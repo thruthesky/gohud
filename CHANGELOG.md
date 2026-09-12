@@ -4,7 +4,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [1.0.0] — 2026-09-12
 
-First version. Extracted from the Laryen 3D shared UX layer and rebuilt as a standalone add-on that
+First version. Rebuilt from a production game's shared UX layer into a standalone add-on that
 depends on nothing outside `addons/gohud/`.
 
 ### Added

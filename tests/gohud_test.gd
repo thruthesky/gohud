@@ -741,8 +741,14 @@ func _rtl() -> void:
 ## 애드온이 호스트 프로젝트에 기대면 스토어에서 받은 사람의 프로젝트에서 깨진다.
 func _standalone() -> void:
 	var outside_ref := RegEx.create_from_string("res://[A-Za-z0-9_./%-]+")
-	var host_names := RegEx.create_from_string("(?<![A-Za-z_])(UiStyle|UiSurface|UiScroll|UiCloseButton|UiNotice|UiPromptCard|UiBackPolicy|UiFeedback|UiCoachMark|UiLootChip|HudSafeArea|HudIcons|HudIconButton|HudMetrics|HudSheet|FormContainer|UiScale|BootProfile|CharacterFlow|Dialogs\\.|Locale\\.|Audio\\.)")
+	# 🛑 호스트 프로젝트의 클래스 이름을 하드코딩하지 않는다 — 어느 프로젝트에 설치될지 모른다.
+	#    애드온이 스스로 선언한 이름도, 엔진이 아는 이름도 아닌 것에 `X.` 로 접근한다면 그것이 외부 의존이다.
+	var known := _own_symbols()
+	var static_access := RegEx.create_from_string("(?<![A-Za-z0-9_.\"'])([A-Z][A-Za-z0-9_]*)\\s*\\.")
 	var trailing_comment := RegEx.create_from_string("\\s#.*$")
+	# 🛑 문자열 안은 코드가 아니다 — 영문 문장 끝의 마침표("… placement CENTER. It respects …")가
+	#    `X.` 로 보여 오탐이 났다. 심볼 검사에서는 리터럴을 지우고 본다(res:// 검사는 원문에서 한다).
+	var literal := RegEx.create_from_string("\"[^\"]*\"|'[^']*'")
 	var problems: Array[String] = []
 	for path in _files(ADDON, ["gd", "tscn", "tres", "cfg"]):
 		if path.begins_with(ADDON + "/tests/") or path.begins_with(ADDON + "/tools/"): continue
@@ -755,13 +761,34 @@ func _standalone() -> void:
 			for found in outside_ref.search_all(line):
 				if not found.get_string().begins_with(ADDON + "/"):
 					problems.append("%s:%d %s" % [path.get_file(), number, found.get_string()])
-			var host := host_names.search(line)
-			if host != null: problems.append("%s:%d %s" % [path.get_file(), number, host.get_string()])
+			for found in static_access.search_all(literal.sub(line, "\"\"", true)):
+				var symbol := found.get_string(1)
+				if known.has(symbol) or ClassDB.class_exists(symbol): continue
+				problems.append("%s:%d %s (외부 심볼)" % [path.get_file(), number, symbol])
 			if "\"/root/" in line: problems.append("%s:%d /root/ 경로" % [path.get_file(), number])
-	check(problems.is_empty(), "애드온 밖 res://·라리엔 클래스·오토로드 경로에 기대지 않는다 %s" % str(problems.slice(0, 6)))
+	check(problems.is_empty(), "애드온 밖 res://·호스트 프로젝트 심볼·오토로드 경로에 기대지 않는다 %s" % str(problems.slice(0, 6)))
 	check(FileAccess.file_exists(ADDON + "/LICENSE") and FileAccess.file_exists(ADDON + "/THIRD_PARTY_NOTICES.md"), "라이선스 고지 파일이 있다")
 	var plugin := ConfigFile.new()
 	check(plugin.load(ADDON + "/plugin.cfg") == OK and str(plugin.get_value("plugin", "version", "")) == GoUi.VERSION, "plugin.cfg 버전 = GoUi.VERSION")
+
+
+## 애드온이 스스로 선언한 이름(class_name·enum)과 엔진 내장 Variant 타입.
+## 🛑 Variant 타입(Vector2·Color…)은 ClassDB 에 없으므로 여기서 따로 인정한다.
+func _own_symbols() -> Dictionary:
+	var known := {}
+	for builtin in ["Vector2", "Vector2i", "Vector3", "Vector3i", "Vector4", "Vector4i",
+			"Rect2", "Rect2i", "Color", "Transform2D", "Transform3D", "Basis", "Quaternion",
+			"AABB", "Plane", "Projection", "RID", "Callable", "Signal", "StringName", "NodePath",
+			"Dictionary", "Array", "String", "PackedByteArray", "PackedInt32Array",
+			"PackedInt64Array", "PackedFloat32Array", "PackedFloat64Array", "PackedStringArray",
+			"PackedVector2Array", "PackedVector3Array", "PackedVector4Array", "PackedColorArray"]:
+		known[builtin] = true
+	var declared := RegEx.create_from_string("^\\s*(?:class_name\\s+|enum\\s+|const\\s+)([A-Z][A-Za-z0-9_]*)")
+	for path in _files(ADDON, ["gd"]):
+		for raw in FileAccess.get_file_as_string(path).split("\n"):
+			var found := declared.search(raw)
+			if found != null: known[found.get_string(1)] = true
+	return known
 
 
 func _files(dir: String, extensions: Array) -> PackedStringArray:

@@ -31,8 +31,8 @@
 ## ```
 ##
 ## 🛑 이 리소스는 **위젯을 참조하지 않는다** — `GoStyle`·`GoSurface` 가 이것을 참조하므로,
-##    반대 방향을 만들면 순환 의존이 되어 `.new()` 부터 무너진다(라리엔 공용UX 가 실제로
-##    `UiStyle → HudIcons → HudIconButton → UiStyle` 로 그렇게 죽었다).
+##    반대 방향을 만들면 순환 의존이 되어 `.new()` 부터 무너진다
+##    (스타일 → 아이콘 → 아이콘 버튼 → 스타일 로 고리가 닫히면 실제로 그렇게 죽는다).
 @tool
 class_name GoIconSet
 extends Resource

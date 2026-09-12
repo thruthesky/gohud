@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """gohud 기본 아이콘 세트 — 직접 그린 24x24 선(stroke) 아이콘. 전부 MIT 로 재배포한다.
-원·선·사각 같은 자명한 기하 도형만 쓴다(다른 아이콘 폰트의 path 를 복사하지 않았다)."""
+원·선·사각 같은 자명한 기하 도형만 쓴다(다른 아이콘 폰트의 path 를 복사하지 않았다).
+참고로, 아이콘은 커스터마이징하여 stroke 색상을 바꾸거나, stroke-width 를 바꾸거나, fill 색상을 바꾸거나, viewBox 를 바꾸거나, width/height 를 바꾸거나, path 를 추가/삭제/변경할 수 있다."""
 import os, sys
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "..", "icons", "default")
