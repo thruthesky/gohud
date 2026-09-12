@@ -1,0 +1,6 @@
+# gohud 저장소용 — 호스트 프로젝트(addons/gohud) 안에 있어도 무해하다.
+.dist/
+.godot/
+tests/_*
+*.tmp
+.DS_Store

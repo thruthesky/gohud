@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dix65p2amhkjo"
+
+[deps]
+
+files=["res://addons/gohud/i18n/gohud.en.translation", "res://addons/gohud/i18n/gohud.ko.translation", "res://addons/gohud/i18n/gohud.ja.translation", "res://addons/gohud/i18n/gohud.zh.translation", "res://addons/gohud/i18n/gohud.es.translation", "res://addons/gohud/i18n/gohud.pt.translation", "res://addons/gohud/i18n/gohud.de.translation", "res://addons/gohud/i18n/gohud.fr.translation", "res://addons/gohud/i18n/gohud.ru.translation", "res://addons/gohud/i18n/gohud.hi.translation", "res://addons/gohud/i18n/gohud.ar.translation"]
+
+source_file="res://addons/gohud/i18n/gohud.csv"
+dest_files=["res://addons/gohud/i18n/gohud.en.translation", "res://addons/gohud/i18n/gohud.ko.translation", "res://addons/gohud/i18n/gohud.ja.translation", "res://addons/gohud/i18n/gohud.zh.translation", "res://addons/gohud/i18n/gohud.es.translation", "res://addons/gohud/i18n/gohud.pt.translation", "res://addons/gohud/i18n/gohud.de.translation", "res://addons/gohud/i18n/gohud.fr.translation", "res://addons/gohud/i18n/gohud.ru.translation", "res://addons/gohud/i18n/gohud.hi.translation", "res://addons/gohud/i18n/gohud.ar.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

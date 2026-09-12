@@ -1,0 +1,6 @@
+# `git archive` 로 배포본을 만들 때 유지보수 전용 폴더를 뺀다(스토어 ZIP 은 tools/package.sh 가 만든다).
+tests/ export-ignore
+tools/ export-ignore
+.dist/ export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
