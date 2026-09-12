@@ -43,7 +43,12 @@ func _ready() -> void:
 
 ## 가로로 흐르는 스크롤(칩 줄·썸네일 줄).
 static func horizontal() -> GoScroll:
-	var node := GoScroll.new()
+	return as_horizontal(GoScroll.new())
+
+
+## `horizontal()` 의 설정만 — 자식 클래스가 자기 인스턴스로 같은 팩토리를 다시 만들 때 쓴다
+## (`static func horizontal() -> Child: return GoScroll.as_horizontal(Child.new())`). 정적 함수는 자식 타입을 모른다.
+static func as_horizontal(node: GoScroll) -> GoScroll:
 	node.horizontal_scroll_mode = SCROLL_MODE_AUTO
 	node.vertical_scroll_mode = SCROLL_MODE_DISABLED
 	node.size_flags_vertical = Control.SIZE_FILL

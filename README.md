@@ -272,6 +272,20 @@ On **Godot 4.7.2** (macOS, Apple Silicon, Compatibility renderer):
 versions other than 4.7.2. The safe-area and haptics code paths only activate on handheld platforms,
 so they are exercised by the test suite but not on real hardware.
 
+## Demo
+
+A full screen built with nothing but this add-on — HUD, buttons, dialogs, notices, touch controls
+and both themes side by side, all of it live.
+
+```bash
+cd examples/demo && godot              # it is a regular Godot project — open it in the editor too
+bash examples/demo/run.sh --shot a.png # save a screenshot and exit
+```
+
+The demo folder holds a symlink `addons/gohud → ../../..` so it sees the add-on without a copy; a `.gdignore`
+there keeps the host project from scanning the demo. Installed from a ZIP (no symlinks)? Run
+`bash examples/demo/run.sh --setup` once.
+
 ## Gallery
 
 Open `res://addons/gohud/examples/gallery.tscn` and run it (F6). It needs no server, autoload or

@@ -37,6 +37,13 @@ extends Button
 		icon_tint = value
 		_refresh_icon()
 
+## 텍스처 아이콘을 **원래 픽셀 크기**로 그린다 — 기본은 `visual_size` 의 58% 로 늘린다(폰트 글리프와 같은 크기).
+## 호스트가 자기 SVG 크기를 그대로 쓰고 싶을 때 켠다: 늘리고 줄이면 1px 차이가 난다(픽셀 대조 실측).
+@export var native_texture_size := false:
+	set(value):
+		native_texture_size = value
+		_refresh_icon()
+
 ## 툴팁으로 쓸 gohud 문구 이름(`GoUi.text` 로 번역한다). 비우면 툴팁 없음.
 @export var tooltip_text_name: StringName = &"":
 	set(value):
@@ -82,9 +89,17 @@ func _refresh_icon() -> void:
 	if found != null:
 		# 텍스처 세트 — 엔진의 `Button.icon` 경로가 색·상태까지 테마로 처리한다.
 		icon = found
-		expand_icon = true
-		# 🛑 `expand_icon` 만 켜면 아이콘이 버튼을 꽉 채운다 — 테마 상수 `icon_max_width` 로 글리프 크기에 묶는다.
-		add_theme_constant_override(&"icon_max_width", glyph_size)
+		# 🛑 아이콘만 있는 버튼은 가운데 — `Button` 기본은 왼쪽 정렬이라, 늘리지 않으면 아이콘이 왼쪽에 붙는다
+		#    (2026-09-12 픽셀 대조 실측: 원래 크기 텍스처가 가로로 밀렸다).
+		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+		if native_texture_size:
+			expand_icon = false
+			remove_theme_constant_override(&"icon_max_width")
+		else:
+			expand_icon = true
+			# 🛑 `expand_icon` 만 켜면 아이콘이 버튼을 꽉 채운다 — 테마 상수 `icon_max_width` 로 글리프 크기에 묶는다.
+			add_theme_constant_override(&"icon_max_width", glyph_size)
 		custom_minimum_size = Vector2.ONE * visual_size
 		if icon_tint.a > 0: add_theme_color_override(&"icon_normal_color", icon_tint)
 		return

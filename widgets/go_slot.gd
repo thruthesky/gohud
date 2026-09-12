@@ -138,8 +138,13 @@ func _rebuild_icon() -> void:
 	if not is_instance_valid(_icon): return
 	for child in _icon.get_children(): child.queue_free()
 	if icon_name.is_empty(): return
-	var glyph := GoUi.icons().node(icon_name, maxi(8, roundi(visual_size * 0.44)))
-	glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var px := maxi(8, roundi(visual_size * 0.44))
+	var glyph := GoUi.icons().node(icon_name, px)
+	# 🛑 칸 가운데에 **정해진 크기**로 둔다 — FULL_RECT 를 주면 텍스처 세트(TextureRect·EXPAND_IGNORE_SIZE)가 칸을
+	#    통째로 채워 판 테두리에 붙는다(폰트 세트는 글자 크기가 고정이라 드러나지 않던 결함 — 2026-09-12 데모에서 발견).
+	glyph.set_anchors_preset(Control.PRESET_CENTER)
+	glyph.size = Vector2(px, px)
+	glyph.position = -Vector2(px, px) * 0.5
 	_icon.add_child(glyph)
 
 

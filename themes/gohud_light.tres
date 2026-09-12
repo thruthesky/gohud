@@ -1,17 +1,21 @@
-[gd_resource type="Theme" load_steps=59 format=3]
+[gd_resource type="Theme" load_steps=66 format=3]
 
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_on.svg" id="toggle_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_on_mirrored.svg" id="toggle_on_mirrored"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_on_disabled.svg" id="toggle_on_disabled"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_on_disabled_mirrored.svg" id="toggle_on_disabled_mirrored"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/check_on.svg" id="check_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/light/radio_on.svg" id="radio_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/check_on_disabled.svg" id="check_on_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/light/radio_on_disabled.svg" id="radio_on_disabled"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_off.svg" id="toggle_off"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_off_mirrored.svg" id="toggle_off_mirrored"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_off_disabled.svg" id="toggle_off_disabled"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/toggle_off_disabled_mirrored.svg" id="toggle_off_disabled_mirrored"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/check_off.svg" id="check_off"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/light/radio_off.svg" id="radio_off"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/check_off_disabled.svg" id="check_off_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/light/radio_off_disabled.svg" id="radio_off_disabled"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/grabber.svg" id="grabber"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/grabber_highlight.svg" id="grabber_highlight"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/light/grabber_disabled.svg" id="grabber_disabled"]
@@ -602,6 +606,39 @@ corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 corner_detail = 8
 
+[sub_resource type="StyleBoxFlat" id="tab_selected"]
+content_margin_left = 20
+content_margin_top = 8
+content_margin_right = 20
+content_margin_bottom = 8
+bg_color = Color(0.890196, 0.909804, 0.941176, 1)
+border_width_bottom = 2
+border_color = Color(0.054902, 0.52549, 0.752941, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_detail = 8
+
+[sub_resource type="StyleBoxFlat" id="tab_unselected"]
+content_margin_left = 20
+content_margin_top = 8
+content_margin_right = 20
+content_margin_bottom = 8
+draw_center = false
+border_width_bottom = 1
+border_color = Color(0.603922, 0.65098, 0.721569, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="tab_hovered"]
+content_margin_left = 20
+content_margin_top = 8
+content_margin_right = 20
+content_margin_bottom = 8
+bg_color = Color(0.933333, 0.945098, 0.964706, 1)
+border_width_bottom = 1
+border_color = Color(0.603922, 0.65098, 0.721569, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_detail = 8
+
 [resource]
 BoxContainer/constants/separation = 12
 Button/colors/font_color = Color(0.070588, 0.090196, 0.129412, 1)
@@ -627,6 +664,10 @@ CheckBox/constants/h_separation = 8
 CheckBox/font_sizes/font_size = 16
 CheckBox/icons/checked = ExtResource("check_on")
 CheckBox/icons/checked_disabled = ExtResource("check_on_disabled")
+CheckBox/icons/radio_checked = ExtResource("radio_on")
+CheckBox/icons/radio_checked_disabled = ExtResource("radio_on_disabled")
+CheckBox/icons/radio_unchecked = ExtResource("radio_off")
+CheckBox/icons/radio_unchecked_disabled = ExtResource("radio_off_disabled")
 CheckBox/icons/unchecked = ExtResource("check_off")
 CheckBox/icons/unchecked_disabled = ExtResource("check_off_disabled")
 CheckBox/styles/disabled = SubResource("empty")
@@ -831,6 +872,26 @@ RichTextLabel/colors/default_color = Color(0.070588, 0.090196, 0.129412, 1)
 RichTextLabel/font_sizes/normal_font_size = 16
 ScrollContainer/constants/scrollbar_h_separation = 8
 ScrollContainer/constants/scrollbar_v_separation = 8
+TabBar/colors/font_disabled_color = Color(0.419608, 0.470588, 0.568627, 1)
+TabBar/colors/font_hovered_color = Color(0.070588, 0.090196, 0.129412, 1)
+TabBar/colors/font_selected_color = Color(0.070588, 0.090196, 0.129412, 1)
+TabBar/colors/font_unselected_color = Color(0.278431, 0.32549, 0.415686, 1)
+TabBar/constants/h_separation = 8
+TabBar/font_sizes/font_size = 16
+TabBar/styles/tab_disabled = SubResource("tab_unselected")
+TabBar/styles/tab_focus = SubResource("focus_soft")
+TabBar/styles/tab_hovered = SubResource("tab_hovered")
+TabBar/styles/tab_selected = SubResource("tab_selected")
+TabBar/styles/tab_unselected = SubResource("tab_unselected")
+TabContainer/colors/font_selected_color = Color(0.070588, 0.090196, 0.129412, 1)
+TabContainer/colors/font_unselected_color = Color(0.278431, 0.32549, 0.415686, 1)
+TabContainer/font_sizes/font_size = 16
+TabContainer/styles/panel = SubResource("card")
+TabContainer/styles/tab_disabled = SubResource("tab_unselected")
+TabContainer/styles/tab_focus = SubResource("focus_soft")
+TabContainer/styles/tab_hovered = SubResource("tab_hovered")
+TabContainer/styles/tab_selected = SubResource("tab_selected")
+TabContainer/styles/tab_unselected = SubResource("tab_unselected")
 TextEdit/colors/font_color = Color(0.070588, 0.090196, 0.129412, 1)
 TextEdit/styles/focus = SubResource("edit_focus")
 TextEdit/styles/normal = SubResource("edit_normal")

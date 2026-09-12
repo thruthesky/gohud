@@ -78,6 +78,11 @@ static func failed() -> void:
 
 
 ## 큰 성취(드문 사건). 진동은 확인과 같은 세기 — 더 세게 하면 놀란다.
+## 토글·체크박스를 켜고 껐다 — 탭과 같은 소리·세기.
+static func toggled() -> void:
+	_emit(TAPPED, GoUi.config.haptic_tap_ms, GoUi.config.haptic_tap_amplitude)
+
+
 static func fanfare() -> void:
 	_emit(FANFARE, GoUi.config.haptic_light_ms, GoUi.config.haptic_light_amplitude)
 

@@ -49,8 +49,10 @@ grep -q "^## \[$VERSION\]" "$ADDON/CHANGELOG.md" || fail "CHANGELOG.md 에 [$VER
 # ④ 애드온 밖 참조 — 주석 줄(`#`)은 사용 예시라 뺀다
 # 🛑 `tests/`·`tools/` 는 뺀다 — 검사 파일 자체가 `res://addons/gohud` 를 문자열로 들고 있어
 #    오탐이 난다(2026-09-12). 스토어 ZIP 에도 들어가지 않는 폴더다.
+# 🛑 `examples/demo/` 도 뺀다 — 자체 project.godot 을 가진 **별도 프로젝트**라
+#    그 안의 `res://` 는 애드온이 아니라 데모 루트를 가리킨다.
 LEAKS="$(grep -rnE 'res://' "$ADDON" --include='*.gd' --include='*.tscn' --include='*.tres' --include='*.cfg' \
-  | grep -vE '/(tests|tools)/' \
+  | grep -vE '/(tests|tools)/|/examples/demo/' \
   | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' \
   | grep -oE '^[^:]+:[0-9]+:|res://[A-Za-z0-9_./%-]+' \
   | awk 'index($0, "res://") == 1 { if (index($0, "res://addons/gohud") != 1) print prev $0; next } { prev = $0 }' || true)"
@@ -64,7 +66,10 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$STAGE/addons/gohud"
 
-set -- --exclude=.git --exclude=.godot --exclude=.dist --exclude=.DS_Store --exclude='tests/_*' --exclude='*.tmp'
+# 🛑 `review/` 는 스토어 제출용 홍보 이미지 보관함이다 — 설치본에 들어갈 이유가 없다(ZIP 이 20배가 된다).
+# 🛑 `examples/demo/addons` 는 애드온 루트로 가는 **심볼릭 링크**다 — ZIP 에 넣으면 설치한 곳에서 깨진 링크가 된다.
+#    데모의 `run.sh` 가 없으면 다시 만든다.
+set -- --exclude=.git --exclude=.godot --exclude=.dist --exclude=.DS_Store --exclude='tests/_*' --exclude='*.tmp' --exclude=review --exclude=examples/demo/addons
 if [ "$FULL" -eq 0 ]; then set -- "$@" --exclude=tests --exclude=tools; fi
 rsync -a "$@" "$ADDON/" "$STAGE/addons/gohud/"
 

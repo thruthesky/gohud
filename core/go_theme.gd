@@ -124,9 +124,24 @@ static func box_of(theme: Theme, key: StringName, fallback: Theme = null) -> Sty
 ## 역할의 글자 크기. 역할 이름이 낯설면 본문 크기로 떨어진다.
 static func font_size_of(theme: Theme, role: StringName, fallback: Theme = null) -> int:
 	var type: StringName = ROLE_TYPES.get(role, &"Label")
-	if theme != null and theme.has_font_size(&"font_size", type): return theme.get_font_size(&"font_size", type)
-	if fallback != null and fallback.has_font_size(&"font_size", type): return fallback.get_font_size(&"font_size", type)
+	for candidate in [theme, fallback]:
+		if candidate == null: continue
+		var found := _font_size_in_chain(candidate, type)
+		if found > 0: return found
 	return 16
+
+
+## 타입에 직접 정의된 글자 크기를 찾되, 없으면 **변형의 base 를 따라 올라간다**(`GoCaptionLabel` → `CaptionLabel` → `Label`).
+## 🛑 `Theme.has_font_size()` 는 `default_font_size` 가 있으면 무조건 true 라 못 쓴다 — 직접 정의 목록으로 판정한다.
+##    호스트 프로젝트가 자기 변형을 base 로 걸어 정본을 하나로 둘 수 있게 하는 길이다. 0 이면 없음.
+static func _font_size_in_chain(theme: Theme, type: StringName) -> int:
+	var current := type
+	for _depth in 8:
+		if current.is_empty(): break
+		if theme.get_font_size_list(current).has(&"font_size"): return theme.get_font_size(&"font_size", current)
+		current = theme.get_type_variation_base(current)
+	if theme.has_default_font_size(): return theme.get_default_font_size()
+	return 0
 
 
 ## 숫자 크기 → 가장 가까운 역할. 예전 코드가 `14` 처럼 숫자로 크기를 주던 자리를 이어 준다.

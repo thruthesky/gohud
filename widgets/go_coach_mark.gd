@@ -99,7 +99,7 @@ func _build() -> void:
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_header.add_child(title_label)
 
-	_scroll = GoScroll.new()
+	_scroll = _make_scroll()
 	_column.add_child(_scroll)
 	body_label = GoStyle.label_key("", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY))
 	body_label.name = "Body"
@@ -218,9 +218,15 @@ func _process(delta: float) -> void:
 		advance()
 		return
 	# 진짜 메뉴가 열려 있는 동안은 카드를 숨긴다 — 닫히면 그 자리에서 이어진다.
-	card.visible = not GoSurface.is_any_open()
+	card.visible = not _should_pause()
 	if card.visible: _layout()
 	queue_redraw()
+
+
+## 카드를 잠시 숨겨야 하는가 — 기본은 "gohud 표면이 하나라도 열려 있다". 🔑 호스트가 자기 모달 체계를 따로 가지면
+## 자식에서 덮어써 그것도 함께 본다(닫히면 같은 단계에서 이어진다).
+func _should_pause() -> bool:
+	return GoSurface.is_any_open()
 
 
 func _accent() -> Color:
@@ -286,3 +292,8 @@ func _input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and visible and not GoSurface.is_any_open():
 		finish.call_deferred(false)
+
+
+## 본문 스크롤을 만든다. 🔑 호스트가 `GoScroll` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.
+func _make_scroll() -> GoScroll:
+	return GoScroll.new()

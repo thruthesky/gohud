@@ -57,6 +57,7 @@ func _initialize() -> void:
 	await _section("icon sets", _icons)
 	await _section("localization", _i18n)
 	await _section("scale functions", _scale)
+	await _section("widgets", _widgets)
 	await _section("style factories", _style)
 	await _section("icon button", _icon_button)
 	await _section("surface", _surface)
@@ -332,6 +333,11 @@ func _icon_button() -> void:
 	TranslationServer.set_locale("en")
 	mark.notification(NOTIFICATION_TRANSLATION_CHANGED)
 	check(mark.accessibility_name == "Close", "접근성 이름 = 툴팁 문구 (%s)" % mark.accessibility_name)
+	check(mark.icon_alignment == HORIZONTAL_ALIGNMENT_CENTER and mark.vertical_icon_alignment == VERTICAL_ALIGNMENT_CENTER, "텍스처 아이콘은 가운데 정렬(Button 기본은 왼쪽)")
+	mark.native_texture_size = true
+	check(not mark.expand_icon and not mark.has_theme_constant_override(&"icon_max_width") and mark.icon is DPITexture, "native_texture_size: 늘리지 않고 icon_max_width 도 풀린다")
+	mark.native_texture_size = false
+	check(mark.expand_icon and mark.get_theme_constant(&"icon_max_width") == cap, "native_texture_size 끄면 다시 글리프 크기로 묶는다")
 	mark.queue_free()
 	await frames(1)
 
@@ -497,6 +503,9 @@ func _notice() -> void:
 	TranslationServer.set_locale("en")
 	notice.show_key("gohud_close")
 	check(notice.label.text == "Close", "show_key 번역")
+	var content := HBoxContainer.new(); var inner := Button.new(); content.add_child(inner)
+	notice.set_content(content)
+	check(content.mouse_filter == Control.MOUSE_FILTER_IGNORE and inner.mouse_filter == Control.MOUSE_FILTER_IGNORE, "set_content: 내용 서브트리의 mouse_filter 값도 IGNORE")
 	notice.queue_free()
 	await frames(1)
 
@@ -693,6 +702,13 @@ func _form() -> void:
 	check(late.autowrap_mode != TextServer.AUTOWRAP_OFF, "나중에 들어온 라벨도 줄바꿈이 보장된다")
 	form.queue_free()
 	await frames(1)
+	# 가로 스크롤 팩토리 — 자식 클래스가 자기 인스턴스로 다시 만들 수 있게 설정만 분리돼 있다.
+	var lane := GoScroll.horizontal()
+	var own := GoScroll.new()
+	var made := GoScroll.as_horizontal(own)
+	check(made == own and lane.horizontal_scroll_mode == made.horizontal_scroll_mode and made.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_AUTO
+		and made.vertical_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED and made.mouse_filter == Control.MOUSE_FILTER_PASS, "as_horizontal = horizontal 의 설정 · 같은 인스턴스를 돌려준다")
+	lane.free(); own.free()
 
 
 # ── 소리·진동 ──────────────────────────────────────────────────────────
@@ -751,7 +767,9 @@ func _standalone() -> void:
 	var literal := RegEx.create_from_string("\"[^\"]*\"|'[^']*'")
 	var problems: Array[String] = []
 	for path in _files(ADDON, ["gd", "tscn", "tres", "cfg"]):
-		if path.begins_with(ADDON + "/tests/") or path.begins_with(ADDON + "/tools/"): continue
+		# 🛑 데모는 자체 project.godot 을 가진 **별도 프로젝트**다 — 그 안의 `res://` 는 데모 루트를 가리킨다.
+		if path.begins_with(ADDON + "/tests/") or path.begins_with(ADDON + "/tools/") \
+				or path.begins_with(ADDON + "/examples/demo/"): continue
 		var number := 0
 		for raw in FileAccess.get_file_as_string(path).split("\n"):
 			number += 1
@@ -774,6 +792,48 @@ func _standalone() -> void:
 
 ## 애드온이 스스로 선언한 이름(class_name·enum)과 엔진 내장 Variant 타입.
 ## 🛑 Variant 타입(Vector2·Color…)은 ClassDB 에 없으므로 여기서 따로 인정한다.
+# ── 위젯 팩토리(선택·메뉴·표시) ─────────────────────────────────────────
+
+func _widgets() -> void:
+	var select := GoStyle.select(["a", "b", "c"], "pick")
+	check(select is OptionButton and select.item_count == 3 and select.selected == -1 and select.text == "pick", "select: 항목 3 · 미선택 placeholder")
+	var menu := GoStyle.dropdown("Actions", ["Rename", {"text": "Delete", "disabled": true}])
+	check(menu is MenuButton and menu.get_popup().item_count == 2 and menu.get_popup().is_item_disabled(1)
+		and menu.custom_minimum_size.y == GoUi.metric(GoTheme.BUTTON_HEIGHT), "dropdown: 항목 2 · 둘째 비활성 · 버튼 높이")
+	var radios := GoStyle.radio_group(["x", "y", "z"], 2)
+	var group: ButtonGroup = radios.get_meta(&"group")
+	check(radios.get_child_count() == 3 and group != null and group.get_pressed_button() == radios.get_child(2)
+		and (radios.get_child(0) as Control).custom_minimum_size.y == GoUi.metric(GoTheme.TOUCH), "radio_group: 3항목 · 셋째 선택 · 터치 하한")
+	var picked := [-1]
+	var seg := GoStyle.segmented(["Day", "Week"], 0, func(i: int) -> void: picked[0] = i)
+	root.add_child(seg); await frames(1)
+	(seg.get_child(1) as Button).button_pressed = true
+	(seg.get_child(1) as Button).pressed.emit()
+	check((seg.get_meta(&"group") as ButtonGroup).get_pressed_button() == seg.get_child(1) and picked[0] == 1, "segmented: 하나만 눌림 · 콜백 index")
+	check((seg.get_child(0) as Button).autowrap_mode == TextServer.AUTOWRAP_OFF and (seg.get_child(0) as Control).size.x >= 40, "segmented: 줄바꿈 끔 · 자연 폭(글자가 세로로 쪼개지지 않는다)")
+	seg.queue_free()
+	var bar := GoStyle.tabs(["One", "Two", "Three"], 1)
+	check(bar is TabBar and bar.tab_count == 3 and bar.current_tab == 1 and bar.custom_minimum_size.y == GoUi.metric(GoTheme.TOUCH), "tabs: 3탭 · 둘째 선택 · 터치 높이")
+	var crumbs := GoStyle.breadcrumb(["Home", "Inventory", "Weapons"])
+	check(crumbs.get_child_count() == 5 and crumbs.get_child(4) is Label and crumbs.get_child(0) is Button, "breadcrumb: 항목 3 + 구분 2 · 마지막은 라벨")
+	check((crumbs.get_child(4) as Label).autowrap_mode == TextServer.AUTOWRAP_OFF and (crumbs.get_child(0) as Button).autowrap_mode == TextServer.AUTOWRAP_OFF, "breadcrumb: 항목 줄바꿈 끔(자연 폭)")
+	var area := GoStyle.textarea("hint", 3)
+	check(area is TextEdit and area.placeholder_text == "hint" and area.wrap_mode == TextEdit.LINE_WRAPPING_BOUNDARY and area.custom_minimum_size.y > GoUi.font_size(GoTheme.ROLE_BODY) * 3, "textarea: placeholder · 줄바꿈 · 3줄 높이")
+	var av := GoStyle.avatar("Ada Lovelace", 40)
+	check(av.custom_minimum_size == Vector2(40, 40) and av.get_child(0) is Label and (av.get_child(0) as Label).text == "AL", "avatar: 40 · 이니셜 AL")
+	var sk := GoStyle.skeleton(0, 12)
+	check(sk.size_flags_horizontal == Control.SIZE_EXPAND_FILL and sk.custom_minimum_size.y == 12, "skeleton: 가로 채움 · 높이")
+	var al := GoStyle.alert("saved", GoTheme.SUCCESS)
+	var al_row := al.get_child(0)
+	check(al is PanelContainer and al_row.get_child_count() == 2 and al_row.get_child(1) is Label and (al_row.get_child(1) as Label).text == "saved", "alert: 아이콘 + 글")
+	var tb := GoStyle.table(["A", "B"], [["1", "2"], ["3", "4"]])
+	check(tb.columns == 2 and tb.get_child_count() == 6 and (tb.get_child(0) as Label).uppercase, "table: 2열 · 머리 2 + 셀 4 · 머리 대문자")
+	var lb := GoStyle.list_button(GoIconSet.SETTINGS, "Settings", Callable(), Color.TRANSPARENT, "", false, GoIconSet.CHEVRON_RIGHT)
+	var line := lb.get_child(0).get_child(0)
+	check(line.get_child_count() == 3 and (line.get_child(2) as Control).size_flags_vertical == Control.SIZE_SHRINK_CENTER, "list_button trailing: 줄 끝 꺾쇠 · 세로 가운데")
+	for n in [select, menu, radios, bar, crumbs, area, av, sk, al, tb, lb]: n.free()
+
+
 func _own_symbols() -> Dictionary:
 	var known := {}
 	for builtin in ["Vector2", "Vector2i", "Vector3", "Vector3i", "Vector4", "Vector4i",

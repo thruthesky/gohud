@@ -80,7 +80,7 @@ func _init() -> void:
 	subtitle_label.visible = false
 	texts.add_child(subtitle_label)
 
-	close_button = GoIconButton.new()
+	close_button = _make_close_button()
 	close_button.icon_name = GoIconSet.CLOSE
 	close_button.tooltip_text_name = &"close"
 	close_button.visible = false
@@ -269,3 +269,8 @@ func _notification(what: int) -> void:
 		if not _subtitle_key.is_empty(): subtitle_label.text = tr(_subtitle_key).format(_subtitle_args)
 	elif what == NOTIFICATION_VISIBILITY_CHANGED and fade_in and is_inside_tree():
 		_fade = GoStyle.fade(self, _fade, visible)
+
+
+## 닫기 버튼을 만든다. 🔑 호스트가 `GoIconButton` 의 서브클래스(자기 그림·크기)를 쓰고 싶으면 자식에서 덮어쓴다.
+func _make_close_button() -> GoIconButton:
+	return GoIconButton.new()

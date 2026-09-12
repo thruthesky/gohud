@@ -85,6 +85,9 @@ func set_content(content: Control, accent := Color.TRANSPARENT, compact := false
 	_drop_content()
 	_content = content
 	add_child(content)
+	# 🛑 내용의 `mouse_filter` 도 전부 IGNORE 로 — `mouse_behavior_recursive` 가 입력을 막아도 값은 남아, "알림 안 노드는 입력을
+	#    안 먹는다"를 값으로 확인하는 코드(호스트 검사·`mouse_filter` 를 읽는 배치 로직)가 어긋난다(2026-09-12, 파생 게임 loot-icons).
+	_ignore_content_input(content)
 	var surface := GoStyle.box(GoTheme.BOX_NOTICE, accent)
 	if compact: surface.set_content_margin_all(GoUi.metric(GoTheme.PADDING_COMPACT))
 	add_theme_stylebox_override(&"panel", surface)
@@ -112,6 +115,12 @@ func _surface(accent := Color.TRANSPARENT) -> StyleBoxFlat:
 	var surface := GoStyle.box(GoTheme.BOX_NOTICE, accent)
 	surface.set_content_margin_all(GoUi.metric(GoTheme.PADDING_COMPACT))
 	return surface
+
+
+## 내용 서브트리가 월드 입력을 먹지 않게 — 스낵바 위를 눌러도 아래 화면이 받는다.
+func _ignore_content_input(node: Node) -> void:
+	if node is Control: (node as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for child in node.get_children(): _ignore_content_input(child)
 
 
 func _drop_content() -> void:

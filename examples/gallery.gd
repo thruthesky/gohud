@@ -111,9 +111,11 @@ func _build_page() -> void:
 	page.add_child(toggle)
 	page.add_child(GoStyle.checkbox("Remember me", false))
 	var volume := GoStyle.slider(0.0, 1.0, 0.01)
+	volume.size_flags_horizontal = Control.SIZE_EXPAND_FILL   # 팩토리는 폭을 정하지 않는다
 	volume.value = 0.7
 	page.add_child(volume)
 	var picker := GoStyle.picker()
+	picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for option in ["Low", "Medium", "High"]: picker.add_item(option)
 	page.add_child(picker)
 

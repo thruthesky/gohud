@@ -56,6 +56,10 @@ wait "$PID"
 CODE=$?
 
 grep -E "^  (ok  |FAIL|viewport) |^FAIL |^gohud tests:" "$LOG"
+# 🛑 새 그림(SVG)을 만든 직후 실제 임포트를 안 했으면 테마가 통째로 안 읽혀 검사가 즉시 죽거나 매달린다(2026-09-12).
+if grep -qE "referenced non-existent resource|Failed loading resource: res://addons/gohud" "$LOG" 2>/dev/null; then
+  echo "🛑 리소스를 못 읽었다 — 새 SVG 가 임포트되지 않았다. 먼저:  godot --headless --path \"$PROJECT\" --import" >&2
+fi
 if grep -A3 "SCRIPT ERROR" "$LOG" | grep -q "addons/gohud\|gohud_test"; then
   echo "🛑 gohud 스크립트 오류:" >&2
   grep -A3 "SCRIPT ERROR" "$LOG" | head -30 >&2

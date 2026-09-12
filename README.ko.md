@@ -90,7 +90,8 @@ hp.set_values(72, 100)
 ```gdscript
 var settings := GoConfig.new()
 settings.theme = preload("res://my_theme.tres")   # 내 테마
-settings.accent = Color("#7c5cff")                # 강조색만 바꿔도 된다
+var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: Color("#7c5cff")}
+settings.color_overrides = colors                 # 강조색만 바꿔도 된다
 settings.base_font_size = 15
 settings.icons = my_icons                         # 아이콘 세트 교체
 settings.metric_overrides = {GoTheme.BUTTON_HEIGHT: 56}
@@ -148,7 +149,8 @@ GoUi.font_size(GoTheme.BODY)      # 글자 크기 토큰
 ```
 
 내 팔레트로 테마를 새로 만들려면 `tools/make_theme.py` 에 색을 넣고 돌린다 —
-컨트롤 SVG(체크박스·화살표·토글 등)까지 테마별로 생성한다.
+컨트롤 SVG(체크박스·라디오·화살표·토글·탭 등)까지 테마별로 생성한다. 🛑 돌린 뒤 프로젝트에서
+`godot --headless --path . --import` 를 한 번 — 새 SVG 는 실제 임포트를 거쳐야 읽힌다.
 
 ## 위젯
 
@@ -210,6 +212,22 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 | 갤러리 화면 — 폰 세로·가로·데스크톱 | 18장 육안 확인 |
 
 **검증하지 않은 것**: Android·iOS 실기기, Forward+/Mobile 렌더러, 4.7.2 외 버전.
+
+## 데모 — 한 화면으로 전부 보기
+
+애드온만으로 만든 화면 하나에 HUD·버튼·대화상자·알림·터치 컨트롤·두 테마가 모두 들어 있고,
+전부 실제로 동작한다.
+
+```bash
+cd examples/demo && godot                 # 보통의 Godot 프로젝트다 — 에디터로 열어도 된다
+bash examples/demo/run.sh --shot out.png  # 화면을 파일로 저장
+```
+
+데모 폴더의 `addons/gohud` 는 애드온 루트로 가는 심볼릭 링크라 복사본 없이 애드온을 본다. 그 폴더의
+`.gdignore` 가 호스트 프로젝트의 스캔을 막는다. ZIP 으로 설치했다면(링크가 없다) `bash examples/demo/run.sh --setup`
+을 한 번 돌린다.
+
+자세한 설명은 [examples/demo/README.md](examples/demo/README.md).
 
 ## 개발
 

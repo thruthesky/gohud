@@ -104,6 +104,14 @@ def control_svgs(pal):
             body = '<rect x="1.75" y="1.75" width="16.5" height="16.5" rx="4.5" fill="none" stroke="%s" stroke-width="1.5"/>' % mut
         return wrap(20, 20, body, disabled)
 
+    def radio(state_on, disabled):
+        if state_on:
+            body = ('<circle cx="10" cy="10" r="9" fill="%s"/>'
+                    '<circle cx="10" cy="10" r="3.6" fill="%s"/>') % (acc, on)
+        else:
+            body = '<circle cx="10" cy="10" r="8.25" fill="none" stroke="%s" stroke-width="1.5"/>' % mut
+        return wrap(20, 20, body, disabled)
+
     def arrow(path):
         return ('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" '
                 'stroke="%s" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="%s"/></svg>') % (sec, path)
@@ -116,6 +124,7 @@ def control_svgs(pal):
                 out[name] = toggle(state_on, disabled, mirrored)
         for disabled in (False, True):
             out["check_%s%s" % ("on" if state_on else "off", "_disabled" if disabled else "")] = check(state_on, disabled)
+            out["radio_%s%s" % ("on" if state_on else "off", "_disabled" if disabled else "")] = radio(state_on, disabled)
     out["grabber"] = wrap(20, 20, '<circle cx="10" cy="10" r="8" fill="%s"/>' % acc)
     out["grabber_highlight"] = wrap(20, 20, '<circle cx="10" cy="10" r="10" fill="%s" fill-opacity=".22"/><circle cx="10" cy="10" r="8" fill="%s"/>' % (acc, acc))
     out["grabber_disabled"] = wrap(20, 20, '<circle cx="10" cy="10" r="7" fill="%s"/>' % mut)
@@ -350,8 +359,35 @@ def build(pal, variant, out_path):
         sb("CheckBox/styles/%s" % state, "empty")
     sb("CheckBox/styles/focus", "focus_soft")
     for key, rid in [("checked", "check_on"), ("unchecked", "check_off"),
-                     ("checked_disabled", "check_on_disabled"), ("unchecked_disabled", "check_off_disabled")]:
+                     ("checked_disabled", "check_on_disabled"), ("unchecked_disabled", "check_off_disabled"),
+                     ("radio_checked", "radio_on"), ("radio_unchecked", "radio_off"),
+                     ("radio_checked_disabled", "radio_on_disabled"), ("radio_unchecked_disabled", "radio_off_disabled")]:
         ex("CheckBox/icons/%s" % key, rid)
+
+    # 탭 줄 — 고른 탭은 강조색 밑줄, 나머지는 얇은 기준선. 위 모서리만 둥글다.
+    tab_margins = (CONST["padding"], CONST["gap_small"], CONST["padding"], CONST["gap_small"])
+    tab_radius = CONST.get("radius_small", 8)
+    box("tab_selected", bg=pal["surface_high"], border=pal["accent"], borders=(0, 0, 0, 2),
+        corners=(tab_radius, tab_radius, 0, 0), margins=tab_margins)
+    box("tab_unselected", draw_center=False, border=pal["border"], borders=(0, 0, 0, 1), margins=tab_margins)
+    box("tab_hovered", bg=pal["surface_soft"], border=pal["border"], borders=(0, 0, 0, 1),
+        corners=(tab_radius, tab_radius, 0, 0), margins=tab_margins)
+    for key, bid in [("tab_selected", "tab_selected"), ("tab_unselected", "tab_unselected"),
+                     ("tab_hovered", "tab_hovered"), ("tab_disabled", "tab_unselected"), ("tab_focus", "focus_soft")]:
+        sb("TabBar/styles/%s" % key, bid)
+    add("TabBar/colors/font_selected_color", C(pal["text"]))
+    add("TabBar/colors/font_unselected_color", C(pal["secondary"]))
+    add("TabBar/colors/font_hovered_color", C(pal["text"]))
+    add("TabBar/colors/font_disabled_color", C(pal["muted"]))
+    add("TabBar/font_sizes/font_size", FONTS["body"])
+    add("TabBar/constants/h_separation", CONST["gap_small"])
+    for key, bid in [("tab_selected", "tab_selected"), ("tab_unselected", "tab_unselected"),
+                     ("tab_hovered", "tab_hovered"), ("tab_disabled", "tab_unselected"), ("tab_focus", "focus_soft"),
+                     ("panel", "card")]:
+        sb("TabContainer/styles/%s" % key, bid)
+    add("TabContainer/colors/font_selected_color", C(pal["text"]))
+    add("TabContainer/colors/font_unselected_color", C(pal["secondary"]))
+    add("TabContainer/font_sizes/font_size", FONTS["body"])
 
     add("FoldableContainer/colors/font_color", C(pal["text"]))
     add("FoldableContainer/colors/hover_font_color", C(pal["text"]))
@@ -480,7 +516,12 @@ def build(pal, variant, out_path):
     print("%s — 항목 %d · StyleBox %d · 그림 %d" % (os.path.relpath(out_path, ADDON), len(T), len(boxes), len(assets)))
 
 
+# 🛑 새 그림(SVG)을 만들었으면 Godot 이 **실제 임포트**를 해야 읽힌다 — `.import` 파일만으로는 안 된다.
+#    안 하면 새 테마를 preload 하는 스크립트가 로드에 실패해 헤드리스 검사가 소리 없이 매달린다(2026-09-12 실측).
+IMPORT_HINT = "다음: 프로젝트에서 `godot --headless --path . --import` 를 한 번 돌린다(새 SVG 임포트). 그 전엔 검사·데모가 새 테마를 못 읽는다."
+
 if __name__ == "__main__":
     themes = os.path.join(ADDON, "themes")
     build(DARK, "dark", os.path.join(themes, "gohud_dark.tres"))
     build(LIGHT, "light", os.path.join(themes, "gohud_light.tres"))
+    print(IMPORT_HINT)
