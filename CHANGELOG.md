@@ -4,6 +4,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- **Showcase images on the homepage.** The English and Korean overview pages now open with medieval
+  (character, inventory and quests; forms, grids and prompt cards) and sci-fi (touch controls)
+  showcase images, served from `docs/www/img/showcase-*.webp`.
+
+### Changed
+
+- `LICENSE` names the copyright holder: Copyright (c) 2026 JaeHo Song.
+
 ## [1.0.2] - 2026-09-13
 
 ### Added
