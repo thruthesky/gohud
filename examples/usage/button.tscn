@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bstkangu5japp"]
+
+[ext_resource type="Script" uid="uid://njy8ml40vxoj" path="res://button.gd" id="1_r04n3"]
+
+[node name="Button_Test" type="Control" unique_id=1488231003]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r04n3")
