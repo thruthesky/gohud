@@ -378,8 +378,10 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 
 	var inset := padding(GoUi.metric(GoTheme.GAP))
 	inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	inset.add_theme_constant_override(&"margin_top", GoUi.metric(GoTheme.GAP_TINY))
-	inset.add_theme_constant_override(&"margin_bottom", GoUi.metric(GoTheme.GAP_TINY))
+	# 두 줄 항목의 바깥 여백은 제목·요약 사이보다 넓게 둔다.
+	var vertical_padding := GoUi.metric(GoTheme.GAP_TINY if sub_key.is_empty() else GoTheme.GAP_SMALL)
+	inset.add_theme_constant_override(&"margin_top", vertical_padding)
+	inset.add_theme_constant_override(&"margin_bottom", vertical_padding)
 	inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	node.add_child(inset)
 
@@ -408,7 +410,8 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 		# 두 줄 항목 — 제목과 요약을 한 칸에 세로로 쌓는다. 요약은 한 단계 물러난 색·크기다.
 		var stack := column(GoUi.metric(GoTheme.GAP_TINY))
 		stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stack.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		# 행이 늘어나도 두 글줄은 자연 높이를 유지하고 아이콘과 함께 가운데 놓인다.
+		stack.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		title.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		title.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 		stack.add_child(title)

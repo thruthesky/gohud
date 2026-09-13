@@ -30,7 +30,7 @@ BEFORE_TABLE="$(cat "$ADDON/tools/skin_dials.json")"
 python3 -c "import sys; sys.path.insert(0, '$ADDON/tools'); import make_theme; make_theme.write_skin_dials_table()"
 [ "$BEFORE_TABLE" = "$(cat "$ADDON/tools/skin_dials.json")" ] \
   && echo "   다이얼 표가 스킨 스크립트와 일치" || { echo "🛑 다이얼 표가 낡아 있었다 — 방금 다시 만들었으니 커밋한다"; FAILED=1; }
-DIAL_COUNT=$(python3 -c "import json;t=json.load(open('$ADDON/tools/skin_dials.json'));print(len(t['default'])+len(t['scifi']))")
+DIAL_COUNT=$(python3 -c "import json;t=json.load(open('$ADDON/tools/skin_dials.json'));print(sum(len(v) for v in t.values() if isinstance(v, dict)))")
 [ "$DIAL_COUNT" -ge 20 ] && echo "   다이얼 $DIAL_COUNT 개를 파싱했다" || { echo "🛑 다이얼 파싱이 $DIAL_COUNT 개뿐 — 파서가 깨졌다"; FAILED=1; }
 
 python3 "$ADDON/tools/new_theme.py" "$ID" --from scifi_light --title "Probe" > /dev/null || { echo "🛑 스캐폴딩 실패"; exit 1; }
@@ -70,6 +70,41 @@ else
   tail -12 "$ADDON/contrast.log"
   echo "🛑 새 테마가 대비 검사에 걸린다"; FAILED=1
 fi
+
+# A JSON preset can itself be a parent; preserve its fonts, icons, shape and skin dials.
+python3 - "$ADDON" <<'PY_CHECK' || FAILED=1
+from pathlib import Path
+import json, subprocess, sys
+root = Path(sys.argv[1])
+def run(*args, ok=True):
+    result = subprocess.run([sys.executable, str(root / 'tools' / args[0]), *args[1:]], capture_output=True, text=True)
+    assert (result.returncode == 0) == ok, result.stdout + result.stderr
+    return result
+ident = 'zz_medieval_probe'
+run('new_theme.py', ident, '--from', 'medieval_dark')
+p = root / 'themes/palettes' / (ident + '.json')
+spec = json.loads(p.read_text())
+assert spec['shape']['kind'] == 'medieval' and spec['skin']['base'] == 'medieval'
+assert spec['icons'].endswith('gohud_icons_medieval.tres')
+# Sparse overrides must retain all other inherited values.
+spec['skin'] = {'dials': {'slot_rivets': 0}}
+spec['shape'] = {'ornament_scale': 0.75}
+p.write_text(json.dumps(spec))
+run('make_theme.py', ident)
+theme = (root / 'themes' / ('gohud_' + ident + '.tres')).read_text()
+skin = (root / 'themes/skins' / ('gohud_skin_' + ident + '.tres')).read_text()
+preset = (root / 'themes/presets' / (ident + '.tres')).read_text()
+assert 'Cinzel.ttf' in theme and 'ornament_scale = 0.75' in theme
+assert 'slot_rivets = 0' in skin and 'slot_tint_lit = 0.14' in skin
+assert 'gohud_icons_medieval.tres' in preset
+run('check_contrast.py', '--quiet')
+spec['from'] = ident
+p.write_text(json.dumps(spec))
+cycle = run('make_theme.py', ident, ok=False)
+assert 'inheritance cycle' in cycle.stdout + cycle.stderr
+run('new_theme.py', '--remove', ident)
+print('   Medieval parent: fonts, icons, sparse dials, contrast and cycle detection passed')
+PY_CHECK
 
 if [ "$FAILED" -eq 0 ]; then echo "✅ 테마 스캐폴딩 — 파일 하나로 테마가 생긴다"; else echo "🛑 스캐폴딩이 깨져 있다"; fi
 exit "$FAILED"

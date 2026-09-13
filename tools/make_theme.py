@@ -218,6 +218,7 @@ SHAPE_CUT = dict(
 )
 
 CUT_SCRIPT = RES + "/widgets/go_stylebox_cut.gd"
+MEDIEVAL_SCRIPT = RES + "/widgets/go_stylebox_medieval.gd"
 BRACKET_SCRIPT = RES + "/widgets/go_stylebox_bracket.gd"
 
 # `corners=(tl, tr, br, bl)` → GoStyleBoxCut 의 비트마스크
@@ -460,6 +461,32 @@ def cut(shape, bg=None, border=None, bw=0, radius=0, margins=None, shadow=None, 
     return out
 
 
+def medieval(shape, bid, **kw):
+    """Reuse the shared component palette/metrics with an opt-in forged frame."""
+    out = ['script = ExtResource("medieval")']
+    for side, value in zip(("left", "top", "right", "bottom"), kw.get("margins") or (0, 0, 0, 0)):
+        out.append("content_margin_%s = %g" % (side, value))
+    for name in ("bg_color", "border_color"):
+        source = "bg" if name == "bg_color" else "border"
+        if kw.get(source) is not None:
+            out.append("%s = %s" % (name, C(kw[source])))
+    out.append("border_width = %g" % max(kw.get("borders") or [kw.get("bw", 0)]))
+    out.append("radius = %g" % min(shape.get("radius_large", 6), max([kw.get("radius", 0)] + list(kw.get("corners") or []))))
+    out.append("draw_center = %s" % ("true" if kw.get("draw_center", True) else "false"))
+    ornate = bid in ("panel", "panel_solid", "card", "popup", "fold_panel")
+    quiet = bid in ("hud", "bar_bg", "bar_fill", "separator", "menu_separator", "menu_hover") or bid.startswith(("scroll_", "slider_", "list_"))
+    out.append("ornament = %d" % (0 if quiet else 2 if ornate else 1))
+    out.append("material = %d" % shape.get("material", 1))
+    for key, default in (("ornament_scale", 1.0), ("grain_alpha", 0.035), ("bevel_strength", 0.18)):
+        out.append("%s = %g" % (key, 0.0 if quiet and key == "grain_alpha" else shape.get(key, default)))
+    shadow = kw.get("shadow")
+    if shadow is not None:
+        out += ["shadow_color = %s" % C(shadow[0]), "shadow_size = %d" % shadow[1]]
+        if kw.get("shadow_offset"):
+            out.append("shadow_offset = Vector2(%g, %g)" % tuple(kw["shadow_offset"]))
+    return out
+
+
 def build(pal, shape, variant, out_path):
     # 🔑 **글자로 쓰이는 색은 손으로 고르지 않는다.** 표면 계층을 한 단계만 조정해도 흐린 글자가
     #    곧바로 기준 아래로 떨어진다(2026-09-13: 표면을 벌렸더니 `muted` 가 네 테마 모두 미달로 돌아갔다).
@@ -526,6 +553,7 @@ def build(pal, shape, variant, out_path):
     PAD = tuple(shape.get("button_padding", (16, 10, 16, 10)))
     boxes = {}
     cutting = shape["kind"] == "cut"
+    forging = shape["kind"] == "medieval"
 
     def box(bid, **kw):
         # `edge`(강조 변)·`glow`(발광)는 각진 형태에만 있는 장식이다 — 둥근 형태에서는 조용히 버린다.
@@ -541,7 +569,7 @@ def build(pal, shape, variant, out_path):
                 kw["shadow"] = flat_shadow[:2]
                 if len(flat_shadow) > 2:
                     kw["shadow_offset"] = flat_shadow[2]
-            boxes[bid] = ("StyleBoxFlat", flat(**kw))
+            boxes[bid] = ("StyleBox", medieval(shape, bid, **kw)) if forging else ("StyleBoxFlat", flat(**kw))
 
     def bracket(bid, color, arm=11, thickness=2.0, inset=0.0, margins=None, bg=None):
         """네 모서리만 긋는 표식 판. 🛑 각진 형태에서만 쓴다 — 둥근 형태에는 부르지 않는다."""
@@ -991,11 +1019,27 @@ def build(pal, shape, variant, out_path):
     add("GoCard/base_type", '&"PanelContainer"')
     sb("GoCard/styles/panel", "card")
 
-    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0)
+    # Optional role fonts are scoped to this theme; existing presets keep their exact output.
+    fonts = shape.get("fonts", {})
+    font_targets = {"title": "GoTitleLabel", "subtitle": "GoSubtitleLabel", "caption": "GoCaptionLabel",
+                    "body": "Label", "button": "Button"}
+    unknown_fonts = set(fonts) - set(font_targets)
+    if unknown_fonts:
+        raise SystemExit("Unknown font roles: %s" % sorted(unknown_fonts))
+    for role in fonts:
+        ex(font_targets[role] + "/fonts/font", "font_" + role)
+        if role == "body": ex("default_font", "font_" + role)
+    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + len(fonts)
     lines = ['[gd_resource type="Theme" load_steps=%d format=3]' % steps, ""]
     if cutting:
         lines.append('[ext_resource type="Script" path="%s" id="cut"]' % CUT_SCRIPT)
         lines.append('[ext_resource type="Script" path="%s" id="bracket"]' % BRACKET_SCRIPT)
+    if forging:
+        lines.append('[ext_resource type="Script" path="%s" id="medieval"]' % MEDIEVAL_SCRIPT)
+    for role, path in fonts.items():
+        if not path.startswith(RES + "/") or not os.path.isfile(os.path.join(ADDON, path[len(RES) + 1:])):
+            raise SystemExit("Font must exist inside the addon: %s" % path)
+        lines.append('[ext_resource type="FontFile" path="%s" id="font_%s"]' % (path, role))
     for name in assets:
         lines.append('[ext_resource type="Texture2D" path="%s/assets/%s/%s.svg" id="%s"]' % (RES, variant, name, name))
     lines.append("")
@@ -1027,7 +1071,10 @@ BUILTIN_THEMES = {
     "scifi_dark": (SCIFI_DARK, SHAPE_CUT),
     "scifi_light": (SCIFI_LIGHT, SHAPE_CUT),
 }
-SHAPES = {"flat": SHAPE_DEFAULT, "cut": SHAPE_CUT}
+SHAPES = {"flat": SHAPE_DEFAULT, "cut": SHAPE_CUT,
+          "medieval": {"kind": "medieval", "controls": "rounded", "radius": 4, "radius_small": 3,
+                       "radius_large": 6, "material": 1, "ornament_scale": 1.0,
+                       "grain_alpha": 0.035, "bevel_strength": 0.18}}
 PALETTES_DIR = os.path.join(ADDON, "themes", "palettes")
 # 팔레트에 반드시 있어야 하는 키 — 없으면 생성 중간에 KeyError 로 죽는다. 미리 알려 준다.
 PALETTE_KEYS = ("background", "surface", "surface_soft", "surface_high", "border", "text", "secondary",
@@ -1042,36 +1089,56 @@ def parse_color(text):
     return hexc(body.strip(), float(alpha) if alpha else 1.0)
 
 
-def load_palette_file(path):
+def load_palette_file(path, ancestors=()):
     """JSON 테마 한 장 → (id, 팔레트, 형태, 메타). `from` 으로 내장 테마를 물려받고 적힌 것만 덮어쓴다."""
     import json
+    path = os.path.abspath(path)
+    if path in ancestors:
+        raise SystemExit("Palette inheritance cycle: %s" % path)
     with open(path, encoding="utf-8") as fh:
         spec = json.load(fh)
     tid = spec.get("id") or os.path.splitext(os.path.basename(path))[0]
     base = spec.get("from", "dark")
-    if base not in BUILTIN_THEMES:
-        raise SystemExit("🛑 %s: `from` 은 %s 중 하나여야 한다 (지금 %r)" % (path, sorted(BUILTIN_THEMES), base))
-    pal = dict(BUILTIN_THEMES[base][0])
+    base_meta = None
+    if base in BUILTIN_THEMES:
+        base_pal, base_shape = BUILTIN_THEMES[base]
+    else:
+        base_path = os.path.join(PALETTES_DIR, base + ".json")
+        if not os.path.isfile(base_path):
+            raise SystemExit("Unknown parent palette: %s" % base)
+        _, base_pal, base_shape, base_meta = load_palette_file(base_path, ancestors + (path,))
+    pal = dict(base_pal)
     for key, value in spec.get("palette", {}).items():
         if key.startswith("_"): continue
         pal[key] = parse_color(value)
     missing = [k for k in PALETTE_KEYS if k not in pal]
     if missing:
         raise SystemExit("🛑 %s: 팔레트에 %s 가 없다" % (path, ", ".join(missing)))
-    shape_spec = spec.get("shape", BUILTIN_THEMES[base][1])
+    shape_spec = spec.get("shape", base_shape)
     if isinstance(shape_spec, str):
         shape = dict(SHAPES[shape_spec])
     else:
-        shape = dict(SHAPES.get(shape_spec.get("kind", BUILTIN_THEMES[base][1]["kind"]), SHAPE_DEFAULT))
+        kind = shape_spec.get("kind", base_shape["kind"])
+        shape = dict(base_shape if kind == base_shape["kind"] else SHAPES[kind])
+        if "fonts" in shape_spec:
+            shape_spec = dict(shape_spec, fonts={**shape.get("fonts", {}), **shape_spec["fonts"]})
         shape.update({k: v for k, v in shape_spec.items() if not k.startswith("_")})
-    meta = {"title": spec.get("title", tid), "dark": spec.get("dark", BUILTIN_THEMES[base][0] in (DARK, SCIFI_DARK)),
-            "skin": spec.get("skin", "scifi" if base.startswith("scifi") else "default"), "from": base}
+    inherited_skin = base_meta["skin"] if base_meta else "scifi" if base.startswith("scifi") else "default"
+    skin = spec.get("skin", inherited_skin)
+    if isinstance(skin, dict) and isinstance(inherited_skin, dict):
+        if skin.get("base", inherited_skin.get("base")) == inherited_skin.get("base"):
+            skin = {**inherited_skin, **skin, "dials": {**inherited_skin.get("dials", {}), **skin.get("dials", {})}}
+    meta = {"title": spec.get("title", tid),
+            "dark": spec.get("dark", base_meta["dark"] if base_meta else base in ("dark", "scifi_dark")),
+            "skin": skin,
+            "icons": spec.get("icons", base_meta.get("icons", "") if base_meta else ""), "from": base}
     return tid, pal, shape, meta
 
 
 SKIN_SCRIPTS = {
     "default": ("GoSkin", RES + "/core/go_skin.gd"),
     "scifi": ("GoSkinSciFi", RES + "/themes/skins/go_skin_scifi.gd"),
+    "medieval": ("GoSkinMedieval", RES + "/themes/skins/go_skin_medieval.gd"),
 }
 SKINS_DIR = os.path.join(ADDON, "themes", "skins")
 
@@ -1079,6 +1146,7 @@ SKINS_DIR = os.path.join(ADDON, "themes", "skins")
 SKIN_SOURCES = {
     "default": os.path.join(ADDON, "core", "go_skin.gd"),
     "scifi": os.path.join(ADDON, "themes", "skins", "go_skin_scifi.gd"),
+    "medieval": os.path.join(ADDON, "themes", "skins", "go_skin_medieval.gd"),
 }
 DIALS_TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "skin_dials.json")
 
@@ -1127,8 +1195,7 @@ def write_skin_resource(tid, skin_spec):
         raise SystemExit("🛑 skin.base 는 %s 중 하나 (지금 %r)" % (sorted(SKIN_SCRIPTS), base))
     script_class, script_path = SKIN_SCRIPTS[base]
     known = dict(skin_dials()["default"])
-    if base == "scifi":
-        known.update(skin_dials()["scifi"])
+    known.update(skin_dials()[base])
     dials = {k: v for k, v in skin_spec.get("dials", {}).items() if not k.startswith("_")}
     unknown = sorted(set(dials) - set(known))
     if unknown:

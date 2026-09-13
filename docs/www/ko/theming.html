@@ -20,6 +20,7 @@
       <a href="./">소개</a>
       <a href="theming.html">생김새</a>
       <a href="widgets.html">위젯</a>
+      <a href="#medieval">중세</a>
       <a href="#tokens">토큰</a>
       <a href="#skin">스킨</a>
       <a href="#own">내 프리셋</a>
@@ -59,7 +60,7 @@
       </tr>
       <tr>
         <td><code>GoIconSet</code></td>
-        <td>아이콘 84종. 텍스처 세트든 아이콘 폰트든 같은 이름으로 부른다</td>
+        <td>이름으로 부르는 아이콘 — 기본 84종, 또는 그 위에 각인풍 16종을 얹은 중세 세트. 텍스처 세트든 아이콘 폰트든 같은 이름으로 부른다</td>
         <td>세트를 꽂거나 몇 개만 덮어쓴다</td>
       </tr>
     </tbody>
@@ -83,6 +84,60 @@
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프리셋 그대로</code></pre>
   <p><code>theme</code>·<code>skin</code>·<code>icons</code> 를 직접 채우면 그쪽이 프리셋보다 <b>우선한다</b>.</p>
+
+  <h3>기본 제공 프리셋 여섯</h3>
+  <table>
+    <thead><tr><th>프리셋</th><th>판</th><th>스킨 · 아이콘</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>둥근 <code>StyleBoxFlat</code> 판과 단계별 그림자. 강조 버튼은 떠 있다가 누르면 가라앉는다</td><td><code>GoSkin</code> · 기본 아이콘 84종</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>모서리를 자른 <code>GoStyleBoxCut</code> 판, 네온 강조 변과 발광, <code>GoStyleBoxBracket</code> 포커스 표식</td><td><code>GoSkinSciFi</code> — 육각 조이스틱 · 기본 아이콘</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>철·가죽 또는 양피지 질감의 <code>GoStyleBoxMedieval</code> 단조 프레임, 메뉴에만 리벳과 모서리 장식</td><td><code>GoSkinMedieval</code> · 기본 위에 각인풍 16종</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>중세: 철·가죽·양피지</h2>
+  <p><code>medieval_dark</code>는 어두운 철·가죽·고금색, <code>medieval_light</code>는 양피지·잉크 색상이다.
+    기존 위젯에 <code>GoSkinMedieval</code>을 적용하며, 16종의 각인풍 아이콘과 기존 탐색 아이콘을 함께 쓴다.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# 또는: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>UI를 만들기 전에 선택한다. <code>GoConfig.theme</code>, <code>skin</code>, <code>icons</code>의 직접 설정은 우선한다.
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code>을 열고 F6을 누르면 캐릭터·인벤토리·퀘스트 예제를 실행한다.
+    버튼으로 두 프리셋을 전환하거나 아이템 설명을 열 수 있다.</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="중세 철과 가죽 테마의 캐릭터·인벤토리·퀘스트" loading="lazy"><figcaption>철과 가죽</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="중세 양피지 테마의 캐릭터·인벤토리·퀘스트" loading="lazy"><figcaption>양피지와 잉크</figcaption></figure>
+  </div>
+  <p>메뉴는 모서리 리벳과 작은 장식으로 꾸미고, 상시 HUD는 테두리를 절제한다.
+    HP·마나·스태미나에는 빨강·파랑·올리브색 채움을 쓴다. Cinzel은 제목·부제에만 적용하고 본문은 기존 글꼴을 유지한다.
+    글꼴 라이선스는 <code>assets/fonts/cinzel/OFL.txt</code>에 포함되어 있다.</p>
+  <p>각인풍 세트는 <code>bag</code>·<code>book</code>·<code>box</code>·<code>coin</code>·<code>crown</code>·<code>flag</code>·
+    <code>heart</code>·<code>key</code>·<code>map</code>·<code>potion</code>·<code>shield</code>·<code>star</code>·
+    <code>sword</code>·<code>user</code> 14종을 다시 그리고 <code>scroll</code>·<code>seal</code> 을 더한다.
+    나머지 이름은 기본 세트로 떨어지므로 <code>close</code>·<code>settings</code> 는 어느 프리셋에서나 같은 그림이다.
+    Cinzel 은 라틴 문자만 담으므로, 다른 문자의 제목에는 <code>shape.fonts</code> 로 따로 글꼴을 준다.</p>
+  <div class="note">
+    <b>두 변형 모두 검사가 확인한다.</b> 중세 스킨이 선택되는지, 메뉴와 HUD 판이 단조 프레임이고 장식은 메뉴에만
+    붙는지, 제목은 Cinzel 이고 본문은 물려받은 글꼴 그대로인지, 각인 아이콘이 <code>DPITexture</code> 로 임포트되는지,
+    실제 퀵슬롯이 스킨을 쓰는지, 복사한 스킨의 다이얼을 바꾸면 프리셋은 그대로 두고 슬롯에 반영되는지,
+    그리고 다른 프리셋으로 돌아가면 기본·sci-fi 모양이 되돌아오는지.
+  </div>
+  <h3>나만의 왕국 만들기</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# themes/palettes/kingdom.json 수정 후:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# 위젯을 만들기 전에 GDScript에서:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>JSON 테마를 부모로 상속할 수 있다. 생략한 값과 아이콘 세트는 부모를 따르며 순환 상속은 오류로 알려 준다.</p>
+  <table><thead><tr><th>설정</th><th>효과</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: 철 · 1: 가죽 · 2: 양피지. 표면 자국의 모양을 조절한다.</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>질감의 투명도. 0이면 깨끗한 표면이다.</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>메뉴 모서리 장식의 크기와 베벨 반사의 강도.</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>title, subtitle, caption, body, button별로 애드온 내부 res:// 글꼴 경로를 지정한다. 생략한 역할은 부모 글꼴을 따른다.</td></tr>
+    <tr><td><code>skin.dials</code></td><td>퀵슬롯 반경·리벳·질감·빛 반사. 아래 표에 모든 이름과 기본값이 있다.</td></tr>
+  </tbody></table>
 </section>
 
 <section id="tokens">
@@ -139,7 +194,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
   <h3>타입 변형</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
-    <code>GoDangerButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code>
     <code>GoSubtitleLabel</code> <code>GoCaptionLabel</code> <code>GoCompactLabel</code>
     <code>GoMicroLabel</code>
@@ -160,7 +215,8 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
       <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>알림 상자, 자리표시 판, 분절 선택</td></tr>
       <tr><td><code>coach_ring_box</code></td><td>코치마크가 대상에 두르는 표시</td></tr>
       <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td><b>직접 그리는</b> 조이스틱과 지시선</td></tr>
-      <tr><td><code>divider_color</code> · <code>divider_thickness</code></td><td>구분선</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>구분선과 섹션 머리말</td></tr>
+      <tr><td><code>badge_box</code></td><td>퀵슬롯 배지 — 수량·남은 시간</td></tr>
       <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>막대 채움, 스낵바</td></tr>
     </tbody>
   </table>
@@ -179,9 +235,10 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     <tbody>
       <tr><td><code>GoStyleBoxCut</code></td><td>모서리를 사선으로 자른 판(챔퍼), 한 변만 굵은 강조 변, 바깥으로 번지는 발광</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>변을 두르지 않고 네 모서리만 짧게 긋는 조준 표식</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>단조 프레임 — 리벳, 모서리 각인, 베벨 반사, 철·가죽·양피지 질감</td></tr>
     </tbody>
   </table>
-  <p>둘 다 여느 StyleBox 처럼 Theme 리소스 안에 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.</p>
+  <p>셋 모두 여느 StyleBox 처럼 Theme 리소스 안에 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.</p>
 
   <div class="note warn">
     <b>여백은 <code>content_margin_*</code> 으로 준다.</b> GDScript 로 StyleBox 를 상속하면
@@ -211,14 +268,17 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
   <table>
     <thead><tr><th>어디</th><th>무엇</th><th>어떻게</th></tr></thead>
     <tbody>
+      <tr><td><code>from</code></td><td>물려받을 테마</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … 또는 다른 JSON 테마. 적지 않은 키는 부모 값을 따르고, 순환 상속은 오류다</td></tr>
       <tr><td rowspan="3"><code>palette</code></td><td>바탕·표면 3단·테두리·글자 3단·강조·상태색 4·스크림·그림자·막대 바탕</td><td><code>"#RRGGBB"</code> · 알파는 <code>"#RRGGBB@0.35"</code></td></tr>
       <tr data-group="palette"><td>막대 채움 전용 원색 <code>*_vivid</code></td><td>글자색이 어두워져도 막대는 선명하게 — 없으면 생성기가 <code>막대가 칙칙하다</code> 고 알린다</td></tr>
       <tr data-group="palette"><td>가독성</td><td><b>손으로 맞추지 않는다.</b> 글자·테두리·강조색·강조 버튼 글자는 생성기가 기준을 넘을 때까지 민다 — 강조색 하나만 바꿔도 검사를 통과한다</td></tr>
-      <tr><td rowspan="3"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code>(둥근) · <code>cut</code>(사선 모서리)</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code>(둥근) · <code>cut</code>(사선 모서리) · <code>medieval</code>(단조 프레임)</td></tr>
       <tr data-group="shape"><td>치수</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — 토큰까지 함께 바뀌어 판과 위젯 계산이 어긋나지 않는다</td></tr>
       <tr data-group="shape"><td><code>cut</code> 전용</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code>(<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
-      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — 코드가 직접 그리는 자리(조이스틱·슬롯·배지·코치마크 링·칩·구분선)의 계열</td><td><code>default</code> · <code>scifi</code></td></tr>
+      <tr data-group="shape"><td><code>medieval</code> 전용</td><td><code>material</code>(0 철 · 1 가죽 · 2 양피지) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>·<code>subtitle</code>·<code>caption</code>·<code>body</code>·<code>button</code> 역할별 애드온 내부 <code>res://</code> 글꼴</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — 코드가 직접 그리는 자리(조이스틱·슬롯·배지·코치마크 링·칩·구분선)의 계열</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
       <tr data-group="skin"><td><code>dials</code> — 그 자리의 <b>숫자</b>: 슬롯 테두리 두께·틴트, 배지 여백, 칩·알림 투명도, 조이스틱 링 두께·투명도, sci-fi 의 잘린 모서리·발광·조준 표식</td><td>JSON 에 부모 값이 전부 풀어 적혀 있다. 생성기가 <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> 로 내려보낸다 — <b>스킨 코드를 안 만진다</b>. 그림 자체를 바꿀 때만 <code>--new-skin</code> 으로 <code>GoSkin</code> 상속 껍데기를 만든다</td></tr>
+      <tr><td><code>icons</code></td><td>아이콘 세트</td><td><code>GoIconSet</code> 리소스의 <code>res://</code> 경로 — 적지 않으면 JSON 부모의 세트를 따른다</td></tr>
       <tr><td><code>dark</code> · <code>title</code></td><td>고르개 표시</td><td>불리언 · 문자열</td></tr>
     </tbody>
   </table>
@@ -271,6 +331,17 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
       <tr><td><code>bracket_thickness</code></td><td data-label="기본값">2.0</td><td>코치마크 조준 표식의 선 두께(dp).</td></tr>
     </tbody>
   </table>
+  <h4>중세 스킨 <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="기본값">4.0</td><td>퀵슬롯 금속 프레임의 모서리 반경(dp).</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="기본값">0.035</td><td>퀵슬롯 가죽 표면 질감의 투명도.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="기본값">1.0</td><td>퀵슬롯 모서리의 금속 장식 배율. 메뉴 프레임은 팔레트의 shape에서 조절한다.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="기본값">0.18</td><td>퀵슬롯 위쪽 금속 반사의 강도.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="기본값">1</td><td>퀵슬롯에 리벳을 표시할지(0: 없음, 1: 표시).</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
@@ -306,6 +377,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
       <tr><td>큰 글자(24px 이상)</td><td>3 : 1</td></tr>
       <tr><td>강조 테두리·아이콘</td><td>3 : 1</td></tr>
       <tr><td>장식 테두리</td><td>2 : 1 — WCAG 는 장식에 3:1 을 요구하지 않는다</td></tr>
+      <tr><td>맞닿은 표면</td><td>1.12 : 1 — 카드가 바탕과 떨어져 보일 만큼</td></tr>
     </tbody>
   </table>
 

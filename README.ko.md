@@ -1,33 +1,53 @@
 # gohud — Godot 4 커스터마이징 HUD·UI 키트
 
-**설명 사이트:** [English (기본)](https://thruthesky.github.io/gohud/) · [한국어](https://thruthesky.github.io/gohud/docs/www/ko/) · [배포 안내](docs/README.md)
+**홈페이지:** [https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)
+
+[한국어 사이트](https://thruthesky.github.io/gohud/docs/www/ko/) ·
+[생김새 안내](https://thruthesky.github.io/gohud/docs/www/ko/theming.html) ·
+[위젯 안내](https://thruthesky.github.io/gohud/docs/www/ko/widgets.html) ·
+[English README](README.md) ·
+[변경 기록](CHANGELOG.md) ·
+[GitHub](https://github.com/thruthesky/gohud)
 
 영문판은 [README.md](README.md) 다. 이 문서는 같은 내용의 한국어 설명서다.
 
 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바, 안내 카드, 코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱을
 **테마 한 장과 교체 가능한 아이콘 세트 한 장**으로 굴린다. 안전영역·가상 키보드·RTL 언어·터치를
-스스로 챙긴다.
+스스로 챙긴다. 기본 제공 프리셋 여섯 — 기본·sci-fi·중세, 각각 어둡고 밝은 판 — 이 코드 한 줄로
+색과 **모양**을 함께 바꾼다.
+
+<p>
+  <img src="https://thruthesky.github.io/gohud/docs/www/img/preset-default-dark.png" alt="default_dark 프리셋의 gohud 갤러리" width="250">
+  <img src="https://thruthesky.github.io/gohud/docs/www/img/preset-scifi-dark.png" alt="scifi_dark 프리셋의 같은 갤러리" width="250">
+</p>
 
 > 넣으면 그냥 동작한다. 에디터 플러그인을 켜는 것은 편의 기능일 뿐이다.
 
+**버전 1.0.1.** 중세 프리셋과 목록 줄 여백 개선은 `main` 에 들어 있고 [변경 기록](CHANGELOG.md)의
+*Unreleased* 에 적혀 있다 — 다음 `tools/package.sh` 실행 때 배포 버전에 포함된다.
+
+- **프리셋 여섯, 코드 한 줄.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` 가 테마·스킨·아이콘을
+  함께 바꾼다 — 둥근 기본 판, 네온이 번지는 사선 모서리의 sci-fi, 각인 아이콘과 단조 프레임의 중세.
 - **아이콘을 갈아 끼워도 코드는 그대로.** 위젯은 아이콘을 이름으로 부른다(`GoIconSet.CLOSE`).
   `GoConfig.icons` 를 내 SVG 세트나 아이콘 폰트로 바꾸면 모든 위젯이 따라온다 — 몇 개만 바꿔도 된다.
-- **설정은 리소스 한 장.** 테마·아이콘·크기·브레이크포인트·표면 동작·햅틱·소리·문구가 전부
+- **테마는 데이터다.** `new_theme.py` 가 내장 테마를 물려받는 JSON 파일 하나를 만든다. 생성기가 테마·컨트롤
+  그림·스킨 다이얼을 만들고, 글자·테두리·강조색을 WCAG 대비 기준을 넘을 때까지 민다.
+- **설정은 리소스 한 장.** 프리셋·테마·아이콘·크기·브레이크포인트·표면 동작·햅틱·소리·문구가 전부
   `GoConfig` 하나에 있고, 애드온을 업데이트해도 살아남는다.
 - **모바일 우선, 데스크톱도.** 작게 보이는 버튼 뒤에 48dp 터치 영역, 안전영역과 키보드 회피,
   가로·세로 배치, Android 뒤로 가기, 키보드 사용자에게만 보이는 포커스 링.
 - **요즘 엔진 기능을 쓴다.** `DPITexture` 아이콘은 UI 배율을 키워도 선명하고,
   `FoldableContainer` 접이식 섹션, 화면 낭독기를 위한 `accessibility_name`,
   알림이 입력을 먹지 않게 하는 `mouse_behavior_recursive`, 흐르는 줄의 `last_wrap_alignment`.
-- **Godot 4.6 이상.** 4.6 stable 과 4.7 에서 검사 전부를 통과시켜 확인했다.
 - **순수 GDScript.** 오토로드 불필요, 엔진 모듈·GDExtension 없음.
-- **MIT** — 함께 들어 있는 아이콘 84종 포함.
+- **MIT** — 코드와 그림 전부, 기본 아이콘 84종과 중세 각인 아이콘 16종 포함. 중세 제목에 쓰는
+  Cinzel 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
 
 ## 요구 사항
 
-Godot **4.6 이상**. `DPITexture`·`FoldableContainer`·접근성 속성 등 4.5 에서 들어온 API 를 쓰고,
-지원 하한은 4.6 이다 — 바뀔 때마다 **4.6 stable 과 4.7.2 양쪽**에서 검사 전부를 돌리고
-갤러리 스크린샷까지 대조한다.
+Godot **4.6 이상**. `DPITexture`·`FoldableContainer`·접근성 속성 등 4.5 에서 들어온 API 를 쓰므로
+그보다 낮은 엔진에서는 파싱 단계에서 죽는다. 지원 하한은 4.6 이고 `GoUi.MIN_ENGINE` 에 적혀 있다.
+`tools/check_all.sh` 는 4.7 에서 검사를 돌리고, `GODOT_46` 에 4.6 실행 파일을 주면 4.6 에서도 돌린다.
 
 ## 설치
 
@@ -41,12 +61,12 @@ Godot **4.6 이상**. `DPITexture`·`FoldableContainer`·접근성 속성 등 4.
 저장소 루트가 곧 애드온 폴더라 Godot 이 기대하는 자리에 그대로 떨어진다.
 
 ```bash
-git submodule add <gohud-저장소-주소> addons/gohud
+git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 ```
 
 그 자리에서 고치고 `addons/gohud` **안에서** 커밋·push 한 뒤, 게임 저장소에서 서브모듈 포인터를
-커밋한다. 재현 가능한 빌드를 원하면 태그에 고정한다(`git -C addons/gohud checkout v1.0.0`).
+커밋한다. 재현 가능한 빌드를 원하면 태그나 커밋에 고정한다(`git -C addons/gohud checkout v1.0.0`).
 
 ## 빠른 시작
 
@@ -59,6 +79,9 @@ func _ready() -> void:
 	if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
 		print("삭제됨")
 ```
+
+되돌릴 수 없는 일에는 `confirm()` 의 마지막 인자 `destructive` 를 `true` 로 준다 — 확인 버튼이 채워진
+위험 버튼으로 그려진다.
 
 검색 칸과 바닥 버튼이 고정된 바텀 시트:
 
@@ -75,6 +98,9 @@ sheet.footer().add_child(GoStyle.button("닫기", sheet.close, GoStyle.Tone.PRIM
 sheet.footer().visible = true
 ```
 
+요약이 있는 두 줄 항목은 위아래 여백이 같고, 줄이 더 높게 늘어나도 제목·요약 묶음이 아이콘 옆 세로
+가운데에 선다.
+
 HUD 모서리:
 
 ```gdscript
@@ -84,9 +110,11 @@ corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT   # 가로 화면에서는 �
 add_child(corner)
 
 var hp := GoBar.new()
-hp.setup("HP", GoTheme.DANGER)
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)             # 채움 전용 토큰 — 밝은 테마에서도 선명하다
+hp.custom_minimum_size.x = 180
 corner.add_child(hp)
-hp.set_values(72, 100)
+hp.set_values(320, 500)
 ```
 
 스크롤되는 본문이 그 HUD 와 한 화면에 있다면, 폼에게 자리를 비우라고 일러 준다 — 그러지 않으면
@@ -108,23 +136,110 @@ notice_anchor.avoid_peers = true      # 고정 HUD 아래로 내려앉는다(좌
 notice_anchor.reserve_space = false   # 떠 있는 동안 본문을 밀지도 않는다
 ```
 
+## 프리셋 — 색뿐 아니라 **모양**까지
+
+`Theme` 는 **엔진이 그려 주는 것**의 모양만 바꾼다. `StyleBoxFlat` 의 모서리는 둥근 것뿐이고,
+조이스틱·퀵슬롯·코치마크는 코드가 직접 그리므로 테마를 아무리 갈아 끼워도 모양이 안 바뀐다.
+그래서 gohud 는 **프리셋**을 쓴다 — 테마 + 스킨 + 아이콘을 한 단위로 고른다.
+
+```gdscript
+GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — 테마·스킨·아이콘이 함께 바뀐다
+```
+
+| 프리셋 | 생김새 | 스킨 |
+|---|---|---|
+| `default_dark` | gohud 원래 모습 — 둥근 모서리, 부드러운 파란 강조, 단계별 그림자 | `GoSkin` |
+| `default_light` | 같은 모양에 밝은 팔레트 | `GoSkin` |
+| `scifi_dark` | 모서리를 사선으로 자른 판, 시안 네온 테두리와 발광, 육각 조이스틱, 조준 표식 포커스 | `GoSkinSciFi` |
+| `scifi_light` | 같은 각진 모양에 밝은 설계도 팔레트 | `GoSkinSciFi` |
+| `medieval_dark` | 어두운 철·가죽, 고금색 프레임, 리벳, 각인풍 아이콘, Cinzel 제목 | `GoSkinMedieval` |
+| `medieval_light` | 양피지·잉크·청동 색상의 같은 단조 프레임 | `GoSkinMedieval` |
+
+에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
+🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 프리셋보다 **우선한다** — 프리셋을 고른 뒤 한 칸만
+자기 것으로 바꿔 끼울 수 있다.
+
+### 중세
+
+<img src="https://thruthesky.github.io/gohud/docs/www/img/medieval-dark.png" alt="medieval_dark — 기본 위젯으로 만든 캐릭터 정보·가방·퀘스트 일지" width="640">
+
+[중세 예제](examples/medieval/medieval.tscn)를 열고 F6 으로 실행하면 캐릭터 정보, 퀵슬롯 가방, 퀘스트 일지를
+볼 수 있다 — 전부 기본 위젯으로 만들었다. 버튼으로 철·양피지를 바꾸고, 아이템을 누르면 `GoDialogs` 알림으로
+설명이 뜬다.
+
+- 메뉴 판에는 리벳과 작은 모서리 장식을 두고, 상시 보이는 HUD 판은 테두리를 절제했다.
+- 체력·마나·스태미나는 빨강·파랑·올리브색 채움으로 읽힌다.
+- 각인풍 세트는 `bag`·`book`·`box`·`coin`·`crown`·`flag`·`heart`·`key`·`map`·`potion`·`shield`·`star`·
+  `sword`·`user` 를 다시 그리고 `scroll`·`seal` 을 더한다. 나머지 이름(`close` 등)은 기본 세트로 떨어진다.
+- 포함된 Cinzel 글꼴은 제목·부제에만 쓰고 본문은 테마 글꼴을 유지한다. Cinzel 은 라틴 문자만 담으므로
+  다른 문자의 제목에는 `shape.fonts` 로 글꼴을 따로 준다.
+
+### 테마 하나 더 — 파일 하나
+
+내장 테마를 물려받고 바꿀 것만 적는다:
+
+```bash
+python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark --title "Kingdom"
+python3 addons/gohud/tools/make_theme.py kingdom   # 테마 .tres + 컨트롤 그림 + 스킨 리소스
+godot --headless --path . --import                 # 새 그림을 한 번 임포트
+```
+
+```gdscript
+GoUi.use_preset(&"kingdom")   # themes/presets/ 를 스캔하므로 프리셋 고르개에도 저절로 뜬다
+```
+
+`themes/palettes/kingdom.json` 에 부모 값이 전부 풀어 적혀 있어 그것이 곧 "바꿀 수 있는 것" 목록이다.
+키를 지우면 부모 값이 쓰인다.
+
+| 블록 | 정하는 것 |
+|---|---|
+| `from` | 부모 — `dark`·`light`·`scifi_dark`·`medieval_dark`·… 또는 다른 JSON 테마. 순환 상속은 오류로 알린다. |
+| `palette` | 바탕·표면 3단·테두리·글자 3단·강조·상태색 4·스크림·그림자·막대 바탕, 그리고 막대 채움 전용 `*_vivid`. 글자·테두리·강조색은 생성기가 읽히는 대비까지 민다. |
+| `shape` | `kind`(`flat`·`cut`·`medieval`)와 치수(`radius`·`radius_small`·`radius_large`·`gap`·`gap_small`·`gap_large`·`padding`·`button_height`·`button_padding`). `cut` 은 `cut_ratio`·`cut_max`·`corners`·`glow`·`edge` 를, `medieval` 은 `material`(0 철·1 가죽·2 양피지)·`grain_alpha`·`ornament_scale`·`bevel_strength`·`fonts`(`title`·`subtitle`·`caption`·`body`·`button` → 애드온 내부 `res://` 글꼴 경로)를 더한다. |
+| `skin` | `base`(`default`·`scifi`·`medieval`)와 `dials` — 슬롯 테두리·배지 여백·조이스틱 링·잘린 모서리·`slot_rivets` 같은 숫자 32개. 생성기가 `themes/skins/gohud_skin_<id>.tres` 로 내려보내므로 스킨 코드를 안 만진다. |
+| `icons` | 아이콘 세트 리소스. 적지 않으면 JSON 부모의 세트를 따른다. |
+| `dark`·`title` | 고르개 표시. |
+
+다이얼 전부의 이름·기본값·뜻은 스킨 스크립트에서 뽑아 사이트
+[생김새 페이지](https://thruthesky.github.io/gohud/docs/www/ko/theming.html#own)에 적혀 있다.
+`tools/check_scaffold.sh` 가 매번 임시 테마를 만들어 강조색과 반경을 바꾸고 생성·토큰 반영·대비 통과를
+확인한다. 그림 자체를 바꿔야 할 때만 `new_theme.py --new-skin` 을 쓰고, 만든 것을 지우려면
+`new_theme.py --remove kingdom`.
+
+애드온 밖, 내 프로젝트에 둔 프리셋은 코드에서 등록한다:
+
+```gdscript
+GoThemePresets.register(preload("res://ui/my_preset.tres"))
+```
+
+🛑 새 SVG 를 생성한 뒤에는 `godot --headless --path . --import` 를 한 번 — 임포트를 거치기 전에는 새 테마를
+읽지 못한다.
+
 ## 설정 — `GoConfig` 한 장
 
 ```gdscript
 var settings := GoConfig.new()
-settings.theme = preload("res://my_theme.tres")   # 내 테마
+settings.preset = GoThemePresets.MEDIEVAL_LIGHT
 var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: Color("#7c5cff")}
 settings.color_overrides = colors                 # 강조색만 바꿔도 된다
 settings.base_font_size = 15
-settings.icons = my_icons                         # 아이콘 세트 교체
-settings.metric_overrides = {GoTheme.BUTTON_HEIGHT: 56}
 GoUi.config = settings
 ```
 
-값을 바꾼 뒤에는 `GoUi.refresh()` 를 부른다 — 살아 있는 위젯이 전부 다시 그려진다.
-설정을 `.tres` 로 저장해 프로젝트 설정에 경로를 적어 두면 자동으로 불린다.
+설정을 `.tres` 로 저장해 **프로젝트 설정 → gohud → Config → Resource** 에 경로를 적어 두면(플러그인을 켜면
+칸이 생긴다) 자동으로 불린다. 비워 둔 칸은 gohud 기본 동작 그대로다 — 채워야 하는 칸은 없다.
 
-여섯 묶음이 있다 — 겉모습 · 반응형 · 표면 동작 · 피드백(소리·진동) · 번역 · 접근성.
+| 묶음 | 칸 |
+|---|---|
+| 겉모습 | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile` |
+| 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
+| 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
+| 피드백 | `haptics_enabled`, `haptic_tap/light/medium_ms` 와 세기, `sound_cues` |
+| 번역 | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
+| 접근성 | `min_touch_size`, `reduce_motion`, `autowrap_text` |
+
+`theme`·`icons` 를 넣으면 열려 있는 위젯이 알아서 다시 배치된다. 다른 칸을 코드에서 바꿨다면
+`GoUi.refresh()` 를 부른다.
 
 ## 아이콘 — 세 가지 교체 방법
 
@@ -141,7 +256,6 @@ mine.textures = {GoIconSet.CLOSE: preload("res://icons/close.svg"),
 	GoIconSet.SETTINGS: preload("res://icons/gear.svg")}
 mine.fallback = GoUi.DEFAULT_ICONS          # 나머지는 기본 세트
 GoUi.config.icons = mine
-GoUi.refresh()
 
 # 아이콘 폰트
 var fa := GoIconSet.new()
@@ -153,66 +267,48 @@ fa.fallback = GoUi.DEFAULT_ICONS
 텍스처든 폰트든 **쓰는 쪽 코드는 같다**.
 
 ```gdscript
-var node := GoUi.icons().node(GoIconSet.CLOSE, 20)   # 알아서 TextureRect 또는 Label
-GoStyle.icon_button(GoIconSet.CLOSE, _on_close)      # 36dp 그림 · 48dp 터치
+var node := GoUi.icons().node(GoIconSet.CLOSE, 20)         # 알아서 TextureRect 또는 Label
+GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close") # 36dp 그림 · 48dp 터치 · 툴팁 = 접근성 이름
 ```
 
-기본 84종은 선·원·사각형만으로 그린 원본이고 **MIT** 라 재배포에 제약이 없다.
+믿고 쓸 수 있는 이름은 `GoIconSet` 의 상수 84개다. 세트에 정의돼 있으면 다른 이름도 된다 — 중세 세트의
+`scroll`·`seal` 이 그렇다. `icons/gohud_icons_medieval.tres` 가 "몇 개만 교체" 의 실제 예다(기본 세트 위에 16장).
+
+기본 84종과 중세 16종은 gohud 를 위해 그린 원본이고 **MIT** 라 재배포에 제약이 없다.
 `DPITexture` 로 임포트돼 UI 배율을 올려도 다시 래스터화된다.
+
+> 상용 아이콘 폰트는 보통 게임 안에서 쓰는 것만 허락하고 재배포는 막는다. gohud 를 공개 포크할 때는
+> 그 폰트를 넣지 말고 게임 프로젝트에 둔다. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 참고.
 
 ## 테마
 
-테마 타입 `GoHud` 아래에 색·여백·글자 크기 토큰이 있고, 14가지 타입 변형(`GoHudPrimary`,
-`GoHudDanger` …)이 버튼·라벨의 역할을 정한다. 다크·라이트 두 벌이 들어 있다.
+토큰은 전부 테마 타입 **`GoHud`** 아래에 있다.
 
-```gdscript
-GoUi.color(GoTheme.DANGER)        # 색 토큰
-GoUi.metric(GoTheme.PADDING)      # 여백 토큰
-GoUi.font_size(GoTheme.BODY)      # 글자 크기 토큰
-```
-
-내 팔레트로 테마를 새로 만들려면 `tools/make_theme.py` 에 색을 넣고 돌린다 —
-컨트롤 SVG(체크박스·라디오·화살표·토글·탭 등)까지 테마별로 생성한다. 🛑 돌린 뒤 프로젝트에서
-`godot --headless --path . --import` 를 한 번 — 새 SVG 는 실제 임포트를 거쳐야 읽힌다.
-
-### 생김새 묶음 — 색뿐 아니라 **모양**까지
-
-`Theme` 는 **엔진이 그려 주는 것**의 모양만 바꾼다. `StyleBoxFlat` 의 모서리는 둥근 것뿐이고,
-조이스틱·퀵슬롯·코치마크는 코드가 직접 그리므로 테마를 아무리 갈아 끼워도 모양이 안 바뀐다.
-그래서 gohud 는 **묶음(preset)** 을 쓴다 — 테마 + 스킨 + 아이콘을 한 단위로 고른다.
-
-| 묶음 | 생김새 |
+| 갈래 | 토큰 |
 |---|---|
-| `default_dark` | gohud 원래 모습 — 둥근 모서리, 부드러운 파란 강조 |
-| `default_light` | 같은 모양에 밝은 팔레트 |
-| `scifi_dark` | 모서리를 사선으로 자른 판, 시안 네온 테두리와 발광, 육각 조이스틱, 조준 표식 |
-| `scifi_light` | 같은 각진 모양에 밝은 설계도 팔레트 |
+| 색 | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
+| 채움 색 | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — 막대처럼 넓은 면적용. 테마에 없으면 `_fill` 을 뗀 이름으로 떨어진다 |
+| 치수(dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
+| StyleBox | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |
+| 글자 역할 | `micro`, `compact`, `caption`, `body`, `button`, `subtitle`, `title` |
+
+타입 변형: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerButton`, `GoDangerSolidButton`,
+`GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`, `GoTitleLabel`, `GoSubtitleLabel`,
+`GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
+
+`GoHud` 토큰이 없는 테마를 꽂아도 동작한다 — `token_fallback` 이 켜져 있는 동안 빠진 토큰은 기본 테마에서 채운다.
 
 ```gdscript
-GoUi.use_preset(GoThemePresets.SCIFI_DARK)     # 한 줄 — 테마·스킨·아이콘이 함께 바뀐다
+GoUi.color(GoTheme.DANGER)            # 색 토큰
+GoUi.metric(GoTheme.PADDING)          # 치수 토큰
+GoUi.font_size(GoTheme.ROLE_CAPTION)  # 글자 역할 크기
 ```
 
-**테마를 하나 더 만들려면** 파일 하나면 된다 — 내장 테마를 물려받고 바꿀 것만 적는다:
-
-```bash
-python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
-python3 addons/gohud/tools/make_theme.py neon      # 테마 .tres + 컨트롤 그림
-godot --headless --path . --import                  # 새 그림을 한 번 임포트
-```
-
-`themes/palettes/neon.json` 에 부모 값이 전부 풀어 적혀 있어 그것이 곧 "바꿀 수 있는 것" 목록이다.
-`themes/presets/` 는 폴더를 스캔하므로 새 프리셋이 코드 수정 없이 고르개에 뜬다. 모양을 바꿨으면 `bash addons/gohud/tools/demo_shots.sh /tmp/shots --play` 로 데모 15 섹션을 봇이 돌며 찍은 그림(코치마크 단계·알림·시트가 뜬 순간 포함)을 눈으로 본다. 스킨의 숫자(슬롯 테두리·배지 여백·조이스틱 링·sci-fi 잘린 모서리)도 JSON 의 `skin.dials` 에서 바꾼다 — 스킨 코드는 손대지 않는다. 다이얼 전부의 이름·기본값·뜻은 사이트 [테마 페이지](docs/www/ko/theming.html)에 스크립트에서 뽑아 적혀 있다. 글자·테두리·강조색은
-생성기가 읽히는 자리까지 밀어 주므로 색만 바꿔도 가독성 검사를 통과한다(`tools/check_scaffold.sh` 가 지킨다).
-
-```gdscript
-```
-
-에디터에서 고르려면 **프로젝트 설정 → Gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
-🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 묶음보다 **우선한다** — 묶음을 고른 뒤 한 칸만
-자기 것으로 바꿔 끼울 수 있다.
+### 스킨과 커스텀 StyleBox
 
 `GoSkin` 이 테마가 닿지 못하는 모양을 맡는다 — 조이스틱, 퀵슬롯 판, 코치마크 링, 칩, 스켈레톤,
-알림 상자, 분절 선택. 상속해서 **바꾸고 싶은 것만** 덮어쓰면 나머지는 기본 모양 그대로다.
+알림 상자, 분절 선택, 구분선, 섹션 머리말. `GoSkinSciFi`·`GoSkinMedieval` 이 함께 들어 있는 상속 예다.
+상속해서 **바꾸고 싶은 것만** 덮어쓰면 나머지는 그대로다.
 
 ```gdscript
 class_name MySkin extends GoSkin
@@ -223,27 +319,51 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     return box
 ```
 
-`StyleBoxFlat` 로 못 만드는 모양을 위해 두 가지를 담았다 — `GoStyleBoxCut`(모서리를 자른 판 ·
-강조 변 · 바깥 발광)과 `GoStyleBoxBracket`(네 모서리 표식). 둘 다 여느 StyleBox 처럼 `Theme`
-리소스 안에 그대로 저장된다.
+`StyleBoxFlat` 로 못 만드는 모양을 위해 셋을 담았다. 모두 여느 StyleBox 처럼 `Theme` 리소스 안에 그대로
+저장된다.
+
+| 클래스 | 그리는 것 |
+|---|---|
+| `GoStyleBoxCut` | 모서리를 자른 판 · 한 변만 굵은 강조 변 · 바깥 발광 |
+| `GoStyleBoxBracket` | 변을 두르지 않는 네 모서리 표식 |
+| `GoStyleBoxMedieval` | 리벳·모서리 각인·베벨 반사·재질 질감이 있는 단조 프레임 |
 
 🛑 `GoStyle.surface()` 는 스킨이 만든 모양을 **그대로** 넘긴다. `box()`·`floating()`·`disc()` 는
 돌려받아 `bg_color` 를 고치는 옛 호출부와의 약속 때문에 **언제나 `StyleBoxFlat`** 이다 —
-그 길로는 각진 모양이 살아남지 못한다.
+그 길로는 커스텀 모양이 살아남지 못한다.
+
+### 가독성은 재서 지킨다
+
+`python3 addons/gohud/tools/check_contrast.py` 가 테마 전부를 WCAG 로 잰다: 본문 4.5:1, 큰 글자·강조 테두리·
+아이콘·포커스 링 3:1, 장식 테두리 2:1, 맞닿은 표면 1.12:1. 버튼 글자는 그것이 얹힌 상태별 판 위에서 재고,
+반투명 판은 순백·순흑 위에 합성해서 잰다 — HUD 는 어떤 게임 화면 위에도 얹힐 수 있기 때문이다. 스킨이
+실행 중에 섞는 색(칩·슬롯)은 검사 스위트의 `skin contrast` 섹션이 Godot 안에서 잰다.
 
 ## 위젯
 
-| | |
-|---|---|
-| `GoSurface` | 끌어 옮기고 크기를 바꾸는 모달 창 — 스크림·헤더·스크롤 본문 |
-| `GoSheet` | 바텀 시트 — 고정 툴바·푸터, 끌어내려 닫기 |
-| `GoDialogs` | `await` 로 받는 알림·확인·입력·선택 |
-| `GoForm` | 좁은 화면에서 한 열로 접히는 라벨 행 |
-| `GoNotice` | 스낵바·토스트 — 입력을 절대 먹지 않는다 |
-| `GoPromptCard` · `GoCoachMark` | 화면 안 안내 카드, 스포트라이트 튜토리얼 |
-| `GoHudAnchor` · `GoBar` · `GoSlot` · `GoJoystick` | HUD 모서리, 자원 막대, 퀵슬롯, 가상 스틱 |
-| `GoScroll` · `GoIconButton` | 스크롤 영역, 아이콘 버튼 |
-| `GoStyle` | 버튼·칩·목록 행·흐르는 줄·접이식 섹션을 한 줄로 만드는 팩토리 |
+| 클래스 | 바탕 | 하는 일 |
+|---|---|---|
+| `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절 |
+| `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터 |
+| `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼 |
+| `GoForm` | MarginContainer | 브레이크포인트마다 폭을 제한하고 가상 키보드를(`avoid_hud` 면 HUD 까지) 피하며 라벨 줄바꿈을 보장하는 폼 |
+| `GoScroll` | ScrollContainer | 손가락 스크롤, 스크롤바가 카드 여백 자리로 들어간다, RTL 대응 |
+| `GoNotice` | PanelContainer | 입력도 포커스도 가져가지 않는 스낵바 |
+| `GoPromptCard` | PanelContainer | 화면을 막지 않는 질문 카드. 새로 그려도 눌린 버튼이 살아 있다 |
+| `GoCoachMark` | Control | 실제 컨트롤을 가리키는 안내 투어. 대상을 누르면 다음으로, 카드는 HUD 앵커와 `keep_clear` 를 피한다 |
+| `GoHudAnchor` | Control | HUD 를 안전영역 아홉 자리 중 하나에 붙인다. 가로 자리·`reserve_space`·`avoid_peers` |
+| `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간 |
+| `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
+| `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
+| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름 |
+| `GoStyle` | 팩토리 | 버튼·라벨·목록 줄·입력·선택·드롭다운·칩·카드·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
+| `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
+| `GoThemePresets` | 정적 | 기본 프리셋 여섯, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
+| `GoSafeArea` | Control / 정적 | 노치·둥근 모서리·키보드를 뺀 쓸 수 있는 사각형 |
+| `GoScale` | 정적 | 브레이크포인트와 dp 계산 |
+| `GoFeedback` | 정적 | 소리·햅틱 연결 |
+| `GoBackPolicy` | 정적 | Android 뒤로 가기의 소유권 |
 
 ### 자식 클래스 훅
 
@@ -254,7 +374,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 |---|---|---|
 | `_make_scroll()` | `GoCoachMark`, `GoSurface` | `GoScroll.new()` |
 | `_make_close_button()` | `GoPromptCard`, `GoSurface` | `GoIconButton.new()` |
-| `_make_surface()` | `GoSheet` (`GoDialogs` 다음) | `GoSurface.new()` |
+| `_make_surface()` | `GoSheet`, `GoDialogs` | `GoSurface.new()` |
 | `_should_pause()` | `GoCoachMark` | `GoSurface.is_any_open()` — 모달이 열려 있는 동안 카드를 숨긴다 |
 | `GoScroll.as_horizontal(node)` | 정적 | `horizontal()` 의 설정 단계 — `static func horizontal() -> MyScroll` 을 자식이 다시 만들 때 |
 
@@ -262,23 +382,30 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 ## 플러그인
 
-켜면 `GoRuntime` 오토로드가 등록된다 — 화면 크기 변화·안전영역·가상 키보드를 매 프레임 지켜보며
-`GoUi` 에 알린다. **켜지 않아도 모든 위젯이 동작한다**(스스로 필요한 시점에 갱신한다).
-배율 적용은 기본 꺼짐이다 — 프로젝트에 이미 UI 배율 주인이 있다면 그대로 두면 된다.
+켜면 세 가지가 더해진다. 모두 선택이다.
+
+1. 프로젝트 설정에 **gohud → Config → Resource** 와 **gohud → Theme → Preset** 칸이 생긴다.
+2. **`GoRuntime`** 오토로드가 등록된다 — `breakpoint_changed`·`viewport_resized`·`keyboard_changed` 를 보내고,
+   폰에서 본문 글자를 한 단계 줄이며, `scale_enabled` 가 켜져 있을 때만 `content_scale_factor` 로 1 unit = 1 dp 를 맞춘다.
+3. 내장 번역을 프로젝트 번역 목록에 넣는다.
+
+**켜지 않아도 모든 위젯이 동작한다** — 키보드는 위젯이 스스로 살피고, 글자 크기는 테마 값 그대로 쓴다.
 
 ## 반응형
 
-`GoScale` 이 dp 좌표계와 브레이크포인트(576 / 991)를 다룬다. 폼은 좁으면 한 열이 되고,
-표면은 화면 비율로 크기를 잡으며, 안전영역과 키보드 높이를 피한다.
-터치 목표는 시각적으로 작아도 **48dp 아래로 내려가지 않는다**.
+- 브레이크포인트는 화면 **짧은 변의 dp** 로 정한다 — 576 까지 모바일, 991 까지 태블릿, 그 위는 데스크톱. 둘 다 바꿀 수 있다.
+- 표면은 기본으로 쓸 수 있는 영역 높이의 72% 에서 멈춘다 — 떠 있는 창이 늘 떠 있어 보이게. 가로 화면에서는 폭을 더 좁게 쓴다.
+- 위젯은 전부 `GoSafeArea.usable_rect()` 를 기준으로 잰다 — Android·iOS 의 노치와 제스처 바를 뺀 영역이다.
+- `GoStyle.responsive_grid(min_cell_width)` 는 폭이 바뀔 때마다 열 수를 다시 계산한다.
+- 터치 목표는 시각적으로 작아도 **48dp 아래로 내려가지 않는다**.
 
 ## 번역
 
 문구 16개가 **21개 언어**로 들어 있다 (`i18n/gohud.csv`) — 영어·한국어·일본어·
 중국어(간체 `zh`·번체 `zh_TW`)·스페인어·포르투갈어·독일어·프랑스어·이탈리아어·네덜란드어·
 폴란드어·러시아어·우크라이나어·터키어·베트남어·인도네시아어·태국어·힌디어·아랍어·히브리어.
-`load_builtin_translations = false` 로 내장 번역을 끈다.
-RTL(`ar`·`he`)은 `LAYOUT_DIRECTION_APPLICATION_LOCALE` 로 자동 처리된다.
+자동으로 읽히고, `load_builtin_translations = false` 로 끈다.
+RTL(`ar`·`he`)에서도 숫자·조이스틱·스크롤 레일은 왼쪽에서 오른쪽을 지키고, 내용은 애플리케이션 로캘을 따른다.
 
 ### 화면의 모든 글자를 호스트가 바꾼다
 
@@ -315,39 +442,72 @@ GoUi.config.number_formatter = func(amount: float) -> String:
     return str(roundi(amount))
 ```
 
-> 🛑 **gohud 는 폰트를 담지 않는다.** 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의
-> 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**.
-> 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
+> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel 하나이고, 중세 프리셋만 제목·부제에 쓴다.
+> 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용
+> 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**. 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
 
 ## 소리·진동
 
-`GoConfig.sound_cues` 에 이름을 적고 `GoFeedback.sound_handler` 에 재생 함수를 꽂는다.
-프로젝트의 오디오 시스템이 무엇이든 상관하지 않는다.
+gohud 는 오디오를 담지 않는다. 신호를 프로젝트 오디오 시스템에 한 번 연결한다:
 
 ```gdscript
 GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 ```
 
-햅틱은 모바일에서만 울리고 설정으로 끌 수 있다.
+신호 이름은 `GoConfig.sound_cues`(`ui_open`, `ui_click`, …)에서 오므로 코드를 고치지 않고 내 소리 파일에 맞춘다.
+진동은 Android·iOS 에서만, 세 단계 세기로 울리고 설정으로 끌 수 있다.
 
 ## 접근성
 
-상호작용 컨트롤에 `accessibility_name` 이 붙는다. 포커스 링은 키보드·게임패드 사용자에게만 보인다.
-`reduce_motion` 을 켜면 애니메이션이 줄어든다.
+- 보이는 컨트롤이 작아도 터치 영역은 `min_touch_size`(48dp) 아래로 내려가지 않는다.
+- 아이콘만 있는 버튼은 툴팁 문구를 `accessibility_name` 으로 내보낸다.
+- `reduce_motion` 을 켜면 페이드와 깜빡이는 강조가 꺼진다.
+- 포커스 링은 키보드·게임패드 사용자에게만 보이고, 누르거나 클릭한 뒤에는 뜨지 않는다. 채워진 버튼에는
+  그 판과 대비되는 링이 붙고, 대비 검사가 그 자리에서 잰다.
+- 창이 열리면 포커스가 창 안으로 들어가고, 밖으로 새지 않으며, 닫히면 원래 자리로 돌아간다.
+- 퀵슬롯은 기본으로 Tab 순회에서 빠진다. 키보드·게임패드가 유일한 입력이면 `GoSlot.keyboard_focus` 로 넣는다.
+- `GoStyle.Tone.DANGER_SOLID`(와 `GoDialogs.confirm(..., destructive = true)`)는 밝은 테마에서도 되돌릴 수 없는
+  동작을 위험으로 읽히게 한다 — 옅게 물든 위험 버튼의 글자는 검은 글자처럼 보이기 때문이다.
 
 ## 검증한 것
 
+`tools/check_all.sh` 하나가 진입점이다. 검사마다 볼 수 있는 범위가 다르다:
+
+| 검사 | 잡는 것 |
+|---|---|
+| `run_tests.sh` — 390×844·844×390·768×1024·1280×800 | 위젯 동작·배치, RTL 위치, 키보드 포커스, 실행 중 스킨 대비, 프리셋 전부 |
+| `new_project_check.sh`(`--with-runtime`·`--zip`·`--export`) | 호스트 프로젝트에 몰래 기대는 것, 배포 ZIP 그대로의 동작, Web 내보내기 |
+| `check_contrast.py` | 테마 파일 전부의 WCAG 대비 — 버튼 상태와 반투명 판 포함 |
+| `check_generated.py` · `check_scaffold.sh` | 생성된 테마가 팔레트와 맞는가, 임시 테마가 만들어지고 대비를 통과하는가 |
+| `check_package.py` | 버전 올림·CHANGELOG 이동·ZIP 내용을 임시 사본에서 |
+| `check_site.py` | 사이트 링크·절 앵커·문서 언어·용어 사전·생성된 다이얼 표 |
+| `check_mutations.sh`(선택) | 규칙을 일부러 깨뜨렸을 때 검사가 알아채는가 |
+
+최근 기록 — **2026-09-13**, Godot 4.7.2 (macOS, Apple Silicon, Compatibility 렌더러). 이 리비전의 애드온
+파일을 빈 프로젝트에 복사해 돌렸다:
+
 | 항목 | 결과 |
 |---|---|
-| 헤드리스 검사 147개 (빈 프로젝트) | 147/147 |
-| 같은 검사 — 오토로드를 켠 프로젝트 | 147/147 |
-| 배포 ZIP 을 빈 프로젝트에 설치해 재검사 | 147/147 |
-| Web 내보내기 | 성공 |
-| 갤러리 화면 — 폰 세로·가로·데스크톱 | 18장 육안 확인 |
+| 빈 프로젝트 헤드리스 검사 — 390×844·844×390·768×1024·1280×800 | 크기마다 438/438 |
+| 같은 검사 — `GoRuntime` 오토로드를 켠 상태 | 438/438 |
+| 그 빈 프로젝트의 Web 내보내기 | 성공(`index.pck` 728 KB) |
+| `check_contrast.py` — 여섯 테마 | 미달 0 |
+| `check_generated.py` | 생성물 149개가 소스와 일치 |
+| `check_scaffold.sh` — 중세 부모 포함 | 통과 |
+| `check_package.py` | 테스트 13개 통과 |
 
-**검증하지 않은 것**: Android·iOS 실기기, Forward+/Mobile 렌더러, 4.7.2 외 버전.
+**이번 실행에 포함되지 않은 것**: Godot 4.6(`GODOT_46` 미지정), 배포 ZIP 자체(`--zip`), Android·iOS 실기기,
+Forward+/Mobile 렌더러. 안전영역·햅틱 코드는 휴대 기기에서만 켜지므로 검사로는 지나가지만 실기기에서는 확인하지 않았다.
 
-## 데모 — 자동 시연과 직접 탐색
+## 예제
+
+| 예제 | 여는 법 | 보여 주는 것 |
+|---|---|---|
+| 갤러리 | `res://addons/gohud/examples/gallery/gallery.tscn` 을 F6 | 모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체. 서버·오토로드·프로젝트 설정이 필요 없다. |
+| 중세 | `res://addons/gohud/examples/medieval/medieval.tscn` 을 F6 | `medieval_dark`·`medieval_light` 의 캐릭터 정보·가방·퀘스트 일지 |
+| 데모 | `bash examples/demo/run.sh` | 실제 입력으로 진행하는 15장면 자동 시연과, 위젯 하나를 직접 만져 보는 탐색 모드 |
+
+### 데모 — 자동 시연과 직접 탐색
 
 `examples/demo/project.godot`을 실행한다. **Start demo**를 누르면 15개 장면이 순서대로 진행되며,
 커서가 실제 입력으로 버튼·메뉴를 선택하고, 글자를 입력하고, 슬라이더·조이스틱을 끌고, 목록을 스크롤한다.
@@ -357,6 +517,7 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 표시 문구는 모두 영어이며, 큰 데스크톱 창에서는 글자와 위젯도 함께 커진다.
 
 ```bash
+bash examples/demo/run.sh --setup                      # git 에서 새로 받았을 때 한 번
 bash examples/demo/run.sh
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi # 전체 시연 1080p / 60fps 녹화
 bash examples/demo/run.sh --shot /tmp/gohud-start.png
@@ -368,20 +529,51 @@ bash examples/demo/run.sh -- --explore=surfaces        # 위젯 하나를 탐색
 촬영 모드는 좌우 패널을 숨기고 시작 전에 3초를 센다. 일반 실행은 시작 버튼을 누를 때까지 대기한다.
 설치·촬영·검증 명령은 [데모 안내](examples/demo/README.md)를 참고한다.
 
+## 설명 사이트
+
+**[https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)** 는
+[`docs/www/`](docs/www/index.html) 의 평범한 HTML 이다 — 루트가 영문, `ko/` 가 한국어이고, 용어에 마우스를
+올리거나 누르거나 키보드로 포커스하면 뜻이 뜬다. GitHub Pages 가 `main` 브랜치의 저장소 루트에서 배포하고,
+루트 `index.html` 이 `docs/www/` 로 넘겨준다.
+
+```bash
+python3 addons/gohud/tools/make_site.py            # 용어 사전과 다이얼 표를 소스에서 다시 만든다
+python3 addons/gohud/tools/check_site.py           # 링크·앵커·언어·용어 사전·생성 표 검사
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # 페이지마다 데스크톱·폰 폭 촬영
+```
+
+배포 세부는 [docs/README.md](docs/README.md) 에 있다.
+
 ## 개발
 
 ```bash
-bash tools/run_tests.sh                         # 147 검사
+bash tools/check_all.sh                         # 검사 전부를 한 번에
+bash tools/run_tests.sh                         # 현재 프로젝트 안에서 헤드리스 검사
 bash tools/new_project_check.sh --export        # 빈 프로젝트에 설치 + Web 내보내기
 bash tools/new_project_check.sh --with-runtime  # 오토로드를 켠 상태로
-bash tools/package.sh                           # 배포 ZIP (게이트 4개)
+python3 tools/check_contrast.py                 # 테마 전부의 WCAG 대비
+python3 tools/new_theme.py kingdom --from medieval_dark   # 테마 스캐폴딩
+python3 tools/make_theme.py                     # 테마 전부 재생성 — id 를 주면 그 테마만
+python3 tools/make_icons.py                     # 기본 아이콘 SVG 재생성
+bash tools/package.sh                           # patch +1; builds/<버전>/gohud-<버전>.zip
+bash tools/package.sh --increase-minor-version  # minor +1, patch는 0
+python3 tools/check_package.py                  # 임시 사본에서 패키징 회귀 검사
 ```
 
-버전을 올릴 때는 `plugin.cfg` 의 `version` 과 `core/go_ui.gd` 의 `VERSION` 을 함께 올리고,
-`CHANGELOG.md` 에 항목을 쓴 뒤 위 네 명령을 통과시킨다. `package.sh` 가 버전 불일치·문서 누락·
-애드온 밖 참조를 잡아 거부한다.
+`package.sh`는 Python 3가 필요하며, 성공할 때마다 패치 버전을 자동으로 올린다.
+예를 들어 `1.2.9`는 `1.2.10`이 되고, `--increase-minor-version`을 주면 `1.3.0`이 된다.
+`--out DIR`로 출력 폴더를 바꿔도 버전은 올라간다. 버전은 `major.minor.patch` 형식을 사용한다.
+
+`plugin.cfg`의 `version`, `core/go_ui.gd`의 `VERSION`, `CHANGELOG.md`를 함께 갱신한다.
+`Unreleased` 변경 내역은 날짜가 붙은 새 버전 항목으로 옮기고 빈 `Unreleased` 항목을 남긴다.
+패키징이 실패하면 버전 파일은 바뀌지 않고, 같은 버전의 기존 ZIP도 덮어쓰지 않는다.
+버전 불일치·문서 누락·애드온 밖 참조는 계속 검사한다.
+ZIP 에는 사이트·검사·도구와 독립 프로젝트 `examples/usage` 가 들어가지 않는다.
+`check_all.sh`의 패키징 검사는 임시 사본에서 실행하므로 작업 중인 버전은 올라가지 않는다.
 
 ## 라이선스
 
-MIT — 아이콘 포함. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
-자세한 고지는 [LICENSE](LICENSE)·[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT — [LICENSE](LICENSE). 코드와 함께 든 그림(기본 아이콘 84종, 중세 아이콘 16종, 생성된 컨트롤 그림)은
+gohud 를 위해 만든 것이라 역시 MIT 다. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
+Cinzel 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`).
+자세한 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

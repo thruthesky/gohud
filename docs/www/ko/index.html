@@ -8,7 +8,7 @@
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/docs/www/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 HUD·UI 키트</title>
-<meta name="description" content="Godot 4.6+ 용 커스터마이징 HUD·UI 키트. 떠 있는 창·바텀 시트·확인창·폼·스낵바·HUD 막대·퀵슬롯·가상 조이스틱을 테마 한 장으로 굴린다.">
+<meta name="description" content="Godot 4.6+ 용 커스터마이징 HUD·UI 키트. 떠 있는 창·바텀 시트·확인창·폼·스낵바·HUD 막대·퀵슬롯·가상 조이스틱을 테마 한 장으로 굴리고, 기본·sci-fi·중세 프리셋 여섯으로 생김새를 바꾼다.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -21,8 +21,10 @@
       <a href="#install">설치</a>
       <a href="#start">빠른 시작</a>
       <a href="#presets">프리셋</a>
+      <a href="#examples">예제</a>
       <a href="theming.html">생김새 ↗</a>
       <a href="widgets.html">위젯 ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
       <a href="../">English ↗</a>
     </nav>
   </div>
@@ -34,19 +36,23 @@
     <p class="lead">
       gohud 는 Godot 4.6 이상에서 쓰는 HUD·UI 키트다. 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바,
       코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱을 <b>테마 한 장과 아이콘 세트 한 장</b>으로 굴리고,
-      안전영역·가상 키보드·RTL·터치 타깃을 스스로 챙긴다.
+      안전영역·가상 키보드·RTL·터치 타깃을 스스로 챙긴다. <b>프리셋 여섯</b> — 기본·sci-fi·중세, 각각 어둡고 밝은 판 —
+      이 한 줄로 색과 모양을 함께 바꾼다.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
       <span class="badge">순수 GDScript</span>
       <span class="badge">오토로드 불필요</span>
       <span class="badge">MIT</span>
+      <span class="badge">프리셋 6종</span>
       <span class="badge">21개 언어</span>
-      <span class="badge">아이콘 84종 포함</span>
+      <span class="badge">아이콘 100종 포함</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="#install">설치하기</a>
-      <a class="btn" href="#presets">생김새 바꾸기</a>
+      <a class="btn" href="#presets">프리셋 보기</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
   </div>
 </div>
@@ -85,11 +91,19 @@
       <h3>아이콘은 이름으로 부른다</h3>
       <p>위젯은 <code>GoIconSet.CLOSE</code> 처럼 이름만 안다. 세트를 갈아 끼우면 코드를 한 줄도 안 고치고 그림이 바뀐다.</p>
     </div>
+    <div class="card">
+      <h3>생김새 여섯, 코드 한 줄</h3>
+      <p><code>GoUi.use_preset()</code> 이 테마·스킨·아이콘을 함께 바꾼다 — 둥근 판, 모서리를 자른 sci-fi, 단조 프레임의 중세.</p>
+    </div>
+    <div class="card">
+      <h3>읽히는지는 잰다</h3>
+      <p>모든 테마를 WCAG 로 잰다. 버튼 상태별 판, 순백·순흑 위에 얹힌 반투명 HUD 판까지.</p>
+    </div>
   </div>
 
   <div class="note">
     <b>플러그인을 켜지 않아도 전부 동작한다.</b> 켜면 GoRuntime 오토로드가 붙어 창 크기·dp 배율·가상 키보드
-    높이를 추적하는 편의가 더해질 뿐이다.
+    높이를 추적하고, 설정 리소스와 프리셋을 고르는 프로젝트 설정이 생긴다 — 편의일 뿐 필수가 아니다.
   </div>
 </section>
 
@@ -98,29 +112,35 @@
   <p class="sub">애드온 폴더를 프로젝트에 넣기만 하면 된다.</p>
 
   <h3>배포 ZIP 또는 애셋 스토어</h3>
-  <p>프로젝트 루트에 풀어 <code>res://addons/gohud/</code> 가 되게 한다. 그것이 전부다.</p>
+  <p>프로젝트 루트에 풀어 <code>res://addons/gohud/</code> 가 되게 한다. 그것이 전부다. 필요하면
+    <b>프로젝트 → 프로젝트 설정 → 플러그인 → gohud</b> 를 켠다.</p>
 
   <h3>git submodule 로</h3>
-  <pre><code>git submodule add &lt;gohud-저장소-주소&gt; addons/gohud
-git submodule update --init</code></pre>
-  <p>저장소 루트가 곧 애드온 폴더라 Godot 이 기대하는 자리에 그대로 떨어진다.</p>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # 선택: 태그나 커밋에 고정</code></pre>
+  <p>저장소 루트가 곧 애드온 폴더라 Godot 이 기대하는 자리에 그대로 떨어진다. 그 자리에서 고치고
+    <code>addons/gohud</code> 안에서 커밋·push 한 뒤, 게임 저장소에서 서브모듈 포인터를 커밋한다.</p>
 
   <div class="note warn">
     <b>Godot 4.6 이상이 필요하다.</b> DPITexture·FoldableContainer·접근성 속성처럼 4.5 에서 들어온 API 를
-    쓰기 때문에 그보다 낮은 엔진에서는 <b>파싱 단계에서 죽는다</b>. 4.6 stable 과 4.7 양쪽에서 검사 전부를
-    돌려 확인한다.
+    쓰기 때문에 그보다 낮은 엔진에서는 <b>파싱 단계에서 죽는다</b>. 지원 하한 4.6 은 <code>GoUi.MIN_ENGINE</code> 에 적혀 있다.
   </div>
 </section>
 
 <section id="start">
   <h2>빠른 시작</h2>
-  <p class="sub">가장 자주 쓰는 셋 — 확인창, 바텀 시트, HUD 모서리.</p>
+  <p class="sub">전부 <code>.new()</code> 로 만들어 <code>add_child()</code> 하면 된다. 씬 파일도, 오토로드도 필요 없다.</p>
+
+  <h3>UI 를 만들기 전에 생김새를 고른다(선택)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 고르지 않으면 default_dark</code></pre>
 
   <h3>확인창을 <code>await</code> 로 받는다</h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
     delete_save()</code></pre>
+  <p>마지막 인자 <code>destructive</code> 를 <code>true</code> 로 주면 확인 버튼이 채워진 위험 버튼으로 그려진다.</p>
 
   <h3>검색 칸과 바닥 버튼이 고정된 바텀 시트</h3>
   <pre><code>var sheet := GoSheet.new()
@@ -129,7 +149,8 @@ sheet.open("가방")
 sheet.toolbar().add_child(GoStyle.line_edit("검색…"))
 sheet.toolbar().visible = true
 for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item)))
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
 sheet.footer().add_child(GoStyle.button("닫기", sheet.close, GoStyle.Tone.PRIMARY))
 sheet.footer().visible = true</code></pre>
 
@@ -146,9 +167,16 @@ add_child(corner)
 
 var hp := GoBar.new()
 hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER)
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)             # 채움 전용 토큰
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
+
+  <h3>본문이 HUD 를 비켜 가게</h3>
+  <pre><code>form.avoid_hud = true                  # 보이는 GoHudAnchor 를 모두 피한다
+joystick_anchor.reserve_space = false  # 손을 얹을 때만 나타나는 것은 빼고
+notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 그 아래로 내려앉는다</code></pre>
+  <p>칸마다 잃는 면적이 가장 작은 방향으로 피한다 — 세로 화면에서는 아래로, 가로 화면에서는 옆으로.
+    <a href="widgets.html#hud">HUD 가 서로 비키는 방식 →</a></p>
 </section>
 
 <section id="presets">
@@ -156,10 +184,10 @@ hp.set_values(320, 500)</code></pre>
   <p class="sub">
     Theme 는 <b>엔진이 그려 주는 것</b>의 모양만 바꾼다. StyleBoxFlat 의 모서리는 둥근 것뿐이고,
     조이스틱·퀵슬롯·코치마크는 코드가 직접 그리므로 테마를 아무리 갈아 끼워도 모양이 안 바뀐다.
-    그래서 gohud 는 <b>프리셋</b>을 쓴다.
+    그래서 gohud 는 테마·스킨·아이콘을 한 단위로 고르는 <b>프리셋</b>을 쓴다.
   </p>
 
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 테마·스킨·아이콘이 한꺼번에</code></pre>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # 테마·스킨·아이콘이 한꺼번에</code></pre>
 
   <table>
     <thead><tr><th>프리셋</th><th>생김새</th></tr></thead>
@@ -168,6 +196,8 @@ hp.set_values(320, 500)</code></pre>
       <tr><td><code>default_light</code></td><td>같은 모양에 밝은 팔레트</td></tr>
       <tr><td><code>scifi_dark</code></td><td>챔퍼 모서리, 시안 네온 테두리와 발광, 육각 조이스틱, 조준 표식</td></tr>
       <tr><td><code>scifi_light</code></td><td>같은 각진 모양에 밝은 설계도 팔레트</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>어두운 철·가죽, 고금색 프레임, 리벳, 각인풍 아이콘, Cinzel 제목</td></tr>
+      <tr><td><code>medieval_light</code></td><td>양피지·잉크·청동 색상의 같은 단조 프레임</td></tr>
     </tbody>
   </table>
 
@@ -195,9 +225,28 @@ hp.set_values(320, 500)</code></pre>
     버튼 모서리, 토글 모양, 목록 줄, 입력 칸 테두리가 함께 움직이는 것이 보인다.
   </p>
 
+  <h3>중세 테마</h3>
+  <p>
+    <code>medieval_dark</code> 는 철·가죽에 고금색, <code>medieval_light</code> 는 양피지와 잉크 색상이다.
+    메뉴 프레임에는 리벳과 작은 모서리 장식을 두고 상시 HUD 는 절제했다. 각인풍 아이콘 16종이 아이템 이름을
+    다시 그리고, 포함된 Cinzel 글꼴은 제목·부제에만 쓴다.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark — 캐릭터 정보, 퀵슬롯 가방, 퀘스트 일지" loading="lazy">
+      <figcaption><code>medieval_dark</code> — 철과 가죽</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light — 같은 캐릭터·가방·퀘스트 화면을 양피지로" loading="lazy">
+      <figcaption><code>medieval_light</code> — 양피지와 잉크</figcaption>
+    </figure>
+  </div>
+  <p>두 장 모두 기본 위젯으로 만든 <code>examples/medieval/medieval.tscn</code> 이다.
+    <a href="theming.html#medieval">중세 안내와 나만의 왕국 만들기 →</a></p>
+
   <h3>같은 화면, 폰에서도 데스크톱에서도</h3>
   <p>
-    위 네 장은 폰 세로다. 아래는 <b>같은 코드</b>를 1280×800 으로 띄운 것이다 — 본문은 읽기 좋은
+    갤러리 네 장은 폰 세로다. 아래는 <b>같은 코드</b>를 1280×800 으로 띄운 것이다 — 본문은 읽기 좋은
     폭(480dp)에서 멈춰 가운데에 서고, HUD 는 화면 구석에 남는다. 폼은 떠 있는 HUD 와 겹치지 않게
     비키되, <b>닿지 않으면 밀지 않는다</b> — 넓은 화면에서 괜히 밀면 본문이 한쪽으로 치우친다.
   </p>
@@ -212,12 +261,6 @@ hp.set_values(320, 500)</code></pre>
     </figure>
   </div>
 
-  <p>
-    에디터에서 고르려면 <b>프로젝트 설정 → Gohud → Theme → Preset</b>, 설정 리소스에서는
-    <code>GoConfig.preset</code> 칸이다. <code>theme</code>·<code>skin</code>·<code>icons</code> 를 직접
-    채우면 그쪽이 프리셋보다 <b>우선한다</b> — 프리셋을 고른 뒤 한 칸만 자기 것으로 바꿔 끼울 수 있다.
-  </p>
-
   <h3>같은 시트, 다른 생김새</h3>
   <div class="shots">
     <figure>
@@ -230,17 +273,23 @@ hp.set_values(320, 500)</code></pre>
     </figure>
   </div>
 
+  <p>
+    에디터에서 고르려면 <b>프로젝트 설정 → gohud → Theme → Preset</b>, 설정 리소스에서는
+    <code>GoConfig.preset</code> 칸이다. <code>theme</code>·<code>skin</code>·<code>icons</code> 를 직접
+    채우면 그쪽이 프리셋보다 <b>우선한다</b> — 프리셋을 고른 뒤 한 칸만 자기 것으로 바꿔 끼울 수 있다.
+  </p>
+
   <div class="note">
-    <b>세 층이다.</b> GoThemePreset = Theme(색·엔진 컨트롤) + GoSkin(코드가 그리는 모양) + GoIconSet(아이콘).
-    비워 둔 칸은 기본값으로 떨어지므로, 색만 바꾸는 프리셋은 <code>theme</code> 한 칸만 채우면 된다.
-    → <a href="theming.html">토큰 목록·내 프리셋 만들기·가독성 검사</a>
+    <b>새 테마는 JSON 파일 하나다.</b> <code>new_theme.py kingdom --from medieval_dark</code> 가 물려받은 값을 전부
+    풀어 적은 팔레트를 만들고, <code>make_theme.py kingdom</code> 이 테마·컨트롤 그림·스킨 다이얼까지 생성한다.
+    프리셋은 고르개에 저절로 뜬다. → <a href="theming.html#own">설정과 다이얼 전부</a>
   </div>
 </section>
 
 <section id="skin">
   <h2>스킨 — 테마가 닿지 못하는 자리</h2>
   <p class="sub">
-    GoSkin 은 조이스틱, 퀵슬롯 판, 코치마크 링, 칩, 스켈레톤, 알림 상자, 분절 선택의 모양을 맡는다.
+    GoSkin 은 조이스틱, 퀵슬롯 판, 코치마크 링, 칩, 스켈레톤, 알림 상자, 분절 선택, 구분선의 모양을 맡는다.
     상속해서 <b>바꾸고 싶은 것만</b> 덮어쓰면 나머지는 기본 모양 그대로다.
   </p>
 
@@ -264,9 +313,11 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     <tbody>
       <tr><td><code>GoStyleBoxCut</code></td><td>모서리를 사선으로 자른 판(챔퍼), 한 변만 굵은 강조 변, 바깥으로 번지는 발광</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>변을 두르지 않고 네 모서리만 짧게 긋는 조준 표식</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>리벳·모서리 각인·베벨 반사·재질 질감이 있는 단조 프레임</td></tr>
     </tbody>
   </table>
-  <p>둘 다 여느 StyleBox 처럼 Theme 리소스 안에 그대로 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.</p>
+  <p>셋 모두 여느 StyleBox 처럼 Theme 리소스 안에 그대로 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.
+    <code>GoSkinSciFi</code>·<code>GoSkinMedieval</code> 이 함께 들어 있는 상속 예다.</p>
 
   <div class="note warn">
     <b>GoStyle.box() 는 언제나 StyleBoxFlat 을 돌려준다.</b> 돌려받아 <code>bg_color</code> 나
@@ -277,17 +328,15 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
 
 <section id="widgets">
   <h2>위젯</h2>
-  <p class="sub">전부 <code>.new()</code> 로 만들어 <code>add_child()</code> 하면 된다. 씬 파일이 필요 없다.</p>
-
-  <p>→ <a href="widgets.html">위젯 하나하나 자세히 보기</a></p>
+  <p class="sub">부품을 표 하나로. → <a href="widgets.html">위젯 하나하나 자세히 보기</a></p>
 
   <table>
     <thead><tr><th>클래스</th><th>바탕</th><th>하는 일</th></tr></thead>
     <tbody>
       <tr><td><code>GoSurface</code></td><td>Control</td><td>떠 있는 창의 껍데기 — 가운데·아래·붙임 배치, 고정 머리말·바닥, 스크롤 본문, 끌어서 높이 조절</td></tr>
       <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>아래에서 올라오는 페이지. 자체 층을 가져 HUD 위에 확실히 뜬다</td></tr>
-      <tr><td><code>GoDialogs</code></td><td>Node</td><td><code>await</code> 로 받는 확인·알림</td></tr>
-      <tr><td><code>GoForm</code></td><td>MarginContainer</td><td>브레이크포인트마다 폭을 제한하고 가상 키보드를 피하는 폼</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td><code>await</code> 로 받는 확인·알림. 되돌릴 수 없는 일에는 <code>destructive</code></td></tr>
+      <tr><td><code>GoForm</code></td><td>MarginContainer</td><td>브레이크포인트마다 폭을 제한하고 가상 키보드를, <code>avoid_hud</code> 면 HUD 까지 피하는 폼</td></tr>
       <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>손가락 스크롤. 스크롤바가 카드 여백 자리로 들어간다</td></tr>
       <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>입력도 포커스도 훔치지 않는 스낵바</td></tr>
       <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>화면을 막지 않는 질문 카드</td></tr>
@@ -309,28 +358,78 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     <code>GoUi.color()</code>·<code>GoUi.metric()</code> 으로 꺼낸다.
   </p>
 
-  <pre><code>GoUi.color(GoTheme.ACCENT)          # 강조색
-GoUi.metric(GoTheme.GAP)            # 줄 간격(dp)
+  <pre><code>GoUi.color(GoTheme.ACCENT)           # 강조색
+GoUi.metric(GoTheme.GAP)             # 줄 간격(dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION) # 역할별 글자 크기</code></pre>
 
   <table>
-    <thead><tr><th>갈래</th><th>이름</th></tr></thead>
+    <thead><tr><th style="white-space:nowrap">갈래</th><th>이름</th></tr></thead>
     <tbody>
-      <tr><td>색</td><td><code>background</code> <code>surface</code> <code>surface_soft</code> <code>surface_high</code> <code>border</code> <code>text</code> <code>secondary</code> <code>muted</code> <code>accent</code> <code>on_accent</code> <code>success</code> <code>warning</code> <code>danger</code> <code>info</code> <code>scrim</code> <code>shadow</code> <code>track</code></td></tr>
-      <tr><td>치수(dp)</td><td><code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code> <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code> <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code> <code>scrollbar_width</code> <code>icon_size</code></td></tr>
-      <tr><td>StyleBox</td><td><code>panel</code> <code>card</code> <code>hud</code> <code>notice</code> <code>popup</code> <code>empty</code> <code>focus</code> <code>focus_soft</code></td></tr>
+      <tr><td style="white-space:nowrap">색</td><td><code>background</code> <code>surface</code> <code>surface_soft</code> <code>surface_high</code> <code>border</code> <code>text</code> <code>secondary</code> <code>muted</code> <code>accent</code> <code>on_accent</code> <code>success</code> <code>warning</code> <code>danger</code> <code>info</code> <code>scrim</code> <code>shadow</code> <code>track</code></td></tr>
+      <tr><td style="white-space:nowrap">채움 색</td><td><code>success_fill</code> <code>warning_fill</code> <code>danger_fill</code> <code>info_fill</code> <code>accent_fill</code> — 없으면 <code>_fill</code> 을 뗀 이름으로 떨어진다</td></tr>
+      <tr><td style="white-space:nowrap">치수(dp)</td><td><code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code> <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code> <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code> <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code> <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code></td></tr>
+      <tr><td style="white-space:nowrap">StyleBox</td><td><code>panel</code> <code>card</code> <code>hud</code> <code>notice</code> <code>popup</code> <code>empty</code> <code>focus</code> <code>focus_soft</code></td></tr>
+    </tbody>
+  </table>
+  <p>토큰 설명·타입 변형·다이얼 전부는 <a href="theming.html#tokens">생김새 페이지</a>에 있다.</p>
+</section>
+
+<section id="examples">
+  <h2>실행해 볼 수 있는 예제</h2>
+  <p class="sub">코드를 쓰기 전에 gohud 를 보는 세 가지 방법 — 어느 것도 서버나 오토로드가 필요 없다.</p>
+
+  <table>
+    <thead><tr><th>예제</th><th>여는 법</th><th>보여 주는 것</th></tr></thead>
+    <tbody>
+      <tr><td>갤러리</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체</td></tr>
+      <tr><td>중세</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>캐릭터 정보·가방·퀘스트 일지. 버튼으로 철·양피지를 바꾸고 아이템 설명을 연다</td></tr>
+      <tr><td>데모</td><td><code>bash examples/demo/run.sh</code></td><td>실제 입력으로 진행하는 15장면 자동 시연과, 위젯 하나를 직접 만져 보는 탐색 모드</td></tr>
     </tbody>
   </table>
 
-  <h3>내 팔레트로 테마 만들기</h3>
-  <p>
-    <code>tools/make_theme.py</code> 에 팔레트와 형태를 더하고 돌리면 <code>.tres</code> 와 테마별 컨트롤
-    SVG(토글·체크박스·라디오·손잡이·화살표)까지 함께 생성된다.
-  </p>
-  <div class="note warn">
-    <b>돌린 뒤 한 번은 임포트해야 한다.</b> <code>godot --headless --path . --import</code> 를 거치지 않으면
-    새 SVG 가 읽히지 않아 테마 로드가 통째로 실패한다.
+  <pre><code>bash examples/demo/run.sh --setup                       # git 에서 새로 받았을 때 한 번
+bash examples/demo/run.sh                               # Start demo 또는 Explore widgets
+bash examples/demo/run.sh -- --explore=surfaces         # 위젯 하나를 탐색 모드로 바로 연다
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 전체 시연 1080p / 60fps 녹화</code></pre>
+  <p>데모에서 <b>C</b> 는 촬영 모드, <b>F11</b> 은 전체 화면, <b>Space</b> 는 일시정지(탐색 중에는 현재 위젯 시연),
+    화살표는 장면 이동, <b>Esc</b> 는 시작 화면이다.</p>
+</section>
+
+<section id="develop">
+  <h2>검사·배포·이 사이트</h2>
+  <p class="sub">진입점 하나가 검사 전부를 돌린다. 검사마다 볼 수 있는 범위가 다르다.</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>검사</th><th>잡는 것</th></tr></thead>
+    <tbody>
+      <tr><td><code>run_tests.sh</code> 네 화면 크기</td><td>위젯 동작·배치, RTL 위치, 키보드 포커스, 스킨이 실행 중에 만드는 색의 대비, 프리셋 전부</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>호스트 프로젝트에 몰래 기대는 것. <code>--zip</code> 이면 배포본 그대로, <code>--export</code> 면 Web 빌드까지</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>테마 파일 전부의 WCAG 대비 — 버튼 상태와 반투명 판 포함</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>생성된 테마가 팔레트와 맞는가, 임시 테마가 만들어지고 대비를 통과하는가</td></tr>
+      <tr><td><code>check_package.py</code></td><td>버전 올림·CHANGELOG 이동·ZIP 내용을 임시 사본에서</td></tr>
+      <tr><td><code>check_site.py</code></td><td>이 사이트의 링크·절 앵커·문서 언어·용어 사전·다이얼 표</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>최근 기록 — 2026-09-13, Godot 4.7.2, macOS, Compatibility 렌더러.</b> 빈 프로젝트에서 390×844·844×390·
+    768×1024·1280×800 네 크기 모두 438/438, GoRuntime 오토로드를 켠 상태도 438/438, Web 내보내기 성공, 여섯 테마
+    대비 미달 0. 이번 실행에 Godot 4.6 과 Android·iOS 실기기는 포함되지 않았다.
   </div>
+
+  <h3>배포 버전</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>성공하면 <code>plugin.cfg</code>·<code>GoUi.VERSION</code>·<code>CHANGELOG.md</code> 가 함께 바뀌고 Unreleased
+    항목이 날짜 붙은 버전으로 옮겨진다. 실패하면 아무것도 바뀌지 않고, 이미 있는 ZIP 은 덮어쓰지 않는다.
+    ZIP 에는 이 사이트·검사·도구가 들어가지 않는다.</p>
+
+  <h3>이 사이트</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # 용어 사전과 다이얼 표를 소스에서 생성
+python3 addons/gohud/tools/check_site.py           # 링크·앵커·언어·용어 사전·생성 표 검사
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # 페이지마다 데스크톱·폰 폭 촬영</code></pre>
+  <p>페이지는 <code>docs/www/</code> 의 평범한 HTML 이다 — 루트가 영문, <code>ko/</code> 가 한국어.
+    GitHub Pages 가 <code>main</code> 브랜치의 저장소 루트에서 배포한다.</p>
 </section>
 
 </main>
@@ -338,11 +437,14 @@ GoUi.font_size(GoTheme.ROLE_CAPTION) # 역할별 글자 크기</code></pre>
 <footer class="bottom">
   <div class="wrap">
     <p>
-      gohud 는 <b>MIT</b> 로 배포된다 — 함께 들어 있는 아이콘 84종 포함.
-      · <a href="https://github.com/thruthesky">저장소</a>
+      gohud 는 <b>MIT</b> 로 배포된다 — 코드와 그림 전부, 기본 아이콘 84종과 중세 아이콘 16종 포함.
+      함께 담긴 Cinzel 글꼴은 SIL Open Font License 1.1 이다.
     </p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub 저장소</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">변경 기록</a> ·
+      <a href="../">English</a></p>
     <p style="font-size:13px">
-      화면의 <b>밑줄 친 용어</b>에 마우스를 올리면 뜻이 뜬다. 오른쪽 아래 단추로 밑줄 표시를 바꿀 수 있다.
+      화면의 <b>밑줄 친 용어</b>에 마우스를 올리거나 누르면 뜻이 뜬다. 오른쪽 아래 단추로 밑줄 표시를 바꿀 수 있다.
     </p>
   </div>
 </footer>

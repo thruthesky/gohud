@@ -23,6 +23,7 @@
       <a href="#surfaces">창</a>
       <a href="#hud">HUD</a>
       <a href="#factory">팩토리</a>
+      <a href="#hooks">훅</a>
       <a href="../widgets.html">English ↗</a>
     </nav>
   </div>
@@ -78,6 +79,12 @@ sheet.footer().visible = true</code></pre>
   <h3><code>GoDialogs</code> — <code>await</code> 로 받는 확인·알림</h3>
   <pre><code>if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
     delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — 본문 뒤는 전부 생략할 수 있고,
+    <code>alert()</code> 는 버튼 하나로 같은 방식이다. 되돌릴 수 없는 일에는 <code>destructive</code> 를 켠다 — 확인 버튼이
+    채워진 <code>GoStyle.Tone.DANGER_SOLID</code> 버튼이 된다. 밝은 테마에서 옅게 물든 위험 버튼의 글자는 읽히려고
+    어두워지다 결국 검은 글자로 보이지만, 채워진 버튼은 빨간 판에 흰 글자를 지킨다. 창 하나를 재사용하므로 부를 때마다
+    색을 다시 입히고, 이미 떠 있을 때 부른 <code>confirm()</code> 은 곧바로 <code>false</code> 다.
+    번역 키로 물을 때는 <code>confirm_key()</code>.</p>
 
   <h3><code>GoForm</code> — 폭을 제한하는 폼</h3>
   <p>브레이크포인트마다 최대 폭이 다르고, 가상 키보드가 올라오면 입력 칸이 그 위로 온다.</p>
@@ -113,6 +120,7 @@ sheet.footer().visible = true</code></pre>
     {"target": bag_button, "title": "가방", "body": "주운 물건이 여기 모입니다."},
     {"target": map_button, "title": "지도", "body": "눌러서 전체 지도를 엽니다."},
 ])</code></pre>
+  <p><code>title</code>·<code>body</code> 는 번역 키여도, 그대로 쓸 문구여도 된다. 대상이 사라진 단계는 건너뛴다.</p>
 </section>
 
 <section id="hud">
@@ -237,6 +245,9 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
     겹친 자리는 <b>중심이 더 가까운 슬롯</b>이 가져간다 — <code>touch_peers</code> 에 서로를 넣어 주면 된다.
   </div>
 
+  <p><code>keyboard_focus</code> 는 기본으로 꺼져 있다 — 퀵슬롯 여덟 칸이 Tab 순회에서 키보드 사용자와 설정 컨트롤 사이를
+    막지 않게. 키보드·게임패드가 유일한 입력일 때 켠다.</p>
+
   <h3><code>GoJoystick</code> — 가상 조이스틱</h3>
   <table>
     <thead><tr><th>모드</th><th>동작</th></tr></thead>
@@ -272,8 +283,9 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
       <tr><td>글자</td><td><code>label</code> <code>label_key</code> <code>section</code> <code>typography</code></td></tr>
       <tr><td>버튼</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code></td></tr>
       <tr><td>입력</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>radio_group</code> <code>segmented</code></td></tr>
-      <tr><td>표시</td><td><code>card</code> <code>chip</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>dropdown</code> <code>empty_state</code></td></tr>
+      <tr><td>표시</td><td><code>card</code> <code>chip</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>dropdown</code> <code>progress</code> <code>empty_state</code></td></tr>
       <tr><td>표면 조각</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code></td></tr>
+      <tr><td>도우미</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code></td></tr>
     </tbody>
   </table>
 
@@ -282,6 +294,16 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
     <code>bg_color</code> 나 <code>corner_radius</code> 를 고치는 호출부와의 약속이기 때문이다.
     커스텀 모양(각진 판)을 지켜야 하면 <code>surface()</code> 를 쓴다.
   </div>
+
+  <h3>요약이 있는 목록 줄</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Oathkeeper", _inspect, Color.TRANSPARENT,
+    "Longsword  /  Attack 42", false)</code></pre>
+  <p>두 줄 항목은 <b>위아래 여백이 같고</b> 한 줄 항목보다 넉넉하며, 제목·요약 묶음이 아이콘 옆 <b>세로 가운데</b>에 선다 —
+    컨테이너가 줄을 더 높게 늘려도, 요약이 여러 줄로 접혀도 그렇다. 줄 전체가 그대로 한 번에 눌린다.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="medieval_light 예제 — 두 줄 목록, 퀵슬롯, 막대" loading="lazy">
+    <figcaption>중세 예제의 두 줄 목록·슬롯·막대 — <code>medieval_light</code> 에서 같은 팩토리 호출.</figcaption>
+  </figure>
 
   <h3>흐르는 줄의 함정</h3>
   <p>

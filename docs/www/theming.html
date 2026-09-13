@@ -20,8 +20,11 @@
       <a href="./">Overview</a>
       <a href="theming.html">Theming</a>
       <a href="widgets.html">Widgets</a>
+      <a href="#medieval">Medieval</a>
       <a href="#tokens">Tokens</a>
       <a href="#skin">Skins</a>
+      <a href="#own">Your preset</a>
+      <a href="#contrast">Readability</a>
       <a href="ko/theming.html">한국어 ↗</a>
     </nav>
   </div>
@@ -57,7 +60,7 @@
       </tr>
       <tr>
         <td><code>GoIconSet</code></td>
-        <td>The 84 icons. A texture pack or an icon font — the calling code is identical either way</td>
+        <td>Icons by name — 84 default drawings, or the medieval set's 16 engraved drawings over them. A texture pack or an icon font; the calling code is identical either way</td>
         <td>Supply a set, or override just a few names</td>
       </tr>
     </tbody>
@@ -81,6 +84,65 @@
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # your icons, the preset's everything else</code></pre>
   <p>Setting <code>theme</code>, <code>skin</code> or <code>icons</code> explicitly <b>wins over</b> the preset.</p>
+
+  <h3>The six built-in presets</h3>
+  <table>
+    <thead><tr><th>Preset</th><th>Panels</th><th>Skin · icons</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>Rounded <code>StyleBoxFlat</code> panels on a graded shadow scale; primary buttons lift and sink when pressed</td><td><code>GoSkin</code> · 84 default icons</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>Chamfered <code>GoStyleBoxCut</code> panels with a neon edge and glow; <code>GoStyleBoxBracket</code> focus marks</td><td><code>GoSkinSciFi</code> — hexagonal joystick · default icons</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Forged <code>GoStyleBoxMedieval</code> frames — iron and leather, or parchment — with rivets and corner ornaments on menus</td><td><code>GoSkinMedieval</code> · 16 engraved icons over the defaults</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>Medieval: iron, leather and parchment</h2>
+  <p><code>medieval_dark</code> pairs dark iron and leather with antique gold. <code>medieval_light</code>
+    uses parchment and ink. Both use <code>GoSkinMedieval</code>, the existing widgets, and 16 original
+    icons with engraving details; navigation icons fall back to the original set.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# Or: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>Choose the preset before creating your UI. Explicit <code>GoConfig.theme</code>,
+    <code>skin</code> or <code>icons</code> overrides still take precedence. Open
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code> and press F6 for a working
+    character sheet, satchel and quest journal. Its buttons switch variants and open item details.</p>
+  <div class="shots">
+    <figure><img src="img/medieval-dark.png" alt="Medieval Iron character, inventory and quest interfaces" loading="lazy"><figcaption>Iron and leather</figcaption></figure>
+    <figure><img src="img/medieval-light.png" alt="Medieval Parchment character, inventory and quest interfaces" loading="lazy"><figcaption>Parchment and ink</figcaption></figure>
+  </div>
+  <p>Menu frames have a rivet and small corner ornament; the always-visible HUD keeps a quiet edge.
+    HP, mana and stamina use red, blue and olive fills. Cinzel is scoped to titles and subtitles;
+    body text keeps the host/default font. The bundled font includes its license at
+    <code>assets/fonts/cinzel/OFL.txt</code>.</p>
+  <p>The engraved set redraws <code>bag</code>, <code>book</code>, <code>box</code>, <code>coin</code>, <code>crown</code>,
+    <code>flag</code>, <code>heart</code>, <code>key</code>, <code>map</code>, <code>potion</code>, <code>shield</code>,
+    <code>star</code>, <code>sword</code> and <code>user</code>, and adds <code>scroll</code> and <code>seal</code>.
+    Every other name falls back to the default set, so <code>close</code> and <code>settings</code> keep their default
+    drawings in every preset. Cinzel covers Latin script; give localized headings a font of their own through
+    <code>shape.fonts</code>.</p>
+  <div class="note">
+    <b>What the suite checks for both variants.</b> The medieval skin is selected; menu and HUD panels are forged
+    frames, with the ornament on menus only; titles use Cinzel while body text keeps the inherited font; engraved
+    icons import as <code>DPITexture</code>; a real quick slot uses the skin; changing a copied skin's dials reaches
+    the slot without touching the preset; and switching back restores the default and sci-fi geometry.
+  </div>
+  <h3>Make a kingdom of your own</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# Edit themes/palettes/kingdom.json, then:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# In GDScript, before creating the widgets:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>JSON themes can inherit other JSON themes. Omitted values keep their parent's settings;
+    circular inheritance is rejected. The generated preset keeps its parent's icon set.</p>
+  <table><thead><tr><th>Setting</th><th>Effect</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: iron · 1: leather · 2: parchment. Controls the surface marks.</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>Texture opacity. Use 0 for a clean surface.</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>Menu corner ornament size and bevel highlight intensity.</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>Map title, subtitle, caption, body and button roles to addon-local res:// font files. Omitted roles keep their inherited font.</td></tr>
+    <tr><td><code>skin.dials</code></td><td>Quick-slot radius, rivet visibility, grain and highlight. The full table below lists each dial.</td></tr>
+  </tbody></table>
 </section>
 
 <section id="tokens">
@@ -123,7 +185,8 @@ GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
     <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
-    <code>scrollbar_width</code> <code>icon_size</code> <code>notice_duration_ms</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
   <h3>Text roles</h3>
@@ -132,6 +195,14 @@ GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
     <code>button</code> · <code>subtitle</code> · <code>title</code> — a role names <b>a size</b>, not a
     purpose. "The largest text", not "the heading". That way the scale holds even when a screen uses it
     for something else.
+  </p>
+
+  <h3>Type variations</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
   </p>
 </section>
 
@@ -148,7 +219,9 @@ GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
       <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>Inline alerts, placeholders, segmented controls</td></tr>
       <tr><td><code>coach_ring_box</code></td><td>The mark a coach tour puts around its target</td></tr>
       <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td>Things <b>drawn directly</b> — the joystick and its pointer</td></tr>
-      <tr><td><code>divider_color</code> · <code>section_box</code></td><td>Dividers and section headings</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>Dividers and section headings</td></tr>
+      <tr><td><code>badge_box</code></td><td>Quick-slot badges — quantity and time left</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>Bar fills (outlined where a fill cannot reach 3:1 on its track) and snackbars</td></tr>
     </tbody>
   </table>
 
@@ -166,9 +239,10 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     <tbody>
       <tr><td><code>GoStyleBoxCut</code></td><td>Diagonally cut corners, one thickened accent edge, an outer glow</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>Corner marks only, leaving the content unenclosed</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>A forged frame — rivets, corner engraving, a bevel highlight and iron, leather or parchment grain</td></tr>
     </tbody>
   </table>
-  <p>Both serialise into a Theme resource like any other StyleBox — which is what lets a theme change shape.</p>
+  <p>All three serialise into a Theme resource like any other StyleBox — which is what lets a theme change shape.</p>
 
   <div class="note warn">
     <b>Give padding through <code>content_margin_*</code>.</b> Subclassing StyleBox in GDScript means
@@ -199,14 +273,17 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
   <table>
     <thead><tr><th>Where</th><th>What</th><th>How</th></tr></thead>
     <tbody>
+      <tr><td><code>from</code></td><td>the parent theme</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … or another JSON theme. Omitted keys inherit its values; an inheritance cycle fails</td></tr>
       <tr><td rowspan="3"><code>palette</code></td><td>background · three surfaces · border · three text tones · accent · four status colours · scrim · shadow · bar track</td><td><code>"#RRGGBB"</code>, alpha as <code>"#RRGGBB@0.35"</code></td></tr>
       <tr data-group="palette"><td>fill-only vivid colours <code>*_vivid</code></td><td>keep bars saturated even when the text colour has to darken — leave one out and the builder says so</td></tr>
       <tr data-group="palette"><td>readability</td><td><b>not tuned by hand.</b> Text, borders, the accent and the label on it are pushed by the builder until they clear the thresholds — change only the accent and the checks still pass</td></tr>
-      <tr><td rowspan="3"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (rounded) · <code>cut</code> (chamfered corners)</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (rounded) · <code>cut</code> (chamfered corners) · <code>medieval</code> (forged frames)</td></tr>
       <tr data-group="shape"><td>sizes</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — the tokens follow, so panels and widget maths never disagree</td></tr>
       <tr data-group="shape"><td><code>cut</code> only</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
-      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — the family for the places code draws itself (joystick, slots, badges, coach-mark ring, chips, dividers)</td><td><code>default</code> · <code>scifi</code></td></tr>
+      <tr data-group="shape"><td><code>medieval</code> only</td><td><code>material</code> (0 iron · 1 leather · 2 parchment) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> mapped to addon-local <code>res://</code> font files</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — the family for the places code draws itself (joystick, slots, badges, coach-mark ring, chips, dividers)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
       <tr data-group="skin"><td><code>dials</code> — the <b>numbers</b> of those places: slot border width and tint, badge padding, chip and alert opacity, joystick ring width and opacity, sci-fi chamfer sizes, glow and bracket</td><td>Every parent value is spelled out in the JSON. The builder writes them into <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>no skin code is touched</b>. Only to change the drawings themselves do you run <code>--new-skin</code>, which scaffolds a <code>GoSkin</code> subclass</td></tr>
+      <tr><td><code>icons</code></td><td>the icon set</td><td>a <code>res://</code> path to a <code>GoIconSet</code> resource — kept from a JSON parent when omitted</td></tr>
       <tr><td><code>dark</code> · <code>title</code></td><td>how the picker shows it</td><td>boolean · string</td></tr>
     </tbody>
   </table>
@@ -257,6 +334,17 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
       <tr><td><code>slot_glow_size</code></td><td data-label="Default">6.0</td><td>Glow distance (dp) of a slot whose cooldown is running.</td></tr>
       <tr><td><code>bracket_arm</code></td><td data-label="Default">12.0</td><td>Arm length (dp) of the coach mark's targeting bracket.</td></tr>
       <tr><td><code>bracket_thickness</code></td><td data-label="Default">2.0</td><td>Line thickness (dp) of the coach mark's targeting bracket.</td></tr>
+    </tbody>
+  </table>
+  <h4>Medieval skin <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Default">4.0</td><td>Corner radius (dp) of the medieval quick-slot frame.</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Default">0.035</td><td>Opacity of the subtle leather marks inside quick slots.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Default">1.0</td><td>Scale of the metal decorations at quick-slot corners. Menu frames use shape.ornament_scale.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Default">0.18</td><td>Strength of the metal highlight along quick-slot edges.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Default">1</td><td>Show small metal rivets on quick slots: 0 hides them, 1 shows them.</td></tr>
     </tbody>
   </table>
   </div>
