@@ -4,6 +4,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-09-13
+
 ### Added
 
 - Both standalone demo scenes now have a top Theme dropdown for Default, Sci-fi and Medieval.

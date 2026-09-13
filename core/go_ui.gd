@@ -21,7 +21,7 @@ class_name GoUi
 extends RefCounted
 
 ## 이 애드온의 버전. `CHANGELOG.md` 와 같이 움직인다.
-const VERSION := "1.0.1"
+const VERSION := "1.0.2"
 
 ## 이 애드온이 요구하는 **가장 낮은 엔진 버전**. `[major, minor]`.
 ##
