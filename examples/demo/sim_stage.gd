@@ -32,11 +32,13 @@ func _init() -> void:
 	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	var surface := GoStyle.box(GoTheme.BOX_CARD).duplicate() as StyleBoxFlat
-	surface.bg_color = Color("#151f30")
-	surface.border_color = Color("#2d435b")
-	surface.set_content_margin_all(20)
-	surface.set_corner_radius_all(20)
+	var surface := GoStyle.surface(GoTheme.BOX_CARD)
+	if GoUi.config.preset == GoThemePresets.DEFAULT_DARK:
+		var flat := surface as StyleBoxFlat
+		flat.bg_color = Color("#151f30")
+		flat.border_color = Color("#2d435b")
+		flat.set_corner_radius_all(20)
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: surface.set_content_margin(side, 20)
 	add_theme_stylebox_override(&"panel", surface)
 	_column = GoStyle.column(GoUi.metric(GoTheme.GAP))
 	add_child(_column)

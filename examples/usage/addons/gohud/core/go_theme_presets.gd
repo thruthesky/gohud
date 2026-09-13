@@ -14,11 +14,13 @@
 class_name GoThemePresets
 extends RefCounted
 
-## gohud 가 담아 보내는 넷.
+## gohud 가 담아 보내는 여섯 가지.
 const DEFAULT_DARK := &"default_dark"
 const DEFAULT_LIGHT := &"default_light"
 const SCIFI_DARK := &"scifi_dark"
 const SCIFI_LIGHT := &"scifi_light"
+const MEDIEVAL_DARK := &"medieval_dark"
+const MEDIEVAL_LIGHT := &"medieval_light"
 
 const FOLDER := "res://addons/gohud/themes/presets/"
 
@@ -28,6 +30,8 @@ const BUILTIN := {
 	DEFAULT_LIGHT: FOLDER + "default_light.tres",
 	SCIFI_DARK: FOLDER + "scifi_dark.tres",
 	SCIFI_LIGHT: FOLDER + "scifi_light.tres",
+	MEDIEVAL_DARK: FOLDER + "medieval_dark.tres",
+	MEDIEVAL_LIGHT: FOLDER + "medieval_light.tres",
 }
 
 static var _loaded: Dictionary[StringName, GoThemePreset] = {}
@@ -66,7 +70,7 @@ static func names() -> Array[StringName]:
 
 
 ## 이름으로 찾는다. 없거나 아직 임포트되지 않았으면 `null`.
-## 기본 넷이 아니어도 `themes/presets/<id>.tres` 가 있으면 읽는다.
+## 기본 여섯이 아니어도 `themes/presets/<id>.tres` 가 있으면 읽는다.
 static func find(id: StringName) -> GoThemePreset:
 	if id.is_empty(): return null
 	if _extra.has(id): return _extra[id]
@@ -91,7 +95,7 @@ static func unregister(id: StringName) -> void:
 	_extra.erase(id)
 
 
-## 고를 수 있는 이름 전부(기본 넷 + 등록한 것). 실제로 읽히는 것만 센다.
+## 고를 수 있는 이름 전부(기본 여섯 + 등록한 것). 실제로 읽히는 것만 센다.
 static func ids() -> Array[StringName]:
 	var out: Array[StringName] = []
 	for id in names():

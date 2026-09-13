@@ -4,6 +4,14 @@
 ## 배경 격자와 제목 줄 말고는 새로 그린 것이 없다 — 나머지는 gohud 가 주는 그대로다.
 extends Control
 
+const ThemePicker := preload("theme_picker.gd")
+
+var _accent := ACCENT
+var _green := GREEN
+var _bg := BG
+var _grid_ink := GRID_INK
+var _subtitle_ink := SUBTITLE_INK
+
 const ACCENT := Color("#29b8f0")     ## 강조색 — 이 한 값이 화면 전체를 물들인다
 const GREEN := Color("#3ee08f")      ## 체력·성공
 const BG := Color("#06131f")
@@ -37,25 +45,44 @@ func _configure() -> void:
 	var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: ACCENT, GoTheme.SUCCESS: GREEN}
 	settings.color_overrides = colors
 	settings.base_font_size = 15
-	GoUi.config = settings
+	ThemePicker.configure(settings, colors)
+	_accent = GoUi.color(GoTheme.ACCENT)
+	_green = GoUi.color(GoTheme.SUCCESS)
+	_bg = BG if ThemePicker.active_preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.BACKGROUND)
+	_grid_ink = GRID_INK if ThemePicker.active_preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.BORDER)
+	_subtitle_ink = SUBTITLE_INK if ThemePicker.active_preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.SECONDARY)
 
 
 func _draw() -> void:
 	var view := get_viewport_rect().size
-	draw_rect(Rect2(Vector2.ZERO, view), BG)
+	draw_rect(Rect2(Vector2.ZERO, view), _bg)
 	for x in range(0, int(view.x), 42):
-		draw_line(Vector2(x, 0), Vector2(x, view.y), Color(GRID_INK, 0.55), 1.0)
+		draw_line(Vector2(x, 0), Vector2(x, view.y), Color(_grid_ink, 0.55), 1.0)
 	for y in range(0, int(view.y), 42):
-		draw_line(Vector2(0, y), Vector2(view.x, y), Color(GRID_INK, 0.55), 1.0)
+		draw_line(Vector2(0, y), Vector2(view.x, y), Color(_grid_ink, 0.55), 1.0)
 	for spot in [Vector2(60, 40), Vector2(view.x - 60, 40),
 			Vector2(60, view.y - 46), Vector2(view.x - 60, view.y - 46)]:
-		draw_line(spot - Vector2(8, 0), spot + Vector2(8, 0), Color(ACCENT, 0.30), 1.5)
-		draw_line(spot - Vector2(0, 8), spot + Vector2(0, 8), Color(ACCENT, 0.30), 1.5)
+		draw_line(spot - Vector2(8, 0), spot + Vector2(8, 0), Color(_accent, 0.30), 1.5)
+		draw_line(spot - Vector2(0, 8), spot + Vector2(0, 8), Color(_accent, 0.30), 1.5)
 
 
 func _build() -> void:
+	theme = GoUi.theme()
+	var toolbar := GoStyle.padding(16)
+	toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	add_child(toolbar)
+	var choices := GoStyle.row(12)
+	toolbar.add_child(choices)
+	var label := GoStyle.label("Theme", GoTheme.ROLE_CAPTION)
+	GoStyle.natural_width(label)
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	choices.add_child(label)
+	var picker := ThemePicker.new()
+	picker.theme_selected.connect(_change_theme)
+	choices.add_child(picker)
 	var scroll := GoScroll.new()
 	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroll.offset_top = 80
 	add_child(scroll)
 	var margin := GoStyle.padding(34)
 	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -83,8 +110,8 @@ func _build() -> void:
 
 	page.add_child(_language_card())
 
-	var footer := GoStyle.label("Godot 4.5+    /    Pure GDScript    /    MIT license",
-		GoTheme.ROLE_CAPTION, SUBTITLE_INK)
+	var footer := GoStyle.label("Godot 4.6+    /    Pure GDScript    /    MIT license",
+		GoTheme.ROLE_CAPTION, _subtitle_ink)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	page.add_child(footer)
 
@@ -97,7 +124,7 @@ func _build() -> void:
 ##      데바나가리·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다. 없으면 두부(□)가
 ##      뜨고 **오류는 나지 않는다.** 그래서 이 카드가 폰트 커버리지 점검표 역할을 한다.
 func _language_card() -> Control:
-	var card := GoStyle.card(ACCENT)
+	var card := GoStyle.card(_accent)
 	var body := GoStyle.padding(20)
 	card.add_child(body)
 	var column := GoStyle.column(14)
@@ -108,7 +135,7 @@ func _language_card() -> Control:
 	var titles := GoStyle.column(2)
 	titles.add_child(GoStyle.label("%d built-in languages" % GoUi.LOCALES.size(), GoTheme.ROLE_TITLE))
 	titles.add_child(GoStyle.label("Every cell is drawn by the host font — an empty box means a missing glyph, not a missing translation.",
-		GoTheme.ROLE_CAPTION, SUBTITLE_INK))
+		GoTheme.ROLE_CAPTION, _subtitle_ink))
 	head.add_child(titles)
 	column.add_child(head)
 	column.add_child(GoStyle.divider())
@@ -137,10 +164,10 @@ func _language_cell(locale: String) -> Control:
 	if locale in RTL_LANGUAGES:
 		cell.layout_direction = Control.LAYOUT_DIRECTION_RTL
 
-	cell.add_child(_language_line(locale, GoTheme.ROLE_CAPTION, ACCENT))
+	cell.add_child(_language_line(locale, GoTheme.ROLE_CAPTION, _accent))
 	cell.add_child(_language_line(String(LANGUAGE_NAMES.get(locale, locale)), GoTheme.ROLE_BODY))
-	cell.add_child(_language_line(tr("gohud_confirm"), GoTheme.ROLE_SUBTITLE, SUBTITLE_INK))
-	cell.add_child(_language_line(tr("gohud_empty"), GoTheme.ROLE_CAPTION, SUBTITLE_INK))
+	cell.add_child(_language_line(tr("gohud_confirm"), GoTheme.ROLE_SUBTITLE, _subtitle_ink))
+	cell.add_child(_language_line(tr("gohud_empty"), GoTheme.ROLE_CAPTION, _subtitle_ink))
 	return cell
 
 
@@ -177,10 +204,10 @@ func _header() -> Control:
 	# 🛑 `[b]` 로 감싼 글은 normal_font_size 가 아니라 bold_font_size 를 쓴다.
 	title.add_theme_font_size_override(&"bold_font_size", 44)
 	title.add_theme_font_size_override(&"normal_font_size", 44)
-	title.text = "[b]A complete [color=#%s]UI toolkit.[/color][/b]" % ACCENT.to_html(false)
+	title.text = "[b]A complete [color=#%s]UI toolkit.[/color][/b]" % _accent.to_html(false)
 	block.add_child(title)
 	block.add_child(GoStyle.label("HUD controls, menus and feedback — styled together.",
-		GoTheme.ROLE_SUBTITLE, SUBTITLE_INK))
+		GoTheme.ROLE_SUBTITLE, _subtitle_ink))
 	row.add_child(block)
 	return row
 
@@ -211,7 +238,7 @@ func _card(grid: GridContainer, number: String, title: String) -> VBoxContainer:
 func _badge(number: String) -> PanelContainer:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = ACCENT
+	style.bg_color = _accent
 	style.set_corner_radius_all(7)
 	style.content_margin_left = 10
 	style.content_margin_right = 10
@@ -234,10 +261,10 @@ func _hud_card(grid: GridContainer) -> void:
 	var column := _card(grid, "01", "HUD & quick slots")
 
 	var bar_row := GoStyle.row(10)
-	bar_row.add_child(GoUi.icons().node(GoIconSet.HEART, 30, GREEN))
+	bar_row.add_child(GoUi.icons().node(GoIconSet.HEART, 30, _green))
 	_hp = GoBar.new()
 	_hp.label_text = "HP"
-	_hp.ink = GREEN
+	_hp.ink = _green
 	_hp.readout = GoBar.Readout.PERCENT
 	_hp.thickness = 16
 	_hp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -253,7 +280,7 @@ func _hud_card(grid: GridContainer) -> void:
 			[GoIconSet.POTION, false, 3], [GoIconSet.BOLT, false, GoSlot.NONE]]:
 		var slot := GoSlot.new()
 		slot.icon_name = spec[0]
-		slot.accent = ACCENT if spec[1] else Color.TRANSPARENT
+		slot.accent = _accent if spec[1] else Color.TRANSPARENT
 		slot.quantity = spec[2]
 		slot.visual_size = 58
 		slots.add_child(slot)
@@ -280,7 +307,7 @@ func _input_card(grid: GridContainer) -> void:
 	column.add_child(GoStyle.line_edit("Player name"))
 
 	var haptics := GoStyle.row(10)
-	haptics.add_child(GoUi.icons().node(GoIconSet.MOBILE, 24, SUBTITLE_INK))
+	haptics.add_child(GoUi.icons().node(GoIconSet.MOBILE, 24, _subtitle_ink))
 	var haptics_label := GoStyle.label("Haptics")
 	haptics_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	haptics.add_child(haptics_label)
@@ -290,7 +317,7 @@ func _input_card(grid: GridContainer) -> void:
 	column.add_child(haptics)
 
 	var volume := GoStyle.row(10)
-	volume.add_child(GoUi.icons().node(GoIconSet.VOLUME_HIGH, 24, SUBTITLE_INK))
+	volume.add_child(GoUi.icons().node(GoIconSet.VOLUME_HIGH, 24, _subtitle_ink))
 	var slider := GoStyle.slider(0.0, 100.0, 1.0)
 	slider.value = 70.0
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -336,7 +363,7 @@ func _dialog_card(grid: GridContainer) -> void:
 	handle.custom_minimum_size = Vector2(46, 5)
 	handle.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var handle_style := StyleBoxFlat.new()
-	handle_style.bg_color = Color(SUBTITLE_INK, 0.5)
+	handle_style.bg_color = Color(_subtitle_ink, 0.5)
 	handle_style.set_corner_radius_all(3)
 	handle.add_theme_stylebox_override(&"panel", handle_style)
 	sheet_column.add_child(handle)
@@ -358,12 +385,12 @@ func _notice_card(grid: GridContainer) -> void:
 
 	var notice := GoNotice.new()
 	var content := GoStyle.row(11)
-	content.add_child(GoUi.icons().node(GoIconSet.SUCCESS, 24, GREEN))
+	content.add_child(GoUi.icons().node(GoIconSet.SUCCESS, 24, _green))
 	var saved := GoStyle.label("Settings saved")
 	saved.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_child(saved)
 	content.add_child(GoStyle.icon_button(GoIconSet.CLOSE, Callable(), 20))
-	notice.set_content(content, GREEN)
+	notice.set_content(content, _green)
 	column.add_child(notice)
 
 	var prompt := GoStyle.card()
@@ -398,12 +425,12 @@ func _touch_card(grid: GridContainer) -> void:
 	stick.mode = GoJoystick.Mode.FIXED
 	stick.radius = 84.0
 	stick.knob_radius = 30.0
-	stick.ink = ACCENT
+	stick.ink = _accent
 	stick.set_anchors_preset(Control.PRESET_FULL_RECT)
 	stage.add_child(stick)
 	for spec in [[GoIconSet.UP, Vector2(0, -62)], [GoIconSet.DOWN, Vector2(0, 62)],
 			[GoIconSet.BACK, Vector2(-62, 0)], [GoIconSet.FORWARD, Vector2(62, 0)]]:
-		var arrow := GoUi.icons().node(spec[0], 18, Color(SUBTITLE_INK, 0.85))
+		var arrow := GoUi.icons().node(spec[0], 18, Color(_subtitle_ink, 0.85))
 		arrow.set_anchors_preset(Control.PRESET_CENTER)
 		arrow.position += spec[1]
 		arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -424,7 +451,7 @@ func _touch_card(grid: GridContainer) -> void:
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 		button.size = Vector2(diameter, diameter)
 		for state in [[&"normal", 0.20], [&"hover", 0.30], [&"pressed", 0.40]]:
-			button.add_theme_stylebox_override(state[0], GoStyle.disc(diameter, ACCENT, state[1], 0.60))
+			button.add_theme_stylebox_override(state[0], GoStyle.disc(diameter, _accent, state[1], 0.60))
 		button.position = spec[1]
 		actions.add_child(button)
 	row.add_child(actions)
@@ -437,14 +464,15 @@ func _theme_card(grid: GridContainer) -> void:
 	var column := _card(grid, "06", "Themes & icons")
 
 	var themes := GoStyle.row(12)
-	themes.add_child(_theme_panel("Dark", GoUi.DEFAULT_THEME, Color.WHITE))
-	themes.add_child(_theme_panel("Light", GoUi.LIGHT_THEME, Color("#12242f")))
+	var pair := ThemePicker.pair()
+	themes.add_child(_theme_panel("Dark", pair[0], GoTheme.color_of(pair[0], GoTheme.TEXT)))
+	themes.add_child(_theme_panel("Light", pair[1], GoTheme.color_of(pair[1], GoTheme.TEXT)))
 	column.add_child(themes)
 
 	var icons := GoStyle.row(20)
 	icons.alignment = BoxContainer.ALIGNMENT_CENTER
 	for name in [GoIconSet.SETTINGS, GoIconSet.HEART, GoIconSet.BELL, GoIconSet.SEARCH]:
-		icons.add_child(GoUi.icons().node(name, 32, Color(SUBTITLE_INK, 0.95)))
+		icons.add_child(GoUi.icons().node(name, 32, Color(_subtitle_ink, 0.95)))
 	column.add_child(icons)
 	column.add_child(GoStyle.spacer())
 
@@ -519,7 +547,7 @@ func _data_card(grid: GridContainer) -> void:
 	var column := _card(grid, "08", "Data & layout")
 	column.add_child(GoStyle.breadcrumb(["Home", "Inventory", "Weapons"]))
 	var people := GoStyle.row(10)
-	for spec in [["Ada Lovelace", ACCENT], ["Grace Hopper", GREEN], ["Linus T", Color("#f0a36b")]]:
+	for spec in [["Ada Lovelace", _accent], ["Grace Hopper", _green], ["Linus T", Color("#f0a36b")]]:
 		people.add_child(GoStyle.avatar(spec[0], 40, spec[1]))
 	var loading := GoStyle.column(6)
 	loading.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -541,9 +569,24 @@ func _states_card(grid: GridContainer) -> void:
 	column.add_child(GoStyle.alert("Low on potions. Restock before the boss.", GoTheme.WARNING))
 	column.add_child(GoStyle.alert("Connection lost. Retrying…", GoTheme.DANGER))
 	var chips := GoStyle.wrap_row(8)
-	for spec in [["Online", GREEN], ["Level 42", ACCENT], ["Guild", Color("#c58bff")], ["Beta", Color("#f0a36b")]]:
+	for spec in [["Online", _green], ["Level 42", _accent], ["Guild", Color("#c58bff")], ["Beta", Color("#f0a36b")]]:
 		chips.add_child(GoStyle.chip(spec[0], spec[1]))
 	column.add_child(chips)
 	var fold := GoStyle.foldable("Advanced options", true, null, false)
-	fold.add_child(GoStyle.label("Frame cap, shadow quality and telemetry live here.", GoTheme.ROLE_CAPTION, SUBTITLE_INK))
+	fold.add_child(GoStyle.label("Frame cap, shadow quality and telemetry live here.", GoTheme.ROLE_CAPTION, _subtitle_ink))
 	column.add_child(fold)
+
+
+func _change_theme(preset: StringName) -> void:
+	if preset == ThemePicker.active_preset: return
+	ThemePicker.active_preset = preset
+	_rebuild_theme.call_deferred()
+
+
+func _rebuild_theme() -> void:
+	for child in get_children():
+		remove_child(child)
+		child.queue_free()
+	_configure()
+	_build()
+	queue_redraw()

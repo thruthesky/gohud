@@ -63,6 +63,7 @@ func _initialize() -> void:
 	await _section("back policy", _back_policy)
 	await _section("tokens · themes", _tokens)
 	await _section("presets · skins", _presets)
+	await _section("medieval theme", _medieval)
 	await _section("skin contrast", _skin_contrast)
 	await _section("icon sets", _icons)
 	await _section("localization", _i18n)
@@ -219,11 +220,14 @@ func _presets() -> void:
 	if table is Dictionary:
 		var fresh_default := GoSkin.new()
 		var fresh_scifi := GoSkinSciFi.new()
+		var fresh_medieval := GoSkinMedieval.new()
 		var off: Array = []
 		for key in table.get("default", {}):
 			if not is_equal_approx(float(fresh_default.get(key)), float(table["default"][key])): off.append(key)
 		for key in table.get("scifi", {}):
 			if not is_equal_approx(float(fresh_scifi.get(key)), float(table["scifi"][key])): off.append(key)
+		for key in table.get("medieval", {}):
+			if not is_equal_approx(float(fresh_medieval.get(key)), float(table["medieval"][key])): off.append(key)
 		check(off.is_empty(), "다이얼 표가 GDScript 기본값과 같다 %s" % str(off))
 
 	# ── 폴더에 놓인 프리셋은 코드 수정 없이 뜬다 ──────────────────────
@@ -257,7 +261,8 @@ func _presets() -> void:
 
 	var ids := GoThemePresets.ids()
 	for wanted in [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT,
-			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT]:
+			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT,
+			GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT]:
 		check(ids.has(wanted), "프리셋이 있다 — %s" % wanted)
 	for preset in GoThemePresets.all():
 		check(preset.theme != null and preset.skin != null and not preset.label().is_empty(),
@@ -310,6 +315,47 @@ func _presets() -> void:
 	GoUi.config.preset = &""
 
 
+# New presets exercise the public widget path, including switching back to the originals.
+func _medieval() -> void:
+	for preset in [GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT]:
+		GoUi.use_preset(preset)
+		var theme := GoUi.theme()
+		check(GoUi.skin() is GoSkinMedieval, "%s: medieval skin selected" % preset)
+		var menu := GoStyle.surface(GoTheme.BOX_PANEL) as GoStyleBoxMedieval
+		var hud := GoStyle.surface(GoTheme.BOX_HUD) as GoStyleBoxMedieval
+		check(menu != null and hud != null, "%s: menu and HUD use forged frames" % preset)
+		if menu != null and hud != null:
+			check(menu.ornament == 2 and hud.ornament == 0, "%s: menu ornaments stay off the gameplay HUD" % preset)
+			check(menu.material == (1 if preset == GoThemePresets.MEDIEVAL_DARK else 2), "%s: leather / parchment material" % preset)
+		check(theme.get_font(&"font", &"GoTitleLabel").resource_path.ends_with("Cinzel.ttf"), "%s: title uses Cinzel" % preset)
+		check(not theme.has_font(&"font", &"Label") and theme.default_font == null, "%s: readable body font stays inherited" % preset)
+		var icons := GoUi.icons()
+		check(icons.texture(GoIconSet.SWORD) is DPITexture, "%s: engraved icons scale without raster blur" % preset)
+		check(icons.texture(GoIconSet.CLOSE) == icons.fallback.texture(GoIconSet.CLOSE), "%s: navigation icons keep their fallback" % preset)
+		var slot := GoSlot.new()
+		slot.icon_name = GoIconSet.SHIELD
+		root.add_child(slot)
+		await frames(2)
+		check(slot.get_node(^"Face").get_theme_stylebox(&"panel") is GoStyleBoxMedieval, "%s: real inventory slot uses the skin" % preset)
+		slot.queue_free()
+		# Changing a copied skin must affect real drawing resources without changing the preset.
+		var skin := GoUi.skin().duplicate() as GoSkinMedieval
+		skin.ornament_scale = 0.7
+		skin.slot_rivets = 0
+		skin.leather_grain_alpha = 0.0
+		var face := skin.slot_box(GoUi.color(GoTheme.ACCENT), true) as GoStyleBoxMedieval
+		check(face.ornament == 0 and face.grain_alpha == 0.0 and near(face.ornament_scale, 0.7, 0.001), "%s: custom dials reach the slot" % preset)
+		check((GoUi.skin() as GoSkinMedieval).slot_rivets == 1, "%s: copied skin leaves source unchanged" % preset)
+		check(GoStyle.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "%s: legacy flat-box API stays compatible" % preset)
+		await frames(1)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	check(GoUi.theme() == GoUi.DEFAULT_THEME and GoUi.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "medieval returns to unchanged default")
+	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+	check(GoUi.skin() is GoSkinSciFi and GoUi.box(GoTheme.BOX_PANEL) is GoStyleBoxCut, "medieval returns to sci-fi geometry")
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.preset = &""
+
+
 # ── 스킨이 만드는 색의 대비 ────────────────────────────────────────────
 #
 # 🛑 `tools/check_contrast.py` 는 테마 `.tres` 만 읽는다. 스킨이 **실행 중에** 만드는 색
@@ -318,7 +364,8 @@ func _presets() -> void:
 func _skin_contrast() -> void:
 	var tones := [GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER, GoTheme.INFO, GoTheme.SECONDARY]
 	for preset in [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT,
-			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT]:
+			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT,
+			GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT]:
 		GoUi.use_preset(preset)
 		var skin := GoUi.skin()
 		var under := GoSkin.blend(GoUi.color(GoTheme.SURFACE_SOFT), GoUi.color(GoTheme.BACKGROUND))
@@ -705,6 +752,31 @@ func _style() -> void:
 	check(row.custom_minimum_size.y < 120, "폭이 있으면 두 줄 항목이 부풀지 않는다 (%.0f)" % row.custom_minimum_size.y)
 	var inset := row.get_child(0) as MarginContainer
 	check(inset != null and row.custom_minimum_size.y >= inset.get_combined_minimum_size().y - 0.5, "여백 포함 내용이 항목 안에 들어간다")
+	var list_line := inset.get_child(0) as HBoxContainer
+	var text_stack := list_line.get_child(1) as VBoxContainer
+	var list_title := text_stack.get_child(0) as Label
+	var description := text_stack.get_child(1) as Label
+	var top := list_title.global_position.y - row.global_position.y
+	var bottom := row.get_global_rect().end.y - description.get_global_rect().end.y
+	check(top >= 8.0 and bottom >= 8.0 and near(top, bottom), "두 줄 목록은 위아래에 균형 잡힌 여백을 둔다")
+	# 행이 컨테이너의 남는 높이를 받아도 글자 사이에 빈 공간을 끼워 넣지 않는다.
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	await frames(3)
+	check(row.size.y > row.get_combined_minimum_size().y + 20.0, "목록 정렬 검사가 실제로 늘어난 행을 확인한다")
+	var text_center := (list_title.global_position.y + description.get_global_rect().end.y) * 0.5
+	check(near(text_center, row.get_global_rect().get_center().y),
+		"늘어난 목록 행에서도 제목·요약 묶음은 세로 가운데")
+	check(near(list_title.size.y, list_title.get_combined_minimum_size().y)
+		and near(description.size.y, description.get_combined_minimum_size().y)
+		and description.global_position.y - list_title.get_global_rect().end.y <= 8.0,
+		"제목·요약은 자연 높이와 짧은 간격을 유지한다")
+	row.size_flags_vertical = Control.SIZE_FILL
+	description.text = "A longer description that wraps onto several lines without touching the row border."
+	await frames(4)
+	check(description.get_line_count() > 1, "목록 여백 검사가 줄바꿈된 요약을 확인한다")
+	top = list_title.global_position.y - row.global_position.y
+	bottom = row.get_global_rect().end.y - description.get_global_rect().end.y
+	check(top >= 8.0 and bottom >= 8.0 and near(top, bottom), "줄바꿈 뒤에도 목록의 위아래 여백이 균형을 유지한다")
 
 	var wrap := GoStyle.wrap_row(-1, FlowContainer.ALIGNMENT_CENTER, FlowContainer.LAST_WRAP_ALIGNMENT_BEGIN)
 	check(wrap is HFlowContainer and wrap.last_wrap_alignment == FlowContainer.LAST_WRAP_ALIGNMENT_BEGIN, "흐르는 줄 · 마지막 줄 정렬")

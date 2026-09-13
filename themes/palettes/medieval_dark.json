@@ -1,0 +1,59 @@
+{
+  "_help": "Change palette, shape and skin.dials, then run python3 tools/make_theme.py medieval_dark. Headings use Cinzel; body text keeps the host font.",
+  "id": "medieval_dark",
+  "title": "Medieval Iron",
+  "from": "dark",
+  "dark": true,
+  "shape": {
+    "kind": "medieval",
+    "material": 1,
+    "radius": 4,
+    "radius_small": 3,
+    "radius_large": 6,
+    "ornament_scale": 1.0,
+    "grain_alpha": 0.035,
+    "bevel_strength": 0.18,
+    "fonts": {
+      "title": "res://addons/gohud/assets/fonts/cinzel/Cinzel.ttf",
+      "subtitle": "res://addons/gohud/assets/fonts/cinzel/Cinzel.ttf"
+    }
+  },
+  "skin": {
+    "base": "medieval",
+    "name": "Medieval Dark",
+    "dials": {
+      "slot_radius": 4.0,
+      "leather_grain_alpha": 0.035,
+      "ornament_scale": 1.0,
+      "bevel_strength": 0.18,
+      "slot_rivets": 1,
+      "slot_tint_lit": 0.14,
+      "slot_tint_idle": 0.02
+    }
+  },
+  "palette": {
+    "background": "#100e0c",
+    "surface": "#241e1a",
+    "surface_soft": "#322921",
+    "surface_high": "#42372b",
+    "border": "#ad8a52",
+    "text": "#f5ebd8",
+    "secondary": "#c9b89b",
+    "muted": "#b6a68d",
+    "accent": "#d5ad64",
+    "on_accent": "#20180e",
+    "danger": "#df817c",
+    "info": "#86a9d1",
+    "success": "#a7b977",
+    "warning": "#e5bd70",
+    "shadow": "#000000@0.65",
+    "track": "#0d0e10",
+    "scrim": "#090806@0.62",
+    "danger_vivid": "#b83e43",
+    "info_vivid": "#3b73bb",
+    "success_vivid": "#94b65b",
+    "warning_vivid": "#c99b45",
+    "accent_vivid": "#c99b45"
+  },
+  "icons": "res://addons/gohud/icons/gohud_icons_medieval.tres"
+}

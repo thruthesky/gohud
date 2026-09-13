@@ -1124,7 +1124,8 @@ func play_anchors(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 
 func build_theming(stage: SimStage, bot: SimBot) -> Dictionary:
 	var preview := PanelContainer.new()
-	preview.theme = GoUi.DEFAULT_THEME
+	var pair: Array[Theme] = preload("theme_picker.gd").pair()
+	preview.theme = pair[0]
 	preview.theme_type_variation = GoTheme.VAR_CARD
 	var inner := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	preview.add_child(inner)
@@ -1141,7 +1142,7 @@ func build_theming(stage: SimStage, bot: SimBot) -> Dictionary:
 	inner.add_child(sample_slider)
 
 	var swap := func(light: bool) -> void:
-		var picked := GoUi.LIGHT_THEME if light else GoUi.DEFAULT_THEME
+		var picked := pair[1] if light else pair[0]
 		for node in [preview, title, sample_button, sample_toggle, sample_slider]:
 			(node as Control).theme = picked
 		bot.note("Theme: %s" % ("Light" if light else "Dark"))

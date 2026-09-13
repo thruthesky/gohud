@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="GoThemePreset" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/core/go_theme_preset.gd" id="script"]
+[ext_resource type="Theme" path="res://addons/gohud/themes/gohud_medieval_dark.tres" id="theme"]
+[ext_resource type="Resource" path="res://addons/gohud/themes/skins/gohud_skin_medieval_dark.tres" id="skin"]
+[ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons_medieval.tres" id="icons"]
+
+[resource]
+script = ExtResource("script")
+id = &"medieval_dark"
+title = "Medieval Iron"
+dark = true
+theme = ExtResource("theme")
+skin = ExtResource("skin")
+icons = ExtResource("icons")

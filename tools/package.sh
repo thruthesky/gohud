@@ -1,8 +1,10 @@
 #!/bin/bash
 # gohud 배포 ZIP — Godot Asset Store(store.godotengine.org)에 올리는 파일을 만든다.
 #
-#   bash addons/gohud/tools/package.sh              # builds/<버전>/gohud-<버전>.zip
-#   bash addons/gohud/tools/package.sh --out DIR    # 저장 위치를 바꾼다
+#   bash addons/gohud/tools/package.sh                           # patch +1 → builds/<버전>/gohud-<버전>.zip
+#   bash addons/gohud/tools/package.sh --increase-minor-version  # minor +1, patch = 0
+#   bash addons/gohud/tools/package.sh --out DIR                 # 저장 위치를 바꾼다 (버전도 올라간다)
+# Python 3 필요. 성공한 경우에만 plugin.cfg · GoUi.VERSION · CHANGELOG.md 를 함께 갱신한다.
 #
 # ZIP 안의 경로는 언제나 `addons/gohud/...` 다 — 받는 사람은 **프로젝트 루트**에 풀면 그대로 설치된다.
 #
@@ -16,7 +18,7 @@
 # 🛑 게이트 — 하나라도 걸리면 ZIP 을 만들지 않는다
 #   ① plugin.cfg 의 version 과 GoUi.VERSION 이 같다
 #   ② LICENSE · README.md · THIRD_PARTY_NOTICES.md · CHANGELOG.md 가 있다
-#   ③ CHANGELOG.md 에 이 버전 항목(`## [x.y.z]`)이 있다
+#   ③ 새 버전 항목을 만들고 Unreleased 내역을 옮긴다 — 이미 있는 버전이면 중단한다
 #   ④ 코드·씬·리소스가 애드온 **밖**의 `res://` 를 가리키지 않는다 — 가리키면 남의 프로젝트에서 깨진다
 #   ⑤ ZIP 안에 비밀(.env·API 키)이 없다
 #   ⑥ ZIP 안의 모든 항목이 `addons/gohud/` 아래에 있다
@@ -29,17 +31,34 @@ set -eu
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
 FULL=0
 OUT=""
+INCREASE="patch"
 while [ $# -gt 0 ]; do
   case "$1" in
     --full) FULL=1 ;;                       # tools/ 까지 넣는다(내부 배포용 — 스토어에는 쓰지 않는다)
-    --out) shift; OUT="${1:-}" ;;
-    -h|--help) sed -n '2,6p' "$0"; exit 0 ;;
+    --increase-minor-version) INCREASE="minor" ;;
+    --out)
+      [ $# -ge 2 ] && [ -n "$2" ] && [[ "$2" != --* ]] || { echo "--out 에 저장 폴더가 필요하다" >&2; exit 2; }
+      shift; OUT="$1" ;;
+    -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
     *) echo "알 수 없는 인자: $1" >&2; exit 2 ;;
   esac
   shift
 done
 
 fail() { echo "🛑 $*" >&2; exit 1; }
+
+# 직렬화: 같은 체크아웃에서 동시에 실행해 같은 다음 버전을 만들지 않는다.
+mkdir -p "$ADDON/builds"
+LOCK="$ADDON/builds/.package-lock"
+mkdir "$LOCK" 2>/dev/null || fail "다른 패키징이 진행 중이다 ($LOCK)"
+STAGE=""
+cleanup() {
+  [ -z "$STAGE" ] || rm -rf "$STAGE"
+  rmdir "$LOCK"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 # ── ① 버전 ──────────────────────────────────────────────────────────────
 VERSION="$(sed -n 's/^version="\(.*\)"$/\1/p' "$ADDON/plugin.cfg")"
@@ -52,27 +71,20 @@ for doc in LICENSE README.md THIRD_PARTY_NOTICES.md CHANGELOG.md; do
   [ -f "$ADDON/$doc" ] || fail "$doc 가 없다"
 done
 
-# ── ③ 변경 이력 ─────────────────────────────────────────────────────────
-grep -q "^## \[$VERSION\]" "$ADDON/CHANGELOG.md" || fail "CHANGELOG.md 에 [$VERSION] 항목이 없다"
-
 # ── ④ 애드온 밖 참조 ────────────────────────────────────────────────────
 # 주석 줄(`#`)은 사용 예시라 뺀다. `tests/`·`tools/` 는 검사 파일 자체가
 # `res://addons/gohud` 를 문자열로 들고 있어 오탐이 난다 — 배포본에도 없는 폴더다.
 # `examples/demo/` 는 자체 project.godot 을 가진 별도 프로젝트라 그 안의 `res://` 는 데모 루트를 가리킨다.
+# `examples/usage/` 는 애드온 사본을 설치해 사용하는 프로젝트이며 배포본에서 제외한다.
 LEAKS="$(grep -rnE 'res://' "$ADDON" --include='*.gd' --include='*.tscn' --include='*.tres' --include='*.cfg' \
-  | grep -vE '/(tests|tools)/|/examples/demo/' \
+  | grep -vE '/(tests|tools)/|/examples/(demo|usage)/' \
   | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' \
   | grep -oE '^[^:]+:[0-9]+:|res://[A-Za-z0-9_./%-]+' \
   | awk 'index($0, "res://") == 1 { if (index($0, "res://addons/gohud") != 1) print prev $0; next } { prev = $0 }' || true)"
 [ -z "$LEAKS" ] || { echo "$LEAKS" >&2; fail "애드온 밖을 가리키는 res:// 참조가 있다"; }
 
 # ── 스테이징 ────────────────────────────────────────────────────────────
-DIST="${OUT:-$ADDON/builds/$VERSION}"
-mkdir -p "$DIST"
-DIST="$(cd "$DIST" && pwd)"
-ZIP="$DIST/gohud-$VERSION.zip"
 STAGE="$(mktemp -d)"
-trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$STAGE/addons/gohud"
 
 # 🛑 `builds/` 는 점 폴더가 아니라 Godot 가 임포트한다 — `.gdignore` 로 스캔을 막는다.
@@ -111,6 +123,7 @@ set -- \
   --exclude='*.zip' \
   --exclude='*.py[co]' \
   --exclude='__pycache__' \
+  --exclude='/examples/usage/' \
   --exclude='examples/demo/addons'
 # 🛑 `docs/` 는 **홈페이지**다 — GitHub Pages 로 배포되는 것이지 애셋에 딸려 갈 것이 아니다.
 #    넣으면 ① 스크린샷 수백 KB 가 애셋 크기에 얹히고 ② 그 안의 명령 예시(`res://…/tests/…`)가
@@ -118,6 +131,16 @@ set -- \
 if [ "$FULL" -eq 0 ]; then set -- "$@" --exclude='tools' --exclude='docs'; fi
 
 rsync -a --no-links "$@" "$ADDON/" "$STAGE/addons/gohud/"
+
+# 버전과 변경 이력은 사본에서 준비한다. 원본은 모든 ZIP 검사가 끝나야 갱신한다.
+PREVIOUS_VERSION="$VERSION"
+VERSION="$(python3 "$ADDON/tools/package_version.py" prepare "$STAGE" "$INCREASE")"
+DIST="${OUT:-$ADDON/builds/$VERSION}"
+mkdir -p "$DIST"
+DIST="$(cd "$DIST" && pwd)"
+DESTINATION="$DIST/gohud-$VERSION.zip"
+[ ! -e "$DESTINATION" ] || fail "같은 버전의 ZIP 이 이미 있다: $DESTINATION"
+ZIP="$STAGE/package.zip"
 
 # 🛑 중첩 project.godot 은 설치한 사람의 에디터에 경고를 띄운다:
 #      WARNING: Detected another project.godot at res://addons/gohud/examples/demo
@@ -146,7 +169,6 @@ LINKS="$(find "$STAGE" -type l -print || true)"
 [ -z "$LINKS" ] || { echo "$LINKS" >&2; fail "심볼릭 링크가 들어갔다"; }
 
 # ── 압축 ────────────────────────────────────────────────────────────────
-rm -f "$ZIP"
 ( cd "$STAGE" && zip -qrX "$ZIP" addons )
 
 # ── ⑥ 경로 ──────────────────────────────────────────────────────────────
@@ -165,5 +187,7 @@ done
 
 COUNT="$(unzip -Z1 "$ZIP" | grep -vc '/$')"
 SIZE="$(du -h "$ZIP" | cut -f1 | tr -d ' ')"
-echo "✅ $ZIP"
+python3 "$ADDON/tools/package_version.py" publish "$ADDON" "$STAGE" "$DESTINATION"
+echo "✅ $DESTINATION"
+echo "   버전 자동 갱신: $PREVIOUS_VERSION → $VERSION"
 echo "   버전 $VERSION · 파일 $COUNT 개 · $SIZE · $([ "$FULL" -eq 1 ] && echo '전체(tools 포함)' || echo '스토어용')"

@@ -18,6 +18,16 @@
 ## 탐색 중: `←` `→` 이전·다음 위젯 · `Space` 이 위젯 시연 · `Esc` 처음으로
 extends Control
 
+const ThemePicker := preload("theme_picker.gd")
+var _accent := ACCENT
+var _green := GREEN
+var _bg := BG
+var _subtitle_ink := SUBTITLE_INK
+var _theme_pending: StringName = &""
+var _theme_state: Dictionary = {}
+var _theme_popup_open := false
+var _theme_paused_before := false
+
 const ACCENT := Color("#71d9e9")
 const VIOLET := Color("#8b7cf6")
 const GREEN := Color("#81dcb0")
@@ -135,7 +145,8 @@ func _configure() -> void:
 	colors[GoTheme.MUTED] = Color("#91a1b8")
 	colors[GoTheme.SECONDARY] = SUBTITLE_INK
 	settings.color_overrides = colors
-	GoUi.config = settings
+	ThemePicker.configure(settings, colors)
+	_refresh_palette()
 
 
 func _scale_window() -> void:
@@ -170,10 +181,10 @@ func index_of(key: StringName) -> int:
 
 func _draw() -> void:
 	var view := size
-	draw_rect(Rect2(Vector2.ZERO, view), BG)
+	draw_rect(Rect2(Vector2.ZERO, view), _bg)
 	# 은은한 점 격자 — 무대가 허공에 뜬 것처럼 보이지 않게 바닥의 질감을 준다.
 	var step := 36.0
-	var dot := Color(ACCENT, 0.05)
+	var dot := Color(_accent, 0.05)
 	var x := 18.0
 	while x < view.x:
 		var y := 18.0
@@ -182,7 +193,7 @@ func _draw() -> void:
 			y += step
 		x += step
 	# 두 개의 부드러운 광원: 왼쪽 위는 강조색, 오른쪽 아래는 보라.
-	_glow(Vector2(view.x * 0.16, view.y * 0.10), 380.0, ACCENT)
+	_glow(Vector2(view.x * 0.16, view.y * 0.10), 380.0, _accent)
 	_glow(Vector2(view.x * 0.88, view.y * 0.94), 340.0, VIOLET)
 
 
@@ -196,7 +207,7 @@ func _glow(center: Vector2, radius: float, color: Color) -> void:
 func _build() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = GoUi.theme()
-	resized.connect(_relayout)
+	if not resized.is_connected(_relayout): resized.connect(_relayout)
 
 	var margin := GoStyle.padding(18)
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -204,6 +215,7 @@ func _build() -> void:
 	var page := GoStyle.column(12)
 	margin.add_child(page)
 
+	page.add_child(_theme_bar())
 	page.add_child(_top_bar())
 
 	var middle := GoStyle.row(16)
@@ -225,15 +237,20 @@ func _build() -> void:
 
 	page.add_child(_caption_bar())
 
-	_bot = SimBot.new()
-	_bot.set_ink(ACCENT)
-	_bot.said.connect(_on_said)
-	_bot.logged.connect(_on_logged)
-	_bot.shortcut.connect(_on_shortcut)
-	add_child(_bot)
+	if not is_instance_valid(_bot):
+		_bot = SimBot.new()
+		_bot.said.connect(_on_said)
+		_bot.logged.connect(_on_logged)
+		_bot.shortcut.connect(_on_shortcut)
+		add_child(_bot)
+	_bot.set_ink(_accent)
 
 
-func _panel_box(color := PANEL, radius := 14, inset := 16) -> StyleBoxFlat:
+func _panel_box(color := PANEL, radius := 14, inset := 16) -> StyleBox:
+	if ThemePicker.active_preset != GoThemePresets.DEFAULT_DARK:
+		var frame := GoStyle.surface(GoTheme.BOX_CARD)
+		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: frame.set_content_margin(side, inset)
+		return frame
 	var surface := StyleBoxFlat.new()
 	surface.bg_color = color
 	surface.border_color = Color("#22334a")
@@ -244,7 +261,8 @@ func _panel_box(color := PANEL, radius := 14, inset := 16) -> StyleBoxFlat:
 
 
 ## 강조색 원판 위의 아이콘 — 로고 마크와 소개 패널이 쓴다.
-func _icon_disc(icon: StringName, diameter: int, color := ACCENT) -> PanelContainer:
+func _icon_disc(icon: StringName, diameter: int, color := Color.TRANSPARENT) -> PanelContainer:
+	if color.a == 0.0: color = _accent
 	var disc := PanelContainer.new()
 	disc.custom_minimum_size = Vector2(diameter, diameter)
 	disc.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -273,10 +291,10 @@ func _top_bar() -> Control:
 	GoStyle.natural_width(logo)
 	logo.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	brand.add_child(logo)
-	var version := GoStyle.chip("v" + GoUi.VERSION, ACCENT)
+	var version := GoStyle.chip("v" + GoUi.VERSION, _accent)
 	version.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	brand.add_child(version)
-	_tag = GoStyle.label("WIDGET SHOWCASE", GoTheme.ROLE_CAPTION, SUBTITLE_INK)
+	_tag = GoStyle.label("WIDGET SHOWCASE", GoTheme.ROLE_CAPTION, _subtitle_ink)
 	_tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_tag.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_tag.clip_text = true
@@ -286,21 +304,21 @@ func _top_bar() -> Control:
 	_journey.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_journey.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	brand.add_child(_journey)
-	_mode_chip = GoStyle.chip("READY", SUBTITLE_INK)
+	_mode_chip = GoStyle.chip("READY", _subtitle_ink)
 	_mode_label = _mode_chip.get_child(0) as Label
 	_mode_chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_journey.add_child(_mode_chip)
-	_progress = GoStyle.progress(ACCENT)
+	_progress = GoStyle.progress(_accent)
 	_progress.custom_minimum_size = Vector2(120, 4)
 	_progress.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_progress.max_value = maxf(1.0, float(_entries.size()))
 	for style in [&"background", &"fill"]:
 		var rail := StyleBoxFlat.new()
-		rail.bg_color = Color("#2a3c50") if style == &"background" else ACCENT
+		rail.bg_color = Color("#2a3c50") if style == &"background" else _accent
 		rail.set_corner_radius_all(2)
 		_progress.add_theme_stylebox_override(style, rail)
 	_journey.add_child(_progress)
-	_counter = GoStyle.label("", GoTheme.ROLE_COMPACT, SUBTITLE_INK)
+	_counter = GoStyle.label("", GoTheme.ROLE_COMPACT, _subtitle_ink)
 	GoStyle.natural_width(_counter)
 	_counter.custom_minimum_size.x = 72
 	_counter.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -349,7 +367,7 @@ func _side_panel() -> Control:
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(heading)
-	var count := GoStyle.chip(str(_entries.size()), SUBTITLE_INK)
+	var count := GoStyle.chip(str(_entries.size()), _subtitle_ink)
 	count.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(count)
 	column.add_child(head)
@@ -405,7 +423,7 @@ func _log_panel() -> Control:
 	_about_title = GoStyle.label("Pick a widget", GoTheme.ROLE_SUBTITLE, Color.WHITE)
 	_about_title.add_theme_font_size_override(&"font_size", 21)
 	stack.add_child(_about_title)
-	_about_note = GoStyle.label("", GoTheme.ROLE_CAPTION, SUBTITLE_INK)
+	_about_note = GoStyle.label("", GoTheme.ROLE_CAPTION, _subtitle_ink)
 	stack.add_child(_about_note)
 	about.add_child(stack)
 	column.add_child(about)
@@ -423,7 +441,7 @@ func _log_panel() -> Control:
 	var heading := GoStyle.section("Live activity", false)
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(heading)
-	var pulse := GoUi.icons().node(GoIconSet.BOLT, 14, GREEN)
+	var pulse := GoUi.icons().node(GoIconSet.BOLT, 14, _green)
 	pulse.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(pulse)
 	column.add_child(head)
@@ -458,7 +476,8 @@ func _caption_bar() -> Control:
 	return center
 
 
-func _set_caption_icon(icon: StringName, color := ACCENT) -> void:
+func _set_caption_icon(icon: StringName, color := Color.TRANSPARENT) -> void:
+	if color.a == 0.0: color = _accent
 	for child in _caption_icon_holder.get_children(): child.queue_free()
 	_caption_icon_holder.add_child(GoUi.icons().node(icon, 20, color))
 
@@ -500,14 +519,19 @@ func _cover_screen() -> VBoxContainer:
 	_cover.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(_cover)
 	var veil := ColorRect.new()
-	veil.color = Color(BG, 0.94)
+	veil.color = Color(_bg, 0.94)
 	veil.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_cover.add_child(veil)
 
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.offset_top = 74
 	_cover.add_child(center)
-	var card := GoStyle.card(ACCENT)
+	var toolbar := GoStyle.padding(18)
+	toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	_cover.add_child(toolbar)
+	toolbar.add_child(_theme_bar())
+	var card := GoStyle.card(_accent)
 	card.custom_minimum_size.x = minf(580.0, size.x - 36.0)
 	_cover_card = card
 	center.add_child(card)
@@ -525,7 +549,7 @@ func _drop_cover() -> void:
 
 func _show_intro() -> void:
 	_explore = -1
-	_set_mode("READY", SUBTITLE_INK)
+	_set_mode("READY", _subtitle_ink)
 	_counter.text = ""
 	_progress.value = 0
 	_sync_marks()
@@ -533,19 +557,19 @@ func _show_intro() -> void:
 	var column := _cover_screen()
 	var eyebrow := GoStyle.row(8)
 	eyebrow.add_child(_icon_disc(GoIconSet.GRID, 28))
-	eyebrow.add_child(GoStyle.label("INTERACTIVE SHOWCASE", GoTheme.ROLE_CAPTION, ACCENT))
+	eyebrow.add_child(GoStyle.label("INTERACTIVE SHOWCASE", GoTheme.ROLE_CAPTION, _accent))
 	column.add_child(eyebrow)
 	var logo := Label.new()
 	logo.text = "gohud"
 	logo.add_theme_font_size_override(&"font_size", 68)
 	logo.add_theme_color_override(&"font_color", Color.WHITE)
 	column.add_child(logo)
-	column.add_child(GoStyle.label("Your UI, in motion", GoTheme.ROLE_TITLE, ACCENT))
+	column.add_child(GoStyle.label("Your UI, in motion", GoTheme.ROLE_TITLE, _accent))
 	column.add_child(GoStyle.label(
 		"Watch a guided tour of %d widgets, or pick any widget and try it with your own hands. "
 		% _entries.size()
 		+ "Every click, drag and keystroke in the tour is real input.",
-		GoTheme.ROLE_BODY, SUBTITLE_INK))
+		GoTheme.ROLE_BODY, _subtitle_ink))
 	column.add_child(GoStyle.divider())
 
 	var speed_row := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
@@ -581,11 +605,11 @@ func _show_intro() -> void:
 
 func _show_outro() -> void:
 	var column := _cover_screen()
-	column.add_child(GoUi.icons().node(GoIconSet.SUCCESS, 48, GREEN))
+	column.add_child(GoUi.icons().node(GoIconSet.SUCCESS, 48, _green))
 	column.add_child(GoStyle.label("Tour complete", GoTheme.ROLE_TITLE))
 	column.add_child(GoStyle.label(
 		"You have explored the gohud widget kit. Replay the tour, or pick a widget and try it yourself.",
-		GoTheme.ROLE_BODY, SUBTITLE_INK))
+		GoTheme.ROLE_BODY, _subtitle_ink))
 	column.add_child(GoStyle.divider())
 	var again := GoStyle.button("Replay demo", _start, GoStyle.Tone.PRIMARY)
 	again.custom_minimum_size.y = 48
@@ -649,7 +673,7 @@ func _begin() -> void:
 		_counting_down = true
 		var column := _cover_screen()
 		column.add_child(GoStyle.label("Ready to record", GoTheme.ROLE_TITLE))
-		var count := GoStyle.label("3", GoTheme.ROLE_TITLE, ACCENT)
+		var count := GoStyle.label("3", GoTheme.ROLE_TITLE, _accent)
 		count.add_theme_font_size_override(&"font_size", 96)
 		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(count)
@@ -676,7 +700,7 @@ func _toggle_fullscreen() -> void:
 func _run() -> void:
 	_running = true
 	_sync_pause()
-	_set_mode("TOUR" if _explore < 0 else "PLAYING", ACCENT)
+	_set_mode("TOUR" if _explore < 0 else "PLAYING", _accent)
 	while not _return_home and _index < _last:
 		var entry := _entries[_index]
 		_sync_marks()
@@ -707,6 +731,9 @@ func _run() -> void:
 	_sync_pause()
 	_running = false
 	_relayout()
+	if not _theme_pending.is_empty():
+		_apply_theme()
+		return
 	if _pending_explore >= 0:
 		var wanted := _pending_explore
 		_pending_explore = -1
@@ -727,7 +754,7 @@ func _run() -> void:
 	_sync_marks()
 	_counter.text = "%02d / %02d" % [_entries.size(), _entries.size()]
 	_progress.value = float(_entries.size())
-	_set_mode("DONE", GREEN)
+	_set_mode("DONE", _green)
 	_show_outro()
 	if _bot.verify:
 		print("SIM RESULT: %d/%d chapters, %d checks, %d failures" % [
@@ -767,11 +794,11 @@ func _open_explore(index: int) -> void:
 	_stage.open("%02d" % (index + 1), entry.title, entry.note)
 	_bot.rearm()
 	_acts.build(entry.key, _stage, _bot)
-	_set_mode("EXPLORE", GREEN)
+	_set_mode("EXPLORE", _green)
 	_sync_marks()
 	_sync_about()
 	_sync_pause()
-	_set_caption_icon(GoIconSet.TARGET, GREEN)
+	_set_caption_icon(GoIconSet.TARGET, _green)
 	_on_said(entry.hint)
 	_relayout()
 
@@ -782,10 +809,10 @@ func _leave_explore() -> void:
 	_stage.clear()
 	_stage.open("", "", "")
 	_explore = -1
-	_set_mode("EXPLORE", GREEN)
+	_set_mode("EXPLORE", _green)
 	_sync_marks()
 	_sync_about()
-	_set_caption_icon(GoIconSet.LIST, GREEN)
+	_set_caption_icon(GoIconSet.LIST, _green)
 	_on_said("Pick a widget from the list on the left.")
 
 
@@ -876,7 +903,7 @@ func _sync_marks() -> void:
 		else:
 			for state in [&"normal", &"hover", &"pressed"]: row.remove_theme_stylebox_override(state)
 			if label != null:
-				if touring and index < _index: label.add_theme_color_override(&"font_color", GREEN)
+				if touring and index < _index: label.add_theme_color_override(&"font_color", _green)
 				else: label.remove_theme_color_override(&"font_color")
 
 
@@ -891,8 +918,8 @@ func _reveal_row(row: Control) -> void:
 
 func _row_box(alpha: float) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
-	box.bg_color = Color(ACCENT, alpha)
-	box.border_color = ACCENT
+	box.bg_color = Color(_accent, alpha)
+	box.border_color = _accent
 	box.border_width_left = 3
 	box.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
 	return box
@@ -904,7 +931,7 @@ func _sync_about() -> void:
 	for child in _about_icon_holder.get_children(): child.queue_free()
 	var index := _index if (_running or _explore >= 0) and _index < _entries.size() else -1
 	if index < 0:
-		_about_icon_holder.add_child(_icon_disc(GoIconSet.LIST, 40, SUBTITLE_INK))
+		_about_icon_holder.add_child(_icon_disc(GoIconSet.LIST, 40, _subtitle_ink))
 		_about_title.text = "Pick a widget"
 		_about_note.text = "Choose one on the left, or play the full tour."
 		_about_hint.text = ""
@@ -912,7 +939,7 @@ func _sync_about() -> void:
 		_play_one.visible = false
 		return
 	var entry := _entries[index]
-	_about_icon_holder.add_child(_icon_disc(entry.icon, 40, GREEN if _explore >= 0 and not _running else ACCENT))
+	_about_icon_holder.add_child(_icon_disc(entry.icon, 40, _green if _explore >= 0 and not _running else _accent))
 	_about_title.text = entry.title
 	_about_note.text = entry.note
 	_about_hint.visible = true
@@ -939,10 +966,10 @@ func _on_logged(text: String) -> void:
 	if not is_instance_valid(_log): return
 	if _trace: print("      → %s" % text)
 	var line := GoStyle.row(6)
-	var mark := GoUi.icons().node(GoIconSet.CHEVRON_RIGHT, 12, GREEN)
+	var mark := GoUi.icons().node(GoIconSet.CHEVRON_RIGHT, 12, _green)
 	mark.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	line.add_child(mark)
-	var label := GoStyle.label(text, GoTheme.ROLE_CAPTION, GREEN)
+	var label := GoStyle.label(text, GoTheme.ROLE_CAPTION, _green)
 	label.add_theme_font_size_override(&"font_size", 14)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.add_child(label)
@@ -965,9 +992,14 @@ func _typing() -> bool:
 
 # 🛑 `keycode` 로만 본다 — 봇이 글을 칠 때 보내는 키는 `unicode` 만 실은 것이라 여기 걸리지 않는다.
 func _on_shortcut(event: InputEvent) -> void:
+	if _theme_popup_open or not _theme_pending.is_empty(): return
 	if event.has_meta(&"simulated"): return
 	var key := event as InputEventKey
 	if key == null or not key.pressed or key.echo: return
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus is OptionButton and focus.name == "ThemePicker" \
+			and key.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT]:
+		return
 	if key.keycode == KEY_F11:
 		_toggle_fullscreen()
 		accept_event()
@@ -1008,3 +1040,88 @@ func _on_shortcut(event: InputEvent) -> void:
 		KEY_ESCAPE:
 			_stop()
 			accept_event()
+
+
+func _refresh_palette() -> void:
+	_accent = GoUi.color(GoTheme.ACCENT)
+	_green = GoUi.color(GoTheme.SUCCESS)
+	_bg = BG if ThemePicker.active_preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.BACKGROUND)
+	_subtitle_ink = SUBTITLE_INK if ThemePicker.active_preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.SECONDARY)
+
+
+func _theme_bar() -> HBoxContainer:
+	var row := GoStyle.row(12)
+	var label := GoStyle.label("Theme", GoTheme.ROLE_CAPTION)
+	GoStyle.natural_width(label)
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(label)
+	var picker := ThemePicker.new()
+	picker.theme_selected.connect(_request_theme)
+	picker.get_popup().about_to_popup.connect(func() -> void:
+		_theme_paused_before = _bot.paused
+		_theme_popup_open = true
+		_bot.paused = true)
+	picker.get_popup().popup_hide.connect(func() -> void:
+		if not _theme_popup_open: return
+		_theme_popup_open = false
+		if _theme_pending.is_empty(): _bot.paused = _theme_paused_before)
+	row.add_child(picker)
+	return row
+
+
+func _request_theme(preset: StringName) -> void:
+	if preset == ThemePicker.active_preset or not _theme_pending.is_empty(): return
+	_theme_pending = preset
+	_theme_state = {"running": _running, "explore": _explore, "index": _index,
+		"first": _first, "last": _last, "cover": is_instance_valid(_cover),
+		"paused": _theme_paused_before if _theme_popup_open else _bot.paused}
+	if _running:
+		# Let the existing cancellation path unwind before removing any live widget.
+		_return_home = true
+		_pending_explore = -1
+		_bot.paused = false
+		_bot.skip()
+	else:
+		_apply_theme.call_deferred()
+
+
+func _apply_theme() -> void:
+	var state := _theme_state
+	ThemePicker.active_preset = _theme_pending
+	_theme_pending = &""
+	_theme_popup_open = false
+	_stage.clear()
+	_drop_cover()
+	for child in get_children():
+		if child == _bot: continue
+		remove_child(child)
+		child.queue_free()
+	_rows.clear()
+	_row_labels.clear()
+	_gutters.clear()
+	# Keep typography, metrics, speed and verification settings; replace only the look.
+	_configure_theme()
+	_build()
+	_explore = -1
+	_return_home = false
+	if int(state.explore) >= 0:
+		_open_explore(int(state.explore))
+		if state.running: _play_current()
+	elif state.running:
+		_start_range(int(state.index), int(state.last))
+		_first = int(state.first)
+	elif state.cover:
+		if int(state.index) >= _entries.size(): _show_outro()
+		else: _show_intro()
+	else:
+		_leave_explore()
+	_bot.paused = bool(state.paused) if state.running else false
+	_sync_pause()
+	_relayout()
+
+
+func _configure_theme() -> void:
+	var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: ACCENT, GoTheme.SUCCESS: GREEN,
+		GoTheme.MUTED: Color("#91a1b8"), GoTheme.SECONDARY: SUBTITLE_INK}
+	ThemePicker.configure(GoUi.config, colors)
+	_refresh_palette()

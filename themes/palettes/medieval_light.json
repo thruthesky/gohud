@@ -1,0 +1,59 @@
+{
+  "_help": "Change palette, shape and skin.dials, then run python3 tools/make_theme.py medieval_light. Headings use Cinzel; body text keeps the host font.",
+  "id": "medieval_light",
+  "title": "Medieval Parchment",
+  "from": "light",
+  "dark": false,
+  "shape": {
+    "kind": "medieval",
+    "material": 2,
+    "radius": 4,
+    "radius_small": 3,
+    "radius_large": 6,
+    "ornament_scale": 1.0,
+    "grain_alpha": 0.027,
+    "bevel_strength": 0.18,
+    "fonts": {
+      "title": "res://addons/gohud/assets/fonts/cinzel/Cinzel.ttf",
+      "subtitle": "res://addons/gohud/assets/fonts/cinzel/Cinzel.ttf"
+    }
+  },
+  "skin": {
+    "base": "medieval",
+    "name": "Medieval Light",
+    "dials": {
+      "slot_radius": 4.0,
+      "leather_grain_alpha": 0.035,
+      "ornament_scale": 1.0,
+      "bevel_strength": 0.18,
+      "slot_rivets": 1,
+      "slot_tint_lit": 0.14,
+      "slot_tint_idle": 0.02
+    }
+  },
+  "palette": {
+    "background": "#efe2c7",
+    "surface": "#fff5e1",
+    "surface_soft": "#d4bb91",
+    "surface_high": "#bca078",
+    "border": "#70502e",
+    "text": "#261b13",
+    "secondary": "#58432c",
+    "muted": "#655036",
+    "accent": "#765021",
+    "on_accent": "#fff5e0",
+    "danger": "#92302d",
+    "info": "#254f83",
+    "success": "#445923",
+    "warning": "#795017",
+    "shadow": "#24150b@0.38",
+    "track": "#473829",
+    "scrim": "#100d08@0.48",
+    "danger_vivid": "#ba3e44",
+    "info_vivid": "#427bbc",
+    "success_vivid": "#94b65b",
+    "warning_vivid": "#d1a149",
+    "accent_vivid": "#c99b45"
+  },
+  "icons": "res://addons/gohud/icons/gohud_icons_medieval.tres"
+}

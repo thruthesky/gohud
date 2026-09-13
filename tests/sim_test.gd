@@ -44,6 +44,11 @@ func _run() -> void:
 		check(activity.has(expected), "Observed callback: %s" % expected)
 	check(not GoSurface.is_any_open(), "No modal surface survives the tour")
 
+	await choose_theme(sim._cover, 1)
+	check(find_button(sim._cover, "Replay demo") != null and not sim._running,
+		"Changing themes keeps the completion screen")
+	await choose_theme(sim._cover, 0)
+
 	# Pause while a text field owns focus, then navigate from the paused state.
 	await click(find_button(sim._cover, "Replay demo"))
 	while not sim._running or sim._index >= SimActs.list().size(): await process_frame
@@ -78,6 +83,7 @@ func _run() -> void:
 	check(not GoSurface.is_any_open(), "Cancelled tour leaves no modal surfaces")
 
 	await _explore_mode()
+	await _theme_switching()
 	print("DEMO TEST RESULT: %d checks, %d failures" % [checks, failures.size()])
 	quit(0 if failures.is_empty() else 1)
 
@@ -236,3 +242,89 @@ func find_button(node: Node, text: String) -> Button:
 		var found := find_button(child, text)
 		if found != null: return found
 	return null
+
+
+func theme_picker(scope: Node) -> OptionButton:
+	return scope.find_child("ThemePicker", true, false) as OptionButton
+
+
+func choose_theme(scope: Node, index: int) -> void:
+	var picker := theme_picker(scope)
+	check(picker != null and picker.item_count == 3, "Theme dropdown lists the three families")
+	if picker == null: return
+	check(root.get_visible_rect().encloses(picker.get_global_rect()), "Theme dropdown fits the viewport")
+	await click(picker)
+	await process_frame
+	check(picker.get_popup().visible, "Click opens the theme dropdown")
+	# A mouse-opened PopupMenu starts with no keyboard-highlighted item.
+	for step in index + 1:
+		key(KEY_DOWN)
+		await process_frame
+	key(KEY_ENTER)
+	await create_timer(0.2).timeout
+
+
+func _theme_switching() -> void:
+	var presets := [GoThemePresets.DEFAULT_DARK, GoThemePresets.SCIFI_DARK, GoThemePresets.MEDIEVAL_DARK]
+	# The intro cover must offer the same dropdown as the running showcase.
+	await choose_theme(sim._cover, 2)
+	check(GoUi.config.preset == GoThemePresets.MEDIEVAL_DARK, "Intro selects medieval")
+	check(is_instance_valid(sim._cover) and not sim._running, "Theme change keeps the Start screen")
+	check(sim._stage.get_theme_stylebox(&"panel") is GoStyleBoxMedieval, "Stage uses the medieval frame")
+	check(GoUi.config.color_overrides.is_empty(), "Original cyan overrides do not leak into medieval")
+	sim._open_explore(0)
+	await create_timer(0.1).timeout
+	await choose_theme(sim, 1)
+	check(sim._explore == 0 and not sim._running, "Theme change keeps the explored widget")
+	check(sim._stage.get_theme_stylebox(&"panel") is GoStyleBoxCut, "Stage uses the sci-fi frame")
+	check(GoUi.icons().texture(GoIconSet.SWORD).resource_path.contains("/icons/default/"),
+		"Sci-fi restores the default sword icon")
+	# Closing the menu without a selection must resume playback, while switching from a
+	# paused chapter must preserve that pause and rebuild only after the old bot unwinds.
+	sim._set_speed(0.7)
+	sim._play_current()
+	await create_timer(0.05).timeout
+	await click(theme_picker(sim))
+	check(sim._bot.paused, "Opening the theme dropdown pauses the bot")
+	key(KEY_ESCAPE)
+	await create_timer(0.05).timeout
+	check(sim._running and not sim._bot.paused, "Dismissing the dropdown resumes the bot")
+	theme_picker(sim).grab_focus()
+	key(KEY_SPACE)
+	await process_frame
+	await process_frame
+	check(theme_picker(sim).get_popup().visible and sim._bot.paused,
+		"Space opens the focused theme picker without triggering a tour shortcut")
+	key(KEY_ESCAPE)
+	await create_timer(0.05).timeout
+	sim._bot.paused = true
+	await choose_theme(sim, 2)
+	check(sim._running and sim._bot.paused and sim._explore == 0,
+		"Switching a paused single play preserves chapter and pause")
+	check(sim._stage.get_theme_stylebox(&"panel") is GoStyleBoxMedieval, "Paused chapter rebuilt with medieval geometry")
+	check(not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT), "Theme change releases any bot drag")
+	sim._stop()
+	await create_timer(0.2).timeout
+	sim._start()
+	await create_timer(0.05).timeout
+	var chapter: int = sim._index
+	await choose_theme(sim, 1)
+	check(sim._running and not sim._bot.paused and sim._explore == -1 and sim._index == chapter,
+		"Switching a running tour resumes the current chapter")
+	sim._stop()
+	await create_timer(0.2).timeout
+	await choose_theme(sim._cover, 0)
+	check(GoUi.config.preset == GoThemePresets.DEFAULT_DARK, "Default can be restored")
+	check(sim._stage.get_theme_stylebox(&"panel") is StyleBoxFlat, "Default stage restores its flat frame")
+	sim.queue_free()
+	await process_frame
+	# demo.tscn is a separate static gallery, with a fixed top toolbar above its scroll.
+	var gallery: Control = load("res://demo.tscn").instantiate()
+	root.add_child(gallery)
+	await create_timer(0.1).timeout
+	for index in [1, 2, 0]:
+		await choose_theme(gallery, index)
+		check(GoUi.config.preset == presets[index], "Gallery switches to %s" % presets[index])
+		check(theme_picker(gallery).selected == index, "Gallery dropdown retains its selection after rebuilding")
+	gallery.queue_free()
+	await process_frame

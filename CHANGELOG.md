@@ -6,6 +6,42 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- Both standalone demo scenes now have a top Theme dropdown for Default, Sci-fi and Medieval.
+  The simulation pauses its bot while choosing, safely rebuilds the current chapter and preserves
+  playback speed and pause state. Start, completion and explore screens support the same selector.
+
+- **Medieval presets:** `medieval_dark` (iron and leather) and `medieval_light` (parchment),
+  with antique-gold frames, restrained corner engraving, rivets, readable red/blue/olive bars,
+  16 original engraved icons and Cinzel headings (bundled with its OFL license). Default and
+  sci-fi resources remain unchanged. Try `examples/medieval/medieval.tscn` for character,
+  inventory and quest interfaces built with the existing widgets.
+- **Custom medieval themes:** palette JSON supports `shape.kind = "medieval"`, material grain,
+  ornaments, bevels and per-role fonts. Themes can inherit other JSON themes, preserving their
+  fonts, icon set and skin dials; inheritance cycles fail explicitly. Medieval skin dials cover
+  slots, rivets and metal highlights. English and Korean docs include usage and term popups.
+- **README and website brought up to date.** Both READMEs link the homepage
+  (https://thruthesky.github.io/gohud/), describe the six presets, the JSON theme blocks, the
+  `destructive` dialog flag, `keyboard_focus`, fill tokens and the latest verification run, and drop
+  the stale "no bundled font" and "84 icons" claims. The site's overview pages gain preset tables,
+  medieval screenshots, runnable examples and a checks/releases section; theming and widget pages
+  cover medieval shapes and icons, `GoStyleBoxMedieval`, dialog options, tour steps and two-line list rows.
+
+### Fixed
+
+- **Balanced list rows.** Rows with a title and description now use roomier, equal vertical
+  padding and center the text pair alongside the icons, including when the row grows taller.
+  Wrapped descriptions retain their spacing and the whole row remains tappable.
+- Exclude the standalone `examples/usage` project and its installed addon copy from release ZIPs.
+
+## [1.0.1] - 2026-09-13
+
+### Added
+
+- **Automatic package versions.** `tools/package.sh` increments the patch version by default;
+  `--increase-minor-version` increments minor and resets patch to zero. Successful packaging
+  updates `plugin.cfg`, `GoUi.VERSION` and dated changelog entries together. Failures preserve
+  the source version; checks exercise packaging in temporary copies without creating a release.
+
 - **GitHub Pages completion.** English-first documentation lives in `docs/www`, with Korean
   counterparts, 27 documented skin dials, and a root entry for the configured `main / (root)`
   deployment. Technical terms support hover, touch and keyboard access, including Escape and

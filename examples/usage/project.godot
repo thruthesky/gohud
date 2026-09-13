@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="New Game Project"
+run/main_scene="uid://cqow47bch5ocs"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GoRuntime="*uid://dhcq8ens8q838"
 
 [display]
 
@@ -21,7 +26,11 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/my_plugin_2/plugin.cfg")
+enabled=PackedStringArray("res://addons/gohud/plugin.cfg")
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://addons/gohud/i18n/gohud.en.translation", "res://addons/gohud/i18n/gohud.ko.translation", "res://addons/gohud/i18n/gohud.ja.translation", "res://addons/gohud/i18n/gohud.zh.translation", "res://addons/gohud/i18n/gohud.es.translation", "res://addons/gohud/i18n/gohud.pt.translation", "res://addons/gohud/i18n/gohud.de.translation", "res://addons/gohud/i18n/gohud.fr.translation", "res://addons/gohud/i18n/gohud.ru.translation", "res://addons/gohud/i18n/gohud.hi.translation", "res://addons/gohud/i18n/gohud.ar.translation", "res://addons/gohud/i18n/gohud.tr.translation", "res://addons/gohud/i18n/gohud.vi.translation", "res://addons/gohud/i18n/gohud.id.translation", "res://addons/gohud/i18n/gohud.th.translation", "res://addons/gohud/i18n/gohud.it.translation", "res://addons/gohud/i18n/gohud.pl.translation", "res://addons/gohud/i18n/gohud.uk.translation", "res://addons/gohud/i18n/gohud.nl.translation", "res://addons/gohud/i18n/gohud.zh_TW.translation", "res://addons/gohud/i18n/gohud.he.translation")
 
 [physics]
 

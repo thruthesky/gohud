@@ -31,7 +31,7 @@ ADDON = mt.ADDON
 THEMES = os.path.join(ADDON, "themes")
 PRESETS = os.path.join(THEMES, "presets")
 PALETTES = mt.PALETTES_DIR
-SKINS = {"default": "gohud_skin_default.tres", "scifi": "gohud_skin_scifi.tres"}
+SKINS = mt.SKIN_SCRIPTS
 
 
 def color_text(c):
@@ -43,13 +43,16 @@ def color_text(c):
 def scaffold(tid, base, title, dark, skin, shape_kind, new_skin=False):
     if not re.fullmatch(r"[a-z][a-z0-9_]*", tid):
         raise SystemExit("🛑 id 는 소문자로 시작하고 소문자·숫자·밑줄만 쓴다: %r" % tid)
-    if tid in mt.BUILTIN_THEMES:
-        raise SystemExit("🛑 %r 은 내장 테마 이름이다" % tid)
-    if base not in mt.BUILTIN_THEMES:
-        raise SystemExit("🛑 --from 은 %s 중 하나" % ", ".join(mt.BUILTIN_THEMES))
-    pal, shape = mt.BUILTIN_THEMES[base]
-    if dark is None: dark = base in ("dark", "scifi_dark")
-    if skin is None: skin = "scifi" if base.startswith("scifi") else "default"
+    registry = mt.all_themes()
+    if tid in registry:
+        raise SystemExit("🛑 %r 테마는 이미 있다" % tid)
+    if base not in registry:
+        raise SystemExit("🛑 --from 은 %s 중 하나" % ", ".join(registry))
+    pal, shape, meta = registry[base]
+    if dark is None: dark = meta["dark"] if meta else base in ("dark", "scifi_dark")
+    if skin is None:
+        inherited = meta["skin"] if meta else "scifi" if base.startswith("scifi") else "default"
+        skin = inherited.get("base", "default") if isinstance(inherited, dict) else inherited
     if shape_kind is None: shape_kind = shape["kind"]
 
     os.makedirs(PALETTES, exist_ok=True)
@@ -68,34 +71,43 @@ def scaffold(tid, base, title, dark, skin, shape_kind, new_skin=False):
         "dark": bool(dark),
         "from": base,
         "skin": {
-            "_help": "base: default | scifi. dials 는 스킨 코드를 안 만지고 바꾸는 숫자 — 값을 지우면 기본값이다. "
+            "_help": "base: default | scifi | medieval. dials 는 스킨 코드를 안 만지고 바꾸는 숫자 — 값을 지우면 부모 값이다. "
                      "그림 자체를 바꾸려면 --new-skin 으로 GoSkin 을 상속한 스크립트 껍데기를 만든다.",
             "base": skin,
-            "dials": {**mt.skin_dials()["default"], **(mt.skin_dials()["scifi"] if skin == "scifi" else {})},
+            "dials": {**mt.skin_dials()["default"], **mt.skin_dials()[skin],
+                      **(meta["skin"].get("dials", {}) if meta and isinstance(meta["skin"], dict)
+                         and meta["skin"].get("base") == skin else {})},
         },
         "shape": {
-            "_help": "kind: flat(둥근 모서리) | cut(사선 모서리). 아래 숫자를 더하면 CONST 를 덮어쓴다 — "
+            "_help": "kind: flat(둥근 모서리) | cut(사선 모서리) | medieval(금속 프레임). 아래 숫자를 더하면 CONST 를 덮어쓴다 — "
                      "radius, radius_small, radius_large, gap, gap_small, gap_large, padding, button_height, "
                      "button_padding[4]. cut 전용: cut_ratio, cut_max, corners(diagonal|all), glow, edge.",
             "kind": shape_kind,
-            **{k: v for k, v in mt.SHAPES[shape_kind].items() if k not in ("kind", "controls")},
+            **{k: v for k, v in (shape if shape_kind == shape["kind"] else mt.SHAPES[shape_kind]).items()
+               if k not in ("kind", "controls")},
         },
         "palette": {key: color_text(pal[key]) for key in pal},
     }
+    if meta and meta.get("icons"):
+        spec["icons"] = meta["icons"]
     with open(palette_path, "w", encoding="utf-8") as fh:
         json.dump(spec, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
 
     with open(preset_path, "w", encoding="utf-8") as fh:
-        fh.write('[gd_resource type="Resource" script_class="GoThemePreset" load_steps=4 format=3]\n\n')
+        fh.write('[gd_resource type="Resource" script_class="GoThemePreset" load_steps=%d format=3]\n\n' % (5 if spec.get("icons") else 4))
         fh.write('[ext_resource type="Script" path="res://addons/gohud/core/go_theme_preset.gd" id="script"]\n')
         fh.write('[ext_resource type="Theme" path="res://addons/gohud/themes/gohud_%s.tres" id="theme"]\n' % tid)
         # 🔑 스킨은 이 테마 전용 리소스(`gohud_skin_<id>.tres`)를 가리킨다 — `make_theme.py` 가 JSON 의
         #    `skin.dials` 로 그 파일을 만든다. 그래서 다이얼을 고치고 생성기만 다시 돌리면 된다.
         fh.write('[ext_resource type="Resource" path="res://addons/gohud/themes/skins/gohud_skin_%s.tres" id="skin"]\n\n' % tid)
+        if spec.get("icons"):
+            fh.write('[ext_resource type="Resource" path="%s" id="icons"]\n\n' % spec["icons"])
         fh.write('[resource]\nscript = ExtResource("script")\nid = &"%s"\ntitle = "%s"\ndark = %s\n'
                  'theme = ExtResource("theme")\nskin = ExtResource("skin")\n'
                  % (tid, spec["title"].replace('"', '\\"'), "true" if dark else "false"))
+        if spec.get("icons"):
+            fh.write('icons = ExtResource("icons")\n')
 
     if new_skin:
         write_skin_script(tid, skin)
@@ -107,7 +119,7 @@ def scaffold(tid, base, title, dark, skin, shape_kind, new_skin=False):
 
 def write_skin_script(tid, base):
     """`GoSkin` 을 상속한 **스크립트 껍데기** — 그림 자체(조이스틱·링·배지)를 바꿀 때만 필요하다."""
-    parent = "GoSkinSciFi" if base == "scifi" else "GoSkin"
+    parent = mt.SKIN_SCRIPTS[base][0]
     path = os.path.join(THEMES, "skins", "go_skin_%s.gd" % tid)
     if os.path.exists(path):
         raise SystemExit("🛑 이미 있다: %s" % os.path.relpath(path, ADDON))
@@ -160,7 +172,7 @@ def remove(tid):
 def main():
     parser = argparse.ArgumentParser(description="gohud 테마 스캐폴딩")
     parser.add_argument("id", nargs="?", help="새 테마 이름(소문자·숫자·밑줄)")
-    parser.add_argument("--from", dest="base", default="dark", help="물려받을 내장 테마: dark | light | scifi_dark | scifi_light")
+    parser.add_argument("--from", dest="base", default="dark", help="물려받을 테마: dark | light | scifi_dark | medieval_dark | ...")
     parser.add_argument("--title", default="", help="고르개에 보일 이름")
     parser.add_argument("--dark", dest="dark", action="store_true", default=None)
     parser.add_argument("--light", dest="dark", action="store_false")

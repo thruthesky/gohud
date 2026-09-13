@@ -56,6 +56,9 @@ step "④-c 테마 스캐폴딩"
 # 🛑 "테마를 더 들인다" 는 약속 — 파일 하나로 테마가 생기고 대비 검사를 통과하는지. 빠르니 늘 돌린다.
 bash "$ADDON/tools/check_scaffold.sh" || FAILED=1
 
+step "⑤ 패키징 버전 갱신 — 임시 사본에서 검사"
+python3 "$ADDON/tools/check_package.py" || FAILED=1
+
 # 🛑 **검사가 무엇을 잡는지**는 검사 개수로 알 수 없다. 느리므로(변이마다 전체 검사) 기본은 끄고,
 #    검사를 더하거나 위젯 로직을 손댄 반복에서 켠다.
 if [ -n "${GOHUD_CHECK_MUTATIONS:-}" ]; then
@@ -76,14 +79,7 @@ if [ -n "${GOHUD_CHECK_SITE_SHOTS:-}" ]; then
   bash "$ADDON/tools/site_shots.sh" "${GOHUD_SITE_SHOTS_DIR:-/tmp/gohud_site_shots}" 2>&1 | tail -1 || FAILED=1
 fi
 
-# 🛑 패키징 게이트는 **배포할 때가 되어서야** 걸린다 — 그때는 이미 늦다. 느리므로(ZIP 생성)
-#    기본으로 돌리지는 않되, 파일을 옮기거나 새 폴더를 더한 반복에서는 켜서 본다.
-if [ -n "${GOHUD_CHECK_PACKAGE:-}" ]; then
-  step "⑤ 스토어 패키징"
-  bash "$ADDON/tools/package.sh" > /tmp/gohud_package.log 2>&1 \
-    && tail -2 /tmp/gohud_package.log \
-    || { echo "🛑 패키징 실패:"; tail -12 /tmp/gohud_package.log; FAILED=1; }
-fi
+# 패키징 검사는 위에서 항상 실행한다. 예전 GOHUD_CHECK_PACKAGE 설정은 더 이상 필요 없다.
 
 printf "\n"
 if [ "$FAILED" -eq 0 ]; then echo "✅ 전부 통과"; else echo "🛑 실패한 검사가 있다"; fi

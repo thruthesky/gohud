@@ -40,6 +40,11 @@ SOURCE_DIRS = ["core", "widgets", "services", "themes/skins"]
 DOCS = "https://docs.godotengine.org/en/stable/classes/class_%s.html"
 
 MANUAL = {
+    "양피지": {'k': '디자인', 'd': '중세 필사본을 떠올리는 밝은 문서 표면. 여기서는 따뜻한 팔레트와 은은한 질감으로 표현한다.', 'u': None},
+    "리벳": {'k': '디자인', 'd': '철판을 고정하는 작은 금속 못 머리. 중세 프레임에서는 모서리 장식으로 표현한다.', 'u': None},
+    "베벨": {'k': '디자인', 'd': '빛과 그림자로 경사진 가장자리를 표현해 프레임에 입체감을 주는 방식.', 'u': None},
+    "각인": {'k': '디자인', 'd': '재료 표면에 새긴 선. 중세 아이콘에서는 실루엣과 내부 선으로 표현한다.', 'u': None},
+    "Cinzel": {'k': '디자인', 'd': '함께 제공하는 제목용 세리프 글꼴. 본문은 기존 글꼴을 유지하며 SIL Open Font License를 포함한다.', 'u': None},
     # ── 엔진 클래스 ────────────────────────────────────────────────
     "Theme": {"k": "리소스", "d": "색·글꼴·여백·StyleBox 를 한 장에 모아 둔 리소스. 어떤 Control 에 꽂으면 그 아래 자식까지 전부 그 규격으로 그려진다.", "u": DOCS % "theme"},
     "StyleBox": {"k": "리소스", "d": "Control 의 배경 한 겹을 그리는 리소스. 버튼의 판, 카드의 테두리가 전부 이것이다.", "u": DOCS % "stylebox"},
@@ -99,6 +104,11 @@ MANUAL = {
 #    한국어 설명이 뜨는 영문 페이지보다 용어가 없는 편이 낫다.
 
 MANUAL_EN = {
+    "parchment": {'k': 'design', 'd': 'A warm, pale writing surface inspired by historical manuscripts. Here it is a palette and subtle grain, keeping the text readable.', 'u': None},
+    "rivet": {'k': 'design', 'd': 'A small metal fastening head. The medieval frame uses these as restrained corner decorations.', 'u': None},
+    "bevel": {'k': 'design', 'd': 'A sloped edge suggested by a highlight and shadow, making the frame look raised.', 'u': None},
+    "engraving": {'k': 'design', 'd': 'Fine lines cut into a material; the medieval icons suggest this with silhouettes and etched details.', 'u': None},
+    "Cinzel": {'k': 'design', 'd': 'The bundled serif heading font. Body text retains the host font; the font includes its SIL Open Font License.', 'u': None},
     "Theme": {"k": "resource", "d": "One resource holding colours, fonts, spacing and StyleBoxes. Assign it to a Control and everything below it is drawn to that spec.", "u": DOCS % "theme"},
     "StyleBox": {"k": "resource", "d": "Draws one layer of background for a Control — a button's panel, a card's border.", "u": DOCS % "stylebox"},
     "StyleBoxFlat": {"k": "resource", "d": "The engine's built-in StyleBox: solid fill, border, **rounded** corners, shadow. Rounded is the only corner it has — you cannot cut one diagonally.", "u": DOCS % "styleboxflat"},
@@ -142,13 +152,15 @@ MANUAL_EN = {
 
 # gohud 클래스의 영문 한 줄. 🛑 여기 없는 클래스는 영문 사전에서 빠진다.
 CLASS_EN = {
+    "GoSkinMedieval": "Iron-bound leather and parchment surfaces, restrained rivets, engraved slots and a compass joystick. Other behaviour comes from GoSkin.",
+    "GoStyleBoxMedieval": "A scalable frame with metal relief, rivets, corner engraving and subtle material grain. Decorations stay in the gutters around content.",
     "GoUi": "The single entry point. Config, theme, skin, icons and strings all come from here, and every function is static — no autoload required.",
     "GoConfig": "One settings resource: theme, icons, sizes, surface behaviour, feedback, localization and accessibility. Every field has a working default.",
     "GoTheme": "The names of the theme tokens and how to look them up. Constants instead of strings, so a typo fails to compile rather than returning black.",
     "GoSkin": "The shapes a Theme cannot reach — the joystick, quick-slot faces, the coach-mark ring, chips, dividers. Subclass it and override only what you want to change.",
     "GoSkinSciFi": "The sci-fi shapes: angular panels, a hexagonal joystick, diamond knobs, targeting brackets instead of rings.",
     "GoThemePreset": "A theme, a skin and an icon set bundled as the unit you pick.",
-    "GoThemePresets": "The registry mapping preset names to resources, including the four gohud ships.",
+    "GoThemePresets": "The registry mapping preset names to resources, including the six gohud ships.",
     "GoIconSet": "A swappable icon set. Widgets ask for icons by name, so a set can be a texture pack, an icon font, or a partial override of another set.",
     "GoStyleBoxCut": "A panel with corners cut diagonally, an optional accent edge on one side, and an outer glow — shapes StyleBoxFlat cannot make.",
     "GoStyleBoxBracket": "Marks only the four corners instead of enclosing the content — the targeting bracket of a tactical display.",
@@ -302,6 +314,11 @@ def scan_presets(lang="ko"):
 #    알 수 있었다(I-72). 소스 주석도 같은 규칙이고, 연속 다이얼이 한 주석을 나눠 쓰면 표가 rowspan 으로 묶는다.
 
 DIALS_EN = {
+    "slot_radius": "Corner radius (dp) of the medieval quick-slot frame.",
+    "leather_grain_alpha": "Opacity of the subtle leather marks inside quick slots.",
+    "ornament_scale": "Scale of the metal decorations at quick-slot corners. Menu frames use shape.ornament_scale.",
+    "bevel_strength": "Strength of the metal highlight along quick-slot edges.",
+    "slot_rivets": "Show small metal rivets on quick slots: 0 hides them, 1 shows them.",
     "chip_fill_alpha": "Fill opacity of a chip's panel.",
     "chip_edge_alpha": "Edge opacity of a chip's panel.",
     "alert_tint": "How far an alert box's panel is tinted toward its status colour.",
@@ -332,6 +349,7 @@ DIALS_EN = {
 }
 
 SKIN_TITLES = {
+    "medieval": {"ko": "중세 스킨", "en": "Medieval skin"},
     "default": {"ko": "기본 스킨", "en": "Default skin"},
     "scifi": {"ko": "sci-fi 스킨", "en": "Sci-fi skin"},
 }

@@ -28,6 +28,16 @@ The app waits on its Start screen and offers two ways in:
   running folds the tour and opens that widget. On narrow windows the sidebar becomes a
   **Widgets** menu in the top bar.
 
+The **Theme** dropdown at the top of both `demo.tscn` and `sim.tscn` selects **Default theme**,
+**Sci-fi theme**, or **Medieval theme** (the dark preset of each family). It is also available on
+the simulation's Start and completion screens. Colours, frames and icons change together;
+the Themes & icons example compares the selected family's dark and light variants.
+
+Changing themes rebuilds the displayed controls, resetting their sample values. Explore stays
+on the same widget. A playing tour restarts its current chapter with the new look, keeping speed
+and pause state. Opening the dropdown temporarily pauses the bot; dismissing it resumes its
+previous state. The choice lasts for the current run and does not edit project settings.
+
 All display text and built-in widget actions use English. The chapters cover HUD bars and
 slots, button styles, inputs, selection and menus, lists and accordions, data display,
 notices, dialogs and sheets, prompt cards, all three joystick modes, coach marks, scrolling
@@ -80,7 +90,7 @@ It is there to answer two questions at a glance:
 
 1. **Is the translation attached?** A raw key (`gohud_confirm`) means the `.translation`
    resource never loaded.
-2. **Does the glyph draw?** gohud ships no font, so Thai, Arabic, Hebrew, Devanagari and CJK
+2. **Does the glyph draw?** the bundled medieval heading font does not cover every script, so Thai, Arabic, Hebrew, Devanagari and CJK
    are drawn by *your* theme font — or by the OS fallback when you have none. A missing glyph
    shows as an empty box and raises no error, which is exactly why the card exists.
 

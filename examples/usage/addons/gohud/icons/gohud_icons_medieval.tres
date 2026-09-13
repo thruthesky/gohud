@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
+[ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/bag.svg" id="bag"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/book.svg" id="book"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/box.svg" id="box"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/coin.svg" id="coin"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/crown.svg" id="crown"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/flag.svg" id="flag"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/heart.svg" id="heart"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/key.svg" id="key"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/map.svg" id="map"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/potion.svg" id="potion"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/scroll.svg" id="scroll"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/shield.svg" id="shield"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/star.svg" id="star"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/sword.svg" id="sword"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/user.svg" id="user"]
+
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/medieval/seal.svg" id="seal"]
+
+[resource]
+script = ExtResource("script")
+set_name = "Medieval engravings"
+attribution = "Original gohud artwork, MIT license. Engraved silhouettes; no third-party path data."
+fallback = ExtResource("fallback")
+textures = {
+&"seal": ExtResource("seal"),
+&"bag": ExtResource("bag"),
+&"book": ExtResource("book"),
+&"box": ExtResource("box"),
+&"coin": ExtResource("coin"),
+&"crown": ExtResource("crown"),
+&"flag": ExtResource("flag"),
+&"heart": ExtResource("heart"),
+&"key": ExtResource("key"),
+&"map": ExtResource("map"),
+&"potion": ExtResource("potion"),
+&"scroll": ExtResource("scroll"),
+&"shield": ExtResource("shield"),
+&"star": ExtResource("star"),
+&"sword": ExtResource("sword"),
+&"user": ExtResource("user")
+}

@@ -21,7 +21,10 @@
       <a href="theming.html">Theming</a>
       <a href="widgets.html">Widgets</a>
       <a href="#surfaces">Windows</a>
+      <a href="#messages">Messages</a>
       <a href="#hud">HUD</a>
+      <a href="#factory">GoStyle</a>
+      <a href="#hooks">Hooks</a>
       <a href="ko/widgets.html">한국어 ↗</a>
     </nav>
   </div>
@@ -74,6 +77,13 @@ sheet.footer().visible = true</code></pre>
   <h3><code>GoDialogs</code> — confirmations you <code>await</code></h3>
   <pre><code>if await dialogs.confirm("Delete save", "This cannot be undone."):
     delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — everything after the body is
+    optional, and <code>alert()</code> works the same way with a single button. Set <code>destructive</code> for
+    something that cannot be undone: the confirm button becomes the filled <code>GoStyle.Tone.DANGER_SOLID</code>
+    button. On a light theme a tinted danger label has to darken until it reads as black text; the filled button
+    keeps white text on red. The tone is re-applied on every call because one window is reused, and a second
+    <code>confirm()</code> while one is open returns <code>false</code> at once. <code>confirm_key()</code> takes
+    translation keys.</p>
 
   <h3><code>GoForm</code> — a width-capped form</h3>
   <div class="note warn">
@@ -104,6 +114,12 @@ sheet.footer().visible = true</code></pre>
   <h3><code>GoCoachMark</code> — guided tour</h3>
   <p>Points at real controls one at a time. Only the card takes input, so <b>pressing the highlighted
     control itself advances the tour</b> — "press here" becomes an action rather than a sentence.</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Press to open the full map."},
+])</code></pre>
+  <p><code>title</code> and <code>body</code> may be translation keys or plain text. A step whose target has
+    disappeared is skipped.</p>
 </section>
 
 <section id="hud">
@@ -235,6 +251,9 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>touch_peers</code>.
   </div>
 
+  <p><code>keyboard_focus</code> is off by default, so a row of eight slots does not sit between a keyboard user and
+    every settings control in the Tab order. Turn it on when a keyboard or gamepad is the only input.</p>
+
   <h3><code>GoJoystick</code> — virtual stick</h3>
   <table>
     <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
@@ -266,10 +285,11 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <tbody>
       <tr><td>Structure</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
       <tr><td>Text</td><td><code>label</code> <code>label_key</code> <code>section</code> <code>typography</code></td></tr>
-      <tr><td>Buttons</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>apply_icon</code></td></tr>
-      <tr><td>Input</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>select</code> <code>radio_group</code> <code>segmented</code></td></tr>
-      <tr><td>Display</td><td><code>card</code> <code>chip</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>empty_state</code></td></tr>
+      <tr><td>Buttons</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code></td></tr>
+      <tr><td>Input</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code></td></tr>
+      <tr><td>Display</td><td><code>card</code> <code>chip</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
       <tr><td>Surface pieces</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code></td></tr>
+      <tr><td>Helpers</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code></td></tr>
     </tbody>
   </table>
 
@@ -278,6 +298,22 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     adjust <code>bg_color</code> or <code>corner_radius</code>. Use <code>surface()</code> when a custom
     shape has to survive.
   </div>
+
+  <h3>List rows with a description</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Oathkeeper", _inspect, Color.TRANSPARENT,
+    "Longsword  /  Attack 42", false)</code></pre>
+  <p>A row with a second line gets <b>equal top and bottom padding</b>, roomier than a single-line row, and the
+    title/description pair stays <b>vertically centred</b> beside the icon — also when a container stretches the row
+    taller, and after the description wraps onto several lines. The whole row remains one tap target.</p>
+  <figure>
+    <img src="img/medieval-light.png" alt="medieval_light example — two-line list rows, quick slots and bars" loading="lazy">
+    <figcaption>Two-line rows, slots and bars in the medieval example — the same factory calls under <code>medieval_light</code>.</figcaption>
+  </figure>
+
+  <h3>Flowing rows</h3>
+  <p>Put controls into <code>wrap_row</code> at their <b>natural width</b>. With wrapping left on, a button's minimum
+    width drops to almost nothing and the row sizes its cell by it — the label collapses to one character per line.
+    The factory prevents this for you.</p>
 
   <h3>Never leave an empty list empty</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet"))</code></pre>

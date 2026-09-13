@@ -14,27 +14,25 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="gohud demo"
+config/name="Gohud Demo App"
 run/main_scene="res://sim.tscn"
-config/features=PackedStringArray("4.6", "Mobile")
+config/features=PackedStringArray("4.7", "Mobile")
 
 [display]
 
 window/size/viewport_width=1280
-window/size/viewport_width.movie=1920
 window/size/viewport_height=800
-window/size/viewport_height.movie=1080
 window/size/window_width_override=2560
 window/size/window_height_override=1600
+window/stretch/mode="canvas_items"
+window/size/viewport_width.movie=1920
+window/size/viewport_height.movie=1080
 window/size/window_width_override.movie=1440
 window/size/window_height_override.movie=810
-window/stretch/mode="canvas_items"
 window/stretch/mode.movie="viewport"
-window/subwindows/embed_subwindows=true
 
 [internationalization]
 
-locale/fallback="en"
 locale/test="en"
 
 [rendering]
