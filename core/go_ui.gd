@@ -23,8 +23,30 @@ extends RefCounted
 ## 이 애드온의 버전. `CHANGELOG.md` 와 같이 움직인다.
 const VERSION := "1.0.0"
 
+## 이 애드온이 요구하는 **가장 낮은 엔진 버전**. `[major, minor]`.
+##
+## 🛑 이보다 낮은 엔진에서는 켜지지 않는다 — 켜지지 않는 정도가 아니라 **파싱 단계에서 죽는다.**
+##    `FoldableContainer`·`DPITexture`·`mouse_behavior_recursive` 처럼 그 버전에 없는 이름을 쓰기 때문이다.
+##    그래서 실행 중에 확인하는 것은 의미가 없고, 이 상수는 **검사와 문서가 한 곳을 보게** 하려고 둔다.
+const MIN_ENGINE := [4, 6]
+
+
+## 지금 엔진이 이 애드온을 돌릴 수 있는가.
+static func engine_supported() -> bool:
+	var info := Engine.get_version_info()
+	if int(info.major) != int(MIN_ENGINE[0]): return int(info.major) > int(MIN_ENGINE[0])
+	return int(info.minor) >= int(MIN_ENGINE[1])
+
+
+## `"4.6"` 처럼 읽기 좋은 최소 버전 문구.
+static func min_engine_string() -> String:
+	return "%d.%d" % [MIN_ENGINE[0], MIN_ENGINE[1]]
+
 ## 설정 리소스의 경로를 담는 프로젝트 설정 키. 플러그인이 이 칸을 만든다.
 const CONFIG_SETTING := "gohud/config/resource"
+
+## 생김새 묶음 이름을 담는 프로젝트 설정 키. 플러그인이 이 칸을 만든다.
+const PRESET_SETTING := "gohud/theme/preset"
 
 const DEFAULT_THEME: Theme = preload("res://addons/gohud/themes/gohud_dark.tres")
 const LIGHT_THEME: Theme = preload("res://addons/gohud/themes/gohud_light.tres")
@@ -33,7 +55,10 @@ const BUILTIN_TRANSLATIONS := "res://addons/gohud/i18n/gohud.csv"
 
 ## 기본 번역이 담고 있는 언어. 🛑 CSV 에 열을 더했으면 **여기도 더한다** — 없는 언어는
 ##    조각 파일이 만들어져도 등록되지 않아 조용히 영어로 나온다.
-const LOCALES := ["en", "ko", "ja", "zh", "es", "pt", "de", "fr", "ru", "hi", "ar"]
+const LOCALES := [
+	"en", "ko", "ja", "zh", "es", "pt", "de", "fr", "ru", "hi", "ar",
+	"tr", "vi", "id", "th", "it", "pl", "uk", "nl", "zh_TW", "he",
+]
 
 ## 설정이 바뀌었다 — 이미 떠 있는 위젯이 다시 그려야 한다.
 ## 🛑 `static signal` 은 Godot 4.x 에 없다. 그래서 콜백 목록을 직접 들고 있는다.
@@ -43,6 +68,7 @@ static var _resolved := false
 static var _translations_loaded := false
 static var _mobile_type := false
 static var _base_font_sizes := {}
+static var _default_skin: GoSkin
 
 
 ## 지금 설정. 처음 읽을 때 프로젝트 설정에 적힌 경로를 자동으로 불러온다.
@@ -104,10 +130,51 @@ static func _notify() -> void:
 
 # ── 테마·아이콘 ────────────────────────────────────────────────────────
 
-## 지금 쓰는 Theme. 설정이 비어 있으면 gohud 기본(어두운) 테마.
+## 지금 고른 생김새 묶음. 이름이 비었거나 아직 임포트되지 않았으면 `null`.
+## 설정 리소스가 비어 있으면 **프로젝트 설정**(`gohud/theme/preset`)을 본다 — 코드 없이 에디터에서 고를 수 있다.
+static func preset() -> GoThemePreset:
+	var id := config.preset
+	if id.is_empty() and ProjectSettings.has_setting(PRESET_SETTING):
+		id = StringName(str(ProjectSettings.get_setting(PRESET_SETTING, "")))
+	return GoThemePresets.find(id)
+
+
+## 🎁 생김새를 **통째로** 바꾼다 — 테마·스킨·아이콘이 함께 움직인다.
+##
+## ```gdscript
+## GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+## GoUi.use_preset(my_preset)                    # GoThemePreset 을 직접 줘도 된다
+## ```
+##
+## 🛑 직접 꽂아 둔 `config.theme`·`skin`·`icons` 를 **비운다** — 그래야 고른 묶음이 그대로 보인다.
+##    한 칸만 자기 것으로 두고 싶으면 이 함수 뒤에 그 칸을 다시 채운다.
+static func use_preset(value: Variant) -> void:
+	var chosen: GoThemePreset = null
+	var id: StringName = &""
+	if value is GoThemePreset:
+		chosen = value
+		id = chosen.id
+		GoThemePresets.register(chosen)
+	elif value is StringName or value is String:
+		id = StringName(value)
+	var settings := config
+	settings.theme = null
+	settings.skin = null
+	settings.icons = null
+	settings.preset = id
+	# 🛑 글자 크기 기준을 버린다 — 테마가 바뀌면 예전 테마의 크기를 되돌려 놓을 수 없다.
+	_base_font_sizes.clear()
+	_mobile_type = false
+	_notify()
+
+
+## 지금 쓰는 Theme. 설정이 비어 있으면 고른 묶음의 테마, 그것도 없으면 gohud 기본(어두운) 테마.
 static func theme() -> Theme:
 	var value := config.theme
-	return value if value != null else DEFAULT_THEME
+	if value != null: return value
+	var chosen := preset()
+	if chosen != null and chosen.theme != null: return chosen.theme
+	return DEFAULT_THEME
 
 
 ## 토큰을 채워 줄 예비 테마. `token_fallback` 이 꺼져 있으면 `null`.
@@ -115,17 +182,47 @@ static func _fallback_theme() -> Theme:
 	return DEFAULT_THEME if config.token_fallback else null
 
 
-## 지금 쓰는 아이콘 세트. 설정이 비어 있으면 gohud 기본 세트.
+## 지금 쓰는 **스킨** — 코드가 직접 그리는 자리(조이스틱·퀵슬롯·코치마크·칩)의 모양.
+## 설정이 비어 있으면 고른 묶음의 스킨, 그것도 없으면 gohud 기본 모양.
+static func skin() -> GoSkin:
+	var value := config.skin
+	if value != null: return value
+	var chosen := preset()
+	if chosen != null and chosen.skin != null: return chosen.skin
+	# 🛑 상수로 두지 않는다 — `GoSkin` 은 `GoUi` 를 부르고 `GoConfig` 는 `GoSkin` 을 담는다.
+	#    상수 초기화 시점에 만들면 그 고리가 로드 순서를 물고 늘어진다. 처음 쓸 때 만든다.
+	if _default_skin == null: _default_skin = GoSkin.new()
+	return _default_skin
+
+
+## 지금 쓰는 아이콘 세트. 설정이 비어 있으면 고른 묶음의 세트, 그것도 없으면 gohud 기본 세트.
 static func icons() -> GoIconSet:
 	var value := config.icons
-	return value if value != null else DEFAULT_ICONS
+	if value != null: return value
+	var chosen := preset()
+	if chosen != null and chosen.icons != null: return chosen.icons
+	return DEFAULT_ICONS
 
 
 ## 색 하나. `GoConfig.color_overrides` 가 테마보다 우선한다.
+##
+## 🔑 `*_fill`(막대 채움처럼 **넓은 면적**에 쓰는 색)은 **선택 토큰**이다 — 테마에 없으면 `_fill` 을
+##    뗀 같은 이름으로 떨어진다. 덕분에 이 토큰을 모르는 테마를 꽂아도 자홍색이 뜨지 않는다.
 static func color(key: StringName) -> Color:
 	var overrides := config.color_overrides
 	if overrides.has(key): return overrides[key]
+	var name := String(key)
+	if name.ends_with("_fill") and not _has_color(key):
+		return color(StringName(name.trim_suffix("_fill")))
 	return GoTheme.color_of(theme(), key, _fallback_theme())
+
+
+## 이 색 토큰이 지금 테마(또는 예비 테마)에 **실제로 정의되어 있는가**.
+static func _has_color(key: StringName) -> bool:
+	var current := theme()
+	if current != null and current.has_color(key, GoTheme.TYPE): return true
+	var backup := _fallback_theme()
+	return backup != null and backup.has_color(key, GoTheme.TYPE)
 
 
 ## 치수 하나(dp). `GoConfig.metric_overrides` 가 테마보다 우선한다.
@@ -238,4 +335,6 @@ static func reset() -> void:
 	_resolved = false
 	_mobile_type = false
 	_base_font_sizes.clear()
+	_default_skin = null
+	GoThemePresets.reset()
 	_watchers.clear()

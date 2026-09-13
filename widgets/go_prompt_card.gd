@@ -96,14 +96,14 @@ func _init() -> void:
 
 func _ready() -> void:
 	theme = GoUi.theme()
-	add_theme_stylebox_override(&"panel", GoStyle.floating(GoTheme.BOX_HUD, _accent))
+	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, _accent))
 	set_title_lines(2)
 
 
 ## 카드 테두리의 의미색. 투명이면 기본 표면.
 func set_accent(accent: Color) -> void:
 	_accent = accent
-	add_theme_stylebox_override(&"panel", GoStyle.floating(GoTheme.BOX_HUD, accent))
+	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, accent))
 	if _boxed_icon: _restyle_icon()
 
 
@@ -184,7 +184,7 @@ func _restyle_icon() -> void:
 		panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		icon_slot.add_child(panel)
 		icon_slot.move_child(panel, 0)
-	panel.add_theme_stylebox_override(&"panel", GoStyle.disc(diameter, accent))
+	panel.add_theme_stylebox_override(&"panel", GoUi.skin().disc_box(diameter, accent))
 
 
 func set_closable(on: bool) -> void:

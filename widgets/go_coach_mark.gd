@@ -36,6 +36,10 @@ signal step_changed(index: int)
 
 ## 가리키는 링·화살표의 색. 투명이면 테마의 `accent`.
 @export var ink := Color.TRANSPARENT
+## 🔑 **카드가 덮으면 안 되는 것들.** 붙박이 HUD(`GoHudAnchor` 의 `reserve_space` 칸)는 알아서 피하지만,
+## 화면 머리띠·툴바처럼 앵커가 아닌 것은 여기 넣어 준다 — 카드가 그 위에 얹히면 조작을 막는다
+## (2026-09-13 데모 실측: 카드가 헤더의 `→ ×` 를 덮었다).
+@export var keep_clear: Array[Control] = []
 
 var card: PanelContainer
 var title_label: Label
@@ -49,7 +53,7 @@ var step := 0
 var _target: Control
 var _target_action := Callable()
 var _target_signal := &""
-var _ring: StyleBoxFlat
+var _ring: StyleBox
 var _phase := 0.0
 var _holds_back := false
 var _fade: Tween
@@ -69,12 +73,11 @@ func _build() -> void:
 	theme = GoUi.theme()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var accent := _accent()
-	_ring = GoStyle.disc(48, accent, 0.0, 1.0)
-	_ring.set_border_width_all(2)
+	_ring = GoUi.skin().coach_ring_box(accent)
 
 	card = PanelContainer.new()
 	card.name = "GuideCard"
-	var face := GoStyle.floating(GoTheme.BOX_CARD, accent)
+	var face := GoUi.skin().floating_box(GoTheme.BOX_CARD, accent)
 	face.set_content_margin_all(0)
 	card.add_theme_stylebox_override(&"panel", face)
 	add_child(card)
@@ -131,9 +134,8 @@ func _ready() -> void:
 
 func _apply_accent() -> void:
 	var accent := _accent()
-	_ring = GoStyle.disc(48, accent, 0.0, 1.0)
-	_ring.set_border_width_all(2)
-	var face := GoStyle.floating(GoTheme.BOX_CARD, accent)
+	_ring = GoUi.skin().coach_ring_box(accent)
+	var face := GoUi.skin().floating_box(GoTheme.BOX_CARD, accent)
 	face.set_content_margin_all(0)
 	card.add_theme_stylebox_override(&"panel", face)
 	progress_label.add_theme_color_override(&"font_color", accent)
@@ -186,8 +188,10 @@ func _show_step() -> void:
 		_target.connect(_target_signal, _target_action)
 	title_label.text = str(data.get("title", ""))
 	body_label.text = str(data.get("body", ""))
-	progress_label.text = "%d / %d" % [step + 1, steps.size()]
+	progress_label.text = GoUi.text(&"coach_progress").format({"step": step + 1, "total": steps.size()})
 	next_button.text = GoUi.text_key(&"done") if step == steps.size() - 1 else GoUi.text_key(&"next")
+	# 🛑 글자를 바꿨으면 줄바꿈도 다시 정한다 — 안 그러면 `Done` 이 `Don`/`e` 로 갈라진다(실측).
+	GoStyle.fit_words(next_button)
 	_fade = GoStyle.fade(card, _fade, true)
 	_layout()
 	step_changed.emit(step)
@@ -256,13 +260,53 @@ func _layout() -> void:
 	if target.get_center().y > area.get_center().y: y = target.position.y - gap - card.size.y
 	if landscape:
 		x = target.position.x - gap - width if target.get_center().x > area.get_center().x else target.end.x + gap
-		y = area.position.y if target.get_center().y < area.get_center().y else area.end.y - card.size.y
+		# 🛑 화면 맨 위/아래 끝으로 보내지 않는다 — 그 띠에는 붙박이 HUD·머리띠가 산다. 카드가 헤더의 조작
+		#    버튼을 덮었다(2026-09-13 데모 실측). **대상과 같은 높이**에 나란히 둔다.
+		y = target.position.y
 	elif avoid_center_band > 0.0:
 		y = minf(y, area.position.y + area.size.y * avoid_center_band - card.size.y)
 	var global := Vector2(
 		clampf(x, area.position.x, maxf(area.position.x, area.end.x - card.size.x)),
 		clampf(y, area.position.y, maxf(area.position.y, area.end.y - card.size.y)))
+	global = _dodge_fixtures(Rect2(global, card.size), area, target).position
 	card.position = get_global_transform().affine_inverse() * global
+
+
+## 붙박이 HUD 와 `keep_clear` 를 피해 카드를 옮긴다 — 네 방향 중 **가장 적게** 움직이는 쪽으로, 대상 위로는
+## 올라가지 않게. 🛑 다 피할 수 없으면(화면이 좁다) 그대로 둔다 — 카드가 사라지는 것보다 겹치는 편이 낫다.
+func _dodge_fixtures(rect: Rect2, area: Rect2, target: Rect2) -> Rect2:
+	var blocks: Array[Rect2] = []
+	for node in get_tree().get_nodes_in_group(GoHudAnchor.GROUP):
+		var hud := node as GoHudAnchor
+		if hud == null or not hud.reserve_space or not hud.is_visible_in_tree(): continue
+		if hud.get_viewport() != get_viewport(): continue
+		var r := Rect2(hud.global_position, hud.size)
+		if r.get_area() > 0.0: blocks.append(r)
+	for control in keep_clear:
+		if is_instance_valid(control) and control.is_visible_in_tree(): blocks.append(control.get_global_rect())
+	var gap := float(GoUi.metric(GoTheme.GAP_SMALL))
+	for i in 4:                       # 붙박이 여럿을 차례로 — 한 번 옮긴 자리가 다른 것과 겹칠 수 있다
+		var hit := Rect2()
+		var found := false
+		for block in blocks:
+			if rect.intersects(block):
+				hit = block; found = true; break
+		if not found: return rect
+		var options := [
+			Vector2(0.0, hit.end.y + gap - rect.position.y),          # 아래로
+			Vector2(0.0, hit.position.y - gap - rect.end.y),          # 위로
+			Vector2(hit.end.x + gap - rect.position.x, 0.0),          # 오른쪽으로
+			Vector2(hit.position.x - gap - rect.end.x, 0.0),          # 왼쪽으로
+		]
+		var best := Vector2.INF
+		for move in options:
+			var moved := Rect2(rect.position + move, rect.size)
+			if not area.encloses(moved): continue
+			if moved.intersects(target): continue               # 대상을 가리면 코치마크가 아니다
+			if move.length() < best.length(): best = move
+		if best == Vector2.INF: return rect
+		rect.position += best
+	return rect
 
 
 func _draw() -> void:
@@ -277,10 +321,8 @@ func _draw() -> void:
 	var direction := (center - start).normalized()
 	if direction.is_zero_approx(): return
 	var tip := center - direction * (maxf(rect.size.x, rect.size.y) * 0.5 + 5.0)
-	var color := _accent()
-	draw_line(start, tip, color, 2.0, true)
-	var wing := direction.orthogonal() * 4.0
-	draw_colored_polygon(PackedVector2Array([tip, tip - direction * 8.0 + wing, tip - direction * 8.0 - wing]), color)
+	# 🔑 자리 계산은 여기, 그리는 모양은 스킨 — 테마를 바꾸면 점선·타깃 표시가 될 수 있다.
+	GoUi.skin().draw_coach_pointer(self, start, tip, direction, _accent())
 
 
 func _input(event: InputEvent) -> void:
@@ -292,6 +334,9 @@ func _input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and visible and not GoSurface.is_any_open():
 		finish.call_deferred(false)
+	# 🛑 진행 표시("1 / 5")는 조립 문자열이라 엔진 자동 번역을 타지 않는다 — 직접 다시 만든다.
+	elif what == NOTIFICATION_TRANSLATION_CHANGED and visible and not steps.is_empty():
+		progress_label.text = GoUi.text(&"coach_progress").format({"step": step + 1, "total": steps.size()})
 
 
 ## 본문 스크롤을 만든다. 🔑 호스트가 `GoScroll` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.

@@ -15,13 +15,15 @@ theme and one swappable icon set, and aware of safe areas, virtual keyboards, RT
 - **Uses current Godot features.** `DPITexture` icons stay sharp at any UI scale, `FoldableContainer`
   sections, `accessibility_name` for screen readers, `mouse_behavior_recursive` for input-transparent
   notices, `last_wrap_alignment` for flowing rows.
+- **Godot 4.6 or newer.** Verified against 4.6 stable and 4.7 — the full test suite passes on both.
 - **Pure GDScript.** No autoload required, no engine module, no GDExtension.
 - **MIT**, including the 84 bundled icons.
 
 ## Requirements
 
-Godot **4.5 or newer** — gohud relies on APIs introduced in 4.5 (`DPITexture`, `FoldableContainer`,
-accessibility properties). Development and verification were done on **Godot 4.7.2**.
+Godot **4.6 or newer**. gohud relies on APIs introduced in 4.5 (`DPITexture`, `FoldableContainer`,
+accessibility properties), and 4.6 is the supported floor: the full test suite is run against
+**4.6 stable** and **4.7.2** on every change, and the gallery is screenshot-compared on both.
 
 ## Installation
 
@@ -83,6 +85,25 @@ hp.ink = GoUi.color(GoTheme.DANGER)
 hp.custom_minimum_size.x = 180
 corner.add_child(hp)
 hp.set_values(320, 500)
+```
+
+If a scrolling screen shares the display with that HUD, tell the form to keep clear of it — otherwise the
+content slides underneath and the two sets of text overlap:
+
+```gdscript
+form.avoid_hud = true                 # keeps clear of every visible GoHudAnchor
+joystick_anchor.reserve_space = false # …except ones that only appear under a finger
+```
+
+Each HUD rectangle is avoided in whichever direction costs the least area, so a bar in the top-right
+corner is stepped around **downwards** on a portrait phone and **sideways** in landscape.
+
+The nine spots divide the screen but do not guarantee the pieces miss each other: a wide snackbar at
+`TOP_CENTER` lands squarely on a health bar at `TOP_RIGHT`. Tell the transient one to step aside:
+
+```gdscript
+notice_anchor.avoid_peers = true      # settles below the fixed HUD, keeping its horizontal alignment
+notice_anchor.reserve_space = false   # and does not push the page around while it is up
 ```
 
 ## Configuration
@@ -174,13 +195,82 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`, `GoTitleLabel`,
 `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
-Two themes ship: `themes/gohud_dark.tres` (default) and `themes/gohud_light.tres`
-(`GoUi.LIGHT_THEME`). To make your own, duplicate one and edit it in the Theme editor, or edit the
-palette in `tools/make_theme.py` and regenerate both. A theme that lacks the `GoHud` tokens still
-works — missing tokens are filled from the default theme while `token_fallback` is on.
+A theme that lacks the `GoHud` tokens still works — missing tokens are filled from the default theme
+while `token_fallback` is on.
 
 Read tokens in code with `GoUi.color(GoTheme.ACCENT)`, `GoUi.metric(GoTheme.GAP)` and
 `GoUi.font_size(GoTheme.ROLE_CAPTION)`.
+
+### Presets — swap colours *and* shape
+
+A `Theme` can only restyle what the engine draws. Rounded corners are the only corners
+`StyleBoxFlat` has, and the joystick, quick slots and coach mark are drawn by code, so a theme alone
+can never change their shape. gohud therefore ships **presets**: a theme *and* a skin *and* an icon
+set, picked as one unit.
+
+| Preset | Look |
+|---|---|
+| `default_dark` | The original gohud: rounded corners, soft blue accent |
+| `default_light` | The same shapes on a light palette |
+| `scifi_dark` | Chamfered corners, cyan neon edges and glow, hexagonal joystick, targeting brackets |
+| `scifi_light` | The same angular shapes in a bright blueprint palette |
+
+```gdscript
+GoUi.use_preset(GoThemePresets.SCIFI_DARK)     # one line — theme, skin and icons together
+```
+
+**Adding a theme is one file.** Inherit a built-in theme and write only what changes:
+
+```bash
+python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # theme .tres + control artwork
+godot --headless --path . --import                  # import the new artwork once
+```
+
+`themes/palettes/neon.json` spells out every inherited value, so it doubles as the list of what you can
+change. `themes/presets/` is scanned, so the new preset appears in the picker with no code change. Skin numbers (slot border, badge padding, joystick ring, sci-fi chamfers) are dials in the JSON's `skin.dials` — no skin code is touched. Text,
+borders and the accent are pushed to readable positions by the builder, so a colour-only change still
+passes the contrast checks (`tools/check_scaffold.sh` guards this).
+
+```gdscript
+```
+
+Or set **Project Settings → Gohud → Theme → Preset**, or fill `preset` on your `GoConfig`. Explicit
+`theme`, `skin` and `icons` fields still win over the preset, so you can take a preset and override
+just one of them.
+
+`GoSkin` owns the shapes a theme cannot reach — the joystick, quick slot faces, the coach-mark ring,
+chips, skeletons, alerts and segmented controls. Subclass it and override only what you want to
+change; everything you leave alone keeps the default look.
+
+```gdscript
+class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    return box
+```
+
+Two custom `StyleBox` classes are available for shapes `StyleBoxFlat` cannot make:
+`GoStyleBoxCut` (chamfered corners, an accent edge, outer glow) and `GoStyleBoxBracket`
+(corner marks only). Both serialise into a `Theme` resource like any other StyleBox.
+
+`GoStyle.surface()` returns whatever shape the skin produced. `GoStyle.box()`, `floating()` and
+`disc()` keep their promise of returning a `StyleBoxFlat`, so existing calling code that tweaks
+`bg_color` or `corner_radius` still compiles — but a custom shape cannot survive that path.
+
+### Making your own
+
+Add a palette and a shape to `tools/make_theme.py`, run it to generate the `.tres` and the
+per-theme control SVGs, then point a `GoThemePreset` resource at the result and register it:
+
+```gdscript
+GoThemePresets.register(preload("res://ui/my_preset.tres"))
+```
+
+🛑 After generating new SVGs run `godot --headless --path . --import` once — until then the new
+theme cannot be loaded.
 
 ## Widgets
 
@@ -205,6 +295,23 @@ Read tokens in code with `GoUi.color(GoTheme.ACCENT)`, `GoUi.metric(GoTheme.GAP)
 | `GoScale` | static | Breakpoint and dp math |
 | `GoFeedback` | static | Sound and haptic routing |
 | `GoBackPolicy` | static | Shared ownership of Android Back |
+
+### Subclass hooks
+
+Every widget that builds child widgets does so through an overridable method, so a host that
+subclasses gohud types (its own type hints, its own close glyph, its own modal system) gets those
+subclasses *inside* the widgets without copying code:
+
+| Hook | Widget | Default |
+|---|---|---|
+| `_make_scroll()` | `GoCoachMark`, `GoSurface` | `GoScroll.new()` |
+| `_make_close_button()` | `GoPromptCard`, `GoSurface` | `GoIconButton.new()` |
+| `_make_surface()` | `GoSheet` (`GoDialogs` next) | `GoSurface.new()` |
+| `_should_pause()` | `GoCoachMark` | `GoSurface.is_any_open()` — hide the card while a modal is open |
+| `GoScroll.as_horizontal(node)` | static | the configuration step of `horizontal()`, for `static func horizontal() -> MyScroll` |
+
+`GoIconButton.native_texture_size = true` draws a texture icon at its own pixel size instead of
+scaling it to 58 % of `visual_size`.
 
 ## Plugin
 
@@ -231,11 +338,50 @@ font sizes unchanged.
 
 ## Localization
 
-gohud's own 11 strings ship in English, Korean, Japanese, Chinese, Spanish, Portuguese, German,
-French, Russian, Hindi and Arabic (`i18n/gohud.csv`). They load automatically; disable that with
-`load_builtin_translations`. Map them onto your own keys with `text_keys`, or bypass translation
-with `text_overrides`. Numbers, joysticks and scroll rails stay left-to-right in RTL languages while
-content follows the application locale.
+gohud's own 16 strings ship in **21 languages** (`i18n/gohud.csv`): English, Korean, Japanese,
+Chinese (Simplified `zh` and Traditional `zh_TW`), Spanish, Portuguese, German, French, Italian,
+Dutch, Polish, Russian, Ukrainian, Turkish, Vietnamese, Indonesian, Thai, Hindi, Arabic and Hebrew.
+They load automatically; disable that with `load_builtin_translations`. Numbers, joysticks and scroll
+rails stay left-to-right in RTL languages (`ar`, `he`) while content follows the application locale.
+
+**Every glyph on screen is yours to change.** Widgets never hard-code display text — there is not a
+single `label.text = "Retry"` anywhere in `widgets/`, `core/` or `services/`, and a test fails the
+build if one appears. Text reaches the screen through exactly two doors:
+
+| Where it comes from | How you change it |
+|---|---|
+| You pass it in — dialog titles and bodies, button labels, form fields, list rows, empty states | Just pass your own string or translation key |
+| gohud supplies it — the 16 named strings below | `text_overrides` (literal) or `text_keys` (your own translation keys) |
+
+```gdscript
+# Your wording, no translation table involved
+GoUi.config.text_overrides = {&"confirm": "Yes", &"cancel": "No"}
+
+# Or point the names at keys your project already has
+GoUi.config.text_keys[&"confirm"] = "MY_DIALOG_YES"
+```
+
+The 16 names: `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty`
+`retry`, plus five **format strings** — `bar_fraction` (`{value} / {max}`), `bar_percent`
+(`{percent}%`), `coach_progress` (`{step} / {total}`), `slot_quantity` (`×{count}`) and
+`slot_unknown` (`…`).
+
+Formats are translatable because punctuation is not universal: Turkish puts the percent sign in
+*front* (`%50`), French separates it (`50 %`). Placeholders use `{name}`, so a translation that
+drops one still renders instead of crashing.
+
+Digit grouping is a hook rather than a format string, because Korean, Japanese and Chinese break at
+10,000 and 100,000,000 rather than at thousands — the arithmetic differs, not just the text:
+
+```gdscript
+GoUi.config.number_formatter = func(amount: float) -> String:
+    if absf(amount) >= 10_000.0: return "%.1f만" % (amount / 10_000.0)
+    return str(roundi(amount))
+```
+
+> **gohud ships no font.** Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from your own
+> theme font — a Latin-only font draws them as empty boxes and raises no error. Traditional Chinese
+> needs its own coverage too: a Simplified subset does not contain those forms.
 
 ## Sound and haptics
 
@@ -274,21 +420,27 @@ so they are exercised by the test suite but not on real hardware.
 
 ## Demo
 
-A full screen built with nothing but this add-on — HUD, buttons, dialogs, notices, touch controls
-and both themes side by side, all of it live.
+Run `examples/demo/project.godot`. **Start demo** plays a guided tour: a visible cursor demonstrates
+15 chapters using real input — buttons, fields, menus, scrolling, HUDs, dialogs, forms and more.
+**Explore widgets**, or any row in the sidebar, opens a single widget for you to try by hand, with
+a **Play this widget** button that lets the bot demonstrate just that one.
+All demo text is English. Large desktop windows enlarge the UI along with the canvas.
 
 ```bash
-cd examples/demo && godot              # it is a regular Godot project — open it in the editor too
-bash examples/demo/run.sh --shot a.png # save a screenshot and exit
+bash examples/demo/run.sh
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi # 1080p / 60 fps, complete tour
+bash examples/demo/run.sh --shot /tmp/gohud-start.png
+bash examples/demo/run.sh -- --explore=surfaces                 # open the app on one widget
 ```
 
-The demo folder holds a symlink `addons/gohud → ../../..` so it sees the add-on without a copy; a `.gdignore`
-there keeps the host project from scanning the demo. Installed from a ZIP (no symlinks)? Run
-`bash examples/demo/run.sh --setup` once.
+**C** toggles Cinema mode, **F11** toggles fullscreen, **Space** pauses, arrows change chapters,
+and **Escape** returns to Start. While exploring, the arrows move between widgets and Space plays the
+current one. Cinema mode hides the side panels and offers a countdown.
+See [the demo guide](examples/demo/README.md) for recording, testing and ZIP setup.
 
 ## Gallery
 
-Open `res://addons/gohud/examples/gallery.tscn` and run it (F6). It needs no server, autoload or
+Open `res://addons/gohud/examples/gallery/gallery.tscn` and run it (F6). It needs no server, autoload or
 project setup, and shows every widget, both themes and the full icon set.
 
 ## Development

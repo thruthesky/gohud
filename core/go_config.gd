@@ -30,7 +30,17 @@ signal changed_settings
 
 @export_group("Appearance")
 
-## 위젯이 쓸 `Theme`. 비우면 gohud 기본(어두운) 테마.
+## 🎁 **생김새 묶음**(`default_dark`·`default_light`·`scifi_dark`·`scifi_light`). 비우면 기본 묶음.
+##
+## 아래 `theme`·`skin`·`icons` 중 **비어 있는 칸만** 이 묶음에서 채운다 — 그래서 프리셋을 고른 뒤
+## `theme` 하나만 자기 것으로 덮어쓰는 식이 된다. 코드에서는 `GoUi.use_preset()` 이 더 편하다.
+@export var preset: StringName = &"":
+	set(value):
+		preset = value
+		emit_changed()
+		changed_settings.emit()
+
+## 위젯이 쓸 `Theme`. 비우면 위 `preset` 의 테마, 그것도 없으면 gohud 기본(어두운) 테마.
 ##
 ## 🔑 **전부 갈아 끼울 필요가 없다** — 기본 테마를 복제해 색만 바꾸거나, 아예 다른 테마를 넣고
 ##    빠진 토큰은 기본 테마에서 가져오게 둘 수도 있다(`token_fallback`).
@@ -43,6 +53,16 @@ signal changed_settings
 ## 위 `theme` 에 gohud 토큰(`GoHud/colors/...`)이 없을 때 기본 테마에서 채울 것인가.
 ## 🛑 끄면 없는 토큰이 검정·0 으로 나온다. 자기 테마를 처음부터 끝까지 채운 경우에만 끈다.
 @export var token_fallback := true
+
+## 위젯이 **직접 그리는 것**의 모양(조이스틱·퀵슬롯·코치마크·칩·알림 상자). 비우면 gohud 기본 모양.
+##
+## 🔑 `theme` 가 색과 엔진 컨트롤의 모양을 정한다면, 이것은 **코드가 그리는 자리**의 모양을 정한다.
+##    둘을 한 묶음으로 고르려면 `GoUi.use_preset()` 을 쓴다.
+@export var skin: GoSkin:
+	set(value):
+		skin = value
+		emit_changed()
+		changed_settings.emit()
 
 ## 아이콘 세트. 비우면 gohud 기본 세트(직접 그린 84종 · MIT).
 @export var icons: GoIconSet:
@@ -190,13 +210,35 @@ signal changed_settings
 	&"loading": "gohud_loading",
 	&"empty": "gohud_empty",
 	&"retry": "gohud_retry",
+	# 🔑 **숫자를 감싸는 형식도 문구다.** 위젯이 `"%d / %d"` 를 코드에 박아 두면 그 한 줄만
+	#    영원히 영어 관습으로 남는다 — 터키어는 백분율 기호를 **앞**에 붙이고(%50), 프랑스어는
+	#    숫자와 기호를 띄운다. 그래서 형식 문자열까지 번역 키로 뺀다.
+	# 🛑 자리표시자는 `{이름}` 이다(`String.format`). `%s` 를 쓰면 번역자가 자리표시자를 빠뜨렸을 때
+	#    "not all arguments converted" 로 화면이 죽는다.
+	&"bar_fraction": "gohud_bar_fraction",      # {value} / {max}
+	&"bar_percent": "gohud_bar_percent",        # {percent}%
+	&"coach_progress": "gohud_coach_progress",  # {step} / {total}
+	&"slot_quantity": "gohud_slot_quantity",    # ×{count}
+	&"slot_unknown": "gohud_slot_unknown",      # …
 }
 
 ## 번역을 거치지 않고 **그대로 쓸 문구**. 번역 테이블을 쓰지 않는 프로젝트를 위한 탈출구다.
 ## 여기 있는 이름은 위 `text_keys` 보다 우선한다.
 @export var text_overrides: Dictionary[StringName, String] = {}
 
-## gohud 기본 번역(11개 문구 × 7언어)을 `TranslationServer` 에 붙일 것인가.
+## 큰 수를 짧게 적는 방법. 비워 두면 내장 규칙(`12.3k` · `4.5m`)을 쓴다.
+## 🛑 **형식 문자열로는 못 고치는 것**이라 훅으로 뺐다 — 한국어·중국어·일본어는 천/백만이 아니라
+##    만(10,000)·억 단위로 끊는다. 자리를 어디서 끊을지가 다르므로 값 계산 자체가 달라야 한다.
+##
+## ```gdscript
+## GoUi.config.number_formatter = func(amount: float) -> String:
+##     if absf(amount) >= 100_000_000.0: return "%.1f억" % (amount / 100_000_000.0)
+##     if absf(amount) >= 10_000.0: return "%.1f만" % (amount / 10_000.0)
+##     return str(roundi(amount))
+## ```
+@export var number_formatter := Callable()
+
+## gohud 기본 번역(16개 문구 × 21언어)을 `TranslationServer` 에 붙일 것인가.
 ## 🛑 프로젝트가 같은 키를 이미 갖고 있으면 끈다 — 나중에 붙는 쪽이 이긴다.
 @export var load_builtin_translations := true
 

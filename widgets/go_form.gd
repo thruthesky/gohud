@@ -41,10 +41,26 @@ var scroll: GoScroll
 ## Android 뒤로가기를 이 버튼으로 보낼 것인가. `%BackButton` 이라는 고유 이름의 자식을 찾는다.
 @export var route_back_button := true
 
+## 🔑 **떠 있는 HUD 자리를 비울 것인가.** 켜면 같은 화면의 `GoHudAnchor` 가 차지한 사각형을
+## 피해서 본문이 그 **뒤로 흐르지 않는다**.
+##
+## 끄면(기본) 폼은 화면 전체를 쓴다 — 지금까지의 동작 그대로다. 게임 화면 위에 HUD 만 띄우는
+## 보통의 경우에는 필요 없고, **HUD 와 스크롤되는 본문이 한 화면에 같이 있을 때** 켠다.
+##
+## 🛑 피하는 방향은 **잃는 면적이 가장 작은 쪽**으로 고른다. 오른쪽 위의 체력바는 세로 화면에서는
+##    위로(높이 13% 손실), 가로 화면에서는 오른쪽으로(폭 21% 손실) 피한다 — 가로에서 세로로만
+##    피하면 본문이 화면의 27% 를 잃는다.
+@export var avoid_hud := false:
+	set(value):
+		avoid_hud = value
+		_relayout()
+
 var _runtime: Node
 var _keyboard_px := 0
 var _back_button: Button
 var _holds_back := false
+## 마지막으로 적용한 HUD 여백(좌·상·우·하). HUD 는 나중에 크기가 정해지므로 매 프레임 견준다.
+var _hud_pad := Vector4.ZERO
 
 
 func _ready() -> void:
@@ -93,10 +109,64 @@ func _relayout() -> void:
 	var cap := _max_width()
 	if cap > 0 and area.size.x > float(cap): side = maxf(side, (area.size.x - float(cap)) * 0.5)
 	var keyboard := float(_keyboard_px) / maxf(1.0, get_window().content_scale_factor)
-	add_theme_constant_override(&"margin_left", roundi(area.position.x + side))
-	add_theme_constant_override(&"margin_right", roundi(view.x - area.end.x + side))
-	add_theme_constant_override(&"margin_top", roundi(area.position.y) + _edge_margin())
-	add_theme_constant_override(&"margin_bottom", roundi(maxf(view.y - area.end.y, keyboard)) + _edge_margin())
+	# 🛑 **겹침은 폼이 실제로 차지할 자리에서 본다.** 안전영역 전체로 재면, 넓은 화면에서 폭 제한
+	#    때문에 이미 가운데로 몰려 HUD 근처에도 없는 폼이 **또 옆으로 밀려** 가운데 정렬이 깨진다
+	#    (1280 화면에서 본문이 왼쪽으로 214dp 치우쳤다 — 2026-09-13 데스크톱 실측).
+	_hud_pad = _hud_insets(area.grow_individual(-side, 0.0, -side, 0.0)) if avoid_hud else Vector4.ZERO
+	add_theme_constant_override(&"margin_left", roundi(area.position.x + side + _hud_pad.x))
+	add_theme_constant_override(&"margin_right", roundi(view.x - area.end.x + side + _hud_pad.z))
+	add_theme_constant_override(&"margin_top", roundi(area.position.y + _hud_pad.y) + _edge_margin())
+	add_theme_constant_override(&"margin_bottom",
+		roundi(maxf(view.y - area.end.y + _hud_pad.w, keyboard)) + _edge_margin())
+
+
+## 떠 있는 HUD 들을 피하는 데 필요한 여백(좌·상·우·하 dp).
+##
+## 🛑 **한 칸마다 한 방향으로만 피한다.** 네 변을 다 밀면 오른쪽 위 모서리의 체력바 하나가 위와
+##    오른쪽을 동시에 깎아 본문이 두 번 줄어든다. 겹치는 칸마다 **가장 싼 한 방향**을 골라 민다.
+func _hud_insets(area: Rect2) -> Vector4:
+	var here := get_viewport()
+	var rects: Array[Rect2] = []
+	for node in get_tree().get_nodes_in_group(GoHudAnchor.GROUP):
+		var hud := node as GoHudAnchor
+		if hud == null or not hud.reserve_space: continue
+		if not hud.is_visible_in_tree() or hud.get_viewport() != here: continue
+		# 내 안에 든 HUD 는 피할 대상이 아니다 — 그건 본문의 일부다.
+		if hud == self or is_ancestor_of(hud) or hud.is_ancestor_of(self): continue
+		var rect := Rect2(hud.global_position, hud.size)
+		if rect.size.x > 0.0 and rect.size.y > 0.0 and area.intersects(rect): rects.append(rect)
+	# 🛑 **크게 파고든 것부터** 처리한다. 순서에 따라 결과가 달라지므로 기준을 못박아 둔다 —
+	#    안 그러면 같은 화면이 노드 차례가 바뀌었다는 이유만으로 다르게 배치된다.
+	rects.sort_custom(func(a: Rect2, b: Rect2) -> bool:
+		return a.intersection(area).get_area() > b.intersection(area).get_area())
+
+	var remain := area
+	for rect in rects:
+		# 🛑 **이미 물러난 만큼을 빼고 다시 본다.** 오른쪽 위 체력바를 피해 오른쪽으로 물러났다면
+		#    오른쪽 아래 슬롯은 그것만으로 이미 비껴 있다 — 따로 세면 아래를 또 깎는다.
+		if not remain.intersects(rect): continue
+		# 각 방향으로 피할 때 **잃는 면적**. 적은 쪽이 이긴다.
+		var options := [
+			[rect.end.x - remain.position.x, remain.size.y, 0],      # 왼쪽에서 민다
+			[rect.end.y - remain.position.y, remain.size.x, 1],      # 위에서 민다
+			[remain.end.x - rect.position.x, remain.size.y, 2],      # 오른쪽에서 민다
+			[remain.end.y - rect.position.y, remain.size.x, 3],      # 아래에서 민다
+		]
+		var best: Array = []
+		for option in options:
+			if option[0] <= 0.0: continue
+			if best.is_empty() or option[0] * option[1] < best[0] * best[1]: best = option
+		if best.is_empty(): continue
+		var depth: float = best[0]
+		match int(best[2]):
+			0: remain.position.x += depth; remain.size.x -= depth
+			1: remain.position.y += depth; remain.size.y -= depth
+			2: remain.size.x -= depth
+			_: remain.size.y -= depth
+		# 다 깎여 남는 것이 없으면 **피하기를 포기한다** — 빈 화면보다 겹친 화면이 낫다.
+		if remain.size.x <= 0.0 or remain.size.y <= 0.0: return Vector4.ZERO
+	return Vector4(remain.position.x - area.position.x, remain.position.y - area.position.y,
+		area.end.x - remain.end.x, area.end.y - remain.end.y)
 
 
 func _on_keyboard(height_px: int) -> void:
@@ -111,6 +181,15 @@ func _on_keyboard(height_px: int) -> void:
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint() or not is_visible_in_tree(): return
 	if route_back_button: _sync_back()
+	# 🛑 HUD 는 **나중에** 크기가 정해진다(자식의 최소 크기를 deferred 로 잰다). 한 번만 계산하면
+	#    첫 프레임의 0×0 을 믿고 끝난다 — 값이 달라졌을 때만 다시 배치한다.
+	if avoid_hud and is_inside_tree():
+		var area := GoSafeArea.usable_rect(get_window())
+		var side := float(_side_margin())
+		var cap := _max_width()
+		if cap > 0 and area.size.x > float(cap): side = maxf(side, (area.size.x - float(cap)) * 0.5)
+		if not _hud_insets(area.grow_individual(-side, 0.0, -side, 0.0)).is_equal_approx(_hud_pad):
+			_relayout()
 	# 오토로드가 없으면 여기서 직접 키보드를 본다.
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
@@ -139,6 +218,11 @@ func _sync_back() -> void:
 
 
 func _notification(what: int) -> void:
+	# 🛑 언어가 바뀌면 버튼의 **보이는 글자**가 바뀐다 — 한 낱말이던 것이 두 낱말이 되기도 한다.
+	#    낱말 줄바꿈 규칙을 자손 전부에 다시 입힌다(멱등이라 몇 번 불러도 같다).
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_inside_tree() and not Engine.is_editor_hint():
+		GoStyle.form(self)
+		return
 	if what != NOTIFICATION_WM_GO_BACK_REQUEST: return
 	if not _holds_back or not is_visible_in_tree() or GoSurface.is_any_open(): return
 	# 🛑 Android 는 키보드가 **사라지는 애니메이션 중에도** 뒤로가기를 보고한다 —

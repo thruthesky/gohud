@@ -45,7 +45,7 @@ config_version=5
 [application]
 
 config/name="gohud clean check"
-run/main_scene="res://addons/gohud/examples/gallery.tscn"
+run/main_scene="res://addons/gohud/examples/gallery/gallery.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [display]

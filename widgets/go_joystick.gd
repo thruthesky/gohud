@@ -162,10 +162,8 @@ func _draw() -> void:
 	if hide_when_idle and not _active: return
 	var color := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
 	var base := GoUi.color(GoTheme.SURFACE)
-	# 🛑 같은 종류의 도형끼리 그린다 — 캔버스는 명령 종류가 바뀔 때마다 드로콜을 끊는다.
-	draw_circle(_center, radius, Color(base, 0.42))
-	draw_circle(_knob, knob_radius, Color(color, 0.85 if _active else 0.55))
-	draw_arc(_center, radius, 0, TAU, 48, Color(color, 0.45), 2.0, true)
+	# 🔑 **그리는 것은 스킨**이다 — 자리·세기 계산은 여기, 모양은 거기. 테마를 바꾸면 육각 링이 될 수 있다.
+	GoUi.skin().draw_joystick(self, _center, _knob, radius, knob_radius, color, base, _active)
 
 
 ## 넓은 조작 영역 — 보이는 원보다 조금 밖에서 시작해도 잡힌다.

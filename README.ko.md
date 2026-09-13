@@ -17,13 +17,15 @@
 - **요즘 엔진 기능을 쓴다.** `DPITexture` 아이콘은 UI 배율을 키워도 선명하고,
   `FoldableContainer` 접이식 섹션, 화면 낭독기를 위한 `accessibility_name`,
   알림이 입력을 먹지 않게 하는 `mouse_behavior_recursive`, 흐르는 줄의 `last_wrap_alignment`.
+- **Godot 4.6 이상.** 4.6 stable 과 4.7 에서 검사 전부를 통과시켜 확인했다.
 - **순수 GDScript.** 오토로드 불필요, 엔진 모듈·GDExtension 없음.
 - **MIT** — 함께 들어 있는 아이콘 84종 포함.
 
 ## 요구 사항
 
-Godot **4.5 이상**. `DPITexture`·`FoldableContainer`·접근성 속성 등 4.5 에서 들어온 API 를 쓴다.
-개발과 검증은 **4.7.2** 에서 했다.
+Godot **4.6 이상**. `DPITexture`·`FoldableContainer`·접근성 속성 등 4.5 에서 들어온 API 를 쓰고,
+지원 하한은 4.6 이다 — 바뀔 때마다 **4.6 stable 과 4.7.2 양쪽**에서 검사 전부를 돌리고
+갤러리 스크린샷까지 대조한다.
 
 ## 설치
 
@@ -83,6 +85,25 @@ var hp := GoBar.new()
 hp.setup("HP", GoTheme.DANGER)
 corner.add_child(hp)
 hp.set_values(72, 100)
+```
+
+스크롤되는 본문이 그 HUD 와 한 화면에 있다면, 폼에게 자리를 비우라고 일러 준다 — 그러지 않으면
+본문이 HUD 뒤로 흘러 글자끼리 겹친다:
+
+```gdscript
+form.avoid_hud = true                 # 보이는 GoHudAnchor 를 모두 피한다
+joystick_anchor.reserve_space = false # 손을 얹을 때만 나타나는 것은 빼고
+```
+
+칸마다 **잃는 면적이 가장 작은 방향**으로 피한다 — 오른쪽 위의 체력바는 세로 화면에서는 아래로,
+가로 화면에서는 옆으로 비껴간다.
+
+아홉 자리는 화면을 나눌 뿐 **서로 안 겹친다는 보장은 아니다.** 위쪽 가운데에 뜨는 넓은 스낵바는
+오른쪽 위 체력바 위에 그대로 얹힌다. 잠깐 뜨는 쪽에게 비키라고 한다:
+
+```gdscript
+notice_anchor.avoid_peers = true      # 고정 HUD 아래로 내려앉는다(좌우 정렬은 그대로)
+notice_anchor.reserve_space = false   # 떠 있는 동안 본문을 밀지도 않는다
 ```
 
 ## 설정 — `GoConfig` 한 장
@@ -152,6 +173,62 @@ GoUi.font_size(GoTheme.BODY)      # 글자 크기 토큰
 컨트롤 SVG(체크박스·라디오·화살표·토글·탭 등)까지 테마별로 생성한다. 🛑 돌린 뒤 프로젝트에서
 `godot --headless --path . --import` 를 한 번 — 새 SVG 는 실제 임포트를 거쳐야 읽힌다.
 
+### 생김새 묶음 — 색뿐 아니라 **모양**까지
+
+`Theme` 는 **엔진이 그려 주는 것**의 모양만 바꾼다. `StyleBoxFlat` 의 모서리는 둥근 것뿐이고,
+조이스틱·퀵슬롯·코치마크는 코드가 직접 그리므로 테마를 아무리 갈아 끼워도 모양이 안 바뀐다.
+그래서 gohud 는 **묶음(preset)** 을 쓴다 — 테마 + 스킨 + 아이콘을 한 단위로 고른다.
+
+| 묶음 | 생김새 |
+|---|---|
+| `default_dark` | gohud 원래 모습 — 둥근 모서리, 부드러운 파란 강조 |
+| `default_light` | 같은 모양에 밝은 팔레트 |
+| `scifi_dark` | 모서리를 사선으로 자른 판, 시안 네온 테두리와 발광, 육각 조이스틱, 조준 표식 |
+| `scifi_light` | 같은 각진 모양에 밝은 설계도 팔레트 |
+
+```gdscript
+GoUi.use_preset(GoThemePresets.SCIFI_DARK)     # 한 줄 — 테마·스킨·아이콘이 함께 바뀐다
+```
+
+**테마를 하나 더 만들려면** 파일 하나면 된다 — 내장 테마를 물려받고 바꿀 것만 적는다:
+
+```bash
+python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # 테마 .tres + 컨트롤 그림
+godot --headless --path . --import                  # 새 그림을 한 번 임포트
+```
+
+`themes/palettes/neon.json` 에 부모 값이 전부 풀어 적혀 있어 그것이 곧 "바꿀 수 있는 것" 목록이다.
+`themes/presets/` 는 폴더를 스캔하므로 새 프리셋이 코드 수정 없이 고르개에 뜬다. 모양을 바꿨으면 `bash addons/gohud/tools/demo_shots.sh /tmp/shots --play` 로 데모 15 섹션을 봇이 돌며 찍은 그림(코치마크 단계·알림·시트가 뜬 순간 포함)을 눈으로 본다. 스킨의 숫자(슬롯 테두리·배지 여백·조이스틱 링·sci-fi 잘린 모서리)도 JSON 의 `skin.dials` 에서 바꾼다 — 스킨 코드는 손대지 않는다. 글자·테두리·강조색은
+생성기가 읽히는 자리까지 밀어 주므로 색만 바꿔도 가독성 검사를 통과한다(`tools/check_scaffold.sh` 가 지킨다).
+
+```gdscript
+```
+
+에디터에서 고르려면 **프로젝트 설정 → Gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
+🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 묶음보다 **우선한다** — 묶음을 고른 뒤 한 칸만
+자기 것으로 바꿔 끼울 수 있다.
+
+`GoSkin` 이 테마가 닿지 못하는 모양을 맡는다 — 조이스틱, 퀵슬롯 판, 코치마크 링, 칩, 스켈레톤,
+알림 상자, 분절 선택. 상속해서 **바꾸고 싶은 것만** 덮어쓰면 나머지는 기본 모양 그대로다.
+
+```gdscript
+class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    return box
+```
+
+`StyleBoxFlat` 로 못 만드는 모양을 위해 두 가지를 담았다 — `GoStyleBoxCut`(모서리를 자른 판 ·
+강조 변 · 바깥 발광)과 `GoStyleBoxBracket`(네 모서리 표식). 둘 다 여느 StyleBox 처럼 `Theme`
+리소스 안에 그대로 저장된다.
+
+🛑 `GoStyle.surface()` 는 스킨이 만든 모양을 **그대로** 넘긴다. `box()`·`floating()`·`disc()` 는
+돌려받아 `bg_color` 를 고치는 옛 호출부와의 약속 때문에 **언제나 `StyleBoxFlat`** 이다 —
+그 길로는 각진 모양이 살아남지 못한다.
+
 ## 위젯
 
 | | |
@@ -165,6 +242,21 @@ GoUi.font_size(GoTheme.BODY)      # 글자 크기 토큰
 | `GoHudAnchor` · `GoBar` · `GoSlot` · `GoJoystick` | HUD 모서리, 자원 막대, 퀵슬롯, 가상 스틱 |
 | `GoScroll` · `GoIconButton` | 스크롤 영역, 아이콘 버튼 |
 | `GoStyle` | 버튼·칩·목록 행·흐르는 줄·접이식 섹션을 한 줄로 만드는 팩토리 |
+
+### 자식 클래스 훅
+
+하위 위젯을 만드는 곳은 전부 덮어쓸 수 있는 메서드를 거친다. gohud 타입을 상속한 호스트(자기 타입 힌트·자기 닫기
+그림·자기 모달 체계)는 코드를 복사하지 않고도 위젯 *안에* 자기 서브클래스를 끼울 수 있다:
+
+| 훅 | 위젯 | 기본 |
+|---|---|---|
+| `_make_scroll()` | `GoCoachMark`, `GoSurface` | `GoScroll.new()` |
+| `_make_close_button()` | `GoPromptCard`, `GoSurface` | `GoIconButton.new()` |
+| `_make_surface()` | `GoSheet` (`GoDialogs` 다음) | `GoSurface.new()` |
+| `_should_pause()` | `GoCoachMark` | `GoSurface.is_any_open()` — 모달이 열려 있는 동안 카드를 숨긴다 |
+| `GoScroll.as_horizontal(node)` | 정적 | `horizontal()` 의 설정 단계 — `static func horizontal() -> MyScroll` 을 자식이 다시 만들 때 |
+
+`GoIconButton.native_texture_size = true` 는 텍스처 아이콘을 `visual_size` 의 58% 로 늘리지 않고 원래 픽셀 크기로 그린다.
 
 ## 플러그인
 
@@ -180,10 +272,50 @@ GoUi.font_size(GoTheme.BODY)      # 글자 크기 토큰
 
 ## 번역
 
-버튼 문구 11개(닫기·뒤로·확인·취소·다음·완료·건너뛰기 …)가 11개 언어로 들어 있다.
-프로젝트의 번역 키를 쓰고 싶으면 `GoConfig.text_keys` 로 연결하고
+문구 16개가 **21개 언어**로 들어 있다 (`i18n/gohud.csv`) — 영어·한국어·일본어·
+중국어(간체 `zh`·번체 `zh_TW`)·스페인어·포르투갈어·독일어·프랑스어·이탈리아어·네덜란드어·
+폴란드어·러시아어·우크라이나어·터키어·베트남어·인도네시아어·태국어·힌디어·아랍어·히브리어.
 `load_builtin_translations = false` 로 내장 번역을 끈다.
-RTL 은 `LAYOUT_DIRECTION_APPLICATION_LOCALE` 로 자동 처리된다.
+RTL(`ar`·`he`)은 `LAYOUT_DIRECTION_APPLICATION_LOCALE` 로 자동 처리된다.
+
+### 화면의 모든 글자를 호스트가 바꾼다
+
+🛑 **위젯은 문구를 코드에 박지 않는다.** `widgets/`·`core/`·`services/` 어디에도
+`label.text = "Retry"` 같은 줄이 없고, 생기면 검사가 실패한다. 화면에 글자가 오는 길은 둘뿐이다.
+
+| 어디서 오나 | 바꾸는 법 |
+|---|---|
+| **당신이 넘긴다** — 대화상자 제목·본문, 버튼 라벨, 폼 항목, 목록 줄, 빈 상태 | 그냥 원하는 문자열이나 번역 키를 넘긴다 |
+| **gohud 가 준다** — 아래 이름 16개 | `text_overrides`(원문) 또는 `text_keys`(프로젝트의 키) |
+
+```gdscript
+# 번역 테이블 없이 내 문구로
+GoUi.config.text_overrides = {&"confirm": "예", &"cancel": "아니오"}
+
+# 또는 프로젝트에 이미 있는 키로 연결
+GoUi.config.text_keys[&"confirm"] = "MY_DIALOG_YES"
+```
+
+이름 16개: `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty`
+`retry` 와 **형식 문자열** 다섯 — `bar_fraction`(`{value} / {max}`) · `bar_percent`(`{percent}%`) ·
+`coach_progress`(`{step} / {total}`) · `slot_quantity`(`×{count}`) · `slot_unknown`(`…`).
+
+🔑 **형식도 번역 대상이다** — 구두점은 만국 공통이 아니다. 터키어는 백분율 기호를 **앞**에 붙이고
+(`%50`), 프랑스어는 띄운다(`50 %`). 자리표시자는 `{이름}` 이라, 번역자가 하나 빠뜨려도 화면이
+죽지 않고 그대로 나온다.
+
+🔑 **숫자 축약은 형식이 아니라 훅이다** — 한국어·일본어·중국어는 천이 아니라 만(10,000)·억에서
+끊는다. 글자만이 아니라 계산이 다르므로 함수를 꽂는다.
+
+```gdscript
+GoUi.config.number_formatter = func(amount: float) -> String:
+    if absf(amount) >= 10_000.0: return "%.1f만" % (amount / 10_000.0)
+    return str(roundi(amount))
+```
+
+> 🛑 **gohud 는 폰트를 담지 않는다.** 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의
+> 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**.
+> 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
 
 ## 소리·진동
 
@@ -213,21 +345,26 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 
 **검증하지 않은 것**: Android·iOS 실기기, Forward+/Mobile 렌더러, 4.7.2 외 버전.
 
-## 데모 — 한 화면으로 전부 보기
+## 데모 — 자동 시연과 직접 탐색
 
-애드온만으로 만든 화면 하나에 HUD·버튼·대화상자·알림·터치 컨트롤·두 테마가 모두 들어 있고,
-전부 실제로 동작한다.
+`examples/demo/project.godot`을 실행한다. **Start demo**를 누르면 15개 장면이 순서대로 진행되며,
+커서가 실제 입력으로 버튼·메뉴를 선택하고, 글자를 입력하고, 슬라이더·조이스틱을 끌고, 목록을 스크롤한다.
+**Explore widgets** 또는 왼쪽 사이드바의 항목을 누르면 그 위젯 하나만 무대에 지어져 **직접 만져 볼 수 있고**,
+오른쪽 **Play this widget** 버튼으로 그 위젯만 봇이 시연하게 할 수 있다. 시연 중 사이드바를 누르면
+시연을 접고 그 위젯을 연다. 좁은 창에서는 사이드바 대신 상단의 **Widgets** 메뉴가 나온다.
+표시 문구는 모두 영어이며, 큰 데스크톱 창에서는 글자와 위젯도 함께 커진다.
 
 ```bash
-cd examples/demo && godot                 # 보통의 Godot 프로젝트다 — 에디터로 열어도 된다
-bash examples/demo/run.sh --shot out.png  # 화면을 파일로 저장
+bash examples/demo/run.sh
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi # 전체 시연 1080p / 60fps 녹화
+bash examples/demo/run.sh --shot /tmp/gohud-start.png
+bash examples/demo/run.sh -- --explore=surfaces        # 위젯 하나를 탐색 모드로 바로 연다
 ```
 
-데모 폴더의 `addons/gohud` 는 애드온 루트로 가는 심볼릭 링크라 복사본 없이 애드온을 본다. 그 폴더의
-`.gdignore` 가 호스트 프로젝트의 스캔을 막는다. ZIP 으로 설치했다면(링크가 없다) `bash examples/demo/run.sh --setup`
-을 한 번 돌린다.
-
-자세한 설명은 [examples/demo/README.md](examples/demo/README.md).
+**C**는 촬영 모드, **F11**은 전체 화면, **Space**는 일시정지(탐색 중에는 현재 위젯 시연), **←/→**는 장면·위젯 이동,
+**Esc**는 시작 화면이다.
+촬영 모드는 좌우 패널을 숨기고 시작 전에 3초를 센다. 일반 실행은 시작 버튼을 누를 때까지 대기한다.
+설치·촬영·검증 명령은 [데모 안내](examples/demo/README.md)를 참고한다.
 
 ## 개발
 

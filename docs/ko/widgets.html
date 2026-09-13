@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="alternate" hreflang="en" href="https://thruthesky.io/gohud/widgets.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.io/gohud/ko/widgets.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.io/gohud/widgets.html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>위젯 — gohud</title>
+<meta name="description" content="gohud 의 위젯 하나하나 — 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바, 코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">소개</a>
+      <a href="theming.html">생김새</a>
+      <a href="widgets.html">위젯</a>
+      <a href="#surfaces">창</a>
+      <a href="#hud">HUD</a>
+      <a href="#factory">팩토리</a>
+      <a href="../widgets.html">English ↗</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>위젯</h1>
+    <p class="lead">
+      전부 <code>.new()</code> 로 만들어 <code>add_child()</code> 하면 된다. 씬 파일도, 오토로드도 필요 없다.
+      아래 설명에서 <b>🛑 표시가 붙은 것</b>은 실제 화면에서 부딪혀 본 함정이다.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>떠 있는 창</h2>
+
+  <h3><code>GoSurface</code> — 창의 껍데기</h3>
+  <p>팝업·시트·드롭다운이 전부 이것 하나를 쓴다. 안전영역·가상 키보드·고정 머리말/바닥·스크롤 본문·
+    가장 위 창 판정·포커스 복원·뒤로가기 소유권·끌어서 높이 조절을 한 곳에서 처리한다.</p>
+  <table>
+    <thead><tr><th>배치</th><th>모습</th><th>쓰는 곳</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>화면 가운데 카드</td><td>확인창·설정</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>아래에서 올라온 시트</td><td>목록·관리 페이지</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>지정한 컨트롤 옆에 붙는 카드</td><td>드롭다운·컨텍스트 메뉴</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>스스로 사라지지 않는다.</b> <code>close_requested</code> 를 받아 숨기거나 지우는 것은
+    <b>소유한 화면</b>이다 — 왜 닫히는지(저장하고 닫기 vs 버리고 닫기)는 껍데기가 알 수 없다.
+  </div>
+
+  <h3><code>GoSheet</code> — 아래에서 올라오는 페이지</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("가방")
+sheet.toolbar().add_child(GoStyle.line_edit("검색…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("닫기", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>자체 <code>CanvasLayer</code> 를 가져 HUD 위에 확실히 올라온다.
+    <code>open()</code> 은 본문을 비우고 뒤로 버튼·고정 줄을 <b>끈다</b> — 돌아갈 데가 없는 화면에 죽은
+    버튼이 남으면 누른 사람은 그것을 고장으로 읽는다.</p>
+  <div class="note">
+    <b>고정 줄과 스크롤 본문을 나누는 이유.</b> 확인·취소를 <code>body</code> 에 넣으면 목록이 길어질 때
+    화면 밖으로 밀린다. <code>footer()</code> 는 언제나 보인다.
+  </div>
+
+  <h3><code>GoDialogs</code> — <code>await</code> 로 받는 확인·알림</h3>
+  <pre><code>if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
+    delete_save()</code></pre>
+
+  <h3><code>GoForm</code> — 폭을 제한하는 폼</h3>
+  <p>브레이크포인트마다 최대 폭이 다르고, 가상 키보드가 올라오면 입력 칸이 그 위로 온다.</p>
+  <div class="note warn">
+    <b>자손 라벨의 줄바꿈을 보장한다.</b> 없으면 긴 문장 하나가 한 줄로 뻗고, 그 최소 폭이 화면을 넘겨
+    좌우가 잘린다 — 무슨 화면인지조차 분간할 수 없게 된다. 씬마다 손으로 켜는 방식은 반드시 빠뜨린다.
+  </div>
+
+  <h3><code>GoScroll</code> — 손가락 스크롤</h3>
+  <p>안에 <b>하나만</b> 넣는다. 머리말과 버튼 줄은 밖에 둔다 — 목록이 길어지면 그것들이 화면 밖으로
+    나가면 안 된다. <code>use_panel_edge()</code> 를 부르면 스크롤바가 카드의 기존 여백 자리로 나가고
+    내용은 원래 들여쓰기를 유지한다.</p>
+</section>
+
+<section id="messages">
+  <h2>알리기</h2>
+
+  <h3><code>GoNotice</code> — 스낵바</h3>
+  <p>새 메시지가 이전 것을 덮어쓰고 시간이 지나면 사라진다.</p>
+  <div class="note warn">
+    <b>절대 입력을 가로채지 않는다.</b> 알림은 <b>읽는 것</b>이지 누르는 것이 아니다. 포커스를 훔치지 않고,
+    게임 입력을 막지 않으며, 그 아래의 버튼이 그대로 눌린다. 확인이 필요하면 <code>GoDialogs</code>,
+    선택이 필요하면 <code>GoPromptCard</code> 다.
+  </div>
+
+  <h3><code>GoPromptCard</code> — 화면을 막지 않는 질문</h3>
+  <p>스크림 없이 화면 한쪽에 떠서 묻는다. 게임은 계속 돈다.</p>
+
+  <h3><code>GoCoachMark</code> — 안내 투어</h3>
+  <p>실제 화면의 컨트롤을 하나씩 가리키며 무엇인지 알려 준다. 카드 영역만 입력을 받으므로
+    <b>가리킨 컨트롤을 실제로 누르면 다음 단계로 넘어간다</b> — "여기를 누르세요" 가 말이 아니라 동작이 된다.</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "가방", "body": "주운 물건이 여기 모입니다."},
+    {"target": map_button, "title": "지도", "body": "눌러서 전체 지도를 엽니다."},
+])</code></pre>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>작은 것들이 예쁨을 정한다</h3>
+  <p>
+    큰 판은 잘 다듬어도, 눈에 걸리는 건 언제나 작은 데다 — 두 줄로 갈라진 낱말, 뚝 잘린 글로우,
+    비좁은 슬롯. 2026-09-13 에 지적받은 네 가지를 위젯·테마 차원에서 고쳤다. 화면(데모)이 아니라
+    <b>부품</b>을 고쳤으므로 어느 화면에서든 같은 결과다.
+  </p>
+  <table>
+    <thead><tr><th>보였던 것</th><th>원인</th><th>고친 것</th></tr></thead>
+    <tbody>
+      <tr><td>코치마크의 <code>Done</code> 이 <code>Don</code>/<code>e</code></td>
+          <td>줄바꿈이 켜진 버튼은 최소 폭에서 <b>글자 폭을 뺀다</b> — 좁아지면 낱말 안에서 끊는다</td>
+          <td><code>GoStyle.fit_words()</code>: 한 낱말은 접지 않고, 여러 낱말은 <b>가장 긴 낱말</b> 폭을 보장 — 번역 키가 아니라 <b>보이는 글자</b>로 판단하고, 언어가 바뀌면 폼이 다시 입힌다</td></tr>
+      <tr><td>꽉 찬 폭 버튼의 글로우가 왼쪽에서 세로로 잘림</td>
+          <td>스크롤은 자기 경계에서 무조건 자른다. 오른쪽만 레일 자리 덕에 살아남아 좌우가 달랐다</td>
+          <td><code>GoScroll</code> 이 부모 여백을 빌려 경계를 12dp 바깥으로 밀고, 안쪽에서 되돌려 <b>내용은 제자리</b></td></tr>
+      <tr><td>슬롯에 시간·아이콘·수량이 세로로 쌓여 비좁음</td>
+          <td>48dp 안에 세 줄</td>
+          <td>아이콘은 가운데에 크게, 단축키는 왼쪽 위, 수량은 오른쪽 아래 <b>배지</b>, 남은 시간은 아이콘 위 배지 — 배지 판은 스킨의 <code>badge_box()</code></td></tr>
+      <tr><td>드롭다운 메뉴가 밋밋하고 어느 항목이 골라졌는지 안 보임</td>
+          <td>항목 호버에 버튼 판을 쓰고, 라디오 표시는 엔진 기본(흐린 원)</td>
+          <td>항목 전용 호버 판(옅은 강조 채움) · 체크박스와 같은 라디오 그림 · 항목 높이를 터치 기준으로</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="열린 드롭다운 — 옅은 강조 호버 판과 골라진 항목의 라디오 표시" loading="lazy">
+      <figcaption>드롭다운 — 호버 판과 라디오 표시</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="퀵슬롯 네 칸 — 왼쪽 위 단축키, 오른쪽 아래 수량 배지, 첫 칸은 남은 시간 배지" loading="lazy">
+      <figcaption>슬롯 — 모서리 배지와 남은 시간(sci-fi)</figcaption>
+    </figure>
+  </div>
+  <p>
+    아이콘만 있는 버튼에는 <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> 로 설명을 단다 —
+    마우스 사용자에게는 툴팁이, 화면 낭독기에게는 접근성 이름이 그 한 값에서 나온다. 툴팁은 gohud 가
+    직접 그린다: 엔진 기본 툴팁은 폭 계산이 어긋나면 글자를 <b>한 자씩 세로로</b> 쪼갠다(실측 폭 1dp).
+  </p>
+
+  <h4>코치마크 카드는 붙박이를 덮지 않는다</h4>
+  <p>
+    가로 화면에서 카드를 화면 맨 위·아래 끝으로 보내던 규칙이 문제였다 — 그 띠에는 머리띠와 HUD 가 산다.
+    데모에서 카드가 헤더의 <code>→ ×</code> 를 덮었다. 이제 카드는 <b>대상과 같은 높이</b>에 놓이고,
+    자리를 예약한 <code>GoHudAnchor</code> 를 알아서 피하며, 앵커가 아닌 것은 <code>keep_clear</code> 로 알려 준다.
+    피할 때는 대상을 가리지 않는 방향 중 <b>가장 짧게</b> 옮기고, 다 피할 수 없으면 그대로 둔다 — 카드가
+    사라지는 것보다 겹치는 편이 낫다. 카드가 본문 위에 <b>떠 있다</b> 고 읽히도록 그림자는 스킨 다이얼
+    (<code>float_shadow_size</code>·<code>float_shadow_lift</code>·<code>float_shadow_alpha</code>, 사선 판은 <code>float_glow_size</code>)로 깊이를 둔다.
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # 앵커가 아닌 붙박이</code></pre>
+
+  <h3>마우스와 키보드가 있는 화면</h3>
+  <p>
+    손가락에는 <b>호버가 없다.</b> 그래서 모바일만 보고 만들면 데스크톱에서만 나타나는 두 상태가
+    검증 없이 지나간다 — 실제로 gohud 의 <b>포커스 링이 강조 버튼 위에서 보이지 않았다.</b>
+    판이 바로 강조색인데 링도 강조색이라 <code>1.00:1</code>, 즉 같은 색이 겹쳐 사라진 것이다.
+    키보드로 옮겨 다니면 "지금 어디" 를 알 수 없었다.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="같은 버튼 줄의 세 상태 — 보통, 마우스 호버, 키보드 포커스" loading="lazy">
+    <figcaption>위에서부터 <b>보통 · 호버 · 포커스</b>. 채워진 버튼에는 판과 대비되는 링이 붙는다.</figcaption>
+  </figure>
+  <p>
+    채워진 버튼(<code>GoPrimaryButton</code> · <code>GoDangerSolidButton</code>)은 <b>판과 대비되는</b>
+    링을 쓴다 — 어두운 테마에서는 짙은 링, 밝은 테마에서는 흰 링, sci-fi 에서는 어두운 조준 표식이다.
+    대비 검사가 <b>포커스 링을 그것이 얹히는 판 위에서</b> 재므로, 팔레트를 바꿔도 이 규칙이 남는다
+    (WCAG 2.4.11 은 포커스 표시에 3:1 을 요구한다).
+  </p>
+
+  <h3><code>GoHudAnchor</code> — 화면 아홉 자리</h3>
+  <p>안전영역과 가장자리 여백을 알아서 지킨다. <code>landscape_spot</code> 을 주면 가로 화면에서
+    다른 자리로 옮겨 간다 — 세로에서 아래 가운데에 있던 조작부를 가로에서는 오른쪽 아래로 보내는 식이다.</p>
+  <div class="note">
+    <b>왜 필요한가.</b> HUD 조각마다 앵커와 오프셋을 손으로 쓰면, 노치가 있는 기기에서 체력바가 카메라
+    구멍에 가리고 가로 모드에서 조작 버튼이 제스처 바에 걸린다. 그 계산을 한 곳에 둔다.
+  </div>
+
+  <h4>본문이 HUD 뒤로 흐르지 않게</h4>
+  <p>
+    스크롤되는 화면이 HUD 와 한 화면에 있으면, 본문은 <b>HUD 뒤를 지나간다</b> — 글자끼리 겹쳐 둘 다
+    못 읽게 된다. 이 애드온에서 실제로 두 번 일어났다: 입력칸 자리표시자가 퀵슬롯 사이로 삐져나왔고,
+    설정 토글의 손잡이가 체력바 위에 얹혔다.
+  </p>
+  <pre><code>form.avoid_hud = true                  # 보이는 GoHudAnchor 를 모두 피한다
+joystick_anchor.reserve_space = false  # 손을 얹을 때만 나타나는 것은 빼고</code></pre>
+  <p>
+    칸마다 <b>잃는 면적이 가장 작은 방향</b>으로 피한다. 오른쪽 위의 체력바는 세로 화면에서는 아래로
+    (높이의 13%), 가로 화면에서는 옆으로(폭의 21%) 비껴간다 — 가로에서 세로로만 피하면 본문이
+    화면의 27% 를 잃는다. 이미 물러난 만큼은 다음 칸을 잴 때 빼고 본다.
+  </p>
+
+  <h4>HUD 끼리도 겹친다</h4>
+  <p>
+    아홉 자리는 화면을 나눌 뿐, 조각들이 <b>서로 안 겹친다는 보장은 아니다.</b> 위쪽 가운데에 뜨는
+    스낵바는 폭이 넓어 오른쪽 위 체력바 위에 그대로 얹혔다 — 값이 가려져 남은 체력을 읽을 수 없었다.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # 고정 HUD 아래로 내려앉는다
+notice_anchor.reserve_space = false   # 떠 있는 동안 본문을 밀지도 않는다</code></pre>
+  <p>
+    비키는 것은 <b>세로로만</b>이다 — 좌우로도 밀면 가운데 정렬이던 알림이 뜰 때마다 다른 자리에
+    나타나 눈이 따라가지 못한다. 그리고 피하는 쪽은 <b>비키지 않기로 한 칸</b>뿐이다: 둘 다 서로를
+    피하면 두 칸이 영원히 자리를 맞바꾼다.
+  </p>
+
+  <h3><code>GoBar</code> — 체력·마나·경험치</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 채움 전용 토큰
+hp.set_values(320, 500)                    # "320 / 500"</code></pre>
+  <p>값 변화는 0.18초 보간한다 — 체력이 뚝뚝 끊겨 움직이면 얼마나 맞았는지 읽히지 않는다.
+    <code>reduce_motion</code> 이면 즉시 바뀐다. 큰 수는 <code>12.3k</code> 로 줄여 막대 폭이 흔들리지 않게 한다.</p>
+
+  <h3><code>GoSlot</code> — 퀵슬롯 한 칸</h3>
+  <p>아이콘·수량·쿨다운·단축키를 <b>판 한 장</b>에 담는다. 작은 원 위에 배지를 따로 달면 슬롯마다 실제
+    폭이 달라져 줄이 흔들린다.</p>
+  <div class="note">
+    <b>보이는 크기와 터치 크기가 다르다.</b> 슬롯을 촘촘히 놓으면 48dp 터치 상자가 이웃과 겹친다.
+    겹친 자리는 <b>중심이 더 가까운 슬롯</b>이 가져간다 — <code>touch_peers</code> 에 서로를 넣어 주면 된다.
+  </div>
+
+  <h3><code>GoJoystick</code> — 가상 조이스틱</h3>
+  <table>
+    <thead><tr><th>모드</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>늘 같은 자리. 위치를 기억하기 쉽다</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>처음 누른 자리에 나타난다. 큰 화면에서 손가락을 옮겨도 잡힌다</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>나타난 뒤 손가락을 계속 따라간다. 오래 끄는 이동에 편하다</td></tr>
+    </tbody>
+  </table>
+  <p><code>moved</code> 로 오는 <code>Vector2</code> 는 길이가 0~1 이라 그대로 속도에 곱하면 된다 —
+    화면 크기나 DPI 에 따라 값이 달라지지 않는다.</p>
+
+  <h3><code>GoIconButton</code> — 작게 보이고 크게 눌린다</h3>
+  <p>헤더의 닫기 버튼이 제목보다 커 보이면 안 되지만, 36dp 사각형은 손가락으로 못 누른다.
+    그래서 <b>노드는 작게, 히트 판정은 노드 밖까지</b> 넓힌다.</p>
+  <div class="note warn">
+    <b>형제가 입력을 받지 않을 때만 안전하다.</b> 넓힌 영역이 옆 버튼을 덮으면 옆 버튼이 안 눌린다.
+    아이콘 버튼을 나란히 둘 때는 <code>touch_peers</code> 로 서로를 알려 준다.
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — 만드는 자리를 하나로</h2>
+  <p class="sub">
+    <code>Button.new()</code> 를 직접 쓰면 화면마다 여백·높이·줄바꿈이 조금씩 달라진다.
+    그 차이는 코드 리뷰로 잡히지 않고 스크린샷으로만 보인다.
+  </p>
+
+  <table>
+    <thead><tr><th>갈래</th><th>함수</th></tr></thead>
+    <tbody>
+      <tr><td>뼈대</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>글자</td><td><code>label</code> <code>label_key</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>버튼</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code></td></tr>
+      <tr><td>입력</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>radio_group</code> <code>segmented</code></td></tr>
+      <tr><td>표시</td><td><code>card</code> <code>chip</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>dropdown</code> <code>empty_state</code></td></tr>
+      <tr><td>표면 조각</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> 는 언제나 <code>StyleBoxFlat</code> 을 돌려준다.</b> 돌려받아
+    <code>bg_color</code> 나 <code>corner_radius</code> 를 고치는 호출부와의 약속이기 때문이다.
+    커스텀 모양(각진 판)을 지켜야 하면 <code>surface()</code> 를 쓴다.
+  </div>
+
+  <h3>흐르는 줄의 함정</h3>
+  <p>
+    <code>wrap_row</code> 에 넣는 것은 <b>자연 폭</b>이어야 한다. 줄바꿈을 켠 채 두면 최소 폭이 거의 0 이
+    되고, 흐르는 줄은 그 최소 폭으로 칸을 잡는다 — 버튼 하나가 한 글자 폭으로 쪼그라들어 글자가
+    <b>세로로 한 자씩</b> 내려간다. 팩토리가 이것을 자동으로 막는다.
+  </p>
+
+  <h3>빈 목록을 빈 채로 두지 않는다</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "아직 아무것도 없습니다"))</code></pre>
+  <p>사용자는 빈 화면을 <b>고장</b>으로 읽는다.</p>
+</section>
+
+<section id="hooks">
+  <h2>자식 클래스 훅</h2>
+  <p class="sub">
+    하위 위젯을 만드는 자리는 전부 덮어쓸 수 있는 메서드를 거친다. gohud 타입을 상속한 프로젝트가
+    코드를 복사하지 않고도 위젯 <b>안에</b> 자기 서브클래스를 끼울 수 있다.
+  </p>
+  <table>
+    <thead><tr><th>훅</th><th>위젯</th><th>기본</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>모달이 열려 있는 동안 카드를 숨긴다</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← 생김새</a> · <a href="./">소개로 →</a></p>
+    <p style="font-size:13px">밑줄 친 용어에 마우스를 올리면 뜻이 뜬다.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

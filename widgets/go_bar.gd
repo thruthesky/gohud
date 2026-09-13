@@ -33,6 +33,10 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 			_name_label.visible = not value.is_empty()
 
 ## 막대 색. 투명이면 테마의 `accent`.
+##
+## 🔑 상태색을 쓸 때는 **채움 전용 토큰**(`GoTheme.DANGER_FILL` 등)을 준다 — `DANGER` 는 글자용이라
+##    밝은 테마에서 어둡게 잡혀 있고, 그대로 막대에 칠하면 탁해 보인다. 채움 토큰이 없는 테마에서는
+##    같은 이름의 기본 색으로 자동으로 떨어지므로 그냥 써도 안전하다.
 @export var ink := Color.TRANSPARENT:
 	set(value):
 		ink = value
@@ -139,6 +143,14 @@ func _restyle() -> void:
 	GoStyle.tint_progress(_bar, ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT))
 
 
+## 🛑 수치 표시는 이제 **번역 키**를 거친다 — 언어가 바뀌면 형식도 바뀌어야 한다
+##    (터키어 %50 · 프랑스어 "50 %"). 엔진 자동 번역을 타지 않는 조립 문자열이라
+##    이 알림을 직접 받아 다시 만든다.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_refresh_text()
+
+
 func _refresh_text() -> void:
 	if not is_instance_valid(_value_label): return
 	match readout:
@@ -146,17 +158,30 @@ func _refresh_text() -> void:
 			_value_label.visible = false
 		Readout.VALUE:
 			_value_label.visible = true
-			_value_label.text = _format(_value)
+			_value_label.text = format_amount(_value)
 		Readout.FRACTION:
 			_value_label.visible = true
-			_value_label.text = "%s / %s" % [_format(_value), _format(_maximum)]
+			# 🛑 형식을 코드에 박지 않는다 — 구분자·순서는 언어마다 다르다(GoConfig.text_keys).
+			_value_label.text = GoUi.text(&"bar_fraction").format({
+				"value": format_amount(_value), "max": format_amount(_maximum)})
 		Readout.PERCENT:
 			_value_label.visible = true
 			var pct := (_value / _maximum * 100.0) if _maximum > 0.0 else 0.0
-			_value_label.text = "%d%%" % roundi(pct)
+			# 터키어는 백분율 기호를 앞에 붙인다(%50) — 그래서 이것도 번역 키다.
+			_value_label.text = GoUi.text(&"bar_percent").format({"percent": roundi(pct)})
 
 
-## 큰 수를 짧게 — `12.3k`·`4.5m`. 자릿수가 늘어나도 막대 폭이 흔들리지 않게 한다.
+## 큰 수를 짧게 적는다 — 호스트가 `GoConfig.number_formatter` 를 꽂았으면 그것을 쓴다.
+## 🔑 한국어·중국어·일본어는 천/백만이 아니라 **만·억** 단위로 끊는다. 자리를 어디서 끊을지가
+##    달라서 형식 문자열로는 못 고치고, 계산 자체를 바꿔야 한다 — 그래서 훅이다.
+static func format_amount(amount: float) -> String:
+	var hook: Callable = GoUi.config.number_formatter
+	if hook.is_valid():
+		return str(hook.call(amount))
+	return abbreviate(amount)
+
+
+## 내장 축약 규칙 — `12.3k`·`4.5m`. 자릿수가 늘어나도 막대 폭이 흔들리지 않게 한다.
 static func abbreviate(amount: float) -> String:
 	var size := absf(amount)
 	if size >= 1_000_000.0: return "%.1fm" % (amount / 1_000_000.0)
@@ -165,4 +190,4 @@ static func abbreviate(amount: float) -> String:
 
 
 func _format(amount: float) -> String:
-	return abbreviate(amount)
+	return format_amount(amount)

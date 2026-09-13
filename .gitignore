@@ -1,6 +1,18 @@
 # gohud 저장소용 — 호스트 프로젝트(addons/gohud) 안에 있어도 무해하다.
+
+# 🛑 스토어 API 키가 든다 — 절대 커밋하지 않는다.
+.env/
+
+# 배포 산출물
+builds/
 .dist/
+
+# Godot 임포트 캐시 · 잡파일
 .godot/
 tests/_*
 *.tmp
+*.zip
 .DS_Store
+
+# Python 도구가 남기는 캐시
+__pycache__/

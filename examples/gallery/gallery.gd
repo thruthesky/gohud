@@ -3,7 +3,7 @@
 ## 이 파일은 예제이자 **살아 있는 검사**다. 위젯을 고치고 이것을 띄우면 그 자리에서 보인다.
 ##
 ## ```
-## godot res://addons/gohud/examples/gallery.tscn
+## godot res://addons/gohud/examples/gallery/gallery.tscn
 ## ```
 ##
 ## 🛑 프로젝트의 오토로드·서버·계정에 의존하지 않는다 — 빈 프로젝트에 애드온만 넣어도 열려야
@@ -49,6 +49,10 @@ func _build_page() -> void:
 	var form := GoForm.new()
 	form.name = "Form"
 	add_child(form)
+	# 🛑 **떠 있는 HUD 자리를 비운다.** 그대로 두면 스크롤 내용이 퀵슬롯 뒤로 흘러 글자가 슬롯
+	#    사이 틈으로 삐져나온다 — RTL 에서 입력칸 글자가 오른쪽으로 가며 실제로 그랬다
+	#    (2026-09-13 아랍어 스크린샷 실측). 폼이 `GoHudAnchor` 들의 자리를 알아서 피한다.
+	form.avoid_hud = true
 
 	var scroll := GoScroll.new()
 	scroll.name = "Scroll"
@@ -58,11 +62,6 @@ func _build_page() -> void:
 	page.name = "Page"
 	scroll.add_child(page)
 
-	# HUD 막대가 오른쪽 위에 떠 있다 — 데모에서는 첫 줄이 그 아래로 오도록 자리를 비운다.
-	var head_room := Control.new()
-	head_room.custom_minimum_size.y = 76
-	head_room.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	page.add_child(head_room)
 	page.add_child(GoStyle.label("gohud", GoTheme.ROLE_TITLE))
 	page.add_child(GoStyle.label("Customizable HUD & UI kit — every widget below is themeable and icon-swappable.",
 		GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
@@ -85,8 +84,10 @@ func _build_page() -> void:
 	page.add_child(buttons)
 
 	var icon_row := GoStyle.wrap_row()
+	# ♿ **아이콘 버튼에는 설명을 단다.** 글자가 없으므로 마우스 사용자에게는 툴팁이, 화면 낭독기에게는
+	#    접근성 이름이 유일한 설명이다 — 둘 다 `tooltip_key` 하나에서 나온다.
 	for icon in [GoIconSet.SETTINGS, GoIconSet.SEARCH, GoIconSet.HEART, GoIconSet.BELL, GoIconSet.TRASH]:
-		icon_row.add_child(GoStyle.icon_button(icon, _say.bind(String(icon))))
+		icon_row.add_child(GoStyle.icon_button(icon, _say.bind(String(icon)), -1, StringName(icon)))
 	page.add_child(icon_row)
 
 	# 목록 항목
@@ -170,14 +171,24 @@ func _build_page() -> void:
 		icons.add_child(GoUi.icons().node(StringName(icon), 22, GoUi.color(GoTheme.SECONDARY)))
 	page.add_child(icons)
 
-	# 테마 전환
-	page.add_child(GoStyle.section("Theme", false))
+	# 생김새 고르기 — 색뿐 아니라 **모양**까지 통째로 바뀐다(테마 + 스킨).
+	page.add_child(GoStyle.section("Theme preset", false))
+	var presets := GoThemePresets.all()
+	var names: Array = []
+	var current := 0
+	for index in presets.size():
+		names.append(presets[index].label())
+		if presets[index].id == GoUi.config.preset: current = index
+	var preset_picker := GoStyle.select(names, "", false)
+	preset_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	preset_picker.selected = current
+	preset_picker.item_selected.connect(_pick_preset)
+	page.add_child(preset_picker)
+	page.add_child(GoStyle.label(
+		"Presets swap the theme (colours, engine controls) and the skin (joystick, slots, coach mark) together.",
+		GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
 	page.add_child(GoStyle.button("Toggle light / dark", _toggle_theme, GoStyle.Tone.COMPACT))
 	page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet", false))
-	# 아래 HUD 에 가리지 않도록 바닥에 여유를 둔다.
-	var tail := Control.new()
-	tail.custom_minimum_size.y = 220
-	page.add_child(tail)
 
 
 # ── 화면에 떠 있는 HUD ─────────────────────────────────────────────────
@@ -187,22 +198,29 @@ func _build_hud() -> void:
 	top.name = "TopLeft"
 	top.spot = GoHudAnchor.Spot.TOP_RIGHT
 	add_child(top)
+	# 🛑 **떠 있는 HUD 는 판 위에 올린다.** 배경 없이 두면 스크롤 본문이 그 뒤를 지나가면서
+	#    글자끼리 뒤섞여 둘 다 못 읽는다 — 세로에서 입력칸 자리표시자가, 가로에서 토글 손잡이가
+	#    체력바 위에 그대로 얹혔다(2026-09-13 실측). `hud` 판은 표면색 82% 라 뒤를 가린다.
+	var bars_panel := PanelContainer.new()
+	bars_panel.name = "Bars"
+	bars_panel.add_theme_stylebox_override(&"panel", GoStyle.floating(GoTheme.BOX_HUD))
+	top.add_child(bars_panel)
 	var bars := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
 	bars.custom_minimum_size.x = 180
 	_hp = GoBar.new()
 	_hp.label_text = "HP"
-	_hp.ink = GoUi.color(GoTheme.DANGER)
+	_hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 	bars.add_child(_hp)
 	var mp := GoBar.new()
 	mp.label_text = "MP"
-	mp.ink = GoUi.color(GoTheme.INFO)
+	mp.ink = GoUi.color(GoTheme.INFO_FILL)
 	bars.add_child(mp)
 	var xp := GoBar.new()
 	xp.label_text = "XP"
 	xp.readout = GoBar.Readout.PERCENT
-	xp.ink = GoUi.color(GoTheme.WARNING)
+	xp.ink = GoUi.color(GoTheme.WARNING_FILL)
 	bars.add_child(xp)
-	top.add_child(bars)
+	bars_panel.add_child(bars)
 	_hp.set_values(320, 500, false)
 	mp.set_values(88, 120, false)
 	xp.set_values(64, 100, false)
@@ -236,6 +254,9 @@ func _build_hud() -> void:
 	var pad := GoHudAnchor.new()
 	pad.name = "Joystick"
 	pad.spot = GoHudAnchor.Spot.BOTTOM_LEFT
+	# 🛑 조이스틱은 손을 얹은 동안에만 나타난다 — 본문에서 자리를 비워 두면 보이지도 않는 칸이
+	#    화면 아래 한 줄을 통째로 깎는다.
+	pad.reserve_space = false
 	add_child(pad)
 	_joystick = GoJoystick.new()
 	# 데모에서는 본문을 가리지 않게 — 손을 얹으면 그 자리에 나타난다.
@@ -247,6 +268,10 @@ func _build_hud() -> void:
 	var notice_anchor := GoHudAnchor.new()
 	notice_anchor.name = "NoticeSpot"
 	notice_anchor.spot = GoHudAnchor.Spot.TOP_CENTER
+	# 🛑 알림은 **잠깐 떴다 사라진다.** 자리를 예약하면 뜰 때마다 본문이 통째로 출렁이고,
+	#    비키지 않으면 오른쪽 위 체력바 위에 그대로 얹힌다(둘 다 실측).
+	notice_anchor.reserve_space = false
+	notice_anchor.avoid_peers = true
 	add_child(notice_anchor)
 	_notice = GoNotice.new()
 	_notice.custom_minimum_size.x = 260
@@ -255,6 +280,8 @@ func _build_hud() -> void:
 	var prompt_anchor := GoHudAnchor.new()
 	prompt_anchor.name = "PromptSpot"
 	prompt_anchor.spot = GoHudAnchor.Spot.CENTER_RIGHT
+	# 이것도 필요할 때만 나타난다 — 본문이 미리 자리를 비워 둘 것은 아니다.
+	prompt_anchor.reserve_space = false
 	add_child(prompt_anchor)
 	_prompt = GoPromptCard.new()
 	_prompt.set_closable(true)
@@ -277,8 +304,9 @@ func _use_slot(slot: GoSlot) -> void:
 
 
 func _open_dialog() -> void:
+	# 되돌릴 수 없는 동작이므로 확인 버튼을 **위험색**으로 — 색이 먼저 읽히고 글자가 뒤따른다.
 	var yes := await _dialogs.confirm("Delete character",
-		"This cannot be undone. Delete \"{name}\"?", "", "", "", {"name": "Aria"})
+		"This cannot be undone. Delete \"{name}\"?", "", "", "", {"name": "Aria"}, true)
 	_say("dialog → %s" % ("confirmed" if yes else "cancelled"))
 
 
@@ -347,12 +375,24 @@ func _start_tour() -> void:
 	])
 
 
+## 생김새 묶음을 고른다 — 한 줄이면 테마·스킨·아이콘이 함께 바뀐다.
+func _pick_preset(index: int) -> void:
+	var presets := GoThemePresets.all()
+	if index < 0 or index >= presets.size(): return
+	GoUi.use_preset(presets[index].id)
+	_rebuild()
+
+
 func _toggle_theme() -> void:
 	_dark = not _dark
 	var settings := GoUi.config
 	settings.theme = GoUi.DEFAULT_THEME if _dark else GoUi.LIGHT_THEME
-	# 🛑 이미 만들어진 노드는 자기 `theme` 를 들고 있다 — 통째로 다시 짓는 것이 가장 확실하다.
-	#    실제 게임에서는 보통 부팅 때 한 번만 테마를 정하므로 이 비용이 들지 않는다.
+	_rebuild()
+
+
+## 🛑 이미 만들어진 노드는 자기 `theme` 를 들고 있다 — 통째로 다시 짓는 것이 가장 확실하다.
+##    실제 게임에서는 보통 부팅 때 한 번만 생김새를 정하므로 이 비용이 들지 않는다.
+func _rebuild() -> void:
 	for child in get_children(): child.queue_free()
 	_slots.clear()
 	_tour = null

@@ -127,12 +127,13 @@ static func spacer(minimum := 0.0) -> Control:
 static func divider(vertical := false) -> Control:
 	var line := ColorRect.new()
 	line.name = "Divider"
-	line.color = GoUi.color(GoTheme.BORDER)
+	line.color = GoUi.skin().divider_color()
+	var thick := GoUi.skin().divider_thickness()
 	if vertical:
-		line.custom_minimum_size = Vector2(1, 0)
+		line.custom_minimum_size = Vector2(thick, 0)
 		line.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	else:
-		line.custom_minimum_size = Vector2(0, 1)
+		line.custom_minimum_size = Vector2(0, thick)
 		line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return line
@@ -155,6 +156,12 @@ static func responsive_grid(min_cell_width := 160.0, spacing := -1) -> GridConta
 	node.add_theme_constant_override(&"h_separation", value)
 	node.add_theme_constant_override(&"v_separation", value)
 	node.set_meta(&"go_min_cell", min_cell_width)
+	# 🛑 칸은 **균등하게 나뉘어야** 한다. `GridContainer` 는 남는 폭을 `SIZE_EXPAND` 가 붙은 자식에게만
+	#    주므로, 기본 `SIZE_FILL` 로 두면 카드가 **내용의 최소 폭**으로 쪼그라든다 — 카드 속 라벨은
+	#    줄바꿈을 켜 두어 최소 폭이 거의 0 이라, 카드가 25px 로 접히고 글자가 **세로로 한 자씩** 내려간다
+	#    (2026-09-13 실측: 창 390~600 어디서나 카드 폭 25px · 라벨 6줄).
+	node.child_entered_tree.connect(func(child: Node) -> void:
+		if child is Control: (child as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL)
 	var refit := func() -> void:
 		if not is_instance_valid(node): return
 		var cell: float = node.get_meta(&"go_min_cell", 160.0)
@@ -227,12 +234,15 @@ static func section(text_or_key: String, translate := true) -> Label:
 	var node := label_key(text_or_key, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)) if translate \
 		else label(text_or_key, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 	node.name = "Section"
+	# 스킨이 머리말에 표식을 붙일 수 있게 한다. 기본 스킨은 빈 판이라 생김새가 그대로다.
+	node.add_theme_stylebox_override(&"normal", GoUi.skin().section_box())
 	return node
 
 
 # ── 버튼 ───────────────────────────────────────────────────────────────
 
-enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT }
+## 🛑 값을 **뒤에만** 더한다 — 가운데에 끼우면 씬에 저장된 숫자가 다른 톤을 가리킨다.
+enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID }
 
 ## 이미 있는 버튼에 gohud 규격을 입힌다(씬에서 만든 버튼도 받는다).
 static func style_button(node: Button, tone := Tone.NORMAL) -> void:
@@ -240,6 +250,7 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	match tone:
 		Tone.PRIMARY: node.theme_type_variation = GoTheme.VAR_PRIMARY_BUTTON
 		Tone.DANGER: node.theme_type_variation = GoTheme.VAR_DANGER_BUTTON
+		Tone.DANGER_SOLID: node.theme_type_variation = GoTheme.VAR_DANGER_SOLID_BUTTON
 		Tone.BARE: node.theme_type_variation = GoTheme.VAR_BARE_BUTTON
 		Tone.COMPACT: node.theme_type_variation = GoTheme.VAR_COMPACT_BUTTON
 		_: node.theme_type_variation = GoTheme.VAR_BUTTON
@@ -247,7 +258,7 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	# 🛑 `MOUSE_FILTER_PASS` — 스크롤 안의 버튼은 손가락 끌기를 `ScrollContainer` 에 넘겨야 한다.
 	#    STOP 이면 목록 위에서 시작한 스크롤이 먹히지 않는다.
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
-	if GoUi.config.autowrap_text: node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if GoUi.config.autowrap_text: fit_words(node)
 	if tone == Tone.BARE:
 		# 씬에서 만든 버튼에 남아 있는 판(override)을 지운다 — 맨 버튼은 테마 변형이 그리는 것이 전부다.
 		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]:
@@ -257,6 +268,32 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	#    여기서 EXPAND_FILL 을 박으면 먼저 둔 값을 덮어쓴다(2026-09-12, 파생 게임 소비처 5곳). 높이는 터치 하한.
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH if compact else GoTheme.BUTTON_HEIGHT)
 	if not compact: node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+## 🔑 **버튼 글자가 글자 단위로 쪼개지지 않게** 줄바꿈을 정한다. 글자를 바꾼 뒤에도 다시 부른다.
+##
+## 🛑 줄바꿈이 켜진 버튼은 최소 폭에서 **글자 폭을 빼 버린다**(접을 수 있다고 보므로). 그래서 자연 폭
+##    버튼이 좁아지면 `Done` 이 `Don`/`e` 로 갈라졌다(2026-09-13 코치마크 실측). 규칙 둘:
+##    ① 한 낱말이면 접지 않는다 — 접을 곳이 없다. ② 여러 낱말이면 접되, **가장 긴 낱말**은 한 줄에
+##    들어가도록 최소 폭을 보장한다.
+static func fit_words(node: Button) -> void:
+	if node.has_meta(&"go_no_wrap"): return
+	# 🛑 **번역 키가 아니라 화면에 보이는 글자**로 판단한다. `button_key()` 의 `text` 는 키(`confirm`)이고
+	#    엔진이 그리기 직전에 번역한다 — 키만 보면 한 낱말이라 접지 않기로 하는데, 번역문은 두 낱말일 수
+	#    있다(2026-09-13, I-57). `atr()` 은 그 노드의 자동 번역 설정을 따라 번역한다.
+	var shown := node.atr(node.text) if node.is_inside_tree() else node.text
+	var words := shown.strip_edges().split(" ", false)
+	if words.size() <= 1:
+		node.autowrap_mode = TextServer.AUTOWRAP_OFF
+		return
+	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var font := node.get_theme_font(&"font")
+	var size := node.get_theme_font_size(&"font_size")
+	var longest := 0.0
+	for word in words:
+		longest = maxf(longest, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1.0, size).x)
+	var frame := node.get_theme_stylebox(&"normal").get_minimum_size().x
+	node.custom_minimum_size.x = maxf(node.custom_minimum_size.x, ceilf(longest + frame + 2.0))
 
 
 ## 번역 키를 담는 버튼.
@@ -277,10 +314,15 @@ static func button(text: String, action := Callable(), tone := Tone.NORMAL) -> B
 
 ## 🔑 **아이콘만 있는 버튼**. 보이는 크기는 `visual`, 터치는 토큰 `touch` 까지 노드 밖으로 넓어진다.
 ## 세트가 폰트든 텍스처든 같은 호출이다.
-static func icon_button(icon: StringName, action := Callable(), visual := -1) -> GoIconButton:
+##
+## ♿ `tooltip_key` 를 **꼭 준다.** 아이콘만 있는 버튼은 마우스 사용자에게 툴팁이, 화면 낭독기에게는
+## 접근성 이름이 **유일한 설명**이다. 둘 다 이 한 값에서 나온다.
+static func icon_button(icon: StringName, action := Callable(), visual := -1,
+		tooltip_key: StringName = &"") -> GoIconButton:
 	var node := GoIconButton.new()
 	node.visual_size = GoUi.metric(GoTheme.TOUCH) - 12 if visual < 0 else visual
 	node.set_icon_name(icon)
+	if not tooltip_key.is_empty(): node.tooltip_text_name = tooltip_key
 	if action.is_valid(): node.pressed.connect(action)
 	return node
 
@@ -297,7 +339,13 @@ static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.
 		node.add_theme_constant_override(&"icon_max_width", px)
 		if ink.a > 0: node.add_theme_color_override(&"icon_normal_color", ink)
 		return
-	var glyph := GoUi.icons().node(icon, px, ink)
+	# 🛑 텍스처가 없어 **자식 라벨**로 떨어지는 경우다. 버튼 테마의 아이콘 색은 자식에게 닿지 않으므로
+	#    색을 안 받았으면 여기서 같은 색을 집어 준다 — 안 그러면 흰색으로 그려진다.
+	var glyph_ink := ink
+	if glyph_ink.a <= 0:
+		glyph_ink = node.get_theme_color(&"icon_normal_color") if node.has_theme_color(&"icon_normal_color") \
+			else GoUi.color(GoTheme.SECONDARY)
+	var glyph := GoUi.icons().node(icon, px, glyph_ink)
 	glyph.name = "IconGlyph"
 	glyph.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT, Control.PRESET_MODE_MINSIZE)
 	node.add_child(glyph)
@@ -403,7 +451,7 @@ static func toggle(key := "", translate := true) -> CheckButton:
 	# 폼 안에서 입력 칸·버튼과 한 줄 높이가 맞도록 버튼 높이를 쓴다(터치 하한보다 크다).
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
-	if GoUi.config.autowrap_text: node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if GoUi.config.autowrap_text: fit_words(node)   # 버튼과 같은 낱말 규칙
 	return node
 
 
@@ -444,56 +492,57 @@ static func progress(ink := Color.TRANSPARENT) -> ProgressBar:
 	return node
 
 
-## 막대의 채움 색만 바꾼다. 🛑 테마의 `ProgressBar/fill` 을 **복제해서** 고친다 — 카드 스타일을
-##    빌려 쓰면 그 안쪽 여백(12dp)까지 딸려 와 얇은 막대가 두꺼운 덩어리가 된다.
+## 막대의 채움 색만 바꾼다. 모양은 스킨이 정한다.
 static func tint_progress(bar: ProgressBar, ink: Color) -> void:
-	var source: StyleBox = null
-	for candidate in [GoUi.theme(), GoUi.DEFAULT_THEME]:
-		if candidate != null and candidate.has_stylebox(&"fill", &"ProgressBar"):
-			source = candidate.get_stylebox(&"fill", &"ProgressBar")
-			break
-	var flat := source.duplicate() as StyleBoxFlat if source != null else null
-	if flat == null:
-		flat = StyleBoxFlat.new()
-		flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
-	flat.bg_color = ink
-	bar.add_theme_stylebox_override(&"fill", flat)
+	bar.add_theme_stylebox_override(&"fill", GoUi.skin().progress_fill_box(ink))
 
 
 # ── 표면 조각 ──────────────────────────────────────────────────────────
 
+## 🔑 카드·패널의 StyleBox **사본** — **스킨이 정한 모양 그대로**다. 각진 판 같은 커스텀
+## StyleBox 도 그대로 온다. 모양까지 바꾸는 테마를 쓰는 곳은 `box()` 대신 이것을 쓴다.
+static func surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) -> StyleBox:
+	return GoUi.skin().surface_box(variant, accent)
+
+
 ## 카드·패널의 StyleBox **사본**. `accent` 를 주면 테두리에 그 색을 입힌다.
+##
+## 🛑 **언제나 `StyleBoxFlat`** 을 돌려준다 — 돌려받아 `bg_color`·`corner_radius` 를 고치는
+##    호출부가 이미 많기 때문이다. 스킨이 커스텀 StyleBox 를 주는 테마(sci-fi 등)에서는 그 모양이
+##    여기서 살아남지 못한다. 모양을 지켜야 하면 `surface()` 를 쓴다.
 static func box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) -> StyleBoxFlat:
-	var style := GoUi.box(variant) as StyleBoxFlat
+	var style := GoUi.skin().surface_box(variant, accent) as StyleBoxFlat
 	if style == null:
 		style = StyleBoxFlat.new()
 		style.bg_color = GoUi.color(GoTheme.SURFACE)
-	# 🛑 0.5 — 이 값은 gohud 가 파생된 게임의 규범이다. 0.55 로 짰다가 위임 대조 검사에서 잡혔다(2026-09-12).
-	if accent.a > 0: style.border_color = Color(accent, 0.5)
+		# 🛑 0.5 — 이 값은 gohud 가 파생된 게임의 규범이다. 0.55 로 짰다가 위임 대조 검사에서 잡혔다(2026-09-12).
+		if accent.a > 0: style.border_color = Color(accent, 0.5)
 	return style
 
 
-## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다.
+## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다. 위 `box()` 와 같은 약속이다.
 static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT) -> StyleBoxFlat:
-	var style := box(variant, accent)
-	style.shadow_color = Color(GoUi.color(GoTheme.SHADOW), 0.35)
-	style.shadow_size = GoUi.metric(GoTheme.GAP_SMALL)
-	style.shadow_offset = Vector2(0, 2)
+	var style := GoUi.skin().floating_box(variant, accent) as StyleBoxFlat
+	if style == null:
+		style = box(variant, accent)
+		style.shadow_color = Color(GoUi.color(GoTheme.SHADOW), 0.35)
+		style.shadow_size = GoUi.metric(GoTheme.GAP_SMALL)
+		style.shadow_offset = Vector2(0, 2)
 	return style
 
 
-## 원형 배지·아바타 테두리 — accent 를 옅게 채우고 같은 색 링을 두른다.
+## 원형 배지·아바타 테두리 — accent 를 옅게 채우고 같은 색 링을 두른다. 위 `box()` 와 같은 약속이다.
 static func disc(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> StyleBoxFlat:
-	var style := box(GoTheme.BOX_HUD, accent)
-	style.bg_color = Color(accent, fill_alpha)
-	style.border_color = Color(accent, edge_alpha)
-	style.set_border_width_all(1)
-	# 🛑 반지름이 변의 정확히 절반이면(31+31=62) 위아래 모서리가 만나는 자리에 이음매 선이 보인다.
-	#    1 만 줄이고 곡선 분할을 올리면 사라진다 — 눈에는 여전히 원이다.
-	style.set_corner_radius_all(maxi(1, int(diameter * 0.5) - 1))
-	style.corner_detail = 16
-	style.set_content_margin_all(0)
-	style.shadow_size = 0
+	var style := GoUi.skin().disc_box(diameter, accent, fill_alpha, edge_alpha) as StyleBoxFlat
+	if style == null:
+		style = box(GoTheme.BOX_HUD, accent)
+		style.bg_color = Color(accent, fill_alpha)
+		style.border_color = Color(accent, edge_alpha)
+		style.set_border_width_all(1)
+		style.set_corner_radius_all(maxi(1, int(diameter * 0.5) - 1))
+		style.corner_detail = 16
+		style.set_content_margin_all(0)
+		style.shadow_size = 0
 	return style
 
 
@@ -503,7 +552,7 @@ static func card(accent := Color.TRANSPARENT) -> PanelContainer:
 	node.name = "Card"
 	node.theme = GoUi.theme()
 	node.theme_type_variation = GoTheme.VAR_CARD
-	if accent.a > 0: node.add_theme_stylebox_override(&"panel", box(GoTheme.BOX_CARD, accent))
+	if accent.a > 0: node.add_theme_stylebox_override(&"panel", surface(GoTheme.BOX_CARD, accent))
 	return node
 
 
@@ -515,19 +564,11 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false) -> 
 	node.theme = GoUi.theme()
 	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(color, 0.16)
-	style.border_color = Color(color, 0.45)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
-	style.corner_detail = 8
-	style.content_margin_left = GoUi.metric(GoTheme.GAP_SMALL)
-	style.content_margin_right = GoUi.metric(GoTheme.GAP_SMALL)
-	style.content_margin_top = GoUi.metric(GoTheme.GAP_TINY)
-	style.content_margin_bottom = GoUi.metric(GoTheme.GAP_TINY)
-	node.add_theme_stylebox_override(&"panel", style)
-	var text_node := label_key(text, GoTheme.ROLE_COMPACT, color) if translate \
-		else label(text, GoTheme.ROLE_COMPACT, color)
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().chip_box(color))
+	# 🛑 글자는 칩 **판 위에서** 읽혀야 한다 — 같은 색 틴트 배경이라 그대로 쓰면 묻힌다.
+	var ink_on_chip := GoUi.skin().chip_ink(color)
+	var text_node := label_key(text, GoTheme.ROLE_COMPACT, ink_on_chip) if translate \
+		else label(text, GoTheme.ROLE_COMPACT, ink_on_chip)
 	text_node.autowrap_mode = TextServer.AUTOWRAP_OFF
 	text_node.set_meta(&"go_no_wrap", true)
 	text_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -586,6 +627,32 @@ static func _fit_height(control_ref: WeakRef, content_ref: WeakRef, baseline: fl
 		control.custom_minimum_size.y = height
 
 
+## 🔑 **gohud 규격의 툴팁 한 장.** `Control._make_custom_tooltip()` 에서 돌려준다.
+##
+## 🛑 엔진 기본 툴팁을 그대로 두면 글자가 **한 자씩 세로로** 쪼개진다 — 라벨에 줄바꿈이 걸린 채
+##    최대 폭이 1dp 로 계산된 탓이다(2026-09-13 실측: `settings` 가 폭 1 · 높이 186 으로 나왔다).
+##    폭을 우리가 정하면 그 계산에 기대지 않는다.
+static func tooltip_node(text: String, max_width := 260.0) -> Control:
+	# 🛑 **판을 다시 그리지 않는다.** 엔진이 이 노드를 자기 `TooltipPanel` 안에 넣으므로, 여기서
+	#    판을 하나 더 만들면 테두리가 **두 겹**으로 보인다(2026-09-13 실측). 글자만 돌려준다.
+	var label := Label.new()
+	label.name = "Text"
+	label.text = text
+	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED   # 이미 번역된 문구가 들어온다
+	# 🛑 `go_no_wrap` 을 달아 둔다 — 폼이 자손 라벨에 줄바꿈을 강제하는데, 툴팁은 그 대상이 아니다.
+	label.set_meta(&"go_no_wrap", true)
+	typography(label, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.TEXT))
+	# 짧은 문구는 한 줄로 둔다. 길면 그때만 접되, **접을 폭을 우리가 준다.**
+	var wide := label.get_theme_font(&"font").get_string_size(
+		text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, label.get_theme_font_size(&"font_size")).x
+	if wide > max_width:
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.custom_minimum_size.x = max_width
+	else:
+		label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	return label
+
+
 ## 트리 전체에 폼 규격을 입힌다 — 나중에 추가되는 자식까지 같은 규격이 되게.
 ##
 ## 🛑🛑 자손 `Label` 의 줄바꿈을 **보장한다.** 없으면 긴 문장 하나가 한 줄로 뻗고, 그 최소 폭이
@@ -597,8 +664,7 @@ static func form(node: Node) -> void:
 	if node is Button:
 		node.custom_minimum_size.y = maxf(node.custom_minimum_size.y, GoUi.metric(GoTheme.BUTTON_HEIGHT))
 		# 🛑 자연 폭으로 표시된 것(흐르는 줄의 칸, 「뒤로」처럼 낱말 하나)은 건드리지 않는다.
-		if GoUi.config.autowrap_text and not node.has_meta(&"go_no_wrap"):
-			node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if GoUi.config.autowrap_text: fit_words(node)
 		if node.get_class() == "Button" and node.theme_type_variation == &"":
 			style_button(node)
 	if node is Label:
@@ -636,7 +702,12 @@ static func dropdown(text: String, items: Array, action := Callable(), translate
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
-	apply_icon(node, GoIconSet.CHEVRON_DOWN, GoUi.metric(GoTheme.LIST_GLYPH))
+	# 🛑 **`select()`(OptionButton) 와 나란히 놓인다** — 데모에서 둘이 위아래로 붙어 있는데 글자 정렬과
+	#    화살표 크기가 달라 다른 부품처럼 보였다(2026-09-13 데모 촬영 실측). 글자는 왼쪽, 화살표는
+	#    OptionButton 이 쓰는 그림과 같은 크기로 맞춘다.
+	node.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	var arrow := GoUi.theme().get_icon(&"arrow", &"OptionButton") if GoUi.theme() != null and GoUi.theme().has_icon(&"arrow", &"OptionButton") else null
+	apply_icon(node, GoIconSet.CHEVRON_DOWN, arrow.get_width() if arrow != null else GoUi.metric(GoTheme.LIST_GLYPH))
 	node.icon_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	var popup := node.get_popup()
 	popup.theme = GoUi.theme()
@@ -690,20 +761,9 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 		# 🛑 자연 폭 — 줄바꿈을 켠 채 두면 최소 폭이 0 이 되어 글자가 세로로 쪼개진다(2026-09-12 데모: 파란 막대만 보였다).
 		natural_width(item)
 		item.custom_minimum_size.x = GoUi.metric(GoTheme.TOUCH) * 1.5
-		# 양 끝만 둥글고 가운데는 각지게 — 한 덩어리로 읽힌다.
+		# 양 끝만 둥글고 가운데는 각지게 — 한 덩어리로 읽힌다. 실제 모양은 스킨이 정한다.
 		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus"]:
-			var face := box(GoTheme.BOX_CARD)
-			if state == &"pressed" or state == &"hover_pressed":
-				face.bg_color = GoUi.color(GoTheme.ACCENT)
-			elif state == &"hover":
-				face.bg_color = GoUi.color(GoTheme.SURFACE_HIGH)
-			var radius := GoUi.metric(GoTheme.RADIUS_SMALL)
-			face.corner_radius_top_left = radius if index == 0 else 0
-			face.corner_radius_bottom_left = radius if index == 0 else 0
-			face.corner_radius_top_right = radius if index == count - 1 else 0
-			face.corner_radius_bottom_right = radius if index == count - 1 else 0
-			face.border_width_left = 0 if index > 0 else face.border_width_left
-			item.add_theme_stylebox_override(state, face)
+			item.add_theme_stylebox_override(state, GoUi.skin().segment_box(index, count, state))
 		item.add_theme_color_override(&"font_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
 		item.add_theme_color_override(&"font_hover_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
 		if action.is_valid(): item.pressed.connect(action.bind(index))
@@ -772,7 +832,7 @@ static func avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture:
 	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	node.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	node.add_theme_stylebox_override(&"panel", disc(size, ink, 0.22, 0.6))
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().disc_box(size, ink, 0.22, 0.6))
 	if texture != null:
 		var picture := TextureRect.new()
 		picture.texture = texture
@@ -802,10 +862,7 @@ static func skeleton(width := 0.0, height := 14.0) -> Control:
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	node.custom_minimum_size = Vector2(width, height)
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL if width <= 0.0 else Control.SIZE_SHRINK_BEGIN
-	var face := StyleBoxFlat.new()
-	face.bg_color = GoUi.color(GoTheme.SURFACE_HIGH)
-	face.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
-	node.add_theme_stylebox_override(&"panel", face)
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().skeleton_box())
 	node.tree_entered.connect(func() -> void:
 		if GoUi.config.reduce_motion: return
 		var pulse := node.create_tween().set_loops()
@@ -821,10 +878,7 @@ static func alert(message: String, tone := GoTheme.INFO, icon: StringName = &"",
 	var node := PanelContainer.new()
 	node.name = "Alert"
 	node.theme = GoUi.theme()
-	var face := box(GoTheme.BOX_CARD, ink)
-	face.bg_color = GoUi.color(GoTheme.SURFACE).lerp(ink, 0.10)
-	face.set_border_width_all(1)
-	node.add_theme_stylebox_override(&"panel", face)
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().alert_box(ink))
 	var line := row(GoUi.metric(GoTheme.GAP_SMALL))
 	line.alignment = BoxContainer.ALIGNMENT_BEGIN
 	node.add_child(line)

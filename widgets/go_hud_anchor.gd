@@ -24,6 +24,9 @@ enum Spot {
 	BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT,
 }
 
+## 떠 있는 HUD 칸이 모두 들어가는 그룹. `GoForm.avoid_hud` 가 이것으로 자리를 찾는다.
+const GROUP := &"gohud_hud_anchor"
+
 ## 붙일 자리.
 @export var spot := Spot.TOP_LEFT:
 	set(value):
@@ -42,6 +45,32 @@ enum Spot {
 		edge_margin = value
 		_relayout()
 
+## 🔑 **이미 자리 잡은 HUD 를 피해 비킬 것인가.**
+##
+## 스낵바처럼 **잠깐 떴다 사라지는 것**에 켠다. 위쪽 가운데에 뜨는 알림은 오른쪽 위의 체력바와
+## 폭이 겹쳐 그 위에 그대로 얹히는데(실측), 켜 두면 체력바 아래로 내려가 앉는다.
+##
+## 🛑 **세로로만 비킨다.** 좌우로도 밀면 가운데 정렬이던 알림이 뜰 때마다 다른 자리에 나타난다.
+## 🛑 피하는 쪽은 **`reserve_space` 가 켜진 붙박이 칸**뿐이다. 잠깐 뜨는 것끼리(알림·프롬프트)는
+##    서로 피하지 않는다 — 실제로 그렇게 했더니 알림이 프롬프트 카드까지 피해 화면 한복판까지
+##    밀려났다(2026-09-13 가로 실측). 화면 가운데 줄(`CENTER_*`)은 비킬 곳이 없어 그대로 둔다.
+@export var avoid_peers := false:
+	set(value):
+		avoid_peers = value
+		_relayout()
+
+## 🔑 **본문에서 이 자리를 비워 줄 것인가**(`GoForm.avoid_hud` 가 켜져 있을 때만 뜻이 있다).
+##
+## 끄면 폼이 이 칸을 못 본 척한다. 손을 얹은 동안에만 나타나는 조이스틱처럼 **평소에는 화면에
+## 없는 것**이 그렇다 — 켜 두면 보이지도 않는 칸이 본문 한 줄을 통째로 깎는다.
+##
+## 이 값은 `avoid_peers` 가 켜진 칸이 **누구를 피할지**도 정한다 — 붙박이만 피한다.
+@export var reserve_space := true:
+	set(value):
+		if reserve_space == value: return
+		reserve_space = value
+		_wake_dodgers()
+
 ## 안전영역을 지킬 것인가. 배경처럼 화면을 꽉 채워야 하는 것만 끈다.
 @export var use_safe_area := true:
 	set(value):
@@ -49,6 +78,8 @@ enum Spot {
 		_relayout()
 
 var _runtime: Node
+## 마지막으로 잡은 자리. 붙박이 칸이 **움직였을 때만** 비키는 칸들을 깨우기 위한 것이다.
+var _last_rect := Rect2()
 ## 🛑 재진입 가드 — `_relayout` 이 `size` 를 바꾸면 `resized` 가 다시 날아온다. 없으면 무한히 돈다.
 var _laying_out := false
 
@@ -60,6 +91,9 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	# 🛑 **자기가 어디를 차지하는지 알릴 수 있어야 한다.** 스크롤 본문이 이 칸 뒤로 흘러 글자끼리
+	#    뒤섞이는 일이 실제로 있었다(2026-09-13) — `GoForm.avoid_hud` 가 이 그룹을 훑어 피한다.
+	add_to_group(GROUP)
 	_runtime = GoUi.runtime()
 	get_viewport().size_changed.connect(_relayout)
 	child_entered_tree.connect(_watch_child)
@@ -113,7 +147,47 @@ func _relayout() -> void:
 	position = Vector2(
 		area.position.x + (area.size.x - size.x) * (column * 0.5),
 		area.position.y + (area.size.y - size.y) * (line * 0.5))
+	if avoid_peers: _dodge_peers(area, line)
 
 	for child in get_children():
 		if child is Control: child.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# 🛑 **붙박이가 움직였으면 비키는 칸들에게 알린다.** 알림은 체력바의 크기 변화를 스스로 알 길이
+	#    없어, 체력바가 숨거나 줄어들어도 비킨 자리에 그대로 남았다(2026-09-13 실측).
+	var now := Rect2(position, size)
+	if not avoid_peers and now != _last_rect:
+		_last_rect = now
+		_wake_dodgers()
 	_laying_out = false
+
+
+## 나를 피하고 있는 칸들에게 자리를 다시 잡으라고 알린다.
+## 🛑 비키는 칸은 이것을 부르지 않는다 — 서로 깨우면 두 칸이 영원히 재배치를 주고받는다.
+func _wake_dodgers() -> void:
+	if not is_inside_tree(): return
+	for node in get_tree().get_nodes_in_group(GROUP):
+		var peer := node as GoHudAnchor
+		if peer != null and peer != self and peer.avoid_peers: peer._relayout.call_deferred()
+
+
+## 자리가 고정된 다른 칸을 피해 세로로 비킨다. 위쪽 칸은 아래로, 아래쪽 칸은 위로.
+func _dodge_peers(area: Rect2, line: int) -> void:
+	if line == 1: return                      # 화면 가운데 줄 — 비킬 곳이 없다
+	var down := line == 0
+	var gap := float(GoUi.metric(GoTheme.GAP_SMALL))
+	var here := get_viewport()
+	var shift := 0.0
+	var mine := Rect2(global_position, size)
+	for node in get_tree().get_nodes_in_group(GROUP):
+		var peer := node as GoHudAnchor
+		# 붙박이 칸만 피한다 — 잠깐 뜨는 것끼리 서로 피하면 둘 다 엉뚱한 자리로 달아난다.
+		if peer == null or peer == self: continue
+		if not peer.reserve_space or peer.avoid_peers: continue
+		if not peer.is_visible_in_tree() or peer.get_viewport() != here: continue
+		var rect := Rect2(peer.global_position, peer.size)
+		if rect.size.x <= 0.0 or rect.size.y <= 0.0: continue
+		if not Rect2(mine.position + Vector2(0.0, shift), mine.size).intersects(rect): continue
+		shift = (rect.end.y + gap - mine.position.y) if down else (rect.position.y - gap - mine.end.y)
+	if is_zero_approx(shift): return
+	# 🛑 비키다가 화면 밖으로 나가면 아예 안 보인다 — 쓸 수 있는 칸 안에 묶어 둔다.
+	position.y = clampf(position.y + shift, area.position.y,
+		maxf(area.position.y, area.end.y - size.y))

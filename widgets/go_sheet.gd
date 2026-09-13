@@ -50,7 +50,7 @@ var _back_action := Callable()
 ##    자연스러운 사용법인데, `_ready` 에서 만들면 그때 `body` 가 아직 `null` 이라 죽는다.
 func _init() -> void:
 	visible = false
-	surface = GoSurface.new()
+	surface = _make_surface()
 	surface.placement = GoSurface.Placement.BOTTOM
 	surface.fit_content = true
 	surface.resizable = true
@@ -122,3 +122,8 @@ func close() -> void:
 	GoFeedback.closed()
 	visible = false
 	closed.emit()
+
+
+## 감싸는 표면을 만든다. 🔑 호스트가 `GoSurface` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.
+func _make_surface() -> GoSurface:
+	return GoSurface.new()

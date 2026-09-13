@@ -53,7 +53,7 @@ func _init() -> void:
 	_layer.layer = layer_index
 	add_child(_layer)
 
-	_surface = GoSurface.new()
+	_surface = _make_surface()
 	_surface.visible = false
 	_surface.max_width = max_width
 	_surface.fit_content = true
@@ -83,23 +83,29 @@ func _ready() -> void:
 
 
 ## 예/아니오를 묻는다. `true` 면 사용자가 확인을 눌렀다.
+##
+## `destructive` 를 켜면 확인 버튼이 **위험색**으로 그려진다. 삭제·탈퇴처럼 되돌릴 수 없는 것에 쓴다.
+##
 ## 🛑 이미 창이 떠 있으면 곧바로 `false` 다 — 확인창 두 개가 겹치지 않게 한다.
-func confirm(title: String, body: String, ok_text := "", cancel_text := "", extra := "", args := {}) -> bool:
+func confirm(title: String, body: String, ok_text := "", cancel_text := "", extra := "", args := {},
+		destructive := false) -> bool:
 	if _open: return false
 	_translate = false
 	_cancel.visible = true
 	_cancel_key = cancel_text if not cancel_text.is_empty() else GoUi.text(&"cancel")
+	_tone(destructive)
 	_apply(title, body, ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args)
 	return await answered
 
 
-## 번역 키로 묻는다.
+## 번역 키로 묻는다. `destructive` 는 `confirm()` 과 같다.
 func confirm_key(title_key: String, body_key: String, ok_key := "", cancel_key := "",
-		extra := "", args := {}) -> bool:
+		extra := "", args := {}, destructive := false) -> bool:
 	if _open: return false
 	_translate = true
 	_cancel.visible = true
 	_cancel_key = cancel_key if not cancel_key.is_empty() else GoUi.text_key(&"cancel")
+	_tone(destructive)
 	_apply(title_key, body_key, ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args)
 	return await answered
 
@@ -109,6 +115,7 @@ func alert(title: String, body: String, ok_text := "", extra := "", args := {}) 
 	if _open: return
 	_translate = false
 	_cancel.visible = false
+	_tone(false)
 	_apply(title, body, ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args)
 	await answered
 
@@ -118,12 +125,19 @@ func alert_key(title_key: String, body_key: String, ok_key := "", extra := "", a
 	if _open: return
 	_translate = true
 	_cancel.visible = false
+	_tone(false)
 	_apply(title_key, body_key, ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args)
 	await answered
 
 
 func is_open() -> bool:
 	return _open
+
+
+## 확인 버튼의 색. 🛑 **매번 정한다** — 한 번 위험색으로 칠하면 그 다음 평범한 확인창까지
+##    빨갛게 뜬다(창 하나를 돌려 쓰기 때문이다).
+func _tone(destructive: bool) -> void:
+	GoStyle.style_button(_ok, GoStyle.Tone.DANGER_SOLID if destructive else GoStyle.Tone.PRIMARY)
 
 
 func _apply(title: String, body: String, ok: String, extra: String, args: Dictionary) -> void:
@@ -154,6 +168,9 @@ func _retranslate() -> void:
 	_cancel.text = _cancel_key
 	_ok.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if _translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	_cancel.auto_translate_mode = _ok.auto_translate_mode
+	# 글자·번역 설정을 바꿨으니 낱말 줄바꿈 규칙도 다시 — 안 그러면 `Don`/`e` 로 갈라진다.
+	GoStyle.fit_words(_ok)
+	GoStyle.fit_words(_cancel)
 
 
 func _finish(yes: bool) -> void:
@@ -169,3 +186,8 @@ func _finish(yes: bool) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED: _retranslate()
+
+
+## 대화상자 표면을 만든다. 🔑 호스트가 `GoSurface` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.
+func _make_surface() -> GoSurface:
+	return GoSurface.new()

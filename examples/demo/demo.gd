@@ -13,6 +13,18 @@ const SUBTITLE_INK := Color("#8fb8d4")
 var _volume_label: Label
 var _hp: GoBar
 
+## 언어 카드에 쓰는 자기표기. 🛑 영어 이름("Korean")이 아니라 **그 언어가 스스로를 부르는 말**이다 —
+##    한국어를 찾는 사람은 "한국어" 를 찾는다. 애드온은 언어 이름을 담지 않으므로 데모가 들고 있다.
+const LANGUAGE_NAMES := {
+	"en": "English", "ko": "한국어", "ja": "日本語", "zh": "中文", "zh_TW": "繁體中文",
+	"es": "Español", "pt": "Português", "de": "Deutsch", "fr": "Français", "it": "Italiano",
+	"nl": "Nederlands", "pl": "Polski", "ru": "Русский", "uk": "Українська", "tr": "Türkçe",
+	"vi": "Tiếng Việt", "id": "Bahasa Indonesia", "th": "ไทย", "hi": "हिन्दी",
+	"ar": "العربية", "he": "עברית",
+}
+## 오른쪽에서 왼쪽으로 읽는 언어. 그 칸만 방향을 뒤집는다.
+const RTL_LANGUAGES := ["ar", "he"]
+
 
 func _ready() -> void:
 	_configure()
@@ -69,10 +81,78 @@ func _build() -> void:
 	_data_card(grid)
 	_states_card(grid)
 
+	page.add_child(_language_card())
+
 	var footer := GoStyle.label("Godot 4.5+    /    Pure GDScript    /    MIT license",
 		GoTheme.ROLE_CAPTION, SUBTITLE_INK)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	page.add_child(footer)
+
+
+# ── 10 Languages — 화면 전체 폭 ────────────────────────────────────────
+
+## 내장 문구를 21개 언어로 한 장에 늘어놓는다. 카드가 두 가지를 한눈에 보여 준다 —
+##   ① 번역이 실제로 붙었는가(키가 그대로 보이면 `.translation` 이 안 붙은 것이다)
+##   ② **글자가 그려지는가** — 🛑 gohud 는 폰트를 담지 않으므로, 태국어·아랍어·히브리어·
+##      데바나가리·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다. 없으면 두부(□)가
+##      뜨고 **오류는 나지 않는다.** 그래서 이 카드가 폰트 커버리지 점검표 역할을 한다.
+func _language_card() -> Control:
+	var card := GoStyle.card(ACCENT)
+	var body := GoStyle.padding(20)
+	card.add_child(body)
+	var column := GoStyle.column(14)
+	body.add_child(column)
+
+	var head := GoStyle.row(10)
+	head.add_child(_badge("10"))
+	var titles := GoStyle.column(2)
+	titles.add_child(GoStyle.label("%d built-in languages" % GoUi.LOCALES.size(), GoTheme.ROLE_TITLE))
+	titles.add_child(GoStyle.label("Every cell is drawn by the host font — an empty box means a missing glyph, not a missing translation.",
+		GoTheme.ROLE_CAPTION, SUBTITLE_INK))
+	head.add_child(titles)
+	column.add_child(head)
+	column.add_child(GoStyle.divider())
+
+	var grid := GridContainer.new()
+	grid.columns = 7
+	grid.add_theme_constant_override(&"h_separation", 14)
+	grid.add_theme_constant_override(&"v_separation", 12)
+	# 🛑 로케일을 갈아 가며 문구를 읽는다 — 읽은 뒤 원래 로케일로 되돌린다.
+	#    각 칸은 `auto_translate_mode = DISABLED` 라, 뒤에 언어가 바뀌어도 그 언어 문구를 유지한다.
+	var before := TranslationServer.get_locale()
+	for locale: String in GoUi.LOCALES:
+		TranslationServer.set_locale(locale)
+		grid.add_child(_language_cell(locale))
+	TranslationServer.set_locale(before)
+	column.add_child(grid)
+	return card
+
+
+const CELL_WIDTH := 150
+
+func _language_cell(locale: String) -> Control:
+	var cell := GoStyle.column(3)
+	# 🛑 이 칸의 글은 **그 언어로 고정**한다 — 엔진이 현재 언어로 다시 번역하면 21칸이 한 언어가 된다.
+	cell.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	if locale in RTL_LANGUAGES:
+		cell.layout_direction = Control.LAYOUT_DIRECTION_RTL
+
+	cell.add_child(_language_line(locale, GoTheme.ROLE_CAPTION, ACCENT))
+	cell.add_child(_language_line(String(LANGUAGE_NAMES.get(locale, locale)), GoTheme.ROLE_BODY))
+	cell.add_child(_language_line(tr("gohud_confirm"), GoTheme.ROLE_SUBTITLE, SUBTITLE_INK))
+	cell.add_child(_language_line(tr("gohud_empty"), GoTheme.ROLE_CAPTION, SUBTITLE_INK))
+	return cell
+
+
+## 🛑 모든 줄을 같은 폭으로 묶고 줄바꿈을 켠다. 그러지 않으면 긴 문구 하나가 그 열을 넓히고
+##    ("Bahasa Indonesia" · "Burada henüz bir şey yok"), 21칸이 화면 밖으로 밀려 나간다 —
+##    2560px 에서도 마지막 열이 잘렸다(2026-09-13 스크린샷 실측).
+func _language_line(text: String, role: StringName, ink := Color.TRANSPARENT) -> Label:
+	var line := GoStyle.label(text, role, ink)
+	line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	line.custom_minimum_size.x = CELL_WIDTH
+	line.size_flags_horizontal = Control.SIZE_FILL
+	return line
 
 
 # ── 머리글 ─────────────────────────────────────────────────────────────

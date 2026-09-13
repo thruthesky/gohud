@@ -1,6 +1,12 @@
-# `git archive` 로 배포본을 만들 때 유지보수 전용 폴더를 뺀다(스토어 ZIP 은 tools/package.sh 가 만든다).
-tests/ export-ignore
-tools/ export-ignore
-.dist/ export-ignore
-.gitignore export-ignore
+# `git archive`·GitHub 소스 ZIP 으로 배포본을 만들 때 유지보수 전용 파일을 뺀다.
+# 🛑 스토어에 올리는 ZIP 은 이 파일이 아니라 tools/package.sh 가 만든다 — 두 목록을 함께 고친다.
+.env/          export-ignore
+.claude/       export-ignore
+.review/       export-ignore
+docs/          export-ignore
+builds/        export-ignore
+.dist/         export-ignore
+tests/         export-ignore
+tools/         export-ignore
+.gitignore     export-ignore
 .gitattributes export-ignore

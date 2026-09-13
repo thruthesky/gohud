@@ -47,15 +47,26 @@ func _initialize() -> void:
 	#    기대값은 그래도 이 값을 박지 않고 **실제 뷰포트·안전영역에서 계산**한다.
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
 	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
-	root.content_scale_size = Vector2i(390, 844)
+	# 🛑 **화면 하나로만 검사하면, 다른 화면에서만 도는 코드는 통째로 미검증이다.**
+	#    폼의 폭 제한이 그랬다 — 폰에서는 상한이 "없음" 이라 규칙이 아예 발동하지 않았다(반복 15).
+	#    `GOHUD_VIEWPORT=1280x800` 으로 크기를 바꿔 같은 검사를 다시 돌린다.
+	var wanted := Vector2i(390, 844)
+	var asked := OS.get_environment("GOHUD_VIEWPORT")
+	if asked.contains("x"):
+		var parts := asked.split("x")
+		wanted = Vector2i(maxi(200, int(parts[0])), maxi(200, int(parts[1])))
+	root.content_scale_size = wanted
 	await frames(2)
 	var view := root.get_visible_rect().size
 	print("  viewport %s" % str(view))
 	check(minf(view.x, view.y) >= 320.0, "검사용 뷰포트가 충분히 크다 (%s)" % str(view))
 	await _section("back policy", _back_policy)
 	await _section("tokens · themes", _tokens)
+	await _section("presets · skins", _presets)
+	await _section("skin contrast", _skin_contrast)
 	await _section("icon sets", _icons)
 	await _section("localization", _i18n)
+	await _section("text customisation", _text_customisation)
 	await _section("scale functions", _scale)
 	await _section("widgets", _widgets)
 	await _section("style factories", _style)
@@ -162,6 +173,259 @@ func _tokens() -> void:
 	check(GoUi.font_size(GoTheme.ROLE_BODY) == body, "축소 해제")
 
 
+# ── 생김새 묶음 · 스킨 ─────────────────────────────────────────────────
+
+func _presets() -> void:
+	# ── 스킨 다이얼 — 리소스에서 숫자만 바꾼다 ──────────────────────────
+	# 🔑 코드에 박혀 있던 숫자를 `@export` 로 냈다(2026-09-13). 값이 실제 판에 닿는지, 그리고
+	#    스캐폴딩이 쓰는 표(`tools/skin_dials.json`)가 GDScript 기본값과 같은지 잰다 — 표가 어긋나면
+	#    새 테마의 JSON 에 엉뚱한 기본값이 풀어 적힌다.
+	var dialed := GoSkin.new()
+	dialed.slot_border_lit = 3
+	dialed.badge_pad_x = 9
+	var dial_box := dialed.slot_box(Color.RED, true) as StyleBoxFlat
+	check(dial_box != null and dial_box.border_width_top == 3, "슬롯 테두리 다이얼이 판에 닿는다 (%s)"
+		% (str(dial_box.border_width_top) if dial_box != null else "null"))
+	check(int(dialed.badge_box(Color.RED).content_margin_left) == 9, "배지 여백 다이얼이 판에 닿는다")
+	# 떠 있는 카드의 깊이감도 다이얼 — 그림자(둥근 판) / 발광(사선 판).
+	var lifted := GoSkin.new()
+	lifted.float_shadow_size = 21
+	lifted.float_shadow_lift = 6
+	var lifted_box := lifted.floating_box(GoTheme.BOX_CARD) as StyleBoxFlat
+	check(lifted_box != null and lifted_box.shadow_size == 21 and lifted_box.shadow_offset.y == 6.0,
+		"떠 있는 카드의 그림자 다이얼이 판에 닿는다 (%s)" % (str(lifted_box.shadow_size) if lifted_box != null else "null"))
+	# 🛑 사선 판은 **테마**가 준다 — 스킨 인스턴스만 만들고 재면 기본 테마의 둥근 판이 와서 발광 칸이 없다
+	#    (실제로 그렇게 실패했다). 프리셋을 sci-fi 로 바꾼 뒤 재고 되돌린다.
+	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+	var glowing := GoSkinSciFi.new()
+	glowing.float_glow_size = 13.0
+	var glow_box := glowing.floating_box(GoTheme.BOX_HUD)
+	check(&"glow_size" in glow_box and is_equal_approx(float(glow_box.get(&"glow_size")), 13.0),
+		"사선 판은 떠 있을 때 발광 다이얼을 따른다 (%s)" % (str(glow_box.get(&"glow_size")) if &"glow_size" in glow_box else "없음"))
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.preset = &""
+	var scifi_dialed := GoSkinSciFi.new()
+	scifi_dialed.cut_slot = 9.0
+	var cut_box := scifi_dialed.slot_box(Color.RED, false)
+	check(&"cut" in cut_box and is_equal_approx(float(cut_box.get(&"cut")), 9.0), "sci-fi 잘린 모서리 다이얼이 판에 닿는다")
+	var table_text := FileAccess.get_file_as_string("res://addons/gohud/tools/skin_dials.json")
+	var table: Variant = JSON.parse_string(table_text) if not table_text.is_empty() else null
+	check(table is Dictionary, "tools/skin_dials.json 을 읽는다")
+	if table is Dictionary:
+		var fresh_default := GoSkin.new()
+		var fresh_scifi := GoSkinSciFi.new()
+		var off: Array = []
+		for key in table.get("default", {}):
+			if not is_equal_approx(float(fresh_default.get(key)), float(table["default"][key])): off.append(key)
+		for key in table.get("scifi", {}):
+			if not is_equal_approx(float(fresh_scifi.get(key)), float(table["scifi"][key])): off.append(key)
+		check(off.is_empty(), "다이얼 표가 GDScript 기본값과 같다 %s" % str(off))
+
+	# ── 폴더에 놓인 프리셋은 코드 수정 없이 뜬다 ──────────────────────
+	# 🛑 새 테마를 더할 때 레지스트리 상수까지 고쳐야 했다면, 테마를 더 들이겠다는 요청(2026-09-13)에
+	#    맞지 않는다. `.tres` 를 폴더에 두는 것으로 끝나야 하고, 그것을 지키는 것이 이 검사다.
+	var probe_dir := "user://gohud_presets_probe"
+	DirAccess.make_dir_recursive_absolute(probe_dir)
+	var probe := GoThemePreset.new()
+	probe.id = &"probe_theme"
+	probe.title = "Probe"
+	probe.theme = GoUi.DEFAULT_THEME
+	var saved := ResourceSaver.save(probe, probe_dir + "/probe_theme.tres")
+	check(saved == OK, "프리셋 리소스를 임시 폴더에 저장한다")
+	var seen := GoThemePresets.scan_folder(probe_dir)
+	check(seen.has(&"probe_theme"), "폴더의 프리셋을 파일 이름으로 찾는다 %s" % str(seen))
+	# 내보낸 게임에서는 텍스트 리소스가 `.remap` 을 달 수 있다 — 그 꼬리도 벗긴다.
+	var remap := FileAccess.open(probe_dir + "/shipped.tres.remap", FileAccess.WRITE)
+	if remap != null: remap.close()
+	check(GoThemePresets.scan_folder(probe_dir).has(&"shipped"), ".remap 꼬리를 벗겨 이름을 얻는다")
+	DirAccess.remove_absolute(probe_dir + "/probe_theme.tres")
+	DirAccess.remove_absolute(probe_dir + "/shipped.tres.remap")
+	check(GoThemePresets.names().size() >= GoThemePresets.BUILTIN.size()
+		and GoThemePresets.names()[0] == GoThemePresets.DEFAULT_DARK,
+		"names() 는 기본 순서를 지키고 폴더의 것을 뒤에 붙인다 %s" % str(GoThemePresets.names()))
+
+	# 🛑 이 애드온은 4.6 미만에서는 **파싱 단계에서 죽는다** — 여기까지 왔다면 이미 통과한 셈이지만,
+	#    검사 로그에 실제로 돌린 엔진을 남겨 두면 "어느 버전에서 통과했나" 를 나중에 따질 수 있다.
+	var info := Engine.get_version_info()
+	check(GoUi.engine_supported(), "엔진 %d.%d 는 최소 %s 이상 — 지원 범위 안" % [
+		info.major, info.minor, GoUi.min_engine_string()])
+
+	var ids := GoThemePresets.ids()
+	for wanted in [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT,
+			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT]:
+		check(ids.has(wanted), "프리셋이 있다 — %s" % wanted)
+	for preset in GoThemePresets.all():
+		check(preset.theme != null and preset.skin != null and not preset.label().is_empty(),
+			"%s: 테마·스킨·이름이 채워져 있다" % preset.id)
+
+	check(GoUi.skin() is GoSkin, "기본 스킨은 GoSkin")
+	var plain := GoUi.skin()
+	check(GoUi.skin() == plain, "기본 스킨은 매번 새로 만들지 않는다")
+
+	# 🛑 여기서부터 생김새를 갈아 끼운다 — 섹션 끝에서 반드시 되돌린다.
+	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+	check(GoUi.theme() != GoUi.DEFAULT_THEME, "sci-fi 테마로 바뀐다")
+	check(GoUi.skin() is GoSkinSciFi, "sci-fi 스킨으로 바뀐다")
+
+	# 모양을 바꾸는 테마는 **커스텀 StyleBox** 를 준다 — 이것이 색만 바꾸는 것과의 차이다.
+	var panel := GoUi.box(GoTheme.BOX_PANEL)
+	check(panel is GoStyleBoxCut, "sci-fi 패널은 각진 판(GoStyleBoxCut)")
+	check((panel as GoStyleBoxCut).cut > 0.0, "자르는 크기가 0 이 아니다")
+	check(GoStyle.surface(GoTheme.BOX_PANEL) is GoStyleBoxCut, "GoStyle.surface() 는 커스텀 모양을 그대로 넘긴다")
+	# 🛑 옛 호출부와의 약속 — `box()` 는 무슨 테마에서든 StyleBoxFlat 이다.
+	check(GoStyle.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "GoStyle.box() 는 sci-fi 에서도 StyleBoxFlat")
+
+	var missing: Array[StringName] = []
+	for key in [GoTheme.BACKGROUND, GoTheme.SURFACE, GoTheme.SURFACE_SOFT, GoTheme.SURFACE_HIGH,
+			GoTheme.BORDER, GoTheme.TEXT, GoTheme.SECONDARY, GoTheme.MUTED, GoTheme.ACCENT,
+			GoTheme.ON_ACCENT, GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER, GoTheme.INFO,
+			GoTheme.SCRIM, GoTheme.SHADOW, GoTheme.TRACK]:
+		if GoUi.color(key) == Color.MAGENTA: missing.append(key)
+	check(missing.is_empty(), "sci-fi 테마에 색 토큰이 전부 있다 (빠짐: %s)" % str(missing))
+	check(GoUi.metric(GoTheme.RADIUS) > 0 and GoUi.metric(GoTheme.PADDING) > 0, "sci-fi 치수 토큰")
+
+	# 코드가 직접 그리는 자리도 실제로 모양이 바뀌는가
+	var slot := GoSlot.new()
+	root.add_child(slot)
+	await frames(2)
+	check(slot.get_node(^"Face").get_theme_stylebox(&"panel") is GoStyleBoxCut, "퀵슬롯 판이 각진 판으로 바뀐다")
+	check(GoUi.skin().coach_ring_box(Color.CYAN) is GoStyleBoxBracket, "코치마크 링이 모서리 표식으로 바뀐다")
+	check(GoStyle.chip("x").get_theme_stylebox(&"panel") is GoStyleBoxCut, "칩이 각진 판으로 바뀐다")
+	var pad := GoJoystick.new()
+	root.add_child(pad)
+	await frames(2)
+	check(is_instance_valid(pad), "sci-fi 스킨으로 조이스틱이 그려진다")
+	slot.queue_free()
+	pad.queue_free()
+	await frames(1)
+
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	check(GoUi.theme() == GoUi.DEFAULT_THEME, "기본으로 되돌아온다")
+	check(GoUi.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "기본 패널은 평판 그대로")
+	GoUi.config.preset = &""
+
+
+# ── 스킨이 만드는 색의 대비 ────────────────────────────────────────────
+#
+# 🛑 `tools/check_contrast.py` 는 테마 `.tres` 만 읽는다. 스킨이 **실행 중에** 만드는 색
+#    (칩의 같은 색 틴트, 슬롯 판, 알림 상자)은 그 바깥이라, 여기서만 잡힌다.
+
+func _skin_contrast() -> void:
+	var tones := [GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER, GoTheme.INFO, GoTheme.SECONDARY]
+	for preset in [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT,
+			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT]:
+		GoUi.use_preset(preset)
+		var skin := GoUi.skin()
+		var under := GoSkin.blend(GoUi.color(GoTheme.SURFACE_SOFT), GoUi.color(GoTheme.BACKGROUND))
+		# 🛑 **배열에 담는다.** GDScript 람다는 바깥 지역 변수를 **값으로 캡처**하므로, 람다 안에서
+		#    `worst = value` 를 해도 바깥에는 반영되지 않는다 — 그러면 이 검사는 무엇을 재든
+		#    늘 통과한다. 실제로 그랬다(2026-09-13: 보정을 세 곳 다 걷어내도 초록불이었다).
+		#    배열·사전은 참조로 캡처되므로 안쪽의 쓰기가 바깥에 보인다.
+		var worst := [99.0, ""]
+
+		var note := func(name: String, ink: Color, back: Color) -> void:
+			var value := GoSkin.contrast_ratio(GoSkin.blend(ink, back), back)
+			if value < worst[0]:
+				worst[0] = value
+				worst[1] = name
+
+		for tone in tones:
+			var ink: Color = GoUi.color(tone)
+			# 🛑 **실제로 만들어진 칩**에서 읽는다 — 스킨 메서드만 재면 위젯이 그 값을 쓰는지는 모른다.
+			var chip := GoStyle.chip("42", ink)
+			root.add_child(chip)
+			await frames(1)
+			var back := GoSkin.blend(GoSkin.box_background(chip.get_theme_stylebox(&"panel")), under)
+			var label := chip.get_child(0) as Label
+			note.call("칩 %s" % tone, label.get_theme_color(&"font_color"), back)
+			chip.queue_free()
+			await frames(1)
+
+		var accent := GoUi.color(GoTheme.ACCENT)
+		# 🛑 **실제로 그려지는 글자색**을 읽는다. 스킨 메서드의 반환값만 재면, 위젯이 그 값을 쓰지
+		#    않고 고정색을 칠하는 경우를 놓친다 — 빈 슬롯의 수량이 그랬다(2026-09-13: 쿨다운 중 3.97:1).
+		for state in [{"q": 3, "cd": 0.0}, {"q": 0, "cd": 5.0}]:
+			var probe := GoSlot.new()
+			probe.accent = accent
+			probe.icon_name = GoIconSet.POTION
+			probe.quantity = state["q"]
+			root.add_child(probe)
+			probe.set_cooldown(state["cd"], 8.0)
+			await frames(2)
+			var panel := (probe.get_node(^"Face") as Panel).get_theme_stylebox(&"panel")
+			var face := GoSkin.blend(GoSkin.box_background(panel), under)
+			for child in [^"Face/QuantityBadge/Quantity", ^"Face/TimerBadge/Timer", ^"Face/Shortcut"]:
+				var label := probe.get_node_or_null(child) as Label
+				if label == null or not label.is_visible_in_tree(): continue
+				# 배지 안의 글자는 **배지 판** 위에 놓인다 — 슬롯 판이 아니라.
+				var under_label := face
+				var badge_panel := label.get_parent() as PanelContainer
+				if badge_panel != null:
+					under_label = GoSkin.blend(GoSkin.box_background(badge_panel.get_theme_stylebox(&"panel")), face)
+				note.call("슬롯 %s(수량 %d)" % [child, state["q"]],
+					label.get_theme_color(&"font_color"), under_label)
+			# 🛑 **아이콘도 잰다.** 라벨만 재던 동안 아이콘은 `Color.WHITE` 로 고정되어 있었고,
+			#    밝은 테마에서 흰 물약이 흰 판에 통째로 묻혔다(2026-09-13 갤러리 실측).
+			#    그려지는 색은 칸의 `modulate` 와 그림 자신의 `modulate` 가 곱해진 것이다.
+			var icon_slot := probe.get_node_or_null(^"Face/IconSlot") as Control
+			# 🛑 쿨다운이 도는 동안 아이콘은 **일부러** 판 색 쪽으로 물린다 — 그때 정보는 그 위의 남은
+			#    시간 배지가 맡고, 그 글자는 위에서 잰다. 비활성 상태 표시는 WCAG 1.4.3 의 예외이기도 하다.
+			if state["cd"] <= 0.0 and icon_slot != null and icon_slot.get_child_count() > 0:
+				var glyph := icon_slot.get_child(0) as CanvasItem
+				note.call("슬롯 아이콘(수량 %d)" % state["q"],
+					icon_slot.modulate * glyph.modulate, face)
+			probe.queue_free()
+			await frames(1)
+
+		# 🛑 **자식 라벨로 떨어지는 글리프.** 텍스처가 없는 이름(또는 폰트 아이콘 세트)은 버튼 안에
+		#    Label 로 그려지는데, 버튼 테마의 `icon_normal_color` 는 자식에게 닿지 않는다 —
+		#    색을 안 집어 주면 흰색이 되어 밝은 테마에서 판에 묻힌다.
+		var glyph_button := GoIconButton.new()
+		glyph_button.icon_name = &"no_such_icon_for_test"
+		root.add_child(glyph_button)
+		await frames(2)
+		var glyph_label := glyph_button.get_node_or_null(^"Icon") as Label
+		if glyph_label != null:
+			note.call("아이콘 버튼 글리프", glyph_label.get_theme_color(&"font_color"),
+				GoSkin.blend(GoSkin.box_background(glyph_button.get_theme_stylebox(&"normal")), under))
+		glyph_button.queue_free()
+		await frames(1)
+
+		for tone in [GoTheme.INFO, GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER]:
+			var ink2: Color = GoUi.color(tone)
+			var back2 := GoSkin.blend(GoSkin.box_background(skin.alert_box(ink2)), under)
+			note.call("알림 %s 본문" % tone, GoUi.color(GoTheme.TEXT), back2)
+
+		# ── 막대 채움 ───────────────────────────────────────────────────
+		# 🛑 **색만으로 대비를 맞추려 하면 색을 잃는다.** 노랑은 휘도가 본래 높아 어떤 회색 바탕
+		#    위에서도 3:1 이 안 나오고, 기준을 맞추려 명도를 내리면 경험치 막대가 **갈색**이 된다
+		#    (밝은 테마에서 실제로 `#A05000` 이었다). 그래서 두 가지를 **함께** 요구한다 —
+		#    ① 바탕에서 구분될 것(색이 모자라면 윤곽이 대신한다) ② 색이 죽지 않을 것.
+		var track := GoSkin.blend(GoUi.color(GoTheme.TRACK), GoUi.color(GoTheme.SURFACE))
+		for pair in [[GoTheme.SUCCESS_FILL, "성공"], [GoTheme.WARNING_FILL, "경고"],
+				[GoTheme.DANGER_FILL, "위험"], [GoTheme.INFO_FILL, "정보"]]:
+			var fill: Color = GoUi.color(pair[0])
+			var box := GoUi.skin().progress_fill_box(fill)
+			var flat := box as StyleBoxFlat
+			var seen := GoSkin.contrast_ratio(GoSkin.blend(fill, track), track)
+			var edge := Color.TRANSPARENT
+			if flat != null and flat.border_width_top > 0: edge = flat.border_color
+			elif flat == null and &"border_color" in box and float(box.get(&"border_width")) > 0.0:
+				edge = box.get(&"border_color")
+			if edge.a > 0.0:
+				seen = maxf(seen, GoSkin.contrast_ratio(GoSkin.blend(edge, track), track))
+			check(seen >= 3.0, "%s: %s 막대가 바탕에서 구분된다 (%.2f:1 — 색 또는 윤곽으로)"
+				% [preset, pair[1], seen])
+			# 갈색으로 가라앉지 않았는가. 채도는 갈색도 높으므로 **명도**로 잰다(#A05000 은 0.63).
+			check(fill.v >= 0.70, "%s: %s 막대 색이 죽지 않았다 (명도 %.2f)"
+				% [preset, pair[1], fill.v])
+
+		check(worst[0] >= 4.5, "%s: 스킨이 만드는 색도 본문 대비를 넘는다 (최저 %.2f:1 — %s)"
+			% [preset, worst[0], worst[1]])
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.preset = &""
+
+
 # ── 아이콘 세트 ────────────────────────────────────────────────────────
 
 func _icons() -> void:
@@ -236,7 +500,163 @@ func _i18n() -> void:
 	check(GoUi.text(&"close") == "X", "text_overrides 가 번역보다 우선")
 	GoUi.config.text_overrides.clear()
 	check(GoUi.text_key(&"close") == "gohud_close", "text_key 는 번역 키")
+
+	# 🛑 CSV 열과 `GoUi.LOCALES` 가 어긋나면 **아무 오류 없이** 그 언어만 영어로 나온다.
+	#    조각 파일(.translation)은 임포트가 만들어 주지만, LOCALES 에 없으면 등록되지 않는다.
+	#    반대로 LOCALES 에만 있고 CSV 열이 없으면 파일이 없어 조용히 지나간다. 양방향으로 본다.
+	var header := ""
+	var f := FileAccess.open(GoUi.BUILTIN_TRANSLATIONS, FileAccess.READ)
+	if f != null:
+		header = f.get_line()
+		f.close()
+	var columns := header.split(",")
+	var csv_locales: Array[String] = []
+	for i in range(1, columns.size()):
+		csv_locales.append(columns[i].strip_edges())
+	check(not csv_locales.is_empty(), "CSV 헤더를 읽었다 (%d열)" % csv_locales.size())
+	for locale: String in csv_locales:
+		check(GoUi.LOCALES.has(locale), "CSV 열 %s 가 GoUi.LOCALES 에 있다" % locale)
+	for locale: String in GoUi.LOCALES:
+		check(csv_locales.has(locale), "GoUi.LOCALES 의 %s 가 CSV 열에 있다" % locale)
+
+	# 선언한 언어마다 문구가 실제로 **나오는지** 본다 — 키가 그대로 보이면 조각 파일이 안 붙은 것이다.
+	for locale: String in GoUi.LOCALES:
+		TranslationServer.set_locale(locale)
+		var got := tr("gohud_confirm")
+		check(got != "gohud_confirm" and got != "", "%s 에서 문구가 나온다 (%s)" % [locale, got])
+
+	# 2026-09-12 에 더한 언어의 표본 — 열 순서가 밀리면 여기서 잡힌다(자리만 맞고 내용이 다른 사고).
+	TranslationServer.set_locale("tr")
+	check(tr("gohud_cancel") == "İptal", "tr 번역")
+	TranslationServer.set_locale("th")
+	check(tr("gohud_close") == "ปิด", "th 번역")
+	TranslationServer.set_locale("vi")
+	check(tr("gohud_retry") == "Thử lại", "vi 번역")
+	TranslationServer.set_locale("id")
+	check(tr("gohud_next") == "Berikutnya", "id 번역")
+	# 🛑 번체는 간체를 변환한 것이 아니라 **대만 어휘**여야 한다 — 搜索(중국)이 아니라 搜尋.
+	TranslationServer.set_locale("zh_TW")
+	check(tr("gohud_search") == "搜尋", "zh_TW 는 대만 어휘 (%s)" % tr("gohud_search"))
+	TranslationServer.set_locale("zh")
+	check(tr("gohud_search") == "搜索", "zh 는 중국 어휘 (%s)" % tr("gohud_search"))
+	TranslationServer.set_locale("he")
+	check(tr("gohud_done") == "סיום", "he 번역")
+
 	TranslationServer.set_locale(original)
+
+
+# ── 문구 커스터마이징 ──────────────────────────────────────────────────
+
+## 🛑 **호스트가 화면의 모든 글자를 바꿀 수 있어야 한다.** 위젯이 문구를 코드에 박아 두면
+##    그 한 줄만 영원히 gohud 의 것으로 남는다 — 프로젝트가 "확인" 대신 "예" 를 쓰고 싶어도,
+##    번역 체계가 달라도, 손댈 방법이 없다. 이 절이 그 빈틈을 막는다.
+func _text_customisation() -> void:
+	# ① 애드온 본체(예제·검사 제외)에 **화면에 나가는 리터럴이 없다**.
+	#    새 위젯이 `label.text = "Retry"` 로 쓰면 여기서 걸린다.
+	var literal := RegEx.new()
+	literal.compile('\\.(text|tooltip_text|accessibility_name|placeholder_text)\\s*=\\s*"[^"]')
+	var offenders: Array[String] = []
+	for folder in ["widgets", "core", "services"]:
+		var dir := DirAccess.open("%s/%s" % [ADDON, folder])
+		if dir == null: continue
+		for file in dir.get_files():
+			if not file.ends_with(".gd"): continue
+			var path := "%s/%s/%s" % [ADDON, folder, file]
+			var source := FileAccess.get_file_as_string(path)
+			for line in source.split("\n"):
+				var trimmed := line.strip_edges()
+				if trimmed.begins_with("#") or trimmed.begins_with("##"): continue
+				if literal.search(line) != null:
+					offenders.append("%s: %s" % [file, trimmed.substr(0, 60)])
+	check(offenders.is_empty(), "애드온 본체에 화면 리터럴 없음 (%s)" % ", ".join(offenders.slice(0, 3)))
+
+	# ② 설정에 적힌 **모든 이름**이 override 로 덮인다 — 하나라도 새면 그 문구는 못 바꾼다.
+	var names: Array = GoUi.config.text_keys.keys()
+	check(names.size() >= 16, "문구 이름 %d개" % names.size())
+	var overrides: Dictionary[StringName, String] = {}
+	for name: StringName in names:
+		overrides[name] = "«%s»" % name
+	GoUi.config.text_overrides = overrides
+	var leaked: Array[String] = []
+	for name: StringName in names:
+		if GoUi.text(name) != "«%s»" % name:
+			leaked.append(String(name))
+	check(leaked.is_empty(), "모든 이름이 text_overrides 로 덮인다 (%s)" % ", ".join(leaked))
+
+	# ③ 위젯이 실제로 그 값을 쓴다 — 이름만 있고 안 쓰면 ②는 통과하고 화면은 안 바뀐다.
+	var bar := GoBar.new()
+	bar.readout = GoBar.Readout.FRACTION
+	root.add_child(bar)
+	bar.set_values(3.0, 10.0, false)
+	await frames(1)
+	var bar_line := _first_label_text(bar)
+	check(bar_line.contains("«bar_fraction»"), "GoBar 수치 형식이 설정을 탄다 (%s)" % bar_line)
+	bar.readout = GoBar.Readout.PERCENT
+	await frames(1)
+	check(_first_label_text(bar).contains("«bar_percent»"), "GoBar 백분율 형식이 설정을 탄다")
+	bar.queue_free()
+
+	var slot := GoSlot.new()
+	root.add_child(slot)
+	slot.quantity = 3
+	slot.refresh()
+	await frames(1)
+	check(_label_texts(slot).any(func(t: String) -> bool: return t.contains("«slot_quantity»")),
+		"GoSlot 수량 형식이 설정을 탄다")
+	slot.queue_free()
+
+	# ④ 형식 문자열은 **자리표시자가 사라져도** 죽지 않는다 — 번역자가 `{value}` 를 빠뜨리는 일은 있다.
+	var broken: Dictionary[StringName, String] = overrides.duplicate()
+	broken[&"bar_fraction"] = "자리표시자 없음"
+	GoUi.config.text_overrides = broken
+	var safe := GoBar.new()
+	safe.readout = GoBar.Readout.FRACTION
+	root.add_child(safe)
+	safe.set_values(3.0, 10.0, false)
+	await frames(1)
+	check(_first_label_text(safe) == "자리표시자 없음", "자리표시자가 빠져도 화면이 죽지 않는다")
+	safe.queue_free()
+
+	# ⑤ 숫자 축약은 훅으로 바꾼다 — 만·억 단위처럼 **계산 자체가 다른** 언어를 위해.
+	GoUi.config.text_overrides = {}
+	GoUi.config.number_formatter = func(amount: float) -> String: return "▲%d" % int(amount)
+	check(GoBar.format_amount(12345.0) == "▲12345", "number_formatter 훅이 축약을 대신한다 (%s)"
+		% GoBar.format_amount(12345.0))
+	GoUi.config.number_formatter = Callable()
+	check(GoBar.format_amount(12345.0) == "12.3k", "훅을 비우면 내장 규칙으로 돌아온다 (%s)"
+		% GoBar.format_amount(12345.0))
+
+	# ⑥ 언어를 바꾸면 조립 문자열도 새 형식이 된다(엔진 자동 번역을 타지 않는 자리다).
+	#    터키어는 백분율 기호를 **앞**에 붙인다 — 형식까지 번역해야 하는 이유.
+	var before := TranslationServer.get_locale()
+	var live := GoBar.new()
+	live.readout = GoBar.Readout.PERCENT
+	root.add_child(live)
+	live.set_values(5.0, 10.0, false)
+	TranslationServer.set_locale("en")
+	await frames(1)
+	check(_first_label_text(live) == "50%", "en 백분율 (%s)" % _first_label_text(live))
+	TranslationServer.set_locale("tr")
+	await frames(1)
+	check(_first_label_text(live) == "%50", "언어를 바꾸면 백분율 형식이 따라 바뀐다 (%s)"
+		% _first_label_text(live))
+	TranslationServer.set_locale(before)
+	live.queue_free()
+	await frames(1)
+
+
+func _label_texts(node: Node) -> Array[String]:
+	var out: Array[String] = []
+	if node is Label and not (node as Label).text.is_empty():
+		out.append((node as Label).text)
+	for child in node.get_children():
+		out.append_array(_label_texts(child))
+	return out
+
+
+func _first_label_text(node: Node) -> String:
+	var all := _label_texts(node)
+	return all[0] if not all.is_empty() else ""
 
 
 # ── 배율 순수 함수 ─────────────────────────────────────────────────────
@@ -304,6 +724,21 @@ func _style() -> void:
 		cell.custom_minimum_size = Vector2(40, 20)
 		grid.add_child(cell)
 	await frames(1)
+	# 🛑 칸이 **남는 폭을 나눠 가져야** 한다. `GridContainer` 는 `SIZE_EXPAND` 가 붙은 자식에게만
+	#    남는 폭을 주므로, 기본값으로 두면 카드가 내용의 최소 폭(줄바꿈 라벨이라 거의 0)으로 접힌다 —
+	#    글자가 세로로 한 자씩 내려갔다(2026-09-13 실측: 어느 창 폭에서나 카드 25px).
+	check((grid.get_child(0) as Control).size_flags_horizontal == Control.SIZE_EXPAND_FILL,
+		"격자 칸이 남는 폭을 나눠 가진다 — 카드가 한 글자 폭으로 접히지 않는다")
+
+	# 🛑 긴 글자는 줄바꿈해야 한다. 없으면 한 줄이 길게 뻗어 그 최소 폭이 화면을 넘긴다.
+	var wrapper := GoStyle.button("A fairly long button label that must wrap")
+	check(wrapper.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART,
+		"버튼 글자가 줄바꿈한다 — 한 줄로 뻗어 화면을 넘기지 않는다")
+	wrapper.free()
+	var long_label := GoStyle.label("A sentence long enough that it must wrap inside a narrow card")
+	check(long_label.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART,
+		"라벨 글자가 줄바꿈한다 — 이것이 없으면 최소 폭이 화면을 넘겨 좌우가 잘린다")
+	long_label.free()
 	grid.size = Vector2(700, 0)
 	await frames(1)
 	check(grid.columns == 4, "반응형 격자 — 700 폭·최소 150 이면 4열 (%d)" % grid.columns)
@@ -465,6 +900,21 @@ func _dialogs() -> void:
 	var yes: bool = await dialogs.confirm("Delete", "Delete \"{name}\"?", "", "", "", {"name": "Aria"})
 	check(yes, "confirm → 확인")
 	check(str(seen[0]) == "Delete \"Aria\"?", "args 가 {name} 을 채운다 (%s)" % str(seen[0]))
+	check(dialogs._ok.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON,
+		"보통 확인은 강조 버튼 (%s)" % dialogs._ok.theme_type_variation)
+
+	# 🛑 **되돌릴 수 없는 동작은 색이 먼저 말해야 한다.** 옅은 위험 버튼으로는 모자랐다 — 판이
+	#    옅으면 글자를 아주 어둡게 밀어야 읽혀서(밝은 테마에서 `#9B2626`) 그냥 검은 글자가 된다.
+	#    채운 위험 버튼은 흰 글자로 5.7:1 이 나온다.
+	create_timer(0.05).timeout.connect(func() -> void: dialogs._ok.pressed.emit())
+	var removed: bool = await dialogs.confirm("Delete", "Sure?", "", "", "", {}, true)
+	check(removed and dialogs._ok.theme_type_variation == GoTheme.VAR_DANGER_SOLID_BUTTON,
+		"destructive 면 확인 버튼이 채운 위험색 (%s)" % dialogs._ok.theme_type_variation)
+	# 🛑 창 하나를 **돌려 쓴다** — 되돌리지 않으면 그 다음 평범한 확인창까지 빨갛게 뜬다.
+	create_timer(0.05).timeout.connect(func() -> void: dialogs._ok.pressed.emit())
+	await dialogs.confirm("Save", "Save now?")
+	check(dialogs._ok.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON,
+		"다음 확인창은 다시 강조색으로 돌아온다 (%s)" % dialogs._ok.theme_type_variation)
 
 	create_timer(0.05).timeout.connect(func() -> void: dialogs._cancel.pressed.emit())
 	var no: bool = await dialogs.confirm("Question", "Body")
@@ -558,6 +1008,21 @@ func _bar() -> void:
 # ── 퀵슬롯 ─────────────────────────────────────────────────────────────
 
 func _slot() -> void:
+	# 🛑 슬롯은 기본적으로 **노드 자체가 48dp** 다(`_ready` 가 `custom_minimum_size` 를 그렇게 잡는다) —
+	#    보이는 판만 44dp 이고, 터치 확장 코드는 그때 발동하지 않는다. 확장이 실제로 일하는 것은
+	#    **호스트가 슬롯을 48dp 보다 작게 강제했을 때**다. 그 경우를 재현해 하한이 지켜지는지 본다.
+	var reachable := GoSlot.new()
+	root.add_child(reachable)
+	await frames(2)
+	reachable.custom_minimum_size = Vector2(30, 30)
+	reachable.size = Vector2(30, 30)
+	await frames(2)
+	check(reachable.touch_hit(Vector2(-5, 15)),
+		"작게 강제된 슬롯도 노드 밖까지 눌린다 (48dp 하한 · 실제 %.0fdp)" % reachable.size.x)
+	check(not reachable.touch_hit(Vector2(-40, 15)), "그렇다고 아무 데나 눌리지는 않는다")
+	reachable.queue_free()
+	await frames(1)
+
 	var a := GoSlot.new()
 	var b := GoSlot.new()
 	a.icon_name = GoIconSet.POTION
@@ -566,11 +1031,11 @@ func _slot() -> void:
 	a.position = Vector2(0, 0)
 	b.position = Vector2(40, 0)
 	await frames(2)
-	var quantity := a.get_node(^"Face/Quantity") as Label
+	var quantity := a.get_node(^"Face/QuantityBadge/Quantity") as Label
 	a.quantity = GoSlot.NONE
-	check(not quantity.visible, "NONE 은 수량 줄을 그리지 않는다")
+	check(not quantity.is_visible_in_tree(), "NONE 은 수량 줄을 그리지 않는다")
 	a.quantity = GoSlot.UNKNOWN
-	check(quantity.visible and quantity.text == "…", "UNKNOWN 은 …")
+	check(quantity.is_visible_in_tree() and quantity.text == "…", "UNKNOWN 은 …")
 	a.quantity = 12
 	check(quantity.text == "×12", "수량 ×12")
 	check(near((a.get_node(^"Face") as Panel).size.x, 44.0), "보이는 판은 한 장 44")
@@ -581,7 +1046,7 @@ func _slot() -> void:
 	check(not a._has_point(point - a.global_position) and b._has_point(point - b.global_position), "겹친 자리는 중심이 가까운 슬롯이 받는다")
 	a.start_cooldown(1.0)
 	await frames(1)
-	check((a.get_node(^"Face/Timer") as Label).visible, "쿨다운 남은 시간 표시")
+	check((a.get_node(^"Face/TimerBadge/Timer") as Label).is_visible_in_tree(), "쿨다운 남은 시간 표시")
 	a.queue_free()
 	b.queue_free()
 	await frames(1)
@@ -623,6 +1088,136 @@ func _joystick() -> void:
 # ── HUD 자리 ───────────────────────────────────────────────────────────
 
 func _anchor() -> void:
+	# 🛑 **가로에서만 도는 코드는 세로 검사로 잡히지 않는다.** 화면을 실제로 눕혀 본다.
+	var was := root.content_scale_size
+	root.content_scale_size = Vector2i(844, 390)
+	await frames(3)
+	var turned := GoHudAnchor.new()
+	turned.spot = GoHudAnchor.Spot.BOTTOM_CENTER
+	turned.landscape_spot = GoHudAnchor.Spot.BOTTOM_RIGHT
+	root.add_child(turned)
+	await frames(2)
+	check(turned.active_spot() == GoHudAnchor.Spot.BOTTOM_RIGHT,
+		"가로에서 HUD 가 landscape_spot 으로 옮겨 간다")
+	root.content_scale_size = Vector2i(390, 844)
+	await frames(3)
+	check(turned.active_spot() == GoHudAnchor.Spot.BOTTOM_CENTER, "세로로 돌아오면 원래 자리")
+	turned.queue_free()
+
+	# 가로에서는 좌우가 남으므로 카드가 화면 폭의 **더 적은 비율**을 쓴다.
+	# 🛑 최대 폭 제한을 **풀고 본다** — 넓은 화면에서는 두 비율이 모두 480dp 상한에 잘려
+	#    차이가 드러나지 않는다(844×0.72 도 844×0.94 도 480 이 된다).
+	var cap_was := GoUi.config.surface_max_width
+	GoUi.config.surface_max_width = 4000.0
+	var card_surface := GoSurface.new()
+	root.add_child(card_surface)
+	await frames(3)
+	var portrait_share := card_surface.card.size.x / 390.0
+	root.content_scale_size = Vector2i(844, 390)
+	await frames(4)
+	var landscape_share := card_surface.card.size.x / 844.0
+	check(landscape_share < portrait_share,
+		"가로에서 창이 화면 폭의 더 적은 비율을 쓴다 (세로 %.2f · 가로 %.2f)"
+		% [portrait_share, landscape_share])
+	card_surface.queue_free()
+	GoUi.config.surface_max_width = cap_was
+	root.content_scale_size = was
+	await frames(3)
+
+	# ── 키보드만으로 쓰는 사람 ─────────────────────────────────────────
+	# 🛑 **창이 떠 있는데 Tab 이 뒤쪽 화면으로 나가면, Enter 가 보이지도 않는 버튼을 누른다.**
+	#    반대로 닫은 뒤 포커스가 사라지면, 키보드 사용자는 화면 어디에도 없는 상태가 된다.
+	#    이 두 규칙은 손가락으로는 드러나지 않아 검사가 없으면 조용히 깨진다.
+	var outside := GoStyle.button("바깥")
+	root.add_child(outside)
+	await frames(2)
+	outside.grab_focus()
+	await frames(2)
+	check(root.gui_get_focus_owner() == outside, "바탕 버튼이 포커스를 쥐었다")
+
+	# 🛑 **키보드로 조작 중이라고 알린다.** gohud 는 마지막 입력 장치를 보고, 포인터로 연 창에는
+	#    일부러 포커스 링을 띄우지 않는다(탭으로 연 창에 링이 번쩍이면 거슬린다). 그러니 키보드
+	#    순회를 검사하려면 **키 입력을 한 번 흘려보내** 그 상태를 만들어야 한다.
+	var key := InputEventKey.new()
+	key.keycode = KEY_TAB
+	key.pressed = true
+	root.push_input(key)
+	await frames(2)
+
+	var win := GoSurface.new()
+	var inside := GoStyle.button("안쪽")
+	root.add_child(win)
+	await frames(2)
+	win.body.add_child(inside)
+	win.initial_focus = inside
+	win._focus_default()
+	await frames(5)
+	var holder := root.gui_get_focus_owner()
+	check(holder != null and win.is_ancestor_of(holder),
+		"창을 열면 포커스가 창 안으로 (%s)" % (holder.name if holder != null else "없음"))
+
+	outside.grab_focus()
+	await frames(5)
+	holder = root.gui_get_focus_owner()
+	check(holder != null and win.is_ancestor_of(holder),
+		"창 밖으로 새어 나간 포커스는 되돌아온다 (%s)" % (holder.name if holder != null else "없음"))
+
+	# 🛑 닫기 **직전**에 포커스가 창 안에 있어야, 닫은 뒤의 복귀가 의미를 갖는다 — 이 줄이 없으면
+	#    "원래 자리로 돌아왔다" 가 사실은 "한 번도 떠난 적이 없다" 일 수 있다.
+	holder = root.gui_get_focus_owner()
+	check(holder != null and win.is_ancestor_of(holder),
+		"닫기 직전 포커스는 창 안에 있다 (%s)" % (holder.name if holder != null else "없음"))
+	# 🛑 `GoSurface` 에는 `close()` 가 없다 — `request_close()` 는 **신호만** 내고, 실제로 닫는 것은
+	#    그 창을 가진 쪽(시트·다이얼로그)이다. 창 자체는 숨는 것으로 닫힌다.
+	win.hide()
+	await frames(6)
+	check(root.gui_get_focus_owner() == outside, "창을 닫으면 원래 자리로 돌아온다 (%s)"
+		% (root.gui_get_focus_owner().name if root.gui_get_focus_owner() != null else "없음"))
+	win.queue_free()
+	outside.queue_free()
+	await frames(2)
+
+	# ── 툴팁 ────────────────────────────────────────────────────────────
+	# 🛑 **아이콘 버튼에게 툴팁은 유일한 설명이다.** 엔진 기본 툴팁은 라벨에 줄바꿈이 걸린 채 최대
+	#    폭이 1dp 로 계산되어, `settings` 가 **한 자씩 세로로** 쪼개졌다(2026-09-13 실측: 폭 1 · 높이 186).
+	#    폭을 gohud 가 정하므로 그 계산에 기대지 않는다.
+	var tip_button := GoIconButton.new()
+	tip_button.icon_name = GoIconSet.SETTINGS
+	tip_button.tooltip_text_name = &"settings"
+	root.add_child(tip_button)
+	await frames(2)
+	var short_tip := tip_button._make_custom_tooltip("settings") as Label
+	check(short_tip != null, "아이콘 버튼이 자기 툴팁을 만든다")
+	if short_tip != null:
+		root.add_child(short_tip)
+		await frames(2)
+		check(short_tip.get_combined_minimum_size().x > 24.0,
+			"짧은 툴팁은 한 줄로 — 최소 폭이 글자를 담는다 (%.0f dp)" % short_tip.get_combined_minimum_size().x)
+		check(short_tip.autowrap_mode == TextServer.AUTOWRAP_OFF, "짧은 문구는 접지 않는다")
+		short_tip.queue_free()
+	var long_text := "이 버튼은 아주 긴 설명을 담고 있어서 한 줄로는 도저히 담기지 않는다"
+	var long_tip := tip_button._make_custom_tooltip(long_text) as Label
+	if long_tip != null:
+		root.add_child(long_tip)
+		await frames(2)
+		check(long_tip.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART
+			and long_tip.custom_minimum_size.x > 24.0,
+			"긴 툴팁은 **정해진 폭**에서 접힌다 (%.0f dp)" % long_tip.custom_minimum_size.x)
+		long_tip.queue_free()
+	tip_button.queue_free()
+	await frames(1)
+
+	# 퀵슬롯은 기본적으로 Tab 순회에서 빠지되, **키보드로만 하는 조작**이 필요하면 켤 수 있어야 한다.
+	var key_slot := GoSlot.new()
+	root.add_child(key_slot)
+	await frames(2)
+	check(key_slot.focus_mode == Control.FOCUS_NONE, "슬롯은 기본적으로 Tab 순회에서 빠진다")
+	key_slot.keyboard_focus = true
+	await frames(1)
+	check(key_slot.focus_mode == Control.FOCUS_ALL, "keyboard_focus 를 켜면 키보드로 닿는다")
+	key_slot.queue_free()
+	await frames(1)
+
 	var spot := GoHudAnchor.new()
 	spot.spot = GoHudAnchor.Spot.BOTTOM_RIGHT
 	root.add_child(spot)
@@ -641,10 +1236,128 @@ func _anchor() -> void:
 	spot.queue_free()
 	await frames(1)
 
+	# ── 고정 칸 피하기 ──────────────────────────────────────────────────
+	# 🛑 **아홉 자리는 자리를 나눌 뿐, 겹치지 않는다고 보장하지 않는다.** 위쪽 가운데에 뜨는 스낵바는
+	#    폭이 넓어 오른쪽 위 체력바 위에 그대로 얹혔다 — 값이 가려져 체력을 읽을 수 없었다(실측).
+	var bars_spot := GoHudAnchor.new()
+	bars_spot.spot = GoHudAnchor.Spot.TOP_RIGHT
+	var bars_box := Control.new()
+	bars_box.custom_minimum_size = Vector2(180, 100)
+	bars_spot.add_child(bars_box)
+	root.add_child(bars_spot)
+	var toast_spot := GoHudAnchor.new()
+	toast_spot.spot = GoHudAnchor.Spot.TOP_CENTER
+	var toast_box := Control.new()
+	# 🛑 폭을 숫자로 박으면 **넓은 화면에서는 원래 안 겹쳐** 검사의 전제가 무너진다(844dp 에서
+	#    300dp 알림은 180dp 체력바에 닿지 않는다). 화면에 비례해 잡아 어디서든 겹치게 둔다.
+	var usable := GoSafeArea.usable_rect(root).grow(-GoUi.metric(GoTheme.SCREEN_MARGIN))
+	toast_box.custom_minimum_size = Vector2(maxf(300.0, usable.size.x * 0.9), 44)
+	toast_spot.add_child(toast_box)
+	root.add_child(toast_spot)
+	await frames(4)
+
+	# ① 그냥 두면 겹친다 — 아홉 자리만으로는 안 풀린다.
+	check(bars_spot.get_global_rect().intersects(toast_spot.get_global_rect()),
+		"넓은 알림은 모서리 HUD 와 겹친다 (알림 %s · HUD %s)"
+		% [str(toast_spot.get_global_rect()), str(bars_spot.get_global_rect())])
+
+	# ② 비키라고 하면 아래로 내려가 앉는다.
+	var toast_x := toast_spot.global_position.x
+	toast_spot.avoid_peers = true
+	await frames(4)
+	check(not bars_spot.get_global_rect().intersects(toast_spot.get_global_rect()),
+		"avoid_peers — 알림 %s 가 HUD %s 를 피한다"
+		% [str(toast_spot.get_global_rect()), str(bars_spot.get_global_rect())])
+	check(toast_spot.global_position.y >= bars_spot.get_global_rect().end.y,
+		"위쪽 칸은 **아래로** 비킨다 (알림 위 %.0f · HUD 아래 %.0f)"
+		% [toast_spot.global_position.y, bars_spot.get_global_rect().end.y])
+	# 🛑 좌우로는 튀지 않는다 — 뜰 때마다 다른 자리에 나타나면 눈이 따라가지 못한다.
+	check(near(toast_spot.global_position.x, toast_x),
+		"가운데 정렬은 그대로다 (비키기 전 %.0f · 뒤 %.0f)" % [toast_x, toast_spot.global_position.x])
+
+	# ③ 고정 칸끼리는 서로 피하지 않는다 — 둘 다 피하면 영원히 자리를 맞바꾼다.
+	var before := bars_spot.global_position
+	await frames(3)
+	check(bars_spot.global_position == before, "피하지 않는 칸은 제자리에 있다")
+
+	# ④ **붙박이가 아닌 칸은 피할 대상이 아니다.** 잠깐 뜨는 것끼리 서로 피하게 두었더니 알림이
+	#    프롬프트 카드까지 피해 화면 한복판까지 달아났다(2026-09-13 가로 실측).
+	bars_spot.reserve_space = false
+	await frames(4)
+	check(bars_spot.get_global_rect().intersects(toast_spot.get_global_rect()),
+		"잠깐 뜨는 칸끼리는 서로 피하지 않는다 (알림 %s · 상대 %s)"
+		% [str(toast_spot.get_global_rect()), str(bars_spot.get_global_rect())])
+	bars_spot.reserve_space = true
+	await frames(4)
+
+	# ⑤ **붙박이가 커지면 비키는 칸도 따라 내려간다.** 알림은 체력바가 커진 것을 스스로 알 길이
+	#    없다 — 알려 주지 않으면 비킨 자리에 그대로 남아 다시 겹친다.
+	var toast_y := toast_spot.global_position.y
+	bars_box.custom_minimum_size = Vector2(180, 170)
+	await frames(6)
+	check(toast_spot.global_position.y > toast_y,
+		"붙박이가 커지면 비키는 칸도 따라 내려간다 (%.0f → %.0f)"
+		% [toast_y, toast_spot.global_position.y])
+	check(not bars_spot.get_global_rect().intersects(toast_spot.get_global_rect()),
+		"커진 뒤에도 겹치지 않는다 (알림 %s · HUD %s)"
+		% [str(toast_spot.get_global_rect()), str(bars_spot.get_global_rect())])
+	bars_spot.queue_free()
+	toast_spot.queue_free()
+	await frames(1)
+
 
 # ── 안내 투어 ──────────────────────────────────────────────────────────
 
 func _coach() -> void:
+	# ── 카드는 붙박이를 덮지 않는다 ────────────────────────────────────
+	# 🛑 가로 화면에서 카드를 화면 맨 위/아래 끝으로 보내던 규칙이 헤더의 조작 버튼을 덮었다(2026-09-13
+	#    데모 실측). 이제 **대상과 같은 높이**에 두고, 붙박이 HUD(`reserve_space`)와 `keep_clear` 를 피한다.
+	var was_size := root.content_scale_size
+	root.content_scale_size = Vector2i(844, 390)
+	await frames(4)
+	var mark := Button.new()
+	mark.text = "Target"
+	mark.position = Vector2(300, 60)          # 화면 왼쪽 위쪽 — 카드는 오른쪽 옆으로 간다
+	mark.size = Vector2(120, 40)
+	root.add_child(mark)
+	var guide := GoCoachMark.new()
+	root.add_child(guide)
+	await frames(3)
+	guide.start([{"target": mark, "title": "T", "body": "b"}])
+	await frames(5)
+	# 🛑 붙박이를 **세우기 전에** 잰다 — 세워 두면 회피가 카드를 옮겨 "대상 높이" 규칙이 가려진다
+	#    (변이 검사가 실제로 그 규칙을 놓쳤다).
+	var card_rect := guide.card.get_global_rect()
+	check(near(card_rect.position.y, mark.get_global_rect().position.y, 1.0),
+		"가로에서 카드는 대상과 같은 높이에 (카드 y %.0f · 대상 y %.0f)" % [card_rect.position.y, mark.get_global_rect().position.y])
+	var fixture := GoHudAnchor.new()          # 오른쪽 위 붙박이 — 카드가 놓인 바로 그 자리
+	fixture.spot = GoHudAnchor.Spot.TOP_RIGHT
+	var fixture_box := Control.new()
+	fixture_box.custom_minimum_size = Vector2(300, 90)
+	fixture.add_child(fixture_box)
+	root.add_child(fixture)
+	await frames(4)
+	guide.call("_layout")
+	await frames(3)
+	card_rect = guide.card.get_global_rect()
+	check(not card_rect.intersects(fixture.get_global_rect()),
+		"카드가 붙박이 HUD 를 피한다 (카드 %s · HUD %s)" % [str(card_rect), str(fixture.get_global_rect())])
+	check(not card_rect.intersects(mark.get_global_rect()), "비키면서도 대상을 가리지 않는다")
+	# 앵커가 아닌 것(머리띠·툴바)은 `keep_clear` 로 알려 준다.
+	var bar := Panel.new()
+	bar.position = Vector2(0, 100)
+	bar.size = Vector2(844, 60)
+	root.add_child(bar)
+	guide.keep_clear = [bar]
+	guide.call("_layout")
+	await frames(3)
+	check(not guide.card.get_global_rect().intersects(bar.get_global_rect()),
+		"keep_clear 에 넣은 것도 피한다 (카드 %s · 띠 %s)" % [str(guide.card.get_global_rect()), str(bar.get_global_rect())])
+	guide.finish(false)
+	guide.queue_free(); fixture.queue_free(); mark.queue_free(); bar.queue_free()
+	root.content_scale_size = was_size
+	await frames(4)
+
 	var baseline := GoBackPolicy.owners()
 	var first := Button.new()
 	first.position = Vector2(20, 20)
@@ -695,13 +1408,247 @@ func _form() -> void:
 	if cap > 0.0 and area.size.x > cap: side = maxf(side, (area.size.x - cap) * 0.5)
 	check(near(form.get_theme_constant(&"margin_left"), roundf(area.position.x + side)), "좌우 여백 = 브레이크포인트 최대 폼 폭")
 	check(form.scroll == scroll, "Scroll 자식을 찾는다")
+	# 🛑 **글로우가 잘리지 않을 자리.** 스크롤은 자기 경계에서 무조건 자르므로, 꽉 찬 폭 버튼의 왼쪽
+	#    글로우가 세로로 뚝 잘렸다(2026-09-13 사용자 지적). 스크롤 경계는 내용보다 좌·상·하로 넓어야
+	#    한다 — 오른쪽은 레일 자리가 이미 그 일을 한다.
+	var inset := scroll.get_node_or_null(^"ContentInset") as Control
+	check(inset != null, "스크롤이 내용을 안쪽 여백으로 감싼다")
+	if inset != null and inset.get_child_count() > 0:
+		# 🛑 `ContentInset` 컨테이너 자체는 스크롤을 꽉 채운다 — 여백은 그 **자식**에 걸린다.
+		#    컨테이너를 재면 "왼 0" 으로 나와 구현이 맞는데도 빨간불이었다(2026-09-13).
+		var outer := scroll.get_global_rect()
+		var inner := (inset.get_child(0) as Control).get_global_rect()
+		check(inner.position.x - outer.position.x >= 8.0 and inner.position.y - outer.position.y >= 8.0
+			and outer.end.y - inner.end.y >= 8.0,
+			"스크롤 경계가 내용보다 좌·상·하로 넓다 — 글로우가 살 자리 (왼 %.0f · 위 %.0f · 아래 %.0f)"
+			% [inner.position.x - outer.position.x, inner.position.y - outer.position.y, outer.end.y - inner.end.y])
+		# 내용의 왼쪽 끝은 폼이 정한 자리 그대로다 — 여백을 빌렸을 뿐 내용이 밀리지는 않았다.
+		check(near(inner.position.x, form.get_global_rect().position.x + form.get_theme_constant(&"margin_left"), 1.0),
+			"내용 위치는 그대로다 (내용 %.0f · 폼 안쪽 %.0f)"
+			% [inner.position.x, form.get_global_rect().position.x + form.get_theme_constant(&"margin_left")])
 	var late := Label.new()
 	late.text = "a long sentence that has to wrap on narrow phones"
 	column.add_child(late)
 	await frames(1)
 	check(late.autowrap_mode != TextServer.AUTOWRAP_OFF, "나중에 들어온 라벨도 줄바꿈이 보장된다")
+
+	# ── 버튼 글자는 낱말 단위로만 접힌다 ──────────────────────────────
+	# 🛑 줄바꿈이 켜진 버튼은 최소 폭에서 **글자 폭을 뺀다**. 그래서 자연 폭 버튼이 좁아지면 `Done` 이
+	#    `Don`/`e` 로 갈라졌다(2026-09-13 코치마크 실측). 한 낱말은 접지 않고, 여러 낱말은 가장 긴
+	#    낱말이 한 줄에 들어갈 폭을 보장한다.
+	var one := GoStyle.button("Done", Callable(), GoStyle.Tone.PRIMARY)
+	one.custom_minimum_size.x = 72
+	one.size_flags_horizontal = Control.SIZE_SHRINK_END
+	column.add_child(one)
+	await frames(1)
+	check(one.autowrap_mode == TextServer.AUTOWRAP_OFF, "한 낱말 버튼은 접지 않는다 (%d)" % one.autowrap_mode)
+	var many := GoStyle.button("Delete everything permanently", Callable(), GoStyle.Tone.PRIMARY)
+	column.add_child(many)
+	await frames(1)
+	var font := many.get_theme_font(&"font")
+	var longest := font.get_string_size("permanently", HORIZONTAL_ALIGNMENT_LEFT, -1.0, many.get_theme_font_size(&"font_size")).x
+	check(many.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART and many.custom_minimum_size.x >= longest,
+		"여러 낱말 버튼은 접되 가장 긴 낱말은 한 줄에 (최소 %.0f ≥ 낱말 %.0f)" % [many.custom_minimum_size.x, longest])
+	# 🛑 **번역 키가 아니라 보이는 글자로 판단한다**(I-57). 키 `probe_two_words` 는 한 낱말이지만 번역문은
+	#    두 낱말이다 — 키만 보면 접지 않기로 하고, 좁아지면 낱말 안에서 갈라진다. 언어가 바뀌어 한 낱말
+	#    번역이 오면 폼이 알림을 받아 다시 정한다.
+	var probe_locale := TranslationServer.get_locale()
+	var two := Translation.new()
+	two.locale = "xx"
+	two.add_message("probe_two_words", "two words here")
+	var one_word := Translation.new()
+	one_word.locale = "yy"
+	one_word.add_message("probe_two_words", "single")
+	TranslationServer.add_translation(two)
+	TranslationServer.add_translation(one_word)
+	TranslationServer.set_locale("xx")
+	var keyed_button := GoStyle.button_key("probe_two_words", Callable(), GoStyle.Tone.PRIMARY)
+	column.add_child(keyed_button)
+	await frames(2)
+	check(keyed_button.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART,
+		"번역문이 두 낱말이면 키가 한 낱말이어도 접는다 (%d)" % keyed_button.autowrap_mode)
+	TranslationServer.set_locale("yy")
+	await frames(3)
+	check(keyed_button.autowrap_mode == TextServer.AUTOWRAP_OFF,
+		"언어가 바뀌어 한 낱말이 되면 폼이 다시 정한다 (%d)" % keyed_button.autowrap_mode)
+	TranslationServer.set_locale(probe_locale)
+	TranslationServer.remove_translation(two)
+	TranslationServer.remove_translation(one_word)
+	await frames(2)
+
+	# ── 드롭다운 두 종류는 한 부품처럼 보여야 한다 ────────────────────
+	# 🛑 `select()`(OptionButton) 와 `dropdown()`(MenuButton) 이 데모에서 위아래로 붙어 있는데, 글자 정렬과
+	#    화살표 크기가 달라 다른 부품처럼 보였다(2026-09-13 데모 촬영 실측).
+	var choose := GoStyle.select(["A", "B"], "Choose")
+	var more := GoStyle.dropdown("More", ["x", "y"])
+	column.add_child(choose)
+	column.add_child(more)
+	await frames(2)
+	check(more.alignment == HORIZONTAL_ALIGNMENT_LEFT, "MenuButton 드롭다운도 글자를 왼쪽에 둔다")
+	var arrow_w := choose.get_theme_icon(&"arrow").get_width()
+	check(more.get_theme_constant(&"icon_max_width") == arrow_w,
+		"두 드롭다운의 화살표 크기가 같다 (OptionButton %d · MenuButton %d)" % [arrow_w, more.get_theme_constant(&"icon_max_width")])
+	# 🛑 크기만이 아니라 **자리**도 — OptionButton 은 `arrow_margin` 만큼, MenuButton 은 판의 오른쪽 여백만큼
+	#    들여 놓는다. 둘이 다르면 화살표 x 가 12dp 어긋난다(2026-09-13 데모 실측).
+	check(choose.get_theme_constant(&"arrow_margin") == int(more.get_theme_stylebox(&"normal").content_margin_right),
+		"두 드롭다운의 화살표가 같은 자리에 (arrow_margin %d · 판 여백 %d)"
+		% [choose.get_theme_constant(&"arrow_margin"), int(more.get_theme_stylebox(&"normal").content_margin_right)])
+	choose.queue_free(); more.queue_free()
+
+	# 글자를 바꾼 뒤 다시 부르면 규칙이 다시 적용된다 — 코치마크가 `Next` → `Done` 으로 바꾸는 길이다.
+	many.text = "Done"
+	GoStyle.fit_words(many)
+	check(many.autowrap_mode == TextServer.AUTOWRAP_OFF, "글자를 바꾼 뒤 fit_words 를 부르면 한 낱말 규칙으로 돌아온다")
+	# 🛑 토글은 **폼 밖**에 둔다 — 폼 안에서는 `GoStyle.form()` 이 자손 버튼에 같은 규칙을 다시 걸어
+	#    `toggle()` 자체의 규칙이 빠져도 초록불이 된다(변이 검사가 실제로 그렇게 놓쳤다).
+	var toggle_one := GoStyle.toggle("Haptics", false)
+	var toggle_many := GoStyle.toggle("Enable haptic feedback on every press", false)
+	root.add_child(toggle_one)
+	root.add_child(toggle_many)
+	await frames(1)
+	check(toggle_one.autowrap_mode == TextServer.AUTOWRAP_OFF and toggle_many.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART,
+		"토글도 같은 낱말 규칙 (한 낱말 %d · 여러 낱말 %d)" % [toggle_one.autowrap_mode, toggle_many.autowrap_mode])
+	toggle_one.queue_free()
+	toggle_many.queue_free()
 	form.queue_free()
 	await frames(1)
+
+	# 🛑 폼 **폭 제한은 폰에서 발동하지 않는다** — 모바일 최대 폭이 0(제한 없음)이기 때문이다.
+	#    그래서 폰 크기로만 검사하면 이 규칙은 있으나 마나다. 데스크톱 폭을 만들어 확인한다.
+	var restore := root.content_scale_size
+	root.content_scale_size = Vector2i(1280, 800)
+	await frames(3)
+	var wide := GoForm.new()
+	root.add_child(wide)
+	await frames(3)
+	var desktop_cap := GoScale.form_width_for(GoScale.breakpoint_for_dp(800.0))
+	check(desktop_cap > 0, "데스크톱 폼 최대 폭이 정해져 있다 (%d dp)" % desktop_cap)
+	var side_margin := wide.get_theme_constant(&"margin_left")
+	check(side_margin > GoUi.metric(GoTheme.PADDING) * 2,
+		"넓은 화면에서 폼이 폭을 제한해 여백을 키운다 (%d dp — 기본 여백 %d)"
+		% [side_margin, GoUi.metric(GoTheme.PADDING)])
+	wide.queue_free()
+	root.content_scale_size = restore
+	await frames(3)
+
+	# 🛑 가상 키보드는 데스크톱 검사에 **올라오지 않는다** — 높이를 직접 넣어 재현한다.
+	#    그러지 않으면 "키보드를 피한다" 는 규칙을 아무도 지키지 않는다.
+	var keyed := GoForm.new()
+	root.add_child(keyed)
+	await frames(2)
+	var bottom_before := keyed.get_theme_constant(&"margin_bottom")
+	keyed._on_keyboard(300)
+	await frames(2)
+	check(keyed.get_theme_constant(&"margin_bottom") > bottom_before,
+		"가상 키보드가 올라오면 폼이 그 위로 비킨다 (%d → %d)"
+		% [bottom_before, keyed.get_theme_constant(&"margin_bottom")])
+	keyed._on_keyboard(0)
+	await frames(2)
+	check(keyed.get_theme_constant(&"margin_bottom") == bottom_before, "키보드가 내려가면 되돌아온다")
+	keyed.queue_free()
+	await frames(1)
+	# ── 떠 있는 HUD 피하기 ──────────────────────────────────────────────
+	# 🛑 **겹침은 눈으로만 잡혀 왔다.** 스크롤 본문이 체력바 뒤로 흘러 글자끼리 뒤섞인 것도,
+	#    입력칸이 퀵슬롯에 가려진 것도 스크린샷을 열어야 보였다(2026-09-13). 사각형이 겹치는지는
+	#    좌표로 잴 수 있다 — 여기서 잰다.
+	var screen := GoForm.new()
+	var screen_scroll := GoScroll.new()
+	screen.add_child(screen_scroll)
+	root.add_child(screen)
+	var corner := GoHudAnchor.new()
+	corner.spot = GoHudAnchor.Spot.BOTTOM_RIGHT
+	var block := Control.new()
+	block.custom_minimum_size = Vector2(160, 90)
+	corner.add_child(block)
+	root.add_child(corner)
+	await frames(4)
+
+	var hud_rect := func() -> Rect2: return Rect2(corner.global_position, corner.size)
+	# 🛑 **자식의 사각형으로 재지 않는다.** 컨테이너는 여백이 바뀐 **다음 프레임**에 자식을 다시
+	#    놓으므로, 자식을 읽으면 한 박자 전의 배치를 보게 된다(16dp 차이로 엇갈렸다).
+	#    폼이 **내주는 안쪽 영역**이 우리가 보장하는 것이고, 그것은 즉시 정확하다.
+	var body := func() -> Rect2:
+		return screen.get_global_rect().grow_individual(
+			-screen.get_theme_constant(&"margin_left"), -screen.get_theme_constant(&"margin_top"),
+			-screen.get_theme_constant(&"margin_right"), -screen.get_theme_constant(&"margin_bottom"))
+	check(hud_rect.call().get_area() > 0.0, "HUD 칸이 자리를 차지한다 %s" % str(hud_rect.call()))
+	# 🛑 **여백으로 판정하지 않는다.** 폼의 좌우 여백은 브레이크포인트별 폭 제한에서도 생긴다 —
+	#    넓은 화면에서는 그쪽이 훨씬 커서, 여백만 보면 "옆으로 피했다" 고 오판한다(실제로 했다:
+	#    768×1024 에서 오른쪽 164 는 폭 제한이고 HUD 회피는 0 이었다). 회피분만 따로 본다.
+	# ① 기본은 지금까지의 동작 그대로 — 한 칸도 비키지 않는다.
+	check(screen._hud_pad == Vector4.ZERO, "avoid_hud 를 끄면 자리를 비우지 않는다(기존 동작) %s"
+		% str(screen._hud_pad))
+
+	# ② 켜면 겹치지 않는다.
+	# 🛑 HUD 는 자기 크기를 **미룬 호출**로 정하고, 폼은 그 변화를 다음 프레임에 따라잡는다 —
+	#    네 프레임으로는 아슬아슬해서 화면 크기에 따라 16dp 차이로 엇갈렸다. 넉넉히 기다린다.
+	screen.avoid_hud = true
+	await frames(10)
+	check(not body.call().intersects(hud_rect.call()),
+		"avoid_hud — 본문 %s 가 HUD %s 를 피한다" % [str(body.call()), str(hud_rect.call())])
+
+	# ③ **어느 쪽으로 피하는가.** "안 겹치니 됐다" 로 끝내면, 가로 화면에서 세로로만 물러나
+	#    본문이 화면의 27% 를 잃는 것을 놓친다(I-38 이 그랬다).
+	#    🛑 방향 이름을 박아 두지 않는다 — 1280×800 은 가로지만 비율이 1.6:1 이라 아래가 근소하게
+	#       싸다(136k vs 141k). 박아 두면 알고리즘이 옳아도 검사가 틀린다. **규칙 자체**를 잰다.
+	var pad := screen._hud_pad
+	var full := GoSafeArea.usable_rect(screen.get_window())
+	var mark := hud_rect.call() as Rect2
+	# 🛑 **구현과 같은 영역에서 잰다.** 폼은 좌우 여백을 뺀 자기 자리에서 겹침을 보므로(넓은 화면에서
+	#    폭 제한으로 이미 가운데에 몰려 있다), 안전영역 전체로 재면 검사만 다른 답을 낸다.
+	var side_now := maxf(float(screen._side_margin()),
+		(full.size.x - float(screen._max_width())) * 0.5 if screen._max_width() > 0 else 0.0)
+	full = full.grow_individual(-side_now, 0.0, -side_now, 0.0)
+	var cost := [
+		(mark.end.x - full.position.x) * full.size.y,     # 왼쪽으로
+		(mark.end.y - full.position.y) * full.size.x,     # 위로
+		(full.end.x - mark.position.x) * full.size.y,     # 오른쪽으로
+		(full.end.y - mark.position.y) * full.size.x,     # 아래로
+	]
+	if pad == Vector4.ZERO:
+		# 🔑 **넓은 화면에서는 밀 필요가 없다.** 폭 제한으로 폼이 이미 가운데에 몰려 있어 구석의
+		#    HUD 와 닿지 않는다 — 그런데도 밀면 본문이 왼쪽으로 치우쳐 가운데 정렬이 깨진다
+		#    (1280 화면에서 실제로 214dp 치우쳤다).
+		check(not body.call().intersects(hud_rect.call()),
+			"이미 비껴 있으면 밀지 않는다 (본문 %s · HUD %s)"
+			% [str(body.call()), str(hud_rect.call())])
+	else:
+		var took := 2 if pad.z > 0.0 else 3               # 이 HUD 는 오른쪽 아래 구석이다
+		# 🛑 **밖에 있는 방향은 세지 않는다**(깊이가 음수다) — 구현도 그렇게 거른다.
+		var reachable: Array = []
+		for value in cost:
+			if value > 0.0: reachable.append(value)
+		var cheapest: float = reachable.min() if not reachable.is_empty() else cost[took]
+		check(is_equal_approx(cost[took], cheapest),
+			"가장 싼 방향으로 피한다 (고른 값 %.0f · 가장 싼 값 %.0f)" % [cost[took], cheapest])
+
+	# ④ **가로에서는 세로 공간을 지킨다.** I-38 의 본래 증상이다 — 844×390 에서 아래로만 피하면
+	#    본문 높이가 390 에서 286 으로 줄어 버튼 한 줄이 통째로 잘린다.
+	var restore_size := root.content_scale_size
+	root.content_scale_size = Vector2i(844, 390)
+	await frames(5)
+	check(screen._hud_pad.z > screen._hud_pad.w,
+		"가로 폰에서는 옆으로 피해 세로를 지킨다 (오른쪽 %.0f · 아래 %.0f)"
+		% [screen._hud_pad.z, screen._hud_pad.w])
+	# ⑤ **넓은 화면에서는 한 칸도 밀지 않는다.** 폭 제한으로 이미 가운데에 몰려 구석의 HUD 와
+	#    닿지 않기 때문이다 — 그런데도 밀면 본문이 왼쪽으로 치우쳐 가운데 정렬이 깨진다.
+	#    🛑 이 규칙은 **폰 화면에서는 드러나지 않는다**(상한이 없어 폼이 화면을 다 쓴다).
+	root.content_scale_size = Vector2i(1280, 800)
+	await frames(8)
+	check(screen._hud_pad == Vector4.ZERO,
+		"넓은 화면에서는 헛되이 밀지 않는다 (pad %s)" % str(screen._hud_pad))
+	root.content_scale_size = restore_size
+	await frames(4)
+
+	# ⑤ 자리를 예약하지 않겠다고 한 칸은 못 본 척한다 — 손을 얹을 때만 나타나는 조이스틱이 그렇다.
+	corner.reserve_space = false
+	await frames(4)
+	check(screen._hud_pad == Vector4.ZERO, "reserve_space 를 끈 칸은 자리를 안 먹는다 %s"
+		% str(screen._hud_pad))
+	screen.queue_free()
+	corner.queue_free()
+	await frames(1)
+
 	# 가로 스크롤 팩토리 — 자식 클래스가 자기 인스턴스로 다시 만들 수 있게 설정만 분리돼 있다.
 	var lane := GoScroll.horizontal()
 	var own := GoScroll.new()
@@ -747,6 +1694,44 @@ func _rtl() -> void:
 	check(content.layout_direction == Control.LAYOUT_DIRECTION_APPLICATION_LOCALE, "내용은 앱 언어 방향")
 	var pad := GoJoystick.new()
 	check(pad.layout_direction == Control.LAYOUT_DIRECTION_LTR, "조이스틱은 물리적 방향")
+	# 🛑 RTL 언어는 ar 하나가 아니다 — he 를 더했으므로 둘 다 엔진이 RTL 로 보는지 확인한다.
+	#    위젯은 LAYOUT_DIRECTION_APPLICATION_LOCALE 에 맡기므로, 판정이 맞으면 레이아웃도 맞다.
+	var before := TranslationServer.get_locale()
+	for locale: String in ["ar", "he"]:
+		TranslationServer.set_locale(locale)
+		check(TranslationServer.get_locale().begins_with(locale), "%s 로케일이 적용된다" % locale)
+		check(not TranslationServer.get_tool_locale().is_empty(), "%s 에서 로케일이 비지 않는다" % locale)
+
+	# 🛑 **숫자는 언어를 따라 뒤집히지 않는다.** 아랍어에서도 `320 / 500` 의 순서는 그대로다 —
+	#    뒤집히면 남은 체력과 최대 체력이 자리를 바꿔 읽힌다.
+	var numbers := GoBar.new()
+	root.add_child(numbers)
+	await frames(2)
+	numbers.set_values(320, 500, false)
+	var readout := numbers.get_node(^"Column/Head/Value") as Label
+	check(readout.text_direction == Control.TEXT_DIRECTION_LTR, "막대 숫자는 RTL 에서도 왼→오")
+	numbers.queue_free()
+
+	# 🛑 **뒤집혀야 하는 것은 실제로 뒤집히는가.** 값만 확인하면 "설정은 맞는데 화면은 그대로" 를 놓친다.
+	#    아랍어를 켜고 목록 줄의 아이콘과 글자가 자리를 바꾸는지 **좌표로** 본다.
+	TranslationServer.set_locale("ar")
+	var mirrored := GoStyle.list_button(GoIconSet.USER, "Profile", Callable(), Color.TRANSPARENT, "", false)
+	root.add_child(mirrored)
+	mirrored.size = Vector2(300, 56)
+	await frames(3)
+	var line := mirrored.get_child(0).get_child(0) as Control
+	var glyph := line.get_child(0) as Control
+	var words := line.get_child(1) as Control
+	check(glyph.global_position.x > words.global_position.x,
+		"RTL 에서 목록 줄이 거울처럼 뒤집힌다 (아이콘 %.0f · 글자 %.0f)"
+		% [glyph.global_position.x, words.global_position.x])
+	TranslationServer.set_locale(before)
+	await frames(3)
+	check(glyph.global_position.x < words.global_position.x, "LTR 로 돌아오면 원래 순서")
+	mirrored.queue_free()
+	await frames(1)
+
+	TranslationServer.set_locale(before)
 	pad.free()
 	scroll.queue_free()
 	await frames(1)

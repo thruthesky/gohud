@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GoThemePreset" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/core/go_theme_preset.gd" id="script"]
+[ext_resource type="Theme" path="res://addons/gohud/themes/gohud_scifi_light.tres" id="theme"]
+[ext_resource type="Resource" path="res://addons/gohud/themes/skins/gohud_skin_scifi.tres" id="skin"]
+
+[resource]
+script = ExtResource("script")
+id = &"scifi_light"
+title = "Sci-Fi Light"
+dark = false
+theme = ExtResource("theme")
+skin = ExtResource("skin")

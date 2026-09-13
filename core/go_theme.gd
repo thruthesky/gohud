@@ -33,6 +33,19 @@ const SCRIM := &"scrim"
 const SHADOW := &"shadow"
 const TRACK := &"track"
 
+# ── 채움 전용 색 ───────────────────────────────────────────────────────
+## 🔑 **같은 뜻인데 쓰임이 반대인 색**이다. `WARNING` 은 글자로 쓰이므로 밝은 바탕에서 읽히려면
+## 어두워야 하고, 체력·경험치 **막대의 채움**으로 쓰이면 눈에 띄어야 하므로 밝아야 한다.
+## 하나로 버티면 밝은 테마의 경험치 막대가 **갈색**이 된다(2026-09-13 실측).
+##
+## 🛑 이것은 **선택 토큰**이다 — 테마에 없으면 `_fill` 을 뗀 같은 이름으로 떨어진다.
+##    그래서 옛 테마·남의 테마를 그대로 꽂아도 깨지지 않는다.
+const SUCCESS_FILL := &"success_fill"
+const WARNING_FILL := &"warning_fill"
+const DANGER_FILL := &"danger_fill"
+const INFO_FILL := &"info_fill"
+const ACCENT_FILL := &"accent_fill"
+
 # ── 치수(dp) ───────────────────────────────────────────────────────────
 const TOUCH := &"touch"
 const BUTTON_HEIGHT := &"button_height"
@@ -91,6 +104,8 @@ const VAR_CARD := &"GoCard"
 const VAR_BUTTON := &"GoButton"
 const VAR_PRIMARY_BUTTON := &"GoPrimaryButton"
 const VAR_DANGER_BUTTON := &"GoDangerButton"
+## 채워진 위험 버튼 — 되돌릴 수 없는 동작의 **확인** 버튼에만 쓴다. 옅은 위험 버튼은 위를 쓴다.
+const VAR_DANGER_SOLID_BUTTON := &"GoDangerSolidButton"
 const VAR_BARE_BUTTON := &"GoBareButton"
 const VAR_COMPACT_BUTTON := &"GoCompactButton"
 const VAR_ICON_BUTTON := &"GoIconButton"

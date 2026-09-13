@@ -88,16 +88,13 @@ func set_content(content: Control, accent := Color.TRANSPARENT, compact := false
 	# 🛑 내용의 `mouse_filter` 도 전부 IGNORE 로 — `mouse_behavior_recursive` 가 입력을 막아도 값은 남아, "알림 안 노드는 입력을
 	#    안 먹는다"를 값으로 확인하는 코드(호스트 검사·`mouse_filter` 를 읽는 배치 로직)가 어긋난다(2026-09-12, 파생 게임 loot-icons).
 	_ignore_content_input(content)
-	var surface := GoStyle.box(GoTheme.BOX_NOTICE, accent)
-	if compact: surface.set_content_margin_all(GoUi.metric(GoTheme.PADDING_COMPACT))
-	add_theme_stylebox_override(&"panel", surface)
+	add_theme_stylebox_override(&"panel", GoUi.skin().notice_box(accent, compact))
 	show()
 
 
 ## 복합 내용의 강조색만 바꾼다 — 표면을 새로 만들지 않는다(다른 알림에 번지지 않게 사본을 고친다).
 func set_accent(accent: Color) -> void:
-	var surface := get_theme_stylebox(&"panel") as StyleBoxFlat
-	if surface != null and accent.a > 0: surface.border_color = Color(accent, 0.55)
+	GoUi.skin().tint_notice(get_theme_stylebox(&"panel"), accent)
 
 
 ## 짧은 문구는 자연 폭, 긴 문구는 `limit` 안에서 줄바꿈한다.
@@ -111,10 +108,8 @@ func preferred_width(limit: float) -> float:
 	return minf(limit, natural + get_theme_stylebox(&"panel").get_minimum_size().x)
 
 
-func _surface(accent := Color.TRANSPARENT) -> StyleBoxFlat:
-	var surface := GoStyle.box(GoTheme.BOX_NOTICE, accent)
-	surface.set_content_margin_all(GoUi.metric(GoTheme.PADDING_COMPACT))
-	return surface
+func _surface(accent := Color.TRANSPARENT) -> StyleBox:
+	return GoUi.skin().notice_box(accent, true)
 
 
 ## 내용 서브트리가 월드 입력을 먹지 않게 — 스낵바 위를 눌러도 아래 화면이 받는다.

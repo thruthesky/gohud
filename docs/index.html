@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="alternate" hreflang="en" href="https://thruthesky.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.io/gohud/ko/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.io/gohud/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — a HUD &amp; UI kit for Godot 4</title>
+<meta name="description" content="A customizable HUD and UI kit for Godot 4.6+. Floating surfaces, bottom sheets, dialogs, forms, snackbars, HUD bars, quick slots and a virtual joystick, driven by one theme.">
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">What it does</a>
+      <a href="#install">Install</a>
+      <a href="#start">Quick start</a>
+      <a href="#presets">Presets</a>
+      <a href="theming.html">Theming ↗</a>
+      <a href="widgets.html">Widgets ↗</a>
+      <a href="ko/">한국어 ↗</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Game UI, driven by one resource</h1>
+    <p class="lead">
+      gohud is a HUD and UI kit for Godot 4.6 and newer. Floating windows, bottom sheets, dialogs, forms,
+      snackbars, coach marks, HUD bars, quick slots and a virtual joystick run off <b>one theme and one
+      swappable icon set</b>, and handle the safe area, the virtual keyboard, RTL and touch targets for you.
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">Pure GDScript</span>
+      <span class="badge">No autoload needed</span>
+      <span class="badge">MIT</span>
+      <span class="badge">21 languages</span>
+      <span class="badge">84 icons included</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">Install</a>
+      <a class="btn" href="#presets">Change the look</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="what">
+  <h2>What it takes off your hands</h2>
+  <p class="sub">
+    What costs the most time in game UI is not the shape of a button — it is everything that drifts
+    apart between devices. gohud handles that drift in one place.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Every measurement is a token</h3>
+      <p>Spacing, corners and text sizes are called by name, not written as numbers. Swap the theme and the whole screen moves with it.</p>
+    </div>
+    <div class="card">
+      <h3>Visible size ≠ pressable size</h3>
+      <p>A close button looks 36dp but its touch target is 48dp. Where crowded slots overlap, the one whose centre is nearer takes the press.</p>
+    </div>
+    <div class="card">
+      <h3>Notches and keyboards</h3>
+      <p>HUD pieces sit inside the safe area, and an input rises above the virtual keyboard when it appears.</p>
+    </div>
+    <div class="card">
+      <h3>Back closes one thing</h3>
+      <p>Escape and Android Back close <b>only the topmost surface</b>. Stacked windows do not vanish together.</p>
+    </div>
+    <div class="card">
+      <h3>Notices never steal input</h3>
+      <p>Press through a snackbar and the button underneath receives it. Focus is not taken either.</p>
+    </div>
+    <div class="card">
+      <h3>Icons are asked for by name</h3>
+      <p>Widgets only know <code>GoIconSet.CLOSE</code>. Swap the set and every drawing changes without touching a line of code.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Everything works without enabling the plugin.</b> Enabling it adds a GoRuntime autoload that
+    tracks window size, dp scale and keyboard height — a convenience, not a requirement.
+  </div>
+</section>
+
+<section id="install">
+  <h2>Install</h2>
+  <p>Extract into your project so you get <code>res://addons/gohud/</code>. That is all.</p>
+  <pre><code>git submodule add &lt;gohud-repository-url&gt; addons/gohud
+git submodule update --init</code></pre>
+  <div class="note warn">
+    <b>Godot 4.6 or newer is required.</b> gohud uses APIs introduced in 4.5 (DPITexture,
+    FoldableContainer, accessibility properties), so on anything older it <b>fails while parsing</b>.
+    The suite is run against 4.6 stable and 4.7 on every change.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Quick start</h2>
+
+  <h3>A confirmation you <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Delete save", "This cannot be undone."):
+    delete_save()</code></pre>
+
+  <h3>A bottom sheet with a sticky search field and footer</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventory")
+sheet.toolbar().add_child(GoStyle.line_edit("Search…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Why sticky rows are separate from the scrolling body.</b> Put confirm and cancel in
+    <code>body</code> and a long list pushes them off screen. <code>footer()</code> is always visible.
+  </div>
+
+  <h3>A HUD corner</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+</section>
+
+<section id="presets">
+  <h2>Change the look — colours <em>and</em> shape</h2>
+  <p class="sub">
+    A Theme can only restyle what the engine draws. Rounded corners are the only corners StyleBoxFlat
+    has, and the joystick, quick slots and coach mark are drawn by code — so a theme alone can never
+    change their shape. gohud therefore ships <b>presets</b>.
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # theme, skin and icons together</code></pre>
+
+  <div class="shots">
+    <figure>
+      <img src="img/preset-default-dark.png" alt="The gohud gallery with the default_dark preset — rounded corners, blue accent" loading="lazy">
+      <figcaption><code>default_dark</code> — rounded corners, soft blue accent</figcaption>
+    </figure>
+    <figure>
+      <img src="img/preset-default-light.png" alt="default_light preset — the same shapes on a light palette" loading="lazy">
+      <figcaption><code>default_light</code> — same shapes, light palette</figcaption>
+    </figure>
+    <figure>
+      <img src="img/preset-scifi-dark.png" alt="scifi_dark preset — chamfered corners and cyan neon" loading="lazy">
+      <figcaption><code>scifi_dark</code> — chamfered corners, cyan neon</figcaption>
+    </figure>
+    <figure>
+      <img src="img/preset-scifi-light.png" alt="scifi_light preset — the same angular shapes in a blueprint palette" loading="lazy">
+      <figcaption><code>scifi_light</code> — same angular shapes, blueprint palette</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    All four are the <b>same gallery screen</b>. Not a line of code differs — only the preset name.
+    Button corners, toggle shapes, list rows and input borders all move together.
+  </p>
+
+  <h3>The same screen on a phone and on a desktop</h3>
+  <p>
+    Those four are a phone in portrait. Below is the <b>same code</b> at 1280×800 — the content stops at a
+    readable width (480dp) and centres, while the HUD stays in the corners. The form steps around floating
+    HUD pieces, but <b>does not move when it is already clear of them</b>: pushing anyway would throw the
+    content off-centre on a wide screen.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="img/desktop-default-dark.png" alt="default_dark at 1280x800 — content centred, HUD in the corners" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="img/desktop-scifi-dark.png" alt="scifi_dark at 1280x800 — same layout with chamfered panels and neon" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Pick one from <b>Project Settings → Gohud → Theme → Preset</b>, or set <code>GoConfig.preset</code>.
+    Filling in <code>theme</code>, <code>skin</code> or <code>icons</code> explicitly <b>wins over</b> the
+    preset, so you can take a preset and override just one of them.
+  </p>
+</section>
+
+<section id="skin">
+  <h2>Skins — where a Theme cannot reach</h2>
+  <p class="sub">
+    A skin owns the joystick, quick-slot faces, the coach-mark ring, chips, skeletons, alerts, dividers
+    and section headings. Subclass it and override only what you want changed.
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>Class</th><th>Shapes it can make</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Diagonally cut corners (chamfer), one thickened accent edge, an outer glow</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Corner marks only, without enclosing the content</td></tr>
+    </tbody>
+  </table>
+  <p>Both serialise into a Theme resource — which is what lets a theme change <b>shape</b>, not just colour.</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> always returns a <code>StyleBoxFlat</code></b>, because calling code
+    receives it and adjusts <code>bg_color</code> or <code>corner_radius</code>. Use
+    <code>GoStyle.surface()</code> when a custom shape has to survive.
+  </div>
+</section>
+
+<section id="readable">
+  <h2>Readability is measured, not eyeballed</h2>
+  <p class="sub">
+    "Pretty" is taste; <b>"legible" can be measured.</b> Faint grey text looks fine on a good monitor
+    and disappears on a phone in daylight — picking by eye guarantees it eventually.
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    Every colour pair and <b>every button state's label over the panel it sits on</b> is measured against
+    WCAG. Translucent colours are composited over their real backdrop first — measuring them directly
+    reports a better ratio than the screen shows.
+  </p>
+  <p>
+    Text colours are therefore <b>derived, not chosen</b>: the builder takes the palette entry as a
+    starting point and pushes its lightness until it clears the threshold on every surface it can land on.
+    Change the palette and the contrast follows.
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud is <b>MIT</b>, including the 84 bundled icons. · <a href="ko/">한국어 문서</a></p>
+    <p style="font-size:13px">Hover an <b>underlined term</b> to see what it means.</p>
+  </div>
+</footer>
+
+<script src="site/glossary.en.js"></script>
+<script src="site/tooltip.js"></script>
+</body>
+</html>

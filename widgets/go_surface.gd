@@ -166,7 +166,7 @@ func _build() -> void:
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	header.add_child(title_label)
 
-	close_button = GoIconButton.new()
+	close_button = _make_close_button()
 	close_button.name = "CloseButton"
 	close_button.visual_size = GoUi.config.close_button_visual
 	close_button.icon_name = GoIconSet.CLOSE
@@ -190,6 +190,18 @@ func _build() -> void:
 	_column.add_child(footer)
 
 
+## 닫기 버튼을 만든다. 🔑 호스트가 `GoIconButton` 의 서브클래스(자기 그림·크기)를 쓰고 싶으면 자식에서 덮어쓴다 —
+## 표면은 `GoIconButton` 의 API 만 쓴다.
+func _make_close_button() -> GoIconButton:
+	return GoIconButton.new()
+
+
+## 본문 스크롤을 만든다. 🔑 호스트 프로젝트가 `GoScroll` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 이 메서드를
+## 자식에서 덮어쓴다 — 표면은 `GoScroll` 의 API 만 쓴다.
+func _make_scroll() -> GoScroll:
+	return GoScroll.new()
+
+
 func _ready() -> void:
 	# `new()` 와 `add_child()` **사이**에 바꿨을 수 있는 옵션을 여기서 반영한다.
 	_scrim.color = Color(0, 0, 0, 0) if scrim_transparent else GoUi.color(GoTheme.SCRIM)
@@ -199,7 +211,7 @@ func _ready() -> void:
 		# 🛑 스크롤 칸은 여기서 끼운다 — `use_panel_edge()` 는 부모가 정해진 뒤에야 스크롤바를
 		#    카드 여백 자리로 내보낼 수 있다. 본문에 이미 담아 둔 자식은 그대로 따라온다.
 		var slot := body.get_index()
-		scroll = GoScroll.new()
+		scroll = _make_scroll()
 		_column.add_child(scroll)
 		_column.move_child(scroll, slot)
 		body.reparent(scroll)

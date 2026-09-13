@@ -19,6 +19,8 @@ extends ScrollContainer
 var _edge_frame: MarginContainer
 var _content_inset: MarginContainer
 var _edge_gutter := 0
+## 글로우가 뻗을 수 있게 스크롤 경계를 바깥으로 민 거리(dp).
+var _bleed := 0
 
 
 func _init() -> void:
@@ -79,8 +81,13 @@ func use_panel_edge(parent_padding: int) -> void:
 	_edge_frame.size_flags_horizontal = size_flags_horizontal
 	_edge_frame.size_flags_vertical = size_flags_vertical
 	_edge_frame.size_flags_stretch_ratio = size_flags_stretch_ratio
+	# 🛑 **글로우·그림자가 잘리지 않게 숨 쉴 자리를 둔다.** 스크롤은 자기 경계에서 무조건 자른다 —
+	#    꽉 찬 폭의 강조 버튼은 왼쪽 글로우가 세로로 뚝 잘려 나갔다(2026-09-13 실측, 오른쪽은 레일
+	#    자리 덕에 살아남아 좌우가 달라 보였다). 부모 여백을 빌려 경계를 바깥으로 밀고, 안쪽에서
+	#    같은 만큼 되돌려 **내용 위치는 그대로** 둔다 — 오른쪽 레일과 같은 수법이다.
+	_bleed = mini(GoUi.metric(GoTheme.GAP), parent_padding)
 	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
-		_edge_frame.add_theme_constant_override(side, 0)
+		_edge_frame.add_theme_constant_override(side, -_bleed)
 	_edge_frame.add_theme_constant_override(&"margin_right", -_edge_gutter)
 	parent.add_child(_edge_frame)
 	parent.move_child(_edge_frame, index)
@@ -92,7 +99,7 @@ func use_panel_edge(parent_padding: int) -> void:
 	_content_inset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_inset.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
-		_content_inset.add_theme_constant_override(side, 0)
+		_content_inset.add_theme_constant_override(side, _bleed)
 	add_child(_content_inset)
 	for child in content: child.reparent(_content_inset)
 	var bar := get_v_scroll_bar()
@@ -106,6 +113,10 @@ func set_panel_padding(padding: int) -> void:
 	if _edge_frame == null: return
 	_edge_gutter = maxi(0, padding - GoUi.metric(GoTheme.SCROLL_EDGE))
 	_edge_frame.add_theme_constant_override(&"margin_right", -_edge_gutter)
+	_bleed = mini(GoUi.metric(GoTheme.GAP), padding)
+	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
+		_edge_frame.add_theme_constant_override(side, -_bleed)
+		_content_inset.add_theme_constant_override(side, _bleed)
 	_sync_edge_inset()
 
 

@@ -1,41 +1,68 @@
 #!/usr/bin/env bash
-# gohud 데모 실행.
-#
-#   bash run.sh                 # 창으로 실행  (= cd 여기 && godot)
-#   bash run.sh --shot out.png  # 화면을 파일로 저장하고 끝낸다
-#   bash run.sh --setup         # 애드온 링크만 만들고 끝낸다(에디터로 열기 전에 한 번)
-#   GODOT_BIN=/path/to/godot bash run.sh
-#
-# 이 폴더는 애드온 **안**에 있는 별도 Godot 프로젝트다. Godot 은 res:// 밖을 못 보므로 `addons/gohud` 가
-# 여기에도 있어야 하는데, 복사하면 원본과 어긋나고 그냥 두면 자기 자신을 품는 순환이 된다. 그래서
-#   · `addons/gohud` 는 애드온 루트로 가는 **심볼릭 링크**(`../../..`)이고
-#   · 링크를 타고 다시 들어오는 `addons/gohud/examples/demo/` 는 `.gdignore` 가 막는다
-#     (루트의 `.gdignore` 는 자기 자신을 막지 않는다 — 2026-09-12 실측).
-# 저장소를 clone 했으면 링크가 이미 있다. 스토어 ZIP 으로 받았으면(링크를 넣지 않는다) 이 스크립트가 만든다.
+# Run the standalone demo; import assets and register script classes first.
+# bash run.sh                            Interactive Start screen
+# bash run.sh --shot /tmp/start.png       Capture the Start screen
+# bash run.sh --languages                 Check all built-in languages render (headless)
+# bash run.sh --shot-languages /tmp/l.png Capture the language card
+# bash run.sh --record /tmp/demo.avi      Record the full tour at 1080p / 60 fps
+# bash run.sh -- --auto --cinema --exit   Preview the recording layout
+# bash run.sh -- --explore=hud             Open one widget in explore mode (hands-on, no bot)
+# GODOT_BIN=/path/to/godot bash run.sh
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 GODOT="${GODOT_BIN:-$(command -v godot || true)}"
-
-ensure_link() {
-	mkdir -p "$HERE/addons"
-	if [ ! -e "$HERE/addons/gohud/plugin.cfg" ]; then
-		rm -rf "$HERE/addons/gohud"
-		ln -s ../../.. "$HERE/addons/gohud"
-		echo "🔗 addons/gohud → ../../.. (애드온 루트)"
-	fi
-}
-ensure_link
-[ "${1:-}" = "--setup" ] && { echo "준비 끝 — 이제 이 폴더를 Godot 에디터로 열거나 \`godot\` 을 치면 된다"; exit 0; }
-[ -n "$GODOT" ] || { echo "🛑 godot 실행 파일이 없다 — GODOT_BIN 으로 지정한다" >&2; exit 2; }
-
-# 🛑 새 그림(SVG)은 `.import` 파일만으로는 못 읽는다 — 실제 임포트를 한 번 돌린다(첫 실행·테마 재생성 뒤). 조용하고 빠르다.
-"$GODOT" --headless --path "$HERE" --import > /dev/null 2>&1 || true
-
-if [ "${1:-}" = "--shot" ]; then
-	SHOT="${2:?저장 경로가 필요하다}"; shift 2
-	SHOT_PATH="$SHOT" "$GODOT" --path "$HERE" --resolution 1680x1400 -s res://shot.gd "$@"
-	echo "📷 $SHOT"
-else
-	"$GODOT" --path "$HERE" "$@"
+# ZIP 설치본은 project.godot 을 `project.godot.demo` 로 담고 있다 — 설치한 게임 프로젝트에서
+# 중첩 project.godot 이 에디터 경고를 내기 때문이다. 데모를 돌리려면 여기서 되살린다.
+if [ ! -f "$HERE/project.godot" ] && [ -f "$HERE/project.godot.demo" ]; then
+  cp "$HERE/project.godot.demo" "$HERE/project.godot"
 fi
+mkdir -p "$HERE/addons"
+if [ ! -e "$HERE/addons/gohud/plugin.cfg" ]; then
+  if [ -L "$HERE/addons/gohud" ]; then
+    rm "$HERE/addons/gohud"
+  elif [ -e "$HERE/addons/gohud" ]; then
+    echo "Cannot set up the demo: addons/gohud exists but is not a valid add-on." >&2
+    exit 2
+  fi
+  ln -s ../../.. "$HERE/addons/gohud"
+fi
+if [ "${1:-}" = "--setup" ]; then
+  echo "Ready. Open this folder in Godot, or run bash run.sh."
+  exit 0
+fi
+[ -n "$GODOT" ] || { echo "Godot was not found. Set GODOT_BIN to its executable." >&2; exit 2; }
+IMPORT_LOG="$(mktemp)"
+trap 'rm -f "$IMPORT_LOG"' EXIT
+if ! "$GODOT" --headless --path "$HERE" --import > "$IMPORT_LOG" 2>&1 || \
+    grep -qE 'SCRIPT ERROR:|^ERROR:' "$IMPORT_LOG"; then
+  cat "$IMPORT_LOG" >&2
+  exit 1
+fi
+
+case "${1:-}" in
+  --shot)
+    SHOT="${2:?Provide a PNG output path}"; shift 2
+    SHOT_PATH="$SHOT" "$GODOT" --path "$HERE" --resolution 2560x1600 -s res://shot.gd "$@"
+    echo "Screenshot: $SHOT"
+    ;;
+  --languages)
+    shift
+    "$GODOT" --headless --path "$HERE" -s res://verify_languages.gd "$@"
+    ;;
+  --shot-languages)
+    SHOT="${2:?Provide a PNG output path}"; shift 2
+    SHOT_PATH="$SHOT" "$GODOT" --path "$HERE" --resolution 2560x1600 -s res://shot_languages.gd "$@"
+    echo "Screenshot: $SHOT"
+    ;;
+  --record)
+    MOVIE="${2:?Provide an AVI or OGV output path}"; shift 2
+    case "$MOVIE" in *.avi|*.ogv) ;; *) echo "Use an .avi or .ogv output path." >&2; exit 2 ;; esac
+    mkdir -p "$(dirname "$MOVIE")"
+    MOVIE="$(cd "$(dirname "$MOVIE")" && pwd)/$(basename "$MOVIE")"
+    "$GODOT" --path "$HERE" --resolution 1920x1080 --fixed-fps "${DEMO_FPS:-60}" \
+      --write-movie "$MOVIE" "$@" -- --auto --cinema --exit
+    echo "Movie: $MOVIE"
+    ;;
+  *) "$GODOT" --path "$HERE" "$@" ;;
+esac

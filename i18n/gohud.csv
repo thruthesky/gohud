@@ -1,12 +1,17 @@
-keys,en,ko,ja,zh,es,pt,de,fr,ru,hi,ar
-gohud_close,Close,닫기,閉じる,关闭,Cerrar,Fechar,Schließen,Fermer,Закрыть,बंद करें,إغلاق
-gohud_back,Back,뒤로,戻る,返回,Atrás,Voltar,Zurück,Retour,Назад,वापस,رجوع
-gohud_next,Next,다음,次へ,下一步,Siguiente,Próximo,Weiter,Suivant,Далее,आगे,التالي
-gohud_done,Done,완료,完了,完成,Hecho,Concluído,Fertig,Terminé,Готово,हो गया,تم
-gohud_skip,Skip,건너뛰기,スキップ,跳过,Omitir,Pular,Überspringen,Passer,Пропустить,छोड़ें,تخطي
-gohud_confirm,Confirm,확인,確認,确认,Confirmar,Confirmar,Bestätigen,Confirmer,Подтвердить,पुष्टि करें,تأكيد
-gohud_cancel,Cancel,취소,キャンセル,取消,Cancelar,Cancelar,Abbrechen,Annuler,Отмена,रद्द करें,إلغاء
-gohud_search,Search,검색,検索,搜索,Buscar,Buscar,Suchen,Rechercher,Поиск,खोजें,بحث
-gohud_loading,Loading…,불러오는 중…,読み込み中…,加载中…,Cargando…,Carregando…,Wird geladen…,Chargement…,Загрузка…,लोड हो रहा है…,جارٍ التحميل…
-gohud_empty,Nothing here yet,아직 아무것도 없습니다,まだ何もありません,这里还没有内容,Aún no hay nada,Ainda não há nada,Noch nichts vorhanden,Rien pour le moment,Здесь пока пусто,अभी यहाँ कुछ नहीं है,لا يوجد شيء هنا بعد
-gohud_retry,Retry,다시 시도,再試行,重试,Reintentar,Tentar novamente,Erneut versuchen,Réessayer,Повторить,पुनः प्रयास करें,إعادة المحاولة
+keys,en,ko,ja,zh,es,pt,de,fr,ru,hi,ar,tr,vi,id,th,it,pl,uk,nl,zh_TW,he
+gohud_close,Close,닫기,閉じる,关闭,Cerrar,Fechar,Schließen,Fermer,Закрыть,बंद करें,إغلاق,Kapat,Đóng,Tutup,ปิด,Chiudi,Zamknij,Закрити,Sluiten,關閉,סגור
+gohud_back,Back,뒤로,戻る,返回,Atrás,Voltar,Zurück,Retour,Назад,वापस,رجوع,Geri,Quay lại,Kembali,ย้อนกลับ,Indietro,Wstecz,Назад,Terug,返回,חזרה
+gohud_next,Next,다음,次へ,下一步,Siguiente,Próximo,Weiter,Suivant,Далее,आगे,التالي,İleri,Tiếp theo,Berikutnya,ถัดไป,Avanti,Dalej,Далі,Volgende,下一步,הבא
+gohud_done,Done,완료,完了,完成,Hecho,Concluído,Fertig,Terminé,Готово,हो गया,تم,Bitti,Xong,Selesai,เสร็จสิ้น,Fatto,Gotowe,Готово,Klaar,完成,סיום
+gohud_skip,Skip,건너뛰기,スキップ,跳过,Omitir,Pular,Überspringen,Passer,Пропустить,छोड़ें,تخطي,Atla,Bỏ qua,Lewati,ข้าม,Salta,Pomiń,Пропустити,Overslaan,略過,דלג
+gohud_confirm,Confirm,확인,確認,确认,Confirmar,Confirmar,Bestätigen,Confirmer,Подтвердить,पुष्टि करें,تأكيد,Onayla,Xác nhận,Konfirmasi,ยืนยัน,Conferma,Potwierdź,Підтвердити,Bevestigen,確認,אישור
+gohud_cancel,Cancel,취소,キャンセル,取消,Cancelar,Cancelar,Abbrechen,Annuler,Отмена,रद्द करें,إلغاء,İptal,Hủy,Batal,ยกเลิก,Annulla,Anuluj,Скасувати,Annuleren,取消,ביטול
+gohud_search,Search,검색,検索,搜索,Buscar,Buscar,Suchen,Rechercher,Поиск,खोजें,بحث,Ara,Tìm kiếm,Cari,ค้นหา,Cerca,Szukaj,Пошук,Zoeken,搜尋,חיפוש
+gohud_loading,Loading…,불러오는 중…,読み込み中…,加载中…,Cargando…,Carregando…,Wird geladen…,Chargement…,Загрузка…,लोड हो रहा है…,جارٍ التحميل…,Yükleniyor…,Đang tải…,Memuat…,กำลังโหลด…,Caricamento…,Ładowanie…,Завантаження…,Laden…,載入中…,טוען…
+gohud_empty,Nothing here yet,아직 아무것도 없습니다,まだ何もありません,这里还没有内容,Aún no hay nada,Ainda não há nada,Noch nichts vorhanden,Rien pour le moment,Здесь пока пусто,अभी यहाँ कुछ नहीं है,لا يوجد شيء هنا بعد,Burada henüz bir şey yok,Chưa có gì ở đây,Belum ada apa-apa di sini,ยังไม่มีอะไรที่นี่,Non c'è ancora nulla,Nie ma tu jeszcze nic,Тут поки нічого немає,Hier is nog niets,這裡還沒有內容,אין כאן עדיין כלום
+gohud_retry,Retry,다시 시도,再試行,重试,Reintentar,Tentar novamente,Erneut versuchen,Réessayer,Повторить,पुनः प्रयास करें,إعادة المحاولة,Yeniden dene,Thử lại,Coba lagi,ลองใหม่,Riprova,Spróbuj ponownie,Повторити,Opnieuw proberen,重試,נסה שוב
+gohud_bar_fraction,{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max},{value} / {max}
+gohud_bar_percent,{percent}%,{percent}%,{percent}%,{percent}%,{percent}%,{percent}%,{percent} %,{percent} %,{percent} %,{percent}%,{percent}%,%{percent},{percent}%,{percent}%,{percent}%,{percent}%,{percent}%,{percent} %,{percent}%,{percent}%,{percent}%
+gohud_coach_progress,{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total}
+gohud_slot_quantity,×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count}
+gohud_slot_unknown,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…

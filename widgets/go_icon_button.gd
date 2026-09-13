@@ -104,10 +104,24 @@ func _refresh_icon() -> void:
 		if icon_tint.a > 0: add_theme_color_override(&"icon_normal_color", icon_tint)
 		return
 	# 폰트 세트 — 자식 라벨로 그린다. 가운데 정렬은 전체 사각형 기준이다.
-	_glyph = icon_set.node(icon_name, glyph_size, icon_tint)
+	# 🛑 자식 라벨에는 버튼 테마의 `icon_normal_color` 가 **닿지 않는다.** 색을 안 넘기면 아이콘
+	#    세트가 흰색으로 그리므로, 밝은 테마에서는 흰 판에 흰 글리프가 된다 — 퀵슬롯에서 실제로
+	#    그랬다(2026-09-13). 텍스처 경로가 쓰는 색과 같은 것을 넘긴다.
+	var glyph_ink := icon_tint
+	if glyph_ink.a <= 0:
+		glyph_ink = get_theme_color(&"icon_normal_color") if has_theme_color(&"icon_normal_color") \
+			else GoUi.color(GoTheme.SECONDARY)
+	_glyph = icon_set.node(icon_name, glyph_size, glyph_ink)
 	_glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_glyph)
+
+
+## 🛑 엔진 기본 툴팁은 폭 계산이 어긋나면 글자를 **한 자씩 세로로** 쪼갠다 — 아이콘 버튼에게
+##    툴팁은 유일한 설명인데 그러면 읽을 수가 없다. gohud 규격으로 직접 만든다.
+func _make_custom_tooltip(for_text: String) -> Object:
+	if for_text.is_empty(): return null
+	return GoStyle.tooltip_node(for_text)
 
 
 func _refresh_tooltip() -> void:
