@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="GoSkin" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/core/go_skin.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+skin_name = "Default"

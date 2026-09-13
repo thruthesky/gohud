@@ -1,0 +1,1176 @@
+[gd_resource type="Theme" load_steps=75 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_medieval.gd" id="medieval"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/cinzel/Cinzel.ttf" id="font_title"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/cinzel/Cinzel.ttf" id="font_subtitle"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_on.svg" id="toggle_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_on_mirrored.svg" id="toggle_on_mirrored"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_on_disabled.svg" id="toggle_on_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_on_disabled_mirrored.svg" id="toggle_on_disabled_mirrored"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/check_on.svg" id="check_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/radio_on.svg" id="radio_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/check_on_disabled.svg" id="check_on_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/radio_on_disabled.svg" id="radio_on_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_off.svg" id="toggle_off"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_off_mirrored.svg" id="toggle_off_mirrored"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_off_disabled.svg" id="toggle_off_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/toggle_off_disabled_mirrored.svg" id="toggle_off_disabled_mirrored"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/check_off.svg" id="check_off"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/radio_off.svg" id="radio_off"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/check_off_disabled.svg" id="check_off_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/radio_off_disabled.svg" id="radio_off_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/grabber.svg" id="grabber"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/grabber_highlight.svg" id="grabber_highlight"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/grabber_disabled.svg" id="grabber_disabled"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/arrow_down.svg" id="arrow_down"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/arrow_right.svg" id="arrow_right"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/medieval_light/arrow_left.svg" id="arrow_left"]
+
+[sub_resource type="StyleBox" id="btn_normal"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(1, 0.960784, 0.882353, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_hover"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.914902, 0.875294, 0.801569, 1)
+border_color = Color(0.14902, 0.105882, 0.07451, 0.42)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_pressed"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.881804, 0.818431, 0.716706, 1)
+border_color = Color(0.462745, 0.313725, 0.129412, 0.75)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_disabled"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(1, 0.960784, 0.882353, 0.55)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.35)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_focus"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+border_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 2
+radius = 4
+draw_center = false
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_focus_on_fill"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+border_color = Color(1, 0.960784, 0.878431, 1)
+border_width = 2
+radius = 4
+draw_center = false
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_primary"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.462745, 0.313725, 0.129412, 0.34)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBox" id="btn_primary_hover"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.406274, 0.276313, 0.11953, 1)
+border_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.462745, 0.313725, 0.129412, 0.46)
+shadow_size = 11
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBox" id="btn_primary_pressed"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.393726, 0.268, 0.117334, 1)
+border_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.141176, 0.082353, 0.043137, 0.095)
+shadow_size = 3
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBox" id="btn_danger"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.572549, 0.188235, 0.176471, 0.12)
+border_color = Color(0.572549, 0.188235, 0.176471, 0.85)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_danger_hover"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.572549, 0.188235, 0.176471, 0.2)
+border_color = Color(0.572549, 0.188235, 0.176471, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_danger_solid"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.572549, 0.188235, 0.176471, 1)
+border_color = Color(0.572549, 0.188235, 0.176471, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.572549, 0.188235, 0.176471, 0.34)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBox" id="btn_danger_solid_hover"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.496314, 0.173411, 0.158118, 1)
+border_color = Color(0.572549, 0.188235, 0.176471, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.572549, 0.188235, 0.176471, 0.46)
+shadow_size = 11
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBox" id="btn_danger_solid_pressed"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.479373, 0.170117, 0.15404, 1)
+border_color = Color(0.572549, 0.188235, 0.176471, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.141176, 0.082353, 0.043137, 0.095)
+shadow_size = 3
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBox" id="compact_normal"]
+script = ExtResource("medieval")
+content_margin_left = 10
+content_margin_top = 5
+content_margin_right = 10
+content_margin_bottom = 5
+bg_color = Color(0.831373, 0.733333, 0.568627, 0.85)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.55)
+border_width = 1
+radius = 3
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="compact_hover"]
+script = ExtResource("medieval")
+content_margin_left = 10
+content_margin_top = 5
+content_margin_right = 10
+content_margin_bottom = 5
+bg_color = Color(0.914902, 0.875294, 0.801569, 1)
+border_color = Color(0.14902, 0.105882, 0.07451, 0.36)
+border_width = 1
+radius = 3
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="icon_hover"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.14902, 0.105882, 0.07451, 0.1)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="list_normal"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.831373, 0.733333, 0.568627, 0.55)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="list_hover"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.14902, 0.105882, 0.07451, 0.09)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.5)
+border_width = 1
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="focus_soft"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+border_color = Color(0.462745, 0.313725, 0.129412, 0.7)
+border_width = 1
+radius = 3
+draw_center = false
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="panel"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(1, 0.960784, 0.882353, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 6
+draw_center = true
+ornament = 2
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.141176, 0.082353, 0.043137, 0.209)
+shadow_size = 18
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="StyleBox" id="panel_solid"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(1, 0.960784, 0.882353, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 2
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="card"]
+script = ExtResource("medieval")
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
+bg_color = Color(0.831373, 0.733333, 0.568627, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.6)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 2
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.141176, 0.082353, 0.043137, 0.114)
+shadow_size = 6
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBox" id="popup"]
+script = ExtResource("medieval")
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
+bg_color = Color(0.984314, 0.942157, 0.856863, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 2
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.141176, 0.082353, 0.043137, 0.209)
+shadow_size = 16
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBox" id="menu_hover"]
+script = ExtResource("medieval")
+content_margin_left = 12
+content_margin_top = 6
+content_margin_right = 12
+content_margin_bottom = 6
+bg_color = Color(0.462745, 0.313725, 0.129412, 0.16)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="menu_separator"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 8
+content_margin_right = 0
+content_margin_bottom = 8
+bg_color = Color(0.439216, 0.313725, 0.180392, 0.7)
+border_width = 0
+radius = 0
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="hud"]
+script = ExtResource("medieval")
+content_margin_left = 8
+content_margin_top = 8
+content_margin_right = 8
+content_margin_bottom = 8
+bg_color = Color(1, 0.960784, 0.882353, 0.92)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.8)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="notice"]
+script = ExtResource("medieval")
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
+bg_color = Color(0.990588, 0.949608, 0.867059, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+shadow_color = Color(0.141176, 0.082353, 0.043137, 0.171)
+shadow_size = 12
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxEmpty" id="empty"]
+
+[sub_resource type="StyleBox" id="edit_normal"]
+script = ExtResource("medieval")
+content_margin_left = 12
+content_margin_top = 8
+content_margin_right = 12
+content_margin_bottom = 8
+bg_color = Color(0.937255, 0.886275, 0.780392, 0.65)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 3
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="edit_focus"]
+script = ExtResource("medieval")
+content_margin_left = 12
+content_margin_top = 8
+content_margin_right = 12
+content_margin_bottom = 8
+bg_color = Color(0.937255, 0.886275, 0.780392, 0.85)
+border_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 2
+radius = 3
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="scroll_track"]
+script = ExtResource("medieval")
+content_margin_left = 3
+content_margin_top = 3
+content_margin_right = 3
+content_margin_bottom = 3
+bg_color = Color(0.265756, 0.210499, 0.142087, 0.14)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="scroll_grab"]
+script = ExtResource("medieval")
+content_margin_left = 3
+content_margin_top = 3
+content_margin_right = 3
+content_margin_bottom = 3
+bg_color = Color(0.278431, 0.211987, 0.139216, 0.5)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="scroll_grab_hover"]
+script = ExtResource("medieval")
+content_margin_left = 3
+content_margin_top = 3
+content_margin_right = 3
+content_margin_bottom = 3
+bg_color = Color(0.278431, 0.211987, 0.139216, 0.8)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="slider_track"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 3
+content_margin_right = 0
+content_margin_bottom = 3
+bg_color = Color(0.278431, 0.219608, 0.160784, 0.9)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="slider_grab"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 3
+content_margin_right = 0
+content_margin_bottom = 3
+bg_color = Color(0.462745, 0.313725, 0.129412, 0.55)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="slider_grab_hover"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 3
+content_margin_right = 0
+content_margin_bottom = 3
+bg_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="bar_bg"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.278431, 0.219608, 0.160784, 0.85)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.65)
+border_width = 1
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="bar_fill"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 0
+radius = 3
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="separator"]
+script = ExtResource("medieval")
+content_margin_left = 0
+content_margin_top = 0.5
+content_margin_right = 0
+content_margin_bottom = 0.5
+bg_color = Color(0.439216, 0.313725, 0.180392, 0.8)
+border_width = 0
+radius = 0
+draw_center = true
+ornament = 0
+material = 2
+ornament_scale = 1
+grain_alpha = 0
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="tooltip"]
+script = ExtResource("medieval")
+content_margin_left = 10
+content_margin_top = 6
+content_margin_right = 10
+content_margin_bottom = 6
+bg_color = Color(0.978039, 0.934706, 0.846667, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 3
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="fold_title"]
+script = ExtResource("medieval")
+content_margin_left = 14
+content_margin_top = 13
+content_margin_right = 14
+content_margin_bottom = 13
+bg_color = Color(0.831373, 0.733333, 0.568627, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.6)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="fold_title_hover"]
+script = ExtResource("medieval")
+content_margin_left = 14
+content_margin_top = 13
+content_margin_right = 14
+content_margin_bottom = 13
+bg_color = Color(0.914902, 0.875294, 0.801569, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.95)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="fold_title_collapsed"]
+script = ExtResource("medieval")
+content_margin_left = 14
+content_margin_top = 13
+content_margin_right = 14
+content_margin_bottom = 13
+bg_color = Color(0.831373, 0.733333, 0.568627, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.6)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="fold_title_collapsed_hover"]
+script = ExtResource("medieval")
+content_margin_left = 14
+content_margin_top = 13
+content_margin_right = 14
+content_margin_bottom = 13
+bg_color = Color(0.914902, 0.875294, 0.801569, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.95)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="fold_panel"]
+script = ExtResource("medieval")
+content_margin_left = 14
+content_margin_top = 10
+content_margin_right = 14
+content_margin_bottom = 14
+bg_color = Color(0.831373, 0.733333, 0.568627, 0.5)
+border_color = Color(0.439216, 0.313725, 0.180392, 0.6)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 2
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="tab_selected"]
+script = ExtResource("medieval")
+content_margin_left = 20
+content_margin_top = 8
+content_margin_right = 20
+content_margin_bottom = 8
+bg_color = Color(0.737255, 0.627451, 0.470588, 1)
+border_color = Color(0.462745, 0.313725, 0.129412, 1)
+border_width = 2
+radius = 6
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="tab_unselected"]
+script = ExtResource("medieval")
+content_margin_left = 20
+content_margin_top = 8
+content_margin_right = 20
+content_margin_bottom = 8
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 0
+draw_center = false
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="tab_hovered"]
+script = ExtResource("medieval")
+content_margin_left = 20
+content_margin_top = 8
+content_margin_right = 20
+content_margin_bottom = 8
+bg_color = Color(0.831373, 0.733333, 0.568627, 1)
+border_color = Color(0.439216, 0.313725, 0.180392, 1)
+border_width = 1
+radius = 6
+draw_center = true
+ornament = 1
+material = 2
+ornament_scale = 1
+grain_alpha = 0.027
+bevel_strength = 0.18
+
+[resource]
+BoxContainer/constants/separation = 12
+Button/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+Button/colors/font_disabled_color = Color(0.265756, 0.210499, 0.142087, 1)
+Button/colors/font_focus_color = Color(0.14902, 0.105882, 0.07451, 1)
+Button/colors/font_hover_color = Color(0.14902, 0.105882, 0.07451, 1)
+Button/colors/font_pressed_color = Color(0.462745, 0.313725, 0.129412, 1)
+Button/colors/icon_disabled_color = Color(0.265756, 0.210499, 0.142087, 0.5)
+Button/colors/icon_hover_color = Color(0.14902, 0.105882, 0.07451, 1)
+Button/colors/icon_normal_color = Color(0.278431, 0.211987, 0.139216, 1)
+Button/colors/icon_pressed_color = Color(0.462745, 0.313725, 0.129412, 1)
+Button/constants/h_separation = 8
+Button/font_sizes/font_size = 16
+Button/styles/disabled = SubResource("btn_disabled")
+Button/styles/focus = SubResource("btn_focus")
+Button/styles/hover = SubResource("btn_hover")
+Button/styles/hover_pressed = SubResource("btn_pressed")
+Button/styles/normal = SubResource("btn_normal")
+Button/styles/pressed = SubResource("btn_pressed")
+CheckBox/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+CheckBox/colors/font_disabled_color = Color(0.265756, 0.210499, 0.142087, 1)
+CheckBox/constants/h_separation = 8
+CheckBox/font_sizes/font_size = 16
+CheckBox/icons/checked = ExtResource("check_on")
+CheckBox/icons/checked_disabled = ExtResource("check_on_disabled")
+CheckBox/icons/radio_checked = ExtResource("radio_on")
+CheckBox/icons/radio_checked_disabled = ExtResource("radio_on_disabled")
+CheckBox/icons/radio_unchecked = ExtResource("radio_off")
+CheckBox/icons/radio_unchecked_disabled = ExtResource("radio_off_disabled")
+CheckBox/icons/unchecked = ExtResource("check_off")
+CheckBox/icons/unchecked_disabled = ExtResource("check_off_disabled")
+CheckBox/styles/disabled = SubResource("empty")
+CheckBox/styles/focus = SubResource("focus_soft")
+CheckBox/styles/hover = SubResource("empty")
+CheckBox/styles/hover_pressed = SubResource("empty")
+CheckBox/styles/normal = SubResource("empty")
+CheckBox/styles/pressed = SubResource("empty")
+CheckButton/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+CheckButton/colors/font_disabled_color = Color(0.265756, 0.210499, 0.142087, 1)
+CheckButton/constants/h_separation = 12
+CheckButton/font_sizes/font_size = 16
+CheckButton/icons/checked = ExtResource("toggle_on")
+CheckButton/icons/checked_disabled = ExtResource("toggle_on_disabled")
+CheckButton/icons/checked_disabled_mirrored = ExtResource("toggle_on_disabled_mirrored")
+CheckButton/icons/checked_mirrored = ExtResource("toggle_on_mirrored")
+CheckButton/icons/unchecked = ExtResource("toggle_off")
+CheckButton/icons/unchecked_disabled = ExtResource("toggle_off_disabled")
+CheckButton/icons/unchecked_disabled_mirrored = ExtResource("toggle_off_disabled_mirrored")
+CheckButton/icons/unchecked_mirrored = ExtResource("toggle_off_mirrored")
+CheckButton/styles/disabled = SubResource("empty")
+CheckButton/styles/focus = SubResource("focus_soft")
+CheckButton/styles/hover = SubResource("empty")
+CheckButton/styles/hover_pressed = SubResource("empty")
+CheckButton/styles/normal = SubResource("empty")
+CheckButton/styles/pressed = SubResource("empty")
+FoldableContainer/colors/collapsed_font_color = Color(0.278431, 0.211987, 0.139216, 1)
+FoldableContainer/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+FoldableContainer/colors/hover_font_color = Color(0.14902, 0.105882, 0.07451, 1)
+FoldableContainer/constants/h_separation = 8
+FoldableContainer/font_sizes/font_size = 16
+FoldableContainer/icons/expanded_arrow = ExtResource("arrow_down")
+FoldableContainer/icons/expanded_arrow_mirrored = ExtResource("arrow_down")
+FoldableContainer/icons/folded_arrow = ExtResource("arrow_right")
+FoldableContainer/icons/folded_arrow_mirrored = ExtResource("arrow_left")
+FoldableContainer/styles/focus = SubResource("focus_soft")
+FoldableContainer/styles/panel = SubResource("fold_panel")
+FoldableContainer/styles/title_collapsed_hover_panel = SubResource("fold_title_collapsed_hover")
+FoldableContainer/styles/title_collapsed_panel = SubResource("fold_title_collapsed")
+FoldableContainer/styles/title_hover_panel = SubResource("fold_title_hover")
+FoldableContainer/styles/title_panel = SubResource("fold_title")
+GoBareButton/base_type = &"Button"
+GoBareButton/styles/disabled = SubResource("empty")
+GoBareButton/styles/focus = SubResource("focus_soft")
+GoBareButton/styles/hover = SubResource("empty")
+GoBareButton/styles/hover_pressed = SubResource("empty")
+GoBareButton/styles/normal = SubResource("empty")
+GoBareButton/styles/pressed = SubResource("empty")
+GoButton/base_type = &"Button"
+GoCaptionLabel/base_type = &"Label"
+GoCaptionLabel/colors/font_color = Color(0.278431, 0.211987, 0.139216, 1)
+GoCaptionLabel/font_sizes/font_size = 13
+GoCard/base_type = &"PanelContainer"
+GoCard/styles/panel = SubResource("card")
+GoCompactButton/base_type = &"Button"
+GoCompactButton/font_sizes/font_size = 13
+GoCompactButton/styles/disabled = SubResource("compact_normal")
+GoCompactButton/styles/focus = SubResource("focus_soft")
+GoCompactButton/styles/hover = SubResource("compact_hover")
+GoCompactButton/styles/hover_pressed = SubResource("compact_hover")
+GoCompactButton/styles/normal = SubResource("compact_normal")
+GoCompactButton/styles/pressed = SubResource("compact_hover")
+GoCompactLabel/base_type = &"Label"
+GoCompactLabel/font_sizes/font_size = 12
+GoDangerButton/base_type = &"Button"
+GoDangerButton/colors/font_color = Color(0.450245, 0.148026, 0.138775, 1)
+GoDangerButton/colors/font_hover_color = Color(0.404382, 0.132947, 0.124638, 1)
+GoDangerButton/colors/font_pressed_color = Color(0.404382, 0.132947, 0.124638, 1)
+GoDangerButton/styles/hover = SubResource("btn_danger_hover")
+GoDangerButton/styles/hover_pressed = SubResource("btn_danger_hover")
+GoDangerButton/styles/normal = SubResource("btn_danger")
+GoDangerButton/styles/pressed = SubResource("btn_danger_hover")
+GoDangerSolidButton/base_type = &"Button"
+GoDangerSolidButton/colors/font_color = Color(1, 0.960784, 0.878431, 1)
+GoDangerSolidButton/colors/font_focus_color = Color(1, 0.960784, 0.878431, 1)
+GoDangerSolidButton/colors/font_hover_color = Color(1, 0.960784, 0.878431, 1)
+GoDangerSolidButton/colors/font_pressed_color = Color(1, 0.960784, 0.878431, 1)
+GoDangerSolidButton/colors/icon_normal_color = Color(1, 0.960784, 0.878431, 1)
+GoDangerSolidButton/styles/focus = SubResource("btn_focus_on_fill")
+GoDangerSolidButton/styles/hover = SubResource("btn_danger_solid_hover")
+GoDangerSolidButton/styles/hover_pressed = SubResource("btn_danger_solid_pressed")
+GoDangerSolidButton/styles/normal = SubResource("btn_danger_solid")
+GoDangerSolidButton/styles/pressed = SubResource("btn_danger_solid_pressed")
+GoHud/colors/accent = Color(0.462745, 0.313725, 0.129412, 1)
+GoHud/colors/accent_fill = Color(0.832941, 0.62139, 0.225882, 1)
+GoHud/colors/accent_vivid = Color(0.788235, 0.607843, 0.270588, 1)
+GoHud/colors/background = Color(0.937255, 0.886275, 0.780392, 1)
+GoHud/colors/border = Color(0.439216, 0.313725, 0.180392, 1)
+GoHud/colors/danger = Color(0.572549, 0.188235, 0.176471, 1)
+GoHud/colors/danger_fill = Color(0.773177, 0.199372, 0.227138, 1)
+GoHud/colors/danger_vivid = Color(0.729412, 0.243137, 0.266667, 1)
+GoHud/colors/info = Color(0.145098, 0.309804, 0.513725, 1)
+GoHud/colors/info_fill = Color(0.214981, 0.479478, 0.781098, 1)
+GoHud/colors/info_vivid = Color(0.258824, 0.482353, 0.737255, 1)
+GoHud/colors/muted = Color(0.265756, 0.210499, 0.142087, 1)
+GoHud/colors/on_accent = Color(1, 0.960784, 0.878431, 1)
+GoHud/colors/scrim = Color(0.062745, 0.05098, 0.031373, 0.48)
+GoHud/colors/secondary = Color(0.278431, 0.211987, 0.139216, 1)
+GoHud/colors/shadow = Color(0.141176, 0.082353, 0.043137, 0.38)
+GoHud/colors/success = Color(0.266667, 0.34902, 0.137255, 1)
+GoHud/colors/success_fill = Color(0.5896, 0.750156, 0.320432, 1)
+GoHud/colors/success_vivid = Color(0.580392, 0.713725, 0.356863, 1)
+GoHud/colors/surface = Color(1, 0.960784, 0.882353, 1)
+GoHud/colors/surface_high = Color(0.737255, 0.627451, 0.470588, 1)
+GoHud/colors/surface_soft = Color(0.831373, 0.733333, 0.568627, 1)
+GoHud/colors/text = Color(0.14902, 0.105882, 0.07451, 1)
+GoHud/colors/track = Color(0.278431, 0.219608, 0.160784, 1)
+GoHud/colors/warning = Color(0.47451, 0.313725, 0.090196, 1)
+GoHud/colors/warning_fill = Color(0.864157, 0.644476, 0.241726, 1)
+GoHud/colors/warning_vivid = Color(0.819608, 0.631373, 0.286275, 1)
+GoHud/constants/button_height = 52
+GoHud/constants/gap = 12
+GoHud/constants/gap_large = 20
+GoHud/constants/gap_small = 8
+GoHud/constants/gap_tiny = 4
+GoHud/constants/icon_size = 20
+GoHud/constants/list_glyph = 18
+GoHud/constants/notice_duration_ms = 3000
+GoHud/constants/padding = 20
+GoHud/constants/padding_compact = 12
+GoHud/constants/radius = 4
+GoHud/constants/radius_large = 6
+GoHud/constants/radius_small = 3
+GoHud/constants/screen_margin = 16
+GoHud/constants/scroll_deadzone = 18
+GoHud/constants/scroll_edge = 4
+GoHud/constants/scrollbar_width = 6
+GoHud/constants/touch = 48
+GoHud/styles/card = SubResource("card")
+GoHud/styles/empty = SubResource("empty")
+GoHud/styles/focus = SubResource("btn_focus")
+GoHud/styles/focus_soft = SubResource("focus_soft")
+GoHud/styles/hud = SubResource("hud")
+GoHud/styles/notice = SubResource("notice")
+GoHud/styles/panel = SubResource("panel")
+GoHud/styles/popup = SubResource("popup")
+GoIconButton/base_type = &"Button"
+GoIconButton/colors/icon_disabled_color = Color(0.265756, 0.210499, 0.142087, 0.4)
+GoIconButton/colors/icon_focus_color = Color(0.278431, 0.211987, 0.139216, 1)
+GoIconButton/colors/icon_hover_color = Color(0.14902, 0.105882, 0.07451, 1)
+GoIconButton/colors/icon_normal_color = Color(0.265756, 0.210499, 0.142087, 1)
+GoIconButton/colors/icon_pressed_color = Color(0.462745, 0.313725, 0.129412, 1)
+GoIconButton/styles/disabled = SubResource("empty")
+GoIconButton/styles/focus = SubResource("focus_soft")
+GoIconButton/styles/hover = SubResource("icon_hover")
+GoIconButton/styles/hover_pressed = SubResource("icon_hover")
+GoIconButton/styles/normal = SubResource("empty")
+GoIconButton/styles/pressed = SubResource("icon_hover")
+GoListButton/base_type = &"Button"
+GoListButton/colors/font_pressed_color = Color(0.337712, 0.228957, 0.094445, 1)
+GoListButton/styles/disabled = SubResource("list_normal")
+GoListButton/styles/focus = SubResource("focus_soft")
+GoListButton/styles/hover = SubResource("list_hover")
+GoListButton/styles/hover_pressed = SubResource("list_hover")
+GoListButton/styles/normal = SubResource("list_normal")
+GoListButton/styles/pressed = SubResource("list_hover")
+GoMicroLabel/base_type = &"Label"
+GoMicroLabel/colors/font_color = Color(0.265756, 0.210499, 0.142087, 1)
+GoMicroLabel/font_sizes/font_size = 10
+GoPanel/base_type = &"PanelContainer"
+GoPanel/styles/panel = SubResource("panel")
+GoPrimaryButton/base_type = &"Button"
+GoPrimaryButton/colors/font_color = Color(1, 0.960784, 0.878431, 1)
+GoPrimaryButton/colors/font_focus_color = Color(1, 0.960784, 0.878431, 1)
+GoPrimaryButton/colors/font_hover_color = Color(1, 0.960784, 0.878431, 1)
+GoPrimaryButton/colors/font_pressed_color = Color(1, 0.960784, 0.878431, 1)
+GoPrimaryButton/colors/icon_normal_color = Color(1, 0.960784, 0.878431, 1)
+GoPrimaryButton/styles/focus = SubResource("btn_focus_on_fill")
+GoPrimaryButton/styles/hover = SubResource("btn_primary_hover")
+GoPrimaryButton/styles/hover_pressed = SubResource("btn_primary_pressed")
+GoPrimaryButton/styles/normal = SubResource("btn_primary")
+GoPrimaryButton/styles/pressed = SubResource("btn_primary_pressed")
+GoSubtitleLabel/base_type = &"Label"
+GoSubtitleLabel/font_sizes/font_size = 22
+GoSubtitleLabel/fonts/font = ExtResource("font_subtitle")
+GoTitleLabel/base_type = &"Label"
+GoTitleLabel/font_sizes/font_size = 28
+GoTitleLabel/fonts/font = ExtResource("font_title")
+GridContainer/constants/h_separation = 12
+GridContainer/constants/v_separation = 12
+HBoxContainer/constants/separation = 12
+HFlowContainer/constants/separation = 12
+HScrollBar/styles/grabber = SubResource("scroll_grab")
+HScrollBar/styles/grabber_highlight = SubResource("scroll_grab_hover")
+HScrollBar/styles/grabber_pressed = SubResource("scroll_grab_hover")
+HScrollBar/styles/scroll = SubResource("scroll_track")
+HScrollBar/styles/scroll_focus = SubResource("scroll_track")
+HSeparator/styles/separator = SubResource("separator")
+HSlider/icons/grabber = ExtResource("grabber")
+HSlider/icons/grabber_disabled = ExtResource("grabber_disabled")
+HSlider/icons/grabber_highlight = ExtResource("grabber_highlight")
+HSlider/styles/grabber_area = SubResource("slider_grab")
+HSlider/styles/grabber_area_highlight = SubResource("slider_grab_hover")
+HSlider/styles/slider = SubResource("slider_track")
+Label/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+Label/font_sizes/font_size = 16
+LineEdit/colors/caret_color = Color(0.462745, 0.313725, 0.129412, 1)
+LineEdit/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+LineEdit/colors/font_placeholder_color = Color(0.265756, 0.210499, 0.142087, 1)
+LineEdit/colors/selection_color = Color(0.462745, 0.313725, 0.129412, 0.35)
+LineEdit/font_sizes/font_size = 16
+LineEdit/styles/focus = SubResource("edit_focus")
+LineEdit/styles/normal = SubResource("edit_normal")
+LineEdit/styles/read_only = SubResource("btn_disabled")
+OptionButton/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+OptionButton/constants/arrow_margin = 16
+OptionButton/font_sizes/font_size = 16
+OptionButton/icons/arrow = ExtResource("arrow_down")
+OptionButton/styles/disabled = SubResource("btn_disabled")
+OptionButton/styles/focus = SubResource("btn_focus")
+OptionButton/styles/hover = SubResource("btn_hover")
+OptionButton/styles/hover_pressed = SubResource("btn_pressed")
+OptionButton/styles/normal = SubResource("btn_normal")
+OptionButton/styles/pressed = SubResource("btn_pressed")
+Panel/styles/panel = SubResource("panel_solid")
+PanelContainer/styles/panel = SubResource("panel_solid")
+PopupMenu/colors/font_accelerator_color = Color(0.278431, 0.211987, 0.139216, 1)
+PopupMenu/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+PopupMenu/colors/font_disabled_color = Color(0.265756, 0.210499, 0.142087, 1)
+PopupMenu/colors/font_hover_color = Color(0.14902, 0.105882, 0.07451, 1)
+PopupMenu/colors/font_separator_color = Color(0.278431, 0.211987, 0.139216, 1)
+PopupMenu/constants/h_separation = 12
+PopupMenu/constants/icon_max_width = 20
+PopupMenu/constants/item_end_padding = 8
+PopupMenu/constants/item_start_padding = 8
+PopupMenu/constants/v_separation = 20
+PopupMenu/font_sizes/font_size = 16
+PopupMenu/icons/checked = ExtResource("check_on")
+PopupMenu/icons/checked_disabled = ExtResource("check_on_disabled")
+PopupMenu/icons/radio_checked = ExtResource("radio_on")
+PopupMenu/icons/radio_checked_disabled = ExtResource("radio_on_disabled")
+PopupMenu/icons/radio_unchecked = ExtResource("radio_off")
+PopupMenu/icons/radio_unchecked_disabled = ExtResource("radio_off_disabled")
+PopupMenu/icons/unchecked = ExtResource("check_off")
+PopupMenu/icons/unchecked_disabled = ExtResource("check_off_disabled")
+PopupMenu/styles/hover = SubResource("menu_hover")
+PopupMenu/styles/panel = SubResource("popup")
+PopupMenu/styles/separator = SubResource("menu_separator")
+ProgressBar/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+ProgressBar/font_sizes/font_size = 12
+ProgressBar/styles/background = SubResource("bar_bg")
+ProgressBar/styles/fill = SubResource("bar_fill")
+RichTextLabel/colors/default_color = Color(0.14902, 0.105882, 0.07451, 1)
+RichTextLabel/font_sizes/normal_font_size = 16
+ScrollContainer/constants/scrollbar_h_separation = 8
+ScrollContainer/constants/scrollbar_v_separation = 8
+TabBar/colors/font_disabled_color = Color(0.265756, 0.210499, 0.142087, 1)
+TabBar/colors/font_hovered_color = Color(0.14902, 0.105882, 0.07451, 1)
+TabBar/colors/font_selected_color = Color(0.14902, 0.105882, 0.07451, 1)
+TabBar/colors/font_unselected_color = Color(0.278431, 0.211987, 0.139216, 1)
+TabBar/constants/h_separation = 8
+TabBar/font_sizes/font_size = 16
+TabBar/styles/tab_disabled = SubResource("tab_unselected")
+TabBar/styles/tab_focus = SubResource("focus_soft")
+TabBar/styles/tab_hovered = SubResource("tab_hovered")
+TabBar/styles/tab_selected = SubResource("tab_selected")
+TabBar/styles/tab_unselected = SubResource("tab_unselected")
+TabContainer/colors/font_selected_color = Color(0.14902, 0.105882, 0.07451, 1)
+TabContainer/colors/font_unselected_color = Color(0.278431, 0.211987, 0.139216, 1)
+TabContainer/font_sizes/font_size = 16
+TabContainer/styles/panel = SubResource("card")
+TabContainer/styles/tab_disabled = SubResource("tab_unselected")
+TabContainer/styles/tab_focus = SubResource("focus_soft")
+TabContainer/styles/tab_hovered = SubResource("tab_hovered")
+TabContainer/styles/tab_selected = SubResource("tab_selected")
+TabContainer/styles/tab_unselected = SubResource("tab_unselected")
+TextEdit/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+TextEdit/styles/focus = SubResource("edit_focus")
+TextEdit/styles/normal = SubResource("edit_normal")
+TooltipLabel/colors/font_color = Color(0.14902, 0.105882, 0.07451, 1)
+TooltipLabel/font_sizes/font_size = 13
+TooltipPanel/styles/panel = SubResource("tooltip")
+VBoxContainer/constants/separation = 12
+VFlowContainer/constants/separation = 12
+VScrollBar/styles/grabber = SubResource("scroll_grab")
+VScrollBar/styles/grabber_highlight = SubResource("scroll_grab_hover")
+VScrollBar/styles/grabber_pressed = SubResource("scroll_grab_hover")
+VScrollBar/styles/scroll = SubResource("scroll_track")
+VScrollBar/styles/scroll_focus = SubResource("scroll_track")
+VSeparator/styles/separator = SubResource("separator")
+VSlider/icons/grabber = ExtResource("grabber")
+VSlider/icons/grabber_disabled = ExtResource("grabber_disabled")
+VSlider/icons/grabber_highlight = ExtResource("grabber_highlight")
+VSlider/styles/grabber_area = SubResource("slider_grab")
+VSlider/styles/grabber_area_highlight = SubResource("slider_grab_hover")
+VSlider/styles/slider = SubResource("slider_track")
+default_font_size = 16

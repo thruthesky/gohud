@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- Both standalone demo scenes now have a top Theme dropdown for Default, Sci-fi and Medieval.
+  The simulation pauses its bot while choosing, safely rebuilds the current chapter and preserves
+  playback speed and pause state. Start, completion and explore screens support the same selector.
+
 - **Medieval presets:** `medieval_dark` (iron and leather) and `medieval_light` (parchment),
   with antique-gold frames, restrained corner engraving, rivets, readable red/blue/olive bars,
   16 original engraved icons and Cinzel headings (bundled with its OFL license). Default and

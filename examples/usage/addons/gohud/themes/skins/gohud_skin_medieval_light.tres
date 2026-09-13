@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GoSkinMedieval" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/themes/skins/go_skin_medieval.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+skin_name = "Medieval Light"
+bevel_strength = 0.18
+leather_grain_alpha = 0.035
+ornament_scale = 1.0
+slot_radius = 4.0
+slot_rivets = 1
+slot_tint_idle = 0.02
+slot_tint_lit = 0.14
