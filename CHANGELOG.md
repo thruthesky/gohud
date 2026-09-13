@@ -6,6 +6,30 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **GitHub Pages completion.** English-first documentation lives in `docs/www`, with Korean
+  counterparts, 27 documented skin dials, and a root entry for the configured `main / (root)`
+  deployment. Technical terms support hover, touch and keyboard access, including Escape and
+  focus restoration. Fixed responsive CSS, mobile code wrapping and table group labels.
+- **Reliable completion checks.** Theme freshness compares generated file contents in an isolated
+  copy; viewport failures now propagate through the aggregate checker. Site checks validate CSS
+  braces, local section links, the English entry and the absence of a tracked recursive demo link.
+  Demo setup generates that ignored link locally, fixing the previous Pages build loop.
+
+- **The site lists every skin dial, generated from the scripts.** The theming page said only what
+  *kinds* of numbers `skin.dials` accepts; the names themselves lived in the JSON (I-70). `make_site.py`
+  now reads each `@export var` and the `##` line above it from `GoSkin` and `GoSkinSciFi` and writes a
+  name · default · meaning table into `theming.html` (both languages) between `<!-- dials:begin/end -->`
+  markers, and adds every dial to the glossary so its name pops up anywhere on the site. `check_site.py`
+  fails when the table is stale, a marker is missing, or a dial has no English text.
+- **The site is photographed too.** `tools/site_shots.sh` renders every page of `docs/` at desktop and
+  phone width with headless Chrome (`GOHUD_CHECK_SITE_SHOTS=1` runs it from `check_all.sh`). Table widths,
+  glossary underlines and phone-width overflow are invisible in the HTML source; the first run showed every
+  table on a page ending at a different right edge, because tables were `display: block` and grew only to
+  their content — they now fill the column on desktop. The first phone-width render showed the other
+  half: a scrolling table at 400px collapses every column to one word per line and hides the third column
+  off-screen, so under 640px tables now stack each row as a card, headings hidden, with a small
+  "Default" label in front of generated dial values. (Headless Chrome will not lay out narrower than
+  500 CSS px, so the phone shots render the page inside a 400px iframe.)
 - **Floating cards sit visibly above the page.** The coach-mark and prompt cards used an 8dp, 35% shadow
   lifted 2dp — over a panel of text the card barely read as "on top" (I-69). `GoSkin` now exposes the
   depth as dials (`float_shadow_alpha` 0.45, `float_shadow_size` 14, `float_shadow_lift` 4) and, for

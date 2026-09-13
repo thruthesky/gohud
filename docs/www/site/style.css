@@ -8,7 +8,8 @@
   --ink: #16202B;
   --muted: #5B6B7B;
   --rule: #DCE3EA;
-  --accent: #0E86C0;
+  --accent: #0878AE;
+  --on-accent: #FFFFFF;
   --blue: #1864AB;
   --code-bg: #F1F4F8;
   --shadow: 0 1px 2px rgba(16, 32, 48, .06), 0 8px 24px -16px rgba(16, 32, 48, .3);
@@ -24,6 +25,7 @@
     --muted: #94A6B6;
     --rule: #253341;
     --accent: #4CC2F1;
+    --on-accent: #08232E;
     --blue: #7FC4F0;
     --code-bg: #0F171F;
     --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -18px rgba(0, 0, 0, .8);
@@ -39,6 +41,7 @@ body {
   font: 16px/1.72 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR",
         "Apple SD Gothic Neo", Roboto, sans-serif;
   -webkit-text-size-adjust: 100%;
+  overflow-wrap: anywhere;
 }
 
 .wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
@@ -76,8 +79,8 @@ header.top nav a:hover { color: var(--accent); }
   font-weight: 600; font-size: 15px; border: 1px solid var(--rule); color: var(--ink); background: var(--card);
 }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn.primary:hover { filter: brightness(1.08); color: #fff; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(1.08); color: var(--on-accent); }
 
 /* ── 본문 ───────────────────────────────────────────────── */
 
@@ -106,10 +109,39 @@ pre {
 code { font-family: var(--mono); font-size: .92em; background: var(--code-bg); padding: 1px 5px; border-radius: 5px; }
 pre code { background: none; padding: 0; font-size: inherit; }
 
-table { border-collapse: collapse; width: 100%; font-size: 14.5px; display: block; overflow-x: auto; }
+/* 표는 본문 폭에 맞춘다 — display:block 이면 내용 폭만큼만 늘어나 한 페이지의 표마다 오른쪽 끝이 달랐다
+   (I-73). 좁은 화면에서만 block 으로 바꿔 가로 스크롤을 준다(코드 셀은 줄바꿈하지 않으므로). */
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+/* 다이얼 표 — 생성기(tools/make_site.py)가 만든다. 두 표(기본·sci-fi)가 나란히 오므로 내용 폭이 아니라
+   본문 폭에 맞춘다. 이름 열은 줄바꿈하지 않는다. */
+/* 열 폭을 고정한다 — 표 둘이 따로 계산하면 "기본값" 열이 서로 다른 자리에 선다. */
+.dials td:first-child, .dials th:first-child { white-space: nowrap; width: 24%; }
+.dials td:nth-child(2), .dials th:nth-child(2) { white-space: nowrap; width: 10%; font-variant-numeric: tabular-nums; }
+.dials h4 { margin: 22px 0 8px; }
 th, td { border-bottom: 1px solid var(--rule); padding: 9px 12px; text-align: left; vertical-align: top; }
 th { font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
 td code { white-space: nowrap; }
+/* 🛑 폰 폭(400)에서 표를 가로 스크롤로 두면 열이 최소 폭으로 접혀 글이 한 낱말씩 세로로 늘어지고 셋째 열은
+   화면 밖이다(2026-09-13 촬영, I-77). 640px 아래에서는 행을 카드처럼 세로로 쌓는다 — 머리글은 숨기고,
+   생성기가 `data-label` 을 준 셀만 앞에 작은 라벨을 단다. 🛑 `th, td` 의 밑줄 규칙 **뒤**에 있어야 셀 구분선이 지워진다. */
+@media (max-width: 640px) {
+  table, tbody, tr, td { display: block; }
+  thead { display: none; }
+  tr { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  tr:last-child { border-bottom: 0; }
+  td { border: 0; padding: 2px 0; width: auto; }
+  td[data-label]::before {
+    content: attr(data-label) " · "; color: var(--muted); font-size: 12px; letter-spacing: .04em;
+    text-transform: uppercase; font-weight: 700;
+  }
+  td code { white-space: normal; }
+  .dials td:first-child, .dials td:nth-child(2) { width: auto; white-space: normal; }
+  tr[data-group]::before {
+    content: attr(data-group); display: block; color: var(--accent);
+    font-family: var(--mono); font-size: 13px; font-weight: 700;
+  }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; }
+}
 
 .note {
   border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent);
@@ -136,6 +168,11 @@ footer.bottom a { color: var(--blue); }
 
 /* 용어 풍선 버튼이 오른쪽 아래에 앉으므로 바닥에 자리를 비운다 */
 body { padding-bottom: 10px; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}
 
 @media (max-width: 640px) {
   .hero { padding: 40px 0 30px; }

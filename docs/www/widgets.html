@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/docs/www/widgets.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/docs/www/ko/widgets.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/docs/www/widgets.html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widgets — gohud</title>
+<meta name="description" content="Every gohud widget — floating surfaces, bottom sheets, dialogs, forms, snackbars, coach marks, HUD bars, quick slots and a virtual joystick.">
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Overview</a>
+      <a href="theming.html">Theming</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="#surfaces">Windows</a>
+      <a href="#hud">HUD</a>
+      <a href="ko/widgets.html">한국어 ↗</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Widgets</h1>
+    <p class="lead">
+      Every one is <code>.new()</code> and <code>add_child()</code> — no scene files, no autoload.
+      Notes marked <b>🛑</b> are traps met on real screens, not theory.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>Floating windows</h2>
+
+  <h3><code>GoSurface</code> — the shell</h3>
+  <p>Popups, sheets and dropdowns all use this one. It handles the safe area, the virtual keyboard,
+    sticky header and footer, a scrolling body, which window is topmost, focus restoration, back-button
+    ownership and drag-to-resize.</p>
+  <table>
+    <thead><tr><th>Placement</th><th>Looks like</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>A card in the middle</td><td>Confirmations, settings</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>A sheet rising from below</td><td>Lists, management pages</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>A card pinned beside a control</td><td>Dropdowns, context menus</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>It does not remove itself.</b> Reacting to <code>close_requested</code> — hiding or freeing — is the
+    owning screen's job, because the shell cannot know <i>why</i> it is closing (save and close, or discard).
+  </div>
+
+  <h3><code>GoSheet</code> — a page from the bottom</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventory")
+sheet.toolbar().add_child(GoStyle.line_edit("Search…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>It owns a <code>CanvasLayer</code>, so it reliably sits above the HUD. <code>open()</code> clears the
+    body and <b>turns off</b> the back button and sticky rows — a dead button on a screen with nowhere to
+    go back to reads as broken.</p>
+
+  <h3><code>GoDialogs</code> — confirmations you <code>await</code></h3>
+  <pre><code>if await dialogs.confirm("Delete save", "This cannot be undone."):
+    delete_save()</code></pre>
+
+  <h3><code>GoForm</code> — a width-capped form</h3>
+  <div class="note warn">
+    <b>It guarantees its descendant labels wrap.</b> Without that, one long sentence stretches into a
+    single line whose minimum width exceeds the screen, and the sides are clipped — you cannot even tell
+    what screen you are on. Turning wrapping on by hand per scene is forgotten every time.
+  </div>
+
+  <h3><code>GoScroll</code> — touch scrolling</h3>
+  <p>Put <b>one</b> thing inside it. Headers and button rows belong outside — a long list must not push
+    them off screen. <code>use_panel_edge()</code> moves the scrollbar into the card's existing padding
+    while the content keeps its indent.</p>
+</section>
+
+<section id="messages">
+  <h2>Telling the player something</h2>
+
+  <h3><code>GoNotice</code> — snackbar</h3>
+  <div class="note warn">
+    <b>It never intercepts input.</b> A notice is read, not pressed. It takes no focus, does not block
+    game input, and the button beneath it still presses. When confirmation is needed use
+    <code>GoDialogs</code>; when a choice is needed, <code>GoPromptCard</code>.
+  </div>
+
+  <h3><code>GoPromptCard</code> — a question that does not block</h3>
+  <p>Floats at one side with no scrim. The game keeps running.</p>
+
+  <h3><code>GoCoachMark</code> — guided tour</h3>
+  <p>Points at real controls one at a time. Only the card takes input, so <b>pressing the highlighted
+    control itself advances the tour</b> — "press here" becomes an action rather than a sentence.</p>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>The small things decide whether it looks good</h3>
+  <p>
+    Polish the big panels all you like — what catches the eye is always something small: a word split in
+    two, a glow chopped off, a cramped slot. Four such things were pointed out on 2026-09-13 and fixed in
+    the widgets and themes, not in the demo screen, so every screen gets the same result.
+  </p>
+  <table>
+    <thead><tr><th>What showed</th><th>Cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>The coach mark's <code>Done</code> became <code>Don</code>/<code>e</code></td>
+          <td>A button with wrapping on <b>subtracts its text width</b> from its minimum — squeeze it and it breaks inside a word</td>
+          <td><code>GoStyle.fit_words()</code>: one word never wraps; several words wrap, but the <b>longest word</b> always fits — judged on the <b>displayed</b> text, not the translation key, and re-applied by the form when the language changes</td></tr>
+      <tr><td>A full-width button's glow cut off vertically on the left</td>
+          <td>A scroll container clips at its edge, no exceptions. Only the right survived, thanks to the rail gutter</td>
+          <td><code>GoScroll</code> borrows the parent's padding to push its edge 12dp out and gives it back inside — <b>content stays put</b></td></tr>
+      <tr><td>Time, icon and count stacked vertically in a slot</td>
+          <td>Three rows inside 48dp</td>
+          <td>Icon large in the centre, shortcut top-left, count as a bottom-right <b>badge</b>, remaining time as a badge over the icon — badge panels come from the skin's <code>badge_box()</code></td></tr>
+      <tr><td>A flat dropdown with no visible selection</td>
+          <td>Item hover used the button panel; radio marks were the engine's faint default</td>
+          <td>A dedicated hover panel (soft accent tint), the same radio artwork as checkboxes, item height sized for touch</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="img/dropdown-default-dark.png" alt="An open dropdown — soft accent hover panel and the radio mark of the chosen item" loading="lazy">
+      <figcaption>Dropdown — hover panel and radio mark</figcaption>
+    </figure>
+    <figure>
+      <img src="img/slots-scifi-dark.png" alt="Four quick slots — shortcut top-left, count badge bottom-right, the first with a remaining-time badge" loading="lazy">
+      <figcaption>Slots — corner badges and remaining time (sci-fi)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Give icon-only buttons a description with <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    the tooltip for mouse users and the accessibility name for screen readers both come from that one value.
+    gohud draws the tooltip itself: the engine's default splits the text <b>one character per line</b> when
+    its width calculation goes wrong (measured at 1dp wide).
+  </p>
+
+  <h4>The coach-mark card keeps off fixtures</h4>
+  <p>
+    In landscape the card used to be sent to the very top or bottom edge — exactly where headers and HUD
+    pieces live; in the demo it sat on the header's <code>→ ×</code>. It now stays level with its target,
+    steps around any <code>GoHudAnchor</code> that reserves space, and takes other things to avoid via
+    <code>keep_clear</code>. It moves the shortest distance that clears the obstacle without covering the
+    target, and stays put when the screen is too small to clear everything — overlapping beats vanishing.
+    Its depth — so it reads as <b>above</b> the page — comes from skin dials
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; chamfered skins use <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # fixtures that are not anchors</code></pre>
+
+  <h3>Screens with a mouse and a keyboard</h3>
+  <p>
+    A finger has <b>no hover state.</b> Build against mobile only and two desktop-only states go unchecked —
+    and one of them was broken: gohud's <b>focus ring was invisible on a primary button.</b> The panel is
+    the accent colour and so was the ring: <code>1.00:1</code>, the same colour drawn over itself. Moving
+    by keyboard, there was no way to tell where you were.
+  </p>
+  <figure>
+    <img src="img/desktop-states.png" alt="The same button row in three states — normal, mouse hover, keyboard focus" loading="lazy">
+    <figcaption>Top to bottom: <b>normal · hover · focus</b>. Filled buttons get a ring that contrasts with their panel.</figcaption>
+  </figure>
+  <p>
+    Filled buttons (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) use a ring that
+    <b>contrasts with their own panel</b> — dark on a dark theme, white on a light one, a dark targeting
+    bracket in sci-fi. The contrast checker measures <b>the focus ring against the panel it sits on</b>, so
+    the rule survives a palette change (WCAG 2.4.11 asks for 3:1 on focus indicators).
+  </p>
+
+  <h3><code>GoHudAnchor</code> — nine spots</h3>
+  <p>Respects the safe area and edge margins. Give it a <code>landscape_spot</code> and it moves in
+    landscape — controls that sit bottom-centre in portrait can go bottom-right instead.</p>
+  <div class="note">
+    <b>Why it exists.</b> Written by hand per HUD piece, anchors and offsets drift: a health bar ends up
+    under the camera cutout on a notched device, and a control button lands on the gesture bar in
+    landscape. That arithmetic lives in one place.
+  </div>
+
+  <h4>Keeping content out from under the HUD</h4>
+  <p>
+    When a scrolling screen shares the display with a HUD, the content slides <b>underneath it</b> and the
+    two sets of text overlap until neither can be read. It happened twice in this add-on: an input's
+    placeholder squeezed out between the quick slots, and a settings toggle's knob landed on the health bar.
+  </p>
+  <pre><code>form.avoid_hud = true                  # keep clear of every visible GoHudAnchor
+joystick_anchor.reserve_space = false  # …except ones that only appear under a finger</code></pre>
+  <p>
+    Each rectangle is avoided in whichever direction <b>costs the least area</b>. A bar in the top-right is
+    stepped around downwards on a portrait phone (13% of the height) and sideways in landscape (21% of the
+    width) — avoiding it vertically in landscape would cost 27% of the screen. Ground already given up is
+    subtracted before the next rectangle is measured.
+  </p>
+
+  <h4>HUD pieces collide with each other too</h4>
+  <p>
+    The nine spots divide the screen; they do not guarantee the pieces <b>miss each other</b>. A wide
+    snackbar at top-centre landed squarely on the health bar at top-right, hiding the value — you could not
+    read how much health was left.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # settles below the fixed HUD
+notice_anchor.reserve_space = false   # and does not push the page while it is up</code></pre>
+  <p>
+    It steps aside <b>vertically only</b> — moving sideways as well would make a centred toast appear in a
+    different place each time it shows. And it only avoids pieces that are <b>not</b> stepping aside
+    themselves: if both yield, the two swap places forever.
+  </p>
+
+  <h3><code>GoBar</code> — health, mana, experience</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # the fill-only token
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Changes ease over 0.18s — a health bar that jumps does not tell you how hard you were hit.
+    <code>reduce_motion</code> makes it instant. Large numbers abbreviate to <code>12.3k</code> so the
+    bar's width does not jitter as digits come and go.</p>
+
+  <h3><code>GoSlot</code> — one quick slot</h3>
+  <p>Icon, quantity, cooldown and shortcut on <b>a single face</b>. Hanging badges off a small circle
+    makes each slot a different width and the row wobbles.</p>
+  <div class="note">
+    <b>Visible size and touch size differ.</b> Packed slots have overlapping 48dp touch boxes; the
+    overlap goes to <b>whichever slot's centre is nearer</b> — tell them about each other through
+    <code>touch_peers</code>.
+  </div>
+
+  <h3><code>GoJoystick</code> — virtual stick</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Always the same place — easy to find without looking</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Appears where the thumb lands</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Keeps following the thumb after appearing — comfortable for long movement</td></tr>
+    </tbody>
+  </table>
+  <p>The <code>Vector2</code> from <code>moved</code> has length 0–1, so you can multiply it straight into
+    a speed; it does not vary with screen size or DPI.</p>
+
+  <h3><code>GoIconButton</code> — looks small, presses large</h3>
+  <div class="note warn">
+    <b>Only safe while its siblings ignore input.</b> If the widened area covers the next button, that
+    button stops responding. Side-by-side icon buttons need <code>touch_peers</code>.
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — one place things are made</h2>
+  <p class="sub">
+    Call <code>Button.new()</code> directly and padding, height and wrapping drift slightly from screen to
+    screen. That drift is invisible in code review and obvious in a screenshot.
+  </p>
+
+  <table>
+    <thead><tr><th>Group</th><th>Functions</th></tr></thead>
+    <tbody>
+      <tr><td>Structure</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Text</td><td><code>label</code> <code>label_key</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Buttons</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>apply_icon</code></td></tr>
+      <tr><td>Input</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>select</code> <code>radio_group</code> <code>segmented</code></td></tr>
+      <tr><td>Display</td><td><code>card</code> <code>chip</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>empty_state</code></td></tr>
+      <tr><td>Surface pieces</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> always returns a <code>StyleBoxFlat</code></b>, because callers receive it and
+    adjust <code>bg_color</code> or <code>corner_radius</code>. Use <code>surface()</code> when a custom
+    shape has to survive.
+  </div>
+
+  <h3>Never leave an empty list empty</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet"))</code></pre>
+  <p>People read a blank screen as <b>broken</b>.</p>
+</section>
+
+<section id="hooks">
+  <h2>Subclass hooks</h2>
+  <p class="sub">
+    Every place a child widget is constructed goes through an overridable method, so a project that
+    subclasses gohud types can get its own subclasses <b>inside</b> the widgets without copying code.
+  </p>
+  <table>
+    <thead><tr><th>Hook</th><th>Widget</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Hides the card while a modal is open</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← Theming</a> · <a href="./">Overview →</a> · <a href="ko/widgets.html">한국어</a></p>
+  </div>
+</footer>
+
+<script src="site/glossary.en.js"></script>
+<script src="site/tooltip.js"></script>
+</body>
+</html>

@@ -208,7 +208,12 @@ func _presets() -> void:
 	scifi_dialed.cut_slot = 9.0
 	var cut_box := scifi_dialed.slot_box(Color.RED, false)
 	check(&"cut" in cut_box and is_equal_approx(float(cut_box.get(&"cut")), 9.0), "sci-fi 잘린 모서리 다이얼이 판에 닿는다")
-	var table_text := FileAccess.get_file_as_string("res://addons/gohud/tools/skin_dials.json")
+	# Store ZIPs omit tools/. The ZIP harness supplies the same fixture beside this
+	# external test script, keeping the installed add-on identical to the shipped ZIP.
+	var table_path := "res://addons/gohud/tools/skin_dials.json"
+	if not FileAccess.file_exists(table_path):
+		table_path = String(get_script().resource_path).get_base_dir().path_join("skin_dials.json")
+	var table_text := FileAccess.get_file_as_string(table_path)
 	var table: Variant = JSON.parse_string(table_text) if not table_text.is_empty() else null
 	check(table is Dictionary, "tools/skin_dials.json 을 읽는다")
 	if table is Dictionary:

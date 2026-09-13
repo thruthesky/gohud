@@ -42,31 +42,42 @@ extends Resource
 #    조이스틱 링 투명도를 바꿀 수 있다. 🛑 기본값을 바꾸면 `tools/skin_dials.json` 도 같이 바꾼다 —
 #    검사가 둘을 대조한다(스캐폴딩이 그 표로 "바꿀 수 있는 것" 을 풀어 적기 때문이다).
 @export_group("Dials")
-## 칩 판의 채움·테두리 투명도.
+# 🔑 다이얼마다 `##` 한 줄 — 사이트 생성기(`tools/make_site.py`)가 이 줄을 읽어 다이얼 표와 용어 사전을
+#    채운다. 묶어서 쓰면 표에서 `_lit` 와 `_idle` 중 어느 것이 쿨다운 중인지 순서로만 알 수 있다(I-72).
+## 칩 판 채움의 투명도.
 @export var chip_fill_alpha := 0.16
+## 칩 판 테두리의 투명도.
 @export var chip_edge_alpha := 0.45
 ## 알림 상자 판이 상태색 쪽으로 물드는 비율.
 @export var alert_tint := 0.10
-## 퀵슬롯 판이 강조색 쪽으로 물드는 비율 — 쿨다운 중 / 평소.
+## 쿨다운 중인 퀵슬롯 판이 강조색 쪽으로 물드는 비율.
 @export var slot_tint_lit := 0.24
+## 평소 퀵슬롯 판이 강조색 쪽으로 물드는 비율.
 @export var slot_tint_idle := 0.08
-## 퀵슬롯 테두리 두께(dp) — 쿨다운 중 / 평소.
+## 쿨다운 중인 퀵슬롯의 테두리 두께(dp).
 @export var slot_border_lit := 2
+## 평소 퀵슬롯의 테두리 두께(dp).
 @export var slot_border_idle := 1
-## 배지(수량·남은 시간) 판의 안쪽 여백(dp)과 테두리 투명도.
+## 배지(수량·남은 시간) 판의 가로 안쪽 여백(dp).
 @export var badge_pad_x := 5
+## 배지 판의 세로 안쪽 여백(dp).
 @export var badge_pad_y := 1
+## 배지 판 테두리의 투명도.
 @export var badge_edge_alpha := 0.6
-## 떠 있는 카드(코치마크·프롬프트 카드)의 그림자 — 투명도·번짐(dp)·아래로 밀리는 거리(dp).
+## 떠 있는 카드(코치마크·프롬프트 카드) 그림자의 투명도.
 ## 🛑 얕으면(8dp·0.35) 정보 패널 위에 얹혔을 때 "떠 있다" 가 안 읽힌다(2026-09-13 데모 실측, I-69).
 @export var float_shadow_alpha := 0.45
+## 떠 있는 카드 그림자의 번짐(dp).
 @export var float_shadow_size := 14
+## 떠 있는 카드 그림자가 아래로 밀리는 거리(dp).
 @export var float_shadow_lift := 4
 ## 사선 판(sci-fi)처럼 그림자 대신 **발광**을 쓰는 판이 떠 있을 때의 발광 거리(dp).
 @export var float_glow_size := 10.0
-## 조이스틱 바탕 원의 투명도, 링의 투명도와 두께(dp).
+## 조이스틱 바탕 원의 투명도.
 @export var joystick_base_alpha := 0.42
+## 조이스틱 링의 투명도.
 @export var joystick_ring_alpha := 0.45
+## 조이스틱 링의 두께(dp).
 @export var joystick_ring_width := 2.0
 @export_group("")
 

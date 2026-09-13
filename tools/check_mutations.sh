@@ -229,6 +229,12 @@ mutate "widgets/go_surface.gd" \
 	if not (_active and is_top() and target != null and not is_ancestor_of(target)): return" \
   "창 밖으로 새어 나간 포커스를 되돌린다"
 
+printf "\n\033[1m── 떠 있는 판\033[0m\n"
+mutate "core/go_skin.gd" \
+  "	flat.shadow_size = float_shadow_size" \
+  "	flat.shadow_size = GoUi.metric(GoTheme.GAP_SMALL)" \
+  "떠 있는 카드의 그림자가 다이얼을 따른다"
+
 printf "\n\033[1m── 코치마크\033[0m\n"
 mutate "widgets/go_coach_mark.gd" \
   "	global = _dodge_fixtures(Rect2(global, card.size), area, target).position" \

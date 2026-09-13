@@ -3,8 +3,7 @@
    site/glossary.js 를 먼저 불러와야 한다.
 
    원본: thruthesky 의 "Godot 3D 개발 스킬" 홈페이지(site/tooltip.js).
-   gohud 로 가져오며 저장 키만 바꿨다 — 같은 브라우저에서 두 사이트가
-   서로의 표시 설정을 덮어쓰지 않게.
+   gohud 의 영문·한국어 표시, 키보드·터치 접근을 함께 지원한다.
    ------------------------------------------------------------------ */
 (function () {
   'use strict';
@@ -12,7 +11,12 @@
   if (!G) return;
 
   var MODES = ['mark', 'all', 'off'];
-  var LABEL = { mark: '용어 밑줄 · 처음 3회', all: '용어 밑줄 · 전부', off: '용어 밑줄 · 끔' };
+  var korean = document.documentElement.lang.toLowerCase().indexOf('ko') === 0;
+  var LABEL = korean
+    ? { mark: '용어 밑줄 · 처음 3회', all: '용어 밑줄 · 전부', off: '용어 밑줄 · 끔' }
+    : { mark: 'Glossary · first 3', all: 'Glossary · all', off: 'Glossary · off' };
+  var INHERITS = korean ? '상속' : 'Inherits';
+  var MORE = korean ? '자세히 보기 ↗' : 'Read more ↗';
   var KEY = 'gohud-glossary-mode';
   var mode = 'mark';
   try { if (MODES.indexOf(localStorage.getItem(KEY)) >= 0) mode = localStorage.getItem(KEY); } catch (e) {}
@@ -116,7 +120,15 @@
         seen[term] = (seen[term] || 0) + 1;
         if (seen[term] <= MARK_LIMIT) s.className += ' gl-m';
         s.setAttribute('data-t', term);
-        s.title = term + ' — ' + e.d + (e.c ? '\n\n상속: ' + term + ' < ' + e.c : '');
+        s.title = term + ' — ' + e.d + (e.c ? '\n\n' + INHERITS + ': ' + term + ' < ' + e.c : '');
+        if (!node.parentElement.closest('a')) {
+          s.tabIndex = mode === 'off' ? -1 : 0;
+          s.setAttribute('role', 'button');
+          s.setAttribute('aria-label', term + (korean ? ' — 용어 설명' : ' — definition'));
+          s.setAttribute('aria-haspopup', 'dialog');
+          s.setAttribute('aria-controls', 'gltip');
+          s.setAttribute('aria-expanded', 'false');
+        }
         s.textContent = term;
         frag.appendChild(s);
         last = m.index + term.length;
@@ -134,7 +146,29 @@
   var tip = document.createElement('div');
   tip.id = 'gltip';
   tip.setAttribute('data-no-gl', '');
-  var hideT, showT, cur = null;
+  tip.setAttribute('role', 'dialog');
+  tip.setAttribute('aria-modal', 'false');
+  tip.setAttribute('aria-hidden', 'true');
+  tip.setAttribute('aria-labelledby', 'gltip-title');
+  tip.setAttribute('aria-describedby', 'gltip-description');
+  var hideT, showT, cur = null, restoringFocus = false;
+
+  function restoreTrigger() {
+    if (!cur) return;
+    if (cur.hasAttribute('data-title')) {
+      cur.title = cur.getAttribute('data-title');
+      cur.removeAttribute('data-title');
+    }
+    if (cur.hasAttribute('aria-expanded')) cur.setAttribute('aria-expanded', 'false');
+  }
+
+  function close() {
+    clearTimeout(hideT); clearTimeout(showT);
+    tip.classList.remove('on');
+    tip.setAttribute('aria-hidden', 'true');
+    restoreTrigger();
+    cur = null;
+  }
 
   function place(el) {
     var r = el.getBoundingClientRect();
@@ -155,10 +189,12 @@
     if (mode === 'off') return;
     var term = el.getAttribute('data-t'), e = G[term];
     if (!e) return;
-    clearTimeout(hideT);
+    clearTimeout(hideT); clearTimeout(showT);
+    if (cur === el && tip.classList.contains('on')) { place(el); return; }
+    restoreTrigger();
     cur = el;
-    var html = '<div class="h"><span class="n' + (isKo(term) ? ' ko' : '') + '"></span>'
-             + '<span class="k"></span></div><p class="d"></p>';
+    var html = '<div class="h"><span id="gltip-title" class="n' + (isKo(term) ? ' ko' : '') + '"></span>'
+             + '<span class="k"></span></div><p id="gltip-description" class="d"></p>';
     tip.innerHTML = html;
     tip.querySelector('.n').textContent = term;
     tip.querySelector('.k').textContent = e.k;
@@ -166,28 +202,26 @@
     if (e.c) {
       var c = document.createElement('div');
       c.className = 'c';
-      c.innerHTML = '상속 <b></b> < ';
+      c.innerHTML = INHERITS + ' <b></b> &lt; ';
       c.querySelector('b').textContent = term;
       c.appendChild(document.createTextNode(e.c));
       tip.appendChild(c);
     }
     if (e.u) {
       var a = document.createElement('a');
-      a.className = 'u'; a.href = e.u; a.textContent = '자세히 보기 ↗';
+      a.className = 'u'; a.href = e.u; a.textContent = MORE;
       if (/^https?:/.test(e.u)) { a.target = '_blank'; a.rel = 'noopener'; }
       tip.appendChild(a);
     }
     // 브라우저 기본 툴팁과 겹치지 않게 잠시 치운다 (벗어나면 되돌린다)
     if (el.title) { el.setAttribute('data-title', el.title); el.title = ''; }
+    tip.setAttribute('aria-hidden', 'false');
+    if (el.hasAttribute('aria-expanded')) el.setAttribute('aria-expanded', 'true');
     place(el);
   }
 
   function hide() {
-    hideT = setTimeout(function () {
-      tip.classList.remove('on');
-      if (cur && cur.getAttribute('data-title')) { cur.title = cur.getAttribute('data-title'); }
-      cur = null;
-    }, 160);
+    hideT = setTimeout(close, 160);
   }
 
   document.addEventListener('mouseover', function (ev) {
@@ -197,6 +231,7 @@
   });
   document.addEventListener('mouseout', function (ev) {
     if (ev.target.closest && (ev.target.closest('.gl') || ev.target.closest('#gltip'))) {
+      if (cur === document.activeElement || tip.contains(document.activeElement)) return;
       clearTimeout(showT); hide();
     }
   });
@@ -206,13 +241,46 @@
     if (el) {
       // 링크 안의 용어는 링크 이동이 우선이다 — 툴팁만 띄우고 기본 동작을 막지 않는다
       if (!el.closest('a')) ev.preventDefault();
-      (cur === el) ? (clearTimeout(hideT), hide()) : show(el);
+      (cur === el) ? close() : show(el);
       return;
     }
-    if (!(ev.target.closest && ev.target.closest('#gltip'))) { clearTimeout(hideT); hide(); }
+    if (!(ev.target.closest && ev.target.closest('#gltip'))) close();
   });
-  addEventListener('keydown', function (e) { if (e.key === 'Escape') { clearTimeout(hideT); hide(); } });
+  document.addEventListener('focusin', function (ev) {
+    if (tip.contains(ev.target)) { clearTimeout(hideT); return; }
+    var el = ev.target.closest && ev.target.closest('.gl[role="button"]');
+    if (el && !restoringFocus && el.matches(':focus-visible')) show(el);
+    else if (!el) close();
+  });
+  document.addEventListener('focusout', function (ev) {
+    if (ev.relatedTarget && (tip.contains(ev.relatedTarget) || ev.relatedTarget === cur)) return;
+    if (ev.target === cur || tip.contains(ev.target)) hide();
+  });
+  addEventListener('keydown', function (e) {
+    var el = e.target.closest && e.target.closest('.gl[role="button"]');
+    if (e.key === 'Escape') {
+      var trigger = cur, inside = tip.contains(document.activeElement);
+      close();
+      if (inside && trigger) {
+        restoringFocus = true; trigger.focus(); restoringFocus = false;
+      }
+    } else if (el && mode !== 'off' && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault(); show(el);
+    } else if (e.key === 'Tab' && cur && tip.classList.contains('on')) {
+      var link = tip.querySelector('a');
+      if (el === cur && link && !e.shiftKey) {
+        e.preventDefault(); link.focus();
+      } else if (tip.contains(e.target)) {
+        // Continue from the definition's trigger, not from the end of the document.
+        var items = Array.from(document.querySelectorAll('a[href], button, [tabindex="0"]'))
+          .filter(function (item) { return !tip.contains(item) && item.getClientRects().length; });
+        var next = e.shiftKey ? cur : items[items.indexOf(cur) + 1];
+        if (next) { e.preventDefault(); next.focus(); }
+      }
+    }
+  });
   addEventListener('scroll', function () { if (cur) place(cur); }, { passive: true });
+  addEventListener('resize', function () { if (cur) place(cur); });
 
   /* ── 켬/끔 버튼 ─────────────────────────────────────────── */
   var btn = document.createElement('button');
@@ -221,15 +289,21 @@
   btn.type = 'button';
   function paint() {
     document.body.setAttribute('data-gl', mode);
+    document.querySelectorAll('.gl[role="button"]').forEach(function (el) {
+      el.tabIndex = mode === 'off' ? -1 : 0;
+    });
     btn.innerHTML = '';
     btn.appendChild(document.createTextNode(LABEL[mode].split(' · ')[0] + ' · '));
     var b = document.createElement('b');
     b.textContent = LABEL[mode].split(' · ')[1];
     btn.appendChild(b);
-    btn.title = '단어에 마우스를 올리면 뜻이 나옵니다. 눌러서 밑줄 표시를 바꿉니다 (처음 3회 → 전부 → 끔)';
+    btn.title = korean
+      ? '용어에 마우스를 올리거나 탭·키보드로 선택하면 뜻이 나옵니다. 밑줄 표시: 처음 3회 → 전부 → 끔'
+      : 'Hover, tap or focus a term to read its definition. Underlines: first 3 → all → off';
   }
   btn.addEventListener('click', function () {
     mode = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+    close();
     try { localStorage.setItem(KEY, mode); } catch (e) {}
     paint();
   });

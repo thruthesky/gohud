@@ -5,6 +5,7 @@ set -euo pipefail
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
 GODOT="${GODOT_BIN:-$(command -v godot || true)}"
 [ -n "$GODOT" ] || { echo "Godot not found" >&2; exit 2; }
+bash "$ADDON/examples/demo/run.sh" --setup
 python3 - "$ADDON" "$GODOT" <<'PY'
 import os, pathlib, re, subprocess, sys, tempfile
 addon, godot = sys.argv[1:]

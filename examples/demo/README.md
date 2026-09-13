@@ -12,6 +12,10 @@ Store it restores `project.godot` from `project.godot.demo` and links the add-on
 keeps `project.godot` asleep on purpose — a nested one would make your own editor warn
 "Detected another project.godot".
 
+On a fresh Git checkout, run `bash examples/demo/run.sh --setup` from the add-on root before
+opening the demo in the editor. The recursive `addons/gohud` link is generated locally and
+ignored by Git so GitHub Pages can publish the repository root without following a link loop.
+
 The app waits on its Start screen and offers two ways in:
 
 - **Start demo** plays a guided simulation of 15 chapters. The cursor uses real mouse and

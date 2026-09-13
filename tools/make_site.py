@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""gohud 홈페이지(`docs/`)의 **용어 사전**을 소스에서 뽑아 만든다.
+"""gohud 홈페이지(`docs/www/`)의 **용어 사전**을 소스에서 뽑아 만든다.
 
     python3 addons/gohud/tools/make_site.py        # docs/www/site/glossary.js 를 다시 만든다
 
@@ -15,6 +15,7 @@
 | 색·치수·StyleBox 토큰 | `core/go_theme.gd` 의 상수 |
 | 타입 변형(`GoCard` 등) | 같은 파일의 `VAR_*` 상수 |
 | 생김새 묶음 이름 | `core/go_theme_presets.gd` 의 `BUILTIN` |
+| 스킨 다이얼 | `core/go_skin.gd`·`themes/skins/go_skin_scifi.gd` 의 `@export var` + 바로 위 `##` 주석 — 사전에도 넣고 `theming.html` 의 표(`<!-- dials:begin -->` 사이)도 채운다 |
 
 🛑 설명이 비면 **그 용어는 넣지 않는다** — 뜻이 안 적힌 빈 풍선이 뜨는 것이 아무것도 없는 것보다 나쁘다.
 """
@@ -24,9 +25,10 @@ import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
-# 🛑 사이트는 `docs/` 루트가 영문, `docs/ko/` 가 한국어다(2026-09-13 에 GitHub Pages 배포 구조로 재배치).
-#    사전 두 장은 `docs/site/` 에 둔다 — 영문 페이지는 `site/`, 한국어 페이지는 `../site/` 로 읽는다.
-SITE = os.path.join(ADDON, "docs", "site")
+# 🛑 사이트는 `docs/www/` 루트가 영문, `docs/www/ko/` 가 한국어다(2026-09-13 에 GitHub Pages 배포 구조로 재배치).
+#    사전 두 장은 `docs/www/site/` 에 둔다 — 영문 페이지는 `site/`, 한국어 페이지는 `../site/` 로 읽는다.
+WWW = os.environ.get("GOHUD_SITE_OUTPUT", os.path.join(ADDON, "docs", "www"))
+SITE = os.path.join(WWW, "site")
 
 SOURCE_DIRS = ["core", "widgets", "services", "themes/skins"]
 
@@ -290,12 +292,204 @@ def scan_presets(lang="ko"):
     return out
 
 
+# ── 스킨 다이얼 ────────────────────────────────────────────────────────
+# 🔑 다이얼이 27개인데 사이트에는 "종류" 만 적혀 있어 무엇을 바꿀 수 있는지는 JSON 을 열어야 알았다
+#    (2026-09-13, I-70). 값은 `make_theme.skin_dials()`(GDScript 가 원천)에서, 뜻은 `@export` 바로 위
+#    `##` 주석에서 읽어 사전과 `theming.html` 의 표를 함께 채운다 — 다이얼을 더하면 문서가 따라온다.
+# 🛑 영문 뜻은 소스에 없으므로 여기 `DIALS_EN` 에 둔다. 빠지면 `check_site.py` 가 잡는다 — 이름만 있고
+#    뜻이 없는 행은 빈 풍선과 같다.
+# 🛑 다이얼마다 한 줄씩 쓴다 — 묶어 쓰면(`— 쿨다운 중 / 평소`) 표에서 어느 이름이 어느 쪽인지 순서로만
+#    알 수 있었다(I-72). 소스 주석도 같은 규칙이고, 연속 다이얼이 한 주석을 나눠 쓰면 표가 rowspan 으로 묶는다.
+
+DIALS_EN = {
+    "chip_fill_alpha": "Fill opacity of a chip's panel.",
+    "chip_edge_alpha": "Edge opacity of a chip's panel.",
+    "alert_tint": "How far an alert box's panel is tinted toward its status colour.",
+    "slot_tint_lit": "Accent tint of a quick-slot panel while its cooldown runs.",
+    "slot_tint_idle": "Accent tint of a quick-slot panel at rest.",
+    "slot_border_lit": "Quick-slot border width (dp) while its cooldown runs.",
+    "slot_border_idle": "Quick-slot border width (dp) at rest.",
+    "badge_pad_x": "Horizontal inner padding (dp) of a badge (quantity, time left).",
+    "badge_pad_y": "Vertical inner padding (dp) of a badge.",
+    "badge_edge_alpha": "Edge opacity of a badge's panel.",
+    "float_shadow_alpha": "Shadow opacity of floating cards (coach mark, prompt card).",
+    "float_shadow_size": "Shadow blur (dp) of floating cards.",
+    "float_shadow_lift": "Downward offset (dp) of a floating card's shadow.",
+    "float_glow_size": "Glow distance (dp) of a floating panel that glows instead of casting a shadow, like the sci-fi chamfered panel.",
+    "joystick_base_alpha": "Opacity of the joystick's base disc.",
+    "joystick_ring_alpha": "Opacity of the joystick's ring.",
+    "joystick_ring_width": "Width (dp) of the joystick's ring.",
+    "cut_chip": "Chamfer size (dp) of a chip's panel.",
+    "cut_skeleton": "Chamfer size (dp) of a skeleton panel.",
+    "cut_alert": "Chamfer size (dp) of an alert box.",
+    "cut_segment": "Chamfer size (dp) of a segmented control.",
+    "cut_slot": "Chamfer size (dp) of a quick-slot panel.",
+    "cut_disc_ratio": "Chamfer of avatars and discs = diameter × this ratio.",
+    "slot_glow_alpha": "Glow opacity of a slot whose cooldown is running.",
+    "slot_glow_size": "Glow distance (dp) of a slot whose cooldown is running.",
+    "bracket_arm": "Arm length (dp) of the coach mark's targeting bracket.",
+    "bracket_thickness": "Line thickness (dp) of the coach mark's targeting bracket.",
+}
+
+SKIN_TITLES = {
+    "default": {"ko": "기본 스킨", "en": "Default skin"},
+    "scifi": {"ko": "sci-fi 스킨", "en": "Sci-fi skin"},
+}
+
+
+def _make_theme():
+    import sys
+    if HERE not in sys.path:
+        sys.path.insert(0, HERE)
+    import make_theme
+    return make_theme
+
+
+def scan_dials():
+    """스킨 → 다이얼 묶음 목록. 묶음 = 한 `##` 주석을 나눠 쓰는 연속된 `@export var` 들.
+
+    반환: {"default": [{"names": [...], "ko": "뜻", "values": {이름: 값}}], "scifi": [...]}
+    🛑 값은 `make_theme.skin_dials()` 가 원천이다 — 정규식을 두 벌 두면 어긋난다. 여기서는 뜻만 읽고,
+       그 표에 없는 이름은 다이얼이 아니므로 건너뛴다.
+    """
+    mt = _make_theme()
+    values = mt.skin_dials()
+    out = {}
+    for skin, path in mt.SKIN_SOURCES.items():
+        known = values.get(skin, {})
+        groups = []
+        pending = []
+        for raw in open(path, encoding="utf-8").read().splitlines():
+            line = raw.strip()
+            if line.startswith("## "):
+                pending.append(line[3:].strip())
+                continue
+            match = re.match(r"^@export var (\w+) := ", line)
+            if match:
+                name = match.group(1)
+                if name not in known:
+                    pending = []
+                    continue
+                if pending:
+                    text = " ".join(p for p in pending if not p.startswith("🛑"))
+                    groups.append({"names": [name], "ko": text, "values": {}})
+                    pending = []
+                elif groups:
+                    groups[-1]["names"].append(name)
+                else:
+                    groups.append({"names": [name], "ko": "", "values": {}})
+                groups[-1]["values"][name] = known[name]
+                continue
+            if not line.startswith("@export"):
+                pending = []
+        out[skin] = groups
+    return out
+
+
+def missing_english_dials():
+    """`DIALS_EN` 에 뜻이 없는 다이얼 이름 — 검사가 문제로 올린다."""
+    names = []
+    for groups in scan_dials().values():
+        for group in groups:
+            names.extend(n for n in group["names"] if not DIALS_EN.get(n))
+    return names
+
+
+def _plain(text):
+    text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
+    return re.sub(r"`(.+?)`", r"\1", text)
+
+
+def _html_text(text):
+    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
+    return re.sub(r"`(.+?)`", r"<code>\1</code>", text)
+
+
+def dial_terms(lang="ko"):
+    """다이얼 이름 → 용어. 표 안의 `<code>` 에도 풍선이 뜬다."""
+    mt = _make_theme()
+    out = {}
+    for skin, groups in scan_dials().items():
+        cls = mt.SKIN_SCRIPTS[skin][0]
+        for group in groups:
+            for name in group["names"]:
+                desc = DIALS_EN.get(name, "") if lang == "en" else group["ko"]
+                if not desc:
+                    continue      # 🛑 뜻이 비면 넣지 않는다
+                tail = (" Default %r, a dial of %s." if lang == "en" else " 기본값 %r, %s 의 다이얼.") % (group["values"][name], cls)
+                out[name] = {"k": "skin dial" if lang == "en" else "스킨 다이얼", "d": _plain(desc) + tail}
+    return out
+
+
+def dials_html(lang="ko"):
+    mt = _make_theme()
+    head = ("<tr><th>Dial</th><th>Default</th><th>What it sets</th></tr>" if lang == "en"
+            else "<tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr>")
+    parts = ['  <div class="dials">']
+    for skin, groups in scan_dials().items():
+        cls = mt.SKIN_SCRIPTS[skin][0]
+        count = sum(len(g["names"]) for g in groups)
+        parts.append("  <h4>%s <code>%s</code> — %d</h4>" % (SKIN_TITLES[skin][lang], cls, count))
+        parts.append("  <table>")
+        parts.append("    <thead>%s</thead>" % head)
+        parts.append("    <tbody>")
+        for group in groups:
+            if lang == "en":
+                descs = [DIALS_EN.get(n, "") for n in group["names"]]
+                shared = len(set(descs)) == 1
+            else:
+                descs = [group["ko"]] * len(group["names"])
+                shared = True
+            for i, name in enumerate(group["names"]):
+                value = group["values"][name]
+                cell = ""
+                if shared and i == 0:
+                    cell = '<td rowspan="%d">%s</td>' % (len(group["names"]), _html_text(descs[0]) or "—") if len(group["names"]) > 1 else "<td>%s</td>" % (_html_text(descs[0]) or "—")
+                elif not shared:
+                    cell = "<td>%s</td>" % (_html_text(descs[i]) or "—")
+                # `data-label` — 폰 폭에서 표가 세로로 쌓일 때 숫자만 덩그러니 남지 않게 앞에 붙는 작은 라벨.
+                label = "Default" if lang == "en" else "기본값"
+                parts.append('      <tr><td><code>%s</code></td><td data-label="%s">%r</td>%s</tr>' % (name, label, value, cell))
+        parts.append("    </tbody>")
+        parts.append("  </table>")
+    parts.append("  </div>")
+    return "\n".join(parts)
+
+
+DIALS_BEGIN = "<!-- dials:begin -->"
+DIALS_END = "<!-- dials:end -->"
+
+
+def dials_page(lang="ko"):
+    return os.path.join(WWW, "theming.html" if lang == "en" else os.path.join("ko", "theming.html"))
+
+
+def write_dials_section(lang="ko"):
+    """`theming.html` 의 표식 사이를 다시 채운다. 표식이 없으면 건드리지 않고 False."""
+    path = dials_page(lang)
+    if not os.path.isfile(path):
+        return False
+    text = open(path, encoding="utf-8").read()
+    if DIALS_BEGIN not in text or DIALS_END not in text:
+        print("🛑 %s 에 %s 표식이 없다 — 다이얼 표를 못 넣었다" % (os.path.relpath(path, ADDON), DIALS_BEGIN))
+        return False
+    before, rest = text.split(DIALS_BEGIN, 1)
+    _old, after = rest.split(DIALS_END, 1)
+    body = before + DIALS_BEGIN + "\n" + dials_html(lang) + "\n  " + DIALS_END + after
+    if body != text:
+        open(path, "w", encoding="utf-8").write(body)
+    print("%s — 다이얼 표 %d개" % (os.path.relpath(path, ADDON), sum(len(g["names"]) for gs in scan_dials().values() for g in gs)))
+    return True
+
+
 def build(lang="ko"):
     glossary = {}
     if lang == "en":
         glossary.update(MANUAL_EN)
         glossary.update(scan_tokens(lang))
         glossary.update(scan_presets(lang))
+        glossary.update(dial_terms(lang))
         # 🛑 영문 설명이 있는 클래스만 넣는다 — 한국어 설명이 뜨는 영문 페이지보다 없는 편이 낫다.
         for name, entry in scan_classes().items():
             if name in CLASS_EN:
@@ -306,6 +500,7 @@ def build(lang="ko"):
         glossary.update(MANUAL)
         glossary.update(scan_tokens())
         glossary.update(scan_presets())
+        glossary.update(dial_terms())
         glossary.update(scan_classes())      # 소스가 가장 세다 — 손으로 쓴 것을 덮는다
     # `u` 가 None 인 것은 키 자체를 뺀다(툴팁이 빈 링크를 그리지 않게).
     for entry in glossary.values():
@@ -329,3 +524,5 @@ def build(lang="ko"):
 if __name__ == "__main__":
     build("ko")
     build("en")
+    write_dials_section("ko")
+    write_dials_section("en")

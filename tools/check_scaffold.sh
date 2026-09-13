@@ -8,9 +8,18 @@
 #   팔레트 JSON 과 프리셋이 생기고, `make_theme.py` 가 나머지를 만들며, 그 결과가 **가독성 검사를
 #   그대로 통과**한다. 넷 중 하나라도 깨지면 새 테마를 넣는 사람이 첫걸음에서 막힌다.
 #
-# 🛑 원본에 임시 테마를 만들었다가 지운다 — 중간에 죽어도 지우도록 trap 을 건다.
-set -u
+# 임시 사본에서 생성·제거한다. 에디터나 다른 작업이 임시 프리셋을 읽지 않게 한다.
+set -uo pipefail
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -z "${GOHUD_SCAFFOLD_ISOLATED:-}" ]; then
+  WORK="$(mktemp -d)"
+  trap 'rm -rf "$WORK"' EXIT
+  for folder in core themes assets tools; do
+    rsync -a "$ADDON/$folder/" "$WORK/$folder/" || exit 1
+  done
+  GOHUD_SCAFFOLD_ISOLATED=1 bash "$WORK/tools/check_scaffold.sh"
+  exit $?
+fi
 ID="zz_scaffold_probe"
 cleanup() { python3 "$ADDON/tools/new_theme.py" --remove "$ID" > /dev/null 2>&1; }
 trap cleanup EXIT
@@ -55,10 +64,11 @@ grep -q 'gohud_skin_'"$ID"'.tres' "$ADDON/themes/presets/$ID.tres" \
   && echo "   프리셋이 자기 스킨 리소스를 가리킨다" || { echo "🛑 프리셋이 스킨을 안 가리킨다"; FAILED=1; }
 
 # 새 테마가 **가독성 검사를 그대로 통과**해야 한다 — 물려받은 값이 보정을 거치므로 통과가 정상이다.
-if python3 "$ADDON/tools/check_contrast.py" --quiet 2>&1 | grep -A 12 "gohud_$ID.tres" | grep -q "🛑"; then
-  echo "🛑 새 테마가 대비 검사에 걸린다"; FAILED=1
-else
+if python3 "$ADDON/tools/check_contrast.py" --quiet > "$ADDON/contrast.log" 2>&1; then
   echo "   새 테마가 대비 검사를 통과한다"
+else
+  tail -12 "$ADDON/contrast.log"
+  echo "🛑 새 테마가 대비 검사에 걸린다"; FAILED=1
 fi
 
 if [ "$FAILED" -eq 0 ]; then echo "✅ 테마 스캐폴딩 — 파일 하나로 테마가 생긴다"; else echo "🛑 스캐폴딩이 깨져 있다"; fi

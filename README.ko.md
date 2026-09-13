@@ -1,5 +1,7 @@
 # gohud — Godot 4 커스터마이징 HUD·UI 키트
 
+**설명 사이트:** [English (기본)](https://thruthesky.github.io/gohud/) · [한국어](https://thruthesky.github.io/gohud/docs/www/ko/) · [배포 안내](docs/README.md)
+
 영문판은 [README.md](README.md) 다. 이 문서는 같은 내용의 한국어 설명서다.
 
 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바, 안내 카드, 코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱을
@@ -199,7 +201,7 @@ godot --headless --path . --import                  # 새 그림을 한 번 임�
 ```
 
 `themes/palettes/neon.json` 에 부모 값이 전부 풀어 적혀 있어 그것이 곧 "바꿀 수 있는 것" 목록이다.
-`themes/presets/` 는 폴더를 스캔하므로 새 프리셋이 코드 수정 없이 고르개에 뜬다. 모양을 바꿨으면 `bash addons/gohud/tools/demo_shots.sh /tmp/shots --play` 로 데모 15 섹션을 봇이 돌며 찍은 그림(코치마크 단계·알림·시트가 뜬 순간 포함)을 눈으로 본다. 스킨의 숫자(슬롯 테두리·배지 여백·조이스틱 링·sci-fi 잘린 모서리)도 JSON 의 `skin.dials` 에서 바꾼다 — 스킨 코드는 손대지 않는다. 글자·테두리·강조색은
+`themes/presets/` 는 폴더를 스캔하므로 새 프리셋이 코드 수정 없이 고르개에 뜬다. 모양을 바꿨으면 `bash addons/gohud/tools/demo_shots.sh /tmp/shots --play` 로 데모 15 섹션을 봇이 돌며 찍은 그림(코치마크 단계·알림·시트가 뜬 순간 포함)을 눈으로 본다. 스킨의 숫자(슬롯 테두리·배지 여백·조이스틱 링·sci-fi 잘린 모서리)도 JSON 의 `skin.dials` 에서 바꾼다 — 스킨 코드는 손대지 않는다. 다이얼 전부의 이름·기본값·뜻은 사이트 [테마 페이지](docs/www/ko/theming.html)에 스크립트에서 뽑아 적혀 있다. 글자·테두리·강조색은
 생성기가 읽히는 자리까지 밀어 주므로 색만 바꿔도 가독성 검사를 통과한다(`tools/check_scaffold.sh` 가 지킨다).
 
 ```gdscript

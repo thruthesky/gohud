@@ -96,7 +96,10 @@ set -- \
   --exclude='.git*' \
   --exclude='.claude' \
   --exclude='.review' \
+  --exclude='.playwright-mcp' \
   --exclude='docs' \
+  --exclude='/index.html' \
+  --exclude='/.nojekyll' \
   --exclude='review' \
   --exclude='.godot' \
   --exclude='.dist' \

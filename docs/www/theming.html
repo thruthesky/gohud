@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/docs/www/theming.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/docs/www/ko/theming.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/docs/www/theming.html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theming — gohud</title>
+<meta name="description" content="How gohud's themes, skins and presets change colour and shape: the token reference, custom StyleBoxes, and how contrast is derived rather than chosen.">
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Overview</a>
+      <a href="theming.html">Theming</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="#tokens">Tokens</a>
+      <a href="#skin">Skins</a>
+      <a href="ko/theming.html">한국어 ↗</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Theming</h1>
+    <p class="lead">
+      gohud's appearance has <b>three layers</b>. Change colours only, or replace the shapes entirely.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>Three layers</h2>
+  <p class="sub">A preset bundles all three. Fields you leave empty fall back to the defaults.</p>
+
+  <table>
+    <thead><tr><th>Layer</th><th>Decides</th><th>How you change it</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>Colours, sizes, text scale, and the shape of everything <b>the engine draws</b> — button panels, inputs, tabs, toggle artwork</td>
+        <td>Author a <code>.tres</code>, or generate one with <code>tools/make_theme.py</code></td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td>The shape of everything <b>code draws</b> — the joystick, quick-slot faces, the coach-mark ring, chips, skeletons, dividers, section headings</td>
+        <td>Subclass it and override only the methods you care about</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>The 84 icons. A texture pack or an icon font — the calling code is identical either way</td>
+        <td>Supply a set, or override just a few names</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Why a Theme alone is not enough.</b> Rounded is the only corner <code>StyleBoxFlat</code> has —
+    set the radius to zero and you get a right angle; there is nothing in between. Diagonally cut corners,
+    a single thickened edge, an outer glow: the engine draws none of them. And the joystick and coach mark
+    are drawn in <code>_draw()</code>, where a theme cannot reach at all.
+  </div>
+</section>
+
+<section id="pick">
+  <h2>Picking one</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>That one line swaps theme, skin and icons. From the editor, use
+    <b>Project Settings → Gohud → Theme → Preset</b>; from a settings resource, <code>GoConfig.preset</code>.</p>
+
+  <h3>Keeping one field your own</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # your icons, the preset's everything else</code></pre>
+  <p>Setting <code>theme</code>, <code>skin</code> or <code>icons</code> explicitly <b>wins over</b> the preset.</p>
+</section>
+
+<section id="tokens">
+  <h2>Tokens</h2>
+  <p class="sub">
+    Every colour and measurement lives under the <code>GoHud</code> type in the Theme, addressed by name.
+    Not writing numbers is the rule: names follow along when the theme is swapped.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # colour
+GoUi.metric(GoTheme.GAP)               # measurement (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # size for a text role
+GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
+
+  <h3>Colours</h3>
+  <table>
+    <thead><tr><th>Name</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>The screen floor</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>Three panel layers — panel, card, raised cell</td></tr>
+      <tr><td><code>border</code></td><td>Card and button borders</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>Three text levels — body, supporting, dimmed</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>The accent and the text placed on it</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>Status <b>text</b> colours</td></tr>
+      <tr><td><code>*_fill</code></td><td>The same statuses as a <b>fill</b> — bars and other large areas</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>The veil behind popups, shadows, the bar's trough</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Why <code>*_fill</code> exists.</b> The same meaning, opposite requirements. <code>warning</code>
+    used as text must be dark enough to read on a light background; used as an experience bar's fill it
+    must be bright enough to notice. One token cannot be both — the light theme's bar went brown.
+    A theme without the <code>_fill</code> variant falls back to the base name automatically, so themes
+    that predate these tokens keep working.
+  </div>
+
+  <h3>Measurements (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scrollbar_width</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>Text roles</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — a role names <b>a size</b>, not a
+    purpose. "The largest text", not "the heading". That way the scale holds even when a screen uses it
+    for something else.
+  </p>
+</section>
+
+<section id="skin">
+  <h2>Skins — where a Theme cannot reach</h2>
+
+  <table>
+    <thead><tr><th>Method</th><th>Decides</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code></td><td>Card and panel faces, floating surfaces</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>A chip's panel and <b>the label colour that stays legible on it</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>Quick-slot faces and their text</td></tr>
+      <tr><td><code>disc_box</code></td><td>The circle behind an avatar or badge</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>Inline alerts, placeholders, segmented controls</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>The mark a coach tour puts around its target</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td>Things <b>drawn directly</b> — the joystick and its pointer</td></tr>
+      <tr><td><code>divider_color</code> · <code>section_box</code></td><td>Dividers and section headings</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # The widget has already worked out the positions — only drawing happens here
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>Shapes StyleBoxFlat cannot make</h3>
+  <table>
+    <thead><tr><th>Class</th><th>What it draws</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Diagonally cut corners, one thickened accent edge, an outer glow</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Corner marks only, leaving the content unenclosed</td></tr>
+    </tbody>
+  </table>
+  <p>Both serialise into a Theme resource like any other StyleBox — which is what lets a theme change shape.</p>
+
+  <div class="note warn">
+    <b>Give padding through <code>content_margin_*</code>.</b> Subclassing StyleBox in GDScript means
+    <code>_get_style_margin()</code> is never called (measured on Godot 4.7). Fill the built-in fields or
+    content will sit against the border.
+  </div>
+</section>
+
+<section id="own">
+  <h2>Your own preset — one file</h2>
+  <p class="sub">
+    Adding a theme used to mean editing four places by hand — the builder's palette, the shape, a skin,
+    a preset resource. One command now puts all of them in place.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # theme .tres + control artwork
+godot --headless --path . --import                  # import the new artwork once
+GoUi.use_preset(&amp;"neon")                             # done — it shows up in the picker too</code></pre>
+  <p>
+    The first line writes <code>themes/palettes/neon.json</code> and <code>themes/presets/neon.tres</code>. The
+    JSON carries <b>every value of the theme it inherits from</b>, fully spelled out, so it doubles as the
+    list of what you can change: delete a key to keep the parent's value, write one to override it. Presets
+    are found by <b>scanning</b> <code>themes/presets/</code>, so no registry code changes — the project
+    setting's dropdown picks it up as well.
+  </p>
+
+  <h3>What you can change — on one page</h3>
+  <table>
+    <thead><tr><th>Where</th><th>What</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3"><code>palette</code></td><td>background · three surfaces · border · three text tones · accent · four status colours · scrim · shadow · bar track</td><td><code>"#RRGGBB"</code>, alpha as <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>fill-only vivid colours <code>*_vivid</code></td><td>keep bars saturated even when the text colour has to darken — leave one out and the builder says so</td></tr>
+      <tr data-group="palette"><td>readability</td><td><b>not tuned by hand.</b> Text, borders, the accent and the label on it are pushed by the builder until they clear the thresholds — change only the accent and the checks still pass</td></tr>
+      <tr><td rowspan="3"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (rounded) · <code>cut</code> (chamfered corners)</td></tr>
+      <tr data-group="shape"><td>sizes</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — the tokens follow, so panels and widget maths never disagree</td></tr>
+      <tr data-group="shape"><td><code>cut</code> only</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — the family for the places code draws itself (joystick, slots, badges, coach-mark ring, chips, dividers)</td><td><code>default</code> · <code>scifi</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — the <b>numbers</b> of those places: slot border width and tint, badge padding, chip and alert opacity, joystick ring width and opacity, sci-fi chamfer sizes, glow and bracket</td><td>Every parent value is spelled out in the JSON. The builder writes them into <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>no skin code is touched</b>. Only to change the drawings themselves do you run <code>--new-skin</code>, which scaffolds a <code>GoSkin</code> subclass</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>how the picker shows it</td><td>boolean · string</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Every dial</h3>
+  <p>
+    The table below is filled by <code>tools/make_site.py</code> <b>straight from the skin scripts'</b>
+    <code>@export</code> lines — add a dial or change a default and the table follows. Use these names under
+    <code>skin.dials</code> in the JSON. A dial whose default reads <code>14</code> is an integer, one that reads
+    <code>10.0</code> a float — write either form in the JSON and the builder casts to the script's type.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>Default skin <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Default">0.16</td><td>Fill opacity of a chip's panel.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Default">0.45</td><td>Edge opacity of a chip's panel.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Default">0.1</td><td>How far an alert box's panel is tinted toward its status colour.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Default">0.24</td><td>Accent tint of a quick-slot panel while its cooldown runs.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Default">0.08</td><td>Accent tint of a quick-slot panel at rest.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Default">2</td><td>Quick-slot border width (dp) while its cooldown runs.</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Default">1</td><td>Quick-slot border width (dp) at rest.</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Default">5</td><td>Horizontal inner padding (dp) of a badge (quantity, time left).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Default">1</td><td>Vertical inner padding (dp) of a badge.</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Default">0.6</td><td>Edge opacity of a badge's panel.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Default">0.45</td><td>Shadow opacity of floating cards (coach mark, prompt card).</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Default">14</td><td>Shadow blur (dp) of floating cards.</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Default">4</td><td>Downward offset (dp) of a floating card's shadow.</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Default">10.0</td><td>Glow distance (dp) of a floating panel that glows instead of casting a shadow, like the sci-fi chamfered panel.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Default">0.42</td><td>Opacity of the joystick's base disc.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Default">0.45</td><td>Opacity of the joystick's ring.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Default">2.0</td><td>Width (dp) of the joystick's ring.</td></tr>
+    </tbody>
+  </table>
+  <h4>Sci-fi skin <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Default">7.0</td><td>Chamfer size (dp) of a chip's panel.</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Default">5.0</td><td>Chamfer size (dp) of a skeleton panel.</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Default">8.0</td><td>Chamfer size (dp) of an alert box.</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Default">8.0</td><td>Chamfer size (dp) of a segmented control.</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Default">6.0</td><td>Chamfer size (dp) of a quick-slot panel.</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Default">0.24</td><td>Chamfer of avatars and discs = diameter × this ratio.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Default">0.45</td><td>Glow opacity of a slot whose cooldown is running.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Default">6.0</td><td>Glow distance (dp) of a slot whose cooldown is running.</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Default">12.0</td><td>Arm length (dp) of the coach mark's targeting bracket.</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Default">2.0</td><td>Line thickness (dp) of the coach mark's targeting bracket.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>Subclass the skin (optional)</h3>
+  <p>Only what theme and shape cannot reach — the joystick's hexagon, slot badges, the coach mark's
+    targeting bracket — lives in a skin. Subclass <code>GoSkin</code>, override just those methods, and point the
+    JSON's <code>skin</code> at that resource. A colour-only theme skips this step.</p>
+
+  <div class="note">
+    <b>A check keeps the promise.</b> <code>tools/check_scaffold.sh</code> creates a throwaway theme every run —
+    changes the accent, sets the radius to 4 — and verifies generation, token propagation and a clean
+    contrast pass before removing it. The first run found a theme with only its accent changed failing
+    <b>8 pairs</b>: the builder pushed text colours but used the accent as written. It now pushes the accent
+    and the label on it too.
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>Readability is measured</h2>
+  <p class="sub">
+    "Pretty" is taste; <b>"legible" can be measured.</b> Faint grey text looks fine on a good monitor and
+    disappears on a phone in daylight — picking by eye guarantees that eventually.
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>What</th><th>Required</th></tr></thead>
+    <tbody>
+      <tr><td>Body text</td><td>4.5 : 1</td></tr>
+      <tr><td>Large text (24px and up)</td><td>3 : 1</td></tr>
+      <tr><td>Accent borders and icons</td><td>3 : 1</td></tr>
+      <tr><td>Decorative borders</td><td>2 : 1 — WCAG does not apply its 3:1 rule to decoration</td></tr>
+      <tr><td>Adjacent surfaces</td><td>1.12 : 1 — enough that a card reads as separate from its background</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Same-hue text on a same-hue tint</h3>
+  <p>
+    This trap appeared <b>three times</b> in this codebase — pressed buttons (accent panel, accent label),
+    danger buttons, and chips. It looks good in a swatch and collapses the moment it is measured, because
+    the two share a hue and so have no difference in lightness.
+  </p>
+  <p>
+    Label colours are therefore <b>not chosen by hand</b>. The theme builder and <code>GoSkin</code> each
+    push lightness — and only lightness — until the threshold is cleared on the panel the text actually
+    sits on. Hue and saturation survive, so the palette keeps its character and changing it keeps its contrast.
+  </p>
+
+  <h3>Colour read as text and colour painted as area want opposite things</h3>
+  <p>
+    On a light theme a warning colour has to darken to stay readable <b>as text</b> (<code>#96500A</code>).
+    When the bar fill inherits that, the experience bar turns <b>brown</b>. Colour alone cannot fix it:
+    yellow is intrinsically bright, so it clears 3:1 over no grey track at all, and darkening the track
+    makes it <b>worse</b> (1.52 → 1.06).
+  </p>
+  <p>
+    So the two are separated. <b>Colour stays vivid</b> — the palette carries fill-only colours such as
+    <code>warning_vivid</code>. <b>The edge carries the contrast</b> — <code>GoSkin</code> draws a 1dp
+    outline on any fill that cannot reach 3:1 against its track, so "how full is it" stays legible.
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # read as text
+    warning_vivid=hexc("F2A007"),   # painted on the bar
+)</code></pre>
+  <div class="note">
+    <b>Leaving it out is reported.</b> Without a <code>*_vivid</code>, a fill that comes out dark makes the
+    builder print <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code>. A place that used to
+    degrade silently now says so.
+  </div>
+
+  <h3>A floating panel cannot know what is behind it</h3>
+  <p>
+    A HUD is drawn <b>over</b> the game — a snowfield, or a cave. If its panel is translucent, whatever is
+    behind it bleeds through and <b>changes the panel's colour</b>, taking the text contrast down with it.
+    At 82% opacity the dark themes' muted text fell to <code>3.74:1</code> over a bright backdrop — below
+    the minimum.
+  </p>
+  <p>
+    So translucent panels are measured with <b>pure white and pure black</b> behind them; those are the
+    worst a game scene can offer. The bundled themes' HUD panel is opaque enough to pass (92%) while
+    keeping the glassy look.
+  </p>
+  <p>
+    For the same reason <b>icon colours are not fixed either</b>. The quick slot's glyph was hard-coded
+    white and measured <code>1.11:1</code> on a light theme — it now follows the panel it sits on, exactly
+    as the labels do.
+  </p>
+
+  <div class="note">
+    <b>Two checkers, two reaches.</b> <code>check_contrast.py</code> reads the theme files;
+    colours a skin mixes <b>while running</b> (chips, slots) are measured by the suite's
+    <code>skin contrast</code> section inside Godot.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">← Overview</a> · <a href="widgets.html">Widgets →</a> · <a href="ko/theming.html">한국어</a></p>
+  </div>
+</footer>
+
+<script src="site/glossary.en.js"></script>
+<script src="site/tooltip.js"></script>
+</body>
+</html>

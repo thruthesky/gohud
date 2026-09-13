@@ -1,5 +1,7 @@
 # gohud
 
+**Documentation:** [English website](https://thruthesky.github.io/gohud/) · [한국어](https://thruthesky.github.io/gohud/docs/www/ko/) · [Publishing guide](docs/README.md)
+
 **A customizable HUD & UI kit for Godot 4.** Floating surfaces, bottom sheets, dialogs, forms,
 snackbars, prompt cards, coach marks, HUD bars, quick slots and a virtual joystick — driven by one
 theme and one swappable icon set, and aware of safe areas, virtual keyboards, RTL languages and touch.
@@ -228,7 +230,7 @@ godot --headless --path . --import                  # import the new artwork onc
 ```
 
 `themes/palettes/neon.json` spells out every inherited value, so it doubles as the list of what you can
-change. `themes/presets/` is scanned, so the new preset appears in the picker with no code change. Skin numbers (slot border, badge padding, joystick ring, sci-fi chamfers) are dials in the JSON's `skin.dials` — no skin code is touched. Text,
+change. `themes/presets/` is scanned, so the new preset appears in the picker with no code change. Skin numbers (slot border, badge padding, joystick ring, sci-fi chamfers) are dials in the JSON's `skin.dials` — no skin code is touched; every dial with its default and meaning is listed on the site's [theming page](docs/www/theming.html), generated from the scripts. Text,
 borders and the accent are pushed to readable positions by the builder, so a colour-only change still
 passes the contrast checks (`tools/check_scaffold.sh` guards this).
 

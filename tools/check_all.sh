@@ -13,7 +13,7 @@
 #   따로 기억해서 돌리면 반드시 하나를 빠뜨린다. 그래서 진입점을 하나로 둔다.
 #
 # 🛑 4.6 호환은 4.7 로 확인할 수 없다. `GODOT_46` 을 주면 **두 엔진 모두**에서 단위 검사를 돌린다.
-set -u
+set -uo pipefail
 
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
 FAILED=0
@@ -50,15 +50,7 @@ python3 "$ADDON/tools/check_site.py" || FAILED=1
 
 step "④ 테마 생성물이 소스와 맞는가"
 # 🛑 팔레트를 고치고 `make_theme.py` 를 안 돌리면 `.tres` 가 낡은 채로 남는다 — 눈에 안 띈다.
-BEFORE="$(cd "$ADDON" && git status --porcelain themes/ assets/ 2>/dev/null | sort)"
-python3 "$ADDON/tools/make_theme.py" > /dev/null || FAILED=1
-AFTER="$(cd "$ADDON" && git status --porcelain themes/ assets/ 2>/dev/null | sort)"
-if [ "$BEFORE" != "$AFTER" ]; then
-  echo "🛑 테마 파일이 소스와 어긋나 있었다 — 방금 다시 만들었으니 확인하고 커밋한다"
-  FAILED=1
-else
-  echo "✅ 테마 생성물이 소스와 일치"
-fi
+python3 "$ADDON/tools/check_generated.py" || FAILED=1
 
 step "④-c 테마 스캐폴딩"
 # 🛑 "테마를 더 들인다" 는 약속 — 파일 하나로 테마가 생기고 대비 검사를 통과하는지. 빠르니 늘 돌린다.
@@ -76,6 +68,12 @@ fi
 if [ -n "${GOHUD_CHECK_DEMO_SHOTS:-}" ]; then
   step "④-d 데모 촬영"
   bash "$ADDON/tools/demo_shots.sh" "${GOHUD_DEMO_SHOTS_DIR:-/tmp/gohud_demo_shots}" 2>&1 | tail -1 || FAILED=1
+fi
+
+# 📸 사이트 촬영 — 표 폭·풍선·폰 폭의 가로 스크롤은 HTML 을 읽어서는 안 보인다. 사이트를 손댄 반복에서 켠다.
+if [ -n "${GOHUD_CHECK_SITE_SHOTS:-}" ]; then
+  step "④-e 사이트 촬영"
+  bash "$ADDON/tools/site_shots.sh" "${GOHUD_SITE_SHOTS_DIR:-/tmp/gohud_site_shots}" 2>&1 | tail -1 || FAILED=1
 fi
 
 # 🛑 패키징 게이트는 **배포할 때가 되어서야** 걸린다 — 그때는 이미 늦다. 느리므로(ZIP 생성)

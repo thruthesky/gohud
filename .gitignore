@@ -16,3 +16,8 @@ tests/_*
 
 # Python 도구가 남기는 캐시
 __pycache__/
+.playwright-mcp/
+
+# Created locally by examples/demo/run.sh --setup. Tracking this recursive
+# link makes a GitHub Pages root build follow the add-on back into itself.
+/examples/demo/addons/gohud

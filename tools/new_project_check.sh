@@ -46,7 +46,7 @@ config_version=5
 
 config/name="gohud clean check"
 run/main_scene="res://addons/gohud/examples/gallery/gallery.tscn"
-config/features=PackedStringArray("4.7", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 
 [display]
 
@@ -67,10 +67,14 @@ if [ -n "$ZIP" ]; then
   ( cd "$WORK" && unzip -q "$ZIP" )
   mkdir -p "$WORK/gohud_check"
   cp "$ADDON/tests/gohud_test.gd" "$WORK/gohud_check/"
+  cp "$ADDON/tools/skin_dials.json" "$WORK/gohud_check/"
   TEST_SCRIPT="res://gohud_check/gohud_test.gd"
   echo "① ZIP 설치 — $(basename "$ZIP")"
 else
-  rsync -a --exclude .dist --exclude '.godot' --exclude 'tests/_*' "$ADDON/" "$WORK/addons/gohud/"
+  rsync -a --exclude .dist --exclude '.godot' --exclude 'tests/_*' \
+    --exclude '.git*' --exclude '.env*' --exclude '.claude' --exclude '.review' \
+    --exclude 'builds' --exclude 'docs' --exclude 'examples/demo' \
+    "$ADDON/" "$WORK/addons/gohud/"
   echo "① 소스 복사 — $ADDON"
 fi
 echo "   작업 폴더: $WORK · GoRuntime 오토로드: $([ "$RUNTIME" -eq 1 ] && echo 켬 || echo 끔)"

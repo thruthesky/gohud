@@ -14,19 +14,26 @@ extends GoSkin
 # ── sci-fi 다이얼 — 스킨 리소스(.tres)에서 숫자만 바꾼다 ───────────────
 # 🛑 기본값을 바꾸면 `tools/skin_dials.json` 도 같이 바꾼다 — 검사가 둘을 대조한다.
 @export_group("Sci-fi dials")
-## 칩·스켈레톤·알림·분절·슬롯 판의 잘린 모서리 크기(dp).
+# 🔑 다이얼마다 `##` 한 줄 — 사이트 생성기가 이 줄로 다이얼 표와 용어 사전을 채운다.
+## 칩 판의 잘린 모서리 크기(dp).
 @export var cut_chip := 7.0
+## 스켈레톤 판의 잘린 모서리 크기(dp).
 @export var cut_skeleton := 5.0
+## 알림 상자 판의 잘린 모서리 크기(dp).
 @export var cut_alert := 8.0
+## 분절 선택 판의 잘린 모서리 크기(dp).
 @export var cut_segment := 8.0
+## 퀵슬롯 판의 잘린 모서리 크기(dp).
 @export var cut_slot := 6.0
 ## 아바타·디스크의 잘린 모서리 = 지름 × 이 비율.
 @export var cut_disc_ratio := 0.24
-## 쿨다운이 도는 슬롯의 발광 투명도와 거리(dp).
+## 쿨다운이 도는 슬롯의 발광 투명도.
 @export var slot_glow_alpha := 0.45
+## 쿨다운이 도는 슬롯의 발광 거리(dp).
 @export var slot_glow_size := 6.0
-## 코치마크 조준 표식의 팔 길이와 두께(dp).
+## 코치마크 조준 표식의 팔 길이(dp).
 @export var bracket_arm := 12.0
+## 코치마크 조준 표식의 선 두께(dp).
 @export var bracket_thickness := 2.0
 @export_group("")
 
