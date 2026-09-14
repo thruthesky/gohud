@@ -4,6 +4,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-09-14
+
 ### Added
 
 - **Showcase images on the homepage.** The English and Korean overview pages now open with medieval
