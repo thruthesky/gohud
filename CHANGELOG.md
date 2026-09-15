@@ -50,6 +50,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   wide). Godot stores a control's size as position plus size, so a 184-unit card became 183.99997, and the card
   padding (a `MarginContainer`) rounds its child down to whole units — the body lost one unit and a one-line message
   showed a scroll bar the first time a dialog opened. Card size and position are now whole units.
+- `GoStyle.box()` (and `floating()` / `disc()`, which build on it) returned an empty `StyleBoxFlat` when the skin gave
+  a custom StyleBox, as sci-fi and medieval do. The flat box had no content margin, so cards built through the legacy
+  API put their text against the border. It now copies the frame's content margin, background, border colour and
+  width, radius and shadow; only the chamfered or forged outline is lost.
 - A `GoForm` built in code stopped routing Android Back when `%BackButton` was owned by the form (or by a holder
   that owned only the form and the button). The form moves its scroll into an edge frame in `_ready`, and Godot's
   `reparent()` restores only the owners shared with the moved node, so the button's owner was cleared and the lookup

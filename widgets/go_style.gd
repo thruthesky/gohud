@@ -557,13 +557,32 @@ static func surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) ->
 ##    호출부가 이미 많기 때문이다. 스킨이 커스텀 StyleBox 를 주는 테마(sci-fi 등)에서는 그 모양이
 ##    여기서 살아남지 못한다. 모양을 지켜야 하면 `surface()` 를 쓴다.
 static func box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) -> StyleBoxFlat:
-	var style := GoUi.skin().surface_box(variant, accent) as StyleBoxFlat
+	var shaped := GoUi.skin().surface_box(variant, accent)
+	var style := shaped as StyleBoxFlat
 	if style == null:
-		style = StyleBoxFlat.new()
-		style.bg_color = GoUi.color(GoTheme.SURFACE)
+		style = _flat_like(shaped)
 		# 🛑 0.5 — 이 값은 gohud 가 파생된 게임의 규범이다. 0.55 로 짰다가 위임 대조 검사에서 잡혔다(2026-09-12).
 		if accent.a > 0: style.border_color = Color(accent, 0.5)
 	return style
+
+
+## 커스텀 판(각진 판·단조 판)을 **같은 여백·바탕·테두리·반경·그림자**의 평판으로 옮긴다 — 모양만 잃고 자리는 같다.
+## 🛑 빈 평판을 돌려주면 여백이 0 이라 옛 `box()` 로 만든 카드의 글자가 테두리에 붙었다(2026-09-15 라리엔 생김새 전환).
+static func _flat_like(source: StyleBox) -> StyleBoxFlat:
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = GoUi.color(GoTheme.SURFACE)
+	if source == null: return flat
+	for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		flat.set_content_margin(side, source.get_content_margin(side))
+	if &"bg_color" in source: flat.bg_color = source.get(&"bg_color")
+	if &"draw_center" in source: flat.draw_center = source.get(&"draw_center")
+	if &"border_color" in source: flat.border_color = source.get(&"border_color")
+	if &"border_width" in source: flat.set_border_width_all(roundi(float(source.get(&"border_width"))))
+	if &"radius" in source: flat.set_corner_radius_all(roundi(float(source.get(&"radius"))))
+	if &"shadow_color" in source: flat.shadow_color = source.get(&"shadow_color")
+	if &"shadow_size" in source: flat.shadow_size = int(source.get(&"shadow_size"))
+	if &"shadow_offset" in source: flat.shadow_offset = source.get(&"shadow_offset")
+	return flat
 
 
 ## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다. 위 `box()` 와 같은 약속이다.

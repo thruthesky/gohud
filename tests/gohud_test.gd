@@ -284,6 +284,14 @@ func _presets() -> void:
 	check(GoStyle.surface(GoTheme.BOX_PANEL) is GoStyleBoxCut, "GoStyle.surface() 는 커스텀 모양을 그대로 넘긴다")
 	# 🛑 옛 호출부와의 약속 — `box()` 는 무슨 테마에서든 StyleBoxFlat 이다.
 	check(GoStyle.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "GoStyle.box() 는 sci-fi 에서도 StyleBoxFlat")
+	# 🛑 평판으로 옮겨도 판의 여백·색·테두리는 이어받는다 — 빈 평판(여백 0)이면 호스트 카드의 글자가 테두리에 붙는다
+	#    (2026-09-15 라리엔 생김새 전환 · 호스트의 옛 `box()` 호출이 전부 이 경로다).
+	var cut_card := GoStyle.surface(GoTheme.BOX_CARD) as GoStyleBoxCut
+	var flat_card := GoStyle.box(GoTheme.BOX_CARD)
+	check(cut_card != null and flat_card.content_margin_left == cut_card.content_margin_left
+		and flat_card.content_margin_top == cut_card.content_margin_top and flat_card.bg_color == cut_card.bg_color
+		and flat_card.border_color == cut_card.border_color and flat_card.border_width_top == roundi(cut_card.border_width),
+		"GoStyle.box() 평판은 각진 판의 여백·색·테두리를 이어받는다 (여백 %.0f / 판 %.0f)" % [flat_card.content_margin_left, cut_card.content_margin_left if cut_card != null else -1.0])
 
 	var missing: Array[StringName] = []
 	for key in [GoTheme.BACKGROUND, GoTheme.SURFACE, GoTheme.SURFACE_SOFT, GoTheme.SURFACE_HIGH,
@@ -347,6 +355,11 @@ func _medieval() -> void:
 		check(face.ornament == 0 and face.grain_alpha == 0.0 and near(face.ornament_scale, 0.7, 0.001), "%s: custom dials reach the slot" % preset)
 		check((GoUi.skin() as GoSkinMedieval).slot_rivets == 1, "%s: copied skin leaves source unchanged" % preset)
 		check(GoStyle.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "%s: legacy flat-box API stays compatible" % preset)
+		var forged := GoStyle.surface(GoTheme.BOX_CARD) as GoStyleBoxMedieval
+		var flat_face := GoStyle.box(GoTheme.BOX_CARD)
+		check(forged != null and flat_face.content_margin_left == forged.content_margin_left
+			and flat_face.bg_color == forged.bg_color and flat_face.corner_radius_top_left == roundi(forged.radius),
+			"%s: flat box keeps the frame's padding, colour and radius" % preset)
 		await frames(1)
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	check(GoUi.theme() == GoUi.DEFAULT_THEME and GoUi.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "medieval returns to unchanged default")
