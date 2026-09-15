@@ -55,6 +55,11 @@ const GAP := &"gap"
 const GAP_LARGE := &"gap_large"
 const PADDING := &"padding"
 const PADDING_COMPACT := &"padding_compact"
+## 작은 버튼(`GoCompactButton`) 판의 **좌우 · 위아래 여백**. 🛑 `padding_compact`(카드·알림 안쪽 여백)와 다른 값이다 —
+##    같이 쓰면 버튼 여백을 바꿀 때 표면 여백까지 흔들린다. 글자가 판 테두리에 붙지 않게 하는 하한이기도 하다
+##    (`GoStyle.audit_compact_padding`). 기본 테마 10 · 5.
+const COMPACT_PADDING_X := &"compact_padding_x"
+const COMPACT_PADDING_Y := &"compact_padding_y"
 const RADIUS := &"radius"
 const RADIUS_SMALL := &"radius_small"
 const RADIUS_LARGE := &"radius_large"

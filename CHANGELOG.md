@@ -4,6 +4,31 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- **Compact button padding tokens.** `compact_padding_x` and `compact_padding_y` (`GoTheme.COMPACT_PADDING_X` /
+  `COMPACT_PADDING_Y`) set the side and top/bottom content margin of the `GoCompactButton` style. They are separate
+  from `padding_compact`, which insets cards and notices, so changing one no longer moves the other. Built-in themes
+  keep 10 and 5 (no visual change), and a palette file can override both through its `shape`.
+- **`GoStyle.audit_compact_padding(root)`** lists compact buttons that show text but whose style has less side margin
+  than the token. That is how text ends up touching the capsule border when a host theme reuses an icon or close
+  style for compact buttons. Icon-only buttons and per-button overrides are skipped unless `include_overrides` is set;
+  a host that chains its own variation to `GoCompactButton` passes that name in `variations`.
+- **`GoDialogs` button layout.** `action_layout` chooses `VERTICAL` (default, unchanged), `HORIZONTAL` (one row, half
+  each) or `AUTO` (one row only when both labels fit half the card on one line, otherwise stacked). `action_gap` sets
+  the space between the buttons and `body_gap` the space between the message and the buttons, so the question and
+  the choice read as two parts. `set_next_action_layout()` changes only the next dialog. The row is built the first
+  time a dialog opens, so an autoloaded `GoDialogs` adds no nodes at startup, and `confirm()` / `alert()` keep their
+  signatures.
+- `GoSurface.section_gap()` and `GoSurface.content_inset()` return the gap and card padding actually applied (both
+  shrink one step on small screens).
+
+### Fixed
+
+- `GoSurface` counted the gaps between header, body and footer with the `gap` token even on small screens, where the
+  column uses `gap_small`, so short cards came out taller than their content and the space above the footer grew.
+- A reused `GoDialogs` kept the minimum button width of a long label when the next label was a single short word.
+
 ## [1.0.3] - 2026-09-14
 
 ### Added

@@ -288,7 +288,7 @@ GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close") # 36dp 그림 · 48
 |---|---|
 | 색 | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
 | 채움 색 | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — 막대처럼 넓은 면적용. 테마에 없으면 `_fill` 을 뗀 이름으로 떨어진다 |
-| 치수(dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
+| 치수(dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `compact_padding_x`, `compact_padding_y`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
 | StyleBox | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |
 | 글자 역할 | `micro`, `compact`, `caption`, `body`, `button`, `subtitle`, `title` |
 
@@ -345,7 +345,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 |---|---|---|
 | `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절 |
 | `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터 |
-| `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼 |
+| `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼, `action_layout` 으로 버튼 세로·한 줄·자동 |
 | `GoForm` | MarginContainer | 브레이크포인트마다 폭을 제한하고 가상 키보드를(`avoid_hud` 면 HUD 까지) 피하며 라벨 줄바꿈을 보장하는 폼 |
 | `GoScroll` | ScrollContainer | 손가락 스크롤, 스크롤바가 카드 여백 자리로 들어간다, RTL 대응 |
 | `GoNotice` | PanelContainer | 입력도 포커스도 가져가지 않는 스낵바 |

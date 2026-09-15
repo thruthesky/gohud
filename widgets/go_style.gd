@@ -312,6 +312,49 @@ static func button(text: String, action := Callable(), tone := Tone.NORMAL) -> B
 	return node
 
 
+## 🔍 **작은 글자 버튼의 판 여백 계약**을 검사한다. 글자가 있는 작은 버튼의 상태별 판 좌우 여백이
+## `compact_padding_x` 토큰보다 작으면 `"노드 경로:상태 …"` 를 돌려준다. 빈 배열이면 통과.
+##
+## 🔑 **판 여백을 직접 본다** — 최소 폭으로 재면 넓게 늘어난 버튼은 여백 0 판이어도 통과하고,
+##    낱말 줄바꿈으로 좁아진 정상 버튼은 실패한다.
+## 🛑 글자 없이 아이콘만 있는 버튼은 보지 않는다 — 원형·정사각 아이콘 판은 여백 0 이 맞다.
+## 🛑 부르는 쪽이 판을 덮어쓴 상태는 기본으로 건너뛴다(좁힌 탭처럼 의도한 예외가 있다). `include_overrides` 로 함께 본다.
+## `variations` — 작은 버튼으로 칠 변형 이름. 호스트가 자기 이름을 base 로 건 경우 그 이름도 넘긴다.
+static func audit_compact_padding(root: Node, include_overrides := false,
+		variations: Array[StringName] = [GoTheme.VAR_COMPACT_BUTTON]) -> Array[String]:
+	var problems: Array[String] = []
+	_audit_compact(root, float(GoUi.metric(GoTheme.COMPACT_PADDING_X)), include_overrides, variations, problems)
+	return problems
+
+
+static func _audit_compact(node: Node, need: float, include_overrides: bool, variations: Array[StringName],
+		out: Array[String]) -> void:
+	var button := node as Button
+	if button != null and not button.text.strip_edges().is_empty() and _is_variation(button, variations):
+		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+			if not include_overrides and button.has_theme_stylebox_override(state): continue
+			var box := button.get_theme_stylebox(state)
+			if box == null: continue
+			var left := box.get_margin(SIDE_LEFT)
+			var right := box.get_margin(SIDE_RIGHT)
+			if left < need - 0.01 or right < need - 0.01:
+				var where := String(button.get_path()) if button.is_inside_tree() else String(button.name)
+				out.append("%s:%s 좌우 여백 %.0f·%.0f < %.0f" % [where, state, left, right, need])
+	for child in node.get_children():
+		_audit_compact(child, need, include_overrides, variations, out)
+
+
+## 노드의 변형이 목록에 있거나, 테마의 base 체인을 따라가다 목록에 닿는가.
+static func _is_variation(control: Control, variations: Array[StringName]) -> bool:
+	var current := control.theme_type_variation
+	var theme := GoUi.theme()
+	for _depth in 8:
+		if current.is_empty(): return false
+		if variations.has(current): return true
+		current = theme.get_type_variation_base(current) if theme != null else &""
+	return false
+
+
 ## 🔑 **아이콘만 있는 버튼**. 보이는 크기는 `visual`, 터치는 토큰 `touch` 까지 노드 밖으로 넓어진다.
 ## 세트가 폰트든 텍스처든 같은 호출이다.
 ##

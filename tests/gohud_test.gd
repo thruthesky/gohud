@@ -744,6 +744,29 @@ func _style() -> void:
 	check(compact.custom_minimum_size.y == 48, "얇은 버튼도 터치 하한")
 	check(primary.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON, "주 버튼 변형")
 	check(normal.mouse_filter == Control.MOUSE_FILTER_PASS, "버튼은 PASS — 스크롤 끌기를 막지 않는다")
+	# 🔑 작은 글자 버튼 여백 계약 — 판 여백이 토큰과 같고, 검증 함수가 여백 0 판을 실제로 잡는다(양성 대조).
+	var pad_x := float(GoUi.metric(GoTheme.COMPACT_PADDING_X))
+	var pad_y := float(GoUi.metric(GoTheme.COMPACT_PADDING_Y))
+	var compact_face := compact.get_theme_stylebox(&"normal")
+	check(pad_x > 0.0 and pad_y > 0.0 and near(compact_face.get_margin(SIDE_LEFT), pad_x) and near(compact_face.get_margin(SIDE_RIGHT), pad_x)
+		and near(compact_face.get_margin(SIDE_TOP), pad_y),
+		"작은 버튼 판 여백 = 토큰 (판 %.0f·%.0f · 토큰 %.0f·%.0f)" % [compact_face.get_margin(SIDE_LEFT), compact_face.get_margin(SIDE_TOP), pad_x, pad_y])
+	check(GoStyle.audit_compact_padding(host).is_empty(), "기본 테마의 작은 글자 버튼은 여백 계약을 지킨다 %s" % str(GoStyle.audit_compact_padding(host)))
+	var glued := GoStyle.button("Glued", Callable(), GoStyle.Tone.COMPACT)
+	glued.name = "Glued"
+	var zero := StyleBoxFlat.new()
+	zero.set_content_margin_all(0)
+	glued.add_theme_stylebox_override(&"normal", zero)
+	var glyph_only := GoStyle.button("", Callable(), GoStyle.Tone.COMPACT)
+	glyph_only.add_theme_stylebox_override(&"normal", zero)
+	host.add_child(glued)
+	host.add_child(glyph_only)
+	var caught: Array[String] = GoStyle.audit_compact_padding(host, true)
+	check(caught.size() == 1 and caught[0].contains("Glued:normal"),
+		"검증 함수가 여백 0 판을 잡고 글자 없는 아이콘 버튼은 건너뛴다 %s" % str(caught))
+	check(GoStyle.audit_compact_padding(host).is_empty(), "덮어쓴 판은 기본으로 건너뛴다(의도한 예외)")
+	glued.queue_free()
+	glyph_only.queue_free()
 
 	var row := GoStyle.list_button(GoIconSet.USER, "Profile", Callable(), Color.TRANSPARENT, "Name and avatar", false)
 	host.add_child(row)
@@ -1009,6 +1032,69 @@ func _dialogs() -> void:
 	check(not refused, "이미 떠 있으면 두 번째 confirm 은 곧바로 false")
 	dialogs._open = false
 	check(not dialogs.is_open(), "닫힌 상태")
+
+	# 🔑 버튼 배치 — 기본 세로 · 한 줄 · 자동 · 1회용. 🛑 버튼 줄은 **처음 열 때** 생긴다(오토로드 입장 비용 0).
+	var fresh := GoDialogs.new()
+	check(fresh._actions == null and fresh._surface.footer.get_child_count() == 2, "만든 직후에는 버튼 줄 노드가 없다(버튼 둘만 footer 에)")
+	fresh.queue_free()
+	var shape := {}
+	var measure := func() -> void:
+		var cancel_rect := dialogs._cancel.get_global_rect()
+		var ok_rect := dialogs._ok.get_global_rect()
+		shape["vertical"] = dialogs._actions.vertical
+		shape["same_row"] = absf(cancel_rect.position.y - ok_rect.position.y) < 1.0
+		shape["cancel_left"] = cancel_rect.position.x < ok_rect.position.x
+		shape["gap_x"] = ok_rect.position.x - cancel_rect.end.x
+		shape["body_to_actions"] = minf(cancel_rect.position.y, ok_rect.position.y) - dialogs._body.get_global_rect().end.y
+		shape["bottom_gap"] = dialogs._surface.card.get_global_rect().end.y - maxf(cancel_rect.end.y, ok_rect.end.y)
+		shape["inset"] = float(dialogs._surface.content_inset())
+		shape["ok_min_w"] = dialogs._ok.custom_minimum_size.x
+	var answer_after_measure := func() -> void:
+		measure.call()
+		dialogs._ok.pressed.emit()
+
+	create_timer(0.1).timeout.connect(answer_after_measure)
+	await dialogs.confirm("Log out", "Do you want to log out?", "Log out", "Cancel")
+	check(dialogs._actions != null and shape["vertical"] and not shape["same_row"], "기본 배치는 세로 (%s)" % str(shape))
+
+	dialogs.action_layout = GoDialogs.ActionLayout.HORIZONTAL
+	dialogs.action_gap = 8
+	dialogs.body_gap = 20
+	create_timer(0.1).timeout.connect(answer_after_measure)
+	await dialogs.confirm("Log out", "Do you want to log out?", "Log out", "Cancel")
+	check(not shape["vertical"] and shape["same_row"] and shape["cancel_left"], "HORIZONTAL — 한 줄 · 취소가 앞 (%s)" % str(shape))
+	check(near(shape["gap_x"], 8.0, 1.5), "버튼 사이 간격 = action_gap (%.1f)" % shape["gap_x"])
+	check(near(shape["body_to_actions"], 20.0, 1.5), "본문 뒤 간격 = body_gap (%.1f)" % shape["body_to_actions"])
+	check(near(shape["bottom_gap"], shape["inset"], 1.5), "마지막 버튼 아래 여백 = 카드 안쪽 여백 (%.1f · %.1f)" % [shape["bottom_gap"], shape["inset"]])
+
+	# 🛑 좁은 화면은 구획 간격이 한 단계 작다 — 표면이 토큰 `gap` 으로 높이를 세면 본문 뒤가 그만큼 벌어진다.
+	dialogs._surface.compact = true
+	create_timer(0.1).timeout.connect(answer_after_measure)
+	await dialogs.confirm("Log out", "Do you want to log out?", "Log out", "Cancel")
+	check(near(shape["body_to_actions"], 20.0, 1.5), "좁은 화면에서도 본문 뒤 간격 = body_gap — 구획 간격을 실제 값으로 센다 (%.1f)" % shape["body_to_actions"])
+	check(near(shape["bottom_gap"], shape["inset"], 1.5), "좁은 화면에서도 카드가 필요보다 크지 않다 (%.1f · %.1f)" % [shape["bottom_gap"], shape["inset"]])
+	dialogs._surface.compact = false
+
+	dialogs.action_layout = GoDialogs.ActionLayout.AUTO
+	create_timer(0.1).timeout.connect(answer_after_measure)
+	await dialogs.confirm("Delete", "Sure?", "Permanently remove this character and every item it carries", "Keep the character as it is")
+	check(shape["vertical"], "AUTO — 반 폭에 한 줄로 안 들어가면 세로 (%s)" % str(shape))
+	var long_min: float = shape["ok_min_w"]
+	create_timer(0.1).timeout.connect(answer_after_measure)
+	await dialogs.confirm("Save", "Save now?", "OK", "No")
+	check(not shape["vertical"], "AUTO — 짧은 문구는 한 줄 (%s)" % str(shape))
+	check(float(shape["ok_min_w"]) < long_min, "긴 문구 다음 짧은 문구에서 버튼 최소 폭이 남지 않는다 (%.0f < %.0f)" % [shape["ok_min_w"], long_min])
+
+	dialogs.action_layout = GoDialogs.ActionLayout.VERTICAL
+	dialogs.set_next_action_layout(GoDialogs.ActionLayout.HORIZONTAL)
+	create_timer(0.1).timeout.connect(answer_after_measure)
+	await dialogs.confirm("Log out", "Do you want to log out?", "Log out", "Cancel")
+	check(not shape["vertical"], "set_next_action_layout — 이번 창만 한 줄")
+	create_timer(0.1).timeout.connect(answer_after_measure)
+	await dialogs.confirm("Log out", "Do you want to log out?", "Log out", "Cancel")
+	check(shape["vertical"], "다음 창은 다시 action_layout(세로)으로 돌아온다")
+	dialogs.action_gap = -1
+	dialogs.body_gap = -1
 	dialogs.queue_free()
 	await frames(2)
 

@@ -304,7 +304,7 @@ All tokens live in the **`GoHud`** theme type.
 |---|---|
 | Colors | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
 | Fill colors | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — for bars and other large areas; a theme without them falls back to the base name |
-| Constants (dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
+| Constants (dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `compact_padding_x`, `compact_padding_y`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
 | Styles | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |
 | Text roles | `micro`, `compact`, `caption`, `body`, `button`, `subtitle`, `title` |
 
@@ -361,7 +361,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 |---|---|---|
 | `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize |
 | `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer |
-| `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button |
+| `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically |
 | `GoForm` | MarginContainer | Forms that cap their width per breakpoint, avoid the virtual keyboard (and, with `avoid_hud`, floating HUD pieces) and guarantee label wrapping |
 | `GoScroll` | ScrollContainer | Touch-friendly scrolling; the scrollbar tucks into the card padding; RTL-aware |
 | `GoNotice` | PanelContainer | Snackbar that never takes input or focus |

@@ -406,11 +406,23 @@ func _update_density() -> void:
 	if title_label.get_meta(&"go_text_role", &"") != role: GoStyle.typography(title_label, role)
 
 
+## 카드 안쪽 여백(dp) — 좁은 화면이면 한 단계 작다. 🔑 `relayout` 뒤에 정해진다.
+func content_inset() -> int:
+	return _content_padding
+
+
+## 머리말·고정 줄·본문·바닥 사이의 **실제로 적용된** 간격(dp) — 좁은 화면이면 한 단계 작다.
+func section_gap() -> int:
+	return _column.get_theme_constant(&"separation")
+
+
 ## 내용이 요구하는 카드 높이(여백 + 머리말 + 고정 줄 + 본문 + 바닥).
 ## 🛑 `toolbar` 를 빠뜨리면 검색칸을 켠 시트가 딱 그만큼 짧아져 목록 마지막 줄이 잘린다.
+## 🛑 구획 간격은 **실제로 적용된 값**으로 센다 — 토큰 `gap` 을 박아 두었더니 좁은 화면(간격이 `gap_small`)에서
+##    카드가 구획마다 그 차이만큼 커져, 짧은 확인창의 본문과 버튼 사이가 벌어졌다.
 func _desired_height() -> float:
 	var desired := float(_content_padding * 2)
-	var gap := float(GoUi.metric(GoTheme.GAP))
+	var gap := float(section_gap())
 	if header.visible: desired += header.get_combined_minimum_size().y + gap
 	if toolbar.visible: desired += toolbar.get_combined_minimum_size().y + gap
 	desired += body.get_combined_minimum_size().y

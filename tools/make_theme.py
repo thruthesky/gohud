@@ -164,6 +164,8 @@ CONST = dict(
     touch=48, button_height=52,
     gap_tiny=4, gap_small=8, gap=12, gap_large=20,
     padding=20, padding_compact=12,
+    # 작은 버튼 판의 좌우·위아래 여백 — 표면 여백(`padding_compact`)과 따로 둔다. 형태 dict 가 덮어쓸 수 있다.
+    compact_padding_x=10, compact_padding_y=5,
     radius=12, radius_small=8, radius_large=18,
     screen_margin=16,
     scroll_deadzone=18, scroll_edge=4, scrollbar_width=6,
@@ -547,7 +549,8 @@ def build(pal, shape, variant, out_path):
     #    스킨 코드를 안 만지고도 "모서리를 더 각지게" · "버튼을 더 납작하게" 가 된다(2026-09-13 —
     #    테마마다 자유도를 높여 달라는 요청). 없으면 `CONST` 의 기본값이다.
     consts = dict(CONST)
-    for key in ("radius", "radius_small", "radius_large", "gap", "gap_small", "gap_large", "padding", "button_height"):
+    for key in ("radius", "radius_small", "radius_large", "gap", "gap_small", "gap_large", "padding", "button_height",
+                "compact_padding_x", "compact_padding_y"):
         if key in shape: consts[key] = shape[key]
     R, G = consts["radius"], consts["radius_small"]
     PAD = tuple(shape.get("button_padding", (16, 10, 16, 10)))
@@ -651,8 +654,11 @@ def build(pal, shape, variant, out_path):
         flat_shadow=(alpha(pal["shadow"], pal["shadow"][3] * 0.25), 3, (0, 1)))
 
     # 얇은 버튼 · 아이콘 버튼 · 목록 항목
-    box("compact_normal", bg=alpha(pal["surface_soft"], 0.85), border=alpha(pal["border"], 0.55), bw=1, radius=G, margins=(10, 5, 10, 5))
-    box("compact_hover", bg=hover_bg, border=alpha(pal["text"], 0.36), bw=1, radius=G, margins=(10, 5, 10, 5))
+    # 🔑 작은 버튼 판 여백은 토큰(`compact_padding_x/y`)에서 — 형태가 값을 바꿔도 판과 토큰이 늘 같다.
+    #    🛑 여기 숫자를 박으면 `GoStyle.audit_compact_padding` 이 보는 토큰과 실제 판이 갈라진다.
+    CPX, CPY = consts["compact_padding_x"], consts["compact_padding_y"]
+    box("compact_normal", bg=alpha(pal["surface_soft"], 0.85), border=alpha(pal["border"], 0.55), bw=1, radius=G, margins=(CPX, CPY, CPX, CPY))
+    box("compact_hover", bg=hover_bg, border=alpha(pal["text"], 0.36), bw=1, radius=G, margins=(CPX, CPY, CPX, CPY))
     box("icon_hover", bg=alpha(pal["text"], 0.10), radius=G)
     box("list_normal", bg=alpha(pal["surface_soft"], 0.55), radius=G, margins=(0, 0, 0, 0))
     box("list_hover", bg=alpha(pal["text"], 0.09), border=alpha(pal["border"], 0.5), bw=1, radius=G, margins=(0, 0, 0, 0))
