@@ -6,6 +6,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoStyle.choice_grid(items, selected, action, translate)`** lays out swatch, icon or text cards and keeps exactly
+  one picked — for character colours, avatars or difficulty cards, where `segmented` (text only) and `chip`/`avatar`
+  (not pressable) do not fit. An item is `{color, icon, texture, text, tooltip}`; a colour swatch is drawn with the
+  real colour and the picked cell gets a thick accent border instead of a fill, so the swatch colour never shifts
+  and the choice is visible without relying on colour. Cells keep the touch minimum, pass drags to scrolls, keep the
+  same inset in every state, and keep their own style inside a `GoForm`. New skin faces `GoSkin.choice_box(state)`
+  and `GoSkin.swatch_box(diameter, color)` let a skin restyle them.
 - **Compact button padding tokens.** `compact_padding_x` and `compact_padding_y` (`GoTheme.COMPACT_PADDING_X` /
   `COMPACT_PADDING_Y`) set the side and top/bottom content margin of the `GoCompactButton` style. They are separate
   from `padding_compact`, which insets cards and notices, so changing one no longer moves the other. Built-in themes

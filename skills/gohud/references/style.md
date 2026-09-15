@@ -87,6 +87,7 @@ DANGER tinted, DANGER_SOLID filled (irreversible confirm), BARE text-only, COMPA
 | `dropdown(text, items: Array, action := Callable(), translate := false)` | `MenuButton` | Items: `"text"` or `{"text", "icon": StringName, "disabled": bool}`; `action.call(index)` |
 | `radio_group(options: Array, selected := 0, translate := false)` | `VBoxContainer` | `column.get_meta("group")` is the `ButtonGroup`; `group.get_pressed_button().get_index()` |
 | `segmented(options: Array, selected := 0, action := Callable(), translate := false, compact := false)` | `HBoxContainer` | One pressed at a time; `action.call(index)`. `compact` for tight pills over a map (put it inside a `GoSkin.overlay_box()` panel) |
+| `choice_grid(items: Array, selected := 0, action := Callable(), translate := false)` | `HFlowContainer` | Pick one **swatch, icon or text card** (character colours, avatars, difficulty). Item: `{color, icon, texture, text, tooltip}` (a plain string = text card). Picked cell gets a thick accent border (the swatch colour is never tinted). `action.call(index)`; `meta("group")` is the `ButtonGroup`. Always give swatches a `tooltip` — it is their name |
 | `tabs(names: Array, selected := 0, translate := false)` | `TabBar` | Switch content on `tab_changed(index)` |
 | `breadcrumb(items: Array, action := Callable(), translate := false)` | `HBoxContainer` | Last item is the current page; `action.call(index)` |
 
