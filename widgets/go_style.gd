@@ -790,7 +790,10 @@ static func radio_group(options: Array, selected := 0, translate := false) -> VB
 
 ## 🔑 **분절 선택(Segmented / Toggle Group).** 나란한 버튼 중 하나만 눌린 상태로 남는다.
 ## 고르면 `action.call(index)`. `meta("group")` 은 `ButtonGroup`.
-static func segmented(options: Array, selected := 0, action := Callable(), translate := false) -> HBoxContainer:
+## `compact` 를 켜면 **좁은 크롬용 작은 칸**이다 — 칸 최소 폭이 터치 하한이고, 칸 판 여백이 작은 버튼 여백 토큰이다.
+## 🔑 지도·HUD 위 알약처럼 폭이 빠듯한 곳에 쓴다. 기본 칸(최소 폭 터치 ×1.5 · 카드 여백)은 폼·설정 화면용이다.
+static func segmented(options: Array, selected := 0, action := Callable(), translate := false,
+		compact := false) -> HBoxContainer:
 	var line := row(0)
 	line.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var group := ButtonGroup.new()
@@ -806,15 +809,49 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 		style_button(item, Tone.COMPACT)
 		# 🛑 자연 폭 — 줄바꿈을 켠 채 두면 최소 폭이 0 이 되어 글자가 세로로 쪼개진다(2026-09-12 데모: 파란 막대만 보였다).
 		natural_width(item)
-		item.custom_minimum_size.x = GoUi.metric(GoTheme.TOUCH) * 1.5
+		item.custom_minimum_size.x = GoUi.metric(GoTheme.TOUCH) * (1.0 if compact else 1.5)
 		# 양 끝만 둥글고 가운데는 각지게 — 한 덩어리로 읽힌다. 실제 모양은 스킨이 정한다.
+		# 🛑 작은 칸은 **모든 상태에 같은 여백**을 준다 — 상태마다 여백이 다르면 누를 때마다 칸 폭이 흔들린다.
+		# 🔑 작은 칸은 바깥 알약(`GoSkin.overlay_box`) **안에** 놓인다 — 고르지 않은 칸은 판을 그리지 않아
+		#    테두리가 두 겹으로 보이지 않고, 고른 칸만 강조색으로 채워진다.
 		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus"]:
-			item.add_theme_stylebox_override(state, GoUi.skin().segment_box(index, count, state))
+			var face := GoUi.skin().segment_box(index, count, state)
+			if compact: face = _compact_segment(face, state)
+			item.add_theme_stylebox_override(state, face)
 		item.add_theme_color_override(&"font_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
 		item.add_theme_color_override(&"font_hover_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
 		if action.is_valid(): item.pressed.connect(action.bind(index))
 		line.add_child(item)
 	return line
+
+
+## 작은 칸 판 — 여백은 작은 버튼 토큰, 고르지 않은 칸은 판을 그리지 않고, 포커스는 옅은 링, 나머지는 테두리 없이 칸마다 둥글게.
+## 🔑 스킨이 커스텀 판(사선·중세)을 줘도 규칙은 같다 — 고르지 않은 칸은 빈 판, 고른 칸·올린 칸은 스킨 판에 여백만 맞춘다.
+static func _compact_segment(face: StyleBox, state: StringName) -> StyleBox:
+	var result := face
+	if state == &"focus":
+		result = GoUi.box(GoTheme.BOX_FOCUS_SOFT)
+	elif state == &"normal":
+		result = GoUi.box(GoTheme.BOX_EMPTY)
+	else:
+		var flat := face as StyleBoxFlat
+		if flat != null:
+			flat.set_border_width_all(0)
+			flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
+			flat.shadow_size = 0
+	_compact_insets(result)
+	return result
+
+
+## 판 안쪽 여백을 작은 버튼 여백 토큰으로(좌우 · 위아래). 스킨이 준 커스텀 판에도 같은 속성이 있다.
+static func _compact_insets(face: StyleBox) -> void:
+	if face == null: return
+	var x := float(GoUi.metric(GoTheme.COMPACT_PADDING_X))
+	var y := float(GoUi.metric(GoTheme.COMPACT_PADDING_Y))
+	face.content_margin_left = x
+	face.content_margin_right = x
+	face.content_margin_top = y
+	face.content_margin_bottom = y
 
 
 ## 🔑 **탭 줄(Tabs).** 이름 배열로 `TabBar` 를 만든다. 내용 전환은 부르는 쪽이 `tab_changed` 로 한다

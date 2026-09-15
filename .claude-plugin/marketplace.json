@@ -1,0 +1,26 @@
+{
+  "name": "gohud",
+  "owner": {
+    "name": "JaeHo Song",
+    "url": "https://github.com/thruthesky"
+  },
+  "metadata": {
+    "description": "AI coding skill for gohud, the HUD & UI kit for Godot 4.6+. Build menus, HUDs, dialogs, sheets, forms and themes with gohud, preview its demo scenes, and list its features."
+  },
+  "plugins": [
+    {
+      "name": "gohud",
+      "source": "./",
+      "description": "Build Godot 4.6+ game UI with gohud: menus, HUD bars, quick slots, joystick, dialogs, bottom sheets, forms, notices, coach marks, presets (default, sci-fi, medieval), JSON themes, skins and icon sets. Includes /gohud:preview to launch the gallery or demo and /gohud:features to explain every feature.",
+      "author": {
+        "name": "JaeHo Song",
+        "url": "https://github.com/thruthesky"
+      },
+      "homepage": "https://thruthesky.github.io/gohud/",
+      "repository": "https://github.com/thruthesky/gohud",
+      "license": "MIT",
+      "category": "development",
+      "keywords": ["godot", "gdscript", "gohud", "hud", "game-ui", "ui-kit", "menu", "theme"]
+    }
+  ]
+}

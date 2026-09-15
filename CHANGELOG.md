@@ -22,12 +22,22 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   signatures.
 - `GoSurface.section_gap()` and `GoSurface.content_inset()` return the gap and card padding actually applied (both
   shrink one step on small screens).
+- `GoStyle.segmented(..., compact = true)` makes tight segments to sit inside a pill over a map or the game: each
+  segment is at least the touch size wide (instead of 1.5×), uses the compact button padding in every state so
+  pressing never changes its width, and only the selected segment is filled — unselected segments draw no face and
+  keyboard focus is a soft ring, so the pill and the segments never show two borders.
+- `GoSkin.overlay_box(h_margin, v_margin, fill_alpha)` is the pill face for controls laid over the game or a map —
+  the background color at 0.82 opacity with a 1 dp border, so text stays readable whatever is behind it.
 
 ### Fixed
 
 - `GoSurface` counted the gaps between header, body and footer with the `gap` token even on small screens, where the
   column uses `gap_small`, so short cards came out taller than their content and the space above the footer grew.
 - A reused `GoDialogs` kept the minimum button width of a long label when the next label was a single short word.
+- `GoSurface` placed centered and anchored cards at fractional positions (for example on a phone screen 349.09 units
+  wide). Godot stores a control's size as position plus size, so a 184-unit card became 183.99997, and the card
+  padding (a `MarginContainer`) rounds its child down to whole units — the body lost one unit and a one-line message
+  showed a scroll bar the first time a dialog opened. Card size and position are now whole units.
 
 ## [1.0.3] - 2026-09-14
 

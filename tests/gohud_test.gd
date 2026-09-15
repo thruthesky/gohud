@@ -926,6 +926,19 @@ func _surface() -> void:
 	check(a.card.size.y > short_height, "내용이 늘면 카드가 자란다 (%.0f → %.0f)" % [short_height, a.card.size.y])
 	check(a.card.size.y <= area.size.y * GoUi.config.surface_max_height_ratio + 1.0,
 		"높이 상한 %d%% (%.0f ≤ %.0f)" % [roundi(GoUi.config.surface_max_height_ratio * 100), a.card.size.y, area.size.y * GoUi.config.surface_max_height_ratio])
+	# 🛑 카드 크기·위치는 정수 — 가운데 정렬 위치가 소수면 크기가 "위치 + 크기" 로 저장되며 184 가 183.99997 이 되고,
+	#    안쪽 여백(MarginContainer)이 자식 크기를 정수로 내려 본문 칸이 1px 모자랐다(한 줄 본문 옆 스크롤바 · 2026-09-15 라리엔
+	#    폰 세로 창 실측 — 헤드리스 논리 크기로는 재현되지 않았다). 판정하는 동안만 홀수 상한을 줘 소수 위치가 나오게 한다.
+	var saved_max_height := a.max_height
+	var saved_max_width := a.max_width
+	a.max_height = 301.0
+	a.max_width = 301.0
+	a.relayout()
+	check(a.card.size == a.card.size.round() and a.card.position == a.card.position.round(),
+		"카드 크기·위치는 정수 (pos %s size %s)" % [str(a.card.position), str(a.card.size)])
+	a.max_height = saved_max_height
+	a.max_width = saved_max_width
+	a.relayout()
 
 	var desired := a._desired_height()
 	a.toolbar.add_child(GoStyle.line_edit("search"))
@@ -1960,6 +1973,31 @@ func _widgets() -> void:
 	check((seg.get_meta(&"group") as ButtonGroup).get_pressed_button() == seg.get_child(1) and picked[0] == 1, "segmented: 하나만 눌림 · 콜백 index")
 	check((seg.get_child(0) as Button).autowrap_mode == TextServer.AUTOWRAP_OFF and (seg.get_child(0) as Control).size.x >= 40, "segmented: 줄바꿈 끔 · 자연 폭(글자가 세로로 쪼개지지 않는다)")
 	seg.queue_free()
+	# 🔑 작은 칸 — 좁은 크롬(지도 위 알약)용. 칸 최소 폭 = 터치, 칸 판 여백 = 작은 버튼 토큰, 눌린 칸만 강조색.
+	var tight := GoStyle.segmented(["Nearby", "Overview"], 1, Callable(), false, true)
+	root.add_child(tight); await frames(1)
+	var tight_first := tight.get_child(0) as Button
+	var tight_face := tight_first.get_theme_stylebox(&"normal")
+	check(near(tight_first.custom_minimum_size.x, GoUi.metric(GoTheme.TOUCH)) and near(tight_face.get_margin(SIDE_LEFT), GoUi.metric(GoTheme.COMPACT_PADDING_X))
+		and near(tight_face.get_margin(SIDE_TOP), GoUi.metric(GoTheme.COMPACT_PADDING_Y)),
+		"segmented(compact): 칸 최소 폭 터치 · 판 여백 = 작은 버튼 토큰 (%.0f · %.0f)" % [tight_first.custom_minimum_size.x, tight_face.get_margin(SIDE_LEFT)])
+	var picked_face := (tight.get_child(1) as Button).get_theme_stylebox(&"pressed") as StyleBoxFlat
+	check(picked_face == null or picked_face.bg_color.is_equal_approx(GoUi.color(GoTheme.ACCENT)), "segmented(compact): 눌린 칸은 강조색으로 채운다")
+	check(near(tight_first.get_theme_stylebox(&"pressed").get_margin(SIDE_LEFT), tight_face.get_margin(SIDE_LEFT)),
+		"segmented(compact): 상태가 바뀌어도 칸 여백이 같다(누를 때 폭이 흔들리지 않는다)")
+	var idle_face := tight_first.get_theme_stylebox(&"normal")
+	check(idle_face is StyleBoxEmpty or (idle_face is StyleBoxFlat and (idle_face as StyleBoxFlat).bg_color.a < 0.01 and (idle_face as StyleBoxFlat).border_width_left == 0),
+		"segmented(compact): 고르지 않은 칸은 판을 그리지 않는다 — 바깥 알약 안에서 테두리가 두 겹이 되지 않는다")
+	var focus_face := tight_first.get_theme_stylebox(&"focus")
+	check(focus_face != null and near(focus_face.get_margin(SIDE_LEFT), GoUi.metric(GoTheme.COMPACT_PADDING_X)) and not (focus_face is StyleBoxEmpty),
+		"segmented(compact): 키보드 포커스는 옅은 링으로 보인다 · 여백 같음")
+	tight.queue_free()
+	var glass: StyleBox = GoUi.skin().overlay_box(4, 2)
+	check(near(glass.get_margin(SIDE_LEFT), 4.0) and near(glass.get_margin(SIDE_TOP), 2.0), "overlay_box: 준 여백 그대로")
+	var glass_default: StyleBox = GoUi.skin().overlay_box()
+	check(near(glass_default.get_margin(SIDE_LEFT), GoUi.metric(GoTheme.COMPACT_PADDING_X)), "overlay_box: 여백을 안 주면 작은 버튼 여백 토큰")
+	var glass_flat := glass_default as StyleBoxFlat
+	check(glass_flat == null or (is_equal_approx(glass_flat.bg_color.a, 0.82) and glass_flat.border_width_left == 1), "overlay_box: 바탕 불투명도 0.82 · 테두리 1")
 	var bar := GoStyle.tabs(["One", "Two", "Three"], 1)
 	check(bar is TabBar and bar.tab_count == 3 and bar.current_tab == 1 and bar.custom_minimum_size.y == GoUi.metric(GoTheme.TOUCH), "tabs: 3탭 · 둘째 선택 · 터치 높이")
 	var crumbs := GoStyle.breadcrumb(["Home", "Inventory", "Weapons"])

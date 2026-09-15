@@ -387,9 +387,12 @@ func relayout() -> void:
 	var width := maxf(1.0, minf(cap_width, area.size.x * width_ratio))
 	var height := maxf(1.0, minf(cap_height, area.size.y * minf(ratio, settings.surface_max_height_ratio)))
 	if fit_content: height = maxf(1.0, minf(height, _desired_height()))
-	card.size = Vector2(width, height)
+	# 🛑 크기·위치는 정수로 준다 — 소수 위치(가운데 정렬 · 논리 349.09 폭)면 크기가 "위치 + 크기" 로 저장되며 184 가 183.99997 이 되고,
+	#    카드 안쪽 여백(MarginContainer)이 자식 크기를 정수로 내려 본문 칸이 1px 모자랐다 — 첫 확인창의 한 줄 본문 옆에 스크롤바가 떴다
+	#    (2026-09-15 라리엔 폰 세로 창 실측 · 헤드리스 논리 크기로는 재현되지 않는다).
+	card.size = Vector2(width, height).round()
 	var y := area.position.y + (area.size.y - card.size.y) * (1.0 if placement == Placement.BOTTOM else 0.5)
-	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y)
+	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y).round()
 
 
 ## 좁아지면 여백과 제목 크기를 한 단계 줄인다 — 작은 화면에서 내용이 들어갈 자리를 만든다.
@@ -454,12 +457,13 @@ func _relayout_anchor(area: Rect2) -> void:
 	var cap := minf(anchor_max_height, area.size.y * GoUi.config.surface_max_height_ratio)
 	var height := clampf(above if opens_up else below, 0, cap)
 	if fit_content: height = minf(height, _desired_height())
-	card.size = Vector2(maxf(1, width), maxf(1, height))
+	card.size = Vector2(maxf(1, width), maxf(1, height)).round()
 	# 고정 머리말·바닥이 남는 공간보다 크면 카드가 최소 크기로 커진다 — 그때는 화면 안으로 민다.
 	var y := anchor.position.y - gap - card.size.y if opens_up else anchor.end.y + gap
 	y = clampf(y, area.position.y + edge, maxf(area.position.y + edge, area.end.y - edge - card.size.y))
 	x = clampf(x, area.position.x + edge, maxf(area.position.x + edge, area.end.x - edge - card.size.x))
-	card.position = Vector2(x, y)
+	# 🛑 정수 — 소수 위치는 크기를 183.99997 로 만들어 본문 칸 1px 를 잃는다(`relayout` 주석).
+	card.position = Vector2(x, y).round()
 
 
 func _process(_delta: float) -> void:

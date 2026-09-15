@@ -2,6 +2,8 @@
 # 🛑 스토어에 올리는 ZIP 은 이 파일이 아니라 tools/package.sh 가 만든다 — 두 목록을 함께 고친다.
 .env/          export-ignore
 .claude/       export-ignore
+.claude-plugin/ export-ignore
+skills/        export-ignore
 .review/       export-ignore
 docs/          export-ignore
 index.html     export-ignore

@@ -179,6 +179,28 @@ func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT) -> St
 	return flat
 
 
+## 게임 화면(지도·월드) **위에 얹는 알약 판** — 뒤 그림이 무엇이든 글자가 읽히게 바탕색으로 어둡게 깔고 테두리를 얇게 둔다.
+## `h_margin`·`v_margin` 은 판 안쪽 여백(dp) — 음수면 작은 버튼 여백 토큰. `fill_alpha` 는 바탕의 불투명도.
+## 🔑 **판 안에 또 판을 넣지 않는다** — 이 알약 안의 버튼은 `GoBareButton` 이나 `segmented()` 칸으로 두어
+##    테두리가 두 겹으로 겹쳐 보이지 않게 한다.
+func overlay_box(h_margin := -1, v_margin := -1, fill_alpha := 0.82) -> StyleBox:
+	var style := surface_box(GoTheme.BOX_HUD)
+	var flat := style as StyleBoxFlat
+	if flat != null:
+		flat.bg_color = Color(GoUi.color(GoTheme.BACKGROUND), fill_alpha)
+		flat.border_color = Color(GoUi.color(GoTheme.BORDER), 0.9)
+		flat.set_border_width_all(1)
+		flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS))
+		flat.shadow_size = 0
+	var h := float(GoUi.metric(GoTheme.COMPACT_PADDING_X) if h_margin < 0 else h_margin)
+	var v := float(GoUi.metric(GoTheme.COMPACT_PADDING_Y) if v_margin < 0 else v_margin)
+	style.content_margin_left = h
+	style.content_margin_right = h
+	style.content_margin_top = v
+	style.content_margin_bottom = v
+	return style
+
+
 ## 원형 배지·아바타 테두리 — accent 를 옅게 채우고 같은 색 링을 두른다.
 func disc_box(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> StyleBox:
 	var style := surface_box(GoTheme.BOX_HUD, accent)

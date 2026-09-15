@@ -84,6 +84,12 @@ sheet.footer().visible = true</code></pre>
     keeps white text on red. The tone is re-applied on every call because one window is reused, and a second
     <code>confirm()</code> while one is open returns <code>false</code> at once. <code>confirm_key()</code> takes
     translation keys.</p>
+  <p><b>Button layout.</b> <code>action_layout</code> is <code>VERTICAL</code> by default (safe for long translations),
+    <code>HORIZONTAL</code> for one row with half the width each, or <code>AUTO</code>, which uses one row only when both
+    labels fit half the card on a single line and stacks them otherwise. <code>action_gap</code> is the space between
+    the buttons and <code>body_gap</code> the space above them — make it wider than the button gap so the question and
+    the choice read as two parts. For one dialog only, call <code>set_next_action_layout()</code> before opening it.
+    The row is built when a dialog first opens, so an autoloaded <code>GoDialogs</code> adds nothing at startup.</p>
 
   <h3><code>GoForm</code> — a width-capped form</h3>
   <div class="note warn">

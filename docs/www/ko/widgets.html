@@ -85,6 +85,11 @@ sheet.footer().visible = true</code></pre>
     어두워지다 결국 검은 글자로 보이지만, 채워진 버튼은 빨간 판에 흰 글자를 지킨다. 창 하나를 재사용하므로 부를 때마다
     색을 다시 입히고, 이미 떠 있을 때 부른 <code>confirm()</code> 은 곧바로 <code>false</code> 다.
     번역 키로 물을 때는 <code>confirm_key()</code>.</p>
+  <p><b>버튼 배치.</b> <code>action_layout</code> 기본은 <code>VERTICAL</code>(긴 번역에도 안전)이고, <code>HORIZONTAL</code> 은
+    반씩 한 줄, <code>AUTO</code> 는 두 문구가 반 폭에 한 줄로 들어갈 때만 한 줄로 두고 아니면 세로로 접는다.
+    <code>action_gap</code> 은 버튼 사이, <code>body_gap</code> 은 본문과 버튼 줄 사이 간격이다 — 버튼 사이보다 넓게 두면
+    "질문" 과 "고르기" 가 두 덩어리로 읽힌다. 창 하나만 다르게 하려면 열기 직전에 <code>set_next_action_layout()</code>.
+    버튼 줄은 처음 열 때 지어지므로 오토로드로 둔 <code>GoDialogs</code> 는 부팅 비용이 늘지 않는다.</p>
 
   <h3><code>GoForm</code> — 폭을 제한하는 폼</h3>
   <p>브레이크포인트마다 최대 폭이 다르고, 가상 키보드가 올라오면 입력 칸이 그 위로 온다.</p>

@@ -76,8 +76,9 @@ done
 # `res://addons/gohud` 를 문자열로 들고 있어 오탐이 난다 — 배포본에도 없는 폴더다.
 # `examples/demo/` 는 자체 project.godot 을 가진 별도 프로젝트라 그 안의 `res://` 는 데모 루트를 가리킨다.
 # `examples/usage/` 는 애드온 사본을 설치해 사용하는 프로젝트이며 배포본에서 제외한다.
+# `skills/` 는 AI 에이전트 스킬(Claude Code 플러그인)이다 — 템플릿이 호스트 프로젝트의 `res://ui/…` 를 예로 든다. 배포본에도 없다.
 LEAKS="$(grep -rnE 'res://' "$ADDON" --include='*.gd' --include='*.tscn' --include='*.tres' --include='*.cfg' \
-  | grep -vE '/(tests|tools)/|/examples/(demo|usage)/' \
+  | grep -vE '/(tests|tools|skills)/|/examples/(demo|usage)/' \
   | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' \
   | grep -oE '^[^:]+:[0-9]+:|res://[A-Za-z0-9_./%-]+' \
   | awk 'index($0, "res://") == 1 { if (index($0, "res://addons/gohud") != 1) print prev $0; next } { prev = $0 }' || true)"
@@ -107,6 +108,8 @@ set -- \
   --exclude='.env' \
   --exclude='.git*' \
   --exclude='.claude' \
+  --exclude='/.claude-plugin/' \
+  --exclude='/skills/' \
   --exclude='.review' \
   --exclude='.playwright-mcp' \
   --exclude='docs' \
