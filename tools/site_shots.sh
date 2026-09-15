@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 사이트(`docs/www/`) 촬영 — 페이지마다 데스크톱·폰 폭으로 한 장씩 찍는다.
+# 사이트(`www/`) 촬영 — 페이지마다 데스크톱·폰 폭으로 한 장씩 찍는다.
 #
 #   bash addons/gohud/tools/site_shots.sh /tmp/site_shots            # 6 페이지 × 2 폭 = 12 장
 #   bash addons/gohud/tools/site_shots.sh /tmp/site_shots theming    # 이름에 theming 이 든 페이지만
@@ -37,7 +37,7 @@ SIZES="desktop:1100x9000:1 phone:400x14000:2"
 shots=0; failed=0
 for page in index theming widgets ko/index ko/theming ko/widgets; do
   [ -n "$ONLY" ] && [[ "$page" != *"$ONLY"* ]] && continue
-  file="$ADDON/docs/www/$page.html"
+  file="$ADDON/www/$page.html"
   [ -f "$file" ] || { echo "🛑 없음: $file"; failed=$((failed+1)); continue; }
   for spec in $SIZES; do
     tag="${spec%%:*}"; rest="${spec#*:}"; size="${rest%%:*}"; scale="${rest#*:}"
@@ -47,7 +47,7 @@ for page in index theming widgets ko/index ko/theming ko/widgets; do
     url="file://$file"; window="$size"
     if [ -n "$DARK" ]; then
       copy="$PROFILES/$name.src.html"
-      python3 - "$file" "$copy" "$ADDON/docs/www/site/style.css" <<'PY' || { echo "🛑 다크 사본 실패: $name"; failed=$((failed+1)); continue; }
+      python3 - "$file" "$copy" "$ADDON/www/site/style.css" <<'PY' || { echo "🛑 다크 사본 실패: $name"; failed=$((failed+1)); continue; }
 import re, sys
 src, dst, css = sys.argv[1:4]
 text = open(src, encoding="utf-8").read()

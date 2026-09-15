@@ -987,10 +987,24 @@ func _sheet() -> void:
 	check(sheet.visible and sheet.surface.placement == GoSurface.Placement.BOTTOM, "시트는 아래에서")
 	sheet.set_back(func() -> void: pass)
 	check(sheet.surface.back_button.visible, "set_back 으로 뒤로 버튼")
+	sheet.toolbar().add_child(GoStyle.line_edit("Search"))
 	sheet.toolbar().visible = true
+	var kept := Label.new()                      # 시트 전체가 쓰는 자리(스낵바 등) — footer().add_child
+	sheet.footer().add_child(kept)
+	var page_close := sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))
+	check(sheet.footer().visible and page_close.get_parent() == sheet.footer(), "add_footer() 는 바닥 줄에 넣고 켠다")
 	sheet.open("Other")
 	check(not sheet.surface.back_button.visible, "open() 은 이전 페이지의 뒤로 버튼을 끈다")
-	check(not sheet.toolbar().visible, "open() 은 고정 줄을 끈다")
+	check(not sheet.toolbar().visible and sheet.toolbar().get_child_count() == 0, "open() 은 고정 줄을 비우고 끈다")
+	# 🛑 페이지 버튼만 치운다 — 끄기만 하면 페이지마다 닫기를 더하는 화면에서 버튼이 쌓였고(2026-09-15),
+	#    통째로 비우면 한 번 넣고 계속 쓰는 스낵바가 사라진다.
+	check(not sheet.footer().visible and page_close.get_parent() == null and kept.get_parent() == sheet.footer(),
+		"open() 은 add_footer() 로 넣은 것만 떼고 footer().add_child() 로 넣은 노드는 남긴다 (자식 %d)"
+		% sheet.footer().get_child_count())
+	sheet.add_footer(GoStyle.button("Close", sheet.close))
+	sheet.open("Third")
+	check(sheet.footer().get_child_count() == 1,
+		"페이지를 거듭 열어도 바닥 버튼이 쌓이지 않는다 (자식 %d)" % sheet.footer().get_child_count())
 	var closed := [false]
 	sheet.closed.connect(func() -> void: closed[0] = true)
 	sheet.close()
@@ -1013,6 +1027,30 @@ func _dialogs() -> void:
 	var yes: bool = await dialogs.confirm("Delete", "Delete \"{name}\"?", "", "", "", {"name": "Aria"})
 	check(yes, "confirm → 확인")
 	check(str(seen[0]) == "Delete \"Aria\"?", "args 가 {name} 을 채운다 (%s)" % str(seen[0]))
+	# 🛑 **제목도 같은 args 로 채운다** — 본문만 채우면 `Drop {item}?` 가 글자 그대로 보였다(2026-09-15).
+	var titled := ["", -1]
+	var read_title := func() -> void:
+		titled[0] = dialogs._surface.title_label.text
+		titled[1] = dialogs._surface.title_label.auto_translate_mode
+		dialogs._ok.pressed.emit()
+	create_timer(0.05).timeout.connect(read_title)
+	await dialogs.confirm("Drop {item}?", "Drop {count} × {item}?", "", "", "", {"item": "Potion", "count": 3})
+	check(str(titled[0]) == "Drop Potion?", "args 가 제목의 {item} 도 채운다 (%s)" % str(titled[0]))
+	var probe_locale := TranslationServer.get_locale()
+	var drop := Translation.new()
+	drop.locale = "xx"
+	drop.add_message("probe_drop_title", "Drop {item}?")
+	TranslationServer.add_translation(drop)
+	TranslationServer.set_locale("xx")
+	create_timer(0.05).timeout.connect(read_title)
+	await dialogs.confirm_key("probe_drop_title", "probe_drop_body", "", "", "", {"item": "Potion"})
+	check(str(titled[0]) == "Drop Potion?", "번역 키 제목은 번역한 뒤 args 로 채운다 (%s)" % str(titled[0]))
+	create_timer(0.05).timeout.connect(read_title)
+	await dialogs.confirm_key("probe_drop_title", "probe_drop_body")
+	check(str(titled[0]) == "probe_drop_title" and int(titled[1]) == Node.AUTO_TRANSLATE_MODE_ALWAYS,
+		"args 가 없는 키 제목은 지금처럼 키를 두고 자동 번역한다 (%s · 모드 %d)" % [str(titled[0]), int(titled[1])])
+	TranslationServer.set_locale(probe_locale)
+	TranslationServer.remove_translation(drop)
 	check(dialogs._ok.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON,
 		"보통 확인은 강조 버튼 (%s)" % dialogs._ok.theme_type_variation)
 
@@ -1723,6 +1761,34 @@ func _form() -> void:
 	check(keyed.get_theme_constant(&"margin_bottom") == bottom_before, "키보드가 내려가면 되돌아온다")
 	keyed.queue_free()
 	await frames(1)
+
+	# ── 코드로 조립한 폼의 뒤로가기 버튼 ──────────────────────────────
+	# 🛑 `_ready` 가 스크롤을 테두리 칸으로 옮긴다. 엔진 `reparent()` 는 스크롤과 **같은 owner** 인 자손만 owner 를
+	#    되돌리므로, 버튼만 소유한 폼은 owner 가 지워져 `%BackButton` 을 못 찾고 Android 뒤로가기가 조용히 꺼졌다
+	#    (2026-09-15 실측). 씬 루트가 전부 소유하는 `.tscn` 에서는 드러나지 않아 코드 조립으로만 잡힌다.
+	for mode in ["form", "holder"]:
+		var holder := Control.new()
+		var coded := GoForm.new()
+		holder.add_child(coded)
+		var coded_scroll := GoScroll.new()
+		coded.add_child(coded_scroll)
+		var coded_column := VBoxContainer.new()
+		coded_scroll.add_child(coded_column)
+		var back := Button.new()
+		back.name = "BackButton"
+		back.text = "Back"
+		coded_column.add_child(back)
+		var keeper: Node = coded if mode == "form" else holder
+		if mode == "holder": coded.owner = holder          # 폼과 버튼만 소유 — 스크롤·칸은 owner 없음
+		back.owner = keeper
+		back.unique_name_in_owner = true
+		root.add_child(holder)
+		await frames(2)
+		check(coded_scroll.get_parent() != coded and back.owner == keeper and coded._back_button == back and coded._holds_back,
+			"코드 폼(owner=%s) — 스크롤을 옮긴 뒤에도 %%BackButton 이 남아 뒤로가기를 잡는다 (옮김 %s · owner 유지 %s · 찾음 %s · 잡음 %s)"
+			% [mode, coded_scroll.get_parent() != coded, back.owner == keeper, coded._back_button == back, coded._holds_back])
+		holder.queue_free()
+		await frames(1)
 	# ── 떠 있는 HUD 피하기 ──────────────────────────────────────────────
 	# 🛑 **겹침은 눈으로만 잡혀 왔다.** 스크롤 본문이 체력바 뒤로 흘러 글자끼리 뒤섞인 것도,
 	#    입력칸이 퀵슬롯에 가려진 것도 스크린샷을 열어야 보였다(2026-09-13). 사각형이 겹치는지는

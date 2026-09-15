@@ -1,7 +1,7 @@
 # Surfaces — GoSurface, GoSheet, GoDialogs, GoForm, GoScroll
 
 Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`, `widgets/go_form.gd`,
-`widgets/go_scroll.gd`. Web: https://thruthesky.github.io/gohud/docs/www/widgets.html#surfaces
+`widgets/go_scroll.gd`. Web: https://thruthesky.github.io/gohud/widgets.html#surfaces
 
 ## Contents
 
@@ -83,18 +83,20 @@ Sub-pages inside one surface: `surface.clear()`, rebuild `body`, `surface.set_ti
 |---|---|
 | signals | `closed` · `page_changed` |
 | vars | `body` (scrolls) · `surface` · `dismissable` (true — set false for trade/irreversible screens) · `height_ratio` (0.6) |
-| `open(title)` / `open_key(key)` | Shows the sheet, clears `body`, hides back button, **frees toolbar children**, hides toolbar and footer |
+| `open(title)` / `open_key(key)` | Shows the sheet, clears `body`, hides back button, **frees toolbar children and `add_footer()` nodes**, hides toolbar and footer |
 | `set_title(text)` | Title only — for list → detail inside one sheet |
 | `toolbar()` / `footer()` | Sticky rows under the header / at the bottom. Set `.visible = true` after adding |
+| `add_footer(node) -> Node` | Adds to **this page's** footer and shows it; the next `open()` removes it (gohud newer than 1.0.3) |
 | `set_back(callable)` · `clear()` · `close()` | `close()` hides (does not free) and emits `closed` |
 
-🛑 `open()` does **not** free `footer()` children — it only hides the footer. Re-opening and adding another
-Close button stacks duplicates. Clear it yourself:
+🛑 `open()` only **hides** `footer()`: children added with `footer().add_child()` stay across pages — right for a
+sheet-wide snackbar, wrong for a Close button added on every open (they stack). Add per-page buttons with
+`add_footer()`; the next `open()` removes them. gohud 1.0.3 and older have no `add_footer()` — there, remove the old
+footer children first (`remove_child` then `queue_free`, so counts and layout update at once).
 
 ```gdscript
 func show_inventory(items: Array) -> void:
-	sheet.open("Inventory")
-	for old in sheet.footer().get_children(): old.queue_free()
+	sheet.open("Inventory")                          # clears body, toolbar and add_footer() nodes
 	sheet.toolbar().add_child(GoStyle.line_edit("Search…"))
 	sheet.toolbar().visible = true
 	if items.is_empty():
@@ -102,8 +104,7 @@ func show_inventory(items: Array) -> void:
 	for item in items:
 		sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
 			Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
-	sheet.footer().add_child(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))
-	sheet.footer().visible = true
+	sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))   # shows the footer too
 
 func show_item(item) -> void:
 	sheet.clear()
@@ -128,7 +129,8 @@ func show_item(item) -> void:
 - `destructive = true` draws the confirm button as `Tone.DANGER_SOLID` (filled red, legible on light themes).
 - A second `confirm()` while one is open returns `false` immediately; `alert()` returns immediately.
 - The header X counts as Cancel on `confirm`, as OK on `alert`.
-- 🛑 `{name}` placeholders are filled only through `args` — `tr()` alone leaves `{name}` on screen.
+- 🛑 `{name}` placeholders are filled only through `args` — `tr()` alone leaves `{name}` on screen. The same `args`
+  fill the title (after translation for `*_key`); gohud 1.0.3 and older fill only the body — build the title there.
 
 ```gdscript
 @onready var dialogs := GoDialogs.new()
@@ -154,7 +156,7 @@ using `form_max_width_*` per breakpoint; bottom margin grows with the virtual ke
 | structure | `GoForm` → `GoScroll` (node **name "Scroll"**, which `GoScroll.new()` already sets) → `VBoxContainer` |
 | `scroll` | Found in `_ready`; when the keyboard opens the focused field scrolls into view |
 | `@export min_side_margin` (-1 → `padding`) · `min_edge_margin` (-1 → `screen_margin`) | |
-| `@export route_back_button` (true) | Android Back presses the descendant with unique name `%BackButton` (hides the keyboard first) |
+| `@export route_back_button` (true) | Android Back presses the node with unique name `%BackButton`, looked up once in `_ready` (hides the keyboard first) |
 | `@export avoid_hud` (false) | Keep content clear of visible `GoHudAnchor`s with `reserve_space`, stepping the cheapest direction |
 
 It applies `GoStyle.form()` to every descendant, now and later: labels wrap, buttons get `button_height`
@@ -164,11 +166,14 @@ and word-safe wrapping, plain `Button`s get the normal style, `LineEdit`s get `b
 a scroll added afterwards is never found, so keyboard follow and the scrollbar gutter are lost (descendants
 still get styled).
 
-🛑 `%BackButton` must be owned by an **ancestor of the form** — a `.tscn` root does this automatically. In code,
-`owner = form` does **not** work: `GoForm._ready` moves the scroll branch into its gutter frame
-(`use_panel_edge`) and that reparent clears an owner equal to the form (measured on 4.7.2: owner becomes null,
-back routing silently off). Setting the owner after `add_child` is too late — the form looks it up once in `_ready`.
-Assemble the screen in a holder that is not in the tree yet and let the holder own the button:
+🛑 `%BackButton` is looked up **once in `_ready`** among the nodes owned by the form or by the form's owner, so a
+`.tscn` (whose root owns every node) just works. In code, name the button `BackButton`, add it to the column, then set `back.owner = form` and
+`back.unique_name_in_owner = true` before `add_child(form)` — setting them after `add_child` is too late.
+
+gohud 1.0.3 and older cleared that owner: `GoForm._ready` moves the scroll into its edge frame (`use_panel_edge`),
+and Godot's `reparent()` keeps only the owners shared with the moved node, so `owner = form` — or a holder owning only
+the form and the button — silently switched Back routing off (measured on 4.7.2). Newer versions restore the owners.
+A holder that owns the **whole branch** works on every version, which is what this example does:
 
 ```gdscript
 func build_login() -> void:
@@ -192,9 +197,10 @@ func build_login() -> void:
 	var back := GoStyle.button("Back", _go_back, GoStyle.Tone.BARE)
 	back.name = "BackButton"
 	column.add_child(back)
-	back.owner = form                   # %BackButton is looked up among nodes the form owns…
-	back.unique_name_in_owner = true    # …so set both BEFORE the form enters the tree
-	add_child(form)                     # _ready runs here: finds Scroll and %BackButton
+	for node in holder.find_children("*", "", true, false):
+		node.owner = holder                         # the whole branch, like a scene root
+	back.unique_name_in_owner = true
+	add_child(holder)                               # _ready runs here: finds Scroll and %BackButton
 ```
 
 ## 5. GoScroll

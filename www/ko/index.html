@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
-<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/docs/www/">
-<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/docs/www/ko/">
-<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/docs/www/">
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 HUD·UI 키트</title>
 <meta name="description" content="Godot 4.6+ 용 커스터마이징 HUD·UI 키트. 떠 있는 창·바텀 시트·확인창·폼·스낵바·HUD 막대·퀵슬롯·가상 조이스틱을 테마 한 장으로 굴리고, 기본·sci-fi·중세 프리셋 여섯으로 생김새를 바꾼다.">
@@ -22,6 +22,7 @@
       <a href="#start">빠른 시작</a>
       <a href="#presets">프리셋</a>
       <a href="#examples">예제</a>
+      <a href="#ai">AI 명령</a>
       <a href="theming.html">생김새 ↗</a>
       <a href="widgets.html">위젯 ↗</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
@@ -416,6 +417,55 @@ bash examples/demo/run.sh -- --explore=surfaces         # 위젯 하나를 탐�
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 전체 시연 1080p / 60fps 녹화</code></pre>
   <p>데모에서 <b>C</b> 는 촬영 모드, <b>F11</b> 은 전체 화면, <b>Space</b> 는 일시정지(탐색 중에는 현재 위젯 시연),
     화살표는 장면 이동, <b>Esc</b> 는 시작 화면이다.</p>
+  <p>AI 코딩 에이전트를 쓴다면 <a href="#ai">세 가지 모두 명령 한 줄로 열 수 있다 →</a></p>
+</section>
+
+<section id="ai">
+  <h2>AI 코딩 에이전트에서 바로 열어 보기</h2>
+  <p class="sub">
+    gohud 는 슬래시 명령이 든 Claude Code 플러그인을 함께 준다. 명령 하나를 치면 갤러리나 데모가 Godot 창으로
+    뜬다 — 에디터를 켤 필요도, 씬을 찾을 필요도 없다.
+  </p>
+
+  <h3>명령은 한 번만 설치한다</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# 설치 뒤 Claude Code 를 다시 시작한다</code></pre>
+  <p>Codex 같은 다른 에이전트도 같은 스킬을 쓸 수 있다 — 이 저장소의 <code>skills/gohud</code> 를 에이전트의
+    스킬 폴더에 복사한다.</p>
+
+  <h3><code>/gohud:preview</code> — 위젯 갤러리</h3>
+  <p>모든 위젯, 프리셋 여섯을 고르는 선택기, 아이콘 전체가 있는 갤러리를 연다. Godot 프로젝트 안에서 치면
+    <b>그 프로젝트의</b> <code>addons/gohud</code> 를 쓰고, 없으면 플러그인에 든 사본이나 새로 받은 저장소를 쓴다.
+    일회용 샌드박스 프로젝트에서 돌기 때문에 내 프로젝트의 오토로드·임포트 캐시는 건드리지 않고, 창은 직접 닫을
+    때까지 떠 있다.</p>
+
+  <h3><code>/gohud:preview demo</code> — 15장면 안내 투어</h3>
+  <p>데모를 시작 화면으로 연다. <b>Start demo</b> 는 실제 입력으로 진행하는 자동 시연, <b>Explore widgets</b> 는
+    위젯 하나를 직접 만져 보는 탐색 모드다. <a href="#examples">예제</a>에 적은 단축키가 여기서도 그대로 통한다.</p>
+
+  <h3>그 밖에도 여러 명령을 쓸 수 있다</h3>
+  <table>
+    <thead><tr><th>명령</th><th>하는 일</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>중세 프리셋의 캐릭터 정보·가방·퀘스트 일지</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>데모를 장면 하나로 바로 연다 — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>프리셋 하나를 입힌 갤러리. <code>--phone</code> 을 붙이면 390×844 폰 창, <code>--size 1920x1080</code> 이면 원하는 크기로</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>내 프로젝트의 씬을 그 프로젝트 안에서 실행</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>열 수 있는 대상·프리셋 이름·데모 장면 키 전부</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>창 없이 도는 헤드리스 점검 — 스크립트 오류가 나면 실패</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>gohud 기능 전부를 갈래별로, 기능마다 코드 한 줄씩</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>한 갈래를 깊이 — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>그냥 말로 부탁해도 된다.</b> 스킬이 gohud API 전체를 에이전트에게 알려 주므로
+    <i>"gohud 로 일시정지 메뉴 만들어 줘"</i> 같은 부탁도 통한다. 플러그인 없이 스킬만
+    <code>~/.claude/skills/gohud</code> 에 넣었다면 명령을 띄어 쓴다 — <code>/gohud preview demo</code>,
+    <code>/gohud features</code>. 미리보기에는 <code>PATH</code> 에 Godot 4.6 이상이 있어야 하고, 없으면
+    <code>--godot /경로/godot</code> 로 넘긴다.
+  </div>
 </section>
 
 <section id="develop">
@@ -451,8 +501,8 @@ bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</
   <pre><code>python3 addons/gohud/tools/make_site.py            # 용어 사전과 다이얼 표를 소스에서 생성
 python3 addons/gohud/tools/check_site.py           # 링크·앵커·언어·용어 사전·생성 표 검사
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # 페이지마다 데스크톱·폰 폭 촬영</code></pre>
-  <p>페이지는 <code>docs/www/</code> 의 평범한 HTML 이다 — 루트가 영문, <code>ko/</code> 가 한국어.
-    GitHub Pages 가 <code>main</code> 브랜치의 저장소 루트에서 배포한다.</p>
+  <p>페이지는 <code>www/</code> 의 평범한 HTML 이다 — 루트가 영문, <code>ko/</code> 가 한국어.
+    GitHub Actions 워크플로가 이 폴더를 사이트 최상위로 배포한다.</p>
 </section>
 
 </main>

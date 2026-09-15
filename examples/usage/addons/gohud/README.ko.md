@@ -1,6 +1,6 @@
 # gohud — Godot 4 커스터마이징 HUD·UI 키트
 
-**설명 사이트:** [English (기본)](https://thruthesky.github.io/gohud/) · [한국어](https://thruthesky.github.io/gohud/docs/www/ko/) · [배포 안내](docs/README.md)
+**설명 사이트:** [English (기본)](https://thruthesky.github.io/gohud/) · [한국어](https://thruthesky.github.io/gohud/ko/) · [배포 안내](docs/README.md)
 
 영문판은 [README.md](README.md) 다. 이 문서는 같은 내용의 한국어 설명서다.
 

@@ -18,6 +18,6 @@ tests/_*
 __pycache__/
 .playwright-mcp/
 
-# Created locally by examples/demo/run.sh --setup. Tracking this recursive
-# link makes a GitHub Pages root build follow the add-on back into itself.
+# examples/demo/run.sh --setup 이 로컬에 만드는 링크다. 애드온 루트로 되돌아가는 순환 링크라 커밋하면
+# 저장소를 따라 읽는 도구가 자기 안으로 끝없이 들어간다(옛 main /(root) Pages 빌드가 이것으로 실패했다).
 /examples/demo/addons/gohud

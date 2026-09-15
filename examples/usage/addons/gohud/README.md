@@ -1,6 +1,6 @@
 # gohud
 
-**Documentation:** [English website](https://thruthesky.github.io/gohud/) · [한국어](https://thruthesky.github.io/gohud/docs/www/ko/) · [Publishing guide](docs/README.md)
+**Documentation:** [English website](https://thruthesky.github.io/gohud/) · [한국어](https://thruthesky.github.io/gohud/ko/) · [Publishing guide](docs/README.md)
 
 **A customizable HUD & UI kit for Godot 4.** Floating surfaces, bottom sheets, dialogs, forms,
 snackbars, prompt cards, coach marks, HUD bars, quick slots and a virtual joystick — driven by one

@@ -44,7 +44,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 |---|---|---|
 | `gohud_close`, `gohud_confirm` visible | Built-in translations not imported / not loaded | Import the project; keep `load_builtin_translations` on, or set `GoConfig.text_overrides` |
 | `{name}` visible in a dialog or notice | `tr()` does not fill placeholders | Pass `args` (`confirm(..., args)`, `show_key(key, args)`) |
-| `{name}` visible in a dialog **title** | Only the body is formatted | Build the title string yourself: `"Drop %s?" % item.name` |
+| `{name}` visible in a dialog **title** | gohud 1.0.3 and older format only the body | Newer gohud fills the title from the same `args`; on 1.0.3 and older build it yourself: `"Drop %s?" % item.name` |
 | My literal row text changes into another string | `list_button`/`foldable`/`section`/`toggle`/`checkbox` translate by default | Pass `translate = false` for literal text |
 | Empty boxes instead of Korean, Japanese, Thai, Arabic… | The theme font lacks the glyphs (no error is raised) | Add a font with those scripts to your Theme |
 | `Done` splits into `Don` / `e` after changing a label | Wrap rule computed for the old text | `GoStyle.fit_words(button)` after `button.text = …` |
@@ -59,7 +59,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Joystick eats mouse clicks on desktop | Its hit area is its whole rect | Show touch controls on handhelds only (`GoUi.is_handheld_platform()`) |
 | Gameplay reacts while a menu is open | Game input does not know about windows | `if GoSurface.is_any_open(): return` in gameplay input |
 | Android Back quits with a window open, or never quits again | `quit_on_go_back` toggled without pairing | Use `GoBackPolicy.acquire/release` in pairs (release in `_exit_tree` too) |
-| `GoForm` ignores Android Back | `%BackButton` missing, or owned by the form itself (owner cleared when the scroll is moved into the gutter frame) | Own it by an ancestor of the form — see surfaces.md §4 |
+| `GoForm` ignores Android Back | When the form entered the tree no node named `BackButton` with `unique_name_in_owner` was owned by the form or by the form's owner; on gohud 1.0.3 and older also `owner = form` or a holder owning only the form and the button (cleared when the scroll moves into its edge frame) | Set `back.owner = form` + `unique_name_in_owner` before `add_child(form)`; on 1.0.3 and older own the whole branch from a holder — surfaces.md §4 |
 | Pause menu freezes when the tree is paused | Its layer inherits `PROCESS_MODE_PAUSABLE` | `process_mode = Node.PROCESS_MODE_ALWAYS` on the menu's layer |
 
 ## 5. Lifecycle and configuration
@@ -67,7 +67,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `GoForm` does not scroll to the focused field when the keyboard opens | The `GoScroll` was added after the form entered the tree | Build form → scroll → content, then `add_child` |
-| Sheet footer buttons pile up on every open | `GoSheet.open()` hides the footer but keeps its children | Remove footer children before adding (`remove_child` + `queue_free`) |
+| Sheet footer buttons pile up on every open | `GoSheet.open()` hides the footer but keeps children added with `footer().add_child()` | `sheet.add_footer(button)` — the next `open()` removes it; on gohud 1.0.3 and older remove them yourself (`remove_child` + `queue_free`) |
 | Child counts / layout lag one frame after clearing | `queue_free()` alone keeps the node until frame end | `remove_child(child)` then `child.queue_free()` |
 | Changing `GoConfig.surface_max_width` in code does nothing | Plain fields do not emit a change | `GoUi.refresh()` after changing them |
 | Switching presets leaves old colours on screen | Built nodes keep their `theme` | Rebuild the screen after `GoUi.use_preset()` |

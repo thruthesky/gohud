@@ -94,16 +94,17 @@ func build() -> void:
 	actions.add_child(GoStyle.button("Save", save, GoStyle.Tone.PRIMARY))
 	page.add_child(actions)
 
-	# 🛑 %BackButton must be owned by an ANCESTOR of the GoForm. `owner = form` does not survive: GoForm._ready
-	#    moves the scroll branch into its gutter frame and that reparent clears it (measured on 4.7.2).
-	#    So the screen is assembled inside a holder that is not in the tree yet; the holder owns the form and the button.
+	# 🛑 GoForm routes Android Back to %BackButton, looked up once in _ready through the form's owner. gohud 1.0.3 and
+	#    older cleared `owner = form` (or a holder owning just the form and the button) when _ready moved the scroll into
+	#    its edge frame — Godot's reparent() keeps only owners shared with the moved node (measured, 4.7.2). A holder
+	#    that owns the WHOLE branch (form, scroll, containers, button), like a .tscn root, works on every version.
 	var holder := Control.new()
 	holder.name = "Screen"
 	holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	holder.add_child(form)
-	form.owner = holder                        # % lookups go through the form's own owner
-	back.owner = holder
+	for node in holder.find_children("*", "", true, false):
+		node.owner = holder
 	back.unique_name_in_owner = true
 	add_child(holder)                          # GoForm._ready runs now: finds Scroll and %BackButton
 	dialogs = GoDialogs.new()

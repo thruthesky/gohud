@@ -6,8 +6,8 @@
 skills/        export-ignore
 .review/       export-ignore
 docs/          export-ignore
-index.html     export-ignore
-.nojekyll      export-ignore
+www/           export-ignore
+.github/       export-ignore
 builds/        export-ignore
 .dist/         export-ignore
 tests/         export-ignore

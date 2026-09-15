@@ -28,6 +28,18 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   keyboard focus is a soft ring, so the pill and the segments never show two borders.
 - `GoSkin.overlay_box(h_margin, v_margin, fill_alpha)` is the pill face for controls laid over the game or a map —
   the background color at 0.82 opacity with a 1 dp border, so text stays readable whatever is behind it.
+- `GoSheet.add_footer(node)` puts a node in the current page's footer and shows the footer; the next `open()`
+  removes it. `open()` only hides the footer, so a page that called `footer().add_child()` on every open stacked a
+  new Close button next to the old ones (the gallery's sheet did). Nodes added with `footer().add_child()` still stay
+  across pages, for sheet-wide parts such as a snackbar.
+
+### Changed
+
+- **Documentation site moved to `www/`.** The site now lives in `www/` at the repository root, and a GitHub Actions
+  workflow publishes that folder as the top of https://thruthesky.github.io/gohud/ — pages are at `/gohud/`,
+  `/gohud/theming.html` and `/gohud/ko/` instead of under `/gohud/docs/www/`. `www/404.html` forwards the old
+  page addresses, and the deployed site keeps a copy of every image at its old `docs/www/img/` address, so the
+  READMEs inside released ZIPs still show their pictures. The add-on itself is unchanged.
 
 ### Fixed
 
@@ -38,6 +50,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   wide). Godot stores a control's size as position plus size, so a 184-unit card became 183.99997, and the card
   padding (a `MarginContainer`) rounds its child down to whole units — the body lost one unit and a one-line message
   showed a scroll bar the first time a dialog opened. Card size and position are now whole units.
+- A `GoForm` built in code stopped routing Android Back when `%BackButton` was owned by the form (or by a holder
+  that owned only the form and the button). The form moves its scroll into an edge frame in `_ready`, and Godot's
+  `reparent()` restores only the owners shared with the moved node, so the button's owner was cleared and the lookup
+  failed silently. `GoScroll.use_panel_edge()` now restores every descendant's owner after the move. Scenes saved as
+  `.tscn`, where the root owns every node, were not affected.
+- `GoDialogs` filled `{placeholders}` from `args` only in the body, so a title such as `Drop {item}?` showed the
+  braces. The title is now formatted with the same `args` (after translation for `confirm_key()` / `alert_key()`).
 
 ## [1.0.3] - 2026-09-14
 

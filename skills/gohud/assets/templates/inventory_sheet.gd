@@ -52,7 +52,7 @@ func close() -> void:
 
 func show_list() -> void:
 	sheet.open(title_text)                 # clears body + toolbar, hides back, toolbar and footer
-	_clear(sheet.footer())                 # 🛑 open() does not free footer children
+	_clear(sheet.footer())                 # 🛑 open() keeps footer().add_child() children — clearing works on every version
 
 	var search := GoStyle.line_edit("Search items…")
 	search.text = _query
@@ -130,7 +130,7 @@ func _use(item: Dictionary) -> void:
 
 
 func _drop(item: Dictionary) -> void:
-	# 🛑 GoDialogs fills {placeholders} in the body only — build the title string yourself.
+	# 🛑 gohud 1.0.3 and older fill {placeholders} in the body only — building the title here works on every version.
 	var yes := await dialogs.confirm("Drop %s?" % item.name, "{name} will be gone for good.", "Drop", "Keep",
 		"", {"name": item.name}, true)
 	if not yes:

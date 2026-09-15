@@ -1,7 +1,7 @@
 # HUD and in-game widgets
 
 GoHudAnchor, GoBar, GoSlot, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark.
-Source: `widgets/`. Web: https://thruthesky.github.io/gohud/docs/www/widgets.html#hud
+Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets.html#hud
 
 ## Contents
 

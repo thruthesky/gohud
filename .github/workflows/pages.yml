@@ -1,0 +1,49 @@
+# gohud 설명 사이트 배포 — `www/` 를 https://thruthesky.github.io/gohud/ 의 최상위로 올린다.
+#
+# 🛑 저장소 Settings → Pages → Build and deployment → Source 가 **GitHub Actions** 여야 한다.
+#    "Deploy from a branch" 는 `/`(root)·`/docs` 만 고를 수 있어 `www/` 를 최상위로 쓸 수 없다.
+# 🔑 조립 규칙은 `tools/build_site.sh` 한 곳 — `www/` 가 최상위, 옛 그림 주소(`docs/www/img/…`)에도 한 벌.
+#    `python3 tools/check_site.py` 가 같은 스크립트로 조립해 검사하므로 로컬에서 본 것이 곧 올라간다.
+# 🔑 사이트에 닿는 push 만 배포한다. 다시 올리려면 Actions 탭 → Pages → Run workflow.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "www/**"
+      - "tools/build_site.sh"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 배포 도중 새 push 가 와도 끊지 않고 차례로 올린다 — 반쯤 올라간 사이트가 남지 않게.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: bash tools/build_site.sh _site
+      # 점으로 시작하는 파일(`.gdignore`)은 올라가지 않는다.
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

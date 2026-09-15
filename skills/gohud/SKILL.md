@@ -9,7 +9,6 @@ description: >-
   (GoUi, GoStyle, GoSurface, GoSheet, GoDialogs, GoForm, GoHudAnchor, GoBar, GoSlot, GoJoystick, GoNotice,
   GoPromptCard, GoCoachMark, GoTheme, GoSkin, GoIconSet, GoConfig), wants to install gohud, or runs
   /gohud preview, /gohud features (plugin form: /gohud:preview, /gohud:features, /gohud:gohud).
-argument-hint: "[preview [gallery|medieval|demo|res://scene.tscn] | features [area] | <UI to build>]"
 license: MIT
 metadata:
   author: JaeHo Song
@@ -39,6 +38,7 @@ Reply in the language the user writes in; keep code identifiers as they are.
 ## 2. Workflow for building UI
 
 1. **Check the project.** `test -f project.godot`, `test -f addons/gohud/plugin.cfg`, `godot --version` (needs 4.6+).
+   Note the gohud version (`version=` in `plugin.cfg`) — rules 4, 5 and 7 differ for 1.0.3 and older.
    Missing add-on → install it (`references/setup.md` §1), then `godot --headless --path . --import`.
 2. **Pick the look first.** `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` (or the project setting) before any widget
    is built. Nodes keep the theme they were built with; switching later means rebuilding the screen.
@@ -62,16 +62,20 @@ Reply in the language the user writes in; keep code identifiers as they are.
    `translate = false` for literal strings.
 3. **Surfaces go in a `CanvasLayer`, and the owner closes them.** `GoSurface` only emits `close_requested`.
    Layers: HUD 5 · `GoSheet` 10 · your popups 50 · `GoDialogs` 100.
-4. **`GoSheet.open()` does not free `footer()` children** — clear them before adding buttons again.
+4. **Per-page sheet buttons go through `sheet.add_footer(button)`** — the next `open()` removes them. `open()` only
+   hides `footer()`, so children added with `footer().add_child()` stay (right for a sheet-wide snackbar, wrong for a
+   Close button re-added on every open). gohud 1.0.3 and older have no `add_footer()`: remove your footer children first.
 5. **Assemble `GoForm → GoScroll → column` before the form enters the tree.** `_ready` runs inside `add_child`; a
-   scroll added later is never found (no keyboard follow). A `%BackButton` (Android Back routing) must be owned by
-   an **ancestor** of the form — a scene root, or in code a holder Control that is not in the tree yet.
-   `owner = form` is cleared when the form moves its scroll into the gutter frame.
+   scroll added later is never found (no keyboard follow), and `%BackButton` (Android Back routing) is looked up once
+   there. In code: name the button `BackButton`, add it, set `back.owner = form` and `back.unique_name_in_owner = true`,
+   then `add_child(form)`. gohud 1.0.3 and older clear that owner when the scroll moves — there, own the whole branch
+   from a holder (`owner = holder` on every descendant; the templates do this, and it works on every version).
 6. **HUD root: `mouse_filter = MOUSE_FILTER_IGNORE`.** Transient anchors (toasts, prompts, joystick) use
    `reserve_space = false`; toasts at `TOP_CENTER` use `avoid_peers = true`. Put a `GoStyle.floating()` panel
    behind HUD text that floats over content.
-7. **`await` dialogs.** `{placeholders}` are filled only from `args`, and only in the body — format the title
-   yourself. Irreversible confirms use `destructive = true` (last argument).
+7. **`await` dialogs.** `{placeholders}` in the title and body are filled only from `args` (gohud 1.0.3 and older
+   format only the body — build the title string yourself there). Irreversible confirms use `destructive = true`
+   (last argument).
 8. **Bars use fill tokens** (`GoTheme.DANGER_FILL`, `INFO_FILL`, `WARNING_FILL`, `SUCCESS_FILL`); text colours
    look dull as fills on light themes.
 9. **Touch:** icon-only buttons get a tooltip (`GoStyle.icon_button(icon, action, -1, &"Menu")`) — it is also the
@@ -166,5 +170,5 @@ use `--check`.
 | `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, character sheet, context menu, tutorial, theme switcher |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |
 
-Web (same content, with screenshots): overview and install https://thruthesky.github.io/gohud/docs/www/#start ·
-widgets https://thruthesky.github.io/gohud/docs/www/widgets.html · theming https://thruthesky.github.io/gohud/docs/www/theming.html
+Web (same content, with screenshots): overview and install https://thruthesky.github.io/gohud/#start ·
+widgets https://thruthesky.github.io/gohud/widgets.html · theming https://thruthesky.github.io/gohud/theming.html

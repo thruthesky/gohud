@@ -2,9 +2,9 @@
 
 **홈페이지:** [https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)
 
-[한국어 사이트](https://thruthesky.github.io/gohud/docs/www/ko/) ·
-[생김새 안내](https://thruthesky.github.io/gohud/docs/www/ko/theming.html) ·
-[위젯 안내](https://thruthesky.github.io/gohud/docs/www/ko/widgets.html) ·
+[한국어 사이트](https://thruthesky.github.io/gohud/ko/) ·
+[생김새 안내](https://thruthesky.github.io/gohud/ko/theming.html) ·
+[위젯 안내](https://thruthesky.github.io/gohud/ko/widgets.html) ·
 [English README](README.md) ·
 [변경 기록](CHANGELOG.md) ·
 [GitHub](https://github.com/thruthesky/gohud)
@@ -17,8 +17,8 @@
 색과 **모양**을 함께 바꾼다.
 
 <p>
-  <img src="https://thruthesky.github.io/gohud/docs/www/img/preset-default-dark.png" alt="default_dark 프리셋의 gohud 갤러리" width="250">
-  <img src="https://thruthesky.github.io/gohud/docs/www/img/preset-scifi-dark.png" alt="scifi_dark 프리셋의 같은 갤러리" width="250">
+  <img src="https://thruthesky.github.io/gohud/img/preset-default-dark.png" alt="default_dark 프리셋의 gohud 갤러리" width="250">
+  <img src="https://thruthesky.github.io/gohud/img/preset-scifi-dark.png" alt="scifi_dark 프리셋의 같은 갤러리" width="250">
 </p>
 
 > 넣으면 그냥 동작한다. 에디터 플러그인을 켜는 것은 편의 기능일 뿐이다.
@@ -161,7 +161,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 
 ### 중세
 
-<img src="https://thruthesky.github.io/gohud/docs/www/img/medieval-dark.png" alt="medieval_dark — 기본 위젯으로 만든 캐릭터 정보·가방·퀘스트 일지" width="640">
+<img src="https://thruthesky.github.io/gohud/img/medieval-dark.png" alt="medieval_dark — 기본 위젯으로 만든 캐릭터 정보·가방·퀘스트 일지" width="640">
 
 [중세 예제](examples/medieval/medieval.tscn)를 열고 F6 으로 실행하면 캐릭터 정보, 퀵슬롯 가방, 퀘스트 일지를
 볼 수 있다 — 전부 기본 위젯으로 만들었다. 버튼으로 철·양피지를 바꾸고, 아이템을 누르면 `GoDialogs` 알림으로
@@ -201,7 +201,7 @@ GoUi.use_preset(&"kingdom")   # themes/presets/ 를 스캔하므로 프리셋 �
 | `dark`·`title` | 고르개 표시. |
 
 다이얼 전부의 이름·기본값·뜻은 스킨 스크립트에서 뽑아 사이트
-[생김새 페이지](https://thruthesky.github.io/gohud/docs/www/ko/theming.html#own)에 적혀 있다.
+[생김새 페이지](https://thruthesky.github.io/gohud/ko/theming.html#own)에 적혀 있다.
 `tools/check_scaffold.sh` 가 매번 임시 테마를 만들어 강조색과 반경을 바꾸고 생성·토큰 반영·대비 통과를
 확인한다. 그림 자체를 바꿔야 할 때만 `new_theme.py --new-skin` 을 쓰고, 만든 것을 지우려면
 `new_theme.py --remove kingdom`.
@@ -532,9 +532,11 @@ bash examples/demo/run.sh -- --explore=surfaces        # 위젯 하나를 탐색
 ## 설명 사이트
 
 **[https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)** 는
-[`docs/www/`](docs/www/index.html) 의 평범한 HTML 이다 — 루트가 영문, `ko/` 가 한국어이고, 용어에 마우스를
-올리거나 누르거나 키보드로 포커스하면 뜻이 뜬다. GitHub Pages 가 `main` 브랜치의 저장소 루트에서 배포하고,
-루트 `index.html` 이 `docs/www/` 로 넘겨준다.
+[`www/`](www/index.html) 의 평범한 HTML 이다 — 루트가 영문, `ko/` 가 한국어이고, 용어에 마우스를
+올리거나 누르거나 키보드로 포커스하면 뜻이 뜬다. GitHub Actions 워크플로
+([`.github/workflows/pages.yml`](.github/workflows/pages.yml))가 `www/` 자체를 사이트 최상위로 배포한다.
+옛 `docs/www/` 주소도 그대로 쓸 수 있다 — 페이지는 `www/404.html` 이 새 주소로 넘겨주고, 그림은 옛 자리에도
+한 벌 올라가 이미 배포된 ZIP 의 README 에서도 보인다.
 
 ```bash
 python3 addons/gohud/tools/make_site.py            # 용어 사전과 다이얼 표를 소스에서 다시 만든다

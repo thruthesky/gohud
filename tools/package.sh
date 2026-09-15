@@ -100,7 +100,8 @@ mkdir -p "$STAGE/addons/gohud"
 #                 (`.gdignore` 는 `.gd` 로 시작해 이 패턴에 걸리지 않는다 — 설치 후 동작에 필요하므로 남긴다.)
 #   🛑 `.claude`  에이전트 작업 설정.
 #   🛑 `.review`  스토어 제출용 홍보 이미지 보관함. 넣으면 ZIP 이 20배가 된다.
-#   🛑 `docs`     GitHub Pages 사이트(836KB). 애드온을 쓰는 데 필요 없다.
+#   🛑 `www`      GitHub Pages 사이트(836KB). 애드온을 쓰는 데 필요 없다.
+#   🛑 `docs`     사이트 편집·배포 안내와 작업 기록. 애드온을 쓰는 데 필요 없다.
 #   🛑 `tests`    검사 전용. 쓰는 사람에게 필요 없다.
 #   🛑 `.godot`   임포트 캐시. 남의 프로젝트에서 유효하지 않다.
 #   🛑 `examples/demo/addons` 는 애드온 루트로 가는 **심볼릭 링크**다 — 설치한 곳에서 깨진 링크가 된다.
@@ -113,8 +114,7 @@ set -- \
   --exclude='.review' \
   --exclude='.playwright-mcp' \
   --exclude='docs' \
-  --exclude='/index.html' \
-  --exclude='/.nojekyll' \
+  --exclude='/www/' \
   --exclude='review' \
   --exclude='.godot' \
   --exclude='.dist' \

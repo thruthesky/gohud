@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
-<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/docs/www/">
-<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/docs/www/ko/">
-<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/docs/www/">
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — a HUD &amp; UI kit for Godot 4</title>
 <meta name="description" content="A customizable HUD and UI kit for Godot 4.6+. Floating surfaces, bottom sheets, dialogs, forms, snackbars, HUD bars, quick slots and a virtual joystick, with six presets — default, sci-fi and medieval.">
@@ -22,6 +22,7 @@
       <a href="#start">Quick start</a>
       <a href="#presets">Presets</a>
       <a href="#examples">Examples</a>
+      <a href="#ai">AI commands</a>
       <a href="theming.html">Theming ↗</a>
       <a href="widgets.html">Widgets ↗</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
@@ -390,6 +391,54 @@ bash examples/demo/run.sh -- --explore=surfaces         # open straight onto one
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 1080p / 60 fps recording of the tour</code></pre>
   <p>In the demo, <b>C</b> toggles Cinema mode, <b>F11</b> fullscreen, <b>Space</b> pauses (or plays the current
     widget while exploring), the arrows change chapters and <b>Escape</b> returns to Start.</p>
+  <p>Using an AI coding agent? <a href="#ai">Open all three with one command →</a></p>
+</section>
+
+<section id="ai">
+  <h2>Open it from your AI coding agent</h2>
+  <p class="sub">
+    gohud ships a Claude Code plugin with slash commands. Type one and the gallery or the demo opens in its own
+    Godot window — no editor to start, no scene to find.
+  </p>
+
+  <h3>Install the commands once</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# then restart Claude Code</code></pre>
+  <p>Other agents such as Codex can use the same skill: copy <code>skills/gohud</code> from this repository into
+    the agent's skills folder.</p>
+
+  <h3><code>/gohud:preview</code> — the widget gallery</h3>
+  <p>Opens the gallery: every widget, a picker for all six presets and the full icon set. Type it inside your Godot
+    project and it uses <b>your</b> <code>addons/gohud</code>; without one it uses the copy bundled with the plugin,
+    or a fresh clone. It runs in a throwaway sandbox project, so your autoloads and import cache are left alone, and
+    the window stays open until you close it.</p>
+
+  <h3><code>/gohud:preview demo</code> — the 15-chapter guided tour</h3>
+  <p>Opens the demo on its start screen. <b>Start demo</b> plays the tour with real input; <b>Explore widgets</b>
+    lets you try one widget by hand. The keys listed under <a href="#examples">Examples</a> work here too.</p>
+
+  <h3>Many other commands</h3>
+  <table>
+    <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>The character sheet, satchel and quest journal in the medieval presets</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>The demo opened straight onto one chapter — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>The gallery in one preset; add <code>--phone</code> for a 390×844 phone window or <code>--size 1920x1080</code> for any size</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>A scene of your own project, run inside that project</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>Every target, preset id and demo chapter key</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>A headless smoke test with no window — fails on script errors</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>Every feature, grouped, one line of code each</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>One area in depth — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Or just ask.</b> The skill teaches the agent gohud's whole API, so plain requests work too —
+    <i>"Build a pause menu with gohud"</i>. Installed as a plain skill in <code>~/.claude/skills/gohud</code>, the
+    commands take a space: <code>/gohud preview demo</code>, <code>/gohud features</code>. Previews need Godot 4.6 or
+    newer on your <code>PATH</code>, or pass <code>--godot /path/to/godot</code>.
+  </div>
 </section>
 
 <section id="readable">
@@ -445,8 +494,8 @@ bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</
   <pre><code>python3 addons/gohud/tools/make_site.py            # glossary and skin-dial tables, generated from source
 python3 addons/gohud/tools/check_site.py           # links, anchors, language, glossary, generated tables
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # desktop and phone screenshots of every page</code></pre>
-  <p>The pages are plain HTML in <code>docs/www/</code> — English at the root, Korean in <code>ko/</code>. GitHub
-    Pages publishes <code>main</code> from the repository root.</p>
+  <p>The pages are plain HTML in <code>www/</code> — English at the root, Korean in <code>ko/</code>. A GitHub
+    Actions workflow publishes that folder as the site root.</p>
 </section>
 
 </main>

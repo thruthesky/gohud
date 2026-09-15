@@ -39,6 +39,8 @@ var scroll: GoScroll
 		_relayout()
 
 ## Android 뒤로가기를 이 버튼으로 보낼 것인가. `%BackButton` 이라는 고유 이름의 자식을 찾는다.
+## 🔑 코드로 조립할 때는 버튼을 폼 안에 넣은 뒤 `back.owner = form` · `back.unique_name_in_owner = true` 를 두고
+##    폼을 트리에 붙인다(`_ready` 에서 한 번 찾는다). 스크롤을 테두리 칸으로 옮겨도 owner 는 지켜진다.
 @export var route_back_button := true
 
 ## 🔑 **떠 있는 HUD 자리를 비울 것인가.** 켜면 같은 화면의 `GoHudAnchor` 가 차지한 사각형을

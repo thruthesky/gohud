@@ -23,7 +23,7 @@
 ##
 ## ## 🛑 `{name}` 같은 자리는 `args` 로 채운다
 ## `tr()` 만으로는 치환되지 않는다 — 번역문의 `{name}` 이 화면에 그대로 남는다.
-## 되돌릴 수 없는 조작의 확인 문구에서 이 실수는 특히 치명적이다.
+## 되돌릴 수 없는 조작의 확인 문구에서 이 실수는 특히 치명적이다. **제목과 본문을 같은 `args` 로 채운다.**
 @tool
 class_name GoDialogs
 extends Node
@@ -191,13 +191,16 @@ func _apply(title: String, body: String, ok: String, extra: String, args: Dictio
 
 func _retranslate() -> void:
 	if _surface == null: return
+	# 🛑 **제목도 `args` 로 채운다** — 본문만 채우면 `Drop {item}?` 제목이 글자 그대로 보였다(2026-09-15 확인).
+	#    채운 제목은 번역을 마친 글자라 자동 번역을 끈다(`set_title`). 언어가 바뀌면 이 함수가 다시 채운다.
 	if _translate:
-		_surface.set_title_key(_title_key)
+		if _args.is_empty(): _surface.set_title_key(_title_key)
+		else: _surface.set_title(tr(_title_key).format(_args))
 		# 🛑 `args` 에 없는 자리는 **번역문에 그대로 남는다**(`{name}` 이 글자로 보인다).
 		#    자리표시자를 쓰는 문구는 반드시 그 키를 `args` 로 넘긴다.
 		_body.text = tr(_body_key).format(_args)
 	else:
-		_surface.set_title(_title_key)
+		_surface.set_title(_title_key.format(_args) if not _args.is_empty() else _title_key)
 		_body.text = _body_key.format(_args) if not _args.is_empty() else _body_key
 	if not _extra.is_empty(): _body.text += "\n" + _extra
 	_ok.text = _ok_key

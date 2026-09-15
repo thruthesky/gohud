@@ -73,7 +73,7 @@ if [ -n "$ZIP" ]; then
 else
   rsync -a --exclude .dist --exclude '.godot' --exclude 'tests/_*' \
     --exclude '.git*' --exclude '.env*' --exclude '.claude' --exclude '.review' \
-    --exclude 'builds' --exclude 'docs' --exclude 'examples/demo' \
+    --exclude 'builds' --exclude 'docs' --exclude '/www/' --exclude 'examples/demo' \
     "$ADDON/" "$WORK/addons/gohud/"
   echo "① 소스 복사 — $ADDON"
 fi

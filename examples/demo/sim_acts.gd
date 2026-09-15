@@ -657,8 +657,7 @@ func build_surfaces(stage: SimStage, bot: SimBot) -> Dictionary:
 		for index in 20:
 			sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, "Item %d" % (index + 1),
 				bot.note.bind("Sheet: item %d" % (index + 1)), Color.TRANSPARENT, "A short description", false))
-		sheet.footer().add_child(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))
-		sheet.footer().visible = true
+		sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))   # 다음 open() 이 치운다
 		bot.note("Sheet opened: 20 items"))
 	stage.body.add_child(open_sheet)
 

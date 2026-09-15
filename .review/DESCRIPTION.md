@@ -4,13 +4,12 @@ conveniences.
 
 📖 **Tutorials & docs → https://thruthesky.github.io/gohud/**
 
-* 🧱 [Widgets guide](https://thruthesky.github.io/gohud/docs/www/widgets.html) — dialogs, sheets, forms, HUD and more
-* 🎨 [Theming guide](https://thruthesky.github.io/gohud/docs/www/theming.html) — presets, JSON themes, shapes and icons
+* 🧱 [Widgets guide](https://thruthesky.github.io/gohud/widgets.html) — dialogs, sheets, forms, HUD and more
+* 🎨 [Theming guide](https://thruthesky.github.io/gohud/theming.html) — presets, JSON themes, shapes and icons
 
 ### 🤖 Let your AI coding agent install and use it
 
-Copy the text below and paste it into Claude Code (or any coding agent that can run shell commands) inside your
-Godot project. It installs the **gohud skill** — the full API, templates and recipes — and the add-on itself.
+Copy the text below and paste it into Claude Code or Codex (or any coding agent that can run shell commands) inside your Godot project. It installs the **gohud skill** — the full API, templates and recipes — and the add-on itself.
 
 ```text
 Install gohud for this Godot 4.6+ project, then use it for all game UI (menus, HUD, dialogs, forms, themes).
@@ -25,11 +24,31 @@ Install gohud for this Godot 4.6+ project, then use it for all game UI (menus, H
 3. Tell me to restart the agent, then show me what gohud can do and how to preview it.
 ```
 
-After a restart: **`/gohud:features`** explains every feature, **`/gohud:preview`** opens the widget gallery
-(`/gohud:preview demo` for the guided tour, `/gohud:preview gallery --preset medieval_dark --phone` for a look
-and size). Installed as a plain skill in `~/.claude/skills/gohud`, the same commands are `/gohud features` and
-`/gohud preview`. Then just ask, for example: *"Build a pause menu with gohud"* or *"Add HP bars and quick slots
-to my HUD in the sci-fi preset"*.
+### 🎮 Commands in your AI agent
+
+After a restart, two commands open gohud in its own Godot window — no editor, no scene to find:
+
+| Command | What it does |
+|---|---|
+| **`/gohud:preview`** | Opens the **widget gallery** — every widget, a picker for all six presets and the full icon set. Inside your Godot project it uses your `addons/gohud`; without one it uses the copy bundled with the plugin. |
+| **`/gohud:preview demo`** | Opens the **15-chapter guided tour** — *Start demo* plays it with real input, *Explore widgets* lets you try one widget by hand. |
+
+Many other commands work too:
+
+| Command | What it does |
+|---|---|
+| `/gohud:preview medieval` | Character sheet, satchel and quest journal in the medieval presets |
+| `/gohud:preview demo --explore hud` | The demo opened straight onto one chapter |
+| `/gohud:preview gallery --preset medieval_dark --phone` | One preset in a 390×844 phone window; `--size 1920x1080` for any size |
+| `/gohud:preview res://ui/main_menu.tscn` | A scene of your own project, run inside that project |
+| `/gohud:preview list` | Every target, preset id and demo chapter |
+| `/gohud:preview gallery --check` | Headless smoke test — no window |
+| `/gohud:features` | Every feature, grouped, one line of code each |
+| `/gohud:features hud` | One area in depth: `surfaces`, `hud`, `style`, `theming`, `icons`, `i18n`, `accessibility`, `config` |
+
+Installed as a plain skill in `~/.claude/skills/gohud`, write them with a space: `/gohud preview demo`,
+`/gohud features`. Previews need Godot 4.6+ on your `PATH` (or `--godot /path/to/godot`). Or just ask, for
+example: *"Build a pause menu with gohud"* or *"Add HP bars and quick slots to my HUD in the sci-fi preset"*.
 
 ### 🧩 Widgets
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""gohud 홈페이지(`docs/www/`)의 **용어 사전**을 소스에서 뽑아 만든다.
+"""gohud 홈페이지(`www/`)의 **용어 사전**을 소스에서 뽑아 만든다.
 
-    python3 addons/gohud/tools/make_site.py        # docs/www/site/glossary.js 를 다시 만든다
+    python3 addons/gohud/tools/make_site.py        # www/site/glossary.js 를 다시 만든다
 
 ## 왜 자동인가
 용어 설명을 손으로 쓰면 **코드가 바뀔 때 같이 바뀌지 않는다.** 클래스를 하나 더해도 사전에는
@@ -25,9 +25,10 @@ import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
-# 🛑 사이트는 `docs/www/` 루트가 영문, `docs/www/ko/` 가 한국어다(2026-09-13 에 GitHub Pages 배포 구조로 재배치).
-#    사전 두 장은 `docs/www/site/` 에 둔다 — 영문 페이지는 `site/`, 한국어 페이지는 `../site/` 로 읽는다.
-WWW = os.environ.get("GOHUD_SITE_OUTPUT", os.path.join(ADDON, "docs", "www"))
+# 🛑 사이트는 `www/` 루트가 영문, `www/ko/` 가 한국어다(2026-09-15 docs 아래에서 저장소 루트로 옮겼다 —
+#    GitHub Actions 가 이 폴더를 Pages 최상위로 올린다).
+#    사전 두 장은 `www/site/` 에 둔다 — 영문 페이지는 `site/`, 한국어 페이지는 `../site/` 로 읽는다.
+WWW = os.environ.get("GOHUD_SITE_OUTPUT", os.path.join(ADDON, "www"))
 SITE = os.path.join(WWW, "site")
 
 SOURCE_DIRS = ["core", "widgets", "services", "themes/skins"]

@@ -91,7 +91,7 @@ func use_panel_edge(parent_padding: int) -> void:
 	_edge_frame.add_theme_constant_override(&"margin_right", -_edge_gutter)
 	parent.add_child(_edge_frame)
 	parent.move_child(_edge_frame, index)
-	reparent(_edge_frame)
+	_reparent_keeping_owners(self, _edge_frame)
 	var content := get_children()
 	_content_inset = MarginContainer.new()
 	_content_inset.name = "ContentInset"
@@ -101,11 +101,27 @@ func use_panel_edge(parent_padding: int) -> void:
 	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
 		_content_inset.add_theme_constant_override(side, _bleed)
 	add_child(_content_inset)
-	for child in content: child.reparent(_content_inset)
+	for child in content: _reparent_keeping_owners(child, _content_inset)
 	var bar := get_v_scroll_bar()
 	bar.visibility_changed.connect(_sync_edge_inset)
 	bar.resized.connect(_sync_edge_inset)
 	_sync_edge_inset()
+
+
+## `reparent()` 로 옮기되 자손의 owner 를 지킨다.
+## 🛑 엔진 `reparent()` 는 옮기는 노드와 **같은 owner** 인 자손만 owner 를 되돌린다. 코드로 조립한 폼에서
+##    `back.owner = form` 처럼 버튼만 소유하게 두면(스크롤은 owner 없음) 스크롤을 테두리 칸으로 옮기는 순간
+##    버튼의 owner 가 지워져 `%BackButton` 을 못 찾고 Android 뒤로가기가 조용히 꺼졌다(2026-09-15 실측, 4.7.2).
+##    씬 루트가 전부 소유하는 `.tscn` 에서는 드러나지 않는다.
+static func _reparent_keeping_owners(node: Node, new_parent: Node) -> void:
+	var owners := {}
+	if node.owner != null: owners[node] = node.owner
+	for each in node.find_children("*", "", true, false):
+		if each.owner != null: owners[each] = each.owner
+	node.reparent(new_parent)
+	for each: Node in owners:
+		var keep: Node = owners[each]
+		if each.owner != keep and is_instance_valid(keep) and keep.is_ancestor_of(each): each.owner = keep
 
 
 ## 카드가 좁아져 여백이 바뀌었을 때 — 스크롤·내용 소유권을 다시 만들지 않고 여백만 고친다.

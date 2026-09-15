@@ -2,9 +2,9 @@
 
 **Homepage:** [https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)
 
-[Theming guide](https://thruthesky.github.io/gohud/docs/www/theming.html) ·
-[Widget reference](https://thruthesky.github.io/gohud/docs/www/widgets.html) ·
-[한국어 사이트](https://thruthesky.github.io/gohud/docs/www/ko/) ·
+[Theming guide](https://thruthesky.github.io/gohud/theming.html) ·
+[Widget reference](https://thruthesky.github.io/gohud/widgets.html) ·
+[한국어 사이트](https://thruthesky.github.io/gohud/ko/) ·
 [한국어 README](README.ko.md) ·
 [Changelog](CHANGELOG.md) ·
 [GitHub](https://github.com/thruthesky/gohud)
@@ -16,8 +16,8 @@ Six built-in presets change colours **and** shapes in one line: default, sci-fi 
 dark and light.
 
 <p>
-  <img src="https://thruthesky.github.io/gohud/docs/www/img/preset-default-dark.png" alt="The gohud gallery with the default_dark preset" width="250">
-  <img src="https://thruthesky.github.io/gohud/docs/www/img/preset-scifi-dark.png" alt="The same gallery with the scifi_dark preset" width="250">
+  <img src="https://thruthesky.github.io/gohud/img/preset-default-dark.png" alt="The gohud gallery with the default_dark preset" width="250">
+  <img src="https://thruthesky.github.io/gohud/img/preset-scifi-dark.png" alt="The same gallery with the scifi_dark preset" width="250">
 </p>
 
 > Drop it in and it works. Enabling the editor plugin only adds conveniences.
@@ -165,7 +165,7 @@ override just one of them.
 
 ### Medieval
 
-<img src="https://thruthesky.github.io/gohud/docs/www/img/medieval-dark.png" alt="medieval_dark: a character sheet, satchel and quest journal built from the standard widgets" width="640">
+<img src="https://thruthesky.github.io/gohud/img/medieval-dark.png" alt="medieval_dark: a character sheet, satchel and quest journal built from the standard widgets" width="640">
 
 Run [the medieval example](examples/medieval/medieval.tscn) with F6 to explore a character sheet, a
 satchel of quick slots and a quest journal, all built from the standard widgets. Its buttons switch
@@ -206,7 +206,7 @@ can change. Delete a key to keep the parent's value.
 | `dark`, `title` | How the picker lists it. |
 
 Every dial with its default and meaning is listed on the
-[theming page](https://thruthesky.github.io/gohud/docs/www/theming.html#own), generated from the skin
+[theming page](https://thruthesky.github.io/gohud/theming.html#own), generated from the skin
 scripts. `tools/check_scaffold.sh` builds a throwaway theme on every run, changes its accent and radius,
 and checks generation, token propagation and contrast. Use `new_theme.py --new-skin` only when the
 drawings themselves must change, and `new_theme.py --remove kingdom` to delete what it created.
@@ -556,9 +556,11 @@ See [the demo guide](examples/demo/README.md) for recording, testing and ZIP set
 ## Documentation website
 
 The site at **[https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)** is plain
-HTML in [`docs/www/`](docs/www/index.html) — English at the root, Korean in `ko/` — with definitions
-that open on hover, tap or keyboard focus. GitHub Pages publishes `main` from the repository root, and
-the root `index.html` forwards to `docs/www/`.
+HTML in [`www/`](www/index.html) — English at the root, Korean in `ko/` — with definitions
+that open on hover, tap or keyboard focus. A GitHub Actions workflow
+([`.github/workflows/pages.yml`](.github/workflows/pages.yml)) publishes `www/` itself as the site root.
+Old `docs/www/` addresses keep working: `www/404.html` forwards pages, and images keep a copy at their old
+address so the READMEs in released ZIPs still show them.
 
 ```bash
 python3 addons/gohud/tools/make_site.py            # regenerate the glossary and skin-dial tables from source

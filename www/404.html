@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — page not found</title>
+<link rel="icon" href="https://thruthesky.github.io/gohud/site/favicon.svg" type="image/svg+xml">
+<script>
+/* 사이트가 2026-09-15 에 …/gohud/docs/www/ 에서 …/gohud/ 로 옮겨졌다. GitHub Pages 는 없는 주소마다
+   이 파일을 내주므로, 옛 주소(docs/www/…, 그 전의 docs/… · docs/ko/…)를 여기서 새 주소로 넘긴다. */
+(function () {
+  var path = location.pathname;
+  var moved = path.replace(/\/docs(?:\/www)?(?=\/|$)\/?/, "/");
+  if (moved !== path) location.replace(moved + location.search + location.hash);
+})();
+</script>
+<style>
+  :root { --bg: #F7F9FB; --card: #FFFFFF; --ink: #16202B; --muted: #5B6B7B; --rule: #DCE3EA; --accent: #0878AE; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0C1116; --card: #141C25; --ink: #E8EFF5; --muted: #94A6B6; --rule: #253341; --accent: #4CC2F1; }
+  }
+  body { margin: 0; min-height: 100vh; box-sizing: border-box; display: grid; place-items: center;
+         padding: 24px 16px; background: var(--bg); color: var(--ink);
+         font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 32rem; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 28px; }
+  h1 { margin: 0 0 8px; font-size: 1.4rem; }
+  p { margin: 8px 0 0; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Page not found</h1>
+  <p>This address is not part of the gohud documentation.</p>
+  <p><a href="https://thruthesky.github.io/gohud/">Open the documentation →</a> ·
+    <a href="https://thruthesky.github.io/gohud/ko/">한국어</a></p>
+</main>
+</body>
+</html>

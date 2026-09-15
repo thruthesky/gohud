@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""`docs/www/` 홈페이지가 **깨지지 않았는지** 검사한다.
+"""`www/` 홈페이지가 **깨지지 않았는지** 검사한다.
 
     python3 addons/gohud/tools/check_site.py
 
@@ -16,6 +16,8 @@
 | 사전이 코드와 맞는가 | `make_site.py` 를 다시 돌린 결과와 다르면 **사전이 낡았다** |
 | 다이얼 표 | `theming.html` 두 장에 표식이 있고, 다시 만든 표와 같고, 영문 뜻이 빠진 다이얼이 없는가 |
 | 문서 언어 표시 | `<html lang>` 이 없으면 화면 낭독기가 엉뚱한 발음으로 읽는다 |
+| 배포 입구 | 워크플로가 `tools/build_site.sh` 로 조립한 배포본을 올리는가, `404.html` 이 옛 `docs/www/` 주소를 넘기는가 |
+| 공개 주소 | README·스킬·스토어 설명에 적힌 `https://thruthesky.github.io/gohud/…` 과 옛 그림 주소가 배포본에 실제로 있는가 — 그림은 404.html 이 넘겨주지 못한다 |
 """
 import json
 import os
@@ -29,12 +31,26 @@ from urllib.parse import unquote, urlsplit
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
-# 🛑 사이트는 `docs/www/` 루트가 영문, `docs/www/ko/` 가 한국어다(2026-09-13 GitHub Pages 배포 구조로 재배치).
-WWW = os.path.join(ADDON, "docs", "www")
+# 🛑 사이트는 `www/` 루트가 영문, `www/ko/` 가 한국어다. GitHub Actions(`.github/workflows/pages.yml`)가
+#    `tools/build_site.sh` 로 조립해 https://thruthesky.github.io/gohud/ 의 최상위로 올린다(2026-09-15 docs 아래에서 옮김).
+WWW = os.path.join(ADDON, "www")
+# 🔑 GitHub Pages 가 없는 주소마다 내주는 페이지 — 사전·툴팁 없이 옛 주소를 넘기는 스크립트만 있다.
+NOT_FOUND = "404.html"
+PUBLIC = "https://thruthesky.github.io/gohud/"
+# 🔑 2026-09-15 전의 README(배포된 ZIP 1.0.2·1.0.3 포함)가 절대 주소로 박아 둔 그림 — git 이력 전체에서 뽑았다.
+#    이미 설치된 README 는 고칠 수 없고 404.html 은 <img> 요청을 넘기지 못하므로, 배포본의 이 자리에 파일이 있어야 한다.
+LEGACY_IMAGES = [
+    "docs/www/img/medieval-dark.png",
+    "docs/www/img/preset-default-dark.png",
+    "docs/www/img/preset-scifi-dark.png",
+]
+# 공개 주소를 찾아볼 파일 종류와 건너뛸 폴더 — 빌드 산출물은 고칠 수 없고, `.env` 에는 키가 든다.
+URL_SOURCES = (".md", ".html", ".json", ".yml", ".cfg")
+SKIP_DIRS = {".git", ".godot", ".env", "builds", ".dist", "__pycache__", ".playwright-mcp"}
 
 
 def pages():
-    """`docs/www/` 아래의 모든 HTML — 🛑 하위 폴더도 본다(한국어판이 `ko/` 에 있다)."""
+    """`www/` 아래의 모든 HTML — 🛑 하위 폴더도 본다(한국어판이 `ko/` 에 있다)."""
     out = []
     for root, _dirs, names in os.walk(WWW):
         for name in names:
@@ -68,6 +84,8 @@ def check_links(problems):
                     ids = re.findall(r'\bid=["\']([^"\']+)["\']', linked.read_text(encoding="utf-8"))
                     if unquote(url.fragment) not in ids:
                         problems.append("%s: 없는 절을 가리킨다 — %s" % (name, target))
+        if name == NOT_FOUND:
+            continue
         if "glossary" not in text:
             problems.append("%s: 용어 사전을 불러오지 않는다 — 이 페이지만 popup 이 죽는다" % name)
         if "tooltip.js" not in text:
@@ -160,19 +178,71 @@ def check_styles(problems):
         problems.append("site/style.css: CSS 중괄호가 맞지 않는다 — 미디어쿼리 범위를 확인한다")
 
 
-def check_entry(problems):
-    entry = Path(ADDON, "index.html")
-    if not entry.is_file() or 'docs/www/' not in entry.read_text(encoding="utf-8"):
-        problems.append("루트 index.html 이 docs/www/ 영문 사이트로 연결되지 않는다")
-    if not Path(ADDON, ".nojekyll").is_file():
-        problems.append("루트 .nojekyll 이 없다 — main /(root) 정적 배포에 필요하다")
+def build_site(problems, temp):
+    """`tools/build_site.sh` 로 배포본을 조립한다 — CI 와 같은 스크립트라 여기서 본 것이 곧 올라가는 것이다."""
+    out = os.path.join(temp, "site")
+    result = subprocess.run(["bash", os.path.join(HERE, "build_site.sh"), out], capture_output=True, text=True)
+    if result.returncode != 0:
+        problems.append("tools/build_site.sh 가 실패했다 — %s" % (result.stderr.strip().splitlines() or [""])[-1])
+        return None
+    return out
+
+
+def check_entry(problems, site):
+    """배포 입구 — 배포본의 최상위가 `www/` 이고, 옛 주소가 살아 있는가."""
+    workflow = Path(ADDON, ".github", "workflows", "pages.yml")
+    text = workflow.read_text(encoding="utf-8") if workflow.is_file() else ""
+    if "tools/build_site.sh _site" not in text or not re.search(r"^\s*path:\s*_site/?\s*$", text, re.M):
+        problems.append(".github/workflows/pages.yml 이 tools/build_site.sh 로 조립한 _site/ 를 올리지 않는다")
+    moved = Path(WWW, NOT_FOUND)
+    if not moved.is_file() or "/docs" not in moved.read_text(encoding="utf-8"):
+        problems.append("www/404.html 이 옛 주소(…/gohud/docs/www/…)를 새 주소로 넘기지 않는다")
+    if site:
+        for rel in ["index.html", NOT_FOUND]:
+            if not os.path.isfile(os.path.join(site, rel)):
+                problems.append("배포본 최상위에 %s 가 없다 — www/ 가 사이트 최상위가 아니다" % rel)
+        for rel in LEGACY_IMAGES:
+            if not os.path.isfile(os.path.join(site, rel)):
+                problems.append("배포본에 옛 그림 %s 가 없다 — 배포된 ZIP 의 README 그림이 깨진다" % rel)
+    for stale in ("index.html", ".nojekyll"):
+        if Path(ADDON, stale).exists():
+            problems.append("루트 %s 가 남았다 — 옛 main /(root) 배포용이다. 이제 Pages 는 www/ 만 올린다" % stale)
     if not re.search(r'<html\s+lang="en"', Path(WWW, "index.html").read_text(encoding="utf-8")):
         problems.append("기본 사이트 언어는 영어여야 한다")
     if Path(ADDON, ".git").exists():
         tracked = subprocess.run(["git", "ls-files", "-s", "--", "examples/demo/addons/gohud"],
                                  cwd=ADDON, capture_output=True, text=True, check=True).stdout
         if tracked.startswith("120000"):
-            problems.append("데모의 순환 심볼릭 링크가 Git 에 들어 있다 — Pages 루트 빌드가 실패한다")
+            problems.append("데모의 순환 심볼릭 링크가 Git 에 들어 있다 — 저장소를 따라 읽는 도구가 자기 안으로 끝없이 들어간다")
+
+
+def check_public_urls(problems, site):
+    """README·스킬·스토어 설명에 적힌 공개 주소가 배포본에 실제로 있는가. 본 주소 수를 돌려준다."""
+    if not site:
+        return 0
+    pattern = re.compile(re.escape(PUBLIC) + r"([^\s\"'<>()\[\]*`]*)")
+    count = 0
+    for root, dirs, names in os.walk(ADDON):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        for name in names:
+            if not name.endswith(URL_SOURCES):
+                continue
+            path = os.path.join(root, name)
+            text = open(path, encoding="utf-8", errors="replace").read()
+            for match in pattern.finditer(text):
+                url = urlsplit(PUBLIC + match.group(1).rstrip(".,;:"))
+                target = Path(site, unquote(url.path)[len(urlsplit(PUBLIC).path):])
+                if target.is_dir():
+                    target = target / "index.html"
+                count += 1
+                where = os.path.relpath(path, ADDON)
+                if not target.is_file():
+                    problems.append("%s: 배포본에 없는 공개 주소 — %s" % (where, url.geturl()))
+                elif url.fragment and target.suffix == ".html":
+                    ids = re.findall(r'\bid=["\']([^"\']+)["\']', target.read_text(encoding="utf-8"))
+                    if unquote(url.fragment) not in ids:
+                        problems.append("%s: 없는 절을 가리키는 공개 주소 — %s" % (where, url.geturl()))
+    return count
 
 
 def check_dials(problems):
@@ -193,7 +263,7 @@ def check_dials(problems):
 def main():
     problems = []
     if not os.path.isdir(WWW):
-        print("🛑 docs/www/ 가 없다")
+        print("🛑 www/ 가 없다")
         return 1
     # 🛑 페이지가 한 장도 없으면 그것부터 실패다 — 사이트가 다른 폴더로 옮겨졌을 때 옛 폴더에서
     #    HTML 0장을 보고도 "문제 0" 을 냈다(2026-09-13). 빈 것을 통과로 세지 않는다.
@@ -201,7 +271,10 @@ def main():
         problems.append("HTML 페이지가 한 장도 없다 — 사이트 폴더가 옮겨졌거나 비었다")
     check_links(problems)
     check_styles(problems)
-    check_entry(problems)
+    with tempfile.TemporaryDirectory(prefix="gohud-site-build-") as temp:
+        site = build_site(problems, temp)
+        check_entry(problems, site)
+        urls = check_public_urls(problems, site)
     glossary = load_glossary(problems)
     check_glossary(glossary, problems)
     english = load_glossary(problems, "glossary.en.js")
@@ -209,7 +282,7 @@ def main():
     check_fresh(problems)
     check_dials(problems)
 
-    print("페이지 %d개 · 용어 %d(한국어) · %d(영문)" % (len(pages()), len(glossary), len(english)))
+    print("페이지 %d개 · 공개 주소 %d곳 · 용어 %d(한국어) · %d(영문)" % (len(pages()), urls, len(glossary), len(english)))
     for line in problems:
         print("   🛑 %s" % line)
     print("\n%s 문제 %d" % ("🛑" if problems else "✅", len(problems)))

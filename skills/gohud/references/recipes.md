@@ -110,7 +110,7 @@ var _submit: Button
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	theme = GoUi.theme()
-	var holder := Control.new()                        # owns the form and %BackButton (see surfaces.md §4)
+	var holder := Control.new()                        # owns the whole branch so GoForm finds %BackButton
 	holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var form := GoForm.new()
@@ -137,8 +137,8 @@ func _ready() -> void:
 	var back := GoStyle.button("Back", func() -> void: queue_free(), GoStyle.Tone.BARE)
 	back.name = "BackButton"
 	column.add_child(back)
-	form.owner = holder
-	back.owner = holder
+	for node in holder.find_children("*", "", true, false):
+		node.owner = holder                        # the whole branch (surfaces.md §4)
 	back.unique_name_in_owner = true
 	add_child(holder)
 
@@ -168,7 +168,7 @@ func _show_error(message: String) -> void:
 ```gdscript
 func build_shop(sheet: GoSheet, dialogs: GoDialogs, notice: GoNotice, gold: int, offers: Array) -> void:
 	sheet.open("Merchant")
-	for old in sheet.footer().get_children():
+	for old in sheet.footer().get_children():          # 1.0.3 and older; newer gohud: add buttons with add_footer()
 		sheet.footer().remove_child(old)
 		old.queue_free()
 	sheet.toolbar().add_child(GoStyle.chip("%d gold" % gold, GoUi.color(GoTheme.WARNING)))

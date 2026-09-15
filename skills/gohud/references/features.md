@@ -19,15 +19,15 @@ A HUD & UI kit for **Godot 4.6+**, pure GDScript, MIT. Drop the folder at `res:/
 class (`GoUi`, `GoStyle`, `GoSurface`, …) is usable at once — no autoload, no scene files, enabling the
 editor plugin only adds conveniences. Every widget is built with `.new()` + `add_child()`.
 
-- Homepage: https://thruthesky.github.io/gohud/ · Widgets: https://thruthesky.github.io/gohud/docs/www/widgets.html
-- Theming: https://thruthesky.github.io/gohud/docs/www/theming.html · Source: https://github.com/thruthesky/gohud
+- Homepage: https://thruthesky.github.io/gohud/ · Widgets: https://thruthesky.github.io/gohud/widgets.html
+- Theming: https://thruthesky.github.io/gohud/theming.html · Source: https://github.com/thruthesky/gohud
 
 ## 2. Surfaces
 
 | Feature | One line | Reference |
 |---|---|---|
 | `GoSurface` floating window — `CENTER`, `BOTTOM` or `ANCHOR` placement, fixed header/toolbar/footer, scrolling body, drag-to-resize, safe area and keyboard aware, Escape/Back closes only the topmost | `var s := GoSurface.new(); s.set_title("Settings"); s.close_requested.connect(s.queue_free)` | surfaces.md §1 |
-| `GoSheet` bottom sheet on its own `CanvasLayer`, pages with back navigation, sticky search row and footer | `sheet.open("Inventory"); sheet.footer().visible = true` | surfaces.md §2 |
+| `GoSheet` bottom sheet on its own `CanvasLayer`, pages with back navigation, sticky search row and footer | `sheet.open("Inventory"); sheet.add_footer(GoStyle.button("Close", sheet.close))` | surfaces.md §2 |
 | `GoDialogs` confirm/alert you `await`; `destructive` confirm button; vertical, horizontal or auto button layout | `if await dialogs.confirm("Delete save", "Cannot be undone.", "", "", "", {}, true):` | surfaces.md §3 |
 | `GoForm` width-capped form that wraps every label, avoids the virtual keyboard and (with `avoid_hud`) the HUD | `form.avoid_hud = true` | surfaces.md §4 |
 | `GoScroll` touch scrolling with the scrollbar tucked into card padding, RTL-aware | `var scroll := GoScroll.new()` | surfaces.md §5 |

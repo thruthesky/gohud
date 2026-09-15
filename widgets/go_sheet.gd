@@ -8,12 +8,13 @@
 ## add_child(sheet)
 ## sheet.open("가방")
 ## sheet.body.add_child(item_list)
-## sheet.footer().add_child(GoStyle.button("닫기", sheet.close))
+## sheet.add_footer(GoStyle.button("닫기", sheet.close))
 ## ```
 ##
 ## ## 🔑 페이지를 바꿀 때
-## `open()` 은 본문을 비우고 뒤로 버튼·고정 줄을 **끈다**. 돌아갈 데가 없는 화면에 죽은 버튼이
+## `open()` 은 본문·고정 줄을 비우고 뒤로 버튼·고정 줄·바닥 줄을 **끈다**. 돌아갈 데가 없는 화면에 죽은 버튼이
 ## 남으면 누른 사람은 아무 일도 안 일어나는 것을 고장으로 읽는다.
+## 페이지마다 바뀌는 바닥 버튼은 `add_footer()` 로 넣는다 — 다음 `open()` 이 떼어 지운다.
 @tool
 class_name GoSheet
 extends CanvasLayer
@@ -44,6 +45,8 @@ var height_ratio := 0.6:
 		return surface.height_ratio if is_instance_valid(surface) and surface.height_ratio > 0.0 else height_ratio
 
 var _back_action := Callable()
+## `add_footer()` 로 넣은 이 페이지의 바닥 노드 — 다음 `open()` 이 치운다.
+var _page_footer: Array[Node] = []
 
 
 ## 🛑 표면은 `_init` 에서 만든다 — 트리에 붙이기 전에 `sheet.open()`·`sheet.body` 를 쓰는 것이
@@ -67,7 +70,7 @@ func _ready() -> void:
 	surface.dismiss_on_scrim = dismissable
 
 
-## 시트를 열고 제목을 정한다(이미 번역된 문구). 본문·뒤로·고정 줄을 초기화한다.
+## 시트를 열고 제목을 정한다(이미 번역된 문구). 본문·뒤로·고정 줄과 `add_footer()` 로 넣은 바닥 노드를 초기화한다.
 func open(title: String) -> void:
 	if not visible: GoFeedback.opened()
 	surface.set_title(title)
@@ -76,6 +79,14 @@ func open(title: String) -> void:
 	for child in toolbar().get_children():
 		toolbar().remove_child(child)
 		child.queue_free()
+	# 🛑 바닥 줄은 **`add_footer()` 로 넣은 것만** 치운다. 끄기만 하면 페이지마다 닫기를 더하는 화면에서 버튼이
+	#    쌓였다(2026-09-15 확인). 그렇다고 통째로 비우면 `footer().add_child()` 로 한 번 넣고 계속 쓰는 노드
+	#    (시트 전체의 스낵바처럼)가 페이지를 바꾸는 순간 사라진다 — 그렇게 쓰는 호스트가 이미 있다.
+	for node in _page_footer:
+		if is_instance_valid(node) and node.get_parent() == footer():
+			footer().remove_child(node)
+			node.queue_free()
+	_page_footer.clear()
 	toolbar().visible = false
 	footer().visible = false
 	visible = true
@@ -102,9 +113,20 @@ func toolbar() -> VBoxContainer:
 
 
 ## **고정 바닥 줄**. 🛑 늘 보여야 하는 확인·취소는 여기 넣는다 — `body` 에 넣으면 목록과 함께
-## 스크롤되어 긴 목록에서는 화면 밖으로 나간다.
+## 스크롤되어 긴 목록에서는 화면 밖으로 나간다. 쓰는 쪽이 `visible = true` 를 켠다. `open()` 은 끄기만 하고
+## 여기에 직접 넣은 자식은 남긴다 — 페이지마다 바뀌는 버튼은 `add_footer()` 로 넣는다.
 func footer() -> VBoxContainer:
 	return surface.footer
+
+
+## **이 페이지의** 바닥 줄에 넣고 바닥 줄을 켠다. 다음 `open()` 이 떼어 지운다.
+## 🔑 페이지마다 닫기·확인을 더하는 화면은 이것을 쓴다 — `footer().add_child()` 로 넣은 것은 `open()` 뒤에도
+##    남는다(시트 전체에 걸린 스낵바·고정 버튼 자리).
+func add_footer(node: Node) -> Node:
+	footer().add_child(node)
+	footer().visible = true
+	_page_footer.append(node)
+	return node
 
 
 ## 같은 시트 안의 하위 화면이 쓰는 뒤로 버튼. 빈 `Callable` 이면 감춘다.

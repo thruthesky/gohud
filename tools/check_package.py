@@ -175,7 +175,7 @@ class PackageTests(unittest.TestCase):
         self.addon = self.root / 'real-addon'
         shutil.copytree(ADDON, self.addon, symlinks=True, ignore=shutil.ignore_patterns(
             '.git*', '.env*', '.claude', '.review', '.playwright-mcp', '.godot',
-            'builds', '.dist', 'docs', '__pycache__', '*.zip', '*.tmp'))
+            'builds', '.dist', 'docs', 'www', '__pycache__', '*.zip', '*.tmp'))
         original = (self.addon / 'plugin.cfg').read_text().split('version="')[1].split('"')[0]
         major, minor, patch_number = map(int, original.split('.'))
         usage = self.addon / 'examples/usage'

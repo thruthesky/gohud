@@ -323,8 +323,7 @@ func _open_sheet() -> void:
 	for i in 24:
 		_sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, "Item %d" % (i + 1),
 			_say.bind("item %d" % (i + 1)), Color.TRANSPARENT, "A description line", false))
-	_sheet.footer().add_child(GoStyle.button("Close", _sheet.close, GoStyle.Tone.PRIMARY))
-	_sheet.footer().visible = true
+	_sheet.add_footer(GoStyle.button("Close", _sheet.close, GoStyle.Tone.PRIMARY))
 
 
 func _open_popup() -> void:

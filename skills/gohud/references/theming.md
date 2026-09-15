@@ -2,7 +2,7 @@
 
 Source: `core/go_ui.gd`, `core/go_theme.gd`, `core/go_theme_presets.gd`, `core/go_skin.gd`, `themes/skins/`,
 `widgets/go_stylebox_*.gd`, `tools/new_theme.py`, `tools/make_theme.py`.
-Web: https://thruthesky.github.io/gohud/docs/www/theming.html
+Web: https://thruthesky.github.io/gohud/theming.html
 
 ## Contents
 
