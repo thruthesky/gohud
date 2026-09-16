@@ -1043,6 +1043,105 @@ static func _compact_insets(face: StyleBox) -> void:
 	face.content_margin_bottom = y
 
 
+## 🔑 **선택 격자(Choice Grid).** 색 견본·아이콘·글자 카드를 늘어놓고, 누른 칸 하나만 선택된 채 남는다.
+## 캐릭터 꾸미기(피부색·머리색·옷), 아바타·난이도 고르기처럼 **그림으로 고르는** 곳에 쓴다.
+##
+## 항목은 사전이다(문자열이면 글자 카드).
+##   `color`   색 견본 원 — 실제 색 그대로 그린다(`Color` 또는 `"f6cfae"` 같은 문자열)
+##   `icon`    `GoIconSet` 아이콘 이름 · `texture` 그림(`Texture2D`)
+##   `text`    아래 이름표. 비우면 견본·그림만 보인다
+##   `tooltip` 툴팁 = 접근성 이름. 🛑 글자 없는 견본에는 **꼭 준다** — 색만으로는 무엇인지 알 수 없다
+## 고르면 `action.call(index)`. 돌려주는 흐르는 줄의 `meta("group")` 이 `ButtonGroup` 이다.
+## 🔑 고른 칸은 판을 칠하지 않고 **두꺼운 강조 테두리**로 표시한다 — 견본의 색이 섞이지 않고,
+##    색을 구분하기 어려운 사람도 테두리 두께로 고른 칸을 안다.
+##
+## ```gdscript
+## var skins := GoStyle.choice_grid([{"color": "f6cfae", "tooltip": "Peach"}, {"color": "8d5a36", "tooltip": "Cocoa"}],
+## 	0, func(i: int) -> void: look.skin = i)
+## ```
+static func choice_grid(items: Array, selected := 0, action := Callable(), translate := false) -> HFlowContainer:
+	var line := wrap_row()
+	line.name = "ChoiceGrid"
+	var group := ButtonGroup.new()
+	line.set_meta(&"group", group)
+	for index in items.size():
+		var item: Dictionary = items[index] if items[index] is Dictionary else {"text": str(items[index])}
+		var cell := _choice_cell(item, translate)
+		cell.button_group = group
+		cell.button_pressed = index == selected
+		if action.is_valid(): cell.pressed.connect(action.bind(index))
+		line.add_child(cell)
+	return line
+
+
+## 선택 격자의 한 칸 — 스킨 판(`choice_box`) 위에 견본·그림·이름표를 세로로 쌓는다.
+static func _choice_cell(item: Dictionary, translate: bool) -> Button:
+	var cell := Button.new()
+	cell.name = "Choice"
+	cell.theme = GoUi.theme()
+	# 🛑 변형 이름을 둔다 — 비워 두면 `GoForm` 이 일반 버튼으로 다시 칠하고 가로로 늘여 격자가 깨진다(`form()`).
+	cell.theme_type_variation = GoTheme.VAR_BUTTON
+	cell.toggle_mode = true
+	cell.focus_mode = Control.FOCUS_ALL
+	# 🛑 스크롤 안에 놓이므로 손가락 끌기를 스크롤에 넘긴다(`style_button` 과 같은 이유).
+	cell.mouse_filter = Control.MOUSE_FILTER_PASS
+	cell.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	cell.tooltip_text = str(item.get("tooltip", item.get("text", "")))
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		cell.add_theme_stylebox_override(state, GoUi.skin().choice_box(state))
+	var touch := float(GoUi.metric(GoTheme.TOUCH))
+	var inset := float(GoUi.metric(GoTheme.GAP_SMALL))
+	var content := column(GoUi.metric(GoTheme.GAP_TINY))
+	content.name = "Content"
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	content.offset_left = inset
+	content.offset_top = inset
+	content.offset_right = -inset
+	content.offset_bottom = -inset
+	cell.add_child(content)
+	if item.has("color"):
+		var diameter := maxf(touch - inset * 2.0, float(GoUi.metric(GoTheme.ICON_SIZE)))
+		var swatch := Panel.new()
+		swatch.name = "Swatch"
+		swatch.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		swatch.custom_minimum_size = Vector2(diameter, diameter)
+		swatch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		var ink: Variant = item["color"]
+		swatch.add_theme_stylebox_override(&"panel", GoUi.skin().swatch_box(diameter, ink if ink is Color else Color(str(ink))))
+		content.add_child(swatch)
+	elif item.get("texture") is Texture2D:
+		var picture := TextureRect.new()
+		picture.name = "Picture"
+		picture.texture = item["texture"]
+		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		picture.custom_minimum_size = Vector2.ONE * (touch - inset * 2.0)
+		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		content.add_child(picture)
+	elif item.has("icon"):
+		var glyph := GoUi.icons().node(StringName(str(item["icon"])), GoUi.metric(GoTheme.ICON_SIZE), GoUi.color(GoTheme.TEXT))
+		glyph.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		content.add_child(glyph)
+	var text := str(item.get("text", ""))
+	if text != "":
+		var caption := label_key(text, GoTheme.ROLE_COMPACT) if translate else label(text, GoTheme.ROLE_COMPACT)
+		caption.name = "Caption"
+		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		caption.autowrap_mode = TextServer.AUTOWRAP_OFF
+		caption.set_meta(&"go_no_wrap", true)
+		content.add_child(caption)
+	# 칸 크기 = 내용 + 안쪽 여백, 가로·세로 모두 터치 크기 이상. 번역·글꼴이 바뀌면 다시 잰다.
+	var fit := func() -> void:
+		if not is_instance_valid(cell) or not is_instance_valid(content): return
+		var need := content.get_combined_minimum_size() + Vector2(inset, inset) * 2.0
+		cell.custom_minimum_size = Vector2(maxf(touch, need.x), maxf(touch, need.y))
+	content.minimum_size_changed.connect(fit, CONNECT_DEFERRED)
+	fit.call()
+	return cell
+
+
 ## 🔑 **탭 줄(Tabs).** 이름 배열로 `TabBar` 를 만든다. 내용 전환은 부르는 쪽이 `tab_changed` 로 한다
 ## (내용까지 묶으려면 엔진의 `TabContainer` 에 이 테마를 주면 된다).
 static func tabs(names: Array, selected := 0, translate := false) -> TabBar:

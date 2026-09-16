@@ -2158,6 +2158,34 @@ func _widgets() -> void:
 		and GoSkin.box_background(tinted_face).a > GoSkin.box_background(chip_face).a,
 		"hud_panel·chip_panel: 스킨 판을 그대로 입힌다 · fill_alpha 는 더 짙게 채운다")
 	icon_chip.free(); both_chip.free(); chip_button.free(); filled_button.free()
+	# 🔑 선택 격자 — 색 견본·아이콘·글자 카드. 하나만 선택, 칸마다 터치 하한, 고른 칸만 두꺼운 강조 테두리.
+	var chosen := [-1]
+	var grid := GoStyle.choice_grid([{"color": "ff0000", "tooltip": "Red"}, {"icon": GoIconSet.STAR, "text": "Star"}, "Plain"], 1,
+		func(i: int) -> void: chosen[0] = i)
+	root.add_child(grid); await frames(2)
+	var cells := grid.get_children()
+	var choice_group: ButtonGroup = grid.get_meta(&"group")
+	check(cells.size() == 3 and choice_group.get_pressed_button() == cells[1], "choice_grid: 3칸 · 둘째 선택")
+	(cells[0] as Button).button_pressed = true
+	(cells[0] as Button).pressed.emit()
+	check(chosen[0] == 0 and choice_group.get_pressed_button() == cells[0], "choice_grid: 누른 칸만 선택 · 콜백 index")
+	var smallest := Vector2.INF
+	for cell: Control in cells: smallest = smallest.min(cell.size)
+	check(smallest.x >= GoUi.metric(GoTheme.TOUCH) - 0.5 and smallest.y >= GoUi.metric(GoTheme.TOUCH) - 0.5,
+		"choice_grid: 칸마다 터치 하한 (%.0f×%.0f)" % [smallest.x, smallest.y])
+	var red_swatch := cells[0].find_child("Swatch", true, false) as Panel
+	check((cells[0] as Button).tooltip_text == "Red" and red_swatch != null
+		and (red_swatch.get_theme_stylebox(&"panel") as StyleBoxFlat).bg_color.is_equal_approx(Color.RED), "choice_grid: 견본은 실제 색 그대로 · 툴팁 = 이름")
+	var picked_box := (cells[0] as Button).get_theme_stylebox(&"pressed")
+	var idle_box := (cells[0] as Button).get_theme_stylebox(&"normal")
+	check(near(picked_box.get_margin(SIDE_LEFT), idle_box.get_margin(SIDE_LEFT)), "choice_grid: 선택해도 칸 여백이 같다(흔들리지 않는다)")
+	var picked_flat := picked_box as StyleBoxFlat
+	check(picked_flat == null or (picked_flat.border_color.is_equal_approx(GoUi.color(GoTheme.ACCENT))
+		and picked_flat.border_width_left > (idle_box as StyleBoxFlat).border_width_left), "choice_grid: 고른 칸은 더 두꺼운 강조색 테두리")
+	var captions := cells[2].find_children("Caption", "Label", true, false)
+	check(captions.size() == 1 and (captions[0] as Label).text == "Plain" and cells[1].find_child("Caption", true, false) != null,
+		"choice_grid: 글자 카드·아이콘 카드에 이름표")
+	grid.queue_free()
 	var glass: StyleBox = GoUi.skin().overlay_box(4, 2)
 	check(near(glass.get_margin(SIDE_LEFT), 4.0) and near(glass.get_margin(SIDE_TOP), 2.0), "overlay_box: 준 여백 그대로")
 	var glass_default: StyleBox = GoUi.skin().overlay_box()

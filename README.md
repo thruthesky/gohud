@@ -321,7 +321,7 @@ Read tokens in code with `GoUi.color(GoTheme.ACCENT)`, `GoUi.metric(GoTheme.GAP)
 ### Skins and custom StyleBoxes
 
 `GoSkin` owns the shapes a theme cannot reach — the joystick, quick slot faces, the coach-mark ring,
-chips, skeletons, alerts, segmented controls, dividers and section headings. `GoSkinSciFi` and
+chips, skeletons, alerts, segmented controls, choice-grid cells and colour swatches, dividers and section headings. `GoSkinSciFi` and
 `GoSkinMedieval` ship as subclasses. Subclass one and override only what you want to change;
 everything you leave alone keeps its look.
 

@@ -54,7 +54,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Structure | `column` `row` `wrap_row` `padding` `insets` `gap` `spacer` `divider` `responsive_grid` `aspect` `foldable` |
 | Text | `label` `label_key` `section` `typography` |
 | Buttons | `button` `button_key` `style_button` `icon_button` `list_button` `list_row` `apply_icon` — tones `NORMAL` `PRIMARY` `DANGER` `DANGER_SOLID` `BARE` `COMPACT` |
-| Input | `line_edit` `textarea` `toggle` `checkbox` `slider` `picker` `select` `dropdown` `radio_group` `segmented` |
+| Input | `line_edit` `textarea` `toggle` `checkbox` `slider` `picker` `select` `dropdown` `radio_group` `segmented` `choice_grid` |
 | Display | `card` `chip` `avatar` `skeleton` `alert` `table` `tabs` `breadcrumb` `progress` `tint_progress` `empty_state` |
 | Surface pieces | `surface` `box` `floating` `disc` |
 | Helpers | `form` `fit_words` `natural_width` `fit_content_height` `fade` `tooltip_node` `audit_compact_padding` |

@@ -300,6 +300,61 @@ func segment_box(index: int, count: int, state: StringName) -> StyleBox:
 	return face
 
 
+## 선택 격자(`GoStyle.choice_grid`) 한 칸의 판. `state` 는 `&"normal"`·`&"hover"`·`&"pressed"`·
+## `&"hover_pressed"`·`&"focus"`·`&"disabled"`.
+## 🛑 고른 칸은 판을 강조색으로 **채우지 않는다** — 색 견본에 강조색이 섞여 다른 색처럼 보인다. 테두리를 두껍게 두른다.
+## 🛑 상태마다 안쪽 여백이 같아야 누를 때 칸이 흔들리지 않는다.
+func choice_box(state: StringName) -> StyleBox:
+	if state == &"focus":
+		var ring := GoUi.box(GoTheme.BOX_FOCUS_SOFT)
+		_choice_insets(ring)
+		return ring
+	var style := surface_box(GoTheme.BOX_CARD)
+	_choice_insets(style)
+	var face := style as StyleBoxFlat
+	if face == null:
+		if (state == &"pressed" or state == &"hover_pressed") and &"border_color" in style:
+			style.set(&"border_color", GoUi.color(GoTheme.ACCENT))
+		return style
+	face.shadow_size = 0
+	face.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
+	match state:
+		&"pressed", &"hover_pressed":
+			face.border_color = GoUi.color(GoTheme.ACCENT)
+			face.set_border_width_all(CHOICE_RING)
+		&"hover":
+			face.bg_color = GoUi.color(GoTheme.SURFACE_HIGH)
+		&"disabled":
+			face.bg_color = Color(face.bg_color, face.bg_color.a * 0.5)
+	return face
+
+
+## 선택 격자에서 고른 칸의 테두리 두께(dp). 기본 판 테두리(1)보다 확실히 두꺼워야 한눈에 보인다.
+const CHOICE_RING := 3
+
+
+func _choice_insets(box: StyleBox) -> void:
+	if box == null: return
+	var inset := float(GoUi.metric(GoTheme.GAP_SMALL))
+	box.content_margin_left = inset
+	box.content_margin_right = inset
+	box.content_margin_top = inset
+	box.content_margin_bottom = inset
+
+
+## 색 견본 원의 판. 게임 데이터의 **실제 색 그대로** 채우고, 어떤 바탕에서도 원의 경계가 보이도록 테두리를 두른다.
+func swatch_box(diameter: float, color: Color) -> StyleBox:
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = color
+	flat.border_color = GoUi.color(GoTheme.BORDER)
+	flat.set_border_width_all(1)
+	# 🛑 반지름을 변의 정확히 절반으로 두면 이음매 선이 보인다(`disc_box` 와 같은 이유).
+	flat.set_corner_radius_all(maxi(1, int(diameter * 0.5) - 1))
+	flat.corner_detail = 16
+	flat.set_content_margin_all(0)
+	return flat
+
+
 ## 값 막대의 **채움**. 🛑 테마의 `ProgressBar/fill` 을 복제해서 고친다 — 카드 스타일을
 ##    빌려 쓰면 그 안쪽 여백(12dp)까지 딸려 와 얇은 막대가 두꺼운 덩어리가 된다.
 func progress_fill_box(ink: Color) -> StyleBox:
