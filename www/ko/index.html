@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">무엇인가</a>
-      <a href="#install">설치</a>
-      <a href="#start">빠른 시작</a>
-      <a href="#presets">프리셋</a>
-      <a href="#examples">예제</a>
-      <a href="#ai">AI 명령</a>
-      <a href="theming.html">생김새 ↗</a>
-      <a href="widgets.html">위젯 ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">소개</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">위젯</a>
+      <a href="theming.html">테마</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>한국어</summary>
@@ -91,7 +90,8 @@
       <span class="badge">아이콘 100종 포함</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">설치하기</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">설치하기</a>
       <a class="btn" href="#presets">프리셋 보기</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -171,76 +171,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>설치</h2>
-  <p class="sub">애드온 폴더를 프로젝트에 넣기만 하면 된다.</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">배포 ZIP 또는 애셋 스토어</h3>
-  <p>프로젝트 루트에 풀어 <code>res://addons/gohud/</code> 가 되게 한다. 그것이 전부다. 필요하면
-    <b>프로젝트 → 프로젝트 설정 → 플러그인 → gohud</b> 를 켠다.</p>
-
-  <h3 id="as-a-git-submodule">git submodule 로</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # 선택: 태그나 커밋에 고정</code></pre>
-  <p>저장소 루트가 곧 애드온 폴더라 Godot 이 기대하는 자리에 그대로 떨어진다. 그 자리에서 고치고
-    <code>addons/gohud</code> 안에서 커밋·push 한 뒤, 게임 저장소에서 서브모듈 포인터를 커밋한다.</p>
-
-  <div class="note warn">
-    <b>Godot 4.6 이상이 필요하다.</b> DPITexture·FoldableContainer·접근성 속성처럼 4.5 에서 들어온 API 를
-    쓰기 때문에 그보다 낮은 엔진에서는 <b>파싱 단계에서 죽는다</b>. 지원 하한 4.6 은 <code>GoUi.MIN_ENGINE</code> 에 적혀 있다.
-  </div>
+<section id="install" class="crumb">
+  <h2>gohud 설치</h2>
+  <p class="sub">길은 둘이다. AI 에게 시키거나, 폴더를 프로젝트에 넣거나 — 그 밖에 설정할 것은 없다.</p>
+  <p><a class="btn primary" href="install.html">설치</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>빠른 시작</h2>
-  <p class="sub">전부 <code>.new()</code> 로 만들어 <code>add_child()</code> 하면 된다. 씬 파일도, 오토로드도 필요 없다.</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">UI 를 만들기 전에 생김새를 고른다(선택)</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 고르지 않으면 default_dark</code></pre>
-
-  <h3 id="a-confirmation-you-await">확인창을 <code>await</code> 로 받는다</h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
-    delete_save()</code></pre>
-  <p>마지막 인자 <code>destructive</code> 를 <code>true</code> 로 주면 확인 버튼이 채워진 위험 버튼으로 그려진다.</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">검색 칸과 바닥 버튼이 고정된 바텀 시트</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("가방")
-sheet.toolbar().add_child(GoStyle.line_edit("검색…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("닫기", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>고정 줄과 스크롤 본문을 나누는 이유.</b> 확인·취소를 <code>body</code> 에 넣으면 목록이 길어질 때
-    화면 밖으로 밀린다. <code>footer()</code> 는 언제나 보인다.
-  </div>
-
-  <h3 id="a-hud-corner">HUD 모서리에 체력 막대</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT   # 가로에서는 다른 자리로
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)             # 채움 전용 토큰
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">본문이 HUD 를 비켜 가게</h3>
-  <pre><code>form.avoid_hud = true                  # 보이는 GoHudAnchor 를 모두 피한다
-joystick_anchor.reserve_space = false  # 손을 얹을 때만 나타나는 것은 빼고
-notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 그 아래로 내려앉는다</code></pre>
-  <p>칸마다 잃는 면적이 가장 작은 방향으로 피한다 — 세로 화면에서는 아래로, 가로 화면에서는 옆으로.
-    <a href="widgets.html#hud">HUD 가 서로 비키는 방식 →</a></p>
+  <p class="sub">다섯 줄이면 테마가 입혀진 화면이 뜬다. 처음부터 끝까지는 설치 쪽에 있다.</p>
+  <p><a class="btn" href="install.html#start">빠른 시작</a></p>
 </section>
 
 <section id="presets">
@@ -414,78 +354,10 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
   </table>
 </section>
 
-<section id="examples">
-  <h2>실행해 볼 수 있는 예제</h2>
-  <p class="sub">코드를 쓰기 전에 gohud 를 보는 세 가지 방법 — 어느 것도 서버나 오토로드가 필요 없다.</p>
-
-  <table>
-    <thead><tr><th>예제</th><th>여는 법</th><th>보여 주는 것</th></tr></thead>
-    <tbody>
-      <tr><td>갤러리</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체</td></tr>
-      <tr><td>중세</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>캐릭터 정보·가방·퀘스트 일지. 버튼으로 철·양피지를 바꾸고 아이템 설명을 연다</td></tr>
-      <tr><td>데모 앱</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>갤러리·15장면 자동 시연·쇼케이스·중세 화면을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # 홈 화면. 첫 실행에서 링크와 임포트를 스스로 한다
-bash examples/demo/run.sh                               # 애드온 루트에서 같은 앱을 연다
-bash examples/demo/run.sh -- --open=gallery             # 홈을 건너뛰고 바로 그 화면으로
-bash examples/demo/run.sh -- --explore=surfaces         # 위젯 하나를 탐색 모드로 바로 연다
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 전체 시연 1080p / 60fps 녹화</code></pre>
-  <p>데모 앱은 준비할 것이 없다. 애드온 링크나 임포트 캐시가 없으면 그 사실을 화면에 적고, 폴더를 고치고,
-    창을 스스로 다시 연다. 홈 화면은 예제를 <b>같은 창 안에서</b> 연다 — <b>1</b>~<b>4</b> 를 누르거나 줄을
-    누르고, 위쪽 줄로 돌아온다.</p>
-  <p>자동 시연에서 <b>C</b> 는 촬영 모드, <b>F11</b> 은 전체 화면, <b>Space</b> 는 일시정지(탐색 중에는 현재 위젯 시연),
-    화살표는 장면 이동, <b>Esc</b> 는 시작 화면이다.</p>
-  <p>AI 코딩 에이전트를 쓴다면 <a href="#ai">세 가지 모두 명령 한 줄로 열 수 있다 →</a></p>
-</section>
-
-<section id="ai">
-  <h2>AI 코딩 에이전트에서 바로 열어 보기</h2>
-  <p class="sub">
-    gohud 는 슬래시 명령이 든 Claude Code 플러그인을 함께 준다. 명령 하나를 치면 갤러리나 데모가 Godot 창으로
-    뜬다 — 에디터를 켤 필요도, 씬을 찾을 필요도 없다.
-  </p>
-
-  <h3 id="install-the-commands-once">명령은 한 번만 설치한다</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# 설치 뒤 Claude Code 를 다시 시작한다</code></pre>
-  <p>Codex 같은 다른 에이전트도 같은 스킬을 쓸 수 있다 — 이 저장소의 <code>skills/gohud</code> 를 에이전트의
-    스킬 폴더에 복사한다.</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — 위젯 갤러리</h3>
-  <p>모든 위젯, 프리셋 여섯을 고르는 선택기, 아이콘 전체가 있는 갤러리를 연다. Godot 프로젝트 안에서 치면
-    <b>그 프로젝트의</b> <code>addons/gohud</code> 를 쓰고, 없으면 플러그인에 든 사본이나 새로 받은 저장소를 쓴다.
-    일회용 샌드박스 프로젝트에서 돌기 때문에 내 프로젝트의 오토로드·임포트 캐시는 건드리지 않고, 창은 직접 닫을
-    때까지 떠 있다.</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15장면 안내 투어</h3>
-  <p>데모를 시작 화면으로 연다. <b>Start demo</b> 는 실제 입력으로 진행하는 자동 시연, <b>Explore widgets</b> 는
-    위젯 하나를 직접 만져 보는 탐색 모드다. <a href="#examples">예제</a>에 적은 단축키가 여기서도 그대로 통한다.</p>
-
-  <h3 id="many-other-commands">그 밖에도 여러 명령을 쓸 수 있다</h3>
-  <table>
-    <thead><tr><th>명령</th><th>하는 일</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>중세 프리셋의 캐릭터 정보·가방·퀘스트 일지</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>데모를 장면 하나로 바로 연다 — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>프리셋 하나를 입힌 갤러리. <code>--phone</code> 을 붙이면 390×844 폰 창, <code>--size 1920x1080</code> 이면 원하는 크기로</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>내 프로젝트의 씬을 그 프로젝트 안에서 실행</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>열 수 있는 대상·프리셋 이름·데모 장면 키 전부</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>창 없이 도는 헤드리스 점검 — 스크립트 오류가 나면 실패</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>gohud 기능 전부를 갈래별로, 기능마다 코드 한 줄씩</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>한 갈래를 깊이 — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>그냥 말로 부탁해도 된다.</b> 스킬이 gohud API 전체를 에이전트에게 알려 주므로
-    <i>"gohud 로 일시정지 메뉴 만들어 줘"</i> 같은 부탁도 통한다. 플러그인 없이 스킬만
-    <code>~/.claude/skills/gohud</code> 에 넣었다면 명령을 띄어 쓴다 — <code>/gohud preview demo</code>,
-    <code>/gohud features</code>. 미리보기에는 <code>PATH</code> 에 Godot 4.6 이상이 있어야 하고, 없으면
-    <code>--godot /경로/godot</code> 로 넘긴다.
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">gohud 에는 AI 스킬이 들어 있다 — API 전부와 바로 돌아가는 템플릿, 미리보기 실행기. 아래 한 덩이를 코딩 에이전트에 붙여 넣으면 gohud 를 설치하고 쓰는 법까지 익힌다.</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -506,7 +378,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>검사·배포·이 사이트</h2>
   <p class="sub">진입점 하나가 검사 전부를 돌린다. 검사마다 볼 수 있는 범위가 다르다.</p>
 

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/install.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/install.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/install.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/install.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/install.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/install.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/install.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/install.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/install.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/install.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/install.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/install.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/install.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/install.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/install.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/install.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/install.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/install.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>安裝 gohud — gohud</title>
+<meta name="description" content="在 Godot 4.6+ 專案中安裝 gohud 的方法 —— 向 AI 編碼代理貼上一次、發行版 ZIP、git 子模組。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html" aria-current="page">安裝</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">控制項</a>
+      <a href="theming.html">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../install.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/install.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/install.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/install.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="install.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/install.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/install.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/install.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/install.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/install.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/install.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/install.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/install.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/install.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/install.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/install.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/install.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>安裝 gohud</h1>
+    <p class="lead">
+      兩條路：讓 AI 代理替你裝，或把資料夾放進專案 —— 此外不必設定任何東西。
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="ai-first">
+  <div class="note ai-card">
+    <h2>最快的路 —— 讓 AI 代理替你安裝</h2>
+    <p>把一段文字貼到 Claude Code、Codex、Cursor 或 Gemini CLI，它會同時裝好技能與外掛，再為你講解 gohud。走這條路，這張卡片以下的內容一樣都不需要。</p>
+    <p><a class="btn primary" href="ai.html#copy">開啟 AI SKILL 頁 →</a></p>
+  </div>
+</section>
+
+<section id="install">
+  <h2>安裝</h2>
+  <p class="sub">把附加元件資料夾放進你的專案，沒有別的要設定。</p>
+
+  <h3 id="from-the-asset-store-or-a-release-zip">從 Asset Store 或發行 ZIP 安裝</h3>
+  <p>解壓縮到專案根目錄，讓路徑成為 <code>res://addons/gohud/</code>。這樣就好。也可以順便啟用
+    <b>專案 → 專案設定 → 外掛程式 → gohud</b>。</p>
+
+  <h3 id="as-a-git-submodule">以 git 子模組安裝</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # 選用：固定在某個標籤或提交</code></pre>
+  <p>版本庫的根目錄<b>就是</b>附加元件資料夾，所以它會剛好落在 Godot 預期的位置。直接在原地編輯，
+    在 <code>addons/gohud</code> 裡 commit 與 push，再到你的遊戲專案裡 commit 子模組指標。</p>
+
+  <div class="note warn">
+    <b>需要 Godot 4.6 以上。</b>gohud 用到 4.5 才有的 API（DPITexture、
+    FoldableContainer、無障礙屬性），版本更舊就會<b>在解析階段直接失敗</b>。
+    支援的下限是 4.6，記錄在 <code>GoUi.MIN_ENGINE</code>。
+  </div>
+</section>
+
+<section id="start">
+  <h2>快速上手</h2>
+  <p class="sub">每個控制項都是 <code>.new()</code> 加 <code>add_child()</code> — 不用場景檔，也不用自動載入。</p>
+
+  <h3 id="pick-a-look-before-building-ui-optional">組 UI 之前先挑外觀（選用）</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 略過這行時會使用 default_dark</code></pre>
+
+  <h3 id="a-confirmation-you-await">用 <code>await</code> 接的確認對話方塊</h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("刪除存檔", "此動作無法復原。"):
+    delete_save()</code></pre>
+  <p>把最後一個引數 <code>destructive = true</code> 傳進去，確認按鈕就會畫成實心的危險按鈕。</p>
+
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">帶固定搜尋欄與頁尾的底部面板</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("背包")
+sheet.toolbar().add_child(GoStyle.line_edit("搜尋…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("關閉", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>固定列為什麼要跟捲動本文分開。</b>把確認與取消放進
+    <code>body</code>，清單一長就把它們推出畫面。<code>footer()</code> 永遠看得見。
+  </div>
+
+  <h3 id="a-hud-corner">HUD 的一角</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3 id="content-that-keeps-clear-of-the-hud">讓內容避開 HUD</h3>
+  <pre><code>form.avoid_hud = true                  # 避開每一個顯示中的 GoHudAnchor
+joystick_anchor.reserve_space = false  # …但只在手指底下才出現的那些除外
+notice_anchor.avoid_peers = true       # 提示訊息落在固定 HUD 下方，而不是蓋住它</code></pre>
+  <p>每個矩形都往損失面積最小的方向避開 — 直向手機往下，橫向則往側邊。
+    <a href="widgets.html#hud">HUD 彼此避讓的機制 →</a></p>
+</section>
+
+<section id="examples">
+  <h2>可以直接跑的範例</h2>
+  <p class="sub">三種在寫下第一行程式碼之前就看得到 gohud 的方式 — 都不需要伺服器，也不需要自動載入。</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">範例</th><th>怎麼開</th><th>看得到什麼</th></tr></thead>
+    <tbody>
+      <tr><td>藝廊</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>每一個控制項、一個可以挑選所有已安裝預設集的選擇器，以及完整圖示組</td></tr>
+      <tr><td>中世紀</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>角色面板、行囊與任務日誌；按鈕可切換鐵與羊皮紙，也能打開物品細節</td></tr>
+      <tr><td>示範應用程式</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>一個首頁畫面，可開啟藝廊、15 章導覽、展示畫面與中世紀外觀，裡面是真的會動的控制項，每個類別各一張卡片</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>cd examples/demo &amp;&amp; godot                             # 首頁畫面；第一次執行會建立連結並匯入
+bash examples/demo/run.sh                               # 同一個應用程式，從附加元件根目錄啟動
+bash examples/demo/run.sh -- --open=gallery             # 跳過首頁畫面
+bash examples/demo/run.sh -- --explore=surfaces         # 直接開在導覽的某一章
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 以 1080p / 60 fps 錄下整段導覽</code></pre>
+  <p>示範應用程式不需要任何設定：附加元件連結或匯入快取不見時，它會直接說出來，修好那個資料夾
+    再自己重新開啟。它的首頁畫面會在同一個視窗裡打開每一個範例 — 按 <b>1</b>–<b>4</b> 或點一列，
+    頂端那條列會把你帶回來。</p>
+  <p>在導覽裡，<b>C</b> 切換劇場模式，<b>F11</b> 全螢幕，<b>Space</b> 暫停（在探索模式下則是播放目前的
+    控制項），方向鍵換章節，<b>Escape</b> 回到起始畫面。</p>
+  <p>在用 AI 編碼代理嗎？<a href="ai.html">一道指令就打開這三個 →</a></p>
+</section>
+
+<section id="develop">
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud 採用 <b>MIT</b> — 包含程式碼與圖檔，其中有 84 個預設圖示和 16 個中世紀圖示。內附的
+      Cinzel 字型採用 SIL Open Font License 1.1。</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">變更紀錄</a></p>
+    <p style="font-size:13px">把滑鼠移到<b>有底線的詞</b>上、點一下，或讓它取得焦點，就會顯示它的意思。</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

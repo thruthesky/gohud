@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">它能做什么</a>
-      <a href="#install">安装</a>
-      <a href="#start">快速上手</a>
-      <a href="#presets">预设</a>
-      <a href="#examples">示例</a>
-      <a href="#ai">AI 命令</a>
-      <a href="theming.html">主题 ↗</a>
-      <a href="widgets.html">控件 ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">概览</a>
+      <a href="install.html">安装</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">控件</a>
+      <a href="theming.html">主题</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>简体中文</summary>
@@ -91,7 +90,8 @@
       <span class="badge">内置 100 个图标</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">安装</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">安装</a>
       <a class="btn" href="#presets">看看预设</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -171,77 +171,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>安装</h2>
-  <p class="sub">把插件文件夹放进项目即可，没有别的要配置。</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">从资源商店或发布 ZIP 安装</h3>
-  <p>解压到项目根目录，得到 <code>res://addons/gohud/</code>，这就完成了。也可以顺手启用
-    <b>项目 → 项目设置 → 插件 → gohud</b>。</p>
-
-  <h3 id="as-a-git-submodule">作为 git 子模块安装</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # 可选：固定到某个标签或提交</code></pre>
-  <p>仓库根目录<b>本身就是</b>插件文件夹，所以它会正好落在 Godot 期望的位置。直接在
-    <code>addons/gohud</code> 里改、提交、推送，然后在游戏项目里提交子模块指针。</p>
-
-  <div class="note warn">
-    <b>必须是 Godot 4.6 或更高版本。</b> gohud 用到了 4.5 引入的 API（DPITexture、
-    FoldableContainer、无障碍属性），所以在更旧的版本上会<b>在解析阶段就失败</b>。
-    4.6 是受支持的下限，记录在 <code>GoUi.MIN_ENGINE</code> 里。
-  </div>
+<section id="install" class="crumb">
+  <h2>安装 gohud</h2>
+  <p class="sub">两条路：让 AI 代理替你装，或把文件夹放进项目 —— 此外无需任何配置。</p>
+  <p><a class="btn primary" href="install.html">安装</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>快速上手</h2>
-  <p class="sub">每个控件都是 <code>.new()</code> 加 <code>add_child()</code> —— 不用场景文件，也不用自动加载。</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">先选一套外观，再开始搭 UI（可选）</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 不写这一行时用的是 default_dark</code></pre>
-
-  <h3 id="a-confirmation-you-await">可以 <code>await</code> 的确认框</h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("删除存档", "此操作无法撤销。"):
-    delete_save()</code></pre>
-  <p>传入 <code>destructive = true</code>（最后一个参数），确认按钮就会画成实心的危险按钮。</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">带常驻搜索框和底栏的底部面板</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("背包")
-sheet.toolbar().add_child(GoStyle.line_edit("搜索…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("关闭", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>常驻行为什么要和滚动主体分开。</b> 把确认和取消放进 <code>body</code>，列表一长就会把它们顶出屏幕。
-    <code>footer()</code> 则始终可见。
-  </div>
-
-  <h3 id="a-hud-corner">一个 HUD 角落</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">让内容避开 HUD</h3>
-  <pre><code>form.avoid_hud = true                  # 避开每一个可见的 GoHudAnchor
-joystick_anchor.reserve_space = false  # …只在手指按下时才出现的那些除外
-notice_anchor.avoid_peers = true       # 提示条落到固定 HUD 下方，而不是盖住它</code></pre>
-  <p>每个矩形都朝着损失面积最小的方向避让 —— 竖屏手机上往下，横屏时往侧边。
-    <a href="widgets.html#hud">HUD 之间如何互相避让 →</a></p>
+  <p class="sub">五行代码就能显示一个带主题的界面。完整流程见安装页。</p>
+  <p><a class="btn" href="install.html#start">快速上手</a></p>
 </section>
 
 <section id="presets">
@@ -409,74 +348,10 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </table>
 </section>
 
-<section id="examples">
-  <h2>能直接跑起来的示例</h2>
-  <p class="sub">不写一行代码就能看到 gohud 的三种方式 —— 都不需要服务器，也不需要自动加载。</p>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">示例</th><th>怎么打开</th><th>能看到什么</th></tr></thead>
-    <tbody>
-      <tr><td>控件画廊</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>每一个控件、一个可切换全部已安装预设的选择器，以及完整图标集</td></tr>
-      <tr><td>中世纪</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>角色面板、行囊和任务日志；按钮可在铁与羊皮纸之间切换，并打开物品详情</td></tr>
-      <tr><td>演示程序</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>一个主页，从这里可以打开控件画廊、15 章导览、展示界面和中世纪外观，里面都是能实际操作的控件，每个类各占一张卡片</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # 主页；首次运行会建好链接并导入资源
-bash examples/demo/run.sh                               # 同一个程序，从插件根目录启动
-bash examples/demo/run.sh -- --open=gallery             # 跳过主页
-bash examples/demo/run.sh -- --explore=surfaces         # 直接打开导览的某一章
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 以 1080p / 60 fps 录制整段导览</code></pre>
-  <p>演示程序不需要任何准备工作：插件链接或导入缓存缺失时它会告诉你，自动把文件夹修好并重新打开自己。
-    它的主页会在同一个窗口里打开每一个示例 —— 按 <b>1</b>–<b>4</b> 或点击某一行即可，顶部那条横栏能把你带回来。</p>
-  <p>在导览里，<b>C</b> 切换影院模式，<b>F11</b> 全屏，<b>Space</b> 暂停（在探索模式下则是播放当前控件），
-    方向键切换章节，<b>Esc</b> 回到开始界面。</p>
-  <p>在用 AI 编程助手？<a href="#ai">一条命令打开这三个示例 →</a></p>
-</section>
-
-<section id="ai">
-  <h2>从 AI 编程助手里打开它</h2>
-  <p class="sub">
-    gohud 附带一个带斜杠命令的 Claude Code 插件。敲一条命令，控件画廊或演示就会在自己的 Godot 窗口里打开 ——
-    不用启动编辑器，也不用去翻场景文件。
-  </p>
-
-  <h3 id="install-the-commands-once">命令只需安装一次</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# 然后重启 Claude Code</code></pre>
-  <p>Codex 等其他助手也能用同一份技能：把本仓库的 <code>skills/gohud</code> 复制到该助手的技能目录即可。</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> —— 控件画廊</h3>
-  <p>打开画廊：每一个控件、可切换全部六套预设的选择器，以及完整图标集。在你自己的 Godot 项目里敲这条命令，
-    它会用<b>你的</b> <code>addons/gohud</code>；没有的话就用插件自带的副本，或者新克隆一份。
-    它跑在一个用完即弃的沙箱项目里，因此不会动到你的自动加载和导入缓存，窗口会一直开着，直到你关掉为止。</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> —— 15 章导览</h3>
-  <p>打开演示的开始界面。<b>开始演示</b>会用真实输入播放整段导览；<b>探索控件</b>让你手动试用单个控件。
-    <a href="#examples">示例</a>一节列出的按键在这里同样有效。</p>
-
-  <h3 id="many-other-commands">还有很多命令</h3>
-  <table>
-    <thead><tr><th>命令</th><th>作用</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>中世纪预设下的角色面板、行囊和任务日志</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>直接打开演示的某一章 —— <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>用指定预设打开画廊；加 <code>--phone</code> 得到 390×844 的手机窗口，或用 <code>--size 1920x1080</code> 指定任意尺寸</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>打开你自己项目里的场景，并在该项目中运行</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>列出全部目标、预设 id 和演示章节名</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>不开窗口的无头冒烟测试 —— 脚本报错就判定失败</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>全部功能分组列出，每项一行代码</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>深入讲一个领域 —— <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>直接开口问也行。</b> 这份技能把 gohud 的整套 API 都教给了助手，所以用大白话提要求同样管用 ——
-    <i>“用 gohud 做一个暂停菜单”</i>。如果是以普通技能的方式装在 <code>~/.claude/skills/gohud</code>，
-    命令要用空格分开：<code>/gohud preview demo</code>、<code>/gohud features</code>。
-    预览需要 <code>PATH</code> 上有 Godot 4.6 或更高版本，也可以用 <code>--godot /path/to/godot</code> 指定路径。
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">gohud 自带 AI 技能：完整 API、可直接运行的模板和预览启动器。把下面这一段粘贴给你的编码代理，它就会装好 gohud 并知道怎么用。</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -497,7 +372,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>检查、发布与这个网站</h2>
   <p class="sub">一个入口跑完所有检查；每一部分都能发现其他部分看不到的问题。</p>
 

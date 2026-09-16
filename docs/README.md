@@ -1,9 +1,35 @@
 # gohud documentation
 
-The site lives in [`www/`](../www/index.html) at the repository root. English is the default; Korean is available at
-[`www/ko/`](../www/ko/index.html). Both languages include overview, theming and widget pages,
-with definitions available by hovering, tapping or focusing a technical term. Escape closes
+The site lives in [`www/`](../www/index.html) at the repository root. English is the default; sixteen more
+languages sit in their own folders (`www/ko/`, `www/ja/`, …) — the list is [`tools/site_langs.py`](../tools/site_langs.py).
+
+Every language has the **same five pages**, listed in `PAGES` in that same file:
+
+| Page | What it holds |
+|---|---|
+| `index.html` | Overview — showcase, what it takes off your hands, presets, skins, a widget summary, and signposts to install / quick start / AI skill |
+| `install.html` | The AI-skill card first, then install, quick start, examples, and the repository's own checks |
+| `ai.html` | AI SKILL — the block to paste into a coding agent, where each agent keeps skills, the commands, and "or just ask" |
+| `widgets.html` | Widget reference |
+| `theming.html` | Themes, tokens, skins and readability |
+
+The three original names never change — released ZIPs link to them absolutely (see
+[`tools/build_site.sh`](../tools/build_site.sh)); pages are only ever **added**.
+
+Definitions are available by hovering, tapping or focusing a technical term. Escape closes
 a definition; Tab reaches its reference link. The glossary button controls term underlines.
+
+## What is generated, and from where
+
+Do not hand-edit these — run `python3 tools/make_site.py`:
+
+| Generated | Source of truth |
+|---|---|
+| The header menu on all 85 pages | [`tools/site_nav.py`](../tools/site_nav.py) — labels per language, and the four rules for what may appear there |
+| `ai.html` in all 17 languages | [`tools/site_ai_text.py`](../tools/site_ai_text.py) + [`tools/make_ai_page.py`](../tools/make_ai_page.py) |
+| Language picker, `hreflang`, heading anchors, script tags | `tools/make_site.py` |
+| The dial tables in `theming.html` | the skin scripts' `@export` lines |
+| Glossary and search index | `tools/make_site.py`, `tools/make_search.py` |
 
 ## GitHub Pages
 

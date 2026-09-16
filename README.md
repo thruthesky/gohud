@@ -568,8 +568,12 @@ See [the demo guide](examples/demo/README.md) for recording, testing and ZIP set
 ## Documentation website
 
 The site at **[https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)** is plain
-HTML in [`www/`](www/index.html) — English at the root, Korean in `ko/` — with definitions
-that open on hover, tap or keyboard focus. A GitHub Actions workflow
+HTML in [`www/`](www/index.html) — English at the root, sixteen more languages in their own folders —
+with definitions that open on hover, tap or keyboard focus. Every language has the same five pages:
+overview, [install](www/install.html), [**AI SKILL**](www/ai.html), [widgets](www/widgets.html) and
+[theming](www/theming.html). The header menu and the whole AI SKILL page are **generated** from
+[`tools/site_nav.py`](tools/site_nav.py) and [`tools/site_ai_text.py`](tools/site_ai_text.py) —
+edit those, not the 85 HTML files. A GitHub Actions workflow
 ([`.github/workflows/pages.yml`](.github/workflows/pages.yml)) publishes `www/` itself as the site root.
 Old `docs/www/` addresses keep working: `www/404.html` forwards pages, and images keep a copy at their old
 address so the READMEs in released ZIPs still show them.

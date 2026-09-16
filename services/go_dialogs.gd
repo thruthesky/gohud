@@ -47,6 +47,23 @@ enum ActionLayout { VERTICAL, HORIZONTAL, AUTO }
 ## 🛑 컨테이너 기본값에 기대지 않는다 — 테마에 따라 0 이라 두 버튼이 붙는다.
 @export var action_gap := -1
 
+## 이미 창이 떠 있을 때 **`confirm()` 도 차례를 기다릴 것인가**.
+##
+## 🛑 기본은 꺼짐 — **묻는 것과 알리는 것은 다르게 다룬다.**
+##
+## | | 창이 떠 있을 때 | 왜 |
+## |---|---|---|
+## | `confirm()`·`confirm_key()` | **곧바로 `false`**(기본) | 물음이 밀리면 사용자는 아까 무엇에 답하는지 모르는 채 "예" 를 누른다. 겹친 확인창은 오조작을 만든다 — 차라리 묻지 않은 것으로 친다. 부른 쪽이 `false` 를 받아 알 수 있다 |
+## | `alert()`·`alert_key()` | **언제나 줄을 선다** | 되돌릴 수 없다. `-> void` 라 부른 쪽이 "안 보였다" 를 알 방법이 **없고**, 그래서 오류 메시지가 조용히 증발한다(2026-09-16 실측: 서버 오류 두 개가 연달아 나면 두 번째를 아무도 못 봤다) |
+##
+## 이 값을 켜면 `confirm()` 도 줄을 선다 — 물음을 하나도 잃으면 안 되는 화면에서만.
+## 🔑 `alert()` 는 이 값과 **무관하게** 줄을 선다. 알림을 버리는 선택지는 두지 않는다.
+@export var queue_when_busy := false
+
+## 차례를 기다릴 수 있는 최대 개수. 넘치면 **가장 오래된 것부터** 버린다(그 쪽은 취소로 답한다).
+## 🛑 0 이면 무제한 — 끊긴 서버에 초당 여러 번 붙는 코드가 창을 수백 개 쌓을 수 있다.
+@export var queue_limit := 8
+
 ## 본문과 버튼 줄 사이 간격(dp). 음수면 표면의 구획 간격 그대로.
 ## 🔑 버튼끼리보다 넓게 두면 "질문" 과 "고르기" 가 두 덩어리로 읽힌다.
 @export var body_gap := -1
@@ -62,6 +79,16 @@ var _actions: BoxContainer
 var _actions_margin: MarginContainer
 var _next_layout := -1
 var _open := false
+## 차례를 기다리는 요청. 🛑 **신호 하나로는 안 된다** — `answered` 를 여럿이 함께 기다리면 모두
+##    같은 답을 받는다. 요청마다 자기 티켓의 신호를 기다린다.
+var _queue: Array[Dictionary] = []
+## 지금 떠 있는 창을 부른 쪽의 알림표.
+var _ticket: Ticket
+
+
+## 요청 하나의 **자기 차례 알림표**. 창을 돌려 쓰므로 "누구에게 온 답인가" 를 이것으로 가른다.
+class Ticket extends RefCounted:
+	signal done(yes: bool)
 var _title_key := ""
 var _body_key := ""
 var _ok_key := ""
@@ -116,49 +143,91 @@ func _ready() -> void:
 ## 🛑 이미 창이 떠 있으면 곧바로 `false` 다 — 확인창 두 개가 겹치지 않게 한다.
 func confirm(title: String, body: String, ok_text := "", cancel_text := "", extra := "", args := {},
 		destructive := false) -> bool:
-	if _open: return false
-	_translate = false
-	_cancel.visible = true
-	_cancel_key = cancel_text if not cancel_text.is_empty() else GoUi.text(&"cancel")
-	_tone(destructive)
-	_apply(title, body, ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args)
-	return await answered
+	return await _request(false, true, cancel_text if not cancel_text.is_empty() else GoUi.text(&"cancel"),
+		destructive, title, body, ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args)
 
 
 ## 번역 키로 묻는다. `destructive` 는 `confirm()` 과 같다.
 func confirm_key(title_key: String, body_key: String, ok_key := "", cancel_key := "",
 		extra := "", args := {}, destructive := false) -> bool:
-	if _open: return false
-	_translate = true
-	_cancel.visible = true
-	_cancel_key = cancel_key if not cancel_key.is_empty() else GoUi.text_key(&"cancel")
-	_tone(destructive)
-	_apply(title_key, body_key, ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args)
-	return await answered
+	return await _request(true, true, cancel_key if not cancel_key.is_empty() else GoUi.text_key(&"cancel"),
+		destructive, title_key, body_key, ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args)
 
 
 ## 알린다(확인 버튼 하나).
 func alert(title: String, body: String, ok_text := "", extra := "", args := {}) -> void:
-	if _open: return
-	_translate = false
-	_cancel.visible = false
-	_tone(false)
-	_apply(title, body, ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args)
-	await answered
+	await _request(false, false, "", false, title, body,
+		ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args, true)
 
 
 ## 번역 키로 알린다.
 func alert_key(title_key: String, body_key: String, ok_key := "", extra := "", args := {}) -> void:
-	if _open: return
-	_translate = true
-	_cancel.visible = false
-	_tone(false)
-	_apply(title_key, body_key, ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args)
-	await answered
+	await _request(true, false, "", false, title_key, body_key,
+		ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args, true)
 
 
 func is_open() -> bool:
 	return _open
+
+
+## 차례를 기다리는 요청 수(지금 떠 있는 것은 빼고).
+func pending() -> int:
+	return _queue.size()
+
+
+## 기다리는 것을 전부 **취소로** 답하고 비운다. 화면을 떠날 때(로그아웃·씬 전환) 부른다.
+## 🛑 `await` 로 붙잡힌 코드는 이것을 부르지 않으면 영영 돌아오지 않는다.
+func clear_pending() -> void:
+	var waiting := _queue
+	_queue = []
+	for item in waiting: (item["ticket"] as Ticket).done.emit(false)
+
+
+## 네 진입점이 모이는 **단 하나의 길**. 창이 비어 있으면 곧바로, 차 있으면 차례를 기다린다.
+## `must_show` 는 **알림**이다 — 버릴 수 없으므로 `queue_when_busy` 와 상관없이 줄을 선다.
+func _request(translate: bool, cancel_visible: bool, cancel_key: String, destructive: bool,
+		title: String, body: String, ok: String, extra: String, args: Dictionary,
+		must_show := false) -> bool:
+	var ticket := Ticket.new()
+	var item := {
+		"translate": translate, "cancel_visible": cancel_visible, "cancel_key": cancel_key,
+		"destructive": destructive, "title": title, "body": body, "ok": ok, "extra": extra,
+		"args": args.duplicate(), "layout": _next_layout, "ticket": ticket,
+	}
+	# 🔑 1회용 배치는 **그 요청** 을 따라간다 — 줄 서 있는 동안 다른 요청이 가져가면 안 된다.
+	_next_layout = -1
+	if not _open:
+		_show(item)
+		return await ticket.done
+	if not must_show and not queue_when_busy:
+		# 🛑 **묻는 것은 버린다.** 겹친 확인창은 "무엇에 답하는지 모르는 예" 를 만든다.
+		#    부른 쪽은 `false` 를 받아 "묻지 못했다" 를 알 수 있다.
+		return false
+	_queue.append(item)
+	# 🛑 넘치면 **가장 오래된 것**을 버린다. 최근 것이 대개 더 중요하고(마지막 오류가 원인에 가깝다),
+	#    새 것을 버리면 방금 일어난 일을 영영 못 보게 된다.
+	while _queue.size() > queue_limit and queue_limit > 0:
+		var dropped: Dictionary = _queue.pop_front()
+		(dropped["ticket"] as Ticket).done.emit(false)
+	return await ticket.done
+
+
+## 큐 항목 하나를 실제로 띄운다.
+func _show(item: Dictionary) -> void:
+	_translate = item["translate"]
+	_cancel.visible = item["cancel_visible"]
+	_cancel_key = item["cancel_key"]
+	_next_layout = item["layout"]
+	_ticket = item["ticket"]
+	_tone(item["destructive"])
+	_apply(item["title"], item["body"], item["ok"], item["extra"], item["args"])
+
+
+## 창이 비었다 — 기다리는 것이 있으면 **다음 프레임에** 연다.
+## 🛑 같은 프레임에 다시 열면 닫히는 애니메이션과 겹쳐 창이 깜빡이지 않고 글자만 바뀐다.
+func _pump() -> void:
+	if _open or _queue.is_empty(): return
+	_show(_queue.pop_front())
 
 
 ## 다음에 여는 창 **하나만** 버튼 배치를 바꾼다. 그 창이 닫히면 `action_layout` 으로 돌아간다.
@@ -295,7 +364,14 @@ func _finish(yes: bool) -> void:
 	#    화면을 안 보고도 알 수 있어야 한다.
 	if yes: GoFeedback.confirmed()
 	else: GoFeedback.canceled()
+	# 🛑 **이 요청을 부른 쪽에게 먼저** 답한다. `answered` 는 누가 물었는지 모르는 방송이라,
+	#    여럿이 기다릴 때 그것만으로는 답이 섞인다.
+	var ticket := _ticket
+	_ticket = null
 	answered.emit(yes)
+	if ticket != null: ticket.done.emit(yes)
+	# 다음 차례. 같은 프레임에 열면 닫힘과 겹쳐 글자만 바뀌어 보인다.
+	if not _queue.is_empty(): _pump.call_deferred()
 
 
 func _notification(what: int) -> void:

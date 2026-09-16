@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/install.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/install.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/install.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/install.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/install.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/install.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/install.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/install.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/install.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/install.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/install.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/install.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/install.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/install.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/install.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/install.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/install.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/install.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ติดตั้ง gohud — gohud</title>
+<meta name="description" content="วิธีติดตั้ง gohud ในโปรเจกต์ Godot 4.6+ — วางครั้งเดียวให้เอเจนต์ AI จาก ZIP ของรุ่น หรือเป็น submodule ของ git">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">ภาพรวม</a>
+      <a href="install.html" aria-current="page">ติดตั้ง</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">วิดเจ็ต</a>
+      <a href="theming.html">ธีม</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>ไทย</summary>
+        <div class="langs-list">
+          <a href="../install.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/install.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/install.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/install.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/install.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/install.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/install.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/install.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/install.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/install.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/install.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/install.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/install.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/install.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/install.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="install.html" hreflang="th" lang="th" aria-current="true">ไทย</a>
+          <a href="../ar/install.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>ติดตั้ง gohud</h1>
+    <p class="lead">
+      มีสองทาง ให้เอเจนต์ AI ทำให้ หรือวางโฟลเดอร์ลงในโปรเจกต์ของคุณ — ไม่มีอะไรต้องตั้งค่าเพิ่ม
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="ai-first">
+  <div class="note ai-card">
+    <h2>ทางที่เร็วที่สุด — ให้เอเจนต์ AI ติดตั้งให้</h2>
+    <p>ข้อความบล็อกเดียว วางลงใน Claude Code, Codex, Cursor หรือ Gemini CLI จะติดตั้งทั้ง skill และแอดออน แล้วอธิบาย gohud ให้คุณฟัง ถ้าไปทางนี้ ทุกอย่างใต้การ์ดนี้ไม่จำเป็นเลย</p>
+    <p><a class="btn primary" href="ai.html#copy">เปิดหน้า AI SKILL →</a></p>
+  </div>
+</section>
+
+<section id="install">
+  <h2>ติดตั้ง</h2>
+  <p class="sub">แค่วางโฟลเดอร์แอดออนลงในโปรเจกต์ ไม่มีอะไรต้องตั้งค่าเพิ่ม</p>
+
+  <h3 id="from-the-asset-store-or-a-release-zip">จาก Asset Store หรือไฟล์ ZIP ของรีลีส</h3>
+  <p>แตกไฟล์ลงที่รากโปรเจกต์ให้ได้เป็น <code>res://addons/gohud/</code> เท่านี้จบ หรือจะเปิดใช้เพิ่มเติมที่
+    <b>Project → Project Settings → Plugins → gohud</b> ก็ได้</p>
+
+  <h3 id="as-a-git-submodule">ในรูปแบบ git submodule</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # ไม่บังคับ: ตรึงไว้ที่แท็กหรือคอมมิตหนึ่ง</code></pre>
+  <p>รากของรีโพ<b>คือ</b>ตัวโฟลเดอร์แอดออน มันจึงลงไปอยู่ตรงตำแหน่งที่ Godot คาดหวังพอดี แก้ไขได้ในที่เดิม
+    คอมมิตและ push ภายใน <code>addons/gohud</code> แล้วค่อยคอมมิตตัวชี้ของ submodule ในโปรเจกต์เกม</p>
+
+  <div class="note warn">
+    <b>ต้องใช้ Godot 4.6 ขึ้นไป</b> gohud ใช้ API ที่เพิ่มเข้ามาใน 4.5 (DPITexture,
+    FoldableContainer, พร็อพเพอร์ตี้ด้านการเข้าถึง) เวอร์ชันที่เก่ากว่านั้นจะ<b>พังตั้งแต่ตอนแปลงสคริปต์</b>
+    4.6 คือขั้นต่ำที่รองรับ และบันทึกไว้ใน <code>GoUi.MIN_ENGINE</code>
+  </div>
+</section>
+
+<section id="start">
+  <h2>เริ่มใช้งาน</h2>
+  <p class="sub">ทุกวิดเจ็ตสร้างด้วย <code>.new()</code> แล้ว <code>add_child()</code> — ไม่มีไฟล์ซีน ไม่มี autoload</p>
+
+  <h3 id="pick-a-look-before-building-ui-optional">เลือกลุคก่อนลงมือสร้าง UI (ไม่บังคับ)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # ถ้าข้ามบรรทัดนี้จะใช้ default_dark</code></pre>
+
+  <h3 id="a-confirmation-you-await">กล่องยืนยันที่ <code>await</code> ได้</h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("ลบไฟล์เซฟ", "การกระทำนี้ย้อนกลับไม่ได้"):
+    delete_save()</code></pre>
+  <p>ส่ง <code>destructive = true</code> (อาร์กิวเมนต์ตัวสุดท้าย) แล้วปุ่มยืนยันจะถูกวาดเป็นปุ่มอันตรายแบบทึบ</p>
+
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">บอททอมชีตที่มีช่องค้นหาและแถบท้ายติดหนึบ</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("กระเป๋าของ")
+sheet.toolbar().add_child(GoStyle.line_edit("ค้นหา…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("ปิด", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>ทำไมแถวติดหนึบถึงแยกออกจากตัวเนื้อหาที่เลื่อนได้</b> ถ้าเอาปุ่มยืนยันกับยกเลิกไปใส่ใน
+    <code>body</code> รายการที่ยาวจะดันมันตกจอไป ส่วน <code>footer()</code> มองเห็นอยู่เสมอ
+  </div>
+
+  <h3 id="a-hud-corner">มุมหนึ่งของ HUD</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3 id="content-that-keeps-clear-of-the-hud">เนื้อหาที่หลบให้พ้น HUD</h3>
+  <pre><code>form.avoid_hud = true                  # หลบทุก GoHudAnchor ที่มองเห็นอยู่
+joystick_anchor.reserve_space = false  # …ยกเว้นอันที่โผล่มาเฉพาะตอนมีนิ้วแตะ
+notice_anchor.avoid_peers = true       # ให้ toast ไปลงใต้ HUD ที่อยู่กับที่ แทนที่จะบังมัน</code></pre>
+  <p>สี่เหลี่ยมแต่ละผืนจะถูกหลบไปในทิศที่เสียพื้นที่น้อยที่สุด — ลงล่างบนมือถือแนวตั้ง และไปด้านข้างเมื่อวางแนวนอน
+    <a href="widgets.html#hud">HUD หลบตัวเองอย่างไร →</a></p>
+</section>
+
+<section id="examples">
+  <h2>ตัวอย่างที่รันได้จริง</h2>
+  <p class="sub">สามวิธีที่จะเห็น gohud ก่อนเขียนโค้ดสักบรรทัด — ไม่ต้องมีเซิร์ฟเวอร์ ไม่ต้องมี autoload</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">ตัวอย่าง</th><th>วิธีเปิด</th><th>แสดงอะไร</th></tr></thead>
+    <tbody>
+      <tr><td>แกลเลอรี</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>วิดเจ็ตทุกตัว ตัวเลือกพรีเซ็ตที่ติดตั้งไว้ทุกอัน และชุดไอคอนทั้งชุด</td></tr>
+      <tr><td>ยุคกลาง</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>แผ่นข้อมูลตัวละคร ย่าม และสมุดบันทึกเควสต์ ปุ่มต่าง ๆ สลับระหว่างเหล็กกับกระดาษหนัง และเปิดรายละเอียดไอเทม</td></tr>
+      <tr><td>แอปเดโม</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>หน้าแรกที่เปิดแกลเลอรี ทัวร์แนะนำ 15 บท หน้าโชว์เคส และลุคยุคกลาง พร้อมวิดเจ็ตที่ใช้งานได้จริงและการ์ดหนึ่งใบต่อหนึ่งคลาส</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>cd examples/demo &amp;&amp; godot                             # หน้าแรก; เชื่อมลิงก์และอิมพอร์ตให้ในการรันครั้งแรก
+bash examples/demo/run.sh                               # แอปเดียวกัน สั่งจากรากของแอดออน
+bash examples/demo/run.sh -- --open=gallery             # ข้ามหน้าแรกไปเลย
+bash examples/demo/run.sh -- --explore=surfaces         # เปิดเข้าไปที่บทใดบทหนึ่งของทัวร์โดยตรง
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # บันทึกทัวร์เป็นวิดีโอ 1080p / 60 fps</code></pre>
+  <p>แอปเดโมไม่ต้องตั้งค่าอะไรเลย: ถ้าลิงก์ของแอดออนหรือแคชการอิมพอร์ตหายไป มันจะบอกให้รู้ ซ่อมโฟลเดอร์ให้
+    แล้วเปิดตัวเองขึ้นมาใหม่ หน้าแรกของมันเปิดตัวอย่างแต่ละอันในหน้าต่างเดียวกัน — กด <b>1</b>–<b>4</b> หรือคลิก
+    ที่แถว แล้วแถบด้านบนสุดจะพาคุณกลับมา</p>
+  <p>ในทัวร์ <b>C</b> สลับโหมดโรงหนัง <b>F11</b> เต็มจอ <b>Space</b> หยุดชั่วคราว (หรือเล่นวิดเจ็ตปัจจุบันขณะสำรวจ)
+    ปุ่มลูกศรเปลี่ยนบท และ <b>Escape</b> กลับไปหน้าเริ่มต้น</p>
+  <p>ใช้ AI coding agent อยู่ใช่ไหม? <a href="ai.html">เปิดทั้งสามตัวด้วยคำสั่งเดียว →</a></p>
+</section>
+
+<section id="develop">
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud เป็นสัญญาอนุญาต <b>MIT</b> — ทั้งโค้ดและงานภาพ รวมไอคอนค่าเริ่มต้น 84 ชิ้นและไอคอนยุคกลาง 16 ชิ้น
+      ส่วนฟอนต์ Cinzel ที่แถมมาอยู่ภายใต้ SIL Open Font License 1.1</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">บันทึกการเปลี่ยนแปลง</a></p>
+    <p style="font-size:13px">เอาเมาส์ชี้ แตะ หรือโฟกัสที่<b>คำที่ขีดเส้นใต้</b> เพื่อดูความหมายของมัน</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

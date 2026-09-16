@@ -259,6 +259,24 @@ static func text(name: StringName) -> String:
 	return TranslationServer.translate(key)
 
 
+## ♿ 스크린리더가 한 마디로 읽을 수 있게 **조각들을 잇는다**. 빈 조각은 빠진다.
+##
+## ```gdscript
+## node.accessibility_name = GoUi.spoken([label.text, error.text])
+## ```
+##
+## 🛑 **위젯마다 `"%s %s"` 로 잇지 않는다.** 그렇게 하면 잇는 방식이 위젯마다 달라지고,
+##    "화면에 나가는 글자를 코드에 박지 않는다" 는 규칙(검사가 지킨다)도 곳곳에서 새어 나간다.
+##    잇는 규칙이 언어마다 달라져야 할 날이 오면 **여기 한 곳만** 고치면 된다.
+## 🔑 구분자는 문구가 아니라 공백이다 — 번역 대상이 아니므로 키로 빼지 않는다.
+static func spoken(parts: Array) -> String:
+	var kept: Array[String] = []
+	for part in parts:
+		var word := str(part).strip_edges()
+		if not word.is_empty(): kept.append(word)
+	return " ".join(kept)
+
+
 ## 위 문구의 **번역 키**. 자동 번역 라벨(`auto_translate_mode`)에 그대로 넣을 때 쓴다.
 static func text_key(name: StringName) -> String:
 	if config.text_overrides.has(name): return config.text_overrides[name]

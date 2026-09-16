@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/ai.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/ai.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/ai.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/ai.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/ai.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/ai.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/ai.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/ai.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/ai.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/ai.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/ai.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/ai.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/ai.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/ai.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/ai.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/ai.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/ai.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/ai.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI SKILL — gohud</title>
+<meta name="description" content="為 Claude Code、Codex、Cursor、Gemini CLI 等任何編碼代理安裝 gohud AI 技能 —— 複製貼上一段即可。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html">安裝</a>
+      <a class="nav-ai" href="ai.html" aria-current="page">AI SKILL</a>
+      <a href="widgets.html">控制項</a>
+      <a href="theming.html">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../ai.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/ai.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/ai.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/ai.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="ai.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/ai.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/ai.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/ai.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/ai.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/ai.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/ai.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/ai.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/ai.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/ai.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/ai.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/ai.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/ai.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>AI SKILL</h1>
+    <p class="lead">
+      gohud 內建 AI 技能：完整 API、可直接執行的範本與預覽啟動器。把下面這一段貼給你的編碼代理，它就會裝好 gohud 並知道怎麼用。
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#copy">查看要貼上的內容</a>
+      <a class="btn" href="install.html">安裝</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="copy">
+  <h2>把這一段貼給你的編碼代理</h2>
+  <p class="sub">在代理裡開啟你的 Godot 專案，貼上下面這段並送出。它會裝好技能與外掛，再告訴你 gohud 能做什麼。</p>
+  <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+(menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
+
+1. Install the gohud AI skill.
+   Claude Code:
+     claude plugin marketplace add thruthesky/gohud
+     claude plugin install gohud@gohud
+   Any other agent (Codex, Cursor, Gemini CLI, ...):
+     git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud
+     Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
+     ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
+
+2. Install the add-on itself, if addons/gohud/plugin.cfg is missing here.
+   In a git repository:
+     git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+   Otherwise copy the clone to addons/gohud without its .git folder.
+   Then run: godot --headless --path . --import
+
+3. Restart yourself so the skill loads, then tell me what gohud can do
+   and how to preview it.
+
+Docs: https://thruthesky.github.io/gohud/</code></pre>
+  <div class="note">這段刻意用英文書寫 —— 那是所有代理讀得最準的語言。你自己發問用什麼語言都行，技能會用你寫的語言回答。</div>
+</section>
+
+<section id="agents">
+  <h2>各代理存放技能的位置</h2>
+  <p class="sub">想手動安裝？把 <code>skills/gohud</code> 資料夾放到代理讀取的位置。先找到的那個生效。</p>
+  <table>
+    <thead><tr><th>代理</th><th>資料夾放在哪</th><th>指令寫法</th></tr></thead>
+    <tbody>
+      <tr><td>Claude Code — 外掛</td><td data-label="資料夾放在哪"><code>claude plugin install gohud@gohud</code></td><td data-label="指令寫法"><code>/gohud:preview · /gohud:features</code></td></tr>
+      <tr><td>Claude Code — 僅技能</td><td data-label="資料夾放在哪"><code>~/.claude/skills/gohud</code></td><td data-label="指令寫法"><code>/gohud preview · /gohud features</code></td></tr>
+      <tr><td>Claude Code — 僅本專案</td><td data-label="資料夾放在哪"><code>.claude/skills/gohud</code></td><td data-label="指令寫法"><code>/gohud preview</code></td></tr>
+      <tr><td>Codex · Cursor · Gemini CLI — 其他</td><td data-label="資料夾放在哪"><code>.agents/skills/gohud</code></td><td data-label="指令寫法"><code>—</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="commands">
+  <h2>你會得到的指令</h2>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — 控制項藝廊</h3>
+  <p>打開藝廊：每一個控制項、可挑選全部六種預設集的選擇器，以及完整圖示組。在你的 Godot
+    專案裡輸入它，用的就是<b>你自己的</b> <code>addons/gohud</code>；不在專案裡的話，就用外掛內附的
+    那一份，或重新複製一份。它跑在一個用完即丟的沙箱專案裡，所以不會動到你的自動載入與匯入快取，
+    視窗則會一直開著，直到你關掉為止。</p>
+
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15 章導覽</h3>
+  <p>把示範開在起始畫面。<b>開始示範</b>會以真實輸入播放整段導覽；<b>探索控制項</b>
+    讓你親手試玩單一控制項。<a href="install.html#examples">範例</a>那一節列出的按鍵在這裡同樣有效。</p>
+
+  <h3 id="many-other-commands">其他許多指令</h3>
+  <table>
+    <thead><tr><th>指令</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>中世紀預設集下的角色面板、行囊與任務日誌</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>示範直接開在某一章 — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>以某個預設集開啟藝廊；加上 <code>--phone</code> 可得 390×844 的手機視窗，<code>--size 1920x1080</code> 則是任意尺寸</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>你自己專案裡的場景，並在該專案中執行</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>所有目標、預設集 id 與示範章節代號</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>不開視窗的無介面冒煙測試 — 有指令碼錯誤就失敗</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>所有功能，依群組列出，每項一行程式碼</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>深入單一領域 — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+  <p>預覽指令需要 <code>PATH</code> 中有 Godot 4.6 或更新版本。</p>
+</section>
+
+<section id="ask">
+  <h2>直接開口問也行</h2>
+  <div class="note"><b>或者直接問。</b>這份技能把 gohud 的整套 API 都教給代理，所以用白話交代也行 —
+    <i>「用 gohud 做一個暫停選單」</i>。若是以普通技能的方式裝在 <code>~/.claude/skills/gohud</code>，
+    指令中間要空一格：<code>/gohud preview demo</code>、<code>/gohud features</code>。預覽需要你的
+    <code>PATH</code> 上有 Godot 4.6 以上，或者傳入 <code>--godot /path/to/godot</code>。</div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud 採用 <b>MIT</b> — 包含程式碼與圖檔，其中有 84 個預設圖示和 16 個中世紀圖示。內附的
+      Cinzel 字型採用 SIL Open Font License 1.1。</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">變更紀錄</a></p>
+    <p style="font-size:13px">把滑鼠移到<b>有底線的詞</b>上、點一下，或讓它取得焦點，就會顯示它的意思。</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

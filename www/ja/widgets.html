@@ -34,14 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
+      <!-- nav:begin -->
       <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">ウィジェット</a>
       <a href="theming.html">テーマ</a>
-      <a href="widgets.html">ウィジェット</a>
-      <a href="#surfaces">ウィンドウ</a>
-      <a href="#messages">メッセージ</a>
-      <a href="#hud">HUD</a>
-      <a href="#factory">GoStyle</a>
-      <a href="#hooks">フック</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>日本語</summary>
@@ -240,6 +240,10 @@ sheet.footer().visible = true</code></pre>
     パレットを変えてもこの規則は生き残る（WCAG 2.4.11 はフォーカス表示に 3:1 を求めている）。
   </p>
 
+</section>
+
+<section id="hud-widgets">
+  <h2>HUD ウィジェット</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 9か所</h3>
   <p>セーフエリアと画面端の余白を尊重する。<code>landscape_spot</code> を与えれば横持ちで移動する —
     縦持ちで下中央にあるコントロールを、横持ちでは右下へ回せる。</p>

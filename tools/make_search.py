@@ -30,6 +30,9 @@ from html.parser import HTMLParser
 
 import site_langs
 
+# 언어 고르개가 시작하는 표식 — 그 뒤는 쪽 이름이 아니라 언어 이름이다.
+LANGS_MARK = "<!-- langs:begin -->"
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 # 🛑 `make_site.py` 와 같은 환경변수를 본다 — `check_site.py` 가 임시 폴더에 다시 만들어 보고
 #    지금 파일과 견주기 때문이다. 이것이 없으면 검사가 원본을 덮어써 늘 통과한다.
@@ -149,19 +152,25 @@ def cut_page(path):
     return [c for c in cutter.cuts if c["t"]]
 
 
-NAV = re.compile(r'<a href="(\./|theming\.html|widgets\.html)"[^>]*>(.*?)</a>', re.S)
+# 🛑 쪽 이름을 박아 두지 않는다 — `site_langs.PAGES` 에서 만든다. 박아 두었을 때는 쪽을 늘려도
+#    검사가 초록불인 채(`check_site.py` 는 옛 세 이름만 본다) 새 쪽의 딱지가 17 개 언어 모두
+#    영어로 남았다(2026-09-16).
+NAV = re.compile(r'<a (?:class="[^"]*" )?href="(\./|%s)"[^>]*>(.*?)</a>'
+                 % "|".join(re.escape(p) for p in site_langs.PAGES if p != "index.html"), re.S)
 
 
 def page_names(code):
-    """세 쪽의 이름을 그 언어의 말로 얻는다 — 머리띠의 상호 링크에 이미 번역돼 있다.
+    """쪽 이름을 그 언어의 말로 얻는다 — 머리띠 메뉴에 이미 번역돼 있다.
 
-    🛑 첫 쪽(`index.html`)에는 자기 자신으로 가는 링크가 없다. 그래서 **`theming.html`** 의
-    머리띠를 읽는다 — 거기에는 세 쪽이 모두 링크로 있다(`./`·`theming.html`·`widgets.html`).
+    🔑 메뉴가 `tools/site_nav.py` 의 생성물이 된 뒤로는 **어느 쪽을 읽어도** 다섯 쪽이 다 있다.
+    🛑 `<nav>` 안만 읽는다 — 그 앞의 로고도 `href="./"` 라서, 머리 전체를 읽으면 첫 쪽 이름이
+       그 언어의 "소개" 가 아니라 "gohud" 가 된다(2026-09-16 실측).
     """
     path = os.path.join(WWW, site_langs.rel_path(code, "theming.html"))
     names = {}
     if os.path.isfile(path):
         head = open(path, encoding="utf-8").read().split("</header>", 1)[0]
+        head = head.split("<nav>", 1)[-1].split(LANGS_MARK, 1)[0]
         for href, label in NAV.findall(head):
             text = squeeze(re.sub(r"<[^>]+>", "", label)).rstrip("↗").strip()
             if text:

@@ -34,14 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
+      <!-- nav:begin -->
       <a href="./">Overview</a>
-      <a href="theming.html">Theming</a>
+      <a href="install.html">Install</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
       <a href="widgets.html">Widgets</a>
-      <a href="#medieval">Medieval</a>
-      <a href="#tokens">Tokens</a>
-      <a href="#skin">Skins</a>
-      <a href="#own">Your preset</a>
-      <a href="#contrast">Readability</a>
+      <a href="theming.html" aria-current="page">Theming</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>English</summary>
@@ -338,7 +338,8 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4 id="default-skin-goskin-17">Default skin <code>GoSkin</code> — 17</h4>
+  <details class="dial-group" open>
+  <summary><h4 id="default-skin-goskin-17">Default skin <code>GoSkin</code> — 17</h4></summary>
   <table>
     <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
     <tbody>
@@ -361,7 +362,9 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
       <tr><td><code>joystick_ring_width</code></td><td data-label="Default">2.0</td><td>Width (dp) of the joystick's ring.</td></tr>
     </tbody>
   </table>
-  <h4 id="sci-fi-skin-goskinscifi-10">Sci-fi skin <code>GoSkinSciFi</code> — 10</h4>
+  </details>
+  <details class="dial-group">
+  <summary><h4 id="sci-fi-skin-goskinscifi-10">Sci-fi skin <code>GoSkinSciFi</code> — 10</h4></summary>
   <table>
     <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
     <tbody>
@@ -377,7 +380,9 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
       <tr><td><code>bracket_thickness</code></td><td data-label="Default">2.0</td><td>Line thickness (dp) of the coach mark's targeting bracket.</td></tr>
     </tbody>
   </table>
-  <h4 id="medieval-skin-goskinmedieval-5">Medieval skin <code>GoSkinMedieval</code> — 5</h4>
+  </details>
+  <details class="dial-group">
+  <summary><h4 id="medieval-skin-goskinmedieval-5">Medieval skin <code>GoSkinMedieval</code> — 5</h4></summary>
   <table>
     <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
     <tbody>
@@ -388,6 +393,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
       <tr><td><code>slot_rivets</code></td><td data-label="Default">1</td><td>Show small metal rivets on quick slots: 0 hides them, 1 shows them.</td></tr>
     </tbody>
   </table>
+  </details>
   </div>
   <!-- dials:end -->
 

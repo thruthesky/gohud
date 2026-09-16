@@ -23,6 +23,12 @@ step() { printf "\n\033[1m── %s\033[0m\n" "$1"; }
 step "① 단위 검사"
 bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-a 단위 검사 — 나중에 들인 위젯"
+# 🔑 스낵바·스피너·배지·표처럼 뒤에 들인 것들은 파일을 나눠 두었다(`gohud_test.gd` 는 이미 2000줄이
+#    넘는다). **진입점이 둘이면 하나를 잊는다** — 그래서 여기서 나란히 부른다.
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_extra_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 # 🛑 **화면 하나로만 돌리면 다른 화면에서만 도는 코드가 통째로 미검증이다.** 폼의 폭 제한이 그랬고
 #    (폰에서는 상한이 "없음"), HUD 의 가로 자리 이동도 그랬다. 크기를 바꿔 같은 검사를 다시 돌린다.
 for VIEWPORT in 844x390 768x1024 1280x800; do

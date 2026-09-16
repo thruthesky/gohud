@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/ai.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/ai.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/ai.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/ai.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/ai.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/ai.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/ai.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/ai.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/ai.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/ai.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/ai.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/ai.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/ai.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/ai.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/ai.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/ai.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/ai.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/ai.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI SKILL — gohud</title>
+<meta name="description" content="Instale a skill de IA do gohud no Claude Code, Codex, Cursor, Gemini CLI ou qualquer agente — um bloco para copiar e colar.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Visão geral</a>
+      <a href="install.html">Instalação</a>
+      <a class="nav-ai" href="ai.html" aria-current="page">AI SKILL</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="theming.html">Temas</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Português</summary>
+        <div class="langs-list">
+          <a href="../ai.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/ai.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/ai.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/ai.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/ai.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/ai.html" hreflang="es" lang="es">Español</a>
+          <a href="ai.html" hreflang="pt" lang="pt" aria-current="true">Português</a>
+          <a href="../ru/ai.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/ai.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/ai.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/ai.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/ai.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/ai.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/ai.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/ai.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/ai.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/ai.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>AI SKILL</h1>
+    <p class="lead">
+      O gohud traz uma skill de IA: toda a API, modelos prontos a correr e um lançador de pré-visualização. Cole um bloco no seu agente e ele instala o gohud e sabe usá-lo.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#copy">Ver o bloco</a>
+      <a class="btn" href="install.html">Instalação</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="copy">
+  <h2>Cole isto no seu agente de código</h2>
+  <p class="sub">Abra o seu projeto Godot no agente, cole o bloco e envie. Ele instala a skill e o add-on, e depois diz-lhe o que o gohud consegue fazer.</p>
+  <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+(menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
+
+1. Install the gohud AI skill.
+   Claude Code:
+     claude plugin marketplace add thruthesky/gohud
+     claude plugin install gohud@gohud
+   Any other agent (Codex, Cursor, Gemini CLI, ...):
+     git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud
+     Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
+     ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
+
+2. Install the add-on itself, if addons/gohud/plugin.cfg is missing here.
+   In a git repository:
+     git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+   Otherwise copy the clone to addons/gohud without its .git folder.
+   Then run: godot --headless --path . --import
+
+3. Restart yourself so the skill loads, then tell me what gohud can do
+   and how to preview it.
+
+Docs: https://thruthesky.github.io/gohud/</code></pre>
+  <div class="note">O bloco está em inglês de propósito — é o que todos os agentes leem com mais fiabilidade. As suas perguntas podem ser em qualquer língua; a skill responde na língua em que escreve.</div>
+</section>
+
+<section id="agents">
+  <h2>Onde cada agente guarda as skills</h2>
+  <p class="sub">Prefere instalar à mão? Ponha a pasta <code>skills/gohud</code> onde o seu agente lê. Vence a primeira que existir.</p>
+  <table>
+    <thead><tr><th>Agente</th><th>Onde vai a pasta</th><th>Forma dos comandos</th></tr></thead>
+    <tbody>
+      <tr><td>Claude Code — plugin</td><td data-label="Onde vai a pasta"><code>claude plugin install gohud@gohud</code></td><td data-label="Forma dos comandos"><code>/gohud:preview · /gohud:features</code></td></tr>
+      <tr><td>Claude Code — só a skill</td><td data-label="Onde vai a pasta"><code>~/.claude/skills/gohud</code></td><td data-label="Forma dos comandos"><code>/gohud preview · /gohud features</code></td></tr>
+      <tr><td>Claude Code — só este projeto</td><td data-label="Onde vai a pasta"><code>.claude/skills/gohud</code></td><td data-label="Forma dos comandos"><code>/gohud preview</code></td></tr>
+      <tr><td>Codex · Cursor · Gemini CLI — outros</td><td data-label="Onde vai a pasta"><code>.agents/skills/gohud</code></td><td data-label="Forma dos comandos"><code>—</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="commands">
+  <h2>Os comandos que ganha</h2>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — a galeria de widgets</h3>
+  <p>Abre a galeria: todo widget, um seletor para os seis presets e o conjunto completo de ícones. Digite dentro do
+    seu projeto Godot e ele usa o <b>seu</b> <code>addons/gohud</code>; fora de um projeto, usa a cópia que vem com o
+    plugin ou um clone novo. Roda em um projeto sandbox descartável, então seus autoloads e o cache de importação
+    ficam intactos, e a janela continua aberta até você fechá-la.</p>
+
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — o tour guiado de 15 capítulos</h3>
+  <p>Abre a demo na tela inicial. <b>Iniciar a demo</b> toca o tour com entrada real; <b>Explorar os widgets</b>
+    deixa você testar um widget na mão. As teclas listadas em <a href="install.html#examples">Exemplos</a> também valem aqui.</p>
+
+  <h3 id="many-other-commands">Muitos outros comandos</h3>
+  <table>
+    <thead><tr><th>Comando</th><th>O que faz</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>A ficha de personagem, a bolsa e o diário de missões nos presets medievais</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>A demo aberta direto em um capítulo — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>A galeria em um preset; acrescente <code>--phone</code> para uma janela de celular de 390×844 ou <code>--size 1920x1080</code> para qualquer tamanho</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Uma cena do seu próprio projeto, executada dentro dele</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>Todos os alvos, ids de preset e chaves de capítulo da demo</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>Um teste de fumaça headless, sem janela — falha em erros de script</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>Cada recurso, agrupado, uma linha de código para cada</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>Uma área a fundo — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+  <p>Os comandos de pré-visualização precisam do Godot 4.6 ou mais recente no seu <code>PATH</code>.</p>
+</section>
+
+<section id="ask">
+  <h2>Ou simplesmente peça</h2>
+  <div class="note"><b>Ou simplesmente peça.</b> A skill ensina ao agente toda a API do gohud, então pedidos em linguagem comum
+    também funcionam — <i>"Monte um menu de pausa com o gohud"</i>. Instalada como skill simples em
+    <code>~/.claude/skills/gohud</code>, os comandos levam um espaço: <code>/gohud preview demo</code>,
+    <code>/gohud features</code>. As pré-visualizações precisam do Godot 4.6 ou mais novo no seu <code>PATH</code>,
+    ou passe <code>--godot /caminho/para/godot</code>.</div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>O gohud é <b>MIT</b> — código e arte, incluindo 84 ícones padrão e 16 ícones medievais. A fonte
+      Cinzel que acompanha o pacote está sob a SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Changelog</a></p>
+    <p style="font-size:13px">Passe o mouse, toque ou foque um <b>termo sublinhado</b> para ver o que ele significa.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">Возможности</a>
-      <a href="#install">Установка</a>
-      <a href="#start">Быстрый старт</a>
-      <a href="#presets">Пресеты</a>
-      <a href="#examples">Примеры</a>
-      <a href="#ai">Команды ИИ</a>
-      <a href="theming.html">Темы ↗</a>
-      <a href="widgets.html">Виджеты ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">Обзор</a>
+      <a href="install.html">Установка</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Виджеты</a>
+      <a href="theming.html">Темы</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>Русский</summary>
@@ -92,7 +91,8 @@
       <span class="badge">100 иконок в комплекте</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">Установка</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">Установка</a>
       <a class="btn" href="#presets">Посмотреть пресеты</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -173,77 +173,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>Установка</h2>
-  <p class="sub">Положите папку аддона в проект. Больше настраивать нечего.</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">Из Asset Store или ZIP-архива релиза</h3>
-  <p>Распакуйте в корень проекта так, чтобы получилось <code>res://addons/gohud/</code>. Это всё. По желанию включите
-    <b>Project → Project Settings → Plugins → gohud</b>.</p>
-
-  <h3 id="as-a-git-submodule">Как git-подмодуль</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # по желанию: закрепить тег или коммит</code></pre>
-  <p>Корень репозитория <b>и есть</b> папка аддона, поэтому он ложится ровно туда, где его ждёт Godot. Правьте на месте,
-    коммитьте и пушьте внутри <code>addons/gohud</code>, а затем коммитьте указатель подмодуля в своей игре.</p>
-
-  <div class="note warn">
-    <b>Нужен Godot 4.6 или новее.</b> gohud использует API, появившиеся в 4.5 (DPITexture,
-    FoldableContainer, свойства доступности), поэтому на всём, что старше, он <b>падает ещё при разборе</b>.
-    4.6 — поддерживаемый минимум, записанный в <code>GoUi.MIN_ENGINE</code>.
-  </div>
+<section id="install" class="crumb">
+  <h2>Установка gohud</h2>
+  <p class="sub">Два пути. Поручите ИИ-агенту или положите папку в проект — больше настраивать нечего.</p>
+  <p><a class="btn primary" href="install.html">Установка</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>Быстрый старт</h2>
-  <p class="sub">Любой виджет — это <code>.new()</code> и <code>add_child()</code>: ни файлов сцен, ни автозагрузки.</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">Выберите образ до сборки интерфейса (по желанию)</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # если пропустить, используется default_dark</code></pre>
-
-  <h3 id="a-confirmation-you-await">Подтверждение, которое можно <code>await</code></h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("Удалить сохранение", "Это действие необратимо."):
-    delete_save()</code></pre>
-  <p>Передайте <code>destructive = true</code> (последний аргумент) — и кнопка подтверждения нарисуется как залитая кнопка опасного действия.</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Нижний лист с закреплённым полем поиска и подвалом</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("Инвентарь")
-sheet.toolbar().add_child(GoStyle.line_edit("Поиск…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("Закрыть", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>Почему закреплённые ряды отделены от прокручиваемого тела.</b> Положите подтверждение и отмену в
-    <code>body</code> — и длинный список вытолкнет их за экран. <code>footer()</code> виден всегда.
-  </div>
-
-  <h3 id="a-hud-corner">Угол HUD</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">Содержимое, которое держится в стороне от HUD</h3>
-  <pre><code>form.avoid_hud = true                  # обходить каждый видимый GoHudAnchor
-joystick_anchor.reserve_space = false  # …кроме тех, что появляются только под пальцем
-notice_anchor.avoid_peers = true       # уведомление садится под закреплённый HUD, а не накрывает его</code></pre>
-  <p>Каждый прямоугольник обходится в том направлении, где потеря площади меньше: вниз на телефоне в книжной
-    ориентации, вбок — в альбомной. <a href="widgets.html#hud">Как HUD обходит сам себя →</a></p>
+  <p class="sub">Пять строк выводят экран с темой. Полное прохождение — на странице установки.</p>
+  <p><a class="btn" href="install.html#start">Быстрый старт</a></p>
 </section>
 
 <section id="presets">
@@ -413,77 +352,10 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </table>
 </section>
 
-<section id="examples">
-  <h2>Примеры, которые можно запустить</h2>
-  <p class="sub">Три способа посмотреть gohud, не написав ни строки, — и ни одному не нужны ни сервер, ни автозагрузка.</p>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">Пример</th><th>Как открыть</th><th>Что показывает</th></tr></thead>
-    <tbody>
-      <tr><td>Галерея</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Все виджеты, переключатель всех установленных пресетов и полный набор иконок</td></tr>
-      <tr><td>Средневековье</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Лист персонажа, сумка и журнал заданий; кнопки переключают железо и пергамент и открывают описание предмета</td></tr>
-      <tr><td>Демо-приложение</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Домашний экран, открывающий галерею, обучающий тур из 15 глав, витрину и средневековый образ, с живыми виджетами и отдельной карточкой на каждый класс</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # домашний экран; при первом запуске создаёт ссылку и импортирует
-bash examples/demo/run.sh                               # то же приложение, из корня аддона
-bash examples/demo/run.sh -- --open=gallery             # пропустить домашний экран
-bash examples/demo/run.sh -- --explore=surfaces         # открыть сразу на одной главе тура
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # запись тура в 1080p / 60 кадров в секунду</code></pre>
-  <p>Демо-приложению не нужна никакая подготовка: если ссылки на аддон или кэша импорта нет, оно сообщает об этом,
-    чинит папку и открывается заново. Его домашний экран открывает каждый пример в том же окне — нажмите <b>1</b>–<b>4</b>
-    или щёлкните по строке, а полоса сверху вернёт вас назад.</p>
-  <p>В туре <b>C</b> включает режим «кино», <b>F11</b> — полный экран, <b>Space</b> ставит на паузу (или проигрывает
-    текущий виджет в режиме просмотра), стрелки меняют главы, а <b>Escape</b> возвращает на стартовый экран.</p>
-  <p>Пользуетесь ИИ-агентом для кода? <a href="#ai">Откройте все три одной командой →</a></p>
-</section>
-
-<section id="ai">
-  <h2>Запуск из вашего ИИ-агента</h2>
-  <p class="sub">
-    В комплекте с gohud идёт плагин для Claude Code со слэш-командами. Введите одну — и галерея или демо откроется
-    в собственном окне Godot: ни редактор запускать, ни сцену искать не нужно.
-  </p>
-
-  <h3 id="install-the-commands-once">Установите команды один раз</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# затем перезапустите Claude Code</code></pre>
-  <p>Другие агенты, например Codex, могут пользоваться тем же навыком: скопируйте <code>skills/gohud</code> из этого
-    репозитория в папку навыков агента.</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — галерея виджетов</h3>
-  <p>Открывает галерею: все виджеты, переключатель всех шести пресетов и полный набор иконок. Наберите команду внутри
-    своего проекта Godot — и она возьмёт <b>ваш</b> <code>addons/gohud</code>; если его нет, используется копия из плагина
-    или свежий клон. Запуск идёт в одноразовом песочном проекте, поэтому ваши автозагрузки и кэш импорта остаются нетронутыми,
-    а окно держится открытым, пока вы его не закроете.</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — обучающий тур из 15 глав</h3>
-  <p>Открывает демо на стартовом экране. <b>Start demo</b> проигрывает тур с настоящим вводом; <b>Explore widgets</b>
-    даёт попробовать виджет руками. Клавиши, перечисленные в разделе <a href="#examples">Примеры</a>, работают и здесь.</p>
-
-  <h3 id="many-other-commands">Множество других команд</h3>
-  <table>
-    <thead><tr><th>Команда</th><th>Что делает</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>Лист персонажа, сумка и журнал заданий в средневековых пресетах</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>Демо, открытое сразу на одной главе — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>Галерея в одном пресете; добавьте <code>--phone</code> для окна телефона 390×844 или <code>--size 1920x1080</code> для любого размера</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Сцена вашего проекта, запущенная внутри этого проекта</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>Все цели, идентификаторы пресетов и ключи глав демо</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>Быстрая проверка без окна в headless-режиме — падает при ошибках в скриптах</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>Все возможности по группам, по одной строке кода на каждую</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>Одна область подробно — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>Или просто попросите.</b> Навык обучает агента всему API gohud, поэтому работают и обычные просьбы —
-    <i>«Собери меню паузы на gohud»</i>. Если он установлен как обычный навык в <code>~/.claude/skills/gohud</code>,
-    команды пишутся через пробел: <code>/gohud preview demo</code>, <code>/gohud features</code>. Для предпросмотра нужен
-    Godot 4.6 или новее в <code>PATH</code>, либо передайте <code>--godot /path/to/godot</code>.
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">В gohud входит ИИ-навык: весь API, готовые шаблоны и запуск предпросмотра. Вставьте один блок в своего агента — он установит gohud и будет знать, как им пользоваться.</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -505,7 +377,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>Проверки, релизы и этот сайт</h2>
   <p class="sub">Одна точка входа запускает все проверки; каждая часть видит то, чего не видят остальные.</p>
 

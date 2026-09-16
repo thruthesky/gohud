@@ -34,13 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
+      <!-- nav:begin -->
       <a href="./">소개</a>
-      <a href="theming.html">생김새</a>
-      <a href="widgets.html">위젯</a>
-      <a href="#surfaces">창</a>
-      <a href="#hud">HUD</a>
-      <a href="#factory">팩토리</a>
-      <a href="#hooks">훅</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">위젯</a>
+      <a href="theming.html">테마</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>한국어</summary>
@@ -239,6 +240,10 @@ sheet.footer().visible = true</code></pre>
     (WCAG 2.4.11 은 포커스 표시에 3:1 을 요구한다).
   </p>
 
+</section>
+
+<section id="hud-widgets">
+  <h2>HUD 위젯</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 화면 아홉 자리</h3>
   <p>안전영역과 가장자리 여백을 알아서 지킨다. <code>landscape_spot</code> 을 주면 가로 화면에서
     다른 자리로 옮겨 간다 — 세로에서 아래 가운데에 있던 조작부를 가로에서는 오른쪽 아래로 보내는 식이다.</p>

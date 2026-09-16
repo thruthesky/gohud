@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">Cosa fa</a>
-      <a href="#install">Installazione</a>
-      <a href="#start">Avvio rapido</a>
-      <a href="#presets">Preset</a>
-      <a href="#examples">Esempi</a>
-      <a href="#ai">Comandi AI</a>
-      <a href="theming.html">Temi ↗</a>
-      <a href="widgets.html">Widget ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">Panoramica</a>
+      <a href="install.html">Installazione</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html">Temi</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>Italiano</summary>
@@ -92,7 +91,8 @@
       <span class="badge">100 icone incluse</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">Installa</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">Installa</a>
       <a class="btn" href="#presets">Guarda i preset</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -173,77 +173,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>Installazione</h2>
-  <p class="sub">Metti la cartella dell'add-on dentro il tuo progetto. Non c'è altro da configurare.</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">Dall'Asset Store o da uno ZIP di release</h3>
-  <p>Estrai nella radice del progetto in modo da ottenere <code>res://addons/gohud/</code>. Tutto qui. Facoltativamente abilita
-    <b>Project → Project Settings → Plugins → gohud</b>.</p>
-
-  <h3 id="as-a-git-submodule">Come sottomodulo git</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # facoltativo: fissa un tag o un commit</code></pre>
-  <p>La radice del repository <b>è</b> la cartella dell'add-on, quindi finisce esattamente dove Godot se l'aspetta. Modifica sul posto,
-    fai commit e push dentro <code>addons/gohud</code>, poi committa il puntatore del sottomodulo nel tuo gioco.</p>
-
-  <div class="note warn">
-    <b>Serve Godot 4.6 o più recente.</b> gohud usa API introdotte nella 4.5 (DPITexture,
-    FoldableContainer, proprietà di accessibilità), quindi su qualsiasi versione precedente <b>fallisce già in fase di parsing</b>.
-    La 4.6 è la soglia supportata, registrata in <code>GoUi.MIN_ENGINE</code>.
-  </div>
+<section id="install" class="crumb">
+  <h2>Installare gohud</h2>
+  <p class="sub">Due strade. Falla fare al tuo agente IA, oppure metti la cartella nel progetto — non c'è altro da configurare.</p>
+  <p><a class="btn primary" href="install.html">Installazione</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>Avvio rapido</h2>
-  <p class="sub">Ogni widget è <code>.new()</code> e <code>add_child()</code> — niente file di scena, niente autoload.</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">Scegli un aspetto prima di costruire la UI (facoltativo)</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # se salti questo passo si usa default_dark</code></pre>
-
-  <h3 id="a-confirmation-you-await">Una conferma che puoi mettere in <code>await</code></h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("Elimina salvataggio", "L'operazione non è reversibile."):
-    delete_save()</code></pre>
-  <p>Passa <code>destructive = true</code> (l'ultimo argomento) e il pulsante di conferma viene disegnato come pulsante di pericolo pieno.</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Un foglio inferiore con campo di ricerca e piè di pagina fissi</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("Inventario")
-sheet.toolbar().add_child(GoStyle.line_edit("Cerca…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("Chiudi", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>Perché le righe fisse sono separate dal corpo scorrevole.</b> Metti conferma e annulla dentro
-    <code>body</code> e una lista lunga li spinge fuori dallo schermo. <code>footer()</code> è sempre visibile.
-  </div>
-
-  <h3 id="a-hud-corner">Un angolo di HUD</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">Contenuto che si tiene alla larga dall'HUD</h3>
-  <pre><code>form.avoid_hud = true                  # sta lontano da ogni GoHudAnchor visibile
-joystick_anchor.reserve_space = false  # …tranne quelli che compaiono solo sotto un dito
-notice_anchor.avoid_peers = true       # un avviso si posa sotto l'HUD fisso invece di coprirlo</code></pre>
-  <p>Ogni rettangolo viene evitato nella direzione che costa meno area — verso il basso su un telefono in verticale,
-    di lato in orizzontale. <a href="widgets.html#hud">Come l'HUD evita sé stesso →</a></p>
+  <p class="sub">Cinque righe mettono a schermo una schermata con il tema. Il percorso completo è nella pagina di installazione.</p>
+  <p><a class="btn" href="install.html#start">Avvio rapido</a></p>
 </section>
 
 <section id="presets">
@@ -414,77 +353,10 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </table>
 </section>
 
-<section id="examples">
-  <h2>Esempi che puoi eseguire</h2>
-  <p class="sub">Tre modi per vedere gohud prima di scrivere una riga — nessuno richiede un server o un autoload.</p>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">Esempio</th><th>Come aprirlo</th><th>Che cosa mostra</th></tr></thead>
-    <tbody>
-      <tr><td>Galleria</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Ogni widget, un selettore per ogni preset installato e il set completo di icone</td></tr>
-      <tr><td>Medievale</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Una scheda personaggio, una bisaccia e un diario delle missioni; i pulsanti alternano ferro e pergamena e aprono il dettaglio degli oggetti</td></tr>
-      <tr><td>App demo</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Una schermata iniziale che apre la galleria, il tour guidato di 15 capitoli, la schermata vetrina e l'aspetto medievale, con widget dal vivo e una scheda per ogni classe</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # schermata iniziale; collegamenti e importazioni al primo avvio
-bash examples/demo/run.sh                               # la stessa app, dalla radice dell'add-on
-bash examples/demo/run.sh -- --open=gallery             # salta la schermata iniziale
-bash examples/demo/run.sh -- --explore=surfaces         # apri direttamente su un capitolo del tour
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # registrazione del tour a 1080p / 60 fps</code></pre>
-  <p>L'app demo non richiede alcuna configurazione: se manca il collegamento all'add-on o la cache di importazione lo segnala, ripara
-    la cartella e si riapre da sola. La sua schermata iniziale apre ogni esempio dentro la stessa finestra — premi <b>1</b>–<b>4</b> oppure fai clic
-    su una riga, e la barra in alto ti riporta indietro.</p>
-  <p>Nel tour, <b>C</b> attiva la modalità Cinema, <b>F11</b> lo schermo intero, <b>Spazio</b> mette in pausa (o riproduce il widget
-    corrente mentre esplori), le frecce cambiano capitolo e <b>Esc</b> torna alla schermata iniziale.</p>
-  <p>Usi un agente AI per programmare? <a href="#ai">Aprili tutti e tre con un solo comando →</a></p>
-</section>
-
-<section id="ai">
-  <h2>Aprilo dal tuo agente AI</h2>
-  <p class="sub">
-    gohud include un plugin per Claude Code con i comandi slash. Ne digiti uno e la galleria o la demo si apre in una
-    finestra Godot dedicata — nessun editor da avviare, nessuna scena da cercare.
-  </p>
-
-  <h3 id="install-the-commands-once">Installa i comandi una volta sola</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# poi riavvia Claude Code</code></pre>
-  <p>Altri agenti come Codex possono usare la stessa skill: copia <code>skills/gohud</code> da questo repository nella
-    cartella delle skill dell'agente.</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — la galleria dei widget</h3>
-  <p>Apre la galleria: ogni widget, un selettore per tutti e sei i preset e il set completo di icone. Digitalo dentro il tuo progetto
-    Godot e userà <b>il tuo</b> <code>addons/gohud</code>; senza progetto usa la copia inclusa nel plugin,
-    oppure un clone appena fatto. Gira in un progetto sandbox usa e getta, così i tuoi autoload e la cache di importazione restano intatti, e
-    la finestra resta aperta finché non la chiudi.</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — il tour guidato di 15 capitoli</h3>
-  <p>Apre la demo sulla sua schermata iniziale. <b>Avvia la demo</b> riproduce il tour con input reali; <b>Esplora i widget</b>
-    ti lascia provare un widget a mano. I tasti elencati sotto <a href="#examples">Esempi</a> funzionano anche qui.</p>
-
-  <h3 id="many-other-commands">Molti altri comandi</h3>
-  <table>
-    <thead><tr><th>Comando</th><th>Cosa fa</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>La scheda personaggio, la bisaccia e il diario delle missioni nei preset medievali</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>La demo aperta direttamente su un capitolo — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>La galleria in un preset; aggiungi <code>--phone</code> per una finestra telefono 390×844 oppure <code>--size 1920x1080</code> per una dimensione qualsiasi</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Una scena del tuo progetto, eseguita dentro quel progetto</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>Ogni destinazione, id di preset e chiave di capitolo della demo</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>Uno smoke test headless senza finestra — fallisce sugli errori di script</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>Ogni funzione, raggruppata, una riga di codice ciascuna</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>Un'area in profondità — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>Oppure chiedi e basta.</b> La skill insegna all'agente l'intera API di gohud, quindi funzionano anche le richieste in linguaggio naturale —
-    <i>"Costruisci un menu di pausa con gohud"</i>. Installati come semplice skill in <code>~/.claude/skills/gohud</code>, i
-    comandi vogliono uno spazio: <code>/gohud preview demo</code>, <code>/gohud features</code>. Le anteprime richiedono Godot 4.6 o
-    più recente nel <code>PATH</code>, oppure passa <code>--godot /path/to/godot</code>.
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">gohud include una skill IA: tutta l'API, modelli pronti all'uso e un avviatore di anteprima. Incolla un blocco nel tuo agente: installa gohud e sa come usarlo.</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -506,7 +378,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>Verifiche, release e questo sito</h2>
   <p class="sub">Un unico punto d'ingresso esegue tutte le verifiche; ogni parte vede qualcosa che le altre non vedono.</p>
 

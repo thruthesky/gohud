@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">Làm được gì</a>
-      <a href="#install">Cài đặt</a>
-      <a href="#start">Bắt đầu nhanh</a>
-      <a href="#presets">Preset</a>
-      <a href="#examples">Ví dụ</a>
-      <a href="#ai">Lệnh AI</a>
-      <a href="theming.html">Theme ↗</a>
-      <a href="widgets.html">Widget ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">Tổng quan</a>
+      <a href="install.html">Cài đặt</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html">Theme</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>Tiếng Việt</summary>
@@ -91,7 +90,8 @@
       <span class="badge">Kèm 100 biểu tượng</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">Cài đặt</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">Cài đặt</a>
       <a class="btn" href="#presets">Xem các preset</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -172,77 +172,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>Cài đặt</h2>
-  <p class="sub">Đặt thư mục add-on vào dự án. Không phải thiết lập gì thêm.</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">Từ Asset Store hoặc file ZIP bản phát hành</h3>
-  <p>Giải nén vào thư mục gốc của dự án sao cho có <code>res://addons/gohud/</code>. Chỉ vậy thôi. Nếu muốn, hãy bật
-    <b>Project → Project Settings → Plugins → gohud</b>.</p>
-
-  <h3 id="as-a-git-submodule">Dưới dạng git submodule</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # tùy chọn: ghim vào một tag hoặc commit</code></pre>
-  <p>Thư mục gốc của kho lưu trữ <b>chính là</b> thư mục add-on, nên nó nằm đúng chỗ Godot mong đợi. Sửa ngay tại chỗ,
-    commit và push bên trong <code>addons/gohud</code>, rồi commit con trỏ submodule trong game của bạn.</p>
-
-  <div class="note warn">
-    <b>Bắt buộc Godot 4.6 trở lên.</b> gohud dùng các API xuất hiện từ 4.5 (DPITexture,
-    FoldableContainer, các thuộc tính trợ năng), nên trên bản cũ hơn nó <b>lỗi ngay khi phân tích cú pháp</b>.
-    4.6 là mức thấp nhất được hỗ trợ, ghi trong <code>GoUi.MIN_ENGINE</code>.
-  </div>
+<section id="install" class="crumb">
+  <h2>Cài đặt gohud</h2>
+  <p class="sub">Hai lối vào. Để tác nhân AI làm hộ, hoặc thả thư mục vào dự án — không còn gì phải cấu hình.</p>
+  <p><a class="btn primary" href="install.html">Cài đặt</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>Bắt đầu nhanh</h2>
-  <p class="sub">Mọi widget đều là <code>.new()</code> rồi <code>add_child()</code> — không file scene, không autoload.</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">Chọn diện mạo trước khi dựng UI (tùy chọn)</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # bỏ qua dòng này thì default_dark được dùng</code></pre>
-
-  <h3 id="a-confirmation-you-await">Một hộp thoại xác nhận mà bạn <code>await</code></h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("Xóa bản lưu", "Thao tác này không thể hoàn tác."):
-    delete_save()</code></pre>
-  <p>Truyền <code>destructive = true</code> (đối số cuối) thì nút xác nhận được vẽ thành nút nguy hiểm tô đặc.</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Bảng trượt dưới với ô tìm kiếm và chân trang cố định</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("Túi đồ")
-sheet.toolbar().add_child(GoStyle.line_edit("Tìm kiếm…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("Đóng", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>Vì sao hàng cố định tách khỏi phần thân cuộn được.</b> Đặt nút xác nhận và hủy vào
-    <code>body</code> thì một danh sách dài sẽ đẩy chúng ra khỏi màn hình. <code>footer()</code> thì luôn nhìn thấy được.
-  </div>
-
-  <h3 id="a-hud-corner">Một góc HUD</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">Nội dung biết tránh khỏi HUD</h3>
-  <pre><code>form.avoid_hud = true                  # tránh mọi GoHudAnchor đang hiện
-joystick_anchor.reserve_space = false  # …trừ những cái chỉ hiện ra dưới ngón tay
-notice_anchor.avoid_peers = true       # thông báo nổi nằm xuống dưới HUD cố định thay vì che lên nó</code></pre>
-  <p>Mỗi hình chữ nhật được né theo hướng tốn ít diện tích nhất — xuống dưới trên điện thoại dọc,
-    sang ngang khi nằm ngang. <a href="widgets.html#hud">Cách các mảnh HUD tự né nhau →</a></p>
+  <p class="sub">Năm dòng là có một màn hình đã gắn theme. Toàn bộ các bước nằm ở trang cài đặt.</p>
+  <p><a class="btn" href="install.html#start">Bắt đầu nhanh</a></p>
 </section>
 
 <section id="presets">
@@ -412,77 +351,10 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </table>
 </section>
 
-<section id="examples">
-  <h2>Những ví dụ chạy được ngay</h2>
-  <p class="sub">Ba cách xem gohud trước khi viết dòng nào — không cách nào cần server hay autoload.</p>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">Ví dụ</th><th>Cách mở</th><th>Cho thấy gì</th></tr></thead>
-    <tbody>
-      <tr><td>Gallery</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Mọi widget, một danh sách chọn cho từng preset đã cài, và trọn bộ biểu tượng</td></tr>
-      <tr><td>Trung cổ</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Bảng nhân vật, túi đồ và sổ nhiệm vụ; các nút chuyển giữa sắt và giấy da rồi mở chi tiết món đồ</td></tr>
-      <tr><td>Ứng dụng demo</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Một màn hình chính mở ra gallery, chuyến tham quan 15 chương, màn hình trưng bày và diện mạo trung cổ, với widget chạy thật và mỗi lớp một tấm thẻ</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # màn hình chính; lần chạy đầu sẽ tạo liên kết và import
-bash examples/demo/run.sh                               # vẫn ứng dụng đó, chạy từ thư mục gốc của add-on
-bash examples/demo/run.sh -- --open=gallery             # bỏ qua màn hình chính
-bash examples/demo/run.sh -- --explore=surfaces         # mở thẳng vào một chương của chuyến tham quan
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # quay chuyến tham quan ở 1080p / 60 fps</code></pre>
-  <p>Ứng dụng demo không cần thiết lập gì: nếu thiếu liên kết tới add-on hay bộ nhớ đệm import, nó sẽ báo,
-    sửa lại thư mục rồi tự mở lại. Màn hình chính của nó mở từng ví dụ ngay trong cùng một cửa sổ — nhấn
-    <b>1</b>–<b>4</b> hoặc bấm vào một hàng, còn thanh chạy ngang phía trên đưa bạn quay lại.</p>
-  <p>Trong chuyến tham quan, <b>C</b> bật tắt chế độ Cinema, <b>F11</b> toàn màn hình, <b>Space</b> tạm dừng (hoặc chạy
-    widget hiện tại khi đang khám phá), các phím mũi tên đổi chương và <b>Escape</b> quay về màn hình đầu.</p>
-  <p>Đang dùng một AI coding agent? <a href="#ai">Mở cả ba bằng một lệnh →</a></p>
-</section>
-
-<section id="ai">
-  <h2>Mở nó từ AI coding agent của bạn</h2>
-  <p class="sub">
-    gohud kèm theo một plugin cho Claude Code với các lệnh gạch chéo. Gõ một lệnh là gallery hoặc bản demo mở ra
-    trong cửa sổ Godot riêng của nó — không phải khởi động trình soạn thảo, không phải đi tìm scene.
-  </p>
-
-  <h3 id="install-the-commands-once">Cài các lệnh một lần</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# rồi khởi động lại Claude Code</code></pre>
-  <p>Các agent khác như Codex dùng được đúng skill đó: chép <code>skills/gohud</code> từ kho này vào
-    thư mục skill của agent.</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — gallery widget</h3>
-  <p>Mở gallery: mọi widget, một danh sách chọn cho cả sáu preset và trọn bộ biểu tượng. Gõ lệnh này bên trong dự án
-    Godot của bạn thì nó dùng <code>addons/gohud</code> của <b>bạn</b>; không có thì nó dùng bản kèm theo plugin,
-    hoặc clone mới một bản. Nó chạy trong một dự án sandbox dùng xong bỏ, nên autoload và bộ nhớ đệm import của bạn
-    không bị đụng tới, còn cửa sổ thì mở cho đến khi bạn đóng.</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — chuyến tham quan 15 chương</h3>
-  <p>Mở bản demo ở màn hình đầu. <b>Bắt đầu demo</b> chạy chuyến tham quan bằng thao tác thật; <b>Khám phá widget</b>
-    cho bạn tự thử từng widget. Các phím liệt kê ở mục <a href="#examples">Ví dụ</a> cũng dùng được ở đây.</p>
-
-  <h3 id="many-other-commands">Nhiều lệnh khác</h3>
-  <table>
-    <thead><tr><th>Lệnh</th><th>Làm gì</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>Bảng nhân vật, túi đồ và sổ nhiệm vụ trong các preset trung cổ</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>Bản demo mở thẳng vào một chương — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>Gallery trong một preset; thêm <code>--phone</code> để có cửa sổ điện thoại 390×844 hoặc <code>--size 1920x1080</code> cho kích thước bất kỳ</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Một scene trong dự án của bạn, chạy ngay bên trong dự án đó</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>Mọi mục tiêu, id preset và khóa chương demo</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>Một lượt kiểm tra nhanh không cửa sổ — sẽ báo lỗi nếu script có lỗi</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>Mọi tính năng, xếp theo nhóm, mỗi cái một dòng code</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>Một mảng đi sâu — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>Hoặc cứ hỏi thẳng.</b> Skill này dạy cho agent toàn bộ API của gohud, nên yêu cầu bằng lời bình thường cũng chạy —
-    <i>"Dựng giúp tôi một menu tạm dừng bằng gohud"</i>. Nếu cài như một skill thường ở <code>~/.claude/skills/gohud</code>,
-    các lệnh viết cách ra một khoảng trắng: <code>/gohud preview demo</code>, <code>/gohud features</code>. Xem trước cần
-    Godot 4.6 trở lên nằm trong <code>PATH</code>, hoặc truyền <code>--godot /path/to/godot</code>.
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">gohud có sẵn một AI skill: toàn bộ API, mẫu chạy được ngay và trình mở xem trước. Dán một khối dưới đây vào tác nhân lập trình của bạn, nó sẽ cài gohud và biết cách dùng.</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -504,7 +376,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>Kiểm tra, phát hành và trang web này</h2>
   <p class="sub">Một điểm vào chạy mọi lượt kiểm tra; mỗi phần thấy được thứ mà các phần kia không thấy.</p>
 

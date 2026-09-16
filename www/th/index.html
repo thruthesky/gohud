@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">ทำอะไรให้บ้าง</a>
-      <a href="#install">ติดตั้ง</a>
-      <a href="#start">เริ่มใช้งาน</a>
-      <a href="#presets">พรีเซ็ต</a>
-      <a href="#examples">ตัวอย่าง</a>
-      <a href="#ai">คำสั่ง AI</a>
-      <a href="theming.html">ธีม ↗</a>
-      <a href="widgets.html">วิดเจ็ต ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">ภาพรวม</a>
+      <a href="install.html">ติดตั้ง</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">วิดเจ็ต</a>
+      <a href="theming.html">ธีม</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>ไทย</summary>
@@ -91,7 +90,8 @@
       <span class="badge">แถมไอคอน 100 แบบ</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">ติดตั้ง</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">ติดตั้ง</a>
       <a class="btn" href="#presets">ดูพรีเซ็ตทั้งหมด</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -172,77 +172,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>ติดตั้ง</h2>
-  <p class="sub">แค่วางโฟลเดอร์แอดออนลงในโปรเจกต์ ไม่มีอะไรต้องตั้งค่าเพิ่ม</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">จาก Asset Store หรือไฟล์ ZIP ของรีลีส</h3>
-  <p>แตกไฟล์ลงที่รากโปรเจกต์ให้ได้เป็น <code>res://addons/gohud/</code> เท่านี้จบ หรือจะเปิดใช้เพิ่มเติมที่
-    <b>Project → Project Settings → Plugins → gohud</b> ก็ได้</p>
-
-  <h3 id="as-a-git-submodule">ในรูปแบบ git submodule</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # ไม่บังคับ: ตรึงไว้ที่แท็กหรือคอมมิตหนึ่ง</code></pre>
-  <p>รากของรีโพ<b>คือ</b>ตัวโฟลเดอร์แอดออน มันจึงลงไปอยู่ตรงตำแหน่งที่ Godot คาดหวังพอดี แก้ไขได้ในที่เดิม
-    คอมมิตและ push ภายใน <code>addons/gohud</code> แล้วค่อยคอมมิตตัวชี้ของ submodule ในโปรเจกต์เกม</p>
-
-  <div class="note warn">
-    <b>ต้องใช้ Godot 4.6 ขึ้นไป</b> gohud ใช้ API ที่เพิ่มเข้ามาใน 4.5 (DPITexture,
-    FoldableContainer, พร็อพเพอร์ตี้ด้านการเข้าถึง) เวอร์ชันที่เก่ากว่านั้นจะ<b>พังตั้งแต่ตอนแปลงสคริปต์</b>
-    4.6 คือขั้นต่ำที่รองรับ และบันทึกไว้ใน <code>GoUi.MIN_ENGINE</code>
-  </div>
+<section id="install" class="crumb">
+  <h2>ติดตั้ง gohud</h2>
+  <p class="sub">มีสองทาง ให้เอเจนต์ AI ทำให้ หรือวางโฟลเดอร์ลงในโปรเจกต์ของคุณ — ไม่มีอะไรต้องตั้งค่าเพิ่ม</p>
+  <p><a class="btn primary" href="install.html">ติดตั้ง</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>เริ่มใช้งาน</h2>
-  <p class="sub">ทุกวิดเจ็ตสร้างด้วย <code>.new()</code> แล้ว <code>add_child()</code> — ไม่มีไฟล์ซีน ไม่มี autoload</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">เลือกลุคก่อนลงมือสร้าง UI (ไม่บังคับ)</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # ถ้าข้ามบรรทัดนี้จะใช้ default_dark</code></pre>
-
-  <h3 id="a-confirmation-you-await">กล่องยืนยันที่ <code>await</code> ได้</h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("ลบไฟล์เซฟ", "การกระทำนี้ย้อนกลับไม่ได้"):
-    delete_save()</code></pre>
-  <p>ส่ง <code>destructive = true</code> (อาร์กิวเมนต์ตัวสุดท้าย) แล้วปุ่มยืนยันจะถูกวาดเป็นปุ่มอันตรายแบบทึบ</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">บอททอมชีตที่มีช่องค้นหาและแถบท้ายติดหนึบ</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("กระเป๋าของ")
-sheet.toolbar().add_child(GoStyle.line_edit("ค้นหา…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("ปิด", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>ทำไมแถวติดหนึบถึงแยกออกจากตัวเนื้อหาที่เลื่อนได้</b> ถ้าเอาปุ่มยืนยันกับยกเลิกไปใส่ใน
-    <code>body</code> รายการที่ยาวจะดันมันตกจอไป ส่วน <code>footer()</code> มองเห็นอยู่เสมอ
-  </div>
-
-  <h3 id="a-hud-corner">มุมหนึ่งของ HUD</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">เนื้อหาที่หลบให้พ้น HUD</h3>
-  <pre><code>form.avoid_hud = true                  # หลบทุก GoHudAnchor ที่มองเห็นอยู่
-joystick_anchor.reserve_space = false  # …ยกเว้นอันที่โผล่มาเฉพาะตอนมีนิ้วแตะ
-notice_anchor.avoid_peers = true       # ให้ toast ไปลงใต้ HUD ที่อยู่กับที่ แทนที่จะบังมัน</code></pre>
-  <p>สี่เหลี่ยมแต่ละผืนจะถูกหลบไปในทิศที่เสียพื้นที่น้อยที่สุด — ลงล่างบนมือถือแนวตั้ง และไปด้านข้างเมื่อวางแนวนอน
-    <a href="widgets.html#hud">HUD หลบตัวเองอย่างไร →</a></p>
+  <p class="sub">ห้าบรรทัดก็ได้หน้าจอที่ใส่ธีมแล้ว ขั้นตอนทั้งหมดอยู่ในหน้าติดตั้ง</p>
+  <p><a class="btn" href="install.html#start">เริ่มใช้งาน</a></p>
 </section>
 
 <section id="presets">
@@ -411,77 +350,10 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </table>
 </section>
 
-<section id="examples">
-  <h2>ตัวอย่างที่รันได้จริง</h2>
-  <p class="sub">สามวิธีที่จะเห็น gohud ก่อนเขียนโค้ดสักบรรทัด — ไม่ต้องมีเซิร์ฟเวอร์ ไม่ต้องมี autoload</p>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">ตัวอย่าง</th><th>วิธีเปิด</th><th>แสดงอะไร</th></tr></thead>
-    <tbody>
-      <tr><td>แกลเลอรี</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>วิดเจ็ตทุกตัว ตัวเลือกพรีเซ็ตที่ติดตั้งไว้ทุกอัน และชุดไอคอนทั้งชุด</td></tr>
-      <tr><td>ยุคกลาง</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>แผ่นข้อมูลตัวละคร ย่าม และสมุดบันทึกเควสต์ ปุ่มต่าง ๆ สลับระหว่างเหล็กกับกระดาษหนัง และเปิดรายละเอียดไอเทม</td></tr>
-      <tr><td>แอปเดโม</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>หน้าแรกที่เปิดแกลเลอรี ทัวร์แนะนำ 15 บท หน้าโชว์เคส และลุคยุคกลาง พร้อมวิดเจ็ตที่ใช้งานได้จริงและการ์ดหนึ่งใบต่อหนึ่งคลาส</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # หน้าแรก; เชื่อมลิงก์และอิมพอร์ตให้ในการรันครั้งแรก
-bash examples/demo/run.sh                               # แอปเดียวกัน สั่งจากรากของแอดออน
-bash examples/demo/run.sh -- --open=gallery             # ข้ามหน้าแรกไปเลย
-bash examples/demo/run.sh -- --explore=surfaces         # เปิดเข้าไปที่บทใดบทหนึ่งของทัวร์โดยตรง
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # บันทึกทัวร์เป็นวิดีโอ 1080p / 60 fps</code></pre>
-  <p>แอปเดโมไม่ต้องตั้งค่าอะไรเลย: ถ้าลิงก์ของแอดออนหรือแคชการอิมพอร์ตหายไป มันจะบอกให้รู้ ซ่อมโฟลเดอร์ให้
-    แล้วเปิดตัวเองขึ้นมาใหม่ หน้าแรกของมันเปิดตัวอย่างแต่ละอันในหน้าต่างเดียวกัน — กด <b>1</b>–<b>4</b> หรือคลิก
-    ที่แถว แล้วแถบด้านบนสุดจะพาคุณกลับมา</p>
-  <p>ในทัวร์ <b>C</b> สลับโหมดโรงหนัง <b>F11</b> เต็มจอ <b>Space</b> หยุดชั่วคราว (หรือเล่นวิดเจ็ตปัจจุบันขณะสำรวจ)
-    ปุ่มลูกศรเปลี่ยนบท และ <b>Escape</b> กลับไปหน้าเริ่มต้น</p>
-  <p>ใช้ AI coding agent อยู่ใช่ไหม? <a href="#ai">เปิดทั้งสามตัวด้วยคำสั่งเดียว →</a></p>
-</section>
-
-<section id="ai">
-  <h2>เปิดจาก AI coding agent ของคุณ</h2>
-  <p class="sub">
-    gohud มาพร้อมปลั๊กอินของ Claude Code ที่มีคำสั่งสแลช พิมพ์คำสั่งเดียวแล้วแกลเลอรีหรือเดโมจะเปิดขึ้นมา
-    ในหน้าต่าง Godot ของตัวเอง — ไม่ต้องเปิดเอดิเตอร์ ไม่ต้องไล่หาซีน
-  </p>
-
-  <h3 id="install-the-commands-once">ติดตั้งคำสั่งครั้งเดียว</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# จากนั้นรีสตาร์ต Claude Code</code></pre>
-  <p>เอเจนต์ตัวอื่นอย่าง Codex ก็ใช้สกิลเดียวกันได้: คัดลอก <code>skills/gohud</code> จากรีโพนี้ไปไว้ใน
-    โฟลเดอร์สกิลของเอเจนต์นั้น</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — แกลเลอรีวิดเจ็ต</h3>
-  <p>เปิดแกลเลอรี: วิดเจ็ตทุกตัว ตัวเลือกพรีเซ็ตทั้ง 6 แบบ และชุดไอคอนทั้งชุด ถ้าพิมพ์คำสั่งนี้ในโปรเจกต์ Godot
-    ของคุณ มันจะใช้ <b>ตัวที่อยู่ในโปรเจกต์ของคุณเอง</b> ที่ <code>addons/gohud</code> ถ้าไม่มี ก็จะใช้สำเนาที่มากับปลั๊กอิน หรือโคลนมาใหม่
-    มันรันในโปรเจกต์แซนด์บ็อกซ์ที่ใช้แล้วทิ้ง autoload และแคชการอิมพอร์ตของคุณจึงไม่ถูกแตะต้อง และหน้าต่าง
-    จะเปิดค้างไว้จนกว่าคุณจะปิดเอง</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — ทัวร์แนะนำ 15 บท</h3>
-  <p>เปิดเดโมที่หน้าเริ่มต้น <b>เริ่มเดโม</b> เล่นทัวร์ด้วยอินพุตจริง ส่วน <b>สำรวจวิดเจ็ต</b>
-    ให้คุณลองเล่นทีละตัวด้วยมือ ปุ่มที่ระบุไว้ในหัวข้อ <a href="#examples">ตัวอย่าง</a> ใช้ได้ที่นี่เช่นกัน</p>
-
-  <h3 id="many-other-commands">คำสั่งอื่น ๆ อีกมาก</h3>
-  <table>
-    <thead><tr><th>คำสั่ง</th><th>ทำอะไร</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>แผ่นข้อมูลตัวละคร ย่าม และสมุดบันทึกเควสต์ ในพรีเซ็ตยุคกลาง</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>เปิดเดโมเข้าไปที่บทใดบทหนึ่งโดยตรง — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>แกลเลอรีในพรีเซ็ตเดียว เติม <code>--phone</code> เพื่อได้หน้าต่างขนาดมือถือ 390×844 หรือ <code>--size 1920x1080</code> สำหรับขนาดใดก็ได้</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>ซีนของโปรเจกต์คุณเอง รันอยู่ในโปรเจกต์นั้น</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>เป้าหมายทุกอัน id ของพรีเซ็ต และคีย์ของบทเดโมทั้งหมด</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>สโมกเทสต์แบบไม่มีหน้าต่าง — ล้มเหลวเมื่อสคริปต์มีข้อผิดพลาด</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>ทุกฟีเจอร์ จัดกลุ่มไว้ พร้อมโค้ดบรรทัดเดียวต่อหนึ่งฟีเจอร์</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>เจาะลึกทีละด้าน — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>หรือจะถามเอาเฉย ๆ ก็ได้</b> สกิลนี้สอน API ทั้งหมดของ gohud ให้เอเจนต์ การสั่งด้วยภาษาธรรมดาจึงใช้ได้ —
-    <i>"สร้างเมนูหยุดเกมด้วย gohud"</i> ถ้าติดตั้งเป็นสกิลธรรมดาไว้ที่ <code>~/.claude/skills/gohud</code>
-    คำสั่งจะคั่นด้วยช่องว่างแทน: <code>/gohud preview demo</code>, <code>/gohud features</code> การพรีวิวต้องมี
-    Godot 4.6 ขึ้นไปอยู่ใน <code>PATH</code> ของคุณ หรือส่ง <code>--godot /path/to/godot</code> เข้าไป
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">gohud มี AI skill มาให้ — API ทั้งหมด เทมเพลตที่รันได้ทันที และตัวเปิดพรีวิว วางบล็อกเดียวด้านล่างให้เอเจนต์เขียนโค้ดของคุณ แล้วมันจะติดตั้ง gohud และรู้วิธีใช้</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -503,7 +375,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>การตรวจสอบ การออกรีลีส และเว็บไซต์นี้</h2>
   <p class="sub">จุดเข้าเดียวรันการตรวจสอบทั้งหมด แต่ละส่วนเห็นสิ่งที่ส่วนอื่นมองไม่เห็น</p>
 

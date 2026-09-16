@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/ai.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/ai.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/ai.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/ai.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/ai.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/ai.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/ai.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/ai.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/ai.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/ai.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/ai.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/ai.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/ai.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/ai.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/ai.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/ai.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/ai.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/ai.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI SKILL — gohud</title>
+<meta name="description" content="Pasang AI skill gohud di Claude Code, Codex, Cursor, Gemini CLI, atau agen apa pun — satu blok untuk disalin dan ditempel.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Ringkasan</a>
+      <a href="install.html">Instalasi</a>
+      <a class="nav-ai" href="ai.html" aria-current="page">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Bahasa Indonesia</summary>
+        <div class="langs-list">
+          <a href="../ai.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/ai.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/ai.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/ai.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/ai.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/ai.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/ai.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/ai.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/ai.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/ai.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/ai.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/ai.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/ai.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="ai.html" hreflang="id" lang="id" aria-current="true">Bahasa Indonesia</a>
+          <a href="../uk/ai.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/ai.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/ai.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>AI SKILL</h1>
+    <p class="lead">
+      gohud membawa AI skill: seluruh API, templat siap jalan, dan peluncur pratinjau. Tempelkan satu blok ke agen codingmu — ia memasang gohud dan tahu cara memakainya.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#copy">Lihat blok</a>
+      <a class="btn" href="install.html">Instalasi</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="copy">
+  <h2>Tempelkan ini ke agen codingmu</h2>
+  <p class="sub">Buka proyek Godot di agen, tempel blok di bawah, lalu kirim. Ia memasang skill dan add-on, lalu menceritakan apa saja yang bisa dilakukan gohud.</p>
+  <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+(menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
+
+1. Install the gohud AI skill.
+   Claude Code:
+     claude plugin marketplace add thruthesky/gohud
+     claude plugin install gohud@gohud
+   Any other agent (Codex, Cursor, Gemini CLI, ...):
+     git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud
+     Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
+     ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
+
+2. Install the add-on itself, if addons/gohud/plugin.cfg is missing here.
+   In a git repository:
+     git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+   Otherwise copy the clone to addons/gohud without its .git folder.
+   Then run: godot --headless --path . --import
+
+3. Restart yourself so the skill loads, then tell me what gohud can do
+   and how to preview it.
+
+Docs: https://thruthesky.github.io/gohud/</code></pre>
+  <div class="note">Blok ini sengaja ditulis dalam bahasa Inggris — itu yang paling andal dibaca setiap agen. Pertanyaanmu sendiri boleh bahasa apa pun; skill menjawab dalam bahasa yang kamu pakai.</div>
+</section>
+
+<section id="agents">
+  <h2>Di mana tiap agen menyimpan skill</h2>
+  <p class="sub">Mau pasang manual? Letakkan folder <code>skills/gohud</code> di tempat yang dibaca agenmu. Yang ada lebih dulu yang dipakai.</p>
+  <table>
+    <thead><tr><th>Agen</th><th>Folder ditaruh di mana</th><th>Bentuk perintah</th></tr></thead>
+    <tbody>
+      <tr><td>Claude Code — plugin</td><td data-label="Folder ditaruh di mana"><code>claude plugin install gohud@gohud</code></td><td data-label="Bentuk perintah"><code>/gohud:preview · /gohud:features</code></td></tr>
+      <tr><td>Claude Code — skill saja</td><td data-label="Folder ditaruh di mana"><code>~/.claude/skills/gohud</code></td><td data-label="Bentuk perintah"><code>/gohud preview · /gohud features</code></td></tr>
+      <tr><td>Claude Code — proyek ini saja</td><td data-label="Folder ditaruh di mana"><code>.claude/skills/gohud</code></td><td data-label="Bentuk perintah"><code>/gohud preview</code></td></tr>
+      <tr><td>Codex · Cursor · Gemini CLI — lainnya</td><td data-label="Folder ditaruh di mana"><code>.agents/skills/gohud</code></td><td data-label="Bentuk perintah"><code>—</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="commands">
+  <h2>Perintah yang kamu dapat</h2>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — galeri widget</h3>
+  <p>Membuka galeri: setiap widget, pemilih untuk keenam preset, dan set ikon lengkap. Ketik di dalam proyek Godot
+    Anda dan ia memakai yang <b>milik Anda sendiri</b> di <code>addons/gohud</code>; bila tidak ada, ia memakai salinan bawaan plugin,
+    atau klon yang baru. Ia berjalan di proyek kotak pasir sekali pakai, sehingga autoload dan cache impor Anda tidak
+    terganggu, dan jendelanya tetap terbuka sampai Anda menutupnya.</p>
+
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — tur berpemandu 15 bab</h3>
+  <p>Membuka demo pada layar awalnya. <b>Mulai demo</b> memainkan tur dengan input sungguhan; <b>Jelajahi widget</b>
+    membiarkan Anda mencoba satu widget secara manual. Tombol-tombol yang tercantum di <a href="install.html#examples">Contoh</a> berlaku juga di sini.</p>
+
+  <h3 id="many-other-commands">Banyak perintah lainnya</h3>
+  <table>
+    <thead><tr><th>Perintah</th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>Lembar karakter, tas, dan jurnal misi dalam preset abad pertengahan</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>Demo yang langsung dibuka pada satu bab — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>Galeri dalam satu preset; tambahkan <code>--phone</code> untuk jendela ponsel 390×844 atau <code>--size 1920x1080</code> untuk ukuran apa pun</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Scene milik proyek Anda sendiri, dijalankan di dalam proyek itu</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>Semua sasaran, id preset, dan kunci bab demo</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>Uji asap headless tanpa jendela — gagal bila ada kesalahan skrip</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>Setiap fitur, dikelompokkan, masing-masing satu baris kode</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>Satu bidang secara mendalam — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+  <p>Perintah pratinjau butuh Godot 4.6 atau lebih baru di <code>PATH</code>.</p>
+</section>
+
+<section id="ask">
+  <h2>Atau tinggal minta saja</h2>
+  <div class="note"><b>Atau tinggal minta saja.</b> Skill-nya mengajarkan seluruh API gohud kepada agen, jadi permintaan biasa pun jalan —
+    <i>"Buatkan menu jeda dengan gohud"</i>. Bila dipasang sebagai skill biasa di <code>~/.claude/skills/gohud</code>,
+    perintahnya memakai spasi: <code>/gohud preview demo</code>, <code>/gohud features</code>. Pratinjau membutuhkan Godot 4.6
+    atau yang lebih baru di <code>PATH</code> Anda, atau berikan <code>--godot /path/to/godot</code>.</div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud berlisensi <b>MIT</b> — kode maupun karya gambarnya, termasuk 84 ikon default dan 16 ikon abad pertengahan. Font
+      Cinzel bawaan berada di bawah SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Changelog</a></p>
+    <p style="font-size:13px">Arahkan kursor, ketuk, atau fokuskan sebuah <b>istilah bergaris bawah</b> untuk melihat artinya.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

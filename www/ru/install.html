@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/install.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/install.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/install.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/install.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/install.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/install.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/install.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/install.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/install.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/install.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/install.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/install.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/install.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/install.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/install.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/install.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/install.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/install.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Установка gohud — gohud</title>
+<meta name="description" content="Как установить gohud в проект Godot 4.6+ — одной вставкой в ИИ-агента, из ZIP-архива релиза или как подмодуль git.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Обзор</a>
+      <a href="install.html" aria-current="page">Установка</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Виджеты</a>
+      <a href="theming.html">Темы</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Русский</summary>
+        <div class="langs-list">
+          <a href="../install.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/install.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/install.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/install.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/install.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/install.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/install.html" hreflang="pt" lang="pt">Português</a>
+          <a href="install.html" hreflang="ru" lang="ru" aria-current="true">Русский</a>
+          <a href="../fr/install.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/install.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/install.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/install.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/install.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/install.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/install.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/install.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/install.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Установка gohud</h1>
+    <p class="lead">
+      Два пути. Поручите ИИ-агенту или положите папку в проект — больше настраивать нечего.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="ai-first">
+  <div class="note ai-card">
+    <h2>Самый быстрый путь — поручите установку ИИ-агенту</h2>
+    <p>Один блок текста, вставленный в Claude Code, Codex, Cursor или Gemini CLI, установит и навык, и дополнение, а потом объяснит вам gohud. На этом пути ничего ниже этой карточки не нужно.</p>
+    <p><a class="btn primary" href="ai.html#copy">Открыть страницу AI SKILL →</a></p>
+  </div>
+</section>
+
+<section id="install">
+  <h2>Установка</h2>
+  <p class="sub">Положите папку аддона в проект. Больше настраивать нечего.</p>
+
+  <h3 id="from-the-asset-store-or-a-release-zip">Из Asset Store или ZIP-архива релиза</h3>
+  <p>Распакуйте в корень проекта так, чтобы получилось <code>res://addons/gohud/</code>. Это всё. По желанию включите
+    <b>Project → Project Settings → Plugins → gohud</b>.</p>
+
+  <h3 id="as-a-git-submodule">Как git-подмодуль</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # по желанию: закрепить тег или коммит</code></pre>
+  <p>Корень репозитория <b>и есть</b> папка аддона, поэтому он ложится ровно туда, где его ждёт Godot. Правьте на месте,
+    коммитьте и пушьте внутри <code>addons/gohud</code>, а затем коммитьте указатель подмодуля в своей игре.</p>
+
+  <div class="note warn">
+    <b>Нужен Godot 4.6 или новее.</b> gohud использует API, появившиеся в 4.5 (DPITexture,
+    FoldableContainer, свойства доступности), поэтому на всём, что старше, он <b>падает ещё при разборе</b>.
+    4.6 — поддерживаемый минимум, записанный в <code>GoUi.MIN_ENGINE</code>.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Быстрый старт</h2>
+  <p class="sub">Любой виджет — это <code>.new()</code> и <code>add_child()</code>: ни файлов сцен, ни автозагрузки.</p>
+
+  <h3 id="pick-a-look-before-building-ui-optional">Выберите образ до сборки интерфейса (по желанию)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # если пропустить, используется default_dark</code></pre>
+
+  <h3 id="a-confirmation-you-await">Подтверждение, которое можно <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Удалить сохранение", "Это действие необратимо."):
+    delete_save()</code></pre>
+  <p>Передайте <code>destructive = true</code> (последний аргумент) — и кнопка подтверждения нарисуется как залитая кнопка опасного действия.</p>
+
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Нижний лист с закреплённым полем поиска и подвалом</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Инвентарь")
+sheet.toolbar().add_child(GoStyle.line_edit("Поиск…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Закрыть", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Почему закреплённые ряды отделены от прокручиваемого тела.</b> Положите подтверждение и отмену в
+    <code>body</code> — и длинный список вытолкнет их за экран. <code>footer()</code> виден всегда.
+  </div>
+
+  <h3 id="a-hud-corner">Угол HUD</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3 id="content-that-keeps-clear-of-the-hud">Содержимое, которое держится в стороне от HUD</h3>
+  <pre><code>form.avoid_hud = true                  # обходить каждый видимый GoHudAnchor
+joystick_anchor.reserve_space = false  # …кроме тех, что появляются только под пальцем
+notice_anchor.avoid_peers = true       # уведомление садится под закреплённый HUD, а не накрывает его</code></pre>
+  <p>Каждый прямоугольник обходится в том направлении, где потеря площади меньше: вниз на телефоне в книжной
+    ориентации, вбок — в альбомной. <a href="widgets.html#hud">Как HUD обходит сам себя →</a></p>
+</section>
+
+<section id="examples">
+  <h2>Примеры, которые можно запустить</h2>
+  <p class="sub">Три способа посмотреть gohud, не написав ни строки, — и ни одному не нужны ни сервер, ни автозагрузка.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Пример</th><th>Как открыть</th><th>Что показывает</th></tr></thead>
+    <tbody>
+      <tr><td>Галерея</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Все виджеты, переключатель всех установленных пресетов и полный набор иконок</td></tr>
+      <tr><td>Средневековье</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Лист персонажа, сумка и журнал заданий; кнопки переключают железо и пергамент и открывают описание предмета</td></tr>
+      <tr><td>Демо-приложение</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Домашний экран, открывающий галерею, обучающий тур из 15 глав, витрину и средневековый образ, с живыми виджетами и отдельной карточкой на каждый класс</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>cd examples/demo &amp;&amp; godot                             # домашний экран; при первом запуске создаёт ссылку и импортирует
+bash examples/demo/run.sh                               # то же приложение, из корня аддона
+bash examples/demo/run.sh -- --open=gallery             # пропустить домашний экран
+bash examples/demo/run.sh -- --explore=surfaces         # открыть сразу на одной главе тура
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # запись тура в 1080p / 60 кадров в секунду</code></pre>
+  <p>Демо-приложению не нужна никакая подготовка: если ссылки на аддон или кэша импорта нет, оно сообщает об этом,
+    чинит папку и открывается заново. Его домашний экран открывает каждый пример в том же окне — нажмите <b>1</b>–<b>4</b>
+    или щёлкните по строке, а полоса сверху вернёт вас назад.</p>
+  <p>В туре <b>C</b> включает режим «кино», <b>F11</b> — полный экран, <b>Space</b> ставит на паузу (или проигрывает
+    текущий виджет в режиме просмотра), стрелки меняют главы, а <b>Escape</b> возвращает на стартовый экран.</p>
+  <p>Пользуетесь ИИ-агентом для кода? <a href="ai.html">Откройте все три одной командой →</a></p>
+</section>
+
+<section id="develop">
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud распространяется по <b>MIT</b> — и код, и графика, включая 84 иконки по умолчанию и 16 средневековых.
+      Встроенный шрифт Cinzel — под SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Журнал изменений</a></p>
+    <p style="font-size:13px">Наведите курсор, коснитесь или сфокусируйтесь на <b>подчёркнутом термине</b>, чтобы увидеть его значение.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

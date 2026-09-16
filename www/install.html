@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/install.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/install.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/install.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/install.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/install.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/install.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/install.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/install.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/install.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/install.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/install.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/install.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/install.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/install.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/install.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/install.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/install.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/install.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install gohud — gohud</title>
+<meta name="description" content="How to install gohud in a Godot 4.6+ project — with an AI coding agent in one paste, from a release ZIP, or as a git submodule.">
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Overview</a>
+      <a href="install.html" aria-current="page">Install</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="theming.html">Theming</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>English</summary>
+        <div class="langs-list">
+          <a href="install.html" hreflang="en" lang="en" aria-current="true">English</a>
+          <a href="ko/install.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="ja/install.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="zh/install.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="zh-tw/install.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="es/install.html" hreflang="es" lang="es">Español</a>
+          <a href="pt/install.html" hreflang="pt" lang="pt">Português</a>
+          <a href="ru/install.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="fr/install.html" hreflang="fr" lang="fr">Français</a>
+          <a href="tr/install.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="pl/install.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="it/install.html" hreflang="it" lang="it">Italiano</a>
+          <a href="vi/install.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="id/install.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="uk/install.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="th/install.html" hreflang="th" lang="th">ไทย</a>
+          <a href="ar/install.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Install gohud</h1>
+    <p class="lead">
+      Two ways in. Let your AI agent do it, or drop the folder into your project — there is nothing else to set up.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="ai-first">
+  <div class="note ai-card">
+    <h2>Fastest way — let your AI agent install it</h2>
+    <p>One block of text, pasted into Claude Code, Codex, Cursor or Gemini CLI, installs both the skill and the add-on and then explains gohud to you. Nothing below this card is needed if you take that road.</p>
+    <p><a class="btn primary" href="ai.html#copy">Open the AI SKILL page →</a></p>
+  </div>
+</section>
+
+<section id="install">
+  <h2>Install</h2>
+  <p class="sub">Put the add-on folder into your project. There is nothing else to set up.</p>
+
+  <h3 id="from-the-asset-store-or-a-release-zip">From the Asset Store or a release ZIP</h3>
+  <p>Extract into your project root so you get <code>res://addons/gohud/</code>. That is all. Optionally enable
+    <b>Project → Project Settings → Plugins → gohud</b>.</p>
+
+  <h3 id="as-a-git-submodule">As a git submodule</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # optional: pin a tag or commit</code></pre>
+  <p>The repository root <b>is</b> the add-on folder, so it lands exactly where Godot expects it. Edit in place,
+    commit and push inside <code>addons/gohud</code>, then commit the submodule pointer in your game.</p>
+
+  <div class="note warn">
+    <b>Godot 4.6 or newer is required.</b> gohud uses APIs introduced in 4.5 (DPITexture,
+    FoldableContainer, accessibility properties), so on anything older it <b>fails while parsing</b>.
+    4.6 is the supported floor, recorded in <code>GoUi.MIN_ENGINE</code>.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Quick start</h2>
+  <p class="sub">Every widget is <code>.new()</code> and <code>add_child()</code> — no scene files, no autoload.</p>
+
+  <h3 id="pick-a-look-before-building-ui-optional">Pick a look before building UI (optional)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # default_dark is used when you skip this</code></pre>
+
+  <h3 id="a-confirmation-you-await">A confirmation you <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Delete save", "This cannot be undone."):
+    delete_save()</code></pre>
+  <p>Pass <code>destructive = true</code> (the last argument) and the confirm button is drawn as a filled danger button.</p>
+
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">A bottom sheet with a sticky search field and footer</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventory")
+sheet.toolbar().add_child(GoStyle.line_edit("Search…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Why sticky rows are separate from the scrolling body.</b> Put confirm and cancel in
+    <code>body</code> and a long list pushes them off screen. <code>footer()</code> is always visible.
+  </div>
+
+  <h3 id="a-hud-corner">A HUD corner</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3 id="content-that-keeps-clear-of-the-hud">Content that keeps clear of the HUD</h3>
+  <pre><code>form.avoid_hud = true                  # keep clear of every visible GoHudAnchor
+joystick_anchor.reserve_space = false  # …except ones that only appear under a finger
+notice_anchor.avoid_peers = true       # a toast settles below the fixed HUD instead of covering it</code></pre>
+  <p>Each rectangle is avoided in whichever direction costs the least area — downwards on a portrait phone,
+    sideways in landscape. <a href="widgets.html#hud">How the HUD avoids itself →</a></p>
+</section>
+
+<section id="examples">
+  <h2>Examples you can run</h2>
+  <p class="sub">Three ways to see gohud before writing a line — none needs a server or an autoload.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Example</th><th>How to open</th><th>What it shows</th></tr></thead>
+    <tbody>
+      <tr><td>Gallery</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Every widget, a picker for every installed preset, and the full icon set</td></tr>
+      <tr><td>Medieval</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>A character sheet, satchel and quest journal; buttons switch iron and parchment and open item details</td></tr>
+      <tr><td>Demo app</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>A home screen opening the gallery, the 15-chapter guided tour, the showcase screen and the medieval look, with live widgets and one card per class</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>cd examples/demo &amp;&amp; godot                             # home screen; links and imports on first run
+bash examples/demo/run.sh                               # the same app, from the add-on root
+bash examples/demo/run.sh -- --open=gallery             # skip the home screen
+bash examples/demo/run.sh -- --explore=surfaces         # open straight onto one tour chapter
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 1080p / 60 fps recording of the tour</code></pre>
+  <p>The demo app needs no setup: if the add-on link or the import cache is missing it says so, repairs the folder
+    and reopens itself. Its home screen opens each example inside the same window — press <b>1</b>–<b>4</b> or click
+    a row, and the bar across the top brings you back.</p>
+  <p>In the tour, <b>C</b> toggles Cinema mode, <b>F11</b> fullscreen, <b>Space</b> pauses (or plays the current
+    widget while exploring), the arrows change chapters and <b>Escape</b> returns to Start.</p>
+  <p>Using an AI coding agent? <a href="ai.html">Open all three with one command →</a></p>
+</section>
+
+<section id="develop">
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud is <b>MIT</b> — code and artwork, including 84 default icons and 16 medieval icons. The bundled
+      Cinzel font is under the SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Changelog</a></p>
+    <p style="font-size:13px">Hover, tap or focus an <b>underlined term</b> to see what it means.</p>
+  </div>
+</footer>
+
+<script src="site/glossary.en.js"></script>
+<script src="site/tooltip.js"></script>
+<script src="site/toc.js"></script>
+<script src="site/search.js"></script>
+<script src="site/ux.js"></script>
+</body>
+</html>

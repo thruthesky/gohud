@@ -26,6 +26,7 @@ import re
 # 🔑 언어 목록은 `tools/site_langs.py` 한 곳에 있다 — 페이지마다 언어 고르개와 hreflang 을 그 목록으로 다시 쓴다.
 import make_search
 import site_langs
+import site_nav
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
@@ -450,10 +451,17 @@ def dials_html(lang="ko"):
     head = ("<tr><th>Dial</th><th>Default</th><th>What it sets</th></tr>" if lang == "en"
             else "<tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr>")
     parts = ['  <div class="dials">']
+    first = True
     for skin, groups in scan_dials().items():
         cls = mt.SKIN_SCRIPTS[skin][0]
         count = sum(len(g["names"]) for g in groups)
-        parts.append("  <h4>%s <code>%s</code> — %d</h4>" % (SKIN_TITLES[skin][lang], cls, count))
+        # 🔑 스킨마다 접는다 — 표 셋을 한꺼번에 펼치면 32 행이고, 폰에서는 표가 세로로 쌓여
+        #    한 행이 블록 셋이 되므로 96 블록·약 2,900px 를 지나야 다음 글이 나온다(2026-09-16).
+        #    첫 스킨만 펼쳐 둔다. 접힌 표 안의 주소로 들어오면 `site/ux.js` 가 열어 준다.
+        parts.append('  <details class="dial-group"%s>' % (" open" if first else ""))
+        parts.append("  <summary><h4>%s <code>%s</code> — %d</h4></summary>"
+                     % (SKIN_TITLES[skin][lang], cls, count))
+        first = False
         parts.append("  <table>")
         parts.append("    <thead>%s</thead>" % head)
         parts.append("    <tbody>")
@@ -476,6 +484,7 @@ def dials_html(lang="ko"):
                 parts.append('      <tr><td><code>%s</code></td><td data-label="%s">%r</td>%s</tr>' % (name, label, value, cell))
         parts.append("    </tbody>")
         parts.append("  </table>")
+        parts.append("  </details>")
     parts.append("  </div>")
     return "\n".join(parts)
 
@@ -689,6 +698,46 @@ def write_not_found_langs():
     return True
 
 
+# ── 머리띠 메뉴 ───────────────────────────────────────────────────────
+# 🔑 메뉴를 85 장에 손으로 두었더니 같은 자리가 언어마다 갈라졌다 — `www/ko/widgets.html` 만 칸이
+#    하나 적었고(`#messages` 누락), `#factory` 를 16 개 언어는 `GoStyle` 로 두었는데 한국어만
+#    "팩토리" 였다. `check_site.py` 는 `<section id>` 만 견주므로 이것을 **하나도 잡지 못한다.**
+#    그래서 메뉴는 사람이 쓰는 글이 아니라 생성물로 옮겼다. 말은 `tools/site_nav.py` 에 있다.
+NAV_BEGIN = "<!-- nav:begin -->"
+NAV_END = "<!-- nav:end -->"
+
+
+def write_nav():
+    """모든 언어판의 머리띠 메뉴를 다시 쓴다.
+
+    표식이 없으면 **처음 한 번** `<nav>` 와 언어 고르개 사이를 통째로 갈아 끼우며 표식을 심는다 —
+    그 자리에 있던 옛 메뉴(쪽마다 다르고 절 앵커가 섞인)가 이때 사라진다.
+    """
+    done, seeded = 0, 0
+    for lang in site_langs.ACTIVE:
+        for page in site_langs.PAGES:
+            rel = site_langs.rel_path(lang.code, page)
+            path = os.path.join(WWW, rel)
+            if not os.path.isfile(path):
+                continue
+            text = open(path, encoding="utf-8").read()
+            body = site_nav.nav_html(lang.code, page)
+            if NAV_BEGIN in text and NAV_END in text:
+                new = replace_marked(text, NAV_BEGIN, NAV_END, body, "      ")
+            else:
+                # 처음 한 번 — `<nav>` 뒤부터 언어 고르개 앞까지가 옛 메뉴다.
+                head, rest = text.split("<nav>", 1)
+                _old, rest = rest.split(LANGS_BEGIN, 1)
+                new = "%s<nav>\n      %s\n%s\n      %s\n      %s%s" % (
+                    head, NAV_BEGIN, body, NAV_END, LANGS_BEGIN, rest)
+                seeded += 1
+            if new != text:
+                open(path, "w", encoding="utf-8").write(new)
+            done += 1
+    print("머리띠 메뉴 — %d장%s" % (done, " · 표식을 처음 심은 곳 %d장" % seeded if seeded else ""))
+    return done
+
+
 # 페이지 끝에 넣는 스크립트 — 순서가 곧 실행 순서다.
 #   toc.js     왼쪽 목차. 페이지의 제목을 읽어 만든다.
 #   search.js  전역 검색. 머리띠에 검색칸을 넣고, 목차의 "전체 검색" 단추에 응답한다.
@@ -725,10 +774,16 @@ def write_page_scripts():
 
 
 if __name__ == "__main__":
+    # 🛑 순서가 있다. `make_ai_page` 는 `ai.html` 을 **통째로 다시 쓰므로** 제목 앵커보다 **먼저**
+    #    와야 한다 — 뒤에 두면 방금 박은 id 를 지우고, `check_site.py` 가 "소스와 다르다" 로 잡는다
+    #    (2026-09-16 실측: 17장 전부 빨간불).
+    import make_ai_page
+    make_ai_page.main()
     build("ko")
     build("en")
     write_dials_section("ko")
     write_dials_section("en")
+    write_nav()
     write_langs()
     write_not_found_langs()
     write_heading_ids()

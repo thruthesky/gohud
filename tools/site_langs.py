@@ -50,7 +50,11 @@ ACTIVE = [lang for lang in LANGS if lang.ready]
 
 # 언어마다 있어야 하는 페이지. 파일 이름은 언어가 달라도 같다 — 주소를 손으로 고쳐 다른 언어로
 # 건너뛸 수 있고, 리다이렉트·검사도 한 규칙으로 끝난다.
-PAGES = ("index.html", "theming.html", "widgets.html")
+# 🔑 순서는 머리띠 메뉴와 같다(`tools/site_nav.py` 의 `NAV_PAGES`) — 검색 결과의 쪽 딱지도 이 차례다.
+# 🛑 `index.html`·`theming.html`·`widgets.html` **세 이름은 바꾸지 않는다.** 이미 배포된 ZIP 1.0.2·1.0.3
+#    의 README 가 그 주소를 절대 주소로 박아 두었고 고칠 수 없다(`tools/build_site.sh` 머리말).
+#    쪽은 **더하기만** 한다.
+PAGES = ("index.html", "install.html", "ai.html", "widgets.html", "theming.html")
 
 PUBLIC = "https://thruthesky.github.io/gohud/"
 BY_CODE = {lang.code: lang for lang in LANGS}

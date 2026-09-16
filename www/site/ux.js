@@ -62,6 +62,22 @@
     return ok;
   }
 
+  /* 접힌 곳 안의 주소로 들어오면 열어 준다 — 다이얼 표는 스킨마다 접혀 있어서, 목차나 검색이
+     그 안의 제목으로 데려가도 닫힌 채면 "아무 일도 안 일어난 것" 처럼 보인다.
+     🛑 최신 브라우저는 스스로 열지만(Chrome 121·Safari 17.4 이후) 그 전 판에서는 열리지 않는다. */
+  function openFor(hash) {
+    if (!hash || hash.length < 2) return;
+    var target = null;
+    try { target = document.getElementById(decodeURIComponent(hash.slice(1))); } catch (e) { return; }
+    if (!target) return;
+    for (var node = target.parentNode; node && node !== document.body; node = node.parentNode) {
+      if (node.tagName === 'DETAILS' && !node.open) node.open = true;
+    }
+    target.scrollIntoView();
+  }
+  window.addEventListener('hashchange', function () { openFor(location.hash); });
+  if (location.hash) setTimeout(function () { openFor(location.hash); }, 0);
+
   // 첫 화면에 없는 그림은 스크롤할 때 받는다.
   document.querySelectorAll('main img:not([loading])').forEach(function (img, i) {
     if (i > 1) img.setAttribute('loading', 'lazy');

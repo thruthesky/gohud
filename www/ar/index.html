@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">ما الذي يتكفّل به</a>
-      <a href="#install">التثبيت</a>
-      <a href="#start">بداية سريعة</a>
-      <a href="#presets">الأنماط الجاهزة</a>
-      <a href="#examples">الأمثلة</a>
-      <a href="#ai">أوامر الذكاء الاصطناعي</a>
-      <a href="theming.html">السمات ↗</a>
-      <a href="widgets.html">الودجات ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">نظرة عامة</a>
+      <a href="install.html">التثبيت</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">الودجات</a>
+      <a href="theming.html">السمات</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>العربية</summary>
@@ -92,7 +91,8 @@
       <span class="badge">100 أيقونة مضمّنة</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">التثبيت</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">التثبيت</a>
       <a class="btn" href="#presets">شاهد الأنماط الجاهزة</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -172,77 +172,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>التثبيت</h2>
-  <p class="sub">ضع مجلد الإضافة في مشروعك. لا شيء آخر يحتاج إعدادًا.</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">من متجر الأصول أو من ملف ZIP للإصدار</h3>
-  <p>فُكّ الضغط في جذر مشروعك بحيث تحصل على <code>res://addons/gohud/</code>. هذا كل شيء. واختياريًا فعّل
-    <b>Project → Project Settings → Plugins → gohud</b>.</p>
-
-  <h3 id="as-a-git-submodule">كوحدة فرعية في git</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # اختياري: ثبّت وسمًا أو كوميت بعينه</code></pre>
-  <p>جذر المستودع <b>هو</b> مجلد الإضافة نفسه، فيحطّ تمامًا حيث يتوقعه Godot. عدّل في مكانه، ثم أودِع وادفع
-    داخل <code>addons/gohud</code>، ثم أودِع مؤشّر الوحدة الفرعية في لعبتك.</p>
-
-  <div class="note warn">
-    <b>يلزم Godot 4.6 أو أحدث.</b> يستعمل gohud واجهات برمجية ظهرت في 4.5 (DPITexture و
-    FoldableContainer وخصائص الوصولية)، فعلى أي إصدار أقدم <b>يفشل أثناء التحليل</b>.
-    الإصدار 4.6 هو الحد الأدنى المدعوم، ومسجَّل في <code>GoUi.MIN_ENGINE</code>.
-  </div>
+<section id="install" class="crumb">
+  <h2>تثبيت gohud</h2>
+  <p class="sub">طريقان. دع وكيل الذكاء الاصطناعي يقوم بذلك، أو ضع المجلد في مشروعك — لا شيء آخر يحتاج إلى إعداد.</p>
+  <p><a class="btn primary" href="install.html">التثبيت</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>بداية سريعة</h2>
-  <p class="sub">كل ودجت هو <code>.new()</code> ثم <code>add_child()</code> — لا ملفات مشاهد ولا autoload.</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">اختر المظهر قبل بناء الواجهة (اختياري)</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # يُستعمل default_dark إن تخطيت هذا السطر</code></pre>
-
-  <h3 id="a-confirmation-you-await">تأكيد تنتظره بـ <code>await</code></h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("حذف الحفظ", "لا يمكن التراجع عن هذا."):
-    delete_save()</code></pre>
-  <p>مرّر <code>destructive = true</code> (المعامل الأخير) فيُرسم زر التأكيد زرًّا مصمتًا بلون الخطر.</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">ورقة سفلية بحقل بحث وتذييل ثابتين</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("الحقيبة")
-sheet.toolbar().add_child(GoStyle.line_edit("بحث…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("إغلاق", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>لماذا تنفصل الصفوف الثابتة عن الجسم المتمرر.</b> ضع التأكيد والإلغاء في
-    <code>body</code> فتدفعهما قائمة طويلة خارج الشاشة. أما <code>footer()</code> فيبقى ظاهرًا دائمًا.
-  </div>
-
-  <h3 id="a-hud-corner">ركن من HUD</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">محتوى يتنحّى عن HUD</h3>
-  <pre><code>form.avoid_hud = true                  # ابتعد عن كل GoHudAnchor ظاهر
-joystick_anchor.reserve_space = false  # …إلا ما لا يظهر إلا تحت الإصبع
-notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD الثابت بدل أن يغطيه</code></pre>
-  <p>كل مستطيل يُتفادى في الاتجاه الأقل كلفة من حيث المساحة — نزولًا على هاتف بالوضع الطولي،
-    وجانبًا في الوضع العرضي. <a href="widgets.html#hud">كيف يتفادى HUD نفسه ←</a></p>
+  <p class="sub">خمسة أسطر تضع شاشة بسمة جاهزة على العرض. الشرح كاملاً في صفحة التثبيت.</p>
+  <p><a class="btn" href="install.html#start">بداية سريعة</a></p>
 </section>
 
 <section id="presets">
@@ -411,77 +350,10 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </table>
 </section>
 
-<section id="examples">
-  <h2>أمثلة تستطيع تشغيلها</h2>
-  <p class="sub">ثلاث طرق ترى بها gohud قبل أن تكتب سطرًا — ولا واحدة منها تحتاج خادمًا ولا autoload.</p>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">المثال</th><th>كيف تفتحه</th><th>ما الذي يعرضه</th></tr></thead>
-    <tbody>
-      <tr><td>المعرض</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>كل ودجت، وقائمة اختيار لكل نمط جاهز مثبّت، ومجموعة الأيقونات كاملة</td></tr>
-      <tr><td>العصور الوسطى</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>صفحة شخصية وحقيبة وسجل مهام؛ والأزرار تبدّل بين الحديد والرقّ وتفتح تفاصيل الأغراض</td></tr>
-      <tr><td>تطبيق العرض التوضيحي</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>شاشة رئيسية تفتح المعرض، والجولة الإرشادية ذات الـ 15 فصلًا، وشاشة الاستعراض، ومظهر العصور الوسطى، بودجات حيّة وبطاقة لكل صنف</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # الشاشة الرئيسية؛ يربط ويستورد عند أول تشغيل
-bash examples/demo/run.sh                               # التطبيق نفسه، من جذر الإضافة
-bash examples/demo/run.sh -- --open=gallery             # تخطَّ الشاشة الرئيسية
-bash examples/demo/run.sh -- --explore=surfaces         # افتح مباشرة على فصل واحد من الجولة
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # تسجيل الجولة بدقة 1080p و60 إطارًا/ثانية</code></pre>
-  <p>تطبيق العرض التوضيحي لا يحتاج إعدادًا: فإن غاب رابط الإضافة أو ذاكرة الاستيراد نبّه إلى ذلك، ثم أصلح
-    المجلد وأعاد فتح نفسه. وشاشته الرئيسية تفتح كل مثال داخل النافذة نفسها — اضغط <b>1</b>–<b>4</b> أو انقر
-    صفًّا، والشريط الممتد في الأعلى يعيدك.</p>
-  <p>وفي الجولة، يبدّل <b>C</b> وضع السينما، و<b>F11</b> ملء الشاشة، و<b>Space</b> يوقف مؤقتًا
-    (أو يشغّل الودجت الحالية أثناء الاستكشاف)، والأسهم تغيّر الفصول، و<b>Escape</b> يعود إلى البداية.</p>
-  <p>تستعمل وكيل برمجة بالذكاء الاصطناعي؟ <a href="#ai">افتح الثلاثة بأمر واحد ←</a></p>
-</section>
-
-<section id="ai">
-  <h2>افتحه من وكيل البرمجة بالذكاء الاصطناعي</h2>
-  <p class="sub">
-    يأتي gohud بإضافة لـ Claude Code فيها أوامر مائلة. اكتب أحدها فيُفتح المعرض أو العرض التوضيحي في نافذة
-    Godot خاصة به — دون تشغيل المحرّر ودون البحث عن مشهد.
-  </p>
-
-  <h3 id="install-the-commands-once">ثبّت الأوامر مرة واحدة</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# ثم أعد تشغيل Claude Code</code></pre>
-  <p>الوكلاء الآخرون مثل Codex يستطيعون استعمال المهارة نفسها: انسخ <code>skills/gohud</code> من هذا المستودع
-    إلى مجلد مهارات الوكيل.</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — معرض الودجات</h3>
-  <p>يفتح المعرض: كل ودجت، وقائمة اختيار للأنماط الجاهزة الستة، ومجموعة الأيقونات كاملة. اكتبه داخل مشروع Godot
-    خاصتك فيستعمل <code>addons/gohud</code> <b>الخاص بك</b>؛ وبدون ذلك يستعمل النسخة المرفقة مع الإضافة،
-    أو نسخة جديدة يستنسخها. يعمل داخل مشروع رملي مؤقت، فتبقى قوائم autoload وذاكرة الاستيراد عندك على حالها،
-    وتبقى النافذة مفتوحة حتى تغلقها أنت.</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — الجولة الإرشادية ذات الـ 15 فصلًا</h3>
-  <p>يفتح العرض التوضيحي على شاشة البداية. <b>ابدأ العرض</b> يشغّل الجولة بلمس حقيقي، و<b>استكشف الودجات</b>
-    يتيح لك تجربة ودجت واحدة بيدك. والمفاتيح المذكورة تحت <a href="#examples">الأمثلة</a> تعمل هنا أيضًا.</p>
-
-  <h3 id="many-other-commands">أوامر أخرى كثيرة</h3>
-  <table>
-    <thead><tr><th>الأمر</th><th>ما الذي يفعله</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>صفحة الشخصية والحقيبة وسجل المهام بأنماط العصور الوسطى</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>العرض التوضيحي مفتوحًا مباشرة على فصل واحد — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>المعرض بنمط جاهز واحد؛ أضف <code>--phone</code> لنافذة هاتف بمقاس 390×844 أو <code>--size 1920x1080</code> لأي مقاس</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>مشهد من مشروعك أنت، يعمل داخل ذلك المشروع</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>كل هدف ومعرّف نمط جاهز ومفتاح فصل في العرض التوضيحي</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>فحص سريع بلا نافذة — يفشل عند أخطاء السكربتات</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>كل ميزة، مصنّفة، بسطر واحد من الكود لكل منها</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>مجال واحد بعمق — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>أو اطلب ببساطة.</b> المهارة تعلّم الوكيل واجهة gohud البرمجية كاملة، فتنجح الطلبات العادية أيضًا —
-    <i>"ابنِ قائمة إيقاف مؤقت بـ gohud"</i>. وإن ثُبّتت مهارةً عادية في <code>~/.claude/skills/gohud</code>، فالأوامر
-    تأخذ مسافة: <code>/gohud preview demo</code> و<code>/gohud features</code>. وتحتاج المعاينات إلى Godot 4.6 أو
-    أحدث على <code>PATH</code>، أو مرّر <code>--godot /path/to/godot</code>.
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">يأتي gohud بمهارة ذكاء اصطناعي: واجهة البرمجة كاملة، وقوالب جاهزة للتشغيل، ومشغّل معاينة. الصق الكتلة أدناه في وكيل البرمجة لديك فيثبّت gohud ويعرف كيف يستخدمه.</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -503,7 +375,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>الفحوص والإصدارات وهذا الموقع</h2>
   <p class="sub">مدخل واحد يشغّل كل الفحوص؛ وكل جزء منها يرى ما لا يراه غيره.</p>
 

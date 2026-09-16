@@ -34,14 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
+      <!-- nav:begin -->
       <a href="./">소개</a>
-      <a href="theming.html">생김새</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
       <a href="widgets.html">위젯</a>
-      <a href="#medieval">중세</a>
-      <a href="#tokens">토큰</a>
-      <a href="#skin">스킨</a>
-      <a href="#own">내 프리셋</a>
-      <a href="#contrast">가독성</a>
+      <a href="theming.html" aria-current="page">테마</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>한국어</summary>
@@ -333,7 +333,8 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4 id="default-skin-goskin-17">기본 스킨 <code>GoSkin</code> — 17</h4>
+  <details class="dial-group" open>
+  <summary><h4 id="default-skin-goskin-17">기본 스킨 <code>GoSkin</code> — 17</h4></summary>
   <table>
     <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
     <tbody>
@@ -356,7 +357,9 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
       <tr><td><code>joystick_ring_width</code></td><td data-label="기본값">2.0</td><td>조이스틱 링의 두께(dp).</td></tr>
     </tbody>
   </table>
-  <h4 id="sci-fi-skin-goskinscifi-10">sci-fi 스킨 <code>GoSkinSciFi</code> — 10</h4>
+  </details>
+  <details class="dial-group">
+  <summary><h4 id="sci-fi-skin-goskinscifi-10">sci-fi 스킨 <code>GoSkinSciFi</code> — 10</h4></summary>
   <table>
     <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
     <tbody>
@@ -372,7 +375,9 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
       <tr><td><code>bracket_thickness</code></td><td data-label="기본값">2.0</td><td>코치마크 조준 표식의 선 두께(dp).</td></tr>
     </tbody>
   </table>
-  <h4 id="medieval-skin-goskinmedieval-5">중세 스킨 <code>GoSkinMedieval</code> — 5</h4>
+  </details>
+  <details class="dial-group">
+  <summary><h4 id="medieval-skin-goskinmedieval-5">중세 스킨 <code>GoSkinMedieval</code> — 5</h4></summary>
   <table>
     <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
     <tbody>
@@ -383,6 +388,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
       <tr><td><code>slot_rivets</code></td><td data-label="기본값">1</td><td>퀵슬롯에 리벳을 표시할지(0: 없음, 1: 표시).</td></tr>
     </tbody>
   </table>
+  </details>
   </div>
   <!-- dials:end -->
 

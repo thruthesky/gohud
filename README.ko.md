@@ -543,8 +543,12 @@ bash examples/demo/run.sh -- --explore=surfaces        # 위젯 하나를 탐색
 ## 설명 사이트
 
 **[https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)** 는
-[`www/`](www/index.html) 의 평범한 HTML 이다 — 루트가 영문, `ko/` 가 한국어이고, 용어에 마우스를
-올리거나 누르거나 키보드로 포커스하면 뜻이 뜬다. GitHub Actions 워크플로
+[`www/`](www/index.html) 의 평범한 HTML 이다 — 루트가 영문이고 나머지 열여섯 언어는 제 폴더에 있다.
+용어에 마우스를 올리거나 누르거나 키보드로 포커스하면 뜻이 뜬다. 언어마다 같은 다섯 쪽이 있다 —
+소개 · [설치](www/install.html) · [**AI SKILL**](www/ai.html) · [위젯](www/widgets.html) ·
+[테마](www/theming.html). 머리띠 메뉴와 AI SKILL 쪽 전부는 **생성물**이다
+([`tools/site_nav.py`](tools/site_nav.py) · [`tools/site_ai_text.py`](tools/site_ai_text.py)) —
+HTML 85 장이 아니라 그 두 파일을 고친다. GitHub Actions 워크플로
 ([`.github/workflows/pages.yml`](.github/workflows/pages.yml))가 `www/` 자체를 사이트 최상위로 배포한다.
 옛 `docs/www/` 주소도 그대로 쓸 수 있다 — 페이지는 `www/404.html` 이 새 주소로 넘겨주고, 그림은 옛 자리에도
 한 벌 올라가 이미 배포된 ZIP 의 README 에서도 보인다.

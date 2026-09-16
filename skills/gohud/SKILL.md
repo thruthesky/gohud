@@ -170,5 +170,6 @@ use `--check`.
 | `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, character sheet, context menu, tutorial, theme switcher |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |
 
-Web (same content, with screenshots): overview and install https://thruthesky.github.io/gohud/#start ·
+Web (same content, with screenshots): overview https://thruthesky.github.io/gohud/ ·
+install https://thruthesky.github.io/gohud/install.html · AI skill https://thruthesky.github.io/gohud/ai.html ·
 widgets https://thruthesky.github.io/gohud/widgets.html · theming https://thruthesky.github.io/gohud/theming.html

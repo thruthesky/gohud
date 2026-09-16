@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/install.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/install.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/install.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/install.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/install.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/install.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/install.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/install.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/install.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/install.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/install.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/install.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/install.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/install.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/install.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/install.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/install.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/install.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud kurulumu — gohud</title>
+<meta name="description" content="gohud'u bir Godot 4.6+ projesine kurma yolları — yapay zekâ ajanına tek yapıştırma, sürüm ZIP'i ya da git alt modülü.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Genel bakış</a>
+      <a href="install.html" aria-current="page">Kurulum</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget'lar</a>
+      <a href="theming.html">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Türkçe</summary>
+        <div class="langs-list">
+          <a href="../install.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/install.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/install.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/install.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/install.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/install.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/install.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/install.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/install.html" hreflang="fr" lang="fr">Français</a>
+          <a href="install.html" hreflang="tr" lang="tr" aria-current="true">Türkçe</a>
+          <a href="../pl/install.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/install.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/install.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/install.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/install.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/install.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/install.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>gohud kurulumu</h1>
+    <p class="lead">
+      İki yol var. Yapay zekâ ajanınıza yaptırın ya da klasörü projenize bırakın — başka ayarlanacak bir şey yok.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="ai-first">
+  <div class="note ai-card">
+    <h2>En hızlı yol — kurulumu yapay zekâ ajanınıza bırakın</h2>
+    <p>Claude Code, Codex, Cursor ya da Gemini CLI'a yapıştırılan tek bir metin bloğu hem beceriyi hem eklentiyi kurar, sonra size gohud'u anlatır. Bu yolu seçerseniz bu kartın altındakilerin hiçbiri gerekmez.</p>
+    <p><a class="btn primary" href="ai.html#copy">AI SKILL sayfasını aç →</a></p>
+  </div>
+</section>
+
+<section id="install">
+  <h2>Kurulum</h2>
+  <p class="sub">Eklenti klasörünü projenize koyun. Kurulacak başka bir şey yok.</p>
+
+  <h3 id="from-the-asset-store-or-a-release-zip">Asset Store'dan veya bir sürüm ZIP'inden</h3>
+  <p>Proje kökünüze çıkarın; sonuçta <code>res://addons/gohud/</code> elde etmelisiniz. Hepsi bu. İsterseniz
+    <b>Project → Project Settings → Plugins → gohud</b> yolundan etkinleştirin.</p>
+
+  <h3 id="as-a-git-submodule">git submodule olarak</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # isteğe bağlı: bir etikete veya commit'e sabitle</code></pre>
+  <p>Deponun kökü <b>doğrudan</b> eklenti klasörüdür, yani tam olarak Godot'un beklediği yere iner. Yerinde
+    düzenleyin, <code>addons/gohud</code> içinde commit'leyip push'layın, sonra oyununuzda submodule
+    işaretçisini commit'leyin.</p>
+
+  <div class="note warn">
+    <b>Godot 4.6 veya daha yenisi gerekir.</b> gohud, 4.5'te gelen API'leri kullanır (DPITexture,
+    FoldableContainer, erişilebilirlik özellikleri); dolayısıyla daha eski her sürümde <b>ayrıştırma
+    sırasında hata verir</b>. Desteklenen alt sınır 4.6'dır ve <code>GoUi.MIN_ENGINE</code> içinde kayıtlıdır.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Hızlı başlangıç</h2>
+  <p class="sub">Her widget <code>.new()</code> ve <code>add_child()</code> ile gelir — sahne dosyası yok, autoload yok.</p>
+
+  <h3 id="pick-a-look-before-building-ui-optional">Arayüzü kurmadan önce bir görünüm seçin (isteğe bağlı)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # bunu atlarsanız default_dark kullanılır</code></pre>
+
+  <h3 id="a-confirmation-you-await"><code>await</code> ile beklediğiniz bir onay</h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Kaydı sil", "Bu geri alınamaz."):
+    delete_save()</code></pre>
+  <p><code>destructive = true</code> (son argüman) geçirin; onay düğmesi dolgulu tehlike düğmesi olarak çizilir.</p>
+
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Sabit bir arama alanı ve alt bilgisi olan bir alt sayfa</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Envanter")
+sheet.toolbar().add_child(GoStyle.line_edit("Ara…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Kapat", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Sabit satırlar neden kaydırılan gövdeden ayrı.</b> Onay ve iptali <code>body</code> içine koyarsanız
+    uzun bir liste onları ekrandan dışarı iter. <code>footer()</code> her zaman görünürdür.
+  </div>
+
+  <h3 id="a-hud-corner">Bir HUD köşesi</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3 id="content-that-keeps-clear-of-the-hud">HUD'a değmeyen içerik</h3>
+  <pre><code>form.avoid_hud = true                  # görünen her GoHudAnchor'dan uzak dur
+joystick_anchor.reserve_space = false  # …yalnızca parmak altında beliren anchor'lar hariç
+notice_anchor.avoid_peers = true       # bildirim sabit HUD'ın üstünü kapatmak yerine altına yerleşir</code></pre>
+  <p>Her dikdörtgenden, en az alana mal olan yönde kaçınılır — dikey tutulan bir telefonda aşağı doğru,
+    yatayda yana doğru. <a href="widgets.html#hud">HUD kendinden nasıl kaçınıyor →</a></p>
+</section>
+
+<section id="examples">
+  <h2>Çalıştırabileceğiniz örnekler</h2>
+  <p class="sub">Tek satır yazmadan gohud'u görmenin üç yolu — hiçbiri sunucu ya da autoload istemez.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Örnek</th><th>Nasıl açılır</th><th>Ne gösterir</th></tr></thead>
+    <tbody>
+      <tr><td>Galeri</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Her widget, kurulu her ön ayar için bir seçici ve simge setinin tamamı</td></tr>
+      <tr><td>Ortaçağ</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Bir karakter sayfası, heybe ve görev günlüğü; düğmeler demir ile parşömen arasında geçiş yapar ve nesne ayrıntılarını açar</td></tr>
+      <tr><td>Demo uygulaması</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Galeriyi, 15 bölümlük rehberli turu, vitrin ekranını ve ortaçağ görünümünü açan bir ana ekran; canlı widget'lar ve sınıf başına bir kartla</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>cd examples/demo &amp;&amp; godot                             # ana ekran; ilk çalıştırmada bağlar ve içe aktarır
+bash examples/demo/run.sh                               # aynı uygulama, eklenti kökünden
+bash examples/demo/run.sh -- --open=gallery             # ana ekranı atla
+bash examples/demo/run.sh -- --explore=surfaces         # doğrudan turun tek bir bölümünü aç
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # turun 1080p / 60 fps kaydı</code></pre>
+  <p>Demo uygulaması kurulum istemez: eklenti bağlantısı ya da içe aktarma önbelleği eksikse bunu söyler,
+    klasörü onarır ve kendini yeniden açar. Ana ekranı her örneği aynı pencerenin içinde açar — <b>1</b>–<b>4</b>
+    tuşlarına basın ya da bir satıra tıklayın; üstteki çubuk sizi geri getirir.</p>
+  <p>Turda <b>C</b> Sinema kipini açıp kapatır, <b>F11</b> tam ekran yapar, <b>Space</b> duraklatır (keşif
+    sırasında ise o anki widget'ı oynatır), oklar bölüm değiştirir ve <b>Escape</b> başlangıca döner.</p>
+  <p>Bir AI kodlama ajanı mı kullanıyorsunuz? <a href="ai.html">Üçünü de tek komutla açın →</a></p>
+</section>
+
+<section id="develop">
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud <b>MIT</b> lisanslıdır — 84 varsayılan simge ve 16 ortaçağ simgesi dahil olmak üzere kod ve
+      grafikler. Pakete dahil Cinzel yazı tipi SIL Open Font License 1.1 altındadır.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Değişiklik günlüğü</a></p>
+    <p style="font-size:13px"><b>Altı çizili bir terimin</b> üstüne gelin, dokunun veya odaklanın; ne anlama geldiğini görün.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

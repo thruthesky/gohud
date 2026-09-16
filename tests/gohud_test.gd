@@ -912,7 +912,9 @@ func _style() -> void:
 	var unsized := GoStyle.button("Zero")
 	check(GoStyle.center_button_content(unsized, 12.0) < 0.0, "폭이 아직 0 이면 아무것도 쓰지 않는다")
 	unsized.free()
-	# 🛑 아이콘을 판 여백 안으로 — 글자가 아이콘 위로 오지 않게 좌우를 같이 넓힌다(폰트 세트 경로)
+	# 🛑 아이콘을 판 여백 안으로 — 글자가 아이콘 위로 오지 않게 좌우를 같이 넓힌다(자식 라벨 경로).
+	# 🔑 기본 세트는 텍스처라 `Button.icon` 으로 가므로, **일부러 없는 이름**을 주어 자식 라벨 경로를 타게 한다
+	#    (폰트 세트를 쓰는 호스트가 가는 길이다). 로그의 "아이콘 세트에 … 없습니다" 경고 한 줄은 의도한 것이다.
 	var iconed := GoStyle.button("Log in with email")
 	brand_host.add_child(iconed)
 	GoStyle.apply_icon(iconed, &"gohud_test_no_such_icon", 24, GoUi.color(GoTheme.TEXT), 20.0)
@@ -982,6 +984,71 @@ func _style() -> void:
 	menu.get_popup().add_item("Three")
 	check(menu.get_popup().get_theme_constant(&"v_separation") == GoUi.metric(GoTheme.GAP),
 		"항목을 지우고 다시 채워도 줄 간격은 남는다")
+
+	# 🔑 HUD 기하 — 토큰으로는 표현되지 않는 간격·여백을 값으로 준다.
+	var overlap := GridContainer.new()
+	GoStyle.spacing(overlap, -8, 0)
+	check(overlap.get_theme_constant(&"h_separation") == -8 and overlap.get_theme_constant(&"v_separation") == 0,
+		"spacing: 터치 상자를 겹쳐 놓는 **음수 간격**과 0 을 그대로 받는다")
+	var stack := GoStyle.column()
+	GoStyle.spacing(stack, 0)
+	check(stack.get_theme_constant(&"separation") == 0, "spacing: 세로 상자는 separation 하나만 쓴다")
+	var edge := MarginContainer.new()
+	GoStyle.edge_insets(edge, 12, -1, -1, 4)
+	check(edge.get_theme_constant(&"margin_left") == 12 and edge.get_theme_constant(&"margin_bottom") == 4
+		and not edge.has_theme_constant_override(&"margin_top"),
+		"edge_insets: 준 변만 바꾸고 음수인 변은 건드리지 않는다")
+
+	# 🔑 HUD 원판 — 속을 그리지 않고 반경은 지름의 절반. 고정 반경을 쓰면 크기가 다른 버튼이 알약이 된다.
+	var orb := Panel.new()
+	GoStyle.style_hud_disc(orb, 36.0)
+	var orb_face := orb.get_theme_stylebox(&"panel") as StyleBoxFlat
+	check(orb_face != null and orb_face.corner_radius_top_left == 18 and not orb_face.draw_center
+		and orb_face.border_width_left == 0 and orb_face.shadow_size == 0
+		and near(orb_face.get_margin(SIDE_LEFT), 0.0),
+		"style_hud_disc: 반경 = 지름의 절반 · 속·테두리·그림자 없음 · 여백 0")
+	GoStyle.style_hud_disc(orb, 40.0, 2.0, Color.RED, Color(0, 0, 1, 1), 8)
+	var lit_face := orb.get_theme_stylebox(&"panel") as StyleBoxFlat
+	check(lit_face != null and lit_face.corner_radius_top_left == 20 and lit_face.border_width_left == 2
+		and lit_face.border_color.is_equal_approx(Color.RED) and lit_face.draw_center
+		and lit_face.corner_detail == 8,
+		"style_hud_disc: 테두리 색·두께 · 채움을 주면 속을 그린다 · 곡선 분할을 올릴 수 있다")
+
+	# 🔑 퀵슬롯 판 — 모양은 스킨이 정한다(자기 슬롯을 만든 호스트도 같은 판을 얻는다).
+	var slot_face_host := Panel.new()
+	GoStyle.style_slot_face(slot_face_host, GoUi.color(GoTheme.DANGER), true)
+	var slot_lit := slot_face_host.get_theme_stylebox(&"panel")
+	GoStyle.style_slot_face(slot_face_host, GoUi.color(GoTheme.DANGER), false)
+	var slot_idle := slot_face_host.get_theme_stylebox(&"panel")
+	# 🛑 커스텀 판(사선·중세)을 주는 스킨도 있으므로 두께 칸이 있을 때만 두께를 견준다.
+	var slot_thicker := slot_lit != null and slot_idle != null
+	if slot_thicker and slot_lit is StyleBoxFlat and slot_idle is StyleBoxFlat:
+		slot_thicker = (slot_lit as StyleBoxFlat).border_width_left > (slot_idle as StyleBoxFlat).border_width_left
+	check(slot_thicker, "style_slot_face: 스킨의 슬롯 판 · 도는 중이면 테두리가 두껍다")
+
+	# 🔑 채운 배지 — 개수는 눈에 띄어야 한다(옅은 `GoSkin.badge_box` 와 역할이 다르다).
+	var count := GoStyle.label("9")
+	GoStyle.style_count_badge(count, GoUi.color(GoTheme.WARNING), GoUi.color(GoTheme.ON_ACCENT),
+		GoUi.color(GoTheme.ON_ACCENT), 2, 10, 4.0)
+	var count_face := count.get_theme_stylebox(&"normal") as StyleBoxFlat
+	check(count_face != null and count_face.bg_color.is_equal_approx(GoUi.color(GoTheme.WARNING))
+		and count_face.draw_center and count_face.corner_radius_top_left == 10
+		and count_face.border_width_left == 2 and near(count_face.get_margin(SIDE_LEFT), 4.0)
+		and count.get_theme_color(&"font_color").is_equal_approx(GoUi.color(GoTheme.ON_ACCENT)),
+		"style_count_badge: 의미색으로 **채우고** 대비색 테두리 · 좌우 여백 · 글자색")
+
+	# 🔑 글리프의 크기·색만 다시 입힌다 — 버튼은 눌림·올림·포커스까지 같은 색이라야 색이 튀지 않는다.
+	var glyph_host := Button.new()
+	GoStyle.glyph_type(glyph_host, 22, Color.AQUA)
+	check(glyph_host.get_theme_font_size(&"font_size") == 22
+		and glyph_host.get_theme_color(&"font_color").is_equal_approx(Color.AQUA)
+		and glyph_host.get_theme_color(&"font_hover_pressed_color").is_equal_approx(Color.AQUA),
+		"glyph_type: 크기·색 · 버튼은 상태 글자색까지 같은 색")
+	GoStyle.glyph_type(glyph_host, -1, Color.TRANSPARENT)
+	check(glyph_host.get_theme_font_size(&"font_size") == 22,
+		"glyph_type: 음수 크기는 건드리지 않는다(HUD 는 부르는 쪽이 기하를 정한다)")
+	for node: Node in [overlap, stack, edge, orb, slot_face_host, count, glyph_host]: node.queue_free()
+
 	narrow.queue_free()
 	brand_host.queue_free()
 	await frames(1)
@@ -2415,6 +2482,116 @@ func _widgets() -> void:
 	check(near(glass_default.get_margin(SIDE_LEFT), GoUi.metric(GoTheme.COMPACT_PADDING_X)), "overlay_box: 여백을 안 주면 작은 버튼 여백 토큰")
 	var glass_flat := glass_default as StyleBoxFlat
 	check(glass_flat == null or (is_equal_approx(glass_flat.bg_color.a, 0.82) and glass_flat.border_width_left == 1), "overlay_box: 바탕 불투명도 0.82 · 테두리 1")
+	# 🔑 지도·월드 그림 위의 알약 판 컨테이너 — 판을 부르는 쪽이 만들지 않는다.
+	var overlay := GoStyle.overlay_panel(4, 2)
+	var overlay_face := overlay.get_theme_stylebox(&"panel")
+	check(overlay is PanelContainer and overlay_face != null
+		and near(overlay_face.get_margin(SIDE_LEFT), 4.0) and near(overlay_face.get_margin(SIDE_TOP), 2.0),
+		"overlay_panel: 알약 판을 입은 컨테이너 · 여백은 준 값 그대로")
+	# 🛑 네 변을 따로 — 오른쪽 끝이 터치 칸짜리 아이콘 버튼이라 판 여백이 필요 없는 알약(지도 범례 · ?).
+	GoStyle.face_insets(overlay_face, -1.0, -1.0, 0.0, -1.0)
+	check(near(overlay_face.get_margin(SIDE_RIGHT), 0.0) and near(overlay_face.get_margin(SIDE_LEFT), 4.0),
+		"face_insets: 준 변만 바꾸고 음수인 변은 그대로 (좌 %.1f · 우 %.1f)"
+			% [overlay_face.get_margin(SIDE_LEFT), overlay_face.get_margin(SIDE_RIGHT)])
+	# 🔑 떠 있는 판의 토큰 변형 — HUD 도크는 `hud`, 월드 위에 펼치는 시트는 `card`.
+	var sheet_face := GoStyle.hud_panel(pick_ink, -1.0, -1.0, GoTheme.BOX_CARD).get_theme_stylebox(&"panel")
+	check(sheet_face != null and sheet_face.get_class()
+		== GoUi.skin().floating_box(GoTheme.BOX_CARD, pick_ink).get_class()
+		and near(sheet_face.get_margin(SIDE_LEFT),
+			GoUi.skin().floating_box(GoTheme.BOX_CARD, pick_ink).get_margin(SIDE_LEFT)),
+		"hud_panel(variant): 카드 변형을 띄운다 · 여백은 스킨 그대로")
+	# 🔑 의미색이 값에 따라 바뀌는 배지 — 노드를 다시 만들지 않고 판만 다시 입힌다.
+	var restyled := GoStyle.hud_panel()
+	GoStyle.style_hud_panel(restyled, GoUi.color(GoTheme.DANGER))
+	check(restyled.get_theme_stylebox(&"panel") != null
+		and GoSkin.box_background(restyled.get_theme_stylebox(&"panel")) != Color.TRANSPARENT,
+		"style_hud_panel: 이미 만든 판 컨테이너에 다시 입힌다")
+	# 🔑 원형 조작 버튼 — 상태 6종 · 여백 0 · 반경은 지름의 절반 · 누른 상태만 의미색으로 채운다.
+	var orb := Button.new()
+	GoStyle.style_disc_button(orb, 48.0, GoUi.color(GoTheme.ACCENT), GoUi.color(GoTheme.SURFACE))
+	var orb_normal := orb.get_theme_stylebox(&"normal") as StyleBoxFlat
+	var orb_pressed := orb.get_theme_stylebox(&"pressed") as StyleBoxFlat
+	var orb_focus := orb.get_theme_stylebox(&"focus") as StyleBoxFlat
+	check(orb.get_theme_stylebox(&"disabled") != null and orb_normal != null and orb_pressed != null and orb_focus != null
+		and orb_normal.corner_radius_top_left == 24 and near(orb_normal.get_margin(SIDE_LEFT), 0.0)
+		and orb_pressed.bg_color.is_equal_approx(Color(GoUi.color(GoTheme.ACCENT), 0.34))
+		and orb_focus.border_width_left > orb_normal.border_width_left,
+		"style_disc_button: 상태 6종 · 반경 %d · 여백 0 · 누르면 의미색 · 포커스만 두꺼운 테두리"
+			% orb_normal.corner_radius_top_left)
+	# 🔑 글자 자체가 아이콘인 칸 — 글꼴과 글자를 함께 옮기고, 그 폭을 노드에 되묻지 않고 잰다.
+	# 🛑 기본 세트는 텍스처라 글리프가 없다(`glyph()` 가 빈 문자열) — 글꼴 세트를 만들어 본다.
+	var font_icons := GoIconSet.new()
+	font_icons.font = ThemeDB.fallback_font
+	var probe_codes: Dictionary[StringName, int] = {&"probe_list": 0x41, &"probe_down": 0x42}
+	font_icons.codepoints = probe_codes
+	var mark_button := Button.new()
+	GoStyle.glyph_text(mark_button, [&"probe_list", &"probe_down"], 16, Color.TRANSPARENT, font_icons)
+	var mark_width := GoStyle.glyph_width([&"probe_list", &"probe_down"], 16, font_icons)
+	var one_width := GoStyle.glyph_width([&"probe_list"], 16, font_icons)
+	check(mark_button.text == "A B" and mark_button.has_theme_font_override(&"font")
+		and mark_button.get_theme_font_size(&"font_size") == 16 and mark_width > one_width,
+		"glyph_text: 글리프 둘을 한 칸 띄워 잇는다 · glyph_width 가 그 폭을 잰다 (글자 %s · %.1f > %.1f)"
+			% [mark_button.text, mark_width, one_width])
+	# 🛑 `font_role` 은 변형을 건드리지 않고 크기만 바꾼다 — 아이콘 글꼴을 지워 본래 글자로 돌아간다.
+	mark_button.theme_type_variation = GoTheme.VAR_COMPACT_BUTTON
+	GoStyle.font_role(mark_button, GoTheme.ROLE_CAPTION)
+	check(not mark_button.has_theme_font_override(&"font")
+		and mark_button.get_theme_font_size(&"font_size") == GoUi.font_size(GoTheme.ROLE_CAPTION)
+		and mark_button.theme_type_variation == GoTheme.VAR_COMPACT_BUTTON,
+		"font_role: 아이콘 글꼴을 지우고 역할 크기만 · 변형은 그대로")
+	# 🔑 카드의 강조 테두리·여백 — 목록에서 한 장만 도드라지게(마지막에 고른 것·읽어야 하는 경고).
+	var quiet_card := GoStyle.card(pick_ink)
+	var loud_card := GoStyle.card(pick_ink, 0.9, 3.0, 7.0)
+	var plain_card := GoStyle.card()
+	var quiet_card_face := quiet_card.get_theme_stylebox(&"panel") as StyleBoxFlat
+	var loud_card_face := loud_card.get_theme_stylebox(&"panel") as StyleBoxFlat
+	check(quiet_card_face != null and loud_card_face != null
+		and loud_card_face.border_width_top == 3 and loud_card_face.border_width_top > quiet_card_face.border_width_top
+		and near(loud_card_face.border_color.a, 0.9, 0.01) and near(loud_card_face.get_margin(SIDE_LEFT), 7.0)
+		and not plain_card.has_theme_stylebox_override(&"panel"),
+		"card(강조): 테두리 굵기 %d·진하기 %.2f·여백 %.0f 는 인자 · 인자 없는 카드는 판을 덮지 않는다"
+			% [loud_card_face.border_width_top, loud_card_face.border_color.a, loud_card_face.get_margin(SIDE_LEFT)])
+	# 🔑 뒤에 까는 바탕 칸 — 준 값만 덮고, 그림자·여백은 0 이며 입력을 통과시킨다.
+	var backdrop := GoStyle.plate(GoTheme.BOX_HUD, Color(pick_ink, 0.14), Color(pick_ink, 0.36), 8.0, 1.0)
+	var backdrop_face := backdrop.get_theme_stylebox(&"panel") as StyleBoxFlat
+	check(backdrop is Panel and backdrop.mouse_filter == Control.MOUSE_FILTER_IGNORE and backdrop_face != null
+		and near(backdrop_face.bg_color.a, 0.14, 0.01) and near(backdrop_face.border_color.a, 0.36, 0.01)
+		and backdrop_face.border_width_top == 1 and backdrop_face.corner_radius_top_left == 8
+		and backdrop_face.shadow_size == 0 and near(backdrop_face.get_margin(SIDE_LEFT), 0.0),
+		"plate: 채움·테두리·반경은 인자 · 그림자·여백 0 · 입력 통과")
+	# 🔑 같은 원판을 칸·라벨·이미 만든 판에 입힌다(▶ 표식 · 번호 배지 · 색이 바뀌는 미리보기).
+	var well := GoStyle.disc_panel(36.0, pick_ink, 0.12, 0.42)
+	var well_face := well.get_theme_stylebox(&"panel") as StyleBoxFlat
+	var index_badge := Label.new()
+	GoStyle.style_disc_label(index_badge, 18.0, pick_ink, 0.92, 1.0)
+	var index_face := index_badge.get_theme_stylebox(&"normal") as StyleBoxFlat
+	var repainted := Panel.new()
+	GoStyle.style_disc_panel(repainted, 36.0, GoUi.color(GoTheme.DANGER))
+	check(well.custom_minimum_size == Vector2(36, 36) and well.mouse_filter == Control.MOUSE_FILTER_IGNORE
+		and well_face != null and index_face != null and near(well_face.bg_color.a, 0.12, 0.01)
+		and well_face.corner_radius_top_left > 0 and near(index_face.bg_color.a, 0.92, 0.01)
+		and repainted.get_theme_stylebox(&"panel") != null,
+		"disc_panel·style_disc_label·style_disc_panel: 원판 하나를 칸·라벨·이미 만든 판에")
+	# 🔑 카드 한 장이 통째로 탭인 자리 — 판을 그리지 않고 올림·누름에만 옅게 물든다.
+	var tap_area := Button.new()
+	GoStyle.style_overlay_button(tap_area, pick_ink, 0.10)
+	var tap_idle := tap_area.get_theme_stylebox(&"normal") as StyleBoxFlat
+	var tap_lit := tap_area.get_theme_stylebox(&"hover") as StyleBoxFlat
+	check(tap_idle != null and tap_lit != null and tap_idle.border_width_top == 0
+		and tap_idle.shadow_size == 0 and near(tap_idle.get_margin(SIDE_LEFT), 0.0)
+		and not tap_idle.draw_center and tap_lit.draw_center and near(tap_lit.bg_color.a, 0.10, 0.01)
+		and tap_area.get_theme_stylebox(&"pressed") != null and tap_area.get_theme_stylebox(&"disabled") != null,
+		"style_overlay_button: 테두리·그림자·여백 0 · 평소엔 안 그리고 올림·누름만 옅게 채운다")
+	# 🔑 월드 위 글자의 그림자 — 음수 축은 테마가 정한 값 그대로 둔다.
+	var lit_text := Label.new()
+	GoStyle.text_shadow(lit_text)
+	check(lit_text.has_theme_color_override(&"font_shadow_color")
+		and lit_text.get_theme_constant(&"shadow_offset_y") == 1
+		and not lit_text.has_theme_constant_override(&"shadow_offset_x"),
+		"text_shadow: 그림자색 + 세로 한 칸 · 음수 축은 테마 그대로")
+	overlay.free(); restyled.free(); orb.free(); mark_button.free()
+	quiet_card.free(); loud_card.free(); plain_card.free(); backdrop.free()
+	well.free(); index_badge.free(); repainted.free(); tap_area.free(); lit_text.free()
 	var bar := GoStyle.tabs(["One", "Two", "Three"], 1)
 	check(bar is TabBar and bar.tab_count == 3 and bar.current_tab == 1 and bar.custom_minimum_size.y == GoUi.metric(GoTheme.TOUCH), "tabs: 3탭 · 둘째 선택 · 터치 높이")
 	var crumbs := GoStyle.breadcrumb(["Home", "Inventory", "Weapons"])
@@ -2446,7 +2623,10 @@ func _own_symbols() -> Dictionary:
 			"PackedInt64Array", "PackedFloat32Array", "PackedFloat64Array", "PackedStringArray",
 			"PackedVector2Array", "PackedVector3Array", "PackedVector4Array", "PackedColorArray"]:
 		known[builtin] = true
-	var declared := RegEx.create_from_string("^\\s*(?:class_name\\s+|enum\\s+|const\\s+)([A-Z][A-Za-z0-9_]*)")
+	# 🛑 **내부 클래스도 자기 이름이다.** `class Ticket extends RefCounted` 처럼 파일 안에 선언한
+	#    것을 빼놓으면, 그것을 쓰는 줄이 "호스트 프로젝트에 기대는 외부 심볼" 로 잘못 걸린다
+	#    (2026-09-16: `GoDialogs.Ticket`·`GoSnackbar.Ticket` 이 그렇게 잡혔다).
+	var declared := RegEx.create_from_string("^\\s*(?:class_name\\s+|class\\s+|enum\\s+|const\\s+)([A-Z][A-Za-z0-9_]*)")
 	for path in _files(ADDON, ["gd"]):
 		for raw in FileAccess.get_file_as_string(path).split("\n"):
 			var found := declared.search(raw)

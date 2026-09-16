@@ -55,7 +55,8 @@ done
 wait "$PID"
 CODE=$?
 
-grep -E "^  (ok  |FAIL|viewport) |^FAIL |^gohud tests:" "$LOG"
+# 🔑 검사 파일이 여럿이다(`gohud tests:` · `gohud extra tests:`) — 요약 줄을 **둘 다** 받는다.
+grep -E "^  (ok  |\.\.\.\.|FAIL|viewport) |^FAIL |^gohud( [a-z]+)* tests:" "$LOG"
 # 🛑 새 그림(SVG)을 만든 직후 실제 임포트를 안 했으면 테마가 통째로 안 읽혀 검사가 즉시 죽거나 매달린다(2026-09-12).
 if grep -qE "referenced non-existent resource|Failed loading resource: res://addons/gohud" "$LOG" 2>/dev/null; then
   echo "🛑 리소스를 못 읽었다 — 새 SVG 가 임포트되지 않았다. 먼저:  godot --headless --path \"$PROJECT\" --import" >&2
@@ -65,7 +66,7 @@ if grep -A3 "SCRIPT ERROR" "$LOG" | grep -q "addons/gohud\|gohud_test"; then
   grep -A3 "SCRIPT ERROR" "$LOG" | head -30 >&2
   CODE=1
 fi
-if ! grep -q "^gohud tests:" "$LOG"; then
+if ! grep -qE "^gohud( [a-z]+)* tests:" "$LOG"; then
   echo "🛑 요약 줄이 없다 — 검사가 끝까지 돌지 않았다" >&2
   tail -20 "$LOG" >&2
   CODE=1

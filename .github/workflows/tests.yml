@@ -1,0 +1,79 @@
+# gohud 검사 — push·PR 마다 `tools/check_all.sh` 가 보는 것을 CI 에서도 본다.
+#
+# 🛑 왜 필요한가
+#   검사는 이미 전부 헤드리스로 돈다. 그런데 **아무도 자동으로 돌리지 않았다** — 사람이 기억해서
+#   로컬에서 돌려야 했고, 그래서 깨진 채로 커밋된 것을 며칠 뒤에야 발견했다(2026-09-16: `standalone`
+#   검사가 로컬 산출물 때문에 실패한 상태로 남아 있었고, 빨간 검사에 익숙해지면 진짜 실패도 묻힌다).
+#
+# 🔑 무엇을 도는가
+#   ① 단위 검사(Godot 헤드리스) — 위젯 동작·스킨이 실행 중에 만드는 색의 대비
+#   ②~⑤ 파이썬 검사 — 테마 대비 · 홈페이지 · 생성물 일치 · 패키징 게이트
+#   `tools/check_all.sh` 하나가 그 전부를 부른다. 여기서도 **같은 진입점**을 쓴다 —
+#   CI 가 로컬과 다른 것을 보면 "내 컴퓨터에서는 되는데" 가 생긴다.
+#
+# 🛑 Godot 버전을 올릴 때는 `GoUi.MIN_ENGINE` 과 함께 올린다. 4.6 호환은 4.7 로 확인할 수 없다.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 같은 가지에 새 push 가 오면 돌던 것을 끊는다 — 마지막 것만 알면 된다.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # 🔑 이 애드온이 요구하는 최소 버전이자, 검사를 도는 버전.
+      GODOT_VERSION: 4.6-stable
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Godot 내려받기
+        run: |
+          set -euo pipefail
+          BASE="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}"
+          FILE="Godot_v${GODOT_VERSION}_linux.x86_64"
+          curl -fsSL -o godot.zip "${BASE}/${FILE}.zip"
+          unzip -q godot.zip
+          chmod +x "${FILE}"
+          echo "GODOT_BIN=${PWD}/${FILE}" >> "$GITHUB_ENV"
+
+      - name: 검사용 빈 프로젝트를 짓고 애드온을 넣는다
+        # 🛑 gohud 저장소에는 `project.godot` 이 없다 — 애드온이지 게임이 아니다.
+        #    검사는 **호스트 프로젝트 안에 설치된 상태**를 보아야 하므로 여기서 하나 만든다.
+        #    복사가 아니라 심볼릭 링크다 — 검사가 보는 파일이 곧 저장소의 파일이어야 한다.
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/host/addons
+          ln -s "${GITHUB_WORKSPACE}" /tmp/host/addons/gohud
+          cat > /tmp/host/project.godot <<'CFG'
+          config_version=5
+          [application]
+          config/name="gohud CI"
+          config/features=PackedStringArray("4.6")
+          CFG
+          echo "GOHUD_PROJECT=/tmp/host" >> "$GITHUB_ENV"
+
+      - name: 자원을 임포트한다
+        # 🛑 이것을 빼면 SVG·테마가 읽히지 않아 검사가 시작하자마자 죽거나 매달린다.
+        run: "${GODOT_BIN}" --headless --path /tmp/host --import
+
+      - name: 전부 검사
+        # 로컬에서 치는 것과 **같은 한 줄**이다.
+        run: bash tools/check_all.sh
+
+      - name: 실패하면 로그를 남긴다
+        if: failure()
+        run: |
+          echo "— 마지막 단위 검사 출력 —"
+          "${GODOT_BIN}" --headless --path /tmp/host -s res://addons/gohud/tests/gohud_test.gd 2>&1 | tail -60 || true

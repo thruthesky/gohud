@@ -34,14 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
+      <!-- nav:begin -->
       <a href="./">Обзор</a>
+      <a href="install.html">Установка</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Виджеты</a>
       <a href="theming.html">Темы</a>
-      <a href="widgets.html">Виджеты</a>
-      <a href="#surfaces">Окна</a>
-      <a href="#messages">Сообщения</a>
-      <a href="#hud">HUD</a>
-      <a href="#factory">GoStyle</a>
-      <a href="#hooks">Хуки</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>Русский</summary>
@@ -241,6 +241,10 @@ sheet.footer().visible = true</code></pre>
     правило переживает смену палитры (WCAG 2.4.11 требует 3:1 для индикаторов фокуса).
   </p>
 
+</section>
+
+<section id="hud-widgets">
+  <h2>Виджеты HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — девять точек</h3>
   <p>Учитывает безопасную область и краевые отступы. Задайте ему <code>landscape_spot</code> — и он переедет
     в альбомной ориентации: элементы управления, стоящие снизу по центру в книжной, могут уйти вправо вниз.</p>

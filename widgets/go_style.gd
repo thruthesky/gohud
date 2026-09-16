@@ -123,6 +123,19 @@ static func edge_card(accent: Color, rtl := false, width := -1.0) -> StyleBoxFla
 	return style
 
 
+## 위 띠 카드 판을 두른 **컨테이너** — 내용은 부르는 쪽이 채운다(`card()` 의 띠 판 짝).
+## [param pad] 는 안쪽 여백(음수면 작은 여백 토큰). 🛑 그 위에 `padding()` 칸을 또 두르지 않는다.
+static func edge_card_panel(accent: Color, rtl := false, pad := -1.0) -> PanelContainer:
+	var node := PanelContainer.new()
+	node.name = "EdgeCard"
+	node.theme = GoUi.theme()
+	var face := edge_card(accent, rtl)
+	face_padding(face, pad if pad >= 0.0 else float(GoUi.metric(GoTheme.PADDING_COMPACT)),
+		pad if pad >= 0.0 else float(GoUi.metric(GoTheme.PADDING_COMPACT)))
+	node.add_theme_stylebox_override(&"panel", face)
+	return node
+
+
 ## 컨테이너의 자식 간격을 토큰으로.
 static func gap(node: Container, token := GoTheme.GAP) -> void:
 	var value := GoUi.metric(token)
@@ -549,6 +562,10 @@ static func style_brand_button(node: Button, fill: Color, ink: Color, edge: Colo
 		mark := -1, gap := -1, inset := -1.0, base: StyleBox = null, mark_ink := Color.WHITE) -> void:
 	var source := base if base != null else node.get_theme_stylebox(&"normal")
 	if source == null: source = surface(GoTheme.BOX_CARD)
+	# 🛑 브랜드 색을 **넣을 수 있는 판**이어야 한다. 스킨이 커스텀 판(각진 판 등)을 주는 테마에서는 `bg_color` 를
+	#    고쳐도 그 판이 자기 색으로 그리므로 규격 색이 화면에 안 나온다 — 같은 여백·테두리·둥글기의 평판으로 옮긴다.
+	#    **규격이 스킨보다 앞서는 유일한 자리다**(다른 함수는 모두 스킨 모양을 그대로 살린다).
+	if not (source is StyleBoxFlat): source = _flat_like(source)
 	# 🔑 어두운 판인가로 되먹임 방향을 가른다 — 검정 판(Apple)은 밝히고 흰 판(Google)은 어둡게.
 	var dark := fill.get_luminance() < 0.5
 	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
@@ -1018,9 +1035,13 @@ static func bare_panel(node: Control) -> void:
 ## [param padding] 음수면 `padding_compact` 토큰.
 static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint := 0.0, padding := -1) -> void:
 	var face := surface(GoTheme.BOX_NOTICE, accent)
-	if tint > 0.0 and &"bg_color" in face:
-		var back: Color = GoUi.color(GoTheme.BACKGROUND)
-		face.set(&"bg_color", back.lerp(accent, tint))
+	if tint > 0.0:
+		# 🛑 바탕을 실제로 물들이려면 색을 넣을 수 있는 판이어야 한다 — 스킨의 커스텀 판은 제 색으로 그리므로
+		#    같은 여백·테두리·둥글기의 평판으로 옮긴다(틴트를 안 줬으면 스킨 모양 그대로 둔다).
+		if not (face is StyleBoxFlat): face = _flat_like(face)
+		if &"bg_color" in face:
+			var back: Color = GoUi.color(GoTheme.BACKGROUND)
+			face.set(&"bg_color", back.lerp(accent, tint))
 	var pad := float(GoUi.metric(GoTheme.PADDING_COMPACT) if padding < 0 else padding)
 	face.content_margin_left = pad
 	face.content_margin_right = pad
@@ -1055,6 +1076,41 @@ static func style_hud_panel(node: PanelContainer, accent := Color.TRANSPARENT, p
 	var face := GoUi.skin().floating_box(variant, accent)
 	face_padding(face, pad_x, pad_y)
 	node.add_theme_stylebox_override(&"panel", face)
+
+
+## 🔑 **이미 만든 아무 노드에 판 한 장을 입힌다** — 판을 만드는 일은 gohud 가, 그 판을 어디에 입힐지는
+## 부르는 쪽이 정한다. 위 `style_hud_panel()` 이 "떠 있는 HUD 판"으로 좁혀진 짝이라면, 이것은 그 원시형이다.
+##
+## 쓰는 자리 — ① `PanelContainer` 가 아닌 노드(`Panel`·`Button`·`Label`)에 입힐 때 ② 떠 있지 **않은** 판이
+## 필요할 때(카드 안에 깔리는 칩은 그림자가 붙으면 떠 보인다) ③ `normal`·`hover`·`pressed` 처럼 **상태별**로
+## 다른 판을 줄 때 ④ 스킨이 만든 판(`surface()`·`GoSkin.alert_box()`)을 그대로 입힐 때.
+##
+## [param face] 는 `surface()`·`box()`·`edge_card()`·`GoUi.skin().*_box()` 가 돌려준 판이다.
+## [param state] 는 테마 아이템 이름(패널류는 `panel`, 버튼류는 `normal`·`hover`·`pressed`·`disabled`).
+## 🛑 판이 여백을 가지면 그 위에 `padding()` 칸을 또 두르지 않는다(내용 폭이 두 배로 깎인다 · `hud_panel()` 과 같은 이유).
+static func style_panel(node: Control, face: StyleBox, state := &"panel") -> void:
+	if node == null or face == null: return
+	node.theme = GoUi.theme()
+	node.add_theme_stylebox_override(state, face)
+
+
+## 🔑 **누르는 자리보다 작은 시각 판** — 버튼 안에 판 한 장을 깔고 버튼 폭을 따라가게 한다.
+##
+## 손가락이 닿는 칸은 터치 하한(48)을 지켜야 하지만 **보이는 판은 그보다 작아야** 하는 자리가 있다
+## (HUD 의 얇은 띠·상태 바). 버튼을 키우면 화면이 답답하고, 판을 키우면 누르기 어렵다 — 둘을 나눈다.
+## 판은 입력을 받지 않으므로(IGNORE) 눌리는 자리는 버튼 그대로다.
+##
+## [param height] 는 보이는 판의 높이(dp), [param face] 를 주면 그 판을, 없으면 떠 있는 HUD 판을 쓴다.
+## 돌려받은 `Panel` 에 자식을 얹어 꾸밀 수 있다(자리 배치는 부르는 쪽이 정한다 — `PanelContainer` 가 아니다).
+static func touch_face(button: Button, height := 38.0, face: StyleBox = null) -> Panel:
+	if button == null: return null
+	var node := Panel.new()
+	node.name = "Surface"
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	style_panel(node, face if face != null else floating(GoTheme.BOX_HUD))
+	button.add_child(node)
+	button.resized.connect(func() -> void: node.size = Vector2(button.size.x, height))
+	return node
 
 
 ## 🔑 **지도·월드 그림 위에 얹는 알약 판** 한 장 — 뒤 그림이 무엇이든 글자가 읽히게 바탕을 어둡게 깔고 테두리를
@@ -1376,26 +1432,22 @@ static func style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, u
 ## [param fill] 은 평상시 바탕색(투명이면 `surface` 토큰), [param fill_alpha] 는 평상시 그 색의 불투명도다
 ## (올렸을 때·비활성은 1.0 — 그림 위에서 더 또렷해진다). 누른 상태는 의미색을 [param press_alpha] 만큼 채운다.
 ## 🛑 `mouse_filter` 를 건드리지 않는다 — 그림 위 버튼은 STOP 이어야 누름이 지도·월드로 새지 않는다.
-## 🔑 각진 판·단조 판 스킨에서는 그 판 모양이 그대로 남는다(반경은 평판일 때만 원이 된다).
+## 🛑 판은 `surface()` 가 아니라 `box()` 에서 온다 — **둥근 것이 이 버튼의 뜻**이라, 각진 판·단조 판 스킨의
+##    모양을 지키면 원이 사각형이 된다(`style_hud_disc()` 와 같은 판단). 색·여백은 스킨 값을 그대로 옮겨 온다.
 static func style_disc_button(node: Button, diameter: float, accent: Color, fill := Color.TRANSPARENT,
 		fill_alpha := 0.92, press_alpha := 0.34) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
 	var back := fill if fill.a > 0 else GoUi.color(GoTheme.SURFACE)
 	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]:
-		var face := surface(GoTheme.BOX_HUD, accent)
+		var face := box(GoTheme.BOX_HUD, accent)
 		var pressed: bool = state == &"pressed" or state == &"hover_pressed"
 		var focused: bool = state == &"focus"
-		if &"bg_color" in face:
-			face.set(&"bg_color", Color(accent, press_alpha) if pressed \
-				else Color(back, fill_alpha if state == &"normal" else 1.0))
-		if &"border_color" in face: face.set(&"border_color", Color(accent, 0.7 if focused else 0.42))
-		var flat := face as StyleBoxFlat
-		if flat != null:
-			flat.set_border_width_all(2 if focused else 1)
-			flat.set_corner_radius_all(maxi(1, int(diameter * 0.5)))
-		elif &"border_width" in face:
-			face.set(&"border_width", 2.0 if focused else 1.0)
+		face.bg_color = Color(accent, press_alpha) if pressed \
+			else Color(back, fill_alpha if state == &"normal" else 1.0)
+		face.border_color = Color(accent, 0.7 if focused else 0.42)
+		face.set_border_width_all(2 if focused else 1)
+		face.set_corner_radius_all(maxi(1, int(diameter * 0.5)))
 		face.set_content_margin_all(0)
 		node.add_theme_stylebox_override(state, face)
 

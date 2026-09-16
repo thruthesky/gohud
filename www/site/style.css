@@ -99,6 +99,15 @@ header.top nav > a {
   padding: 6px 9px; border-radius: 8px;
 }
 header.top nav > a:hover { color: var(--accent); background: var(--tint); }
+/* 지금 보고 있는 쪽 — 다섯 칸 중 어디에 서 있는지 글자만으로 알린다. */
+header.top nav > a[aria-current="page"] { color: var(--ink); font-weight: 700; background: var(--tint); }
+/* 🔑 AI SKILL 한 칸만 테두리를 준다 — 이 사이트에서 가장 빨리 끝나는 설치 경로이고,
+   나머지 넷은 문서인데 이것만 "해 보는 것" 이라 성격이 다르다. */
+header.top nav > a.nav-ai {
+  color: var(--accent); font-weight: 700; letter-spacing: .01em;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+header.top nav > a.nav-ai:hover { background: var(--tint); border-color: var(--accent); }
 
 /* ── 언어 고르개 ─────────────────────────────────────────── */
 /* 🛑 JavaScript 를 쓰지 않는다 — <details> 만으로 연다. 스크립트가 막힌 곳에서도 언어는 바뀌어야 한다.
@@ -173,11 +182,22 @@ header.top nav > a:hover { color: var(--accent); background: var(--tint); }
   box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--accent) 80%, transparent);
 }
 .btn.primary:hover { color: var(--on-accent); filter: brightness(1.06); box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 85%, transparent); }
+/* 🔑 단추가 넷이 되면서 생긴 자리 — AI 를 쓰지 않는 사람에게 "설치" 가 한 칸 밀렸다.
+   윤곽선만으로 둘째 자리를 지켜 준다(배경을 채우면 으뜸 단추와 싸운다). */
+.btn.accent { border-color: var(--accent); color: var(--accent); }
+.btn.accent:hover { background: var(--tint); }
 
 /* ── 본문 ───────────────────────────────────────────────── */
 
 main { padding: 8px 0 90px; }
 section { padding: 54px 0 10px; scroll-margin-top: 78px; }
+/* 🔑 갈림길 절 — 대문에 남아 바깥 링크를 받고 새 쪽으로 보내는 짧은 절이다. 본문 절과 같은 여백을
+   주면 제목·한 줄·단추만 있는 칸이 화면 하나를 차지해 "여기서 글이 끊겼나" 싶게 보인다(촬영 확인).
+   나란히 선 갈림길끼리는 붙여 한 덩어리로 읽히게 한다. */
+section.crumb { padding: 30px 0 6px; }
+section.crumb + section.crumb { padding-top: 12px; }
+section.crumb h2 { margin-bottom: 6px; }
+section.crumb p.sub { margin-bottom: 14px; }
 section > h2 {
   font-size: clamp(24px, 3.4vw, 31px); margin: 0 0 8px; letter-spacing: -.024em; font-weight: 750;
   line-height: 1.24;
@@ -193,6 +213,11 @@ h3 { font-size: 20.5px; margin: 34px 0 8px; letter-spacing: -.015em; font-weight
 h4 { font-size: 16.5px; margin: 24px 0 6px; letter-spacing: -.01em; }
 p { max-width: 74ch; color: var(--ink-2); }
 main li { max-width: 72ch; color: var(--ink-2); }
+/* 🛑 `ch` 는 숫자 0 한 글자의 폭이다 — 전각 문자는 그 두 배라, 74ch 로 잰 줄이 한국어·일본어·중국어
+   판에서는 **한 줄 80~95 자**가 된다(권장 상한 45~75 자). 전각을 쓰는 네 언어에서만 좁힌다.
+   글자 수로 바로 잴 수단이 CSS 에 없으므로 `em`(글자 크기) 으로 잰다 — 전각 한 글자가 곧 1em 이다. */
+:lang(ko) p, :lang(ja) p, :lang(zh-Hans) p, :lang(zh-Hant) p { max-width: 42em; }
+:lang(ko) main li, :lang(ja) main li, :lang(zh-Hans) main li, :lang(zh-Hant) main li { max-width: 41em; }
 b, strong { color: var(--ink); font-weight: 680; }
 
 .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(252px, 1fr)); }
@@ -216,6 +241,15 @@ b, strong { color: var(--ink); font-weight: 680; }
 .card h3 { margin: 0 0 6px; font-size: 17.5px; }
 .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
 
+/* 🛑 합자(ligature)를 끈다 — IBM Plex Mono 는 `--` 를 한 줄로 이어 붙인다. 그러면 화면의
+   `git clone --depth 1` 이 `git clone —depth 1` 로 보여, 읽는 사람이 붙임표를 하나로 센다.
+   복사하면 글자는 멀쩡하지만 **보고 따라 치는 사람**이 틀린다(2026-09-16 촬영에서 확인). */
+pre, pre code, code {
+  font-variant-ligatures: none;
+  /* 🛑 `font-variant-ligatures` 만으로는 모자란다 — 코딩용 글꼴은 `--`·`->`·`!=` 를 표준 합자가
+     아니라 **상황별 대체**(`calt`)로 잇는다. 둘 다 꺼야 화면의 붙임표가 원문대로 둘로 보인다. */
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
+}
 pre {
   background: var(--code-bg); border: 1px solid var(--rule); border-radius: var(--radius);
   padding: 16px 18px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.66;
@@ -234,7 +268,11 @@ pre code { background: none; padding: 0; font-size: inherit; border: 0; }
    `isolate` 로 떼어 둬야 앞뒤 아랍어와 엉키지 않는다. */
 pre, code { direction: ltr; unicode-bidi: isolate; text-align: start; }
 
-/* 코드 복사 단추 — `site/ux.js` 가 붙인다. 손을 올린 코드 칸에만 나타난다. */
+/* 코드 복사 단추 — `site/ux.js` 가 붙인다. 마우스가 있는 기기에서는 손을 올린 칸에만 나타난다.
+   🛑 손가락에는 hover 가 없다 — 이 사이트가 `widgets.html` 에서 직접 쓴 함정을 이 파일이 밟고
+      있었다(2026-09-16). `pre:hover` 만으로 두면 폰에서 복사 단추가 **영영 뜨지 않는다.**
+      AI 에 붙여 넣는 설치 문구를 복사하는 것이 이 사이트의 핵심 동선이라 더욱 치명적이었다.
+      그래서 마우스가 없는 기기에서는 늘 보이고, 터치 크기(44px)도 거기서만 키운다. */
 .gocopy {
   position: absolute; inset-block-start: 8px; inset-inline-end: 8px; z-index: 2;
   font: inherit; font-size: 11.5px; font-weight: 650; padding: 4px 10px; border-radius: 8px;
@@ -244,6 +282,14 @@ pre, code { direction: ltr; unicode-bidi: isolate; text-align: start; }
 pre:hover .gocopy, .gocopy:focus-visible { opacity: 1; }
 .gocopy:hover { color: var(--accent); border-color: var(--accent); }
 .gocopy.done { color: var(--accent-2); border-color: var(--accent-2); opacity: 1; }
+
+@media (hover: none) {
+  .gocopy {
+    opacity: 1; font-size: 13px; padding: 10px 14px; min-height: 44px;
+    /* 손가락이 코드 첫 줄을 가리지 않게 살짝 안쪽으로. */
+    inset-block-start: 6px; inset-inline-end: 6px;
+  }
+}
 
 /* 표는 본문 폭에 맞춘다 — display:block 이면 내용 폭만큼만 늘어나 한 페이지의 표마다 오른쪽 끝이 달랐다
    (I-73). 좁은 화면에서만 block 으로 바꿔 가로 스크롤을 준다(코드 셀은 줄바꿈하지 않으므로). */
@@ -255,12 +301,33 @@ table {
    본문 폭에 맞춘다. 이름 열은 줄바꿈하지 않는다. */
 /* 열 폭을 고정한다 — 표 둘이 따로 계산하면 "기본값" 열이 서로 다른 자리에 선다. */
 .dials td:first-child, .dials th:first-child { white-space: nowrap; width: 24%; }
+/* 스킨마다 접는 다이얼 표 — 셋을 한꺼번에 펼치면 32 행이고, 폰에서는 그 한 행이 블록 셋이 된다. */
+.dial-group { margin: 18px 0; border: 1px solid var(--rule); border-radius: var(--radius-s); overflow: hidden; }
+.dial-group > summary {
+  list-style: none; cursor: pointer; padding: 12px 16px; background: var(--bg-2);
+  display: flex; align-items: center; gap: 10px; min-height: 48px;   /* 손가락 크기 */
+}
+.dial-group > summary::-webkit-details-marker { display: none; }
+/* 여닫는 표시 — 글 방향을 따라 돈다(아랍어에서는 반대쪽을 가리켜야 한다). */
+.dial-group > summary::before { content: "\25B8"; font-size: 11px; color: var(--muted); transition: transform .14s; }
+[dir="rtl"] .dial-group > summary::before { transform: scaleX(-1); }
+.dial-group[open] > summary::before { transform: rotate(90deg); }
+[dir="rtl"] .dial-group[open] > summary::before { transform: rotate(90deg) scaleX(-1); }
+.dial-group > summary:hover { background: var(--tint); }
+.dial-group > summary h4 { margin: 0; font-size: 15px; border: 0; padding: 0; }
+.dial-group > table { margin: 0; border-radius: 0; }
 .dials td:nth-child(2), .dials th:nth-child(2) { white-space: nowrap; width: 10%; font-variant-numeric: tabular-nums; }
 .dials h4 { margin: 24px 0 8px; }
 th, td { border-bottom: 1px solid var(--rule); padding: 10px 13px; text-align: start; vertical-align: top; }
 th {
   font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 700;
+  /* 🛑 아래 두 가지는 라틴 문자용 관습이다. 아랍 문자는 낱자가 서로 **이어져** 한 낱말을 이루므로
+     자간을 벌리면 낱말이 흩어져 보이고, 대소문자가 없어 uppercase 는 아무 일도 하지 않는다.
+     (같은 이유로 전각 문자에서도 자간을 벌리지 않는다 — 이미 글자마다 여백이 있다.) */
   background: var(--bg-2); border-bottom-color: var(--rule-2);
+}
+[dir="rtl"] th, :lang(ko) th, :lang(ja) th, :lang(zh-Hans) th, :lang(zh-Hant) th, :lang(th) th {
+  letter-spacing: normal; text-transform: none;
 }
 tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
@@ -296,6 +363,16 @@ td code { white-space: nowrap; }
   color: var(--ink-2);
 }
 .note b { color: var(--blue); }
+/* 🔑 설치 쪽 맨 위의 AI SKILL 카드 — 안내 상자보다 크고 절보다 작다. 설치하러 온 사람에게
+   "훨씬 빠른 길이 있다" 를 먼저 보이려고 절 대신 카드로 둔다. */
+.ai-card {
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-inline-start-width: 3px; border-radius: var(--radius);
+  padding: 20px 24px; font-size: 16px;
+}
+.ai-card h2 { margin: 0 0 8px; font-size: 21px; border: 0; padding: 0; }
+.ai-card p { margin: 0 0 14px; max-width: 68ch; }
+.ai-card p:last-child { margin-bottom: 0; }
 /* 🛑 경고 색은 변수로 둔다 — 어두운 판에서 재정의되지 않아 네 조합 모두 AA 미달이었다. */
 .warn {
   border-inline-start-color: var(--warn);

@@ -34,15 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
-      <a href="#what">Neler yapar</a>
-      <a href="#install">Kurulum</a>
-      <a href="#start">Hızlı başlangıç</a>
-      <a href="#presets">Ön ayarlar</a>
-      <a href="#examples">Örnekler</a>
-      <a href="#ai">AI komutları</a>
-      <a href="theming.html">Tema ↗</a>
-      <a href="widgets.html">Widget'lar ↗</a>
+      <!-- nav:begin -->
+      <a href="./" aria-current="page">Genel bakış</a>
+      <a href="install.html">Kurulum</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget'lar</a>
+      <a href="theming.html">Tema</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>Türkçe</summary>
@@ -92,7 +91,8 @@
       <span class="badge">100 simge dahil</span>
     </div>
     <div class="cta">
-      <a class="btn primary" href="#install">Kurulum</a>
+      <a class="btn primary" href="ai.html">AI SKILL</a>
+      <a class="btn accent" href="install.html">Kurulum</a>
       <a class="btn" href="#presets">Ön ayarları gör</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -173,78 +173,16 @@
   </div>
 </section>
 
-<section id="install">
-  <h2>Kurulum</h2>
-  <p class="sub">Eklenti klasörünü projenize koyun. Kurulacak başka bir şey yok.</p>
-
-  <h3 id="from-the-asset-store-or-a-release-zip">Asset Store'dan veya bir sürüm ZIP'inden</h3>
-  <p>Proje kökünüze çıkarın; sonuçta <code>res://addons/gohud/</code> elde etmelisiniz. Hepsi bu. İsterseniz
-    <b>Project → Project Settings → Plugins → gohud</b> yolundan etkinleştirin.</p>
-
-  <h3 id="as-a-git-submodule">git submodule olarak</h3>
-  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
-git submodule update --init
-git -C addons/gohud checkout v1.0.0   # isteğe bağlı: bir etikete veya commit'e sabitle</code></pre>
-  <p>Deponun kökü <b>doğrudan</b> eklenti klasörüdür, yani tam olarak Godot'un beklediği yere iner. Yerinde
-    düzenleyin, <code>addons/gohud</code> içinde commit'leyip push'layın, sonra oyununuzda submodule
-    işaretçisini commit'leyin.</p>
-
-  <div class="note warn">
-    <b>Godot 4.6 veya daha yenisi gerekir.</b> gohud, 4.5'te gelen API'leri kullanır (DPITexture,
-    FoldableContainer, erişilebilirlik özellikleri); dolayısıyla daha eski her sürümde <b>ayrıştırma
-    sırasında hata verir</b>. Desteklenen alt sınır 4.6'dır ve <code>GoUi.MIN_ENGINE</code> içinde kayıtlıdır.
-  </div>
+<section id="install" class="crumb">
+  <h2>gohud kurulumu</h2>
+  <p class="sub">İki yol var. Yapay zekâ ajanınıza yaptırın ya da klasörü projenize bırakın — başka ayarlanacak bir şey yok.</p>
+  <p><a class="btn primary" href="install.html">Kurulum</a></p>
 </section>
 
-<section id="start">
+<section id="start" class="crumb">
   <h2>Hızlı başlangıç</h2>
-  <p class="sub">Her widget <code>.new()</code> ve <code>add_child()</code> ile gelir — sahne dosyası yok, autoload yok.</p>
-
-  <h3 id="pick-a-look-before-building-ui-optional">Arayüzü kurmadan önce bir görünüm seçin (isteğe bağlı)</h3>
-  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # bunu atlarsanız default_dark kullanılır</code></pre>
-
-  <h3 id="a-confirmation-you-await"><code>await</code> ile beklediğiniz bir onay</h3>
-  <pre><code>var dialogs := GoDialogs.new()
-add_child(dialogs)
-if await dialogs.confirm("Kaydı sil", "Bu geri alınamaz."):
-    delete_save()</code></pre>
-  <p><code>destructive = true</code> (son argüman) geçirin; onay düğmesi dolgulu tehlike düğmesi olarak çizilir.</p>
-
-  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Sabit bir arama alanı ve alt bilgisi olan bir alt sayfa</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("Envanter")
-sheet.toolbar().add_child(GoStyle.line_edit("Ara…"))
-sheet.toolbar().visible = true
-for item in items:
-    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
-        Color.TRANSPARENT, item.description, false))
-sheet.footer().add_child(GoStyle.button("Kapat", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-
-  <div class="note">
-    <b>Sabit satırlar neden kaydırılan gövdeden ayrı.</b> Onay ve iptali <code>body</code> içine koyarsanız
-    uzun bir liste onları ekrandan dışarı iter. <code>footer()</code> her zaman görünürdür.
-  </div>
-
-  <h3 id="a-hud-corner">Bir HUD köşesi</h3>
-  <pre><code>var corner := GoHudAnchor.new()
-corner.spot = GoHudAnchor.Spot.TOP_LEFT
-corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
-add_child(corner)
-
-var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)
-corner.add_child(hp)
-hp.set_values(320, 500)</code></pre>
-
-  <h3 id="content-that-keeps-clear-of-the-hud">HUD'a değmeyen içerik</h3>
-  <pre><code>form.avoid_hud = true                  # görünen her GoHudAnchor'dan uzak dur
-joystick_anchor.reserve_space = false  # …yalnızca parmak altında beliren anchor'lar hariç
-notice_anchor.avoid_peers = true       # bildirim sabit HUD'ın üstünü kapatmak yerine altına yerleşir</code></pre>
-  <p>Her dikdörtgenden, en az alana mal olan yönde kaçınılır — dikey tutulan bir telefonda aşağı doğru,
-    yatayda yana doğru. <a href="widgets.html#hud">HUD kendinden nasıl kaçınıyor →</a></p>
+  <p class="sub">Beş satır, temalı bir ekranı gösterir. Baştan sona anlatım kurulum sayfasında.</p>
+  <p><a class="btn" href="install.html#start">Hızlı başlangıç</a></p>
 </section>
 
 <section id="presets">
@@ -418,79 +356,10 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </table>
 </section>
 
-<section id="examples">
-  <h2>Çalıştırabileceğiniz örnekler</h2>
-  <p class="sub">Tek satır yazmadan gohud'u görmenin üç yolu — hiçbiri sunucu ya da autoload istemez.</p>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">Örnek</th><th>Nasıl açılır</th><th>Ne gösterir</th></tr></thead>
-    <tbody>
-      <tr><td>Galeri</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Her widget, kurulu her ön ayar için bir seçici ve simge setinin tamamı</td></tr>
-      <tr><td>Ortaçağ</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Bir karakter sayfası, heybe ve görev günlüğü; düğmeler demir ile parşömen arasında geçiş yapar ve nesne ayrıntılarını açar</td></tr>
-      <tr><td>Demo uygulaması</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Galeriyi, 15 bölümlük rehberli turu, vitrin ekranını ve ortaçağ görünümünü açan bir ana ekran; canlı widget'lar ve sınıf başına bir kartla</td></tr>
-    </tbody>
-  </table>
-
-  <pre><code>cd examples/demo &amp;&amp; godot                             # ana ekran; ilk çalıştırmada bağlar ve içe aktarır
-bash examples/demo/run.sh                               # aynı uygulama, eklenti kökünden
-bash examples/demo/run.sh -- --open=gallery             # ana ekranı atla
-bash examples/demo/run.sh -- --explore=surfaces         # doğrudan turun tek bir bölümünü aç
-bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # turun 1080p / 60 fps kaydı</code></pre>
-  <p>Demo uygulaması kurulum istemez: eklenti bağlantısı ya da içe aktarma önbelleği eksikse bunu söyler,
-    klasörü onarır ve kendini yeniden açar. Ana ekranı her örneği aynı pencerenin içinde açar — <b>1</b>–<b>4</b>
-    tuşlarına basın ya da bir satıra tıklayın; üstteki çubuk sizi geri getirir.</p>
-  <p>Turda <b>C</b> Sinema kipini açıp kapatır, <b>F11</b> tam ekran yapar, <b>Space</b> duraklatır (keşif
-    sırasında ise o anki widget'ı oynatır), oklar bölüm değiştirir ve <b>Escape</b> başlangıca döner.</p>
-  <p>Bir AI kodlama ajanı mı kullanıyorsunuz? <a href="#ai">Üçünü de tek komutla açın →</a></p>
-</section>
-
-<section id="ai">
-  <h2>AI kodlama ajanınızdan açın</h2>
-  <p class="sub">
-    gohud, eğik çizgi komutları olan bir Claude Code eklentisiyle gelir. Birini yazın; galeri ya da demo
-    kendi Godot penceresinde açılsın — başlatılacak bir editör, bulunacak bir sahne yok.
-  </p>
-
-  <h3 id="install-the-commands-once">Komutları bir kez kurun</h3>
-  <pre><code>claude plugin marketplace add thruthesky/gohud
-claude plugin install gohud@gohud
-# ardından Claude Code'u yeniden başlatın</code></pre>
-  <p>Codex gibi başka ajanlar da aynı beceriyi kullanabilir: bu depodaki <code>skills/gohud</code> klasörünü
-    ajanın beceri klasörüne kopyalayın.</p>
-
-  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — widget galerisi</h3>
-  <p>Galeriyi açar: her widget, altı ön ayarın tamamı için bir seçici ve simge setinin tamamı. Komutu kendi Godot
-    projenizin içinde yazarsanız <b>sizin</b> <code>addons/gohud</code> klasörünüzü kullanır; proje yoksa eklentiyle
-    gelen kopyayı ya da taze bir klonu kullanır. Kullan-at bir sandbox projesinde çalışır, böylece autoload'larınıza
-    ve içe aktarma önbelleğinize dokunulmaz; pencere siz kapatana kadar açık kalır.</p>
-
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15 bölümlük rehberli tur</h3>
-  <p>Demoyu başlangıç ekranında açar. <b>Demoyu başlat</b> turu gerçek girdiyle oynatır; <b>Widget'ları keşfet</b>
-    tek bir widget'ı elle denemenizi sağlar. <a href="#examples">Örnekler</a> altında listelenen tuşlar burada da
-    çalışır.</p>
-
-  <h3 id="many-other-commands">Diğer pek çok komut</h3>
-  <table>
-    <thead><tr><th>Komut</th><th>Ne yapar</th></tr></thead>
-    <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>Ortaçağ ön ayarlarında karakter sayfası, heybe ve görev günlüğü</td></tr>
-      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>Demoyu doğrudan tek bir bölümde açar — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
-      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>Galeriyi tek bir ön ayarda açar; 390×844'lük bir telefon penceresi için <code>--phone</code>, herhangi bir boyut için <code>--size 1920x1080</code> ekleyin</td></tr>
-      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Kendi projenizden bir sahne, o projenin içinde çalıştırılır</td></tr>
-      <tr><td><code>/gohud:preview list</code></td><td>Her hedef, ön ayar id'si ve demo bölüm anahtarı</td></tr>
-      <tr><td><code>/gohud:preview gallery --check</code></td><td>Pencere açmayan hızlı bir sağlık kontrolü — betik hatalarında başarısız olur</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>Her özellik, gruplanmış, her biri tek satır kodla</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>Tek bir alan derinlemesine — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>Ya da sadece sorun.</b> Beceri, ajana gohud'un bütün API'sini öğretir; dolayısıyla düz istekler de işe yarar —
-    <i>"gohud ile bir duraklatma menüsü kur"</i>. <code>~/.claude/skills/gohud</code> içinde düz bir beceri olarak
-    kurulduğunda komutlar boşlukla yazılır: <code>/gohud preview demo</code>, <code>/gohud features</code>.
-    Önizlemeler için <code>PATH</code> üzerinde Godot 4.6 veya daha yenisi gerekir; ya da
-    <code>--godot /path/to/godot</code> geçirin.
-  </div>
+<section id="ai" class="crumb">
+  <h2>AI SKILL</h2>
+  <p class="sub">gohud bir yapay zekâ becerisiyle gelir: API'nin tamamı, çalışmaya hazır şablonlar ve önizleme başlatıcı. Tek bloğu ajanınıza yapıştırın; gohud'u kurar ve nasıl kullanacağını bilir.</p>
+  <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
 <section id="readable">
@@ -512,7 +381,6 @@ claude plugin install gohud@gohud
   </p>
 </section>
 
-<section id="develop">
   <h2>Denetimler, sürümler ve bu site</h2>
   <p class="sub">Tek bir giriş noktası bütün denetimleri çalıştırır; her parça diğerlerinin göremediği bir şeyi görür.</p>
 

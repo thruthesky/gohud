@@ -44,7 +44,11 @@ SIZES="desktop:1100x9000:1 phone:400x14000:2"
 shots=0; failed=0
 # 🛑 아랍어를 목록에 둔다 — 오른쪽에서 왼쪽으로 흐르는 판은 눈으로 보지 않으면 어긋난 것을 못 잡는다
 #    (목차·검색창·코드 칸이 모두 방향을 뒤집는다).
-for page in index theming widgets ko/index ko/theming ko/widgets ar/theming; do
+# 🔑 쪽이 다섯이 된 뒤로는 새 쪽(install·ai)도 찍는다 — 안 찍으면 그 두 장은 눈으로 한 번도
+#    확인되지 않는다. 한국어는 전부, 아랍어는 오른쪽에서 왼쪽으로 흐르는 판만 표본으로.
+for page in index install ai theming widgets \
+           ko/index ko/install ko/ai ko/theming ko/widgets \
+           ar/index ar/ai ar/theming; do
   [ -n "$ONLY" ] && [[ "$page" != *"$ONLY"* ]] && continue
   file="$ADDON/www/$page.html"
   [ -f "$file" ] || { echo "🛑 없음: $file"; failed=$((failed+1)); continue; }

@@ -34,14 +34,14 @@
   <div class="wrap">
     <a class="brand" href="./">go<span>hud</span></a>
     <nav>
+      <!-- nav:begin -->
       <a href="./">概览</a>
+      <a href="install.html">安装</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">控件</a>
       <a href="theming.html">主题</a>
-      <a href="widgets.html">控件</a>
-      <a href="#surfaces">窗口</a>
-      <a href="#messages">消息</a>
-      <a href="#hud">HUD</a>
-      <a href="#factory">GoStyle</a>
-      <a href="#hooks">钩子</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
       <!-- langs:begin -->
       <details class="langs">
         <summary>简体中文</summary>
@@ -233,6 +233,10 @@ sheet.footer().visible = true</code></pre>
     <b>焦点框与它所在的面板</b>，所以换一套调色板这条规则依然成立（WCAG 2.4.11 要求焦点指示器达到 3:1）。
   </p>
 
+</section>
+
+<section id="hud-widgets">
+  <h2>HUD 控件</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> —— 九个位置</h3>
   <p>它会尊重安全区域和边缘留白。给它一个 <code>landscape_spot</code>，横屏时它就会换位置 ——
     竖屏时待在底部居中的操控件，横屏可以改到右下角。</p>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/install.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/install.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/install.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/install.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/install.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/install.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/install.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/install.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/install.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/install.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/install.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/install.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/install.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/install.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/install.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/install.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/install.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/install.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memasang gohud — gohud</title>
+<meta name="description" content="Cara memasang gohud di proyek Godot 4.6+ — sekali tempel ke agen AI, dari ZIP rilis, atau sebagai submodul git.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Ringkasan</a>
+      <a href="install.html" aria-current="page">Instalasi</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Bahasa Indonesia</summary>
+        <div class="langs-list">
+          <a href="../install.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/install.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/install.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/install.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/install.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/install.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/install.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/install.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/install.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/install.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/install.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/install.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/install.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="install.html" hreflang="id" lang="id" aria-current="true">Bahasa Indonesia</a>
+          <a href="../uk/install.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/install.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/install.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Memasang gohud</h1>
+    <p class="lead">
+      Dua jalan. Serahkan pada agen AI, atau letakkan foldernya di proyekmu — tidak ada lagi yang perlu diatur.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="ai-first">
+  <div class="note ai-card">
+    <h2>Jalan tercepat — biarkan agen AI yang memasang</h2>
+    <p>Satu blok teks, ditempel ke Claude Code, Codex, Cursor, atau Gemini CLI, memasang skill sekaligus add-on lalu menjelaskan gohud padamu. Lewat jalan itu, tak satu pun di bawah kartu ini diperlukan.</p>
+    <p><a class="btn primary" href="ai.html#copy">Buka halaman AI SKILL →</a></p>
+  </div>
+</section>
+
+<section id="install">
+  <h2>Instalasi</h2>
+  <p class="sub">Letakkan folder add-on ke dalam proyek Anda. Tidak ada lagi yang perlu disiapkan.</p>
+
+  <h3 id="from-the-asset-store-or-a-release-zip">Dari Asset Store atau ZIP rilis</h3>
+  <p>Ekstrak ke akar proyek sehingga terbentuk <code>res://addons/gohud/</code>. Itu saja. Bila mau, aktifkan
+    <b>Project → Project Settings → Plugins → gohud</b>.</p>
+
+  <h3 id="as-a-git-submodule">Sebagai submodule git</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # opsional: kunci ke satu tag atau commit</code></pre>
+  <p>Akar repositori <b>adalah</b> folder add-on itu sendiri, jadi ia mendarat persis di tempat yang diharapkan Godot.
+    Sunting langsung di tempat, commit dan push di dalam <code>addons/gohud</code>, lalu commit penunjuk submodule di game Anda.</p>
+
+  <div class="note warn">
+    <b>Godot 4.6 atau yang lebih baru wajib.</b> gohud memakai API yang diperkenalkan di 4.5 (DPITexture,
+    FoldableContainer, properti aksesibilitas), jadi pada versi yang lebih lama ia <b>gagal saat parsing</b>.
+    4.6 adalah batas bawah yang didukung, tercatat di <code>GoUi.MIN_ENGINE</code>.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Mulai cepat</h2>
+  <p class="sub">Setiap widget cukup <code>.new()</code> dan <code>add_child()</code> — tanpa file scene, tanpa autoload.</p>
+
+  <h3 id="pick-a-look-before-building-ui-optional">Pilih tampilan sebelum membangun UI (opsional)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # default_dark dipakai kalau baris ini dilewati</code></pre>
+
+  <h3 id="a-confirmation-you-await">Konfirmasi yang bisa Anda <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Hapus simpanan", "Tindakan ini tidak bisa dibatalkan."):
+    delete_save()</code></pre>
+  <p>Berikan <code>destructive = true</code> (argumen terakhir) dan tombol konfirmasi digambar sebagai tombol bahaya berisi penuh.</p>
+
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Lembar bawah dengan kolom pencarian dan footer yang menempel</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventaris")
+sheet.toolbar().add_child(GoStyle.line_edit("Cari…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Tutup", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Kenapa baris yang menempel dipisahkan dari body yang bergulir.</b> Taruh tombol konfirmasi dan batal di
+    <code>body</code> dan daftar yang panjang akan mendorongnya keluar layar. <code>footer()</code> selalu terlihat.
+  </div>
+
+  <h3 id="a-hud-corner">Satu sudut HUD</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3 id="content-that-keeps-clear-of-the-hud">Konten yang menjauh dari HUD</h3>
+  <pre><code>form.avoid_hud = true                  # menjauh dari setiap GoHudAnchor yang terlihat
+joystick_anchor.reserve_space = false  # …kecuali yang hanya muncul di bawah jari
+notice_anchor.avoid_peers = true       # toast turun ke bawah HUD tetap alih-alih menutupinya</code></pre>
+  <p>Setiap persegi dihindari ke arah yang paling sedikit memakan luas — ke bawah pada ponsel potret,
+    ke samping pada lanskap. <a href="widgets.html#hud">Bagaimana HUD menghindari dirinya sendiri →</a></p>
+</section>
+
+<section id="examples">
+  <h2>Contoh yang bisa Anda jalankan</h2>
+  <p class="sub">Tiga cara melihat gohud sebelum menulis satu baris pun — tidak satu pun butuh server atau autoload.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Contoh</th><th>Cara membuka</th><th>Apa yang ditampilkan</th></tr></thead>
+    <tbody>
+      <tr><td>Galeri</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Setiap widget, pemilih untuk setiap preset yang terpasang, dan set ikon lengkap</td></tr>
+      <tr><td>Abad pertengahan</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Lembar karakter, tas, dan jurnal misi; tombol-tombolnya menukar besi dan perkamen serta membuka rincian benda</td></tr>
+      <tr><td>Aplikasi demo</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Layar beranda yang membuka galeri, tur berpemandu 15 bab, layar etalase, dan tampilan abad pertengahan, lengkap dengan widget yang hidup dan satu kartu untuk tiap kelas</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>cd examples/demo &amp;&amp; godot                             # layar beranda; menautkan dan mengimpor saat pertama dijalankan
+bash examples/demo/run.sh                               # aplikasi yang sama, dari akar add-on
+bash examples/demo/run.sh -- --open=gallery             # lewati layar berandanya
+bash examples/demo/run.sh -- --explore=surfaces         # langsung membuka satu bab tur
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # rekaman tur 1080p / 60 fps</code></pre>
+  <p>Aplikasi demo tidak butuh penyiapan: bila tautan add-on atau cache impornya tidak ada ia akan memberi tahu, memperbaiki
+    foldernya, lalu membuka dirinya kembali. Layar berandanya membuka tiap contoh di dalam jendela yang sama — tekan <b>1</b>–<b>4</b>
+    atau klik salah satu barisnya, dan bilah di sepanjang bagian atas membawa Anda kembali.</p>
+  <p>Di dalam turnya, <b>C</b> mengalihkan mode Sinema, <b>F11</b> layar penuh, <b>Spasi</b> menjeda (atau memainkan widget
+    yang sedang dilihat saat menjelajah), tombol panah mengganti bab, dan <b>Escape</b> kembali ke layar Mulai.</p>
+  <p>Memakai agen coding AI? <a href="ai.html">Buka ketiganya dengan satu perintah →</a></p>
+</section>
+
+<section id="develop">
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud berlisensi <b>MIT</b> — kode maupun karya gambarnya, termasuk 84 ikon default dan 16 ikon abad pertengahan. Font
+      Cinzel bawaan berada di bawah SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Changelog</a></p>
+    <p style="font-size:13px">Arahkan kursor, ketuk, atau fokuskan sebuah <b>istilah bergaris bawah</b> untuk melihat artinya.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>
