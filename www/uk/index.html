@@ -4,6 +4,24 @@
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
 <!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — набір HUD та UI для Godot 4</title>
@@ -26,6 +44,28 @@
       <a href="widgets.html">Віджети ↗</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
       <!-- langs:begin -->
+      <details class="langs">
+        <summary>Українська</summary>
+        <div class="langs-list">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/index.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/index.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/index.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/index.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/index.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/index.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/index.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/index.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/index.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/index.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="index.html" hreflang="uk" lang="uk" aria-current="true">Українська</a>
+          <a href="../th/index.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/index.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
       <!-- langs:end -->
     </nav>
   </div>
@@ -383,15 +423,19 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     <tbody>
       <tr><td>Галерея</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Кожен віджет, список вибору для всіх встановлених пресетів і повний набір іконок</td></tr>
       <tr><td>Середньовіччя</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Картка персонажа, торба та журнал завдань; кнопки перемикають залізо й пергамент і відкривають подробиці предметів</td></tr>
-      <tr><td>Демо</td><td><code>bash examples/demo/run.sh</code></td><td>Екскурсія з 15 розділів, якою керує справжній ввід, і режим дослідження, щоб спробувати один віджет вручну</td></tr>
+      <tr><td>Застосунок демо</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Домашній екран, що відкриває галерею, екскурсію з 15 розділів, вітринний екран і середньовічний образ, із живими віджетами й однією карткою на клас</td></tr>
     </tbody>
   </table>
 
-  <pre><code>bash examples/demo/run.sh --setup                       # один раз, на свіжій копії з git
-bash examples/demo/run.sh                               # запустити демо або дослідити віджети
-bash examples/demo/run.sh -- --explore=surfaces         # відкрити одразу на одному віджеті
+  <pre><code>cd examples/demo &amp;&amp; godot                             # домашній екран; при першому запуску створює посилання й імпортує
+bash examples/demo/run.sh                               # той самий застосунок, із кореня доповнення
+bash examples/demo/run.sh -- --open=gallery             # пропустити домашній екран
+bash examples/demo/run.sh -- --explore=surfaces         # відкрити одразу на одному розділі екскурсії
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # запис екскурсії 1080p / 60 к/с</code></pre>
-  <p>У демо <b>C</b> вмикає кінорежим, <b>F11</b> — повний екран, <b>Пробіл</b> ставить на паузу (або програє
+  <p>Застосунок демо не потребує налаштування: якщо бракує посилання на доповнення чи кешу імпорту, він про це
+    скаже, полагодить теку й перевідкриє себе. Його домашній екран відкриває кожен приклад у тому самому вікні —
+    натисніть <b>1</b>–<b>4</b> чи клацніть рядок, а смуга вгорі поверне вас назад.</p>
+  <p>В екскурсії <b>C</b> вмикає кінорежим, <b>F11</b> — повний екран, <b>Пробіл</b> ставить на паузу (або програє
     поточний віджет у режимі дослідження), стрілки міняють розділи, а <b>Escape</b> повертає на початок.</p>
   <p>Користуєтеся AI-агентом для написання коду? <a href="#ai">Відкрийте всі три однією командою →</a></p>
 </section>

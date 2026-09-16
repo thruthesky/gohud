@@ -4,6 +4,24 @@
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
 <!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — طقم HUD وواجهات لـ Godot 4</title>
@@ -26,6 +44,28 @@
       <a href="widgets.html">الودجات ↗</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
       <!-- langs:begin -->
+      <details class="langs">
+        <summary>العربية</summary>
+        <div class="langs-list">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/index.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/index.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/index.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/index.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/index.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/index.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/index.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/index.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/index.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/index.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/index.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/index.html" hreflang="th" lang="th">ไทย</a>
+          <a href="index.html" hreflang="ar" lang="ar" aria-current="true">العربية</a>
+        </div>
+      </details>
       <!-- langs:end -->
     </nav>
   </div>
@@ -81,7 +121,7 @@
       <figcaption><b>الخيال العلمي</b> — لوحات حادة الزوايا وتحكّم باللمس</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">← الأنماط الجاهزة الستة وكيف تبدّل بينها</a></p>
+  <p><a href="#presets">الأنماط الجاهزة الستة وكيف تبدّل بينها ←</a></p>
 </section>
 
 <section id="what">
@@ -202,7 +242,7 @@ hp.set_values(320, 500)</code></pre>
 joystick_anchor.reserve_space = false  # …إلا ما لا يظهر إلا تحت الإصبع
 notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD الثابت بدل أن يغطيه</code></pre>
   <p>كل مستطيل يُتفادى في الاتجاه الأقل كلفة من حيث المساحة — نزولًا على هاتف بالوضع الطولي،
-    وجانبًا في الوضع العرضي. <a href="widgets.html#hud">← كيف يتفادى HUD نفسه</a></p>
+    وجانبًا في الوضع العرضي. <a href="widgets.html#hud">كيف يتفادى HUD نفسه ←</a></p>
 </section>
 
 <section id="presets">
@@ -268,7 +308,7 @@ notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD ا
     </figure>
   </div>
   <p>اللقطتان كلتاهما من <code>examples/medieval/medieval.tscn</code>، مبنيّتان من الودجات القياسية.
-    <a href="theming.html#medieval">← دليل العصور الوسطى وكيف تصنع مملكتك أنت</a></p>
+    <a href="theming.html#medieval">دليل العصور الوسطى وكيف تصنع مملكتك أنت ←</a></p>
 
   <h3>الشاشة ذاتها على هاتف وعلى سطح مكتب</h3>
   <p>
@@ -308,7 +348,7 @@ notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD ا
   <div class="note">
     <b>السمة الجديدة ملف JSON واحد.</b> الأمر <code>new_theme.py kingdom --from medieval_dark</code> يكتب لوحة ألوان
     تسرد كل قيمة موروثة صراحةً، و<code>make_theme.py kingdom</code> يبني السمة ورسوم عناصر التحكم
-    ومقابض المظهر، فيظهر النمط الجاهز في قائمة الاختيار. <a href="theming.html#own">← كل إعداد وكل مقبض</a>
+    ومقابض المظهر، فيظهر النمط الجاهز في قائمة الاختيار. <a href="theming.html#own">كل إعداد وكل مقبض ←</a>
   </div>
 </section>
 
@@ -348,7 +388,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 <section id="widgets">
   <h2>الودجات</h2>
-  <p class="sub">القطع كلها في جدول واحد. <a href="widgets.html">← كل واحدة بالتفصيل</a></p>
+  <p class="sub">القطع كلها في جدول واحد. <a href="widgets.html">كل واحدة بالتفصيل ←</a></p>
 
   <table>
     <thead><tr><th>الصنف</th><th>الأساس</th><th>ما الذي يفعله</th></tr></thead>
@@ -380,17 +420,21 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     <tbody>
       <tr><td>المعرض</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>كل ودجت، وقائمة اختيار لكل نمط جاهز مثبّت، ومجموعة الأيقونات كاملة</td></tr>
       <tr><td>العصور الوسطى</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>صفحة شخصية وحقيبة وسجل مهام؛ والأزرار تبدّل بين الحديد والرقّ وتفتح تفاصيل الأغراض</td></tr>
-      <tr><td>العرض التوضيحي</td><td><code>bash examples/demo/run.sh</code></td><td>جولة إرشادية من 15 فصلًا تعمل بلمس حقيقي، ووضع استكشاف لتجربة ودجت واحدة بيدك</td></tr>
+      <tr><td>تطبيق العرض التوضيحي</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>شاشة رئيسية تفتح المعرض، والجولة الإرشادية ذات الـ 15 فصلًا، وشاشة الاستعراض، ومظهر العصور الوسطى، بودجات حيّة وبطاقة لكل صنف</td></tr>
     </tbody>
   </table>
 
-  <pre><code>bash examples/demo/run.sh --setup                       # مرة واحدة، على نسخة git جديدة
-bash examples/demo/run.sh                               # ابدأ العرض، أو استكشف الودجات
-bash examples/demo/run.sh -- --explore=surfaces         # افتح مباشرة على ودجت واحدة
+  <pre><code>cd examples/demo &amp;&amp; godot                             # الشاشة الرئيسية؛ يربط ويستورد عند أول تشغيل
+bash examples/demo/run.sh                               # التطبيق نفسه، من جذر الإضافة
+bash examples/demo/run.sh -- --open=gallery             # تخطَّ الشاشة الرئيسية
+bash examples/demo/run.sh -- --explore=surfaces         # افتح مباشرة على فصل واحد من الجولة
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # تسجيل الجولة بدقة 1080p و60 إطارًا/ثانية</code></pre>
-  <p>في العرض التوضيحي، يبدّل <b>C</b> وضع السينما، و<b>F11</b> ملء الشاشة، و<b>Space</b> يوقف مؤقتًا
+  <p>تطبيق العرض التوضيحي لا يحتاج إعدادًا: فإن غاب رابط الإضافة أو ذاكرة الاستيراد نبّه إلى ذلك، ثم أصلح
+    المجلد وأعاد فتح نفسه. وشاشته الرئيسية تفتح كل مثال داخل النافذة نفسها — اضغط <b>1</b>–<b>4</b> أو انقر
+    صفًّا، والشريط الممتد في الأعلى يعيدك.</p>
+  <p>وفي الجولة، يبدّل <b>C</b> وضع السينما، و<b>F11</b> ملء الشاشة، و<b>Space</b> يوقف مؤقتًا
     (أو يشغّل الودجت الحالية أثناء الاستكشاف)، والأسهم تغيّر الفصول، و<b>Escape</b> يعود إلى البداية.</p>
-  <p>تستعمل وكيل برمجة بالذكاء الاصطناعي؟ <a href="#ai">← افتح الثلاثة بأمر واحد</a></p>
+  <p>تستعمل وكيل برمجة بالذكاء الاصطناعي؟ <a href="#ai">افتح الثلاثة بأمر واحد ←</a></p>
 </section>
 
 <section id="ai">
@@ -455,7 +499,7 @@ claude plugin install gohud@gohud
   <p>
     ولذلك فألوان النصوص <b>مشتقّة لا مختارة</b>: يأخذ البنّاء مدخل لوحة الألوان نقطةَ انطلاق ثم يدفع
     إضاءته حتى تتجاوز العتبة على كل سطح قد تحطّ عليه. غيّر لوحة الألوان فيتبعها التباين.
-    <a href="theming.html#contrast">← القواعد والمزالق التي وراءها</a>
+    <a href="theming.html#contrast">القواعد والمزالق التي وراءها ←</a>
   </p>
 </section>
 

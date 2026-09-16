@@ -4,6 +4,24 @@
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
 <!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — kit HUD &amp; UI untuk Godot 4</title>
@@ -26,6 +44,28 @@
       <a href="widgets.html">Widget ↗</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
       <!-- langs:begin -->
+      <details class="langs">
+        <summary>Bahasa Indonesia</summary>
+        <div class="langs-list">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/index.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/index.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/index.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/index.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/index.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/index.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/index.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/index.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/index.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="index.html" hreflang="id" lang="id" aria-current="true">Bahasa Indonesia</a>
+          <a href="../uk/index.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/index.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/index.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
       <!-- langs:end -->
     </nav>
   </div>
@@ -381,15 +421,19 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     <tbody>
       <tr><td>Galeri</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Setiap widget, pemilih untuk setiap preset yang terpasang, dan set ikon lengkap</td></tr>
       <tr><td>Abad pertengahan</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Lembar karakter, tas, dan jurnal misi; tombol-tombolnya menukar besi dan perkamen serta membuka rincian benda</td></tr>
-      <tr><td>Demo</td><td><code>bash examples/demo/run.sh</code></td><td>Tur berpemandu 15 bab yang digerakkan input sungguhan, plus mode jelajah untuk mencoba satu widget secara manual</td></tr>
+      <tr><td>Aplikasi demo</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Layar beranda yang membuka galeri, tur berpemandu 15 bab, layar etalase, dan tampilan abad pertengahan, lengkap dengan widget yang hidup dan satu kartu untuk tiap kelas</td></tr>
     </tbody>
   </table>
 
-  <pre><code>bash examples/demo/run.sh --setup                       # sekali saja, pada git checkout yang baru
-bash examples/demo/run.sh                               # Mulai demo, atau Jelajahi widget
-bash examples/demo/run.sh -- --explore=surfaces         # langsung membuka satu widget
+  <pre><code>cd examples/demo &amp;&amp; godot                             # layar beranda; menautkan dan mengimpor saat pertama dijalankan
+bash examples/demo/run.sh                               # aplikasi yang sama, dari akar add-on
+bash examples/demo/run.sh -- --open=gallery             # lewati layar berandanya
+bash examples/demo/run.sh -- --explore=surfaces         # langsung membuka satu bab tur
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # rekaman tur 1080p / 60 fps</code></pre>
-  <p>Di dalam demo, <b>C</b> mengalihkan mode Sinema, <b>F11</b> layar penuh, <b>Spasi</b> menjeda (atau memainkan widget
+  <p>Aplikasi demo tidak butuh penyiapan: bila tautan add-on atau cache impornya tidak ada ia akan memberi tahu, memperbaiki
+    foldernya, lalu membuka dirinya kembali. Layar berandanya membuka tiap contoh di dalam jendela yang sama — tekan <b>1</b>–<b>4</b>
+    atau klik salah satu barisnya, dan bilah di sepanjang bagian atas membawa Anda kembali.</p>
+  <p>Di dalam turnya, <b>C</b> mengalihkan mode Sinema, <b>F11</b> layar penuh, <b>Spasi</b> menjeda (atau memainkan widget
     yang sedang dilihat saat menjelajah), tombol panah mengganti bab, dan <b>Escape</b> kembali ke layar Mulai.</p>
   <p>Memakai agen coding AI? <a href="#ai">Buka ketiganya dengan satu perintah →</a></p>
 </section>

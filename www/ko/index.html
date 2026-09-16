@@ -7,6 +7,20 @@
 <link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
 <link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
 <link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/">
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,6 +50,20 @@
           <a href="../index.html" hreflang="en" lang="en">English</a>
           <a href="index.html" hreflang="ko" lang="ko" aria-current="true">한국어</a>
           <a href="../ja/index.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/index.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/index.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/index.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/index.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/index.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/index.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/index.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/index.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/index.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/index.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/index.html" hreflang="ar" lang="ar">العربية</a>
         </div>
       </details>
       <!-- langs:end -->
@@ -387,29 +415,6 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
   </table>
 </section>
 
-<section id="tokens">
-  <h2>토큰</h2>
-  <p class="sub">
-    모든 색과 치수는 Theme 의 <code>GoHud</code> 타입 아래에 이름으로 산다. 코드에서는
-    <code>GoUi.color()</code>·<code>GoUi.metric()</code> 으로 꺼낸다.
-  </p>
-
-  <pre><code>GoUi.color(GoTheme.ACCENT)           # 강조색
-GoUi.metric(GoTheme.GAP)             # 줄 간격(dp)
-GoUi.font_size(GoTheme.ROLE_CAPTION) # 역할별 글자 크기</code></pre>
-
-  <table>
-    <thead><tr><th style="white-space:nowrap">갈래</th><th>이름</th></tr></thead>
-    <tbody>
-      <tr><td style="white-space:nowrap">색</td><td><code>background</code> <code>surface</code> <code>surface_soft</code> <code>surface_high</code> <code>border</code> <code>text</code> <code>secondary</code> <code>muted</code> <code>accent</code> <code>on_accent</code> <code>success</code> <code>warning</code> <code>danger</code> <code>info</code> <code>scrim</code> <code>shadow</code> <code>track</code></td></tr>
-      <tr><td style="white-space:nowrap">채움 색</td><td><code>success_fill</code> <code>warning_fill</code> <code>danger_fill</code> <code>info_fill</code> <code>accent_fill</code> — 없으면 <code>_fill</code> 을 뗀 이름으로 떨어진다</td></tr>
-      <tr><td style="white-space:nowrap">치수(dp)</td><td><code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code> <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code> <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code> <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code> <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code></td></tr>
-      <tr><td style="white-space:nowrap">StyleBox</td><td><code>panel</code> <code>card</code> <code>hud</code> <code>notice</code> <code>popup</code> <code>empty</code> <code>focus</code> <code>focus_soft</code></td></tr>
-    </tbody>
-  </table>
-  <p>토큰 설명·타입 변형·다이얼 전부는 <a href="theming.html#tokens">생김새 페이지</a>에 있다.</p>
-</section>
-
 <section id="examples">
   <h2>실행해 볼 수 있는 예제</h2>
   <p class="sub">코드를 쓰기 전에 gohud 를 보는 세 가지 방법 — 어느 것도 서버나 오토로드가 필요 없다.</p>
@@ -482,6 +487,24 @@ claude plugin install gohud@gohud
     <code>/gohud features</code>. 미리보기에는 <code>PATH</code> 에 Godot 4.6 이상이 있어야 하고, 없으면
     <code>--godot /경로/godot</code> 로 넘긴다.
   </div>
+</section>
+
+<section id="readable">
+  <h2>읽히는지는 눈대중이 아니라 잰다</h2>
+  <p class="sub">
+    "예쁘다" 는 취향이지만 <b>"읽힌다" 는 잴 수 있다.</b> 흐린 회색 글씨는 좋은 모니터에서 멀쩡해 보이고
+    한낮의 폰에서는 사라진다 — 눈으로 고르면 언젠가 반드시 그렇게 된다.
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    색 짝 전부와 <b>버튼 상태마다의 글자와 그 글자가 얹힌 판</b>을 여섯 테마 모두에서 WCAG 로 잰다.
+    반투명 색은 실제 배경에 합성한 뒤에 잰다 — 그대로 재면 화면에 보이는 것보다 좋은 비율이 나온다.
+  </p>
+  <p>
+    그래서 글자 색은 <b>고르는 것이 아니라 끌어낸다</b> — 빌더가 팔레트 값을 출발점으로 삼아, 그 글자가 놓일 수
+    있는 모든 표면에서 기준을 넘길 때까지 밝기를 민다. 팔레트를 바꾸면 대비가 따라온다.
+    <a href="theming.html#contrast">규칙과 그 뒤의 함정 →</a>
+  </p>
 </section>
 
 <section id="develop">

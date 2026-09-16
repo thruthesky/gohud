@@ -304,6 +304,17 @@ def check_langs(problems):
             for begin in (make_site.LANGS_BEGIN, make_site.HREFLANG_BEGIN):
                 if begin not in text:
                     problems.append("%s 에 %s 표식이 없다 — 생성기가 채우지 못한다" % (rel, begin))
+            # 🛑 언어판끼리 **절 구성이 갈라지는 것**은 링크 검사로 잡히지 않는다 — 페이지 안에서는 앞뒤가
+            #    맞으니 끝까지 초록불이다. 한국어판에만 `#tokens` 가 있고 `#readable` 이 없던 것을 이렇게
+            #    놓쳤다(2026-09-16). 영어를 정본으로 삼아 절의 목록과 순서를 그대로 맞춘다.
+            if lang.code != "en":
+                want = re.findall(r'<section id="([^"]+)"', open(os.path.join(WWW, page), encoding="utf-8").read())
+                got = re.findall(r'<section id="([^"]+)"', text)
+                if got != want:
+                    missing, extra = [s for s in want if s not in got], [s for s in got if s not in want]
+                    problems.append("%s: 절 구성이 영어판과 다르다 — 빠진 절 %s · 더 있는 절 %s%s"
+                                    % (rel, missing or "없음", extra or "없음",
+                                       "" if missing or extra else " (순서가 다르다)"))
     # 옮겨는 놓고 아직 올리지 않은 언어 — 잊고 넘어가지 않게 알려만 준다(문제로 세지는 않는다).
     waiting = [lang.code for lang in site_langs.LANGS if not lang.ready
                and os.path.isfile(os.path.join(WWW, site_langs.rel_path(lang.code, "index.html")))]

@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>السمات — gohud</title>
+<meta name="description" content="كيف تغيّر سمات gohud ومظاهره وأنماطه الجاهزة اللونَ والشكل: مرجع التوكنات، وصناديق StyleBox المخصّصة، وكيف يُشتقّ التباين بدل أن يُختار.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">نظرة عامة</a>
+      <a href="theming.html">السمات</a>
+      <a href="widgets.html">الودجات</a>
+      <a href="#medieval">العصور الوسطى</a>
+      <a href="#tokens">التوكنات</a>
+      <a href="#skin">المظاهر</a>
+      <a href="#own">نمطك الجاهز</a>
+      <a href="#contrast">الوضوح</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>العربية</summary>
+        <div class="langs-list">
+          <a href="../theming.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming.html" hreflang="th" lang="th">ไทย</a>
+          <a href="theming.html" hreflang="ar" lang="ar" aria-current="true">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>السمات</h1>
+    <p class="lead">
+      مظهر gohud مبنيّ على <b>ثلاث طبقات</b>. غيّر الألوان وحدها، أو استبدل الأشكال كلها.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>ثلاث طبقات</h2>
+  <p class="sub">النمط الجاهز يجمع الثلاث معًا. والحقول التي تتركها فارغة تعود إلى القيم الافتراضية.</p>
+
+  <table>
+    <thead><tr><th>الطبقة</th><th>ما الذي تقرّره</th><th>كيف تغيّرها</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>الألوان والمقاسات ومقياس النص، وشكل كل ما <b>يرسمه المحرك</b> — لوحات الأزرار وحقول الإدخال والتبويبات ورسوم مفاتيح التبديل</td>
+        <td>اكتب ملف <code>.tres</code>، أو ولّد واحدًا بـ <code>tools/make_theme.py</code></td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td>شكل كل ما <b>يرسمه الكود</b> — عصا التوجيه، ووجوه الخانات السريعة، وحلقة العلامة الإرشادية، والشرائح، والهياكل المؤقتة، والفواصل، وعناوين الأقسام</td>
+        <td>اشتقّ منه صنفًا وتجاوز الدوال التي تهمّك فقط</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>أيقونات تُطلب بالاسم — 84 رسمة افتراضية، أو 16 رسمة محفورة من مجموعة العصور الوسطى فوقها. حزمة نقوش أو خط أيقونات؛ والكود المستدعي واحد في الحالتين</td>
+        <td>زوّده بمجموعة، أو تجاوز بضعة أسماء فقط</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>لماذا لا تكفي السمة وحدها.</b> المدوّرة هي الزاوية الوحيدة التي يملكها <code>StyleBoxFlat</code> —
+    اضبط نصف القطر على صفر فتحصل على زاوية قائمة؛ ولا شيء بينهما. أما الزوايا المقطوعة قطريًا،
+    وحافة واحدة أسمك، وتوهّج خارجي: فلا يرسم المحرك منها شيئًا. وعصا التوجيه والعلامة الإرشادية
+    تُرسمان في <code>_draw()</code>، حيث لا تصل السمة أصلًا.
+  </div>
+</section>
+
+<section id="pick">
+  <h2>اختيار واحد منها</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>هذا السطر وحده يبدّل السمة والمظهر والأيقونات. ومن المحرّر استعمل
+    <b>Project Settings → Gohud → Theme → Preset</b>؛ ومن مورد إعدادات، <code>GoConfig.preset</code>.</p>
+
+  <h3>إبقاء حقل واحد على اختيارك</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # أيقوناتك أنت، وكل ما عداها من النمط الجاهز</code></pre>
+  <p>ضبط <code>theme</code> أو <code>skin</code> أو <code>icons</code> صراحةً <b>يغلب</b> النمط الجاهز.</p>
+
+  <h3>الأنماط الجاهزة الستة المدمجة</h3>
+  <table>
+    <thead><tr><th>النمط الجاهز</th><th>اللوحات</th><th>المظهر · الأيقونات</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>لوحات <code>StyleBoxFlat</code> مدوّرة على سلّم ظلال متدرّج؛ والأزرار الأساسية ترتفع ثم تغوص عند الضغط</td><td><code>GoSkin</code> · 84 أيقونة افتراضية</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>لوحات <code>GoStyleBoxCut</code> مشطوفة بحافة نيون وتوهّج؛ وعلامات تركيز من <code>GoStyleBoxBracket</code></td><td><code>GoSkinSciFi</code> — عصا توجيه سداسية · الأيقونات الافتراضية</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>إطارات <code>GoStyleBoxMedieval</code> مطروقة — حديد وجلد، أو رقّ — بمسامير وزخارف أركان على القوائم</td><td><code>GoSkinMedieval</code> · 16 أيقونة محفورة فوق الافتراضية</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>العصور الوسطى: حديد وجلد ورقّ</h2>
+  <p><code>medieval_dark</code> يزاوج الحديد والجلد الداكنين بالذهب العتيق. و<code>medieval_light</code>
+    يستعمل الرقّ والحبر. وكلاهما يستعمل <code>GoSkinMedieval</code> والودجات القائمة و16 أيقونة أصلية
+    بتفاصيل محفورة؛ أما أيقونات التنقّل فتعود إلى المجموعة الأصلية.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# أو: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>اختر النمط الجاهز قبل إنشاء واجهتك. وتبقى تجاوزات <code>GoConfig.theme</code> و
+    <code>skin</code> و<code>icons</code> الصريحة هي الأولى. افتح
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code> واضغط F6 لترى صفحة شخصية
+    وحقيبة وسجل مهام تعمل فعلًا. وأزرارها تبدّل التنويعات وتفتح تفاصيل الأغراض.</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="واجهات الشخصية والحقيبة والمهام بطراز حديد العصور الوسطى" loading="lazy"><figcaption>حديد وجلد</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="واجهات الشخصية والحقيبة والمهام بطراز رقّ العصور الوسطى" loading="lazy"><figcaption>رقّ وحبر</figcaption></figure>
+  </div>
+  <p>إطارات القوائم فيها مسمار وزخرفة ركن صغيرة؛ أما HUD الدائم الظهور فيحتفظ بحافة هادئة.
+    والصحة والمانا وقدرة التحمّل تستعمل تعبئة حمراء وزرقاء وزيتونية. وخط Cinzel مقصور على العناوين
+    والعناوين الفرعية؛ ونص المتن يبقى على خط المضيف أو الخط الافتراضي. والخط المضمَّن يحمل رخصته في
+    <code>assets/fonts/cinzel/OFL.txt</code>.</p>
+  <p>المجموعة المحفورة تعيد رسم <code>bag</code> و<code>book</code> و<code>box</code> و<code>coin</code> و<code>crown</code>
+    و<code>flag</code> و<code>heart</code> و<code>key</code> و<code>map</code> و<code>potion</code> و<code>shield</code>
+    و<code>star</code> و<code>sword</code> و<code>user</code>، وتضيف <code>scroll</code> و<code>seal</code>.
+    وكل اسم آخر يعود إلى المجموعة الافتراضية، فيحتفظ <code>close</code> و<code>settings</code> برسمهما
+    الافتراضي في كل نمط جاهز. وخط Cinzel يغطي الحروف اللاتينية؛ فامنح العناوين المترجمة خطًّا خاصًّا بها عبر
+    <code>shape.fonts</code>.</p>
+  <div class="note">
+    <b>ما الذي تفحصه حزمة الاختبارات في التنويعتين.</b> أن مظهر العصور الوسطى هو المحدَّد؛ وأن لوحات القوائم وHUD
+    إطارات مطروقة، والزخرفة على القوائم دون غيرها؛ وأن العناوين تستعمل Cinzel بينما يبقى نص المتن على الخط الموروث؛
+    وأن الأيقونات المحفورة تُستورد بصيغة <code>DPITexture</code>؛ وأن خانة سريعة حقيقية تستعمل المظهر؛ وأن تغيير
+    مقابض نسخة من المظهر يصل إلى الخانة دون المساس بالنمط الجاهز؛ وأن الرجوع يعيد هندسة النمط الافتراضي والخيال العلمي.
+  </div>
+  <h3>اصنع مملكتك أنت</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# عدّل themes/palettes/kingdom.json، ثم:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# وفي GDScript، قبل إنشاء الودجات:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>سمات JSON تستطيع أن ترث سمات JSON أخرى. والقيم المحذوفة تحتفظ بإعدادات أصلها؛
+    أما الوراثة الدائرية فمرفوضة. والنمط الجاهز المولَّد يحتفظ بمجموعة أيقونات أصله.</p>
+  <table><thead><tr><th>الإعداد</th><th>الأثر</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: حديد · 1: جلد · 2: رقّ. يتحكم في علامات السطح.</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>عتامة النقش. استعمل 0 للحصول على سطح نظيف.</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>حجم زخرفة ركن القائمة وشدّة إبراز الحافة المشطوفة.</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>يربط أدوار العنوان والعنوان الفرعي والتعليق والمتن والزر بملفات خطوط res:// داخل الإضافة. والأدوار المحذوفة تحتفظ بخطها الموروث.</td></tr>
+    <tr><td><code>skin.dials</code></td><td>نصف قطر الخانة السريعة، وظهور المسامير، والحبيبات، والإبراز. والجدول الكامل أدناه يسرد كل مقبض.</td></tr>
+  </tbody></table>
+</section>
+
+<section id="tokens">
+  <h2>التوكنات</h2>
+  <p class="sub">
+    كل لون وكل مقاس يعيش تحت النوع <code>GoHud</code> داخل السمة، ويُطلب بالاسم.
+    والقاعدة ألّا تكتب أرقامًا: فالأسماء تتبع السمة حين تُبدَّل.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # لون
+GoUi.metric(GoTheme.GAP)               # مقاس (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # حجم دور نصّي
+GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
+
+  <h3>الألوان</h3>
+  <table>
+    <thead><tr><th>الاسم</th><th>يُستعمل لـ</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>أرضية الشاشة</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>ثلاث طبقات لوحات — لوحة، بطاقة، خلية مرفوعة</td></tr>
+      <tr><td><code>border</code></td><td>حدود البطاقات والأزرار</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>ثلاثة مستويات نص — متن، مساند، خافت</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>لون التمييز والنص الموضوع فوقه</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>ألوان الحالة <b>نصًّا</b></td></tr>
+      <tr><td><code>*_fill</code></td><td>الحالات نفسها <b>تعبئةً</b> — للأشرطة وسائر المساحات الكبيرة</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>الحجاب خلف النوافذ المنبثقة، والظلال، ومجرى الشريط</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>لماذا يوجد <code>*_fill</code>.</b> المعنى واحد والمتطلبات متضادّة. فـ <code>warning</code>
+    المستعمل نصًّا يجب أن يكون داكنًا بما يكفي ليُقرأ على خلفية فاتحة؛ والمستعمل تعبئةً لشريط خبرة يجب أن
+    يكون ساطعًا بما يكفي ليُلحظ. ولا يستطيع توكن واحد أن يكون الاثنين — فشريط السمة الفاتحة صار بنيًّا.
+    والسمة التي تخلو من تنويعة <code>_fill</code> تعود إلى الاسم الأساسي تلقائيًا، فتبقى السمات الأقدم من
+    هذه التوكنات عاملة.
+  </div>
+
+  <h3>المقاسات (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>أدوار النص</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — الدور يسمّي <b>حجمًا</b> لا
+    غرضًا. "أكبر نص"، لا "العنوان". وبذلك يصمد السلّم حتى لو استعملته شاشة لشيء آخر.
+  </p>
+
+  <h3>تنويعات النوع</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="skin">
+  <h2>المظاهر — حيث لا تصل السمة</h2>
+
+  <table>
+    <thead><tr><th>الدالة</th><th>ما الذي تقرّره</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>وجوه البطاقات واللوحات، والأسطح العائمة، والكبسولات الموضوعة فوق اللعبة أو الخريطة</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>لوحة الشريحة و<b>لون النص الذي يبقى واضحًا عليها</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>وجوه الخانات السريعة ونصّها</td></tr>
+      <tr><td><code>disc_box</code></td><td>الدائرة خلف الصورة الرمزية أو الشارة</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>التنبيهات المضمّنة، والعناصر النائبة، وأدوات التحكم المقسّمة</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>العلامة التي تضعها الجولة الإرشادية حول هدفها</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td>ما يُرسم <b>مباشرةً</b> — عصا التوجيه ومؤشّرها</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>الفواصل وعناوين الأقسام</td></tr>
+      <tr><td><code>badge_box</code></td><td>شارات الخانات السريعة — الكمية والوقت المتبقي</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>تعبئة الأشرطة (بحدّ خارجي حيث تعجز التعبئة عن بلوغ 3:1 على مجراها) وأشرطة الإشعار</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # الودجت حسب المواضع سلفًا — لا يجري هنا إلا الرسم
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>أشكال لا يستطيع StyleBoxFlat صنعها</h3>
+  <table>
+    <thead><tr><th>الصنف</th><th>ما الذي يرسمه</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>زوايا مقطوعة قطريًا، وحافة تمييز واحدة أسمك، وتوهّج خارجي</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>علامات أركان فقط، تاركةً المحتوى غير محاط</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>إطار مطروق — مسامير ونقش أركان وإبراز مشطوف وحبيبات حديد أو جلد أو رقّ</td></tr>
+    </tbody>
+  </table>
+  <p>الثلاثة كلها تُسلسَل داخل مورد سمة كأي StyleBox آخر — وهذا ما يتيح للسمة أن تغيّر الشكل.</p>
+
+  <div class="note warn">
+    <b>امنح الحشوة عبر <code>content_margin_*</code>.</b> اشتقاق StyleBox في GDScript يعني أن
+    <code>_get_style_margin()</code> لا يُستدعى أبدًا (مقيس على Godot 4.7). املأ الحقول المدمجة وإلا
+    التصق المحتوى بالحدّ.
+  </div>
+</section>
+
+<section id="own">
+  <h2>نمطك الجاهز أنت — ملف واحد</h2>
+  <p class="sub">
+    كانت إضافة سمة تعني تعديل أربعة مواضع باليد — لوحة ألوان البنّاء، والشكل، والمظهر، ومورد النمط الجاهز.
+    وأمر واحد اليوم يضعها كلها في مكانها.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # ملف السمة .tres + رسوم عناصر التحكم
+godot --headless --path . --import                  # استورد الرسوم الجديدة مرة واحدة
+GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر في قائمة الاختيار أيضًا</code></pre>
+  <p>
+    السطر الأول يكتب <code>themes/palettes/neon.json</code> و<code>themes/presets/neon.tres</code>. وملف
+    JSON يحمل <b>كل قيمة من السمة التي يرث عنها</b>، مكتوبةً صراحةً، فيصلح في الوقت نفسه قائمةً بما تستطيع
+    تغييره: احذف مفتاحًا لتبقي قيمة الأصل، واكتب واحدًا لتتجاوزها. والأنماط الجاهزة تُكتشف بـ <b>مسح</b>
+    <code>themes/presets/</code>، فلا تتغير أي شيفرة تسجيل — وقائمة إعداد المشروع المنسدلة تلتقطها كذلك.
+  </p>
+
+  <h3>ما الذي تستطيع تغييره — في صفحة واحدة</h3>
+  <table>
+    <thead><tr><th>أين</th><th>ماذا</th><th>كيف</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>السمة الأصل</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … أو سمة JSON أخرى. والمفاتيح المحذوفة ترث قيمها؛ ودورة الوراثة تفشل</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>الخلفية · ثلاثة أسطح · الحدّ · ثلاث درجات نص · لون التمييز · أربعة ألوان حالة · الحجاب · الظل · مجرى الشريط</td><td><code>"#RRGGBB"</code>، والشفافية بصيغة <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>ألوان زاهية للتعبئة فقط <code>*_vivid</code></td><td>تُبقي الأشرطة مشبعة حتى حين يضطر لون النص إلى الدكانة — أغفل واحدًا منها فينبّهك البنّاء</td></tr>
+      <tr data-group="palette"><td>الوضوح</td><td><b>لا يُضبط باليد.</b> النصوص والحدود ولون التمييز والنص فوقه يدفعها البنّاء حتى تتجاوز العتبات — غيّر لون التمييز وحده وستظل الفحوص ناجحة</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (مدوّر) · <code>cut</code> (زوايا مشطوفة) · <code>medieval</code> (إطارات مطروقة)</td></tr>
+      <tr data-group="shape"><td>المقاسات</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — والتوكنات تتبعها، فلا تختلف حسابات اللوحات والودجات أبدًا</td></tr>
+      <tr data-group="shape"><td>لـ <code>cut</code> فقط</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>لـ <code>medieval</code> فقط</td><td><code>material</code> (0 حديد · 1 جلد · 2 رقّ) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — أي <code>title</code> و<code>subtitle</code> و<code>caption</code> و<code>body</code> و<code>button</code> مربوطةً بملفات خطوط <code>res://</code> داخل الإضافة</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — العائلة التي تحكم المواضع التي يرسمها الكود بنفسه (عصا التوجيه، والخانات، والشارات، وحلقة العلامة الإرشادية، والشرائح، والفواصل)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — <b>أرقام</b> تلك المواضع: عرض حدّ الخانة وصبغتها، وحشوة الشارة، وعتامة الشريحة والتنبيه، وعرض حلقة عصا التوجيه وعتامتها، ومقاسات الشطف والتوهّج والأقواس في طراز الخيال العلمي</td><td>كل قيمة من الأصل مكتوبة صراحةً في ملف JSON. والبنّاء يكتبها في <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>دون المساس بأي شيفرة مظهر</b>. ولا تشغّل <code>--new-skin</code>، الذي يولّد هيكل صنف مشتقّ من <code>GoSkin</code>، إلا لتغيير الرسوم نفسها</td></tr>
+      <tr><td><code>icons</code></td><td>مجموعة الأيقونات</td><td>مسار <code>res://</code> إلى مورد <code>GoIconSet</code> — ويُحتفظ به من أصل JSON عند إغفاله</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>كيف تعرضه قائمة الاختيار</td><td>قيمة منطقية · نص</td></tr>
+    </tbody>
+  </table>
+
+  <h3>كل مقبض</h3>
+  <p>
+    الجدول أدناه يملؤه <code>tools/make_site.py</code> <b>مباشرةً من أسطر</b> <code>@export</code>
+    في سكربتات المظاهر — أضف مقبضًا أو غيّر قيمة افتراضية فيتبعه الجدول. استعمل هذه الأسماء تحت
+    <code>skin.dials</code> في ملف JSON. والمقبض الذي تُقرأ قيمته الافتراضية <code>14</code> عدد صحيح، والذي
+    تُقرأ <code>10.0</code> عدد عشري — اكتب أيّ الصيغتين في JSON ويحوّلها البنّاء إلى نوع السكربت.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>المظهر الافتراضي <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="الافتراضي">0.16</td><td>عتامة تعبئة لوحة الشريحة.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="الافتراضي">0.45</td><td>عتامة حافة لوحة الشريحة.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="الافتراضي">0.1</td><td>مقدار ميل لوحة صندوق التنبيه نحو لون حالته.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="الافتراضي">0.24</td><td>صبغة لون التمييز في لوحة الخانة السريعة أثناء سريان مهلة استعدادها.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="الافتراضي">0.08</td><td>صبغة لون التمييز في لوحة الخانة السريعة في حال السكون.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="الافتراضي">2</td><td>عرض حدّ الخانة السريعة (dp) أثناء سريان مهلة استعدادها.</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="الافتراضي">1</td><td>عرض حدّ الخانة السريعة (dp) في حال السكون.</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="الافتراضي">5</td><td>الحشوة الداخلية الأفقية (dp) للشارة (الكمية، الوقت المتبقي).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="الافتراضي">1</td><td>الحشوة الداخلية الرأسية (dp) للشارة.</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="الافتراضي">0.6</td><td>عتامة حافة لوحة الشارة.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="الافتراضي">0.45</td><td>عتامة ظل البطاقات العائمة (العلامة الإرشادية، بطاقة السؤال).</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="الافتراضي">14</td><td>ضبابية ظل البطاقات العائمة (dp).</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="الافتراضي">4</td><td>إزاحة ظل البطاقة العائمة إلى الأسفل (dp).</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="الافتراضي">10.0</td><td>مدى توهّج (dp) اللوحة العائمة التي تتوهّج بدل أن تُلقي ظلًّا، مثل اللوحة المشطوفة في طراز الخيال العلمي.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="الافتراضي">0.42</td><td>عتامة قرص قاعدة عصا التوجيه.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="الافتراضي">0.45</td><td>عتامة حلقة عصا التوجيه.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="الافتراضي">2.0</td><td>عرض حلقة عصا التوجيه (dp).</td></tr>
+    </tbody>
+  </table>
+  <h4>مظهر الخيال العلمي <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="الافتراضي">7.0</td><td>مقدار الشطف (dp) في لوحة الشريحة.</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="الافتراضي">5.0</td><td>مقدار الشطف (dp) في اللوحة النائبة.</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="الافتراضي">8.0</td><td>مقدار الشطف (dp) في صندوق التنبيه.</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="الافتراضي">8.0</td><td>مقدار الشطف (dp) في أداة التحكم المقسّمة.</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="الافتراضي">6.0</td><td>مقدار الشطف (dp) في لوحة الخانة السريعة.</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="الافتراضي">0.24</td><td>شطف الصور الرمزية والأقراص = القطر × هذه النسبة.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="الافتراضي">0.45</td><td>عتامة توهّج الخانة التي تسري مهلة استعدادها.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="الافتراضي">6.0</td><td>مدى توهّج (dp) الخانة التي تسري مهلة استعدادها.</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="الافتراضي">12.0</td><td>طول ذراع (dp) قوس التصويب في العلامة الإرشادية.</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="الافتراضي">2.0</td><td>سماكة خط (dp) قوس التصويب في العلامة الإرشادية.</td></tr>
+    </tbody>
+  </table>
+  <h4>مظهر العصور الوسطى <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="الافتراضي">4.0</td><td>نصف قطر زوايا (dp) إطار الخانة السريعة في طراز العصور الوسطى.</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="الافتراضي">0.035</td><td>عتامة علامات الجلد الخفيفة داخل الخانات السريعة.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="الافتراضي">1.0</td><td>مقياس الزخارف المعدنية عند أركان الخانات السريعة. أما إطارات القوائم فتستعمل shape.ornament_scale.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="الافتراضي">0.18</td><td>شدّة الإبراز المعدني على طول حواف الخانات السريعة.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="الافتراضي">1</td><td>إظهار مسامير معدنية صغيرة على الخانات السريعة: 0 يخفيها، و1 يظهرها.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>اشتقّ المظهر (اختياري)</h3>
+  <p>لا يعيش في المظهر إلا ما لا تصله السمة ولا الشكل — سداسية عصا التوجيه، وشارات الخانات، وقوس التصويب
+    في العلامة الإرشادية. اشتقّ من <code>GoSkin</code>، وتجاوز تلك الدوال وحدها، ثم وجّه مفتاح <code>skin</code>
+    في ملف JSON إلى ذلك المورد. أما السمة التي تغيّر الألوان وحدها فتتخطى هذه الخطوة.</p>
+
+  <div class="note">
+    <b>فحص يحفظ الوعد.</b> ينشئ <code>tools/check_scaffold.sh</code> سمةً مؤقتة في كل تشغيل —
+    يغيّر لون التمييز، ويضبط نصف القطر على 4 — ويتحقق من التوليد ومن انتشار التوكنات ومن نجاح فحص
+    التباين قبل أن يحذفها. وقد كشف أول تشغيل أن سمةً لم يتغير فيها إلا لون التمييز تسقط في
+    <b>8 أزواج</b>: فالبنّاء كان يدفع ألوان النصوص لكنه يستعمل لون التمييز كما كُتب. أما الآن فهو يدفع
+    لون التمييز والنص فوقه كذلك.
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>الوضوح يُقاس</h2>
+  <p class="sub">
+    "الجميل" مسألة ذوق، أما <b>"الواضح" فيمكن قياسه.</b> النص الرمادي الباهت يبدو جيدًا على شاشة جيدة
+    ويختفي على هاتف في ضوء النهار — والاختيار بالعين يضمن وقوع ذلك عاجلًا أو آجلًا.
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>ماذا</th><th>المطلوب</th></tr></thead>
+    <tbody>
+      <tr><td>نص المتن</td><td>4.5 : 1</td></tr>
+      <tr><td>النص الكبير (24px فما فوق)</td><td>3 : 1</td></tr>
+      <tr><td>حدود وأيقونات لون التمييز</td><td>3 : 1</td></tr>
+      <tr><td>الحدود الزخرفية</td><td>2 : 1 — إذ لا تطبّق WCAG قاعدة 3:1 على الزخرفة</td></tr>
+      <tr><td>الأسطح المتجاورة</td><td>1.12 : 1 — بما يكفي لتُقرأ البطاقة منفصلةً عن خلفيتها</td></tr>
+    </tbody>
+  </table>
+
+  <h3>نصّ بدرجة لون فوق صبغة بالدرجة نفسها</h3>
+  <p>
+    ظهر هذا المزلق <b>ثلاث مرات</b> في هذه الشيفرة — الأزرار المضغوطة (لوحة بلون التمييز ونصّ بلون التمييز)،
+    وأزرار الخطر، والشرائح. يبدو جميلًا في عيّنة لون وينهار لحظة قياسه، لأن الاثنين يتشاركان الدرجة نفسها
+    فلا فرق بينهما في الإضاءة.
+  </p>
+  <p>
+    ولذلك <b>لا تُختار ألوان النصوص باليد</b>. فبنّاء السمة و<code>GoSkin</code> كلٌّ منهما يدفع
+    الإضاءة — الإضاءة وحدها — حتى تُتجاوز العتبة على اللوحة التي يجلس عليها النص فعلًا. وتبقى الدرجة
+    والتشبّع على حالهما، فتحتفظ لوحة الألوان بشخصيتها ويحتفظ تغييرها بتباينها.
+  </p>
+
+  <h3>اللون المقروء نصًّا واللون المرسوم مساحةً يريدان شيئين متضادّين</h3>
+  <p>
+    في سمة فاتحة، يضطر لون التحذير إلى الدكانة ليبقى مقروءًا <b>نصًّا</b> (<code>#96500A</code>).
+    وحين ترث تعبئة الشريط ذلك اللون، يصير شريط الخبرة <b>بنيًّا</b>. واللون وحده لا يصلح الأمر:
+    فالأصفر ساطع بطبعه، إذ يتجاوز 3:1 فوق مجرى رمادي أصلًا، وتغميق المجرى يجعله <b>أسوأ</b>
+    (من 1.52 إلى 1.06).
+  </p>
+  <p>
+    فصُلَ الاثنان إذن. <b>اللون يبقى زاهيًا</b> — إذ تحمل لوحة الألوان ألوان تعبئة خالصة مثل
+    <code>warning_vivid</code>. و<b>الحافة هي التي تحمل التباين</b> — فـ <code>GoSkin</code> يرسم حدًّا
+    خارجيًا بسماكة 1dp حول أي تعبئة تعجز عن بلوغ 3:1 مقابل مجراها، فيبقى سؤال "كم امتلأ؟" واضحًا.
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # يُقرأ نصًّا
+    warning_vivid=hexc("F2A007"),   # يُرسم على الشريط
+)</code></pre>
+  <div class="note">
+    <b>وإغفاله يُبلَّغ عنه.</b> من دون <code>*_vivid</code>، حين تخرج التعبئة داكنة يطبع البنّاء
+    <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code> (أي: الشريط باهت — أضف
+    <code>warning_vivid</code> إلى لوحة الألوان). موضعٌ كان يتدهور بصمت صار يصرّح بذلك.
+  </div>
+
+  <h3>اللوحة العائمة لا تعرف ما وراءها</h3>
+  <p>
+    يُرسم HUD <b>فوق</b> اللعبة — فوق حقل ثلجي، أو داخل كهف. فإن كانت لوحته نصف شفافة، نفذ إليها ما خلفها
+    و<b>غيّر لون اللوحة</b>، فهبط معه تباين النص. فعند عتامة 82% نزل النص الخافت في السمات الداكنة إلى
+    <code>3.74:1</code> فوق خلفية ساطعة — أي دون الحد الأدنى.
+  </p>
+  <p>
+    ولذلك تُقاس اللوحات نصف الشفافة و<b>خلفها الأبيض الخالص والأسود الخالص</b>؛ فهما أسوأ ما قد يقدّمه
+    مشهد لعبة. ولوحة HUD في السمات المرفقة معتمة بما يكفي للنجاح (92%) مع بقاء مظهرها الزجاجي.
+  </p>
+  <p>
+    وللسبب نفسه <b>ألوان الأيقونات ليست ثابتة هي الأخرى</b>. فرمز الخانة السريعة كان مكتوبًا بالأبيض
+    صراحةً في الشيفرة، وقيس بـ <code>1.11:1</code> على سمة فاتحة — وهو اليوم يتبع اللوحة التي يجلس عليها،
+    تمامًا كما تفعل النصوص.
+  </p>
+
+  <div class="note">
+    <b>فاحصان، ومدى مختلف لكلٍّ منهما.</b> يقرأ <code>check_contrast.py</code> ملفات السمات؛
+    أما الألوان التي يمزجها المظهر <b>أثناء التشغيل</b> (الشرائح، الخانات) فتقيسها حزمة الاختبارات في
+    قسم <code>skin contrast</code> داخل Godot.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">→ نظرة عامة</a> · <a href="widgets.html">الودجات ←</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

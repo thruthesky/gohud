@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>วิดเจ็ต — gohud</title>
+<meta name="description" content="วิดเจ็ตทุกตัวของ gohud — หน้าต่างลอย บอททอมชีต ไดอะล็อก ฟอร์ม สแน็กบาร์ โค้ชมาร์ก แถบ HUD ควิกสล็อต และจอยสติ๊กเสมือน">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">ภาพรวม</a>
+      <a href="theming.html">ธีม</a>
+      <a href="widgets.html">วิดเจ็ต</a>
+      <a href="#surfaces">หน้าต่าง</a>
+      <a href="#messages">ข้อความ</a>
+      <a href="#hud">HUD</a>
+      <a href="#factory">GoStyle</a>
+      <a href="#hooks">ฮุก</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>ไทย</summary>
+        <div class="langs-list">
+          <a href="../widgets.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="widgets.html" hreflang="th" lang="th" aria-current="true">ไทย</a>
+          <a href="../ar/widgets.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>วิดเจ็ต</h1>
+    <p class="lead">
+      ทุกตัวสร้างด้วย <code>.new()</code> แล้ว <code>add_child()</code> — ไม่มีไฟล์ซีน ไม่มี autoload
+      หมายเหตุที่มี <b>🛑</b> กำกับคือกับดักที่เจอมาแล้วบนหน้าจอจริง ไม่ใช่ทฤษฎี
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>หน้าต่างลอย</h2>
+
+  <h3><code>GoSurface</code> — เปลือกนอก</h3>
+  <p>ป๊อปอัป ชีต และดรอปดาวน์ ล้วนใช้ตัวนี้ตัวเดียว มันจัดการเซฟแอเรีย คีย์บอร์ดเสมือน
+    หัวและท้ายที่ติดหนึบ เนื้อหาที่เลื่อนได้ การตัดสินว่าหน้าต่างไหนอยู่บนสุด การคืนโฟกัส
+    ความเป็นเจ้าของปุ่มย้อนกลับ และการลากปรับขนาด</p>
+  <table>
+    <thead><tr><th>ตำแหน่ง</th><th>หน้าตาเป็นอย่างไร</th><th>ใช้กับอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>การ์ดกลางจอ</td><td>กล่องยืนยัน หน้าตั้งค่า</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>ชีตที่ยกขึ้นมาจากด้านล่าง</td><td>รายการต่าง ๆ หน้าจัดการ</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>การ์ดที่ตรึงไว้ข้างคอนโทรลหนึ่ง</td><td>ดรอปดาวน์ เมนูคลิกขวา</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>มันไม่ลบตัวเองทิ้ง</b> การตอบสนองต่อ <code>close_requested</code> — จะซ่อนหรือจะคืนหน่วยความจำ —
+    เป็นหน้าที่ของหน้าจอที่เป็นเจ้าของ เพราะตัวเปลือกไม่มีทางรู้ว่ามันกำลังถูกปิดด้วย<i>เหตุผล</i>อะไร
+    (บันทึกแล้วปิด หรือทิ้งไปเลย)
+  </div>
+
+  <h3><code>GoSheet</code> — หน้าที่มาจากด้านล่าง</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("กระเป๋าของ")
+sheet.toolbar().add_child(GoStyle.line_edit("ค้นหา…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("ปิด", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>มันเป็นเจ้าของ <code>CanvasLayer</code> ของตัวเอง จึงลอยอยู่เหนือ HUD ได้อย่างแน่นอน <code>open()</code>
+    จะล้างเนื้อหาในตัวชีตและ<b>ปิด</b>ปุ่มย้อนกลับกับแถวติดหนึบ — ปุ่มที่กดไม่ได้บนหน้าจอที่ไม่มีที่ให้ย้อนกลับ
+    ทำให้คนอ่านว่าแอปพัง</p>
+
+  <h3><code>GoDialogs</code> — กล่องยืนยันที่ <code>await</code> ได้</h3>
+  <pre><code>if await dialogs.confirm("ลบไฟล์เซฟ", "การกระทำนี้ย้อนกลับไม่ได้"):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — ทุกอย่างหลังจากเนื้อความ
+    เป็นตัวเลือกทั้งหมด และ <code>alert()</code> ทำงานแบบเดียวกันแต่มีปุ่มเดียว ตั้ง <code>destructive</code>
+    สำหรับสิ่งที่ย้อนกลับไม่ได้: ปุ่มยืนยันจะกลายเป็นปุ่มทึบ <code>GoStyle.Tone.DANGER_SOLID</code>
+    บนธีมสว่าง ป้ายข้อความสีอันตรายแบบย้อมสีจำเป็นต้องเข้มลงจนอ่านเหมือนตัวอักษรสีดำ แต่ปุ่มแบบทึบ
+    ยังคงตัวอักษรสีขาวบนพื้นแดงไว้ได้ โทนสีถูกกำหนดใหม่ทุกครั้งที่เรียกเพราะหน้าต่างถูกใช้ซ้ำอยู่บานเดียว
+    และการเรียก <code>confirm()</code> ครั้งที่สองขณะที่ยังมีบานเปิดค้างอยู่จะคืนค่า <code>false</code> ทันที
+    ส่วน <code>confirm_key()</code> รับคีย์คำแปลเข้าไปแทน</p>
+  <p><b>การจัดวางปุ่ม</b> <code>action_layout</code> มีค่าเริ่มต้นเป็น <code>VERTICAL</code> (ปลอดภัยสำหรับคำแปลยาว ๆ)
+    ใช้ <code>HORIZONTAL</code> เพื่อจัดเป็นแถวเดียวโดยแบ่งความกว้างคนละครึ่ง หรือ <code>AUTO</code>
+    ซึ่งจะใช้แถวเดียวก็ต่อเมื่อป้ายข้อความทั้งสองพอดีกับครึ่งหนึ่งของการ์ดในบรรทัดเดียว ไม่อย่างนั้นก็ซ้อนกันลงมา
+    <code>action_gap</code> คือช่องไฟระหว่างปุ่ม ส่วน <code>body_gap</code> คือช่องไฟเหนือปุ่ม — ตั้งให้กว้างกว่า
+    ช่องไฟระหว่างปุ่ม เพื่อให้คำถามกับตัวเลือกอ่านออกมาเป็นสองส่วน ถ้าอยากเปลี่ยนเฉพาะไดอะล็อกบานเดียว
+    ให้เรียก <code>set_next_action_layout()</code> ก่อนเปิดมัน แถวปุ่มถูกสร้างตอนที่ไดอะล็อกเปิดครั้งแรก
+    การใส่ <code>GoDialogs</code> เป็น autoload จึงไม่เพิ่มภาระตอนเปิดเกมเลย</p>
+
+  <h3><code>GoForm</code> — ฟอร์มที่จำกัดความกว้าง</h3>
+  <div class="note warn">
+    <b>มันรับประกันว่าป้ายข้อความที่เป็นลูกหลานของมันจะตัดบรรทัด</b> ถ้าไม่มีสิ่งนี้ ประโยคยาว ๆ ประโยคเดียว
+    จะยืดเป็นบรรทัดเดียวที่ความกว้างขั้นต่ำเกินหน้าจอ แล้วสองข้างจะถูกตัดหาย — จนดูไม่ออกด้วยซ้ำว่า
+    คุณอยู่หน้าจอไหน ส่วนการไล่เปิดการตัดบรรทัดด้วยมือทีละซีนนั้น ลืมทุกครั้ง
+  </div>
+
+  <h3><code>GoScroll</code> — การเลื่อนด้วยนิ้ว</h3>
+  <p>ใส่ของไว้ข้างในแค่ <b>ชิ้นเดียว</b> ส่วนหัวและแถวปุ่มต้องอยู่ข้างนอก — รายการยาว ๆ ต้องไม่ดันมันตกจอไป
+    <code>use_panel_edge()</code> ย้ายแถบเลื่อนเข้าไปอยู่ในระยะขอบที่การ์ดมีอยู่แล้ว
+    ขณะที่เนื้อหายังคงระยะย่อหน้าเดิมไว้</p>
+</section>
+
+<section id="messages">
+  <h2>การบอกอะไรบางอย่างกับผู้เล่น</h2>
+
+  <h3><code>GoNotice</code> — สแน็กบาร์</h3>
+  <div class="note warn">
+    <b>มันไม่ดักอินพุตเด็ดขาด</b> ข้อความแจ้งเตือนมีไว้อ่าน ไม่ได้มีไว้กด มันไม่แย่งโฟกัส ไม่ขวางอินพุตของเกม
+    และปุ่มที่อยู่ข้างใต้ก็ยังกดได้ ถ้าต้องการการยืนยันให้ใช้ <code>GoDialogs</code>
+    ถ้าต้องการให้เลือกให้ใช้ <code>GoPromptCard</code>
+  </div>
+
+  <h3><code>GoPromptCard</code> — คำถามที่ไม่หยุดเกม</h3>
+  <p>ลอยอยู่ด้านข้างโดยไม่มีฉากหลังทึบ เกมยังเดินต่อไปตามปกติ</p>
+
+  <h3><code>GoCoachMark</code> — ทัวร์แนะนำ</h3>
+  <p>ชี้ไปยังคอนโทรลจริงทีละอัน มีเพียงการ์ดเท่านั้นที่รับอินพุต ดังนั้น <b>การกดคอนโทรลที่ถูกไฮไลต์เอง
+    จะพาทัวร์เดินหน้าต่อ</b> — "กดตรงนี้" จึงกลายเป็นการลงมือทำ แทนที่จะเป็นแค่ประโยคหนึ่ง</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "กระเป๋า", "body": "ของทุกอย่างที่เก็บได้จะมาอยู่ที่นี่"},
+    {"target": map_button, "title": "แผนที่", "body": "กดเพื่อเปิดแผนที่เต็ม"},
+])</code></pre>
+  <p><code>title</code> และ <code>body</code> จะเป็นคีย์คำแปลหรือข้อความธรรมดาก็ได้ ขั้นตอนที่เป้าหมาย
+    หายไปแล้วจะถูกข้ามไป</p>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>เรื่องเล็ก ๆ ต่างหากที่ตัดสินว่าหน้าจอดูดีหรือไม่</h3>
+  <p>
+    จะขัดเกลาพาเนลใหญ่ ๆ แค่ไหนก็ตาม สิ่งที่สะดุดตาเสมอคือเรื่องเล็ก ๆ: คำที่ถูกหักเป็นสองท่อน
+    แสงเรืองที่ถูกตัดขาด สล็อตที่แน่นจนอึดอัด มีสี่เรื่องแบบนี้ถูกชี้ให้เห็นเมื่อ 2026-09-13
+    และถูกแก้ที่ตัววิดเจ็ตกับธีม ไม่ใช่แก้ที่หน้าจอเดโม ทุกหน้าจอจึงได้ผลลัพธ์เดียวกัน
+  </p>
+  <table>
+    <thead><tr><th>อาการที่เห็น</th><th>สาเหตุ</th><th>วิธีแก้</th></tr></thead>
+    <tbody>
+      <tr><td>ปุ่ม <code>Done</code> ของโค้ชมาร์กกลายเป็น <code>Don</code>/<code>e</code></td>
+          <td>ปุ่มที่เปิดการตัดบรรทัดจะ<b>หักความกว้างของข้อความออก</b>จากความกว้างขั้นต่ำของมัน พอถูกบีบ มันจึงหักกลางคำ</td>
+          <td><code>GoStyle.fit_words()</code>: คำเดียวไม่มีวันถูกตัดบรรทัด ถ้ามีหลายคำก็ตัดบรรทัดได้ แต่<b>คำที่ยาวที่สุด</b>ต้องพอดีเสมอ โดยตัดสินจากข้อความที่<b>แสดงจริง</b> ไม่ใช่จากคีย์คำแปล และฟอร์มจะคำนวณใหม่ให้เมื่อเปลี่ยนภาษา</td></tr>
+      <tr><td>แสงเรืองของปุ่มเต็มความกว้างถูกตัดหายไปในแนวตั้งทางด้านซ้าย</td>
+          <td>คอนเทนเนอร์ที่เลื่อนได้จะตัดทุกอย่างที่ขอบของมันโดยไม่มีข้อยกเว้น เหลือรอดแค่ด้านขวาเพราะมีร่องของรางเลื่อนช่วยไว้</td>
+          <td><code>GoScroll</code> ขอยืมระยะขอบของพาเรนต์มาดันขอบของมันออกไป 12dp แล้วคืนกลับเข้ามาข้างใน — <b>เนื้อหาอยู่ที่เดิม</b></td></tr>
+      <tr><td>เวลา ไอคอน และจำนวน ซ้อนกันเป็นแนวตั้งในสล็อต</td>
+          <td>สามแถวอัดอยู่ใน 48dp</td>
+          <td>ไอคอนขนาดใหญ่อยู่กลาง ปุ่มลัดอยู่มุมบนซ้าย จำนวนเป็น<b>แบดจ์</b>มุมล่างขวา และเวลาที่เหลือเป็นแบดจ์ทับบนไอคอน — พาเนลของแบดจ์มาจาก <code>badge_box()</code> ของสกิน</td></tr>
+      <tr><td>ดรอปดาวน์ที่แบนราบจนมองไม่ออกว่าเลือกอะไรอยู่</td>
+          <td>การชี้ที่รายการใช้พาเนลของปุ่ม ส่วนเครื่องหมายเรดิโอเป็นของเอนจินที่จางมาก</td>
+          <td>พาเนลชี้เฉพาะของมันเอง (ย้อมสีเน้นอ่อน ๆ) เครื่องหมายเรดิโอชุดเดียวกับเช็กบ็อกซ์ และความสูงของรายการที่พอดีกับการกดด้วยนิ้ว</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="ดรอปดาวน์ที่เปิดอยู่ — พาเนลชี้ที่ย้อมสีเน้นอ่อน ๆ และเครื่องหมายเรดิโอของรายการที่เลือก" loading="lazy">
+      <figcaption>ดรอปดาวน์ — พาเนลชี้และเครื่องหมายเรดิโอ</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="ควิกสล็อตสี่ช่อง — ปุ่มลัดมุมบนซ้าย แบดจ์จำนวนมุมล่างขวา และช่องแรกมีแบดจ์เวลาที่เหลือ" loading="lazy">
+      <figcaption>สล็อต — แบดจ์ที่มุมและเวลาที่เหลือ (ไซไฟ)</figcaption>
+    </figure>
+  </div>
+  <p>
+    ใส่คำอธิบายให้ปุ่มที่มีแต่ไอคอนด้วย <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    ทั้งทูลทิปสำหรับคนใช้เมาส์และชื่อเชิงการเข้าถึงสำหรับโปรแกรมอ่านหน้าจอ มาจากค่าเดียวกันนี้
+    gohud วาดทูลทิปเอง เพราะของเอนจินจะฉีกข้อความ<b>เป็นบรรทัดละตัวอักษร</b>เมื่อการคำนวณความกว้าง
+    ของมันผิดพลาด (วัดได้ว่ากว้างแค่ 1dp)
+  </p>
+
+  <h4>การ์ดโค้ชมาร์กหลบสิ่งที่ตรึงอยู่กับที่</h4>
+  <p>
+    เมื่อวางแนวนอน การ์ดเคยถูกส่งไปที่ขอบบนสุดหรือล่างสุด — ซึ่งเป็นที่อยู่ของแถบหัวและชิ้นส่วน HUD พอดี
+    ในเดโมมันไปนั่งทับ <code>→ ×</code> ของแถบหัว ตอนนี้มันอยู่ระดับเดียวกับเป้าหมาย เดินอ้อม
+    <code>GoHudAnchor</code> ทุกอันที่จองพื้นที่ไว้ และรับสิ่งอื่นที่ต้องหลบผ่าน <code>keep_clear</code>
+    มันขยับด้วยระยะที่สั้นที่สุดที่พ้นสิ่งกีดขวางโดยไม่บังเป้าหมาย และจะอยู่นิ่งถ้าหน้าจอเล็กเกินกว่าจะหลบได้ครบ
+    — ทับกันยังดีกว่าหายไปเลย ความลึกของมัน — ที่ทำให้มันอ่านว่า<b>ลอยอยู่เหนือ</b>หน้าเนื้อหา — มาจากค่าปรับของสกิน
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; สกินมุมตัดเฉียงใช้ <code>float_glow_size</code>)
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # สิ่งที่ตรึงอยู่กับที่แต่ไม่ใช่แองเคอร์</code></pre>
+
+  <h3>หน้าจอที่มีเมาส์และคีย์บอร์ด</h3>
+  <p>
+    นิ้ว<b>ไม่มีสถานะ hover</b> ถ้าพัฒนาโดยคิดถึงแต่มือถือ จะมีสองสถานะที่มีเฉพาะบนเดสก์ท็อปหลุดการตรวจไป —
+    และหนึ่งในนั้นก็พังจริง ๆ: <b>วงแหวนโฟกัสของ gohud มองไม่เห็นเลยบนปุ่มหลัก</b> เพราะพาเนลใช้สีเน้น
+    และวงแหวนก็ใช้สีเน้นเหมือนกัน: <code>1.00:1</code> คือสีเดียวกันวาดทับตัวเอง เมื่อไล่ด้วยคีย์บอร์ด
+    จึงไม่มีทางรู้เลยว่าตอนนี้อยู่ตรงไหน
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="แถวปุ่มชุดเดียวกันในสามสถานะ — ปกติ เมาส์ชี้ และโฟกัสจากคีย์บอร์ด" loading="lazy">
+    <figcaption>จากบนลงล่าง: <b>ปกติ · เมาส์ชี้ · โฟกัส</b> ปุ่มแบบทึบได้วงแหวนที่ตัดกับพาเนลของมันเอง</figcaption>
+  </figure>
+  <p>
+    ปุ่มแบบทึบ (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) ใช้วงแหวนที่
+    <b>ตัดกับพาเนลของตัวเอง</b> — สีเข้มบนธีมมืด สีขาวบนธีมสว่าง และวงเล็บเล็งเป้าสีเข้มในธีมไซไฟ
+    ตัวตรวจคอนทราสต์วัด<b>วงแหวนโฟกัสเทียบกับพาเนลที่มันวางอยู่</b> กฎนี้จึงอยู่รอดแม้เปลี่ยนจานสี
+    (WCAG 2.4.11 กำหนดไว้ที่ 3:1 สำหรับตัวบอกโฟกัส)
+  </p>
+
+  <h3><code>GoHudAnchor</code> — เก้าตำแหน่ง</h3>
+  <p>เคารพเซฟแอเรียและระยะขอบจอ ใส่ <code>landscape_spot</code> ให้มันแล้วมันจะย้ายที่เมื่อวางแนวนอน —
+    ปุ่มควบคุมที่อยู่กลางล่างในแนวตั้งจึงไปอยู่มุมล่างขวาแทนได้</p>
+  <div class="note">
+    <b>ทำไมต้องมีมัน</b> ถ้าเขียนแองเคอร์และออฟเซ็ตด้วยมือทีละชิ้น HUD ค่าจะเพี้ยนไปเรื่อย ๆ:
+    แถบพลังชีวิตไปโผล่ใต้รอยบากกล้องบนเครื่องที่มีนอตช์ และปุ่มควบคุมไปตกบนแถบท่าทางเมื่อวางแนวนอน
+    เลขคณิตพวกนั้นถูกรวมไว้ที่เดียว
+  </div>
+
+  <h4>กันเนื้อหาไม่ให้มุดเข้าไปใต้ HUD</h4>
+  <p>
+    เมื่อหน้าจอที่เลื่อนได้ต้องแบ่งพื้นที่กับ HUD เนื้อหาจะเลื่อน<b>ลอดเข้าไปข้างใต้</b> แล้วข้อความสองชุด
+    จะทับกันจนอ่านไม่ออกทั้งคู่ เรื่องนี้เกิดขึ้นสองครั้งในแอดออนนี้: ข้อความตัวอย่างในช่องกรอกถูกบีบ
+    โผล่ออกมาระหว่างควิกสล็อต และปุ่มสวิตช์ในหน้าตั้งค่าไปตกบนแถบพลังชีวิต
+  </p>
+  <pre><code>form.avoid_hud = true                  # หลบทุก GoHudAnchor ที่มองเห็นอยู่
+joystick_anchor.reserve_space = false  # …ยกเว้นอันที่โผล่มาเฉพาะตอนมีนิ้วแตะ</code></pre>
+  <p>
+    สี่เหลี่ยมแต่ละผืนจะถูกหลบไปในทิศที่<b>เสียพื้นที่น้อยที่สุด</b> แถบที่อยู่มุมบนขวาจะถูกหลบลงล่าง
+    บนมือถือแนวตั้ง (คิดเป็น 13% ของความสูง) และหลบไปด้านข้างเมื่อวางแนวนอน (21% ของความกว้าง)
+    — เพราะถ้าหลบในแนวตั้งตอนวางแนวนอนจะเสียพื้นที่ถึง 27% ของหน้าจอ พื้นที่ที่ยอมเสียไปแล้ว
+    จะถูกหักออกก่อนวัดสี่เหลี่ยมผืนถัดไป
+  </p>
+
+  <h4>ชิ้นส่วน HUD ก็ชนกันเองได้เหมือนกัน</h4>
+  <p>
+    เก้าตำแหน่งนั้นแบ่งหน้าจอออกเป็นส่วน ๆ แต่ไม่ได้รับประกันว่าชิ้นส่วนแต่ละชิ้นจะ<b>ไม่ชนกัน</b>
+    สแน็กบาร์กว้าง ๆ ที่กลางบนเคยไปลงเต็ม ๆ บนแถบพลังชีวิตที่มุมบนขวา จนบังตัวเลขไว้หมด —
+    อ่านไม่ออกเลยว่าเหลือพลังชีวิตเท่าไร
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # ไปลงใต้ HUD ที่อยู่กับที่
+notice_anchor.reserve_space = false   # และไม่ดันหน้าเนื้อหาระหว่างที่มันโผล่อยู่</code></pre>
+  <p>
+    มันหลบ<b>ในแนวตั้งเท่านั้น</b> — ถ้าหลบด้านข้างด้วย toast ที่จัดกึ่งกลางจะไปโผล่คนละที่ทุกครั้งที่แสดง
+    และมันหลบเฉพาะชิ้นส่วนที่<b>ไม่ได้</b>กำลังหลบอยู่เหมือนกัน: ถ้าต่างฝ่ายต่างยอมหลบ ทั้งคู่จะสลับที่กันไปไม่มีวันจบ
+  </p>
+
+  <h3><code>GoBar</code> — พลังชีวิต มานา ค่าประสบการณ์</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # โทเคนที่ใช้เป็นสีเติมอย่างเดียว
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>การเปลี่ยนค่าจะไหลนุ่มนวลใน 0.18 วินาที — แถบพลังชีวิตที่กระโดดพรวดไม่ได้บอกคุณว่าโดนหนักแค่ไหน
+    ตั้ง <code>reduce_motion</code> แล้วมันจะเปลี่ยนทันที ตัวเลขใหญ่ ๆ จะถูกย่อเป็น <code>12.3k</code>
+    เพื่อไม่ให้ความกว้างของแถบกระตุกไปมาตามจำนวนหลักที่เพิ่มลด</p>
+
+  <h3><code>GoSlot</code> — ควิกสล็อตหนึ่งช่อง</h3>
+  <p>ไอคอน จำนวน คูลดาวน์ และปุ่มลัด อยู่บน<b>หน้าเดียวกัน</b> การเอาแบดจ์ไปห้อยรอบวงกลมเล็ก ๆ
+    จะทำให้แต่ละสล็อตกว้างไม่เท่ากัน แล้วทั้งแถวก็โยกเยก</p>
+  <div class="note">
+    <b>ขนาดที่เห็นกับขนาดที่กดได้ไม่เท่ากัน</b> สล็อตที่เรียงชิดกันมีกล่องสัมผัส 48dp ที่ซ้อนทับกัน
+    พื้นที่ซ้อนนั้นจะตกเป็นของ<b>สล็อตที่จุดกึ่งกลางใกล้กว่า</b> — บอกให้พวกมันรู้จักกันผ่าน
+    <code>touch_peers</code>
+  </div>
+
+  <p><code>keyboard_focus</code> ปิดไว้เป็นค่าเริ่มต้น สล็อตแปดช่องเรียงกันจึงไม่ไปขวางระหว่างผู้ใช้คีย์บอร์ด
+    กับคอนโทรลในหน้าตั้งค่าทุกตัวในลำดับ Tab เปิดมันเมื่อคีย์บอร์ดหรือเกมแพดเป็นอินพุตเดียวที่มี</p>
+
+  <h3><code>GoJoystick</code> — จอยสติ๊กเสมือน</h3>
+  <table>
+    <thead><tr><th>โหมด</th><th>พฤติกรรม</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>อยู่ที่เดิมเสมอ — หาเจอง่ายโดยไม่ต้องมอง</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>โผล่ขึ้นตรงที่นิ้วโป้งลง</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>ตามนิ้วต่อไปเรื่อย ๆ หลังโผล่ขึ้นมาแล้ว — สบายสำหรับการเคลื่อนที่นาน ๆ</td></tr>
+    </tbody>
+  </table>
+  <p><code>Vector2</code> ที่ได้จาก <code>moved</code> มีความยาว 0–1 คุณจึงคูณเข้ากับความเร็วได้ตรง ๆ
+    และค่านี้ไม่แปรตามขนาดหน้าจอหรือ DPI</p>
+
+  <h3><code>GoIconButton</code> — ดูเล็ก แต่กดง่าย</h3>
+  <div class="note warn">
+    <b>ปลอดภัยเฉพาะตอนที่เพื่อนบ้านของมันไม่รับอินพุต</b> ถ้าพื้นที่ที่ขยายออกไปครอบปุ่มถัดไป
+    ปุ่มนั้นจะหยุดตอบสนอง ปุ่มไอคอนที่วางเรียงชิดกันต้องใช้ <code>touch_peers</code>
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — ที่เดียวที่ทุกอย่างถูกสร้างขึ้น</h2>
+  <p class="sub">
+    ถ้าเรียก <code>Button.new()</code> ตรง ๆ ระยะขอบใน ความสูง และการตัดบรรทัด จะเพี้ยนไปทีละนิด
+    จากหน้าจอหนึ่งไปอีกหน้าจอหนึ่ง ความเพี้ยนนั้นมองไม่เห็นตอนรีวิวโค้ด แต่เห็นชัดเจนในภาพหน้าจอ
+  </p>
+
+  <table>
+    <thead><tr><th>กลุ่ม</th><th>ฟังก์ชัน</th></tr></thead>
+    <tbody>
+      <tr><td>โครงสร้าง</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>ตัวอักษร</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>ปุ่ม</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>การรับข้อมูล</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>การแสดงผล</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>ชิ้นส่วนของพื้นผิว</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>ตัวช่วย</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> คืนค่าเป็น <code>StyleBoxFlat</code> เสมอ</b> เพราะผู้เรียกจะรับมันไปแล้วปรับ
+    <code>bg_color</code> หรือ <code>corner_radius</code> ต่อ ถ้าต้องการให้รูปทรงที่กำหนดเองอยู่รอด
+    ให้ใช้ <code>surface()</code> แทน
+  </div>
+
+  <h3>แถวรายการที่มีคำอธิบาย</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "ดาบคำสาบาน", _inspect, Color.TRANSPARENT,
+    "ดาบยาว  /  โจมตี 42", false)</code></pre>
+  <p>แถวที่มีบรรทัดที่สองจะได้<b>ระยะขอบในด้านบนและล่างเท่ากัน</b> โปร่งกว่าแถวบรรทัดเดียว และคู่ของ
+    หัวเรื่องกับคำอธิบายจะ<b>จัดกึ่งกลางแนวตั้ง</b>ข้างไอคอนเสมอ — รวมถึงตอนที่คอนเทนเนอร์ยืดแถวให้สูงขึ้น
+    และหลังจากคำอธิบายตัดบรรทัดเป็นหลายบรรทัดแล้วด้วย ทั้งแถวยังคงเป็นเป้าหมายการแตะเดียวกัน</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="ตัวอย่าง medieval_light — แถวรายการสองบรรทัด ควิกสล็อต และแถบต่าง ๆ" loading="lazy">
+    <figcaption>แถวสองบรรทัด สล็อต และแถบ ในตัวอย่างยุคกลาง — เป็นการเรียกฟังก์ชันชุดเดียวกันภายใต้ <code>medieval_light</code></figcaption>
+  </figure>
+
+  <h3>แถวที่ไหลต่อกัน</h3>
+  <p>ใส่คอนโทรลลงใน <code>wrap_row</code> ที่<b>ความกว้างตามธรรมชาติ</b>ของมัน ถ้าปล่อยให้การตัดบรรทัดเปิดอยู่
+    ความกว้างขั้นต่ำของปุ่มจะลดลงจนแทบเป็นศูนย์ แล้วแถวจะกำหนดขนาดเซลล์ตามนั้น — ป้ายข้อความจะยุบลงเหลือ
+    บรรทัดละตัวอักษร ตัวโรงงานป้องกันเรื่องนี้ให้คุณแล้ว</p>
+
+  <h3>อย่าปล่อยรายการที่ว่างให้ว่างเปล่า</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "ยังไม่มีอะไรที่นี่"))</code></pre>
+  <p>คนอ่านหน้าจอเปล่า ๆ ว่า<b>มันพัง</b></p>
+</section>
+
+<section id="hooks">
+  <h2>ฮุกสำหรับการสืบทอด</h2>
+  <p class="sub">
+    ทุกจุดที่มีการสร้างวิดเจ็ตลูกจะผ่านเมธอดที่เขียนทับได้ โปรเจกต์ที่สืบทอดชนิดต่าง ๆ ของ gohud
+    จึงเอาซับคลาสของตัวเองเข้าไปอยู่<b>ข้างใน</b>วิดเจ็ตได้ โดยไม่ต้องคัดลอกโค้ด
+  </p>
+  <table>
+    <thead><tr><th>ฮุก</th><th>วิดเจ็ต</th><th>ค่าเริ่มต้น</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>ซ่อนการ์ดขณะที่มีหน้าต่างโมดัลเปิดอยู่</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← ธีม</a> · <a href="./">ภาพรวม →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

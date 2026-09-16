@@ -4,6 +4,24 @@
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
 <!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 的 HUD 与 UI 套件</title>
@@ -26,6 +44,28 @@
       <a href="widgets.html">控件 ↗</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
       <!-- langs:begin -->
+      <details class="langs">
+        <summary>简体中文</summary>
+        <div class="langs-list">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/index.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/index.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="index.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">简体中文</a>
+          <a href="../zh-tw/index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/index.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/index.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/index.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/index.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/index.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/index.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/index.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/index.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/index.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/index.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/index.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
       <!-- langs:end -->
     </nav>
   </div>
@@ -378,15 +418,18 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     <tbody>
       <tr><td>控件画廊</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>每一个控件、一个可切换全部已安装预设的选择器，以及完整图标集</td></tr>
       <tr><td>中世纪</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>角色面板、行囊和任务日志；按钮可在铁与羊皮纸之间切换，并打开物品详情</td></tr>
-      <tr><td>演示</td><td><code>bash examples/demo/run.sh</code></td><td>由真实输入驱动的 15 章导览，外加一个可以手动试用单个控件的探索模式</td></tr>
+      <tr><td>演示程序</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>一个主页，从这里可以打开控件画廊、15 章导览、展示界面和中世纪外观，里面都是能实际操作的控件，每个类各占一张卡片</td></tr>
     </tbody>
   </table>
 
-  <pre><code>bash examples/demo/run.sh --setup                       # 刚 clone 下来时执行一次
-bash examples/demo/run.sh                               # 开始演示，或探索各个控件
-bash examples/demo/run.sh -- --explore=surfaces         # 直接打开某一个控件
+  <pre><code>cd examples/demo &amp;&amp; godot                             # 主页；首次运行会建好链接并导入资源
+bash examples/demo/run.sh                               # 同一个程序，从插件根目录启动
+bash examples/demo/run.sh -- --open=gallery             # 跳过主页
+bash examples/demo/run.sh -- --explore=surfaces         # 直接打开导览的某一章
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 以 1080p / 60 fps 录制整段导览</code></pre>
-  <p>在演示里，<b>C</b> 切换影院模式，<b>F11</b> 全屏，<b>Space</b> 暂停（在探索模式下则是播放当前控件），
+  <p>演示程序不需要任何准备工作：插件链接或导入缓存缺失时它会告诉你，自动把文件夹修好并重新打开自己。
+    它的主页会在同一个窗口里打开每一个示例 —— 按 <b>1</b>–<b>4</b> 或点击某一行即可，顶部那条横栏能把你带回来。</p>
+  <p>在导览里，<b>C</b> 切换影院模式，<b>F11</b> 全屏，<b>Space</b> 暂停（在探索模式下则是播放当前控件），
     方向键切换章节，<b>Esc</b> 回到开始界面。</p>
   <p>在用 AI 编程助手？<a href="#ai">一条命令打开这三个示例 →</a></p>
 </section>

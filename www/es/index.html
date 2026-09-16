@@ -4,6 +4,24 @@
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
 <!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — un kit de HUD e interfaz para Godot 4</title>
@@ -26,6 +44,28 @@
       <a href="widgets.html">Widgets ↗</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
       <!-- langs:begin -->
+      <details class="langs">
+        <summary>Español</summary>
+        <div class="langs-list">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/index.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/index.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/index.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="index.html" hreflang="es" lang="es" aria-current="true">Español</a>
+          <a href="../pt/index.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/index.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/index.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/index.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/index.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/index.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/index.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/index.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/index.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/index.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
       <!-- langs:end -->
     </nav>
   </div>
@@ -382,15 +422,19 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     <tbody>
       <tr><td>Galería</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Todos los widgets, un selector para cada preajuste instalado y el juego de iconos completo</td></tr>
       <tr><td>Medieval</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Una hoja de personaje, un zurrón y un diario de misiones; los botones alternan entre hierro y pergamino y abren el detalle de los objetos</td></tr>
-      <tr><td>Demo</td><td><code>bash examples/demo/run.sh</code></td><td>Un recorrido guiado de 15 capítulos movido por entrada real, y un modo de exploración para probar un widget a mano</td></tr>
+      <tr><td>App de demo</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>Una pantalla de inicio que abre la galería, el recorrido guiado de 15 capítulos, la pantalla de muestra y el aspecto medieval, con widgets en vivo y una tarjeta por clase</td></tr>
     </tbody>
   </table>
 
-  <pre><code>bash examples/demo/run.sh --setup                       # una vez, en un checkout recién clonado
-bash examples/demo/run.sh                               # elige Start demo o Explore widgets
-bash examples/demo/run.sh -- --explore=surfaces         # abre directamente en un widget
+  <pre><code>cd examples/demo &amp;&amp; godot                             # pantalla de inicio; enlaza e importa en la primera ejecución
+bash examples/demo/run.sh                               # la misma app, desde la raíz del add-on
+bash examples/demo/run.sh -- --open=gallery             # omite la pantalla de inicio
+bash examples/demo/run.sh -- --explore=surfaces         # abre directamente en un capítulo del recorrido
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # grabación del recorrido a 1080p / 60 fps</code></pre>
-  <p>En la demo, <b>C</b> alterna el modo cine, <b>F11</b> la pantalla completa, <b>Espacio</b> pausa (o reproduce el widget
+  <p>La app de demo no necesita ninguna preparación: si falta el enlace al add-on o la caché de importación, lo indica, repara la carpeta
+    y se vuelve a abrir sola. Su pantalla de inicio abre cada ejemplo dentro de la misma ventana — pulsa <b>1</b>–<b>4</b> o haz clic en
+    una fila, y la barra superior te trae de vuelta.</p>
+  <p>En el recorrido, <b>C</b> alterna el modo cine, <b>F11</b> la pantalla completa, <b>Espacio</b> pausa (o reproduce el widget
     actual mientras exploras), las flechas cambian de capítulo y <b>Escape</b> vuelve al inicio.</p>
   <p>¿Usas un agente de programación con IA? <a href="#ai">Abre los tres con un solo comando →</a></p>
 </section>

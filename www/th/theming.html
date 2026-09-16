@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ธีม — gohud</title>
+<meta name="description" content="ธีม สกิน และพรีเซ็ตของ gohud เปลี่ยนสีและรูปทรงอย่างไร: คู่มือโทเคน การสร้าง StyleBox ของตัวเอง และเหตุผลที่คอนทราสต์ถูกคำนวณมาแทนที่จะเลือกเอง">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">ภาพรวม</a>
+      <a href="theming.html">ธีม</a>
+      <a href="widgets.html">วิดเจ็ต</a>
+      <a href="#medieval">ยุคกลาง</a>
+      <a href="#tokens">โทเคน</a>
+      <a href="#skin">สกิน</a>
+      <a href="#own">พรีเซ็ตของคุณ</a>
+      <a href="#contrast">ความอ่านง่าย</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>ไทย</summary>
+        <div class="langs-list">
+          <a href="../theming.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="theming.html" hreflang="th" lang="th" aria-current="true">ไทย</a>
+          <a href="../ar/theming.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>ธีม</h1>
+    <p class="lead">
+      หน้าตาของ gohud มี <b>สามชั้น</b> จะเปลี่ยนแค่สี หรือจะเปลี่ยนรูปทรงทั้งหมดก็ได้
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>สามชั้น</h2>
+  <p class="sub">พรีเซ็ตหนึ่งอันรวมทั้งสามชั้นไว้ด้วยกัน ช่องที่ปล่อยว่างจะย้อนกลับไปใช้ค่าเริ่มต้น</p>
+
+  <table>
+    <thead><tr><th>ชั้น</th><th>กำหนดอะไร</th><th>เปลี่ยนอย่างไร</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>สี ขนาด สเกลตัวอักษร และรูปทรงของทุกอย่าง<b>ที่เอนจินเป็นคนวาด</b> — พาเนลของปุ่ม ช่องกรอก แท็บ ภาพของสวิตช์</td>
+        <td>เขียนไฟล์ <code>.tres</code> เอง หรือให้ <code>tools/make_theme.py</code> สร้างให้</td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td>รูปทรงของทุกอย่าง<b>ที่โค้ดเป็นคนวาด</b> — จอยสติ๊ก หน้าควิกสล็อต วงแหวนโค้ชมาร์ก ชิป สเกเลตัน เส้นคั่น หัวข้อส่วน</td>
+        <td>สืบทอดคลาสแล้วเขียนทับเฉพาะเมธอดที่สนใจ</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>ไอคอนที่เรียกด้วยชื่อ — ภาพค่าเริ่มต้น 84 ชิ้น หรือภาพสลัก 16 ชิ้นของชุดยุคกลางที่ทับลงไป จะเป็นเท็กซ์เจอร์แพ็กหรือไอคอนฟอนต์ก็ได้ โค้ดที่เรียกใช้เหมือนกันทั้งสองทาง</td>
+        <td>ใส่ชุดไอคอนเข้าไป หรือเขียนทับเฉพาะบางชื่อ</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>ทำไม Theme อย่างเดียวถึงไม่พอ</b> มุมมนคือมุมชนิดเดียวที่ <code>StyleBoxFlat</code> มี —
+    ตั้งรัศมีเป็นศูนย์แล้วได้มุมฉาก ไม่มีอะไรอยู่ระหว่างนั้นเลย ส่วนมุมตัดเฉียง ขอบหนาด้านเดียว
+    และแสงเรืองรอบนอกนั้น เอนจินไม่วาดให้สักอย่าง ยิ่งกว่านั้น จอยสติ๊กกับโค้ชมาร์กถูกวาดใน
+    <code>_draw()</code> ซึ่งเป็นที่ที่ธีมเอื้อมไม่ถึงเลย
+  </div>
+</section>
+
+<section id="pick">
+  <h2>เลือกพรีเซ็ต</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>บรรทัดเดียวนั้นสลับทั้งธีม สกิน และไอคอน ถ้าทำจากเอดิเตอร์ ให้ไปที่
+    <b>Project Settings → Gohud → Theme → Preset</b> ถ้าทำจากรีซอร์สตั้งค่า ให้ใช้ <code>GoConfig.preset</code></p>
+
+  <h3>เก็บบางช่องไว้เป็นของตัวเอง</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # ไอคอนของคุณ ที่เหลือใช้ของพรีเซ็ต</code></pre>
+  <p>การกำหนด <code>theme</code>, <code>skin</code> หรือ <code>icons</code> ไว้ตรง ๆ จะ<b>ชนะ</b>พรีเซ็ต</p>
+
+  <h3>พรีเซ็ตที่มีมาให้ทั้ง 6 แบบ</h3>
+  <table>
+    <thead><tr><th>พรีเซ็ต</th><th>พาเนล</th><th>สกิน · ไอคอน</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>พาเนล <code>StyleBoxFlat</code> มุมมน บนสเกลเงาที่ไล่ระดับ ปุ่มหลักยกตัวขึ้นและยุบลงเมื่อถูกกด</td><td><code>GoSkin</code> · ไอคอนค่าเริ่มต้น 84 ชิ้น</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>พาเนล <code>GoStyleBoxCut</code> มุมตัดเฉียง พร้อมขอบนีออนและแสงเรือง เครื่องหมายโฟกัสแบบ <code>GoStyleBoxBracket</code></td><td><code>GoSkinSciFi</code> — จอยสติ๊กหกเหลี่ยม · ไอคอนค่าเริ่มต้น</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>กรอบตีขึ้นรูป <code>GoStyleBoxMedieval</code> — เหล็กและหนัง หรือกระดาษหนัง พร้อมหมุดย้ำและลวดลายมุมบนเมนู</td><td><code>GoSkinMedieval</code> · ไอคอนสลัก 16 ชิ้นทับบนชุดค่าเริ่มต้น</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>ยุคกลาง: เหล็ก หนัง และกระดาษหนัง</h2>
+  <p><code>medieval_dark</code> จับคู่เหล็กดำและหนังเข้ากับทองโบราณ ส่วน <code>medieval_light</code>
+    ใช้กระดาษหนังและหมึก ทั้งคู่ใช้ <code>GoSkinMedieval</code> วิดเจ็ตชุดเดิม และไอคอนออริจินัล 16 ชิ้น
+    ที่มีรายละเอียดลายสลัก ส่วนไอคอนนำทางย้อนกลับไปใช้ชุดเดิม</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# หรือ: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>เลือกพรีเซ็ตก่อนสร้าง UI ทั้งนี้ค่า <code>GoConfig.theme</code>, <code>skin</code> หรือ
+    <code>icons</code> ที่กำหนดไว้ตรง ๆ ยังคงมีอำนาจเหนือกว่าอยู่ดี เปิด
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code> แล้วกด F6 เพื่อดูแผ่นข้อมูลตัวละคร
+    ย่าม และสมุดบันทึกเควสต์ที่ใช้งานได้จริง ปุ่มในนั้นสลับตัวแปรของธีมและเปิดรายละเอียดไอเทมได้</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="หน้าตัวละคร กระเป๋าของ และเควสต์ ในธีมยุคกลางแบบเหล็ก" loading="lazy"><figcaption>เหล็กและหนัง</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="หน้าตัวละคร กระเป๋าของ และเควสต์ ในธีมยุคกลางแบบกระดาษหนัง" loading="lazy"><figcaption>กระดาษหนังและหมึก</figcaption></figure>
+  </div>
+  <p>กรอบเมนูมีหมุดย้ำและลวดลายมุมเล็ก ๆ ส่วน HUD ที่มองเห็นตลอดเวลายังคงมีขอบเรียบสงบ
+    พลังชีวิต มานา และสตามินา ใช้สีแดง น้ำเงิน และเขียวมะกอกเป็นสีเติม Cinzel ถูกจำกัดไว้ที่หัวข้อและหัวข้อรอง
+    ส่วนเนื้อความยังใช้ฟอนต์ของโปรเจกต์แม่หรือฟอนต์ค่าเริ่มต้น ฟอนต์ที่แถมมามีสัญญาอนุญาตอยู่ที่
+    <code>assets/fonts/cinzel/OFL.txt</code></p>
+  <p>ชุดไอคอนสลักวาดใหม่ให้กับ <code>bag</code>, <code>book</code>, <code>box</code>, <code>coin</code>, <code>crown</code>,
+    <code>flag</code>, <code>heart</code>, <code>key</code>, <code>map</code>, <code>potion</code>, <code>shield</code>,
+    <code>star</code>, <code>sword</code> และ <code>user</code> แล้วเพิ่ม <code>scroll</code> กับ <code>seal</code> เข้ามา
+    ชื่ออื่นทั้งหมดย้อนกลับไปใช้ชุดค่าเริ่มต้น <code>close</code> และ <code>settings</code> จึงคงภาพเดิมไว้ในทุกพรีเซ็ต
+    Cinzel รองรับเฉพาะอักษรละติน ถ้าต้องการหัวข้อในภาษาอื่นให้กำหนดฟอนต์ของมันเองผ่าน
+    <code>shape.fonts</code></p>
+  <div class="note">
+    <b>ชุดทดสอบตรวจอะไรบ้างในทั้งสองตัวแปร</b> ตรวจว่าสกินยุคกลางถูกเลือกจริง พาเนลของเมนูและ HUD เป็น
+    กรอบตีขึ้นรูปโดยมีลวดลายเฉพาะบนเมนู หัวข้อใช้ Cinzel ขณะที่เนื้อความยังใช้ฟอนต์ที่สืบทอดมา ไอคอนสลัก
+    ถูกอิมพอร์ตเป็น <code>DPITexture</code> ควิกสล็อตจริงใช้สกินนั้น การแก้ค่าปรับของสกินที่คัดลอกมาส่งผลถึง
+    ตัวสล็อตโดยไม่ต้องแตะพรีเซ็ต และการสลับกลับไปคืนรูปทรงของชุดค่าเริ่มต้นกับชุดไซไฟได้ครบ
+  </div>
+  <h3>สร้างอาณาจักรของคุณเอง</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# แก้ไข themes/palettes/kingdom.json แล้วสั่ง:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# ใน GDScript ก่อนสร้างวิดเจ็ต:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>ธีมแบบ JSON สืบทอดจากธีม JSON อื่นได้ ค่าที่ละไว้จะคงการตั้งค่าของธีมแม่ไว้
+    ส่วนการสืบทอดที่วนเป็นวงจะถูกปฏิเสธ พรีเซ็ตที่สร้างขึ้นจะใช้ชุดไอคอนของธีมแม่ต่อไป</p>
+  <table><thead><tr><th>การตั้งค่า</th><th>ผลที่ได้</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: เหล็ก · 1: หนัง · 2: กระดาษหนัง ควบคุมร่องรอยบนพื้นผิว</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>ความทึบของลายเนื้อวัสดุ ใส่ 0 เพื่อให้พื้นผิวเกลี้ยง</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>ขนาดลวดลายมุมของเมนู และความเข้มของแสงไฮไลต์ตามขอบลาด</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>จับคู่บทบาท title, subtitle, caption, body และ button เข้ากับไฟล์ฟอนต์ res:// ที่อยู่ในแอดออน บทบาทที่ละไว้จะคงฟอนต์ที่สืบทอดมา</td></tr>
+    <tr><td><code>skin.dials</code></td><td>รัศมีของควิกสล็อต การแสดงหมุดย้ำ ลายเนื้อ และไฮไลต์ ตารางเต็มด้านล่างแจกแจงทุกค่าปรับ</td></tr>
+  </tbody></table>
+</section>
+
+<section id="tokens">
+  <h2>โทเคน</h2>
+  <p class="sub">
+    ทุกสีและทุกค่าขนาดอยู่ใต้ชนิด <code>GoHud</code> ใน Theme และถูกอ้างถึงด้วยชื่อ
+    กฎคือห้ามเขียนตัวเลข: ชื่อจะตามไปเองเมื่อมีการสลับธีม
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # สี
+GoUi.metric(GoTheme.GAP)               # ค่าขนาด (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # ขนาดของบทบาทตัวอักษรหนึ่ง ๆ
+GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox หนึ่งชิ้น</code></pre>
+
+  <h3>สี</h3>
+  <table>
+    <thead><tr><th>ชื่อ</th><th>ใช้กับอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>พื้นล่างสุดของหน้าจอ</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>พาเนลสามชั้น — พาเนล การ์ด และเซลล์ที่ยกขึ้นมา</td></tr>
+      <tr><td><code>border</code></td><td>เส้นขอบของการ์ดและปุ่ม</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>ตัวอักษรสามระดับ — เนื้อความ ข้อความประกอบ และข้อความจาง</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>สีเน้น และสีตัวอักษรที่วางอยู่บนมัน</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>สี<b>ตัวอักษร</b>สำหรับบอกสถานะ</td></tr>
+      <tr><td><code>*_fill</code></td><td>สถานะเดียวกันในรูปของ<b>สีเติม</b> — ใช้กับแถบและพื้นที่ใหญ่ ๆ</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>ม่านที่อยู่หลังป๊อปอัป เงา และรางของแถบ</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>ทำไมต้องมี <code>*_fill</code></b> ความหมายเดียวกัน แต่ความต้องการตรงข้ามกัน <code>warning</code>
+    เมื่อใช้เป็นตัวอักษรต้องเข้มพอจะอ่านออกบนพื้นสว่าง แต่เมื่อใช้เป็นสีเติมของแถบค่าประสบการณ์
+    มันต้องสว่างพอจะสะดุดตา โทเคนเดียวเป็นทั้งสองอย่างไม่ได้ — ที่ผ่านมาแถบของธีมสว่างเลยกลายเป็นสีน้ำตาล
+    ธีมที่ไม่มีตัวแปร <code>_fill</code> จะย้อนกลับไปใช้ชื่อฐานโดยอัตโนมัติ ธีมเก่าที่มีมาก่อนโทเคนพวกนี้จึงยังใช้ได้
+  </div>
+
+  <h3>ค่าขนาด (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>บทบาทของตัวอักษร</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — บทบาทหนึ่งตั้งชื่อให้ <b>ขนาด</b>
+    ไม่ใช่ตั้งชื่อให้จุดประสงค์ มันคือ "ตัวอักษรที่ใหญ่ที่สุด" ไม่ใช่ "หัวข้อ" ด้วยวิธีนี้
+    สเกลจะยังคงอยู่แม้บางหน้าจอจะเอาไปใช้กับอย่างอื่น
+  </p>
+
+  <h3>Type variation</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="skin">
+  <h2>สกิน — ที่ที่ Theme เอื้อมไม่ถึง</h2>
+
+  <table>
+    <thead><tr><th>เมธอด</th><th>กำหนดอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>หน้าของการ์ดและพาเนล พื้นผิวที่ลอยอยู่ และแคปซูลที่วางทับฉากเกมหรือแผนที่</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>พาเนลของชิป และ<b>สีข้อความที่ยังอ่านออกเมื่ออยู่บนนั้น</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>หน้าของควิกสล็อตและตัวอักษรบนมัน</td></tr>
+      <tr><td><code>disc_box</code></td><td>วงกลมที่อยู่หลังอวาตาร์หรือแบดจ์</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>กล่องแจ้งเตือนในเนื้อหา ตัวยึดที่ว่าง และคอนโทรลแบบแบ่งช่อง</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>เครื่องหมายที่ทัวร์โค้ชมาร์กวาดล้อมรอบเป้าหมาย</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td>สิ่งที่<b>วาดขึ้นตรง ๆ</b> — จอยสติ๊กและตัวชี้ของโค้ชมาร์ก</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>เส้นคั่นและหัวข้อส่วน</td></tr>
+      <tr><td><code>badge_box</code></td><td>แบดจ์บนควิกสล็อต — จำนวนและเวลาที่เหลือ</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>สีเติมของแถบ (มีเส้นขอบเมื่อสีเติมทำคอนทราสต์ 3:1 กับรางไม่ได้) และสแน็กบาร์</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # วิดเจ็ตคำนวณตำแหน่งมาให้เรียบร้อยแล้ว ตรงนี้มีแค่การวาดเท่านั้น
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>รูปทรงที่ StyleBoxFlat ทำไม่ได้</h3>
+  <table>
+    <thead><tr><th>คลาส</th><th>วาดอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>มุมตัดเฉียง ขอบเน้นสีที่หนาขึ้นหนึ่งด้าน และแสงเรืองรอบนอก</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>เครื่องหมายมุมอย่างเดียว โดยไม่ล้อมกรอบเนื้อหา</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>กรอบตีขึ้นรูป — หมุดย้ำ ลายสลักที่มุม แสงไฮไลต์ตามขอบลาด และลายเนื้อเหล็ก หนัง หรือกระดาษหนัง</td></tr>
+    </tbody>
+  </table>
+  <p>ทั้งสามคลาสซีเรียลไลซ์ลงในรีซอร์ส Theme ได้เหมือน StyleBox ตัวอื่น — นี่เองคือสิ่งที่ทำให้ธีมเปลี่ยนรูปทรงได้</p>
+
+  <div class="note warn">
+    <b>ใส่ระยะขอบในผ่าน <code>content_margin_*</code></b> การสืบทอด StyleBox ใน GDScript หมายความว่า
+    <code>_get_style_margin()</code> จะไม่ถูกเรียกเลย (วัดผลบน Godot 4.7) ให้กรอกช่องที่มีมาให้ ไม่อย่างนั้น
+    เนื้อหาจะไปแปะติดเส้นขอบ
+  </div>
+</section>
+
+<section id="own">
+  <h2>พรีเซ็ตของคุณเอง — ไฟล์เดียวจบ</h2>
+  <p class="sub">
+    เมื่อก่อนการเพิ่มธีมหนึ่งธีมหมายถึงต้องแก้ด้วยมือถึงสี่ที่ — จานสีของตัวสร้าง รูปทรง สกิน
+    และรีซอร์สพรีเซ็ต ตอนนี้คำสั่งเดียวจัดการให้ครบทุกที่
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # ไฟล์ธีม .tres + ภาพของคอนโทรล
+godot --headless --path . --import                  # อิมพอร์ตภาพใหม่หนึ่งครั้ง
+GoUi.use_preset(&amp;"neon")                             # เสร็จแล้ว — และมันโผล่ในตัวเลือกด้วย</code></pre>
+  <p>
+    บรรทัดแรกเขียนไฟล์ <code>themes/palettes/neon.json</code> และ <code>themes/presets/neon.tres</code>
+    ตัว JSON บรรจุ<b>ทุกค่าของธีมที่มันสืบทอดมา</b>ไว้อย่างละเอียดครบถ้วน มันจึงทำหน้าที่เป็นรายการของ
+    สิ่งที่คุณเปลี่ยนได้ไปในตัว: ลบคีย์ทิ้งเพื่อคงค่าของธีมแม่ หรือเขียนคีย์ลงไปเพื่อเขียนทับ พรีเซ็ตถูกค้นหา
+    ด้วยการ<b>สแกน</b>โฟลเดอร์ <code>themes/presets/</code> จึงไม่ต้องแก้โค้ดทะเบียนใด ๆ — และดรอปดาวน์
+    ในการตั้งค่าโปรเจกต์ก็มองเห็นมันเช่นกัน
+  </p>
+
+  <h3>อะไรเปลี่ยนได้บ้าง — รวมไว้ในหน้าเดียว</h3>
+  <table>
+    <thead><tr><th>ที่ไหน</th><th>อะไร</th><th>อย่างไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>ธีมแม่</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … หรือธีม JSON อื่น คีย์ที่ละไว้จะสืบทอดค่าของมัน ส่วนการสืบทอดที่วนเป็นวงจะล้มเหลว</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>พื้นหลัง · พื้นผิวสามชั้น · เส้นขอบ · ตัวอักษรสามโทน · สีเน้น · สีสถานะสี่สี · สคริม · เงา · รางของแถบ</td><td><code>"#RRGGBB"</code> ส่วนค่าอัลฟาเขียนเป็น <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>สีสดที่ใช้เติมอย่างเดียว <code>*_vivid</code></td><td>ทำให้แถบยังคงสีสดแม้สีตัวอักษรจะต้องเข้มลง ถ้าลืมใส่ตัวใดตัวสร้างจะบอกให้รู้</td></tr>
+      <tr data-group="palette"><td>ความอ่านง่าย</td><td><b>ไม่ต้องจูนด้วยมือ</b> ตัวอักษร เส้นขอบ สีเน้น และป้ายข้อความที่อยู่บนมัน ถูกตัวสร้างดันค่าจนผ่านเกณฑ์ — เปลี่ยนแค่สีเน้น การตรวจก็ยังผ่านอยู่ดี</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (มุมมน) · <code>cut</code> (มุมตัดเฉียง) · <code>medieval</code> (กรอบตีขึ้นรูป)</td></tr>
+      <tr data-group="shape"><td>ขนาดต่าง ๆ</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — โทเคนจะตามไปด้วย พาเนลกับการคำนวณของวิดเจ็ตจึงไม่มีทางขัดกัน</td></tr>
+      <tr data-group="shape"><td>เฉพาะ <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>เฉพาะ <code>medieval</code></td><td><code>material</code> (0 เหล็ก · 1 หนัง · 2 กระดาษหนัง) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> ที่จับคู่กับไฟล์ฟอนต์ <code>res://</code> ภายในแอดออน</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — ตระกูลของที่ที่โค้ดวาดเอง (จอยสติ๊ก สล็อต แบดจ์ วงแหวนโค้ชมาร์ก ชิป เส้นคั่น)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — <b>ตัวเลข</b>ของที่เหล่านั้น: ความหนาและสีอ่อนของขอบสล็อต ระยะขอบในของแบดจ์ ความทึบของชิปและกล่องแจ้งเตือน ความหนาและความทึบของวงแหวนจอยสติ๊ก ขนาดมุมตัดเฉียงแบบไซไฟ แสงเรือง และวงเล็บ</td><td>ทุกค่าของธีมแม่ถูกเขียนไว้ครบใน JSON ตัวสร้างจะเขียนมันลงใน <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>โดยไม่แตะโค้ดสกินเลย</b> จะรัน <code>--new-skin</code> ซึ่งวางโครงซับคลาส <code>GoSkin</code> ให้ ก็ต่อเมื่อคุณต้องการเปลี่ยนตัวภาพวาดเองเท่านั้น</td></tr>
+      <tr><td><code>icons</code></td><td>ชุดไอคอน</td><td>พาธแบบ <code>res://</code> ที่ชี้ไปยังรีซอร์ส <code>GoIconSet</code> — ถ้าละไว้จะรับมาจากธีม JSON แม่</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>ตัวเลือกจะแสดงมันอย่างไร</td><td>บูลีน · สตริง</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ค่าปรับทุกตัว</h3>
+  <p>
+    ตารางด้านล่างถูกเติมโดย <code>tools/make_site.py</code> <b>ตรงจากบรรทัด</b> <code>@export</code>
+    ของสคริปต์สกิน — เพิ่มค่าปรับหรือแก้ค่าเริ่มต้นแล้วตารางตามไปเอง ใช้ชื่อเหล่านี้ใต้
+    <code>skin.dials</code> ใน JSON ค่าปรับที่ค่าเริ่มต้นเขียนว่า <code>14</code> เป็นจำนวนเต็ม ส่วนที่เขียนว่า
+    <code>10.0</code> เป็นทศนิยม — เขียนแบบไหนลงใน JSON ก็ได้ ตัวสร้างจะแปลงให้ตรงกับชนิดในสคริปต์เอง
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>สกินค่าเริ่มต้น <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="ค่าเริ่มต้น">0.16</td><td>ความทึบของสีเติมในพาเนลของชิป</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="ค่าเริ่มต้น">0.45</td><td>ความทึบของขอบพาเนลของชิป</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="ค่าเริ่มต้น">0.1</td><td>พาเนลของกล่องแจ้งเตือนถูกย้อมเข้าหาสีสถานะของมันมากแค่ไหน</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="ค่าเริ่มต้น">0.24</td><td>ระดับการย้อมสีเน้นบนพาเนลของควิกสล็อตขณะที่คูลดาวน์กำลังเดิน</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="ค่าเริ่มต้น">0.08</td><td>ระดับการย้อมสีเน้นบนพาเนลของควิกสล็อตในสภาวะปกติ</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="ค่าเริ่มต้น">2</td><td>ความหนาของขอบควิกสล็อต (dp) ขณะที่คูลดาวน์กำลังเดิน</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="ค่าเริ่มต้น">1</td><td>ความหนาของขอบควิกสล็อต (dp) ในสภาวะปกติ</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="ค่าเริ่มต้น">5</td><td>ระยะขอบในแนวนอน (dp) ของแบดจ์ (จำนวน เวลาที่เหลือ)</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="ค่าเริ่มต้น">1</td><td>ระยะขอบในแนวตั้ง (dp) ของแบดจ์</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="ค่าเริ่มต้น">0.6</td><td>ความทึบของขอบพาเนลของแบดจ์</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="ค่าเริ่มต้น">0.45</td><td>ความทึบของเงาใต้การ์ดที่ลอยอยู่ (โค้ชมาร์ก พรอมต์การ์ด)</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="ค่าเริ่มต้น">14</td><td>ความฟุ้งของเงา (dp) ใต้การ์ดที่ลอยอยู่</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="ค่าเริ่มต้น">4</td><td>ระยะที่เงาของการ์ดลอยเยื้องลงล่าง (dp)</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="ค่าเริ่มต้น">10.0</td><td>ระยะแสงเรือง (dp) ของพาเนลลอยที่ใช้แสงเรืองแทนเงา เช่นพาเนลมุมตัดเฉียงแบบไซไฟ</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="ค่าเริ่มต้น">0.42</td><td>ความทึบของแผ่นวงกลมฐานของจอยสติ๊ก</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="ค่าเริ่มต้น">0.45</td><td>ความทึบของวงแหวนจอยสติ๊ก</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="ค่าเริ่มต้น">2.0</td><td>ความหนา (dp) ของวงแหวนจอยสติ๊ก</td></tr>
+    </tbody>
+  </table>
+  <h4>สกินไซไฟ <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="ค่าเริ่มต้น">7.0</td><td>ขนาดมุมตัดเฉียง (dp) ของพาเนลของชิป</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="ค่าเริ่มต้น">5.0</td><td>ขนาดมุมตัดเฉียง (dp) ของพาเนลสเกเลตัน</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="ค่าเริ่มต้น">8.0</td><td>ขนาดมุมตัดเฉียง (dp) ของกล่องแจ้งเตือน</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="ค่าเริ่มต้น">8.0</td><td>ขนาดมุมตัดเฉียง (dp) ของคอนโทรลแบบแบ่งช่อง</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="ค่าเริ่มต้น">6.0</td><td>ขนาดมุมตัดเฉียง (dp) ของพาเนลควิกสล็อต</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="ค่าเริ่มต้น">0.24</td><td>มุมตัดเฉียงของอวาตาร์และแผ่นวงกลม = เส้นผ่านศูนย์กลาง × อัตราส่วนนี้</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="ค่าเริ่มต้น">0.45</td><td>ความทึบของแสงเรืองบนสล็อตที่คูลดาวน์กำลังเดิน</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="ค่าเริ่มต้น">6.0</td><td>ระยะแสงเรือง (dp) ของสล็อตที่คูลดาวน์กำลังเดิน</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="ค่าเริ่มต้น">12.0</td><td>ความยาวแขน (dp) ของวงเล็บเล็งเป้าของโค้ชมาร์ก</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="ค่าเริ่มต้น">2.0</td><td>ความหนาของเส้น (dp) ของวงเล็บเล็งเป้าของโค้ชมาร์ก</td></tr>
+    </tbody>
+  </table>
+  <h4>สกินยุคกลาง <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="ค่าเริ่มต้น">4.0</td><td>รัศมีมุม (dp) ของกรอบควิกสล็อตแบบยุคกลาง</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="ค่าเริ่มต้น">0.035</td><td>ความทึบของรอยหนังจาง ๆ ภายในควิกสล็อต</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="ค่าเริ่มต้น">1.0</td><td>สเกลของลวดลายโลหะที่มุมของควิกสล็อต ส่วนกรอบเมนูใช้ shape.ornament_scale</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="ค่าเริ่มต้น">0.18</td><td>ความเข้มของแสงไฮไลต์โลหะตามขอบควิกสล็อต</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="ค่าเริ่มต้น">1</td><td>แสดงหมุดย้ำโลหะเล็ก ๆ บนควิกสล็อต: 0 คือซ่อน 1 คือแสดง</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>สืบทอดสกิน (ไม่บังคับ)</h3>
+  <p>สิ่งที่ธีมและรูปทรงเอื้อมไม่ถึงเท่านั้น — หกเหลี่ยมของจอยสติ๊ก แบดจ์บนสล็อต วงเล็บเล็งเป้าของ
+    โค้ชมาร์ก — ที่อยู่ในสกิน สืบทอด <code>GoSkin</code> เขียนทับเฉพาะเมธอดเหล่านั้น แล้วชี้ช่อง
+    <code>skin</code> ใน JSON ไปที่รีซอร์สนั้น ธีมที่เปลี่ยนแค่สีข้ามขั้นตอนนี้ไปได้เลย</p>
+
+  <div class="note">
+    <b>มีการตรวจสอบคอยรักษาคำมั่นนี้ไว้</b> <code>tools/check_scaffold.sh</code> สร้างธีมใช้แล้วทิ้ง
+    ขึ้นมาทุกครั้งที่รัน — เปลี่ยนสีเน้น ตั้งรัศมีเป็น 4 — แล้วตรวจการสร้าง การกระจายของโทเคน และการวัด
+    คอนทราสต์ให้ผ่านหมดก่อนจะลบมันทิ้ง การรันครั้งแรกพบว่าธีมที่เปลี่ยนแค่สีเน้นอย่างเดียวตกไปถึง
+    <b>8 คู่สี</b>: ตัวสร้างดันสีตัวอักษรให้ แต่ใช้สีเน้นตามที่เขียนมาดื้อ ๆ ตอนนี้มันดันทั้งสีเน้นและ
+    ป้ายข้อความที่อยู่บนมันด้วย
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>ความอ่านง่ายเป็นเรื่องที่วัดได้</h2>
+  <p class="sub">
+    "สวย" เป็นเรื่องรสนิยม แต่ <b>"อ่านออก" วัดได้</b> ตัวอักษรสีเทาจาง ๆ ดูดีบนจอมอนิเตอร์ดี ๆ
+    แล้วหายไปเลยบนมือถือกลางแดด — เลือกด้วยตาเปล่าเมื่อไร ก็รับประกันว่าเจอปัญหานี้เข้าสักวัน
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>อะไร</th><th>เกณฑ์ที่ต้องผ่าน</th></tr></thead>
+    <tbody>
+      <tr><td>เนื้อความ</td><td>4.5 : 1</td></tr>
+      <tr><td>ตัวอักษรขนาดใหญ่ (24px ขึ้นไป)</td><td>3 : 1</td></tr>
+      <tr><td>เส้นขอบและไอคอนที่ใช้สีเน้น</td><td>3 : 1</td></tr>
+      <tr><td>เส้นขอบเพื่อการตกแต่ง</td><td>2 : 1 — WCAG ไม่บังคับใช้กฎ 3:1 กับงานตกแต่ง</td></tr>
+      <tr><td>พื้นผิวที่อยู่ติดกัน</td><td>1.12 : 1 — พอให้การ์ดดูแยกออกจากพื้นหลังของมัน</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ตัวอักษรสีเดียวกันบนพื้นย้อมสีเดียวกัน</h3>
+  <p>
+    กับดักนี้โผล่มาแล้ว <b>สามครั้ง</b> ในโค้ดเบสนี้ — ปุ่มขณะถูกกด (พาเนลสีเน้น ป้ายข้อความสีเน้น)
+    ปุ่มอันตราย และชิป มันดูดีเวลาอยู่บนแผ่นตัวอย่างสี แล้วพังทันทีที่ถูกวัด เพราะทั้งสองใช้เฉดสีเดียวกัน
+    จึงไม่มีความต่างของความสว่างเลย
+  </p>
+  <p>
+    สีของป้ายข้อความจึง<b>ไม่ได้ถูกเลือกด้วยมือ</b> ตัวสร้างธีมและ <code>GoSkin</code> ต่างก็ดัน
+    ความสว่าง — และดันเฉพาะความสว่างเท่านั้น — จนผ่านเกณฑ์บนพาเนลที่ข้อความนั้นวางอยู่จริง
+    เฉดสีและความอิ่มตัวยังอยู่ครบ จานสีจึงรักษาบุคลิกของมันไว้ได้ และการเปลี่ยนจานสีก็ยังรักษาคอนทราสต์ไว้ได้ด้วย
+  </p>
+
+  <h3>สีที่ถูกอ่านเป็นตัวอักษรกับสีที่ถูกระบายเป็นพื้นที่ ต้องการคนละอย่าง</h3>
+  <p>
+    บนธีมสว่าง สีเตือนต้องเข้มลงเพื่อให้ยังอ่านออก<b>ในฐานะตัวอักษร</b> (<code>#96500A</code>)
+    พอสีเติมของแถบสืบทอดค่านั้นไป แถบค่าประสบการณ์ก็กลายเป็น<b>สีน้ำตาล</b> การแก้ด้วยสีอย่างเดียว
+    ไม่ได้ผล: สีเหลืองสว่างโดยธรรมชาติ มันจึงผ่าน 3:1 แม้ไม่มีรางสีเทาอยู่เลย และการทำให้รางเข้มลง
+    ยิ่ง<b>แย่กว่าเดิม</b> (1.52 → 1.06)
+  </p>
+  <p>
+    ทั้งสองอย่างจึงถูกแยกออกจากกัน <b>สียังคงความสด</b> — จานสีบรรจุสีที่ใช้เติมอย่างเดียวไว้ เช่น
+    <code>warning_vivid</code> ส่วน<b>ขอบเป็นตัวแบกคอนทราสต์</b> — <code>GoSkin</code> วาดเส้นขอบ 1dp
+    ให้กับสีเติมทุกสีที่ทำคอนทราสต์ 3:1 กับรางของมันไม่ได้ คำถามที่ว่า "เต็มแค่ไหน" จึงยังอ่านออก
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # อ่านในฐานะตัวอักษร
+    warning_vivid=hexc("F2A007"),   # ระบายลงบนแถบ
+)</code></pre>
+  <div class="note">
+    <b>ถ้าลืมใส่ ระบบจะรายงานให้ทราบ</b> เมื่อไม่มี <code>*_vivid</code> สีเติมที่ออกมาทึมจะทำให้
+    ตัวสร้างพิมพ์ข้อความ <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code>
+    (ภาษาเกาหลี: "แถบดูทึม — เพิ่ม warning_vivid ลงในจานสี") จุดที่เคยเสื่อมคุณภาพอย่างเงียบ ๆ
+    ตอนนี้พูดออกมาแล้ว
+  </div>
+
+  <h3>พาเนลที่ลอยอยู่ไม่มีทางรู้ว่าข้างหลังมันคืออะไร</h3>
+  <p>
+    HUD ถูกวาด<b>ทับ</b>ฉากเกม — อาจเป็นทุ่งหิมะ หรือถ้ำมืด ถ้าพาเนลของมันกึ่งโปร่งใส สิ่งที่อยู่ข้างหลัง
+    จะทะลุออกมาและ<b>เปลี่ยนสีของพาเนล</b> ลากคอนทราสต์ของตัวอักษรลงไปด้วย ที่ความทึบ 82%
+    ตัวอักษรโทนจางของธีมมืดตกลงไปเหลือ <code>3.74:1</code> เมื่อพื้นหลังสว่าง — ต่ำกว่าเกณฑ์ขั้นต่ำ
+  </p>
+  <p>
+    พาเนลกึ่งโปร่งใสจึงถูกวัดโดยมี<b>สีขาวล้วนและดำล้วน</b>อยู่ข้างหลัง เพราะนั่นคือสิ่งที่เลวร้ายที่สุด
+    ที่ฉากเกมจะยัดเยียดให้ได้ พาเนล HUD ของธีมที่แถมมามีความทึบมากพอจะผ่าน (92%)
+    ขณะที่ยังคงลุคใสแบบกระจกไว้
+  </p>
+  <p>
+    ด้วยเหตุผลเดียวกัน <b>สีของไอคอนก็ไม่ได้ถูกตรึงไว้เช่นกัน</b> สัญลักษณ์ในควิกสล็อตเคยถูกฮาร์ดโค้ด
+    เป็นสีขาวและวัดได้ <code>1.11:1</code> บนธีมสว่าง — ตอนนี้มันเดินตามพาเนลที่มันวางอยู่
+    เหมือนกับที่ป้ายข้อความทำเป๊ะ ๆ
+  </p>
+
+  <div class="note">
+    <b>ตัวตรวจสองตัว เอื้อมถึงคนละที่</b> <code>check_contrast.py</code> อ่านจากไฟล์ธีม
+    ส่วนสีที่สกินผสมขึ้น<b>ขณะรัน</b> (ชิป สล็อต) ถูกวัดโดยหัวข้อ <code>skin contrast</code>
+    ของชุดทดสอบที่รันอยู่ใน Godot
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">← ภาพรวม</a> · <a href="widgets.html">วิดเจ็ต →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

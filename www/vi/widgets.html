@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widget — gohud</title>
+<meta name="description" content="Toàn bộ widget của gohud — cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, coach mark, thanh HUD, ô nhanh và cần điều khiển ảo.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Tổng quan</a>
+      <a href="theming.html">Theme</a>
+      <a href="widgets.html">Widget</a>
+      <a href="#surfaces">Cửa sổ</a>
+      <a href="#messages">Thông báo</a>
+      <a href="#hud">HUD</a>
+      <a href="#factory">GoStyle</a>
+      <a href="#hooks">Hook</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Tiếng Việt</summary>
+        <div class="langs-list">
+          <a href="../widgets.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets.html" hreflang="it" lang="it">Italiano</a>
+          <a href="widgets.html" hreflang="vi" lang="vi" aria-current="true">Tiếng Việt</a>
+          <a href="../id/widgets.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Widget</h1>
+    <p class="lead">
+      Cái nào cũng là <code>.new()</code> rồi <code>add_child()</code> — không file scene, không autoload.
+      Những ghi chú gắn dấu <b>🛑</b> là các cái bẫy gặp trên màn hình thật, không phải lý thuyết.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>Cửa sổ nổi</h2>
+
+  <h3><code>GoSurface</code> — lớp vỏ</h3>
+  <p>Popup, bảng trượt và danh sách thả xuống đều dùng chung cái này. Nó lo vùng an toàn, bàn phím ảo,
+    đầu và chân trang cố định, thân cuộn được, cửa sổ nào đang ở trên cùng, việc trả focus về chỗ cũ, quyền
+    sở hữu nút Back và thao tác kéo để đổi kích thước.</p>
+  <table>
+    <thead><tr><th>Vị trí đặt</th><th>Trông như</th><th>Dùng cho</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>Một tấm thẻ ở giữa</td><td>Xác nhận, cài đặt</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>Một bảng trồi lên từ dưới</td><td>Danh sách, trang quản lý</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>Một tấm thẻ ghim bên cạnh một control</td><td>Danh sách thả xuống, menu ngữ cảnh</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Nó không tự gỡ mình đi.</b> Phản ứng với <code>close_requested</code> — ẩn đi hay giải phóng — là việc
+    của màn hình sở hữu nó, vì lớp vỏ không thể biết <i>vì sao</i> nó đang đóng (lưu rồi đóng, hay bỏ luôn).
+  </div>
+
+  <h3><code>GoSheet</code> — một trang trồi lên từ đáy</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Túi đồ")
+sheet.toolbar().add_child(GoStyle.line_edit("Tìm kiếm…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Đóng", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>Nó sở hữu một <code>CanvasLayer</code> nên chắc chắn nằm trên HUD. <code>open()</code> dọn sạch
+    phần thân và <b>tắt</b> nút Back cùng các hàng cố định — một cái nút chết trên màn hình không có chỗ nào để
+    quay về thì người ta đọc ra là hỏng.</p>
+
+  <h3><code>GoDialogs</code> — hộp thoại xác nhận mà bạn <code>await</code></h3>
+  <pre><code>if await dialogs.confirm("Xóa bản lưu", "Thao tác này không thể hoàn tác."):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — mọi thứ sau phần thân đều
+    tùy chọn, và <code>alert()</code> cũng vậy nhưng chỉ có một nút. Hãy đặt <code>destructive</code> cho
+    thao tác không thể hoàn tác: nút xác nhận trở thành nút tô đặc <code>GoStyle.Tone.DANGER_SOLID</code>.
+    Trên theme sáng, một nhãn nguy hiểm chỉ pha màu buộc phải tối đi đến mức đọc ra thành chữ đen; nút tô đặc thì
+    giữ chữ trắng trên nền đỏ. Sắc thái được áp lại ở mỗi lần gọi vì chỉ một cửa sổ được tái sử dụng, và một lần
+    <code>confirm()</code> thứ hai trong lúc cái trước còn mở sẽ trả về <code>false</code> ngay. <code>confirm_key()</code>
+    nhận khóa dịch.</p>
+  <p><b>Bố cục nút.</b> <code>action_layout</code> mặc định là <code>VERTICAL</code> (an toàn cho những bản dịch dài),
+    <code>HORIZONTAL</code> cho một hàng chia đôi bề ngang, hoặc <code>AUTO</code> — chỉ dùng một hàng khi cả hai
+    nhãn vừa đúng nửa tấm thẻ trên một dòng, còn không thì xếp chồng. <code>action_gap</code> là khoảng cách giữa
+    các nút và <code>body_gap</code> là khoảng trống phía trên chúng — hãy để nó rộng hơn khoảng cách giữa các nút để
+    câu hỏi và lựa chọn đọc ra thành hai phần. Nếu chỉ muốn áp cho một hộp thoại, hãy gọi
+    <code>set_next_action_layout()</code> trước khi mở nó. Hàng nút được dựng khi hộp thoại mở lần đầu, nên một
+    <code>GoDialogs</code> nạp bằng autoload không thêm gì vào lúc khởi động.</p>
+
+  <h3><code>GoForm</code> — biểu mẫu giới hạn bề ngang</h3>
+  <div class="note warn">
+    <b>Nó bảo đảm mọi nhãn con cháu đều xuống dòng.</b> Không có điều đó, một câu dài sẽ kéo thành
+    một dòng duy nhất có bề rộng tối thiểu vượt quá màn hình, rồi hai bên bị cắt cụt — đến mức bạn không
+    còn nhận ra mình đang ở màn hình nào. Bật xuống dòng bằng tay cho từng scene thì lần nào cũng quên.
+  </div>
+
+  <h3><code>GoScroll</code> — cuộn bằng ngón tay</h3>
+  <p>Chỉ đặt <b>một</b> thứ vào bên trong. Phần đầu trang và hàng nút thì để bên ngoài — một danh sách dài
+    không được phép đẩy chúng ra khỏi màn hình. <code>use_panel_edge()</code> dời thanh cuộn vào phần đệm
+    sẵn có của tấm thẻ mà nội dung vẫn giữ nguyên lề thụt.</p>
+</section>
+
+<section id="messages">
+  <h2>Nói cho người chơi biết một điều gì đó</h2>
+
+  <h3><code>GoNotice</code> — snackbar</h3>
+  <div class="note warn">
+    <b>Nó không bao giờ chặn thao tác.</b> Một thông báo là để đọc chứ không phải để bấm. Nó không lấy focus,
+    không chặn thao tác trong game, và cái nút nằm dưới nó vẫn bấm được. Khi cần xác nhận thì dùng
+    <code>GoDialogs</code>; khi cần một lựa chọn thì dùng <code>GoPromptCard</code>.
+  </div>
+
+  <h3><code>GoPromptCard</code> — câu hỏi không chặn game</h3>
+  <p>Nổi ở một bên và không có lớp phủ mờ. Game vẫn chạy tiếp.</p>
+
+  <h3><code>GoCoachMark</code> — chuyến tham quan có hướng dẫn</h3>
+  <p>Chỉ vào từng control thật một. Chỉ tấm thẻ mới nhận thao tác, nên <b>bấm thẳng vào chính control đang
+    được làm nổi là sang bước kế</b> — "bấm vào đây" trở thành một hành động chứ không còn là một câu chữ.</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "Túi", "body": "Mọi thứ bạn nhặt được đều nằm ở đây."},
+    {"target": map_button, "title": "Bản đồ", "body": "Bấm để mở bản đồ đầy đủ."},
+])</code></pre>
+  <p><code>title</code> và <code>body</code> có thể là khóa dịch hoặc chữ thường. Bước nào có mục tiêu
+    đã biến mất thì được bỏ qua.</p>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>Những thứ nhỏ mới quyết định nó có đẹp hay không</h3>
+  <p>
+    Bạn có gọt giũa các tấm nền lớn đến đâu đi nữa — thứ đập vào mắt luôn là một chi tiết nhỏ: một từ bị
+    cắt làm đôi, một vệt sáng bị xén mất, một cái ô chật chội. Bốn chuyện như vậy được chỉ ra vào 2026-09-13 và
+    đã sửa ngay trong widget và theme, không sửa ở màn hình demo, nên mọi màn hình đều được kết quả như nhau.
+  </p>
+  <table>
+    <thead><tr><th>Hiện tượng</th><th>Nguyên nhân</th><th>Cách sửa</th></tr></thead>
+    <tbody>
+      <tr><td>Chữ <code>Done</code> trên coach mark thành <code>Don</code>/<code>e</code></td>
+          <td>Một cái nút đang bật xuống dòng sẽ <b>trừ bề rộng chữ của nó</b> khỏi bề rộng tối thiểu — bóp lại là nó gãy ngay giữa từ</td>
+          <td><code>GoStyle.fit_words()</code>: một từ thì không bao giờ xuống dòng; nhiều từ thì xuống dòng, nhưng <b>từ dài nhất</b> luôn vừa — xét trên chữ <b>được hiển thị</b> chứ không phải khóa dịch, và biểu mẫu áp lại khi đổi ngôn ngữ</td></tr>
+      <tr><td>Vệt sáng của một nút rộng hết khung bị cắt dọc ở cạnh trái</td>
+          <td>Một container cuộn thì cắt ở mép của nó, không có ngoại lệ. Chỉ bên phải sống sót, nhờ khoảng chừa cho thanh cuộn</td>
+          <td><code>GoScroll</code> mượn phần đệm của cha để đẩy mép của nó ra 12dp rồi trả lại vào trong — <b>nội dung không xê dịch</b></td></tr>
+      <tr><td>Thời gian, biểu tượng và số lượng xếp chồng theo chiều dọc trong một ô</td>
+          <td>Ba hàng nhồi trong 48dp</td>
+          <td>Biểu tượng to ở giữa, phím tắt góc trên bên trái, số lượng là một <b>badge</b> ở góc dưới bên phải, thời gian còn lại là một badge đè lên biểu tượng — tấm nền của badge lấy từ <code>badge_box()</code> của skin</td></tr>
+      <tr><td>Một danh sách thả xuống phẳng lì, không thấy mục nào đang chọn</td>
+          <td>Mục đang rê chuột dùng tấm nền của nút; dấu chọn tròn là mặc định nhợt nhạt của engine</td>
+          <td>Một tấm nền rê chuột riêng (pha nhẹ màu nhấn), dấu chọn tròn vẽ giống hộp kiểm, chiều cao mỗi mục đủ cho ngón tay</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Một danh sách thả xuống đang mở — tấm nền rê chuột pha nhẹ màu nhấn và dấu chọn tròn của mục đã chọn" loading="lazy">
+      <figcaption>Danh sách thả xuống — tấm nền rê chuột và dấu chọn tròn</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Bốn ô nhanh — phím tắt góc trên bên trái, badge số lượng góc dưới bên phải, ô đầu tiên có badge thời gian còn lại" loading="lazy">
+      <figcaption>Ô nhanh — badge ở góc và thời gian còn lại (sci-fi)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Hãy cho những nút chỉ có biểu tượng một lời mô tả bằng <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    tooltip cho người dùng chuột và tên dành cho trình đọc màn hình đều lấy từ đúng một giá trị đó.
+    gohud tự vẽ tooltip: bản mặc định của engine cắt chữ thành <b>mỗi dòng một ký tự</b> khi
+    phép tính bề rộng của nó sai (đo được là rộng 1dp).
+  </p>
+
+  <h4>Thẻ coach mark biết tránh các vật cố định</h4>
+  <p>
+    Khi màn hình nằm ngang, tấm thẻ trước đây bị đẩy ra sát mép trên hoặc mép dưới — đúng chỗ phần đầu trang và các
+    mảnh HUD ngồi; trong bản demo nó đè lên cụm <code>→ ×</code> của đầu trang. Giờ nó giữ ngang tầm với mục tiêu,
+    bước tránh mọi <code>GoHudAnchor</code> có giữ chỗ, và nhận thêm những thứ khác cần né qua
+    <code>keep_clear</code>. Nó dịch đi quãng ngắn nhất đủ thoát vật cản mà không che mất mục tiêu, và đứng
+    yên khi màn hình quá nhỏ để né hết — chồng lên nhau vẫn hơn biến mất.
+    Chiều sâu của nó — để đọc ra là <b>nổi trên</b> trang — đến từ các núm chỉnh của skin
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; skin vát góc thì dùng <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # các vật cố định không phải là anchor</code></pre>
+
+  <h3>Màn hình có chuột và bàn phím</h3>
+  <p>
+    Ngón tay thì <b>không có trạng thái rê chuột.</b> Chỉ làm cho di động thôi là hai trạng thái riêng của máy để bàn
+    chẳng ai kiểm — và một trong hai đã hỏng: <b>vòng focus của gohud vô hình trên nút chính.</b> Tấm nền
+    mang màu nhấn còn vòng focus cũng vậy: <code>1.00:1</code>, cùng một màu vẽ chồng lên chính nó. Di chuyển
+    bằng bàn phím thì không cách nào biết mình đang ở đâu.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="Vẫn hàng nút đó ở ba trạng thái — bình thường, rê chuột, focus bàn phím" loading="lazy">
+    <figcaption>Từ trên xuống: <b>bình thường · rê chuột · focus</b>. Nút tô đặc nhận một vòng focus tương phản với tấm nền của nó.</figcaption>
+  </figure>
+  <p>
+    Nút tô đặc (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) dùng một vòng focus
+    <b>tương phản với chính tấm nền của nó</b> — tối trên theme tối, trắng trên theme sáng, một khung ngắm góc
+    tối ở bản sci-fi. Bộ kiểm tra tương phản đo <b>vòng focus so với tấm nền nó nằm lên</b>, nên
+    quy tắc này sống sót qua một lần đổi bảng màu (WCAG 2.4.11 yêu cầu 3:1 cho chỉ báo focus).
+  </p>
+
+  <h3><code>GoHudAnchor</code> — chín vị trí</h3>
+  <p>Tôn trọng vùng an toàn và lề mép màn hình. Cho nó một <code>landscape_spot</code> thì nó đổi chỗ khi màn hình
+    nằm ngang — những control nằm giữa đáy lúc màn hình dọc có thể dời sang góc dưới bên phải.</p>
+  <div class="note">
+    <b>Vì sao có nó.</b> Viết tay cho từng mảnh HUD thì anchor và offset sẽ lệch dần: thanh máu chui
+    xuống dưới lỗ khoét camera trên máy có tai thỏ, còn một nút điều khiển thì rơi vào thanh cử chỉ khi màn hình
+    nằm ngang. Phép tính đó nằm gọn ở một chỗ.
+  </div>
+
+  <h4>Giữ cho nội dung không chui xuống dưới HUD</h4>
+  <p>
+    Khi một màn hình cuộn được phải chia màn hình với HUD, nội dung trượt <b>xuống bên dưới nó</b> và
+    hai lớp chữ chồng lên nhau đến mức chẳng đọc nổi bên nào. Chuyện đó đã xảy ra hai lần trong add-on này: chữ gợi ý
+    của một ô nhập bị kẹt giữa các ô nhanh, và núm của một công tắc trong phần cài đặt rơi trúng thanh máu.
+  </p>
+  <pre><code>form.avoid_hud = true                  # tránh mọi GoHudAnchor đang hiện
+joystick_anchor.reserve_space = false  # …trừ những cái chỉ hiện ra dưới ngón tay</code></pre>
+  <p>
+    Mỗi hình chữ nhật được né theo hướng <b>tốn ít diện tích nhất</b>. Một thanh ở góc trên bên phải thì
+    được bước tránh xuống dưới trên điện thoại dọc (13% chiều cao) và sang ngang khi nằm ngang (21% chiều
+    rộng) — né nó theo chiều dọc lúc nằm ngang sẽ tốn 27% màn hình. Phần đất đã nhường rồi thì được trừ ra
+    trước khi đo tới hình chữ nhật kế tiếp.
+  </p>
+
+  <h4>Các mảnh HUD cũng va vào nhau</h4>
+  <p>
+    Chín vị trí chia màn hình ra; chúng không bảo đảm các mảnh <b>không đụng nhau</b>. Một snackbar rộng
+    ở giữa mép trên đã đáp thẳng lên thanh máu ở góc trên bên phải, che mất con số — bạn không đọc nổi
+    mình còn bao nhiêu máu.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # nằm xuống dưới HUD cố định
+notice_anchor.reserve_space = false   # và không đẩy trang trong lúc nó đang hiện</code></pre>
+  <p>
+    Nó chỉ bước tránh <b>theo chiều dọc</b> — dịch cả sang ngang nữa thì một thông báo canh giữa sẽ hiện ra
+    ở một chỗ khác nhau mỗi lần. Và nó chỉ né những mảnh <b>không</b> tự bước tránh: nếu cả hai
+    cùng nhường, hai bên sẽ đổi chỗ cho nhau mãi mãi.
+  </p>
+
+  <h3><code>GoBar</code> — máu, mana, kinh nghiệm</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token chỉ dùng để tô
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Thay đổi chạy mượt trong 0,18 giây — một thanh máu nhảy phắt một cái thì không cho bạn biết cú đánh vừa rồi
+    nặng đến đâu. <code>reduce_motion</code> làm nó đổi tức thì. Số lớn được rút gọn thành <code>12.3k</code> để
+    bề rộng của thanh không giật lên giật xuống theo số chữ số.</p>
+
+  <h3><code>GoSlot</code> — một ô nhanh</h3>
+  <p>Biểu tượng, số lượng, hồi chiêu và phím tắt trên <b>cùng một mặt</b>. Treo badge lủng lẳng quanh một
+    vòng tròn nhỏ sẽ làm mỗi ô một bề rộng khác nhau và cả hàng lắc lư.</p>
+  <div class="note">
+    <b>Cỡ nhìn thấy và cỡ chạm là hai thứ khác nhau.</b> Các ô xếp sát nhau có vùng chạm 48dp chồng lên nhau;
+    phần chồng lấn thuộc về <b>ô nào có tâm gần hơn</b> — hãy cho chúng biết về nhau qua
+    <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> mặc định tắt, nên một hàng tám ô nhanh không chen giữa người dùng bàn phím và
+    mọi control cài đặt trong thứ tự Tab. Hãy bật nó khi bàn phím hoặc tay cầm là cách nhập liệu duy nhất.</p>
+
+  <h3><code>GoJoystick</code> — cần điều khiển ảo</h3>
+  <table>
+    <thead><tr><th>Chế độ</th><th>Hành vi</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Luôn ở đúng một chỗ — dễ tìm mà không cần nhìn</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Hiện ra ngay nơi ngón cái chạm xuống</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Sau khi hiện ra thì tiếp tục đi theo ngón cái — thoải mái cho những đoạn di chuyển dài</td></tr>
+    </tbody>
+  </table>
+  <p><code>Vector2</code> mà tín hiệu <code>moved</code> trả về có độ dài từ 0 đến 1, nên bạn nhân thẳng nó
+    vào tốc độ được; nó không đổi theo kích thước màn hình hay DPI.</p>
+
+  <h3><code>GoIconButton</code> — trông nhỏ, bấm rộng</h3>
+  <div class="note warn">
+    <b>Chỉ an toàn khi các nút bên cạnh bỏ qua thao tác.</b> Nếu vùng đã nới rộng phủ lên nút kế bên, nút đó
+    sẽ không còn phản hồi. Các nút biểu tượng đặt sát nhau cần <code>touch_peers</code>.
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — một chỗ duy nhất để tạo ra mọi thứ</h2>
+  <p class="sub">
+    Gọi thẳng <code>Button.new()</code> thì phần đệm, chiều cao và cách xuống dòng sẽ lệch nhau chút ít giữa các
+    màn hình. Chỗ lệch đó vô hình khi review code và lộ rõ trong một tấm ảnh chụp màn hình.
+  </p>
+
+  <table>
+    <thead><tr><th>Nhóm</th><th>Hàm</th></tr></thead>
+    <tbody>
+      <tr><td>Cấu trúc</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Văn bản</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Nút</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>Nhập liệu</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>Hiển thị</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>Mảnh của lớp nổi</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>Tiện ích</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> luôn trả về một <code>StyleBoxFlat</code></b>, vì phía gọi nhận nó rồi
+    chỉnh <code>bg_color</code> hoặc <code>corner_radius</code>. Hãy dùng <code>surface()</code> khi cần giữ
+    nguyên một hình dáng tùy biến.
+  </div>
+
+  <h3>Hàng danh sách có dòng mô tả</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Kiếm Thề Nguyện", _inspect, Color.TRANSPARENT,
+    "Trường kiếm  /  Tấn công 42", false)</code></pre>
+  <p>Một hàng có dòng thứ hai được cấp <b>phần đệm trên và dưới bằng nhau</b>, rộng rãi hơn hàng một dòng, và cặp
+    tiêu đề/mô tả luôn <b>canh giữa theo chiều dọc</b> bên cạnh biểu tượng — kể cả khi một container kéo hàng đó cao
+    lên, và cả sau khi dòng mô tả xuống thành nhiều dòng. Cả hàng vẫn là một vùng chạm duy nhất.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="Ví dụ medieval_light — hàng danh sách hai dòng, ô nhanh và các thanh" loading="lazy">
+    <figcaption>Hàng hai dòng, ô nhanh và các thanh trong ví dụ trung cổ — vẫn những lệnh gọi factory đó dưới <code>medieval_light</code>.</figcaption>
+  </figure>
+
+  <h3>Hàng tự xuống dòng</h3>
+  <p>Hãy đặt các control vào <code>wrap_row</code> ở <b>bề rộng tự nhiên</b> của chúng. Nếu cứ để bật xuống dòng, bề rộng
+    tối thiểu của một cái nút tụt xuống gần như bằng không và hàng lấy đó làm cỡ ô — nhãn co lại thành mỗi dòng một ký tự.
+    Factory ngăn chuyện này giúp bạn.</p>
+
+  <h3>Đừng bao giờ để một danh sách rỗng trống trơn</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Chưa có gì ở đây"))</code></pre>
+  <p>Người ta đọc một màn hình trắng trơn ra là <b>hỏng</b>.</p>
+</section>
+
+<section id="hooks">
+  <h2>Hook để kế thừa</h2>
+  <p class="sub">
+    Mọi chỗ dựng ra một widget con đều đi qua một phương thức ghi đè được, nên một dự án có kế thừa các kiểu
+    của gohud sẽ đưa được lớp con của mình vào <b>bên trong</b> các widget mà không phải chép code.
+  </p>
+  <table>
+    <thead><tr><th>Hook</th><th>Widget</th><th>Mặc định</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Ẩn tấm thẻ trong lúc một cửa sổ modal đang mở</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← Theme</a> · <a href="./">Tổng quan →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>
