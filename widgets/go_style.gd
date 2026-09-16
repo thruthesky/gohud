@@ -1234,10 +1234,33 @@ static func face_insets(face: StyleBox, left := -1.0, top := -1.0, right := -1.0
 ## [param edge_width] 0 이면 테두리 없음(맨 판) · [param edge_ink] 테두리 색 ·
 ## [param detail] 모서리 곡선 분할. 기본 1 은 **모서리마다 삼각형 팬을 만들지 않는다** — 화면에 스무 개씩
 ## 깔리는 버튼이라 그 비용이 그대로 곱해진다. 큰 원을 매끄럽게 그려야 하면 8·16 을 준다.
+## [param accent] 는 이 버튼의 강조색 — 각진·중세 스킨이 판을 그릴 때 쓴다(둥근 스킨은 쓰지 않는다).
+##
+## 🔑 **모양을 정하는 것은 스킨이다**(`GoSkin.disc_box`) — 둥근 스킨은 원, 각진 스킨은 잘린 모서리,
+##    중세 스킨은 그 스킨의 판을 준다. 종전에는 여기서 `box()` 를 불렀는데, 그 반환형이 `StyleBoxFlat`
+##    이라 **각진 판이 평판으로 갈려** 생김새를 갈아도 HUD 버튼만 늘 둥글었다(2026-09-16 실측: 세
+##    생김새의 판이 모두 `StyleBoxFlat` 으로 같았다).
+## 🔑 **돌려주는 판을 보면 스킨이 원인지 알 수 있다** — 평판이면 원, 아니면 스킨이 모양을 가진 판이다.
+##    호스트가 원 위에만 얹는 그림(그라디언트 원판)을 가졌다면 이 값으로 켜고 끈다.
 static func style_hud_disc(node: Control, diameter: float, edge_width := 0.0,
-		edge_ink := Color.TRANSPARENT, fill := Color.TRANSPARENT, detail := 1) -> void:
-	if node == null: return
-	var face := box(GoTheme.BOX_HUD)
+		edge_ink := Color.TRANSPARENT, fill := Color.TRANSPARENT, detail := 1,
+		accent := Color.TRANSPARENT) -> StyleBox:
+	if node == null: return null
+	# 🛑 강조색이 없는 버튼(맨 판)에도 **볼 수 있는 바탕**을 줘야 한다 — 각진 스킨은 채움을 강조색에서
+	#    만들기 때문에, 투명을 넘기면 판이 통째로 사라져 월드 위에 글리프만 뜬다.
+	var ink := accent if accent.a > 0.0 else (edge_ink if edge_ink.a > 0.0 else GoUi.color(GoTheme.SURFACE))
+	var shaped := GoUi.skin().disc_box(diameter, ink)
+	var face := shaped as StyleBoxFlat
+	if face == null:
+		# 스킨이 제 모양을 가진 판(각진·중세) — 모양과 채움은 그대로 두고, 호스트가 준 것만 얹는다.
+		if fill.a > 0.0 and &"bg_color" in shaped: shaped.set(&"bg_color", fill)
+		# 🛑 테두리는 **0 도 값이다** — 안 넘기면 스킨 기본 테두리가 남아, 테두리를 일부러 뺀 맨 버튼에
+		#    선이 생긴다(2026-08-07 사용자가 원·테두리 프레임을 명시적으로 배제했다).
+		if &"border_width" in shaped: shaped.set(&"border_width", maxf(0.0, edge_width))
+		if edge_width > 0.0 and edge_ink.a > 0.0 and &"border_color" in shaped:
+			shaped.set(&"border_color", edge_ink)
+		node.add_theme_stylebox_override(&"panel", shaped)
+		return shaped
 	face.set_content_margin_all(0)
 	face.bg_color = fill
 	face.draw_center = fill.a > 0.0
@@ -1249,6 +1272,7 @@ static func style_hud_disc(node: Control, diameter: float, edge_width := 0.0,
 	# 🛑 그림자를 그리지 않는다 — `StyleBoxFlat` 의 그림자는 본체와 **별개의 사각형**을 더 그린다.
 	face.shadow_size = 0
 	node.add_theme_stylebox_override(&"panel", face)
+	return face
 
 
 ## 🔑 **퀵슬롯 판을 노드에 입힌다** — `GoSlot` 을 쓰지 않고 자기 슬롯을 만든 호스트(칸 안의 줄 구성이 다른

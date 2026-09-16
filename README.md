@@ -476,6 +476,44 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoFeedback` | static | Sound and haptic routing |
 | `GoBackPolicy` | static | Shared ownership of Android Back |
 
+### Waiting, telling, counting
+
+| Class | Base | Purpose |
+|---|---|---|
+| `GoSnackbar` | Node | A message at the bottom of the screen, on its own layer. It queues, merges a repeat of the same text into a counter, dodges the safe area and the keyboard, and can carry buttons — `await post()` returns the index of the one that was pressed, or `-1` when it expired. With no buttons it takes no input at all |
+| `GoSpinner` | Control | An indeterminate wait. `GoSpinner.busy(button, true)` turns a button into a spinner **in place**: same size, disabled, and the label comes back on `false` — so a slow request cannot be fired twice |
+| `GoBadge` | PanelContainer | The unread dot, the `NEW` tag and the `99+`. `attach()` hangs it half off the top-right corner of any control through anchors, so it follows when that control moves or resizes; `0` hides it |
+
+### Forms and lists
+
+| Class | Base | Purpose |
+|---|---|---|
+| `GoField` | VBoxContainer | Label, control, hint — and per-field errors. `set_error()` marks the box, says what is wrong under it, and makes that error the control's accessible description; the label and hint stay translated while the error does not (a server message is not a key) |
+| `GoInputGroup` | HBoxContainer | An input and its buttons welded into one shape — search with a leading icon, a message row with Send, a quantity with − and +. The parts share one border and one focus ring |
+| `GoCombobox` | Button | A picker that **searches inside** names, not just from their start, so "sword" finds "Rusty sword". Opens a `GoSurface` anchored to itself, keeps the chosen row highlighted, and falls back to a plain list when there are few items |
+| `GoCodeInput` | VBoxContainer | Coupon and gift codes as separate cells. One hidden `LineEdit` holds the text so paste, autofill and an IME all keep working — the cells are drawn, not typed into. Cells wrap instead of overflowing on a phone |
+| `GoTable` | VBoxContainer | Sortable headers and selectable rows. **Numbers sort as numbers** (a column of `2, 10` does not become `10, 2`), the sorted header shows its direction in a glyph as well as in colour, and rows keep a 48 dp touch height |
+| `GoPagination` | HBoxContainer | Numbered pages that keep the current one centred with ellipses at the ends, or — with `mode = MORE` — a single *Load more* row, which is what a phone list actually wants |
+
+### Shapes games actually use
+
+| Class | Base | Purpose |
+|---|---|---|
+| `GoRewardCalendar` | VBoxContainer | Daily attendance: claimed, today, and still to come. Only today can be pressed, the streak is drawn as a run, and each day's state is spoken, not just coloured |
+| `GoRadar` | Control | The stat pentagon — strength, agility, intellect, vitality, luck in one shape. `set_compare()` overlays a **dashed** second line for the gear you are about to equip (dashed, so colour-blind players still see two lines) |
+| `GoDonut` | Control | Damage share, currency splits, party contribution. Beyond `collapse_to` slices the rest is merged into one, the centre carries the total, and `legend()` says every slice in words as well as in colour |
+| `GoCarousel` | VBoxContainer | Event banners and character select. It **never moves on its own** — an auto-advancing banner steals the tap the player was aiming at; dots are pressable and the page is announced |
+| `GoKbd` | HBoxContainer | Key caps for hints. `GoKbd.for_action(&"interact")` reads the real binding from the InputMap, so remapping a key changes the hint too, and `hide_on_touch` keeps it off phones |
+
+### Over the screen
+
+| Class | Base | Purpose |
+|---|---|---|
+| `GoDrawer` | CanvasLayer | A panel that slides in from either side, for screens wider than a phone. It respects the safe area, closes on Back and on the scrim, and mirrors itself in RTL |
+| `GoPopover` | RefCounted | An info card beside the thing you pressed — the item tooltip, the "what is this stat" card. One at a time, flips to the other side when it would go off-screen, and follows its anchor on resize |
+| `GoContextMenu` | RefCounted | Long-press (0.5 s) or right-click on any control. A finger that moves more than 12 dp cancels it, so a long list still scrolls |
+| `GoConsole` | CanvasLayer | The developer console: registered commands, arguments, history and completion. `allow_in_release` defaults to `false`, so it cannot open in a shipped build |
+
 ### Subclass hooks
 
 Every widget that builds child widgets does so through an overridable method, so a host that
