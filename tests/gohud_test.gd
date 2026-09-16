@@ -2144,8 +2144,9 @@ func _widgets() -> void:
 	GoStyle.style_chip_button(filled_button, pick_ink, 0.85)
 	check(chip_button.mouse_filter == Control.MOUSE_FILTER_STOP
 		and chip_button.get_theme_stylebox(&"normal") != null and chip_button.get_theme_stylebox(&"disabled") != null
-		and not chip_button.has_theme_stylebox_override(&"focus"),
-		"style_chip_button: 상태 판을 입히고 mouse_filter·포커스 판은 건드리지 않는다")
+		and not chip_button.has_theme_stylebox_override(&"focus")
+		and chip_button.has_theme_color_override(&"font_color") and chip_button.has_theme_color_override(&"font_hover_color"),
+		"style_chip_button: 상태 판·판 위에서 읽히는 글자색을 입히고 mouse_filter·포커스 판은 건드리지 않는다")
 	check(GoSkin.box_background(filled_button.get_theme_stylebox(&"normal")).a
 		> GoSkin.box_background(chip_button.get_theme_stylebox(&"normal")).a,
 		"style_chip_button(filled): 의미색으로 채운다")

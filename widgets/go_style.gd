@@ -800,10 +800,16 @@ static func restyle_chip(node: PanelContainer, ink: Color, urgent := false) -> v
 ## 🛑 `mouse_filter` 를 건드리지 않는다 — HUD 위 버튼은 STOP 이어야 누른 이벤트가 월드로 새지 않는다.
 static func style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, urgent := false) -> void:
 	node.theme = GoUi.theme()
+	var face_ink := accent
 	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
 		var face := _chip_face(accent, urgent)
 		if fill_alpha >= 0.0 and &"bg_color" in face: face.set(&"bg_color", Color(accent, fill_alpha))
+		if state == &"normal": face_ink = GoUi.skin().readable_on(accent, GoSkin.blend(GoSkin.box_background(face), GoUi.color(GoTheme.SURFACE)))
 		node.add_theme_stylebox_override(state, face)
+	# 🛑 글자는 **칩 판 위에서** 읽혀야 한다 — 같은 색 틴트 위에 같은 색 글자를 얹는 전형적인 자리다(`chip()` 과 같은 규칙).
+	#    채운 판에서는 이 값이 어두운 쪽으로 간다.
+	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
+		node.add_theme_color_override(key, face_ink)
 
 
 ## 아무것도 없을 때 보여 주는 자리 — 아이콘 + 한 줄 설명.
