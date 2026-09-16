@@ -229,6 +229,16 @@ GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox ห�
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">ความทึบของพาเนล (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — หน้าของคอนเทนเนอร์ทึบแค่ไหน ค่าเริ่มต้นคือ <b>80</b> เกมจึงยังมองเห็นได้
+    อยู่หลังไดอะล็อก ส่วน <code>popup_alpha</code> เป็น 100 ธีมที่ไม่มีโทเคนเหล่านี้จะย้อนกลับไปใช้ 100
+    และวาดออกมาเหมือนเดิมทุกประการ อ่านค่าที่คำนวณแล้วในรูป<b>อัตราส่วน</b>ได้ด้วย
+    <code>GoUi.surface_alpha(variant)</code> กฎทั้งหมดอยู่ในหัวข้อ
+    <a href="#opacity">ความทึบ — เกมที่อยู่หลังพาเนล</a>
+  </p>
+
   <h3 id="text-roles">บทบาทของตัวอักษร</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -243,6 +253,129 @@ GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox ห�
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
     <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>ความทึบ — เกมที่อยู่หลังพาเนล</h2>
+  <p class="sub">
+    ป๊อปอัป ไดอะล็อก ชีต การ์ด พาเนล HUD กล่องแจ้งเตือน และสแน็กบาร์ วาดหน้าของมันที่<b>ความทึบ 80%</b>
+    การต่อสู้ยังดำเนินต่อไปหลังไดอะล็อกยืนยัน แผนที่ยังเห็นได้ใต้ชีตกระเป๋าของ ในเกมนี่ไม่ใช่การตกแต่ง —
+    มันคือสิ่งที่ทำให้ผู้เล่นไม่หลงทิศ พาเนลทึบตันลบที่ที่เขายืนอยู่ทิ้งทันทีที่หน้าต่างเปิดขึ้น
+  </p>
+
+  <div class="note">
+    <b>จางลงแค่หน้าของมันเท่านั้น</b> ตัวอักษร ไอคอน ปุ่ม แบดจ์ และควิกสล็อตยังคมชัด เส้นขอบและเงาก็เช่นกัน
+    พาเนลกึ่งโปร่งใสจะอ่านออกว่าเป็นกระจกก็ต่อเมื่อเส้นรอบรูปของมันยังคม ทำให้เส้นขอบจางลงเมื่อไร
+    ก็บอกไม่ได้ว่าพาเนลจบตรงไหน ทำให้เนื้อหาจางลง UI ก็อ่านไม่ออกเลย — นั่นไม่ใช่หน้าต่างโปร่งใส
+    นั่นคือบั๊ก นี่คือเหตุผลที่ค่านี้ไม่เคยถูกใส่ผ่าน
+    <code>modulate.a</code>
+  </div>
+
+  <h3 id="five-layers-most-specific-first">ห้าชั้น เริ่มจากที่เจาะจงที่สุด</h3>
+  <table>
+    <thead><tr><th>ลำดับ</th><th>อยู่ที่ไหน</th><th>หน่วย</th><th>มีผลถึงไหน</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>อาร์กิวเมนต์ ณ จุดที่เรียก — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>อัตราส่วน <code>0.0–1.0</code></td><td>หน้าต่างเดียว</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>เปอร์เซ็นต์ <code>0–100</code></td><td>พาเนลชนิดเดียว ทั่วทั้งโปรเจกต์</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>เปอร์เซ็นต์</td><td>โปรเจกต์ที่เก็บค่าขนาดทุกตัวไว้ที่เดียว</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>เปอร์เซ็นต์</td><td>พาเนลทุกอันพร้อมกัน</td></tr>
+      <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> ของธีม</td><td>เปอร์เซ็นต์</td><td>สิ่งที่ลุคเป็นผู้กำหนด — <b>แหล่งความจริง</b></td></tr>
+    </tbody>
+  </table>
+  <p>ถ้าไม่ได้ตั้งสักชั้นเลย ค่าจะเป็น 100 ธีมเก่าจึงไม่มีอะไรเปลี่ยน</p>
+
+  <div class="note">
+    <b>การตั้งค่ารับเป็นเปอร์เซ็นต์ โค้ดรับเป็นอัตราส่วน</b> คนละชั้น คนละหน่วย — ช่องในเอดิเตอร์ต้องการ
+    จำนวนเต็ม (ค่าคงที่ของ <code>Theme</code> เก็บทศนิยมไม่ได้) ส่วนอัลฟาของสีใน StyleBox เป็นอัตราส่วน
+    เขียน <code>0.8</code> ลงในช่องคอนฟิกจะถูกตัดเหลือ <code>0</code> แล้ว
+    <b>พาเนลจะหายไป</b> ในการตั้งค่าคือ <code>80</code> ในโค้ดคือ <code>0.8</code>
+  </div>
+
+  <pre><code># หน้าต่างเดียวเท่านั้น — ไดอะล็อกยืนยันที่ต้องไม่บังการต่อสู้ที่อยู่ข้างหลัง
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export จึงเป็นเปอร์เซ็นต์
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# แยกตามชนิด — ให้ HUD เกือบทึบตัน เพราะตัวอักษรของมันวางทับโลกตรง ๆ
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # ไดอะล็อกกับชีตหายใจได้
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # วาดวิดเจ็ตที่เปิดอยู่แล้วใหม่
+
+# ทั้งโปรเจกต์ — โลกที่รกตาอยากได้พาเนลทึบตันกลับคืน
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # อัตราส่วนที่คำนวณแล้ว เช่น 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">อะไรเดินตามค่านี้ และอะไรไม่เดินตาม</h3>
+  <table>
+    <thead><tr><th>เดินตามมัน — คอนเทนเนอร์</th><th>ไม่สนใจมัน — ของที่กดได้ และเครื่องหมาย</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (เปลือกนอกหนึ่งเดียวที่อยู่หลังไดอะล็อก ชีต และดรอปดาวน์) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>ปุ่มทุกปุ่ม · <code>GoSlot</code> (ควิกสล็อต) · <code>GoBadge</code> · คอนโทรลแบบแบ่งช่อง · เซลล์ตัวเลือก · ชิป · วงกลมและอวาตาร์</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>ตัวอักษรและไอคอนทั้งหมด</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    ปุ่มที่สถานะของมันจางหายไปก็ไม่ได้บอกอีกต่อไปว่ามันคืออะไร ส่วนแบดจ์มีอยู่เพื่อให้ตัวอักษรสองตัวอ่านออก
+    — ทั้งคู่ไม่ใช่คอนเทนเนอร์ จึงไม่มีตัวไหนเดินตามค่านี้
+  </p>
+
+  <div class="note">
+    <b>เมนูป๊อปอัปยังทึบตัน</b> (<code>popup_alpha</code> 100) เอนจินอาจวาง
+    <code>PopupMenu</code> ไว้ใน <code>Window</code> ของมันเอง และที่นั่น OS ไม่ได้ผสมมันเข้ากับเกม:
+    ความกึ่งโปร่งใสจะออกมาเป็นสีดำแทนที่จะทะลุเห็นข้างหลัง ลดค่านี้เฉพาะในโปรเจกต์ที่ฝังหน้าต่างย่อยไว้ข้างใน
+    (<code>gui_embed_subwindows</code>)
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">รายละเอียดสามข้อที่มาจากหน้าจอจริง</h3>
+  <ul>
+    <li>
+      <b>ค่านี้คูณเข้าไป ไม่ได้แทนที่</b> หน้าของ HUD ตามค่าเริ่มต้นมีอัลฟา 0.92 อยู่แล้ว
+      <code>hud_alpha</code> 80 จึงลงเอยที่ 0.736 — ธีมที่ตั้งใจทำให้หน้าของมันกึ่งโปร่งใสก็ยังรักษา
+      การตัดสินใจนั้นไว้ อีกด้านหนึ่ง: ใส่สองครั้งพาเนลก็จางสองเท่า นี่คือเหตุผลที่อัลฟาถูกคูณในที่เดียว
+      เท่านั้น (<code>GoSkin.surface_box()</code>) ส่วนฟังก์ชันวาดหน้าตัวอื่นทุกตัวส่งอาร์กิวเมนต์ต่อไป
+      แทนที่จะทำให้ผลลัพธ์ของตัวเองจางลง
+    </li>
+    <li>
+      <b>สีที่ส่งเข้าไปคือสีที่ได้ออกมา</b> <code>GoStyle.plate(…, fill)</code> เก็บสีเติมที่ระบุมาไว้
+      ตรงตามนั้น: <code>Color(ink, 0.14)</code> บอกอัลฟาของมันไว้แล้ว การคูณความทึบของพาเนลเข้าไปอีก
+      จะเป็นการหั่นเจตนาของผู้เรียกซ้ำสองครั้ง <code>GoStyle.floating(…, opaque = true)</code>
+      ไม่สนใจค่านี้ด้วยเหตุผลทำนองเดียวกัน — การเติมหน้าให้ทึบตันคือจุดประสงค์ทั้งหมดของแฟล็กนั้น
+    </li>
+    <li>
+      <b>พาเนลที่ gohud ไม่ได้สร้างก็ใช้กฎเดียวกัน</b> <code>GoStyle.fade_panel(node)</code> — หลังจาก
+      โหนดเข้าไปอยู่ในทรีแล้ว มันจึงอ่านธีมที่มันสืบทอดมาได้ มันเรียกซ้ำได้ผลเท่าเดิม: หน้าดั้งเดิมถูกจดไว้
+      และทุกครั้งที่เรียกจะคำนวณใหม่จากตรงนั้น การวาดใหม่ซ้ำ ๆ จึงไม่ทับถมกัน หลังสลับธีมแล้ว
+      <code>GoStyle.forget_face(node)</code> จะทิ้งความจำนั้น การเรียกครั้งถัดไปจึงรับหน้าใหม่มาใช้
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">หน้าแบบกำหนดเองก็จางลงด้วย — และนั่นคือส่วนที่พังอย่างเงียบ ๆ</h3>
+  <p>
+    พาเนลมุมตัดเฉียง (<code>GoStyleBoxCut</code>) และกรอบตีขึ้นรูป
+    (<code>GoStyleBoxMedieval</code>) ไม่ใช่ <code>StyleBoxFlat</code> มันวาดตัวเอง ถ้าใส่ความทึบไว้
+    เฉพาะในสาขาของ flat ธีมพวกนี้ก็จะเมินมันอย่างเงียบ ๆ ขณะที่การทดสอบที่ดูจากค่าตัวเลขยังผ่านหมด
+    ทั้งสองตัวทำให้พื้นหลังของมันจางลง แล้วคงแสงเรือง หมุดย้ำ ลายสลักที่มุม และขอบลาดไว้เต็มกำลัง —
+    ส่วนลายเนื้อและขอบลาดของหน้าแบบยุคกลางนั้นแปรผันตามอัลฟาของพื้นหลังมาตลอดอยู่แล้ว
+    มันจึงจางลงไปพร้อมกับพาเนล
+  </p>
+  <p>
+    ซึ่งนั่นคือประเด็นที่ใหญ่กว่า: <code>bg_color.a == 0.8</code> เป็นแค่ตัวเลข <em>โลกทะลุผ่านออกมาได้
+    และตัวอักษรยังอ่านออก</em> ต่างหากคือข้อกำหนด gohud ตรวจข้อแรกในชุดทดสอบแบบไร้หน้าต่าง
+    และตรวจข้อหลังด้วยการวาดพาเนลทับลายเส้นทแยงบนจอเสมือน
+    (<code>tests/gohud_alpha_shot.gd</code>) — ทั้งบนหน้าแบบแบน แบบมุมตัดเฉียง และแบบตีขึ้นรูป
+    ในทั้งธีมมืดและธีมสว่าง
   </p>
 </section>
 

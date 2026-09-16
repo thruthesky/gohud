@@ -230,6 +230,16 @@ GoUi.box(GoTheme.BOX_CARD)             # копія StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">Непрозорість панелі (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — наскільки щільний лицьовий бік контейнера. Типово <b>80</b>, тож гра лишається
+    видимою за діалогом; у <code>popup_alpha</code> — 100. Тема без цих токенів повертається до 100
+    і малюється рівно так, як і раніше. Обчислене значення читають як <b>частку</b> через
+    <code>GoUi.surface_alpha(variant)</code>; правила — у розділі
+    <a href="#opacity">Непрозорість — гра за панеллю</a>.
+  </p>
+
   <h3 id="text-roles">Текстові ролі</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -244,6 +254,130 @@ GoUi.box(GoTheme.BOX_CARD)             # копія StyleBox</code></pre>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
     <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>Непрозорість — гра за панеллю</h2>
+  <p class="sub">
+    Спливні вікна, діалоги, аркуші, картки, панелі HUD, сповіщення та снекбари малюють свій лицьовий бік із <b>непрозорістю 80%</b>.
+    Бій триває за діалогом підтвердження; карта проглядає з-під аркуша інвентаря. У грі це
+    не оздоба — це те, що тримає гравця зорієнтованим. Повністю щільна панель стирає місце, де він
+    стояв, тієї ж миті, коли відкривається вікно.
+  </p>
+
+  <div class="note">
+    <b>Тоншає лише лицьовий бік.</b> Текст, іконки, кнопки, бейджі та швидкі слоти лишаються чіткими, і так само
+    рамки й тіні. Напівпрозора панель читається як скло, лише поки її обрис різкий; приглушіть
+    обрис — і годі сказати, де панель закінчується. Приглушіть вміст — і інтерфейс узагалі не прочитати:
+    це не прозоре вікно, це помилка. Саме тому значення ніколи не застосовують через
+    <code>modulate.a</code>.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">П'ять шарів, найконкретніший перший</h3>
+  <table>
+    <thead><tr><th>Порядок</th><th>Де</th><th>Одиниця</th><th>Охоплення</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>аргумент у самому виклику — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>частка <code>0.0–1.0</code></td><td>одне вікно</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>відсоток <code>0–100</code></td><td>один вид панелі, на весь проєкт</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>відсоток</td><td>проєкти, які тримають усі розміри в одному місці</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>відсоток</td><td>усі панелі відразу</td></tr>
+      <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> у темі</td><td>відсоток</td><td>те, що вирішує образ, — <b>джерело правди</b></td></tr>
+    </tbody>
+  </table>
+  <p>Якщо не задано жодного з них, значення дорівнює 100, тож у старішій темі не змінюється нічого.</p>
+
+  <div class="note">
+    <b>Налаштування беруть відсоток; код бере частку.</b> Різні шари — різні одиниці: поле
+    редактора потребує цілого числа (константа <code>Theme</code> не вміє тримати дробове), а альфа кольору
+    в StyleBox — це частка. Написавши <code>0.8</code> у полі конфігурації, ви обріжете його до <code>0</code>, і
+    <b>панель зникне</b>. У налаштуваннях це <code>80</code>, у коді — <code>0.8</code>.
+  </div>
+
+  <pre><code># Лише одне вікно — діалог підтвердження, який не має ховати бій за собою
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export, тобто відсоток
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# За видом — HUD лишаємо майже щільним, бо його текст лежить просто над світом
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # діалоги та аркуші можуть дихати
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # перемальовує вже відкриті віджети
+
+# Весь проєкт — насичений світ хоче, щоб його панелі знову стали щільними
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # обчислена частка, напр. 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Що йде за значенням, а що ні</h3>
+  <table>
+    <thead><tr><th>Іде за ним — контейнери</th><th>Ігнорує його — те, що натискають, і позначки</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (єдина оболонка за діалогами, аркушами та випадними списками) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>кожна кнопка · <code>GoSlot</code> (швидкі слоти) · <code>GoBadge</code> · сегментовані контроли · комірки вибору · чипи · диски та аватари</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>увесь текст та іконки</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Кнопка, чий стан вицвів, більше не каже, що вона таке, а бейдж існує, щоб два символи лишалися
+    розбірливими, — жодне з них не контейнер, тож жодне за значенням і не йде.
+  </p>
+
+  <div class="note">
+    <b>Спливні меню лишаються щільними</b> (<code>popup_alpha</code> 100). Рушій може тримати
+    <code>PopupMenu</code> у власному <code>Window</code>, а там ОС не змішує його з
+    грою: напівпрозорість виходить чорною, а не наскрізною. Знижуйте його лише в проєктах, які вбудовують свої
+    підвікна (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Три подробиці, які взялися зі справжніх екранів</h3>
+  <ul>
+    <li>
+      <b>Значення множиться, а не заміщує.</b> Типовий лицьовий бік HUD уже має альфу 0.92, тож
+      <code>hud_alpha</code> 80 дає 0.736 — тема, яка навмисно зробила лице напівпрозорим, зберігає
+      це рішення. Зворотний бік: застосуйте його двічі — і панель приглушиться двічі; саме тому альфу
+      множать рівно в одному місці (<code>GoSkin.surface_box()</code>), а кожна інша функція лиця
+      передає аргумент далі, замість приглушувати власний результат.
+    </li>
+    <li>
+      <b>Колір, який ви передали, — це колір, який ви дістанете.</b> <code>GoStyle.plate(…, fill)</code> тримає явну
+      заливку рівно такою, як задано: <code>Color(ink, 0.14)</code> уже називає свою альфу, а домноження
+      непрозорості панелі врізало б намір того, хто викликав, удруге. <code>GoStyle.floating(…, opaque = true)</code>
+      ігнорує значення з тієї самої причини — залити лице щільно і є єдиним призначенням цього прапорця.
+    </li>
+    <li>
+      <b>Панелі, яких gohud не будував, дістають те саме правило.</b> <code>GoStyle.fade_panel(node)</code> — після того, як
+      вузол уже в дереві, щоб він прочитав успадковану тему. Виклик ідемпотентний: початкове лице
+      запам'ятовується, і кожен виклик перераховує від нього, тож повторні перемальовування ніколи не накладаються. Помінявши тему,
+      <code>GoStyle.forget_face(node)</code> скидає цю пам'ять, і наступний виклик підхопить нове лице.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Власні лицьові боки теж приглушуються — і саме це ламається мовчки</h3>
+  <p>
+    Панель зі зрізаними кутами (<code>GoStyleBoxCut</code>) і кована рама
+    (<code>GoStyleBoxMedieval</code>) — не <code>StyleBoxFlat</code>; вони малюють себе самі. Покладіть
+    непрозорість лише в пласку гілку — і ці теми тихо її проігнорують, тоді як усі тести за значеннями далі
+    проходитимуть. Обидві приглушують своє тло й тримають сяйво, заклепки, кутове гравіювання та фаски на повній силі, —
+    а зернистість і фаска середньовічного лиця завжди були пропорційні альфі його тла, тож вони
+    тоншають разом із панеллю.
+  </p>
+  <p>
+    А ширша думка ось яка: <code>bg_color.a == 0.8</code> — це число. <em>Світ проглядає крізь панель, і
+    текст досі розбірливий</em> — ось вимога. Перше gohud перевіряє у своєму безвіконному наборі тестів, а
+    друге — малюючи панелі поверх діагональних смуг на віртуальному моніторі
+    (<code>tests/gohud_alpha_shot.gd</code>): на пласкому, зрізаному та кованому лиці, і в темній
+    темі, і у світлій.
   </p>
 </section>
 

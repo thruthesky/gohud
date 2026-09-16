@@ -232,6 +232,16 @@ GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">Panel opaklığı (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — bir kapsayıcının yüzü ne kadar dolu. Varsayılan <b>80</b>; böylece bir
+    diyaloğun arkasında oyun görünür kalır; <code>popup_alpha</code> 100'dür. Bu token'ları taşımayan bir
+    tema 100'e geri düşer ve tıpkı eskisi gibi çizer. Çözümlenmiş değeri bir <b>oran</b> olarak
+    <code>GoUi.surface_alpha(variant)</code> ile okuyun; kurallar
+    <a href="#opacity">Opaklık — panelin arkasındaki oyun</a> bölümünde.
+  </p>
+
   <h3 id="text-roles">Yazı rolleri</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -246,6 +256,130 @@ GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
     <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>Opaklık — panelin arkasındaki oyun</h2>
+  <p class="sub">
+    Açılır pencereler, diyaloglar, sayfalar, kartlar, HUD panelleri, uyarılar ve snackbar'lar yüzlerini
+    <b>%80 opaklıkla</b> çizer. Bir onay diyaloğunun arkasında dövüş sürer; bir envanter sayfasının altından
+    harita görünür. Bir oyunda bu süsleme değildir — oyuncunun nerede olduğunu bilmesini sağlayan şeydir.
+    Tamamen dolu bir panel, pencere açıldığı anda oyuncunun nerede durduğunu siler.
+  </p>
+
+  <div class="note">
+    <b>Yalnızca yüz incelir.</b> Yazılar, simgeler, düğmeler, rozetler ve hızlı slotlar keskin kalır;
+    kenarlıklar ve gölgeler de öyle. Yarı saydam bir panel ancak dış çizgisi net kaldığı sürece cam gibi
+    okunur; dış çizgiyi soldurun, panelin nerede bittiğini anlayamazsınız. İçeriği soldurun, arayüz hiç
+    okunamaz — o saydam bir pencere değil, bir hatadır. Değer bu yüzden asla
+    <code>modulate.a</code> üzerinden uygulanmaz.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Beş katman, en özel olandan başlayarak</h3>
+  <table>
+    <thead><tr><th>Sıra</th><th>Nerede</th><th>Birim</th><th>Kapsam</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>o çağrıdaki argüman — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>oran <code>0.0–1.0</code></td><td>tek bir pencere</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>yüzde <code>0–100</code></td><td>proje genelinde tek bir panel türü</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>yüzde</td><td>bütün ölçüleri tek yerde tutan projeler</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>yüzde</td><td>bütün paneller birden</td></tr>
+      <tr><td>⑤</td><td>temanın <code>GoHud/constants/&lt;kind&gt;_alpha</code> değeri</td><td>yüzde</td><td>görünüşün kararı — <b>doğrunun kaynağı</b></td></tr>
+    </tbody>
+  </table>
+  <p>Hiçbiri ayarlanmamışsa değer 100'dür; yani eski bir temada hiçbir şey değişmez.</p>
+
+  <div class="note">
+    <b>Ayarlar yüzde alır; kod oran alır.</b> Farklı katmanlar, farklı birimler — bir düzenleyici alanı tam
+    sayı ister (bir <code>Theme</code> sabiti float tutamaz), bir StyleBox renginin alfası ise orandır. Bir
+    yapılandırma alanına <code>0.8</code> yazmak onu <code>0</code>'a kırpar ve <b>panel gözden kaybolur</b>.
+    Ayarlarda <code>80</code>, kodda <code>0.8</code>.
+  </div>
+
+  <pre><code># Yalnızca tek bir pencere — arkasındaki dövüşü gizlememesi gereken bir onay diyaloğu
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export, yani yüzde
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Tür bazında — HUD'u neredeyse dolu tutun, çünkü yazısı doğrudan dünyanın üstünde durur
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # diyaloglar ve sayfalar nefes alabilir
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # zaten açık olan widget'ları yeniden çizer
+
+# Bütün proje — kalabalık bir dünya panellerini yeniden dolu ister
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # çözümlenmiş oran, örneğin 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Değeri ne izler, ne izlemez</h3>
+  <table>
+    <thead><tr><th>İzleyenler — kapsayıcılar</th><th>Yok sayanlar — bastığınız şeyler ve işaretler</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (diyalogların, sayfaların ve açılır listelerin arkasındaki tek kabuk) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>her düğme · <code>GoSlot</code> (hızlı slotlar) · <code>GoBadge</code> · bölümlü denetimler · seçim hücreleri · chip'ler · daireler ve avatarlar</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>bütün yazılar ve simgeler</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Durumu solmuş bir düğme artık ne olduğunu söylemez ve bir rozet iki karakteri okunaklı kılmak için
+    vardır — ikisi de kapsayıcı değildir, bu yüzden ikisi de değeri izlemez.
+  </p>
+
+  <div class="note">
+    <b>Açılır menüler dolu kalır</b> (<code>popup_alpha</code> 100). Motor bir <code>PopupMenu</code>'yü
+    kendi <code>Window</code>'unda barındırabilir ve orada işletim sistemi onu oyunla birleştirmez: yarı
+    saydamlık, arkası görünen değil siyah çıkar. Bu değeri yalnızca alt pencerelerini gömen projelerde
+    (<code>gui_embed_subwindows</code>) düşürün.
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Gerçek ekranlardan gelen üç ayrıntı</h3>
+  <ul>
+    <li>
+      <b>Değer çarpar, yerine geçmez.</b> Varsayılan HUD yüzü zaten 0.92 alfadadır; dolayısıyla
+      <code>hud_alpha</code> 80, 0.736'ya iner — bir yüzü bilerek yarı saydam yapmış bir tema o kararını
+      korur. Madalyonun öbür yüzü: iki kez uygularsanız panel iki kez solar. Alfa bu yüzden tam olarak tek
+      bir yerde (<code>GoSkin.surface_box()</code>) çarpılır ve diğer bütün yüz fonksiyonları kendi
+      sonucunu soldurmak yerine argümanı iletir.
+    </li>
+    <li>
+      <b>Geçirdiğiniz renk, aldığınız renktir.</b> <code>GoStyle.plate(…, fill)</code> açıkça verilmiş bir
+      dolguyu verildiği gibi korur: <code>Color(ink, 0.14)</code> alfasını zaten söylemiştir, panel
+      opaklığını onunla çarpmak çağıranın niyetini ikinci kez kısardı.
+      <code>GoStyle.floating(…, opaque = true)</code> aynı türden bir nedenle değeri yok sayar — yüzü dolu
+      doldurmak zaten o bayrağın bütün amacıdır.
+    </li>
+    <li>
+      <b>gohud'un kurmadığı paneller de aynı kurala tabidir.</b> <code>GoStyle.fade_panel(node)</code> —
+      düğüm ağaca girdikten sonra çağrılır, böylece devraldığı temayı okur. İdempotenttir: özgün yüz
+      kaydedilir ve her çağrı onun üstünden yeniden hesaplar, böylece tekrarlanan yeniden çizimler üst üste
+      binmez. Tema değiştirdikten sonra <code>GoStyle.forget_face(node)</code> o kaydı düşürür; sonraki
+      çağrı yeni yüzü alır.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Özel yüzler de solar — ve sessizce bozulan kısım tam da budur</h3>
+  <p>
+    Kesik köşeli panel (<code>GoStyleBoxCut</code>) ve dövme çerçeve (<code>GoStyleBoxMedieval</code>) birer
+    <code>StyleBoxFlat</code> değildir; kendilerini kendileri çizer. Opaklığı yalnızca flat dalına koyun, bu
+    temalar onu sessizce yok sayar, üstelik değere bakan bütün testler geçmeye devam eder. İkisi de arka
+    planını soldurur; ışımayı, perçinleri, köşe gravürünü ve eğimleri tam güçte tutar — ortaçağ yüzünün
+    dokusu ve eğimi ise en baştan beri arka plan alfasıyla orantılıydı, bu yüzden panelle birlikte incelir.
+  </p>
+  <p>
+    Asıl mesele de bu: <code>bg_color.a == 0.8</code> bir sayıdır. <em>Dünya arkadan görünüyor ve yazı hâlâ
+    okunaklı</em> ise gereksinimdir. gohud birincisini headless test takımında, ikincisini ise sanal bir
+    monitörde panelleri çapraz şeritlerin üstüne çizerek (<code>tests/gohud_alpha_shot.gd</code>) denetler —
+    flat, kesik ve dövme yüzde, hem koyu hem açık temada.
   </p>
 </section>
 

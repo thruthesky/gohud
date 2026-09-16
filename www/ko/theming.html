@@ -224,6 +224,16 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">판 불투명도(%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — 컨테이너의 면이 얼마나 꽉 찼는가. 기본은 <b>80</b> 이라 확인창 뒤로
+    게임이 그대로 보인다. <code>popup_alpha</code> 만 100 이다. 이 토큰이 없는 테마는 100 으로 떨어져
+    예전과 똑같이 그려진다. 계산이 끝난 값은 <b>비율</b>로 읽는다 —
+    <code>GoUi.surface_alpha(variant)</code>. 규칙은
+    <a href="#opacity">불투명도 — 판 뒤의 게임</a> 절에 있다.
+  </p>
+
   <h3 id="text-roles">글자 역할</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -239,6 +249,128 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code>
     <code>GoSubtitleLabel</code> <code>GoCaptionLabel</code> <code>GoCompactLabel</code>
     <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>불투명도 — 판 뒤의 게임</h2>
+  <p class="sub">
+    떠 있는 창, 확인창, 시트, 카드, HUD 판, 알림 상자, 스낵바는 면을 <b>80% 불투명도</b>로 그린다.
+    확인창 뒤에서 전투는 계속되고, 인벤토리 시트 아래로 지도가 비친다. 게임에서 이것은 장식이 아니다 —
+    플레이어가 자기 자리를 놓치지 않게 붙드는 것이다. 꽉 찬 판은 창이 열리는 순간 그가 서 있던 자리를
+    지워 버린다.
+  </p>
+
+  <div class="note">
+    <b>묽어지는 것은 면뿐이다.</b> 글자·아이콘·버튼·배지·퀵슬롯은 또렷하게 남고, 테두리와 그림자도
+    그대로다. 반투명한 판이 유리로 읽히는 것은 윤곽이 날카로울 때뿐이다 — 윤곽까지 묽히면 판이 어디서
+    끝나는지 알 수 없다. 내용까지 묽히면 UI 는 아예 읽히지 않는다. 그건 투명한 창이 아니라 버그다.
+    이 값을 <code>modulate.a</code> 로 먹이지 않는 이유가 이것이다.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">다섯 층, 좁은 것부터</h3>
+  <table>
+    <thead><tr><th>순서</th><th>어디에</th><th>단위</th><th>미치는 범위</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>그 호출의 인자 — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>비율 <code>0.0–1.0</code></td><td>창 하나</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>퍼센트 <code>0–100</code></td><td>판 한 종류, 프로젝트 전체</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>퍼센트</td><td>치수를 한곳에 모아 두는 프로젝트</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>퍼센트</td><td>모든 판을 한꺼번에</td></tr>
+      <tr><td>⑤</td><td>테마의 <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>퍼센트</td><td>생김새가 정하는 값 — <b>정본</b></td></tr>
+    </tbody>
+  </table>
+  <p>하나도 정하지 않으면 값은 100 이다. 그래서 예전 테마는 달라지는 것이 없다.</p>
+
+  <div class="note">
+    <b>설정은 퍼센트로, 코드는 비율로 받는다.</b> 층이 다르니 단위도 다르다 — 에디터 칸은 정수여야 하고
+    (<code>Theme</code> 상수는 실수를 담지 못한다), StyleBox 색의 알파는 비율이다. 설정 칸에
+    <code>0.8</code> 을 적으면 <code>0</code> 으로 잘려 <b>판이 사라진다</b>. 설정에서는 <code>80</code>,
+    코드에서는 <code>0.8</code> 이다.
+  </div>
+
+  <pre><code># 창 하나만 — 뒤의 전투를 가리면 안 되는 확인창
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export 라서 퍼센트
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# 종류별 — HUD 는 글자가 세계 위에 바로 얹히므로 거의 꽉 채워 둔다
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # 확인창과 시트는 숨 쉴 여유를 준다
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # 이미 열려 있는 위젯을 다시 그린다
+
+# 프로젝트 전체 — 화면이 바쁜 게임은 판을 다시 꽉 채우고 싶어 한다
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 계산이 끝난 비율, 예를 들어 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">값을 따르는 것과 따르지 않는 것</h3>
+  <table>
+    <thead><tr><th>따른다 — 컨테이너</th><th>따르지 않는다 — 누르는 것과 표식</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code>(확인창·시트·드롭다운이 함께 쓰는 껍데기 하나) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>모든 버튼 · <code>GoSlot</code>(퀵슬롯) · <code>GoBadge</code> · 분절 선택 · 선택 칸 · 칩 · 원과 아바타</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>모든 글자와 아이콘</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    상태가 묽어진 버튼은 자기가 무엇인지 더 말하지 못하고, 배지는 글자 두 자를 읽히게 하려고 있는 것이다.
+    둘 다 컨테이너가 아니니 값을 따르지 않는다.
+  </p>
+
+  <div class="note">
+    <b>팝업 메뉴는 꽉 찬 채로 둔다</b>(<code>popup_alpha</code> 100). 엔진은 <code>PopupMenu</code> 를
+    자기 <code>Window</code> 에 띄우기도 하는데, 거기서는 OS 가 게임과 합성하지 않는다 — 반투명이 비쳐
+    보이는 대신 검게 나온다. 서브 창을 게임 안에 품는 프로젝트(<code>gui_embed_subwindows</code>)에서만
+    낮춘다.
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">실제 화면에서 나온 세 가지</h3>
+  <ul>
+    <li>
+      <b>값은 곱해진다. 갈아 끼우는 것이 아니다.</b> 기본 HUD 면은 이미 알파 0.92 라서
+      <code>hud_alpha</code> 80 은 0.736 에 닿는다 — 면을 일부러 반투명하게 만든 테마는 그 결정을
+      지킨다. 뒤집으면 이렇다: 두 번 먹이면 판도 두 번 묽어진다. 그래서 알파를 곱하는 자리는 딱
+      한 곳(<code>GoSkin.surface_box()</code>)뿐이고, 나머지 면 함수는 자기 결과를 묽히지 않고 인자를
+      넘기기만 한다.
+    </li>
+    <li>
+      <b>넘긴 색은 넘긴 그대로 나온다.</b> <code>GoStyle.plate(…, fill)</code> 은 채움을 명시하면 그
+      색을 받은 그대로 쓴다. <code>Color(ink, 0.14)</code> 는 이미 자기 알파를 말하고 있으니, 거기에
+      판 불투명도를 곱하면 부른 쪽의 뜻이 두 번 깎인다. <code>GoStyle.floating(…, opaque = true)</code>
+      가 값을 무시하는 것도 같은 종류의 이유다 — 면을 꽉 채우는 것이 그 플래그의 존재 이유다.
+    </li>
+    <li>
+      <b>gohud 가 만들지 않은 판에도 같은 규칙이 간다.</b> <code>GoStyle.fade_panel(node)</code> —
+      노드가 트리에 들어간 뒤에 부른다. 그래야 물려받은 테마를 읽는다. 여러 번 불러도 결과는 같다:
+      원래 면을 적어 두고 호출마다 그 값에서 다시 계산하므로, 몇 번을 다시 그려도 묽기가 쌓이지 않는다.
+      테마를 갈아 끼운 뒤에는 <code>GoStyle.forget_face(node)</code> 로 그 기억을 지운다 — 다음 호출이
+      새 면을 집는다.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">직접 그리는 면도 묽어진다 — 말없이 깨지는 자리가 여기다</h3>
+  <p>
+    모서리를 자른 판(<code>GoStyleBoxCut</code>)과 단조 프레임(<code>GoStyleBoxMedieval</code>)은
+    <code>StyleBoxFlat</code> 이 아니다. 스스로 그린다. 불투명도를 flat 갈래에만 넣어 두면 이 테마들은
+    말없이 그것을 무시하는데, 값을 재는 검사는 하나도 빠짐없이 통과한다. 둘 다 배경만 묽히고 발광·리벳·
+    모서리 각인·베벨은 제 세기로 남긴다 — 중세 면의 질감과 베벨은 원래부터 배경 알파에 비례했으므로
+    판을 따라 함께 묽어진다.
+  </p>
+  <p>
+    여기서 더 넓은 이야기가 나온다. <code>bg_color.a == 0.8</code> 은 숫자다. <em>세계가 비쳐 보이고
+    글자는 여전히 읽힌다</em> 가 요구다. gohud 는 앞의 것을 헤드리스 검사 스위트로 재고, 뒤의 것은
+    가상 모니터에서 사선 줄무늬 위에 판을 그려 확인한다(<code>tests/gohud_alpha_shot.gd</code>) —
+    flat 면·자른 면·단조 면 각각, 어두운 테마와 밝은 테마 양쪽에서.
   </p>
 </section>
 

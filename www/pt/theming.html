@@ -233,6 +233,16 @@ GoUi.box(GoTheme.BOX_CARD)             # uma cópia de um StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">Opacidade do painel (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — quão sólida é a face de um contêiner. <b>80</b> por padrão, para que o jogo
+    continue visível atrás de um diálogo; <code>popup_alpha</code> é 100. Um tema sem esses tokens volta a 100
+    e desenha exatamente como antes. Leia o valor resolvido como <b>razão</b> com
+    <code>GoUi.surface_alpha(variant)</code>; a seção
+    <a href="#opacity">Opacidade — o jogo atrás do painel</a> tem as regras.
+  </p>
+
   <h3 id="text-roles">Papéis de texto</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -247,6 +257,132 @@ GoUi.box(GoTheme.BOX_CARD)             # uma cópia de um StyleBox</code></pre>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
     <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>Opacidade — o jogo atrás do painel</h2>
+  <p class="sub">
+    Popups, diálogos, folhas, cartões, painéis de HUD, alertas e snackbars desenham sua face com <b>80% de opacidade</b>.
+    A luta continua atrás de um diálogo de confirmação; o mapa aparece sob uma folha de inventário. Em um jogo isso
+    não é enfeite — é o que mantém o jogador orientado. Um painel totalmente sólido apaga onde ele estava
+    no instante em que uma janela abre.
+  </p>
+
+  <div class="note">
+    <b>Só a face fica mais fina.</b> Texto, ícones, botões, badges e slots rápidos continuam nítidos, e as
+    bordas e as sombras também. Um painel translúcido só é lido como vidro enquanto o contorno está firme;
+    esmaeça o contorno e não dá para saber onde o painel termina. Esmaeça o conteúdo e a UI não pode mais ser
+    lida — isso não é uma janela transparente, é um bug. É por isso que o valor nunca é aplicado por
+    <code>modulate.a</code>.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Cinco camadas, da mais específica para a mais geral</h3>
+  <table>
+    <thead><tr><th>Ordem</th><th>Onde</th><th>Unidade</th><th>Alcance</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>o argumento naquela chamada — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>razão <code>0.0–1.0</code></td><td>uma janela</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>porcentagem <code>0–100</code></td><td>um tipo de painel, em todo o projeto</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>porcentagem</td><td>projetos que mantêm cada medida em um só lugar</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>porcentagem</td><td>todos os painéis de uma vez</td></tr>
+      <tr><td>⑤</td><td>o <code>GoHud/constants/&lt;kind&gt;_alpha</code> do tema</td><td>porcentagem</td><td>o que o visual decide — <b>a fonte da verdade</b></td></tr>
+    </tbody>
+  </table>
+  <p>Sem nenhuma delas definida o valor é 100, então nada muda em um tema mais antigo.</p>
+
+  <div class="note">
+    <b>As configurações recebem porcentagem; o código recebe razão.</b> Camadas diferentes, unidades diferentes — um
+    campo do editor precisa de um inteiro (uma constante de <code>Theme</code> não guarda um float) enquanto o alfa
+    da cor de um StyleBox é uma razão. Escrever <code>0.8</code> em um campo de configuração trunca para
+    <code>0</code> e <b>o painel desaparece</b>. É <code>80</code> nas configurações e <code>0.8</code> no código.
+  </div>
+
+  <pre><code># Só uma janela — um diálogo de confirmação que não pode esconder a luta atrás dele
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export, então é porcentagem
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Por tipo — mantenha o HUD quase sólido, porque o texto dele fica direto sobre o mundo
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # diálogos e folhas podem respirar
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # redesenha os widgets que já estão abertos
+
+# O projeto inteiro — um mundo carregado quer os painéis sólidos de novo
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # a razão resolvida, p. ex. 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">O que segue o valor, e o que não segue</h3>
+  <table>
+    <thead><tr><th>Segue — contêineres</th><th>Ignora — o que se pressiona, e os marcadores</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (a casca única atrás de diálogos, folhas e listas suspensas) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>todo botão · <code>GoSlot</code> (slots rápidos) · <code>GoBadge</code> · controles segmentados · células de escolha · chips · discos e avatares</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>todo texto e todo ícone</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Um botão com o estado lavado deixa de dizer o que é, e um badge existe para deixar dois caracteres
+    legíveis — nenhum dos dois é um contêiner, então nenhum dos dois segue o valor.
+  </p>
+
+  <div class="note">
+    <b>Menus popup continuam sólidos</b> (<code>popup_alpha</code> 100). A engine pode hospedar um
+    <code>PopupMenu</code> em uma <code>Window</code> própria, e ali o sistema não o compõe com o jogo: a
+    translucidez sai preta em vez de transparente. Baixe o valor só em projetos que embutem suas subjanelas
+    (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Três detalhes que vieram de telas reais</h3>
+  <ul>
+    <li>
+      <b>O valor multiplica, não substitui.</b> A face padrão do HUD já tem alfa 0.92, então
+      <code>hud_alpha</code> 80 chega a 0.736 — um tema que deliberadamente deixou uma face translúcida mantém
+      essa decisão. O outro lado: aplique duas vezes e o painel esmaece duas vezes, e é por isso que o alfa é
+      multiplicado em exatamente um lugar (<code>GoSkin.surface_box()</code>) e toda outra função de face
+      repassa o argumento em vez de esmaecer o próprio resultado.
+    </li>
+    <li>
+      <b>Uma cor que você passou é a cor que você recebe.</b> <code>GoStyle.plate(…, fill)</code> mantém um
+      preenchimento explícito exatamente como foi dado: <code>Color(ink, 0.14)</code> já declara seu alfa, e
+      multiplicar a opacidade do painel nele cortaria duas vezes a intenção de quem chamou.
+      <code>GoStyle.floating(…, opaque = true)</code> ignora o valor pelo mesmo tipo de motivo — preencher a
+      face sólida é toda a finalidade dessa flag.
+    </li>
+    <li>
+      <b>Painéis que o gohud não construiu seguem a mesma regra.</b> <code>GoStyle.fade_panel(node)</code> —
+      depois que o nó está na árvore, para que leia o tema que herda. É idempotente: a face original fica
+      registrada e cada chamada recalcula a partir dela, então redesenhos repetidos nunca se acumulam. Depois
+      de trocar de tema, <code>GoStyle.forget_face(node)</code> descarta essa memória para que a próxima
+      chamada pegue a face nova.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Faces personalizadas também esmaecem — e é aí que quebra em silêncio</h3>
+  <p>
+    O painel de cantos cortados (<code>GoStyleBoxCut</code>) e a moldura forjada
+    (<code>GoStyleBoxMedieval</code>) não são <code>StyleBoxFlat</code>; elas se desenham sozinhas. Ponha a
+    opacidade só no ramo flat e esses temas a ignoram caladamente enquanto todo teste baseado em valor continua
+    passando. As duas esmaecem o fundo e mantêm brilho, rebites, gravação nos cantos e biséis com força total —
+    e a textura e o bisel da face medieval sempre foram proporcionais ao alfa do fundo dela, então afinam junto
+    com o painel.
+  </p>
+  <p>
+    O que leva ao ponto maior: <code>bg_color.a == 0.8</code> é um número. <em>O mundo aparece através e o
+    texto continua legível</em> é o requisito. O gohud verifica o primeiro na suíte headless e o segundo
+    desenhando painéis sobre listras diagonais em um monitor virtual
+    (<code>tests/gohud_alpha_shot.gd</code>) — na face flat, na cortada e na forjada, tanto no tema escuro
+    quanto no claro.
   </p>
 </section>
 

@@ -230,6 +230,16 @@ GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">عتامة اللوحة (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — إلى أي حدّ يكون وجه الحاوية معتمًا. <b>80</b> افتراضًا، فتبقى اللعبة
+    ظاهرة خلف مربع الحوار؛ و<code>popup_alpha</code> هو 100. والسمة التي تخلو من هذه التوكنات تعود إلى 100
+    فترسم تمامًا كما كانت ترسم من قبل. واقرأ القيمة الناتجة <b>نسبةً</b> بـ
+    <code>GoUi.surface_alpha(variant)</code>؛ والقواعد في قسم
+    <a href="#opacity">العتامة — اللعبة خلف اللوحة</a>.
+  </p>
+
   <h3 id="text-roles">أدوار النص</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -243,6 +253,126 @@ GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
     <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>العتامة — اللعبة خلف اللوحة</h2>
+  <p class="sub">
+    النوافذ المنبثقة ومربعات الحوار والأوراق والبطاقات ولوحات HUD والتنبيهات وأشرطة الرسائل ترسم وجهها بعتامة <b>80%</b>.
+    فالقتال ماضٍ خلف مربع حوار التأكيد، والخريطة ظاهرة تحت ورقة الحقيبة. وهذا في اللعبة ليس زخرفًا — بل هو
+    ما يُبقي اللاعب عارفًا أين هو. أما اللوحة المعتمة تمامًا فتمحو الموضع الذي كان يقف فيه لحظةَ تُفتح
+    نافذة.
+  </p>
+
+  <div class="note">
+    <b>الوجه وحده هو الذي يرقّ.</b> فالنصوص والأيقونات والأزرار والشارات والخانات السريعة تبقى حادّة،
+    وكذلك الحدود والظلال. فاللوحة نصف الشفافة لا تُقرأ زجاجًا إلا ما دام حدّها الخارجي واضحًا؛ فإن أخفتَّ
+    الحدّ لم تعد تعرف أين تنتهي اللوحة. وإن أخفتَّ المحتوى لم تُقرأ الواجهة أصلًا — وتلك ليست نافذة شفافة،
+    بل هي عطب. ولهذا لا تُطبَّق القيمة عبر <code>modulate.a</code> أبدًا.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">خمس طبقات، الأخصّ أولًا</h3>
+  <table>
+    <thead><tr><th>الترتيب</th><th>الموضع</th><th>الوحدة</th><th>المدى</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>الوسيط عند ذلك الاستدعاء — <code>surface.alpha</code>، <code>GoStyle.card(…, alpha)</code></td><td>نسبة <code>0.0–1.0</code></td><td>نافذة واحدة</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>نسبة مئوية <code>0–100</code></td><td>نوع واحد من اللوحات، في المشروع كله</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>نسبة مئوية</td><td>المشاريع التي تجمع كل المقاسات في مكان واحد</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>نسبة مئوية</td><td>كل اللوحات دفعةً واحدة</td></tr>
+      <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> في السمة</td><td>نسبة مئوية</td><td>ما يقرّره المظهر العام — <b>مصدر الحقيقة</b></td></tr>
+    </tbody>
+  </table>
+  <p>وإن لم يُضبط أيٌّ منها كانت القيمة 100، فلا يتغيّر في السمة الأقدم شيء.</p>
+
+  <div class="note">
+    <b>الإعدادات تأخذ نسبة مئوية، والشيفرة تأخذ نسبة عشرية.</b> طبقات مختلفة ووحدات مختلفة — فحقل المحرّر
+    يحتاج عددًا صحيحًا (وثابت <code>Theme</code> لا يسع عددًا عشريًّا) بينما ألفا لون StyleBox نسبة.
+    وكتابة <code>0.8</code> في حقل إعدادات تقتطعها إلى <code>0</code> فـ<b>تختفي اللوحة</b>. فهي
+    <code>80</code> في الإعدادات و<code>0.8</code> في الشيفرة.
+  </div>
+
+  <pre><code># نافذة واحدة فقط — مربع حوار تأكيد يجب ألّا يحجب القتال خلفه
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export، فهي نسبة مئوية
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# حسب النوع — أبقِ HUD معتمًا تقريبًا، لأن نصّه يجلس فوق العالم مباشرةً
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # مربعات الحوار والأوراق تستطيع أن تتنفّس
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # يعيد رسم الودجات المفتوحة سلفًا
+
+# المشروع كله — عالم مزدحم يريد لوحاته معتمة من جديد
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # النسبة الناتجة، مثلًا 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">ما الذي يتبع القيمة وما الذي لا يتبعها</h3>
+  <table>
+    <thead><tr><th>يتبعها — الحاويات</th><th>يتجاهلها — ما تضغطه، والعلامات</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (القشرة الواحدة خلف مربعات الحوار والأوراق والقوائم المنسدلة) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>كل زرّ · <code>GoSlot</code> (الخانات السريعة) · <code>GoBadge</code> · أدوات التحكم المقسّمة · خلايا الاختيار · الشرائح · الأقراص والصور الرمزية</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>كل النصوص والأيقونات</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    والزرّ الذي بهتت حالته لم يعد يقول ما هو، والشارة إنما وُجدت لتجعل حرفين مقروءين — وليس أيٌّ منهما
+    حاوية، فلا يتبع أيٌّ منهما القيمة.
+  </p>
+
+  <div class="note">
+    <b>القوائم المنبثقة تبقى معتمة</b> (<code>popup_alpha</code> 100). فقد يستضيف المحرّك
+    <code>PopupMenu</code> في <code>Window</code> خاصّة به، وهناك لا يدمجها نظام التشغيل مع اللعبة: فتخرج
+    نصف الشفافية سوداء لا شفّافة. ولا تخفضها إلا في المشاريع التي تضمّن نوافذها الفرعية
+    (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">ثلاثة تفاصيل جاءت من شاشات حقيقية</h3>
+  <ul>
+    <li>
+      <b>القيمة تضرب ولا تستبدل.</b> فوجه HUD الافتراضي عند ألفا 0.92 أصلًا، فتهبط <code>hud_alpha</code>
+      80 إلى 0.736 — فالسمة التي جعلت وجهًا نصف شفاف عن قصد تحتفظ بقرارها. وفي المقابل: طبّقها مرتين تخفت
+      اللوحة مرتين، ولذلك تُضرب ألفا في موضع واحد لا غير (<code>GoSkin.surface_box()</code>)، وكل دالة وجه
+      أخرى تمرّر الوسيط بدل أن تخفت نتيجتها هي.
+    </li>
+    <li>
+      <b>اللون الذي مرّرته هو اللون الذي تناله.</b> فـ<code>GoStyle.plate(…, fill)</code> تُبقي التعبئة
+      الصريحة كما أُعطيت تمامًا: فـ<code>Color(ink, 0.14)</code> قد صرّحت بألفاها، وضرب عتامة اللوحة فيها
+      يقصّ قصد المستدعي مرّتين. و<code>GoStyle.floating(…, opaque = true)</code> تتجاهل القيمة لمثل هذا
+      السبب — فملء الوجه معتمًا هو غرض ذلك الخيار كلّه.
+    </li>
+    <li>
+      <b>واللوحات التي لم يبنِها gohud تأخذ القاعدة نفسها.</b> <code>GoStyle.fade_panel(node)</code> — بعد
+      دخول العقدة في الشجرة، لتقرأ السمة التي ترثها. ولا يتراكم أثرها بالتكرار: إذ يُسجَّل الوجه الأصلي
+      ويُعاد الحساب منه في كل استدعاء، فلا تتراكم إعادات الرسم المتكرّرة أبدًا. وبعد تبديل السمات تُسقِط
+      <code>GoStyle.forget_face(node)</code> ذلك السجلّ ليلتقط الاستدعاء التالي الوجه الجديد.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">الوجوه المخصّصة تخفت هي الأخرى — وهنا يقع العطب صامتًا</h3>
+  <p>
+    اللوحة مقطوعة الأركان (<code>GoStyleBoxCut</code>) والإطار المطروق (<code>GoStyleBoxMedieval</code>)
+    ليسا <code>StyleBoxFlat</code>؛ بل يرسمان نفسيهما. فضع العتامة في الفرع المسطّح وحده تتجاهلها هاتان
+    السمتان في صمت بينما يظلّ كل اختبار قائم على القيم ناجحًا. وكلاهما يخفت خلفيته ويُبقي التوهّج
+    والمسامير ونقش الأركان والإبراز المشطوف بكامل قوّتها — وحبيبات وجه العصور الوسطى وإبرازه كانت أصلًا
+    متناسبة مع ألفا خلفيته، فترقّ مع اللوحة.
+  </p>
+  <p>
+    وهذه هي النقطة الأوسع: فـ<code>bg_color.a == 0.8</code> رقم. أما <em>أن ينفذ العالم من خلفها ويبقى
+    النص مقروءًا</em> فهو المطلوب. ويفحص gohud الأول في حزمة اختباراته بلا شاشة، ويفحص الثاني برسم لوحات
+    فوق خطوط مائلة على شاشة افتراضية (<code>tests/gohud_alpha_shot.gd</code>) — على الوجه المسطّح
+    والمقطوع والمطروق، في السمة الداكنة والفاتحة كلتيهما.
   </p>
 </section>
 

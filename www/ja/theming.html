@@ -230,6 +230,16 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">パネルの不透明度(%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — コンテナの面がどれだけ不透明か。既定は <b>80</b> で、ダイアログの背後でも
+    ゲームは見えたままだ。<code>popup_alpha</code> だけは 100 だ。これらのトークンを持たないテーマは 100 に
+    落ちるので、これまでとまったく同じに描かれる。解決された値は
+    <code>GoUi.surface_alpha(variant)</code> で<b>比率</b>として読める。規則は
+    <a href="#opacity">不透明度 — パネルの向こうのゲーム</a> の節にある。
+  </p>
+
   <h3 id="text-roles">文字の役割</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -244,6 +254,129 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
     <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>不透明度 — パネルの向こうのゲーム</h2>
+  <p class="sub">
+    ポップアップ、ダイアログ、シート、カード、HUD パネル、アラート、スナックバーは、面を<b>不透明度 80%</b>
+    で描く。確認ダイアログの背後では戦いが続き、インベントリのシートの下には地図が見えている。ゲームでは
+    これは飾りではない — プレイヤーが自分の居場所を見失わずにいられる理由だ。完全に不透明なパネルは、
+    ウィンドウが開いたその瞬間に、プレイヤーが立っていた場所を消してしまう。
+  </p>
+
+  <div class="note">
+    <b>薄くなるのは面だけだ。</b> 文字、アイコン、ボタン、バッジ、クイックスロットははっきりしたままで、
+    枠と影もそのままだ。半透明のパネルがガラスに見えるのは、その輪郭が鋭いあいだだけだ。輪郭まで薄めれば、
+    パネルがどこで終わるのか分からなくなる。中身を薄めれば UI はもう読めない — それは透けた窓ではなく、
+    ただの不具合だ。だからこの値は <code>modulate.a</code> を通しては決して適用されない。
+  </div>
+
+  <h3 id="five-layers-most-specific-first">5つの層、具体的なものから順に</h3>
+  <table>
+    <thead><tr><th>順</th><th>どこ</th><th>単位</th><th>及ぶ範囲</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>その呼び出しの引数 — <code>surface.alpha</code>、<code>GoStyle.card(…, alpha)</code></td><td>比率 <code>0.0–1.0</code></td><td>1つのウィンドウ</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>パーセント <code>0–100</code></td><td>1種類のパネル、プロジェクト全体で</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>パーセント</td><td>寸法をすべて1か所にまとめているプロジェクト</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>パーセント</td><td>すべてのパネルを一度に</td></tr>
+      <tr><td>⑤</td><td>テーマの <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>パーセント</td><td>見た目が決めること — <b>大もとはここだ</b></td></tr>
+    </tbody>
+  </table>
+  <p>どれも設定しなければ値は 100 だ。だから古いテーマは何も変わらない。</p>
+
+  <div class="note">
+    <b>設定はパーセント、コードは比率。</b> 層が違えば単位も違う — エディタのフィールドには整数が要る
+    （<code>Theme</code> の定数は小数を持てない）のに対し、StyleBox の色のアルファは比率だ。設定の
+    フィールドに <code>0.8</code> と書けば <code>0</code> に切り捨てられ、<b>パネルは消える</b>。
+    設定では <code>80</code>、コードでは <code>0.8</code> だ。
+  </div>
+
+  <pre><code># 1つのウィンドウだけ — 背後の戦いを隠してはならない確認ダイアログ
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export なのでパーセント
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# 種類ごと — HUD はほぼ不透明に保つ。その文字は世界の上に直接載るからだ
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # ダイアログとシートは息をつける
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # すでに開いているウィジェットを描き直す
+
+# プロジェクト全体 — 情報の多い世界では、パネルを不透明に戻したくなる
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 解決された比率。たとえば 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">この値に従うもの、従わないもの</h3>
+  <table>
+    <thead><tr><th>従うもの — コンテナ</th><th>無視するもの — 押すもの、そして印</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code>（ダイアログ、シート、ドロップダウンの背後にある唯一の外殻） · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>すべてのボタン · <code>GoSlot</code>（クイックスロット） · <code>GoBadge</code> · セグメント選択 · 選択セル · チップ · 円とアバター</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>すべての文字とアイコン</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    状態が薄れたボタンは、自分が何であるかをもう伝えない。バッジは2文字を読ませるために存在する —
+    どちらもコンテナではないから、どちらもこの値には従わない。
+  </p>
+
+  <div class="note">
+    <b>ポップアップメニューは不透明のままだ</b>（<code>popup_alpha</code> は 100）。エンジンは
+    <code>PopupMenu</code> を独立した <code>Window</code> に載せることがあり、そこでは OS がゲームと
+    合成してくれない — 半透明は透けるのではなく黒く出る。下げてよいのは、サブウィンドウを埋め込んでいる
+    プロジェクト（<code>gui_embed_subwindows</code>）だけだ。
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">実際の画面から分かった3つのこと</h3>
+  <ul>
+    <li>
+      <b>この値は掛かるのであって、置き換えるのではない。</b> 既定の HUD の面はすでにアルファ 0.92 だから、
+      <code>hud_alpha</code> 80 は 0.736 に着く — 面をわざと半透明にしたテーマは、その判断を保つ。
+      裏を返せば、2回かければパネルは2回薄くなる。だからアルファを掛けるのはただ1か所
+      （<code>GoSkin.surface_box()</code>）だけで、ほかの面を作る関数はどれも、自分の結果を薄めずに
+      引数をそのまま渡す。
+    </li>
+    <li>
+      <b>渡した色は、渡したとおりに返る。</b> <code>GoStyle.plate(…, fill)</code> は、明示された塗りを
+      与えられたまま保つ。<code>Color(ink, 0.14)</code> はすでに自分のアルファを述べていて、そこへパネルの
+      不透明度を掛ければ、呼び出し側の意図を二重に削ることになる。
+      <code>GoStyle.floating(…, opaque = true)</code> が同じたぐいの理由でこの値を無視する —
+      面を不透明に塗りつぶすことが、そのフラグの目的そのものだからだ。
+    </li>
+    <li>
+      <b>gohud が作ったのではないパネルにも、同じ規則が及ぶ。</b> <code>GoStyle.fade_panel(node)</code> —
+      ノードがツリーに入ったあとで呼ぶ。そうすれば、継承したテーマを読める。この関数は冪等だ。元の面を
+      記録しておき、呼ぶたびにそこから計算し直すので、描き直しを繰り返しても効果が積み重なることはない。
+      テーマを差し替えたあとは <code>GoStyle.forget_face(node)</code> でその記憶を捨てる。すると次の
+      呼び出しが新しい面を拾う。
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">独自の面も薄くなる — そして、黙って壊れるのはここだ</h3>
+  <p>
+    面取りのパネル（<code>GoStyleBoxCut</code>）と鍛造の枠（<code>GoStyleBoxMedieval</code>）は
+    <code>StyleBoxFlat</code> ではない — 自分で描く。不透明度をフラットの枝にだけ入れると、これらの
+    テーマは黙ってそれを無視し、それでいて値を見るテストはすべて通ってしまう。どちらも背景を薄くし、
+    発光、リベット、角の彫刻、ベベルは強さを保つ。そして中世の面の質感とベベルはもともと背景のアルファに
+    比例していたので、パネルと一緒に薄くなる。
+  </p>
+  <p>
+    ここから広い話になる。<code>bg_color.a == 0.8</code> は数値にすぎない。<em>世界が透けて見え、それでも
+    文字が読める</em> — これが要件だ。gohud は前者をヘッドレスの検査で確かめ、後者を仮想モニタ上で斜めの縞
+    の上にパネルを描いて確かめる（<code>tests/gohud_alpha_shot.gd</code>）— フラットの面、面取りの面、
+    鍛造の面で、ダークとライトの両方のテーマで。
   </p>
 </section>
 

@@ -230,6 +230,16 @@ GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
+  <h3 id="panel-opacity">Opasitas panel (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — seberapa pekat muka sebuah wadah. <b>80</b> secara default, sehingga game tetap
+    terlihat di balik sebuah dialog; <code>popup_alpha</code> adalah 100. Tema tanpa token ini kembali ke 100
+    dan menggambar persis seperti sebelumnya. Baca nilai hasilnya sebagai <b>rasio</b> dengan
+    <code>GoUi.surface_alpha(variant)</code>; bagian
+    <a href="#opacity">Opasitas — game di balik panel</a> memuat aturannya.
+  </p>
+
   <h3 id="text-roles">Peran teks</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
@@ -244,6 +254,130 @@ GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
     <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
     <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="opacity">
+  <h2>Opasitas — game di balik panel</h2>
+  <p class="sub">
+    Popup, dialog, lembar, kartu, panel HUD, peringatan, dan snackbar menggambar mukanya pada <b>opasitas 80%</b>.
+    Pertarungan terus berjalan di balik sebuah dialog konfirmasi; petanya tampak di bawah lembar inventaris. Di dalam
+    sebuah game ini bukan hiasan — inilah yang menjaga pemain tetap tahu di mana ia berada. Panel yang sepenuhnya pekat
+    menghapus tempat ia tadi berdiri begitu sebuah jendela terbuka.
+  </p>
+
+  <div class="note">
+    <b>Hanya mukanya yang menipis.</b> Teks, ikon, tombol, lencana, dan slot cepat tetap tajam, begitu pula
+    garis tepi dan bayangannya. Panel tembus pandang terbaca sebagai kaca hanya selama garis luarnya tegas; pudarkan
+    garis luarnya dan Anda tak bisa tahu di mana panelnya berakhir. Pudarkan kontennya dan UI-nya tak terbaca sama sekali —
+    itu bukan jendela transparan, itu bug. Karena itulah nilainya tidak pernah diterapkan lewat
+    <code>modulate.a</code>.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Lima lapis, yang paling spesifik dulu</h3>
+  <table>
+    <thead><tr><th>Urutan</th><th>Di mana</th><th>Satuan</th><th>Jangkauan</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>argumen pada pemanggilan itu — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>rasio <code>0.0–1.0</code></td><td>satu jendela</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>persen <code>0–100</code></td><td>satu jenis panel, seluruh proyek</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>persen</td><td>proyek yang menyimpan setiap ukuran di satu tempat</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>persen</td><td>semua panel sekaligus</td></tr>
+      <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> milik temanya</td><td>persen</td><td>apa yang diputuskan tampilannya — <b>sumber kebenarannya</b></td></tr>
+    </tbody>
+  </table>
+  <p>Tanpa satu pun dari itu disetel, nilainya 100, jadi tak ada yang berubah pada tema lama.</p>
+
+  <div class="note">
+    <b>Setelan memakai persentase; kode memakai rasio.</b> Lapis berbeda, satuan berbeda — sebuah kolom di
+    editor butuh bilangan bulat (sebuah konstanta <code>Theme</code> tidak bisa memuat float) sementara alfa warna
+    sebuah StyleBox adalah rasio. Menulis <code>0.8</code> di kolom konfigurasi akan memangkasnya menjadi <code>0</code> dan
+    <b>panelnya lenyap</b>. Jadi <code>80</code> di setelan dan <code>0.8</code> di kode.
+  </div>
+
+  <pre><code># Satu jendela saja — dialog konfirmasi yang tak boleh menutupi pertarungan di belakangnya
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.surface_alpha = 90                   # @export, jadi sebuah persen
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Per jenis — jaga HUD tetap nyaris pekat, karena teksnya duduk langsung di atas dunianya
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,                   # dialog dan lembar bisa bernapas
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                               # menggambar ulang widget yang sudah terbuka
+
+# Seluruh proyek — dunia yang ramai ingin panelnya kembali pekat
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # rasio hasilnya, mis. 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Apa yang mengikuti nilainya, dan apa yang tidak</h3>
+  <table>
+    <thead><tr><th>Mengikutinya — wadah</th><th>Mengabaikannya — yang Anda tekan, dan penanda</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (cangkang tunggal di balik dialog, lembar, dan dropdown) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>setiap tombol · <code>GoSlot</code> (slot cepat) · <code>GoBadge</code> · kontrol tersegmentasi · sel pilihan · chip · cakram dan avatar</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>semua teks dan ikon</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Tombol yang statusnya pudar tak lagi mengatakan dirinya apa, dan lencana ada supaya dua huruf terbaca —
+    keduanya bukan wadah, jadi keduanya tidak mengikuti nilai itu.
+  </p>
+
+  <div class="note">
+    <b>Menu popup tetap pekat</b> (<code>popup_alpha</code> 100). Mesin bisa menempatkan sebuah
+    <code>PopupMenu</code> di dalam <code>Window</code>-nya sendiri, dan di sana OS tidak mengomposisinya dengan
+    game: tembus pandangnya keluar hitam alih-alih tembus. Turunkan hanya pada proyek yang menyematkan
+    subjendelanya (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Tiga rincian yang datang dari layar sungguhan</h3>
+  <ul>
+    <li>
+      <b>Nilainya mengalikan, bukan menggantikan.</b> Muka HUD default sudah beralfa 0.92, jadi
+      <code>hud_alpha</code> 80 mendarat di 0.736 — tema yang sengaja membuat sebuah muka tembus pandang mempertahankan
+      keputusan itu. Sisi sebaliknya: terapkan dua kali dan panelnya memudar dua kali, dan karena itulah alfanya
+      dikalikan tepat di satu tempat (<code>GoSkin.surface_box()</code>) sementara setiap fungsi muka lain
+      meneruskan argumennya alih-alih memudarkan hasilnya sendiri.
+    </li>
+    <li>
+      <b>Warna yang Anda berikan adalah warna yang Anda dapat.</b> <code>GoStyle.plate(…, fill)</code> mempertahankan
+      isian eksplisit persis seperti yang diberikan: <code>Color(ink, 0.14)</code> sudah menyatakan alfanya, dan mengalikan
+      opasitas panel ke dalamnya akan memotong maksud pemanggilnya dua kali. <code>GoStyle.floating(…, opaque = true)</code>
+      mengabaikan nilainya karena alasan sejenis — mengisi mukanya sampai pekat adalah seluruh tujuan flag itu.
+    </li>
+    <li>
+      <b>Panel yang bukan buatan gohud dapat aturan yang sama.</b> <code>GoStyle.fade_panel(node)</code> — setelah
+      node-nya ada di dalam tree, sehingga ia membaca tema yang diwarisinya. Ia idempoten: muka aslinya
+      dicatat dan setiap pemanggilan menghitung ulang dari situ, jadi penggambaran ulang berkali-kali tak pernah menumpuk.
+      Setelah menukar tema, <code>GoStyle.forget_face(node)</code> membuang catatan itu supaya pemanggilan berikutnya mengambil muka yang baru.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Muka buatan sendiri pun memudar — dan di situlah bagian yang diam-diam rusak</h3>
+  <p>
+    Panel bersudut potong (<code>GoStyleBoxCut</code>) dan bingkai tempaan
+    (<code>GoStyleBoxMedieval</code>) bukan <code>StyleBoxFlat</code>; keduanya menggambar dirinya sendiri. Taruh
+    opasitasnya hanya di cabang flat dan tema-tema ini diam-diam mengabaikannya sementara setiap uji berbasis nilai tetap
+    lolos. Keduanya memudarkan latarnya dan mempertahankan pendar, paku keling, ukiran sudut, serta bevel pada kekuatan penuh —
+    dan serat maupun bevel muka abad pertengahan memang selalu sebanding dengan alfa latarnya, jadi keduanya ikut menipis
+    bersama panelnya.
+  </p>
+  <p>
+    Dan itulah poin yang lebih luas: <code>bg_color.a == 0.8</code> adalah sebuah angka. <em>Dunianya tampak menembus dan
+    teksnya tetap terbaca</em> adalah persyaratannya. gohud memeriksa yang pertama di rangkaian uji headless-nya dan yang
+    kedua dengan menggambar panel di atas garis-garis diagonal pada monitor virtual
+    (<code>tests/gohud_alpha_shot.gd</code>) — pada muka flat, muka terpotong, dan muka tempaan, di tema gelap
+    maupun di tema terang.
   </p>
 </section>
 
