@@ -317,6 +317,192 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>等待、告知、計數</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — 會自己找位置的訊息</h3>
+  <p>待在畫面底部（或頂部），在安全區域與鍵盤之上，時間到了自己離開。沒有它，每一個得說一句
+    「已儲存」的畫面，都要自己寫視窗層、擺放位置、計時器與善後。</p>
+  <pre><code>snack.show_text("已儲存", GoTheme.SUCCESS)
+
+# 給一次復原的機會 — 0 是第一顆按鈕，-1 表示逾時消失
+if await snack.post({"text": "已丟棄道具", "actions": ["復原"]}) == 0:
+    restore_item()</code></pre>
+  <p>訊息會<b>排隊</b>，而不是互相覆蓋；同一句話重複出現則會合併 — 一秒失敗四次的伺服器，
+    不會再堆出四分鐘的警告。沒有按鈕的訊息條讓輸入穿過去，底下的遊戲照常跑。</p>
+  <div class="note warn">
+    <b>它不是拿來問問題的地方。</b>它會自己消失，所以玩家可能根本沒看到。
+    無法復原的確認請交給 <code>GoDialogs</code>。這裡的按鈕必須是可有可無的 — 復原、
+    詳細、重試。
+  </div>
+  <p><code>GoNotice</code> 是這一對的另一半：它從不接收輸入或焦點，位置由持有它的畫面決定。
+    它放不了按鈕，這個可以。</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — 看不到盡頭的等待</h3>
+  <p>會跟伺服器說話的遊戲，對這一頁的東西裡最需要的就是它：一個定住不動的畫面，
+    看起來就像當掉了。一次呼叫，就把你按下的那顆按鈕<b>原地</b>變成轉圈。</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>按鈕維持原本的大小 — 文字是變透明，而不是拿掉，所以那一列不會跳動 — 而且轉圈期間它是停用的。
+    後面這一點才是重點：<code>await</code> 的時候，購買絕不能被觸發兩次。開了
+    <code>reduce_motion</code> 就不轉了，改成三個點在呼吸。</p>
+  <p>量得出進度的是 <code>GoBar</code>。轉圈對什麼時候結束不做任何承諾。</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — 未讀圓點、「新」標籤、99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # 為 0 時自己隱藏
+GoBadge.attach(shop_button, 0, "新")
+GoBadge.attach(friend_button, 3, "", true) # 一個圓點 — 「那裡有東西」</code></pre>
+  <p>它用錨點掛在宿主的右上角，所以宿主的大小就算之後才決定，它也跟得上；對同一個宿主掛第二次，
+    回傳的是同一個徽章。數量會改變玩家行動時用數字，只需要說「那裡有東西」時用圓點。</p>
+  <p>文字顏色是照外觀替徽章塗上的底色去挑對比出來的 — 從不假設是白色 — 而且它帶有無障礙名稱，
+    因為一個有顏色的圓點，對螢幕閱讀器什麼也沒說。</p>
+</section>
+
+<section id="forms-lists">
+  <h2>表單與清單</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 會出錯的那一列</h3>
+  <p>五個欄位的表單，最上面寫一句「請檢查輸入內容」，並沒有說是<i>哪一個</i>欄位。
+    就是這一件事，讓人放棄註冊。</p>
+  <pre><code>var name_field := GoField.make("角色名稱", GoStyle.line_edit("2-12"), "之後無法變更")
+name_field.set_error("這個名稱已經有人用了")   # 伺服器說不行
+name_field.clear_error()</code></pre>
+  <p>錯誤顯示的期間提示文字會隱藏，所以那一列不會多長出一行、把底下全部往下推；
+    錯誤文字也會併進控制項的無障礙名稱裡 — 只有一圈紅色外框，對看不見紅色的人什麼也沒說。</p>
+  <p><code>GoStyle.field()</code> 是靜態版：標籤、控制項、提示文字，沒有錯誤狀態。
+    不會出錯的地方用工廠函式，伺服器有可能打回票的就用節點。</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — 和按鈕焊在一起的輸入欄</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("訊息"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("名稱"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>它解決的是圓角。兩個圓角形狀在中間碰頭，看起來像被捏了一下，而預設的間距讓它們讀起來
+    是兩個東西。外側的角維持圓的，碰在一起的那兩個角變方 — 每一種按鈕狀態都要這樣，
+    否則一按下去整組就裂開。切角外觀根本沒有圓角欄位，所以在那裡它什麼都不動，
+    方正的面自然就接得乾淨。</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 會搜尋的選擇器</h3>
+  <p>不到十項時 <code>GoStyle.select()</code> 更好：少按一下，而且整份清單都看得到。
+    超過三十項，用眼睛找就變成工作了。</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "選擇伺服器")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>搜尋會比對名稱內部，不是只比對開頭。</b>在韓文或日文的清單裡，前綴比對幾乎找不到東西 —
+    那些清單中，用來分辨兩個項目的那個詞，很少是第一個。
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — 優惠券與禮物碼</h3>
+  <p>序號從訊息裡貼上的次數，遠多於用打的。十二個真的輸入欄會讓貼上動作卡在第一格，
+    字元還會被輸入法吃掉，所以文字由一個隱藏欄位接收，格子只是畫出來的。
+    <code>ABCD-EFGH-IJKL</code> 進來的路上會把連字號去掉。</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("已經使用過了")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 可排序的標題列、可選取的資料列</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "排名", "width": 56}, {"text": "名稱"}, {"text": "分數", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>，不然排名會顛倒。</b>當成文字比較時，<code>"9124"</code> 會贏過
+    <code>"91240"</code> — 而分數、金幣與傷害的位數本來就長短不一。
+  </div>
+  <p><code>row_selected</code> 給的是你原本陣列裡的索引，不是排序後的位置。排序方向用符號表示，
+    不是只靠顏色；整列都按得動，沒有人需要去戳某一個儲存格。<code>GoStyle.table()</code>
+    仍然是唯讀的表格。</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — 頁碼，或是一列「更多」</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # 對手機比較友善的版本</code></pre>
+  <p>頁碼是滑鼠介面的東西；在手機上，一列「更多」讀起來比較順。目前頁碼會保持在視窗正中間，
+    所以按下一頁不會把每個數字重洗一次。總數給 0 表示「不知道」，這時只畫箭頭 —
+    它不會憑空生出一個沒人告訴它的頁數。</p>
+</section>
+
+<section id="game-shapes">
+  <h2>遊戲真的會用到的形狀</h2>
+  <p>網頁上熟悉的那些形狀，照遊戲真正需要的樣子重做了一遍。</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — 每日簽到</h3>
+  <p>日期選擇器在遊戲裡幾乎派不上用場。日曆的形狀倒是有用 — 用在簽到獎勵上，
+    重要的是<b>你走到第幾天</b>，而不是今天幾號。</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>只有今天那一格按得動 — 按了沒反應的按鈕，看起來就是壞的。已領取、今天與未來三種格子，
+    同時用三件事區分：勾號、強調色外框，以及變暗。</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> 與 <code>GoDonut</code> — 一眼看完的能力值</h3>
+  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)          # 虛線疊圖
+
+var share := GoDonut.make([{"label": "物理", "value": 620}, {"label": "魔法", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>雷達圖的數值是 0–1，因為「滿」是多少要由遊戲自己決定 — 把原始的 120 STR 和 45 INT
+    擺在一起，畫出來的是一個謊。環圈圖收的是原始數值，比例由它幫你算；超過五塊就把剩下的併起來，
+    因為第六塊細得像一條線，沒有人讀得出來。比較用的那條線是<b>虛線</b>，不是只換個顏色，
+    而且圖例會把百分比用文字寫出來。</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — 橫幅與角色選擇</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # 預設關閉</code></pre>
+  <p>除非你開口要，否則它不會自己往前翻；五秒是下限：三秒換一次的橫幅，會在字被讀完之前
+    就把它收走。碰它一下計時器就重來，而開了 <code>reduce_motion</code> 之後它永遠不會自己翻頁。
+    圓點雖然畫得小，按得到的範圍仍然是觸控最小尺寸。</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — 不會說謊的按鍵提示</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # 讀的是實際的按鍵設定</code></pre>
+  <p>寫死的「按 F」，在玩家改了按鍵之後還是繼續說 F — 這是 PC 介面上最常見的謊。
+    <code>for_action()</code> 會去讀 <code>InputMap</code>；如果那個動作綁的是遊戲手把，
+    它會回傳空的、控制項自己隱藏，因為顯示「無」本身也是一個謊。在 Android 與 iOS 上它會自己隱藏。</p>
+</section>
+
+<section id="overlays">
+  <h2>蓋在畫面上</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 側邊面板</h3>
+  <p><code>GoSheet</code> 從底部上來，這在直握的手機上是對的。在平板或桌機上，
+    同一張頁面會把遊戲整個蓋住；側邊面板則改從側邊進來。</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("背包")</code></pre>
+  <p>面板本身貼到螢幕邊緣，但內容留在安全區域裡面，否則圓角會把第一列切掉。<code>LEFT</code>
+    就算在阿拉伯文底下也是指螢幕左側；如果你要的是「起始那一側」，請打開
+    <code>follow_text_direction</code>，它在 RTL 下會翻邊。</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 釘住的卡片</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>這是 <code>GoSurface</code> 的錨定擺放，只是視窗層、外殼、錨點與善後都先接好了 —
+    就是每個遊戲都要重寫一遍的那十行。同一時間只會開一個，因為卡片疊起來會把畫面埋掉，
+    誰也分不出哪張卡片屬於哪一格。遮罩是透明的：你打開來比較裝備的卡片，不可以把裝備變暗。</p>
+  <div class="note warn">
+    <b>它不是滑鼠停留提示。</b>觸控沒有停留這回事，所以只有滑鼠才叫得出來的東西，
+    對你一半的玩家來說是看不見的。
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 長按與右鍵</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "使用", "action": use},
+    {"separator": true},
+    {"text": "丟棄", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> 引擎裡本來就有。沒有的是那個手勢：按住半秒才開，
+    <b>手指一動就取消</b>，所以捲動清單絕不會跳出選單。項目要看你按到誰才決定時，
+    傳一個 <code>Callable</code> 進去，而不是陣列。</p>
+  <div class="note warn">
+    <b>長按需要第二個入口。</b>沒有人會自己發現藏起來的手勢 — 請搭配一顆看得見的
+    <code>⋯</code> 按鈕（<code>open_at()</code>）、一個圖示，或是第一次進遊戲時的導覽標記。
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 開發者主控台</h3>
+  <pre><code>console.register("give", "給予道具：give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>作弊與除錯指令，附帶一個邊打邊篩選的指令面板，這樣就沒有人需要背它們，
+    方向鍵上還有歷史紀錄。它待在所有東西之上，所以你可以蓋在對話方塊上面除錯。</p>
+  <div class="note warn">
+    <b>在發行版本裡它拒絕開啟。</b><code>debug_only</code> 預設是開的；作弊指令落到玩家手上，
+    遊戲的經濟系統第一天就結束了。
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — 東西統一在一個地方產生</h2>
   <p class="sub">

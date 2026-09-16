@@ -319,6 +319,193 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>الانتظار والإخبار والعدّ</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — الرسالة التي تضع نفسها بنفسها</h3>
+  <p>يجلس في الأسفل (أو في الأعلى)، فوق المنطقة الآمنة ولوحة المفاتيح، ثم يمضي من تلقاء نفسه. وبدونه
+    تكتب الطبقة والموضع والمؤقّت والتحرير في كل شاشة عليها أن تقول "حُفظ".</p>
+  <pre><code>snack.show_text("حُفظ", GoTheme.SUCCESS)
+
+# فرصة للتراجع — 0 هو الزرّ الأول، و-1 يعني أن المهلة انتهت
+if await snack.post({"text": "أُسقط العنصر", "actions": ["تراجع"]}) == 0:
+    restore_item()</code></pre>
+  <p>الرسائل <b>تصطفّ</b> بدل أن يطمس بعضها بعضًا، وتكرارات السطر الواحد تُدمج — فخادم يفشل أربع مرات في
+    الثانية لم يعد يكدّس أربع دقائق من التنبيهات. والشريط الذي لا زرّ فيه يمرّر المدخلات، فتظلّ اللعبة
+    تحته تعمل.</p>
+  <div class="note warn">
+    <b>ليس مكانًا لطرح سؤال.</b> فهو يذهب من تلقاء نفسه، وقد لا يراه اللاعب أبدًا.
+    والتأكيدات التي لا رجعة فيها مكانها <code>GoDialogs</code>. والأزرار هنا يجب أن تكون اختيارية — تراجع،
+    تفاصيل، إعادة المحاولة.
+  </div>
+  <p>و<code>GoNotice</code> هو النصف الآخر من الزوج: فهو لا يأخذ مدخلًا ولا تركيزًا أبدًا، والشاشة المالكة
+    له هي التي تقرّر أين يذهب. وهو لا يحمل زرًّا؛ أما هذا فيحمل.</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — انتظار لا تُرى نهايته</h3>
+  <p>الألعاب التي تكلّم خادمًا تحتاج هذا أكثر من أي شيء آخر في هذه الصفحة: فالشاشة الساكنة تُقرأ على أنها
+    انهيار. واستدعاء واحد يحوّل الزرَّ الذي ضغطتَه إلى دوّارة <b>في مكانه</b>.</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>الزرّ يحتفظ بحجمه — فالنصّ يصير شفافًا بدل أن يزول، فلا يقفز الصفّ — وهو معطَّل ما دام يدور. وهذا
+    الجزء الثاني هو المقصود: فالشراء يجب ألّا ينطلق مرتين وأنت في <code>await</code>. ومع تشغيل
+    <code>reduce_motion</code> لا يدور؛ بل تنبض ثلاث نقاط بدلًا من ذلك.</p>
+  <p>والتقدّم الذي يمكن قياسه هو <code>GoBar</code>. أما الدوّارة فلا تَعِد بشيء عن موعد انتهائها.</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — نقطة غير المقروء، وعلامة «جديد»، والـ 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # يخفي نفسه عند الصفر
+GoBadge.attach(shop_button, 0, "جديد")
+GoBadge.attach(friend_button, 3, "", true) # نقطة — "هناك شيء ما"</code></pre>
+  <p>يتعلّق بالركن العلوي الأيمن للمضيف عبر المراسي، فيتبع مضيفًا يُقرَّر حجمه لاحقًا، والإلحاق مرتين يعيد
+    الشارة نفسها. استعمل عددًا حين يغيّر العددُ ما يفعله اللاعب، ونقطةً حين لا يهمّ إلا "أن هناك شيئًا".</p>
+  <p>ولون نصّه يُختار ليتباين مع أي لون صبغ به المظهرُ الشارةَ — ولا يُفترض أبيض أبدًا — وهو يحمل اسم
+    وصولية، لأن نقطة ملوّنة لا تقول شيئًا لقارئ الشاشة.</p>
+</section>
+
+<section id="forms-lists">
+  <h2>النماذج والقوائم</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — الصفّ الذي قد يكون خاطئًا</h3>
+  <p>سطر واحد في أعلى نموذج من خمسة حقول يقول "راجع ما أدخلتَه" لا يقول <i>أيّ</i> حقل. وهذا وحده هو ما
+    يجعل الناس يتركون التسجيل.</p>
+  <pre><code>var name_field := GoField.make("اسم الشخصية", GoStyle.line_edit("2-12"), "لا يمكن تغييره لاحقًا")
+name_field.set_error("هذا الاسم مأخوذ")   # قال الخادم لا
+name_field.clear_error()</code></pre>
+  <p>والتلميح يختفي ما دام الخطأ ظاهرًا، فلا يطول الصفّ سطرًا يدفع كل ما تحته، ونصّ الخطأ يُضمّ إلى اسم
+    الوصولية لعنصر التحكم — فالإطار الأحمر وحده لا يقول شيئًا لمن لا يرى الأحمر.</p>
+  <p>و<code>GoStyle.field()</code> هو النسخة الساكنة: عنوان وعنصر تحكم وتلميح، بلا حالة خطأ. استعمل المصنع
+    حين لا شيء يمكن أن يخطئ، والعقدة لكل ما يمكن أن يرفضه خادم.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — إدخال ملحوم بزرّه</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("رسالة"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("الاسم"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>ما يحلّه هو الأركان. فشكلان مدوّران يلتقيان في الوسط يبدوان منقبضين، والفجوة الافتراضية تجعلهما
+    يُقرآن شيئين منفصلين. الأركان الخارجية تبقى مدوّرة، والملتقية تصير قائمة — في كل حالات الزرّ، وإلا
+    انشقّت المجموعة لحظة الضغط. أما المظاهر المشطوفة فلا حقول أركان فيها أصلًا، فيدعها هناك على حالها
+    وتلتقي الوجوه القائمة نظيفةً.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — منتقٍ يبحث</h3>
+  <p>دون العشرة مدخلات يكون <code>GoStyle.select()</code> أفضل: ضغطة أقلّ والقائمة كلها ظاهرة.
+    وبعد الثلاثين يصير المسح بالعين عملًا.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "اختر خادمًا")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>البحث يطابق داخل الأسماء، لا بداياتها وحدها.</b> فمطابقة البادئة لا تكاد تجد شيئًا في القوائم
+    الكورية أو اليابانية، حيث الكلمة التي تفرّق بين عنصرين نادرًا ما تكون الأولى.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — رموز القسائم والهدايا</h3>
+  <p>الرمز يُلصق من رسالة أكثر بكثير مما يُكتب. واثنا عشر حقلًا حقيقيًا كانت ستكسر اللصق عند الخليّة الأولى
+    وتضيّع حروفًا في محرّر الإدخال، فحقلٌ واحد مخفيّ يأخذ النصّ والخلايا تُرسم رسمًا.
+    و<code>ABCD-EFGH-IJKL</code> يفقد شُرَطه في الطريق.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("مستعمَل من قبل")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — رؤوس تُرتَّب وصفوف تُختار</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "الرتبة", "width": 56}, {"text": "الاسم"}, {"text": "النقاط", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>، وإلا انقلب الترتيب.</b> فبالمقارنة نصًّا يتفوّق <code>"9124"</code> على
+    <code>"91240"</code> — والنقاط والذهب والضرر كلها أعداد خاناتها متفاوتة.
+  </div>
+  <p>و<code>row_selected</code> يعطي الفهرس في مصفوفتك الأصلية، لا الموضع بعد الترتيب. واتجاه الترتيب
+    يظهر برسمٍ لا بلون وحده، والصفوف كلها تُضغط فلا يضطر أحد إلى إصابة خليّة واحدة. أما
+    <code>GoStyle.table()</code> فيظلّ الشبكة للقراءة فقط.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — صفحات، أو صفّ «المزيد»</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # النسخة الملائمة للهاتف</code></pre>
+  <p>الأرقام واجهة فأرة؛ وعلى الهاتف يُقرأ صفّ «المزيد» أفضل. والصفحة الحالية تبقى متوسّطة في النافذة،
+    فالضغط على التالي لا يعيد خلط كل رقم. والمجموع 0 يعني "غير معروف" فتُرسم الأسهم وحدها — فهو لا يخترع
+    عدد صفحات لم يُعطَه.</p>
+</section>
+
+<section id="game-shapes">
+  <h2>أشكال تستعملها الألعاب فعلًا</h2>
+  <p>أشكال مألوفة من الويب، أُعيد بناؤها حول ما تحتاجه اللعبة منها.</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — الحضور اليومي</h3>
+  <p>منتقي التواريخ لا يكاد ينفع في لعبة أبدًا. أما شكل التقويم فينفع — لمكافآت الحضور، حيث المهمّ هو
+    <b>في أي يوم أنت</b>، لا ما هو التاريخ.</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>خليّة اليوم وحدها هي التي تُضغط — فالزرّ الذي لا يفعل شيئًا عند ضغطه يُقرأ على أنه معطوب. والمستلَم
+    واليومُ والقادمُ تختلف بثلاثة أشياء معًا: علامة صحّ، وإطار بلون التمييز، وإعتام.</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> و<code>GoDonut</code> — الإحصاءات بنظرة</h3>
+  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)          # طبقة متقطّعة فوقها
+
+var share := GoDonut.make([{"label": "فيزيائي", "value": 620}, {"label": "سحري", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>قيم الرادار بين 0 و1 لأن ما يُعدّ ملئًا قرارٌ تتخذه اللعبة — فـ120 STR خامًا بجانب 45 INT كانت سترسم
+    كذبة. أما قيم الدونت فخام وهو يقسمها عنك؛ وبعد خمس شرائح يطوي الباقي، إذ إن الشريحة السادسة خيطٌ لا
+    يقرؤه أحد. وخطّ المقارنة <b>متقطّع</b>، لا مجرّد لون آخر، ومفتاح الرسم يطبع النسبة المئوية كتابةً.</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — اللافتات واختيار الشخصية</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # مطفأ افتراضيًا</code></pre>
+  <p>هو لا يتقدّم من تلقاء نفسه ما لم تطلب، والخمس ثوانٍ هي الحدّ الأدنى: فلافتة تتغيّر كل ثلاث تسحب النصّ
+    قبل أن يُقرأ. ولمسه يصفّر المؤقّت، ومع تشغيل <code>reduce_motion</code> لا يتقدّم من تلقاء نفسه أبدًا.
+    والنقاط تُضغط بالحدّ الأدنى للمس وإن كانت النقطة المرسومة صغيرة.</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — تلميحات مفاتيح لا تكذب</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # يقرأ الارتباط الحقيقي</code></pre>
+  <p>عبارة "اضغط F" المكتوبة في الكود تظلّ تقول F بعد أن يغيّر اللاعب الارتباط — وهي أشيع كذبة في واجهات
+    الحاسوب. و<code>for_action()</code> يقرأ <code>InputMap</code>؛ فإن كان الفعل مرتبطًا بذراع تحكم بدلًا
+    من ذلك، أعاد فراغًا واختفت الودجة، لأن "لا شيء" ستكون كذبة أخرى. وعلى أندرويد وiOS يخفي نفسه.</p>
+</section>
+
+<section id="overlays">
+  <h2>فوق الشاشة</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — اللوحة الجانبية</h3>
+  <p><code>GoSheet</code> يأتي من الأسفل، وهو الصواب لهاتف يُمسك قائمًا. أما على لوح أو سطح مكتب فالورقة
+    نفسها تغطّي اللعبة؛ والدرج يأتي من الجانب بدلًا من ذلك.</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("الحقيبة")</code></pre>
+  <p>اللوحة تبلغ حافة الشاشة لكن المحتوى يبقى داخل المنطقة الآمنة، وإلا قصّ ركنٌ مدوّر الصفَّ الأول.
+    و<code>LEFT</code> تعني يسار الشاشة حتى في العربية؛ فشغّل <code>follow_text_direction</code> حين يكون
+    المقصود "جهة البداية"، فينقلب مع الكتابة من اليمين إلى اليسار.</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — البطاقة المثبّتة</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>هذا هو الموضع المثبّت من <code>GoSurface</code> وقد وُصلت له الطبقةُ والسطحُ والمرساةُ والتحريرُ سلفًا
+    — تلك الأسطر العشرة التي تكتبها كل لعبة مرارًا وتكرارًا. وواحدة تُفتح في المرة، لأن البطاقات المكدّسة
+    تدفن الشاشة فلا يعرف أحد أي بطاقة تخصّ أي خانة. والحجاب شفاف: فبطاقة فتحتَها لتقارن عتادًا يجب ألّا
+    تُعتم العتاد.</p>
+  <div class="note warn">
+    <b>ليس تلميحًا يظهر بتمرير الفأرة.</b> فاللمس لا تمرير فيه، وكل ما لا تكشفه إلا الفأرة غير مرئي
+    لنصف لاعبيك.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — الضغط المطوَّل والنقر الأيمن</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "استعمال", "action": use},
+    {"separator": true},
+    {"text": "إسقاط", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> موجود في المحرّك أصلًا. أما غير الموجود فالإيماءة: نصف ثانية للفتح، وتُلغى
+    <b>لحظة تحرّك الإصبع</b>، فتمرير قائمة لا يُظهر قائمة سياق أبدًا. ومرّر <code>Callable</code> بدل
+    مصفوفة حين تعتمد المدخلات على ما ضغطتَ عليه.</p>
+  <div class="note warn">
+    <b>الضغط المطوَّل يحتاج مدخلًا ثانيًا.</b> فلا أحد يكتشف إيماءة مخفيّة — اقرنه بزرّ <code>⋯</code>
+    ظاهر (<code>open_at()</code>)، أو أيقونة، أو علامة إرشادية عند أول تشغيل.
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — وحدة تحكّم المطوّر</h3>
+  <pre><code>console.register("give", "امنح عنصرًا: give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>أوامر الغشّ والتنقيح، مع لوحة أوامر تُرشّح وأنت تكتب فلا يضطر أحد إلى حفظها، وسجلّ على مفاتيح الأسهم.
+    وهي تجلس فوق كل شيء، فتستطيع أن تنقّح فوق مربع حوار.</p>
+  <div class="note warn">
+    <b>ترفض أن تُفتح في بناء إصدار.</b> فـ<code>debug_only</code> مشغّل افتراضيًا؛ وأوامر الغشّ في يد لاعب
+    تنهي اقتصاد اللعبة في اليوم الأول.
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — المكان الواحد الذي تُصنع فيه الأشياء</h2>
   <p class="sub">

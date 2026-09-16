@@ -310,6 +310,192 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>等待、告知、计数</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> —— 会自己找位置的消息条</h3>
+  <p>它待在屏幕底部（或者顶部），避开安全区域和虚拟键盘，然后自己退场。没有它，每一个需要说一句
+    “已保存”的界面，都得自己写一遍图层、摆放、计时和拆除。</p>
+  <pre><code>snack.show_text("已保存", GoTheme.SUCCESS)
+
+# 给一次撤销的机会 —— 0 是第一个按钮，-1 表示它自己超时消失了
+if await snack.post({"text": "物品已丢弃", "actions": ["撤销"]}) == 0:
+    restore_item()</code></pre>
+  <p>消息会<b>排队</b>，而不是互相覆盖；重复的同一句会被合并 —— 一秒失败四次的服务器，
+    不会再堆出四分钟的提示。没有按钮的消息条会放行输入，底下的游戏照常运行。</p>
+  <div class="note warn">
+    <b>它不是用来发问的地方。</b> 它会自己消失，所以玩家可能根本没看见。
+    不可撤销的确认请交给 <code>GoDialogs</code>。这里的按钮必须是可有可无的 —— 撤销、
+    详情、重试。
+  </div>
+  <p><code>GoNotice</code> 是这一对里的另一半：它从不接收输入、也不抢焦点，放在哪儿由拥有它的
+    那个界面决定。它挂不了按钮，而这个挂得了。</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> —— 看不到尽头的等待</h3>
+  <p>要和服务器打交道的游戏，本页上最需要的就是它：一个纹丝不动的界面，读起来就是卡死了。
+    一次调用，就把你按下的那颗按钮<b>就地</b>换成一个转圈。</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>按钮会保住原来的尺寸 —— 文字是变透明，而不是被拿走，所以这一行不会跳动 ——
+    而且转圈期间它是禁用的。后面这半句才是重点：在你 <code>await</code> 的时候，
+    一次购买绝不能触发两次。打开 <code>reduce_motion</code> 之后它不转圈，改成三个点在呼吸。</p>
+  <p>量得出来的进度用 <code>GoBar</code>。转圈对什么时候结束不作任何承诺。</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> —— 未读的小圆点、NEW 角标、99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # 为 0 时自己隐藏
+GoBadge.attach(shop_button, 0, "NEW")
+GoBadge.attach(friend_button, 3, "", true) # 一个点 —— “那儿有东西”</code></pre>
+  <p>它靠锚点挂在宿主的右上角，所以宿主的尺寸就算是之后才定下来，它也跟得上；对同一个宿主挂两次，
+    拿回的是同一个角标。数量会左右玩家下一步动作时用数字，只是“那儿有东西”时用点。</p>
+  <p>它的文字颜色，是照着皮肤给角标涂的那个底色算对比度挑出来的 —— 从不想当然地用白色 ——
+    而且它带着无障碍名称，因为一个彩色的点，对读屏软件什么都没说。</p>
+</section>
+
+<section id="forms-lists">
+  <h2>表单与列表</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> —— 会出错的那一行</h3>
+  <p>五个字段的表单，顶上只有一句“请检查输入”，并没有说是<i>哪一个</i>字段。
+    就是这一件事，让人放弃了注册。</p>
+  <pre><code>var name_field := GoField.make("角色名", GoStyle.line_edit("2-12"), "之后无法修改")
+name_field.set_error("这个名字已经被占用了")   # 服务器说不行
+name_field.clear_error()</code></pre>
+  <p>错误显示期间提示会隐藏，这一行就不会多长出一行、把下面的东西整个顶下去；
+    错误文字还会并进控件的无障碍名称 —— 对看不见红色的人来说，光一圈红边什么都没说。</p>
+  <p><code>GoStyle.field()</code> 是静态版本：标签、控件、提示，没有错误状态。
+    不会出错的地方用工厂方法，可能被服务器打回来的地方用这个节点。</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> —— 和按钮焊在一起的输入框</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("消息"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("名字"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>它解决的是圆角。两个圆角形状在中间相接，看着像被掐了一下；而默认的那道间距，
+    又让它们读成两样东西。外侧的角保持圆的，相接的那两个角改成直角 —— 按钮的每一种状态都得这么做，
+    否则一按下去这一组就裂开了。切角风格的皮肤根本没有圆角字段，所以在那里它就不去动，
+    平直的两个面自然接得干净。</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> —— 能搜索的选择器</h3>
+  <p>不到十条时 <code>GoStyle.select()</code> 更好：少按一下，而且整张列表都看得见。
+    超过三十条，一条条找就成了体力活。</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "选择服务器")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>搜索匹配的是名字内部，不只是开头。</b> 在韩文或日文的列表里，前缀匹配几乎搜不到东西 ——
+    区分两个条目的那个词，很少是排在最前面的那一个。
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> —— 兑换码和礼品码</h3>
+  <p>兑换码从消息里粘贴过来的次数，远远多于一个个敲进去。十二个真的输入框，会让粘贴卡在第一格，
+    还会被输入法吃掉字符 —— 所以文字交给一个隐藏的输入框接住，格子只是画出来的。
+    <code>ABCD-EFGH-IJKL</code> 进来的路上会自己去掉短横线。</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("已经用过了")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> —— 可排序的表头、可选中的行</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "排名", "width": 56}, {"text": "名字"}, {"text": "分数", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b>要写 <code>numeric: true</code>，否则排名会反过来。</b> 按文本比较时，<code>"9124"</code> 会排在
+    <code>"91240"</code> 前面 —— 而分数、金币和伤害，位数本来就是长短不一的。
+  </div>
+  <p><code>row_selected</code> 给的是你原始数组里的下标，不是排序之后的位置。排序方向用一个字形来表示，
+    不只靠颜色；整行都按得下去，谁也不必去戳某一个单元格。<code>GoStyle.table()</code> 仍然是只读的表格。</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> —— 页码，或者一行“更多”</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # 对手机更友好的那一种</code></pre>
+  <p>页码是鼠标用的界面；在手机上，一行“更多”读起来更顺。当前页始终停在窗口中间，
+    所以按下一页不会把每个数字都重新洗一遍。总数为 0 表示“未知”，这时只画箭头 ——
+    它不会替你编一个没人告诉过它的总页数。</p>
+</section>
+
+<section id="game-shapes">
+  <h2>游戏真正用得上的形态</h2>
+  <p>那些网页上眼熟的形态，按游戏真正要从它们身上拿到的东西重做了一遍。</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> —— 每日签到</h3>
+  <p>日期选择器在游戏里几乎派不上用场，日历这个形态却用得上 —— 用在签到奖励上，
+    要紧的是<b>你签到到第几天了</b>，而不是今天几号。</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>只有今天这一格按得动 —— 一颗按下去什么都不发生的按钮，看上去就是坏的。已领取、今天和将来
+    这三种，同时靠三样东西区分开：一个对勾字形、一圈强调色描边，以及变暗。</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> 和 <code>GoDonut</code> —— 一眼看完的属性</h3>
+  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)          # 一层虚线叠上去
+
+var share := GoDonut.make([{"label": "物理", "value": 620}, {"label": "魔法", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>雷达图的数值是 0–1，因为“满”算到哪里是游戏自己的决定 —— 把原始的 120 点力量和 45 点智力
+    并排画出来，画出来的是一句谎话。环形图给的是原始值，占比由它替你除；超过五块它会把剩下的合起来，
+    因为第六块只是一根谁都读不出来的细线。对比线是<b>虚线</b>，而不只是换一个颜色；
+    图例会把百分比用文字写出来。</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> —— 横幅和角色选择</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # 默认关闭</code></pre>
+  <p>你不开口，它就不会自己往下翻；五秒是下限：三秒一换的横幅，字还没读完就被拿走了。
+    手一碰上去计时就重置；打开 <code>reduce_motion</code> 之后它绝不自己翻页。
+    那排小圆点画出来虽小，按得到的范围却是触摸下限那么大。</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> —— 不会骗人的按键提示</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # 读的是真正的按键绑定</code></pre>
+  <p>写死的“按 F”，在玩家改键之后还在说 F —— 这是 PC 界面里最常见的一句谎话。
+    <code>for_action()</code> 读的是 <code>InputMap</code>；要是这个动作绑到了手柄上，
+    它会返回空、控件跟着隐藏，因为写一个“无”本身也是一句谎话。在 Android 和 iOS 上它会自己藏起来。</p>
+</section>
+
+<section id="overlays">
+  <h2>盖在屏幕之上</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> —— 侧边抽屉</h3>
+  <p><code>GoSheet</code> 是从底部升上来的，这对竖着拿的手机是对的。可在平板或者桌面上，
+    同一张面板会把游戏盖住 —— 这时候换成从侧边推出来的抽屉。</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("背包")</code></pre>
+  <p>面板一直铺到屏幕边缘，内容却留在安全区域里面，否则一个圆角就把第一行裁掉了。
+    <code>LEFT</code> 即使在阿拉伯语下也是指屏幕的左边；要是你要的是“开始的那一侧”，
+    请打开 <code>follow_text_direction</code>，它在 RTL 下会翻过来。</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> —— 贴着控件的卡片</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>它就是 <code>GoSurface</code> 的贴靠摆放，只不过图层、外壳、锚点和拆除都已经接好了 ——
+    每个游戏都要反复写的那十行。同一时间只开着一张，因为卡片叠起来会把屏幕埋掉，
+    谁也分不清哪张卡片属于哪个格子。遮罩是透明的：你打开一张卡片本来是为了比较装备，
+    它就不该把装备压暗。</p>
+  <div class="note warn">
+    <b>它不是悬停提示。</b> 触摸屏没有悬停，所以只有鼠标才揭得开的东西，
+    对你一半的玩家来说是不存在的。
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> —— 长按与右键</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "使用", "action": use},
+    {"separator": true},
+    {"text": "丢弃", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> 引擎里本来就有。没有的是那个手势：按住半秒才打开，
+    <b>手指一动就取消</b>，这样滑动列表时绝不会弹出菜单。菜单项要看你按的是谁才定得下来时，
+    传一个 <code>Callable</code>，而不是数组。</p>
+  <div class="note warn">
+    <b>长按需要第二个入口。</b> 藏起来的手势没人发现得了 —— 请给它配上一颗看得见的
+    <code>⋯</code> 按钮（<code>open_at()</code>）、一个图标，或者第一次进来时的一次引导。
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> —— 开发者控制台</h3>
+  <pre><code>console.register("give", "发放一件物品：give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>作弊和调试命令；命令面板会随着你输入即时筛选，谁也不用背下来，方向键上还留着历史记录。
+    它盖在所有东西之上，所以对话框开着也照样调试。</p>
+  <div class="note warn">
+    <b>在正式版里它拒绝打开。</b> <code>debug_only</code> 默认是开着的；
+    作弊命令一旦落到玩家手里，一款游戏的经济系统第一天就完了。
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> —— 所有东西都在同一处造出来</h2>
   <p class="sub">

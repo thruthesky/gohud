@@ -319,6 +319,196 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>기다리기, 알리기, 세기</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — 스스로 자리를 잡는 메시지</h3>
+  <p>화면 아래(또는 위), 안전영역과 가상 키보드 위에 앉았다가 혼자 사라진다. 이것이 없으면 "저장했습니다"
+    한마디를 띄우는 화면마다 레이어·배치·타이머·정리 코드를 다시 쓴다.</p>
+  <pre><code>snack.show_text("저장했습니다", GoTheme.SUCCESS)
+
+# 되돌릴 기회 — 0 은 첫 버튼, -1 은 시간이 다 된 것
+if await snack.post({"text": "아이템을 버렸습니다", "actions": ["되돌리기"]}) == 0:
+    restore_item()</code></pre>
+  <p>메시지는 서로 덮어쓰지 않고 <b>줄을 선다</b>. 같은 문장이 되풀이되면 하나로 합친다 — 1초에 네 번
+    실패하는 서버가 4분치 알림을 쌓아 올리는 일이 없다. 버튼 없는 스낵바는 입력을 그대로 통과시키므로
+    아래의 게임은 계속 돈다.</p>
+  <div class="note warn">
+    <b>무언가를 묻는 자리가 아니다.</b> 스스로 사라지니 플레이어는 끝내 못 볼 수도 있다.
+    되돌릴 수 없는 확인은 <code>GoDialogs</code> 의 몫이다. 여기 버튼은 눌러도 되고 안 눌러도 되는
+    것이어야 한다 — 되돌리기, 자세히, 다시 시도.
+  </div>
+  <p><code>GoNotice</code> 는 짝을 이루는 나머지 반쪽이다. 입력도 포커스도 절대 가져가지 않고, 어디에
+    둘지는 그것을 가진 화면이 정한다. 그쪽은 버튼을 달 수 없고, 이쪽은 달 수 있다.</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — 끝이 보이지 않는 기다림</h3>
+  <p>서버와 이야기하는 게임에는 이 페이지의 무엇보다 이것이 먼저 필요하다 — 가만히 서 있는 화면은
+    멈춘 게임으로 읽힌다. 한 줄이면 방금 누른 버튼이 <b>그 자리에서</b> 스피너가 된다.</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>버튼은 크기를 지킨다 — 글자가 없어지는 게 아니라 투명해지므로 줄이 튀지 않는다 — 그리고 도는 동안
+    눌리지 않는다. 뒤쪽이 핵심이다: <code>await</code> 하는 사이에 결제가 두 번 나가면 안 된다.
+    <code>reduce_motion</code> 이면 돌지 않고 점 세 개가 깜박인다.</p>
+  <p>잴 수 있는 진행은 <code>GoBar</code> 다. 스피너는 언제 끝나는지 아무것도 약속하지 않는다.</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — 안 읽은 점, NEW 딱지, 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # 0 이면 스스로 숨는다
+GoBadge.attach(shop_button, 0, "NEW")
+GoBadge.attach(friend_button, 3, "", true) # 점 하나 — "뭔가 있다"</code></pre>
+  <p>앵커로 대상의 오른쪽 위 모서리에 매달리므로 크기가 나중에 정해지는 대상도 따라간다. 두 번 붙이면
+    같은 배지를 돌려준다. 개수가 플레이어의 행동을 바꾸면 숫자를, "뭔가 있다" 만 중요하면 점을 쓴다.</p>
+  <p>글자 색은 스킨이 배지를 어떤 색으로 칠했든 그 색과의 대비로 고른다 — 흰색이라고 넘겨짚지 않는다 —
+    그리고 접근성 이름을 함께 단다. 색깔 점 하나는 화면 낭독기에 아무 말도 하지 않기 때문이다.</p>
+</section>
+
+<section id="forms-lists">
+  <h2>폼과 목록</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 틀릴 수 있는 줄</h3>
+  <p>입력 칸이 다섯인 폼 맨 위에 "입력을 확인하세요" 한 줄이 떠도, 그것은 <i>어느 칸</i>인지 말해 주지
+    않는다. 가입을 도중에 그만두게 만드는 것은 딱 그 하나다.</p>
+  <pre><code>var name_field := GoField.make("캐릭터 이름", GoStyle.line_edit("2~12자"), "나중에 바꿀 수 없습니다")
+name_field.set_error("이미 쓰고 있는 이름입니다")   # 서버가 거절했다
+name_field.clear_error()</code></pre>
+  <p>오류가 떠 있는 동안 도움말은 숨는다 — 줄이 한 줄만큼 자라 아래를 전부 밀어내지 않게. 그리고 오류
+    문구는 컨트롤의 접근성 이름에 함께 붙는다. 빨간 테두리만으로는 빨강을 못 보는 사람에게 아무 말도
+    되지 않는다.</p>
+  <p><code>GoStyle.field()</code> 는 고정된 쪽이다 — 라벨·컨트롤·도움말, 오류 상태는 없다. 틀릴 일이
+    없으면 팩토리를, 서버가 거절할 수 있는 것에는 노드를 쓴다.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — 버튼과 한 덩어리로 붙은 입력칸</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("메시지"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("이름"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>이것이 푸는 문제는 모서리다. 둥근 두 모양이 가운데서 만나면 잘록해 보이고, 기본 간격까지 있으면
+    따로 노는 두 물건으로 읽힌다. 바깥 모서리는 둥근 채로 두고 맞닿는 쪽만 각지게 한다 — 버튼의 모든
+    상태에서. 아니면 누르는 순간 덩어리가 갈라진다. 모서리를 깎아 낸 스킨에는 모서리 항목 자체가
+    없으므로 거기서는 손대지 않고, 각진 면끼리 깔끔하게 만난다.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 검색되는 고르개</h3>
+  <p>항목이 열 개 아래면 <code>GoStyle.select()</code> 가 낫다 — 누르는 횟수가 하나 줄고 목록이 한눈에
+    다 보인다. 서른을 넘으면 눈으로 훑는 것이 일이 된다.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "서버를 고르세요")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>검색은 이름의 첫머리가 아니라 이름 안을 본다.</b> 앞글자만 맞춰서는 한국어·일본어 목록에서 거의
+    아무것도 찾지 못한다 — 두 항목을 갈라 주는 낱말이 맨 앞에 오는 일은 드물다.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — 쿠폰·선물 코드</h3>
+  <p>코드는 손으로 치기보다 메시지에서 붙여넣는 경우가 훨씬 많다. 진짜 입력칸을 열두 개 두면 붙여넣기가
+    첫 칸에서 끊기고 IME 에 글자를 잃는다. 그래서 글자는 숨은 입력칸 하나가 받고 칸은 그려서 보여 준다.
+    <code>ABCD-EFGH-IJKL</code> 은 들어오는 길에 붙임표를 떼어 낸다.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("이미 사용한 코드입니다")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 정렬되는 머리줄, 눌리는 줄</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "순위", "width": 56}, {"text": "이름"}, {"text": "점수", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code> 를 빠뜨리면 순위가 뒤집힌다.</b> 글자로 견주면 <code>"9124"</code> 가
+    <code>"91240"</code> 를 이긴다 — 점수도 골드도 피해량도 자릿수가 제각각이다.
+  </div>
+  <p><code>row_selected</code> 는 정렬된 자리가 아니라 원래 배열의 인덱스를 준다. 정렬 방향은 색만이 아니라
+    글리프로 보여 주고, 줄 전체가 눌리므로 칸 하나를 겨눌 필요가 없다. 읽기 전용 격자는 여전히
+    <code>GoStyle.table()</code> 이다.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — 쪽 번호, 아니면 더 보기 줄</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # 모바일에 어울리는 쪽</code></pre>
+  <p>번호는 마우스의 UI 다. 휴대폰에서는 더 보기 줄이 더 잘 읽힌다. 지금 쪽은 늘 창 가운데에 머무르므로
+    다음을 눌러도 번호가 통째로 뒤섞이지 않는다. 총 개수 0 은 "모른다" 는 뜻이고 화살표만 그린다 —
+    받지 않은 쪽 수를 지어내지 않는다.</p>
+</section>
+
+<section id="game-shapes">
+  <h2>게임이 실제로 쓰는 모양</h2>
+  <p>웹에서 익숙한 모양들을, 게임이 그것에 바라는 것에 맞춰 다시 지었다.</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — 출석 보상</h3>
+  <p>날짜 고르개가 게임에서 쓸모 있는 일은 거의 없다. 달력 모양은 다르다 — 출석 보상에서 중요한
+    것은 며칠인가가 아니라 <b>몇 일째인가</b>이기 때문이다.</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>누를 수 있는 것은 오늘 칸뿐이다 — 눌러도 아무 일 없는 버튼은 고장으로 읽힌다. 받은 날·오늘·앞으로
+    올 날은 세 가지로 한꺼번에 갈라진다: 체크 글리프, 강조 테두리, 흐림.</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> 와 <code>GoDonut</code> — 능력치를 한눈에</h3>
+  <pre><code>var stats := GoRadar.make({"힘": 0.85, "민첩": 0.5, "지능": 0.3, "체력": 0.7, "행운": 0.45})
+stats.set_compare(with_new_sword)          # 점선으로 겹쳐 그린다
+
+var share := GoDonut.make([{"label": "물리", "value": 620}, {"label": "마법", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>레이더 값이 0~1 인 것은 무엇을 가득으로 볼지가 게임의 결정이기 때문이다 — 힘 120 을 지능 45 옆에
+    날것 그대로 그리면 거짓말을 그리게 된다. 도넛 값은 날것 그대로 넣으면 나누는 일은 알아서 한다.
+    조각이 다섯을 넘으면 나머지를 하나로 접는다 — 여섯 번째 조각은 아무도 읽을 수 없는 실오라기다.
+    비교선은 색만 다른 것이 아니라 <b>점선</b>이고, 범례는 비율을 글자로도 적는다.</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — 배너와 캐릭터 선택</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # 기본은 꺼져 있다</code></pre>
+  <p>시키지 않으면 스스로 넘어가지 않고, 5초가 하한이다 — 3초마다 바뀌는 배너는 글을 다 읽기도 전에 글을
+    걷어 간다. 손을 대면 타이머가 처음부터 다시 가고, <code>reduce_motion</code> 이면 스스로는 절대
+    넘어가지 않는다. 점은 작게 그려져도 터치 최소 크기로 눌린다.</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — 거짓말하지 않는 키 안내</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # 실제 배정된 키를 읽는다</code></pre>
+  <p>코드에 박아 넣은 "F 를 누르세요" 는 플레이어가 키를 바꾼 뒤에도 계속 F 라고 말한다 — PC UI 에서
+    가장 흔한 거짓말이다. <code>for_action()</code> 은 <code>InputMap</code> 을 읽는다. 그 동작이 패드에만
+    배정되어 있으면 빈 값을 돌려주고 위젯은 숨는다. "없음" 이라고 적는 것 역시 또 하나의 거짓말이기
+    때문이다. Android 와 iOS 에서는 스스로 숨는다.</p>
+</section>
+
+<section id="overlays">
+  <h2>화면 위에</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 옆에서 나오는 판</h3>
+  <p><code>GoSheet</code> 는 아래에서 올라온다. 세워 쥔 휴대폰에는 그게 맞다. 태블릿이나 데스크톱에서는
+    같은 시트가 게임을 덮어 버린다 — 그 자리에는 옆에서 나오는 판을 쓴다.</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("가방")</code></pre>
+  <p>판은 화면 끝까지 가지만 내용은 안전영역 안에 머문다. 아니면 둥근 모서리가 첫 줄을 잘라 먹는다.
+    <code>LEFT</code> 는 아랍어에서도 화면의 왼쪽이다. "글이 시작하는 쪽" 이 요점이라면
+    <code>follow_text_direction</code> 을 켠다 — RTL 에서 좌우가 뒤집힌다.</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 붙어서 뜨는 카드</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p><code>GoSurface</code> 의 붙는 배치에 레이어·표면·기준 컨트롤·정리까지 미리 이어 둔 것이다 —
+    게임마다 몇 번이고 다시 쓰는 그 열 줄. 한 번에 하나만 열린다. 카드가 겹겹이 쌓이면 화면이 묻히고
+    어느 카드가 어느 칸의 것인지 아무도 알 수 없다. 스크림은 투명하다 — 장비를 견주려고 연 카드가 그
+    장비를 어둡게 만들면 안 된다.</p>
+  <div class="note warn">
+    <b>마우스를 올리면 뜨는 툴팁이 아니다.</b> 터치에는 올려 두는 동작이 없다. 마우스로만 드러나는 것은
+    플레이어의 절반에게는 없는 것과 같다.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 길게 누르기와 오른쪽 클릭</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "사용", "action": use},
+    {"separator": true},
+    {"text": "버리기", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> 는 엔진에 이미 있다. 없는 것은 제스처다 — 0.5초를 눌러야 열리고,
+    <b>손가락이 움직이는 순간</b> 취소된다. 그래서 목록을 넘기다가 메뉴가 튀어나오는 일이 없다. 무엇을
+    눌렀느냐에 따라 항목이 달라지면 배열 대신 <code>Callable</code> 을 넘긴다.</p>
+  <div class="note warn">
+    <b>길게 누르기에는 두 번째 길이 있어야 한다.</b> 숨은 제스처를 스스로 찾아내는 사람은 없다 — 눈에
+    보이는 <code>⋯</code> 버튼(<code>open_at()</code>)이나 아이콘, 아니면 첫 실행 안내 투어를 함께 둔다.
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 개발자 콘솔</h3>
+  <pre><code>console.register("give", "아이템 지급: give &lt;id&gt; &lt;개수&gt;", give)
+console.toggle()</code></pre>
+  <p>치트와 디버그 명령을 둔다. 치는 대로 걸러 주는 목록이 있어 아무도 명령을 외울 필요가 없고, 화살표
+    키에 기록이 남는다. 무엇보다 위에 있으므로 확인창 위에서도 디버그할 수 있다.</p>
+  <div class="note warn">
+    <b>릴리스 빌드에서는 열리기를 거부한다.</b> <code>debug_only</code> 는 기본으로 켜져 있다. 치트 명령이
+    플레이어 손에 들어가면 게임의 경제는 첫날에 끝난다.
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — 만드는 자리를 하나로</h2>
   <p class="sub">

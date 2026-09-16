@@ -323,6 +323,197 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>Waiting, telling, counting</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — the message that places itself</h3>
+  <p>Sits at the bottom (or the top), above the safe area and the keyboard, and leaves on its own. Without it
+    you write the layer, the placement, the timer and the teardown on every screen that has to say "saved".</p>
+  <pre><code>snack.show_text("Saved", GoTheme.SUCCESS)
+
+# A chance to undo — 0 is the first button, -1 means it timed out
+if await snack.post({"text": "Item dropped", "actions": ["Undo"]}) == 0:
+    restore_item()</code></pre>
+  <p>Messages <b>queue</b> instead of overwriting each other, and repeats of the same line are merged — a
+    server failing four times a second no longer stacks four minutes of alerts. A snackbar with no button
+    lets input through, so the game underneath keeps running.</p>
+  <div class="note warn">
+    <b>It is not a place to ask something.</b> It goes away by itself, so the player may never see it.
+    Irreversible confirmations belong in <code>GoDialogs</code>. Buttons here must be optional — Undo,
+    Details, Retry.
+  </div>
+  <p><code>GoNotice</code> is the other half of the pair: it never takes input or focus, and the screen that
+    owns it decides where it goes. It cannot hold a button; this can.</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — a wait with no end in sight</h3>
+  <p>Games that talk to a server need this more than anything else on this page: a screen that sits still
+    reads as a crash. One call turns the button you pressed into a spinner <b>in place</b>.</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>The button keeps its size — the label goes transparent rather than away, so the row does not jump — and
+    it is disabled while it spins. That second part is the point: a purchase must not fire twice while you
+    <code>await</code>. With <code>reduce_motion</code> on it does not spin; three dots pulse instead.</p>
+  <p>Progress you can measure is a <code>GoBar</code>. A spinner promises nothing about when it ends.</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — the unread dot, the NEW tag, the 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # hides itself at zero
+GoBadge.attach(shop_button, 0, "NEW")
+GoBadge.attach(friend_button, 3, "", true) # a dot — "something is there"</code></pre>
+  <p>It hangs on the host's top-right corner with anchors, so it follows a host whose size is decided later,
+    and attaching twice returns the same badge. Use a number when the count changes what the player does,
+    a dot when only "there is something" matters.</p>
+  <p>Its text colour is chosen for contrast against whatever colour the skin painted the badge — never
+    assumed white — and it carries an accessible name, because a coloured dot says nothing to a screen reader.</p>
+</section>
+
+<section id="forms-lists">
+  <h2>Forms and lists</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — the row that can be wrong</h3>
+  <p>One line at the top of a five-field form saying "check your input" does not say <i>which</i> field. That
+    single thing is what makes people abandon a sign-up.</p>
+  <pre><code>var name_field := GoField.make("Character name", GoStyle.line_edit("2-12"), "Cannot be changed later")
+name_field.set_error("That name is taken")   # the server said no
+name_field.clear_error()</code></pre>
+  <p>The hint hides while an error shows, so the row does not grow by a line and push everything below it,
+    and the error text is joined into the control's accessible name — a red border alone says nothing to
+    someone who cannot see red.</p>
+  <p><code>GoStyle.field()</code> is the static version: label, control, hint, no error state. Use the factory
+    when nothing can go wrong and the node for anything a server can reject.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — an input welded to its button</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Name"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>What it solves is corners. Two rounded shapes meeting in the middle look pinched, and the default gap
+    makes them read as two objects. Outer corners stay round, touching ones go square — in every button
+    state, or the group splits the moment it is pressed. Chamfered skins have no corner fields at all, so
+    there it leaves them alone and the square faces meet cleanly.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — a picker that searches</h3>
+  <p>Under ten entries <code>GoStyle.select()</code> is better: one less tap and the whole list is visible.
+    Past thirty, scanning is work.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "Choose a server")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>The search matches inside names, not just their start.</b> Prefix matching finds almost nothing in
+    Korean or Japanese lists, where the word that tells two items apart is rarely the first one.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — coupon and gift codes</h3>
+  <p>A code is pasted from a message far more often than it is typed. Twelve real fields would break pasting
+    at the first cell and lose characters to an IME, so one hidden field takes the text and the cells are
+    drawn. <code>ABCD-EFGH-IJKL</code> loses its dashes on the way in.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Already used")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — sortable headers, selectable rows</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>, or the ranking inverts.</b> Compared as text, <code>"9124"</code> beats
+    <code>"91240"</code> — and scores, gold and damage all have mixed digit counts.
+  </div>
+  <p><code>row_selected</code> gives the index in your original array, not the sorted position. The sort
+    direction is shown with a glyph, not only a colour, and whole rows are pressable so nobody has to hit one
+    cell. <code>GoStyle.table()</code> remains the read-only grid.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — pages, or a More row</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # the mobile-friendly variant</code></pre>
+  <p>Numbers are a mouse UI; on a phone the More row reads better. The current page stays centred in the
+    window, so pressing next does not reshuffle every number. A total of 0 means "unknown" and only the
+    arrows are drawn — it does not invent a page count it was not given.</p>
+</section>
+
+<section id="game-shapes">
+  <h2>Shapes games actually use</h2>
+  <p>Familiar web shapes, rebuilt around what a game needs from them.</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — daily attendance</h3>
+  <p>A date picker is almost never useful in a game. A calendar shape is — for attendance rewards, where
+    what matters is <b>which day you are on</b>, not which date it is.</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>Only today's cell can be pressed — a button that does nothing when pressed reads as broken. Claimed,
+    today and future differ by three things at once: a tick glyph, an accent border and dimming.</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> and <code>GoDonut</code> — stats at a glance</h3>
+  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)          # a dashed overlay
+
+var share := GoDonut.make([{"label": "Physical", "value": 620}, {"label": "Magic", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>Radar values are 0–1 because what counts as full is a game decision — raw 120 STR beside 45 INT would
+    draw a lie. Donut values are raw and it divides for you; past five slices it collapses the rest, since a
+    sixth slice is a thread nobody can read. The comparison line is <b>dashed</b>, not just another colour,
+    and the legend prints the percentage in words.</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banners and character select</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # off by default</code></pre>
+  <p>It does not advance on its own unless you ask, and five seconds is the floor: a banner that changes
+    every three takes the text away before it is read. Touching it resets the timer, and with
+    <code>reduce_motion</code> on it never advances by itself. The dots are pressable at the touch minimum
+    even though the drawn dot is small.</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — key hints that do not lie</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # reads the real binding</code></pre>
+  <p>A hard-coded "Press F" keeps saying F after the player rebinds — the most common lie in a PC UI.
+    <code>for_action()</code> reads <code>InputMap</code>; if the action is bound to a pad instead, it returns
+    empty and the widget hides, because "None" would be its own lie. On Android and iOS it hides itself.</p>
+</section>
+
+<section id="overlays">
+  <h2>Over the screen</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — the side panel</h3>
+  <p><code>GoSheet</code> comes from the bottom, which is right for a phone held upright. On a tablet or a
+    desktop the same sheet covers the game; a drawer comes from the side instead.</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("Bag")</code></pre>
+  <p>The panel reaches the screen edge but the content stays inside the safe area, or a rounded corner clips
+    the first row. <code>LEFT</code> means screen-left even in Arabic; turn on
+    <code>follow_text_direction</code> when "the start side" is the point, and it flips in RTL.</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — the anchored card</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>This is <code>GoSurface</code>'s anchored placement with the layer, the surface, the anchor and the
+    teardown already wired — the ten lines every game writes over and over. One is open at a time, because
+    stacked cards bury the screen and nobody can tell which card belongs to which slot. The scrim is
+    transparent: a card you opened to compare gear must not darken the gear.</p>
+  <div class="note warn">
+    <b>It is not a hover tooltip.</b> Touch has no hover, so anything only a mouse could reveal is invisible
+    to half your players.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — long-press and right-click</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "Use", "action": use},
+    {"separator": true},
+    {"text": "Drop", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> is already in the engine. What is not is the gesture: half a second to open,
+    cancelled <b>the moment the finger moves</b>, so scrolling a list never pops a menu. Pass a
+    <code>Callable</code> instead of an array when the entries depend on who you pressed.</p>
+  <div class="note warn">
+    <b>A long press needs a second way in.</b> Nobody discovers a hidden gesture — pair it with a visible
+    <code>⋯</code> button (<code>open_at()</code>), an icon, or a first-run coach mark.
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — the developer console</h3>
+  <pre><code>console.register("give", "Grant an item: give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>Cheat and debug commands, with a palette that filters as you type so nobody has to memorise them, and
+    a history on the arrow keys. It sits above everything, so you can debug over a dialog.</p>
+  <div class="note warn">
+    <b>It refuses to open in a release build.</b> <code>debug_only</code> is on by default; cheat commands in
+    a player's hands end a game's economy on the first day.
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — one place things are made</h2>
   <p class="sub">

@@ -323,6 +323,197 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>Menunggu, memberi tahu, menghitung</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — pesan yang menempatkan dirinya sendiri</h3>
+  <p>Duduk di bawah (atau di atas), di atas area aman dan keyboard, lalu pergi dengan sendirinya. Tanpa itu
+    Anda menulis lapisannya, penempatannya, pewaktunya, dan pembongkarannya di setiap layar yang harus mengatakan "tersimpan".</p>
+  <pre><code>snack.show_text("Tersimpan", GoTheme.SUCCESS)
+
+# Kesempatan untuk membatalkan — 0 adalah tombol pertama, -1 berarti waktunya habis
+if await snack.post({"text": "Item dibuang", "actions": ["Batalkan"]}) == 0:
+    restore_item()</code></pre>
+  <p>Pesan-pesannya <b>mengantre</b> alih-alih saling menimpa, dan pengulangan baris yang sama digabung — server
+    yang gagal empat kali sedetik tidak lagi menumpuk empat menit peringatan. Snackbar tanpa tombol
+    meneruskan input, jadi game di bawahnya terus berjalan.</p>
+  <div class="note warn">
+    <b>Ia bukan tempat untuk menanyakan sesuatu.</b> Ia pergi dengan sendirinya, jadi pemainnya bisa saja tidak pernah melihatnya.
+    Konfirmasi yang tak bisa dibatalkan tempatnya di <code>GoDialogs</code>. Tombol di sini harus bersifat opsional — Batalkan,
+    Rincian, Coba lagi.
+  </div>
+  <p><code>GoNotice</code> adalah separuh lainnya dari pasangan ini: ia tidak pernah mengambil input atau fokus, dan layar yang
+    memilikinya yang menentukan ke mana ia pergi. Ia tidak bisa memuat tombol; yang ini bisa.</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — menunggu tanpa tahu kapan berakhirnya</h3>
+  <p>Game yang berbicara dengan server membutuhkan ini lebih daripada apa pun di halaman ini: layar yang diam
+    terbaca sebagai crash. Satu panggilan mengubah tombol yang Anda tekan menjadi spinner <b>di tempatnya</b>.</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>Tombolnya mempertahankan ukurannya — labelnya menjadi transparan alih-alih hilang, jadi barisnya tidak melompat — dan
+    ia dimatikan selagi berputar. Bagian kedua itulah intinya: sebuah pembelian tidak boleh terpicu dua kali selagi Anda
+    <code>await</code>. Dengan <code>reduce_motion</code> menyala ia tidak berputar; tiga titik berdenyut sebagai gantinya.</p>
+  <p>Kemajuan yang bisa Anda ukur itu <code>GoBar</code>. Spinner tidak menjanjikan apa pun tentang kapan ia berakhir.</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — titik belum dibaca, tanda BARU, dan 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # menyembunyikan diri saat nol
+GoBadge.attach(shop_button, 0, "BARU")
+GoBadge.attach(friend_button, 3, "", true) # sebuah titik — "ada sesuatu di sana"</code></pre>
+  <p>Ia menggantung di pojok kanan atas induknya dengan anchor, jadi ia mengikuti induk yang ukurannya baru ditentukan belakangan,
+    dan memasangnya dua kali mengembalikan lencana yang sama. Pakai angka bila jumlahnya mengubah apa yang dilakukan pemain,
+    dan titik bila yang penting hanya "ada sesuatu".</p>
+  <p>Warna teksnya dipilih agar kontras dengan warna apa pun yang dipakai skin untuk mengecat lencananya — tidak pernah
+    diasumsikan putih — dan ia membawa nama aksesibilitas, karena titik berwarna tidak mengatakan apa-apa kepada pembaca layar.</p>
+</section>
+
+<section id="forms-lists">
+  <h2>Formulir dan daftar</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — baris yang bisa salah</h3>
+  <p>Satu baris di atas formulir berisi lima kolom yang berbunyi "periksa masukan Anda" tidak memberi tahu kolom yang <i>mana</i>. Hal
+    satu itulah yang membuat orang meninggalkan pendaftaran.</p>
+  <pre><code>var name_field := GoField.make("Nama karakter", GoStyle.line_edit("2-12"), "Tidak bisa diubah nanti")
+name_field.set_error("Nama itu sudah dipakai")   # servernya menolak
+name_field.clear_error()</code></pre>
+  <p>Petunjuknya bersembunyi selagi pesan kesalahannya tampil, jadi barisnya tidak bertambah satu baris dan mendorong segala
+    sesuatu di bawahnya, dan teks kesalahannya digabungkan ke dalam nama aksesibilitas kontrolnya — garis tepi merah saja tidak
+    mengatakan apa-apa kepada orang yang tidak bisa melihat merah.</p>
+  <p><code>GoStyle.field()</code> adalah versi statisnya: label, kontrol, petunjuk, tanpa keadaan kesalahan. Pakai pabriknya
+    bila tak ada yang bisa salah, dan node-nya untuk apa pun yang bisa ditolak server.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — masukan yang dilas ke tombolnya</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("Pesan"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Nama"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>Yang ia pecahkan adalah sudut. Dua bentuk membulat yang bertemu di tengah tampak terjepit, dan jarak bawaannya
+    membuat keduanya terbaca sebagai dua objek. Sudut luarnya tetap bulat, yang bersentuhan menjadi siku — pada setiap keadaan
+    tombol, kalau tidak kelompoknya terbelah begitu ditekan. Skin ber-chamfer sama sekali tidak punya properti sudut, jadi
+    di sana ia membiarkannya apa adanya dan muka-muka sikunya bertemu dengan rapi.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — pemilih yang bisa mencari</h3>
+  <p>Di bawah sepuluh entri <code>GoStyle.select()</code> lebih baik: satu ketukan lebih sedikit dan seluruh daftarnya terlihat.
+    Lewat tiga puluh, memindainya jadi pekerjaan.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "Pilih server")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>Pencariannya mencocokkan di dalam nama, bukan hanya awalannya.</b> Pencocokan awalan nyaris tidak menemukan apa pun pada
+    daftar berbahasa Korea atau Jepang, yang kata pembeda dua entrinya jarang menjadi kata pertama.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — kode kupon dan hadiah</h3>
+  <p>Sebuah kode jauh lebih sering ditempel dari sebuah pesan daripada diketik. Dua belas kolom sungguhan akan mematahkan penempelan
+    di sel pertama dan kehilangan karakter ke IME, jadi satu kolom tersembunyi yang menerima teksnya dan sel-selnya digambar.
+    <code>ABCD-EFGH-IJKL</code> kehilangan tanda hubungnya di jalan masuk.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Sudah dipakai")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — kepala kolom yang bisa diurutkan, baris yang bisa dipilih</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "Peringkat", "width": 56}, {"text": "Nama"}, {"text": "Skor", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>, kalau tidak peringkatnya terbalik.</b> Dibandingkan sebagai teks, <code>"9124"</code> mengalahkan
+    <code>"91240"</code> — dan skor, emas, serta kerusakan semuanya punya jumlah digit yang campur aduk.
+  </div>
+  <p><code>row_selected</code> memberi indeks pada array asli Anda, bukan posisi setelah diurutkan. Arah pengurutannya
+    ditunjukkan dengan sebuah glif, bukan hanya warna, dan seluruh barisnya bisa ditekan supaya tak seorang pun harus mengenai satu
+    sel. <code>GoStyle.table()</code> tetap menjadi grid yang hanya bisa dibaca.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — halaman, atau baris Selengkapnya</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # varian yang ramah ponsel</code></pre>
+  <p>Angka itu UI untuk tetikus; pada ponsel baris Selengkapnya lebih terbaca. Halaman yang sedang dibuka tetap terpusat di
+    jendelanya, jadi menekan berikutnya tidak mengacak ulang setiap angka. Total 0 berarti "tidak diketahui" dan hanya
+    panahnya yang digambar — ia tidak mengarang jumlah halaman yang tidak diberikan kepadanya.</p>
+</section>
+
+<section id="game-shapes">
+  <h2>Bentuk-bentuk yang benar-benar dipakai game</h2>
+  <p>Bentuk-bentuk web yang sudah dikenal, dibangun ulang di sekitar apa yang dibutuhkan game dari mereka.</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — absensi harian</h3>
+  <p>Pemilih tanggal nyaris tak pernah berguna di dalam game. Bentuk kalender berguna — untuk hadiah absensi, yang
+    pentingnya adalah <b>Anda sedang di hari ke berapa</b>, bukan tanggal berapa hari itu.</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>Hanya sel hari ini yang bisa ditekan — tombol yang tidak melakukan apa-apa saat ditekan terbaca sebagai rusak. Yang sudah diambil,
+    hari ini, dan hari mendatang berbeda dalam tiga hal sekaligus: glif centang, garis tepi aksen, dan peredupan.</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> dan <code>GoDonut</code> — statistik dalam sekali lihat</h3>
+  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)          # hamparan bergaris putus-putus
+
+var share := GoDonut.make([{"label": "Fisik", "value": 620}, {"label": "Sihir", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>Nilai radar itu 0–1 karena apa yang dihitung sebagai penuh adalah keputusan game — 120 STR mentah di samping 45 INT akan
+    menggambar sebuah kebohongan. Nilai donatnya mentah dan ia yang membaginya untuk Anda; lewat lima potong ia meringkas sisanya, karena
+    potongan keenam adalah seutas benang yang tak seorang pun bisa membacanya. Garis pembandingnya <b>putus-putus</b>, bukan sekadar warna yang lain,
+    dan legendanya mencetak persentasenya dalam bentuk kata.</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banner dan pemilihan karakter</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # mati secara default</code></pre>
+  <p>Ia tidak berpindah sendiri kecuali Anda memintanya, dan lima detik adalah batas bawahnya: banner yang berganti
+    setiap tiga detik mengambil teksnya sebelum sempat dibaca. Menyentuhnya mengatur ulang pewaktunya, dan dengan
+    <code>reduce_motion</code> menyala ia tidak pernah berpindah sendiri. Titik-titiknya bisa ditekan pada ukuran sentuh minimum
+    meskipun titik yang digambar itu kecil.</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — petunjuk tombol yang tidak berbohong</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # membaca pengikatan yang sebenarnya</code></pre>
+  <p>Tulisan "Tekan F" yang ditanam di kode akan terus mengatakan F setelah pemainnya mengubah pengikatan tombol — kebohongan paling umum pada UI PC.
+    <code>for_action()</code> membaca <code>InputMap</code>; bila aksinya justru terikat ke gamepad, ia mengembalikan nilai
+    kosong dan widget-nya bersembunyi, karena "Tidak ada" akan menjadi kebohongannya sendiri. Pada Android dan iOS ia menyembunyikan dirinya.</p>
+</section>
+
+<section id="overlays">
+  <h2>Di atas layar</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — panel samping</h3>
+  <p><code>GoSheet</code> datang dari bawah, dan itu tepat untuk ponsel yang dipegang tegak. Pada tablet atau
+    desktop lembar yang sama menutupi game-nya; laci datang dari samping sebagai gantinya.</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("Tas")</code></pre>
+  <p>Panelnya mencapai tepi layar tetapi kontennya tetap di dalam area aman, kalau tidak sudut membulatnya akan memotong
+    baris pertama. <code>LEFT</code> berarti kiri layar bahkan dalam bahasa Arab; nyalakan
+    <code>follow_text_direction</code> bila "sisi awal" yang menjadi intinya, dan ia akan berbalik pada RTL.</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — kartu yang disematkan</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>Ini adalah penempatan tersemat milik <code>GoSurface</code> dengan lapisan, permukaan, anchor, dan
+    pembongkarannya sudah terpasang — sepuluh baris yang ditulis setiap game berulang-ulang. Hanya satu yang terbuka pada satu waktu, karena
+    kartu yang bertumpuk mengubur layarnya dan tak seorang pun bisa tahu kartu mana milik slot mana. Selubungnya
+    transparan: kartu yang Anda buka untuk membandingkan perlengkapan tidak boleh menggelapkan perlengkapannya.</p>
+  <div class="note warn">
+    <b>Ia bukan tooltip hover.</b> Sentuhan tidak punya hover, jadi apa pun yang hanya bisa dimunculkan tetikus itu tak terlihat
+    oleh separuh pemain Anda.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — tekan lama dan klik kanan</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "Pakai", "action": use},
+    {"separator": true},
+    {"text": "Buang", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> sudah ada di dalam engine. Yang tidak ada adalah gesturnya: setengah detik untuk membuka,
+    dibatalkan <b>begitu jarinya bergerak</b>, jadi menggulir sebuah daftar tidak pernah memunculkan menu. Berikan sebuah
+    <code>Callable</code> alih-alih array bila entrinya bergantung pada apa yang Anda tekan.</p>
+  <div class="note warn">
+    <b>Tekan lama butuh jalan masuk kedua.</b> Tak seorang pun menemukan gestur tersembunyi — pasangkan dengan tombol
+    <code>⋯</code> yang terlihat (<code>open_at()</code>), sebuah ikon, atau coach mark saat pertama kali dijalankan.
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — konsol pengembang</h3>
+  <pre><code>console.register("give", "Berikan sebuah item: give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>Perintah cheat dan debug, dengan palet yang menyaring selagi Anda mengetik supaya tak seorang pun harus menghafalnya, dan
+    riwayat pada tombol panah. Ia duduk di atas segalanya, jadi Anda bisa men-debug di atas sebuah dialog.</p>
+  <div class="note warn">
+    <b>Ia menolak terbuka pada build rilis.</b> <code>debug_only</code> menyala secara default; perintah cheat di
+    tangan pemain mengakhiri ekonomi sebuah game pada hari pertama.
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — satu tempat segala sesuatu dibuat</h2>
   <p class="sub">

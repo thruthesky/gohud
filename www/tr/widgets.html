@@ -327,6 +327,198 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>Beklemek, bildirmek, saymak</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — kendi yerini bulan mesaj</h3>
+  <p>Altta (ya da üstte), güvenli alanın ve klavyenin üzerinde durur ve kendi kendine gider. O olmadan
+    "kaydedildi" demesi gereken her ekranda katmanı, yerleşimi, sayacı ve temizliği siz yazarsınız.</p>
+  <pre><code>snack.show_text("Kaydedildi", GoTheme.SUCCESS)
+
+# Geri almak için bir şans — 0 ilk düğme, -1 ise süresinin dolduğu anlamına gelir
+if await snack.post({"text": "Eşya düşürüldü", "actions": ["Geri al"]}) == 0:
+    restore_item()</code></pre>
+  <p>Mesajlar birbirinin üstüne yazmak yerine <b>sıraya girer</b> ve aynı satırın tekrarları birleştirilir —
+    saniyede dört kez hata veren bir sunucu artık dört dakikalık uyarı yığmaz. Düğmesiz bir snackbar girdiyi
+    geçirir, böylece altındaki oyun çalışmaya devam eder.</p>
+  <div class="note warn">
+    <b>Bir şey sormanın yeri değildir.</b> Kendi kendine gider, yani oyuncu onu hiç görmeyebilir.
+    Geri alınamaz onaylar <code>GoDialogs</code>'a aittir. Buradaki düğmeler isteğe bağlı olmalıdır — Geri al,
+    Ayrıntılar, Yeniden dene.
+  </div>
+  <p><code>GoNotice</code> çiftin diğer yarısıdır: asla girdi ya da odak almaz ve nereye gideceğine sahibi olan
+    ekran karar verir. O bir düğme taşıyamaz; bu taşır.</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — sonu görünmeyen bir bekleyiş</h3>
+  <p>Sunucuyla konuşan oyunların bu sayfadaki her şeyden çok buna ihtiyacı vardır: kıpırdamayan bir ekran
+    çökme gibi okunur. Tek bir çağrı, bastığınız düğmeyi <b>yerinde</b> bir spinner'a dönüştürür.</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>Düğme boyutunu korur — etiket kaybolmak yerine saydamlaşır, böylece satır zıplamaz — ve dönerken devre dışı
+    kalır. Asıl mesele bu ikinci kısımdır: <code>await</code> ederken bir satın alma iki kez tetiklenmemelidir.
+    <code>reduce_motion</code> açıkken dönmez; bunun yerine üç nokta nabız gibi atar.</p>
+  <p>Ölçebildiğiniz ilerleme bir <code>GoBar</code>'dır. Bir spinner ne zaman biteceğine dair hiçbir söz vermez.</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — okunmamış noktası, YENİ etiketi, 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # sıfırda kendini gizler
+GoBadge.attach(shop_button, 0, "YENİ")
+GoBadge.attach(friend_button, 3, "", true) # bir nokta — "orada bir şey var"</code></pre>
+  <p>Anchor'larla sahibinin sağ üst köşesine asılır, böylece boyutuna sonradan karar verilen bir sahibi de izler;
+    iki kez bağlamak aynı rozeti döndürür. Sayı, adet oyuncunun ne yapacağını değiştirdiğinde kullanılır;
+    yalnızca "orada bir şey var" önemliyse nokta kullanılır.</p>
+  <p>Yazı rengi, kaplamanın rozeti hangi renge boyadığından bağımsız olarak kontrast için seçilir — beyaz olduğu
+    asla varsayılmaz — ve erişilebilir bir ad taşır, çünkü renkli bir nokta ekran okuyucuya hiçbir şey söylemez.</p>
+</section>
+
+<section id="forms-lists">
+  <h2>Formlar ve listeler</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — hatalı olabilen satır</h3>
+  <p>Beş alanlı bir formun tepesinde "girdinizi kontrol edin" diyen tek bir satır, <i>hangi</i> alan olduğunu
+    söylemez. İnsanlara kaydı yarıda bıraktıran tek şey budur.</p>
+  <pre><code>var name_field := GoField.make("Karakter adı", GoStyle.line_edit("2-12"), "Sonradan değiştirilemez")
+name_field.set_error("Bu ad alınmış")   # sunucu hayır dedi
+name_field.clear_error()</code></pre>
+  <p>Bir hata görünürken ipucu gizlenir, böylece satır bir satır büyüyüp altındaki her şeyi aşağı itmez; hata
+    yazısı da denetimin erişilebilir adına eklenir — kırmızıyı göremeyen birine tek başına kırmızı bir kenarlık
+    hiçbir şey söylemez.</p>
+  <p><code>GoStyle.field()</code> durağan sürümdür: etiket, denetim, ipucu, hata durumu yok. Hiçbir şeyin ters
+    gidemeyeceği yerde fabrikayı, bir sunucunun reddedebileceği her şey için düğümü kullanın.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — düğmesine kaynaklanmış bir girdi</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("Mesaj"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Ad"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>Çözdüğü şey köşelerdir. Ortada buluşan iki yuvarlak biçim sıkışmış görünür, varsayılan boşluk da onları iki
+    ayrı nesne gibi okutur. Dış köşeler yuvarlak kalır, birbirine değenler köşeli olur — her düğme durumunda,
+    yoksa grup basıldığı anda ikiye ayrılır. Pahlı kaplamalarda köşe alanları hiç yoktur; orada onlara dokunmaz
+    ve köşeli yüzler temizce buluşur.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — arama yapan bir seçici</h3>
+  <p>On girdinin altında <code>GoStyle.select()</code> daha iyidir: bir dokunuş eksik ve listenin tamamı görünür.
+    Otuzu geçtiğinde göz gezdirmek zahmete dönüşür.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "Bir sunucu seçin")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>Arama yalnızca adların başını değil, içini de eşleştirir.</b> Ön ek eşleştirmesi Korece ya da Japonca
+    listelerde neredeyse hiçbir şey bulamaz; orada iki öğeyi birbirinden ayıran kelime nadiren ilk kelimedir.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — kupon ve hediye kodları</h3>
+  <p>Bir kod, yazılmaktan çok daha sık bir mesajdan yapıştırılır. On iki gerçek alan, yapıştırmayı ilk hücrede
+    bozar ve karakterleri bir IME'ye kaptırırdı; bu yüzden yazıyı gizli tek bir alan alır, hücreler ise çizilir.
+    <code>ABCD-EFGH-IJKL</code> girerken tirelerini bırakır.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Zaten kullanılmış")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — sıralanabilir başlıklar, seçilebilir satırlar</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "Sıra", "width": 56}, {"text": "Ad"}, {"text": "Puan", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code> verin, yoksa sıralama tersine döner.</b> Yazı olarak karşılaştırıldığında
+    <code>"9124"</code>, <code>"91240"</code>'ı geçer — puanların, altının ve hasarın hepsinde basamak sayısı karışıktır.
+  </div>
+  <p><code>row_selected</code>, sıralanmış konumu değil, özgün dizinizdeki indisi verir. Sıralama yönü yalnızca
+    renkle değil bir simgeyle gösterilir ve kimse tek bir hücreyi tutturmak zorunda kalmasın diye satırların
+    tamamı basılabilir. <code>GoStyle.table()</code> salt okunur ızgara olarak kalır.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — sayfalar ya da bir Daha fazla satırı</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # mobil dostu değişke</code></pre>
+  <p>Sayılar fareye göre bir arayüzdür; telefonda Daha fazla satırı daha iyi okunur. Geçerli sayfa pencerenin
+    ortasında kalır, böylece ileriye basmak bütün sayıları yeniden karıştırmaz. Toplamın 0 olması "bilinmiyor"
+    demektir ve yalnızca oklar çizilir — kendisine verilmeyen bir sayfa sayısını uydurmaz.</p>
+</section>
+
+<section id="game-shapes">
+  <h2>Oyunların gerçekten kullandığı biçimler</h2>
+  <p>Web'den tanıdık biçimler, bir oyunun onlardan ne istediğine göre yeniden kurulmuş.</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — günlük katılım</h3>
+  <p>Bir oyunda tarih seçici neredeyse hiç işe yaramaz. Takvim biçimi ise yarar — katılım ödülleri için; orada
+    önemli olan hangi tarihte olduğunuz değil, <b>kaçıncı gündeyseniz</b> odur.</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>Yalnızca bugünün hücresine basılabilir — basıldığında hiçbir şey yapmayan bir düğme bozuk gibi okunur.
+    Alınmış, bugün ve gelecek olan üç şeyle birden ayrılır: bir onay simgesi, bir vurgu kenarlığı ve soluklaştırma.</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> ve <code>GoDonut</code> — bir bakışta istatistikler</h3>
+  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)          # kesik çizgili bir katman
+
+var share := GoDonut.make([{"label": "Fiziksel", "value": 620}, {"label": "Büyü", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>Radar değerleri 0–1 arasındadır, çünkü neyin tam sayılacağı oyunun kararıdır — 45 INT'in yanındaki ham
+    120 STR yalan bir şekil çizerdi. Halka değerleri hamdır ve bölme işini o yapar; beş dilimi geçtiğinde geri
+    kalanı tek dilimde toplar, çünkü altıncı dilim kimsenin okuyamayacağı bir ipliktir. Karşılaştırma çizgisi
+    yalnızca başka bir renk değil, <b>kesik çizgilidir</b>; gösterge de yüzdeyi yazıyla basar.</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — afişler ve karakter seçimi</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # varsayılan olarak kapalı</code></pre>
+  <p>Siz istemedikçe kendi kendine ilerlemez ve beş saniye alt sınırdır: üç saniyede bir değişen bir afiş, yazıyı
+    okunmadan alıp götürür. Ona dokunmak sayacı sıfırlar; <code>reduce_motion</code> açıkken asla kendi kendine
+    ilerlemez. Çizilen nokta küçük olsa da noktalara dokunma alt sınırında basılabilir.</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — yalan söylemeyen tuş ipuçları</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # gerçek atamayı okur</code></pre>
+  <p>Koda gömülmüş bir "F'ye basın", oyuncu tuşu değiştirdikten sonra da F demeyi sürdürür — bir PC arayüzündeki
+    en yaygın yalan. <code>for_action()</code>, <code>InputMap</code>'i okur; eylem bunun yerine bir kumandaya
+    atanmışsa boş döner ve widget gizlenir, çünkü "Yok" kendi başına bir yalan olurdu. Android ve iOS'ta kendini gizler.</p>
+</section>
+
+<section id="overlays">
+  <h2>Ekranın üstünde</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — yan panel</h3>
+  <p><code>GoSheet</code> alttan gelir; bu da dik tutulan bir telefon için doğrudur. Bir tablette ya da
+    masaüstünde aynı sayfa oyunun üstünü kaplar; çekmece ise bunun yerine yandan gelir.</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("Çanta")</code></pre>
+  <p>Panel ekranın kenarına dayanır ama içerik güvenli alanın içinde kalır, yoksa yuvarlak bir köşe ilk satırı
+    kırpar. <code>LEFT</code>, Arapçada bile ekranın solu demektir; asıl mesele "başlangıç tarafı" olduğunda
+    <code>follow_text_direction</code>'ı açın, o zaman RTL'de yön değiştirir.</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — sabitlenmiş kart</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>Bu, <code>GoSurface</code>'in sabitlenmiş yerleşimidir; katman, yüzey, anchor ve temizlik önceden
+    bağlanmıştır — her oyunun tekrar tekrar yazdığı o on satır. Aynı anda yalnızca biri açıktır, çünkü üst üste
+    yığılan kartlar ekranı gömer ve hangi kartın hangi slota ait olduğu anlaşılmaz. Perde saydamdır: ekipmanı
+    karşılaştırmak için açtığınız bir kart, ekipmanı karartmamalıdır.</p>
+  <div class="note warn">
+    <b>Üzerine gelince çıkan bir ipucu değildir.</b> Dokunmatikte üzerine gelme diye bir şey yoktur; yalnızca
+    farenin ortaya çıkarabileceği her şey oyuncularınızın yarısı için görünmezdir.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — uzun basış ve sağ tık</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "Kullan", "action": use},
+    {"separator": true},
+    {"text": "Düşür", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> zaten motorda var. Olmayan şey el hareketi: açılması için yarım saniye,
+    <b>parmak kıpırdadığı anda</b> iptal — böylece bir listeyi kaydırmak asla menü açmaz. Girdiler kime
+    bastığınıza bağlıysa dizi yerine bir <code>Callable</code> geçin.</p>
+  <div class="note warn">
+    <b>Uzun basışın ikinci bir giriş yoluna ihtiyacı vardır.</b> Kimse gizli bir el hareketini keşfetmez —
+    yanına görünür bir <code>⋯</code> düğmesi (<code>open_at()</code>), bir simge ya da ilk açılışta bir rehber
+    işareti koyun.
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — geliştirici konsolu</h3>
+  <pre><code>console.register("give", "Bir eşya ver: give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>Hile ve hata ayıklama komutları; kimse ezberlemek zorunda kalmasın diye siz yazdıkça süzen bir palet ve ok
+    tuşlarında bir geçmişle birlikte. Her şeyin üstünde durur, böylece bir iletişim kutusunun üzerinde hata
+    ayıklayabilirsiniz.</p>
+  <div class="note warn">
+    <b>Yayın derlemesinde açılmayı reddeder.</b> <code>debug_only</code> varsayılan olarak açıktır; oyuncunun
+    eline geçen hile komutları bir oyunun ekonomisini ilk günde bitirir.
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — her şeyin üretildiği tek yer</h2>
   <p class="sub">

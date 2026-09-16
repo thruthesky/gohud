@@ -317,6 +317,194 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>待たせる、伝える、数える</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — 自分で居場所を決めるメッセージ</h3>
+  <p>画面の下（あるいは上）に、セーフエリアと仮想キーボードを避けて出て、自分で消える。これがないと、
+    「保存しました」と言うだけの画面ごとに、レイヤーも配置もタイマーも後片付けも書くことになる。</p>
+  <pre><code>snack.show_text("保存しました", GoTheme.SUCCESS)
+
+# 取り消す機会 — 0 は最初のボタン、-1 は時間切れ
+if await snack.post({"text": "アイテムを捨てた", "actions": ["取り消す"]}) == 0:
+    restore_item()</code></pre>
+  <p>メッセージは互いを上書きせず<b>順番に並ぶ</b>し、同じ文面の繰り返しはまとめられる — 毎秒4回失敗する
+    サーバーが、4分ぶんの警告を積み上げることはもうない。ボタンのないスナックバーは入力を通すので、
+    その下のゲームは動き続ける。</p>
+  <div class="note warn">
+    <b>何かを尋ねる場所ではない。</b> 自分で消えてしまうので、プレイヤーが一度も見ないことがある。
+    取り消せない操作の確認は <code>GoDialogs</code> の仕事だ。ここに置くボタンは、なくても困らないものに限る —
+    取り消す、詳細、再試行。
+  </div>
+  <p><code>GoNotice</code> はこの対のもう半分だ。入力もフォーカスも決して取らず、どこに出すかは持ち主の画面が
+    決める。あちらはボタンを持てないが、こちらは持てる。</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — 終わりの見えない待ち時間</h3>
+  <p>サーバーと話すゲームが、このページの中でいちばん必要とするものだ。止まったままの画面は、落ちたと
+    読まれる。呼び出し1つで、押されたボタンが<b>その場で</b>スピナーに変わる。</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>ボタンは大きさを保つ — ラベルは消えるのではなく透明になるので、行が跳ねない — そして回っている間は
+    無効になる。要はこの後半だ。<code>await</code> している間に購入が2回走ってはならない。
+    <code>reduce_motion</code> にすると回らず、代わりに3つの点が明滅する。</p>
+  <p>測れる進捗なら <code>GoBar</code> だ。スピナーは、いつ終わるかを何も約束しない。</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — 未読の点、NEW の札、99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # 0 のときは自分で隠れる
+GoBadge.attach(shop_button, 0, "NEW")
+GoBadge.attach(friend_button, 3, "", true) # 点 — 「何かある」</code></pre>
+  <p>アンカーで持ち主の右上に吊り下がるので、大きさが後から決まる相手にも付いていくし、2度付けても同じ
+    バッジが返る。数が変われば行動も変わるときは数字を、「何かある」ことだけが問題なら点を使う。</p>
+  <p>文字の色は、スキンがバッジをどの色で塗ったとしてもコントラストが取れるように選ばれる — 白だと決めて
+    かかることはない。読み上げ用の名前も持つ。色の付いた点は、スクリーンリーダーには何も伝えないからだ。</p>
+</section>
+
+<section id="forms-lists">
+  <h2>フォームとリスト</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 間違いを抱えられる行</h3>
+  <p>入力欄が5つあるフォームの先頭に「入力を確認してください」と1行あっても、<i>どの</i>欄なのかは分からない。
+    その1点だけで、人は新規登録をやめてしまう。</p>
+  <pre><code>var name_field := GoField.make("キャラクター名", GoStyle.line_edit("2〜12文字"), "あとから変更できない")
+name_field.set_error("その名前は使われている")   # サーバーが断った
+name_field.clear_error()</code></pre>
+  <p>エラーが出ている間ヒントは隠れるので、行が1行ぶん伸びて下のすべてを押し下げることがない。エラーの文は
+    コントロールの読み上げ名にも連結される — 赤い枠だけでは、赤が見えない人には何も伝わらない。</p>
+  <p><code>GoStyle.field()</code> は静的な版だ。ラベル、コントロール、ヒント、エラー状態なし。何も失敗しよう
+    がないところはファクトリで、サーバーに断られうるものはノードで作る。</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — ボタンと溶接された入力欄</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("メッセージ"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("名前"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>これが解くのは角の問題だ。丸い形が2つ真ん中で出会うとくびれて見えるし、既定の隙間があると2つの物体と
+    して読めてしまう。外側の角は丸いまま、触れ合う角は四角にする — それをボタンのどの状態でも行う。さもないと、
+    押した瞬間にグループが割れる。面取りのスキンにはそもそも角の項目がないので、そこでは何も触らず、四角い
+    面どうしがきれいに合わさる。</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 検索できるピッカー</h3>
+  <p>項目が10個までなら <code>GoStyle.select()</code> のほうがよい。タップが1回少なく、リスト全体が見える。
+    30 を超えると、目で追うこと自体が作業になる。</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "サーバーを選ぶ")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>検索は名前の先頭だけでなく、途中にも一致する。</b> 前方一致では、日本語や韓国語のリストはほとんど
+    引っかからない。2つの項目を見分ける語が先頭に来ることは、めったにないからだ。
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — クーポンとギフトコード</h3>
+  <p>コードは打ち込まれるより、メッセージから貼り付けられることのほうがずっと多い。本物の入力欄を12個並べると、
+    貼り付けは最初のマスで止まり、IME が文字を食う。だから文字を受け取るのは隠した1つの欄で、マスは描かれた
+    ものだ。<code>ABCD-EFGH-IJKL</code> は、入るときにハイフンが落ちる。</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("使用済み")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 並べ替えできる見出し、選べる行</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "順位", "width": 56}, {"text": "名前"}, {"text": "スコア", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code> を忘れると、順位が逆さになる。</b> 文字として比べると <code>"9124"</code> が
+    <code>"91240"</code> に勝つ — スコアも所持金もダメージも、桁数はばらばらだ。
+  </div>
+  <p><code>row_selected</code> が渡すのは、並べ替え後の位置ではなく元の配列での添字だ。並べ替えの向きは色だけで
+    なく記号でも示され、行は全体が押せるので、1つのセルを狙う必要はない。<code>GoStyle.table()</code> は
+    読み取り専用の表のまま残る。</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — ページ番号、あるいは「もっと見る」の行</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # スマートフォン向きの変種</code></pre>
+  <p>番号はマウスの UI だ。スマートフォンなら「もっと見る」の行のほうが読みやすい。現在のページは窓の中央に
+    留まるので、次を押すたびに番号が全部並び替わることはない。合計 0 は「不明」を意味し、矢印だけが描かれる —
+    渡されていないページ数を、勝手に作り出したりはしない。</p>
+</section>
+
+<section id="game-shapes">
+  <h2>ゲームで実際に使う形</h2>
+  <p>見慣れたウェブの形を、ゲームがそこに求めるものを軸に作り直したものだ。</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — 毎日のログインボーナス</h3>
+  <p>日付ピッカーがゲームで役に立つことは、ほとんどない。カレンダーの形は役に立つ — ログインボーナスだ。
+    そこで問題になるのは<b>何日目か</b>であって、何月何日かではない。</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>押せるのは今日のマスだけだ — 押しても何も起きないボタンは、壊れていると読まれる。受け取り済み・今日・
+    これからの3つは、同時に3つの違いで見分けられる。チェックの記号、強調色の枠、そして暗さだ。</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> と <code>GoDonut</code> — ひと目で分かるステータス</h3>
+  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)          # 破線の重ね描き
+
+var share := GoDonut.make([{"label": "物理", "value": 620}, {"label": "魔法", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>レーダーの値が 0〜1 なのは、どこを満点とするかがゲームの決めることだからだ — 素の STR 120 を INT 45 の
+    隣に置けば、嘘の形が描かれる。ドーナツの値は素のままでよく、割り算はこちらでやる。5つを超えた分はまとめ
+    られる。6枚目の扇形は、誰にも読めない糸になるからだ。比較の線は色違いではなく<b>破線</b>で、凡例には
+    割合が文字で出る。</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — バナーとキャラクター選択</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # 既定では動かない</code></pre>
+  <p>頼まない限り自分では進まないし、5秒が下限だ。3秒ごとに変わるバナーは、読み終える前に文字を持ち去る。
+    触れるとタイマーは戻り、<code>reduce_motion</code> にすれば自分から進むことは一切ない。点は小さく描かれる
+    が、押せる範囲はタッチの最小寸法を保つ。</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — 嘘をつかないキー表示</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # 実際の割り当てを読む</code></pre>
+  <p>直接書き込んだ「F を押す」は、プレイヤーが割り当てを変えたあとも F と言い続ける — PC の UI でいちばん
+    よくある嘘だ。<code>for_action()</code> は <code>InputMap</code> を読む。その操作がパッドに割り当てられて
+    いれば空を返してウィジェットは隠れる。「なし」もまた1つの嘘だからだ。Android と iOS では自分から隠れる。</p>
+</section>
+
+<section id="overlays">
+  <h2>画面の上に重ねる</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 横から出るパネル</h3>
+  <p><code>GoSheet</code> は下から出る。縦に持ったスマートフォンにはそれが正しい。タブレットやデスクトップでは、
+    同じシートがゲームを覆ってしまう。ドロワーは代わりに横から出る。</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("かばん")</code></pre>
+  <p>パネルは画面の端まで届くが、中身はセーフエリアの内側に留まる。そうしないと、丸めた角が最初の行を切り
+    落とす。<code>LEFT</code> はアラビア語でも画面の左だ。「始まりの側」であることが要点なら
+    <code>follow_text_direction</code> を有効にする。RTL では左右が入れ替わる。</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 脇に留まるカード</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p><code>GoSurface</code> の脇に留まる配置に、レイヤーもサーフェスもアンカーも後片付けも配線済みの
+    ものだ — どのゲームも何度も書く、あの10行である。開くのは一度に1つだけだ。カードが積み重なると画面が埋まり、
+    どのカードがどのスロットのものか分からなくなる。幕は透明だ。装備を見比べるために開いたカードが、その装備を
+    暗くしてはならない。</p>
+  <div class="note warn">
+    <b>ホバーのツールチップではない。</b> タッチにホバーはない。マウスでしか現れないものは、プレイヤーの半分
+    には見えないままだ。
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 長押しと右クリック</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "使う", "action": use},
+    {"separator": true},
+    {"text": "捨てる", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> はエンジンにすでにある。ないのはジェスチャーのほうだ。開くまで 0.5 秒、
+    <b>指が動いた瞬間</b>に取り消す。だからリストをスクロールしてもメニューは出てこない。項目が「どれを押したか」
+    で変わるなら、配列の代わりに <code>Callable</code> を渡す。</p>
+  <div class="note warn">
+    <b>長押しには、もう1つの入り口が要る。</b> 隠れたジェスチャーは誰にも見つけられない — 目に見える
+    <code>⋯</code> ボタン（<code>open_at()</code>）や、アイコンや、初回のコーチマークと組み合わせる。
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 開発者コンソール</h3>
+  <pre><code>console.register("give", "アイテムを与える: give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>チートとデバッグのコマンドだ。打つそばから絞り込むパレットが付くので、覚えておく必要はない。履歴は
+    矢印キーに載っている。すべての上に出るので、ダイアログの上からでもデバッグできる。</p>
+  <div class="note warn">
+    <b>リリースビルドでは開かない。</b> <code>debug_only</code> は既定で有効だ。チートコマンドがプレイヤーの手に
+    渡れば、ゲームの経済は初日で終わる。
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — 作る場所を1つにする</h2>
   <p class="sub">

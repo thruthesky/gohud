@@ -332,6 +332,197 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>Attendre, dire, compter</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — le message qui se place tout seul</h3>
+  <p>Il se pose en bas (ou en haut), au-dessus de la zone sûre et du clavier, et s'en va de lui-même. Sans lui,
+    vous écrivez le calque, le placement, le minuteur et la libération sur chaque écran qui doit dire « enregistré ».</p>
+  <pre><code>snack.show_text("Enregistré", GoTheme.SUCCESS)
+
+# Une chance d'annuler — 0 est le premier bouton, -1 signifie que le délai a expiré
+if await snack.post({"text": "Objet jeté", "actions": ["Annuler"]}) == 0:
+    restore_item()</code></pre>
+  <p>Les messages <b>font la queue</b> au lieu de s'écraser les uns les autres, et les répétitions d'une même
+    ligne sont fusionnées — un serveur qui échoue quatre fois par seconde n'empile plus quatre minutes d'alertes.
+    Un snackbar sans bouton laisse passer la saisie : le jeu continue de tourner en dessous.</p>
+  <div class="note warn">
+    <b>Ce n'est pas un endroit où poser une question.</b> Il disparaît de lui-même : le joueur peut ne jamais le
+    voir. Les confirmations irréversibles vont dans <code>GoDialogs</code>. Les boutons, ici, doivent être
+    facultatifs — Annuler, Détails, Réessayer.
+  </div>
+  <p><code>GoNotice</code> est l'autre moitié de la paire : il ne prend jamais la saisie ni le focus, et c'est
+    l'écran propriétaire qui décide où il se place. Il ne peut pas porter de bouton ; celui-ci le peut.</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — une attente dont on ne voit pas la fin</h3>
+  <p>Les jeux qui parlent à un serveur en ont besoin plus que de tout le reste de cette page : un écran qui ne
+    bouge pas se lit comme un plantage. Un seul appel transforme le bouton que l'on vient d'appuyer en indicateur d'attente, <b>sur place</b>.</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>Le bouton garde sa taille — le libellé devient transparent au lieu de disparaître, la rangée ne saute donc
+    pas — et il est désactivé pendant qu'il tourne. C'est ce second point qui compte : un achat ne doit pas partir
+    deux fois pendant que vous <code>await</code>. Avec <code>reduce_motion</code>, il ne tourne pas ; trois points pulsent à la place.</p>
+  <p>Une progression mesurable, c'est une <code>GoBar</code>. Un indicateur d'attente ne promet rien sur le moment où il s'arrête.</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — la pastille de non-lu, l'étiquette NOUVEAU, le 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # se masque à zéro
+GoBadge.attach(shop_button, 0, "NOUVEAU")
+GoBadge.attach(friend_button, 3, "", true) # une pastille — « il y a quelque chose »</code></pre>
+  <p>Il s'accroche au coin supérieur droit de son hôte par des ancres : il suit donc un hôte dont la taille est
+    décidée plus tard, et l'attacher deux fois renvoie le même badge. Mettez un nombre quand le compte change ce
+    que le joueur fait, une pastille quand seul « il y a quelque chose » importe.</p>
+  <p>La couleur de son texte est choisie pour contraster avec la couleur dont le skin a peint le badge — jamais
+    supposée blanche — et il porte un nom accessible, parce qu'une pastille colorée ne dit rien à un lecteur d'écran.</p>
+</section>
+
+<section id="forms-lists">
+  <h2>Formulaires et listes</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — la rangée qui peut être en erreur</h3>
+  <p>Une seule ligne en haut d'un formulaire à cinq champs qui dit « vérifiez votre saisie » ne dit pas <i>quel</i>
+    champ. C'est cette seule chose qui fait abandonner une inscription.</p>
+  <pre><code>var name_field := GoField.make("Nom du personnage", GoStyle.line_edit("2-12"), "Impossible à changer ensuite")
+name_field.set_error("Ce nom est déjà pris")   # le serveur a refusé
+name_field.clear_error()</code></pre>
+  <p>L'indication se masque pendant qu'une erreur s'affiche : la rangée ne grandit donc pas d'une ligne en
+    poussant tout ce qui se trouve en dessous, et le texte d'erreur est joint au nom accessible de la commande —
+    une bordure rouge, à elle seule, ne dit rien à qui ne voit pas le rouge.</p>
+  <p><code>GoStyle.field()</code> en est la version statique : libellé, commande, indication, sans état d'erreur.
+    Prenez la fabrique quand rien ne peut mal tourner, et le nœud pour tout ce qu'un serveur peut refuser.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — une saisie soudée à son bouton</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Nom"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>Ce qu'il règle, ce sont les coins. Deux formes arrondies qui se rejoignent au milieu paraissent pincées, et
+    l'écart par défaut les fait lire comme deux objets. Les coins extérieurs restent ronds, ceux qui se touchent
+    deviennent carrés — dans chaque état du bouton, sinon le groupe se scinde à l'instant où l'on appuie dessus.
+    Les skins chanfreinés n'ont aucun champ de coin : là, il les laisse tranquilles et les faces carrées se rejoignent proprement.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — un sélecteur qui cherche</h3>
+  <p>En dessous de dix entrées, <code>GoStyle.select()</code> vaut mieux : un appui de moins et toute la liste est
+    visible. Au-delà de trente, parcourir devient un travail.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "Choisissez un serveur")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>La recherche correspond à l'intérieur des noms, pas seulement à leur début.</b> Une correspondance par
+    préfixe ne trouve presque rien dans une liste coréenne ou japonaise, où le mot qui distingue deux éléments est rarement le premier.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — codes promo et codes cadeaux</h3>
+  <p>Un code est bien plus souvent collé depuis un message que saisi au clavier. Douze vrais champs casseraient le
+    collage dès la première case et perdraient des caractères à cause d'un IME : un seul champ masqué reçoit donc
+    le texte, et les cases sont dessinées. <code>ABCD-EFGH-IJKL</code> perd ses tirets en chemin.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Déjà utilisé")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — des en-têtes triables, des rangées sélectionnables</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "Rang", "width": 56}, {"text": "Nom"}, {"text": "Score", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>, sinon le classement s'inverse.</b> Comparé comme du texte, <code>"9124"</code>
+    passe devant <code>"91240"</code> — et les scores, l'or et les dégâts ont tous un nombre de chiffres variable.
+  </div>
+  <p><code>row_selected</code> donne l'indice dans votre tableau d'origine, pas la position triée. Le sens du tri
+    est indiqué par un glyphe, pas seulement par une couleur, et la rangée entière s'appuie : personne n'a à viser
+    une cellule. <code>GoStyle.table()</code> reste la grille en lecture seule.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — des pages, ou une rangée « Voir plus »</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # la variante adaptée au mobile</code></pre>
+  <p>Les numéros sont une interface à la souris ; sur un téléphone, la rangée « Voir plus » se lit mieux. La page
+    courante reste centrée dans la fenêtre : appuyer sur suivant ne rebat donc pas tous les numéros. Un total de 0
+    signifie « inconnu » et seules les flèches sont dessinées — il n'invente pas un nombre de pages qu'on ne lui a pas donné.</p>
+</section>
+
+<section id="game-shapes">
+  <h2>Les formes que les jeux utilisent vraiment</h2>
+  <p>Des formes familières du web, refaites autour de ce qu'un jeu leur demande.</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — la présence quotidienne</h3>
+  <p>Un sélecteur de date n'est presque jamais utile dans un jeu. Une forme de calendrier, si — pour les
+    récompenses de présence, où ce qui compte est <b>le jour où vous en êtes</b>, pas la date qu'il est.</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>Seule la case du jour s'appuie — un bouton qui ne fait rien quand on appuie dessus se lit comme cassé.
+    Réclamé, aujourd'hui et à venir diffèrent par trois choses à la fois : un glyphe de coche, une bordure d'accent et un assombrissement.</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> et <code>GoDonut</code> — les statistiques d'un coup d'œil</h3>
+  <pre><code>var stats := GoRadar.make({"FOR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "CHA": 0.45})
+stats.set_compare(with_new_sword)          # une superposition en pointillés
+
+var share := GoDonut.make([{"label": "Physique", "value": 620}, {"label": "Magique", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>Les valeurs du radar vont de 0 à 1, parce que ce qui compte comme « au maximum » est une décision de jeu —
+    120 de FOR brut à côté de 45 d'INT dessinerait un mensonge. Les valeurs du donut sont brutes et il fait la
+    division pour vous ; au-delà de cinq parts, il regroupe le reste, car une sixième part est un fil que personne
+    ne peut lire. La ligne de comparaison est <b>en pointillés</b>, pas simplement d'une autre couleur, et la légende écrit le pourcentage en toutes lettres.</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — bannières et sélection de personnage</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # désactivé par défaut</code></pre>
+  <p>Il n'avance pas tout seul à moins qu'on le lui demande, et cinq secondes est le plancher : une bannière qui
+    change toutes les trois retire le texte avant qu'il soit lu. Le toucher remet le minuteur à zéro, et avec
+    <code>reduce_motion</code>, il n'avance jamais de lui-même. Les pastilles s'appuient à la taille tactile
+    minimale, même si la pastille dessinée est petite.</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — des indications de touche qui ne mentent pas</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # lit la vraie assignation</code></pre>
+  <p>Un « Appuyez sur F » écrit en dur continue de dire F après que le joueur a réassigné ses touches — le
+    mensonge le plus courant dans une interface PC. <code>for_action()</code> lit <code>InputMap</code> ; si
+    l'action est assignée à une manette, il renvoie une chaîne vide et le widget se masque, parce que « Aucune » serait un mensonge de plus. Sur Android et iOS, il se masque de lui-même.</p>
+</section>
+
+<section id="overlays">
+  <h2>Par-dessus l'écran</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — le panneau latéral</h3>
+  <p><code>GoSheet</code> vient du bas, ce qui convient à un téléphone tenu à la verticale. Sur une tablette ou un
+    ordinateur, la même feuille recouvre le jeu ; un tiroir vient du côté à la place.</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("Sac")</code></pre>
+  <p>Le panneau va jusqu'au bord de l'écran, mais le contenu reste à l'intérieur de la zone sûre, sinon un coin
+    arrondi rogne la première rangée. <code>LEFT</code> veut dire la gauche de l'écran, même en arabe ; activez
+    <code>follow_text_direction</code> quand c'est « le côté du début » qui compte, et il bascule en RTL.</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — la carte épinglée</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>C'est le placement épinglé de <code>GoSurface</code> avec le calque, la surface, l'ancre et la libération
+    déjà câblés — les dix lignes que chaque jeu réécrit encore et encore. Une seule est ouverte à la fois, parce
+    que des cartes empilées enterrent l'écran et plus personne ne sait quelle carte appartient à quel emplacement.
+    Le voile est transparent : une carte ouverte pour comparer un équipement ne doit pas assombrir cet équipement.</p>
+  <div class="note warn">
+    <b>Ce n'est pas une infobulle au survol.</b> Le tactile n'a pas de survol : tout ce que seule une souris
+    pourrait révéler est invisible pour la moitié de vos joueurs.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — appui long et clic droit</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "Utiliser", "action": use},
+    {"separator": true},
+    {"text": "Jeter", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> est déjà dans le moteur. Ce qui n'y est pas, c'est le geste : une demi-seconde pour
+    ouvrir, annulé <b>dès que le doigt bouge</b>, si bien que faire défiler une liste ne fait jamais surgir de
+    menu. Passez un <code>Callable</code> au lieu d'un tableau quand les entrées dépendent de ce sur quoi on a appuyé.</p>
+  <div class="note warn">
+    <b>Un appui long a besoin d'une seconde porte d'entrée.</b> Personne ne découvre un geste caché —
+    accompagnez-le d'un bouton <code>⋯</code> visible (<code>open_at()</code>), d'une icône ou d'un repère guidé au premier lancement.
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — la console de développement</h3>
+  <pre><code>console.register("give", "Donner un objet : give &lt;id&gt; &lt;quantité&gt;", give)
+console.toggle()</code></pre>
+  <p>Des commandes de triche et de débogage, avec une palette qui filtre à mesure que vous tapez pour que personne
+    n'ait à les mémoriser, et un historique sur les touches fléchées. Elle se place au-dessus de tout : vous pouvez déboguer par-dessus une boîte de dialogue.</p>
+  <div class="note warn">
+    <b>Elle refuse de s'ouvrir dans une version de production.</b> <code>debug_only</code> est actif par défaut ;
+    des commandes de triche entre les mains d'un joueur achèvent l'économie d'un jeu dès le premier jour.
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — un seul endroit où les choses se fabriquent</h2>
   <p class="sub">

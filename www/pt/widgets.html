@@ -326,6 +326,204 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   </div>
 </section>
 
+<section id="feedback">
+  <h2>Esperando, avisando, contando</h2>
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — a mensagem que se posiciona sozinha</h3>
+  <p>Fica embaixo (ou em cima), acima da área segura e do teclado, e vai embora sozinha. Sem ela, você escreve a
+    camada, o posicionamento, o cronômetro e o desmonte em toda tela que precisa dizer "salvo".</p>
+  <pre><code>snack.show_text("Salvo", GoTheme.SUCCESS)
+
+# Uma chance de desfazer — 0 é o primeiro botão, -1 significa que o tempo acabou
+if await snack.post({"text": "Item descartado", "actions": ["Desfazer"]}) == 0:
+    restore_item()</code></pre>
+  <p>As mensagens entram em uma <b>fila</b> em vez de sobrescrever umas às outras, e repetições da mesma linha são
+    fundidas — um servidor que falha quatro vezes por segundo não empilha mais quatro minutos de alertas. Um
+    snackbar sem botão deixa o toque passar, então o jogo embaixo dele continua rodando.</p>
+  <div class="note warn">
+    <b>Não é lugar de perguntar nada.</b> Ele some sozinho, então o jogador pode nunca chegar a vê-lo.
+    Confirmações irreversíveis são do <code>GoDialogs</code>. Os botões daqui precisam ser opcionais — Desfazer,
+    Detalhes, Tentar de novo.
+  </div>
+  <p>O <code>GoNotice</code> é a outra metade do par: ele nunca intercepta o toque nem toma o foco, e a tela que é
+    dona dele decide onde ele fica. Ele não pode segurar um botão; este pode.</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — uma espera sem fim à vista</h3>
+  <p>Jogos que falam com um servidor precisam disto mais do que de qualquer outra coisa desta página: uma tela
+    parada passa a impressão de travamento. Uma chamada transforma o botão que você pressionou em um spinner
+    <b>no lugar dele mesmo</b>.</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>O botão mantém o tamanho — o rótulo fica transparente em vez de sumir, então a fileira não dá pulo — e fica
+    desabilitado enquanto gira. Essa segunda parte é o que importa: uma compra não pode disparar duas vezes
+    enquanto você espera com <code>await</code>. Com o <code>reduce_motion</code> ligado ele não gira; três
+    pontinhos pulsam no lugar.</p>
+  <p>Progresso que dá para medir é um <code>GoBar</code>. Um spinner não promete nada sobre quando termina.</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — o pontinho de não lido, a etiqueta NOVO, o 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # se esconde no zero
+GoBadge.attach(shop_button, 0, "NOVO")
+GoBadge.attach(friend_button, 3, "", true) # um pontinho — "tem alguma coisa aí"</code></pre>
+  <p>Ele fica pendurado no canto superior direito do hospedeiro por âncoras, então acompanha um hospedeiro cujo
+    tamanho só é decidido depois, e anexar duas vezes devolve o mesmo badge. Use um número quando a contagem muda
+    o que o jogador faz, e um pontinho quando só importa que "tem alguma coisa lá".</p>
+  <p>A cor do texto é escolhida pelo contraste com a cor que o skin pintou no badge — nunca se supõe branco — e
+    ele carrega um nome acessível, porque um pontinho colorido não diz nada a um leitor de tela.</p>
+</section>
+
+<section id="forms-lists">
+  <h2>Formulários e listas</h2>
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — a linha que pode estar errada</h3>
+  <p>Uma linha no topo de um formulário de cinco campos dizendo "verifique os dados" não diz <i>qual</i> campo. É
+    essa única coisa que faz as pessoas abandonarem um cadastro.</p>
+  <pre><code>var name_field := GoField.make("Nome do personagem", GoStyle.line_edit("2-12"), "Não pode ser alterado depois")
+name_field.set_error("Esse nome já está em uso")   # o servidor disse não
+name_field.clear_error()</code></pre>
+  <p>A dica se esconde enquanto um erro aparece, então a linha não cresce uma linha e empurra tudo o que está
+    abaixo dela, e o texto do erro é juntado ao nome acessível do controle — uma borda vermelha sozinha não diz
+    nada a quem não enxerga vermelho.</p>
+  <p>O <code>GoStyle.field()</code> é a versão estática: rótulo, controle, dica, sem estado de erro. Use a fábrica
+    quando nada pode dar errado, e o nó para qualquer coisa que um servidor possa recusar.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — uma entrada soldada ao botão dela</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("Mensagem"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Nome"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>O que ele resolve são os cantos. Duas formas arredondadas se encontrando no meio parecem estranguladas, e o
+    espaço padrão faz as duas se lerem como dois objetos. Os cantos externos continuam redondos, os que se tocam
+    ficam retos — em todos os estados do botão, ou o grupo se parte no instante em que é pressionado. Skins
+    chanfrados não têm campo de canto nenhum, então lá ele não mexe neles e as faces retas se encontram sem
+    emenda.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — um seletor que busca</h3>
+  <p>Com menos de dez itens o <code>GoStyle.select()</code> é melhor: um toque a menos e a lista inteira fica
+    visível. Passando de trinta, procurar vira trabalho.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "Escolha um servidor")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>A busca casa dentro dos nomes, não só no começo deles.</b> Casar por prefixo não encontra quase nada em
+    listas em coreano ou japonês, onde a palavra que diferencia dois itens raramente é a primeira.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — códigos de cupom e de presente</h3>
+  <p>Um código é colado de uma mensagem muito mais vezes do que é digitado. Doze campos de verdade quebrariam a
+    colagem na primeira célula e perderiam caracteres para um IME, então um único campo escondido recebe o texto e
+    as células são desenhadas. <code>ABCD-EFGH-IJKL</code> perde os hifens na entrada.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Já foi usado")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — cabeçalhos ordenáveis, linhas selecionáveis</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "Posição", "width": 56}, {"text": "Nome"}, {"text": "Pontuação", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>, ou a classificação inverte.</b> Comparado como texto, <code>"9124"</code> ganha
+    de <code>"91240"</code> — e pontuação, ouro e dano têm todos quantidades de dígitos misturadas.
+  </div>
+  <p>O <code>row_selected</code> devolve o índice no seu array original, não a posição ordenada. A direção da
+    ordenação é mostrada com um glifo, não só com uma cor, e as linhas inteiras são pressionáveis, então ninguém
+    precisa acertar uma célula. O <code>GoStyle.table()</code> continua sendo a grade somente leitura.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — páginas, ou uma linha Mais</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # a variante amigável para celular</code></pre>
+  <p>Números são interface de mouse; no celular a linha Mais se lê melhor. A página atual fica centralizada na
+    janela, então pressionar próxima não embaralha todos os números. Um total de 0 significa "desconhecido" e só
+    as setas são desenhadas — ele não inventa uma contagem de páginas que não recebeu.</p>
+</section>
+
+<section id="game-shapes">
+  <h2>Formas que os jogos realmente usam</h2>
+  <p>Formas conhecidas da web, refeitas em torno do que um jogo precisa delas.</p>
+
+  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — presença diária</h3>
+  <p>Um seletor de data quase nunca serve em um jogo. Uma forma de calendário serve — para recompensas de
+    presença, onde o que importa é <b>em que dia você está</b>, não que data é hoje.</p>
+  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
+attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
+  <p>Só a célula de hoje pode ser pressionada — um botão que não faz nada quando pressionado passa a impressão de
+    coisa quebrada. Resgatado, hoje e futuro se diferenciam por três coisas ao mesmo tempo: um glifo de visto, uma
+    borda de destaque e o escurecimento.</p>
+
+  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> e <code>GoDonut</code> — atributos de relance</h3>
+  <pre><code>var stats := GoRadar.make({"FOR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "SOR": 0.45})
+stats.set_compare(with_new_sword)          # uma sobreposição tracejada
+
+var share := GoDonut.make([{"label": "Físico", "value": 620}, {"label": "Mágico", "value": 340}])
+card.add_child(share.legend())</code></pre>
+  <p>Os valores do radar vão de 0 a 1 porque o que conta como cheio é uma decisão do jogo — 120 de força puros ao
+    lado de 45 de inteligência desenhariam uma mentira. Os valores da rosca são brutos e ela faz a divisão por
+    você; passando de cinco fatias, ela junta o resto, já que uma sexta fatia é um fiozinho que ninguém consegue
+    ler. A linha de comparação é <b>tracejada</b>, não só de outra cor, e a legenda escreve a porcentagem em
+    palavras.</p>
+
+  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banners e seleção de personagem</h3>
+  <pre><code>banners.set_pages([promo, event, pack])
+banners.autoplay_seconds = 5.0             # desligado por padrão</code></pre>
+  <p>Ele não avança sozinho a não ser que você peça, e cinco segundos é o piso: um banner que muda a cada três leva
+    o texto embora antes de ele ser lido. Tocar nele reinicia o cronômetro, e com o <code>reduce_motion</code>
+    ligado ele nunca avança por conta própria. Os pontinhos são pressionáveis no mínimo de toque mesmo com o ponto
+    desenhado sendo pequeno.</p>
+
+  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — dicas de tecla que não mentem</h3>
+  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # lê o atalho de verdade</code></pre>
+  <p>Um "Aperte F" escrito na mão continua dizendo F depois que o jogador remapeia — a mentira mais comum de uma
+    interface de PC. O <code>for_action()</code> lê o <code>InputMap</code>; se a ação estiver mapeada em um
+    controle, ele devolve vazio e o widget se esconde, porque "Nenhuma" seria uma mentira em si. No Android e no
+    iOS ele se esconde sozinho.</p>
+</section>
+
+<section id="overlays">
+  <h2>Por cima da tela</h2>
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — o painel lateral</h3>
+  <p>O <code>GoSheet</code> vem de baixo, o que é certo para um celular na vertical. Em um tablet ou em um desktop
+    essa mesma folha cobre o jogo; um drawer vem do lado.</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("Bolsa")</code></pre>
+  <p>O painel chega até a borda da tela, mas o conteúdo fica dentro da área segura, senão um canto arredondado
+    corta a primeira linha. <code>LEFT</code> significa esquerda da tela até em árabe; ligue o
+    <code>follow_text_direction</code> quando o que importa é "o lado de início", e ele inverte em RTL.</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — o cartão ancorado</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p>Isto é o posicionamento ancorado do <code>GoSurface</code> com a camada, a superfície, a âncora e o desmonte
+    já ligados — as dez linhas que todo jogo escreve de novo e de novo. Um de cada vez fica aberto, porque cartões
+    empilhados soterram a tela e ninguém consegue dizer qual cartão pertence a qual slot. O véu é transparente: um
+    cartão que você abriu para comparar equipamentos não pode escurecer os equipamentos.</p>
+  <div class="note warn">
+    <b>Não é uma dica de passar o mouse.</b> Toque não tem hover, então tudo o que só um mouse consegue revelar é
+    invisível para metade dos seus jogadores.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — toque longo e clique direito</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "Usar", "action": use},
+    {"separator": true},
+    {"text": "Descartar", "action": drop, "danger": true},
+])</code></pre>
+  <p>O <code>PopupMenu</code> já vem na engine. O que não vem é o gesto: meio segundo para abrir, cancelado <b>no
+    instante em que o dedo se move</b>, então rolar uma lista nunca abre um menu. Passe um <code>Callable</code>
+    em vez de um array quando os itens dependem de quem você pressionou.</p>
+  <div class="note warn">
+    <b>Um toque longo precisa de um segundo caminho.</b> Ninguém descobre um gesto escondido — combine-o com um
+    botão <code>⋯</code> visível (<code>open_at()</code>), um ícone, ou um coach mark de primeira execução.
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — o console de desenvolvimento</h3>
+  <pre><code>console.register("give", "Dar um item: give &lt;id&gt; &lt;quantidade&gt;", give)
+console.toggle()</code></pre>
+  <p>Comandos de cheat e de depuração, com uma paleta que filtra conforme você digita, então ninguém precisa
+    decorá-los, e um histórico nas setas do teclado. Ele fica acima de tudo, então dá para depurar por cima de um
+    diálogo.</p>
+  <div class="note warn">
+    <b>Ele se recusa a abrir em uma build de release.</b> O <code>debug_only</code> vem ligado por padrão;
+    comandos de cheat nas mãos de um jogador acabam com a economia de um jogo no primeiro dia.
+  </div>
+</section>
+
 <section id="factory">
   <h2><code>GoStyle</code> — um lugar só onde as coisas são feitas</h2>
   <p class="sub">
