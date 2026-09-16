@@ -419,15 +419,19 @@ GoUi.font_size(GoTheme.ROLE_CAPTION) # 역할별 글자 크기</code></pre>
     <tbody>
       <tr><td>갤러리</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체</td></tr>
       <tr><td>중세</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>캐릭터 정보·가방·퀘스트 일지. 버튼으로 철·양피지를 바꾸고 아이템 설명을 연다</td></tr>
-      <tr><td>데모</td><td><code>bash examples/demo/run.sh</code></td><td>실제 입력으로 진행하는 15장면 자동 시연과, 위젯 하나를 직접 만져 보는 탐색 모드</td></tr>
+      <tr><td>데모 앱</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>갤러리·15장면 자동 시연·쇼케이스·중세 화면을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다</td></tr>
     </tbody>
   </table>
 
-  <pre><code>bash examples/demo/run.sh --setup                       # git 에서 새로 받았을 때 한 번
-bash examples/demo/run.sh                               # Start demo 또는 Explore widgets
+  <pre><code>cd examples/demo &amp;&amp; godot                             # 홈 화면. 첫 실행에서 링크와 임포트를 스스로 한다
+bash examples/demo/run.sh                               # 애드온 루트에서 같은 앱을 연다
+bash examples/demo/run.sh -- --open=gallery             # 홈을 건너뛰고 바로 그 화면으로
 bash examples/demo/run.sh -- --explore=surfaces         # 위젯 하나를 탐색 모드로 바로 연다
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 전체 시연 1080p / 60fps 녹화</code></pre>
-  <p>데모에서 <b>C</b> 는 촬영 모드, <b>F11</b> 은 전체 화면, <b>Space</b> 는 일시정지(탐색 중에는 현재 위젯 시연),
+  <p>데모 앱은 준비할 것이 없다. 애드온 링크나 임포트 캐시가 없으면 그 사실을 화면에 적고, 폴더를 고치고,
+    창을 스스로 다시 연다. 홈 화면은 예제를 <b>같은 창 안에서</b> 연다 — <b>1</b>~<b>4</b> 를 누르거나 줄을
+    누르고, 위쪽 줄로 돌아온다.</p>
+  <p>자동 시연에서 <b>C</b> 는 촬영 모드, <b>F11</b> 은 전체 화면, <b>Space</b> 는 일시정지(탐색 중에는 현재 위젯 시연),
     화살표는 장면 이동, <b>Esc</b> 는 시작 화면이다.</p>
   <p>AI 코딩 에이전트를 쓴다면 <a href="#ai">세 가지 모두 명령 한 줄로 열 수 있다 →</a></p>
 </section>

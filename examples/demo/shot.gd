@@ -1,11 +1,14 @@
-## Capture the current main scene after layout and rendering have settled.
+## Capture one screen after layout and rendering have settled.
+## SHOT_SCENE picks the scene (default: the home screen); SHOT_PATH is where the PNG goes.
 extends SceneTree
 
 func _initialize() -> void:
 	_run.call_deferred()
 
 func _run() -> void:
-	var scene: Node = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
+	var path := OS.get_environment("SHOT_SCENE")
+	if path.is_empty(): path = "res://home.tscn"
+	var scene: Node = load(path).instantiate()
 	root.add_child(scene)
 	for frame in 12: await process_frame
 	await RenderingServer.frame_post_draw

@@ -530,21 +530,31 @@ activate on handheld platforms, so they are exercised by the suite but not on re
 |---|---|---|
 | Gallery | `res://addons/gohud/examples/gallery/gallery.tscn`, F6 | Every widget, a picker for every installed preset, and the full icon set. Needs no server, autoload or project setup. |
 | Medieval | `res://addons/gohud/examples/medieval/medieval.tscn`, F6 | A character sheet, satchel and quest journal in `medieval_dark` and `medieval_light`. |
-| Demo | `bash examples/demo/run.sh` | A guided tour of 15 chapters driven by real input, plus an explore mode for trying one widget by hand. |
+| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 15-chapter tour, the showcase screen or the medieval look — plus live widgets and one card per class. |
 
-### Demo
-
-Run `examples/demo/project.godot`. **Start demo** plays a guided tour: a visible cursor demonstrates
-15 chapters using real input — buttons, fields, menus, scrolling, HUDs, dialogs, forms and more.
-**Explore widgets**, or any row in the sidebar, opens a single widget for you to try by hand, with
-a **Play this widget** button that lets the bot demonstrate just that one.
-All demo text is English. Large desktop windows enlarge the UI along with the canvas.
+### Demo app
 
 ```bash
-bash examples/demo/run.sh --setup                       # once, on a fresh git checkout
-bash examples/demo/run.sh
+cd examples/demo && godot
+```
+
+Nothing to set up: if the add-on link or the import cache is missing, the app links, imports and
+reopens itself once, then lands on its **home screen**. Four rows open the widget gallery, the
+guided tour, the showcase screen and the medieval look inside the same window — press `1`–`4`, or
+click. Below them the home screen holds a card of live widgets to press, and one small card per
+class with its one-line job and the line of code that does it.
+
+**Start demo**, on the tour, plays 15 chapters with a visible cursor using real input — buttons,
+fields, menus, scrolling, HUDs, dialogs, forms and more. **Explore widgets**, or any row in the
+sidebar, opens a single widget for you to try by hand, with a **Play this widget** button that
+lets the bot demonstrate just that one. All demo text is English. Large desktop windows enlarge
+the UI along with the canvas.
+
+```bash
+bash examples/demo/run.sh                               # the same app, from the add-on root
+bash examples/demo/run.sh -- --open=gallery             # skip the home screen
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 1080p / 60 fps, complete tour
-bash examples/demo/run.sh --shot /tmp/gohud-start.png
+bash examples/demo/run.sh --shot /tmp/gohud-home.png
 bash examples/demo/run.sh -- --explore=surfaces         # open the app on one widget
 ```
 

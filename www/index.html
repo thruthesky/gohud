@@ -393,15 +393,19 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     <tbody>
       <tr><td>Gallery</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Every widget, a picker for every installed preset, and the full icon set</td></tr>
       <tr><td>Medieval</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>A character sheet, satchel and quest journal; buttons switch iron and parchment and open item details</td></tr>
-      <tr><td>Demo</td><td><code>bash examples/demo/run.sh</code></td><td>A 15-chapter guided tour driven by real input, and an explore mode for trying one widget by hand</td></tr>
+      <tr><td>Demo app</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>A home screen opening the gallery, the 15-chapter guided tour, the showcase screen and the medieval look, with live widgets and one card per class</td></tr>
     </tbody>
   </table>
 
-  <pre><code>bash examples/demo/run.sh --setup                       # once, on a fresh git checkout
-bash examples/demo/run.sh                               # Start demo, or Explore widgets
-bash examples/demo/run.sh -- --explore=surfaces         # open straight onto one widget
+  <pre><code>cd examples/demo &amp;&amp; godot                             # home screen; links and imports on first run
+bash examples/demo/run.sh                               # the same app, from the add-on root
+bash examples/demo/run.sh -- --open=gallery             # skip the home screen
+bash examples/demo/run.sh -- --explore=surfaces         # open straight onto one tour chapter
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 1080p / 60 fps recording of the tour</code></pre>
-  <p>In the demo, <b>C</b> toggles Cinema mode, <b>F11</b> fullscreen, <b>Space</b> pauses (or plays the current
+  <p>The demo app needs no setup: if the add-on link or the import cache is missing it says so, repairs the folder
+    and reopens itself. Its home screen opens each example inside the same window — press <b>1</b>–<b>4</b> or click
+    a row, and the bar across the top brings you back.</p>
+  <p>In the tour, <b>C</b> toggles Cinema mode, <b>F11</b> fullscreen, <b>Space</b> pauses (or plays the current
     widget while exploring), the arrows change chapters and <b>Escape</b> returns to Start.</p>
   <p>Using an AI coding agent? <a href="#ai">Open all three with one command →</a></p>
 </section>

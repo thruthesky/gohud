@@ -4,7 +4,8 @@
     python3 gohud_preview.py                          # gallery in a window (sandbox project)
     python3 gohud_preview.py gallery --preset scifi_dark --phone
     python3 gohud_preview.py medieval
-    python3 gohud_preview.py demo --explore hud       # 15-chapter demo app, opened on one widget
+    python3 gohud_preview.py demo                     # demo app home screen (gallery / tour / showcase / medieval)
+    python3 gohud_preview.py demo --explore hud       # ...opened straight on one tour chapter
     python3 gohud_preview.py res://ui/main_menu.tscn  # a scene of YOUR project (runs in your project)
     python3 gohud_preview.py gallery --check          # headless: no window, fail on script errors
     python3 gohud_preview.py list                     # targets, presets, demo chapters
