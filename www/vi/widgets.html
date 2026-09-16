@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>Cửa sổ nổi</h2>
 
-  <h3><code>GoSurface</code> — lớp vỏ</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — lớp vỏ</h3>
   <p>Popup, bảng trượt và danh sách thả xuống đều dùng chung cái này. Nó lo vùng an toàn, bàn phím ảo,
     đầu và chân trang cố định, thân cuộn được, cửa sổ nào đang ở trên cùng, việc trả focus về chỗ cũ, quyền
     sở hữu nút Back và thao tác kéo để đổi kích thước.</p>
@@ -102,7 +102,7 @@
     của màn hình sở hữu nó, vì lớp vỏ không thể biết <i>vì sao</i> nó đang đóng (lưu rồi đóng, hay bỏ luôn).
   </div>
 
-  <h3><code>GoSheet</code> — một trang trồi lên từ đáy</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — một trang trồi lên từ đáy</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Túi đồ")
@@ -114,7 +114,7 @@ sheet.footer().visible = true</code></pre>
     phần thân và <b>tắt</b> nút Back cùng các hàng cố định — một cái nút chết trên màn hình không có chỗ nào để
     quay về thì người ta đọc ra là hỏng.</p>
 
-  <h3><code>GoDialogs</code> — hộp thoại xác nhận mà bạn <code>await</code></h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — hộp thoại xác nhận mà bạn <code>await</code></h3>
   <pre><code>if await dialogs.confirm("Xóa bản lưu", "Thao tác này không thể hoàn tác."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — mọi thứ sau phần thân đều
@@ -132,14 +132,14 @@ sheet.footer().visible = true</code></pre>
     <code>set_next_action_layout()</code> trước khi mở nó. Hàng nút được dựng khi hộp thoại mở lần đầu, nên một
     <code>GoDialogs</code> nạp bằng autoload không thêm gì vào lúc khởi động.</p>
 
-  <h3><code>GoForm</code> — biểu mẫu giới hạn bề ngang</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — biểu mẫu giới hạn bề ngang</h3>
   <div class="note warn">
     <b>Nó bảo đảm mọi nhãn con cháu đều xuống dòng.</b> Không có điều đó, một câu dài sẽ kéo thành
     một dòng duy nhất có bề rộng tối thiểu vượt quá màn hình, rồi hai bên bị cắt cụt — đến mức bạn không
     còn nhận ra mình đang ở màn hình nào. Bật xuống dòng bằng tay cho từng scene thì lần nào cũng quên.
   </div>
 
-  <h3><code>GoScroll</code> — cuộn bằng ngón tay</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — cuộn bằng ngón tay</h3>
   <p>Chỉ đặt <b>một</b> thứ vào bên trong. Phần đầu trang và hàng nút thì để bên ngoài — một danh sách dài
     không được phép đẩy chúng ra khỏi màn hình. <code>use_panel_edge()</code> dời thanh cuộn vào phần đệm
     sẵn có của tấm thẻ mà nội dung vẫn giữ nguyên lề thụt.</p>
@@ -148,17 +148,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>Nói cho người chơi biết một điều gì đó</h2>
 
-  <h3><code>GoNotice</code> — snackbar</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
   <div class="note warn">
     <b>Nó không bao giờ chặn thao tác.</b> Một thông báo là để đọc chứ không phải để bấm. Nó không lấy focus,
     không chặn thao tác trong game, và cái nút nằm dưới nó vẫn bấm được. Khi cần xác nhận thì dùng
     <code>GoDialogs</code>; khi cần một lựa chọn thì dùng <code>GoPromptCard</code>.
   </div>
 
-  <h3><code>GoPromptCard</code> — câu hỏi không chặn game</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — câu hỏi không chặn game</h3>
   <p>Nổi ở một bên và không có lớp phủ mờ. Game vẫn chạy tiếp.</p>
 
-  <h3><code>GoCoachMark</code> — chuyến tham quan có hướng dẫn</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — chuyến tham quan có hướng dẫn</h3>
   <p>Chỉ vào từng control thật một. Chỉ tấm thẻ mới nhận thao tác, nên <b>bấm thẳng vào chính control đang
     được làm nổi là sang bước kế</b> — "bấm vào đây" trở thành một hành động chứ không còn là một câu chữ.</p>
   <pre><code>tour.start([
@@ -172,7 +172,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>Những thứ nhỏ mới quyết định nó có đẹp hay không</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">Những thứ nhỏ mới quyết định nó có đẹp hay không</h3>
   <p>
     Bạn có gọt giũa các tấm nền lớn đến đâu đi nữa — thứ đập vào mắt luôn là một chi tiết nhỏ: một từ bị
     cắt làm đôi, một vệt sáng bị xén mất, một cái ô chật chội. Bốn chuyện như vậy được chỉ ra vào 2026-09-13 và
@@ -212,7 +212,7 @@ sheet.footer().visible = true</code></pre>
     phép tính bề rộng của nó sai (đo được là rộng 1dp).
   </p>
 
-  <h4>Thẻ coach mark biết tránh các vật cố định</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">Thẻ coach mark biết tránh các vật cố định</h4>
   <p>
     Khi màn hình nằm ngang, tấm thẻ trước đây bị đẩy ra sát mép trên hoặc mép dưới — đúng chỗ phần đầu trang và các
     mảnh HUD ngồi; trong bản demo nó đè lên cụm <code>→ ×</code> của đầu trang. Giờ nó giữ ngang tầm với mục tiêu,
@@ -224,7 +224,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # các vật cố định không phải là anchor</code></pre>
 
-  <h3>Màn hình có chuột và bàn phím</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Màn hình có chuột và bàn phím</h3>
   <p>
     Ngón tay thì <b>không có trạng thái rê chuột.</b> Chỉ làm cho di động thôi là hai trạng thái riêng của máy để bàn
     chẳng ai kiểm — và một trong hai đã hỏng: <b>vòng focus của gohud vô hình trên nút chính.</b> Tấm nền
@@ -242,7 +242,7 @@ sheet.footer().visible = true</code></pre>
     quy tắc này sống sót qua một lần đổi bảng màu (WCAG 2.4.11 yêu cầu 3:1 cho chỉ báo focus).
   </p>
 
-  <h3><code>GoHudAnchor</code> — chín vị trí</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — chín vị trí</h3>
   <p>Tôn trọng vùng an toàn và lề mép màn hình. Cho nó một <code>landscape_spot</code> thì nó đổi chỗ khi màn hình
     nằm ngang — những control nằm giữa đáy lúc màn hình dọc có thể dời sang góc dưới bên phải.</p>
   <div class="note">
@@ -251,7 +251,7 @@ sheet.footer().visible = true</code></pre>
     nằm ngang. Phép tính đó nằm gọn ở một chỗ.
   </div>
 
-  <h4>Giữ cho nội dung không chui xuống dưới HUD</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">Giữ cho nội dung không chui xuống dưới HUD</h4>
   <p>
     Khi một màn hình cuộn được phải chia màn hình với HUD, nội dung trượt <b>xuống bên dưới nó</b> và
     hai lớp chữ chồng lên nhau đến mức chẳng đọc nổi bên nào. Chuyện đó đã xảy ra hai lần trong add-on này: chữ gợi ý
@@ -266,7 +266,7 @@ joystick_anchor.reserve_space = false  # …trừ những cái chỉ hiện ra d
     trước khi đo tới hình chữ nhật kế tiếp.
   </p>
 
-  <h4>Các mảnh HUD cũng va vào nhau</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">Các mảnh HUD cũng va vào nhau</h4>
   <p>
     Chín vị trí chia màn hình ra; chúng không bảo đảm các mảnh <b>không đụng nhau</b>. Một snackbar rộng
     ở giữa mép trên đã đáp thẳng lên thanh máu ở góc trên bên phải, che mất con số — bạn không đọc nổi
@@ -280,7 +280,7 @@ notice_anchor.reserve_space = false   # và không đẩy trang trong lúc nó �
     cùng nhường, hai bên sẽ đổi chỗ cho nhau mãi mãi.
   </p>
 
-  <h3><code>GoBar</code> — máu, mana, kinh nghiệm</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — máu, mana, kinh nghiệm</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token chỉ dùng để tô
@@ -289,7 +289,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     nặng đến đâu. <code>reduce_motion</code> làm nó đổi tức thì. Số lớn được rút gọn thành <code>12.3k</code> để
     bề rộng của thanh không giật lên giật xuống theo số chữ số.</p>
 
-  <h3><code>GoSlot</code> — một ô nhanh</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — một ô nhanh</h3>
   <p>Biểu tượng, số lượng, hồi chiêu và phím tắt trên <b>cùng một mặt</b>. Treo badge lủng lẳng quanh một
     vòng tròn nhỏ sẽ làm mỗi ô một bề rộng khác nhau và cả hàng lắc lư.</p>
   <div class="note">
@@ -301,7 +301,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> mặc định tắt, nên một hàng tám ô nhanh không chen giữa người dùng bàn phím và
     mọi control cài đặt trong thứ tự Tab. Hãy bật nó khi bàn phím hoặc tay cầm là cách nhập liệu duy nhất.</p>
 
-  <h3><code>GoJoystick</code> — cần điều khiển ảo</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — cần điều khiển ảo</h3>
   <table>
     <thead><tr><th>Chế độ</th><th>Hành vi</th></tr></thead>
     <tbody>
@@ -313,7 +313,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>Vector2</code> mà tín hiệu <code>moved</code> trả về có độ dài từ 0 đến 1, nên bạn nhân thẳng nó
     vào tốc độ được; nó không đổi theo kích thước màn hình hay DPI.</p>
 
-  <h3><code>GoIconButton</code> — trông nhỏ, bấm rộng</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — trông nhỏ, bấm rộng</h3>
   <div class="note warn">
     <b>Chỉ an toàn khi các nút bên cạnh bỏ qua thao tác.</b> Nếu vùng đã nới rộng phủ lên nút kế bên, nút đó
     sẽ không còn phản hồi. Các nút biểu tượng đặt sát nhau cần <code>touch_peers</code>.
@@ -346,7 +346,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     nguyên một hình dáng tùy biến.
   </div>
 
-  <h3>Hàng danh sách có dòng mô tả</h3>
+  <h3 id="list-rows-with-a-description">Hàng danh sách có dòng mô tả</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Kiếm Thề Nguyện", _inspect, Color.TRANSPARENT,
     "Trường kiếm  /  Tấn công 42", false)</code></pre>
   <p>Một hàng có dòng thứ hai được cấp <b>phần đệm trên và dưới bằng nhau</b>, rộng rãi hơn hàng một dòng, và cặp
@@ -357,12 +357,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>Hàng hai dòng, ô nhanh và các thanh trong ví dụ trung cổ — vẫn những lệnh gọi factory đó dưới <code>medieval_light</code>.</figcaption>
   </figure>
 
-  <h3>Hàng tự xuống dòng</h3>
+  <h3 id="flowing-rows">Hàng tự xuống dòng</h3>
   <p>Hãy đặt các control vào <code>wrap_row</code> ở <b>bề rộng tự nhiên</b> của chúng. Nếu cứ để bật xuống dòng, bề rộng
     tối thiểu của một cái nút tụt xuống gần như bằng không và hàng lấy đó làm cỡ ô — nhãn co lại thành mỗi dòng một ký tự.
     Factory ngăn chuyện này giúp bạn.</p>
 
-  <h3>Đừng bao giờ để một danh sách rỗng trống trơn</h3>
+  <h3 id="never-leave-an-empty-list-empty">Đừng bao giờ để một danh sách rỗng trống trơn</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Chưa có gì ở đây"))</code></pre>
   <p>Người ta đọc một màn hình trắng trơn ra là <b>hỏng</b>.</p>
 </section>
@@ -394,5 +394,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

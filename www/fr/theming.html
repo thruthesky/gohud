@@ -122,12 +122,12 @@
     <b>Paramètres du projet → Gohud → Theme → Preset</b> ; depuis une ressource de configuration,
     <code>GoConfig.preset</code>.</p>
 
-  <h3>Garder un champ à vous</h3>
+  <h3 id="keeping-one-field-your-own">Garder un champ à vous</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # vos icônes, tout le reste vient du préréglage</code></pre>
   <p>Renseigner explicitement <code>theme</code>, <code>skin</code> ou <code>icons</code> <b>l'emporte sur</b> le préréglage.</p>
 
-  <h3>Les six préréglages intégrés</h3>
+  <h3 id="the-six-built-in-presets">Les six préréglages intégrés</h3>
   <table>
     <thead><tr><th>Préréglage</th><th>Panneaux</th><th>Skin · icônes</th></tr></thead>
     <tbody>
@@ -173,7 +173,7 @@ GoUi.config.icons = my_icons     # vos icônes, tout le reste vient du prérégl
     atteint l'emplacement sans toucher au préréglage ; et revenir en arrière restaure la géométrie par défaut
     et science-fiction.
   </div>
-  <h3>Créez votre propre royaume</h3>
+  <h3 id="make-a-kingdom-of-your-own">Créez votre propre royaume</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # Modifiez themes/palettes/kingdom.json, puis :
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -203,7 +203,7 @@ GoUi.metric(GoTheme.GAP)               # mesure (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # taille d'un rôle de texte
 GoUi.box(GoTheme.BOX_CARD)             # une copie d'un StyleBox</code></pre>
 
-  <h3>Couleurs</h3>
+  <h3 id="colours">Couleurs</h3>
   <table>
     <thead><tr><th>Nom</th><th>Sert à</th></tr></thead>
     <tbody>
@@ -226,7 +226,7 @@ GoUi.box(GoTheme.BOX_CARD)             # une copie d'un StyleBox</code></pre>
     sur le nom de base : les thèmes antérieurs à ces tokens continuent donc de fonctionner.
   </div>
 
-  <h3>Mesures (dp)</h3>
+  <h3 id="measurements-dp">Mesures (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -236,7 +236,7 @@ GoUi.box(GoTheme.BOX_CARD)             # une copie d'un StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>Rôles de texte</h3>
+  <h3 id="text-roles">Rôles de texte</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — un rôle nomme <b>une taille</b>, pas un
@@ -244,7 +244,7 @@ GoUi.box(GoTheme.BOX_CARD)             # une copie d'un StyleBox</code></pre>
     pour autre chose.
   </p>
 
-  <h3>Variations de type</h3>
+  <h3 id="type-variations">Variations de type</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -280,7 +280,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>Des formes que StyleBoxFlat ne sait pas produire</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">Des formes que StyleBoxFlat ne sait pas produire</h3>
   <table>
     <thead><tr><th>Classe</th><th>Ce qu'elle dessine</th></tr></thead>
     <tbody>
@@ -316,7 +316,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
     registre à modifier — la liste déroulante du paramètre de projet le reprend elle aussi.
   </p>
 
-  <h3>Ce que vous pouvez changer — sur une seule page</h3>
+  <h3 id="what-you-can-change-on-one-page">Ce que vous pouvez changer — sur une seule page</h3>
   <table>
     <thead><tr><th>Où</th><th>Quoi</th><th>Comment</th></tr></thead>
     <tbody>
@@ -335,7 +335,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
     </tbody>
   </table>
 
-  <h3>Toutes les molettes</h3>
+  <h3 id="every-dial">Toutes les molettes</h3>
   <p>
     Le tableau ci-dessous est rempli par <code>tools/make_site.py</code> <b>directement depuis les lignes</b>
     <code>@export</code> des scripts de skin — ajoutez une molette ou changez une valeur par défaut et le tableau
@@ -345,7 +345,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>Skin par défaut <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">Skin par défaut <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>Molette</th><th>Valeur par défaut</th><th>Ce qu'elle règle</th></tr></thead>
     <tbody>
@@ -368,7 +368,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
       <tr><td><code>joystick_ring_width</code></td><td data-label="Valeur par défaut">2.0</td><td>Largeur (dp) de l'anneau du joystick.</td></tr>
     </tbody>
   </table>
-  <h4>Skin science-fiction <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">Skin science-fiction <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>Molette</th><th>Valeur par défaut</th><th>Ce qu'elle règle</th></tr></thead>
     <tbody>
@@ -384,7 +384,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
       <tr><td><code>bracket_thickness</code></td><td data-label="Valeur par défaut">2.0</td><td>Épaisseur (dp) du trait du crochet de visée du repère guidé.</td></tr>
     </tbody>
   </table>
-  <h4>Skin médiéval <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">Skin médiéval <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>Molette</th><th>Valeur par défaut</th><th>Ce qu'elle règle</th></tr></thead>
     <tbody>
@@ -398,7 +398,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
   </div>
   <!-- dials:end -->
 
-  <h3>Dériver le skin (facultatif)</h3>
+  <h3 id="subclass-the-skin-optional">Dériver le skin (facultatif)</h3>
   <p>Seul ce que le thème et la forme n'atteignent pas — l'hexagone du joystick, les badges des emplacements,
     le crochet de visée du repère guidé — vit dans un skin. Dérivez <code>GoSkin</code>, ne redéfinissez que ces
     méthodes, et faites pointer la clé <code>skin</code> du JSON vers cette ressource. Un thème qui ne change
@@ -433,7 +433,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
     </tbody>
   </table>
 
-  <h3>Du texte sur une teinte de la même couleur</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">Du texte sur une teinte de la même couleur</h3>
   <p>
     Ce piège est apparu <b>trois fois</b> dans ce code — les boutons enfoncés (panneau d'accent, libellé
     d'accent), les boutons de danger et les puces. C'est joli sur un nuancier et cela s'effondre dès qu'on le
@@ -446,7 +446,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
     caractère, et la modifier conserve son contraste.
   </p>
 
-  <h3>Une couleur lue comme du texte et une couleur peinte en aplat veulent des choses opposées</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">Une couleur lue comme du texte et une couleur peinte en aplat veulent des choses opposées</h3>
   <p>
     Sur un thème clair, une couleur d'avertissement doit s'assombrir pour rester lisible <b>en tant que
     texte</b> (<code>#96500A</code>). Quand le remplissage de la barre en hérite, la barre d'expérience vire au
@@ -469,7 +469,7 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
     warning_vivid à la palette »). Un endroit qui se dégradait en silence le dit désormais.
   </div>
 
-  <h3>Un panneau flottant ne peut pas savoir ce qu'il y a derrière lui</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">Un panneau flottant ne peut pas savoir ce qu'il y a derrière lui</h3>
   <p>
     Un HUD est dessiné <b>par-dessus</b> le jeu — un champ de neige, ou une grotte. Si son panneau est
     translucide, ce qui se trouve derrière transparaît et <b>change la couleur du panneau</b>, entraînant avec
@@ -504,5 +504,6 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

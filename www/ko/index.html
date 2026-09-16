@@ -132,35 +132,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>모든 치수가 토큰이다</h3>
+      <h3 id="every-measurement-is-a-token">모든 치수가 토큰이다</h3>
       <p>여백·모서리·글자 크기를 숫자로 쓰지 않고 이름으로 부른다. 테마를 갈아 끼우면 화면 전체가 함께 움직인다.</p>
     </div>
     <div class="card">
-      <h3>보이는 크기와 누르는 크기가 다르다</h3>
+      <h3 id="visible-size-pressable-size">보이는 크기와 누르는 크기가 다르다</h3>
       <p>닫기 버튼은 36dp 로 보이지만 터치 타깃은 48dp 다. 슬롯이 촘촘히 깔려도 겹친 자리는 중심이 가까운 쪽이 가져간다.</p>
     </div>
     <div class="card">
-      <h3>노치와 키보드를 피한다</h3>
+      <h3 id="notches-and-keyboards">노치와 키보드를 피한다</h3>
       <p>안전영역 안에 HUD 를 붙이고, 가상 키보드가 올라오면 입력 칸이 그 위로 올라온다.</p>
     </div>
     <div class="card">
-      <h3>뒤로 가기가 하나씩 닫힌다</h3>
+      <h3 id="back-closes-one-thing">뒤로 가기가 하나씩 닫힌다</h3>
       <p>Escape 와 Android 뒤로 가기가 <b>가장 위 창 하나만</b> 닫는다. 겹쳐 띄운 창이 한꺼번에 사라지지 않는다.</p>
     </div>
     <div class="card">
-      <h3>알림은 입력을 훔치지 않는다</h3>
+      <h3 id="notices-never-steal-input">알림은 입력을 훔치지 않는다</h3>
       <p>스낵바 위를 눌러도 그 아래 버튼이 눌린다. 포커스도 가져가지 않는다.</p>
     </div>
     <div class="card">
-      <h3>아이콘은 이름으로 부른다</h3>
+      <h3 id="icons-are-asked-for-by-name">아이콘은 이름으로 부른다</h3>
       <p>위젯은 <code>GoIconSet.CLOSE</code> 처럼 이름만 안다. 세트를 갈아 끼우면 코드를 한 줄도 안 고치고 그림이 바뀐다.</p>
     </div>
     <div class="card">
-      <h3>생김새 여섯, 코드 한 줄</h3>
+      <h3 id="six-looks-one-line">생김새 여섯, 코드 한 줄</h3>
       <p><code>GoUi.use_preset()</code> 이 테마·스킨·아이콘을 함께 바꾼다 — 둥근 판, 모서리를 자른 sci-fi, 단조 프레임의 중세.</p>
     </div>
     <div class="card">
-      <h3>읽히는지는 잰다</h3>
+      <h3 id="legible-by-measurement">읽히는지는 잰다</h3>
       <p>모든 테마를 WCAG 로 잰다. 버튼 상태별 판, 순백·순흑 위에 얹힌 반투명 HUD 판까지.</p>
     </div>
   </div>
@@ -175,11 +175,11 @@
   <h2>설치</h2>
   <p class="sub">애드온 폴더를 프로젝트에 넣기만 하면 된다.</p>
 
-  <h3>배포 ZIP 또는 애셋 스토어</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">배포 ZIP 또는 애셋 스토어</h3>
   <p>프로젝트 루트에 풀어 <code>res://addons/gohud/</code> 가 되게 한다. 그것이 전부다. 필요하면
     <b>프로젝트 → 프로젝트 설정 → 플러그인 → gohud</b> 를 켠다.</p>
 
-  <h3>git submodule 로</h3>
+  <h3 id="as-a-git-submodule">git submodule 로</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # 선택: 태그나 커밋에 고정</code></pre>
@@ -196,17 +196,17 @@ git -C addons/gohud checkout v1.0.0   # 선택: 태그나 커밋에 고정</code
   <h2>빠른 시작</h2>
   <p class="sub">전부 <code>.new()</code> 로 만들어 <code>add_child()</code> 하면 된다. 씬 파일도, 오토로드도 필요 없다.</p>
 
-  <h3>UI 를 만들기 전에 생김새를 고른다(선택)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">UI 를 만들기 전에 생김새를 고른다(선택)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 고르지 않으면 default_dark</code></pre>
 
-  <h3>확인창을 <code>await</code> 로 받는다</h3>
+  <h3 id="a-confirmation-you-await">확인창을 <code>await</code> 로 받는다</h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
     delete_save()</code></pre>
   <p>마지막 인자 <code>destructive</code> 를 <code>true</code> 로 주면 확인 버튼이 채워진 위험 버튼으로 그려진다.</p>
 
-  <h3>검색 칸과 바닥 버튼이 고정된 바텀 시트</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">검색 칸과 바닥 버튼이 고정된 바텀 시트</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("가방")
@@ -223,7 +223,7 @@ sheet.footer().visible = true</code></pre>
     화면 밖으로 밀린다. <code>footer()</code> 는 언제나 보인다.
   </div>
 
-  <h3>HUD 모서리에 체력 막대</h3>
+  <h3 id="a-hud-corner">HUD 모서리에 체력 막대</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT   # 가로에서는 다른 자리로
@@ -235,7 +235,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)             # 채움 전용 토큰
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>본문이 HUD 를 비켜 가게</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">본문이 HUD 를 비켜 가게</h3>
   <pre><code>form.avoid_hud = true                  # 보이는 GoHudAnchor 를 모두 피한다
 joystick_anchor.reserve_space = false  # 손을 얹을 때만 나타나는 것은 빼고
 notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 그 아래로 내려앉는다</code></pre>
@@ -289,7 +289,7 @@ notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 
     버튼 모서리, 토글 모양, 목록 줄, 입력 칸 테두리가 함께 움직이는 것이 보인다.
   </p>
 
-  <h3>중세 테마</h3>
+  <h3 id="medieval-collection">중세 테마</h3>
   <p>
     <code>medieval_dark</code> 는 철·가죽에 고금색, <code>medieval_light</code> 는 양피지와 잉크 색상이다.
     메뉴 프레임에는 리벳과 작은 모서리 장식을 두고 상시 HUD 는 절제했다. 각인풍 아이콘 16종이 아이템 이름을
@@ -308,7 +308,7 @@ notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 
   <p>두 장 모두 기본 위젯으로 만든 <code>examples/medieval/medieval.tscn</code> 이다.
     <a href="theming.html#medieval">중세 안내와 나만의 왕국 만들기 →</a></p>
 
-  <h3>같은 화면, 폰에서도 데스크톱에서도</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">같은 화면, 폰에서도 데스크톱에서도</h3>
   <p>
     갤러리 네 장은 폰 세로다. 아래는 <b>같은 코드</b>를 1280×800 으로 띄운 것이다 — 본문은 읽기 좋은
     폭(480dp)에서 멈춰 가운데에 서고, HUD 는 화면 구석에 남는다. 폼은 떠 있는 HUD 와 겹치지 않게
@@ -325,7 +325,7 @@ notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 
     </figure>
   </div>
 
-  <h3>같은 시트, 다른 생김새</h3>
+  <h3 id="the-same-sheet-a-different-look">같은 시트, 다른 생김새</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="default_dark 의 바텀 시트" loading="lazy">
@@ -371,7 +371,6 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>StyleBoxFlat 로 못 만드는 모양</h3>
   <table>
     <thead><tr><th>클래스</th><th>낼 수 있는 모양</th></tr></thead>
     <tbody>
@@ -448,24 +447,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 전체 시연 1080p / 
     뜬다 — 에디터를 켤 필요도, 씬을 찾을 필요도 없다.
   </p>
 
-  <h3>명령은 한 번만 설치한다</h3>
+  <h3 id="install-the-commands-once">명령은 한 번만 설치한다</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # 설치 뒤 Claude Code 를 다시 시작한다</code></pre>
   <p>Codex 같은 다른 에이전트도 같은 스킬을 쓸 수 있다 — 이 저장소의 <code>skills/gohud</code> 를 에이전트의
     스킬 폴더에 복사한다.</p>
 
-  <h3><code>/gohud:preview</code> — 위젯 갤러리</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — 위젯 갤러리</h3>
   <p>모든 위젯, 프리셋 여섯을 고르는 선택기, 아이콘 전체가 있는 갤러리를 연다. Godot 프로젝트 안에서 치면
     <b>그 프로젝트의</b> <code>addons/gohud</code> 를 쓰고, 없으면 플러그인에 든 사본이나 새로 받은 저장소를 쓴다.
     일회용 샌드박스 프로젝트에서 돌기 때문에 내 프로젝트의 오토로드·임포트 캐시는 건드리지 않고, 창은 직접 닫을
     때까지 떠 있다.</p>
 
-  <h3><code>/gohud:preview demo</code> — 15장면 안내 투어</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15장면 안내 투어</h3>
   <p>데모를 시작 화면으로 연다. <b>Start demo</b> 는 실제 입력으로 진행하는 자동 시연, <b>Explore widgets</b> 는
     위젯 하나를 직접 만져 보는 탐색 모드다. <a href="#examples">예제</a>에 적은 단축키가 여기서도 그대로 통한다.</p>
 
-  <h3>그 밖에도 여러 명령을 쓸 수 있다</h3>
+  <h3 id="many-other-commands">그 밖에도 여러 명령을 쓸 수 있다</h3>
   <table>
     <thead><tr><th>명령</th><th>하는 일</th></tr></thead>
     <tbody>
@@ -529,14 +528,14 @@ claude plugin install gohud@gohud
     대비 미달 0. 이번 실행에 Godot 4.6 과 Android·iOS 실기기는 포함되지 않았다.
   </div>
 
-  <h3>배포 버전</h3>
+  <h3 id="release-versions">배포 버전</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>성공하면 <code>plugin.cfg</code>·<code>GoUi.VERSION</code>·<code>CHANGELOG.md</code> 가 함께 바뀌고 Unreleased
     항목이 날짜 붙은 버전으로 옮겨진다. 실패하면 아무것도 바뀌지 않고, 이미 있는 ZIP 은 덮어쓰지 않는다.
     ZIP 에는 이 사이트·검사·도구가 들어가지 않는다.</p>
 
-  <h3>이 사이트</h3>
+  <h3 id="this-site">이 사이트</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # 용어 사전과 다이얼 표를 소스에서 생성
 python3 addons/gohud/tools/check_site.py           # 링크·앵커·언어·용어 사전·생성 표 검사
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # 페이지마다 데스크톱·폰 폭 촬영</code></pre>
@@ -562,5 +561,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # 페이지마다 데스크�
 
 <script src="../site/glossary.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

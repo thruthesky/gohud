@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>النوافذ العائمة</h2>
 
-  <h3><code>GoSurface</code> — القشرة</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — القشرة</h3>
   <p>النوافذ المنبثقة والأوراق والقوائم المنسدلة كلها تستعمل هذه الواحدة. وهي تتكفّل بالمنطقة الآمنة ولوحة
     المفاتيح الافتراضية، وبالرأس والتذييل الثابتين، وبالجسم المتمرر، وبتحديد النافذة الأعلى، واستعادة التركيز،
     وملكية زر الرجوع، وتغيير الحجم بالسحب.</p>
@@ -102,7 +102,7 @@
     الشاشة المالكة، لأن القشرة لا تستطيع أن تعرف <i>لماذا</i> تُغلَق (حفظ وإغلاق، أم تجاهل).
   </div>
 
-  <h3><code>GoSheet</code> — صفحة من الأسفل</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — صفحة من الأسفل</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("الحقيبة")
@@ -113,7 +113,7 @@ sheet.footer().visible = true</code></pre>
   <p>هي تملك <code>CanvasLayer</code> خاصًّا بها، فتجلس فوق HUD بلا تردّد. و<code>open()</code> يفرّغ
     الجسم و<b>يطفئ</b> زر الرجوع والصفوف الثابتة — فالزر الميت على شاشة لا مكان للرجوع منها يُقرأ على أنه عطل.</p>
 
-  <h3><code>GoDialogs</code> — تأكيدات تنتظرها بـ <code>await</code></h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — تأكيدات تنتظرها بـ <code>await</code></h3>
   <pre><code>if await dialogs.confirm("حذف الحفظ", "لا يمكن التراجع عن هذا."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — كل ما بعد المتن
@@ -130,14 +130,14 @@ sheet.footer().visible = true</code></pre>
     <code>set_next_action_layout()</code> قبل فتحه. والصفّ يُبنى عند أول فتح لمربع حوار، فلا يضيف
     <code>GoDialogs</code> المحمَّل تلقائيًا شيئًا عند الإقلاع.</p>
 
-  <h3><code>GoForm</code> — نموذج محدود العرض</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — نموذج محدود العرض</h3>
   <div class="note warn">
     <b>يضمن التفاف نصوص كل ما تحته.</b> فبدون ذلك تمتدّ جملة طويلة واحدة على سطر واحد يتجاوز عرضه الأدنى
     عرضَ الشاشة، فتُقصّ الجوانب — حتى إنك لا تعرف على أي شاشة أنت. وتشغيل الالتفاف يدويًا في كل مشهد
     يُنسى في كل مرة.
   </div>
 
-  <h3><code>GoScroll</code> — تمرير باللمس</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — تمرير باللمس</h3>
   <p>ضع <b>شيئًا واحدًا</b> بداخله. أما الرؤوس وصفوف الأزرار فمكانها خارجه — إذ لا يصحّ أن تدفعها قائمة
     طويلة خارج الشاشة. و<code>use_panel_edge()</code> ينقل شريط التمرير إلى حشوة البطاقة القائمة
     بينما يحتفظ المحتوى بإزاحته.</p>
@@ -146,17 +146,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>أن تخبر اللاعب بشيء</h2>
 
-  <h3><code>GoNotice</code> — شريط الإشعار</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — شريط الإشعار</h3>
   <div class="note warn">
     <b>لا يعترض اللمس أبدًا.</b> الإشعار يُقرأ ولا يُضغط. فهو لا يأخذ تركيزًا، ولا يحجب مدخلات اللعبة،
     والزر الذي تحته يظلّ يُضغط. وحين يلزم تأكيد استعمل <code>GoDialogs</code>؛
     وحين يلزم اختيار، <code>GoPromptCard</code>.
   </div>
 
-  <h3><code>GoPromptCard</code> — سؤال لا يوقف اللعبة</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — سؤال لا يوقف اللعبة</h3>
   <p>يطفو على أحد الجانبين بلا حجاب معتم. واللعبة تواصل عملها.</p>
 
-  <h3><code>GoCoachMark</code> — جولة إرشادية</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — جولة إرشادية</h3>
   <p>يشير إلى عناصر تحكم حقيقية واحدًا تلو الآخر. والبطاقة وحدها هي التي تأخذ اللمس، فـ<b>الضغط على عنصر
     التحكم المُبرَز نفسه ينتقل بالجولة</b> — فتصير "اضغط هنا" فعلًا لا جملة.</p>
   <pre><code>tour.start([
@@ -170,7 +170,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>التفاصيل الصغيرة هي التي تقرّر إن كان يبدو جيدًا</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">التفاصيل الصغيرة هي التي تقرّر إن كان يبدو جيدًا</h3>
   <p>
     اصقل اللوحات الكبيرة ما شئت — فالذي يلفت النظر دائمًا شيء صغير: كلمة انقسمت نصفين، أو توهّج قُصّ طرفه،
     أو خانة مزدحمة. أربعة أمور كهذه رُصدت في 2026-09-13 وأُصلحت في الودجات والسمات، لا في شاشة العرض
@@ -210,7 +210,7 @@ sheet.footer().visible = true</code></pre>
     حسابُ عرضه (قيس بعرض 1dp).
   </p>
 
-  <h4>بطاقة العلامة الإرشادية تتنحّى عن التجهيزات الثابتة</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">بطاقة العلامة الإرشادية تتنحّى عن التجهيزات الثابتة</h4>
   <p>
     في الوضع العرضي كانت البطاقة تُرسَل إلى الحافة العليا أو السفلى تمامًا — حيث تعيش الرؤوس وقطع HUD
     بالضبط؛ وفي العرض التوضيحي كانت تجلس على <code>→ ×</code> في الرأس. أما الآن فتبقى بمحاذاة هدفها،
@@ -222,7 +222,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # تجهيزات ثابتة ليست مراسيَ</code></pre>
 
-  <h3>الشاشات ذات الفأرة ولوحة المفاتيح</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">الشاشات ذات الفأرة ولوحة المفاتيح</h3>
   <p>
     الإصبع <b>لا حالة تمرير له.</b> ابنِ للهاتف وحده فتمرّ حالتان خاصتان بسطح المكتب بلا فحص —
     وإحداهما كانت معطوبة: <b>حلقة التركيز في gohud كانت غير مرئية على الزر الأساسي.</b> فاللوحة
@@ -240,7 +240,7 @@ sheet.footer().visible = true</code></pre>
     لوحة الألوان (إذ تطلب WCAG 2.4.11 نسبة 3:1 لمؤشرات التركيز).
   </p>
 
-  <h3><code>GoHudAnchor</code> — تسعة مواضع</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — تسعة مواضع</h3>
   <p>يحترم المنطقة الآمنة وهوامش الحواف. امنحه <code>landscape_spot</code> فينتقل في الوضع العرضي —
     فأدوات التحكم التي تجلس أسفل الوسط في الوضع الطولي يمكن أن تنتقل إلى أسفل اليمين.</p>
   <div class="note">
@@ -249,7 +249,7 @@ sheet.footer().visible = true</code></pre>
     وهذا الحساب يعيش في مكان واحد.
   </div>
 
-  <h4>إبقاء المحتوى من تحت HUD</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">إبقاء المحتوى من تحت HUD</h4>
   <p>
     حين تتقاسم شاشة متمررة العرضَ مع HUD، ينزلق المحتوى <b>تحته</b> فتتداخل مجموعتا النص حتى لا تُقرأ
     أيّ منهما. وقد حدث ذلك مرتين في هذه الإضافة: نصّ نائب في حقل إدخال انعصر بين الخانات السريعة،
@@ -263,7 +263,7 @@ joystick_anchor.reserve_space = false  # …إلا ما لا يظهر إلا ت�
     رأسيًا في الوضع العرضي يكلّف 27% من الشاشة. والأرض التي تُخلى تُطرح قبل قياس المستطيل التالي.
   </p>
 
-  <h4>قطع HUD تتصادم فيما بينها أيضًا</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">قطع HUD تتصادم فيما بينها أيضًا</h4>
   <p>
     المواضع التسعة تقسم الشاشة؛ لكنها لا تضمن أن <b>تتفادى القطع بعضها</b>. فشريط إشعار عريض في أعلى
     الوسط حطّ تمامًا على شريط الصحة في أعلى اليمين فأخفى قيمته — ولم يكن بوسعك أن تقرأ كم بقي من الصحة.
@@ -275,7 +275,7 @@ notice_anchor.reserve_space = false   # ولا يدفع الصفحة ما دام
     مرة. وهو لا يتفادى إلا القطع التي <b>لا</b> تتنحّى هي الأخرى: فلو تنحّى الاثنان لتبادلا المكانين إلى الأبد.
   </p>
 
-  <h3><code>GoBar</code> — الصحة والمانا والخبرة</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — الصحة والمانا والخبرة</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # التوكن الخاص بالتعبئة وحدها
@@ -284,7 +284,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     و<code>reduce_motion</code> يجعله فوريًا. والأعداد الكبيرة تُختصر إلى <code>12.3k</code> حتى لا يهتزّ
     عرض الشريط كلما زادت الخانات أو نقصت.</p>
 
-  <h3><code>GoSlot</code> — خانة سريعة واحدة</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — خانة سريعة واحدة</h3>
   <p>الأيقونة والكمية ومهلة الاستعداد والاختصار على <b>وجه واحد</b>. فتعليق الشارات على دائرة صغيرة
     يجعل لكل خانة عرضًا مختلفًا فيتمايل الصف.</p>
   <div class="note">
@@ -296,7 +296,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> مطفأ افتراضيًا، حتى لا يقف صفّ من ثماني خانات بين مستخدم لوحة المفاتيح وكل
     عناصر الإعدادات في ترتيب Tab. شغّله حين تكون لوحة المفاتيح أو ذراع التحكم هي وسيلة الإدخال الوحيدة.</p>
 
-  <h3><code>GoJoystick</code> — عصا افتراضية</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — عصا افتراضية</h3>
   <table>
     <thead><tr><th>الوضع</th><th>السلوك</th></tr></thead>
     <tbody>
@@ -308,7 +308,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p>قيمة <code>Vector2</code> القادمة من <code>moved</code> طولها بين 0 و1، فتستطيع ضربها مباشرةً في
     سرعة؛ وهي لا تتغير بتغيّر حجم الشاشة ولا كثافتها.</p>
 
-  <h3><code>GoIconButton</code> — يبدو صغيرًا ويُضغط كبيرًا</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — يبدو صغيرًا ويُضغط كبيرًا</h3>
   <div class="note warn">
     <b>آمن فقط ما دام جيرانه يتجاهلون اللمس.</b> فإن غطّت المساحة الموسَّعة الزرَّ التالي، توقّف ذلك
     الزر عن الاستجابة. والأزرار الأيقونية المتجاورة تحتاج <code>touch_peers</code>.
@@ -341,7 +341,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     شكل مخصّص على حاله.
   </div>
 
-  <h3>صفوف القوائم ذات وصف</h3>
+  <h3 id="list-rows-with-a-description">صفوف القوائم ذات وصف</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "حافظ العهد", _inspect, Color.TRANSPARENT,
     "سيف طويل  /  هجوم 42", false)</code></pre>
   <p>الصفّ ذو السطر الثاني ينال <b>حشوة علوية وسفلية متساويتين</b>، أفسح من صفّ السطر الواحد، ويبقى زوج
@@ -352,12 +352,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>صفوف من سطرين وخانات وأشرطة في مثال العصور الوسطى — استدعاءات المصنع نفسها تحت <code>medieval_light</code>.</figcaption>
   </figure>
 
-  <h3>الصفوف المتدفقة</h3>
+  <h3 id="flowing-rows">الصفوف المتدفقة</h3>
   <p>ضع عناصر التحكم في <code>wrap_row</code> بـ<b>عرضها الطبيعي</b>. فمع بقاء الالتفاف مفعَّلًا، يهبط الحدّ
     الأدنى لعرض الزر إلى ما يقارب الصفر فيقيس الصفُّ خليّته عليه — فينهار النص إلى حرف واحد في كل سطر.
     والمصنع يمنع ذلك عنك.</p>
 
-  <h3>لا تترك قائمة فارغة فارغة</h3>
+  <h3 id="never-leave-an-empty-list-empty">لا تترك قائمة فارغة فارغة</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "لا شيء هنا بعد"))</code></pre>
   <p>الناس يقرؤون الشاشة الخالية على أنها <b>عطل</b>.</p>
 </section>
@@ -389,5 +389,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>Floating windows</h2>
 
-  <h3><code>GoSurface</code> — the shell</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — the shell</h3>
   <p>Popups, sheets and dropdowns all use this one. It handles the safe area, the virtual keyboard,
     sticky header and footer, a scrolling body, which window is topmost, focus restoration, back-button
     ownership and drag-to-resize.</p>
@@ -102,7 +102,7 @@
     owning screen's job, because the shell cannot know <i>why</i> it is closing (save and close, or discard).
   </div>
 
-  <h3><code>GoSheet</code> — a page from the bottom</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — a page from the bottom</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventory")
@@ -114,7 +114,7 @@ sheet.footer().visible = true</code></pre>
     body and <b>turns off</b> the back button and sticky rows — a dead button on a screen with nowhere to
     go back to reads as broken.</p>
 
-  <h3><code>GoDialogs</code> — confirmations you <code>await</code></h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — confirmations you <code>await</code></h3>
   <pre><code>if await dialogs.confirm("Delete save", "This cannot be undone."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — everything after the body is
@@ -131,14 +131,14 @@ sheet.footer().visible = true</code></pre>
     the choice read as two parts. For one dialog only, call <code>set_next_action_layout()</code> before opening it.
     The row is built when a dialog first opens, so an autoloaded <code>GoDialogs</code> adds nothing at startup.</p>
 
-  <h3><code>GoForm</code> — a width-capped form</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — a width-capped form</h3>
   <div class="note warn">
     <b>It guarantees its descendant labels wrap.</b> Without that, one long sentence stretches into a
     single line whose minimum width exceeds the screen, and the sides are clipped — you cannot even tell
     what screen you are on. Turning wrapping on by hand per scene is forgotten every time.
   </div>
 
-  <h3><code>GoScroll</code> — touch scrolling</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — touch scrolling</h3>
   <p>Put <b>one</b> thing inside it. Headers and button rows belong outside — a long list must not push
     them off screen. <code>use_panel_edge()</code> moves the scrollbar into the card's existing padding
     while the content keeps its indent.</p>
@@ -147,17 +147,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>Telling the player something</h2>
 
-  <h3><code>GoNotice</code> — snackbar</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
   <div class="note warn">
     <b>It never intercepts input.</b> A notice is read, not pressed. It takes no focus, does not block
     game input, and the button beneath it still presses. When confirmation is needed use
     <code>GoDialogs</code>; when a choice is needed, <code>GoPromptCard</code>.
   </div>
 
-  <h3><code>GoPromptCard</code> — a question that does not block</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — a question that does not block</h3>
   <p>Floats at one side with no scrim. The game keeps running.</p>
 
-  <h3><code>GoCoachMark</code> — guided tour</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — guided tour</h3>
   <p>Points at real controls one at a time. Only the card takes input, so <b>pressing the highlighted
     control itself advances the tour</b> — "press here" becomes an action rather than a sentence.</p>
   <pre><code>tour.start([
@@ -171,7 +171,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>The small things decide whether it looks good</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">The small things decide whether it looks good</h3>
   <p>
     Polish the big panels all you like — what catches the eye is always something small: a word split in
     two, a glow chopped off, a cramped slot. Four such things were pointed out on 2026-09-13 and fixed in
@@ -211,7 +211,7 @@ sheet.footer().visible = true</code></pre>
     its width calculation goes wrong (measured at 1dp wide).
   </p>
 
-  <h4>The coach-mark card keeps off fixtures</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">The coach-mark card keeps off fixtures</h4>
   <p>
     In landscape the card used to be sent to the very top or bottom edge — exactly where headers and HUD
     pieces live; in the demo it sat on the header's <code>→ ×</code>. It now stays level with its target,
@@ -223,7 +223,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # fixtures that are not anchors</code></pre>
 
-  <h3>Screens with a mouse and a keyboard</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Screens with a mouse and a keyboard</h3>
   <p>
     A finger has <b>no hover state.</b> Build against mobile only and two desktop-only states go unchecked —
     and one of them was broken: gohud's <b>focus ring was invisible on a primary button.</b> The panel is
@@ -241,7 +241,7 @@ sheet.footer().visible = true</code></pre>
     the rule survives a palette change (WCAG 2.4.11 asks for 3:1 on focus indicators).
   </p>
 
-  <h3><code>GoHudAnchor</code> — nine spots</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — nine spots</h3>
   <p>Respects the safe area and edge margins. Give it a <code>landscape_spot</code> and it moves in
     landscape — controls that sit bottom-centre in portrait can go bottom-right instead.</p>
   <div class="note">
@@ -250,7 +250,7 @@ sheet.footer().visible = true</code></pre>
     landscape. That arithmetic lives in one place.
   </div>
 
-  <h4>Keeping content out from under the HUD</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">Keeping content out from under the HUD</h4>
   <p>
     When a scrolling screen shares the display with a HUD, the content slides <b>underneath it</b> and the
     two sets of text overlap until neither can be read. It happened twice in this add-on: an input's
@@ -265,7 +265,7 @@ joystick_anchor.reserve_space = false  # …except ones that only appear under a
     subtracted before the next rectangle is measured.
   </p>
 
-  <h4>HUD pieces collide with each other too</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD pieces collide with each other too</h4>
   <p>
     The nine spots divide the screen; they do not guarantee the pieces <b>miss each other</b>. A wide
     snackbar at top-centre landed squarely on the health bar at top-right, hiding the value — you could not
@@ -279,7 +279,7 @@ notice_anchor.reserve_space = false   # and does not push the page while it is u
     themselves: if both yield, the two swap places forever.
   </p>
 
-  <h3><code>GoBar</code> — health, mana, experience</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — health, mana, experience</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # the fill-only token
@@ -288,7 +288,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>reduce_motion</code> makes it instant. Large numbers abbreviate to <code>12.3k</code> so the
     bar's width does not jitter as digits come and go.</p>
 
-  <h3><code>GoSlot</code> — one quick slot</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — one quick slot</h3>
   <p>Icon, quantity, cooldown and shortcut on <b>a single face</b>. Hanging badges off a small circle
     makes each slot a different width and the row wobbles.</p>
   <div class="note">
@@ -300,7 +300,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> is off by default, so a row of eight slots does not sit between a keyboard user and
     every settings control in the Tab order. Turn it on when a keyboard or gamepad is the only input.</p>
 
-  <h3><code>GoJoystick</code> — virtual stick</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — virtual stick</h3>
   <table>
     <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
     <tbody>
@@ -312,7 +312,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p>The <code>Vector2</code> from <code>moved</code> has length 0–1, so you can multiply it straight into
     a speed; it does not vary with screen size or DPI.</p>
 
-  <h3><code>GoIconButton</code> — looks small, presses large</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — looks small, presses large</h3>
   <div class="note warn">
     <b>Only safe while its siblings ignore input.</b> If the widened area covers the next button, that
     button stops responding. Side-by-side icon buttons need <code>touch_peers</code>.
@@ -345,7 +345,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     shape has to survive.
   </div>
 
-  <h3>List rows with a description</h3>
+  <h3 id="list-rows-with-a-description">List rows with a description</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Oathkeeper", _inspect, Color.TRANSPARENT,
     "Longsword  /  Attack 42", false)</code></pre>
   <p>A row with a second line gets <b>equal top and bottom padding</b>, roomier than a single-line row, and the
@@ -356,12 +356,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>Two-line rows, slots and bars in the medieval example — the same factory calls under <code>medieval_light</code>.</figcaption>
   </figure>
 
-  <h3>Flowing rows</h3>
+  <h3 id="flowing-rows">Flowing rows</h3>
   <p>Put controls into <code>wrap_row</code> at their <b>natural width</b>. With wrapping left on, a button's minimum
     width drops to almost nothing and the row sizes its cell by it — the label collapses to one character per line.
     The factory prevents this for you.</p>
 
-  <h3>Never leave an empty list empty</h3>
+  <h3 id="never-leave-an-empty-list-empty">Never leave an empty list empty</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet"))</code></pre>
   <p>People read a blank screen as <b>broken</b>.</p>
 </section>
@@ -393,5 +393,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="site/glossary.en.js"></script>
 <script src="site/tooltip.js"></script>
+<script src="site/toc.js"></script>
 </body>
 </html>

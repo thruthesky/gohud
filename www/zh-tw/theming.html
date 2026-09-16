@@ -119,12 +119,12 @@
   <p>這一行就換掉佈景主題、外觀與圖示。從編輯器要挑的話，用
     <b>專案設定 → Gohud → Theme → Preset</b>；從設定資源則是 <code>GoConfig.preset</code>。</p>
 
-  <h3>只留一個欄位給自己</h3>
+  <h3 id="keeping-one-field-your-own">只留一個欄位給自己</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的</code></pre>
   <p>明確設定 <code>theme</code>、<code>skin</code> 或 <code>icons</code> 會<b>蓋過</b>預設集。</p>
 
-  <h3>內建的六種預設集</h3>
+  <h3 id="the-six-built-in-presets">內建的六種預設集</h3>
   <table>
     <thead><tr><th>預設集</th><th>面板</th><th>外觀 · 圖示</th></tr></thead>
     <tbody>
@@ -164,7 +164,7 @@ GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的
     標題使用 Cinzel，內文則沿用繼承來的字型；雕刻圖示以 <code>DPITexture</code> 匯入；實際的快捷格有用到該外觀；
     改動複製出來的外觀的旋鈕，效果會傳到快捷格而不必更動預設集；切換回去時，預設與科幻的幾何形狀都能復原。
   </div>
-  <h3>打造一個自己的王國</h3>
+  <h3 id="make-a-kingdom-of-your-own">打造一個自己的王國</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # 編輯 themes/palettes/kingdom.json，然後：
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -194,7 +194,7 @@ GoUi.metric(GoTheme.GAP)               # 尺寸（dp）
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # 某個文字角色的大小
 GoUi.box(GoTheme.BOX_CARD)             # StyleBox 的副本</code></pre>
 
-  <h3>顏色</h3>
+  <h3 id="colours">顏色</h3>
   <table>
     <thead><tr><th>名稱</th><th>用在哪裡</th></tr></thead>
     <tbody>
@@ -216,7 +216,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 的副本</code></pre>
     沒有 <code>_fill</code> 變體的佈景主題會自動退回使用基本名稱，所以早於這些 token 的舊佈景主題照樣能用。
   </div>
 
-  <h3>尺寸（dp）</h3>
+  <h3 id="measurements-dp">尺寸（dp）</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -226,14 +226,14 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 的副本</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>文字角色</h3>
+  <h3 id="text-roles">文字角色</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — 一個角色指的是<b>一種大小</b>，
     而不是一種用途。是「最大的文字」，不是「標題」。這樣即使某個畫面拿它來做別的事，整套比例仍然成立。
   </p>
 
-  <h3>型別變體</h3>
+  <h3 id="type-variations">型別變體</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -269,7 +269,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>StyleBoxFlat 畫不出來的形狀</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">StyleBoxFlat 畫不出來的形狀</h3>
   <table>
     <thead><tr><th>類別</th><th>畫得出什麼</th></tr></thead>
     <tbody>
@@ -304,7 +304,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
     <code>themes/presets/</code> 找到的，所以不用改任何註冊用的程式碼 — 專案設定的下拉選單也會自動抓到。
   </p>
 
-  <h3>可以改的東西 — 一頁看完</h3>
+  <h3 id="what-you-can-change-on-one-page">可以改的東西 — 一頁看完</h3>
   <table>
     <thead><tr><th>位置</th><th>改什麼</th><th>怎麼寫</th></tr></thead>
     <tbody>
@@ -323,7 +323,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
     </tbody>
   </table>
 
-  <h3>所有旋鈕</h3>
+  <h3 id="every-dial">所有旋鈕</h3>
   <p>
     下面的表格由 <code>tools/make_site.py</code> <b>直接從外觀指令碼的</b>
     <code>@export</code> 行填出來 — 加一個旋鈕或改一個預設值，表格就跟著變。在 JSON 的
@@ -332,7 +332,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>預設外觀 <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">預設外觀 <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
     <tbody>
@@ -355,7 +355,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
       <tr><td><code>joystick_ring_width</code></td><td data-label="預設值">2.0</td><td>搖桿外圈的寬度（dp）。</td></tr>
     </tbody>
   </table>
-  <h4>科幻外觀 <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">科幻外觀 <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
     <tbody>
@@ -371,7 +371,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
       <tr><td><code>bracket_thickness</code></td><td data-label="預設值">2.0</td><td>導覽標記瞄準框角的線條粗細（dp）。</td></tr>
     </tbody>
   </table>
-  <h4>中世紀外觀 <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">中世紀外觀 <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
     <tbody>
@@ -385,7 +385,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
   </div>
   <!-- dials:end -->
 
-  <h3>繼承外觀（選用）</h3>
+  <h3 id="subclass-the-skin-optional">繼承外觀（選用）</h3>
   <p>只有佈景主題與形狀碰不到的東西 — 搖桿的六邊形、快捷格徽章、導覽標記的
     瞄準框角 — 才住在外觀裡。繼承 <code>GoSkin</code>，只覆寫那幾個方法，再把 JSON 的
     <code>skin</code> 指向那份資源。只改顏色的佈景主題可以略過這一步。</p>
@@ -418,7 +418,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
     </tbody>
   </table>
 
-  <h3>同色相的文字疊在同色相的著色上</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">同色相的文字疊在同色相的著色上</h3>
   <p>
     這個陷阱在這套程式碼裡出現了<b>三次</b> — 按下狀態的按鈕（強調色面板配強調色標籤）、
     危險按鈕，以及標籤片。它在色票上看起來很好，一量就垮，因為兩者色相相同，明度自然沒有差別。
@@ -429,7 +429,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
     所以調色盤維持它的個性，換了調色盤對比也還在。
   </p>
 
-  <h3>當成文字讀的顏色，和當成面積塗的顏色，要的東西相反</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">當成文字讀的顏色，和當成面積塗的顏色，要的東西相反</h3>
   <p>
     在淺色佈景主題上，警告色必須變深才能<b>當成文字</b>讀得清楚（<code>#96500A</code>）。
     量條的填色如果直接繼承它，經驗量條就會變成<b>咖啡色</b>。光靠顏色解決不了：
@@ -450,7 +450,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
     意思是「量條變得灰暗 — 請在調色盤裡加上 warning_vivid」）。以前會默默劣化的地方，現在會出聲。
   </div>
 
-  <h3>浮動面板不知道背後是什麼</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">浮動面板不知道背後是什麼</h3>
   <p>
     HUD 是畫<b>在</b>遊戲之上的 — 可能是一片雪原，也可能是一個洞窟。如果它的面板是半透明的，
     背後的東西就會透出來並<b>改變面板的顏色</b>，連帶把文字對比拉下去。
@@ -482,5 +482,6 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

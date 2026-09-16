@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>Yüzen pencereler</h2>
 
-  <h3><code>GoSurface</code> — kabuk</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — kabuk</h3>
   <p>Açılır pencereler, sayfalar ve açılır listeler hep bunu kullanır. Güvenli alanı, sanal klavyeyi, sabit
     başlık ve alt bilgiyi, kaydırılan gövdeyi, hangi pencerenin en üstte olduğunu, odağın geri verilmesini,
     geri tuşunun sahipliğini ve sürükleyerek yeniden boyutlandırmayı üstlenir.</p>
@@ -103,7 +103,7 @@
     yoksa atmak mı).
   </div>
 
-  <h3><code>GoSheet</code> — alttan gelen bir sayfa</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — alttan gelen bir sayfa</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Envanter")
@@ -115,7 +115,7 @@ sheet.footer().visible = true</code></pre>
     <code>open()</code> gövdeyi temizler ve geri düğmesiyle sabit satırları <b>kapatır</b> — geri dönülecek
     yeri olmayan bir ekrandaki ölü bir düğme bozuk gibi okunur.</p>
 
-  <h3><code>GoDialogs</code> — <code>await</code> ettiğiniz onaylar</h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — <code>await</code> ettiğiniz onaylar</h3>
   <pre><code>if await dialogs.confirm("Kaydı sil", "Bu geri alınamaz."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — gövdeden sonraki her şey
@@ -134,14 +134,14 @@ sheet.footer().visible = true</code></pre>
     çağırın. Sıra ilk kez bir iletişim kutusu açıldığında kurulur; yani autoload edilmiş bir
     <code>GoDialogs</code> açılışta hiçbir şey eklemez.</p>
 
-  <h3><code>GoForm</code> — genişliği sınırlı bir form</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — genişliği sınırlı bir form</h3>
   <div class="note warn">
     <b>Altındaki etiketlerin satır kaydırmasını garanti eder.</b> Bu olmadan uzun bir cümle tek satıra
     uzar, o satırın en küçük genişliği ekranı aşar ve kenarlar kırpılır — hangi ekranda olduğunuzu bile
     anlayamazsınız. Sahne başına elle satır kaydırma açmak her seferinde unutulur.
   </div>
 
-  <h3><code>GoScroll</code> — dokunmatik kaydırma</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — dokunmatik kaydırma</h3>
   <p>İçine <b>tek bir</b> şey koyun. Başlıklar ve düğme sıraları dışarıda kalır — uzun bir liste onları
     ekrandan dışarı itmemelidir. <code>use_panel_edge()</code>, içerik kendi girintisini korurken kaydırma
     çubuğunu kartın var olan iç boşluğuna taşır.</p>
@@ -150,17 +150,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>Oyuncuya bir şey söylemek</h2>
 
-  <h3><code>GoNotice</code> — snackbar</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
   <div class="note warn">
     <b>Girdiyi asla araya girip almaz.</b> Bir bildirim okunur, basılmaz. Odak almaz, oyun girdisini
     engellemez ve altındaki düğme yine basılır. Onay gerektiğinde <code>GoDialogs</code>, seçim gerektiğinde
     <code>GoPromptCard</code> kullanın.
   </div>
 
-  <h3><code>GoPromptCard</code> — engellemeyen bir soru</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — engellemeyen bir soru</h3>
   <p>Perde olmadan bir kenarda yüzer. Oyun çalışmaya devam eder.</p>
 
-  <h3><code>GoCoachMark</code> — rehberli tur</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — rehberli tur</h3>
   <p>Gerçek denetimleri teker teker gösterir. Yalnızca kart girdi alır, dolayısıyla <b>vurgulanan denetimin
     kendisine basmak turu ilerletir</b> — "buraya basın" bir cümle olmaktan çıkıp bir eyleme dönüşür.</p>
   <pre><code>tour.start([
@@ -174,7 +174,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>İyi görünüp görünmediğine küçük şeyler karar verir</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">İyi görünüp görünmediğine küçük şeyler karar verir</h3>
   <p>
     Büyük panelleri istediğiniz kadar cilalayın — göze çarpan hep küçük bir şeydir: ikiye bölünmüş bir
     kelime, kesilmiş bir ışıma, sıkışmış bir slot. 2026-09-13'te böyle dört şey işaret edildi ve demo
@@ -214,7 +214,7 @@ sheet.footer().visible = true</code></pre>
     <b>satır başına tek karakter</b> olarak böler (1dp genişlikte ölçüldü).
   </p>
 
-  <h4>Rehber işareti kartı sabit parçalardan uzak durur</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">Rehber işareti kartı sabit parçalardan uzak durur</h4>
   <p>
     Yatay kipte kart eskiden tam üst ya da alt kenara gönderiliyordu — tam da başlıkların ve HUD parçalarının
     bulunduğu yere; demoda başlığın <code>→ ×</code> kısmının üstüne oturmuştu. Artık hedefiyle aynı hizada
@@ -226,7 +226,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # anchor olmayan sabit parçalar</code></pre>
 
-  <h3>Fareli ve klavyeli ekranlar</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Fareli ve klavyeli ekranlar</h3>
   <p>
     Bir parmağın <b>üstüne gelme durumu yoktur.</b> Yalnızca mobili düşünerek geliştirin, yalnızca masaüstünde
     olan iki durum denetimsiz kalır — ve biri bozuktu: gohud'un <b>odak halkası birincil düğmede
@@ -244,7 +244,7 @@ sheet.footer().visible = true</code></pre>
     yüzden kural bir palet değişikliğinden sağ çıkar (WCAG 2.4.11 odak göstergelerinde 3:1 ister).
   </p>
 
-  <h3><code>GoHudAnchor</code> — dokuz nokta</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — dokuz nokta</h3>
   <p>Güvenli alana ve kenar boşluklarına uyar. Ona bir <code>landscape_spot</code> verin, yatay kipte yer
     değiştirsin — dikeyde alt ortada duran denetimler bunun yerine sağ alta gidebilir.</p>
   <div class="note">
@@ -253,7 +253,7 @@ sheet.footer().visible = true</code></pre>
     üstüne iner. O aritmetik tek bir yerde yaşıyor.
   </div>
 
-  <h4>İçeriği HUD'ın altından çıkarmak</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">İçeriği HUD'ın altından çıkarmak</h4>
   <p>
     Kaydırılan bir ekran, ekranı bir HUD ile paylaştığında içerik <b>onun altına</b> kayar ve iki yazı kümesi
     hiçbiri okunmaz hâle gelene kadar üst üste biner. Bu eklentide iki kez oldu: bir giriş alanının yer tutucu
@@ -268,7 +268,7 @@ joystick_anchor.reserve_space = false  # …yalnızca parmak altında beliren an
     dikdörtgen ölçülmeden önce düşülür.
   </p>
 
-  <h4>HUD parçaları birbiriyle de çarpışır</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD parçaları birbiriyle de çarpışır</h4>
   <p>
     Dokuz nokta ekranı böler; parçaların <b>birbirini ıskalayacağını</b> garanti etmez. Üst ortadaki geniş bir
     snackbar, sağ üstteki can çubuğunun tam üstüne indi ve değeri gizledi — ne kadar can kaldığını
@@ -282,7 +282,7 @@ notice_anchor.reserve_space = false   # ve görünürken sayfayı itmez</code></
     kaçınır: ikisi birden çekilirse, ikisi sonsuza dek yer değiştirir.
   </p>
 
-  <h3><code>GoBar</code> — can, mana, deneyim</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — can, mana, deneyim</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # yalnızca dolguya özgü token
@@ -291,7 +291,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     anlatmaz. <code>reduce_motion</code> bunu anında yapar. Büyük sayılar <code>12.3k</code> gibi kısaltılır,
     böylece basamaklar gelip gittikçe çubuğun genişliği titremez.</p>
 
-  <h3><code>GoSlot</code> — tek bir hızlı slot</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — tek bir hızlı slot</h3>
   <p>Simge, adet, bekleme süresi ve kısayol <b>tek bir yüzde</b>. Rozetleri küçük bir dairenin kenarına
     asmak her slotu başka genişlikte yapar ve sıra yalpalar.</p>
   <div class="note">
@@ -303,7 +303,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> varsayılan olarak kapalıdır, böylece sekiz slotluk bir sıra, Tab sırasında klavye
     kullanan biriyle bütün ayar denetimlerinin arasına girmez. Girdi yalnızca klavye ya da oyun kumandasıysa açın.</p>
 
-  <h3><code>GoJoystick</code> — sanal joystick</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — sanal joystick</h3>
   <table>
     <thead><tr><th>Kip</th><th>Davranış</th></tr></thead>
     <tbody>
@@ -315,7 +315,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>moved</code> sinyalinden gelen <code>Vector2</code>'nin uzunluğu 0–1 arasındadır, yani doğrudan bir
     hızla çarpabilirsiniz; ekran boyutuna ya da DPI'ya göre değişmez.</p>
 
-  <h3><code>GoIconButton</code> — küçük görünür, büyük basılır</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — küçük görünür, büyük basılır</h3>
   <div class="note warn">
     <b>Yalnızca kardeşleri girdiyi yok saydığı sürece güvenlidir.</b> Genişletilmiş alan bir sonraki
     düğmenin üstünü kaplarsa, o düğme yanıt vermeyi bırakır. Yan yana duran simge düğmelerinin
@@ -349,7 +349,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     gerekiyorsa <code>surface()</code> kullanın.
   </div>
 
-  <h3>Açıklamalı liste satırları</h3>
+  <h3 id="list-rows-with-a-description">Açıklamalı liste satırları</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Yemin Tutan", _inspect, Color.TRANSPARENT,
     "Uzun kılıç  /  Saldırı 42", false)</code></pre>
   <p>İkinci satırı olan bir satır <b>eşit üst ve alt iç boşluk</b> alır, tek satırlık bir satırdan ferahtır ve
@@ -360,12 +360,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>Ortaçağ örneğinde iki satırlı satırlar, slotlar ve çubuklar — <code>medieval_light</code> altında aynı fabrika çağrıları.</figcaption>
   </figure>
 
-  <h3>Akan satırlar</h3>
+  <h3 id="flowing-rows">Akan satırlar</h3>
   <p>Denetimleri <code>wrap_row</code> içine <b>doğal genişlikleriyle</b> koyun. Satır kaydırma açık bırakılırsa
     bir düğmenin en küçük genişliği neredeyse hiçe iner ve satır, hücresini buna göre boyutlandırır — etiket
     satır başına tek karaktere çöker. Fabrika bunu sizin yerinize engeller.</p>
 
-  <h3>Boş bir listeyi asla boş bırakmayın</h3>
+  <h3 id="never-leave-an-empty-list-empty">Boş bir listeyi asla boş bırakmayın</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Burada henüz bir şey yok"))</code></pre>
   <p>İnsanlar boş bir ekranı <b>bozuk</b> diye okur.</p>
 </section>
@@ -397,5 +397,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

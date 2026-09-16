@@ -120,12 +120,12 @@
   <p>Đúng một dòng đó đổi cả theme, skin và biểu tượng. Từ trình soạn thảo thì dùng
     <b>Project Settings → Gohud → Theme → Preset</b>; từ một tài nguyên cấu hình thì dùng <code>GoConfig.preset</code>.</p>
 
-  <h3>Giữ riêng một trường cho mình</h3>
+  <h3 id="keeping-one-field-your-own">Giữ riêng một trường cho mình</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # biểu tượng của bạn, còn lại là của preset</code></pre>
   <p>Đặt thẳng <code>theme</code>, <code>skin</code> hay <code>icons</code> thì giá trị đó <b>thắng</b> preset.</p>
 
-  <h3>Sáu preset có sẵn</h3>
+  <h3 id="the-six-built-in-presets">Sáu preset có sẵn</h3>
   <table>
     <thead><tr><th>Preset</th><th>Tấm nền</th><th>Skin · biểu tượng</th></tr></thead>
     <tbody>
@@ -167,7 +167,7 @@ GoUi.config.icons = my_icons     # biểu tượng của bạn, còn lại là c
     khắc chìm được import thành <code>DPITexture</code>; một ô nhanh thật dùng đúng skin; đổi núm chỉnh của một bản sao skin
     thì thay đổi lan tới ô nhanh mà không phải đụng vào preset; và chuyển ngược lại thì hình dáng của bản mặc định lẫn sci-fi được khôi phục.
   </div>
-  <h3>Dựng một vương quốc của riêng bạn</h3>
+  <h3 id="make-a-kingdom-of-your-own">Dựng một vương quốc của riêng bạn</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # Sửa themes/palettes/kingdom.json, rồi:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -197,7 +197,7 @@ GoUi.metric(GoTheme.GAP)               # số đo (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # cỡ chữ cho một vai trò văn bản
 GoUi.box(GoTheme.BOX_CARD)             # một bản sao của StyleBox</code></pre>
 
-  <h3>Màu sắc</h3>
+  <h3 id="colours">Màu sắc</h3>
   <table>
     <thead><tr><th>Tên</th><th>Dùng cho</th></tr></thead>
     <tbody>
@@ -220,7 +220,7 @@ GoUi.box(GoTheme.BOX_CARD)             # một bản sao của StyleBox</code></
     các token này vẫn chạy bình thường.
   </div>
 
-  <h3>Số đo (dp)</h3>
+  <h3 id="measurements-dp">Số đo (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -230,7 +230,7 @@ GoUi.box(GoTheme.BOX_CARD)             # một bản sao của StyleBox</code></
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>Vai trò văn bản</h3>
+  <h3 id="text-roles">Vai trò văn bản</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — một vai trò đặt tên cho <b>một cỡ chữ</b>,
@@ -238,7 +238,7 @@ GoUi.box(GoTheme.BOX_CARD)             # một bản sao của StyleBox</code></
     ngay cả khi một màn hình dùng nó cho việc khác.
   </p>
 
-  <h3>Biến thể kiểu</h3>
+  <h3 id="type-variations">Biến thể kiểu</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -274,7 +274,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>Những hình dáng StyleBoxFlat không tạo được</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">Những hình dáng StyleBoxFlat không tạo được</h3>
   <table>
     <thead><tr><th>Lớp</th><th>Vẽ ra gì</th></tr></thead>
     <tbody>
@@ -310,7 +310,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
     thả xuống trong project setting cũng tự thấy nó.
   </p>
 
-  <h3>Những gì bạn đổi được — gói trong một trang</h3>
+  <h3 id="what-you-can-change-on-one-page">Những gì bạn đổi được — gói trong một trang</h3>
   <table>
     <thead><tr><th>Ở đâu</th><th>Cái gì</th><th>Bằng cách nào</th></tr></thead>
     <tbody>
@@ -329,7 +329,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
     </tbody>
   </table>
 
-  <h3>Toàn bộ núm chỉnh</h3>
+  <h3 id="every-dial">Toàn bộ núm chỉnh</h3>
   <p>
     Bảng dưới đây do <code>tools/make_site.py</code> điền <b>thẳng từ các dòng <code>@export</code>
     trong script của skin</b> — thêm một núm chỉnh hay đổi một giá trị mặc định thì bảng đi theo. Hãy dùng
@@ -338,7 +338,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>Skin mặc định <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">Skin mặc định <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
     <tbody>
@@ -361,7 +361,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
       <tr><td><code>joystick_ring_width</code></td><td data-label="Mặc định">2.0</td><td>Bề rộng (dp) của vòng quanh cần điều khiển.</td></tr>
     </tbody>
   </table>
-  <h4>Skin sci-fi <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">Skin sci-fi <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
     <tbody>
@@ -377,7 +377,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
       <tr><td><code>bracket_thickness</code></td><td data-label="Mặc định">2.0</td><td>Độ dày nét (dp) của khung ngắm góc trên coach mark.</td></tr>
     </tbody>
   </table>
-  <h4>Skin trung cổ <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">Skin trung cổ <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
     <tbody>
@@ -391,7 +391,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
   </div>
   <!-- dials:end -->
 
-  <h3>Kế thừa skin (tùy chọn)</h3>
+  <h3 id="subclass-the-skin-optional">Kế thừa skin (tùy chọn)</h3>
   <p>Chỉ những gì theme và hình dáng không với tới — hình lục giác của cần điều khiển, badge trên ô nhanh, khung ngắm
     góc của coach mark — mới nằm trong một skin. Hãy kế thừa <code>GoSkin</code>, chỉ ghi đè đúng các phương thức đó, rồi trỏ
     trường <code>skin</code> trong file JSON vào tài nguyên đó. Một theme chỉ đổi màu thì bỏ qua bước này.</p>
@@ -425,7 +425,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
     </tbody>
   </table>
 
-  <h3>Chữ cùng tông trên nền pha cùng tông</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">Chữ cùng tông trên nền pha cùng tông</h3>
   <p>
     Cái bẫy này xuất hiện <b>ba lần</b> trong chính mã nguồn này — nút đang bấm (tấm nền màu nhấn, nhãn màu nhấn),
     nút nguy hiểm, và chip. Nó trông đẹp trong một ô màu mẫu rồi sụp đổ ngay khi bị đo, vì
@@ -437,7 +437,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
     nằm lên. Tông màu và độ bão hòa được giữ nguyên, nên bảng màu giữ được cá tính và đổi nó thì độ tương phản vẫn còn.
   </p>
 
-  <h3>Màu đọc như chữ và màu tô như mảng muốn hai điều ngược nhau</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">Màu đọc như chữ và màu tô như mảng muốn hai điều ngược nhau</h3>
   <p>
     Trên theme sáng, màu cảnh báo phải tối đi mới đọc được <b>khi làm chữ</b> (<code>#96500A</code>).
     Khi phần tô của thanh kế thừa màu đó, thanh kinh nghiệm hóa <b>nâu</b>. Riêng màu thì không cứu được:
@@ -459,7 +459,7 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
     hãy thêm warning_vivid vào bảng màu). Một chỗ trước đây âm thầm xuống cấp thì nay lên tiếng.
   </div>
 
-  <h3>Một tấm nền nổi không thể biết phía sau nó là gì</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">Một tấm nền nổi không thể biết phía sau nó là gì</h3>
   <p>
     HUD được vẽ <b>đè lên</b> game — một cánh đồng tuyết, hay một hang động. Nếu tấm nền của nó bán trong suốt,
     thứ nằm sau sẽ lộ qua và <b>đổi luôn màu của tấm nền</b>, kéo độ tương phản của chữ tụt theo.
@@ -494,5 +494,6 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

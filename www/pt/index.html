@@ -133,35 +133,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>Toda medida é um token</h3>
+      <h3 id="every-measurement-is-a-token">Toda medida é um token</h3>
       <p>Espaçamentos, cantos e tamanhos de texto são chamados pelo nome, não escritos como números. Troque o tema e a tela inteira acompanha.</p>
     </div>
     <div class="card">
-      <h3>Tamanho visível ≠ tamanho de toque</h3>
+      <h3 id="visible-size-pressable-size">Tamanho visível ≠ tamanho de toque</h3>
       <p>Um botão de fechar aparenta 36dp, mas sua área de toque tem 48dp. Onde slots apertados se sobrepõem, o toque vai para aquele cujo centro está mais perto.</p>
     </div>
     <div class="card">
-      <h3>Notches e teclados</h3>
+      <h3 id="notches-and-keyboards">Notches e teclados</h3>
       <p>As peças do HUD ficam dentro da área segura, e um campo de entrada sobe acima do teclado virtual quando ele aparece.</p>
     </div>
     <div class="card">
-      <h3>Voltar fecha uma coisa só</h3>
+      <h3 id="back-closes-one-thing">Voltar fecha uma coisa só</h3>
       <p>Escape e o Voltar do Android fecham <b>apenas a superfície mais acima</b>. Janelas empilhadas não somem todas juntas.</p>
     </div>
     <div class="card">
-      <h3>Avisos nunca roubam o toque</h3>
+      <h3 id="notices-never-steal-input">Avisos nunca roubam o toque</h3>
       <p>Toque através de um snackbar e o botão embaixo dele recebe o toque. O foco também não é tomado.</p>
     </div>
     <div class="card">
-      <h3>Ícones são pedidos pelo nome</h3>
+      <h3 id="icons-are-asked-for-by-name">Ícones são pedidos pelo nome</h3>
       <p>Os widgets só conhecem <code>GoIconSet.CLOSE</code>. Troque o conjunto e todos os desenhos mudam sem tocar em uma linha de código.</p>
     </div>
     <div class="card">
-      <h3>Seis visuais, uma linha</h3>
+      <h3 id="six-looks-one-line">Seis visuais, uma linha</h3>
       <p><code>GoUi.use_preset()</code> troca tema, skin e ícones de uma vez — molduras arredondadas, chanfradas sci-fi ou forjadas medievais.</p>
     </div>
     <div class="card">
-      <h3>Legível por medição</h3>
+      <h3 id="legible-by-measurement">Legível por medição</h3>
       <p>Todo tema é conferido contra a WCAG, incluindo os estados dos botões e os painéis de HUD translúcidos sobre branco puro e preto puro.</p>
     </div>
   </div>
@@ -177,11 +177,11 @@
   <h2>Instalação</h2>
   <p class="sub">Coloque a pasta do add-on dentro do seu projeto. Não há mais nada para configurar.</p>
 
-  <h3>Pela Asset Store ou por um ZIP de release</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">Pela Asset Store ou por um ZIP de release</h3>
   <p>Extraia na raiz do seu projeto para obter <code>res://addons/gohud/</code>. É só isso. Opcionalmente, ative
     <b>Projeto → Configurações do Projeto → Plugins → gohud</b>.</p>
 
-  <h3>Como submódulo do git</h3>
+  <h3 id="as-a-git-submodule">Como submódulo do git</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # opcional: fixa uma tag ou um commit</code></pre>
@@ -199,17 +199,17 @@ git -C addons/gohud checkout v1.0.0   # opcional: fixa uma tag ou um commit</cod
   <h2>Início rápido</h2>
   <p class="sub">Todo widget é <code>.new()</code> e <code>add_child()</code> — sem arquivos de cena, sem autoload.</p>
 
-  <h3>Escolha um visual antes de montar a UI (opcional)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">Escolha um visual antes de montar a UI (opcional)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # default_dark é usado quando você pula esta linha</code></pre>
 
-  <h3>Uma confirmação que você aguarda com <code>await</code></h3>
+  <h3 id="a-confirmation-you-await">Uma confirmação que você aguarda com <code>await</code></h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("Apagar o save", "Isso não pode ser desfeito."):
     delete_save()</code></pre>
   <p>Passe <code>destructive = true</code> (o último argumento) e o botão de confirmação é desenhado como um botão de perigo preenchido.</p>
 
-  <h3>Uma folha inferior com campo de busca e rodapé fixos</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Uma folha inferior com campo de busca e rodapé fixos</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventário")
@@ -226,7 +226,7 @@ sheet.footer().visible = true</code></pre>
     <code>body</code> e uma lista longa os empurra para fora da tela. O <code>footer()</code> está sempre visível.
   </div>
 
-  <h3>Um canto de HUD</h3>
+  <h3 id="a-hud-corner">Um canto de HUD</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -238,7 +238,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>Conteúdo que se mantém longe do HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">Conteúdo que se mantém longe do HUD</h3>
   <pre><code>form.avoid_hud = true                  # se afasta de todo GoHudAnchor visível
 joystick_anchor.reserve_space = false  # …menos os que só aparecem sob o dedo
 notice_anchor.avoid_peers = true       # o aviso se acomoda abaixo do HUD fixo em vez de cobri-lo</code></pre>
@@ -293,7 +293,7 @@ notice_anchor.avoid_peers = true       # o aviso se acomoda abaixo do HUD fixo e
     Cantos dos botões, formato dos interruptores, linhas de lista e bordas dos campos mudam todos juntos.
   </p>
 
-  <h3>Coleção medieval</h3>
+  <h3 id="medieval-collection">Coleção medieval</h3>
   <p>
     O <code>medieval_dark</code> combina ferro e couro com ouro envelhecido; o <code>medieval_light</code> usa
     pergaminho e tinta. As molduras de menu levam um rebite e um pequeno ornamento de canto, enquanto o HUD sempre
@@ -313,7 +313,7 @@ notice_anchor.avoid_peers = true       # o aviso se acomoda abaixo do HUD fixo e
   <p>As duas capturas são <code>examples/medieval/medieval.tscn</code>, montadas com os widgets padrão.
     <a href="theming.html#medieval">O guia medieval e como criar o seu próprio reino →</a></p>
 
-  <h3>A mesma tela no celular e no desktop</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">A mesma tela no celular e no desktop</h3>
   <p>
     As capturas da galeria são de um celular em retrato. Abaixo está <b>o mesmo código</b> a 1280×800 — o conteúdo
     para em uma largura legível (480dp) e se centraliza, enquanto o HUD continua nos cantos. O formulário contorna
@@ -331,7 +331,7 @@ notice_anchor.avoid_peers = true       # o aviso se acomoda abaixo do HUD fixo e
     </figure>
   </div>
 
-  <h3>A mesma folha, outro visual</h3>
+  <h3 id="the-same-sheet-a-different-look">A mesma folha, outro visual</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="Uma folha inferior no default_dark" loading="lazy">
@@ -449,24 +449,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # gravação do tour em 
     janela própria do Godot — sem abrir o editor, sem procurar cena.
   </p>
 
-  <h3>Instale os comandos uma vez</h3>
+  <h3 id="install-the-commands-once">Instale os comandos uma vez</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # depois reinicie o Claude Code</code></pre>
   <p>Outros agentes, como o Codex, usam a mesma skill: copie <code>skills/gohud</code> deste repositório para
     a pasta de skills do agente.</p>
 
-  <h3><code>/gohud:preview</code> — a galeria de widgets</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — a galeria de widgets</h3>
   <p>Abre a galeria: todo widget, um seletor para os seis presets e o conjunto completo de ícones. Digite dentro do
     seu projeto Godot e ele usa o <b>seu</b> <code>addons/gohud</code>; fora de um projeto, usa a cópia que vem com o
     plugin ou um clone novo. Roda em um projeto sandbox descartável, então seus autoloads e o cache de importação
     ficam intactos, e a janela continua aberta até você fechá-la.</p>
 
-  <h3><code>/gohud:preview demo</code> — o tour guiado de 15 capítulos</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — o tour guiado de 15 capítulos</h3>
   <p>Abre a demo na tela inicial. <b>Iniciar a demo</b> toca o tour com entrada real; <b>Explorar os widgets</b>
     deixa você testar um widget na mão. As teclas listadas em <a href="#examples">Exemplos</a> também valem aqui.</p>
 
-  <h3>Muitos outros comandos</h3>
+  <h3 id="many-other-commands">Muitos outros comandos</h3>
   <table>
     <thead><tr><th>Comando</th><th>O que faz</th></tr></thead>
     <tbody>
@@ -532,14 +532,14 @@ claude plugin install gohud@gohud
     físicos não fizeram parte desta execução.
   </div>
 
-  <h3>Versões de release</h3>
+  <h3 id="release-versions">Versões de release</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>Uma execução bem-sucedida atualiza <code>plugin.cfg</code>, <code>GoUi.VERSION</code> e <code>CHANGELOG.md</code>
     juntos, movendo as notas de Unreleased para uma entrada datada. Uma execução que falha não muda nada, e um ZIP já
     existente nunca é sobrescrito. O ZIP deixa de fora este site, os testes e as ferramentas.</p>
 
-  <h3>Este site</h3>
+  <h3 id="this-site">Este site</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # glossário e tabelas de dials das skins, gerados a partir do código
 python3 addons/gohud/tools/check_site.py           # links, âncoras, idioma, glossário, tabelas geradas
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # capturas de desktop e de celular de todas as páginas</code></pre>
@@ -561,5 +561,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # capturas de desktop e de ce
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

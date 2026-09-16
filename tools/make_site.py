@@ -607,6 +607,64 @@ def write_langs():
     return done
 
 
+# ── 제목 앵커 ─────────────────────────────────────────────────────────
+# 🔑 사이드바도 검색도 **그 자리로 데려가는 주소**가 있어야 만들 수 있다. 이 사이트의 제목에는 id 가
+#    하나도 없어서 `GoSlot`·`GoBar` 같은 항목은 주소로 가리킬 수조차 없었다(2026-09-16 실측 0건).
+# 🛑 id 는 **영어 제목**에서 만들어 모든 언어의 같은 순서 제목에 그대로 준다 — 언어를 바꿔도 주소가
+#    같아야 고르개로 건너뛸 때 보던 자리를 지킨다. 번역문으로 만들면 언어마다 주소가 달라진다.
+HEADING = re.compile(r'<(h[34])(\s[^>]*?)?>(.*?)</\1>', re.S)
+
+
+def heading_slug(html, used):
+    """제목 한 줄에서 주소로 쓸 이름을 만든다. 같은 이름이 겹치면 뒤에 번호를 붙인다."""
+    plain = re.sub(r'&[a-z]+;|&#\d+;', " ", re.sub(r'<[^>]+>', "", html))
+    name = re.sub(r'[^a-z0-9]+', "-", plain.lower()).strip("-")[:48].strip("-") or "h"
+    base, n = name, 2
+    while name in used:
+        name, n = "%s-%d" % (base, n), n + 1
+    used.add(name)
+    return name
+
+
+def heading_ids(page):
+    """영어판 제목에서 뽑은 id 목록 — 같은 페이지의 모든 언어가 이 순서대로 쓴다."""
+    used = set()
+    text = open(os.path.join(WWW, page), encoding="utf-8").read()
+    return [heading_slug(m.group(3), used) for m in HEADING.finditer(text)]
+
+
+def write_heading_ids():
+    """모든 언어판의 h3·h4 에 영어 기준 id 를 박는다. 제목 수가 다르면 그 언어를 알려 준다."""
+    pages, mismatched = 0, []
+    for page in site_langs.PAGES:
+        ids = heading_ids(page)
+        for lang in site_langs.ACTIVE:
+            rel = site_langs.rel_path(lang.code, page)
+            path = os.path.join(WWW, rel)
+            if not os.path.isfile(path):
+                continue
+            text = open(path, encoding="utf-8").read()
+            count = [0]
+
+            def put(m):
+                i = count[0]
+                count[0] += 1
+                if i >= len(ids):
+                    return m.group(0)
+                # 🛑 붙어 있던 id 는 지우고 다시 준다 — 생성기가 이 속성의 주인이다.
+                attrs = re.sub(r'\s+id="[^"]*"', "", m.group(2) or "")
+                return '<%s id="%s"%s>%s</%s>' % (m.group(1), ids[i], attrs, m.group(3), m.group(1))
+
+            body = HEADING.sub(put, text)
+            if count[0] != len(ids):
+                mismatched.append("%s(%d≠%d)" % (rel, count[0], len(ids)))
+            if body != text:
+                open(path, "w", encoding="utf-8").write(body)
+            pages += 1
+    print("제목 앵커 — %d장%s" % (pages, " · 🛑 제목 수가 다른 곳: " + ", ".join(mismatched) if mismatched else ""))
+    return pages
+
+
 def write_not_found_langs():
     """`404.html` 의 언어 줄 — 없는 주소로 들어온 사람에게 **제 나라 말 문서로 가는 길**을 준다.
 
@@ -630,6 +688,33 @@ def write_not_found_langs():
     return True
 
 
+def write_toc_script():
+    """페이지마다 목차 스크립트를 한 줄 넣는다 — 이미 있으면 그대로 둔다.
+
+    🔑 목차는 페이지의 제목을 읽어서 만든다. 그래서 언어판 51 장에 번역문을 따로 넣을 필요가 없고,
+    여기서 하는 일은 `<script>` 한 줄을 넣는 것뿐이다.
+    """
+    added = 0
+    for lang in site_langs.ACTIVE:
+        for page in site_langs.PAGES:
+            rel = site_langs.rel_path(lang.code, page)
+            path = os.path.join(WWW, rel)
+            if not os.path.isfile(path):
+                continue
+            text = open(path, encoding="utf-8").read()
+            if "site/toc.js" in text:
+                continue
+            if "</body>" not in text:
+                print("🛑 %s 에 </body> 가 없다 — 목차 스크립트를 못 넣었다" % rel)
+                continue
+            up = "../" if site_langs.BY_CODE[lang.code].folder else ""
+            open(path, "w", encoding="utf-8").write(
+                text.replace("</body>", '<script src="%ssite/toc.js"></script>\n</body>' % up, 1))
+            added += 1
+    print("목차 스크립트 — %d장에 넣음" % added)
+    return added
+
+
 if __name__ == "__main__":
     build("ko")
     build("en")
@@ -637,3 +722,5 @@ if __name__ == "__main__":
     write_dials_section("en")
     write_langs()
     write_not_found_langs()
+    write_heading_ids()
+    write_toc_script()

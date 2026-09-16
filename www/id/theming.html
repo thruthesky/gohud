@@ -120,12 +120,12 @@
   <p>Satu baris itu menukar tema, skin, dan ikon. Dari editor, gunakan
     <b>Project Settings → Gohud → Theme → Preset</b>; dari resource setelan, <code>GoConfig.preset</code>.</p>
 
-  <h3>Mempertahankan satu kolom sebagai milik Anda</h3>
+  <h3 id="keeping-one-field-your-own">Mempertahankan satu kolom sebagai milik Anda</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
   <p>Menyetel <code>theme</code>, <code>skin</code>, atau <code>icons</code> secara eksplisit <b>mengalahkan</b> preset.</p>
 
-  <h3>Enam preset bawaan</h3>
+  <h3 id="the-six-built-in-presets">Enam preset bawaan</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panel</th><th>Skin · ikon</th></tr></thead>
     <tbody>
@@ -167,7 +167,7 @@ GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
     ukiran terimpor sebagai <code>DPITexture</code>; slot cepat sungguhan memakai skin tersebut; mengubah kenop pada salinan skin
     sampai ke slot tanpa menyentuh presetnya; dan beralih kembali memulihkan geometri default serta sci-fi.
   </div>
-  <h3>Bangun kerajaan Anda sendiri</h3>
+  <h3 id="make-a-kingdom-of-your-own">Bangun kerajaan Anda sendiri</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # Sunting themes/palettes/kingdom.json, lalu:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -197,7 +197,7 @@ GoUi.metric(GoTheme.GAP)               # ukuran (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # ukuran untuk sebuah peran teks
 GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
 
-  <h3>Warna</h3>
+  <h3 id="colours">Warna</h3>
   <table>
     <thead><tr><th>Nama</th><th>Dipakai untuk</th></tr></thead>
     <tbody>
@@ -220,7 +220,7 @@ GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
     tetap berjalan.
   </div>
 
-  <h3>Ukuran (dp)</h3>
+  <h3 id="measurements-dp">Ukuran (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -230,7 +230,7 @@ GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>Peran teks</h3>
+  <h3 id="text-roles">Peran teks</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — sebuah peran menamai <b>satu ukuran</b>, bukan
@@ -238,7 +238,7 @@ GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
     untuk hal lain.
   </p>
 
-  <h3>Variasi tipe</h3>
+  <h3 id="type-variations">Variasi tipe</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -274,7 +274,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>Bentuk yang tak bisa dibuat StyleBoxFlat</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">Bentuk yang tak bisa dibuat StyleBoxFlat</h3>
   <table>
     <thead><tr><th>Kelas</th><th>Apa yang digambarnya</th></tr></thead>
     <tbody>
@@ -310,7 +310,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
     pada project setting pun langsung menangkapnya.
   </p>
 
-  <h3>Apa yang bisa Anda ubah — dalam satu halaman</h3>
+  <h3 id="what-you-can-change-on-one-page">Apa yang bisa Anda ubah — dalam satu halaman</h3>
   <table>
     <thead><tr><th>Di mana</th><th>Apa</th><th>Bagaimana</th></tr></thead>
     <tbody>
@@ -329,7 +329,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
     </tbody>
   </table>
 
-  <h3>Setiap kenop</h3>
+  <h3 id="every-dial">Setiap kenop</h3>
   <p>
     Tabel di bawah ini diisi oleh <code>tools/make_site.py</code> <b>langsung dari baris</b>
     <code>@export</code> pada skrip skin — tambahkan sebuah kenop atau ubah nilai defaultnya dan tabelnya ikut menyesuaikan. Pakai nama-nama ini di bawah
@@ -338,7 +338,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>Skin default <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">Skin default <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
     <tbody>
@@ -361,7 +361,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
       <tr><td><code>joystick_ring_width</code></td><td data-label="Default">2.0</td><td>Lebar (dp) cincin joystick.</td></tr>
     </tbody>
   </table>
-  <h4>Skin sci-fi <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">Skin sci-fi <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
     <tbody>
@@ -377,7 +377,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
       <tr><td><code>bracket_thickness</code></td><td data-label="Default">2.0</td><td>Ketebalan garis (dp) kurung penanda sasaran pada coach mark.</td></tr>
     </tbody>
   </table>
-  <h4>Skin abad pertengahan <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">Skin abad pertengahan <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
     <tbody>
@@ -391,7 +391,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
   </div>
   <!-- dials:end -->
 
-  <h3>Turunkan kelas skin (opsional)</h3>
+  <h3 id="subclass-the-skin-optional">Turunkan kelas skin (opsional)</h3>
   <p>Hanya apa yang tak terjangkau tema dan bentuk — heksagon joystick, lencana slot, kurung penanda sasaran pada
     coach mark — yang tinggal di dalam sebuah skin. Turunkan <code>GoSkin</code>, timpa metode-metode itu saja, lalu arahkan
     kolom <code>skin</code> di JSON ke resource tersebut. Tema yang hanya mengubah warna melewatkan langkah ini.</p>
@@ -425,7 +425,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
     </tbody>
   </table>
 
-  <h3>Teks berwarna senada di atas rona senada</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">Teks berwarna senada di atas rona senada</h3>
   <p>
     Jebakan ini muncul <b>tiga kali</b> di basis kode ini — tombol yang ditekan (panel aksen, label aksen),
     tombol bahaya, dan chip. Ia tampak bagus sebagai contoh warna lalu ambruk begitu diukur, karena
@@ -437,7 +437,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
     berada. Rona dan kepekatannya bertahan, sehingga paletnya menjaga wataknya dan mengubahnya tetap menjaga kontrasnya.
   </p>
 
-  <h3>Warna yang dibaca sebagai teks dan warna yang dilukis sebagai bidang menuntut hal yang berlawanan</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">Warna yang dibaca sebagai teks dan warna yang dilukis sebagai bidang menuntut hal yang berlawanan</h3>
   <p>
     Pada tema terang, warna peringatan harus digelapkan agar tetap terbaca <b>sebagai teks</b> (<code>#96500A</code>).
     Ketika isian bar mewarisi warna itu, bar pengalaman berubah <b>cokelat</b>. Warna saja tak bisa memperbaikinya:
@@ -459,7 +459,7 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
     warning_vivid ke paletnya). Tempat yang dulu memburuk diam-diam kini bersuara.
   </div>
 
-  <h3>Panel mengambang tak bisa tahu apa yang ada di belakangnya</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">Panel mengambang tak bisa tahu apa yang ada di belakangnya</h3>
   <p>
     Sebuah HUD digambar <b>di atas</b> game — padang salju, atau sebuah gua. Kalau panelnya tembus pandang, apa pun yang
     ada di belakangnya akan merembes dan <b>mengubah warna panelnya</b>, sekaligus menyeret turun kontras teksnya.
@@ -494,5 +494,6 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

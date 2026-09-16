@@ -132,35 +132,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>每个尺寸都是一个令牌</h3>
+      <h3 id="every-measurement-is-a-token">每个尺寸都是一个令牌</h3>
       <p>间距、圆角和字号都按名字取用，而不是写死数字。换掉主题，整个画面跟着一起变。</p>
     </div>
     <div class="card">
-      <h3>看得见的大小 ≠ 按得到的大小</h3>
+      <h3 id="visible-size-pressable-size">看得见的大小 ≠ 按得到的大小</h3>
       <p>关闭按钮看上去是 36dp，触摸目标却有 48dp。密集的快捷槽互相重叠时，中心更近的那个接住这次点按。</p>
     </div>
     <div class="card">
-      <h3>刘海与键盘</h3>
+      <h3 id="notches-and-keyboards">刘海与键盘</h3>
       <p>HUD 各部件待在安全区域之内，虚拟键盘弹出时输入框会抬到键盘上方。</p>
     </div>
     <div class="card">
-      <h3>返回只关掉一层</h3>
+      <h3 id="back-closes-one-thing">返回只关掉一层</h3>
       <p>Esc 和安卓返回键<b>只关闭最上面那一层</b>。叠起来的窗口不会一起消失。</p>
     </div>
     <div class="card">
-      <h3>提示条从不抢走输入</h3>
+      <h3 id="notices-never-steal-input">提示条从不抢走输入</h3>
       <p>隔着消息条按下去，底下的按钮照样收到。焦点也不会被夺走。</p>
     </div>
     <div class="card">
-      <h3>图标按名字取用</h3>
+      <h3 id="icons-are-asked-for-by-name">图标按名字取用</h3>
       <p>控件只认识 <code>GoIconSet.CLOSE</code>。换掉图标集，所有画法随之改变，一行代码都不用动。</p>
     </div>
     <div class="card">
-      <h3>六种外观，一行代码</h3>
+      <h3 id="six-looks-one-line">六种外观，一行代码</h3>
       <p><code>GoUi.use_preset()</code> 把主题、皮肤和图标一起换掉 —— 圆角、科幻切角，或是锻造的中世纪边框。</p>
     </div>
     <div class="card">
-      <h3>可读性靠量出来</h3>
+      <h3 id="legible-by-measurement">可读性靠量出来</h3>
       <p>每套主题都对照 WCAG 检查过，连按钮的各种状态和盖在纯白、纯黑之上的半透明 HUD 面板也不例外。</p>
     </div>
   </div>
@@ -175,11 +175,11 @@
   <h2>安装</h2>
   <p class="sub">把插件文件夹放进项目即可，没有别的要配置。</p>
 
-  <h3>从资源商店或发布 ZIP 安装</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">从资源商店或发布 ZIP 安装</h3>
   <p>解压到项目根目录，得到 <code>res://addons/gohud/</code>，这就完成了。也可以顺手启用
     <b>项目 → 项目设置 → 插件 → gohud</b>。</p>
 
-  <h3>作为 git 子模块安装</h3>
+  <h3 id="as-a-git-submodule">作为 git 子模块安装</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # 可选：固定到某个标签或提交</code></pre>
@@ -197,17 +197,17 @@ git -C addons/gohud checkout v1.0.0   # 可选：固定到某个标签或提交<
   <h2>快速上手</h2>
   <p class="sub">每个控件都是 <code>.new()</code> 加 <code>add_child()</code> —— 不用场景文件，也不用自动加载。</p>
 
-  <h3>先选一套外观，再开始搭 UI（可选）</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">先选一套外观，再开始搭 UI（可选）</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 不写这一行时用的是 default_dark</code></pre>
 
-  <h3>可以 <code>await</code> 的确认框</h3>
+  <h3 id="a-confirmation-you-await">可以 <code>await</code> 的确认框</h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("删除存档", "此操作无法撤销。"):
     delete_save()</code></pre>
   <p>传入 <code>destructive = true</code>（最后一个参数），确认按钮就会画成实心的危险按钮。</p>
 
-  <h3>带常驻搜索框和底栏的底部面板</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">带常驻搜索框和底栏的底部面板</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("背包")
@@ -224,7 +224,7 @@ sheet.footer().visible = true</code></pre>
     <code>footer()</code> 则始终可见。
   </div>
 
-  <h3>一个 HUD 角落</h3>
+  <h3 id="a-hud-corner">一个 HUD 角落</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -236,7 +236,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>让内容避开 HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">让内容避开 HUD</h3>
   <pre><code>form.avoid_hud = true                  # 避开每一个可见的 GoHudAnchor
 joystick_anchor.reserve_space = false  # …只在手指按下时才出现的那些除外
 notice_anchor.avoid_peers = true       # 提示条落到固定 HUD 下方，而不是盖住它</code></pre>
@@ -289,7 +289,7 @@ notice_anchor.avoid_peers = true       # 提示条落到固定 HUD 下方，而�
     按钮圆角、开关形状、列表行和输入框边框全都跟着一起变。
   </p>
 
-  <h3>中世纪合集</h3>
+  <h3 id="medieval-collection">中世纪合集</h3>
   <p>
     <code>medieval_dark</code> 把铁与皮革配上仿古金；<code>medieval_light</code> 用羊皮纸和墨水。
     菜单边框带一颗铆钉和小小的角落纹饰，而常驻显示的 HUD 保持素净；
@@ -308,7 +308,7 @@ notice_anchor.avoid_peers = true       # 提示条落到固定 HUD 下方，而�
   <p>两张图都出自 <code>examples/medieval/medieval.tscn</code>，全部由标准控件搭成。
     <a href="theming.html#medieval">中世纪指南，以及如何造一个自己的王国 →</a></p>
 
-  <h3>同一个界面，在手机上和在桌面上</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">同一个界面，在手机上和在桌面上</h3>
   <p>
     画廊截图是竖屏手机。下面是<b>同一份代码</b>在 1280×800 下的样子 —— 内容停在便于阅读的宽度（480dp）并居中，
     HUD 仍待在四角。表单会绕开浮动的 HUD 部件，但<b>本来就没挡住时不会移动</b>：
@@ -325,7 +325,7 @@ notice_anchor.avoid_peers = true       # 提示条落到固定 HUD 下方，而�
     </figure>
   </div>
 
-  <h3>同一个面板，不同的外观</h3>
+  <h3 id="the-same-sheet-a-different-look">同一个面板，不同的外观</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="default_dark 下的底部面板" loading="lazy">
@@ -441,22 +441,22 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 以 1080p / 60 fps 录
     不用启动编辑器，也不用去翻场景文件。
   </p>
 
-  <h3>命令只需安装一次</h3>
+  <h3 id="install-the-commands-once">命令只需安装一次</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # 然后重启 Claude Code</code></pre>
   <p>Codex 等其他助手也能用同一份技能：把本仓库的 <code>skills/gohud</code> 复制到该助手的技能目录即可。</p>
 
-  <h3><code>/gohud:preview</code> —— 控件画廊</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> —— 控件画廊</h3>
   <p>打开画廊：每一个控件、可切换全部六套预设的选择器，以及完整图标集。在你自己的 Godot 项目里敲这条命令，
     它会用<b>你的</b> <code>addons/gohud</code>；没有的话就用插件自带的副本，或者新克隆一份。
     它跑在一个用完即弃的沙箱项目里，因此不会动到你的自动加载和导入缓存，窗口会一直开着，直到你关掉为止。</p>
 
-  <h3><code>/gohud:preview demo</code> —— 15 章导览</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> —— 15 章导览</h3>
   <p>打开演示的开始界面。<b>开始演示</b>会用真实输入播放整段导览；<b>探索控件</b>让你手动试用单个控件。
     <a href="#examples">示例</a>一节列出的按键在这里同样有效。</p>
 
-  <h3>还有很多命令</h3>
+  <h3 id="many-other-commands">还有很多命令</h3>
   <table>
     <thead><tr><th>命令</th><th>作用</th></tr></thead>
     <tbody>
@@ -519,14 +519,14 @@ claude plugin install gohud@gohud
     完成一次 Web 导出；六套主题对比度零失败。这一轮没有覆盖 Godot 4.6，也没有覆盖 Android 或 iOS 真机。
   </div>
 
-  <h3>发布版本</h3>
+  <h3 id="release-versions">发布版本</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>运行成功会同时更新 <code>plugin.cfg</code>、<code>GoUi.VERSION</code> 和 <code>CHANGELOG.md</code>，
     把 Unreleased 下的记录挪进带日期的条目。运行失败则什么都不改，已存在的 ZIP 也绝不会被覆盖。
     ZIP 里不包含这个网站、测试和工具。</p>
 
-  <h3>这个网站</h3>
+  <h3 id="this-site">这个网站</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # 术语表和皮肤旋钮表格，直接从源码生成
 python3 addons/gohud/tools/check_site.py           # 检查链接、锚点、语言、术语表和生成的表格
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # 为每个页面截取桌面版和手机版截图</code></pre>
@@ -548,5 +548,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # 为每个页面截取桌面
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

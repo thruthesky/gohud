@@ -84,7 +84,7 @@
 <section id="surfaces">
   <h2>떠 있는 창</h2>
 
-  <h3><code>GoSurface</code> — 창의 껍데기</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — 창의 껍데기</h3>
   <p>팝업·시트·드롭다운이 전부 이것 하나를 쓴다. 안전영역·가상 키보드·고정 머리말/바닥·스크롤 본문·
     가장 위 창 판정·포커스 복원·뒤로가기 소유권·끌어서 높이 조절을 한 곳에서 처리한다.</p>
   <table>
@@ -100,7 +100,7 @@
     <b>소유한 화면</b>이다 — 왜 닫히는지(저장하고 닫기 vs 버리고 닫기)는 껍데기가 알 수 없다.
   </div>
 
-  <h3><code>GoSheet</code> — 아래에서 올라오는 페이지</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — 아래에서 올라오는 페이지</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("가방")
@@ -116,7 +116,7 @@ sheet.footer().visible = true</code></pre>
     화면 밖으로 밀린다. <code>footer()</code> 는 언제나 보인다.
   </div>
 
-  <h3><code>GoDialogs</code> — <code>await</code> 로 받는 확인·알림</h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — <code>await</code> 로 받는 확인·알림</h3>
   <pre><code>if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — 본문 뒤는 전부 생략할 수 있고,
@@ -131,14 +131,14 @@ sheet.footer().visible = true</code></pre>
     "질문" 과 "고르기" 가 두 덩어리로 읽힌다. 창 하나만 다르게 하려면 열기 직전에 <code>set_next_action_layout()</code>.
     버튼 줄은 처음 열 때 지어지므로 오토로드로 둔 <code>GoDialogs</code> 는 부팅 비용이 늘지 않는다.</p>
 
-  <h3><code>GoForm</code> — 폭을 제한하는 폼</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — 폭을 제한하는 폼</h3>
   <p>브레이크포인트마다 최대 폭이 다르고, 가상 키보드가 올라오면 입력 칸이 그 위로 온다.</p>
   <div class="note warn">
     <b>자손 라벨의 줄바꿈을 보장한다.</b> 없으면 긴 문장 하나가 한 줄로 뻗고, 그 최소 폭이 화면을 넘겨
     좌우가 잘린다 — 무슨 화면인지조차 분간할 수 없게 된다. 씬마다 손으로 켜는 방식은 반드시 빠뜨린다.
   </div>
 
-  <h3><code>GoScroll</code> — 손가락 스크롤</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — 손가락 스크롤</h3>
   <p>안에 <b>하나만</b> 넣는다. 머리말과 버튼 줄은 밖에 둔다 — 목록이 길어지면 그것들이 화면 밖으로
     나가면 안 된다. <code>use_panel_edge()</code> 를 부르면 스크롤바가 카드의 기존 여백 자리로 나가고
     내용은 원래 들여쓰기를 유지한다.</p>
@@ -147,7 +147,7 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>알리기</h2>
 
-  <h3><code>GoNotice</code> — 스낵바</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — 스낵바</h3>
   <p>새 메시지가 이전 것을 덮어쓰고 시간이 지나면 사라진다.</p>
   <div class="note warn">
     <b>절대 입력을 가로채지 않는다.</b> 알림은 <b>읽는 것</b>이지 누르는 것이 아니다. 포커스를 훔치지 않고,
@@ -155,10 +155,10 @@ sheet.footer().visible = true</code></pre>
     선택이 필요하면 <code>GoPromptCard</code> 다.
   </div>
 
-  <h3><code>GoPromptCard</code> — 화면을 막지 않는 질문</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — 화면을 막지 않는 질문</h3>
   <p>스크림 없이 화면 한쪽에 떠서 묻는다. 게임은 계속 돈다.</p>
 
-  <h3><code>GoCoachMark</code> — 안내 투어</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — 안내 투어</h3>
   <p>실제 화면의 컨트롤을 하나씩 가리키며 무엇인지 알려 준다. 카드 영역만 입력을 받으므로
     <b>가리킨 컨트롤을 실제로 누르면 다음 단계로 넘어간다</b> — "여기를 누르세요" 가 말이 아니라 동작이 된다.</p>
   <pre><code>tour.start([
@@ -171,7 +171,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>작은 것들이 예쁨을 정한다</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">작은 것들이 예쁨을 정한다</h3>
   <p>
     큰 판은 잘 다듬어도, 눈에 걸리는 건 언제나 작은 데다 — 두 줄로 갈라진 낱말, 뚝 잘린 글로우,
     비좁은 슬롯. 2026-09-13 에 지적받은 네 가지를 위젯·테마 차원에서 고쳤다. 화면(데모)이 아니라
@@ -210,7 +210,7 @@ sheet.footer().visible = true</code></pre>
     직접 그린다: 엔진 기본 툴팁은 폭 계산이 어긋나면 글자를 <b>한 자씩 세로로</b> 쪼갠다(실측 폭 1dp).
   </p>
 
-  <h4>코치마크 카드는 붙박이를 덮지 않는다</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">코치마크 카드는 붙박이를 덮지 않는다</h4>
   <p>
     가로 화면에서 카드를 화면 맨 위·아래 끝으로 보내던 규칙이 문제였다 — 그 띠에는 머리띠와 HUD 가 산다.
     데모에서 카드가 헤더의 <code>→ ×</code> 를 덮었다. 이제 카드는 <b>대상과 같은 높이</b>에 놓이고,
@@ -221,7 +221,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # 앵커가 아닌 붙박이</code></pre>
 
-  <h3>마우스와 키보드가 있는 화면</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">마우스와 키보드가 있는 화면</h3>
   <p>
     손가락에는 <b>호버가 없다.</b> 그래서 모바일만 보고 만들면 데스크톱에서만 나타나는 두 상태가
     검증 없이 지나간다 — 실제로 gohud 의 <b>포커스 링이 강조 버튼 위에서 보이지 않았다.</b>
@@ -239,7 +239,7 @@ sheet.footer().visible = true</code></pre>
     (WCAG 2.4.11 은 포커스 표시에 3:1 을 요구한다).
   </p>
 
-  <h3><code>GoHudAnchor</code> — 화면 아홉 자리</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 화면 아홉 자리</h3>
   <p>안전영역과 가장자리 여백을 알아서 지킨다. <code>landscape_spot</code> 을 주면 가로 화면에서
     다른 자리로 옮겨 간다 — 세로에서 아래 가운데에 있던 조작부를 가로에서는 오른쪽 아래로 보내는 식이다.</p>
   <div class="note">
@@ -247,7 +247,7 @@ sheet.footer().visible = true</code></pre>
     구멍에 가리고 가로 모드에서 조작 버튼이 제스처 바에 걸린다. 그 계산을 한 곳에 둔다.
   </div>
 
-  <h4>본문이 HUD 뒤로 흐르지 않게</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">본문이 HUD 뒤로 흐르지 않게</h4>
   <p>
     스크롤되는 화면이 HUD 와 한 화면에 있으면, 본문은 <b>HUD 뒤를 지나간다</b> — 글자끼리 겹쳐 둘 다
     못 읽게 된다. 이 애드온에서 실제로 두 번 일어났다: 입력칸 자리표시자가 퀵슬롯 사이로 삐져나왔고,
@@ -261,7 +261,7 @@ joystick_anchor.reserve_space = false  # 손을 얹을 때만 나타나는 것�
     화면의 27% 를 잃는다. 이미 물러난 만큼은 다음 칸을 잴 때 빼고 본다.
   </p>
 
-  <h4>HUD 끼리도 겹친다</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD 끼리도 겹친다</h4>
   <p>
     아홉 자리는 화면을 나눌 뿐, 조각들이 <b>서로 안 겹친다는 보장은 아니다.</b> 위쪽 가운데에 뜨는
     스낵바는 폭이 넓어 오른쪽 위 체력바 위에 그대로 얹혔다 — 값이 가려져 남은 체력을 읽을 수 없었다.
@@ -274,7 +274,7 @@ notice_anchor.reserve_space = false   # 떠 있는 동안 본문을 밀지도 �
     피하면 두 칸이 영원히 자리를 맞바꾼다.
   </p>
 
-  <h3><code>GoBar</code> — 체력·마나·경험치</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 체력·마나·경험치</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 채움 전용 토큰
@@ -282,7 +282,7 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
   <p>값 변화는 0.18초 보간한다 — 체력이 뚝뚝 끊겨 움직이면 얼마나 맞았는지 읽히지 않는다.
     <code>reduce_motion</code> 이면 즉시 바뀐다. 큰 수는 <code>12.3k</code> 로 줄여 막대 폭이 흔들리지 않게 한다.</p>
 
-  <h3><code>GoSlot</code> — 퀵슬롯 한 칸</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — 퀵슬롯 한 칸</h3>
   <p>아이콘·수량·쿨다운·단축키를 <b>판 한 장</b>에 담는다. 작은 원 위에 배지를 따로 달면 슬롯마다 실제
     폭이 달라져 줄이 흔들린다.</p>
   <div class="note">
@@ -293,7 +293,7 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> 는 기본으로 꺼져 있다 — 퀵슬롯 여덟 칸이 Tab 순회에서 키보드 사용자와 설정 컨트롤 사이를
     막지 않게. 키보드·게임패드가 유일한 입력일 때 켠다.</p>
 
-  <h3><code>GoJoystick</code> — 가상 조이스틱</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — 가상 조이스틱</h3>
   <table>
     <thead><tr><th>모드</th><th>동작</th></tr></thead>
     <tbody>
@@ -305,7 +305,7 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
   <p><code>moved</code> 로 오는 <code>Vector2</code> 는 길이가 0~1 이라 그대로 속도에 곱하면 된다 —
     화면 크기나 DPI 에 따라 값이 달라지지 않는다.</p>
 
-  <h3><code>GoIconButton</code> — 작게 보이고 크게 눌린다</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 작게 보이고 크게 눌린다</h3>
   <p>헤더의 닫기 버튼이 제목보다 커 보이면 안 되지만, 36dp 사각형은 손가락으로 못 누른다.
     그래서 <b>노드는 작게, 히트 판정은 노드 밖까지</b> 넓힌다.</p>
   <div class="note warn">
@@ -340,7 +340,7 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
     커스텀 모양(각진 판)을 지켜야 하면 <code>surface()</code> 를 쓴다.
   </div>
 
-  <h3>요약이 있는 목록 줄</h3>
+  <h3 id="list-rows-with-a-description">요약이 있는 목록 줄</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Oathkeeper", _inspect, Color.TRANSPARENT,
     "Longsword  /  Attack 42", false)</code></pre>
   <p>두 줄 항목은 <b>위아래 여백이 같고</b> 한 줄 항목보다 넉넉하며, 제목·요약 묶음이 아이콘 옆 <b>세로 가운데</b>에 선다 —
@@ -350,14 +350,14 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
     <figcaption>중세 예제의 두 줄 목록·슬롯·막대 — <code>medieval_light</code> 에서 같은 팩토리 호출.</figcaption>
   </figure>
 
-  <h3>흐르는 줄의 함정</h3>
+  <h3 id="flowing-rows">흐르는 줄의 함정</h3>
   <p>
     <code>wrap_row</code> 에 넣는 것은 <b>자연 폭</b>이어야 한다. 줄바꿈을 켠 채 두면 최소 폭이 거의 0 이
     되고, 흐르는 줄은 그 최소 폭으로 칸을 잡는다 — 버튼 하나가 한 글자 폭으로 쪼그라들어 글자가
     <b>세로로 한 자씩</b> 내려간다. 팩토리가 이것을 자동으로 막는다.
   </p>
 
-  <h3>빈 목록을 빈 채로 두지 않는다</h3>
+  <h3 id="never-leave-an-empty-list-empty">빈 목록을 빈 채로 두지 않는다</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "아직 아무것도 없습니다"))</code></pre>
   <p>사용자는 빈 화면을 <b>고장</b>으로 읽는다.</p>
 </section>
@@ -390,5 +390,6 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
 
 <script src="../site/glossary.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

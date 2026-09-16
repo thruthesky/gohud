@@ -120,12 +120,12 @@
   <p>Цей один рядок міняє тему, скін та іконки. З редактора скористайтеся
     <b>Параметрами проєкту → Gohud → Theme → Preset</b>; із ресурсу налаштувань — <code>GoConfig.preset</code>.</p>
 
-  <h3>Лишити одне поле своїм</h3>
+  <h3 id="keeping-one-field-your-own">Лишити одне поле своїм</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # ваші іконки, решта — від пресету</code></pre>
   <p>Явно задані <code>theme</code>, <code>skin</code> чи <code>icons</code> <b>переважають</b> над пресетом.</p>
 
-  <h3>Шість вбудованих пресетів</h3>
+  <h3 id="the-six-built-in-presets">Шість вбудованих пресетів</h3>
   <table>
     <thead><tr><th>Пресет</th><th>Панелі</th><th>Скін · іконки</th></tr></thead>
     <tbody>
@@ -167,7 +167,7 @@ GoUi.config.icons = my_icons     # ваші іконки, решта — від 
     іконки імпортуються як <code>DPITexture</code>; що справжній швидкий слот користується скіном; що зміна регуляторів
     у копії скіна доходить до слота, не чіпаючи пресету; і що перемикання назад відновлює стандартну та сай-фай геометрію.
   </div>
-  <h3>Створіть власне королівство</h3>
+  <h3 id="make-a-kingdom-of-your-own">Створіть власне королівство</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # Відредагуйте themes/palettes/kingdom.json, а тоді:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -197,7 +197,7 @@ GoUi.metric(GoTheme.GAP)               # розмір (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # розмір для текстової ролі
 GoUi.box(GoTheme.BOX_CARD)             # копія StyleBox</code></pre>
 
-  <h3>Кольори</h3>
+  <h3 id="colours">Кольори</h3>
   <table>
     <thead><tr><th>Ім'я</th><th>Для чого</th></tr></thead>
     <tbody>
@@ -220,7 +220,7 @@ GoUi.box(GoTheme.BOX_CARD)             # копія StyleBox</code></pre>
     старші за ці токени, працюють далі.
   </div>
 
-  <h3>Розміри (dp)</h3>
+  <h3 id="measurements-dp">Розміри (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -230,7 +230,7 @@ GoUi.box(GoTheme.BOX_CARD)             # копія StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>Текстові ролі</h3>
+  <h3 id="text-roles">Текстові ролі</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — роль називає <b>розмір</b>, а не
@@ -238,7 +238,7 @@ GoUi.box(GoTheme.BOX_CARD)             # копія StyleBox</code></pre>
     використовує її для чогось іншого.
   </p>
 
-  <h3>Варіації типів</h3>
+  <h3 id="type-variations">Варіації типів</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -274,7 +274,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>Форми, яких StyleBoxFlat не вміє</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">Форми, яких StyleBoxFlat не вміє</h3>
   <table>
     <thead><tr><th>Клас</th><th>Що малює</th></tr></thead>
     <tbody>
@@ -310,7 +310,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
     міняти не треба — випадний список у параметрах проєкту теж їх підхопить.
   </p>
 
-  <h3>Що можна змінити — на одній сторінці</h3>
+  <h3 id="what-you-can-change-on-one-page">Що можна змінити — на одній сторінці</h3>
   <table>
     <thead><tr><th>Де</th><th>Що</th><th>Як</th></tr></thead>
     <tbody>
@@ -329,7 +329,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
     </tbody>
   </table>
 
-  <h3>Усі регулятори</h3>
+  <h3 id="every-dial">Усі регулятори</h3>
   <p>
     Таблицю нижче заповнює <code>tools/make_site.py</code> <b>просто з рядків</b> <code>@export</code>
     у скриптах скінів — додайте регулятор чи змініть типове значення, і таблиця піде услід. Уживайте ці імена під
@@ -338,7 +338,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>Стандартний скін <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">Стандартний скін <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>Регулятор</th><th>Типове значення</th><th>Що задає</th></tr></thead>
     <tbody>
@@ -361,7 +361,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
       <tr><td><code>joystick_ring_width</code></td><td data-label="Типове значення">2.0</td><td>Ширина (dp) кільця стика.</td></tr>
     </tbody>
   </table>
-  <h4>Сай-фай скін <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">Сай-фай скін <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>Регулятор</th><th>Типове значення</th><th>Що задає</th></tr></thead>
     <tbody>
@@ -377,7 +377,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
       <tr><td><code>bracket_thickness</code></td><td data-label="Типове значення">2.0</td><td>Товщина лінії (dp) прицільної дужки коуч-мітки.</td></tr>
     </tbody>
   </table>
-  <h4>Середньовічний скін <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">Середньовічний скін <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>Регулятор</th><th>Типове значення</th><th>Що задає</th></tr></thead>
     <tbody>
@@ -391,7 +391,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
   </div>
   <!-- dials:end -->
 
-  <h3>Успадкувати скін (необов'язково)</h3>
+  <h3 id="subclass-the-skin-optional">Успадкувати скін (необов'язково)</h3>
   <p>У скіні живе лише те, куди не дістаються тема та форма — шестикутник стика, бейджі слотів, прицільна дужка
     коуч-мітки. Успадкуйте <code>GoSkin</code>, перевизначте саме ці методи й вкажіть у полі <code>skin</code>
     вашого JSON на цей ресурс. Тема, що міняє лише кольори, цей крок пропускає.</p>
@@ -425,7 +425,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
     </tbody>
   </table>
 
-  <h3>Текст одного відтінку на підфарбуванні того самого відтінку</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">Текст одного відтінку на підфарбуванні того самого відтінку</h3>
   <p>
     Ця пастка траплялася в цій кодовій базі <b>тричі</b> — натиснуті кнопки (акцентна панель, акцентний напис),
     кнопки небезпеки та чипи. У зразку кольору вона має гарний вигляд і розсипається тієї ж миті, коли її
@@ -437,7 +437,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
     Відтінок і насиченість виживають, тож палітра зберігає свій характер, а її зміна зберігає контраст.
   </p>
 
-  <h3>Колір, який читають як текст, і колір, яким зафарбовують площину, хочуть протилежного</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">Колір, який читають як текст, і колір, яким зафарбовують площину, хочуть протилежного</h3>
   <p>
     У світлій темі колір попередження мусить потемніти, щоб лишитися читабельним <b>як текст</b> (<code>#96500A</code>).
     Коли заливка смуги успадковує його, смуга досвіду стає <b>брунатною</b>. Самим кольором цього не полагодити:
@@ -459,7 +459,7 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
     додайте до палітри warning_vivid»). Місце, яке раніше тихо псувалося, тепер про себе каже.
   </div>
 
-  <h3>Плаваюча панель не може знати, що за нею</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">Плаваюча панель не може знати, що за нею</h3>
   <p>
     HUD малюється <b>поверх</b> гри — сніжного поля чи печери. Якщо його панель напівпрозора, те, що за нею,
     просочується крізь неї і <b>змінює колір панелі</b>, тягнучи за собою вниз і контраст тексту.
@@ -494,5 +494,6 @@ GoUi.use_preset(&amp;"neon")                             # готово — во
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

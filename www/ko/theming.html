@@ -120,12 +120,12 @@
   <p>이 한 줄이 테마·스킨·아이콘을 함께 바꾼다. 에디터에서 고르려면
     <b>프로젝트 설정 → Gohud → Theme → Preset</b>, 설정 리소스에서는 <code>GoConfig.preset</code> 이다.</p>
 
-  <h3>한 칸만 내 것으로</h3>
+  <h3 id="keeping-one-field-your-own">한 칸만 내 것으로</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프리셋 그대로</code></pre>
   <p><code>theme</code>·<code>skin</code>·<code>icons</code> 를 직접 채우면 그쪽이 프리셋보다 <b>우선한다</b>.</p>
 
-  <h3>기본 제공 프리셋 여섯</h3>
+  <h3 id="the-six-built-in-presets">기본 제공 프리셋 여섯</h3>
   <table>
     <thead><tr><th>프리셋</th><th>판</th><th>스킨 · 아이콘</th></tr></thead>
     <tbody>
@@ -163,7 +163,7 @@ GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프�
     실제 퀵슬롯이 스킨을 쓰는지, 복사한 스킨의 다이얼을 바꾸면 프리셋은 그대로 두고 슬롯에 반영되는지,
     그리고 다른 프리셋으로 돌아가면 기본·sci-fi 모양이 되돌아오는지.
   </div>
-  <h3>나만의 왕국 만들기</h3>
+  <h3 id="make-a-kingdom-of-your-own">나만의 왕국 만들기</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # themes/palettes/kingdom.json 수정 후:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -192,7 +192,7 @@ GoUi.metric(GoTheme.GAP)               # 치수(dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # 역할별 글자 크기
 GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
 
-  <h3>색</h3>
+  <h3 id="colours">색</h3>
   <table>
     <thead><tr><th>이름</th><th>쓰이는 곳</th></tr></thead>
     <tbody>
@@ -214,7 +214,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
     <code>_fill</code> 을 뗀 이름으로 떨어지므로, 이 토큰을 모르는 테마를 꽂아도 깨지지 않는다.
   </div>
 
-  <h3>치수(dp)</h3>
+  <h3 id="measurements-dp">치수(dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -224,7 +224,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>글자 역할</h3>
+  <h3 id="text-roles">글자 역할</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — 역할은 <b>크기의 이름</b>이지
@@ -232,7 +232,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
     크기 체계가 흔들리지 않는다.
   </p>
 
-  <h3>타입 변형</h3>
+  <h3 id="type-variations">타입 변형</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -270,7 +270,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>StyleBoxFlat 로 못 만드는 모양</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">StyleBoxFlat 로 못 만드는 모양</h3>
   <table>
     <thead><tr><th>클래스</th><th>낼 수 있는 것</th></tr></thead>
     <tbody>
@@ -305,7 +305,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
     <b>스캔</b>하므로 레지스트리 코드를 고칠 일이 없다 — 프로젝트 설정의 드롭다운에도 바로 뜬다.
   </p>
 
-  <h3>바꿀 수 있는 것 — 한 장</h3>
+  <h3 id="what-you-can-change-on-one-page">바꿀 수 있는 것 — 한 장</h3>
   <table>
     <thead><tr><th>어디</th><th>무엇</th><th>어떻게</th></tr></thead>
     <tbody>
@@ -324,7 +324,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
     </tbody>
   </table>
 
-  <h3>다이얼 — 전부</h3>
+  <h3 id="every-dial">다이얼 — 전부</h3>
   <p>
     아래 표는 <code>tools/make_site.py</code> 가 스킨 스크립트의 <code>@export</code> 에서 <b>직접 읽어</b> 채운다 —
     다이얼을 더하거나 기본값을 바꾸면 표도 따라온다. JSON 의 <code>skin.dials</code> 에 이 이름으로 적는다.
@@ -333,7 +333,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>기본 스킨 <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">기본 스킨 <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
     <tbody>
@@ -356,7 +356,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
       <tr><td><code>joystick_ring_width</code></td><td data-label="기본값">2.0</td><td>조이스틱 링의 두께(dp).</td></tr>
     </tbody>
   </table>
-  <h4>sci-fi 스킨 <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">sci-fi 스킨 <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
     <tbody>
@@ -372,7 +372,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
       <tr><td><code>bracket_thickness</code></td><td data-label="기본값">2.0</td><td>코치마크 조준 표식의 선 두께(dp).</td></tr>
     </tbody>
   </table>
-  <h4>중세 스킨 <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">중세 스킨 <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
     <tbody>
@@ -386,7 +386,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
   </div>
   <!-- dials:end -->
 
-  <h3>스킨을 상속한다(선택)</h3>
+  <h3 id="subclass-the-skin-optional">스킨을 상속한다(선택)</h3>
   <p>테마와 형태로 닿지 않는 자리 — 조이스틱의 육각, 슬롯 배지, 코치마크의 조준 표식 — 만 스킨이다.
     <code>GoSkin</code> 을 상속해 바꿀 메서드만 덮어쓰고, JSON 의 <code>skin</code> 에 그 리소스를 가리키면 된다.
     색만 바꾸는 테마는 이 단계가 없다.</p>
@@ -422,7 +422,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
     </tbody>
   </table>
 
-  <h3>같은 색 틴트 위의 같은 색 글자</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">같은 색 틴트 위의 같은 색 글자</h3>
   <p>
     이 함정은 이 코드베이스에서 <b>세 번</b> 나타났다 — 눌린 버튼(강조색 판 + 강조색 글자), 위험 버튼,
     그리고 칩. 색 견본으로 보면 예쁜데, 같은 색조라 명도 차가 없어 측정하면 곧바로 무너진다.
@@ -433,7 +433,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
     팔레트를 바꿔도 대비가 따라온다.
   </p>
 
-  <h3>글자로 읽히는 색과 면으로 칠하는 색은 요구가 반대다</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">글자로 읽히는 색과 면으로 칠하는 색은 요구가 반대다</h3>
   <p>
     밝은 테마에서 경고색은 <b>글자로 읽히려고</b> 어두워진다(<code>#96500A</code>). 그런데 막대 채움이
     그 색을 물려받으면 경험치 막대가 <b>갈색</b>이 된다. 색만으로는 풀 수 없다 — 노랑은 휘도가 본래
@@ -455,7 +455,7 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
     말없이 나빠지는 자리를 말하게 만든 것이다.
   </div>
 
-  <h3>떠 있는 판은 뒤에 무엇이 올지 모른다</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">떠 있는 판은 뒤에 무엇이 올지 모른다</h3>
   <p>
     HUD 는 게임 화면 <b>위에</b> 얹힌다 — 눈밭일 수도, 동굴일 수도 있다. 판이 반투명이면 뒤가 비쳐
     <b>판 색 자체가 달라지고</b>, 그 위 글자의 대비도 따라 무너진다. 어두운 테마의 HUD 판이 82%
@@ -488,5 +488,6 @@ GoUi.use_preset(&amp;"neon")                             # 끝 — 고르개에�
 
 <script src="../site/glossary.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

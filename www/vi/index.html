@@ -132,35 +132,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>Mọi số đo đều là một token</h3>
+      <h3 id="every-measurement-is-a-token">Mọi số đo đều là một token</h3>
       <p>Khoảng cách, góc bo và cỡ chữ được gọi theo tên chứ không viết thành số. Đổi theme là cả màn hình đổi theo.</p>
     </div>
     <div class="card">
-      <h3>Cỡ nhìn thấy ≠ cỡ bấm được</h3>
+      <h3 id="visible-size-pressable-size">Cỡ nhìn thấy ≠ cỡ bấm được</h3>
       <p>Nút đóng trông chỉ 36dp nhưng vùng chạm của nó là 48dp. Khi các ô chen nhau và vùng chạm chồng lên nhau, ô nào có tâm gần hơn sẽ nhận cú bấm.</p>
     </div>
     <div class="card">
-      <h3>Tai thỏ và bàn phím</h3>
+      <h3 id="notches-and-keyboards">Tai thỏ và bàn phím</h3>
       <p>Các mảnh HUD nằm gọn trong vùng an toàn, và ô nhập liệu tự nâng lên trên bàn phím ảo khi bàn phím hiện ra.</p>
     </div>
     <div class="card">
-      <h3>Back chỉ đóng một thứ</h3>
+      <h3 id="back-closes-one-thing">Back chỉ đóng một thứ</h3>
       <p>Phím Escape và nút Back của Android chỉ đóng <b>lớp trên cùng</b>. Các cửa sổ xếp chồng không biến mất cùng lúc.</p>
     </div>
     <div class="card">
-      <h3>Thông báo không cướp thao tác</h3>
+      <h3 id="notices-never-steal-input">Thông báo không cướp thao tác</h3>
       <p>Bấm xuyên qua một snackbar thì nút nằm dưới vẫn nhận được. Focus cũng không bị lấy mất.</p>
     </div>
     <div class="card">
-      <h3>Biểu tượng được gọi theo tên</h3>
+      <h3 id="icons-are-asked-for-by-name">Biểu tượng được gọi theo tên</h3>
       <p>Widget chỉ biết <code>GoIconSet.CLOSE</code>. Đổi bộ biểu tượng là mọi hình vẽ đổi theo mà không phải sửa một dòng code nào.</p>
     </div>
     <div class="card">
-      <h3>Sáu diện mạo, một dòng</h3>
+      <h3 id="six-looks-one-line">Sáu diện mạo, một dòng</h3>
       <p><code>GoUi.use_preset()</code> đổi cùng lúc theme, skin và biểu tượng — khung bo tròn, khung vát góc kiểu sci-fi hay khung rèn kiểu trung cổ.</p>
     </div>
     <div class="card">
-      <h3>Dễ đọc là thứ đo được</h3>
+      <h3 id="legible-by-measurement">Dễ đọc là thứ đo được</h3>
       <p>Mọi theme đều được đối chiếu với WCAG, kể cả các trạng thái của nút và những tấm HUD bán trong suốt đặt trên nền trắng tinh lẫn đen tuyền.</p>
     </div>
   </div>
@@ -176,11 +176,11 @@
   <h2>Cài đặt</h2>
   <p class="sub">Đặt thư mục add-on vào dự án. Không phải thiết lập gì thêm.</p>
 
-  <h3>Từ Asset Store hoặc file ZIP bản phát hành</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">Từ Asset Store hoặc file ZIP bản phát hành</h3>
   <p>Giải nén vào thư mục gốc của dự án sao cho có <code>res://addons/gohud/</code>. Chỉ vậy thôi. Nếu muốn, hãy bật
     <b>Project → Project Settings → Plugins → gohud</b>.</p>
 
-  <h3>Dưới dạng git submodule</h3>
+  <h3 id="as-a-git-submodule">Dưới dạng git submodule</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # tùy chọn: ghim vào một tag hoặc commit</code></pre>
@@ -198,17 +198,17 @@ git -C addons/gohud checkout v1.0.0   # tùy chọn: ghim vào một tag hoặc 
   <h2>Bắt đầu nhanh</h2>
   <p class="sub">Mọi widget đều là <code>.new()</code> rồi <code>add_child()</code> — không file scene, không autoload.</p>
 
-  <h3>Chọn diện mạo trước khi dựng UI (tùy chọn)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">Chọn diện mạo trước khi dựng UI (tùy chọn)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # bỏ qua dòng này thì default_dark được dùng</code></pre>
 
-  <h3>Một hộp thoại xác nhận mà bạn <code>await</code></h3>
+  <h3 id="a-confirmation-you-await">Một hộp thoại xác nhận mà bạn <code>await</code></h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("Xóa bản lưu", "Thao tác này không thể hoàn tác."):
     delete_save()</code></pre>
   <p>Truyền <code>destructive = true</code> (đối số cuối) thì nút xác nhận được vẽ thành nút nguy hiểm tô đặc.</p>
 
-  <h3>Bảng trượt dưới với ô tìm kiếm và chân trang cố định</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Bảng trượt dưới với ô tìm kiếm và chân trang cố định</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Túi đồ")
@@ -225,7 +225,7 @@ sheet.footer().visible = true</code></pre>
     <code>body</code> thì một danh sách dài sẽ đẩy chúng ra khỏi màn hình. <code>footer()</code> thì luôn nhìn thấy được.
   </div>
 
-  <h3>Một góc HUD</h3>
+  <h3 id="a-hud-corner">Một góc HUD</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -237,7 +237,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>Nội dung biết tránh khỏi HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">Nội dung biết tránh khỏi HUD</h3>
   <pre><code>form.avoid_hud = true                  # tránh mọi GoHudAnchor đang hiện
 joystick_anchor.reserve_space = false  # …trừ những cái chỉ hiện ra dưới ngón tay
 notice_anchor.avoid_peers = true       # thông báo nổi nằm xuống dưới HUD cố định thay vì che lên nó</code></pre>
@@ -291,7 +291,7 @@ notice_anchor.avoid_peers = true       # thông báo nổi nằm xuống dưới
     Góc nút, hình công tắc, hàng danh sách và viền ô nhập đều đổi theo cùng lúc.
   </p>
 
-  <h3>Bộ sưu tập trung cổ</h3>
+  <h3 id="medieval-collection">Bộ sưu tập trung cổ</h3>
   <p>
     <code>medieval_dark</code> ghép sắt và da thuộc với vàng cổ; <code>medieval_light</code> dùng giấy da
     và mực. Khung menu mang một chiếc đinh tán và một hoa văn góc nhỏ, còn HUD luôn hiện thì giữ nét trầm;
@@ -310,7 +310,7 @@ notice_anchor.avoid_peers = true       # thông báo nổi nằm xuống dưới
   <p>Cả hai ảnh đều là <code>examples/medieval/medieval.tscn</code>, dựng từ các widget tiêu chuẩn.
     <a href="theming.html#medieval">Hướng dẫn trung cổ và cách tạo vương quốc của riêng bạn →</a></p>
 
-  <h3>Cùng một màn hình trên điện thoại và trên máy để bàn</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">Cùng một màn hình trên điện thoại và trên máy để bàn</h3>
   <p>
     Các ảnh gallery là điện thoại ở chế độ dọc. Bên dưới là <b>cùng đoạn code đó</b> ở 1280×800 — nội dung
     dừng lại ở bề ngang dễ đọc (480dp) rồi canh giữa, còn HUD vẫn nằm ở các góc. Biểu mẫu bước tránh các
@@ -328,7 +328,7 @@ notice_anchor.avoid_peers = true       # thông báo nổi nằm xuống dưới
     </figure>
   </div>
 
-  <h3>Cùng một bảng trượt, khác diện mạo</h3>
+  <h3 id="the-same-sheet-a-different-look">Cùng một bảng trượt, khác diện mạo</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="Một bảng trượt dưới ở default_dark" loading="lazy">
@@ -445,24 +445,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # quay chuyến tham qua
     trong cửa sổ Godot riêng của nó — không phải khởi động trình soạn thảo, không phải đi tìm scene.
   </p>
 
-  <h3>Cài các lệnh một lần</h3>
+  <h3 id="install-the-commands-once">Cài các lệnh một lần</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # rồi khởi động lại Claude Code</code></pre>
   <p>Các agent khác như Codex dùng được đúng skill đó: chép <code>skills/gohud</code> từ kho này vào
     thư mục skill của agent.</p>
 
-  <h3><code>/gohud:preview</code> — gallery widget</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — gallery widget</h3>
   <p>Mở gallery: mọi widget, một danh sách chọn cho cả sáu preset và trọn bộ biểu tượng. Gõ lệnh này bên trong dự án
     Godot của bạn thì nó dùng <code>addons/gohud</code> của <b>bạn</b>; không có thì nó dùng bản kèm theo plugin,
     hoặc clone mới một bản. Nó chạy trong một dự án sandbox dùng xong bỏ, nên autoload và bộ nhớ đệm import của bạn
     không bị đụng tới, còn cửa sổ thì mở cho đến khi bạn đóng.</p>
 
-  <h3><code>/gohud:preview demo</code> — chuyến tham quan 15 chương</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — chuyến tham quan 15 chương</h3>
   <p>Mở bản demo ở màn hình đầu. <b>Bắt đầu demo</b> chạy chuyến tham quan bằng thao tác thật; <b>Khám phá widget</b>
     cho bạn tự thử từng widget. Các phím liệt kê ở mục <a href="#examples">Ví dụ</a> cũng dùng được ở đây.</p>
 
-  <h3>Nhiều lệnh khác</h3>
+  <h3 id="many-other-commands">Nhiều lệnh khác</h3>
   <table>
     <thead><tr><th>Lệnh</th><th>Làm gì</th></tr></thead>
     <tbody>
@@ -527,14 +527,14 @@ claude plugin install gohud@gohud
     không nằm trong lượt chạy này.
   </div>
 
-  <h3>Phiên bản phát hành</h3>
+  <h3 id="release-versions">Phiên bản phát hành</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>Một lượt chạy thành công cập nhật <code>plugin.cfg</code>, <code>GoUi.VERSION</code> và <code>CHANGELOG.md</code>
     cùng lúc, chuyển phần ghi chú Unreleased thành một mục có ngày tháng. Lượt chạy hỏng thì không đổi gì cả, và một
     file ZIP đã có sẽ không bao giờ bị ghi đè. File ZIP không chứa trang web này, phần kiểm thử và các công cụ.</p>
 
-  <h3>Trang web này</h3>
+  <h3 id="this-site">Trang web này</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # bảng thuật ngữ và bảng núm chỉnh của skin, sinh ra từ mã nguồn
 python3 addons/gohud/tools/check_site.py           # liên kết, neo, ngôn ngữ, bảng thuật ngữ, bảng được sinh ra
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # ảnh chụp mọi trang ở cỡ máy để bàn và điện thoại</code></pre>
@@ -556,5 +556,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # ảnh chụp mọi trang �
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

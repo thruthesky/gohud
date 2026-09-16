@@ -119,12 +119,12 @@
   <p>这一行会把主题、皮肤和图标一起换掉。在编辑器里可以用
     <b>项目设置 → Gohud → Theme → Preset</b>；用设置资源的话就是 <code>GoConfig.preset</code>。</p>
 
-  <h3>保留其中一项由自己决定</h3>
+  <h3 id="keeping-one-field-your-own">保留其中一项由自己决定</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # 图标用自己的，其余全部用预设的</code></pre>
   <p>显式设置 <code>theme</code>、<code>skin</code> 或 <code>icons</code> 会<b>压过</b>预设。</p>
 
-  <h3>六套内置预设</h3>
+  <h3 id="the-six-built-in-presets">六套内置预设</h3>
   <table>
     <thead><tr><th>预设</th><th>面板</th><th>皮肤 · 图标</th></tr></thead>
     <tbody>
@@ -166,7 +166,7 @@ GoUi.config.icons = my_icons     # 图标用自己的，其余全部用预设的
     真实的快捷槽确实用上了该皮肤；改动一份皮肤副本的旋钮能传到快捷槽而不必碰预设；
     切回去之后默认和科幻的几何形状能够恢复。
   </div>
-  <h3>造一个自己的王国</h3>
+  <h3 id="make-a-kingdom-of-your-own">造一个自己的王国</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # 编辑 themes/palettes/kingdom.json，然后：
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -196,7 +196,7 @@ GoUi.metric(GoTheme.GAP)               # 尺寸（dp）
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # 某个文字角色的字号
 GoUi.box(GoTheme.BOX_CARD)             # 一份 StyleBox 的副本</code></pre>
 
-  <h3>颜色</h3>
+  <h3 id="colours">颜色</h3>
   <table>
     <thead><tr><th>名字</th><th>用在哪里</th></tr></thead>
     <tbody>
@@ -218,7 +218,7 @@ GoUi.box(GoTheme.BOX_CARD)             # 一份 StyleBox 的副本</code></pre>
     没有 <code>_fill</code> 变体的主题会自动回退到基础名字，所以早于这些令牌的旧主题照样能用。
   </div>
 
-  <h3>尺寸（dp）</h3>
+  <h3 id="measurements-dp">尺寸（dp）</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -228,14 +228,14 @@ GoUi.box(GoTheme.BOX_CARD)             # 一份 StyleBox 的副本</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>文字角色</h3>
+  <h3 id="text-roles">文字角色</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> —— 角色命名的是<b>一个字号</b>，
     而不是一种用途。是“最大的那号字”，不是“标题”。这样一来，即使某个界面拿它派了别的用场，整套字号体系依然成立。
   </p>
 
-  <h3>类型变体</h3>
+  <h3 id="type-variations">类型变体</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -271,7 +271,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>StyleBoxFlat 画不出来的形状</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">StyleBoxFlat 画不出来的形状</h3>
   <table>
     <thead><tr><th>类</th><th>它画出什么</th></tr></thead>
     <tbody>
@@ -306,7 +306,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
     <code>themes/presets/</code> 找到的，所以不必改任何注册表代码 —— 项目设置里的下拉框也会自动认出它。
   </p>
 
-  <h3>能改什么 —— 一页看完</h3>
+  <h3 id="what-you-can-change-on-one-page">能改什么 —— 一页看完</h3>
   <table>
     <thead><tr><th>位置</th><th>改什么</th><th>怎么写</th></tr></thead>
     <tbody>
@@ -325,7 +325,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
     </tbody>
   </table>
 
-  <h3>全部旋钮</h3>
+  <h3 id="every-dial">全部旋钮</h3>
   <p>
     下面这张表由 <code>tools/make_site.py</code> <b>直接从皮肤脚本的</b>
     <code>@export</code> 行生成 —— 加一个旋钮或改一个默认值，表格自动跟上。在 JSON 的
@@ -334,7 +334,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>默认皮肤 <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">默认皮肤 <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>旋钮</th><th>默认值</th><th>它设定什么</th></tr></thead>
     <tbody>
@@ -357,7 +357,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
       <tr><td><code>joystick_ring_width</code></td><td data-label="默认值">2.0</td><td>摇杆圆环的宽度（dp）。</td></tr>
     </tbody>
   </table>
-  <h4>科幻皮肤 <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">科幻皮肤 <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>旋钮</th><th>默认值</th><th>它设定什么</th></tr></thead>
     <tbody>
@@ -373,7 +373,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
       <tr><td><code>bracket_thickness</code></td><td data-label="默认值">2.0</td><td>引导标记瞄准框的线条粗细（dp）。</td></tr>
     </tbody>
   </table>
-  <h4>中世纪皮肤 <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">中世纪皮肤 <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>旋钮</th><th>默认值</th><th>它设定什么</th></tr></thead>
     <tbody>
@@ -387,7 +387,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
   </div>
   <!-- dials:end -->
 
-  <h3>继承皮肤（可选）</h3>
+  <h3 id="subclass-the-skin-optional">继承皮肤（可选）</h3>
   <p>只有主题和形状够不着的东西 —— 摇杆的六边形、快捷槽角标、引导标记的瞄准框 ——
     才住在皮肤里。继承 <code>GoSkin</code>，只重写那几个方法，再把 JSON 的
     <code>skin</code> 指向那份资源。只改颜色的主题可以跳过这一步。</p>
@@ -420,7 +420,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
     </tbody>
   </table>
 
-  <h3>同色相文字压在同色相底色上</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">同色相文字压在同色相底色上</h3>
   <p>
     这个坑在本项目里出现过<b>三次</b> —— 按下状态的按钮（强调色面板配强调色文字）、
     危险按钮，以及标签片。它在色卡上看着挺好，一测就崩，
@@ -432,7 +432,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
     因此调色板保留了自己的性格，改动它也不会丢掉对比度。
   </p>
 
-  <h3>当文字读的颜色和当色块涂的颜色，要求正好相反</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">当文字读的颜色和当色块涂的颜色，要求正好相反</h3>
   <p>
     在浅色主题上，警告色<b>当文字用</b>时必须压暗才读得清（<code>#96500A</code>）。
     而状态条的填充要是继承了这个值，经验条就变成<b>褐色</b>了。光靠颜色解决不了：
@@ -453,7 +453,7 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
     以前会悄悄劣化的地方，现在会开口说话。
   </div>
 
-  <h3>浮动面板不可能知道自己背后是什么</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">浮动面板不可能知道自己背后是什么</h3>
   <p>
     HUD 是画<b>在</b>游戏画面之上的 —— 背后可能是雪原，也可能是洞窟。如果它的面板半透明，
     背后的东西就会透上来，<b>改变面板的颜色</b>，文字对比度也跟着被拖下去。
@@ -485,5 +485,6 @@ GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也�
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

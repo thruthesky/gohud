@@ -132,35 +132,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>ทุกค่าขนาดคือโทเคน</h3>
+      <h3 id="every-measurement-is-a-token">ทุกค่าขนาดคือโทเคน</h3>
       <p>ระยะห่าง มุม และขนาดตัวอักษรถูกเรียกด้วยชื่อ ไม่ใช่เขียนเป็นตัวเลข สลับธีมแล้วทั้งหน้าจอขยับตามไปพร้อมกัน</p>
     </div>
     <div class="card">
-      <h3>ขนาดที่เห็น ≠ ขนาดที่กดได้</h3>
+      <h3 id="visible-size-pressable-size">ขนาดที่เห็น ≠ ขนาดที่กดได้</h3>
       <p>ปุ่มปิดดูเหมือนกว้าง 36dp แต่พื้นที่กดสัมผัสคือ 48dp เมื่อสล็อตที่อยู่ชิดกันมีพื้นที่ซ้อนทับ อันที่จุดกึ่งกลางใกล้กว่าจะได้รับการกดไป</p>
     </div>
     <div class="card">
-      <h3>รอยบากหน้าจอและคีย์บอร์ด</h3>
+      <h3 id="notches-and-keyboards">รอยบากหน้าจอและคีย์บอร์ด</h3>
       <p>ชิ้นส่วน HUD อยู่ในเซฟแอเรียเสมอ และช่องกรอกข้อมูลจะยกตัวขึ้นเหนือคีย์บอร์ดเสมือนทันทีที่มันโผล่มา</p>
     </div>
     <div class="card">
-      <h3>ปุ่มย้อนกลับปิดทีละชั้น</h3>
+      <h3 id="back-closes-one-thing">ปุ่มย้อนกลับปิดทีละชั้น</h3>
       <p>Escape และปุ่มย้อนกลับของ Android ปิด<b>เฉพาะเลเยอร์บนสุด</b> หน้าต่างที่ซ้อนกันอยู่จะไม่หายวับไปพร้อมกันหมด</p>
     </div>
     <div class="card">
-      <h3>ข้อความแจ้งเตือนไม่แย่งอินพุต</h3>
+      <h3 id="notices-never-steal-input">ข้อความแจ้งเตือนไม่แย่งอินพุต</h3>
       <p>กดทะลุสแน็กบาร์ลงไปแล้วปุ่มข้างใต้ยังรับการกดอยู่ และมันก็ไม่แย่งโฟกัสไปด้วย</p>
     </div>
     <div class="card">
-      <h3>ไอคอนถูกเรียกด้วยชื่อ</h3>
+      <h3 id="icons-are-asked-for-by-name">ไอคอนถูกเรียกด้วยชื่อ</h3>
       <p>วิดเจ็ตรู้จักแค่ <code>GoIconSet.CLOSE</code> สลับชุดไอคอนแล้วภาพวาดทุกชิ้นเปลี่ยนตาม โดยไม่ต้องแตะโค้ดสักบรรทัด</p>
     </div>
     <div class="card">
-      <h3>หกลุค หนึ่งบรรทัด</h3>
+      <h3 id="six-looks-one-line">หกลุค หนึ่งบรรทัด</h3>
       <p><code>GoUi.use_preset()</code> สลับธีม สกิน และไอคอนพร้อมกัน — จะเป็นมุมมน มุมตัดเฉียงแบบไซไฟ หรือกรอบตีเหล็กแบบยุคกลางก็ได้</p>
     </div>
     <div class="card">
-      <h3>อ่านออกโดยวัดผลจริง</h3>
+      <h3 id="legible-by-measurement">อ่านออกโดยวัดผลจริง</h3>
       <p>ทุกธีมถูกตรวจกับ WCAG รวมถึงสถานะต่าง ๆ ของปุ่ม และพาเนล HUD กึ่งโปร่งใสที่วางทับพื้นขาวล้วนและดำล้วน</p>
     </div>
   </div>
@@ -176,11 +176,11 @@
   <h2>ติดตั้ง</h2>
   <p class="sub">แค่วางโฟลเดอร์แอดออนลงในโปรเจกต์ ไม่มีอะไรต้องตั้งค่าเพิ่ม</p>
 
-  <h3>จาก Asset Store หรือไฟล์ ZIP ของรีลีส</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">จาก Asset Store หรือไฟล์ ZIP ของรีลีส</h3>
   <p>แตกไฟล์ลงที่รากโปรเจกต์ให้ได้เป็น <code>res://addons/gohud/</code> เท่านี้จบ หรือจะเปิดใช้เพิ่มเติมที่
     <b>Project → Project Settings → Plugins → gohud</b> ก็ได้</p>
 
-  <h3>ในรูปแบบ git submodule</h3>
+  <h3 id="as-a-git-submodule">ในรูปแบบ git submodule</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # ไม่บังคับ: ตรึงไว้ที่แท็กหรือคอมมิตหนึ่ง</code></pre>
@@ -198,17 +198,17 @@ git -C addons/gohud checkout v1.0.0   # ไม่บังคับ: ตรึ�
   <h2>เริ่มใช้งาน</h2>
   <p class="sub">ทุกวิดเจ็ตสร้างด้วย <code>.new()</code> แล้ว <code>add_child()</code> — ไม่มีไฟล์ซีน ไม่มี autoload</p>
 
-  <h3>เลือกลุคก่อนลงมือสร้าง UI (ไม่บังคับ)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">เลือกลุคก่อนลงมือสร้าง UI (ไม่บังคับ)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # ถ้าข้ามบรรทัดนี้จะใช้ default_dark</code></pre>
 
-  <h3>กล่องยืนยันที่ <code>await</code> ได้</h3>
+  <h3 id="a-confirmation-you-await">กล่องยืนยันที่ <code>await</code> ได้</h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("ลบไฟล์เซฟ", "การกระทำนี้ย้อนกลับไม่ได้"):
     delete_save()</code></pre>
   <p>ส่ง <code>destructive = true</code> (อาร์กิวเมนต์ตัวสุดท้าย) แล้วปุ่มยืนยันจะถูกวาดเป็นปุ่มอันตรายแบบทึบ</p>
 
-  <h3>บอททอมชีตที่มีช่องค้นหาและแถบท้ายติดหนึบ</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">บอททอมชีตที่มีช่องค้นหาและแถบท้ายติดหนึบ</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("กระเป๋าของ")
@@ -225,7 +225,7 @@ sheet.footer().visible = true</code></pre>
     <code>body</code> รายการที่ยาวจะดันมันตกจอไป ส่วน <code>footer()</code> มองเห็นอยู่เสมอ
   </div>
 
-  <h3>มุมหนึ่งของ HUD</h3>
+  <h3 id="a-hud-corner">มุมหนึ่งของ HUD</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -237,7 +237,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>เนื้อหาที่หลบให้พ้น HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">เนื้อหาที่หลบให้พ้น HUD</h3>
   <pre><code>form.avoid_hud = true                  # หลบทุก GoHudAnchor ที่มองเห็นอยู่
 joystick_anchor.reserve_space = false  # …ยกเว้นอันที่โผล่มาเฉพาะตอนมีนิ้วแตะ
 notice_anchor.avoid_peers = true       # ให้ toast ไปลงใต้ HUD ที่อยู่กับที่ แทนที่จะบังมัน</code></pre>
@@ -291,7 +291,7 @@ notice_anchor.avoid_peers = true       # ให้ toast ไปลงใต้ H
     มุมของปุ่ม รูปทรงของสวิตช์ แถวรายการ และเส้นขอบช่องกรอก ขยับตามไปพร้อมกันทั้งหมด
   </p>
 
-  <h3>คอลเลกชันยุคกลาง</h3>
+  <h3 id="medieval-collection">คอลเลกชันยุคกลาง</h3>
   <p>
     <code>medieval_dark</code> จับคู่เหล็กและหนังเข้ากับทองโบราณ ส่วน <code>medieval_light</code> ใช้กระดาษหนัง
     และหมึก กรอบเมนูมีหมุดย้ำและลวดลายมุมเล็ก ๆ ขณะที่ HUD ซึ่งมองเห็นตลอดเวลายังคงเรียบสงบ
@@ -310,7 +310,7 @@ notice_anchor.avoid_peers = true       # ให้ toast ไปลงใต้ H
   <p>ทั้งสองภาพคือ <code>examples/medieval/medieval.tscn</code> ที่ประกอบขึ้นจากวิดเจ็ตมาตรฐาน
     <a href="theming.html#medieval">คู่มือยุคกลางและวิธีสร้างอาณาจักรของคุณเอง →</a></p>
 
-  <h3>หน้าจอเดียวกัน บนมือถือและบนเดสก์ท็อป</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">หน้าจอเดียวกัน บนมือถือและบนเดสก์ท็อป</h3>
   <p>
     ภาพแกลเลอรีข้างบนคือมือถือแนวตั้ง ส่วนด้านล่างคือ<b>โค้ดชุดเดียวกัน</b>ที่ 1280×800 — เนื้อหาหยุดที่
     ความกว้างที่อ่านสบาย (480dp) แล้วจัดกึ่งกลาง ขณะที่ HUD ยังอยู่ตามมุม ฟอร์มจะเดินอ้อมชิ้นส่วน HUD
@@ -327,7 +327,7 @@ notice_anchor.avoid_peers = true       # ให้ toast ไปลงใต้ H
     </figure>
   </div>
 
-  <h3>ชีตเดียวกัน คนละลุค</h3>
+  <h3 id="the-same-sheet-a-different-look">ชีตเดียวกัน คนละลุค</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="บอททอมชีตในพรีเซ็ต default_dark" loading="lazy">
@@ -444,24 +444,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # บันทึกท�
     ในหน้าต่าง Godot ของตัวเอง — ไม่ต้องเปิดเอดิเตอร์ ไม่ต้องไล่หาซีน
   </p>
 
-  <h3>ติดตั้งคำสั่งครั้งเดียว</h3>
+  <h3 id="install-the-commands-once">ติดตั้งคำสั่งครั้งเดียว</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # จากนั้นรีสตาร์ต Claude Code</code></pre>
   <p>เอเจนต์ตัวอื่นอย่าง Codex ก็ใช้สกิลเดียวกันได้: คัดลอก <code>skills/gohud</code> จากรีโพนี้ไปไว้ใน
     โฟลเดอร์สกิลของเอเจนต์นั้น</p>
 
-  <h3><code>/gohud:preview</code> — แกลเลอรีวิดเจ็ต</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — แกลเลอรีวิดเจ็ต</h3>
   <p>เปิดแกลเลอรี: วิดเจ็ตทุกตัว ตัวเลือกพรีเซ็ตทั้ง 6 แบบ และชุดไอคอนทั้งชุด ถ้าพิมพ์คำสั่งนี้ในโปรเจกต์ Godot
     ของคุณ มันจะใช้ <b>ตัวที่อยู่ในโปรเจกต์ของคุณเอง</b> ที่ <code>addons/gohud</code> ถ้าไม่มี ก็จะใช้สำเนาที่มากับปลั๊กอิน หรือโคลนมาใหม่
     มันรันในโปรเจกต์แซนด์บ็อกซ์ที่ใช้แล้วทิ้ง autoload และแคชการอิมพอร์ตของคุณจึงไม่ถูกแตะต้อง และหน้าต่าง
     จะเปิดค้างไว้จนกว่าคุณจะปิดเอง</p>
 
-  <h3><code>/gohud:preview demo</code> — ทัวร์แนะนำ 15 บท</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — ทัวร์แนะนำ 15 บท</h3>
   <p>เปิดเดโมที่หน้าเริ่มต้น <b>เริ่มเดโม</b> เล่นทัวร์ด้วยอินพุตจริง ส่วน <b>สำรวจวิดเจ็ต</b>
     ให้คุณลองเล่นทีละตัวด้วยมือ ปุ่มที่ระบุไว้ในหัวข้อ <a href="#examples">ตัวอย่าง</a> ใช้ได้ที่นี่เช่นกัน</p>
 
-  <h3>คำสั่งอื่น ๆ อีกมาก</h3>
+  <h3 id="many-other-commands">คำสั่งอื่น ๆ อีกมาก</h3>
   <table>
     <thead><tr><th>คำสั่ง</th><th>ทำอะไร</th></tr></thead>
     <tbody>
@@ -526,14 +526,14 @@ claude plugin install gohud@gohud
     และไม่มีรายการคอนทราสต์ตกสักรายการใน 6 ธีม การรันครั้งนี้ยังไม่รวม Godot 4.6 และเครื่อง Android หรือ iOS จริง
   </div>
 
-  <h3>การออกเวอร์ชัน</h3>
+  <h3 id="release-versions">การออกเวอร์ชัน</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>การรันที่สำเร็จจะอัปเดต <code>plugin.cfg</code>, <code>GoUi.VERSION</code> และ <code>CHANGELOG.md</code>
     ไปพร้อมกัน โดยย้ายบันทึกในหัวข้อ Unreleased ไปเป็นรายการที่มีวันที่กำกับ ถ้ารันแล้วล้มเหลวจะไม่มีอะไรเปลี่ยน
     และไฟล์ ZIP ที่มีอยู่แล้วจะไม่ถูกเขียนทับเด็ดขาด ไฟล์ ZIP ไม่รวมเว็บไซต์นี้ เทสต์ และเครื่องมือต่าง ๆ</p>
 
-  <h3>เว็บไซต์นี้</h3>
+  <h3 id="this-site">เว็บไซต์นี้</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # อภิธานศัพท์และตารางค่าปรับของสกิน สร้างจากซอร์สโดยตรง
 python3 addons/gohud/tools/check_site.py           # ลิงก์ จุดยึด ภาษา อภิธานศัพท์ ตารางที่สร้างขึ้น
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # ภาพหน้าจอเดสก์ท็อปและมือถือของทุกหน้า</code></pre>
@@ -555,5 +555,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # ภาพหน้าจอ
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

@@ -121,12 +121,12 @@
     <b>Project Settings → Gohud → Theme → Preset</b> yolunu, bir ayar kaynağından ise
     <code>GoConfig.preset</code> alanını kullanın.</p>
 
-  <h3>Tek bir alanı kendinize saklamak</h3>
+  <h3 id="keeping-one-field-your-own">Tek bir alanı kendinize saklamak</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # simgeler sizin, geri kalan her şey ön ayarın</code></pre>
   <p><code>theme</code>, <code>skin</code> veya <code>icons</code> alanını açıkça vermek ön ayarı <b>geçersiz kılar</b>.</p>
 
-  <h3>Yerleşik altı ön ayar</h3>
+  <h3 id="the-six-built-in-presets">Yerleşik altı ön ayar</h3>
   <table>
     <thead><tr><th>Ön ayar</th><th>Paneller</th><th>Kaplama · simgeler</th></tr></thead>
     <tbody>
@@ -169,7 +169,7 @@ GoUi.config.icons = my_icons     # simgeler sizin, geri kalan her şey ön ayar�
     hızlı slot kaplamayı kullanır mı; kopyalanmış bir kaplamanın ayarlarını değiştirmek ön ayara dokunmadan
     slota ulaşır mı; ve geri dönmek varsayılan ile bilimkurgu geometrisini eski haline getirir mi.
   </div>
-  <h3>Kendi krallığınızı kurun</h3>
+  <h3 id="make-a-kingdom-of-your-own">Kendi krallığınızı kurun</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # themes/palettes/kingdom.json dosyasını düzenleyin, sonra:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -199,7 +199,7 @@ GoUi.metric(GoTheme.GAP)               # ölçü (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # bir yazı rolünün boyutu
 GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
 
-  <h3>Renkler</h3>
+  <h3 id="colours">Renkler</h3>
   <table>
     <thead><tr><th>Ad</th><th>Nerede kullanılır</th></tr></thead>
     <tbody>
@@ -222,7 +222,7 @@ GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
     temel ada geri düşer; böylece bu token'lardan önce yazılmış temalar çalışmaya devam eder.
   </div>
 
-  <h3>Ölçüler (dp)</h3>
+  <h3 id="measurements-dp">Ölçüler (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -232,7 +232,7 @@ GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>Yazı rolleri</h3>
+  <h3 id="text-roles">Yazı rolleri</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — bir rol <b>bir boyutu</b> adlandırır,
@@ -240,7 +240,7 @@ GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
     ölçek bozulmaz.
   </p>
 
-  <h3>Tür varyasyonları</h3>
+  <h3 id="type-variations">Tür varyasyonları</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -276,7 +276,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>StyleBoxFlat'in yapamadığı biçimler</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">StyleBoxFlat'in yapamadığı biçimler</h3>
   <table>
     <thead><tr><th>Sınıf</th><th>Ne çizer</th></tr></thead>
     <tbody>
@@ -313,7 +313,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
     değişmez — proje ayarındaki açılır liste de onu kendiliğinden alır.
   </p>
 
-  <h3>Neleri değiştirebilirsiniz — tek sayfada</h3>
+  <h3 id="what-you-can-change-on-one-page">Neleri değiştirebilirsiniz — tek sayfada</h3>
   <table>
     <thead><tr><th>Nerede</th><th>Ne</th><th>Nasıl</th></tr></thead>
     <tbody>
@@ -332,7 +332,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
     </tbody>
   </table>
 
-  <h3>Bütün ayarlar</h3>
+  <h3 id="every-dial">Bütün ayarlar</h3>
   <p>
     Aşağıdaki tabloyu <code>tools/make_site.py</code> <b>doğrudan kaplama betiklerinin</b> <code>@export</code>
     satırlarından doldurur — bir ayar ekleyin ya da bir varsayılanı değiştirin, tablo peşinden gelsin. Bu adları
@@ -342,7 +342,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>Varsayılan kaplama <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">Varsayılan kaplama <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
     <tbody>
@@ -365,7 +365,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
       <tr><td><code>joystick_ring_width</code></td><td data-label="Varsayılan">2.0</td><td>Joystick halkasının kalınlığı (dp).</td></tr>
     </tbody>
   </table>
-  <h4>Bilimkurgu kaplaması <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">Bilimkurgu kaplaması <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
     <tbody>
@@ -381,7 +381,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
       <tr><td><code>bracket_thickness</code></td><td data-label="Varsayılan">2.0</td><td>Rehber işaretinin hedefleme köşeliğinin çizgi kalınlığı (dp).</td></tr>
     </tbody>
   </table>
-  <h4>Ortaçağ kaplaması <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">Ortaçağ kaplaması <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
     <tbody>
@@ -395,7 +395,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
   </div>
   <!-- dials:end -->
 
-  <h3>Kaplamanın alt sınıfını türetin (isteğe bağlı)</h3>
+  <h3 id="subclass-the-skin-optional">Kaplamanın alt sınıfını türetin (isteğe bağlı)</h3>
   <p>Yalnızca temanın ve biçimin erişemediği şeyler — joystick'in altıgeni, slot rozetleri, rehber işaretinin
     hedefleme köşeliği — bir kaplamada yaşar. <code>GoSkin</code>'in alt sınıfını türetin, yalnızca o metotları
     ezin ve JSON'daki <code>skin</code> alanını o kaynağa yöneltin. Yalnızca renk değiştiren bir tema bu adımı
@@ -430,7 +430,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
     </tbody>
   </table>
 
-  <h3>Aynı tondaki bir yazı, aynı tondaki bir renk katmanı üstünde</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">Aynı tondaki bir yazı, aynı tondaki bir renk katmanı üstünde</h3>
   <p>
     Bu tuzak bu kod tabanında <b>üç kez</b> ortaya çıktı — basılı düğmeler (vurgu paneli, vurgu etiketi),
     tehlike düğmeleri ve chip'ler. Bir renk örneğinde iyi görünür ve ölçüldüğü anda çöker, çünkü ikisi aynı
@@ -442,7 +442,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
     hayatta kalır; böylece palet karakterini korur ve onu değiştirmek kontrastını da korur.
   </p>
 
-  <h3>Yazı olarak okunan renk ile alan olarak boyanan renk zıt şeyler ister</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">Yazı olarak okunan renk ile alan olarak boyanan renk zıt şeyler ister</h3>
   <p>
     Açık bir temada bir uyarı rengi <b>yazı olarak</b> okunaklı kalmak için koyulaşmak zorundadır
     (<code>#96500A</code>). Çubuk dolgusu bunu devraldığında deneyim çubuğu <b>kahverengiye</b> döner. Bunu
@@ -465,7 +465,7 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
     söylüyor.
   </div>
 
-  <h3>Yüzen bir panel arkasında ne olduğunu bilemez</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">Yüzen bir panel arkasında ne olduğunu bilemez</h3>
   <p>
     Bir HUD, oyunun <b>üstüne</b> çizilir — bir kar tarlasının ya da bir mağaranın. Paneli yarı saydamsa,
     arkasındaki her şey sızar ve <b>panelin rengini değiştirir</b>, yazı kontrastını da beraberinde aşağı
@@ -499,5 +499,6 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

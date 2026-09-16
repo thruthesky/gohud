@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>Jendela mengambang</h2>
 
-  <h3><code>GoSurface</code> — cangkangnya</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — cangkangnya</h3>
   <p>Popup, lembar, dan dropdown semuanya memakai yang satu ini. Ia mengurus area aman, keyboard virtual,
     header dan footer yang menempel, body yang bergulir, jendela mana yang paling atas, pemulihan fokus, kepemilikan
     tombol kembali, dan tarik untuk mengubah ukuran.</p>
@@ -102,7 +102,7 @@
     tugas layar yang memilikinya, karena cangkangnya tidak bisa tahu <i>kenapa</i> ia ditutup (simpan lalu tutup, atau buang).
   </div>
 
-  <h3><code>GoSheet</code> — sebuah halaman dari bawah</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — sebuah halaman dari bawah</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventaris")
@@ -114,7 +114,7 @@ sheet.footer().visible = true</code></pre>
     body dan <b>mematikan</b> tombol kembali serta baris yang menempel — tombol mati di layar yang tidak punya tempat
     untuk kembali akan terbaca sebagai rusak.</p>
 
-  <h3><code>GoDialogs</code> — konfirmasi yang bisa Anda <code>await</code></h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — konfirmasi yang bisa Anda <code>await</code></h3>
   <pre><code>if await dialogs.confirm("Hapus simpanan", "Tindakan ini tidak bisa dibatalkan."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — semua yang ada setelah body bersifat
@@ -131,14 +131,14 @@ sheet.footer().visible = true</code></pre>
     pilihannya terbaca sebagai dua bagian. Untuk satu dialog saja, panggil <code>set_next_action_layout()</code> sebelum membukanya.
     Baris tombolnya dibangun saat sebuah dialog pertama kali dibuka, jadi <code>GoDialogs</code> yang di-autoload tidak menambah apa pun saat startup.</p>
 
-  <h3><code>GoForm</code> — formulir berlebar terbatas</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — formulir berlebar terbatas</h3>
   <div class="note warn">
     <b>Ia menjamin label keturunannya membungkus baris.</b> Tanpa itu, satu kalimat panjang akan merentang menjadi
     satu baris yang lebar minimumnya melebihi layar, dan sisi-sisinya terpotong — Anda bahkan tak bisa tahu
     sedang berada di layar apa. Menyalakan pembungkusan baris secara manual per scene selalu terlupakan.
   </div>
 
-  <h3><code>GoScroll</code> — gulir sentuh</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — gulir sentuh</h3>
   <p>Taruh <b>satu</b> hal saja di dalamnya. Header dan baris tombol tempatnya di luar — daftar yang panjang tidak boleh mendorongnya
     keluar layar. <code>use_panel_edge()</code> memindahkan bilah gulirnya ke dalam padding kartu yang sudah ada
     sementara kontennya mempertahankan indentasinya.</p>
@@ -147,17 +147,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>Menyampaikan sesuatu kepada pemain</h2>
 
-  <h3><code>GoNotice</code> — snackbar</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
   <div class="note warn">
     <b>Ia tidak pernah mencegat input.</b> Sebuah pemberitahuan itu dibaca, bukan ditekan. Ia tidak mengambil fokus, tidak menghalangi
     input game, dan tombol di bawahnya masih bisa ditekan. Bila butuh konfirmasi pakailah
     <code>GoDialogs</code>; bila butuh pilihan, <code>GoPromptCard</code>.
   </div>
 
-  <h3><code>GoPromptCard</code> — pertanyaan yang tidak menghentikan jalannya game</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — pertanyaan yang tidak menghentikan jalannya game</h3>
   <p>Mengambang di salah satu sisi tanpa selubung. Game-nya terus berjalan.</p>
 
-  <h3><code>GoCoachMark</code> — tur berpemandu</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — tur berpemandu</h3>
   <p>Menunjuk kontrol sungguhan satu per satu. Hanya kartunya yang menerima input, sehingga <b>menekan kontrol yang disorot
     itu sendiri akan melanjutkan tur</b> — "tekan di sini" menjadi sebuah tindakan, bukan sekadar kalimat.</p>
   <pre><code>tour.start([
@@ -171,7 +171,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>Hal-hal kecil yang menentukan bagus atau tidaknya</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">Hal-hal kecil yang menentukan bagus atau tidaknya</h3>
   <p>
     Poles panel besarnya sesuka Anda — yang selalu menyita perhatian justru sesuatu yang kecil: satu kata terbelah
     dua, pendar yang terpotong, slot yang sempit. Empat hal semacam itu ditunjukkan pada 2026-09-13 lalu diperbaiki di
@@ -211,7 +211,7 @@ sheet.footer().visible = true</code></pre>
     perhitungan lebarnya meleset (terukur selebar 1dp).
   </p>
 
-  <h4>Kartu coach mark menjauh dari perabot layar</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">Kartu coach mark menjauh dari perabot layar</h4>
   <p>
     Pada mode lanskap, kartunya dulu dilempar ke tepi paling atas atau paling bawah — persis tempat header dan bagian
     HUD berada; di dalam demo ia mendarat di atas <code>→ ×</code> milik header. Kini ia tetap sejajar dengan sasarannya,
@@ -223,7 +223,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # perabot layar yang bukan anchor</code></pre>
 
-  <h3>Layar dengan tetikus dan papan ketik</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Layar dengan tetikus dan papan ketik</h3>
   <p>
     Jari <b>tidak punya keadaan hover.</b> Bangun hanya untuk seluler dan dua keadaan khas desktop luput dari pemeriksaan —
     dan salah satunya memang rusak: <b>cincin fokus gohud tidak terlihat pada tombol primer.</b> Panelnya
@@ -241,7 +241,7 @@ sheet.footer().visible = true</code></pre>
     aturannya bertahan saat paletnya berubah (WCAG 2.4.11 meminta 3:1 pada penanda fokus).
   </p>
 
-  <h3><code>GoHudAnchor</code> — sembilan titik</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — sembilan titik</h3>
   <p>Menghormati area aman dan margin tepi. Berikan <code>landscape_spot</code> dan ia berpindah saat
     lanskap — kontrol yang duduk di tengah bawah pada mode potret bisa pindah ke kanan bawah.</p>
   <div class="note">
@@ -250,7 +250,7 @@ sheet.footer().visible = true</code></pre>
     lanskap. Hitung-hitungan itu tinggal di satu tempat.
   </div>
 
-  <h4>Menjaga konten tidak masuk ke bawah HUD</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">Menjaga konten tidak masuk ke bawah HUD</h4>
   <p>
     Ketika layar yang bergulir berbagi tampilan dengan HUD, kontennya menyelinap <b>ke bawahnya</b> dan kedua
     kumpulan teksnya bertumpuk sampai tak satu pun terbaca. Itu terjadi dua kali di add-on ini: teks contoh sebuah
@@ -265,7 +265,7 @@ joystick_anchor.reserve_space = false  # …kecuali yang hanya muncul di bawah j
     dikurangkan lebih dulu sebelum persegi berikutnya diukur.
   </p>
 
-  <h4>Bagian-bagian HUD juga bertabrakan satu sama lain</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">Bagian-bagian HUD juga bertabrakan satu sama lain</h4>
   <p>
     Kesembilan titik itu membagi layar; mereka tidak menjamin bagian-bagiannya <b>saling luput</b>. Sebuah
     snackbar lebar di tengah atas mendarat tepat di atas bar darah di kanan atas, menyembunyikan nilainya — Anda tidak
@@ -279,7 +279,7 @@ notice_anchor.reserve_space = false   # dan tidak mendorong halamannya selagi ia
     sendiri: kalau keduanya mengalah, keduanya akan bertukar tempat selamanya.
   </p>
 
-  <h3><code>GoBar</code> — darah, mana, pengalaman</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — darah, mana, pengalaman</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token khusus isian
@@ -288,7 +288,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>reduce_motion</code> membuatnya seketika. Angka besar disingkat menjadi <code>12.3k</code> supaya
     lebar bar-nya tidak bergetar saat jumlah digitnya berubah.</p>
 
-  <h3><code>GoSlot</code> — satu slot cepat</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — satu slot cepat</h3>
   <p>Ikon, jumlah, waktu jeda, dan pintasan pada <b>satu muka</b>. Menggantung lencana pada lingkaran kecil
     membuat tiap slot punya lebar berbeda dan barisannya goyah.</p>
   <div class="note">
@@ -300,7 +300,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> mati secara default, supaya barisan delapan slot tidak menghalangi pengguna papan ketik dari
     setiap kontrol setelan dalam urutan Tab. Nyalakan bila papan ketik atau gamepad adalah satu-satunya input.</p>
 
-  <h3><code>GoJoystick</code> — stik virtual</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — stik virtual</h3>
   <table>
     <thead><tr><th>Mode</th><th>Perilaku</th></tr></thead>
     <tbody>
@@ -312,7 +312,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>Vector2</code> dari <code>moved</code> panjangnya 0–1, jadi Anda bisa langsung mengalikannya dengan
     sebuah kecepatan; nilainya tidak berubah mengikuti ukuran layar atau DPI.</p>
 
-  <h3><code>GoIconButton</code> — terlihat kecil, ditekan besar</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — terlihat kecil, ditekan besar</h3>
   <div class="note warn">
     <b>Hanya aman selama saudara-saudaranya mengabaikan input.</b> Bila area yang diperlebar itu menutupi tombol berikutnya,
     tombol itu berhenti merespons. Tombol ikon yang berjajar butuh <code>touch_peers</code>.
@@ -345,7 +345,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     harus tetap bertahan.
   </div>
 
-  <h3>Baris daftar dengan deskripsi</h3>
+  <h3 id="list-rows-with-a-description">Baris daftar dengan deskripsi</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Penjaga Sumpah", _inspect, Color.TRANSPARENT,
     "Pedang panjang  /  Serangan 42", false)</code></pre>
   <p>Baris dengan baris kedua mendapat <b>padding atas dan bawah yang sama</b>, lebih lapang daripada baris satu baris, dan pasangan
@@ -356,12 +356,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>Baris dua baris, slot, dan bar pada contoh abad pertengahan — pemanggilan pabrik yang sama di bawah <code>medieval_light</code>.</figcaption>
   </figure>
 
-  <h3>Baris yang mengalir</h3>
+  <h3 id="flowing-rows">Baris yang mengalir</h3>
   <p>Taruh kontrol ke dalam <code>wrap_row</code> pada <b>lebar alaminya</b>. Dengan pembungkusan baris dibiarkan menyala, lebar minimum
     sebuah tombol turun hampir menjadi nol dan barisnya mengukur selnya berdasarkan itu — labelnya menciut menjadi satu karakter per baris.
     Pabriknya mencegah hal itu untuk Anda.</p>
 
-  <h3>Jangan pernah membiarkan daftar kosong benar-benar kosong</h3>
+  <h3 id="never-leave-an-empty-list-empty">Jangan pernah membiarkan daftar kosong benar-benar kosong</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Belum ada apa-apa di sini"))</code></pre>
   <p>Orang membaca layar kosong sebagai <b>rusak</b>.</p>
 </section>
@@ -393,5 +393,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

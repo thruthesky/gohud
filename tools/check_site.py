@@ -304,6 +304,11 @@ def check_langs(problems):
             for begin in (make_site.LANGS_BEGIN, make_site.HREFLANG_BEGIN):
                 if begin not in text:
                     problems.append("%s 에 %s 표식이 없다 — 생성기가 채우지 못한다" % (rel, begin))
+            if "site/toc.js" not in text:
+                problems.append("%s 가 목차 스크립트를 부르지 않는다 — 그 장만 사이드바가 없다" % rel)
+            # 🔑 목차는 제목의 id 로 데려간다 — id 가 없으면 사이드바도 검색도 절 머리에만 닿는다.
+            if not re.search(r'<h3 id="', text):
+                problems.append("%s 의 소제목에 id 가 없다 — `python3 tools/make_site.py` 를 돌린다" % rel)
             # 🛑 언어판끼리 **절 구성이 갈라지는 것**은 링크 검사로 잡히지 않는다 — 페이지 안에서는 앞뒤가
             #    맞으니 끝까지 초록불이다. 한국어판에만 `#tokens` 가 있고 `#readable` 이 없던 것을 이렇게
             #    놓쳤다(2026-09-16). 영어를 정본으로 삼아 절의 목록과 순서를 그대로 맞춘다.

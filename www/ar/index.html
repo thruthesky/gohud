@@ -133,35 +133,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>كل مقاس توكن له اسم</h3>
+      <h3 id="every-measurement-is-a-token">كل مقاس توكن له اسم</h3>
       <p>المسافات والزوايا وأحجام النص تُطلب بأسمائها لا تُكتب أرقامًا. بدّل السمة فتتحرك الشاشة كلها معها.</p>
     </div>
     <div class="card">
-      <h3>الحجم المرئي ≠ الحجم الملموس</h3>
+      <h3 id="visible-size-pressable-size">الحجم المرئي ≠ الحجم الملموس</h3>
       <p>زر الإغلاق يبدو بحجم 36dp لكن مساحة لمسه 48dp. وحيث تتداخل الخانات المتلاصقة، تأخذ الضغطةَ الخانةُ الأقرب مركزًا.</p>
     </div>
     <div class="card">
-      <h3>النتوءات ولوحات المفاتيح</h3>
+      <h3 id="notches-and-keyboards">النتوءات ولوحات المفاتيح</h3>
       <p>قطع HUD تجلس داخل المنطقة الآمنة، وحقل الإدخال يرتفع فوق لوحة المفاتيح الافتراضية حين تظهر.</p>
     </div>
     <div class="card">
-      <h3>الرجوع يغلق شيئًا واحدًا</h3>
+      <h3 id="back-closes-one-thing">الرجوع يغلق شيئًا واحدًا</h3>
       <p>مفتاح Escape وزر الرجوع في أندرويد يغلقان <b>السطح الأعلى فقط</b>. النوافذ المتراكمة لا تختفي دفعة واحدة.</p>
     </div>
     <div class="card">
-      <h3>الإشعارات لا تسرق اللمس</h3>
+      <h3 id="notices-never-steal-input">الإشعارات لا تسرق اللمس</h3>
       <p>اضغط عبر شريط الإشعار فيصل الضغط إلى الزر الذي تحته. ولا يُسلب التركيز أيضًا.</p>
     </div>
     <div class="card">
-      <h3>الأيقونات تُطلب بالاسم</h3>
+      <h3 id="icons-are-asked-for-by-name">الأيقونات تُطلب بالاسم</h3>
       <p>الودجات لا تعرف سوى <code>GoIconSet.CLOSE</code>. بدّل المجموعة فتتغير كل الرسوم دون لمس سطر واحد من الكود.</p>
     </div>
     <div class="card">
-      <h3>ستة مظاهر بسطر واحد</h3>
+      <h3 id="six-looks-one-line">ستة مظاهر بسطر واحد</h3>
       <p><code>GoUi.use_preset()</code> يبدّل السمة والمظهر والأيقونات معًا — إطارات مدوّرة أو مشطوفة بطراز الخيال العلمي أو مطروقة بطراز العصور الوسطى.</p>
     </div>
     <div class="card">
-      <h3>وضوح مقيس لا مُقدَّر</h3>
+      <h3 id="legible-by-measurement">وضوح مقيس لا مُقدَّر</h3>
       <p>كل سمة تُفحص وفق معايير WCAG، بما في ذلك حالات الأزرار ولوحات HUD الشفافة فوق الأبيض الخالص والأسود الخالص.</p>
     </div>
   </div>
@@ -176,11 +176,11 @@
   <h2>التثبيت</h2>
   <p class="sub">ضع مجلد الإضافة في مشروعك. لا شيء آخر يحتاج إعدادًا.</p>
 
-  <h3>من متجر الأصول أو من ملف ZIP للإصدار</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">من متجر الأصول أو من ملف ZIP للإصدار</h3>
   <p>فُكّ الضغط في جذر مشروعك بحيث تحصل على <code>res://addons/gohud/</code>. هذا كل شيء. واختياريًا فعّل
     <b>Project → Project Settings → Plugins → gohud</b>.</p>
 
-  <h3>كوحدة فرعية في git</h3>
+  <h3 id="as-a-git-submodule">كوحدة فرعية في git</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # اختياري: ثبّت وسمًا أو كوميت بعينه</code></pre>
@@ -198,17 +198,17 @@ git -C addons/gohud checkout v1.0.0   # اختياري: ثبّت وسمًا أو
   <h2>بداية سريعة</h2>
   <p class="sub">كل ودجت هو <code>.new()</code> ثم <code>add_child()</code> — لا ملفات مشاهد ولا autoload.</p>
 
-  <h3>اختر المظهر قبل بناء الواجهة (اختياري)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">اختر المظهر قبل بناء الواجهة (اختياري)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # يُستعمل default_dark إن تخطيت هذا السطر</code></pre>
 
-  <h3>تأكيد تنتظره بـ <code>await</code></h3>
+  <h3 id="a-confirmation-you-await">تأكيد تنتظره بـ <code>await</code></h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("حذف الحفظ", "لا يمكن التراجع عن هذا."):
     delete_save()</code></pre>
   <p>مرّر <code>destructive = true</code> (المعامل الأخير) فيُرسم زر التأكيد زرًّا مصمتًا بلون الخطر.</p>
 
-  <h3>ورقة سفلية بحقل بحث وتذييل ثابتين</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">ورقة سفلية بحقل بحث وتذييل ثابتين</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("الحقيبة")
@@ -225,7 +225,7 @@ sheet.footer().visible = true</code></pre>
     <code>body</code> فتدفعهما قائمة طويلة خارج الشاشة. أما <code>footer()</code> فيبقى ظاهرًا دائمًا.
   </div>
 
-  <h3>ركن من HUD</h3>
+  <h3 id="a-hud-corner">ركن من HUD</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -237,7 +237,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>محتوى يتنحّى عن HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">محتوى يتنحّى عن HUD</h3>
   <pre><code>form.avoid_hud = true                  # ابتعد عن كل GoHudAnchor ظاهر
 joystick_anchor.reserve_space = false  # …إلا ما لا يظهر إلا تحت الإصبع
 notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD الثابت بدل أن يغطيه</code></pre>
@@ -291,7 +291,7 @@ notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD ا
     زوايا الأزرار وأشكال مفاتيح التبديل وصفوف القوائم وحدود حقول الإدخال تتحرك كلها معًا.
   </p>
 
-  <h3>مجموعة العصور الوسطى</h3>
+  <h3 id="medieval-collection">مجموعة العصور الوسطى</h3>
   <p>
     <code>medieval_dark</code> يزاوج الحديد والجلد بالذهب العتيق، و<code>medieval_light</code> يستعمل الرقّ
     والحبر. إطارات القوائم تحمل مسمارًا وزخرفة ركن صغيرة، بينما يبقى HUD الدائم الظهور هادئًا؛
@@ -310,7 +310,7 @@ notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD ا
   <p>اللقطتان كلتاهما من <code>examples/medieval/medieval.tscn</code>، مبنيّتان من الودجات القياسية.
     <a href="theming.html#medieval">دليل العصور الوسطى وكيف تصنع مملكتك أنت ←</a></p>
 
-  <h3>الشاشة ذاتها على هاتف وعلى سطح مكتب</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">الشاشة ذاتها على هاتف وعلى سطح مكتب</h3>
   <p>
     لقطات المعرض لهاتف بالوضع الطولي. وأدناه <b>الكود نفسه</b> بمقاس 1280×800 — يتوقف المحتوى عند عرض
     مريح للقراءة (480dp) ويتوسّط، بينما يبقى HUD في الأركان. والنموذج يلتفّ حول قطع HUD العائمة،
@@ -327,7 +327,7 @@ notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD ا
     </figure>
   </div>
 
-  <h3>الورقة ذاتها بمظهر مختلف</h3>
+  <h3 id="the-same-sheet-a-different-look">الورقة ذاتها بمظهر مختلف</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="ورقة سفلية بنمط default_dark" loading="lazy">
@@ -444,24 +444,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # تسجيل الجول�
     Godot خاصة به — دون تشغيل المحرّر ودون البحث عن مشهد.
   </p>
 
-  <h3>ثبّت الأوامر مرة واحدة</h3>
+  <h3 id="install-the-commands-once">ثبّت الأوامر مرة واحدة</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # ثم أعد تشغيل Claude Code</code></pre>
   <p>الوكلاء الآخرون مثل Codex يستطيعون استعمال المهارة نفسها: انسخ <code>skills/gohud</code> من هذا المستودع
     إلى مجلد مهارات الوكيل.</p>
 
-  <h3><code>/gohud:preview</code> — معرض الودجات</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — معرض الودجات</h3>
   <p>يفتح المعرض: كل ودجت، وقائمة اختيار للأنماط الجاهزة الستة، ومجموعة الأيقونات كاملة. اكتبه داخل مشروع Godot
     خاصتك فيستعمل <code>addons/gohud</code> <b>الخاص بك</b>؛ وبدون ذلك يستعمل النسخة المرفقة مع الإضافة،
     أو نسخة جديدة يستنسخها. يعمل داخل مشروع رملي مؤقت، فتبقى قوائم autoload وذاكرة الاستيراد عندك على حالها،
     وتبقى النافذة مفتوحة حتى تغلقها أنت.</p>
 
-  <h3><code>/gohud:preview demo</code> — الجولة الإرشادية ذات الـ 15 فصلًا</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — الجولة الإرشادية ذات الـ 15 فصلًا</h3>
   <p>يفتح العرض التوضيحي على شاشة البداية. <b>ابدأ العرض</b> يشغّل الجولة بلمس حقيقي، و<b>استكشف الودجات</b>
     يتيح لك تجربة ودجت واحدة بيدك. والمفاتيح المذكورة تحت <a href="#examples">الأمثلة</a> تعمل هنا أيضًا.</p>
 
-  <h3>أوامر أخرى كثيرة</h3>
+  <h3 id="many-other-commands">أوامر أخرى كثيرة</h3>
   <table>
     <thead><tr><th>الأمر</th><th>ما الذي يفعله</th></tr></thead>
     <tbody>
@@ -525,14 +525,14 @@ claude plugin install gohud@gohud
     وتصدير للويب؛ وصفر إخفاقات تباين عبر السمات الست. ولم يشمل هذا التشغيل Godot 4.6 ولا أجهزة أندرويد أو iOS الحقيقية.
   </div>
 
-  <h3>إصدارات النشر</h3>
+  <h3 id="release-versions">إصدارات النشر</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>التشغيل الناجح يحدّث <code>plugin.cfg</code> و<code>GoUi.VERSION</code> و<code>CHANGELOG.md</code>
     معًا، ناقلًا ملاحظات Unreleased إلى مدخل مؤرَّخ. والتشغيل الفاشل لا يغيّر شيئًا، ولا يُستبدل ملف ZIP قائم أبدًا.
     وملف ZIP لا يحوي هذا الموقع ولا الاختبارات ولا الأدوات.</p>
 
-  <h3>هذا الموقع</h3>
+  <h3 id="this-site">هذا الموقع</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # المسرد وجداول مقابض المظهر، مولَّدة من المصدر
 python3 addons/gohud/tools/check_site.py           # الروابط والمراسي واللغة والمسرد والجداول المولَّدة
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # لقطات سطح مكتب وهاتف لكل صفحة</code></pre>
@@ -554,5 +554,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # لقطات سطح مكتب 
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

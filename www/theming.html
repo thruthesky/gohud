@@ -120,12 +120,12 @@
   <p>That one line swaps theme, skin and icons. From the editor, use
     <b>Project Settings → Gohud → Theme → Preset</b>; from a settings resource, <code>GoConfig.preset</code>.</p>
 
-  <h3>Keeping one field your own</h3>
+  <h3 id="keeping-one-field-your-own">Keeping one field your own</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # your icons, the preset's everything else</code></pre>
   <p>Setting <code>theme</code>, <code>skin</code> or <code>icons</code> explicitly <b>wins over</b> the preset.</p>
 
-  <h3>The six built-in presets</h3>
+  <h3 id="the-six-built-in-presets">The six built-in presets</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panels</th><th>Skin · icons</th></tr></thead>
     <tbody>
@@ -167,7 +167,7 @@ GoUi.config.icons = my_icons     # your icons, the preset's everything else</cod
     icons import as <code>DPITexture</code>; a real quick slot uses the skin; changing a copied skin's dials reaches
     the slot without touching the preset; and switching back restores the default and sci-fi geometry.
   </div>
-  <h3>Make a kingdom of your own</h3>
+  <h3 id="make-a-kingdom-of-your-own">Make a kingdom of your own</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # Edit themes/palettes/kingdom.json, then:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -197,7 +197,7 @@ GoUi.metric(GoTheme.GAP)               # measurement (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # size for a text role
 GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
 
-  <h3>Colours</h3>
+  <h3 id="colours">Colours</h3>
   <table>
     <thead><tr><th>Name</th><th>Used for</th></tr></thead>
     <tbody>
@@ -220,7 +220,7 @@ GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
     that predate these tokens keep working.
   </div>
 
-  <h3>Measurements (dp)</h3>
+  <h3 id="measurements-dp">Measurements (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -230,7 +230,7 @@ GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>Text roles</h3>
+  <h3 id="text-roles">Text roles</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — a role names <b>a size</b>, not a
@@ -238,7 +238,7 @@ GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
     for something else.
   </p>
 
-  <h3>Type variations</h3>
+  <h3 id="type-variations">Type variations</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -274,7 +274,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>Shapes StyleBoxFlat cannot make</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">Shapes StyleBoxFlat cannot make</h3>
   <table>
     <thead><tr><th>Class</th><th>What it draws</th></tr></thead>
     <tbody>
@@ -310,7 +310,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
     setting's dropdown picks it up as well.
   </p>
 
-  <h3>What you can change — on one page</h3>
+  <h3 id="what-you-can-change-on-one-page">What you can change — on one page</h3>
   <table>
     <thead><tr><th>Where</th><th>What</th><th>How</th></tr></thead>
     <tbody>
@@ -329,7 +329,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
     </tbody>
   </table>
 
-  <h3>Every dial</h3>
+  <h3 id="every-dial">Every dial</h3>
   <p>
     The table below is filled by <code>tools/make_site.py</code> <b>straight from the skin scripts'</b>
     <code>@export</code> lines — add a dial or change a default and the table follows. Use these names under
@@ -338,7 +338,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>Default skin <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">Default skin <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
     <tbody>
@@ -361,7 +361,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
       <tr><td><code>joystick_ring_width</code></td><td data-label="Default">2.0</td><td>Width (dp) of the joystick's ring.</td></tr>
     </tbody>
   </table>
-  <h4>Sci-fi skin <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">Sci-fi skin <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
     <tbody>
@@ -377,7 +377,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
       <tr><td><code>bracket_thickness</code></td><td data-label="Default">2.0</td><td>Line thickness (dp) of the coach mark's targeting bracket.</td></tr>
     </tbody>
   </table>
-  <h4>Medieval skin <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">Medieval skin <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>Dial</th><th>Default</th><th>What it sets</th></tr></thead>
     <tbody>
@@ -391,7 +391,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
   </div>
   <!-- dials:end -->
 
-  <h3>Subclass the skin (optional)</h3>
+  <h3 id="subclass-the-skin-optional">Subclass the skin (optional)</h3>
   <p>Only what theme and shape cannot reach — the joystick's hexagon, slot badges, the coach mark's
     targeting bracket — lives in a skin. Subclass <code>GoSkin</code>, override just those methods, and point the
     JSON's <code>skin</code> at that resource. A colour-only theme skips this step.</p>
@@ -425,7 +425,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
     </tbody>
   </table>
 
-  <h3>Same-hue text on a same-hue tint</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">Same-hue text on a same-hue tint</h3>
   <p>
     This trap appeared <b>three times</b> in this codebase — pressed buttons (accent panel, accent label),
     danger buttons, and chips. It looks good in a swatch and collapses the moment it is measured, because
@@ -437,7 +437,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
     sits on. Hue and saturation survive, so the palette keeps its character and changing it keeps its contrast.
   </p>
 
-  <h3>Colour read as text and colour painted as area want opposite things</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">Colour read as text and colour painted as area want opposite things</h3>
   <p>
     On a light theme a warning colour has to darken to stay readable <b>as text</b> (<code>#96500A</code>).
     When the bar fill inherits that, the experience bar turns <b>brown</b>. Colour alone cannot fix it:
@@ -459,7 +459,7 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
     degrade silently now says so.
   </div>
 
-  <h3>A floating panel cannot know what is behind it</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">A floating panel cannot know what is behind it</h3>
   <p>
     A HUD is drawn <b>over</b> the game — a snowfield, or a cave. If its panel is translucent, whatever is
     behind it bleeds through and <b>changes the panel's colour</b>, taking the text contrast down with it.
@@ -494,5 +494,6 @@ GoUi.use_preset(&amp;"neon")                             # done — it shows up 
 
 <script src="site/glossary.en.js"></script>
 <script src="site/tooltip.js"></script>
+<script src="site/toc.js"></script>
 </body>
 </html>

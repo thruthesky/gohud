@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>浮动窗口</h2>
 
-  <h3><code>GoSurface</code> —— 外壳</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> —— 外壳</h3>
   <p>弹窗、底部面板和下拉菜单用的都是它。它负责安全区域、虚拟键盘、
     常驻页眉页脚、滚动主体、谁是最上层窗口、焦点恢复、返回键的归属，以及拖动改变大小。</p>
   <table>
@@ -101,7 +101,7 @@
     是拥有它的那个界面的事 —— 因为外壳无从知道它<i>为什么</i>被关闭（是保存后关闭，还是丢弃）。
   </div>
 
-  <h3><code>GoSheet</code> —— 从底部升起的页面</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> —— 从底部升起的页面</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("背包")
@@ -112,7 +112,7 @@ sheet.footer().visible = true</code></pre>
   <p>它自带一个 <code>CanvasLayer</code>，因此能稳稳地盖在 HUD 之上。<code>open()</code> 会清空
     主体，并<b>关掉</b>返回按钮和常驻行 —— 在一个无处可返回的界面上留一颗按不动的按钮，看上去就像坏了。</p>
 
-  <h3><code>GoDialogs</code> —— 可以 <code>await</code> 的确认框</h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> —— 可以 <code>await</code> 的确认框</h3>
   <pre><code>if await dialogs.confirm("删除存档", "此操作无法撤销。"):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> —— 正文之后的参数全都可选，
@@ -128,13 +128,13 @@ sheet.footer().visible = true</code></pre>
     在打开之前调用 <code>set_next_action_layout()</code>。按钮行是在对话框第一次打开时才构建的，
     所以把 <code>GoDialogs</code> 放进自动加载也不会在启动时增加任何开销。</p>
 
-  <h3><code>GoForm</code> —— 限定最大宽度的表单</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> —— 限定最大宽度的表单</h3>
   <div class="note warn">
     <b>它保证其后代的标签会自动换行。</b> 否则一句长句子会拉成一整行，其最小宽度超过屏幕，
     两侧被裁掉 —— 甚至会让人看不出自己在哪个界面上。逐个场景手动打开换行，每次都会忘。
   </div>
 
-  <h3><code>GoScroll</code> —— 触摸滚动</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> —— 触摸滚动</h3>
   <p>里面只放<b>一样</b>东西。页眉和按钮行都该放在外面 —— 长列表绝不能把它们顶出屏幕。
     <code>use_panel_edge()</code> 会把滚动条移进卡片已有的内边距里，同时内容保持原来的缩进。</p>
 </section>
@@ -142,17 +142,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>把消息传达给玩家</h2>
 
-  <h3><code>GoNotice</code> —— 消息条</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> —— 消息条</h3>
   <div class="note warn">
     <b>它从不拦截输入。</b> 提示是用来读的，不是用来按的。它不抢焦点，不挡游戏输入，
     底下的按钮照样按得到。需要确认时请用
     <code>GoDialogs</code>；需要做选择时用 <code>GoPromptCard</code>。
   </div>
 
-  <h3><code>GoPromptCard</code> —— 不打断游戏的提问</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> —— 不打断游戏的提问</h3>
   <p>浮在一侧，不加遮罩。游戏照常进行。</p>
 
-  <h3><code>GoCoachMark</code> —— 新手引导</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> —— 新手引导</h3>
   <p>一次指向一个真实控件。只有卡片接收输入，所以<b>按下被高亮的控件本身就能推进引导</b> ——
     “按这里”于是成了一个动作，而不只是一句话。</p>
   <pre><code>tour.start([
@@ -165,7 +165,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>好不好看，是小地方决定的</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">好不好看，是小地方决定的</h3>
   <p>
     大面板再怎么打磨，真正扎眼的永远是某个小东西：一个词被劈成两截、一圈辉光被切掉、一个挤得慌的快捷槽。
     2026-09-13 有人指出了四处这样的问题，修复落在控件和主题里，而不是演示界面上，
@@ -204,7 +204,7 @@ sheet.footer().visible = true</code></pre>
     工具提示由 gohud 自己绘制：引擎的默认实现在宽度计算出错时会把文字拆成<b>一行一个字</b>（实测宽度只有 1dp）。
   </p>
 
-  <h4>引导卡片会避开固定部件</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">引导卡片会避开固定部件</h4>
   <p>
     横屏时，这张卡片以前会被推到最上边或最下边 —— 而那正是页眉和 HUD 部件所在的位置；
     在演示里它就正好压在了页眉的 <code>→ ×</code> 上。现在它会与目标保持齐平，
@@ -216,7 +216,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # 不是锚点的那些固定部件</code></pre>
 
-  <h3>有鼠标和键盘的屏幕</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">有鼠标和键盘的屏幕</h3>
   <p>
     手指<b>没有悬停状态。</b> 只照着移动端做，就会有两种只在桌面出现的状态没人检查 ——
     其中一种当时确实是坏的：gohud 的<b>焦点框在主按钮上根本看不见。</b>
@@ -233,7 +233,7 @@ sheet.footer().visible = true</code></pre>
     <b>焦点框与它所在的面板</b>，所以换一套调色板这条规则依然成立（WCAG 2.4.11 要求焦点指示器达到 3:1）。
   </p>
 
-  <h3><code>GoHudAnchor</code> —— 九个位置</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> —— 九个位置</h3>
   <p>它会尊重安全区域和边缘留白。给它一个 <code>landscape_spot</code>，横屏时它就会换位置 ——
     竖屏时待在底部居中的操控件，横屏可以改到右下角。</p>
   <div class="note">
@@ -241,7 +241,7 @@ sheet.footer().visible = true</code></pre>
     操控按钮在横屏时压上手势条。这些算术统一放在一个地方。
   </div>
 
-  <h4>别让内容钻到 HUD 底下</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">别让内容钻到 HUD 底下</h4>
   <p>
     当一个可滚动的界面和 HUD 共用屏幕时，内容会从 HUD <b>底下</b>滑过去，两组文字叠在一起，
     最后哪一组都读不出来。这在本插件里发生过两次：输入框的占位文字从快捷槽之间挤了出来，
@@ -255,7 +255,7 @@ joystick_anchor.reserve_space = false  # …只在手指按下时才出现的那
     已经让出去的地盘会先扣掉，再去测量下一个矩形。
   </p>
 
-  <h4>HUD 部件之间也会打架</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD 部件之间也会打架</h4>
   <p>
     九个位置把屏幕分好了，却不保证各个部件<b>互不相撞</b>。顶部居中的一条宽消息条，
     结结实实地压在了右上角的生命条上，把数值挡住了 —— 你根本看不出还剩多少血。
@@ -267,7 +267,7 @@ notice_anchor.reserve_space = false   # 而且它显示时不会把页面顶开<
     而且它只避开那些<b>不会</b>自己让位的部件：两边都让，就会永远交换位置换个不停。
   </p>
 
-  <h3><code>GoBar</code> —— 生命、魔法、经验</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> —— 生命、魔法、经验</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 仅用于填充的令牌
@@ -276,7 +276,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>reduce_motion</code> 会让它瞬间完成。大数字会缩写成 <code>12.3k</code>，
     这样位数增减时状态条的宽度不会抖来抖去。</p>
 
-  <h3><code>GoSlot</code> —— 一个快捷槽</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> —— 一个快捷槽</h3>
   <p>图标、数量、冷却和快捷键都在<b>同一个面</b>上。把角标挂在一个小圆圈外面，
     会让每个槽宽度都不一样，整排跟着晃。</p>
   <div class="note">
@@ -287,7 +287,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> 默认关闭，这样一排八个快捷槽就不会横在键盘用户和后面每一个设置控件之间的 Tab 顺序里。
     只有键盘或手柄可用时再把它打开。</p>
 
-  <h3><code>GoJoystick</code> —— 虚拟摇杆</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> —— 虚拟摇杆</h3>
   <table>
     <thead><tr><th>模式</th><th>行为</th></tr></thead>
     <tbody>
@@ -299,7 +299,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>moved</code> 传出的 <code>Vector2</code> 长度在 0–1 之间，可以直接乘到速度上；
     它不随屏幕尺寸或 DPI 变化。</p>
 
-  <h3><code>GoIconButton</code> —— 看着小，按着大</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> —— 看着小，按着大</h3>
   <div class="note warn">
     <b>只有在相邻控件不接收输入时才安全。</b> 如果扩大后的区域盖住了下一个按钮，
     那个按钮就会失去响应。并排的图标按钮需要 <code>touch_peers</code>。
@@ -332,7 +332,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>surface()</code>。
   </div>
 
-  <h3>带说明的列表行</h3>
+  <h3 id="list-rows-with-a-description">带说明的列表行</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "守誓者", _inspect, Color.TRANSPARENT,
     "长剑  /  攻击 42", false)</code></pre>
   <p>带第二行的行会获得<b>上下相等的内边距</b>，比单行的行更宽松，标题与说明这一组始终
@@ -342,11 +342,11 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>中世纪示例里的两行式列表行、快捷槽和状态条 —— 在 <code>medieval_light</code> 下调用的是同样的工厂方法。</figcaption>
   </figure>
 
-  <h3>会自动折行的一排控件</h3>
+  <h3 id="flowing-rows">会自动折行的一排控件</h3>
   <p>把控件按<b>自然宽度</b>放进 <code>wrap_row</code>。若保持换行开启，按钮的最小宽度会掉到几乎为零，
     而这一排会按这个值来分配单元格 —— 标签于是被压成一行一个字。工厂方法替你挡住了这个问题。</p>
 
-  <h3>永远别让空列表就这么空着</h3>
+  <h3 id="never-leave-an-empty-list-empty">永远别让空列表就这么空着</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "这里还什么都没有"))</code></pre>
   <p>人看到一片空白，会当成<b>坏了</b>。</p>
 </section>
@@ -378,5 +378,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

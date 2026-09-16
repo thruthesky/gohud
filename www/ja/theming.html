@@ -120,12 +120,12 @@
   <p>この1行でテーマ・スキン・アイコンが入れ替わる。エディタからは
     <b>プロジェクト設定 → Gohud → Theme → Preset</b>、設定リソースからは <code>GoConfig.preset</code> で指定する。</p>
 
-  <h3>1つだけ自分のものを使う</h3>
+  <h3 id="keeping-one-field-your-own">1つだけ自分のものを使う</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセットのまま</code></pre>
   <p><code>theme</code>・<code>skin</code>・<code>icons</code> を明示的に設定すると、プリセットより<b>優先される</b>。</p>
 
-  <h3>組み込みの6プリセット</h3>
+  <h3 id="the-six-built-in-presets">組み込みの6プリセット</h3>
   <table>
     <thead><tr><th>プリセット</th><th>パネル</th><th>スキン · アイコン</th></tr></thead>
     <tbody>
@@ -168,7 +168,7 @@ GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセ
     複製したスキンのダイヤルを変えると、プリセットに触れずにスロットへ届くこと。そして戻したときに、
     デフォルトと SF のジオメトリが復元されること。
   </div>
-  <h3>自分だけの王国を作る</h3>
+  <h3 id="make-a-kingdom-of-your-own">自分だけの王国を作る</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # themes/palettes/kingdom.json を編集してから:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -198,7 +198,7 @@ GoUi.metric(GoTheme.GAP)               # 寸法(dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # 文字役割ごとのサイズ
 GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
 
-  <h3>色</h3>
+  <h3 id="colours">色</h3>
   <table>
     <thead><tr><th>名前</th><th>使いどころ</th></tr></thead>
     <tbody>
@@ -220,7 +220,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
     <code>_fill</code> を持たないテーマは自動で元の名前に落ちるので、これらのトークン以前のテーマもそのまま動く。
   </div>
 
-  <h3>寸法(dp)</h3>
+  <h3 id="measurements-dp">寸法(dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -230,7 +230,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>文字の役割</h3>
+  <h3 id="text-roles">文字の役割</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — 役割が指すのは<b>大きさ</b>であって
@@ -238,7 +238,7 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
     使っても尺度は崩れない。
   </p>
 
-  <h3>タイプバリエーション</h3>
+  <h3 id="type-variations">タイプバリエーション</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -274,7 +274,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>StyleBoxFlat では作れない形</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">StyleBoxFlat では作れない形</h3>
   <table>
     <thead><tr><th>クラス</th><th>描くもの</th></tr></thead>
     <tbody>
@@ -309,7 +309,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
     <b>走査して</b>見つけるので、登録コードの変更はいらない — プロジェクト設定のドロップダウンにも同じように載る。
   </p>
 
-  <h3>変えられるもの — 1ページで</h3>
+  <h3 id="what-you-can-change-on-one-page">変えられるもの — 1ページで</h3>
   <table>
     <thead><tr><th>場所</th><th>何を</th><th>どう書くか</th></tr></thead>
     <tbody>
@@ -328,7 +328,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
     </tbody>
   </table>
 
-  <h3>ダイヤル一覧</h3>
+  <h3 id="every-dial">ダイヤル一覧</h3>
   <p>
     下の表は <code>tools/make_site.py</code> がスキンスクリプトの <code>@export</code> 行から<b>直接</b>読んで埋める —
     ダイヤルを足したり既定値を変えたりすれば、表も付いてくる。JSON の <code>skin.dials</code> の下では、この名前を使う。
@@ -337,7 +337,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>デフォルトスキン <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">デフォルトスキン <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
     <tbody>
@@ -360,7 +360,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
       <tr><td><code>joystick_ring_width</code></td><td data-label="既定値">2.0</td><td>スティックのリングの太さ(dp)。</td></tr>
     </tbody>
   </table>
-  <h4>SF スキン <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">SF スキン <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
     <tbody>
@@ -376,7 +376,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
       <tr><td><code>bracket_thickness</code></td><td data-label="既定値">2.0</td><td>コーチマークの照準ブラケットの線の太さ(dp)。</td></tr>
     </tbody>
   </table>
-  <h4>中世スキン <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">中世スキン <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
     <tbody>
@@ -390,7 +390,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
   </div>
   <!-- dials:end -->
 
-  <h3>スキンを継承する（任意）</h3>
+  <h3 id="subclass-the-skin-optional">スキンを継承する（任意）</h3>
   <p>スキンにあるのは、テーマと形では届かないものだけだ — スティックの六角形、スロットのバッジ、
     コーチマークの照準ブラケット。<code>GoSkin</code> を継承してそれらのメソッドだけを上書きし、JSON の
     <code>skin</code> をそのリソースへ向ける。色だけのテーマなら、この手順はいらない。</p>
@@ -423,7 +423,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
     </tbody>
   </table>
 
-  <h3>同系色の文字を同系色の淡い面に載せる</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">同系色の文字を同系色の淡い面に載せる</h3>
   <p>
     この落とし穴は、このコードベースで<b>3度</b>現れた — 押されたボタン（アクセントのパネルにアクセントの文字）、
     危険ボタン、そしてチップだ。色見本の上ではよく見えるのに、測った瞬間に崩れる。
@@ -435,7 +435,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
     変更してもコントラストは保たれる。
   </p>
 
-  <h3>文字として読む色と、面として塗る色は求めるものが逆だ</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">文字として読む色と、面として塗る色は求めるものが逆だ</h3>
   <p>
     ライトテーマでは、警告色は<b>文字として</b>読めるよう暗くしなければならない(<code>#96500A</code>)。
     バーの塗りがそれを受け継ぐと、経験値バーは<b>茶色</b>になる。色だけでは直せない。黄色はそもそも明るく、
@@ -456,7 +456,7 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
     黙って劣化していた場所が、いまは声を上げる。
   </div>
 
-  <h3>浮かぶパネルは、背後に何があるか知りようがない</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">浮かぶパネルは、背後に何があるか知りようがない</h3>
   <p>
     HUD はゲームの<b>上</b>に描かれる — 雪原かもしれないし、洞窟かもしれない。パネルが半透明なら背後のものが
     透けて<b>パネルの色そのものを変え</b>、文字のコントラストまで道連れにする。不透明度 82% では、明るい背景の上で
@@ -488,5 +488,6 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

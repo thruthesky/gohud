@@ -120,12 +120,12 @@
   <p>บรรทัดเดียวนั้นสลับทั้งธีม สกิน และไอคอน ถ้าทำจากเอดิเตอร์ ให้ไปที่
     <b>Project Settings → Gohud → Theme → Preset</b> ถ้าทำจากรีซอร์สตั้งค่า ให้ใช้ <code>GoConfig.preset</code></p>
 
-  <h3>เก็บบางช่องไว้เป็นของตัวเอง</h3>
+  <h3 id="keeping-one-field-your-own">เก็บบางช่องไว้เป็นของตัวเอง</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # ไอคอนของคุณ ที่เหลือใช้ของพรีเซ็ต</code></pre>
   <p>การกำหนด <code>theme</code>, <code>skin</code> หรือ <code>icons</code> ไว้ตรง ๆ จะ<b>ชนะ</b>พรีเซ็ต</p>
 
-  <h3>พรีเซ็ตที่มีมาให้ทั้ง 6 แบบ</h3>
+  <h3 id="the-six-built-in-presets">พรีเซ็ตที่มีมาให้ทั้ง 6 แบบ</h3>
   <table>
     <thead><tr><th>พรีเซ็ต</th><th>พาเนล</th><th>สกิน · ไอคอน</th></tr></thead>
     <tbody>
@@ -167,7 +167,7 @@ GoUi.config.icons = my_icons     # ไอคอนของคุณ ที่�
     ถูกอิมพอร์ตเป็น <code>DPITexture</code> ควิกสล็อตจริงใช้สกินนั้น การแก้ค่าปรับของสกินที่คัดลอกมาส่งผลถึง
     ตัวสล็อตโดยไม่ต้องแตะพรีเซ็ต และการสลับกลับไปคืนรูปทรงของชุดค่าเริ่มต้นกับชุดไซไฟได้ครบ
   </div>
-  <h3>สร้างอาณาจักรของคุณเอง</h3>
+  <h3 id="make-a-kingdom-of-your-own">สร้างอาณาจักรของคุณเอง</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # แก้ไข themes/palettes/kingdom.json แล้วสั่ง:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -197,7 +197,7 @@ GoUi.metric(GoTheme.GAP)               # ค่าขนาด (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # ขนาดของบทบาทตัวอักษรหนึ่ง ๆ
 GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox หนึ่งชิ้น</code></pre>
 
-  <h3>สี</h3>
+  <h3 id="colours">สี</h3>
   <table>
     <thead><tr><th>ชื่อ</th><th>ใช้กับอะไร</th></tr></thead>
     <tbody>
@@ -219,7 +219,7 @@ GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox ห�
     ธีมที่ไม่มีตัวแปร <code>_fill</code> จะย้อนกลับไปใช้ชื่อฐานโดยอัตโนมัติ ธีมเก่าที่มีมาก่อนโทเคนพวกนี้จึงยังใช้ได้
   </div>
 
-  <h3>ค่าขนาด (dp)</h3>
+  <h3 id="measurements-dp">ค่าขนาด (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -229,7 +229,7 @@ GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox ห�
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>บทบาทของตัวอักษร</h3>
+  <h3 id="text-roles">บทบาทของตัวอักษร</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — บทบาทหนึ่งตั้งชื่อให้ <b>ขนาด</b>
@@ -237,7 +237,7 @@ GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox ห�
     สเกลจะยังคงอยู่แม้บางหน้าจอจะเอาไปใช้กับอย่างอื่น
   </p>
 
-  <h3>Type variation</h3>
+  <h3 id="type-variations">Type variation</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -273,7 +273,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>รูปทรงที่ StyleBoxFlat ทำไม่ได้</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">รูปทรงที่ StyleBoxFlat ทำไม่ได้</h3>
   <table>
     <thead><tr><th>คลาส</th><th>วาดอะไร</th></tr></thead>
     <tbody>
@@ -309,7 +309,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
     ในการตั้งค่าโปรเจกต์ก็มองเห็นมันเช่นกัน
   </p>
 
-  <h3>อะไรเปลี่ยนได้บ้าง — รวมไว้ในหน้าเดียว</h3>
+  <h3 id="what-you-can-change-on-one-page">อะไรเปลี่ยนได้บ้าง — รวมไว้ในหน้าเดียว</h3>
   <table>
     <thead><tr><th>ที่ไหน</th><th>อะไร</th><th>อย่างไร</th></tr></thead>
     <tbody>
@@ -328,7 +328,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
     </tbody>
   </table>
 
-  <h3>ค่าปรับทุกตัว</h3>
+  <h3 id="every-dial">ค่าปรับทุกตัว</h3>
   <p>
     ตารางด้านล่างถูกเติมโดย <code>tools/make_site.py</code> <b>ตรงจากบรรทัด</b> <code>@export</code>
     ของสคริปต์สกิน — เพิ่มค่าปรับหรือแก้ค่าเริ่มต้นแล้วตารางตามไปเอง ใช้ชื่อเหล่านี้ใต้
@@ -337,7 +337,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>สกินค่าเริ่มต้น <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">สกินค่าเริ่มต้น <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
     <tbody>
@@ -360,7 +360,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
       <tr><td><code>joystick_ring_width</code></td><td data-label="ค่าเริ่มต้น">2.0</td><td>ความหนา (dp) ของวงแหวนจอยสติ๊ก</td></tr>
     </tbody>
   </table>
-  <h4>สกินไซไฟ <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">สกินไซไฟ <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
     <tbody>
@@ -376,7 +376,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
       <tr><td><code>bracket_thickness</code></td><td data-label="ค่าเริ่มต้น">2.0</td><td>ความหนาของเส้น (dp) ของวงเล็บเล็งเป้าของโค้ชมาร์ก</td></tr>
     </tbody>
   </table>
-  <h4>สกินยุคกลาง <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">สกินยุคกลาง <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
     <tbody>
@@ -390,7 +390,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
   </div>
   <!-- dials:end -->
 
-  <h3>สืบทอดสกิน (ไม่บังคับ)</h3>
+  <h3 id="subclass-the-skin-optional">สืบทอดสกิน (ไม่บังคับ)</h3>
   <p>สิ่งที่ธีมและรูปทรงเอื้อมไม่ถึงเท่านั้น — หกเหลี่ยมของจอยสติ๊ก แบดจ์บนสล็อต วงเล็บเล็งเป้าของ
     โค้ชมาร์ก — ที่อยู่ในสกิน สืบทอด <code>GoSkin</code> เขียนทับเฉพาะเมธอดเหล่านั้น แล้วชี้ช่อง
     <code>skin</code> ใน JSON ไปที่รีซอร์สนั้น ธีมที่เปลี่ยนแค่สีข้ามขั้นตอนนี้ไปได้เลย</p>
@@ -424,7 +424,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
     </tbody>
   </table>
 
-  <h3>ตัวอักษรสีเดียวกันบนพื้นย้อมสีเดียวกัน</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">ตัวอักษรสีเดียวกันบนพื้นย้อมสีเดียวกัน</h3>
   <p>
     กับดักนี้โผล่มาแล้ว <b>สามครั้ง</b> ในโค้ดเบสนี้ — ปุ่มขณะถูกกด (พาเนลสีเน้น ป้ายข้อความสีเน้น)
     ปุ่มอันตราย และชิป มันดูดีเวลาอยู่บนแผ่นตัวอย่างสี แล้วพังทันทีที่ถูกวัด เพราะทั้งสองใช้เฉดสีเดียวกัน
@@ -436,7 +436,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
     เฉดสีและความอิ่มตัวยังอยู่ครบ จานสีจึงรักษาบุคลิกของมันไว้ได้ และการเปลี่ยนจานสีก็ยังรักษาคอนทราสต์ไว้ได้ด้วย
   </p>
 
-  <h3>สีที่ถูกอ่านเป็นตัวอักษรกับสีที่ถูกระบายเป็นพื้นที่ ต้องการคนละอย่าง</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">สีที่ถูกอ่านเป็นตัวอักษรกับสีที่ถูกระบายเป็นพื้นที่ ต้องการคนละอย่าง</h3>
   <p>
     บนธีมสว่าง สีเตือนต้องเข้มลงเพื่อให้ยังอ่านออก<b>ในฐานะตัวอักษร</b> (<code>#96500A</code>)
     พอสีเติมของแถบสืบทอดค่านั้นไป แถบค่าประสบการณ์ก็กลายเป็น<b>สีน้ำตาล</b> การแก้ด้วยสีอย่างเดียว
@@ -459,7 +459,7 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
     ตอนนี้พูดออกมาแล้ว
   </div>
 
-  <h3>พาเนลที่ลอยอยู่ไม่มีทางรู้ว่าข้างหลังมันคืออะไร</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">พาเนลที่ลอยอยู่ไม่มีทางรู้ว่าข้างหลังมันคืออะไร</h3>
   <p>
     HUD ถูกวาด<b>ทับ</b>ฉากเกม — อาจเป็นทุ่งหิมะ หรือถ้ำมืด ถ้าพาเนลของมันกึ่งโปร่งใส สิ่งที่อยู่ข้างหลัง
     จะทะลุออกมาและ<b>เปลี่ยนสีของพาเนล</b> ลากคอนทราสต์ของตัวอักษรลงไปด้วย ที่ความทึบ 82%
@@ -493,5 +493,6 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

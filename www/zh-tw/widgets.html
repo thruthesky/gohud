@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>浮動視窗</h2>
 
-  <h3><code>GoSurface</code> — 外殼</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — 外殼</h3>
   <p>彈出視窗、面板與下拉選單全都用這一個。它負責安全區域、虛擬鍵盤、
     固定的頁首與頁尾、可捲動的本文、哪一層視窗在最上面、焦點還原、返回鍵的歸屬
     以及拖曳改變大小。</p>
@@ -102,7 +102,7 @@
     持有它的畫面的責任，因為外殼無從得知它<i>為什麼</i>要關（是存檔後關閉，還是捨棄）。
   </div>
 
-  <h3><code>GoSheet</code> — 從底部上來的頁面</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — 從底部上來的頁面</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("背包")
@@ -113,7 +113,7 @@ sheet.footer().visible = true</code></pre>
   <p>它自己持有一個 <code>CanvasLayer</code>，所以能穩穩地待在 HUD 之上。<code>open()</code> 會清空
     本文，並<b>關掉</b>返回鍵與固定列 — 在一個無處可回的畫面上擺一顆按不動的按鈕，看起來就像壞了。</p>
 
-  <h3><code>GoDialogs</code> — 可以 <code>await</code> 的確認</h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — 可以 <code>await</code> 的確認</h3>
   <pre><code>if await dialogs.confirm("刪除存檔", "此動作無法復原。"):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — body 之後的全部
@@ -130,14 +130,14 @@ sheet.footer().visible = true</code></pre>
     只想改某一個對話方塊時，在開啟之前呼叫 <code>set_next_action_layout()</code>。
     按鈕列是在對話方塊第一次開啟時才建立的，所以自動載入的 <code>GoDialogs</code> 在啟動時不會多做任何事。</p>
 
-  <h3><code>GoForm</code> — 限制寬度的表單</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — 限制寬度的表單</h3>
   <div class="note warn">
     <b>它保證底下的標籤會換行。</b>沒有這一點，一個長句子就會拉成單獨一行，
     其最小寬度超過螢幕，兩側被裁掉 — 你甚至看不出自己在哪個畫面。
     靠人工在每個場景手動打開換行，每次都會忘。
   </div>
 
-  <h3><code>GoScroll</code> — 觸控捲動</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — 觸控捲動</h3>
   <p>裡面只放<b>一樣</b>東西。頁首與按鈕列要放在外面 — 長清單絕不能把它們推出畫面。
     <code>use_panel_edge()</code> 會把捲軸移進卡片原有的內距裡，而內容仍保持它的縮排。</p>
 </section>
@@ -145,17 +145,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>告訴玩家某件事</h2>
 
-  <h3><code>GoNotice</code> — 訊息條</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — 訊息條</h3>
   <div class="note warn">
     <b>它永遠不攔截輸入。</b>訊息條是拿來讀的，不是拿來按的。它不取得焦點、不擋住
     遊戲輸入，底下的按鈕照樣按得動。需要確認時請用
     <code>GoDialogs</code>；需要做選擇時，用 <code>GoPromptCard</code>。
   </div>
 
-  <h3><code>GoPromptCard</code> — 不擋住遊戲的提問</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — 不擋住遊戲的提問</h3>
   <p>浮在一側，沒有遮罩。遊戲繼續跑。</p>
 
-  <h3><code>GoCoachMark</code> — 導覽</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — 導覽</h3>
   <p>一次指向一個真實的控制項。只有卡片會吃輸入，所以<b>直接按下被標示的控制項本身
     就會推進導覽</b> — 「按這裡」於是變成一個動作，而不是一句話。</p>
   <pre><code>tour.start([
@@ -168,7 +168,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>好不好看，是那些小地方決定的</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">好不好看，是那些小地方決定的</h3>
   <p>
     大面板再怎麼磨，抓住視線的永遠是某個小東西：一個被切成兩半的字、一圈被削掉的光暈、
     一格擠成一團的快捷格。2026-09-13 有人指出四件這樣的事，修正做在控制項與佈景主題裡，
@@ -208,7 +208,7 @@ sheet.footer().visible = true</code></pre>
     （實測寬度只有 1dp）。
   </p>
 
-  <h4>導覽標記的卡片會避開固定元素</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">導覽標記的卡片會避開固定元素</h4>
   <p>
     橫向時，這張卡片以前會被送到畫面最上或最下的邊緣 — 那裡剛好就是頁首與 HUD
     零件的地盤；在示範裡，它就壓在頁首的 <code>→ ×</code> 上。現在它會與目標保持齊高，
@@ -220,7 +220,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # 不是錨點的固定元素</code></pre>
 
-  <h3>有滑鼠與鍵盤的畫面</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">有滑鼠與鍵盤的畫面</h3>
   <p>
     手指<b>沒有滑過狀態。</b>只照著行動裝置開發，就會有兩個只出現在桌機的狀態沒被檢查 —
     而其中一個確實壞了：gohud 的<b>焦點外框在主要按鈕上是看不見的。</b>面板是強調色，
@@ -238,7 +238,7 @@ sheet.footer().visible = true</code></pre>
     （WCAG 2.4.11 要求焦點指示器達到 3:1）。
   </p>
 
-  <h3><code>GoHudAnchor</code> — 九個位置</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 九個位置</h3>
   <p>它會尊重安全區域與邊界留白。給它一個 <code>landscape_spot</code>，橫向時它就會換位置 —
     直向時待在底部中央的操作鍵，橫向可以改到右下。</p>
   <div class="note">
@@ -247,7 +247,7 @@ sheet.footer().visible = true</code></pre>
     那些算式只住在一個地方。
   </div>
 
-  <h4>別讓內容跑到 HUD 底下</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">別讓內容跑到 HUD 底下</h4>
   <p>
     當一個會捲動的畫面和 HUD 共用螢幕時，內容會滑<b>到它下面</b>，兩邊的文字互相重疊，
     最後誰都讀不出來。這在這個附加元件裡發生過兩次：輸入欄的提示文字被擠在快捷格中間，
@@ -261,7 +261,7 @@ joystick_anchor.reserve_space = false  # …但只在手指底下才出現的那
     已經讓出去的地盤，會先扣掉，再去量下一個矩形。
   </p>
 
-  <h4>HUD 零件彼此也會撞在一起</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD 零件彼此也會撞在一起</h4>
   <p>
     九個位置只是把畫面分好；它們並不保證零件<b>彼此不相碰</b>。一條很寬的訊息條擺在
     上方中央，就正好壓在右上的生命量條上，把數值遮住 — 你根本讀不到還剩多少血。
@@ -273,7 +273,7 @@ notice_anchor.reserve_space = false   # 顯示期間也不會推擠頁面</code>
     而且它只避開那些<b>本身不會讓開</b>的零件：如果雙方都讓，兩者就會永遠交換位置。
   </p>
 
-  <h3><code>GoBar</code> — 生命、魔力、經驗</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 生命、魔力、經驗</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 只用於填色的 token
@@ -282,7 +282,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>reduce_motion</code> 會讓它立即完成。大數字會縮寫成 <code>12.3k</code>，
     讓量條的寬度不會隨著位數增減而抖動。</p>
 
-  <h3><code>GoSlot</code> — 一格快捷格</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — 一格快捷格</h3>
   <p>圖示、數量、冷卻與快速鍵都在<b>同一個面</b>上。把徽章掛在小圓圈外面，
     會讓每一格寬度都不一樣，整列就歪歪扭扭。</p>
   <div class="note">
@@ -294,7 +294,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> 預設是關的，這樣八格一列的快捷格才不會卡在鍵盤使用者與 Tab 順序上
     所有設定控制項之間。只有在鍵盤或遊戲手把是唯一輸入方式時才打開它。</p>
 
-  <h3><code>GoJoystick</code> — 虛擬搖桿</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — 虛擬搖桿</h3>
   <table>
     <thead><tr><th>模式</th><th>行為</th></tr></thead>
     <tbody>
@@ -306,7 +306,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>moved</code> 傳出來的 <code>Vector2</code> 長度介於 0–1，所以可以直接乘上速度；
     它不會隨螢幕大小或 DPI 改變。</p>
 
-  <h3><code>GoIconButton</code> — 看起來小，按起來大</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 看起來小，按起來大</h3>
   <div class="note warn">
     <b>只有在旁邊的兄弟節點不吃輸入時才安全。</b>如果被放大的區域蓋到隔壁按鈕，
     那顆按鈕就沒反應了。並排的圖示按鈕需要 <code>touch_peers</code>。
@@ -339,7 +339,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     請改用 <code>surface()</code>。
   </div>
 
-  <h3>帶說明的清單列</h3>
+  <h3 id="list-rows-with-a-description">帶說明的清單列</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "守誓者", _inspect, Color.TRANSPARENT,
     "長劍  /  攻擊 42", false)</code></pre>
   <p>有第二行的列會得到<b>上下相等的內距</b>，比單行的列更寬鬆，而標題與說明這一組會
@@ -350,12 +350,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>中世紀範例中的兩行式清單列、快捷格與量條 — 在 <code>medieval_light</code> 底下呼叫的是同一批工廠函式。</figcaption>
   </figure>
 
-  <h3>會換行的列</h3>
+  <h3 id="flowing-rows">會換行的列</h3>
   <p>把控制項放進 <code>wrap_row</code> 時，讓它們維持<b>自然寬度</b>。若放著換行不管，按鈕的最小寬度
     會掉到幾乎為零，而該列就用這個值決定儲存格大小 — 標籤於是縮成一行一個字。
     工廠函式替你擋掉了這件事。</p>
 
-  <h3>永遠別讓空清單真的空著</h3>
+  <h3 id="never-leave-an-empty-list-empty">永遠別讓空清單真的空著</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "這裡還沒有東西"))</code></pre>
   <p>人看到一片空白的畫面，會讀成<b>壞掉了</b>。</p>
 </section>
@@ -387,5 +387,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

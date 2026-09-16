@@ -133,35 +133,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>Каждый размер — это токен</h3>
+      <h3 id="every-measurement-is-a-token">Каждый размер — это токен</h3>
       <p>Отступы, углы и размеры текста вызываются по имени, а не пишутся числами. Смените тему — и весь экран поедет вместе с ней.</p>
     </div>
     <div class="card">
-      <h3>Видимый размер ≠ размер нажатия</h3>
+      <h3 id="visible-size-pressable-size">Видимый размер ≠ размер нажатия</h3>
       <p>Кнопка закрытия выглядит на 36dp, но её область нажатия — 48dp. Там, где тесно стоящие слоты перекрываются, нажатие получает тот, чей центр ближе.</p>
     </div>
     <div class="card">
-      <h3>Вырезы и клавиатуры</h3>
+      <h3 id="notches-and-keyboards">Вырезы и клавиатуры</h3>
       <p>Элементы HUD остаются внутри безопасной области, а поле ввода поднимается над виртуальной клавиатурой, когда та появляется.</p>
     </div>
     <div class="card">
-      <h3>«Назад» закрывает одно</h3>
+      <h3 id="back-closes-one-thing">«Назад» закрывает одно</h3>
       <p>Escape и кнопка «Назад» на Android закрывают <b>только самую верхнюю поверхность</b>. Стопка окон не исчезает целиком.</p>
     </div>
     <div class="card">
-      <h3>Уведомления не перехватывают ввод</h3>
+      <h3 id="notices-never-steal-input">Уведомления не перехватывают ввод</h3>
       <p>Нажмите сквозь снекбар — и кнопка под ним его получит. Фокус тоже не отбирается.</p>
     </div>
     <div class="card">
-      <h3>Иконки запрашиваются по имени</h3>
+      <h3 id="icons-are-asked-for-by-name">Иконки запрашиваются по имени</h3>
       <p>Виджеты знают только <code>GoIconSet.CLOSE</code>. Смените набор — и все рисунки поменяются, не тронув ни строки кода.</p>
     </div>
     <div class="card">
-      <h3>Шесть образов, одна строка</h3>
+      <h3 id="six-looks-one-line">Шесть образов, одна строка</h3>
       <p><code>GoUi.use_preset()</code> меняет тему, скин и иконки разом — скруглённые, срезанные sci-fi или кованые средневековые рамки.</p>
     </div>
     <div class="card">
-      <h3>Читаемость — по измерению</h3>
+      <h3 id="legible-by-measurement">Читаемость — по измерению</h3>
       <p>Каждая тема проверена по WCAG, включая состояния кнопок и полупрозрачные панели HUD поверх чисто белого и чисто чёрного.</p>
     </div>
   </div>
@@ -177,11 +177,11 @@
   <h2>Установка</h2>
   <p class="sub">Положите папку аддона в проект. Больше настраивать нечего.</p>
 
-  <h3>Из Asset Store или ZIP-архива релиза</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">Из Asset Store или ZIP-архива релиза</h3>
   <p>Распакуйте в корень проекта так, чтобы получилось <code>res://addons/gohud/</code>. Это всё. По желанию включите
     <b>Project → Project Settings → Plugins → gohud</b>.</p>
 
-  <h3>Как git-подмодуль</h3>
+  <h3 id="as-a-git-submodule">Как git-подмодуль</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # по желанию: закрепить тег или коммит</code></pre>
@@ -199,17 +199,17 @@ git -C addons/gohud checkout v1.0.0   # по желанию: закрепить 
   <h2>Быстрый старт</h2>
   <p class="sub">Любой виджет — это <code>.new()</code> и <code>add_child()</code>: ни файлов сцен, ни автозагрузки.</p>
 
-  <h3>Выберите образ до сборки интерфейса (по желанию)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">Выберите образ до сборки интерфейса (по желанию)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # если пропустить, используется default_dark</code></pre>
 
-  <h3>Подтверждение, которое можно <code>await</code></h3>
+  <h3 id="a-confirmation-you-await">Подтверждение, которое можно <code>await</code></h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("Удалить сохранение", "Это действие необратимо."):
     delete_save()</code></pre>
   <p>Передайте <code>destructive = true</code> (последний аргумент) — и кнопка подтверждения нарисуется как залитая кнопка опасного действия.</p>
 
-  <h3>Нижний лист с закреплённым полем поиска и подвалом</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Нижний лист с закреплённым полем поиска и подвалом</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Инвентарь")
@@ -226,7 +226,7 @@ sheet.footer().visible = true</code></pre>
     <code>body</code> — и длинный список вытолкнет их за экран. <code>footer()</code> виден всегда.
   </div>
 
-  <h3>Угол HUD</h3>
+  <h3 id="a-hud-corner">Угол HUD</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -238,7 +238,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>Содержимое, которое держится в стороне от HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">Содержимое, которое держится в стороне от HUD</h3>
   <pre><code>form.avoid_hud = true                  # обходить каждый видимый GoHudAnchor
 joystick_anchor.reserve_space = false  # …кроме тех, что появляются только под пальцем
 notice_anchor.avoid_peers = true       # уведомление садится под закреплённый HUD, а не накрывает его</code></pre>
@@ -292,7 +292,7 @@ notice_anchor.avoid_peers = true       # уведомление садится �
     Углы кнопок, формы переключателей, строки списка и рамки полей ввода едут вместе.
   </p>
 
-  <h3>Средневековая коллекция</h3>
+  <h3 id="medieval-collection">Средневековая коллекция</h3>
   <p>
     <code>medieval_dark</code> соединяет железо и кожу со старым золотом; <code>medieval_light</code> берёт пергамент
     и чернила. На рамках меню есть заклёпка и небольшой угловой орнамент, а всегда видимый HUD остаётся сдержанным;
@@ -311,7 +311,7 @@ notice_anchor.avoid_peers = true       # уведомление садится �
   <p>Оба снимка — это <code>examples/medieval/medieval.tscn</code>, собранный из стандартных виджетов.
     <a href="theming.html#medieval">Руководство по средневековью и как сделать своё королевство →</a></p>
 
-  <h3>Один и тот же экран на телефоне и на настольном компьютере</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">Один и тот же экран на телефоне и на настольном компьютере</h3>
   <p>
     Снимки галереи сделаны на телефоне в книжной ориентации. Ниже — <b>тот же код</b> при 1280×800: содержимое
     останавливается на читаемой ширине (480dp) и центрируется, а HUD остаётся по углам. Форма обходит плавающие
@@ -329,7 +329,7 @@ notice_anchor.avoid_peers = true       # уведомление садится �
     </figure>
   </div>
 
-  <h3>Тот же лист, другой вид</h3>
+  <h3 id="the-same-sheet-a-different-look">Тот же лист, другой вид</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="Нижний лист в default_dark" loading="lazy">
@@ -446,24 +446,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # запись тура 
     в собственном окне Godot: ни редактор запускать, ни сцену искать не нужно.
   </p>
 
-  <h3>Установите команды один раз</h3>
+  <h3 id="install-the-commands-once">Установите команды один раз</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # затем перезапустите Claude Code</code></pre>
   <p>Другие агенты, например Codex, могут пользоваться тем же навыком: скопируйте <code>skills/gohud</code> из этого
     репозитория в папку навыков агента.</p>
 
-  <h3><code>/gohud:preview</code> — галерея виджетов</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — галерея виджетов</h3>
   <p>Открывает галерею: все виджеты, переключатель всех шести пресетов и полный набор иконок. Наберите команду внутри
     своего проекта Godot — и она возьмёт <b>ваш</b> <code>addons/gohud</code>; если его нет, используется копия из плагина
     или свежий клон. Запуск идёт в одноразовом песочном проекте, поэтому ваши автозагрузки и кэш импорта остаются нетронутыми,
     а окно держится открытым, пока вы его не закроете.</p>
 
-  <h3><code>/gohud:preview demo</code> — обучающий тур из 15 глав</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — обучающий тур из 15 глав</h3>
   <p>Открывает демо на стартовом экране. <b>Start demo</b> проигрывает тур с настоящим вводом; <b>Explore widgets</b>
     даёт попробовать виджет руками. Клавиши, перечисленные в разделе <a href="#examples">Примеры</a>, работают и здесь.</p>
 
-  <h3>Множество других команд</h3>
+  <h3 id="many-other-commands">Множество других команд</h3>
   <table>
     <thead><tr><th>Команда</th><th>Что делает</th></tr></thead>
     <tbody>
@@ -528,14 +528,14 @@ claude plugin install gohud@gohud
     в этот прогон не входили.
   </div>
 
-  <h3>Версии релизов</h3>
+  <h3 id="release-versions">Версии релизов</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>Успешный прогон обновляет <code>plugin.cfg</code>, <code>GoUi.VERSION</code> и <code>CHANGELOG.md</code>
     вместе, перенося заметки из раздела Unreleased в датированную запись. Неудачный прогон не меняет ничего, а уже
     существующий ZIP никогда не перезаписывается. В ZIP не попадают этот сайт, тесты и инструменты.</p>
 
-  <h3>Этот сайт</h3>
+  <h3 id="this-site">Этот сайт</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # глоссарий и таблицы регуляторов скина, порождённые из исходников
 python3 addons/gohud/tools/check_site.py           # ссылки, якоря, язык, глоссарий, порождённые таблицы
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # снимки каждой страницы для настольного экрана и телефона</code></pre>
@@ -557,5 +557,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # снимки каждой �
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

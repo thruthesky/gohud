@@ -132,35 +132,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>Setiap ukuran adalah token</h3>
+      <h3 id="every-measurement-is-a-token">Setiap ukuran adalah token</h3>
       <p>Jarak, sudut, dan ukuran teks dipanggil lewat nama, bukan ditulis sebagai angka. Tukar temanya dan seluruh layar ikut berubah.</p>
     </div>
     <div class="card">
-      <h3>Ukuran terlihat ≠ ukuran yang bisa ditekan</h3>
+      <h3 id="visible-size-pressable-size">Ukuran terlihat ≠ ukuran yang bisa ditekan</h3>
       <p>Tombol tutup terlihat 36dp tetapi target sentuhnya 48dp. Di tempat slot berdesakan saling tumpang tindih, yang pusatnya lebih dekat yang menerima tekanan.</p>
     </div>
     <div class="card">
-      <h3>Notch dan keyboard</h3>
+      <h3 id="notches-and-keyboards">Notch dan keyboard</h3>
       <p>Bagian-bagian HUD duduk di dalam area aman, dan kolom masukan naik ke atas keyboard virtual begitu keyboard muncul.</p>
     </div>
     <div class="card">
-      <h3>Tombol kembali menutup satu hal</h3>
+      <h3 id="back-closes-one-thing">Tombol kembali menutup satu hal</h3>
       <p>Escape dan tombol Back Android menutup <b>hanya permukaan paling atas</b>. Jendela yang bertumpuk tidak lenyap bersamaan.</p>
     </div>
     <div class="card">
-      <h3>Pemberitahuan tidak pernah merampas input</h3>
+      <h3 id="notices-never-steal-input">Pemberitahuan tidak pernah merampas input</h3>
       <p>Tekan menembus snackbar dan tombol di bawahnya tetap menerimanya. Fokus pun tidak diambil.</p>
     </div>
     <div class="card">
-      <h3>Ikon diminta lewat namanya</h3>
+      <h3 id="icons-are-asked-for-by-name">Ikon diminta lewat namanya</h3>
       <p>Widget hanya tahu <code>GoIconSet.CLOSE</code>. Tukar setnya dan semua gambar berubah tanpa menyentuh satu baris kode.</p>
     </div>
     <div class="card">
-      <h3>Enam tampilan, satu baris</h3>
+      <h3 id="six-looks-one-line">Enam tampilan, satu baris</h3>
       <p><code>GoUi.use_preset()</code> menukar tema, skin, dan ikon sekaligus — bingkai membulat, sci-fi bersudut potong, atau tempaan abad pertengahan.</p>
     </div>
     <div class="card">
-      <h3>Keterbacaan yang terukur</h3>
+      <h3 id="legible-by-measurement">Keterbacaan yang terukur</h3>
       <p>Setiap tema diperiksa terhadap WCAG, termasuk keadaan tombol dan panel HUD tembus pandang di atas putih murni dan hitam murni.</p>
     </div>
   </div>
@@ -176,11 +176,11 @@
   <h2>Instalasi</h2>
   <p class="sub">Letakkan folder add-on ke dalam proyek Anda. Tidak ada lagi yang perlu disiapkan.</p>
 
-  <h3>Dari Asset Store atau ZIP rilis</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">Dari Asset Store atau ZIP rilis</h3>
   <p>Ekstrak ke akar proyek sehingga terbentuk <code>res://addons/gohud/</code>. Itu saja. Bila mau, aktifkan
     <b>Project → Project Settings → Plugins → gohud</b>.</p>
 
-  <h3>Sebagai submodule git</h3>
+  <h3 id="as-a-git-submodule">Sebagai submodule git</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # opsional: kunci ke satu tag atau commit</code></pre>
@@ -198,17 +198,17 @@ git -C addons/gohud checkout v1.0.0   # opsional: kunci ke satu tag atau commit<
   <h2>Mulai cepat</h2>
   <p class="sub">Setiap widget cukup <code>.new()</code> dan <code>add_child()</code> — tanpa file scene, tanpa autoload.</p>
 
-  <h3>Pilih tampilan sebelum membangun UI (opsional)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">Pilih tampilan sebelum membangun UI (opsional)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # default_dark dipakai kalau baris ini dilewati</code></pre>
 
-  <h3>Konfirmasi yang bisa Anda <code>await</code></h3>
+  <h3 id="a-confirmation-you-await">Konfirmasi yang bisa Anda <code>await</code></h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("Hapus simpanan", "Tindakan ini tidak bisa dibatalkan."):
     delete_save()</code></pre>
   <p>Berikan <code>destructive = true</code> (argumen terakhir) dan tombol konfirmasi digambar sebagai tombol bahaya berisi penuh.</p>
 
-  <h3>Lembar bawah dengan kolom pencarian dan footer yang menempel</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Lembar bawah dengan kolom pencarian dan footer yang menempel</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventaris")
@@ -225,7 +225,7 @@ sheet.footer().visible = true</code></pre>
     <code>body</code> dan daftar yang panjang akan mendorongnya keluar layar. <code>footer()</code> selalu terlihat.
   </div>
 
-  <h3>Satu sudut HUD</h3>
+  <h3 id="a-hud-corner">Satu sudut HUD</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -237,7 +237,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>Konten yang menjauh dari HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">Konten yang menjauh dari HUD</h3>
   <pre><code>form.avoid_hud = true                  # menjauh dari setiap GoHudAnchor yang terlihat
 joystick_anchor.reserve_space = false  # …kecuali yang hanya muncul di bawah jari
 notice_anchor.avoid_peers = true       # toast turun ke bawah HUD tetap alih-alih menutupinya</code></pre>
@@ -291,7 +291,7 @@ notice_anchor.avoid_peers = true       # toast turun ke bawah HUD tetap alih-ali
     Sudut tombol, bentuk sakelar, baris daftar, dan garis tepi kolom masukan semuanya berubah bersamaan.
   </p>
 
-  <h3>Koleksi abad pertengahan</h3>
+  <h3 id="medieval-collection">Koleksi abad pertengahan</h3>
   <p>
     <code>medieval_dark</code> memadukan besi dan kulit dengan emas antik; <code>medieval_light</code> memakai perkamen
     dan tinta. Bingkai menu membawa paku keling dan ornamen sudut kecil, sementara HUD yang selalu terlihat tetap tenang;
@@ -310,7 +310,7 @@ notice_anchor.avoid_peers = true       # toast turun ke bawah HUD tetap alih-ali
   <p>Kedua tangkapan layar itu adalah <code>examples/medieval/medieval.tscn</code>, dibangun dari widget standar.
     <a href="theming.html#medieval">Panduan abad pertengahan dan cara membuat kerajaan Anda sendiri →</a></p>
 
-  <h3>Layar yang sama di ponsel dan di desktop</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">Layar yang sama di ponsel dan di desktop</h3>
   <p>
     Tangkapan layar galeri itu ponsel dalam mode potret. Di bawah ini <b>kode yang sama</b> pada 1280×800 — kontennya
     berhenti pada lebar yang nyaman dibaca (480dp) lalu memusat, sementara HUD tetap di sudut-sudut. Formulirnya
@@ -328,7 +328,7 @@ notice_anchor.avoid_peers = true       # toast turun ke bawah HUD tetap alih-ali
     </figure>
   </div>
 
-  <h3>Lembar yang sama, tampilan yang berbeda</h3>
+  <h3 id="the-same-sheet-a-different-look">Lembar yang sama, tampilan yang berbeda</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="Sebuah lembar bawah dalam default_dark" loading="lazy">
@@ -445,24 +445,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # rekaman tur 1080p / 60
     jendela Godot tersendiri — tak perlu menjalankan editor, tak perlu mencari scene.
   </p>
 
-  <h3>Pasang perintahnya sekali saja</h3>
+  <h3 id="install-the-commands-once">Pasang perintahnya sekali saja</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # lalu jalankan ulang Claude Code</code></pre>
   <p>Agen lain seperti Codex bisa memakai skill yang sama: salin <code>skills/gohud</code> dari repositori ini ke
     folder skill agen tersebut.</p>
 
-  <h3><code>/gohud:preview</code> — galeri widget</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — galeri widget</h3>
   <p>Membuka galeri: setiap widget, pemilih untuk keenam preset, dan set ikon lengkap. Ketik di dalam proyek Godot
     Anda dan ia memakai yang <b>milik Anda sendiri</b> di <code>addons/gohud</code>; bila tidak ada, ia memakai salinan bawaan plugin,
     atau klon yang baru. Ia berjalan di proyek kotak pasir sekali pakai, sehingga autoload dan cache impor Anda tidak
     terganggu, dan jendelanya tetap terbuka sampai Anda menutupnya.</p>
 
-  <h3><code>/gohud:preview demo</code> — tur berpemandu 15 bab</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — tur berpemandu 15 bab</h3>
   <p>Membuka demo pada layar awalnya. <b>Mulai demo</b> memainkan tur dengan input sungguhan; <b>Jelajahi widget</b>
     membiarkan Anda mencoba satu widget secara manual. Tombol-tombol yang tercantum di <a href="#examples">Contoh</a> berlaku juga di sini.</p>
 
-  <h3>Banyak perintah lainnya</h3>
+  <h3 id="many-other-commands">Banyak perintah lainnya</h3>
   <table>
     <thead><tr><th>Perintah</th><th>Fungsinya</th></tr></thead>
     <tbody>
@@ -527,14 +527,14 @@ claude plugin install gohud@gohud
     termasuk dalam jalan uji ini.
   </div>
 
-  <h3>Versi rilis</h3>
+  <h3 id="release-versions">Versi rilis</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>Jalan yang berhasil memperbarui <code>plugin.cfg</code>, <code>GoUi.VERSION</code>, dan <code>CHANGELOG.md</code>
     sekaligus, memindahkan catatan Unreleased menjadi entri bertanggal. Jalan yang gagal tidak mengubah apa pun, dan ZIP
     yang sudah ada tidak pernah ditimpa. ZIP-nya tidak menyertakan situs web ini, berkas uji, dan tools.</p>
 
-  <h3>Situs ini</h3>
+  <h3 id="this-site">Situs ini</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # glosarium dan tabel kenop skin, dibuat dari kode sumber
 python3 addons/gohud/tools/check_site.py           # tautan, jangkar, bahasa, glosarium, tabel hasil generasi
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # tangkapan layar desktop dan ponsel untuk setiap halaman</code></pre>
@@ -556,5 +556,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # tangkapan layar desktop dan
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

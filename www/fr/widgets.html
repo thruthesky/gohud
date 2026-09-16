@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>Fenêtres flottantes</h2>
 
-  <h3><code>GoSurface</code> — la coque</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — la coque</h3>
   <p>Les fenêtres surgissantes, les feuilles et les listes déroulantes passent toutes par elle. Elle gère la zone
     sûre, le clavier virtuel, l'en-tête et le pied fixes, un corps défilant, la fenêtre qui est au premier plan,
     la restauration du focus, la propriété du bouton Retour et le redimensionnement par glissement.</p>
@@ -103,7 +103,7 @@
     fermer, ou abandonner).
   </div>
 
-  <h3><code>GoSheet</code> — une page venue du bas</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — une page venue du bas</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventaire")
@@ -115,7 +115,7 @@ sheet.footer().visible = true</code></pre>
     <code>open()</code> vide le corps et <b>désactive</b> le bouton Retour et les rangées fixes — un bouton mort
     sur un écran d'où l'on ne peut revenir nulle part se lit comme une panne.</p>
 
-  <h3><code>GoDialogs</code> — des confirmations que vous <code>await</code></h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — des confirmations que vous <code>await</code></h3>
   <pre><code>if await dialogs.confirm("Supprimer la sauvegarde", "Cette action est irréversible."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — tout ce qui suit le corps
@@ -135,14 +135,14 @@ sheet.footer().visible = true</code></pre>
     <code>set_next_action_layout()</code> avant de l'ouvrir. La rangée est construite à la première ouverture : un
     <code>GoDialogs</code> chargé en autoload n'ajoute donc rien au démarrage.</p>
 
-  <h3><code>GoForm</code> — un formulaire à largeur plafonnée</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — un formulaire à largeur plafonnée</h3>
   <div class="note warn">
     <b>Il garantit le retour à la ligne des libellés qu'il contient.</b> Sans cela, une longue phrase s'étire sur
     une seule ligne dont la largeur minimale dépasse l'écran, et les côtés sont rognés — on ne peut même plus dire
     sur quel écran on se trouve. Activer le retour à la ligne à la main, scène par scène, s'oublie à tous les coups.
   </div>
 
-  <h3><code>GoScroll</code> — le défilement tactile</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — le défilement tactile</h3>
   <p>Mettez-y <b>une seule</b> chose. Les en-têtes et les rangées de boutons se placent à l'extérieur — une longue
     liste ne doit pas les pousser hors de l'écran. <code>use_panel_edge()</code> déplace la barre de défilement
     dans la marge intérieure existante de la carte tandis que le contenu garde son retrait.</p>
@@ -151,17 +151,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>Dire quelque chose au joueur</h2>
 
-  <h3><code>GoNotice</code> — le snackbar</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — le snackbar</h3>
   <div class="note warn">
     <b>Il n'intercepte jamais la saisie.</b> Un message éphémère se lit, il ne s'appuie pas. Il ne prend pas le
     focus, ne bloque pas les entrées du jeu, et le bouton qui se trouve dessous s'appuie toujours. Quand une
     confirmation est nécessaire, utilisez <code>GoDialogs</code> ; quand c'est un choix, <code>GoPromptCard</code>.
   </div>
 
-  <h3><code>GoPromptCard</code> — une question qui ne bloque pas</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — une question qui ne bloque pas</h3>
   <p>Elle flotte sur un côté, sans voile. Le jeu continue de tourner.</p>
 
-  <h3><code>GoCoachMark</code> — la visite guidée</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — la visite guidée</h3>
   <p>Elle désigne de vraies commandes, une à la fois. Seule la carte capte la saisie : <b>appuyer sur la commande
     mise en avant fait donc avancer la visite</b> — « appuyez ici » devient une action plutôt qu'une phrase.</p>
   <pre><code>tour.start([
@@ -175,7 +175,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>Ce sont les petites choses qui décident si c'est réussi</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">Ce sont les petites choses qui décident si c'est réussi</h3>
   <p>
     Peaufinez les grands panneaux tant que vous voulez — ce qui accroche l'œil est toujours un détail : un mot
     coupé en deux, un halo tronqué, un emplacement à l'étroit. Quatre détails de ce genre ont été signalés le
@@ -216,7 +216,7 @@ sheet.footer().visible = true</code></pre>
     <b>à raison d'un caractère par ligne</b> quand son calcul de largeur se trompe (mesurée à 1 dp de large).
   </p>
 
-  <h4>La carte du repère guidé se tient à l'écart des éléments fixes</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">La carte du repère guidé se tient à l'écart des éléments fixes</h4>
   <p>
     En paysage, la carte était envoyée tout en haut ou tout en bas — exactement là où vivent les en-têtes et les
     éléments de HUD ; dans la démo, elle se posait sur le <code>→ ×</code> de l'en-tête. Elle reste désormais à la
@@ -229,7 +229,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # des éléments fixes qui ne sont pas des ancres</code></pre>
 
-  <h3>Les écrans avec souris et clavier</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Les écrans avec souris et clavier</h3>
   <p>
     Un doigt n'a <b>pas d'état de survol.</b> Développez pour le mobile seul et deux états propres au bureau
     restent non vérifiés — et l'un d'eux était cassé : <b>l'anneau de focus de gohud était invisible sur un bouton
@@ -248,7 +248,7 @@ sheet.footer().visible = true</code></pre>
     indicateurs de focus).
   </p>
 
-  <h3><code>GoHudAnchor</code> — neuf positions</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — neuf positions</h3>
   <p>Il respecte la zone sûre et les marges de bord. Donnez-lui un <code>landscape_spot</code> et il se déplace en
     paysage — des commandes placées en bas au centre en portrait peuvent passer en bas à droite.</p>
   <div class="note">
@@ -257,7 +257,7 @@ sheet.footer().visible = true</code></pre>
     atterrit sur la barre de gestes en paysage. Ce calcul vit en un seul endroit.
   </div>
 
-  <h4>Empêcher le contenu de passer sous le HUD</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">Empêcher le contenu de passer sous le HUD</h4>
   <p>
     Quand un écran défilant partage l'affichage avec un HUD, le contenu glisse <b>en dessous</b> et les deux textes
     se superposent jusqu'à ce qu'aucun ne se lise. C'est arrivé deux fois dans cet add-on : le texte indicatif d'un
@@ -273,7 +273,7 @@ joystick_anchor.reserve_space = false  # …sauf ceux qui n'apparaissent que sou
     soustrait avant de mesurer le rectangle suivant.
   </p>
 
-  <h4>Les éléments de HUD se heurtent aussi entre eux</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">Les éléments de HUD se heurtent aussi entre eux</h4>
   <p>
     Les neuf positions découpent l'écran ; elles ne garantissent pas que les éléments <b>s'évitent</b>. Un snackbar
     large en haut au centre atterrissait en plein sur la barre de vie en haut à droite, masquant la valeur — on ne
@@ -287,7 +287,7 @@ notice_anchor.reserve_space = false   # et ne pousse pas la page tant qu'il est 
     deux cèdent, ils échangent leurs places sans fin.
   </p>
 
-  <h3><code>GoBar</code> — vie, mana, expérience</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — vie, mana, expérience</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "PV"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # le token réservé au remplissage
@@ -296,7 +296,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>reduce_motion</code> les rend instantanées. Les grands nombres s'abrègent en <code>12.3k</code> pour que
     la largeur de la barre ne tressaute pas au gré des chiffres.</p>
 
-  <h3><code>GoSlot</code> — un emplacement rapide</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — un emplacement rapide</h3>
   <p>Icône, quantité, temps de recharge et raccourci sur <b>une seule face</b>. Accrocher des badges autour d'un
     petit cercle donne à chaque emplacement une largeur différente et la rangée se met à onduler.</p>
   <div class="note">
@@ -309,7 +309,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     pas, dans l'ordre de tabulation, entre un utilisateur au clavier et toutes les commandes de réglages.
     Activez-le quand le clavier ou la manette est la seule entrée.</p>
 
-  <h3><code>GoJoystick</code> — le stick virtuel</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — le stick virtuel</h3>
   <table>
     <thead><tr><th>Mode</th><th>Comportement</th></tr></thead>
     <tbody>
@@ -321,7 +321,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p>Le <code>Vector2</code> émis par <code>moved</code> a une longueur de 0 à 1 : vous pouvez le multiplier
     directement par une vitesse ; il ne varie ni avec la taille de l'écran ni avec le DPI.</p>
 
-  <h3><code>GoIconButton</code> — paraît petit, s'appuie grand</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — paraît petit, s'appuie grand</h3>
   <div class="note warn">
     <b>Sûr uniquement tant que ses voisins ignorent la saisie.</b> Si la zone élargie recouvre le bouton suivant,
     ce bouton cesse de répondre. Des boutons d'icône côte à côte réclament <code>touch_peers</code>.
@@ -355,7 +355,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     personnalisée doit survivre.
   </div>
 
-  <h3>Rangées de liste avec une description</h3>
+  <h3 id="list-rows-with-a-description">Rangées de liste avec une description</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Garde-Serment", _inspect, Color.TRANSPARENT,
     "Épée longue  /  Attaque 42", false)</code></pre>
   <p>Une rangée à deux lignes reçoit <b>des marges haute et basse égales</b>, plus généreuses que celles d'une
@@ -367,12 +367,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>Rangées à deux lignes, emplacements et barres dans l'exemple médiéval — les mêmes appels de fabrique sous <code>medieval_light</code>.</figcaption>
   </figure>
 
-  <h3>Rangées qui s'écoulent</h3>
+  <h3 id="flowing-rows">Rangées qui s'écoulent</h3>
   <p>Placez les commandes dans <code>wrap_row</code> à leur <b>largeur naturelle</b>. Si le retour à la ligne reste
     actif, la largeur minimale d'un bouton tombe à presque rien et la rangée dimensionne sa cellule d'après elle —
     le libellé s'effondre à un caractère par ligne. La fabrique vous l'évite.</p>
 
-  <h3>Ne laissez jamais une liste vide rester vide</h3>
+  <h3 id="never-leave-an-empty-list-empty">Ne laissez jamais une liste vide rester vide</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Rien ici pour l'instant"))</code></pre>
   <p>Les gens lisent un écran vide comme <b>une panne</b>.</p>
 </section>
@@ -405,5 +405,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

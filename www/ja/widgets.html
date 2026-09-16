@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>浮かぶウィンドウ</h2>
 
-  <h3><code>GoSurface</code> — 外殻</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — 外殻</h3>
   <p>ポップアップもシートもドロップダウンも、すべてこれ1つを使う。セーフエリア、仮想キーボード、
     固定ヘッダーとフッター、スクロールする本文、どのウィンドウが最前面か、フォーカスの復帰、
     戻るボタンの所有権、ドラッグでのサイズ変更まで面倒をみる。</p>
@@ -102,7 +102,7 @@
     外殻には<i>なぜ</i>閉じようとしているのか（保存して閉じるのか、破棄するのか）が分からないからである。
   </div>
 
-  <h3><code>GoSheet</code> — 下から出るページ</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — 下から出るページ</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("インベントリ")
@@ -114,7 +114,7 @@ sheet.footer().visible = true</code></pre>
     戻るボタンと固定行を<b>いったん無効にする</b> — 戻る先のない画面で死んだボタンが見えていると、
     壊れているように読めるからだ。</p>
 
-  <h3><code>GoDialogs</code> — <code>await</code> で受け取る確認</h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — <code>await</code> で受け取る確認</h3>
   <pre><code>if await dialogs.confirm("セーブデータの削除", "元に戻せません。"):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — 本文より後ろはすべて省略でき、
@@ -131,14 +131,14 @@ sheet.footer().visible = true</code></pre>
     ボタンの行は最初にダイアログを開いたときに組み立てられるので、オートロードした <code>GoDialogs</code> でも
     起動時のコストはない。</p>
 
-  <h3><code>GoForm</code> — 幅に上限のあるフォーム</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — 幅に上限のあるフォーム</h3>
   <div class="note warn">
     <b>配下のラベルが必ず折り返すことを保証する。</b> これがないと、長い一文が1行に伸びて最小幅が画面を超え、
     左右が切れる — 自分がどの画面にいるのかすら分からなくなる。シーンごとに手で折り返しを有効にする方法は、
     毎回必ず忘れられる。
   </div>
 
-  <h3><code>GoScroll</code> — タッチでのスクロール</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — タッチでのスクロール</h3>
   <p>中に入れるのは<b>1つ</b>だけにする。見出しやボタンの行は外側だ — 長いリストがそれらを画面外へ
     押し出してはならない。<code>use_panel_edge()</code> は、中身のインデントを保ったまま
     スクロールバーをカードの既存の余白へ移す。</p>
@@ -147,17 +147,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>プレイヤーに何かを伝える</h2>
 
-  <h3><code>GoNotice</code> — スナックバー</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — スナックバー</h3>
   <div class="note warn">
     <b>入力を横取りしない。</b> 通知は読むものであって、押すものではない。フォーカスを取らず、ゲームの入力も
     塞がず、その下のボタンはそのまま押せる。確認が要るなら <code>GoDialogs</code>、選択が要るなら
     <code>GoPromptCard</code> を使う。
   </div>
 
-  <h3><code>GoPromptCard</code> — 画面を塞がない問いかけ</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — 画面を塞がない問いかけ</h3>
   <p>幕を張らずに片側へ浮かぶ。ゲームは動き続ける。</p>
 
-  <h3><code>GoCoachMark</code> — ガイドツアー</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — ガイドツアー</h3>
   <p>実物のコントロールを1つずつ指し示す。入力を受けるのはカードだけなので、<b>強調されたコントロールを
     押すこと自体がツアーを進める</b> — 「ここを押してください」が文章ではなく操作になる。</p>
   <pre><code>tour.start([
@@ -171,7 +171,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>出来を決めるのは小さなところだ</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">出来を決めるのは小さなところだ</h3>
   <p>
     大きなパネルをいくら磨いても、目に留まるのはいつも小さなものだ — 途中で切れた単語、欠けた発光、
     窮屈なスロット。2026-09-13 にそうした4つが指摘され、デモ画面ではなくウィジェットとテーマの側で直した。
@@ -211,7 +211,7 @@ sheet.footer().visible = true</code></pre>
     （幅 1dp と実測された）。
   </p>
 
-  <h4>コーチマークのカードは固定物を避ける</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">コーチマークのカードは固定物を避ける</h4>
   <p>
     横持ちでは、カードが画面のいちばん上か下の端へ送られていた — ヘッダーや HUD がちょうど居座る場所だ。
     デモではヘッダーの <code>→ ×</code> の上に重なっていた。いまは対象と同じ高さにとどまり、場所を確保している
@@ -222,7 +222,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # アンカーではない固定物</code></pre>
 
-  <h3>マウスとキーボードのある画面</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">マウスとキーボードのある画面</h3>
   <p>
     指には<b>ホバー状態がない。</b> モバイルだけを見て作ると、デスクトップにしかない2つの状態が未確認のまま残る —
     そして実際、片方は壊れていた。gohud の<b>フォーカスリングが主ボタンの上で見えなかった</b>のだ。パネルが
@@ -240,7 +240,7 @@ sheet.footer().visible = true</code></pre>
     パレットを変えてもこの規則は生き残る（WCAG 2.4.11 はフォーカス表示に 3:1 を求めている）。
   </p>
 
-  <h3><code>GoHudAnchor</code> — 9か所</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 9か所</h3>
   <p>セーフエリアと画面端の余白を尊重する。<code>landscape_spot</code> を与えれば横持ちで移動する —
     縦持ちで下中央にあるコントロールを、横持ちでは右下へ回せる。</p>
   <div class="note">
@@ -248,7 +248,7 @@ sheet.footer().visible = true</code></pre>
     カメラの切り欠きの下に入り、横持ちでは操作ボタンがジェスチャーバーの上に載る。その算術を1か所に集めてある。
   </div>
 
-  <h4>本文を HUD の下に潜り込ませない</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">本文を HUD の下に潜り込ませない</h4>
   <p>
     スクロールする画面が HUD と同じ表示面を分け合うと、本文はその<b>下へ</b>滑り込み、2組の文字が重なって
     どちらも読めなくなる。このアドオンでも2度起きた。入力欄のプレースホルダーがクイックスロットの間から
@@ -262,7 +262,7 @@ joystick_anchor.reserve_space = false  # …指が触れたときだけ現れる
     すでに明け渡した領域は、次の矩形を測る前に差し引かれる。
   </p>
 
-  <h4>HUD どうしもぶつかる</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD どうしもぶつかる</h4>
   <p>
     9か所は画面を分割するだけで、部品どうしが<b>ぶつからない</b>ことまでは保証しない。上中央の幅広い
     スナックバーが、右上の体力バーの真上に着地して値を隠した — 残り体力が読めなかったのだ。
@@ -274,7 +274,7 @@ notice_anchor.reserve_space = false   # 出ている間にページを押しの�
     しかも、避けるのは<b>自分からはよけない</b>部品に対してだけだ。両方が譲ると、2つは永遠に場所を入れ替え続ける。
   </p>
 
-  <h3><code>GoBar</code> — 体力・マナ・経験値</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 体力・マナ・経験値</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 塗り専用のトークン
@@ -283,7 +283,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>reduce_motion</code> にすれば即座に反映する。大きな数は <code>12.3k</code> のように略記するので、
     桁が増減してもバーの幅が揺れない。</p>
 
-  <h3><code>GoSlot</code> — クイックスロット1つ</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — クイックスロット1つ</h3>
   <p>アイコン、個数、クールダウン、ショートカットを<b>1つの面</b>に収める。小さな円にバッジをぶら下げると、
     スロットごとに幅が変わって列が揺れてしまう。</p>
   <div class="note">
@@ -294,7 +294,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>keyboard_focus</code> は既定で無効だ。8個並んだスロットが、キーボード利用者と設定項目すべての間に
     Tab 順で割り込まないようにするためである。キーボードやゲームパッドが唯一の入力手段なら有効にする。</p>
 
-  <h3><code>GoJoystick</code> — バーチャルスティック</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — バーチャルスティック</h3>
   <table>
     <thead><tr><th>モード</th><th>ふるまい</th></tr></thead>
     <tbody>
@@ -306,7 +306,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p><code>moved</code> が渡す <code>Vector2</code> は長さ 0〜1 なので、そのまま速度に掛けられる。
     画面サイズや DPI で変わることもない。</p>
 
-  <h3><code>GoIconButton</code> — 小さく見えて大きく押せる</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 小さく見えて大きく押せる</h3>
   <div class="note warn">
     <b>安全なのは、隣が入力を受け取らないときだけだ。</b> 広げた領域が隣のボタンに重なると、そのボタンは
     反応しなくなる。並べて置くアイコンボタンには <code>touch_peers</code> が要る。
@@ -339,7 +339,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>surface()</code> を使う。
   </div>
 
-  <h3>説明の付いたリスト行</h3>
+  <h3 id="list-rows-with-a-description">説明の付いたリスト行</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "誓いの剣", _inspect, Color.TRANSPARENT,
     "ロングソード  /  攻撃力 42", false)</code></pre>
   <p>2行目のある行は<b>上下の余白が等しく</b>なり、1行の行より広めにとられる。タイトルと説明の組は
@@ -350,12 +350,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>中世サンプルの2行リスト、スロット、バー — <code>medieval_light</code> の下での、同じファクトリ呼び出し。</figcaption>
   </figure>
 
-  <h3>折り返して流れる行</h3>
+  <h3 id="flowing-rows">折り返して流れる行</h3>
   <p>コントロールは<b>自然な幅</b>のまま <code>wrap_row</code> に入れる。折り返しを有効にしたままだと、
     ボタンの最小幅はほとんど 0 まで落ち、行はその値でセルの大きさを決めてしまう — ラベルが1文字ずつ改行される。
     ファクトリがこれを防いでくれる。</p>
 
-  <h3>空のリストを空のまま見せない</h3>
+  <h3 id="never-leave-an-empty-list-empty">空のリストを空のまま見せない</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "まだ何もない"))</code></pre>
   <p>人は何もない画面を<b>壊れている</b>と読む。</p>
 </section>
@@ -387,5 +387,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

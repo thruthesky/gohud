@@ -120,12 +120,12 @@
   <p>هذا السطر وحده يبدّل السمة والمظهر والأيقونات. ومن المحرّر استعمل
     <b>Project Settings → Gohud → Theme → Preset</b>؛ ومن مورد إعدادات، <code>GoConfig.preset</code>.</p>
 
-  <h3>إبقاء حقل واحد على اختيارك</h3>
+  <h3 id="keeping-one-field-your-own">إبقاء حقل واحد على اختيارك</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 GoUi.config.icons = my_icons     # أيقوناتك أنت، وكل ما عداها من النمط الجاهز</code></pre>
   <p>ضبط <code>theme</code> أو <code>skin</code> أو <code>icons</code> صراحةً <b>يغلب</b> النمط الجاهز.</p>
 
-  <h3>الأنماط الجاهزة الستة المدمجة</h3>
+  <h3 id="the-six-built-in-presets">الأنماط الجاهزة الستة المدمجة</h3>
   <table>
     <thead><tr><th>النمط الجاهز</th><th>اللوحات</th><th>المظهر · الأيقونات</th></tr></thead>
     <tbody>
@@ -167,7 +167,7 @@ GoUi.config.icons = my_icons     # أيقوناتك أنت، وكل ما عدا�
     وأن الأيقونات المحفورة تُستورد بصيغة <code>DPITexture</code>؛ وأن خانة سريعة حقيقية تستعمل المظهر؛ وأن تغيير
     مقابض نسخة من المظهر يصل إلى الخانة دون المساس بالنمط الجاهز؛ وأن الرجوع يعيد هندسة النمط الافتراضي والخيال العلمي.
   </div>
-  <h3>اصنع مملكتك أنت</h3>
+  <h3 id="make-a-kingdom-of-your-own">اصنع مملكتك أنت</h3>
   <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
 # عدّل themes/palettes/kingdom.json، ثم:
 python3 addons/gohud/tools/make_theme.py kingdom
@@ -197,7 +197,7 @@ GoUi.metric(GoTheme.GAP)               # مقاس (dp)
 GoUi.font_size(GoTheme.ROLE_CAPTION)   # حجم دور نصّي
 GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
 
-  <h3>الألوان</h3>
+  <h3 id="colours">الألوان</h3>
   <table>
     <thead><tr><th>الاسم</th><th>يُستعمل لـ</th></tr></thead>
     <tbody>
@@ -220,7 +220,7 @@ GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
     هذه التوكنات عاملة.
   </div>
 
-  <h3>المقاسات (dp)</h3>
+  <h3 id="measurements-dp">المقاسات (dp)</h3>
   <p>
     <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
     <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
@@ -230,14 +230,14 @@ GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
     <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
   </p>
 
-  <h3>أدوار النص</h3>
+  <h3 id="text-roles">أدوار النص</h3>
   <p>
     <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
     <code>button</code> · <code>subtitle</code> · <code>title</code> — الدور يسمّي <b>حجمًا</b> لا
     غرضًا. "أكبر نص"، لا "العنوان". وبذلك يصمد السلّم حتى لو استعملته شاشة لشيء آخر.
   </p>
 
-  <h3>تنويعات النوع</h3>
+  <h3 id="type-variations">تنويعات النوع</h3>
   <p>
     <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
     <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
@@ -273,7 +273,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
     canvas.draw_circle(center, radius, Color(base, 0.4))
     canvas.draw_circle(knob, knob_radius, ink)</code></pre>
 
-  <h3>أشكال لا يستطيع StyleBoxFlat صنعها</h3>
+  <h3 id="shapes-styleboxflat-cannot-make">أشكال لا يستطيع StyleBoxFlat صنعها</h3>
   <table>
     <thead><tr><th>الصنف</th><th>ما الذي يرسمه</th></tr></thead>
     <tbody>
@@ -308,7 +308,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
     <code>themes/presets/</code>، فلا تتغير أي شيفرة تسجيل — وقائمة إعداد المشروع المنسدلة تلتقطها كذلك.
   </p>
 
-  <h3>ما الذي تستطيع تغييره — في صفحة واحدة</h3>
+  <h3 id="what-you-can-change-on-one-page">ما الذي تستطيع تغييره — في صفحة واحدة</h3>
   <table>
     <thead><tr><th>أين</th><th>ماذا</th><th>كيف</th></tr></thead>
     <tbody>
@@ -327,7 +327,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
     </tbody>
   </table>
 
-  <h3>كل مقبض</h3>
+  <h3 id="every-dial">كل مقبض</h3>
   <p>
     الجدول أدناه يملؤه <code>tools/make_site.py</code> <b>مباشرةً من أسطر</b> <code>@export</code>
     في سكربتات المظاهر — أضف مقبضًا أو غيّر قيمة افتراضية فيتبعه الجدول. استعمل هذه الأسماء تحت
@@ -336,7 +336,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
   </p>
   <!-- dials:begin -->
   <div class="dials">
-  <h4>المظهر الافتراضي <code>GoSkin</code> — 17</h4>
+  <h4 id="default-skin-goskin-17">المظهر الافتراضي <code>GoSkin</code> — 17</h4>
   <table>
     <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
     <tbody>
@@ -359,7 +359,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
       <tr><td><code>joystick_ring_width</code></td><td data-label="الافتراضي">2.0</td><td>عرض حلقة عصا التوجيه (dp).</td></tr>
     </tbody>
   </table>
-  <h4>مظهر الخيال العلمي <code>GoSkinSciFi</code> — 10</h4>
+  <h4 id="sci-fi-skin-goskinscifi-10">مظهر الخيال العلمي <code>GoSkinSciFi</code> — 10</h4>
   <table>
     <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
     <tbody>
@@ -375,7 +375,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
       <tr><td><code>bracket_thickness</code></td><td data-label="الافتراضي">2.0</td><td>سماكة خط (dp) قوس التصويب في العلامة الإرشادية.</td></tr>
     </tbody>
   </table>
-  <h4>مظهر العصور الوسطى <code>GoSkinMedieval</code> — 5</h4>
+  <h4 id="medieval-skin-goskinmedieval-5">مظهر العصور الوسطى <code>GoSkinMedieval</code> — 5</h4>
   <table>
     <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
     <tbody>
@@ -389,7 +389,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
   </div>
   <!-- dials:end -->
 
-  <h3>اشتقّ المظهر (اختياري)</h3>
+  <h3 id="subclass-the-skin-optional">اشتقّ المظهر (اختياري)</h3>
   <p>لا يعيش في المظهر إلا ما لا تصله السمة ولا الشكل — سداسية عصا التوجيه، وشارات الخانات، وقوس التصويب
     في العلامة الإرشادية. اشتقّ من <code>GoSkin</code>، وتجاوز تلك الدوال وحدها، ثم وجّه مفتاح <code>skin</code>
     في ملف JSON إلى ذلك المورد. أما السمة التي تغيّر الألوان وحدها فتتخطى هذه الخطوة.</p>
@@ -423,7 +423,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
     </tbody>
   </table>
 
-  <h3>نصّ بدرجة لون فوق صبغة بالدرجة نفسها</h3>
+  <h3 id="same-hue-text-on-a-same-hue-tint">نصّ بدرجة لون فوق صبغة بالدرجة نفسها</h3>
   <p>
     ظهر هذا المزلق <b>ثلاث مرات</b> في هذه الشيفرة — الأزرار المضغوطة (لوحة بلون التمييز ونصّ بلون التمييز)،
     وأزرار الخطر، والشرائح. يبدو جميلًا في عيّنة لون وينهار لحظة قياسه، لأن الاثنين يتشاركان الدرجة نفسها
@@ -435,7 +435,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
     والتشبّع على حالهما، فتحتفظ لوحة الألوان بشخصيتها ويحتفظ تغييرها بتباينها.
   </p>
 
-  <h3>اللون المقروء نصًّا واللون المرسوم مساحةً يريدان شيئين متضادّين</h3>
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">اللون المقروء نصًّا واللون المرسوم مساحةً يريدان شيئين متضادّين</h3>
   <p>
     في سمة فاتحة، يضطر لون التحذير إلى الدكانة ليبقى مقروءًا <b>نصًّا</b> (<code>#96500A</code>).
     وحين ترث تعبئة الشريط ذلك اللون، يصير شريط الخبرة <b>بنيًّا</b>. واللون وحده لا يصلح الأمر:
@@ -457,7 +457,7 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
     <code>warning_vivid</code> إلى لوحة الألوان). موضعٌ كان يتدهور بصمت صار يصرّح بذلك.
   </div>
 
-  <h3>اللوحة العائمة لا تعرف ما وراءها</h3>
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">اللوحة العائمة لا تعرف ما وراءها</h3>
   <p>
     يُرسم HUD <b>فوق</b> اللعبة — فوق حقل ثلجي، أو داخل كهف. فإن كانت لوحته نصف شفافة، نفذ إليها ما خلفها
     و<b>غيّر لون اللوحة</b>، فهبط معه تباين النص. فعند عتامة 82% نزل النص الخافت في السمات الداكنة إلى
@@ -490,5 +490,6 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

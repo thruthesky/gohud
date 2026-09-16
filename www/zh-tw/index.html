@@ -132,35 +132,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>每個尺寸都是一個 token</h3>
+      <h3 id="every-measurement-is-a-token">每個尺寸都是一個 token</h3>
       <p>間距、圓角與文字大小都用名稱呼叫，不寫死成數字。換一份佈景主題，整個畫面就跟著動。</p>
     </div>
     <div class="card">
-      <h3>看得到的尺寸 ≠ 按得到的尺寸</h3>
+      <h3 id="visible-size-pressable-size">看得到的尺寸 ≠ 按得到的尺寸</h3>
       <p>關閉按鈕看起來是 36dp，觸控範圍卻是 48dp。快捷格擠在一起而互相重疊時，中心比較近的那一個接下這次按壓。</p>
     </div>
     <div class="card">
-      <h3>瀏海與鍵盤</h3>
+      <h3 id="notches-and-keyboards">瀏海與鍵盤</h3>
       <p>HUD 零件待在安全區域內，虛擬鍵盤跳出來時輸入欄會升到它上面。</p>
     </div>
     <div class="card">
-      <h3>返回一次只關一層</h3>
+      <h3 id="back-closes-one-thing">返回一次只關一層</h3>
       <p>Escape 與 Android 的返回鍵<b>只關掉最上層那一層介面</b>。疊在一起的視窗不會一起消失。</p>
     </div>
     <div class="card">
-      <h3>訊息條不會搶走輸入</h3>
+      <h3 id="notices-never-steal-input">訊息條不會搶走輸入</h3>
       <p>按在訊息條上，底下的按鈕照樣收得到。焦點也不會被拿走。</p>
     </div>
     <div class="card">
-      <h3>圖示按名稱索取</h3>
+      <h3 id="icons-are-asked-for-by-name">圖示按名稱索取</h3>
       <p>控制項只認得 <code>GoIconSet.CLOSE</code>。換掉整組圖示，所有圖案都跟著換，一行程式碼都不必動。</p>
     </div>
     <div class="card">
-      <h3>六種外觀，一行切換</h3>
+      <h3 id="six-looks-one-line">六種外觀，一行切換</h3>
       <p><code>GoUi.use_preset()</code> 一次換掉佈景主題、外觀與圖示 — 圓角、切角的科幻，或鍛造的中世紀框。</p>
     </div>
     <div class="card">
-      <h3>清晰度是量出來的</h3>
+      <h3 id="legible-by-measurement">清晰度是量出來的</h3>
       <p>每一份佈景主題都對照 WCAG 檢查過，包含按鈕的各種狀態，以及半透明 HUD 面板疊在純白與純黑上的情形。</p>
     </div>
   </div>
@@ -175,11 +175,11 @@
   <h2>安裝</h2>
   <p class="sub">把附加元件資料夾放進你的專案，沒有別的要設定。</p>
 
-  <h3>從 Asset Store 或發行 ZIP 安裝</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">從 Asset Store 或發行 ZIP 安裝</h3>
   <p>解壓縮到專案根目錄，讓路徑成為 <code>res://addons/gohud/</code>。這樣就好。也可以順便啟用
     <b>專案 → 專案設定 → 外掛程式 → gohud</b>。</p>
 
-  <h3>以 git 子模組安裝</h3>
+  <h3 id="as-a-git-submodule">以 git 子模組安裝</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # 選用：固定在某個標籤或提交</code></pre>
@@ -197,17 +197,17 @@ git -C addons/gohud checkout v1.0.0   # 選用：固定在某個標籤或提交<
   <h2>快速上手</h2>
   <p class="sub">每個控制項都是 <code>.new()</code> 加 <code>add_child()</code> — 不用場景檔，也不用自動載入。</p>
 
-  <h3>組 UI 之前先挑外觀（選用）</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">組 UI 之前先挑外觀（選用）</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 略過這行時會使用 default_dark</code></pre>
 
-  <h3>用 <code>await</code> 接的確認對話方塊</h3>
+  <h3 id="a-confirmation-you-await">用 <code>await</code> 接的確認對話方塊</h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("刪除存檔", "此動作無法復原。"):
     delete_save()</code></pre>
   <p>把最後一個引數 <code>destructive = true</code> 傳進去，確認按鈕就會畫成實心的危險按鈕。</p>
 
-  <h3>帶固定搜尋欄與頁尾的底部面板</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">帶固定搜尋欄與頁尾的底部面板</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("背包")
@@ -224,7 +224,7 @@ sheet.footer().visible = true</code></pre>
     <code>body</code>，清單一長就把它們推出畫面。<code>footer()</code> 永遠看得見。
   </div>
 
-  <h3>HUD 的一角</h3>
+  <h3 id="a-hud-corner">HUD 的一角</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -236,7 +236,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>讓內容避開 HUD</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">讓內容避開 HUD</h3>
   <pre><code>form.avoid_hud = true                  # 避開每一個顯示中的 GoHudAnchor
 joystick_anchor.reserve_space = false  # …但只在手指底下才出現的那些除外
 notice_anchor.avoid_peers = true       # 提示訊息落在固定 HUD 下方，而不是蓋住它</code></pre>
@@ -290,7 +290,7 @@ notice_anchor.avoid_peers = true       # 提示訊息落在固定 HUD 下方，�
     按鈕圓角、切換開關的形狀、清單列與輸入框邊框全都一起改變。
   </p>
 
-  <h3>中世紀系列</h3>
+  <h3 id="medieval-collection">中世紀系列</h3>
   <p>
     <code>medieval_dark</code> 把鐵與皮革配上古金色；<code>medieval_light</code> 用的是羊皮紙
     與墨水。選單框上有一顆鉚釘和一小塊角落裝飾，而始終顯示的 HUD 保持安靜；
@@ -309,7 +309,7 @@ notice_anchor.avoid_peers = true       # 提示訊息落在固定 HUD 下方，�
   <p>兩張圖都是 <code>examples/medieval/medieval.tscn</code>，全部用標準控制項組成。
     <a href="theming.html#medieval">中世紀指南，以及怎麼打造自己的王國 →</a></p>
 
-  <h3>同一個畫面，在手機與在桌機</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">同一個畫面，在手機與在桌機</h3>
   <p>
     藝廊那幾張是直向手機。下面是<b>同樣的程式碼</b>跑在 1280×800 — 內容停在好讀的寬度（480dp）
     並置中，HUD 則待在角落。表單會繞開浮動的 HUD 零件，但<b>在本來就沒擋到時不會移動</b>：
@@ -326,7 +326,7 @@ notice_anchor.avoid_peers = true       # 提示訊息落在固定 HUD 下方，�
     </figure>
   </div>
 
-  <h3>同一個面板，不同外觀</h3>
+  <h3 id="the-same-sheet-a-different-look">同一個面板，不同外觀</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="default_dark 下的底部面板" loading="lazy">
@@ -443,24 +443,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 以 1080p / 60 fps 錄
     視窗裡 — 不必先開編輯器，也不必去找場景。
   </p>
 
-  <h3>指令只要安裝一次</h3>
+  <h3 id="install-the-commands-once">指令只要安裝一次</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # 然後重新啟動 Claude Code</code></pre>
   <p>Codex 之類的其他代理也能用同一份技能：把這個版本庫裡的 <code>skills/gohud</code> 複製到
     該代理的技能資料夾即可。</p>
 
-  <h3><code>/gohud:preview</code> — 控制項藝廊</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — 控制項藝廊</h3>
   <p>打開藝廊：每一個控制項、可挑選全部六種預設集的選擇器，以及完整圖示組。在你的 Godot
     專案裡輸入它，用的就是<b>你自己的</b> <code>addons/gohud</code>；不在專案裡的話，就用外掛內附的
     那一份，或重新複製一份。它跑在一個用完即丟的沙箱專案裡，所以不會動到你的自動載入與匯入快取，
     視窗則會一直開著，直到你關掉為止。</p>
 
-  <h3><code>/gohud:preview demo</code> — 15 章導覽</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15 章導覽</h3>
   <p>把示範開在起始畫面。<b>開始示範</b>會以真實輸入播放整段導覽；<b>探索控制項</b>
     讓你親手試玩單一控制項。<a href="#examples">範例</a>那一節列出的按鍵在這裡同樣有效。</p>
 
-  <h3>其他許多指令</h3>
+  <h3 id="many-other-commands">其他許多指令</h3>
   <table>
     <thead><tr><th>指令</th><th>作用</th></tr></thead>
     <tbody>
@@ -524,14 +524,14 @@ claude plugin install gohud@gohud
     不在這次執行的範圍內。
   </div>
 
-  <h3>發行版本</h3>
+  <h3 id="release-versions">發行版本</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>成功執行時會一起更新 <code>plugin.cfg</code>、<code>GoUi.VERSION</code> 與 <code>CHANGELOG.md</code>，
     把 Unreleased 的內容搬進一筆有日期的紀錄。執行失敗則什麼都不改，既有的 ZIP 也絕不會被蓋掉。
     ZIP 裡不含這個網站、測試與工具。</p>
 
-  <h3>這個網站</h3>
+  <h3 id="this-site">這個網站</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # 詞彙表與外觀旋鈕表格，從原始碼產生
 python3 addons/gohud/tools/check_site.py           # 連結、錨點、語言、詞彙表、產生的表格
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # 每一頁的桌機與手機螢幕截圖</code></pre>
@@ -553,5 +553,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # 每一頁的桌機與手機
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

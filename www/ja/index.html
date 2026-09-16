@@ -132,35 +132,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>寸法はすべてトークン</h3>
+      <h3 id="every-measurement-is-a-token">寸法はすべてトークン</h3>
       <p>余白・角・文字サイズは数値で書かず名前で呼ぶ。テーマを差し替えれば画面全体がまとめて動く。</p>
     </div>
     <div class="card">
-      <h3>見える大きさ ≠ 押せる大きさ</h3>
+      <h3 id="visible-size-pressable-size">見える大きさ ≠ 押せる大きさ</h3>
       <p>閉じるボタンは 36dp に見えてタッチターゲットは 48dp。スロットが密集して重なる場所は、中心が近いほうが押下を取る。</p>
     </div>
     <div class="card">
-      <h3>ノッチとキーボード</h3>
+      <h3 id="notches-and-keyboards">ノッチとキーボード</h3>
       <p>HUD はセーフエリアの内側に収まり、仮想キーボードが出れば入力欄がその上へ持ち上がる。</p>
     </div>
     <div class="card">
-      <h3>戻るは1枚だけ閉じる</h3>
+      <h3 id="back-closes-one-thing">戻るは1枚だけ閉じる</h3>
       <p>Escape と Android の戻るは<b>最前面の1枚だけ</b>を閉じる。重ねたウィンドウがまとめて消えない。</p>
     </div>
     <div class="card">
-      <h3>通知は入力を奪わない</h3>
+      <h3 id="notices-never-steal-input">通知は入力を奪わない</h3>
       <p>スナックバーの上を押しても、その下のボタンが反応する。フォーカスも奪わない。</p>
     </div>
     <div class="card">
-      <h3>アイコンは名前で頼む</h3>
+      <h3 id="icons-are-asked-for-by-name">アイコンは名前で頼む</h3>
       <p>ウィジェットが知っているのは <code>GoIconSet.CLOSE</code> だけ。セットを差し替えればコードに触れずに絵が変わる。</p>
     </div>
     <div class="card">
-      <h3>6つの見た目、1行</h3>
+      <h3 id="six-looks-one-line">6つの見た目、1行</h3>
       <p><code>GoUi.use_preset()</code> がテーマ・スキン・アイコンをまとめて入れ替える — 丸み、面取りの SF、鍛造した中世の枠。</p>
     </div>
     <div class="card">
-      <h3>読めるかどうかは測る</h3>
+      <h3 id="legible-by-measurement">読めるかどうかは測る</h3>
       <p>どのテーマも WCAG で測ってある。ボタンの状態ごとのラベルも、純白・純黒の上に載る半透明 HUD パネルも含めて。</p>
     </div>
   </div>
@@ -175,11 +175,11 @@
   <h2>インストール</h2>
   <p class="sub">アドオンのフォルダをプロジェクトに置くだけでよい。ほかに準備はない。</p>
 
-  <h3>アセットストアまたは配布 ZIP から</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">アセットストアまたは配布 ZIP から</h3>
   <p>プロジェクトのルートに展開して <code>res://addons/gohud/</code> になるようにする。それだけだ。必要なら
     <b>プロジェクト → プロジェクト設定 → プラグイン → gohud</b> を有効にする。</p>
 
-  <h3>git サブモジュールとして</h3>
+  <h3 id="as-a-git-submodule">git サブモジュールとして</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # 任意: タグやコミットに固定する</code></pre>
@@ -197,17 +197,17 @@ git -C addons/gohud checkout v1.0.0   # 任意: タグやコミットに固定�
   <h2>クイックスタート</h2>
   <p class="sub">どのウィジェットも <code>.new()</code> して <code>add_child()</code> するだけだ — シーンファイルもオートロードもいらない。</p>
 
-  <h3>UI を組む前に見た目を選ぶ（任意）</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">UI を組む前に見た目を選ぶ（任意）</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 指定しなければ default_dark が使われる</code></pre>
 
-  <h3><code>await</code> で受け取る確認ダイアログ</h3>
+  <h3 id="a-confirmation-you-await"><code>await</code> で受け取る確認ダイアログ</h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("セーブデータの削除", "元に戻せません。"):
     delete_save()</code></pre>
   <p>最後の引数 <code>destructive</code> を <code>true</code> にすると、確認ボタンが塗りつぶしの危険ボタンとして描かれる。</p>
 
-  <h3>検索欄とフッターを固定したボトムシート</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">検索欄とフッターを固定したボトムシート</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("インベントリ")
@@ -224,7 +224,7 @@ sheet.footer().visible = true</code></pre>
     リストが長いだけで画面の外へ押し出される。<code>footer()</code> は常に見えている。
   </div>
 
-  <h3>HUD の隅に体力バーを置く</h3>
+  <h3 id="a-hud-corner">HUD の隅に体力バーを置く</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -236,7 +236,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>本文が HUD を避けるようにする</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">本文が HUD を避けるようにする</h3>
   <pre><code>form.avoid_hud = true                  # 表示中の GoHudAnchor をすべて避ける
 joystick_anchor.reserve_space = false  # …指が触れたときだけ現れるものは除く
 notice_anchor.avoid_peers = true       # トーストは固定 HUD を覆わず、その下に落ち着く</code></pre>
@@ -290,7 +290,7 @@ notice_anchor.avoid_peers = true       # トーストは固定 HUD を覆わず�
     ボタンの角、トグルの形、リストの行、入力欄の枠が、そろって動いているのが分かる。
   </p>
 
-  <h3>中世コレクション</h3>
+  <h3 id="medieval-collection">中世コレクション</h3>
   <p>
     <code>medieval_dark</code> は鉄と革にアンティークゴールドを合わせ、<code>medieval_light</code> は羊皮紙とインクを使う。
     メニューの枠にはリベットと小さな角飾りを置き、常に見えている HUD は静かなままにした。
@@ -309,7 +309,7 @@ notice_anchor.avoid_peers = true       # トーストは固定 HUD を覆わず�
   <p>どちらも標準ウィジェットだけで組んだ <code>examples/medieval/medieval.tscn</code> だ。
     <a href="theming.html#medieval">中世テーマの解説と、自分だけの王国の作り方 →</a></p>
 
-  <h3>同じ画面を、スマートフォンでもデスクトップでも</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">同じ画面を、スマートフォンでもデスクトップでも</h3>
   <p>
     ギャラリーの4枚は縦持ちのスマートフォンだ。下は<b>同じコード</b>を 1280×800 で開いたもので、本文は読みやすい幅
     (480dp) で止まって中央に立ち、HUD は隅に残る。フォームは浮かぶ HUD をよけて回り込むが、
@@ -326,7 +326,7 @@ notice_anchor.avoid_peers = true       # トーストは固定 HUD を覆わず�
     </figure>
   </div>
 
-  <h3>同じシート、違う見た目</h3>
+  <h3 id="the-same-sheet-a-different-look">同じシート、違う見た目</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="default_dark のボトムシート" loading="lazy">
@@ -443,24 +443,24 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # ツアーを 1080p / 6
     Godot のウィンドウで開く — エディタを起動する必要も、シーンを探す必要もない。
   </p>
 
-  <h3>コマンドは一度だけ導入する</h3>
+  <h3 id="install-the-commands-once">コマンドは一度だけ導入する</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # そのあと Claude Code を再起動する</code></pre>
   <p>Codex のような他のエージェントでも同じスキルを使える — このリポジトリの <code>skills/gohud</code> を
     そのエージェントのスキルフォルダにコピーすればよい。</p>
 
-  <h3><code>/gohud:preview</code> — ウィジェットギャラリー</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — ウィジェットギャラリー</h3>
   <p>ギャラリーを開く。すべてのウィジェット、6つのプリセットの選択リスト、アイコン一式が入っている。自分の Godot
     プロジェクトの中で打てば<b>そのプロジェクトの</b> <code>addons/gohud</code> を使い、無ければプラグイン同梱の
     コピーか、新しくクローンしたものを使う。使い捨てのサンドボックスプロジェクトで動くので、自分のオートロードや
     インポートキャッシュには触れず、ウィンドウは閉じるまで開いたままだ。</p>
 
-  <h3><code>/gohud:preview demo</code> — 15章のガイドツアー</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15章のガイドツアー</h3>
   <p>デモを開始画面で開く。<b>Start demo</b> は実際の入力でツアーを再生し、<b>Explore widgets</b> は
     ウィジェット1つを手で試させる。<a href="#examples">サンプル</a>に挙げたキー操作はここでも同じだ。</p>
 
-  <h3>ほかにも多くのコマンドがある</h3>
+  <h3 id="many-other-commands">ほかにも多くのコマンドがある</h3>
   <table>
     <thead><tr><th>コマンド</th><th>役割</th></tr></thead>
     <tbody>
@@ -525,14 +525,14 @@ claude plugin install gohud@gohud
     Web エクスポート成功、6テーマでコントラスト不足は 0。この実行に Godot 4.6 と Android・iOS の実機は含まれていない。
   </div>
 
-  <h3>リリース版を作る</h3>
+  <h3 id="release-versions">リリース版を作る</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>成功すると <code>plugin.cfg</code>・<code>GoUi.VERSION</code>・<code>CHANGELOG.md</code> がまとめて更新され、
     Unreleased の記述が日付付きの項目へ移る。失敗すれば何も変わらず、既存の ZIP を上書きすることもない。
     ZIP にはこのサイトもテストもツールも入らない。</p>
 
-  <h3>このサイト</h3>
+  <h3 id="this-site">このサイト</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # 用語集とスキンのダイヤル表をソースから生成する
 python3 addons/gohud/tools/check_site.py           # リンク・アンカー・言語・用語集・生成された表を検査する
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # 各ページのデスクトップ幅とスマートフォン幅を撮る</code></pre>
@@ -554,5 +554,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # 各ページのデスクト
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

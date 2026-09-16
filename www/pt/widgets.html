@@ -85,7 +85,7 @@
 <section id="surfaces">
   <h2>Janelas flutuantes</h2>
 
-  <h3><code>GoSurface</code> — a casca</h3>
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — a casca</h3>
   <p>Popups, folhas e listas suspensas usam todos este mesmo widget. Ele cuida da área segura, do teclado virtual,
     do cabeçalho e do rodapé fixos, de um corpo rolável, de qual janela está mais acima, da restauração do foco,
     de quem é dono do botão Voltar e do redimensionamento por arraste.</p>
@@ -102,7 +102,7 @@
     tela que é dona dele, porque a casca não tem como saber <i>por que</i> está fechando (salvar e fechar, ou descartar).
   </div>
 
-  <h3><code>GoSheet</code> — uma página vinda de baixo</h3>
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — uma página vinda de baixo</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventário")
@@ -114,7 +114,7 @@ sheet.footer().visible = true</code></pre>
     o corpo e <b>desliga</b> o botão de voltar e as linhas fixas — um botão morto em uma tela que não tem para onde
     voltar passa a impressão de coisa quebrada.</p>
 
-  <h3><code>GoDialogs</code> — confirmações que você aguarda com <code>await</code></h3>
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — confirmações que você aguarda com <code>await</code></h3>
   <pre><code>if await dialogs.confirm("Apagar o save", "Isso não pode ser desfeito."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — tudo depois do corpo é
@@ -132,14 +132,14 @@ sheet.footer().visible = true</code></pre>
     <code>set_next_action_layout()</code> antes de abri-lo. A linha é montada quando um diálogo abre pela primeira vez,
     então um <code>GoDialogs</code> em autoload não acrescenta nada na inicialização.</p>
 
-  <h3><code>GoForm</code> — um formulário com largura máxima</h3>
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — um formulário com largura máxima</h3>
   <div class="note warn">
     <b>Ele garante que os rótulos descendentes quebrem linha.</b> Sem isso, uma frase longa se estica em uma
     única linha cuja largura mínima ultrapassa a tela, e as laterais ficam cortadas — você nem consegue dizer
     em que tela está. Ligar a quebra na mão, cena por cena, é esquecido toda vez.
   </div>
 
-  <h3><code>GoScroll</code> — rolagem por toque</h3>
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — rolagem por toque</h3>
   <p>Coloque <b>uma</b> coisa dentro dele. Cabeçalhos e linhas de botões ficam fora — uma lista longa não pode
     empurrá-los para fora da tela. O <code>use_panel_edge()</code> leva a barra de rolagem para dentro do respiro
     que o cartão já tem, enquanto o conteúdo mantém o recuo.</p>
@@ -148,17 +148,17 @@ sheet.footer().visible = true</code></pre>
 <section id="messages">
   <h2>Contando algo ao jogador</h2>
 
-  <h3><code>GoNotice</code> — snackbar</h3>
+  <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
   <div class="note warn">
     <b>Ele nunca intercepta o toque.</b> Um aviso é lido, não pressionado. Ele não toma o foco, não bloqueia
     a entrada do jogo, e o botão embaixo dele continua respondendo. Quando é preciso confirmação, use o
     <code>GoDialogs</code>; quando é preciso uma escolha, o <code>GoPromptCard</code>.
   </div>
 
-  <h3><code>GoPromptCard</code> — uma pergunta que não bloqueia</h3>
+  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — uma pergunta que não bloqueia</h3>
   <p>Flutua em um dos lados, sem véu escurecendo a tela. O jogo continua rodando.</p>
 
-  <h3><code>GoCoachMark</code> — tour guiado</h3>
+  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — tour guiado</h3>
   <p>Aponta para controles de verdade, um de cada vez. Só o cartão recebe toque, então <b>pressionar o próprio
     controle destacado avança o tour</b> — "toque aqui" vira uma ação em vez de uma frase.</p>
   <pre><code>tour.start([
@@ -172,7 +172,7 @@ sheet.footer().visible = true</code></pre>
 <section id="hud">
   <h2>HUD</h2>
 
-  <h3>São as coisas pequenas que decidem se fica bom</h3>
+  <h3 id="the-small-things-decide-whether-it-looks-good">São as coisas pequenas que decidem se fica bom</h3>
   <p>
     Capriche o quanto quiser nos painéis grandes — o que salta aos olhos é sempre algo pequeno: uma palavra partida
     ao meio, um brilho cortado, um slot apertado. Quatro coisas assim foram apontadas em 2026-09-13 e corrigidas nos
@@ -212,7 +212,7 @@ sheet.footer().visible = true</code></pre>
     quando o cálculo de largura dela dá errado (medido com 1dp de largura).
   </p>
 
-  <h4>O cartão do coach mark se mantém longe dos elementos fixos</h4>
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">O cartão do coach mark se mantém longe dos elementos fixos</h4>
   <p>
     Em paisagem, o cartão era jogado bem na borda de cima ou de baixo — exatamente onde ficam os cabeçalhos e as
     peças do HUD; na demo, ele pousava sobre o <code>→ ×</code> do cabeçalho. Agora ele permanece no mesmo nível do
@@ -224,7 +224,7 @@ sheet.footer().visible = true</code></pre>
   </p>
   <pre><code>tour.keep_clear = [header_bar, toolbar]   # elementos fixos que não são âncoras</code></pre>
 
-  <h3>Telas com mouse e teclado</h3>
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Telas com mouse e teclado</h3>
   <p>
     Um dedo <b>não tem estado de hover.</b> Desenvolva pensando só no celular e dois estados exclusivos do desktop
     ficam sem conferência — e um deles estava quebrado: <b>o anel de foco do gohud era invisível em um botão
@@ -242,7 +242,7 @@ sheet.footer().visible = true</code></pre>
     a regra sobrevive a uma troca de paleta (a WCAG 2.4.11 pede 3:1 nos indicadores de foco).
   </p>
 
-  <h3><code>GoHudAnchor</code> — nove pontos</h3>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — nove pontos</h3>
   <p>Respeita a área segura e as margens das bordas. Dê a ele um <code>landscape_spot</code> e ele se move em
     paisagem — controles que ficam embaixo e ao centro em retrato podem ir para o canto inferior direito.</p>
   <div class="note">
@@ -251,7 +251,7 @@ sheet.footer().visible = true</code></pre>
     barra de gestos em paisagem. Essa aritmética vive em um lugar só.
   </div>
 
-  <h4>Mantendo o conteúdo fora de baixo do HUD</h4>
+  <h4 id="keeping-content-out-from-under-the-hud">Mantendo o conteúdo fora de baixo do HUD</h4>
   <p>
     Quando uma tela rolável divide o display com um HUD, o conteúdo desliza <b>por baixo dele</b> e os dois
     conjuntos de texto se sobrepõem até que nenhum possa ser lido. Aconteceu duas vezes neste add-on: o texto de
@@ -267,7 +267,7 @@ joystick_anchor.reserve_space = false  # …menos os que só aparecem sob o dedo
     retângulo ser medido.
   </p>
 
-  <h4>As peças do HUD também colidem entre si</h4>
+  <h4 id="hud-pieces-collide-with-each-other-too">As peças do HUD também colidem entre si</h4>
   <p>
     Os nove pontos dividem a tela; eles não garantem que as peças <b>não se encontrem</b>. Um snackbar largo no topo
     ao centro caiu em cheio sobre a barra de vida no canto superior direito, escondendo o valor — não dava para ler
@@ -281,7 +281,7 @@ notice_anchor.reserve_space = false   # e não empurra a página enquanto está 
     cedem, os dois trocam de lugar para sempre.
   </p>
 
-  <h3><code>GoBar</code> — vida, mana, experiência</h3>
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — vida, mana, experiência</h3>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # o token só de preenchimento
@@ -290,7 +290,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     O <code>reduce_motion</code> a torna instantânea. Números grandes são abreviados para <code>12.3k</code> para
     que a largura da barra não fique tremendo conforme os dígitos entram e saem.</p>
 
-  <h3><code>GoSlot</code> — um slot rápido</h3>
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — um slot rápido</h3>
   <p>Ícone, quantidade, cooldown e atalho em <b>uma única face</b>. Pendurar badges em um círculo pequeno faz cada
     slot ter uma largura diferente e a fileira fica bamba.</p>
   <div class="note">
@@ -303,7 +303,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     usa teclado e todos os controles de configuração na ordem do Tab. Ligue-o quando teclado ou controle forem a única
     forma de entrada.</p>
 
-  <h3><code>GoJoystick</code> — stick virtual</h3>
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — stick virtual</h3>
   <table>
     <thead><tr><th>Modo</th><th>Comportamento</th></tr></thead>
     <tbody>
@@ -315,7 +315,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
   <p>O <code>Vector2</code> vindo de <code>moved</code> tem comprimento de 0 a 1, então dá para multiplicá-lo direto
     por uma velocidade; ele não varia com o tamanho da tela nem com o DPI.</p>
 
-  <h3><code>GoIconButton</code> — parece pequeno, recebe toque grande</h3>
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — parece pequeno, recebe toque grande</h3>
   <div class="note warn">
     <b>Só é seguro enquanto os irmãos dele ignoram o toque.</b> Se a área ampliada cobrir o botão seguinte, esse
     botão para de responder. Botões de ícone lado a lado precisam de <code>touch_peers</code>.
@@ -348,7 +348,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     personalizada precisa sobreviver.
   </div>
 
-  <h3>Linhas de lista com uma descrição</h3>
+  <h3 id="list-rows-with-a-description">Linhas de lista com uma descrição</h3>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Guardiã do Juramento", _inspect, Color.TRANSPARENT,
     "Espada longa  /  Ataque 42", false)</code></pre>
   <p>Uma linha com uma segunda linha de texto ganha <b>respiro igual em cima e embaixo</b>, mais folgado que o de uma
@@ -360,12 +360,12 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <figcaption>Linhas de duas linhas, slots e barras no exemplo medieval — as mesmas chamadas da fábrica sob <code>medieval_light</code>.</figcaption>
   </figure>
 
-  <h3>Linhas que fluem</h3>
+  <h3 id="flowing-rows">Linhas que fluem</h3>
   <p>Coloque os controles em um <code>wrap_row</code> na <b>largura natural</b> deles. Com a quebra de linha ligada, a
     largura mínima de um botão cai para quase nada e a fileira dimensiona a célula por ela — o rótulo desaba para um
     caractere por linha. A fábrica evita isso por você.</p>
 
-  <h3>Nunca deixe uma lista vazia realmente vazia</h3>
+  <h3 id="never-leave-an-empty-list-empty">Nunca deixe uma lista vazia realmente vazia</h3>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nada por aqui ainda"))</code></pre>
   <p>As pessoas leem uma tela em branco como <b>quebrada</b>.</p>
 </section>
@@ -397,5 +397,6 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>

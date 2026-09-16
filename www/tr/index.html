@@ -133,35 +133,35 @@
 
   <div class="grid">
     <div class="card">
-      <h3>Her ölçü bir token'dır</h3>
+      <h3 id="every-measurement-is-a-token">Her ölçü bir token'dır</h3>
       <p>Boşluklar, köşeler ve yazı boyutları sayı olarak yazılmaz, adıyla çağrılır. Temayı değiştirin, ekranın tamamı onunla birlikte hareket eder.</p>
     </div>
     <div class="card">
-      <h3>Görünen boyut ≠ basılabilir boyut</h3>
+      <h3 id="visible-size-pressable-size">Görünen boyut ≠ basılabilir boyut</h3>
       <p>Bir kapatma düğmesi 36dp görünür ama dokunma hedefi 48dp'dir. Sıkışık slotlar üst üste bindiğinde, basışı merkezi daha yakın olan alır.</p>
     </div>
     <div class="card">
-      <h3>Çentikler ve klavyeler</h3>
+      <h3 id="notches-and-keyboards">Çentikler ve klavyeler</h3>
       <p>HUD parçaları güvenli alanın içinde durur; sanal klavye belirdiğinde bir giriş alanı onun üstüne yükselir.</p>
     </div>
     <div class="card">
-      <h3>Geri, tek bir şeyi kapatır</h3>
+      <h3 id="back-closes-one-thing">Geri, tek bir şeyi kapatır</h3>
       <p>Escape ve Android'in Geri tuşu <b>yalnızca en üstteki yüzeyi</b> kapatır. Üst üste açılmış pencereler birlikte yok olmaz.</p>
     </div>
     <div class="card">
-      <h3>Bildirimler girdiyi çalmaz</h3>
+      <h3 id="notices-never-steal-input">Bildirimler girdiyi çalmaz</h3>
       <p>Bir snackbar'ın üstüne basın, altındaki düğme basışı alır. Odak da elinden alınmaz.</p>
     </div>
     <div class="card">
-      <h3>Simgeler adıyla istenir</h3>
+      <h3 id="icons-are-asked-for-by-name">Simgeler adıyla istenir</h3>
       <p>Widget'lar yalnızca <code>GoIconSet.CLOSE</code> bilir. Seti değiştirin, tek satır koda dokunmadan bütün çizimler değişsin.</p>
     </div>
     <div class="card">
-      <h3>Altı görünüm, tek satır</h3>
+      <h3 id="six-looks-one-line">Altı görünüm, tek satır</h3>
       <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu veya dövme ortaçağ çerçeveleri.</p>
     </div>
     <div class="card">
-      <h3>Okunaklılık ölçülerek</h3>
+      <h3 id="legible-by-measurement">Okunaklılık ölçülerek</h3>
       <p>Her tema WCAG'a göre denetlenir; düğme durumları ve saf beyaz ile saf siyah üstündeki yarı saydam HUD panelleri dahil.</p>
     </div>
   </div>
@@ -177,11 +177,11 @@
   <h2>Kurulum</h2>
   <p class="sub">Eklenti klasörünü projenize koyun. Kurulacak başka bir şey yok.</p>
 
-  <h3>Asset Store'dan veya bir sürüm ZIP'inden</h3>
+  <h3 id="from-the-asset-store-or-a-release-zip">Asset Store'dan veya bir sürüm ZIP'inden</h3>
   <p>Proje kökünüze çıkarın; sonuçta <code>res://addons/gohud/</code> elde etmelisiniz. Hepsi bu. İsterseniz
     <b>Project → Project Settings → Plugins → gohud</b> yolundan etkinleştirin.</p>
 
-  <h3>git submodule olarak</h3>
+  <h3 id="as-a-git-submodule">git submodule olarak</h3>
   <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
 git submodule update --init
 git -C addons/gohud checkout v1.0.0   # isteğe bağlı: bir etikete veya commit'e sabitle</code></pre>
@@ -200,17 +200,17 @@ git -C addons/gohud checkout v1.0.0   # isteğe bağlı: bir etikete veya commit
   <h2>Hızlı başlangıç</h2>
   <p class="sub">Her widget <code>.new()</code> ve <code>add_child()</code> ile gelir — sahne dosyası yok, autoload yok.</p>
 
-  <h3>Arayüzü kurmadan önce bir görünüm seçin (isteğe bağlı)</h3>
+  <h3 id="pick-a-look-before-building-ui-optional">Arayüzü kurmadan önce bir görünüm seçin (isteğe bağlı)</h3>
   <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # bunu atlarsanız default_dark kullanılır</code></pre>
 
-  <h3><code>await</code> ile beklediğiniz bir onay</h3>
+  <h3 id="a-confirmation-you-await"><code>await</code> ile beklediğiniz bir onay</h3>
   <pre><code>var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("Kaydı sil", "Bu geri alınamaz."):
     delete_save()</code></pre>
   <p><code>destructive = true</code> (son argüman) geçirin; onay düğmesi dolgulu tehlike düğmesi olarak çizilir.</p>
 
-  <h3>Sabit bir arama alanı ve alt bilgisi olan bir alt sayfa</h3>
+  <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">Sabit bir arama alanı ve alt bilgisi olan bir alt sayfa</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Envanter")
@@ -227,7 +227,7 @@ sheet.footer().visible = true</code></pre>
     uzun bir liste onları ekrandan dışarı iter. <code>footer()</code> her zaman görünürdür.
   </div>
 
-  <h3>Bir HUD köşesi</h3>
+  <h3 id="a-hud-corner">Bir HUD köşesi</h3>
   <pre><code>var corner := GoHudAnchor.new()
 corner.spot = GoHudAnchor.Spot.TOP_LEFT
 corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
@@ -239,7 +239,7 @@ hp.ink = GoUi.color(GoTheme.DANGER_FILL)
 corner.add_child(hp)
 hp.set_values(320, 500)</code></pre>
 
-  <h3>HUD'a değmeyen içerik</h3>
+  <h3 id="content-that-keeps-clear-of-the-hud">HUD'a değmeyen içerik</h3>
   <pre><code>form.avoid_hud = true                  # görünen her GoHudAnchor'dan uzak dur
 joystick_anchor.reserve_space = false  # …yalnızca parmak altında beliren anchor'lar hariç
 notice_anchor.avoid_peers = true       # bildirim sabit HUD'ın üstünü kapatmak yerine altına yerleşir</code></pre>
@@ -294,7 +294,7 @@ notice_anchor.avoid_peers = true       # bildirim sabit HUD'ın üstünü kapatm
     Düğme köşeleri, anahtar biçimleri, liste satırları ve giriş kenarlıkları hep birlikte hareket eder.
   </p>
 
-  <h3>Ortaçağ koleksiyonu</h3>
+  <h3 id="medieval-collection">Ortaçağ koleksiyonu</h3>
   <p>
     <code>medieval_dark</code> demir ve deriyi antika altınla eşleştirir; <code>medieval_light</code> parşömen ve
     mürekkep kullanır. Menü çerçeveleri bir perçin ve küçük bir köşe süsü taşırken sürekli görünen HUD sessiz
@@ -314,7 +314,7 @@ notice_anchor.avoid_peers = true       # bildirim sabit HUD'ın üstünü kapatm
   <p>Her iki görüntü de standart widget'lardan kurulmuş <code>examples/medieval/medieval.tscn</code> dosyasıdır.
     <a href="theming.html#medieval">Ortaçağ rehberi ve kendi krallığınızı nasıl kuracağınız →</a></p>
 
-  <h3>Aynı ekran telefonda ve masaüstünde</h3>
+  <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">Aynı ekran telefonda ve masaüstünde</h3>
   <p>
     Galeri görüntüleri dikey tutulan bir telefondur. Aşağıdaki ise <b>aynı kodun</b> 1280×800'deki hali —
     içerik okunabilir bir genişlikte (480dp) durur ve ortalanır, HUD ise köşelerde kalır. Form, yüzen HUD
@@ -332,7 +332,7 @@ notice_anchor.avoid_peers = true       # bildirim sabit HUD'ın üstünü kapatm
     </figure>
   </div>
 
-  <h3>Aynı sayfa, başka bir görünüm</h3>
+  <h3 id="the-same-sheet-a-different-look">Aynı sayfa, başka bir görünüm</h3>
   <div class="shots">
     <figure>
       <img src="../img/sheet-default-dark.png" alt="default_dark içinde bir alt sayfa" loading="lazy">
@@ -451,25 +451,25 @@ bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # turun 1080p / 60 fps k
     kendi Godot penceresinde açılsın — başlatılacak bir editör, bulunacak bir sahne yok.
   </p>
 
-  <h3>Komutları bir kez kurun</h3>
+  <h3 id="install-the-commands-once">Komutları bir kez kurun</h3>
   <pre><code>claude plugin marketplace add thruthesky/gohud
 claude plugin install gohud@gohud
 # ardından Claude Code'u yeniden başlatın</code></pre>
   <p>Codex gibi başka ajanlar da aynı beceriyi kullanabilir: bu depodaki <code>skills/gohud</code> klasörünü
     ajanın beceri klasörüne kopyalayın.</p>
 
-  <h3><code>/gohud:preview</code> — widget galerisi</h3>
+  <h3 id="gohud-preview-the-widget-gallery"><code>/gohud:preview</code> — widget galerisi</h3>
   <p>Galeriyi açar: her widget, altı ön ayarın tamamı için bir seçici ve simge setinin tamamı. Komutu kendi Godot
     projenizin içinde yazarsanız <b>sizin</b> <code>addons/gohud</code> klasörünüzü kullanır; proje yoksa eklentiyle
     gelen kopyayı ya da taze bir klonu kullanır. Kullan-at bir sandbox projesinde çalışır, böylece autoload'larınıza
     ve içe aktarma önbelleğinize dokunulmaz; pencere siz kapatana kadar açık kalır.</p>
 
-  <h3><code>/gohud:preview demo</code> — 15 bölümlük rehberli tur</h3>
+  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15 bölümlük rehberli tur</h3>
   <p>Demoyu başlangıç ekranında açar. <b>Demoyu başlat</b> turu gerçek girdiyle oynatır; <b>Widget'ları keşfet</b>
     tek bir widget'ı elle denemenizi sağlar. <a href="#examples">Örnekler</a> altında listelenen tuşlar burada da
     çalışır.</p>
 
-  <h3>Diğer pek çok komut</h3>
+  <h3 id="many-other-commands">Diğer pek çok komut</h3>
   <table>
     <thead><tr><th>Komut</th><th>Ne yapar</th></tr></thead>
     <tbody>
@@ -535,7 +535,7 @@ claude plugin install gohud@gohud
     cihazları bu çalıştırmaya dahil değildi.
   </div>
 
-  <h3>Sürüm yayımlama</h3>
+  <h3 id="release-versions">Sürüm yayımlama</h3>
   <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
 bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
   <p>Başarılı bir çalıştırma <code>plugin.cfg</code>, <code>GoUi.VERSION</code> ve <code>CHANGELOG.md</code>
@@ -543,7 +543,7 @@ bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</
     hiçbir şeyi değiştirmez ve var olan bir ZIP asla üzerine yazılmaz. ZIP; bu web sitesini, testleri ve
     araçları dışarıda bırakır.</p>
 
-  <h3>Bu site</h3>
+  <h3 id="this-site">Bu site</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # sözlük ve kaplama ayarı tabloları, kaynaktan üretilir
 python3 addons/gohud/tools/check_site.py           # bağlantılar, çapalar, dil, sözlük, üretilen tablolar
 bash addons/gohud/tools/site_shots.sh /tmp/shots   # her sayfanın masaüstü ve telefon ekran görüntüleri</code></pre>
@@ -565,5 +565,6 @@ bash addons/gohud/tools/site_shots.sh /tmp/shots   # her sayfanın masaüstü ve
 
 <script src="../site/glossary.en.js"></script>
 <script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
 </body>
 </html>
