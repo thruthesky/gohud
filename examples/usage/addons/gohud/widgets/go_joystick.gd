@@ -1,4 +1,4 @@
-## 🕹️ **가상 조이스틱.** 손가락을 얹은 자리에서 시작해, 끈 방향과 세기를 알려 준다.
+## 🕹️ **A virtual joystick.** It starts where the finger lands, and reports the direction and strength of the drag.
 ##
 ## ```gdscript
 ## var pad := GoJoystick.new()
@@ -6,56 +6,56 @@
 ## pad.released.connect(func() -> void: player.direction = Vector2.ZERO)
 ## ```
 ##
-## ## 🔑 세 가지 방식
-## | `mode` | 동작 |
+## ## 🔑 Three modes
+## | `mode` | Behavior |
 ## |---|---|
-## | `FIXED` | 늘 같은 자리. 위치를 기억하기 쉽다 |
-## | `FOLLOW` | 처음 누른 자리에 나타난다. 큰 화면에서 손가락을 옮겨도 잡힌다 |
-## | `RELATIVE` | 나타난 뒤 손가락을 계속 따라간다. 오래 끄는 이동에 편하다 |
+## | `FIXED` | always in the same place; easy to remember where it is |
+## | `FOLLOW` | appears wherever you first press; still catches the finger on a big screen |
+## | `RELATIVE` | once it appears it keeps following the finger; comfortable for long drags |
 ##
-## ## 🛑 값은 **정규화된 방향 × 세기**다
-## `moved` 로 오는 `Vector2` 는 길이가 0~1 이다. 그대로 속도에 곱하면 된다. 화면 크기·DPI 에
-## 따라 값이 달라지지 않는다 — 반지름으로 나누기 때문이다.
+## ## 🛑 The value is **a normalized direction × strength**
+## The `Vector2` that arrives with `moved` has a length of 0~1. Multiply it straight into a speed. The value does not
+## shift with screen size or DPI — because it is divided by the radius.
 ##
-## 🛑 `dead_zone` 안에서는 `Vector2.ZERO` 를 낸다. 손가락을 얹기만 해도 캐릭터가 흐르는 것을 막는다.
+## 🛑 Inside `dead_zone` it emits `Vector2.ZERO`. That stops the character from drifting when a finger merely rests on it.
 @tool
 class_name GoJoystick
 extends Control
 
-## 방향과 세기(길이 0~1). 손가락을 움직일 때마다 온다.
+## Direction and strength (length 0~1). Emitted every time the finger moves.
 signal moved(vector: Vector2)
-## 손가락을 뗐다.
+## The finger was lifted.
 signal released
-## 손가락을 얹었다.
+## A finger landed.
 signal pressed_down
 
 enum Mode { FIXED, FOLLOW, RELATIVE }
 
 @export var mode := Mode.FOLLOW
 
-## 바깥 원의 반지름(dp).
+## Radius of the outer circle (dp).
 @export_range(24, 240) var radius := 72.0:
 	set(value):
 		radius = maxf(16.0, value)
 		custom_minimum_size = Vector2.ONE * radius * 2.0
 		queue_redraw()
 
-## 손잡이(안쪽 원)의 반지름(dp).
+## Radius of the knob, the inner circle (dp).
 @export_range(8, 120) var knob_radius := 28.0:
 	set(value):
 		knob_radius = maxf(6.0, value)
 		queue_redraw()
 
-## 이 비율 안에서는 0 을 낸다(0~1).
+## Within this fraction it emits 0 (0~1).
 @export_range(0.0, 0.9, 0.01) var dead_zone := 0.12
 
-## 색. 투명이면 테마의 `accent`.
+## The color. Transparent means the theme's `accent`.
 @export var ink := Color.TRANSPARENT:
 	set(value):
 		ink = value
 		queue_redraw()
 
-## 손가락을 떼면 숨긴다(`FOLLOW`·`RELATIVE` 에서 자연스럽다).
+## Hide once the finger lifts (natural with `FOLLOW` and `RELATIVE`).
 @export var hide_when_idle := false:
 	set(value):
 		hide_when_idle = value
@@ -72,7 +72,7 @@ func _init() -> void:
 	name = "Joystick"
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	custom_minimum_size = Vector2.ONE * radius * 2.0
-	# 🛑 조이스틱은 **물리적 방향**이다 — 아랍어라고 왼쪽이 오른쪽이 되지 않는다.
+	# 🛑 A joystick is a **physical direction** — left does not become right just because the language is Arabic.
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 
 
@@ -84,9 +84,23 @@ func _ready() -> void:
 			_center = size * 0.5
 			_knob = _center
 			queue_redraw())
+	GoUi.watch(_on_ui_changed)
 
 
-## 지금 방향과 세기(길이 0~1). 매 프레임 폴링해도 된다.
+func _exit_tree() -> void:
+	GoUi.unwatch(_on_ui_changed)
+
+
+## 🎨 The whole look changed — `GoUi.use_preset()` and `GoUi.refresh()` call this.
+## 🛑 Without it **the widgets already on screen are the only ones left on the old theme.** They sit next to freshly
+##    built ones and one screen ends up wearing two looks (measured 2026-09-16: after switching presets the HP bar
+##    kept the old accent color and the quick-slot panel its old color — the values had changed, but nobody re-read them).
+## 🔑 The joystick reads its colors and skin **on the spot** inside `_draw()` — telling it to redraw is all it takes.
+func _on_ui_changed() -> void:
+	queue_redraw()
+
+
+## The current direction and strength (length 0~1). Polling it every frame is fine.
 func vector() -> Vector2:
 	return _vector
 
@@ -108,7 +122,7 @@ func _gui_input(event: InputEvent) -> void:
 		_drag(event.position)
 		accept_event()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		# 데스크톱에서 개발·시험할 수 있게 마우스도 받는다.
+		# The mouse is taken as well, so you can develop and test on desktop.
 		if event.pressed and _touch_index < 0:
 			_touch_index = -2
 			_begin(event.position)
@@ -136,7 +150,7 @@ func _drag(point: Vector2) -> void:
 	var distance := offset.length()
 	if distance > radius:
 		if mode == Mode.RELATIVE:
-			# 손가락을 따라 중심이 끌려간다 — 손가락과 손잡이가 어긋나지 않는다.
+			# The center is dragged along with the finger — finger and knob never come apart.
 			_center += offset - offset.normalized() * radius
 		offset = offset.normalized() * radius
 		distance = radius
@@ -162,10 +176,10 @@ func _draw() -> void:
 	if hide_when_idle and not _active: return
 	var color := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
 	var base := GoUi.color(GoTheme.SURFACE)
-	# 🔑 **그리는 것은 스킨**이다 — 자리·세기 계산은 여기, 모양은 거기. 테마를 바꾸면 육각 링이 될 수 있다.
+	# 🔑 **The skin does the drawing** — position and strength are computed here, the shape lives there. Change the theme and it can become a hex ring.
 	GoUi.skin().draw_joystick(self, _center, _knob, radius, knob_radius, color, base, _active)
 
 
-## 넓은 조작 영역 — 보이는 원보다 조금 밖에서 시작해도 잡힌다.
+## A generous input area — a press that starts a little outside the visible circle is still caught.
 func _has_point(point: Vector2) -> bool:
 	return Rect2(Vector2.ZERO, size).has_point(point)

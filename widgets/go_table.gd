@@ -1,37 +1,37 @@
-## 📊 **고를 수 있고 정렬되는 표** — 랭킹, 길드원, 업적, 거래 기록.
+## 📊 **A selectable, sortable table** — rankings, guild members, achievements, trade logs.
 ##
 ## ```gdscript
 ## var board := GoTable.make(
-##     [{"text": "순위", "width": 56}, {"text": "이름"}, {"text": "점수", "numeric": true}],
-##     rows)                                   # rows = [[1, "가나다", 91240], …]
+##     [{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}],
+##     rows)                                   # rows = [[1, "Alice", 91240], …]
 ## board.row_selected.connect(func(index: int) -> void: show_profile(rows[index]))
-## board.sort_by(2, false)                     # 점수 내림차순
+## board.sort_by(2, false)                     # score, descending
 ## ```
 ##
-## ## 🔑 `GoStyle.table()` 과 무엇이 다른가
-## 저것은 **읽기만 하는 표**다(격자에 글자를 늘어놓는다). 이것은 **머리를 눌러 정렬**하고
-## **줄을 골라** 다음 화면으로 갈 수 있다. 랭킹처럼 "누르면 프로필" 인 자리는 이쪽이다.
+## ## 🔑 How it differs from `GoStyle.table()`
+## That one is **a read-only table** (it lays text out in a grid). This one **sorts when a header is pressed** and lets
+## you **pick a row** to move on to the next screen. Wherever "press it for the profile" applies, such as a ranking, this is the one.
 ##
-## ## 🛑 숫자 칸은 오른쪽 정렬이고 숫자로 정렬한다
-## `"91240"` 과 `"9124"` 를 글자로 견주면 `"9124"` 가 더 크다. 자릿수가 다른 점수·골드·피해량이
-## 섞이는 순간 순위가 통째로 뒤집힌다 — `numeric: true` 를 주면 수로 견준다.
+## ## 🛑 Numeric columns are right-aligned and sorted as numbers
+## Compared as text, `"9124"` is greater than `"91240"`. The moment scores, gold or damage of differing digit counts are
+## mixed in, the whole ranking turns upside down — give it `numeric: true` and they are compared as numbers.
 ##
-## ## 🛑 모바일에서는 칸을 네 개 넘기지 않는다
-## 폰 가로 폭에 다섯 칸을 넣으면 글자가 잘리거나 표가 옆으로 스크롤된다. 정말 필요하면 줄을
-## 눌러 `GoSheet` 로 상세를 띄우는 편이 낫다 — 표를 옆으로 미는 UI 는 손가락으로 쓰기 어렵다.
+## ## 🛑 On mobile, never more than four columns
+## Five columns across a phone width either clip the text or make the table scroll sideways. If they really are needed,
+## pressing a row to raise the details in a `GoSheet` is better — a table you push sideways is hard to use with a finger.
 @tool
 class_name GoTable
 extends VBoxContainer
 
-## 줄을 골랐다. `index` 는 **지금 보이는 차례**가 아니라 원래 데이터의 번호다.
+## A row was picked. `index` is the index in the original data, not **the position it is shown at**.
 signal row_selected(index: int)
 
-## 정렬이 바뀌었다.
+## The sort changed.
 signal sorted(column: int, ascending: bool)
 
-## 머리 줄(정렬 버튼).
+## The header row (the sort buttons).
 var head: HBoxContainer
-## 줄들이 쌓이는 칸.
+## The container the rows stack in.
 var rows_box: VBoxContainer
 
 var _columns: Array[Dictionary] = []
@@ -63,16 +63,16 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 표 하나를 만든다.
+## Builds one table.
 ##
-## `columns` 의 각 칸:
-## | 칸 | 뜻 | 기본 |
+## Each entry of `columns`:
+## | Key | Meaning | Default |
 ## |---|---|---|
-## | `text` | 머리 글자 | `""` |
-## | `width` | 고정 폭(dp). 없으면 남는 폭을 나눠 가진다 | 없음 |
-## | `numeric` | 수로 정렬하고 **오른쪽 정렬** | `false` |
-## | `sortable` | 머리를 눌러 정렬할 수 있다 | `true` |
-## | `translate` | 머리 글자를 번역 키로 | `false` |
+## | `text` | The header label | `""` |
+## | `width` | Fixed width (dp). Without it, the leftover width is shared out | none |
+## | `numeric` | Sorted as a number and **right-aligned** | `false` |
+## | `sortable` | The header can be pressed to sort | `true` |
+## | `translate` | Takes the header label as a translation key | `false` |
 static func make(columns: Array, rows: Array, selectable := true) -> GoTable:
 	var table := GoTable.new()
 	table._selectable = selectable
@@ -95,9 +95,9 @@ func set_columns(columns: Array) -> void:
 	_build_head()
 
 
-## 줄 데이터. 각 줄은 칸 개수만큼의 값(글자·수·`Control`)이다.
-## 🔑 `Control` 을 넘기면 **소유권은 넘긴 쪽에 남는다** — 표는 정렬·테마 교체 때 자리만 옮기고
-##    그 노드를 지우지 않는다. 표를 버릴 때 함께 버리려면 직접 `queue_free()` 한다.
+## The row data. Each row holds as many values as there are columns (text, numbers or a `Control`).
+## 🔑 Hand over a `Control` and **ownership stays with the caller** — on a sort or a theme swap the table only moves it,
+##    it never frees the node. To throw it away together with the table, call `queue_free()` yourself.
 func set_rows(rows: Array) -> void:
 	_detach_borrowed()
 	_rows = rows.duplicate()
@@ -112,12 +112,12 @@ func rows() -> Array:
 	return _rows
 
 
-## 지금 고른 줄의 **원래 번호**(-1 이면 없음).
+## The **original index** of the row currently picked (-1 for none).
 func selected() -> int:
 	return _selected
 
 
-## 이 칸으로 정렬한다. 같은 칸을 다시 주면 방향이 뒤집힌다.
+## Sorts by this column. Give the same column again and the direction flips.
 func sort_by(column: int, ascending := true) -> void:
 	if column < 0 or column >= _columns.size(): return
 	if not bool(_columns[column]["sortable"]): return
@@ -136,32 +136,32 @@ func _apply_sort() -> void:
 	_order.sort_custom(func(a: int, b: int) -> bool:
 		var left := GoTable._cell_key(rows, a, column, numeric)
 		var right := GoTable._cell_key(rows, b, column, numeric)
-		if left == right: return a < b   # 🔑 값이 같으면 원래 차례를 지킨다 — 순위가 프레임마다 흔들리지 않게
+		if left == right: return a < b   # 🔑 equal values keep the original order — so the ranking does not wobble frame to frame
 		return left < right if ascending else left > right)
 	_build_rows()
 
 
-## 정렬에 쓰는 값. 🛑 수 칸은 **반드시 수로** — 글자로 견주면 "9124" > "91240" 이 된다.
+## The value used for sorting. 🛑 A numeric column **must go as a number** — compared as text, "9124" > "91240".
 static func _cell_key(rows: Array, row: int, column: int, numeric: bool) -> Variant:
 	if row < 0 or row >= rows.size(): return 0 if numeric else ""
 	var cells: Array = rows[row]
 	if column < 0 or column >= cells.size(): return 0 if numeric else ""
 	var value: Variant = cells[column]
 	if value is Control:
-		# 노드가 들어 있으면 그 안의 글자로 견준다 — 아이콘만 있는 칸은 정렬 대상이 아니다.
+		# With a node inside, its text is what is compared — an icon-only cell is not something to sort by.
 		value = (value as Control).get(&"text") if &"text" in value else ""
 	if numeric: return float(str(value).replace(",", "").strip_edges())
 	return str(value).to_lower()
 
 
-## 빌려 온 셀(호스트가 넘긴 `Control`)을 지우기 전에 떼어 둔다.
-## 🔑 소유권은 **넘긴 쪽**에 있다 — 표는 자리를 빌려 줄 뿐이다.
+## Detaches the borrowed cells (the `Control`s the host handed over) before anything is freed.
+## 🔑 Ownership belongs to **whoever handed them over** — the table only lends them a place.
 func _detach_borrowed() -> void:
 	for cells in _rows:
 		if not (cells is Array): continue
 		for value in cells:
-			# 🛑 `as Control` 을 숫자·글자에 쓰면 **`Invalid cast` 오류를 찍는다**(null 이 되는 것이
-			#    아니다). 표의 칸은 대부분 숫자·글자이므로 먼저 `is` 로 거른다.
+			# 🛑 `as Control` on a number or a string **prints an `Invalid cast` error** (it does not come out null).
+			#    Table cells are mostly numbers and strings, so `is` filters them out first.
 			if not (value is Control): continue
 			var node: Control = value
 			if not is_instance_valid(node): continue
@@ -175,20 +175,20 @@ func _build_head() -> void:
 		var col := _columns[index]
 		var words := str(col["text"])
 		var mark := ""
-		# 🔑 지금 어느 칸으로, 어느 방향으로 정렬돼 있는지 **글자로** 보인다 — 색이나 굵기만으로
-		#    구별하면 색각 이상인 사람에게는 아무 표시가 없는 것과 같다.
+		# 🔑 Which column is sorted, and in which direction, is shown **as a character** — told apart by color or weight
+		#    alone, it amounts to no indication at all for someone with color vision deficiency.
 		if index == _sort_column: mark = " ▲" if _ascending else " ▼"
 		var node: Control
 		if bool(col["sortable"]):
-			# 🛑 **번역 키에 화살표를 이어 붙이지 않는다.** `translate` 가 켜져 있으면 엔진이
-			#    `"rank ▲"` 를 통째로 키로 찾아 못 찾고, 화면에 키가 그대로 드러난다.
-			#    번역은 여기서 끝내고(`tr`), 표시는 그 **뒤**에 붙인다.
+			# 🛑 **Never concatenate the arrow onto a translation key.** With `translate` on, the engine looks up
+			#    `"rank ▲"` whole, fails, and the key shows on screen as it is.
+			#    The translation is finished here (`tr`), and the mark is appended **after** it.
 			var translate: bool = col["translate"]
 			var shown := (tr(words) if translate else words) + mark
 			var button := GoStyle.button(shown, sort_by.bind(index, index != _sort_column or not _ascending),
 				GoStyle.Tone.BARE)
 			button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-			# 🛑 `Tone.BARE` 에는 높이 하한이 없다 — 누르는 머리 줄이라 직접 준다.
+			# 🛑 `Tone.BARE` has no minimum height — this is a header row that gets pressed, so it is given one directly.
 			button.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 			button.alignment = HORIZONTAL_ALIGNMENT_RIGHT if bool(col["numeric"]) else HORIZONTAL_ALIGNMENT_LEFT
 			node = button
@@ -204,10 +204,10 @@ func _build_head() -> void:
 
 
 func _build_rows() -> void:
-	# 🛑 **호스트가 넘긴 `Control` 셀을 죽이지 않는다.** 줄을 통째로 지우면 그 자손인 셀도 함께
-	#    사라지고, 다음 정렬에서 `_make_row` 가 **이미 죽은 노드**를 다시 붙이려 한다 — 칸이
-	#    비거나 죽은 인스턴스를 만진다(2026-09-16 실측: 정렬 한 번에 `is_instance_valid` false).
-	#    지우기 전에 떼어 두면 우리가 만든 것만 사라진다.
+	# 🛑 **The `Control` cells the host handed over are not killed.** Freeing a whole row takes its descendant cells
+	#    with it, and on the next sort `_make_row` tries to attach **an already dead node** — the cell comes up empty
+	#    or a dead instance is touched (measured 2026-09-16: `is_instance_valid` false after a single sort).
+	#    Detaching them before the free leaves only what we built to disappear.
 	_detach_borrowed()
 	for child in rows_box.get_children(): child.queue_free()
 	for position in _order.size():
@@ -225,20 +225,20 @@ func _make_row(source: int, position: int) -> Control:
 		var node: Control
 		if value is Control and is_instance_valid(value):
 			node = value
-			# 🛑 **붙이기 직전에 옛 부모에서 뗀다.** 줄을 다시 지을 때 이 노드는 아직 지워지는 중인
-			#    옛 줄에 매달려 있다 — 그대로 `add_child` 하면 Godot 이 "already has a parent" 로
-			#    거절해 칸이 비고, 옛 줄이 실제로 free 될 때 이 노드까지 함께 죽는다.
+			# 🛑 **Detached from the old parent right before it is attached.** When the rows are rebuilt this node is still
+			#    hanging on the old row, which is in the middle of being freed — `add_child` as is gets refused by Godot with
+			#    "already has a parent", the cell comes up empty, and this node dies with the old row when it really is freed.
 			var previous := node.get_parent()
 			if previous != null: previous.remove_child(node)
 		else:
 			var text := GoStyle.label(str(value))
 			text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if bool(col["numeric"]) else HORIZONTAL_ALIGNMENT_LEFT
-			# 🛑 숫자는 언어를 따라 좌우가 뒤집히지 않는다.
+			# 🛑 Numbers do not flip left to right with the language.
 			if bool(col["numeric"]): text.text_direction = Control.TEXT_DIRECTION_LTR
-			# 🛑 **표의 칸은 줄바꿈하지 않는다.** 줄마다 높이가 달라지면 격자가 어긋나고, 무엇보다
-			#    이 줄은 `Button`(컨테이너가 아니다) 안에 앵커로 들어가서 **첫 배치 때 폭이 0** 이다.
-			#    그때 줄바꿈 라벨의 최소 높이가 1dp 로 잡혀 그대로 굳었고, 화면에는 판만 남고 글자가
-			#    통째로 사라졌다(2026-09-16 가상 모니터 촬영에서 발견 — 헤드리스 검사 120개는 전부 통과했다).
+			# 🛑 **Table cells do not wrap.** Differing heights per row throw the grid off, and above all this row goes into a
+			#    `Button` (not a container) by anchors, so **its width is 0 on the first layout**. The minimum height of a
+			#    wrapping label was taken as 1dp there and set that way, leaving nothing but the panel on screen with the text
+			#    gone entirely (found in a virtual-monitor capture 2026-09-16 — all 120 headless tests had passed).
 			text.autowrap_mode = TextServer.AUTOWRAP_OFF
 			text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			text.size_flags_vertical = Control.SIZE_FILL
@@ -249,7 +249,7 @@ func _make_row(source: int, position: int) -> Control:
 		line.add_child(node)
 
 	if not _selectable: return line
-	# 🔑 줄 전체가 버튼이다 — 손가락으로 칸 하나를 정확히 짚게 하지 않는다.
+	# 🔑 The whole row is the button — a finger is never asked to hit one cell precisely.
 	var button := Button.new()
 	button.name = "Pick%d" % source
 	button.theme = GoUi.theme()
@@ -257,8 +257,8 @@ func _make_row(source: int, position: int) -> Control:
 	button.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	button.toggle_mode = true
 	button.button_pressed = source == _selected
-	# 얼룩 줄 — 칸이 많은 표에서 눈이 줄을 놓치지 않게.
-	# 🔑 밝기를 깎는 대신 **판을 한 겹 깐다** — `modulate` 는 글자까지 함께 흐려 대비를 떨어뜨린다.
+	# Zebra striping — so the eye does not lose the row in a table with many columns.
+	# 🔑 Instead of cutting the brightness, **one more panel is laid underneath** — `modulate` would dim the text along with it and cost contrast.
 	if position % 2 == 1:
 		var stripe := StyleBoxFlat.new()
 		stripe.bg_color = Color(GoUi.color(GoTheme.SURFACE_SOFT), 0.5)
@@ -274,14 +274,14 @@ func _make_row(source: int, position: int) -> Control:
 	for child in line.get_children(): (child as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.add_child(line)
 	line.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	# ♿ 스크린리더는 줄 하나를 한 덩어리로 읽는다 — 칸 값을 이어 붙여 준다.
+	# ♿ A screen reader reads the row as one chunk — the cell values are joined for it.
 	var spoken: Array[String] = []
 	for value in cells: spoken.append(str(value) if not (value is Control) else "")
 	button.accessibility_name = GoUi.spoken(spoken)
 	return button
 
 
-## 고정 폭이 있으면 그만큼, 없으면 남는 폭을 나눠 가진다.
+## A fixed width if there is one; otherwise the leftover width is shared out.
 func _size_cell(node: Control, col: Dictionary) -> void:
 	var fixed := float(col["width"])
 	if fixed > 0.0:

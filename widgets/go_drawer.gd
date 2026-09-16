@@ -1,84 +1,84 @@
-## 📂 **옆에서 밀려 들어오는 서랍** — 태블릿·PC 가로 화면의 가방·친구목록·채팅.
+## 📂 **A drawer that slides in from the side** — the bag, friend list or chat on a tablet or PC landscape screen.
 ##
 ## ```gdscript
 ## var bag := GoDrawer.new()
 ## add_child(bag)
-## bag.open("가방")
+## bag.open("Bag")
 ## bag.body.add_child(inventory_grid)
 ##
-## bag.side = GoDrawer.Side.RIGHT     # 오른쪽에서
+## bag.side = GoDrawer.Side.RIGHT     # from the right
 ## ```
 ##
-## ## 🔑 `GoSheet` 와 무엇이 다른가
-## `GoSheet` 는 **아래에서** 올라온다 — 폰 세로 화면에서 엄지에 가깝고, 화면 가로를 다 쓴다.
-## 서랍은 **옆에서** 들어온다 — 가로가 넓은 화면에서 게임 화면을 다 가리지 않고 목록을 펼친다.
-## 폰 세로에서는 서랍이 화면을 거의 다 덮으므로 그때는 시트를 쓰는 편이 낫다.
+## ## 🔑 How it differs from `GoSheet`
+## `GoSheet` rises **from the bottom** — close to the thumb on a phone in portrait, using the full width.
+## A drawer comes **from the side** — on a wide screen it opens a list without covering the whole game view.
+## On a phone in portrait a drawer covers almost the entire screen, so a sheet is the better choice there.
 ##
-## ## 🛑 방향은 화면 방향이지 글 방향이 아니다
-## `LEFT` 는 아랍어에서도 화면 왼쪽이다. 글 방향을 따르고 싶으면 `follow_text_direction` 을 켠다 —
-## 그러면 RTL 에서 좌우가 뒤집힌다(메뉴 서랍처럼 "시작 쪽" 이 뜻이 있는 자리).
+## ## 🛑 The side is a screen side, not a text side
+## `LEFT` is the left of the screen in Arabic too. To follow the text direction, turn on `follow_text_direction` —
+## that flips it in RTL (for places where "the start side" carries meaning, such as a menu drawer).
 ##
-## ## 🛑 안전영역을 침범하지 않는다
-## 노치·둥근 모서리가 있는 기기에서 서랍이 화면 끝까지 가면 모서리에서 내용이 잘린다.
-## 배경은 끝까지 채우되 **내용은 안전영역 안**에 둔다.
+## ## 🛑 It does not intrude on the safe area
+## On a device with a notch or rounded corners, a drawer that runs to the screen edge has its content clipped
+## at the corners. The background fills all the way out, but **the content stays inside the safe area**.
 @tool
 class_name GoDrawer
 extends CanvasLayer
 
-## 닫혔다.
+## It closed.
 signal closed
-## 열렸다.
+## It opened.
 signal opened
 
 enum Side {
-	LEFT,   ## 화면 왼쪽에서
-	RIGHT,  ## 화면 오른쪽에서
+	LEFT,   ## From the left of the screen
+	RIGHT,  ## From the right of the screen
 }
 
-## 어느 쪽에서 들어오는가.
+## Which side it comes in from.
 @export var side := Side.LEFT:
 	set(value):
 		side = value
 		_relayout()
 
-## 글 방향(RTL)을 따라 좌우를 뒤집을 것인가. 🔑 메뉴 서랍처럼 "시작 쪽" 이 뜻이 있을 때 켠다.
+## Whether to flip sides with the text direction (RTL). 🔑 Turn it on where "the start side" carries meaning, such as a menu drawer.
 @export var follow_text_direction := false:
 	set(value):
 		follow_text_direction = value
 		_relayout()
 
-## 차지할 화면 **가로** 비율. 좁은 화면에서는 `max_width` 가 먼저 걸린다.
+## Fraction of the screen **width** it takes up. On a narrow screen `max_width` binds first.
 @export_range(0.2, 1.0, 0.01) var width_ratio := 0.42:
 	set(value):
 		width_ratio = value
 		_relayout()
 
-## 최대 폭(dp). 넓은 모니터에서 서랍이 끝없이 넓어지지 않게.
+## Maximum width (dp). Keeps the drawer from growing without limit on a wide monitor.
 @export var max_width := 420.0:
 	set(value):
 		max_width = value
 		_relayout()
 
-## 🪟 서랍 판 바탕의 **불투명도**(0.0~1.0). **음수면 테마·설정이 정한 카드 값**(기본).
-## 🛑 바탕만 묽어진다 — 글자·아이콘·버튼은 선명한 채로 남는다.
+## 🪟 **Opacity** of the drawer panel's ground (0.0~1.0). **Negative uses the card value the theme and settings decide** (default).
+## 🛑 Only the ground thins out — text, icons and buttons stay crisp.
 @export_range(-1.0, 1.0, 0.01) var alpha := -1.0:
 	set(value):
 		alpha = value
 		if panel != null: _restyle()
 
-## 바깥(가림막)을 눌러 닫을 수 있는가.
+## Whether tapping outside (the scrim) closes it.
 @export var dismissable := true
 
-## 미끄러져 들어오는 시간(초). `reduce_motion` 이면 무시한다.
+## How long the slide-in takes (seconds). Ignored under `reduce_motion`.
 @export var motion_seconds := 0.2
 
-## 본문(스크롤됨).
+## The body (scrolls).
 var body: VBoxContainer
-## 머리 줄.
+## The header row.
 var header: HBoxContainer
-## 제목.
+## The title.
 var title_label: Label
-## 감싸고 있는 판 — 세밀한 조정이 필요하면 직접 만진다.
+## The panel being wrapped — reach for it directly when you need fine control.
 var panel: PanelContainer
 
 var _scrim: ColorRect
@@ -147,17 +147,17 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
-	# 🛑 뒤로가기 차지를 놓는다 — 서랍이 사라졌는데 뒤로가기를 계속 잡고 있으면 그 화면을 못 빠져나간다.
-	# 🛑 **`_open` 도 함께 내린다.** 안 내리면 차지는 놓았는데 상태만 "열림" 으로 남아,
-	#    다시 트리에 넣고 `close()` 를 부르면 `release` 가 **한 번 더** 나가 다른 창의 차지까지
-	#    깎는다(그러면 그 창이 뒤로가기로 안 닫힌다).
+	# 🛑 Release the back-gesture claim — hold on to back after the drawer is gone and that screen cannot be left.
+	# 🛑 **Clear `_open` along with it.** Leave it set and the claim is released while the state still says
+	#    "open", so putting this back in the tree and calling `close()` sends `release` **a second time** and
+	#    eats another window's claim (after which that window no longer closes on back).
 	if _open:
 		GoBackPolicy.release(get_tree())
 		_open = false
 		visible = false
 
 
-## 서랍을 연다. `title` 을 주면 머리 줄에 쓴다. 본문은 **비우지 않는다** — 넣어 둔 것이 남는다.
+## Open the drawer. A `title`, if given, goes in the header row. The body is **not emptied** — whatever was put in stays.
 func open(title := "") -> void:
 	if not title.is_empty(): set_title(title)
 	if _open: return
@@ -183,7 +183,7 @@ func is_open() -> bool:
 	return _open
 
 
-## 본문을 비운다(페이지를 갈아 끼울 때).
+## Empty the body (for swapping pages).
 func clear() -> void:
 	for child in body.get_children(): child.queue_free()
 
@@ -200,13 +200,13 @@ func set_title_key(key: String) -> void:
 	header.visible = not key.is_empty()
 
 
-## 지금 화면에서 서랍이 실제로 붙는 쪽(글 방향을 따를 수도 있으므로 `side` 와 다를 수 있다).
-## 🛑 반환 타입은 `GoDrawer.Side` 로 적는다 — 그냥 `Side` 라고 쓰면 GDScript 가 "`GoDrawer.Side`
-##    를 `Side` 로 돌려줄 수 없다" 며 **파싱 단계에서** 죽는다(4.7 실측).
+## The side the drawer actually attaches to on the current screen (it can differ from `side`, since it may follow the text direction).
+## 🛑 Write the return type as `GoDrawer.Side` — write just `Side` and GDScript dies **at parse time** saying it
+##    "cannot return `GoDrawer.Side` as `Side`" (measured on 4.7).
 func effective_side() -> GoDrawer.Side:
 	if not follow_text_direction: return side
-	# 🛑 `get_tool_locale()` 은 **에디터의** 언어다 — 플레이어가 게임 안에서 아랍어로 바꿔도 그 값은
-	#    그대로라 서랍이 끝내 뒤집히지 않았다(2026-09-16). 실행 중 언어는 `get_locale()` 이다.
+	# 🛑 `get_tool_locale()` is **the editor's** language — it stays put when the player switches the game to
+	#    Arabic, and the drawer never flipped (2026-09-16). The language at run time is `get_locale()`.
 	var locale := TranslationServer.get_locale()
 	var rtl := locale.begins_with("ar") or locale.begins_with("he") \
 		or locale.begins_with("fa") or locale.begins_with("ur")
@@ -218,8 +218,8 @@ func _relayout() -> void:
 	if panel == null or not is_inside_tree(): return
 	var window := get_window()
 	if window == null: return
-	# 🛑 배경(판)은 화면 **끝까지** 가되 내용은 안전영역 안이다 — 판을 안으로 밀면 가장자리에
-	#    바탕색 띠가 생겨 서랍이 떠 있는 것처럼 보인다.
+	# 🛑 The background (the panel) runs **all the way** to the screen edge while the content stays inside the
+	#    safe area — pull the panel inward and a band of page colour appears at the edge, making the drawer look like it floats.
 	var full := window.get_visible_rect()
 	var area := GoSafeArea.usable_rect(window)
 	var width := minf(full.size.x * width_ratio, max_width) if max_width > 0.0 else full.size.x * width_ratio
@@ -228,7 +228,7 @@ func _relayout() -> void:
 	var at_left := effective_side() == Side.LEFT
 	panel.position = Vector2(0.0 if at_left else full.size.x - width, 0.0).round()
 
-	# 내용만 안전영역 안으로 — 노치·제스처 바를 피한다.
+	# Only the content moves inside the safe area — clear of the notch and the gesture bar.
 	var pad := panel.get_child(0) as MarginContainer
 	if pad != null:
 		var base := GoUi.metric(GoTheme.PADDING)
@@ -297,6 +297,6 @@ func _on_ui_changed() -> void:
 
 
 func _notification(what: int) -> void:
-	# 뒤로가기(Android)·Escape 로 닫힌다 — 서랍은 "빠져나갈 수 있어야 하는" 화면이다.
+	# Back (Android) and Escape close it — a drawer is a screen that "has to be leavable".
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and _open and not GoSurface.is_any_open():
 		close.call_deferred()

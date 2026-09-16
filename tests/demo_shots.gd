@@ -1,13 +1,13 @@
-## 📸 **데모(`examples/demo`)의 위젯 화면을 섹션마다 찍는다** — 갤러리에는 없는 배치가 여기 있다.
+## 📸 **Shoots the demo's (`examples/demo`) widget screens section by section** — it holds layouts the gallery does not.
 ##
 ## ```
-## bash addons/gohud/tools/demo_shots.sh /tmp/demo_shots      # 심링크·임포트까지 알아서
+## bash addons/gohud/tools/demo_shots.sh /tmp/demo_shots      # symlinks and import handled for you
 ## ```
 ##
-## 🛑 데모 코드는 손대지 않는다 — `sim.gd` 의 `_open_explore(index)` 를 밖에서 부를 뿐이다.
-##    사용자가 지적한 그림(두 줄로 갈라진 `Done`·잘린 글로우·비좁은 슬롯·밋밋한 드롭다운)은 전부
-##    **데모**에서 나왔는데, 촬영은 갤러리만 찍고 있었다(2026-09-13, I-56).
-## 🛑 `--headless` 로는 그림이 나오지 않는다 · `frame_post_draw` 를 기다리지 않는다(갤러리와 같은 이유).
+## 🛑 Do not touch the demo code — this only calls `sim.gd`'s `_open_explore(index)` from outside.
+##    The pictures the user pointed at (a `Done` split across two lines, a clipped glow, cramped slots, a flat dropdown)
+##    all came from the **demo**, while the shots were being taken of the gallery only (2026-09-13, I-56).
+## 🛑 `--headless` produces no pictures · do not wait on `frame_post_draw` (same reason as the gallery).
 extends SceneTree
 
 const SIZES := [
@@ -16,14 +16,14 @@ const SIZES := [
 ]
 
 var out_dir := "user://demo_shots"
-## 찍을 섹션만 고른다(`--only=selection,hud`). 비우면 전부.
+## Shoot only these sections (`--only=selection,hud`). Empty means all of them.
 var only: PackedStringArray = []
-## 찍을 크기만 고른다(`--sizes=desktop`). 비우면 전부.
+## Shoot only these sizes (`--sizes=desktop`). Empty means all of them.
 var sizes: PackedStringArray = []
-## 🔑 **봇을 돌린 뒤에도 찍는다**(`--play`). 섹션을 열기만 하면 데모가 스테이지 위젯을 비활성으로 두어
-##    회색만 찍힌다(2026-09-13, I-61·65). "Play this widget" 과 같은 길(`_play_current`)로 봇을 4× 로
-##    돌리고 끝나면 **활성 상태의 마지막 장면**을 찍는다 — 코치마크의 `Done` 카드, 뜬 알림이 여기서 보인다.
-##    데모의 `_shot_dir` 도 함께 켜서 봇이 장면 직후에 저장하는 그림(`NN-key.png`)까지 얻는다.
+## 🔑 **Shoot after running the bot as well** (`--play`). Merely opening a section leaves the demo's stage widgets
+##    disabled and only grey gets shot (2026-09-13, I-61·65). Run the bot at 4× down the same path as
+##    "Play this widget" (`_play_current`) and shoot **the last frame while it is live** — the coach mark's `Done` card and a raised notice show up there.
+##    The demo's `_shot_dir` is switched on too, so we also get the pictures it saves right after each scene (`NN-key.png`).
 var play := false
 
 
@@ -44,16 +44,16 @@ func _initialize() -> void:
 	var entries: Array = SimActs.list()
 	for spec in SIZES:
 		if not sizes.is_empty() and not sizes.has(spec.name): continue
-		# 🛑 데모 프로젝트는 `window_width_override=2560` 을 갖고 있어 `root.size` 만으로는 첫 화면이
-		#    2560×1600 으로 찍혔다(실측). 창과 뷰포트를 **둘 다** 맞추고 넉넉히 기다린다.
+		# 🛑 The demo project carries `window_width_override=2560`, so `root.size` alone got the first screen
+		#    shot at 2560×1600 (measured). Set **both** the window and the viewport, and wait generously.
 		DisplayServer.window_set_size(spec.size)
 		await _settle(6)
 		_pin_scale(spec.size)
 		await _settle(8)
 		var sim := scene.instantiate()
 		root.add_child(sim)
-		# 🛑 데모의 `_scale_window` 는 `_scaling` 가드로 시작한다 — 켜 두면 즉시 돌아가므로 데모 코드를
-		#    손대지 않고도 배율 재설정을 막을 수 있다(`_pin_scale` 만으로는 다음 프레임에 다시 덮였다).
+		# 🛑 The demo's `_scale_window` opens with a `_scaling` guard — leaving it on makes it return at once, so
+		#    the scale reset can be blocked without touching demo code (`_pin_scale` alone was overwritten the next frame).
 		sim.set("_scaling", true)
 		_pin_scale(spec.size)
 		if play:
@@ -70,7 +70,7 @@ func _initialize() -> void:
 			_pin_scale(spec.size)
 			await _settle(2)
 			_shot("%s_%02d_%s" % [spec.name, index + 1, key])
-			# 🔽 드롭다운은 **연 채로** 한 장 더 — 메뉴 판·라디오 표시는 열어야 보인다.
+			# 🔽 One more shot with the dropdown **open** — the menu panel and radio marks are only visible when it is.
 			for node in sim.find_children("*", "OptionButton", true, false):
 				var picker := node as OptionButton
 				if picker == null or not picker.is_visible_in_tree() or picker.item_count == 0: continue
@@ -82,11 +82,11 @@ func _initialize() -> void:
 				break
 			if play:
 				sim.call("_play_current")
-				# 🛑 `_running` 이 꺼질 때까지 기다린다 — 장면마다 길이가 달라 고정 프레임으로는 안 된다.
-				#    🔑 **재생이 끝난 뒤의 화면은 쓸모없다** — 데모가 탐색 상태로 돌아가며 스테이지를 다시 지어
-				#    회색이 된다(실측: `Clicks: 0` 으로 초기화). 활성 그림은 봇이 장면 직후 저장하는
-				#    `<크기>_bot/NN-key.png` 이고, **순간 장면**(코치마크 카드·뜬 알림·프롬프트·시트)은 재생 중
-				#    폴링해서 오버레이가 보이는 첫 순간을 잡는다.
+				# 🛑 Wait until `_running` goes off — scenes differ in length, so a fixed frame count will not do.
+				#    🔑 **The screen after playback ends is useless** — the demo returns to its explore state, rebuilds the stage
+				#    and goes grey (measured: reset to `Clicks: 0`). The live pictures are the ones the bot saves right after each
+				#    scene at `<size>_bot/NN-key.png`, and **momentary scenes** (coach-mark cards, raised notices, prompts, sheets)
+				#    are caught by polling during playback for the first moment the overlay is visible.
 				var waited := 0.0
 				var seen: Dictionary = {}
 				while sim.get("_running") and waited < 90.0:
@@ -96,13 +96,13 @@ func _initialize() -> void:
 						for node in root.find_children("*", cls, true, false):
 							var overlay := node as Control
 							if overlay == null or not overlay.is_visible_in_tree() or overlay.get_global_rect().get_area() <= 0.0: continue
-							# 코치마크는 **단계마다** 한 장 — 마지막 단계의 `Done` 이 두 줄로 갈라졌던 곳이다(사용자 지적).
+							# One shot **per step** of the coach mark — the last step's `Done` is where it split across two lines (user report).
 							var tag: String = cls
 							if cls == "GoCoachMark" and overlay.get("step") != null: tag = "%s_step%d" % [cls, int(overlay.get("step")) + 1]
 							if seen.has(tag): break
-							# 🛑 `visible` 이 켜진 **첫 프레임**은 페이드인 알파 0 이라 카드가 그림에 없다(실측: 화살표만
-							#    남았다). 그렇다고 고정 시간을 기다리면 4× 봇이 그새 `Done` 을 눌러 카드가 사라진다(실측).
-							#    코치마크는 **카드 알파가 찰 때까지만** 기다렸다가 곧바로 찍는다.
+							# 🛑 The **first frame** with `visible` on is still at fade-in alpha 0, so the card is missing from the picture
+							#    (measured: only the arrow was left). Waiting a fixed time instead lets the 4× bot press `Done` meanwhile (measured).
+							#    For coach marks, wait **only until the card's alpha has filled** and shoot straight away.
 							if cls == "GoCoachMark":
 								var card_node := overlay.get("card") as CanvasItem
 								if card_node != null and card_node.modulate.a < 0.9: break
@@ -119,9 +119,9 @@ func _initialize() -> void:
 	quit(0)
 
 
-## 🛑 데모의 `_scale_window` 는 창 크기가 바뀔 때마다 **화면 배율**(레티나 2×)을 곱해 콘텐츠를 키운다 —
-##    헤드리스 검사는 창이 없어 배율이 1 이라 폰 배치가 나오지만, 창을 띄운 촬영에서는 390dp 창에
-##    195dp 만 담겨 제목이 낱말 안에서 쪼개졌다(실측 `quic`/`k`). 찍기 직전에 배율을 1 로 되돌린다.
+## 🛑 The demo's `_scale_window` multiplies the content by the **display scale** (retina 2×) on every window resize —
+##    headless checks have no window so the scale is 1 and the phone layout comes out, but in a windowed shot a 390dp
+##    window held only 195dp and titles broke inside words (measured `quic`/`k`). Reset the scale to 1 right before shooting.
 func _pin_scale(size: Vector2i) -> void:
 	root.content_scale_factor = 1.0
 	root.content_scale_size = size

@@ -1,49 +1,49 @@
-## 🖥 **개발자 콘솔** — 치트·디버그 명령을 치고, 로그를 본다.
+## 🖥 **Developer console** — type cheat and debug commands, watch the log.
 ##
 ## ```gdscript
 ## var console := GoConsole.new()
 ## add_child(console)
-## console.register("give", "아이템을 준다: give <id> <수량>", func(args: PackedStringArray) -> String:
-##     return "준비됨 %s" % args)
-## console.register("tp", "좌표로 옮긴다: tp <x> <z>", teleport)
+## console.register("give", "Grant an item: give <id> <count>", func(args: PackedStringArray) -> String:
+##     return "granted %s" % args)
+## console.register("tp", "Teleport to a coordinate: tp <x> <z>", teleport)
 ##
-## # 어디서든 로그를 남긴다
-## console.log_line("서버에 붙었다")
+## # Log from anywhere
+## console.log_line("connected to the server")
 ## ```
 ##
-## ## 🛑 이것은 **개발자용**이다 — 배포 빌드에서 열리지 않게 한다
-## 기본값 `debug_only` 가 켜져 있어 릴리스 빌드(`OS.is_debug_build() == false`)에서는 아무리
-## 불러도 열리지 않는다. 치트 명령이 플레이어 손에 들어가면 그 순간 게임 경제가 끝난다.
-## 🔑 QA 빌드에서만 열고 싶으면 `debug_only = false` 로 두고 **직접** 조건을 건다.
+## ## 🛑 This is **for developers** — keep it from opening in shipping builds
+## `debug_only` is on by default, so in a release build (`OS.is_debug_build() == false`) it never opens
+## no matter how often you call it. The moment cheat commands reach players, the game economy is over.
+## 🔑 To open it in QA builds only, set `debug_only = false` and gate it **yourself**.
 ##
-## ## 🔑 명령 팔레트로도 쓴다
-## 이름을 치면 걸러지는 목록이 뜬다 — 명령을 외우지 않아도 된다. 위/아래로 고르고 Enter 로 실행한다.
+## ## 🔑 It doubles as a command palette
+## Type a name and a filtered list appears — nobody has to memorize commands. Pick with up/down, run with Enter.
 ##
-## ## 🛑 로그는 잘라 낸다
-## 무한히 쌓으면 몇 분 만에 메모리를 먹고 스크롤이 무거워진다. `max_lines`(기본 400) 를 넘으면
-## 오래된 줄부터 버린다.
+## ## 🛑 The log is trimmed
+## Left to grow forever it eats memory within minutes and scrolling turns heavy. Past `max_lines` (400 by
+## default) the oldest lines are dropped first.
 @tool
 class_name GoConsole
 extends CanvasLayer
 
-## 명령을 실행했다.
+## A command ran.
 signal executed(command: String, args: PackedStringArray, result: String)
 
-## 이 층에 뜬다 — **무엇보다 위**여야 한다(대화상자 위에서도 디버깅할 수 있어야 한다).
+## The layer it shows on — it must sit **above everything** (you have to be able to debug on top of a dialog).
 @export var layer_index := 200
 
-## 릴리스 빌드에서는 열리지 않는다. 🛑 끄기 전에 두 번 생각한다.
+## Never opens in a release build. 🛑 Think twice before turning this off.
 @export var debug_only := true
 
-## 로그를 몇 줄까지 들고 있을 것인가.
+## How many log lines to keep.
 @export var max_lines := 400
 
-## 차지할 화면 높이 비율.
+## Fraction of the screen height it takes up.
 @export_range(0.2, 1.0, 0.01) var height_ratio := 0.55
 
-## 입력줄.
+## The input line.
 var input: LineEdit
-## 로그가 쌓이는 칸.
+## The pane the log piles up in.
 var output: RichTextLabel
 
 var _panel: PanelContainer
@@ -56,8 +56,8 @@ var _lines := 0
 var _open := false
 
 
-## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
-## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+## 🪟 **Panel background opacity** (0.0~1.0) — for this one panel only. Negative means whatever the theme/config decided.
+## 🛑 Only the background thins out — text and icons stay crisp.
 var alpha := -1.0:
 	set(value):
 		alpha = value
@@ -67,7 +67,7 @@ var alpha := -1.0:
 func _init() -> void:
 	layer = layer_index
 	visible = false
-	process_mode = Node.PROCESS_MODE_ALWAYS   # 🔑 게임을 멈춘 채로도 디버깅할 수 있어야 한다
+	process_mode = Node.PROCESS_MODE_ALWAYS   # 🔑 you have to be able to debug while the game is paused
 
 	_root = Control.new()
 	_root.name = "ConsoleRoot"
@@ -102,7 +102,7 @@ func _init() -> void:
 
 	input = GoStyle.line_edit("")
 	input.name = "Input"
-	# 🛑 명령은 번역·자동완성·대문자 보정을 **하지 않는다** — 친 그대로 가야 한다.
+	# 🛑 Commands get **no** translation, autocomplete or capitalization fixups — they must go through exactly as typed.
 	input.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	input.text_submitted.connect(_submit)
 	input.text_changed.connect(_on_typed)
@@ -115,8 +115,8 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		get_viewport().size_changed.connect(_relayout)
 	GoUi.watch(_on_ui_changed)
-	# 🛑 애드온 코드에 한 언어의 글자를 박지 않는다 — 콘솔은 개발자용이지만 **번역하는 팀도 있다**.
-	#    영어는 개발 도구의 공통어라 기본으로 두고, 바꾸려면 `register()` 로 같은 이름을 덮어쓴다.
+	# 🛑 Don't hardcode one language's text into addon code — the console is for developers, but **some teams translate it**.
+	#    English is the lingua franca of dev tools, so it stays the default; to change it, overwrite the same name with `register()`.
 	register("help", "List the commands", func(_a: PackedStringArray) -> String: return _help())
 	register("clear", "Clear the log", func(_a: PackedStringArray) -> String:
 		output.clear()
@@ -128,8 +128,8 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 명령 하나를 등록한다. `action` 은 `func(args: PackedStringArray) -> String` 이고,
-## 돌려준 글이 로그에 찍힌다(빈 글이면 안 찍는다).
+## Registers one command. `action` is `func(args: PackedStringArray) -> String`,
+## and whatever it returns is printed to the log (an empty string prints nothing).
 func register(command: String, help: String, action: Callable) -> void:
 	_commands[command.strip_edges().to_lower()] = {"help": help, "action": action}
 
@@ -142,7 +142,7 @@ func commands() -> Array:
 	return _commands.keys()
 
 
-## 콘솔을 연다. 🛑 릴리스 빌드에서는 `debug_only` 가 켜져 있으면 **아무 일도 하지 않는다.**
+## Opens the console. 🛑 In a release build with `debug_only` on it **does nothing.**
 func open() -> void:
 	if debug_only and not OS.is_debug_build(): return
 	if _open: return
@@ -168,7 +168,7 @@ func is_open() -> bool:
 	return _open
 
 
-## 로그 한 줄. `tone` 은 색 토큰(`GoTheme.DANGER` 등).
+## One log line. `tone` is a color token (`GoTheme.DANGER`, …).
 func log_line(message: String, tone := GoTheme.TEXT) -> void:
 	if output == null: return
 	output.push_color(GoUi.color(tone))
@@ -176,7 +176,7 @@ func log_line(message: String, tone := GoTheme.TEXT) -> void:
 	output.pop()
 	output.newline()
 	_lines += 1
-	# 🛑 오래된 줄을 버린다 — 안 그러면 긴 세션에서 메모리와 스크롤이 함께 무거워진다.
+	# 🛑 Drop the oldest lines — otherwise memory and scrolling both get heavy over a long session.
 	if _lines > max_lines:
 		var keep := output.get_parsed_text().split("\n")
 		var trimmed := keep.slice(maxi(0, keep.size() - max_lines))
@@ -185,10 +185,10 @@ func log_line(message: String, tone := GoTheme.TEXT) -> void:
 		_lines = trimmed.size()
 
 
-## 명령 한 줄을 실행한다(콘솔을 열지 않고 코드에서 불러도 된다).
+## Runs one command line (callable from code without opening the console).
 func run(line: String) -> String:
-	# 🛑 **`open()` 만 막아서는 소용이 없다.** 콘솔을 열지 않고 코드에서 `run("give …")` 을 부를 수
-	#    있으므로, 치트가 릴리스 빌드에 그대로 남는다 — 막는 자리는 여기다.
+	# 🛑 **Blocking `open()` alone is useless.** Code can call `run("give …")` without ever opening the
+	#    console, so the cheats would survive into the release build — this is the place to block them.
 	if debug_only and not OS.is_debug_build(): return ""
 	var trimmed := line.strip_edges()
 	if trimmed.is_empty(): return ""
@@ -217,7 +217,7 @@ func _submit(line: String) -> void:
 	run(line)
 
 
-## 치는 동안 이름이 맞는 명령을 보여 준다 — **명령을 외우지 않아도 되게** 하는 것이 핵심이다.
+## Shows the commands whose name matches while you type — the whole point is that **nobody has to memorize commands**.
 func _on_typed(text: String) -> void:
 	for child in _suggest.get_children(): child.queue_free()
 	var needle := text.strip_edges().to_lower()
@@ -252,7 +252,7 @@ func _input(event: InputEvent) -> void:
 	if not _open: return
 	var key := event as InputEventKey
 	if key == null or not key.pressed: return
-	# 위·아래로 지난 명령을 꺼낸다 — 같은 명령을 몇 번씩 치는 것이 디버깅의 대부분이다.
+	# Up/down recalls past commands — typing the same command over and over is most of debugging.
 	if key.keycode == KEY_UP and _history.size() > 0:
 		_history_at = maxi(0, _history_at - 1)
 		input.text = _history[_history_at]
@@ -279,7 +279,7 @@ func _relayout() -> void:
 
 func _restyle() -> void:
 	_panel.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box(-1, -1, alpha))
-	# 🔑 로그는 **고정폭 글꼴**이 읽기 쉽다 — 좌표·수치가 세로로 줄이 맞는다. 테마에 없으면 기본 글꼴.
+	# 🔑 The log reads best in a **monospace font** — coordinates and numbers line up in columns. Falls back to the default font when the theme has none.
 	output.add_theme_font_size_override(&"normal_font_size", GoUi.font_size(GoTheme.ROLE_COMPACT))
 	output.add_theme_color_override(&"default_color", GoUi.color(GoTheme.TEXT))
 

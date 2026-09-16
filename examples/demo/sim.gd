@@ -1,21 +1,22 @@
-## ▶️ **gohud 데모 — 스스로 돌기도 하고, 손으로 만지기도 한다.**
+## ▶️ **The gohud demo — it runs itself, and you can work it by hand.**
 ##
-## 두 가지 길이 있다.
-##   **Tour**    시작을 누르면 열여섯 장면을 차례로 지난다. 장면마다 화면을 새로 짓고, 봇이 그
-##               위젯을 실제로 누르고·치고·끌고·굴린다(`SimBot`).
-##   **Explore** 왼쪽 사이드바에서 위젯 하나를 고르면 그 장면만 짓고 **사람이 직접** 만진다.
-##               오른쪽 "Play this widget" 을 누르면 같은 화면 위에서 봇이 그 장면만 시연한다.
+## There are two ways in.
+##   **Tour**    Press start and it walks through sixteen scenes. Each one builds its screen afresh and
+##               the bot really presses, types, drags and scrolls those widgets (`SimBot`).
+##   **Explore** Pick one widget in the left sidebar and only that scene is built, for **you** to work
+##               by hand. Press "Play this widget" on the right and the bot demonstrates that one
+##               scene on the same screen.
 ##
 ## ```
-## godot                       # 이 폴더에서
+## godot                       # from this folder
 ## ```
 ##
-## 왼쪽이 위젯 목록, 가운데가 무대(폰 한 대 폭), 오른쪽이 **위젯이 실제로 부른 콜백의 기록**과
-## 지금 보는 위젯의 설명이다. 기록줄이 움직인다는 것은 그림이 아니라 진짜로 눌렸다는 뜻이다 —
-## 봇이 눌러도, 사람이 눌러도 같은 줄이 움직인다.
+## On the left is the widget list, in the middle the stage (one phone wide), and on the right **a log of
+## the callbacks the widgets really fired**, plus a note on the widget you are looking at. A log line
+## moving means it was truly pressed, not a picture — the same line moves whether the bot or you pressed.
 ##
-## 진행 중: `Space` 멈춤·이어가기 · `←` `→` 장면 이동 · `Esc` 처음으로
-## 탐색 중: `←` `→` 이전·다음 위젯 · `Space` 이 위젯 시연 · `Esc` 처음으로
+## While running: `Space` pause and resume · `←` `→` move between scenes · `Esc` back to the start
+## While exploring: `←` `→` previous and next widget · `Space` play this widget · `Esc` back to the start
 extends Control
 
 const ThemePicker := preload("theme_picker.gd")
@@ -34,7 +35,7 @@ const GREEN := Color("#81dcb0")
 const BG := Color("#0b111e")
 const PANEL := Color("#121c2b")
 const SUBTITLE_INK := Color("#afbbce")
-const NARROW := 1080.0          ## 이보다 좁으면 사이드바·기록을 접고 상단 메뉴로 고른다
+const NARROW := 1080.0          ## Narrower than this and the sidebar and log fold away; the top menu picks instead
 const LOG_LINES := 9
 const SIDE_WIDTH := 236.0
 const PANEL_WIDTH := 256.0
@@ -44,12 +45,12 @@ var _entries: Array[Dictionary] = []
 var _bot: SimBot
 var _stage: SimStage
 
-var _side_box: Control            ## 왼쪽 위젯 목록
+var _side_box: Control            ## The widget list on the left
 var _side_scroll: GoScroll
 var _rows: Array[Button] = []
 var _row_labels: Array[Label] = []
 var _play_all: Button
-var _log_box: Control             ## 오른쪽 기록·소개
+var _log_box: Control             ## The log and the notes on the right
 var _log: VBoxContainer
 var _log_empty: Control
 var _about_icon_holder: CenterContainer
@@ -69,8 +70,8 @@ var _progress: ProgressBar
 var _pause_button: Button
 var _rate_button: Button
 var _cinema_button: Button
-var _picker: MenuButton           ## 좁은 창에서 사이드바를 대신하는 위젯 메뉴
-var _cover: Control               ## 시작·완료 화면
+var _picker: MenuButton           ## The widget menu that stands in for the sidebar in a narrow window
+var _cover: Control               ## The start and finish screen
 var _cover_card: Control
 var _controls: HBoxContainer
 var _top: VBoxContainer
@@ -84,8 +85,8 @@ var _jump := 0
 var _running := false
 var _return_home := false
 var _completed := 0
-var _explore := -1                ## 탐색 중인 장면. -1 이면 탐색 중이 아니다
-var _pending_explore := -1        ## 투어를 접은 뒤 열 장면
+var _explore := -1                ## The scene being explored. -1 means not exploring
+var _pending_explore := -1        ## The scene to open once the tour is folded up
 var _scaling := false
 var _cinema := false
 var _counting_down := false
@@ -93,11 +94,11 @@ signal tour_finished
 signal chapter_finished(index: int)
 
 
-## 명령줄에서 자동으로 돌린다 — 검사와 화면 녹화에 쓴다.
-##   godot -- --auto            시작 버튼을 대신 눌러 준다
-##   godot -- --auto --turbo    네 배속으로
-##   godot -- --auto --exit     다 보고 나면 스스로 닫는다
-##   godot -- --explore=hud     그 위젯을 탐색 모드로 바로 연다
+## Runs itself from the command line — used for checks and for screen recordings.
+##   godot -- --auto            presses the start button for you
+##   godot -- --auto --turbo    at four times the speed
+##   godot -- --auto --exit     closes itself once it has been through everything
+##   godot -- --explore=hud     opens that widget straight into explore mode
 var _auto_exit := false
 var _trace := false
 var _shot_dir := ""
@@ -127,7 +128,7 @@ func _ready() -> void:
 	_relayout.call_deferred()
 
 
-## 설정 한 장이 화면 전체의 모습을 정한다.
+## One settings resource decides the look of the whole screen.
 func _configure() -> void:
 	TranslationServer.set_locale("en")
 	Input.use_accumulated_input = false
@@ -172,7 +173,7 @@ func _scale_window() -> void:
 	_scaling = false
 
 
-## 장면 키 → 차례. 모르는 키는 -1.
+## Scene key → its place in the order. An unknown key gives -1.
 func index_of(key: StringName) -> int:
 	for index in _entries.size():
 		if _entries[index].key == key: return index
@@ -182,7 +183,7 @@ func index_of(key: StringName) -> int:
 func _draw() -> void:
 	var view := size
 	draw_rect(Rect2(Vector2.ZERO, view), _bg)
-	# 은은한 점 격자 — 무대가 허공에 뜬 것처럼 보이지 않게 바닥의 질감을 준다.
+	# A faint dot grid — it gives the floor a texture, so the stage does not look as if it hangs in the void.
 	var step := 36.0
 	var dot := Color(_accent, 0.05)
 	var x := 18.0
@@ -192,7 +193,7 @@ func _draw() -> void:
 			draw_circle(Vector2(x, y), 1.1, dot)
 			y += step
 		x += step
-	# 두 개의 부드러운 광원: 왼쪽 위는 강조색, 오른쪽 아래는 보라.
+	# Two soft lights: the accent at the top left, violet at the bottom right.
 	_glow(Vector2(view.x * 0.16, view.y * 0.10), 380.0, _accent)
 	_glow(Vector2(view.x * 0.88, view.y * 0.94), 340.0, VIOLET)
 
@@ -202,7 +203,7 @@ func _glow(center: Vector2, radius: float, color: Color) -> void:
 		draw_circle(center, radius * float(ring) / 16.0, Color(color, 0.0028))
 
 
-# ── 화면 ───────────────────────────────────────────────────────────────
+# ── Screen ─────────────────────────────────────────────────────────────
 
 func _build() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -260,7 +261,7 @@ func _panel_box(color := PANEL, radius := 14, inset := 16) -> StyleBox:
 	return surface
 
 
-## 강조색 원판 위의 아이콘 — 로고 마크와 소개 패널이 쓴다.
+## An icon on an accent disc — used by the logo mark and the notes panel.
 func _icon_disc(icon: StringName, diameter: int, color := Color.TRANSPARENT) -> PanelContainer:
 	if color.a == 0.0: color = _accent
 	var disc := PanelContainer.new()
@@ -389,7 +390,7 @@ func _side_panel() -> Control:
 		var labels := row.find_children("*", "Label", true, false)
 		var label := labels[0] as Label if not labels.is_empty() else null
 		if label != null:
-			# 한 줄에 맞춘다 — 목록이 접히면 열여섯 개가 화면을 넘긴다.
+			# Keep it to one line — wrapped, the sixteen entries run off the screen.
 			label.add_theme_font_size_override(&"font_size", 15)
 			label.autowrap_mode = TextServer.AUTOWRAP_OFF
 			label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -414,7 +415,7 @@ func _log_panel() -> Control:
 	var column := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	card.add_child(column)
 
-	# 위: 지금 보는 위젯.
+	# Top: the widget you are looking at.
 	var about := GoStyle.row(10)
 	_about_icon_holder = CenterContainer.new()
 	_about_icon_holder.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
@@ -436,7 +437,7 @@ func _log_panel() -> Control:
 
 	column.add_child(GoStyle.divider())
 
-	# 아래: 콜백 기록.
+	# Bottom: the callback log.
 	var head := GoStyle.row(8)
 	var heading := GoStyle.section("Live activity", false)
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -482,7 +483,7 @@ func _set_caption_icon(icon: StringName, color := Color.TRANSPARENT) -> void:
 	_caption_icon_holder.add_child(GoUi.icons().node(icon, 20, color))
 
 
-## 좁은 창에서는 무대만 남긴다 — 폰 폭에서도 데모가 성립해야 한다. 위젯 고르기는 상단 메뉴가 맡는다.
+## In a narrow window only the stage stays — the demo has to hold up at phone width too. Picking a widget is the top menu's job.
 func _relayout() -> void:
 	var wide := size.x >= NARROW
 	if is_instance_valid(_side_box): _side_box.visible = wide and not _cinema
@@ -498,7 +499,7 @@ func _relayout() -> void:
 		_picker.visible = not wide or _cinema
 		Input.mouse_mode = Input.MOUSE_MODE_HIDDEN if _cinema and _running else Input.MOUSE_MODE_VISIBLE
 		_cinema_button.text = "Cinema on" if _cinema else "Cinema"
-	# 폰 폭에서는 로고만 남긴다 — 진행 표시와 꼬리표까지 두면 글자가 잘린다.
+	# At phone width only the logo stays — keep the progress and the tag as well and the text is cut off.
 	if is_instance_valid(_journey): _journey.visible = size.x >= 800.0
 	if is_instance_valid(_tag): _tag.visible = size.x >= 640.0
 	if is_instance_valid(_progress): _progress.visible = size.x >= 900.0
@@ -510,7 +511,7 @@ func _relayout() -> void:
 	queue_redraw()
 
 
-# ── 시작·완료 화면 ─────────────────────────────────────────────────────
+# ── Start and finish screen ────────────────────────────────────────────
 
 func _cover_screen() -> VBoxContainer:
 	_drop_cover()
@@ -619,14 +620,14 @@ func _show_outro() -> void:
 	again.grab_focus()
 
 
-# ── 진행 ───────────────────────────────────────────────────────────────
+# ── Running ────────────────────────────────────────────────────────────
 
 func _auto_start() -> void:
 	await _bot.settle(0.1)
 	await _bot.click(_cover.find_child("Start", true, false) as Control)
 
 
-## 전체 투어.
+## The whole tour.
 func _start() -> void:
 	if _running: return
 	_explore = -1
@@ -635,7 +636,7 @@ func _start() -> void:
 	_start_range(0, _entries.size())
 
 
-## 탐색 중인 장면 하나만 봇이 시연한다. 끝나면 같은 장면을 다시 지어 탐색으로 돌아온다.
+## The bot demonstrates only the scene being explored. When it ends, that same scene is rebuilt and exploring resumes.
 func _clear_log() -> void:
 	for child in _log.get_children():
 		_log.remove_child(child)
@@ -765,7 +766,7 @@ func _run() -> void:
 		get_tree().quit(0 if _bot.failures.is_empty() else 1)
 
 
-## 장면이 끝난 모습을 파일로 남긴다 — `--shots=<폴더>`. 눈으로 확인하는 가장 빠른 길이다.
+## Saves how each scene ended as a file — `--shots=<folder>`. The fastest way to check it with your eyes.
 func _capture(number: int, key: StringName) -> void:
 	if _shot_dir.is_empty() or DisplayServer.get_name() == "headless": return
 	await RenderingServer.frame_post_draw
@@ -774,9 +775,9 @@ func _capture(number: int, key: StringName) -> void:
 	image.save_png("%s/%02d-%s.png" % [_shot_dir, number, key])
 
 
-# ── 탐색 ───────────────────────────────────────────────────────────────
+# ── Exploring ──────────────────────────────────────────────────────────
 
-## 🔑 장면 하나를 짓고 사람에게 맡긴다. 투어 중이면 투어를 접은 뒤 연다.
+## 🔑 Builds one scene and hands it over to the person. During a tour, the tour is folded up first.
 func _open_explore(index: int) -> void:
 	index = clampi(index, 0, _entries.size() - 1)
 	if _running:
@@ -803,7 +804,7 @@ func _open_explore(index: int) -> void:
 	_relayout()
 
 
-## 화면 전체를 덮는 장면에서 "위젯 목록으로" — 무대를 비우고 사이드바를 다시 드러낸다.
+## "Back to the widget list" from a scene that covers the whole screen — clears the stage and brings the sidebar back.
 func _leave_explore() -> void:
 	if _running: return
 	_stage.clear()
@@ -849,8 +850,8 @@ func _stop() -> void:
 	_bot.skip()
 
 
-## 상단의 ▶/⏸ — 투어 중에는 멈춤·이어가기, 탐색 중에는 "이 위젯 시연". 폰처럼 오른쪽 패널이 접힌
-## 화면에서는 이것이 시연을 시작하는 유일한 버튼이다.
+## The ▶/⏸ at the top — pause and resume during a tour, "play this widget" while exploring. On a screen
+## where the right panel is folded away, as on a phone, this is the only button that starts a demo.
 func _toggle_pause() -> void:
 	if not _running:
 		if _explore >= 0 and not is_instance_valid(_cover): _play_current()
@@ -884,7 +885,7 @@ func _set_mode(text: String, color: Color) -> void:
 	_mode_label.add_theme_color_override(&"font_color", GoUi.skin().chip_ink(color))
 
 
-## 사이드바·진행·번호를 현재 장면에 맞춘다.
+## Brings the sidebar, the progress and the number in line with the current scene.
 func _sync_marks() -> void:
 	var touring := _running and _explore < 0
 	var active := _index if (_running or _explore >= 0) and _index < _entries.size() else -1
@@ -907,7 +908,7 @@ func _sync_marks() -> void:
 				else: label.remove_theme_color_override(&"font_color")
 
 
-## 목록 행의 높이는 다음 프레임에야 정해진다 — 두 프레임 뒤에 굴린다.
+## A list row's height is only settled on the next frame — so we scroll two frames later.
 func _reveal_row(row: Control) -> void:
 	if not is_instance_valid(_side_scroll) or not _side_scroll.is_inside_tree(): return
 	await get_tree().process_frame
@@ -925,7 +926,7 @@ func _row_box(alpha: float) -> StyleBoxFlat:
 	return box
 
 
-## 오른쪽 소개 패널을 현재 장면에 맞춘다.
+## Brings the notes panel on the right in line with the current scene.
 func _sync_about() -> void:
 	if not is_instance_valid(_about_title): return
 	for child in _about_icon_holder.get_children(): child.queue_free()
@@ -984,13 +985,13 @@ func _on_logged(text: String) -> void:
 		oldest.queue_free()
 
 
-## 글을 치는 칸이 포커스를 쥐고 있는가 — 탐색 중에는 그 키를 위젯에 양보한다.
+## Does a text field hold the focus — while exploring, the key is yielded to the widget.
 func _typing() -> bool:
 	var owner := get_viewport().gui_get_focus_owner()
 	return owner is LineEdit or owner is TextEdit
 
 
-# 🛑 `keycode` 로만 본다 — 봇이 글을 칠 때 보내는 키는 `unicode` 만 실은 것이라 여기 걸리지 않는다.
+# 🛑 Look at `keycode` only — the keys the bot sends while typing carry `unicode` alone, so they never catch here.
 func _on_shortcut(event: InputEvent) -> void:
 	if _theme_popup_open or not _theme_pending.is_empty(): return
 	if event.has_meta(&"simulated"): return
@@ -1009,7 +1010,7 @@ func _on_shortcut(event: InputEvent) -> void:
 		accept_event()
 		return
 	if not _running:
-		# 시작 화면이 떠 있으면 키는 그 화면의 버튼이 받는다. 탐색 중이거나 빈 무대면 여기서 듣는다.
+		# While the start screen is up, its buttons take the keys. When exploring, or on an empty stage, we listen here.
 		if is_instance_valid(_cover): return
 		if key.keycode == KEY_ESCAPE:
 			_stop()

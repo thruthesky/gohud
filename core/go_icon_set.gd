@@ -1,46 +1,46 @@
-## 🎨 갈아 끼우는 **아이콘 세트**. gohud 의 모든 위젯은 아이콘을 *이름*으로만 부르고,
-## 그 이름이 무엇으로 그려지는지는 이 리소스 하나가 정한다.
+## 🎨 A swappable **icon set**. Every gohud widget calls an icon by *name* alone,
+## and this one resource decides what that name gets drawn with.
 ##
-## ## 왜 리소스인가
-## 아이콘을 코드에 `preload` 로 박으면 쓰는 쪽이 바꿀 길이 없다. 그래서 **`.tres` 한 장**으로
-## 빼 두고, 프로젝트가 자기 세트를 만들어 `GoConfig.icons` 에 꽂으면 위젯 코드를 한 줄도
-## 고치지 않고 아이콘이 통째로 바뀐다.
+## ## Why a resource
+## `preload` an icon into the code and the user has no way to change it. So it is pulled out into **a single
+## `.tres`**: a project builds its own set, plugs it into `GoConfig.icons`, and every icon changes without a
+## single line of widget code being touched.
 ##
-## ## 두 가지 방식을 모두 받는다
-## | 방식 | 채우는 칸 | 쓰는 곳 |
+## ## It takes either approach
+## | Approach | Fields to fill | Where it is used |
 ## |---|---|---|
-## | **텍스처**(SVG·PNG) | `textures` | gohud 기본 세트. 색은 `modulate` 로 입힌다 |
-## | **아이콘 폰트**(Font Awesome·Material Symbols 등) | `font` + `codepoints` | 이미 폰트를 쓰는 프로젝트 |
+## | **Textures** (SVG·PNG) | `textures` | gohud's default set. Color goes on through `modulate` |
+## | **An icon font** (Font Awesome·Material Symbols and the like) | `font` + `codepoints` | projects already using a font |
 ##
-## 둘을 섞어도 된다 — `textures` 를 먼저 보고, 없으면 `codepoints`, 그래도 없으면 `fallback`
-## 세트로 내려간다. 그래서 **기본 세트를 fallback 으로 두고 바꾸고 싶은 몇 개만 덮어쓰는**
-## 부분 교체가 가능하다.
+## Mixing the two is fine — it looks at `textures` first, then `codepoints`, and failing that drops to the
+## `fallback` set. That is what makes **partial replacement** possible: keep the default set as the fallback
+## and override only the few you want changed.
 ##
-## ## 쓰는 법
+## ## How to use it
 ## ```gdscript
-## # ① 이름으로 노드 하나 — 텍스처든 폰트든 같은 호출이다.
+## # ① One node by name — the same call whether it is a texture or a font.
 ## var mark := icons.node(GoIconSet.CLOSE, 20, Color.WHITE)
 ##
-## # ② 버튼에 붙이기(텍스처면 Button.icon, 폰트면 자식 Label 로 알아서 간다)
+## # ② Attaching it to a button (a texture goes to Button.icon, a font to a child Label, on its own)
 ## GoStyle.apply_icon(button, GoIconSet.SETTINGS)
 ##
-## # ③ 부분 교체 세트 만들기
+## # ③ Building a partial-replacement set
 ## var mine := GoIconSet.new()
-## mine.fallback = GoUi.icons()            # 나머지는 기본 세트 그대로
+## mine.fallback = GoUi.icons()            # everything else stays the default set
 ## mine.textures = {GoIconSet.CLOSE: preload("res://my_close.svg")}
 ## ```
 ##
-## 🛑 이 리소스는 **위젯을 참조하지 않는다** — `GoStyle`·`GoSurface` 가 이것을 참조하므로,
-##    반대 방향을 만들면 순환 의존이 되어 `.new()` 부터 무너진다
-##    (스타일 → 아이콘 → 아이콘 버튼 → 스타일 로 고리가 닫히면 실제로 그렇게 죽는다).
+## 🛑 This resource **never references a widget** — `GoStyle`·`GoSurface` reference it, so a reference in the
+##    other direction becomes a circular dependency and it collapses as early as `.new()`
+##    (close the cycle style → icon → icon button → style and it really does die that way).
 @tool
 class_name GoIconSet
 extends Resource
 
-# ── 의미 이름 상수 ──────────────────────────────────────────────────────
-# 위젯과 게임 코드는 이 이름만 쓴다. 세트를 갈아 끼워도 이름은 그대로다.
-# 🛑 여기에 없는 이름을 써도 된다 — `textures`/`codepoints` 에 넣기만 하면 그대로 찾는다.
-#    상수는 오타를 막고 에디터 자동완성을 받기 위한 것이지 흰 목록이 아니다.
+# ── Semantic name constants ────────────────────────────────────────────
+# Widget and game code use nothing but these names. Swap the set and the names stay.
+# 🛑 Names not listed here are fine too — put them in `textures`/`codepoints` and they are found all the same.
+#    The constants are here to stop typos and get editor completion, not to be an allowlist.
 
 const CLOSE := &"close"
 const BACK := &"back"
@@ -135,64 +135,64 @@ const POTION := &"potion"
 const SKULL := &"skull"
 const RUN := &"run"
 
-# ── 세트 내용 ──────────────────────────────────────────────────────────
+# ── What the set holds ─────────────────────────────────────────────────
 
-## 사람이 읽는 세트 이름 — 에디터 인스펙터와 갤러리 예제가 보여 준다.
+## The human-readable set name — shown by the editor inspector and the gallery example.
 @export var set_name := ""
 
-## 출처·라이선스 한 줄. 🛑 남의 아이콘을 넣었다면 **여기에 반드시 적는다** — 배포판의
-##    `THIRD_PARTY_NOTICES.md` 가 이 칸을 근거로 쓰인다.
+## One line of source·license. 🛑 If you put somebody else's icons in, **write it here without fail** — the
+##    release's `THIRD_PARTY_NOTICES.md` is written from this field.
 @export_multiline var attribution := ""
 
-## 이름 → `Texture2D`. gohud 기본 세트가 쓰는 방식이다.
+## Name → `Texture2D`. The approach gohud's default set uses.
 @export var textures: Dictionary[StringName, Texture2D] = {}
 
-## 아이콘 폰트. `codepoints` 와 짝이다.
+## The icon font. It pairs with `codepoints`.
 @export var font: Font
 
-## 이름 → 유니코드 코드포인트(정수). Font Awesome 의 `0xf00d` 같은 값을 그대로 넣는다.
+## Name → Unicode codepoint (integer). Put a value like Font Awesome's `0xf00d` straight in.
 @export var codepoints: Dictionary[StringName, int] = {}
 
-## 아이콘 폰트의 글리프는 보통 네모 칸보다 작게 그려진다 — 요청한 크기에 이 값을 곱해
-## 텍스처 아이콘과 눈에 보이는 크기를 맞춘다. 1.0 이면 보정 없음.
+## Glyphs in an icon font are usually drawn smaller than their box — the requested size is multiplied by this
+## to match the visible size of a texture icon. 1.0 means no correction.
 @export_range(0.5, 2.0, 0.01) var font_size_ratio := 1.0
 
-## 이 세트에 없는 이름을 찾아 볼 다음 세트. 기본 세트를 여기 두면 **몇 개만 덮어쓰는**
-## 부분 교체가 된다. 🛑 순환으로 연결하지 말 것(A→B→A) — `_seen` 가드가 막지만 낭비다.
+## The next set to look in for a name this set lacks. Put the default set here and you get **partial replacement**,
+## overriding only a few. 🛑 Do not wire it into a cycle (A→B→A) — the `_seen` guard stops it, but it is waste.
 @export var fallback: GoIconSet
 
-## 텍스처 아이콘에 곱할 기본 색. 투명이면 부르는 쪽이 준 색을 그대로 쓴다.
+## The default color multiplied into texture icons. Transparent means the color the caller gave is used as is.
 @export var tint := Color.TRANSPARENT
 
 
-# ── 조회 ───────────────────────────────────────────────────────────────
+# ── Lookups ────────────────────────────────────────────────────────────
 
-## 이 이름을 그릴 수 있는가(폴백 포함).
+## Can this name be drawn (fallback included).
 func has_icon(icon: StringName) -> bool:
 	return not _resolve(icon, {}).is_empty()
 
 
-## 텍스처 아이콘. 폰트 전용 이름이면 `null` 이다 — 부르는 쪽은 `node()` 를 쓰는 편이 안전하다.
+## The texture icon. `null` for a font-only name — the caller is safer using `node()`.
 func texture(icon: StringName) -> Texture2D:
 	return _resolve(icon, {}).get("texture")
 
 
-## 아이콘 폰트의 문자 한 개. 텍스처 전용 이름이면 빈 문자열이다.
+## A single character of the icon font. An empty string for a texture-only name.
 func glyph(icon: StringName) -> String:
 	var found := _resolve(icon, {})
 	return String.chr(found.codepoint) if found.has("codepoint") else ""
 
 
-## 이 이름을 그리는 폰트(폴백 세트의 폰트일 수 있다).
+## The font that draws this name (it may be the fallback set's font).
 func glyph_font(icon: StringName) -> Font:
 	return _resolve(icon, {}).get("font")
 
 
-## 🎯 **통일 API** — 이름 하나로 그릴 준비가 된 `Control` 을 얻는다.
-## 세트가 텍스처면 `TextureRect`, 아이콘 폰트면 `Label` 이 나온다. 부르는 쪽은 구별할 필요가 없다.
+## 🎯 **The unified API** — one name gets you a `Control` ready to draw.
+## A texture set yields a `TextureRect`, an icon font a `Label`. The caller has no need to tell them apart.
 ##
-## `size` 는 dp(= Theme 상수와 같은 좌표계)이고, 노드는 정확히 그 정사각형을 최소 크기로 잡는다 —
-## 아이콘마다 폭이 달라 글자 시작 위치가 줄마다 흔들리는 것을 막는다.
+## `size` is in dp (= the same coordinate space as the Theme constants), and the node takes exactly that square as
+## its minimum size — which keeps the text start position from wobbling line to line as icon widths differ.
 func node(icon: StringName, size: int, ink := Color.TRANSPARENT) -> Control:
 	var found := _resolve(icon, {})
 	var color := ink if ink.a > 0 else (tint if tint.a > 0 else Color.WHITE)
@@ -205,8 +205,8 @@ func node(icon: StringName, size: int, ink := Color.TRANSPARENT) -> Control:
 		rect.custom_minimum_size = Vector2(size, size)
 		rect.modulate = color
 		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		# 🛑 아이콘은 언어를 따라 좌우가 뒤집히면 안 된다(닫기 ×, 톱니). 방향을 뒤집어야 하는
-		#    것은 `back`/`forward` 뿐이고, 그것은 부르는 쪽이 이름을 바꿔 고른다.
+		# 🛑 An icon must never flip left-right with the language (the close ×, a cog). The only ones that have to
+		#    flip direction are `back`/`forward`, and the caller picks those by changing the name.
 		rect.layout_direction = Control.LAYOUT_DIRECTION_LTR
 		return rect
 	var label := Label.new()
@@ -225,15 +225,15 @@ func node(icon: StringName, size: int, ink := Color.TRANSPARENT) -> Control:
 		if found.has("font"): label.add_theme_font_override(&"font", found.font)
 		label.add_theme_font_size_override(&"font_size", maxi(1, roundi(size * float(found.get("ratio", 1.0)))))
 	else:
-		# 🛑 이름을 못 찾았다 — **빈 칸을 돌려주되 자리는 차지한다.** 아이콘 하나가 없다고
-		#    줄 전체가 밀리면 원인을 찾기 어렵다. 개발 중에는 아래 경고로 알아챈다.
+		# 🛑 The name was not found — **hand back an empty box that still takes up the space.** If a whole row shifts
+		#    because one icon is missing, the cause is hard to track down. During development the warning below tells you.
 		label.text = ""
 		if OS.is_debug_build() and not icon.is_empty():
-			push_warning("[gohud] 아이콘 세트에 '%s' 이(가) 없습니다 (세트: %s)" % [icon, set_name if not set_name.is_empty() else resource_path])
+			push_warning("[gohud] icon set has no '%s' (set: %s)" % [icon, set_name if not set_name.is_empty() else resource_path])
 	return label
 
 
-## 이 세트가 담고 있는 모든 이름(폴백 포함, 정렬됨). 갤러리 예제와 검사가 쓴다.
+## Every name this set holds (fallback included, sorted). The gallery example and the checks use it.
 func icon_names() -> PackedStringArray:
 	var names := {}
 	_collect(names, {})
@@ -250,10 +250,10 @@ func _collect(into: Dictionary, seen: Dictionary) -> void:
 	if fallback != null: fallback._collect(into, seen)
 
 
-## 이름 하나를 어디서 어떻게 그릴지 결정한다. 텍스처 → 코드포인트 → 폴백 순이다.
-## **빈 Dictionary 가 "그릴 수 없다"** 는 뜻이다(`-> Dictionary` 는 null 을 담지 못한다).
+## Decides where and how one name gets drawn. Texture → codepoint → fallback, in that order.
+## **An empty Dictionary means "cannot be drawn"** (a `-> Dictionary` cannot hold null).
 func _resolve(icon: StringName, seen: Dictionary) -> Dictionary:
-	if seen.has(get_instance_id()): return {}   # 세트를 순환으로 엮었다 — 없는 것으로 본다
+	if seen.has(get_instance_id()): return {}   # the sets are wired into a cycle — treat it as missing
 	seen[get_instance_id()] = true
 	var found: Texture2D = textures.get(icon)
 	if found != null: return {"texture": found}

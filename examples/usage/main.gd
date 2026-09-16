@@ -1,268 +1,269 @@
-# 이 파일은 gohud로 아주 간단한 화면을 만드는 예제입니다.
+# This file is an example of making a very simple screen with gohud.
 #
-# 먼저 알아 두면 좋은 말:
-# - 노드(Node): Godot에서 화면이나 게임을 구성하는 부품입니다.
-# - 씬(Scene): 여러 노드를 묶어 둔 것입니다. 이 예제의 씬 파일은 main.tscn입니다.
-# - 객체: 그 설계도로 실제로 만든 것입니다. 노드도 객체의 한 종류입니다.
+# Words worth knowing first:
+# - Node: the part a screen or a game is built from in Godot.
+# - Scene: a bundle of nodes. This example's scene file is main.tscn.
+# - Object: the actual thing made from that blueprint. A node is one kind of object.
 #
-# 이 파일에 나오는 Control, RenderingServer는 Godot이 기본으로 제공합니다.
-# GoUi, GoTheme, GoForm, GoScroll, GoStyle, GoDialogs는 gohud 애드온이 제공합니다.
-# 즉, Go로 시작하는 이름들은 GDScript 문법이 아니라 이 애드온의 클래스 이름입니다.
+# Control and RenderingServer in this file come with Godot.
+# GoUi, GoTheme, GoForm, GoScroll, GoStyle and GoDialogs come from the gohud add-on.
+# That is, the names beginning with Go are not GDScript syntax but this add-on's class names.
 #
-# [GoUi는 정확히 무엇인가요?]
-# GoUi는 gohud의 공통 디자인 설정을 고르고, 현재 설정에 맞는 값을 꺼내 쓰는 클래스입니다.
-# 쉽게 말하면 "우리 UI가 함께 사용하는 디자인 설정 창구"라고 생각하면 됩니다.
-# 예를 들어 "어두운 디자인을 쓰자", "지금 배경색은 무엇이지?", "제목 글자 크기는?" 같은
-# 일을 GoUi를 통해 처리합니다. 테마 외에도 간격, 아이콘, 공통 문구 등을 다룹니다.
-# GoUi 자체가 화면에 보이는 버튼이나 팝업은 아닙니다.
-# 실제 화면 부품은 아래의 GoStyle.button(), GoDialogs 같은 클래스로 만듭니다.
+# [What exactly is GoUi?]
+# GoUi is the class that picks gohud's shared design settings and hands out values matching the current one.
+# Put simply, think of it as "the counter where our UI asks about the design settings it shares".
+# Things such as "let us use the dark design", "what is the background color right now?" and "how big is
+# the title text?" are handled through GoUi. Besides the theme it covers spacing, icons and shared strings.
+# GoUi itself is not a button or a popup you see on screen.
+# The actual screen parts are made with classes such as GoStyle.button() and GoDialogs, below.
 #
-# [GoUi는 어디에서 오나요?]
-# 이 예제 프로젝트에는 다음 파일이 들어 있습니다.
+# [Where does GoUi come from?]
+# This example project contains the following file.
 #   examples/usage/addons/gohud/core/go_ui.gd
-# 이 파일을 열면 위쪽에 다음 두 줄이 있습니다.
+# Open it and these two lines are near the top.
 #   class_name GoUi
 #   extends RefCounted
-# class_name GoUi는 "이 스크립트의 클래스를 GoUi라는 이름으로 등록한다"는 선언입니다.
-# Godot이 프로젝트의 스크립트를 읽어 등록하면, 다른 .gd 파일에서도 GoUi라고 쓸 수 있습니다.
-# 이렇게 프로젝트의 다른 스크립트에서도 사용할 수 있는 클래스를 전역 클래스라고 합니다.
-# main.gd에서 GoUi 변수를 선언하거나 별도의 import 문을 쓰지 않은 이유가 이것입니다.
-# go_ui.gd라는 파일 이름만으로 생기는 기능은 아니며, class_name 선언이 이름을 등록합니다.
-# 따라서 새 프로젝트에서도 쓰려면 gohud 애드온 파일들이 그 프로젝트에 있어야 합니다.
+# `class_name GoUi` is the declaration "register this script's class under the name GoUi".
+# Once Godot has read and registered the project's scripts, other .gd files can write GoUi too.
+# A class usable from the project's other scripts like this is called a global class.
+# That is why main.gd declares no GoUi variable and needs no separate import statement.
+# The file name go_ui.gd alone does not give this; the class_name declaration registers the name.
+# So to use it in a new project, that project has to have the gohud add-on files in it.
 #
-# 이 예제를 Godot 프로젝트로 열었을 때 위 파일의 경로는 다음과 같습니다.
+# When this example is opened as a Godot project, the path of the file above is this.
 #   res://addons/gohud/core/go_ui.gd
-# res://는 "현재 열어 둔 Godot 프로젝트의 맨 위 폴더"라는 뜻입니다.
-# 여기서는 examples/usage/project.godot이 있으므로 examples/usage/가 그 폴더입니다.
-# gohud 개발 저장소의 core/go_ui.gd와, 이 예제 안에 복사된 파일의 위치를 구분하면 됩니다.
+# res:// means "the top folder of the Godot project currently open".
+# Here examples/usage/project.godot exists, so examples/usage/ is that folder.
+# Just keep the gohud development repository's core/go_ui.gd apart from the copy inside this example.
 #
-# [왜 GoUi.new()를 만들지 않고 바로 쓰나요?]
-# go_ui.gd의 use_preset(), theme(), color() 등은 static func로 정의되어 있습니다.
-# static 함수(정적 함수)는 객체를 새로 만들지 않고 클래스 이름으로 직접 호출하는 함수입니다.
-# 그래서 GoUi.theme()라고 쓰면 됩니다. GoUi는 RefCounted를 상속한 클래스로,
-# 씬 트리에 붙이는 Node가 아니므로 add_child(GoUi)처럼 화면에 추가하지 않습니다.
-# 반면 GoForm.new()와 GoDialogs.new()는 화면마다 사용할 실제 노드를 만드는 코드입니다.
+# [Why use GoUi directly instead of making GoUi.new()?]
+# use_preset(), theme(), color() and the rest in go_ui.gd are defined as static func.
+# A static function is called on the class name itself, without making a new object.
+# So you simply write GoUi.theme(). GoUi is a class extending RefCounted and not a Node that goes into
+# the scene tree, so it is never added to the screen with something like add_child(GoUi).
+# GoForm.new() and GoDialogs.new(), by contrast, are code that makes the real nodes each screen uses.
 #
-# GoUi.config에는 gohud가 함께 사용하는 설정 객체가 들어 있습니다.
-# 이 설정도 static이므로 같은 실행 안에서 여러 화면이 GoUi를 통해 공유합니다.
-# 아래의 GoUi.use_preset(...)은 Main만의 개인 설정이 아니라 공통 프리셋을 바꿉니다.
-# 여러 화면이 같은 디자인을 쓰게 하려면, 앱 시작 시 UI를 만들기 전에 정해 두면 편합니다.
-# 실행 중에 디자인을 바꿀 수도 있지만, 직접 적용한 theme나 배경색은 다시 적용해야 합니다.
-# 특히 아래의 RenderingServer 배경색 지정은 그 줄을 실행한 시점의 색을 적용합니다.
+# GoUi.config holds the settings object gohud shares.
+# These settings are static too, so several screens share them through GoUi within one run.
+# GoUi.use_preset(...) below is not a setting private to Main; it changes the shared preset.
+# To have several screens use the same design, it is easiest to settle it at app start, before any UI is built.
+# The design can be changed while running too, but a theme or a background color you applied yourself
+# has to be applied again.
+# The RenderingServer background color below in particular applies the color as of the moment that line runs.
 #
-# [언제 어떤 함수를 쓰나요? 아래 줄들은 사용 예시를 적은 주석입니다.]
-#   GoUi.use_preset(&"default_dark")       → 앱의 공통 디자인 묶음을 선택할 때
-#   GoUi.theme()                          → Control 노드에 적용할 현재 Theme가 필요할 때
-#   GoUi.color(GoTheme.BACKGROUND)         → 현재 디자인의 배경색이 필요할 때
-#   GoUi.color(GoTheme.ACCENT)             → 현재 디자인의 강조색이 필요할 때
-#   GoUi.metric(GoTheme.GAP)               → UI 사이의 공통 간격 수치가 필요할 때
-#   GoUi.font_size(GoTheme.ROLE_TITLE)     → 제목용 글자 크기가 필요할 때
-# GoTheme.BACKGROUND는 "배경색"이라는 이름표이고, GoUi.color(...)는 실제 색을 가져옵니다.
-# 예를 들어 직접 만든 UI도 GoUi에서 색과 간격을 가져오면 다른 gohud 부품과 맞출 수 있습니다.
-# GoStyle은 이런 값을 내부에서 사용하므로, 기본 버튼을 만들 때마다 직접 꺼낼 필요는 없습니다.
-# 이 main.gd에서는 "디자인 선택 → 테마 가져오기 → 배경색 가져오기"에 GoUi를 사용합니다.
+# [Which function do you use when? The lines below are comments giving examples of use.]
+#   GoUi.use_preset(&"default_dark")       → when picking the app's shared design bundle
+#   GoUi.theme()                          → when you need the current Theme to apply to a Control node
+#   GoUi.color(GoTheme.BACKGROUND)         → when you need the current design's background color
+#   GoUi.color(GoTheme.ACCENT)             → when you need the current design's accent color
+#   GoUi.metric(GoTheme.GAP)               → when you need the shared spacing value between UI parts
+#   GoUi.font_size(GoTheme.ROLE_TITLE)     → when you need the font size for a title
+# GoTheme.BACKGROUND is the label meaning "background color", and GoUi.color(...) fetches the real color.
+# UI you wrote yourself, for instance, can match the other gohud parts by taking its colors and gaps from GoUi.
+# GoStyle uses these values internally, so you need not fetch them yourself every time you make a plain button.
+# In this main.gd, GoUi is used to "pick a design → get the theme → get the background color".
 #
-# [프로젝트 설정에 있는 GoRuntime과는 어떤 관계인가요?]
-# GoRuntime은 앱 시작 때 자동으로 만들어지는 별도의 노드(오토로드)입니다.
-# 이 예제의 project.godot에는 GoRuntime이 오토로드로 등록되어 있습니다.
-# GoRuntime은 창 크기 변화, 화면 배율, 가상 키보드 높이 등을 추적합니다.
-# GoUi라는 이름을 사용할 수 있는 이유는 위에서 설명한 class_name 등록 때문입니다.
-# GoUi의 테마·색 조회 기능 자체는 GoRuntime을 오토로드하지 않아도 사용할 수 있습니다.
+# [What is its relationship to GoRuntime in the project settings?]
+# GoRuntime is a separate node (an autoload) created automatically when the app starts.
+# This example's project.godot registers GoRuntime as an autoload.
+# GoRuntime tracks window size changes, screen scaling, the virtual keyboard height and so on.
+# The reason the name GoUi can be used is the class_name registration explained above.
+# GoUi's theme and color lookups themselves work even without autoloading GoRuntime.
 #
-# 전체 실행 순서는 다음과 같습니다.
-# 1. Godot이 main.tscn의 Main 노드를 준비하고 _ready()를 호출합니다.
-# 2. _ready()가 화면 모양을 정하고 제목, 버튼, 팝업 관리 노드를 만듭니다.
-# 3. 사용자가 "팝업 열기" 버튼을 누르면 _on_open_pressed()가 호출됩니다.
-# 4. 그 함수가 안내 팝업을 열고, 팝업이 닫힐 때까지 기다립니다.
+# The whole run goes like this.
+# 1. Godot prepares the Main node of main.tscn and calls _ready().
+# 2. _ready() settles the look of the screen and makes the title, the button and the popup manager node.
+# 3. When the user presses the "Open popup" button, _on_open_pressed() is called.
+# 4. That function opens an information popup and waits until the popup is closed.
 
-# extends는 "이 클래스의 기능을 물려받아 사용하겠다"는 뜻입니다. 이를 상속이라고 합니다.
-# Control은 UI의 위치, 크기, 테마 등을 다루는 기본 노드입니다.
-# 이 스크립트는 main.tscn 안에 있는 Control 타입의 Main 노드에 연결되어 있습니다.
-# 아래에서 "현재 노드"라고 하면 바로 그 Main 노드를 뜻합니다.
+# extends means "inherit this class's features and use them". This is called inheritance.
+# Control is the basic node that handles a UI's position, size, theme and so on.
+# This script is attached to the Main node, of type Control, inside main.tscn.
+# Below, "the current node" means exactly that Main node.
 extends Control
 
-# var는 변수를 만드는 문법입니다. 변수는 값에 이름을 붙여 두는 자리입니다.
-# dialogs는 우리가 정한 변수 이름이며, 나중에 팝업 관리 객체를 담아 둡니다.
-# : GoDialogs는 "이 변수에는 GoDialogs 타입의 객체를 담겠다"는 타입 표시입니다.
-# 타입은 값의 종류를 뜻합니다. 예를 들어 String은 글자, int는 정수입니다.
+# var is the syntax that makes a variable. A variable is a place that gives a value a name.
+# dialogs is a variable name we chose, and it will hold the popup manager object later.
+# `: GoDialogs` is the type annotation "this variable will hold an object of type GoDialogs".
+# A type means the kind of a value. String is text, for instance, and int is a whole number.
 #
-# 이 줄은 변수를 선언할 뿐, 아직 팝업 관리 객체를 만들지는 않습니다.
-# 지금 dialogs의 값은 null, 즉 "아직 가리키는 객체가 없음"입니다.
-# 실제 객체는 아래 _ready() 안의 GoDialogs.new()에서 만듭니다.
+# This line only declares the variable; it does not make the popup manager object yet.
+# Right now the value of dialogs is null, that is, "it points at no object yet".
+# The real object is made by GoDialogs.new() inside _ready(), below.
 #
-# 함수 밖에서 선언했으므로 이 스크립트의 여러 함수에서 사용할 수 있습니다.
-# 이렇게 선언한 변수를 멤버 변수라고 합니다.
-# _ready()에서 담아 둔 객체를 _on_open_pressed()에서도 사용하려고 여기 둡니다.
+# Declared outside any function, it can be used from several functions in this script.
+# A variable declared this way is called a member variable.
+# It is here so that the object stored in _ready() can be used in _on_open_pressed() as well.
 var dialogs: GoDialogs
 
 
-# func는 함수를 정의하는 문법입니다. 함수 이름 뒤에는 괄호를 붙입니다.
-# _ready()는 Godot이 정해 둔 특별한 함수 이름입니다.
-# 이 노드와 자식 노드들이 씬 트리에 들어가 준비되면 Godot이 자동으로 호출합니다.
-# 씬 트리는 실행 중인 노드들을 부모와 자식 관계로 연결한 구조입니다.
-# 보통 노드를 처음 준비할 때 한 번 실행되며, 매 프레임 실행되는 함수는 아닙니다.
-# 그래서 이 예제처럼 처음에 필요한 화면을 만드는 작업을 넣기 좋습니다.
+# func is the syntax that defines a function. A function name is followed by parentheses.
+# _ready() is a special function name that Godot has settled on.
+# Godot calls it automatically once this node and its children are in the scene tree and ready.
+# The scene tree is the structure that connects the running nodes as parents and children.
+# It usually runs once, when a node is first prepared; it is not a function that runs every frame.
+# That makes it a good place for work such as building the first screen, as in this example.
 #
-# () 안이 비어 있다는 것은 이 함수가 전달받는 값(매개변수)이 없다는 뜻입니다.
-# -> void는 "호출한 곳에 결과값을 돌려주지 않는다"는 뜻입니다.
-# 끝의 : 다음부터 들여쓴 줄들이 이 함수의 본문입니다.
-# GDScript는 들여쓰기로 코드의 소속을 구분하므로 들여쓰기를 유지해야 합니다.
+# Empty parentheses mean this function takes no values (no parameters).
+# -> void means "it hands no result back to the caller".
+# The indented lines after the closing : are this function's body.
+# GDScript tells what belongs where by indentation, so the indentation has to be kept.
 func _ready() -> void:
-	# 1. 화면에 사용할 디자인을 정합니다.
-	# 테마(Theme)는 글자 크기, 색, 버튼 모양 같은 UI 디자인 설정입니다.
-	# 프리셋(preset)은 바로 선택해서 쓸 수 있도록 미리 준비한 디자인 묶음입니다.
-	# use_preset()에 "default_dark"를 전달해 gohud의 기본 어두운 디자인을 고릅니다.
-	# UI를 만들 때 이 설정을 사용하므로, 노드를 만들기 전에 먼저 선택합니다.
+	# 1. Settle the design the screen will use.
+	# A Theme is the UI design settings — font sizes, colors, button shapes and the like.
+	# A preset is a design bundle prepared in advance so it can be picked and used straight away.
+	# Passing "default_dark" to use_preset() picks gohud's default dark design.
+	# The UI uses these settings as it is built, so pick them before making any node.
 	#
-	# GoUi.use_preset(&"default_dark")를 각 부분으로 나누어 읽어 봅시다.
-	#   GoUi           → 공통 UI 설정을 다루는 클래스 이름입니다.
-	#   use_preset     → GoUi 클래스 안에 정의된 함수 이름입니다.
-	#   "default_dark" → 그 함수에 전달할 프리셋 이름입니다.
-	# 즉, "GoUi의 use_preset 함수를 호출해서 default_dark 프리셋을 선택한다"는 뜻입니다.
-	# use_preset()은 디자인을 선택하는 함수이고, 테마는 선택한 디자인의 설정 데이터입니다.
-	# 프리셋에는 테마와 함께 스킨(꾸밈 방식), 아이콘 묶음도 들어 있습니다.
-	# 점(.)은 왼쪽 클래스나 객체에 속한 항목에 접근할 때 쓰는 기호입니다.
-	# 이 줄에서는 함수에 접근하지만, GoUi.config처럼 설정 속성에 접근할 때도 씁니다.
-	# 괄호 안의 값은 함수에 전달하는 재료이며, 이를 인자라고 부릅니다.
-	# GoUi의 이런 함수는 static 함수라 GoUi.new()로 객체를 만들지 않고 호출합니다.
-	# &"default_dark"는 StringName이라는 타입의 값입니다.
-	# 일반 문자열 "default_dark"와 비슷하지만, 반복해서 쓰는 이름을 다루기 위한 타입입니다.
-	# 여기서는 "선택할 프리셋의 이름"이라고 이해하면 됩니다.
+	# Let us read GoUi.use_preset(&"default_dark") one part at a time.
+	#   GoUi           → the name of the class that handles the shared UI settings.
+	#   use_preset     → the name of a function defined inside the GoUi class.
+	#   "default_dark" → the preset name passed to that function.
+	# So it means "call GoUi's use_preset function and pick the default_dark preset".
+	# use_preset() is the function that picks a design; a theme is the settings data of the design picked.
+	# A preset holds a skin (the way things are decorated) and an icon set along with the theme.
+	# The dot (.) is the symbol used to reach an item belonging to the class or object on its left.
+	# On this line it reaches a function, but it also reaches settings properties, as in GoUi.config.
+	# The value inside the parentheses is the material passed to the function, and is called an argument.
+	# Functions like this on GoUi are static, so they are called without making an object with GoUi.new().
+	# &"default_dark" is a value of the type StringName.
+	# It is much like the plain string "default_dark", but is a type for handling names used over and over.
+	# Here, read it as "the name of the preset to pick".
 	GoUi.use_preset(&"default_dark")
 
 
-	# GoUi.theme()는 현재 선택된 Godot Theme 객체를 돌려줍니다.
-	# 왼쪽 theme는 Control에서 물려받은, 현재 노드의 테마 속성입니다. extends Control 을 통해서 받은 것입니다.
-	# Control 을 통해서 theme 뿐만아니라 font, font_size, color, position, size 등 다양한 속성을 사용할 수 있습니다.
-	# 속성은 객체가 가진 설정값이라고 생각하면 됩니다. self.theme라고 써도 같습니다.
-	# 부모 Control에 테마를 지정하면 자식 UI도 그 테마를 물려받아 사용할 수 있습니다.
+	# GoUi.theme() hands back the Godot Theme object currently picked.
+	# The theme on the left is the current node's theme property, inherited from Control. It came through extends Control.
+	# Through Control you can use not only theme but font, font_size, color, position, size and many more properties.
+	# A property can be thought of as a setting the object holds. Writing self.theme is the same thing.
+	# Give a parent Control a theme and the child UI can inherit and use that theme too.
 	theme = GoUi.theme()
 
-	# 화면의 빈 부분에 보이는 기본 배경색도 테마와 맞춥니다.
-	# GoTheme.BACKGROUND는 "배경색"을 찾을 때 쓰는 이름표(상수)입니다.
-	# 상수는 변수와 달리 정해 놓은 값이 바뀌지 않는 이름입니다.
-	# GoUi.color(...)가 이 이름표에 해당하는 실제 색(Color)을 돌려줍니다.
-	# 그 색을 Godot의 화면 그리기 기능인 RenderingServer에 전달합니다.
-	# 괄호가 겹쳐 있으면 안쪽의 결과를 바깥쪽 함수에 전달한다고 읽으면 됩니다.
+	# Match the default background color, seen in the empty parts of the screen, to the theme as well.
+	# GoTheme.BACKGROUND is the label (a constant) used when looking up "the background color".
+	# A constant, unlike a variable, is a name whose settled value does not change.
+	# GoUi.color(...) hands back the real color (a Color) for that label.
+	# That color is passed to RenderingServer, Godot's screen-drawing feature.
+	# When parentheses nest, read it as the inner result being passed to the outer function.
 	RenderingServer.set_default_clear_color(GoUi.color(GoTheme.BACKGROUND))
 
-	# 2. 화면 안쪽에 적절한 여백을 확보할 폼을 만듭니다.
-	# GoForm은 화면 크기와 안전 영역 등을 고려해 내용의 여백을 잡는 컨테이너입니다.
-	# 컨테이너(Container)는 자식 UI의 위치나 크기를 정리해 주는 노드입니다.
-	# .new()는 클래스라는 설계도로 실제 객체 하나를 새로 만드는 함수입니다.
-	# GoForm.new()는 실제 GoForm 노드를 만들고, 그 노드를 form 변수에 담습니다.
+	# 2. Make a form that keeps a sensible margin inside the screen.
+	# GoForm is a container that works the content's margins out from the screen size, the safe area and so on.
+	# A Container is a node that arranges the position and size of its child UI.
+	# .new() is the function that makes one real object from a class, its blueprint.
+	# GoForm.new() makes a real GoForm node and puts that node into the form variable.
 	#
-	# :=는 "오른쪽 값으로 변수의 타입을 자동으로 정하고 그 값을 저장한다"는 뜻입니다.
-	# 여기서는 var form: GoForm = GoForm.new()라고 쓴 것과 같습니다.
-	# 함수 안에서 선언한 form은 이 함수 안에서만 이름으로 접근하는 지역 변수입니다.
+	# := means "settle the variable's type automatically from the value on the right, and store that value".
+	# Here it is the same as writing var form: GoForm = GoForm.new().
+	# form, declared inside a function, is a local variable reachable by name only inside this function.
 	var form := GoForm.new()
 
-	# .new()만으로는 노드가 씬 트리에 들어가지 않습니다.
-	# add_child(form)은 form을 현재 Main 노드의 자식으로 붙입니다.
-	# 앞에 대상이 없는 add_child(...)는 self.add_child(...)와 같습니다.
-	# self는 이 스크립트가 붙어 있는 현재 노드를 가리킵니다.
-	# 노드는 이렇게 실행 중인 씬 트리에 연결되어야 화면 구성에 참여합니다.
+	# .new() alone does not put the node into the scene tree.
+	# add_child(form) attaches form as a child of the current Main node.
+	# add_child(...) with no target in front of it is the same as self.add_child(...).
+	# self points at the current node this script is attached to.
+	# A node takes part in the screen only once it is connected to the running scene tree like this.
 	add_child(form)
 
-	# 3. 내용이 화면보다 길어질 때 위아래로 움직여 볼 수 있는 영역을 만듭니다.
-	# GoScroll은 기본적으로 가로 스크롤은 끄고, 필요할 때 세로 스크롤을 사용합니다.
-	# 지금은 제목과 버튼뿐이어서 내용이 다 들어가면 스크롤바가 필요하지 않습니다.
+	# 3. Make an area that can be moved up and down when the content grows longer than the screen.
+	# GoScroll turns horizontal scrolling off by default and uses vertical scrolling when it is needed.
+	# Right now there is only a title and a button, so with everything fitting no scrollbar is needed.
 	var scroll := GoScroll.new()
 
-	# 이번에는 form.add_child(...)이므로 부모가 Main이 아니라 form입니다.
-	# 이제 Main -> form -> scroll 순서로 부모와 자식이 연결됩니다.
+	# This time it is form.add_child(...), so the parent is form, not Main.
+	# The parents and children are now connected in the order Main -> form -> scroll.
 	form.add_child(scroll)
 
-	# 4. 제목과 버튼을 위에서 아래로 차례대로 놓을 상자를 만듭니다.
-	# GoStyle.column()은 세로 정렬용 VBoxContainer를 만들어 돌려주는 도우미 함수입니다.
-	# 자식 사이의 간격도 gohud의 설정에 맞춰 줍니다.
-	# content는 "실제 화면 내용을 담을 상자"라는 뜻으로 붙인 변수 이름입니다.
+	# 4. Make a box that lays the title and the button out from top to bottom.
+	# GoStyle.column() is a helper function that makes and hands back a VBoxContainer for vertical layout.
+	# It also matches the gap between children to gohud's settings.
+	# content is a variable name chosen to mean "the box that holds the actual screen content".
 	var content := GoStyle.column()
 
-	# content를 스크롤 영역 안에 넣습니다.
-	# 앞으로 제목이나 버튼을 content에 추가하면 세로로 배치되고 함께 스크롤됩니다.
+	# Put content inside the scrolling area.
+	# From now on, a title or a button added to content is laid out vertically and scrolls with it.
 	scroll.add_child(content)
 
-	# 5. 화면의 제목을 만듭니다.
-	# Label은 사용자가 읽을 글자를 표시하는 노드입니다.
-	# GoStyle.label()의 첫 번째 인자는 화면에 그대로 표시할 문자열입니다.
-	# 문자열(String)은 "My first gohud"처럼 따옴표로 감싼 글자 데이터입니다.
-	# 두 번째 인자 GoTheme.ROLE_TITLE은 제목용 글자 스타일을 사용하라는 뜻입니다.
-	# 쉼표(,)는 함수에 전달하는 인자들을 구분합니다.
+	# 5. Make the screen's title.
+	# A Label is the node that shows text for the user to read.
+	# The first argument to GoStyle.label() is the string shown on screen as it is.
+	# A String is text data wrapped in quotes, such as "My first gohud".
+	# The second argument, GoTheme.ROLE_TITLE, says to use the text style meant for titles.
+	# The comma (,) separates the arguments passed to a function.
 	#
-	# 이 한 줄은 안쪽부터 두 작업을 합니다.
-	#   ① GoStyle.label(...)로 제목 노드를 만듭니다.
-	#   ② content.add_child(...)로 그 제목을 세로 상자 안에 넣습니다.
-	# 따로 변수에 담지 않고, 만들어진 노드를 바로 다른 함수에 전달한 것입니다.
+	# This one line does two things, from the inside out.
+	#   ① GoStyle.label(...) makes the title node.
+	#   ② content.add_child(...) puts that title into the vertical box.
+	# Rather than being stored in a variable, the node just made is passed straight to another function.
 	content.add_child(GoStyle.label("My first gohud", GoTheme.ROLE_TITLE))
 
-	# 6. 팝업을 열고 닫는 일을 맡을 노드를 준비합니다.
-	# 파일 위에서 선언해 둔 dialogs에 실제 GoDialogs 객체를 담습니다.
-	# 이미 선언한 변수이므로 여기서는 var를 다시 쓰지 않습니다.
-	# 변수는 객체 자체를 복사해 담는 것이 아니라, 만든 객체를 가리킵니다.
+	# 6. Prepare the node that will take care of opening and closing popups.
+	# Put a real GoDialogs object into dialogs, declared at the top of the file.
+	# The variable is already declared, so var is not written again here.
+	# A variable does not copy the object itself into place; it points at the object that was made.
 	dialogs = GoDialogs.new()
 
-	# 팝업 관리 노드는 content가 아니라 Main의 자식으로 붙입니다.
-	# GoDialogs가 내부에서 팝업용 화면을 관리하므로 제목·버튼의 세로 배치에 넣지 않습니다.
-	# 여기서는 팝업을 사용할 준비만 하며, 아직 안내 팝업을 열지는 않습니다.
+	# The popup manager node is attached as a child of Main, not of content.
+	# GoDialogs manages the popup screens internally, so it is kept out of the title-and-button column.
+	# Here we only get ready to use popups; no information popup is opened yet.
 	add_child(dialogs)
 
-	# 7. 사용자가 누를 버튼을 만듭니다.
-	# GoStyle.button()에는 다음 세 값을 순서대로 전달합니다.
-	#   첫 번째: "팝업 열기" — 버튼 위에 표시할 글자입니다.
-	#   두 번째: _on_open_pressed — 버튼을 눌렀을 때 실행할 함수입니다.
-	#   세 번째: GoStyle.Tone.PRIMARY — 주요 행동을 강조하는 버튼 스타일입니다.
-	# Tone은 버튼 스타일 선택지를 모아 둔 열거형(enum)이고, PRIMARY는 그중 하나입니다.
+	# 7. Make the button the user will press.
+	# GoStyle.button() is passed these three values, in order.
+	#   first: "Open popup" — the text shown on the button.
+	#   second: _on_open_pressed — the function to run when the button is pressed.
+	#   third: GoStyle.Tone.PRIMARY — the button style that emphasises a main action.
+	# Tone is an enum gathering the button style choices, and PRIMARY is one of them.
 	#
-	# 여기서 _on_open_pressed 뒤에 ()가 없는 점이 중요합니다.
-	# _on_open_pressed는 "나중에 이 함수를 실행해 주세요"라며 함수 자체를 전달합니다.
-	# 이렇게 나중에 호출할 수 있는 함수 값을 Callable이라고 합니다.
-	# 반대로 _on_open_pressed()라고 쓰면 이 자리에서 함수를 바로 실행하게 됩니다.
+	# It matters that _on_open_pressed has no () after it here.
+	# _on_open_pressed passes the function itself, saying "please run this function later".
+	# A function value that can be called later like this is called a Callable.
+	# Write _on_open_pressed() instead and the function runs right there and then.
 	#
-	# 버튼에는 "눌렸다"고 알리는 pressed 신호(signal)가 있습니다.
-	# GoStyle.button()이 그 신호와 전달받은 함수를 내부에서 연결해 줍니다.
-	# 따라서 지금 팝업이 열리는 것이 아니라, 실제로 버튼을 누를 때 함수가 실행됩니다.
-	# 마지막으로 만들어진 버튼을 content의 자식으로 넣습니다.
-	# 제목을 먼저 추가했으므로 버튼은 제목 아래에 놓입니다.
-	# 괄호 안에서는 아래처럼 코드를 여러 줄로 나누어 적을 수 있습니다.
+	# A button has a pressed signal that announces "I was pressed".
+	# GoStyle.button() connects that signal to the function it was given, internally.
+	# So no popup opens now; the function runs when the button is actually pressed.
+	# Finally, the button just made is put into content as a child.
+	# The title was added first, so the button sits below the title.
+	# Inside parentheses, code can be split over several lines, as below.
 	content.add_child(GoStyle.button(
-		"팝업 열기", _on_open_pressed, GoStyle.Tone.PRIMARY
+		"Open popup", _on_open_pressed, GoStyle.Tone.PRIMARY
 	))
 
-	# 여기까지 실행되면 처음 화면을 만드는 작업이 끝납니다.
-	# form, scroll, content라는 지역 변수 이름은 이 함수 밖에서 사용할 수 없지만,
-	# 자식으로 붙인 노드들은 씬 트리에 남아 계속 화면을 구성합니다.
-	# 우리가 만든 주요 노드의 관계는 다음과 같습니다(애드온 내부 보조 노드는 생략).
-	# Main (현재 노드)
-	# ├─ form (GoForm: 여백)
-	# │  └─ scroll (GoScroll: 세로 스크롤)
-	# │     └─ content (VBoxContainer: 세로 배치)
-	# │        ├─ 제목 (Label)
-	# │        └─ "팝업 열기" 버튼 (Button)
-	# └─ dialogs (GoDialogs: 팝업 관리)
+	# Once this much has run, the work of building the first screen is done.
+	# The local variable names form, scroll and content cannot be used outside this function, but
+	# the nodes attached as children stay in the scene tree and keep making up the screen.
+	# The main nodes we made are related like this (the add-on's internal helper nodes are left out).
+	# Main (the current node)
+	# ├─ form (GoForm: margins)
+	# │  └─ scroll (GoScroll: vertical scrolling)
+	# │     └─ content (VBoxContainer: vertical layout)
+	# │        ├─ title (Label)
+	# │        └─ "Open popup" button (Button)
+	# └─ dialogs (GoDialogs: popup management)
 
 
-# 이 함수는 위에서 버튼의 동작으로 전달한 함수입니다.
-# _ready()와 달리 Godot이 이 이름을 알아서 찾아 호출해 주는 것은 아닙니다.
-# GoStyle.button()에 이 함수를 전달해 연결했기 때문에 버튼을 누르면 실행됩니다.
-# _on_대상_이벤트 형태의 이름은 이벤트 처리 함수에 자주 쓰는 이름 짓기 관례입니다.
-# 여기서는 "열기 버튼이 눌렸을 때 할 일"이라는 의미로 읽으면 됩니다.
+# This function is the one passed above as the button's action.
+# Unlike _ready(), Godot does not find this name and call it by itself.
+# It runs when the button is pressed because it was passed to GoStyle.button() and connected there.
+# A name shaped _on_<target>_<event> is a naming convention often used for event-handling functions.
+# Here, read it as "what to do when the open button was pressed".
 func _on_open_pressed() -> void:
-	# dialogs는 _ready()에서 만들어 둔 바로 그 팝업 관리 객체입니다.
-	# dialogs.alert(...)는 확인 버튼이 있는 안내 팝업을 엽니다.
-	# 괄호 안의 세 문자열은 각각 다음 위치에 표시됩니다.
-	#   "안녕하세요"                         → 팝업 제목
-	#   "gohud가 정상적으로 작동합니다."     → 팝업 본문
-	#   "확인"                               → 팝업 안의 버튼 글자
-	# 화면 문구를 바꿔 보고 싶다면 이 따옴표 안의 글자를 바꾸면 됩니다.
+	# dialogs is the very popup manager object made in _ready().
+	# dialogs.alert(...) opens an information popup with a confirm button.
+	# The three strings in the parentheses appear in these places.
+	#   "Hello"                              → the popup title
+	#   "gohud is working."                  → the popup body
+	#   "OK"                                 → the text on the button inside the popup
+	# To change what the screen says, change the text inside these quotes.
 	#
-	# await는 비동기 작업이 끝날 때까지 이 함수의 다음 줄 실행을 기다리게 합니다.
-	# 여기서는 팝업을 연 뒤, 사용자가 확인을 누르는 등 팝업에 응답할 때까지 기다립니다.
-	# 게임 전체가 멈추는 것은 아닙니다. 기다리는 동안에도 화면과 버튼 입력은 동작합니다.
-	# "확인"을 누르면 팝업 쪽에서 응답을 알리고, 기다리던 이 함수가 이어서 실행됩니다.
-	await dialogs.alert("안녕하세요", "gohud가 정상적으로 작동합니다.", "확인")
+	# await makes this function wait, before running its next line, until an asynchronous job finishes.
+	# Here, having opened the popup, it waits until the user answers it — by pressing OK, for instance.
+	# The whole game does not stop. While it waits, the screen and button input keep working.
+	# Press "OK" and the popup side reports the answer, and this waiting function carries on.
+	await dialogs.alert("Hello", "gohud is working.", "OK")
 
-	# 팝업에 응답하면 위의 기다림이 끝나고 이 아래로 실행이 이어집니다.
-	# 지금은 추가 명령이 없으므로 함수가 끝납니다.
-	# 참고로 alert()는 결과값을 돌려주지 않아 여기서도 변수에 결과를 저장하지 않습니다.
-	# "팝업을 닫은 다음 할 일"이 필요하면 이 아래에 같은 들여쓰기로 작성하면 됩니다.
+	# Once the popup is answered, the wait above ends and running carries on below here.
+	# There is no further command right now, so the function ends.
+	# Note that alert() hands back no result, which is why no result is stored in a variable here either.
+	# If you need "something to do after the popup closes", write it below at the same indentation.

@@ -1,51 +1,51 @@
-## 🚪 gohud 의 **단 하나의 관문**. 설정·테마·아이콘·문구를 여기서 꺼낸다.
+## 🚪 gohud's **single gateway**. Settings, theme, icons and strings all come out of here.
 ##
-## ## 오토로드가 필요 없다
-## 전부 `static` 이다. 플러그인을 켜지 않아도, 오토로드를 등록하지 않아도
-## `GoUi.color(GoTheme.ACCENT)` 가 바로 동작한다 — 애셋으로 배포할 때 가장 중요한 성질이다.
+## ## No autoload needed
+## Everything is `static`. Without enabling the plugin and without registering an autoload,
+## `GoUi.color(GoTheme.ACCENT)` works right away — the most important property when this ships as an asset.
 ##
-## 플러그인을 켜면 `GoRuntime` 오토로드가 붙어 **창 크기 추적·dp 배율·가상 키보드 높이**가
-## 추가로 동작한다. 없어도 위젯은 전부 동작하고, 그 기능만 빠진다.
+## Enable the plugin and the `GoRuntime` autoload joins in, adding **window size tracking, the dp scale and
+## the virtual keyboard height**. Without it every widget still works; only those features are missing.
 ##
-## ## 설정 넣기
+## ## Putting the config in
 ## ```gdscript
-## GoUi.config = preload("res://ui/my_gohud.tres")   # 코드에서
-## # 또는 Project Settings > Gohud > Config 에 경로를 넣는다(플러그인이 그 칸을 만든다).
+## GoUi.config = preload("res://ui/my_gohud.tres")   # from code
+## # or put the path in Project Settings > Gohud > Config (the plugin creates that field).
 ## ```
 ##
-## ## 🛑 이 파일은 위젯을 참조하지 않는다
-## `GoStyle`·`GoSurface` 등 모든 위젯이 이것을 참조한다. 반대 방향을 하나라도 만들면
-## 순환 의존이 되어 `.new()` 가 통째로 실패한다.
+## ## 🛑 This file never references a widget
+## Every widget — `GoStyle`·`GoSurface` and the rest — references this. Make even one reference in the
+## other direction and it becomes a circular dependency, and `.new()` fails outright.
 @tool
 class_name GoUi
 extends RefCounted
 
-## 이 애드온의 버전. `CHANGELOG.md` 와 같이 움직인다.
-const VERSION := "1.0.1"
+## The version of this addon. It moves together with `CHANGELOG.md`.
+const VERSION := "1.0.3"
 
-## 이 애드온이 요구하는 **가장 낮은 엔진 버전**. `[major, minor]`.
+## The **lowest engine version** this addon requires. `[major, minor]`.
 ##
-## 🛑 이보다 낮은 엔진에서는 켜지지 않는다 — 켜지지 않는 정도가 아니라 **파싱 단계에서 죽는다.**
-##    `FoldableContainer`·`DPITexture`·`mouse_behavior_recursive` 처럼 그 버전에 없는 이름을 쓰기 때문이다.
-##    그래서 실행 중에 확인하는 것은 의미가 없고, 이 상수는 **검사와 문서가 한 곳을 보게** 하려고 둔다.
+## 🛑 On an engine below this it does not turn on — and not merely "does not turn on": it **dies at the parsing stage**,
+##    because it uses names that version does not have, such as `FoldableContainer`·`DPITexture`·`mouse_behavior_recursive`.
+##    So checking at runtime is pointless; this constant is here to **give the checks and the docs one place to look**.
 const MIN_ENGINE := [4, 6]
 
 
-## 지금 엔진이 이 애드온을 돌릴 수 있는가.
+## Can the engine we are on run this addon.
 static func engine_supported() -> bool:
 	var info := Engine.get_version_info()
 	if int(info.major) != int(MIN_ENGINE[0]): return int(info.major) > int(MIN_ENGINE[0])
 	return int(info.minor) >= int(MIN_ENGINE[1])
 
 
-## `"4.6"` 처럼 읽기 좋은 최소 버전 문구.
+## The minimum version as readable text, like `"4.6"`.
 static func min_engine_string() -> String:
 	return "%d.%d" % [MIN_ENGINE[0], MIN_ENGINE[1]]
 
-## 설정 리소스의 경로를 담는 프로젝트 설정 키. 플러그인이 이 칸을 만든다.
+## Project setting key holding the path to the config resource. The plugin creates that field.
 const CONFIG_SETTING := "gohud/config/resource"
 
-## 생김새 묶음 이름을 담는 프로젝트 설정 키. 플러그인이 이 칸을 만든다.
+## Project setting key holding the look bundle name. The plugin creates that field.
 const PRESET_SETTING := "gohud/theme/preset"
 
 const DEFAULT_THEME: Theme = preload("res://addons/gohud/themes/gohud_dark.tres")
@@ -53,15 +53,15 @@ const LIGHT_THEME: Theme = preload("res://addons/gohud/themes/gohud_light.tres")
 const DEFAULT_ICONS: GoIconSet = preload("res://addons/gohud/icons/gohud_icons.tres")
 const BUILTIN_TRANSLATIONS := "res://addons/gohud/i18n/gohud.csv"
 
-## 기본 번역이 담고 있는 언어. 🛑 CSV 에 열을 더했으면 **여기도 더한다** — 없는 언어는
-##    조각 파일이 만들어져도 등록되지 않아 조용히 영어로 나온다.
+## The languages the built-in translations carry. 🛑 If you added a column to the CSV, **add it here too** —
+##    a language that is missing never gets registered even once its piece file is built, and it quietly comes out in English.
 const LOCALES := [
 	"en", "ko", "ja", "zh", "es", "pt", "de", "fr", "ru", "hi", "ar",
 	"tr", "vi", "id", "th", "it", "pl", "uk", "nl", "zh_TW", "he",
 ]
 
-## 설정이 바뀌었다 — 이미 떠 있는 위젯이 다시 그려야 한다.
-## 🛑 `static signal` 은 Godot 4.x 에 없다. 그래서 콜백 목록을 직접 들고 있는다.
+## The settings changed — widgets already on screen have to redraw.
+## 🛑 There is no `static signal` in Godot 4.x. So it holds the callback list itself.
 static var _watchers: Array[Callable] = []
 static var _config: GoConfig
 static var _resolved := false
@@ -71,7 +71,7 @@ static var _base_font_sizes := {}
 static var _default_skin: GoSkin
 
 
-## 지금 설정. 처음 읽을 때 프로젝트 설정에 적힌 경로를 자동으로 불러온다.
+## The config in use. On the first read it automatically loads the path written in the project settings.
 static var config: GoConfig:
 	get:
 		if not _resolved:
@@ -104,7 +104,7 @@ static func _load_project_config() -> GoConfig:
 	return ResourceLoader.load(path) as GoConfig
 
 
-## 설정이 바뀔 때 불릴 콜백을 등록한다. 노드는 `_exit_tree` 에서 `unwatch` 한다.
+## Register a callback to be called when the settings change. A node `unwatch`es in `_exit_tree`.
 static func watch(callback: Callable) -> void:
 	if not _watchers.has(callback): _watchers.append(callback)
 
@@ -113,8 +113,8 @@ static func unwatch(callback: Callable) -> void:
 	_watchers.erase(callback)
 
 
-## 설정의 평범한 칸을 코드에서 바꾼 뒤 부른다 — 떠 있는 위젯이 다시 배치된다.
-## (`theme`·`icons` 를 바꾸면 자동으로 불린다.)
+## Call this after changing a plain field of the config from code — the widgets on screen lay out again.
+## (Changing `theme`·`icons` calls it automatically.)
 static func refresh() -> void:
 	_notify()
 
@@ -128,10 +128,10 @@ static func _notify() -> void:
 	_watchers = alive
 
 
-# ── 테마·아이콘 ────────────────────────────────────────────────────────
+# ── Theme·icons ────────────────────────────────────────────────────────
 
-## 지금 고른 생김새 묶음. 이름이 비었거나 아직 임포트되지 않았으면 `null`.
-## 설정 리소스가 비어 있으면 **프로젝트 설정**(`gohud/theme/preset`)을 본다 — 코드 없이 에디터에서 고를 수 있다.
+## The look bundle currently picked. `null` if the name is empty or it has not been imported yet.
+## When the config resource is empty it looks at the **project settings** (`gohud/theme/preset`) — pickable from the editor without code.
 static func preset() -> GoThemePreset:
 	var id := config.preset
 	if id.is_empty() and ProjectSettings.has_setting(PRESET_SETTING):
@@ -139,15 +139,15 @@ static func preset() -> GoThemePreset:
 	return GoThemePresets.find(id)
 
 
-## 🎁 생김새를 **통째로** 바꾼다 — 테마·스킨·아이콘이 함께 움직인다.
+## 🎁 Change the look **wholesale** — theme, skin and icons move together.
 ##
 ## ```gdscript
 ## GoUi.use_preset(GoThemePresets.SCIFI_DARK)
-## GoUi.use_preset(my_preset)                    # GoThemePreset 을 직접 줘도 된다
+## GoUi.use_preset(my_preset)                    # handing over a GoThemePreset works too
 ## ```
 ##
-## 🛑 직접 꽂아 둔 `config.theme`·`skin`·`icons` 를 **비운다** — 그래야 고른 묶음이 그대로 보인다.
-##    한 칸만 자기 것으로 두고 싶으면 이 함수 뒤에 그 칸을 다시 채운다.
+## 🛑 It **clears** any `config.theme`·`skin`·`icons` you plugged in by hand — that is what lets the chosen bundle show as it is.
+##    To keep one of those fields as your own, fill that field back in after this call.
 static func use_preset(value: Variant) -> void:
 	var chosen: GoThemePreset = null
 	var id: StringName = &""
@@ -162,13 +162,13 @@ static func use_preset(value: Variant) -> void:
 	settings.skin = null
 	settings.icons = null
 	settings.preset = id
-	# 🛑 글자 크기 기준을 버린다 — 테마가 바뀌면 예전 테마의 크기를 되돌려 놓을 수 없다.
+	# 🛑 Throw the font size baseline away — once the theme changes there is no putting the old theme's sizes back.
 	_base_font_sizes.clear()
 	_mobile_type = false
 	_notify()
 
 
-## 지금 쓰는 Theme. 설정이 비어 있으면 고른 묶음의 테마, 그것도 없으면 gohud 기본(어두운) 테마.
+## The Theme in use. If the config is empty, the chosen bundle's theme; failing that, gohud's default (dark) theme.
 static func theme() -> Theme:
 	var value := config.theme
 	if value != null: return value
@@ -177,25 +177,25 @@ static func theme() -> Theme:
 	return DEFAULT_THEME
 
 
-## 토큰을 채워 줄 예비 테마. `token_fallback` 이 꺼져 있으면 `null`.
+## The backup theme that fills tokens in. `null` when `token_fallback` is off.
 static func _fallback_theme() -> Theme:
 	return DEFAULT_THEME if config.token_fallback else null
 
 
-## 지금 쓰는 **스킨** — 코드가 직접 그리는 자리(조이스틱·퀵슬롯·코치마크·칩)의 모양.
-## 설정이 비어 있으면 고른 묶음의 스킨, 그것도 없으면 gohud 기본 모양.
+## The **skin** in use — the look of the spots the code draws itself (joystick·quick slot·coach mark·chip).
+## If the config is empty, the chosen bundle's skin; failing that, gohud's default look.
 static func skin() -> GoSkin:
 	var value := config.skin
 	if value != null: return value
 	var chosen := preset()
 	if chosen != null and chosen.skin != null: return chosen.skin
-	# 🛑 상수로 두지 않는다 — `GoSkin` 은 `GoUi` 를 부르고 `GoConfig` 는 `GoSkin` 을 담는다.
-	#    상수 초기화 시점에 만들면 그 고리가 로드 순서를 물고 늘어진다. 처음 쓸 때 만든다.
+	# 🛑 Not kept as a constant — `GoSkin` calls `GoUi` and `GoConfig` holds a `GoSkin`.
+	#    Built at constant-initialization time, that cycle drags the load order down with it. It is built on first use.
 	if _default_skin == null: _default_skin = GoSkin.new()
 	return _default_skin
 
 
-## 지금 쓰는 아이콘 세트. 설정이 비어 있으면 고른 묶음의 세트, 그것도 없으면 gohud 기본 세트.
+## The icon set in use. If the config is empty, the chosen bundle's set; failing that, gohud's default set.
 static func icons() -> GoIconSet:
 	var value := config.icons
 	if value != null: return value
@@ -204,10 +204,10 @@ static func icons() -> GoIconSet:
 	return DEFAULT_ICONS
 
 
-## 색 하나. `GoConfig.color_overrides` 가 테마보다 우선한다.
+## A single color. `GoConfig.color_overrides` takes precedence over the theme.
 ##
-## 🔑 `*_fill`(막대 채움처럼 **넓은 면적**에 쓰는 색)은 **선택 토큰**이다 — 테마에 없으면 `_fill` 을
-##    뗀 같은 이름으로 떨어진다. 덕분에 이 토큰을 모르는 테마를 꽂아도 자홍색이 뜨지 않는다.
+## 🔑 `*_fill` (a color used over a **wide area**, such as a bar fill) is an **optional token** — when the theme
+##    lacks it, it falls back to the same name with `_fill` stripped. That is why plugging in a theme that never heard of this token does not raise magenta.
 static func color(key: StringName) -> Color:
 	var overrides := config.color_overrides
 	if overrides.has(key): return overrides[key]
@@ -217,7 +217,7 @@ static func color(key: StringName) -> Color:
 	return GoTheme.color_of(theme(), key, _fallback_theme())
 
 
-## 이 색 토큰이 지금 테마(또는 예비 테마)에 **실제로 정의되어 있는가**.
+## Is this color token **actually defined** in the current theme (or the backup theme).
 static func _has_color(key: StringName) -> bool:
 	var current := theme()
 	if current != null and current.has_color(key, GoTheme.TYPE): return true
@@ -225,7 +225,7 @@ static func _has_color(key: StringName) -> bool:
 	return backup != null and backup.has_color(key, GoTheme.TYPE)
 
 
-## 치수 하나(dp). `GoConfig.metric_overrides` 가 테마보다 우선한다.
+## A single metric (dp). `GoConfig.metric_overrides` takes precedence over the theme.
 static func metric(key: StringName) -> int:
 	var overrides := config.metric_overrides
 	if overrides.has(key): return overrides[key]
@@ -233,24 +233,68 @@ static func metric(key: StringName) -> int:
 	return GoTheme.metric_of(theme(), key, _fallback_theme())
 
 
-## 표면 StyleBox 한 장의 **사본**. 🛑 사본이 아니면 한 카드의 색 변경이 모든 카드에 번진다.
+## A **copy** of one surface StyleBox. 🛑 Without the copy, a color change on one card bleeds into every card.
 static func box(key: StringName) -> StyleBox:
 	return GoTheme.box_of(theme(), key, _fallback_theme()).duplicate()
 
 
-## 역할의 글자 크기(dp). 모바일 축소가 켜져 있으면 이미 반영된 값이다.
+## 🪟 The **opacity (0.0~1.0)** of one panel variant. 1.0 is a solid color; at 0.8, 20% of what is behind bleeds through.
+##
+## ## The more specific wins — four layers
+## | Order | Where | Unit | When it is used |
+## |---|---|---|---|
+## | ① | `GoConfig.container_alpha_overrides[variant]` | ratio | to make **only this variant** different in this project |
+## | ② | `GoConfig.metric_overrides[<variant>_alpha]` | **%** | to follow the habit of a project that keeps its metrics in one place |
+## | ③ | `GoConfig.container_alpha` | ratio | **every panel** in the project at once |
+## | ④ | the theme's `GoHud/constants/<variant>_alpha` | **%** | the value the look bundle decided — **the canonical one** |
+##
+## With none of the four it is 1.0 (a solid color) — meaning plugging in a theme that never heard of this token leaves the screen as it was.
+##
+## 🔑 To make **one widget alone** different, do not go through this function — give 0.0~1.0 to the argument
+##    at that spot, as in `GoSurface.alpha` or `GoStyle.card(..., alpha)` (a negative falls through to this function).
+##
+## ## 🛑 Percentages live **in the theme constant layer alone**
+## Every spot that handles opacity works in ratios (0.0~1.0) — a widget's `alpha` field, `GoStyle` arguments,
+## the two fields of `GoConfig`, and the return value of this function. **Because a `Theme` constant can hold
+## nothing but integers**, only the theme's `<variant>_alpha` and the channel that overrides it
+## (`metric_overrides` — same name and type as a theme metric) are percentages. Those two spots are the only place it divides by 100.
+##
+## ## 🔬 Drag it before you pick a number
+## How large this value should be is something you only learn by looking at the screen — does the background show, does the text on it still read?
+## So the examples carry a lab where a single slider thins the panels right where you are looking
+## (`examples/gallery/opacity_lab.gd` · widget gallery · guide tour chapter 16 · demo home · medieval example).
+static func surface_alpha(variant := GoTheme.BOX_CARD) -> float:
+	var settings := config
+	var chosen: float = settings.container_alpha_overrides.get(variant, -1.0)
+	if chosen >= 0.0: return clampf(chosen, 0.0, 1.0)
+	var token := GoTheme.alpha_token(variant)
+	# 🛑 This channel alone is a percentage — it is the general window over theme metrics, so it uses the theme's unit.
+	if settings.metric_overrides.has(token):
+		return _alpha_ratio(settings.metric_overrides[token])
+	if settings.container_alpha >= 0.0: return clampf(settings.container_alpha, 0.0, 1.0)
+	# 🛑 With nothing there it falls back to **100** — taking `metric_of`'s default of 0 as is would make the panel vanish entirely.
+	return _alpha_ratio(GoTheme.metric_of(theme(), token, _fallback_theme(), 100))
+
+
+## Theme constant percentage (0~100) → ratio (0.0~1.0). Values out of range are clamped — one typo in a theme
+## must not be enough to make a panel disappear or get painted twice over.
+static func _alpha_ratio(percent: int) -> float:
+	return clampf(float(percent) / 100.0, 0.0, 1.0)
+
+
+## The font size of a role (dp). With mobile shrinking on, it is already reflected in the value.
 static func font_size(role: StringName = GoTheme.ROLE_BODY) -> int:
 	if config.base_font_size > 0 and role == GoTheme.ROLE_BODY: return config.base_font_size
 	return GoTheme.font_size_of(theme(), role, _fallback_theme())
 
 
-# ── 문구 ───────────────────────────────────────────────────────────────
+# ── Strings ────────────────────────────────────────────────────────────
 
-## gohud 문구 하나를 **번역해서** 돌려준다.
+## Return one gohud string, **translated**.
 ##
-## 순서: `text_overrides`(원문 그대로) → `text_keys` 의 키를 `tr()` → 이름 그대로.
-## 🛑 번역 테이블에 키가 없으면 `tr()` 은 키를 그대로 돌려준다 — 화면에 `gohud_close` 가
-##    보인다면 번역이 안 붙은 것이지 코드가 틀린 것이 아니다.
+## Order: `text_overrides` (the literal text) → the key from `text_keys` through `tr()` → the name as is.
+## 🛑 If the key is not in the translation table, `tr()` hands the key straight back — `gohud_close` showing
+##    on screen means the translations are not attached, not that the code is wrong.
 static func text(name: StringName) -> String:
 	var overrides := config.text_overrides
 	if overrides.has(name): return overrides[name]
@@ -259,7 +303,25 @@ static func text(name: StringName) -> String:
 	return TranslationServer.translate(key)
 
 
-## 위 문구의 **번역 키**. 자동 번역 라벨(`auto_translate_mode`)에 그대로 넣을 때 쓴다.
+## ♿ **Join the pieces** so a screen reader can read them as one phrase. Empty pieces drop out.
+##
+## ```gdscript
+## node.accessibility_name = GoUi.spoken([label.text, error.text])
+## ```
+##
+## 🛑 **Do not join with `"%s %s"` in every widget.** That way the joining differs from widget to widget, and
+##    the rule "never hard-code text that goes on screen" (which a check enforces) leaks out all over the place.
+##    The day the joining rule has to differ per language, **this one spot** is all there is to fix.
+## 🔑 The separator is a space, not a string — it is not translatable, so it is not pulled out as a key.
+static func spoken(parts: Array) -> String:
+	var kept: Array[String] = []
+	for part in parts:
+		var word := str(part).strip_edges()
+		if not word.is_empty(): kept.append(word)
+	return " ".join(kept)
+
+
+## The **translation key** of the string above. Used when feeding it straight to an auto-translated label (`auto_translate_mode`).
 static func text_key(name: StringName) -> String:
 	if config.text_overrides.has(name): return config.text_overrides[name]
 	return config.text_keys.get(name, String(name))
@@ -269,9 +331,9 @@ static func _load_translations() -> void:
 	if _translations_loaded: return
 	_translations_loaded = true
 	if not ResourceLoader.exists(BUILTIN_TRANSLATIONS): return
-	# 🛑 CSV 는 임포트 때 **언어마다 하나씩** `.translation` 으로 쪼개진다 — 원본 CSV 를
-	#    로드하는 것이 아니라 그 조각들을 등록해야 한다. 조각이 아직 없으면(에디터를 한 번도
-	#    돌리지 않은 사본) 조용히 지나간다: 문구는 키 그대로 나오고 위젯은 그대로 동작한다.
+	# 🛑 On import the CSV is split into **one `.translation` per language** — what you register is those
+	#    pieces, not the original CSV. If the pieces are not there yet (a copy where the editor has never
+	#    been run once) it passes quietly: the strings come out as their keys and the widgets work all the same.
 	var base := BUILTIN_TRANSLATIONS.get_basename()
 	for suffix in LOCALES:
 		var path := "%s.%s.translation" % [base, suffix]
@@ -280,31 +342,31 @@ static func _load_translations() -> void:
 		if loaded != null: TranslationServer.add_translation(loaded)
 
 
-# ── 트리 접근(오토로드 없이) ────────────────────────────────────────────
+# ── Tree access (without an autoload) ──────────────────────────────────
 
-## 지금 `SceneTree`. 🛑 `-s` 로 도는 검사·에디터에서는 `null` 일 수 있다 — 반드시 확인한다.
+## The current `SceneTree`. 🛑 It can be `null` in checks run with `-s` and in the editor — always check.
 static func tree() -> SceneTree:
 	var loop := Engine.get_main_loop()
 	return loop as SceneTree if loop is SceneTree else null
 
 
-## 선택 오토로드 `GoRuntime`. 플러그인을 켜지 않았으면 `null` 이고, 그래도 위젯은 동작한다.
+## The optional `GoRuntime` autoload. `null` when the plugin is not enabled, and the widgets work regardless.
 static func runtime() -> Node:
 	var scene := tree()
 	return scene.root.get_node_or_null(^"GoRuntime") if scene != null else null
 
 
-## 이 기기가 손에 드는 기기인가 — 진동·가상 키보드·안전영역의 판정 기준이다.
-## 🛑 "창이 좁은가" 와 다르다. 작은 창으로 띄운 데스크톱에서 진동하면 안 된다.
+## Is this a handheld device — the basis for judging haptics, the virtual keyboard and the safe area.
+## 🛑 Not the same as "is the window narrow". A desktop opened in a small window must not vibrate.
 static func is_handheld_platform() -> bool:
 	return OS.has_feature("android") or OS.has_feature("ios")
 
 
-# ── 모바일 글자 축소 ───────────────────────────────────────────────────
+# ── Mobile type shrinking ──────────────────────────────────────────────
 
-## 좁은 화면에서 **글자만** 한 단계 줄인다. 터치 영역은 건드리지 않는다.
-## `GoRuntime` 이 브레이크포인트가 바뀔 때 부른다. 오토로드가 없으면 아무도 부르지 않고,
-## 그때는 테마 값 그대로 나온다(그것도 올바른 동작이다).
+## On a narrow screen, shrink **the type alone** by one step. Touch areas are left untouched.
+## `GoRuntime` calls it when the breakpoint changes. With no autoload nobody calls it, and
+## then the theme values come out as they are (which is correct behavior too).
 static func set_mobile_type(enabled: bool) -> void:
 	if not config.shrink_type_on_mobile or _mobile_type == enabled: return
 	var current := theme()
@@ -327,7 +389,7 @@ static func is_mobile_type() -> bool:
 	return _mobile_type
 
 
-## 🛑 검사·에디터 재시작용. 캐시를 비워 설정을 처음부터 다시 읽게 한다.
+## 🛑 For checks and editor restarts. Clears the cache so the config is read again from scratch.
 static func reset() -> void:
 	if _config != null and _config.changed_settings.is_connected(_notify):
 		_config.changed_settings.disconnect(_notify)

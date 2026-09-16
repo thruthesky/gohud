@@ -1,19 +1,21 @@
-## 📄 **아래에서 올라오는 시트** — 자체 `CanvasLayer` 를 갖는 페이지 컨테이너.
+## 📄 **A sheet that rises from the bottom** — a page container with a `CanvasLayer` of its own.
 ##
-## `GoSurface` 를 쓰기 쉽게 감싼 것이다. 게임 화면 위에 목록·관리 페이지를 띄우고, 페이지를
-## 갈아 끼우며 쓴다. 층(`layer`)을 스스로 들고 있어 HUD 위에 확실히 올라온다.
+## It is a convenient wrapper around `GoSurface`. Put a list or a management page over the game screen
+## and swap pages inside it. It holds its own `layer`, so it reliably comes up above the HUD.
 ##
 ## ```gdscript
 ## var sheet := GoSheet.new()
 ## add_child(sheet)
-## sheet.open("가방")
+## sheet.open("Bag")
 ## sheet.body.add_child(item_list)
-## sheet.footer().add_child(GoStyle.button("닫기", sheet.close))
+## sheet.add_footer(GoStyle.button("Close", sheet.close))
 ## ```
 ##
-## ## 🔑 페이지를 바꿀 때
-## `open()` 은 본문을 비우고 뒤로 버튼·고정 줄을 **끈다**. 돌아갈 데가 없는 화면에 죽은 버튼이
-## 남으면 누른 사람은 아무 일도 안 일어나는 것을 고장으로 읽는다.
+## ## 🔑 When you change page
+## `open()` empties the body and the pinned row and **switches off** the back button, the pinned row and the
+## footer. A dead button left on a screen with nowhere to go back to reads as a fault to whoever presses it
+## and gets nothing. Footer buttons that change per page go in through `add_footer()` — the next `open()`
+## detaches and frees them.
 @tool
 class_name GoSheet
 extends CanvasLayer
@@ -21,21 +23,34 @@ extends CanvasLayer
 signal closed
 signal page_changed
 
-## 본문(스크롤됨).
+## The body (scrolls).
 var body: VBoxContainer
-## 감싸고 있는 표면 — 세밀한 조정이 필요하면 직접 만진다.
+## The surface being wrapped — reach for it directly when you need fine control.
 var surface: GoSurface
 
-## 배경을 눌러 닫을 수 있는가.
-## 🛑 **되돌릴 수 없는 조작을 담은 시트는 꺼 둔다** — 거래창처럼 물건을 올려 둔 화면이
-##    바깥 오탭 한 번으로 닫히면 올린 것이 전부 사라진다. 닫기 버튼과 Escape·뒤로가기는
-##    그대로라 빠져나갈 길은 남는다.
+## Whether tapping the scrim closes it.
+## 🛑 **Turn it off on a sheet that holds irreversible work** — a trade window with goods staked on it
+##    loses all of them to a single stray tap outside. The close button, Escape and the back gesture
+##    stay as they are, so there is still a way out.
 var dismissable := true:
 	set(value):
 		dismissable = value
 		if is_instance_valid(surface): surface.dismiss_on_scrim = value
 
-## 차지할 화면 높이 비율.
+## 🪟 **Opacity of the panel ground** (0.0~1.0) — for making this one thing differ. Negative uses whatever the theme and settings decide.
+## 🛑 Only the ground thins out — text, icons and buttons stay crisp.
+##
+## ```gdscript
+## sheet.alpha = 0.7    # this sheet alone at 70% — a list that has to show the map underneath
+## ```
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		# 🔑 The surface already exists from `_init` — take the value even before entering the tree and
+		#    let the surface's `_ready` apply the panel then (it checks `is_inside_tree()` over there).
+		if is_instance_valid(surface): surface.alpha = value
+
+## Fraction of the screen height it takes up.
 var height_ratio := 0.6:
 	set(value):
 		height_ratio = value
@@ -44,10 +59,12 @@ var height_ratio := 0.6:
 		return surface.height_ratio if is_instance_valid(surface) and surface.height_ratio > 0.0 else height_ratio
 
 var _back_action := Callable()
+## This page's footer nodes, added through `add_footer()` — the next `open()` clears them away.
+var _page_footer: Array[Node] = []
 
 
-## 🛑 표면은 `_init` 에서 만든다 — 트리에 붙이기 전에 `sheet.open()`·`sheet.body` 를 쓰는 것이
-##    자연스러운 사용법인데, `_ready` 에서 만들면 그때 `body` 가 아직 `null` 이라 죽는다.
+## 🛑 The surface is built in `_init` — using `sheet.open()` and `sheet.body` before adding this to the
+##    tree is the natural way to use it, and building in `_ready` makes `body` still `null` then and crash.
 func _init() -> void:
 	visible = false
 	surface = _make_surface()
@@ -61,13 +78,13 @@ func _init() -> void:
 
 func _ready() -> void:
 	if layer == 1: layer = 10
-	# `new()` 뒤에 바꿨을 수 있는 값을 반영한다. 🛑 `true` 를 박지 않는다 — `dismissable = false`
-	#    로 정한 시트(거래창처럼 오탭으로 닫히면 안 되는 것)를 덮어쓴다.
+	# Apply the values that may have been changed after `new()`. 🛑 Do not hard-code `true` — that would
+	#    overwrite a sheet set to `dismissable = false` (a trade window that must not close on a stray tap).
 	surface.height_ratio = height_ratio
 	surface.dismiss_on_scrim = dismissable
 
 
-## 시트를 열고 제목을 정한다(이미 번역된 문구). 본문·뒤로·고정 줄을 초기화한다.
+## Open the sheet and set the title (already-translated text). Resets the body, the back button, the pinned row and any footer nodes added through `add_footer()`.
 func open(title: String) -> void:
 	if not visible: GoFeedback.opened()
 	surface.set_title(title)
@@ -76,6 +93,15 @@ func open(title: String) -> void:
 	for child in toolbar().get_children():
 		toolbar().remove_child(child)
 		child.queue_free()
+	# 🛑 Clear **only what `add_footer()` put there**. Merely hiding the row let buttons pile up on screens that
+	#    add a close button per page (confirmed 2026-09-15). Emptying it wholesale, on the other hand, would make
+	#    a node added once through `footer().add_child()` and kept (a sheet-wide snackbar, say) vanish the moment
+	#    the page changes — there are already hosts using it that way.
+	for node in _page_footer:
+		if is_instance_valid(node) and node.get_parent() == footer():
+			footer().remove_child(node)
+			node.queue_free()
+	_page_footer.clear()
 	toolbar().visible = false
 	footer().visible = false
 	visible = true
@@ -83,31 +109,43 @@ func open(title: String) -> void:
 	page_changed.emit()
 
 
-## 번역 키로 연다.
+## Open with a translation key.
 func open_key(title_key: String) -> void:
 	open("")
 	surface.set_title_key(title_key)
 
 
-## 제목만 바꾼다 — `open()` 과 달리 본문·뒤로·고정 줄을 건드리지 않는다.
-## 같은 시트 안에서 하위 화면으로 들어갈 때(목록 → 상세) 제목이 따라가야 한다.
+## Change only the title — unlike `open()` it leaves the body, the back button and the pinned row alone.
+## Going into a sub-screen inside the same sheet (list → detail) has to carry the title along.
 func set_title(value: String) -> void:
 	surface.set_title(value)
 
 
-## 머리말 아래의 **고정 줄**. 검색칸처럼 목록을 내려도 보여야 하는 것을 넣는다.
-## 쓰는 쪽이 `visible = true` 를 켠다. `open()` 이 매 페이지마다 비우고 끈다.
+## The **pinned row** under the header. Put things that must stay visible as the list scrolls, such as a search field.
+## The caller switches `visible = true` on. `open()` empties it and switches it off on every page.
 func toolbar() -> VBoxContainer:
 	return surface.toolbar
 
 
-## **고정 바닥 줄**. 🛑 늘 보여야 하는 확인·취소는 여기 넣는다 — `body` 에 넣으면 목록과 함께
-## 스크롤되어 긴 목록에서는 화면 밖으로 나간다.
+## The **pinned footer row**. 🛑 Confirm and cancel buttons that must always be visible go here — put them in
+## `body` and they scroll with the list and leave the screen on a long one. The caller switches `visible = true`
+## on. `open()` only switches it off and keeps children added here directly — buttons that change per page go
+## in through `add_footer()`.
 func footer() -> VBoxContainer:
 	return surface.footer
 
 
-## 같은 시트 안의 하위 화면이 쓰는 뒤로 버튼. 빈 `Callable` 이면 감춘다.
+## Add to **this page's** footer row and switch the row on. The next `open()` detaches and frees it.
+## 🔑 Screens that add a close or confirm button per page use this — anything added through `footer().add_child()`
+##    survives an `open()` (the place for a sheet-wide snackbar or a permanent button).
+func add_footer(node: Node) -> Node:
+	footer().add_child(node)
+	footer().visible = true
+	_page_footer.append(node)
+	return node
+
+
+## The back button used by a sub-screen inside the same sheet. An empty `Callable` hides it.
 func set_back(action: Callable) -> void:
 	_back_action = action
 	surface.set_back(action)
@@ -124,6 +162,6 @@ func close() -> void:
 	closed.emit()
 
 
-## 감싸는 표면을 만든다. 🔑 호스트가 `GoSurface` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.
+## Build the surface being wrapped. 🔑 If the host wants a `GoSurface` subclass (for old type-hint compatibility, say), override this in a subclass.
 func _make_surface() -> GoSurface:
 	return GoSurface.new()

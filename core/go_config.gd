@@ -1,215 +1,216 @@
-## ⚙️ gohud 의 **설정 한 장**. 테마·아이콘·치수·동작·피드백·번역을 전부 여기서 정한다.
+## ⚙️ gohud's **one settings sheet**. Theme, icons, metrics, behavior, feedback and localization are all decided here.
 ##
-## ## 왜 리소스인가
-## 설정이 코드 상수면 쓰는 쪽이 포크를 떠야 바꿀 수 있다. `.tres` 한 장으로 빼 두면
-## **애드온을 업데이트해도 프로젝트 설정이 살아남는다** — 이것이 애셋으로서 가장 중요한 성질이다.
+## ## Why a resource
+## If the settings were code constants, the user would have to fork the addon to change them. Pulled
+## out into a single `.tres`, **the project's settings survive an addon update** — as an asset, that is the most important property there is.
 ##
-## ## 붙이는 법 — 셋 중 하나
+## ## How to attach it — one of three
 ## ```gdscript
-## # ① 프로젝트 설정(권장) — 에디터의 Project Settings > General > Gohud > Config 에 경로를 넣는다.
-## #    플러그인을 켜면 그 칸이 생기고, gohud 는 첫 위젯을 만들 때 자동으로 읽는다.
+## # ① Project settings (recommended) — put the path in Project Settings > General > Gohud > Config in the editor.
+## #    Enabling the plugin creates that field, and gohud reads it automatically when it builds its first widget.
 ##
-## # ② 코드에서 직접 — 오토로드·플러그인 없이도 된다.
+## # ② Straight from code — this works without an autoload or the plugin.
 ## GoUi.config = preload("res://ui/my_gohud.tres")
 ##
-## # ③ 아무것도 안 한다 — 기본값으로 동작한다. 설치 직후 바로 쓸 수 있다는 뜻이다.
+## # ③ Do nothing — it runs on the defaults. Which means it is usable the moment it is installed.
 ## ```
 ##
-## ## 🛑 비워 두는 칸이 "기본값" 이다
-## `theme` 를 비우면 gohud 기본 테마, `icons` 를 비우면 gohud 기본 아이콘 세트를 쓴다.
-## 그래서 **바꾸고 싶은 칸만 채우면 된다** — 전부 채울 필요가 없다.
+## ## 🛑 A field left empty *is* the "default"
+## Leave `theme` empty and gohud's default theme is used; leave `icons` empty and gohud's default icon set is.
+## So **fill in only the fields you want to change** — there is no need to fill them all.
 @tool
 class_name GoConfig
 extends Resource
 
-## 값이 바뀌면 알린다. `GoUi` 가 받아 열려 있는 위젯을 다시 그린다.
+## Emitted when a value changes. `GoUi` picks it up and redraws the widgets that are open.
 signal changed_settings
 
 
-# ── 겉모습 ─────────────────────────────────────────────────────────────
+# ── Appearance ─────────────────────────────────────────────────────────
 
 @export_group("Appearance")
 
-## 🎁 **생김새 묶음**(`default_dark`·`default_light`·`scifi_dark`·`scifi_light`). 비우면 기본 묶음.
+## 🎁 **A look bundle** (`default_dark`·`default_light`·`scifi_dark`·`scifi_light`). Empty means the default bundle.
 ##
-## 아래 `theme`·`skin`·`icons` 중 **비어 있는 칸만** 이 묶음에서 채운다 — 그래서 프리셋을 고른 뒤
-## `theme` 하나만 자기 것으로 덮어쓰는 식이 된다. 코드에서는 `GoUi.use_preset()` 이 더 편하다.
+## Of `theme`·`skin`·`icons` below, **only the empty fields** are filled from this bundle — so you pick a
+## preset and then override just `theme` with your own. From code, `GoUi.use_preset()` is easier.
 @export var preset: StringName = &"":
 	set(value):
 		preset = value
 		emit_changed()
 		changed_settings.emit()
 
-## 위젯이 쓸 `Theme`. 비우면 위 `preset` 의 테마, 그것도 없으면 gohud 기본(어두운) 테마.
+## The `Theme` the widgets use. Empty falls back to the `preset` above, and failing that to gohud's default (dark) theme.
 ##
-## 🔑 **전부 갈아 끼울 필요가 없다** — 기본 테마를 복제해 색만 바꾸거나, 아예 다른 테마를 넣고
-##    빠진 토큰은 기본 테마에서 가져오게 둘 수도 있다(`token_fallback`).
+## 🔑 **There is no need to swap the whole thing** — duplicate the default theme and change only the colors,
+##    or drop in an entirely different theme and let the missing tokens come from the default theme (`token_fallback`).
 @export var theme: Theme:
 	set(value):
 		theme = value
 		emit_changed()
 		changed_settings.emit()
 
-## 위 `theme` 에 gohud 토큰(`GoHud/colors/...`)이 없을 때 기본 테마에서 채울 것인가.
-## 🛑 끄면 없는 토큰이 검정·0 으로 나온다. 자기 테마를 처음부터 끝까지 채운 경우에만 끈다.
+## Whether to fill from the default theme when the `theme` above has no gohud token (`GoHud/colors/...`).
+## 🛑 Turned off, a missing token comes out black·0. Turn it off only if you filled your own theme from end to end.
 @export var token_fallback := true
 
-## 위젯이 **직접 그리는 것**의 모양(조이스틱·퀵슬롯·코치마크·칩·알림 상자). 비우면 gohud 기본 모양.
+## The look of **what the widgets draw themselves** (joystick·quick slot·coach mark·chip·alert box). Empty means gohud's default look.
 ##
-## 🔑 `theme` 가 색과 엔진 컨트롤의 모양을 정한다면, 이것은 **코드가 그리는 자리**의 모양을 정한다.
-##    둘을 한 묶음으로 고르려면 `GoUi.use_preset()` 을 쓴다.
+## 🔑 Where `theme` decides the colors and the look of the engine's controls, this decides the look of
+##    **the spots the code draws**. To pick the two as one bundle, use `GoUi.use_preset()`.
 @export var skin: GoSkin:
 	set(value):
 		skin = value
 		emit_changed()
 		changed_settings.emit()
 
-## 아이콘 세트. 비우면 gohud 기본 세트(직접 그린 84종 · MIT).
+## The icon set. Empty means gohud's default set (84 hand-drawn icons · MIT).
 @export var icons: GoIconSet:
 	set(value):
 		icons = value
 		emit_changed()
 		changed_settings.emit()
 
-## 개별 색 덮어쓰기 — 테마를 통째로 만들지 않고 `accent` 하나만 바꾸고 싶을 때.
-## 키는 `GoTheme.ACCENT` 같은 토큰 이름이다.
+## Individual color overrides — for when you want to change just `accent` without building a whole theme.
+## The keys are token names such as `GoTheme.ACCENT`.
 @export var color_overrides: Dictionary[StringName, Color] = {}
 
-## 개별 치수 덮어쓰기 — `touch`·`padding`·`radius` 등. 위 `color_overrides` 와 같은 방식이다.
+## Individual metric overrides — `touch`·`padding`·`radius` and the rest. Same idea as `color_overrides` above.
 @export var metric_overrides: Dictionary[StringName, int] = {}
 
-## 본문 글자 크기(dp). 0 이면 테마 값 그대로.
+## Body font size (dp). 0 keeps the theme's value.
 @export_range(0, 48) var base_font_size := 0
 
-## 좁은 화면에서 글자만 한 단계 줄인다(터치 영역은 그대로).
-## 🛑 터치 크기까지 줄이지 않는다 — 손가락은 화면이 좁아졌다고 작아지지 않는다.
+## On a narrow screen, shrink the type by one step and nothing else (touch targets stay).
+## 🛑 It does not shrink the touch size — a finger does not get smaller because the screen did.
 @export var shrink_type_on_mobile := true
 
 
-# ── 화면 적응 ───────────────────────────────────────────────────────────
+# ── Responsive ─────────────────────────────────────────────────────────
 
 @export_group("Responsive")
 
-## `GoScale` 로 **1 unit = 1dp 좌표계**를 잡을 것인가.
+## Whether `GoScale` should set up a **1 unit = 1dp coordinate space**.
 ##
-## 🛑 기본은 **꺼짐**. 이 기능은 창의 `content_scale_factor` 를 바꾸므로 프로젝트 전체의
-##    좌표계에 영향을 준다 — 남의 프로젝트에서 말없이 켜면 안 된다. 켜는 쪽이 정한다.
+## 🛑 The default is **off**. This changes the window's `content_scale_factor`, so it affects the
+##    coordinate space of the whole project — never switch it on silently in someone else's project. The one turning it on decides.
 @export var scale_enabled := false
 
-## 짧은 변이 이 dp 이하면 모바일 브레이크포인트.
+## A short side at or below this many dp is the mobile breakpoint.
 @export_range(240, 1200) var mobile_max_dp := 576.0
 
-## 짧은 변이 이 dp 이하면 태블릿.
+## A short side at or below this many dp is a tablet.
 @export_range(480, 2000) var tablet_max_dp := 991.0
 
-## 브레이크포인트별 가독성 보정 — 좁을수록 조금 키운다. 1.0 은 순수 dp.
+## Readability gain per breakpoint — the narrower it is, the more it grows. 1.0 is pure dp.
 @export_range(1.0, 1.5, 0.01) var read_gain_mobile := 1.10
 @export_range(1.0, 1.5, 0.01) var read_gain_tablet := 1.05
 @export_range(1.0, 1.5, 0.01) var read_gain_desktop := 1.00
 
-## 데스크톱에서 UI 를 추가로 키우는 배수(먼 시야 거리 보정). 1.0 이면 없음.
+## Extra multiplier that enlarges the UI on desktop (correcting for the longer viewing distance). 1.0 means none.
 @export_range(1.0, 1.6, 0.01) var desktop_ui_gain := 1.0
 
-## 폼(로그인·설정 같은 세로 목록)의 최대 콘텐츠 폭(dp). 0 은 제한 없음.
+## Maximum content width of a form (a vertical list such as login·settings) in dp. 0 is no limit.
 @export_range(0, 1200) var form_max_width_mobile := 0
 @export_range(0, 1200) var form_max_width_tablet := 440
 @export_range(0, 1200) var form_max_width_desktop := 480
 
-## 기기의 안전영역(노치·둥근 모서리)을 피할 것인가. 모바일에서만 실제 효과가 있다.
+## Whether to keep clear of the device safe area (notch·rounded corners). It only takes real effect on mobile.
 @export var respect_safe_area := true
 
 
-# ── 표면(팝업·시트·다이얼로그) ──────────────────────────────────────────
+# ── Surfaces (popups·sheets·dialogs) ───────────────────────────────────
 
 @export_group("Surface")
 
-## 카드의 최대 폭(dp).
+## Maximum card width (dp).
 @export_range(200, 1600) var surface_max_width := 480.0
 
-## 카드의 최대 높이(dp).
+## Maximum card height (dp).
 @export_range(200, 2000) var surface_max_height := 700.0
 
-## 카드가 쓰는 화면 높이 비율의 기본값.
+## Default share of the screen height a card takes.
 @export_range(0.2, 1.0, 0.01) var surface_height_ratio := 0.68
 
-## 🛑 카드가 차지할 수 있는 화면 높이의 **상한**. 위아래로 바깥 화면이 보여야 "떠 있는 창"
-##    으로 읽힌다 — 1.0 으로 두면 전체 화면 페이지처럼 보인다.
+## 🛑 The **ceiling** on the screen height a card may take. The screen behind has to show above and
+##    below for it to read as "a floating window" — left at 1.0 it looks like a full-screen page.
 @export_range(0.4, 1.0, 0.01) var surface_max_height_ratio := 0.72
 
-## 🔑 **내용이 더 필요하면 여기까지 자란다**(가운데 카드 · `fit_content` 일 때만).
+## 🔑 **If the content needs more, it grows to here** (centered card · only when `fit_content`).
 ##
-## 위의 `surface_max_height_ratio` 는 "내용과 상관없이 이만큼까지" 인 반면, 이 값은 "내용이
-## 들어가려면 이만큼까지는 늘려 준다" 다. 둘을 하나로 두었더니 **화면이 30% 남았는데 폼의
-## 마지막 입력칸이 스크롤 밖으로 밀렸다** — 사용자는 칸이 있는 줄도 모르고 빈 채로 제출한다
-## (2026-09-16 라리엔 계정 연결 폼 실측: 논리 317×704 에서 카드가 457 에 멈춰 세 번째 칸이 0% 보였다).
+## Where `surface_max_height_ratio` above means "up to this much regardless of the content", this value
+## means "stretch up to this much if that is what it takes for the content to fit". Kept as a single
+## value it gave us **30% of the screen still free while the form's last input was pushed out of the
+## scroll view** — the user never learns the field is there and submits it empty (measured 2026-09-16
+## on the Laryen account-link form: at a logical 317×704 the card stopped at 457 and the third field was 0% visible).
 ##
-## 🛑 끌어서 크기를 바꾸는 시트(`resizable`)와 아래에서 올라온 시트(`BOTTOM`)에는 쓰지 않는다 —
-##    그 높이는 사용자가 정한 것이다.
+## 🛑 Not used for sheets you drag to resize (`resizable`) or sheets that came up from the bottom
+##    (`BOTTOM`) — that height was decided by the user.
 @export_range(0.4, 1.0, 0.01) var surface_fit_max_height_ratio := 0.94
 
-## 세로 화면에서 카드가 쓰는 폭의 비율.
+## Share of the width a card takes on a portrait screen.
 @export_range(0.5, 1.0, 0.01) var surface_width_ratio_portrait := 0.94
 
-## 가로 화면에서 카드가 쓰는 폭의 비율(좌우가 남으므로 더 좁게).
+## Share of the width a card takes on a landscape screen (narrower, since there is room to spare left and right).
 @export_range(0.3, 1.0, 0.01) var surface_width_ratio_landscape := 0.72
 
-## 🪟 판(컨테이너) 바탕의 **불투명도**(0.0~1.0) — 프로젝트 전체에 한 번에 건다.
-## 0.8 이면 판 뒤가 20% 만큼 배어 나온다. **음수면 테마가 정한 값 그대로**(기본).
+## 🪟 **Opacity** of the panel (container) background (0.0~1.0) — applied to the whole project at once.
+## At 0.8, 20% of what is behind the panel bleeds through. **Negative keeps the theme's value** (the default).
 ##
-## 🛑 글자·아이콘·버튼은 이 값을 따르지 않는다. 판의 바탕만 묽어지고 그 위 내용은 선명하다.
-## 🔑 **비율이다** — 코드와 인스펙터에서 다루는 불투명도는 `Color.a`·`modulate.a` 와 같은 0.0~1.0 이다.
-##    퍼센트 정수는 **테마의 constant 한 층에만** 있다(`Theme` 이 정수만 담기 때문 · `GoTheme.PANEL_ALPHA`).
+## 🛑 Text·icons·buttons do not follow this value. Only the panel background thins out; the content on it stays crisp.
+## 🔑 **It is a ratio** — the opacity handled in code and in the inspector is the 0.0~1.0 of `Color.a`·`modulate.a`.
+##    Integer percentages live **only in the theme's constant layer** (a `Theme` can hold nothing but integers · `GoTheme.PANEL_ALPHA`).
 ##
 ## ```gdscript
-## GoUi.config.container_alpha = 0.7     # 판 전부를 70%
-## GoUi.refresh()                        # 🛑 떠 있는 위젯까지 다시 그리려면 부른다
+## GoUi.config.container_alpha = 0.7     # every panel at 70%
+## GoUi.refresh()                        # 🛑 call this to redraw the widgets already on screen too
 ## ```
 @export_range(-1.0, 1.0, 0.01) var container_alpha := -1.0
 
-## 🪟 판 **종류별** 불투명도(0.0~1.0) — 위 `container_alpha` 보다 **우선한다.**
-## 키는 판 종류(`GoTheme.BOX_PANEL`·`BOX_CARD`·`BOX_HUD`·`BOX_NOTICE`·`BOX_POPUP`)이고, 음수 값은
-## "정하지 않았다" 로 보아 아래 층으로 넘긴다.
+## 🪟 Opacity **per panel variant** (0.0~1.0) — it **takes precedence** over `container_alpha` above.
+## The keys are panel variants (`GoTheme.BOX_PANEL`·`BOX_CARD`·`BOX_HUD`·`BOX_NOTICE`·`BOX_POPUP`), and a
+## negative value counts as "not decided" and is handed down to the layer below.
 ##
-## 🔑 요구가 종류마다 다르기 때문에 있다 — 대화상자는 뒤가 보여도 좋지만, 게임 그림 위에 바로
-##    얹히는 HUD 판은 더 꽉 차야 글자가 읽힌다.
+## 🔑 It exists because the demands differ per variant — a dialog may let the background show through, but
+##    a HUD panel laid straight over the game picture has to be fuller for the text to read.
 ##
 ## ```gdscript
 ## GoUi.config.container_alpha_overrides = {
-##     GoTheme.BOX_PANEL: 0.7,   # 대화상자·시트는 시원하게
-##     GoTheme.BOX_HUD: 0.95,    # HUD 는 거의 꽉 차게 — 월드 위에서 읽혀야 한다
+##     GoTheme.BOX_PANEL: 0.7,   # dialogs·sheets can be airy
+##     GoTheme.BOX_HUD: 0.95,    # the HUD nearly solid — it has to read over the world
 ## }
 ## GoUi.refresh()
 ## ```
 @export var container_alpha_overrides: Dictionary[StringName, float] = {}
 
-## 배경(스크림)을 눌러 닫을 수 있는가의 기본값. 표면마다 따로 정할 수 있다.
+## Default for whether pressing the background (scrim) closes it. Each surface can decide for itself.
 @export var dismiss_on_scrim := false
 
-## 표면을 열 때 카드를 페이드인할 것인가.
+## Whether to fade the card in when a surface opens.
 @export var surface_fade_in := false
 
-## 페이드 시간(초).
+## Fade duration (seconds).
 @export_range(0.0, 1.0, 0.01) var fade_seconds := 0.14
 
-## 닫기 버튼의 **보이는** 크기(dp). 터치 영역은 아래 `touch` 토큰까지 노드 밖으로 넓어진다.
+## The **visible** size of the close button (dp). The touch area widens out past the node, up to the `touch` token below.
 @export_range(16, 96) var close_button_visual := 36
 
-## 포인터(마우스·손가락)로 연 창에 포커스 링을 띄우지 않는다.
-## 🛑 터치로 메뉴를 열었을 뿐인데 닫기 버튼만 빛나면 "여기를 누르라" 는 신호로 읽힌다.
+## Do not raise a focus ring on a window opened with a pointer (mouse·finger).
+## 🛑 When all that happened was opening a menu by touch and the close button alone lights up, it reads as a "press here" signal.
 @export var suppress_pointer_focus_ring := true
 
-## Escape / Android 뒤로가기로 가장 위 표면을 닫는다.
+## Close the topmost surface on Escape / the Android back gesture.
 @export var close_on_back := true
 
 
-# ── 피드백(소리·진동) ──────────────────────────────────────────────────
+# ── Feedback (sound·haptics) ───────────────────────────────────────────
 
 @export_group("Feedback")
 
-## 진동을 쓸 것인가(Android·iOS 에서만 실제로 떤다).
+## Whether to use haptics (it only really buzzes on Android·iOS).
 @export var haptics_enabled := true
 
-## 세 단계 진동의 지속 시간(ms)과 세기. 짧을수록 가볍게 느껴진다.
+## Duration (ms) and strength of the three haptic steps. The shorter it is, the lighter it feels.
 @export_range(0, 200) var haptic_tap_ms := 10
 @export_range(0.0, 1.0, 0.01) var haptic_tap_amplitude := 0.35
 @export_range(0, 200) var haptic_light_ms := 20
@@ -217,9 +218,9 @@ signal changed_settings
 @export_range(0, 400) var haptic_medium_ms := 40
 @export_range(0.0, 1.0, 0.01) var haptic_medium_amplitude := 0.8
 
-## 효과음 신호 이름 → 프로젝트의 음원 큐 이름.
-## 🛑 gohud 는 **음원을 담지 않는다.** 소리를 실제로 내는 것은 프로젝트다 —
-##    `GoFeedback.sound_handler` 에 Callable 을 하나 꽂으면 이 이름이 그대로 넘어간다.
+## Sound signal name → the project's audio cue name.
+## 🛑 gohud **ships no audio.** Making the sound is the project's job —
+##    plug a single Callable into `GoFeedback.sound_handler` and these names are handed straight over.
 @export var sound_cues: Dictionary[StringName, String] = {
 	&"opened": "ui_open",
 	&"closed": "ui_close",
@@ -231,13 +232,13 @@ signal changed_settings
 }
 
 
-# ── 번역 ───────────────────────────────────────────────────────────────
+# ── Localization ───────────────────────────────────────────────────────
 
 @export_group("Localization")
 
-## gohud 가 쓰는 문구의 번역 키. 프로젝트에 이미 같은 뜻의 키가 있으면 여기서 바꿔 끼운다.
-## 🛑 값이 번역 테이블에 **없으면** `tr()` 이 키를 그대로 돌려주므로 화면에 키가 보인다.
-##    그럴 때는 아래 `text_overrides` 로 원문을 직접 넣으면 된다.
+## Translation keys for the strings gohud uses. If the project already has keys with the same meaning, swap them in here.
+## 🛑 If a value is **not** in the translation table, `tr()` hands the key back and the key shows on screen.
+##    When that happens, put the literal text straight in through `text_overrides` below.
 @export var text_keys: Dictionary[StringName, String] = {
 	&"close": "gohud_close",
 	&"back": "gohud_back",
@@ -250,11 +251,11 @@ signal changed_settings
 	&"loading": "gohud_loading",
 	&"empty": "gohud_empty",
 	&"retry": "gohud_retry",
-	# 🔑 **숫자를 감싸는 형식도 문구다.** 위젯이 `"%d / %d"` 를 코드에 박아 두면 그 한 줄만
-	#    영원히 영어 관습으로 남는다 — 터키어는 백분율 기호를 **앞**에 붙이고(%50), 프랑스어는
-	#    숫자와 기호를 띄운다. 그래서 형식 문자열까지 번역 키로 뺀다.
-	# 🛑 자리표시자는 `{이름}` 이다(`String.format`). `%s` 를 쓰면 번역자가 자리표시자를 빠뜨렸을 때
-	#    "not all arguments converted" 로 화면이 죽는다.
+	# 🔑 **The format that wraps a number is a string too.** If a widget hard-codes `"%d / %d"`, that one
+	#    line stays in English convention forever — Turkish puts the percent sign in **front** (%50) and
+	#    French spaces the number and the sign apart. So even format strings are pulled out as translation keys.
+	# 🛑 Placeholders are `{name}` (`String.format`). With `%s`, a translator who drops a placeholder
+	#    kills the screen with "not all arguments converted".
 	&"bar_fraction": "gohud_bar_fraction",      # {value} / {max}
 	&"bar_percent": "gohud_bar_percent",        # {percent}%
 	&"coach_progress": "gohud_coach_progress",  # {step} / {total}
@@ -262,47 +263,49 @@ signal changed_settings
 	&"slot_unknown": "gohud_slot_unknown",      # …
 }
 
-## 번역을 거치지 않고 **그대로 쓸 문구**. 번역 테이블을 쓰지 않는 프로젝트를 위한 탈출구다.
-## 여기 있는 이름은 위 `text_keys` 보다 우선한다.
+## Text used **as is**, without going through translation. An escape hatch for projects that do not use a translation table.
+## A name present here takes precedence over `text_keys` above.
 @export var text_overrides: Dictionary[StringName, String] = {}
 
-## 큰 수를 짧게 적는 방법. 비워 두면 내장 규칙(`12.3k` · `4.5m`)을 쓴다.
-## 🛑 **형식 문자열로는 못 고치는 것**이라 훅으로 뺐다 — 한국어·중국어·일본어는 천/백만이 아니라
-##    만(10,000)·억 단위로 끊는다. 자리를 어디서 끊을지가 다르므로 값 계산 자체가 달라야 한다.
+## How to write big numbers short. Left empty, the built-in rule (`12.3k` · `4.5m`) applies.
+## 🛑 Pulled out as a hook because it is **something a format string cannot fix** — Korean·Chinese·Japanese
+##    break at 10,000 (man/wan) and 100,000,000 (eok/yi), not at thousands/millions. Where the number breaks
+##    differs, so the value calculation itself has to differ.
 ##
 ## ```gdscript
 ## GoUi.config.number_formatter = func(amount: float) -> String:
-##     if absf(amount) >= 100_000_000.0: return "%.1f억" % (amount / 100_000_000.0)
-##     if absf(amount) >= 10_000.0: return "%.1f만" % (amount / 10_000.0)
+##     if absf(amount) >= 100_000_000.0: return "%.1f億" % (amount / 100_000_000.0)
+##     if absf(amount) >= 10_000.0: return "%.1f萬" % (amount / 10_000.0)
 ##     return str(roundi(amount))
+## ```
 ## ```
 @export var number_formatter := Callable()
 
-## gohud 기본 번역(16개 문구 × 21언어)을 `TranslationServer` 에 붙일 것인가.
-## 🛑 프로젝트가 같은 키를 이미 갖고 있으면 끈다 — 나중에 붙는 쪽이 이긴다.
+## Whether to attach gohud's built-in translations (16 strings × 21 languages) to the `TranslationServer`.
+## 🛑 Turn it off if the project already holds the same keys — whichever attaches last wins.
 @export var load_builtin_translations := true
 
 
-# ── 접근성 ─────────────────────────────────────────────────────────────
+# ── Accessibility ──────────────────────────────────────────────────────
 
 @export_group("Accessibility")
 
-## 터치 대상의 최소 한 변(dp). Material 48 · Apple HIG 44 가 근거다.
-## 🛑 시각 크기가 아니라 **입력 판정**의 하한이다 — 위젯은 이보다 작아 보일 수 있어도
-##    누를 수 있는 범위는 이 값을 지킨다.
+## Minimum side of a touch target (dp). Material 48 · Apple HIG 44 are the basis.
+## 🛑 It is the floor for **hit testing**, not for visual size — a widget may look smaller than this,
+##    but the area you can press keeps to this value.
 @export_range(24, 96) var min_touch_size := 48
 
-## 움직임을 줄인다 — 페이드·코치마크 맥동을 끈다.
+## Reduce motion — turns off fades and the coach-mark pulse.
 @export var reduce_motion := false
 
-## 긴 문구를 줄바꿈한다. 🛑 끄면 한 줄이 길게 뻗어 최소 폭이 화면을 넘길 수 있다.
+## Wrap long text. 🛑 Turned off, a line stretches out and the minimum width can run past the screen.
 @export var autowrap_text := true
 
 
 func _init() -> void:
-	# `emit_changed()` 를 부르는 경로(테마·아이콘 setter 등)를 한 곳에서 받는다.
-	# 🛑 **코드에서 평범한 칸을 바꾸면 신호가 오지 않는다** — `config.surface_max_width = 600` 은 값만
-	#    조용히 바뀐다. 이미 떠 있는 위젯까지 다시 그리려면 바꾼 뒤 `GoUi.refresh()` 를 부른다.
+	# Catch every path that calls `emit_changed()` (the theme·icon setters and so on) in one place.
+	# 🛑 **Changing a plain field from code sends no signal** — `config.surface_max_width = 600` just changes
+	#    the value quietly. To redraw the widgets already on screen, call `GoUi.refresh()` after the change.
 	if not changed.is_connected(_on_changed): changed.connect(_on_changed)
 
 
@@ -310,8 +313,8 @@ func _on_changed() -> void:
 	changed_settings.emit()
 
 
-## 이 설정의 사본 — 실행 중 한 화면만 다르게 하고 싶을 때.
-## 🛑 `duplicate()` 를 그냥 쓰면 Dictionary 가 **공유**되어 한쪽 수정이 다른 쪽에 번진다.
+## A copy of this config — for when one screen alone should differ at runtime.
+## 🛑 Plain `duplicate()` leaves the Dictionaries **shared**, so an edit on one side bleeds into the other.
 func copy() -> GoConfig:
 	var clone: GoConfig = duplicate(true)
 	clone.color_overrides = color_overrides.duplicate(true)

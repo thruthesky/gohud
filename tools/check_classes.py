@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
-"""같은 `class_name` 이 저장소 안에 **둘 이상** 있는지 본다.
+"""Find any `class_name` declared **more than once** in the repository.
 
     python3 addons/gohud/tools/check_classes.py
 
-## 🛑 왜 필요한가 (2026-09-16 실측)
+## 🛑 Why it is needed (measured 2026-09-16)
 
-`examples/usage/` 에는 "게임 프로젝트에 설치한 모습" 을 보이려고 **애드온 사본이 한 벌 더** 들어
-있었고, 거기에 `.gdignore` 가 없었다. 그래서 `GoUi`·`GoConfig`·`GoStyle` 을 비롯한 **35 개 클래스가
-두 번 선언**됐다.
+`examples/usage/` held **a second copy of the addon** to show "what it looks like installed in a
+game project", and that copy had no `.gdignore`. So **35 classes were declared twice**, `GoUi`,
+`GoConfig` and `GoStyle` among them.
 
-같은 `class_name` 이 둘이면 Godot 은 하나만 고르고, **어느 쪽인지는 사람이 정하지 못한다.** 고른
-결과는 스캔 순서와 `.godot` 캐시에 달려 있어 기계마다 달라질 수 있다.
+With two of the same `class_name`, Godot picks one and **a person does not get to decide which.**
+What it picks depends on scan order and the `.godot` cache, so it can differ from machine to machine.
 
-🛑 **틀려도 오류가 나지 않는다.** 옛 사본의 클래스도 그 자체로는 멀쩡히 동작하므로, 고른 쪽이 옛
-것이어도 화면은 조용히 옛 동작을 한다. 단위 검사도 전부 통과한다 — 검사는 **고른 그 클래스**를
-보기 때문이다. 그래서 이 겹침은 사람이 알아채기 전에는 드러나지 않고, 검사로만 막을 수 있다.
+🛑 **Getting it wrong raises no error.** The class in the old copy works fine on its own, so if the
+old one is picked the screen quietly behaves the old way. Unit tests all pass too — the tests look
+at **whichever class was picked**. So this collision stays invisible until a person happens to
+notice, and only a check can stop it.
 
-🔑 배포 ZIP 에는 `examples/usage/` 가 들어가지 않는다(`tools/check_package.py`). 위험한 것은 저장소를
-통째로 쓰는 쪽 — README 가 안내하는 **git 서브모듈** 방식이다.
+🔑 The release ZIP does not include `examples/usage/` (`tools/check_package.py`). What is at risk is
+using the whole repository — the **git submodule** route the README describes.
 
-🔑 `.gdignore` 가 있는 폴더는 Godot 이 통째로 건너뛰므로 여기서도 건너뛴다 — 사본을 두는 것 자체는
-문제가 아니고, **스캔되게 두는 것**이 문제다.
+🔑 A folder with a `.gdignore` is skipped whole by Godot, so it is skipped here too — keeping a copy
+is not the problem, **leaving it scannable** is.
 """
 import os
 import re
@@ -33,11 +34,11 @@ CLASS = re.compile(r"^class_name\s+([A-Za-z_][A-Za-z0-9_]*)", re.M)
 
 
 def scan():
-	"""`class_name` → 그것을 선언한 파일들. `.gdignore` 가 있는 폴더는 통째로 건너뛴다."""
+	"""`class_name` -> the files that declare it. A folder with a `.gdignore` is skipped whole."""
 	found = {}
 	for root, dirs, files in os.walk(ADDON):
 		if ".gdignore" in files:
-			dirs[:] = []            # Godot 과 같은 규칙 — 이 아래로는 내려가지 않는다
+			dirs[:] = []            # the same rule as Godot — do not descend below this
 			continue
 		dirs[:] = [name for name in dirs if name not in SKIP]
 		for name in sorted(files):
@@ -56,14 +57,14 @@ def scan():
 def main():
 	found = scan()
 	clashes = {name: paths for name, paths in found.items() if len(paths) > 1}
-	print("스크립트가 선언하는 클래스 %d개" % len(found))
+	print("%d classes declared by scripts" % len(found))
 	if not clashes:
-		print("\n✅ 같은 이름을 두 번 선언하는 곳이 없다")
+		print("\n✅ no name is declared twice")
 		return 0
 	for name in sorted(clashes):
 		print("   🛑 %s — %s" % (name, " · ".join(clashes[name])))
-	print("\n🛑 같은 class_name 이 둘 이상이다 — %d개" % len(clashes))
-	print("   사본을 둔 폴더라면 그 폴더에 빈 `.gdignore` 를 둔다(Godot 이 통째로 건너뛴다).")
+	print("\n🛑 the same class_name appears more than once — %d of them" % len(clashes))
+	print("   If the folder holds a copy, put an empty `.gdignore` in it (Godot skips it whole).")
 	return 1
 
 

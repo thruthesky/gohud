@@ -1,56 +1,56 @@
-## 🔘 **아이콘만 있는 버튼.** 보이는 크기는 작게, 누를 수 있는 범위는 48dp 로.
+## 🔘 **A button that is only an icon.** Small on screen, 48dp to the finger.
 ##
-## ## 왜 둘을 나누나
-## 헤더의 닫기 버튼이 제목보다 커 보이면 안 된다. 그렇다고 36dp 짜리 사각형으로 만들면
-## 손가락으로 못 누른다. 그래서 **노드는 `visual_size`(작게), 히트 판정은 노드 밖까지** 넓힌다.
+## ## Why the two are separated
+## A close button in a header must not look bigger than the title. But make it a 36dp square and a finger
+## cannot hit it. So **the node is `visual_size` (small) and the hit test reaches beyond the node**.
 ##
 ## ```gdscript
 ## var mark := GoIconButton.new()
-## mark.visual_size = 36          # 보이는 크기
+## mark.visual_size = 36          # the size on screen
 ## mark.set_icon_name(GoIconSet.CLOSE)
-## # 터치는 GoConfig.min_touch_size(기본 48)까지 자동으로 넓어진다
+## # touch widens automatically to GoConfig.min_touch_size (48 by default)
 ## ```
 ##
-## 🛑 이 방식은 **형제가 입력을 받지 않을 때만** 안전하다 — 넓힌 영역이 옆 버튼을 덮으면
-##    옆 버튼이 안 눌린다. 헤더의 제목 라벨처럼 입력을 받지 않는 형제 옆에 두는 것이 전제다.
-##    아이콘 버튼을 **나란히 여러 개** 둘 때는 `touch_peers` 로 서로를 알려 준다.
+## 🛑 This is only safe **while the siblings do not take input** — where the widened area covers the button
+##    next to it, that button stops being pressable. It assumes siblings that take no input, like a header's
+##    title label. When you put **several icon buttons side by side**, tell them about each other with `touch_peers`.
 @tool
 class_name GoIconButton
 extends Button
 
-## 보이는 정사각형의 한 변(dp). 히트 판정은 이보다 클 수 있다.
+## Side of the visible square (dp). The hit test can be larger than this.
 @export var visual_size := 36:
 	set(value):
 		visual_size = maxi(8, value)
 		custom_minimum_size = Vector2.ONE * visual_size
 		_refresh_icon()
 
-## 아이콘 이름(`GoIconSet.CLOSE` 등).
+## Icon name (`GoIconSet.CLOSE` and so on).
 @export var icon_name: StringName = &"":
 	set(value):
 		icon_name = value
 		_refresh_icon()
 
-## 아이콘 색. 투명이면 테마의 `GoIconButton` 색을 따른다.
+## Icon colour. Transparent follows the theme's `GoIconButton` colour.
 @export var icon_tint := Color.TRANSPARENT:
 	set(value):
 		icon_tint = value
 		_refresh_icon()
 
-## 텍스처 아이콘을 **원래 픽셀 크기**로 그린다 — 기본은 `visual_size` 의 58% 로 늘린다(폰트 글리프와 같은 크기).
-## 호스트가 자기 SVG 크기를 그대로 쓰고 싶을 때 켠다: 늘리고 줄이면 1px 차이가 난다(픽셀 대조 실측).
+## Draw a texture icon at **its native pixel size** — the default scales it to 58% of `visual_size` (the same size as a font glyph).
+## Turn it on where the host wants its own SVG size kept: scaling up and down differs by 1px (measured by pixel comparison).
 @export var native_texture_size := false:
 	set(value):
 		native_texture_size = value
 		_refresh_icon()
 
-## 툴팁으로 쓸 gohud 문구 이름(`GoUi.text` 로 번역한다). 비우면 툴팁 없음.
+## The gohud string name to use as the tooltip (translated through `GoUi.text`). Empty means no tooltip.
 @export var tooltip_text_name: StringName = &"":
 	set(value):
 		tooltip_text_name = value
 		_refresh_tooltip()
 
-## 나란히 놓인 형제 아이콘 버튼들. 넓힌 히트 영역이 겹치면 **중심이 더 가까운 쪽**이 가져간다.
+## The sibling icon buttons placed alongside. Where the widened hit areas overlap, **whichever centre is nearer** takes the press.
 var touch_peers: Array[Control] = []
 
 var _glyph: Control
@@ -76,16 +76,16 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
-## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다**(2026-09-16 실측).
-## 🔑 아이콘 **세트**가 통째로 바뀔 수 있다 — 같은 이름이 다른 그림·다른 방식(텍스처↔폰트)이 된다.
+## 🎨 The whole look changed — `GoUi.use_preset()` and `GoUi.refresh()` call this.
+## 🛑 Without it **only the widgets already on screen stay on the old theme** (measured 2026-09-16).
+## 🔑 The icon **set** can change entirely — the same name becomes a different picture and a different mechanism (texture ↔ font).
 func _on_ui_changed() -> void:
 	theme = GoUi.theme()
 	_refresh_icon()
 	_refresh_tooltip()
 
 
-## 아이콘을 이름으로 정한다(`icon_name` 과 같지만 코드에서 부르기 좋은 이름).
+## Set the icon by name (the same as `icon_name`, under a name that reads better from code).
 func set_icon_name(value: StringName) -> void:
 	icon_name = value
 
@@ -101,10 +101,10 @@ func _refresh_icon() -> void:
 	var icon_set := GoUi.icons()
 	var found := icon_set.texture(icon_name)
 	if found != null:
-		# 텍스처 세트 — 엔진의 `Button.icon` 경로가 색·상태까지 테마로 처리한다.
+		# A texture set — the engine's `Button.icon` path handles colour and state through the theme.
 		icon = found
-		# 🛑 아이콘만 있는 버튼은 가운데 — `Button` 기본은 왼쪽 정렬이라, 늘리지 않으면 아이콘이 왼쪽에 붙는다
-		#    (2026-09-12 픽셀 대조 실측: 원래 크기 텍스처가 가로로 밀렸다).
+		# 🛑 An icon-only button centres — `Button` aligns left by default, so without expanding, the icon sticks
+		#    to the left (measured by pixel comparison 2026-09-12: a native-size texture was pushed sideways).
 		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 		if native_texture_size:
@@ -112,15 +112,15 @@ func _refresh_icon() -> void:
 			remove_theme_constant_override(&"icon_max_width")
 		else:
 			expand_icon = true
-			# 🛑 `expand_icon` 만 켜면 아이콘이 버튼을 꽉 채운다 — 테마 상수 `icon_max_width` 로 글리프 크기에 묶는다.
+			# 🛑 `expand_icon` on its own makes the icon fill the button — tie it to the glyph size with the `icon_max_width` theme constant.
 			add_theme_constant_override(&"icon_max_width", glyph_size)
 		custom_minimum_size = Vector2.ONE * visual_size
 		if icon_tint.a > 0: add_theme_color_override(&"icon_normal_color", icon_tint)
 		return
-	# 폰트 세트 — 자식 라벨로 그린다. 가운데 정렬은 전체 사각형 기준이다.
-	# 🛑 자식 라벨에는 버튼 테마의 `icon_normal_color` 가 **닿지 않는다.** 색을 안 넘기면 아이콘
-	#    세트가 흰색으로 그리므로, 밝은 테마에서는 흰 판에 흰 글리프가 된다 — 퀵슬롯에서 실제로
-	#    그랬다(2026-09-13). 텍스처 경로가 쓰는 색과 같은 것을 넘긴다.
+	# A font set — drawn as a child label. Centring is measured against the whole rect.
+	# 🛑 The button theme's `icon_normal_color` **does not reach** a child label. Pass no colour and the icon
+	#    set draws in white, which on a light theme gives a white glyph on a white panel — that really happened
+	#    on the quick slots (2026-09-13). Pass the same colour the texture path uses.
 	var glyph_ink := icon_tint
 	if glyph_ink.a <= 0:
 		glyph_ink = get_theme_color(&"icon_normal_color") if has_theme_color(&"icon_normal_color") \
@@ -131,8 +131,8 @@ func _refresh_icon() -> void:
 	add_child(_glyph)
 
 
-## 🛑 엔진 기본 툴팁은 폭 계산이 어긋나면 글자를 **한 자씩 세로로** 쪼갠다 — 아이콘 버튼에게
-##    툴팁은 유일한 설명인데 그러면 읽을 수가 없다. gohud 규격으로 직접 만든다.
+## 🛑 When its width calculation goes wrong, the engine's default tooltip breaks the text into **one character
+##    per line** — and the tooltip is an icon button's only explanation, so it becomes unreadable. Build our own to gohud's spec.
 func _make_custom_tooltip(for_text: String) -> Object:
 	if for_text.is_empty(): return null
 	return GoStyle.tooltip_node(for_text)
@@ -141,16 +141,16 @@ func _make_custom_tooltip(for_text: String) -> Object:
 func _refresh_tooltip() -> void:
 	var words := GoUi.text(tooltip_text_name) if not tooltip_text_name.is_empty() else ""
 	tooltip_text = words
-	# ♿ 아이콘만 있는 버튼은 화면 낭독기가 읽을 글자가 없다 — Godot 4.5+ 접근성 이름에 같은 문구를 준다.
+	# ♿ An icon-only button has no text for a screen reader — give the Godot 4.5+ accessibility name the same wording.
 	accessibility_name = words
 
 
-## 노드 밖 여유까지 누름으로 받는다 — 보이는 크기와 별개로 실제 터치는 `min_touch_size` 다.
+## Take presses in the slack beyond the node — whatever the visible size, the real touch target is `min_touch_size`.
 func _has_point(point: Vector2) -> bool:
 	var reach := maxf(0.0, (float(GoUi.config.min_touch_size) - minf(size.x, size.y)) * 0.5)
 	if not Rect2(Vector2.ZERO, size).grow(reach).has_point(point): return false
 	if touch_peers.is_empty(): return true
-	# 넓힌 영역이 겹쳤다 — 중심이 더 가까운 쪽이 가져간다. 그래야 한 점이 두 버튼을 누르지 않는다.
+	# The widened areas overlap — whichever centre is nearer takes it. That keeps one point from pressing two buttons.
 	var here := (point + global_position - get_global_rect().get_center()).length()
 	for peer in touch_peers:
 		if peer == self or not is_instance_valid(peer) or not peer.is_visible_in_tree(): continue

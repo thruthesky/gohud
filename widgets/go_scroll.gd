@@ -1,17 +1,17 @@
-## 📜 세로 스크롤 한 칸. 손가락 끌기·포커스 따라가기·가장자리 여백을 한 곳에서 처리한다.
+## 📜 One vertical scroll box. Finger dragging, focus following and edge insets handled in one place.
 ##
-## ## 안에 딱 하나만 넣는다
-## 머리말과 버튼 줄은 **밖**에 둔다. 목록이 길어지면 그것들이 화면 밖으로 나가면 안 된다.
+## ## Put exactly one thing inside
+## Keep the header and the button row **outside**. When the list grows long they must not leave the screen.
 ##
 ## ```gdscript
 ## var scroll := GoScroll.new()
-## scroll.add_child(body_column)      # 자식 하나
+## scroll.add_child(body_column)      # a single child
 ## card.add_child(scroll)
 ## ```
 ##
-## ## 🔑 스크롤바가 글자를 가리지 않게
-## `use_panel_edge()` 를 부르면 스크롤바가 **카드의 기존 여백 자리**로 나가고, 내용은 원래
-## 들여쓰기를 유지한다. 스크롤바가 없을 때는 그 자리를 내용이 도로 쓴다.
+## ## 🔑 Keeping the scrollbar off the text
+## Call `use_panel_edge()` and the scrollbar moves out into **the card's existing padding**, while the
+## content keeps its original indent. When there is no scrollbar the content takes that space back.
 @tool
 class_name GoScroll
 extends ScrollContainer
@@ -19,7 +19,7 @@ extends ScrollContainer
 var _edge_frame: MarginContainer
 var _content_inset: MarginContainer
 var _edge_gutter := 0
-## 글로우가 뻗을 수 있게 스크롤 경계를 바깥으로 민 거리(dp).
+## How far the scroll bounds are pushed outward so a glow has room to spread (dp).
 var _bleed := 0
 
 
@@ -31,8 +31,8 @@ func _init() -> void:
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	follow_focus = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	# 🛑 스크롤 **레일은 언제나 물리적 오른쪽**이다 — 아랍어·우르두에서도 마찬가지다.
-	#    내용의 좌우 방향은 자식이 각자 정한다(`_prepare_branch` 가 LOCALE 로 되돌린다).
+	# 🛑 The scroll **rail is always on the physical right** — in Arabic and Urdu as well.
+	#    The children each decide the direction of their own content (`_prepare_branch` puts them back to LOCALE).
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 
 
@@ -43,13 +43,13 @@ func _ready() -> void:
 	for child in get_children(): _prepare_branch(child)
 
 
-## 가로로 흐르는 스크롤(칩 줄·썸네일 줄).
+## A scroll that runs horizontally (a row of chips, a row of thumbnails).
 static func horizontal() -> GoScroll:
 	return as_horizontal(GoScroll.new())
 
 
-## `horizontal()` 의 설정만 — 자식 클래스가 자기 인스턴스로 같은 팩토리를 다시 만들 때 쓴다
-## (`static func horizontal() -> Child: return GoScroll.as_horizontal(Child.new())`). 정적 함수는 자식 타입을 모른다.
+## Just the settings `horizontal()` applies — for a subclass rebuilding the same factory with its own instance
+## (`static func horizontal() -> Child: return GoScroll.as_horizontal(Child.new())`). A static function cannot know the subclass type.
 static func as_horizontal(node: GoScroll) -> GoScroll:
 	node.horizontal_scroll_mode = SCROLL_MODE_AUTO
 	node.vertical_scroll_mode = SCROLL_MODE_DISABLED
@@ -58,7 +58,7 @@ static func as_horizontal(node: GoScroll) -> GoScroll:
 	return node
 
 
-## 이 노드를 감싸고 있는 `GoScroll`(없으면 null).
+## The `GoScroll` this node sits inside (null if there is none).
 static func containing(node: Node) -> GoScroll:
 	var ancestor := node.get_parent()
 	while ancestor != null:
@@ -67,8 +67,8 @@ static func containing(node: Node) -> GoScroll:
 	return null
 
 
-## 스크롤바를 부모의 기존 오른쪽 여백으로 내보내고, 내용은 원래 들여쓰기를 지킨다.
-## `parent_padding` 은 부모 카드가 쓰는 여백(dp)이다.
+## Move the scrollbar out into the parent's existing right padding, keeping the content's original indent.
+## `parent_padding` is the padding the parent card uses (dp).
 func use_panel_edge(parent_padding: int) -> void:
 	if _edge_frame != null: return
 	_edge_gutter = maxi(0, parent_padding - GoUi.metric(GoTheme.SCROLL_EDGE))
@@ -81,10 +81,11 @@ func use_panel_edge(parent_padding: int) -> void:
 	_edge_frame.size_flags_horizontal = size_flags_horizontal
 	_edge_frame.size_flags_vertical = size_flags_vertical
 	_edge_frame.size_flags_stretch_ratio = size_flags_stretch_ratio
-	# 🛑 **글로우·그림자가 잘리지 않게 숨 쉴 자리를 둔다.** 스크롤은 자기 경계에서 무조건 자른다 —
-	#    꽉 찬 폭의 강조 버튼은 왼쪽 글로우가 세로로 뚝 잘려 나갔다(2026-09-13 실측, 오른쪽은 레일
-	#    자리 덕에 살아남아 좌우가 달라 보였다). 부모 여백을 빌려 경계를 바깥으로 밀고, 안쪽에서
-	#    같은 만큼 되돌려 **내용 위치는 그대로** 둔다 — 오른쪽 레일과 같은 수법이다.
+	# 🛑 **Leave breathing room so glows and shadows are not clipped.** A scroll clips at its own bounds,
+	#    no exceptions — a full-width accent button had its left glow sheared off in a straight vertical line
+	#    (measured 2026-09-13; the right side survived thanks to the rail gutter, so the two sides looked
+	#    different). Borrow the parent padding to push the bounds outward, then give the same amount back on
+	#    the inside so **the content does not move** — the same trick as the right-hand rail.
 	_bleed = mini(GoUi.metric(GoTheme.GAP), parent_padding)
 	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
 		_edge_frame.add_theme_constant_override(side, -_bleed)
@@ -108,11 +109,12 @@ func use_panel_edge(parent_padding: int) -> void:
 	_sync_edge_inset()
 
 
-## `reparent()` 로 옮기되 자손의 owner 를 지킨다.
-## 🛑 엔진 `reparent()` 는 옮기는 노드와 **같은 owner** 인 자손만 owner 를 되돌린다. 코드로 조립한 폼에서
-##    `back.owner = form` 처럼 버튼만 소유하게 두면(스크롤은 owner 없음) 스크롤을 테두리 칸으로 옮기는 순간
-##    버튼의 owner 가 지워져 `%BackButton` 을 못 찾고 Android 뒤로가기가 조용히 꺼졌다(2026-09-15 실측, 4.7.2).
-##    씬 루트가 전부 소유하는 `.tscn` 에서는 드러나지 않는다.
+## Move with `reparent()` while preserving the descendants' owners.
+## 🛑 The engine's `reparent()` only restores the owner of descendants that share **the same owner** as the node
+##    being moved. In a form assembled in code, where only a button is owned (`back.owner = form`) and the scroll
+##    has no owner, moving the scroll into the edge frame wiped the button's owner, `%BackButton` was no longer
+##    found and the Android back gesture silently stopped working (measured 2026-09-15, 4.7.2). It never shows up
+##    in a `.tscn` where the scene root owns everything.
 static func _reparent_keeping_owners(node: Node, new_parent: Node) -> void:
 	var owners := {}
 	if node.owner != null: owners[node] = node.owner
@@ -124,7 +126,7 @@ static func _reparent_keeping_owners(node: Node, new_parent: Node) -> void:
 		if each.owner != keep and is_instance_valid(keep) and keep.is_ancestor_of(each): each.owner = keep
 
 
-## 카드가 좁아져 여백이 바뀌었을 때 — 스크롤·내용 소유권을 다시 만들지 않고 여백만 고친다.
+## For when the card narrowed and the padding changed — fixes only the insets, without rebuilding the scroll and content ownership.
 func set_panel_padding(padding: int) -> void:
 	if _edge_frame == null: return
 	_edge_gutter = maxi(0, padding - GoUi.metric(GoTheme.SCROLL_EDGE))
@@ -136,11 +138,11 @@ func set_panel_padding(padding: int) -> void:
 	_sync_edge_inset()
 
 
-## 🔑 **이 자손을 화면에 드러낸다** — 「비밀번호가 다릅니다」의 그 칸처럼, 사용자를 고쳐야 할 자리로 데려갈 때.
+## 🔑 **Bring this descendant into view** — for taking the user to the thing they have to fix, like the field behind 「Passwords do not match」.
 ##
-## 🛑 `ensure_control_visible()` 을 그 자리에서 바로 부르면 빗나간다 — 오류 줄이 방금 생겨 카드 높이가
-##    아직 바뀌는 중이라, 엔진은 **옛 위치**를 기준으로 스크롤한다(2026-09-16 실측: 54% 만 드러났다).
-##    배치가 끝나는 두 프레임을 기다렸다가 부른다.
+## 🛑 Calling `ensure_control_visible()` right there misses — the error line has just appeared and the card height
+##    is still changing, so the engine scrolls against the **old position** (measured 2026-09-16: only 54% was revealed).
+##    Wait the two frames layout takes, then call it.
 func reveal(control: Control) -> void:
 	if not is_instance_valid(control) or not is_ancestor_of(control): return
 	for i in 2:
@@ -149,7 +151,7 @@ func reveal(control: Control) -> void:
 	ensure_control_visible(control)
 
 
-## 스크롤 칸 전체를 함께 보이고 숨긴다(가장자리 프레임까지).
+## Show and hide the whole scroll section together (the edge frame included).
 func set_section_visible(value: bool) -> void:
 	if _edge_frame != null: _edge_frame.visible = value
 	visible = value
@@ -164,13 +166,13 @@ func _sync_edge_inset() -> void:
 	_content_inset.add_theme_constant_override(&"margin_right", maxi(0, _edge_gutter - reserved))
 
 
-## 평범한 버튼은 손가락 끌기를 `ScrollContainer` 가 보게 해야 한다 — 그래야 목록 위에서 시작한
-## 스크롤이 먹힌다. 엔진이 끌기 문턱을 넘으면 버튼 누름을 취소해 준다.
-## 🛑 글자 편집·슬라이더·`OptionButton` 팝업은 자기 제스처를 지켜야 하므로 건드리지 않는다.
+## Ordinary buttons have to let the `ScrollContainer` see finger drags — that is what makes a scroll started on
+## top of the list work. Once the drag threshold is crossed the engine cancels the button press for us.
+## 🛑 Text editing, sliders and the `OptionButton` popup keep their own gestures, so they are left alone.
 func _prepare_branch(node: Node) -> void:
 	if node is ScrollBar or node is ScrollContainer: return
 	if node is Control and node.get_parent() == self and node.layout_direction == Control.LAYOUT_DIRECTION_INHERITED:
-		node.layout_direction = Control.LAYOUT_DIRECTION_APPLICATION_LOCALE  # 4.4+ 이름 — `LOCALE` 는 폐기 예정 별칭
+		node.layout_direction = Control.LAYOUT_DIRECTION_APPLICATION_LOCALE  # the 4.4+ name — `LOCALE` is a deprecated alias
 	if node is Button and not node is OptionButton:
 		node.mouse_filter = Control.MOUSE_FILTER_PASS
 	if not node.child_entered_tree.is_connected(_prepare_branch):
@@ -180,5 +182,5 @@ func _prepare_branch(node: Node) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and _content_inset != null:
-		# 언어가 바뀌면 자식들이 좌우를 뒤집는다 — 우리의 물리적 오른쪽 여백 안으로 다시 맞춘다.
+		# When the language changes the children flip left-to-right — fit them back inside our physical right inset.
 		_content_inset.queue_sort.call_deferred()

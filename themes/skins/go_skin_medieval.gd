@@ -4,15 +4,15 @@ class_name GoSkinMedieval
 extends GoSkin
 
 @export_group("Medieval dials")
-## 퀵슬롯 금속 프레임의 모서리 반경(dp).
+## Corner radius of the quick slot's metal frame (dp).
 @export var slot_radius := 4.0
-## 퀵슬롯 가죽 표면 질감의 투명도.
+## Opacity of the leather grain texture on a quick slot.
 @export var leather_grain_alpha := 0.035
-## 퀵슬롯 모서리의 금속 장식 배율. 메뉴 프레임은 팔레트의 shape에서 조절한다.
+## Scale of the metal ornament on a quick slot's corners. Menu frames are tuned through the palette's shape instead.
 @export var ornament_scale := 1.0
-## 퀵슬롯 위쪽 금속 반사의 강도.
+## Strength of the metal highlight along the top of a quick slot.
 @export var bevel_strength := 0.18
-## 퀵슬롯에 리벳을 표시할지(0: 없음, 1: 표시).
+## Whether a quick slot shows rivets (0: none, 1: shown).
 @export var slot_rivets := 1
 @export_group("")
 

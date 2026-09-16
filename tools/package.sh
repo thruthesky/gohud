@@ -1,31 +1,31 @@
 #!/bin/bash
-# gohud 배포 ZIP — Godot Asset Store(store.godotengine.org)에 올리는 파일을 만든다.
+# The gohud release ZIP — builds the file uploaded to the Godot Asset Store (store.godotengine.org).
 #
-#   bash addons/gohud/tools/package.sh                           # patch +1 → builds/<버전>/gohud-<버전>.zip
+#   bash addons/gohud/tools/package.sh                           # patch +1 → builds/<version>/gohud-<version>.zip
 #   bash addons/gohud/tools/package.sh --increase-minor-version  # minor +1, patch = 0
-#   bash addons/gohud/tools/package.sh --out DIR                 # 저장 위치를 바꾼다 (버전도 올라간다)
-# Python 3 필요. 성공한 경우에만 plugin.cfg · GoUi.VERSION · CHANGELOG.md 를 함께 갱신한다.
+#   bash addons/gohud/tools/package.sh --out DIR                 # change where it is written (the version is still bumped)
+# Needs Python 3. Only on success are plugin.cfg, GoUi.VERSION and CHANGELOG.md updated together.
 #
-# ZIP 안의 경로는 언제나 `addons/gohud/...` 다 — 받는 사람은 **프로젝트 루트**에 풀면 그대로 설치된다.
+# Paths inside the ZIP are always `addons/gohud/...` — unpacking it at the **project root** installs it as-is.
 #
-# 🛑 최상위를 `addons/` 로 두는 것은 취향이 아니라 요구사항이다.
-#    Godot 의 에셋 설치기는 ZIP 의 공통 최상위 폴더를 벗겨내는데, `addons/` 만 예외로 남긴다:
+# 🛑 Keeping `addons/` at the top level is a requirement, not a preference.
+#    Godot's asset installer strips the common top-level folder of a ZIP, leaving only `addons/`:
 #        skip_toplevel = p_autoskip_toplevel && toplevel_prefix != "addons/";
 #        (godot/editor/asset_library/editor_asset_installer.cpp)
-#    그래서 최상위를 `gohud/` 로 만들면 에디터가 그걸 벗겨
-#    core/·widgets/·icons/ 가 남의 프로젝트 루트에 흩어진다.
+#    So a top level of `gohud/` gets stripped by the editor and
+#    core/, widgets/ and icons/ scatter across someone else's project root.
 #
-# 🛑 게이트 — 하나라도 걸리면 ZIP 을 만들지 않는다
-#   ① plugin.cfg 의 version 과 GoUi.VERSION 이 같다
-#   ② LICENSE · README.md · THIRD_PARTY_NOTICES.md · CHANGELOG.md 가 있다
-#   ③ 새 버전 항목을 만들고 Unreleased 내역을 옮긴다 — 이미 있는 버전이면 중단한다
-#   ④ 코드·씬·리소스가 애드온 **밖**의 `res://` 를 가리키지 않는다 — 가리키면 남의 프로젝트에서 깨진다
-#   ⑤ ZIP 안에 비밀(.env·API 키)이 없다
-#   ⑥ ZIP 안의 모든 항목이 `addons/gohud/` 아래에 있다
-#   ⑦ ZIP 에 심볼릭 링크가 없다 — 설치한 곳에서 깨진 링크가 된다
-#   ⑧ 스토어 필수 파일(LICENSE · plugin.cfg)이 ZIP 안에 있다
-#   ⑨ 씬·리소스가 가리키는 res:// 가 ZIP 안에 실제로 있다 — 없으면 설치한 곳에서 씬이 열리지 않는다
-#   ⑩ ZIP 안에 project.godot 이 없다 — 있으면 설치한 사람의 에디터가 경고를 낸다
+# 🛑 Gates — if any one trips, no ZIP is built
+#   ① the version in plugin.cfg and GoUi.VERSION are the same
+#   ② LICENSE, README.md, THIRD_PARTY_NOTICES.md and CHANGELOG.md exist
+#   ③ a new version entry is created and the Unreleased notes moved into it — stop if that version already exists
+#   ④ no code, scene or resource points at a `res://` **outside** the addon — that breaks in someone else's project
+#   ⑤ no secrets inside the ZIP (.env, API keys)
+#   ⑥ every entry in the ZIP is under `addons/gohud/`
+#   ⑦ no symlinks in the ZIP — they become broken links where it is installed
+#   ⑧ the files the store requires (LICENSE, plugin.cfg) are in the ZIP
+#   ⑨ every res:// a scene or resource points at really is in the ZIP — otherwise the scene will not open where it is installed
+#   ⑩ no project.godot in the ZIP — one makes the installing editor warn
 set -eu
 
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
@@ -34,23 +34,23 @@ OUT=""
 INCREASE="patch"
 while [ $# -gt 0 ]; do
   case "$1" in
-    --full) FULL=1 ;;                       # tools/ 까지 넣는다(내부 배포용 — 스토어에는 쓰지 않는다)
+    --full) FULL=1 ;;                       # include tools/ as well (internal distribution — never for the store)
     --increase-minor-version) INCREASE="minor" ;;
     --out)
-      [ $# -ge 2 ] && [ -n "$2" ] && [[ "$2" != --* ]] || { echo "--out 에 저장 폴더가 필요하다" >&2; exit 2; }
+      [ $# -ge 2 ] && [ -n "$2" ] && [[ "$2" != --* ]] || { echo "--out needs a destination folder" >&2; exit 2; }
       shift; OUT="$1" ;;
     -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
-    *) echo "알 수 없는 인자: $1" >&2; exit 2 ;;
+    *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
   shift
 done
 
 fail() { echo "🛑 $*" >&2; exit 1; }
 
-# 직렬화: 같은 체크아웃에서 동시에 실행해 같은 다음 버전을 만들지 않는다.
+# Serialize: two runs on the same checkout must not produce the same next version.
 mkdir -p "$ADDON/builds"
 LOCK="$ADDON/builds/.package-lock"
-mkdir "$LOCK" 2>/dev/null || fail "다른 패키징이 진행 중이다 ($LOCK)"
+mkdir "$LOCK" 2>/dev/null || fail "another packaging run is in progress ($LOCK)"
 STAGE=""
 cleanup() {
   [ -z "$STAGE" ] || rm -rf "$STAGE"
@@ -60,52 +60,52 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-# ── ① 버전 ──────────────────────────────────────────────────────────────
+# ── ① version ───────────────────────────────────────────────────────────
 VERSION="$(sed -n 's/^version="\(.*\)"$/\1/p' "$ADDON/plugin.cfg")"
-[ -n "$VERSION" ] || fail "plugin.cfg 에서 version 을 읽지 못했다"
+[ -n "$VERSION" ] || fail "could not read version from plugin.cfg"
 CODE_VERSION="$(sed -n 's/^const VERSION := "\(.*\)"$/\1/p' "$ADDON/core/go_ui.gd")"
-[ "$VERSION" = "$CODE_VERSION" ] || fail "버전 불일치 — plugin.cfg=$VERSION · GoUi.VERSION=$CODE_VERSION"
+[ "$VERSION" = "$CODE_VERSION" ] || fail "version mismatch — plugin.cfg=$VERSION · GoUi.VERSION=$CODE_VERSION"
 
-# ── ② 문서 ──────────────────────────────────────────────────────────────
+# ── ② documents ─────────────────────────────────────────────────────────
 for doc in LICENSE README.md THIRD_PARTY_NOTICES.md CHANGELOG.md; do
-  [ -f "$ADDON/$doc" ] || fail "$doc 가 없다"
+  [ -f "$ADDON/$doc" ] || fail "$doc is missing"
 done
 
-# ── ④ 애드온 밖 참조 ────────────────────────────────────────────────────
-# 주석 줄(`#`)은 사용 예시라 뺀다. `tests/`·`tools/` 는 검사 파일 자체가
-# `res://addons/gohud` 를 문자열로 들고 있어 오탐이 난다 — 배포본에도 없는 폴더다.
-# `examples/demo/` 는 자체 project.godot 을 가진 별도 프로젝트라 그 안의 `res://` 는 데모 루트를 가리킨다.
-# `examples/usage/` 는 애드온 사본을 설치해 사용하는 프로젝트이며 배포본에서 제외한다.
-# `skills/` 는 AI 에이전트 스킬(Claude Code 플러그인)이다 — 템플릿이 호스트 프로젝트의 `res://ui/…` 를 예로 든다. 배포본에도 없다.
+# ── ④ references outside the addon ──────────────────────────────────────
+# Comment lines (`#`) are usage examples, so they are excluded. `tests/` and `tools/` hold
+# `res://addons/gohud` as a plain string and would false-alarm — and neither ships in the release.
+# `examples/demo/` is a separate project with its own project.godot, so its `res://` points at the demo root.
+# `examples/usage/` is a project that installs and uses a copy of the addon, and is excluded from the release.
+# `skills/` is the AI agent skill (a Claude Code plugin) — its templates use the host project's `res://ui/…` as an example. It does not ship either.
 LEAKS="$(grep -rnE 'res://' "$ADDON" --include='*.gd' --include='*.tscn' --include='*.tres' --include='*.cfg' \
   | grep -vE '/(tests|tools|skills)/|/examples/(demo|usage)/' \
   | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' \
   | grep -oE '^[^:]+:[0-9]+:|res://[A-Za-z0-9_./%-]+' \
   | awk 'index($0, "res://") == 1 { if (index($0, "res://addons/gohud") != 1) print prev $0; next } { prev = $0 }' || true)"
-[ -z "$LEAKS" ] || { echo "$LEAKS" >&2; fail "애드온 밖을 가리키는 res:// 참조가 있다"; }
+[ -z "$LEAKS" ] || { echo "$LEAKS" >&2; fail "there is a res:// reference pointing outside the addon"; }
 
-# ── 스테이징 ────────────────────────────────────────────────────────────
+# ── staging ─────────────────────────────────────────────────────────────
 STAGE="$(mktemp -d)"
 mkdir -p "$STAGE/addons/gohud"
 
-# 🛑 `builds/` 는 점 폴더가 아니라 Godot 가 임포트한다 — `.gdignore` 로 스캔을 막는다.
+# 🛑 `builds/` is not a dot folder, so Godot imports it — block the scan with a `.gdignore`.
 [ -f "$ADDON/builds/.gdignore" ] || {
   mkdir -p "$ADDON/builds"
-  printf '# 배포 ZIP 보관함이다 — Godot 가 스캔할 것이 없다.\n' > "$ADDON/builds/.gdignore"
+  printf '# A store of release ZIPs — nothing here for Godot to scan.\n' > "$ADDON/builds/.gdignore"
 }
 
-# 제외 목록 — 설치본에 들어갈 이유가 없는 것들.
-#   🛑 `.env`     스토어 API 키가 든다. 무슨 일이 있어도 나가면 안 된다.
-#   🛑 `.git*`    .git · .gitignore · .gitattributes · .github — 저장소 살림이다.
-#                 (`.gdignore` 는 `.gd` 로 시작해 이 패턴에 걸리지 않는다 — 설치 후 동작에 필요하므로 남긴다.)
-#   🛑 `.claude`  에이전트 작업 설정.
-#   🛑 `.cowork`  cowork 5 AI 분석 산출물. 개인 도구의 내부 기록이다 — 배포본에 나가면 안 된다.
-#   🛑 `.review`  스토어 제출용 홍보 이미지 보관함. 넣으면 ZIP 이 20배가 된다.
-#   🛑 `www`      GitHub Pages 사이트(836KB). 애드온을 쓰는 데 필요 없다.
-#   🛑 `docs`     사이트 편집·배포 안내와 작업 기록. 애드온을 쓰는 데 필요 없다.
-#   🛑 `tests`    검사 전용. 쓰는 사람에게 필요 없다.
-#   🛑 `.godot`   임포트 캐시. 남의 프로젝트에서 유효하지 않다.
-#   🛑 `examples/demo/addons` 는 애드온 루트로 가는 **심볼릭 링크**다 — 설치한 곳에서 깨진 링크가 된다.
+# Exclusion list — things with no reason to be in an installation.
+#   🛑 `.env`     holds the store API key. It must never get out, whatever happens.
+#   🛑 `.git*`    .git, .gitignore, .gitattributes, .github — repository housekeeping.
+#                 (`.gdignore` starts with `.gd` and does not match this pattern — it is needed after installation, so it stays.)
+#   🛑 `.claude`  agent working configuration.
+#   🛑 `.cowork`  output of the cowork 5-AI analysis. Internal notes of a personal tool — they must not ship.
+#   🛑 `.review`  store submission promo images. Including them makes the ZIP 20x bigger.
+#   🛑 `www`      the GitHub Pages site (836KB). Not needed to use the addon.
+#   🛑 `docs`     site editing and deployment notes, plus work records. Not needed to use the addon.
+#   🛑 `tests`    for checks only. The user does not need them.
+#   🛑 `.godot`   the import cache. Not valid in someone else's project.
+#   🛑 `examples/demo/addons` is a **symlink** to the addon root — it becomes a broken link where it is installed.
 set -- \
   --exclude='.env' \
   --exclude='.git*' \
@@ -130,69 +130,69 @@ set -- \
   --exclude='__pycache__' \
   --exclude='/examples/usage/' \
   --exclude='examples/demo/addons'
-# 🛑 `docs/` 는 **홈페이지**다 — GitHub Pages 로 배포되는 것이지 애셋에 딸려 갈 것이 아니다.
-#    넣으면 ① 스크린샷 수백 KB 가 애셋 크기에 얹히고 ② 그 안의 명령 예시(`res://…/tests/…`)가
-#    스토어 ZIP 에 없는 `tests/` 를 가리켜 **깨진 참조 게이트에 걸린다**(2026-09-13 실측).
+# 🛑 `docs/` is **the website** — it is published to GitHub Pages, not shipped with the asset.
+#    Including it ① adds hundreds of KB of screenshots to the asset size and ② makes its command
+#    examples (`res://…/tests/…`) point at a `tests/` absent from the store ZIP, **tripping the broken-reference gate** (measured 2026-09-13).
 if [ "$FULL" -eq 0 ]; then set -- "$@" --exclude='tools' --exclude='docs'; fi
 
 rsync -a --no-links "$@" "$ADDON/" "$STAGE/addons/gohud/"
 
-# 버전과 변경 이력은 사본에서 준비한다. 원본은 모든 ZIP 검사가 끝나야 갱신한다.
+# The version and changelog are prepared on the copy. The original is updated only once every ZIP check passes.
 PREVIOUS_VERSION="$VERSION"
 VERSION="$(python3 "$ADDON/tools/package_version.py" prepare "$STAGE" "$INCREASE")"
 DIST="${OUT:-$ADDON/builds/$VERSION}"
 mkdir -p "$DIST"
 DIST="$(cd "$DIST" && pwd)"
 DESTINATION="$DIST/gohud-$VERSION.zip"
-[ ! -e "$DESTINATION" ] || fail "같은 버전의 ZIP 이 이미 있다: $DESTINATION"
+[ ! -e "$DESTINATION" ] || fail "a ZIP of the same version already exists: $DESTINATION"
 ZIP="$STAGE/package.zip"
 
-# 🛑 중첩 project.godot 은 설치한 사람의 에디터에 경고를 띄운다:
+# 🛑 A nested project.godot makes the installing editor warn:
 #      WARNING: Detected another project.godot at res://addons/gohud/examples/demo
-#    데모를 별도 프로젝트로 여는 데 꼭 필요한 파일이라 빼지는 않고, 이름만 바꿔 재워 둔다.
-#    `bash examples/demo/run.sh` 가 되살린다.
+#    The file is needed to open the demo as its own project, so instead of dropping it we rename it to sleep.
+#    `bash examples/demo/run.sh` wakes it again.
 DEMO="$STAGE/addons/gohud/examples/demo"
 [ ! -f "$DEMO/project.godot" ] || mv "$DEMO/project.godot" "$DEMO/project.godot.demo"
 
-# ── ⑨ 깨진 참조 ─────────────────────────────────────────────────────────
-# 🛑 파일을 옮기고 씬의 참조를 안 고치면, 설치한 사람에게 이렇게 보인다:
+# ── ⑨ broken references ─────────────────────────────────────────────────
+# 🛑 Move a file and forget to fix a scene's reference, and whoever installs it sees:
 #      Error loading: gallery.tscn — Load failed due to missing dependencies
-#    게이트 ④ 는 애드온 **밖**을 가리키는 참조만 본다. 여기서는 애드온 **안**인데
-#    ZIP 에 실제로 없는 파일을 가리키는 경우를 잡는다.
+#    Gate ④ only looks at references pointing **outside** the addon. This one catches references
+#    **inside** the addon that point at a file which is not actually in the ZIP.
 BROKEN="$(grep -rhoE 'res://addons/gohud/[A-Za-z0-9_./%-]+' "$STAGE" 2>/dev/null | sort -u \
   | while read -r ref; do [ -e "$STAGE/addons/gohud/${ref#res://addons/gohud/}" ] || echo "  $ref"; done)"
-[ -z "$BROKEN" ] || { echo "$BROKEN" >&2; fail "ZIP 안에 없는 파일을 가리키는 res:// 참조가 있다"; }
+[ -z "$BROKEN" ] || { echo "$BROKEN" >&2; fail "there is a res:// reference to a file that is not in the ZIP"; }
 
-# ── ⑤ 비밀 ──────────────────────────────────────────────────────────────
+# ── ⑤ secrets ───────────────────────────────────────────────────────────
 SECRETS="$(find "$STAGE" \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*.key' -o -name '*.p8' \) -print || true)"
-[ -z "$SECRETS" ] || { echo "$SECRETS" >&2; fail "비밀 파일이 스테이징에 들어갔다"; }
+[ -z "$SECRETS" ] || { echo "$SECRETS" >&2; fail "a secret file made it into staging"; }
 KEYS="$(grep -rlE 'GD_STORE_|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----' "$STAGE" || true)"
-[ -z "$KEYS" ] || { echo "$KEYS" >&2; fail "API 키·비밀키로 보이는 문자열이 들어갔다"; }
+[ -z "$KEYS" ] || { echo "$KEYS" >&2; fail "a string that looks like an API key or private key got in"; }
 
-# ── ⑦ 심볼릭 링크 ───────────────────────────────────────────────────────
+# ── ⑦ symlinks ──────────────────────────────────────────────────────────
 LINKS="$(find "$STAGE" -type l -print || true)"
-[ -z "$LINKS" ] || { echo "$LINKS" >&2; fail "심볼릭 링크가 들어갔다"; }
+[ -z "$LINKS" ] || { echo "$LINKS" >&2; fail "a symlink got in"; }
 
-# ── 압축 ────────────────────────────────────────────────────────────────
+# ── zip it ──────────────────────────────────────────────────────────────
 ( cd "$STAGE" && zip -qrX "$ZIP" addons )
 
-# ── ⑥ 경로 ──────────────────────────────────────────────────────────────
+# ── ⑥ paths ─────────────────────────────────────────────────────────────
 BAD="$(unzip -Z1 "$ZIP" | grep -v '^addons/gohud/' | grep -v '^addons/$' || true)"
-[ -z "$BAD" ] || fail "ZIP 안에 addons/gohud/ 밖의 항목이 있다: $BAD"
+[ -z "$BAD" ] || fail "the ZIP has entries outside addons/gohud/: $BAD"
 
-# ── ⑩ 중첩 프로젝트 ─────────────────────────────────────────────────────
+# ── ⑩ nested project ────────────────────────────────────────────────────
 NESTED="$(unzip -Z1 "$ZIP" | grep -E '/project\.godot$' || true)"
-[ -z "$NESTED" ] || { echo "$NESTED" >&2; fail "ZIP 안에 project.godot 이 있다 — 설치한 에디터가 경고를 낸다"; }
+[ -z "$NESTED" ] || { echo "$NESTED" >&2; fail "the ZIP contains a project.godot — the installing editor will warn"; }
 
-# ── ⑧ 스토어 필수 파일 ──────────────────────────────────────────────────
-# 스토어 업로드 폼: "Assets must be uploaded as .zip and must contain a license file."
+# ── ⑧ files the store requires ──────────────────────────────────────────
+# The store upload form: "Assets must be uploaded as .zip and must contain a license file."
 for need in addons/gohud/LICENSE addons/gohud/plugin.cfg addons/gohud/README.md; do
-  unzip -Z1 "$ZIP" | grep -qx "$need" || fail "ZIP 에 $need 가 없다"
+  unzip -Z1 "$ZIP" | grep -qx "$need" || fail "the ZIP has no $need"
 done
 
 COUNT="$(unzip -Z1 "$ZIP" | grep -vc '/$')"
 SIZE="$(du -h "$ZIP" | cut -f1 | tr -d ' ')"
 python3 "$ADDON/tools/package_version.py" publish "$ADDON" "$STAGE" "$DESTINATION"
 echo "✅ $DESTINATION"
-echo "   버전 자동 갱신: $PREVIOUS_VERSION → $VERSION"
-echo "   버전 $VERSION · 파일 $COUNT 개 · $SIZE · $([ "$FULL" -eq 1 ] && echo '전체(tools 포함)' || echo '스토어용')"
+echo "   version bumped automatically: $PREVIOUS_VERSION → $VERSION"
+echo "   version $VERSION · $COUNT files · $SIZE · $([ "$FULL" -eq 1 ] && echo 'full (tools included)' || echo 'for the store')"

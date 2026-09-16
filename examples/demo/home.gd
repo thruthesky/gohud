@@ -1,39 +1,41 @@
-## 🏠 **데모의 홈** — 무엇을 볼지 고르고, 고른 것을 이 화면 안에서 연다.
+## 🏠 **The demo's home** — pick what to look at, and open it inside this screen.
 ##
-## ## 왜 홈이 있는가
-## 처음 온 사람이 `godot` 을 치면 나오는 첫 장면이다. 예제 넷이 저마다 다른 것을 보여 주는데,
-## 어느 파일을 열어야 하는지 아는 사람만 그것을 볼 수 있다면 있으나 마나다. 그래서 고르는
-## 자리를 하나 만들고, **고른 것을 이 화면 안에서** 연다 — 돌아올 길(위쪽 `Home` 줄)이 늘 남는다.
+## ## Why there is a home
+## This is the first scene a newcomer gets when they type `godot`. The four examples each show something
+## different, and if only those who know which file to open can see them, they may as well not exist. So
+## there is one place to choose from, and **what you chose opens inside this screen** — the way back
+## (the `Home` bar at the top) is always there.
 ##
-## 🔑 이 화면 자체가 gohud 로만 지어져 있다. 카드도 목록 줄도 칩도 막대도 전부 애드온이 준
-##    위젯이고, 가운데 카드의 것들은 **그림이 아니라 진짜로 눌린다**. 홈을 한 번 훑는 것이
-##    이 키트가 무엇을 주는지 보는 가장 빠른 길이 되도록 했다.
+## 🔑 This screen itself is built out of nothing but gohud. The cards, the list rows, the chips and the
+##    bars are all widgets the add-on gave, and the things on the middle cards **are not pictures: they
+##    really press**. One pass over home is meant to be the fastest way to see what this kit gives you.
 ##
-## ## 🛑 읽히는 폭이 먼저다
-## 창이 넓다고 글을 창만큼 늘이면 한 줄이 120자를 넘고, 눈이 줄 끝에서 다음 줄 머리를 못 찾는다.
-## 그래서 본문은 [constant PAGE_MAX_WIDTH] 안으로 모으고, 남는 폭은 양옆 여백으로 버린다.
-## 소개·미리보기·카드가 모두 **격자**에 들어가 있어, 폭이 줄면 열이 줄고 글줄은 그대로 읽힌다.
+## ## 🛑 Readable width comes first
+## Stretch the text to a wide window and a line passes 120 characters, and at the end of one line the eye
+## cannot find the start of the next. So the body gathers inside [constant PAGE_MAX_WIDTH] and the width
+## left over is spent on side margins. The intro, the preview and the cards all sit in **grids**, so a
+## narrower window loses columns while the lines of text keep reading.
 ##
 ## ```
-## godot                       # 이 폴더에서 — 홈이 뜬다
-## godot -- --open=gallery     # 홈을 건너뛰고 그 화면으로 바로
+## godot                       # from this folder — home comes up
+## godot -- --open=gallery     # skip home and go straight to that screen
 ## ```
 ##
-## 홈에서 `1`~`4` 로 화면을 고른다. 예제를 보는 중에는 위쪽 `Home` 을 눌러 돌아온다.
+## Press `1`–`4` on home to pick a screen. While an example is up, press `Home` at the top to come back.
 extends Control
 
 const ThemePicker := preload("theme_picker.gd")
-## 🔬 판 불투명도 실험실 — 갤러리·투어와 **같은 위젯**이다.
+## 🔬 The container-opacity lab — **the same widget** the gallery and the tour use.
 const OpacityLab := preload("res://addons/gohud/examples/gallery/opacity_lab.gd")
 
-## 본문이 넘지 않는 폭(dp). 넓은 창에서는 양옆이 여백이 된다.
+## The width the body never passes (dp). In a wide window the sides become margins.
 const PAGE_MAX_WIDTH := 1120.0
-## 자랑할 만한 숫자들 — 아이콘 상수·번역본·프리셋을 센 값이다.
+## Numbers worth bragging about — counted from the icon constants, the translations and the presets.
 const ICON_COUNT := 84
 const LANGUAGE_COUNT := 21
 
-## 열 수 있는 화면. 홈의 카드도 `--open=` 인자도 이 표 하나를 본다.
-## `tone` 은 그 카드가 입는 의미색이다 — 넷이 한눈에 구분된다.
+## The screens that can be opened. The home cards and the `--open=` argument both read this one table.
+## `tone` is the meaning color that card wears — the four are told apart at a glance.
 const TARGETS: Array[Dictionary] = [
 	{
 		"key": "gallery", "scene": "res://addons/gohud/examples/gallery/gallery.tscn",
@@ -61,7 +63,7 @@ const TARGETS: Array[Dictionary] = [
 	},
 ]
 
-## 클래스를 **하는 일별로** 묶는다. 스무 개를 한 무더기로 쌓으면 목록이지 설명이 아니다.
+## Groups the classes **by what they do**. Twenty in a single pile is a list, not an explanation.
 const GROUPS: Array[Dictionary] = [
 	{"name": "Foundation", "icon": GoIconSet.SLIDERS, "tone": GoTheme.ACCENT,
 		"note": "What the look is made of. Set it once and every screen follows."},
@@ -77,7 +79,7 @@ const GROUPS: Array[Dictionary] = [
 		"note": "Attendance, stats and banners — web shapes rebuilt for what games need."},
 ]
 
-## 이름 하나에 한 줄 설명과 **실제로 쓰는 코드 한 줄**. `group` 은 위 묶음의 번호다.
+## One name, a one-line note, and **one line of the code you really write**. `group` is the number of the group above.
 const PIECES: Array[Dictionary] = [
 	{"group": 0, "name": "GoUi", "note": "The one place theme, colors and metrics come from.",
 		"code": "theme = GoUi.theme()"},
@@ -155,15 +157,16 @@ const PIECES: Array[Dictionary] = [
 		"code": "GoKbd.for_action(&\"interact\")"},
 ]
 
-## 테마를 갈아 끼우면 화면을 통째로 다시 짓는다 — 위젯은 태어날 때 옷을 입기 때문이다.
-## 그때 돌아올 자리를 이 정적 값이 들고 있다(씬은 새로 만들어지므로 멤버로는 남지 않는다).
+## Swapping the theme rebuilds the whole screen — widgets put their clothes on when they are born.
+## This static value holds the spot to come back to (the scene is made anew, so a member would not survive).
 static var _resume := ""
-## 🛑 판 불투명도도 같은 이유로 여기 둔다 — `_configure()` 가 씬마다 `GoConfig` 를 **새로 만들기**
-##    때문에, 설정에만 심어 두면 화면을 다시 짓는 순간 값이 사라진다. 음수면 테마 값 그대로.
+## 🛑 The container opacity lives here for the same reason — `_configure()` **makes a new** `GoConfig` for
+##    every scene, so a value planted in the settings alone vanishes the moment the screen is rebuilt.
+##    Negative means the theme value as it is.
 static var _opacity := -1.0
 
-var _stage: Control                ## 홈이든 예제든 여기 한 자리에 들어간다
-var _chrome: PanelContainer        ## 예제를 볼 때만 나오는 위쪽 줄
+var _stage: Control                ## home or example, it goes into this one spot
+var _chrome: PanelContainer        ## the top bar, which appears only while an example is up
 var _chrome_inset: MarginContainer
 var _home_inset: MarginContainer
 var _chrome_title: Label
@@ -181,8 +184,8 @@ var _mp: GoBar
 var _log: Label
 var _log_empty: Control
 var _open_key := ""
-var _history: Array[String] = []      ## 기록 줄 — 가장 최근이 맨 위
-var _guides: Array[Dictionary] = []   ## 코치마크가 가리킬 자리들
+var _history: Array[String] = []      ## the log lines — the most recent at the top
+var _guides: Array[Dictionary] = []   ## the spots the coach marks will point at
 
 
 func _ready() -> void:
@@ -199,20 +202,20 @@ func _ready() -> void:
 	else: _open(wanted)
 
 
-## 애플리케이션 전체의 모습을 설정 한 장으로 정한다 — 예제들이 쓰는 것과 같은 선택기다.
+## One settings resource decides the look of the whole application — the same picker the examples use.
 func _configure() -> void:
 	var settings := GoConfig.new()
 	var colors: Dictionary[StringName, Color] = {}
 	settings.color_overrides = colors
-	# 🔑 읽는 화면이다 — 기본보다 한 칸 큰 본문이 훑기에 편하다.
+	# 🔑 This is a screen to read — a body one step larger than the default skims more easily.
 	settings.base_font_size = 16
-	# 🔬 사람이 불투명도를 만졌다면 그 값으로 다시 짓는다(위 `_opacity` 주석).
+	# 🔬 If a person touched the opacity, rebuild with that value (the `_opacity` comment above).
 	settings.container_alpha = _opacity
 	ThemePicker.configure(settings, colors)
 	theme = GoUi.theme()
 
 
-# ── 껍데기 ─────────────────────────────────────────────────────────────
+# ── The shell ──────────────────────────────────────────────────────────
 
 func _build_shell() -> void:
 	var background := ColorRect.new()
@@ -228,7 +231,7 @@ func _build_shell() -> void:
 	add_child(shell)
 
 	shell.add_child(_build_chrome())
-	# 창이 바뀌면 안전 영역도 읽히는 폭도 바뀐다 — 위쪽 줄과 본문 여백을 함께 다시 잰다.
+	# A changed window changes both the safe area and the readable width — remeasure the top bar and the body margins together.
 	get_window().size_changed.connect(_sync_chrome_inset)
 	get_window().size_changed.connect(_sync_home_inset)
 	_stage = Control.new()
@@ -238,13 +241,14 @@ func _build_shell() -> void:
 	shell.add_child(_stage)
 
 
-## 예제를 보는 동안 위쪽에 남는 한 줄 — 돌아갈 길과, 지금 보는 것이 **어느 파일인지**.
-## 🔑 파일 경로를 적는 이유: 화면이 마음에 든 사람이 다음으로 할 일은 그 소스를 여는 것이다.
+## The one line that stays at the top while an example is up — the way back, and **which file** you are
+## looking at.
+## 🔑 Why the file path is written there: the next thing someone who likes a screen does is open its source.
 func _build_chrome() -> PanelContainer:
 	_chrome = PanelContainer.new()
 	_chrome.name = "Chrome"
 	var face := GoStyle.box(GoTheme.BOX_PANEL)
-	# 화면 맨 위에 **딱 붙는** 줄이다 — 둥근 모서리와 그림자는 여기서 떠 있는 것처럼 보일 뿐이다.
+	# This bar sits **flush** with the top of the screen — rounded corners and a shadow would only make it look as if it floats.
 	for corner in [CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOTTOM_LEFT, CORNER_BOTTOM_RIGHT]:
 		face.set_corner_radius(corner, 0)
 	face.shadow_size = 0
@@ -277,8 +281,8 @@ func _build_chrome() -> PanelContainer:
 	return _chrome
 
 
-## 🔑 위쪽 줄은 화면 맨 끝에 붙으므로 **노치·상태 표시줄 밑으로 들어갈 수 있다.** 안전 영역이
-## 깎아 내는 만큼을 위쪽 여백으로 되돌려 준다(데스크톱에서는 0 이라 아무 일도 없다).
+## 🔑 The top bar is flush with the edge of the screen, so **it can slide under a notch or a status bar.**
+## Give back as top padding whatever the safe area cuts away (on desktop it is 0, so nothing happens).
 func _sync_chrome_inset() -> void:
 	if not is_instance_valid(_chrome_inset): return
 	var window := get_window()
@@ -293,17 +297,18 @@ func _sync_chrome_inset() -> void:
 	_chrome_inset.add_theme_constant_override(&"margin_bottom", height)
 
 
-# ── 화면 갈아 끼우기 ───────────────────────────────────────────────────
+# ── Swapping screens ───────────────────────────────────────────────────
 
-## 홈으로 돌아온다. 예제 안에서 테마를 바꿨다면 껍데기까지 새로 지어야 한다 —
-## 🛑 배경·위쪽 줄은 옛 테마로 태어난 노드라, 내용만 갈면 색이 두 벌로 섞인다.
+## Comes back home. If the theme was changed inside an example, even the shell has to be built again —
+## 🛑 the background and the top bar were born under the old theme, so swapping only the contents mixes two palettes.
 func _show_home() -> void:
-	if _dialogs.is_open(): return    # 떠 있는 대화상자부터 답한다
+	if _dialogs.is_open(): return    # answer the open dialog first
 	_dismiss_overlays()
 	if ThemePicker.active_preset != GoUi.config.preset:
 		_resume = ""
-		# 🛑 예제를 **먼저 놓아 주고** 다시 짓는다. 씬을 통째로 갈면서 남은 위젯이 포커스를 되돌리려
-		#    하면 이미 트리 밖이다(실측: medieval 을 닫을 때 `grab_focus` 조건 실패).
+		# 🛑 **Let the example go first**, then rebuild. If a widget left over while the whole scene is
+		#    swapped tries to hand focus back, it is already outside the tree (measured: the `grab_focus`
+		#    condition failed when closing medieval).
 		_clear_stage()
 		await get_tree().process_frame
 		await get_tree().process_frame
@@ -332,13 +337,14 @@ func _open(key: String) -> void:
 	_open_key = key
 	_chrome_title.text = String(item["title"])
 	_chrome_file.text = String(item["file"])
-	# 🛑 녹화·자동 재생 중에는 껍데기를 걷어 낸다 — 영상에 데모가 아닌 것이 찍히면 안 된다.
+	# 🛑 While recording or auto-playing, strip the shell away — nothing that is not the demo may end up in the video.
 	_chrome.visible = not _is_bare()
 	_stage.add_child(packed.instantiate())
 
 
-## 화면을 갈기 전에 **띄워 둔 것부터 걷는다.** 시트나 코치마크를 남긴 채 밑판을 갈면,
-## 닫히는 쪽이 이미 사라진 화면에 포커스를 되돌리려 한다(실측: `grab_focus` 조건 실패).
+## **Clear away what is floating before swapping the screen.** Swap the board underneath while a sheet or
+## a coach mark is still up, and the closing side tries to hand focus back to a screen that is already
+## gone (measured: the `grab_focus` condition failed).
 func _dismiss_overlays() -> void:
 	if is_instance_valid(_sheet): _sheet.close()
 	if is_instance_valid(_tour) and _tour.visible: _tour.finish(false)
@@ -346,10 +352,10 @@ func _dismiss_overlays() -> void:
 
 
 func _clear_stage() -> void:
-	# 🛑 **떼어 내지 않고 숨긴 뒤 놓아 준다.** `remove_child()` 는 그 자리에서 `_exit_tree` 를 돌리는데,
-	#    그때 예약된 포커스 되돌리기가 다음 프레임에 트리 밖 노드를 붙잡는다(실측: `grab_focus`
-	#    조건 실패). `queue_free()` 는 트리 안에서 제 순서로 정리하고, 숨겨 두었으므로 다음
-	#    화면과 한 프레임도 겹치지 않는다.
+	# 🛑 **Hide it and let it go, rather than detaching it.** `remove_child()` runs `_exit_tree` right there,
+	#    and the focus hand-back scheduled then grabs a node outside the tree on the next frame (measured:
+	#    the `grab_focus` condition failed). `queue_free()` tidies up in its own order inside the tree, and
+	#    since it is hidden it never overlaps the next screen by even one frame.
 	for child in _stage.get_children():
 		if child is CanvasItem: (child as CanvasItem).hide()
 		child.queue_free()
@@ -371,7 +377,7 @@ func _target(key: String) -> Dictionary:
 	return {}
 
 
-## 홈을 건너뛰고 열 화면. 테마를 바꾸며 다시 지은 것이면 보던 자리로 돌아간다.
+## The screen to open, skipping home. After a rebuild for a theme change, it returns to where you were.
 func _requested() -> String:
 	if not _resume.is_empty():
 		var resumed := _resume
@@ -384,7 +390,7 @@ func _requested() -> String:
 	return "tour" if arguments.has("--auto") or arguments.has("--cinema") else ""
 
 
-## 녹화·자동 재생인가 — 그때는 껍데기 없이 예제만 보여 준다.
+## Is this a recording or an auto-play — then the example is shown with no shell.
 func _is_bare() -> bool:
 	var arguments := OS.get_cmdline_user_args()
 	return arguments.has("--auto") or arguments.has("--cinema") or arguments.has("--exit")
@@ -397,7 +403,7 @@ func _change_theme(preset: StringName) -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not _open_key.is_empty(): return    # 예제가 보는 중이면 그쪽 단축키다
+	if not _open_key.is_empty(): return    # while an example is up, the shortcuts are its own
 	var key := event as InputEventKey
 	if key == null or not key.pressed or key.echo: return
 	var index := key.keycode - KEY_1
@@ -406,7 +412,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
-# ── 홈 화면 ────────────────────────────────────────────────────────────
+# ── The home screen ────────────────────────────────────────────────────
 
 func _build_home() -> Control:
 	var page_root := Control.new()
@@ -421,7 +427,7 @@ func _build_home() -> Control:
 	backdrop.spark = GoUi.color(GoTheme.INFO)
 	page_root.add_child(backdrop)
 
-	# 🔑 가장자리 여백과 **읽히는 폭**을 한 컨테이너가 함께 맡는다 — 둘 다 창 크기에서 나온다.
+	# 🔑 One container carries both the edge margins and the **readable width** — both come out of the window size.
 	_home_inset = MarginContainer.new()
 	_home_inset.name = "Inset"
 	_home_inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -441,7 +447,7 @@ func _build_home() -> Control:
 	return page_root
 
 
-## 화면 가장자리 여백 = 기본 여백 + 안전 영역 + **넘치는 폭**. 마지막 항이 줄 길이를 잡아 준다.
+## Screen edge margin = base margin + safe area + **the width that overflows**. That last term settles the line length.
 func _sync_home_inset() -> void:
 	if not is_instance_valid(_home_inset): return
 	var window := get_window()
@@ -451,7 +457,7 @@ func _sync_home_inset() -> void:
 	var base := GoUi.metric(GoTheme.SCREEN_MARGIN)
 	var left := base + maxi(0, int(area.position.x))
 	var right := base + maxi(0, int(view.end.x - area.end.x))
-	# 🛑 넓은 창에서 글을 창만큼 늘이지 않는다 — 한 줄이 길면 눈이 다음 줄 머리를 잃는다.
+	# 🛑 Do not stretch the text to a wide window — on a long line the eye loses the start of the next one.
 	var usable := area.size.x - float(left + right)
 	if usable > PAGE_MAX_WIDTH:
 		var spare := int((usable - PAGE_MAX_WIDTH) * 0.5)
@@ -463,7 +469,7 @@ func _sync_home_inset() -> void:
 	_home_inset.add_theme_constant_override(&"margin_bottom", base + maxi(0, int(view.end.y - area.end.y)))
 
 
-# ── ① 첫인상 ───────────────────────────────────────────────────────────
+# ── ① First impression ─────────────────────────────────────────────────
 
 func _add_hero(page: VBoxContainer) -> void:
 	var accent := GoUi.color(GoTheme.ACCENT)
@@ -472,8 +478,8 @@ func _add_hero(page: VBoxContainer) -> void:
 	var mark := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
 	mark.add_child(_disc(GoIconSet.GRID, accent, 46 if narrow else 52, 24 if narrow else 27))
 	var wordmark := GoStyle.label("gohud", GoTheme.ROLE_TITLE)
-	# 🛑 남는 폭을 먹지 않게 좁히되 **줄바꿈까지 같이 꺼야** 한다 — 폭만 좁히면 최소 폭이 거의
-	#    0 이 되어 `gohud` 가 글자마다 한 줄씩 내려간다(실측).
+	# 🛑 Narrow it so it does not eat the spare width, but **wrapping has to go off with it** — narrow the
+	#    width alone and the minimum width drops to nearly 0, so `gohud` falls one letter per line (measured).
 	GoStyle.natural_width(wordmark)
 	wordmark.add_theme_font_size_override(&"font_size",
 		roundi(GoUi.font_size(GoTheme.ROLE_TITLE) * (1.2 if narrow else 1.45)))
@@ -487,8 +493,9 @@ func _add_hero(page: VBoxContainer) -> void:
 	picker.theme_selected.connect(_change_theme)
 	picker.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
-	# 🛑 이름표와 선택기를 **한 줄에 억지로 묶지 않는다.** 가로 줄은 자식의 최소 폭 아래로는
-	#    줄지 않으므로, 폰 폭에서 줄 하나가 페이지 전체를 밀어내 오른쪽을 잘라 먹는다(실측).
+	# 🛑 **Do not force the wordmark and the picker onto one line.** A horizontal row never shrinks below
+	#    its children's minimum width, so at phone width one row shoves the whole page across and eats the
+	#    right edge (measured).
 	var brand := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	if narrow:
 		picker.custom_minimum_size.x = 0
@@ -505,8 +512,8 @@ func _add_hero(page: VBoxContainer) -> void:
 	_guides.append({"target": picker, "title": "One switch, every screen",
 		"body": "A preset carries a palette, a skin and an icon set. Change it here and the whole app is rebuilt."})
 
-	# 🔑 소개와 **살아 있는 HUD** 를 나란히 둔다. 글만으로 설명하면 읽어야 믿지만, 옆에서
-	#    막대가 실제로 차 있으면 읽기 전에 보인다. 좁아지면 격자가 알아서 한 줄로 접는다.
+	# 🔑 The intro and a **live HUD** side by side. Words alone have to be read to be believed; with a bar
+	#    actually filling beside them it is seen before it is read. Narrow enough and the grid folds to one column by itself.
 	var top := GoStyle.responsive_grid(400, GoUi.metric(GoTheme.GAP))
 	hero.add_child(top)
 	top.add_child(_hero_words())
@@ -540,7 +547,7 @@ func _hero_words() -> Control:
 	return card
 
 
-## 홍보 문구 옆에 두는 **진짜 HUD** — 막대도 슬롯도 게임에서 쓰는 그 위젯이다.
+## The **real HUD** beside the sales pitch — the bars and slots are the very widgets a game uses.
 func _hero_hud() -> Control:
 	var card := GoStyle.card()
 	var body := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
@@ -579,7 +586,7 @@ func _hero_hud() -> Control:
 	return card
 
 
-# ── ② 화면 고르기 ──────────────────────────────────────────────────────
+# ── ② Picking a screen ─────────────────────────────────────────────────
 
 func _add_targets(page: VBoxContainer) -> void:
 	_add_heading(page, "01", "Pick a screen",
@@ -590,14 +597,15 @@ func _add_targets(page: VBoxContainer) -> void:
 	page.add_child(grid)
 
 
-## 🔑 **누를 수 있는 카드.** 목록 줄보다 크게 잡아 아이콘·제목·설명·소스 파일이 한자리에 온다.
-## `style_choice_card` 가 평소·올림·누름 판을 한 번에 입혀 주므로, 여기서는 내용만 담는다.
+## 🔑 **A card you can press.** Larger than a list row, so the icon, the title, the note and the source
+## file all come together. `style_choice_card` puts the normal, hover and pressed panels on in one go, so
+## here we only fill in the contents.
 func _target_card(index: int, item: Dictionary) -> Button:
 	var accent := GoUi.color(item["tone"])
 	var card := Button.new()
 	card.name = "Target%d" % (index + 1)
 	GoStyle.style_choice_card(card, accent, false, false, true, Control.MOUSE_FILTER_STOP)
-	# 제목은 카드에 이미 크게 적혀 있다 — 툴팁은 **더 말해 주는 것**이어야 한다.
+	# The title is already written large on the card — a tooltip has to **say something more**.
 	card.tooltip_text = "Opens %s" % item["file"]
 	card.accessibility_name = String(item["title"])
 	card.pressed.connect(_open.bind(String(item["key"])))
@@ -621,7 +629,7 @@ func _target_card(index: int, item: Dictionary) -> Button:
 		GoUi.color(GoTheme.SECONDARY)))
 	var file := GoStyle.chip(String(item["file"]), GoUi.color(GoTheme.MUTED), false, GoIconSet.BOOK)
 	body.add_child(file)
-	# 🛑 카드가 곧 버튼이다 — 그 위의 글자·아이콘이 마우스를 가로채면 올림 판이 켜지지 않는다.
+	# 🛑 The card is the button — if the text and icons on it intercept the mouse, the hover panel never lights up.
 	_pass_through(body)
 	if index == 0:
 		_guides.append({"target": card, "title": "Four screens, one window",
@@ -629,10 +637,10 @@ func _target_card(index: int, item: Dictionary) -> Button:
 	return card
 
 
-# ── ③ 만져 보는 자리 ───────────────────────────────────────────────────
+# ── ③ A place to try it ────────────────────────────────────────────────
 
-## 🔑 위젯을 그림으로 보여 주는 소개는 믿기 어렵다 — 여기 있는 것은 전부 진짜 위젯이고,
-##    무엇을 누르든 마지막 카드의 기록이 움직인다.
+## 🔑 An introduction that shows widgets as pictures is hard to believe — everything here is a real
+##    widget, and whatever you press, the log on the last card moves.
 func _add_playground(page: VBoxContainer) -> void:
 	_add_heading(page, "02", "Try it right here",
 		"Nothing below is a picture. Press, drag and type — the activity card reports every callback.")
@@ -648,7 +656,7 @@ func _add_playground(page: VBoxContainer) -> void:
 	grid.add_child(_card_activity())
 
 
-# ── 🆕 뒤에 들인 위젯의 동작 ───────────────────────────────────────────
+# ── 🆕 Behaviour of the widgets added later ────────────────────────────
 
 func _ensure_snackbar() -> GoSnackbar:
 	if not is_instance_valid(_snackbar):
@@ -675,7 +683,7 @@ func _pop_drawer() -> void:
 	_say("drawer")
 
 
-## 🔑 누른 버튼이 그 자리에서 도는 것으로 바뀐다 — 크기도 그대로고 두 번 눌리지도 않는다.
+## 🔑 The pressed button turns into a spinner on the spot — the size stays the same and it cannot fire twice.
 func _demo_busy() -> void:
 	var button := _find_named_button("Buy")
 	if button == null: return
@@ -791,7 +799,7 @@ func _card_choices() -> Control:
 	return card
 
 
-## 이름·목록 줄·진행도처럼 **화면에 값을 얹는** 것들. 게임 UI 의 절반이 이 모양이다.
+## The things that **put values on screen** — names, list rows, progress. Half of any game UI has this shape.
 func _card_lists() -> Control:
 	var tone := GoUi.color(GoTheme.SUCCESS)
 	var card := GoStyle.card()
@@ -858,11 +866,11 @@ func _card_feedback() -> Control:
 	return card
 
 
-## 🔬 **판 불투명도** — 이 홈 화면의 뒤에는 이미 무늬가 깔려 있다(`Backdrop`). 그래서 여기서 값을
-## 내리면 카드 뒤로 그 격자와 빛이 배어 나오는 것이 **이 화면 자체에서** 보인다.
+## 🔬 **Container opacity** — this home screen already has a pattern behind it (`Backdrop`). So lowering
+## the value here shows that grid and that glow bleeding through the cards **on this very screen**.
 ##
-## 🛑 "모든 판에 적용" 은 프로젝트 설정을 건드린다 — 홈은 그 값을 심고 화면을 다시 지어, 카드·목록
-##    줄·떠 있는 알림까지 한꺼번에 그 값으로 입는 것을 보여 준다.
+## 🛑 "Apply to every panel" touches the project settings — home plants that value and rebuilds the screen,
+##    showing the cards, the list rows and even the floating notice take it all at once.
 func _card_opacity() -> Control:
 	var tone := GoUi.color(GoTheme.INFO)
 	var card := GoStyle.card(tone)
@@ -875,16 +883,16 @@ func _card_opacity() -> Control:
 	return card
 
 
-## 프로젝트 전체의 판 불투명도가 바뀌었다 — 화면을 다시 짓는다. 🛑 이미 태어난 위젯은 스스로 옷을
-## 갈지 않는다(테마를 갈아 끼울 때와 같은 이유). 바뀐 모습이 곧 알림이라 기록줄에는 적지 않는다 —
-## 씬이 새로 태어나면서 그 줄도 함께 사라지기 때문이다.
+## The container opacity for the whole project changed — rebuild the screen. 🛑 Widgets already born do not
+## change their clothes (the same reason as swapping a theme). The changed look is the notice itself, so
+## nothing is written to the log — the scene is born anew and that line goes with it.
 func _on_opacity_applied(alpha: float) -> void:
 	_opacity = alpha
 	_resume = _open_key
 	get_tree().reload_current_scene()
 
 
-## 🆕 뒤에 들인 위젯을 **살아 있는 채로** 한 카드에. 목록에 이름만 적어 두면 아무도 눌러 보지 않는다.
+## 🆕 The widgets added later, on one card and **alive**. Listed as names alone, nobody ever presses them.
 func _card_new_widgets() -> Control:
 	var tone := GoUi.color(GoTheme.WARNING)
 	var card := GoStyle.card(tone)
@@ -892,7 +900,7 @@ func _card_new_widgets() -> Control:
 	card.add_child(body)
 	body.add_child(_card_head("NEWEST WIDGETS", GoIconSet.STAR, tone))
 
-	# 배지가 달린 아이콘 — 우편함의 안 읽음 표시 그대로.
+	# An icon with a badge — exactly the unread marker on a mailbox.
 	var top := GoStyle.row(GoUi.metric(GoTheme.GAP))
 	var mail := GoIconButton.new()
 	mail.icon_name = GoIconSet.BELL
@@ -910,7 +918,7 @@ func _card_new_widgets() -> Control:
 	top.add_child(keys)
 	body.add_child(top)
 
-	# 오류를 띄웠다 지우는 폼 한 줄.
+	# One form row that raises an error and clears it.
 	_home_field = GoField.make("Guild name", GoStyle.line_edit("2-16 characters"), "Everyone sees this")
 	body.add_child(_home_field)
 	var field_row := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_TINY))
@@ -923,7 +931,7 @@ func _card_new_widgets() -> Control:
 	body.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
 		{"suffix": GoStyle.button("Send", _say.bind("sent"))}))
 
-	# 정렬되는 표 — 점수는 수로 견준다.
+	# A table that sorts — the scores are compared as numbers.
 	var board := GoTable.make(
 		[{"text": "Rank", "width": 48}, {"text": "Name"}, {"text": "Score", "numeric": true}],
 		[[1, "Aria", 91240], [2, "Brin", 48210], [3, "Cade", 9124]])
@@ -975,7 +983,7 @@ func _card_activity() -> Control:
 	var body := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	card.add_child(body)
 	body.add_child(_card_head("LIVE ACTIVITY", GoIconSet.BOLT, tone))
-	# 🛑 빈 카드는 고장처럼 보인다 — 아직 아무 일도 없다는 것을 **말해 주는** 자리를 둔다.
+	# 🛑 An empty card looks broken — leave a place that **says** nothing has happened yet.
 	_log_empty = GoStyle.empty_state(GoIconSet.BOLT, "Press anything on this page", false)
 	body.add_child(_log_empty)
 	_log = GoStyle.label("", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY))
@@ -990,7 +998,7 @@ func _card_activity() -> Control:
 	return card
 
 
-# ── ④ 조각들 ───────────────────────────────────────────────────────────
+# ── ④ The pieces ───────────────────────────────────────────────────────
 
 func _add_pieces(page: VBoxContainer) -> void:
 	_add_heading(page, "03", "The pieces",
@@ -999,8 +1007,8 @@ func _add_pieces(page: VBoxContainer) -> void:
 	for index in GROUPS.size():
 		var group := GROUPS[index]
 		var tone := GoUi.color(group["tone"])
-		# 🔑 머리와 그 카드들은 **한 덩어리**다 — 구획 간격만큼 떨어지면 어느 머리에 딸린
-		#    카드인지 눈으로 이어지지 않는다.
+		# 🔑 A heading and its cards are **one block** — a section gap apart, and the eye no longer joins a
+		#    card to the heading it belongs to.
 		var block := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 		page.add_child(block)
 
@@ -1038,7 +1046,7 @@ func _piece_card(item: Dictionary, tone: Color) -> Control:
 	return card
 
 
-# ── ⑤ 다음 걸음 ────────────────────────────────────────────────────────
+# ── ⑤ Next steps ───────────────────────────────────────────────────────
 
 func _add_next(page: VBoxContainer) -> void:
 	_add_heading(page, "04", "Where to go next",
@@ -1077,12 +1085,12 @@ func _add_next(page: VBoxContainer) -> void:
 	page.add_child(foot)
 
 
-## 화면 귀퉁이에 떠 있는 것들 — 본문이 자리를 비켜 줄 필요가 없는 손님들이다.
+## The things floating in the corners of the screen — guests the body never has to make room for.
 func _add_floating(page_root: Control) -> void:
 	var notice_spot := GoHudAnchor.new()
 	notice_spot.name = "NoticeSpot"
 	notice_spot.spot = GoHudAnchor.Spot.TOP_CENTER
-	# 🛑 알림은 잠깐 떴다 사라진다 — 자리를 예약하면 뜰 때마다 본문이 통째로 출렁인다.
+	# 🛑 A notice shows for a moment and goes — reserve space for it and the body lurches every time one appears.
 	notice_spot.reserve_space = false
 	notice_spot.avoid_peers = true
 	page_root.add_child(notice_spot)
@@ -1108,9 +1116,9 @@ func _add_floating(page_root: Control) -> void:
 	page_root.add_child(_tour)
 
 
-# ── 작은 부품들 ────────────────────────────────────────────────────────
+# ── Small parts ────────────────────────────────────────────────────────
 
-## 번호 배지가 붙은 구획 제목. 🔑 번호가 있으면 긴 페이지에서 **어디쯤인지**가 늘 보인다.
+## A section title with a number badge. 🔑 With numbers, **where you are** in a long page is always visible.
 func _add_heading(page: VBoxContainer, number: String, title: String, note: String) -> void:
 	var accent := GoUi.color(GoTheme.ACCENT)
 	var head := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
@@ -1128,7 +1136,7 @@ func _add_heading(page: VBoxContainer, number: String, title: String, note: Stri
 	page.add_child(head)
 
 
-## 카드 안쪽의 머리 줄 — 작은 아이콘, 의미색 이름, 그 아래 구분선.
+## The head row inside a card — a small icon, a name in the meaning color, and a divider below.
 func _card_head(title: String, icon: StringName, tone: Color) -> Control:
 	var wrap := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
 	var line := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
@@ -1142,14 +1150,14 @@ func _card_head(title: String, icon: StringName, tone: Color) -> Control:
 	return wrap
 
 
-## 한 줄에 이름표와 선택기를 함께 놓기에 **모자란 폭**인가.
+## Is the width **too small** to put the wordmark and the picker on one line?
 func _is_narrow() -> bool:
 	var window := get_window()
 	if window == null: return false
 	return GoSafeArea.usable_rect(window).size.x < 640.0
 
 
-## 아이콘 한 개를 담은 **동그란 판**. 스킨의 원판을 그대로 쓰므로 각진 테마에서도 어울린다.
+## **A round panel** holding a single icon. It uses the skin's disc as it is, so it suits an angular theme too.
 func _disc(icon: StringName, tone: Color, diameter: int, glyph: int) -> Control:
 	var disc := PanelContainer.new()
 	disc.name = "Disc"
@@ -1173,13 +1181,13 @@ func _bar(title: String, ink: StringName, value: float, maximum: float) -> GoBar
 	return bar
 
 
-## 카드 버튼 위의 내용이 마우스를 가로채지 않게 — 누르는 것도 올림 판을 켜는 것도 카드다.
+## Keeps the contents on a card button from intercepting the mouse — pressing, and lighting the hover panel, are the card's job.
 func _pass_through(node: Node) -> void:
 	GoStyle.let_input_through(node)
 	for child in node.get_children(): _pass_through(child)
 
 
-# ── 만져 봤을 때 ───────────────────────────────────────────────────────
+# ── When something is touched ──────────────────────────────────────────
 
 func _say(what: String) -> void:
 	GoFeedback.tapped()
@@ -1236,10 +1244,10 @@ func _pop_tour() -> void:
 	_tour.start(_guides)
 
 
-# ── 배경 ───────────────────────────────────────────────────────────────
+# ── Background ─────────────────────────────────────────────────────────
 
-## 본문 뒤에 까는 한 장. 격자는 화면에 **자를 대 주고**, 번짐 두 점은 위아래를 구분해 준다.
-## 🛑 색은 밖에서 받는다 — 테마가 바뀌면 배경도 같이 바뀌어야 한다.
+## The sheet laid behind the body. The grid **holds a ruler to the screen**, and the two blooms tell top from bottom.
+## 🛑 The colors come from outside — when the theme changes, the background has to change with it.
 class Backdrop extends Control:
 	const CELL := 44.0
 	const RINGS := 26
@@ -1272,7 +1280,7 @@ class Backdrop extends Control:
 			y += CELL
 
 
-	## 동심원을 겹쳐 만드는 번짐. 🔑 셰이더도 그라디언트 텍스처도 없이 어느 렌더러에서나 같다.
+	## Blooms made of concentric circles. 🔑 No shader and no gradient texture, so it is the same on every renderer.
 	func _bloom(centre: Vector2, radius: float, ink: Color) -> void:
 		if ink.a <= 0.0: return
 		for step in RINGS:

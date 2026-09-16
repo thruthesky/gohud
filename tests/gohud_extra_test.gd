@@ -1,15 +1,15 @@
-## 🧪 **뒤에 들인 위젯들의 검사.** `gohud_test.gd` 와 나란히 돈다.
+## 🧪 **Checks for the widgets that arrived later.** Runs alongside `gohud_test.gd`.
 ##
-##   godot --headless --path <프로젝트> -s res://addons/gohud/tests/gohud_extra_test.gd
+##   godot --headless --path <project> -s res://addons/gohud/tests/gohud_extra_test.gd
 ##
-## ## 🔑 왜 파일을 나눴나
-## `gohud_test.gd` 는 2000줄이 넘는다. 위젯을 들일 때마다 그 한 파일이 커지면
-## ① 여러 사람이 같은 자리를 고쳐 충돌이 잦고 ② 어디를 보아야 하는지 찾기 어려워진다.
-## **묶음이 다르면 파일도 나눈다** — 여기는 스낵바·스피너·배지·표처럼 나중에 들인 것들이다.
+## ## 🔑 Why the file was split
+## `gohud_test.gd` is over 2000 lines. If that one file grew with every widget added,
+## ① several people would edit the same spot and clash often and ② finding where to look would get hard.
+## **A different group gets its own file** — this one holds the later arrivals: snackbar, spinner, badge, table.
 ##
-## ## 🛑 움직임이 있는 위젯은 `reduce_motion` 으로 잰다
-## 뜨고 지는 애니메이션 중에 자리를 재면 **중간값**이 나온다(2026-09-16 실측: 스낵바가 화면
-## 밖으로 7dp 나간 것처럼 보였는데, 실제로는 올라오는 중이었다). 최종 자리를 보려면 움직임을 끈다.
+## ## 🛑 Widgets that move are measured with `reduce_motion`
+## Measuring a position mid-animation gives an **in-between value** (measured 2026-09-16: the snackbar looked
+## like it was 7dp off screen, when it was really still rising). To see the final position, turn motion off.
 extends SceneTree
 
 const ADDON := "res://addons/gohud"
@@ -19,7 +19,7 @@ var failed: Array[String] = []
 
 
 func _initialize() -> void:
-	# 🛑 커스텀 스킨(각진 판)에서는 모서리·StyleBoxFlat 을 전제한 판정이 뜻을 잃는다. 기본에서 잰다.
+	# 🛑 On a custom skin (cut panels), verdicts that assume corners and StyleBoxFlat lose their meaning. Measure on the default.
 	GoUi.reset()
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	GoUi.config.reduce_motion = true
@@ -62,7 +62,7 @@ func frames(count: int) -> void:
 	for _i in count: await process_frame
 
 
-# ── 스낵바 ─────────────────────────────────────────────────────────────
+# ── Snackbar ──────────────────────────────────────────────────────────
 
 func _snackbar() -> void:
 	var snack := GoSnackbar.new()
@@ -74,28 +74,28 @@ func _snackbar() -> void:
 
 	snack.show_text("저장했습니다", GoTheme.SUCCESS)
 	await frames(4)
-	check(card.visible, "스낵바: 뜬다")
-	# 🛑 화면 **밖으로 나가지 않는다** — 안전영역 안, 여백만큼 띄우고.
+	check(card.visible, "snackbar: it appears")
+	# 🛑 It **never goes off screen** — inside the safe area, lifted by the margin.
 	check(card.position.y + card.size.y <= area.end.y - edge + 1.0,
-		"스낵바: 화면 안에 있다 (%.0f + %.0f ≤ %.0f)" % [card.position.y, card.size.y, area.end.y - edge])
-	check(card.position.y > area.size.y * 0.5, "스낵바: 아래쪽에 뜬다")
-	# 🛑 높이가 **최소와 같다** — 폭이 정해지기 전에 잰 값이 굳으면 카드가 네 배로 커진다.
+		"snackbar: stays on screen (%.0f + %.0f ≤ %.0f)" % [card.position.y, card.size.y, area.end.y - edge])
+	check(card.position.y > area.size.y * 0.5, "snackbar: appears at the bottom")
+	# 🛑 Its height **equals the minimum** — freeze a value measured before the width is known and the card grows fourfold.
 	check(is_equal_approx(card.size.y, card.get_combined_minimum_size().y),
-		"스낵바: 높이 = 최소 높이 (%.0f · %.0f)" % [card.size.y, card.get_combined_minimum_size().y])
-	check(card.size.x <= snack.max_width + 1.0, "스낵바: 최대 폭을 지킨다")
+		"snackbar: height = minimum height (%.0f · %.0f)" % [card.size.y, card.get_combined_minimum_size().y])
+	check(card.size.x <= snack.max_width + 1.0, "snackbar: keeps to the maximum width")
 	check(card.mouse_filter != Control.MOUSE_FILTER_IGNORE or not snack.tap_to_dismiss,
-		"스낵바: 눌러 닫기가 켜져 있으면 입력을 받는다")
+		"snackbar: takes input while tap-to-dismiss is on")
 
-	# 위쪽 배치
+	# Placed at the top
 	snack.dismiss()
 	await frames(3)
 	snack.placement = GoSnackbar.Placement.TOP
 	snack.show_text("위")
 	await frames(4)
-	check(is_equal_approx(card.position.y, area.position.y + edge), "스낵바: TOP 배치 (%.0f)" % card.position.y)
+	check(is_equal_approx(card.position.y, area.position.y + edge), "snackbar: TOP placement (%.0f)" % card.position.y)
 	snack.placement = GoSnackbar.Placement.BOTTOM
 
-	# 버튼 — 되돌리기
+	# Buttons — undo
 	snack.clear()
 	await frames(3)
 	var log: Array[String] = []
@@ -105,45 +105,45 @@ func _snackbar() -> void:
 	var buttons: Array[String] = []
 	for node in _all(card):
 		if node is Button and not (node is GoIconButton): buttons.append((node as Button).text)
-	check(buttons == ["되돌리기"], "스낵바: 버튼이 붙는다 (%s)" % str(buttons))
-	check(card.mouse_filter == Control.MOUSE_FILTER_STOP, "스낵바: 버튼이 있으면 입력을 받는다")
+	check(buttons == ["되돌리기"], "snackbar: a button attaches (%s)" % str(buttons))
+	check(card.mouse_filter == Control.MOUSE_FILTER_STOP, "snackbar: with a button it takes input")
 	for node in _all(card):
 		if node is Button and (node as Button).text == "되돌리기": (node as Button).pressed.emit()
 	await frames(3)
-	check(picked[0] == 0, "스낵바: 눌린 버튼 번호가 돌아온다 (%d)" % picked[0])
-	check(log.has("되돌림"), "스낵바: 버튼의 콜백이 불린다")
-	# 🛑 되돌리기는 이 위젯의 존재 이유인 버튼이다 — `Tone.BARE` 라도 터치 하한을 지켜야 한다.
+	check(picked[0] == 0, "snackbar: the index of the pressed button comes back (%d)" % picked[0])
+	check(log.has("되돌림"), "snackbar: the button's callback is called")
+	# 🛑 Undo is the button this widget exists for — even as `Tone.BARE` it must keep the touch minimum.
 	for node in _all(card):
 		var action := node as Button
 		if action != null and action.text == "되돌리기":
 			check(action.custom_minimum_size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
-				"스낵바: 버튼이 터치 하한을 지킨다 (%.0f)" % action.custom_minimum_size.y)
+				"snackbar: the button keeps the touch minimum (%.0f)" % action.custom_minimum_size.y)
 
-	# 큐 — 셋을 연달아 띄우면 하나만 뜨고 둘이 기다린다
+	# Queue — post three in a row and one shows while two wait
 	snack.clear()
 	await frames(3)
 	snack.show_text("첫째"); snack.show_text("둘째"); snack.show_text("셋째")
 	await frames(2)
-	check(snack.is_showing() and snack.pending() == 2, "스낵바: 줄을 선다 (대기 %d)" % snack.pending())
+	check(snack.is_showing() and snack.pending() == 2, "snackbar: they queue up (waiting %d)" % snack.pending())
 
-	# 같은 글은 하나로 — 끊긴 서버가 같은 오류를 쏟아낼 때
+	# Identical text counts once — for when a dropped server pours out the same error
 	snack.clear()
 	await frames(3)
 	snack.show_text("연결 실패"); snack.show_text("연결 실패"); snack.show_text("연결 실패")
 	await frames(2)
-	check(snack.pending() == 0, "스낵바: 같은 글은 하나로 친다 (대기 %d)" % snack.pending())
+	check(snack.pending() == 0, "snackbar: identical text counts as one (waiting %d)" % snack.pending())
 
-	# 버튼 없는 알림은 입력을 통과시킨다 — 게임이 멈추면 안 된다
+	# A notice with no buttons lets input through — the game must not stall
 	snack.clear()
 	await frames(3)
 	snack.tap_to_dismiss = false
 	snack.show_text("통과")
 	await frames(4)
-	check(card.mouse_filter == Control.MOUSE_FILTER_IGNORE, "스낵바: 순수 알림은 입력을 통과시킨다")
-	check(card.accessibility_name == "통과", "스낵바: 스크린리더 이름 (%s)" % card.accessibility_name)
-	# 🪟 판 불투명도를 바꿔도 **의미색 테두리를 잃지 않는다.**
-	# 🛑 판을 다시 입히는 자리에서 색을 빼먹으면 떠 있는 위험 알림의 테두리가 사라진다 — 화면에는
-	#    "조금 연해졌다" 로만 보여 알아채기 어렵다(2026-09-16 `alpha` setter 가 실제로 그랬다).
+	check(card.mouse_filter == Control.MOUSE_FILTER_IGNORE, "snackbar: a plain notice lets input through")
+	check(card.accessibility_name == "통과", "snackbar: screen-reader name (%s)" % card.accessibility_name)
+	# 🪟 Changing container alpha **must not lose the tone-coloured border.**
+	# 🛑 Drop the colour where the panel is re-applied and a raised danger notice loses its border — on screen that
+	#    only looks like "a little paler", which is hard to notice (2026-09-16: the `alpha` setter really did this).
 	snack.show_text("Danger", GoTheme.DANGER)
 	await frames(2)
 	var toned := snack._card.get_theme_stylebox(&"panel")
@@ -153,9 +153,9 @@ func _snackbar() -> void:
 	var after := snack._card.get_theme_stylebox(&"panel")
 	var after_edge: Color = after.get(&"border_color") if &"border_color" in after else Color.TRANSPARENT
 	check(absf(GoSkin.box_background(after).a - 0.5) < 0.02,
-		"스낵바: 불투명도가 판에 닿는다 (%.2f)" % GoSkin.box_background(after).a)
+		"snackbar: alpha reaches the panel (%.2f)" % GoSkin.box_background(after).a)
 	check(tone_edge.a <= 0.0 or absf(after_edge.r - tone_edge.r) < 0.02,
-		"스낵바: 불투명도를 바꿔도 의미색 테두리는 그대로")
+		"snackbar: changing alpha leaves the tone border alone")
 	snack.alpha = -1.0
 
 	snack.queue_free()
@@ -167,42 +167,42 @@ func _ask_snack(snack: GoSnackbar, log: Array[String], out: Array) -> void:
 		"actions": [{"text": "되돌리기", "action": func() -> void: log.append("되돌림")}]})
 
 
-# ── 대화상자 큐 ────────────────────────────────────────────────────────
+# ── Dialog queue ──────────────────────────────────────────────────────
 
-## 🛑 **알림은 버리지 않고 묻는 것은 버린다.** 그 둘이 뒤바뀌면 어느 쪽이든 사고가 난다 —
-##    알림을 버리면 오류 메시지가 조용히 사라지고, 물음을 줄 세우면 사용자가 무엇에 답하는지
-##    모르는 채 "예" 를 누른다.
+## 🛑 **Notices are never dropped; questions are.** Swap those two and it goes wrong either way —
+##    drop a notice and an error message vanishes silently; queue a question and the user presses
+##    "yes" without knowing what they are answering.
 func _dialogs_queue() -> void:
 	var dialogs := GoDialogs.new()
 	root.add_child(dialogs)
 	await frames(2)
 
-	# 물음은 겹치면 곧바로 false — 부른 쪽이 "묻지 못했다" 를 알 수 있다.
+	# An overlapping question returns false at once — the caller learns it "could not ask".
 	dialogs._open = true
 	var refused: bool = await dialogs.confirm("A", "B")
-	check(not refused, "대화상자: 떠 있으면 두 번째 confirm 은 곧바로 false")
-	check(dialogs.pending() == 0, "대화상자: 거절된 물음은 줄 서지 않는다")
+	check(not refused, "dialog: while one is up, a second confirm returns false at once")
+	check(dialogs.pending() == 0, "dialog: a refused question does not queue")
 	dialogs._open = false
 
-	# 알림은 셋이 연달아 와도 셋 다 보인다.
+	# Three notices in a row are all shown.
 	var seen: Array[String] = []
 	_say(dialogs, "첫", seen); _say(dialogs, "둘", seen); _say(dialogs, "셋", seen)
 	await frames(2)
-	check(dialogs.is_open() and dialogs.pending() == 2, "대화상자: 알림은 줄을 선다 (대기 %d)" % dialogs.pending())
+	check(dialogs.is_open() and dialogs.pending() == 2, "dialog: notices queue up (waiting %d)" % dialogs.pending())
 	for _i in 3:
 		dialogs._finish(true)
 		await frames(2)
 	check(seen.size() == 3 and seen[0] == "첫" and seen[2] == "셋",
-		"대화상자: 알림 셋이 차례로 전부 보인다 (%s)" % str(seen))
+		"dialog: all three notices are shown in turn (%s)" % str(seen))
 
-	# 🛑 화면을 떠날 때 기다리던 코드를 풀어 준다 — 안 그러면 영영 돌아오지 않는다.
+	# 🛑 Release the code that is waiting when the screen goes away — otherwise it never comes back.
 	var stranded: Array[String] = []
 	_say(dialogs, "버려짐", stranded)
 	await frames(2)
-	check(dialogs.is_open(), "대화상자: 떠 있다")
+	check(dialogs.is_open(), "dialog: it is up")
 	dialogs.queue_free()
 	await frames(3)
-	check(stranded.size() == 1, "대화상자: 트리에서 빠지면 기다리던 await 가 풀린다")
+	check(stranded.size() == 1, "dialog: leaving the tree releases the waiting await")
 	section("dialogs queue")
 
 
@@ -211,27 +211,27 @@ func _say(dialogs: GoDialogs, words: String, log: Array[String]) -> void:
 	log.append(words)
 
 
-# ── 스피너 ─────────────────────────────────────────────────────────────
+# ── Spinner ───────────────────────────────────────────────────────────
 
 func _spinner() -> void:
-	# 움직임을 켠 채로만 도는지 본다.
+	# Check that it only turns while motion is on.
 	GoUi.config.reduce_motion = false
 	var spinner := GoSpinner.new()
 	root.add_child(spinner)
 	await frames(2)
-	check(spinner.is_processing(), "스피너: 돈다")
+	check(spinner.is_processing(), "spinner: it turns")
 	spinner.visible = false
 	await frames(1)
-	# 🛑 안 보이는 동안은 돌지 않는다 — 숨긴 스피너가 매 프레임 다시 그리면 그만큼 공짜로 버린다.
-	check(not spinner.is_processing(), "스피너: 숨기면 멈춘다")
+	# 🛑 It does not turn while out of sight — a hidden spinner redrawing every frame throws that work away.
+	check(not spinner.is_processing(), "spinner: hidden, it stops")
 	spinner.visible = true
 	await frames(1)
 	GoUi.config.reduce_motion = true
 	GoUi.refresh()
 	await frames(1)
-	# ♿ 회전을 끈 사람에게는 **돌지 않되 멈추지도 않는다** — 점 세 개의 밝기가 흐른다.
-	#    아예 멈추면 "죽은 화면" 과 구별되지 않는다.
-	check(spinner.is_processing(), "스피너: reduce_motion 이어도 점은 흐른다")
+	# ♿ For someone who turned rotation off it **does not turn, but does not freeze either** — three dots flow in brightness.
+	#    Stopping outright would be indistinguishable from a "dead screen".
+	check(spinner.is_processing(), "spinner: the dots still flow under reduce_motion")
 
 	var button := GoStyle.button("구매")
 	root.add_child(button)
@@ -239,107 +239,107 @@ func _spinner() -> void:
 	var before := button.size
 	GoSpinner.busy(button, true)
 	await frames(2)
-	check(GoSpinner.is_busy(button) and button.disabled, "스피너: busy 는 버튼을 잠근다")
+	check(GoSpinner.is_busy(button) and button.disabled, "spinner: busy locks the button")
 	var busy_spinner := button.get_node_or_null(^"BusySpinner") as Control
-	check(busy_spinner != null, "스피너: 버튼 안에서 돈다")
-	# 🛑 **버튼 안에 실제로 들어 있는가.** 앵커가 가운데인데 부모 크기를 또 더하면 버튼 밖으로
-	#    날아가, 글자만 사라진 빈 버튼이 남는다(2026-09-16 촬영에서 발견).
+	check(busy_spinner != null, "spinner: it turns inside the button")
+	# 🛑 **Is it really inside the button.** The anchor is centred, so adding the parent size on top of that flings it
+	#    outside and leaves an empty button with the label gone (found in the 2026-09-16 shots).
 	if busy_spinner != null:
 		var spin_rect := Rect2(busy_spinner.global_position, busy_spinner.size)
 		var host_rect2 := Rect2(button.global_position, button.size)
 		check(host_rect2.encloses(spin_rect),
-			"스피너: 버튼 안에 들어 있다 (스피너 %s · 버튼 %s)" % [str(spin_rect), str(host_rect2)])
-	check(button.get_theme_color(&"font_disabled_color").a <= 0.01, "스피너: 글자를 감춘다")
-	GoSpinner.busy(button, true)   # 두 번 불러도 하나만
+			"spinner: it sits inside the button (spinner %s · button %s)" % [str(spin_rect), str(host_rect2)])
+	check(button.get_theme_color(&"font_disabled_color").a <= 0.01, "spinner: it hides the label")
+	GoSpinner.busy(button, true)   # called twice, still only one
 	await frames(1)
 	var spinners := 0
 	for node in button.get_children():
 		if node is GoSpinner: spinners += 1
-	check(spinners == 1, "스피너: 두 번 걸어도 하나만 (%d)" % spinners)
+	check(spinners == 1, "spinner: applied twice, still one (%d)" % spinners)
 	GoSpinner.busy(button, false)
 	await frames(2)
-	check(not GoSpinner.is_busy(button) and not button.disabled, "스피너: busy 를 풀면 되돌아온다")
-	# 🛑 감춰 둔 글자색을 **지운다** — 안 지우면 이후 정말 비활성일 때 빈 판으로 보인다.
-	check(not button.has_theme_color_override(&"font_disabled_color"), "스피너: 감춘 글자색을 되돌린다")
+	check(not GoSpinner.is_busy(button) and not button.disabled, "spinner: clearing busy brings the button back")
+	# 🛑 **Erase** the hidden font colour — leave it and a genuinely disabled button later looks like an empty panel.
+	check(not button.has_theme_color_override(&"font_disabled_color"), "spinner: it restores the hidden font colour")
 	spinner.queue_free(); button.queue_free()
 	await frames(1)
 	section("spinner")
 
 
-# ── 배지 ───────────────────────────────────────────────────────────────
+# ── Badge ─────────────────────────────────────────────────────────────
 
 func _badge() -> void:
 	var badge := GoBadge.make(5)
 	root.add_child(badge)
 	await frames(2)
-	check(badge.visible and _first_label(badge) == "5", "배지: 숫자를 쓴다")
+	check(badge.visible and _first_label(badge) == "5", "badge: it writes the number")
 	badge.set_count(0)
 	await frames(1)
-	check(not badge.visible, "배지: 0 이면 숨는다")
+	check(not badge.visible, "badge: at 0 it hides")
 	badge.set_count(500)
 	await frames(1)
-	# 🛑 접지 않으면 "1284" 가 아이콘보다 넓어져 HUD 줄이 밀린다.
-	check(_first_label(badge) == "99+", "배지: 큰 수를 접는다 (%s)" % _first_label(badge))
+	# 🛑 Without folding, "1284" grows wider than the icon and pushes the HUD row over.
+	check(_first_label(badge) == "99+", "badge: it folds large numbers (%s)" % _first_label(badge))
 	badge.dot = true
 	await frames(1)
-	check(badge.custom_minimum_size.x > 0 and _first_label(badge) == "", "배지: 점 모드")
-	# 🛑 점은 "개수를 감춘 것" 이지 "없는 것" 이 아니다 — `empty` 로 읽히면 뜻이 정반대가 된다.
+	check(badge.custom_minimum_size.x > 0 and _first_label(badge) == "", "badge: dot mode")
+	# 🛑 A dot means "the count is hidden", not "there is none" — read as `empty` it says the opposite.
 	check(not badge.accessibility_name.contains(GoUi.text(&"empty")),
-		"배지: 점이 '비어 있음' 으로 읽히지 않는다 ('%s')" % badge.accessibility_name)
+		"badge: the dot does not read as 'empty' ('%s')" % badge.accessibility_name)
 
 	var host := GoStyle.button("우편함")
 	root.add_child(host)
 	await frames(2)
 	var one := GoBadge.attach(host, 3)
 	await frames(1)
-	check(one != null and one.get_parent() == host, "배지: 붙는다")
-	check(GoBadge.attach(host, 4) == one, "배지: 두 번 붙여도 하나")
-	# 🛑 오른쪽 위에 **절반만 걸친다** — 안쪽이면 아이콘을 가리고, 완전히 밖이면 동떨어져 보인다.
-	#    앵커가 이미 오른쪽 위라 부모 폭을 또 더하면 한 폭만큼 날아간다(2026-09-16 촬영에서 발견).
+	check(one != null and one.get_parent() == host, "badge: it attaches")
+	check(GoBadge.attach(host, 4) == one, "badge: attaching twice still gives one")
+	# 🛑 It **straddles** the top-right corner — fully inside it covers the icon, fully outside it looks detached.
+	#    The anchor is already top-right, so adding the parent width on top of that flings it a whole width away (found in the 2026-09-16 shots).
 	var badge_rect := Rect2(one.global_position, one.size)
 	var host_rect := Rect2(host.global_position, host.size)
 	check(host_rect.intersects(badge_rect),
-		"배지: 부모 모서리에 걸친다 (배지 %s · 부모 %s)" % [str(badge_rect), str(host_rect)])
+		"badge: it straddles the parent's corner (badge %s · parent %s)" % [str(badge_rect), str(host_rect)])
 	check(badge_rect.get_center().x > host_rect.get_center().x and badge_rect.get_center().y < host_rect.get_center().y,
-		"배지: 오른쪽 위 모서리다")
+		"badge: it is the top-right corner")
 	GoBadge.detach(host)
 	await frames(1)
-	check(not host.has_meta(&"gohud_badge"), "배지: 뗀다")
+	check(not host.has_meta(&"gohud_badge"), "badge: it detaches")
 	badge.queue_free(); host.queue_free()
 	await frames(1)
 	section("badge")
 
 
-# ── 폼 한 줄 ───────────────────────────────────────────────────────────
+# ── Form row ──────────────────────────────────────────────────────────
 
 func _field() -> void:
 	var edit := GoStyle.line_edit("2~12자")
 	var field := GoField.make("캐릭터 이름", edit, "나중에 바꿀 수 없습니다")
 	root.add_child(field)
 	await frames(2)
-	check(field.label.text == "캐릭터 이름" and field.hint_label.visible, "폼줄: 라벨·설명")
-	check(not field.error_label.visible, "폼줄: 오류는 처음엔 없다")
-	check(edit.accessibility_name.contains("캐릭터 이름"), "폼줄: 라벨이 스크린리더로 간다")
+	check(field.label.text == "캐릭터 이름" and field.hint_label.visible, "form row: label and hint")
+	check(not field.error_label.visible, "form row: no error at first")
+	check(edit.accessibility_name.contains("캐릭터 이름"), "form row: the label reaches the screen reader")
 
 	field.set_error("이미 쓰는 이름입니다")
 	await frames(1)
-	check(field.has_error() and field.error_label.visible, "폼줄: 오류가 뜬다")
-	# 🔑 설명과 오류는 자리를 다투지 않는다 — 둘이 쌓이면 아래 칸이 전부 밀린다.
-	check(not field.hint_label.visible, "폼줄: 오류가 뜨면 설명이 숨는다")
-	# ♿ 색만으로는 읽히지 않는다 — 오류 글이 스크린리더 이름에도 들어간다.
-	check(edit.accessibility_name.contains("이미 쓰는"), "폼줄: 오류가 스크린리더로 간다")
-	check(edit.has_theme_stylebox_override(&"normal"), "폼줄: 칸 테두리도 물든다")
+	check(field.has_error() and field.error_label.visible, "form row: the error appears")
+	# 🔑 Hint and error never fight for the same space — stacked, every field below gets pushed down.
+	check(not field.hint_label.visible, "form row: the hint hides once the error appears")
+	# ♿ Colour alone is not readable — the error text goes into the screen-reader name as well.
+	check(edit.accessibility_name.contains("이미 쓰는"), "form row: the error reaches the screen reader")
+	check(edit.has_theme_stylebox_override(&"normal"), "form row: the field border takes the tone too")
 
 	field.clear_error()
 	await frames(1)
-	check(not field.has_error() and field.hint_label.visible, "폼줄: 오류를 지우면 설명이 돌아온다")
-	check(not edit.has_theme_stylebox_override(&"normal"), "폼줄: 테두리도 되돌아온다")
+	check(not field.has_error() and field.hint_label.visible, "form row: clearing the error brings the hint back")
+	check(not edit.has_theme_stylebox_override(&"normal"), "form row: the border comes back too")
 	field.queue_free()
 	await frames(1)
 	section("field")
 
 
-# ── 붙은 입력 묶음 ─────────────────────────────────────────────────────
+# ── Joined input group ────────────────────────────────────────────────
 
 func _input_group() -> void:
 	var input := GoStyle.line_edit("메시지")
@@ -347,79 +347,79 @@ func _input_group() -> void:
 	var group := GoInputGroup.make(input, {"suffix": send})
 	root.add_child(group)
 	await frames(3)
-	check(group.get_theme_constant(&"separation") == 0, "입력묶음: 간격 0")
+	check(group.get_theme_constant(&"separation") == 0, "input group: zero separation")
 	var left: StyleBox = input.get_theme_stylebox(&"normal")
 	var right: StyleBox = send.get_theme_stylebox(&"normal")
-	# 🛑 맞닿는 안쪽만 각지게 — 둥근 모서리 두 쌍이 맞붙으면 잘록해 보인다.
+	# 🛑 Only the touching inner corners go square — two pairs of round corners meeting look pinched.
 	if &"corner_radius_top_left" in left:
 		check(float(left.get(&"corner_radius_top_left")) > 0.0 and float(left.get(&"corner_radius_top_right")) == 0.0,
-			"입력묶음: 앞은 바깥쪽만 둥글다")
+			"input group: the leading part is round on the outside only")
 		check(float(right.get(&"corner_radius_top_right")) > 0.0 and float(right.get(&"corner_radius_top_left")) == 0.0,
-			"입력묶음: 뒤는 바깥쪽만 둥글다")
+			"input group: the trailing part is round on the outside only")
 	else:
-		# 각진 스킨에는 모서리 칸이 없다 — 손대지 않는 것이 올바른 동작이다.
-		check(true, "입력묶음: 각진 스킨에서는 모서리를 건드리지 않는다")
+		# A cut skin has no corner fields — leaving them alone is the correct behaviour.
+		check(true, "input group: on a cut skin the corners are left alone")
 	var marked := GoInputGroup.make(GoStyle.line_edit("이름"), {"prefix_icon": &"search"})
 	root.add_child(marked)
 	await frames(2)
-	check(marked.prefix != null, "입력묶음: 아이콘 표식이 붙는다")
+	check(marked.prefix != null, "input group: an icon mark attaches")
 	group.queue_free(); marked.queue_free()
 	await frames(1)
 	section("input group")
 
 
-# ── 키 캡 ──────────────────────────────────────────────────────────────
+# ── Key caps ──────────────────────────────────────────────────────────
 
 func _kbd() -> void:
 	var keys := GoKbd.make("Ctrl", "S")
 	root.add_child(keys)
 	await frames(2)
-	check(keys.keys().size() == 2, "키캡: 조합 두 개")
-	check(keys.get_child_count() == 3, "키캡: 캡 + 가운데 + 캡")
-	check(keys.accessibility_name == "Ctrl + S", "키캡: 한 마디로 읽힌다 (%s)" % keys.accessibility_name)
-	# 🛑 키 이름은 낱말이 아니라 **키에 새겨진 기호**다 — `Ctrl` 이 `Ctr`/`l` 로 쪼개지면 안 된다.
+	check(keys.keys().size() == 2, "kbd: two keys in the combo")
+	check(keys.get_child_count() == 3, "kbd: cap + joiner + cap")
+	check(keys.accessibility_name == "Ctrl + S", "kbd: it reads as one phrase (%s)" % keys.accessibility_name)
+	# 🛑 A key name is not a word but the **symbol engraved on the key** — `Ctrl` must not split into `Ctr`/`l`.
 	var cap_label := (keys.get_child(0) as Control).get_child(0) as Label
 	check(cap_label != null and cap_label.get_line_count() == 1,
-		"키캡: 키 이름이 한 줄이다 (%d줄)" % (cap_label.get_line_count() if cap_label else -1))
-	# 🛑 폰에는 키보드가 없다 — 손에 드는 기기에서는 스스로 숨는다.
-	check(keys.visible != GoUi.is_handheld_platform(), "키캡: 손에 드는 기기에서는 숨는다")
+		"kbd: the key name stays on one line (%d lines)" % (cap_label.get_line_count() if cap_label else -1))
+	# 🛑 A phone has no keyboard — on a handheld it hides itself.
+	check(keys.visible != GoUi.is_handheld_platform(), "kbd: it hides on a handheld")
 	keys.set_keys([])
 	await frames(1)
-	check(not keys.visible, "키캡: 빈 키는 숨는다")
-	# 없는 액션은 빈 것을 준다 — "없음" 같은 글자를 띄우지 않는다.
+	check(not keys.visible, "kbd: an empty key hides")
+	# An unbound action gives an empty cap — it does not print a word like "none".
 	var absent := GoKbd.for_action(&"gohud_probe_missing_action")
 	root.add_child(absent)
 	await frames(1)
-	check(not absent.visible, "키캡: 묶이지 않은 액션은 숨는다")
+	check(not absent.visible, "kbd: an unbound action hides")
 	keys.queue_free(); absent.queue_free()
 	await frames(1)
 	section("kbd")
 
 
-# ── 길게 눌러 여는 메뉴 ────────────────────────────────────────────────
+# ── Long-press menu ───────────────────────────────────────────────────
 
 func _context_menu() -> void:
 	var slot := GoSlot.new()
 	root.add_child(slot)
 	await frames(2)
 	GoContextMenu.attach(slot, [{"text": "사용"}, {"separator": true}, {"text": "버리기", "danger": true}])
-	check(slot.has_meta(&"gohud_context_menu"), "맥락메뉴: 붙는다")
+	check(slot.has_meta(&"gohud_context_menu"), "context menu: it attaches")
 	var popup := GoContextMenu.open_at(slot, [{"text": "귓속말"}, {"text": "차단", "disabled": true}])
 	await frames(2)
-	check(popup != null and popup.item_count == 2, "맥락메뉴: 항목 둘")
-	check(popup.is_item_disabled(1), "맥락메뉴: 비활성 항목")
-	# 🔑 목록이 상황마다 달라지는 자리 — 열릴 때 만든다.
+	check(popup != null and popup.item_count == 2, "context menu: two items")
+	check(popup.is_item_disabled(1), "context menu: a disabled item")
+	# 🔑 For a list that differs with the situation — it is built as the menu opens.
 	var live := GoContextMenu.open_at(slot, func() -> Array: return [{"text": "1"}, {"text": "2"}, {"text": "3"}])
 	await frames(2)
-	check(live != null and live.item_count == 3, "맥락메뉴: 열 때마다 목록을 만든다")
+	check(live != null and live.item_count == 3, "context menu: the list is built on every open")
 	GoContextMenu.detach(slot)
-	check(not slot.has_meta(&"gohud_context_menu"), "맥락메뉴: 뗀다")
+	check(not slot.has_meta(&"gohud_context_menu"), "context menu: it detaches")
 	slot.queue_free()
 	await frames(1)
 	section("context menu")
 
 
-# ── 붙어서 뜨는 카드 ───────────────────────────────────────────────────
+# ── Card that opens attached ──────────────────────────────────────────
 
 func _popover() -> void:
 	var anchor := GoStyle.button("슬롯")
@@ -428,83 +428,83 @@ func _popover() -> void:
 	var body := GoStyle.label("불꽃의 검 — 공격력 +12")
 	var first := GoPopover.open(anchor, body, {"title": "아이템"})
 	await frames(3)
-	check(first != null and GoPopover.is_open(), "팝오버: 열린다")
-	check(first.placement == GoSurface.Placement.ANCHOR and first.anchor_control == anchor, "팝오버: 앵커에 붙는다")
-	check(body.get_parent() == first.body, "팝오버: 내용이 들어간다")
-	# 🔑 가림막은 투명하다 — 비교하려던 게임 화면이 어두워지면 안 된다.
-	check(first.scrim_transparent, "팝오버: 가림막이 투명하다")
-	# 🛑 한 번에 하나 — 쌓이면 어느 것이 어느 슬롯의 것인지 알 수 없다.
+	check(first != null and GoPopover.is_open(), "popover: it opens")
+	check(first.placement == GoSurface.Placement.ANCHOR and first.anchor_control == anchor, "popover: it attaches to the anchor")
+	check(body.get_parent() == first.body, "popover: the content goes in")
+	# 🔑 The scrim is transparent — the game screen being compared must not go dark.
+	check(first.scrim_transparent, "popover: the scrim is transparent")
+	# 🛑 One at a time — stacked, you cannot tell which slot each belongs to.
 	var second := GoPopover.open(anchor, GoStyle.label("둘째"))
 	await frames(3)
-	check(second != null and not is_instance_valid(first), "팝오버: 한 번에 하나만")
-	# 🛑 **닫는 세 길이 모두 `close_requested` 를 낸다.** 문서가 `await …close_requested` 를 권하는데
-	#    `close()`·재열기가 신호 없이 층만 지우면 그 `await` 가 영영 풀리지 않는다(2026-09-16 실측).
+	check(second != null and not is_instance_valid(first), "popover: only one at a time")
+	# 🛑 **All three ways of closing emit `close_requested`.** The docs recommend `await …close_requested`, so if
+	#    `close()` or a re-open merely erased the layer without the signal, that `await` would never return (measured 2026-09-16).
 	var signalled := [false]
 	var watched := GoPopover.open(anchor, GoStyle.label("신호"))
 	if watched != null: watched.close_requested.connect(func() -> void: signalled[0] = true)
 	await frames(3)
 	GoPopover.close()
 	await frames(3)
-	check(signalled[0], "팝오버: close() 도 close_requested 를 낸다")
-	check(not GoPopover.is_open(), "팝오버: 닫힌다")
+	check(signalled[0], "popover: close() emits close_requested too")
+	check(not GoPopover.is_open(), "popover: it closes")
 	anchor.queue_free()
 	await frames(1)
 	section("popover")
 
 
-# ── 표 ─────────────────────────────────────────────────────────────────
+# ── Table ─────────────────────────────────────────────────────────────
 
 func _table() -> void:
 	var rows := [[3, "다다", 9124], [1, "가가", 91240], [2, "나나", 500]]
 	var table := GoTable.make([{"text": "순위", "width": 56}, {"text": "이름"}, {"text": "점수", "numeric": true}], rows)
 	root.add_child(table)
 	await frames(3)
-	check(table.rows_box.get_child_count() == 3, "표: 줄 셋")
+	check(table.rows_box.get_child_count() == 3, "table: three rows")
 	table.sort_by(2, false)
 	await frames(2)
 	var top := table.rows_box.get_child(0) as Button
-	# 🛑 글자로 견주면 "9124" > "91240" 이다 — 점수 순위가 통째로 뒤집힌다.
-	check(top != null and top.accessibility_name.contains("91240"), "표: 숫자 칸은 수로 정렬한다")
+	# 🛑 Compared as text, "9124" > "91240" — the score ranking flips entirely.
+	check(top != null and top.accessibility_name.contains("91240"), "table: a numeric column sorts as numbers")
 	var got := [-1]
 	table.row_selected.connect(func(i: int) -> void: got[0] = i)
 	top.pressed.emit()
 	await frames(2)
-	# 고른 줄의 번호는 **원래 데이터**의 번호다(정렬된 자리가 아니라).
-	check(got[0] == 1, "표: 고른 줄은 원래 번호로 온다 (%d)" % got[0])
+	# The index of a picked row is its index in the **original data** (not its sorted position).
+	check(got[0] == 1, "table: a picked row comes back with its original index (%d)" % got[0])
 	table.sort_by(2, true)
 	await frames(2)
 	var first_asc := table.rows_box.get_child(0) as Button
-	check(first_asc != null and first_asc.accessibility_name.contains("500"), "표: 방향을 바꾼다")
-	# 🛑 **글자가 실제로 보이는 높이를 갖는가.** 줄바꿈이 켜진 채 폭 0 으로 첫 배치되면 최소 높이가
-	#    1dp 로 굳어 화면에는 판만 남고 글자가 통째로 사라진다 — 값 검사는 전부 통과하면서.
+	check(first_asc != null and first_asc.accessibility_name.contains("500"), "table: the direction flips")
+	# 🛑 **Does the text really have a visible height.** Laid out first at width 0 with wrapping on, the minimum
+	#    height freezes at 1dp: the screen keeps the panel while the text disappears entirely — with every value check passing.
 	var cell_heights: Array[float] = []
 	for node in _all(first_asc):
 		if node is Label: cell_heights.append((node as Label).size.y)
 	check(not cell_heights.is_empty() and cell_heights.min() > 4.0,
-		"표: 칸 글자가 보이는 높이를 갖는다 (가장 낮은 칸 %.0f)" % (cell_heights.min() if not cell_heights.is_empty() else -1.0))
-	# 🛑 **호스트가 넘긴 `Control` 셀을 죽이지 않는다** — 정렬·테마 교체마다 줄을 다시 짓는데,
-	#    그때 빌려 온 노드까지 free 하면 다음 줄 짓기가 죽은 노드를 붙이려 한다(2026-09-16 실측).
+		"table: cell text has a visible height (shortest cell %.0f)" % (cell_heights.min() if not cell_heights.is_empty() else -1.0))
+	# 🛑 **Never kill a `Control` cell handed in by the host** — rows are rebuilt on every sort and theme swap, and
+	#    freeing the borrowed nodes there makes the next rebuild attach a dead node (measured 2026-09-16).
 	var borrowed := GoStyle.label("빌려온 칸")
 	var lend := GoTable.make([{"text": "A"}, {"text": "B"}], [[1, borrowed], [2, "글자"]])
 	root.add_child(lend)
 	await frames(3)
 	lend.sort_by(0, false)
 	await frames(3)
-	check(is_instance_valid(borrowed), "표: 넘겨받은 셀을 정렬 뒤에도 살려 둔다")
+	check(is_instance_valid(borrowed), "table: a handed-in cell survives a sort")
 	lend.set_rows([[3, borrowed]])
 	await frames(3)
-	check(is_instance_valid(borrowed), "표: 줄을 갈아 끼워도 넘겨받은 셀이 산다")
-	# 🛑 누르는 머리 줄이라 터치 하한을 지켜야 한다(`Tone.BARE` 는 하한을 걸지 않는다).
+	check(is_instance_valid(borrowed), "table: a handed-in cell survives a row rebuild")
+	# 🛑 The header row is pressed, so it must keep the touch minimum (`Tone.BARE` applies none).
 	var header := lend.head.get_child(0) as Button
 	check(header != null and header.custom_minimum_size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
-		"표: 머리 버튼이 터치 하한을 지킨다 (%.0f)" % (header.custom_minimum_size.y if header else -1.0))
+		"table: the header button keeps the touch minimum (%.0f)" % (header.custom_minimum_size.y if header else -1.0))
 	lend.queue_free(); borrowed.queue_free()
 	table.queue_free()
 	await frames(1)
 	section("table")
 
 
-# ── 쪽 넘기기 ──────────────────────────────────────────────────────────
+# ── Pagination ────────────────────────────────────────────────────────
 
 func _pagination() -> void:
 	var moved := [-1]
@@ -513,28 +513,28 @@ func _pagination() -> void:
 	await frames(2)
 	pager.set_page(5)
 	await frames(2)
-	check(pager.page() == 5 and moved[0] == 5, "쪽넘김: 쪽을 옮긴다")
+	check(pager.page() == 5 and moved[0] == 5, "pagination: it moves page")
 	var numbers := pager._numbers()
-	# 🔑 지금 쪽이 가운데 오고 양끝이 남는다 — 어디였는지 놓치지 않게.
-	check(numbers.has(1) and numbers.has(5) and numbers.has(12), "쪽넘김: 1 … 5 … 12 로 접는다 (%s)" % str(numbers))
+	# 🔑 The current page sits in the middle and both ends remain — so you never lose where you were.
+	check(numbers.has(1) and numbers.has(5) and numbers.has(12), "pagination: it folds to 1 … 5 … 12 (%s)" % str(numbers))
 	pager.set_page(99)
 	await frames(1)
-	check(pager.page() == 12, "쪽넘김: 끝을 넘지 않는다")
-	# 🛑 쪽 수를 모르면 번호를 만들지 않는다 — 모르는 것을 아는 척하지 않는다.
+	check(pager.page() == 12, "pagination: it does not run past the end")
+	# 🛑 With an unknown page count it makes no numbers — it does not pretend to know what it does not.
 	var endless := GoPagination.make(1, 0)
 	root.add_child(endless)
 	await frames(2)
-	check(endless._numbers().is_empty(), "쪽넘김: 총 쪽을 모르면 번호가 없다")
+	check(endless._numbers().is_empty(), "pagination: no numbers when the total is unknown")
 	var more := GoPagination.more()
 	root.add_child(more)
 	await frames(2)
-	check(more.get_child_count() == 1, "쪽넘김: 더보기는 한 줄")
+	check(more.get_child_count() == 1, "pagination: load-more is a single row")
 	pager.queue_free(); endless.queue_free(); more.queue_free()
 	await frames(1)
 	section("pagination")
 
 
-# ── 서랍 ───────────────────────────────────────────────────────────────
+# ── Drawer ────────────────────────────────────────────────────────────
 
 func _drawer() -> void:
 	var drawer := GoDrawer.new()
@@ -543,42 +543,42 @@ func _drawer() -> void:
 	await frames(2)
 	drawer.open("가방")
 	await frames(3)
-	check(drawer.is_open() and drawer.visible, "서랍: 열린다")
-	check(drawer.panel.size.x <= drawer.max_width + 1.0, "서랍: 폭 상한 (%.0f)" % drawer.panel.size.x)
-	check(is_equal_approx(drawer.panel.position.x, 0.0), "서랍: 왼쪽에 붙는다")
+	check(drawer.is_open() and drawer.visible, "drawer: it opens")
+	check(drawer.panel.size.x <= drawer.max_width + 1.0, "drawer: width cap (%.0f)" % drawer.panel.size.x)
+	check(is_equal_approx(drawer.panel.position.x, 0.0), "drawer: it sticks to the left")
 	drawer.side = GoDrawer.Side.RIGHT
 	drawer._relayout()
 	await frames(2)
 	var full := root.get_visible_rect()
 	check(absf(drawer.panel.position.x + drawer.panel.size.x - full.size.x) < 2.0,
-		"서랍: 오른쪽에 붙는다 (%.0f)" % (drawer.panel.position.x + drawer.panel.size.x))
-	# 🛑 배경은 끝까지 가되 내용은 안전영역 안 — 모서리에서 잘리지 않게.
-	check(is_equal_approx(drawer.panel.size.y, full.size.y), "서랍: 판은 화면 끝까지")
-	# 🪟 판 불투명도 — `@export` 라 **퍼센트**이고, 판에는 **비율**로 닿는다.
-	# 🛑 이 파일에는 `near()` 가 없다 — 이 검사의 도우미는 `check` 하나뿐이라 차이를 직접 잰다.
+		"drawer: it sticks to the right (%.0f)" % (drawer.panel.position.x + drawer.panel.size.x))
+	# 🛑 The background runs edge to edge while the content stays inside the safe area — nothing clipped at a corner.
+	check(is_equal_approx(drawer.panel.size.y, full.size.y), "drawer: the panel runs to the screen edge")
+	# 🪟 Container alpha — an `@export`, so it is a **percent**, and it reaches the panel as a **ratio**.
+	# 🛑 There is no `near()` in this file — its only helper is `check`, so the difference is measured directly.
 	var drawer_themed := GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a
 	check(absf(drawer_themed - GoUi.surface_alpha(GoTheme.BOX_CARD)) < 0.02,
-		"서랍: 기본은 테마·설정이 정한 카드 값 (%.2f)" % drawer_themed)
+		"drawer: by default it takes the card value theme and config set (%.2f)" % drawer_themed)
 	drawer.alpha = 0.40
 	await frames(1)
 	check(absf(GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a - 0.40) < 0.02,
-		"서랍: 비율 0.40 → 판 바탕 0.40")
+		"drawer: ratio 0.40 → panel background 0.40")
 	drawer.alpha = -1.0
 	await frames(1)
 	check(absf(GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a - drawer_themed) < 0.02,
-		"서랍: -1 로 되돌리면 테마 값으로")
+		"drawer: back to -1 returns the theme value")
 	drawer.close()
 	await frames(2)
-	check(not drawer.is_open(), "서랍: 닫힌다")
-	# 🛑 트리에서 빠지면 **상태도 내린다** — 안 내리면 다시 넣고 닫을 때 뒤로가기 차지를 한 번 더
-	#    놓아 다른 창의 차지까지 깎는다.
+	check(not drawer.is_open(), "drawer: it closes")
+	# 🛑 Leaving the tree **puts the state down too** — otherwise re-adding and closing releases the back-button
+	#    claim one more time and eats another window's claim with it.
 	drawer.open("다시")
 	await frames(2)
 	var owners_open := GoBackPolicy.owners()
 	root.remove_child(drawer)
 	await frames(2)
-	check(not drawer.is_open(), "서랍: 트리에서 빠지면 열림 상태도 내린다")
-	check(GoBackPolicy.owners() == owners_open - 1, "서랍: 뒤로가기 차지를 한 번만 놓는다")
+	check(not drawer.is_open(), "drawer: leaving the tree puts the open state down too")
+	check(GoBackPolicy.owners() == owners_open - 1, "drawer: it releases the back-button claim exactly once")
 	root.add_child(drawer)
 	await frames(2)
 	drawer.queue_free()
@@ -586,7 +586,7 @@ func _drawer() -> void:
 	section("drawer")
 
 
-# ── 찾아서 고르는 칸 ───────────────────────────────────────────────────
+# ── Search-and-pick field ─────────────────────────────────────────────
 
 func _combobox() -> void:
 	var items: Array = []
@@ -594,24 +594,24 @@ func _combobox() -> void:
 	var combo := GoCombobox.make(items, -1, "친구 찾기")
 	root.add_child(combo)
 	await frames(2)
-	check(combo.text == "친구 찾기", "콤보: 안내 글자")
+	check(combo.text == "친구 찾기", "combobox: placeholder text")
 	combo.select(3)
 	await frames(1)
-	check(combo.selected() == 3 and combo.selected_text() == "플레이어3", "콤보: 고른다")
+	check(combo.selected() == 3 and combo.selected_text() == "플레이어3", "combobox: it picks")
 	combo._open()
 	await frames(3)
-	# 항목이 많으면 검색줄이 붙는다.
-	check(combo._search != null, "콤보: 항목이 많으면 검색줄이 붙는다")
+	# With many items a search row appears.
+	check(combo._search != null, "combobox: with many items a search row appears")
 	combo._search.text = "플레이어1"
 	combo._fill()
 	await frames(2)
-	# "플레이어1", "플레이어10"~"플레이어19" = 11개
-	check(combo._rows.get_child_count() == 11, "콤보: 가운데 글자도 잡는다 (%d)" % combo._rows.get_child_count())
+	# "플레이어1", "플레이어10"~"플레이어19" = 11 of them
+	check(combo._rows.get_child_count() == 11, "combobox: it matches inside the text too (%d)" % combo._rows.get_child_count())
 	combo._search.text = "없는이름"
 	combo._fill()
 	await frames(2)
-	# 🛑 빈 목록을 그냥 두지 않는다 — 고장으로 읽힌다.
-	check(combo._empty.visible, "콤보: 결과가 없으면 알려 준다")
+	# 🛑 An empty list is not left as it is — it reads as a fault.
+	check(combo._empty.visible, "combobox: it says so when there are no results")
 	combo._close()
 	await frames(1)
 	var few := GoCombobox.make(["A", "B", "C"])
@@ -619,14 +619,14 @@ func _combobox() -> void:
 	await frames(2)
 	few._open()
 	await frames(2)
-	check(few._search == null, "콤보: 항목이 적으면 검색줄이 없다")
+	check(few._search == null, "combobox: with few items there is no search row")
 	few._close()
 	combo.queue_free(); few.queue_free()
 	await frames(1)
 	section("combobox")
 
 
-# ── 출석 보상 달력 ─────────────────────────────────────────────────────
+# ── Daily reward calendar ─────────────────────────────────────────────
 
 func _reward_calendar() -> void:
 	var days: Array = []
@@ -634,129 +634,129 @@ func _reward_calendar() -> void:
 	var cal := GoRewardCalendar.make(days, 1)
 	root.add_child(cal)
 	await frames(3)
-	check(cal._grid.get_child_count() == 7, "출석: 칸 일곱")
-	check(cal.today() == 2, "출석: 오늘은 셋째 칸 (%d)" % cal.today())
+	check(cal._grid.get_child_count() == 7, "rewards: seven cells")
+	check(cal.today() == 2, "rewards: today is the third cell (%d)" % cal.today())
 	var cells := cal._grid.get_children()
-	# 🛑 눌러도 아무 일이 없는 버튼은 고장으로 읽힌다 — 오늘 칸만 눌린다.
-	check(not (cells[2] as Button).disabled, "출석: 오늘 칸은 눌린다")
-	check((cells[0] as Button).disabled and (cells[6] as Button).disabled, "출석: 받은·앞으로 칸은 안 눌린다")
-	# ♿ 흐림만으로는 받은 것과 앞으로 올 것이 구별되지 않는다.
+	# 🛑 A button that does nothing when pressed reads as a fault — only today's cell is pressable.
+	check(not (cells[2] as Button).disabled, "rewards: today's cell is pressable")
+	check((cells[0] as Button).disabled and (cells[6] as Button).disabled, "rewards: claimed and upcoming cells are not pressable")
+	# ♿ Dimming alone does not tell a claimed day from one still to come.
 	check((cells[0] as Button).accessibility_name != (cells[6] as Button).accessibility_name,
-		"출석: 받음과 앞으로가 말로 구별된다")
+		"rewards: claimed and upcoming are told apart in words")
 	var got := [-1]
 	cal.claimed.connect(func(d: int) -> void: got[0] = d)
 	(cells[2] as Button).pressed.emit()
 	await frames(2)
-	check(got[0] == 2, "출석: 받기 신호")
+	check(got[0] == 2, "rewards: the claim signal")
 	cal.set_claimed_until(6)
 	await frames(2)
-	check(cal.today() == -1, "출석: 다 받으면 오늘이 없다")
+	check(cal.today() == -1, "rewards: with everything claimed there is no today")
 	cal.queue_free()
 	await frames(1)
 	section("reward calendar")
 
 
-# ── 레이더·도넛 ────────────────────────────────────────────────────────
+# ── Radar · donut ─────────────────────────────────────────────────────
 
 func _charts() -> void:
 	var radar := GoRadar.make({"힘": 0.8, "민첩": 0.5, "지능": 0.3, "체력": 0.7, "행운": 0.4})
 	root.add_child(radar)
 	await frames(2)
-	# ♿ 그림만으로는 읽히지 않는다.
-	check(radar.accessibility_name.contains("힘 80%"), "레이더: 값이 말로 간다 (%s)" % radar.accessibility_name)
+	# ♿ A picture alone is not readable.
+	check(radar.accessibility_name.contains("힘 80%"), "radar: the values go into words (%s)" % radar.accessibility_name)
 	radar.set_values({"힘": 0.1})
 	await frames(1)
-	check(radar.accessibility_name.contains("10%"), "레이더: 값을 바꾸면 따라간다")
+	check(radar.accessibility_name.contains("10%"), "radar: changing a value follows through")
 
 	var donut := GoDonut.make([{"label": "물리", "value": 620}, {"label": "마법", "value": 340}, {"label": "관통", "value": 90}])
 	root.add_child(donut)
 	await frames(2)
-	check(is_equal_approx(donut.total(), 1050.0), "도넛: 합계 (%.0f)" % donut.total())
-	check(donut.accessibility_name.contains("물리 59%"), "도넛: 비율이 말로 간다 (%s)" % donut.accessibility_name)
-	check(donut.legend().get_child_count() == 3, "도넛: 범례 세 줄")
-	# 🔑 조각이 다섯을 넘으면 나머지를 묶는다 — 실처럼 가는 조각은 읽을 수 없다.
+	check(is_equal_approx(donut.total(), 1050.0), "donut: total (%.0f)" % donut.total())
+	check(donut.accessibility_name.contains("물리 59%"), "donut: the ratios go into words (%s)" % donut.accessibility_name)
+	check(donut.legend().get_child_count() == 3, "donut: a three-row legend")
+	# 🔑 Past five slices the rest are folded together — thread-thin slices cannot be read.
 	var many: Array = []
 	for i in 9: many.append({"label": "조각%d" % i, "value": 100 - i * 8})
 	donut.set_slices(many)
 	await frames(1)
-	check(donut.visible_slices().size() == 5, "도넛: 다섯으로 접는다 (%d)" % donut.visible_slices().size())
+	check(donut.visible_slices().size() == 5, "donut: it folds down to five (%d)" % donut.visible_slices().size())
 	radar.queue_free(); donut.queue_free()
 	await frames(1)
 	section("radar · donut")
 
 
-# ── 쿠폰 코드 ──────────────────────────────────────────────────────────
+# ── Coupon code ───────────────────────────────────────────────────────
 
 func _code_input() -> void:
 	var coupon := GoCodeInput.make(12, 4)
 	root.add_child(coupon)
 	await frames(3)
-	check(coupon._cells.size() == 12, "쿠폰: 칸 열둘")
-	# 🛑 **숨은 입력칸이 칸들을 덮어야** 아무 데나 눌러도 키보드가 뜬다. `HBoxContainer` 에 직접
-	#    넣으면 컨테이너가 한 열로 밀어내 칸을 눌러도 포커스가 가지 않는다(2026-09-16 실측).
+	check(coupon._cells.size() == 12, "coupon: twelve cells")
+	# 🛑 **The hidden input must cover the cells** so that tapping anywhere brings up the keyboard. Put straight
+	#    into an `HBoxContainer` it is pushed out into its own column and tapping a cell never gives it focus (measured 2026-09-16).
 	var cell_rect := Rect2(coupon._cells[0].global_position, coupon._cells[0].size)
 	check(Rect2(coupon.edit.global_position, coupon.edit.size).encloses(cell_rect),
-		"쿠폰: 숨은 입력칸이 칸들을 덮는다 (edit %s · 첫 칸 %s)" % [str(coupon.edit.size), str(cell_rect)])
-	# 🛑 자릿수를 바꿔도 끊는 자리의 빈 칸이 쌓이지 않는다.
+		"coupon: the hidden input covers the cells (edit %s · first cell %s)" % [str(coupon.edit.size), str(cell_rect)])
+	# 🛑 Changing the digit count does not pile up the empty cells at the break positions.
 	var children_before := coupon.cells_row.get_child_count()
 	coupon.length = 8
 	await frames(2)
 	coupon.length = 12
 	await frames(2)
 	check(coupon.cells_row.get_child_count() == children_before,
-		"쿠폰: 자릿수를 바꿔도 노드가 쌓이지 않는다 (%d → %d)" % [children_before, coupon.cells_row.get_child_count()])
-	# 🛑 **폰 폭에 들어간다.** 12칸을 고정 폭으로 두면 720dp 화면에서 칸이 밖으로 잘렸다
-	#    (2026-09-16 촬영). 좁으면 칸이 함께 좁아져야 한다.
+		"coupon: changing the digit count does not pile up nodes (%d → %d)" % [children_before, coupon.cells_row.get_child_count()])
+	# 🛑 **It fits a phone's width.** Holding 12 cells at a fixed width clipped them off a 720dp screen
+	#    (2026-09-16 shots). When it is narrow, the cells have to narrow with it.
 	var need := coupon.cells_row.get_combined_minimum_size().x + float(GoUi.metric(GoTheme.SCREEN_MARGIN)) * 2.0
-	check(need <= 720.0, "쿠폰: 720dp 폰 폭에 들어간다 (%.0f)" % need)
+	check(need <= 720.0, "coupon: it fits a 720dp phone width (%.0f)" % need)
 	var done := [""]
 	coupon.completed.connect(func(c: String) -> void: done[0] = c)
-	# 🛑 코드는 손으로 치는 것이 아니라 붙여넣는 것이다 — 하이픈·공백이 떨어지고 대문자가 된다.
+	# 🛑 A code is pasted, not typed by hand — hyphens and spaces fall away and it is upper-cased.
 	coupon.edit.text = "abcd-efgh ijkl"
 	coupon._on_text("abcd-efgh ijkl")
 	await frames(2)
-	check(coupon.code() == "ABCDEFGHIJKL", "쿠폰: 붙여넣기를 정리한다 (%s)" % coupon.code())
-	check(done[0] == "ABCDEFGHIJKL", "쿠폰: 다 차면 알린다")
-	check(coupon.is_complete(), "쿠폰: 다 찼다")
+	check(coupon.code() == "ABCDEFGHIJKL", "coupon: it tidies up a paste (%s)" % coupon.code())
+	check(done[0] == "ABCDEFGHIJKL", "coupon: it reports once full")
+	check(coupon.is_complete(), "coupon: it is full")
 	coupon.set_error("이미 쓴 코드입니다")
 	await frames(2)
-	check(coupon.has_error() and coupon.error_label.visible, "쿠폰: 오류가 뜬다")
+	check(coupon.has_error() and coupon.error_label.visible, "coupon: the error appears")
 	coupon.clear()
 	await frames(1)
-	check(coupon.code().is_empty(), "쿠폰: 비운다")
-	# 받을 수 없는 글자는 들어오지 않는다.
+	check(coupon.code().is_empty(), "coupon: it clears")
+	# Characters it cannot take never get in.
 	coupon._on_text("한글!@#AB")
 	await frames(1)
-	check(coupon.code() == "AB", "쿠폰: 받을 글자만 남긴다 (%s)" % coupon.code())
+	check(coupon.code() == "AB", "coupon: only acceptable characters are kept (%s)" % coupon.code())
 	coupon.queue_free()
 	await frames(1)
 	section("code input")
 
 
-# ── 개발자 콘솔 ────────────────────────────────────────────────────────
+# ── Developer console ─────────────────────────────────────────────────
 
 func _console() -> void:
 	var console := GoConsole.new()
 	root.add_child(console)
 	await frames(2)
 	console.register("give", "아이템 지급", func(a: PackedStringArray) -> String: return "지급 %s" % " ".join(a))
-	check(console.commands().has("give"), "콘솔: 명령을 등록한다")
-	check(console.commands().has("help") and console.commands().has("clear"), "콘솔: 기본 명령이 있다")
-	check(console.run("give sword 3") == "지급 sword 3", "콘솔: 명령을 실행한다")
-	# 🔑 기본 문구는 영어다 — 개발 도구의 공통어이고, 애드온 코드에 한 언어를 박지 않는다.
-	check(console.run("no_such_command").contains("unknown"), "콘솔: 모르는 명령을 알린다")
-	# 🛑 `open()` 만 막으면 소용없다 — 코드에서 `run()` 을 직접 부를 수 있다.
-	check(console.debug_only and OS.is_debug_build(), "콘솔: 이 검사는 디버그 빌드에서 돈다")
+	check(console.commands().has("give"), "console: a command registers")
+	check(console.commands().has("help") and console.commands().has("clear"), "console: the built-in commands are there")
+	check(console.run("give sword 3") == "지급 sword 3", "console: it runs a command")
+	# 🔑 The built-in strings are English — the common tongue of dev tools, and the add-on code pins no single language.
+	check(console.run("no_such_command").contains("unknown"), "console: it reports an unknown command")
+	# 🛑 Blocking `open()` alone is useless — code can call `run()` directly.
+	check(console.debug_only and OS.is_debug_build(), "console: this check runs in a debug build")
 	console.unregister("give")
-	check(not console.commands().has("give"), "콘솔: 명령을 뺀다")
-	# 🛑 릴리스 빌드에서는 열리지 않는다 — 치트가 플레이어 손에 들어가면 안 된다.
-	check(console.debug_only, "콘솔: 기본은 디버그 빌드 전용")
+	check(not console.commands().has("give"), "console: a command unregisters")
+	# 🛑 It does not open in a release build — cheats must not reach a player's hands.
+	check(console.debug_only, "console: debug builds only by default")
 	console.queue_free()
 	await frames(1)
 	section("console")
 
 
-# ── 넘겨 보는 띠 ───────────────────────────────────────────────────────
+# ── Swipeable strip ───────────────────────────────────────────────────
 
 func _carousel() -> void:
 	var carousel := GoCarousel.new()
@@ -765,39 +765,39 @@ func _carousel() -> void:
 	await frames(2)
 	carousel.set_pages([GoStyle.card(), GoStyle.card(), GoStyle.card()])
 	await frames(3)
-	check(carousel.pages().size() == 3, "띠: 쪽 셋")
-	check(carousel._dots.get_child_count() == 3, "띠: 점 셋")
-	# 🛑 보이는 점은 작아도 누르는 자리는 터치 하한이다.
+	check(carousel.pages().size() == 3, "carousel: three pages")
+	check(carousel._dots.get_child_count() == 3, "carousel: three dots")
+	# 🛑 The dot may look small, but the place you press is the touch minimum.
 	var dot := carousel._dots.get_child(0) as Control
-	check(dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) * 0.55, "띠: 점의 누르는 자리가 넉넉하다")
+	check(dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) * 0.55, "carousel: the dot's press area is generous")
 	carousel.next()
 	await frames(2)
-	check(carousel.index() == 1, "띠: 다음")
+	check(carousel.index() == 1, "carousel: next")
 	carousel.go_to(0)
 	await frames(1)
 	carousel.previous()
 	await frames(2)
-	check(carousel.index() == 2, "띠: 처음에서 이전이면 끝으로 감긴다 (%d)" % carousel.index())
-	# 🛑 저절로 넘어가면 읽을 시간을 뺏는다 — 기본은 꺼짐.
-	check(not carousel.is_processing(), "띠: 자동 넘김은 기본 꺼짐")
+	check(carousel.index() == 2, "carousel: previous from the first wraps to the end (%d)" % carousel.index())
+	# 🛑 Advancing by itself steals reading time — off by default.
+	check(not carousel.is_processing(), "carousel: auto-advance is off by default")
 	carousel.autoplay_seconds = 5.0
 	await frames(1)
-	# ♿ 움직임을 줄인 사람에게는 스스로 움직이지 않는다(지금 reduce_motion 이 켜져 있다).
-	check(not carousel.is_processing(), "띠: reduce_motion 이면 자동 넘김을 하지 않는다")
-	# 🛑 누르는 자리는 터치 하한 그대로 — 점이 작아 보인다고 하한을 깎지 않는다.
-	# 🛑 점은 쪽이 바뀔 때마다 **다시 만들어진다** — 앞에서 잡아 둔 것을 나중에 읽으면 이미 지워진
-	#    노드를 건드려 `previously freed` 가 난다(판정은 통과해 오류만 쌓인다). 쓸 때 다시 가져온다.
+	# ♿ For someone who reduced motion it never moves on its own (reduce_motion is on right now).
+	check(not carousel.is_processing(), "carousel: under reduce_motion it does not auto-advance")
+	# 🛑 The press area stays at the touch minimum — a dot that looks small is no reason to shave it.
+	# 🛑 The dots are **rebuilt** whenever the page changes — reading one grabbed earlier touches an already
+	#    freed node and raises `previously freed` (the verdict still passes, only errors pile up). Fetch it again at use.
 	var live_dot := carousel._dots.get_child(0) as Control
 	check(live_dot != null and live_dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
-		"띠: 점의 누르는 자리가 터치 하한을 지킨다 (%.1f)" % (live_dot.custom_minimum_size.x if live_dot else -1.0))
-	# 🛑 안 보이면 돌지 않는다 — 가린 배너가 배터리를 쓰면 안 된다.
+		"carousel: the dot's press area keeps the touch minimum (%.1f)" % (live_dot.custom_minimum_size.x if live_dot else -1.0))
+	# 🛑 Out of sight it does not turn — a covered banner must not burn battery.
 	GoUi.config.reduce_motion = false
 	carousel.autoplay_seconds = 5.0
 	await frames(1)
-	check(carousel.is_processing(), "띠: 보이고 자동넘김이 켜지면 돈다")
+	check(carousel.is_processing(), "carousel: visible with auto-advance on, it runs")
 	carousel.visible = false
 	await frames(1)
-	check(not carousel.is_processing(), "띠: 숨기면 자동 넘김이 멈춘다")
+	check(not carousel.is_processing(), "carousel: hidden, auto-advance stops")
 	carousel.visible = true
 	GoUi.config.reduce_motion = true
 	carousel.queue_free()
@@ -805,12 +805,12 @@ func _carousel() -> void:
 	section("carousel")
 
 
-# ── 생김새를 바꾸면 따라오는가 ─────────────────────────────────────────
+# ── Does a change of look follow through ──────────────────────────────
 
-## 🛑 **이것이 이 파일에서 가장 중요한 검사다.** `GoUi.use_preset()` 은 "테마·스킨·아이콘이 함께
-##    움직인다" 고 약속한다. 그런데 2026-09-16 이전에는 **새로 만든 위젯만** 바뀌었다 —
-##    이미 떠 있는 HP 막대·퀵슬롯은 옛 색 그대로였고, 새것과 나란히 놓여 한 화면에 두 생김새가
-##    섞였다. 위젯이 `GoUi.watch()` 를 등록하지 않으면 아무도 다시 읽지 않기 때문이다.
+## 🛑 **This is the most important check in this file.** `GoUi.use_preset()` promises that "theme, skin and
+##    icons move together". Yet before 2026-09-16 **only freshly built widgets** changed —
+##    an HP bar or quick slot already on screen kept its old colours, and standing next to the new ones one
+##    screen carried two looks at once. It happens because a widget that registers no `GoUi.watch()` is never re-read.
 func _theme_follow() -> void:
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	await frames(2)
@@ -825,11 +825,11 @@ func _theme_follow() -> void:
 	}
 	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
 	await frames(3)
-	check(_fill_color(bar) != before["bar"], "생김새: 떠 있는 HP 막대가 따라온다")
-	check(_face_color(slot) != before["slot"], "생김새: 떠 있는 퀵슬롯이 따라온다")
-	check(_panel_color(badge) != before["badge"], "생김새: 떠 있는 배지가 따라온다")
-	# 🛑 노드를 다시 만들지 않는다 — `Face` 가 사라지면 그 슬롯을 참조하던 코드가 전부 깨진다.
-	check(slot.get_node_or_null(^"Face") != null, "생김새: 노드를 다시 만들지 않는다")
+	check(_fill_color(bar) != before["bar"], "look: an HP bar already on screen follows")
+	check(_face_color(slot) != before["slot"], "look: a quick slot already on screen follows")
+	check(_panel_color(badge) != before["badge"], "look: a badge already on screen follows")
+	# 🛑 Nodes are not rebuilt — lose `Face` and every piece of code referring to that slot breaks.
+	check(slot.get_node_or_null(^"Face") != null, "look: nodes are not rebuilt")
 
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	await frames(2)
@@ -838,7 +838,7 @@ func _theme_follow() -> void:
 	section("theme follows")
 
 
-# ── 거들기 ─────────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────
 
 func _all(node: Node) -> Array:
 	var out: Array = [node]

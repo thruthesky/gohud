@@ -15,8 +15,8 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 GODOT="${GODOT_BIN:-$(command -v godot || true)}"
-# ZIP 설치본은 project.godot 을 `project.godot.demo` 로 담고 있다 — 설치한 게임 프로젝트에서
-# 중첩 project.godot 이 에디터 경고를 내기 때문이다. 데모를 돌리려면 여기서 되살린다.
+# A ZIP install ships project.godot as `project.godot.demo` — a nested project.godot makes the
+# editor warn inside the game project it was installed into. Restore it here to run the demo.
 if [ ! -f "$HERE/project.godot" ] && [ -f "$HERE/project.godot.demo" ]; then
   cp "$HERE/project.godot.demo" "$HERE/project.godot"
 fi

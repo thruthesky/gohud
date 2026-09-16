@@ -1,11 +1,13 @@
-/* gohud 홈페이지 — 작은 손질 두 가지.
+/* gohud homepage — two small touches.
  *
- * 1. **코드 복사 단추** — 이 사이트의 코드 칸은 그대로 붙여 넣어 돌아가는 조각이다. 끌어서 고르다
- *    보면 줄 번호도 없는데 앞뒤 공백이 딸려 온다. 손을 올린 칸에만 단추가 뜬다.
- * 2. **그림 늦게 받기** — 스크린샷이 열 몇 장이라 첫 화면과 상관없는 것까지 한꺼번에 받으면 느리다.
+ * 1. **Copy button on code blocks** — every code block here is a snippet meant to be pasted and
+ *    run as is. Selecting it by hand drags along leading and trailing whitespace even though
+ *    there are no line numbers. The button appears only on the block under the pointer.
+ * 2. **Lazy images** — there are a dozen-odd screenshots, and fetching the ones below the fold
+ *    along with everything else makes the first paint slow.
  *
- * 🛑 CSS 는 `site/style.css` 의 `.gocopy` 규칙을 쓴다(이 파일은 스타일을 넣지 않는다).
- * 🛑 `navigator.clipboard` 는 `file://` 와 http 에서 막힌다 — 옛 방식으로 되돌아간다.
+ * 🛑 The CSS lives in the `.gocopy` rules of `site/style.css` (this file injects no styles).
+ * 🛑 `navigator.clipboard` is blocked on `file://` and over plain http — fall back to the old way.
  */
 (function () {
   'use strict';
@@ -48,7 +50,7 @@
     then(old(text));
   }
 
-  /** 옛 방식 — 화면 밖 칸에 넣고 잘라낸다. 권한이 없으면 false 를 돌려준다. */
+  /** The old way — put it in an off-screen box and cut. Returns false when permission is denied. */
   function old(text) {
     var box = document.createElement('textarea');
     box.value = text;
@@ -62,9 +64,10 @@
     return ok;
   }
 
-  /* 접힌 곳 안의 주소로 들어오면 열어 준다 — 다이얼 표는 스킨마다 접혀 있어서, 목차나 검색이
-     그 안의 제목으로 데려가도 닫힌 채면 "아무 일도 안 일어난 것" 처럼 보인다.
-     🛑 최신 브라우저는 스스로 열지만(Chrome 121·Safari 17.4 이후) 그 전 판에서는 열리지 않는다. */
+  /* Open a collapsed section when the URL points inside one — the dial tables are folded per skin,
+     so when the table of contents or search sends you to a heading in there and it stays closed,
+     it reads as "nothing happened".
+     🛑 Recent browsers open it themselves (Chrome 121 · Safari 17.4 and later); older ones do not. */
   function openFor(hash) {
     if (!hash || hash.length < 2) return;
     var target = null;
@@ -78,7 +81,7 @@
   window.addEventListener('hashchange', function () { openFor(location.hash); });
   if (location.hash) setTimeout(function () { openFor(location.hash); }, 0);
 
-  // 첫 화면에 없는 그림은 스크롤할 때 받는다.
+  // Images below the fold are fetched as you scroll.
   document.querySelectorAll('main img:not([loading])').forEach(function (img, i) {
     if (i > 1) img.setAttribute('loading', 'lazy');
     if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');

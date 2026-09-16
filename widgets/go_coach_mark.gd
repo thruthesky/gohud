@@ -1,25 +1,25 @@
-## 🧭 **안내 투어(코치마크).** 실제 화면의 컨트롤을 하나씩 가리키며 무엇인지 알려 준다.
+## 🧭 **A guided tour (coach mark).** It points at the real controls on screen one by one and says what they are.
 ##
-## ## 🛑 막지 않는다
-## 카드 영역만 입력을 받는다. 게임과 가리킨 컨트롤은 **그대로 쓸 수 있고**, 가리킨 컨트롤을 실제로
-## 누르면 다음 단계로 넘어간다 — "여기를 누르세요" 가 말이 아니라 동작이 된다.
+## ## 🛑 It does not block
+## Only the card area takes input. The game and the highlighted control **stay usable**, and actually pressing
+## the highlighted control moves to the next step — "tap here" becomes an action, not a sentence.
 ##
 ## ```gdscript
 ## var tour := GoCoachMark.new()
 ## add_child(tour)
 ## tour.finished.connect(func(done: bool) -> void: save_tour_seen())
 ## tour.start([
-##     {"target": bag_button, "title": "가방", "body": "주운 물건이 여기 모입니다."},
-##     {"target": map_button, "title": "지도", "body": "눌러서 전체 지도를 엽니다."},
+##     {"target": bag_button, "title": "Bag", "body": "Everything you pick up gathers here."},
+##     {"target": map_button, "title": "Map", "body": "Tap to open the full map."},
 ## ])
 ## ```
 ##
-## 단계 항목:
-## | 키 | 뜻 |
+## Step entries:
+## | Key | Meaning |
 ## |---|---|
-## | `target` | 가리킬 `Control`. 사라지면 그 단계를 건너뛴다 |
-## | `title`·`body` | 번역 키여도 되고 그대로 쓸 문구여도 된다(자동 번역 라벨이다) |
-## | `signal` | 대상의 이 신호가 오면 다음으로. 기본 `pressed`. 🛑 **인자 없는 신호**만 받는다 |
+## | `target` | The `Control` to point at. If it disappears the step is skipped |
+## | `title`·`body` | Either a translation key or literal text (these are auto-translating labels) |
+## | `signal` | This signal on the target moves to the next step. Default `pressed`. 🛑 **Argument-less signals** only |
 @tool
 class_name GoCoachMark
 extends Control
@@ -27,18 +27,18 @@ extends Control
 signal finished(completed: bool)
 signal step_changed(index: int)
 
-## 카드의 최대 폭(dp).
+## Maximum width of the card (dp).
 @export_range(160, 600) var card_max_width := 280.0
 
-## 세로 화면에서 카드가 넘지 않을 **화면 위쪽 비율**(0~1). 0 이면 제한하지 않는다.
-## 🛑 게임은 보통 화면 가운데에 캐릭터가 있다 — 안내 카드가 그 위를 덮으면 조작이 가려진다.
+## The **fraction of the screen from the top** (0~1) the card must stay within in portrait. 0 means no limit.
+## 🛑 A game usually has the character in the middle of the screen — a guide card over it hides the controls.
 @export_range(0.0, 1.0, 0.01) var avoid_center_band := 0.45
 
-## 가리키는 링·화살표의 색. 투명이면 테마의 `accent`.
+## Colour of the ring and the pointer. Transparent uses the theme's `accent`.
 @export var ink := Color.TRANSPARENT
-## 🔑 **카드가 덮으면 안 되는 것들.** 붙박이 HUD(`GoHudAnchor` 의 `reserve_space` 칸)는 알아서 피하지만,
-## 화면 머리띠·툴바처럼 앵커가 아닌 것은 여기 넣어 준다 — 카드가 그 위에 얹히면 조작을 막는다
-## (2026-09-13 데모 실측: 카드가 헤더의 `→ ×` 를 덮었다).
+## 🔑 **Things the card must not cover.** Fixed HUD (a `GoHudAnchor` box with `reserve_space`) is avoided
+## automatically, but put non-anchor things such as a screen header or toolbar in here — a card lying on top
+## of them blocks the controls (measured in the demo 2026-09-13: the card covered the header's `→ ×`).
 @export var keep_clear: Array[Control] = []
 
 var card: PanelContainer
@@ -62,8 +62,8 @@ var _column: VBoxContainer
 var _header: HBoxContainer
 
 
-## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
-## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+## 🪟 **Opacity of the panel ground** (0.0~1.0) — for making this one thing differ. Negative uses whatever the theme and settings decide.
+## 🛑 Only the ground thins out — text and icons stay crisp.
 var alpha := -1.0:
 	set(value):
 		alpha = value
@@ -76,7 +76,7 @@ func _init() -> void:
 	_build()
 
 
-## 🛑 자식은 `_init` 에서 만든다 — 트리에 붙기 전에 `start()` 를 부를 수 있어야 한다.
+## 🛑 The children are built in `_init` — `start()` has to be callable before this enters the tree.
 func _build() -> void:
 	theme = GoUi.theme()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -136,10 +136,10 @@ func _build() -> void:
 
 
 func _ready() -> void:
-	# `ink` 를 `new()` 뒤에 바꿨을 수 있다 — 색을 다시 입힌다.
+	# `ink` may have been changed after `new()` — re-apply the colour.
 	_apply_accent()
-	# 🎨 생김새가 통째로 바뀌면(`GoUi.use_preset()`) 링·판·진행 글자를 다시 입힌다.
-	# 🛑 링은 `_draw()` 가 쓰는 캐시(`_ring`)라 다시 만들지 않으면 옛 스킨 모양이 그대로 남는다.
+	# 🎨 When the whole look changes (`GoUi.use_preset()`), re-tint the ring, the panel and the progress text.
+	# 🛑 The ring is a cache `_draw()` reads (`_ring`) — rebuild it or the old skin's shape stays on screen.
 	GoUi.watch(_on_ui_changed)
 
 
@@ -152,7 +152,7 @@ func _apply_accent() -> void:
 	progress_label.add_theme_color_override(&"font_color", accent)
 
 
-## 투어를 시작한다. 항목 형식은 파일 머리말의 표를 본다.
+## Start the tour. For the entry format see the table at the top of this file.
 func start(value: Array) -> void:
 	_disconnect_target()
 	steps.assign(value)
@@ -188,7 +188,7 @@ func _show_step() -> void:
 		return
 	var data := steps[step]
 	_target = data.get("target") as Control
-	# 반응형 레일이 접히거나 화면이 바뀌면 대상이 사라진다 — 그 단계는 건너뛴다.
+	# The target disappears when a responsive rail collapses or the screen changes — skip that step.
 	if not is_instance_valid(_target):
 		advance()
 		return
@@ -201,7 +201,7 @@ func _show_step() -> void:
 	body_label.text = str(data.get("body", ""))
 	progress_label.text = GoUi.text(&"coach_progress").format({"step": step + 1, "total": steps.size()})
 	next_button.text = GoUi.text_key(&"done") if step == steps.size() - 1 else GoUi.text_key(&"next")
-	# 🛑 글자를 바꿨으면 줄바꿈도 다시 정한다 — 안 그러면 `Done` 이 `Don`/`e` 로 갈라진다(실측).
+	# 🛑 Once the text changed, redo the wrapping too — otherwise `Done` breaks into `Don`/`e` (measured).
 	GoStyle.fit_words(next_button)
 	_fade = GoStyle.fade(card, _fade, true)
 	_layout()
@@ -238,14 +238,14 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(_target) or not _target.is_visible_in_tree():
 		advance()
 		return
-	# 진짜 메뉴가 열려 있는 동안은 카드를 숨긴다 — 닫히면 그 자리에서 이어진다.
+	# Hide the card while a real menu is open — it picks up where it left off once that closes.
 	card.visible = not _should_pause()
 	if card.visible: _layout()
 	queue_redraw()
 
 
-## 카드를 잠시 숨겨야 하는가 — 기본은 "gohud 표면이 하나라도 열려 있다". 🔑 호스트가 자기 모달 체계를 따로 가지면
-## 자식에서 덮어써 그것도 함께 본다(닫히면 같은 단계에서 이어진다).
+## Should the card be hidden for now — the default is "any gohud surface is open". 🔑 If the host has a modal system
+## of its own, override this in a subclass to take that into account too (it resumes at the same step on close).
 func _should_pause() -> bool:
 	return GoSurface.is_any_open()
 
@@ -254,8 +254,8 @@ func _accent() -> Color:
 	return ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
 
 
-## 전역 사각형 → 이 노드의 좌표. 🛑 이 노드가 원점에 있지 않으면(`CanvasLayer` 안의 여백 등)
-##    전역 좌표를 그대로 그리면 링이 엇나간다.
+## Global rect → this node's coordinates. 🛑 When this node does not sit at the origin (a margin inside a
+##    `CanvasLayer`, say), drawing global coordinates as they are puts the ring in the wrong place.
 func _to_local(rect: Rect2) -> Rect2:
 	return Rect2(get_global_transform().affine_inverse() * rect.position, rect.size)
 
@@ -271,14 +271,14 @@ func _layout() -> void:
 	card.size.y = minf(maxf(116.0, desired), area.size.y * (0.52 if landscape else 0.32))
 	var target := _target.get_global_rect()
 	var gap := float(GoUi.metric(GoTheme.GAP))
-	# 가로에서는 대상의 옆, 세로에서는 위나 아래. 가장자리에 둘 수 있으면 가운데를 피한다.
+	# Beside the target in landscape, above or below it in portrait. Stay off the centre when an edge will do.
 	var x := clampf(target.get_center().x - width * 0.5, area.position.x, area.end.x - width)
 	var y := target.end.y + gap
 	if target.get_center().y > area.get_center().y: y = target.position.y - gap - card.size.y
 	if landscape:
 		x = target.position.x - gap - width if target.get_center().x > area.get_center().x else target.end.x + gap
-		# 🛑 화면 맨 위/아래 끝으로 보내지 않는다 — 그 띠에는 붙박이 HUD·머리띠가 산다. 카드가 헤더의 조작
-		#    버튼을 덮었다(2026-09-13 데모 실측). **대상과 같은 높이**에 나란히 둔다.
+		# 🛑 Do not send it to the very top or bottom of the screen — fixed HUD and headers live in those bands.
+		#    The card covered the header's buttons (measured in the demo 2026-09-13). Sit it **level with the target**.
 		y = target.position.y
 	elif avoid_center_band > 0.0:
 		y = minf(y, area.position.y + area.size.y * avoid_center_band - card.size.y)
@@ -289,8 +289,8 @@ func _layout() -> void:
 	card.position = get_global_transform().affine_inverse() * global
 
 
-## 붙박이 HUD 와 `keep_clear` 를 피해 카드를 옮긴다 — 네 방향 중 **가장 적게** 움직이는 쪽으로, 대상 위로는
-## 올라가지 않게. 🛑 다 피할 수 없으면(화면이 좁다) 그대로 둔다 — 카드가 사라지는 것보다 겹치는 편이 낫다.
+## Move the card clear of the fixed HUD and of `keep_clear` — in whichever of the four directions moves it **least**,
+## and never onto the target. 🛑 If it cannot clear everything (a narrow screen) leave it — overlapping beats vanishing.
 func _dodge_fixtures(rect: Rect2, area: Rect2, target: Rect2) -> Rect2:
 	var blocks: Array[Rect2] = []
 	for node in get_tree().get_nodes_in_group(GoHudAnchor.GROUP):
@@ -302,7 +302,7 @@ func _dodge_fixtures(rect: Rect2, area: Rect2, target: Rect2) -> Rect2:
 	for control in keep_clear:
 		if is_instance_valid(control) and control.is_visible_in_tree(): blocks.append(control.get_global_rect())
 	var gap := float(GoUi.metric(GoTheme.GAP_SMALL))
-	for i in 4:                       # 붙박이 여럿을 차례로 — 한 번 옮긴 자리가 다른 것과 겹칠 수 있다
+	for i in 4:                       # Several fixtures in turn — a spot moved to can overlap another one
 		var hit := Rect2()
 		var found := false
 		for block in blocks:
@@ -310,16 +310,16 @@ func _dodge_fixtures(rect: Rect2, area: Rect2, target: Rect2) -> Rect2:
 				hit = block; found = true; break
 		if not found: return rect
 		var options := [
-			Vector2(0.0, hit.end.y + gap - rect.position.y),          # 아래로
-			Vector2(0.0, hit.position.y - gap - rect.end.y),          # 위로
-			Vector2(hit.end.x + gap - rect.position.x, 0.0),          # 오른쪽으로
-			Vector2(hit.position.x - gap - rect.end.x, 0.0),          # 왼쪽으로
+			Vector2(0.0, hit.end.y + gap - rect.position.y),          # down
+			Vector2(0.0, hit.position.y - gap - rect.end.y),          # up
+			Vector2(hit.end.x + gap - rect.position.x, 0.0),          # right
+			Vector2(hit.position.x - gap - rect.end.x, 0.0),          # left
 		]
 		var best := Vector2.INF
 		for move in options:
 			var moved := Rect2(rect.position + move, rect.size)
 			if not area.encloses(moved): continue
-			if moved.intersects(target): continue               # 대상을 가리면 코치마크가 아니다
+			if moved.intersects(target): continue               # Cover the target and it is not a coach mark
 			if move.length() < best.length(): best = move
 		if best == Vector2.INF: return rect
 		rect.position += best
@@ -338,7 +338,7 @@ func _draw() -> void:
 	var direction := (center - start).normalized()
 	if direction.is_zero_approx(): return
 	var tip := center - direction * (maxf(rect.size.x, rect.size.y) * 0.5 + 5.0)
-	# 🔑 자리 계산은 여기, 그리는 모양은 스킨 — 테마를 바꾸면 점선·타깃 표시가 될 수 있다.
+	# 🔑 The geometry is worked out here, the shape drawn by the skin — another theme can make it a dashed line or a target reticle.
 	GoUi.skin().draw_coach_pointer(self, start, tip, direction, _accent())
 
 
@@ -351,11 +351,11 @@ func _input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and visible and not GoSurface.is_any_open():
 		finish.call_deferred(false)
-	# 🛑 진행 표시("1 / 5")는 조립 문자열이라 엔진 자동 번역을 타지 않는다 — 직접 다시 만든다.
+	# 🛑 The progress text ("1 / 5") is assembled, so the engine's auto-translation never touches it — rebuild it ourselves.
 	elif what == NOTIFICATION_TRANSLATION_CHANGED and visible and not steps.is_empty():
 		progress_label.text = GoUi.text(&"coach_progress").format({"step": step + 1, "total": steps.size()})
 
 
-## 본문 스크롤을 만든다. 🔑 호스트가 `GoScroll` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.
+## Build the body scroll. 🔑 If the host wants a `GoScroll` subclass (for old type-hint compatibility, say), override this in a subclass.
 func _make_scroll() -> GoScroll:
 	return GoScroll.new()

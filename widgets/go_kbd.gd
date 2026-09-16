@@ -1,26 +1,26 @@
-## ⌨️ **키 캡** — PC·Steam 빌드에서 "이 키를 누르세요" 를 보여 준다.
+## ⌨️ **Key caps** — show "press this key" in PC and Steam builds.
 ##
 ## ```gdscript
 ## row.add_child(GoKbd.make("F"))                    # F
 ## row.add_child(GoKbd.make("Ctrl", "S"))            # Ctrl + S
-## hint.add_child(GoKbd.for_action(&"interact"))     # 실제로 묶여 있는 키를 읽어 온다
+## hint.add_child(GoKbd.for_action(&"interact"))     # reads the key that is actually bound
 ## ```
 ##
-## ## 🔑 `for_action()` 을 쓰면 키를 바꿔도 안내가 따라온다
-## 글자를 손으로 박아 두면 플레이어가 키를 바꾼 뒤에도 옛 키가 안내된다 — **가장 흔한 거짓말**이다.
-## `InputMap` 에서 읽어 오면 그 일이 없다.
+## ## 🔑 With `for_action()` the hint follows a rebind
+## Hardcode the text and the old key keeps being advertised after the player rebinds — **the most common lie in a UI**.
+## Read it out of `InputMap` and that never happens.
 ##
-## ## 🛑 터치 빌드에서는 숨긴다
-## 폰에는 키보드가 없다. `hide_on_handheld`(기본 켜짐)이면 손에 드는 기기에서 스스로 사라진다 —
-## 화면마다 `if OS.has_feature("android")` 를 쓰지 않아도 된다.
+## ## 🛑 Hidden in touch builds
+## A phone has no keyboard. With `hide_on_handheld` (on by default) it removes itself on handheld devices —
+## no need for `if OS.has_feature("android")` on every screen.
 ##
-## ## 🛑 키 이름은 번역하지 않는다
-## `Ctrl`·`Shift`·`F` 는 키보드에 새겨진 그대로여야 찾을 수 있다. 자동 번역을 끈다.
+## ## 🛑 Key names are never translated
+## `Ctrl`, `Shift` and `F` can only be found if they read exactly as engraved on the keyboard. Auto-translation is off.
 @tool
 class_name GoKbd
 extends HBoxContainer
 
-## 손에 드는 기기(Android·iOS)에서 스스로 숨을 것인가.
+## Whether it hides itself on handheld devices (Android, iOS).
 @export var hide_on_handheld := true:
 	set(value):
 		hide_on_handheld = value
@@ -31,11 +31,11 @@ var _keys: PackedStringArray = []
 
 func _init() -> void:
 	name = "Kbd"
-	# 🛑 키 조합은 **물리적 순서**다 — 아랍어라고 Ctrl 이 오른쪽으로 가지 않는다.
+	# 🛑 A key combo is a **physical order** — Ctrl does not move to the right just because the language is Arabic.
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 	add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_TINY))
-	# 🛑 **남는 폭을 먹지 않는다.** 이 줄은 키 두세 개만큼만 넓으면 된다 — 늘어나면 그 안에서
-	#    캡들이 서로 밀려난다(2026-09-16 촬영: `Ctrl` 은 왼쪽 끝, `S` 는 화면 오른쪽 끝에 붙었다).
+	# 🛑 **Never eat the leftover width.** This row only needs to be as wide as two or three keys — let it stretch and
+	#    the caps get pushed apart inside it (shot 2026-09-16: `Ctrl` sat at the far left, `S` against the right edge of the screen).
 	size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 
 
@@ -49,25 +49,25 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 키 캡 하나 또는 조합(`Ctrl` + `S`). 조각이 더 필요하면 `set_keys()` 에 배열을 준다.
-## 🛑 GDScript 에는 가변 인자가 없다 — 세 자리면 실제 조합(`Ctrl`+`Shift`+`S`)을 다 덮는다.
+## One key cap, or a combo (`Ctrl` + `S`). For more pieces, hand an array to `set_keys()`.
+## 🛑 GDScript has no varargs — three slots cover every combo that actually occurs (`Ctrl`+`Shift`+`S`).
 static func make(first: String, second := "", third := "") -> GoKbd:
 	var node := GoKbd.new()
 	node.set_keys([first, second, third])
 	return node
 
 
-## `InputMap` 의 액션에 **실제로 묶여 있는** 키를 읽어 캡으로 만든다.
+## Reads the key **actually bound** to an `InputMap` action and builds caps out of it.
 ##
-## 🛑 그 액션이 없거나 키보드에 묶여 있지 않으면 **빈 것**을 돌려준다(숨는다) — 게임패드 전용
-##    액션에 "없음" 같은 글자를 띄우면 그것대로 거짓말이다.
+## 🛑 If the action does not exist, or is not bound to the keyboard, it returns an **empty** one (which hides) —
+##    putting a word like "none" on a gamepad-only action would be its own kind of lie.
 static func for_action(action: StringName) -> GoKbd:
 	var node := GoKbd.new()
 	node.set_keys(action_keys(action))
 	return node
 
 
-## 액션에 묶인 첫 키보드 입력을 사람이 읽는 조각들로. 없으면 빈 배열.
+## The first keyboard event bound to the action, as human-readable pieces. Empty array if there is none.
 static func action_keys(action: StringName) -> Array:
 	if not InputMap.has_action(action): return []
 	for event in InputMap.action_get_events(action):
@@ -86,7 +86,7 @@ static func action_keys(action: StringName) -> Array:
 	return []
 
 
-## 보여 줄 키들. 빈 배열이면 숨는다.
+## The keys to show. An empty array hides it.
 func set_keys(keys: Array) -> void:
 	_keys = PackedStringArray()
 	for key in keys:
@@ -105,32 +105,32 @@ func _rebuild() -> void:
 	for index in _keys.size():
 		if index > 0: add_child(_joiner())
 		add_child(_cap(_keys[index]))
-	# ♿ 스크린리더에게는 "컨트롤 에스" 처럼 한 마디로 읽히는 편이 낫다 — 캡 하나하나를 따로 읽으면 끊긴다.
-	# 🔑 `+` 는 키 조합을 **읽는 관습**이라 조각 사이에 남긴다(공백으로만 잇는 `GoUi.spoken` 과 다르다).
+	# ♿ A screen reader does better with one phrase, "control s" — read cap by cap it comes out chopped up.
+	# 🔑 `+` is the **convention for reading** a key combo, so it stays between the pieces (unlike `GoUi.spoken`, which joins with spaces).
 	var spoken: Array[String] = []
 	for key in _keys: spoken.append(key)
 	accessibility_name = " + ".join(spoken)
 
 
-## 키 하나가 새겨진 캡.
+## A cap with one key engraved on it.
 func _cap(word: String) -> Control:
 	var box := PanelContainer.new()
 	box.name = "Cap"
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_theme_stylebox_override(&"panel", GoUi.skin().chip_box(GoUi.color(GoTheme.BORDER)))
 	var text := GoStyle.label(word, GoTheme.ROLE_MICRO, GoUi.color(GoTheme.SECONDARY))
-	# 🛑 키 이름은 **번역하지 않는다** — 키보드에 새겨진 글자 그대로여야 찾을 수 있다.
+	# 🛑 Key names are **never translated** — they can only be found if they read exactly as engraved on the keyboard.
 	text.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	text.text_direction = Control.TEXT_DIRECTION_LTR
 	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	# 🛑 **줄바꿈하지 않는다.** `Ctrl` 이 `Ctr` / `l` 로 쪼개져 캡이 두 줄이 되었다(2026-09-16 촬영).
-	#    키 이름은 낱말이 아니라 **키에 새겨진 기호**다 — 어디서도 끊으면 안 된다.
-	#    `GoStyle.natural_width()` 가 이 규칙의 정본이다(줄바꿈 끄기 + 남는 폭 안 먹기를 함께 건다).
+	# 🛑 **Never wrap.** `Ctrl` split into `Ctr` / `l` and the cap became two lines (shot 2026-09-16).
+	#    A key name is not a word but the **symbol engraved on the key** — it must not break anywhere.
+	#    `GoStyle.natural_width()` is the canonical form of this rule (it turns wrapping off and stops it eating leftover width, together).
 	GoStyle.natural_width(text)
 	text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	# 한 글자 키도 정사각형으로 — `W` 와 `I` 의 캡 폭이 다르면 줄이 들쭉날쭉해진다.
-	# 🛑 **글자가 들어갈 폭을 직접 잰다.** 최소 폭만 주고 자연 폭에 맡기면, 판 여백에 밀려 글자
-	#    칸이 좁아진 순간 다시 두 줄이 된다 — 줄바꿈을 꺼도 폭이 모자라면 잘리거나 접힌다.
+	# Single-letter keys stay square too — caps of different widths for `W` and `I` make the row ragged.
+	# 🛑 **Measure the width the text needs.** Give only a minimum width and leave the rest to natural sizing, and the
+	#    moment panel padding squeezes the text cell it is back to two lines — wrapping off still clips or folds when the width falls short.
 	var size := GoUi.font_size(GoTheme.ROLE_MICRO)
 	var side := float(size) * 1.6
 	var font := text.get_theme_font(&"font")
@@ -140,7 +140,7 @@ func _cap(word: String) -> Control:
 	return box
 
 
-## 캡 사이의 `+`.
+## The `+` between caps.
 func _joiner() -> Control:
 	var plus := GoStyle.label("+", GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED))
 	plus.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED

@@ -1,8 +1,8 @@
-## 🎒 **퀵슬롯 한 칸** — 아이콘 하나, 수량, 쿨다운, 단축키를 **판 한 장**에 담는다.
+## 🎒 **One quick slot** — an icon, a quantity, a cooldown and a shortcut key on **a single panel**.
 ##
-## ## 🛑 판은 하나다
-## 작은 원 위에 수량 배지·키 배지·타이머를 따로 달면, 슬롯마다 실제 폭이 달라져 줄이 흔들리고
-## 화면이 복잡해진다. 그래서 요소는 전부 **이 판의 폭 안**에 들어간다.
+## ## 🛑 There is only one panel
+## Hanging a quantity badge, a key badge and a timer separately off a small circle gives every slot a different
+## real width, so the row wobbles and the screen gets busy. That is why every element stays **within this panel's width**.
 ##
 ## ```gdscript
 ## var slot := GoSlot.new()
@@ -10,59 +10,59 @@
 ## slot.accent = GoUi.color(GoTheme.DANGER)
 ## slot.quantity = 12
 ## slot.shortcut_label = "1"
-## slot.set_cooldown(3.0, 8.0)     # 8초 중 3초 남음
+## slot.set_cooldown(3.0, 8.0)     # 3 of 8 seconds left
 ## ```
 ##
-## ## 🔑 보이는 크기와 터치 크기가 다르다
-## 슬롯을 촘촘히 놓으면 48dp 터치 상자가 이웃과 겹친다. 겹친 자리는 **중심이 더 가까운 슬롯**이
-## 가져간다 — `touch_peers` 에 서로를 넣어 주면 된다.
+## ## 🔑 The visual size and the touch size differ
+## Pack the slots tightly and the 48dp touch boxes overlap their neighbours. The overlap goes to **the slot whose
+## center is closer** — just put them in each other's `touch_peers`.
 @tool
 class_name GoSlot
 extends Button
 
-## 수량을 아직 모른다 — `…` 을 보여 준다(서버 응답 대기).
+## The quantity is not known yet — shows `…` (waiting on the server).
 const UNKNOWN := -1
-## 이 슬롯에는 수량이라는 개념이 없다 — 수량 줄을 그리지 않는다(스킬·기능 슬롯).
+## This slot has no notion of quantity — the quantity row is not drawn (skill and ability slots).
 const NONE := -2
 
-## 아이콘 이름.
+## Icon name.
 @export var icon_name: StringName = &"":
 	set(value):
 		icon_name = value
 		_rebuild_icon()
 
-## 이 슬롯의 의미색(테두리·발광).
+## This slot's semantic color (border and glow).
 @export var accent := Color.TRANSPARENT:
 	set(value):
 		accent = value
 		refresh()
 
-## 보유 수량. `UNKNOWN`(-1) 이면 `…`, `NONE`(-2) 이면 수량 줄을 아예 숨긴다(스킬 슬롯 등),
-## 0 이면 흐리게.
+## The quantity held. `UNKNOWN` (-1) shows `…`, `NONE` (-2) hides the quantity row entirely (skill slots and such),
+## and 0 is dimmed.
 @export var quantity := UNKNOWN:
 	set(value):
 		quantity = value
 		refresh()
 
-## 남은 시간 문구를 판 위쪽에 띄운다(쿨다운·버프 잔여). 비우면 숨긴다.
+## Shows a remaining-time label over the panel (a cooldown, time left on a buff). Empty hides it.
 @export var timer_text := "":
 	set(value):
 		timer_text = value
 		refresh()
 
-## 단축키 표시(`1`·`Q`). 비우면 숨긴다. 🛑 **표시만** 한다 — 입력은 게임이 처리한다.
+## The shortcut label (`1`·`Q`). Empty hides it. 🛑 **Display only** — the game handles the input.
 @export var shortcut_label := "":
 	set(value):
 		shortcut_label = value
 		refresh()
 
-## 보이는 판의 한 변(dp). 터치는 `GoConfig.min_touch_size` 까지 넓어진다.
+## One side of the visible panel (dp). Touch grows out to `GoConfig.min_touch_size`.
 @export_range(16, 128) var visual_size := 44:
 	set(value):
 		visual_size = value
 		_fit()
 
-## 겹치는 이웃 슬롯들. 겹친 자리는 중심이 가까운 쪽이 받는다.
+## Overlapping neighbour slots. The overlap goes to whichever center is closer.
 var touch_peers: Array[Control] = []
 
 var _face: Panel
@@ -76,10 +76,10 @@ var _cooldown_left := 0.0
 var _cooldown_total := 0.0
 
 
-## 🔑 **키보드·게임패드로 이 칸에 닿을 수 있게 할 것인가.**
+## 🔑 **Should this slot be reachable by keyboard and gamepad?**
 ##
-## 기본은 꺼져 있다 — 퀵슬롯은 손가락이나 숫자키로 쓰는 것이고, 여덟 칸이 Tab 순회에 끼면 설정
-## 화면을 키보드로 돌 때 매번 슬롯을 거쳐야 한다. 키보드만으로 하는 조작이 필요하면 켠다.
+## Off by default — quick slots are for fingers or number keys, and eight of them in the Tab order means walking
+## through every slot each time the settings screen is navigated by keyboard. Turn it on for keyboard-only play.
 @export var keyboard_focus := false:
 	set(value):
 		keyboard_focus = value
@@ -88,7 +88,7 @@ var _cooldown_total := 0.0
 
 func _init() -> void:
 	name = "Slot"
-	# 🛑 기본은 Tab 순회에서 빠진다 — 위 `keyboard_focus` 주석에 이유가 있다.
+	# 🛑 Out of the Tab order by default — the reason is in the `keyboard_focus` comment above.
 	focus_mode = Control.FOCUS_NONE
 	auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	theme_type_variation = GoTheme.VAR_BARE_BUTTON
@@ -103,14 +103,14 @@ func _ready() -> void:
 	_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_face)
 
-	# 🔑 **아이콘은 가운데에 크게, 글자는 모서리 배지로.** 셋을 세로로 쌓으면 48dp 안에서 아이콘이
-	#    작아지고 글자끼리 붙어 비좁았다(2026-09-13 실측). 단축키는 왼쪽 위, 수량은 오른쪽 아래 배지,
-	#    남은 시간은 아이콘 **위에 겹쳐** 크게 — 게임 HUD 가 쓰는 배치 그대로다.
+	# 🔑 **The icon big in the middle, the text as corner badges.** Stacking the three vertically shrank the icon
+	#    inside 48dp and crowded the labels together (measured 2026-09-13). The shortcut goes top-left, the quantity
+	#    in a bottom-right badge, and the time left large, **overlaid on** the icon — exactly how game HUDs lay it out.
 	_icon = Control.new()
 	_icon.name = "IconSlot"
 	_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_face.add_child(_icon)
-	# 남은 시간은 아이콘 위에 **작은 배지**로 — 배지 없이 겹치면 아이콘과 뒤섞여 안 읽힌다(실측).
+	# The time left sits over the icon as **a small badge** — overlaid without a badge it blends into the icon and cannot be read (measured).
 	_timer_badge = PanelContainer.new()
 	_timer_badge.name = "TimerBadge"
 	_timer_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -138,20 +138,20 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 지금 테마와 터치 하한을 이 칸에 입힌다. 🛑 생김새가 바뀔 때도 **같은 것**을 다시 해야 하므로 따로 뺐다.
+## Puts the current theme and touch minimum on this slot. 🛑 Pulled out because **the same thing** has to be redone when the look changes.
 func _adopt_theme() -> void:
 	theme = GoUi.theme()
 	var touch := GoUi.config.min_touch_size
 	custom_minimum_size = Vector2(touch, touch)
 
 
-## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
-## 🛑 이것이 없으면 **이미 떠 있는 퀵슬롯만 옛 테마로 남는다**(2026-09-16 실측: 프리셋을 sci-fi 로
-##    바꿔도 판 색이 그대로였고, 새로 만든 칸과 나란히 놓여 한 줄에 두 생김새가 섞였다).
-## 🛑 노드를 **다시 만들지 않는다** — `_ready` 가 지은 `Face`·배지를 그대로 두고 색과 그림만 갈아 끼운다.
+## 🎨 The whole look changed — called by `GoUi.use_preset()`·`GoUi.refresh()`.
+## 🛑 Without this, **only the quick slots already on screen keep the old theme** (measured 2026-09-16: switching the
+##    preset to sci-fi left the panel color unchanged, and next to a freshly made slot one row carried two looks).
+## 🛑 Nodes are **not rebuilt** — the `Face` and badges `_ready` built stay put; only colors and art are swapped.
 func _on_ui_changed() -> void:
 	_adopt_theme()
-	# 아이콘 **세트**가 통째로 바뀌었을 수 있다 — 같은 이름이 다른 그림이 된다.
+	# The icon **set** may have been swapped wholesale — the same name becomes a different picture.
 	_rebuild_icon()
 	refresh()
 
@@ -162,13 +162,13 @@ func _line(node_name: String, role: StringName) -> Label:
 	node.autowrap_mode = TextServer.AUTOWRAP_OFF
 	node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	node.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	# 🛑 숫자·키 표시는 언어를 따라 뒤집히지 않는다.
+	# 🛑 Numbers and key labels do not flip with the language.
 	node.text_direction = Control.TEXT_DIRECTION_LTR
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return node
 
 
-## 쿨다운을 정한다. `left <= 0` 이면 쿨다운 없음.
+## Sets the cooldown. `left <= 0` means no cooldown.
 func set_cooldown(left: float, total: float) -> void:
 	_cooldown_left = maxf(0.0, left)
 	_cooldown_total = maxf(0.0, total)
@@ -183,18 +183,18 @@ func _rebuild_icon() -> void:
 	if not is_instance_valid(_icon): return
 	for child in _icon.get_children(): child.queue_free()
 	if icon_name.is_empty(): return
-	var px := maxi(8, roundi(visual_size * 0.52))   # 배지 배치라 아이콘이 더 크다
+	var px := maxi(8, roundi(visual_size * 0.52))   # badge layout, so the icon is bigger
 	var glyph := GoUi.icons().node(icon_name, px)
-	# 🛑 칸 가운데에 **정해진 크기**로 둔다 — FULL_RECT 를 주면 텍스처 세트(TextureRect·EXPAND_IGNORE_SIZE)가 칸을
-	#    통째로 채워 판 테두리에 붙는다(폰트 세트는 글자 크기가 고정이라 드러나지 않던 결함 — 2026-09-12 데모에서 발견).
+	# 🛑 Placed at **a fixed size** in the middle of the slot — with FULL_RECT a texture set (TextureRect · EXPAND_IGNORE_SIZE)
+	#    fills the whole slot and runs into the panel border (a flaw hidden by font sets, whose glyph size is fixed — found in the demo 2026-09-12).
 	glyph.set_anchors_preset(Control.PRESET_CENTER)
 	glyph.size = Vector2(px, px)
 	glyph.position = -Vector2(px, px) * 0.5
 	_icon.add_child(glyph)
 
 
-## 판 높이 = 실제 줄 높이의 합. 🛑 줄 높이를 **숫자로 박지 않는다** — 글꼴·배율이 곱해진 실제
-##    줄 높이는 글자 크기보다 크고 기기마다 다르다. 박으면 수량이 판 밖으로 삐져나온다.
+## Panel height = the sum of the real line heights. 🛑 Line heights are **never hard-coded** — the real line height,
+##    with font and scale multiplied in, is taller than the font size and differs per device. Hard-code it and the quantity spills outside the panel.
 func _fit() -> void:
 	if not is_instance_valid(_face): return
 	var touch := float(GoUi.config.min_touch_size)
@@ -203,25 +203,25 @@ func _fit() -> void:
 	var visual := minf(float(visual_size), minf(box, box_y))
 	_face.position = Vector2((box - visual) * 0.5, (box_y - visual) * 0.5)
 	_face.size = Vector2(visual, visual)
-	# 아이콘은 판 전체를 쓰고 가운데에 놓인다 — 배지가 모서리에 걸칠 뿐 자리를 뺏지 않는다.
+	# The icon uses the whole panel and sits in the middle — the badges only hang on the corners, they take no room from it.
 	_icon.position = Vector2.ZERO
 	_icon.size = Vector2(visual, visual)
-	# 남은 시간은 아이콘 **위에** 가운데로 — 그 동안 아이콘은 흐려진다(`refresh`).
+	# The time left goes centered **over** the icon — the icon dims while it is there (`refresh`).
 	var timer_size := _timer_badge.get_combined_minimum_size()
 	_timer_badge.size = timer_size
 	_timer_badge.position = ((Vector2(visual, visual) - timer_size) * 0.5).round()
-	# 단축키: 왼쪽 위 모서리, 자연 크기.
+	# Shortcut: top-left corner, natural size.
 	var shortcut_size := _shortcut.get_combined_minimum_size()
 	_shortcut.position = Vector2(3.0, 1.0)
 	_shortcut.size = shortcut_size
 	_shortcut.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	# 수량 배지: 오른쪽 아래 모서리에 걸친다.
+	# Quantity badge: hangs on the bottom-right corner.
 	var badge_size := _quantity_badge.get_combined_minimum_size()
 	_quantity_badge.size = badge_size
 	_quantity_badge.position = Vector2(visual - badge_size.x + 2.0, visual - badge_size.y + 2.0)
 
 
-## 색·글자를 지금 상태에 맞춘다.
+## Brings colors and text in line with the current state.
 func refresh() -> void:
 	if not is_instance_valid(_face): return
 	var color := accent if accent.a > 0 else GoUi.color(GoTheme.ACCENT)
@@ -229,33 +229,33 @@ func refresh() -> void:
 	var empty := quantity == 0
 	var faded := empty or disabled
 
-	# 🛑 흐리게 만들 때 **알파를 곱하지 않는다**(`modulate.a = 0.55` 였다) — 밝은 테마에서는 이미 옅은
-	#    색에 곱해져 칸이 통째로 **사라진다**(2026-09-13 라이트 갤러리 실측: 빈 슬롯이 안 보였다).
-	#    대신 색을 흐린 쪽으로 **옮긴다**. 어느 테마에서도 "흐리지만 보인다" 가 된다.
+	# 🛑 Dimming **never multiplies alpha** (it used to be `modulate.a = 0.55`) — in a light theme it multiplies into
+	#    an already pale color and the slot **disappears** entirely (measured 2026-09-13 in the light gallery: empty slots were invisible).
+	#    The color is **moved** toward the dim end instead. In any theme that reads as "faint but still there".
 	var face_ink := GoUi.color(GoTheme.MUTED) if faded else color
 	var style := GoUi.skin().slot_box(face_ink, lit)
 	_face.add_theme_stylebox_override(&"panel", style)
 
-	# 🛑 글자는 **이 판 위에서** 읽혀야 한다. 판을 어떻게 칠할지는 스킨이 정하므로 — 호스트가 자기
-	#    스킨에서 강조색으로 꽉 채울 수도 있다 — 글자색을 고정해 두면 그 순간 사라진다
-	#    (2026-09-13 실측: 문서대로 만든 커스텀 스킨에서 수량이 1.70:1, 빈 칸이 1.29:1 이었다).
-	#    쿨다운이 도는 기본 슬롯에서도 빈 칸 수량이 3.97:1 로 이미 기준 아래였다.
+	# 🛑 The text has to be readable **on this panel**. How the panel is painted is the skin's call — a host may fill
+	#    it with the accent color in its own skin — so a hard-coded text color vanishes the moment it does
+	#    (measured 2026-09-13: in a custom skin built exactly as documented, the quantity came out at 1.70:1 and an empty slot at 1.29:1).
+	#    Even on the default slot with a cooldown running, an empty slot's quantity was already below the bar at 3.97:1.
 	var on_face := GoSkin.blend(GoSkin.box_background(style), GoUi.color(GoTheme.SURFACE_SOFT))
 
-	# 🛑 **아이콘도 글자와 같은 요구를 받는다.** `Color.WHITE` 로 고정되어 있어 밝은 테마에서는
-	#    흰 물약이 흰 판에 통째로 묻혔다(2026-09-13 라이트 갤러리 실측 — 네 칸 중 셋이 윤곽만 남았다).
-	#    다만 아이콘 세트가 자기 색(`tint`)을 정해 두었다면 그 뜻을 존중한다 — 색이 있는 그림을
-	#    덧칠해 망치지 않는다.
-	#    🛑 흰색 `tint` 는 곱셈의 항등원이라 **색을 정하지 않은 것과 결과가 같다** — 정한 것으로 보면
-	#       기본 세트가 통째로 이 분기에 걸린다(실제로 걸렸다: 기본 `.tres` 에 흰색이 박혀 있었다).
+	# 🛑 **The icon is held to the same requirement as the text.** Pinned to `Color.WHITE`, a white potion sank
+	#    completely into a white panel in a light theme (measured 2026-09-13 in the light gallery — three of four slots were left as outlines only).
+	#    That said, when the icon set has picked its own color (`tint`), that intent is respected — a colored picture
+	#    is not ruined by painting over it.
+	#    🛑 A white `tint` is the identity of multiplication, so **the result is the same as picking no color at all** —
+	#       treat it as picked and the whole default set falls into this branch (and it did: white was baked into the default `.tres`).
 	var icons := GoUi.icons()
 	if icons != null and icons.tint.a > 0 and not icons.tint.is_equal_approx(Color.WHITE):
 		_icon.modulate = Color.WHITE
 	else:
 		_icon.modulate = GoUi.skin().readable_on(
 			GoUi.color(GoTheme.MUTED) if faded else GoUi.color(GoTheme.TEXT), on_face)
-		# 🛑 쿨다운 중에는 아이콘을 **판 색 쪽으로 물린다** — 그 위에 얹힌 남은 시간이 주인공이다.
-		#    알파를 곱하지 않고 색을 섞는다(밝은 테마에서 알파는 칸을 통째로 지운다).
+		# 🛑 During a cooldown the icon is **pulled back toward the panel color** — the time left on top of it is the star.
+		#    Colors are blended rather than alpha multiplied (in a light theme alpha erases the slot entirely).
 		if lit: _icon.modulate = on_face.lerp(_icon.modulate, 0.45)
 
 	_quantity_badge.visible = quantity != NONE
@@ -264,7 +264,7 @@ func refresh() -> void:
 			else GoUi.text(&"slot_quantity").format({"count": GoBar.format_amount(quantity)})
 		var badge := GoUi.skin().badge_box(face_ink)
 		_quantity_badge.add_theme_stylebox_override(&"panel", badge)
-		# 글자는 **배지 판 위에서** 읽혀야 한다 — 슬롯 판이 아니라.
+		# The text must be readable **on the badge panel** — not on the slot panel.
 		var on_badge := GoSkin.blend(GoSkin.box_background(badge), on_face)
 		_quantity.add_theme_color_override(&"font_color", GoUi.skin().readable_on(
 			GoUi.color(GoTheme.MUTED) if empty else GoUi.color(GoTheme.TEXT), on_badge))
@@ -290,8 +290,8 @@ func refresh() -> void:
 	_fit()
 
 
-## 이 슬롯 자신의 사각 터치 — 이웃과 나누기 전의 판정이다.
-## 🛑 수량 표시("×3")도 번역 키를 거친다 — 언어가 바뀌면 다시 만든다.
+## This slot's own rectangular touch area — the test before it is shared out with the neighbours.
+## 🛑 The quantity label ("×3") goes through a translation key too — it is rebuilt when the language changes.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		refresh()
@@ -320,7 +320,7 @@ func _process(delta: float) -> void:
 	refresh()
 
 
-## 쿨다운을 스스로 세게 한다(게임이 매 프레임 넣어 주지 않아도 되도록).
+## Lets the slot count the cooldown down itself (so the game need not feed it every frame).
 func start_cooldown(seconds: float) -> void:
 	set_cooldown(seconds, seconds)
 	set_process(seconds > 0.0)

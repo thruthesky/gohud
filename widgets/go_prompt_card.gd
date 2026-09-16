@@ -1,20 +1,20 @@
-## 💬 **게임을 멈추지 않는 질문 카드.** 스크림이 없고 카드 영역만 입력을 받는다.
+## 💬 **A question card that does not stop the game.** There is no scrim, and only the card area takes input.
 ##
-## 파티 초대·거래 요청처럼 "지금 답하지 않아도 계속 놀 수 있는" 물음에 쓴다.
-## 확인/취소로 **막아야 하는** 것은 `GoDialogs`, 답이 필요 없는 알림은 `GoNotice` 다.
+## Use it for questions you can keep playing without answering right now — party invites, trade requests.
+## Anything that has to **block** on OK/Cancel is `GoDialogs`; a notice that needs no answer is `GoNotice`.
 ##
 ## ```gdscript
 ## var card := GoPromptCard.new()
-## card.set_title("%s 님이 파티에 초대했습니다" % who)
+## card.set_title("%s invited you to a party" % who)
 ## card.set_actions([
-##     {"text": "수락", "action": _accept, "primary": true},
-##     {"text": "거절", "action": _decline},
+##     {"text": "Accept", "action": _accept, "primary": true},
+##     {"text": "Decline", "action": _decline},
 ## ])
 ## card.fit_width(320)
 ## hud.add_child(card)
 ## ```
 ##
-## 배치(어디에 얼마나 크게)는 **소유한 화면**이 정한다 — 이 카드는 색·여백·버튼 규격만 안다.
+## Placement — where, and how big — is up to the **screen that owns it**; this card only knows colors, padding and button sizing.
 @tool
 class_name GoPromptCard
 extends PanelContainer
@@ -27,7 +27,7 @@ var icon_slot: Control
 var actions: HBoxContainer
 var close_button: GoIconButton
 
-## 보일 때 페이드인 — 전투 화면 위에 툭 튀어나오지 않게. 크기·위치는 즉시 잡힌다.
+## Fades in when shown, so it does not pop out over a combat screen. Size and position are settled immediately.
 var fade_in := true
 
 var _column: VBoxContainer
@@ -42,8 +42,8 @@ var _fade: Tween
 var _boxed_icon := false
 
 
-## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
-## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+## 🪟 **Panel background opacity** (0.0~1.0) — for this one panel only. Negative means whatever the theme/config decided.
+## 🛑 Only the background thins out — text and icons stay crisp.
 var alpha := -1.0:
 	set(value):
 		alpha = value
@@ -81,7 +81,7 @@ func _init() -> void:
 
 	subtitle_label = GoStyle.label("", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 	subtitle_label.name = "Subtitle"
-	# 상태 한 줄 — 줄바꿈되면 카드가 위아래로 커져 화면을 더 가린다. 기본은 한 줄.
+	# One status line — if it wraps, the card grows taller and covers more of the screen. One line by default.
 	subtitle_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	subtitle_label.clip_text = true
 	subtitle_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -113,14 +113,14 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
-## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다**(2026-09-16 실측).
+## 🎨 The whole look changed — `GoUi.use_preset()` and `GoUi.refresh()` call this.
+## 🛑 Without it **the widgets already on screen are the only ones left on the old theme** (measured 2026-09-16).
 func _on_ui_changed() -> void:
 	theme = GoUi.theme()
 	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, _accent, alpha))
 
 
-## 카드 테두리의 의미색. 투명이면 기본 표면.
+## The semantic color of the card's border. Transparent means the default surface.
 func set_accent(accent: Color) -> void:
 	_accent = accent
 	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, accent, alpha))
@@ -133,7 +133,7 @@ func set_title_key(key: String, arguments := {}) -> void:
 	title_label.text = tr(key).format(arguments)
 
 
-## 사람 이름·서버 값처럼 번역하지 않는 문구.
+## Text that is never translated — a person's name, a server value.
 func set_title(value: String) -> void:
 	_title_key = ""
 	title_label.text = value
@@ -152,14 +152,14 @@ func set_subtitle(value: String) -> void:
 	subtitle_label.text = value
 
 
-## 제목 줄 수. 🛑 줄바꿈 라벨은 폭이 정해지기 전 높이 0 으로 잡혀 카드가 접힌다 —
-##    최소 한 줄 높이를 미리 준다.
+## Title line count. 🛑 A wrapping label measures as 0 high before its width is settled and the card collapses —
+##    so give it at least one line of height up front.
 func set_title_lines(lines: int) -> void:
 	_set_lines(title_label, lines)
 
 
-## 부제 줄 수. 기본은 한 줄이지만, **다음에 할 일을 적는 안내**처럼 문장을 다 보여 줘야 하는
-## 카드도 있다 — 한 줄이면 중요한 조건이 중간에서 잘린다.
+## Subtitle line count. One line by default, but some cards — **instructions for what to do next** — have to show
+## the whole sentence; with one line an important condition gets cut off mid-way.
 func set_subtitle_lines(lines: int) -> void:
 	_set_lines(subtitle_label, lines)
 
@@ -176,8 +176,8 @@ func _set_lines(node: Label, lines: int) -> void:
 	node.custom_minimum_size.y = float(node.get_line_height())
 
 
-## 제목 앞의 아이콘. 빈 이름이면 숨긴다.
-## `boxed` 는 아이콘을 accent 색 원형 배지 안에 넣는다.
+## The icon in front of the title. An empty name hides it.
+## `boxed` puts the icon inside a round badge in the accent color.
 func set_icon(icon: StringName, ink := Color.TRANSPARENT, boxed := false) -> void:
 	for child in icon_slot.get_children(): child.queue_free()
 	icon_slot.visible = not icon.is_empty()
@@ -211,10 +211,10 @@ func set_closable(on: bool) -> void:
 	close_button.visible = on
 
 
-## 동작 버튼 목록. 항목: `{"key"|"text", "action": Callable, "primary": bool, "disabled": bool, "name": String}`.
+## The list of action buttons. An item: `{"key"|"text", "action": Callable, "primary": bool, "disabled": bool, "name": String}`.
 ##
-## 🛑 같은 구성(문구·종류·이름)이면 버튼을 **다시 만들지 않는다** — 서버 명단이 1초마다 와서
-##    카드를 새로 그리는 동안 누르고 있던 버튼이 사라지면 탭이 유실된다. 동작·잠금만 갱신한다.
+## 🛑 For the same shape (text, kind, name) the buttons are **not rebuilt** — when a server roster arrives every second
+##    and the button under your finger disappears mid-redraw, the tap is lost. Only the action and the disabled state are refreshed.
 func set_actions(list: Array) -> void:
 	var shape := ""
 	for item in list:
@@ -250,11 +250,11 @@ func set_actions(list: Array) -> void:
 	actions.visible = not list.is_empty()
 
 
-## 소유한 화면이 폭을 정한다. 높이는 내용에 맞춰 스스로 잡는다.
+## The owning screen sets the width. The height it works out from its content.
 ##
-## 🛑 줄바꿈 제목의 실제 높이는 폭이 정해진 **다음 프레임**에야 나온다 — 그 사이 소유 화면이
-##    잰 높이로 다른 것을 배치하면 카드가 한 프레임 뒤 커져 겹친다. 그래서 제목의 자연 폭을
-##    폰트로 재서 줄 수를 미리 예측해 최소 높이에 반영한다.
+## 🛑 The real height of a wrapping title only appears **the frame after** the width is settled — if the owning screen
+##    lays other things out against the height it measured in between, the card grows one frame later and overlaps them.
+##    So the title's natural width is measured with the font, the line count predicted, and folded into the minimum height.
 func fit_width(width: float) -> void:
 	custom_minimum_size.x = width
 	size.x = width
@@ -291,6 +291,6 @@ func _notification(what: int) -> void:
 		_fade = GoStyle.fade(self, _fade, visible)
 
 
-## 닫기 버튼을 만든다. 🔑 호스트가 `GoIconButton` 의 서브클래스(자기 그림·크기)를 쓰고 싶으면 자식에서 덮어쓴다.
+## Builds the close button. 🔑 A host that wants a `GoIconButton` subclass (its own art and size) overrides this in a subclass.
 func _make_close_button() -> GoIconButton:
 	return GoIconButton.new()

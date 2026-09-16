@@ -1,47 +1,50 @@
 # -*- coding: utf-8 -*-
-"""gohud 홈페이지(`www/`)의 **용어 사전**을 소스에서 뽑아 만든다.
+"""Builds the **glossary** for the gohud website (`www/`) by extracting it from the source.
 
-    python3 addons/gohud/tools/make_site.py        # www/site/glossary.js 를 다시 만든다
+    python3 addons/gohud/tools/make_site.py        # rebuilds www/site/glossary.js
 
-## 왜 자동인가
-용어 설명을 손으로 쓰면 **코드가 바뀔 때 같이 바뀌지 않는다.** 클래스를 하나 더해도 사전에는
-없고, 토큰 이름을 고쳐도 사전은 옛 이름을 설명한다. 그래서 gohud 쪽 용어(클래스·토큰·타입 변형)는
-전부 소스에서 읽고, 사람이 써야 하는 것(엔진 일반 용어·개념어)만 이 파일 안에 둔다.
+## Why generate it
+Written by hand, glossary entries **do not change when the code does.** Add a class and the glossary
+has never heard of it; rename a token and the glossary still explains the old name. So everything on
+the gohud side (classes, tokens, type variations) is read from the source, and only what a person has
+to write (general engine terms, concepts) lives in this file.
 
-## 뽑아 오는 것
-| 무엇 | 어디서 |
+## What is extracted
+| What | From where |
 |---|---|
-| gohud 클래스 | `core/`·`widgets/`·`services/`·`themes/skins/` 의 `class_name` + 바로 위 `##` 첫 문장 |
-| 색·치수·StyleBox 토큰 | `core/go_theme.gd` 의 상수 |
-| 타입 변형(`GoCard` 등) | 같은 파일의 `VAR_*` 상수 |
-| 생김새 묶음 이름 | `core/go_theme_presets.gd` 의 `BUILTIN` |
-| 스킨 다이얼 | `core/go_skin.gd`·`themes/skins/go_skin_scifi.gd` 의 `@export var` + 바로 위 `##` 주석 — 사전에도 넣고 `theming.html` 의 표(`<!-- dials:begin -->` 사이)도 채운다 |
+| gohud classes | `class_name` in `core/`·`widgets/`·`services/`·`themes/skins/` + the first sentence of the `##` block above it |
+| Colour, metric and StyleBox tokens | the constants in `core/go_theme.gd` |
+| Type variations (`GoCard` and friends) | the `VAR_*` constants in that same file |
+| Preset names | `BUILTIN` in `core/go_theme_presets.gd` |
+| Skin dials | `@export var` in `core/go_skin.gd`·`themes/skins/go_skin_scifi.gd` + the `##` comment above it — it goes into the glossary and also fills the table in `theming.html` (between `<!-- dials:begin -->`) |
 
-🛑 설명이 비면 **그 용어는 넣지 않는다** — 뜻이 안 적힌 빈 풍선이 뜨는 것이 아무것도 없는 것보다 나쁘다.
+🛑 When the description is empty **the term is left out** — an empty bubble with no meaning in it is
+worse than nothing at all.
 """
 import json
 import os
 import re
 
-# 🔑 언어 목록은 `tools/site_langs.py` 한 곳에 있다 — 페이지마다 언어 고르개와 hreflang 을 그 목록으로 다시 쓴다.
+# 🔑 The language list lives in one place, `tools/site_langs.py` — every page's language picker and
+#    hreflang tags are rewritten from that list.
 import make_search
 import site_langs
 import site_nav
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
-# 🛑 사이트는 `www/` 루트가 영문, `www/ko/` 가 한국어다(2026-09-15 docs 아래에서 저장소 루트로 옮겼다 —
-#    GitHub Actions 가 이 폴더를 Pages 최상위로 올린다).
-#    사전 두 장은 `www/site/` 에 둔다 — 영문 페이지는 `site/`, 한국어 페이지는 `../site/` 로 읽는다.
+# 🛑 On the site, the `www/` root is English and `www/ko/` is Korean (moved out from under docs to the
+#    repository root on 2026-09-15 — GitHub Actions publishes this folder as the Pages root).
+#    Both glossaries live in `www/site/` — English pages read `site/`, Korean pages `../site/`.
 WWW = os.environ.get("GOHUD_SITE_OUTPUT", os.path.join(ADDON, "www"))
 SITE = os.path.join(WWW, "site")
 
 SOURCE_DIRS = ["core", "widgets", "services", "themes/skins"]
 
 
-# ── 사람이 써야 하는 것 ────────────────────────────────────────────────
-# 엔진 일반 용어와 개념어. gohud 소스에는 정의가 없으므로 여기 둔다.
-# k = 분류(풍선의 작은 딱지), d = 설명, u = 더 읽을 곳.
+# ── What a person has to write ─────────────────────────────────────────
+# General engine terms and concepts. The gohud source has no definition for them, so they live here.
+# k = kind (the small tag on the bubble), d = description, u = where to read more.
 
 DOCS = "https://docs.godotengine.org/en/stable/classes/class_%s.html"
 
@@ -51,7 +54,7 @@ MANUAL = {
     "베벨": {'k': '디자인', 'd': '빛과 그림자로 경사진 가장자리를 표현해 프레임에 입체감을 주는 방식.', 'u': None},
     "각인": {'k': '디자인', 'd': '재료 표면에 새긴 선. 중세 아이콘에서는 실루엣과 내부 선으로 표현한다.', 'u': None},
     "Cinzel": {'k': '디자인', 'd': '함께 제공하는 제목용 세리프 글꼴. 본문은 기존 글꼴을 유지하며 SIL Open Font License를 포함한다.', 'u': None},
-    # ── 엔진 클래스 ────────────────────────────────────────────────
+    # ── Engine classes ─────────────────────────────────────────────
     "Theme": {"k": "리소스", "d": "색·글꼴·여백·StyleBox 를 한 장에 모아 둔 리소스. 어떤 Control 에 꽂으면 그 아래 자식까지 전부 그 규격으로 그려진다.", "u": DOCS % "theme"},
     "StyleBox": {"k": "리소스", "d": "Control 의 배경 한 겹을 그리는 리소스. 버튼의 판, 카드의 테두리가 전부 이것이다.", "u": DOCS % "stylebox"},
     "StyleBoxFlat": {"k": "리소스", "d": "엔진이 기본으로 주는 StyleBox. 단색 배경·테두리·**둥근** 모서리·그림자를 낸다. 모서리는 둥근 것뿐이라 사선으로 자를 수 없다.", "u": DOCS % "styleboxflat"},
@@ -73,12 +76,12 @@ MANUAL = {
     "ProjectSettings": {"k": "클래스", "d": "프로젝트 전역 설정. gohud 는 여기에 설정 리소스 경로와 생김새 묶음 이름 칸을 만든다.", "u": DOCS % "projectsettings"},
     "GDScript": {"k": "언어", "d": "Godot 의 내장 스크립트 언어. gohud 는 전부 이것으로만 되어 있다 — 빌드도 GDExtension 도 필요 없다.", "u": "https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/index.html"},
 
-    # ── 파일·형식 ──────────────────────────────────────────────────
+    # ── Files and formats ──────────────────────────────────────────
     ".tres": {"k": "파일", "d": "글자로 된 Godot 리소스 파일. 열어서 읽을 수 있고 git diff 도 된다.", "u": None},
     ".tscn": {"k": "파일", "d": "글자로 된 Godot 씬 파일.", "u": None},
     "SVG": {"k": "형식", "d": "선과 도형으로 된 그림 형식. 확대해도 깨지지 않아 아이콘에 쓴다.", "u": None},
 
-    # ── UI 개념 ────────────────────────────────────────────────────
+    # ── UI concepts ────────────────────────────────────────────────
     "타입 변형": {"k": "개념", "d": "Theme 안에서 같은 노드 종류에 다른 옷을 입히는 이름표. `GoCard` 를 단 PanelContainer 는 카드 모양으로, 안 단 것은 기본 판으로 그려진다.", "u": None},
     "theme type variation": {"k": "개념", "d": "「타입 변형」의 원래 이름. Theme 안에서 같은 노드에 다른 스타일을 주는 이름표다.", "u": None},
     "토큰": {"k": "개념", "d": "색·치수를 숫자 대신 **이름**으로 부르는 것. `accent`·`gap` 처럼. 이름으로 부르면 테마를 갈아 끼울 때 전부 따라 바뀐다.", "u": None},
@@ -103,11 +106,12 @@ MANUAL = {
 
 
 
-# ── 영문판 ─────────────────────────────────────────────────────────────
+# ── The English glossary ───────────────────────────────────────────────
 #
-# 🛑 한국어 사전은 **소스의 `##` 주석**에서 뽑지만, 영문은 뽑아 올 곳이 없다(주석이 한국어다).
-#    그래서 영문 설명은 여기 손으로 둔다. 설명이 없는 용어는 **영문 사전에 넣지 않는다** —
-#    한국어 설명이 뜨는 영문 페이지보다 용어가 없는 편이 낫다.
+# 🛑 The Korean glossary is extracted from the **`##` comments in the source**, but there is nowhere to
+#    extract English from (those comments are Korean). So the English descriptions are kept here by
+#    hand. A term without one is **left out of the English glossary** — a missing term beats an English
+#    page popping up a Korean description.
 
 MANUAL_EN = {
     "parchment": {'k': 'design', 'd': 'A warm, pale writing surface inspired by historical manuscripts. Here it is a palette and subtle grain, keeping the text readable.', 'u': None},
@@ -156,7 +160,7 @@ MANUAL_EN = {
     "GitHub Pages": {"k": "service", "d": "GitHub's feature that serves a repository's files as a website. This page is published that way.", "u": "https://pages.github.com/"},
 }
 
-# gohud 클래스의 영문 한 줄. 🛑 여기 없는 클래스는 영문 사전에서 빠진다.
+# One English line per gohud class. 🛑 A class missing here is left out of the English glossary.
 CLASS_EN = {
     "GoSkinMedieval": "Iron-bound leather and parchment surfaces, restrained rivets, engraved slots and a compass joystick. Other behaviour comes from GoSkin.",
     "GoStyleBoxMedieval": "A scalable frame with metal relief, rivets, corner engraving and subtle material grain. Decorations stay in the gutters around content.",
@@ -193,7 +197,7 @@ CLASS_EN = {
 
 
 def first_doc_sentence(lines, index):
-    """`class_name` 줄 위에 붙은 `##` 주석 덩어리에서 **첫 문장**을 뽑는다."""
+    """Take **the first sentence** out of the `##` comment block above a `class_name` line."""
     block = []
     cursor = index - 1
     while cursor >= 0:
@@ -206,27 +210,27 @@ def first_doc_sentence(lines, index):
             break
         cursor -= 1
     block.reverse()
-    # 🛑 **첫 문단까지만** 쓴다 — 그 아래는 "## ## 왜 이런가" 같은 소제목과 코드 예시라,
-    #    그대로 이으면 풍선 안에 문서 한 장이 통째로 들어간다.
+    # 🛑 Use **the first paragraph only** — below it come subheadings like "## ## Why this way" and code
+    #    samples, and joining those in would drop a whole page of documentation into the bubble.
     paragraph = []
     for part in block:
         if not part:
             if paragraph:
                 break
             continue
-        if part.startswith("#"):        # 소제목(## 왜 …)에서 끊는다
+        if part.startswith("#"):        # stop at a subheading (## Why …)
             break
         paragraph.append(part)
     text = " ".join(paragraph)
     if not text:
         return ""
-    # 굵게·이모지·코드 표시를 걷어 낸다 — 풍선 안에서는 글만 보인다.
+    # Strip bold, emoji and code markers — the bubble shows nothing but the words.
     text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
     text = re.sub(r"`(.+?)`", r"\1", text)
     text = re.sub(r"\[(.+?)\]\([^)]*\)", r"\1", text)
     text = re.sub(r"^[^\w가-힣]+", "", text)
     text = re.sub(r"\s+", " ", text).strip()
-    # 너무 길면 두 문장까지. 짧은 첫 문장 하나만으로는 뜻이 서지 않는 것이 많다.
+    # Up to two sentences. A single short first sentence often does not stand on its own.
     sentences = re.findall(r".+?[.。](?:\s|$)", text)
     if sentences and len("".join(sentences[:2])) >= 12:
         text = "".join(sentences[:2]).strip()
@@ -236,7 +240,7 @@ def first_doc_sentence(lines, index):
 
 
 def scan_classes():
-    """소스에서 `class_name` 과 그 설명을 모은다."""
+    """Collect every `class_name` and its description from the source."""
     out = {}
     for folder in SOURCE_DIRS:
         root = os.path.join(ADDON, folder)
@@ -253,7 +257,7 @@ def scan_classes():
                     continue
                 described = first_doc_sentence(lines, index)
                 if not described:
-                    continue        # 🛑 설명 없는 용어는 넣지 않는다
+                    continue        # 🛑 a term without a description is left out
                 base = ""
                 for follow in lines[index:index + 3]:
                     extends = re.match(r"^extends\s+([A-Za-z0-9_]+)", follow)
@@ -268,16 +272,20 @@ def scan_classes():
 
 
 def scan_tokens(lang="ko"):
-    """`GoTheme` 의 토큰 상수 → 용어. 이름만으로는 뜻을 모르는 것들이다."""
+    """The token constants of `GoTheme` → glossary terms. Their names alone do not say what they mean."""
     path = os.path.join(ADDON, "core", "go_theme.gd")
     if not os.path.isfile(path):
         return {}
     text = open(path, encoding="utf-8").read()
     out = {}
     kinds = [
-        (r"# ── 색 ", "색 토큰"),
-        (r"# ── 치수", "치수 토큰"),
-        (r"# ── 표면 StyleBox", "StyleBox 토큰"),
+        # 🛑 These patterns must track the section rules in `core/go_theme.gd`. When that file's
+        #    comments were translated to English (2026-09-16) these still read `# ── 색 ` and all
+        #    45 `GoTheme.*` terms silently vanished from the glossary — the check stayed green
+        #    because a smaller glossary is still a valid glossary. Change them together.
+        (r"# ── Colors ", "색 토큰"),
+        (r"# ── Metrics", "치수 토큰"),
+        (r"# ── Surface StyleBox", "StyleBox 토큰"),
     ]
     for pattern, kind in kinds:
         match = re.search(pattern + r".*?\n(.*?)(?=\n# ──|\Z)", text, re.S)
@@ -310,14 +318,16 @@ def scan_presets(lang="ko"):
     return out
 
 
-# ── 스킨 다이얼 ────────────────────────────────────────────────────────
-# 🔑 다이얼이 27개인데 사이트에는 "종류" 만 적혀 있어 무엇을 바꿀 수 있는지는 JSON 을 열어야 알았다
-#    (2026-09-13, I-70). 값은 `make_theme.skin_dials()`(GDScript 가 원천)에서, 뜻은 `@export` 바로 위
-#    `##` 주석에서 읽어 사전과 `theming.html` 의 표를 함께 채운다 — 다이얼을 더하면 문서가 따라온다.
-# 🛑 영문 뜻은 소스에 없으므로 여기 `DIALS_EN` 에 둔다. 빠지면 `check_site.py` 가 잡는다 — 이름만 있고
-#    뜻이 없는 행은 빈 풍선과 같다.
-# 🛑 다이얼마다 한 줄씩 쓴다 — 묶어 쓰면(`— 쿨다운 중 / 평소`) 표에서 어느 이름이 어느 쪽인지 순서로만
-#    알 수 있었다(I-72). 소스 주석도 같은 규칙이고, 연속 다이얼이 한 주석을 나눠 쓰면 표가 rowspan 으로 묶는다.
+# ── Skin dials ─────────────────────────────────────────────────────────
+# 🔑 There are 27 dials, but the site listed only the "kind", so finding out what could be changed meant
+#    opening the JSON (2026-09-13, I-70). The values come from `make_theme.skin_dials()` (GDScript is the
+#    source) and the meanings from the `##` comment right above each `@export`; together they fill the
+#    glossary and the table in `theming.html` — add a dial and the documentation follows.
+# 🛑 The English meanings are not in the source, so they live here in `DIALS_EN`. A missing one is caught
+#    by `check_site.py` — a row with a name and no meaning is an empty bubble.
+# 🛑 Write one line per dial. Combined (`— while on cooldown / at rest`), the table left the order as the
+#    only clue to which name was which (I-72). The source comments follow the same rule, and when
+#    consecutive dials share one comment the table joins them with a rowspan.
 
 DIALS_EN = {
     "slot_radius": "Corner radius (dp) of the medieval quick-slot frame.",
@@ -370,11 +380,12 @@ def _make_theme():
 
 
 def scan_dials():
-    """스킨 → 다이얼 묶음 목록. 묶음 = 한 `##` 주석을 나눠 쓰는 연속된 `@export var` 들.
+    """Skin → list of dial groups. A group = consecutive `@export var`s sharing one `##` comment.
 
-    반환: {"default": [{"names": [...], "ko": "뜻", "values": {이름: 값}}], "scifi": [...]}
-    🛑 값은 `make_theme.skin_dials()` 가 원천이다 — 정규식을 두 벌 두면 어긋난다. 여기서는 뜻만 읽고,
-       그 표에 없는 이름은 다이얼이 아니므로 건너뛴다.
+    Returns: {"default": [{"names": [...], "ko": "meaning", "values": {name: value}}], "scifi": [...]}
+    🛑 `make_theme.skin_dials()` is the source of the values — keeping a second regex here would let the
+       two drift. This only reads the meanings, and skips any name absent from that table, since it is
+       not a dial.
     """
     mt = _make_theme()
     values = mt.skin_dials()
@@ -411,7 +422,7 @@ def scan_dials():
 
 
 def missing_english_dials():
-    """`DIALS_EN` 에 뜻이 없는 다이얼 이름 — 검사가 문제로 올린다."""
+    """Dial names with no meaning in `DIALS_EN` — the checker reports these as problems."""
     names = []
     for groups in scan_dials().values():
         for group in groups:
@@ -431,7 +442,7 @@ def _html_text(text):
 
 
 def dial_terms(lang="ko"):
-    """다이얼 이름 → 용어. 표 안의 `<code>` 에도 풍선이 뜬다."""
+    """Dial name → glossary term. The `<code>` cells inside the table pop up a bubble too."""
     mt = _make_theme()
     out = {}
     for skin, groups in scan_dials().items():
@@ -440,7 +451,7 @@ def dial_terms(lang="ko"):
             for name in group["names"]:
                 desc = DIALS_EN.get(name, "") if lang == "en" else group["ko"]
                 if not desc:
-                    continue      # 🛑 뜻이 비면 넣지 않는다
+                    continue      # 🛑 leave it out when the meaning is empty
                 tail = (" Default %r, a dial of %s." if lang == "en" else " 기본값 %r, %s 의 다이얼.") % (group["values"][name], cls)
                 out[name] = {"k": "skin dial" if lang == "en" else "스킨 다이얼", "d": _plain(desc) + tail}
     return out
@@ -455,9 +466,10 @@ def dials_html(lang="ko"):
     for skin, groups in scan_dials().items():
         cls = mt.SKIN_SCRIPTS[skin][0]
         count = sum(len(g["names"]) for g in groups)
-        # 🔑 스킨마다 접는다 — 표 셋을 한꺼번에 펼치면 32 행이고, 폰에서는 표가 세로로 쌓여
-        #    한 행이 블록 셋이 되므로 96 블록·약 2,900px 를 지나야 다음 글이 나온다(2026-09-16).
-        #    첫 스킨만 펼쳐 둔다. 접힌 표 안의 주소로 들어오면 `site/ux.js` 가 열어 준다.
+        # 🔑 Collapse per skin — all three tables open at once is 32 rows, and on a phone the table stacks
+        #    vertically so one row becomes three blocks: 96 blocks, roughly 2,900px, before the next piece
+        #    of text (2026-09-16). Only the first skin is left open. Arriving at an anchor inside a
+        #    collapsed table, `site/ux.js` opens it.
         parts.append('  <details class="dial-group"%s>' % (" open" if first else ""))
         parts.append("  <summary><h4>%s <code>%s</code> — %d</h4></summary>"
                      % (SKIN_TITLES[skin][lang], cls, count))
@@ -479,7 +491,8 @@ def dials_html(lang="ko"):
                     cell = '<td rowspan="%d">%s</td>' % (len(group["names"]), _html_text(descs[0]) or "—") if len(group["names"]) > 1 else "<td>%s</td>" % (_html_text(descs[0]) or "—")
                 elif not shared:
                     cell = "<td>%s</td>" % (_html_text(descs[i]) or "—")
-                # `data-label` — 폰 폭에서 표가 세로로 쌓일 때 숫자만 덩그러니 남지 않게 앞에 붙는 작은 라벨.
+                # `data-label` — the small label put in front so a bare number is not left stranded when
+                # the table stacks vertically at phone width.
                 label = "Default" if lang == "en" else "기본값"
                 parts.append('      <tr><td><code>%s</code></td><td data-label="%s">%r</td>%s</tr>' % (name, label, value, cell))
         parts.append("    </tbody>")
@@ -493,9 +506,10 @@ DIALS_BEGIN = "<!-- dials:begin -->"
 DIALS_END = "<!-- dials:end -->"
 
 
-# 🔑 다이얼 표는 `own` 절에 있었고, 2026-09-16 의 가르기(`tools/split_site.py`)로 그 절이
-#    `theming-own.html` 로 옮겨 갔다. 🛑 여기 이름을 함께 고치지 않으면 표식을 못 찾아
-#    **조용히 옛 표가 남는다** — 다이얼을 더해도 문서가 따라오지 않는다.
+# 🔑 The dial table used to sit in the `own` section, and the 2026-09-16 split (`tools/split_site.py`)
+#    moved that section into `theming-own.html`. 🛑 Fail to change the name here along with it and the
+#    marker is never found, so **the old table quietly stays** — add a dial and the documentation does
+#    not follow.
 DIALS_PAGE = "theming-own.html"
 
 
@@ -504,20 +518,20 @@ def dials_page(lang="ko"):
 
 
 def write_dials_section(lang="ko"):
-    """`theming-own.html` 의 표식 사이를 다시 채운다. 표식이 없으면 건드리지 않고 False."""
+    """Refill between the markers in `theming-own.html`. Without the markers, leave the file alone and return False."""
     path = dials_page(lang)
     if not os.path.isfile(path):
         return False
     text = open(path, encoding="utf-8").read()
     if DIALS_BEGIN not in text or DIALS_END not in text:
-        print("🛑 %s 에 %s 표식이 없다 — 다이얼 표를 못 넣었다" % (os.path.relpath(path, ADDON), DIALS_BEGIN))
+        print("🛑 no %s marker in %s — the dial table was not written" % (DIALS_BEGIN, os.path.relpath(path, ADDON)))
         return False
     before, rest = text.split(DIALS_BEGIN, 1)
     _old, after = rest.split(DIALS_END, 1)
     body = before + DIALS_BEGIN + "\n" + dials_html(lang) + "\n  " + DIALS_END + after
     if body != text:
         open(path, "w", encoding="utf-8").write(body)
-    print("%s — 다이얼 표 %d개" % (os.path.relpath(path, ADDON), sum(len(g["names"]) for gs in scan_dials().values() for g in gs)))
+    print("%s — %d dials in the table" % (os.path.relpath(path, ADDON), sum(len(g["names"]) for gs in scan_dials().values() for g in gs)))
     return True
 
 
@@ -528,7 +542,7 @@ def build(lang="ko"):
         glossary.update(scan_tokens(lang))
         glossary.update(scan_presets(lang))
         glossary.update(dial_terms(lang))
-        # 🛑 영문 설명이 있는 클래스만 넣는다 — 한국어 설명이 뜨는 영문 페이지보다 없는 편이 낫다.
+        # 🛑 Only classes with an English description go in — better absent than an English page popping up Korean.
         for name, entry in scan_classes().items():
             if name in CLASS_EN:
                 out = {"d": CLASS_EN[name], "k": "gohud"}
@@ -539,13 +553,14 @@ def build(lang="ko"):
         glossary.update(scan_tokens())
         glossary.update(scan_presets())
         glossary.update(dial_terms())
-        glossary.update(scan_classes())      # 소스가 가장 세다 — 손으로 쓴 것을 덮는다
-    # `u` 가 None 인 것은 키 자체를 뺀다(툴팁이 빈 링크를 그리지 않게).
+        glossary.update(scan_classes())      # the source wins — it overrides anything written by hand
+    # Where `u` is None, drop the key entirely (so the tooltip does not draw an empty link).
     for entry in glossary.values():
         if entry.get("u") is None:
             entry.pop("u", None)
-        # 🛑 풍선은 설명을 **글자 그대로** 넣는다(`textContent`) — 마크다운을 남기면 `**둥근**` 이
-        #    그대로 보인다. 소스에서 뽑은 것은 이미 지웠지만, 손으로 쓴 사전은 여기서 지운다.
+        # 🛑 The bubble takes the description **verbatim** (`textContent`) — leave markdown in and
+        #    `**rounded**` shows up exactly like that. What was extracted from the source is already
+        #    clean; the hand-written glossaries are cleaned here.
         if "d" in entry:
             entry["d"] = re.sub(r"\*\*(.+?)\*\*", r"\1", entry["d"])
             entry["d"] = re.sub(r"`(.+?)`", r"\1", entry["d"])
@@ -553,16 +568,17 @@ def build(lang="ko"):
     path = os.path.join(SITE, "glossary.js" if lang == "ko" else "glossary.%s.js" % lang)
     body = json.dumps(glossary, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     with open(path, "w", encoding="utf-8") as fh:
-        fh.write("/* gohud 용어 사전 — tools/make_site.py 가 만든다. 손으로 고치지 않는다. */\n")
+        fh.write("/* gohud glossary — generated by tools/make_site.py. Do not edit by hand. */\n")
         fh.write("window.GLOSSARY=" + body + ";\n")
-    print("%s — 용어 %d개" % (os.path.relpath(path, ADDON), len(glossary)))
+    print("%s — %d terms" % (os.path.relpath(path, ADDON), len(glossary)))
     return glossary
 
 
-# ── 언어 고르개와 hreflang ────────────────────────────────────────────
-# 🔑 언어 17 개 × 페이지 3 장 = 51 장이다. 고르개와 hreflang 을 손으로 넣으면 반드시 한두 장이
-#    어긋나고, **어긋나도 화면은 멀쩡해 보인다**(링크 하나가 딴 언어로 가거나, 검색엔진이 언어판을
-#    서로 남남으로 본다). 그래서 다이얼 표와 같은 방식으로 표식 사이를 여기서 채운다.
+# ── The language picker and hreflang ──────────────────────────────────
+# 🔑 17 languages × 3 pages = 51 files. Putting the picker and the hreflang tags in by hand always leaves
+#    a file or two out of step, and **out of step still looks fine on screen** (one link goes to the wrong
+#    language, or search engines treat the translations as strangers to each other). So, as with the dial
+#    table, the space between the markers is filled here.
 LANGS_BEGIN = "<!-- langs:begin -->"
 LANGS_END = "<!-- langs:end -->"
 HREFLANG_BEGIN = "<!-- hreflang:begin -->"
@@ -570,7 +586,7 @@ HREFLANG_END = "<!-- hreflang:end -->"
 
 
 def replace_marked(text, begin, end, body, tail=""):
-    """표식 사이를 갈아 끼운다 — 표식이 없으면 None 을 돌려준다(부르는 쪽이 알린다)."""
+    """Swap out what lies between the markers — return None when they are missing (the caller reports it)."""
     if begin not in text or end not in text:
         return None
     before, rest = text.split(begin, 1)
@@ -579,7 +595,7 @@ def replace_marked(text, begin, end, body, tail=""):
 
 
 def langs_html(code, page):
-    """지금 언어만 보이다가 누르면 17 개가 **제 나라 말로** 펼쳐지는 고르개."""
+    """A picker showing only the current language until pressed, then all 17 **each in its own language**."""
     rows = ['          <a href="%s" hreflang="%s" lang="%s"%s>%s</a>' % (
         site_langs.link_from(code, lang.code, page), lang.hreflang, lang.html_lang,
         ' aria-current="true"' if lang.code == code else "", lang.name) for lang in site_langs.ACTIVE]
@@ -590,7 +606,7 @@ def langs_html(code, page):
 
 
 def hreflang_html(page):
-    """검색엔진에 "같은 글의 다른 언어판" 을 알린다. 못 고른 경우의 기본(x-default)은 영어다."""
+    """Tell search engines about "other language editions of the same page". The fallback (x-default) is English."""
     rows = ['<link rel="alternate" hreflang="%s" href="%s">' % (lang.hreflang, site_langs.public_url(lang.code, page))
             for lang in site_langs.ACTIVE]
     rows.append('<link rel="alternate" hreflang="x-default" href="%s">' % site_langs.public_url("en", page))
@@ -598,7 +614,7 @@ def hreflang_html(page):
 
 
 def write_langs():
-    """있는 언어판마다 고르개와 hreflang 을 다시 쓴다. 아직 번역하지 않은 언어는 건너뛴다."""
+    """Rewrite the picker and the hreflang tags in every language edition that exists. Untranslated languages are skipped."""
     done, missing = 0, []
     for lang in site_langs.ACTIVE:
         for page in site_langs.PAGES:
@@ -610,29 +626,31 @@ def write_langs():
             text = open(path, encoding="utf-8").read()
             body = replace_marked(text, HREFLANG_BEGIN, HREFLANG_END, hreflang_html(page))
             if body is None:
-                print("🛑 %s 에 %s 표식이 없다 — hreflang 을 못 넣었다" % (rel, HREFLANG_BEGIN))
+                print("🛑 no %s marker in %s — hreflang was not written" % (HREFLANG_BEGIN, rel))
                 continue
             body = replace_marked(body, LANGS_BEGIN, LANGS_END, langs_html(lang.code, page), "      ")
             if body is None:
-                print("🛑 %s 에 %s 표식이 없다 — 언어 고르개를 못 넣었다" % (rel, LANGS_BEGIN))
+                print("🛑 no %s marker in %s — the language picker was not written" % (LANGS_BEGIN, rel))
                 continue
             if body != text:
                 open(path, "w", encoding="utf-8").write(body)
             done += 1
-    print("언어 고르개·hreflang — %d장%s" % (done, " · 아직 없는 언어판 %d장" % len(missing) if missing else ""))
+    print("Language picker · hreflang — %d pages%s" % (done, " · %d language editions still missing" % len(missing) if missing else ""))
     return done
 
 
-# ── 제목 앵커 ─────────────────────────────────────────────────────────
-# 🔑 사이드바도 검색도 **그 자리로 데려가는 주소**가 있어야 만들 수 있다. 이 사이트의 제목에는 id 가
-#    하나도 없어서 `GoSlot`·`GoBar` 같은 항목은 주소로 가리킬 수조차 없었다(2026-09-16 실측 0건).
-# 🛑 id 는 **영어 제목**에서 만들어 모든 언어의 같은 순서 제목에 그대로 준다 — 언어를 바꿔도 주소가
-#    같아야 고르개로 건너뛸 때 보던 자리를 지킨다. 번역문으로 만들면 언어마다 주소가 달라진다.
+# ── Heading anchors ───────────────────────────────────────────────────
+# 🔑 Neither the sidebar nor the search can be built without **an address that takes you to the spot**.
+#    Not one heading on this site had an id, so entries like `GoSlot` and `GoBar` could not even be
+#    pointed at by URL (measured 2026-09-16: zero of them).
+# 🛑 The ids are made from **the English headings** and given to the heading at the same position in every
+#    language — the address has to stay the same across languages so that switching with the picker keeps
+#    your place. Built from the translations, every language would get a different address.
 HEADING = re.compile(r'<(h[34])(\s[^>]*?)?>(.*?)</\1>', re.S)
 
 
 def heading_slug(html, used):
-    """제목 한 줄에서 주소로 쓸 이름을 만든다. 같은 이름이 겹치면 뒤에 번호를 붙인다."""
+    """Make the name to use as an address out of one heading. Duplicates get a number appended."""
     plain = re.sub(r'&[a-z]+;|&#\d+;', " ", re.sub(r'<[^>]+>', "", html))
     name = re.sub(r'[^a-z0-9]+', "-", plain.lower()).strip("-")[:48].strip("-") or "h"
     base, n = name, 2
@@ -643,14 +661,14 @@ def heading_slug(html, used):
 
 
 def heading_ids(page):
-    """영어판 제목에서 뽑은 id 목록 — 같은 페이지의 모든 언어가 이 순서대로 쓴다."""
+    """The ids taken from the English headings — every language edition of that page uses them in this order."""
     used = set()
     text = open(os.path.join(WWW, page), encoding="utf-8").read()
     return [heading_slug(m.group(3), used) for m in HEADING.finditer(text)]
 
 
 def write_heading_ids():
-    """모든 언어판의 h3·h4 에 영어 기준 id 를 박는다. 제목 수가 다르면 그 언어를 알려 준다."""
+    """Stamp the English-derived ids onto the h3·h4 of every language edition. Report any language whose heading count differs."""
     pages, mismatched = 0, []
     for page in site_langs.PAGES:
         ids = heading_ids(page)
@@ -667,7 +685,7 @@ def write_heading_ids():
                 count[0] += 1
                 if i >= len(ids):
                     return m.group(0)
-                # 🛑 붙어 있던 id 는 지우고 다시 준다 — 생성기가 이 속성의 주인이다.
+                # 🛑 Any id already there is removed and reissued — the generator owns this attribute.
                 attrs = re.sub(r'\s+id="[^"]*"', "", m.group(2) or "")
                 return '<%s id="%s"%s>%s</%s>' % (m.group(1), ids[i], attrs, m.group(3), m.group(1))
 
@@ -677,15 +695,15 @@ def write_heading_ids():
             if body != text:
                 open(path, "w", encoding="utf-8").write(body)
             pages += 1
-    print("제목 앵커 — %d장%s" % (pages, " · 🛑 제목 수가 다른 곳: " + ", ".join(mismatched) if mismatched else ""))
+    print("Heading anchors — %d pages%s" % (pages, " · 🛑 heading count differs in: " + ", ".join(mismatched) if mismatched else ""))
     return pages
 
 
 def write_not_found_langs():
-    """`404.html` 의 언어 줄 — 없는 주소로 들어온 사람에게 **제 나라 말 문서로 가는 길**을 준다.
+    """The language row in `404.html` — gives whoever landed on a dead address **a way to the docs in their own language**.
 
-    🛑 이 페이지는 사전도 툴팁도 style.css 도 불러오지 않는다(그것들까지 404 면 아무것도 못 한다).
-    그래서 고르개가 아니라 평범한 링크를 나열한다.
+    🛑 This page loads neither the glossary nor the tooltip nor style.css (if those 404 too, nothing works
+    at all). So it lists plain links rather than the picker.
     """
     path = os.path.join(WWW, "404.html")
     if not os.path.isfile(path):
@@ -696,28 +714,30 @@ def write_not_found_langs():
              for lang in site_langs.ACTIVE]
     body = replace_marked(text, LANGS_BEGIN, LANGS_END, " ·\n".join(links), "    ")
     if body is None:
-        print("🛑 404.html 에 %s 표식이 없다 — 언어 줄을 못 넣었다" % LANGS_BEGIN)
+        print("🛑 no %s marker in 404.html — the language row was not written" % LANGS_BEGIN)
         return False
     if body != text:
         open(path, "w", encoding="utf-8").write(body)
-    print("404.html — 언어 %d개" % len(site_langs.ACTIVE))
+    print("404.html — %d languages" % len(site_langs.ACTIVE))
     return True
 
 
-# ── 머리띠 메뉴 ───────────────────────────────────────────────────────
-# 🔑 메뉴를 85 장에 손으로 두었더니 같은 자리가 언어마다 갈라졌다 — `www/ko/widgets.html` 만 칸이
-#    하나 적었고(`#messages` 누락), `#factory` 를 16 개 언어는 `GoStyle` 로 두었는데 한국어만
-#    "팩토리" 였다. `check_site.py` 는 `<section id>` 만 견주므로 이것을 **하나도 잡지 못한다.**
-#    그래서 메뉴는 사람이 쓰는 글이 아니라 생성물로 옮겼다. 말은 `tools/site_nav.py` 에 있다.
+# ── The header menu ───────────────────────────────────────────────────
+# 🔑 Kept by hand across 85 files, the same spot drifted apart between languages — `www/ko/widgets.html`
+#    alone was one entry short (`#messages` missing), and where 16 languages left `#factory` as
+#    `GoStyle`, Korean alone had translated it. `check_site.py` only compares `<section id>`, so it
+#    catches **none of this.** The menu was therefore moved from prose into generated output. The wording
+#    lives in `tools/site_nav.py`.
 NAV_BEGIN = "<!-- nav:begin -->"
 NAV_END = "<!-- nav:end -->"
 
 
 def write_nav():
-    """모든 언어판의 머리띠 메뉴를 다시 쓴다.
+    """Rewrite the header menu in every language edition.
 
-    표식이 없으면 **처음 한 번** `<nav>` 와 언어 고르개 사이를 통째로 갈아 끼우며 표식을 심는다 —
-    그 자리에 있던 옛 메뉴(쪽마다 다르고 절 앵커가 섞인)가 이때 사라진다.
+    Without the markers, **once** it replaces everything between `<nav>` and the language picker and
+    plants the markers there — and the old menu sitting in that spot (different on every page, with
+    section anchors mixed in) disappears at that moment.
     """
     done, seeded = 0, 0
     for lang in site_langs.ACTIVE:
@@ -731,7 +751,7 @@ def write_nav():
             if NAV_BEGIN in text and NAV_END in text:
                 new = replace_marked(text, NAV_BEGIN, NAV_END, body, "      ")
             else:
-                # 처음 한 번 — `<nav>` 뒤부터 언어 고르개 앞까지가 옛 메뉴다.
+                # The first time — everything from after `<nav>` to before the language picker is the old menu.
                 head, rest = text.split("<nav>", 1)
                 _old, rest = rest.split(LANGS_BEGIN, 1)
                 new = "%s<nav>\n      %s\n%s\n      %s\n      %s%s" % (
@@ -740,20 +760,21 @@ def write_nav():
             if new != text:
                 open(path, "w", encoding="utf-8").write(new)
             done += 1
-    print("머리띠 메뉴 — %d장%s" % (done, " · 표식을 처음 심은 곳 %d장" % seeded if seeded else ""))
+    print("Header menu — %d pages%s" % (done, " · markers planted for the first time in %d" % seeded if seeded else ""))
     return done
 
 
-# 페이지 끝에 넣는 스크립트 — 순서가 곧 실행 순서다.
-#   toc.js     왼쪽 목차. 페이지의 제목을 읽어 만든다.
-#   search.js  전역 검색. 머리띠에 검색칸을 넣고, 목차의 "전체 검색" 단추에 응답한다.
-#   ux.js      코드 복사 단추와 그림 늦게 받기.
-# 🛑 셋 다 번역문을 제 안에 들고 있다 — 언어판 51 장에 넣는 것은 이 `<script>` 한 줄뿐이다.
+# Scripts appended at the end of a page — the order is the execution order.
+#   toc.js     the left-hand table of contents, built by reading the page's headings.
+#   search.js  site-wide search: puts a search box in the header and answers the TOC's "search all" button.
+#   ux.js      the copy-code button and lazy image loading.
+# 🛑 All three carry their own translations — the only thing put into the 51 language editions is this
+#    one `<script>` line.
 PAGE_SCRIPTS = ("site/toc.js", "site/search.js", "site/ux.js")
 
 
 def write_page_scripts():
-    """페이지마다 스크립트 줄을 넣는다 — 이미 있으면 그대로 둔다."""
+    """Put the script lines into every page — already there, they are left alone."""
     added, touched = 0, 0
     for lang in site_langs.ACTIVE:
         for page in site_langs.PAGES:
@@ -763,7 +784,7 @@ def write_page_scripts():
                 continue
             text = open(path, encoding="utf-8").read()
             if "</body>" not in text:
-                print("🛑 %s 에 </body> 가 없다 — 스크립트를 못 넣었다" % rel)
+                print("🛑 no </body> in %s — the scripts were not written" % rel)
                 continue
             up = "../" if site_langs.BY_CODE[lang.code].folder else ""
             body = text
@@ -775,14 +796,14 @@ def write_page_scripts():
             if body != text:
                 open(path, "w", encoding="utf-8").write(body)
                 touched += 1
-    print("페이지 스크립트 — %d줄을 %d장에 넣음" % (added, touched))
+    print("Page scripts — %d lines added across %d pages" % (added, touched))
     return added
 
 
 if __name__ == "__main__":
-    # 🛑 순서가 있다. `make_ai_page` 는 `ai.html` 을 **통째로 다시 쓰므로** 제목 앵커보다 **먼저**
-    #    와야 한다 — 뒤에 두면 방금 박은 id 를 지우고, `check_site.py` 가 "소스와 다르다" 로 잡는다
-    #    (2026-09-16 실측: 17장 전부 빨간불).
+    # 🛑 The order matters. `make_ai_page` **rewrites `ai.html` wholesale**, so it has to come **before**
+    #    the heading anchors — put it after and it wipes the ids just stamped in, and `check_site.py`
+    #    reports "differs from the source" (measured 2026-09-16: all 17 pages red).
     import make_ai_page
     make_ai_page.main()
     build("ko")

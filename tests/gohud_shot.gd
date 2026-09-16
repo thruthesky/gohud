@@ -1,16 +1,16 @@
-## 📸 새로 들인 gohud 위젯을 **실제로 그려** PNG 로 남긴다(가상 모니터 전용).
+## 📸 **Really draws** newly added gohud widgets and saves them as PNGs (virtual monitor only).
 ##
-##   bash <godot 스킬>/scripts/xvfb_run.sh --out <폴더> --size 720x1600 \
+##   bash <godot skill>/scripts/xvfb_run.sh --out <folder> --size 720x1600 \
 ##     -s res://addons/gohud/tests/gohud_shot.gd
 ##
-## 🛑 `--headless` 로는 스크린샷이 나오지 않는다 — 그리지 않기 때문이다.
+## 🛑 `--headless` produces no screenshot — it does not draw.
 ##
-## ## 🔑 왜 이것이 필요한가
-## 2026-09-16, 헤드리스 검사 120개가 **전부 통과한 상태**에서 이 그림을 찍어 결함 다섯을 찾았다 —
-## 표의 줄에 글자가 통째로 없었고, 배지는 아이콘 밖에 떠 있었고, 버튼 안의 스피너는 보이지 않았다.
-## 값으로 재는 검사는 "얼마인가" 는 알아도 **"보이는가" 는 모른다.** 위젯 모양을 손댔으면 찍어서 본다.
+## ## 🔑 Why this is needed
+## On 2026-09-16, with **all 120 headless checks passing**, these shots turned up five defects —
+## table rows had no text at all, badges floated outside their icons, and the spinner in a button was invisible.
+## Checks that measure values know "how much" but **not "is it visible".** Touch a widget's shape, then shoot and look.
 ##
-## 🛑 컨테이너에 한글 글꼴이 없다 — 한글은 두부(□)로 나온다. 모양을 보는 것이 목적이므로 영문으로 쓴다.
+## 🛑 The container has no Korean font — Korean renders as tofu (□). Shapes are the point here, so write in English.
 extends SceneTree
 
 var _dir := ""
@@ -21,13 +21,13 @@ func _initialize() -> void:
 	if _dir.is_empty(): _dir = "/out"
 	GoUi.reset()
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
-	GoUi.config.reduce_motion = true   # 움직임 중간이 아니라 최종 모습을 찍는다
+	GoUi.config.reduce_motion = true   # shoot the final look, not a mid-animation frame
 
 	await _shot_forms()
 	await _shot_data()
 	await _shot_game()
 	await _shot_overlays()
-	print("✅ 촬영 끝 — %s" % _dir)
+	print("✅ shots done — %s" % _dir)
 	quit(0)
 
 
@@ -58,7 +58,7 @@ func _save(name: String) -> void:
 	print("  %s %s (%dx%d)" % ["✅" if err == OK else "🛑", path, image.get_width(), image.get_height()])
 
 
-# ── 폼 계열 ────────────────────────────────────────────────────────────
+# ── Forms ─────────────────────────────────────────────────────────────
 
 func _shot_forms() -> void:
 	var page := await _page("Forms & Input")
@@ -90,7 +90,7 @@ func _shot_forms() -> void:
 	await _save("01_forms")
 
 
-# ── 데이터 계열 ────────────────────────────────────────────────────────
+# ── Data ──────────────────────────────────────────────────────────────
 
 func _shot_data() -> void:
 	var page := await _page("Table & Pagination")
@@ -120,7 +120,7 @@ func _shot_data() -> void:
 	await _save("02_data")
 
 
-# ── 게임 계열 ──────────────────────────────────────────────────────────
+# ── Game ──────────────────────────────────────────────────────────────
 
 func _shot_game() -> void:
 	var page := await _page("Rewards & Stats")
@@ -159,7 +159,7 @@ func _shot_game() -> void:
 	await _save("03_game")
 
 
-# ── 겹쳐 뜨는 것들 ─────────────────────────────────────────────────────
+# ── Overlays ──────────────────────────────────────────────────────────
 
 func _shot_overlays() -> void:
 	var page := await _page("Snackbar & Drawer")

@@ -164,7 +164,7 @@ Headless runs cannot take screenshots (the viewport image is null). To *see* a s
 **overwrites the size the test asked for**, and the smallest size fails with
 
 ```
-FAIL 검사용 뷰포트가 충분히 크다 ((667.1937, 308.3004))    # asked for 844x390
+FAIL test viewport is large enough ((667.1937, 308.3004))    # asked for 844x390
 ```
 
 That is the host's scaling, not a gohud defect. Confirm by running the same tests in an empty project — the

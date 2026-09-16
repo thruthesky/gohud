@@ -1,4 +1,4 @@
-## 🎠 **넘겨 보는 띠** — 상점 배너, 캐릭터 고르기, 신규 콘텐츠 안내.
+## 🎠 **A strip you swipe through** — shop banners, character select, new-content announcements.
 ##
 ## ```gdscript
 ## var banners := GoCarousel.new()
@@ -9,42 +9,42 @@
 ## banners.page_changed.connect(func(index: int) -> void: track_view(index))
 ## ```
 ##
-## ## 🛑 저절로 넘어가는 것은 **읽을 시간을 뺏는다**
-## 배너가 3초마다 바뀌면 글을 다 읽기 전에 사라진다. 기본은 **저절로 안 넘어간다**(`autoplay_seconds = 0`).
-## 켤 때는 5초 이상을 준다. 그리고 **손을 대면 멈춘다** — 읽으려고 손가락을 올렸는데 넘어가면 안 된다.
+## ## 🛑 Advancing on its own **steals reading time**
+## A banner that changes every 3 seconds is gone before the text has been read. By default it **does not advance on its own** (`autoplay_seconds = 0`).
+## When you turn it on, give it 5 seconds or more. And it **stops the moment you touch it** — nothing may slide away under a finger that came to read.
 ##
-## ## ♿ `reduce_motion` 이면 저절로 넘기지 않는다
-## 움직임을 줄인 사람에게 스스로 움직이는 화면은 그 자체가 문제다. 그 설정이 켜져 있으면
-## 자동 넘김을 **하지 않는다** — 점을 눌러 직접 넘길 수 있으니 기능이 사라지는 것은 아니다.
+## ## ♿ Under `reduce_motion` it never advances by itself
+## To someone who reduced motion, a screen that moves on its own is the problem itself. With that setting on,
+## auto-advance **does not happen** — nothing is lost, since the dots still flip pages by hand.
 ##
-## ## 🔑 점(indicator)은 몇 장인지·지금 몇 번째인지를 말한다
-## 점이 없으면 옆으로 넘길 수 있다는 것조차 모른다. 점은 **누를 수 있고**, 터치 하한을 지킨다.
+## ## 🔑 The dots say how many pages there are and which one you are on
+## Without dots you cannot even tell the strip swipes sideways. The dots are **pressable**, and they keep the touch minimum.
 @tool
 class_name GoCarousel
 extends VBoxContainer
 
-## 보이는 쪽이 바뀌었다.
+## The visible page changed.
 signal page_changed(index: int)
 
-## 몇 초마다 저절로 넘길 것인가. **0 이면 안 넘긴다**(기본).
+## Seconds between automatic advances. **0 never advances** (the default).
 @export var autoplay_seconds := 0.0:
 	set(value):
 		autoplay_seconds = maxf(0.0, value)
 		_sync_timer()
 
-## 넘어가는 데 걸리는 시간(초). `reduce_motion` 이면 즉시.
+## How long a page change takes (seconds). Instant under `reduce_motion`.
 @export var motion_seconds := 0.25
 
-## 끝에서 다시 처음으로 돌아갈 것인가.
+## Whether the end wraps around to the beginning.
 @export var loop := true
 
-## 점을 보여 줄 것인가.
+## Whether to show the dots.
 @export var show_dots := true:
 	set(value):
 		show_dots = value
 		if is_instance_valid(_dots): _dots.visible = value and _pages.size() > 1
 
-## 이만큼(dp) 끌면 넘긴다.
+## Drag this far (dp) to flip a page.
 @export var swipe_dp := 48.0
 
 var _viewport: Control
@@ -67,7 +67,7 @@ func _init() -> void:
 	_viewport.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_viewport.mouse_filter = Control.MOUSE_FILTER_STOP
 	_viewport.gui_input.connect(_on_input)
-	# 🛑 넘기는 방향은 **물리적**이다 — 점과 쪽 차례가 글 방향을 따라 뒤집히면 혼란스럽다.
+	# 🛑 The swipe direction is **physical** — flipping the order of dots and pages with the text direction is only confusing.
 	_viewport.layout_direction = Control.LAYOUT_DIRECTION_LTR
 	add_child(_viewport)
 
@@ -94,10 +94,10 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 보여 줄 쪽들. 각 쪽은 `Control` 이고, 폭·높이는 이 위젯이 잡는다.
+## The pages to show. Each is a `Control`, and this widget sets their width and height.
 func set_pages(pages: Array) -> void:
-	# 🛑 **넘겨받은 쪽 노드를 죽이지 않는다** — 같은 배너를 재사용해 두 번 부르면 죽은 노드를
-	#    다시 붙이게 된다. 소유권은 넘긴 쪽에 남는다(표와 같은 규칙).
+	# 🛑 **Never free the page nodes handed in** — call this twice reusing the same banner and you end up re-parenting a
+	#    freed node. Ownership stays with the caller (the same rule as `GoTable`).
 	for node in _pages:
 		if is_instance_valid(node) and node.get_parent() == _strip: _strip.remove_child(node)
 	for child in _strip.get_children(): child.queue_free()
@@ -122,7 +122,7 @@ func index() -> int:
 	return _index
 
 
-## 그 쪽으로 넘긴다.
+## Flips to that page.
 func go_to(target: int, animate := true) -> void:
 	if _pages.is_empty(): return
 	var next := target
@@ -176,9 +176,9 @@ func _build_dots() -> void:
 		dot.theme = GoUi.theme()
 		dot.theme_type_variation = GoTheme.VAR_BARE_BUTTON
 		dot.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-		# 🛑 보이는 점은 작아도 **누르는 자리는 터치 하한 그대로**다. 0.6 을 곱해 28.8dp 로 줄였던
-		#    것은 하한을 스스로 깬 것이었다(2026-09-16 실측). 점이 촘촘해 보이면 점 크기를 줄이지
-		#    누르는 자리를 줄이지 않는다.
+		# 🛑 The dot may look small, but **the press target stays at the touch minimum**. Multiplying by 0.6 to shrink it to
+		#    28.8dp was breaking that minimum ourselves (measured 2026-09-16). If the dots look crowded, shrink the dot,
+		#    never the press target.
 		var touch := float(GoUi.metric(GoTheme.TOUCH))
 		dot.custom_minimum_size = Vector2(touch, touch)
 		var lit := i == _index
@@ -194,7 +194,7 @@ func _build_dots() -> void:
 		dot.pressed.connect(func() -> void:
 			GoFeedback.tapped()
 			go_to(target))
-		# ♿ "3장 중 2번째" — 점 그림만으로는 읽히지 않는다.
+		# ♿ "2 of 3" — the dot graphic on its own reads as nothing.
 		dot.accessibility_name = GoUi.text(&"bar_fraction").format({"value": i + 1, "max": _pages.size()})
 		_dots.add_child(dot)
 
@@ -213,7 +213,7 @@ func _on_input(event: InputEvent) -> void:
 
 	if down.is_finite():
 		_drag_from = down
-		# 🔑 손을 대면 자동 넘김을 **멈춘다** — 읽으려고 손을 올렸는데 넘어가면 안 된다.
+		# 🔑 A touch **stops** the autoplay — nothing may slide away under a finger that came to read.
 		_elapsed = 0.0
 		return
 	if not up.is_finite() or not _drag_from.is_finite(): return
@@ -234,11 +234,11 @@ func _process(delta: float) -> void:
 	next()
 
 
-## 저절로 넘길 조건이 되는지 보고 `_process` 를 켜고 끈다.
-## 🛑 `reduce_motion` 이면 **끈다** — 움직임을 줄인 사람에게 스스로 움직이는 화면을 주지 않는다.
+## Turns `_process` on or off depending on whether the conditions for advancing on its own hold.
+## 🛑 Under `reduce_motion` it is **off** — never hand a self-moving screen to someone who reduced motion.
 func _sync_timer() -> void:
-	# 🛑 **안 보이면 돌지 않는다** — 서랍이나 시트 뒤에 가린 배너가 계속 넘어가면, 돌아왔을 때
-	#    엉뚱한 쪽이 떠 있고 그동안 배터리만 쓴다.
+	# 🛑 **It does not run while hidden** — a banner buried behind a drawer or a sheet that keeps advancing leaves the
+	#    wrong page showing when you come back, and burns battery in the meantime.
 	set_process(autoplay_seconds > 0.0 and _pages.size() > 1 and is_visible_in_tree()
 		and not GoUi.config.reduce_motion and not Engine.is_editor_hint())
 

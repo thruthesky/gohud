@@ -1,18 +1,20 @@
-/* gohud 홈페이지 — 전역 검색.
+/* gohud site — global search.
  *
- * 한 언어의 세 쪽(소개·생김새·위젯)을 **한 번에** 뒤진다. 읽던 쪽이 어디든 `GoSheet` 를 치면
- * 그 위젯을 설명하는 자리로 곧장 간다.
+ * Searches all three pages of one language (intro, looks, widgets) **at once**. Whatever page you
+ * are reading, type `GoSheet` and you land straight on the spot that explains that widget.
  *
- * ## 왜 이렇게 만들었나
- * - 🛑 `fetch()` 를 쓰지 않는다. `tools/site_shots.sh` 가 페이지를 `file://` 로 열어 촬영하는데,
- *   그 자리에서 fetch 는 CORS 로 조용히 죽는다. 색인은 `<script src>` 로 불러온다
- *   (`tools/make_search.py` 가 전역 대입문으로 낸다).
- * - 색인은 **팔레트를 처음 열 때** 받는다. 글만 읽고 가는 사람은 한 바이트도 더 받지 않는다.
- * - 색인 파일의 주소는 이 스크립트 자신의 주소에서 만든다 — `ko/widgets.html` 이든 최상위든
- *   `../site/` 를 손으로 셀 필요가 없다.
- * - CSS 는 이 파일이 넣는다(`site/tooltip.js`·`site/toc.js` 의 선례). `site/style.css` 는 안 건드린다.
- * - 🛑 `tooltip.js` 가 전역 keydown 에서 Escape·Enter·Space·Tab 을 가로챈다. 팔레트가 열려 있는
- *   동안에는 캡처 단계에서 먼저 잡아 멈춘다.
+ * ## Why it is built this way
+ * - 🛑 No `fetch()`. `tools/site_shots.sh` opens the pages over `file://` to photograph them, and
+ *   there fetch dies silently on CORS. The index is pulled in with `<script src>`
+ *   (`tools/make_search.py` emits it as a global assignment).
+ * - The index is fetched **the first time the palette is opened**. Someone who only reads the prose
+ *   downloads not one extra byte.
+ * - The index file's address is derived from this script's own address — whether you sit in
+ *   `ko/widgets.html` or at the top level, nobody has to count `../site/` by hand.
+ * - The CSS is injected by this file (following `site/tooltip.js` and `site/toc.js`). `site/style.css`
+ *   is left alone.
+ * - 🛑 `tooltip.js` grabs Escape, Enter, Space and Tab on a global keydown. While the palette is
+ *   open we catch them first in the capture phase and stop them.
  */
 (function () {
   'use strict';
@@ -21,8 +23,8 @@
   if (!self || !self.src) return;
   var BASE = self.src.replace(/search\.js(\?.*)?$/, '');   // …/site/
 
-  // ── 화면에 쓰는 말 ─────────────────────────────────────────
-  // 🔑 한 곳에 두고 `<html lang>` 으로 고른다 — 언어판 51 장에는 아무것도 넣지 않는다.
+  // ── Words on screen ────────────────────────────────────────
+  // 🔑 Kept in one place and picked by `<html lang>` — nothing goes into the 51 translated pages.
   var SAY = {
     'en':      { ph: 'Search the docs',        open: 'Search',   none: 'Nothing found for',    all: 'All sections',      recent: 'Recent',        load: 'Loading…',     hint: 'to open' },
     'ko':      { ph: '문서 검색',                open: '검색',      none: '검색 결과 없음:',          all: '전체 항목',           recent: '최근 검색',        load: '불러오는 중…',   hint: '키로 열기' },
@@ -42,7 +44,7 @@
     'th':      { ph: 'ค้นหาเอกสาร',                open: 'ค้นหา',      none: 'ไม่พบ:',                 all: 'ทุกหัวข้อ',             recent: 'ล่าสุด',           load: 'กำลังโหลด…',     hint: 'เพื่อเปิด' },
     'ar':      { ph: 'ابحث في التوثيق',           open: 'بحث',      none: 'لا نتائج لـ',            all: 'كل الأقسام',          recent: 'الأخيرة',        load: 'جارٍ التحميل…',   hint: 'للفتح' }
   };
-  // `<html lang>` → 색인 파일 이름. 🛑 중국어만 문자(Hans·Hant)로 갈린다.
+  // `<html lang>` → index file name. 🛑 Only Chinese splits by script (Hans · Hant).
   var FILE = { 'zh-Hans': 'zh', 'zh-Hant': 'zh-tw' };
 
   var lang = document.documentElement.lang || 'en';
@@ -51,10 +53,10 @@
   var mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   var KEY = mac ? '⌘K' : 'Ctrl K';
 
-  // ── 생김새 ─────────────────────────────────────────────────
+  // ── Looks ──────────────────────────────────────────────────
   var css = document.createElement('style');
   css.textContent = [
-    /* 머리띠의 검색칸 — 눌러야 팔레트가 뜨는 가짜 입력칸이다(진짜 입력은 팔레트 안에서 한다). */
+    /* The search box in the header — a fake input that only opens the palette (the real typing happens inside it). */
     '.gos-open{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font:inherit;font-size:13px;',
     '  padding:6px 10px;border-radius:999px;border:1px solid var(--rule,#DCE3EA);',
     '  background:var(--card,#fff);color:var(--muted,#5B6B7B);min-width:184px}',
@@ -64,7 +66,7 @@
     '.gos-ico{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:2}',
     '@media (max-width:860px){.gos-open{min-width:0}.gos-open .t,.gos-open .k{display:none}}',
 
-    /* 팔레트 */
+    /* The palette */
     '.gos-veil{position:fixed;inset:0;z-index:90;background:rgba(8,16,24,.5);',
     '  backdrop-filter:blur(3px);display:flex;justify-content:center;padding:10vh 16px 16px}',
     '.gos-box{width:min(680px,100%);max-height:78vh;display:flex;flex-direction:column;',
@@ -82,9 +84,10 @@
     '  border:1px solid transparent}',
     '.gos-hit:hover,.gos-hit.on{background:color-mix(in srgb,var(--accent,#0878AE) 10%,transparent);',
     '  border-color:color-mix(in srgb,var(--accent,#0878AE) 35%,transparent)}',
-    /* 🛑 flex 로 두면 배지·절 이름·제목이 저마다 줄바꿈 대상이 되어 폭 400 에서 "G o Shee t" 처럼
-       글자가 흩어진다(2026-09-16 촬영). 한 줄의 글로 흐르게 두고 배지만 붙여 놓는다.
-       🛑 body 의 `overflow-wrap:anywhere` 도 여기서는 되돌린다 — 낱말 한가운데를 자른다. */
+    /* 🛑 With flex, the badge, the section name and the title each become their own wrapping box,
+       and at width 400 the letters scatter like "G o Shee t" (screenshot, 2026-09-16). Let it flow
+       as one line of text and simply tack the badge onto it.
+       🛑 The body's `overflow-wrap:anywhere` is undone here too — it cuts words down the middle. */
     '.gos-t{display:block;font-weight:600;font-size:15px;overflow-wrap:break-word}',
     '.gos-pg{margin-inline-end:8px;vertical-align:1px}',
     '.gos-hit.on .gos-t{color:var(--accent,#0878AE)}',
@@ -105,7 +108,7 @@
     '@media (max-width:640px){.gos-veil{padding:0}.gos-box{max-height:100%;height:100%;border-radius:0;border:0}',
     '  .gos-foot{display:none}}',
 
-    /* 결과를 눌러 도착한 자리를 잠깐 밝힌다 — 어디로 왔는지 보이게. */
+    /* Briefly light up the spot a result lands on — so you can see where you arrived. */
     '.gos-flash{animation:gos-flash 1.6s ease-out}',
     '@keyframes gos-flash{from{background:color-mix(in srgb,var(--accent,#0878AE) 28%,transparent)}',
     '  to{background:transparent}}',
@@ -118,7 +121,7 @@
            '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>';
   }
 
-  // ── 머리띠의 검색 단추 ──────────────────────────────────────
+  // ── The search button in the header ────────────────────────
   var nav = document.querySelector('header.top nav');
   var btn = document.createElement('button');
   btn.type = 'button';
@@ -128,11 +131,11 @@
   btn.addEventListener('click', function () { open(''); });
   if (nav) nav.insertBefore(btn, nav.firstChild);
 
-  // 🔑 목차 사이드바(`site/toc.js`)가 있으면 그 위에도 같은 단추를 둔다 — 거기서 항목을 못 찾은
-  //    사람이 곧바로 전체 검색으로 넘어간다.
+  // 🔑 If the table-of-contents sidebar (`site/toc.js`) is there, it puts the same button on top —
+  //    someone who cannot find an entry there moves straight on to the global search.
   window.GOHUD_SEARCH_OPEN = open;
 
-  // ── 색인 ───────────────────────────────────────────────────
+  // ── The index ──────────────────────────────────────────────
   var index = null, loading = false;
   function load(then) {
     if (index) return then();
@@ -149,9 +152,10 @@
     document.head.appendChild(s);
   }
 
-  // ── 찾기 ───────────────────────────────────────────────────
-  // 낱말을 공백으로 쪼개 **모두** 들어 있는 조각만 고른다. 토큰은 부분 문자열로 견준다 —
-  // 한국어·일본어·중국어·태국어에는 낱말 사이 공백이 없어서 이 방법이라야 걸린다.
+  // ── Searching ──────────────────────────────────────────────
+  // Split the query on whitespace and keep only the pieces that hold **all** of the words. Tokens
+  // are matched as substrings — Korean, Japanese, Chinese and Thai put no space between words, so
+  // nothing else would catch them.
   function norm(s) { return s.toLowerCase().normalize ? s.toLowerCase().normalize('NFC') : s.toLowerCase(); }
 
   function search(q) {
@@ -163,21 +167,21 @@
       for (var k = 0; k < toks.length; k++) {
         var tok = toks[k], at = t.indexOf(tok);
         if (at >= 0) {
-          // 제목에 든 말이 가장 세다. 제목이 그 말로 시작하면 더 세다.
+          // A word in the title weighs most. If the title starts with it, more still.
           score += t === tok ? 900 : at === 0 ? 420 : 200;
         } else {
           var bt = x.indexOf(tok);
           if (bt >= 0) {
             score += 14 + Math.min(8, count(x, tok)) * 3;
-            if (bt < 120) score += 6;   // 절 첫머리에 나오면 그 절의 주제일 확률이 높다
+            if (bt < 120) score += 6;   // near the head of a section it is likely that section's subject
           } else if (c.indexOf(tok) >= 0) {
-            // 코드에만 있는 말 — `GoUi.use_preset()` 처럼 문장에는 안 나오는 이름이 여기서 걸린다.
+            // A word that lives only in code — names like `GoUi.use_preset()` that never appear in prose are caught here.
             score += 11 + Math.min(6, count(c, tok)) * 3;
           } else { ok = false; break; }
         }
       }
       if (!ok) continue;
-      if (!d[3]) score += 12;         // 소제목보다 절을 앞에
+      if (!d[3]) score += 12;         // sections ahead of subheadings
       out.push({ d: d, s: score, i: i });
     }
     out.sort(function (a, b) { return b.s - a.s || a.i - b.i; });
@@ -196,7 +200,7 @@
     });
   }
 
-  /** 적중한 낱말에 표시를 넣는다. 원문을 잘라 쓰므로 먼저 이스케이프한다. */
+  /** Marks the words that matched. The raw text is sliced up, so escape it first. */
   function light(text, toks) {
     var low = norm(text), marks = [];
     toks.forEach(function (tok) {
@@ -217,7 +221,7 @@
     return out + esc(text.slice(at));
   }
 
-  /** 본문에서 적중한 자리 둘레만 잘라 보여 준다 — 어느 문장에서 걸렸는지 보이게. */
+  /** Shows only the text around the match — so you can see which sentence it was caught in. */
   function snip(text, toks) {
     var low = norm(text), at = -1;
     for (var i = 0; i < toks.length && at < 0; i++) at = low.indexOf(toks[i]);
@@ -227,8 +231,8 @@
     return (from ? '…' : '') + light(cut, toks) + (from + 190 < text.length ? '…' : '');
   }
 
-  // ── 최근 찾은 것 ───────────────────────────────────────────
-  // 🛑 `file://` 나 사생활 보호 창에서는 localStorage 가 통째로 막힌다 — 없어도 검색은 돌아간다.
+  // ── Recent searches ────────────────────────────────────────
+  // 🛑 On `file://` and in a private window localStorage is blocked outright — search runs without it.
   function recent(add) {
     var list = [];
     try {
@@ -237,11 +241,11 @@
         list = [add].concat(list.filter(function (x) { return x !== add; })).slice(0, 5);
         localStorage.setItem('gohud.recent', JSON.stringify(list));
       }
-    } catch (e) { /* 막혀 있으면 그냥 넘어간다 */ }
+    } catch (e) { /* blocked — just move on */ }
     return list;
   }
 
-  // ── 팔레트 ─────────────────────────────────────────────────
+  // ── The palette ────────────────────────────────────────────
   var veil = null, input = null, list = null, hits = [], cur = -1, toks = [];
 
   function open(seed) {
@@ -287,7 +291,7 @@
     var rows = q ? search(q) : null;
     var html = '', label;
     if (!rows) {
-      // 빈 칸일 때는 할 일을 준다 — 최근에 찾은 것, 그리고 절 전체 목록.
+      // An empty box gets something to do — what was searched recently, and every section.
       var old = recent();
       if (old.length) {
         html += '<div class="gos-lab">' + esc(say.recent) + '</div>';
@@ -309,9 +313,9 @@
     rows.forEach(function (r) {
       var d = r.d, line = '';
       if (q) {
-        // 🔑 보여 줄 한 줄을 고르는 규칙. 사람이 먼저 읽어야 하는 것은 **문장**이다.
-        //    1) 찾는 말이 산문에 있으면 그 자리를, 2) 제목에서 걸렸으면 산문 첫머리를,
-        //    3) 코드에만 있는 이름이면 그때만 코드를 보인다.
+        // 🔑 The rule for picking the one line to show. What a person should read first is **prose**.
+        //    1) If the searched word is in the prose, show that spot; 2) if it matched in the title,
+        //    show the head of the prose; 3) only for a name that lives solely in code, show code.
         var prose = !!d[4] && toks.some(function (tok) { return norm(d[4]).indexOf(tok) >= 0; });
         var byTitle = toks.some(function (tok) { return norm(d[2]).indexOf(tok) >= 0; });
         var code = !prose && !(byTitle && d[4]) && !!d[5];
@@ -340,7 +344,7 @@
     list.scrollTop = 0;
   }
 
-  /** 결과 한 줄이 가리키는 주소. 같은 언어 폴더 안이라 파일 이름만 쓰면 된다. */
+  /** The address a result row points at. It is in the same language folder, so the file name is enough. */
   function href(d) {
     var page = index.p[d[0]];
     var here = (location.pathname.split('/').pop() || 'index.html');
@@ -364,9 +368,10 @@
     if (url.charAt(0) === '#') {
       var el = document.getElementById(url.slice(1));
       if (el) {
-        // 🛑 데려가는 일부터 한다. `history.replaceState` 는 `file://` 에서 SecurityError 를 던지는데,
-        //    이것을 먼저 부르면 그 예외에 걸려 **스크롤도 강조도 일어나지 않는다**(2026-09-16 실측).
-        //    오프라인 사본으로 문서를 읽는 사람에게는 검색 결과가 통째로 죽는 고장이었다.
+        // 🛑 Do the moving first. `history.replaceState` throws a SecurityError on `file://`, and
+        //    calling it first means that exception stops **both the scroll and the highlight**
+        //    (measured 2026-09-16). For anyone reading the docs from an offline copy that broke
+        //    search results outright.
         flash(el);
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         try { history.replaceState(null, '', url); } catch (e) { location.hash = url.slice(1); }
@@ -383,8 +388,8 @@
     mark.classList.add('gos-flash');
   }
 
-  // ── 열쇠 ──────────────────────────────────────────────────
-  // 🛑 캡처 단계에서 잡아 멈춘다 — tooltip.js 가 전역에서 Escape·Enter·Space·Tab 을 쓴다.
+  // ── Keys ──────────────────────────────────────────────────
+  // 🛑 Caught and stopped in the capture phase — tooltip.js uses Escape, Enter, Space and Tab globally.
   function keys(e) {
     if (!veil) return;
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); return; }
@@ -395,10 +400,10 @@
       if (hits[cur]) hits[cur].click();
       return;
     }
-    e.stopPropagation();   // 글자 키가 풍선 단축키로 새지 않게
+    e.stopPropagation();   // keep letter keys from leaking into the tooltip shortcuts
   }
 
-  // 어디서나 열 수 있게 — `/` 한 글자, 그리고 ⌘K·Ctrl K.
+  // Openable from anywhere — the single `/` key, plus ⌘K / Ctrl K.
   document.addEventListener('keydown', function (e) {
     if (veil) return;
     var el = e.target, tag = el && el.tagName;

@@ -1,28 +1,28 @@
-## 🎞️ **장면 대본.** 한 장면이 위젯을 짓고, 봇이 그것을 실제로 만진다.
+## 🎞️ **The scene script.** A scene builds the widgets, and the bot really works them.
 ##
-## 장면 하나 = 함수 **둘**이다.
-##   `build_<key>(stage, bot) -> Dictionary`  화면을 짓고, 봇이 겨눌 노드를 사전으로 돌려준다.
-##   `play_<key>(stage, bot, refs)`           그 노드를 진짜 입력으로 조작한다.
+## One scene = **two** functions.
+##   `build_<key>(stage, bot) -> Dictionary`  builds the screen and returns, in a dictionary, the nodes the bot will aim at.
+##   `play_<key>(stage, bot, refs)`           works those nodes with real input.
 ##
-## 둘로 나눈 이유 — 사이드바에서 위젯 하나를 고르면 `build_` 만 불러 **사람이 직접** 만지고(탐색),
-## "Play this" 를 누르면 같은 화면 위에서 `play_` 가 봇을 움직인다(시연). 화면은 한 벌이다.
+## Why they are split — pick one widget in the sidebar and only `build_` is called, for **you** to work by hand (explore);
+## press "Play this" and `play_` moves the bot over the same screen (demonstrate). There is one screen.
 ##
-## 조작은 전부 진짜 입력이라 위젯의 콜백이 실제로 불리고, 그 콜백이 오른쪽 기록줄에 한 줄씩
-## 남는다 — 기록줄이 곧 "정말 눌렸다"는 증거다. 사람이 만져도 같은 기록줄이 움직인다.
+## Every action is real input, so the widgets' callbacks really fire, and each callback leaves a line in the log on the
+## right — the log is the proof that "it really was pressed". Work it yourself and the same log moves.
 ##
-## 🛑 사람이 눌러 주기를 **기다리지 않는다.** `await dialogs.confirm(…)` 처럼 응답을 기다리는
-##    호출은 건너뛰기가 걸렸을 때 영영 풀리지 않는다. 답은 시그널로 받는다.
-## 🛑 `build_` 는 봇 없이도 완결된 화면이어야 한다 — 봇만 할 수 있는 일(자료 도착, 투어 시작)은
-##    버튼으로 두고, `play_` 에서 봇이 그 버튼을 누른다.
+## 🛑 **Never wait for a person to press something.** A call that waits for an answer, such as
+##    `await dialogs.confirm(…)`, never comes back once skip is on. Answers arrive by signal.
+## 🛑 `build_` has to be a complete screen even with no bot — what only a bot can do (data arriving, starting a tour)
+##    is left as a button, and in `play_` the bot presses that button.
 class_name SimActs
 extends RefCounted
 
-## 🔬 판 불투명도 실험실 — **갤러리와 같은 위젯**을 쓴다. 데모마다 슬라이더를 다시 만들면 한쪽만
-## 고쳐지고, 그러면 무엇이 맞는 사용법인지 알 수 없게 된다.
+## 🔬 The container-opacity lab — it uses **the same widget as the gallery**. Rebuild the slider for every demo and only
+## one of them gets fixed, and then there is no telling which is the right way to use it.
 const OpacityLab := preload("res://addons/gohud/examples/gallery/opacity_lab.gd")
 
 
-## 장면 차례. 제목·설명·아이콘은 무대 머리글과 사이드바가 함께 쓴다. `hint` 는 탐색 모드의 안내.
+## The scene order. The title, note and icon are shared by the stage heading and the sidebar. `hint` is the guidance shown in explore mode.
 static func list() -> Array[Dictionary]:
 	return [
 		{"key": &"hud", "title": "HUD & quick slots", "icon": GoIconSet.POTION,
@@ -85,17 +85,17 @@ static func list() -> Array[Dictionary]:
 	]
 
 
-## 장면을 짓는다. 봇이 겨눌 노드를 사전으로 돌려준다.
+## Builds a scene. Returns, in a dictionary, the nodes the bot will aim at.
 func build(key: StringName, stage: SimStage, bot: SimBot) -> Dictionary:
 	return Callable(self, "build_" + key).call(stage, bot)
 
 
-## 지은 장면 위에서 봇을 움직인다.
+## Moves the bot over the scene that was built.
 func play(key: StringName, stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	await Callable(self, "play_" + key).call(stage, bot, refs)
 
 
-# ── 01 HUD 막대와 퀵 슬롯 ──────────────────────────────────────────────
+# ── 01 HUD bars and quick slots ────────────────────────────────────────
 
 func build_hud(stage: SimStage, bot: SimBot) -> Dictionary:
 	var bars := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
@@ -189,7 +189,7 @@ func play_hud(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	bot.expect(hp.value() == 500.0 and mp.value() == 120.0, "Camp restores bars")
 
 
-# ── 02 버튼 ────────────────────────────────────────────────────────────
+# ── 02 Buttons ─────────────────────────────────────────────────────────
 
 func build_buttons(stage: SimStage, bot: SimBot) -> Dictionary:
 	var made: Array[Button] = []
@@ -251,7 +251,7 @@ func play_buttons(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 03 입력 ────────────────────────────────────────────────────────────
+# ── 03 Inputs ──────────────────────────────────────────────────────────
 
 func build_inputs(stage: SimStage, bot: SimBot) -> Dictionary:
 	var name_edit := GoStyle.line_edit("Adventurer name")
@@ -336,7 +336,7 @@ func play_inputs(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 04 선택과 메뉴 ─────────────────────────────────────────────────────
+# ── 04 Selection and menus ─────────────────────────────────────────────
 
 func build_selection(stage: SimStage, bot: SimBot) -> Dictionary:
 	var klass := GoStyle.select(["Warrior", "Mage", "Ranger", "Engineer"], "Choose a class")
@@ -424,7 +424,7 @@ func play_selection(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 05 목록과 이동 ─────────────────────────────────────────────────────
+# ── 05 Lists and navigation ────────────────────────────────────────────
 
 func build_lists(stage: SimStage, bot: SimBot) -> Dictionary:
 	var trail := GoStyle.breadcrumb(["Home", "Inventory", "Weapons"], func(index: int) -> void:
@@ -496,7 +496,7 @@ func play_lists(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 06 데이터 표시 ─────────────────────────────────────────────────────
+# ── 06 Data display ────────────────────────────────────────────────────
 
 func build_data(stage: SimStage, bot: SimBot) -> Dictionary:
 	var people := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
@@ -515,7 +515,7 @@ func build_data(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(holder)
 	for index in 3:
 		holder.add_child(GoStyle.skeleton(0.0, 16.0))
-	# 자료가 "도착하는" 순간을 버튼으로 둔다 — 사람이 눌러도, 봇이 눌러도 같은 일이 일어난다.
+	# The moment the data "arrives" is left as a button — the same thing happens whether a person or the bot presses it.
 	var loaded := {"done": false}
 	var load := GoStyle.button("Load inventory", func() -> void:
 		if loaded.done: return
@@ -552,7 +552,7 @@ func play_data(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 07 상태와 알림 ─────────────────────────────────────────────────────
+# ── 07 Status and notices ──────────────────────────────────────────────
 
 func build_states(stage: SimStage, bot: SimBot) -> Dictionary:
 	var holder := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
@@ -606,7 +606,7 @@ func build_states(stage: SimStage, bot: SimBot) -> Dictionary:
 func play_states(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	var alerts: Array[Control] = refs.alerts
 	var bar: ProgressBar = refs.bar
-	# 시연에서는 알림이 하나씩 나타난다 — 탐색에서는 처음부터 다 보인다.
+	# In the demonstration the alerts appear one at a time — in explore mode they are all there from the start.
 	for alert in alerts: alert.visible = false
 	await bot.settle()
 	if bot.skipping():
@@ -630,7 +630,7 @@ func play_states(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 	await bot.wait(1.6)
 	if bot.skipping(): return
-	# 🛑 진행은 트윈이라 배속을 안 탄다 — 4배속 검사에서는 아직 도중일 수 있다. 시작만 확인한다.
+	# 🛑 The progress is a tween and does not follow the speed — at 4× the check may still be mid-run. Only the start is confirmed.
 	bot.expect(bar.value > 0.0, "Download is running")
 	await bot.click(refs.shout, "A temporary notice appears, then fades away.")
 	if bot.skipping(): return
@@ -642,7 +642,7 @@ func play_states(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 08 대화상자·시트·팝업 ──────────────────────────────────────────────
+# ── 08 Dialogs, sheets and popups ──────────────────────────────────────
 
 func build_surfaces(stage: SimStage, bot: SimBot) -> Dictionary:
 	var dialogs := GoDialogs.new()
@@ -662,7 +662,7 @@ func build_surfaces(stage: SimStage, bot: SimBot) -> Dictionary:
 		dialogs.alert("Connection lost", "Unable to reach the server. Please try again later.", "Got it"))
 	stage.body.add_child(tell)
 
-	# 시트 — 아래에서 올라와 목록을 담는다. 한 벌을 두고 열 때마다 다시 채운다.
+	# The sheet — it rises from the bottom and holds a list. One is kept and refilled each time it opens.
 	stage.body.add_child(GoStyle.section("Bottom sheet", false))
 	var sheet := GoSheet.new()
 	stage.add_child(sheet)
@@ -673,11 +673,11 @@ func build_surfaces(stage: SimStage, bot: SimBot) -> Dictionary:
 		for index in 20:
 			sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, "Item %d" % (index + 1),
 				bot.note.bind("Sheet: item %d" % (index + 1)), Color.TRANSPARENT, "A short description", false))
-		sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))   # 다음 open() 이 치운다
+		sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))   # the next open() clears it
 		bot.note("Sheet opened: 20 items"))
 	stage.body.add_child(open_sheet)
 
-	# 팝업 — 가운데 떠서 배경을 어둡게 한다. 누를 때마다 새로 만들고, 닫히면 제 레이어와 함께 사라진다.
+	# The popup — it floats in the middle and dims the background. A new one is made per press, and on closing it goes with its own layer.
 	stage.body.add_child(GoStyle.section("Centered popup", false))
 	var popup := {"got": null}
 	var open_popup := GoStyle.button("Open popup", func() -> void:
@@ -765,7 +765,7 @@ func play_surfaces(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 09 권유 카드 ───────────────────────────────────────────────────────
+# ── 09 Prompt cards ────────────────────────────────────────────────────
 
 func build_prompt(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(GoStyle.label(
@@ -794,7 +794,7 @@ func build_prompt(stage: SimStage, bot: SimBot) -> Dictionary:
 	card.fit_width(300)
 	stage.float_at(card, Control.PRESET_CENTER_RIGHT)
 	card.show()
-	# 탐색 모드에서 닫은 카드를 다시 부를 수 있어야 한다.
+	# A card closed in explore mode has to be callable back.
 	var again := GoStyle.button("Send the invitation again", func() -> void:
 		reset.call()
 		card.show()
@@ -824,7 +824,7 @@ func play_prompt(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 10 터치 컨트롤 ─────────────────────────────────────────────────────
+# ── 10 Touch controls ──────────────────────────────────────────────────
 
 func build_touch(stage: SimStage, bot: SimBot) -> Dictionary:
 	var readout := GoStyle.label("Stick: 0.00, 0.00", GoTheme.ROLE_SUBTITLE)
@@ -915,7 +915,7 @@ func play_touch(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 11 코치마크 투어 ───────────────────────────────────────────────────
+# ── 11 The coach mark tour ─────────────────────────────────────────────
 
 func build_coach(stage: SimStage, bot: SimBot) -> Dictionary:
 	var bar := GoBar.new()
@@ -972,8 +972,8 @@ func play_coach(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 	await bot.wait(1.4)
 	if bot.skipping(): return
-	# 🛑 가리킨 것을 누르면 투어가 **스스로** 다음으로 넘어간다 — 여기서 '다음'을 또 누르면
-	#    끝난 투어의 없는 버튼을 겨누게 된다.
+	# 🛑 Pressing what it points at moves the tour on **by itself** — press 'Next' again here and you aim at a button
+	#    that is no longer there, on a tour that has finished.
 	await bot.click(refs.slot, "Click the highlighted slot to advance the tour.")
 	if bot.skipping(): return
 	await bot.wait(1.4)
@@ -984,7 +984,7 @@ func play_coach(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 12 스크롤과 반응형 격자 ────────────────────────────────────────────
+# ── 12 Scrolling and responsive grids ──────────────────────────────────
 
 func build_scrolling(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(GoStyle.label(
@@ -1037,7 +1037,7 @@ func play_scrolling(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 13 반응형 폼 ───────────────────────────────────────────────────────
+# ── 13 Responsive forms ────────────────────────────────────────────────
 # Full-viewport widgets are mounted on a chapter-owned layer so cleanup is automatic.
 
 func build_forms(stage: SimStage, bot: SimBot) -> Dictionary:
@@ -1090,7 +1090,7 @@ func play_forms(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 14 HUD 앵커 ────────────────────────────────────────────────────────
+# ── 14 HUD anchors ─────────────────────────────────────────────────────
 
 func build_anchors(stage: SimStage, bot: SimBot) -> Dictionary:
 	var layer := _full_layer(stage)
@@ -1135,7 +1135,7 @@ func play_anchors(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 15 테마와 아이콘 ───────────────────────────────────────────────────
+# ── 15 Themes and icons ────────────────────────────────────────────────
 
 func build_theming(stage: SimStage, bot: SimBot) -> Dictionary:
 	var preview := PanelContainer.new()
@@ -1201,12 +1201,12 @@ func play_theming(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 16 판 불투명도 ─────────────────────────────────────────────────────
+# ── 16 Container opacity ───────────────────────────────────────────────
 #
-# 🔑 이 장면은 **갤러리와 같은 실험실 위젯**을 쓴다(`examples/gallery/opacity_lab.gd`) — 데모마다
-#    슬라이더를 다시 만들면 한쪽만 고쳐지고, 그러면 무엇이 맞는 사용법인지 알 수 없게 된다.
-# 🛑 여기서는 "프로젝트 전체에 적용" 을 보이지 않는다. 그 설정은 전역이라 장면을 떠난 뒤에도 남아
-#    다음 장면의 판까지 묽게 만든다 — 투어는 장면마다 처음 상태로 시작해야 한다.
+# 🔑 This scene uses **the same lab widget as the gallery** (`examples/gallery/opacity_lab.gd`) — rebuild the slider for
+#    every demo and only one of them gets fixed, and then there is no telling which is the right way to use it.
+# 🛑 "Apply to every panel" is not shown here. That setting is global, so it outlives the scene and thins the panels of
+#    the next one — a tour has to start each scene from the same state.
 
 func build_opacity(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(GoStyle.label(
@@ -1218,16 +1218,16 @@ func build_opacity(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(GoStyle.label(
 		"A theme ships the defaults, a project can override them, and one widget can always ask for "
 		+ "its own value.", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
-	# 🔑 되돌리기 버튼을 손으로 만질 수 있게 둔다 — 실험실의 전체 적용 버튼과 달리 이것은 이 장면의
-	#    미리보기만 건드린다.
+	# 🔑 The reset button is left where a hand can reach it — unlike the lab's apply-to-everything button, this one touches
+	#    only this scene's preview.
 	var restore := GoStyle.button("Back to the theme value",
 		_restore_opacity.bind(lab, bot), GoStyle.Tone.COMPACT)
 	stage.body.add_child(restore)
 	return {"lab": lab, "dial": lab.dial(), "restore": restore}
 
 
-## 🛑 여러 줄 람다 **뒤에 인자를 더 붙이지 않는다** — 람다 본문의 끝이 어디인지 파서가 알 수 없다.
-##    그래서 되돌리기는 이름 있는 함수로 둔다.
+## 🛑 **Never add an argument after a multi-line lambda** — the parser cannot tell where the lambda body ends.
+##    That is why the reset is a named function.
 func _restore_opacity(lab: OpacityLab, bot: SimBot) -> void:
 	lab.dial().value = GoUi.surface_alpha(GoTheme.BOX_CARD)
 	bot.note("Opacity: theme default")
@@ -1244,7 +1244,7 @@ func play_opacity(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 	await bot.wait(0.8)
 	if bot.skipping(): return
-	# 🛑 손잡이가 움직인 것으로는 모자란다 — **판에 박힌 값**을 읽어야 값이 도달했는지 알 수 있다.
+	# 🛑 The knob having moved is not enough — reading **the value baked into the panel** is what shows the value arrived.
 	bot.expect(lab.fill_alpha() < 0.5, "Panel fill follows the slider")
 	await bot.say("Too far: the stripes now fight the text. That is the floor, not a target.")
 	if bot.skipping(): return
@@ -1259,9 +1259,9 @@ func play_opacity(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 거들기 ─────────────────────────────────────────────────────────────
+# ── Helpers ────────────────────────────────────────────────────────────
 
-## 화면 전체를 덮는 장면의 바탕 레이어. 무대가 비워질 때 함께 사라진다.
+## The base layer of a scene that covers the whole screen. It goes when the stage is cleared.
 static func _full_layer(stage: SimStage) -> CanvasLayer:
 	var layer := CanvasLayer.new()
 	layer.layer = 60
@@ -1273,15 +1273,15 @@ static func _full_layer(stage: SimStage) -> CanvasLayer:
 	return layer
 
 
-## 화면 전체를 덮는 장면에서 위젯 목록으로 돌아가는 버튼 — 사이드바가 가려져 있으므로 필요하다.
-## 봇은 이것을 누르지 않는다.
+## The button back to the widget list from a scene that covers the whole screen — needed because the sidebar is hidden.
+## The bot does not press it.
 static func _back_button(stage: SimStage) -> Button:
 	var back := GoStyle.button("Back to widgets", stage.leave_requested.emit, GoStyle.Tone.BARE)
 	back.name = "BackToWidgets"
 	return back
 
 
-## 글자로 버튼을 찾는다 — 위젯이 속을 감춰 두었을 때.
+## Finds a button by its text — for when a widget keeps its insides to itself.
 static func _find_button(root: Node, text: String) -> Button:
 	for child in root.get_children():
 		if child is Button and (child as Button).text == text: return child
@@ -1290,11 +1290,11 @@ static func _find_button(root: Node, text: String) -> Button:
 	return null
 
 
-# ── 17 기다림과 세기 ───────────────────────────────────────────────────
+# ── 17 Waiting and counting ────────────────────────────────────────────
 
 func build_waiting(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(GoStyle.section("A wait with no end in sight", false))
-	# 🔑 스피너는 **버튼 자리에서** 돈다. 따로 띄우면 버튼은 여전히 눌리고, 느린 요청이 두 번 간다.
+	# 🔑 The spinner turns **in the button's place**. Float it separately and the button is still pressable, and a slow request goes twice.
 	var slow := GoStyle.button("Save to the cloud", Callable(), GoStyle.Tone.PRIMARY)
 	var busy := {"runs": 0}
 	slow.pressed.connect(func() -> void:
@@ -1311,7 +1311,7 @@ func build_waiting(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.add_child(snackbar)
 	var undone := {"count": 0}
 	var drop := GoStyle.button("Drop the iron sword", func() -> void:
-		# 🛑 `post()` 를 `await` 로 붙들지 않는다 — 여기서 기다리면 장면이 멈춘다. 답은 콜백으로 받는다.
+		# 🛑 Do not hold `post()` with `await` — waiting here stops the scene. The answer comes back through the callback.
 		var answer: int = await snackbar.post({"text": "Iron sword dropped", "actions": ["Undo"],
 			"tone": GoTheme.WARNING, "seconds": 6.0})
 		if answer == 0:
@@ -1328,7 +1328,7 @@ func build_waiting(stage: SimStage, bot: SimBot) -> Dictionary:
 	marks.add_child(mail)
 	var shop := GoStyle.button("Shop", Callable(), GoStyle.Tone.COMPACT)
 	marks.add_child(shop)
-	# 🛑 배지는 앵커로 모서리에 걸린다 — 자리가 정해진 **다음 프레임**에 붙인다.
+	# 🛑 A badge hangs on the corner by anchors — attach it **on the frame after** its place is settled.
 	GoBadge.attach.call_deferred(mail, 3)
 	GoBadge.attach.call_deferred(shop, 0, "NEW")
 
@@ -1371,7 +1371,7 @@ func play_waiting(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-## 떠 있는 스낵바의 첫 버튼. 🔑 봇이 누르려면 **실제 노드**가 필요하다 — 없으면 null.
+## The first button of the floating snackbar. 🔑 For the bot to press it, **a real node** is needed — null if there is none.
 func _snackbar_action(snackbar: GoSnackbar) -> Button:
 	for node in _descendants(snackbar):
 		if node is Button and (node as Button).text != "": return node as Button
@@ -1386,7 +1386,7 @@ func _descendants(node: Node) -> Array:
 	return out
 
 
-# ── 18 칸과 고르개 ─────────────────────────────────────────────────────
+# ── 18 Fields and pickers ──────────────────────────────────────────────
 
 func build_fields(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(GoStyle.section("The row that can be wrong", false))
@@ -1398,7 +1398,7 @@ func build_fields(stage: SimStage, bot: SimBot) -> Dictionary:
 	submit.pressed.connect(func() -> void:
 		var typed: String = (guild.control as LineEdit).text.strip_edges()
 		if typed.length() < 2:
-			# 🛑 서버가 준 문장은 번역 키가 아니다 — 그대로 싣는다.
+			# 🛑 A sentence the server sent is not a translation key — it goes in as it is.
 			guild.set_error("Enter at least two characters")
 			tries.errors += 1
 			bot.note("The error landed on the guild name row")
@@ -1451,7 +1451,7 @@ func play_fields(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
-# ── 19 게임이 쓰는 모양 ────────────────────────────────────────────────
+# ── 19 Shapes games use ────────────────────────────────────────────────
 
 func build_shapes(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(GoStyle.section("Daily attendance", false))
@@ -1469,7 +1469,7 @@ func build_shapes(stage: SimStage, bot: SimBot) -> Dictionary:
 
 	stage.body.add_child(GoStyle.section("Stats at a glance", false))
 	var shapes := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
-	# 🛑 값은 0~1 로 정규화한다 — 힘 120 과 지능 45 를 그대로 그리면 모양이 거짓말을 한다.
+	# 🛑 Normalise the values to 0–1 — drawing STR 120 and INT 45 as they are makes the shape lie.
 	var radar := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45},
 		{"STR": 0.92, "AGI": 0.44, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 	radar.custom_minimum_size = Vector2(150, 150)
@@ -1492,7 +1492,7 @@ func build_shapes(stage: SimStage, bot: SimBot) -> Dictionary:
 		card.add_child(inset)
 		inset.add_child(GoStyle.label(str(spec[0]), GoTheme.ROLE_SUBTITLE, GoUi.color(spec[1])))
 		banners.append(card)
-	# 🛑 `autoplay_seconds` 는 0 인 채로 둔다 — 저절로 넘어가는 배너는 사람이 누르려던 것을 가로챈다.
+	# 🛑 Leave `autoplay_seconds` at 0 — a banner that moves on by itself steals what someone was about to press.
 	carousel.set_pages(banners)
 	stage.body.add_child(carousel)
 	return {"calendar": calendar, "claims": claims, "radar": radar, "donut": donut, "carousel": carousel}

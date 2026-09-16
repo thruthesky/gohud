@@ -1,53 +1,53 @@
-## 🕸 **스탯 육각형** — 캐릭터의 힘·민첩·지능·체력·행운을 한 그림으로.
+## 🕸 **The stat hexagon** — a character's strength, agility, intelligence, vitality and luck in one picture.
 ##
 ## ```gdscript
-## var stats := GoRadar.make({"힘": 0.8, "민첩": 0.5, "지능": 0.3, "체력": 0.7, "행운": 0.4})
+## var stats := GoRadar.make({"STR": 0.8, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.4})
 ## card.add_child(stats)
 ##
-## # 장비를 바꾸면 어떻게 되는지 겹쳐 본다
-## stats.set_compare({"힘": 0.9, "민첩": 0.4, "지능": 0.3, "체력": 0.7, "행운": 0.4})
+## # Overlay what it would look like with different gear
+## stats.set_compare({"STR": 0.9, "AGI": 0.4, "INT": 0.3, "VIT": 0.7, "LUK": 0.4})
 ## ```
 ##
-## ## 🔑 범용 차트가 아니다
-## 게임에서 쓰는 방사형 그림은 **캐릭터·장비 비교** 한 가지다. 축 눈금·범례·툴팁이 붙은 차트
-## 라이브러리를 들이면 그 대부분이 쓰이지 않는다. 여기 있는 것은 축 이름, 0~1 값, 그리고
-## **겹쳐 보기** 뿐이다.
+## ## 🔑 It is not a general-purpose chart
+## A radar shape in a game is used for exactly one thing: **comparing characters and gear**. Pull in a charting
+## library with axis ticks, legends and tooltips and most of it goes unused. What is here is axis names, 0~1 values,
+## and **overlaying one on another** — nothing more.
 ##
-## ## 🛑 값은 0~1 로 정규화해 넘긴다
-## 힘 120 과 지능 45 를 그대로 그리면 축마다 기준이 달라 모양이 거짓말을 한다. 무엇을 1 로 볼지는
-## 게임이 정한다(그 직업의 상한? 서버 1위?) — 그 판단을 위젯이 대신할 수 없다.
+## ## 🛑 Normalize the values to 0~1 before passing them in
+## Draw strength 120 and intelligence 45 as they are and every axis has its own scale, so the shape lies. What counts
+## as 1 is for the game to decide (the cap for that class? the server's number one?) — a widget cannot make that call for you.
 ##
-## ## ♿ 그림만으로는 읽히지 않는다
-## 값을 축 이름과 함께 스크린리더 이름으로 준다. 색각 이상인 사람을 위해 비교선은 **색만이 아니라
-## 점선**으로도 구별된다.
+## ## ♿ A picture on its own reads as nothing
+## The values go into the screen-reader name along with the axis names. For people with a color vision deficiency the
+## comparison outline is told apart by **more than color — it is dashed** as well.
 @tool
 class_name GoRadar
 extends Control
 
-## 축 이름 → 값(0~1).
+## Axis name → value (0~1).
 var values: Dictionary = {}
-## 겹쳐 그릴 값(장비 비교). 비어 있으면 안 그린다.
+## The values to overlay (a gear comparison). Nothing is drawn while it is empty.
 var compare: Dictionary = {}
 
-## 면을 채우는 색. 비우면 테마 강조색.
+## The fill color of the area. Empty means the theme's accent color.
 @export var ink := Color.TRANSPARENT:
 	set(value):
 		ink = value
 		queue_redraw()
 
-## 비교선 색. 비우면 테마 경고색.
+## The color of the comparison outline. Empty means the theme's warning color.
 @export var compare_ink := Color.TRANSPARENT:
 	set(value):
 		compare_ink = value
 		queue_redraw()
 
-## 축 이름을 그릴 것인가. 🛑 작은 칸(60dp 아래)에서는 글자가 겹치므로 끈다.
+## Whether to draw the axis names. 🛑 In a small cell (under 60dp) the text overlaps, so turn it off.
 @export var show_labels := true:
 	set(value):
 		show_labels = value
 		queue_redraw()
 
-## 안쪽 거미줄을 몇 겹 그릴 것인가.
+## How many rings of web to draw inside.
 @export var rings := 3:
 	set(value):
 		rings = maxi(1, value)
@@ -90,7 +90,7 @@ func set_compare(stats: Dictionary) -> void:
 
 func _draw() -> void:
 	var axes := values.keys()
-	# 🛑 축이 셋보다 적으면 면이 되지 않는다 — 선 하나·점 하나를 그려 놓고 "그래프" 라고 하지 않는다.
+	# 🛑 With fewer than three axes there is no area — we don't draw a single line or dot and call it a "graph".
 	if axes.size() < 3: return
 	var box := minf(size.x, size.y)
 	var pad := float(GoUi.font_size(GoTheme.ROLE_MICRO)) * 2.2 if show_labels else 4.0
@@ -99,7 +99,7 @@ func _draw() -> void:
 	var center := size * 0.5
 	var web := Color(GoUi.color(GoTheme.BORDER), 0.55)
 
-	# 거미줄 — 값을 눈대중으로 읽을 수 있게 하는 격자다.
+	# The web — the grid that lets you eyeball the values.
 	for ring in range(1, rings + 1):
 		var r := radius * float(ring) / float(rings)
 		var points := PackedVector2Array()
@@ -109,11 +109,11 @@ func _draw() -> void:
 	for i in axes.size():
 		draw_line(center, center + _spoke(i, axes.size()) * radius, web, 1.0, true)
 
-	# 값 면
+	# The value area
 	var fill := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
 	_draw_shape(center, radius, axes, values, fill, true, false)
 
-	# 비교선 — 🔑 **점선**으로 그린다. 색만 다르면 색각 이상인 사람에게는 두 줄이 겹쳐 보인다.
+	# The comparison outline — 🔑 drawn **dashed**. Differ only in color and the two outlines look like one to someone with a color vision deficiency.
 	if not compare.is_empty():
 		var other := compare_ink if compare_ink.a > 0 else GoUi.color(GoTheme.WARNING)
 		_draw_shape(center, radius, axes, compare, other, false, true)
@@ -128,13 +128,13 @@ func _draw() -> void:
 		var dir := _spoke(i, axes.size())
 		var at := center + dir * (radius + font_size * 0.9)
 		var measured := font.get_string_size(name, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
-		# 축이 어느 쪽을 보느냐에 따라 글자를 당겨 붙인다 — 안 하면 왼쪽 축 이름이 그림에 겹친다.
+		# Pull the text in depending on which way the axis points — without this the left-hand axis names overlap the drawing.
 		at.x -= measured.x * (0.5 + dir.x * 0.5)
 		at.y += measured.y * 0.35
 		draw_string(font, at, name, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_ink)
 
 
-## 값 하나를 면(또는 선)으로 그린다.
+## Draws one set of values as an area (or an outline).
 func _draw_shape(center: Vector2, radius: float, axes: Array, source: Dictionary,
 		color: Color, filled: bool, dashed: bool) -> void:
 	var points := PackedVector2Array()
@@ -151,7 +151,7 @@ func _draw_shape(center: Vector2, radius: float, axes: Array, source: Dictionary
 	if not dashed:
 		draw_polyline(outline, color, 2.0, true)
 		return
-	# 점선 — 각 변을 조각내어 한 칸 띄어 그린다.
+	# Dashes — each edge is cut into pieces and drawn with a gap between them.
 	for i in outline.size() - 1:
 		var from := outline[i]
 		var to := outline[i + 1]
@@ -165,16 +165,16 @@ func _draw_shape(center: Vector2, radius: float, axes: Array, source: Dictionary
 			walked += step
 
 
-## `index` 번째 축이 가리키는 방향. 🔑 첫 축이 **위**를 보게 한다 — 그러지 않으면 그림이 기울어 보인다.
+## The direction axis `index` points in. 🔑 The first axis points **up** — otherwise the whole shape looks tilted.
 func _spoke(index: int, total: int) -> Vector2:
 	var angle := -PI * 0.5 + TAU * float(index) / float(total)
 	return Vector2(cos(angle), sin(angle))
 
 
-## ♿ 그림을 못 보는 사람에게 값을 말로 준다.
+## ♿ Gives the values in words to someone who cannot see the picture.
 func _sync_accessibility() -> void:
-	# 🛑 **백분율 형식도 문구다** — 터키어는 기호를 앞에 붙이고(%50) 프랑스어는 띄운다.
-	#    `GoConfig.text_keys` 가 그래서 `bar_percent` 를 두었고, 여기서도 그것을 쓴다.
+	# 🛑 **A percent format is text too** — Turkish puts the sign in front (%50) and French puts a space before it.
+	#    That is why `GoConfig.text_keys` has `bar_percent`, and it is used here as well.
 	var parts: Array[String] = []
 	for key in values:
 		var share := GoUi.text(&"bar_percent").format({"percent": roundi(float(values[key]) * 100.0)})

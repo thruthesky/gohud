@@ -1,5 +1,5 @@
 {
-  "_help": "생성물 — 손으로 고치지 않는다. 원천은 core/go_skin.gd 와 themes/skins/go_skin_scifi.gd 의 @export 기본값이고, make_theme.py 가 파싱해 여기 적는다. 검사(presets · skins)가 GDScript 기본값과 대조해 파서를 지킨다.",
+  "_help": "Generated — do not edit by hand. The source is the @export defaults in core/go_skin.gd and themes/skins/go_skin_scifi.gd; make_theme.py parses them and writes them here. The checks (presets · skins) compare this against the GDScript defaults to guard the parser.",
   "default": {
     "chip_fill_alpha": 0.16,
     "chip_edge_alpha": 0.45,

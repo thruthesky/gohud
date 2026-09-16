@@ -1,37 +1,41 @@
 # -*- coding: utf-8 -*-
-"""문서에 적힌 gohud API 가 **실제로 있는가** 를 본다.
+"""Check that the gohud API written in the docs **really exists**.
 
-    python3 addons/gohud/tools/check_docs_api.py           # 문서 전부
-    python3 addons/gohud/tools/check_docs_api.py --list     # 어떤 클래스의 무엇을 아는지 보여만 준다
+    python3 addons/gohud/tools/check_docs_api.py           # every document
+    python3 addons/gohud/tools/check_docs_api.py --list     # only show what it knows about which class
 
-## 왜 필요한가 (2026-09-16 실측)
+## Why it is needed (measured 2026-09-16)
 
-새 위젯 열여덟을 문서에 적으면서, **코드를 열어 보지 않고 기억으로 쓴 호출이 아홉 군데 틀렸다.**
+While writing up eighteen new widgets, **nine calls written from memory without opening the code
+were wrong.**
 
-| 문서에 적힌 것 | 실제 |
+| Written in the docs | Reality |
 |---|---|
-| `coupon.shake()` | 그런 것은 없다 — `set_error(message)` |
-| `GoTable.make(cols, rows, 1, false)` | 셋째 인자는 `selectable` — 정렬은 `sort_by()` |
-| `GoPagination.Mode.MORE` | 그런 enum 은 없다 — `GoPagination.more(action)` |
-| `calendar.claim_requested` | 신호 이름은 `claimed` |
-| `console.register(name, action, help)` | 인자 차례가 `(command, help, action)` |
-| `field.control()` | 메서드가 아니라 **속성** `field.control` |
+| `coupon.shake()` | no such thing — `set_error(message)` |
+| `GoTable.make(cols, rows, 1, false)` | the third argument is `selectable` — sorting is `sort_by()` |
+| `GoPagination.Mode.MORE` | no such enum — `GoPagination.more(action)` |
+| `calendar.claim_requested` | the signal is named `claimed` |
+| `console.register(name, action, help)` | the argument order is `(command, help, action)` |
+| `field.control()` | not a method but a **property**, `field.control` |
 
-문서는 사람이 **그대로 베껴 쓰는 것**이라 틀린 한 줄이 곧 남의 파싱 오류가 된다. 게다가 이런 것은
-검사도 사람도 잘 못 잡는다 — 코드가 아니라 글이기 때문이다. 그래서 글에서 호출을 뽑아 코드와 맞춰 본다.
+Docs are **copied verbatim** by people, so one wrong line becomes someone else's parse error. And
+this kind of mistake is caught poorly by tests and by people alike — it is prose, not code. So we
+pull the calls out of the prose and match them against the code.
 
-## 어떻게 보나
+## How it looks
 
-1. `core/`·`widgets/`·`services/`·`themes/` 에서 클래스마다 **제 멤버**를 거둔다(함수·신호·상수·enum·변수).
-2. `extends` 를 따라 올라가며 gohud 조상의 멤버를 더한다. 엔진 클래스에 닿으면 거기서 멈추고,
-   그 클래스의 멤버는 Godot 에게 물어 본다(`ClassDB` — 없으면 그 검사만 건너뛴다).
-3. 문서의 코드 덩이에서 두 가지를 뽑는다.
-   - `GoTable.make(…)` 처럼 **클래스 이름으로 바로** 부르는 것
-   - `var board := GoTable.make(…)` · `var t: GoTable` 로 **타입이 드러난 지역 변수**의 `board.sort_by(…)`
-4. 어느 쪽에도 없는 이름을 적는다.
+1. Collect each class's **own members** from `core/`, `widgets/`, `services/` and `themes/`
+   (functions, signals, constants, enums, variables).
+2. Walk up `extends` and add the members of gohud ancestors. Stop at an engine class and ask Godot
+   for that class's members (`ClassDB` — if that is unavailable, skip only that check).
+3. Pull two kinds of things out of the code blocks in the docs.
+   - calls made **straight on a class name**, like `GoTable.make(…)`
+   - `board.sort_by(…)` on a **local variable whose type is visible** from
+     `var board := GoTable.make(…)` or `var t: GoTable`
+4. Report any name that is in neither.
 
-🛑 **모르는 것을 틀렸다고 하지 않는다.** 타입을 모르는 변수, 엔진 멤버 목록을 못 얻은 경우는 건너뛴다 —
-거짓 경고가 쌓이면 이 검사는 아무도 안 보게 된다.
+🛑 **Never call unknown wrong.** Variables of unknown type, and cases where the engine member list
+could not be obtained, are skipped — once false alarms pile up nobody reads this check any more.
 """
 import json
 import os
@@ -48,10 +52,10 @@ DOC_GLOBS = [
 	("", "README.ko.md"),
 	("www", ".html"),
 ]
-# 엔진 멤버를 물어 볼 클래스 — gohud 가 상속하는 것들. 못 물어 보면 그 클래스 밑은 검사하지 않는다.
+# Classes whose engine members we ask for — the ones gohud extends. If we cannot ask, nothing below them is checked.
 CACHE = os.path.join(HERE, "__pycache__", "engine_members.json")
 
-# GDScript·엔진의 낱말 — 멤버가 아니지만 글에서 코드처럼 적는다.
+# GDScript and engine words — not members, but the prose writes them like code.
 KEYWORDS = {"class_name", "canvas_items", "corner_radius", "content_margin", "set_theme",
 	"extends", "func_name", "res_path"}
 
@@ -67,14 +71,14 @@ def sources():
 
 
 def literals():
-	"""소스에 적힌 **이름 문자열**을 거둔다.
+	"""Collect the **name strings** written in the source.
 
-	🔑 토큰(`&"gap_tiny"`)·문구 키(`&"bar_percent"`)·입력 액션(`&"ui_open"`)은 상수의 **값**이라
-	   멤버 이름으로는 잡히지 않는다. 문서는 그 값을 그대로 쓰므로 함께 알아야 한다.
-	🔑 `class_name` 이 없는 스크립트(`core/go_runtime.gd`)의 멤버도 여기서 거둔다 — 그런 파일의
-	   신호 이름(`breakpoint_changed`)을 문서가 가리킨다.
+	🔑 Tokens (`&"gap_tiny"`), phrase keys (`&"bar_percent"`) and input actions (`&"ui_open"`) are the
+	   **values** of constants, so they are never caught as member names. The docs quote them verbatim.
+	🔑 Members of scripts with no `class_name` (`core/go_runtime.gd`) are collected here too — the docs
+	   point at signal names from such files (`breakpoint_changed`).
 	"""
-	# 🔑 파이썬 도구와 JSON 도 본다 — 팔레트·스킨 다이얼의 키(`cut_ratio`)는 거기에만 있다.
+	# 🔑 Look at the Python tools and the JSON too — palette and skin dial keys (`cut_ratio`) live only there.
 	names = set(KEYWORDS)
 	for root, dirs, files in os.walk(ADDON):
 		dirs[:] = [d for d in dirs if d not in (".git", ".godot", "builds", "__pycache__", "usage")]
@@ -88,9 +92,9 @@ def literals():
 			names.update(re.findall(r'&?["\']([a-z][a-z0-9]*(?:_[a-z0-9]+)+)["\']', text))
 			if not name.endswith(".gd"):
 				continue
-			# 🔑 **이름: 타입** 을 전부 거둔다 — 함수의 매개변수가 여기 든다(`tooltip_key: StringName`).
-			#    여러 줄로 이어진 시그니처가 흔하므로 줄 단위로 `func` 를 찾지 않는다. 지역 변수까지
-			#    섞여 관대해지지만, 이 검사의 목적은 **없는 이름을 잡는 것**이지 이름을 세는 것이 아니다.
+			# 🔑 Collect every **name: Type** — a function's parameters land here (`tooltip_key: StringName`).
+			#    Signatures often wrap across lines, so we do not scan for `func` line by line. Local variables
+			#    get mixed in and make it lenient, but this check exists to **catch names that do not exist**, not to count them.
 			names.update(re.findall(r"\b([a-z][a-z0-9_]*)\s*:\s*[A-Z]", text))
 			for line in text.splitlines():
 				match = MEMBER.match(line)
@@ -100,8 +104,8 @@ def literals():
 	return names
 
 
-# 🛑 `@export var`·`static var`·`@onready var` 를 빠뜨리면 **있는 속성을 없다고 한다** — 처음 돌렸을 때
-#    `GoBar.ink`·`GoHudAnchor.spot` 이 그래서 거짓 경고로 나왔다(411 건 중 대부분).
+# 🛑 Miss `@export var`, `static var` or `@onready var` and it **calls existing properties missing** — on the
+#    first run `GoBar.ink` and `GoHudAnchor.spot` came out as false alarms that way (most of the 411 hits).
 MEMBER = re.compile(
 	r"^\s*(?:@\w+(?:\([^)]*\))?\s+)*"          # @export · @export_range(…) · @onready …
 	r"(?:static\s+)?"                            # static var · static func
@@ -112,7 +116,7 @@ MEMBER = re.compile(
 	r"|enum\s+([A-Z][A-Za-z0-9_]*)"
 	r"|class\s+([A-Z][A-Za-z0-9_]*))")
 
-# 🔑 어느 클래스에나 있는 것 — `ClassDB` 는 생성자를 멤버로 내놓지 않는다.
+# 🔑 Present on every class — `ClassDB` does not list the constructor as a member.
 ALWAYS = {"new"}
 
 
@@ -120,10 +124,10 @@ RETURNS = re.compile(r"^\s*(?:static\s+)?func\s+([a-z_][A-Za-z0-9_]*)\s*\(.*?\)\
 
 
 def scan_sources():
-	"""클래스 → (제 멤버, 부모 이름, 메서드의 반환형).
+	"""class -> (own members, parent name, method return types).
 
-	🛑 반환형이 있어야 `var column := GoStyle.column()` 의 타입을 안다 — 그것을 `GoStyle` 로 보면
-	   뒤따르는 `column.add_child(…)` 가 죄다 거짓 경고가 된다(처음 돌렸을 때 21 건이 그랬다).
+	🛑 Return types are what tell us the type of `var column := GoStyle.column()` — read as `GoStyle`,
+	   every following `column.add_child(…)` turns into a false alarm (21 of them on the first run).
 	"""
 	own, parent, returns = {}, {}, {}
 	for path in sources():
@@ -139,7 +143,7 @@ def scan_sources():
 			match = MEMBER.match(line)
 			if match:
 				names.update(part for part in match.groups() if part)
-			# enum 안의 값은 `GoDrawer.Side.LEFT` 로 쓰이므로 함께 거둔다.
+			# Values inside an enum are written as `GoDrawer.Side.LEFT`, so collect them too.
 			for value in re.findall(r"^\t([A-Z][A-Z0-9_]*)\s*(?:,|=|##|$)", line):
 				names.add(value)
 		own[name] = names
@@ -151,7 +155,7 @@ def scan_sources():
 
 
 def engine_members(classes):
-	"""Godot 에게 그 엔진 클래스의 멤버를 묻는다. 못 물어 보면 빈 표 — 그러면 그 밑은 검사하지 않는다."""
+	"""Ask Godot for that engine class's members. If we cannot ask, an empty table — then nothing below it is checked."""
 	if os.path.exists(CACHE):
 		try:
 			cached = json.load(open(CACHE, encoding="utf-8"))
@@ -175,8 +179,8 @@ func _initialize() -> void:
 		for row in ClassDB.class_get_property_list(name): names.append(row["name"])
 		for row in ClassDB.class_get_signal_list(name): names.append(row["name"])
 		out[name] = names
-	# 🔑 "*" 는 엔진 **전체**의 이름 묶음이다 — 글 속에 적힌 `mouse_filter` 같은 이름이 실재하는지
-	#    보려면 어느 클래스의 것인지 모르는 채로도 물어볼 수 있어야 한다.
+	# 🔑 "*" is the bundle of **every** engine name — to tell whether a name written in prose, such as
+	#    `mouse_filter`, is real, we have to be able to ask without knowing which class owns it.
 	var every := {}
 	for name in ClassDB.get_class_list():
 		for row in ClassDB.class_get_method_list(name, true): every[row["name"]] = true
@@ -252,10 +256,10 @@ def code_blocks(path):
 
 
 def uncomment(block):
-	"""주석을 걷어낸다.
+	"""Strip the comments.
 
-	🛑 이것이 없으면 **주석에 적은 예시가 진짜 선언으로 읽힌다** — "이렇게 쓰지 말라" 며 적어 둔
-	   `var hud: CanvasLayer` 한 줄 때문에 그 블록 전체가 거짓 경고를 냈다(2026-09-16 실측).
+	🛑 Without this, **an example written in a comment reads as a real declaration** — a single
+	   `var hud: CanvasLayer` line left there to say "do not write it this way" made the whole block false-alarm (measured 2026-09-16).
 	"""
 	out = []
 	for line in block.splitlines():
@@ -286,7 +290,7 @@ USE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\.([a-z_][A-Za-z0-9_]*|[A-Z][A-Za-z
 def main():
 	own, parent, returns = scan_sources()
 	needed = {base for base in parent.values() if base and base not in own}
-	# 🔑 문서가 쓰는 반환형이 엔진 클래스면 그 멤버도 물어 봐야 `column.add_child(…)` 를 볼 수 있다.
+	# 🔑 If a return type the docs use is an engine class, we must ask for its members too to see `column.add_child(…)`.
 	needed |= {kind for kind in returns.values() if kind not in own and kind[:1].isupper()}
 	engine = engine_members(needed)
 
@@ -300,15 +304,15 @@ def main():
 		return set(engine.get(name, [])) | ALWAYS
 
 	def known(name):
-		"""그 클래스의 멤버를 **끝까지** 알 수 있는가 — 모르면 검사하지 않는다."""
+		"""Can we know that class's members **all the way up**? If not, do not check it."""
 		while name in own:
 			name = parent.get(name, "")
 		return not name or name in engine
 
 	if "--list" in sys.argv:
 		for name in sorted(own):
-			print("%-20s %s → %d 개%s" % (name, parent.get(name, "?"), len(members(name)),
-				"" if known(name) else "  (엔진 멤버를 못 얻어 검사하지 않는다)"))
+			print("%-20s %s → %d members%s" % (name, parent.get(name, "?"), len(members(name)),
+				"" if known(name) else "  (engine members unavailable — not checked)"))
 		return 0
 
 	problems = []
@@ -328,7 +332,7 @@ def main():
 			for match in USE.finditer(block):
 				head, member = match.group(1), match.group(2)
 				target = head if head in own else types.get(head)
-				# 🛑 타입을 모르거나, 그 클래스의 멤버를 끝까지 알 수 없으면 **묻지 않는다.**
+				# 🛑 If the type is unknown, or that class's members cannot be known all the way up, **do not ask.**
 				if not target or (target not in own and target not in engine):
 					continue
 				if not known(target):
@@ -337,10 +341,10 @@ def main():
 					continue
 				problems.append((rel, line_of(path, offset), target, member, head))
 
-	# ── 글 속에 적힌 멤버 이름 ────────────────────────────────────────
-	# 🛑 코드 덩이만 보면 **산문에 적은 이름은 그냥 지나간다** — 2026-09-16 에 `hide_on_handheld` 를
-	#    세 문서에서 `hide_on_touch` 로 적었고, 위의 검사는 그것을 하나도 잡지 못했다.
-	#    밑줄이 든 소문자 이름은 영어 낱말이 아니라 거의 언제나 코드의 이름이다.
+	# ── member names written in the prose ─────────────────────────────
+	# 🛑 Looking only at code blocks lets **names written in prose slip straight past** — on 2026-09-16
+	#    `hide_on_handheld` was written as `hide_on_touch` in three documents, and the check above caught none of it.
+	#    A lowercase name with an underscore is almost never an English word — it is nearly always a name from the code.
 	everything = set()
 	for names in own.values():
 		everything |= names
@@ -362,17 +366,17 @@ def main():
 			continue
 		seen.add(key)
 		if target == "(prose)":
-			print("   🛑 %s:%d — 글에 적힌 `%s` 라는 이름이 어디에도 없다" % (rel, line, member))
+			print("   🛑 %s:%d — the name `%s` written in the prose exists nowhere" % (rel, line, member))
 			continue
-		via = "" if head == target else " (%s 는 %s)" % (head, target)
-		print("   🛑 %s:%d — %s 에 `%s` 가 없다%s" % (rel, line, target, member, via))
-	print("문서 %d장 · gohud 클래스 %d개 · 엔진 클래스 %d개%s"
+		via = "" if head == target else " (%s is a %s)" % (head, target)
+		print("   🛑 %s:%d — %s has no `%s`%s" % (rel, line, target, member, via))
+	print("%d documents · %d gohud classes · %d engine classes%s"
 		% (len(list(docs())), len(own), len(engine),
-		   "" if engine else " 🛑 (Godot 을 못 불러 상속 멤버는 검사하지 않았다)"))
+		   "" if engine else " 🛑 (could not run Godot — inherited members were not checked)"))
 	if seen:
-		print("\n🛑 문서가 없는 API 를 가리킨다 — %d 곳" % len(seen))
+		print("\n🛑 the docs point at APIs that do not exist — %d places" % len(seen))
 		return 1
-	print("\n✅ 문서의 gohud 호출이 모두 실재한다")
+	print("\n✅ every gohud call in the docs is real")
 	return 0
 
 

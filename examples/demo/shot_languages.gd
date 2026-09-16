@@ -1,11 +1,11 @@
-## 언어 카드만 찍는다 — 21개 언어가 **실제로 그려지는지**(두부 □ 가 아닌지) 눈으로 확인하는 용도.
+## Captures the language card only — to see with your own eyes that all 21 languages really draw (and are not tofu □).
 extends SceneTree
 func _initialize() -> void: _run.call_deferred()
 func _run() -> void:
 	var demo: Control = load("res://demo.tscn").instantiate()
 	root.add_child(demo)
 	for frame in 10: await process_frame
-	# 데모는 페이지 맨 아래에 언어 카드를 둔다 — 스크롤을 끝까지 내린다.
+	# The demo puts the language card at the very bottom of the page — scroll all the way down.
 	var scroll := _find_scroll(demo)
 	if scroll != null:
 		scroll.scroll_vertical = 1 << 20

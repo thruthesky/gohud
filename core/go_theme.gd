@@ -1,20 +1,20 @@
-## 🎨 테마 **토큰 이름**과 조회. 색·치수·글자 크기를 부르는 이름이 여기 모여 있다.
+## 🎨 Theme **token names** and lookups. The names you call colors, metrics and font sizes by are gathered here.
 ##
-## ## 왜 이름을 상수로 두나
-## `theme.get_color("acent", "GoHud")` 의 오타는 조용히 검정을 돌려준다. 상수로 부르면
-## 컴파일이 잡아 준다 — `GoTheme.ACCENT`.
+## ## Why the names are constants
+## A typo in `theme.get_color("acent", "GoHud")` quietly hands back black. Called as a constant, the compiler
+## catches it — `GoTheme.ACCENT`.
 ##
-## ## 토큰이 사는 곳
-## 테마 안의 **`GoHud`** 타입이다 — `GoHud/colors/accent`, `GoHud/constants/touch`.
-## 프로젝트가 자기 테마를 넣었는데 이 타입이 없으면 `GoConfig.token_fallback` 이 켜져 있는 한
-## gohud 기본 테마에서 채운다. 그래서 **평범한 Theme 를 넣어도 위젯이 깨지지 않는다.**
+## ## Where the tokens live
+## In the **`GoHud`** type inside the theme — `GoHud/colors/accent`, `GoHud/constants/touch`.
+## If a project brought its own theme and that type is missing, they are filled from gohud's default theme as
+## long as `GoConfig.token_fallback` is on. That is why **plugging in an ordinary Theme does not break the widgets.**
 class_name GoTheme
 extends RefCounted
 
-## 토큰이 사는 Theme 타입 이름.
+## Name of the Theme type the tokens live in.
 const TYPE := &"GoHud"
 
-# ── 색 ─────────────────────────────────────────────────────────────────
+# ── Colors ─────────────────────────────────────────────────────────────
 const BACKGROUND := &"background"
 const SURFACE := &"surface"
 const SURFACE_SOFT := &"surface_soft"
@@ -33,20 +33,20 @@ const SCRIM := &"scrim"
 const SHADOW := &"shadow"
 const TRACK := &"track"
 
-# ── 채움 전용 색 ───────────────────────────────────────────────────────
-## 🔑 **같은 뜻인데 쓰임이 반대인 색**이다. `WARNING` 은 글자로 쓰이므로 밝은 바탕에서 읽히려면
-## 어두워야 하고, 체력·경험치 **막대의 채움**으로 쓰이면 눈에 띄어야 하므로 밝아야 한다.
-## 하나로 버티면 밝은 테마의 경험치 막대가 **갈색**이 된다(2026-09-13 실측).
+# ── Fill-only colors ───────────────────────────────────────────────────
+## 🔑 **The same meaning, the opposite use.** `WARNING` is used as text, so it has to be dark to read on a light
+## background; used as the **fill of a health or experience bar** it has to be bright to stand out.
+## Making one color carry both turns the light theme's experience bar **brown** (measured 2026-09-13).
 ##
-## 🛑 이것은 **선택 토큰**이다 — 테마에 없으면 `_fill` 을 뗀 같은 이름으로 떨어진다.
-##    그래서 옛 테마·남의 테마를 그대로 꽂아도 깨지지 않는다.
+## 🛑 These are **optional tokens** — when the theme lacks one it falls back to the same name with `_fill` stripped.
+##    That is why an old theme, or somebody else's theme, plugs straight in without breaking.
 const SUCCESS_FILL := &"success_fill"
 const WARNING_FILL := &"warning_fill"
 const DANGER_FILL := &"danger_fill"
 const INFO_FILL := &"info_fill"
 const ACCENT_FILL := &"accent_fill"
 
-# ── 치수(dp) ───────────────────────────────────────────────────────────
+# ── Metrics (dp) ───────────────────────────────────────────────────────
 const TOUCH := &"touch"
 const BUTTON_HEIGHT := &"button_height"
 const GAP_TINY := &"gap_tiny"
@@ -55,9 +55,9 @@ const GAP := &"gap"
 const GAP_LARGE := &"gap_large"
 const PADDING := &"padding"
 const PADDING_COMPACT := &"padding_compact"
-## 작은 버튼(`GoCompactButton`) 판의 **좌우 · 위아래 여백**. 🛑 `padding_compact`(카드·알림 안쪽 여백)와 다른 값이다 —
-##    같이 쓰면 버튼 여백을 바꿀 때 표면 여백까지 흔들린다. 글자가 판 테두리에 붙지 않게 하는 하한이기도 하다
-##    (`GoStyle.audit_compact_padding`). 기본 테마 10 · 5.
+## The **left/right · top/bottom padding** of a compact button (`GoCompactButton`) panel. 🛑 A different value from
+##    `padding_compact` (the inner padding of cards and notices) — shared, changing the button padding shakes the
+##    surface padding with it. It is also the floor that keeps text off the panel border (`GoStyle.audit_compact_padding`). Default theme 10 · 5.
 const COMPACT_PADDING_X := &"compact_padding_x"
 const COMPACT_PADDING_Y := &"compact_padding_y"
 const RADIUS := &"radius"
@@ -71,28 +71,28 @@ const LIST_GLYPH := &"list_glyph"
 const ICON_SIZE := &"icon_size"
 const NOTICE_DURATION_MS := &"notice_duration_ms"
 
-# ── 판 불투명도(%) ─────────────────────────────────────────────────────
-## 🪟 **판(컨테이너)의 바탕이 얼마나 꽉 찬 색인가.** 100 이면 뒤가 전혀 보이지 않고, 80 이면
-## 20% 만큼 뒤 화면이 배어 나온다 — 대화상자 뒤로 전투가 계속되는 것이 보이고, 시트 아래로 지도가
-## 비친다. 게임 UI 에서 이것은 장식이 아니라 **맥락을 잃지 않게 하는 장치**다.
+# ── Panel opacity (%) ──────────────────────────────────────────────────
+## 🪟 **How solid the background of a panel (container) is.** At 100 nothing behind shows; at 80, 20% of the screen
+## behind bleeds through — you see the battle carry on behind a dialog and the map shine through beneath a sheet.
+## In a game UI this is not decoration but **the device that keeps you from losing context**.
 ##
-## 🛑 **글자·아이콘·버튼은 이 값을 따르지 않는다.** 판만 반투명해지고 그 위의 내용은 선명하게
-##    남는다 — 내용까지 함께 흐려지면(`modulate.a`) 읽히지 않는 UI 가 되고, 그것은 투명도의
-##    문제가 아니라 고장이다.
+## 🛑 **Text, icons and buttons do not follow this value.** Only the panel turns translucent while the content on it
+##    stays crisp — fading the content along with it (`modulate.a`) gives you a UI that cannot be read, and that is
+##    not a transparency problem, it is a breakage.
 ##
-## 🛑 **퍼센트 정수**다(0~100). `Theme` 의 constant 는 정수만 담기 때문이다. 코드에서 비율
-##    (0.0~1.0)로 다루는 자리는 `GoUi.surface_alpha()` 이며 그쪽이 100 으로 나눠 준다.
-##    테마·설정 칸에 `0.8` 을 적으면 0 으로 잘려 **판이 통째로 사라진다** — 거기에는 `80` 을 적는다.
+## 🛑 It is an **integer percentage** (0~100), because a `Theme` constant can hold nothing but integers. The spot that
+##    handles it as a ratio (0.0~1.0) in code is `GoUi.surface_alpha()`, and that is where the division by 100 happens.
+##    Write `0.8` into a theme or config field and it truncates to 0, which makes **the panel vanish entirely** — write `80` there.
 ##
-## 🔑 이것도 **선택 토큰**이다 — 테마에 없으면 100(꽉 찬 색)으로 떨어진다. 그래서 이 토큰을
-##    모르는 옛 테마·남의 테마를 그대로 꽂아도 화면은 예전과 같다.
+## 🔑 These are **optional tokens** as well — when the theme lacks one it falls back to 100 (a solid color). So an old
+##    theme, or somebody else's theme, that never heard of this token leaves the screen exactly as it was.
 const PANEL_ALPHA := &"panel_alpha"
 const CARD_ALPHA := &"card_alpha"
 const HUD_ALPHA := &"hud_alpha"
 const NOTICE_ALPHA := &"notice_alpha"
 const POPUP_ALPHA := &"popup_alpha"
 
-# ── 표면 StyleBox ──────────────────────────────────────────────────────
+# ── Surface StyleBoxes ─────────────────────────────────────────────────
 const BOX_PANEL := &"panel"
 const BOX_CARD := &"card"
 const BOX_HUD := &"hud"
@@ -102,10 +102,10 @@ const BOX_EMPTY := &"empty"
 const BOX_FOCUS := &"focus"
 const BOX_FOCUS_SOFT := &"focus_soft"
 
-## 판 종류(`BOX_*`) → **그 종류의 불투명도 토큰**. 종류마다 따로 정할 수 있어야 하는 이유는
-## 요구가 서로 다르기 때문이다 — 대화상자는 뒤가 조금 보여도 좋지만, 게임 화면 위에 바로 얹히는
-## HUD 판은 그림이 복잡할수록 더 꽉 차야 글자가 읽힌다.
-## 🛑 `focus`·`empty` 는 없다 — 포커스 링은 판이 아니고, 빈 판은 그릴 것이 없다.
+## Panel variant (`BOX_*`) → **the opacity token of that variant**. The reason each variant has to be settable on its
+## own is that the demands differ — a dialog may let a little of the background show, but a HUD panel laid straight
+## over the game screen has to be fuller the busier the picture is, or the text stops reading.
+## 🛑 There is no `focus`·`empty` — a focus ring is not a panel, and an empty panel has nothing to draw.
 const ALPHA_TOKENS := {
 	BOX_PANEL: PANEL_ALPHA,
 	BOX_CARD: CARD_ALPHA,
@@ -114,10 +114,10 @@ const ALPHA_TOKENS := {
 	BOX_POPUP: POPUP_ALPHA,
 }
 
-# ── 글자 역할 ──────────────────────────────────────────────────────────
-## 역할 이름 → 그 크기를 들고 있는 Theme 타입.
-## 🛑 역할은 **크기의 이름**이지 용도의 이름이 아니다 — "제목" 이 아니라 "가장 큰 글자" 다.
-##    그래야 화면마다 다른 뜻으로 쓰여도 크기 체계가 흔들리지 않는다.
+# ── Type roles ─────────────────────────────────────────────────────────
+## Role name → the Theme type that holds that size.
+## 🛑 A role is **the name of a size**, not the name of a use — not "title" but "the largest type".
+##    That is what keeps the size system steady even when different screens use it to mean different things.
 const ROLE_TYPES := {
 	&"micro": &"GoMicroLabel",
 	&"compact": &"GoCompactLabel",
@@ -136,13 +136,13 @@ const ROLE_BUTTON := &"button"
 const ROLE_SUBTITLE := &"subtitle"
 const ROLE_TITLE := &"title"
 
-# ── 타입 변형 ──────────────────────────────────────────────────────────
+# ── Type variations ────────────────────────────────────────────────────
 const VAR_PANEL := &"GoPanel"
 const VAR_CARD := &"GoCard"
 const VAR_BUTTON := &"GoButton"
 const VAR_PRIMARY_BUTTON := &"GoPrimaryButton"
 const VAR_DANGER_BUTTON := &"GoDangerButton"
-## 채워진 위험 버튼 — 되돌릴 수 없는 동작의 **확인** 버튼에만 쓴다. 옅은 위험 버튼은 위를 쓴다.
+## The filled danger button — used only on the **confirm** button of an irreversible action. For a faint danger button use the one above.
 const VAR_DANGER_SOLID_BUTTON := &"GoDangerSolidButton"
 const VAR_BARE_BUTTON := &"GoBareButton"
 const VAR_COMPACT_BUTTON := &"GoCompactButton"
@@ -155,16 +155,16 @@ const VAR_COMPACT_LABEL := &"GoCompactLabel"
 const VAR_MICRO_LABEL := &"GoMicroLabel"
 
 
-## 테마에서 색 하나. 없으면 `fallback` 테마에서, 그래도 없으면 자홍색(눈에 띄라고).
+## One color from a theme. Missing, from the `fallback` theme; missing there too, magenta (so it catches the eye).
 static func color_of(theme: Theme, key: StringName, fallback: Theme = null) -> Color:
 	if theme != null and theme.has_color(key, TYPE): return theme.get_color(key, TYPE)
 	if fallback != null and fallback.has_color(key, TYPE): return fallback.get_color(key, TYPE)
 	return Color.MAGENTA
 
 
-## 테마에서 치수 하나. [param missing] 은 **어느 테마에도 없을 때** 돌려줄 값이다.
-## 🛑 치수의 기본은 0 이어도 되지만 **불투명도의 0 은 "판이 안 보인다"** 다 — 그래서 부르는 쪽이
-##    빠뜨릴 수 없게 인자로 뺐다(`GoUi.surface_alpha` 는 100 을 준다).
+## One metric from a theme. [param missing] is what comes back **when no theme has it**.
+## 🛑 A metric may default to 0, but **an opacity of 0 means "the panel is invisible"** — so it was pulled out as an
+##    argument the caller cannot forget (`GoUi.surface_alpha` passes 100).
 static func metric_of(theme: Theme, key: StringName, fallback: Theme = null, missing := 0) -> int:
 	if theme != null and theme.has_constant(key, TYPE): return theme.get_constant(key, TYPE)
 	if fallback != null and fallback.has_constant(key, TYPE): return fallback.get_constant(key, TYPE)
@@ -177,7 +177,7 @@ static func box_of(theme: Theme, key: StringName, fallback: Theme = null) -> Sty
 	return StyleBoxEmpty.new()
 
 
-## 역할의 글자 크기. 역할 이름이 낯설면 본문 크기로 떨어진다.
+## The font size of a role. An unfamiliar role name falls back to the body size.
 static func font_size_of(theme: Theme, role: StringName, fallback: Theme = null) -> int:
 	var type: StringName = ROLE_TYPES.get(role, &"Label")
 	for candidate in [theme, fallback]:
@@ -187,9 +187,9 @@ static func font_size_of(theme: Theme, role: StringName, fallback: Theme = null)
 	return 16
 
 
-## 타입에 직접 정의된 글자 크기를 찾되, 없으면 **변형의 base 를 따라 올라간다**(`GoCaptionLabel` → `CaptionLabel` → `Label`).
-## 🛑 `Theme.has_font_size()` 는 `default_font_size` 가 있으면 무조건 true 라 못 쓴다 — 직접 정의 목록으로 판정한다.
-##    호스트 프로젝트가 자기 변형을 base 로 걸어 정본을 하나로 둘 수 있게 하는 길이다. 0 이면 없음.
+## Find the font size defined directly on the type, and failing that **climb the variation's base** (`GoCaptionLabel` → `CaptionLabel` → `Label`).
+## 🛑 `Theme.has_font_size()` is unusable — it is true no matter what once `default_font_size` exists; judge by the list of direct definitions instead.
+##    This is the road that lets a host project hang its own variation off a base and keep one canonical value. 0 means none.
 static func _font_size_in_chain(theme: Theme, type: StringName) -> int:
 	var current := type
 	for _depth in 8:
@@ -200,13 +200,13 @@ static func _font_size_in_chain(theme: Theme, type: StringName) -> int:
 	return 0
 
 
-## 판 종류의 **불투명도 토큰 이름**. 낯선 종류는 카드로 본다 — 모르는 판이 갑자기 꽉 차거나
-## 사라지는 것보다, 카드와 같은 규칙을 따르는 편이 화면이 한 덩어리로 읽힌다.
+## The **opacity token name** of a panel variant. An unfamiliar variant is read as a card — rather than have an unknown
+## panel suddenly turn solid or disappear, following the card's rule keeps the screen reading as one piece.
 static func alpha_token(variant: StringName) -> StringName:
 	return ALPHA_TOKENS.get(variant, CARD_ALPHA)
 
 
-## 숫자 크기 → 가장 가까운 역할. 예전 코드가 `14` 처럼 숫자로 크기를 주던 자리를 이어 준다.
+## A numeric size → the nearest role. It carries over the spots where older code handed a size in as a number like `14`.
 static func role_for_size(size: int) -> StringName:
 	if size <= 10: return ROLE_MICRO
 	if size <= 12: return ROLE_COMPACT

@@ -1,14 +1,17 @@
-## 🖼️ **gohud 갤러리** — 서버도 게임도 없이 모든 위젯을 한 화면에서 열어 본다.
+## 🖼️ **The gohud gallery** — every widget opened on one screen, with no server and no game.
 ##
-## 이 파일은 예제이자 **살아 있는 검사**다. 위젯을 고치고 이것을 띄우면 그 자리에서 보인다.
+## This file is both an example and a **living test**. Change a widget, bring this up, and you see it there and then.
 ##
 ## ```
 ## godot res://addons/gohud/examples/gallery/gallery.tscn
 ## ```
 ##
-## 🛑 프로젝트의 오토로드·서버·계정에 의존하지 않는다 — 빈 프로젝트에 애드온만 넣어도 열려야
-##    한다. 그것이 이 예제의 존재 이유다.
+## 🛑 It leans on no autoload, server or account of the project — it must open in an empty project with
+##    nothing but the add-on. That is why this example exists.
 extends Control
+
+## 🔬 The container-opacity lab — the sim tour and the home screen use this same file.
+const OpacityLab := preload("opacity_lab.gd")
 
 var _sheet: GoSheet
 var _dialogs: GoDialogs
@@ -20,6 +23,14 @@ var _slots: Array[GoSlot] = []
 var _log: Label
 var _dark := true
 var _tour: GoCoachMark
+var _snackbar: GoSnackbar
+var _drawer: GoDrawer
+var _console: GoConsole
+var _gallery_field: GoField
+var _popover_anchor: Button
+var _menu_anchor: Button
+## Is the backdrop pattern on? 🔑 `_rebuild()` calls this node's `_ready` again, so this value survives it.
+var _busy_background := false
 
 
 func _ready() -> void:
@@ -34,6 +45,19 @@ func _ready() -> void:
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
 
+	# 🔬 **To see container opacity you need something other than a flat color behind it.** The toggle in
+	#    the opacity section turns this on — with it on the whole screen becomes "over the game", and what
+	#    every panel lets through is plain at a glance.
+	var busy := OpacityLab.Backdrop.new()
+	busy.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# 🛑 **Lay it on faintly.** Inside the preview box it must be crisp, but a crisp pattern across the
+	#    whole screen leaves not one readable line of body text outside a panel (measured on the first
+	#    capture, 2026-09-16). A real game's background is about this strong too — which is why text with
+	#    no panel under it survives.
+	busy.intensity = 0.3
+	busy.visible = _busy_background
+	add_child(busy)
+
 	_build_page()
 	_build_hud()
 
@@ -43,15 +67,16 @@ func _ready() -> void:
 	add_child(_sheet)
 
 
-# ── 스크롤되는 본문 ────────────────────────────────────────────────────
+# ── The scrolling body ─────────────────────────────────────────────────
 
 func _build_page() -> void:
 	var form := GoForm.new()
 	form.name = "Form"
 	add_child(form)
-	# 🛑 **떠 있는 HUD 자리를 비운다.** 그대로 두면 스크롤 내용이 퀵슬롯 뒤로 흘러 글자가 슬롯
-	#    사이 틈으로 삐져나온다 — RTL 에서 입력칸 글자가 오른쪽으로 가며 실제로 그랬다
-	#    (2026-09-13 아랍어 스크린샷 실측). 폼이 `GoHudAnchor` 들의 자리를 알아서 피한다.
+	# 🛑 **Keep clear of the floating HUD.** Left alone, the scrolling content runs behind the quick slots
+	#    and the text pokes out through the gaps between them — which is exactly what happened in RTL,
+	#    where the field text moves to the right (measured on the Arabic screenshot, 2026-09-13). The form
+	#    avoids the spots the `GoHudAnchor`s hold, on its own.
 	form.avoid_hud = true
 
 	var scroll := GoScroll.new()
@@ -70,7 +95,7 @@ func _build_page() -> void:
 	_log.name = "Log"
 	page.add_child(_log)
 
-	# 버튼 종류
+	# Kinds of button
 	page.add_child(GoStyle.section("Buttons", false))
 	var buttons := GoStyle.wrap_row()
 	buttons.add_child(GoStyle.button("Primary", _say.bind("primary"), GoStyle.Tone.PRIMARY))
@@ -84,13 +109,13 @@ func _build_page() -> void:
 	page.add_child(buttons)
 
 	var icon_row := GoStyle.wrap_row()
-	# ♿ **아이콘 버튼에는 설명을 단다.** 글자가 없으므로 마우스 사용자에게는 툴팁이, 화면 낭독기에게는
-	#    접근성 이름이 유일한 설명이다 — 둘 다 `tooltip_key` 하나에서 나온다.
+	# ♿ **Describe your icon buttons.** With no text, the tooltip is the only description a mouse user gets
+	#    and the accessibility name the only one a screen reader gets — both come from the one `tooltip_key`.
 	for icon in [GoIconSet.SETTINGS, GoIconSet.SEARCH, GoIconSet.HEART, GoIconSet.BELL, GoIconSet.TRASH]:
 		icon_row.add_child(GoStyle.icon_button(icon, _say.bind(String(icon)), -1, StringName(icon)))
 	page.add_child(icon_row)
 
-	# 목록 항목
+	# List items
 	page.add_child(GoStyle.section("List rows", false))
 	var list := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
 	list.add_child(GoStyle.list_button(GoIconSet.USER, "Profile", _say.bind("profile"),
@@ -104,7 +129,7 @@ func _build_page() -> void:
 		GoUi.color(GoTheme.DANGER), "", false))
 	page.add_child(list)
 
-	# 입력
+	# Inputs
 	page.add_child(GoStyle.section("Inputs", false))
 	page.add_child(GoStyle.line_edit("Type here…"))
 	var toggle := GoStyle.toggle("Enable haptics", false)
@@ -112,7 +137,7 @@ func _build_page() -> void:
 	page.add_child(toggle)
 	page.add_child(GoStyle.checkbox("Remember me", false))
 	var volume := GoStyle.slider(0.0, 1.0, 0.01)
-	volume.size_flags_horizontal = Control.SIZE_EXPAND_FILL   # 팩토리는 폭을 정하지 않는다
+	volume.size_flags_horizontal = Control.SIZE_EXPAND_FILL   # the factory does not decide the width
 	volume.value = 0.7
 	page.add_child(volume)
 	var picker := GoStyle.picker()
@@ -120,7 +145,7 @@ func _build_page() -> void:
 	for option in ["Low", "Medium", "High"]: picker.add_item(option)
 	page.add_child(picker)
 
-	# 표면
+	# Surfaces
 	page.add_child(GoStyle.section("Surfaces", false))
 	var surfaces := GoStyle.wrap_row()
 	surfaces.add_child(GoStyle.button("Dialog", _open_dialog, GoStyle.Tone.COMPACT))
@@ -132,7 +157,7 @@ func _build_page() -> void:
 	surfaces.add_child(GoStyle.button("Coach tour", _start_tour, GoStyle.Tone.COMPACT))
 	page.add_child(surfaces)
 
-	# 접이식 섹션 — Godot 4.5+ FoldableContainer. 같은 FoldableGroup 이라 한 번에 하나만 펼쳐진다.
+	# Foldable sections — Godot 4.5+ FoldableContainer. They share one FoldableGroup, so only one opens at a time.
 	page.add_child(GoStyle.section("Foldable sections", false))
 	var accordion := FoldableGroup.new()
 	for title in ["Graphics", "Audio", "Controls"]:
@@ -143,7 +168,7 @@ func _build_page() -> void:
 		fold.add_child(inner)
 		page.add_child(fold)
 
-	# 칩·빈 상태
+	# Chips and empty states
 	page.add_child(GoStyle.section("Chips", false))
 	var chips := GoStyle.wrap_row()
 	chips.add_child(GoStyle.chip("default"))
@@ -152,7 +177,7 @@ func _build_page() -> void:
 	chips.add_child(GoStyle.chip("danger", GoUi.color(GoTheme.DANGER)))
 	page.add_child(chips)
 
-	# 반응형 격자 — 창을 좁히면 열이 줄어든다
+	# Responsive grid — narrow the window and the column count drops
 	page.add_child(GoStyle.section("Responsive grid (resize the window)", false))
 	var grid := GoStyle.responsive_grid(150.0)
 	for i in 6:
@@ -164,14 +189,14 @@ func _build_page() -> void:
 		grid.add_child(tile)
 	page.add_child(grid)
 
-	# 아이콘 세트 전체
+	# The whole icon set
 	page.add_child(GoStyle.section("Icon set — swap it in GoConfig.icons", false))
 	var icons := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP))
 	for icon in GoUi.icons().icon_names():
 		icons.add_child(GoUi.icons().node(StringName(icon), 22, GoUi.color(GoTheme.SECONDARY)))
 	page.add_child(icons)
 
-	# 생김새 고르기 — 색뿐 아니라 **모양**까지 통째로 바뀐다(테마 + 스킨).
+	# Pick a look — not just the colors but the **shapes** change with it (theme + skin).
 	page.add_child(GoStyle.section("Theme preset", false))
 	var presets := GoThemePresets.all()
 	var names: Array = []
@@ -188,19 +213,168 @@ func _build_page() -> void:
 		"Presets swap the theme (colours, engine controls) and the skin (joystick, slots, coach mark) together.",
 		GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
 	page.add_child(GoStyle.button("Toggle light / dark", _toggle_theme, GoStyle.Tone.COMPACT))
+
+	_build_opacity(page)
+	_build_new_widgets(page)
+
 	page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet", false))
 
 
-# ── 화면에 떠 있는 HUD ─────────────────────────────────────────────────
+## 🔬 **Container opacity** — drag the slider and the panels thin out on the spot.
+##
+## 🛑 No value check can confirm this feature — "does the back show through", "is the text still
+##    readable" are answered by drawing. So the lab lives inside the gallery, with a toggle that lays a
+##    pattern behind it.
+func _build_opacity(page: VBoxContainer) -> void:
+	var lab := OpacityLab.new()
+	# ④ Applying it project-wide rebuilds the screen — widgets already born do not change their clothes.
+	lab.applied.connect(func(_alpha: float) -> void: _rebuild())
+	lab.backdrop_wanted.connect(_set_busy_background)
+	page.add_child(lab)
+
+
+## Turns the pattern behind the whole screen on and off — the place to see what a panel lets through.
+func _set_busy_background(on: bool) -> void:
+	_busy_background = on
+	var busy := get_node_or_null(^"Backdrop")
+	if busy != null: (busy as Control).visible = on
+
+
+## 🆕 The widgets added later — people only know they exist if **they can press them right here**.
+## 🛑 Not a row of pictures. The buttons really work, and what a press did is written in the log line above.
+func _build_new_widgets(page: VBoxContainer) -> void:
+	page.add_child(GoStyle.section("Feedback", false))
+	var feedback := GoStyle.wrap_row()
+	feedback.add_child(GoStyle.button("Snackbar", _show_snackbar, GoStyle.Tone.COMPACT))
+	feedback.add_child(GoStyle.button("Snackbar + Undo", _show_snackbar_undo, GoStyle.Tone.COMPACT))
+	feedback.add_child(GoStyle.button("Busy button", _show_busy, GoStyle.Tone.COMPACT))
+	page.add_child(feedback)
+
+	var spin_row := GoStyle.row()
+	var spinner := GoSpinner.new()
+	spinner.custom_minimum_size = Vector2.ONE * 28.0
+	spin_row.add_child(spinner)
+	spin_row.add_child(GoStyle.label("GoSpinner — an indeterminate wait", GoTheme.ROLE_COMPACT,
+		GoUi.color(GoTheme.MUTED)))
+	page.add_child(spin_row)
+
+	page.add_child(GoStyle.section("Badges", false))
+	var badges := GoStyle.row(GoUi.metric(GoTheme.GAP))
+	for pair in [[3, ""], [0, "NEW"], [128, ""]]:
+		var host := GoIconButton.new()
+		host.icon_name = GoIconSet.BELL
+		host.tooltip_text_name = &"close"
+		host.pressed.connect(_say.bind("badge host"))
+		badges.add_child(host)
+		GoBadge.attach.call_deferred(host, int(pair[0]), str(pair[1]))
+	badges.add_child(GoBadge.make(0, "", true))
+	page.add_child(badges)
+
+	page.add_child(GoStyle.section("Fields", false))
+	_gallery_field = GoField.make("Guild name", GoStyle.line_edit("2-16 characters"),
+		"Everyone in the guild sees this")
+	page.add_child(_gallery_field)
+	var field_row := GoStyle.wrap_row()
+	field_row.add_child(GoStyle.button("Show error", _show_field_error, GoStyle.Tone.COMPACT))
+	field_row.add_child(GoStyle.button("Clear error", _clear_field_error, GoStyle.Tone.COMPACT))
+	page.add_child(field_row)
+
+	page.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
+		{"suffix": GoStyle.button("Send", _say.bind("send"))}))
+	page.add_child(GoInputGroup.make(GoStyle.line_edit("Search by name"), {"prefix_icon": GoIconSet.SEARCH}))
+
+	var coupon := GoCodeInput.make(12, 4)
+	coupon.completed.connect(func(code: String) -> void: _say("coupon %s" % code))
+	page.add_child(coupon)
+
+	var many: Array = []
+	for i in 30: many.append({"text": "Player %d" % i})
+	var combo := GoCombobox.make(many, 2, "Find a friend")
+	combo.picked.connect(func(index: int) -> void: _say("picked player %d" % index))
+	page.add_child(combo)
+
+	page.add_child(GoStyle.section("Lists", false))
+	var board := GoTable.make(
+		[{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}],
+		[[1, "Aria", 91240], [2, "Brin", 48210], [3, "Cade", 9124], [4, "Dane", 500]])
+	board.sort_by(2, false)
+	board.row_selected.connect(func(index: int) -> void: _say("row %d" % index))
+	page.add_child(board)
+	var pager := GoPagination.make(1, 12, func(value: int) -> void: _say("page %d" % value))
+	page.add_child(pager)
+
+	page.add_child(GoStyle.section("Over the screen", false))
+	var overlays := GoStyle.wrap_row()
+	overlays.add_child(GoStyle.button("Drawer", _open_drawer, GoStyle.Tone.COMPACT))
+	_popover_anchor = GoStyle.button("Popover", _open_popover, GoStyle.Tone.COMPACT)
+	overlays.add_child(_popover_anchor)
+	_menu_anchor = GoStyle.button("Long-press me", _say.bind("hold for a menu"), GoStyle.Tone.COMPACT)
+	GoContextMenu.attach(_menu_anchor, [
+		{"text": "Use", "action": _say.bind("use")},
+		{"text": "Equip", "action": _say.bind("equip")},
+		{"separator": true},
+		{"text": "Drop", "action": _say.bind("drop"), "danger": true},
+	])
+	overlays.add_child(_menu_anchor)
+	overlays.add_child(GoStyle.button("Console", _open_console, GoStyle.Tone.COMPACT))
+	page.add_child(overlays)
+	var keys := GoKbd.make("Ctrl", "S")
+	keys.hide_on_handheld = false
+	page.add_child(keys)
+
+	page.add_child(GoStyle.section("Game shapes", false))
+	var days: Array = []
+	for i in 7:
+		days.append({"icon": GoIconSet.CROWN if i == 6 else GoIconSet.COIN,
+			"amount": (i + 1) * 100, "special": i == 6})
+	var calendar := GoRewardCalendar.make(days, 2)
+	calendar.claimed.connect(func(day: int) -> void:
+		_say("claimed day %d" % (day + 1))
+		calendar.set_claimed_until(day))
+	page.add_child(calendar)
+
+	var charts := GoStyle.wrap_row()
+	var radar := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45},
+		{"STR": 0.6, "AGI": 0.75, "INT": 0.35, "VIT": 0.55, "LUK": 0.45})
+	radar.custom_minimum_size = Vector2(170, 170)
+	charts.add_child(radar)
+	var donut := GoDonut.make([
+		{"label": "Physical", "value": 620}, {"label": "Magic", "value": 340}, {"label": "Pierce", "value": 90}])
+	donut.center_text = "1050"
+	donut.center_hint = "Damage"
+	donut.custom_minimum_size = Vector2(150, 150)
+	charts.add_child(donut)
+	page.add_child(charts)
+	page.add_child(donut.legend())
+
+	var carousel := GoCarousel.new()
+	carousel.custom_minimum_size.y = 120
+	page.add_child(carousel)
+	var banners: Array[Control] = []
+	for pair in [["Spring event", GoTheme.ACCENT], ["Double XP", GoTheme.SUCCESS], ["New skins", GoTheme.WARNING]]:
+		var banner := GoStyle.card(GoUi.color(pair[1]))
+		var inner := GoStyle.padding()
+		var words := GoStyle.label(str(pair[0]), GoTheme.ROLE_SUBTITLE, GoUi.color(pair[1]))
+		words.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		words.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		inner.add_child(words)
+		banner.add_child(inner)
+		banners.append(banner)
+	carousel.set_pages(banners)
+	carousel.page_changed.connect(func(index: int) -> void: _say("banner %d" % index))
+
+
+# ── The HUD floating over the screen ───────────────────────────────────
 
 func _build_hud() -> void:
 	var top := GoHudAnchor.new()
 	top.name = "TopLeft"
 	top.spot = GoHudAnchor.Spot.TOP_RIGHT
 	add_child(top)
-	# 🛑 **떠 있는 HUD 는 판 위에 올린다.** 배경 없이 두면 스크롤 본문이 그 뒤를 지나가면서
-	#    글자끼리 뒤섞여 둘 다 못 읽는다 — 세로에서 입력칸 자리표시자가, 가로에서 토글 손잡이가
-	#    체력바 위에 그대로 얹혔다(2026-09-13 실측). `hud` 판은 표면색 82% 라 뒤를 가린다.
+	# 🛑 **A floating HUD goes on a panel.** With no background behind it the scrolling body passes under
+	#    it and the two sets of text tangle until neither can be read — in portrait a field's placeholder
+	#    and in landscape a toggle's knob sat straight on the health bar (measured 2026-09-13). The `hud`
+	#    panel is 82% of the surface color, so it covers what is behind it.
 	var bars_panel := PanelContainer.new()
 	bars_panel.name = "Bars"
 	bars_panel.add_theme_stylebox_override(&"panel", GoStyle.floating(GoTheme.BOX_HUD))
@@ -246,7 +420,7 @@ func _build_hud() -> void:
 		slot_row.add_child(slot)
 		_slots.append(slot)
 	slots_anchor.add_child(slot_row)
-	# 촘촘히 놓인 슬롯끼리 넓힌 터치 영역을 나눠 갖게 알려 준다.
+	# Tell tightly packed slots to share out their widened touch areas.
 	var peers: Array[Control] = []
 	for slot in _slots: peers.append(slot)
 	for slot in _slots: slot.touch_peers = peers
@@ -254,12 +428,12 @@ func _build_hud() -> void:
 	var pad := GoHudAnchor.new()
 	pad.name = "Joystick"
 	pad.spot = GoHudAnchor.Spot.BOTTOM_LEFT
-	# 🛑 조이스틱은 손을 얹은 동안에만 나타난다 — 본문에서 자리를 비워 두면 보이지도 않는 칸이
-	#    화면 아래 한 줄을 통째로 깎는다.
+	# 🛑 The joystick only appears while a thumb rests on it — reserving space for it in the body would
+	#    carve a whole row off the bottom of the screen for a box nobody can even see.
 	pad.reserve_space = false
 	add_child(pad)
 	_joystick = GoJoystick.new()
-	# 데모에서는 본문을 가리지 않게 — 손을 얹으면 그 자리에 나타난다.
+	# In the demo it must not cover the body — it appears where the thumb lands.
 	_joystick.hide_when_idle = true
 	_joystick.moved.connect(func(v: Vector2) -> void:
 		if not v.is_zero_approx(): _say("joystick %.2f, %.2f" % [v.x, v.y]))
@@ -268,8 +442,8 @@ func _build_hud() -> void:
 	var notice_anchor := GoHudAnchor.new()
 	notice_anchor.name = "NoticeSpot"
 	notice_anchor.spot = GoHudAnchor.Spot.TOP_CENTER
-	# 🛑 알림은 **잠깐 떴다 사라진다.** 자리를 예약하면 뜰 때마다 본문이 통째로 출렁이고,
-	#    비키지 않으면 오른쪽 위 체력바 위에 그대로 얹힌다(둘 다 실측).
+	# 🛑 A notice **shows for a moment and goes.** Reserve space for it and the body lurches every time one
+	#    appears; give it no room to move and it sits straight on the health bar at the top right (both measured).
 	notice_anchor.reserve_space = false
 	notice_anchor.avoid_peers = true
 	add_child(notice_anchor)
@@ -280,7 +454,7 @@ func _build_hud() -> void:
 	var prompt_anchor := GoHudAnchor.new()
 	prompt_anchor.name = "PromptSpot"
 	prompt_anchor.spot = GoHudAnchor.Spot.CENTER_RIGHT
-	# 이것도 필요할 때만 나타난다 — 본문이 미리 자리를 비워 둘 것은 아니다.
+	# This one, too, appears only when it is needed — not something the body should keep space for.
 	prompt_anchor.reserve_space = false
 	add_child(prompt_anchor)
 	_prompt = GoPromptCard.new()
@@ -289,7 +463,101 @@ func _build_hud() -> void:
 	prompt_anchor.add_child(_prompt)
 
 
-# ── 동작 ───────────────────────────────────────────────────────────────
+# ── Behaviour ──────────────────────────────────────────────────────────
+
+# ── 🆕 Behaviour of the widgets added later ────────────────────────────
+
+## Services are made **the first time they are used** — no layer that might go unused is attached while the screen comes up.
+func _ensure_snackbar() -> GoSnackbar:
+	if not is_instance_valid(_snackbar):
+		_snackbar = GoSnackbar.new()
+		add_child(_snackbar)
+	return _snackbar
+
+
+func _show_snackbar() -> void:
+	_ensure_snackbar().show_text("Saved to the cloud", GoTheme.SUCCESS)
+	_say("snackbar")
+
+
+func _show_snackbar_undo() -> void:
+	_say("snackbar with an action")
+	var picked: int = await _ensure_snackbar().post({
+		"text": "Item dropped", "tone": GoTheme.WARNING, "icon": GoIconSet.TRASH,
+		"actions": ["Undo"],
+	})
+	_say("undo pressed" if picked == 0 else "snackbar timed out")
+
+
+## 🔑 The pressed button turns into a spinner on the spot — its size does not change, and it cannot fire twice.
+func _show_busy() -> void:
+	var button := _find_button("Busy button")
+	if button == null: return
+	GoSpinner.busy(button, true)
+	_say("waiting for the server…")
+	await get_tree().create_timer(1.6).timeout
+	if is_instance_valid(button): GoSpinner.busy(button, false)
+	_say("done")
+
+
+func _find_button(words: String) -> Button:
+	for node in _descendants(self):
+		var button := node as Button
+		if button != null and button.text == words: return button
+	return null
+
+
+func _descendants(node: Node) -> Array:
+	var out: Array = [node]
+	for child in node.get_children(): out.append_array(_descendants(child))
+	return out
+
+
+func _show_field_error() -> void:
+	if is_instance_valid(_gallery_field): _gallery_field.set_error("That name is taken")
+	_say("field error")
+
+
+func _clear_field_error() -> void:
+	if is_instance_valid(_gallery_field): _gallery_field.clear_error()
+	_say("field cleared")
+
+
+func _open_drawer() -> void:
+	if not is_instance_valid(_drawer):
+		_drawer = GoDrawer.new()
+		add_child(_drawer)
+		for i in 8:
+			_drawer.body.add_child(GoStyle.list_button(GoIconSet.POTION, "Potion %d" % (i + 1),
+				_say.bind("potion %d" % (i + 1)), Color.TRANSPARENT, "Restores health", false))
+	_drawer.open("Bag")
+	_say("drawer")
+
+
+func _open_popover() -> void:
+	if not is_instance_valid(_popover_anchor): return
+	var body := GoStyle.column()
+	body.add_child(GoStyle.label("Flame sword", GoTheme.ROLE_SUBTITLE))
+	body.add_child(GoStyle.label("ATK +12 · burns for 3s", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
+	body.add_child(GoStyle.button("Equip", func() -> void:
+		_say("equipped")
+		GoPopover.close()))
+	GoPopover.open(_popover_anchor, body, {"title": "Item"})
+	_say("popover")
+
+
+func _open_console() -> void:
+	if not is_instance_valid(_console):
+		_console = GoConsole.new()
+		add_child(_console)
+		_console.register("say", "Print a line: say <words>",
+			func(args: PackedStringArray) -> String: return " ".join(args))
+		_console.register("give", "Grant an item: give <id> <count>",
+			func(args: PackedStringArray) -> String: return "granted %s" % " ".join(args))
+		_console.log_line("Type help to list the commands.", GoTheme.MUTED)
+	_console.toggle()
+	_say("console")
+
 
 func _say(what: String) -> void:
 	GoFeedback.tapped()
@@ -304,7 +572,7 @@ func _use_slot(slot: GoSlot) -> void:
 
 
 func _open_dialog() -> void:
-	# 되돌릴 수 없는 동작이므로 확인 버튼을 **위험색**으로 — 색이 먼저 읽히고 글자가 뒤따른다.
+	# The action cannot be undone, so the confirm button wears the **danger color** — the color reads first, the words follow.
 	var yes := await _dialogs.confirm("Delete character",
 		"This cannot be undone. Delete \"{name}\"?", "", "", "", {"name": "Aria"}, true)
 	_say("dialog → %s" % ("confirmed" if yes else "cancelled"))
@@ -323,8 +591,7 @@ func _open_sheet() -> void:
 	for i in 24:
 		_sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, "Item %d" % (i + 1),
 			_say.bind("item %d" % (i + 1)), Color.TRANSPARENT, "A description line", false))
-	_sheet.footer().add_child(GoStyle.button("Close", _sheet.close, GoStyle.Tone.PRIMARY))
-	_sheet.footer().visible = true
+	_sheet.add_footer(GoStyle.button("Close", _sheet.close, GoStyle.Tone.PRIMARY))
 
 
 func _open_popup() -> void:
@@ -375,7 +642,7 @@ func _start_tour() -> void:
 	])
 
 
-## 생김새 묶음을 고른다 — 한 줄이면 테마·스킨·아이콘이 함께 바뀐다.
+## Picks a look — one line changes the theme, the skin and the icons together.
 func _pick_preset(index: int) -> void:
 	var presets := GoThemePresets.all()
 	if index < 0 or index >= presets.size(): return
@@ -390,8 +657,8 @@ func _toggle_theme() -> void:
 	_rebuild()
 
 
-## 🛑 이미 만들어진 노드는 자기 `theme` 를 들고 있다 — 통째로 다시 짓는 것이 가장 확실하다.
-##    실제 게임에서는 보통 부팅 때 한 번만 생김새를 정하므로 이 비용이 들지 않는다.
+## 🛑 Nodes already built carry their own `theme` — rebuilding the lot is the surest way.
+##    A real game usually settles its look once, at boot, so it never pays this cost.
 func _rebuild() -> void:
 	for child in get_children(): child.queue_free()
 	_slots.clear()

@@ -1,26 +1,26 @@
-## 🪟 **떠 있는 창의 껍데기.** 팝업·시트·드롭다운이 전부 이것 하나를 쓴다.
+## 🪟 **The shell of a floating window.** Popups, sheets and dropdowns all use this one node.
 ##
-## 안전영역·가상 키보드·고정 머리말/바닥·스크롤 본문·가장 위 창 판정·포커스 복원·뒤로가기
-## 소유권·끌어서 높이 조절을 한 곳에서 처리한다.
+## Safe area, virtual keyboard, pinned header/footer, scrolling body, topmost-window test, focus restore,
+## back-navigation ownership and drag-to-resize are all handled in one place.
 ##
 ## ```gdscript
 ## var surface := GoSurface.new()
-## surface.set_title("설정")
-## surface.body.add_child(GoStyle.label("내용"))
+## surface.set_title("Settings")
+## surface.body.add_child(GoStyle.label("Content"))
 ## surface.close_requested.connect(surface.queue_free)
 ## canvas_layer.add_child(surface)
 ## ```
 ##
-## ## 세 가지 배치
-## | `placement` | 모습 | 쓰는 곳 |
+## ## Three placements
+## | `placement` | Looks like | Used for |
 ## |---|---|---|
-## | `CENTER` | 화면 가운데 카드 | 확인창·설정 |
-## | `BOTTOM` | 아래에서 올라온 시트 | 목록·관리 페이지 |
-## | `ANCHOR` | 지정한 컨트롤 옆에 붙는 카드 | 드롭다운·컨텍스트 메뉴 |
+## | `CENTER` | A card in the middle of the screen | Confirmations, settings |
+## | `BOTTOM` | A sheet that rises from the bottom | Lists, management pages |
+## | `ANCHOR` | A card attached beside a given control | Dropdowns, context menus |
 ##
-## ## 🛑 이 노드는 스스로 사라지지 않는다
-## `close_requested` 를 받아 숨기거나 지우는 것은 **소유한 화면**이다. 창이 왜 닫히는지는
-## 이 껍데기가 알 수 없기 때문이다(저장하고 닫기 vs 버리고 닫기).
+## ## 🛑 This node never dismisses itself
+## Taking `close_requested` and hiding or freeing the node is up to the **screen that owns it**. The shell
+## cannot know why the window is closing (save and close vs. discard and close).
 @tool
 class_name GoSurface
 extends Control
@@ -31,48 +31,66 @@ signal height_changed(ratio: float)
 
 enum Placement { CENTER, BOTTOM, ANCHOR }
 
-## 지금 열려 있는 표면의 수. 게임 입력을 멈출지 판단할 때 쓴다.
+## Threshold for falling back from dense to normal density — padding returns only once this much room is free (stops flicker).
+const RELAX := 0.85
+
+## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
-## 마지막 조작이 키보드·게임패드였는가. 🛑 포인터로 연 창에는 **포커스 링을 띄우지 않는다** —
-##    터치로 메뉴를 열었을 뿐인데 닫기 버튼만 빛나면 "여기를 누르라" 는 신호처럼 보인다.
+## Was the last input from a keyboard or gamepad? 🛑 A window opened with a pointer gets **no focus ring** —
+##    when a menu was merely opened by touch and only the close button glows, it reads as "press here".
 static var _pointer_navigation := true
 
-## 열려 있는 표면이 하나라도 있는가.
+## Is any surface open at all?
 static func is_any_open() -> bool:
 	return _open_count > 0
 
 
-# ── 배치 ───────────────────────────────────────────────────────────────
+# ── Placement ──────────────────────────────────────────────────────────
 
 var placement := Placement.CENTER
-var max_width := 0.0            ## 0 이면 `GoConfig.surface_max_width`
-var max_height := 0.0           ## 0 이면 `GoConfig.surface_max_height`
-var height_ratio := 0.0         ## 0 이면 `GoConfig.surface_height_ratio`
-## 내용이 짧으면 카드도 짧아진다. 끄면 늘 `height_ratio` 만큼 차지한다.
+var max_width := 0.0            ## 0 means `GoConfig.surface_max_width`
+var max_height := 0.0           ## 0 means `GoConfig.surface_max_height`
+var height_ratio := 0.0         ## 0 means `GoConfig.surface_height_ratio`
+## Short content makes a short card. Turn it off to always take up `height_ratio`.
 var fit_content := true
-## 좁은 화면에서 여백·글자를 한 단계 줄인다.
+## Drops padding and text one step on narrow screens.
 var compact := false
-## 배경을 눌러 닫을 수 있는가. 기본은 설정값.
+## Can pressing the backdrop close it? Defaults to the config value.
 var dismiss_on_scrim := false
-## 스크림을 투명하게 — 게임 화면 위의 드롭다운처럼 뒤가 보여야 할 때.
+## Make the scrim transparent — for a dropdown over the game screen, where what is behind must stay visible.
 var scrim_transparent := false
-## 열 때 카드를 페이드인.
+## 🪟 **Opacity of the card background** (0.0~1.0) — for this one window only. Negative means the value the theme
+## and config decide (`GoUi.surface_alpha(GoTheme.BOX_PANEL)` · 80% in the default theme).
+##
+## ```gdscript
+## surface.alpha = 0.6    # 60% for this window only — a confirmation where the fight behind must show
+## surface.alpha = 1.0    # fully opaque for this window only — a window for reading long text
+## ```
+##
+## 🛑 **Only the card background** thins out. Title, body, buttons and icons stay crisp — if the content faded too,
+##    the window would be unreadable, and that is not a transparent window but a broken one (use `modulate` for that).
+## 🛑 The scrim (the veil behind) is separate — it is decided by the theme's `scrim` color and `scrim_transparent`.
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		_restyle()
+## Fade the card in when it opens.
 var fade_in := false
-## 끌어서 높이를 바꿀 수 있는가(시트).
+## Can the height be changed by dragging (sheets)?
 var resizable := false
 var show_header := true
 var scroll_body := true
 var close_enabled := true
-## 열었을 때 포커스를 줄 컨트롤. 없으면 포인터 조작일 때 아무 데도 주지 않는다.
+## Control to focus when opened. Without one, pointer input leaves focus nowhere.
 var initial_focus: Control
 
-## ANCHOR 배치 — 이 컨트롤 바로 아래(공간이 없으면 위)에 붙는다.
+## ANCHOR placement — attaches right below this control (above it when there is no room).
 var anchor_control: Control
 var anchor_width := 320.0
 var anchor_min_width := 210.0
 var anchor_max_height := 520.0
 
-# ── 자식 ───────────────────────────────────────────────────────────────
+# ── Children ───────────────────────────────────────────────────────────
 
 var card: PanelContainer
 var header: HBoxContainer
@@ -80,18 +98,27 @@ var title_label: Label
 var close_button: GoIconButton
 var back_button: Button
 var scroll: GoScroll
-## 스크롤되는 본문. 대부분의 내용이 여기 들어간다.
+## The scrolling body. Most content goes in here.
 var body: VBoxContainer
-## 머리말 아래·본문 위의 **고정 줄**(검색칸 등). 기본은 숨김.
-## 🛑 목록을 내려도 사라지면 안 되는 것을 여기 둔다 — 본문에 넣으면 시트를 줄였을 때 밖으로 밀린다.
+## A **pinned row** below the header and above the body (a search field, say). Hidden by default.
+## 🛑 Put here what must not scroll away — inside the body it gets pushed out of sight when the sheet shrinks.
 var toolbar: VBoxContainer
-## **고정 바닥 줄**(확인·취소). 기본은 숨김. 본문에 넣으면 긴 목록에서 화면 밖으로 나간다.
+## A **pinned footer row** (confirm, cancel). Hidden by default. Inside the body it scrolls off screen on long lists.
 var footer: VBoxContainer
+## A **pinned status row** between the body and the footer — the **one line that must not be missed**, like "Passwords do not match".
+## Hidden by default; turn it on with `set_status_*()`.
+## 🛑 Do not put this row in the body — when an error in a long form lands outside the scroll, the screen looks as if
+##    **nothing happened at all**, and the user waits, wondering "why is it not working" (measured 2026-09-16, Laryen account linking).
+var status: VBoxContainer
+## The label of the pinned status row. 🛑 **Created on first use** — screens that never use it grow no extra node.
+var status_label: Label
 
 var _scrim: ColorRect
 var _column: VBoxContainer
 var _margin: MarginContainer
 var _content_padding := 0
+## Are we at dense density right now (a narrow screen, or content that overflows).
+var _dense := false
 var _active := false
 var _previous_focus: WeakRef
 var _dragging := false
@@ -105,24 +132,24 @@ var _runtime: Node
 
 
 func _init() -> void:
-	# 이름은 `_init` 에서 정한다 — `_ready` 에서 정하면 `new()` 직후 부르는 쪽이 바꾼 이름을 덮어쓴다.
+	# The name is set in `_init` — setting it in `_ready` would overwrite a name the caller changed right after `new()`.
 	name = "Surface"
-	# 🛑 설정의 기본값은 **여기서** 받는다 — `_ready` 에서 `dismiss_on_scrim or 설정` 으로 합치면
-	#    `new()` 직후 명시한 `false`(거래창처럼 오탭으로 닫히면 안 되는 시트)가 설정의 `true` 에 덮인다.
+	# 🛑 Config defaults are taken **here** — merging them in `_ready` as `dismiss_on_scrim or config` would let the
+	#    config's `true` override an explicit `false` given right after `new()` (a trade sheet that must not close on a mistap).
 	dismiss_on_scrim = GoUi.config.dismiss_on_scrim
 	fade_in = GoUi.config.surface_fade_in
 	_build()
 
 
-## 🛑 자식은 **`_init` 에서** 만든다 — 트리에 붙이기 *전에* `set_title()` 이나 `body.add_child()` 를
-##    부르는 것은 아주 자연스러운 사용법인데, `_ready` 에서 만들면 그때 `title_label` 이 아직
-##    `null` 이라 "Invalid assignment … on a base object of type 'Nil'" 로 죽는다(2026-09-12 실측).
+## 🛑 Children are built **in `_init`** — calling `set_title()` or `body.add_child()` *before* the node is added to
+##    the tree is perfectly natural usage, and building them in `_ready` leaves `title_label` still `null` at that
+##    point, which dies with "Invalid assignment … on a base object of type 'Nil'" (measured 2026-09-12).
 func _build() -> void:
 	theme = GoUi.theme()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	# 자식이 먼저 스크롤한다. 쓰이지 않은 휠 이벤트는 이 창 경계에서 멈춘다 —
-	# 목록 끝에서도, 크롬 위에서도, 내용이 짧아 스크롤이 없을 때도 뒤쪽으로 새지 않는다.
+	# Children scroll first. Unused wheel events stop at this window's edge — they never leak through to what is
+	# behind: not at the end of a list, not over the chrome, not when content is too short to scroll at all.
 	mouse_force_pass_scroll_events = false
 	add_to_group(&"go_surfaces")
 
@@ -151,8 +178,8 @@ func _build() -> void:
 	back_button = GoStyle.button_key(GoUi.text_key(&"back"), func() -> void: back_requested.emit(), GoStyle.Tone.COMPACT)
 	back_button.name = "BackButton"
 	back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	# 🛑 줄바꿈을 끈다 — 줄바꿈은 최소 **폭**을 거의 0 으로 만들고, `SHRINK_BEGIN` 에서는
-	#    그 최소 폭이 곧 실제 폭이 된다. 그러면 캡슐만 남고 글자가 통째로 잘린다.
+	# 🛑 Wrapping is turned off — wrapping drops the minimum **width** to nearly 0, and under `SHRINK_BEGIN` that
+	#    minimum width becomes the real width. All that is left is the capsule, with the label clipped away entirely.
 	back_button.autowrap_mode = TextServer.AUTOWRAP_OFF
 	back_button.set_meta(&"go_no_wrap", true)
 	back_button.visible = false
@@ -184,32 +211,39 @@ func _build() -> void:
 	body.name = "Body"
 	_column.add_child(body)
 
+	status = GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	# 🛑 Not a common name (`Status`) — when a host screen looks its own status row up by name, this one is found
+	#    **first** and the wrong node comes back (that is how the Laryen profile screen test broke, 2026-09-16).
+	status.name = "StatusLine"
+	status.visible = false
+	_column.add_child(status)
+
 	footer = GoStyle.column()
 	footer.name = "Footer"
 	footer.visible = false
 	_column.add_child(footer)
 
 
-## 닫기 버튼을 만든다. 🔑 호스트가 `GoIconButton` 의 서브클래스(자기 그림·크기)를 쓰고 싶으면 자식에서 덮어쓴다 —
-## 표면은 `GoIconButton` 의 API 만 쓴다.
+## Builds the close button. 🔑 A host that wants a `GoIconButton` subclass (its own art and size) overrides this in a
+## subclass — the surface only uses the `GoIconButton` API.
 func _make_close_button() -> GoIconButton:
 	return GoIconButton.new()
 
 
-## 본문 스크롤을 만든다. 🔑 호스트 프로젝트가 `GoScroll` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 이 메서드를
-## 자식에서 덮어쓴다 — 표면은 `GoScroll` 의 API 만 쓴다.
+## Builds the body scroll. 🔑 A host project that wants a `GoScroll` subclass (old type-hint compatibility, say) overrides
+## this in a subclass — the surface only uses the `GoScroll` API.
 func _make_scroll() -> GoScroll:
 	return GoScroll.new()
 
 
 func _ready() -> void:
-	# `new()` 와 `add_child()` **사이**에 바꿨을 수 있는 옵션을 여기서 반영한다.
+	# Options that may have changed **between** `new()` and `add_child()` are applied here.
 	_scrim.color = Color(0, 0, 0, 0) if scrim_transparent else GoUi.color(GoTheme.SCRIM)
 	header.visible = show_header
 	if resizable: attach_resize_handle(title_label)
 	if scroll_body and scroll == null:
-		# 🛑 스크롤 칸은 여기서 끼운다 — `use_panel_edge()` 는 부모가 정해진 뒤에야 스크롤바를
-		#    카드 여백 자리로 내보낼 수 있다. 본문에 이미 담아 둔 자식은 그대로 따라온다.
+		# 🛑 The scroll is inserted here — `use_panel_edge()` can only push the scrollbar out into the card padding once
+		#    the parent is known. Children already placed in the body come along unchanged.
 		var slot := body.get_index()
 		scroll = _make_scroll()
 		_column.add_child(scroll)
@@ -226,26 +260,45 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(relayout)
 	get_viewport().gui_focus_changed.connect(_focus_changed)
 	visibility_changed.connect(_sync_active)
-	GoUi.watch(relayout)
+	# 🛑 Register `_on_ui_changed`, not the layout pass — when the config changes, **the panel opacity** has to be
+	#    reapplied too. Relaying out alone leaves a window whose theme was swapped still wearing the old panel.
+	GoUi.watch(_on_ui_changed)
+	_restyle()
 	relayout()
 	_sync_active()
 
 
-# ── 제목 ───────────────────────────────────────────────────────────────
+## Reapplies the card panel — this is where opacity is decided.
+## 🛑 **Not called every frame** (`relayout` runs every frame on fit-content windows). It duplicates the stylebox, so it
+##    costs more than a layout pass, and only needs doing on change — a config change, an `alpha` assignment, opening.
+func _restyle() -> void:
+	if card == null or not is_inside_tree(): return
+	GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
 
-## 번역 키를 제목으로 — 언어가 바뀌면 엔진이 다시 그린다.
+
+## Config or theme changed. 🛑 **Forget** the remembered "original panel" and take it again — swapping the look
+##    changes the panel itself, so putting the new opacity on the old panel leaves a card from the old theme.
+func _on_ui_changed() -> void:
+	GoStyle.forget_face(card)
+	_restyle()
+	relayout()
+
+
+# ── Title ──────────────────────────────────────────────────────────────
+
+## A translation key as the title — the engine redraws it when the language changes.
 func set_title_key(key: String) -> void:
 	title_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
 	title_label.text = key
 
 
-## 이미 번역된 문구·사람 이름을 제목으로.
+## An already-translated phrase or a person's name as the title.
 func set_title(value: String) -> void:
 	title_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	title_label.text = value
 
 
-## 같은 표면 안의 하위 화면이 쓰는 뒤로 버튼. 빈 `Callable` 이면 감춘다.
+## The back button used by sub-screens inside the same surface. An empty `Callable` hides it.
 func set_back(action: Callable) -> void:
 	for existing in back_requested.get_connections():
 		back_requested.disconnect(existing.callable)
@@ -253,7 +306,43 @@ func set_back(action: Callable) -> void:
 	back_button.visible = action.is_valid()
 
 
-## 본문을 비운다.
+# ── Pinned status row ──────────────────────────────────────────────────
+
+## Pins an already-translated line above the footer row. An empty string hides the row.
+## `tone` is a color token (`GoTheme.DANGER`·`WARNING`·`SUCCESS`·`MUTED` …) — leave it out for the body color.
+func set_status_text(text: String, tone := StringName()) -> void:
+	_set_status(text, tone, false)
+
+
+## By translation key — the engine redraws it when the language changes.
+func set_status_key(key: String, tone := StringName()) -> void:
+	_set_status(key, tone, true)
+
+
+## Hides the status row.
+func clear_status() -> void:
+	_set_status("", StringName(), false)
+
+
+func _set_status(text: String, tone: StringName, translate: bool) -> void:
+	if text.is_empty():
+		if status_label != null: status_label.text = ""
+		status.visible = false
+		return
+	if status_label == null:
+		status_label = GoStyle.label("", GoTheme.ROLE_CAPTION)
+		status_label.name = "StatusLineText"
+		status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		status.add_child(status_label)
+	status_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	status_label.text = text
+	GoStyle.typography(status_label, GoTheme.ROLE_CAPTION,
+		GoUi.color(tone) if tone != StringName() else Color.TRANSPARENT)
+	status.visible = true
+
+
+## Empties the body.
 func clear() -> void:
 	for child in body.get_children():
 		body.remove_child(child)
@@ -265,17 +354,17 @@ func request_close() -> void:
 	if close_enabled and is_top(): close_requested.emit()
 
 
-# ── 가장 위 창 판정 ────────────────────────────────────────────────────
+# ── Topmost test ───────────────────────────────────────────────────────
 
-## 이 표면이 가장 위인가 — 중첩된 `CanvasLayer` 까지 보고 실제 그려지는 순서로 판단한다.
-## 🛑 이것이 없으면 창 두 개가 겹쳤을 때 Escape 한 번이 둘 다 닫는다.
+## Is this surface the topmost one — decided by the real draw order, nested `CanvasLayer`s included.
+## 🛑 Without this, one Escape closes both windows when two of them overlap.
 func is_top() -> bool:
 	if not is_inside_tree() or not is_visible_in_tree(): return false
 	var winner: GoSurface = self
 	for node in get_tree().get_nodes_in_group(&"go_surfaces"):
-		# 🛑 `node` 를 먼저 `GoSurface` 로 좁힌다 — `for` 변수는 `Node` 라, 그대로 `_layer_order()`
-		#    를 부르면 반환 타입을 추론하지 못해 **파싱 단계에서** 스크립트가 통째로 죽는다
-		#    (증상은 `GoSurface.new()` 의 "Nonexistent function 'new' in base 'GDScript'" 다).
+		# 🛑 Narrow `node` to `GoSurface` first — the `for` variable is a `Node`, and calling `_layer_order()` on it
+		#    directly leaves the return type un-inferable, which kills the whole script **at parse time**
+		#    (the symptom is "Nonexistent function 'new' in base 'GDScript'" on `GoSurface.new()`).
 		var candidate := node as GoSurface
 		if candidate == null or not candidate.is_visible_in_tree(): continue
 		var mine := winner._layer_order()
@@ -292,7 +381,7 @@ func _layer_order() -> int:
 	return 0
 
 
-# ── 수명·포커스 ────────────────────────────────────────────────────────
+# ── Lifetime and focus ─────────────────────────────────────────────────
 
 func _sync_active() -> void:
 	var next := is_visible_in_tree()
@@ -330,9 +419,9 @@ func _focus_default() -> void:
 		initial_focus.grab_focus()
 		return
 	if GoUi.config.suppress_pointer_focus_ring and _pointer_navigation:
-		# 포인터로 열었다 — 링을 띄우지 않는다. Tab 을 누르면 그때 포커스가 들어온다.
-		# 🛑 뒤쪽 화면에 남은 포커스는 놓게 한다 — 그대로 두면 창이 떠 있는데 Enter 가
-		#    뒤 버튼을 누른다. 닫을 때 `_restore_focus` 가 원래 자리로 되돌린다.
+		# Opened with a pointer — no ring. Focus arrives the moment Tab is pressed.
+		# 🛑 Make the screen behind drop its focus — left alone, Enter presses a button back there while the
+		#    window is up. `_restore_focus` puts it back where it was on close.
 		var outside := get_viewport().gui_get_focus_owner()
 		if outside != null and not is_ancestor_of(outside): outside.release_focus()
 		return
@@ -345,7 +434,7 @@ func _focus_default() -> void:
 
 func _focus_changed(target: Control) -> void:
 	if not (_active and is_top() and target != null and not is_ancestor_of(target)): return
-	# 창 밖에 포커스를 남기지 않는다 — Enter 가 뒤쪽 화면의 버튼을 누르면 안 된다.
+	# Never leave focus outside the window — Enter must not press a button on the screen behind.
 	if GoUi.config.suppress_pointer_focus_ring and _pointer_navigation and not is_instance_valid(initial_focus):
 		target.release_focus.call_deferred()
 	else:
@@ -361,22 +450,22 @@ func _restore_focus() -> void:
 
 
 func _exit_tree() -> void:
-	GoUi.unwatch(relayout)
+	GoUi.unwatch(_on_ui_changed)
 	_release_back()
 	_restore_focus()
 
 
-# ── 배치 계산 ──────────────────────────────────────────────────────────
+# ── Layout math ────────────────────────────────────────────────────────
 
 func relayout() -> void:
 	if card == null or not is_inside_tree(): return
-	_update_density()
 	var settings := GoUi.config
 	var area := GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px)
 	if placement == Placement.ANCHOR and is_instance_valid(anchor_control) and anchor_control.is_inside_tree():
+		_update_density()
 		_relayout_anchor(area)
 		return
-	# 화면 가장자리에서 최소한 이만큼은 떨어진다 — 아주 좁은 화면에서는 비율로 줄인다.
+	# Keeps at least this much off the screen edge — on very narrow screens it shrinks proportionally.
 	var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN))
 	area = area.grow(-minf(edge, minf(area.size.x, area.size.y) * 0.1))
 	var landscape := area.size.x > area.size.y
@@ -386,15 +475,37 @@ func relayout() -> void:
 	var ratio := height_ratio if height_ratio > 0.0 else settings.surface_height_ratio
 	var width := maxf(1.0, minf(cap_width, area.size.x * width_ratio))
 	var height := maxf(1.0, minf(cap_height, area.size.y * minf(ratio, settings.surface_max_height_ratio)))
-	if fit_content: height = maxf(1.0, minf(height, _desired_height()))
-	card.size = Vector2(width, height)
+	if fit_content:
+		# 🔑 Short content shrinks it, and **long content grows it as far as the screen allows.** Scrolling while screen
+		#    space is left over makes users who never noticed the scroll submit with unseen fields empty (`surface_fit_max_height_ratio`).
+		#    🛑 Drag-resizable sheets and bottom sheets are not grown — their height is the user's own choice.
+		var room := height
+		if placement == Placement.CENTER and not resizable:
+			room = maxf(room, minf(cap_height, area.size.y * settings.surface_fit_max_height_ratio))
+		# If it looks like overflowing, try one step less padding and gap — then measure again.
+		_update_density(room)
+		height = clampf(_desired_height(), 1.0, room)
+	else:
+		_update_density()
+	# 🛑 Size and position are given as integers — at a fractional position (centered · logical width 349.09) the size is
+	#    stored as "position + size" and 184 becomes 183.99997, the card's inner padding (MarginContainer) floors child
+	#    sizes to integers, and the body came out 1px short — a scrollbar appeared beside the one-line body of the first
+	#    confirmation (measured 2026-09-15 on a Laryen phone in portrait · does not reproduce at headless logical sizes).
+	card.size = Vector2(width, height).round()
 	var y := area.position.y + (area.size.y - card.size.y) * (1.0 if placement == Placement.BOTTOM else 0.5)
-	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y)
+	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y).round()
 
 
-## 좁아지면 여백과 제목 크기를 한 단계 줄인다 — 작은 화면에서 내용이 들어갈 자리를 만든다.
-func _update_density() -> void:
+## Drops padding and title size one step when space runs short — making room for content on small screens.
+##
+## Pass `room` (greater than 0) to drop a step **when the content overflows that height** as well — a form with the
+## virtual keyboard covering half the screen, say: not much room, yet everything has to be visible.
+## 🛑 Coming back needs slack (`RELAX`) — measuring right at the boundary makes the padding shrink and grow, flickering.
+func _update_density(room := 0.0) -> void:
 	var small := compact or get_viewport_rect().size.y < 420
+	if not small and room > 0.0:
+		small = _desired_height() > (room * RELAX if _dense else room)
+	_dense = small
 	var token := GoTheme.PADDING_COMPACT if small else GoTheme.PADDING
 	var next := GoUi.metric(token)
 	if _content_padding != next:
@@ -406,20 +517,33 @@ func _update_density() -> void:
 	if title_label.get_meta(&"go_text_role", &"") != role: GoStyle.typography(title_label, role)
 
 
-## 내용이 요구하는 카드 높이(여백 + 머리말 + 고정 줄 + 본문 + 바닥).
-## 🛑 `toolbar` 를 빠뜨리면 검색칸을 켠 시트가 딱 그만큼 짧아져 목록 마지막 줄이 잘린다.
+## The card's inner padding (dp) — one step smaller on narrow screens. 🔑 Decided after `relayout`.
+func content_inset() -> int:
+	return _content_padding
+
+
+## The **actually applied** gap (dp) between header, pinned rows, body and footer — one step smaller on narrow screens.
+func section_gap() -> int:
+	return _column.get_theme_constant(&"separation")
+
+
+## The card height the content asks for (padding + header + pinned rows + body + footer).
+## 🛑 Leave `toolbar` out and a sheet with its search field on comes up exactly that much shorter, clipping the last row of the list.
+## 🛑 Section gaps are counted from the **value actually applied** — hard-coding the `gap` token grew the card by that difference
+##    at every section on narrow screens (where the gap is `gap_small`), opening a hole between body and buttons in short confirmations.
 func _desired_height() -> float:
 	var desired := float(_content_padding * 2)
-	var gap := float(GoUi.metric(GoTheme.GAP))
+	var gap := float(section_gap())
 	if header.visible: desired += header.get_combined_minimum_size().y + gap
 	if toolbar.visible: desired += toolbar.get_combined_minimum_size().y + gap
 	desired += body.get_combined_minimum_size().y
+	if status.visible: desired += status.get_combined_minimum_size().y + gap
 	if footer.visible: desired += footer.get_combined_minimum_size().y + gap
 	return desired
 
 
-## 지정한 컨트롤 옆에 붙인다 — 오른쪽에 최소 폭이 나오면 오른쪽, 아니면 넓은 쪽, 둘 다 안 되면
-## 화면 안쪽으로 당긴다. 아래가 위보다 좁으면 위로 연다.
+## Attaches beside the given control — to the right if the minimum width fits there, otherwise to the wider side, and if
+## neither fits, pulled inside the screen. Opens upward when there is less room below than above.
 func _relayout_anchor(area: Rect2) -> void:
 	var anchor := anchor_control.get_global_rect()
 	var edge := 8.0
@@ -442,12 +566,13 @@ func _relayout_anchor(area: Rect2) -> void:
 	var cap := minf(anchor_max_height, area.size.y * GoUi.config.surface_max_height_ratio)
 	var height := clampf(above if opens_up else below, 0, cap)
 	if fit_content: height = minf(height, _desired_height())
-	card.size = Vector2(maxf(1, width), maxf(1, height))
-	# 고정 머리말·바닥이 남는 공간보다 크면 카드가 최소 크기로 커진다 — 그때는 화면 안으로 민다.
+	card.size = Vector2(maxf(1, width), maxf(1, height)).round()
+	# When the pinned header and footer are bigger than the room left, the card grows to its minimum size — then it is pushed inside the screen.
 	var y := anchor.position.y - gap - card.size.y if opens_up else anchor.end.y + gap
 	y = clampf(y, area.position.y + edge, maxf(area.position.y + edge, area.end.y - edge - card.size.y))
 	x = clampf(x, area.position.x + edge, maxf(area.position.x + edge, area.end.x - edge - card.size.x))
-	card.position = Vector2(x, y)
+	# 🛑 Integers — a fractional position makes the size 183.99997 and the body loses 1px (see the `relayout` comment).
+	card.position = Vector2(x, y).round()
 
 
 func _process(_delta: float) -> void:
@@ -455,7 +580,7 @@ func _process(_delta: float) -> void:
 	_sync_active()
 	if not _active: return
 	close_button.disabled = not close_enabled
-	# 오토로드가 없으면 여기서 직접 키보드를 본다(있으면 신호로 온다).
+	# Without the autoload the keyboard is polled here (with it, it arrives as a signal).
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
 	if fit_content: relayout()
@@ -470,7 +595,7 @@ func _on_keyboard(height_px: int) -> void:
 	if focus != null and scroll.is_ancestor_of(focus): scroll.ensure_control_visible.call_deferred(focus)
 
 
-# ── 입력 ───────────────────────────────────────────────────────────────
+# ── Input ──────────────────────────────────────────────────────────────
 
 func _scrim_input(event: InputEvent) -> void:
 	if not dismiss_on_scrim or not is_top(): return
@@ -479,20 +604,20 @@ func _scrim_input(event: InputEvent) -> void:
 		_scrim_pressed = true
 		_scrim_origin = event.position
 	else:
-		# 🛑 누른 자리에서 **끌지 않았을 때만** 닫는다 — 카드 안에서 시작해 밖에서 뗀 끌기가
-		#    창을 닫으면 안 된다.
+		# 🛑 Closes **only when the press did not drag** — a drag that started inside the card and ended outside
+		#    must not close the window.
 		if _scrim_pressed and _scrim_origin.distance_to(event.position) < GoUi.metric(GoTheme.SCROLL_DEADZONE):
 			request_close()
 		_scrim_pressed = false
 
 
 func _gui_input(event: InputEvent) -> void:
-	# `MOUSE_FILTER_STOP` 은 Godot 에서 확대/이동 제스처를 삼키지 않는다.
-	# 중첩된 컨트롤이 먼저 본 뒤에야 여기로 오므로, 남은 것만 여기서 멈춘다.
+	# `MOUSE_FILTER_STOP` does not swallow zoom and pan gestures in Godot.
+	# Nested controls see them first, so only what is left over is stopped here.
 	if event is InputEventGesture: accept_event()
 
 
-## 끌어서 높이 조절 — 시트의 머리말을 잡고 위아래로.
+## Drag to resize — grab the sheet's header and move it up or down.
 func attach_resize_handle(handle: Control) -> void:
 	resizable = true
 	handle.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -534,8 +659,8 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
-## 어떤 장치로 조작 중인지 기록한다. 창이 숨어 있어도 트리에 있으면 이벤트가 오므로,
-## **창을 열기 직전의 조작**(버튼 탭인지 Tab 키인지)이 그대로 반영된다.
+## Records which device is in use. Events arrive while the window is in the tree even when it is hidden, so
+## **the input right before the window opened** (a button tap or the Tab key) is what counts.
 func _track_device(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventScreenTouch or event is InputEventScreenDrag:
 		_pointer_navigation = true
@@ -545,5 +670,5 @@ func _track_device(event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and is_top():
-		# 한 번의 OS 알림이 겹친 창 여러 개를 닫지 않도록 미룬다.
+		# Deferred so that one OS notification does not close several stacked windows.
 		request_close.call_deferred()

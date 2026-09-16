@@ -1,31 +1,40 @@
-/* gohud 홈페이지 — 왼쪽 목차(사이드바).
+/* gohud site — the left-hand table of contents (sidebar).
  *
- * **지금 어디를 읽고 있는지 늘 보이게** 한다. 목차는 쪽을 가르는 일과 서로를 대신하지 않는다.
+ * Keeps **where you are reading right now always in sight**. The table of contents and splitting
+ * pages up do not stand in for each other.
  *
- * 🔑 2026-09-16 사람 지시로 대문을 **다섯 장**으로 갈랐고(index·install·ai·widgets·theming),
- *   같은 날 다시 **절 단위로** 갈랐다(`tools/split_site.py` — widgets 표지+8 · theming 표지+6, 19 장 ×
- *   17 개 언어). 절의 번역문을 그대로 옮겨 기계로 가른 것이라 번역이 새로 든 곳은 없다.
+ * 🔑 On 2026-09-16, by human instruction, the front door was split into **five pages**
+ *   (index · install · ai · widgets · theming), and later the same day split again **by section**
+ *   (`tools/split_site.py` — widgets cover + 8 · theming cover + 6, so 19 pages × 17 languages).
+ *   The section translations were carried over as they stood and split by machine, so no new
+ *   translation went in anywhere.
  *
- * 🛑 **그 전에 이 자리에는 "절 단위로 더 쪼개지는 않는다 — 그때부터는 이 목차가 맡는다" 가 적혀
- *   있었다.** 그 한 줄과 `tools/site_nav.py` 의 같은 말을 근거로, **"문서를 작게 나눠 달라" 는
- *   사람의 요청이 여러 차례 '이미 결정된 것' 으로 처리됐다.** 목차와 가르기는 서로를 대신하지
- *   않는다 — 목차는 한 쪽 **안**을 안내하고, 가르기는 쪽 **자체**를 줄인다. 40 KB 짜리 한 장에서는
- *   찾는 것 하나를 보려고 나머지 서른하나를 스크롤해야 했다.
+ * 🛑 **This spot used to read "no splitting further by section — from here on this table of contents
+ *   takes over."** On the strength of that one line and the same words in `tools/site_nav.py`, the
+ *   human's request to **"break the docs into smaller pieces" was repeatedly treated as 'already
+ *   decided'.** The table of contents and splitting do not stand in for each other — the table of
+ *   contents guides you **inside** one page, splitting shrinks the page **itself**. On a single
+ *   40 KB page you had to scroll past the other thirty-one things to see the one you came for.
  *
- * ## 사이드바에 무엇이 뜨나 — 두 켜
- * 1. **이 묶음의 쪽들** — 문서 안의 `<nav class="subnav">`(가르기가 넣어 둔다)를 그대로 맨 위로
- *    올린다. 라벨이 이미 그 언어로 적혀 있어 여기에 번역을 둘 필요가 없다.
- * 2. **이 쪽의 차례** — 아래 `items`. 종전과 같다.
+ * ## What shows up in the sidebar — two layers
+ * 1. **The pages of this group** — the document's own `<nav class="subnav">` (put there by the
+ *    splitter) is lifted to the top as it is. Its labels are already in that language, so there is
+ *    no translation to keep here.
+ * 2. **This page's contents** — `items` below. Same as before.
  *
- * ## 왜 이렇게 만들었나
- * - 목차는 **페이지의 제목을 읽어서** 만든다. 그래서 17 개 언어판에 번역문을 따로 넣을 필요가 없다.
- *   제목의 id 는 `tools/make_site.py` 가 영어 기준으로 박아 두어, 언어를 바꿔도 주소가 같다.
- * - CSS 는 이 파일이 직접 넣는다(`site/tooltip.js` 의 선례). `site/style.css` 는 건드리지 않는다.
- * - 🛑 `fetch()` 를 쓰지 않는다 — `tools/site_shots.sh` 가 페이지를 `file://` 로 열기 때문에
- *   브라우저에서는 되고 촬영 검증에서만 조용히 죽는다. 필요한 것은 전부 문서 안에 있다.
- * - 🛑 화면 오른쪽 아래는 용어 버튼(`#glbtn`)이 쓰고 있다. 좁은 화면의 목차 단추는 **왼쪽 아래**다.
- * - 🛑 `tooltip.js` 가 전역 keydown 에서 Escape·Enter·Space·Tab 을 가로챈다. 거르개 입력칸에서는
- *   키 이벤트를 멈춰 글자가 엉뚱하게 먹히지 않게 한다.
+ * ## Why it is built this way
+ * - The table of contents is built **by reading the page's own headings**. That way no translated
+ *   text has to be added to the 17 language editions. Heading ids are stamped in English by
+ *   `tools/make_site.py`, so the address stays the same whatever the language.
+ * - The CSS is injected by this file itself (following `site/tooltip.js`). `site/style.css` is left
+ *   alone.
+ * - 🛑 No `fetch()` — `tools/site_shots.sh` opens the pages over `file://`, so it would work in the
+ *   browser and die silently only in the screenshot check. Everything needed is already inside the
+ *   document.
+ * - 🛑 The bottom right of the screen is taken by the glossary button (`#glbtn`). On a narrow screen
+ *   the table-of-contents button goes **bottom left**.
+ * - 🛑 `tooltip.js` grabs Escape, Enter, Space and Tab on a global keydown. In the filter input we
+ *   stop key events so letters do not get eaten by the wrong thing.
  */
 (function () {
   'use strict';
@@ -33,9 +42,10 @@
   var main = document.querySelector('main');
   if (!main) return;
 
-  // ── 사이드바가 쓰는 말 ─────────────────────────────────────
-  // 🔑 여기 한 곳에 두고 문서의 `<html lang>` 으로 고른다. 이렇게 하면 언어판 51 장에는 아무것도
-  //    넣지 않아도 목차가 그 나라 말로 뜬다. 모르는 언어는 영어로 떨어진다.
+  // ── Words the sidebar uses ─────────────────────────────────
+  // 🔑 Kept here in one place and picked by the document's `<html lang>`. That way the table of
+  //    contents comes up in the reader's language without putting anything into the 51 translated
+  //    pages. An unknown language falls back to English.
   var SAY = {
     'en': { title: 'On this page', filter: 'Filter', search: 'Search all pages' },
     'ko': { title: '이 페이지 차례', filter: '필터', search: '문서 전체 검색' },
@@ -58,9 +68,10 @@
   var lang = document.documentElement.lang || 'en';
   var say = SAY[lang] || SAY[lang.split('-')[0]] || SAY.en;
 
-  // ── 목차 거리 ──────────────────────────────────────────────
-  // 절(`<section id>`)과 그 안의 소제목(`h3[id]`)만 담는다. 🛑 카드 안의 h3 은 뺀다 — `#what` 절의
-  // 카드 여덟 장은 나열이지 절이 아니라서, 넣으면 목차가 본문만큼 길어진다.
+  // ── What the table of contents is made of ──────────────────
+  // Only sections (`<section id>`) and the subheadings inside them (`h3[id]`). 🛑 An h3 inside a
+  // card is left out — the eight cards of the `#what` section are a list, not sections, and putting
+  // them in makes the table of contents as long as the page itself.
   var items = [];
   main.querySelectorAll('section[id]').forEach(function (sec) {
     var h2 = sec.querySelector('h2');
@@ -71,14 +82,15 @@
       items.push({ id: h3.id, text: h3.textContent.trim(), sub: true, el: h3 });
     });
   });
-  // 🔑 가르기(`tools/split_site.py`)가 넣어 둔 이 묶음의 쪽 목록. 없으면 갈리지 않은 쪽이다.
+  // 🔑 The list of this group's pages, put there by the splitter (`tools/split_site.py`). Absent means an unsplit page.
   var groupNav = main.querySelector('nav.subnav');
 
-  // 🛑 갈린 쪽은 절이 한둘뿐이다 — 그렇다고 목차를 접으면 **묶음 목록까지 사라져** 옆 쪽으로
-  //    건너갈 길이 머리띠밖에 남지 않는다. 묶음이 있으면 절 수와 상관없이 띄운다.
+  // 🛑 A split page has only one or two sections — but dropping the table of contents for that
+  //    takes **the group list down with it**, leaving the header as the only way across to the next
+  //    page. If there is a group, show it whatever the section count.
   if (items.length < 3 && !groupNav) return;
 
-  // 머리띠의 페이지 링크(다른 장으로 가는 길)를 그대로 가져온다 — 번역문이 이미 들어 있다.
+  // Take the header's page links (the way to the other chapters) as they are — the translation is already in them.
   var pageLinks = [];
   document.querySelectorAll('header.top nav a').forEach(function (a) {
     var href = a.getAttribute('href') || '';
@@ -88,8 +100,8 @@
     pageLinks.push({ href: href, text: a.textContent.replace(/\s*↗\s*$/, '').trim() });
   });
 
-  // ── 생김새 ────────────────────────────────────────────────
-  // 색은 style.css 의 변수를 그대로 쓴다 — 밝은 판·어두운 판이 저절로 따라온다.
+  // ── Looks ─────────────────────────────────────────────────
+  // The colors come straight from style.css variables — light and dark follow on their own.
   var W = '264px', HEAD = '58px';
   var css = document.createElement('style');
   css.textContent = [
@@ -118,20 +130,22 @@
     '.gotoc-pages{margin-top:16px;padding-top:12px;border-top:1px solid var(--rule,#DCE3EA)}',
     '.gotoc-pages a{font-weight:600;color:var(--ink,#16202B)}',
     'body.gotoc-on{padding-inline-start:' + W + '}',
-    /* 🔑 머리띠만 목차 너머로 되돌린다 — 로고가 화면 맨 왼쪽 위에 서고 목차가 그 아래로 붙어,
-       왼쪽 위에 뜻 없는 빈칸이 생기지 않는다(2026-09-16 촬영에서 264px 이 비어 있었다). */
+    /* 🔑 Only the header is pulled back across the table of contents — the logo stands at the very
+       top left and the table of contents tucks in below it, so no meaningless gap opens up at the
+       top left (in the 2026-09-16 screenshot 264px sat empty). */
     'body.gotoc-on header.top{margin-inline-start:-' + W + '}',
     'body.gotoc-on header.top .wrap{max-width:none}',
-    /* 🛑 목차가 뜨면 머리띠의 절 링크는 왼쪽에 그대로 있다 — 두 벌을 두면 머리띠가 두 줄로 접혀
-       검색칸과 언어 고르개가 밀려난다(2026-09-16 촬영). 목차가 실제로 떴을 때만 숨긴다. */
+    /* 🛑 Once the table of contents is up, the header's section links are already there on the left
+       — keeping both sets folds the header onto two lines and pushes the search box and the language
+       picker out (screenshot, 2026-09-16). Hide them only when the table of contents is really up. */
     'body.gotoc-on header.top nav a[href^="#"]{display:none}',
 
-    /* 제목 옆의 작은 고리 — 그 자리의 주소를 바로 집어갈 수 있게. 마우스를 올려야 보인다. */
+    /* The little link beside a heading — so its address can be picked up on the spot. Shows on hover only. */
     '.gotoc-anchor{margin-inline-start:.4em;color:var(--muted,#5B6B7B);text-decoration:none;',
     '  opacity:0;font-weight:400;transition:opacity .12s}',
     'h2:hover>.gotoc-anchor,h3:hover>.gotoc-anchor,.gotoc-anchor:focus{opacity:.75}',
 
-    /* 좁은 화면 — 옆에 둘 자리가 없으니 단추로 여닫는다. 🛑 왼쪽 아래(오른쪽은 용어 버튼 자리). */
+    /* Narrow screens — no room beside the text, so a button opens and closes it. 🛑 Bottom left (bottom right is the glossary button's spot). */
     '.gotoc-btn{display:none;position:fixed;inset-block-end:14px;inset-inline-start:14px;z-index:45;',
     '  padding:9px 14px;border-radius:999px;border:1px solid var(--rule,#DCE3EA);',
     '  background:var(--card,#fff);color:var(--ink,#16202B);font:inherit;font-size:13px;font-weight:600;',
@@ -147,15 +161,16 @@
     '  .gotoc.open{transform:none}',
     '  .gotoc-veil{position:fixed;inset:0;z-index:55;background:rgba(8,16,24,.45)}',
     '}',
-    /* 사이드바 맨 위의 묶음 켜 — 이 묶음의 다른 쪽으로 건너가는 길. */
+    /* The group layer at the top of the sidebar — the way across to the other pages of this group. */
     '.gotoc-group{padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--rule,#DCE3EA)}',
     '.gotoc-group a{font-weight:600;color:var(--ink,#16202B)}',
     '.gotoc-group a[aria-current]{color:var(--accent,#0878AE);',
     '  border-inline-start-color:var(--accent,#0878AE);',
     '  background:color-mix(in srgb,var(--accent,#0878AE) 10%,transparent)}',
 
-    /* 🔑 본문 맨 위의 같은 목록 — 자바스크립트가 꺼져 있어도 이것만은 보인다. 목차가 뜨면 숨긴다
-       (같은 목록이 두 벌 보이지 않게). 좁은 화면에서는 목차가 단추 뒤로 접히므로 다시 보인다. */
+    /* 🔑 The same list at the top of the page body — this one shows even with JavaScript off. It is
+       hidden once the table of contents is up (so the same list is not shown twice). On a narrow
+       screen the table of contents folds away behind a button, so it comes back. */
     'main>nav.subnav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px;padding:0 0 18px;',
     '  border-bottom:1px solid var(--rule,#DCE3EA)}',
     'main>nav.subnav a{padding:6px 13px;border-radius:999px;text-decoration:none;font-size:14px;',
@@ -169,12 +184,12 @@
   ].join('');
   document.head.appendChild(css);
 
-  // ── 목차 만들기 ────────────────────────────────────────────
+  // ── Building the table of contents ─────────────────────────
   var nav = document.createElement('nav');
   nav.className = 'gotoc';
   nav.setAttribute('aria-label', say.title);
 
-  // 🔑 이 묶음의 쪽들을 맨 위에 — 제목은 `subnav` 의 `aria-label`(이미 그 언어의 말이다).
+  // 🔑 This group's pages go on top — the title is the `subnav`'s `aria-label` (already in that language).
   if (groupNav) {
     var group = document.createElement('div');
     group.className = 'gotoc-group';
@@ -197,7 +212,7 @@
   title.textContent = say.title;
   nav.appendChild(title);
 
-  // 🔑 이 페이지 안에서 못 찾은 사람을 전체 검색으로 넘긴다. `site/search.js` 가 열어 준다.
+  // 🔑 Hands anyone who cannot find it on this page over to the global search. `site/search.js` opens it.
   var all = document.createElement('button');
   all.className = 'gotoc-all';
   all.type = 'button';
@@ -250,7 +265,7 @@
   document.body.appendChild(nav);
   document.body.classList.add('gotoc-on');
 
-  // 제목마다 주소 고리를 단다 — 읽다가 그 자리를 남에게 보낼 수 있게.
+  // Hang an address link on every heading — so a spot can be sent to someone else while reading.
   main.querySelectorAll('section[id] > h2, h3[id]').forEach(function (h) {
     var id = h.tagName === 'H2' ? (h.parentNode.id || '') : h.id;
     if (!id || h.closest('.card')) return;
@@ -263,7 +278,7 @@
     h.appendChild(a);
   });
 
-  // ── 지금 읽는 자리 표시 ────────────────────────────────────
+  // ── Marking where you are reading ──────────────────────────
   var current = null;
   function mark() {
     var line = window.scrollY + 90, pick = links[0];
@@ -275,7 +290,7 @@
     if (current) current.classList.remove('on');
     pick.classList.add('on');
     current = pick;
-    // 목차가 길면 지금 항목이 화면 밖일 수 있다 — 보이는 자리로 끌어온다.
+    // A long table of contents can leave the current entry off-screen — pull it into view.
     var box = nav.getBoundingClientRect(), at = pick.getBoundingClientRect();
     if (at.top < box.top + 8 || at.bottom > box.bottom - 8) {
       nav.scrollTop += at.top - box.top - box.height / 2;
@@ -289,8 +304,8 @@
   }, { passive: true });
   mark();
 
-  // ── 거르개 ────────────────────────────────────────────────
-  // 🛑 키 이벤트를 여기서 멈춘다 — tooltip.js 가 전역에서 Escape·Space·Enter 를 가로채기 때문이다.
+  // ── The filter ────────────────────────────────────────────
+  // 🛑 Key events are stopped here — tooltip.js grabs Escape, Space and Enter globally.
   find.addEventListener('keydown', function (e) {
     e.stopPropagation();
     if (e.key === 'Escape') { find.value = ''; filter(); find.blur(); }
@@ -307,7 +322,7 @@
     none.textContent = '\u2315 ' + say.search + (q ? ' \u00b7 \u201c' + find.value.trim() + '\u201d' : '');
   }
 
-  // ── 좁은 화면의 여닫이 ─────────────────────────────────────
+  // ── Opening and closing on a narrow screen ─────────────────
   var veil = null;
   var btn = document.createElement('button');
   btn.className = 'gotoc-btn';

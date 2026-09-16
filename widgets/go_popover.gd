@@ -1,55 +1,56 @@
-## 💬 **붙어서 뜨는 작은 카드** — 아이템 정보, 스킬 설명, 스탯 비교.
+## 💬 **A small card that opens attached to something** — item details, skill descriptions, stat comparisons.
 ##
 ## ```gdscript
-## # 슬롯을 누르면 그 옆에 설명이 뜬다
+## # Press a slot and the description opens beside it
 ## GoPopover.open(slot, item_card(item))
 ##
-## # 제목을 달고, 바깥을 눌러도 닫히지 않게
-## GoPopover.open(button, body, {"title": "강화 확률", "dismissable": false})
+## # With a title, and not closing on an outside tap
+## GoPopover.open(button, body, {"title": "Upgrade odds", "dismissable": false})
 ##
-## # 닫힐 때까지 기다린다
+## # Wait until it closes
 ## await GoPopover.open(slot, body).close_requested
 ## ```
 ##
-## ## 🔑 이것이 푸는 문제는 **조립**이다
-## `GoSurface` 에 이미 `Placement.ANCHOR` 가 있다. 하지만 쓰려면 층을 만들고, 표면을 만들고,
-## 앵커를 물리고, 닫힐 때 치우는 것까지 매번 써야 했다 — 게임 UI 에서 가장 자주 하는 일인데
-## 매번 열 줄이 든다. 여기서는 **한 줄**이다.
+## ## 🔑 The problem it solves is **assembly**
+## `GoSurface` already has `Placement.ANCHOR`. But using it meant writing out the layer, the surface, wiring
+## the anchor and cleaning up on close every single time — the most common job in a game UI, and ten lines
+## each time. Here it is **one line**.
 ##
-## ## 🛑 툴팁이 아니다
-## 마우스를 올려 두는 동안만 뜨는 것(hover)은 **터치 기기에 없다.** 폰에는 "올려 두기" 가 없으므로
-## 정보를 거기에만 두면 모바일 플레이어는 영영 못 본다. 그래서 이것은 **눌러서 열고 눌러서 닫는다.**
+## ## 🛑 It is not a tooltip
+## Something that only appears while a mouse rests on it (hover) **does not exist on a touch device.** A phone
+## has no "resting on it", so information kept only there is never seen by a mobile player. That is why this
+## one **opens on a press and closes on a press.**
 ##
-## ## 🛑 되돌릴 수 없는 조작을 여기 담지 않는다
-## 바깥을 누르면 닫힌다(기본). 판매·해체 확인은 `GoDialogs.confirm()` 이다.
+## ## 🛑 Do not put irreversible actions in here
+## An outside tap closes it (by default). Confirming a sale or a salvage is `GoDialogs.confirm()`.
 @tool
 class_name GoPopover
 extends RefCounted
 
-## 이 층에 뜬다. HUD 보다 위, 대화상자보다 아래.
+## It opens on this layer. Above the HUD, below the dialogs.
 const LAYER := 95
 
-## 지금 열려 있는 것 — **한 번에 하나**다. 새로 열면 앞의 것이 닫힌다.
+## The one currently open — **one at a time**. Opening a new one closes the previous.
 static var _open: CanvasLayer
-## 그 층 안의 표면. 닫을 때 `close_requested` 를 내 주려고 따로 들고 있는다.
+## The surface inside that layer. Held separately so `close_requested` can be emitted on close.
 static var _open_surface: GoSurface
 
 
-## `anchor` 옆에 `content` 를 담은 카드를 띄운다. 돌려주는 것은 그 `GoSurface` 다
-## (`closed` 를 기다리거나 `request_close()` 로 닫는다).
+## Open a card holding `content` beside `anchor`. What comes back is that `GoSurface`
+## (await its `closed`, or close it with `request_close()`).
 ##
-## | 칸 | 뜻 | 기본 |
+## | Field | Meaning | Default |
 ## |---|---|---|
-## | `title` | 머리 줄 글자. 비우면 머리 줄이 없다 | `""` |
-## | `translate` | 제목을 번역 키로 본다 | `false` |
-## | `width` | 카드 폭(dp) | 320 |
-## | `max_height` | 카드 최대 높이(dp) | 520 |
-## | `dismissable` | 바깥을 눌러 닫을 수 있다 | `true` |
-## | `compact` | 여백을 좁게 — 한두 줄짜리 설명에 | `false` |
-## | `alpha` | 카드 바탕의 불투명도(0.0~1.0). 음수면 테마·설정 값 | `-1.0` |
+## | `title` | Header text. Empty means no header row | `""` |
+## | `translate` | Treat the title as a translation key | `false` |
+## | `width` | Card width (dp) | 320 |
+## | `max_height` | Maximum card height (dp) | 520 |
+## | `dismissable` | An outside tap closes it | `true` |
+## | `compact` | Tighter padding — for a one or two line description | `false` |
+## | `alpha` | Opacity of the card ground (0.0~1.0). Negative uses the theme and settings value | `-1.0` |
 ##
-## 🛑 **한 번에 하나만** 뜬다. 슬롯을 연달아 누르면 앞의 것이 닫히고 새것이 뜬다 —
-##    쌓이면 화면이 카드로 덮이고 어느 것이 어느 슬롯의 것인지 알 수 없다.
+## 🛑 **Only one is open at a time.** Press slots in succession and the previous closes as the new one opens —
+##    let them stack and the screen fills with cards with no way to tell which belongs to which slot.
 static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 	close()
 	if not is_instance_valid(anchor) or not anchor.is_inside_tree(): return null
@@ -65,18 +66,18 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 	surface.anchor_max_height = float(options.get("max_height", surface.anchor_max_height))
 	surface.fit_content = true
 	surface.dismiss_on_scrim = bool(options.get("dismissable", true))
-	# 🔑 가림막을 **투명하게** 둔다 — 정보를 보려고 연 카드 때문에 게임 화면이 어두워지면
-	#    비교하려던 그 화면이 안 보인다. 바깥 탭을 받는 역할만 남긴다.
+	# 🔑 Keep the scrim **transparent** — if a card opened to read some information darkens the game screen,
+	#    the very screen being compared against is gone. Leave the scrim only its job of catching outside taps.
 	surface.scrim_transparent = true
 	surface.compact = bool(options.get("compact", false))
-	# 🔑 정보를 **비교하려고** 연 카드다 — 뒤 화면이 보여야 할 때가 많아 창마다 정할 수 있게 둔다.
+	# 🔑 This card was opened **to compare** information — the screen behind often has to stay visible, so leave it per-popover.
 	surface.alpha = float(options.get("alpha", -1.0))
 	var title := str(options.get("title", ""))
 	surface.show_header = not title.is_empty()
 
 	layer.add_child(surface)
-	# 🛑 앵커와 **같은 트리**에 붙인다 — 창이 여러 개인 게임(별도 채팅 창)에서 다른 창에 붙이면
-	#    좌표가 어긋나 카드가 엉뚱한 자리에 뜬다.
+	# 🛑 Add it to **the same tree** as the anchor — in a game with several windows (a separate chat window),
+	#    attaching to a different window throws the coordinates off and the card opens in the wrong place.
 	anchor.get_tree().root.add_child(layer)
 	_open = layer
 
@@ -86,10 +87,10 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 	if is_instance_valid(content): surface.body.add_child(content)
 
 	_open_surface = surface
-	# 🔑 닫는 길은 둘인데 하는 일은 하나다 — 같은 것을 두 번 쓰면 한쪽만 고치는 실수가 난다.
-	# 🛑 층을 **약한 참조로** 붙잡는다. 두 신호 중 하나가 먼저 층을 지우면, 남은 쪽이 나중에 불릴 때
-	#    람다가 들고 있던 것이 이미 사라져 엔진이 `Lambda capture … was freed` 를 찍는다
-	#    (2026-09-16 검사 로그에서 발견 — 판정은 통과하는데 오류만 쌓여 원인을 찾기 어려웠다).
+	# 🔑 There are two ways in but only one job to do — write it twice and one copy gets fixed while the other does not.
+	# 🛑 Hold the layer through a **weak reference**. If one of the two signals frees the layer first, whatever the
+	#    lambda captured is already gone when the other fires later and the engine prints `Lambda capture … was freed`
+	#    (found in the test logs 2026-09-16 — the checks passed while the errors piled up, which made it hard to trace).
 	var held := weakref(layer)
 	var dispose := func() -> void:
 		var node := held.get_ref() as CanvasLayer
@@ -98,7 +99,7 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 			_open = null
 			_open_surface = null
 	surface.close_requested.connect(dispose, CONNECT_ONE_SHOT)
-	# 앵커가 사라지면(아이템을 버렸다) 카드도 함께 사라진다 — 없는 것의 설명이 남지 않게.
+	# If the anchor goes (the item was dropped) the card goes with it — no description left for something that no longer exists.
 	anchor.tree_exiting.connect(dispose, CONNECT_ONE_SHOT)
 	surface.visible = true
 	surface.relayout()
@@ -106,10 +107,10 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 	return surface
 
 
-## 열려 있으면 닫는다.
-## 🛑 **`close_requested` 를 내고 닫는다.** 문서가 `await GoPopover.open(...).close_requested` 를
-##    권하는데, 층만 지우면 그 `await` 가 영영 풀리지 않는다 — 그리고 "한 번에 하나" 규칙 때문에
-##    `close()` 와 재열기는 **정상 경로**다(2026-09-16 실측: 신호가 오지 않았다).
+## Close it if it is open.
+## 🛑 **Emit `close_requested`, then close.** The documentation recommends `await GoPopover.open(...).close_requested`,
+##    and simply freeing the layer leaves that `await` hanging forever — and because of the "one at a time" rule,
+##    `close()` followed by reopening is **the normal path** (measured 2026-09-16: the signal never arrived).
 static func close() -> void:
 	var surface := _open_surface
 	_open_surface = null

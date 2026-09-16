@@ -28,7 +28,7 @@ func _run() -> void:
 	var dimensions := OS.get_environment("DEMO_TEST_SIZE").split("x")
 	if dimensions.size() == 2: root.size = Vector2i(int(dimensions[0]), int(dimensions[1]))
 
-	# 🔑 문간부터 시작한다 — 이 데모가 깨졌던 자리가 바로 "메인 씬이 뜨지 않는다" 였다.
+	# 🔑 Start at the doorway — where this demo broke was exactly "the main scene never comes up".
 	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
 	await settle(20)
 	check(current_scene != null and current_scene.name == "Home", "The main scene reaches the home screen")
@@ -52,7 +52,7 @@ func _finish() -> void:
 	quit(0 if failures.is_empty() else 1)
 
 
-## 네 줄이 저마다 제 화면을 열고, `Home` 이 다시 홈으로 돌려놓는가.
+## Does each of the four rows open its own screen, and does `Home` put us back home?
 func _rows() -> void:
 	var chrome := home.find_child("Chrome", true, false) as Control
 	for item in home.TARGETS:
@@ -68,7 +68,7 @@ func _rows() -> void:
 
 		home._show_home()
 		await settle(14)
-		# medieval 은 프리셋을 바꾸므로 홈이 씬째 다시 지어진다 — 그때는 `current_scene` 을 다시 잡는다.
+		# medieval swaps the preset, so home is rebuilt as a whole scene — grab `current_scene` again then.
 		if current_scene != null and current_scene != home: home = current_scene
 		await settle(6)
 		check(home.find_child("HomePage", true, false) != null, "Home returns after %s" % key)
@@ -76,7 +76,7 @@ func _rows() -> void:
 		check(chrome != null and not chrome.visible, "The top bar hides again after %s" % key)
 
 
-## 손이 키보드에 있는 사람을 위한 길: `1`~`4`.
+## The path for someone whose hands are on the keyboard: `1`~`4`.
 func _keys() -> void:
 	var event := InputEventKey.new()
 	event.keycode = KEY_2
@@ -90,7 +90,7 @@ func _keys() -> void:
 	check(home._open_key == "", "Home clears the open screen")
 
 
-## 카드 안의 것들이 **진짜로 눌리는가** — 기록 줄이 움직이면 콜백이 돈 것이다.
+## Do the things inside the card **really get pressed** — if the log line moves, a callback ran.
 func _live_widgets() -> void:
 	var log_line := home._log as Label
 	check(log_line != null, "The home screen keeps a callback line")
@@ -109,11 +109,11 @@ func _live_widgets() -> void:
 	check(home._sheet != null and home._sheet.visible, "The bottom sheet opens from the home screen")
 	check(home._prompt != null and home._prompt.visible, "The prompt card opens from the home screen")
 
-	# 화면을 갈면 띄워 둔 것부터 걷힌다 — 남겨 두면 사라진 화면에 포커스를 되돌리려 한다.
+	# Switching screens dismisses what floats first — left behind, it would return focus to a screen that is gone.
 	home._open("gallery")
 	await settle(14)
 	check(not home._sheet.visible, "Opening a screen dismisses the sheet")
-	# 프롬프트 카드는 홈 페이지에 속한 손님이라 페이지와 함께 걷힌다(시트는 껍데기가 들고 있다).
+	# The prompt card is a guest of the home page, so it leaves with the page (the shell holds the sheet).
 	check(home._prompt == null, "The prompt card leaves with the home page")
 	home._show_home()
 	await settle(14)

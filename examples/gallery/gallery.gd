@@ -1,16 +1,16 @@
-## 🖼️ **gohud 갤러리** — 서버도 게임도 없이 모든 위젯을 한 화면에서 열어 본다.
+## 🖼️ **The gohud gallery** — every widget opened on one screen, with no server and no game.
 ##
-## 이 파일은 예제이자 **살아 있는 검사**다. 위젯을 고치고 이것을 띄우면 그 자리에서 보인다.
+## This file is both an example and a **living test**. Change a widget, bring this up, and you see it there and then.
 ##
 ## ```
 ## godot res://addons/gohud/examples/gallery/gallery.tscn
 ## ```
 ##
-## 🛑 프로젝트의 오토로드·서버·계정에 의존하지 않는다 — 빈 프로젝트에 애드온만 넣어도 열려야
-##    한다. 그것이 이 예제의 존재 이유다.
+## 🛑 It leans on no autoload, server or account of the project — it must open in an empty project with
+##    nothing but the add-on. That is why this example exists.
 extends Control
 
-## 🔬 판 불투명도 실험실 — 같은 파일을 sim 투어와 홈도 쓴다.
+## 🔬 The container-opacity lab — the sim tour and the home screen use this same file.
 const OpacityLab := preload("opacity_lab.gd")
 
 var _sheet: GoSheet
@@ -29,7 +29,7 @@ var _console: GoConsole
 var _gallery_field: GoField
 var _popover_anchor: Button
 var _menu_anchor: Button
-## 뒤에 무늬를 깔았는가. 🔑 `_rebuild()` 는 이 노드의 `_ready` 를 다시 부르므로 이 값이 살아남는다.
+## Is the backdrop pattern on? 🔑 `_rebuild()` calls this node's `_ready` again, so this value survives it.
 var _busy_background := false
 
 
@@ -45,13 +45,15 @@ func _ready() -> void:
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
 
-	# 🔬 **판 불투명도를 눈으로 보려면 뒤가 단색이면 안 된다.** 불투명도 절의 토글이 이것을 켠다 —
-	#    켜면 화면 전체가 "게임 위" 가 되어, 모든 판이 무엇을 통과시키는지 한눈에 보인다.
+	# 🔬 **To see container opacity you need something other than a flat color behind it.** The toggle in
+	#    the opacity section turns this on — with it on the whole screen becomes "over the game", and what
+	#    every panel lets through is plain at a glance.
 	var busy := OpacityLab.Backdrop.new()
 	busy.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	# 🛑 **옅게 깐다.** 미리보기 칸 안에서는 선명해야 하지만, 화면 전체에 선명한 무늬를 깔면 판
-	#    밖에 놓인 본문 글자가 한 줄도 읽히지 않는다(2026-09-16 첫 촬영에서 실측). 실제 게임의
-	#    배경도 이 정도다 — 그래서 판이 없는 자리의 글자도 살아남는다.
+	# 🛑 **Lay it on faintly.** Inside the preview box it must be crisp, but a crisp pattern across the
+	#    whole screen leaves not one readable line of body text outside a panel (measured on the first
+	#    capture, 2026-09-16). A real game's background is about this strong too — which is why text with
+	#    no panel under it survives.
 	busy.intensity = 0.3
 	busy.visible = _busy_background
 	add_child(busy)
@@ -65,15 +67,16 @@ func _ready() -> void:
 	add_child(_sheet)
 
 
-# ── 스크롤되는 본문 ────────────────────────────────────────────────────
+# ── The scrolling body ─────────────────────────────────────────────────
 
 func _build_page() -> void:
 	var form := GoForm.new()
 	form.name = "Form"
 	add_child(form)
-	# 🛑 **떠 있는 HUD 자리를 비운다.** 그대로 두면 스크롤 내용이 퀵슬롯 뒤로 흘러 글자가 슬롯
-	#    사이 틈으로 삐져나온다 — RTL 에서 입력칸 글자가 오른쪽으로 가며 실제로 그랬다
-	#    (2026-09-13 아랍어 스크린샷 실측). 폼이 `GoHudAnchor` 들의 자리를 알아서 피한다.
+	# 🛑 **Keep clear of the floating HUD.** Left alone, the scrolling content runs behind the quick slots
+	#    and the text pokes out through the gaps between them — which is exactly what happened in RTL,
+	#    where the field text moves to the right (measured on the Arabic screenshot, 2026-09-13). The form
+	#    avoids the spots the `GoHudAnchor`s hold, on its own.
 	form.avoid_hud = true
 
 	var scroll := GoScroll.new()
@@ -92,7 +95,7 @@ func _build_page() -> void:
 	_log.name = "Log"
 	page.add_child(_log)
 
-	# 버튼 종류
+	# Kinds of button
 	page.add_child(GoStyle.section("Buttons", false))
 	var buttons := GoStyle.wrap_row()
 	buttons.add_child(GoStyle.button("Primary", _say.bind("primary"), GoStyle.Tone.PRIMARY))
@@ -106,13 +109,13 @@ func _build_page() -> void:
 	page.add_child(buttons)
 
 	var icon_row := GoStyle.wrap_row()
-	# ♿ **아이콘 버튼에는 설명을 단다.** 글자가 없으므로 마우스 사용자에게는 툴팁이, 화면 낭독기에게는
-	#    접근성 이름이 유일한 설명이다 — 둘 다 `tooltip_key` 하나에서 나온다.
+	# ♿ **Describe your icon buttons.** With no text, the tooltip is the only description a mouse user gets
+	#    and the accessibility name the only one a screen reader gets — both come from the one `tooltip_key`.
 	for icon in [GoIconSet.SETTINGS, GoIconSet.SEARCH, GoIconSet.HEART, GoIconSet.BELL, GoIconSet.TRASH]:
 		icon_row.add_child(GoStyle.icon_button(icon, _say.bind(String(icon)), -1, StringName(icon)))
 	page.add_child(icon_row)
 
-	# 목록 항목
+	# List items
 	page.add_child(GoStyle.section("List rows", false))
 	var list := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
 	list.add_child(GoStyle.list_button(GoIconSet.USER, "Profile", _say.bind("profile"),
@@ -126,7 +129,7 @@ func _build_page() -> void:
 		GoUi.color(GoTheme.DANGER), "", false))
 	page.add_child(list)
 
-	# 입력
+	# Inputs
 	page.add_child(GoStyle.section("Inputs", false))
 	page.add_child(GoStyle.line_edit("Type here…"))
 	var toggle := GoStyle.toggle("Enable haptics", false)
@@ -134,7 +137,7 @@ func _build_page() -> void:
 	page.add_child(toggle)
 	page.add_child(GoStyle.checkbox("Remember me", false))
 	var volume := GoStyle.slider(0.0, 1.0, 0.01)
-	volume.size_flags_horizontal = Control.SIZE_EXPAND_FILL   # 팩토리는 폭을 정하지 않는다
+	volume.size_flags_horizontal = Control.SIZE_EXPAND_FILL   # the factory does not decide the width
 	volume.value = 0.7
 	page.add_child(volume)
 	var picker := GoStyle.picker()
@@ -142,7 +145,7 @@ func _build_page() -> void:
 	for option in ["Low", "Medium", "High"]: picker.add_item(option)
 	page.add_child(picker)
 
-	# 표면
+	# Surfaces
 	page.add_child(GoStyle.section("Surfaces", false))
 	var surfaces := GoStyle.wrap_row()
 	surfaces.add_child(GoStyle.button("Dialog", _open_dialog, GoStyle.Tone.COMPACT))
@@ -154,7 +157,7 @@ func _build_page() -> void:
 	surfaces.add_child(GoStyle.button("Coach tour", _start_tour, GoStyle.Tone.COMPACT))
 	page.add_child(surfaces)
 
-	# 접이식 섹션 — Godot 4.5+ FoldableContainer. 같은 FoldableGroup 이라 한 번에 하나만 펼쳐진다.
+	# Foldable sections — Godot 4.5+ FoldableContainer. They share one FoldableGroup, so only one opens at a time.
 	page.add_child(GoStyle.section("Foldable sections", false))
 	var accordion := FoldableGroup.new()
 	for title in ["Graphics", "Audio", "Controls"]:
@@ -165,7 +168,7 @@ func _build_page() -> void:
 		fold.add_child(inner)
 		page.add_child(fold)
 
-	# 칩·빈 상태
+	# Chips and empty states
 	page.add_child(GoStyle.section("Chips", false))
 	var chips := GoStyle.wrap_row()
 	chips.add_child(GoStyle.chip("default"))
@@ -174,7 +177,7 @@ func _build_page() -> void:
 	chips.add_child(GoStyle.chip("danger", GoUi.color(GoTheme.DANGER)))
 	page.add_child(chips)
 
-	# 반응형 격자 — 창을 좁히면 열이 줄어든다
+	# Responsive grid — narrow the window and the column count drops
 	page.add_child(GoStyle.section("Responsive grid (resize the window)", false))
 	var grid := GoStyle.responsive_grid(150.0)
 	for i in 6:
@@ -186,14 +189,14 @@ func _build_page() -> void:
 		grid.add_child(tile)
 	page.add_child(grid)
 
-	# 아이콘 세트 전체
+	# The whole icon set
 	page.add_child(GoStyle.section("Icon set — swap it in GoConfig.icons", false))
 	var icons := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP))
 	for icon in GoUi.icons().icon_names():
 		icons.add_child(GoUi.icons().node(StringName(icon), 22, GoUi.color(GoTheme.SECONDARY)))
 	page.add_child(icons)
 
-	# 생김새 고르기 — 색뿐 아니라 **모양**까지 통째로 바뀐다(테마 + 스킨).
+	# Pick a look — not just the colors but the **shapes** change with it (theme + skin).
 	page.add_child(GoStyle.section("Theme preset", false))
 	var presets := GoThemePresets.all()
 	var names: Array = []
@@ -217,27 +220,28 @@ func _build_page() -> void:
 	page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet", false))
 
 
-## 🔬 **판 불투명도** — 슬라이더를 끌면 그 자리에서 판이 묽어진다.
+## 🔬 **Container opacity** — drag the slider and the panels thin out on the spot.
 ##
-## 🛑 값 검사로는 이 기능을 확인할 수 없다 — "뒤가 보이는가", "글자가 아직 읽히는가" 는 그려 봐야
-##    안다. 그래서 실험실을 갤러리 안에 두고, 뒤에 무늬를 깔 토글까지 준다.
+## 🛑 No value check can confirm this feature — "does the back show through", "is the text still
+##    readable" are answered by drawing. So the lab lives inside the gallery, with a toggle that lays a
+##    pattern behind it.
 func _build_opacity(page: VBoxContainer) -> void:
 	var lab := OpacityLab.new()
-	# ④ 프로젝트 전체에 적용하면 화면을 다시 짓는다 — 이미 태어난 위젯은 스스로 옷을 갈지 않는다.
+	# ④ Applying it project-wide rebuilds the screen — widgets already born do not change their clothes.
 	lab.applied.connect(func(_alpha: float) -> void: _rebuild())
 	lab.backdrop_wanted.connect(_set_busy_background)
 	page.add_child(lab)
 
 
-## 화면 전체 뒤의 무늬를 켜고 끈다 — 판이 무엇을 통과시키는지 보는 자리.
+## Turns the pattern behind the whole screen on and off — the place to see what a panel lets through.
 func _set_busy_background(on: bool) -> void:
 	_busy_background = on
 	var busy := get_node_or_null(^"Backdrop")
 	if busy != null: (busy as Control).visible = on
 
 
-## 🆕 뒤에 들인 위젯들 — **여기서 직접 눌러 볼 수 있어야** 있는 줄 안다.
-## 🛑 그림만 늘어놓지 않는다. 버튼은 진짜로 동작하고, 누른 결과가 위 로그 줄에 적힌다.
+## 🆕 The widgets added later — people only know they exist if **they can press them right here**.
+## 🛑 Not a row of pictures. The buttons really work, and what a press did is written in the log line above.
 func _build_new_widgets(page: VBoxContainer) -> void:
 	page.add_child(GoStyle.section("Feedback", false))
 	var feedback := GoStyle.wrap_row()
@@ -360,16 +364,17 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	carousel.page_changed.connect(func(index: int) -> void: _say("banner %d" % index))
 
 
-# ── 화면에 떠 있는 HUD ─────────────────────────────────────────────────
+# ── The HUD floating over the screen ───────────────────────────────────
 
 func _build_hud() -> void:
 	var top := GoHudAnchor.new()
 	top.name = "TopLeft"
 	top.spot = GoHudAnchor.Spot.TOP_RIGHT
 	add_child(top)
-	# 🛑 **떠 있는 HUD 는 판 위에 올린다.** 배경 없이 두면 스크롤 본문이 그 뒤를 지나가면서
-	#    글자끼리 뒤섞여 둘 다 못 읽는다 — 세로에서 입력칸 자리표시자가, 가로에서 토글 손잡이가
-	#    체력바 위에 그대로 얹혔다(2026-09-13 실측). `hud` 판은 표면색 82% 라 뒤를 가린다.
+	# 🛑 **A floating HUD goes on a panel.** With no background behind it the scrolling body passes under
+	#    it and the two sets of text tangle until neither can be read — in portrait a field's placeholder
+	#    and in landscape a toggle's knob sat straight on the health bar (measured 2026-09-13). The `hud`
+	#    panel is 82% of the surface color, so it covers what is behind it.
 	var bars_panel := PanelContainer.new()
 	bars_panel.name = "Bars"
 	bars_panel.add_theme_stylebox_override(&"panel", GoStyle.floating(GoTheme.BOX_HUD))
@@ -415,7 +420,7 @@ func _build_hud() -> void:
 		slot_row.add_child(slot)
 		_slots.append(slot)
 	slots_anchor.add_child(slot_row)
-	# 촘촘히 놓인 슬롯끼리 넓힌 터치 영역을 나눠 갖게 알려 준다.
+	# Tell tightly packed slots to share out their widened touch areas.
 	var peers: Array[Control] = []
 	for slot in _slots: peers.append(slot)
 	for slot in _slots: slot.touch_peers = peers
@@ -423,12 +428,12 @@ func _build_hud() -> void:
 	var pad := GoHudAnchor.new()
 	pad.name = "Joystick"
 	pad.spot = GoHudAnchor.Spot.BOTTOM_LEFT
-	# 🛑 조이스틱은 손을 얹은 동안에만 나타난다 — 본문에서 자리를 비워 두면 보이지도 않는 칸이
-	#    화면 아래 한 줄을 통째로 깎는다.
+	# 🛑 The joystick only appears while a thumb rests on it — reserving space for it in the body would
+	#    carve a whole row off the bottom of the screen for a box nobody can even see.
 	pad.reserve_space = false
 	add_child(pad)
 	_joystick = GoJoystick.new()
-	# 데모에서는 본문을 가리지 않게 — 손을 얹으면 그 자리에 나타난다.
+	# In the demo it must not cover the body — it appears where the thumb lands.
 	_joystick.hide_when_idle = true
 	_joystick.moved.connect(func(v: Vector2) -> void:
 		if not v.is_zero_approx(): _say("joystick %.2f, %.2f" % [v.x, v.y]))
@@ -437,8 +442,8 @@ func _build_hud() -> void:
 	var notice_anchor := GoHudAnchor.new()
 	notice_anchor.name = "NoticeSpot"
 	notice_anchor.spot = GoHudAnchor.Spot.TOP_CENTER
-	# 🛑 알림은 **잠깐 떴다 사라진다.** 자리를 예약하면 뜰 때마다 본문이 통째로 출렁이고,
-	#    비키지 않으면 오른쪽 위 체력바 위에 그대로 얹힌다(둘 다 실측).
+	# 🛑 A notice **shows for a moment and goes.** Reserve space for it and the body lurches every time one
+	#    appears; give it no room to move and it sits straight on the health bar at the top right (both measured).
 	notice_anchor.reserve_space = false
 	notice_anchor.avoid_peers = true
 	add_child(notice_anchor)
@@ -449,7 +454,7 @@ func _build_hud() -> void:
 	var prompt_anchor := GoHudAnchor.new()
 	prompt_anchor.name = "PromptSpot"
 	prompt_anchor.spot = GoHudAnchor.Spot.CENTER_RIGHT
-	# 이것도 필요할 때만 나타난다 — 본문이 미리 자리를 비워 둘 것은 아니다.
+	# This one, too, appears only when it is needed — not something the body should keep space for.
 	prompt_anchor.reserve_space = false
 	add_child(prompt_anchor)
 	_prompt = GoPromptCard.new()
@@ -458,11 +463,11 @@ func _build_hud() -> void:
 	prompt_anchor.add_child(_prompt)
 
 
-# ── 동작 ───────────────────────────────────────────────────────────────
+# ── Behaviour ──────────────────────────────────────────────────────────
 
-# ── 🆕 뒤에 들인 위젯의 동작 ───────────────────────────────────────────
+# ── 🆕 Behaviour of the widgets added later ────────────────────────────
 
-## 서비스는 **처음 쓸 때** 만든다 — 화면이 뜨는 동안 안 쓸지도 모르는 층을 미리 붙이지 않는다.
+## Services are made **the first time they are used** — no layer that might go unused is attached while the screen comes up.
 func _ensure_snackbar() -> GoSnackbar:
 	if not is_instance_valid(_snackbar):
 		_snackbar = GoSnackbar.new()
@@ -484,7 +489,7 @@ func _show_snackbar_undo() -> void:
 	_say("undo pressed" if picked == 0 else "snackbar timed out")
 
 
-## 🔑 누른 버튼이 그 자리에서 도는 것으로 바뀐다 — 크기가 변하지 않고, 두 번 눌리지도 않는다.
+## 🔑 The pressed button turns into a spinner on the spot — its size does not change, and it cannot fire twice.
 func _show_busy() -> void:
 	var button := _find_button("Busy button")
 	if button == null: return
@@ -567,7 +572,7 @@ func _use_slot(slot: GoSlot) -> void:
 
 
 func _open_dialog() -> void:
-	# 되돌릴 수 없는 동작이므로 확인 버튼을 **위험색**으로 — 색이 먼저 읽히고 글자가 뒤따른다.
+	# The action cannot be undone, so the confirm button wears the **danger color** — the color reads first, the words follow.
 	var yes := await _dialogs.confirm("Delete character",
 		"This cannot be undone. Delete \"{name}\"?", "", "", "", {"name": "Aria"}, true)
 	_say("dialog → %s" % ("confirmed" if yes else "cancelled"))
@@ -637,7 +642,7 @@ func _start_tour() -> void:
 	])
 
 
-## 생김새 묶음을 고른다 — 한 줄이면 테마·스킨·아이콘이 함께 바뀐다.
+## Picks a look — one line changes the theme, the skin and the icons together.
 func _pick_preset(index: int) -> void:
 	var presets := GoThemePresets.all()
 	if index < 0 or index >= presets.size(): return
@@ -652,8 +657,8 @@ func _toggle_theme() -> void:
 	_rebuild()
 
 
-## 🛑 이미 만들어진 노드는 자기 `theme` 를 들고 있다 — 통째로 다시 짓는 것이 가장 확실하다.
-##    실제 게임에서는 보통 부팅 때 한 번만 생김새를 정하므로 이 비용이 들지 않는다.
+## 🛑 Nodes already built carry their own `theme` — rebuilding the lot is the surest way.
+##    A real game usually settles its look once, at boot, so it never pays this cost.
 func _rebuild() -> void:
 	for child in get_children(): child.queue_free()
 	_slots.clear()

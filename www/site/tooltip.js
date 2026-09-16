@@ -1,9 +1,9 @@
 /* ------------------------------------------------------------------
-   용어 호버 도움말 — 문서 어디서든 단어에 마우스를 올리면 뜻이 뜬다.
-   site/glossary.js 를 먼저 불러와야 한다.
+   Glossary hover help — point at a term anywhere in the docs and its
+   definition appears. site/glossary.js must be loaded first.
 
-   원본: thruthesky 의 "Godot 3D 개발 스킬" 홈페이지(site/tooltip.js).
-   gohud 의 영문·한국어 표시, 키보드·터치 접근을 함께 지원한다.
+   Origin: thruthesky's "Godot 3D development skill" homepage (site/tooltip.js).
+   This version adds gohud's English/Korean labels plus keyboard and touch access.
    ------------------------------------------------------------------ */
 (function () {
   'use strict';
@@ -21,10 +21,10 @@
   var mode = 'mark';
   try { if (MODES.indexOf(localStorage.getItem(KEY)) >= 0) mode = localStorage.getItem(KEY); } catch (e) {}
 
-  var MARK_LIMIT = 3;          // mark 모드에서 한 용어를 몇 번까지 밑줄 칠 것인가
+  var MARK_LIMIT = 3;          // how many times one term gets underlined in "mark" mode
   var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, INPUT: 1, SELECT: 1, OPTION: 1, BUTTON: 1, MARK: 1, ABBR: 1 };
 
-  /* ── 스타일 주입 ────────────────────────────────────────── */
+  /* ── Inject styles ──────────────────────────────────────── */
   var css = document.createElement('style');
   css.textContent = [
     '.gl{cursor:help}',
@@ -67,7 +67,7 @@
   ].join('\n');
   document.head.appendChild(css);
 
-  /* ── 정규식 하나로 합친다 (긴 용어 우선) ────────────────── */
+  /* ── Fold every term into one regex (longest first) ───── */
   var terms = Object.keys(G).sort(function (a, b) { return b.length - a.length || (a < b ? -1 : 1); });
   var esc = function (s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
   var isKo = function (s) { return /^[가-힣]/.test(s); };
@@ -78,10 +78,10 @@
   });
   var RE;
   try { RE = new RegExp(parts.join('|'), 'g'); }
-  catch (e) { return; }   // lookbehind 미지원 브라우저에서는 조용히 넘어간다
+  catch (e) { return; }   // browsers without lookbehind support: bail out quietly
 
-  /* ── DOM 을 훑어 용어를 감싼다 ──────────────────────────── */
-  var seen = Object.create(null);   // 용어별 등장 횟수
+  /* ── Walk the DOM and wrap the terms ────────────────────── */
+  var seen = Object.create(null);   // how many times each term has appeared
 
   function skip(node) {
     for (var p = node.parentNode; p && p !== document.body; p = p.parentNode) {
@@ -142,7 +142,7 @@
     return wrapped;
   }
 
-  /* ── 툴팁 ───────────────────────────────────────────────── */
+  /* ── Tooltip ────────────────────────────────────────────── */
   var tip = document.createElement('div');
   tip.id = 'gltip';
   tip.setAttribute('data-no-gl', '');
@@ -180,7 +180,7 @@
     var vh = document.documentElement.clientHeight;
     var above = r.top > th + 14;
     var y = above ? r.top - th - 9 : r.bottom + 9;
-    y = Math.max(8, Math.min(y, vh - th - 8));   // 화면 밖으로 나가지 않게 가둔다
+    y = Math.max(8, Math.min(y, vh - th - 8));   // keep it inside the viewport
     tip.style.left = (x + window.scrollX) + 'px';
     tip.style.top = (y + window.scrollY) + 'px';
   }
@@ -213,7 +213,7 @@
       if (/^https?:/.test(e.u)) { a.target = '_blank'; a.rel = 'noopener'; }
       tip.appendChild(a);
     }
-    // 브라우저 기본 툴팁과 겹치지 않게 잠시 치운다 (벗어나면 되돌린다)
+    // stash the native title so it does not double up (restored on leave)
     if (el.title) { el.setAttribute('data-title', el.title); el.title = ''; }
     tip.setAttribute('aria-hidden', 'false');
     if (el.hasAttribute('aria-expanded')) el.setAttribute('aria-expanded', 'true');
@@ -235,11 +235,11 @@
       clearTimeout(showT); hide();
     }
   });
-  // 모바일 — 탭하면 뜨고 바깥을 누르면 사라진다
+  // mobile — tap opens it, a tap outside closes it
   document.addEventListener('click', function (ev) {
     var el = ev.target.closest && ev.target.closest('.gl');
     if (el) {
-      // 링크 안의 용어는 링크 이동이 우선이다 — 툴팁만 띄우고 기본 동작을 막지 않는다
+      // inside a link the navigation wins — show the tooltip but do not preventDefault
       if (!el.closest('a')) ev.preventDefault();
       (cur === el) ? close() : show(el);
       return;
@@ -282,7 +282,7 @@
   addEventListener('scroll', function () { if (cur) place(cur); }, { passive: true });
   addEventListener('resize', function () { if (cur) place(cur); });
 
-  /* ── 켬/끔 버튼 ─────────────────────────────────────────── */
+  /* ── On/off button ──────────────────────────────────────── */
   var btn = document.createElement('button');
   btn.id = 'glbtn';
   btn.setAttribute('data-no-gl', '');

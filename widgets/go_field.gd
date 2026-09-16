@@ -1,53 +1,53 @@
-## 🏷 **폼 한 줄** — 라벨 · 입력칸 · 설명 · 오류를 한 덩어리로 묶는다.
+## 🏷 **One form row** — label · input · hint · error bundled into a single unit.
 ##
 ## ```gdscript
-## var name_field := GoField.make("캐릭터 이름", GoStyle.line_edit("2~12자"), "나중에 바꿀 수 없습니다")
+## var name_field := GoField.make("Character name", GoStyle.line_edit("2~12 characters"), "You cannot change this later")
 ## form.add_child(name_field)
 ##
-## # 서버가 거절했다
-## name_field.set_error("이미 쓰고 있는 이름입니다")
-## # 고쳐졌다
+## # The server rejected it
+## name_field.set_error("That name is already taken")
+## # Fixed
 ## name_field.clear_error()
 ## ```
 ##
-## ## 🛑 오류는 **그 칸 옆에** 붙어야 한다
-## 폼 맨 위에 "입력을 확인하세요" 한 줄만 띄우면, 칸이 다섯 개일 때 어느 것이 틀렸는지 알 수 없다.
-## 회원가입에서 이 한 가지가 이탈을 만든다. 그래서 오류는 **틀린 칸 바로 아래**에 뜨고,
-## 그 칸의 테두리도 함께 위험색이 된다.
+## ## 🛑 An error belongs **beside the field it came from**
+## A single "please check your input" line at the top of the form leaves you guessing which of five fields is wrong.
+## In a signup form that one thing is what makes people quit. So the error appears **right under the offending field**,
+## and that field's border turns the danger color with it.
 ##
-## ## ♿ 색만으로 알리지 않는다
-## 빨간 테두리만으로는 색각 이상인 사람에게 **아무 변화가 없다.** 그래서 오류는 언제나
-## **글자로도** 뜨고(`error_label`), 스크린리더가 읽을 이름에도 들어간다.
+## ## ♿ Color alone never carries the message
+## To someone with a color vision deficiency a red border alone is **no change at all.** So an error always
+## shows **as text too** (`error_label`), and goes into the name a screen reader reads.
 ##
-## ## 🔑 설명과 오류는 자리를 다투지 않는다
-## 오류가 뜨면 설명은 숨는다 — 둘을 함께 쌓으면 줄이 갑자기 두 줄 늘어 아래 칸이 전부 밀린다.
-## 오류가 사라지면 설명이 돌아온다.
+## ## 🔑 Hint and error never compete for the same space
+## When the error appears the hint hides — stacking both suddenly adds two lines and shoves every field below down.
+## When the error clears the hint comes back.
 @tool
 class_name GoField
 extends VBoxContainer
 
-## 오류가 생기거나 사라졌다.
+## An error appeared or cleared.
 signal error_changed(message: String)
 
-## 라벨 줄.
+## The label row.
 var label: Label
-## 감싸고 있는 입력칸(`line_edit`·`select`·무엇이든 `Control`).
+## The input it wraps (`line_edit`, `select`, any `Control`).
 var control: Control
-## 설명 줄 — 오류가 없을 때만 보인다.
+## The hint row — visible only while there is no error.
 var hint_label: Label
-## 오류 줄 — 오류가 있을 때만 보인다.
+## The error row — visible only while there is an error.
 var error_label: Label
 
 var _error := ""
 var _label_key := ""
 var _hint_key := ""
 var _error_key := ""
-## 라벨·힌트를 번역 키로 볼 것인가(`make()` 가 정한다).
+## Whether label and hint are treated as translation keys (`make()` decides).
 var _translate := false
-## 🛑 오류 글은 **따로** 센다. 서버가 준 오류 코드를 한 번 번역 키로 넘겼다고 해서 라벨·힌트까지
-##    키로 취급하면, 그 뒤로 화면에 `field_guild_name` 같은 키가 그대로 드러난다.
+## 🛑 The error text is tracked **separately**. If passing a server error code as a translation key once made
+##    the label and hint keys too, a raw key like `field_guild_name` would show up on screen from then on.
 var _translate_error := false
-## 오류를 씌우기 전 입력칸의 테두리 — 지울 때 그대로 되돌린다.
+## The input's border before the error was painted on — restored as-is when it clears.
 var _plain_face: StyleBox
 
 
@@ -81,8 +81,8 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 라벨 · 입력칸 · 설명으로 한 줄을 만든다.
-## `translate` 를 켜면 세 글자를 모두 **번역 키**로 본다.
+## Builds one row from a label, an input and a hint.
+## With `translate` on, all three strings are treated as **translation keys**.
 static func make(label_text: String, node: Control, hint := "", translate := false) -> GoField:
 	var field := GoField.new()
 	field._translate = translate
@@ -93,7 +93,7 @@ static func make(label_text: String, node: Control, hint := "", translate := fal
 	return field
 
 
-## 입력칸을 넣는다(이미 있으면 갈아 끼운다). 라벨 **바로 아래**, 설명 위에 들어간다.
+## Sets the input (replacing one already there). It goes **right under** the label, above the hint.
 func set_control(node: Control) -> void:
 	if is_instance_valid(control):
 		remove_child(control)
@@ -102,20 +102,20 @@ func set_control(node: Control) -> void:
 	_plain_face = null
 	if not is_instance_valid(node): return
 	add_child(node)
-	# 라벨 → 입력칸 → 설명 → 오류 차례로.
+	# Label → input → hint → error, in that order.
 	move_child(node, 1)
-	# ♿ 스크린리더가 "무엇을 입력하는 칸인지" 를 알아야 한다 — 라벨은 눈으로만 읽는 정보가 아니다.
+	# ♿ A screen reader has to know "what does this field take" — a label is not information for the eyes only.
 	_sync_accessibility()
 
 
-## 오류를 띄운다. 빈 글이면 `clear_error()` 와 같다.
-## 🔑 `translate` 를 켜면 **번역 키**로 본다 — 서버가 준 코드(`err_name_taken`)를 그대로 넘길 수 있다.
+## Shows an error. An empty string is the same as `clear_error()`.
+## 🔑 With `translate` on it is treated as a **translation key** — you can pass a server code (`err_name_taken`) straight through.
 func set_error(message: String, translate := false) -> void:
 	_error_key = message
 	_translate_error = translate
 	_error = message
-	# 🛑 **글자를 먼저 채운다.** `_apply_error()` 가 접근성 이름을 이 글에서 만들므로, 순서가
-	#    바뀌면 스크린리더에 옛 오류(또는 빈 글)가 실린다 — 눈으로는 멀쩡해 보여 놓치기 쉽다.
+	# 🛑 **Fill the text first.** `_apply_error()` builds the accessibility name out of this text, so a swapped
+	#    order feeds the screen reader the old error (or an empty one) — it looks fine to the eye, so it is easy to miss.
 	error_label.text = tr(_error_key) if _translate_error else _error_key
 	error_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	_apply_error()
@@ -130,7 +130,7 @@ func has_error() -> bool:
 	return not _error.is_empty()
 
 
-## 지금 오류 글(번역된 것).
+## The current error text (translated).
 func error_text() -> String:
 	return error_label.text
 
@@ -138,14 +138,14 @@ func error_text() -> String:
 func _apply_error() -> void:
 	var shown := not _error.is_empty()
 	error_label.visible = shown
-	# 🔑 설명과 오류는 자리를 다투지 않는다 — 둘이 함께 쌓이면 줄이 두 칸 늘어 아래가 전부 밀린다.
+	# 🔑 Hint and error never compete for space — stacked together they add two lines and shove everything below down.
 	hint_label.visible = not shown and not hint_label.text.is_empty()
 	_paint_control(shown)
 	_sync_accessibility()
 
 
-## 입력칸 테두리를 위험색으로 물들이거나 되돌린다.
-## 🛑 **색만 바꾼다** — 테두리 굵기까지 바꾸면 칸 크기가 1dp 달라져 줄 전체가 흔들린다.
+## Paints the input's border the danger color, or puts it back.
+## 🛑 **Only the color changes** — changing the border width too shifts the field by 1dp and the whole row jitters.
 func _paint_control(bad: bool) -> void:
 	if not is_instance_valid(control): return
 	for state in [&"normal", &"focus"]:
@@ -158,7 +158,7 @@ func _paint_control(bad: bool) -> void:
 		control.add_theme_stylebox_override(state, face)
 
 
-## ♿ 라벨·설명·오류를 **한 문장으로 묶어** 입력칸에 준다. 스크린리더는 칸에 들어갈 때 이것을 읽는다.
+## ♿ Joins label, hint and error **into one sentence** on the input. A screen reader reads it on entering the field.
 func _sync_accessibility() -> void:
 	if not is_instance_valid(control): return
 	var parts: Array[String] = [label.text]

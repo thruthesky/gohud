@@ -1,7 +1,7 @@
-## gohud 데모 — 홍보 이미지의 화면을 애드온 위젯만으로 그대로 만든 것.
+## The gohud demo — the screen from the promo image, rebuilt out of add-on widgets alone.
 ##
-## 카드 6장(HUD·버튼·대화상자·알림·터치·테마)이 한 화면에 있고, 전부 실제로 동작한다.
-## 배경 격자와 제목 줄 말고는 새로 그린 것이 없다 — 나머지는 gohud 가 주는 그대로다.
+## Six cards (HUD, buttons, dialogs, notices, touch, themes) sit on one screen, and every one of them works.
+## Nothing is drawn by hand except the background grid and the title line — the rest is gohud as it ships.
 extends Control
 
 const ThemePicker := preload("theme_picker.gd")
@@ -12,8 +12,8 @@ var _bg := BG
 var _grid_ink := GRID_INK
 var _subtitle_ink := SUBTITLE_INK
 
-const ACCENT := Color("#29b8f0")     ## 강조색 — 이 한 값이 화면 전체를 물들인다
-const GREEN := Color("#3ee08f")      ## 체력·성공
+const ACCENT := Color("#29b8f0")     ## The accent — this one value colors the whole screen
+const GREEN := Color("#3ee08f")      ## Health, success
 const BG := Color("#06131f")
 const GRID_INK := Color("#0f2b41")
 const SUBTITLE_INK := Color("#8fb8d4")
@@ -21,8 +21,9 @@ const SUBTITLE_INK := Color("#8fb8d4")
 var _volume_label: Label
 var _hp: GoBar
 
-## 언어 카드에 쓰는 자기표기. 🛑 영어 이름("Korean")이 아니라 **그 언어가 스스로를 부르는 말**이다 —
-##    한국어를 찾는 사람은 "한국어" 를 찾는다. 애드온은 언어 이름을 담지 않으므로 데모가 들고 있다.
+## The endonyms used on the language card. 🛑 Not the English name ("Korean") but **what the language
+##    calls itself** — someone looking for Korean scans for the word written in Korean, not for
+##    "Korean". The add-on carries no language names, so the demo holds them.
 const LANGUAGE_NAMES := {
 	"en": "English", "ko": "한국어", "ja": "日本語", "zh": "中文", "zh_TW": "繁體中文",
 	"es": "Español", "pt": "Português", "de": "Deutsch", "fr": "Français", "it": "Italiano",
@@ -30,7 +31,7 @@ const LANGUAGE_NAMES := {
 	"vi": "Tiếng Việt", "id": "Bahasa Indonesia", "th": "ไทย", "hi": "हिन्दी",
 	"ar": "العربية", "he": "עברית",
 }
-## 오른쪽에서 왼쪽으로 읽는 언어. 그 칸만 방향을 뒤집는다.
+## Languages read right to left. Only their cells flip direction.
 const RTL_LANGUAGES := ["ar", "he"]
 
 
@@ -39,7 +40,7 @@ func _ready() -> void:
 	_build()
 
 
-## 설정 한 장으로 전체 모습을 정한다.
+## One settings resource decides the whole look.
 func _configure() -> void:
 	var settings := GoConfig.new()
 	var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: ACCENT, GoTheme.SUCCESS: GREEN}
@@ -119,13 +120,13 @@ func _build() -> void:
 	page.add_child(footer)
 
 
-# ── 10 Languages — 화면 전체 폭 ────────────────────────────────────────
+# ── 10 Languages — full screen width ───────────────────────────────────
 
-## 내장 문구를 21개 언어로 한 장에 늘어놓는다. 카드가 두 가지를 한눈에 보여 준다 —
-##   ① 번역이 실제로 붙었는가(키가 그대로 보이면 `.translation` 이 안 붙은 것이다)
-##   ② **글자가 그려지는가** — 🛑 gohud 는 폰트를 담지 않으므로, 태국어·아랍어·히브리어·
-##      데바나가리·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다. 없으면 두부(□)가
-##      뜨고 **오류는 나지 않는다.** 그래서 이 카드가 폰트 커버리지 점검표 역할을 한다.
+## Lays the built-in strings out in 21 languages on a single card. The card shows two things at a glance —
+##   ① whether the translations really landed (a key showing through means no `.translation` was attached)
+##   ② **whether the characters draw** — 🛑 gohud carries no fonts, so for Thai, Arabic, Hebrew,
+##      Devanagari and CJK the host project's theme font has to cover the glyphs. Without it you get
+##      tofu (□) and **no error at all.** That is why this card doubles as a font-coverage checklist.
 func _language_card() -> Control:
 	var card := GoStyle.card(_accent)
 	var body := GoStyle.padding(20)
@@ -147,8 +148,8 @@ func _language_card() -> Control:
 	grid.columns = 7
 	grid.add_theme_constant_override(&"h_separation", 14)
 	grid.add_theme_constant_override(&"v_separation", 12)
-	# 🛑 로케일을 갈아 가며 문구를 읽는다 — 읽은 뒤 원래 로케일로 되돌린다.
-	#    각 칸은 `auto_translate_mode = DISABLED` 라, 뒤에 언어가 바뀌어도 그 언어 문구를 유지한다.
+	# 🛑 The strings are read by swapping the locale — the original locale is restored afterwards.
+	#    Each cell is `auto_translate_mode = DISABLED`, so it keeps its own language even when the app's changes later.
 	var before := TranslationServer.get_locale()
 	for locale: String in GoUi.LOCALES:
 		TranslationServer.set_locale(locale)
@@ -162,7 +163,7 @@ const CELL_WIDTH := 150
 
 func _language_cell(locale: String) -> Control:
 	var cell := GoStyle.column(3)
-	# 🛑 이 칸의 글은 **그 언어로 고정**한다 — 엔진이 현재 언어로 다시 번역하면 21칸이 한 언어가 된다.
+	# 🛑 This cell's text is **pinned to its language** — re-translated into the current one, all 21 cells become a single language.
 	cell.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	if locale in RTL_LANGUAGES:
 		cell.layout_direction = Control.LAYOUT_DIRECTION_RTL
@@ -174,9 +175,9 @@ func _language_cell(locale: String) -> Control:
 	return cell
 
 
-## 🛑 모든 줄을 같은 폭으로 묶고 줄바꿈을 켠다. 그러지 않으면 긴 문구 하나가 그 열을 넓히고
-##    ("Bahasa Indonesia" · "Burada henüz bir şey yok"), 21칸이 화면 밖으로 밀려 나간다 —
-##    2560px 에서도 마지막 열이 잘렸다(2026-09-13 스크린샷 실측).
+## 🛑 Hold every line to the same width and turn wrapping on. Otherwise a single long string widens its
+##    column ("Bahasa Indonesia" · "Burada henüz bir şey yok") and pushes the 21 cells off screen —
+##    even at 2560px the last column was cut off (measured on a screenshot, 2026-09-13).
 func _language_line(text: String, role: StringName, ink := Color.TRANSPARENT) -> Label:
 	var line := GoStyle.label(text, role, ink)
 	line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -185,7 +186,7 @@ func _language_line(text: String, role: StringName, ink := Color.TRANSPARENT) ->
 	return line
 
 
-# ── 머리글 ─────────────────────────────────────────────────────────────
+# ── Heading ────────────────────────────────────────────────────────────
 
 func _header() -> Control:
 	var row := GoStyle.row(26)
@@ -204,7 +205,7 @@ func _header() -> Control:
 	title.fit_content = true
 	title.scroll_active = false
 	title.autowrap_mode = TextServer.AUTOWRAP_OFF
-	# 🛑 `[b]` 로 감싼 글은 normal_font_size 가 아니라 bold_font_size 를 쓴다.
+	# 🛑 Text wrapped in `[b]` uses bold_font_size, not normal_font_size.
 	title.add_theme_font_size_override(&"bold_font_size", 44)
 	title.add_theme_font_size_override(&"normal_font_size", 44)
 	title.text = "[b]A complete [color=#%s]UI toolkit.[/color][/b]" % _accent.to_html(false)
@@ -215,9 +216,9 @@ func _header() -> Control:
 	return row
 
 
-# ── 카드 골격 ───────────────────────────────────────────────────────────
+# ── Card skeleton ───────────────────────────────────────────────────────
 
-## 번호 배지 + 제목을 단 카드를 만들고, 내용을 담을 세로줄을 돌려준다.
+## Builds a card with a number badge and a title, and returns the column its contents go into.
 func _card(grid: GridContainer, number: String, title: String) -> VBoxContainer:
 	var card := GoStyle.card()
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -278,7 +279,7 @@ func _hud_card(grid: GridContainer) -> void:
 	var slots := GoStyle.row(12)
 	slots.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var peers: Array[Control] = []
-	# 🛑 수량을 아예 안 보이려면 NONE 이다 — UNKNOWN 은 "모른다"는 뜻이라 `…` 를 그린다.
+	# 🛑 To hide the quantity entirely, use NONE — UNKNOWN means "not known" and draws `…`.
 	for spec in [[GoIconSet.SWORD, true, GoSlot.NONE], [GoIconSet.SHIELD, false, GoSlot.NONE],
 			[GoIconSet.POTION, false, 3], [GoIconSet.BOLT, false, GoSlot.NONE]]:
 		var slot := GoSlot.new()
@@ -287,7 +288,7 @@ func _hud_card(grid: GridContainer) -> void:
 		slot.quantity = spec[2]
 		slot.visual_size = 58
 		slots.add_child(slot)
-		slot.custom_minimum_size = Vector2(66, 66)   # _ready 가 48 로 잡은 뒤에 키운다
+		slot.custom_minimum_size = Vector2(66, 66)   # grown after _ready set it to 48
 		peers.append(slot)
 	for slot in peers:
 		(slot as GoSlot).touch_peers = peers
@@ -376,7 +377,7 @@ func _dialog_card(grid: GridContainer) -> void:
 	column.add_child(GoStyle.spacer())
 
 
-## 목록 한 줄 — 오른쪽 꺾쇠는 목록 버튼 위에 겹쳐 둔다.
+## One list row — the chevron on the right is laid over the list button.
 func _sheet_row(icon: StringName, text: String) -> Control:
 	return GoStyle.list_button(icon, text, Callable(), Color.TRANSPARENT, "", false, GoIconSet.CHEVRON_RIGHT)
 
@@ -443,13 +444,13 @@ func _touch_card(grid: GridContainer) -> void:
 	var actions := Control.new()
 	actions.custom_minimum_size = Vector2(168, 186)
 	actions.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	# 🛑 좌표는 stage 좌상단 기준으로 직접 준다 — PRESET_CENTER 는 크기가 정해지기 전에 계산돼 어긋난다.
+	# 🛑 The coordinates are given directly, from the stage's top left — PRESET_CENTER is computed before the size is settled and lands wrong.
 	for spec in [[GoIconSet.SHIELD, Vector2(78, 6)], [GoIconSet.SWORD, Vector2(8, 82)],
 			[GoIconSet.BOLT, Vector2(92, 104)]]:
-		# 🛑 `visual_size` 하나가 버튼 크기와 아이콘 크기(58%)를 함께 정한다 — 크기를 따로 강제하면 어긋난다.
+		# 🛑 A single `visual_size` sets both the button size and the icon size (58%) — forcing either on its own throws it off.
 		var diameter := 62.0
 		var button := GoStyle.icon_button(spec[0], Callable(), int(diameter))
-		# 🛑 글자 없는 버튼의 아이콘은 기본이 왼쪽 정렬이다 — 원 안에서는 가운데로 맞춘다.
+		# 🛑 On a button with no text the icon defaults to left alignment — inside a disc, centre it.
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 		button.size = Vector2(diameter, diameter)
@@ -480,7 +481,7 @@ func _theme_card(grid: GridContainer) -> void:
 	column.add_child(GoStyle.spacer())
 
 
-## 같은 위젯을 테마만 바꿔 나란히 둔다 — 코드는 한 벌이다.
+## The same widgets side by side under two themes — there is one set of code.
 func _theme_panel(title: String, theme: Theme, ink: Color) -> Control:
 	var panel := PanelContainer.new()
 	panel.theme = theme
@@ -582,7 +583,7 @@ func _states_card(grid: GridContainer) -> void:
 
 # ── 10 Waiting & counting ─────────────────────────────────────────────
 
-## 🔑 기다림·알림·세기. 이 셋은 "게임이 지금 무엇을 하고 있는지" 를 말하는 위젯들이다.
+## 🔑 Waiting, telling, counting. These three are the widgets that say "what the game is doing right now".
 func _feedback_card(grid: GridContainer) -> void:
 	var column := _card(grid, "10", "Waiting & counting")
 
@@ -594,8 +595,9 @@ func _feedback_card(grid: GridContainer) -> void:
 	waiting.add_child(GoStyle.label("Finding a match…", GoTheme.ROLE_COMPACT, _subtitle_ink))
 	column.add_child(waiting)
 
-	# 🛑 배지는 **앵커**로 모서리에 반쯤 걸친다 — 부모가 자리를 잡은 뒤라야 그 자리가 정해지므로
-	#    트리에 든 다음 붙인다(바로 부르면 0,0 에 붙어 왼쪽 위로 삐져나온다).
+	# 🛑 A badge hangs half over the corner by **anchors** — that spot is only settled once the parent has
+	#    been laid out, so attach it after it is in the tree (called right away it lands at 0,0 and sticks
+	#    out to the top left).
 	var marks := GoStyle.wrap_row(14)
 	for spec in [["Mail", 3, ""], ["Shop", 0, "NEW"], ["Guild", 128, ""]]:
 		var host := GoStyle.button(str(spec[0]), Callable(), GoStyle.Tone.COMPACT)
@@ -613,8 +615,8 @@ func _feedback_card(grid: GridContainer) -> void:
 
 # ── 11 Forms & lists ──────────────────────────────────────────────────
 
-## 🔑 **틀린 칸이 어느 것인지** 말하는 폼. 위의 한 줄짜리 "입력을 확인하세요" 는 다섯 칸 중
-##    어느 것이 문제인지 알려 주지 않는다.
+## 🔑 A form that says **which box is wrong**. The single line above — "check your input" — never tells
+##    you which of the five boxes is the problem.
 func _forms_card(grid: GridContainer) -> void:
 	var column := _card(grid, "11", "Forms & lists")
 
@@ -622,7 +624,7 @@ func _forms_card(grid: GridContainer) -> void:
 	taken.set_error("That name is taken")
 	column.add_child(taken)
 
-	# 🔑 `suffix` 는 **컨트롤**을 받는다 — 글자만 주는 칸은 없다(아이콘만은 `suffix_icon`).
+	# 🔑 `suffix` takes a **Control** — there is no text-only variant (for an icon alone, `suffix_icon`).
 	column.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
 		{"suffix": GoStyle.button("Send", Callable(), GoStyle.Tone.PRIMARY)}))
 	column.add_child(GoInputGroup.make(GoStyle.line_edit("Search by name"),
@@ -635,12 +637,12 @@ func _forms_card(grid: GridContainer) -> void:
 
 # ── 12 Shapes games use ───────────────────────────────────────────────
 
-## 🔑 범용 차트가 아니라 **게임이 실제로 쓰는 두 모양**이다 — 능력치 오각형과 비중 고리.
+## 🔑 Not general-purpose charts but **the two shapes games actually use** — the stat pentagon and the share ring.
 func _shapes_card(grid: GridContainer) -> void:
 	var column := _card(grid, "12", "Shapes games use")
 
 	var shapes := GoStyle.row(14)
-	# 🛑 값은 0~1 로 정규화해 넘긴다 — 힘 120 과 지능 45 를 그대로 그리면 모양이 거짓말을 한다.
+	# 🛑 Pass the values normalised to 0–1 — drawing STR 120 and INT 45 as they are makes the shape lie.
 	var radar := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45},
 		{"STR": 0.92, "AGI": 0.44, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 	radar.custom_minimum_size = Vector2(132, 132)
@@ -654,7 +656,7 @@ func _shapes_card(grid: GridContainer) -> void:
 	shapes.add_child(donut)
 	column.add_child(shapes)
 
-	# ♿ 색만으로는 읽히지 않는다 — 범례가 조각 이름과 비율을 글자로 함께 둔다.
+	# ♿ Color alone does not read — the legend puts each slice's name and share into words.
 	column.add_child(donut.legend())
 
 

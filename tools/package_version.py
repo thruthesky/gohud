@@ -23,10 +23,10 @@ def prepare(stage, increase):
     versions = re.findall(r'^version="([^"]+)"$', plugin, re.M)
     code_versions = re.findall(r'^const VERSION := "([^"]+)"$', code, re.M)
     if len(versions) != 1 or versions != code_versions:
-        raise ValueError("plugin.cfg 와 GoUi.VERSION 은 같은 버전 하나여야 한다")
+        raise ValueError("plugin.cfg and GoUi.VERSION must be one and the same version")
     match = re.fullmatch(SEMVER, versions[0])
     if not match:
-        raise ValueError("버전은 major.minor.patch 형식이어야 한다 (예: 1.2.3)")
+        raise ValueError("the version must be in major.minor.patch form (for example: 1.2.3)")
     major, minor, patch = map(int, match.groups())
     if increase == "minor":
         minor, patch = minor + 1, 0
@@ -34,11 +34,11 @@ def prepare(stage, increase):
         patch += 1
     version = f"{major}.{minor}.{patch}"
     if re.search(rf"^## \[{re.escape(version)}\](?:\s|$)", changelog, re.M):
-        raise ValueError(f"CHANGELOG.md 에 [{version}] 이 이미 있다")
+        raise ValueError(f"CHANGELOG.md already has [{version}]")
     heading = f"## [{version}] - {date.today().isoformat()}"
     unreleased = re.compile(r"^## \[Unreleased\][^\n]*", re.M)
     if len(unreleased.findall(changelog)) > 1:
-        raise ValueError("CHANGELOG.md 에 Unreleased 항목이 여러 개 있다")
+        raise ValueError("CHANGELOG.md has more than one Unreleased entry")
     if unreleased.search(changelog):
         changelog = unreleased.sub("## [Unreleased]\n\n" + heading, changelog, count=1)
     else:
@@ -74,9 +74,9 @@ def publish(addon, stage, destination):
     originals = {relative: (stage / "originals" / relative).read_bytes() for relative in FILES}
     for relative, content in originals.items():
         if (addon / relative).read_bytes() != content:
-            raise ValueError(f"패키징 도중 {relative} 이 바뀌었다. 변경을 보존하고 중단한다")
+            raise ValueError(f"{relative} changed while packaging. Keeping the change and stopping")
     if destination.exists():
-        raise ValueError(f"같은 버전의 ZIP 이 이미 있다: {destination}")
+        raise ValueError(f"a ZIP of the same version already exists: {destination}")
     # Copy to the destination filesystem before publishing (also works with --out
     # on another volume). Any copy failure occurs before the source version changes.
     fd, temporary = tempfile.mkstemp(prefix=".gohud-package-", suffix=".tmp", dir=destination.parent)
@@ -105,6 +105,6 @@ if __name__ == "__main__":
         elif len(sys.argv) == 5 and sys.argv[1] == "publish":
             publish(*(Path(arg) for arg in sys.argv[2:]))
         else:
-            raise ValueError("package.sh 를 통해 실행한다")
+            raise ValueError("run this through package.sh")
     except (ValueError, OSError) as error:
         sys.exit(f"🛑 {error}")

@@ -1,17 +1,20 @@
-# gohud 검사 — push·PR 마다 `tools/check_all.sh` 가 보는 것을 CI 에서도 본다.
+# gohud checks — on every push and PR, CI looks at what `tools/check_all.sh` looks at.
 #
-# 🛑 왜 필요한가
-#   검사는 이미 전부 헤드리스로 돈다. 그런데 **아무도 자동으로 돌리지 않았다** — 사람이 기억해서
-#   로컬에서 돌려야 했고, 그래서 깨진 채로 커밋된 것을 며칠 뒤에야 발견했다(2026-09-16: `standalone`
-#   검사가 로컬 산출물 때문에 실패한 상태로 남아 있었고, 빨간 검사에 익숙해지면 진짜 실패도 묻힌다).
+# 🛑 Why this is needed
+#   The checks already all run headless. But **nobody ran them automatically** — a human had to
+#   remember and run them locally, so something committed broken was only found days later
+#   (2026-09-16: the `standalone` check had been left failing because of a local build artifact,
+#   and once red checks feel normal, a real failure is buried with them).
 #
-# 🔑 무엇을 도는가
-#   ① 단위 검사(Godot 헤드리스) — 위젯 동작·스킨이 실행 중에 만드는 색의 대비
-#   ②~⑤ 파이썬 검사 — 테마 대비 · 홈페이지 · 생성물 일치 · 패키징 게이트
-#   `tools/check_all.sh` 하나가 그 전부를 부른다. 여기서도 **같은 진입점**을 쓴다 —
-#   CI 가 로컬과 다른 것을 보면 "내 컴퓨터에서는 되는데" 가 생긴다.
+# 🔑 What it runs
+#   ① Unit tests (Godot headless) — widget behaviour, and the contrast of the colors a skin
+#     produces at runtime
+#   ②~⑤ Python checks — theme contrast · website · generated files in sync · packaging gate
+#   `tools/check_all.sh` alone calls all of that. We use the **same entry point** here —
+#   when CI looks at something different from local, "it works on my machine" is born.
 #
-# 🛑 Godot 버전을 올릴 때는 `GoUi.MIN_ENGINE` 과 함께 올린다. 4.6 호환은 4.7 로 확인할 수 없다.
+# 🛑 When raising the Godot version, raise `GoUi.MIN_ENGINE` with it. 4.6 compatibility cannot be
+#   verified with 4.7.
 name: Tests
 
 on:
@@ -23,7 +26,7 @@ on:
 permissions:
   contents: read
 
-# 같은 가지에 새 push 가 오면 돌던 것을 끊는다 — 마지막 것만 알면 된다.
+# A new push on the same branch cancels the running one — only the last one matters.
 concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
@@ -33,19 +36,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      # 🔑 이 애드온이 요구하는 최소 버전이자, 검사를 도는 버전.
+      # 🔑 The minimum version this add-on requires, and the version the checks run on.
       GODOT_VERSION: 4.6-stable
     steps:
       - uses: actions/checkout@v7
 
-      - name: Godot 내려받기
-        # 🛑 **저장소 밖(`/tmp`)에 푼다.** 체크아웃한 폴더에 풀면 그 폴더가 그대로
-        #    `/tmp/host/addons/gohud` 로 링크되어, 패키징 검사(⑤)가 애드온 ZIP 을 만들 때
-        #    100MB 짜리 엔진 실행 파일까지 담는다 — 비밀키 스캐너가 그 바이너리의 임의 바이트를
-        #    API 키로 보고 막는다(2026-09-16 CI 로그: `addons/gohud/Godot_v4.6-stable_linux.x86_64`
-        #    에서 "API 키·비밀키로 보이는 문자열이 들어갔다").
-        #    로컬에서는 엔진이 저장소 밖에 있어 이 검사가 통과하므로 **CI 에서만** 드러난다.
-        # 🔑 게이트 자체는 제 일을 했다 — 애드온 ZIP 에 있으면 안 될 것이 들어갔다고 정확히 말했다.
+      - name: Download Godot
+        # 🛑 **Unpack it outside the repository (`/tmp`).** Unpacked into the checked-out folder,
+        #    that folder is linked as `/tmp/host/addons/gohud`, so the packaging check (⑤) puts the
+        #    100MB engine executable into the add-on ZIP — and the secret scanner reads arbitrary
+        #    bytes of that binary as an API key and blocks it (2026-09-16 CI log: "a string that
+        #    looks like an API key or secret got in" at
+        #    `addons/gohud/Godot_v4.6-stable_linux.x86_64`).
+        #    Locally the engine lives outside the repository, so this check passes and the problem
+        #    shows up **only in CI**.
+        # 🔑 The gate itself did its job — it said precisely that something that must not be in the
+        #    add-on ZIP had got in.
         run: |
           set -euo pipefail
           BASE="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}"
@@ -55,10 +61,11 @@ jobs:
           chmod +x "/tmp/${FILE}"
           echo "GODOT_BIN=/tmp/${FILE}" >> "$GITHUB_ENV"
 
-      - name: 검사용 빈 프로젝트를 짓고 애드온을 넣는다
-        # 🛑 gohud 저장소에는 `project.godot` 이 없다 — 애드온이지 게임이 아니다.
-        #    검사는 **호스트 프로젝트 안에 설치된 상태**를 보아야 하므로 여기서 하나 만든다.
-        #    복사가 아니라 심볼릭 링크다 — 검사가 보는 파일이 곧 저장소의 파일이어야 한다.
+      - name: Build an empty host project and install the add-on into it
+        # 🛑 The gohud repository has no `project.godot` — it is an add-on, not a game.
+        #    The checks must look at it **installed inside a host project**, so we make one here.
+        #    It is a symbolic link, not a copy — the files the checks look at must be the
+        #    repository's own files.
         run: |
           set -euo pipefail
           mkdir -p /tmp/host/addons
@@ -71,20 +78,22 @@ jobs:
           CFG
           echo "GOHUD_PROJECT=/tmp/host" >> "$GITHUB_ENV"
 
-      - name: 자원을 임포트한다
-        # 🛑 이것을 빼면 SVG·테마가 읽히지 않아 검사가 시작하자마자 죽거나 매달린다.
-        # 🛑 `run:` 값을 **따옴표로 시작하지 않는다** — YAML 은 거기서 스칼라가 끝난 것으로 보고
-        #    뒤의 인자를 문법 오류로 읽는다. 워크플로가 파싱되지 않으면 잡이 **0초 만에** 실패하고
-        #    로그조차 남지 않는다(2026-09-16: 이 한 줄 때문에 세 번 연속 빨간불이었다).
+      - name: Import the resources
+        # 🛑 Leave this out and the SVGs and themes are never read, so the checks die or hang the
+        #    moment they start.
+        # 🛑 **Do not start the `run:` value with a quote** — YAML takes the scalar as ending there
+        #    and reads the arguments that follow as a syntax error. A workflow that does not parse
+        #    fails **in zero seconds** and leaves no log at all (2026-09-16: this one line meant
+        #    three red runs in a row).
         run: |
           "$GODOT_BIN" --headless --path /tmp/host --import
 
-      - name: 전부 검사
-        # 로컬에서 치는 것과 **같은 한 줄**이다.
+      - name: Run every check
+        # The **same one line** you type locally.
         run: bash tools/check_all.sh
 
-      - name: 실패하면 로그를 남긴다
+      - name: Keep the log when it fails
         if: failure()
         run: |
-          echo "— 마지막 단위 검사 출력 —"
+          echo "— last unit test output —"
           "$GODOT_BIN" --headless --path /tmp/host -s res://addons/gohud/tests/gohud_test.gd 2>&1 | tail -60 || true

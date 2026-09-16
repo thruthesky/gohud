@@ -1,80 +1,80 @@
-## ❓ **확인·알림 창.** `await` 한 줄로 답을 받는다.
+## ❓ **Confirmation and alert windows.** One `await` line gets you the answer.
 ##
 ## ```gdscript
 ## var dialogs := GoDialogs.new()
 ## add_child(dialogs)
 ##
-## if await dialogs.confirm("캐릭터 삭제", "정말 지울까요? 되돌릴 수 없습니다."):
+## if await dialogs.confirm("Delete character", "Really delete? This cannot be undone."):
 ##     delete_character()
 ##
-## await dialogs.alert("오류", "서버에 연결하지 못했습니다.")
+## await dialogs.alert("Error", "Could not reach the server.")
 ## ```
 ##
-## ## 🔑 오토로드로 두면 편하다
-## 게임 어디서나 쓰려면 Project Settings > Autoload 에 이 스크립트를 넣는다. 그러면
-## `Dialogs.confirm(...)` 처럼 부를 수 있다. 애드온은 **자동으로 등록하지 않는다** —
-## 프로젝트의 오토로드 목록은 프로젝트가 정한다.
+## ## 🔑 An autoload makes it easy
+## To use it anywhere in the game, add this script under Project Settings > Autoload. Then you can call it as
+## `Dialogs.confirm(...)`. The addon **does not register it for you** — the project's autoload list
+## belongs to the project.
 ##
-## ## 🔑 버튼 배치 — 세로 · 한 줄 · 자동
-## `action_layout` 이 버튼 두 개를 어떻게 놓을지 정한다. 기본 `VERTICAL` 은 긴 번역에도 안전하고,
-## `HORIZONTAL` 은 한 줄에 반씩, `AUTO` 는 **두 문구가 반 폭에 한 줄로 들어갈 때만** 한 줄로 두고 아니면 세로로 접는다.
-## 버튼이 카드의 절반을 차지하던 짧은 확인창이 한 줄이면 3분의 1 아래로 줄어든다.
-## 창 하나만 다르게 하려면 열기 직전에 `set_next_action_layout()` — 그 창이 닫히면 원래 값으로 돌아간다.
+## ## 🔑 Button layout — vertical · one row · auto
+## `action_layout` decides how the two buttons are placed. The default `VERTICAL` is safe even for long translations,
+## `HORIZONTAL` gives each half a row, and `AUTO` keeps one row **only when both labels fit on one line at half width**, folding to vertical otherwise.
+## A short confirmation whose buttons took half the card drops below a third of it in one row.
+## For one window only, call `set_next_action_layout()` just before opening — it reverts once that window closes.
 ##
-## ## 🛑 `{name}` 같은 자리는 `args` 로 채운다
-## `tr()` 만으로는 치환되지 않는다 — 번역문의 `{name}` 이 화면에 그대로 남는다.
-## 되돌릴 수 없는 조작의 확인 문구에서 이 실수는 특히 치명적이다. **제목과 본문을 같은 `args` 로 채운다.**
+## ## 🛑 Placeholders like `{name}` are filled with `args`
+## `tr()` alone does not substitute them — the `{name}` in the translation stays on screen as written.
+## In the confirmation text of an irreversible action this mistake is especially deadly. **Fill title and body with the same `args`.**
 @tool
 class_name GoDialogs
 extends Node
 
-## 창이 닫히며 답이 나왔다. 보통은 `await confirm(...)` 을 쓴다.
+## The window closed and an answer came out. Normally you use `await confirm(...)`.
 signal answered(yes: bool)
 
-## 버튼 두 개를 놓는 방식.
+## How the two buttons are placed.
 enum ActionLayout { VERTICAL, HORIZONTAL, AUTO }
 
-## 이 창이 뜰 층. HUD 보다 위여야 한다.
+## The layer this window appears on. It has to be above the HUD.
 @export var layer_index := 100
 
-## 카드의 최대 폭(dp).
+## Maximum card width (dp).
 @export var max_width := 420.0
 
-## 🪟 카드 바탕의 **불투명도**(0.0~1.0) — 확인창만 다르게. **음수면 테마·설정이 정한 값**(기본).
-## 🔑 되돌릴 수 없는 조작을 묻는 창은 값을 올리는 편이 낫다 — 뒤가 덜 보일수록 물음에 집중한다.
-## 🛑 이름을 `GoSheet.alpha`·`GoSurface.alpha` 와 같게 둔다 — 같은 뜻을 위젯마다 다른 이름·다른
-##    단위로 두면 부르는 쪽이 위젯별로 외워야 한다(`GoUi.surface_alpha()` 는 **조회 함수**로 따로다).
+## 🪟 **Opacity** of the card background (0.0~1.0) — for dialogs only. **Negative means what the theme and config decide** (the default).
+## 🔑 A window asking about an irreversible action is better off with a higher value — the less shows through, the more the question holds attention.
+## 🛑 The name is kept the same as `GoSheet.alpha`·`GoSurface.alpha` — giving one meaning a different name and a
+##    different unit per widget forces callers to memorize each one (`GoUi.surface_alpha()` is separate, a **lookup function**).
 @export_range(-1.0, 1.0, 0.01) var alpha := -1.0:
 	set(value):
 		alpha = value
 		if _surface != null: _surface.alpha = value
 
-## 버튼 배치 — `VERTICAL`(기본) · `HORIZONTAL`(한 줄) · `AUTO`(한 줄에 들어갈 때만 한 줄).
+## Button layout — `VERTICAL` (default) · `HORIZONTAL` (one row) · `AUTO` (one row only when they fit).
 @export var action_layout := ActionLayout.VERTICAL
 
-## 버튼 사이 간격(dp). 음수면 `gap_small` 토큰.
-## 🛑 컨테이너 기본값에 기대지 않는다 — 테마에 따라 0 이라 두 버튼이 붙는다.
+## Gap between the buttons (dp). Negative means the `gap_small` token.
+## 🛑 Do not lean on the container default — in some themes it is 0 and the two buttons touch.
 @export var action_gap := -1
 
-## 이미 창이 떠 있을 때 **`confirm()` 도 차례를 기다릴 것인가**.
+## **Should `confirm()` queue too** when a window is already up.
 ##
-## 🛑 기본은 꺼짐 — **묻는 것과 알리는 것은 다르게 다룬다.**
+## 🛑 Off by default — **asking and telling are handled differently.**
 ##
-## | | 창이 떠 있을 때 | 왜 |
+## | | When a window is up | Why |
 ## |---|---|---|
-## | `confirm()`·`confirm_key()` | **곧바로 `false`**(기본) | 물음이 밀리면 사용자는 아까 무엇에 답하는지 모르는 채 "예" 를 누른다. 겹친 확인창은 오조작을 만든다 — 차라리 묻지 않은 것으로 친다. 부른 쪽이 `false` 를 받아 알 수 있다 |
-## | `alert()`·`alert_key()` | **언제나 줄을 선다** | 되돌릴 수 없다. `-> void` 라 부른 쪽이 "안 보였다" 를 알 방법이 **없고**, 그래서 오류 메시지가 조용히 증발한다(2026-09-16 실측: 서버 오류 두 개가 연달아 나면 두 번째를 아무도 못 봤다) |
+## | `confirm()`·`confirm_key()` | **`false` right away** (default) | A question that gets pushed back collects a "yes" from a user who no longer knows what is being answered. Stacked confirmations cause mis-taps — better to treat it as never asked. The caller sees the `false` and knows |
+## | `alert()`·`alert_key()` | **Always queues** | It cannot be undone. Being `-> void`, the caller has **no way** to learn "it was never seen", so error messages quietly evaporate (measured 2026-09-16: with two server errors back to back, nobody ever saw the second) |
 ##
-## 이 값을 켜면 `confirm()` 도 줄을 선다 — 물음을 하나도 잃으면 안 되는 화면에서만.
-## 🔑 `alert()` 는 이 값과 **무관하게** 줄을 선다. 알림을 버리는 선택지는 두지 않는다.
+## Turn this on and `confirm()` queues too — only on screens where not one question may be lost.
+## 🔑 `alert()` queues **regardless** of this value. There is no option to throw a notice away.
 @export var queue_when_busy := false
 
-## 차례를 기다릴 수 있는 최대 개수. 넘치면 **가장 오래된 것부터** 버린다(그 쪽은 취소로 답한다).
-## 🛑 0 이면 무제한 — 끊긴 서버에 초당 여러 번 붙는 코드가 창을 수백 개 쌓을 수 있다.
+## How many may wait in the queue. Past that, **the oldest go first** (answered as cancel).
+## 🛑 0 means unlimited — code hitting a dead server several times a second could pile up hundreds of windows.
 @export var queue_limit := 8
 
-## 본문과 버튼 줄 사이 간격(dp). 음수면 표면의 구획 간격 그대로.
-## 🔑 버튼끼리보다 넓게 두면 "질문" 과 "고르기" 가 두 덩어리로 읽힌다.
+## Gap between the body and the button row (dp). Negative means the surface's section gap as it is.
+## 🔑 Wider than the gap between the buttons makes "the question" and "the choice" read as two blocks.
 @export var body_gap := -1
 
 var _layer: CanvasLayer
@@ -82,20 +82,20 @@ var _surface: GoSurface
 var _body: Label
 var _ok: Button
 var _cancel: Button
-## 버튼 줄. 🛑 **처음 열 때** 짓는다(`_ensure_actions`) — 오토로드로 둔 창은 부팅 중 트리에 붙으므로
-##    여기서 노드를 더하면 그만큼 입장이 늦어진다.
+## The button row. 🛑 Built **on first open** (`_ensure_actions`) — an autoloaded dialog joins the tree during
+##    boot, so every node added here delays startup by that much.
 var _actions: BoxContainer
 var _actions_margin: MarginContainer
 var _next_layout := -1
 var _open := false
-## 차례를 기다리는 요청. 🛑 **신호 하나로는 안 된다** — `answered` 를 여럿이 함께 기다리면 모두
-##    같은 답을 받는다. 요청마다 자기 티켓의 신호를 기다린다.
+## Requests waiting their turn. 🛑 **One signal is not enough** — several waiters on `answered` would all receive
+##    the same answer. Each request waits on the signal of its own ticket.
 var _queue: Array[Dictionary] = []
-## 지금 떠 있는 창을 부른 쪽의 알림표.
+## The ticket of whoever opened the window that is up.
 var _ticket: Ticket
 
 
-## 요청 하나의 **자기 차례 알림표**. 창을 돌려 쓰므로 "누구에게 온 답인가" 를 이것으로 가른다.
+## One request's **own ticket**. The window is reused, so this is what tells "whose answer is this".
 class Ticket extends RefCounted:
 	signal done(yes: bool)
 var _title_key := ""
@@ -107,7 +107,7 @@ var _args := {}
 var _translate := true
 
 
-## 🛑 창은 `_init` 에서 만든다 — 트리에 붙기 전에 `confirm()` 을 부를 수 있어야 한다.
+## 🛑 The window is built in `_init` — `confirm()` must be callable before the node enters the tree.
 func _init() -> void:
 	_layer = CanvasLayer.new()
 	_layer.name = "DialogLayer"
@@ -118,7 +118,7 @@ func _init() -> void:
 	_surface.visible = false
 	_surface.max_width = max_width
 	_surface.fit_content = true
-	# 닫기(X)는 확인 버튼만 있는 알림에서는 "확인", 취소가 있는 물음에서는 "취소" 로 친다.
+	# Close (X) counts as "confirm" on an alert that has only a confirm button, and as "cancel" on a question that has one.
 	_surface.close_requested.connect(func() -> void: _finish(not _cancel.visible))
 	_layer.add_child(_surface)
 
@@ -126,7 +126,7 @@ func _init() -> void:
 	_body.name = "Body"
 	_surface.body.add_child(_body)
 
-	# 버튼 두 개는 우선 `footer` 에 둔다. 배치(세로·한 줄)는 처음 열 때 짓는 버튼 줄이 맡는다.
+	# The two buttons start out in `footer`. Layout (vertical or one row) is handled by the button row built on first open.
 	_surface.footer.visible = true
 	_cancel = GoStyle.button_key(GoUi.text_key(&"cancel"), func() -> void: _finish(false))
 	_cancel.name = "Cancel"
@@ -138,39 +138,39 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	# `new()` 뒤에 바꿨을 수 있는 값을 반영한다.
+	# Applies values that may have changed after `new()`.
 	_layer.layer = layer_index
 	_surface.max_width = max_width
 	_surface.alpha = alpha
-	# 화면을 돌리면 카드 폭이 바뀐다 — 한 줄에 들어가는지 다시 본다.
+	# Rotating the screen changes the card width — check again whether one row fits.
 	if not Engine.is_editor_hint(): get_viewport().size_changed.connect(_on_viewport_resized)
 
 
-## 예/아니오를 묻는다. `true` 면 사용자가 확인을 눌렀다.
+## Asks yes or no. `true` means the user pressed confirm.
 ##
-## `destructive` 를 켜면 확인 버튼이 **위험색**으로 그려진다. 삭제·탈퇴처럼 되돌릴 수 없는 것에 쓴다.
+## Turn `destructive` on and the confirm button is drawn in **the danger color**. For the irreversible — deleting, closing an account.
 ##
-## 🛑 이미 창이 떠 있으면 곧바로 `false` 다 — 확인창 두 개가 겹치지 않게 한다.
+## 🛑 With a window already up it is `false` right away — two confirmations never stack.
 func confirm(title: String, body: String, ok_text := "", cancel_text := "", extra := "", args := {},
 		destructive := false) -> bool:
 	return await _request(false, true, cancel_text if not cancel_text.is_empty() else GoUi.text(&"cancel"),
 		destructive, title, body, ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args)
 
 
-## 번역 키로 묻는다. `destructive` 는 `confirm()` 과 같다.
+## Asks by translation key. `destructive` works as in `confirm()`.
 func confirm_key(title_key: String, body_key: String, ok_key := "", cancel_key := "",
 		extra := "", args := {}, destructive := false) -> bool:
 	return await _request(true, true, cancel_key if not cancel_key.is_empty() else GoUi.text_key(&"cancel"),
 		destructive, title_key, body_key, ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args)
 
 
-## 알린다(확인 버튼 하나).
+## Tells the user something (one confirm button).
 func alert(title: String, body: String, ok_text := "", extra := "", args := {}) -> void:
 	await _request(false, false, "", false, title, body,
 		ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"), extra, args, true)
 
 
-## 번역 키로 알린다.
+## Tells the user something by translation key.
 func alert_key(title_key: String, body_key: String, ok_key := "", extra := "", args := {}) -> void:
 	await _request(true, false, "", false, title_key, body_key,
 		ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args, true)
@@ -180,21 +180,21 @@ func is_open() -> bool:
 	return _open
 
 
-## 차례를 기다리는 요청 수(지금 떠 있는 것은 빼고).
+## How many requests are waiting (not counting the one that is up).
 func pending() -> int:
 	return _queue.size()
 
 
-## 기다리는 것을 전부 **취소로** 답하고 비운다. 화면을 떠날 때(로그아웃·씬 전환) 부른다.
-## 🛑 `await` 로 붙잡힌 코드는 이것을 부르지 않으면 영영 돌아오지 않는다.
+## Answers everything waiting with **cancel** and empties the queue. Call it when leaving the screen (logout, scene change).
+## 🛑 Code held by `await` never returns unless this is called.
 func clear_pending() -> void:
 	var waiting := _queue
 	_queue = []
 	for item in waiting: (item["ticket"] as Ticket).done.emit(false)
 
 
-## 네 진입점이 모이는 **단 하나의 길**. 창이 비어 있으면 곧바로, 차 있으면 차례를 기다린다.
-## `must_show` 는 **알림**이다 — 버릴 수 없으므로 `queue_when_busy` 와 상관없이 줄을 선다.
+## The **single path** where all four entry points meet. Straight through when no window is up, queued when one is.
+## `must_show` means **an alert** — it cannot be thrown away, so it queues regardless of `queue_when_busy`.
 func _request(translate: bool, cancel_visible: bool, cancel_key: String, destructive: bool,
 		title: String, body: String, ok: String, extra: String, args: Dictionary,
 		must_show := false) -> bool:
@@ -204,25 +204,25 @@ func _request(translate: bool, cancel_visible: bool, cancel_key: String, destruc
 		"destructive": destructive, "title": title, "body": body, "ok": ok, "extra": extra,
 		"args": args.duplicate(), "layout": _next_layout, "ticket": ticket,
 	}
-	# 🔑 1회용 배치는 **그 요청** 을 따라간다 — 줄 서 있는 동안 다른 요청이 가져가면 안 된다.
+	# 🔑 A one-shot layout travels with **that request** — another request must not take it while this one waits in line.
 	_next_layout = -1
 	if not _open:
 		_show(item)
 		return await ticket.done
 	if not must_show and not queue_when_busy:
-		# 🛑 **묻는 것은 버린다.** 겹친 확인창은 "무엇에 답하는지 모르는 예" 를 만든다.
-		#    부른 쪽은 `false` 를 받아 "묻지 못했다" 를 알 수 있다.
+		# 🛑 **Questions are dropped.** Stacked confirmations produce "a yes to who knows what".
+		#    The caller receives `false` and can tell that it was never asked.
 		return false
 	_queue.append(item)
-	# 🛑 넘치면 **가장 오래된 것**을 버린다. 최근 것이 대개 더 중요하고(마지막 오류가 원인에 가깝다),
-	#    새 것을 버리면 방금 일어난 일을 영영 못 보게 된다.
+	# 🛑 On overflow **the oldest** is dropped. The recent one usually matters more (the last error is closer to the cause),
+	#    and dropping the new one would hide what just happened for good.
 	while _queue.size() > queue_limit and queue_limit > 0:
 		var dropped: Dictionary = _queue.pop_front()
 		(dropped["ticket"] as Ticket).done.emit(false)
 	return await ticket.done
 
 
-## 큐 항목 하나를 실제로 띄운다.
+## Actually shows one queued item.
 func _show(item: Dictionary) -> void:
 	_translate = item["translate"]
 	_cancel.visible = item["cancel_visible"]
@@ -233,22 +233,22 @@ func _show(item: Dictionary) -> void:
 	_apply(item["title"], item["body"], item["ok"], item["extra"], item["args"])
 
 
-## 창이 비었다 — 기다리는 것이 있으면 **다음 프레임에** 연다.
-## 🛑 같은 프레임에 다시 열면 닫히는 애니메이션과 겹쳐 창이 깜빡이지 않고 글자만 바뀐다.
+## The window is free — if something is waiting, open it **on the next frame**.
+## 🛑 Reopening in the same frame overlaps the closing animation: the window never blinks, only the text changes.
 func _pump() -> void:
 	if _open or _queue.is_empty(): return
 	_show(_queue.pop_front())
 
 
-## 다음에 여는 창 **하나만** 버튼 배치를 바꾼다. 그 창이 닫히면 `action_layout` 으로 돌아간다.
-## 🔑 되돌릴 수 없는 조작처럼 그 화면에서만 세로로 고정하고 싶을 때 쓴다. 인자를 늘리지 않는 이유 —
-##    `confirm()` 을 덮어쓴 자식 클래스가 있으면 인자 개수가 어긋나 컴파일이 깨진다.
+## Changes the button layout for **just the next** window opened. It returns to `action_layout` once that window closes.
+## 🔑 For pinning one screen to vertical, as with irreversible actions. Why not another argument — a subclass that
+##    overrode `confirm()` would no longer match the argument count and compilation would break.
 func set_next_action_layout(layout: ActionLayout) -> void:
 	_next_layout = layout
 
 
-## 확인 버튼의 색. 🛑 **매번 정한다** — 한 번 위험색으로 칠하면 그 다음 평범한 확인창까지
-##    빨갛게 뜬다(창 하나를 돌려 쓰기 때문이다).
+## The confirm button's color. 🛑 **Set every time** — paint it in the danger color once and the next ordinary
+##    confirmation comes up red too (one window is being reused).
 func _tone(destructive: bool) -> void:
 	GoStyle.style_button(_ok, GoStyle.Tone.DANGER_SOLID if destructive else GoStyle.Tone.PRIMARY)
 
@@ -270,13 +270,13 @@ func _apply(title: String, body: String, ok: String, extra: String, args: Dictio
 
 func _retranslate() -> void:
 	if _surface == null: return
-	# 🛑 **제목도 `args` 로 채운다** — 본문만 채우면 `Drop {item}?` 제목이 글자 그대로 보였다(2026-09-15 확인).
-	#    채운 제목은 번역을 마친 글자라 자동 번역을 끈다(`set_title`). 언어가 바뀌면 이 함수가 다시 채운다.
+	# 🛑 **The title is filled with `args` too** — filling only the body showed the title `Drop {item}?` literally (confirmed 2026-09-15).
+	#    A filled title is already-translated text, so auto translation is turned off (`set_title`). This function refills it when the language changes.
 	if _translate:
 		if _args.is_empty(): _surface.set_title_key(_title_key)
 		else: _surface.set_title(tr(_title_key).format(_args))
-		# 🛑 `args` 에 없는 자리는 **번역문에 그대로 남는다**(`{name}` 이 글자로 보인다).
-		#    자리표시자를 쓰는 문구는 반드시 그 키를 `args` 로 넘긴다.
+		# 🛑 A placeholder missing from `args` **stays in the translation** (`{name}` shows up as text).
+		#    Any phrase that uses placeholders must be given those keys in `args`.
 		_body.text = tr(_body_key).format(_args)
 	else:
 		_surface.set_title(_title_key.format(_args) if not _args.is_empty() else _title_key)
@@ -286,21 +286,21 @@ func _retranslate() -> void:
 	_cancel.text = _cancel_key
 	_ok.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if _translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	_cancel.auto_translate_mode = _ok.auto_translate_mode
-	# 🛑 창을 **돌려 쓰므로** 앞 문구가 남긴 최소 폭을 먼저 지운다 — `fit_words` 는 기존 값과 큰 쪽을 취해,
-	#    긴 문구 다음의 짧은 한 낱말 문구에서도 버튼이 긴 폭으로 남았다.
+	# 🛑 The window **is reused**, so the minimum width left by the previous label is cleared first — `fit_words` takes
+	#    the larger of the old and new values, which kept the button wide even for a short one-word label after a long one.
 	_ok.custom_minimum_size.x = 0.0
 	_cancel.custom_minimum_size.x = 0.0
-	# 글자·번역 설정을 바꿨으니 낱말 줄바꿈 규칙도 다시 — 안 그러면 `Don`/`e` 로 갈라진다.
+	# Text and translation settings changed, so the word-wrap rule is redone — otherwise it splits as `Don`/`e`.
 	GoStyle.fit_words(_ok)
 	GoStyle.fit_words(_cancel)
-	# 열린 채 언어가 바뀌면 문구 폭이 달라진다 — 한 줄에 들어가는지 다시 본다.
+	# A language change while it is open changes the label widths — check again whether one row fits.
 	if _open: _place_actions.call_deferred()
 
 
-## 버튼 줄을 처음 열 때 한 번 짓고, 버튼 두 개를 그 안으로 옮긴다.
-## 🛑 `footer` 의 타입은 바꾸지 않는다 — 같은 `footer` 에 자기 버튼을 쌓는 화면이 많다.
-## 🛑 `MarginContainer` 로 한 번 감싼다 — `footer` 에 자식이 둘이 되면 `footer` 자신의 간격이
-##    본문 뒤 간격에 끼어들어 `body_gap` 이 맞지 않는다.
+## Builds the button row once on first open and moves the two buttons into it.
+## 🛑 The type of `footer` is not changed — many screens stack their own buttons in that same `footer`.
+## 🛑 Wrapped once in a `MarginContainer` — with two children in `footer`, `footer`'s own separation cuts into the
+##    gap after the body and `body_gap` no longer holds.
 func _ensure_actions() -> void:
 	if _actions != null: return
 	_actions_margin = MarginContainer.new()
@@ -316,15 +316,15 @@ func _ensure_actions() -> void:
 		(button as Node).reparent(_actions)
 
 
-## 버튼 줄의 방향·간격과 본문 뒤 간격을 정한다.
-## 🛑 **열 때·번역이 바뀔 때·창 크기가 바뀔 때만** 부른다 — 표면은 내용 맞춤이면 매 프레임 `relayout` 하므로
-##    거기에 기대면 한 줄 ↔ 세로를 매 프레임 오갈 수 있다.
+## Sets the button row's direction and gap, and the gap after the body.
+## 🛑 Called **only on open, on translation change and on window resize** — a fit-content surface runs `relayout`
+##    every frame, and leaning on that could flip between one row and vertical every frame.
 func _place_actions() -> void:
 	if _actions == null or not _open: return
 	var layout: int = _next_layout if _next_layout >= 0 else action_layout
 	var gap := _action_gap()
 	var one_row := false
-	# 버튼이 하나(알림)면 한 줄과 세로가 같다 — 폭 전체를 쓴다.
+	# With one button (an alert) one row and vertical are the same — it takes the full width.
 	if _cancel.visible:
 		one_row = layout == ActionLayout.HORIZONTAL or (layout == ActionLayout.AUTO and _fits_one_row(gap))
 	_actions.vertical = not one_row
@@ -334,8 +334,8 @@ func _place_actions() -> void:
 	_surface.relayout()
 
 
-## 두 문구가 **반 폭에 한 줄로** 들어가는가.
-## 🔑 입력은 글자 폭과 카드 안쪽 폭뿐이다 — 지금 어떻게 놓여 있는지에 기대면 판정이 뒤집힌다.
+## Do both labels fit **on one line at half width**?
+## 🔑 The only inputs are the text width and the card's inner width — leaning on how things are laid out right now flips the verdict.
 func _fits_one_row(gap: int) -> bool:
 	var inner := _surface.card.size.x - float(_surface.content_inset()) * 2.0
 	if inner <= 0.0: return false
@@ -343,8 +343,8 @@ func _fits_one_row(gap: int) -> bool:
 	return _one_line_width(_ok) <= half and _one_line_width(_cancel) <= half
 
 
-## 버튼 글자를 **한 줄로** 둘 때의 폭 — 글자 폭 + 판 좌우 여백(상태 중 가장 넓은 것).
-## 🛑 `get_combined_minimum_size()` 로 재지 않는다 — `fit_words` 가 여러 낱말 버튼의 최소 폭을 가장 긴 낱말로 줄여 둔다.
+## The width of a button label **on one line** — text width + the stylebox's horizontal padding (the widest of the states).
+## 🛑 Not measured with `get_combined_minimum_size()` — `fit_words` has already shrunk a multi-word button's minimum width to its longest word.
 func _one_line_width(button: Button) -> float:
 	var font := button.get_theme_font(&"font")
 	if font == null: return INF
@@ -361,34 +361,34 @@ func _action_gap() -> int:
 
 
 func _on_viewport_resized() -> void:
-	# 표면이 먼저 새 크기로 카드를 놓은 뒤에 판정한다.
+	# Decide after the surface has placed the card at its new size.
 	if _open: _place_actions.call_deferred()
 
 
 func _finish(yes: bool) -> void:
 	if not _open: return
 	_open = false
-	_next_layout = -1   # 1회용 배치는 이 창으로 끝
+	_next_layout = -1   # the one-shot layout ends with this window
 	_surface.visible = false
-	# 🔔 확인과 취소는 **다른 소리·다른 진동**이다 — 되돌릴 수 없는 조작을 승인했는지 물렀는지를
-	#    화면을 안 보고도 알 수 있어야 한다.
+	# 🔔 Confirm and cancel are **a different sound and a different vibration** — whether an irreversible action was
+	#    approved or backed out of has to be knowable without looking at the screen.
 	if yes: GoFeedback.confirmed()
 	else: GoFeedback.canceled()
-	# 🛑 **이 요청을 부른 쪽에게 먼저** 답한다. `answered` 는 누가 물었는지 모르는 방송이라,
-	#    여럿이 기다릴 때 그것만으로는 답이 섞인다.
+	# 🛑 **The caller of this request is answered first.** `answered` is a broadcast that does not know who asked,
+	#    so with several waiters it alone mixes the answers up.
 	var ticket := _ticket
 	_ticket = null
 	answered.emit(yes)
 	if ticket != null: ticket.done.emit(yes)
-	# 다음 차례. 같은 프레임에 열면 닫힘과 겹쳐 글자만 바뀌어 보인다.
+	# Next in line. Opening in the same frame overlaps the close and just looks like the text changed.
 	if not _queue.is_empty(): _pump.call_deferred()
 
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED: _retranslate()
-	# 🛑 씬 전환·`queue_free` 로 이 노드가 빠지면 **기다리던 코드를 풀어 준다.** 안 그러면
-	#    `await dialogs.confirm(...)` 에 묶인 로직이 영원히 돌아오지 않는다 — 화면은 이미 넘어갔는데
-	#    그 앞 화면의 코루틴이 살아 남아 아무 일도 하지 않는 상태가 된다.
+	# 🛑 When this node leaves on a scene change or `queue_free`, **the code that was waiting is released.** Otherwise
+	#    logic held by `await dialogs.confirm(...)` never returns — the screen has already moved on while the
+	#    previous screen's coroutine lives on, doing nothing.
 	elif what == NOTIFICATION_EXIT_TREE:
 		var ticket := _ticket
 		_ticket = null
@@ -397,6 +397,6 @@ func _notification(what: int) -> void:
 		clear_pending()
 
 
-## 대화상자 표면을 만든다. 🔑 호스트가 `GoSurface` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.
+## Builds the dialog surface. 🔑 A host that wants a `GoSurface` subclass (old type-hint compatibility, say) overrides this in a subclass.
 func _make_surface() -> GoSurface:
 	return GoSurface.new()

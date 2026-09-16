@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-"""`ai.html` 17 장을 짓는다 — 손으로 쓰는 장은 하나도 없다.
+"""Build all 17 `ai.html` pages — not one of them is written by hand.
 
     python3 tools/make_ai_page.py
 
-## 어디서 재료를 가져오나
-- **새로 쓰는 말**(절 제목·안내문·붙여 넣을 블록) — `tools/site_ai_text.py`
-- **옛 번역문**(미리보기 명령 설명 · 명령 표 · "그냥 말로 부탁해도 된다") — 그 언어의 `install.html`
-  안에 아직 남아 있는 것이 아니라, 갈라내기 전 `index.html` 의 `#ai` 절이었다. 그 조각은
-  `www/<code>/ai.html` 이 이미 있으면 거기서, 없으면 **영어 뼈대에 그 언어 표를 얹어** 만든다.
-- **머리·꼬리**(`<head>`·머리띠·바닥글·스크립트) — 같은 언어의 `index.html` 에서 그대로 가져온다.
-  그래야 언어 고르개·hreflang·용어 사전 경로가 저절로 맞는다.
+## Where the material comes from
+- **Newly written wording** (section titles, notes, the block to paste) — `tools/site_ai_text.py`
+- **Older translations** (the preview command text, the command table, "you can just ask in plain
+  words") — not what is still left in that language's `install.html`, but the `#ai` section of
+  `index.html` from before the split. That piece comes from `www/<code>/ai.html` if it already
+  exists, otherwise from **the English skeleton with that language's table laid on top**.
+- **Head and tail** (`<head>`, header bar, footer, scripts) — taken as-is from the `index.html` of
+  the same language. That way the language picker, hreflang and glossary paths line up by themselves.
 
-🛑 이 스크립트는 `ai.html` 을 **통째로 다시 쓴다.** 손으로 고친 것은 날아간다 — 고칠 곳은
-`tools/site_ai_text.py` 다.
+🛑 This script rewrites `ai.html` **completely.** Hand edits are lost — the place to edit is
+`tools/site_ai_text.py`.
 """
 import os
 import re
@@ -27,9 +28,10 @@ import site_ai_text  # noqa: E402
 import site_langs  # noqa: E402
 import site_nav  # noqa: E402
 
-# 옛 `#ai` 절에서 그대로 옮겨 오는 조각 — 이 제목 id 사이의 글이다(언어가 달라도 id 는 같다).
-KEEP_FROM = "gohud-preview-the-widget-gallery"   # 이 h3 부터
-KEEP_TO = None                                   # 표 끝까지 (`</table>`)
+# The piece carried over verbatim from the old `#ai` section — the text between these heading ids
+# (the ids are the same in every language).
+KEEP_FROM = "gohud-preview-the-widget-gallery"   # from this h3
+KEEP_TO = None                                   # to the end of the table (`</table>`)
 
 
 def esc(text):
@@ -37,7 +39,7 @@ def esc(text):
 
 
 def head_and_tail(code):
-    """그 언어 `index.html` 의 머리와 꼬리. 머리띠·고르개·스크립트가 딸려 온다."""
+    """The head and tail of that language's `index.html`. The header bar, picker and scripts come along."""
     path = os.path.join(WWW, site_langs.rel_path(code, "index.html"))
     text = open(path, encoding="utf-8").read()
     head = text.split('<div class="hero">', 1)[0]
@@ -50,11 +52,12 @@ def head_and_tail(code):
 
 
 def kept_html(code):
-    """미리보기 명령 설명과 명령 표 — 그 언어의 번역문을 그대로 쓴다.
+    """The preview command text and the command table — that language's translation, used as-is.
 
-    🔑 재료는 **이미 있는 `ai.html`** 이다. 즉 이 스크립트는 제가 지은 쪽을 다시 읽어 다시 짓는다 —
-    `site_ai_text.py` 의 말만 갈아 끼우고 번역된 표는 그대로 둔다. 맨 처음 한 번만, 대문을 가를 때
-    떼어 둔 옛 `#ai` 절(`GOHUD_AI_SRC` 가 가리키는 폴더)에서 가져온다.
+    🔑 The material is **the `ai.html` that already exists**. That is, this script reads back the page
+    it built and rebuilds it — swapping in the wording from `site_ai_text.py` and leaving the
+    translated table alone. Only the very first time does it take the old `#ai` section set aside
+    when the front page was split (the folder `GOHUD_AI_SRC` points at).
     """
     src = os.path.join(WWW, site_langs.rel_path(code, "ai.html"))
     if not os.path.isfile(src):
@@ -63,14 +66,14 @@ def kept_html(code):
     if not src or not os.path.isfile(src):
         return None, None
     text = open(src, encoding="utf-8").read()
-    # ① 미리보기 두 소제목 + 명령 표 → `#commands`
+    # ① the two preview subheadings + the command table → `#commands`
     start = text.find('<h3 id="%s">' % KEEP_FROM)
-    # 🛑 표의 끝은 **그 소제목 뒤에서** 찾는다. 다시 지을 때는 `#agents` 절의 표가 앞에 오므로,
-    #    앞에서부터 찾으면 start > end 가 되어 조각이 통째로 빈다(2026-09-16 실측: h3 0개).
+    # 🛑 Look for the end of the table **after that subheading**. On a rebuild the `#agents` table comes
+    #    first, so searching from the start gives start > end and the piece comes out empty (measured 2026-09-16: 0 h3).
     end = text.find("</table>", start) if start >= 0 else -1
     commands = text[start:end + len("</table>")] if start >= 0 and end > start else ""
-    # ② "그냥 말로 부탁해도 된다" 안내 → `#ask`
-    # 🛑 `<div class="note">` 는 `#copy` 절에도 있다(다시 지을 때). **마지막** 것이 "그냥 말로" 안내다.
+    # ② the "you can just ask in plain words" note → `#ask`
+    # 🛑 `<div class="note">` also appears in the `#copy` section (on a rebuild). The **last** one is that note.
     note = ""
     found = re.findall(r'<div class="note">(.*?)</div>', text, re.S)
     if found:
@@ -87,8 +90,8 @@ def build(code):
         return None
 
     th = say("agents_th")
-    # 🛑 `data-label` 을 준다 — 폰 폭(640px 이하)에서는 표가 세로로 쌓이고 머리줄이 숨는다
-    #    (`style.css` 의 `thead{display:none}`). 라벨이 없으면 경로와 명령이 구분 없이 붙는다.
+    # 🛑 Give a `data-label` — at phone width (640px and under) the table stacks vertically and the
+    #    header row is hidden (`thead{display:none}` in `style.css`). Without labels the path and the command run together.
     rows = "\n".join(
         '      <tr><td>%s — %s</td><td data-label="%s"><code>%s</code></td>'
         '<td data-label="%s"><code>%s</code></td></tr>'
@@ -96,7 +99,7 @@ def build(code):
         for who, what, where, how in site_ai_text.AGENT_ROWS)
 
     body = []
-    # ── #copy — 가장 먼저 온다. 설명보다 블록이 먼저다. ──────────────
+    # ── #copy — comes first. The block before the explanation. ─────
     body.append(
         '<section id="copy">\n'
         '  <h2>%s</h2>\n'
@@ -105,7 +108,7 @@ def build(code):
         '  <div class="note">%s</div>\n'
         '</section>\n' % (say("copy_h2"), say("copy_sub"), esc(site_ai_text.COPY_BLOCK), say("copy_note")))
 
-    # ── #agents — 손으로 넣을 때의 자리 ────────────────────────────
+    # ── #agents — where to put it by hand ──────────────────────────
     body.append(
         '<section id="agents">\n'
         '  <h2>%s</h2>\n'
@@ -116,7 +119,7 @@ def build(code):
         '  </table>\n'
         '</section>\n' % (say("agents_h2"), say("agents_sub"), th[0], th[1], th[2], rows))
 
-    # ── #commands — 옛 번역문 그대로 ───────────────────────────────
+    # ── #commands — the old translation, verbatim ──────────────────
     body.append(
         '<section id="commands">\n'
         '  <h2>%s</h2>\n'
@@ -124,7 +127,7 @@ def build(code):
         '  <p>%s</p>\n'
         '</section>\n' % (say("commands_h2"), commands.strip(), say("need")))
 
-    # ── #ask — 옛 안내문 그대로 ────────────────────────────────────
+    # ── #ask — the old note, verbatim ──────────────────────────────
     body.append(
         '<section id="ask">\n'
         '  <h2>%s</h2>\n'
@@ -153,7 +156,7 @@ def main():
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
         open(path, "w", encoding="utf-8").write(page)
         made += 1
-    print("ai.html — %d장%s" % (made, " · 재료가 없어 건너뛴 언어: " + ", ".join(skipped) if skipped else ""))
+    print("ai.html — %d pages%s" % (made, " · skipped for lack of material: " + ", ".join(skipped) if skipped else ""))
     return 0 if made else 1
 
 

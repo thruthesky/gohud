@@ -1,49 +1,49 @@
-## ⏳ **대기 표시** — 서버에 붙는 중, 맵을 받는 중, 결제를 기다리는 중.
+## ⏳ **A waiting indicator** — connecting to the server, downloading a map, waiting on a payment.
 ##
 ## ```gdscript
 ## var busy := GoSpinner.new()
 ## card.add_child(busy)
 ##
-## # 버튼을 누르면 그 자리에서 도는 것으로 바꾼다 — 두 번 눌리지 않게 막아 준다
+## # Press the button and it turns into a spinner right there — which also blocks a second press
 ## GoSpinner.busy(buy_button, true)
 ## var ok := await server.purchase(item)
 ## GoSpinner.busy(buy_button, false)
 ## ```
 ##
-## ## 🛑 "멈춘 것"과 "기다리는 것"은 다르게 보여야 한다
-## 네트워크 게임에서 화면이 가만히 있으면 플레이어는 **게임이 죽었다고 읽는다.** 서버를 기다리는
-## 동안은 반드시 도는 것을 보여 준다. 반대로 3초 안에 끝나는 것에 전체 화면 가림막을 씌우면
-## 그것대로 굼떠 보인다 — 누른 **그 버튼 안에서** 도는 편이 빠르게 느껴진다.
+## ## 🛑 "Stuck" and "waiting" have to look different
+## In a networked game a screen that sits still **reads as a dead game** to the player. While the server is being
+## waited on, something has to be turning. The other way round, throwing a full-screen veil over something that
+## finishes within three seconds looks sluggish in its own way — spinning **inside the button that was pressed** feels faster.
 ##
-## ## ♿ `reduce_motion` 을 켠 사람에게는 돌지 않는다
-## 어지럼증(vestibular) 때문에 회전을 끈 사람에게 계속 도는 원을 보여 주면 안 된다. 그때는
-## **점 세 개가 차례로 밝아지는** 표시로 바뀐다 — 여전히 "진행 중" 으로 읽히면서 회전이 없다.
+## ## ♿ For people who turned `reduce_motion` on, nothing spins
+## Someone who turned rotation off because of vestibular issues must not be shown an endlessly spinning circle. For them
+## it becomes **three dots brightening in turn** — still reading as "in progress", with no rotation.
 ##
-## ## 🔑 얼마나 걸리는지 알면 막대를 쓴다
-## 받은 바이트처럼 **진행률을 아는** 것은 `GoBar` 다. 이것은 "얼마나 걸릴지 모른다" 는 뜻이고,
-## 그래서 끝을 약속하지 않는다.
+## ## 🔑 When you know how long it takes, use a bar
+## Anything whose **progress is known**, such as bytes received, belongs to `GoBar`. This one means "how long is unknown",
+## and so it promises no end.
 @tool
 class_name GoSpinner
 extends Control
 
-## 한 바퀴에 걸리는 시간(초).
+## Seconds per turn.
 @export var seconds_per_turn := 1.1:
 	set(value):
 		seconds_per_turn = maxf(0.05, value)
 
-## 선 두께(dp). 음수면 지름의 1/9 — 작게 만들어도 비례가 유지된다.
+## Line thickness (dp). Negative means 1/9 of the diameter — the proportion holds even when it is made small.
 @export var thickness := -1.0:
 	set(value):
 		thickness = value
 		queue_redraw()
 
-## 도는 색. 비우면 테마 강조색.
+## The spinning color. Leave it empty for the theme accent.
 @export var ink := Color.TRANSPARENT:
 	set(value):
 		ink = value
 		queue_redraw()
 
-## 뒤에 깔리는 옅은 원을 그릴 것인가. 🔑 바탕이 복잡한 게임 화면 위에서는 켜 두면 잘 읽힌다.
+## Should the pale circle behind be drawn? 🔑 Over a busy game background, leaving it on keeps it readable.
 @export var show_track := true:
 	set(value):
 		show_track = value
@@ -55,14 +55,14 @@ var _phase := 0.0
 func _init() -> void:
 	name = "Spinner"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# 🛑 도는 것은 **물리적 방향**이다 — 아랍어라고 시계 반대로 돌지 않는다.
+	# 🛑 Spinning is **physical** — it does not run counter-clockwise just because the language is Arabic.
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 	var px := GoUi.metric(GoTheme.ICON_SIZE)
 	custom_minimum_size = Vector2(px, px)
 
 
 func _ready() -> void:
-	# ♿ 스크린리더에게는 "불러오는 중" 한 마디면 된다 — 도는 모양은 눈으로만 읽는 정보다.
+	# ♿ For a screen reader the single word "loading" is enough — the turning shape is information for the eyes only.
 	accessibility_name = GoUi.text(&"loading")
 	GoUi.watch(_on_ui_changed)
 	set_process(is_visible_in_tree())
@@ -92,16 +92,16 @@ func _draw() -> void:
 
 	if show_track:
 		draw_arc(center, radius, 0.0, TAU, 40, GoUi.color(GoTheme.TRACK), line, true)
-	# 🔑 호의 길이를 함께 흔든다 — 길이가 고정이면 도는 것이 아니라 "그림이 회전할 뿐" 으로 보인다.
-	#    Material 의 결정형 스피너가 쓰는 방식이고, 실제로 "일하고 있다" 는 느낌이 훨씬 강하다.
+	# 🔑 The arc length is swung along with it — at a fixed length it does not read as spinning but as "a picture merely rotating".
+	#    It is what Material's determinate spinner does, and it really does feel far more like "work is happening".
 	var swing := (sin(_phase * TAU) * 0.5 + 0.5)
 	var sweep := lerpf(PI * 0.25, PI * 1.35, swing)
 	var start := _phase * TAU * 1.6
 	draw_arc(center, radius, start, start + sweep, 48, color, line, true)
 
 
-## ♿ 회전을 끈 사람에게 — 점 세 개가 차례로 밝아진다. 같은 "진행 중" 이되 도는 것이 없다.
-## 🛑 시간이 아예 멈추면 "죽은 화면" 과 구별이 안 된다. 그래서 **밝기만** 흐른다.
+## ♿ For those who turned rotation off — three dots brighten in turn. The same "in progress", with nothing spinning.
+## 🛑 If time stopped altogether it would be indistinguishable from "a dead screen". So **only the brightness** flows.
 func _draw_dots(center: Vector2, box: float, color: Color) -> void:
 	var dot := maxf(1.0, box / 8.0)
 	var gap := dot * 2.6
@@ -113,9 +113,9 @@ func _draw_dots(center: Vector2, box: float, color: Color) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED:
-		# 🛑 안 보이는 동안은 돌지 않는다 — 숨긴 스피너가 매 프레임 다시 그리면 그만큼 공짜로 버린다.
-		# 🛑 `reduce_motion` 이어도 **멈추지 않는다** — 그때는 점 세 개의 밝기가 흐르는 표시이고,
-		#    시간이 아예 멈추면 "죽은 화면" 과 구별되지 않는다(2026-09-16: 끄는 바람에 굳어 있었다).
+		# 🛑 Nothing turns while it is out of sight — a hidden spinner redrawing every frame is thrown away for free.
+		# 🛑 It **does not stop** under `reduce_motion` either — that is the indicator where three dots flow in brightness,
+		#    and if time stopped altogether it would be indistinguishable from "a dead screen" (2026-09-16: turning it off left it frozen).
 		set_process(is_visible_in_tree())
 	elif what == NOTIFICATION_TRANSLATION_CHANGED:
 		accessibility_name = GoUi.text(&"loading")
@@ -127,13 +127,13 @@ func _on_ui_changed() -> void:
 	queue_redraw()
 
 
-# ── 버튼을 대기 상태로 ──────────────────────────────────────────────────
+# ── Putting a button into the waiting state ─────────────────────────────
 
-## 이 메타 이름으로 버튼에 원래 글자와 스피너를 매달아 둔다.
+## The meta name that hangs the original label and the spinner on the button.
 const _BUSY_META := &"gohud_busy"
 
 
-## 버튼을 **기다리는 중**으로 바꾼다 — 글자를 감추고 그 자리에서 스피너가 돈다. 누를 수 없다.
+## Turns the button into **waiting** — the label is hidden and a spinner turns in its place. It cannot be pressed.
 ##
 ## ```gdscript
 ## GoSpinner.busy(buy, true)
@@ -141,14 +141,14 @@ const _BUSY_META := &"gohud_busy"
 ## GoSpinner.busy(buy, false)
 ## ```
 ##
-## 🛑 **크기가 변하지 않는다.** 글자를 지우고 스피너로 바꾸면 버튼이 홀쭉해져 줄 전체가 출렁인다.
-##    그래서 글자는 `modulate.a = 0` 으로 **자리를 지킨 채** 투명해지고, 스피너는 그 위에 겹친다
-##    (2026-09-16 설계: 글자를 지우는 방식은 "구매" 두 글자 버튼이 정사각형으로 쪼그라들었다).
-## 🛑 **두 번 눌리는 것을 막는 것이 이 함수의 절반이다.** 결제·거래처럼 두 번 나가면 안 되는
-##    요청은 `disabled` 만으로 부족하다 — 이미 눌린 뒤 `await` 사이에 한 번 더 들어온다.
+## 🛑 **The size does not change.** Erasing the label and replacing it with a spinner makes the button skinny and the whole row lurch.
+##    So the label goes transparent at `modulate.a = 0` **while keeping its place**, and the spinner overlays it
+##    (design 2026-09-16: erasing the label shrank a two-character "Buy" button into a square).
+## 🛑 **Half of what this function does is preventing a double press.** For requests that must not go out twice, such as
+##    a payment or a trade, `disabled` alone is not enough — a second press slips in between the first one and the `await`.
 static func busy(button: Button, waiting: bool) -> void:
 	if not is_instance_valid(button): return
-	# 🛑 `get_meta(key, default)` 는 키가 없으면 오류를 찍는다 — 먼저 `has_meta` 로 묻는다.
+	# 🛑 `get_meta(key, default)` prints an error when the key is missing — ask `has_meta` first.
 	var carried: Dictionary = button.get_meta(_BUSY_META) if button.has_meta(_BUSY_META) else {}
 
 	if not waiting:
@@ -156,8 +156,8 @@ static func busy(button: Button, waiting: bool) -> void:
 		var spinner: GoSpinner = carried.get("spinner")
 		if is_instance_valid(spinner): spinner.queue_free()
 		button.disabled = bool(carried.get("disabled", false))
-		# 🛑 감춰 두었던 글자색을 **되돌려 놓는다** — 안 지우면 그 버튼은 이후 정말로 비활성일 때도
-		#    글자가 투명해서 빈 판으로 보인다.
+		# 🛑 The hidden label color is **put back** — leave it and that button shows as an empty panel, its label
+		#    transparent, even later on when it really is disabled.
 		if bool(carried.get("had_font", false)):
 			button.add_theme_color_override(&"font_disabled_color", carried["font"])
 		else:
@@ -169,38 +169,38 @@ static func busy(button: Button, waiting: bool) -> void:
 		button.remove_meta(_BUSY_META)
 		return
 
-	if not carried.is_empty(): return   # 이미 기다리는 중이다 — 스피너를 두 개 얹지 않는다
+	if not carried.is_empty(): return   # already waiting — no second spinner is stacked on
 	var spinner := GoSpinner.new()
 	spinner.name = "BusySpinner"
-	# 버튼 글자 높이에 맞춘다 — 크면 버튼 밖으로 삐져나오고, 작으면 안 보인다.
+	# Matched to the height of the button label — bigger sticks out of the button, smaller cannot be seen.
 	var px := maxi(12, roundi(float(GoUi.metric(GoTheme.ICON_SIZE)) * 0.8))
 	spinner.custom_minimum_size = Vector2(px, px)
 	spinner.size = Vector2(px, px)
-	# 🛑 앵커가 **가운데**라 `position` 은 그 점에서의 거리다. 부모 크기를 다시 더하면 버튼 밖으로
-	#    나가 보이지 않는다(2026-09-16 촬영: 글자만 사라지고 도는 것이 없는 빈 버튼이 남았다).
-	#    앵커로 두면 버튼 크기가 나중에 정해져도 가운데를 지킨다.
+	# 🛑 The anchor is **centered**, so `position` is the offset from that point. Adding the parent size on top again
+	#    puts it outside the button, out of sight (captured 2026-09-16: an empty button with the label gone and nothing turning).
+	#    With the anchor it keeps the center even when the button size is settled later.
 	spinner.set_anchors_preset(Control.PRESET_CENTER)
 	spinner.position = -Vector2(px, px) * 0.5
-	# 🔑 색은 **그 버튼의 글자색**이다 — 강조 버튼(채워진 판) 위에서 강조색 스피너는 묻힌다.
+	# 🔑 The color is **that button's text color** — on an accent button (a filled panel) an accent-colored spinner sinks in.
 	if button.has_theme_color(&"font_color"): spinner.ink = button.get_theme_color(&"font_color")
 	button.add_child(spinner)
-	# 되돌릴 때 쓰려고 **원래 있던 덮어쓰기**까지 적어 둔다 — 없던 것을 지우는 것과 있던 것을
-	# 되돌리는 것은 다르다.
+	# For restoring later, **the overrides that were already there** are recorded too — removing something that was
+	# never there is not the same as putting back something that was.
 	button.set_meta(_BUSY_META, {
 		"spinner": spinner, "disabled": button.disabled,
-		# 🔑 덮어쓰기가 **없었으면** 그 값은 쓰이지 않는다(되돌릴 때 `remove_…` 로 간다). 자리를 채우는
-		#    값일 뿐이라 토큰을 쓴다 — 흰색을 박으면 혹시 새어 나갈 때 밝은 테마에서 안 보인다.
+		# 🔑 When there **was no** override, the value is never used (restoring goes through `remove_…`). It is only filler,
+		#    so a token is used — hard-coding white would be invisible in a light theme should it ever leak out.
 		"had_font": button.has_theme_color_override(&"font_disabled_color"),
 		"font": button.get_theme_color(&"font_disabled_color") if button.has_theme_color_override(&"font_disabled_color") else GoUi.color(GoTheme.MUTED),
 		"had_icon": button.has_theme_color_override(&"icon_disabled_color"),
 		"icon": button.get_theme_color(&"icon_disabled_color") if button.has_theme_color_override(&"icon_disabled_color") else GoUi.color(GoTheme.MUTED),
 	})
 	button.disabled = true
-	# 글자만 투명하게 — 버튼 판과 크기는 그대로 둔다.
+	# Only the label goes transparent — the button panel and its size stay as they are.
 	button.add_theme_color_override(&"font_disabled_color", Color(0, 0, 0, 0))
 	button.add_theme_color_override(&"icon_disabled_color", Color(0, 0, 0, 0))
 
 
-## 이 버튼이 지금 기다리는 중인가.
+## Is this button waiting right now?
 static func is_busy(button: Button) -> bool:
 	return is_instance_valid(button) and button.has_meta(_BUSY_META)

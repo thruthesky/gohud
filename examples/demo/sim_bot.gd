@@ -1,30 +1,31 @@
-## 🤖 데모를 **대신 조작하는 손**.
+## 🤖 **The hand that works the demo for you.**
 ##
-## 화면 맨 위에 커서를 그리고, 그 자리에 **진짜 입력 이벤트**를 밀어 넣는다. 흉내가 아니다 —
-## `Input.parse_input_event()` 으로 들어간 이벤트는 엔진이 사람 손과 똑같이 처리한다. 그래서 버튼은
-## hover → pressed 를 거쳐 `pressed` 시그널을 실제로 내고, 슬라이더는 끌린 만큼 값이 바뀌며,
-## 체크박스는 스스로 켜진다. 데모가 "동작하는 것처럼 보이는" 그림이 아니라 동작 그 자체다.
+## It draws a cursor on top of the screen and pushes **real input events** in at that spot. Nothing is
+## faked — an event that arrives through `Input.parse_input_event()` is handled by the engine exactly as
+## a human hand would be. So a button really goes hover → pressed and emits its `pressed` signal, a
+## slider's value changes by how far it was dragged, and a checkbox ticks itself. The demo is not a
+## picture that "looks like it works" — it is the working itself.
 ##
-## 🛑 모든 기다림은 `wait()` 한 곳을 지난다 — 일시정지·배속·건너뛰기가 그래서 어디서나 듣는다.
+## 🛑 Every wait passes through the single `wait()` — which is why pause, speed and skip are heard everywhere.
 ## Cursor paths use viewport coordinates; _push converts them to window coordinates for Input.
 class_name SimBot
 extends CanvasLayer
 
-## 지금 무엇을 하는지 — 화면 아래 한 줄.
+## What is being done right now — one line at the bottom of the screen.
 signal said(text: String)
-## 무슨 일이 일어났는지 — 오른쪽 기록줄. 위젯이 실제로 부른 콜백에서 온다.
+## What happened — the log on the right. It comes from the callbacks the widgets really fired.
 signal logged(text: String)
 signal shortcut(event: InputEvent)
 
-const SPEED := 1600.0            ## 커서가 움직이는 빠르기(px/s)
+const SPEED := 1600.0            ## How fast the cursor moves (px/s)
 const HOME := Vector2(-200, -200)
 
-## 배속. 1.0 이 기본, 2.0 이면 두 배로 빨리 본다.
+## Playback speed. 1.0 is normal; at 2.0 you watch it twice as fast.
 var speed := 1.0
-## 멈춰 있는가.
+## Is it paused?
 var paused := false
-## 🔍 겨눈 위젯에 정말 닿았는지 검사한다(`--trace`). 빗나간 클릭은 조용히 사라지므로,
-## 데모가 "아무 일도 안 일어난 것처럼" 보일 때 여기가 먼저 알려 준다.
+## 🔍 Checks that the aimed widget was really hit (`--trace`). A click that misses vanishes silently, so
+## when the demo looks as if "nothing happened", this is what tells you first.
 var verify := false
 var failures: Array[String] = []
 var checks := 0
@@ -38,11 +39,11 @@ var _skip := false
 
 
 func _init() -> void:
-	# 🛑 확인창(100)·시트(10)보다 위여야 커서가 그 위에 보인다.
+	# 🛑 It has to sit above dialogs (100) and sheets (10) for the cursor to show over them.
 	layer = 200
 	_canvas = Control.new()
 	_canvas.name = "Cursor"
-	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE   # 커서가 자기 입력을 가로채면 안 된다
+	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE   # the cursor must not swallow its own input
 	_canvas.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_canvas.draw.connect(_draw_cursor)
 	add_child(_canvas)
@@ -67,9 +68,9 @@ func set_ink(value: Color) -> void:
 	_ink = value
 
 
-# ── 흐름 ───────────────────────────────────────────────────────────────
+# ── Flow ───────────────────────────────────────────────────────────────
 
-## 한 프레임 넘긴다. 멈춰 있으면 풀릴 때까지 여기서 기다린다 — 일시정지가 듣는 유일한 자리.
+## Advances one frame. While paused it waits here until released — the only place pause is heard.
 func _tick() -> float:
 	await get_tree().process_frame
 	while paused and not _skip:
@@ -77,7 +78,7 @@ func _tick() -> float:
 	return get_process_delta_time()
 
 
-## `seconds` 만큼 쉰다(배속이 걸린다). 건너뛰는 중이면 그냥 지나간다.
+## Rests for `seconds` (playback speed applies). While skipping it simply passes through.
 func wait(seconds: float) -> void:
 	if _skip: return
 	var left := seconds / maxf(0.1, speed)
@@ -85,20 +86,20 @@ func wait(seconds: float) -> void:
 		left -= await _tick()
 
 
-## 레이아웃이 자리를 잡을 때까지 — 새로 지은 화면의 크기는 다음 프레임에야 정해진다.
+## Until the layout settles — a freshly built screen only knows its size on the next frame.
 func settle(seconds := 0.5) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await wait(seconds)
 
 
-## 지금 장면을 접는다. 남은 조작은 화면만 바꾸고 곧바로 끝난다.
+## Folds up the current scene. What is left only changes the screen and ends right away.
 func skip() -> void:
 	_skip = true
 	rest()
 
 
-## 다음 장면을 위해 건너뛰기를 푼다.
+## Clears the skip flag for the next scene.
 func rearm() -> void:
 	_skip = false
 
@@ -116,7 +117,7 @@ func note(text: String) -> void:
 	if not text.is_empty(): logged.emit(text)
 
 
-# ── 커서 ───────────────────────────────────────────────────────────────
+# ── Cursor ─────────────────────────────────────────────────────────────
 
 func _draw_cursor() -> void:
 	if _point.x < -100.0: return
@@ -165,7 +166,7 @@ func _button(pressed: bool) -> void:
 	_canvas.queue_redraw()
 
 
-## 대상의 한가운데. 없는(지워졌거나 숨은) 대상은 `HOME` 이다 — 부르는 쪽이 그것으로 건너뛴다.
+## The centre of the target. A target that is gone (freed or hidden) gives `HOME` — the caller skips on that.
 static func center_of(node: Control) -> Vector2:
 	if not is_instance_valid(node) or not node.is_visible_in_tree(): return HOME
 	return node.get_global_rect().get_center()
@@ -175,9 +176,9 @@ func here() -> Vector2:
 	return _point
 
 
-# ── 조작 ───────────────────────────────────────────────────────────────
+# ── Acting ─────────────────────────────────────────────────────────────
 
-## 커서를 그 자리로 옮긴다(가속·감속이 붙는다).
+## Moves the cursor to that spot (easing in and out).
 func move(point: Vector2) -> void:
 	if point.x < -100.0: return
 	if _skip: return
@@ -244,7 +245,7 @@ func _wheel(direction: int, factor := 1.0) -> void:
 		_push(event)
 
 
-## 지금 자리를 한 번 누른다.
+## Presses once at the current spot.
 func tap() -> void:
 	if _skip: return
 	_button(true)
@@ -254,7 +255,7 @@ func tap() -> void:
 	await wait(0.22)
 
 
-## 🔑 대상을 **누른다** — 옮기고, 누르고, 뗀다. 위젯은 진짜 클릭으로 받는다.
+## 🔑 **Presses** a target — move, press, release. The widget takes it as a real click.
 func click(node: Control, note_text := "") -> void:
 	if _skip: return
 	say(note_text)
@@ -267,7 +268,7 @@ func click(node: Control, note_text := "") -> void:
 	await tap()
 
 
-## 지금 커서 밑에 있는 것이 겨눈 그것인가.
+## Is what lies under the cursor right now the thing we aimed at?
 func _check(node: Control) -> void:
 	if not verify: return
 	var view := get_viewport()
@@ -277,7 +278,7 @@ func _check(node: Control) -> void:
 	expect(false, "Click reaches %s (%s) at %s, hovered: %s" % [node.name, node.get_class(), node.get_global_rect(), under])
 
 
-## 좌표 하나를 누른다 — 탭 줄·접이식 제목처럼 **노드 안의 한 자리**를 겨눌 때.
+## Presses one coordinate — for aiming at **a spot inside a node**, such as a tab bar or a foldable's title.
 func click_at(point: Vector2, note_text := "") -> void:
 	if _skip: return
 	say(note_text)
@@ -285,7 +286,7 @@ func click_at(point: Vector2, note_text := "") -> void:
 	await tap()
 
 
-## 키 하나를 눌렀다 뗀다.
+## Presses and releases a single key.
 func _tap_key(code: Key) -> void:
 	if _skip: return
 	for pressed in [true, false]:
@@ -334,7 +335,7 @@ func pick_in_menu(popup: PopupMenu, index: int, note_text := "") -> void:
 	await pick_with_keys(popup, index, note_text)
 
 
-## 같은 대상을 여러 번(연타·수량 증가).
+## The same target several times (repeat taps, counting up).
 func click_times(node: Control, times: int, gap := 0.18, note_text := "") -> void:
 	if _skip: return
 	say(note_text)
@@ -348,14 +349,14 @@ func click_times(node: Control, times: int, gap := 0.18, note_text := "") -> voi
 		await wait(gap)
 
 
-## 여러 대상을 차례로.
+## Several targets, one after another.
 func click_each(nodes: Array, gap := 0.35) -> void:
 	for node in nodes:
 		if node is Control: await click(node)
 		await wait(gap)
 
 
-## 🔑 **글을 친다** — 키 이벤트를 한 자씩 보낸다. 포커스가 간 입력칸이 스스로 받아 적는다.
+## 🔑 **Types** — sends key events one character at a time. The focused input writes them down itself.
 func type_text(node: Control, text: String, note_text := "") -> void:
 	if _skip: return
 	say(note_text)
@@ -377,7 +378,7 @@ func type_text(node: Control, text: String, note_text := "") -> void:
 	await wait(0.3)
 
 
-## 🔑 **끈다** — 누른 채 여러 점을 지난다. 슬라이더·조이스틱이 이것으로 움직인다.
+## 🔑 **Drags** — passes through several points with the button held. Sliders and joysticks move by this.
 func drag(path: Array, hold := 0.06) -> void:
 	if _skip or path.is_empty(): return
 	await move(path[0])
@@ -397,7 +398,7 @@ func drag(path: Array, hold := 0.06) -> void:
 	await wait(0.2)
 
 
-## 🔑 슬라이더를 **손잡이부터 잡아** 목표 값까지 끈다.
+## 🔑 Drags a slider to a target value, **taking hold of its knob first**.
 func drag_slider(slider: Range, to_value: float, note_text := "") -> void:
 	if _skip: return
 	say(note_text)
@@ -414,7 +415,7 @@ func drag_slider(slider: Range, to_value: float, note_text := "") -> void:
 	await drag([at.call(slider.value), at.call(to_value)])
 
 
-## 🔑 목록을 **굴린다** — 진짜 휠 이벤트다. 스크롤 컨테이너가 스스로 따라온다.
+## 🔑 **Rolls** a list — a real wheel event. The scroll container follows by itself.
 func scroll_by(node: Control, notches: int, note_text := "") -> void:
 	if _skip: return
 	say(note_text)
@@ -427,7 +428,7 @@ func scroll_by(node: Control, notches: int, note_text := "") -> void:
 	await wait(0.25)
 
 
-## 커서를 화면 밖으로 물린다 — 장면이 바뀌기 전에.
+## Pulls the cursor off screen — before the scene changes.
 func rest() -> void:
 	_place(HOME)
 	if _down: _button(false)

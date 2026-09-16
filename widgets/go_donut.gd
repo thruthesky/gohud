@@ -1,53 +1,53 @@
-## 🍩 **도넛 비중** — 피해량 분포, 인벤토리 무게, 보유 재화 비율, 파티 기여도.
+## 🍩 **Donut shares** — damage breakdown, inventory weight, currency split, party contribution.
 ##
 ## ```gdscript
 ## var share := GoDonut.make([
-##     {"label": "물리", "value": 620, "color": Color("e05a4a")},
-##     {"label": "마법", "value": 340, "color": Color("4a8fe0")},
-##     {"label": "관통", "value": 90},          # 색을 안 주면 테마에서 돌려 쓴다
+##     {"label": "Physical", "value": 620, "color": Color("e05a4a")},
+##     {"label": "Magic", "value": 340, "color": Color("4a8fe0")},
+##     {"label": "Pierce", "value": 90},        # with no color, the theme's are cycled through
 ## ])
-## share.center_text = "1050"                    # 가운데에 합계
+## share.center_text = "1050"                    # the total in the middle
 ## ```
 ##
-## ## 🔑 조각은 다섯을 넘기지 않는다
-## 여섯 조각부터는 작은 것들이 실처럼 보여 읽을 수 없다. 나머지는 **「기타」로 묶는 편**이 낫다 —
-## `collapse_to` 를 주면 알아서 묶는다.
+## ## 🔑 Never go past five slices
+## From six on, the small ones look like threads and cannot be read. The rest are better **folded into an "other"** —
+## give `collapse_to` and it folds them for you.
 ##
-## ## 🛑 가운데를 비워 두지 않는다
-## 도넛의 가운데는 게임에서 가장 값싼 자리다. 합계·비율·아이콘 중 하나를 넣는다.
+## ## 🛑 Never leave the middle empty
+## The middle of a donut is the cheapest real estate in a game. Put a total, a share or an icon in it.
 ##
-## ## ♿ 색만으로 구별하지 않는다
-## 조각 이름과 비율을 스크린리더 이름으로 준다. 눈으로 읽는 범례(`legend()`)도 **글자를 함께** 둔다 —
-## 색 점만 있는 범례는 색각 이상인 사람에게 아무 정보가 아니다.
+## ## ♿ Color alone never tells things apart
+## Slice names and shares go into the screen-reader name. The legend you read with your eyes (`legend()`) keeps
+## **the text beside the dot** — a legend of colored dots alone is no information at all to someone with a color vision deficiency.
 @tool
 class_name GoDonut
 extends Control
 
-## 가운데에 쓸 글자(합계·비율). 비우면 안 쓴다.
+## The text in the middle (a total, a share). Empty writes nothing.
 @export var center_text := "":
 	set(value):
 		center_text = value
 		queue_redraw()
 
-## 가운데 글자 아래 작은 설명.
+## A small caption under the center text.
 @export var center_hint := "":
 	set(value):
 		center_hint = value
 		queue_redraw()
 
-## 고리 두께 비율(0~1). 1 이면 원그래프(가운데가 없다).
+## Ring thickness as a fraction (0~1). 1 makes it a pie chart (no middle).
 @export_range(0.1, 1.0, 0.01) var thickness_ratio := 0.34:
 	set(value):
 		thickness_ratio = value
 		queue_redraw()
 
-## 이 개수를 넘으면 나머지를 **하나로 묶는다**. 0 이면 묶지 않는다.
+## Past this count the rest is **folded into one**. 0 folds nothing.
 @export var collapse_to := 5:
 	set(value):
 		collapse_to = maxi(0, value)
 		queue_redraw()
 
-## 묶은 조각의 이름(번역 키가 아니라 글자).
+## The name of the folded slice (plain text, not a translation key).
 @export var collapse_label := "…"
 
 var _slices: Array[Dictionary] = []
@@ -68,8 +68,8 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## 조각은 `{"label":…, "value":…, "color":…}` 다. `value` 는 **비율이 아니라 원래 값**이다 —
-## 합을 맞출 필요가 없다(여기서 나눈다).
+## A slice is `{"label":…, "value":…, "color":…}`. `value` is **the raw value, not a share** —
+## the values need not add up to anything (the division happens here).
 static func make(slices: Array) -> GoDonut:
 	var node := GoDonut.new()
 	node.set_slices(slices)
@@ -93,14 +93,14 @@ func slices() -> Array[Dictionary]:
 	return _slices
 
 
-## 합계(원래 값의 합).
+## The total (the sum of the raw values).
 func total() -> float:
 	var sum := 0.0
 	for slice in _slices: sum += float(slice["value"])
 	return sum
 
 
-## 실제로 그릴 조각들 — 큰 것부터, 넘치면 묶어서.
+## The slices actually drawn — largest first, folded when there are too many.
 func visible_slices() -> Array[Dictionary]:
 	var sorted := _slices.duplicate()
 	sorted.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["value"]) > float(b["value"]))
@@ -123,13 +123,13 @@ func _draw() -> void:
 	if radius <= 1.0: return
 	var center := size * 0.5
 
-	# 값이 하나도 없으면 빈 고리만 — 🛑 아무것도 안 그리면 "불러오는 중" 과 구별되지 않는다.
+	# With no values at all, just the empty ring — 🛑 drawing nothing is indistinguishable from "loading".
 	if sum <= 0.0:
 		draw_arc(center, radius, 0.0, TAU, 64, GoUi.color(GoTheme.TRACK), width, true)
 		_draw_center()
 		return
 
-	var angle := -PI * 0.5   # 12시부터 시계방향 — 사람이 비중을 읽는 관습이다
+	var angle := -PI * 0.5   # from 12 o'clock, clockwise — the convention people read shares by
 	for index in parts.size():
 		var slice := parts[index]
 		var portion := float(slice["value"]) / sum
@@ -160,13 +160,13 @@ func _draw_center() -> void:
 		HORIZONTAL_ALIGNMENT_LEFT, -1, small, GoUi.color(GoTheme.MUTED))
 
 
-## 색을 안 준 조각에 돌려 쓸 색. 🔑 테마 토큰에서만 고른다 — 팔레트를 박아 두면 스킨을 바꿔도 안 따라온다.
+## The colors cycled through for slices given none. 🔑 Picked from theme tokens only — a hardcoded palette would not follow when the skin changes.
 func _palette(index: int) -> Color:
 	var wheel := [GoTheme.ACCENT, GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.INFO, GoTheme.DANGER]
 	return GoUi.color(wheel[index % wheel.size()])
 
 
-## 눈으로 읽는 범례. 🛑 **색 점만 두지 않는다** — 이름과 비율을 글자로 함께 둔다.
+## The legend you read with your eyes. 🛑 **Never colored dots alone** — the name and the share go beside them as text.
 func legend() -> Control:
 	var column := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
 	column.name = "Legend"
@@ -202,7 +202,7 @@ func _sync_accessibility() -> void:
 	var parts := visible_slices()
 	var sum := 0.0
 	for slice in parts: sum += float(slice["value"])
-	# 🛑 백분율 형식도 문구다(위 `GoRadar` 와 같은 이유) — `bar_percent` 키를 탄다.
+	# 🛑 A percent format is text too (the same reason as `GoRadar` above) — it goes through the `bar_percent` key.
 	var spoken: Array[String] = []
 	for slice in parts:
 		var portion := 0.0 if sum <= 0.0 else float(slice["value"]) / sum * 100.0

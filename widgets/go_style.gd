@@ -1,26 +1,27 @@
-## 🧱 위젯 **공장**. 버튼·라벨·줄·칸·카드를 같은 규격으로 찍어 낸다.
+## 🧱 Widget **factory**. Stamps out buttons, labels, rows, cells and cards to one spec.
 ##
-## ## 왜 팩토리인가
-## `Button.new()` 를 직접 쓰면 화면마다 여백·높이·줄바꿈이 조금씩 달라진다. 그 차이는 코드
-## 리뷰로 잡히지 않고 스크린샷으로만 보인다. 그래서 **만드는 자리를 하나로** 모은다.
+## ## Why a factory
+## Call `Button.new()` directly and every screen ends up with slightly different padding, height
+## and wrapping. Code review never catches that difference — only a screenshot does. So **there is
+## one place where things are made**.
 ##
 ## ```gdscript
 ## var row := GoStyle.row()
-## row.add_child(GoStyle.button("저장", _on_save, true))
-## row.add_child(GoStyle.button("취소", _on_cancel))
+## row.add_child(GoStyle.button("Save", _on_save, true))
+## row.add_child(GoStyle.button("Cancel", _on_cancel))
 ## ```
 ##
-## ## 🛑 규칙
-## - 모든 치수는 **토큰**에서 온다(`GoUi.metric`). 숫자를 직접 쓰지 않는다.
-## - 터치 대상은 `min_touch_size`(48dp) 하한을 지킨다 — 보이는 크기는 더 작아도 된다.
-## - 긴 문구는 줄바꿈한다. 한 줄로 뻗으면 최소 폭이 화면을 넘긴다.
+## ## 🛑 Rules
+## - Every dimension comes from a **token** (`GoUi.metric`). Never write a raw number.
+## - Touch targets keep the `min_touch_size` (48dp) floor — the visible size may be smaller.
+## - Long text wraps. Left on one line its minimum width runs off the screen.
 @tool
 class_name GoStyle
 extends RefCounted
 
-# ── 기본 뼈대 ──────────────────────────────────────────────────────────
+# ── Basic skeleton ─────────────────────────────────────────────────────
 
-## 세로 줄. `spacing` 이 음수면 토큰 `gap`.
+## A vertical row. Negative `spacing` means the `gap` token.
 static func column(spacing := -1) -> VBoxContainer:
 	var node := VBoxContainer.new()
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -28,7 +29,7 @@ static func column(spacing := -1) -> VBoxContainer:
 	return node
 
 
-## 가로 줄.
+## A horizontal row.
 static func row(spacing := -1) -> HBoxContainer:
 	var node := HBoxContainer.new()
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -36,11 +37,12 @@ static func row(spacing := -1) -> HBoxContainer:
 	return node
 
 
-## 🔑 **넘치면 다음 줄로 흐르는** 가로 줄. 칩·필터·태그처럼 개수가 정해지지 않은 것에 쓴다.
-## 좁은 화면에서 `row` 는 자식을 찌그러뜨리지만 이것은 줄을 늘린다.
+## 🔑 A horizontal row that **flows onto the next line when it overflows**. Use it for chips,
+## filters and tags — things whose count is not fixed. On a narrow screen `row` squashes its
+## children; this one adds a line.
 ##
-## `alignment` 로 줄을 가운데·끝으로 모을 수 있다. 🛑 그때 **마지막 줄**은 따로 정한다
-## (`last_wrap_alignment`) — 가운데 정렬 목록의 마지막 한두 개만 가운데 떠 있으면 어색하다.
+## `alignment` gathers the lines to the center or the end. 🛑 Then set the **last line** separately
+## (`last_wrap_alignment`) — one or two items floating centered under a centered list looks off.
 static func wrap_row(spacing := -1, alignment := FlowContainer.ALIGNMENT_BEGIN,
 		last_line := FlowContainer.LAST_WRAP_ALIGNMENT_BEGIN) -> HFlowContainer:
 	var node := HFlowContainer.new()
@@ -54,12 +56,13 @@ static func wrap_row(spacing := -1, alignment := FlowContainer.ALIGNMENT_BEGIN,
 	return node
 
 
-## 흐르는 줄에 들어가는 것은 **자연 폭**이어야 한다.
+## Whatever goes into a flow row must be at its **natural width**.
 ##
-## 🛑 줄바꿈을 켠 채 두면 최소 폭이 거의 0 이 되고, 흐르는 줄은 그 최소 폭으로 칸을 잡는다 —
-##    버튼 하나가 한 글자 폭으로 쪼그라들어 글자가 **세로로 한 자씩** 내려간다
-##    (2026-09-12 폰 세로 스크린샷 실측: `Primary` 가 `Pri m ary` 로 보였다).
-##    표식(`go_no_wrap`)을 남겨 `form()` 이 줄바꿈을 도로 켜지 않게 한다.
+## 🛑 Leave wrapping on and the minimum width drops to nearly 0, and the flow row sizes the cell
+##    to that minimum — one button shrinks to a single character wide and its text runs
+##    **one character per line, vertically**
+##    (measured 2026-09-12 on a portrait phone screenshot: `Primary` read as `Pri m ary`).
+##    Leave a mark (`go_no_wrap`) so `form()` does not turn wrapping back on.
 static func natural_width(node: Node) -> void:
 	if not (node is Control): return
 	var control := node as Control
@@ -70,11 +73,13 @@ static func natural_width(node: Node) -> void:
 	for child in control.get_children(): natural_width(child)
 
 
-## 📂 **접이식 섹션**(Godot 4.5+ `FoldableContainer`). 설정 화면의 "고급" 처럼 늘 펼쳐 둘 필요가
-## 없는 묶음에 쓴다. 같은 `FoldableGroup` 을 주면 한 번에 하나만 펼쳐진다(아코디언).
+## 📂 **A foldable section** (Godot 4.5+ `FoldableContainer`). For groups that need not stay open,
+## like "Advanced" on a settings screen. Pass the same `FoldableGroup` and only one opens at a time
+## (an accordion).
 ##
-## 🛑 긴 설정 목록을 스크롤 하나로 늘어놓지 않는다 — 폰에서 원하는 항목까지 한참 내려가야 한다.
-##    제목 줄 **전체**가 탭 영역이라 작은 화살표를 조준할 필요가 없다(엔진 노드의 동작이다).
+## 🛑 Do not lay a long settings list out in one scroll — on a phone you scroll a long way to the
+##    item you want. The **whole** title row is the tap target, so there is no small arrow to aim at
+##    (that is the engine node's own behavior).
 static func foldable(title: String, folded := false, group: FoldableGroup = null, translate := true) -> FoldableContainer:
 	var node := FoldableContainer.new()
 	node.name = "Foldable"
@@ -88,15 +93,16 @@ static func foldable(title: String, folded := false, group: FoldableGroup = null
 	return node
 
 
-## 안쪽 여백 한 겹. [param vertical] 을 주면 위·아래만 그 값이다(좌우는 [param amount]) —
-## 옆은 넉넉하고 위아래는 좁아야 하는 한 줄 목록 칸용이다. 음수면 네 변이 같다.
+## One layer of inner padding. Pass [param vertical] and only the top and bottom take that value
+## (left and right take [param amount]) — for one-line list cells that want roomy sides and a tight
+## top and bottom. Negative makes all four sides the same.
 static func padding(amount := -1, vertical := -1) -> MarginContainer:
 	var node := MarginContainer.new()
 	insets(node, amount, vertical)
 	return node
 
 
-## 이미 있는 `MarginContainer` 의 네 변 여백을 한 번에. [param vertical] 은 `padding()` 과 같다.
+## Sets all four margins of an existing `MarginContainer` at once. [param vertical] works as in `padding()`.
 static func insets(node: MarginContainer, amount := -1, vertical := -1) -> void:
 	var value := GoUi.metric(GoTheme.PADDING) if amount < 0 else amount
 	for side in [&"margin_left", &"margin_right"]:
@@ -106,14 +112,16 @@ static func insets(node: MarginContainer, amount := -1, vertical := -1) -> void:
 		node.add_theme_constant_override(side, down)
 
 
-## **한쪽에 의미색 띠만 세운 카드 판** — 목록에 상태를 표시하되 색면이 줄줄이 쌓이지 않게 한다.
+## **A card face with a semantic stripe on one edge only** — shows state in a list without stacking
+## blocks of color.
 ##
-## 🔑 카드 배경 전체를 상태색으로 칠하면 목록에서 색면이 겹겹이 쌓여 **무엇이 급한지 알 수 없다.**
-##    배경은 공용 카드 그대로 두고 글이 시작하는 쪽 모서리에 띠 하나만 세운다.
-## 🛑 판은 글의 방향을 모른다 — RTL(아랍어·우르두)에서는 띠가 **오른쪽**에 서야 하므로,
-##    카드를 만드는 쪽이 `Control.is_layout_rtl()` 을 읽어 [param rtl] 로 알려준다.
-## [param width] 음수면 작은 간격 토큰.
-## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정이 정한 카드 값).
+## 🔑 Paint the whole card background in the state color and the list becomes layer upon layer of
+##    color — **you cannot tell what is urgent.** Leave the background as the shared card and stand
+##    one stripe at the edge where the text starts.
+## 🛑 A face knows nothing about text direction — in RTL (Arabic, Urdu) the stripe must stand on the
+##    **right**, so whoever builds the card reads `Control.is_layout_rtl()` and passes it as [param rtl].
+## [param width] negative means the small gap token.
+## [param alpha] is the opacity of the face background (negative: the card value set by theme and config).
 static func edge_card(accent: Color, rtl := false, width := -1.0, alpha := -1.0) -> StyleBoxFlat:
 	var style := box(GoTheme.BOX_CARD, Color.TRANSPARENT, alpha)
 	var thick := int(width if width >= 0.0 else float(GoUi.metric(GoTheme.GAP_TINY)))
@@ -124,8 +132,10 @@ static func edge_card(accent: Color, rtl := false, width := -1.0, alpha := -1.0)
 	return style
 
 
-## 위 띠 카드 판을 두른 **컨테이너** — 내용은 부르는 쪽이 채운다(`card()` 의 띠 판 짝).
-## [param pad] 는 안쪽 여백(음수면 작은 여백 토큰). 🛑 그 위에 `padding()` 칸을 또 두르지 않는다.
+## A **container** wearing that stripe card face — the caller fills the content (the stripe counterpart
+## of `card()`).
+## [param pad] is the inner padding (negative: the compact padding token). 🛑 Do not wrap another
+## `padding()` cell around it.
 static func edge_card_panel(accent: Color, rtl := false, pad := -1.0, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "EdgeCard"
@@ -137,7 +147,7 @@ static func edge_card_panel(accent: Color, rtl := false, pad := -1.0, alpha := -
 	return node
 
 
-## 컨테이너의 자식 간격을 토큰으로.
+## Sets a container's child spacing from a token.
 static func gap(node: Container, token := GoTheme.GAP) -> void:
 	var value := GoUi.metric(token)
 	if node is GridContainer or node is FlowContainer:
@@ -147,12 +157,13 @@ static func gap(node: Container, token := GoTheme.GAP) -> void:
 		node.add_theme_constant_override(&"separation", value)
 
 
-## 🔑 **간격을 값으로 직접** 준다 — 토큰으로 표현되지 않는 HUD 기하 전용이다.
+## 🔑 **Spacing given directly as a value** — only for HUD geometry no token expresses.
 ##
-## 🛑 `gap()` 을 쓸 수 없는 자리가 둘 있다. ① **음수 간격** — 터치 상자를 일부러 겹쳐 놓는 줄(퀵슬롯이
-##    48 폭인데 중심 간격이 40 이면 −8 이다). ② **0** — 붙여 그려야 이음매가 없는 줄. 토큰에는 그런 값이
-##    없고, 있어서도 안 된다(토큰은 읽는 리듬이지 손가락 기하가 아니다).
-## [param vertical] 을 주지 않으면 가로와 같은 값이다. 세로 상자는 `separation` 하나만 쓴다.
+## 🛑 There are two places `gap()` cannot serve. ① **Negative spacing** — a row whose touch boxes
+##    overlap on purpose (quick slots 48 wide on a 40 center pitch is −8). ② **0** — a row that must be
+##    drawn flush so there is no seam. Tokens hold no such values, and must not (a token is reading
+##    rhythm, not finger geometry).
+## Omit [param vertical] and it matches the horizontal value. A vertical box uses `separation` alone.
 static func spacing(node: Container, horizontal: int, vertical := -9999) -> void:
 	var down := horizontal if vertical == -9999 else vertical
 	if node is GridContainer or node is FlowContainer:
@@ -164,8 +175,9 @@ static func spacing(node: Container, horizontal: int, vertical := -9999) -> void
 		node.add_theme_constant_override(&"separation", horizontal)
 
 
-## 🔑 **변마다 다른 여백** — `insets()` 는 네 변을 같은 값으로 두지만, 화면 가장자리에 붙는 HUD 는
-## 한두 변만 띄운다(왼쪽·아래만 주는 물약 줄). 음수인 변은 **건드리지 않는다**(`face_padding` 과 같은 약속).
+## 🔑 **A different margin per side** — `insets()` gives all four the same value, but a HUD pinned to
+## the screen edge insets one or two sides only (a potion row given left and bottom). A negative side is
+## **left alone** (the same contract as `face_padding`).
 static func edge_insets(node: MarginContainer, left := -1, top := -1, right := -1, bottom := -1) -> void:
 	if node == null: return
 	var sides := {&"margin_left": left, &"margin_top": top, &"margin_right": right, &"margin_bottom": bottom}
@@ -174,7 +186,7 @@ static func edge_insets(node: MarginContainer, left := -1, top := -1, right := -
 		if value >= 0: node.add_theme_constant_override(side, value)
 
 
-## 남는 공간을 먹는 빈 칸 — 줄의 한쪽을 끝으로 밀 때.
+## An empty cell that eats the leftover space — for pushing one side of a row to the end.
 static func spacer(minimum := 0.0) -> Control:
 	var node := Control.new()
 	node.name = "Spacer"
@@ -185,7 +197,7 @@ static func spacer(minimum := 0.0) -> Control:
 	return node
 
 
-## 1dp 구분선. 🛑 `HSeparator` 를 쓰지 않는다 — 기본 테마의 여백까지 딸려 와 줄이 두꺼워진다.
+## A 1dp divider. 🛑 Not `HSeparator` — it drags the default theme's margins along and the line turns thick.
 static func divider(vertical := false) -> Control:
 	var line := ColorRect.new()
 	line.name = "Divider"
@@ -201,13 +213,14 @@ static func divider(vertical := false) -> Control:
 	return line
 
 
-## 🔑 **최소 카드 폭을 지키며 열 수를 스스로 정하는** 격자.
+## 🔑 A grid that **keeps a minimum card width and decides its own column count**.
 ##
-## 고정 열 수는 반드시 어느 화면에선가 깨진다 — 3열은 폰에서 글자가 뭉개지고, 1열은 데스크톱
-## 에서 허전하다. 이 격자는 폭이 바뀔 때마다 `floor(폭 / 최소카드폭)` 로 열을 다시 센다.
+## A fixed column count is bound to break on some screen — 3 columns mash the text on a phone, 1 column
+## looks empty on a desktop. This grid recounts columns as `floor(width / min card width)` every time the
+## width changes.
 ##
 ## ```gdscript
-## var grid := GoStyle.responsive_grid(160)   # 카드가 최소 160dp 는 되게
+## var grid := GoStyle.responsive_grid(160)   # keep cards at least 160dp wide
 ## ```
 static func responsive_grid(min_cell_width := 160.0, spacing := -1) -> GridContainer:
 	var node := GridContainer.new()
@@ -218,17 +231,18 @@ static func responsive_grid(min_cell_width := 160.0, spacing := -1) -> GridConta
 	node.add_theme_constant_override(&"h_separation", value)
 	node.add_theme_constant_override(&"v_separation", value)
 	node.set_meta(&"go_min_cell", min_cell_width)
-	# 🛑 칸은 **균등하게 나뉘어야** 한다. `GridContainer` 는 남는 폭을 `SIZE_EXPAND` 가 붙은 자식에게만
-	#    주므로, 기본 `SIZE_FILL` 로 두면 카드가 **내용의 최소 폭**으로 쪼그라든다 — 카드 속 라벨은
-	#    줄바꿈을 켜 두어 최소 폭이 거의 0 이라, 카드가 25px 로 접히고 글자가 **세로로 한 자씩** 내려간다
-	#    (2026-09-13 실측: 창 390~600 어디서나 카드 폭 25px · 라벨 6줄).
+	# 🛑 Cells must be **divided evenly**. `GridContainer` hands the leftover width only to children
+	#    flagged `SIZE_EXPAND`, so left at the default `SIZE_FILL` a card shrinks to **its content's minimum
+	#    width** — the label inside has wrapping on, so that minimum is nearly 0, the card folds to 25px and
+	#    the text runs **one character per line, vertically**
+	#    (measured 2026-09-13: card width 25px at every window from 390 to 600 · label 6 lines).
 	node.child_entered_tree.connect(func(child: Node) -> void:
 		if child is Control: (child as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL)
 	var refit := func() -> void:
 		if not is_instance_valid(node): return
 		var cell: float = node.get_meta(&"go_min_cell", 160.0)
 		var separation := float(node.get_theme_constant(&"h_separation"))
-		# 열 n 개가 들어가려면 n*cell + (n-1)*separation <= 폭 이어야 한다.
+		# n columns fit only while n*cell + (n-1)*separation <= width.
 		var columns := int(floor((node.size.x + separation) / maxf(1.0, cell + separation)))
 		node.columns = maxi(1, columns)
 	node.resized.connect(refit)
@@ -236,7 +250,7 @@ static func responsive_grid(min_cell_width := 160.0, spacing := -1) -> GridConta
 	return node
 
 
-## 비율을 지키는 상자(썸네일·미니맵·초상화).
+## A box that keeps its aspect ratio (thumbnails, minimaps, portraits).
 static func aspect(ratio := 1.0) -> AspectRatioContainer:
 	var node := AspectRatioContainer.new()
 	node.ratio = ratio
@@ -245,22 +259,22 @@ static func aspect(ratio := 1.0) -> AspectRatioContainer:
 	return node
 
 
-# ── 글자 ───────────────────────────────────────────────────────────────
+# ── Text ───────────────────────────────────────────────────────────────
 
-## 글자 역할과 색을 입힌다. `RichTextLabel` 도 받는다.
+## Applies a text role and color. Also accepts a `RichTextLabel`.
 static func typography(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> void:
 	node.theme = GoUi.theme()
 	node.set_meta(&"go_text_role", role)
 	if node is RichTextLabel:
-		# 변형이 없는 노드 — 크기를 직접 박는다.
+		# A node with no variation — pin the size directly.
 		var size := GoUi.font_size(role)
 		for key in [&"normal_font_size", &"bold_font_size", &"italics_font_size", &"bold_italics_font_size"]:
 			node.add_theme_font_size_override(key, size)
 		if ink.a > 0: node.add_theme_color_override(&"default_color", ink)
 		return
-	# 🛑 크기는 **변형**으로 입힌다(`GoCaptionLabel` …, 본문은 변형 없음) — override 를 박으면 그 라벨은 테마가
-	#    바뀌어도(모바일 축소·테마 교체) 따라오지 않는다(2026-09-12 발견 — `set_mobile_type` 이 라벨을 다시
-	#    입히지 않았다). 테마 밖 값(`base_font_size`)을 요구할 때만 override 다.
+	# 🛑 Size comes from the **variation** (`GoCaptionLabel` …, body has none) — pin an override and that
+	#    label stops following the theme (mobile shrink, theme swap) (found 2026-09-12 — `set_mobile_type`
+	#    did not restyle the label). Override only when a value outside the theme (`base_font_size`) is asked for.
 	var type: StringName = GoTheme.ROLE_TYPES.get(role, &"Label")
 	if type == &"Label" or type == &"Button": node.theme_type_variation = &""
 	else: node.theme_type_variation = type
@@ -271,11 +285,12 @@ static func typography(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TR
 	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
 
 
-## 🔑 **글자 크기(와 색)만** 역할 토큰으로 정한다 — `theme_type_variation` 은 건드리지 않는다.
+## 🔑 Sets **the font size (and color) only** from a role token — `theme_type_variation` is left alone.
 ##
-## `typography()` 는 변형까지 갈아 끼우므로 **변형이 판을 정하는 노드**(버튼·분절 칸)에는 쓸 수 없다 —
-## 거기 쓰면 버튼 판이 통째로 사라진다. 한 칸 안에서 글자를 작은 캡션으로 줄이거나, `glyph_text()` 로
-## 아이콘 글꼴을 입혔던 칸을 **본래 글꼴로 되돌릴** 때 쓴다(글꼴 override 를 지운다).
+## `typography()` swaps the variation too, so it cannot go on **nodes whose variation defines their face**
+## (buttons, segment cells) — there it wipes the button face out entirely. Use this to shrink text to a
+## small caption inside a cell, or to **restore the original font** on a cell that `glyph_text()` dressed
+## in the icon font (it removes the font override).
 static func font_role(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
@@ -284,11 +299,12 @@ static func font_role(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TRA
 	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
 
 
-## 🔑 **글자 그림자** — 월드·그림·사진 위에 바로 얹히는 글자가 배경에 묻히지 않게 한 칸 뒤로 그림자를 깐다
-## (HUD 의 이름·레벨처럼 판 없이 뜨는 글자). 판 위의 글자에는 쓰지 않는다 — 판이 이미 대비를 만든다.
+## 🔑 **Text shadow** — lays a shadow one step behind text that sits straight on the world, on art or on
+## a photo, so it does not sink into the background (HUD names and levels, text floating with no face).
+## Not for text on a face — the face already makes the contrast.
 ##
-## [param ink] 의 알파가 0 이면 토큰 `shadow`. [param offset_y]·[param offset_x] 는 dp 이고, **음수면 그 축을 건드리지
-## 않는다**(테마가 정한 값을 그대로 둔다) — 세로로만 한 칸 내리는 것이 기본이다.
+## Alpha 0 on [param ink] means the `shadow` token. [param offset_y] and [param offset_x] are dp, and
+## **negative leaves that axis alone** (keeps the theme's value) — one step down, vertically, is the default.
 static func text_shadow(node: Control, ink := Color.TRANSPARENT, offset_y := 1, offset_x := -1) -> void:
 	if node == null: return
 	node.add_theme_color_override(&"font_shadow_color", ink if ink.a > 0 else GoUi.color(GoTheme.SHADOW))
@@ -296,15 +312,15 @@ static func text_shadow(node: Control, ink := Color.TRANSPARENT, offset_y := 1, 
 	if offset_x >= 0: node.add_theme_constant_override(&"shadow_offset_x", offset_x)
 
 
-## 🔑 **노드의 글자 자체를 아이콘 글리프로** 삼는다 — 글꼴을 아이콘 세트의 글꼴로 바꾸고 `text` 에 글리프를 넣는다.
+## 🔑 Makes **the node's own text the icon glyph** — swaps the font for the icon set's and puts the glyph in `text`.
 ##
-## `apply_icon()` 은 자식 라벨을 더하지만, 이것은 **글자 한 칸이 곧 아이콘**인 자리용이다(지도 위 알약의 글리프 칸,
-## 원판 버튼처럼 부르는 쪽이 칸 폭을 글꼴로 재서 배치하는 곳). 아이콘을 둘 이상 주면 한 칸 띄워 잇는다
-## (목록 + 꺾쇠 = "펼치는 목록").
-## [param size] 음수면 `icon_size` 토큰. 본래 글자로 되돌릴 때는 `font_role()` 을 부른다.
-## [param set] 을 주면 그 세트에서 찾는다 — 같은 이름을 **채운 모양**으로 그리는 두 번째 세트처럼, 한 화면이
-## 세트를 갈아 쓰는 자리를 위한 것이다. 비우면 설정의 기본 세트다.
-## 🛑 텍스처만 있는 아이콘은 글리프가 없어 건너뛴다 — 그런 아이콘은 `apply_icon()`·`icon_button()` 이 맡는다.
+## `apply_icon()` adds a child label; this is for places where **one text cell is the icon** (the glyph cell of
+## a pill on the map, a disc button — anywhere the caller measures the cell width from the font and lays it
+## out). Pass more than one icon and they are joined with a space (list + chevron = "a list that opens").
+## [param size] negative means the `icon_size` token. To go back to the original text, call `font_role()`.
+## [param set] looks them up in that set — for a screen that swaps sets, like a second set drawing the same
+## names in a **filled** style. Leave it empty for the configured default set.
+## 🛑 Texture-only icons have no glyph and are skipped — those belong to `apply_icon()` and `icon_button()`.
 static func glyph_text(node: Control, icons: Array, size := -1, ink := Color.TRANSPARENT,
 		set: GoIconSet = null) -> void:
 	if node == null: return
@@ -324,10 +340,12 @@ static func glyph_text(node: Control, icons: Array, size := -1, ink := Color.TRA
 	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
 
 
-## `glyph_text()` 가 그릴 글자의 **폭**(dp). 칸을 접을지 말지를 노드에 되묻지 않고 미리 재는 자리에 쓴다.
+## The **width** (dp) of the text `glyph_text()` would draw. For measuring ahead of time whether to collapse
+## a cell, instead of asking the node back.
 ##
-## 🛑 **버튼에 되묻지 않는다** — 버튼의 최소 폭은 지금 글자인지 글리프인지에 따라 달라, 되물으면 판정이 제
-##    결과를 입력으로 받아 두 모양을 오간다. 두 모양을 모두 글꼴로 재서 비교한다.
+## 🛑 **Do not ask the button** — its minimum width depends on whether it currently holds text or a glyph,
+##    so asking it feeds the decision its own result and it flips between the two shapes. Measure both shapes
+##    from the font and compare.
 static func glyph_width(icons: Array, size := -1, set: GoIconSet = null) -> float:
 	var marks := set if set != null else GoUi.icons()
 	if marks == null: return 0.0
@@ -343,7 +361,7 @@ static func glyph_width(icons: Array, size := -1, set: GoIconSet = null) -> floa
 		GoUi.metric(GoTheme.ICON_SIZE) if size < 0 else size).x
 
 
-## **번역 키**를 담는 라벨 — 언어가 바뀌면 엔진이 알아서 다시 그린다.
+## A label holding a **translation key** — the engine redraws it on its own when the language changes.
 static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
 	var node := Label.new()
 	node.theme = GoUi.theme()
@@ -356,29 +374,29 @@ static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANS
 	return node
 
 
-## **그대로 보여 줄 글자** — 사람 이름·서버 값·이미 번역된 문구.
+## **Text shown as it is** — a person's name, a server value, an already translated phrase.
 static func label(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
 	var node := label_key(text, role, ink)
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	return node
 
 
-## 섹션 제목 한 줄(작고 흐린 대문자 느낌의 구분 머리말).
+## One section title line (a small, dim, uppercase-feeling heading).
 static func section(text_or_key: String, translate := true) -> Label:
 	var node := label_key(text_or_key, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)) if translate \
 		else label(text_or_key, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 	node.name = "Section"
-	# 스킨이 머리말에 표식을 붙일 수 있게 한다. 기본 스킨은 빈 판이라 생김새가 그대로다.
+	# Lets the skin mark the heading. The default skin's is an empty face, so the look is unchanged.
 	node.add_theme_stylebox_override(&"normal", GoUi.skin().section_box())
 	return node
 
 
-# ── 버튼 ───────────────────────────────────────────────────────────────
+# ── Buttons ────────────────────────────────────────────────────────────
 
-## 🛑 값을 **뒤에만** 더한다 — 가운데에 끼우면 씬에 저장된 숫자가 다른 톤을 가리킨다.
+## 🛑 Add values **at the end only** — insert one in the middle and numbers saved in scenes point at a different tone.
 enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID }
 
-## 이미 있는 버튼에 gohud 규격을 입힌다(씬에서 만든 버튼도 받는다).
+## Applies the gohud spec to an existing button (scene-built buttons too).
 static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	node.theme = GoUi.theme()
 	match tone:
@@ -389,32 +407,34 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 		Tone.COMPACT: node.theme_type_variation = GoTheme.VAR_COMPACT_BUTTON
 		_: node.theme_type_variation = GoTheme.VAR_BUTTON
 	var compact := tone == Tone.COMPACT or tone == Tone.BARE
-	# 🛑 `MOUSE_FILTER_PASS` — 스크롤 안의 버튼은 손가락 끌기를 `ScrollContainer` 에 넘겨야 한다.
-	#    STOP 이면 목록 위에서 시작한 스크롤이 먹히지 않는다.
+	# 🛑 `MOUSE_FILTER_PASS` — a button inside a scroll must hand the finger drag to the `ScrollContainer`.
+	#    With STOP, a scroll that starts on the list does nothing.
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
 	if GoUi.config.autowrap_text: fit_words(node)
 	if tone == Tone.BARE:
-		# 씬에서 만든 버튼에 남아 있는 판(override)을 지운다 — 맨 버튼은 테마 변형이 그리는 것이 전부다.
+		# Clears faces (overrides) left on a scene-built button — a bare button is whatever the theme variation draws.
 		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]:
 			node.remove_theme_stylebox_override(state)
 		return
-	# 🛑 작은 버튼(COMPACT)은 **폭 플래그를 건드리지 않는다** — 부르는 쪽이 SHRINK_BEGIN/END 로 놓는 경우가 많고,
-	#    여기서 EXPAND_FILL 을 박으면 먼저 둔 값을 덮어쓴다(2026-09-12, 파생 게임 소비처 5곳). 높이는 터치 하한.
+	# 🛑 A small button (COMPACT) **leaves the width flag alone** — the caller often places it with
+	#    SHRINK_BEGIN/END, and pinning EXPAND_FILL here overwrites what they set already (2026-09-12, 5 call
+	#    sites in the game gohud grew out of). The height is the touch floor.
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH if compact else GoTheme.BUTTON_HEIGHT)
 	if not compact: node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
-## 🔑 **버튼 글자가 글자 단위로 쪼개지지 않게** 줄바꿈을 정한다. 글자를 바꾼 뒤에도 다시 부른다.
+## 🔑 Sets wrapping so **button text is never split character by character**. Call it again after changing the text.
 ##
-## 🛑 줄바꿈이 켜진 버튼은 최소 폭에서 **글자 폭을 빼 버린다**(접을 수 있다고 보므로). 그래서 자연 폭
-##    버튼이 좁아지면 `Done` 이 `Don`/`e` 로 갈라졌다(2026-09-13 코치마크 실측). 규칙 둘:
-##    ① 한 낱말이면 접지 않는다 — 접을 곳이 없다. ② 여러 낱말이면 접되, **가장 긴 낱말**은 한 줄에
-##    들어가도록 최소 폭을 보장한다.
+## 🛑 A button with wrapping on **drops the text width out of its minimum width** (it assumes it can fold).
+##    So a natural-width button, once narrowed, split `Done` into `Don`/`e` (measured 2026-09-13 on a coach
+##    mark). Two rules: ① one word never folds — there is nowhere to fold. ② several words fold, but the
+##    minimum width guarantees the **longest word** fits on one line.
 static func fit_words(node: Button) -> void:
 	if node.has_meta(&"go_no_wrap"): return
-	# 🛑 **번역 키가 아니라 화면에 보이는 글자**로 판단한다. `button_key()` 의 `text` 는 키(`confirm`)이고
-	#    엔진이 그리기 직전에 번역한다 — 키만 보면 한 낱말이라 접지 않기로 하는데, 번역문은 두 낱말일 수
-	#    있다(2026-09-13, I-57). `atr()` 은 그 노드의 자동 번역 설정을 따라 번역한다.
+	# 🛑 Decide from **the text shown on screen, not the translation key**. `button_key()`'s `text` is the key
+	#    (`confirm`) and the engine translates it just before drawing — by the key alone it is one word and we
+	#    decide not to fold, while the translation may be two (2026-09-13, I-57). `atr()` translates following
+	#    that node's own auto-translate setting.
 	var shown := node.atr(node.text) if node.is_inside_tree() else node.text
 	var words := shown.strip_edges().split(" ", false)
 	if words.size() <= 1:
@@ -430,7 +450,7 @@ static func fit_words(node: Button) -> void:
 	node.custom_minimum_size.x = maxf(node.custom_minimum_size.x, ceilf(longest + frame + 2.0))
 
 
-## 번역 키를 담는 버튼.
+## A button holding a translation key.
 static func button_key(key: String, action := Callable(), tone := Tone.NORMAL) -> Button:
 	var node := Button.new()
 	node.text = key
@@ -439,21 +459,21 @@ static func button_key(key: String, action := Callable(), tone := Tone.NORMAL) -
 	return node
 
 
-## 그대로 보여 줄 글자의 버튼.
+## A button whose text is shown as it is.
 static func button(text: String, action := Callable(), tone := Tone.NORMAL) -> Button:
 	var node := button_key(text, action, tone)
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	return node
 
 
-## 🔍 **작은 글자 버튼의 판 여백 계약**을 검사한다. 글자가 있는 작은 버튼의 상태별 판 좌우 여백이
-## `compact_padding_x` 토큰보다 작으면 `"노드 경로:상태 …"` 를 돌려준다. 빈 배열이면 통과.
+## 🔍 Audits the **face-padding contract of small text buttons**. Returns `"node path:state …"` for every
+## state whose face has left/right padding below the `compact_padding_x` token. An empty array passes.
 ##
-## 🔑 **판 여백을 직접 본다** — 최소 폭으로 재면 넓게 늘어난 버튼은 여백 0 판이어도 통과하고,
-##    낱말 줄바꿈으로 좁아진 정상 버튼은 실패한다.
-## 🛑 글자 없이 아이콘만 있는 버튼은 보지 않는다 — 원형·정사각 아이콘 판은 여백 0 이 맞다.
-## 🛑 부르는 쪽이 판을 덮어쓴 상태는 기본으로 건너뛴다(좁힌 탭처럼 의도한 예외가 있다). `include_overrides` 로 함께 본다.
-## `variations` — 작은 버튼으로 칠 변형 이름. 호스트가 자기 이름을 base 로 건 경우 그 이름도 넘긴다.
+## 🔑 **Looks at the face padding itself** — measured by minimum width, a button stretched wide passes even
+##    with a zero-padding face, while a sound button narrowed by word wrapping fails.
+## 🛑 Buttons with an icon and no text are skipped — a round or square icon face is right to have no padding.
+## 🛑 States whose face the caller overrode are skipped by default (some exceptions are deliberate, like a tightened tab). Pass `include_overrides` to include them.
+## `variations` — the variation names to treat as small buttons. If the host based its own name on one, pass that too.
 static func audit_compact_padding(root: Node, include_overrides := false,
 		variations: Array[StringName] = [GoTheme.VAR_COMPACT_BUTTON]) -> Array[String]:
 	var problems: Array[String] = []
@@ -473,12 +493,12 @@ static func _audit_compact(node: Node, need: float, include_overrides: bool, var
 			var right := box.get_margin(SIDE_RIGHT)
 			if left < need - 0.01 or right < need - 0.01:
 				var where := String(button.get_path()) if button.is_inside_tree() else String(button.name)
-				out.append("%s:%s 좌우 여백 %.0f·%.0f < %.0f" % [where, state, left, right, need])
+				out.append("%s:%s side padding %.0f·%.0f < %.0f" % [where, state, left, right, need])
 	for child in node.get_children():
 		_audit_compact(child, need, include_overrides, variations, out)
 
 
-## 노드의 변형이 목록에 있거나, 테마의 base 체인을 따라가다 목록에 닿는가.
+## Is the node's variation in the list, or does following the theme's base chain reach the list?
 static func _is_variation(control: Control, variations: Array[StringName]) -> bool:
 	var current := control.theme_type_variation
 	var theme := GoUi.theme()
@@ -489,11 +509,11 @@ static func _is_variation(control: Control, variations: Array[StringName]) -> bo
 	return false
 
 
-## 🔑 **아이콘만 있는 버튼**. 보이는 크기는 `visual`, 터치는 토큰 `touch` 까지 노드 밖으로 넓어진다.
-## 세트가 폰트든 텍스처든 같은 호출이다.
+## 🔑 **An icon-only button**. The visible size is `visual`; the touch area grows past the node out to the
+## `touch` token. The same call whether the set is a font or textures.
 ##
-## ♿ `tooltip_key` 를 **꼭 준다.** 아이콘만 있는 버튼은 마우스 사용자에게 툴팁이, 화면 낭독기에게는
-## 접근성 이름이 **유일한 설명**이다. 둘 다 이 한 값에서 나온다.
+## ♿ **Always pass `tooltip_key`.** On an icon-only button the tooltip is a mouse user's **only** explanation,
+## and the accessibility name is a screen reader's. Both come from this one value.
 static func icon_button(icon: StringName, action := Callable(), visual := -1,
 		tooltip_key: StringName = &"") -> GoIconButton:
 	var node := GoIconButton.new()
@@ -504,14 +524,15 @@ static func icon_button(icon: StringName, action := Callable(), visual := -1,
 	return node
 
 
-## 버튼에 아이콘을 붙인다 — 텍스처 세트면 `Button.icon`, 폰트 세트면 자식 라벨로 간다.
-## 🛑 한 버튼에 아이콘 폰트와 본문 폰트를 같이 쓸 방법은 자식 라벨뿐이다(`text` 의 폰트는 하나다).
+## Puts an icon on a button — a texture set goes to `Button.icon`, a font set to a child label.
+## 🛑 A child label is the only way to use the icon font and the body font on one button (`text` has one font).
 ##
-## [param inset] 는 **폰트 세트의 글리프**를 버튼 왼쪽 경계에서 그만큼 안으로 들이고(판 여백 안에 놓이게),
-## 글자가 그 위로 오지 않게 좌우 글자 여백을 아이콘 끝 + `gap_small` 까지 넓힌다. 음수면 지금까지처럼
-## 경계에 붙이고 판도 건드리지 않는다. 텍스처 세트는 버튼이 아이콘 자리를 따로 잡으므로 해당 없다.
-## 🛑 좌우를 **같이** 넓힌다 — 한쪽만 넓히면 가운데 정렬 글자가 아이콘 쪽으로 밀려 오히려 겹친다
-##    (2026-09-13 좁은 전폭 버튼 실측: `Log in with email` 이 ✉ 위에 얹혀 "Lg in with email" 로 읽혔다).
+## [param inset] moves **a font set's glyph** that far in from the button's left edge (so it lands inside the
+## face padding) and widens the left and right text padding out to the icon's end + `gap_small` so the text
+## does not run over it. Negative keeps it flush to the edge as before and leaves the face alone. A texture
+## set does not apply — the button reserves the icon's place itself.
+## 🛑 Widen **both** sides — widen one and centered text is pushed toward the icon and overlaps it instead
+##    (measured 2026-09-13 on a narrow full-width button: `Log in with email` sat on top of ✉ and read "Lg in with email").
 static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.TRANSPARENT,
 		inset := -1.0) -> void:
 	var px := GoUi.metric(GoTheme.ICON_SIZE) if size < 0 else size
@@ -519,12 +540,12 @@ static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.
 	if found != null:
 		node.icon = found
 		node.expand_icon = true
-		# 🛑 `icon_max_width` 없이 `expand_icon` 만 켜면 아이콘이 버튼 높이만큼 커진다.
+			# 🛑 Turn on `expand_icon` without `icon_max_width` and the icon grows to the button's height.
 		node.add_theme_constant_override(&"icon_max_width", px)
 		if ink.a > 0: node.add_theme_color_override(&"icon_normal_color", ink)
 		return
-	# 🛑 텍스처가 없어 **자식 라벨**로 떨어지는 경우다. 버튼 테마의 아이콘 색은 자식에게 닿지 않으므로
-	#    색을 안 받았으면 여기서 같은 색을 집어 준다 — 안 그러면 흰색으로 그려진다.
+	# 🛑 No texture, so this falls through to a **child label**. The button theme's icon color does not reach a
+	#    child, so when no color was passed, pick the same one up here — otherwise it draws white.
 	var glyph_ink := ink
 	if glyph_ink.a <= 0:
 		glyph_ink = node.get_theme_color(&"icon_normal_color") if node.has_theme_color(&"icon_normal_color") \
@@ -546,28 +567,32 @@ static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.
 		node.add_theme_stylebox_override(state, plate)
 
 
-## 🔑 **바깥 규격이 정해 준 브랜드 버튼** — 플랫폼 제공자의 로그인 버튼(Sign in with Google·Apple 등)처럼
-## 판 색·테두리·마크 크기를 **심사 규격이 못 박은** 자리다. gohud 는 자리와 상태만 맡고 값은 부르는 쪽이 준다 —
-## 🛑 스킨·팔레트가 이 색을 바꾸면 안 되므로 토큰을 쓰지 않는다. 규격 원문을 옮겨 적는 것은 호스트의 몫이다.
+## 🔑 **A brand button whose spec comes from outside** — a platform provider's sign-in button (Sign in with
+## Google, Apple …), where face color, border and mark size are **nailed down by review guidelines**. gohud
+## takes the place and the states, the caller gives the values —
+## 🛑 no tokens here, because no skin or palette may change these colors. Transcribing the spec is the host's job.
 ##
-## [param fill] 판 바탕 · [param ink] 글자색 · [param edge] 1dp 테두리색.
-## [param mark] 는 마크의 `icon_max_width`(음수면 그대로) · [param gap] 은 마크와 글자 사이(음수면 그대로) ·
-## [param inset] 은 판 **좌우** 안쪽 여백(음수면 그대로 · 위아래는 0 으로 둔다 — 높이는 부르는 쪽이 정한다).
-## [param base] 를 주면 그 판을 복제해 **모양(둥글기)** 을 물려받는다 — 같은 화면의 다른 버튼과 한 묶음으로 보이게.
-## [param mark_ink] 는 마크 색이며 기본은 흰색이다 — 여러 색으로 된 공식 마크(Google 의 4색 G)가 테마 색에 물들지 않게.
+## [param fill] face background · [param ink] text color · [param edge] 1dp border color.
+## [param mark] is the mark's `icon_max_width` (negative: unchanged) · [param gap] the space between mark and
+## text (negative: unchanged) · [param inset] the face's **left and right** inner padding (negative: unchanged ·
+## top and bottom are set to 0 — the caller decides the height).
+## [param base] duplicates that face to inherit its **shape (rounding)** — so it reads as one set with the other buttons on the screen.
+## [param mark_ink] is the mark color, white by default — so a multi-color official mark (Google's four-color G) is not stained by theme colors.
 ##
-## 올림·눌림은 어두운 판이면 밝히고 밝은 판이면 어둡게 하며(제공자 배포본과 같은 되먹임), 비활성은 회색 쪽으로
-## 당기고, 포커스 판은 **속을 비워** 테두리만 남긴다(공용 포커스 링이 그 위에 그려진다).
-## 🛑 마크와 글자를 함께 판 가운데 세우려면 폭이 정해진 뒤 [method center_button_content] 를 부른다.
+## Hover and press lighten a dark face and darken a light one (the same feedback as the providers' own builds),
+## disabled pulls toward gray, and the focus face is **hollow**, leaving only the border (the shared focus ring
+## draws on top of it).
+## 🛑 To stand mark and text together in the middle of the face, call [method center_button_content] once the width is known.
 static func style_brand_button(node: Button, fill: Color, ink: Color, edge: Color,
 		mark := -1, gap := -1, inset := -1.0, base: StyleBox = null, mark_ink := Color.WHITE) -> void:
 	var source := base if base != null else node.get_theme_stylebox(&"normal")
 	if source == null: source = surface(GoTheme.BOX_CARD)
-	# 🛑 브랜드 색을 **넣을 수 있는 판**이어야 한다. 스킨이 커스텀 판(각진 판 등)을 주는 테마에서는 `bg_color` 를
-	#    고쳐도 그 판이 자기 색으로 그리므로 규격 색이 화면에 안 나온다 — 같은 여백·테두리·둥글기의 평판으로 옮긴다.
-	#    **규격이 스킨보다 앞서는 유일한 자리다**(다른 함수는 모두 스킨 모양을 그대로 살린다).
+	# 🛑 The face must be one the brand color **can be put into**. In a theme whose skin returns a custom face
+	#    (an angular one, say), fixing `bg_color` changes nothing because that face draws in its own color, so the
+	#    spec color never reaches the screen — move to a flat face with the same padding, border and rounding.
+	#    **This is the only place the spec outranks the skin** (every other function keeps the skin's shape).
 	if not (source is StyleBoxFlat): source = _flat_like(source)
-	# 🔑 어두운 판인가로 되먹임 방향을 가른다 — 검정 판(Apple)은 밝히고 흰 판(Google)은 어둡게.
+	# 🔑 How dark the face is decides the feedback direction — a black face (Apple) lightens, a white one (Google) darkens.
 	var dark := fill.get_luminance() < 0.5
 	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
 		var face := source.duplicate() as StyleBox
@@ -600,12 +625,13 @@ static func style_brand_button(node: Button, fill: Color, ink: Color, edge: Colo
 	node.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
 
-## 🔑 **마크와 글자를 함께 판 가운데** 세운다 — 제공자 배포 버튼의 모양이다.
-## 🛑 `icon_alignment = CENTER` 를 쓰지 않는다 — 엔진은 마크를 글자 **위에 겹쳐** 그린다(2026-09-14 실측
-##    "Sign in w●th Apple"). 대신 글자를 왼쪽에 두고 **왼쪽 여백 = (폭 − 마크 − 간격 − 글자 폭) / 2** 를 판에 넣는다.
-## 폭이 바뀔 때(`resized`) · 언어가 바뀔 때 · 마크가 늦게 붙을 때 다시 부른다.
-## 🔑 같은 값이면 판을 건드리지 않는다 — 여백을 바꾸면 최소 크기가 바뀌어 `resized` 가 다시 오는 되돌이가 생긴다.
-## [param min_inset] 음수면 판이 가진 왼쪽 여백이 하한이다. 돌려주는 값은 넣은 왼쪽 여백(폭이 아직 0 이면 -1).
+## 🔑 Stands **mark and text together in the middle of the face** — the shape of the providers' own buttons.
+## 🛑 Do not use `icon_alignment = CENTER` — the engine draws the mark **on top of** the text (measured
+##    2026-09-14: "Sign in w●th Apple"). Instead keep the text on the left and put
+##    **left padding = (width − mark − gap − text width) / 2** into the face.
+## Call it again when the width changes (`resized`), when the language changes, and when the mark arrives late.
+## 🔑 An unchanged value leaves the face alone — changing the padding changes the minimum size, which brings `resized` back around in a loop.
+## [param min_inset] negative means the face's own left padding is the floor. Returns the left padding it set (-1 while the width is still 0).
 static func center_button_content(node: Button, min_inset := -1.0) -> float:
 	if node == null or not is_instance_valid(node) or node.size.x <= 0.0: return -1.0
 	var face := node.get_theme_stylebox(&"normal")
@@ -622,9 +648,10 @@ static func center_button_content(node: Button, min_inset := -1.0) -> float:
 	return left
 
 
-## 🎨 **판 없이 글자·아이콘 색만** 정한다 — 링크 줄·조용한 메뉴처럼 배경을 그리지 않고 색으로만 상태를 말하는 버튼.
-## [param ink] 는 평소 색, [param active] 는 올림·눌림·포커스 색이다. 투명인 쪽은 건드리지 않는다 —
-## 평소 색을 `typography()` 로 이미 준 버튼에는 [param active] 만 준다.
+## 🎨 Sets **text and icon color only, with no face** — buttons that draw no background and say their state
+## in color alone (link rows, quiet menus).
+## [param ink] is the resting color, [param active] the hover, pressed and focus color. A transparent one is
+## left alone — a button already given its resting color by `typography()` takes [param active] only.
 static func tint_button(node: Button, ink := Color.TRANSPARENT, active := Color.TRANSPARENT) -> void:
 	if ink.a > 0:
 		node.add_theme_color_override(&"font_color", ink)
@@ -635,9 +662,10 @@ static func tint_button(node: Button, ink := Color.TRANSPARENT, active := Color.
 			node.add_theme_color_override(key, active)
 
 
-## 🛑 글자 크기를 **픽셀로 못 박는다** — 규격이 바깥에서 정해진 자리(높이 대비 글자 비율이 지침인 공식 로그인
-##    버튼 등)에만 쓴다. 보통은 `typography()` 의 역할을 쓴다 — 역할은 테마 교체·모바일 축소를 따라가고,
-##    여기서 박은 값은 따라가지 않는다. `RichTextLabel` 은 네 가지 크기를 함께 박는다.
+## 🛑 **Pins the font size in pixels** — only where the spec comes from outside (an official sign-in button
+##    whose guideline is a text-to-height ratio, say). Normally use a role through `typography()` — a role
+##    follows theme swaps and mobile shrink; a value pinned here does not. A `RichTextLabel` gets all four
+##    sizes pinned together.
 static func pin_font_size(node: Control, size: int) -> void:
 	if node is RichTextLabel:
 		for key in [&"normal_font_size", &"bold_font_size", &"italics_font_size", &"bold_italics_font_size"]:
@@ -646,11 +674,12 @@ static func pin_font_size(node: Control, size: int) -> void:
 	node.add_theme_font_size_override(&"font_size", size)
 
 
-## 🧾 **고정폭 글 상자** — 진단 코드·로그처럼 글자가 어긋나면 안 되고 골라서 복사할 수 있어야 하는 자리.
-## [param font] 은 부르는 쪽이 고른 고정폭 글꼴이다 — 🛑 gohud 는 글꼴을 싣지 않는다(기기에 있는 것을 찾는
-## `SystemFont` 를 쓰거나 호스트가 자기 글꼴을 넘긴다).
-## [param selection] 은 고른 영역의 바탕색, [param selected_ink] 는 그 위 글자색이다(투명이면 그대로 둔다) —
-## 🛑 기본 선택 바탕은 밝은 회색이라 밝은 글자가 묻힌다.
+## 🧾 **A monospace text box** — for diagnostics codes and logs, where characters must line up and the
+## reader must be able to select and copy them.
+## [param font] is a monospace font the caller chose — 🛑 gohud ships no fonts (use `SystemFont`, which finds
+## one on the device, or have the host pass its own).
+## [param selection] is the background of the selected range and [param selected_ink] the text on it (transparent
+## leaves them alone) — 🛑 the default selection background is light gray, and light text sinks into it.
 static func style_mono_text(node: RichTextLabel, font: Font, selection := Color.TRANSPARENT,
 		selected_ink := Color.TRANSPARENT) -> void:
 	if font != null:
@@ -660,20 +689,20 @@ static func style_mono_text(node: RichTextLabel, font: Font, selection := Color.
 	if selected_ink.a > 0: node.add_theme_color_override(&"font_selected_color", selected_ink)
 
 
-## 🔑 **아이콘 한 개 + 글자 한 줄의 목록 항목.** 메뉴·설정처럼 세로로 쌓는 곳에 쓴다.
+## 🔑 **A list item: one icon + one line of text.** For places that stack vertically, like menus and settings.
 ##
-## 2열 격자보다 눈이 덜 흔들리고, 줄마다 아이콘이 있어 글을 읽기 전에 무엇인지 알아본다.
-## `sub_key` 를 주면 제목 아래 한 줄 요약이 붙는다(작고 흐린 글씨).
+## The eye travels less than over a two-column grid, and the icon on every row is recognized before the text is
+## read. Pass `sub_key` and a one-line summary joins under the title (small and dim).
 ##
-## 🛑 줄 **전체**가 탭 영역이다 — 요약도 버튼 안에 있어야 한다.
+## 🛑 The **whole** row is the tap target — the summary must be inside the button too.
 static func list_button(icon: StringName, key: String, action := Callable(),
 		ink := Color.TRANSPARENT, sub_key := "", translate := true, trailing: StringName = &"") -> Button:
 	return list_row(Button.new(), icon, key, action, ink, sub_key, translate, trailing)
 
 
-## 이미 있는 버튼을 같은 목록 항목으로 꾸민다 — 노드·이름·연결을 그대로 둔다.
-## `trailing` 은 줄 오른쪽 끝의 아이콘(예: `GoIconSet.CHEVRON_RIGHT` — 다음 화면으로 간다는 표시). 글자 줄과
-## 세로 가운데가 맞도록 같은 행 안에 둔다(좌표로 놓지 않는다).
+## Dresses an existing button as the same list item — node, name and connections are left as they are.
+## `trailing` is the icon at the row's right end (e.g. `GoIconSet.CHEVRON_RIGHT` — the sign that a next screen
+## follows). It sits inside the same row as the text so the two center vertically together (never placed by coordinates).
 static func list_row(node: Button, icon: StringName, key: String, action := Callable(),
 		ink := Color.TRANSPARENT, sub_key := "", translate := true, trailing: StringName = &"") -> Button:
 	node.theme = GoUi.theme()
@@ -681,13 +710,13 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	node.text = ""            # 글자는 아래 라벨이 그린다 — 씬에서 만든 버튼의 옛 text 를 비운다.
+	node.text = ""            # The label below draws the text — clears the old text of a scene-built button.
 	node.clip_text = false
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var inset := padding(GoUi.metric(GoTheme.GAP))
 	inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	# 두 줄 항목의 바깥 여백은 제목·요약 사이보다 넓게 둔다.
+	# On a two-line item the outer padding stays wider than the space between title and summary.
 	var vertical_padding := GoUi.metric(GoTheme.GAP_TINY if sub_key.is_empty() else GoTheme.GAP_SMALL)
 	inset.add_theme_constant_override(&"margin_top", vertical_padding)
 	inset.add_theme_constant_override(&"margin_bottom", vertical_padding)
@@ -706,8 +735,8 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 		line.add_child(glyph)
 
 	var title := label_key(key, GoTheme.ROLE_BODY, ink) if translate else label(key, GoTheme.ROLE_BODY, ink)
-	# 🛑 버튼의 자동 번역을 껐으므로(글자는 이 라벨이 그린다) 자식이 그것을 물려받지 않게 못박는다 —
-	#    INHERIT 로 두면 목록에 번역 키가 그대로 뜬다.
+	# 🛑 Auto-translate is off on the button (this label draws the text), so pin it on the child instead of
+	#    letting it inherit — left at INHERIT the list shows raw translation keys.
 	title.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -716,10 +745,10 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 		title.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		line.add_child(title)
 	else:
-		# 두 줄 항목 — 제목과 요약을 한 칸에 세로로 쌓는다. 요약은 한 단계 물러난 색·크기다.
+		# A two-line item — title and summary stacked vertically in one cell. The summary is one step back in color and size.
 		var stack := column(GoUi.metric(GoTheme.GAP_TINY))
 		stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		# 행이 늘어나도 두 글줄은 자연 높이를 유지하고 아이콘과 함께 가운데 놓인다.
+		# However tall the row grows, the two text lines keep their natural height and center with the icon.
 		stack.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		title.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		title.vertical_alignment = VERTICAL_ALIGNMENT_TOP
@@ -735,32 +764,34 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 		tail.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		line.add_child(tail)
 
-	# 🛑 `line` 이 아니라 **`inset`** 을 잰다 — 내용 높이만 맞추면 위아래 여백이 빠져 글자가
-	#    항목 아래로 정확히 그만큼 삐져나온다. 한 줄 항목은 터치 하한보다 작아 이 변화가 안 보인다.
+	# 🛑 Measure **`inset`**, not `line` — fit the content height alone and the top and bottom padding is left
+	#    out, so the text spills below the item by exactly that much. A one-line item stays under the touch floor,
+	#    which hides the difference.
 	fit_content_height(node, inset)
 	if action.is_valid(): node.pressed.connect(action)
 	return node
 
 
-# ── 입력 ───────────────────────────────────────────────────────────────
+# ── Inputs ─────────────────────────────────────────────────────────────
 
-## 🔑 **라벨 + 입력칸을 한 묶음으로.** 폼의 한 줄(필드)을 만든다.
+## 🔑 **A label + its input as one group.** Builds one row (a field) of a form.
 ##
 ## ```gdscript
 ## body.add_child(GoStyle.field("fieldEmail", GoStyle.line_edit("you@example.com")))
 ## ```
 ##
-## 🛑 **라벨은 자기 입력칸에 붙어 있어야 한다.** 라벨·칸·라벨·칸을 같은 간격(`gap`)으로 쌓으면
-##    어느 라벨이 어느 칸의 것인지 읽는 사람이 매번 판단해야 하고, 칸마다 여덟 픽셀씩 세로를
-##    낭비해 마지막 칸이 화면 밖으로 밀린다(2026-09-16 라리엔 계정 연결 폼 실측).
-##    묶음 안은 `gap_tiny`, 묶음 사이는 폼의 `gap` 이다.
+## 🛑 **A label must stay attached to its own input.** Stack label, field, label, field at the same
+##    spacing (`gap`) and the reader has to work out which label belongs to which field every time, and
+##    each field wastes eight pixels of height until the last one is pushed off the screen
+##    (measured 2026-09-16 on Laryen's account-linking form).
+##    Inside the group is `gap_tiny`; between groups is the form's `gap`.
 ##
-## `key` 가 비면 라벨 없이 컨트롤만 돌려준다. `hint` 를 주면 칸 아래에 작은 설명 줄이 붙는다.
+## An empty `key` returns the control alone, with no label. Pass `hint` and a small explanatory line joins under the field.
 static func field(key: String, control: Control, hint := "", translate := true) -> Control:
 	if key.is_empty() and hint.is_empty(): return control
 	var group := column(GoUi.metric(GoTheme.GAP_TINY))
 	group.name = "Field"
-	# 🛑 폼이 자식 상자의 간격을 한꺼번에 `gap` 으로 맞추므로, 이 묶음만은 제 간격을 지킨다고 표시한다.
+	# 🛑 The form sets every child box's spacing to `gap` at once, so mark this one group as keeping its own.
 	group.set_meta(&"go_own_spacing", true)
 	if not key.is_empty():
 		var caption := label_key(key, GoTheme.ROLE_CAPTION) if translate else label(key, GoTheme.ROLE_CAPTION)
@@ -781,8 +812,9 @@ static func line_edit(placeholder := "", translate_placeholder := false) -> Line
 	var node := LineEdit.new()
 	node.theme = GoUi.theme()
 	node.placeholder_text = placeholder
-	# 🛑 `translate_placeholder` 가 아니면 번역 모드를 **건드리지 않는다**(부모 상속). DISABLED 를 박으면 부모가
-	#    번역 중인 폼 안에서 키 이름이 그대로 뜬다(2026-09-12, 파생 게임의 검색 힌트 3곳).
+	# 🛑 Without `translate_placeholder` the translate mode is **left alone** (inherited from the parent).
+	#    Pinning DISABLED makes key names show through inside a form the parent is translating
+	#    (2026-09-12, 3 search hints in the game gohud grew out of).
 	if translate_placeholder: node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	return node
@@ -792,11 +824,11 @@ static func toggle(key := "", translate := true) -> CheckButton:
 	var node := CheckButton.new()
 	node.theme = GoUi.theme()
 	node.text = key
-	if translate: node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS   # 아니면 부모 상속
-	# 폼 안에서 입력 칸·버튼과 한 줄 높이가 맞도록 버튼 높이를 쓴다(터치 하한보다 크다).
+	if translate: node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS   # otherwise inherited from the parent
+	# Uses the button height so it lines up with inputs and buttons in a form (taller than the touch floor).
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
-	if GoUi.config.autowrap_text: fit_words(node)   # 버튼과 같은 낱말 규칙
+	if GoUi.config.autowrap_text: fit_words(node)   # the same word rule as buttons
 	return node
 
 
@@ -837,38 +869,40 @@ static func progress(ink := Color.TRANSPARENT) -> ProgressBar:
 	return node
 
 
-## 막대의 채움 색만 바꾼다. 모양은 스킨이 정한다.
+## Changes only the bar's fill color. The skin decides the shape.
 static func tint_progress(bar: ProgressBar, ink: Color) -> void:
 	bar.add_theme_stylebox_override(&"fill", GoUi.skin().progress_fill_box(ink))
 
 
-# ── 표면 조각 ──────────────────────────────────────────────────────────
+# ── Surface pieces ─────────────────────────────────────────────────────
 
-## 🔑 카드·패널의 StyleBox **사본** — **스킨이 정한 모양 그대로**다. 각진 판 같은 커스텀
-## StyleBox 도 그대로 온다. 모양까지 바꾸는 테마를 쓰는 곳은 `box()` 대신 이것을 쓴다.
-## [param alpha] 는 판 **바탕의 불투명도**(0.0~1.0) — 음수면 테마·설정이 정한 값(`GoUi.surface_alpha`).
+## 🔑 A **copy** of a card or panel StyleBox — **in exactly the shape the skin decided**. A custom
+## StyleBox, an angular face for instance, comes through as it is. Where the theme changes the shape too,
+## use this instead of `box()`.
+## [param alpha] is the **opacity of the face background** (0.0~1.0) — negative: the value set by theme and config (`GoUi.surface_alpha`).
 static func surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
 	return GoUi.skin().surface_box(variant, accent, alpha)
 
 
-## 카드·패널의 StyleBox **사본**. `accent` 를 주면 테두리에 그 색을 입힌다.
+## A **copy** of a card or panel StyleBox. Pass `accent` and the border takes that color.
 ##
-## 🛑 **언제나 `StyleBoxFlat`** 을 돌려준다 — 돌려받아 `bg_color`·`corner_radius` 를 고치는
-##    호출부가 이미 많기 때문이다. 스킨이 커스텀 StyleBox 를 주는 테마(sci-fi 등)에서는 그 모양이
-##    여기서 살아남지 못한다. 모양을 지켜야 하면 `surface()` 를 쓴다.
-## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값 · `surface()` 와 같다).
+## 🛑 **Always returns a `StyleBoxFlat`** — many call sites already take it back and fix `bg_color` or
+##    `corner_radius`. In a theme whose skin returns a custom StyleBox (sci-fi and the like) that shape
+##    does not survive here. To keep the shape, use `surface()`.
+## [param alpha] is the opacity of the face background (negative: the theme and config value · as in `surface()`).
 static func box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBoxFlat:
 	var shaped := GoUi.skin().surface_box(variant, accent, alpha)
 	var style := shaped as StyleBoxFlat
 	if style == null:
 		style = _flat_like(shaped)
-		# 🛑 0.5 — 이 값은 gohud 가 파생된 게임의 규범이다. 0.55 로 짰다가 위임 대조 검사에서 잡혔다(2026-09-12).
+			# 🛑 0.5 — this value is the norm of the game gohud grew out of. Written as 0.55 once, and the delegation cross-check caught it (2026-09-12).
 		if accent.a > 0: style.border_color = Color(accent, 0.5)
 	return style
 
 
-## 커스텀 판(각진 판·단조 판)을 **같은 여백·바탕·테두리·반경·그림자**의 평판으로 옮긴다 — 모양만 잃고 자리는 같다.
-## 🛑 빈 평판을 돌려주면 여백이 0 이라 옛 `box()` 로 만든 카드의 글자가 테두리에 붙었다(2026-09-15 라리엔 생김새 전환).
+## Moves a custom face (angular, forged) onto a flat one with **the same padding, background, border, radius
+## and shadow** — only the shape is lost, the geometry is the same.
+## 🛑 Return an empty flat face and its padding is 0, which glued the text of cards built by the old `box()` to their borders (2026-09-15, Laryen's look swap).
 static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 	var flat := StyleBoxFlat.new()
 	flat.bg_color = GoUi.color(GoTheme.SURFACE)
@@ -886,11 +920,12 @@ static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 	return flat
 
 
-## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다. 위 `box()` 와 같은 약속이다.
-## [param opaque] 는 판을 배경색으로 **꽉 채운다** — 월드가 비쳐 글자가 안 읽히는 자리(HUD 위 알림 줄)용이다.
-## [param pad] 는 판 안쪽 여백(음수면 스킨 값 그대로 · `face_padding` 과 같다).
-## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값). 🛑 [param opaque] 를 켜면 이 값은
-## 쓰이지 않는다 — "월드가 비쳐 글자가 안 읽히는 자리" 를 위해 **일부러 꽉 채우는** 것이 그 인자의 뜻이다.
+## A surface **floating** above the game screen — the same card with a shallow shadow. The same contract as `box()` above.
+## [param opaque] **fills the face solid** with the background color — for places where the world shows through and the text cannot be read (a notice row over the HUD).
+## [param pad] is the face's inner padding (negative: the skin's value · as in `face_padding`).
+## [param alpha] is the opacity of the face background (negative: the theme and config value). 🛑 Turn
+## [param opaque] on and this value goes unused — filling solid **on purpose**, for "places where the world
+## shows through and the text cannot be read", is what that argument means.
 static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, opaque := false, pad := -1.0,
 		alpha := -1.0) -> StyleBoxFlat:
 	var style := GoUi.skin().floating_box(variant, accent, alpha) as StyleBoxFlat
@@ -904,7 +939,7 @@ static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, op
 	return style
 
 
-## 원형 배지·아바타 테두리 — accent 를 옅게 채우고 같은 색 링을 두른다. 위 `box()` 와 같은 약속이다.
+## A round badge or avatar border — a faint accent fill with a ring of the same color. The same contract as `box()` above.
 static func disc(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> StyleBoxFlat:
 	var style := GoUi.skin().disc_box(diameter, accent, fill_alpha, edge_alpha) as StyleBoxFlat
 	if style == null:
@@ -919,26 +954,27 @@ static func disc(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha 
 	return style
 
 
-## 테두리가 있는 카드 한 장(내용은 부르는 쪽이 채운다).
+## One card with a border (the caller fills the content).
 ##
-## [param border_alpha]·[param border_width] 는 강조 테두리의 **진하기와 굵기**다(음수면 스킨 판이 가진 값 그대로) —
-## 같은 목록에서 한 장만 도드라지게 할 때 쓴다(마지막에 고른 것·지금 쓰는 것·주의를 끄는 안내 카드).
-## [param pad] 는 판 안쪽 여백이다(음수면 스킨 그대로). 🛑 그 위에 `padding()` 칸을 **또** 두르지 말 것 —
-## 여백이 두 겹이 되어 좁은 칸의 말줄임 글자가 통째로 사라진다(`hud_panel()` 과 같은 함정).
-## 🔑 판은 `surface()` 에서 온다 — 각진 판·중세 판 테마에서도 그 모양 그대로 색·굵기·여백만 바뀐다.
-## [param alpha] 는 판 바탕의 불투명도(0.0~1.0) — 음수면 테마·설정이 정한 카드 값(`GoTheme.CARD_ALPHA`).
-## 🔑 **이 카드 하나만** 다르게 하고 싶을 때 쓴다(장비 비교 카드처럼 뒤가 보여야 하는 자리).
+## [param border_alpha] and [param border_width] are the accent border's **depth and thickness** (negative: the
+## values the skin face has) — for making one card in a list stand out (the last one chosen, the one in use, a
+## notice card asking for attention).
+## [param pad] is the face's inner padding (negative: the skin's). 🛑 Do **not** wrap another `padding()` cell
+## around it — the padding doubles and the ellipsized text in a narrow cell disappears completely (the same trap as `hud_panel()`).
+## 🔑 The face comes from `surface()` — in angular and medieval face themes the shape stays and only color, thickness and padding change.
+## [param alpha] is the opacity of the face background (0.0~1.0) — negative: the card value set by theme and config (`GoTheme.CARD_ALPHA`).
+## 🔑 Use it when you want **this one card** to differ (an equipment comparison card and other places that must show what is behind).
 static func card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0,
 		pad := -1.0, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "Card"
 	node.theme = GoUi.theme()
 	node.theme_type_variation = GoTheme.VAR_CARD
-	# 🛑 아무것도 주지 않은 카드는 **판을 새로 만들지 않는다** — `GoCard` 변형을 자기 테마에서 다르게
-	#    정의한 프로젝트의 모양이 `GoHud/styles/card` 로 바뀌기 때문이다. 그래도 **판 불투명도는
-	#    따라야 한다**(기본 80%): 그래서 테마 변형이 그리는 그 판을 읽어 **알파만 곱한다.**
-	#    🔑 이 길이라야 둘을 함께 지킨다 — 남의 테마가 정한 모양은 그대로, 불투명도는 설정대로.
-	#    불투명도가 100% 면 `fade_panel()` 이 덮개를 걷어내므로 예전과 완전히 같은 판이다.
+	# 🛑 A card given nothing **builds no new face** — the look of a project that defined the `GoCard`
+	#    variation differently in its own theme would turn into `GoHud/styles/card`. It must still **follow the
+	#    face opacity** (80% by default): so read the very face the theme variation draws and **multiply the alpha only.**
+	#    🔑 Only this path keeps both — someone else's theme keeps the shape it set, the opacity follows the config.
+	#    At 100% opacity `fade_panel()` lifts the override off, so the face is exactly what it used to be.
 	if accent.a <= 0 and border_alpha < 0.0 and border_width < 0.0 and pad < 0.0 and alpha < 0.0:
 		fade_panel(node, -1.0, &"panel", GoTheme.BOX_CARD)
 		return node
@@ -949,8 +985,8 @@ static func card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width
 	return node
 
 
-## 판의 테두리 색·굵기를 덮는다 — 스킨 판 종류를 가정하지 않는다(평판은 네 변, 커스텀 판은 `border_width` 하나).
-## [param ink] 의 알파가 0 이거나 [param alpha] 가 음수면 색을 두지 않고, [param width] 가 음수면 굵기를 두지 않는다.
+## Overrides a face's border color and thickness — assumes nothing about the skin's face type (a flat face has four sides, a custom one a single `border_width`).
+## Alpha 0 on [param ink] or a negative [param alpha] sets no color; a negative [param width] sets no thickness.
 static func _face_border(face: StyleBox, ink: Color, alpha: float, width: float) -> void:
 	if face == null: return
 	if ink.a > 0 and alpha >= 0.0 and &"border_color" in face: face.set(&"border_color", Color(ink, alpha))
@@ -959,22 +995,23 @@ static func _face_border(face: StyleBox, ink: Color, alpha: float, width: float)
 	elif &"border_width" in face: face.set(&"border_width", width)
 
 
-## 🔑 **바탕 칸 한 장** — 내용을 담지 않고 **뒤에 까는** 판이다(초상화 자리의 틴트 칸, 터치 칸보다 작게 보이는 HUD 표면).
-## `card()`·`hud_panel()` 이 자식을 품는 컨테이너라면 이것은 `Panel` 하나라, 부르는 쪽이 앵커·크기로 자리를 잡는다.
+## 🔑 **One backing cell** — a face that holds no content and is **laid behind** things (the tint cell of a portrait slot, a HUD surface that looks smaller than its touch cell).
+## Where `card()` and `hud_panel()` are containers holding children, this is a single `Panel`, so the caller places it with anchors and size.
 ##
-## 판은 스킨의 [param variant] 에서 오고 **준 값만** 덮는다 — [param fill]·[param edge] 는 알파가 0 이면 스킨 색 그대로,
-## [param radius]·[param border] 는 음수면 스킨이 가진 모서리·테두리 그대로다.
-## 🛑 내용이 없는 칸이라 판 여백과 그림자는 0 이다 — 겹쳐 까는 판의 그림자는 그 위 글자를 흐린다.
-## 🔑 입력을 받지 않는다(`MOUSE_FILTER_IGNORE`) — 바탕이 위에 놓인 버튼의 누름을 가로채면 안 된다.
-## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값). 🛑 [param fill] 을 **준 판은 그 색 그대로**다 —
-## 알파까지 적어 준 색에 판 불투명도를 또 곱하지 않는다. 둘 다 정하고 싶으면 [param alpha] 를 명시한다.
+## The face comes from the skin's [param variant] and **only what you pass** is overridden — alpha 0 on
+## [param fill] or [param edge] keeps the skin's colors, and negative [param radius] or [param border] keeps the skin's corners and border.
+## 🛑 The cell has no content, so face padding and shadow are 0 — the shadow of a face laid under another blurs the text above it.
+## 🔑 It takes no input (`MOUSE_FILTER_IGNORE`) — backing must never swallow the press of a button laid on top.
+## [param alpha] is the opacity of the face background (negative: the theme and config value). 🛑 **A face given
+## [param fill] keeps that exact color** — the face opacity is not multiplied onto a color whose alpha you already
+## wrote. To set both, state [param alpha] explicitly.
 static func plate(variant := GoTheme.BOX_HUD, fill := Color.TRANSPARENT, edge := Color.TRANSPARENT,
 		radius := -1.0, border := -1.0, alpha := -1.0) -> Panel:
 	var node := Panel.new()
 	node.name = "Plate"
 	node.theme = GoUi.theme()
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# 🛑 바탕을 아래에서 덮어쓸 수 있으므로 판을 꽉 찬 채로 받아 **마지막에** 불투명도를 입힌다.
+	# 🛑 The background may be overridden further down, so take the face solid and apply the opacity **last**.
 	var face := surface(variant, Color.TRANSPARENT, 1.0)
 	var explicit_fill := fill.a > 0
 	if explicit_fill and &"bg_color" in face: face.set(&"bg_color", fill)
@@ -984,17 +1021,18 @@ static func plate(variant := GoTheme.BOX_HUD, fill := Color.TRANSPARENT, edge :=
 		elif &"radius" in face: face.set(&"radius", radius)
 	if face is StyleBoxFlat: (face as StyleBoxFlat).shadow_size = 0
 	face.set_content_margin_all(0)
-	# 🛑 **[param fill] 을 준 판은 그 색 그대로다** — `Color(ink, 0.14)` 처럼 알파까지 적어 준 색에
-	#    판 불투명도를 또 곱하면 부르는 쪽의 의도가 두 번 깎인다(0.14 → 0.112). 판 불투명도는
-	#    "스킨이 준 바탕" 에만 입힌다. [param alpha] 를 직접 준 경우에는 그것이 이긴다.
+	# 🛑 **A face given [param fill] keeps that exact color** — multiply the face opacity again onto a color
+	#    whose alpha was written out, like `Color(ink, 0.14)`, and the caller's intent is cut twice
+	#    (0.14 → 0.112). Face opacity goes onto "the background the skin gave" only. An explicit
+	#    [param alpha] wins.
 	if alpha >= 0.0: GoSkin.fade_box(face, alpha)
 	elif not explicit_fill: GoSkin.fade_box(face, GoUi.surface_alpha(variant))
 	node.add_theme_stylebox_override(&"panel", face)
 	return node
 
 
-## 🔑 **원판 칸** — `disc()` 판을 두른 컨테이너. 안에 아이콘·글자를 하나 넣으면 가운데 온다(입장 표식 ▶, 아바타 자리).
-## 지름만큼의 최소 크기를 갖고 입력은 받지 않는다 — 누를 수 있는 동그란 단추는 `style_disc_button()` 이다.
+## 🔑 **A disc cell** — a container wearing the `disc()` face. Put one icon or one line of text inside and it centers (an entry marker ▶, an avatar slot).
+## Its minimum size is the diameter and it takes no input — for a round button you can press, see `style_disc_button()`.
 static func disc_panel(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "Disc"
@@ -1006,8 +1044,8 @@ static func disc_panel(diameter: float, accent: Color, fill_alpha := 0.14, edge_
 	return node
 
 
-## **이미 만든 판**(`Panel`·`PanelContainer`)에 같은 원판을 입힌다 — 의미색이 바뀔 때마다 노드를 다시 만들지 않는
-## 자리(성별을 고르면 테두리 색이 따라가는 미리보기 원판). 인자는 `disc_panel()` 과 같다.
+## Applies the same disc to **a face you already built** (`Panel`, `PanelContainer`) — for places that must not
+## rebuild the node every time the semantic color changes (the preview disc whose border follows the gender you pick). The arguments are those of `disc_panel()`.
 static func style_disc_panel(node: Control, diameter: float, accent: Color, fill_alpha := 0.14,
 		edge_alpha := 0.38) -> void:
 	if node == null: return
@@ -1015,9 +1053,10 @@ static func style_disc_panel(node: Control, diameter: float, accent: Color, fill
 	node.add_theme_stylebox_override(&"panel", disc(diameter, accent, fill_alpha, edge_alpha))
 
 
-## **이미 만든 라벨**에 원판을 입힌다 — 번호 배지처럼 자리를 앵커·offset 으로 못박아 `disc_panel()` 의 컨테이너를
-## 쓸 수 없을 때(`style_chip_label()` 의 원형 짝). 글자색은 부르는 쪽이 `typography()` 로 준다 —
-## 🛑 짙게 채운 원판(`fill_alpha` 0.9 이상) 위에서는 흰 글자가 흐리다. `on_accent` 를 쓴다.
+## Applies a disc to **a label you already built** — for when the place is pinned with anchors and offsets, like a
+## number badge, and `disc_panel()`'s container cannot be used (the round counterpart of `style_chip_label()`).
+## The caller gives the text color through `typography()` —
+## 🛑 on a deeply filled disc (`fill_alpha` 0.9 and up) white text is washed out. Use `on_accent`.
 static func style_disc_label(node: Label, diameter: float, accent: Color, fill_alpha := 0.14,
 		edge_alpha := 0.38) -> void:
 	if node == null: return
@@ -1025,18 +1064,19 @@ static func style_disc_label(node: Label, diameter: float, accent: Color, fill_a
 	node.add_theme_stylebox_override(&"normal", disc(diameter, accent, fill_alpha, edge_alpha))
 
 
-## 🔑 **판 위에 겹치는 누름 영역** — 카드 한 장이 통째로 하나의 탭일 때, 그 카드 위에 까는 투명 버튼이다.
-## 판은 자기 모양을 그리지 않고(테두리·그림자·여백 0) 올림·누름에만 의미색을 [param fill_alpha] 만큼 옅게 깐다 —
-## 🛑 카드의 판이 이미 테두리를 그리므로 여기에 또 두르면 테두리가 두 겹이 된다.
+## 🔑 **A press area laid over a face** — the transparent button laid on a card when the whole card is one tap.
+## The face draws no shape of its own (border, shadow and padding 0) and lays the semantic color faintly, by
+## [param fill_alpha], on hover and press only —
+## 🛑 the card's own face already draws the border, so wrapping another one here makes it double.
 ##
-## 안쪽 여백이 0 이라 내용은 `card_body()` 같은 안쪽 칸이 대고, 높이는 `fit_content_height()` 가 내용에 맞춘다.
-## 🛑 `mouse_filter` 를 건드리지 않는다 — HUD 위 버튼은 STOP 이어야 누름이 월드로 새지 않는다.
+## Its inner padding is 0, so an inner cell like `card_body()` holds the content, and `fit_content_height()` fits the height to it.
+## 🛑 `mouse_filter` is left alone — a button over the HUD must be STOP so the press does not leak into the world.
 static func style_overlay_button(node: Button, accent: Color, fill_alpha := 0.10) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
 	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
-		# 🛑 `BOX_EMPTY` 를 쓰지 않는다 — `StyleBoxEmpty` 에는 바탕색이 없어 올림·누름이 보이지 않는다.
-		#    늘 평판인 `box()` 를 받아 모양을 지우고 바탕만 남긴다.
+			# 🛑 Not `BOX_EMPTY` — a `StyleBoxEmpty` has no background color, so hover and press are invisible.
+			#    Take `box()`, which is always flat, erase the shape and keep the background alone.
 		var face := box(GoTheme.BOX_CARD)
 		face.set_border_width_all(0)
 		face.shadow_size = 0
@@ -1047,24 +1087,24 @@ static func style_overlay_button(node: Button, accent: Color, fill_alpha := 0.10
 		node.add_theme_stylebox_override(state, face)
 
 
-## 판을 **그리지 않는** 컨테이너 — 자리·쌓임·간격은 그대로 두고 바탕·테두리·그림자·여백만 없앤다.
-## 🔑 판 하나를 지우려고 노드를 빼지 않는다 — 노드를 빼면 경로와 검사가 함께 깨진다. 묶음은 남고 상자만 사라진다.
+## A container that **draws no face** — place, stacking and spacing stay; only background, border, shadow and padding go.
+## 🔑 Never remove a node just to remove one face — removing it breaks node paths and tests with it. The group stays and only the box disappears.
 static func bare_panel(node: Control) -> void:
 	node.add_theme_stylebox_override(&"panel", StyleBoxEmpty.new())
 
 
-## 🔔 **알림 판을 이미 만든 컨테이너에** 입힌다 — 화면 안에 눌러앉는 오류·경고 상자(새로 만드는 쪽은 `alert()`).
-## 판은 스킨의 `notice` 표면이고 테두리에 [param accent] 가 든다. [param tint] 를 주면 바탕을 바탕색에서
-## 그 색 쪽으로 그만큼 당긴다(0 이면 스킨 바탕 그대로) — 🛑 새 팔레트를 만들지 않고 의미색 하나로 물들이는 자리다.
-## [param padding] 음수면 `padding_compact` 토큰.
-## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정이 정한 알림 값 `GoTheme.NOTICE_ALPHA`).
+## 🔔 Applies **a notice face to a container you already built** — the error or warning box that settles into the screen (to build a new one, see `alert()`).
+## The face is the skin's `notice` surface and the border takes [param accent]. Pass [param tint] and the background
+## is pulled that far from the background color toward that one (0 keeps the skin's background) — 🛑 this is where one semantic color stains a face without inventing a new palette.
+## [param padding] negative means the `padding_compact` token.
+## [param alpha] is the opacity of the face background (negative: the notice value set by theme and config, `GoTheme.NOTICE_ALPHA`).
 static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint := 0.0, padding := -1,
 		alpha := -1.0) -> void:
-	# 🛑 틴트가 바탕을 덮어쓰므로 꽉 찬 판으로 받아 **마지막에** 불투명도를 입힌다.
+	# 🛑 The tint overwrites the background, so take the face solid and apply the opacity **last**.
 	var face := surface(GoTheme.BOX_NOTICE, accent, 1.0)
 	if tint > 0.0:
-		# 🛑 바탕을 실제로 물들이려면 색을 넣을 수 있는 판이어야 한다 — 스킨의 커스텀 판은 제 색으로 그리므로
-		#    같은 여백·테두리·둥글기의 평판으로 옮긴다(틴트를 안 줬으면 스킨 모양 그대로 둔다).
+		# 🛑 To actually stain the background the face must be one a color can be put into — the skin's custom face
+		#    draws in its own color, so move to a flat face with the same padding, border and rounding (with no tint given, the skin's shape is left as it is).
 		if not (face is StyleBoxFlat): face = _flat_like(face)
 		if &"bg_color" in face:
 			var back: Color = GoUi.color(GoTheme.BACKGROUND)
@@ -1078,17 +1118,18 @@ static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint 
 	node.add_theme_stylebox_override(&"panel", face)
 
 
-## 게임 화면 위에 **떠 있는 판** 한 장 — HUD 의 도크·상태 바처럼 월드 위에 얹는 자리다(내용은 부르는 쪽이 채운다).
-## `card()` 의 HUD 짝이며, 모양은 스킨의 떠 있는 판을 그대로 쓴다(각진 판은 그림자 대신 발광이다).
+## One face **floating** above the game screen — for things laid over the world like a HUD dock or a status bar (the caller fills the content).
+## It is the HUD counterpart of `card()`, and the shape is the skin's floating face as it is (an angular face glows instead of casting a shadow).
 ##
-## [param pad_x]·[param pad_y] 는 **판 안쪽 여백**이다(음수면 스킨이 준 여백 그대로). HUD 는 손가락이
-## 닿는 기하가 화면마다 정해져 있어 여백을 부르는 쪽이 준다 — 🛑 그때 `padding()` 칸을 **또** 두르지
-## 말 것. 판 여백과 겹쳐 내용 폭이 두 배로 깎이고, 좁은 칸의 말줄임 글자가 통째로 사라진다
-## (2026-09-16 파티 도크에서 이끌기 칩이 27 → 11 로 접혔다).
-## [param variant] 는 어떤 토큰 판을 띄울 것인가다 — HUD 도크는 `BOX_HUD`, 월드 위에 펼치는 시트·카드는
-## `BOX_CARD`(같은 카드 모양에 그림자만 얹힌다).
-## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값 · HUD 판은 `GoTheme.HUD_ALPHA`).
-## 🔑 HUD 는 월드 위에 바로 얹히므로 **그림이 복잡한 게임일수록 값을 올린다** — 글자가 읽히는 것이 먼저다.
+## [param pad_x] and [param pad_y] are the **face's inner padding** (negative: the padding the skin gave). A HUD
+## has its finger geometry fixed per screen, so the caller gives the padding — 🛑 and must **not** wrap another
+## `padding()` cell around it. It stacks with the face padding, the content width is cut twice over, and the
+## ellipsized text in a narrow cell disappears completely
+## (2026-09-16: the lead chip in the party dock folded 27 → 11).
+## [param variant] is which token face to float — `BOX_HUD` for a HUD dock, `BOX_CARD` for sheets and cards opened
+## over the world (the same card shape with only a shadow added).
+## [param alpha] is the opacity of the face background (negative: the theme and config value · `GoTheme.HUD_ALPHA` for HUD faces).
+## 🔑 A HUD lies straight on the world, so **raise the value the busier the game's art is** — readable text comes first.
 static func hud_panel(accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0,
 		variant := GoTheme.BOX_HUD, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
@@ -1097,8 +1138,8 @@ static func hud_panel(accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0,
 	return node
 
 
-## **이미 만든 `PanelContainer`** 에 같은 떠 있는 판을 입힌다 — 의미색이 런타임에 바뀌는 자리(EXP 배지처럼
-## 값에 따라 초록·주황·회색이 되는 것)에서 노드를 다시 만들지 않는다. 인자는 `hud_panel()` 과 같다.
+## Applies the same floating face to **a `PanelContainer` you already built** — so places whose semantic color changes
+## at runtime (an EXP badge turning green, orange or gray by its value) never rebuild the node. The arguments are those of `hud_panel()`.
 static func style_hud_panel(node: PanelContainer, accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0,
 		variant := GoTheme.BOX_HUD, alpha := -1.0) -> void:
 	if node == null: return
@@ -1108,50 +1149,51 @@ static func style_hud_panel(node: PanelContainer, accent := Color.TRANSPARENT, p
 	node.add_theme_stylebox_override(&"panel", face)
 
 
-## 🔑 **이미 만든 아무 노드에 판 한 장을 입힌다** — 판을 만드는 일은 gohud 가, 그 판을 어디에 입힐지는
-## 부르는 쪽이 정한다. 위 `style_hud_panel()` 이 "떠 있는 HUD 판"으로 좁혀진 짝이라면, 이것은 그 원시형이다.
+## 🔑 **Applies one face to any node you already built** — gohud makes the face, the caller decides where it goes.
+## Where `style_hud_panel()` above is the counterpart narrowed to "a floating HUD face", this is the primitive.
 ##
-## 쓰는 자리 — ① `PanelContainer` 가 아닌 노드(`Panel`·`Button`·`Label`)에 입힐 때 ② 떠 있지 **않은** 판이
-## 필요할 때(카드 안에 깔리는 칩은 그림자가 붙으면 떠 보인다) ③ `normal`·`hover`·`pressed` 처럼 **상태별**로
-## 다른 판을 줄 때 ④ 스킨이 만든 판(`surface()`·`GoSkin.alert_box()`)을 그대로 입힐 때.
+## Where it is used — ① on a node that is not a `PanelContainer` (`Panel`, `Button`, `Label`) ② when a face that
+## does **not** float is needed (a chip laid inside a card looks lifted once it has a shadow) ③ when a different
+## face goes on each **state**, like `normal`, `hover`, `pressed` ④ when a face the skin made
+## (`surface()`, `GoSkin.alert_box()`) goes on as it is.
 ##
-## [param face] 는 `surface()`·`box()`·`edge_card()`·`GoUi.skin().*_box()` 가 돌려준 판이다.
-## [param state] 는 테마 아이템 이름(패널류는 `panel`, 버튼류는 `normal`·`hover`·`pressed`·`disabled`).
-## 🛑 판이 여백을 가지면 그 위에 `padding()` 칸을 또 두르지 않는다(내용 폭이 두 배로 깎인다 · `hud_panel()` 과 같은 이유).
+## [param face] is a face returned by `surface()`, `box()`, `edge_card()` or `GoUi.skin().*_box()`.
+## [param state] is the theme item name (`panel` for panels; `normal`, `hover`, `pressed`, `disabled` for buttons).
+## 🛑 If the face has padding, do not wrap another `padding()` cell around it (the content width is cut twice over · the same reason as `hud_panel()`).
 static func style_panel(node: Control, face: StyleBox, state := &"panel") -> void:
 	if node == null or face == null: return
 	node.theme = GoUi.theme()
 	node.add_theme_stylebox_override(state, face)
 
 
-## 🪟 **이미 놓여 있는 판 한 장을 반투명하게 만든다** — gohud 가 만들지 않은 컨테이너에 같은 규칙을
-## 입히는 길이다(손으로 만든 `PanelContainer`, 씬에 그려 둔 판, 호스트 프로젝트의 제 판).
+## 🪟 **Makes one face already in place translucent** — the way to put the same rule on a container gohud did
+## not make (a hand-built `PanelContainer`, a face drawn into a scene, the host project's own face).
 ##
 ## ```gdscript
 ## var frame := PanelContainer.new()
-## add_child(frame)                       # 🛑 트리에 붙인 **뒤에** 부른다 — 부모에서 물려받은 테마를 읽는다
-## GoStyle.fade_panel(frame)              # 테마·설정이 정한 값
-## GoStyle.fade_panel(frame, 0.6)         # 이 판만 60%
-## GoStyle.fade_panel(frame, 1.0)         # 되돌린다(판 덮기를 걷어낸다)
+## add_child(frame)                       # 🛑 call it **after** adding to the tree — it reads the theme inherited from the parent
+## GoStyle.fade_panel(frame)              # the value set by theme and config
+## GoStyle.fade_panel(frame, 0.6)         # 60% for this face only
+## GoStyle.fade_panel(frame, 1.0)         # back again (lifts the face override off)
 ## ```
 ##
-## ## 🔑 여러 번 불러도 한 번만 묽어진다
-## 처음 부를 때 **원래 판을 메타에 적어 두고** 언제나 그것에서 다시 계산한다. 그러지 않으면
-## `_notify()` 로 다시 그릴 때마다 판이 한 겹씩 더 묽어져 결국 사라진다 — 알파를 곱셈으로
-## 입히는 방식(`GoSkin.fade_box`)의 유일한 함정이고, 그 함정을 여기서 막는다.
+## ## 🔑 Called many times, it thins once
+## The first call **records the original face in a meta** and every later one recomputes from that. Otherwise
+## every redraw through `_notify()` thins the face by another layer until it disappears — the one trap in
+## applying alpha by multiplication (`GoSkin.fade_box`), and this is where that trap is blocked.
 ##
-## [param alpha] 음수면 테마·설정 값(`GoUi.surface_alpha(variant)`), [param state] 는 테마 아이템 이름
-## (패널류는 `panel`, 버튼류는 `normal`·`hover` …), [param variant] 는 어느 종류의 값을 따를 것인가다.
+## [param alpha] negative means the theme and config value (`GoUi.surface_alpha(variant)`), [param state] is the
+## theme item name (`panel` for panels; `normal`, `hover` … for buttons), and [param variant] is which kind of value to follow.
 ##
-## 🔬 이 함수가 어떻게 보이는지는 `examples/gallery/opacity_lab.gd` 의 세 번째 판이 보여 준다 —
-##    무늬 위에 얹은 맨 `PanelContainer` 에 이것을 걸고, 슬라이더를 끌어 그 자리에서 확인한다.
+## 🔬 What this function looks like is shown by the third face in `examples/gallery/opacity_lab.gd` — it hangs
+##    this on a bare `PanelContainer` over a pattern, and you drag the slider and see it on the spot.
 static func fade_panel(node: Control, alpha := -1.0, state := &"panel",
 		variant := GoTheme.BOX_PANEL) -> void:
 	if node == null: return
 	var key := StringName("go_solid_face_" + String(state))
 	var base: StyleBox = node.get_meta(key) if node.has_meta(key) else null
 	if base == null:
-		# 🛑 덮어 둔 판을 먼저 걷어낸다 — 안 그러면 이미 묽어진 판을 "원래 판" 으로 적어 둔다.
+		# 🛑 Lift the override off first — otherwise an already thinned face is recorded as the "original face".
 		node.remove_theme_stylebox_override(state)
 		base = node.get_theme_stylebox(state)
 		if base == null: return
@@ -1163,22 +1205,22 @@ static func fade_panel(node: Control, alpha := -1.0, state := &"panel",
 	node.add_theme_stylebox_override(state, GoSkin.fade_box(base.duplicate(), opacity))
 
 
-## `fade_panel()` 이 적어 둔 "원래 판" 을 **잊는다** — 테마·생김새 묶음을 갈아 끼운 뒤 다음 `fade_panel()`
-## 이 지금 테마에서 판을 다시 잡게 한다. 🛑 이것을 빠뜨리면 새 테마의 창이 **옛 테마의 판**을 쓴다.
+## **Forgets** the "original face" `fade_panel()` recorded — so that after a theme or look swap the next
+## `fade_panel()` picks the face up from the theme in force now. 🛑 Leave this out and a window on the new theme wears **the old theme's face**.
 static func forget_face(node: Control, state := &"panel") -> void:
 	if node == null: return
 	var key := StringName("go_solid_face_" + String(state))
 	if node.has_meta(key): node.remove_meta(key)
 
 
-## 🔑 **누르는 자리보다 작은 시각 판** — 버튼 안에 판 한 장을 깔고 버튼 폭을 따라가게 한다.
+## 🔑 **A visible face smaller than the press area** — lays one face inside a button and has it follow the button's width.
 ##
-## 손가락이 닿는 칸은 터치 하한(48)을 지켜야 하지만 **보이는 판은 그보다 작아야** 하는 자리가 있다
-## (HUD 의 얇은 띠·상태 바). 버튼을 키우면 화면이 답답하고, 판을 키우면 누르기 어렵다 — 둘을 나눈다.
-## 판은 입력을 받지 않으므로(IGNORE) 눌리는 자리는 버튼 그대로다.
+## The cell a finger lands on must keep the touch floor (48), but there are places where **the visible face must
+## be smaller** (a HUD's thin band, a status bar). Grow the button and the screen feels cramped; grow the face and
+## it is hard to press — so the two are split. The face takes no input (IGNORE), so the press area is the button as it is.
 ##
-## [param height] 는 보이는 판의 높이(dp), [param face] 를 주면 그 판을, 없으면 떠 있는 HUD 판을 쓴다.
-## 돌려받은 `Panel` 에 자식을 얹어 꾸밀 수 있다(자리 배치는 부르는 쪽이 정한다 — `PanelContainer` 가 아니다).
+## [param height] is the visible face's height (dp); pass [param face] to use that face, otherwise a floating HUD face is used.
+## You can dress the returned `Panel` with children (the caller lays them out — it is not a `PanelContainer`).
 static func touch_face(button: Button, height := 38.0, face: StyleBox = null) -> Panel:
 	if button == null: return null
 	var node := Panel.new()
@@ -1190,12 +1232,12 @@ static func touch_face(button: Button, height := 38.0, face: StyleBox = null) ->
 	return node
 
 
-## 🔑 **지도·월드 그림 위에 얹는 알약 판** 한 장 — 뒤 그림이 무엇이든 글자가 읽히게 바탕을 어둡게 깔고 테두리를
-## 얇게 두른다(`GoSkin.overlay_box`). `hud_panel()` 이 HUD 도크의 판이라면 이것은 **그림 위의 작은 크롬**이다.
+## 🔑 **One pill face laid over a map or over world art** — it lays a dark background and a thin border so the
+## text is readable whatever the art behind it is (`GoSkin.overlay_box`). Where `hud_panel()` is the face of a HUD dock, this is **small chrome over the art**.
 ##
-## [param pad_x]·[param pad_y] 는 판 안쪽 여백(dp · 음수면 작은 버튼 여백 토큰), [param fill_alpha] 는 바탕의
-## 불투명도다(0.0~1.0 · **음수면 테마·설정이 정한 HUD 값** `GoTheme.HUD_ALPHA`). 🛑 여기에 `padding()` 칸을 또 두르지 않는다(`hud_panel()` 과 같은 이유).
-## 🛑 **알약 안에 또 알약을 넣지 않는다** — 안에 놓는 버튼은 맨 버튼이나 `segmented()` 칸으로 둔다.
+## [param pad_x] and [param pad_y] are the face's inner padding (dp · negative: the small button padding token), and
+## [param fill_alpha] the background's opacity (0.0~1.0 · **negative: the HUD value set by theme and config**, `GoTheme.HUD_ALPHA`). 🛑 Do not wrap another `padding()` cell around it (the same reason as `hud_panel()`).
+## 🛑 **Never put a pill inside a pill** — buttons placed inside stay bare buttons or `segmented()` cells.
 static func overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "OverlayPanel"
@@ -1203,15 +1245,15 @@ static func overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> Panel
 	return node
 
 
-## **이미 만든 `PanelContainer`** 에 같은 알약 판을 입힌다. 인자는 `overlay_panel()` 과 같다.
+## Applies the same pill face to **a `PanelContainer` you already built**. The arguments are those of `overlay_panel()`.
 static func style_overlay_panel(node: PanelContainer, pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
 	node.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box(pad_x, pad_y, fill_alpha))
 
 
-## 판 안쪽 여백을 지정한 값으로 바꾼다 — 음수인 쪽은 판이 가진 값을 그대로 둔다.
-## 스킨이 준 커스텀 판에도 `StyleBox` 의 같은 속성이 있으므로 모양(테두리·발광·모서리)은 그대로다.
+## Sets a face's inner padding to the given values — a negative side keeps the value the face has.
+## A custom face from a skin has the same `StyleBox` properties, so the shape (border, glow, corners) is untouched.
 static func face_padding(face: StyleBox, pad_x := -1.0, pad_y := -1.0) -> void:
 	if face == null: return
 	if pad_x >= 0.0:
@@ -1222,8 +1264,8 @@ static func face_padding(face: StyleBox, pad_x := -1.0, pad_y := -1.0) -> void:
 		face.content_margin_bottom = pad_y
 
 
-## 판의 **네 변을 따로** 정한다 — 음수인 변은 그대로 둔다. 좌우가 같아도 되는 자리는 `face_padding()` 이고,
-## 이것은 한쪽만 달라야 할 때다(오른쪽 끝이 터치 칸 48 짜리 아이콘 버튼이라 판 여백이 필요 없는 알약 등).
+## Sets a face's **four sides separately** — a negative side is left alone. Where left and right may be equal use
+## `face_padding()`; this is for when one side must differ (a pill whose right end is a 48 touch-cell icon button and therefore needs no face padding).
 static func face_insets(face: StyleBox, left := -1.0, top := -1.0, right := -1.0, bottom := -1.0) -> void:
 	if face == null: return
 	if left >= 0.0: face.content_margin_left = left
@@ -1232,37 +1274,37 @@ static func face_insets(face: StyleBox, left := -1.0, top := -1.0, right := -1.0
 	if bottom >= 0.0: face.content_margin_bottom = bottom
 
 
-## 🔑 **HUD 원형 버튼의 원판** — 게임 화면 위에 떠 있는 둥근 아이콘 버튼(조작 패드·유틸리티 줄)의 판이다.
+## 🔑 **The disc face of a HUD round button** — the face of the round icon buttons floating over the game screen (control pads, utility rows).
 ##
-## 🛑 모서리 반경은 **보이는 원의 지름**에서 나온다. 테마에 반경을 숫자로 박아 두면 크기가 다른 버튼에서
-##    원이 알약이 된다(반경 24 짜리 판이 104×64 버튼에 들어가 그렇게 됐다).
-## 🔑 [param fill] 이 투명이면 **속을 그리지 않는다**(`draw_center = false`) — 그림(그라디언트 이미지·보석)을
-##    자식이 그리는 버튼이라, 판까지 칠하면 그 위에 색이 한 겹 더 얹힌다. 판은 테두리와 모서리만 맡는다.
-## [param edge_width] 0 이면 테두리 없음(맨 판) · [param edge_ink] 테두리 색 ·
-## [param detail] 모서리 곡선 분할. 기본 1 은 **모서리마다 삼각형 팬을 만들지 않는다** — 화면에 스무 개씩
-## 깔리는 버튼이라 그 비용이 그대로 곱해진다. 큰 원을 매끄럽게 그려야 하면 8·16 을 준다.
-## [param accent] 는 이 버튼의 강조색 — 각진·중세 스킨이 판을 그릴 때 쓴다(둥근 스킨은 쓰지 않는다).
+## 🛑 The corner radius comes from **the visible circle's diameter**. Pin a radius as a number in the theme and
+##    the circle turns into a pill on buttons of another size (a radius-24 face went into a 104×64 button and did exactly that).
+## 🔑 A transparent [param fill] **draws no center** (`draw_center = false`) — on these buttons a child draws the
+##    art (a gradient image, a gem), so painting the face too lays one more layer of color over it. The face handles the border and corners only.
+## [param edge_width] 0 means no border (a bare face) · [param edge_ink] the border color ·
+## [param detail] the corner curve subdivision. The default 1 **builds no triangle fan per corner** — twenty of
+## these buttons lie on the screen at once, so that cost is multiplied straight through. For a large circle to look smooth, pass 8 or 16.
+## [param accent] is this button's accent color — the angular and medieval skins use it when they draw the face (round skins do not).
 ##
-## 🔑 **모양을 정하는 것은 스킨이다**(`GoSkin.disc_box`) — 둥근 스킨은 원, 각진 스킨은 잘린 모서리,
-##    중세 스킨은 그 스킨의 판을 준다. 종전에는 여기서 `box()` 를 불렀는데, 그 반환형이 `StyleBoxFlat`
-##    이라 **각진 판이 평판으로 갈려** 생김새를 갈아도 HUD 버튼만 늘 둥글었다(2026-09-16 실측: 세
-##    생김새의 판이 모두 `StyleBoxFlat` 으로 같았다).
-## 🔑 **돌려주는 판을 보면 스킨이 원인지 알 수 있다** — 평판이면 원, 아니면 스킨이 모양을 가진 판이다.
-##    호스트가 원 위에만 얹는 그림(그라디언트 원판)을 가졌다면 이 값으로 켜고 끈다.
+## 🔑 **The skin decides the shape** (`GoSkin.disc_box`) — the round skin gives a circle, the angular skin cut
+##    corners, the medieval skin its own face. This used to call `box()`, whose return type is `StyleBoxFlat`, so
+##    **angular faces were ground down to flat ones** and HUD buttons alone stayed round through every look swap
+##    (measured 2026-09-16: all three looks returned the same `StyleBoxFlat`).
+## 🔑 **The returned face tells you whether the skin is round** — flat means a circle, anything else means the
+##    skin has a face with a shape of its own. A host with art it lays on circles only (a gradient disc) switches it on and off by this value.
 static func style_hud_disc(node: Control, diameter: float, edge_width := 0.0,
 		edge_ink := Color.TRANSPARENT, fill := Color.TRANSPARENT, detail := 1,
 		accent := Color.TRANSPARENT) -> StyleBox:
 	if node == null: return null
-	# 🛑 강조색이 없는 버튼(맨 판)에도 **볼 수 있는 바탕**을 줘야 한다 — 각진 스킨은 채움을 강조색에서
-	#    만들기 때문에, 투명을 넘기면 판이 통째로 사라져 월드 위에 글리프만 뜬다.
+	# 🛑 A button with no accent (a bare face) still needs **a background you can see** — the angular skin builds
+	#    its fill from the accent, so passing transparent makes the whole face vanish and only the glyph floats over the world.
 	var ink := accent if accent.a > 0.0 else (edge_ink if edge_ink.a > 0.0 else GoUi.color(GoTheme.SURFACE))
 	var shaped := GoUi.skin().disc_box(diameter, ink)
 	var face := shaped as StyleBoxFlat
 	if face == null:
-		# 스킨이 제 모양을 가진 판(각진·중세) — 모양과 채움은 그대로 두고, 호스트가 준 것만 얹는다.
+		# A skin face with a shape of its own (angular, medieval) — leave the shape and the fill alone and lay only what the host gave on top.
 		if fill.a > 0.0 and &"bg_color" in shaped: shaped.set(&"bg_color", fill)
-		# 🛑 테두리는 **0 도 값이다** — 안 넘기면 스킨 기본 테두리가 남아, 테두리를 일부러 뺀 맨 버튼에
-		#    선이 생긴다(2026-08-07 사용자가 원·테두리 프레임을 명시적으로 배제했다).
+		# 🛑 For the border **0 is a value too** — leave it unset and the skin's default border stays, drawing a line
+		#    on a bare button whose border was removed on purpose (2026-08-07, the user explicitly ruled out the circle-and-border frame).
 		if &"border_width" in shaped: shaped.set(&"border_width", maxf(0.0, edge_width))
 		if edge_width > 0.0 and edge_ink.a > 0.0 and &"border_color" in shaped:
 			shaped.set(&"border_color", edge_ink)
@@ -1276,27 +1318,27 @@ static func style_hud_disc(node: Control, diameter: float, edge_width := 0.0,
 	var width := maxi(0, roundi(edge_width))
 	face.set_border_width_all(width)
 	if width > 0 and edge_ink.a > 0.0: face.border_color = edge_ink
-	# 🛑 그림자를 그리지 않는다 — `StyleBoxFlat` 의 그림자는 본체와 **별개의 사각형**을 더 그린다.
+	# 🛑 Draws no shadow — a `StyleBoxFlat`'s shadow draws **a rectangle separate from** the body.
 	face.shadow_size = 0
 	node.add_theme_stylebox_override(&"panel", face)
 	return face
 
 
-## 🔑 **퀵슬롯 판을 노드에 입힌다** — `GoSlot` 을 쓰지 않고 자기 슬롯을 만든 호스트(칸 안의 줄 구성이 다른
-## 게임)도 같은 판을 얻는다. 모양은 스킨의 `slot_box` 가 정하므로 생김새를 갈면 함께 따라온다.
-## [param lit] 은 쿨다운·잔여 시간이 도는 중이라는 뜻이다(테두리가 굵고 채움이 짙어진다).
+## 🔑 **Applies the quick-slot face to a node** — a host that built its own slots instead of using `GoSlot`
+## (a game whose rows inside the cell differ) gets the same face. The skin's `slot_box` decides the shape, so it follows along on a look swap.
+## [param lit] means a cooldown or a remaining time is running (the border thickens and the fill deepens).
 static func style_slot_face(node: Control, accent: Color, lit := false) -> void:
 	if node == null: return
 	node.add_theme_stylebox_override(&"panel", GoUi.skin().slot_box(accent, lit))
 
 
-## 🔑 **꽉 채운 배지** — 개수·알림처럼 **눈에 띄어야 하는 수** 한 칸. 판을 [param fill] 로 채우고 글자를
-## [param ink] 로 쓴다. `GoSkin.badge_box` 는 표면 위에 얹는 **옅은** 배지라 역할이 다르다.
+## 🔑 **A solid badge** — one cell for **a number that must be noticed**, like a count or an alert. It fills the
+## face with [param fill] and writes the text in [param ink]. `GoSkin.badge_box` is the **faint** badge laid on a surface, and plays a different part.
 ##
-## 🛑 글자 크기는 여기서 정하지 않는다 — `typography(node, GoTheme.ROLE_MICRO, ink)` 로 **역할**을 준다.
-##    크기를 override 로 박으면 그 배지만 모바일 축소·테마 교체를 따라오지 못한다.
-## [param edge] 는 테두리 색, [param edge_width] 0 이면 테두리 없음. [param radius] 음수면 `radius_small`
-## 토큰, [param pad_x] 음수면 판이 가진 좌우 여백 그대로. [param detail] 은 `style_hud_disc` 와 같다.
+## 🛑 The font size is not set here — give it a **role** through `typography(node, GoTheme.ROLE_MICRO, ink)`.
+##    Pin the size as an override and that badge alone stops following mobile shrink and theme swaps.
+## [param edge] is the border color and [param edge_width] 0 means no border. [param radius] negative means the
+## `radius_small` token, and [param pad_x] negative keeps the face's own left and right padding. [param detail] works as in `style_hud_disc`.
 static func style_count_badge(node: Label, fill: Color, ink := Color.TRANSPARENT,
 		edge := Color.TRANSPARENT, edge_width := 0, radius := -1, pad_x := -1.0, detail := 1) -> void:
 	if node == null: return
@@ -1318,13 +1360,13 @@ static func style_count_badge(node: Label, fill: Color, ink := Color.TRANSPARENT
 	if ink.a > 0.0: node.add_theme_color_override(&"font_color", ink)
 
 
-## 🔑 **이미 글리프가 든 노드의 크기·색만** 다시 입힌다 — `glyph_text()` 로 한 번 그린 아이콘을
-## 상태가 바뀔 때마다(눌림·올림·켜짐) 새로 조회하지 않고 색만 옮기는 자리다.
+## 🔑 Restyles **only the size and color of a node that already holds a glyph** — for moving the color of an icon
+## drawn once by `glyph_text()` on every state change (pressed, hovered, toggled on) without looking it up again.
 ##
-## [param size] 음수면 크기를 건드리지 않는다 — HUD 의 글리프 크기는 터치 지름에 비례하는 기하라
-## 부르는 쪽이 정한다(토큰이 아니다).
-## 🛑 [param states] 를 끄지 않는 한 버튼은 올림·눌림·포커스 글자색까지 **같은 색**으로 맞춘다.
-##    한 상태만 빠뜨리면 마우스를 올린 채 누르는 순간 글리프 색이 테마 기본으로 튄다.
+## [param size] negative leaves the size alone — a HUD's glyph size is geometry proportional to the touch diameter,
+## so the caller decides it (it is not a token).
+## 🛑 Unless [param states] is turned off, a button's hover, pressed and focus text colors are matched to **the same color**.
+##    Miss one state and the glyph color jumps to the theme default the moment it is pressed while hovered.
 static func glyph_type(node: Control, size := -1, ink := Color.TRANSPARENT, states := true) -> void:
 	if node == null: return
 	if size >= 0: node.add_theme_font_size_override(&"font_size", size)
@@ -1335,8 +1377,8 @@ static func glyph_type(node: Control, size := -1, ink := Color.TRANSPARENT, stat
 		node.add_theme_color_override(key, ink)
 
 
-## 칩과 **같은 알약 판**에 내용을 채우는 빈 컨테이너 — 한 줄짜리 칩으로는 모자란 자리(이름·레벨·게이지가 함께 드는
-## 명단 카드)에 쓴다. [param fill_alpha] 는 `style_chip_button` 과 같다(음수면 스킨 틴트 그대로).
+## An empty container filling **the same pill face** as a chip — for places a one-line chip cannot serve (a roster
+## card carrying a name, a level and a gauge together). [param fill_alpha] works as in `style_chip_button` (negative keeps the skin's tint).
 static func chip_panel(accent := Color.TRANSPARENT, fill_alpha := -1.0) -> PanelContainer:
 	var color := accent if accent.a > 0 else GoUi.color(GoTheme.SECONDARY)
 	var node := PanelContainer.new()
@@ -1348,18 +1390,19 @@ static func chip_panel(accent := Color.TRANSPARENT, fill_alpha := -1.0) -> Panel
 	return node
 
 
-## 🔑 **고르는 카드.** 버튼 한 장에 상태별 판을 입힌다 — 고른 카드만 의미색 테두리와 옅은 채움을 얻고, 올리면 테두리만 물든다.
-## 내용(아이콘·제목·설명)은 부르는 쪽이 안쪽 `MarginContainer` 로 채운다.
+## 🔑 **A choice card.** Puts a face per state on one button — only the chosen card gets the semantic border
+## and a faint fill, and hovering stains the border alone.
+## The caller fills the content (icon, title, description) through an inner `MarginContainer`.
 ##
-## 🛑 **판 여백은 모든 상태에서 0** 이다 — 상태마다 판 여백이 다르면 고른 카드만 넓어져 줄이 흔들린다.
-## 🔑 판은 스킨의 `surface()` 에서 온다 — 각진 판·단조 판 테마에서도 그 모양 그대로 색만 바뀐다. 포커스 판은 덮지 않는다.
+## 🛑 **Face padding is 0 in every state** — differing face padding per state widens the chosen card alone and the row shifts.
+## 🔑 The face comes from the skin's `surface()` — in angular and forged face themes the shape stays and only the color changes. The focus face is not overridden.
 ##
-## [param selected] — [param toggle] 을 끈 카드에서 이 카드를 고른 것으로 그린다(고를 때마다 목록을 다시 짓는 화면).
-## [param toggle] — 켜면 `toggle_mode` 의 눌린 상태가 곧 선택이다. 같은 무리는 부르는 쪽이 `ButtonGroup` 하나로 묶는다.
-## [param dim_disabled] — 켜면 비활성 카드를 옅게, 끄면 평소 판을 그대로 쓴다(비활성으로 바뀔 때 색이 튀지 않게).
-## [param filter] — 음수면 `mouse_filter` 를 건드리지 않는다. 🛑 스크롤 안의 카드는 `MOUSE_FILTER_PASS` 를 넘긴다 —
-##   STOP 이면 카드 위에서 시작한 끌기가 스크롤로 넘어가지 않는다. 함수가 알아서 정하지 않는 이유는 HUD 처럼 월드 위에 뜬
-##   버튼은 STOP 이어야 하기 때문이다(PASS 면 누른 이벤트가 월드로 샌다).
+## [param selected] — draws this card as the chosen one on a card with [param toggle] off (screens that rebuild the list on every pick).
+## [param toggle] — on, `toggle_mode`'s pressed state is the selection. The caller ties one set together with a single `ButtonGroup`.
+## [param dim_disabled] — on, a disabled card goes faint; off, the resting face is kept (so the color does not jump when it turns disabled).
+## [param filter] — negative leaves `mouse_filter` alone. 🛑 A card inside a scroll passes `MOUSE_FILTER_PASS` —
+##   with STOP a drag that starts on the card never reaches the scroll. The function does not decide on its own
+##   because a button floating over the world, a HUD's, must be STOP (with PASS the press event leaks into the world).
 static func style_choice_card(node: Button, accent: Color, selected := false, toggle := true,
 		dim_disabled := true, filter := -1) -> void:
 	node.theme = GoUi.theme()
@@ -1386,7 +1429,7 @@ static func style_choice_card(node: Button, accent: Color, selected := false, to
 		node.add_theme_stylebox_override(state, face)
 
 
-## 고른 카드 판 — 평소 판 색을 의미색 쪽으로 16% 물들이고, 테두리를 의미색 0.9 · 두께 2 로. 스킨 판 종류를 가정하지 않는다.
+## The chosen card's face — stains the resting face color 16% toward the semantic color and sets the border to that color at 0.9, thickness 2. Assumes nothing about the skin's face type.
 static func _choice_face(accent: Color) -> StyleBox:
 	var face := surface(GoTheme.BOX_CARD, accent)
 	if &"bg_color" in face:
@@ -1398,11 +1441,12 @@ static func _choice_face(accent: Color) -> StyleBox:
 	return face
 
 
-## 🔑 **카드 안의 내용 칸** — 판 여백이 0 인 카드(`style_choice_card` 로 꾸민 버튼 등)를 채우는 안쪽 여백 한 번 · 세로 줄.
-## 카드 높이가 내용(줄바꿈된 글자 포함)을 따라간다(`fit_content_height`).
-## 🛑 판에 여백이 있는 `PanelContainer`(`card()`)에 쓰면 여백이 두 겹이 된다 — 그 카드에는 `column()` 을 바로 넣는다.
-## 🛑 카드가 버튼이면 내용을 다 채운 뒤 `let_input_through(body)` 를 부른다 — 누르는 것은 카드다.
-## [param padding] 음수면 `padding_compact` 토큰(dp), [param spacing] 음수면 `gap_tiny` 토큰(dp).
+## 🔑 **The content cell inside a card** — one layer of inner padding plus a vertical row, filling a card whose
+## face padding is 0 (a button dressed by `style_choice_card`, for one).
+## The card's height follows the content, wrapped text included (`fit_content_height`).
+## 🛑 Used on a `PanelContainer` whose face has padding (`card()`) the padding doubles — put a `column()` straight into that card.
+## 🛑 When the card is a button, call `let_input_through(body)` once the content is filled — the card is what gets pressed.
+## [param padding] negative means the `padding_compact` token (dp), [param spacing] negative the `gap_tiny` token (dp).
 static func card_body(card: Control, padding := -1, spacing := -1) -> VBoxContainer:
 	var inset := MarginContainer.new()
 	inset.name = "Inset"
@@ -1418,15 +1462,15 @@ static func card_body(card: Control, padding := -1, spacing := -1) -> VBoxContai
 	return body
 
 
-## 이 노드와 그 아래 모든 컨트롤이 **입력을 받지 않게** 한다 — 카드 버튼 위의 글자·아이콘이 누름과 올림을 가로채지 않게.
-## 🔑 컨테이너의 기본은 PASS 라 이벤트를 부모로 넘기기는 하지만, 마우스 진입을 먼저 받아 카드의 올림 판이 켜지지 않는다.
+## Makes this node and every control under it **take no input** — so text and icons on a card button do not swallow press and hover.
+## 🔑 A container defaults to PASS and does hand the event to its parent, but it takes the mouse entry first, and the card's hover face never lights.
 static func let_input_through(node: Node) -> void:
 	if node is Control: (node as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for child in node.get_children(): let_input_through(child)
 
 
-## **한 줄 라벨** — 줄바꿈하지 않고 넘치면 말줄임(…)으로 자른다. 좁은 카드의 이름·수치 줄에 쓴다.
-## 🛑 말줄임 라벨의 최소 폭은 거의 0 이다 — 칸이 좁으면 글자가 통째로 사라진 것처럼 보인다. 칸 폭은 부르는 쪽이 확보한다.
+## **A one-line label** — never wraps, and cuts the overflow with an ellipsis (…). For name and number rows on narrow cards.
+## 🛑 An ellipsized label's minimum width is nearly 0 — in a narrow cell the text looks as if it vanished entirely. The caller secures the cell width.
 static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
 	var node := label(text, role, ink)
 	node.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -1436,9 +1480,9 @@ static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARE
 	return node
 
 
-## 작은 알약형 표식(상태·태그·수량).
-## [param icon] 을 주면 아이콘 세트의 그림을 글자 앞에 놓는다 — 글자가 비어 있으면 **아이콘만** 있는 칩이다(HUD 버프 표시 등).
-## [param icon_size] 음수면 `list_glyph` 토큰. [param urgent] 는 곧 사라질 것(남은 시간이 얼마 없는 버프)에 경고 테두리를 입힌다.
+## A small pill-shaped mark (a state, a tag, a quantity).
+## Pass [param icon] and the icon set's art goes before the text — with the text empty it is an **icon-only** chip (HUD buff marks and the like).
+## [param icon_size] negative means the `list_glyph` token. [param urgent] puts a warning border on what is about to go (a buff with little time left).
 static func chip(text: String, ink := Color.TRANSPARENT, translate := false, icon: StringName = &"",
 		icon_size := -1, urgent := false) -> PanelContainer:
 	var color := ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY)
@@ -1448,7 +1492,7 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	node.add_theme_stylebox_override(&"panel", _chip_face(color, urgent))
-	# 🛑 글자는 칩 **판 위에서** 읽혀야 한다 — 같은 색 틴트 배경이라 그대로 쓰면 묻힌다.
+	# 🛑 The text must read **on the chip face** — the background is a tint of the same color, so used as it is it sinks in.
 	var ink_on_chip := GoUi.skin().chip_ink(color)
 	var text_node: Label = null
 	if not text.is_empty():
@@ -1463,7 +1507,7 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 		return node
 	var glyph := GoUi.icons().node(icon, GoUi.metric(GoTheme.LIST_GLYPH) if icon_size < 0 else icon_size, ink_on_chip)
 	if text_node == null:
-		# 🔑 아이콘만 있는 칩은 **정사각에 가깝게** — 좌우 여백도 위아래와 같게 줄인다(HUD 버프 줄처럼 같은 칸을 늘어놓는 자리).
+		# 🔑 An icon-only chip stays **close to square** — the left and right padding shrinks to match the top and bottom (for rows of identical cells, like a HUD buff row).
 		var face := node.get_theme_stylebox(&"panel")
 		var tight := float(GoUi.metric(GoTheme.GAP_TINY))
 		face.content_margin_left = tight
@@ -1479,7 +1523,7 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 	return node
 
 
-## 칩 판 — 모양은 스킨이 정하고, 급한 것만 경고 테두리로 바꾼다(스킨 판 종류를 가정하지 않는다).
+## The chip face — the skin decides the shape, and only the urgent ones swap to a warning border (assumes nothing about the skin's face type).
 static func _chip_face(color: Color, urgent: bool) -> StyleBox:
 	var face := GoUi.skin().chip_box(color)
 	if urgent and &"border_color" in face:
@@ -1487,15 +1531,15 @@ static func _chip_face(color: Color, urgent: bool) -> StyleBox:
 	return face
 
 
-## 이미 만든 칩의 **판만** 다시 입힌다 — 의미색이 바뀌거나(파티장이 바뀐 명단) 남은 시간이 줄어드는 표시처럼
-## 자주 갱신되는 곳에서 노드를 다시 만들지 않는다. 글자·아이콘 색은 부르는 쪽이 함께 바꾼다.
+## Restyles **the face only** of a chip you already built — so places that refresh often never rebuild the node
+## (a roster whose party leader changed, a mark counting a remaining time down). The caller changes the text and icon colors alongside.
 static func restyle_chip(node: PanelContainer, ink: Color, urgent := false) -> void:
 	if node == null: return
 	node.add_theme_stylebox_override(&"panel", _chip_face(ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY), urgent))
 
 
-## **이미 만든 라벨**에 칩 판을 입힌다 — 폭을 직접 재서 칸을 잡는 자리(HUD 상태 바의 배지)처럼 `chip()` 의
-## 컨테이너를 쓸 수 없을 때. 글자색도 판 위에서 읽히도록 맞춘다.
+## Applies a chip face to **a label you already built** — for when `chip()`'s container cannot be used, as where the
+## caller measures the width itself to place the cell (a badge on the HUD status bar). The text color is matched to read on the face too.
 static func style_chip_label(node: Label, accent: Color, urgent := false) -> void:
 	node.theme = GoUi.theme()
 	var face := _chip_face(accent, urgent)
@@ -1503,14 +1547,15 @@ static func style_chip_label(node: Label, accent: Color, urgent := false) -> voi
 	node.add_theme_color_override(&"font_color", GoUi.skin().chip_ink(accent))
 
 
-## 🔑 **칩처럼 생긴 버튼** — 틴트 알약 판을 모든 상태에 입힌다. HUD 의 상태 버튼(따라가기·나가기), 알림 배지,
-## 목록의 작은 동작 단추처럼 "누를 수 있는 칩" 자리에 쓴다. 글자·아이콘은 부르는 쪽이 넣는다(판만 입힌다).
+## 🔑 **A button shaped like a chip** — puts the tinted pill face on every state. For "a chip you can press":
+## a HUD's state buttons (follow, leave), notification badges, the small action buttons in a list. The caller puts
+## the text and icons in (this applies the face only).
 ##
-## [param fill_alpha] 가 음수면 스킨 칩 판의 틴트 그대로다. 값을 주면 그만큼 의미색으로 채운다 —
-## 0.08 처럼 옅게 주면 조용한 상태 버튼, 0.85 처럼 크게 주면 **강조** 버튼이다(채운 판 위 글자색은 부르는 쪽이
-## `typography(node, role, ink)` 로 준다). [param urgent] 는 경고 테두리다.
-## 🔑 포커스 판은 덮지 않는다 — 공용 Theme 의 포커스 링이 키보드·게임패드로 조작할 때만 뜬다.
-## 🛑 `mouse_filter` 를 건드리지 않는다 — HUD 위 버튼은 STOP 이어야 누른 이벤트가 월드로 새지 않는다.
+## A negative [param fill_alpha] keeps the tint of the skin's chip face. Give a value and it fills that far with the
+## semantic color — faint, like 0.08, for a quiet state button; large, like 0.85, for an **emphasis** button (the
+## caller gives the text color on a filled face through `typography(node, role, ink)`). [param urgent] is the warning border.
+## 🔑 The focus face is not overridden — the shared Theme's focus ring appears only under keyboard and gamepad control.
+## 🛑 `mouse_filter` is left alone — a button over the HUD must be STOP so the press event does not leak into the world.
 static func style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, urgent := false) -> void:
 	node.theme = GoUi.theme()
 	var face_ink := accent
@@ -1519,22 +1564,23 @@ static func style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, u
 		if fill_alpha >= 0.0 and &"bg_color" in face: face.set(&"bg_color", Color(accent, fill_alpha))
 		if state == &"normal": face_ink = GoUi.skin().readable_on(accent, GoSkin.blend(GoSkin.box_background(face), GoUi.color(GoTheme.SURFACE)))
 		node.add_theme_stylebox_override(state, face)
-	# 🛑 글자는 **칩 판 위에서** 읽혀야 한다 — 같은 색 틴트 위에 같은 색 글자를 얹는 전형적인 자리다(`chip()` 과 같은 규칙).
-	#    채운 판에서는 이 값이 어두운 쪽으로 간다.
+	# 🛑 The text must read **on the chip face** — this is the classic place where text is laid on a tint of its
+	#    own color (the same rule as `chip()`). On a filled face this value goes toward the dark side.
 	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
 		node.add_theme_color_override(key, face_ink)
 
 
-## 🔑 **원형 조작 버튼** — 지도의 줌 ＋/－ · 내 위치처럼 그림 위에 뜬 동그란 단추의 상태 판을 입힌다.
-## 글자·아이콘은 부르는 쪽이 넣는다(`glyph_text()`·`font_role()`), 여기는 판만 맡는다.
+## 🔑 **A round control button** — puts the state faces on the round buttons floating over art, like a map's zoom ＋/－ or "my location".
+## The caller puts the text and icons in (`glyph_text()`, `font_role()`); this takes the face alone.
 ##
-## 판 여백은 모든 상태에서 0 이고 모서리 반경은 [param diameter] 의 절반이다 — 보이는 크기는 부르는 쪽이
-## `custom_minimum_size` 로 정한 지름 그대로이고, 상태가 바뀌어도 폭이 흔들리지 않는다.
-## [param fill] 은 평상시 바탕색(투명이면 `surface` 토큰), [param fill_alpha] 는 평상시 그 색의 불투명도다
-## (올렸을 때·비활성은 1.0 — 그림 위에서 더 또렷해진다). 누른 상태는 의미색을 [param press_alpha] 만큼 채운다.
-## 🛑 `mouse_filter` 를 건드리지 않는다 — 그림 위 버튼은 STOP 이어야 누름이 지도·월드로 새지 않는다.
-## 🛑 판은 `surface()` 가 아니라 `box()` 에서 온다 — **둥근 것이 이 버튼의 뜻**이라, 각진 판·단조 판 스킨의
-##    모양을 지키면 원이 사각형이 된다(`style_hud_disc()` 와 같은 판단). 색·여백은 스킨 값을 그대로 옮겨 온다.
+## Face padding is 0 in every state and the corner radius is half of [param diameter] — the visible size stays the
+## diameter the caller set through `custom_minimum_size`, and the width does not shift as the state changes.
+## [param fill] is the resting background color (transparent: the `surface` token) and [param fill_alpha] that
+## color's resting opacity (1.0 when hovered and when disabled — it stands out more over art). The pressed state fills with the semantic color by [param press_alpha].
+## 🛑 `mouse_filter` is left alone — a button over art must be STOP so the press does not leak into the map or the world.
+## 🛑 The face comes from `box()`, not `surface()` — **being round is what this button means**, so keeping the
+##    shape of an angular or forged skin would turn the circle into a square (the same judgment as `style_hud_disc()`).
+##    Color and padding are carried over from the skin's values as they are.
 static func style_disc_button(node: Button, diameter: float, accent: Color, fill := Color.TRANSPARENT,
 		fill_alpha := 0.92, press_alpha := 0.34) -> void:
 	if node == null: return
@@ -1553,8 +1599,8 @@ static func style_disc_button(node: Button, diameter: float, accent: Color, fill
 		node.add_theme_stylebox_override(state, face)
 
 
-## 아무것도 없을 때 보여 주는 자리 — 아이콘 + 한 줄 설명.
-## 🛑 빈 목록을 **빈 채로** 두지 않는다. 사용자는 그것을 고장으로 읽는다.
+## What is shown when there is nothing — an icon + one line of explanation.
+## 🛑 Never leave an empty list **empty**. Users read that as broken.
 static func empty_state(icon: StringName, key: String, translate := true) -> Control:
 	var wrap := column(GoUi.metric(GoTheme.GAP))
 	wrap.name = "EmptyState"
@@ -1570,9 +1616,9 @@ static func empty_state(icon: StringName, key: String, translate := true) -> Con
 	return wrap
 
 
-# ── 동작 ───────────────────────────────────────────────────────────────
+# ── Motion ─────────────────────────────────────────────────────────────
 
-## 등장 페이드. 직전 트윈은 끊는다. `reduce_motion` 이면 즉시 보인다.
+## An entrance fade. Kills the previous tween. With `reduce_motion` it shows at once.
 static func fade(node: CanvasItem, previous: Tween, shown: bool) -> Tween:
 	if previous != null and previous.is_valid(): previous.kill()
 	var seconds := GoUi.config.fade_seconds
@@ -1585,8 +1631,8 @@ static func fade(node: CanvasItem, previous: Tween, shown: bool) -> Tween:
 	return tween
 
 
-## `Button` 처럼 **자식에서 최소 높이를 물려받지 않는** 컨트롤을 내용에 맞춰 키운다.
-## 줄바꿈·번역·글꼴이 바뀌어도 내용이 카드 밖으로 나가지 않는다.
+## Grows a control that **does not inherit a minimum height from its children**, like `Button`, to fit its content.
+## The content stays inside the card through wrapping, translation and font changes.
 static func fit_content_height(control: Control, content: Control) -> void:
 	var baseline := control.custom_minimum_size.y
 	var update := _fit_height.bind(weakref(control), weakref(content), baseline)
@@ -1603,22 +1649,22 @@ static func _fit_height(control_ref: WeakRef, content_ref: WeakRef, baseline: fl
 		control.custom_minimum_size.y = height
 
 
-## 🔑 **gohud 규격의 툴팁 한 장.** `Control._make_custom_tooltip()` 에서 돌려준다.
+## 🔑 **One tooltip to the gohud spec.** Return it from `Control._make_custom_tooltip()`.
 ##
-## 🛑 엔진 기본 툴팁을 그대로 두면 글자가 **한 자씩 세로로** 쪼개진다 — 라벨에 줄바꿈이 걸린 채
-##    최대 폭이 1dp 로 계산된 탓이다(2026-09-13 실측: `settings` 가 폭 1 · 높이 186 으로 나왔다).
-##    폭을 우리가 정하면 그 계산에 기대지 않는다.
+## 🛑 Leave the engine's default tooltip alone and the text splits **one character per line, vertically** — the
+##    label has wrapping on while the maximum width computes as 1dp (measured 2026-09-13: `settings` came out
+##    1 wide and 186 tall). Setting the width ourselves takes that computation out of the loop.
 static func tooltip_node(text: String, max_width := 260.0) -> Control:
-	# 🛑 **판을 다시 그리지 않는다.** 엔진이 이 노드를 자기 `TooltipPanel` 안에 넣으므로, 여기서
-	#    판을 하나 더 만들면 테두리가 **두 겹**으로 보인다(2026-09-13 실측). 글자만 돌려준다.
+	# 🛑 **Draws no face of its own.** The engine puts this node inside its own `TooltipPanel`, so making one more
+	#    face here shows **two** borders (measured 2026-09-13). Return the text alone.
 	var label := Label.new()
 	label.name = "Text"
 	label.text = text
-	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED   # 이미 번역된 문구가 들어온다
-	# 🛑 `go_no_wrap` 을 달아 둔다 — 폼이 자손 라벨에 줄바꿈을 강제하는데, 툴팁은 그 대상이 아니다.
+	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED   # what arrives is already translated
+	# 🛑 Leave `go_no_wrap` on it — a form forces wrapping onto descendant labels, and a tooltip is not one of them.
 	label.set_meta(&"go_no_wrap", true)
 	typography(label, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.TEXT))
-	# 짧은 문구는 한 줄로 둔다. 길면 그때만 접되, **접을 폭을 우리가 준다.**
+	# A short phrase stays on one line. Only a long one folds, and **we give the width it folds at.**
 	var wide := label.get_theme_font(&"font").get_string_size(
 		text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, label.get_theme_font_size(&"font_size")).x
 	if wide > max_width:
@@ -1629,18 +1675,18 @@ static func tooltip_node(text: String, max_width := 260.0) -> Control:
 	return label
 
 
-## 트리 전체에 폼 규격을 입힌다 — 나중에 추가되는 자식까지 같은 규격이 되게.
+## Applies the form spec to a whole tree — so children added later get the same spec.
 ##
-## 🛑🛑 자손 `Label` 의 줄바꿈을 **보장한다.** 없으면 긴 문장 하나가 한 줄로 뻗고, 그 최소 폭이
-##    화면을 넘겨 좌우가 잘린다 — 무슨 화면인지조차 분간할 수 없게 된다.
-##    씬마다 손으로 켜는 방식은 **반드시 빠뜨린다.** 그래서 컨테이너가 스스로 보장한다.
+## 🛑🛑 It **guarantees** wrapping on descendant `Label`s. Without it one long sentence runs on a single line
+##    and its minimum width runs off the screen, cutting both sides — you cannot even tell which screen you are on.
+##    Turning it on by hand per scene **is always forgotten somewhere.** So the container guarantees it itself.
 static func form(node: Node) -> void:
-	# 🛑 제 간격을 쓰는 묶음(`field()` — 라벨이 자기 칸에 붙어야 한다)은 건드리지 않는다.
+	# 🛑 A group that keeps its own spacing (`field()` — its label must stay attached to its field) is left alone.
 	if node is BoxContainer and not node.has_meta(&"go_own_spacing"):
 		node.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP))
 	if node is Button:
 		node.custom_minimum_size.y = maxf(node.custom_minimum_size.y, GoUi.metric(GoTheme.BUTTON_HEIGHT))
-		# 🛑 자연 폭으로 표시된 것(흐르는 줄의 칸, 「뒤로」처럼 낱말 하나)은 건드리지 않는다.
+		# 🛑 Anything shown at natural width (a cell in a flow row, a single word like "Back") is left alone.
 		if GoUi.config.autowrap_text: fit_words(node)
 		if node.get_class() == "Button" and node.theme_type_variation == &"":
 			style_button(node)
@@ -1653,23 +1699,23 @@ static func form(node: Node) -> void:
 	for child in node.get_children(): form(child)
 
 
-# ── 선택·메뉴 ───────────────────────────────────────────────────────────
+# ── Selection and menus ────────────────────────────────────────────────
 
-## 🔑 **드롭다운 선택(Select).** 항목 배열을 받아 `OptionButton` 을 만든다. `placeholder` 는 아무것도 고르지
-## 않았을 때 보이는 글(고르면 사라진다). 폭은 부르는 쪽이 정한다.
+## 🔑 **A dropdown select.** Takes an array of options and builds an `OptionButton`. `placeholder` is the text
+## shown while nothing is chosen (it goes once something is). The caller decides the width.
 static func select(options: Array, placeholder := "", translate := false) -> OptionButton:
 	var node := picker()
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	for option in options: node.add_item(str(option))
 	if not placeholder.is_empty():
-		# 🛑 `select(-1)` 이 글을 지우므로 **그 뒤에** placeholder 를 쓴다. 고르면 엔진이 항목 글로 바꾼다.
+		# 🛑 `select(-1)` clears the text, so write the placeholder **after** it. Once something is chosen the engine swaps in the item's text.
 		node.select(-1)
 		node.text = placeholder
 	return node
 
 
-## 🔑 **드롭다운 메뉴(Dropdown Menu).** 버튼을 누르면 항목 목록이 아래로 펼쳐진다. 항목은 문자열 또는
-## `{"text": …, "icon": StringName, "disabled": bool}` 사전. 고르면 `action.call(index)`.
+## 🔑 **A dropdown menu.** Press the button and the item list opens downward. An item is a string or a
+## `{"text": …, "icon": StringName, "disabled": bool}` dictionary. Choosing one calls `action.call(index)`.
 static func dropdown(text: String, items: Array, action := Callable(), translate := false) -> MenuButton:
 	var node := MenuButton.new()
 	node.theme = GoUi.theme()
@@ -1679,9 +1725,9 @@ static func dropdown(text: String, items: Array, action := Callable(), translate
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
-	# 🛑 **`select()`(OptionButton) 와 나란히 놓인다** — 데모에서 둘이 위아래로 붙어 있는데 글자 정렬과
-	#    화살표 크기가 달라 다른 부품처럼 보였다(2026-09-13 데모 촬영 실측). 글자는 왼쪽, 화살표는
-	#    OptionButton 이 쓰는 그림과 같은 크기로 맞춘다.
+	# 🛑 **It stands next to `select()` (OptionButton)** — in the demo the two are stacked one above the other, and
+	#    their text alignment and arrow size differed enough that they read as different parts (measured 2026-09-13
+	#    on a demo capture). The text goes left, and the arrow is matched to the size of the art OptionButton uses.
 	node.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var arrow := GoUi.theme().get_icon(&"arrow", &"OptionButton") if GoUi.theme() != null and GoUi.theme().has_icon(&"arrow", &"OptionButton") else null
 	apply_icon(node, GoIconSet.CHEVRON_DOWN, arrow.get_width() if arrow != null else GoUi.metric(GoTheme.LIST_GLYPH))
@@ -1700,13 +1746,13 @@ static func dropdown(text: String, items: Array, action := Callable(), translate
 	return node
 
 
-## 팝업 메뉴의 항목이 **터치 하한**을 지키게 줄 간격을 띄운다 — 팝업 글자는 본문 크기라 줄이 손가락보다 얇다.
-## [param spacing] 음수면 `gap` 토큰. 🔑 항목을 지우고 다시 채워도 이 값은 남는다(테마 값이지 항목이 아니다).
-## [param alpha] 는 메뉴 판 바탕의 불투명도(0.0~1.0) — 음수면 `GoTheme.POPUP_ALPHA`(기본 테마는 **100**).
+## Spreads the rows of a popup menu so its items keep the **touch floor** — popup text is body size, which makes the rows thinner than a finger.
+## [param spacing] negative means the `gap` token. 🔑 Clear the items and refill and this value survives (it is a theme value, not an item).
+## [param alpha] is the opacity of the menu face background (0.0~1.0) — negative: `GoTheme.POPUP_ALPHA` (**100** in the default theme).
 ##
-## 🛑 **팝업 메뉴는 기본이 꽉 찬 색이다.** 다른 판과 달리 `PopupMenu` 는 엔진이 창(`Window`)으로 띄울 수
-##    있고, 그때는 OS 가 게임 화면과 합성해 주지 않아 반투명이 **뒤가 보이는 대신 검게** 나온다
-##    (`gui_embed_subwindows` 가 꺼진 프로젝트). 게임 안에 박아 띄우는 프로젝트라면 값을 내려도 좋다.
+## 🛑 **A popup menu is solid by default.** Unlike other faces a `PopupMenu` may be raised by the engine as a
+##    `Window`, and then the OS does not composite it with the game screen, so translucency comes out **black
+##    instead of showing what is behind** (projects with `gui_embed_subwindows` off). A project that raises them embedded in the game may lower the value.
 static func style_popup(popup: PopupMenu, spacing := -1, alpha := -1.0) -> void:
 	if popup == null: return
 	popup.theme = GoUi.theme()
@@ -1717,8 +1763,8 @@ static func style_popup(popup: PopupMenu, spacing := -1, alpha := -1.0) -> void:
 			GoSkin.fade_box(GoUi.box(GoTheme.BOX_POPUP), opacity))
 
 
-## 🔑 **라디오 묶음(Radio Group).** 하나만 고른다. 돌려주는 세로줄의 `meta("group")` 이 `ButtonGroup` 이고,
-## 고른 항목은 `group.get_pressed_button().get_index()` 로 안다. 터치 하한은 항목마다 지킨다.
+## 🔑 **A radio group.** Only one is chosen. `meta("group")` on the returned vertical row is the `ButtonGroup`,
+## and the chosen item is read as `group.get_pressed_button().get_index()`. Every item keeps the touch floor.
 static func radio_group(options: Array, selected := 0, translate := false) -> VBoxContainer:
 	var column := column(GoUi.metric(GoTheme.GAP_TINY))
 	var group := ButtonGroup.new()
@@ -1727,7 +1773,7 @@ static func radio_group(options: Array, selected := 0, translate := false) -> VB
 		var item := CheckBox.new()
 		item.theme = GoUi.theme()
 		item.text = str(options[index])
-		item.button_group = group   # 묶음이 있으면 CheckBox 는 라디오로 그려진다
+		item.button_group = group   # given a group, a CheckBox draws as a radio
 		item.button_pressed = index == selected
 		item.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 		item.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
@@ -1736,10 +1782,10 @@ static func radio_group(options: Array, selected := 0, translate := false) -> VB
 	return column
 
 
-## 🔑 **분절 선택(Segmented / Toggle Group).** 나란한 버튼 중 하나만 눌린 상태로 남는다.
-## 고르면 `action.call(index)`. `meta("group")` 은 `ButtonGroup`.
-## `compact` 를 켜면 **좁은 크롬용 작은 칸**이다 — 칸 최소 폭이 터치 하한이고, 칸 판 여백이 작은 버튼 여백 토큰이다.
-## 🔑 지도·HUD 위 알약처럼 폭이 빠듯한 곳에 쓴다. 기본 칸(최소 폭 터치 ×1.5 · 카드 여백)은 폼·설정 화면용이다.
+## 🔑 **A segmented / toggle group.** Of the buttons standing side by side, only one stays pressed.
+## Choosing one calls `action.call(index)`. `meta("group")` is the `ButtonGroup`.
+## Turn `compact` on for **small cells for narrow chrome** — the cell's minimum width is the touch floor and the cell face's padding is the small button padding token.
+## 🔑 Use it where width is tight, like a pill over a map or a HUD. The default cell (minimum width touch ×1.5 · card padding) is for forms and settings screens.
 static func segmented(options: Array, selected := 0, action := Callable(), translate := false,
 		compact := false) -> HBoxContainer:
 	var line := row(0)
@@ -1755,13 +1801,13 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 		item.button_pressed = index == selected
 		item.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 		style_button(item, Tone.COMPACT)
-		# 🛑 자연 폭 — 줄바꿈을 켠 채 두면 최소 폭이 0 이 되어 글자가 세로로 쪼개진다(2026-09-12 데모: 파란 막대만 보였다).
+		# 🛑 Natural width — leave wrapping on and the minimum width goes to 0 and the text splits vertically (2026-09-12 demo: only a blue bar was visible).
 		natural_width(item)
 		item.custom_minimum_size.x = GoUi.metric(GoTheme.TOUCH) * (1.0 if compact else 1.5)
-		# 양 끝만 둥글고 가운데는 각지게 — 한 덩어리로 읽힌다. 실제 모양은 스킨이 정한다.
-		# 🛑 작은 칸은 **모든 상태에 같은 여백**을 준다 — 상태마다 여백이 다르면 누를 때마다 칸 폭이 흔들린다.
-		# 🔑 작은 칸은 바깥 알약(`GoSkin.overlay_box`) **안에** 놓인다 — 고르지 않은 칸은 판을 그리지 않아
-		#    테두리가 두 겹으로 보이지 않고, 고른 칸만 강조색으로 채워진다.
+		# Round at the two ends and square in the middle — it reads as one block. The skin decides the actual shape.
+		# 🛑 A small cell gets **the same padding in every state** — differing padding per state makes the cell width shift on every press.
+		# 🔑 Small cells sit **inside** an outer pill (`GoSkin.overlay_box`) — an unchosen cell draws no face, so no
+		#    border reads as double, and only the chosen cell is filled with the accent color.
 		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus"]:
 			var face := GoUi.skin().segment_box(index, count, state)
 			if compact: face = _compact_segment(face, state)
@@ -1773,8 +1819,8 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 	return line
 
 
-## 작은 칸 판 — 여백은 작은 버튼 토큰, 고르지 않은 칸은 판을 그리지 않고, 포커스는 옅은 링, 나머지는 테두리 없이 칸마다 둥글게.
-## 🔑 스킨이 커스텀 판(사선·중세)을 줘도 규칙은 같다 — 고르지 않은 칸은 빈 판, 고른 칸·올린 칸은 스킨 판에 여백만 맞춘다.
+## The small cell face — padding from the small button token, no face on an unchosen cell, a faint ring on focus, and the rest rounded per cell with no border.
+## 🔑 The rule holds even when the skin gives a custom face (angular, medieval) — an unchosen cell gets an empty face, and a chosen or hovered cell keeps the skin face with only the padding matched.
 static func _compact_segment(face: StyleBox, state: StringName) -> StyleBox:
 	var result := face
 	if state == &"focus":
@@ -1791,7 +1837,7 @@ static func _compact_segment(face: StyleBox, state: StringName) -> StyleBox:
 	return result
 
 
-## 판 안쪽 여백을 작은 버튼 여백 토큰으로(좌우 · 위아래). 스킨이 준 커스텀 판에도 같은 속성이 있다.
+## Sets a face's inner padding from the small button padding tokens (left/right · top/bottom). A custom face from a skin has the same properties.
 static func _compact_insets(face: StyleBox) -> void:
 	if face == null: return
 	var x := float(GoUi.metric(GoTheme.COMPACT_PADDING_X))
@@ -1802,17 +1848,17 @@ static func _compact_insets(face: StyleBox) -> void:
 	face.content_margin_bottom = y
 
 
-## 🔑 **선택 격자(Choice Grid).** 색 견본·아이콘·글자 카드를 늘어놓고, 누른 칸 하나만 선택된 채 남는다.
-## 캐릭터 꾸미기(피부색·머리색·옷), 아바타·난이도 고르기처럼 **그림으로 고르는** 곳에 쓴다.
+## 🔑 **A choice grid.** Lays out color swatch, icon and text cards, and only the cell pressed stays selected.
+## For places where **you choose by picture**: character customization (skin tone, hair color, clothes), picking an avatar or a difficulty.
 ##
-## 항목은 사전이다(문자열이면 글자 카드).
-##   `color`   색 견본 원 — 실제 색 그대로 그린다(`Color` 또는 `"f6cfae"` 같은 문자열)
-##   `icon`    `GoIconSet` 아이콘 이름 · `texture` 그림(`Texture2D`)
-##   `text`    아래 이름표. 비우면 견본·그림만 보인다
-##   `tooltip` 툴팁 = 접근성 이름. 🛑 글자 없는 견본에는 **꼭 준다** — 색만으로는 무엇인지 알 수 없다
-## 고르면 `action.call(index)`. 돌려주는 흐르는 줄의 `meta("group")` 이 `ButtonGroup` 이다.
-## 🔑 고른 칸은 판을 칠하지 않고 **두꺼운 강조 테두리**로 표시한다 — 견본의 색이 섞이지 않고,
-##    색을 구분하기 어려운 사람도 테두리 두께로 고른 칸을 안다.
+## An item is a dictionary (a string makes a text card).
+##   `color`   the swatch circle — drawn in that exact color (a `Color`, or a string like `"f6cfae"`)
+##   `icon`    a `GoIconSet` icon name · `texture` a picture (`Texture2D`)
+##   `text`    the caption below. Empty shows the swatch or picture alone
+##   `tooltip` the tooltip = the accessibility name. 🛑 **Always give one** on a swatch with no text — color alone says nothing
+## Choosing one calls `action.call(index)`. `meta("group")` on the returned flow row is the `ButtonGroup`.
+## 🔑 The chosen cell is marked with a **thick accent border** instead of a painted face — the swatch's color
+##    stays unmixed, and someone who has trouble telling colors apart still reads the choice from the border thickness.
 ##
 ## ```gdscript
 ## var skins := GoStyle.choice_grid([{"color": "f6cfae", "tooltip": "Peach"}, {"color": "8d5a36", "tooltip": "Cocoa"}],
@@ -1833,16 +1879,16 @@ static func choice_grid(items: Array, selected := 0, action := Callable(), trans
 	return line
 
 
-## 선택 격자의 한 칸 — 스킨 판(`choice_box`) 위에 견본·그림·이름표를 세로로 쌓는다.
+## One cell of a choice grid — stacks swatch, picture and caption vertically on the skin face (`choice_box`).
 static func _choice_cell(item: Dictionary, translate: bool) -> Button:
 	var cell := Button.new()
 	cell.name = "Choice"
 	cell.theme = GoUi.theme()
-	# 🛑 변형 이름을 둔다 — 비워 두면 `GoForm` 이 일반 버튼으로 다시 칠하고 가로로 늘여 격자가 깨진다(`form()`).
+	# 🛑 Keep a variation name — left empty, `GoForm` repaints it as an ordinary button and stretches it wide, breaking the grid (`form()`).
 	cell.theme_type_variation = GoTheme.VAR_BUTTON
 	cell.toggle_mode = true
 	cell.focus_mode = Control.FOCUS_ALL
-	# 🛑 스크롤 안에 놓이므로 손가락 끌기를 스크롤에 넘긴다(`style_button` 과 같은 이유).
+	# 🛑 It sits inside a scroll, so the finger drag is handed to the scroll (the same reason as `style_button`).
 	cell.mouse_filter = Control.MOUSE_FILTER_PASS
 	cell.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	cell.tooltip_text = str(item.get("tooltip", item.get("text", "")))
@@ -1891,7 +1937,7 @@ static func _choice_cell(item: Dictionary, translate: bool) -> Button:
 		caption.autowrap_mode = TextServer.AUTOWRAP_OFF
 		caption.set_meta(&"go_no_wrap", true)
 		content.add_child(caption)
-	# 칸 크기 = 내용 + 안쪽 여백, 가로·세로 모두 터치 크기 이상. 번역·글꼴이 바뀌면 다시 잰다.
+	# Cell size = content + inner padding, at least the touch size both ways. Remeasured when translation or font changes.
 	var fit := func() -> void:
 		if not is_instance_valid(cell) or not is_instance_valid(content): return
 		var need := content.get_combined_minimum_size() + Vector2(inset, inset) * 2.0
@@ -1901,8 +1947,8 @@ static func _choice_cell(item: Dictionary, translate: bool) -> Button:
 	return cell
 
 
-## 🔑 **탭 줄(Tabs).** 이름 배열로 `TabBar` 를 만든다. 내용 전환은 부르는 쪽이 `tab_changed` 로 한다
-## (내용까지 묶으려면 엔진의 `TabContainer` 에 이 테마를 주면 된다).
+## 🔑 **A tab bar.** Builds a `TabBar` from an array of names. The caller switches the content on `tab_changed`
+## (to tie the content in too, give this theme to the engine's `TabContainer`).
 static func tabs(names: Array, selected := 0, translate := false) -> TabBar:
 	var bar := TabBar.new()
 	bar.theme = GoUi.theme()
@@ -1915,8 +1961,8 @@ static func tabs(names: Array, selected := 0, translate := false) -> TabBar:
 	return bar
 
 
-## 🔑 **빵 부스러기(Breadcrumb).** 경로 항목을 `›` 로 잇는다. 마지막은 현재 위치라 누를 수 없다.
-## 앞 항목을 누르면 `action.call(index)`.
+## 🔑 **A breadcrumb.** Joins the path items with `›`. The last one is where you are, so it cannot be pressed.
+## Pressing an earlier one calls `action.call(index)`.
 static func breadcrumb(items: Array, action := Callable(), translate := false) -> HBoxContainer:
 	var line := row(GoUi.metric(GoTheme.GAP_TINY))
 	line.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
@@ -1933,13 +1979,13 @@ static func breadcrumb(items: Array, action := Callable(), translate := false) -
 				if not translate else button_key(str(items[index]), action.bind(index) if action.is_valid() else Callable(), Tone.BARE)
 			link.add_theme_color_override(&"font_color", GoUi.color(GoTheme.SECONDARY))
 			line.add_child(link)
-	natural_width(line)   # 🛑 항목마다 자연 폭 — 아니면 "Weapons" 가 W·e·a·p·o·n·s 로 세로 쪼개진다(2026-09-12 데모)
+	natural_width(line)   # 🛑 Natural width per item — otherwise "Weapons" splits vertically into W·e·a·p·o·n·s (2026-09-12 demo)
 	return line
 
 
-# ── 글 입력 ─────────────────────────────────────────────────────────────
+# ── Text input ─────────────────────────────────────────────────────────
 
-## 🔑 **여러 줄 입력(Textarea).** `lines` 줄 높이만큼 보이고, 넘치면 안에서 스크롤한다.
+## 🔑 **A multi-line input (textarea).** It shows `lines` lines' worth of height and scrolls inside when it overflows.
 static func textarea(placeholder := "", lines := 4, translate_placeholder := false) -> TextEdit:
 	var node := TextEdit.new()
 	node.theme = GoUi.theme()
@@ -1951,19 +1997,19 @@ static func textarea(placeholder := "", lines := 4, translate_placeholder := fal
 	return node
 
 
-# ── 표시 ────────────────────────────────────────────────────────────────
+# ── Display ────────────────────────────────────────────────────────────
 
-## 그림을 칸에 어떻게 맞출지. `CONTAIN` 은 전부 보이게 넣고, `COVER` 는 칸을 꽉 채우되 넘치는 쪽을
-## 자르며, `FILL` 은 비율을 버리고 칸에 맞춰 늘린다.
+## How a picture fits its cell. `CONTAIN` fits all of it in, `COVER` fills the cell and crops the overflow, and
+## `FILL` drops the aspect ratio and stretches to the cell.
 enum Fit { CONTAIN, COVER, FILL }
 
-## 🔑 **그림 칸.** 화면 코드가 `TextureRect` 를 손수 세우지 않게 하는 자리다 —
-##    늘림·정렬·마우스 통과처럼 **어떻게 보일지**는 여기가 정하고,
-##    **무엇을 보일지**(그림 자체)만 부르는 쪽이 준다(그림은 그 게임의 자산이라 애드온이 가질 수 없다).
+## 🔑 **A picture cell.** This is what keeps screen code from standing a `TextureRect` up by hand —
+##    **how it looks** (stretch, alignment, mouse pass-through) is decided here, and the caller gives only
+##    **what to show** (the picture itself) (art belongs to that game, so an addon cannot hold it).
 ##
 ## ```gdscript
-## var logo := GoStyle.art(texture, Vector2(96, 96))                 # 전부 보이게
-## var face := GoStyle.art(portrait, cell, GoStyle.Fit.COVER)        # 칸을 채우고 넘치는 쪽은 자른다
+## var logo := GoStyle.art(texture, Vector2(96, 96))                 # show all of it
+## var face := GoStyle.art(portrait, cell, GoStyle.Fit.COVER)        # fill the cell and crop the overflow
 ## ```
 static func art(texture: Texture2D = null, size := Vector2.ZERO, fit := Fit.CONTAIN) -> TextureRect:
 	var node := TextureRect.new()
@@ -1975,12 +2021,12 @@ static func art(texture: Texture2D = null, size := Vector2.ZERO, fit := Fit.CONT
 	return node
 
 
-## 이미 세워 둔 그림 칸에 **그림만 갈아 끼운다**(성별을 바꿀 때마다 바뀌는 초상화처럼).
+## **Swaps the picture only** on a picture cell already standing (a portrait that changes every time the gender does).
 ##
-## 🛑 `texture` 가 `null` 일 때 무엇을 할지는 **부르는 쪽이 정한다** — 기본(`keep_when_null`)은 그대로 두는 것이다.
-##    아직 읽는 중인 그림의 자리를 비우지 않기 위해서다. 그러나 **없으면 없는 대로 보여야 하는** 자리
-##    (에셋 묶음이 빠진 빌드의 초상화처럼 — 그대로 두면 **직전에 고른 것이 남아 거짓이 된다**)에서는
-##    `keep_when_null = false` 로 불러 비운다.
+## 🛑 **The caller decides** what happens when `texture` is `null` — the default (`keep_when_null`) is to leave
+##    it alone, so the place of a picture still loading is not emptied. But where **missing must look missing**
+##    (a portrait in a build without the asset pack — leave it and **the last one picked stays and becomes a lie**),
+##    call it with `keep_when_null = false` to empty it.
 static func style_art(node: TextureRect, texture: Texture2D = null, fit := Fit.CONTAIN,
 		keep_when_null := true) -> void:
 	if node == null: return
@@ -1993,8 +2039,8 @@ static func style_art(node: TextureRect, texture: Texture2D = null, fit := Fit.C
 	if texture != null or not keep_when_null: node.texture = texture
 
 
-## 🔑 **덮개(scrim).** 뒤를 가려 앞의 카드·시트로 눈이 가게 하는 한 겹.
-##    `alpha` 를 주지 않으면 스킨이 정한 덮개색을 그대로 쓰고, 주면 배경색을 그 짙기로 깐다.
+## 🔑 **A scrim.** One layer that veils what is behind so the eye goes to the card or sheet in front.
+##    Without `alpha` it uses the scrim color the skin set as it is; with one it lays the background color at that depth.
 static func scrim(alpha := -1.0, ink := Color.TRANSPARENT) -> ColorRect:
 	var node := ColorRect.new()
 	node.name = "Scrim"
@@ -2003,7 +2049,7 @@ static func scrim(alpha := -1.0, ink := Color.TRANSPARENT) -> ColorRect:
 	return node
 
 
-## 이미 있는 덮개의 짙기를 다시 정한다(그림이 다 읽힌 뒤에야 덮는 로그인 배경처럼).
+## Resets the depth of a scrim already in place (a login background that veils only once the art has loaded).
 static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT) -> void:
 	if node == null: return
 	if alpha < 0.0 and ink.a <= 0.0:
@@ -2013,9 +2059,9 @@ static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT
 	node.color = Color(base, alpha if alpha >= 0.0 else base.a)
 
 
-## 🔑 **색 표식.** 칸 하나를 색으로만 채우는 작은 조각 — 범례의 짧은 줄, 접속 중을 알리는 점,
-##    배너 왼쪽의 세로 띠처럼 **글자도 그림도 아닌 색 자체가 뜻인** 자리에 쓴다.
-##    🛑 판(`plate`)과 다르다 — 표식은 모서리도 테두리도 없이 그 색 하나만 칠한다.
+## 🔑 **A color mark.** A small piece that fills one cell with color alone — for places where **the color itself
+##    is the meaning, neither text nor picture**: a legend's short line, the dot saying you are online, the vertical band down a banner's left.
+##    🛑 Not the same as a `plate` — a mark paints that one color with no corners and no border.
 static func mark(size: Vector2, ink: Color) -> ColorRect:
 	var node := ColorRect.new()
 	node.name = "Mark"
@@ -2027,7 +2073,7 @@ static func mark(size: Vector2, ink: Color) -> ColorRect:
 	return node
 
 
-## 🔑 **아바타.** 그림이 있으면 둥글게 자른 그림, 없으면 accent 원 위에 이니셜(최대 2글자).
+## 🔑 **An avatar.** With a picture, the picture cropped to a circle; without one, initials (2 characters at most) on an accent circle.
 static func avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture: Texture2D = null) -> Control:
 	var ink := accent if accent.a > 0 else GoUi.color(GoTheme.ACCENT)
 	var node := PanelContainer.new()
@@ -2058,8 +2104,8 @@ static func avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture:
 	return node
 
 
-## 🔑 **스켈레톤(Skeleton).** 아직 오지 않은 내용의 자리를 잡아 두는 옅은 판. 트리에 붙으면 은은하게 숨 쉰다
-## (`reduce_motion` 이면 멈춘 채). 폭 0 은 가로로 채운다.
+## 🔑 **A skeleton.** A faint face holding the place of content that has not arrived. Once in the tree it breathes
+## gently (`reduce_motion` leaves it still). Width 0 fills horizontally.
 static func skeleton(width := 0.0, height := 14.0) -> Control:
 	var node := Panel.new()
 	node.name = "Skeleton"
@@ -2075,8 +2121,8 @@ static func skeleton(width := 0.0, height := 14.0) -> Control:
 	return node
 
 
-## 🔑 **알림 상자(Alert).** 화면 안에 붙박이로 두는 안내 — 스낵바(`GoNotice`)와 달리 사라지지 않는다.
-## `tone` 은 색 토큰(`GoTheme.INFO`·`SUCCESS`·`WARNING`·`DANGER`). 아이콘을 비우면 톤에 맞는 기본 아이콘.
+## 🔑 **An alert box.** A notice fixed into the screen — unlike a snackbar (`GoNotice`) it does not go away.
+## `tone` is a color token (`GoTheme.INFO`, `SUCCESS`, `WARNING`, `DANGER`). Leave the icon empty for the default icon of that tone.
 static func alert(message: String, tone := GoTheme.INFO, icon: StringName = &"", translate := false,
 		alpha := -1.0) -> PanelContainer:
 	var ink := GoUi.color(tone)
@@ -2099,7 +2145,7 @@ static func alert(message: String, tone := GoTheme.INFO, icon: StringName = &"",
 	return node
 
 
-## 🔑 **표(Table).** 머리글 한 줄 + 행들. 셀은 문자열이나 `Control`. 머리글은 흐린 대문자 느낌, 행은 얇은 선으로 나눈다.
+## 🔑 **A table.** One header row + the rows. A cell is a string or a `Control`. The header is dim and uppercase-feeling, and the rows are divided by thin lines.
 static func table(headers: Array, rows: Array) -> GridContainer:
 	var grid := GridContainer.new()
 	grid.name = "Table"

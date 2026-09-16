@@ -1,40 +1,44 @@
 # -*- coding: utf-8 -*-
-"""큰 쪽을 **절 단위로 가른다** — `widgets` 와 `theming` 을 표지 + 하위 쪽들로.
+"""**Split big pages by section** — `widgets` and `theming` become a cover page plus sub-pages.
 
-    python3 addons/gohud/tools/split_site.py            # 17 개 언어를 한 번에
-    python3 addons/gohud/tools/split_site.py --check     # 가르지 않고 무엇이 갈릴지만 본다
+    python3 addons/gohud/tools/split_site.py            # all 17 languages at once
+    python3 addons/gohud/tools/split_site.py --check     # split nothing, only show what would be split
 
-## 왜 가르나 (2026-09-16 사람 지시 — 여러 번)
+## Why split (human instruction 2026-09-16 — several times)
 
-`widgets.html` 은 595 줄(40 KB), `theming.html` 은 644 줄(44 KB)이었다. 한 쪽에 위젯 32 개가
-들어 있으면 **찾는 것 하나를 보려고 나머지 서른하나를 스크롤해야 한다.** 링크를 주고받을 때도
-`#gotable` 같은 조각 주소뿐이라, 받은 사람은 그 긴 쪽의 어디쯤인지 모른 채 열게 된다.
+`widgets.html` was 595 lines (40 KB) and `theming.html` 644 lines (44 KB). With 32 widgets on one
+page, **you scroll past thirty-one of them to see the one you came for.** Sharing a link gives only
+a fragment address like `#gotable`, so whoever receives it opens that long page with no idea where
+in it they are.
 
-🛑 **이 파일이 생기기 전에는 반대로 적혀 있었다.** `site/toc.js` 와 `tools/site_nav.py` 에
-"절 단위로 더 쪼개지 않는다 — 그 자리는 왼쪽 목차가 맡는다" 가 규칙으로 못 박혀 있었고,
-그것을 근거로 여러 차례의 요청이 "이미 결정된 것" 으로 처리됐다. 사람의 지시가 그 판단을 덮는다.
-목차와 가르기는 **서로를 대신하지 않는다** — 목차는 한 쪽 안을 안내하고, 가르기는 쪽 자체를 줄인다.
+🛑 **Before this file existed, the opposite was written down.** `site/toc.js` and
+`tools/site_nav.py` nailed down the rule "do not split further by section — the left-hand table of
+contents covers that", and on that basis several requests were treated as "already decided". A
+human instruction overrides that judgement. Contents and splitting **do not substitute for each
+other** — the contents guides you within a page, splitting shrinks the page itself.
 
-## 어떻게 가르나 — 번역을 새로 짓지 않는다
+## How the split works — no new translation is written
 
-17 개 언어판은 `<section id>` 이 **같다**(영어 기준 id 를 `make_site.py` 가 박아 둔다).
-그래서 언어마다 같은 id 를 집어 옮기면, 그 언어의 번역문이 그대로 따라온다. 새 쪽의 제목도
-그 언어판의 `<h2>` 를 그대로 쓴다 — 이 스크립트는 **한 글자도 번역하지 않는다.**
+All 17 language editions share **the same** `<section id>` (`make_site.py` stamps the English ids).
+So picking the same id per language and moving it brings that language's translated text along. A
+new page's title reuses the `<h2>` of that language edition — this script **translates not one
+character.**
 
-| 무엇 | 어디서 |
+| What | Comes from |
 |---|---|
-| 새 쪽의 `<h1>`·표지 카드 제목 | 그 절의 `<h2>` |
-| 새 쪽의 `<meta description>`·카드 설명 | 그 절의 첫 `<p>` |
-| 머리띠로 돌아가는 말 | `tools/site_nav.py` 의 `NAV` |
+| the new page's `<h1>` and the cover card title | that section's `<h2>` |
+| the new page's `<meta description>` and card text | that section's first `<p>` |
+| the wording of the link back to the header | `NAV` in `tools/site_nav.py` |
 
-## 가른 뒤에 무엇이 따라오나
+## What follows a split
 
-1. `tools/site_langs.py` 의 `PAGES` 에 새 이름을 더한다 → hreflang·언어 고르개·검사가 따라온다.
-2. `python3 tools/make_site.py` → 머리띠(`nav`)·언어 블록·쪽 스크립트가 새 쪽에도 들어간다.
-3. `python3 tools/make_search.py` → 검색 색인이 새 쪽을 싣는다.
+1. Add the new names to `PAGES` in `tools/site_langs.py` → hreflang, language picker and checks follow.
+2. `python3 tools/make_site.py` → header (`nav`), language block and page scripts go into the new pages.
+3. `python3 tools/make_search.py` → the search index picks the new pages up.
 
-🛑 **표지 이름(`widgets.html`·`theming.html`)은 그대로 둔다.** 이미 배포된 ZIP 1.0.2·1.0.3 의
-README 가 그 주소를 절대 주소로 박아 두었다(`tools/site_langs.py`). 쪽은 더하기만 한다.
+🛑 **Leave the cover names (`widgets.html`, `theming.html`) alone.** The README in the already
+released ZIPs 1.0.2 and 1.0.3 hard-codes those as absolute addresses (`tools/site_langs.py`). Pages
+are only ever added.
 """
 import os
 import re
@@ -48,10 +52,10 @@ WWW = os.environ.get("GOHUD_SITE_OUTPUT", os.path.join(ADDON, "www"))
 import site_langs
 import site_nav
 
-# ── 무엇을 어떻게 가르나 ───────────────────────────────────────────────
-# (새 파일, [옮길 section id …]) — 순서가 곧 사이드바와 앞뒤 링크의 차례다.
-# 🔑 절 하나가 한 쪽이지만, **짝이 되는 절은 함께 둔다**(`hud`+`hud-widgets` 는 "무엇을 왜" 와
-#    "그래서 이 위젯들" 이라 떼면 둘 다 반쪽이 된다).
+# ── what gets split and how ───────────────────────────────────────────
+# (new file, [section ids to move …]) — the order is also the sidebar and prev/next order.
+# 🔑 One section is one page, but **sections that belong together stay together** (`hud` +
+#    `hud-widgets` are "what and why" and "so here are the widgets" — split, each is half a page).
 GROUPS = {
 	"widgets.html": [
 		("widgets-surfaces.html", ["surfaces"]),
@@ -73,7 +77,7 @@ GROUPS = {
 	],
 }
 
-# 표지에서 머리띠 메뉴의 어느 칸에 해당하나 — 되돌아가는 말을 그 언어로 쓰기 위해.
+# Which header menu entry the cover corresponds to — so the link back is worded in that language.
 NAV_KEY = {"widgets.html": "widgets", "theming.html": "theming"}
 
 MAIN_OPEN = '<main class="wrap">'
@@ -93,13 +97,13 @@ def write(path, text):
 
 
 def strip_tags(html):
-	"""태그를 걷어낸 알맹이. 카드 설명·`<meta description>` 에 쓴다."""
+	"""The content with tags stripped. Used for card text and `<meta description>`."""
 	text = re.sub(r"<[^>]+>", "", html)
 	return re.sub(r"\s+", " ", text).strip()
 
 
 def first_sentence(text, limit=150):
-	"""첫 문장. 🛑 마침표로만 자르지 않는다 — 태국어·중국어에는 그 마침표가 없다."""
+	"""The first sentence. 🛑 Do not cut on a period alone — Thai and Chinese do not have that period."""
 	for end in (". ", "。", "· ", "! ", "? "):
 		at = text.find(end)
 		if 0 < at <= limit:
@@ -111,7 +115,7 @@ def first_sentence(text, limit=150):
 
 
 def parts(html):
-	"""문서를 넷으로 — 머리(head+머리띠), 표지 머리말, 본문 속, 꼬리."""
+	"""The document in four — head (head + header bar), hero, body, tail."""
 	head, rest = html.split(MAIN_OPEN, 1)
 	body, tail = rest.split(MAIN_CLOSE, 1)
 	hero_at = head.index(HERO_OPEN)
@@ -119,7 +123,7 @@ def parts(html):
 
 
 def sections(body):
-	"""`<section id=…>` 을 **원문 그대로** 집어낸다(들여쓰기·주석까지)."""
+	"""Pick out `<section id=…>` **verbatim** (indentation and comments included)."""
 	found = {}
 	for match in re.finditer(r'<section id="([^"]+)">.*?</section>', body, re.S):
 		found[match.group(1)] = match.group(0)
@@ -127,7 +131,7 @@ def sections(body):
 
 
 def swap_in_block(html, begin, end, old, new):
-	"""표식 사이에서만 바꾼다 — 본문의 같은 낱말은 건드리지 않는다."""
+	"""Replace only between the markers — the same word in the body is left alone."""
 	if begin not in html or end not in html:
 		return html
 	start = html.index(begin)
@@ -136,8 +140,9 @@ def swap_in_block(html, begin, end, old, new):
 
 
 def retarget(head, cover, page):
-	"""머리의 주소들을 이 쪽 것으로. 🔑 정본은 `make_site.py` 가 다시 쓴다 — 여기서는
-	가른 직후에도 문서가 혼자 말이 되도록 표식 사이만 맞춰 둔다."""
+	"""Point the head's addresses at this page. 🔑 `make_site.py` rewrites the authoritative
+	version — here we only fix what is between the markers, so the document makes sense on its
+	own right after the split."""
 	for begin, end in (("<!-- hreflang:begin -->", "<!-- hreflang:end -->"),
 			("<!-- langs:begin -->", "<!-- langs:end -->")):
 		head = swap_in_block(head, begin, end, cover, page)
@@ -159,19 +164,19 @@ def h2_of(section_html):
 
 
 def lead_of(section_html):
-	"""그 절의 첫 문단 — 표지 카드와 `<meta description>` 에 쓴다."""
+	"""That section's first paragraph — used for the cover card and `<meta description>`."""
 	match = re.search(r"<p[^>]*>(.*?)</p>", section_html, re.S)
 	return strip_tags(match.group(1)) if match else ""
 
 
 def drop_first_h2(section_html):
-	"""첫 `<h2>` 를 뺀다 — 그 말이 새 쪽의 `<h1>` 이 되었으므로 두 번 적지 않는다."""
+	"""Drop the first `<h2>` — those words became the new page's `<h1>`, so do not write them twice."""
 	return re.sub(r"[ \t]*<h2[^>]*>.*?</h2>\n?", "", section_html, count=1, flags=re.S)
 
 
 def subnav(lang, cover, pages, titles, current):
-	"""이 묶음의 쪽들. 🔑 `site/toc.js` 가 이것을 왼쪽 목차 맨 위로 옮긴다 —
-	자바스크립트가 꺼져 있어도 본문 위에 목록으로 남는다(그래서 `hidden` 이 아니다)."""
+	"""The pages of this group. 🔑 `site/toc.js` moves this to the top of the left-hand contents —
+	with JavaScript off it stays as a list above the body (which is why it is not `hidden`)."""
 	label = site_nav.NAV.get(lang, site_nav.NAV["en"]).get(NAV_KEY[cover], NAV_KEY[cover])
 	rows = ['<nav class="subnav" aria-label="%s">' % _escape(label),
 		'  <!-- subnav:begin -->',
@@ -189,7 +194,7 @@ def _escape(text):
 
 
 def neighbours(cover, pages, titles, index, nav_label):
-	"""꼬리의 앞뒤 링크 — 같은 묶음 안에서만 오간다."""
+	"""The prev/next links in the tail — they only move within the same group."""
 	previous = (cover, nav_label) if index == 0 else (pages[index - 1][0], titles[pages[index - 1][0]])
 	following = (cover, nav_label) if index == len(pages) - 1 else (pages[index + 1][0], titles[pages[index + 1][0]])
 	return ('<p><a href="%s">← %s</a> · <a href="%s">%s →</a></p>'
@@ -199,15 +204,15 @@ def neighbours(cover, pages, titles, index, nav_label):
 def split_language(lang, cover, pages, dry_run):
 	source = os.path.join(WWW, site_langs.rel_path(lang.code, cover))
 	if not os.path.exists(source):
-		return ["%s 없음" % source]
+		return ["%s does not exist" % source]
 	html = read(source)
 	if MAIN_OPEN not in html:
-		return ["%s: <main> 을 못 찾았다" % source]
+		return ["%s: could not find <main>" % source]
 	head, hero, body, tail = parts(html)
 	found = sections(body)
 	missing = [sid for _name, ids in pages for sid in ids if sid not in found]
 	if missing:
-		return ["%s: 절이 없다 — %s" % (source, ", ".join(missing))]
+		return ["%s: sections missing — %s" % (source, ", ".join(missing))]
 
 	titles = {name: h2_of(found[ids[0]]) for name, ids in pages}
 	leads = {name: lead_of(found[ids[0]]) for name, ids in pages}
@@ -234,7 +239,7 @@ def split_language(lang, cover, pages, dry_run):
 			write(target, document)
 		notes.append("  %s ← %s" % (site_langs.rel_path(lang.code, name), ", ".join(ids)))
 
-	# 표지 — 카드 목록만 남긴다. 옮긴 절의 본문은 하위 쪽에 있다.
+	# The cover — only the card list stays. The moved sections' bodies live on the sub-pages.
 	cards = ['<section id="pages">', '  <div class="grid">']
 	for name, _ids in pages:
 		cards.append('    <div class="card">')
@@ -243,13 +248,13 @@ def split_language(lang, cover, pages, dry_run):
 		cards.append("    </div>")
 	cards.append("  </div>")
 	cards.append("</section>")
-	# 🔑 표지에 남기는 절은 없다 — 옮긴 절은 전부 하위 쪽에 있고, 표지는 그 목록이다.
+	# 🔑 No section stays on the cover — every moved section is on a sub-page, and the cover is their list.
 	cover_document = (head + hero + MAIN_OPEN + "\n\n"
 		+ subnav(lang.code, cover, pages, titles, cover) + "\n\n"
 		+ "\n".join(cards) + "\n\n" + MAIN_CLOSE + tail)
 	if not dry_run:
 		write(source, cover_document)
-	notes.append("  %s ← 표지(카드 %d)" % (site_langs.rel_path(lang.code, cover), len(pages)))
+	notes.append("  %s ← cover (%d cards)" % (site_langs.rel_path(lang.code, cover), len(pages)))
 	return notes
 
 
@@ -258,7 +263,7 @@ def main():
 	problems = []
 	made = 0
 	for cover, pages in GROUPS.items():
-		print("── %s → 표지 + %d 쪽" % (cover, len(pages)))
+		print("── %s → cover + %d pages" % (cover, len(pages)))
 		for lang in site_langs.ACTIVE:
 			notes = split_language(lang, cover, pages, dry_run)
 			for note in notes:
@@ -270,7 +275,7 @@ def main():
 				print("\n".join(note for note in notes if note.startswith("  ")))
 	for problem in problems:
 		print("🛑 " + problem)
-	print("%s %d 쪽 (%d 개 언어)" % ("갈릴 것" if dry_run else "갈랐다", made, len(site_langs.ACTIVE)))
+	print("%s %d pages (%d languages)" % ("would split" if dry_run else "split", made, len(site_langs.ACTIVE)))
 	return 1 if problems else 0
 
 

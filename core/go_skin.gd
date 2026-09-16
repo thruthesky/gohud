@@ -1,95 +1,99 @@
-## 🖌️ **모양을 정하는 한 장.** 테마가 못 가는 곳 — 코드가 직접 그리는 자리 — 이 여기 모여 있다.
+## 🖌️ **The one sheet that decides the look.** Everything a theme cannot reach — the spots the code draws itself — is gathered here.
 ##
-## ## 왜 테마만으로는 모자란가
-## `Theme` 는 **엔진이 그려 주는 것**의 모양만 바꾼다. 그런데 gohud 에는 코드가 스스로 그리는
-## 자리가 있다: 조이스틱의 원, 퀵슬롯의 판, 코치마크의 링과 화살표, 칩·스켈레톤·알림 상자.
-## 이것들은 `StyleBoxFlat` 을 코드에서 만들거나 `_draw()` 로 직접 그리므로, `.tres` 를 아무리
-## 갈아 끼워도 **둥근 모서리가 각지지 않는다.** 그 결정을 전부 이 리소스로 뺀 것이 스킨이다.
+## ## Why a theme alone is not enough
+## `Theme` only changes the look of **what the engine draws for you**. But gohud has spots the
+## code draws on its own: the joystick circles, the quick-slot panel, the coach-mark ring and
+## arrow, chips, skeletons, alert boxes. These are built as a `StyleBoxFlat` in code or painted
+## in `_draw()`, so no matter which `.tres` you swap in, **round corners never turn angular.**
+## Pulling every one of those decisions out into this resource is what the skin is.
 ##
 ## ```gdscript
-## # 자기 모양을 만들려면 이것을 상속해 필요한 것만 덮어쓴다.
+## # To make your own look, extend this and override only what you need.
 ## class_name MySkin extends GoSkin
 ## func slot_box(accent: Color, lit: bool) -> StyleBox:
 ##     var box := GoStyleBoxCut.new()
 ##     box.bg_color = accent
 ##     return box
 ##
-## # 꽂는 법 — 셋 중 하나
-## GoUi.config.skin = preload("res://ui/my_skin.tres")   # ① 직접
-## GoUi.use_preset(GoThemePresets.SCIFI_DARK)            # ② 테마와 한 묶음으로
-## # ③ 아무것도 안 한다 — 이 기본 스킨이 gohud 의 원래 모양을 그린다.
+## # How to plug it in — one of three
+## GoUi.config.skin = preload("res://ui/my_skin.tres")   # ① directly
+## GoUi.use_preset(GoThemePresets.SCIFI_DARK)            # ② bundled with a theme
+## # ③ do nothing — this default skin draws gohud's original look.
 ## ```
 ##
-## ## 🛑 이 클래스의 본문은 **gohud 의 원래 모양 그 자체**다
-## 여기 있는 코드는 예전에 `GoStyle`·`GoSlot`·`GoJoystick`·`GoCoachMark`·`GoNotice` 안에 흩어져
-## 있던 것을 **한 줄도 바꾸지 않고** 옮겨 온 것이다. 그래서 스킨을 안 꽂으면 화면은 픽셀 하나까지
-## 예전과 같다. 자식 스킨이 덮어쓰지 않은 메서드도 마찬가지다 — 부분 교체가 안전하다.
+## ## 🛑 The body of this class **is gohud's original look itself**
+## The code here was scattered across `GoStyle`·`GoSlot`·`GoJoystick`·`GoCoachMark`·`GoNotice` and
+## was moved over **without changing a single line**. So with no skin plugged in, the screen is
+## identical to what it was, down to the pixel. The same holds for methods a child skin does not
+## override — partial replacement is safe.
 ##
-## ## 🛑 이 파일은 위젯을 참조하지 않는다
-## `GoUi` 의 토큰 조회(`color`·`metric`·`box`)만 쓴다. 위젯을 참조하면
-## `GoUi → GoConfig → GoSkin → 위젯 → GoStyle → GoUi` 로 고리가 닫힌다.
+## ## 🛑 This file never references a widget
+## It uses only `GoUi`'s token lookups (`color`·`metric`·`box`). Referencing a widget would close
+## the cycle `GoUi → GoConfig → GoSkin → widget → GoStyle → GoUi`.
 @tool
 class_name GoSkin
 extends Resource
 
-## 화면에 보이는 이름(에디터·갤러리의 고르개에 쓴다). 비우면 리소스 이름.
+## The name shown on screen (used by the pickers in the editor and the gallery). Empty means the resource name.
 @export var skin_name := ""
 
-# ── 다이얼 — 스킨 **리소스(.tres)** 에서 숫자만 바꾼다 ───────────────────
+# ── Dials — change nothing but the numbers, from a skin **resource (.tres)** ─
 #
-# 🔑 코드에 박혀 있던 숫자를 밖으로 냈다(2026-09-13 — 테마마다 자유도를 높여 달라는 요청).
-#    `GoSkin` 을 상속하지 않고도 `themes/palettes/<id>.json` 의 `skin.dials` 로 슬롯 테두리 두께나
-#    조이스틱 링 투명도를 바꿀 수 있다. 🛑 기본값을 바꾸면 `tools/skin_dials.json` 도 같이 바꾼다 —
-#    검사가 둘을 대조한다(스캐폴딩이 그 표로 "바꿀 수 있는 것" 을 풀어 적기 때문이다).
+# 🔑 Numbers that used to be hard-coded were pulled out (2026-09-13 — a request for more freedom
+#    per theme). Without extending `GoSkin` you can change the slot border width or the joystick
+#    ring opacity through `skin.dials` in `themes/palettes/<id>.json`. 🛑 If you change a default,
+#    change `tools/skin_dials.json` with it — a check compares the two (the scaffolding spells out
+#    "what you can change" from that table).
 @export_group("Dials")
-# 🔑 다이얼마다 `##` 한 줄 — 사이트 생성기(`tools/make_site.py`)가 이 줄을 읽어 다이얼 표와 용어 사전을
-#    채운다. 묶어서 쓰면 표에서 `_lit` 와 `_idle` 중 어느 것이 쿨다운 중인지 순서로만 알 수 있다(I-72).
-## 칩 판 채움의 투명도.
+# 🔑 One `##` line per dial — the site generator (`tools/make_site.py`) reads these lines to fill the
+#    dial table and the glossary. Grouped into one line, the table can only tell `_lit` from `_idle` by their order (I-72).
+## Opacity of the chip panel fill.
 @export var chip_fill_alpha := 0.16
-## 칩 판 테두리의 투명도.
+## Opacity of the chip panel border.
 @export var chip_edge_alpha := 0.45
-## 알림 상자 판이 상태색 쪽으로 물드는 비율.
+## How far the alert box panel is tinted toward the state color.
 @export var alert_tint := 0.10
-## 쿨다운 중인 퀵슬롯 판이 강조색 쪽으로 물드는 비율.
+## How far a cooling-down quick-slot panel is tinted toward the accent color.
 @export var slot_tint_lit := 0.24
-## 평소 퀵슬롯 판이 강조색 쪽으로 물드는 비율.
+## How far an idle quick-slot panel is tinted toward the accent color.
 @export var slot_tint_idle := 0.08
-## 쿨다운 중인 퀵슬롯의 테두리 두께(dp).
+## Border width of a cooling-down quick slot (dp).
 @export var slot_border_lit := 2
-## 평소 퀵슬롯의 테두리 두께(dp).
+## Border width of an idle quick slot (dp).
 @export var slot_border_idle := 1
-## 배지(수량·남은 시간) 판의 가로 안쪽 여백(dp).
+## Horizontal inner padding of the badge (quantity·remaining time) panel (dp).
 @export var badge_pad_x := 5
-## 배지 판의 세로 안쪽 여백(dp).
+## Vertical inner padding of the badge panel (dp).
 @export var badge_pad_y := 1
-## 배지 판 테두리의 투명도.
+## Opacity of the badge panel border.
 @export var badge_edge_alpha := 0.6
-## 떠 있는 카드(코치마크·프롬프트 카드) 그림자의 투명도.
-## 🛑 얕으면(8dp·0.35) 정보 패널 위에 얹혔을 때 "떠 있다" 가 안 읽힌다(2026-09-13 데모 실측, I-69).
+## Opacity of the shadow under a floating card (coach mark·prompt card).
+## 🛑 Too shallow (8dp·0.35) and "it floats" does not read once it sits on an info panel (2026-09-13 demo measurement, I-69).
 @export var float_shadow_alpha := 0.45
-## 떠 있는 카드 그림자의 번짐(dp).
+## Blur of the floating card shadow (dp).
 @export var float_shadow_size := 14
-## 떠 있는 카드 그림자가 아래로 밀리는 거리(dp).
+## How far the floating card shadow is pushed downward (dp).
 @export var float_shadow_lift := 4
-## 사선 판(sci-fi)처럼 그림자 대신 **발광**을 쓰는 판이 떠 있을 때의 발광 거리(dp).
+## Glow distance (dp) when a panel that uses a **glow** instead of a shadow — the cut panels (sci-fi) — is floating.
 @export var float_glow_size := 10.0
-## 조이스틱 바탕 원의 투명도.
+## Opacity of the joystick base circle.
 @export var joystick_base_alpha := 0.42
-## 조이스틱 링의 투명도.
+## Opacity of the joystick ring.
 @export var joystick_ring_alpha := 0.45
-## 조이스틱 링의 두께(dp).
+## Width of the joystick ring (dp).
 @export var joystick_ring_width := 2.0
 @export_group("")
 
 
-# ── 읽히게 만들기 ───────────────────────────────────────────────────────
+# ── Making it readable ─────────────────────────────────────────────────
 #
-# 🛑 **같은 색 틴트 위에 같은 색 글자**는 예뻐 보이고 안 읽힌다. 칩(`accent` 16% 판 위 `accent` 글자),
-#    쿨다운 중인 슬롯의 남은 시간이 그렇다 — 판이 글자 쪽으로 밝아져 명도 차가 사라진다.
-#    테마 쪽은 생성기가 미리 계산해 두지만, **스킨이 실행 중에 만드는 색**은 여기서 민다.
+# 🛑 **Same-color text on a same-color tint** looks pretty and does not read. Chips (`accent` text on
+#    an `accent` 16% panel) and the remaining time on a cooling-down slot are exactly that — the panel
+#    brightens toward the text and the luminance gap disappears. On the theme side the generator
+#    precomputes it, but **the colors a skin makes at runtime** get pushed here.
 
-## WCAG 상대 명도. 🛑 `Color.get_luminance()` 를 쓰지 않는다 — 그것은 감마를 풀지 않아
-## WCAG 값과 다르고, 어두운 색에서 특히 크게 어긋난다.
+## WCAG relative luminance. 🛑 Do not use `Color.get_luminance()` — it does not undo gamma, so it
+## differs from the WCAG value, and it is off by a lot on dark colors in particular.
 static func luminance(color: Color) -> float:
 	var parts := [color.r, color.g, color.b]
 	var linear := []
@@ -98,14 +102,14 @@ static func luminance(color: Color) -> float:
 	return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
 
 
-## 두 색의 명도 대비비(1~21).
+## Contrast ratio between two colors (1~21).
 static func contrast_ratio(front: Color, back: Color) -> float:
 	var a := luminance(front)
 	var b := luminance(back)
 	return (maxf(a, b) + 0.05) / (minf(a, b) + 0.05)
 
 
-## 반투명한 색을 깔린 색 위에 얹어 **실제로 보이는 색**으로.
+## Lay a translucent color over what is beneath it to get **the color actually seen**.
 static func blend(top: Color, bottom: Color) -> Color:
 	if top.a >= 1.0: return top
 	return Color(
@@ -114,11 +118,12 @@ static func blend(top: Color, bottom: Color) -> Color:
 		top.b * top.a + bottom.b * (1.0 - top.a), 1.0)
 
 
-## 🔑 `ink` 를 `back` 위에서 읽히도록 민다 — **색조는 지키고 밝기만** 옮긴다.
+## 🔑 Push `ink` until it reads on `back` — **keep the hue, move only the brightness**.
 ##
-## 배경이 밝으면 어둡게, 어두우면 밝게 간다. 이미 밝기가 끝까지 간 색(순수 시안 등)은
-## 채도를 낮춰 더 밝힌다. 60번 밀어도 못 넘기면 거기서 멈춘다 — 흑백으로 튀면 팔레트의
-## 성격이 통째로 사라지고, 그것은 읽히는 것과 별개로 실패다.
+## It goes darker on a bright background and brighter on a dark one. A color whose brightness is
+## already at the end of the road (pure cyan and the like) is brightened further by dropping
+## saturation. If 60 pushes still do not clear the bar it stops there — bolting to black or white
+## wipes out the character of the palette wholesale, and that is a failure regardless of readability.
 static func readable_on(ink: Color, back: Color, need := 4.5) -> Color:
 	var flat := blend(ink, back)
 	if contrast_ratio(flat, back) >= need: return ink
@@ -135,30 +140,32 @@ static func readable_on(ink: Color, back: Color, need := 4.5) -> Color:
 	return out
 
 
-## 🪟 판 **바탕의 불투명도만** 낮춘다 — 테두리·그림자·발광·질감은 건드리지 않는다.
+## 🪟 Lower **only the panel background's opacity** — borders, shadows, glow and texture are untouched.
 ##
-## ## 왜 바탕만인가
-## 반투명한 판은 **윤곽이 선명해야** 유리처럼 읽힌다. 테두리까지 함께 묽어지면 판이 어디서
-## 끝나는지 알 수 없어 "흐릿한 화면" 이 되고, 그것은 투명한 판이 아니라 고장으로 보인다.
-## 글자·아이콘도 같은 이유로 건드리지 않는다 — 그쪽은 `modulate` 의 일이고, 읽히는 것이 먼저다.
+## ## Why only the background
+## A translucent panel reads like glass only when **its outline stays crisp**. If the border thins
+## out with it you cannot tell where the panel ends, and you get a "blurry screen" that looks broken
+## rather than transparent. Text and icons are untouched for the same reason — those are `modulate`'s
+## job, and being readable comes first.
 ##
-## ## 🛑 **곱한다**, 덮어쓰지 않는다
-## 테마가 이미 반투명으로 정한 판(기본 테마의 HUD 판은 0.92)이 있다. 덮어쓰면 그 결정이
-## 사라지므로 비율로 곱한다 — 0.92 × 0.80 = 0.736. 그래서 **두 번 부르면 두 번 묽어진다**:
-## 알파는 판 한 장에 **한 곳에서만** 입힌다(`surface_box` 가 그 한 곳이다).
+## ## 🛑 It **multiplies**, it does not overwrite
+## Some panels the theme already decided to make translucent (the HUD panel of the default theme is
+## 0.92). Overwriting would erase that decision, so it multiplies as a ratio — 0.92 × 0.80 = 0.736.
+## Which means **calling it twice thins it twice**: apply alpha to a panel in **exactly one place**
+## (`surface_box` is that place).
 ##
-## [param alpha] 가 음수면 아무것도 하지 않는다 — "정하지 않았다" 를 그대로 흘려보내는 값이다.
+## A negative [param alpha] does nothing — it is the value that passes "not decided" straight through.
 static func fade_box(box: StyleBox, alpha: float) -> StyleBox:
 	if box == null or alpha < 0.0 or alpha >= 1.0: return box
 	if not (&"bg_color" in box): return box
 	var fill: Color = box.get(&"bg_color")
-	# 이미 투명한 판(윤곽만 그리는 판)은 그대로 둔다 — 0 에 곱해도 0 이지만, 뜻을 분명히 한다.
+	# An already transparent panel (one that draws only an outline) is left alone — multiplying by 0 is still 0, but this says so plainly.
 	if fill.a <= 0.0: return box
 	box.set(&"bg_color", Color(fill, fill.a * alpha))
 	return box
 
 
-## StyleBox 의 배경색(없으면 투명). 커스텀 StyleBox 도 `bg_color` 칸을 쓴다.
+## The StyleBox background color (transparent if it has none). Custom StyleBoxes use the `bg_color` field too.
 static func box_background(box: StyleBox) -> Color:
 	if box == null: return Color.TRANSPARENT
 	if not (&"bg_color" in box): return Color.TRANSPARENT
@@ -166,23 +173,23 @@ static func box_background(box: StyleBox) -> Color:
 	return value if value is Color else Color.TRANSPARENT
 
 
-# ── 표면 ───────────────────────────────────────────────────────────────
+# ── Surfaces ───────────────────────────────────────────────────────────
 
-## 카드·패널의 StyleBox. `accent` 가 있으면 테두리에 그 색을 입힌다.
+## StyleBox for cards and panels. If `accent` is set, the border takes that color.
 ##
-## 🔑 테마가 **커스텀 StyleBox**(각진 판 등)를 줬으면 그대로 돌려준다 — 그것이 모양을 바꾸는 길이다.
-## 🛑 `0.5` — 이 값은 gohud 가 파생된 게임의 규범이다. 0.55 로 짰다가 위임 대조 검사에서 잡혔다(2026-09-12).
-## [param alpha] 는 판 **바탕의 불투명도**(0.0~1.0)다. 음수면 테마·설정이 정한 값
-## (`GoUi.surface_alpha(variant)`)을 쓴다 — 거기서 종류별 토큰·프로젝트 설정·개별 덮어쓰기가 합쳐진다.
-## 🛑 **불투명도를 입히는 자리는 여기 하나다.** 이것을 부르는 판(`floating_box`·`notice_box` …)은
-##    알파를 직접 입히지 않고 이 인자로 넘긴다 — 두 번 입히면 두 번 묽어진다(`fade_box` 주석).
+## 🔑 If the theme handed over a **custom StyleBox** (a cut panel and the like) it comes back as is — that is the road to a different shape.
+## 🛑 `0.5` — this value is the norm of the game gohud grew out of. It was written as 0.55 once, and the delegation comparison check caught it (2026-09-12).
+## [param alpha] is the **panel background's opacity** (0.0~1.0). Negative uses the value the theme and
+## config decided (`GoUi.surface_alpha(variant)`) — per-variant tokens, project settings and individual overrides are merged there.
+## 🛑 **This is the one place opacity is applied.** The panels that call it (`floating_box`·`notice_box` …)
+##    do not apply alpha themselves but pass it in through this argument — applied twice, it thins twice (see `fade_box`).
 func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
 	var style := GoUi.box(variant)
 	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(variant)
 	var flat := style as StyleBoxFlat
 	if flat == null:
-		# 테마가 StyleBoxFlat 이 아닌 것을 줬다. 빈 상자면 예전처럼 평판을 새로 만들고,
-		# 실제로 그리는 커스텀 상자면 그것을 살린다.
+			# The theme handed over something that is not a StyleBoxFlat. If it is an empty box, build a
+			# fresh flat one as before; if it is a custom box that actually draws, keep it.
 		if style != null and not (style is StyleBoxEmpty):
 			if accent.a > 0 and &"border_color" in style: style.set(&"border_color", Color(accent, 0.5))
 			return fade_box(style, opacity)
@@ -192,13 +199,13 @@ func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha
 	return fade_box(flat, opacity)
 
 
-## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다.
-## [param alpha] 는 `surface_box` 와 같다(음수면 테마·설정 값).
+## A surface **floating** over the game screen — the same card with a shallow shadow added.
+## [param alpha] works as in `surface_box` (negative uses the theme·config value).
 func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
 	var style := surface_box(variant, accent, alpha)
 	var flat := style as StyleBoxFlat
 	if flat == null:
-		# 🛑 사선 판은 그림자를 못 그린다 — 대신 **발광을 키워** 떠 있음을 말한다. 발광이 없는 판(색 0)은 그대로.
+			# 🛑 A cut panel cannot draw a shadow — it says "floating" by **growing the glow** instead. A panel with no glow (color 0) is left as is.
 		if &"glow_size" in style and &"glow_color" in style and (style.get(&"glow_color") as Color).a > 0.0:
 			style.set(&"glow_size", maxf(float(style.get(&"glow_size")), float_glow_size))
 		return style
@@ -208,12 +215,12 @@ func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, alpha
 	return flat
 
 
-## 게임 화면(지도·월드) **위에 얹는 알약 판** — 뒤 그림이 무엇이든 글자가 읽히게 바탕색으로 어둡게 깔고 테두리를 얇게 둔다.
-## `h_margin`·`v_margin` 은 판 안쪽 여백(dp) — 음수면 작은 버튼 여백 토큰. `fill_alpha` 는 바탕의 불투명도.
-## 🔑 **판 안에 또 판을 넣지 않는다** — 이 알약 안의 버튼은 `GoBareButton` 이나 `segmented()` 칸으로 두어
-##    테두리가 두 겹으로 겹쳐 보이지 않게 한다.
+## A **pill panel laid over** the game screen (map·world) — filled dark with the background color and thinly bordered so the text reads over whatever picture is behind it.
+## `h_margin`·`v_margin` are the panel's inner padding (dp) — negative uses the compact button padding token. `fill_alpha` is the background opacity.
+## 🔑 **Never put a panel inside a panel** — keep the buttons in this pill as `GoBareButton` or `segmented()` cells
+##    so the borders do not stack into a double outline.
 func overlay_box(h_margin := -1, v_margin := -1, fill_alpha := -1.0) -> StyleBox:
-	# 🛑 바탕을 **아래에서 덮어쓰므로** 알파를 `surface_box` 에 맡기지 않는다(맡기면 두 번 곱해진다).
+	# 🛑 The background is **overwritten below**, so alpha is not left to `surface_box` (left there, it gets multiplied twice).
 	var style := surface_box(GoTheme.BOX_HUD, Color.TRANSPARENT, 1.0)
 	var opacity := fill_alpha if fill_alpha >= 0.0 else GoUi.surface_alpha(GoTheme.BOX_HUD)
 	var flat := style as StyleBoxFlat
@@ -224,7 +231,7 @@ func overlay_box(h_margin := -1, v_margin := -1, fill_alpha := -1.0) -> StyleBox
 		flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS))
 		flat.shadow_size = 0
 	else:
-		# 커스텀 판(사선 판·중세 판)은 위 갈래를 타지 않는다 — 그 판의 바탕에 같은 불투명도를 입힌다.
+		# Custom panels (cut·medieval) do not take the branch above — apply the same opacity to their background.
 		fade_box(style, opacity)
 	var h := float(GoUi.metric(GoTheme.COMPACT_PADDING_X) if h_margin < 0 else h_margin)
 	var v := float(GoUi.metric(GoTheme.COMPACT_PADDING_Y) if v_margin < 0 else v_margin)
@@ -235,8 +242,8 @@ func overlay_box(h_margin := -1, v_margin := -1, fill_alpha := -1.0) -> StyleBox
 	return style
 
 
-## 원형 배지·아바타 테두리 — accent 를 옅게 채우고 같은 색 링을 두른다.
-## 🛑 판 불투명도(`GoTheme.HUD_ALPHA`)를 따르지 않는다 — 원판은 **표식**이고 자기 `fill_alpha` 를 이미 갖는다.
+## Round badge·avatar border — faintly filled with accent and ringed in the same color.
+## 🛑 It does not follow the panel opacity (`GoTheme.HUD_ALPHA`) — a disc is a **marker** and already carries its own `fill_alpha`.
 func disc_box(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> StyleBox:
 	var style := surface_box(GoTheme.BOX_HUD, accent, 1.0)
 	var flat := style as StyleBoxFlat
@@ -244,8 +251,8 @@ func disc_box(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 
 	flat.bg_color = Color(accent, fill_alpha)
 	flat.border_color = Color(accent, edge_alpha)
 	flat.set_border_width_all(1)
-	# 🛑 반지름이 변의 정확히 절반이면(31+31=62) 위아래 모서리가 만나는 자리에 이음매 선이 보인다.
-	#    1 만 줄이고 곡선 분할을 올리면 사라진다 — 눈에는 여전히 원이다.
+	# 🛑 With a radius exactly half the side (31+31=62) a seam shows where the top and bottom corners meet.
+	#    Drop it by just 1 and raise the corner detail and it is gone — to the eye it is still a circle.
 	flat.set_corner_radius_all(maxi(1, int(diameter * 0.5) - 1))
 	flat.corner_detail = 16
 	flat.set_content_margin_all(0)
@@ -253,7 +260,7 @@ func disc_box(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 
 	return flat
 
 
-## 작은 알약형 표식(상태·태그·수량)의 판.
+## Panel for a small pill marker (state·tag·quantity).
 func chip_box(color: Color) -> StyleBox:
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(color, chip_fill_alpha)
@@ -268,37 +275,37 @@ func chip_box(color: Color) -> StyleBox:
 	return style
 
 
-## 칩 **글자색** — 칩 판 위에서 읽히도록 민 값. 🛑 칩은 같은 색 틴트 위에 같은 색 글자를 얹는
-## 전형적인 자리다(밝은 테마에서 3.5:1 까지 떨어졌다 — 2026-09-13 실측).
+## Chip **text color** — the value pushed until it reads on the chip panel. 🛑 A chip is the textbook
+## spot for same-color text on a same-color tint (it fell to 3.5:1 on the light theme — measured 2026-09-13).
 func chip_ink(color: Color) -> Color:
 	var back := blend(box_background(chip_box(color)), GoUi.color(GoTheme.SURFACE_SOFT))
 	return readable_on(color, back)
 
 
-## 퀵슬롯 판 위에 얹는 글자색(남은 시간 등).
+## Text color laid over the quick-slot panel (remaining time and the like).
 func slot_ink(accent: Color, lit: bool) -> Color:
 	var back := blend(box_background(slot_box(accent, lit)), GoUi.color(GoTheme.SURFACE_SOFT))
 	return readable_on(accent, back)
 
 
-## 섹션 머리말(`GoStyle.section()`)의 판. 🛑 기본은 **아무것도 그리지 않는다** — 원래 모양은
-## 흐린 글자 한 줄이고, 여기서 뭔가를 그리면 그것이 기본 생김새가 바뀌는 것이다.
-## 표식을 붙이고 싶은 스킨이 덮어쓴다.
+## Panel for a section heading (`GoStyle.section()`). 🛑 By default it **draws nothing** — the original
+## look is a single dim line of text, and drawing anything here would be changing that default look.
+## A skin that wants a marker overrides it.
 func section_box() -> StyleBox:
 	return StyleBoxEmpty.new()
 
 
-## 구분선 한 줄의 색. 화면의 리듬을 만드는 자리다.
+## Color of a single divider line. This is where the rhythm of the screen comes from.
 func divider_color() -> Color:
 	return GoUi.color(GoTheme.BORDER)
 
 
-## 구분선의 두께(dp).
+## Thickness of the divider (dp).
 func divider_thickness() -> float:
 	return 1.0
 
 
-## 아직 오지 않은 내용의 자리를 잡아 두는 옅은 판.
+## A faint panel holding the place of content that has not arrived yet.
 func skeleton_box() -> StyleBox:
 	var face := StyleBoxFlat.new()
 	face.bg_color = GoUi.color(GoTheme.SURFACE_HIGH)
@@ -306,10 +313,10 @@ func skeleton_box() -> StyleBox:
 	return face
 
 
-## 화면 안에 붙박이로 두는 안내 상자의 판. `ink` 는 톤 색.
-## [param alpha] 는 판 바탕의 불투명도(음수면 카드 값) — 안내 상자는 **카드 안에 놓이는 컨테이너**다.
+## Panel for an alert box fixed inside the screen. `ink` is the tone color.
+## [param alpha] is the panel background opacity (negative uses the card value) — an alert box is **a container placed inside a card**.
 func alert_box(ink: Color, alpha := -1.0) -> StyleBox:
-	# 🛑 바탕을 톤 색 쪽으로 물들여 **덮어쓰므로** 알파는 그 뒤에 입힌다(먼저 입히면 지워진다).
+	# 🛑 The background is **overwritten** by tinting toward the tone color, so alpha goes on after that (applied first, it gets erased).
 	var style := surface_box(GoTheme.BOX_CARD, ink, 1.0)
 	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(GoTheme.BOX_CARD)
 	var flat := style as StyleBoxFlat
@@ -319,10 +326,10 @@ func alert_box(ink: Color, alpha := -1.0) -> StyleBox:
 	return fade_box(flat, opacity)
 
 
-## 분절 선택(Segmented)의 한 칸. 양 끝만 둥글고 가운데는 각지게 — 한 덩어리로 읽힌다.
-## `state` 는 `&"normal"`·`&"hover"`·`&"pressed"`·`&"hover_pressed"`·`&"focus"`.
+## One cell of a segmented control. Round at the two ends and square in the middle — it reads as a single block.
+## `state` is `&"normal"`·`&"hover"`·`&"pressed"`·`&"hover_pressed"`·`&"focus"`.
 func segment_box(index: int, count: int, state: StringName) -> StyleBox:
-	# 🛑 판 불투명도를 따르지 않는다 — 분절 선택은 **누르는 것**이고, 버튼이 묽어지면 상태가 안 읽힌다.
+	# 🛑 It does not follow the panel opacity — a segmented control is **something you press**, and a thinned-out button stops showing its state.
 	var style := surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
 	var face := style as StyleBoxFlat
 	if face == null: return style
@@ -339,16 +346,16 @@ func segment_box(index: int, count: int, state: StringName) -> StyleBox:
 	return face
 
 
-## 선택 격자(`GoStyle.choice_grid`) 한 칸의 판. `state` 는 `&"normal"`·`&"hover"`·`&"pressed"`·
+## Panel for one cell of a choice grid (`GoStyle.choice_grid`). `state` is `&"normal"`·`&"hover"`·`&"pressed"`·
 ## `&"hover_pressed"`·`&"focus"`·`&"disabled"`.
-## 🛑 고른 칸은 판을 강조색으로 **채우지 않는다** — 색 견본에 강조색이 섞여 다른 색처럼 보인다. 테두리를 두껍게 두른다.
-## 🛑 상태마다 안쪽 여백이 같아야 누를 때 칸이 흔들리지 않는다.
+## 🛑 The chosen cell is **not filled** with the accent — the accent mixes into the swatch and it looks like a different color. Give it a thicker border instead.
+## 🛑 The inner padding has to be the same in every state or the cell shifts when you press it.
 func choice_box(state: StringName) -> StyleBox:
 	if state == &"focus":
 		var ring := GoUi.box(GoTheme.BOX_FOCUS_SOFT)
 		_choice_insets(ring)
 		return ring
-	# 🛑 판 불투명도를 따르지 않는다 — 고르는 칸은 버튼이다(`segment_box` 와 같은 이유).
+	# 🛑 It does not follow the panel opacity — a choice cell is a button (same reason as `segment_box`).
 	var style := surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
 	_choice_insets(style)
 	var face := style as StyleBoxFlat
@@ -369,7 +376,7 @@ func choice_box(state: StringName) -> StyleBox:
 	return face
 
 
-## 선택 격자에서 고른 칸의 테두리 두께(dp). 기본 판 테두리(1)보다 확실히 두꺼워야 한눈에 보인다.
+## Border width of the chosen cell in a choice grid (dp). It has to be clearly thicker than the default panel border (1) to be seen at a glance.
 const CHOICE_RING := 3
 
 
@@ -382,21 +389,21 @@ func _choice_insets(box: StyleBox) -> void:
 	box.content_margin_bottom = inset
 
 
-## 색 견본 원의 판. 게임 데이터의 **실제 색 그대로** 채우고, 어떤 바탕에서도 원의 경계가 보이도록 테두리를 두른다.
+## Panel for a color swatch disc. Filled with **the exact color from the game data**, and bordered so the disc's edge shows against any background.
 func swatch_box(diameter: float, color: Color) -> StyleBox:
 	var flat := StyleBoxFlat.new()
 	flat.bg_color = color
 	flat.border_color = GoUi.color(GoTheme.BORDER)
 	flat.set_border_width_all(1)
-	# 🛑 반지름을 변의 정확히 절반으로 두면 이음매 선이 보인다(`disc_box` 와 같은 이유).
+	# 🛑 A radius of exactly half the side shows a seam (same reason as `disc_box`).
 	flat.set_corner_radius_all(maxi(1, int(diameter * 0.5) - 1))
 	flat.corner_detail = 16
 	flat.set_content_margin_all(0)
 	return flat
 
 
-## 값 막대의 **채움**. 🛑 테마의 `ProgressBar/fill` 을 복제해서 고친다 — 카드 스타일을
-##    빌려 쓰면 그 안쪽 여백(12dp)까지 딸려 와 얇은 막대가 두꺼운 덩어리가 된다.
+## The **fill** of a value bar. 🛑 Duplicate the theme's `ProgressBar/fill` and edit that — borrowing
+##    the card style drags its inner padding (12dp) along and turns a thin bar into a fat block.
 func progress_fill_box(ink: Color) -> StyleBox:
 	var source: StyleBox = null
 	for candidate in [GoUi.theme(), GoUi.DEFAULT_THEME]:
@@ -408,7 +415,7 @@ func progress_fill_box(ink: Color) -> StyleBox:
 	if flat == null:
 		if copied != null and not (copied is StyleBoxEmpty):
 			if &"bg_color" in copied: copied.set(&"bg_color", ink)
-			# 🛑 발광이 있으면 **그 색도 채움을 따라간다** — 고정해 두면 빨간 체력 막대가 시안으로 빛난다.
+				# 🛑 If there is a glow, **its color follows the fill too** — pinned, a red health bar glows cyan.
 			if &"glow_color" in copied:
 				var glow: Color = copied.get(&"glow_color")
 				if glow.a > 0.0: copied.set(&"glow_color", Color(ink, glow.a))
@@ -421,15 +428,16 @@ func progress_fill_box(ink: Color) -> StyleBox:
 	return flat
 
 
-## 🛑 **채움이 바탕에 녹으면 얼마나 찼는지 알 수 없다.** 밝은 테마의 노랑이 그렇다 — 휘도가 본래
-##    높아 어떤 회색 바탕 위에서도 3:1 이 나오지 않고, 기준을 맞추려 어둡게 밀면 경험치 막대가
-##    **갈색**이 된다(2026-09-13 실측 `#A05000`). 색을 죽이는 대신 **윤곽으로 경계를 만든다** —
-##    채움은 선명한 채로 두고, 대비는 테두리가 책임진다.
+## 🛑 **A fill that melts into the track tells you nothing about how full it is.** The light theme's
+##    yellow is exactly that — its luminance is high to begin with, so it never reaches 3:1 over any
+##    gray track, and pushing it darker to meet the bar turns the experience bar **brown**
+##    (measured 2026-09-13: `#A05000`). Instead of killing the color, **draw the boundary with an
+##    outline** — the fill stays vivid and the border carries the contrast.
 func _edge_fill(box: StyleBox, ink: Color) -> void:
 	if box == null: return
 	var track := blend(GoUi.color(GoTheme.TRACK), GoUi.color(GoTheme.SURFACE))
 	if contrast_ratio(blend(ink, track), track) >= 3.0: return
-	# 바탕보다 어두운 쪽·밝은 쪽 중 **더 벌어지는 쪽**으로, 기준을 넘을 때까지 민다.
+	# Push toward whichever of darker·lighter **opens the bigger gap** from the track, until it clears the bar.
 	var pick := ink
 	for step in range(1, 11):
 		var amount := 0.1 * float(step)
@@ -438,8 +446,8 @@ func _edge_fill(box: StyleBox, ink: Color) -> void:
 		pick = dark if contrast_ratio(dark, track) >= contrast_ratio(light, track) else light
 		if contrast_ratio(pick, track) >= 3.0: break
 	if &"border_color" in box: box.set(&"border_color", pick)
-	# 🛑 커스텀 StyleBox 는 테두리 두께가 **한 칸**이고, `StyleBoxFlat` 은 네 변이 따로다.
-	#    sci-fi 의 채움은 커스텀이라, 이 갈래를 빠뜨렸더니 윤곽이 통째로 안 그려졌다(실측).
+	# 🛑 A custom StyleBox has **one** border-width field, while `StyleBoxFlat` has four separate sides.
+	#    The sci-fi fill is custom, and leaving this branch out left the outline undrawn entirely (measured).
 	if box is StyleBoxFlat:
 		var flat := box as StyleBoxFlat
 		flat.set_border_width_all(1)
@@ -450,11 +458,11 @@ func _edge_fill(box: StyleBox, ink: Color) -> void:
 
 # ── HUD ────────────────────────────────────────────────────────────────
 
-## 슬롯 모서리에 얹는 **작은 배지**(수량·단축키)의 판. 아이콘과 글자를 세로로 쌓지 않고
-## 모서리에 걸쳐 두면 아이콘이 가운데에 크게 남는다(2026-09-13 — 세로로 쌓였을 때 비좁았다).
-## 판 모양은 `surface_box` 에서 나오므로 sci-fi 에서는 저절로 각진 배지가 된다.
+## Panel for the **small badge** (quantity·shortcut) laid on a slot corner. Hanging it over the corner
+## instead of stacking icon and text vertically leaves the icon large and centered (2026-09-13 — stacked
+## vertically it was cramped). The panel shape comes from `surface_box`, so on sci-fi it turns into an angular badge by itself.
 func badge_box(ink: Color) -> StyleBox:
-	# 🛑 판 불투명도를 따르지 않는다 — 배지는 두 글자를 읽히게 하는 **표식**이고, 아래 판 위에 겹쳐 놓인다.
+	# 🛑 It does not follow the panel opacity — a badge is a **marker** that has to keep two characters readable, and it lies on top of the panel below.
 	var style := surface_box(GoTheme.BOX_HUD, ink, 1.0)
 	style.content_margin_left = badge_pad_x
 	style.content_margin_right = badge_pad_x
@@ -472,9 +480,9 @@ func badge_box(ink: Color) -> StyleBox:
 	return style
 
 
-## 퀵슬롯 한 칸의 판. `lit` 은 쿨다운·잔여 시간이 도는 중이라는 뜻이다.
+## Panel for one quick slot. `lit` means a cooldown·remaining time is running.
 func slot_box(accent: Color, lit: bool) -> StyleBox:
-	# 🛑 판 불투명도를 따르지 않는다 — 퀵슬롯은 **누르는 칸**이고 쿨다운 틴트로 상태를 말한다.
+	# 🛑 It does not follow the panel opacity — a quick slot is **a cell you press** and speaks its state through the cooldown tint.
 	var style := surface_box(GoTheme.BOX_HUD, accent, 1.0)
 	var flat := style as StyleBoxFlat
 	if flat == null: return style
@@ -483,27 +491,27 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 	flat.bg_color = GoUi.color(GoTheme.SURFACE).lerp(Color(accent, 0.8), slot_tint_lit if lit else slot_tint_idle)
 	flat.border_color = Color(accent, 0.95 if lit else 0.45)
 	flat.set_border_width_all(slot_border_lit if lit else slot_border_idle)
-	# 🛑 `shadow_size` 를 쓰지 않는다 — StyleBoxFlat 그림자는 본체와 별개의 사각형을 더 그린다.
-	#    슬롯은 화면에 여러 개가 깔리므로 그리기 비용이 그만큼 곱해진다.
+	# 🛑 Do not use `shadow_size` — a StyleBoxFlat shadow draws one more rectangle separate from the body.
+	#    Slots are laid out several at a time on screen, so that drawing cost is multiplied by as many.
 	flat.shadow_size = 0
 	return flat
 
 
-## 스낵바의 판. `compact` 면 좁은 여백을 준다.
-## [param alpha] 는 판 바탕의 불투명도(음수면 `GoTheme.NOTICE_ALPHA`).
+## Panel for a snackbar. `compact` gives it tighter padding.
+## [param alpha] is the panel background opacity (negative uses `GoTheme.NOTICE_ALPHA`).
 func notice_box(accent: Color, compact: bool, alpha := -1.0) -> StyleBox:
 	var surface := surface_box(GoTheme.BOX_NOTICE, accent, alpha)
 	if compact: surface.set_content_margin_all(GoUi.metric(GoTheme.PADDING_COMPACT))
 	return surface
 
 
-## 이미 붙은 스낵바 판의 **강조색만** 바꾼다 — 표면을 새로 만들지 않는다.
+## Change **only the accent color** of a snackbar panel already in place — no new surface is built.
 func tint_notice(box: StyleBox, accent: Color) -> void:
 	if box == null or accent.a <= 0: return
 	if &"border_color" in box: box.set(&"border_color", Color(accent, 0.55))
 
 
-## 코치마크가 대상 컨트롤에 두르는 링.
+## The ring a coach mark draws around its target control.
 func coach_ring_box(accent: Color) -> StyleBox:
 	var ring := disc_box(48, accent, 0.0, 1.0)
 	if &"border_width_left" in ring:
@@ -514,10 +522,10 @@ func coach_ring_box(accent: Color) -> StyleBox:
 	return ring
 
 
-# ── 직접 그리기 ─────────────────────────────────────────────────────────
+# ── Direct drawing ─────────────────────────────────────────────────────
 
-## 가상 조이스틱. 좌표·상태는 위젯이 계산해 넘긴다 — 여기서는 **그리기만** 한다.
-## 🛑 같은 종류의 도형끼리 그린다 — 캔버스는 명령 종류가 바뀔 때마다 드로콜을 끊는다.
+## The virtual joystick. Coordinates and state are computed by the widget and passed in — this **only draws**.
+## 🛑 Draw shapes of the same kind together — the canvas breaks the draw call every time the command type changes.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink: Color, base: Color, active: bool) -> void:
 	canvas.draw_circle(center, radius, Color(base, joystick_base_alpha))
@@ -525,7 +533,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: f
 	canvas.draw_arc(center, radius, 0, TAU, 48, Color(ink, joystick_ring_alpha), joystick_ring_width, true)
 
 
-## 코치마크의 카드에서 대상으로 뻗는 화살표.
+## The arrow reaching from the coach-mark card to its target.
 func draw_coach_pointer(canvas: CanvasItem, start: Vector2, tip: Vector2,
 		direction: Vector2, ink: Color) -> void:
 	canvas.draw_line(start, tip, ink, 2.0, true)

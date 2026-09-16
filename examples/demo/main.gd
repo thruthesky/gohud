@@ -1,23 +1,24 @@
-## 🚪 **데모의 문간** — `godot` 한 번으로 이 폴더가 열리게 하는 자리.
+## 🚪 **The demo's front door** — the place that makes a single `godot` open this folder.
 ##
-## 🛑 이 파일만은 gohud 의 이름(`GoUi`·`GoStyle`…)을 **한 글자도 쓰지 않는다.** 애드온 링크나 임포트
-##    캐시가 없으면 그 이름들은 파싱 단계에서 터지고, 사람이 보는 것은 빈 창과
-##    `Identifier "GoUi" not declared` 한 줄뿐이다 — 이 데모가 실제로 겪던 증상이 그것이다.
-##    문간만은 그 상황에서도 떠서, 무엇이 없는지 말하고 스스로 고친다.
+## 🛑 This one file uses **not a single** gohud name (`GoUi`, `GoStyle`, …). Without the add-on link or
+##    the import cache those names blow up while parsing, and all a person sees is an empty window and
+##    one line of `Identifier "GoUi" not declared` — which is exactly what this demo used to suffer.
+##    The front door alone must still come up in that state, say what is missing, and fix it itself.
 ##
-## ## 하는 일
-## 1. `addons/gohud` 링크와 클래스 캐시가 있으면 곧장 홈(`home.tscn`)으로 넘긴다.
-## 2. 없으면 애드온을 링크하고 임포트를 한 번 돌린 뒤 **창을 다시 연다**.
-##    🔑 임포트는 실행 중인 프로세스에 반영되지 않는다 — 클래스 이름은 시작할 때 한 번 읽힌다.
-## 3. 그래도 안 되면 무엇을 해야 하는지 화면에 적는다(빈 화면을 남기지 않는다).
+## ## What it does
+## 1. If the `addons/gohud` link and the class cache are there, it hands straight over to the home
+##    screen (`home.tscn`).
+## 2. If they are not, it links the add-on, runs one import and **reopens the window**.
+##    🔑 An import does not reach the running process — class names are read once, at startup.
+## 3. If that still does not work, it writes on screen what to do (it never leaves a blank screen).
 extends Control
 
 const ADDON_MARKER := "res://addons/gohud/plugin.cfg"
 const HOME_SCENE := "res://home.tscn"
-## 다시 연 창에 붙는 표식. 🛑 이것이 없으면 준비가 끝내 안 될 때 창이 끝없이 다시 열린다.
+## The marker put on the reopened window. 🛑 Without it, a setup that never finishes reopens the window forever.
 const RETRY_FLAG := "--gohud-bootstrapped"
 
-# 애드온이 없을 때도 그려야 하므로 테마 토큰을 쓸 수 없다 — 문간 한 장만의 색이다.
+# This has to draw even with no add-on, so no theme tokens — these colors belong to the front door alone.
 const BG := Color("#0b111e")
 const INK := Color("#e6edf7")
 const DIM := Color("#8fa3bd")
@@ -33,17 +34,17 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_build()
 	if _addon_ready():
-		# 🛑 `_ready` 안에서 곧장 바꾸면 트리가 자식을 들이는 중이라 엔진이 거부한다
-		#    ("Parent node is busy adding/removing children" — 실측). 한 박자 미룬다.
+		# 🛑 Switching straight away inside `_ready` is refused by the engine, because the tree is busy
+		#    taking in children ("Parent node is busy adding/removing children" — measured). Wait a beat.
 		get_tree().change_scene_to_file.call_deferred(HOME_SCENE)
 		return
 	_bootstrap()
 
 
-# ── 준비 확인 ──────────────────────────────────────────────────────────
+# ── Readiness check ────────────────────────────────────────────────────
 
-## 애드온이 **이 프로세스에서 쓸 수 있는가.** 파일이 제자리에 있는 것만으로는 모자라다 —
-## 클래스 이름은 임포트가 남긴 캐시에서 오고, 그 캐시가 없으면 `GoUi` 는 없는 이름이다.
+## Is the add-on **usable in this process?** Having the files in place is not enough —
+## class names come from the cache the import leaves behind, and without that cache `GoUi` is no name at all.
 func _addon_ready() -> bool:
 	if not FileAccess.file_exists(ADDON_MARKER): return false
 	for entry in ProjectSettings.get_global_class_list():
@@ -51,7 +52,7 @@ func _addon_ready() -> bool:
 	return false
 
 
-## 애드온 원본이 있는 폴더. 이 데모는 gohud 저장소의 `examples/demo` 안에 산다.
+## The folder the add-on source lives in. This demo lives inside `examples/demo` of the gohud repository.
 func _addon_source() -> String:
 	var here := _project_dir()
 	var root := here.get_base_dir().get_base_dir()   # examples/demo → examples → gohud
@@ -62,7 +63,7 @@ func _project_dir() -> String:
 	return ProjectSettings.globalize_path("res://").trim_suffix("/")
 
 
-# ── 첫 실행 준비 ───────────────────────────────────────────────────────
+# ── First-run setup ────────────────────────────────────────────────────
 
 func _bootstrap() -> void:
 	if OS.get_cmdline_user_args().has(RETRY_FLAG):
@@ -79,8 +80,8 @@ func _bootstrap() -> void:
 	_say("Setting up gohud",
 		"Linking addons/gohud and importing assets. This happens once and takes a moment.",
 		"The window reopens by itself when it is done.")
-	# 🛑 안내를 **먼저 한 장 그리고** 나서 붙잡는다. 임포트는 프로세스를 통째로 멈추므로,
-	#    그리기 전에 부르면 사람은 그동안 빈 창만 본다.
+	# 🛑 **Draw the notice first**, then block. An import stops the whole process, so calling it before
+	#    drawing leaves the person looking at an empty window the whole time.
 	await get_tree().process_frame
 	await RenderingServer.frame_post_draw
 	if not FileAccess.file_exists(ADDON_MARKER) and not _link(source):
@@ -97,14 +98,14 @@ func _bootstrap() -> void:
 	_relaunch()
 
 
-## 애드온 원본을 가리키는 링크를 만든다 — 복사가 아니라 링크라 원본을 고치면 그대로 보인다.
+## Makes a link pointing at the add-on source — a link, not a copy, so edits to the source show through.
 func _link(source: String) -> bool:
 	var project := _project_dir()
 	DirAccess.make_dir_recursive_absolute(project.path_join("addons"))
 	var link := project.path_join("addons/gohud")
 	var output: Array = []
 	if OS.get_name() == "Windows":
-		# 🔑 접합(junction)은 심볼릭 링크와 달리 관리자 권한 없이도 만들어진다.
+		# 🔑 Unlike a symbolic link, a junction can be made without administrator rights.
 		OS.execute("cmd", ["/c", "mklink", "/J", link.replace("/", "\\"), source.replace("/", "\\")],
 			output, true)
 	else:
@@ -112,7 +113,7 @@ func _link(source: String) -> bool:
 	return FileAccess.file_exists(ADDON_MARKER)
 
 
-## 클래스 캐시를 만든다. 🛑 실행 중인 창에는 반영되지 않는다 — 그래서 뒤이어 다시 연다.
+## Builds the class cache. 🛑 It does not reach the running window — which is why we reopen right after.
 func _reimport() -> int:
 	var output: Array = []
 	return OS.execute(OS.get_executable_path(),
@@ -127,7 +128,7 @@ func _relaunch() -> void:
 	get_tree().quit()
 
 
-# ── 문간 화면 ──────────────────────────────────────────────────────────
+# ── The front-door screen ──────────────────────────────────────────────
 
 func _build() -> void:
 	var background := ColorRect.new()

@@ -1,17 +1,17 @@
-## 📸 **판 불투명도(컨테이너 투명도)를 실제로 그려** PNG 로 남긴다(가상 모니터 전용).
+## 📸 **Really draws container alpha (panel transparency)** and saves it as a PNG (virtual monitor only).
 ##
-##   bash <godot 스킬>/scripts/xvfb_run.sh --out <폴더> --size 900x1400 \
+##   bash <godot skill>/scripts/xvfb_run.sh --out <folder> --size 900x1400 \
 ##     -s res://addons/gohud/tests/gohud_alpha_shot.gd
 ##
-## 🛑 `--headless` 로는 스크린샷이 나오지 않는다 — 그리지 않기 때문이다.
+## 🛑 `--headless` produces no screenshot — it does not draw.
 ##
-## ## 🔑 왜 값 검사만으로는 모자란가
-## `bg_color.a == 0.8` 은 **숫자**다. "뒤가 실제로 보이는가", "그 위의 글자가 아직 읽히는가" 는
-## 그려 봐야 안다 — 투명도는 그 두 가지가 전부인 기능이다. 그래서 **뒤에 눈에 띄는 무늬를 깔고**
-## 그 위에 판을 얹어 찍는다. 무늬가 판을 통해 비쳐야 기능이 동작한 것이고, 무늬 때문에 글자를
-## 못 읽으면 값이 너무 낮은 것이다.
+## ## 🔑 Why checking values is not enough
+## `bg_color.a == 0.8` is a **number**. "Does what is behind really show through", "is the text on top still
+## readable" — only drawing answers those, and those two are all this feature is. So we **lay a loud pattern
+## behind** and put the panel on top. The pattern must show through the panel for the feature to work, and if
+## the pattern makes the text unreadable the value is too low.
 ##
-## 🛑 컨테이너에 한글 글꼴이 없다 — 한글은 두부(□)로 나온다. 모양을 보는 것이 목적이므로 영문으로 쓴다.
+## 🛑 The container has no Korean font — Korean renders as tofu (□). Shapes are the point here, so write in English.
 extends SceneTree
 
 var _dir := ""
@@ -22,18 +22,18 @@ func _initialize() -> void:
 	if _dir.is_empty(): _dir = "/out"
 	GoUi.reset()
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
-	GoUi.config.reduce_motion = true   # 최종 모습을 찍는다 — 페이드 중간이 아니라
+	GoUi.config.reduce_motion = true   # shoot the final look — not the middle of a fade
 	await _shot_default()
 	await _shot_levels()
 	await _shot_solid()
 	await _shot_light()
 	await _shot_custom_boxes()
-	print("✅ 촬영 끝 — %s" % _dir)
+	print("✅ shots done — %s" % _dir)
 	quit(0)
 
 
-## 뒤에 깔 **눈에 띄는 무늬** — 판을 통해 이것이 비쳐야 투명도가 동작한 것이다.
-## 🔑 단색이 아니라 굵은 사선 띠다 — 단색 배경이면 판이 "조금 다른 색" 이 된 것과 구별되지 않는다.
+## The **loud pattern** laid behind — it must show through the panel for alpha to have worked.
+## 🔑 Bold diagonal stripes, not a flat colour — on a flat background a panel that merely turned "a slightly different colour" looks the same.
 func _stage(title: String) -> VBoxContainer:
 	for child in root.get_children():
 		if child is CanvasLayer or child is Control: child.queue_free()
@@ -71,7 +71,7 @@ func _save(name: String) -> void:
 	print("  %s %s (%dx%d)" % ["✅" if err == OK else "🛑", path, image.get_width(), image.get_height()])
 
 
-## 판 한 장에 글자를 담아 넣는다 — "뒤가 비치는데 글자는 읽히는가" 를 한 장에서 함께 본다.
+## Puts text on one panel — "the back shows through, but is the text still readable" seen in a single picture.
 func _filled(card: Control, label: String, note: String) -> Control:
 	var body := GoStyle.card_body(card, GoUi.metric(GoTheme.PADDING_COMPACT), GoUi.metric(GoTheme.GAP_TINY))
 	body.add_child(GoStyle.label(label, GoTheme.ROLE_BUTTON))
@@ -81,7 +81,7 @@ func _filled(card: Control, label: String, note: String) -> Control:
 	return card
 
 
-# ── ① 기본값 그대로 — 테마가 정한 80% ─────────────────────────────────
+# ── ① Defaults as they come — the 80% the theme sets ──────────────────
 
 func _shot_default() -> void:
 	var page := await _stage("Default theme — panels at 80%")
@@ -91,14 +91,14 @@ func _shot_default() -> void:
 	var pill := GoStyle.overlay_panel()
 	pill.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var pill_text := GoStyle.label("overlay_panel()", GoTheme.ROLE_CAPTION)
-	# 🛑 줄바꿈을 끈다 — `SHRINK_BEGIN` 에서는 최소 폭이 곧 실제 폭이라 한 글자씩 세로로 접힌다.
+	# 🛑 Turn wrapping off — under `SHRINK_BEGIN` the minimum width is the actual width, so text folds one character per line.
 	pill_text.autowrap_mode = TextServer.AUTOWRAP_OFF
 	pill.add_child(pill_text)
 	page.add_child(pill)
 	var notice := GoNotice.new()
 	page.add_child(notice)
 	notice.show_text("GoNotice at notice_alpha (80)", GoTheme.WARNING, 0.0)
-	# 🔑 표면(대화상자)은 자체 층에 뜬다 — 카드 뒤로 띠가 비치는 것이 이 장의 핵심이다.
+	# 🔑 The surface (dialog) floats on its own layer — the stripes showing through behind the card is the point of this shot.
 	var layer := CanvasLayer.new()
 	layer.layer = 50
 	root.add_child(layer)
@@ -111,7 +111,7 @@ func _shot_default() -> void:
 	await _save("alpha_default_80")
 
 
-# ── ② 네 단계를 나란히 — 값이 무엇을 바꾸는가 ─────────────────────────
+# ── ② Four steps side by side — what the value changes ────────────────
 
 func _shot_levels() -> void:
 	var page := await _stage("One card at four levels")
@@ -122,7 +122,7 @@ func _shot_levels() -> void:
 	await _save("alpha_levels")
 
 
-# ── ③ 프로젝트 전체를 꽉 찬 색으로 되돌린다 ───────────────────────────
+# ── ③ Put the whole project back to solid colour ──────────────────────
 
 func _shot_solid() -> void:
 	GoUi.config.container_alpha = 1.0
@@ -135,7 +135,7 @@ func _shot_solid() -> void:
 	GoUi.refresh()
 
 
-# ── ④ 밝은 테마에서도 같은 규칙인가 ───────────────────────────────────
+# ── ④ Is the rule the same on a light theme ───────────────────────────
 
 func _shot_light() -> void:
 	GoUi.use_preset(GoThemePresets.DEFAULT_LIGHT)
@@ -145,11 +145,11 @@ func _shot_light() -> void:
 	await _save("alpha_light_80")
 
 
-# ── ⑤ 커스텀 StyleBox 테마 — 평판이 아닌 판에서도 같은 규칙인가 ────────
+# ── ⑤ Custom StyleBox themes — same rule on panels that are not flat ──
 #
-# 🛑 **여기가 조용히 깨지는 자리다.** sci-fi 의 사선 판(`GoStyleBoxCut`)과 중세 판
-#    (`GoStyleBoxMedieval`)은 `StyleBoxFlat` 이 아니라 `_draw()` 로 직접 그린다. 불투명도를
-#    `StyleBoxFlat` 갈래에만 넣으면 이 테마들에서 **아무 일도 일어나지 않고**, 값 검사는 통과한다.
+# 🛑 **This is where it breaks quietly.** The sci-fi cut panel (`GoStyleBoxCut`) and the medieval panel
+#    (`GoStyleBoxMedieval`) are not `StyleBoxFlat` — they draw themselves in `_draw()`. Put alpha only on
+#    the `StyleBoxFlat` branch and **nothing happens** in these themes, while the value checks still pass.
 
 func _shot_custom_boxes() -> void:
 	for preset: StringName in [GoThemePresets.SCIFI_DARK, GoThemePresets.MEDIEVAL_DARK]:

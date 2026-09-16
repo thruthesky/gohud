@@ -1,57 +1,57 @@
-## 📝 **폼의 폭을 화면에 맞춰 잡는 칸.** 로그인·설정·캐릭터 만들기처럼 세로로 긴 화면에 쓴다.
+## 📝 **The container that fits a form's width to the screen.** For tall screens: login, settings, character creation.
 ##
-## ## 왜 필요한가
-## 씬에 `custom_minimum_size = Vector2(800, 0)` 같은 고정 폭을 박으면, 720dp 폰에서 그 폼은
-## **화면 밖으로 나간다.** 폭은 컨테이너가 채우고, 좌우 여백만 여기서 계산한다.
+## ## Why it is needed
+## Hard-code a fixed width such as `custom_minimum_size = Vector2(800, 0)` in the scene and on a 720dp phone that form
+## **runs off the screen.** The container fills the width; only the side margins are computed here.
 ##
-## > 좌우 여백 = max(최소 여백, (쓸 수 있는 폭 − 브레이크포인트별 최대 폼 폭) / 2)
+## > side margin = max(minimum margin, (usable width − the breakpoint's maximum form width) / 2)
 ##
-## ## 쓰는 법
-## 화면 루트 아래에 이것을 두고, 안에 `GoScroll` + `VBoxContainer` 를 넣는다.
-## 스크롤 노드의 이름을 `Scroll` 로 해 두면 키보드 회피가 자동으로 붙는다.
+## ## How to use it
+## Put this under the screen root and place a `GoScroll` + `VBoxContainer` inside it.
+## Name the scroll node `Scroll` and keyboard avoidance is wired up automatically.
 ##
 ## ```
 ## GoForm
-##  └ GoScroll (이름: "Scroll")
-##     └ VBoxContainer   ← 여기에 입력칸·버튼을 쌓는다
+##  └ GoScroll (name: "Scroll")
+##     └ VBoxContainer   ← stack the fields and buttons in here
 ## ```
 ##
-## ## 🛑 이 칸은 자손 라벨의 줄바꿈을 **보장한다**
-## 없으면 긴 문장 하나가 한 줄로 뻗고, 그 최소 폭이 폼 전체를 화면 밖으로 민다 —
-## 좌우가 잘려 무슨 화면인지조차 분간할 수 없게 된다. 씬마다 손으로 켜는 방식은 반드시 빠뜨린다.
+## ## 🛑 This container **guarantees** that descendant labels wrap
+## Without it a single long sentence stretches into one line, and its minimum width pushes the whole form off screen —
+## both sides get clipped until you cannot even tell which screen it is. Turning it on by hand per scene always gets forgotten.
 @tool
 class_name GoForm
 extends MarginContainer
 
-## 안의 스크롤(이름이 `Scroll` 인 자식). 키보드가 뜨면 포커스를 따라 스크롤한다.
+## The scroll inside (the child named `Scroll`). When the keyboard comes up it scrolls to follow the focus.
 var scroll: GoScroll
 
-## 화면 가장자리에서 최소한 이만큼(dp). 음수면 토큰 `padding`.
+## At least this much from the screen edge (dp). Negative means the `padding` token.
 @export var min_side_margin := -1:
 	set(value):
 		min_side_margin = value
 		_relayout()
 
-## 위아래 최소 여백(dp). 음수면 토큰 `screen_margin`.
+## Minimum top and bottom margin (dp). Negative means the `screen_margin` token.
 @export var min_edge_margin := -1:
 	set(value):
 		min_edge_margin = value
 		_relayout()
 
-## Android 뒤로가기를 이 버튼으로 보낼 것인가. `%BackButton` 이라는 고유 이름의 자식을 찾는다.
-## 🔑 코드로 조립할 때는 버튼을 폼 안에 넣은 뒤 `back.owner = form` · `back.unique_name_in_owner = true` 를 두고
-##    폼을 트리에 붙인다(`_ready` 에서 한 번 찾는다). 스크롤을 테두리 칸으로 옮겨도 owner 는 지켜진다.
+## Should the Android back gesture be routed to this button? It looks for a child with the unique name `%BackButton`.
+## 🔑 When assembling in code, put the button inside the form, set `back.owner = form` · `back.unique_name_in_owner = true`,
+##    then add the form to the tree (it is looked up once in `_ready`). Moving the scroll into an edge container keeps the owner intact.
 @export var route_back_button := true
 
-## 🔑 **떠 있는 HUD 자리를 비울 것인가.** 켜면 같은 화면의 `GoHudAnchor` 가 차지한 사각형을
-## 피해서 본문이 그 **뒤로 흐르지 않는다**.
+## 🔑 **Should room be left for the floating HUDs?** Turn it on and the body avoids the rectangles taken by a
+## `GoHudAnchor` on the same screen, so it **never flows behind them**.
 ##
-## 끄면(기본) 폼은 화면 전체를 쓴다 — 지금까지의 동작 그대로다. 게임 화면 위에 HUD 만 띄우는
-## 보통의 경우에는 필요 없고, **HUD 와 스크롤되는 본문이 한 화면에 같이 있을 때** 켠다.
+## Off (the default) the form uses the whole screen — the behaviour as it has always been. The usual case, a HUD
+## floating over the game screen, does not need it; turn it on **when a HUD and a scrolling body share one screen**.
 ##
-## 🛑 피하는 방향은 **잃는 면적이 가장 작은 쪽**으로 고른다. 오른쪽 위의 체력바는 세로 화면에서는
-##    위로(높이 13% 손실), 가로 화면에서는 오른쪽으로(폭 21% 손실) 피한다 — 가로에서 세로로만
-##    피하면 본문이 화면의 27% 를 잃는다.
+## 🛑 The direction to move is chosen by **whichever loses the least area**. A health bar at the top right is avoided
+##    upward in portrait (13% of the height lost) and to the right in landscape (21% of the width) — avoiding only
+##    vertically in landscape costs the body 27% of the screen.
 @export var avoid_hud := false:
 	set(value):
 		avoid_hud = value
@@ -61,7 +61,7 @@ var _runtime: Node
 var _keyboard_px := 0
 var _back_button: Button
 var _holds_back := false
-## 마지막으로 적용한 HUD 여백(좌·상·우·하). HUD 는 나중에 크기가 정해지므로 매 프레임 견준다.
+## The HUD insets last applied (left, top, right, bottom). HUD sizes settle later, so they are compared every frame.
 var _hud_pad := Vector4.ZERO
 
 
@@ -95,7 +95,7 @@ func _edge_margin() -> int:
 	return GoUi.metric(GoTheme.SCREEN_MARGIN) if min_edge_margin < 0 else min_edge_margin
 
 
-## 브레이크포인트별 최대 폼 폭(dp). 오토로드가 없으면 화면 폭으로 직접 판정한다.
+## The breakpoint's maximum form width (dp). Without the autoload it is decided from the screen width directly.
 func _max_width() -> int:
 	if _runtime != null and _runtime.has_method(&"form_max_width"): return _runtime.form_max_width()
 	var view := get_viewport_rect().size
@@ -111,9 +111,9 @@ func _relayout() -> void:
 	var cap := _max_width()
 	if cap > 0 and area.size.x > float(cap): side = maxf(side, (area.size.x - float(cap)) * 0.5)
 	var keyboard := float(_keyboard_px) / maxf(1.0, get_window().content_scale_factor)
-	# 🛑 **겹침은 폼이 실제로 차지할 자리에서 본다.** 안전영역 전체로 재면, 넓은 화면에서 폭 제한
-	#    때문에 이미 가운데로 몰려 HUD 근처에도 없는 폼이 **또 옆으로 밀려** 가운데 정렬이 깨진다
-	#    (1280 화면에서 본문이 왼쪽으로 214dp 치우쳤다 — 2026-09-13 데스크톱 실측).
+	# 🛑 **Overlap is judged where the form will actually sit.** Measured against the whole safe area, a form that is
+	#    already pulled to the center on a wide screen by the width cap — nowhere near the HUD — gets **pushed aside**
+	#    again and its centering breaks (the body drifted 214dp to the left on a 1280 screen — measured 2026-09-13 on desktop).
 	_hud_pad = _hud_insets(area.grow_individual(-side, 0.0, -side, 0.0)) if avoid_hud else Vector4.ZERO
 	add_theme_constant_override(&"margin_left", roundi(area.position.x + side + _hud_pad.x))
 	add_theme_constant_override(&"margin_right", roundi(view.x - area.end.x + side + _hud_pad.z))
@@ -122,10 +122,10 @@ func _relayout() -> void:
 		roundi(maxf(view.y - area.end.y + _hud_pad.w, keyboard)) + _edge_margin())
 
 
-## 떠 있는 HUD 들을 피하는 데 필요한 여백(좌·상·우·하 dp).
+## The insets needed to avoid the floating HUDs (left, top, right, bottom, in dp).
 ##
-## 🛑 **한 칸마다 한 방향으로만 피한다.** 네 변을 다 밀면 오른쪽 위 모서리의 체력바 하나가 위와
-##    오른쪽을 동시에 깎아 본문이 두 번 줄어든다. 겹치는 칸마다 **가장 싼 한 방향**을 골라 민다.
+## 🛑 **Each HUD is avoided in one direction only.** Pushing all four sides lets a single health bar in the top-right
+##    corner eat both the top and the right, shrinking the body twice. For each overlapping HUD **the cheapest single direction** is chosen.
 func _hud_insets(area: Rect2) -> Vector4:
 	var here := get_viewport()
 	var rects: Array[Rect2] = []
@@ -133,26 +133,26 @@ func _hud_insets(area: Rect2) -> Vector4:
 		var hud := node as GoHudAnchor
 		if hud == null or not hud.reserve_space: continue
 		if not hud.is_visible_in_tree() or hud.get_viewport() != here: continue
-		# 내 안에 든 HUD 는 피할 대상이 아니다 — 그건 본문의 일부다.
+		# A HUD inside me is not something to avoid — it is part of the body.
 		if hud == self or is_ancestor_of(hud) or hud.is_ancestor_of(self): continue
 		var rect := Rect2(hud.global_position, hud.size)
 		if rect.size.x > 0.0 and rect.size.y > 0.0 and area.intersects(rect): rects.append(rect)
-	# 🛑 **크게 파고든 것부터** 처리한다. 순서에 따라 결과가 달라지므로 기준을 못박아 둔다 —
-	#    안 그러면 같은 화면이 노드 차례가 바뀌었다는 이유만으로 다르게 배치된다.
+	# 🛑 **The deepest intrusion is handled first.** The result depends on the order, so the rule is nailed down —
+	#    otherwise the same screen lays out differently just because the node order changed.
 	rects.sort_custom(func(a: Rect2, b: Rect2) -> bool:
 		return a.intersection(area).get_area() > b.intersection(area).get_area())
 
 	var remain := area
 	for rect in rects:
-		# 🛑 **이미 물러난 만큼을 빼고 다시 본다.** 오른쪽 위 체력바를 피해 오른쪽으로 물러났다면
-		#    오른쪽 아래 슬롯은 그것만으로 이미 비껴 있다 — 따로 세면 아래를 또 깎는다.
+		# 🛑 **Look again with what has already been given up subtracted.** Having moved right to avoid the top-right
+		#    health bar, the bottom-right slot is already clear of it — counting it separately would eat into the bottom too.
 		if not remain.intersects(rect): continue
-		# 각 방향으로 피할 때 **잃는 면적**. 적은 쪽이 이긴다.
+		# **The area lost** when avoiding in each direction. The smaller one wins.
 		var options := [
-			[rect.end.x - remain.position.x, remain.size.y, 0],      # 왼쪽에서 민다
-			[rect.end.y - remain.position.y, remain.size.x, 1],      # 위에서 민다
-			[remain.end.x - rect.position.x, remain.size.y, 2],      # 오른쪽에서 민다
-			[remain.end.y - rect.position.y, remain.size.x, 3],      # 아래에서 민다
+			[rect.end.x - remain.position.x, remain.size.y, 0],      # push in from the left
+			[rect.end.y - remain.position.y, remain.size.x, 1],      # push in from the top
+			[remain.end.x - rect.position.x, remain.size.y, 2],      # push in from the right
+			[remain.end.y - rect.position.y, remain.size.x, 3],      # push in from the bottom
 		]
 		var best: Array = []
 		for option in options:
@@ -165,7 +165,7 @@ func _hud_insets(area: Rect2) -> Vector4:
 			1: remain.position.y += depth; remain.size.y -= depth
 			2: remain.size.x -= depth
 			_: remain.size.y -= depth
-		# 다 깎여 남는 것이 없으면 **피하기를 포기한다** — 빈 화면보다 겹친 화면이 낫다.
+		# When nothing is left after all the cutting, **avoidance is given up** — an overlapping screen beats an empty one.
 		if remain.size.x <= 0.0 or remain.size.y <= 0.0: return Vector4.ZERO
 	return Vector4(remain.position.x - area.position.x, remain.position.y - area.position.y,
 		area.end.x - remain.end.x, area.end.y - remain.end.y)
@@ -183,8 +183,8 @@ func _on_keyboard(height_px: int) -> void:
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint() or not is_visible_in_tree(): return
 	if route_back_button: _sync_back()
-	# 🛑 HUD 는 **나중에** 크기가 정해진다(자식의 최소 크기를 deferred 로 잰다). 한 번만 계산하면
-	#    첫 프레임의 0×0 을 믿고 끝난다 — 값이 달라졌을 때만 다시 배치한다.
+	# 🛑 HUD sizes settle **later** (children's minimum sizes are measured deferred). Computing once means trusting
+	#    the 0×0 of the first frame — so it is laid out again only when the value has changed.
 	if avoid_hud and is_inside_tree():
 		var area := GoSafeArea.usable_rect(get_window())
 		var side := float(_side_margin())
@@ -192,12 +192,12 @@ func _process(_delta: float) -> void:
 		if cap > 0 and area.size.x > float(cap): side = maxf(side, (area.size.x - float(cap)) * 0.5)
 		if not _hud_insets(area.grow_individual(-side, 0.0, -side, 0.0)).is_equal_approx(_hud_pad):
 			_relayout()
-	# 오토로드가 없으면 여기서 직접 키보드를 본다.
+	# Without the autoload the keyboard is polled here.
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
 
 
-## 나중에 추가되는 자식에게도 같은 규격을 입힌다.
+## Children added later get the same rules.
 func _watch_children(node: Node) -> void:
 	if node is ScrollBar: return
 	if not node.child_entered_tree.is_connected(_child_added):
@@ -220,15 +220,15 @@ func _sync_back() -> void:
 
 
 func _notification(what: int) -> void:
-	# 🛑 언어가 바뀌면 버튼의 **보이는 글자**가 바뀐다 — 한 낱말이던 것이 두 낱말이 되기도 한다.
-	#    낱말 줄바꿈 규칙을 자손 전부에 다시 입힌다(멱등이라 몇 번 불러도 같다).
+	# 🛑 A language change changes a button's **visible text** — what was one word can become two.
+	#    The word-wrap rule is reapplied to every descendant (it is idempotent, so calling it repeatedly is the same).
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_inside_tree() and not Engine.is_editor_hint():
 		GoStyle.form(self)
 		return
 	if what != NOTIFICATION_WM_GO_BACK_REQUEST: return
 	if not _holds_back or not is_visible_in_tree() or GoSurface.is_any_open(): return
-	# 🛑 Android 는 키보드가 **사라지는 애니메이션 중에도** 뒤로가기를 보고한다 —
-	#    그때 화면을 나가면 사용자는 "한 번 눌렀는데 두 단계 뒤로 갔다" 고 느낀다.
+	# 🛑 Android reports the back gesture **even during the keyboard's dismiss animation** —
+	#    leaving the screen then makes the user feel "I pressed once and went back two steps".
 	if _keyboard_px > 0:
 		DisplayServer.virtual_keyboard_hide()
 	elif is_instance_valid(_back_button) and not _back_button.disabled:

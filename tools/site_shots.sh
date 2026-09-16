@@ -1,54 +1,55 @@
 #!/usr/bin/env bash
-# 사이트(`www/`) 촬영 — 페이지마다 데스크톱·폰 폭으로 한 장씩 찍는다.
+# Site (`www/`) screenshots — one shot per page at desktop and phone width.
 #
-#   bash addons/gohud/tools/site_shots.sh /tmp/site_shots            # 6 페이지 × 2 폭 = 12 장
-#   bash addons/gohud/tools/site_shots.sh /tmp/site_shots theming    # 이름에 theming 이 든 페이지만
-#   SITE_DARK=1 bash addons/gohud/tools/site_shots.sh /tmp/site_shots  # 다크 팔레트로(이름에 _dark)
-#   SITE_SEARCH=sheet bash addons/gohud/tools/site_shots.sh /tmp/site_shots index  # 그 말로 검색창을 연 채(_search)
+#   bash addons/gohud/tools/site_shots.sh /tmp/site_shots            # 6 pages x 2 widths = 12 shots
+#   bash addons/gohud/tools/site_shots.sh /tmp/site_shots theming    # only pages with theming in the name
+#   SITE_DARK=1 bash addons/gohud/tools/site_shots.sh /tmp/site_shots  # in the dark palette (_dark in the name)
+#   SITE_SEARCH=sheet bash addons/gohud/tools/site_shots.sh /tmp/site_shots index  # with the search palette open on that word (_search)
 #
-# 왜 있나: 갤러리·데모는 촬영 도구가 있는데 사이트는 헤드리스 크롬을 손으로 띄우고 거둬야 했다(I-75).
-#   표 폭·풍선 밑줄·폰 폭에서의 가로 스크롤은 HTML 을 읽어서는 안 보인다.
+# Why it exists: the gallery and demo have screenshot tools, while the site needed headless Chrome raised and reaped by hand (I-75).
+#   Table widths, tooltip underlines and horizontal scrolling at phone width cannot be seen by reading HTML.
 #
-# 🛑 크롬의 `--headless=new` 는 스크린샷을 저장한 뒤에도 **끝나지 않는다.** 그래서 `&` 로 띄우고 파일이
-#    생기면 죽인다. macOS 에는 `timeout` 이 없다. 프로필 폴더는 촬영마다 새로 만든다(같은 폴더를 두 프로세스가
-#    쓰면 "already running" 으로 죽는다).
+# 🛑 Chrome's `--headless=new` **does not exit** even after saving the screenshot. So it is started with
+#    `&` and killed once the file appears. macOS has no `timeout`. The profile folder is created fresh per
+#    shot (two processes sharing one folder die with "already running").
 set -u
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
-OUT="${1:?출력 폴더를 준다}"
+OUT="${1:?give an output folder}"
 ONLY="${2:-}"
-# 🌙 다크 — 헤드리스 크롬에 `prefers-color-scheme` 을 줄 수단이 없으니, 페이지 사본의 <head> 첫머리에
-#    style.css 의 다크 `:root` 블록을 그대로 넣어 찍는다(원천은 style.css 하나). `<base>` 로 상대 경로를 원본
-#    자리에 묶는다 — 🛑 <base> 는 <link> 보다 **앞**에 있어야 스타일시트에 적용된다.
+# 🌙 Dark — there is no way to give headless Chrome a `prefers-color-scheme`, so the dark `:root` block of
+#    style.css is injected verbatim at the top of a copy's <head> (style.css stays the single source). A
+#    `<base>` pins relative paths to the original location — 🛑 <base> must come **before** <link> or it does not apply to the stylesheet.
 DARK="${SITE_DARK:-}"
-# 🔍 검색 팔레트를 연 채로 찍는다 — 색인은 `<script>` 로 늦게 받으므로 크롬에 가상 시간을 준다.
-#    이렇게 하지 않으면 검색 기능은 **아무도 보지 않은 채** 배포된다(스크린샷에 나오지 않으니까).
+# 🔍 Shoot with the search palette open — the index arrives late via `<script>`, so Chrome is given virtual time.
+#    Without this the search feature ships **with nobody having looked at it** (it appears in no screenshot).
 SEARCH="${SITE_SEARCH:-}"
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 if [ ! -x "$CHROME" ]; then
-  echo "🛑 크롬이 없다: $CHROME (CHROME=경로 로 준다)"; exit 1
+  echo "🛑 no Chrome at: $CHROME (pass CHROME=path)"; exit 1
 fi
 mkdir -p "$OUT"
 PROFILES="$(mktemp -d)"
 trap 'rm -rf "$PROFILES"' EXIT
 
-# 페이지 폭·높이 — 높이는 긴 페이지가 다 들어가도록 넉넉히. 폰은 400dp(gohud 의 폰 세로 기준과 같다).
-# 🛑 크롬은 창 폭을 **500 CSS px 아래로 안 줄인다** — `--window-size=400` 을 줘도 레이아웃은 500 으로 되고
-#    그림만 400 으로 잘려, 본문 글자가 오른쪽에서 끊긴 그림이 나온다(2026-09-13 실측: innerWidth 500,
-#    배율 2 를 줘도 같다). 그래서 폰은 페이지를 **폭 400 의 iframe 에 넣은 래퍼**를 찍는다 — iframe 안의
-#    레이아웃 폭은 창 최소 폭과 무관하다(실측 400). 그림은 배율 2 라 800px 폭이고 오른쪽 여백은 회색이다.
+# Page width and height — the height is generous so a long page fits. Phone is 400dp (the same as gohud's phone-portrait baseline).
+# 🛑 Chrome **will not go below 500 CSS px** of window width — even with `--window-size=400` the layout is
+#    laid out at 500 and only the image is cropped to 400, giving a picture with body text cut off on the
+#    right (measured 2026-09-13: innerWidth 500, the same at scale 2). So the phone shot photographs a
+#    **wrapper holding the page in a 400-wide iframe** — the layout width inside an iframe is unrelated
+#    to the window minimum (measured 400). At scale 2 the image is 800px wide and the right margin is gray.
 SIZES="desktop:1100x9000:1 phone:400x14000:2"
-# 🛑 검색 팔레트는 창 높이의 10% 아래에 뜬다 — 페이지 전체를 담으려고 높이 9000 으로 찍으면 팔레트가
-#    900px 아래에 있어 "안 보인다" 는 그림이 나온다(2026-09-16 실측). 검색은 **실제 창 크기**로 찍는다.
+# 🛑 The search palette sits 10% down the window height — shooting at height 9000 to fit the whole page puts
+#    it 900px down and yields a picture where it "is not there" (measured 2026-09-16). Search is shot at the **real window size**.
 [ -n "$SEARCH" ] && SIZES="desktop:1100x900:1 phone:400x860:2"
 
 shots=0; failed=0
-# 🛑 아랍어를 목록에 둔다 — 오른쪽에서 왼쪽으로 흐르는 판은 눈으로 보지 않으면 어긋난 것을 못 잡는다
-#    (목차·검색창·코드 칸이 모두 방향을 뒤집는다).
-# 🔑 쪽이 다섯이 된 뒤로는 새 쪽(install·ai)도 찍는다 — 안 찍으면 그 두 장은 눈으로 한 번도
-#    확인되지 않는다. 한국어는 전부, 아랍어는 오른쪽에서 왼쪽으로 흐르는 판만 표본으로.
-# 🛑 목록을 여기 손으로 두지 않는다 — 2026-09-16 의 가르기로 쪽이 5 → 19 가 되었는데, 손으로 둔
-#    목록은 그대로여서 **새로 갈린 열네 장이 눈으로 한 번도 확인되지 않은 채** 있었다.
-#    정본은 `tools/site_langs.py` 의 `PAGES` 하나다.
+# 🛑 Keep Arabic in the list — a right-to-left layout gone wrong cannot be caught without looking
+#    (the contents, the search box and the code blocks all flip direction).
+# 🔑 Since there are five pages, the new ones (install, ai) are shot too — otherwise those two are never
+#    seen by eye. Korean gets all of them; Arabic is sampled only for the right-to-left layout.
+# 🛑 Do not keep the list here by hand — the 2026-09-16 split took the pages from 5 to 19 while the
+#    hand-kept list stayed put, leaving **fourteen newly split pages never once seen by eye**.
+#    The single source is `PAGES` in `tools/site_langs.py`.
 ALL_PAGES="$(python3 -c "
 import sys; sys.path.insert(0, '$ADDON/tools')
 import site_langs
@@ -59,7 +60,7 @@ for page in $ALL_PAGES \
            ar/index ar/ai ar/widgets ar/widgets-forms ar/theming ar/theming-tokens; do
   [ -n "$ONLY" ] && [[ "$page" != *"$ONLY"* ]] && continue
   file="$ADDON/www/$page.html"
-  [ -f "$file" ] || { echo "🛑 없음: $file"; failed=$((failed+1)); continue; }
+  [ -f "$file" ] || { echo "🛑 missing: $file"; failed=$((failed+1)); continue; }
   for spec in $SIZES; do
     tag="${spec%%:*}"; rest="${spec#*:}"; size="${rest%%:*}"; scale="${rest#*:}"
     name="$(echo "$page" | tr '/' '_')_$tag${DARK:+_dark}${SEARCH:+_search}"
@@ -68,26 +69,26 @@ for page in $ALL_PAGES \
     url="file://$file"; window="$size"; extra=""
     if [ -n "$DARK" ] || [ -n "$SEARCH" ]; then
       copy="$PROFILES/$name.src.html"
-      python3 - "$file" "$copy" "$ADDON/www/site/style.css" "$DARK" "$SEARCH" <<'PY' || { echo "🛑 사본 실패: $name"; failed=$((failed+1)); continue; }
+      python3 - "$file" "$copy" "$ADDON/www/site/style.css" "$DARK" "$SEARCH" <<'PY' || { echo "🛑 could not make the copy: $name"; failed=$((failed+1)); continue; }
 import re, sys
 src, dst, css, dark, search = sys.argv[1:6]
 text = open(src, encoding="utf-8").read()
-# 🛑 <base> 는 <link> 보다 **앞**이어야 스타일시트·스크립트가 원본 자리에서 풀린다.
+# 🛑 <base> must come **before** <link> so stylesheets and scripts resolve at the original location.
 inject = '<base href="file://%s">' % src
 if dark:
     sheet = open(css, encoding="utf-8").read()
-    # 🛑 주석을 먼저 지운다 — style.css 의 머리말이 이 블록의 **모양을 예시로 적어** 두었더니
-    #    정규식이 그 주석을 먼저 물어 `:root { … }` 라는 빈 껍데기를 뽑았다(2026-09-16).
+    # 🛑 Strip comments first — the preamble of style.css **spells this block out as an example**, and the
+    #    regex bit on that comment first and pulled out an empty `:root { … }` shell (2026-09-16).
     sheet = re.sub(r"/\*.*?\*/", "", sheet, flags=re.S)
     block = re.search(r"@media \(prefers-color-scheme: dark\) \{\s*(:root \{.*?\})", sheet, re.S)
     if not block:
-        sys.exit("style.css 에 다크 :root 블록이 없다")
+        sys.exit("style.css has no dark :root block")
     inject += '<style>%s</style>' % block.group(1).replace(':root', ':root:root')
 out, n = re.subn(r"(<head[^>]*>)", r"\1" + inject.replace("\\", "\\\\"), text, count=1)
 if n != 1:
-    sys.exit("<head> 가 없다")
+    sys.exit("there is no <head>")
 if search:
-    # 페이지가 다 뜬 뒤 그 말로 검색 팔레트를 연다 — `site/search.js` 가 전역에 열쇠를 둔다.
+    # Once the page has loaded, open the search palette on that word — `site/search.js` leaves the key on the global object.
     word = re.sub(r"[^\w \uAC00-\uD7A3\u3040-\u30FF\u4E00-\u9FFF-]", "", search)
     auto = ("<script>window.addEventListener('load',function(){setTimeout(function(){"
             "if(window.GOHUD_SEARCH_OPEN)window.GOHUD_SEARCH_OPEN('%s');},50);});</script>" % word)
@@ -115,9 +116,9 @@ PY
     if [ -s "$png" ]; then
       echo "SHOT $png"; shots=$((shots+1))
     else
-      echo "🛑 못 찍음: $name"; failed=$((failed+1))
+      echo "🛑 could not shoot: $name"; failed=$((failed+1))
     fi
   done
 done
-echo "사이트 촬영 $shots 장 · 실패 $failed → $OUT"
+echo "site screenshots: $shots taken · $failed failed → $OUT"
 [ "$failed" -eq 0 ]

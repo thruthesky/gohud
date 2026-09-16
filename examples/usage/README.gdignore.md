@@ -1,17 +1,17 @@
-# 왜 이 폴더에 `.gdignore` 가 있나
+# Why this folder has a `.gdignore`
 
-이 폴더는 **"게임 프로젝트에 gohud 를 설치한 모습"** 을 그대로 담은 예시다. 그래서 안에
-`addons/gohud/` 가 **한 벌 더** 들어 있고, 그 사본은 `GoUi`·`GoConfig`·`GoStyle` 을 비롯한
-**35 개의 `class_name` 을 똑같이 선언**한다.
+This folder is an example that shows, exactly as it is, **"what gohud looks like installed in a game
+project"**. That means it holds **one more copy** of `addons/gohud/` inside it, and that copy
+**declares the same 35 `class_name`s** — `GoUi`, `GoConfig`, `GoStyle` and the rest.
 
-🛑 **같은 `class_name` 이 둘이면 Godot 은 하나만 고른다 — 어느 쪽인지 사람이 정하지 못한다.**
-고른 결과는 프로젝트의 스캔 순서와 `.godot` 캐시에 달려 있어, 같은 저장소인데 기계마다 다를 수 있다.
-그리고 **오류는 한 줄도 나지 않는다** — 옛 사본의 클래스도 그 자체로는 멀쩡히 동작하기 때문에,
-고른 쪽이 옛 것이어도 화면이 조용히 옛 동작을 한다.
+🛑 **When the same `class_name` exists twice, Godot picks one — and nobody gets to say which.**
+Which one it picks depends on the project's scan order and the `.godot` cache, so the same repository
+can resolve differently from machine to machine. And **not one line of error appears** — the old copy's
+classes work perfectly well on their own, so if the old one wins, the screen quietly behaves the old way.
 
-🔑 배포 ZIP 에는 이 폴더가 **들어가지 않는다**(`tools/check_package.py` 가 검사한다). 위험한 것은
-저장소를 통째로 쓰는 쪽 — README 가 안내하는 **git 서브모듈** 방식이다.
+🔑 The release ZIP **does not contain** this folder (`tools/check_package.py` checks that). The risk is
+on the side that uses the whole repository — the **git submodule** route the README recommends.
 
-빈 `.gdignore` 파일 하나면 Godot 이 이 폴더를 통째로 건너뛴다. `examples/demo/` 에도 같은 이유로
-있고, `tools/check_classes.py` 가 이런 겹침이 다시 생기지 않는지 본다.
-**이 폴더에 프로젝트 사본을 둘 때는 `.gdignore` 를 함께 둔다.**
+A single empty `.gdignore` file makes Godot skip this folder entirely. `examples/demo/` has one for the
+same reason, and `tools/check_classes.py` watches that such an overlap never comes back.
+**Whenever you put a copy of the project in a folder, put a `.gdignore` there with it.**

@@ -36,11 +36,11 @@ def main():
         after = snapshot(copy)
     changed = sorted(p for p in before.keys() | after.keys() if before.get(p) != after.get(p))
     if changed:
-        print("🛑 생성물이 소스와 다르다 — python3 tools/make_theme.py 를 실행한다")
+        print("🛑 the generated files differ from the source — run python3 tools/make_theme.py")
         for path in changed:
             print("  " + path)
         return 1
-    print("✅ 테마 생성물 %d개가 소스와 일치" % len(before))
+    print("✅ %d generated theme files match the source" % len(before))
     return 0
 
 

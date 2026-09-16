@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-"""`www/` 홈페이지가 **깨지지 않았는지** 검사한다.
+"""Checks that the `www/` website is **not broken**.
 
     python3 addons/gohud/tools/check_site.py
 
-## 왜 필요한가
-사이트는 코드가 아니라서 아무도 실행해 보지 않는다. 링크 하나가 깨지거나 용어 사전이 통째로
-비어도 **검사는 초록색**이고, GitHub Pages 에 그대로 올라간다. 그 조용한 실패를 막는다.
+## Why this exists
+A site is not code, so nobody ever runs it. One broken link, or an entirely empty glossary, and **the
+checks stay green** while it goes up on GitHub Pages as it is. This stops that silent failure.
 
-## 보는 것
-| 무엇 | 왜 |
+## What it looks at
+| What | Why |
 |---|---|
-| 로컬 링크·그림 경로 | 파일이 실제로 있는가 — 배포 후에야 404 를 보면 늦다 |
-| 용어 사전 | 유효한 JS 인가, 모든 항목에 설명(`d`)과 갈래(`k`)가 있는가 |
-| 페이지마다 사전·툴팁 로드 | 한 페이지만 빠뜨리면 그 페이지에서만 조용히 popup 이 죽는다 |
-| 사전이 코드와 맞는가 | `make_site.py` 를 다시 돌린 결과와 다르면 **사전이 낡았다** |
-| 다이얼 표 | `theming.html` 두 장에 표식이 있고, 다시 만든 표와 같고, 영문 뜻이 빠진 다이얼이 없는가 |
-| 문서 언어 표시 | `<html lang>` 이 없으면 화면 낭독기가 엉뚱한 발음으로 읽는다 |
-| 배포 입구 | 워크플로가 `tools/build_site.sh` 로 조립한 배포본을 올리는가, `404.html` 이 옛 `docs/www/` 주소를 넘기는가 |
-| 공개 주소 | README·스킬·스토어 설명에 적힌 `https://thruthesky.github.io/gohud/…` 과 옛 그림 주소가 배포본에 실제로 있는가 — 그림은 404.html 이 넘겨주지 못한다 |
+| Local links and image paths | Does the file actually exist — seeing the 404 only after deploying is too late |
+| The glossary | Is it valid JS, and does every entry have a description (`d`) and a kind (`k`) |
+| Glossary and tooltip loaded per page | Miss one page and the popup dies silently on that page alone |
+| Does the glossary match the code | Differ from a fresh run of `make_site.py` and **the glossary is stale** |
+| The dial table | Do both `theming.html` pages have the markers, does the table match a fresh one, and is any dial missing its English meaning |
+| Document language | Without `<html lang>` a screen reader reads it with the wrong pronunciation |
+| The deploy entry point | Does the workflow publish what `tools/build_site.sh` assembles, and does `404.html` forward the old `docs/www/` addresses |
+| Public URLs | Do the `https://thruthesky.github.io/gohud/…` links written in the README, the skill and the store description — and the old image URLs — actually exist in the build; 404.html cannot forward an image |
 """
 import json
 import os
@@ -29,38 +29,42 @@ import tempfile
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-# 🔑 언어 목록은 `tools/site_langs.py` 한 곳 — 검사도 생성기와 **같은 목록**을 본다.
+# 🔑 The language list lives in one place, `tools/site_langs.py` — the checker reads **the same list** as the generator.
 import site_langs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
-# 🛑 사이트는 `www/` 루트가 영문, `www/ko/` 가 한국어다. GitHub Actions(`.github/workflows/pages.yml`)가
-#    `tools/build_site.sh` 로 조립해 https://thruthesky.github.io/gohud/ 의 최상위로 올린다(2026-09-15 docs 아래에서 옮김).
+# 🛑 On the site, the `www/` root is English and `www/ko/` is Korean. GitHub Actions
+#    (`.github/workflows/pages.yml`) assembles it with `tools/build_site.sh` and publishes it as the root
+#    of https://thruthesky.github.io/gohud/ (moved out from under docs on 2026-09-15).
 WWW = os.path.join(ADDON, "www")
-# 🔑 GitHub Pages 가 없는 주소마다 내주는 페이지 — 사전·툴팁 없이 옛 주소를 넘기는 스크립트만 있다.
+# 🔑 The page GitHub Pages serves for every missing address — no glossary, no tooltip, just the script
+#    that forwards the old addresses.
 NOT_FOUND = "404.html"
 PUBLIC = "https://thruthesky.github.io/gohud/"
-# 🔑 2026-09-15 전의 README(배포된 ZIP 1.0.2·1.0.3 포함)가 절대 주소로 박아 둔 그림 — git 이력 전체에서 뽑았다.
-#    이미 설치된 README 는 고칠 수 없고 404.html 은 <img> 요청을 넘기지 못하므로, 배포본의 이 자리에 파일이 있어야 한다.
+# 🔑 Images hard-coded as absolute URLs by READMEs from before 2026-09-15 (including the shipped ZIPs
+#    1.0.2 and 1.0.3) — collected from the whole git history. An already-installed README cannot be fixed
+#    and 404.html cannot forward an <img> request, so a file has to exist at this path in the build.
 LEGACY_IMAGES = [
     "docs/www/img/medieval-dark.png",
     "docs/www/img/preset-default-dark.png",
     "docs/www/img/preset-scifi-dark.png",
 ]
-# 🔑 옛 문서 주소 — `tools/build_site.sh` 가 배포본에 **넘겨 주는 페이지를 실물로** 둔다.
-#    404.html 의 스크립트도 넘기지만 그 응답은 상태 코드가 404 라, 검색엔진·링크 검사기·채팅 미리보기에는
-#    끝까지 깨진 주소로 남는다. 여기 적힌 자리는 200 이어야 한다.
+# 🔑 The old documentation addresses — `tools/build_site.sh` puts **a real forwarding page** at each of
+#    them in the build. The script in 404.html forwards too, but that response carries status 404, so to
+#    search engines, link checkers and chat previews the address stays broken for good. Everything listed
+#    here has to answer 200.
 LEGACY_PAGES = ["%s/%s" % (old, page)
                 for page in ("index.html", "theming.html", "widgets.html",
                              "ko/index.html", "ko/theming.html", "ko/widgets.html")
                 for old in ("docs/www", "docs")]
-# 공개 주소를 찾아볼 파일 종류와 건너뛸 폴더 — 빌드 산출물은 고칠 수 없고, `.env` 에는 키가 든다.
+# File types searched for public URLs, and folders skipped — build output cannot be fixed, and `.env` holds keys.
 URL_SOURCES = (".md", ".html", ".json", ".yml", ".cfg")
 SKIP_DIRS = {".git", ".godot", ".env", "builds", ".dist", "__pycache__", ".playwright-mcp", ".cowork"}
 
 
 def pages():
-    """`www/` 아래의 모든 HTML — 🛑 하위 폴더도 본다(한국어판이 `ko/` 에 있다)."""
+    """Every HTML file under `www/` — 🛑 subfolders included (the Korean edition lives in `ko/`)."""
     out = []
     for root, _dirs, names in os.walk(WWW):
         for name in names:
@@ -75,7 +79,7 @@ def check_links(problems):
         here = os.path.dirname(path)
         text = open(path, encoding="utf-8").read()
         if not re.search(r'<html[^>]+\blang=', text):
-            problems.append("%s: <html> 에 lang 이 없다" % name)
+            problems.append("%s: <html> has no lang" % name)
         for attribute in ("href", "src"):
             for target in re.findall(r'%s="([^"]+)"' % attribute, text):
                 url = urlsplit(target)
@@ -84,38 +88,38 @@ def check_links(problems):
                 clean = unquote(url.path)
                 linked = (Path(here, clean) if clean else Path(path)).resolve()
                 if not linked.is_relative_to(Path(WWW).resolve()):
-                    problems.append("%s: 배포 폴더 밖을 가리킨다 — %s" % (name, target))
+                    problems.append("%s: points outside the deploy folder — %s" % (name, target))
                     continue
                 if linked.is_dir():
                     linked = linked / "index.html"
                 if not linked.is_file():
-                    problems.append("%s: 없는 곳을 가리킨다 — %s" % (name, target))
+                    problems.append("%s: points at something that does not exist — %s" % (name, target))
                 elif url.fragment and linked.suffix == ".html":
                     ids = re.findall(r'\bid=["\']([^"\']+)["\']', linked.read_text(encoding="utf-8"))
                     if unquote(url.fragment) not in ids:
-                        problems.append("%s: 없는 절을 가리킨다 — %s" % (name, target))
+                        problems.append("%s: points at a section that does not exist — %s" % (name, target))
         if name == NOT_FOUND:
             continue
         if "glossary" not in text:
-            problems.append("%s: 용어 사전을 불러오지 않는다 — 이 페이지만 popup 이 죽는다" % name)
+            problems.append("%s: does not load the glossary — the popup dies on this page alone" % name)
         if "tooltip.js" not in text:
-            problems.append("%s: tooltip.js 를 불러오지 않는다" % name)
+            problems.append("%s: does not load tooltip.js" % name)
 
 
 def load_glossary(problems, name="glossary.js"):
     path = os.path.join(WWW, "site", name)
     if not os.path.isfile(path):
-        problems.append("%s 가 없다 — python3 tools/make_site.py 를 돌린다" % name)
+        problems.append("%s is missing — run python3 tools/make_site.py" % name)
         return {}
     text = open(path, encoding="utf-8").read()
     match = re.search(r"window\.GLOSSARY\s*=\s*(\{.*\})\s*;", text, re.S)
     if not match:
-        problems.append("용어 사전의 모양이 낯설다 — window.GLOSSARY 대입을 찾지 못했다")
+        problems.append("the glossary has an unfamiliar shape — no window.GLOSSARY assignment found")
         return {}
     try:
         return json.loads(match.group(1))
     except ValueError as error:
-        problems.append("용어 사전이 올바른 JSON 이 아니다 — %s" % error)
+        problems.append("the glossary is not valid JSON — %s" % error)
         return {}
 
 
@@ -124,22 +128,22 @@ def check_glossary(glossary, problems):
         return
     for term, entry in sorted(glossary.items()):
         if not isinstance(entry, dict):
-            problems.append("용어 %r 의 값이 사전이 아니다" % term)
+            problems.append("the value of term %r is not a dict" % term)
             continue
         if not entry.get("d"):
-            problems.append("용어 %r 에 설명(d)이 없다 — 빈 풍선이 뜬다" % term)
+            problems.append("term %r has no description (d) — an empty bubble pops up" % term)
         if not entry.get("k"):
-            problems.append("용어 %r 에 갈래(k)가 없다" % term)
+            problems.append("term %r has no kind (k)" % term)
         if len(term) < 2:
-            problems.append("용어 %r 이 너무 짧다 — 본문 아무 데나 걸린다" % term)
-        # 🛑 풍선은 설명을 글자 그대로 넣는다 — 마크다운이 남으면 `**둥근**` 이 그대로 보인다.
+            problems.append("term %r is too short — it will match anywhere in the text" % term)
+        # 🛑 The bubble takes the description verbatim — leave markdown in and `**rounded**` shows up as is.
         text = entry.get("d", "")
         if "**" in text or "`" in text:
-            problems.append("용어 %r 의 설명에 마크다운이 남았다 — 풍선에 기호가 그대로 보인다" % term)
+            problems.append("markdown left in the description of term %r — the marks show in the bubble" % term)
 
 
-# 🔑 생성기가 쓰는 파일 전부 — 사전 두 장과 다이얼 표가 든 페이지 두 장. 하나라도 빠뜨리면 그 파일은
-#    낡아도 초록색이다.
+# 🔑 Every file the generator writes — the two glossaries and the two pages carrying the dial table. Miss
+#    one and that file stays green however stale it is.
 GENERATED = [
     os.path.join("site", "glossary.js"),
     os.path.join("site", "glossary.en.js"),
@@ -149,7 +153,7 @@ GENERATED = [
 
 
 def check_fresh(problems):
-    """`make_site.py` 를 다시 돌린 결과와 지금 파일이 같은가 — 다르면 생성물이 낡은 것이다."""
+    """Do the current files match a fresh run of `make_site.py` — if not, the generated output is stale."""
     def snapshot(folder):
         out = {}
         for rel in GENERATED:
@@ -165,11 +169,11 @@ def check_fresh(problems):
                                 capture_output=True, text=True)
         after = snapshot(output)
     if result.returncode != 0:
-        problems.append("make_site.py 가 실패했다 — %s" % (result.stderr.strip().splitlines() or [""])[-1])
+        problems.append("make_site.py failed — %s" % (result.stderr.strip().splitlines() or [""])[-1])
         return
     for rel in GENERATED:
         if before[rel] != after[rel]:
-            problems.append("%s 가 소스와 다르다 — python3 tools/make_site.py 를 실행한다" % rel)
+            problems.append("%s differs from the source — run python3 tools/make_site.py" % rel)
 
 
 def check_styles(problems):
@@ -185,65 +189,66 @@ def check_styles(problems):
             if depth < 0:
                 break
     if depth != 0:
-        problems.append("site/style.css: CSS 중괄호가 맞지 않는다 — 미디어쿼리 범위를 확인한다")
-    # 🛑 다크 촬영(`SITE_DARK=1 tools/site_shots.sh`)은 이 블록을 정규식으로 뽑아 쓴다. 뽑히지 않거나
-    #    빈 껍데기가 나오면 다크 그림이 **밝은 판으로 찍히고**, 아무도 그것을 알아채지 못한다.
+        problems.append("site/style.css: unbalanced CSS braces — check the media-query scopes")
+    # 🛑 The dark screenshots (`SITE_DARK=1 tools/site_shots.sh`) pull this block out with a regex. If it
+    #    cannot be pulled out, or comes back an empty husk, **the dark shots are taken on a light theme**
+    #    and nobody notices.
     sheet = re.sub(r"/\*.*?\*/", "", Path(WWW, "site/style.css").read_text(encoding="utf-8"), flags=re.S)
     dark = re.search(r"@media \(prefers-color-scheme: dark\) \{\s*(:root \{.*?\})", sheet, re.S)
     if not dark or "--bg:" not in dark.group(1):
-        problems.append("site/style.css: 어두운 판 :root 블록을 뽑을 수 없다 — 다크 촬영이 밝은 판을 찍는다")
+        problems.append("site/style.css: the dark :root block cannot be extracted — dark screenshots will capture the light theme")
 
 
 def build_site(problems, temp):
-    """`tools/build_site.sh` 로 배포본을 조립한다 — CI 와 같은 스크립트라 여기서 본 것이 곧 올라가는 것이다."""
+    """Assemble the build with `tools/build_site.sh` — the same script CI runs, so what is seen here is what goes up."""
     out = os.path.join(temp, "site")
     result = subprocess.run(["bash", os.path.join(HERE, "build_site.sh"), out], capture_output=True, text=True)
     if result.returncode != 0:
-        problems.append("tools/build_site.sh 가 실패했다 — %s" % (result.stderr.strip().splitlines() or [""])[-1])
+        problems.append("tools/build_site.sh failed — %s" % (result.stderr.strip().splitlines() or [""])[-1])
         return None
     return out
 
 
 def check_entry(problems, site):
-    """배포 입구 — 배포본의 최상위가 `www/` 이고, 옛 주소가 살아 있는가."""
+    """The deploy entry point — is the build rooted at `www/`, and are the old addresses still alive."""
     workflow = Path(ADDON, ".github", "workflows", "pages.yml")
     text = workflow.read_text(encoding="utf-8") if workflow.is_file() else ""
     if "tools/build_site.sh _site" not in text or not re.search(r"^\s*path:\s*_site/?\s*$", text, re.M):
-        problems.append(".github/workflows/pages.yml 이 tools/build_site.sh 로 조립한 _site/ 를 올리지 않는다")
+        problems.append(".github/workflows/pages.yml does not publish the _site/ assembled by tools/build_site.sh")
     moved = Path(WWW, NOT_FOUND)
     if not moved.is_file() or "/docs" not in moved.read_text(encoding="utf-8"):
-        problems.append("www/404.html 이 옛 주소(…/gohud/docs/www/…)를 새 주소로 넘기지 않는다")
+        problems.append("www/404.html does not forward the old addresses (…/gohud/docs/www/…) to the new ones")
     if site:
         for rel in ["index.html", NOT_FOUND]:
             if not os.path.isfile(os.path.join(site, rel)):
-                problems.append("배포본 최상위에 %s 가 없다 — www/ 가 사이트 최상위가 아니다" % rel)
+                problems.append("%s is missing from the root of the build — www/ is not the site root" % rel)
         for rel in LEGACY_IMAGES:
             if not os.path.isfile(os.path.join(site, rel)):
-                problems.append("배포본에 옛 그림 %s 가 없다 — 배포된 ZIP 의 README 그림이 깨진다" % rel)
+                problems.append("the old image %s is missing from the build — README images in the shipped ZIP break" % rel)
         for rel in LEGACY_PAGES:
             path = os.path.join(site, rel)
             if not os.path.isfile(path):
-                problems.append("배포본에 옛 주소 %s 가 없다 — 404 로 남아 넘겨 주지 못한다" % rel)
+                problems.append("the old address %s is missing from the build — it stays a 404 and forwards nothing" % rel)
                 continue
             moved = re.search(r'http-equiv="refresh" content="0; url=([^"]+)"', open(path, encoding="utf-8").read())
             if not moved:
-                problems.append("%s 가 새 주소로 넘기지 않는다" % rel)
+                problems.append("%s does not forward to the new address" % rel)
             elif not os.path.isfile(os.path.normpath(os.path.join(os.path.dirname(path), moved.group(1)))):
-                problems.append("%s 가 없는 곳으로 넘긴다 — %s" % (rel, moved.group(1)))
+                problems.append("%s forwards somewhere that does not exist — %s" % (rel, moved.group(1)))
     for stale in ("index.html", ".nojekyll"):
         if Path(ADDON, stale).exists():
-            problems.append("루트 %s 가 남았다 — 옛 main /(root) 배포용이다. 이제 Pages 는 www/ 만 올린다" % stale)
+            problems.append("a stray %s is left at the root — that was for the old main /(root) deploy. Pages now publishes www/ only" % stale)
     if not re.search(r'<html\s+lang="en"', Path(WWW, "index.html").read_text(encoding="utf-8")):
-        problems.append("기본 사이트 언어는 영어여야 한다")
+        problems.append("the default site language must be English")
     if Path(ADDON, ".git").exists():
         tracked = subprocess.run(["git", "ls-files", "-s", "--", "examples/demo/addons/gohud"],
                                  cwd=ADDON, capture_output=True, text=True, check=True).stdout
         if tracked.startswith("120000"):
-            problems.append("데모의 순환 심볼릭 링크가 Git 에 들어 있다 — 저장소를 따라 읽는 도구가 자기 안으로 끝없이 들어간다")
+            problems.append("the demo's circular symlink is committed to Git — tools that walk the repository descend into it forever")
 
 
 def check_public_urls(problems, site):
-    """README·스킬·스토어 설명에 적힌 공개 주소가 배포본에 실제로 있는가. 본 주소 수를 돌려준다."""
+    """Do the public URLs written in the README, the skill and the store description exist in the build. Returns how many were checked."""
     if not site:
         return 0
     pattern = re.compile(re.escape(PUBLIC) + r"([^\s\"'<>()\[\]*`]*)")
@@ -263,36 +268,37 @@ def check_public_urls(problems, site):
                 count += 1
                 where = os.path.relpath(path, ADDON)
                 if not target.is_file():
-                    problems.append("%s: 배포본에 없는 공개 주소 — %s" % (where, url.geturl()))
+                    problems.append("%s: public URL missing from the build — %s" % (where, url.geturl()))
                 elif url.fragment and target.suffix == ".html":
                     ids = re.findall(r'\bid=["\']([^"\']+)["\']', target.read_text(encoding="utf-8"))
                     if unquote(url.fragment) not in ids:
-                        problems.append("%s: 없는 절을 가리키는 공개 주소 — %s" % (where, url.geturl()))
+                        problems.append("%s: public URL pointing at a section that does not exist — %s" % (where, url.geturl()))
     return count
 
 
 def check_dials(problems):
-    """다이얼 표 — 표식이 있는가, 영문 뜻이 빠진 다이얼은 없는가."""
-    # 🔑 다이얼 표는 `own` 절에 있었고, 그 절은 가르기로 `theming-own.html` 로 옮겨 갔다
-    #    (`tools/split_site.py`). 여기 이름을 함께 고치지 않으면 표식을 영영 못 찾는다.
+    """The dial table — are the markers there, and is any dial missing its English meaning."""
+    # 🔑 The dial table used to sit in the `own` section, and the split moved that section into
+    #    `theming-own.html` (`tools/split_site.py`). Fail to change the name here along with it and the
+    #    marker is never found again.
     for rel in ("theming-own.html", os.path.join("ko", "theming-own.html")):
         path = os.path.join(WWW, rel)
         text = open(path, encoding="utf-8").read() if os.path.isfile(path) else ""
         if "<!-- dials:begin -->" not in text or "<!-- dials:end -->" not in text:
-            problems.append("%s 에 다이얼 표식(<!-- dials:begin/end -->)이 없다" % rel)
+            problems.append("%s has no dial markers (<!-- dials:begin/end -->)" % rel)
     if HERE not in sys.path:
         sys.path.insert(0, HERE)
     import make_site
     missing = make_site.missing_english_dials()
     if missing:
-        problems.append("영문 뜻이 없는 다이얼 — make_site.DIALS_EN 에 적는다: " + ", ".join(missing))
+        problems.append("dials with no English meaning — write them in make_site.DIALS_EN: " + ", ".join(missing))
 
 
 def check_langs(problems):
-    """언어판이 다 있는가, 문서 언어 표시가 목록과 맞는가, 생성기가 채울 표식이 살아 있는가.
+    """Are all the language editions there, do their document languages match the list, and are the generator's markers intact.
 
-    🛑 `site_langs.ACTIVE` 에 오른 언어는 **고르개가 실제로 데려가는 언어**다. 그 페이지가 없으면
-    고르개의 그 줄은 404 로 데려가고, hreflang 은 없는 글을 검색엔진에 알린다.
+    🛑 A language listed in `site_langs.ACTIVE` is **a language the picker actually takes you to**. Without
+    its page, that row of the picker leads to a 404 and hreflang announces a page that does not exist.
     """
     if HERE not in sys.path:
         sys.path.insert(0, HERE)
@@ -302,74 +308,77 @@ def check_langs(problems):
             rel = site_langs.rel_path(lang.code, page)
             path = os.path.join(WWW, rel)
             if not os.path.isfile(path):
-                problems.append("%s 가 없다 — 언어 고르개가 404 로 데려간다" % rel)
+                problems.append("%s is missing — the language picker leads to a 404" % rel)
                 continue
             text = open(path, encoding="utf-8").read()
             if not re.search(r'<html[^>]*\blang="%s"' % re.escape(lang.html_lang), text):
-                problems.append('%s: <html lang="%s"> 가 아니다 — 화면 낭독기가 엉뚱한 발음으로 읽는다'
+                problems.append('%s: not <html lang="%s"> — a screen reader will use the wrong pronunciation'
                                 % (rel, lang.html_lang))
             if lang.direction == "rtl" and not re.search(r'<html[^>]*\bdir="rtl"', text):
-                problems.append('%s: 오른쪽에서 왼쪽으로 읽는 언어인데 dir="rtl" 이 없다' % rel)
+                problems.append('%s: a right-to-left language without dir="rtl"' % rel)
             for begin in (make_site.LANGS_BEGIN, make_site.HREFLANG_BEGIN):
                 if begin not in text:
-                    problems.append("%s 에 %s 표식이 없다 — 생성기가 채우지 못한다" % (rel, begin))
+                    problems.append("%s has no %s marker — the generator cannot fill it" % (rel, begin))
             for src in make_site.PAGE_SCRIPTS:
                 if src not in text:
-                    problems.append("%s 가 %s 를 부르지 않는다 — 그 장만 기능이 빠진다" % (rel, src))
-            # 🔑 목차는 제목의 id 로 데려간다 — id 가 없으면 사이드바도 검색도 절 머리에만 닿는다.
+                    problems.append("%s does not load %s — that page alone loses the feature" % (rel, src))
+            # 🔑 The table of contents navigates by heading id — without ids, neither the sidebar nor the
+            #    search reaches further than the top of a section.
             if not re.search(r'<h3 id="', text):
-                problems.append("%s 의 소제목에 id 가 없다 — `python3 tools/make_site.py` 를 돌린다" % rel)
-            # 🛑 언어판끼리 **절 구성이 갈라지는 것**은 링크 검사로 잡히지 않는다 — 페이지 안에서는 앞뒤가
-            #    맞으니 끝까지 초록불이다. 한국어판에만 `#tokens` 가 있고 `#readable` 이 없던 것을 이렇게
-            #    놓쳤다(2026-09-16). 영어를 정본으로 삼아 절의 목록과 순서를 그대로 맞춘다.
+                problems.append("the subheadings in %s have no id — run `python3 tools/make_site.py`" % rel)
+            # 🛑 **Section structure drifting apart between languages** is not caught by the link check —
+            #    inside a page everything lines up, so it stays green to the end. That is how the Korean
+            #    edition having `#tokens` but not `#readable` was missed (2026-09-16). English is the
+            #    canonical edition; the list and the order of sections must match it exactly.
             if lang.code != "en":
                 want = re.findall(r'<section id="([^"]+)"', open(os.path.join(WWW, page), encoding="utf-8").read())
                 got = re.findall(r'<section id="([^"]+)"', text)
                 if got != want:
                     missing, extra = [s for s in want if s not in got], [s for s in got if s not in want]
-                    problems.append("%s: 절 구성이 영어판과 다르다 — 빠진 절 %s · 더 있는 절 %s%s"
-                                    % (rel, missing or "없음", extra or "없음",
-                                       "" if missing or extra else " (순서가 다르다)"))
-    # 옮겨는 놓고 아직 올리지 않은 언어 — 잊고 넘어가지 않게 알려만 준다(문제로 세지는 않는다).
+                    problems.append("%s: section structure differs from the English edition — missing %s · extra %s%s"
+                                    % (rel, missing or "none", extra or "none",
+                                       "" if missing or extra else " (the order differs)"))
+    # Translated but not yet published — only mentioned so it is not forgotten (it does not count as a problem).
     waiting = [lang.code for lang in site_langs.LANGS if not lang.ready
                and os.path.isfile(os.path.join(WWW, site_langs.rel_path(lang.code, "index.html")))]
     if waiting:
-        print("   ℹ 번역해 두고 아직 올리지 않은 언어: %s — site_langs.py 의 ready 를 True 로 바꾸면 고르개에 오른다"
+        print("   ℹ translated but not yet published: %s — set ready to True in site_langs.py and they join the picker"
               % ", ".join(waiting))
 
 
 def check_search(problems):
-    """전역 검색 색인 — 언어마다 있는가, 가리키는 자리가 실제로 있는가, 영어판만큼 담았는가.
+    """The site-wide search index — is there one per language, do its anchors exist, does it hold as much as the English one.
 
-    🔑 색인이 낡으면 **검색만** 조용히 어긋난다. 페이지는 멀쩡해 보이고 링크 검사도 통과하는데,
-       누른 결과가 페이지 머리로 떨어지거나 아무 데도 가지 않는다. 그래서 색인의 앵커를 실제
-       페이지와 대조한다.
-    🛑 영어판보다 조각이 적은 언어는 **번역이 뒤처졌다는 뜻**이다 — 영어 원문에 절이 늘었는데
-       그 언어만 옛 글 그대로인 것을 여기서 잡는다(절 구성 검사는 `<section>` 만 보므로 못 잡는다).
+    🔑 A stale index breaks **the search alone**, silently. The pages look fine and the link check passes,
+       but a result you click lands at the top of the page, or nowhere at all. So the index's anchors are
+       compared against the real pages.
+    🛑 A language with fewer fragments than English **means its translation has fallen behind** — the
+       English original gained a section and that language still carries the old text. That is caught here
+       (the section-structure check only looks at `<section>`, so it misses this).
     """
     counts = {}
     for lang in site_langs.ACTIVE:
         code = lang.code or "en"
         path = os.path.join(WWW, "site", "search", "%s.js" % code)
         if not os.path.isfile(path):
-            problems.append("site/search/%s.js 가 없다 — 그 언어에서 검색이 빈 채로 열린다" % code)
+            problems.append("site/search/%s.js is missing — search opens empty in that language" % code)
             continue
         text = open(path, encoding="utf-8").read()
         match = re.search(r"window\.GOHUD_SEARCH\[[^\]]+\]=(\{.*\});", text, re.S)
         if not match:
-            problems.append("site/search/%s.js 가 전역 대입 모양이 아니다 — <script> 로 못 읽는다" % code)
+            problems.append("site/search/%s.js is not shaped as a global assignment — a <script> cannot read it" % code)
             continue
         try:
             body = json.loads(match.group(1))
         except ValueError as err:
-            problems.append("site/search/%s.js 를 읽을 수 없다 — %s" % (code, err))
+            problems.append("site/search/%s.js cannot be read — %s" % (code, err))
             continue
         counts[code] = len(body["d"])
-        # 페이지 이름이 번역되지 않고 파일 이름 그대로 남았는가.
+        # Was a page name left as the file name instead of being translated.
         for i, name in enumerate(body["n"]):
             if name.lower().replace(" ", "") in ("index.html", "theming.html", "widgets.html"):
-                problems.append("site/search/%s.js: %d번째 쪽 이름이 번역되지 않았다(%s)" % (code, i + 1, name))
-        # 색인이 가리키는 자리가 그 페이지에 실제로 있는가 — 한 언어당 세 쪽을 한 번씩만 읽는다.
+                problems.append("site/search/%s.js: the name of page %d is untranslated (%s)" % (code, i + 1, name))
+        # Do the index's anchors exist on that page — each language's three pages are read once each.
         for i, page in enumerate(body["p"]):
             rel = site_langs.rel_path(lang.code, page)
             full = os.path.join(WWW, rel)
@@ -379,35 +388,37 @@ def check_search(problems):
             here = set(re.findall(r'<(?:section|h3|h4) id="([^"]+)"', html))
             missing = sorted({d[1] for d in body["d"] if d[0] == i} - here)
             if missing:
-                problems.append("site/search/%s.js 가 %s 에 없는 자리를 가리킨다 — %s"
+                problems.append("site/search/%s.js points at anchors missing from %s — %s"
                                 % (code, rel, ", ".join(missing[:4])))
     if "en" in counts:
         thin = ["%s(%d)" % (c, n) for c, n in sorted(counts.items()) if n < counts["en"]]
         if thin:
-            problems.append("검색 색인이 영어판(%d조각)보다 얇다 — %s · 그 언어만 옛 글이다"
+            problems.append("the search index is thinner than the English one (%d fragments) — %s · those languages still carry the old text"
                             % (counts["en"], ", ".join(thin)))
 
 
-# 🛑 번역이 다시 어긋나지 않게 — 언어별 금칙어.
-#    2026-09-16: 한국어판이 영어 낱말에 고유어를 1:1 로 갈아 끼워 `block→덩이` · `shell→껍데기` ·
-#    `header→머리띠` · `picker→고르개` · `fade→묽다` 가 됐다. 문장력이 아니라 **용어 결정**이
-#    문제였고, 그래서 독자가 본문에서 배운 말로 API(`GoStyle.hud_panel()`)를 찾지 못했다.
-#    일본어도 `ひとかたまり` 로 같은 병을 옮았다. 사람 눈으로는 17개 언어를 다시 못 본다 — 검사가 본다.
-# 🔑 "판"(panel)은 여기 넣지 않는다 — "판단"·"판정" 과 겹쳐 오탐이 쏟아진다. 대신 영어의
-#    `panel` 수와 크게 어긋나면 사람이 보도록 §아래 비율 검사가 잡는다.
+# 🛑 Keeping the translations from drifting again — banned words, per language.
+#    2026-09-16: the Korean edition replaced English words one-for-one with native coinages, producing
+#    `block→덩이` · `shell→껍데기` · `header→머리띠` · `picker→고르개` · `fade→묽다`. The problem was not the
+#    prose but **the terminology decision**, and because of it a reader could no longer find the API
+#    (`GoStyle.hud_panel()`) using the words the text had taught them. Japanese caught the same disease
+#    with `ひとかたまり`. Nobody re-reads 17 languages by eye — the checker does.
+# 🔑 "판" (panel) is deliberately kept out — it overlaps with 판단 and 판정 and floods the report with
+#    false positives. Instead, when its count drifts far from the English `panel` count, the ratio check
+#    below flags it for a person to look at.
 BANNED = {
-    "ko": (("덩이", "block — 원문에 없는 말이다. '아래 글' 로"),
-           ("껍데기", "shell — '알맹이 없는 것' 이라는 부정 함의. '틀' 로"),
-           ("낱말", "word — 기술 문서의 관용어는 '단어'"),
-           ("고르개", "picker — 에디터 화면 용어와 맞춰 '선택기'"),
-           ("머리띠", "header — 머리띠는 액세서리다. '헤더' 로"),
-           ("묽", "fade/thin — '묽다' 는 액체 농도 전용. '옅다' 로")),
-    "ja": (("かたまり", "block — 「ブロック」か「下の文」で受ける"),),
+    "ko": (("덩이", "block — not a word in the source; use '아래 글'"),
+           ("껍데기", "shell — carries the connotation of an empty husk; use '틀'"),
+           ("낱말", "word — the conventional term in technical writing is '단어'"),
+           ("고르개", "picker — match the editor's own wording and use '선택기'"),
+           ("머리띠", "header — a 머리띠 is a hair accessory; use '헤더'"),
+           ("묽", "fade/thin — '묽다' is for the consistency of a liquid only; use '옅다'")),
+    "ja": (("かたまり", "block — use 「ブロック」 or 「下の文」"),),
 }
 
 
 def check_wording(problems):
-    """번역판에 다시 들어오면 안 되는 말을 잡는다."""
+    """Catch wording that must not find its way back into a translation."""
     for code, rules in BANNED.items():
         folder = os.path.join(WWW, code)
         if not os.path.isdir(folder):
@@ -419,18 +430,18 @@ def check_wording(problems):
             for word, why in rules:
                 n = text.count(word)
                 if n:
-                    problems.append("%s/%s: 금칙어 '%s' %d곳 — %s" % (code, name, word, n, why))
+                    problems.append("%s/%s: banned word '%s' in %d places — %s" % (code, name, word, n, why))
 
 
 def main():
     problems = []
     if not os.path.isdir(WWW):
-        print("🛑 www/ 가 없다")
+        print("🛑 there is no www/")
         return 1
-    # 🛑 페이지가 한 장도 없으면 그것부터 실패다 — 사이트가 다른 폴더로 옮겨졌을 때 옛 폴더에서
-    #    HTML 0장을 보고도 "문제 0" 을 냈다(2026-09-13). 빈 것을 통과로 세지 않는다.
+    # 🛑 Not a single page is a failure in itself — when the site moved to another folder, the old folder
+    #    saw 0 HTML files and still reported "0 problems" (2026-09-13). Empty does not count as a pass.
     if not pages():
-        problems.append("HTML 페이지가 한 장도 없다 — 사이트 폴더가 옮겨졌거나 비었다")
+        problems.append("there is not a single HTML page — the site folder has moved or is empty")
     check_links(problems)
     check_styles(problems)
     with tempfile.TemporaryDirectory(prefix="gohud-site-build-") as temp:
@@ -447,11 +458,11 @@ def main():
     check_search(problems)
     check_wording(problems)
 
-    print("언어 %d개 · 페이지 %d장 · 공개 주소 %d곳 · 용어 %d(한국어) · %d(영문)"
+    print("%d languages · %d pages · %d public URLs · %d terms (Korean) · %d (English)"
           % (len(site_langs.ACTIVE), len(pages()), urls, len(glossary), len(english)))
     for line in problems:
         print("   🛑 %s" % line)
-    print("\n%s 문제 %d" % ("🛑" if problems else "✅", len(problems)))
+    print("\n%s %d problems" % ("🛑" if problems else "✅", len(problems)))
     return 1 if problems else 0
 
 

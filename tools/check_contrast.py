@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-"""테마의 **명도 대비비**를 재서 읽기 어려운 색 짝을 찾아낸다.
+"""Measure the **contrast ratio** of every theme and find hard-to-read color pairs.
 
-    python3 addons/gohud/tools/check_contrast.py           # 모든 테마를 잰다
-    python3 addons/gohud/tools/check_contrast.py --strict   # 경고도 실패로 센다(CI용)
+    python3 addons/gohud/tools/check_contrast.py           # measure every theme
+    python3 addons/gohud/tools/check_contrast.py --strict   # count warnings as failures too (for CI)
 
-## 왜 재는가
-"예쁘다" 는 취향이지만 **"읽힌다" 는 측정할 수 있다.** 밝은 테마에서 흐린 회색 글자는 디자이너의
-좋은 모니터에서는 멀쩡해 보이고 햇빛 아래 폰에서는 사라진다. 눈으로 고르면 반드시 그렇게 된다.
+## Why measure it
+"Pretty" is taste, but **"readable" can be measured.** On a light theme, faint gray text
+looks fine on the designer's good monitor and disappears on a phone in sunlight. Picking
+by eye always ends up there.
 
-## 기준 — WCAG 2.2 대비 최소값
-| 글자 | 필요한 비 |
+## The bar — WCAG 2.2 minimum contrast
+| Text | Required ratio |
 |---|---|
-| 본문(24px 미만, 또는 19px 미만 굵게) | **4.5 : 1** |
-| 큰 글자(24px 이상) | **3 : 1** |
-| UI 부품의 경계·아이콘 | **3 : 1** |
+| Body (under 24px, or under 19px bold) | **4.5 : 1** |
+| Large text (24px and up) | **3 : 1** |
+| UI component edges and icons | **3 : 1** |
 
-🛑 알파가 있는 색은 **깔린 배경 위에 합성한 뒤** 잰다 — 반투명 테두리를 그대로 재면 실제보다
-   좋게 나온다. 배경이 불투명하지 않으면 그 아래 `background` 까지 차례로 합성한다.
+🛑 Colors with alpha are measured **after compositing them onto the surface underneath** —
+   measuring a translucent border as-is scores better than it really is. If that surface is
+   not opaque either, keep compositing down to `background`.
 """
 import argparse
 import os
@@ -27,17 +29,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
 THEMES = os.path.join(ADDON, "themes")
 
-# 본문 4.5 · 큰 글자 3 · 부품 경계 3
+# Body 4.5 · large text 3 · component edges 3
 BODY, LARGE, UI = 4.5, 3.0, 3.0
 
-# 🛑 장식 테두리는 WCAG 의 3:1 대상이 **아니다.** 1.4.11 은 "그것을 못 보면 기능을 쓸 수 없는"
-#    경계에만 적용되는데, gohud 의 카드는 배경색 차이로 이미 구분된다 — 테두리는 그 위의 장식이다.
-#    그래도 아예 안 보이면 카드가 배경에 녹으므로, 경계가 눈에 드는 최소선을 따로 둔다.
+# 🛑 Decorative borders are **not** what WCAG's 3:1 rule is about. 1.4.11 applies only to
+#    boundaries you cannot use the feature without seeing, and a gohud card is already told
+#    apart by its background color — the border is decoration on top of that.
+#    Still, an invisible border melts the card into the background, so we keep a separate
+#    minimum for the edge being noticeable at all.
 DECOR = 2.0
 
 
 def parse_theme(path):
-    """`GoHud/colors/*` 토큰만 뽑는다 — 그것이 위젯이 실제로 쓰는 색이다."""
+    """Pull only the `GoHud/colors/*` tokens — those are the colors widgets actually use."""
     colors = {}
     for line in open(path, encoding="utf-8"):
         match = re.match(r"^GoHud/colors/([a-z_]+)\s*=\s*Color\(([^)]+)\)", line.strip())
@@ -50,7 +54,7 @@ def parse_theme(path):
 
 
 def over(top, bottom):
-    """알파 합성 — `top` 을 `bottom` 위에 얹은 실제 색."""
+    """Alpha compositing — the real color of `top` laid over `bottom`."""
     alpha = top[3]
     return tuple(top[i] * alpha + bottom[i] * (1.0 - alpha) for i in range(3)) + (1.0,)
 
@@ -70,7 +74,7 @@ def ratio(front, back):
 
 
 def solid(colors, name, under="background"):
-    """토큰 하나를 **불투명한 실제 화면 색**으로 만든다."""
+    """Turn one token into the **opaque color actually shown on screen**."""
     base = colors.get(under, (0, 0, 0, 1))
     if base[3] < 1.0:
         base = over(base, (0, 0, 0, 1.0))
@@ -80,39 +84,42 @@ def solid(colors, name, under="background"):
     return over(value, base) if value[3] < 1.0 else value
 
 
-# (앞색, 뒷배경, 필요한 비, 어디에 쓰이나)
+# (foreground, background, required ratio, where it is used)
 def pairs(colors):
     surfaces = ["surface", "surface_soft", "surface_high"]
     out = []
     for back in ["background"] + surfaces:
-        out.append(("text", back, BODY, "본문 글자"))
-        out.append(("secondary", back, BODY, "보조 글자(캡션)"))
-        out.append(("muted", back, BODY, "흐린 글자(마이크로 라벨·비활성)"))
-    out.append(("on_accent", "accent", BODY, "강조 버튼의 글자"))
+        out.append(("text", back, BODY, "body text"))
+        out.append(("secondary", back, BODY, "secondary text (captions)"))
+        out.append(("muted", back, BODY, "muted text (micro labels, disabled)"))
+    out.append(("on_accent", "accent", BODY, "text on an accent button"))
     for tone in ["success", "warning", "danger", "info"]:
-        out.append((tone, "surface", BODY, "%s 상태 글자" % tone))
-        out.append((tone, "background", BODY, "%s 상태 글자(바탕 위)" % tone))
-    out.append(("accent", "surface", UI, "강조 테두리·아이콘"))
-    out.append(("accent", "background", UI, "강조 테두리·아이콘(바탕 위)"))
-    out.append(("border", "surface", DECOR, "카드 테두리(장식 — WCAG 3:1 대상 아님)"))
-    out.append(("border", "background", DECOR, "카드 테두리(바탕 위)"))
+        out.append((tone, "surface", BODY, "%s status text" % tone))
+        out.append((tone, "background", BODY, "%s status text (on the backdrop)" % tone))
+    out.append(("accent", "surface", UI, "accent borders and icons"))
+    out.append(("accent", "background", UI, "accent borders and icons (on the backdrop)"))
+    out.append(("border", "surface", DECOR, "card border (decoration — not a WCAG 3:1 target)"))
+    out.append(("border", "background", DECOR, "card border (on the backdrop)"))
     return out
 
 
-# 🛑 **면끼리도 구분되어야 한다.** 글자 대비만 재면 "카드가 배경에 녹아 어디까지가 카드인지 모르겠다" 를
-#    놓친다. WCAG 는 이 짝에 기준을 주지 않는다(장식도 글자도 아니므로). 눈이 경계를 알아보는 최소선을
-#    경험으로 잡는다 — Material 의 표면 단계도 대략 이 정도 차이를 둔다.
+# 🛑 **Surfaces must be told apart from each other too.** Measuring only text contrast misses
+#    "the card melts into the background, I cannot tell where the card ends". WCAG gives no bar
+#    for this pair (it is neither decoration nor text). We set the minimum where the eye still
+#    picks up the edge, from experience — Material's surface elevations use about this much
+#    difference too.
 LAYER = 1.12
 
-# (위 면, 아래 면, 무엇이 구분되는가)
+# (upper surface, lower surface, what is being told apart)
 LAYER_PAIRS = [
-    ("surface", "background", "패널이 화면 바탕에서"),
-    ("surface_soft", "surface", "카드가 패널에서"),
-    ("surface_high", "surface_soft", "도드라진 칸이 카드에서"),
-    # 🛑 **카드는 바탕 위에도 놓인다.** 이 쌍을 빠뜨렸다가 밝은 테마에서 카드가 바탕과 1.00:1 이 되어
-    #    목록 줄의 판이 통째로 사라진 것을 스크린샷에서야 발견했다(2026-09-13).
-    ("surface_soft", "background", "카드가 화면 바탕에서"),
-    ("surface_high", "background", "도드라진 칸이 화면 바탕에서"),
+    ("surface", "background", "the panel against the screen backdrop"),
+    ("surface_soft", "surface", "the card against the panel"),
+    ("surface_high", "surface_soft", "the raised cell against the card"),
+    # 🛑 **Cards also sit directly on the backdrop.** Missing this pair let a light theme end up
+    #    with a card at 1.00:1 against the backdrop, and the whole plate behind list rows
+    #    vanished — only spotted in a screenshot (2026-09-13).
+    ("surface_soft", "background", "the card against the screen backdrop"),
+    ("surface_high", "background", "the raised cell against the screen backdrop"),
 ]
 
 
@@ -124,16 +131,17 @@ def layer_rows(colors):
         if a is None or b is None:
             continue
         rows.append({
-            "front": top, "back": bottom, "need": LAYER, "note": note + " 구분된다",
+            "front": top, "back": bottom, "need": LAYER, "note": note + " stays visible",
             "ratio": ratio(a, b),
         })
     return rows
 
 
 def parse_boxes(path):
-    """`[sub_resource ...] id="x"` 블록마다 `bg_color` 를 모은다.
+    """Collect `bg_color` from every `[sub_resource ...] id="x"` block.
 
-    🛑 커스텀 StyleBox(`type="StyleBox"` + script)도 `bg_color` 칸을 쓴다 — 타입 이름으로 거르지 않는다.
+    🛑 A custom StyleBox (`type="StyleBox"` + script) uses the `bg_color` field too — do not
+    filter by type name.
     """
     boxes = {}
     current = None
@@ -154,12 +162,12 @@ def parse_boxes(path):
                     parts.append(1.0)
                 boxes[current] = tuple(parts[:4])
             elif re.match(r"^draw_center\s*=\s*false", line):
-                boxes[current] = None      # 배경을 안 그린다 — 아래 판이 그대로 보인다
+                boxes[current] = None      # draws no background — the plate below shows through
     return boxes
 
 
 def parse_theme_map(path):
-    """`Type/styles/state = SubResource("id")` 와 `Type/colors/name = Color(...)`, 그리고 `base_type`."""
+    """`Type/styles/state = SubResource("id")`, `Type/colors/name = Color(...)`, and `base_type`."""
     styles, fonts, bases = {}, {}, {}
     for line in open(path, encoding="utf-8"):
         line = line.strip()
@@ -180,7 +188,7 @@ def parse_theme_map(path):
     return styles, fonts, bases
 
 
-# 상태 → 그 상태에서 쓰이는 글자색 칸(없으면 앞의 것으로 떨어진다)
+# state -> the font color slots used in that state (falls back to the earlier one if absent)
 STATE_FONTS = {
     "normal": ["font_color"],
     "hover": ["font_hover_color", "font_color"],
@@ -188,7 +196,7 @@ STATE_FONTS = {
     "disabled": ["font_disabled_color", "font_color"],
 }
 
-# 검사할 타입 — 글자를 담는 것만. 스크롤바·슬라이더는 글자가 없다.
+# Types to check — only the ones that hold text. Scrollbars and sliders have none.
 TEXT_TYPES = [
     "Button", "OptionButton", "GoButton", "GoPrimaryButton", "GoDangerButton", "GoDangerSolidButton",
     "GoCompactButton", "GoListButton", "LineEdit", "TextEdit", "PopupMenu", "TabBar",
@@ -197,7 +205,7 @@ TEXT_TYPES = [
 
 
 def font_for(fonts, bases, type_name, keys):
-    """타입에 그 색이 없으면 `base_type` 을 따라 올라간다 — 엔진이 실제로 그렇게 찾는다."""
+    """If the type has no such color, walk up `base_type` — that is how the engine looks it up."""
     seen = 0
     current = type_name
     while current and seen < 8:
@@ -210,19 +218,23 @@ def font_for(fonts, bases, type_name, keys):
     return None
 
 
-# 🛑 **떠 있는 판은 뒤에 무엇이 올지 모른다.** HUD·팝업·알림은 게임 화면 위에 얹힌다 — 눈밭일 수도,
-#    동굴일 수도 있다. 판이 반투명이면 뒤가 비쳐 판 색 자체가 달라지고, 그 위 글자 대비가 따라 무너진다.
-#    갤러리에서도 스크롤 본문이 HUD 뒤를 지나가며 같은 일이 벌어졌다(2026-09-13 실측).
-#    그래서 **순백과 순흑**을 깔아 보고도 본문 기준을 지키는지 잰다 — 게임 화면의 최악이 그 둘이다.
+# 🛑 **A floating plate does not know what will be behind it.** HUDs, popups and notices sit on
+#    top of the game view — it could be a snowfield, it could be a cave. If the plate is
+#    translucent the view behind changes the plate's own color, and the text contrast on it
+#    collapses with it. The same thing happened in the gallery as scrolling body content passed
+#    behind the HUD (measured 2026-09-13).
+#    So we lay **pure white and pure black** underneath and check the body bar still holds —
+#    those two are the worst case a game view can give.
 FLOATING_STYLES = ["hud", "popup", "notice", "panel", "card", "empty"]
 FLOATING_INKS = [("text", BODY), ("secondary", BODY), ("muted", BODY)]
-WORST_BACKDROPS = [((1.0, 1.0, 1.0, 1.0), "순백"), ((0.0, 0.0, 0.0, 1.0), "순흑")]
+WORST_BACKDROPS = [((1.0, 1.0, 1.0, 1.0), "pure white"), ((0.0, 0.0, 0.0, 1.0), "pure black")]
 
 
 def parse_box_field(path, *fields):
-    """`sub_resource` 블록마다 주어진 색 칸 중 **먼저 나오는 것**을 모은다.
+    """Collect, per `sub_resource` block, **the first of the given color fields** that appears.
 
-    커스텀 StyleBox 는 칸 이름이 다르다 — 챔퍼 판은 `border_color`, 조준 표식은 `color` 다.
+    Custom StyleBoxes name their fields differently — the chamfered plate uses `border_color`,
+    the aim marker uses `color`.
     """
     found = {}
     current = None
@@ -248,16 +260,18 @@ def parse_box_field(path, *fields):
     return found
 
 
-# 🛑 **포커스 표시는 그것이 얹히는 판 위에서 보여야 한다.** 강조 버튼의 판이 바로 강조색이라,
-#    강조색 링을 그리면 같은 색이 겹쳐 **사라진다** — 키보드로 옮겨 다닐 때 "지금 어디" 가 없어진다
-#    (2026-09-13 데스크톱 실측: 호버와 포커스가 구별되지 않았다). WCAG 2.4.11 은 포커스 표시에
-#    3:1 을 요구한다.
+# 🛑 **The focus indicator has to be visible on the plate it is drawn over.** An accent button's
+#    plate *is* the accent color, so an accent-colored ring lands on the same color and
+#    **disappears** — and with it any sense of "where am I" while moving by keyboard
+#    (measured on desktop 2026-09-13: hover and focus were indistinguishable). WCAG 2.4.11
+#    requires 3:1 for focus indicators.
 FOCUS_TYPES = ["Button", "GoPrimaryButton", "GoDangerButton", "GoDangerSolidButton"]
 
 
-# 🛑 **툴팁은 타입이 둘로 나뉜다** — 판은 `TooltipPanel`, 글자는 `TooltipLabel` 이다. 한 타입 안에서
-#    판과 글자를 짝지어 보는 검사로는 **절대 걸리지 않는다.** 그리고 아이콘 버튼은 글자가 없어,
-#    마우스 사용자에게 툴팁이 그 버튼의 **유일한 설명**이다.
+# 🛑 **A tooltip is split across two types** — the plate is `TooltipPanel`, the text is
+#    `TooltipLabel`. A check that pairs plate and text within one type **can never catch this.**
+#    And an icon button has no label, so for a mouse user the tooltip is that button's
+#    **only** description.
 def tooltip_rows(path, colors):
     boxes = parse_boxes(path)
     styles, fonts, _bases = parse_theme_map(path)
@@ -270,8 +284,8 @@ def tooltip_rows(path, colors):
     back = base if panel is None else (over(panel, base) if panel[3] < 1.0 else panel)
     front = over(ink, back) if ink[3] < 1.0 else ink
     return [{
-        "front": "툴팁 글자", "back": "툴팁 판", "need": BODY, "ratio": ratio(front, back),
-        "note": "아이콘 버튼의 유일한 설명",
+        "front": "tooltip text", "back": "tooltip plate", "need": BODY, "ratio": ratio(front, back),
+        "note": "the only description an icon button has",
     }]
 
 
@@ -296,15 +310,15 @@ def focus_rows(path, colors):
             under = over(panel, base) if panel[3] < 1.0 else panel
         front = over(ring, under) if ring[3] < 1.0 else ring
         rows.append({
-            "front": "%s 포커스 링" % type_name, "back": "자기 판 위",
+            "front": "%s focus ring" % type_name, "back": "its own plate",
             "need": UI, "ratio": ratio(front, under),
-            "note": "키보드로 옮겼을 때 어디인지 보인다",
+            "note": "shows where you are after moving by keyboard",
         })
     return rows
 
 
 def floating_rows(path, colors):
-    """반투명한 떠 있는 판 — 뒤가 무엇이든 판 위 글자가 읽히는가."""
+    """Translucent floating plates — is the text on them readable whatever is behind?"""
     boxes = parse_boxes(path)
     styles, _fonts, _bases = parse_theme_map(path)
     hud_styles = styles.get("GoHud", {})
@@ -315,7 +329,7 @@ def floating_rows(path, colors):
             continue
         box_bg = boxes[box_id]
         if box_bg is None or box_bg[3] >= 1.0:
-            continue                      # 배경을 안 그리거나 불투명하면 뒤가 비칠 일이 없다
+            continue                      # nothing shows through if it draws no background or is opaque
         for ink_name, need in FLOATING_INKS:
             raw = colors.get(ink_name)
             if raw is None:
@@ -328,18 +342,18 @@ def floating_rows(path, colors):
                 if worst is None or value < worst:
                     worst, worst_name = value, backdrop_name
             rows.append({
-                "front": ink_name, "back": "%s 판/%s" % (style_name, worst_name),
+                "front": ink_name, "back": "%s plate/%s" % (style_name, worst_name),
                 "need": need, "ratio": worst,
-                "note": "떠 있는 판 뒤가 비쳐도 읽힌다",
+                "note": "readable even with the view showing through a floating plate",
             })
     return rows
 
 
 def surface_rows(path, colors):
-    """**StyleBox 배경 위의 글자** — 눈에 실제로 보이는 조합을 잰다."""
+    """**Text over StyleBox backgrounds** — measure the combinations the eye actually sees."""
     boxes = parse_boxes(path)
     styles, fonts, bases = parse_theme_map(path)
-    under_names = ["background", "surface_soft"]      # 버튼은 바탕 위에도, 카드 안에도 놓인다
+    under_names = ["background", "surface_soft"]      # buttons sit on the backdrop and inside cards
     rows = []
     for type_name in TEXT_TYPES:
         table = styles.get(type_name)
@@ -364,12 +378,12 @@ def surface_rows(path, colors):
                 if worst is None or value < worst:
                     worst, worst_under = value, under
                 if box_bg is not None and box_bg[3] >= 1.0:
-                    break        # 불투명한 판이면 아래가 무엇이든 같다
+                    break        # an opaque plate looks the same whatever is under it
             if worst is None:
                 continue
             rows.append({
-                "front": "%s.%s" % (type_name, state), "back": "판 위 (%s)" % worst_under,
-                "need": BODY, "ratio": worst, "note": "버튼·입력칸 글자",
+                "front": "%s.%s" % (type_name, state), "back": "on the plate (%s)" % worst_under,
+                "need": BODY, "ratio": worst, "note": "button and input field text",
             })
     return rows
 
@@ -401,8 +415,8 @@ def measure(path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--strict", action="store_true", help="아깝게 넘긴 것(기준의 1.1배 미만)도 실패로 센다")
-    parser.add_argument("--quiet", action="store_true", help="통과한 줄은 감춘다")
+    parser.add_argument("--strict", action="store_true", help="count near misses (under 1.1x the bar) as failures too")
+    parser.add_argument("--quiet", action="store_true", help="hide the rows that pass")
     args = parser.parse_args()
 
     files = sorted(name for name in os.listdir(THEMES) if name.endswith(".tres"))
@@ -415,18 +429,18 @@ def main():
         bad = [row for row in rows if row["ratio"] < row["need"]]
         thin = [row for row in rows if row["need"] <= row["ratio"] < row["need"] * 1.1]
         mark = "🛑" if bad else ("⚠️ " if thin else "✅")
-        print("\n%s %s — 짝 %d개 · 미달 %d · 아슬아슬 %d" % (mark, name, len(rows), len(bad), len(thin)))
+        print("\n%s %s — %d pairs · %d below the bar · %d near miss" % (mark, name, len(rows), len(bad), len(thin)))
         for row in sorted(rows, key=lambda r: r["ratio"]):
             failed = row["ratio"] < row["need"]
             close = not failed and row["ratio"] < row["need"] * 1.1
             if args.quiet and not failed and not close:
                 continue
             flag = "🛑" if failed else ("⚠️ " if close else "  ")
-            print("   %s %-24s on %-20s %5.2f:1  (필요 %.1f)  %s"
+            print("   %s %-24s on %-20s %5.2f:1  (need %.1f)  %s"
                   % (flag, row["front"], row["back"], row["ratio"], row["need"], row["note"]))
         failures += len(bad) + (len(thin) if args.strict else 0)
 
-    print("\n%s 미달 합계 %d" % ("🛑" if failures else "✅", failures))
+    print("\n%s %d below the bar in total" % ("🛑" if failures else "✅", failures))
     return 1 if failures else 0
 
 
