@@ -144,7 +144,8 @@ GENERATED = [
     os.path.join("site", "glossary.js"),
     os.path.join("site", "glossary.en.js"),
     NOT_FOUND,
-] + [site_langs.rel_path(lang.code, page) for lang in site_langs.ACTIVE for page in site_langs.PAGES]
+] + [site_langs.rel_path(lang.code, page) for lang in site_langs.ACTIVE for page in site_langs.PAGES] \
+  + [os.path.join("site", "search", "%s.js" % (lang.code or "en")) for lang in site_langs.ACTIVE]
 
 
 def check_fresh(problems):
@@ -185,6 +186,12 @@ def check_styles(problems):
                 break
     if depth != 0:
         problems.append("site/style.css: CSS 중괄호가 맞지 않는다 — 미디어쿼리 범위를 확인한다")
+    # 🛑 다크 촬영(`SITE_DARK=1 tools/site_shots.sh`)은 이 블록을 정규식으로 뽑아 쓴다. 뽑히지 않거나
+    #    빈 껍데기가 나오면 다크 그림이 **밝은 판으로 찍히고**, 아무도 그것을 알아채지 못한다.
+    sheet = re.sub(r"/\*.*?\*/", "", Path(WWW, "site/style.css").read_text(encoding="utf-8"), flags=re.S)
+    dark = re.search(r"@media \(prefers-color-scheme: dark\) \{\s*(:root \{.*?\})", sheet, re.S)
+    if not dark or "--bg:" not in dark.group(1):
+        problems.append("site/style.css: 어두운 판 :root 블록을 뽑을 수 없다 — 다크 촬영이 밝은 판을 찍는다")
 
 
 def build_site(problems, temp):
@@ -304,8 +311,9 @@ def check_langs(problems):
             for begin in (make_site.LANGS_BEGIN, make_site.HREFLANG_BEGIN):
                 if begin not in text:
                     problems.append("%s 에 %s 표식이 없다 — 생성기가 채우지 못한다" % (rel, begin))
-            if "site/toc.js" not in text:
-                problems.append("%s 가 목차 스크립트를 부르지 않는다 — 그 장만 사이드바가 없다" % rel)
+            for src in make_site.PAGE_SCRIPTS:
+                if src not in text:
+                    problems.append("%s 가 %s 를 부르지 않는다 — 그 장만 기능이 빠진다" % (rel, src))
             # 🔑 목차는 제목의 id 로 데려간다 — id 가 없으면 사이드바도 검색도 절 머리에만 닿는다.
             if not re.search(r'<h3 id="', text):
                 problems.append("%s 의 소제목에 id 가 없다 — `python3 tools/make_site.py` 를 돌린다" % rel)
@@ -326,6 +334,56 @@ def check_langs(problems):
     if waiting:
         print("   ℹ 번역해 두고 아직 올리지 않은 언어: %s — site_langs.py 의 ready 를 True 로 바꾸면 고르개에 오른다"
               % ", ".join(waiting))
+
+
+def check_search(problems):
+    """전역 검색 색인 — 언어마다 있는가, 가리키는 자리가 실제로 있는가, 영어판만큼 담았는가.
+
+    🔑 색인이 낡으면 **검색만** 조용히 어긋난다. 페이지는 멀쩡해 보이고 링크 검사도 통과하는데,
+       누른 결과가 페이지 머리로 떨어지거나 아무 데도 가지 않는다. 그래서 색인의 앵커를 실제
+       페이지와 대조한다.
+    🛑 영어판보다 조각이 적은 언어는 **번역이 뒤처졌다는 뜻**이다 — 영어 원문에 절이 늘었는데
+       그 언어만 옛 글 그대로인 것을 여기서 잡는다(절 구성 검사는 `<section>` 만 보므로 못 잡는다).
+    """
+    counts = {}
+    for lang in site_langs.ACTIVE:
+        code = lang.code or "en"
+        path = os.path.join(WWW, "site", "search", "%s.js" % code)
+        if not os.path.isfile(path):
+            problems.append("site/search/%s.js 가 없다 — 그 언어에서 검색이 빈 채로 열린다" % code)
+            continue
+        text = open(path, encoding="utf-8").read()
+        match = re.search(r"window\.GOHUD_SEARCH\[[^\]]+\]=(\{.*\});", text, re.S)
+        if not match:
+            problems.append("site/search/%s.js 가 전역 대입 모양이 아니다 — <script> 로 못 읽는다" % code)
+            continue
+        try:
+            body = json.loads(match.group(1))
+        except ValueError as err:
+            problems.append("site/search/%s.js 를 읽을 수 없다 — %s" % (code, err))
+            continue
+        counts[code] = len(body["d"])
+        # 페이지 이름이 번역되지 않고 파일 이름 그대로 남았는가.
+        for i, name in enumerate(body["n"]):
+            if name.lower().replace(" ", "") in ("index.html", "theming.html", "widgets.html"):
+                problems.append("site/search/%s.js: %d번째 쪽 이름이 번역되지 않았다(%s)" % (code, i + 1, name))
+        # 색인이 가리키는 자리가 그 페이지에 실제로 있는가 — 한 언어당 세 쪽을 한 번씩만 읽는다.
+        for i, page in enumerate(body["p"]):
+            rel = site_langs.rel_path(lang.code, page)
+            full = os.path.join(WWW, rel)
+            if not os.path.isfile(full):
+                continue
+            html = open(full, encoding="utf-8").read()
+            here = set(re.findall(r'<(?:section|h3|h4) id="([^"]+)"', html))
+            missing = sorted({d[1] for d in body["d"] if d[0] == i} - here)
+            if missing:
+                problems.append("site/search/%s.js 가 %s 에 없는 자리를 가리킨다 — %s"
+                                % (code, rel, ", ".join(missing[:4])))
+    if "en" in counts:
+        thin = ["%s(%d)" % (c, n) for c, n in sorted(counts.items()) if n < counts["en"]]
+        if thin:
+            problems.append("검색 색인이 영어판(%d조각)보다 얇다 — %s · 그 언어만 옛 글이다"
+                            % (counts["en"], ", ".join(thin)))
 
 
 def main():
@@ -350,6 +408,7 @@ def main():
     check_fresh(problems)
     check_dials(problems)
     check_langs(problems)
+    check_search(problems)
 
     print("언어 %d개 · 페이지 %d장 · 공개 주소 %d곳 · 용어 %d(한국어) · %d(영문)"
           % (len(site_langs.ACTIVE), len(pages()), urls, len(glossary), len(english)))

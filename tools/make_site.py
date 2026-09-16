@@ -24,6 +24,7 @@ import os
 import re
 
 # 🔑 언어 목록은 `tools/site_langs.py` 한 곳에 있다 — 페이지마다 언어 고르개와 hreflang 을 그 목록으로 다시 쓴다.
+import make_search
 import site_langs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -688,13 +689,17 @@ def write_not_found_langs():
     return True
 
 
-def write_toc_script():
-    """페이지마다 목차 스크립트를 한 줄 넣는다 — 이미 있으면 그대로 둔다.
+# 페이지 끝에 넣는 스크립트 — 순서가 곧 실행 순서다.
+#   toc.js     왼쪽 목차. 페이지의 제목을 읽어 만든다.
+#   search.js  전역 검색. 머리띠에 검색칸을 넣고, 목차의 "전체 검색" 단추에 응답한다.
+#   ux.js      코드 복사 단추와 그림 늦게 받기.
+# 🛑 셋 다 번역문을 제 안에 들고 있다 — 언어판 51 장에 넣는 것은 이 `<script>` 한 줄뿐이다.
+PAGE_SCRIPTS = ("site/toc.js", "site/search.js", "site/ux.js")
 
-    🔑 목차는 페이지의 제목을 읽어서 만든다. 그래서 언어판 51 장에 번역문을 따로 넣을 필요가 없고,
-    여기서 하는 일은 `<script>` 한 줄을 넣는 것뿐이다.
-    """
-    added = 0
+
+def write_page_scripts():
+    """페이지마다 스크립트 줄을 넣는다 — 이미 있으면 그대로 둔다."""
+    added, touched = 0, 0
     for lang in site_langs.ACTIVE:
         for page in site_langs.PAGES:
             rel = site_langs.rel_path(lang.code, page)
@@ -702,16 +707,20 @@ def write_toc_script():
             if not os.path.isfile(path):
                 continue
             text = open(path, encoding="utf-8").read()
-            if "site/toc.js" in text:
-                continue
             if "</body>" not in text:
-                print("🛑 %s 에 </body> 가 없다 — 목차 스크립트를 못 넣었다" % rel)
+                print("🛑 %s 에 </body> 가 없다 — 스크립트를 못 넣었다" % rel)
                 continue
             up = "../" if site_langs.BY_CODE[lang.code].folder else ""
-            open(path, "w", encoding="utf-8").write(
-                text.replace("</body>", '<script src="%ssite/toc.js"></script>\n</body>' % up, 1))
-            added += 1
-    print("목차 스크립트 — %d장에 넣음" % added)
+            body = text
+            for src in PAGE_SCRIPTS:
+                if src in body:
+                    continue
+                body = body.replace("</body>", '<script src="%s%s"></script>\n</body>' % (up, src), 1)
+                added += 1
+            if body != text:
+                open(path, "w", encoding="utf-8").write(body)
+                touched += 1
+    print("페이지 스크립트 — %d줄을 %d장에 넣음" % (added, touched))
     return added
 
 
@@ -723,4 +732,5 @@ if __name__ == "__main__":
     write_langs()
     write_not_found_langs()
     write_heading_ids()
-    write_toc_script()
+    write_page_scripts()
+    make_search.write_all()

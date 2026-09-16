@@ -82,13 +82,20 @@
     '  border:1px solid transparent}',
     '.gos-hit:hover,.gos-hit.on{background:color-mix(in srgb,var(--accent,#0878AE) 10%,transparent);',
     '  border-color:color-mix(in srgb,var(--accent,#0878AE) 35%,transparent)}',
-    '.gos-t{display:flex;align-items:baseline;gap:8px;font-weight:600;font-size:15px}',
+    /* 🛑 flex 로 두면 배지·절 이름·제목이 저마다 줄바꿈 대상이 되어 폭 400 에서 "G o Shee t" 처럼
+       글자가 흩어진다(2026-09-16 촬영). 한 줄의 글로 흐르게 두고 배지만 붙여 놓는다.
+       🛑 body 의 `overflow-wrap:anywhere` 도 여기서는 되돌린다 — 낱말 한가운데를 자른다. */
+    '.gos-t{display:block;font-weight:600;font-size:15px;overflow-wrap:break-word}',
+    '.gos-pg{margin-inline-end:8px;vertical-align:1px}',
     '.gos-hit.on .gos-t{color:var(--accent,#0878AE)}',
-    '.gos-pg{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;flex:none;',
-    '  padding:2px 7px;border-radius:999px;color:var(--accent,#0878AE);',
+    '.gos-pg{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;',
+    '  display:inline-block;padding:2px 7px;border-radius:999px;color:var(--accent,#0878AE);',
     '  background:color-mix(in srgb,var(--accent,#0878AE) 13%,transparent)}',
+    '.gos-up{font-weight:500;color:var(--muted,#5B6B7B);font-size:13px;margin-inline-end:2px}',
     '.gos-x{font-size:13px;color:var(--muted,#5B6B7B);margin-top:3px;line-height:1.5;',
+    '  overflow-wrap:break-word;',
     '  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
+    '.gos-x.code{font-family:var(--mono,monospace);font-size:12px;direction:ltr;unicode-bidi:isolate}',
     '.gos-x mark,.gos-t mark{background:color-mix(in srgb,var(--accent,#0878AE) 26%,transparent);',
     '  color:inherit;border-radius:3px;padding:0 1px;font-weight:700}',
     '.gos-none{padding:26px 12px;text-align:center;color:var(--muted,#5B6B7B)}',
@@ -152,7 +159,7 @@
     if (!toks.length || !index) return [];
     var out = [];
     for (var i = 0; i < index.d.length; i++) {
-      var d = index.d[i], t = norm(d[2]), x = norm(d[4]), score = 0, ok = true;
+      var d = index.d[i], t = norm(d[2]), x = norm(d[4]), c = norm(d[5] || ''), score = 0, ok = true;
       for (var k = 0; k < toks.length; k++) {
         var tok = toks[k], at = t.indexOf(tok);
         if (at >= 0) {
@@ -160,9 +167,13 @@
           score += t === tok ? 900 : at === 0 ? 420 : 200;
         } else {
           var bt = x.indexOf(tok);
-          if (bt < 0) { ok = false; break; }
-          score += 14 + Math.min(8, count(x, tok)) * 3;
-          if (bt < 120) score += 6;   // 절 첫머리에 나오면 그 절의 주제일 확률이 높다
+          if (bt >= 0) {
+            score += 14 + Math.min(8, count(x, tok)) * 3;
+            if (bt < 120) score += 6;   // 절 첫머리에 나오면 그 절의 주제일 확률이 높다
+          } else if (c.indexOf(tok) >= 0) {
+            // 코드에만 있는 말 — `GoUi.use_preset()` 처럼 문장에는 안 나오는 이름이 여기서 걸린다.
+            score += 11 + Math.min(6, count(c, tok)) * 3;
+          } else { ok = false; break; }
         }
       }
       if (!ok) continue;
@@ -296,11 +307,22 @@
     }
     if (label) html += '<div class="gos-lab">' + esc(label) + '</div>';
     rows.forEach(function (r) {
-      var d = r.d;
+      var d = r.d, line = '';
+      if (q) {
+        // 🔑 보여 줄 한 줄을 고르는 규칙. 사람이 먼저 읽어야 하는 것은 **문장**이다.
+        //    1) 찾는 말이 산문에 있으면 그 자리를, 2) 제목에서 걸렸으면 산문 첫머리를,
+        //    3) 코드에만 있는 이름이면 그때만 코드를 보인다.
+        var prose = !!d[4] && toks.some(function (tok) { return norm(d[4]).indexOf(tok) >= 0; });
+        var byTitle = toks.some(function (tok) { return norm(d[2]).indexOf(tok) >= 0; });
+        var code = !prose && !(byTitle && d[4]) && !!d[5];
+        var body = code ? d[5] : (d[4] || d[5]);
+        if (body) line = '<span class="gos-x' + (code ? ' code' : '') + '">' + snip(body, toks) + '</span>';
+      }
+      var up = d[6] >= 0 && index.d[d[6]] ? index.d[d[6]][2] : '';
       html += '<a class="gos-hit" href="' + esc(href(d)) + '">' +
               '<span class="gos-t"><span class="gos-pg">' + esc(index.n[d[0]]) + '</span>' +
-              (q ? light(d[2], toks) : esc(d[2])) + '</span>' +
-              (q && d[4] ? '<span class="gos-x">' + snip(d[4], toks) + '</span>' : '') +
+              (up ? '<span class="gos-up">' + esc(up) + ' \u203A</span>' : '') +
+              (q ? light(d[2], toks) : esc(d[2])) + '</span>' + line +
               '</a>';
     });
     list.innerHTML = html;
@@ -342,9 +364,12 @@
     if (url.charAt(0) === '#') {
       var el = document.getElementById(url.slice(1));
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        history.replaceState(null, '', url);
+        // 🛑 데려가는 일부터 한다. `history.replaceState` 는 `file://` 에서 SecurityError 를 던지는데,
+        //    이것을 먼저 부르면 그 예외에 걸려 **스크롤도 강조도 일어나지 않는다**(2026-09-16 실측).
+        //    오프라인 사본으로 문서를 읽는 사람에게는 검색 결과가 통째로 죽는 고장이었다.
         flash(el);
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        try { history.replaceState(null, '', url); } catch (e) { location.hash = url.slice(1); }
         return;
       }
     }

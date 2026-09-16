@@ -76,7 +76,7 @@
   css.textContent = [
     '.gotoc{position:fixed;inset-block-start:' + HEAD + ';inset-inline-start:0;width:' + W + ';',
     '  height:calc(100vh - ' + HEAD + ');overflow-y:auto;overscroll-behavior:contain;z-index:40;',
-    '  padding:16px 12px 48px;background:var(--bg,#F7F9FB);',
+    '  padding:16px 12px 48px;background:var(--bg-2,#EDF2F7);',
     '  border-inline-end:1px solid var(--rule,#DCE3EA);font-size:13.5px;line-height:1.5}',
     '.gotoc-title{font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;',
     '  color:var(--muted,#5B6B7B);padding:0 8px 10px}',
@@ -99,6 +99,13 @@
     '.gotoc-pages{margin-top:16px;padding-top:12px;border-top:1px solid var(--rule,#DCE3EA)}',
     '.gotoc-pages a{font-weight:600;color:var(--ink,#16202B)}',
     'body.gotoc-on{padding-inline-start:' + W + '}',
+    /* 🔑 머리띠만 목차 너머로 되돌린다 — 로고가 화면 맨 왼쪽 위에 서고 목차가 그 아래로 붙어,
+       왼쪽 위에 뜻 없는 빈칸이 생기지 않는다(2026-09-16 촬영에서 264px 이 비어 있었다). */
+    'body.gotoc-on header.top{margin-inline-start:-' + W + '}',
+    'body.gotoc-on header.top .wrap{max-width:none}',
+    /* 🛑 목차가 뜨면 머리띠의 절 링크는 왼쪽에 그대로 있다 — 두 벌을 두면 머리띠가 두 줄로 접혀
+       검색칸과 언어 고르개가 밀려난다(2026-09-16 촬영). 목차가 실제로 떴을 때만 숨긴다. */
+    'body.gotoc-on header.top nav a[href^="#"]{display:none}',
 
     /* 제목 옆의 작은 고리 — 그 자리의 주소를 바로 집어갈 수 있게. 마우스를 올려야 보인다. */
     '.gotoc-anchor{margin-inline-start:.4em;color:var(--muted,#5B6B7B);text-decoration:none;',
@@ -112,10 +119,8 @@
     '  box-shadow:0 6px 20px -8px rgba(0,0,0,.35);cursor:pointer}',
     '@media (max-width:1079px){',
     '  body.gotoc-on{padding-inline-start:0}',
+    '  body.gotoc-on header.top{margin-inline-start:0}',
     '  .gotoc-btn{display:block}',
-    /* 머리띠의 절 링크는 목차와 겹친다 — 좁은 화면에서는 뺀다. 머리띠가 세 줄에서 한 줄로 줄어
-       본문이 그만큼 먼저 보인다. 🛑 목차가 실제로 떴을 때만(`body.gotoc-on`) 숨긴다. */
-    '  body.gotoc-on header.top nav a[href^="#"]{display:none}',
     '  .gotoc{inset-block-start:0;height:100vh;width:min(320px,86vw);z-index:60;',
     '    box-shadow:0 0 40px -10px rgba(0,0,0,.4);transform:translateX(-110%);',
     '    transition:transform .18s;padding-top:20px}',

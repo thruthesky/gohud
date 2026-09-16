@@ -13,9 +13,14 @@
 같다. 제목의 id 는 `tools/make_site.py` 가 영어 기준으로 박아 두므로 언어를 바꿔도 주소가 같다.
 
 ## 무엇을 담나
-제목과 본문을 따로 담는다(`t`·`x`). 제목에 든 말은 점수를 높게 쳐야 `GoSheet` 를 찾을 때 그 위젯을
-설명하는 절이 맨 위에 오고, 그것을 스쳐 언급한 절이 아래로 간다. 코드 블록도 본문에 넣는다 —
-`GoUi.use_preset()` 같은 이름은 문장이 아니라 코드에만 나오는 일이 많다.
+제목·산문·코드를 **따로** 담는다(`t`·`x`·`c`).
+- 제목에 든 말은 점수를 높게 쳐야 `GoSheet` 를 찾을 때 그 위젯을 설명하는 절이 맨 위에 오고,
+  스쳐 언급한 절이 아래로 간다.
+- 소제목 조각은 제가 속한 절의 번호(`p`)를 들고 있다 — 결과 한 줄만 보고도 어디에 있는 이야기인지
+  알 수 있어야 한다.
+- 코드는 찾기는 해야 하지만 **보여 줄 때는 뒤로 미룬다.** 코드와 산문을 한 자루에 담았더니
+  결과에 딸려 나오는 한 줄이 `var sheet := GoSheet.new() add_child(sheet)…` 처럼 읽기 어려웠다
+  (2026-09-16 촬영). 사람이 먼저 읽어야 하는 것은 그 절이 무엇을 하는지 적은 문장이다.
 """
 import html
 import json
@@ -26,7 +31,9 @@ from html.parser import HTMLParser
 import site_langs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-WWW = os.path.join(os.path.dirname(HERE), "www")
+# 🛑 `make_site.py` 와 같은 환경변수를 본다 — `check_site.py` 가 임시 폴더에 다시 만들어 보고
+#    지금 파일과 견주기 때문이다. 이것이 없으면 검사가 원본을 덮어써 늘 통과한다.
+WWW = os.environ.get("GOHUD_SITE_OUTPUT", os.path.join(os.path.dirname(HERE), "www"))
 OUT = os.path.join(WWW, "site", "search")
 
 # 글을 붙여 쓰면 안 되는 태그 — 이것들의 경계에는 공백을 넣는다. 반대로 `<b>`·`<code>` 같은 인라인
@@ -45,7 +52,9 @@ class Cutter(HTMLParser):
         self.drop = 0            # 통째로 버리는 태그 안인가
         self.stack = []          # [(태그, class)] — 카드 안 h3 을 가려내는 데 쓴다
         self.cuts = []           # 자른 조각들
-        self.buf = []            # 지금 조각의 본문
+        self.buf = []            # 지금 조각의 산문
+        self.code = []           # 지금 조각의 코드(`<pre>` 안)
+        self.pre = 0             # 코드 칸 안인가
         self.cap = None          # 제목을 모으는 중이면 리스트
         self.sec = None          # 지금 절의 id
         self.sec_open = False    # 이 절의 h2 를 이미 만났는가
@@ -54,11 +63,19 @@ class Cutter(HTMLParser):
     def _flush(self):
         if self.cuts:
             self.cuts[-1]["x"] = squeeze("".join(self.buf))
-        self.buf = []
+            self.cuts[-1]["c"] = squeeze("".join(self.code))
+        self.buf, self.code = [], []
 
     def _begin(self, anchor, sub):
         self._flush()
-        self.cuts.append({"a": anchor, "t": "", "s": 1 if sub else 0, "x": ""})
+        # 소제목이면 제가 속한 절의 번호를 적어 둔다 — 결과에 "위젯 › 배치" 처럼 길을 보인다.
+        parent = -1
+        if sub:
+            for i in range(len(self.cuts) - 1, -1, -1):
+                if not self.cuts[i]["s"]:
+                    parent = i
+                    break
+        self.cuts.append({"a": anchor, "t": "", "s": 1 if sub else 0, "x": "", "c": "", "p": parent})
         self.cap = []
 
     # ── 파서 콜백 ──────────────────────────────────────────
@@ -73,8 +90,10 @@ class Cutter(HTMLParser):
             return
         at = dict(attrs)
         self.stack.append((tag, at.get("class", "")))
+        if tag == "pre":
+            self.pre += 1
         if tag in BLOCK:
-            self.buf.append(" ")
+            (self.code if self.pre else self.buf).append(" ")
         if tag == "section" and at.get("id"):
             self.sec, self.sec_open = at["id"], False
         elif tag == "h2" and self.sec and not self.sec_open:
@@ -97,11 +116,13 @@ class Cutter(HTMLParser):
             if self.stack[i][0] == tag:
                 del self.stack[i:]
                 break
+        if tag == "pre":
+            self.pre = max(0, self.pre - 1)
         if tag in ("h2", "h3") and self.cap is not None:
             self.cuts[-1]["t"] = squeeze("".join(self.cap))
             self.cap = None
         elif tag in BLOCK:
-            self.buf.append(" ")
+            (self.code if self.pre else self.buf).append(" ")
 
     def handle_data(self, data):
         if not self.inside or self.drop:
@@ -109,7 +130,7 @@ class Cutter(HTMLParser):
         if self.cap is not None:
             self.cap.append(data)
         elif self.cuts:
-            self.buf.append(data)
+            (self.code if self.pre else self.buf).append(data)
 
     # ── 거들기 ─────────────────────────────────────────────
     def _in_card(self):
@@ -157,8 +178,11 @@ def build(code):
         if not os.path.isfile(path):
             continue
         pages += 1
+        base = len(docs)
         for cut in cut_page(path):
-            docs.append([i, cut["a"], cut["t"], cut["s"], cut["x"]])
+            # 🛑 `p` 는 **그 페이지 안의** 번호였다 — 세 쪽을 한 자루에 담으므로 여기서 옮겨 적는다.
+            docs.append([i, cut["a"], cut["t"], cut["s"], cut["x"], cut["c"],
+                         base + cut["p"] if cut["p"] >= 0 else -1])
     if not docs:
         return 0, 0, 0
     body = {"p": list(site_langs.PAGES), "n": page_names(code), "d": docs}

@@ -1,36 +1,59 @@
 /* gohud 홈페이지 — 밝은 바탕이 기본, 시스템이 어두우면 따라간다.
    🛑 변수 이름(--accent·--card·--ink·--rule·--muted·--blue)은 site/tooltip.js 가 그대로 읽는다.
-      이름을 바꾸면 용어 풍선의 색이 통째로 빠진다. */
+      이름을 바꾸면 용어 풍선의 색이 통째로 빠진다.
+   🛑 어두운 판은 prefers-color-scheme 미디어쿼리가 곧바로 :root 를 여는 **지금 모양** 그대로 둔다 —
+      tools/site_shots.sh 가 그 블록을 정규식으로 뽑아 다크 촬영본에 넣는다(모양이 바뀌면 다크 촬영이
+      밝은 판을 찍는다). 🛑 이 머리말에 그 모양을 예시로 적지 않는다 — 정규식이 주석을 먼저 문다. */
 
 :root {
-  --bg: #F7F9FB;
+  /* 바탕과 글 */
+  --bg: #F6F8FB;
+  --bg-2: #EDF2F7;          /* 한 단 내려앉은 바탕 — 절을 번갈아 칠해 글의 마디를 만든다 */
   --card: #FFFFFF;
-  --ink: #16202B;
-  --muted: #5B6B7B;
-  --rule: #DCE3EA;
+  --ink: #131C26;
+  --ink-2: #33455A;
+  --muted: #566878;
+  --rule: #DCE4EC;
+  --rule-2: #C7D3DF;
+
+  /* 강조 */
   --accent: #0878AE;
+  --accent-2: #0E9F9B;      /* 그라데이션의 반대편 — 띠·고리·표시에만 쓴다 */
   --on-accent: #FFFFFF;
   --blue: #1864AB;
-  --code-bg: #F1F4F8;
   --warn: #C2410C;
+  --tint: color-mix(in srgb, var(--accent) 8%, transparent);
+
+  /* 재질 */
+  --code-bg: #F0F4F8;
   --shadow: 0 1px 2px rgba(16, 32, 48, .06), 0 8px 24px -16px rgba(16, 32, 48, .3);
-  --radius: 12px;
+  --shadow-2: 0 2px 6px rgba(16, 32, 48, .07), 0 22px 48px -26px rgba(16, 32, 48, .45);
+  --glow: radial-gradient(58% 72% at 14% -8%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 68%),
+          radial-gradient(46% 62% at 94% 10%, color-mix(in srgb, var(--accent-2) 24%, transparent), transparent 70%);
+  --radius: 14px;
+  --radius-s: 10px;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0C1116;
-    --card: #141C25;
-    --ink: #E8EFF5;
-    --muted: #94A6B6;
-    --rule: #253341;
+    --bg: #0A0F15;
+    --bg-2: #0E151D;
+    --card: #131C25;
+    --ink: #E9F0F6;
+    --ink-2: #C3D2DE;
+    --muted: #93A5B5;
+    --rule: #22303D;
+    --rule-2: #31414F;
     --accent: #4CC2F1;
-    --on-accent: #08232E;
+    --accent-2: #55D6C2;
+    --on-accent: #062230;
     --blue: #7FC4F0;
-    --code-bg: #0F171F;
     --warn: #FF9F6B;
+    --tint: color-mix(in srgb, var(--accent) 12%, transparent);
+    --code-bg: #0C141C;
     --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -18px rgba(0, 0, 0, .8);
+    --shadow-2: 0 2px 8px rgba(0, 0, 0, .5), 0 26px 56px -28px rgba(0, 0, 0, .95);
   }
 }
 
@@ -44,110 +67,203 @@ body {
         "Apple SD Gothic Neo", Roboto, sans-serif;
   -webkit-text-size-adjust: 100%;
   overflow-wrap: anywhere;
+  /* 용어 풍선 버튼이 오른쪽 아래에 앉으므로 바닥에 자리를 비운다 */
+  padding-bottom: 10px;
 }
 
-.wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 22px; }
 
 /* ── 머리 ───────────────────────────────────────────────── */
 
 header.top {
   border-bottom: 1px solid var(--rule);
-  background: color-mix(in srgb, var(--card) 88%, transparent);
+  background: color-mix(in srgb, var(--card) 82%, transparent);
   position: sticky; top: 0; z-index: 50;
-  backdrop-filter: saturate(150%) blur(8px);
+  backdrop-filter: saturate(160%) blur(10px);
 }
-header.top .wrap { display: flex; align-items: center; gap: 18px; height: 58px; }
-.brand { font-weight: 800; font-size: 18px; letter-spacing: -.01em; text-decoration: none; color: var(--ink); }
-.brand span { color: var(--accent); }
-header.top nav { margin-inline-start: auto; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-header.top nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
-header.top nav a:hover { color: var(--accent); }
+header.top .wrap { display: flex; align-items: center; gap: 16px; height: 60px; }
+.brand {
+  font-weight: 800; font-size: 19px; letter-spacing: -.02em; text-decoration: none; color: var(--ink);
+  /* 🛑 `go<span>hud</span>` 는 한 낱말이다. flex 로 두면 조각 둘이 따로 줄바꿈해 "g hu / o d" 가 된다. */
+  white-space: nowrap; flex: none;
+}
+.brand span {
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+header.top nav { margin-inline-start: auto; display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+header.top nav > a {
+  color: var(--muted); text-decoration: none; font-size: 13.5px;
+  padding: 6px 9px; border-radius: 8px;
+}
+header.top nav > a:hover { color: var(--accent); background: var(--tint); }
 
 /* ── 언어 고르개 ─────────────────────────────────────────── */
 /* 🛑 JavaScript 를 쓰지 않는다 — <details> 만으로 연다. 스크립트가 막힌 곳에서도 언어는 바뀌어야 한다.
    17 개 언어를 메뉴에 나란히 두면 줄이 세 줄로 접히므로, 지금 언어만 보이고 나머지는 접어 둔다. */
-.langs { position: relative; font-size: 14px; }
+.langs { position: relative; font-size: 13.5px; }
 .langs > summary {
   list-style: none; cursor: pointer; color: var(--muted);
   display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 10px; border-radius: 8px;
 }
 .langs > summary::-webkit-details-marker { display: none; }
-.langs > summary::after { content: "▾"; font-size: 11px; }
-.langs > summary:hover, .langs[open] > summary { color: var(--accent); }
+.langs > summary::before { content: "\1F310"; font-size: 12px; opacity: .85; }
+.langs > summary::after { content: "\25BE"; font-size: 10px; }
+.langs > summary:hover, .langs[open] > summary { color: var(--accent); background: var(--tint); }
 .langs-list {
   position: absolute; inset-inline-end: 0; top: calc(100% + 10px); z-index: 60;
-  display: grid; gap: 2px; min-width: 190px; max-height: 68vh; overflow-y: auto;
-  padding: 8px; border: 1px solid var(--rule); border-radius: 10px;
-  background: var(--card); box-shadow: 0 12px 32px rgba(0, 0, 0, .16);
+  display: grid; gap: 2px; min-width: 196px; max-height: 68vh; overflow-y: auto;
+  padding: 8px; border: 1px solid var(--rule); border-radius: var(--radius-s);
+  background: var(--card); box-shadow: var(--shadow-2);
 }
-.langs-list a { padding: 6px 10px; border-radius: 7px; color: var(--ink); font-size: 14px; }
-.langs-list a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+.langs-list a { padding: 6px 10px; border-radius: 7px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.langs-list a:hover { background: var(--tint); color: var(--accent); }
 .langs-list a[aria-current] { color: var(--accent); font-weight: 700; }
 
 /* ── 히어로 ─────────────────────────────────────────────── */
 
-.hero { padding: 64px 0 40px; border-bottom: 1px solid var(--rule); }
-.hero h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.16; margin: 0 0 14px; letter-spacing: -.02em; }
-.hero p.lead { font-size: clamp(16px, 2.2vw, 19px); color: var(--muted); margin: 0 0 26px; max-width: 62ch; }
-.badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 26px; }
+.hero {
+  padding: 78px 0 56px; border-bottom: 1px solid var(--rule);
+  background: var(--glow), linear-gradient(180deg, var(--bg-2), var(--bg) 82%);
+  position: relative; overflow: hidden;
+}
+/* 아주 옅은 격자 — 바탕이 허전하지 않으면서 글을 방해하지 않을 만큼만. */
+.hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(var(--rule) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(70% 60% at 50% 0%, #000, transparent 75%);
+  opacity: .5;
+}
+.hero .wrap { position: relative; }
+.hero h1 {
+  font-size: clamp(32px, 5.4vw, 52px); line-height: 1.1; margin: 0 0 16px;
+  letter-spacing: -.033em; font-weight: 800;
+}
+.hero p.lead {
+  font-size: clamp(16.5px, 2.2vw, 20px); color: var(--ink-2); margin: 0 0 28px; max-width: 60ch;
+  line-height: 1.6;
+}
+.badges { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 28px; }
 .badge {
-  font-size: 12px; padding: 4px 11px; border-radius: 999px;
-  border: 1px solid var(--rule); color: var(--muted); background: var(--card);
+  font-size: 12px; padding: 5px 12px; border-radius: 999px; font-weight: 600;
+  border: 1px solid var(--rule-2); color: var(--muted); background: var(--card);
 }
-.badge.on { border-color: var(--accent); color: var(--accent); }
+.badge.on {
+  border-color: transparent; color: var(--on-accent);
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+}
 
-.cta { display: flex; gap: 10px; flex-wrap: wrap; }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .btn {
-  display: inline-block; padding: 11px 20px; border-radius: 10px; text-decoration: none;
-  font-weight: 600; font-size: 15px; border: 1px solid var(--rule); color: var(--ink); background: var(--card);
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 12px 22px; border-radius: 999px; text-decoration: none;
+  font-weight: 650; font-size: 15px; border: 1px solid var(--rule-2);
+  color: var(--ink); background: var(--card);
+  transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
 }
-.btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.btn.primary:hover { filter: brightness(1.08); color: var(--on-accent); }
+.btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn.primary {
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+  border-color: transparent; color: var(--on-accent);
+  box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+.btn.primary:hover { color: var(--on-accent); filter: brightness(1.06); box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 85%, transparent); }
 
 /* ── 본문 ───────────────────────────────────────────────── */
 
-main { padding: 8px 0 80px; }
-section { padding: 44px 0 8px; scroll-margin-top: 70px; }
+main { padding: 8px 0 90px; }
+section { padding: 54px 0 10px; scroll-margin-top: 78px; }
 section > h2 {
-  font-size: clamp(22px, 3.2vw, 28px); margin: 0 0 6px; letter-spacing: -.015em;
+  font-size: clamp(24px, 3.4vw, 31px); margin: 0 0 8px; letter-spacing: -.024em; font-weight: 750;
+  line-height: 1.24;
 }
-section > p.sub { color: var(--muted); margin: 0 0 22px; max-width: 68ch; }
+/* 절 제목 위의 짧은 띠 — 눈이 "여기서 새 이야기가 시작한다" 를 한눈에 잡는다. */
+section > h2::before {
+  content: ""; display: block; width: 34px; height: 3px; border-radius: 3px; margin-bottom: 14px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+section > p.sub { color: var(--muted); margin: 0 0 24px; max-width: 68ch; font-size: 16.5px; }
 
-h3 { font-size: 20px; margin: 30px 0 8px; letter-spacing: -.01em; }
-p { max-width: 74ch; }
+h3 { font-size: 20.5px; margin: 34px 0 8px; letter-spacing: -.015em; font-weight: 700; line-height: 1.35; }
+h4 { font-size: 16.5px; margin: 24px 0 6px; letter-spacing: -.01em; }
+p { max-width: 74ch; color: var(--ink-2); }
+main li { max-width: 72ch; color: var(--ink-2); }
+b, strong { color: var(--ink); font-weight: 680; }
 
-.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr)); }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(252px, 1fr)); }
 .card {
   background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius);
-  padding: 18px 18px 16px; box-shadow: var(--shadow);
+  padding: 20px 20px 18px; box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
+/* 카드 위쪽의 가는 띠 — 평소에는 옅고, 손을 올리면 또렷해진다. */
+.card::before {
+  content: ""; position: absolute; inset-inline: 0; inset-block-start: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  opacity: .35; transition: opacity .16s ease;
+}
+.card:hover {
+  transform: translateY(-2px); box-shadow: var(--shadow-2);
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--rule));
+}
+.card:hover::before { opacity: 1; }
 .card h3 { margin: 0 0 6px; font-size: 17.5px; }
 .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
 
 pre {
   background: var(--code-bg); border: 1px solid var(--rule); border-radius: var(--radius);
-  padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.62;
+  padding: 16px 18px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.66;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--card) 60%, transparent);
+  position: relative;
 }
-code { font-family: var(--mono); font-size: .92em; background: var(--code-bg); padding: 1px 5px; border-radius: 5px; }
-pre code { background: none; padding: 0; font-size: inherit; }
+code {
+  font-family: var(--mono); font-size: .9em; background: var(--code-bg);
+  padding: 1.5px 6px; border-radius: 6px; border: 1px solid color-mix(in srgb, var(--rule) 70%, transparent);
+  color: var(--ink);
+}
+pre code { background: none; padding: 0; font-size: inherit; border: 0; }
 
 /* 🛑 코드는 글이 흐르는 방향과 **상관없이** 왼쪽에서 오른쪽이다. 아랍어 판에서 이것이 없으면
    `GoUi.use_preset()` 같은 줄의 괄호와 점이 뒤집혀 읽을 수 없게 된다. 문장 속 인라인 코드도
    `isolate` 로 떼어 둬야 앞뒤 아랍어와 엉키지 않는다. */
 pre, code { direction: ltr; unicode-bidi: isolate; text-align: start; }
 
+/* 코드 복사 단추 — `site/ux.js` 가 붙인다. 손을 올린 코드 칸에만 나타난다. */
+.gocopy {
+  position: absolute; inset-block-start: 8px; inset-inline-end: 8px; z-index: 2;
+  font: inherit; font-size: 11.5px; font-weight: 650; padding: 4px 10px; border-radius: 8px;
+  border: 1px solid var(--rule-2); background: var(--card); color: var(--muted);
+  cursor: pointer; opacity: 0; transition: opacity .14s ease, color .14s ease, border-color .14s ease;
+}
+pre:hover .gocopy, .gocopy:focus-visible { opacity: 1; }
+.gocopy:hover { color: var(--accent); border-color: var(--accent); }
+.gocopy.done { color: var(--accent-2); border-color: var(--accent-2); opacity: 1; }
+
 /* 표는 본문 폭에 맞춘다 — display:block 이면 내용 폭만큼만 늘어나 한 페이지의 표마다 오른쪽 끝이 달랐다
    (I-73). 좁은 화면에서만 block 으로 바꿔 가로 스크롤을 준다(코드 셀은 줄바꿈하지 않으므로). */
-table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+table {
+  border-collapse: collapse; width: 100%; font-size: 14.5px;
+  border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
+}
 /* 다이얼 표 — 생성기(tools/make_site.py)가 만든다. 두 표(기본·sci-fi)가 나란히 오므로 내용 폭이 아니라
    본문 폭에 맞춘다. 이름 열은 줄바꿈하지 않는다. */
 /* 열 폭을 고정한다 — 표 둘이 따로 계산하면 "기본값" 열이 서로 다른 자리에 선다. */
 .dials td:first-child, .dials th:first-child { white-space: nowrap; width: 24%; }
 .dials td:nth-child(2), .dials th:nth-child(2) { white-space: nowrap; width: 10%; font-variant-numeric: tabular-nums; }
-.dials h4 { margin: 22px 0 8px; }
-th, td { border-bottom: 1px solid var(--rule); padding: 9px 12px; text-align: start; vertical-align: top; }
-th { font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.dials h4 { margin: 24px 0 8px; }
+th, td { border-bottom: 1px solid var(--rule); padding: 10px 13px; text-align: start; vertical-align: top; }
+th {
+  font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 700;
+  background: var(--bg-2); border-bottom-color: var(--rule-2);
+}
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
 td code { white-space: nowrap; }
 /* 🛑 폰 폭(400)에서 표를 가로 스크롤로 두면 열이 최소 폭으로 접혀 글이 한 낱말씩 세로로 늘어지고 셋째 열은
    화면 밖이다(2026-09-13 촬영, I-77). 640px 아래에서는 행을 카드처럼 세로로 쌓는다 — 머리글은 숨기고,
@@ -155,11 +271,13 @@ td code { white-space: nowrap; }
 @media (max-width: 640px) {
   table, tbody, tr, td { display: block; }
   thead { display: none; }
-  tr { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  table { border-radius: var(--radius-s); }
+  tr { padding: 10px 12px; border-bottom: 1px solid var(--rule); }
   tr:last-child { border-bottom: 0; }
   td { border: 0; padding: 2px 0; width: auto; }
+  tbody tr:hover td { background: none; }
   td[data-label]::before {
-    content: attr(data-label) " · "; color: var(--muted); font-size: 12px; letter-spacing: .04em;
+    content: attr(data-label) " \00b7 "; color: var(--muted); font-size: 12px; letter-spacing: .04em;
     text-transform: uppercase; font-weight: 700;
   }
   td code { white-space: normal; }
@@ -172,45 +290,65 @@ td code { white-space: nowrap; }
 }
 
 .note {
-  border-inline-start: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent);
-  padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 18px 0; font-size: 14.5px;
+  border-inline-start: 3px solid var(--accent);
+  background: linear-gradient(90deg, var(--tint), transparent 88%);
+  padding: 14px 18px; border-radius: 0 var(--radius-s) var(--radius-s) 0; margin: 20px 0; font-size: 14.5px;
+  color: var(--ink-2);
 }
 .note b { color: var(--blue); }
 /* 🛑 경고 색은 변수로 둔다 — 어두운 판에서 재정의되지 않아 네 조합 모두 AA 미달이었다. */
-.warn { border-inline-start-color: var(--warn); background: color-mix(in srgb, var(--warn) 9%, transparent); }
+.warn {
+  border-inline-start-color: var(--warn);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--warn) 11%, transparent), transparent 88%);
+}
 .warn b { color: var(--warn); }
 
-figure { margin: 20px 0; }
+figure { margin: 22px 0; }
 figure img {
   max-width: 100%; border: 1px solid var(--rule); border-radius: var(--radius); display: block;
   box-shadow: var(--shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
-figcaption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+figure img:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+figcaption { color: var(--muted); font-size: 13px; margin-top: 9px; }
 
-.shots { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.shots { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .shots figure { margin: 0; }
 
 footer.bottom {
-  border-top: 1px solid var(--rule); padding: 28px 0 60px; color: var(--muted); font-size: 14px;
+  border-top: 1px solid var(--rule); padding: 34px 0 64px; color: var(--muted); font-size: 14px;
+  background: linear-gradient(180deg, transparent, var(--bg-2));
 }
 footer.bottom a { color: var(--blue); }
 
 /* 🛑 본문 링크에 색을 준다. 이 규칙이 없으면 어두운 판에서 브라우저 기본 파랑(#0000EE)이 나와
    대비 2.02:1 로 읽히지 않는다(2026-09-16 실측). 색이 있던 것은 머리띠·고르개·바닥글뿐이었다. */
-main a { color: var(--blue); }
+main a { color: var(--blue); text-underline-offset: 2px; }
 main a:hover { color: var(--accent); }
 
-/* 용어 풍선 버튼이 오른쪽 아래에 앉으므로 바닥에 자리를 비운다 */
-body { padding-bottom: 10px; }
+/* 읽은 만큼 차오르는 가는 띠 — 긴 한 장에서 지금 어디쯤인지 알려 준다.
+   스크롤 타임라인을 모르는 브라우저에서는 그냥 보이지 않는다(폭 0). */
+@supports (animation-timeline: scroll()) {
+  body::after {
+    content: ""; position: fixed; inset-block-start: 0; inset-inline-start: 0; z-index: 70;
+    height: 2px; width: 100%; transform-origin: left center;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    animation: gohud-read linear; animation-timeline: scroll();
+  }
+  [dir="rtl"] body::after { transform-origin: right center; }
+  @keyframes gohud-read { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
 
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important; transition: none !important; animation: none !important;
+  }
 }
 
 @media (max-width: 640px) {
-  section { scroll-margin-top: 140px; }
-  .hero { padding: 40px 0 30px; }
+  section { scroll-margin-top: 140px; padding-top: 42px; }
+  .hero { padding: 48px 0 34px; }
   header.top .wrap { height: auto; padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap; }
   header.top nav { margin-inline-start: 0; width: 100%; }
   /* 🛑 폰에서는 언어 목록을 띄우지 않고 글의 흐름에 둔다 — 떠 있으면 화면 밖으로 잘려 나간다 */
