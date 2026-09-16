@@ -6,6 +6,31 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoStyle.style_choice_card(node, accent, selected, toggle, dim_disabled, filter)`** gives a `Button` the faces of a
+  pick-one card. Every state has zero content margin — the card's inner `MarginContainer` pads once, so the chosen
+  card never grows and the row never shifts. The chosen state gets an accent border (0.9, 2 dp) and a 16 % accent
+  fill; hover tints only the border. Faces come from `surface()`, so chamfered and medieval skins keep their shape
+  and only change colour. With `toggle` on, the pressed state is the selection (group cards with a `ButtonGroup`);
+  with it off, `selected` draws a list that is rebuilt on every change. `dim_disabled = false` keeps the disabled
+  face identical to the normal one. `mouse_filter` is left alone unless `filter` is given — pass
+  `MOUSE_FILTER_PASS` for cards inside a scroll, and keep the default for buttons laid over the game.
+- **`GoStyle.card_body(card, padding, spacing)`** builds the content column inside a card whose own face has no
+  padding, such as a `style_choice_card` button: one inner margin, a vertical list, and a card height that follows
+  the content, wrapped text included. `GoStyle.let_input_through(node)` makes a subtree ignore the mouse, so the card
+  takes the press and shows its hover face instead of the text on it. `GoStyle.line(text, role, ink)` is a
+  one-line label that ellipsizes instead of wrapping.
+- **`GoStyle.chip` takes an icon and an urgency flag**: `chip(text, ink, translate, icon, icon_size, urgent)`. With an
+  icon and no text you get an icon-only chip, which is what a HUD buff row is made of; `urgent` swaps the border for
+  the danger colour so a buff about to expire reads as such without changing its shape. The face still comes from
+  `GoSkin.chip_box`, so a skin that redefines it keeps its own shape (its signature is unchanged).
+- **`GoStyle.style_chip_button(node, accent, filled, urgent)`** puts that same tinted pill face on every state of a
+  `Button` — the HUD's status buttons, badges and small list actions. `filled` paints the face in the accent for an
+  emphasised action; the caller sets the label colour. The focus face and `mouse_filter` are left alone, because a
+  button laid over the game must keep `MOUSE_FILTER_STOP` or its press leaks into the world.
+- **`GoStyle.hud_panel(accent)` and `GoStyle.chip_panel(accent, fill_alpha)`** are the container versions of the
+  floating and chip faces: a dock or status bar laid over the game, and a pill that holds more than one line (a
+  roster card with a name, a level and a gauge). The host adds children and never builds a face of its own.
+
 - **Compact button padding tokens.** `compact_padding_x` and `compact_padding_y` (`GoTheme.COMPACT_PADDING_X` /
   `COMPACT_PADDING_Y`) set the side and top/bottom content margin of the `GoCompactButton` style. They are separate
   from `padding_compact`, which insets cards and notices, so changing one no longer moves the other. Built-in themes

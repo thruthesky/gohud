@@ -621,25 +621,189 @@ static func card(accent := Color.TRANSPARENT) -> PanelContainer:
 	return node
 
 
+## 게임 화면 위에 **떠 있는 판** 한 장 — HUD 의 도크·상태 바처럼 월드 위에 얹는 자리다(내용은 부르는 쪽이 채운다).
+## `card()` 의 HUD 짝이며, 모양은 스킨의 떠 있는 판을 그대로 쓴다(각진 판은 그림자 대신 발광이다).
+static func hud_panel(accent := Color.TRANSPARENT) -> PanelContainer:
+	var node := PanelContainer.new()
+	node.name = "HudPanel"
+	node.theme = GoUi.theme()
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, accent))
+	return node
+
+
+## 칩과 **같은 알약 판**에 내용을 채우는 빈 컨테이너 — 한 줄짜리 칩으로는 모자란 자리(이름·레벨·게이지가 함께 드는
+## 명단 카드)에 쓴다. [param fill_alpha] 는 `style_chip_button` 과 같다(음수면 스킨 틴트 그대로).
+static func chip_panel(accent := Color.TRANSPARENT, fill_alpha := -1.0) -> PanelContainer:
+	var color := accent if accent.a > 0 else GoUi.color(GoTheme.SECONDARY)
+	var node := PanelContainer.new()
+	node.name = "ChipPanel"
+	node.theme = GoUi.theme()
+	var face := _chip_face(color, false)
+	if fill_alpha >= 0.0 and &"bg_color" in face: face.set(&"bg_color", Color(color, fill_alpha))
+	node.add_theme_stylebox_override(&"panel", face)
+	return node
+
+
+## 🔑 **고르는 카드.** 버튼 한 장에 상태별 판을 입힌다 — 고른 카드만 의미색 테두리와 옅은 채움을 얻고, 올리면 테두리만 물든다.
+## 내용(아이콘·제목·설명)은 부르는 쪽이 안쪽 `MarginContainer` 로 채운다.
+##
+## 🛑 **판 여백은 모든 상태에서 0** 이다 — 상태마다 판 여백이 다르면 고른 카드만 넓어져 줄이 흔들린다.
+## 🔑 판은 스킨의 `surface()` 에서 온다 — 각진 판·단조 판 테마에서도 그 모양 그대로 색만 바뀐다. 포커스 판은 덮지 않는다.
+##
+## [param selected] — [param toggle] 을 끈 카드에서 이 카드를 고른 것으로 그린다(고를 때마다 목록을 다시 짓는 화면).
+## [param toggle] — 켜면 `toggle_mode` 의 눌린 상태가 곧 선택이다. 같은 무리는 부르는 쪽이 `ButtonGroup` 하나로 묶는다.
+## [param dim_disabled] — 켜면 비활성 카드를 옅게, 끄면 평소 판을 그대로 쓴다(비활성으로 바뀔 때 색이 튀지 않게).
+## [param filter] — 음수면 `mouse_filter` 를 건드리지 않는다. 🛑 스크롤 안의 카드는 `MOUSE_FILTER_PASS` 를 넘긴다 —
+##   STOP 이면 카드 위에서 시작한 끌기가 스크롤로 넘어가지 않는다. 함수가 알아서 정하지 않는 이유는 HUD 처럼 월드 위에 뜬
+##   버튼은 STOP 이어야 하기 때문이다(PASS 면 누른 이벤트가 월드로 샌다).
+static func style_choice_card(node: Button, accent: Color, selected := false, toggle := true,
+		dim_disabled := true, filter := -1) -> void:
+	node.theme = GoUi.theme()
+	node.clip_text = false
+	node.text = ""
+	if toggle: node.toggle_mode = true
+	if filter >= 0: node.mouse_filter = filter as Control.MouseFilter
+	var idle := surface(GoTheme.BOX_CARD)
+	var hover := surface(GoTheme.BOX_CARD, accent)
+	var chosen := _choice_face(accent)
+	var picked := selected and not toggle
+	var normal := chosen if picked else idle
+	var off := normal
+	if dim_disabled:
+		off = surface(GoTheme.BOX_CARD)
+		if &"bg_color" in off:
+			var back: Color = off.get(&"bg_color")
+			off.set(&"bg_color", Color(back, back.a * 0.6))
+	var faces := {&"normal": normal, &"hover": chosen if picked else hover, &"pressed": chosen,
+		&"hover_pressed": chosen, &"disabled": off}
+	for state: StringName in faces:
+		var face: StyleBox = faces[state]
+		face.set_content_margin_all(0)
+		node.add_theme_stylebox_override(state, face)
+
+
+## 고른 카드 판 — 평소 판 색을 의미색 쪽으로 16% 물들이고, 테두리를 의미색 0.9 · 두께 2 로. 스킨 판 종류를 가정하지 않는다.
+static func _choice_face(accent: Color) -> StyleBox:
+	var face := surface(GoTheme.BOX_CARD, accent)
+	if &"bg_color" in face:
+		var back: Color = face.get(&"bg_color")
+		face.set(&"bg_color", back.lerp(Color(accent, back.a), 0.16))
+	if &"border_color" in face: face.set(&"border_color", Color(accent, 0.9))
+	if face is StyleBoxFlat: (face as StyleBoxFlat).set_border_width_all(2)
+	elif &"border_width" in face: face.set(&"border_width", 2.0)
+	return face
+
+
+## 🔑 **카드 안의 내용 칸** — 판 여백이 0 인 카드(`style_choice_card` 로 꾸민 버튼 등)를 채우는 안쪽 여백 한 번 · 세로 줄.
+## 카드 높이가 내용(줄바꿈된 글자 포함)을 따라간다(`fit_content_height`).
+## 🛑 판에 여백이 있는 `PanelContainer`(`card()`)에 쓰면 여백이 두 겹이 된다 — 그 카드에는 `column()` 을 바로 넣는다.
+## 🛑 카드가 버튼이면 내용을 다 채운 뒤 `let_input_through(body)` 를 부른다 — 누르는 것은 카드다.
+## [param padding] 음수면 `padding_compact` 토큰(dp), [param spacing] 음수면 `gap_tiny` 토큰(dp).
+static func card_body(card: Control, padding := -1, spacing := -1) -> VBoxContainer:
+	var inset := MarginContainer.new()
+	inset.name = "Inset"
+	insets(inset, GoUi.metric(GoTheme.PADDING_COMPACT) if padding < 0 else padding)
+	inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(inset)
+	var body := column(GoUi.metric(GoTheme.GAP_TINY) if spacing < 0 else spacing)
+	body.name = "Body"
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inset.add_child(body)
+	fit_content_height(card, inset)
+	return body
+
+
+## 이 노드와 그 아래 모든 컨트롤이 **입력을 받지 않게** 한다 — 카드 버튼 위의 글자·아이콘이 누름과 올림을 가로채지 않게.
+## 🔑 컨테이너의 기본은 PASS 라 이벤트를 부모로 넘기기는 하지만, 마우스 진입을 먼저 받아 카드의 올림 판이 켜지지 않는다.
+static func let_input_through(node: Node) -> void:
+	if node is Control: (node as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for child in node.get_children(): let_input_through(child)
+
+
+## **한 줄 라벨** — 줄바꿈하지 않고 넘치면 말줄임(…)으로 자른다. 좁은 카드의 이름·수치 줄에 쓴다.
+## 🛑 말줄임 라벨의 최소 폭은 거의 0 이다 — 칸이 좁으면 글자가 통째로 사라진 것처럼 보인다. 칸 폭은 부르는 쪽이 확보한다.
+static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
+	var node := label(text, role, ink)
+	node.autowrap_mode = TextServer.AUTOWRAP_OFF
+	node.set_meta(&"go_no_wrap", true)
+	node.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	node.clip_text = true
+	return node
+
+
 ## 작은 알약형 표식(상태·태그·수량).
-static func chip(text: String, ink := Color.TRANSPARENT, translate := false) -> PanelContainer:
+## [param icon] 을 주면 아이콘 세트의 그림을 글자 앞에 놓는다 — 글자가 비어 있으면 **아이콘만** 있는 칩이다(HUD 버프 표시 등).
+## [param icon_size] 음수면 `list_glyph` 토큰. [param urgent] 는 곧 사라질 것(남은 시간이 얼마 없는 버프)에 경고 테두리를 입힌다.
+static func chip(text: String, ink := Color.TRANSPARENT, translate := false, icon: StringName = &"",
+		icon_size := -1, urgent := false) -> PanelContainer:
 	var color := ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY)
 	var node := PanelContainer.new()
 	node.name = "Chip"
 	node.theme = GoUi.theme()
 	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	node.add_theme_stylebox_override(&"panel", GoUi.skin().chip_box(color))
+	node.add_theme_stylebox_override(&"panel", _chip_face(color, urgent))
 	# 🛑 글자는 칩 **판 위에서** 읽혀야 한다 — 같은 색 틴트 배경이라 그대로 쓰면 묻힌다.
 	var ink_on_chip := GoUi.skin().chip_ink(color)
-	var text_node := label_key(text, GoTheme.ROLE_COMPACT, ink_on_chip) if translate \
-		else label(text, GoTheme.ROLE_COMPACT, ink_on_chip)
-	text_node.autowrap_mode = TextServer.AUTOWRAP_OFF
-	text_node.set_meta(&"go_no_wrap", true)
-	text_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	text_node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	node.add_child(text_node)
+	var text_node: Label = null
+	if not text.is_empty():
+		text_node = label_key(text, GoTheme.ROLE_COMPACT, ink_on_chip) if translate \
+			else label(text, GoTheme.ROLE_COMPACT, ink_on_chip)
+		text_node.autowrap_mode = TextServer.AUTOWRAP_OFF
+		text_node.set_meta(&"go_no_wrap", true)
+		text_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		text_node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	if icon.is_empty():
+		node.add_child(text_node)
+		return node
+	var glyph := GoUi.icons().node(icon, GoUi.metric(GoTheme.LIST_GLYPH) if icon_size < 0 else icon_size, ink_on_chip)
+	if text_node == null:
+		# 🔑 아이콘만 있는 칩은 **정사각에 가깝게** — 좌우 여백도 위아래와 같게 줄인다(HUD 버프 줄처럼 같은 칸을 늘어놓는 자리).
+		var face := node.get_theme_stylebox(&"panel")
+		var tight := float(GoUi.metric(GoTheme.GAP_TINY))
+		face.content_margin_left = tight
+		face.content_margin_right = tight
+		node.add_child(glyph)
+		return node
+	var line_row := row(GoUi.metric(GoTheme.GAP_TINY))
+	line_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line_row.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	line_row.add_child(glyph)
+	line_row.add_child(text_node)
+	node.add_child(line_row)
 	return node
+
+
+## 칩 판 — 모양은 스킨이 정하고, 급한 것만 경고 테두리로 바꾼다(스킨 판 종류를 가정하지 않는다).
+static func _chip_face(color: Color, urgent: bool) -> StyleBox:
+	var face := GoUi.skin().chip_box(color)
+	if urgent and &"border_color" in face:
+		face.set(&"border_color", Color(GoUi.color(GoTheme.DANGER), 0.9))
+	return face
+
+
+## 이미 만든 칩의 **판만** 다시 입힌다 — 의미색이 바뀌거나(파티장이 바뀐 명단) 남은 시간이 줄어드는 표시처럼
+## 자주 갱신되는 곳에서 노드를 다시 만들지 않는다. 글자·아이콘 색은 부르는 쪽이 함께 바꾼다.
+static func restyle_chip(node: PanelContainer, ink: Color, urgent := false) -> void:
+	if node == null: return
+	node.add_theme_stylebox_override(&"panel", _chip_face(ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY), urgent))
+
+
+## 🔑 **칩처럼 생긴 버튼** — 틴트 알약 판을 모든 상태에 입힌다. HUD 의 상태 버튼(따라가기·나가기), 알림 배지,
+## 목록의 작은 동작 단추처럼 "누를 수 있는 칩" 자리에 쓴다. 글자·아이콘은 부르는 쪽이 넣는다(판만 입힌다).
+##
+## [param fill_alpha] 가 음수면 스킨 칩 판의 틴트 그대로다. 값을 주면 그만큼 의미색으로 채운다 —
+## 0.08 처럼 옅게 주면 조용한 상태 버튼, 0.85 처럼 크게 주면 **강조** 버튼이다(채운 판 위 글자색은 부르는 쪽이
+## `typography(node, role, ink)` 로 준다). [param urgent] 는 경고 테두리다.
+## 🔑 포커스 판은 덮지 않는다 — 공용 Theme 의 포커스 링이 키보드·게임패드로 조작할 때만 뜬다.
+## 🛑 `mouse_filter` 를 건드리지 않는다 — HUD 위 버튼은 STOP 이어야 누른 이벤트가 월드로 새지 않는다.
+static func style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, urgent := false) -> void:
+	node.theme = GoUi.theme()
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		var face := _chip_face(accent, urgent)
+		if fill_alpha >= 0.0 and &"bg_color" in face: face.set(&"bg_color", Color(accent, fill_alpha))
+		node.add_theme_stylebox_override(state, face)
 
 
 ## 아무것도 없을 때 보여 주는 자리 — 아이콘 + 한 줄 설명.

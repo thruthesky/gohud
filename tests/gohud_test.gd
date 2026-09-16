@@ -2071,6 +2071,92 @@ func _widgets() -> void:
 	check(focus_face != null and near(focus_face.get_margin(SIDE_LEFT), GoUi.metric(GoTheme.COMPACT_PADDING_X)) and not (focus_face is StyleBoxEmpty),
 		"segmented(compact): 키보드 포커스는 옅은 링으로 보인다 · 여백 같음")
 	tight.queue_free()
+	# 🔑 고르는 카드 — 모든 상태 판 여백 0 · 토글/목록형 선택 · 비활성 옅게/그대로 · mouse_filter 는 줄 때만 바꾼다.
+	var pick_ink := Color(0.9, 0.3, 0.2)
+	var pick := Button.new()
+	GoStyle.style_choice_card(pick, pick_ink)
+	root.add_child(pick); await frames(1)
+	var zero_margins := true
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		var face := pick.get_theme_stylebox(state)
+		zero_margins = zero_margins and face != null and near(face.get_margin(SIDE_LEFT), 0.0) and near(face.get_margin(SIDE_TOP), 0.0)
+	check(zero_margins and pick.toggle_mode and pick.text == "",
+		"style_choice_card: 모든 상태 판 여백 0(고른 카드만 넓어지지 않는다) · 토글 · 글자 없음")
+	check(pick.mouse_filter == Control.MOUSE_FILTER_STOP, "style_choice_card: filter 를 주지 않으면 mouse_filter 를 건드리지 않는다")
+	check(GoSkin.box_background(pick.get_theme_stylebox(&"pressed")) != GoSkin.box_background(pick.get_theme_stylebox(&"normal")),
+		"style_choice_card: 고른 판은 평소 판과 채움이 다르다")
+	check(GoSkin.box_background(pick.get_theme_stylebox(&"disabled")).a < GoSkin.box_background(pick.get_theme_stylebox(&"normal")).a,
+		"style_choice_card: 비활성 판은 옅다(dim_disabled 기본)")
+	pick.queue_free()
+	var listed := Button.new()
+	GoStyle.style_choice_card(listed, pick_ink, true, false, false, Control.MOUSE_FILTER_PASS)
+	check(not listed.toggle_mode and listed.mouse_filter == Control.MOUSE_FILTER_PASS
+		and listed.get_theme_stylebox(&"normal") == listed.get_theme_stylebox(&"pressed")
+		and listed.get_theme_stylebox(&"disabled") == listed.get_theme_stylebox(&"normal"),
+		"style_choice_card(selected·토글 없음): 평소 판이 고른 판 · 비활성도 같은 판(색·폭이 튀지 않는다) · 준 filter 그대로")
+	listed.free()
+	# 🔑 카드 안 내용 칸 · 입력 통과 · 한 줄 라벨 — 고르는 카드를 채우는 조립.
+	var tile := Button.new()
+	GoStyle.style_choice_card(tile, pick_ink, false, false)
+	root.add_child(tile)
+	var tile_body := GoStyle.card_body(tile, 9, 3)
+	var tile_row := GoStyle.row(4)
+	tile_body.add_child(tile_row)
+	var tile_name := GoStyle.line("A very long item name that cannot fit on one line", GoTheme.ROLE_CAPTION)
+	tile_row.add_child(tile_name)
+	var tile_desc := GoStyle.label("Wraps onto several lines inside the card without spilling out of it at all.")
+	tile_body.add_child(tile_desc)
+	GoStyle.let_input_through(tile_body)
+	tile.size.x = 160
+	await frames(4)
+	var tile_inset := tile_body.get_parent() as MarginContainer
+	check(tile_inset != null and tile_inset.get_theme_constant(&"margin_left") == 9 and tile_body.get_theme_constant(&"separation") == 3,
+		"card_body: 준 안쪽 여백 9 · 줄 간격 3")
+	check(tile_desc.get_line_count() > 1 and tile.size.y >= tile_inset.get_combined_minimum_size().y - 0.5,
+		"card_body: 카드 높이가 줄바꿈된 내용을 감싼다 (%.0f ≥ %.0f)" % [tile.size.y, tile_inset.get_combined_minimum_size().y])
+	check(tile_inset.mouse_filter == Control.MOUSE_FILTER_IGNORE and tile_body.mouse_filter == Control.MOUSE_FILTER_IGNORE
+		and tile_row.mouse_filter == Control.MOUSE_FILTER_IGNORE and tile_name.mouse_filter == Control.MOUSE_FILTER_IGNORE
+		and tile_desc.mouse_filter == Control.MOUSE_FILTER_IGNORE,
+		"let_input_through: 카드 안 컨트롤이 모두 입력을 받지 않는다(누르는 것은 카드)")
+	check(tile_name.autowrap_mode == TextServer.AUTOWRAP_OFF and tile_name.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS
+		and tile_name.clip_text and tile_name.get_line_count() == 1,
+		"line: 줄바꿈 끔 · 말줄임 · 자르기 · 한 줄")
+	tile.queue_free()
+	# 🔑 칩 — 아이콘만 · 아이콘 + 글자 · 경고 테두리 · 누를 수 있는 칩 버튼(채움).
+	var icon_chip := GoStyle.chip("", pick_ink, false, GoIconSet.HEART, 20)
+	var icon_face := icon_chip.get_theme_stylebox(&"panel")
+	check(icon_chip.get_child_count() == 1 and icon_chip.get_child(0) is Label
+		and (icon_chip.get_child(0) as Control).custom_minimum_size == Vector2(20, 20)
+		and near(icon_face.get_margin(SIDE_LEFT), icon_face.get_margin(SIDE_TOP)),
+		"chip(icon): 글자가 없으면 아이콘 한 칸만 들고 판도 정사각(좌우 여백 = 위아래 여백)")
+	var both_chip := GoStyle.chip("12", pick_ink, false, GoIconSet.HEART, 16)
+	var both_row := both_chip.get_child(0) as HBoxContainer
+	check(both_row != null and both_row.get_child_count() == 2 and both_row.get_child(1) is Label
+		and (both_row.get_child(1) as Label).text == "12",
+		"chip(icon, text): 아이콘 다음에 글자")
+	var calm_face := GoStyle.chip("x", pick_ink).get_theme_stylebox(&"panel")
+	var urgent_face := GoStyle.chip("x", pick_ink, false, &"", -1, true).get_theme_stylebox(&"panel")
+	check(&"border_color" not in calm_face or calm_face.get(&"border_color") != urgent_face.get(&"border_color"),
+		"chip(urgent): 경고 테두리는 평상 칩과 다르다")
+	var chip_button := Button.new()
+	GoStyle.style_chip_button(chip_button, pick_ink)
+	var filled_button := Button.new()
+	GoStyle.style_chip_button(filled_button, pick_ink, 0.85)
+	check(chip_button.mouse_filter == Control.MOUSE_FILTER_STOP
+		and chip_button.get_theme_stylebox(&"normal") != null and chip_button.get_theme_stylebox(&"disabled") != null
+		and not chip_button.has_theme_stylebox_override(&"focus"),
+		"style_chip_button: 상태 판을 입히고 mouse_filter·포커스 판은 건드리지 않는다")
+	check(GoSkin.box_background(filled_button.get_theme_stylebox(&"normal")).a
+		> GoSkin.box_background(chip_button.get_theme_stylebox(&"normal")).a,
+		"style_chip_button(filled): 의미색으로 채운다")
+	var hud_face := GoStyle.hud_panel(pick_ink).get_theme_stylebox(&"panel")
+	var chip_face := GoStyle.chip_panel(pick_ink).get_theme_stylebox(&"panel")
+	var tinted_face := GoStyle.chip_panel(pick_ink, 0.5).get_theme_stylebox(&"panel")
+	check(hud_face != null and hud_face.get_class() == GoUi.skin().floating_box(GoTheme.BOX_HUD, pick_ink).get_class()
+		and chip_face != null and chip_face.get_class() == GoUi.skin().chip_box(pick_ink).get_class()
+		and GoSkin.box_background(tinted_face).a > GoSkin.box_background(chip_face).a,
+		"hud_panel·chip_panel: 스킨 판을 그대로 입힌다 · fill_alpha 는 더 짙게 채운다")
+	icon_chip.free(); both_chip.free(); chip_button.free(); filled_button.free()
 	var glass: StyleBox = GoUi.skin().overlay_box(4, 2)
 	check(near(glass.get_margin(SIDE_LEFT), 4.0) and near(glass.get_margin(SIDE_TOP), 2.0), "overlay_box: 준 여백 그대로")
 	var glass_default: StyleBox = GoUi.skin().overlay_box()
