@@ -76,6 +76,11 @@ python3 "$ADDON/tools/check_contrast.py" --quiet || FAILED=1
 step "③ 홈페이지"
 python3 "$ADDON/tools/check_site.py" || FAILED=1
 
+step "①-n 같은 class_name 이 둘 이상인가"
+# 🛑 겹쳐도 **오류가 나지 않는다** — Godot 이 하나를 고르고, 고른 쪽이 옛 사본이어도 그 자체로는
+#    동작한다. 단위 검사마저 고른 그 클래스를 보므로 통과한다. 검사로만 막을 수 있다.
+python3 "$ADDON/tools/check_classes.py" || FAILED=1
+
 step "③-a 문서가 가리키는 gohud API 가 실재하는가"
 # 🛑 글은 검사가 없으면 아무도 안 본다 — 2026-09-16 에 새 위젯을 문서에 적으면서 **코드를 열지 않고
 #    기억으로 쓴 호출이 아홉 군데 틀렸고**, 그중 둘은 베껴 쓰면 파싱 오류가 나는 코드였다.

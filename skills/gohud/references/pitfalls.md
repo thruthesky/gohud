@@ -47,7 +47,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `gohud_close`, `gohud_confirm` visible | Built-in translations not imported / not loaded | Import the project; keep `load_builtin_translations` on, or set `GoConfig.text_overrides` |
+| `gohud_close`, `slot_quantity`, `bar_fraction` visible on screen | The built-in translations were not imported, so the `.translation` pieces do not exist and every key falls through as itself. Common in a **copy** of the project that the editor has never opened — a CI checkout, or the rsynced copy a virtual-display screenshot runs in (2026-09-16: a medieval screenshot came back with `slot_quantity` on every slot) | `godot --headless --path . --import` in that copy; keep `load_builtin_translations` on, or set `GoConfig.text_overrides` |
 | `{name}` visible in a dialog or notice | `tr()` does not fill placeholders | Pass `args` (`confirm(..., args)`, `show_key(key, args)`) |
 | `{name}` visible in a dialog **title** | gohud 1.0.3 and older format only the body | Newer gohud fills the title from the same `args`; on 1.0.3 and older build it yourself: `"Drop %s?" % item.name` |
 | My literal row text changes into another string | `list_button`/`foldable`/`section`/`toggle`/`checkbox` translate by default | Pass `translate = false` for literal text |
