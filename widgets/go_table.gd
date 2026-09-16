@@ -96,7 +96,10 @@ func set_columns(columns: Array) -> void:
 
 
 ## 줄 데이터. 각 줄은 칸 개수만큼의 값(글자·수·`Control`)이다.
+## 🔑 `Control` 을 넘기면 **소유권은 넘긴 쪽에 남는다** — 표는 정렬·테마 교체 때 자리만 옮기고
+##    그 노드를 지우지 않는다. 표를 버릴 때 함께 버리려면 직접 `queue_free()` 한다.
 func set_rows(rows: Array) -> void:
+	_detach_borrowed()
 	_rows = rows.duplicate()
 	_order.clear()
 	for index in _rows.size(): _order.append(index)
@@ -151,6 +154,18 @@ static func _cell_key(rows: Array, row: int, column: int, numeric: bool) -> Vari
 	return str(value).to_lower()
 
 
+## 빌려 온 셀(호스트가 넘긴 `Control`)을 지우기 전에 떼어 둔다.
+## 🔑 소유권은 **넘긴 쪽**에 있다 — 표는 자리를 빌려 줄 뿐이다.
+func _detach_borrowed() -> void:
+	for cells in _rows:
+		if not (cells is Array): continue
+		for value in cells:
+			var node := value as Control
+			if node == null or not is_instance_valid(node): continue
+			var parent := node.get_parent()
+			if parent != null: parent.remove_child(node)
+
+
 func _build_head() -> void:
 	for child in head.get_children(): child.queue_free()
 	for index in _columns.size():
@@ -170,6 +185,8 @@ func _build_head() -> void:
 			var button := GoStyle.button(shown, sort_by.bind(index, index != _sort_column or not _ascending),
 				GoStyle.Tone.BARE)
 			button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+			# 🛑 `Tone.BARE` 에는 높이 하한이 없다 — 누르는 머리 줄이라 직접 준다.
+			button.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 			button.alignment = HORIZONTAL_ALIGNMENT_RIGHT if bool(col["numeric"]) else HORIZONTAL_ALIGNMENT_LEFT
 			node = button
 		else:
@@ -184,6 +201,11 @@ func _build_head() -> void:
 
 
 func _build_rows() -> void:
+	# 🛑 **호스트가 넘긴 `Control` 셀을 죽이지 않는다.** 줄을 통째로 지우면 그 자손인 셀도 함께
+	#    사라지고, 다음 정렬에서 `_make_row` 가 **이미 죽은 노드**를 다시 붙이려 한다 — 칸이
+	#    비거나 죽은 인스턴스를 만진다(2026-09-16 실측: 정렬 한 번에 `is_instance_valid` false).
+	#    지우기 전에 떼어 두면 우리가 만든 것만 사라진다.
+	_detach_borrowed()
 	for child in rows_box.get_children(): child.queue_free()
 	for position in _order.size():
 		var source: int = _order[position]

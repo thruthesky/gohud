@@ -6,6 +6,27 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **Container opacity — the game stays visible behind a panel.** Popups, dialogs, sheets, cards, HUD panels,
+  alerts and snackbars now draw their face at **80% opacity** by default, so the fight carries on behind a
+  confirm dialog and the map shows under an inventory sheet. Only the *face* thins out: text, icons, buttons,
+  badges and quick slots stay sharp, and so do borders and shadows — a translucent panel reads as glass only
+  while its outline is crisp, and fading the content produces UI that cannot be read.
+  Five layers decide the value, most specific first: the argument at that call (`surface.alpha`,
+  `GoStyle.card(…, alpha)`, `GoPopover.open(…, {"alpha": …})`) → `GoConfig.container_alpha_overrides[kind]`
+  → `GoConfig.metric_overrides[<kind>_alpha]` → `GoConfig.container_alpha` → the theme's
+  `GoHud/constants/<kind>_alpha`. New tokens `panel_alpha` `card_alpha` `hud_alpha` `notice_alpha`
+  `popup_alpha` are **optional**: a theme that lacks them falls back to 100, so an older theme or someone
+  else's theme draws exactly as before. `GoUi.surface_alpha(variant)` reads the resolved value as a ratio;
+  `GoStyle.fade_panel(node, alpha)` applies the same rule to a panel gohud did not build (idempotent — the
+  original face is remembered, so repeated calls never stack), and `GoStyle.forget_face(node)` drops that
+  memory after a theme swap. `GoSkin.fade_box()` is the single place the alpha is multiplied in, which is
+  why faces drawn by hand — the cut-corner panel, the forged medieval frame — fade their background while
+  their glow, rivets and engraving keep full strength.
+  Things you press do **not** follow the value: buttons, quick slots, badges, segmented controls, choice
+  cells and chips stay solid, because a button whose state is washed out no longer says what it is. Popup
+  menus stay solid too (`popup_alpha` 100) — the engine may put one in its own window, where the OS does not
+  composite it with the game and translucency comes out black rather than see-through.
+
 - **`GoSnackbar` — a snackbar that places itself, queues, and can carry a button.** It sits at the bottom
   (or the top), above the safe area and the virtual keyboard, and goes away on its own.
   `snack.show_text("Saved", GoTheme.SUCCESS)` for a line; `await snack.post({"text": "Item dropped",

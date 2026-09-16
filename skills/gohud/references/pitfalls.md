@@ -83,6 +83,12 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Experience bar looks brown on a light theme | A text colour used as a fill | `GoTheme.WARNING_FILL` (and `*_FILL` tokens) for bars |
 | Accent override changed labels but not button faces | Button StyleBoxes are baked into the Theme `.tres` | Edit a copy of the Theme or build a JSON theme |
 | Same-hue label on a same-hue tint is unreadable | No lightness contrast | `GoUi.skin().readable_on(ink, background)`; run `check_contrast.py` for themes |
+| A panel vanished after setting opacity in the config | `container_alpha` / `container_alpha_overrides` take **percent integers** — `0.8` truncates to `0` | Write `80`; ratios (`0.8`) belong in code arguments only. theming.md §4 |
+| A panel keeps getting fainter each redraw | `GoSkin.fade_box()` **multiplies**, so applying it twice to the same face compounds | Apply opacity in one place only — pass `alpha` down to `surface_box()` instead of fading the result. `GoStyle.fade_panel()` is already idempotent |
+| Opacity has no effect on a sci-fi / medieval panel | A `GoSkin` subclass overrode `surface_box`/`floating_box`/`alert_box` without the `alpha` parameter | Add it and forward it to `super(...)` — a mismatched signature is a parse error, a dropped argument is silent |
+| Panels stayed opaque after changing the setting from code | Plain `GoConfig` fields emit no signal | `GoUi.refresh()` |
+| A translucent popup menu renders black instead of see-through | The engine hosts `PopupMenu` in its own `Window`; the OS does not composite it with the game | Leave `popup_alpha` at 100, or enable `gui_embed_subwindows` |
+| Buttons went translucent too | Something faded the whole node (`modulate.a`) instead of the face | Panel opacity touches `bg_color` only; never use `modulate` for it |
 
 ## 7. Verification
 

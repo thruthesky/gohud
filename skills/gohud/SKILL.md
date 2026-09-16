@@ -93,7 +93,17 @@ Reply in the language the user writes in; keep code identifiers as they are.
     out at zero width freezes its minimum height at 1 dp and the text disappears while the panel still
     paints — this is why table cells, key caps and code cells set `AUTOWRAP_OFF`. When you place a child by
     anchors, set `offset_*`, not `position`: `Control.position` is parent-space and ignores the anchors.
-13. **Never hand-edit gohud's generated themes**; recolour through `color_overrides`, a Theme copy in your project,
+13. **Containers are 80% opaque; things you press are not.** Panels (`GoSurface`/`GoSheet`/`GoDialogs`/cards/
+    HUD panels/alerts/snackbars) fade their **face only** — never use `modulate.a` for this, it fades the text too.
+    Five layers decide the value, most specific first: the call's `alpha` argument (ratio `0.0–1.0`, negative =
+    unset) → `GoConfig.container_alpha_overrides[GoTheme.BOX_*]` → `metric_overrides[<kind>_alpha]` →
+    `GoConfig.container_alpha` → theme `GoHud/constants/<kind>_alpha`. 🛑 **Config and theme fields are percent
+    integers** (`80`), code arguments are ratios (`0.8`) — `0.8` in a config field truncates to `0` and the panel
+    disappears. Call `GoUi.refresh()` after changing it from code. Read the resolved value with
+    `GoUi.surface_alpha(variant)`; apply it to a panel gohud did not build with `GoStyle.fade_panel(node)` (after
+    `add_child`). A `GoSkin` subclass overriding `surface_box`/`floating_box`/`alert_box` **must carry the `alpha`
+    parameter** or the script will not parse. Details: `references/theming.md` §4.
+14. **Never hand-edit gohud's generated themes**; recolour through `color_overrides`, a Theme copy in your project,
     a project-local `GoThemePreset`, or the JSON theme tools (`references/theming.md`).
 
 More traps with their causes: `references/pitfalls.md`.
@@ -175,7 +185,7 @@ use `--check`.
 | `references/surfaces.md` | `GoSurface` (placements, anchored menus, sub-pages), `GoSheet`, `GoDialogs` (layouts, destructive, args), `GoForm`, `GoScroll`, subclass hooks, which widget to use |
 | `references/hud.md` | `GoHudAnchor` spots and avoidance, `GoBar`, `GoSlot`, `GoJoystick`, `GoIconButton`, `GoNotice`, `GoPromptCard`, `GoCoachMark`, composing a HUD |
 | `references/style.md` | Every `GoStyle` factory signature: structure, text, buttons and tones, inputs, select/dropdown/segmented/tabs, cards, chips, tables, styleboxes, helpers |
-| `references/theming.md` | Presets and resolution order, all tokens, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins and dials, custom StyleBoxes, project-local presets, contrast |
+| `references/theming.md` | Presets and resolution order, all tokens, **container opacity (§4)**, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins and dials, custom StyleBoxes, project-local presets, contrast |
 | `references/platform.md` | The 84 icon names and custom icon sets/fonts, localization and RTL, sound and haptics, accessibility, safe area, breakpoints, dp scale, Android Back |
 | `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, character sheet, context menu, tutorial, theme switcher |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |

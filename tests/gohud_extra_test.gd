@@ -508,6 +508,19 @@ func _drawer() -> void:
 		"서랍: 오른쪽에 붙는다 (%.0f)" % (drawer.panel.position.x + drawer.panel.size.x))
 	# 🛑 배경은 끝까지 가되 내용은 안전영역 안 — 모서리에서 잘리지 않게.
 	check(is_equal_approx(drawer.panel.size.y, full.size.y), "서랍: 판은 화면 끝까지")
+	# 🪟 판 불투명도 — `@export` 라 **퍼센트**이고, 판에는 **비율**로 닿는다.
+	# 🛑 이 파일에는 `near()` 가 없다 — 이 검사의 도우미는 `check` 하나뿐이라 차이를 직접 잰다.
+	var drawer_themed := GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a
+	check(absf(drawer_themed - GoUi.surface_alpha(GoTheme.BOX_CARD)) < 0.02,
+		"서랍: 기본은 테마·설정이 정한 카드 값 (%.2f)" % drawer_themed)
+	drawer.alpha = 40
+	await frames(1)
+	check(absf(GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a - 0.40) < 0.02,
+		"서랍: 퍼센트 40 → 판 바탕 0.40")
+	drawer.alpha = -1
+	await frames(1)
+	check(absf(GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a - drawer_themed) < 0.02,
+		"서랍: -1 로 되돌리면 테마 값으로")
 	drawer.close()
 	await frames(2)
 	check(not drawer.is_open(), "서랍: 닫힌다")
@@ -713,8 +726,11 @@ func _carousel() -> void:
 	# ♿ 움직임을 줄인 사람에게는 스스로 움직이지 않는다(지금 reduce_motion 이 켜져 있다).
 	check(not carousel.is_processing(), "띠: reduce_motion 이면 자동 넘김을 하지 않는다")
 	# 🛑 누르는 자리는 터치 하한 그대로 — 점이 작아 보인다고 하한을 깎지 않는다.
-	check(dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
-		"띠: 점의 누르는 자리가 터치 하한을 지킨다 (%.1f)" % dot.custom_minimum_size.x)
+	# 🛑 점은 쪽이 바뀔 때마다 **다시 만들어진다** — 앞에서 잡아 둔 것을 나중에 읽으면 이미 지워진
+	#    노드를 건드려 `previously freed` 가 난다(판정은 통과해 오류만 쌓인다). 쓸 때 다시 가져온다.
+	var live_dot := carousel._dots.get_child(0) as Control
+	check(live_dot != null and live_dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
+		"띠: 점의 누르는 자리가 터치 하한을 지킨다 (%.1f)" % (live_dot.custom_minimum_size.x if live_dot else -1.0))
 	# 🛑 안 보이면 돌지 않는다 — 가린 배너가 배터리를 쓰면 안 된다.
 	GoUi.config.reduce_motion = false
 	carousel.autoplay_seconds = 5.0

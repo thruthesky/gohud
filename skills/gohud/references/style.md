@@ -106,11 +106,11 @@ pill.add_child(GoStyle.segmented(["Map", "Quests"], 0, _switch_layer, false, tru
 
 | Signature | Returns | Notes |
 |---|---|---|
-| `card(accent := Color.TRANSPARENT)` | `PanelContainer` | Bordered card (`GoCard`); add a padding/column child |
+| `card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0, pad := -1.0, alpha := -1.0)` | `PanelContainer` | Bordered card (`GoCard`); add a padding/column child. With **no arguments it does not override the face** — the `GoCard` variation draws it. `alpha` = face opacity (§7) |
 | `chip(text, ink := Color.TRANSPARENT, translate := false)` | `PanelContainer` | Status/tag pill; text contrast is corrected automatically |
 | `avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture: Texture2D = null)` | `Control` | Initials (max 2) or picture in a disc |
 | `skeleton(width := 0.0, height := 14.0)` | `Control` | Pulsing placeholder; width 0 fills |
-| `alert(message, tone := GoTheme.INFO, icon: StringName = &"", translate := false)` | `PanelContainer` | Inline, persistent (unlike `GoNotice`); tone `INFO`/`SUCCESS`/`WARNING`/`DANGER` |
+| `alert(message, tone := GoTheme.INFO, icon: StringName = &"", translate := false, alpha := -1.0)` | `PanelContainer` | Inline, persistent (unlike `GoNotice`); tone `INFO`/`SUCCESS`/`WARNING`/`DANGER`. A container, so it follows panel opacity (§7) |
 | `table(headers: Array, rows: Array)` | `GridContainer` | Cells are strings or Controls |
 | `empty_state(icon, key, translate := true)` | `Control` | Never leave a list blank |
 
@@ -126,14 +126,22 @@ inner.add_child(GoStyle.label("Legendary", GoTheme.ROLE_SUBTITLE))
 
 | Signature | Returns | Notes |
 |---|---|---|
-| `surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT)` | `StyleBox` | **Keeps the preset's shape** (chamfer, forged frame). Prefer this |
-| `box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT)` | `StyleBoxFlat` | Always flat — for code that edits `bg_color`/`corner_radius`; loses custom shapes |
-| `floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT)` | `StyleBoxFlat` | Card + shadow for HUD panels |
-| `disc(diameter, accent, fill_alpha := 0.14, edge_alpha := 0.38)` | `StyleBoxFlat` | Round badge |
+| `surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0)` | `StyleBox` | **Keeps the preset's shape** (chamfer, forged frame). Prefer this |
+| `box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0)` | `StyleBoxFlat` | Always flat — for code that edits `bg_color`/`corner_radius`; loses custom shapes |
+| `floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, opaque := false, pad := -1.0, alpha := -1.0)` | `StyleBoxFlat` | Card + shadow for HUD panels. `opaque` fills the face solid and ignores `alpha` |
+| `disc(diameter, accent, fill_alpha := 0.14, edge_alpha := 0.38)` | `StyleBoxFlat` | Round badge — a marker, so panel opacity does not apply |
+| `fade_panel(node, alpha := -1.0, state := &"panel", variant := GoTheme.BOX_PANEL)` | — | Applies panel opacity to a panel gohud did not build. Call **after** `add_child`; idempotent |
+| `forget_face(node, state := &"panel")` | — | Drops `fade_panel`'s memory of the original face — after a theme swap |
 
 Variants: `BOX_PANEL` `BOX_CARD` `BOX_HUD` `BOX_NOTICE` `BOX_POPUP` `BOX_EMPTY` `BOX_FOCUS` `BOX_FOCUS_SOFT`.
-Skin-level faces: `GoUi.skin().overlay_box(h_margin := -1, v_margin := -1, fill_alpha := 0.82)` (pill over the
-game), `alert_box(ink)`, `chip_box(color)`, `badge_box(ink)`.
+Skin-level faces: `GoUi.skin().overlay_box(h_margin := -1, v_margin := -1, fill_alpha := -1.0)` (pill over the
+game), `alert_box(ink, alpha := -1.0)`, `chip_box(color)`, `badge_box(ink)`,
+`notice_box(accent, compact, alpha := -1.0)`, `surface_box(variant, accent, alpha := -1.0)`.
+
+**`alpha` is the panel face's opacity** (ratio 0.0–1.0; negative = whatever the theme and `GoConfig` decided —
+80% by default). Only the background thins out: borders, shadows, glow, text and icons keep full strength.
+Containers follow it; buttons, quick slots, badges, chips and segmented cells do not. Full rules, the
+five-layer precedence and the percent-vs-ratio trap: `references/theming.md` §4.
 
 ```gdscript
 var panel := PanelContainer.new()

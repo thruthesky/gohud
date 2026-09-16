@@ -9,11 +9,12 @@ Web: https://thruthesky.github.io/gohud/theming.html
 1. [Three layers and presets](#1-three-layers-and-presets)
 2. [Tokens](#2-tokens)
 3. [Small changes without a new theme](#3-small-changes-without-a-new-theme)
-4. [A new theme from one JSON file](#4-a-new-theme-from-one-json-file)
-5. [Skins — shapes drawn by code](#5-skins)
-6. [Custom StyleBoxes](#6-custom-styleboxes)
-7. [A project-local preset in code](#7-a-project-local-preset-in-code)
-8. [Contrast rules](#8-contrast-rules)
+4. [Container opacity](#4-container-opacity)
+5. [A new theme from one JSON file](#5-a-new-theme-from-one-json-file)
+6. [Skins — shapes drawn by code](#6-skins)
+7. [Custom StyleBoxes](#7-custom-styleboxes)
+8. [A project-local preset in code](#8-a-project-local-preset-in-code)
+9. [Contrast rules](#9-contrast-rules)
 
 ## 1. Three layers and presets
 
@@ -64,6 +65,7 @@ All tokens live in the Theme under type **`GoHud`**. Read them through `GoUi` (o
 | Colours (17) | `BACKGROUND` `SURFACE` `SURFACE_SOFT` `SURFACE_HIGH` `BORDER` `TEXT` `SECONDARY` `MUTED` `ACCENT` `ON_ACCENT` `SUCCESS` `WARNING` `DANGER` `INFO` `SCRIM` `SHADOW` `TRACK` |
 | Fill colours (5, optional) | `SUCCESS_FILL` `WARNING_FILL` `DANGER_FILL` `INFO_FILL` `ACCENT_FILL` — bars and large areas; fall back to the base colour |
 | Metrics (20, dp) | `TOUCH` `BUTTON_HEIGHT` `GAP_TINY` `GAP_SMALL` `GAP` `GAP_LARGE` `PADDING` `PADDING_COMPACT` `COMPACT_PADDING_X` `COMPACT_PADDING_Y` `RADIUS_SMALL` `RADIUS` `RADIUS_LARGE` `SCREEN_MARGIN` `SCROLL_DEADZONE` `SCROLL_EDGE` `SCROLLBAR_WIDTH` `LIST_GLYPH` `ICON_SIZE` `NOTICE_DURATION_MS` |
+| Panel opacity (5, optional, **%**) | `PANEL_ALPHA` `CARD_ALPHA` `HUD_ALPHA` `NOTICE_ALPHA` `POPUP_ALPHA` — how solid a container face is. **80** by default, `POPUP_ALPHA` 100; a theme without them falls back to 100. Read as a *ratio* with `GoUi.surface_alpha(variant)`; §4 |
 | StyleBoxes (8) | `BOX_PANEL` `BOX_CARD` `BOX_HUD` `BOX_NOTICE` `BOX_POPUP` `BOX_EMPTY` `BOX_FOCUS` `BOX_FOCUS_SOFT` |
 | Text roles (7) | `ROLE_MICRO` `ROLE_COMPACT` `ROLE_CAPTION` `ROLE_BODY` `ROLE_BUTTON` `ROLE_SUBTITLE` `ROLE_TITLE` — names of sizes, not purposes |
 | Type variations (15) | `GoPanel` `GoCard` `GoButton` `GoPrimaryButton` `GoDangerButton` `GoDangerSolidButton` `GoBareButton` `GoCompactButton` `GoIconButton` `GoListButton` `GoTitleLabel` `GoSubtitleLabel` `GoCaptionLabel` `GoCompactLabel` `GoMicroLabel` (constants `VAR_*`) |
@@ -95,7 +97,65 @@ duplicate `res://addons/gohud/themes/gohud_dark.tres` to `res://ui/my_theme.tres
 the button/panel StyleBoxes in the Theme editor, then `GoUi.config.theme = preload("res://ui/my_theme.tres")`.
 A plain Theme without `GoHud` tokens also works while `token_fallback` is true.
 
-## 4. A new theme from one JSON file
+## 4. Container opacity
+
+Containers draw their face at **80% opacity** by default, so the game stays visible behind a dialog or sheet.
+**Only the face thins out** — text, icons, buttons, badges, quick slots, borders and shadows keep full
+strength. Never reach for `modulate.a` to get this effect: it fades the content too.
+
+**Five layers, most specific first.** Config/theme fields are **percent integers** (0–100); code arguments are
+**ratios** (0.0–1.0, negative = "not set"). Writing `0.8` in a config field truncates to `0` and the panel
+vanishes.
+
+| Order | Where | Unit |
+|---|---|---|
+| ① | the argument at that call — `surface.alpha`, `GoStyle.card(…, alpha)` | ratio |
+| ② | `GoConfig.container_alpha_overrides[kind]` (`Dictionary[StringName, int]`, key = `GoTheme.BOX_*`) | % |
+| ③ | `GoConfig.metric_overrides[<kind>_alpha]` | % |
+| ④ | `GoConfig.container_alpha` (`-1` = not set) | % |
+| ⑤ | theme `GoHud/constants/<kind>_alpha` — the source of truth | % |
+
+```gdscript
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # resolved ratio, e.g. 0.8
+
+surface.alpha = 0.6                          # this GoSurface only (dialog/sheet/dropdown shell)
+sheet.alpha = 0.7                            # GoSheet delegates to its surface
+dialogs.surface_alpha = 90                   # GoDialogs — @export, so percent
+drawer.alpha = 70                            # GoDrawer — @export, percent
+notice.alpha = 0.95                          # GoNotice · GoSnackbar · GoPromptCard · GoCoachMark · GoConsole
+GoPopover.open(slot, body, {"alpha": 0.9})   # option key
+
+GoUi.config.container_alpha_overrides = {GoTheme.BOX_HUD: 95}
+GoUi.refresh()                               # 🛑 required for widgets already on screen
+```
+
+**Which faces follow it**
+
+| Follows — containers | Ignores — pressables and markers |
+|---|---|
+| `GoSurface` `GoSheet` `GoDialogs` `GoDrawer` `GoPopover` `GoNotice` `GoSnackbar` `GoPromptCard` `GoCoachMark` `GoConsole` | every button, `GoSlot`, `GoBadge`, `segmented()`, `choice_grid()`, `chip()`, `disc()` |
+| `GoStyle.card()` `hud_panel()` `overlay_panel()` `alert()` `plate()` `edge_card_panel()` `style_notice_panel()` `floating()` `box()` `surface()` | all text and icons |
+
+Every `GoStyle` factory above takes an `alpha` argument (last parameter; `overlay_panel`'s is `fill_alpha`).
+`GoUi.skin().surface_box(variant, accent, alpha)` is the one place the value is multiplied in — subclasses of
+`GoSkin` that override `surface_box`, `floating_box` or `alert_box` **must carry the new parameter** or the
+script fails to parse.
+
+- 🛑 `POPUP_ALPHA` is 100 on purpose. The engine may host a `PopupMenu` in its own `Window`, where the OS does
+  not composite it with the game and translucency renders black. Lower it only with `gui_embed_subwindows` on.
+- `GoStyle.plate()` keeps an explicit `fill` colour exactly as passed (its alpha is already the caller's
+  decision); opacity applies only when `fill` is omitted, or when `alpha` is given explicitly.
+- `GoStyle.floating(…, opaque = true)` ignores the value — filling the face solid is that flag's purpose.
+- Panels gohud did not build: `GoStyle.fade_panel(node, alpha := -1.0, state := &"panel", variant := GoTheme.BOX_PANEL)`
+  **after** the node is in the tree. It is idempotent (the original face is stored in a meta entry, so repeated
+  calls never stack); after a theme swap call `GoStyle.forget_face(node)` first.
+- The multiplication is **relative**: the default HUD face is already 0.92 alpha, so `hud_alpha` 80 lands at
+  0.736. A theme that deliberately made a face translucent keeps that decision.
+- Verify visually, not only by value: `tests/gohud_alpha_shot.gd` draws panels over diagonal stripes on a
+  virtual monitor. `bg_color.a == 0.8` is a number; "the world shows through and the text is still legible"
+  is the actual requirement.
+
+## 5. A new theme from one JSON file
 
 Run inside a project that has gohud at `addons/gohud` (a git checkout — the tools are not in the release ZIP).
 These commands write **into the add-on folder** (`themes/palettes/`, `themes/presets/`, `themes/skins/`,
@@ -135,7 +195,7 @@ GoUi.use_preset(&"kingdom")
 }
 ```
 
-## 5. Skins
+## 6. Skins
 
 Override only what you need; everything else keeps the parent's drawing. Assign with
 `GoUi.config.skin = MySkin.new()` (after `use_preset`) or put it in a preset.
@@ -178,7 +238,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: f
 	canvas.draw_circle(knob, knob_radius, Color(ink, 0.9 if active else 0.6))
 ```
 
-## 6. Custom StyleBoxes
+## 7. Custom StyleBoxes
 
 All serialise into Theme resources. 🛑 Give padding with `content_margin_*` — `_get_style_margin()` is not called
 for GDScript StyleBoxes (measured on 4.7), so leaving them empty puts content against the border.
@@ -201,7 +261,7 @@ box.set_content_margin_all(12)
 panel.add_theme_stylebox_override(&"panel", box)
 ```
 
-## 7. A project-local preset in code
+## 8. A project-local preset in code
 
 Keeps the add-on folder untouched (good for submodules and the Asset Store ZIP):
 
@@ -216,7 +276,7 @@ func _ready() -> void:
 	GoUi.use_preset(brand)
 ```
 
-## 8. Contrast rules
+## 9. Contrast rules
 
 `python3 addons/gohud/tools/check_contrast.py` measures every theme: body text 4.5:1 · large text, accent
 borders, icons, focus rings 3:1 · decorative borders 2:1 · adjacent surfaces 1.12:1. Translucent panels are

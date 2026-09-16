@@ -1436,6 +1436,23 @@ func _dialogs() -> void:
 	root.add_child(dialogs)
 	await frames(2)
 
+	# 🪟 판 불투명도 — 이 칸은 `@export` 라 **퍼센트**이고 표면은 **비율**로 받는다.
+	# 🛑 두 단위 사이의 변환이 어긋나면 조용히 깨진다(80 이 8000% 가 되거나 0.8 이 0 이 된다) —
+	#    화면으로는 "좀 진해졌다" 로만 보여 알아채기 어렵다. 그래서 두 방향을 모두 잰다.
+	check(dialogs.surface_alpha == -1 and dialogs._surface.alpha < 0.0,
+		"확인창: 불투명도는 기본이 '테마 값 그대로'(-1)")
+	dialogs.surface_alpha = 90
+	check(near(dialogs._surface.alpha, 0.90, 0.001),
+		"확인창: @export 퍼센트 90 → 표면 비율 0.90 (%.2f)" % dialogs._surface.alpha)
+	await frames(1)
+	check(near(GoSkin.box_background(dialogs._surface.card.get_theme_stylebox(&"panel")).a, 0.90, 0.02),
+		"확인창: 그 값이 실제 판까지 닿는다")
+	dialogs.surface_alpha = -1
+	await frames(1)
+	check(near(GoSkin.box_background(dialogs._surface.card.get_theme_stylebox(&"panel")).a,
+		GoUi.surface_alpha(GoTheme.BOX_PANEL), 0.02),
+		"확인창: -1 로 되돌리면 테마·설정 값으로 돌아간다")
+
 	var seen := [""]
 	create_timer(0.05).timeout.connect(func() -> void:
 		seen[0] = dialogs._body.text

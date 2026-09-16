@@ -129,11 +129,15 @@ static func _build(entries: Array) -> PopupMenu:
 		if bool(row.get("disabled", false)): popup.set_item_disabled(index, true)
 		# 되돌릴 수 없는 항목은 눈으로 가려낼 수 있어야 오탭이 준다.
 		# 🛑 `add_theme_color_override` 는 **메뉴 전체**에 걸린다 — 한 항목을 위험색으로 만들려다
-		#    모든 항목을 물들인다(그리고 `TEXT` 를 덮어써 색이 바뀌지도 않았다).
-		#    `PopupMenu` 는 항목별 글자색을 주지 않으므로, 대신 **글자 자체에 표시**를 남긴다 —
-		#    ♿ 색이 아니라 기호라서 색각 이상인 사람에게도 똑같이 읽힌다.
+		#    모든 항목을 물들인다. `PopupMenu` 는 항목별 글자색을 주지 않는다.
+		# 🛑 그렇다고 **글자 앞에 기호를 이어 붙이면 안 된다** — 그 글자가 번역 키일 수 있고,
+		#    그러면 엔진이 `"⚠ menu_drop"` 을 통째로 키로 찾아 못 찾고 화면에 키가 그대로 드러난다
+		#    (`go_table.gd` 가 정렬 화살표에서 같은 함정을 겪었다). 번역을 **먼저 끝내고** 붙인다.
+		# ♿ 기호는 색이 아니라 모양이라 색각 이상인 사람에게도 똑같이 읽힌다.
 		if bool(row.get("danger", false)):
-			popup.set_item_text(index, "⚠ " + popup.get_item_text(index))
+			var shown := tr(words) if bool(row.get("translate", false)) else words
+			popup.set_item_text(index, "⚠ " + shown)
+			popup.set_item_auto_translate_mode(index, Node.AUTO_TRANSLATE_MODE_DISABLED)
 			popup.set_item_metadata(index, &"danger")
 		actions.append(row.get("action", Callable()))
 	popup.id_pressed.connect(func(id: int) -> void:

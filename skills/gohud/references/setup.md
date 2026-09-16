@@ -79,6 +79,8 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | Surface | `surface_max_width` (480) · `surface_max_height` (700) | Card caps in dp |
 | | `surface_height_ratio` (0.68) · `surface_max_height_ratio` (0.72) | Share of usable height; the cap keeps windows reading as floating |
 | | `surface_width_ratio_portrait` (0.94) · `surface_width_ratio_landscape` (0.72) | Share of width |
+| | `container_alpha` (**-1**) | Face opacity of **every** panel, as a **percent** (`-1` = theme value, 80%). `0.8` here truncates to `0` and panels vanish — write `80` |
+| | `container_alpha_overrides` `Dictionary[StringName, int]` | Per-kind opacity in percent; key = `GoTheme.BOX_PANEL`/`BOX_CARD`/`BOX_HUD`/`BOX_NOTICE`/`BOX_POPUP`. Beats `container_alpha`. theming.md §4 |
 | | `dismiss_on_scrim` (false) · `surface_fade_in` (false) · `fade_seconds` (0.14) | Defaults for new surfaces |
 | | `close_button_visual` (36) · `suppress_pointer_focus_ring` (true) · `close_on_back` (true) | Header close button, focus ring policy, Escape/Back |
 | Feedback | `haptics_enabled` (true) · `haptic_tap_ms` (10) · `haptic_light_ms` (20) · `haptic_medium_ms` (40) + `_amplitude`s | Vibration on handhelds only |
@@ -139,13 +141,35 @@ bash addons/gohud/tools/run_tests.sh                                  # gohud's 
 Headless runs cannot take screenshots (the viewport image is null). To *see* a screen, open a window with
 `gohud_preview.py <scene>` — only when the user asked for a visual preview.
 
+### 🛑 Checking gohud *inside a game project* can fail for reasons that are not gohud's
+
+`check_all.sh` re-runs the unit tests at four screen sizes. If the host project has an autoload that drives
+`content_scale_size` / `content_scale_factor` — a UI-scale singleton, which most shipped games have — it
+**overwrites the size the test asked for**, and the smallest size fails with
+
+```
+FAIL 검사용 뷰포트가 충분히 크다 ((667.1937, 308.3004))    # asked for 844x390
+```
+
+That is the host's scaling, not a gohud defect. Confirm by running the same tests in an empty project — the
+one the CI workflow builds:
+
+```bash
+mkdir -p /tmp/host/addons && ln -s "$PWD/addons/gohud" /tmp/host/addons/gohud
+printf 'config_version=5\n[application]\nconfig/name="check"\n' > /tmp/host/project.godot
+godot --headless --path /tmp/host --import
+GOHUD_VIEWPORT=844x390 godot --headless --path /tmp/host -s res://addons/gohud/tests/gohud_test.gd | tail -2
+```
+
+If it passes there, the add-on is fine. 🔑 This is also how you reproduce a CI failure locally.
+
 gohud's own tooling (present in a git checkout, not in the release ZIP):
 
 | Command | Does |
 |---|---|
 | `bash addons/gohud/tools/check_all.sh` | Every check: tests at 4 screen sizes, contrast, site, generated themes, scaffolding, packaging |
 | `python3 addons/gohud/tools/check_contrast.py` | WCAG contrast of every theme |
-| `python3 addons/gohud/tools/new_theme.py <id> --from <parent>` · `make_theme.py <id>` | Scaffold and build a theme (theming.md §4) |
+| `python3 addons/gohud/tools/new_theme.py <id> --from <parent>` · `make_theme.py <id>` | Scaffold and build a theme (theming.md §5) |
 | `bash addons/gohud/tools/package.sh` | Release ZIP, bumps patch version (`--increase-minor-version`) |
 | `bash addons/gohud/examples/demo/run.sh` | The demo app (`--setup`, `--shot`, `--record`, `-- --explore=<chapter>`) |
 

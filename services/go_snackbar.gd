@@ -368,6 +368,9 @@ func _build_actions(item: Dictionary) -> void:
 			_finish(picked), GoStyle.Tone.BARE)
 		node.name = "Action%d" % index
 		node.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		# 🛑 `Tone.BARE` 는 **높이 하한을 걸지 않는다**(`GoStyle.style_button` 이 그 전에 돌아온다).
+		#    되돌리기는 스낵바의 존재 이유인 버튼이라 48dp 를 직접 준다(2026-09-16 실측: 하한 0).
+		node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 		# 되돌리기 글자는 tone 색으로 — 본문과 구별되어 "누를 수 있는 것" 으로 읽힌다.
 		node.add_theme_color_override(&"font_color", GoUi.color(GoTheme.ACCENT))
 		_actions.append(node)

@@ -148,7 +148,13 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 	# 🛑 뒤로가기 차지를 놓는다 — 서랍이 사라졌는데 뒤로가기를 계속 잡고 있으면 그 화면을 못 빠져나간다.
-	if _open: GoBackPolicy.release(get_tree())
+	# 🛑 **`_open` 도 함께 내린다.** 안 내리면 차지는 놓았는데 상태만 "열림" 으로 남아,
+	#    다시 트리에 넣고 `close()` 를 부르면 `release` 가 **한 번 더** 나가 다른 창의 차지까지
+	#    깎는다(그러면 그 창이 뒤로가기로 안 닫힌다).
+	if _open:
+		GoBackPolicy.release(get_tree())
+		_open = false
+		visible = false
 
 
 ## 서랍을 연다. `title` 을 주면 머리 줄에 쓴다. 본문은 **비우지 않는다** — 넣어 둔 것이 남는다.

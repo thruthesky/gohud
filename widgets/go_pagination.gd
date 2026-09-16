@@ -160,7 +160,9 @@ func _number(value: int) -> Control:
 		GoStyle.Tone.PRIMARY if value == _page else GoStyle.Tone.BARE)
 	# 🛑 숫자는 번역하지 않는다 — 쪽 번호가 다른 글자로 바뀌면 안 된다.
 	button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	button.custom_minimum_size.x = GoUi.metric(GoTheme.TOUCH)
+	# 🛑 폭만이 아니라 **높이도** 터치 하한이다. 지금 쪽이 아닌 번호는 `Tone.BARE` 인데 그 톤은
+	#    높이 하한을 걸지 않는다 — 정작 **누르는 대상**이 하한 아래가 된다(2026-09-16 실측).
+	button.custom_minimum_size = Vector2.ONE * float(GoUi.metric(GoTheme.TOUCH))
 	button.disabled = _busy
 	# ♿ "3" 만으로는 무엇의 3 인지 모른다. 🔑 「n / m」 형식은 문구 키를 탄다.
 	button.accessibility_name = GoUi.text(&"bar_fraction").format({"value": value, "max": _total})

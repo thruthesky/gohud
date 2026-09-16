@@ -96,6 +96,10 @@ func _exit_tree() -> void:
 
 ## 보여 줄 쪽들. 각 쪽은 `Control` 이고, 폭·높이는 이 위젯이 잡는다.
 func set_pages(pages: Array) -> void:
+	# 🛑 **넘겨받은 쪽 노드를 죽이지 않는다** — 같은 배너를 재사용해 두 번 부르면 죽은 노드를
+	#    다시 붙이게 된다. 소유권은 넘긴 쪽에 남는다(표와 같은 규칙).
+	for node in _pages:
+		if is_instance_valid(node) and node.get_parent() == _strip: _strip.remove_child(node)
 	for child in _strip.get_children(): child.queue_free()
 	_pages.clear()
 	for page in pages:

@@ -163,10 +163,13 @@ func _open() -> void:
 	_surface.relayout()
 	GoFeedback.opened()
 	if _search != null: _search.grab_focus.call_deferred()
-	var layer := _layer
+	# 🛑 층을 **약한 참조로** 붙잡는다 — `_close()` 가 먼저 지운 뒤 이 람다가 불리면 엔진이
+	#    `Lambda capture … was freed` 를 찍는다.
+	var held := weakref(_layer)
 	var dispose := func() -> void:
-		if is_instance_valid(layer): layer.queue_free()
-		if _layer == layer:
+		var node := held.get_ref() as CanvasLayer
+		if is_instance_valid(node): node.queue_free()
+		if _layer != null and _layer == node:
 			_layer = null
 			_surface = null
 			_search = null

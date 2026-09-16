@@ -31,6 +31,8 @@ const LAYER := 95
 
 ## 지금 열려 있는 것 — **한 번에 하나**다. 새로 열면 앞의 것이 닫힌다.
 static var _open: CanvasLayer
+## 그 층 안의 표면. 닫을 때 `close_requested` 를 내 주려고 따로 들고 있는다.
+static var _open_surface: GoSurface
 
 
 ## `anchor` 옆에 `content` 를 담은 카드를 띄운다. 돌려주는 것은 그 `GoSurface` 다
@@ -83,10 +85,18 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 		else: surface.set_title(title)
 	if is_instance_valid(content): surface.body.add_child(content)
 
+	_open_surface = surface
 	# 🔑 닫는 길은 둘인데 하는 일은 하나다 — 같은 것을 두 번 쓰면 한쪽만 고치는 실수가 난다.
+	# 🛑 층을 **약한 참조로** 붙잡는다. 두 신호 중 하나가 먼저 층을 지우면, 남은 쪽이 나중에 불릴 때
+	#    람다가 들고 있던 것이 이미 사라져 엔진이 `Lambda capture … was freed` 를 찍는다
+	#    (2026-09-16 검사 로그에서 발견 — 판정은 통과하는데 오류만 쌓여 원인을 찾기 어려웠다).
+	var held := weakref(layer)
 	var dispose := func() -> void:
-		if is_instance_valid(layer): layer.queue_free()
-		if _open == layer: _open = null
+		var node := held.get_ref() as CanvasLayer
+		if is_instance_valid(node): node.queue_free()
+		if _open != null and _open == node:
+			_open = null
+			_open_surface = null
 	surface.close_requested.connect(dispose, CONNECT_ONE_SHOT)
 	# 앵커가 사라지면(아이템을 버렸다) 카드도 함께 사라진다 — 없는 것의 설명이 남지 않게.
 	anchor.tree_exiting.connect(dispose, CONNECT_ONE_SHOT)
@@ -97,7 +107,13 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 
 
 ## 열려 있으면 닫는다.
+## 🛑 **`close_requested` 를 내고 닫는다.** 문서가 `await GoPopover.open(...).close_requested` 를
+##    권하는데, 층만 지우면 그 `await` 가 영영 풀리지 않는다 — 그리고 "한 번에 하나" 규칙 때문에
+##    `close()` 와 재열기는 **정상 경로**다(2026-09-16 실측: 신호가 오지 않았다).
 static func close() -> void:
+	var surface := _open_surface
+	_open_surface = null
+	if is_instance_valid(surface): surface.close_requested.emit()
 	if is_instance_valid(_open): _open.queue_free()
 	_open = null
 

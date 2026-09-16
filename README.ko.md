@@ -223,6 +223,7 @@ settings.preset = GoThemePresets.MEDIEVAL_LIGHT
 var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: Color("#7c5cff")}
 settings.color_overrides = colors                 # 강조색만 바꿔도 된다
 settings.base_font_size = 15
+settings.container_alpha = 70                     # 판 전부를 70% 불투명 (-1 이면 테마 값)
 GoUi.config = settings
 ```
 
@@ -233,7 +234,7 @@ GoUi.config = settings
 |---|---|
 | 겉모습 | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile` |
 | 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
-| 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
+| 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
 | 피드백 | `haptics_enabled`, `haptic_tap/light/medium_ms` 와 세기, `sound_cues` |
 | 번역 | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
 | 접근성 | `min_touch_size`, `reduce_motion`, `autowrap_text` |
@@ -289,6 +290,7 @@ GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close") # 36dp 그림 · 48
 | 색 | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
 | 채움 색 | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — 막대처럼 넓은 면적용. 테마에 없으면 `_fill` 을 뗀 이름으로 떨어진다 |
 | 치수(dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `compact_padding_x`, `compact_padding_y`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
+| 판 불투명도(%) | `panel_alpha`, `card_alpha`, `hud_alpha`, `notice_alpha`, `popup_alpha` — 컨테이너 바탕이 얼마나 꽉 찬 색인가. 기본 80(팝업 메뉴만 100). 테마에 없으면 100 으로 떨어진다 |
 | StyleBox | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |
 | 글자 역할 | `micro`, `compact`, `caption`, `body`, `button`, `subtitle`, `title` |
 
@@ -299,10 +301,93 @@ GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close") # 36dp 그림 · 48
 `GoHud` 토큰이 없는 테마를 꽂아도 동작한다 — `token_fallback` 이 켜져 있는 동안 빠진 토큰은 기본 테마에서 채운다.
 
 ```gdscript
-GoUi.color(GoTheme.DANGER)            # 색 토큰
-GoUi.metric(GoTheme.PADDING)          # 치수 토큰
-GoUi.font_size(GoTheme.ROLE_CAPTION)  # 글자 역할 크기
+GoUi.color(GoTheme.DANGER)                  # 색 토큰
+GoUi.metric(GoTheme.PADDING)                # 치수 토큰
+GoUi.font_size(GoTheme.ROLE_CAPTION)        # 글자 역할 크기
+GoUi.surface_alpha(GoTheme.BOX_PANEL)       # 판 불투명도 — 비율 0.0~1.0 로 돌려준다
 ```
+
+### 판 투명도 — 컨테이너 뒤로 게임이 보인다
+
+**팝업·다이얼로그·시트·카드·HUD 판은 기본 80% 불투명**이다. 뒤 20% 가 배어 나와, 확인창 뒤에서 전투가
+계속되는 것이 보이고 가방 시트 아래로 지도가 비친다. 게임 UI 에서 이것은 장식이 아니라 **맥락을 잃지 않게
+하는 장치**다 — 판이 꽉 찬 색이면 창을 여는 순간 플레이어는 자기가 어디에 서 있었는지 알 수 없다.
+
+🛑 **묽어지는 것은 판의 바탕뿐이다.** 글자·아이콘·버튼·배지·퀵슬롯은 선명한 채로 남는다. 내용까지 함께
+흐려지면 읽을 수 없는 UI 가 되고, 그것은 투명한 창이 아니라 고장이다. 테두리와 그림자도 그대로다 —
+윤곽이 선명해야 반투명한 판이 유리처럼 읽히고, 흐려지면 판이 어디서 끝나는지 알 수 없다.
+
+#### 네 층 — 구체적인 것이 이긴다
+
+| 순서 | 어디서 | 단위 | 쓰는 때 |
+|---|---|---|---|
+| ① | 그 자리의 인자 — `surface.alpha`, `GoStyle.card(…, alpha)` | 비율 `0.0~1.0` | **이 창 하나만** 다르게 |
+| ② | `GoConfig.container_alpha_overrides[종류]` | 퍼센트 `0~100` | 이 프로젝트에서 **이 종류만** 다르게 |
+| ③ | `GoConfig.metric_overrides[<종류>_alpha]` | 퍼센트 `0~100` | 치수를 한 곳에 모아 두는 프로젝트의 관습을 따를 때 |
+| ④ | `GoConfig.container_alpha` | 퍼센트 `0~100` | 프로젝트의 **판 전부**를 한 번에 |
+| ⑤ | 테마의 `GoHud/constants/<종류>_alpha` | 퍼센트 `0~100` | 생김새 묶음이 정한 값 — **정본** |
+
+넷 다 비어 있으면 100(꽉 찬 색)이다 — 이 토큰을 모르는 옛 테마·남의 테마를 그대로 꽂아도 화면이 예전과 같다.
+
+🛑 **테마·설정 칸은 퍼센트 정수, 코드 인자는 비율**이다. 층이 다르므로 단위도 다르다 — 에디터 칸은 정수라야
+다루기 쉽고(`Theme` 의 constant 는 정수만 담는다), StyleBox 의 색 알파는 비율이다. 섞어 쓰면 설정에 적은
+`0.8` 이 `0` 으로 잘려 **판이 통째로 사라진다.** 설정에는 `80`, 코드에는 `0.8` 이다.
+
+```gdscript
+# ① 창 하나만 — 뒤의 전투가 보여야 하는 확인창
+surface.alpha = 0.6
+sheet.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# ② 종류별 — HUD 만 거의 꽉 차게(월드 위에서 글자가 읽혀야 한다)
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,    # 대화상자·시트는 시원하게
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                # 🛑 떠 있는 위젯까지 다시 그리려면 부른다
+
+# ③ 프로젝트 전부 — 그림이 복잡한 게임은 꽉 찬 색으로 되돌린다
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+# ④ 테마에서(정본) — 팔레트 JSON 의 shape 에 적으면 생성기가 토큰까지 내려 준다
+#    또는 .tres 를 직접: GoHud/constants/panel_alpha = 70
+```
+
+#### 어느 판이 따르고, 어느 것이 따르지 않는가
+
+| 따른다 — 컨테이너 | 따르지 않는다 — 누르는 것·표식 |
+|---|---|
+| `GoSurface`(다이얼로그·시트·드롭다운의 근원) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` | 버튼 전부 · `GoSlot`(퀵슬롯) · `GoBadge`(배지) · 분절 선택 · 고르는 칸 · 칩 · 원판·아바타 |
+| `GoStyle.card()` · `hud_panel()` · `overlay_panel()` · `alert()` · `plate()` · `edge_card_panel()` · `style_notice_panel()` · `floating()` · `box()` · `surface()` | 글자·아이콘 일체 |
+
+- **팝업 메뉴(`PopupMenu`)는 기본이 꽉 찬 색**이다(`popup_alpha` 100). 엔진이 그것을 **창**으로 띄울 수 있고,
+  그때는 OS 가 게임 화면과 합성해 주지 않아 반투명이 "뒤가 보이는 대신 검게" 나온다. 게임 안에 박아 띄우는
+  프로젝트(`gui_embed_subwindows`)라면 값을 내려도 좋다.
+- `GoStyle.plate()` 에 **채움 색을 직접 주면 그 색 그대로**다 — `Color(ink, 0.14)` 처럼 알파까지 적어 준 색에
+  판 불투명도를 또 곱하면 부르는 쪽의 의도가 두 번 깎인다.
+- `GoStyle.floating(…, opaque = true)` 는 이 값을 쓰지 않는다 — "월드가 비쳐 글자가 안 읽히는 자리" 를 위해
+  **일부러 꽉 채우는** 것이 그 인자의 뜻이다.
+
+#### gohud 가 만들지 않은 판에도
+
+```gdscript
+var frame := PanelContainer.new()
+add_child(frame)                   # 🛑 트리에 붙인 뒤에 — 부모에서 물려받은 테마를 읽는다
+GoStyle.fade_panel(frame)          # 테마·설정이 정한 값
+GoStyle.fade_panel(frame, 0.6)     # 이 판만 60%
+GoStyle.fade_panel(frame, 1.0)     # 되돌린다(판 덮기를 걷어낸다)
+```
+
+여러 번 불러도 한 번만 묽어진다 — 원래 판을 메타에 적어 두고 언제나 그것에서 다시 계산한다. 테마를 갈아
+끼운 뒤에는 `GoStyle.forget_face(node)` 로 그 기억을 버려야 새 테마의 판을 잡는다.
+
+#### 커스텀 StyleBox 에서도 같다
+
+사선 판(`GoStyleBoxCut`)·철판(`GoStyleBoxMedieval`)처럼 `_draw()` 로 직접 그리는 판도 바탕만 묽어진다.
+발광·리벳·모서리 각인·베벨은 세기를 그대로 지키고, 중세 판의 질감과 베벨은 원래부터 바탕 알파에 비례하므로
+판이 묽어지면 함께 묽어진다.
 
 ### 스킨과 커스텀 StyleBox
 

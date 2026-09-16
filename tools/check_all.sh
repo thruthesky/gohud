@@ -48,6 +48,21 @@ if [ -n "${GODOT_46:-}" ]; then
   fi
 fi
 
+step "①-c 워크플로가 파싱되는가"
+# 🛑 **CI 는 자기가 뜨지 못한 것을 알려 주지 못한다.** 워크플로 YAML 에 문법 오류가 있으면 잡이
+#    아예 만들어지지 않아 `0s` 만에 failure 이고 로그도 남지 않는다 — 어느 검사가 실패했는지
+#    알 길이 없어 사흘을 헤맸다(2026-09-16: `run:` 값을 따옴표로 시작한 한 줄 때문이었다).
+#    그래서 **로컬에서** 먼저 파싱해 본다. PyYAML 이 없으면 조용히 건너뛴다(선택 의존).
+if python3 -c "import yaml" 2>/dev/null; then
+  for wf in "$ADDON"/.github/workflows/*.yml; do
+    python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$wf" \
+      || { echo "🛑 워크플로 YAML 오류: $wf" >&2; FAILED=1; }
+  done
+  echo "✅ 워크플로 $(ls "$ADDON"/.github/workflows/*.yml 2>/dev/null | wc -l | tr -d ' ')개 파싱"
+else
+  echo "⏭ PyYAML 이 없어 건너뛴다 (pip install pyyaml)"
+fi
+
 step "② 테마 대비"
 python3 "$ADDON/tools/check_contrast.py" --quiet || FAILED=1
 

@@ -42,6 +42,14 @@ hud_root.add_child(corner)
 🛑 A floating HUD over scrolling content needs a panel behind it, or text overlaps text:
 `panel.add_theme_stylebox_override(&"panel", GoStyle.floating(GoTheme.BOX_HUD))`.
 
+🪟 **HUD faces are 80% opaque by default** (`GoTheme.HUD_ALPHA`), so the world shows through a dock or a
+status bar. A HUD sits straight over the game with no scrim in front of it, so **this is the one place where
+the default can be too low** — over a bright, busy or high-contrast world, raise it:
+`GoUi.config.container_alpha_overrides = {GoTheme.BOX_HUD: 95}` for the project, `GoStyle.hud_panel(…, alpha)`
+for one panel, or `GoStyle.floating(…, opaque = true)` where the text must never fight the background.
+Quick slots and badges stay solid regardless — they are pressables and markers, not containers.
+Full rules: `theming.md` §4.
+
 ## 2. GoBar
 
 `class_name GoBar extends Control` · input-transparent.

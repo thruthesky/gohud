@@ -1922,6 +1922,80 @@ static func textarea(placeholder := "", lines := 4, translate_placeholder := fal
 
 # ── 표시 ────────────────────────────────────────────────────────────────
 
+## 그림을 칸에 어떻게 맞출지. `CONTAIN` 은 전부 보이게 넣고, `COVER` 는 칸을 꽉 채우되 넘치는 쪽을
+## 자르며, `FILL` 은 비율을 버리고 칸에 맞춰 늘린다.
+enum Fit { CONTAIN, COVER, FILL }
+
+## 🔑 **그림 칸.** 화면 코드가 `TextureRect` 를 손수 세우지 않게 하는 자리다 —
+##    늘림·정렬·마우스 통과처럼 **어떻게 보일지**는 여기가 정하고,
+##    **무엇을 보일지**(그림 자체)만 부르는 쪽이 준다(그림은 그 게임의 자산이라 애드온이 가질 수 없다).
+##
+## ```gdscript
+## var logo := GoStyle.art(texture, Vector2(96, 96))                 # 전부 보이게
+## var face := GoStyle.art(portrait, cell, GoStyle.Fit.COVER)        # 칸을 채우고 넘치는 쪽은 자른다
+## ```
+static func art(texture: Texture2D = null, size := Vector2.ZERO, fit := Fit.CONTAIN) -> TextureRect:
+	var node := TextureRect.new()
+	node.name = "Art"
+	if size.x > 0 or size.y > 0: node.custom_minimum_size = size
+	node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	node.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	style_art(node, texture, fit)
+	return node
+
+
+## 이미 세워 둔 그림 칸에 **그림만 갈아 끼운다**(성별을 바꿀 때마다 바뀌는 초상화처럼).
+##
+## 🛑 `texture` 가 `null` 일 때 무엇을 할지는 **부르는 쪽이 정한다** — 기본(`keep_when_null`)은 그대로 두는 것이다.
+##    아직 읽는 중인 그림의 자리를 비우지 않기 위해서다. 그러나 **없으면 없는 대로 보여야 하는** 자리
+##    (에셋 묶음이 빠진 빌드의 초상화처럼 — 그대로 두면 **직전에 고른 것이 남아 거짓이 된다**)에서는
+##    `keep_when_null = false` 로 불러 비운다.
+static func style_art(node: TextureRect, texture: Texture2D = null, fit := Fit.CONTAIN,
+		keep_when_null := true) -> void:
+	if node == null: return
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	match fit:
+		Fit.COVER: node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		Fit.FILL: node.stretch_mode = TextureRect.STRETCH_SCALE
+		_: node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if texture != null or not keep_when_null: node.texture = texture
+
+
+## 🔑 **덮개(scrim).** 뒤를 가려 앞의 카드·시트로 눈이 가게 하는 한 겹.
+##    `alpha` 를 주지 않으면 스킨이 정한 덮개색을 그대로 쓰고, 주면 배경색을 그 짙기로 깐다.
+static func scrim(alpha := -1.0, ink := Color.TRANSPARENT) -> ColorRect:
+	var node := ColorRect.new()
+	node.name = "Scrim"
+	node.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	style_scrim(node, alpha, ink)
+	return node
+
+
+## 이미 있는 덮개의 짙기를 다시 정한다(그림이 다 읽힌 뒤에야 덮는 로그인 배경처럼).
+static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT) -> void:
+	if node == null: return
+	if alpha < 0.0 and ink.a <= 0.0:
+		node.color = GoUi.color(GoTheme.SCRIM)
+		return
+	var base := ink if ink.a > 0 else GoUi.color(GoTheme.BACKGROUND)
+	node.color = Color(base, alpha if alpha >= 0.0 else base.a)
+
+
+## 🔑 **색 표식.** 칸 하나를 색으로만 채우는 작은 조각 — 범례의 짧은 줄, 접속 중을 알리는 점,
+##    배너 왼쪽의 세로 띠처럼 **글자도 그림도 아닌 색 자체가 뜻인** 자리에 쓴다.
+##    🛑 판(`plate`)과 다르다 — 표식은 모서리도 테두리도 없이 그 색 하나만 칠한다.
+static func mark(size: Vector2, ink: Color) -> ColorRect:
+	var node := ColorRect.new()
+	node.name = "Mark"
+	node.color = ink
+	node.custom_minimum_size = size
+	node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	node.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return node
+
+
 ## 🔑 **아바타.** 그림이 있으면 둥글게 자른 그림, 없으면 accent 원 위에 이니셜(최대 2글자).
 static func avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture: Texture2D = null) -> Control:
 	var ink := accent if accent.a > 0 else GoUi.color(GoTheme.ACCENT)

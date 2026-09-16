@@ -25,6 +25,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 | `enum Placement { CENTER, BOTTOM, ANCHOR }` | `placement` (CENTER) |
 | size | `max_width` / `max_height` / `height_ratio` (0 = GoConfig value) · `fit_content` (true — short content, short card) · `compact` (smaller padding) |
 | behaviour | `dismiss_on_scrim` (config default) · `scrim_transparent` · `fade_in` · `resizable` (drag the title) · `show_header` (true) · `scroll_body` (true) · `close_enabled` (true) · `initial_focus: Control` |
+| opacity | `alpha` — the **card face's** opacity, ratio 0.0–1.0, negative = theme/config value (**80%** by default). Text, buttons and the border stay sharp; the scrim behind is separate (`scrim_transparent`, `GoTheme.SCRIM`). `theming.md` §4 |
 | anchor | `anchor_control` · `anchor_width` (320) · `anchor_min_width` (210) · `anchor_max_height` (520) — opens below, or above when there is more room |
 | parts | `card` PanelContainer · `header` HBox · `title_label` · `close_button` GoIconButton · `back_button` · `scroll` GoScroll (**created in `_ready`**) · `body` VBox · `toolbar` VBox (hidden) · `footer` VBox (hidden) |
 | methods | `set_title(text)` · `set_title_key(key)` · `set_back(callable)` (empty Callable hides) · `clear()` · `request_close()` · `is_top()` · `relayout()` · `content_inset()` · `section_gap()` · `attach_resize_handle(control)` |
@@ -113,6 +114,9 @@ func show_item(item) -> void:
 	sheet.body.add_child(GoStyle.label(item.description))
 ```
 
+
+**Opacity.** `sheet.alpha = 0.7` (ratio) delegates to the surface — the map under an inventory sheet
+stays visible. Default 80%; `theming.md` §4.
 ## 3. GoDialogs
 
 `class_name GoDialogs extends Node`. One reusable window on its own `CanvasLayer` (layer 100).
@@ -146,6 +150,9 @@ func delete_character(name: String) -> void:
 		await dialogs.alert("Deleted", "{name} is gone.", "OK", "", {"name": name})
 ```
 
+
+**Opacity.** `dialogs.surface_alpha = 90` — an `@export`, so it takes a **percent** (`-1` = theme/config
+value, 80% by default). Raising it on an irreversible confirm keeps the eye on the question.
 ## 4. GoForm
 
 `class_name GoForm extends MarginContainer`. Full-rect; side margins = max(padding, (usable width − cap) / 2)
@@ -279,6 +286,9 @@ if await snack.post({"text": "Item dropped", "icon": &"trash", "actions": ["Undo
 - 🔑 `GoNotice` vs `GoSnackbar`: the notice never takes input or focus and the screen decides where it goes —
   it cannot hold a button. The snackbar places itself, queues and can be pressed.
 
+
+**Opacity.** `snack.alpha = 0.95` (ratio, negative = `notice_alpha`, 80% by default). A snackbar carries the
+one line you must not miss; over a busy world raise it — `theming.md` §4 explains the trade.
 ## 9. GoDrawer — the side panel
 
 ```gdscript
@@ -301,6 +311,8 @@ bag.body.add_child(inventory_grid)
   corner clips the first list row.
 - It takes the Back/Escape ownership while open and releases it on close, including in `_exit_tree`.
 
+
+**Opacity.** `drawer.alpha = 70` — an `@export`, so **percent** (`-1` = theme/config value).
 ## 10. GoPopover — the anchored card
 
 ```gdscript
@@ -320,6 +332,9 @@ Options: `title` · `translate` · `width` 320 · `max_height` 520 · `dismissab
 - 🛑 It is not a hover tooltip — touch has no hover, so put nothing here that only a mouse could reveal.
 - When the anchor leaves the tree (the item was dropped) the card goes with it.
 
+
+**Opacity.** `{"alpha": 0.9}` in the options. These cards exist to **compare** things, so the value behind them
+often matters; the scrim is already transparent for the same reason.
 ## 11. Dialogs that queue
 
 `GoDialogs.alert()` and `alert_key()` **wait their turn** when a dialog is already open. `confirm()` and

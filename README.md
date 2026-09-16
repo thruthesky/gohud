@@ -234,7 +234,7 @@ Leave a field empty or at its default to keep gohud's behaviour. Nothing needs t
 |---|---|
 | Appearance | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile` |
 | Responsive | `scale_enabled` (1 unit = 1 dp, **off by default**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
-| Surface | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
+| Surface | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
 | Feedback | `haptics_enabled`, `haptic_tap/light/medium_ms` and amplitudes, `sound_cues` |
 | Localization | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
 | Accessibility | `min_touch_size`, `reduce_motion`, `autowrap_text` |
@@ -305,6 +305,7 @@ All tokens live in the **`GoHud`** theme type.
 | Colors | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
 | Fill colors | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — for bars and other large areas; a theme without them falls back to the base name |
 | Constants (dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `compact_padding_x`, `compact_padding_y`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
+| Panel opacity (%) | `panel_alpha`, `card_alpha`, `hud_alpha`, `notice_alpha`, `popup_alpha` — how solid a container's face is. 80 by default (100 for popup menus); a theme without them falls back to 100 |
 | Styles | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |
 | Text roles | `micro`, `compact`, `caption`, `body`, `button`, `subtitle`, `title` |
 
@@ -315,8 +316,96 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 A theme that lacks the `GoHud` tokens still works — missing tokens are filled from the default theme
 while `token_fallback` is on.
 
-Read tokens in code with `GoUi.color(GoTheme.ACCENT)`, `GoUi.metric(GoTheme.GAP)` and
-`GoUi.font_size(GoTheme.ROLE_CAPTION)`.
+Read tokens in code with `GoUi.color(GoTheme.ACCENT)`, `GoUi.metric(GoTheme.GAP)`,
+`GoUi.font_size(GoTheme.ROLE_CAPTION)` and `GoUi.surface_alpha(GoTheme.BOX_PANEL)` — the last one
+returns a **ratio** (0.0–1.0), not the percentage stored in the theme.
+
+### Panel opacity — the game stays visible behind a container
+
+**Popups, dialogs, sheets, cards and HUD panels are 80% opaque by default.** The remaining 20% lets the
+world through: the fight carries on behind a confirm dialog, the map shows under an inventory sheet. In a
+game this is not decoration — it is **what keeps the player oriented**. A fully solid panel erases where
+they were standing the moment a window opens.
+
+🛑 **Only the face thins out.** Text, icons, buttons, badges and quick slots stay sharp. Fading the content
+along with the panel produces UI that cannot be read, and that is not a transparent window — it is a bug.
+Borders and shadows are also left alone: a translucent panel reads as glass only while its outline is
+crisp, and a faded outline leaves you unable to tell where the panel ends.
+
+#### Five layers — the most specific wins
+
+| Order | Where | Unit | Use it for |
+|---|---|---|---|
+| ① | the argument at that call — `surface.alpha`, `GoStyle.card(…, alpha)` | ratio `0.0–1.0` | **this one window** |
+| ② | `GoConfig.container_alpha_overrides[kind]` | percent `0–100` | **one kind** across the project |
+| ③ | `GoConfig.metric_overrides[<kind>_alpha]` | percent `0–100` | projects that keep every measurement in one place |
+| ④ | `GoConfig.container_alpha` | percent `0–100` | **every panel** in the project at once |
+| ⑤ | the theme's `GoHud/constants/<kind>_alpha` | percent `0–100` | what the look itself decides — **the source of truth** |
+
+With none of them set the value is 100 (solid) — so a theme that predates these tokens, or someone else's
+theme, draws exactly as it did before.
+
+🛑 **Themes and config fields take a percentage; code arguments take a ratio.** Different layers, different
+units: editor fields need integers (a `Theme` constant cannot hold a float) while a StyleBox colour's alpha
+is a ratio. Mixing them truncates `0.8` to `0` in a config field and **the panel disappears**. Write `80`
+in settings, `0.8` in code.
+
+```gdscript
+# ① One window only — a confirm dialog that must not hide the fight behind it
+surface.alpha = 0.6
+sheet.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# ② Per kind — keep the HUD nearly solid, because its text sits straight over the world
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 70,    # dialogs and sheets can breathe
+    GoTheme.BOX_HUD: 95,
+}
+GoUi.refresh()                # 🛑 call this to redraw widgets that are already open
+
+# ③ The whole project — busy worlds want their panels back to solid
+GoUi.config.container_alpha = 100
+GoUi.refresh()
+
+# ④ In the theme (the source of truth) — or in a palette JSON, where the generator
+#    carries it down to the token:  GoHud/constants/panel_alpha = 70
+```
+
+#### What follows the value, and what does not
+
+| Follows it — containers | Does not — things you press, and markers |
+|---|---|
+| `GoSurface` (the one shell behind dialogs, sheets and dropdowns) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` | every button · `GoSlot` (quick slots) · `GoBadge` · segmented controls · choice cells · chips · discs and avatars |
+| `GoStyle.card()` · `hud_panel()` · `overlay_panel()` · `alert()` · `plate()` · `edge_card_panel()` · `style_notice_panel()` · `floating()` · `box()` · `surface()` | all text and icons |
+
+- **Popup menus (`PopupMenu`) stay solid by default** (`popup_alpha` 100). The engine may put one in its own
+  **window**, and there the OS does not composite it with the game — translucency comes out black instead of
+  see-through. Projects that embed their subwindows (`gui_embed_subwindows`) can lower it.
+- `GoStyle.plate()` keeps a fill colour you pass **exactly as given** — multiplying panel opacity into
+  `Color(ink, 0.14)`, which already states its alpha, would cut the caller's intent twice.
+- `GoStyle.floating(…, opaque = true)` ignores the value: filling the face solid is the whole point of that
+  argument, for places where the world would otherwise show through the text.
+
+#### Panels gohud did not build
+
+```gdscript
+var frame := PanelContainer.new()
+add_child(frame)                   # 🛑 after it enters the tree — it reads the theme it inherits
+GoStyle.fade_panel(frame)          # whatever theme and config decided
+GoStyle.fade_panel(frame, 0.6)     # this panel at 60%
+GoStyle.fade_panel(frame, 1.0)     # back to solid (the override is removed)
+```
+
+Calling it repeatedly fades the panel only once — the original face is recorded in a meta entry and every
+call recomputes from that. After swapping themes, drop that memory with `GoStyle.forget_face(node)` so the
+next call picks up the new theme's face.
+
+#### Custom StyleBoxes behave the same
+
+Faces drawn by hand — the cut-corner panel (`GoStyleBoxCut`), the forged frame (`GoStyleBoxMedieval`) —
+fade their background only. Glow, rivets, corner engraving and bevels keep their strength; the medieval
+face's grain and bevel were always proportional to the background alpha, so they thin out with the panel.
 
 ### Skins and custom StyleBoxes
 
