@@ -862,6 +862,130 @@ func _style() -> void:
 	host.queue_free()
 	await frames(1)
 
+	# ── 🏷 브랜드 버튼(바깥 규격) · 조용한 색 · 판 없는 컨테이너 · 알림 판 · 고정폭 글 상자 · 팝업 줄 ──
+	var brand_host := VBoxContainer.new()
+	brand_host.size = Vector2(320, 600)
+	root.add_child(brand_host)
+	var brand := GoStyle.button("Continue with Example")
+	brand_host.add_child(brand)
+	var base_face := GoStyle.box(GoTheme.BOX_CARD)
+	base_face.set_corner_radius_all(12)   # 모양을 물려받는지 보려고 알아볼 수 있는 값을 심는다
+	GoStyle.style_brand_button(brand, Color.BLACK, Color.WHITE, Color(1, 1, 1, 0.35), 18, 12, 16.0, base_face)
+	await frames(2)
+	var brand_face := brand.get_theme_stylebox(&"normal") as StyleBoxFlat
+	check(brand_face != null and brand_face.bg_color == Color.BLACK and brand_face.border_color == Color(1, 1, 1, 0.35)
+		and brand_face.get_border_width(SIDE_LEFT) == 1,
+		"브랜드 버튼 — 판 색·테두리는 부르는 쪽 값 그대로(스킨 팔레트가 아니다)")
+	check(brand_face.corner_radius_top_left == 12, "브랜드 버튼 — 모양(둥글기)은 넘긴 판에서 물려받는다 (%d)" % brand_face.corner_radius_top_left)
+	check(near(brand_face.content_margin_left, 16.0) and near(brand_face.content_margin_right, 16.0)
+		and near(brand_face.content_margin_top, 0.0),
+		"브랜드 버튼 — 좌우 여백은 지침 값, 위아래는 0(높이는 부르는 쪽이 정한다)")
+	check(brand.get_theme_constant(&"icon_max_width") == 18 and brand.get_theme_constant(&"h_separation") == 12,
+		"브랜드 버튼 — 마크 크기·간격이 넘긴 값 그대로")
+	check(brand.get_theme_color(&"font_color") == Color.WHITE and brand.get_theme_color(&"icon_normal_color") == Color.WHITE,
+		"브랜드 버튼 — 글자색은 규격 값, 마크는 흰색 고정(4색 공식 마크가 테마에 물들지 않는다)")
+	check(brand.alignment == HORIZONTAL_ALIGNMENT_LEFT and brand.icon_alignment == HORIZONTAL_ALIGNMENT_LEFT,
+		"🛑 브랜드 버튼 — 마크·글자 모두 왼쪽 정렬(icon_alignment = CENTER 는 마크를 글자 위에 겹쳐 그린다)")
+	check((brand.get_theme_stylebox(&"hover") as StyleBoxFlat).bg_color.get_luminance() > Color.BLACK.get_luminance(),
+		"어두운 브랜드 판은 올릴 때 밝아진다")
+	var white_brand := GoStyle.button("Continue with Example")
+	brand_host.add_child(white_brand)
+	GoStyle.style_brand_button(white_brand, Color.WHITE, Color("1f1f1f"), Color("747775"), 24, 10, 12.0)
+	check((white_brand.get_theme_stylebox(&"hover") as StyleBoxFlat).bg_color.get_luminance() < Color.WHITE.get_luminance(),
+		"밝은 브랜드 판은 올릴 때 어두워진다")
+	check(not (white_brand.get_theme_stylebox(&"focus") as StyleBoxFlat).draw_center,
+		"포커스 판은 속을 비워 공용 포커스 링이 보이게 한다")
+	# 마크+글자를 함께 가운데 — 왼쪽 여백 = (폭 − 마크 − 간격 − 글자 폭) / 2, 하한은 지침 여백
+	var brand_left := GoStyle.center_button_content(brand, 16.0)
+	var brand_text := brand.get_theme_font(&"font").get_string_size(brand.atr(brand.text), HORIZONTAL_ALIGNMENT_LEFT, -1,
+			brand.get_theme_font_size(&"font_size")).x
+	var want_left := maxf(16.0, floorf((brand.size.x - 18.0 - 12.0 - brand_text) * 0.5))
+	check(near(brand_left, want_left) and near(brand.get_theme_stylebox(&"normal").content_margin_left, want_left),
+		"마크+글자가 함께 판 가운데 — 왼쪽 여백 %.0f (기대 %.0f · 폭 %.0f)" % [brand_left, want_left, brand.size.x])
+	check(near(brand.get_theme_stylebox(&"disabled").content_margin_left, want_left),
+		"가운데 맞춤은 모든 상태 판에 같이 들어간다 — 눌러도 글자가 튀지 않는다")
+	var narrow := GoStyle.button("Continue with a very long provider name indeed")
+	root.add_child(narrow)
+	GoStyle.style_brand_button(narrow, Color.WHITE, Color.BLACK, Color("747775"), 24, 10, 12.0)
+	narrow.size = Vector2(120, 56)
+	check(near(GoStyle.center_button_content(narrow, 12.0), 12.0), "좁아도 여백은 지침 하한 아래로 내려가지 않는다")
+	var unsized := GoStyle.button("Zero")
+	check(GoStyle.center_button_content(unsized, 12.0) < 0.0, "폭이 아직 0 이면 아무것도 쓰지 않는다")
+	unsized.free()
+	# 🛑 아이콘을 판 여백 안으로 — 글자가 아이콘 위로 오지 않게 좌우를 같이 넓힌다(폰트 세트 경로)
+	var iconed := GoStyle.button("Log in with email")
+	brand_host.add_child(iconed)
+	GoStyle.apply_icon(iconed, &"gohud_test_no_such_icon", 24, GoUi.color(GoTheme.TEXT), 20.0)
+	var iconed_glyph := iconed.get_node_or_null("IconGlyph") as Control
+	check(iconed_glyph != null, "폰트 세트 경로 — 아이콘이 자식 라벨로 붙었다(이 판정이 아래 겹침 검사를 받쳐 준다)")
+	if iconed_glyph != null:
+		var iconed_face := iconed.get_theme_stylebox(&"normal")
+		check(near(iconed_glyph.offset_left, 20.0), "아이콘 글리프가 판 여백만큼 안으로 들어온다 (%.0f)" % iconed_glyph.offset_left)
+		check(iconed_face.content_margin_left >= iconed_glyph.offset_right,
+			"🛑 글자 여백이 아이콘 끝을 덮는다 — 좁은 전폭 버튼에서 글자가 아이콘 위로 오지 않는다 (%.0f ≥ %.0f)"
+				% [iconed_face.content_margin_left, iconed_glyph.offset_right])
+		check(near(iconed_face.content_margin_left, iconed_face.content_margin_right),
+			"좌우를 같이 넓힌다 — 글자가 여전히 가운데다")
+	# 조용한 버튼 — 판 없이 색만
+	var quiet := GoStyle.button("Terms", Callable(), GoStyle.Tone.BARE)
+	brand_host.add_child(quiet)
+	GoStyle.tint_button(quiet, GoUi.color(GoTheme.MUTED), GoUi.color(GoTheme.ACCENT))
+	check(quiet.get_theme_color(&"font_color") == GoUi.color(GoTheme.MUTED)
+		and quiet.get_theme_color(&"font_pressed_color") == GoUi.color(GoTheme.ACCENT)
+		and quiet.get_theme_color(&"icon_hover_color") == GoUi.color(GoTheme.ACCENT),
+		"조용한 버튼 — 평소는 muted, 누를 때 accent")
+	var kept := GoStyle.button("Notice", Callable(), GoStyle.Tone.BARE)
+	brand_host.add_child(kept)
+	GoStyle.typography(kept, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY))
+	GoStyle.tint_button(kept, Color.TRANSPARENT, GoUi.color(GoTheme.ACCENT))
+	check(kept.get_theme_color(&"font_color") == GoUi.color(GoTheme.SECONDARY),
+		"투명을 주면 그 색은 건드리지 않는다 — typography 가 준 평소 색이 남는다")
+	# 규격이 바깥에서 정해진 글자 크기
+	GoStyle.pin_font_size(brand, 18)
+	check(brand.get_theme_font_size(&"font_size") == 18, "규격 글자 크기를 픽셀로 못 박는다")
+	var rich := RichTextLabel.new()
+	brand_host.add_child(rich)
+	GoStyle.pin_font_size(rich, 13)
+	check(rich.get_theme_font_size(&"normal_font_size") == 13 and rich.get_theme_font_size(&"bold_font_size") == 13,
+		"RichTextLabel 은 네 가지 크기를 함께 박는다")
+	# 판 없는 컨테이너 · 알림 판
+	var plain := PanelContainer.new()
+	brand_host.add_child(plain)
+	GoStyle.bare_panel(plain)
+	check(plain.get_theme_stylebox(&"panel") is StyleBoxEmpty, "판을 그리지 않는 컨테이너 — 자리는 남고 상자만 사라진다")
+	var notice_box := PanelContainer.new()
+	brand_host.add_child(notice_box)
+	GoStyle.style_notice_panel(notice_box, GoUi.color(GoTheme.DANGER), 0.14)
+	var notice_face := notice_box.get_theme_stylebox(&"panel")
+	var want_bg := (GoUi.color(GoTheme.BACKGROUND) as Color).lerp(GoUi.color(GoTheme.DANGER), 0.14)
+	check(notice_face != null and GoSkin.box_background(notice_face).is_equal_approx(want_bg),
+		"알림 판 — 바탕을 의미색 쪽으로 당긴다(새 팔레트를 만들지 않는다)")
+	check(near(notice_face.content_margin_left, float(GoUi.metric(GoTheme.PADDING_COMPACT))),
+		"알림 판 여백 = padding_compact 토큰 (%.0f)" % notice_face.content_margin_left)
+	# 고정폭 글 상자
+	var code := RichTextLabel.new()
+	brand_host.add_child(code)
+	var mono := SystemFont.new()
+	mono.font_names = PackedStringArray(["monospace"])
+	GoStyle.style_mono_text(code, mono, Color(0, 0.5, 1, 0.35), Color.WHITE)
+	check(code.get_theme_font(&"normal_font") == mono, "고정폭 글 상자 — 부르는 쪽 글꼴을 쓴다(gohud 는 글꼴을 싣지 않는다)")
+	check(code.get_theme_color(&"selection_color") == Color(0, 0.5, 1, 0.35)
+		and code.get_theme_color(&"font_selected_color") == Color.WHITE,
+		"고른 영역 색 — 기본 밝은 회색에 밝은 글자가 묻히지 않게")
+	# 팝업 줄 간격
+	var menu := GoStyle.dropdown("Menu", ["One", "Two"])
+	brand_host.add_child(menu)
+	GoStyle.style_popup(menu.get_popup())
+	check(menu.get_popup().get_theme_constant(&"v_separation") == GoUi.metric(GoTheme.GAP),
+		"팝업 줄 간격 = gap 토큰 — 항목이 손가락보다 얇지 않다")
+	menu.get_popup().clear()
+	menu.get_popup().add_item("Three")
+	check(menu.get_popup().get_theme_constant(&"v_separation") == GoUi.metric(GoTheme.GAP),
+		"항목을 지우고 다시 채워도 줄 간격은 남는다")
+	narrow.queue_free()
+	brand_host.queue_free()
+	await frames(1)
+
 
 # ── 아이콘 버튼 ────────────────────────────────────────────────────────
 
@@ -937,8 +1061,23 @@ func _surface() -> void:
 	await frames(4)
 	var area := GoSafeArea.usable_rect(a.get_window())
 	check(a.card.size.y > short_height, "내용이 늘면 카드가 자란다 (%.0f → %.0f)" % [short_height, a.card.size.y])
+	# 🔑 `fit_content` 인 가운데 카드는 **기본 비율을 넘어** 내용이 들어갈 데까지 자란다 — 화면이 남는데
+	#    본문을 스크롤시키면, 스크롤이 있는 줄도 모르는 사용자가 안 보이는 칸을 비운 채 제출한다.
+	check(a.card.size.y > area.size.y * GoUi.config.surface_height_ratio,
+		"내용이 많으면 기본 비율(%d%%)을 넘어 자란다 (%.0f > %.0f)"
+			% [roundi(GoUi.config.surface_height_ratio * 100), a.card.size.y, area.size.y * GoUi.config.surface_height_ratio])
+	check(a.card.size.y <= area.size.y * GoUi.config.surface_fit_max_height_ratio + 1.0,
+		"높이 상한 %d%% (%.0f ≤ %.0f)" % [roundi(GoUi.config.surface_fit_max_height_ratio * 100),
+			a.card.size.y, area.size.y * GoUi.config.surface_fit_max_height_ratio])
+	# 🛑 그래도 화면을 **다 덮지는 않는다** — 위아래로 바깥이 보여야 "떠 있는 창" 으로 읽힌다.
+	check(a.card.size.y < area.size.y, "카드가 화면을 다 덮지 않는다 (%.0f < %.0f)" % [a.card.size.y, area.size.y])
+	# 끌어서 크기를 바꾸는 시트는 그 높이가 사용자의 선택이다 — 내용이 넘쳐도 늘리지 않는다.
+	a.resizable = true
+	a.relayout()
 	check(a.card.size.y <= area.size.y * GoUi.config.surface_max_height_ratio + 1.0,
-		"높이 상한 %d%% (%.0f ≤ %.0f)" % [roundi(GoUi.config.surface_max_height_ratio * 100), a.card.size.y, area.size.y * GoUi.config.surface_max_height_ratio])
+		"끌 수 있는 시트는 기본 상한을 지킨다 (%.0f)" % a.card.size.y)
+	a.resizable = false
+	a.relayout()
 	# 🛑 카드 크기·위치는 정수 — 가운데 정렬 위치가 소수면 크기가 "위치 + 크기" 로 저장되며 184 가 183.99997 이 되고,
 	#    안쪽 여백(MarginContainer)이 자식 크기를 정수로 내려 본문 칸이 1px 모자랐다(한 줄 본문 옆 스크롤바 · 2026-09-15 라리엔
 	#    폰 세로 창 실측 — 헤드리스 논리 크기로는 재현되지 않았다). 판정하는 동안만 홀수 상한을 줘 소수 위치가 나오게 한다.
@@ -958,6 +1097,51 @@ func _surface() -> void:
 	a.toolbar.visible = true
 	await frames(1)
 	check(a._desired_height() > desired + 40.0, "고정 줄(toolbar)도 원하는 높이에 들어간다 (%.0f → %.0f)" % [desired, a._desired_height()])
+
+	# ── 고정 알림 줄 — 「비밀번호가 다릅니다」가 스크롤 밖으로 숨지 않는다 ──
+	check(not a.status.visible and a.status_label == null, "알림 줄은 기본 숨김 · 노드도 없다")
+	var status_desired := a._desired_height()
+	a.set_status_text("오류가 있습니다", GoTheme.DANGER)
+	await frames(1)
+	check(a.status.visible and a.status_label != null and a.status_label.text == "오류가 있습니다",
+		"알림 줄이 뜬다")
+	check(not a.scroll.is_ancestor_of(a.status_label),
+		"🛑 알림 줄은 스크롤 **밖** 고정이다 — 긴 폼에서 오류가 화면 밖에 뜨면 아무 일도 없어 보인다")
+	# 본문(스크롤) **아래**, 바닥 줄 **위**. 🛑 자리는 카드 세로줄의 **차례**로 잰다 — 스크롤 칸은
+	#    글로우가 잘리지 않게 경계를 바깥으로 밀어 두어(`use_panel_edge`) 사각형으로 재면 겹쳐 보인다.
+	a.footer.visible = true
+	await frames(1)
+	var order := func(node: Control) -> int:
+		var ancestor := node
+		while ancestor != null and ancestor.get_parent() != a._column:
+			ancestor = ancestor.get_parent() as Control
+		return -1 if ancestor == null else ancestor.get_index()
+	check(order.call(a.status) > order.call(a.scroll) and order.call(a.status) < order.call(a.footer),
+		"알림 줄은 본문과 바닥 줄 사이 (본문 %d · 알림 %d · 바닥 %d)"
+			% [order.call(a.scroll), order.call(a.status), order.call(a.footer)])
+	check(a.status_label.get_global_rect().end.y <= a.footer.get_global_rect().position.y + 1.0,
+		"알림 줄이 바닥 버튼을 가리지 않는다")
+	check(a._desired_height() > status_desired, "알림 줄도 원하는 높이에 들어간다 (%.0f → %.0f)"
+		% [status_desired, a._desired_height()])
+	check(a.status_label.get_theme_color(&"font_color") == GoUi.color(GoTheme.DANGER), "알림 줄 색 토큰")
+	a.set_status_key("close")
+	await frames(1)
+	check(a.status_label.auto_translate_mode == Node.AUTO_TRANSLATE_MODE_ALWAYS, "번역 키로도 띄운다")
+	a.clear_status()
+	await frames(1)
+	check(not a.status.visible, "알림 줄을 감춘다")
+
+	# ── 드러내기 — 오류가 난 칸으로 데려간다 ──
+	var deep := GoStyle.line_edit("deep")
+	a.body.add_child(deep)
+	await frames(3)
+	a.scroll.scroll_vertical = 0
+	await frames(1)
+	await a.scroll.reveal(deep)
+	await frames(1)
+	var seen := a.scroll.get_global_rect().intersection(deep.get_global_rect())
+	check(seen.size.y >= deep.size.y - 1.0, "스크롤 밖 칸을 드러낸다 (보임 %.0f/%.0f)" % [seen.size.y, deep.size.y])
+	deep.queue_free()
 
 	a.placement = GoSurface.Placement.BOTTOM
 	a.relayout()
@@ -1635,6 +1819,27 @@ func _form() -> void:
 	if cap > 0.0 and area.size.x > cap: side = maxf(side, (area.size.x - cap) * 0.5)
 	check(near(form.get_theme_constant(&"margin_left"), roundf(area.position.x + side)), "좌우 여백 = 브레이크포인트 최대 폼 폭")
 	check(form.scroll == scroll, "Scroll 자식을 찾는다")
+
+	# ── 필드 묶음 — 라벨이 자기 칸에 붙는다 ──
+	var edit := GoStyle.line_edit("you@example.com")
+	var group := GoStyle.field("close", edit, "", true)
+	column.add_child(group)
+	GoStyle.form(column)
+	await frames(2)
+	check(group is VBoxContainer and group.get_child_count() == 2, "라벨 + 칸 한 묶음")
+	check(group.get_child(0) is Label and group.get_child(1) == edit, "라벨이 칸 위")
+	check(group.get_theme_constant(&"separation") == GoUi.metric(GoTheme.GAP_TINY),
+		"🛑 묶음 안은 `gap_tiny` — 폼이 덮어쓰지 않는다 (지금 %d)" % group.get_theme_constant(&"separation"))
+	check(column.get_theme_constant(&"separation") == GoUi.metric(GoTheme.GAP), "묶음 **사이**는 폼의 `gap`")
+	var gap_tiny := float(GoUi.metric(GoTheme.GAP_TINY))
+	check(edit.get_global_rect().position.y - (group.get_child(0) as Control).get_global_rect().end.y <= gap_tiny + 1.0,
+		"라벨과 칸이 붙어 있다")
+	var hinted := GoStyle.field("close", GoStyle.line_edit(), "back", true)
+	check(hinted.get_child_count() == 3 and hinted.get_child(2) is Label, "설명 줄을 주면 칸 아래에 붙는다")
+	check(GoStyle.field("", edit) == edit, "라벨도 설명도 없으면 컨트롤 그대로")
+	hinted.queue_free()
+	group.queue_free()
+	await frames(1)
 	# 🛑 **글로우가 잘리지 않을 자리.** 스크롤은 자기 경계에서 무조건 자르므로, 꽉 찬 폭 버튼의 왼쪽
 	#    글로우가 세로로 뚝 잘렸다(2026-09-13 사용자 지적). 스크롤 경계는 내용보다 좌·상·하로 넓어야
 	#    한다 — 오른쪽은 레일 자리가 이미 그 일을 한다.
@@ -2249,11 +2454,25 @@ func _own_symbols() -> Dictionary:
 	return known
 
 
+## 🛑 **저장소에 있다고 다 애드온인 것은 아니다.** 이 둘은 배포에 들어가지 않으면서 애드온
+##    코드처럼 생겨서, 스캔하면 검사가 **양쪽으로** 망가진다.
+##      · `builds/` — `package.sh` 가 남기는 옛 버전의 압축 푼 사본. 그 안의 `examples/demo/` 는
+##        `_standalone` 의 제외 경로(`ADDON + "/examples/demo/"`)와 문자열이 달라 걸러지지 않아
+##        **없는 실패를 만든다**(2026-09-16 실측: 498/499, 치우면 499/499).
+##      · `examples/usage/` — 애드온을 설치해 보는 **별도 프로젝트**다(자기 `project.godot` 을 가진다).
+##        그 안의 `res://` 는 그쪽 루트를 가리키고, 애드온 사본은 버전이 뒤처져 있어
+##        `_own_symbols()` 가 **이미 지운 이름까지 "자기 것" 으로 인정**해 검사를 무디게 만든다.
+const SKIP_DIRS := ["builds", "examples/usage"]
+
+
 func _files(dir: String, extensions: Array) -> PackedStringArray:
 	var found := PackedStringArray()
 	for file_name in DirAccess.get_files_at(dir):
 		if file_name.get_extension() in extensions: found.append(dir.path_join(file_name))
 	for sub in DirAccess.get_directories_at(dir):
 		if sub.begins_with("."): continue
-		found.append_array(_files(dir.path_join(sub), extensions))
+		var path := dir.path_join(sub)
+		# 애드온 루트 기준 상대 경로로 본다 — 같은 이름의 하위 폴더를 실수로 걸러 내지 않는다.
+		if SKIP_DIRS.has(path.trim_prefix(ADDON + "/")): continue
+		found.append_array(_files(path, extensions))
 	return found

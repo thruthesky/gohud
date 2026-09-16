@@ -69,6 +69,20 @@ func _ready() -> void:
 	theme = GoUi.theme()
 	_refresh_icon()
 	_refresh_tooltip()
+	GoUi.watch(_on_ui_changed)
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_on_ui_changed)
+
+
+## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
+## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다**(2026-09-16 실측).
+## 🔑 아이콘 **세트**가 통째로 바뀔 수 있다 — 같은 이름이 다른 그림·다른 방식(텍스처↔폰트)이 된다.
+func _on_ui_changed() -> void:
+	theme = GoUi.theme()
+	_refresh_icon()
+	_refresh_tooltip()
 
 
 ## 아이콘을 이름으로 정한다(`icon_name` 과 같지만 코드에서 부르기 좋은 이름).

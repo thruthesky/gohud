@@ -109,6 +109,20 @@ func _init() -> void:
 func _ready() -> void:
 	_restyle()
 	_refresh_text()
+	GoUi.watch(_on_ui_changed)
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_on_ui_changed)
+
+
+## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
+## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다.** 새로 만든 것과 나란히 놓여 한
+##    화면에 두 생김새가 섞인다(2026-09-16 실측: 프리셋을 바꿔도 HP 막대가 옛 강조색 그대로였고,
+##    퀵슬롯 판도 옛 색이었다 — 값은 바뀌었는데 아무도 다시 읽지 않았다).
+func _on_ui_changed() -> void:
+	_restyle()
+	_refresh_text()
 
 
 ## 값과 최대값을 정한다. 최대값이 0 이하면 막대는 비어 있는 것으로 본다.

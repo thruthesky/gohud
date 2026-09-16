@@ -136,6 +136,19 @@ func set_panel_padding(padding: int) -> void:
 	_sync_edge_inset()
 
 
+## 🔑 **이 자손을 화면에 드러낸다** — 「비밀번호가 다릅니다」의 그 칸처럼, 사용자를 고쳐야 할 자리로 데려갈 때.
+##
+## 🛑 `ensure_control_visible()` 을 그 자리에서 바로 부르면 빗나간다 — 오류 줄이 방금 생겨 카드 높이가
+##    아직 바뀌는 중이라, 엔진은 **옛 위치**를 기준으로 스크롤한다(2026-09-16 실측: 54% 만 드러났다).
+##    배치가 끝나는 두 프레임을 기다렸다가 부른다.
+func reveal(control: Control) -> void:
+	if not is_instance_valid(control) or not is_ancestor_of(control): return
+	for i in 2:
+		await get_tree().process_frame
+		if not (is_inside_tree() and is_instance_valid(control) and is_ancestor_of(control)): return
+	ensure_control_visible(control)
+
+
 ## 스크롤 칸 전체를 함께 보이고 숨긴다(가장자리 프레임까지).
 func set_section_visible(value: bool) -> void:
 	if _edge_frame != null: _edge_frame.visible = value

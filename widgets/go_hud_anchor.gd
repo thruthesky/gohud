@@ -99,6 +99,15 @@ func _ready() -> void:
 	child_entered_tree.connect(_watch_child)
 	for child in get_children(): _watch_child(child)
 	_relayout.call_deferred()
+	GoUi.watch(_relayout)
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_relayout)
+
+
+## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
+## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다**(2026-09-16 실측).
 
 
 ## 🛑 자식의 **최소 크기·보임 변화**를 듣는다 — 알림이 글자를 받아 커지거나, 숨었던 카드가 나타나도

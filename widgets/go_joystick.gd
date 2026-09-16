@@ -84,6 +84,20 @@ func _ready() -> void:
 			_center = size * 0.5
 			_knob = _center
 			queue_redraw())
+	GoUi.watch(_on_ui_changed)
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_on_ui_changed)
+
+
+## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
+## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다.** 새로 만든 것과 나란히 놓여 한
+##    화면에 두 생김새가 섞인다(2026-09-16 실측: 프리셋을 바꿔도 HP 막대가 옛 강조색 그대로였고,
+##    퀵슬롯 판도 옛 색이었다 — 값은 바뀌었는데 아무도 다시 읽지 않았다).
+## 🔑 조이스틱은 `_draw()` 에서 색과 스킨을 **그때그때 읽는다** — 다시 그리라고만 하면 된다.
+func _on_ui_changed() -> void:
+	queue_redraw()
 
 
 ## 지금 방향과 세기(길이 0~1). 매 프레임 폴링해도 된다.

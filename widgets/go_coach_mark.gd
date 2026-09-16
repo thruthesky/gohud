@@ -130,6 +130,9 @@ func _build() -> void:
 func _ready() -> void:
 	# `ink` 를 `new()` 뒤에 바꿨을 수 있다 — 색을 다시 입힌다.
 	_apply_accent()
+	# 🎨 생김새가 통째로 바뀌면(`GoUi.use_preset()`) 링·판·진행 글자를 다시 입힌다.
+	# 🛑 링은 `_draw()` 가 쓰는 캐시(`_ring`)라 다시 만들지 않으면 옛 스킨 모양이 그대로 남는다.
+	GoUi.watch(_on_ui_changed)
 
 
 func _apply_accent() -> void:
@@ -214,6 +217,12 @@ func _release_back() -> void:
 func _exit_tree() -> void:
 	_disconnect_target()
 	_release_back()
+	GoUi.unwatch(_on_ui_changed)
+
+
+func _on_ui_changed() -> void:
+	_apply_accent()
+	queue_redraw()
 
 
 func _process(delta: float) -> void:

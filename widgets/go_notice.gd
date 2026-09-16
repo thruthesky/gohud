@@ -45,6 +45,19 @@ func _ready() -> void:
 	theme = GoUi.theme()
 	add_theme_stylebox_override(&"panel", _surface())
 	set_process(_remaining > 0.0)
+	GoUi.watch(_on_ui_changed)
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_on_ui_changed)
+
+
+## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
+## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다**(2026-09-16 실측).
+func _on_ui_changed() -> void:
+	theme = GoUi.theme()
+	# 🔑 복합 내용(`set_content`)의 판은 그쪽 강조색을 갖고 있다 — 글자 알림일 때만 다시 만든다.
+	if not is_instance_valid(_content): add_theme_stylebox_override(&"panel", _surface())
 
 
 ## 그대로 보여 줄 문구. `tone` 은 색 토큰 이름(`GoTheme.SUCCESS` 등).

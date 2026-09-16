@@ -31,6 +31,9 @@ signal height_changed(ratio: float)
 
 enum Placement { CENTER, BOTTOM, ANCHOR }
 
+## 조밀한 밀도에서 보통으로 되돌아가는 문턱 — 이만큼 여유가 생겨야 여백을 되돌린다(떨림 방지).
+const RELAX := 0.85
+
 ## 지금 열려 있는 표면의 수. 게임 입력을 멈출지 판단할 때 쓴다.
 static var _open_count := 0
 ## 마지막 조작이 키보드·게임패드였는가. 🛑 포인터로 연 창에는 **포커스 링을 띄우지 않는다** —
@@ -87,11 +90,20 @@ var body: VBoxContainer
 var toolbar: VBoxContainer
 ## **고정 바닥 줄**(확인·취소). 기본은 숨김. 본문에 넣으면 긴 목록에서 화면 밖으로 나간다.
 var footer: VBoxContainer
+## 본문과 바닥 줄 사이의 **고정 알림 줄** — 「비밀번호가 다릅니다」처럼 **놓치면 안 되는 한 줄**.
+## 기본은 숨김이며 `set_status_*()` 로 켠다.
+## 🛑 이 줄을 본문에 두지 않는다 — 긴 폼에서 오류가 스크롤 밖에 뜨면 화면에는 **아무 일도 일어나지
+##    않은 것처럼** 보이고, 사용자는 "왜 안 되지" 하며 기다린다(2026-09-16 라리엔 계정 연결 실측).
+var status: VBoxContainer
+## 고정 알림 줄의 글자. 🛑 **처음 쓸 때 만든다** — 쓰지 않는 화면에는 노드가 늘지 않는다.
+var status_label: Label
 
 var _scrim: ColorRect
 var _column: VBoxContainer
 var _margin: MarginContainer
 var _content_padding := 0
+## 지금 조밀한 밀도인가(좁은 화면 또는 내용이 넘쳐서).
+var _dense := false
 var _active := false
 var _previous_focus: WeakRef
 var _dragging := false
@@ -184,6 +196,13 @@ func _build() -> void:
 	body.name = "Body"
 	_column.add_child(body)
 
+	status = GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	# 🛑 흔한 이름(`Status`)을 쓰지 않는다 — 호스트 화면이 제 상태 줄을 이름으로 찾을 때 이 칸이 **먼저**
+	#    잡혀 엉뚱한 노드를 돌려준다(2026-09-16 라리엔 프로필 화면 검사가 그렇게 깨졌다).
+	status.name = "StatusLine"
+	status.visible = false
+	_column.add_child(status)
+
 	footer = GoStyle.column()
 	footer.name = "Footer"
 	footer.visible = false
@@ -251,6 +270,42 @@ func set_back(action: Callable) -> void:
 		back_requested.disconnect(existing.callable)
 	if action.is_valid(): back_requested.connect(action)
 	back_button.visible = action.is_valid()
+
+
+# ── 고정 알림 줄 ───────────────────────────────────────────────────────
+
+## 이미 번역된 한 줄을 바닥 줄 위에 고정으로 띄운다. 빈 문자열이면 줄을 감춘다.
+## `tone` 은 색 토큰(`GoTheme.DANGER`·`WARNING`·`SUCCESS`·`MUTED` …) — 비우면 본문 색.
+func set_status_text(text: String, tone := StringName()) -> void:
+	_set_status(text, tone, false)
+
+
+## 번역 키로 — 언어가 바뀌면 엔진이 다시 그린다.
+func set_status_key(key: String, tone := StringName()) -> void:
+	_set_status(key, tone, true)
+
+
+## 알림 줄을 감춘다.
+func clear_status() -> void:
+	_set_status("", StringName(), false)
+
+
+func _set_status(text: String, tone: StringName, translate: bool) -> void:
+	if text.is_empty():
+		if status_label != null: status_label.text = ""
+		status.visible = false
+		return
+	if status_label == null:
+		status_label = GoStyle.label("", GoTheme.ROLE_CAPTION)
+		status_label.name = "StatusLineText"
+		status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		status.add_child(status_label)
+	status_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	status_label.text = text
+	GoStyle.typography(status_label, GoTheme.ROLE_CAPTION,
+		GoUi.color(tone) if tone != StringName() else Color.TRANSPARENT)
+	status.visible = true
 
 
 ## 본문을 비운다.
@@ -370,10 +425,10 @@ func _exit_tree() -> void:
 
 func relayout() -> void:
 	if card == null or not is_inside_tree(): return
-	_update_density()
 	var settings := GoUi.config
 	var area := GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px)
 	if placement == Placement.ANCHOR and is_instance_valid(anchor_control) and anchor_control.is_inside_tree():
+		_update_density()
 		_relayout_anchor(area)
 		return
 	# 화면 가장자리에서 최소한 이만큼은 떨어진다 — 아주 좁은 화면에서는 비율로 줄인다.
@@ -386,7 +441,18 @@ func relayout() -> void:
 	var ratio := height_ratio if height_ratio > 0.0 else settings.surface_height_ratio
 	var width := maxf(1.0, minf(cap_width, area.size.x * width_ratio))
 	var height := maxf(1.0, minf(cap_height, area.size.y * minf(ratio, settings.surface_max_height_ratio)))
-	if fit_content: height = maxf(1.0, minf(height, _desired_height()))
+	if fit_content:
+		# 🔑 내용이 짧으면 줄이고, **길면 화면이 허락하는 데까지 늘린다.** 남은 화면을 두고 스크롤시키면
+		#    스크롤이 있다는 것조차 모르는 사용자가 안 보이는 칸을 비운 채 제출한다(`surface_fit_max_height_ratio`).
+		#    🛑 끌어서 크기를 바꾸는 시트·아래에서 올라온 시트는 그 높이가 사용자의 선택이므로 늘리지 않는다.
+		var room := height
+		if placement == Placement.CENTER and not resizable:
+			room = maxf(room, minf(cap_height, area.size.y * settings.surface_fit_max_height_ratio))
+		# 넘칠 것 같으면 여백·간격을 한 단계 줄여 본다 — 줄이고 나서 다시 잰다.
+		_update_density(room)
+		height = clampf(_desired_height(), 1.0, room)
+	else:
+		_update_density()
 	# 🛑 크기·위치는 정수로 준다 — 소수 위치(가운데 정렬 · 논리 349.09 폭)면 크기가 "위치 + 크기" 로 저장되며 184 가 183.99997 이 되고,
 	#    카드 안쪽 여백(MarginContainer)이 자식 크기를 정수로 내려 본문 칸이 1px 모자랐다 — 첫 확인창의 한 줄 본문 옆에 스크롤바가 떴다
 	#    (2026-09-15 라리엔 폰 세로 창 실측 · 헤드리스 논리 크기로는 재현되지 않는다).
@@ -396,8 +462,15 @@ func relayout() -> void:
 
 
 ## 좁아지면 여백과 제목 크기를 한 단계 줄인다 — 작은 화면에서 내용이 들어갈 자리를 만든다.
-func _update_density() -> void:
+##
+## `room` 을 주면(0 보다 크면) **내용이 그 높이를 넘칠 때도** 한 단계 줄인다 — 가상 키보드가 절반을
+## 가린 폼처럼, 화면은 넓지 않은데 꼭 다 보여야 하는 경우다.
+## 🛑 되돌아갈 때는 넉넉해져야 한다(`RELAX`) — 딱 경계에서 재면 여백을 줄였다 늘렸다 하며 떨린다.
+func _update_density(room := 0.0) -> void:
 	var small := compact or get_viewport_rect().size.y < 420
+	if not small and room > 0.0:
+		small = _desired_height() > (room * RELAX if _dense else room)
+	_dense = small
 	var token := GoTheme.PADDING_COMPACT if small else GoTheme.PADDING
 	var next := GoUi.metric(token)
 	if _content_padding != next:
@@ -429,6 +502,7 @@ func _desired_height() -> float:
 	if header.visible: desired += header.get_combined_minimum_size().y + gap
 	if toolbar.visible: desired += toolbar.get_combined_minimum_size().y + gap
 	desired += body.get_combined_minimum_size().y
+	if status.visible: desired += status.get_combined_minimum_size().y + gap
 	if footer.visible: desired += footer.get_combined_minimum_size().y + gap
 	return desired
 

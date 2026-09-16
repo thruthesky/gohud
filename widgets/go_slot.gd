@@ -96,9 +96,27 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	_adopt_theme()
+	GoUi.watch(_on_ui_changed)
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_on_ui_changed)
+
+
+func _adopt_theme() -> void:
 	theme = GoUi.theme()
 	var touch := GoUi.config.min_touch_size
 	custom_minimum_size = Vector2(touch, touch)
+
+
+## 🎨 생김새가 통째로 바뀌었다 — `GoUi.use_preset()`·`GoUi.refresh()` 가 부른다.
+## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다**(2026-09-16 실측).
+func _on_ui_changed() -> void:
+	_adopt_theme()
+	# 🛑 아이콘 세트도 바뀌었을 수 있다 — 글리프를 다시 짓고서 색을 입힌다.
+	_rebuild_icon()
+	refresh()
 
 	_face = Panel.new()
 	_face.name = "Face"

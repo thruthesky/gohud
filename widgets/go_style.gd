@@ -88,18 +88,39 @@ static func foldable(title: String, folded := false, group: FoldableGroup = null
 	return node
 
 
-## 안쪽 여백 한 겹.
-static func padding(amount := -1) -> MarginContainer:
+## 안쪽 여백 한 겹. [param vertical] 을 주면 위·아래만 그 값이다(좌우는 [param amount]) —
+## 옆은 넉넉하고 위아래는 좁아야 하는 한 줄 목록 칸용이다. 음수면 네 변이 같다.
+static func padding(amount := -1, vertical := -1) -> MarginContainer:
 	var node := MarginContainer.new()
-	insets(node, amount)
+	insets(node, amount, vertical)
 	return node
 
 
-## 이미 있는 `MarginContainer` 의 네 변 여백을 한 번에.
-static func insets(node: MarginContainer, amount := -1) -> void:
+## 이미 있는 `MarginContainer` 의 네 변 여백을 한 번에. [param vertical] 은 `padding()` 과 같다.
+static func insets(node: MarginContainer, amount := -1, vertical := -1) -> void:
 	var value := GoUi.metric(GoTheme.PADDING) if amount < 0 else amount
-	for side in [&"margin_left", &"margin_right", &"margin_top", &"margin_bottom"]:
+	for side in [&"margin_left", &"margin_right"]:
 		node.add_theme_constant_override(side, value)
+	var down := value if vertical < 0 else vertical
+	for side in [&"margin_top", &"margin_bottom"]:
+		node.add_theme_constant_override(side, down)
+
+
+## **한쪽에 의미색 띠만 세운 카드 판** — 목록에 상태를 표시하되 색면이 줄줄이 쌓이지 않게 한다.
+##
+## 🔑 카드 배경 전체를 상태색으로 칠하면 목록에서 색면이 겹겹이 쌓여 **무엇이 급한지 알 수 없다.**
+##    배경은 공용 카드 그대로 두고 글이 시작하는 쪽 모서리에 띠 하나만 세운다.
+## 🛑 판은 글의 방향을 모른다 — RTL(아랍어·우르두)에서는 띠가 **오른쪽**에 서야 하므로,
+##    카드를 만드는 쪽이 `Control.is_layout_rtl()` 을 읽어 [param rtl] 로 알려준다.
+## [param width] 음수면 작은 간격 토큰.
+static func edge_card(accent: Color, rtl := false, width := -1.0) -> StyleBoxFlat:
+	var style := box(GoTheme.BOX_CARD)
+	var thick := int(width if width >= 0.0 else float(GoUi.metric(GoTheme.GAP_TINY)))
+	style.set_border_width_all(0)
+	if rtl: style.border_width_right = thick
+	else: style.border_width_left = thick
+	style.border_color = Color(accent, 0.9)
+	return style
 
 
 ## 컨테이너의 자식 간격을 토큰으로.
@@ -110,6 +131,33 @@ static func gap(node: Container, token := GoTheme.GAP) -> void:
 		node.add_theme_constant_override(&"v_separation", value)
 	else:
 		node.add_theme_constant_override(&"separation", value)
+
+
+## 🔑 **간격을 값으로 직접** 준다 — 토큰으로 표현되지 않는 HUD 기하 전용이다.
+##
+## 🛑 `gap()` 을 쓸 수 없는 자리가 둘 있다. ① **음수 간격** — 터치 상자를 일부러 겹쳐 놓는 줄(퀵슬롯이
+##    48 폭인데 중심 간격이 40 이면 −8 이다). ② **0** — 붙여 그려야 이음매가 없는 줄. 토큰에는 그런 값이
+##    없고, 있어서도 안 된다(토큰은 읽는 리듬이지 손가락 기하가 아니다).
+## [param vertical] 을 주지 않으면 가로와 같은 값이다. 세로 상자는 `separation` 하나만 쓴다.
+static func spacing(node: Container, horizontal: int, vertical := -9999) -> void:
+	var down := horizontal if vertical == -9999 else vertical
+	if node is GridContainer or node is FlowContainer:
+		node.add_theme_constant_override(&"h_separation", horizontal)
+		node.add_theme_constant_override(&"v_separation", down)
+	elif node is VBoxContainer:
+		node.add_theme_constant_override(&"separation", down)
+	else:
+		node.add_theme_constant_override(&"separation", horizontal)
+
+
+## 🔑 **변마다 다른 여백** — `insets()` 는 네 변을 같은 값으로 두지만, 화면 가장자리에 붙는 HUD 는
+## 한두 변만 띄운다(왼쪽·아래만 주는 물약 줄). 음수인 변은 **건드리지 않는다**(`face_padding` 과 같은 약속).
+static func edge_insets(node: MarginContainer, left := -1, top := -1, right := -1, bottom := -1) -> void:
+	if node == null: return
+	var sides := {&"margin_left": left, &"margin_top": top, &"margin_right": right, &"margin_bottom": bottom}
+	for side: StringName in sides:
+		var value: int = sides[side]
+		if value >= 0: node.add_theme_constant_override(side, value)
 
 
 ## 남는 공간을 먹는 빈 칸 — 줄의 한쪽을 끝으로 밀 때.
@@ -207,6 +255,78 @@ static func typography(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TR
 	else:
 		node.remove_theme_font_size_override(&"font_size")
 	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
+
+
+## 🔑 **글자 크기(와 색)만** 역할 토큰으로 정한다 — `theme_type_variation` 은 건드리지 않는다.
+##
+## `typography()` 는 변형까지 갈아 끼우므로 **변형이 판을 정하는 노드**(버튼·분절 칸)에는 쓸 수 없다 —
+## 거기 쓰면 버튼 판이 통째로 사라진다. 한 칸 안에서 글자를 작은 캡션으로 줄이거나, `glyph_text()` 로
+## 아이콘 글꼴을 입혔던 칸을 **본래 글꼴로 되돌릴** 때 쓴다(글꼴 override 를 지운다).
+static func font_role(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> void:
+	if node == null: return
+	node.theme = GoUi.theme()
+	node.remove_theme_font_override(&"font")
+	node.add_theme_font_size_override(&"font_size", GoUi.font_size(role))
+	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
+
+
+## 🔑 **글자 그림자** — 월드·그림·사진 위에 바로 얹히는 글자가 배경에 묻히지 않게 한 칸 뒤로 그림자를 깐다
+## (HUD 의 이름·레벨처럼 판 없이 뜨는 글자). 판 위의 글자에는 쓰지 않는다 — 판이 이미 대비를 만든다.
+##
+## [param ink] 의 알파가 0 이면 토큰 `shadow`. [param offset_y]·[param offset_x] 는 dp 이고, **음수면 그 축을 건드리지
+## 않는다**(테마가 정한 값을 그대로 둔다) — 세로로만 한 칸 내리는 것이 기본이다.
+static func text_shadow(node: Control, ink := Color.TRANSPARENT, offset_y := 1, offset_x := -1) -> void:
+	if node == null: return
+	node.add_theme_color_override(&"font_shadow_color", ink if ink.a > 0 else GoUi.color(GoTheme.SHADOW))
+	if offset_y >= 0: node.add_theme_constant_override(&"shadow_offset_y", offset_y)
+	if offset_x >= 0: node.add_theme_constant_override(&"shadow_offset_x", offset_x)
+
+
+## 🔑 **노드의 글자 자체를 아이콘 글리프로** 삼는다 — 글꼴을 아이콘 세트의 글꼴로 바꾸고 `text` 에 글리프를 넣는다.
+##
+## `apply_icon()` 은 자식 라벨을 더하지만, 이것은 **글자 한 칸이 곧 아이콘**인 자리용이다(지도 위 알약의 글리프 칸,
+## 원판 버튼처럼 부르는 쪽이 칸 폭을 글꼴로 재서 배치하는 곳). 아이콘을 둘 이상 주면 한 칸 띄워 잇는다
+## (목록 + 꺾쇠 = "펼치는 목록").
+## [param size] 음수면 `icon_size` 토큰. 본래 글자로 되돌릴 때는 `font_role()` 을 부른다.
+## [param set] 을 주면 그 세트에서 찾는다 — 같은 이름을 **채운 모양**으로 그리는 두 번째 세트처럼, 한 화면이
+## 세트를 갈아 쓰는 자리를 위한 것이다. 비우면 설정의 기본 세트다.
+## 🛑 텍스처만 있는 아이콘은 글리프가 없어 건너뛴다 — 그런 아이콘은 `apply_icon()`·`icon_button()` 이 맡는다.
+static func glyph_text(node: Control, icons: Array, size := -1, ink := Color.TRANSPARENT,
+		set: GoIconSet = null) -> void:
+	if node == null: return
+	var marks := set if set != null else GoUi.icons()
+	if marks == null: return
+	var parts := PackedStringArray()
+	var font: Font = null
+	for icon in icons:
+		var mark := marks.glyph(icon as StringName)
+		if mark.is_empty(): continue
+		parts.append(mark)
+		if font == null: font = marks.glyph_font(icon as StringName)
+	node.theme = GoUi.theme()
+	node.set(&"text", " ".join(parts))
+	if font != null: node.add_theme_font_override(&"font", font)
+	node.add_theme_font_size_override(&"font_size", GoUi.metric(GoTheme.ICON_SIZE) if size < 0 else size)
+	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
+
+
+## `glyph_text()` 가 그릴 글자의 **폭**(dp). 칸을 접을지 말지를 노드에 되묻지 않고 미리 재는 자리에 쓴다.
+##
+## 🛑 **버튼에 되묻지 않는다** — 버튼의 최소 폭은 지금 글자인지 글리프인지에 따라 달라, 되물으면 판정이 제
+##    결과를 입력으로 받아 두 모양을 오간다. 두 모양을 모두 글꼴로 재서 비교한다.
+static func glyph_width(icons: Array, size := -1, set: GoIconSet = null) -> float:
+	var marks := set if set != null else GoUi.icons()
+	if marks == null: return 0.0
+	var parts := PackedStringArray()
+	var font: Font = null
+	for icon in icons:
+		var mark := marks.glyph(icon as StringName)
+		if mark.is_empty(): continue
+		parts.append(mark)
+		if font == null: font = marks.glyph_font(icon as StringName)
+	if font == null or parts.is_empty(): return 0.0
+	return font.get_string_size(" ".join(parts), HORIZONTAL_ALIGNMENT_LEFT, -1.0,
+		GoUi.metric(GoTheme.ICON_SIZE) if size < 0 else size).x
 
 
 ## **번역 키**를 담는 라벨 — 언어가 바뀌면 엔진이 알아서 다시 그린다.
@@ -372,7 +492,14 @@ static func icon_button(icon: StringName, action := Callable(), visual := -1,
 
 ## 버튼에 아이콘을 붙인다 — 텍스처 세트면 `Button.icon`, 폰트 세트면 자식 라벨로 간다.
 ## 🛑 한 버튼에 아이콘 폰트와 본문 폰트를 같이 쓸 방법은 자식 라벨뿐이다(`text` 의 폰트는 하나다).
-static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.TRANSPARENT) -> void:
+##
+## [param inset] 는 **폰트 세트의 글리프**를 버튼 왼쪽 경계에서 그만큼 안으로 들이고(판 여백 안에 놓이게),
+## 글자가 그 위로 오지 않게 좌우 글자 여백을 아이콘 끝 + `gap_small` 까지 넓힌다. 음수면 지금까지처럼
+## 경계에 붙이고 판도 건드리지 않는다. 텍스처 세트는 버튼이 아이콘 자리를 따로 잡으므로 해당 없다.
+## 🛑 좌우를 **같이** 넓힌다 — 한쪽만 넓히면 가운데 정렬 글자가 아이콘 쪽으로 밀려 오히려 겹친다
+##    (2026-09-13 좁은 전폭 버튼 실측: `Log in with email` 이 ✉ 위에 얹혀 "Lg in with email" 로 읽혔다).
+static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.TRANSPARENT,
+		inset := -1.0) -> void:
 	var px := GoUi.metric(GoTheme.ICON_SIZE) if size < 0 else size
 	var found := GoUi.icons().texture(icon)
 	if found != null:
@@ -392,6 +519,127 @@ static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.
 	glyph.name = "IconGlyph"
 	glyph.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT, Control.PRESET_MODE_MINSIZE)
 	node.add_child(glyph)
+	if inset < 0.0: return
+	glyph.offset_left += inset
+	glyph.offset_right += inset
+	var room := glyph.offset_right + float(GoUi.metric(GoTheme.GAP_SMALL))
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		var face := node.get_theme_stylebox(state)
+		if face == null: continue
+		var plate := face.duplicate() as StyleBox
+		plate.content_margin_left = maxf(face.content_margin_left, room)
+		plate.content_margin_right = maxf(face.content_margin_right, room)
+		node.add_theme_stylebox_override(state, plate)
+
+
+## 🔑 **바깥 규격이 정해 준 브랜드 버튼** — 플랫폼 제공자의 로그인 버튼(Sign in with Google·Apple 등)처럼
+## 판 색·테두리·마크 크기를 **심사 규격이 못 박은** 자리다. gohud 는 자리와 상태만 맡고 값은 부르는 쪽이 준다 —
+## 🛑 스킨·팔레트가 이 색을 바꾸면 안 되므로 토큰을 쓰지 않는다. 규격 원문을 옮겨 적는 것은 호스트의 몫이다.
+##
+## [param fill] 판 바탕 · [param ink] 글자색 · [param edge] 1dp 테두리색.
+## [param mark] 는 마크의 `icon_max_width`(음수면 그대로) · [param gap] 은 마크와 글자 사이(음수면 그대로) ·
+## [param inset] 은 판 **좌우** 안쪽 여백(음수면 그대로 · 위아래는 0 으로 둔다 — 높이는 부르는 쪽이 정한다).
+## [param base] 를 주면 그 판을 복제해 **모양(둥글기)** 을 물려받는다 — 같은 화면의 다른 버튼과 한 묶음으로 보이게.
+## [param mark_ink] 는 마크 색이며 기본은 흰색이다 — 여러 색으로 된 공식 마크(Google 의 4색 G)가 테마 색에 물들지 않게.
+##
+## 올림·눌림은 어두운 판이면 밝히고 밝은 판이면 어둡게 하며(제공자 배포본과 같은 되먹임), 비활성은 회색 쪽으로
+## 당기고, 포커스 판은 **속을 비워** 테두리만 남긴다(공용 포커스 링이 그 위에 그려진다).
+## 🛑 마크와 글자를 함께 판 가운데 세우려면 폭이 정해진 뒤 [method center_button_content] 를 부른다.
+static func style_brand_button(node: Button, fill: Color, ink: Color, edge: Color,
+		mark := -1, gap := -1, inset := -1.0, base: StyleBox = null, mark_ink := Color.WHITE) -> void:
+	var source := base if base != null else node.get_theme_stylebox(&"normal")
+	if source == null: source = surface(GoTheme.BOX_CARD)
+	# 🔑 어두운 판인가로 되먹임 방향을 가른다 — 검정 판(Apple)은 밝히고 흰 판(Google)은 어둡게.
+	var dark := fill.get_luminance() < 0.5
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		var face := source.duplicate() as StyleBox
+		var back := fill
+		if state == &"hover" or state == &"pressed" or state == &"hover_pressed":
+			back = fill.lightened(0.18) if dark else fill.darkened(0.06)
+		elif state == &"disabled":
+			back = fill.lerp(Color(0.5, 0.5, 0.5), 0.35)
+		if &"bg_color" in face: face.set(&"bg_color", back)
+		if state == &"focus" and &"draw_center" in face: face.set(&"draw_center", false)
+		if &"border_color" in face: face.set(&"border_color", edge)
+		if face is StyleBoxFlat: (face as StyleBoxFlat).set_border_width_all(1)
+		elif &"border_width" in face: face.set(&"border_width", 1.0)
+		if &"shadow_size" in face: face.set(&"shadow_size", 0)
+		if inset >= 0.0:
+			face.content_margin_left = inset
+			face.content_margin_right = inset
+			face.content_margin_top = 0.0
+			face.content_margin_bottom = 0.0
+		node.add_theme_stylebox_override(state, face)
+	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color", &"font_disabled_color"]:
+		node.add_theme_color_override(key, ink)
+	for key in [&"icon_normal_color", &"icon_hover_color", &"icon_pressed_color", &"icon_hover_pressed_color",
+			&"icon_focus_color", &"icon_disabled_color"]:
+		node.add_theme_color_override(key, mark_ink)
+	if mark >= 0: node.add_theme_constant_override(&"icon_max_width", mark)
+	if gap >= 0: node.add_theme_constant_override(&"h_separation", gap)
+	node.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	node.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+
+
+## 🔑 **마크와 글자를 함께 판 가운데** 세운다 — 제공자 배포 버튼의 모양이다.
+## 🛑 `icon_alignment = CENTER` 를 쓰지 않는다 — 엔진은 마크를 글자 **위에 겹쳐** 그린다(2026-09-14 실측
+##    "Sign in w●th Apple"). 대신 글자를 왼쪽에 두고 **왼쪽 여백 = (폭 − 마크 − 간격 − 글자 폭) / 2** 를 판에 넣는다.
+## 폭이 바뀔 때(`resized`) · 언어가 바뀔 때 · 마크가 늦게 붙을 때 다시 부른다.
+## 🔑 같은 값이면 판을 건드리지 않는다 — 여백을 바꾸면 최소 크기가 바뀌어 `resized` 가 다시 오는 되돌이가 생긴다.
+## [param min_inset] 음수면 판이 가진 왼쪽 여백이 하한이다. 돌려주는 값은 넣은 왼쪽 여백(폭이 아직 0 이면 -1).
+static func center_button_content(node: Button, min_inset := -1.0) -> float:
+	if node == null or not is_instance_valid(node) or node.size.x <= 0.0: return -1.0
+	var face := node.get_theme_stylebox(&"normal")
+	var lower := min_inset
+	if lower < 0.0: lower = face.content_margin_left if face != null else 0.0
+	var mark := float(node.get_theme_constant(&"icon_max_width") + node.get_theme_constant(&"h_separation"))
+	var text := node.get_theme_font(&"font").get_string_size(node.atr(node.text), HORIZONTAL_ALIGNMENT_LEFT, -1,
+			node.get_theme_font_size(&"font_size")).x
+	var left := maxf(lower, floorf((node.size.x - mark - text) * 0.5))
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		var plate := node.get_theme_stylebox(state)
+		if plate != null and not is_equal_approx(plate.content_margin_left, left):
+			plate.content_margin_left = left
+	return left
+
+
+## 🎨 **판 없이 글자·아이콘 색만** 정한다 — 링크 줄·조용한 메뉴처럼 배경을 그리지 않고 색으로만 상태를 말하는 버튼.
+## [param ink] 는 평소 색, [param active] 는 올림·눌림·포커스 색이다. 투명인 쪽은 건드리지 않는다 —
+## 평소 색을 `typography()` 로 이미 준 버튼에는 [param active] 만 준다.
+static func tint_button(node: Button, ink := Color.TRANSPARENT, active := Color.TRANSPARENT) -> void:
+	if ink.a > 0:
+		node.add_theme_color_override(&"font_color", ink)
+		node.add_theme_color_override(&"icon_normal_color", ink)
+	if active.a > 0:
+		for key in [&"font_hover_color", &"font_pressed_color", &"font_focus_color",
+				&"icon_hover_color", &"icon_pressed_color", &"icon_focus_color"]:
+			node.add_theme_color_override(key, active)
+
+
+## 🛑 글자 크기를 **픽셀로 못 박는다** — 규격이 바깥에서 정해진 자리(높이 대비 글자 비율이 지침인 공식 로그인
+##    버튼 등)에만 쓴다. 보통은 `typography()` 의 역할을 쓴다 — 역할은 테마 교체·모바일 축소를 따라가고,
+##    여기서 박은 값은 따라가지 않는다. `RichTextLabel` 은 네 가지 크기를 함께 박는다.
+static func pin_font_size(node: Control, size: int) -> void:
+	if node is RichTextLabel:
+		for key in [&"normal_font_size", &"bold_font_size", &"italics_font_size", &"bold_italics_font_size"]:
+			node.add_theme_font_size_override(key, size)
+		return
+	node.add_theme_font_size_override(&"font_size", size)
+
+
+## 🧾 **고정폭 글 상자** — 진단 코드·로그처럼 글자가 어긋나면 안 되고 골라서 복사할 수 있어야 하는 자리.
+## [param font] 은 부르는 쪽이 고른 고정폭 글꼴이다 — 🛑 gohud 는 글꼴을 싣지 않는다(기기에 있는 것을 찾는
+## `SystemFont` 를 쓰거나 호스트가 자기 글꼴을 넘긴다).
+## [param selection] 은 고른 영역의 바탕색, [param selected_ink] 는 그 위 글자색이다(투명이면 그대로 둔다) —
+## 🛑 기본 선택 바탕은 밝은 회색이라 밝은 글자가 묻힌다.
+static func style_mono_text(node: RichTextLabel, font: Font, selection := Color.TRANSPARENT,
+		selected_ink := Color.TRANSPARENT) -> void:
+	if font != null:
+		for key in [&"normal_font", &"bold_font", &"italics_font", &"bold_italics_font"]:
+			node.add_theme_font_override(key, font)
+	if selection.a > 0: node.add_theme_color_override(&"selection_color", selection)
+	if selected_ink.a > 0: node.add_theme_color_override(&"font_selected_color", selected_ink)
 
 
 ## 🔑 **아이콘 한 개 + 글자 한 줄의 목록 항목.** 메뉴·설정처럼 세로로 쌓는 곳에 쓴다.
@@ -477,6 +725,39 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 
 
 # ── 입력 ───────────────────────────────────────────────────────────────
+
+## 🔑 **라벨 + 입력칸을 한 묶음으로.** 폼의 한 줄(필드)을 만든다.
+##
+## ```gdscript
+## body.add_child(GoStyle.field("fieldEmail", GoStyle.line_edit("you@example.com")))
+## ```
+##
+## 🛑 **라벨은 자기 입력칸에 붙어 있어야 한다.** 라벨·칸·라벨·칸을 같은 간격(`gap`)으로 쌓으면
+##    어느 라벨이 어느 칸의 것인지 읽는 사람이 매번 판단해야 하고, 칸마다 여덟 픽셀씩 세로를
+##    낭비해 마지막 칸이 화면 밖으로 밀린다(2026-09-16 라리엔 계정 연결 폼 실측).
+##    묶음 안은 `gap_tiny`, 묶음 사이는 폼의 `gap` 이다.
+##
+## `key` 가 비면 라벨 없이 컨트롤만 돌려준다. `hint` 를 주면 칸 아래에 작은 설명 줄이 붙는다.
+static func field(key: String, control: Control, hint := "", translate := true) -> Control:
+	if key.is_empty() and hint.is_empty(): return control
+	var group := column(GoUi.metric(GoTheme.GAP_TINY))
+	group.name = "Field"
+	# 🛑 폼이 자식 상자의 간격을 한꺼번에 `gap` 으로 맞추므로, 이 묶음만은 제 간격을 지킨다고 표시한다.
+	group.set_meta(&"go_own_spacing", true)
+	if not key.is_empty():
+		var caption := label_key(key, GoTheme.ROLE_CAPTION) if translate else label(key, GoTheme.ROLE_CAPTION)
+		caption.name = "FieldLabel"
+		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		group.add_child(caption)
+	group.add_child(control)
+	if not hint.is_empty():
+		var note := label_key(hint, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)) if translate \
+			else label(hint, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+		note.name = "FieldHint"
+		note.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		group.add_child(note)
+	return group
+
 
 static func line_edit(placeholder := "", translate_placeholder := false) -> LineEdit:
 	var node := LineEdit.new()
@@ -586,13 +867,17 @@ static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 
 
 ## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다. 위 `box()` 와 같은 약속이다.
-static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT) -> StyleBoxFlat:
+## [param opaque] 는 판을 배경색으로 **꽉 채운다** — 월드가 비쳐 글자가 안 읽히는 자리(HUD 위 알림 줄)용이다.
+## [param pad] 는 판 안쪽 여백(음수면 스킨 값 그대로 · `face_padding` 과 같다).
+static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, opaque := false, pad := -1.0) -> StyleBoxFlat:
 	var style := GoUi.skin().floating_box(variant, accent) as StyleBoxFlat
 	if style == null:
 		style = box(variant, accent)
 		style.shadow_color = Color(GoUi.color(GoTheme.SHADOW), 0.35)
 		style.shadow_size = GoUi.metric(GoTheme.GAP_SMALL)
 		style.shadow_offset = Vector2(0, 2)
+	if opaque: style.bg_color = GoUi.color(GoTheme.BACKGROUND)
+	face_padding(style, pad, pad)
 	return style
 
 
@@ -612,13 +897,136 @@ static func disc(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha 
 
 
 ## 테두리가 있는 카드 한 장(내용은 부르는 쪽이 채운다).
-static func card(accent := Color.TRANSPARENT) -> PanelContainer:
+##
+## [param border_alpha]·[param border_width] 는 강조 테두리의 **진하기와 굵기**다(음수면 스킨 판이 가진 값 그대로) —
+## 같은 목록에서 한 장만 도드라지게 할 때 쓴다(마지막에 고른 것·지금 쓰는 것·주의를 끄는 안내 카드).
+## [param pad] 는 판 안쪽 여백이다(음수면 스킨 그대로). 🛑 그 위에 `padding()` 칸을 **또** 두르지 말 것 —
+## 여백이 두 겹이 되어 좁은 칸의 말줄임 글자가 통째로 사라진다(`hud_panel()` 과 같은 함정).
+## 🔑 판은 `surface()` 에서 온다 — 각진 판·중세 판 테마에서도 그 모양 그대로 색·굵기·여백만 바뀐다.
+static func card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0,
+		pad := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "Card"
 	node.theme = GoUi.theme()
 	node.theme_type_variation = GoTheme.VAR_CARD
-	if accent.a > 0: node.add_theme_stylebox_override(&"panel", surface(GoTheme.BOX_CARD, accent))
+	if accent.a <= 0 and border_alpha < 0.0 and border_width < 0.0 and pad < 0.0: return node
+	var face := surface(GoTheme.BOX_CARD, accent)
+	_face_border(face, accent if border_alpha >= 0.0 else Color.TRANSPARENT, border_alpha, border_width)
+	if pad >= 0.0: face.set_content_margin_all(pad)
+	node.add_theme_stylebox_override(&"panel", face)
 	return node
+
+
+## 판의 테두리 색·굵기를 덮는다 — 스킨 판 종류를 가정하지 않는다(평판은 네 변, 커스텀 판은 `border_width` 하나).
+## [param ink] 의 알파가 0 이거나 [param alpha] 가 음수면 색을 두지 않고, [param width] 가 음수면 굵기를 두지 않는다.
+static func _face_border(face: StyleBox, ink: Color, alpha: float, width: float) -> void:
+	if face == null: return
+	if ink.a > 0 and alpha >= 0.0 and &"border_color" in face: face.set(&"border_color", Color(ink, alpha))
+	if width < 0.0: return
+	if face is StyleBoxFlat: (face as StyleBoxFlat).set_border_width_all(roundi(width))
+	elif &"border_width" in face: face.set(&"border_width", width)
+
+
+## 🔑 **바탕 칸 한 장** — 내용을 담지 않고 **뒤에 까는** 판이다(초상화 자리의 틴트 칸, 터치 칸보다 작게 보이는 HUD 표면).
+## `card()`·`hud_panel()` 이 자식을 품는 컨테이너라면 이것은 `Panel` 하나라, 부르는 쪽이 앵커·크기로 자리를 잡는다.
+##
+## 판은 스킨의 [param variant] 에서 오고 **준 값만** 덮는다 — [param fill]·[param edge] 는 알파가 0 이면 스킨 색 그대로,
+## [param radius]·[param border] 는 음수면 스킨이 가진 모서리·테두리 그대로다.
+## 🛑 내용이 없는 칸이라 판 여백과 그림자는 0 이다 — 겹쳐 까는 판의 그림자는 그 위 글자를 흐린다.
+## 🔑 입력을 받지 않는다(`MOUSE_FILTER_IGNORE`) — 바탕이 위에 놓인 버튼의 누름을 가로채면 안 된다.
+static func plate(variant := GoTheme.BOX_HUD, fill := Color.TRANSPARENT, edge := Color.TRANSPARENT,
+		radius := -1.0, border := -1.0) -> Panel:
+	var node := Panel.new()
+	node.name = "Plate"
+	node.theme = GoUi.theme()
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var face := surface(variant)
+	if fill.a > 0 and &"bg_color" in face: face.set(&"bg_color", fill)
+	_face_border(face, edge, edge.a, border)
+	if radius >= 0.0:
+		if face is StyleBoxFlat: (face as StyleBoxFlat).set_corner_radius_all(roundi(radius))
+		elif &"radius" in face: face.set(&"radius", radius)
+	if face is StyleBoxFlat: (face as StyleBoxFlat).shadow_size = 0
+	face.set_content_margin_all(0)
+	node.add_theme_stylebox_override(&"panel", face)
+	return node
+
+
+## 🔑 **원판 칸** — `disc()` 판을 두른 컨테이너. 안에 아이콘·글자를 하나 넣으면 가운데 온다(입장 표식 ▶, 아바타 자리).
+## 지름만큼의 최소 크기를 갖고 입력은 받지 않는다 — 누를 수 있는 동그란 단추는 `style_disc_button()` 이다.
+static func disc_panel(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> PanelContainer:
+	var node := PanelContainer.new()
+	node.name = "Disc"
+	node.custom_minimum_size = Vector2(diameter, diameter)
+	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	node.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	style_disc_panel(node, diameter, accent, fill_alpha, edge_alpha)
+	return node
+
+
+## **이미 만든 판**(`Panel`·`PanelContainer`)에 같은 원판을 입힌다 — 의미색이 바뀔 때마다 노드를 다시 만들지 않는
+## 자리(성별을 고르면 테두리 색이 따라가는 미리보기 원판). 인자는 `disc_panel()` 과 같다.
+static func style_disc_panel(node: Control, diameter: float, accent: Color, fill_alpha := 0.14,
+		edge_alpha := 0.38) -> void:
+	if node == null: return
+	node.theme = GoUi.theme()
+	node.add_theme_stylebox_override(&"panel", disc(diameter, accent, fill_alpha, edge_alpha))
+
+
+## **이미 만든 라벨**에 원판을 입힌다 — 번호 배지처럼 자리를 앵커·offset 으로 못박아 `disc_panel()` 의 컨테이너를
+## 쓸 수 없을 때(`style_chip_label()` 의 원형 짝). 글자색은 부르는 쪽이 `typography()` 로 준다 —
+## 🛑 짙게 채운 원판(`fill_alpha` 0.9 이상) 위에서는 흰 글자가 흐리다. `on_accent` 를 쓴다.
+static func style_disc_label(node: Label, diameter: float, accent: Color, fill_alpha := 0.14,
+		edge_alpha := 0.38) -> void:
+	if node == null: return
+	node.theme = GoUi.theme()
+	node.add_theme_stylebox_override(&"normal", disc(diameter, accent, fill_alpha, edge_alpha))
+
+
+## 🔑 **판 위에 겹치는 누름 영역** — 카드 한 장이 통째로 하나의 탭일 때, 그 카드 위에 까는 투명 버튼이다.
+## 판은 자기 모양을 그리지 않고(테두리·그림자·여백 0) 올림·누름에만 의미색을 [param fill_alpha] 만큼 옅게 깐다 —
+## 🛑 카드의 판이 이미 테두리를 그리므로 여기에 또 두르면 테두리가 두 겹이 된다.
+##
+## 안쪽 여백이 0 이라 내용은 `card_body()` 같은 안쪽 칸이 대고, 높이는 `fit_content_height()` 가 내용에 맞춘다.
+## 🛑 `mouse_filter` 를 건드리지 않는다 — HUD 위 버튼은 STOP 이어야 누름이 월드로 새지 않는다.
+static func style_overlay_button(node: Button, accent: Color, fill_alpha := 0.10) -> void:
+	if node == null: return
+	node.theme = GoUi.theme()
+	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		# 🛑 `BOX_EMPTY` 를 쓰지 않는다 — `StyleBoxEmpty` 에는 바탕색이 없어 올림·누름이 보이지 않는다.
+		#    늘 평판인 `box()` 를 받아 모양을 지우고 바탕만 남긴다.
+		var face := box(GoTheme.BOX_CARD)
+		face.set_border_width_all(0)
+		face.shadow_size = 0
+		face.set_content_margin_all(0)
+		var lit: bool = String(state).contains("hover") or state == &"pressed"
+		face.bg_color = Color(accent, fill_alpha if lit else 0.0)
+		face.draw_center = lit
+		node.add_theme_stylebox_override(state, face)
+
+
+## 판을 **그리지 않는** 컨테이너 — 자리·쌓임·간격은 그대로 두고 바탕·테두리·그림자·여백만 없앤다.
+## 🔑 판 하나를 지우려고 노드를 빼지 않는다 — 노드를 빼면 경로와 검사가 함께 깨진다. 묶음은 남고 상자만 사라진다.
+static func bare_panel(node: Control) -> void:
+	node.add_theme_stylebox_override(&"panel", StyleBoxEmpty.new())
+
+
+## 🔔 **알림 판을 이미 만든 컨테이너에** 입힌다 — 화면 안에 눌러앉는 오류·경고 상자(새로 만드는 쪽은 `alert()`).
+## 판은 스킨의 `notice` 표면이고 테두리에 [param accent] 가 든다. [param tint] 를 주면 바탕을 바탕색에서
+## 그 색 쪽으로 그만큼 당긴다(0 이면 스킨 바탕 그대로) — 🛑 새 팔레트를 만들지 않고 의미색 하나로 물들이는 자리다.
+## [param padding] 음수면 `padding_compact` 토큰.
+static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint := 0.0, padding := -1) -> void:
+	var face := surface(GoTheme.BOX_NOTICE, accent)
+	if tint > 0.0 and &"bg_color" in face:
+		var back: Color = GoUi.color(GoTheme.BACKGROUND)
+		face.set(&"bg_color", back.lerp(accent, tint))
+	var pad := float(GoUi.metric(GoTheme.PADDING_COMPACT) if padding < 0 else padding)
+	face.content_margin_left = pad
+	face.content_margin_right = pad
+	face.content_margin_top = pad
+	face.content_margin_bottom = pad
+	node.add_theme_stylebox_override(&"panel", face)
 
 
 ## 게임 화면 위에 **떠 있는 판** 한 장 — HUD 의 도크·상태 바처럼 월드 위에 얹는 자리다(내용은 부르는 쪽이 채운다).
@@ -628,14 +1036,45 @@ static func card(accent := Color.TRANSPARENT) -> PanelContainer:
 ## 닿는 기하가 화면마다 정해져 있어 여백을 부르는 쪽이 준다 — 🛑 그때 `padding()` 칸을 **또** 두르지
 ## 말 것. 판 여백과 겹쳐 내용 폭이 두 배로 깎이고, 좁은 칸의 말줄임 글자가 통째로 사라진다
 ## (2026-09-16 파티 도크에서 이끌기 칩이 27 → 11 로 접혔다).
-static func hud_panel(accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0) -> PanelContainer:
+## [param variant] 는 어떤 토큰 판을 띄울 것인가다 — HUD 도크는 `BOX_HUD`, 월드 위에 펼치는 시트·카드는
+## `BOX_CARD`(같은 카드 모양에 그림자만 얹힌다).
+static func hud_panel(accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0,
+		variant := GoTheme.BOX_HUD) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "HudPanel"
+	style_hud_panel(node, accent, pad_x, pad_y, variant)
+	return node
+
+
+## **이미 만든 `PanelContainer`** 에 같은 떠 있는 판을 입힌다 — 의미색이 런타임에 바뀌는 자리(EXP 배지처럼
+## 값에 따라 초록·주황·회색이 되는 것)에서 노드를 다시 만들지 않는다. 인자는 `hud_panel()` 과 같다.
+static func style_hud_panel(node: PanelContainer, accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0,
+		variant := GoTheme.BOX_HUD) -> void:
+	if node == null: return
 	node.theme = GoUi.theme()
-	var face := GoUi.skin().floating_box(GoTheme.BOX_HUD, accent)
+	var face := GoUi.skin().floating_box(variant, accent)
 	face_padding(face, pad_x, pad_y)
 	node.add_theme_stylebox_override(&"panel", face)
+
+
+## 🔑 **지도·월드 그림 위에 얹는 알약 판** 한 장 — 뒤 그림이 무엇이든 글자가 읽히게 바탕을 어둡게 깔고 테두리를
+## 얇게 두른다(`GoSkin.overlay_box`). `hud_panel()` 이 HUD 도크의 판이라면 이것은 **그림 위의 작은 크롬**이다.
+##
+## [param pad_x]·[param pad_y] 는 판 안쪽 여백(dp · 음수면 작은 버튼 여백 토큰), [param fill_alpha] 는 바탕의
+## 불투명도다. 🛑 여기에 `padding()` 칸을 또 두르지 않는다(`hud_panel()` 과 같은 이유).
+## 🛑 **알약 안에 또 알약을 넣지 않는다** — 안에 놓는 버튼은 맨 버튼이나 `segmented()` 칸으로 둔다.
+static func overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := 0.82) -> PanelContainer:
+	var node := PanelContainer.new()
+	node.name = "OverlayPanel"
+	style_overlay_panel(node, pad_x, pad_y, fill_alpha)
 	return node
+
+
+## **이미 만든 `PanelContainer`** 에 같은 알약 판을 입힌다. 인자는 `overlay_panel()` 과 같다.
+static func style_overlay_panel(node: PanelContainer, pad_x := -1, pad_y := -1, fill_alpha := 0.82) -> void:
+	if node == null: return
+	node.theme = GoUi.theme()
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box(pad_x, pad_y, fill_alpha))
 
 
 ## 판 안쪽 여백을 지정한 값으로 바꾼다 — 음수인 쪽은 판이 가진 값을 그대로 둔다.
@@ -648,6 +1087,95 @@ static func face_padding(face: StyleBox, pad_x := -1.0, pad_y := -1.0) -> void:
 	if pad_y >= 0.0:
 		face.content_margin_top = pad_y
 		face.content_margin_bottom = pad_y
+
+
+## 판의 **네 변을 따로** 정한다 — 음수인 변은 그대로 둔다. 좌우가 같아도 되는 자리는 `face_padding()` 이고,
+## 이것은 한쪽만 달라야 할 때다(오른쪽 끝이 터치 칸 48 짜리 아이콘 버튼이라 판 여백이 필요 없는 알약 등).
+static func face_insets(face: StyleBox, left := -1.0, top := -1.0, right := -1.0, bottom := -1.0) -> void:
+	if face == null: return
+	if left >= 0.0: face.content_margin_left = left
+	if top >= 0.0: face.content_margin_top = top
+	if right >= 0.0: face.content_margin_right = right
+	if bottom >= 0.0: face.content_margin_bottom = bottom
+
+
+## 🔑 **HUD 원형 버튼의 원판** — 게임 화면 위에 떠 있는 둥근 아이콘 버튼(조작 패드·유틸리티 줄)의 판이다.
+##
+## 🛑 모서리 반경은 **보이는 원의 지름**에서 나온다. 테마에 반경을 숫자로 박아 두면 크기가 다른 버튼에서
+##    원이 알약이 된다(반경 24 짜리 판이 104×64 버튼에 들어가 그렇게 됐다).
+## 🔑 [param fill] 이 투명이면 **속을 그리지 않는다**(`draw_center = false`) — 그림(그라디언트 이미지·보석)을
+##    자식이 그리는 버튼이라, 판까지 칠하면 그 위에 색이 한 겹 더 얹힌다. 판은 테두리와 모서리만 맡는다.
+## [param edge_width] 0 이면 테두리 없음(맨 판) · [param edge_ink] 테두리 색 ·
+## [param detail] 모서리 곡선 분할. 기본 1 은 **모서리마다 삼각형 팬을 만들지 않는다** — 화면에 스무 개씩
+## 깔리는 버튼이라 그 비용이 그대로 곱해진다. 큰 원을 매끄럽게 그려야 하면 8·16 을 준다.
+static func style_hud_disc(node: Control, diameter: float, edge_width := 0.0,
+		edge_ink := Color.TRANSPARENT, fill := Color.TRANSPARENT, detail := 1) -> void:
+	if node == null: return
+	var face := box(GoTheme.BOX_HUD)
+	face.set_content_margin_all(0)
+	face.bg_color = fill
+	face.draw_center = fill.a > 0.0
+	face.set_corner_radius_all(maxi(0, roundi(diameter * 0.5)))
+	face.corner_detail = maxi(1, detail)
+	var width := maxi(0, roundi(edge_width))
+	face.set_border_width_all(width)
+	if width > 0 and edge_ink.a > 0.0: face.border_color = edge_ink
+	# 🛑 그림자를 그리지 않는다 — `StyleBoxFlat` 의 그림자는 본체와 **별개의 사각형**을 더 그린다.
+	face.shadow_size = 0
+	node.add_theme_stylebox_override(&"panel", face)
+
+
+## 🔑 **퀵슬롯 판을 노드에 입힌다** — `GoSlot` 을 쓰지 않고 자기 슬롯을 만든 호스트(칸 안의 줄 구성이 다른
+## 게임)도 같은 판을 얻는다. 모양은 스킨의 `slot_box` 가 정하므로 생김새를 갈면 함께 따라온다.
+## [param lit] 은 쿨다운·잔여 시간이 도는 중이라는 뜻이다(테두리가 굵고 채움이 짙어진다).
+static func style_slot_face(node: Control, accent: Color, lit := false) -> void:
+	if node == null: return
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().slot_box(accent, lit))
+
+
+## 🔑 **꽉 채운 배지** — 개수·알림처럼 **눈에 띄어야 하는 수** 한 칸. 판을 [param fill] 로 채우고 글자를
+## [param ink] 로 쓴다. `GoSkin.badge_box` 는 표면 위에 얹는 **옅은** 배지라 역할이 다르다.
+##
+## 🛑 글자 크기는 여기서 정하지 않는다 — `typography(node, GoTheme.ROLE_MICRO, ink)` 로 **역할**을 준다.
+##    크기를 override 로 박으면 그 배지만 모바일 축소·테마 교체를 따라오지 못한다.
+## [param edge] 는 테두리 색, [param edge_width] 0 이면 테두리 없음. [param radius] 음수면 `radius_small`
+## 토큰, [param pad_x] 음수면 판이 가진 좌우 여백 그대로. [param detail] 은 `style_hud_disc` 와 같다.
+static func style_count_badge(node: Label, fill: Color, ink := Color.TRANSPARENT,
+		edge := Color.TRANSPARENT, edge_width := 0, radius := -1, pad_x := -1.0, detail := 1) -> void:
+	if node == null: return
+	node.theme = GoUi.theme()
+	var face := box(GoTheme.BOX_HUD)
+	face.set_content_margin_all(0)
+	face.bg_color = fill
+	face.draw_center = true
+	face.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL) if radius < 0 else radius)
+	face.corner_detail = maxi(1, detail)
+	var width := maxi(0, edge_width)
+	face.set_border_width_all(width)
+	if width > 0 and edge.a > 0.0: face.border_color = edge
+	face.shadow_size = 0
+	if pad_x >= 0.0:
+		face.content_margin_left = pad_x
+		face.content_margin_right = pad_x
+	node.add_theme_stylebox_override(&"normal", face)
+	if ink.a > 0.0: node.add_theme_color_override(&"font_color", ink)
+
+
+## 🔑 **이미 글리프가 든 노드의 크기·색만** 다시 입힌다 — `glyph_text()` 로 한 번 그린 아이콘을
+## 상태가 바뀔 때마다(눌림·올림·켜짐) 새로 조회하지 않고 색만 옮기는 자리다.
+##
+## [param size] 음수면 크기를 건드리지 않는다 — HUD 의 글리프 크기는 터치 지름에 비례하는 기하라
+## 부르는 쪽이 정한다(토큰이 아니다).
+## 🛑 [param states] 를 끄지 않는 한 버튼은 올림·눌림·포커스 글자색까지 **같은 색**으로 맞춘다.
+##    한 상태만 빠뜨리면 마우스를 올린 채 누르는 순간 글리프 색이 테마 기본으로 튄다.
+static func glyph_type(node: Control, size := -1, ink := Color.TRANSPARENT, states := true) -> void:
+	if node == null: return
+	if size >= 0: node.add_theme_font_size_override(&"font_size", size)
+	if ink.a <= 0.0: return
+	node.add_theme_color_override(&"font_color", ink)
+	if not states or not (node is Button): return
+	for key in [&"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
+		node.add_theme_color_override(key, ink)
 
 
 ## 칩과 **같은 알약 판**에 내용을 채우는 빈 컨테이너 — 한 줄짜리 칩으로는 모자란 자리(이름·레벨·게이지가 함께 드는
@@ -840,6 +1368,38 @@ static func style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, u
 		node.add_theme_color_override(key, face_ink)
 
 
+## 🔑 **원형 조작 버튼** — 지도의 줌 ＋/－ · 내 위치처럼 그림 위에 뜬 동그란 단추의 상태 판을 입힌다.
+## 글자·아이콘은 부르는 쪽이 넣는다(`glyph_text()`·`font_role()`), 여기는 판만 맡는다.
+##
+## 판 여백은 모든 상태에서 0 이고 모서리 반경은 [param diameter] 의 절반이다 — 보이는 크기는 부르는 쪽이
+## `custom_minimum_size` 로 정한 지름 그대로이고, 상태가 바뀌어도 폭이 흔들리지 않는다.
+## [param fill] 은 평상시 바탕색(투명이면 `surface` 토큰), [param fill_alpha] 는 평상시 그 색의 불투명도다
+## (올렸을 때·비활성은 1.0 — 그림 위에서 더 또렷해진다). 누른 상태는 의미색을 [param press_alpha] 만큼 채운다.
+## 🛑 `mouse_filter` 를 건드리지 않는다 — 그림 위 버튼은 STOP 이어야 누름이 지도·월드로 새지 않는다.
+## 🔑 각진 판·단조 판 스킨에서는 그 판 모양이 그대로 남는다(반경은 평판일 때만 원이 된다).
+static func style_disc_button(node: Button, diameter: float, accent: Color, fill := Color.TRANSPARENT,
+		fill_alpha := 0.92, press_alpha := 0.34) -> void:
+	if node == null: return
+	node.theme = GoUi.theme()
+	var back := fill if fill.a > 0 else GoUi.color(GoTheme.SURFACE)
+	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]:
+		var face := surface(GoTheme.BOX_HUD, accent)
+		var pressed: bool = state == &"pressed" or state == &"hover_pressed"
+		var focused: bool = state == &"focus"
+		if &"bg_color" in face:
+			face.set(&"bg_color", Color(accent, press_alpha) if pressed \
+				else Color(back, fill_alpha if state == &"normal" else 1.0))
+		if &"border_color" in face: face.set(&"border_color", Color(accent, 0.7 if focused else 0.42))
+		var flat := face as StyleBoxFlat
+		if flat != null:
+			flat.set_border_width_all(2 if focused else 1)
+			flat.set_corner_radius_all(maxi(1, int(diameter * 0.5)))
+		elif &"border_width" in face:
+			face.set(&"border_width", 2.0 if focused else 1.0)
+		face.set_content_margin_all(0)
+		node.add_theme_stylebox_override(state, face)
+
+
 ## 아무것도 없을 때 보여 주는 자리 — 아이콘 + 한 줄 설명.
 ## 🛑 빈 목록을 **빈 채로** 두지 않는다. 사용자는 그것을 고장으로 읽는다.
 static func empty_state(icon: StringName, key: String, translate := true) -> Control:
@@ -922,7 +1482,8 @@ static func tooltip_node(text: String, max_width := 260.0) -> Control:
 ##    화면을 넘겨 좌우가 잘린다 — 무슨 화면인지조차 분간할 수 없게 된다.
 ##    씬마다 손으로 켜는 방식은 **반드시 빠뜨린다.** 그래서 컨테이너가 스스로 보장한다.
 static func form(node: Node) -> void:
-	if node is BoxContainer:
+	# 🛑 제 간격을 쓰는 묶음(`field()` — 라벨이 자기 칸에 붙어야 한다)은 건드리지 않는다.
+	if node is BoxContainer and not node.has_meta(&"go_own_spacing"):
 		node.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP))
 	if node is Button:
 		node.custom_minimum_size.y = maxf(node.custom_minimum_size.y, GoUi.metric(GoTheme.BUTTON_HEIGHT))
@@ -984,6 +1545,14 @@ static func dropdown(text: String, items: Array, action := Callable(), translate
 			popup.add_item(str(item))
 	if action.is_valid(): popup.index_pressed.connect(action)
 	return node
+
+
+## 팝업 메뉴의 항목이 **터치 하한**을 지키게 줄 간격을 띄운다 — 팝업 글자는 본문 크기라 줄이 손가락보다 얇다.
+## [param spacing] 음수면 `gap` 토큰. 🔑 항목을 지우고 다시 채워도 이 값은 남는다(테마 값이지 항목이 아니다).
+static func style_popup(popup: PopupMenu, spacing := -1) -> void:
+	if popup == null: return
+	popup.theme = GoUi.theme()
+	popup.add_theme_constant_override(&"v_separation", GoUi.metric(GoTheme.GAP) if spacing < 0 else spacing)
 
 
 ## 🔑 **라디오 묶음(Radio Group).** 하나만 고른다. 돌려주는 세로줄의 `meta("group")` 이 `ButtonGroup` 이고,

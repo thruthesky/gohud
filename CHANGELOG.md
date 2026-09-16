@@ -84,6 +84,40 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   removes it. `open()` only hides the footer, so a page that called `footer().add_child()` on every open stacked a
   new Close button next to the old ones (the gallery's sheet did). Nodes added with `footer().add_child()` still stay
   across pages, for sheet-wide parts such as a snackbar.
+- **`GoStyle.style_brand_button(node, fill, ink, edge, mark, gap, inset, base, mark_ink)`** puts the faces of a
+  provider's sign-in button on a `Button` — the one place where a review guideline, not the skin, owns the colour.
+  gohud holds the states and the caller holds the values: the face is painted `fill`, hover and press move it away
+  from that colour (a dark plate lightens, a light plate darkens, as the vendors' own bundles do), disabled pulls
+  toward grey, and focus empties the centre so only the border is left for the shared focus ring. `mark` caps the
+  mark with `icon_max_width` and `gap` is the space to the label; `inset` is the side padding (top and bottom go to
+  zero — the height belongs to the caller); `base` is a face to clone so the button keeps the *shape* of the screen's
+  other buttons while carrying the brand's colour; `mark_ink` stays white by default so a multi-colour official mark
+  (Google's four-colour G) is never tinted by the theme. Negative `mark`, `gap` and `inset` leave those alone.
+- **`GoStyle.center_button_content(node, min_inset)`** sets the mark and the label together in the middle of a
+  button — the shape both Google and Apple ship. 🛑 `icon_alignment = CENTER` draws the mark *on top of* the label;
+  this keeps the label left-aligned and writes the left padding `(width − mark − gap − text) / 2` into every state
+  instead, with `min_inset` (negative: the face's own left margin) as the floor. Call it on `resized`, on a language
+  change and when the mark arrives late; an unchanged value is not written back, so there is no resize loop.
+- **`GoStyle.apply_icon(..., inset)`** insets a font-set glyph from the button's left edge and widens the *both* side
+  text margins to the end of the icon, so a centred label in a narrow full-width button can no longer overlap it.
+  Negative (the default) keeps the previous behaviour, and texture sets are unaffected.
+- **`GoStyle.tint_button(node, ink, active)`** sets only the label and icon colours of a button that draws no face —
+  a links row or a quiet menu that speaks through colour. A transparent argument is left alone, so a button whose
+  resting colour already came from `typography()` can take just the pressed colour.
+- **`GoStyle.bare_panel(node)`** drops the face of a container and keeps its place, stacking and spacing. Removing
+  the node instead would take the paths and the assertions with it.
+- **`GoStyle.style_notice_panel(node, accent, tint, padding)`** puts the skin's `notice` face on a container you
+  already built (`alert()` builds its own): an accent border, and with `tint` the background pulled that far from
+  the background colour toward the accent — one semantic colour instead of a new palette.
+- **`GoStyle.style_mono_text(node, font, selection, selected_ink)`** makes a `RichTextLabel` a monospaced, selectable
+  block for a diagnostic code or a log line. gohud ships no font, so the caller passes one (a `SystemFont` that finds
+  the device's own is enough); `selection` and `selected_ink` replace the default light-grey selection that swallows
+  light text.
+- **`GoStyle.pin_font_size(node, size)`** nails a font size in pixels for the rare place where the size is fixed from
+  outside (a sign-in button whose guideline ties the text to the button height). Everything else should use a
+  `typography()` role, which follows the theme and the screen.
+- **`GoStyle.style_popup(popup, spacing)`** spaces a `PopupMenu`'s rows out to the touch minimum — popup text is body
+  size, so the rows come out thinner than a finger. The value survives clearing and refilling the items.
 
 ### Changed
 

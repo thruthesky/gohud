@@ -23,23 +23,23 @@
   // 🔑 여기 한 곳에 두고 문서의 `<html lang>` 으로 고른다. 이렇게 하면 언어판 51 장에는 아무것도
   //    넣지 않아도 목차가 그 나라 말로 뜬다. 모르는 언어는 영어로 떨어진다.
   var SAY = {
-    'en': { title: 'On this page', filter: 'Filter' },
-    'ko': { title: '이 페이지 차례', filter: '거르기' },
-    'ja': { title: 'このページの目次', filter: '絞り込み' },
-    'zh-Hans': { title: '本页目录', filter: '筛选' },
-    'zh-Hant': { title: '本頁目錄', filter: '篩選' },
-    'es': { title: 'En esta página', filter: 'Filtrar' },
-    'pt': { title: 'Nesta página', filter: 'Filtrar' },
-    'ru': { title: 'На этой странице', filter: 'Фильтр' },
-    'fr': { title: 'Sur cette page', filter: 'Filtrer' },
-    'tr': { title: 'Bu sayfada', filter: 'Süz' },
-    'pl': { title: 'Na tej stronie', filter: 'Filtruj' },
-    'it': { title: 'In questa pagina', filter: 'Filtra' },
-    'vi': { title: 'Trong trang này', filter: 'Lọc' },
-    'id': { title: 'Di halaman ini', filter: 'Saring' },
-    'uk': { title: 'На цій сторінці', filter: 'Фільтр' },
-    'th': { title: 'ในหน้านี้', filter: 'กรอง' },
-    'ar': { title: 'في هذه الصفحة', filter: 'تصفية' }
+    'en': { title: 'On this page', filter: 'Filter', search: 'Search all pages' },
+    'ko': { title: '이 페이지 차례', filter: '거르기', search: '문서 전체 검색' },
+    'ja': { title: 'このページの目次', filter: '絞り込み', search: '全ページを検索' },
+    'zh-Hans': { title: '本页目录', filter: '筛选', search: '搜索全部页面' },
+    'zh-Hant': { title: '本頁目錄', filter: '篩選', search: '搜尋全部頁面' },
+    'es': { title: 'En esta página', filter: 'Filtrar', search: 'Buscar en todo' },
+    'pt': { title: 'Nesta página', filter: 'Filtrar', search: 'Buscar em tudo' },
+    'ru': { title: 'На этой странице', filter: 'Фильтр', search: 'Искать везде' },
+    'fr': { title: 'Sur cette page', filter: 'Filtrer', search: 'Chercher partout' },
+    'tr': { title: 'Bu sayfada', filter: 'Süz', search: 'Tümünde ara' },
+    'pl': { title: 'Na tej stronie', filter: 'Filtruj', search: 'Szukaj wszędzie' },
+    'it': { title: 'In questa pagina', filter: 'Filtra', search: 'Cerca ovunque' },
+    'vi': { title: 'Trong trang này', filter: 'Lọc', search: 'Tìm toàn bộ' },
+    'id': { title: 'Di halaman ini', filter: 'Saring', search: 'Cari semua' },
+    'uk': { title: 'На цій сторінці', filter: 'Фільтр', search: 'Шукати всюди' },
+    'th': { title: 'ในหน้านี้', filter: 'กรอง', search: 'ค้นหาทุกหน้า' },
+    'ar': { title: 'في هذه الصفحة', filter: 'تصفية', search: 'ابحث في كل الصفحات' }
   };
   var lang = document.documentElement.lang || 'en';
   var say = SAY[lang] || SAY[lang.split('-')[0]] || SAY.en;
@@ -90,7 +90,12 @@
     '.gotoc a.on{color:var(--accent,#0878AE);font-weight:700;',
     '  border-inline-start-color:var(--accent,#0878AE);background:color-mix(in srgb,var(--accent,#0878AE) 10%,transparent)}',
     '.gotoc a[hidden]{display:none}',
-    '.gotoc-none{padding:8px 9px;color:var(--muted,#5B6B7B)}',
+    '.gotoc-all,.gotoc-none{display:block;width:100%;text-align:start;font:inherit;font-size:13px;',
+    '  padding:7px 10px;margin-bottom:10px;border-radius:8px;cursor:pointer;',
+    '  border:1px dashed var(--rule,#DCE3EA);background:none;color:var(--muted,#5B6B7B)}',
+    '.gotoc-all:hover,.gotoc-none:hover{border-color:var(--accent,#0878AE);color:var(--accent,#0878AE);',
+    '  border-style:solid}',
+    '.gotoc-none{margin-top:6px;border-style:solid}',
     '.gotoc-pages{margin-top:16px;padding-top:12px;border-top:1px solid var(--rule,#DCE3EA)}',
     '.gotoc-pages a{font-weight:600;color:var(--ink,#16202B)}',
     'body.gotoc-on{padding-inline-start:' + W + '}',
@@ -132,6 +137,14 @@
   title.textContent = say.title;
   nav.appendChild(title);
 
+  // 🔑 이 페이지 안에서 못 찾은 사람을 전체 검색으로 넘긴다. `site/search.js` 가 열어 준다.
+  var all = document.createElement('button');
+  all.className = 'gotoc-all';
+  all.type = 'button';
+  all.textContent = '\u2315 ' + say.search;
+  all.addEventListener('click', function () { openSearch(find.value.trim()); });
+  nav.appendChild(all);
+
   var find = document.createElement('input');
   find.className = 'gotoc-find';
   find.type = 'search';
@@ -151,11 +164,16 @@
     return a;
   });
 
-  var none = document.createElement('div');
+  var none = document.createElement('button');
   none.className = 'gotoc-none';
+  none.type = 'button';
   none.hidden = true;
-  none.textContent = '—';
+  none.addEventListener('click', function () { openSearch(find.value.trim()); });
   list.appendChild(none);
+
+  function openSearch(word) {
+    if (typeof window.GOHUD_SEARCH_OPEN === 'function') window.GOHUD_SEARCH_OPEN(word);
+  }
 
   if (pageLinks.length) {
     var pages = document.createElement('div');
@@ -226,6 +244,7 @@
       if (ok) hit++;
     });
     none.hidden = hit > 0;
+    none.textContent = '\u2315 ' + say.search + (q ? ' \u00b7 \u201c' + find.value.trim() + '\u201d' : '');
   }
 
   // ── 좁은 화면의 여닫이 ─────────────────────────────────────
