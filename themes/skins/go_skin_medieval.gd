@@ -17,8 +17,8 @@ extends GoSkin
 @export_group("")
 
 
-func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT) -> StyleBox:
-	var frame := surface_box(variant, accent)
+func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
+	var frame := surface_box(variant, accent, alpha)
 	if frame is GoStyleBoxMedieval:
 		frame.shadow_color = Color(GoUi.color(GoTheme.SHADOW), float_shadow_alpha)
 		frame.shadow_size = float_shadow_size

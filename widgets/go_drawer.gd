@@ -59,6 +59,13 @@ enum Side {
 		max_width = value
 		_relayout()
 
+## 🪟 서랍 판 바탕의 **불투명도(%)**. **-1 이면 테마·설정이 정한 카드 값**(기본).
+## 🛑 `0.8` 이 아니라 `80` 이다(퍼센트 정수). 바탕만 묽어지고 글자·버튼은 선명하다.
+@export_range(-1, 100) var alpha := -1:
+	set(value):
+		alpha = value
+		if panel != null: _restyle()
+
 ## 바깥(가림막)을 눌러 닫을 수 있는가.
 @export var dismissable := true
 
@@ -192,10 +199,11 @@ func set_title_key(key: String) -> void:
 ##    를 `Side` 로 돌려줄 수 없다" 며 **파싱 단계에서** 죽는다(4.7 실측).
 func effective_side() -> GoDrawer.Side:
 	if not follow_text_direction: return side
-	var rtl := TranslationServer.get_tool_locale().begins_with("ar") \
-		or TranslationServer.get_tool_locale().begins_with("he") \
-		or TranslationServer.get_tool_locale().begins_with("fa") \
-		or TranslationServer.get_tool_locale().begins_with("ur")
+	# 🛑 `get_tool_locale()` 은 **에디터의** 언어다 — 플레이어가 게임 안에서 아랍어로 바꿔도 그 값은
+	#    그대로라 서랍이 끝내 뒤집히지 않았다(2026-09-16). 실행 중 언어는 `get_locale()` 이다.
+	var locale := TranslationServer.get_locale()
+	var rtl := locale.begins_with("ar") or locale.begins_with("he") \
+		or locale.begins_with("fa") or locale.begins_with("ur")
 	if not rtl: return side
 	return Side.RIGHT if side == Side.LEFT else Side.LEFT
 
@@ -272,7 +280,8 @@ func _scrim_input(event: InputEvent) -> void:
 
 
 func _restyle() -> void:
-	panel.add_theme_stylebox_override(&"panel", GoUi.skin().surface_box(GoTheme.BOX_CARD))
+	panel.add_theme_stylebox_override(&"panel", GoUi.skin().surface_box(
+		GoTheme.BOX_CARD, Color.TRANSPARENT, -1.0 if alpha < 0 else float(alpha) / 100.0))
 	_scrim.color = _scrim_color(_open)
 
 

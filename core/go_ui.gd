@@ -238,6 +238,42 @@ static func box(key: StringName) -> StyleBox:
 	return GoTheme.box_of(theme(), key, _fallback_theme()).duplicate()
 
 
+## 🪟 판 한 종류의 **불투명도(0.0~1.0)**. 1.0 은 꽉 찬 색, 0.8 이면 뒤가 20% 배어 나온다.
+##
+## ## 구체적인 것이 이긴다 — 네 층
+## | 순서 | 어디서 | 단위 | 쓰는 때 |
+## |---|---|---|---|
+## | ① | `GoConfig.container_alpha_overrides[종류]` | % | 이 프로젝트에서 **이 종류만** 다르게 |
+## | ② | `GoConfig.metric_overrides[<종류>_alpha]` | % | 치수를 한 곳에 모아 두는 프로젝트의 관습을 따를 때 |
+## | ③ | `GoConfig.container_alpha` | % | 프로젝트의 **판 전부**를 한 번에 |
+## | ④ | 테마의 `GoHud/constants/<종류>_alpha` | % | 생김새 묶음이 정한 값 — **정본** |
+##
+## 넷 다 없으면 100(꽉 찬 색)이다 — 이 토큰을 모르는 테마를 꽂아도 화면이 예전과 같다는 뜻이다.
+##
+## 🔑 **위젯 하나만** 다르게 하려면 이 함수를 거치지 않는다 — `GoSurface.alpha`,
+##    `GoStyle.card(..., alpha)` 처럼 그 자리의 인자에 0.0~1.0 을 준다(음수면 이 함수로 떨어진다).
+##
+## 🛑 돌려주는 것은 **비율**이고 설정·테마에 적는 것은 **퍼센트**다. 층이 다르므로 단위도 다르다 —
+##    에디터 칸은 정수라야 다루기 쉽고(Theme constant 는 정수만 담는다), StyleBox 의 색 알파는
+##    비율이다. 섞어 쓰면 `0.8` 이 0 으로 잘려 판이 사라지거나 `80` 이 8000% 로 잘린다.
+static func surface_alpha(variant := GoTheme.BOX_CARD) -> float:
+	var settings := config
+	if settings.container_alpha_overrides.has(variant):
+		return _alpha_ratio(settings.container_alpha_overrides[variant])
+	var token := GoTheme.alpha_token(variant)
+	if settings.metric_overrides.has(token):
+		return _alpha_ratio(settings.metric_overrides[token])
+	if settings.container_alpha >= 0: return _alpha_ratio(settings.container_alpha)
+	# 🛑 없을 때는 **100** 으로 떨어진다 — `metric_of` 의 기본값 0 을 그대로 쓰면 판이 통째로 사라진다.
+	return _alpha_ratio(GoTheme.metric_of(theme(), token, _fallback_theme(), 100))
+
+
+## 퍼센트(0~100) → 비율(0.0~1.0). 범위를 벗어난 값은 잘라 낸다 — 판이 사라지거나 두 배로 칠해지는
+## 일이 설정 오타 하나로 일어나지 않게 한다.
+static func _alpha_ratio(percent: int) -> float:
+	return clampf(float(percent) / 100.0, 0.0, 1.0)
+
+
 ## 역할의 글자 크기(dp). 모바일 축소가 켜져 있으면 이미 반영된 값이다.
 static func font_size(role: StringName = GoTheme.ROLE_BODY) -> int:
 	if config.base_font_size > 0 and role == GoTheme.ROLE_BODY: return config.base_font_size

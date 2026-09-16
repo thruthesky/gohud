@@ -25,6 +25,16 @@ var _arguments := {}
 var _content: Control
 
 
+## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
+## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+## 🔑 알림은 게임 화면 위에 바로 얹히므로, 그림이 복잡한 게임에서는 값을 올린다 —
+##    한 줄짜리 알림은 **읽히지 않으면 없는 것과 같다.**
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		if is_inside_tree(): add_theme_stylebox_override(&"panel", _surface())
+
+
 func _init() -> void:
 	name = "Notice"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -101,7 +111,7 @@ func set_content(content: Control, accent := Color.TRANSPARENT, compact := false
 	# 🛑 내용의 `mouse_filter` 도 전부 IGNORE 로 — `mouse_behavior_recursive` 가 입력을 막아도 값은 남아, "알림 안 노드는 입력을
 	#    안 먹는다"를 값으로 확인하는 코드(호스트 검사·`mouse_filter` 를 읽는 배치 로직)가 어긋난다(2026-09-12, 파생 게임 loot-icons).
 	_ignore_content_input(content)
-	add_theme_stylebox_override(&"panel", GoUi.skin().notice_box(accent, compact))
+	add_theme_stylebox_override(&"panel", GoUi.skin().notice_box(accent, compact, alpha))
 	show()
 
 
@@ -122,7 +132,7 @@ func preferred_width(limit: float) -> float:
 
 
 func _surface(accent := Color.TRANSPARENT) -> StyleBox:
-	return GoUi.skin().notice_box(accent, true)
+	return GoUi.skin().notice_box(accent, true, alpha)
 
 
 ## 내용 서브트리가 월드 입력을 먹지 않게 — 스낵바 위를 눌러도 아래 화면이 받는다.

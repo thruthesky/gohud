@@ -171,6 +171,12 @@ CONST = dict(
     scroll_deadzone=18, scroll_edge=4, scrollbar_width=6,
     list_glyph=18, icon_size=20,
     notice_duration_ms=3000,
+    # 🪟 판(컨테이너) 바탕의 **불투명도(%)** — 100 은 꽉 찬 색, 80 이면 뒤가 20% 배어 나온다.
+    #    글자·아이콘·버튼은 이 값을 따르지 않는다(`core/go_theme.gd` 의 `PANEL_ALPHA` 주석).
+    # 🛑 `popup_alpha` 만 100 이다 — `PopupMenu` 는 엔진이 **창**으로 띄울 수 있고, 그때는 OS 가
+    #    게임 화면과 합성해 주지 않아 반투명이 뒤가 보이는 대신 검게 나온다.
+    #    게임 안에 박아 띄우는(`gui_embed_subwindows`) 프로젝트는 팔레트에서 내려도 된다.
+    panel_alpha=80, card_alpha=80, hud_alpha=80, notice_alpha=80, popup_alpha=100,
 )
 
 FONTS = dict(micro=10, compact=12, caption=13, body=16, button=16, subtitle=22, title=28)

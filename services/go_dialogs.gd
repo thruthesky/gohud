@@ -40,6 +40,14 @@ enum ActionLayout { VERTICAL, HORIZONTAL, AUTO }
 ## 카드의 최대 폭(dp).
 @export var max_width := 420.0
 
+## 🪟 카드 바탕의 **불투명도(%)** — 확인창만 다르게. **-1 이면 테마·설정이 정한 값**(기본).
+## 🔑 되돌릴 수 없는 조작을 묻는 창은 값을 올리는 편이 낫다 — 뒤가 덜 보일수록 물음에 집중한다.
+## 🛑 `0.8` 이 아니라 `80` 이다(퍼센트 정수 · 에디터 칸이라 정수로 둔다).
+@export_range(-1, 100) var surface_alpha := -1:
+	set(value):
+		surface_alpha = value
+		if _surface != null: _surface.alpha = -1.0 if value < 0 else float(value) / 100.0
+
 ## 버튼 배치 — `VERTICAL`(기본) · `HORIZONTAL`(한 줄) · `AUTO`(한 줄에 들어갈 때만 한 줄).
 @export var action_layout := ActionLayout.VERTICAL
 
@@ -132,6 +140,7 @@ func _ready() -> void:
 	# `new()` 뒤에 바꿨을 수 있는 값을 반영한다.
 	_layer.layer = layer_index
 	_surface.max_width = max_width
+	_surface.alpha = -1.0 if surface_alpha < 0 else float(surface_alpha) / 100.0
 	# 화면을 돌리면 카드 폭이 바뀐다 — 한 줄에 들어가는지 다시 본다.
 	if not Engine.is_editor_hint(): get_viewport().size_changed.connect(_on_viewport_resized)
 
@@ -376,6 +385,15 @@ func _finish(yes: bool) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED: _retranslate()
+	# 🛑 씬 전환·`queue_free` 로 이 노드가 빠지면 **기다리던 코드를 풀어 준다.** 안 그러면
+	#    `await dialogs.confirm(...)` 에 묶인 로직이 영원히 돌아오지 않는다 — 화면은 이미 넘어갔는데
+	#    그 앞 화면의 코루틴이 살아 남아 아무 일도 하지 않는 상태가 된다.
+	elif what == NOTIFICATION_EXIT_TREE:
+		var ticket := _ticket
+		_ticket = null
+		_open = false
+		if ticket != null: ticket.done.emit(false)
+		clear_pending()
 
 
 ## 대화상자 표면을 만든다. 🔑 호스트가 `GoSurface` 의 서브클래스를 쓰고 싶으면(옛 타입 힌트 호환 등) 자식에서 덮어쓴다.

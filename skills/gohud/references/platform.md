@@ -164,3 +164,42 @@ func _notification(what: int) -> void:
 ```
 
 - Pause gameplay input while a window is up: `if GoSurface.is_any_open(): return` in `_unhandled_input`.
+
+## 7. GoKbd — key hints that do not lie
+
+```gdscript
+row.add_child(GoKbd.make("F"))
+row.add_child(GoKbd.make("Ctrl", "S"))
+hint.add_child(GoKbd.for_action(&"interact"))     # reads the real binding
+```
+
+`hide_on_handheld` (default on) · `set_keys(array)` `keys()` · `GoKbd.action_keys(action)`.
+
+- 🔑 **`for_action()` reads `InputMap`.** A hard-coded "Press F" keeps saying F after the player rebinds —
+  the most common lie in a PC UI. If the action does not exist or is bound to a pad, it returns **empty** and
+  the widget hides; "None" would be its own lie.
+- Phones have no keyboard, so it hides itself on Android and iOS — no `if OS.has_feature(...)` per screen.
+- 🛑 Key names are never translated and never wrap: `Ctrl` is what is printed on the key, and breaking it
+  across two lines makes it unfindable. Caps stay in physical order in RTL too.
+
+## 8. Accessibility — what gohud does for you, and what it cannot
+
+| Done for you | Where |
+|---|---|
+| 48 dp touch behind smaller visuals, nearest-centre resolution | `min_touch_size`, `touch_peers` |
+| Focus rings only for keyboard/gamepad, focus trapped and restored | `suppress_pointer_focus_ring`, `GoSurface` |
+| `accessibility_name` on icon buttons, badges, bars, slots, tables, charts, code fields | the widgets |
+| State told by **shape or text**, not only colour — tick glyphs, dashed comparison lines, ▲▼ sort marks, error text | the widgets |
+| `reduce_motion` honoured: no spin, no autoplay, no slide | `GoConfig.reduce_motion` |
+| One place to join spoken phrases | `GoUi.spoken([label, error])` |
+
+What it **cannot** do for you: name your own controls, decide which colour means what in your game, or
+write the error text. Anything you build with `GoStyle` factories needs its own `accessibility_name` when
+the visible label is not enough.
+
+```gdscript
+node.accessibility_name = GoUi.spoken([field_label.text, error_label.text])
+```
+
+🛑 Do not build `"%s %s"` yourself in each widget — that both scatters the joining rule and leaks past the
+check that keeps display strings out of the add-on's code.

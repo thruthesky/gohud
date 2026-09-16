@@ -44,6 +44,7 @@ static var _open: CanvasLayer
 ## | `max_height` | 카드 최대 높이(dp) | 520 |
 ## | `dismissable` | 바깥을 눌러 닫을 수 있다 | `true` |
 ## | `compact` | 여백을 좁게 — 한두 줄짜리 설명에 | `false` |
+## | `alpha` | 카드 바탕의 불투명도(0.0~1.0). 음수면 테마·설정 값 | `-1.0` |
 ##
 ## 🛑 **한 번에 하나만** 뜬다. 슬롯을 연달아 누르면 앞의 것이 닫히고 새것이 뜬다 —
 ##    쌓이면 화면이 카드로 덮이고 어느 것이 어느 슬롯의 것인지 알 수 없다.
@@ -66,6 +67,8 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 	#    비교하려던 그 화면이 안 보인다. 바깥 탭을 받는 역할만 남긴다.
 	surface.scrim_transparent = true
 	surface.compact = bool(options.get("compact", false))
+	# 🔑 정보를 **비교하려고** 연 카드다 — 뒤 화면이 보여야 할 때가 많아 창마다 정할 수 있게 둔다.
+	surface.alpha = float(options.get("alpha", -1.0))
 	var title := str(options.get("title", ""))
 	surface.show_header = not title.is_empty()
 

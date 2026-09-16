@@ -153,6 +153,33 @@ signal changed_settings
 ## 가로 화면에서 카드가 쓰는 폭의 비율(좌우가 남으므로 더 좁게).
 @export_range(0.3, 1.0, 0.01) var surface_width_ratio_landscape := 0.72
 
+## 🪟 판(컨테이너) 바탕의 **불투명도(%)** — 프로젝트 전체에 한 번에 건다.
+## 80 이면 판 뒤가 20% 만큼 배어 나온다. **-1 이면 테마가 정한 값 그대로**(기본).
+##
+## 🛑 `0.8` 이 아니라 `80` 이다 — 퍼센트 정수다(`GoTheme.PANEL_ALPHA` 주석). 0 은 "판이 안 보인다" 다.
+## 🛑 글자·아이콘·버튼은 이 값을 따르지 않는다. 판의 바탕만 묽어지고 그 위 내용은 선명하다.
+##
+## ```gdscript
+## GoUi.config.container_alpha = 70      # 판 전부를 70%
+## GoUi.refresh()                        # 🛑 떠 있는 위젯까지 다시 그리려면 부른다
+## ```
+@export_range(-1, 100) var container_alpha := -1
+
+## 🪟 판 **종류별** 불투명도(%) — 위 `container_alpha` 보다 **우선한다.**
+## 키는 판 종류(`GoTheme.BOX_PANEL`·`BOX_CARD`·`BOX_HUD`·`BOX_NOTICE`·`BOX_POPUP`)다.
+##
+## 🔑 요구가 종류마다 다르기 때문에 있다 — 대화상자는 뒤가 보여도 좋지만, 게임 그림 위에 바로
+##    얹히는 HUD 판은 더 꽉 차야 글자가 읽힌다.
+##
+## ```gdscript
+## GoUi.config.container_alpha_overrides = {
+##     GoTheme.BOX_PANEL: 70,   # 대화상자·시트는 시원하게
+##     GoTheme.BOX_HUD: 95,     # HUD 는 거의 꽉 차게 — 월드 위에서 읽혀야 한다
+## }
+## GoUi.refresh()
+## ```
+@export var container_alpha_overrides: Dictionary[StringName, int] = {}
+
 ## 배경(스크림)을 눌러 닫을 수 있는가의 기본값. 표면마다 따로 정할 수 있다.
 @export var dismiss_on_scrim := false
 
@@ -287,6 +314,7 @@ func copy() -> GoConfig:
 	var clone: GoConfig = duplicate(true)
 	clone.color_overrides = color_overrides.duplicate(true)
 	clone.metric_overrides = metric_overrides.duplicate(true)
+	clone.container_alpha_overrides = container_alpha_overrides.duplicate(true)
 	clone.sound_cues = sound_cues.duplicate(true)
 	clone.text_keys = text_keys.duplicate(true)
 	clone.text_overrides = text_overrides.duplicate(true)

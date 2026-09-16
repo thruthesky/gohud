@@ -172,8 +172,10 @@ func _build_dots() -> void:
 		dot.theme = GoUi.theme()
 		dot.theme_type_variation = GoTheme.VAR_BARE_BUTTON
 		dot.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-		# 🛑 보이는 점은 작아도 **누르는 자리는 터치 하한**이다 — 6dp 점을 직접 누르게 하지 않는다.
-		var touch := float(GoUi.metric(GoTheme.TOUCH)) * 0.6
+		# 🛑 보이는 점은 작아도 **누르는 자리는 터치 하한 그대로**다. 0.6 을 곱해 28.8dp 로 줄였던
+		#    것은 하한을 스스로 깬 것이었다(2026-09-16 실측). 점이 촘촘해 보이면 점 크기를 줄이지
+		#    누르는 자리를 줄이지 않는다.
+		var touch := float(GoUi.metric(GoTheme.TOUCH))
 		dot.custom_minimum_size = Vector2(touch, touch)
 		var lit := i == _index
 		var glyph := PanelContainer.new()
@@ -231,7 +233,9 @@ func _process(delta: float) -> void:
 ## 저절로 넘길 조건이 되는지 보고 `_process` 를 켜고 끈다.
 ## 🛑 `reduce_motion` 이면 **끈다** — 움직임을 줄인 사람에게 스스로 움직이는 화면을 주지 않는다.
 func _sync_timer() -> void:
-	set_process(autoplay_seconds > 0.0 and _pages.size() > 1
+	# 🛑 **안 보이면 돌지 않는다** — 서랍이나 시트 뒤에 가린 배너가 계속 넘어가면, 돌아왔을 때
+	#    엉뚱한 쪽이 떠 있고 그동안 배터리만 쓴다.
+	set_process(autoplay_seconds > 0.0 and _pages.size() > 1 and is_visible_in_tree()
 		and not GoUi.config.reduce_motion and not Engine.is_editor_hint())
 
 
@@ -243,3 +247,4 @@ func _on_ui_changed() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED: _build_dots()
+	elif what == NOTIFICATION_VISIBILITY_CHANGED: _sync_timer()

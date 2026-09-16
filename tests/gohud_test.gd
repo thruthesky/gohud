@@ -69,6 +69,7 @@ func _initialize() -> void:
 	await _section("localization", _i18n)
 	await _section("text customisation", _text_customisation)
 	await _section("scale functions", _scale)
+	await _section("container alpha", _container_alpha)
 	await _section("widgets", _widgets)
 	await _section("style factories", _style)
 	await _section("icon button", _icon_button)
@@ -172,6 +173,147 @@ func _tokens() -> void:
 	check(GoUi.metric(GoTheme.TOUCH) == 48, "모바일 축소는 터치 크기를 건드리지 않는다")
 	GoUi.set_mobile_type(false)
 	check(GoUi.font_size(GoTheme.ROLE_BODY) == body, "축소 해제")
+
+
+# ── 판 불투명도(컨테이너 투명도) ───────────────────────────────────────
+#
+# 🔑 이 기능의 값어치는 **네 층이 정확한 순서로 겹치는가**에 있다 — 테마가 정본이고, 프로젝트 설정이
+#    그것을 덮고, 종류별 설정이 그것을 덮고, 그 자리의 인자가 마지막에 이긴다. 한 층만 어긋나도
+#    "왜 내 값이 안 먹지" 가 되고, 그것은 화면을 봐도 알 수 없다.
+# 🛑 그리고 **판만 묽어져야 한다** — 글자·버튼·배지·퀵슬롯까지 따라 묽어지면 읽히지 않는 UI 가 된다.
+
+func _container_alpha() -> void:
+	var settings := GoUi.config
+	var skin := GoUi.skin()
+
+	# ── ① 테마가 정본 ──────────────────────────────────────────────────
+	check(near(GoUi.surface_alpha(GoTheme.BOX_PANEL), 0.80, 0.001),
+		"기본 테마의 팝업·시트 판은 80%% (%.2f)" % GoUi.surface_alpha(GoTheme.BOX_PANEL))
+	check(near(GoUi.surface_alpha(GoTheme.BOX_CARD), 0.80, 0.001)
+		and near(GoUi.surface_alpha(GoTheme.BOX_HUD), 0.80, 0.001)
+		and near(GoUi.surface_alpha(GoTheme.BOX_NOTICE), 0.80, 0.001),
+		"카드·HUD·알림 판도 80%")
+	# 🛑 팝업 메뉴만 꽉 찬 색이다 — `PopupMenu` 는 엔진이 창으로 띄울 수 있고 그때는 합성되지 않는다.
+	check(near(GoUi.surface_alpha(GoTheme.BOX_POPUP), 1.0, 0.001), "팝업 메뉴 판은 기본이 꽉 찬 색")
+	# 낯선 종류는 카드 규칙을 따른다 — 모르는 판이 사라지거나 튀지 않는다.
+	check(GoTheme.alpha_token(&"nonexistent") == GoTheme.CARD_ALPHA, "낯선 판 종류는 카드 토큰으로")
+	# 토큰을 모르는 테마에서도 판이 사라지지 않는다(없으면 100).
+	check(near(float(GoTheme.metric_of(Theme.new(), GoTheme.PANEL_ALPHA, null, 100)), 100.0, 0.001),
+		"토큰이 없는 테마는 100(꽉 찬 색)으로 떨어진다 — 판이 사라지지 않는다")
+
+	# ── ② 프로젝트 전체 설정이 테마를 덮는다 ───────────────────────────
+	settings.container_alpha = 50
+	check(near(GoUi.surface_alpha(GoTheme.BOX_PANEL), 0.50, 0.001)
+		and near(GoUi.surface_alpha(GoTheme.BOX_HUD), 0.50, 0.001),
+		"container_alpha 는 판 종류 전부를 한 번에 덮는다")
+
+	# ── ③ 종류별 설정이 전체 설정을 덮는다 ────────────────────────────
+	settings.container_alpha_overrides = {GoTheme.BOX_HUD: 95}
+	check(near(GoUi.surface_alpha(GoTheme.BOX_HUD), 0.95, 0.001)
+		and near(GoUi.surface_alpha(GoTheme.BOX_PANEL), 0.50, 0.001),
+		"종류별 설정이 전체 설정보다 우선 — 지정한 종류만 바뀐다")
+	# 치수 덮어쓰기(같은 이름의 토큰)도 길이 된다 — 치수를 한 곳에 모으는 프로젝트의 관습을 위해.
+	settings.container_alpha_overrides = {}
+	settings.metric_overrides = {GoTheme.CARD_ALPHA: 30}
+	check(near(GoUi.surface_alpha(GoTheme.BOX_CARD), 0.30, 0.001),
+		"metric_overrides[card_alpha] 도 판 불투명도로 읽힌다")
+	settings.metric_overrides = {}
+	# 범위를 벗어난 값은 잘린다 — 설정 오타 하나로 판이 사라지거나 두 배로 칠해지지 않는다.
+	settings.container_alpha_overrides = {GoTheme.BOX_CARD: 400}
+	check(near(GoUi.surface_alpha(GoTheme.BOX_CARD), 1.0, 0.001), "100 이 넘는 값은 꽉 찬 색으로 잘린다")
+	settings.container_alpha_overrides = {}
+	settings.container_alpha = -1
+
+	# ── ④ 판에 실제로 닿는가 · 곱셈인가 ──────────────────────────────
+	var solid := skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
+	var faded := skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 0.5)
+	var solid_a := GoSkin.box_background(solid).a
+	check(near(GoSkin.box_background(faded).a, solid_a * 0.5, 0.01),
+		"판 불투명도는 테마 값에 **곱한다** — 테마가 정한 반투명을 지운다면 그 결정이 사라진다")
+	# 🛑 테두리는 묽어지지 않는다 — 윤곽이 흐려지면 판이 어디서 끝나는지 알 수 없다.
+	var solid_flat := solid as StyleBoxFlat
+	var faded_flat := faded as StyleBoxFlat
+	check(solid_flat == null or faded_flat == null
+		or near(faded_flat.border_color.a, solid_flat.border_color.a, 0.001),
+		"바탕만 묽어진다 — 테두리 진하기는 그대로")
+	check(solid_flat == null or faded_flat == null
+		or near(faded_flat.shadow_color.a, solid_flat.shadow_color.a, 0.001),
+		"그림자도 그대로 — 떠 있다는 신호를 잃지 않는다")
+	# 두 번 입히지 않는다 — `fade_box` 를 겹쳐 부르면 판이 사라지는 것이 이 기능의 유일한 함정이다.
+	check(near(GoSkin.box_background(skin.floating_box(GoTheme.BOX_HUD, Color.TRANSPARENT, 0.5)).a,
+		GoSkin.box_background(skin.floating_box(GoTheme.BOX_HUD, Color.TRANSPARENT, 1.0)).a * 0.5, 0.01),
+		"떠 있는 판도 한 번만 묽어진다(surface_box 를 거치지만 두 번 곱하지 않는다)")
+
+	# ── ⑤ 버튼·표식은 따라 묽어지지 않는다 ──────────────────────────
+	# 🔑 기준은 "설정을 바꾸기 **전과 같은가**" 다 — 슬롯 바탕은 쿨다운 틴트 보간의 결과라
+	#    고정 숫자로 잴 수 없다(그 숫자를 박으면 다이얼을 돌린 스킨에서 검사가 깨진다).
+	var slot_before := GoSkin.box_background(skin.slot_box(GoUi.color(GoTheme.ACCENT), false)).a
+	settings.container_alpha = 40
+	check(near(GoSkin.box_background(skin.slot_box(GoUi.color(GoTheme.ACCENT), false)).a, slot_before, 0.01),
+		"퀵슬롯은 판 불투명도를 따르지 않는다 — 누르는 칸이고 쿨다운 틴트로 상태를 말한다")
+	check(near(GoSkin.box_background(skin.segment_box(0, 2, &"normal")).a,
+		GoSkin.box_background(skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)).a, 0.01),
+		"분절 선택(버튼)은 판 불투명도를 따르지 않는다")
+	check(near(GoSkin.box_background(skin.choice_box(&"normal")).a,
+		GoSkin.box_background(skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)).a, 0.01),
+		"고르는 칸(버튼)도 따르지 않는다")
+	var badge_alpha := GoSkin.box_background(skin.badge_box(GoUi.color(GoTheme.ACCENT))).a
+	check(near(badge_alpha, 1.0, 0.01), "배지는 따르지 않는다 — 두 글자를 읽히게 하는 표식이다 (%.2f)" % badge_alpha)
+	# 안내 상자는 컨테이너다 — 따른다. 🛑 바탕을 톤 색으로 덮어쓴 **뒤에** 입혀야 이 값이 남는다.
+	check(near(GoSkin.box_background(skin.alert_box(GoUi.color(GoTheme.DANGER))).a, 0.40, 0.01),
+		"안내 상자는 컨테이너라 따른다(바탕을 톤 색으로 덮어쓴 뒤에도 남는다)")
+	# 알약 판(지도·월드 위)도 따른다 — 기본 0.82 를 박아 두었던 자리가 토큰으로 옮겨졌다.
+	var pill := skin.overlay_box() as StyleBoxFlat
+	check(pill == null or near(pill.bg_color.a, 0.40, 0.01), "그림 위 알약 판도 따른다")
+	settings.container_alpha = -1
+
+	# ── ⑥ 위젯 하나만 다르게 ──────────────────────────────────────────
+	var window := GoSurface.new()
+	root.add_child(window)
+	await frames(1)
+	var themed := GoSkin.box_background(window.card.get_theme_stylebox(&"panel")).a
+	check(near(themed, 0.80, 0.02), "표면 카드가 테마 값(80%%)으로 그려진다 (%.2f)" % themed)
+	window.alpha = 0.35
+	await frames(1)
+	check(near(GoSkin.box_background(window.card.get_theme_stylebox(&"panel")).a, 0.35, 0.02),
+		"표면 하나만 35% 로 — 나머지 창은 그대로")
+	# 🛑 여러 번 다시 그려도 한 번만 묽어진다(원래 판을 적어 두므로).
+	window._on_ui_changed()
+	window._on_ui_changed()
+	await frames(1)
+	check(near(GoSkin.box_background(window.card.get_theme_stylebox(&"panel")).a, 0.35, 0.02),
+		"다시 그려도 더 묽어지지 않는다 — 원래 판에서 다시 계산한다")
+	window.alpha = 1.0
+	await frames(1)
+	check(not window.card.has_theme_stylebox_override(&"panel"),
+		"1.0 으로 되돌리면 판 덮기를 걷어낸다 — 테마 변형이 그리던 대로")
+	window.queue_free()
+
+	# 이미 만들어 둔 남의 판에도 같은 규칙을 입힌다.
+	var host := PanelContainer.new()
+	root.add_child(host)
+	await frames(1)
+	var host_solid := GoSkin.box_background(host.get_theme_stylebox(&"panel")).a
+	GoStyle.fade_panel(host, 0.5)
+	check(near(GoSkin.box_background(host.get_theme_stylebox(&"panel")).a, host_solid * 0.5, 0.02),
+		"fade_panel 은 gohud 가 만들지 않은 판에도 같은 규칙을 입힌다")
+	GoStyle.fade_panel(host, 0.5)
+	GoStyle.fade_panel(host, 0.5)
+	check(near(GoSkin.box_background(host.get_theme_stylebox(&"panel")).a, host_solid * 0.5, 0.02),
+		"fade_panel 을 세 번 불러도 한 번만 묽어진다")
+	GoStyle.fade_panel(host, 1.0)
+	check(not host.has_theme_stylebox_override(&"panel"), "fade_panel(1.0) 은 덮기를 걷어낸다")
+	host.queue_free()
+
+	# ── ⑦ 카드·안내 상자의 개별 인자 ─────────────────────────────────
+	var loud_card := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.25)
+	check(near(GoSkin.box_background(loud_card.get_theme_stylebox(&"panel")).a, 0.25, 0.02),
+		"GoStyle.card(…, alpha) 로 카드 하나만")
+	var plain_card := GoStyle.card()
+	check(not plain_card.has_theme_stylebox_override(&"panel"),
+		"인자 없는 카드는 여전히 판을 덮지 않는다 — 호스트가 정의한 GoCard 변형을 지키다")
+	loud_card.queue_free()
+	plain_card.queue_free()
 
 
 # ── 생김새 묶음 · 스킨 ─────────────────────────────────────────────────
@@ -960,8 +1102,18 @@ func _style() -> void:
 	GoStyle.style_notice_panel(notice_box, GoUi.color(GoTheme.DANGER), 0.14)
 	var notice_face := notice_box.get_theme_stylebox(&"panel")
 	var want_bg := (GoUi.color(GoTheme.BACKGROUND) as Color).lerp(GoUi.color(GoTheme.DANGER), 0.14)
-	check(notice_face != null and GoSkin.box_background(notice_face).is_equal_approx(want_bg),
+	var got_bg := GoSkin.box_background(notice_face)
+	# 🔑 **색조와 불투명도를 따로 본다** — 어느 쪽으로 물들었나(색)와 얼마나 비치나(알파)는 다른 결정이다.
+	check(notice_face != null and near(got_bg.r, want_bg.r, 0.01) and near(got_bg.g, want_bg.g, 0.01)
+		and near(got_bg.b, want_bg.b, 0.01),
 		"알림 판 — 바탕을 의미색 쪽으로 당긴다(새 팔레트를 만들지 않는다)")
+	check(near(got_bg.a, want_bg.a * GoUi.surface_alpha(GoTheme.BOX_NOTICE), 0.01),
+		"알림 판 — 불투명도는 notice_alpha 토큰(%.2f)" % GoUi.surface_alpha(GoTheme.BOX_NOTICE))
+	var notice_solid := PanelContainer.new()
+	brand_host.add_child(notice_solid)
+	GoStyle.style_notice_panel(notice_solid, GoUi.color(GoTheme.DANGER), 0.14, -1, 1.0)
+	check(near(GoSkin.box_background(notice_solid.get_theme_stylebox(&"panel")).a, want_bg.a, 0.01),
+		"알림 판 — 불투명도를 직접 주면 그 값 그대로")
 	check(near(notice_face.content_margin_left, float(GoUi.metric(GoTheme.PADDING_COMPACT))),
 		"알림 판 여백 = padding_compact 토큰 (%.0f)" % notice_face.content_margin_left)
 	# 고정폭 글 상자
@@ -2481,7 +2633,13 @@ func _widgets() -> void:
 	var glass_default: StyleBox = GoUi.skin().overlay_box()
 	check(near(glass_default.get_margin(SIDE_LEFT), GoUi.metric(GoTheme.COMPACT_PADDING_X)), "overlay_box: 여백을 안 주면 작은 버튼 여백 토큰")
 	var glass_flat := glass_default as StyleBoxFlat
-	check(glass_flat == null or (is_equal_approx(glass_flat.bg_color.a, 0.82) and glass_flat.border_width_left == 1), "overlay_box: 바탕 불투명도 0.82 · 테두리 1")
+	# 🛑 숫자를 박지 않는다 — 바탕 불투명도는 테마의 `hud_alpha` 토큰이 정하고, 팔레트마다 다를 수 있다.
+	var glass_want := GoUi.surface_alpha(GoTheme.BOX_HUD)
+	check(glass_flat == null or (is_equal_approx(glass_flat.bg_color.a, glass_want) and glass_flat.border_width_left == 1),
+		"overlay_box: 바탕 불투명도 = hud_alpha 토큰(%.2f) · 테두리 1" % glass_want)
+	var glass_fixed := GoUi.skin().overlay_box(-1, -1, 0.5) as StyleBoxFlat
+	check(glass_fixed == null or is_equal_approx(glass_fixed.bg_color.a, 0.5),
+		"overlay_box: 불투명도를 직접 주면 그 값 그대로")
 	# 🔑 지도·월드 그림 위의 알약 판 컨테이너 — 판을 부르는 쪽이 만들지 않는다.
 	var overlay := GoStyle.overlay_panel(4, 2)
 	var overlay_face := overlay.get_theme_stylebox(&"panel")

@@ -135,6 +135,29 @@ static func readable_on(ink: Color, back: Color, need := 4.5) -> Color:
 	return out
 
 
+## 🪟 판 **바탕의 불투명도만** 낮춘다 — 테두리·그림자·발광·질감은 건드리지 않는다.
+##
+## ## 왜 바탕만인가
+## 반투명한 판은 **윤곽이 선명해야** 유리처럼 읽힌다. 테두리까지 함께 묽어지면 판이 어디서
+## 끝나는지 알 수 없어 "흐릿한 화면" 이 되고, 그것은 투명한 판이 아니라 고장으로 보인다.
+## 글자·아이콘도 같은 이유로 건드리지 않는다 — 그쪽은 `modulate` 의 일이고, 읽히는 것이 먼저다.
+##
+## ## 🛑 **곱한다**, 덮어쓰지 않는다
+## 테마가 이미 반투명으로 정한 판(기본 테마의 HUD 판은 0.92)이 있다. 덮어쓰면 그 결정이
+## 사라지므로 비율로 곱한다 — 0.92 × 0.80 = 0.736. 그래서 **두 번 부르면 두 번 묽어진다**:
+## 알파는 판 한 장에 **한 곳에서만** 입힌다(`surface_box` 가 그 한 곳이다).
+##
+## [param alpha] 가 음수면 아무것도 하지 않는다 — "정하지 않았다" 를 그대로 흘려보내는 값이다.
+static func fade_box(box: StyleBox, alpha: float) -> StyleBox:
+	if box == null or alpha < 0.0 or alpha >= 1.0: return box
+	if not (&"bg_color" in box): return box
+	var fill: Color = box.get(&"bg_color")
+	# 이미 투명한 판(윤곽만 그리는 판)은 그대로 둔다 — 0 에 곱해도 0 이지만, 뜻을 분명히 한다.
+	if fill.a <= 0.0: return box
+	box.set(&"bg_color", Color(fill, fill.a * alpha))
+	return box
+
+
 ## StyleBox 의 배경색(없으면 투명). 커스텀 StyleBox 도 `bg_color` 칸을 쓴다.
 static func box_background(box: StyleBox) -> Color:
 	if box == null: return Color.TRANSPARENT
@@ -149,24 +172,30 @@ static func box_background(box: StyleBox) -> Color:
 ##
 ## 🔑 테마가 **커스텀 StyleBox**(각진 판 등)를 줬으면 그대로 돌려준다 — 그것이 모양을 바꾸는 길이다.
 ## 🛑 `0.5` — 이 값은 gohud 가 파생된 게임의 규범이다. 0.55 로 짰다가 위임 대조 검사에서 잡혔다(2026-09-12).
-func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) -> StyleBox:
+## [param alpha] 는 판 **바탕의 불투명도**(0.0~1.0)다. 음수면 테마·설정이 정한 값
+## (`GoUi.surface_alpha(variant)`)을 쓴다 — 거기서 종류별 토큰·프로젝트 설정·개별 덮어쓰기가 합쳐진다.
+## 🛑 **불투명도를 입히는 자리는 여기 하나다.** 이것을 부르는 판(`floating_box`·`notice_box` …)은
+##    알파를 직접 입히지 않고 이 인자로 넘긴다 — 두 번 입히면 두 번 묽어진다(`fade_box` 주석).
+func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
 	var style := GoUi.box(variant)
+	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(variant)
 	var flat := style as StyleBoxFlat
 	if flat == null:
 		# 테마가 StyleBoxFlat 이 아닌 것을 줬다. 빈 상자면 예전처럼 평판을 새로 만들고,
 		# 실제로 그리는 커스텀 상자면 그것을 살린다.
 		if style != null and not (style is StyleBoxEmpty):
 			if accent.a > 0 and &"border_color" in style: style.set(&"border_color", Color(accent, 0.5))
-			return style
+			return fade_box(style, opacity)
 		flat = StyleBoxFlat.new()
 		flat.bg_color = GoUi.color(GoTheme.SURFACE)
 	if accent.a > 0: flat.border_color = Color(accent, 0.5)
-	return flat
+	return fade_box(flat, opacity)
 
 
 ## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다.
-func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT) -> StyleBox:
-	var style := surface_box(variant, accent)
+## [param alpha] 는 `surface_box` 와 같다(음수면 테마·설정 값).
+func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
+	var style := surface_box(variant, accent, alpha)
 	var flat := style as StyleBoxFlat
 	if flat == null:
 		# 🛑 사선 판은 그림자를 못 그린다 — 대신 **발광을 키워** 떠 있음을 말한다. 발광이 없는 판(색 0)은 그대로.
@@ -183,15 +212,20 @@ func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT) -> St
 ## `h_margin`·`v_margin` 은 판 안쪽 여백(dp) — 음수면 작은 버튼 여백 토큰. `fill_alpha` 는 바탕의 불투명도.
 ## 🔑 **판 안에 또 판을 넣지 않는다** — 이 알약 안의 버튼은 `GoBareButton` 이나 `segmented()` 칸으로 두어
 ##    테두리가 두 겹으로 겹쳐 보이지 않게 한다.
-func overlay_box(h_margin := -1, v_margin := -1, fill_alpha := 0.82) -> StyleBox:
-	var style := surface_box(GoTheme.BOX_HUD)
+func overlay_box(h_margin := -1, v_margin := -1, fill_alpha := -1.0) -> StyleBox:
+	# 🛑 바탕을 **아래에서 덮어쓰므로** 알파를 `surface_box` 에 맡기지 않는다(맡기면 두 번 곱해진다).
+	var style := surface_box(GoTheme.BOX_HUD, Color.TRANSPARENT, 1.0)
+	var opacity := fill_alpha if fill_alpha >= 0.0 else GoUi.surface_alpha(GoTheme.BOX_HUD)
 	var flat := style as StyleBoxFlat
 	if flat != null:
-		flat.bg_color = Color(GoUi.color(GoTheme.BACKGROUND), fill_alpha)
+		flat.bg_color = Color(GoUi.color(GoTheme.BACKGROUND), opacity)
 		flat.border_color = Color(GoUi.color(GoTheme.BORDER), 0.9)
 		flat.set_border_width_all(1)
 		flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS))
 		flat.shadow_size = 0
+	else:
+		# 커스텀 판(사선 판·중세 판)은 위 갈래를 타지 않는다 — 그 판의 바탕에 같은 불투명도를 입힌다.
+		fade_box(style, opacity)
 	var h := float(GoUi.metric(GoTheme.COMPACT_PADDING_X) if h_margin < 0 else h_margin)
 	var v := float(GoUi.metric(GoTheme.COMPACT_PADDING_Y) if v_margin < 0 else v_margin)
 	style.content_margin_left = h
@@ -202,8 +236,9 @@ func overlay_box(h_margin := -1, v_margin := -1, fill_alpha := 0.82) -> StyleBox
 
 
 ## 원형 배지·아바타 테두리 — accent 를 옅게 채우고 같은 색 링을 두른다.
+## 🛑 판 불투명도(`GoTheme.HUD_ALPHA`)를 따르지 않는다 — 원판은 **표식**이고 자기 `fill_alpha` 를 이미 갖는다.
 func disc_box(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> StyleBox:
-	var style := surface_box(GoTheme.BOX_HUD, accent)
+	var style := surface_box(GoTheme.BOX_HUD, accent, 1.0)
 	var flat := style as StyleBoxFlat
 	if flat == null: return style
 	flat.bg_color = Color(accent, fill_alpha)
@@ -272,19 +307,23 @@ func skeleton_box() -> StyleBox:
 
 
 ## 화면 안에 붙박이로 두는 안내 상자의 판. `ink` 는 톤 색.
-func alert_box(ink: Color) -> StyleBox:
-	var style := surface_box(GoTheme.BOX_CARD, ink)
+## [param alpha] 는 판 바탕의 불투명도(음수면 카드 값) — 안내 상자는 **카드 안에 놓이는 컨테이너**다.
+func alert_box(ink: Color, alpha := -1.0) -> StyleBox:
+	# 🛑 바탕을 톤 색 쪽으로 물들여 **덮어쓰므로** 알파는 그 뒤에 입힌다(먼저 입히면 지워진다).
+	var style := surface_box(GoTheme.BOX_CARD, ink, 1.0)
+	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(GoTheme.BOX_CARD)
 	var flat := style as StyleBoxFlat
-	if flat == null: return style
+	if flat == null: return fade_box(style, opacity)
 	flat.bg_color = GoUi.color(GoTheme.SURFACE).lerp(ink, alert_tint)
 	flat.set_border_width_all(1)
-	return flat
+	return fade_box(flat, opacity)
 
 
 ## 분절 선택(Segmented)의 한 칸. 양 끝만 둥글고 가운데는 각지게 — 한 덩어리로 읽힌다.
 ## `state` 는 `&"normal"`·`&"hover"`·`&"pressed"`·`&"hover_pressed"`·`&"focus"`.
 func segment_box(index: int, count: int, state: StringName) -> StyleBox:
-	var style := surface_box(GoTheme.BOX_CARD)
+	# 🛑 판 불투명도를 따르지 않는다 — 분절 선택은 **누르는 것**이고, 버튼이 묽어지면 상태가 안 읽힌다.
+	var style := surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
 	var face := style as StyleBoxFlat
 	if face == null: return style
 	if state == &"pressed" or state == &"hover_pressed":
@@ -309,7 +348,8 @@ func choice_box(state: StringName) -> StyleBox:
 		var ring := GoUi.box(GoTheme.BOX_FOCUS_SOFT)
 		_choice_insets(ring)
 		return ring
-	var style := surface_box(GoTheme.BOX_CARD)
+	# 🛑 판 불투명도를 따르지 않는다 — 고르는 칸은 버튼이다(`segment_box` 와 같은 이유).
+	var style := surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
 	_choice_insets(style)
 	var face := style as StyleBoxFlat
 	if face == null:
@@ -414,7 +454,8 @@ func _edge_fill(box: StyleBox, ink: Color) -> void:
 ## 모서리에 걸쳐 두면 아이콘이 가운데에 크게 남는다(2026-09-13 — 세로로 쌓였을 때 비좁았다).
 ## 판 모양은 `surface_box` 에서 나오므로 sci-fi 에서는 저절로 각진 배지가 된다.
 func badge_box(ink: Color) -> StyleBox:
-	var style := surface_box(GoTheme.BOX_HUD, ink)
+	# 🛑 판 불투명도를 따르지 않는다 — 배지는 두 글자를 읽히게 하는 **표식**이고, 아래 판 위에 겹쳐 놓인다.
+	var style := surface_box(GoTheme.BOX_HUD, ink, 1.0)
 	style.content_margin_left = badge_pad_x
 	style.content_margin_right = badge_pad_x
 	style.content_margin_top = badge_pad_y
@@ -433,7 +474,8 @@ func badge_box(ink: Color) -> StyleBox:
 
 ## 퀵슬롯 한 칸의 판. `lit` 은 쿨다운·잔여 시간이 도는 중이라는 뜻이다.
 func slot_box(accent: Color, lit: bool) -> StyleBox:
-	var style := surface_box(GoTheme.BOX_HUD, accent)
+	# 🛑 판 불투명도를 따르지 않는다 — 퀵슬롯은 **누르는 칸**이고 쿨다운 틴트로 상태를 말한다.
+	var style := surface_box(GoTheme.BOX_HUD, accent, 1.0)
 	var flat := style as StyleBoxFlat
 	if flat == null: return style
 	flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
@@ -448,8 +490,9 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 
 ## 스낵바의 판. `compact` 면 좁은 여백을 준다.
-func notice_box(accent: Color, compact: bool) -> StyleBox:
-	var surface := surface_box(GoTheme.BOX_NOTICE, accent)
+## [param alpha] 는 판 바탕의 불투명도(음수면 `GoTheme.NOTICE_ALPHA`).
+func notice_box(accent: Color, compact: bool, alpha := -1.0) -> StyleBox:
+	var surface := surface_box(GoTheme.BOX_NOTICE, accent, alpha)
 	if compact: surface.set_content_margin_all(GoUi.metric(GoTheme.PADDING_COMPACT))
 	return surface
 

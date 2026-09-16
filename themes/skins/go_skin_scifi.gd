@@ -41,8 +41,8 @@ extends GoSkin
 # ── 표면 ───────────────────────────────────────────────────────────────
 
 ## 강조색을 줄 때 테두리뿐 아니라 **강조 변**까지 그 색으로 — 각진 판의 정체성이 그 한 줄이다.
-func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) -> StyleBox:
-	var style := super(variant, accent)
+func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
+	var style := super(variant, accent, alpha)
 	var cut := style as GoStyleBoxCut
 	if cut != null and accent.a > 0 and cut.edge_color.a > 0:
 		cut.edge_color = Color(accent, cut.edge_color.a)
@@ -85,8 +85,10 @@ func disc_box(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 
 
 
 ## 왼쪽에 굵은 띠를 세운 안내 상자 — 목록 속에서 눈이 먼저 그 띠를 잡는다.
-func alert_box(ink: Color) -> StyleBox:
+func alert_box(ink: Color, alpha := -1.0) -> StyleBox:
 	var box := GoStyleBoxCut.new()
+	# 🛑 판을 처음부터 짓는다 — 그래서 불투명도도 여기서 직접 입힌다(부모가 입혀 줄 판이 없다).
+	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(GoTheme.BOX_CARD)
 	box.bg_color = GoUi.color(GoTheme.SURFACE).lerp(ink, 0.12)
 	box.border_color = Color(ink, 0.5)
 	box.border_width = 1.0
@@ -95,7 +97,7 @@ func alert_box(ink: Color) -> StyleBox:
 	box.edge_width = 3.0
 	box.edge_side = SIDE_LEFT
 	box.set_content_margin_all(GoUi.metric(GoTheme.GAP))
-	return box
+	return fade_box(box, opacity)
 
 
 ## 분절 선택 — 양 끝만 자르고 가운데는 각진 채로 이어 붙인다.

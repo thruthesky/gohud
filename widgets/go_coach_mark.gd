@@ -62,6 +62,14 @@ var _column: VBoxContainer
 var _header: HBoxContainer
 
 
+## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
+## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		if card != null: _apply_accent()
+
+
 func _init() -> void:
 	name = "CoachMark"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -77,7 +85,7 @@ func _build() -> void:
 
 	card = PanelContainer.new()
 	card.name = "GuideCard"
-	var face := GoUi.skin().floating_box(GoTheme.BOX_CARD, accent)
+	var face := GoUi.skin().floating_box(GoTheme.BOX_CARD, accent, alpha)
 	face.set_content_margin_all(0)
 	card.add_theme_stylebox_override(&"panel", face)
 	add_child(card)
@@ -138,7 +146,7 @@ func _ready() -> void:
 func _apply_accent() -> void:
 	var accent := _accent()
 	_ring = GoUi.skin().coach_ring_box(accent)
-	var face := GoUi.skin().floating_box(GoTheme.BOX_CARD, accent)
+	var face := GoUi.skin().floating_box(GoTheme.BOX_CARD, accent, alpha)
 	face.set_content_margin_all(0)
 	card.add_theme_stylebox_override(&"panel", face)
 	progress_label.add_theme_color_override(&"font_color", accent)

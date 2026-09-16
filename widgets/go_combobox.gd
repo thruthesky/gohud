@@ -118,7 +118,7 @@ func _sync_text() -> void:
 	text = selected_text() if _selected >= 0 else placeholder
 	# ♿ "무엇을 고르는 칸인지" + "지금 무엇이 골라져 있는지" 를 함께 읽힌다.
 	var spoken := placeholder if not placeholder.is_empty() else GoUi.text(&"search")
-	accessibility_name = "%s %s" % [spoken, selected_text()] if _selected >= 0 else spoken
+	accessibility_name = GoUi.spoken([spoken, selected_text()])
 	if _selected < 0 and not placeholder.is_empty():
 		add_theme_color_override(&"font_color", GoUi.color(GoTheme.MUTED))
 	else:

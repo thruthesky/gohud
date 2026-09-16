@@ -113,8 +113,9 @@ static func insets(node: MarginContainer, amount := -1, vertical := -1) -> void:
 ## 🛑 판은 글의 방향을 모른다 — RTL(아랍어·우르두)에서는 띠가 **오른쪽**에 서야 하므로,
 ##    카드를 만드는 쪽이 `Control.is_layout_rtl()` 을 읽어 [param rtl] 로 알려준다.
 ## [param width] 음수면 작은 간격 토큰.
-static func edge_card(accent: Color, rtl := false, width := -1.0) -> StyleBoxFlat:
-	var style := box(GoTheme.BOX_CARD)
+## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정이 정한 카드 값).
+static func edge_card(accent: Color, rtl := false, width := -1.0, alpha := -1.0) -> StyleBoxFlat:
+	var style := box(GoTheme.BOX_CARD, Color.TRANSPARENT, alpha)
 	var thick := int(width if width >= 0.0 else float(GoUi.metric(GoTheme.GAP_TINY)))
 	style.set_border_width_all(0)
 	if rtl: style.border_width_right = thick
@@ -125,11 +126,11 @@ static func edge_card(accent: Color, rtl := false, width := -1.0) -> StyleBoxFla
 
 ## 위 띠 카드 판을 두른 **컨테이너** — 내용은 부르는 쪽이 채운다(`card()` 의 띠 판 짝).
 ## [param pad] 는 안쪽 여백(음수면 작은 여백 토큰). 🛑 그 위에 `padding()` 칸을 또 두르지 않는다.
-static func edge_card_panel(accent: Color, rtl := false, pad := -1.0) -> PanelContainer:
+static func edge_card_panel(accent: Color, rtl := false, pad := -1.0, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "EdgeCard"
 	node.theme = GoUi.theme()
-	var face := edge_card(accent, rtl)
+	var face := edge_card(accent, rtl, -1.0, alpha)
 	face_padding(face, pad if pad >= 0.0 else float(GoUi.metric(GoTheme.PADDING_COMPACT)),
 		pad if pad >= 0.0 else float(GoUi.metric(GoTheme.PADDING_COMPACT)))
 	node.add_theme_stylebox_override(&"panel", face)
@@ -845,8 +846,9 @@ static func tint_progress(bar: ProgressBar, ink: Color) -> void:
 
 ## 🔑 카드·패널의 StyleBox **사본** — **스킨이 정한 모양 그대로**다. 각진 판 같은 커스텀
 ## StyleBox 도 그대로 온다. 모양까지 바꾸는 테마를 쓰는 곳은 `box()` 대신 이것을 쓴다.
-static func surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) -> StyleBox:
-	return GoUi.skin().surface_box(variant, accent)
+## [param alpha] 는 판 **바탕의 불투명도**(0.0~1.0) — 음수면 테마·설정이 정한 값(`GoUi.surface_alpha`).
+static func surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
+	return GoUi.skin().surface_box(variant, accent, alpha)
 
 
 ## 카드·패널의 StyleBox **사본**. `accent` 를 주면 테두리에 그 색을 입힌다.
@@ -854,8 +856,9 @@ static func surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) ->
 ## 🛑 **언제나 `StyleBoxFlat`** 을 돌려준다 — 돌려받아 `bg_color`·`corner_radius` 를 고치는
 ##    호출부가 이미 많기 때문이다. 스킨이 커스텀 StyleBox 를 주는 테마(sci-fi 등)에서는 그 모양이
 ##    여기서 살아남지 못한다. 모양을 지켜야 하면 `surface()` 를 쓴다.
-static func box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT) -> StyleBoxFlat:
-	var shaped := GoUi.skin().surface_box(variant, accent)
+## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값 · `surface()` 와 같다).
+static func box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBoxFlat:
+	var shaped := GoUi.skin().surface_box(variant, accent, alpha)
 	var style := shaped as StyleBoxFlat
 	if style == null:
 		style = _flat_like(shaped)
@@ -886,10 +889,13 @@ static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 ## 게임 화면 위에 **떠 있는** 표면 — 같은 카드에 얕은 그림자를 더한다. 위 `box()` 와 같은 약속이다.
 ## [param opaque] 는 판을 배경색으로 **꽉 채운다** — 월드가 비쳐 글자가 안 읽히는 자리(HUD 위 알림 줄)용이다.
 ## [param pad] 는 판 안쪽 여백(음수면 스킨 값 그대로 · `face_padding` 과 같다).
-static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, opaque := false, pad := -1.0) -> StyleBoxFlat:
-	var style := GoUi.skin().floating_box(variant, accent) as StyleBoxFlat
+## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값). 🛑 [param opaque] 를 켜면 이 값은
+## 쓰이지 않는다 — "월드가 비쳐 글자가 안 읽히는 자리" 를 위해 **일부러 꽉 채우는** 것이 그 인자의 뜻이다.
+static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, opaque := false, pad := -1.0,
+		alpha := -1.0) -> StyleBoxFlat:
+	var style := GoUi.skin().floating_box(variant, accent, alpha) as StyleBoxFlat
 	if style == null:
-		style = box(variant, accent)
+		style = box(variant, accent, alpha)
 		style.shadow_color = Color(GoUi.color(GoTheme.SHADOW), 0.35)
 		style.shadow_size = GoUi.metric(GoTheme.GAP_SMALL)
 		style.shadow_offset = Vector2(0, 2)
@@ -920,14 +926,19 @@ static func disc(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha 
 ## [param pad] 는 판 안쪽 여백이다(음수면 스킨 그대로). 🛑 그 위에 `padding()` 칸을 **또** 두르지 말 것 —
 ## 여백이 두 겹이 되어 좁은 칸의 말줄임 글자가 통째로 사라진다(`hud_panel()` 과 같은 함정).
 ## 🔑 판은 `surface()` 에서 온다 — 각진 판·중세 판 테마에서도 그 모양 그대로 색·굵기·여백만 바뀐다.
+## [param alpha] 는 판 바탕의 불투명도(0.0~1.0) — 음수면 테마·설정이 정한 카드 값(`GoTheme.CARD_ALPHA`).
+## 🔑 **이 카드 하나만** 다르게 하고 싶을 때 쓴다(장비 비교 카드처럼 뒤가 보여야 하는 자리).
 static func card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0,
-		pad := -1.0) -> PanelContainer:
+		pad := -1.0, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "Card"
 	node.theme = GoUi.theme()
 	node.theme_type_variation = GoTheme.VAR_CARD
-	if accent.a <= 0 and border_alpha < 0.0 and border_width < 0.0 and pad < 0.0: return node
-	var face := surface(GoTheme.BOX_CARD, accent)
+	# 🛑 불투명도가 테마 값 그대로면(`alpha` 음수) 예전처럼 **판을 덮지 않는다** — 테마 변형이 그리게 둔다.
+	#    카드 하나에만 다른 값을 줬을 때만 판을 만든다. 그러지 않으면 `GoCard` 변형을 자기 테마에서
+	#    다르게 정의한 프로젝트의 모양이 `GoHud/styles/card` 로 바뀐다.
+	if accent.a <= 0 and border_alpha < 0.0 and border_width < 0.0 and pad < 0.0 and alpha < 0.0: return node
+	var face := surface(GoTheme.BOX_CARD, accent, alpha)
 	_face_border(face, accent if border_alpha >= 0.0 else Color.TRANSPARENT, border_alpha, border_width)
 	if pad >= 0.0: face.set_content_margin_all(pad)
 	node.add_theme_stylebox_override(&"panel", face)
@@ -951,20 +962,29 @@ static func _face_border(face: StyleBox, ink: Color, alpha: float, width: float)
 ## [param radius]·[param border] 는 음수면 스킨이 가진 모서리·테두리 그대로다.
 ## 🛑 내용이 없는 칸이라 판 여백과 그림자는 0 이다 — 겹쳐 까는 판의 그림자는 그 위 글자를 흐린다.
 ## 🔑 입력을 받지 않는다(`MOUSE_FILTER_IGNORE`) — 바탕이 위에 놓인 버튼의 누름을 가로채면 안 된다.
+## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값). 🛑 [param fill] 을 **준 판은 그 색 그대로**다 —
+## 알파까지 적어 준 색에 판 불투명도를 또 곱하지 않는다. 둘 다 정하고 싶으면 [param alpha] 를 명시한다.
 static func plate(variant := GoTheme.BOX_HUD, fill := Color.TRANSPARENT, edge := Color.TRANSPARENT,
-		radius := -1.0, border := -1.0) -> Panel:
+		radius := -1.0, border := -1.0, alpha := -1.0) -> Panel:
 	var node := Panel.new()
 	node.name = "Plate"
 	node.theme = GoUi.theme()
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var face := surface(variant)
-	if fill.a > 0 and &"bg_color" in face: face.set(&"bg_color", fill)
+	# 🛑 바탕을 아래에서 덮어쓸 수 있으므로 판을 꽉 찬 채로 받아 **마지막에** 불투명도를 입힌다.
+	var face := surface(variant, Color.TRANSPARENT, 1.0)
+	var explicit_fill := fill.a > 0
+	if explicit_fill and &"bg_color" in face: face.set(&"bg_color", fill)
 	_face_border(face, edge, edge.a, border)
 	if radius >= 0.0:
 		if face is StyleBoxFlat: (face as StyleBoxFlat).set_corner_radius_all(roundi(radius))
 		elif &"radius" in face: face.set(&"radius", radius)
 	if face is StyleBoxFlat: (face as StyleBoxFlat).shadow_size = 0
 	face.set_content_margin_all(0)
+	# 🛑 **[param fill] 을 준 판은 그 색 그대로다** — `Color(ink, 0.14)` 처럼 알파까지 적어 준 색에
+	#    판 불투명도를 또 곱하면 부르는 쪽의 의도가 두 번 깎인다(0.14 → 0.112). 판 불투명도는
+	#    "스킨이 준 바탕" 에만 입힌다. [param alpha] 를 직접 준 경우에는 그것이 이긴다.
+	if alpha >= 0.0: GoSkin.fade_box(face, alpha)
+	elif not explicit_fill: GoSkin.fade_box(face, GoUi.surface_alpha(variant))
 	node.add_theme_stylebox_override(&"panel", face)
 	return node
 
@@ -1033,8 +1053,11 @@ static func bare_panel(node: Control) -> void:
 ## 판은 스킨의 `notice` 표면이고 테두리에 [param accent] 가 든다. [param tint] 를 주면 바탕을 바탕색에서
 ## 그 색 쪽으로 그만큼 당긴다(0 이면 스킨 바탕 그대로) — 🛑 새 팔레트를 만들지 않고 의미색 하나로 물들이는 자리다.
 ## [param padding] 음수면 `padding_compact` 토큰.
-static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint := 0.0, padding := -1) -> void:
-	var face := surface(GoTheme.BOX_NOTICE, accent)
+## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정이 정한 알림 값 `GoTheme.NOTICE_ALPHA`).
+static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint := 0.0, padding := -1,
+		alpha := -1.0) -> void:
+	# 🛑 틴트가 바탕을 덮어쓰므로 꽉 찬 판으로 받아 **마지막에** 불투명도를 입힌다.
+	var face := surface(GoTheme.BOX_NOTICE, accent, 1.0)
 	if tint > 0.0:
 		# 🛑 바탕을 실제로 물들이려면 색을 넣을 수 있는 판이어야 한다 — 스킨의 커스텀 판은 제 색으로 그리므로
 		#    같은 여백·테두리·둥글기의 평판으로 옮긴다(틴트를 안 줬으면 스킨 모양 그대로 둔다).
@@ -1047,6 +1070,7 @@ static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint 
 	face.content_margin_right = pad
 	face.content_margin_top = pad
 	face.content_margin_bottom = pad
+	GoSkin.fade_box(face, alpha if alpha >= 0.0 else GoUi.surface_alpha(GoTheme.BOX_NOTICE))
 	node.add_theme_stylebox_override(&"panel", face)
 
 
@@ -1059,21 +1083,23 @@ static func style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint 
 ## (2026-09-16 파티 도크에서 이끌기 칩이 27 → 11 로 접혔다).
 ## [param variant] 는 어떤 토큰 판을 띄울 것인가다 — HUD 도크는 `BOX_HUD`, 월드 위에 펼치는 시트·카드는
 ## `BOX_CARD`(같은 카드 모양에 그림자만 얹힌다).
+## [param alpha] 는 판 바탕의 불투명도(음수면 테마·설정 값 · HUD 판은 `GoTheme.HUD_ALPHA`).
+## 🔑 HUD 는 월드 위에 바로 얹히므로 **그림이 복잡한 게임일수록 값을 올린다** — 글자가 읽히는 것이 먼저다.
 static func hud_panel(accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0,
-		variant := GoTheme.BOX_HUD) -> PanelContainer:
+		variant := GoTheme.BOX_HUD, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "HudPanel"
-	style_hud_panel(node, accent, pad_x, pad_y, variant)
+	style_hud_panel(node, accent, pad_x, pad_y, variant, alpha)
 	return node
 
 
 ## **이미 만든 `PanelContainer`** 에 같은 떠 있는 판을 입힌다 — 의미색이 런타임에 바뀌는 자리(EXP 배지처럼
 ## 값에 따라 초록·주황·회색이 되는 것)에서 노드를 다시 만들지 않는다. 인자는 `hud_panel()` 과 같다.
 static func style_hud_panel(node: PanelContainer, accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0,
-		variant := GoTheme.BOX_HUD) -> void:
+		variant := GoTheme.BOX_HUD, alpha := -1.0) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
-	var face := GoUi.skin().floating_box(variant, accent)
+	var face := GoUi.skin().floating_box(variant, accent, alpha)
 	face_padding(face, pad_x, pad_y)
 	node.add_theme_stylebox_override(&"panel", face)
 
@@ -1092,6 +1118,50 @@ static func style_panel(node: Control, face: StyleBox, state := &"panel") -> voi
 	if node == null or face == null: return
 	node.theme = GoUi.theme()
 	node.add_theme_stylebox_override(state, face)
+
+
+## 🪟 **이미 놓여 있는 판 한 장을 반투명하게 만든다** — gohud 가 만들지 않은 컨테이너에 같은 규칙을
+## 입히는 길이다(손으로 만든 `PanelContainer`, 씬에 그려 둔 판, 호스트 프로젝트의 제 판).
+##
+## ```gdscript
+## var frame := PanelContainer.new()
+## add_child(frame)                       # 🛑 트리에 붙인 **뒤에** 부른다 — 부모에서 물려받은 테마를 읽는다
+## GoStyle.fade_panel(frame)              # 테마·설정이 정한 값
+## GoStyle.fade_panel(frame, 0.6)         # 이 판만 60%
+## GoStyle.fade_panel(frame, 1.0)         # 되돌린다(판 덮기를 걷어낸다)
+## ```
+##
+## ## 🔑 여러 번 불러도 한 번만 묽어진다
+## 처음 부를 때 **원래 판을 메타에 적어 두고** 언제나 그것에서 다시 계산한다. 그러지 않으면
+## `_notify()` 로 다시 그릴 때마다 판이 한 겹씩 더 묽어져 결국 사라진다 — 알파를 곱셈으로
+## 입히는 방식(`GoSkin.fade_box`)의 유일한 함정이고, 그 함정을 여기서 막는다.
+##
+## [param alpha] 음수면 테마·설정 값(`GoUi.surface_alpha(variant)`), [param state] 는 테마 아이템 이름
+## (패널류는 `panel`, 버튼류는 `normal`·`hover` …), [param variant] 는 어느 종류의 값을 따를 것인가다.
+static func fade_panel(node: Control, alpha := -1.0, state := &"panel",
+		variant := GoTheme.BOX_PANEL) -> void:
+	if node == null: return
+	var key := StringName("go_solid_face_" + String(state))
+	var base: StyleBox = node.get_meta(key) if node.has_meta(key) else null
+	if base == null:
+		# 🛑 덮어 둔 판을 먼저 걷어낸다 — 안 그러면 이미 묽어진 판을 "원래 판" 으로 적어 둔다.
+		node.remove_theme_stylebox_override(state)
+		base = node.get_theme_stylebox(state)
+		if base == null: return
+		node.set_meta(key, base)
+	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(variant)
+	if opacity >= 1.0:
+		node.remove_theme_stylebox_override(state)
+		return
+	node.add_theme_stylebox_override(state, GoSkin.fade_box(base.duplicate(), opacity))
+
+
+## `fade_panel()` 이 적어 둔 "원래 판" 을 **잊는다** — 테마·생김새 묶음을 갈아 끼운 뒤 다음 `fade_panel()`
+## 이 지금 테마에서 판을 다시 잡게 한다. 🛑 이것을 빠뜨리면 새 테마의 창이 **옛 테마의 판**을 쓴다.
+static func forget_face(node: Control, state := &"panel") -> void:
+	if node == null: return
+	var key := StringName("go_solid_face_" + String(state))
+	if node.has_meta(key): node.remove_meta(key)
 
 
 ## 🔑 **누르는 자리보다 작은 시각 판** — 버튼 안에 판 한 장을 깔고 버튼 폭을 따라가게 한다.
@@ -1117,9 +1187,9 @@ static func touch_face(button: Button, height := 38.0, face: StyleBox = null) ->
 ## 얇게 두른다(`GoSkin.overlay_box`). `hud_panel()` 이 HUD 도크의 판이라면 이것은 **그림 위의 작은 크롬**이다.
 ##
 ## [param pad_x]·[param pad_y] 는 판 안쪽 여백(dp · 음수면 작은 버튼 여백 토큰), [param fill_alpha] 는 바탕의
-## 불투명도다. 🛑 여기에 `padding()` 칸을 또 두르지 않는다(`hud_panel()` 과 같은 이유).
+## 불투명도다(0.0~1.0 · **음수면 테마·설정이 정한 HUD 값** `GoTheme.HUD_ALPHA`). 🛑 여기에 `padding()` 칸을 또 두르지 않는다(`hud_panel()` 과 같은 이유).
 ## 🛑 **알약 안에 또 알약을 넣지 않는다** — 안에 놓는 버튼은 맨 버튼이나 `segmented()` 칸으로 둔다.
-static func overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := 0.82) -> PanelContainer:
+static func overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "OverlayPanel"
 	style_overlay_panel(node, pad_x, pad_y, fill_alpha)
@@ -1127,7 +1197,7 @@ static func overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := 0.82) -> Panel
 
 
 ## **이미 만든 `PanelContainer`** 에 같은 알약 판을 입힌다. 인자는 `overlay_panel()` 과 같다.
-static func style_overlay_panel(node: PanelContainer, pad_x := -1, pad_y := -1, fill_alpha := 0.82) -> void:
+static func style_overlay_panel(node: PanelContainer, pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
 	node.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box(pad_x, pad_y, fill_alpha))
@@ -1601,10 +1671,19 @@ static func dropdown(text: String, items: Array, action := Callable(), translate
 
 ## 팝업 메뉴의 항목이 **터치 하한**을 지키게 줄 간격을 띄운다 — 팝업 글자는 본문 크기라 줄이 손가락보다 얇다.
 ## [param spacing] 음수면 `gap` 토큰. 🔑 항목을 지우고 다시 채워도 이 값은 남는다(테마 값이지 항목이 아니다).
-static func style_popup(popup: PopupMenu, spacing := -1) -> void:
+## [param alpha] 는 메뉴 판 바탕의 불투명도(0.0~1.0) — 음수면 `GoTheme.POPUP_ALPHA`(기본 테마는 **100**).
+##
+## 🛑 **팝업 메뉴는 기본이 꽉 찬 색이다.** 다른 판과 달리 `PopupMenu` 는 엔진이 창(`Window`)으로 띄울 수
+##    있고, 그때는 OS 가 게임 화면과 합성해 주지 않아 반투명이 **뒤가 보이는 대신 검게** 나온다
+##    (`gui_embed_subwindows` 가 꺼진 프로젝트). 게임 안에 박아 띄우는 프로젝트라면 값을 내려도 좋다.
+static func style_popup(popup: PopupMenu, spacing := -1, alpha := -1.0) -> void:
 	if popup == null: return
 	popup.theme = GoUi.theme()
 	popup.add_theme_constant_override(&"v_separation", GoUi.metric(GoTheme.GAP) if spacing < 0 else spacing)
+	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(GoTheme.BOX_POPUP)
+	if opacity < 1.0:
+		popup.add_theme_stylebox_override(&"panel",
+			GoSkin.fade_box(GoUi.box(GoTheme.BOX_POPUP), opacity))
 
 
 ## 🔑 **라디오 묶음(Radio Group).** 하나만 고른다. 돌려주는 세로줄의 `meta("group")` 이 `ButtonGroup` 이고,
@@ -1893,12 +1972,13 @@ static func skeleton(width := 0.0, height := 14.0) -> Control:
 
 ## 🔑 **알림 상자(Alert).** 화면 안에 붙박이로 두는 안내 — 스낵바(`GoNotice`)와 달리 사라지지 않는다.
 ## `tone` 은 색 토큰(`GoTheme.INFO`·`SUCCESS`·`WARNING`·`DANGER`). 아이콘을 비우면 톤에 맞는 기본 아이콘.
-static func alert(message: String, tone := GoTheme.INFO, icon: StringName = &"", translate := false) -> PanelContainer:
+static func alert(message: String, tone := GoTheme.INFO, icon: StringName = &"", translate := false,
+		alpha := -1.0) -> PanelContainer:
 	var ink := GoUi.color(tone)
 	var node := PanelContainer.new()
 	node.name = "Alert"
 	node.theme = GoUi.theme()
-	node.add_theme_stylebox_override(&"panel", GoUi.skin().alert_box(ink))
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().alert_box(ink, alpha))
 	var line := row(GoUi.metric(GoTheme.GAP_SMALL))
 	line.alignment = BoxContainer.ALIGNMENT_BEGIN
 	node.add_child(line)

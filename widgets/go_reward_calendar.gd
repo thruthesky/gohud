@@ -179,8 +179,13 @@ func _cell(index: int, day: Dictionary, now: int) -> Control:
 	button.add_child(column)
 
 	# ♿ 흐림·테두리만으로는 구별되지 않는다 — 상태를 말로도 준다.
+	# 🛑 **무엇을 받는지도 읽혀야 한다.** 날짜와 상태만 주면 "3일차 받음" 뿐이라, 눈으로 못 보는
+	#    사람은 오늘 무엇이 걸려 있는지 끝내 알 수 없다 — 받을지 말지를 정할 수가 없다.
 	var state := GoUi.text(&"done") if taken else (GoUi.text(&"confirm") if is_today else GoUi.text(&"next"))
-	button.accessibility_name = GoUi.spoken([str(index + 1), state])
+	var reward := str(day["label"])
+	if reward.is_empty() and not icon_name.is_empty(): reward = String(icon_name)
+	var many := GoUi.text(&"slot_quantity").format({"count": amount}) if amount > 0 else ""
+	button.accessibility_name = GoUi.spoken([str(index + 1), reward, many, state])
 
 	if taken:
 		# 받은 칸에는 **그림 표시**를 얹는다 — 흐리게만 두면 앞으로 올 칸과 구별되지 않는다.

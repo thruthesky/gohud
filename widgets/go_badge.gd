@@ -120,7 +120,11 @@ func _refresh() -> void:
 		custom_minimum_size = Vector2(side, box.y)
 
 	# ♿ 색과 자리만으로는 읽히지 않는다 — 무엇이 몇 개인지 말로도 준다.
-	accessibility_name = words if not words.is_empty() else GoUi.text(&"empty")
+	# 🛑 점 모드에서 `empty` 를 쓰면 **뜻이 정반대로** 읽힌다 — "새 것이 있다" 는 표시가
+	#    "여기 아무것도 없습니다" 가 된다(2026-09-16 실측). 점은 개수를 감춘 것이지 없는 것이 아니다.
+	if not words.is_empty(): accessibility_name = words
+	elif dot: accessibility_name = GoUi.spoken([str(_count)]) if _count > 0 else ""
+	else: accessibility_name = ""
 
 
 ## 배지 판 위에서 읽히는 글자색.
@@ -170,7 +174,9 @@ const _ATTACHED := &"gohud_badge"
 static func attach(host: Control, count := 0, words := "", as_dot := false,
 		color := Color.TRANSPARENT) -> GoBadge:
 	if not is_instance_valid(host): return null
-	var node: GoBadge = host.get_meta(_ATTACHED, null)
+	# 🛑 `get_meta(key, default)` 는 키가 없으면 **오류를 찍는다**(Godot 4 실측) — 기본값을 줘도
+	#    그렇다. 먼저 `has_meta` 로 묻는다.
+	var node: GoBadge = host.get_meta(_ATTACHED) if host.has_meta(_ATTACHED) else null
 	if not is_instance_valid(node):
 		node = GoBadge.new()
 		node.name = "Badge"
@@ -183,7 +189,8 @@ static func attach(host: Control, count := 0, words := "", as_dot := false,
 		host.add_child(node)
 		host.set_meta(_ATTACHED, node)
 		node.tree_exited.connect(func() -> void:
-			if is_instance_valid(host) and host.get_meta(_ATTACHED, null) == node: host.remove_meta(_ATTACHED))
+			if not is_instance_valid(host) or not host.has_meta(_ATTACHED): return
+			if host.get_meta(_ATTACHED) == node: host.remove_meta(_ATTACHED))
 	node.label_text = words
 	node.dot = as_dot
 	node.ink = color
@@ -206,6 +213,6 @@ static func attach(host: Control, count := 0, words := "", as_dot := false,
 ## 붙여 둔 배지를 뗀다. 없으면 아무 일도 하지 않는다.
 static func detach(host: Control) -> void:
 	if not is_instance_valid(host): return
-	var node: GoBadge = host.get_meta(_ATTACHED, null)
+	var node: GoBadge = host.get_meta(_ATTACHED) if host.has_meta(_ATTACHED) else null
 	if is_instance_valid(node): node.queue_free()
 	if host.has_meta(_ATTACHED): host.remove_meta(_ATTACHED)

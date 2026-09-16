@@ -151,3 +151,114 @@ panel.add_theme_stylebox_override(&"panel", GoStyle.surface(GoTheme.BOX_PANEL))
 | `fade(canvas_item, previous_tween, shown) -> Tween` | Fade in honouring `reduce_motion` |
 | `tooltip_node(text, max_width := 260.0)` | Return from `_make_custom_tooltip()` to avoid one-letter-per-line tooltips |
 | `audit_compact_padding(root, include_overrides := false, variations := [GoTheme.VAR_COMPACT_BUTTON]) -> Array[String]` | Lists compact buttons whose padding is below `compact_padding_x` |
+
+## 9. Form and list widgets (classes, not factories)
+
+These are nodes because they hold state a factory cannot — an error, a sort order, a page, a search.
+
+### GoField — a row that can be wrong
+
+```gdscript
+var name_field := GoField.make("Character name", GoStyle.line_edit("2-12"), "Cannot be changed later")
+form.add_child(name_field)
+name_field.set_error("That name is taken")       # server said no
+name_field.clear_error()
+```
+
+`label` `control` `hint_label` `error_label` · `set_control()` `set_error(msg, translate)` `clear_error()`
+`has_error()` `error_text()` · signal `error_changed(message)`.
+
+- 🛑 **The error belongs next to the box.** One "check your input" line at the top of a five-field form does
+  not say which field — that single thing is what makes people abandon a sign-up.
+- The hint hides while an error shows, so the row does not grow by a line and push everything below it.
+- ♿ The error text is joined into the control's `accessibility_name` — a red border alone says nothing to
+  someone who cannot see red.
+- 🔑 `GoStyle.field()` is the **static** version: label + control + hint, no error state. Use it when nothing
+  can go wrong; use `GoField` for anything a server can reject.
+
+### GoInputGroup — welded input and button
+
+```gdscript
+GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(&"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Name"), {"prefix_icon": &"search"})
+GoInputGroup.make(qty, {"prefix": minus, "suffix": plus})
+```
+
+Keys: `prefix` · `suffix` (any `Control`) · `prefix_icon` · `suffix_icon` (a mark you cannot press).
+
+The problem it solves is **corners**: two rounded shapes meeting in the middle look pinched, and the default
+gap makes them read as two objects. Separation is 0 on purpose, outer corners stay round, touching ones go
+square — in **every** button state, or the group splits the moment it is pressed. Skins that draw their own
+faces (`GoStyleBoxCut`) have no corner fields, so the group leaves them alone; square faces meet cleanly.
+
+### GoCombobox — a picker with search
+
+```gdscript
+var picker := GoCombobox.make(server_names, 0, "Choose a server")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))
+GoCombobox.make([{"text": "Flame sword", "icon": &"sword", "hint": "ATK +12"}])
+```
+
+`placeholder` · `search_threshold` 8 · `list_width` · `picked(index)` · `select(i, notify)` `selected()`
+`selected_text()` `set_items()`.
+
+- Under ten entries `GoStyle.select()` is better — one less tap and the whole list is visible. Past thirty,
+  scanning is work; that is this widget.
+- 🛑 The search matches **inside** names, not just their start: prefix matching finds almost nothing in
+  Korean or Japanese lists, where the distinguishing word is rarely first.
+- Rows never auto-translate — entries are player names and item names.
+- An empty result shows an empty state; a blank panel reads as broken.
+
+### GoCodeInput — coupon and gift codes
+
+```gdscript
+var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Already used")
+```
+
+`length` 12 · `group` 4 · `allowed` · `uppercase` · `cell_width` · `edit` `cells_row` `error_label`
+· signals `completed(code)` `changed(code)` · `set_code()` `code()` `clear()` `is_complete()` `focus()`.
+
+- 🛑 **One hidden `LineEdit` receives the text; the cells are drawn.** Twelve real fields would break pasting
+  at the first cell and lose characters to an IME — and a code is pasted from a message far more often than
+  it is typed. `ABCD-EFGH-IJKL` loses its dashes on the way in.
+- Cells share the leftover width, so twelve of them still fit a 720 dp phone.
+
+### GoTable — sortable, selectable rows
+
+```gdscript
+var board := GoTable.make(
+    [{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -> void: open_profile(rows[i]))
+board.sort_by(2, false)
+```
+
+Column keys: `text` · `width` · `numeric` · `sortable` · `translate`.
+`head` `rows_box` · signals `row_selected(index)` `sorted(column, ascending)` · `set_rows()` `set_columns()`
+`selected()` `rows()`.
+
+- 🛑 **`numeric: true` or the ranking inverts** — compared as text, `"9124"` beats `"91240"`. Scores, gold
+  and damage all have mixed digit counts.
+- `row_selected` gives the index in **your original array**, not the sorted position.
+- The sort direction is shown with a glyph (▲▼), not only a colour, and whole rows are pressable so nobody
+  has to hit one cell. Ties keep their original order, so a leaderboard does not shuffle every frame.
+- 🔑 `GoStyle.table()` is the read-only grid. Use it when nothing is pressed or sorted.
+- 🛑 Four columns is the practical limit on a phone; beyond that open a row in a `GoSheet` instead.
+
+### GoPagination — pages
+
+```gdscript
+var pager := GoPagination.make(1, 12, func(page: int) -> void: load_mail(page))
+pager.set_total(server_pages)
+pager.set_busy(true)                       # while the request is in flight
+var more := GoPagination.more(load_next)   # the mobile-friendly variant
+```
+
+`window` 5 · signals `page_changed(page)` `more_requested` · `page()` `total()` `set_page(v, notify)`
+`set_total()` `set_busy()` `is_busy()`.
+
+- Numbers are a mouse UI; on a phone `more()` reads better. The current page stays **centred** in the window,
+  so pressing next does not reshuffle every number.
+- `total = 0` means "unknown" — only the arrows are drawn. Do not invent a page count you were not given.
+- `set_busy(true)` locks the buttons while a request is out, so two taps cannot skip a page.

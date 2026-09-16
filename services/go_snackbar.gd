@@ -102,6 +102,15 @@ class Ticket extends RefCounted:
 
 
 ## 🛑 카드는 `_init` 에서 만든다 — 트리에 붙기 전에 `show_text()` 를 부를 수 있어야 한다.
+## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
+## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+## 🔑 스낵바는 화면 아래에 잠깐 떠서 **놓치면 안 되는 한 줄**을 나른다 — 뒤가 복잡하면 값을 올린다.
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		if _card != null: _card.add_theme_stylebox_override(&"panel", _face(Color.TRANSPARENT))
+
+
 func _init() -> void:
 	name = "Snackbar"
 	_layer = CanvasLayer.new()
@@ -170,6 +179,9 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
+	# 🛑 씬을 갈아엎을 때 기다리던 코드를 **풀어 준다** — 안 그러면 `await post(...)` 에 묶인
+	#    게임 로직이 영원히 돌아오지 않는다(이 노드가 사라지면 아무도 티켓에 답하지 않는다).
+	clear()
 
 
 # ── 띄우기 ─────────────────────────────────────────────────────────────
@@ -204,11 +216,16 @@ func show_key(key: String, args := {}, tone := GoTheme.TEXT, seconds := -1.0) ->
 func post(options: Dictionary) -> int:
 	var item := _normalize(options)
 	# 같은 글이 잇따르면 하나로 친다 — 시간만 다시 채우고 새로 줄 세우지 않는다.
+	# 🛑 **떠 있는 것의 답을 그대로 물려준다.** 여기서 `-1` 을 바로 돌려주면, 되돌리기를 기다리던
+	#    `await post(...)` 가 스낵바가 멀쩡히 떠 있는데도 "시간이 다 됐다" 를 받아 엉뚱한 길로 간다
+	#    (2026-09-16 지적). 합쳐진 요청은 **먼저 뜬 것과 같은 답**을 받아야 한다.
 	if merge_repeats and _shown and not _current.is_empty() \
 			and _current.get("text", "") == item["text"] and _current.get("title", "") == item["title"]:
 		_remaining = float(item["seconds"])
 		set_process(_remaining > 0.0)
-		return -1
+		var standing: Ticket = _ticket
+		if standing == null: return -1
+		return await standing.done
 	var ticket: Ticket = item["ticket"]
 	if not _shown:
 		_present(item)
@@ -300,9 +317,7 @@ func _present(item: Dictionary) -> void:
 	_card.mouse_filter = Control.MOUSE_FILTER_STOP if interactive else Control.MOUSE_FILTER_IGNORE
 
 	# ♿ 스크린리더는 카드 하나를 한 덩어리로 읽는다 — 제목과 본문을 이어 붙여 이름으로 준다.
-	var spoken_title: String = item["title"]
-	var spoken_body: String = item["text"]
-	_card.accessibility_name = ("%s %s" % [spoken_title, spoken_body]).strip_edges()
+	_card.accessibility_name = GoUi.spoken([item["title"], item["text"]])
 
 	_remaining = float(item["seconds"])
 	# 🛑 **한 프레임 숨긴 채로** 띄운다. 줄바꿈하는 본문의 최소 높이는 폭이 정해진 **다음**
@@ -426,7 +441,7 @@ func _refit() -> void:
 
 
 func _face(accent: Color) -> StyleBox:
-	return GoUi.skin().notice_box(accent, true)
+	return GoUi.skin().notice_box(accent, true, alpha)
 
 
 ## 올라오고 내려가는 움직임. `reduce_motion` 이면 그 자리에서 나타나고 사라진다.

@@ -42,6 +42,14 @@ var _fade: Tween
 var _boxed_icon := false
 
 
+## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
+## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		if is_inside_tree(): add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, _accent, value))
+
+
 func _init() -> void:
 	name = "PromptCard"
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -96,7 +104,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	theme = GoUi.theme()
-	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, _accent))
+	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, _accent, alpha))
 	set_title_lines(2)
 	GoUi.watch(_on_ui_changed)
 
@@ -109,13 +117,13 @@ func _exit_tree() -> void:
 ## 🛑 이것이 없으면 **이미 떠 있는 위젯만 옛 테마로 남는다**(2026-09-16 실측).
 func _on_ui_changed() -> void:
 	theme = GoUi.theme()
-	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, _accent))
+	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, _accent, alpha))
 
 
 ## 카드 테두리의 의미색. 투명이면 기본 표면.
 func set_accent(accent: Color) -> void:
 	_accent = accent
-	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, accent))
+	add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, accent, alpha))
 	if _boxed_icon: _restyle_icon()
 
 

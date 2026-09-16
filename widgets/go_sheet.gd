@@ -36,6 +36,19 @@ var dismissable := true:
 		dismissable = value
 		if is_instance_valid(surface): surface.dismiss_on_scrim = value
 
+## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게 한다. 음수면 테마·설정이 정한 값.
+## 🛑 바탕만 묽어진다 — 글자·아이콘·버튼은 선명한 채로 남는다.
+##
+## ```gdscript
+## sheet.alpha = 0.7    # 이 시트만 70% — 아래 지도가 보여야 하는 목록
+## ```
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		# 🔑 표면은 `_init` 에서 이미 만들어져 있다 — 트리에 붙기 전이라도 값을 받아 두고,
+		#    표면의 `_ready` 가 그때 판을 입힌다(그쪽에서 `is_inside_tree()` 를 본다).
+		if is_instance_valid(surface): surface.alpha = value
+
 ## 차지할 화면 높이 비율.
 var height_ratio := 0.6:
 	set(value):

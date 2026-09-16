@@ -31,6 +31,7 @@ Arguments given: `$ARGUMENTS`
 |---|---|
 | `preview` | §6 — launch the preview with the remaining arguments |
 | `features` | Read `references/features.md` and present it grouped (one line of code per feature). If an area follows (`features theming`), also read that area's reference and go deeper |
+| `update` | Read `references/setup.md` §7 and follow `commands/update.md` — update the add-on in the project **and** this skill, then verify the two agree |
 | anything else / empty | §2 — build or change UI with gohud |
 
 Reply in the language the user writes in; keep code identifiers as they are.
@@ -43,8 +44,13 @@ Reply in the language the user writes in; keep code identifiers as they are.
 2. **Pick the look first.** `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` (or the project setting) before any widget
    is built. Nodes keep the theme they were built with; switching later means rebuilding the screen.
 3. **Choose the widget for the job** — table in `references/surfaces.md` §7: blocking question → `GoDialogs`,
-   list over the game → `GoSheet`, window → `GoSurface`, full-screen menu/login/settings → root Control + `GoForm`,
-   info that must not block → `GoNotice`, optional question → `GoPromptCard`, HUD pieces → `GoHudAnchor`.
+   list over the game → `GoSheet`, side panel on a wide screen → `GoDrawer`, window → `GoSurface`,
+   full-screen menu/login/settings → root Control + `GoForm`, **message with an Undo button → `GoSnackbar`**,
+   fixed notice panel the HUD owns → `GoNotice`, optional question → `GoPromptCard`,
+   **info card next to a slot → `GoPopover`**, HUD pieces → `GoHudAnchor`.
+   Lists and forms: sortable/selectable rows → `GoTable`, pages → `GoPagination`, searchable picker →
+   `GoCombobox`, a field that can show an error → `GoField`, input welded to a button → `GoInputGroup`.
+   Waiting → `GoSpinner` (`GoSpinner.busy(button, true)` also blocks the double press).
 4. **Start from a template** when one fits (§5): copy it into the project (e.g. `res://ui/`), rename, adjust, wire
    its signals. Otherwise compose with `GoStyle` factories (`references/style.md`).
 5. **Follow the rules in §3.** Look up exact signatures in the references before using a member you are not sure
@@ -83,7 +89,11 @@ Reply in the language the user writes in; keep code identifiers as they are.
 10. **Config:** after changing a plain `GoConfig` field in code call `GoUi.refresh()`; `theme`/`icons` refresh
     themselves. `use_preset()` clears explicit `theme`/`skin`/`icons` — set overrides after it.
 11. **Gameplay input pauses while a window is open:** `if GoSurface.is_any_open(): return`.
-12. **Never hand-edit gohud's generated themes**; recolour through `color_overrides`, a Theme copy in your project,
+12. **Widgets that draw text inside a non-container parent must not wrap.** A `Label` with autowrap laid
+    out at zero width freezes its minimum height at 1 dp and the text disappears while the panel still
+    paints — this is why table cells, key caps and code cells set `AUTOWRAP_OFF`. When you place a child by
+    anchors, set `offset_*`, not `position`: `Control.position` is parent-space and ignores the anchors.
+13. **Never hand-edit gohud's generated themes**; recolour through `color_overrides`, a Theme copy in your project,
     a project-local `GoThemePreset`, or the JSON theme tools (`references/theming.md`).
 
 More traps with their causes: `references/pitfalls.md`.
@@ -161,7 +171,7 @@ use `--check`.
 | File | Read when |
 |---|---|
 | `references/features.md` | `/gohud features`, or "what can gohud do" — catalogue of every feature with one-line code |
-| `references/setup.md` | Installing, enabling the plugin, every `GoConfig` field and default, boot order, layers, project settings, headless verification, gohud's tool commands |
+| `references/setup.md` | Installing, **updating (§7 — add-on and skill, `/gohud update`)**, enabling the plugin, every `GoConfig` field and default, boot order, layers, project settings, headless verification, gohud's tool commands |
 | `references/surfaces.md` | `GoSurface` (placements, anchored menus, sub-pages), `GoSheet`, `GoDialogs` (layouts, destructive, args), `GoForm`, `GoScroll`, subclass hooks, which widget to use |
 | `references/hud.md` | `GoHudAnchor` spots and avoidance, `GoBar`, `GoSlot`, `GoJoystick`, `GoIconButton`, `GoNotice`, `GoPromptCard`, `GoCoachMark`, composing a HUD |
 | `references/style.md` | Every `GoStyle` factory signature: structure, text, buttons and tones, inputs, select/dropdown/segmented/tabs, cards, chips, tables, styleboxes, helpers |

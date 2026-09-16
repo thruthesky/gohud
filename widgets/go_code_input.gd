@@ -59,6 +59,8 @@ var cells_row: HBoxContainer
 var error_label: Label
 
 var _cells: Array[PanelContainer] = []
+## 칸 줄과 숨은 입력칸을 겹쳐 쌓는 칸(컨테이너가 아니라 `Control` 이라 둘이 같은 자리를 쓴다).
+var _stack: Control
 var _error := ""
 
 
@@ -66,12 +68,25 @@ func _init() -> void:
 	name = "CodeInput"
 	add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_TINY))
 
+	# 🛑 칸 줄과 숨은 입력칸을 **겹쳐 쌓는** 칸. `HBoxContainer` 에 직접 넣으면 컨테이너가 입력칸을
+	#    한 열로 **밀어내** 칸들 위에 겹치지 못한다 — 그러면 칸을 아무리 눌러도 포커스가 가지 않아
+	#    가상 키보드가 뜨지 않는다(2026-09-16 실측: edit 이 x=456 의 마지막 열에 놓였다).
+	# 🛑 `Control` 은 자식의 최소 크기를 **물려받지 않는다** — 그대로 두면 이 칸이 0 으로 잡혀
+	#    칸 줄과 입력칸이 함께 쪼그라든다. 칸 줄의 높이를 따라가게 묶고, 폭은 부모에서 받는다.
+	_stack = Control.new()
+	_stack.name = "Stack"
+	_stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	add_child(_stack)
+
 	cells_row = GoStyle.row(GoUi.metric(GoTheme.GAP_TINY))
 	cells_row.name = "Cells"
 	cells_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	# 🛑 코드는 **물리적 순서**다 — 아랍어에서도 왼쪽부터 찬다.
 	cells_row.layout_direction = Control.LAYOUT_DIRECTION_LTR
-	add_child(cells_row)
+	cells_row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_stack.add_child(cells_row)
+	GoStyle.fit_content_height(_stack, cells_row)
 
 	# 🔑 진짜 입력은 이 칸 하나가 받는다. 보이지는 않지만 **크기는 차지한다** — 그래야 탭으로 닿고
 	#    가상 키보드가 뜬다. 칸들 위에 겹쳐 두어 아무 데나 눌러도 여기로 포커스가 온다.
@@ -84,8 +99,9 @@ func _init() -> void:
 	edit.add_theme_color_override(&"font_selected_color", Color(0, 0, 0, 0))
 	edit.add_theme_color_override(&"caret_color", Color(0, 0, 0, 0))
 	edit.text_changed.connect(_on_text)
+	# 칸 줄 **위에** 덮는다 — 아무 데나 눌러도 이 칸으로 포커스가 온다.
 	edit.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	cells_row.add_child(edit)
+	_stack.add_child(edit)
 
 	error_label = GoStyle.label("", GoTheme.ROLE_MICRO, GoUi.color(GoTheme.DANGER))
 	error_label.name = "Error"
@@ -176,7 +192,9 @@ func _clean(raw: String) -> String:
 
 func _rebuild() -> void:
 	if cells_row == null: return
-	for cell in _cells: cell.queue_free()
+	# 🛑 `_cells` 만 지우면 끊는 자리의 **빈 칸(gap)** 이 남아 자릿수를 바꿀 때마다 쌓인다
+	#    (2026-09-16 실측: 19 → 22 개로 늘었다). 줄을 통째로 비운다.
+	for child in cells_row.get_children(): child.queue_free()
 	_cells.clear()
 	edit.max_length = length
 	var side := cell_width if cell_width > 0.0 else float(GoUi.font_size(GoTheme.ROLE_SUBTITLE)) * 1.7
@@ -184,10 +202,10 @@ func _rebuild() -> void:
 		# 끊는 자리에 사이를 벌린다 — `ABCD EFGH IJKL` 이 한 덩어리 열두 자보다 훨씬 잘 읽힌다.
 		if group > 0 and index > 0 and index % group == 0:
 			var gap := Control.new()
+			gap.name = "Gap%d" % index
 			gap.custom_minimum_size.x = GoUi.metric(GoTheme.GAP_SMALL)
 			gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			cells_row.add_child(gap)
-			cells_row.move_child(gap, cells_row.get_child_count() - 1)
 		var cell := PanelContainer.new()
 		cell.name = "Cell%d" % index
 		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -210,8 +228,6 @@ func _rebuild() -> void:
 		cell.add_child(glyph)
 		_cells.append(cell)
 		cells_row.add_child(cell)
-	# 숨은 입력칸을 맨 앞으로 — 칸들 위에 겹쳐 아무 데나 눌러도 포커스가 온다.
-	cells_row.move_child(edit, cells_row.get_child_count() - 1)
 	_paint()
 
 
@@ -228,8 +244,10 @@ func _paint() -> void:
 		cell.add_theme_stylebox_override(&"panel", GoUi.skin().slot_box(accent, here))
 	# ♿ "몇 자 중 몇 자" — 칸 그림은 눈으로만 읽는 정보다. 🔑 「n / m」 형식은 이미 문구 키가 있다
 	#    (터키어·프랑스어는 이 형식이 다르다 — 코드에 박으면 그 언어에서 어색해진다).
+	# 🛑 여기서 `search` 를 쓰면 쿠폰 칸이 "검색 0 / 12" 로 읽힌다 — 무엇을 넣는 칸인지 부르는 쪽이
+	#    안다. 라벨은 `GoField` 나 위 줄이 주고, 여기서는 **진행만** 말한다.
 	var progress := GoUi.text(&"bar_fraction").format({"value": value.length(), "max": length})
-	edit.accessibility_name = GoUi.spoken([_error if has_error() else GoUi.text(&"search"), progress])
+	edit.accessibility_name = GoUi.spoken([_error, progress])
 
 
 func _on_ui_changed() -> void:

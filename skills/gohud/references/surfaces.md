@@ -245,3 +245,90 @@ strip.add_child(row)
 | Settings / details window | `GoSurface` CENTER |
 | Dropdown or context menu next to a control | `GoSurface` ANCHOR (or `GoStyle.dropdown`) |
 | Full-screen menu / login / character creation | Root Control + `GoForm` |
+
+## 8. GoSnackbar — the message that places itself
+
+```gdscript
+var snack := GoSnackbar.new()
+add_child(snack)                                  # or an autoload, like GoDialogs
+
+snack.show_text("Saved", GoTheme.SUCCESS)
+snack.show_key("err_offline", {}, GoTheme.DANGER)
+
+# A chance to undo — 0 is the first button, -1 means it timed out
+if await snack.post({"text": "Item dropped", "icon": &"trash", "actions": ["Undo"]}) == 0:
+    restore_item()
+```
+
+`layer_index` 90 (above the HUD, below `GoDialogs` at 100) · `max_width` 560 · `margin` (−1 = screen margin)
+· `placement` `BOTTOM`/`TOP` · `queue_limit` 4 · `merge_repeats` · `motion_seconds` · `slide_dp` ·
+`tap_to_dismiss` · signal `closed(index)` · `dismiss()` `clear()` `is_showing()` `pending()`.
+
+| `post()` key | Meaning | Default |
+|---|---|---|
+| `text` · `title` | Body, and an optional bold first line | `""` |
+| `tone` | Colour token (`GoTheme.DANGER` …) | `TEXT` |
+| `icon` | Icon name — skipped silently if the set does not know it | none |
+| `actions` | Strings, or `{"text":…, "action": Callable}` | none |
+| `closable` · `seconds` · `translate` · `args` | × button · lifetime (`0` = until pressed) · keys · placeholders | |
+
+- 🛑 **It is not a place to ask something.** It goes away on its own, so the player may never see it —
+  irreversible confirmations belong in `GoDialogs`. Buttons here must be optional (Undo, Details, Retry).
+- Messages **queue**; repeats of the same line are merged (a server failing four times a second no longer
+  stacks four minutes of alerts); a snackbar with **no** button lets input through so the game keeps running.
+- 🔑 `GoNotice` vs `GoSnackbar`: the notice never takes input or focus and the screen decides where it goes —
+  it cannot hold a button. The snackbar places itself, queues and can be pressed.
+
+## 9. GoDrawer — the side panel
+
+```gdscript
+var bag := GoDrawer.new()
+add_child(bag)
+bag.side = GoDrawer.Side.RIGHT
+bag.open("Bag")
+bag.body.add_child(inventory_grid)
+```
+
+`side` · `follow_text_direction` · `width_ratio` 0.42 · `max_width` 420 · `dismissable` · `motion_seconds`
+· `body` `header` `title_label` `panel` · signals `opened` `closed` · `clear()` `is_open()` `effective_side()`.
+
+- 🔑 `GoSheet` comes from the **bottom** — right for a phone held upright. A drawer comes from the **side** —
+  right for a tablet or desktop, where a bottom sheet would cover the game. On a narrow phone the drawer
+  covers nearly everything, so prefer the sheet there.
+- `LEFT` means screen-left even in Arabic; turn on `follow_text_direction` when "the start side" is the point
+  (a menu drawer), and it flips in RTL.
+- The panel reaches the screen edge but the **content stays inside the safe area** — otherwise a rounded
+  corner clips the first list row.
+- It takes the Back/Escape ownership while open and releases it on close, including in `_exit_tree`.
+
+## 10. GoPopover — the anchored card
+
+```gdscript
+GoPopover.open(slot, item_card(item))
+GoPopover.open(button, body, {"title": "Upgrade odds", "dismissable": false, "width": 280})
+await GoPopover.open(slot, body).close_requested
+GoPopover.close()
+```
+
+Options: `title` · `translate` · `width` 320 · `max_height` 520 · `dismissable` · `compact` · `layer` 95.
+
+- This is `GoSurface`'s `ANCHOR` placement with the layer, the surface, the anchor and the teardown already
+  wired — the thing every game writes ten lines of, over and over.
+- 🛑 **One at a time.** Pressing slot after slot closes the previous card; stacked cards bury the screen and
+  nobody can tell which card belongs to which slot.
+- The scrim is **transparent**: a card you opened to compare gear must not darken the gear.
+- 🛑 It is not a hover tooltip — touch has no hover, so put nothing here that only a mouse could reveal.
+- When the anchor leaves the tree (the item was dropped) the card goes with it.
+
+## 11. Dialogs that queue
+
+`GoDialogs.alert()` and `alert_key()` **wait their turn** when a dialog is already open. `confirm()` and
+`confirm_key()` still return `false` immediately, and `queue_when_busy` (default off) makes questions queue too.
+
+| | Already open | Why |
+|---|---|---|
+| `confirm()` | returns `false` at once | A question that arrives late is answered by someone who no longer knows what they are agreeing to. The caller sees the `false` and can react |
+| `alert()` | queues | It returns `void` — the caller **cannot** tell it was never shown, so a dropped alert is an error message nobody ever sees |
+
+`pending()` counts what is waiting; `clear_pending()` answers them all with `false` — call it when leaving a
+screen, or code parked on `await` never resumes.

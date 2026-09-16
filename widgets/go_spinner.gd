@@ -65,7 +65,7 @@ func _ready() -> void:
 	# ♿ 스크린리더에게는 "불러오는 중" 한 마디면 된다 — 도는 모양은 눈으로만 읽는 정보다.
 	accessibility_name = GoUi.text(&"loading")
 	GoUi.watch(_on_ui_changed)
-	set_process(visible and not GoUi.config.reduce_motion)
+	set_process(is_visible_in_tree())
 
 
 func _exit_tree() -> void:
@@ -114,14 +114,16 @@ func _draw_dots(center: Vector2, box: float, color: Color) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED:
 		# 🛑 안 보이는 동안은 돌지 않는다 — 숨긴 스피너가 매 프레임 다시 그리면 그만큼 공짜로 버린다.
-		set_process(is_visible_in_tree() and not GoUi.config.reduce_motion)
+		# 🛑 `reduce_motion` 이어도 **멈추지 않는다** — 그때는 점 세 개의 밝기가 흐르는 표시이고,
+		#    시간이 아예 멈추면 "죽은 화면" 과 구별되지 않는다(2026-09-16: 끄는 바람에 굳어 있었다).
+		set_process(is_visible_in_tree())
 	elif what == NOTIFICATION_TRANSLATION_CHANGED:
 		accessibility_name = GoUi.text(&"loading")
 
 
 func _on_ui_changed() -> void:
 	accessibility_name = GoUi.text(&"loading")
-	set_process(is_visible_in_tree() and not GoUi.config.reduce_motion)
+	set_process(is_visible_in_tree())
 	queue_redraw()
 
 
@@ -146,7 +148,8 @@ const _BUSY_META := &"gohud_busy"
 ##    요청은 `disabled` 만으로 부족하다 — 이미 눌린 뒤 `await` 사이에 한 번 더 들어온다.
 static func busy(button: Button, waiting: bool) -> void:
 	if not is_instance_valid(button): return
-	var carried: Dictionary = button.get_meta(_BUSY_META, {})
+	# 🛑 `get_meta(key, default)` 는 키가 없으면 오류를 찍는다 — 먼저 `has_meta` 로 묻는다.
+	var carried: Dictionary = button.get_meta(_BUSY_META) if button.has_meta(_BUSY_META) else {}
 
 	if not waiting:
 		if carried.is_empty(): return
@@ -185,10 +188,12 @@ static func busy(button: Button, waiting: bool) -> void:
 	# 되돌리는 것은 다르다.
 	button.set_meta(_BUSY_META, {
 		"spinner": spinner, "disabled": button.disabled,
+		# 🔑 덮어쓰기가 **없었으면** 그 값은 쓰이지 않는다(되돌릴 때 `remove_…` 로 간다). 자리를 채우는
+		#    값일 뿐이라 토큰을 쓴다 — 흰색을 박으면 혹시 새어 나갈 때 밝은 테마에서 안 보인다.
 		"had_font": button.has_theme_color_override(&"font_disabled_color"),
-		"font": button.get_theme_color(&"font_disabled_color") if button.has_theme_color_override(&"font_disabled_color") else Color.WHITE,
+		"font": button.get_theme_color(&"font_disabled_color") if button.has_theme_color_override(&"font_disabled_color") else GoUi.color(GoTheme.MUTED),
 		"had_icon": button.has_theme_color_override(&"icon_disabled_color"),
-		"icon": button.get_theme_color(&"icon_disabled_color") if button.has_theme_color_override(&"icon_disabled_color") else Color.WHITE,
+		"icon": button.get_theme_color(&"icon_disabled_color") if button.has_theme_color_override(&"icon_disabled_color") else GoUi.color(GoTheme.MUTED),
 	})
 	button.disabled = true
 	# 글자만 투명하게 — 버튼 판과 크기는 그대로 둔다.

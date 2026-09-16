@@ -8,6 +8,7 @@
 4. [Boot order and the root screen](#4-boot-order-and-the-root-screen)
 5. [Project settings that matter](#5-project-settings-that-matter)
 6. [Verify without opening a window](#6-verify-without-opening-a-window)
+7. [Updating gohud and this skill](#7-updating-gohud-and-this-skill)
 
 ## 1. Requirements and install
 
@@ -132,7 +133,7 @@ extends GoDialogs
 godot --headless --path . --import                                   # registers class_name globals
 godot --headless --path . --quit-after 120 res://ui/main_menu.tscn 2>&1 | grep -E "SCRIPT ERROR|Parse Error|ERROR: Failed" && echo FAIL || echo OK
 python3 <skill>/scripts/gohud_preview.py res://ui/main_menu.tscn --check   # same, with the error scan built in
-bash addons/gohud/tools/run_tests.sh                                  # gohud's own 438 checks (git checkout only)
+bash addons/gohud/tools/run_tests.sh                                  # gohud's own 693 checks (git checkout only)
 ```
 
 Headless runs cannot take screenshots (the viewport image is null). To *see* a screen, open a window with
@@ -147,3 +148,74 @@ gohud's own tooling (present in a git checkout, not in the release ZIP):
 | `python3 addons/gohud/tools/new_theme.py <id> --from <parent>` · `make_theme.py <id>` | Scaffold and build a theme (theming.md §4) |
 | `bash addons/gohud/tools/package.sh` | Release ZIP, bumps patch version (`--increase-minor-version`) |
 | `bash addons/gohud/examples/demo/run.sh` | The demo app (`--setup`, `--shot`, `--record`, `-- --explore=<chapter>`) |
+
+## 7. Updating gohud and this skill
+
+`/gohud update` walks this. There are **two separate things** and updating one does not update the other:
+
+| What | Lives at | Why it matters |
+|---|---|---|
+| **The add-on** | `<project>/addons/gohud/` | The classes your game calls |
+| **The skill** | the plugin cache, or `~/.claude/skills/gohud/` | What the agent knows about those classes |
+
+🛑 **If only the skill updates, the agent recommends APIs the project does not have** — and if only the
+add-on updates, the agent does not know the new widgets exist. Update both, then verify the versions match.
+
+### 7.1 Which install is this?
+
+```bash
+test -f addons/gohud/plugin.cfg && grep -m1 '^version=' addons/gohud/plugin.cfg   # installed version
+git -C addons/gohud rev-parse --short HEAD 2>/dev/null && echo "→ git checkout"   # or: not a git repo
+git config --file .gitmodules --get-regexp 'addons/gohud' 2>/dev/null             # submodule?
+```
+
+### 7.2 Update the add-on
+
+| Install kind | Command | Note |
+|---|---|---|
+| **Submodule** | `git -C addons/gohud fetch origin && git -C addons/gohud checkout main && git -C addons/gohud pull` | Then commit the pointer in the parent repo: `git add addons/gohud` |
+| **Pinned submodule** | `git -C addons/gohud fetch --tags && git -C addons/gohud checkout v<version>` | Pin on purpose; unpinned `main` can carry breaking changes |
+| **Plain clone / copy** | `git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud-new && rm -rf addons/gohud && mv /tmp/gohud-new addons/gohud && rm -rf addons/gohud/.git` | 🛑 **Back up first** if you edited files inside `addons/gohud/` — this replaces everything |
+| **Release ZIP / Asset Store** | Download the newest ZIP and extract over the project root (its top folder is `addons/`) | The store's "update" button does the same |
+
+🛑 **Never hand-edit files inside `addons/gohud/`** — an update overwrites them. Everything you would want
+to change has a supported seam: `GoConfig`, `color_overrides`, a project-local `GoThemePreset`, a `GoSkin`
+subclass, or the subclass hooks in surfaces.md §6. If you already edited the add-on, `git -C addons/gohud
+diff` before updating and move those changes into your own project.
+
+After updating, **always**:
+
+```bash
+godot --headless --path . --import       # new class_name globals register; without this they are "not declared"
+bash addons/gohud/tools/check_all.sh     # git checkout only — confirms the new version is healthy here
+```
+
+### 7.3 Update the skill
+
+| Install kind | Command |
+|---|---|
+| **Claude Code plugin** (`/plugin`) | `/plugin update gohud` — or Claude Code updates it on its own; `/plugin` lists what is installed |
+| **Personal skill** (`~/.claude/skills/gohud/`) | `rm -rf ~/.claude/skills/gohud && cp -R addons/gohud/skills/gohud ~/.claude/skills/gohud` |
+| **Project skill** (`.claude/skills/gohud/`) | `rm -rf .claude/skills/gohud && cp -R addons/gohud/skills/gohud .claude/skills/gohud` |
+
+The skill's source of truth is `addons/gohud/skills/gohud/` in the repository — the plugin and any copies
+are built from it. Editing a copy is lost on the next update; change the repository copy.
+
+### 7.4 Verify the two agree
+
+```bash
+grep -m1 '^version=' addons/gohud/plugin.cfg                                    # add-on
+grep -m1 'Version described' <skill>/references/features.md                     # skill
+```
+
+If the skill names a class the add-on does not have, the skill is ahead:
+
+```bash
+godot --headless --path . -s res://addons/gohud/tests/gohud_test.gd | tail -1   # should end "N/N passed"
+```
+
+### 7.5 What changed
+
+`addons/gohud/CHANGELOG.md` is the record — read the entries above your previous version. Breaking changes
+are called out under **Changed**; everything else is additive. After a major or minor bump, re-run your own
+screens headless (§6) before shipping.

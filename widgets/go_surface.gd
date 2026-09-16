@@ -59,6 +59,21 @@ var compact := false
 var dismiss_on_scrim := false
 ## 스크림을 투명하게 — 게임 화면 위의 드롭다운처럼 뒤가 보여야 할 때.
 var scrim_transparent := false
+## 🪟 **카드 바탕의 불투명도**(0.0~1.0) — 이 창 하나만 다르게 한다. 음수면 테마·설정이 정한 값
+## (`GoUi.surface_alpha(GoTheme.BOX_PANEL)` · 기본 테마는 80%).
+##
+## ```gdscript
+## surface.alpha = 0.6    # 이 창만 60% — 뒤의 전투가 보여야 하는 확인창
+## surface.alpha = 1.0    # 이 창만 꽉 찬 색 — 긴 글을 읽는 창
+## ```
+##
+## 🛑 **카드의 바탕만** 묽어진다. 제목·본문·버튼·아이콘은 선명한 채로 남는다 — 내용까지 흐려지면
+##    읽을 수 없는 창이 되고, 그것은 투명한 창이 아니라 고장이다(그쪽이 필요하면 `modulate` 다).
+## 🛑 스크림(뒤를 덮는 막)은 따로다 — 그것은 테마의 `scrim` 색과 `scrim_transparent` 가 정한다.
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		_restyle()
 ## 열 때 카드를 페이드인.
 var fade_in := false
 ## 끌어서 높이를 바꿀 수 있는가(시트).
@@ -245,9 +260,28 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(relayout)
 	get_viewport().gui_focus_changed.connect(_focus_changed)
 	visibility_changed.connect(_sync_active)
-	GoUi.watch(relayout)
+	# 🛑 배치가 아니라 `_on_ui_changed` 를 등록한다 — 설정이 바뀌면 **판의 불투명도도** 다시 입혀야 한다.
+	#    배치만 다시 하면 테마를 갈아 끼운 창이 옛 판을 그대로 쓴다.
+	GoUi.watch(_on_ui_changed)
+	_restyle()
 	relayout()
 	_sync_active()
+
+
+## 카드 판을 다시 입힌다 — 불투명도가 여기서 정해진다.
+## 🛑 **매 프레임 부르지 않는다**(`relayout` 은 내용 맞춤 창에서 매 프레임 돌아간다). 판을 복제하는
+##    일이라 배치보다 비싸고, 바뀔 때만 하면 되는 일이다 — 설정 변경·`alpha` 대입·열기에서만 부른다.
+func _restyle() -> void:
+	if card == null or not is_inside_tree(): return
+	GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
+
+
+## 설정·테마가 바뀌었다. 🛑 적어 둔 "원래 판" 을 **잊고** 다시 잡는다 — 생김새 묶음을 갈아 끼우면
+##    판 모양 자체가 달라지므로, 옛 판에 새 불투명도를 입히면 옛 테마의 카드가 남는다.
+func _on_ui_changed() -> void:
+	GoStyle.forget_face(card)
+	_restyle()
+	relayout()
 
 
 # ── 제목 ───────────────────────────────────────────────────────────────
@@ -416,7 +450,7 @@ func _restore_focus() -> void:
 
 
 func _exit_tree() -> void:
-	GoUi.unwatch(relayout)
+	GoUi.unwatch(_on_ui_changed)
 	_release_back()
 	_restore_focus()
 

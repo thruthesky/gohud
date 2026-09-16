@@ -162,14 +162,19 @@ func _build_head() -> void:
 		if index == _sort_column: mark = " ▲" if _ascending else " ▼"
 		var node: Control
 		if bool(col["sortable"]):
-			var button := GoStyle.button(words + mark, sort_by.bind(index, index != _sort_column or not _ascending),
+			# 🛑 **번역 키에 화살표를 이어 붙이지 않는다.** `translate` 가 켜져 있으면 엔진이
+			#    `"rank ▲"` 를 통째로 키로 찾아 못 찾고, 화면에 키가 그대로 드러난다.
+			#    번역은 여기서 끝내고(`tr`), 표시는 그 **뒤**에 붙인다.
+			var translate: bool = col["translate"]
+			var shown := (tr(words) if translate else words) + mark
+			var button := GoStyle.button(shown, sort_by.bind(index, index != _sort_column or not _ascending),
 				GoStyle.Tone.BARE)
-			button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if bool(col["translate"]) \
-				else Node.AUTO_TRANSLATE_MODE_DISABLED
+			button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 			button.alignment = HORIZONTAL_ALIGNMENT_RIGHT if bool(col["numeric"]) else HORIZONTAL_ALIGNMENT_LEFT
 			node = button
 		else:
-			var text := GoStyle.label(words, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+			var text := GoStyle.label(tr(words) if bool(col["translate"]) else words,
+				GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 			text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if bool(col["numeric"]) else HORIZONTAL_ALIGNMENT_LEFT
 			text.autowrap_mode = TextServer.AUTOWRAP_OFF
 			text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -223,7 +228,11 @@ func _make_row(source: int, position: int) -> Control:
 	button.toggle_mode = true
 	button.button_pressed = source == _selected
 	# 얼룩 줄 — 칸이 많은 표에서 눈이 줄을 놓치지 않게.
-	if position % 2 == 1: button.modulate = Color(1, 1, 1, 0.97)
+	# 🔑 밝기를 깎는 대신 **판을 한 겹 깐다** — `modulate` 는 글자까지 함께 흐려 대비를 떨어뜨린다.
+	if position % 2 == 1:
+		var stripe := StyleBoxFlat.new()
+		stripe.bg_color = Color(GoUi.color(GoTheme.SURFACE_SOFT), 0.5)
+		button.add_theme_stylebox_override(&"normal", stripe)
 	button.pressed.connect(func() -> void:
 		_selected = source
 		GoFeedback.tapped()

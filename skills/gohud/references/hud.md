@@ -246,3 +246,149 @@ func build_hud() -> void:
 
 The complete, runnable version (bars, slots, joystick, toast, prompt, pause button) is
 `assets/templates/game_hud.gd`.
+
+## 9. GoContextMenu — long-press and right-click
+
+```gdscript
+GoContextMenu.attach(item_slot, [
+    {"text": "Use", "action": use},
+    {"text": "Equip", "action": equip},
+    {"separator": true},
+    {"text": "Drop", "action": drop, "danger": true},
+])
+
+# A list that changes per row — build it when it opens
+GoContextMenu.attach(player_row, func() -> Array: return menu_for(player))
+
+# A visible "⋯" button opens the same menu without the hold
+GoContextMenu.open_at(more_button, items)
+GoContextMenu.detach(item_slot)
+```
+
+| Item key | Meaning |
+|---|---|
+| `text` | Row label (a translation key when `translate: true`) |
+| `action` | `Callable` to run |
+| `icon` | Icon name (texture sets only — `PopupMenu` cannot draw font glyphs) |
+| `disabled` · `checked` · `separator` · `danger` | Greyed · tick mark · divider line · destructive colour |
+
+- `HOLD_SECONDS = 0.5` matches Android; `SLOP_DP = 12` cancels the hold **the moment the finger moves**, so
+  scrolling a list never pops a menu. Right-click opens it immediately on desktop.
+- 🛑 **A long press needs a second way in.** Nobody discovers a hidden gesture — pair it with a visible `⋯`
+  (`open_at()`), an icon, or a first-run `GoCoachMark`.
+- The holder is a `RefCounted` hung on the control's meta, not a node — it does not change the tree shape.
+
+## 10. GoConsole — developer console
+
+```gdscript
+var console := GoConsole.new()
+add_child(console)
+console.register("give", "Grant an item: give <id> <count>", func(args: PackedStringArray) -> String:
+    return "granted %s" % " ".join(args))
+console.log_line("connected to server", GoTheme.SUCCESS)
+console.toggle()          # Escape closes; ↑/↓ walk the history
+```
+
+`layer_index` 200 (above everything, so you can debug over a dialog) · `max_lines` 400 (older lines are
+dropped) · `height_ratio` 0.55 · `executed(command, args, result)` signal.
+
+🛑 **`debug_only` is on by default and `open()` does nothing in a release build.** Cheat commands in a
+player's hands end a game's economy. Turn it off only for a QA build, and gate it yourself.
+🔑 Typing filters the registered commands into a palette — nobody has to memorise them. `help` and `clear`
+are registered for you.
+
+## 11. GoSpinner — waiting
+
+```gdscript
+var busy := GoSpinner.new()
+card.add_child(busy)
+
+GoSpinner.busy(buy_button, true)          # the button becomes a spinner, in place
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)
+```
+
+`seconds_per_turn` 1.1 · `thickness` (−1 = diameter/9) · `ink` (empty = accent) · `show_track`.
+
+- **`busy()` keeps the button's size** — the label is made transparent rather than removed, so the row does
+  not jump. It also sets `disabled`, which is the point: a purchase must not fire twice while you `await`.
+  `is_busy(button)` asks. Calling it twice adds one spinner, not two, and turning it off restores the exact
+  theme overrides it found.
+- ♿ With `reduce_motion` on it does not spin — three dots pulse instead. It also stops while hidden.
+- 🔑 Progress you can measure is a `GoBar`. A spinner promises nothing about when it ends.
+
+## 12. GoBadge — counts and dots
+
+```gdscript
+GoBadge.attach(mail_button, unread_count)      # hides itself at 0
+GoBadge.attach(shop_button, 0, "NEW")          # a word instead of a number
+GoBadge.attach(friend_button, 3, "", true)     # a dot — "something is there"
+row.add_child(GoBadge.make(12))                # standalone, inside a row
+GoBadge.detach(mail_button)
+```
+
+`cap` 99 (`99+` beyond it) · `label_text` · `dot` · `ink` (empty = danger) · `hide_when_zero`.
+
+- `attach()` pins it to the **top-right corner of the host**, half outside, with anchors — so it follows a
+  host whose size is decided later. Attaching twice returns the same badge.
+- 🔑 A number when the count changes what the player does; a dot when only "there is something" matters.
+- ♿ The badge carries an `accessibility_name`, and its text colour is picked for contrast against whatever
+  colour the skin painted the badge — never assumed white.
+
+## 13. GoRewardCalendar — daily attendance
+
+```gdscript
+var attendance := GoRewardCalendar.make([
+    {"icon": &"coin", "amount": 100},
+    {"icon": &"potion", "amount": 3},
+    {"icon": &"crown", "amount": 1, "special": true},
+], 1)                                          # claimed through day 2
+attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))
+attendance.set_claimed_until(server_value)     # after the server confirms
+```
+
+`columns` 7 · `cell_size` (−1 = touch × 1.4) · `today()` returns the claimable index, `-1` when done.
+
+- 🛑 **Only today's cell is pressable.** Claimed and future cells are disabled — a button that does nothing
+  when pressed reads as broken.
+- ♿ Claimed / today / future differ by **three things**: a tick glyph, an accent border, and dimming — and
+  the state is in the accessible name. Dimming alone cannot separate "claimed" from "not yet".
+
+## 14. GoRadar and GoDonut — stats at a glance
+
+```gdscript
+var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+stats.set_compare(with_new_sword)              # dashed overlay
+
+var share := GoDonut.make([
+    {"label": "Physical", "value": 620},
+    {"label": "Magic", "value": 340, "color": Color("4a8fe0")},
+])
+share.center_text = "1050"
+share.center_hint = "Damage"
+card.add_child(share.legend())
+```
+
+- **Radar values are 0–1.** What counts as 1 (the class cap? the server's best?) is a game decision the
+  widget cannot make; raw 120 STR next to 45 INT would draw a lie. Needs at least three axes.
+- **Donut values are raw** — it divides for you. It collapses past `collapse_to` (5) slices into one, because
+  a sixth slice is a thread nobody can read, and `legend()` prints name **and** percent as words.
+- ♿ Both expose the numbers through `accessibility_name`, and the radar's comparison line is **dashed** so it
+  survives colour blindness.
+
+## 15. GoCarousel — banners and character select
+
+```gdscript
+var banners := GoCarousel.new()
+banners.custom_minimum_size.y = 160
+banners.set_pages([promo, event, pack])
+banners.page_changed.connect(track_view)
+banners.autoplay_seconds = 5.0                 # off by default
+```
+
+`loop` · `show_dots` · `swipe_dp` 48 · `motion_seconds` · `next()` `previous()` `go_to(i)` `index()`.
+
+- 🛑 **It does not advance on its own unless you ask**, and 5 s is the floor — a banner that changes every
+  3 s takes the text away before it is read. Touching it resets the timer.
+- ♿ With `reduce_motion` on, autoplay is off entirely; the dots still work, so nothing is lost.
+- The dots are pressable at the touch minimum even though the drawn dot is small.

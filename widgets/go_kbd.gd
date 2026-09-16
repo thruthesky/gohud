@@ -106,7 +106,10 @@ func _rebuild() -> void:
 		if index > 0: add_child(_joiner())
 		add_child(_cap(_keys[index]))
 	# ♿ 스크린리더에게는 "컨트롤 에스" 처럼 한 마디로 읽히는 편이 낫다 — 캡 하나하나를 따로 읽으면 끊긴다.
-	accessibility_name = " + ".join(_keys)
+	# 🔑 `+` 는 키 조합을 **읽는 관습**이라 조각 사이에 남긴다(공백으로만 잇는 `GoUi.spoken` 과 다르다).
+	var spoken: Array[String] = []
+	for key in _keys: spoken.append(key)
+	accessibility_name = " + ".join(spoken)
 
 
 ## 키 하나가 새겨진 캡.
@@ -120,17 +123,19 @@ func _cap(word: String) -> Control:
 	text.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	text.text_direction = Control.TEXT_DIRECTION_LTR
 	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	# 🛑 **줄바꿈하지 않는다.** `Ctrl` 이 `Ctr` / `l` 로 쪼개져 캡 두 줄이 되었다(2026-09-16 촬영).
+	# 🛑 **줄바꿈하지 않는다.** `Ctrl` 이 `Ctr` / `l` 로 쪼개져 캡이 두 줄이 되었다(2026-09-16 촬영).
 	#    키 이름은 낱말이 아니라 **키에 새겨진 기호**다 — 어디서도 끊으면 안 된다.
-	text.autowrap_mode = TextServer.AUTOWRAP_OFF
+	#    `GoStyle.natural_width()` 가 이 규칙의 정본이다(줄바꿈 끄기 + 남는 폭 안 먹기를 함께 건다).
+	GoStyle.natural_width(text)
 	text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	# 한 글자 키도 정사각형으로 — `W` 와 `I` 의 캡 폭이 다르면 줄이 들쭉날쭉해진다.
-	# 🔑 **최소**만 준다 — `Ctrl` 처럼 긴 이름은 글자 폭만큼 넓어진다.
-	var side := float(GoUi.font_size(GoTheme.ROLE_MICRO)) * 1.6
-	text.custom_minimum_size.x = side
-	# 🛑 캡은 글자만큼만 — `GoStyle.label()` 은 남는 폭을 먹게(EXPAND_FILL) 만들어져 있어,
-	#    그대로 두면 캡 하나가 줄 전체를 차지하고 나머지가 밀려난다.
-	text.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	# 🛑 **글자가 들어갈 폭을 직접 잰다.** 최소 폭만 주고 자연 폭에 맡기면, 판 여백에 밀려 글자
+	#    칸이 좁아진 순간 다시 두 줄이 된다 — 줄바꿈을 꺼도 폭이 모자라면 잘리거나 접힌다.
+	var size := GoUi.font_size(GoTheme.ROLE_MICRO)
+	var side := float(size) * 1.6
+	var font := text.get_theme_font(&"font")
+	var natural := font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x if font != null else side
+	text.custom_minimum_size.x = maxf(side, natural)
 	box.add_child(text)
 	return box
 

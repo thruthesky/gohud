@@ -56,6 +56,14 @@ var _lines := 0
 var _open := false
 
 
+## 🪟 **판 바탕의 불투명도**(0.0~1.0) — 이것 하나만 다르게. 음수면 테마·설정이 정한 값.
+## 🛑 바탕만 묽어진다 — 글자·아이콘은 선명한 채로 남는다.
+var alpha := -1.0:
+	set(value):
+		alpha = value
+		if _panel != null: _restyle()
+
+
 func _init() -> void:
 	layer = layer_index
 	visible = false
@@ -107,8 +115,10 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		get_viewport().size_changed.connect(_relayout)
 	GoUi.watch(_on_ui_changed)
-	register("help", "명령 목록을 본다", func(_a: PackedStringArray) -> String: return _help())
-	register("clear", "로그를 지운다", func(_a: PackedStringArray) -> String:
+	# 🛑 애드온 코드에 한 언어의 글자를 박지 않는다 — 콘솔은 개발자용이지만 **번역하는 팀도 있다**.
+	#    영어는 개발 도구의 공통어라 기본으로 두고, 바꾸려면 `register()` 로 같은 이름을 덮어쓴다.
+	register("help", "List the commands", func(_a: PackedStringArray) -> String: return _help())
+	register("clear", "Clear the log", func(_a: PackedStringArray) -> String:
 		output.clear()
 		_lines = 0
 		return "")
@@ -184,7 +194,7 @@ func run(line: String) -> String:
 	var args := PackedStringArray(parts.slice(1))
 	log_line("> " + trimmed, GoTheme.MUTED)
 	if not _commands.has(name):
-		var message := "알 수 없는 명령: %s" % name
+		var message := "unknown command: %s" % name
 		log_line(message, GoTheme.DANGER)
 		return message
 	var action: Callable = _commands[name]["action"]
@@ -265,7 +275,7 @@ func _relayout() -> void:
 
 
 func _restyle() -> void:
-	_panel.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box())
+	_panel.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box(-1, -1, alpha))
 	# 🔑 로그는 **고정폭 글꼴**이 읽기 쉽다 — 좌표·수치가 세로로 줄이 맞는다. 테마에 없으면 기본 글꼴.
 	output.add_theme_font_size_override(&"normal_font_size", GoUi.font_size(GoTheme.ROLE_COMPACT))
 	output.add_theme_color_override(&"default_color", GoUi.color(GoTheme.TEXT))

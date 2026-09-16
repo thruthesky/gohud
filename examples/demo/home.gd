@@ -69,6 +69,10 @@ const GROUPS: Array[Dictionary] = [
 		"note": "Asking, telling and guiding — with focus and the back key handled."},
 	{"name": "The game HUD", "icon": GoIconSet.TARGET, "tone": GoTheme.SUCCESS,
 		"note": "What sits over the world: corners, gauges, slots and a thumbstick."},
+	{"name": "Forms and lists", "icon": GoIconSet.LIST, "tone": GoTheme.ACCENT,
+		"note": "Where players type, search, sort and page through what the server sent."},
+	{"name": "Game shapes", "icon": GoIconSet.CHART, "tone": GoTheme.WARNING,
+		"note": "Attendance, stats and banners — web shapes rebuilt for what games need."},
 ]
 
 ## 이름 하나에 한 줄 설명과 **실제로 쓰는 코드 한 줄**. `group` 은 위 묶음의 번호다.
@@ -111,6 +115,42 @@ const PIECES: Array[Dictionary] = [
 		"code": "slot.quantity = 12"},
 	{"group": 3, "name": "GoJoystick", "note": "A thumbstick that appears where the thumb lands.",
 		"code": "joystick.moved.connect(_move)"},
+	{"group": 2, "name": "GoSnackbar", "note": "Places itself at the bottom, queues, and can carry Undo.",
+		"code": "await snack.post(options)"},
+	{"group": 2, "name": "GoPopover", "note": "An info card beside the thing you pressed — one at a time.",
+		"code": "GoPopover.open(slot, card)"},
+	{"group": 2, "name": "GoDrawer", "note": "Slides in from the side, for screens wider than a phone.",
+		"code": "drawer.open(\"Bag\")"},
+	{"group": 2, "name": "GoContextMenu", "note": "Long-press or right-click; a moving finger cancels it.",
+		"code": "GoContextMenu.attach(slot, items)"},
+	{"group": 3, "name": "GoSpinner", "note": "A wait with no end in sight — and a button that cannot double-fire.",
+		"code": "GoSpinner.busy(button, true)"},
+	{"group": 3, "name": "GoBadge", "note": "The unread dot, the NEW tag, the 99+ — hidden at zero.",
+		"code": "GoBadge.attach(mail, unread)"},
+	{"group": 3, "name": "GoConsole", "note": "Cheat and debug commands. Refuses to open in a release build.",
+		"code": "console.register(name, help, run)"},
+	{"group": 4, "name": "GoField", "note": "Label, input, hint — and the error that says which box is wrong.",
+		"code": "field.set_error(message)"},
+	{"group": 4, "name": "GoInputGroup", "note": "An input and its button welded into one shape.",
+		"code": "GoInputGroup.make(edit, parts)"},
+	{"group": 4, "name": "GoCombobox", "note": "A picker that searches inside names, not just their start.",
+		"code": "GoCombobox.make(friends)"},
+	{"group": 4, "name": "GoCodeInput", "note": "Coupon codes — pasting works, and an IME cannot eat a letter.",
+		"code": "GoCodeInput.make(12, 4)"},
+	{"group": 4, "name": "GoTable", "note": "Sort by a header, pick a row — and numbers sort as numbers.",
+		"code": "GoTable.make(columns, rows)"},
+	{"group": 4, "name": "GoPagination", "note": "Pages that keep the current one centred, or a More row.",
+		"code": "GoPagination.make(1, total, load)"},
+	{"group": 5, "name": "GoRewardCalendar", "note": "Daily attendance — only today can be pressed.",
+		"code": "GoRewardCalendar.make(days, got)"},
+	{"group": 5, "name": "GoRadar", "note": "The stat pentagon, with a dashed line to compare gear.",
+		"code": "GoRadar.make(stats, compare)"},
+	{"group": 5, "name": "GoDonut", "note": "Damage share and currency splits, with a legend in words.",
+		"code": "GoDonut.make(slices)"},
+	{"group": 5, "name": "GoCarousel", "note": "Banners and character select — it never moves on its own.",
+		"code": "carousel.set_pages(banners)"},
+	{"group": 5, "name": "GoKbd", "note": "Key caps that read the real binding, and hide on phones.",
+		"code": "GoKbd.for_action(&\"interact\")"},
 ]
 
 ## 테마를 갈아 끼우면 화면을 통째로 다시 짓는다 — 위젯은 태어날 때 옷을 입기 때문이다.
@@ -129,6 +169,9 @@ var _notice: GoNotice
 var _prompt: GoPromptCard
 var _tour: GoCoachMark
 var _hp: GoBar
+var _snackbar: GoSnackbar
+var _drawer: GoDrawer
+var _home_field: GoField
 var _mp: GoBar
 var _log: Label
 var _log_empty: Control
@@ -593,7 +636,69 @@ func _add_playground(page: VBoxContainer) -> void:
 	grid.add_child(_card_choices())
 	grid.add_child(_card_lists())
 	grid.add_child(_card_feedback())
+	grid.add_child(_card_new_widgets())
 	grid.add_child(_card_activity())
+
+
+# ── 🆕 뒤에 들인 위젯의 동작 ───────────────────────────────────────────
+
+func _ensure_snackbar() -> GoSnackbar:
+	if not is_instance_valid(_snackbar):
+		_snackbar = GoSnackbar.new()
+		add_child(_snackbar)
+	return _snackbar
+
+
+func _pop_snackbar() -> void:
+	_say("snackbar")
+	var picked: int = await _ensure_snackbar().post({
+		"text": "Item dropped", "tone": GoTheme.WARNING, "icon": GoIconSet.TRASH, "actions": ["Undo"]})
+	_say("undo pressed" if picked == 0 else "snackbar closed")
+
+
+func _pop_drawer() -> void:
+	if not is_instance_valid(_drawer):
+		_drawer = GoDrawer.new()
+		add_child(_drawer)
+		for i in 8:
+			_drawer.body.add_child(GoStyle.list_button(GoIconSet.POTION, "Potion %d" % (i + 1),
+				_say.bind("potion %d" % (i + 1)), Color.TRANSPARENT, "Restores health", false))
+	_drawer.open("Bag")
+	_say("drawer")
+
+
+## 🔑 누른 버튼이 그 자리에서 도는 것으로 바뀐다 — 크기도 그대로고 두 번 눌리지도 않는다.
+func _demo_busy() -> void:
+	var button := _find_named_button("Buy")
+	if button == null: return
+	GoSpinner.busy(button, true)
+	_say("waiting for the server…")
+	await get_tree().create_timer(1.5).timeout
+	if is_instance_valid(button): GoSpinner.busy(button, false)
+	_say("purchase done")
+
+
+func _find_named_button(words: String) -> Button:
+	for node in _all_nodes(self):
+		var button := node as Button
+		if button != null and button.text == words: return button
+	return null
+
+
+func _all_nodes(node: Node) -> Array:
+	var out: Array = [node]
+	for child in node.get_children(): out.append_array(_all_nodes(child))
+	return out
+
+
+func _demo_field_error() -> void:
+	if is_instance_valid(_home_field): _home_field.set_error("That name is taken")
+	_say("field error")
+
+
+func _demo_field_clear() -> void:
+	if is_instance_valid(_home_field): _home_field.clear_error()
+	_say("field cleared")
 
 
 func _card_buttons() -> Control:
@@ -732,8 +837,9 @@ func _card_feedback() -> Control:
 	body.add_child(_card_head("TELLING THE PLAYER", GoIconSet.CHAT, tone))
 
 	var actions := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_TINY))
-	for spec in [["Notice", _pop_notice], ["Dialog", _pop_dialog], ["Sheet", _pop_sheet],
-			["Prompt", _pop_prompt], ["Coach marks", _pop_tour]]:
+	for spec in [["Notice", _pop_notice], ["Snackbar", _pop_snackbar], ["Dialog", _pop_dialog],
+			["Sheet", _pop_sheet], ["Drawer", _pop_drawer], ["Prompt", _pop_prompt],
+			["Coach marks", _pop_tour]]:
 		var button := GoStyle.button(String(spec[0]), spec[1], GoStyle.Tone.COMPACT)
 		GoStyle.natural_width(button)
 		actions.add_child(button)
@@ -741,6 +847,91 @@ func _card_feedback() -> Control:
 	body.add_child(GoStyle.alert(
 		"Each one handles focus and the back key for you, on a phone as much as on a desktop.",
 		GoTheme.INFO))
+	return card
+
+
+## 🆕 뒤에 들인 위젯을 **살아 있는 채로** 한 카드에. 목록에 이름만 적어 두면 아무도 눌러 보지 않는다.
+func _card_new_widgets() -> Control:
+	var tone := GoUi.color(GoTheme.WARNING)
+	var card := GoStyle.card(tone)
+	var body := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	card.add_child(body)
+	body.add_child(_card_head("NEWEST WIDGETS", GoIconSet.STAR, tone))
+
+	# 배지가 달린 아이콘 — 우편함의 안 읽음 표시 그대로.
+	var top := GoStyle.row(GoUi.metric(GoTheme.GAP))
+	var mail := GoIconButton.new()
+	mail.icon_name = GoIconSet.BELL
+	mail.tooltip_text_name = &"next"
+	mail.pressed.connect(func() -> void:
+		GoBadge.attach(mail, 0)
+		_say("mail read"))
+	top.add_child(mail)
+	GoBadge.attach.call_deferred(mail, 3)
+	var busy := GoStyle.button("Buy", _demo_busy, GoStyle.Tone.PRIMARY)
+	GoStyle.natural_width(busy)
+	top.add_child(busy)
+	var keys := GoKbd.make("Ctrl", "S")
+	keys.hide_on_handheld = false
+	top.add_child(keys)
+	body.add_child(top)
+
+	# 오류를 띄웠다 지우는 폼 한 줄.
+	_home_field = GoField.make("Guild name", GoStyle.line_edit("2-16 characters"), "Everyone sees this")
+	body.add_child(_home_field)
+	var field_row := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_TINY))
+	for spec in [["Show error", _demo_field_error], ["Clear", _demo_field_clear]]:
+		var button := GoStyle.button(String(spec[0]), spec[1], GoStyle.Tone.COMPACT)
+		GoStyle.natural_width(button)
+		field_row.add_child(button)
+	body.add_child(field_row)
+
+	body.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
+		{"suffix": GoStyle.button("Send", _say.bind("sent"))}))
+
+	# 정렬되는 표 — 점수는 수로 견준다.
+	var board := GoTable.make(
+		[{"text": "Rank", "width": 48}, {"text": "Name"}, {"text": "Score", "numeric": true}],
+		[[1, "Aria", 91240], [2, "Brin", 48210], [3, "Cade", 9124]])
+	board.sort_by(2, false)
+	board.row_selected.connect(func(index: int) -> void: _say("row %d" % index))
+	body.add_child(board)
+
+	var charts := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP))
+	var radar := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45},
+		{"STR": 0.6, "AGI": 0.75, "INT": 0.35, "VIT": 0.55, "LUK": 0.45})
+	radar.custom_minimum_size = Vector2(150, 150)
+	charts.add_child(radar)
+	var donut := GoDonut.make([{"label": "Physical", "value": 620}, {"label": "Magic", "value": 340}])
+	donut.center_text = "960"
+	donut.center_hint = "Damage"
+	donut.custom_minimum_size = Vector2(130, 130)
+	charts.add_child(donut)
+	body.add_child(charts)
+
+	var days: Array = []
+	for i in 7:
+		days.append({"icon": GoIconSet.CROWN if i == 6 else GoIconSet.COIN,
+			"amount": (i + 1) * 100, "special": i == 6})
+	var calendar := GoRewardCalendar.make(days, 2)
+	calendar.claimed.connect(func(day: int) -> void:
+		calendar.set_claimed_until(day)
+		_say("claimed day %d" % (day + 1)))
+	body.add_child(calendar)
+
+	var coupon := GoCodeInput.make(8, 4)
+	coupon.completed.connect(func(code: String) -> void: _say("coupon %s" % code))
+	body.add_child(coupon)
+
+	body.add_child(GoStyle.alert(
+		"Long-press the table rows for a context menu; every press here writes to Live activity.",
+		GoTheme.WARNING))
+	GoContextMenu.attach(board, [
+		{"text": "Whisper", "action": _say.bind("whisper")},
+		{"text": "Invite", "action": _say.bind("invite")},
+		{"separator": true},
+		{"text": "Block", "action": _say.bind("blocked"), "danger": true},
+	])
 	return card
 
 

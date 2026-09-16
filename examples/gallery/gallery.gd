@@ -20,6 +20,12 @@ var _slots: Array[GoSlot] = []
 var _log: Label
 var _dark := true
 var _tour: GoCoachMark
+var _snackbar: GoSnackbar
+var _drawer: GoDrawer
+var _console: GoConsole
+var _gallery_field: GoField
+var _popover_anchor: Button
+var _menu_anchor: Button
 
 
 func _ready() -> void:
@@ -188,7 +194,134 @@ func _build_page() -> void:
 		"Presets swap the theme (colours, engine controls) and the skin (joystick, slots, coach mark) together.",
 		GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
 	page.add_child(GoStyle.button("Toggle light / dark", _toggle_theme, GoStyle.Tone.COMPACT))
+
+	_build_new_widgets(page)
+
 	page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet", false))
+
+
+## 🆕 뒤에 들인 위젯들 — **여기서 직접 눌러 볼 수 있어야** 있는 줄 안다.
+## 🛑 그림만 늘어놓지 않는다. 버튼은 진짜로 동작하고, 누른 결과가 위 로그 줄에 적힌다.
+func _build_new_widgets(page: VBoxContainer) -> void:
+	page.add_child(GoStyle.section("Feedback", false))
+	var feedback := GoStyle.wrap_row()
+	feedback.add_child(GoStyle.button("Snackbar", _show_snackbar, GoStyle.Tone.COMPACT))
+	feedback.add_child(GoStyle.button("Snackbar + Undo", _show_snackbar_undo, GoStyle.Tone.COMPACT))
+	feedback.add_child(GoStyle.button("Busy button", _show_busy, GoStyle.Tone.COMPACT))
+	page.add_child(feedback)
+
+	var spin_row := GoStyle.row()
+	var spinner := GoSpinner.new()
+	spinner.custom_minimum_size = Vector2.ONE * 28.0
+	spin_row.add_child(spinner)
+	spin_row.add_child(GoStyle.label("GoSpinner — an indeterminate wait", GoTheme.ROLE_COMPACT,
+		GoUi.color(GoTheme.MUTED)))
+	page.add_child(spin_row)
+
+	page.add_child(GoStyle.section("Badges", false))
+	var badges := GoStyle.row(GoUi.metric(GoTheme.GAP))
+	for pair in [[3, ""], [0, "NEW"], [128, ""]]:
+		var host := GoIconButton.new()
+		host.icon_name = GoIconSet.BELL
+		host.tooltip_text_name = &"close"
+		host.pressed.connect(_say.bind("badge host"))
+		badges.add_child(host)
+		GoBadge.attach.call_deferred(host, int(pair[0]), str(pair[1]))
+	badges.add_child(GoBadge.make(0, "", true))
+	page.add_child(badges)
+
+	page.add_child(GoStyle.section("Fields", false))
+	_gallery_field = GoField.make("Guild name", GoStyle.line_edit("2-16 characters"),
+		"Everyone in the guild sees this")
+	page.add_child(_gallery_field)
+	var field_row := GoStyle.wrap_row()
+	field_row.add_child(GoStyle.button("Show error", _show_field_error, GoStyle.Tone.COMPACT))
+	field_row.add_child(GoStyle.button("Clear error", _clear_field_error, GoStyle.Tone.COMPACT))
+	page.add_child(field_row)
+
+	page.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
+		{"suffix": GoStyle.button("Send", _say.bind("send"))}))
+	page.add_child(GoInputGroup.make(GoStyle.line_edit("Search by name"), {"prefix_icon": GoIconSet.SEARCH}))
+
+	var coupon := GoCodeInput.make(12, 4)
+	coupon.completed.connect(func(code: String) -> void: _say("coupon %s" % code))
+	page.add_child(coupon)
+
+	var many: Array = []
+	for i in 30: many.append({"text": "Player %d" % i})
+	var combo := GoCombobox.make(many, 2, "Find a friend")
+	combo.picked.connect(func(index: int) -> void: _say("picked player %d" % index))
+	page.add_child(combo)
+
+	page.add_child(GoStyle.section("Lists", false))
+	var board := GoTable.make(
+		[{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}],
+		[[1, "Aria", 91240], [2, "Brin", 48210], [3, "Cade", 9124], [4, "Dane", 500]])
+	board.sort_by(2, false)
+	board.row_selected.connect(func(index: int) -> void: _say("row %d" % index))
+	page.add_child(board)
+	var pager := GoPagination.make(1, 12, func(value: int) -> void: _say("page %d" % value))
+	page.add_child(pager)
+
+	page.add_child(GoStyle.section("Over the screen", false))
+	var overlays := GoStyle.wrap_row()
+	overlays.add_child(GoStyle.button("Drawer", _open_drawer, GoStyle.Tone.COMPACT))
+	_popover_anchor = GoStyle.button("Popover", _open_popover, GoStyle.Tone.COMPACT)
+	overlays.add_child(_popover_anchor)
+	_menu_anchor = GoStyle.button("Long-press me", _say.bind("hold for a menu"), GoStyle.Tone.COMPACT)
+	GoContextMenu.attach(_menu_anchor, [
+		{"text": "Use", "action": _say.bind("use")},
+		{"text": "Equip", "action": _say.bind("equip")},
+		{"separator": true},
+		{"text": "Drop", "action": _say.bind("drop"), "danger": true},
+	])
+	overlays.add_child(_menu_anchor)
+	overlays.add_child(GoStyle.button("Console", _open_console, GoStyle.Tone.COMPACT))
+	page.add_child(overlays)
+	var keys := GoKbd.make("Ctrl", "S")
+	keys.hide_on_handheld = false
+	page.add_child(keys)
+
+	page.add_child(GoStyle.section("Game shapes", false))
+	var days: Array = []
+	for i in 7:
+		days.append({"icon": GoIconSet.CROWN if i == 6 else GoIconSet.COIN,
+			"amount": (i + 1) * 100, "special": i == 6})
+	var calendar := GoRewardCalendar.make(days, 2)
+	calendar.claimed.connect(func(day: int) -> void:
+		_say("claimed day %d" % (day + 1))
+		calendar.set_claimed_until(day))
+	page.add_child(calendar)
+
+	var charts := GoStyle.wrap_row()
+	var radar := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45},
+		{"STR": 0.6, "AGI": 0.75, "INT": 0.35, "VIT": 0.55, "LUK": 0.45})
+	radar.custom_minimum_size = Vector2(170, 170)
+	charts.add_child(radar)
+	var donut := GoDonut.make([
+		{"label": "Physical", "value": 620}, {"label": "Magic", "value": 340}, {"label": "Pierce", "value": 90}])
+	donut.center_text = "1050"
+	donut.center_hint = "Damage"
+	donut.custom_minimum_size = Vector2(150, 150)
+	charts.add_child(donut)
+	page.add_child(charts)
+	page.add_child(donut.legend())
+
+	var carousel := GoCarousel.new()
+	carousel.custom_minimum_size.y = 120
+	page.add_child(carousel)
+	var banners: Array[Control] = []
+	for pair in [["Spring event", GoTheme.ACCENT], ["Double XP", GoTheme.SUCCESS], ["New skins", GoTheme.WARNING]]:
+		var banner := GoStyle.card(GoUi.color(pair[1]))
+		var inner := GoStyle.padding()
+		var words := GoStyle.label(str(pair[0]), GoTheme.ROLE_SUBTITLE, GoUi.color(pair[1]))
+		words.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		words.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		inner.add_child(words)
+		banner.add_child(inner)
+		banners.append(banner)
+	carousel.set_pages(banners)
+	carousel.page_changed.connect(func(index: int) -> void: _say("banner %d" % index))
 
 
 # ── 화면에 떠 있는 HUD ─────────────────────────────────────────────────
@@ -290,6 +423,100 @@ func _build_hud() -> void:
 
 
 # ── 동작 ───────────────────────────────────────────────────────────────
+
+# ── 🆕 뒤에 들인 위젯의 동작 ───────────────────────────────────────────
+
+## 서비스는 **처음 쓸 때** 만든다 — 화면이 뜨는 동안 안 쓸지도 모르는 층을 미리 붙이지 않는다.
+func _ensure_snackbar() -> GoSnackbar:
+	if not is_instance_valid(_snackbar):
+		_snackbar = GoSnackbar.new()
+		add_child(_snackbar)
+	return _snackbar
+
+
+func _show_snackbar() -> void:
+	_ensure_snackbar().show_text("Saved to the cloud", GoTheme.SUCCESS)
+	_say("snackbar")
+
+
+func _show_snackbar_undo() -> void:
+	_say("snackbar with an action")
+	var picked: int = await _ensure_snackbar().post({
+		"text": "Item dropped", "tone": GoTheme.WARNING, "icon": GoIconSet.TRASH,
+		"actions": ["Undo"],
+	})
+	_say("undo pressed" if picked == 0 else "snackbar timed out")
+
+
+## 🔑 누른 버튼이 그 자리에서 도는 것으로 바뀐다 — 크기가 변하지 않고, 두 번 눌리지도 않는다.
+func _show_busy() -> void:
+	var button := _find_button("Busy button")
+	if button == null: return
+	GoSpinner.busy(button, true)
+	_say("waiting for the server…")
+	await get_tree().create_timer(1.6).timeout
+	if is_instance_valid(button): GoSpinner.busy(button, false)
+	_say("done")
+
+
+func _find_button(words: String) -> Button:
+	for node in _descendants(self):
+		var button := node as Button
+		if button != null and button.text == words: return button
+	return null
+
+
+func _descendants(node: Node) -> Array:
+	var out: Array = [node]
+	for child in node.get_children(): out.append_array(_descendants(child))
+	return out
+
+
+func _show_field_error() -> void:
+	if is_instance_valid(_gallery_field): _gallery_field.set_error("That name is taken")
+	_say("field error")
+
+
+func _clear_field_error() -> void:
+	if is_instance_valid(_gallery_field): _gallery_field.clear_error()
+	_say("field cleared")
+
+
+func _open_drawer() -> void:
+	if not is_instance_valid(_drawer):
+		_drawer = GoDrawer.new()
+		add_child(_drawer)
+		for i in 8:
+			_drawer.body.add_child(GoStyle.list_button(GoIconSet.POTION, "Potion %d" % (i + 1),
+				_say.bind("potion %d" % (i + 1)), Color.TRANSPARENT, "Restores health", false))
+	_drawer.open("Bag")
+	_say("drawer")
+
+
+func _open_popover() -> void:
+	if not is_instance_valid(_popover_anchor): return
+	var body := GoStyle.column()
+	body.add_child(GoStyle.label("Flame sword", GoTheme.ROLE_SUBTITLE))
+	body.add_child(GoStyle.label("ATK +12 · burns for 3s", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
+	body.add_child(GoStyle.button("Equip", func() -> void:
+		_say("equipped")
+		GoPopover.close()))
+	GoPopover.open(_popover_anchor, body, {"title": "Item"})
+	_say("popover")
+
+
+func _open_console() -> void:
+	if not is_instance_valid(_console):
+		_console = GoConsole.new()
+		add_child(_console)
+		_console.register("say", "Print a line: say <words>",
+			func(args: PackedStringArray) -> String: return " ".join(args))
+		_console.register("give", "Grant an item: give <id> <count>",
+			func(args: PackedStringArray) -> String: return "granted %s" % " ".join(args))
+		_console.log_line("Type help to list the commands.", GoTheme.MUTED)
+	_console.toggle()
+	_say("console")
+
 
 func _say(what: String) -> void:
 	GoFeedback.tapped()

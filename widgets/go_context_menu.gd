@@ -53,7 +53,8 @@ const _ATTACHED := &"gohud_context_menu"
 ## | `checked` | 켜짐 표시가 붙는 항목 |
 static func attach(host: Control, items: Variant) -> void:
 	if not is_instance_valid(host): return
-	var holder: _Holder = host.get_meta(_ATTACHED, null)
+	# 🛑 `get_meta(key, default)` 는 키가 없으면 오류를 찍는다 — 먼저 `has_meta` 로 묻는다.
+	var holder: _Holder = host.get_meta(_ATTACHED) if host.has_meta(_ATTACHED) else null
 	if holder == null:
 		holder = _Holder.new()
 		holder.host = host
@@ -67,7 +68,7 @@ static func attach(host: Control, items: Variant) -> void:
 ## 붙여 둔 메뉴를 뗀다.
 static func detach(host: Control) -> void:
 	if not is_instance_valid(host): return
-	var holder: _Holder = host.get_meta(_ATTACHED, null)
+	var holder: _Holder = host.get_meta(_ATTACHED) if host.has_meta(_ATTACHED) else null
 	if holder != null: holder.dispose()
 	if host.has_meta(_ATTACHED): host.remove_meta(_ATTACHED)
 
@@ -81,8 +82,11 @@ static func open_at(host: Control, items: Variant, where := Vector2.INF) -> Popu
 	host.add_child(popup)
 	GoStyle.style_popup(popup)
 	var spot := where if where.is_finite() else host.get_global_rect().get_center()
-	# 화면 좌표로 — 팝업은 별도 창이라 뷰포트 기준이 아니다.
-	var origin := host.get_window().position if host.get_window() != null else Vector2i.ZERO
+	# 🛑 창을 **품고 있으면**(`gui_embed_subwindows`, Godot 4 기본) 팝업 좌표는 뷰포트 기준이다 —
+	#    거기에 OS 창 위치를 더하면 팝업이 화면 밖으로 날아간다. 품지 않을 때만 창 위치를 더한다.
+	var window := host.get_window()
+	var embedded := window == null or window.gui_embed_subwindows
+	var origin := Vector2i.ZERO if embedded else window.position
 	popup.position = Vector2i(spot.round()) + origin
 	popup.reset_size()
 	popup.popup()
@@ -123,9 +127,13 @@ static func _build(entries: Array) -> PopupMenu:
 			var texture := GoUi.icons().texture(StringName(row["icon"]))
 			if texture != null: popup.set_item_icon(index, texture)
 		if bool(row.get("disabled", false)): popup.set_item_disabled(index, true)
-		# 되돌릴 수 없는 항목은 위험색 — 목록에서 눈으로 가려낼 수 있어야 오탭이 준다.
+		# 되돌릴 수 없는 항목은 눈으로 가려낼 수 있어야 오탭이 준다.
+		# 🛑 `add_theme_color_override` 는 **메뉴 전체**에 걸린다 — 한 항목을 위험색으로 만들려다
+		#    모든 항목을 물들인다(그리고 `TEXT` 를 덮어써 색이 바뀌지도 않았다).
+		#    `PopupMenu` 는 항목별 글자색을 주지 않으므로, 대신 **글자 자체에 표시**를 남긴다 —
+		#    ♿ 색이 아니라 기호라서 색각 이상인 사람에게도 똑같이 읽힌다.
 		if bool(row.get("danger", false)):
-			popup.add_theme_color_override(&"font_color", GoUi.color(GoTheme.TEXT))
+			popup.set_item_text(index, "⚠ " + popup.get_item_text(index))
 			popup.set_item_metadata(index, &"danger")
 		actions.append(row.get("action", Callable()))
 	popup.id_pressed.connect(func(id: int) -> void:
@@ -202,6 +210,9 @@ class _Holder extends RefCounted:
 
 	func dispose() -> void:
 		_cancel()
-		if is_instance_valid(host):
-			if host.gui_input.is_connected(on_input): host.gui_input.disconnect(on_input)
-			if host.tree_exiting.is_connected(dispose): host.tree_exiting.disconnect(dispose)
+		if not is_instance_valid(host): return
+		if host.gui_input.is_connected(on_input): host.gui_input.disconnect(on_input)
+		if host.tree_exiting.is_connected(dispose): host.tree_exiting.disconnect(dispose)
+		# 🛑 **메타도 지운다.** 남겨 두면 그 컨트롤을 다시 트리에 넣고 `attach()` 를 불러도
+		#    "이미 붙어 있다" 로 보고 죽은 처리기를 그대로 둬, 길게 눌러도 아무 일이 없다.
+		if host.has_meta(GoContextMenu._ATTACHED): host.remove_meta(GoContextMenu._ATTACHED)

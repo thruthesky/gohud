@@ -47,8 +47,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **`.github/workflows/tests.yml`** runs `tools/check_all.sh` on every push and pull request. Every check was
   already headless; nothing ran them automatically, so a broken one could sit in the tree for days.
 
-- **`tests/gohud_extra_test.gd`** — 120 checks covering the widgets above, including one that would have
-  caught the theme bug below.
+- **`tests/gohud_extra_test.gd`** — 134 checks covering the widgets above, including one that would have
+  caught the theme bug below, and one that measures every fault the review turned up.
+
+- **`/gohud update`** and `setup.md` §7 — how to update the add-on **and** the skill, and how to tell when the
+  two have drifted apart. A skill that is ahead of the add-on makes an agent recommend APIs the project cannot
+  run; a skill that is behind hides the widgets that exist.
+
+- **The demo and the gallery show every new widget, live.** The gallery has sections for feedback, badges,
+  fields, lists, overlays and game shapes; the demo's home screen grew a *Newest widgets* card you can press,
+  plus cards for all eighteen classes. Nothing there is a picture — every button reports to the activity log.
 
 ### Changed
 
@@ -119,6 +127,21 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 - **The `standalone` check recognises inner classes.** `class Ticket extends RefCounted` inside a file was not
   counted as the add-on's own name, so using it read as a dependency on the host project.
+
+- **Twelve faults a five-AI review found, each confirmed against the code before it was touched.** Four of the
+  five reviewers were out of quota, so every claim the one that ran made was checked by hand or by running it —
+  and one was **disproved** (a lambda followed by an argument does parse; the button's tone was applied). What
+  survived: `GoCodeInput`'s hidden field sat in a container that pushed it into its own column, so tapping a
+  cell never opened the keyboard; `GoBadge`'s dot read as "Nothing here yet" to a screen reader — the exact
+  opposite of what a notification dot means; `GoSpinner` froze instead of pulsing under `reduce_motion`;
+  `GoSnackbar`'s repeat-merging answered a caller that was still waiting; `GoDialogs` and `GoSnackbar` left
+  `await` parked forever when their node left the tree; `GoDrawer` read the **editor's** locale, so RTL never
+  flipped it; `GoContextMenu`'s danger colour was applied to the whole menu; a long-pressed control could not
+  be re-attached; `GoCarousel`'s dots were below the touch minimum and kept animating while hidden;
+  `GoConsole` had Korean strings compiled in; and `GoTable` appended its sort arrow to a **translation key**.
+  Running the demo then turned up one more that no reviewer named: `get_meta(key, default)` logs an error when
+  the key is absent, so three widgets now ask `has_meta` first. Details and the disproof:
+  `.cowork/gohud-new-widgets/final-report.md`.
 
 - **Five layout faults that only a screenshot could find.** Every one passed the headless checks and was
   caught by drawing the widgets on a virtual monitor: `GoTable` rows lost their text entirely (a wrapping

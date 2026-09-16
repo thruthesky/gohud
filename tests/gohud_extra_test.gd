@@ -25,6 +25,7 @@ func _initialize() -> void:
 	GoUi.config.reduce_motion = true
 
 	await _snackbar()
+	await _dialogs_queue()
 	await _spinner()
 	await _badge()
 	await _field()
@@ -146,8 +147,46 @@ func _ask_snack(snack: GoSnackbar, log: Array[String], out: Array) -> void:
 
 # ── 대화상자 큐 ────────────────────────────────────────────────────────
 
+## 🛑 **알림은 버리지 않고 묻는 것은 버린다.** 그 둘이 뒤바뀌면 어느 쪽이든 사고가 난다 —
+##    알림을 버리면 오류 메시지가 조용히 사라지고, 물음을 줄 세우면 사용자가 무엇에 답하는지
+##    모르는 채 "예" 를 누른다.
 func _dialogs_queue() -> void:
-	pass
+	var dialogs := GoDialogs.new()
+	root.add_child(dialogs)
+	await frames(2)
+
+	# 물음은 겹치면 곧바로 false — 부른 쪽이 "묻지 못했다" 를 알 수 있다.
+	dialogs._open = true
+	var refused: bool = await dialogs.confirm("A", "B")
+	check(not refused, "대화상자: 떠 있으면 두 번째 confirm 은 곧바로 false")
+	check(dialogs.pending() == 0, "대화상자: 거절된 물음은 줄 서지 않는다")
+	dialogs._open = false
+
+	# 알림은 셋이 연달아 와도 셋 다 보인다.
+	var seen: Array[String] = []
+	_say(dialogs, "첫", seen); _say(dialogs, "둘", seen); _say(dialogs, "셋", seen)
+	await frames(2)
+	check(dialogs.is_open() and dialogs.pending() == 2, "대화상자: 알림은 줄을 선다 (대기 %d)" % dialogs.pending())
+	for _i in 3:
+		dialogs._finish(true)
+		await frames(2)
+	check(seen.size() == 3 and seen[0] == "첫" and seen[2] == "셋",
+		"대화상자: 알림 셋이 차례로 전부 보인다 (%s)" % str(seen))
+
+	# 🛑 화면을 떠날 때 기다리던 코드를 풀어 준다 — 안 그러면 영영 돌아오지 않는다.
+	var stranded: Array[String] = []
+	_say(dialogs, "버려짐", stranded)
+	await frames(2)
+	check(dialogs.is_open(), "대화상자: 떠 있다")
+	dialogs.queue_free()
+	await frames(3)
+	check(stranded.size() == 1, "대화상자: 트리에서 빠지면 기다리던 await 가 풀린다")
+	section("dialogs queue")
+
+
+func _say(dialogs: GoDialogs, words: String, log: Array[String]) -> void:
+	await dialogs.alert(words, "body")
+	log.append(words)
 
 
 # ── 스피너 ─────────────────────────────────────────────────────────────
@@ -168,8 +207,9 @@ func _spinner() -> void:
 	GoUi.config.reduce_motion = true
 	GoUi.refresh()
 	await frames(1)
-	# ♿ 회전을 끈 사람에게는 돌지 않는다.
-	check(not spinner.is_processing(), "스피너: reduce_motion 이면 돌지 않는다")
+	# ♿ 회전을 끈 사람에게는 **돌지 않되 멈추지도 않는다** — 점 세 개의 밝기가 흐른다.
+	#    아예 멈추면 "죽은 화면" 과 구별되지 않는다.
+	check(spinner.is_processing(), "스피너: reduce_motion 이어도 점은 흐른다")
 
 	var button := GoStyle.button("구매")
 	root.add_child(button)
@@ -221,6 +261,9 @@ func _badge() -> void:
 	badge.dot = true
 	await frames(1)
 	check(badge.custom_minimum_size.x > 0 and _first_label(badge) == "", "배지: 점 모드")
+	# 🛑 점은 "개수를 감춘 것" 이지 "없는 것" 이 아니다 — `empty` 로 읽히면 뜻이 정반대가 된다.
+	check(not badge.accessibility_name.contains(GoUi.text(&"empty")),
+		"배지: 점이 '비어 있음' 으로 읽히지 않는다 ('%s')" % badge.accessibility_name)
 
 	var host := GoStyle.button("우편함")
 	root.add_child(host)
@@ -579,6 +622,19 @@ func _code_input() -> void:
 	root.add_child(coupon)
 	await frames(3)
 	check(coupon._cells.size() == 12, "쿠폰: 칸 열둘")
+	# 🛑 **숨은 입력칸이 칸들을 덮어야** 아무 데나 눌러도 키보드가 뜬다. `HBoxContainer` 에 직접
+	#    넣으면 컨테이너가 한 열로 밀어내 칸을 눌러도 포커스가 가지 않는다(2026-09-16 실측).
+	var cell_rect := Rect2(coupon._cells[0].global_position, coupon._cells[0].size)
+	check(Rect2(coupon.edit.global_position, coupon.edit.size).encloses(cell_rect),
+		"쿠폰: 숨은 입력칸이 칸들을 덮는다 (edit %s · 첫 칸 %s)" % [str(coupon.edit.size), str(cell_rect)])
+	# 🛑 자릿수를 바꿔도 끊는 자리의 빈 칸이 쌓이지 않는다.
+	var children_before := coupon.cells_row.get_child_count()
+	coupon.length = 8
+	await frames(2)
+	coupon.length = 12
+	await frames(2)
+	check(coupon.cells_row.get_child_count() == children_before,
+		"쿠폰: 자릿수를 바꿔도 노드가 쌓이지 않는다 (%d → %d)" % [children_before, coupon.cells_row.get_child_count()])
 	# 🛑 **폰 폭에 들어간다.** 12칸을 고정 폭으로 두면 720dp 화면에서 칸이 밖으로 잘렸다
 	#    (2026-09-16 촬영). 좁으면 칸이 함께 좁아져야 한다.
 	var need := coupon.cells_row.get_combined_minimum_size().x + float(GoUi.metric(GoTheme.SCREEN_MARGIN)) * 2.0
@@ -617,7 +673,8 @@ func _console() -> void:
 	check(console.commands().has("give"), "콘솔: 명령을 등록한다")
 	check(console.commands().has("help") and console.commands().has("clear"), "콘솔: 기본 명령이 있다")
 	check(console.run("give sword 3") == "지급 sword 3", "콘솔: 명령을 실행한다")
-	check(console.run("없는명령").contains("알 수 없는"), "콘솔: 모르는 명령을 알린다")
+	# 🔑 기본 문구는 영어다 — 개발 도구의 공통어이고, 애드온 코드에 한 언어를 박지 않는다.
+	check(console.run("no_such_command").contains("unknown"), "콘솔: 모르는 명령을 알린다")
 	console.unregister("give")
 	check(not console.commands().has("give"), "콘솔: 명령을 뺀다")
 	# 🛑 릴리스 빌드에서는 열리지 않는다 — 치트가 플레이어 손에 들어가면 안 된다.
@@ -655,6 +712,19 @@ func _carousel() -> void:
 	await frames(1)
 	# ♿ 움직임을 줄인 사람에게는 스스로 움직이지 않는다(지금 reduce_motion 이 켜져 있다).
 	check(not carousel.is_processing(), "띠: reduce_motion 이면 자동 넘김을 하지 않는다")
+	# 🛑 누르는 자리는 터치 하한 그대로 — 점이 작아 보인다고 하한을 깎지 않는다.
+	check(dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
+		"띠: 점의 누르는 자리가 터치 하한을 지킨다 (%.1f)" % dot.custom_minimum_size.x)
+	# 🛑 안 보이면 돌지 않는다 — 가린 배너가 배터리를 쓰면 안 된다.
+	GoUi.config.reduce_motion = false
+	carousel.autoplay_seconds = 5.0
+	await frames(1)
+	check(carousel.is_processing(), "띠: 보이고 자동넘김이 켜지면 돈다")
+	carousel.visible = false
+	await frames(1)
+	check(not carousel.is_processing(), "띠: 숨기면 자동 넘김이 멈춘다")
+	carousel.visible = true
+	GoUi.config.reduce_motion = true
 	carousel.queue_free()
 	await frames(1)
 	section("carousel")
