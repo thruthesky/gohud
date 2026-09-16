@@ -151,8 +151,9 @@ func delete_character(name: String) -> void:
 ```
 
 
-**Opacity.** `dialogs.surface_alpha = 90` — an `@export`, so it takes a **percent** (`-1` = theme/config
-value, 80% by default). Raising it on an irreversible confirm keeps the eye on the question.
+**Opacity.** `dialogs.alpha = 0.9` — a ratio like every other `alpha` field, even though it is an `@export`
+(negative = theme/config value, 80% by default). Raising it on an irreversible confirm keeps the eye on the
+question.
 ## 4. GoForm
 
 `class_name GoForm extends MarginContainer`. Full-rect; side margins = max(padding, (usable width − cap) / 2)
@@ -312,7 +313,7 @@ bag.body.add_child(inventory_grid)
 - It takes the Back/Escape ownership while open and releases it on close, including in `_exit_tree`.
 
 
-**Opacity.** `drawer.alpha = 70` — an `@export`, so **percent** (`-1` = theme/config value).
+**Opacity.** `drawer.alpha = 0.7` — a ratio (negative = theme/config value).
 ## 10. GoPopover — the anchored card
 
 ```gdscript

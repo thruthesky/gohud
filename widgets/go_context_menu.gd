@@ -135,7 +135,11 @@ static func _build(entries: Array) -> PopupMenu:
 		#    (`go_table.gd` 가 정렬 화살표에서 같은 함정을 겪었다). 번역을 **먼저 끝내고** 붙인다.
 		# ♿ 기호는 색이 아니라 모양이라 색각 이상인 사람에게도 똑같이 읽힌다.
 		if bool(row.get("danger", false)):
-			var shown := tr(words) if bool(row.get("translate", false)) else words
+			# 🛑 `tr()` 은 `Object` 의 **인스턴스** 메서드라 `static func` 에서 못 부른다 — 부르면
+			#    파싱 단계에서 죽고, 이 파일을 참조하는 화면과 검사가 통째로 로드되지 않는다.
+			#    `TranslationServer.translate()` 는 싱글턴이라 여기서 부를 수 있고, `GoUi.text()` 도
+			#    같은 것을 쓴다(2026-09-16: `tr()` 로 썼다가 커밋까지 간 것을 다른 세션이 잡아 줬다).
+			var shown := TranslationServer.translate(words) if bool(row.get("translate", false)) else words
 			popup.set_item_text(index, "⚠ " + shown)
 			popup.set_item_auto_translate_mode(index, Node.AUTO_TRANSLATE_MODE_DISABLED)
 			popup.set_item_metadata(index, &"danger")

@@ -173,9 +173,13 @@ func _spoke(index: int, total: int) -> Vector2:
 
 ## ♿ 그림을 못 보는 사람에게 값을 말로 준다.
 func _sync_accessibility() -> void:
+	# 🛑 **백분율 형식도 문구다** — 터키어는 기호를 앞에 붙이고(%50) 프랑스어는 띄운다.
+	#    `GoConfig.text_keys` 가 그래서 `bar_percent` 를 두었고, 여기서도 그것을 쓴다.
 	var parts: Array[String] = []
-	for key in values: parts.append("%s %d%%" % [str(key), roundi(float(values[key]) * 100.0)])
-	accessibility_name = ", ".join(parts)
+	for key in values:
+		var share := GoUi.text(&"bar_percent").format({"percent": roundi(float(values[key]) * 100.0)})
+		parts.append(GoUi.spoken([str(key), share]))
+	accessibility_name = GoUi.spoken(parts)
 
 
 func _on_ui_changed() -> void:

@@ -42,7 +42,11 @@ var _error := ""
 var _label_key := ""
 var _hint_key := ""
 var _error_key := ""
+## 라벨·힌트를 번역 키로 볼 것인가(`make()` 가 정한다).
 var _translate := false
+## 🛑 오류 글은 **따로** 센다. 서버가 준 오류 코드를 한 번 번역 키로 넘겼다고 해서 라벨·힌트까지
+##    키로 취급하면, 그 뒤로 화면에 `field_guild_name` 같은 키가 그대로 드러난다.
+var _translate_error := false
 ## 오류를 씌우기 전 입력칸의 테두리 — 지울 때 그대로 되돌린다.
 var _plain_face: StyleBox
 
@@ -108,11 +112,11 @@ func set_control(node: Control) -> void:
 ## 🔑 `translate` 를 켜면 **번역 키**로 본다 — 서버가 준 코드(`err_name_taken`)를 그대로 넘길 수 있다.
 func set_error(message: String, translate := false) -> void:
 	_error_key = message
-	if not message.is_empty(): _translate = _translate or translate
+	_translate_error = translate
 	_error = message
 	# 🛑 **글자를 먼저 채운다.** `_apply_error()` 가 접근성 이름을 이 글에서 만들므로, 순서가
 	#    바뀌면 스크린리더에 옛 오류(또는 빈 글)가 실린다 — 눈으로는 멀쩡해 보여 놓치기 쉽다.
-	error_label.text = tr(_error_key) if _translate else _error_key
+	error_label.text = tr(_error_key) if _translate_error else _error_key
 	error_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	_apply_error()
 	error_changed.emit(message)
@@ -168,7 +172,7 @@ func _retranslate() -> void:
 	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	hint_label.text = tr(_hint_key) if _translate else _hint_key
 	hint_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	error_label.text = tr(_error_key) if _translate else _error_key
+	error_label.text = tr(_error_key) if _translate_error else _error_key
 	error_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	label.visible = not label.text.is_empty()
 	_apply_error()

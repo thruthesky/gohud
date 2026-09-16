@@ -79,8 +79,8 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | Surface | `surface_max_width` (480) · `surface_max_height` (700) | Card caps in dp |
 | | `surface_height_ratio` (0.68) · `surface_max_height_ratio` (0.72) | Share of usable height; the cap keeps windows reading as floating |
 | | `surface_width_ratio_portrait` (0.94) · `surface_width_ratio_landscape` (0.72) | Share of width |
-| | `container_alpha` (**-1**) | Face opacity of **every** panel, as a **percent** (`-1` = theme value, 80%). `0.8` here truncates to `0` and panels vanish — write `80` |
-| | `container_alpha_overrides` `Dictionary[StringName, int]` | Per-kind opacity in percent; key = `GoTheme.BOX_PANEL`/`BOX_CARD`/`BOX_HUD`/`BOX_NOTICE`/`BOX_POPUP`. Beats `container_alpha`. theming.md §4 |
+| | `container_alpha` (**-1.0**) | Face opacity of **every** panel, as a **ratio** 0.0–1.0 (negative = theme value, 80%) |
+| | `container_alpha_overrides` `Dictionary[StringName, float]` | Per-kind opacity, same ratio; key = `GoTheme.BOX_PANEL`/`BOX_CARD`/`BOX_HUD`/`BOX_NOTICE`/`BOX_POPUP`. Beats `container_alpha`; negative = not set. theming.md §4 |
 | | `dismiss_on_scrim` (false) · `surface_fade_in` (false) · `fade_seconds` (0.14) | Defaults for new surfaces |
 | | `close_button_visual` (36) · `suppress_pointer_focus_ring` (true) · `close_on_back` (true) | Header close button, focus ring policy, Escape/Back |
 | Feedback | `haptics_enabled` (true) · `haptic_tap_ms` (10) · `haptic_light_ms` (20) · `haptic_medium_ms` (40) + `_amplitude`s | Vibration on handhelds only |

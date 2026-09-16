@@ -160,8 +160,11 @@ func _detach_borrowed() -> void:
 	for cells in _rows:
 		if not (cells is Array): continue
 		for value in cells:
-			var node := value as Control
-			if node == null or not is_instance_valid(node): continue
+			# 🛑 `as Control` 을 숫자·글자에 쓰면 **`Invalid cast` 오류를 찍는다**(null 이 되는 것이
+			#    아니다). 표의 칸은 대부분 숫자·글자이므로 먼저 `is` 로 거른다.
+			if not (value is Control): continue
+			var node: Control = value
+			if not is_instance_valid(node): continue
 			var parent := node.get_parent()
 			if parent != null: parent.remove_child(node)
 
@@ -220,8 +223,13 @@ func _make_row(source: int, position: int) -> Control:
 		var col := _columns[index]
 		var value: Variant = cells[index] if index < cells.size() else ""
 		var node: Control
-		if value is Control:
+		if value is Control and is_instance_valid(value):
 			node = value
+			# 🛑 **붙이기 직전에 옛 부모에서 뗀다.** 줄을 다시 지을 때 이 노드는 아직 지워지는 중인
+			#    옛 줄에 매달려 있다 — 그대로 `add_child` 하면 Godot 이 "already has a parent" 로
+			#    거절해 칸이 비고, 옛 줄이 실제로 free 될 때 이 노드까지 함께 죽는다.
+			var previous := node.get_parent()
+			if previous != null: previous.remove_child(node)
 		else:
 			var text := GoStyle.label(str(value))
 			text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if bool(col["numeric"]) else HORIZONTAL_ALIGNMENT_LEFT

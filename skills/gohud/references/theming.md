@@ -65,7 +65,7 @@ All tokens live in the Theme under type **`GoHud`**. Read them through `GoUi` (o
 | Colours (17) | `BACKGROUND` `SURFACE` `SURFACE_SOFT` `SURFACE_HIGH` `BORDER` `TEXT` `SECONDARY` `MUTED` `ACCENT` `ON_ACCENT` `SUCCESS` `WARNING` `DANGER` `INFO` `SCRIM` `SHADOW` `TRACK` |
 | Fill colours (5, optional) | `SUCCESS_FILL` `WARNING_FILL` `DANGER_FILL` `INFO_FILL` `ACCENT_FILL` — bars and large areas; fall back to the base colour |
 | Metrics (20, dp) | `TOUCH` `BUTTON_HEIGHT` `GAP_TINY` `GAP_SMALL` `GAP` `GAP_LARGE` `PADDING` `PADDING_COMPACT` `COMPACT_PADDING_X` `COMPACT_PADDING_Y` `RADIUS_SMALL` `RADIUS` `RADIUS_LARGE` `SCREEN_MARGIN` `SCROLL_DEADZONE` `SCROLL_EDGE` `SCROLLBAR_WIDTH` `LIST_GLYPH` `ICON_SIZE` `NOTICE_DURATION_MS` |
-| Panel opacity (5, optional, **%**) | `PANEL_ALPHA` `CARD_ALPHA` `HUD_ALPHA` `NOTICE_ALPHA` `POPUP_ALPHA` — how solid a container face is. **80** by default, `POPUP_ALPHA` 100; a theme without them falls back to 100. Read as a *ratio* with `GoUi.surface_alpha(variant)`; §4 |
+| Panel opacity (5, optional, **% in the theme**) | `PANEL_ALPHA` `CARD_ALPHA` `HUD_ALPHA` `NOTICE_ALPHA` `POPUP_ALPHA` — how solid a container face is. **80** by default, `POPUP_ALPHA` 100; a theme without them falls back to 100. Percent only because a `Theme` constant cannot hold a float — read it as a *ratio* with `GoUi.surface_alpha(variant)`, and every other layer is a ratio too; §4 |
 | StyleBoxes (8) | `BOX_PANEL` `BOX_CARD` `BOX_HUD` `BOX_NOTICE` `BOX_POPUP` `BOX_EMPTY` `BOX_FOCUS` `BOX_FOCUS_SOFT` |
 | Text roles (7) | `ROLE_MICRO` `ROLE_COMPACT` `ROLE_CAPTION` `ROLE_BODY` `ROLE_BUTTON` `ROLE_SUBTITLE` `ROLE_TITLE` — names of sizes, not purposes |
 | Type variations (15) | `GoPanel` `GoCard` `GoButton` `GoPrimaryButton` `GoDangerButton` `GoDangerSolidButton` `GoBareButton` `GoCompactButton` `GoIconButton` `GoListButton` `GoTitleLabel` `GoSubtitleLabel` `GoCaptionLabel` `GoCompactLabel` `GoMicroLabel` (constants `VAR_*`) |
@@ -103,29 +103,29 @@ Containers draw their face at **80% opacity** by default, so the game stays visi
 **Only the face thins out** — text, icons, buttons, badges, quick slots, borders and shadows keep full
 strength. Never reach for `modulate.a` to get this effect: it fades the content too.
 
-**Five layers, most specific first.** Config/theme fields are **percent integers** (0–100); code arguments are
-**ratios** (0.0–1.0, negative = "not set"). Writing `0.8` in a config field truncates to `0` and the panel
-vanishes.
+**Five layers, most specific first.** Everything is a **ratio** (0.0–1.0, negative = "not set") except the
+theme's constants and the channel that overrides them — a `Theme` constant cannot hold a float, so those two
+are **percent integers** (0–100).
 
 | Order | Where | Unit |
 |---|---|---|
-| ① | the argument at that call — `surface.alpha`, `GoStyle.card(…, alpha)` | ratio |
-| ② | `GoConfig.container_alpha_overrides[kind]` (`Dictionary[StringName, int]`, key = `GoTheme.BOX_*`) | % |
-| ③ | `GoConfig.metric_overrides[<kind>_alpha]` | % |
-| ④ | `GoConfig.container_alpha` (`-1` = not set) | % |
-| ⑤ | theme `GoHud/constants/<kind>_alpha` — the source of truth | % |
+| ① | the argument or field at that call — `surface.alpha`, `sheet.alpha`, `dialogs.alpha`, `drawer.alpha`, `GoStyle.card(…, alpha)` | ratio |
+| ② | `GoConfig.container_alpha_overrides[kind]` (`Dictionary[StringName, float]`, key = `GoTheme.BOX_*`) | ratio |
+| ③ | `GoConfig.metric_overrides[<kind>_alpha]` | **%** |
+| ④ | `GoConfig.container_alpha` (negative = not set) | ratio |
+| ⑤ | theme `GoHud/constants/<kind>_alpha` — the source of truth | **%** |
 
 ```gdscript
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # resolved ratio, e.g. 0.8
 
 surface.alpha = 0.6                          # this GoSurface only (dialog/sheet/dropdown shell)
 sheet.alpha = 0.7                            # GoSheet delegates to its surface
-dialogs.surface_alpha = 90                   # GoDialogs — @export, so percent
-drawer.alpha = 70                            # GoDrawer — @export, percent
+dialogs.alpha = 0.9                          # GoDialogs · GoDrawer are @export — still ratios
+drawer.alpha = 0.7
 notice.alpha = 0.95                          # GoNotice · GoSnackbar · GoPromptCard · GoCoachMark · GoConsole
 GoPopover.open(slot, body, {"alpha": 0.9})   # option key
 
-GoUi.config.container_alpha_overrides = {GoTheme.BOX_HUD: 95}
+GoUi.config.container_alpha_overrides = {GoTheme.BOX_HUD: 0.95}
 GoUi.refresh()                               # 🛑 required for widgets already on screen
 ```
 

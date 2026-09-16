@@ -125,13 +125,13 @@ func _shot_levels() -> void:
 # ── ③ 프로젝트 전체를 꽉 찬 색으로 되돌린다 ───────────────────────────
 
 func _shot_solid() -> void:
-	GoUi.config.container_alpha = 100
+	GoUi.config.container_alpha = 1.0
 	GoUi.refresh()
-	var page := await _stage("container_alpha = 100 — opaque again")
+	var page := await _stage("container_alpha = 1.0 — opaque again")
 	page.add_child(_filled(GoStyle.card(), "GoStyle.card()", "One setting turns every panel back to a solid colour. Nothing behind shows through."))
 	page.add_child(_filled(GoStyle.hud_panel(), "GoStyle.hud_panel()", "Projects with busy worlds want this."))
 	await _save("alpha_solid_100")
-	GoUi.config.container_alpha = -1
+	GoUi.config.container_alpha = -1.0
 	GoUi.refresh()
 
 

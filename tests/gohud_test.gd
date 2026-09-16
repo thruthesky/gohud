@@ -202,16 +202,20 @@ func _container_alpha() -> void:
 		"토큰이 없는 테마는 100(꽉 찬 색)으로 떨어진다 — 판이 사라지지 않는다")
 
 	# ── ② 프로젝트 전체 설정이 테마를 덮는다 ───────────────────────────
-	settings.container_alpha = 50
+	settings.container_alpha = 0.50
 	check(near(GoUi.surface_alpha(GoTheme.BOX_PANEL), 0.50, 0.001)
 		and near(GoUi.surface_alpha(GoTheme.BOX_HUD), 0.50, 0.001),
 		"container_alpha 는 판 종류 전부를 한 번에 덮는다")
 
 	# ── ③ 종류별 설정이 전체 설정을 덮는다 ────────────────────────────
-	settings.container_alpha_overrides = {GoTheme.BOX_HUD: 95}
+	settings.container_alpha_overrides = {GoTheme.BOX_HUD: 0.95}
 	check(near(GoUi.surface_alpha(GoTheme.BOX_HUD), 0.95, 0.001)
 		and near(GoUi.surface_alpha(GoTheme.BOX_PANEL), 0.50, 0.001),
 		"종류별 설정이 전체 설정보다 우선 — 지정한 종류만 바뀐다")
+	# 🔑 음수는 "정하지 않았다" — 아래 층으로 넘긴다(다른 칸과 같은 관례).
+	settings.container_alpha_overrides = {GoTheme.BOX_HUD: -1.0}
+	check(near(GoUi.surface_alpha(GoTheme.BOX_HUD), 0.50, 0.001),
+		"종류별 설정의 음수는 건너뛴다 — 전체 설정이 이어받는다")
 	# 치수 덮어쓰기(같은 이름의 토큰)도 길이 된다 — 치수를 한 곳에 모으는 프로젝트의 관습을 위해.
 	settings.container_alpha_overrides = {}
 	settings.metric_overrides = {GoTheme.CARD_ALPHA: 30}
@@ -219,10 +223,10 @@ func _container_alpha() -> void:
 		"metric_overrides[card_alpha] 도 판 불투명도로 읽힌다")
 	settings.metric_overrides = {}
 	# 범위를 벗어난 값은 잘린다 — 설정 오타 하나로 판이 사라지거나 두 배로 칠해지지 않는다.
-	settings.container_alpha_overrides = {GoTheme.BOX_CARD: 400}
-	check(near(GoUi.surface_alpha(GoTheme.BOX_CARD), 1.0, 0.001), "100 이 넘는 값은 꽉 찬 색으로 잘린다")
+	settings.container_alpha_overrides = {GoTheme.BOX_CARD: 4.0}
+	check(near(GoUi.surface_alpha(GoTheme.BOX_CARD), 1.0, 0.001), "1.0 이 넘는 값은 꽉 찬 색으로 잘린다")
 	settings.container_alpha_overrides = {}
-	settings.container_alpha = -1
+	settings.container_alpha = -1.0
 
 	# ── ④ 판에 실제로 닿는가 · 곱셈인가 ──────────────────────────────
 	var solid := skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
@@ -248,7 +252,7 @@ func _container_alpha() -> void:
 	# 🔑 기준은 "설정을 바꾸기 **전과 같은가**" 다 — 슬롯 바탕은 쿨다운 틴트 보간의 결과라
 	#    고정 숫자로 잴 수 없다(그 숫자를 박으면 다이얼을 돌린 스킨에서 검사가 깨진다).
 	var slot_before := GoSkin.box_background(skin.slot_box(GoUi.color(GoTheme.ACCENT), false)).a
-	settings.container_alpha = 40
+	settings.container_alpha = 0.40
 	check(near(GoSkin.box_background(skin.slot_box(GoUi.color(GoTheme.ACCENT), false)).a, slot_before, 0.01),
 		"퀵슬롯은 판 불투명도를 따르지 않는다 — 누르는 칸이고 쿨다운 틴트로 상태를 말한다")
 	check(near(GoSkin.box_background(skin.segment_box(0, 2, &"normal")).a,
@@ -265,7 +269,7 @@ func _container_alpha() -> void:
 	# 알약 판(지도·월드 위)도 따른다 — 기본 0.82 를 박아 두었던 자리가 토큰으로 옮겨졌다.
 	var pill := skin.overlay_box() as StyleBoxFlat
 	check(pill == null or near(pill.bg_color.a, 0.40, 0.01), "그림 위 알약 판도 따른다")
-	settings.container_alpha = -1
+	settings.container_alpha = -1.0
 
 	# ── ⑥ 위젯 하나만 다르게 ──────────────────────────────────────────
 	var window := GoSurface.new()
@@ -305,7 +309,34 @@ func _container_alpha() -> void:
 	check(not host.has_theme_stylebox_override(&"panel"), "fade_panel(1.0) 은 덮기를 걷어낸다")
 	host.queue_free()
 
-	# ── ⑦ 카드·안내 상자의 개별 인자 ─────────────────────────────────
+	# ── ⑦ 위젯의 `alpha` 칸은 **모두 같은 단위**다 ───────────────────
+	# 🛑 이름이 같으면 단위도 같아야 한다. 한 위젯만 퍼센트를 받으면 부르는 쪽이 위젯별로 외워야 하고,
+	#    `drawer.alpha = 0.7` 이 "거의 투명" 이 아니라 **0** 으로 잘려 판이 사라진다(2026-09-16 실제로 그랬다).
+	#    그래서 `@export` 로 인스펙터에 나가는 칸까지 전부 비율(0.0~1.0)로 맞추고, 그것을 여기서 잰다.
+	var dialogs_probe := GoDialogs.new()
+	var drawer_probe := GoDrawer.new()
+	var sheet_probe := GoSheet.new()
+	root.add_child(dialogs_probe)
+	root.add_child(drawer_probe)
+	root.add_child(sheet_probe)
+	await frames(2)
+	for probe: Dictionary in [
+		{"name": "GoDialogs", "node": dialogs_probe, "face": dialogs_probe._surface.card},
+		{"name": "GoDrawer", "node": drawer_probe, "face": drawer_probe.panel},
+		{"name": "GoSheet", "node": sheet_probe, "face": sheet_probe.surface.card},
+	]:
+		var node: Node = probe["node"]
+		node.set(&"alpha", 0.45)
+		await frames(1)
+		var face: Control = probe["face"]
+		check(near(GoSkin.box_background(face.get_theme_stylebox(&"panel")).a, 0.45, 0.02),
+			"%s.alpha 는 비율이다 — 0.45 를 주면 판 바탕이 0.45" % probe["name"])
+		node.set(&"alpha", -1.0)
+	dialogs_probe.queue_free()
+	drawer_probe.queue_free()
+	sheet_probe.queue_free()
+
+	# ── ⑧ 카드·안내 상자의 개별 인자 ─────────────────────────────────
 	var loud_card := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.25)
 	check(near(GoSkin.box_background(loud_card.get_theme_stylebox(&"panel")).a, 0.25, 0.02),
 		"GoStyle.card(…, alpha) 로 카드 하나만")
@@ -1439,19 +1470,19 @@ func _dialogs() -> void:
 	# 🪟 판 불투명도 — 이 칸은 `@export` 라 **퍼센트**이고 표면은 **비율**로 받는다.
 	# 🛑 두 단위 사이의 변환이 어긋나면 조용히 깨진다(80 이 8000% 가 되거나 0.8 이 0 이 된다) —
 	#    화면으로는 "좀 진해졌다" 로만 보여 알아채기 어렵다. 그래서 두 방향을 모두 잰다.
-	check(dialogs.surface_alpha == -1 and dialogs._surface.alpha < 0.0,
-		"확인창: 불투명도는 기본이 '테마 값 그대로'(-1)")
-	dialogs.surface_alpha = 90
+	check(dialogs.alpha < 0.0 and dialogs._surface.alpha < 0.0,
+		"확인창: 불투명도는 기본이 '테마 값 그대로'(음수)")
+	dialogs.alpha = 0.90
 	check(near(dialogs._surface.alpha, 0.90, 0.001),
-		"확인창: @export 퍼센트 90 → 표면 비율 0.90 (%.2f)" % dialogs._surface.alpha)
+		"확인창: 카드 불투명도가 표면까지 그대로 간다 (%.2f)" % dialogs._surface.alpha)
 	await frames(1)
 	check(near(GoSkin.box_background(dialogs._surface.card.get_theme_stylebox(&"panel")).a, 0.90, 0.02),
 		"확인창: 그 값이 실제 판까지 닿는다")
-	dialogs.surface_alpha = -1
+	dialogs.alpha = -1.0
 	await frames(1)
 	check(near(GoSkin.box_background(dialogs._surface.card.get_theme_stylebox(&"panel")).a,
 		GoUi.surface_alpha(GoTheme.BOX_PANEL), 0.02),
-		"확인창: -1 로 되돌리면 테마·설정 값으로 돌아간다")
+		"확인창: 음수로 되돌리면 테마·설정 값으로 돌아간다")
 
 	var seen := [""]
 	create_timer(0.05).timeout.connect(func() -> void:

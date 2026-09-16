@@ -336,36 +336,42 @@ crisp, and a faded outline leaves you unable to tell where the panel ends.
 
 | Order | Where | Unit | Use it for |
 |---|---|---|---|
-| ① | the argument at that call — `surface.alpha`, `GoStyle.card(…, alpha)` | ratio `0.0–1.0` | **this one window** |
-| ② | `GoConfig.container_alpha_overrides[kind]` | percent `0–100` | **one kind** across the project |
-| ③ | `GoConfig.metric_overrides[<kind>_alpha]` | percent `0–100` | projects that keep every measurement in one place |
-| ④ | `GoConfig.container_alpha` | percent `0–100` | **every panel** in the project at once |
-| ⑤ | the theme's `GoHud/constants/<kind>_alpha` | percent `0–100` | what the look itself decides — **the source of truth** |
+| ① | the argument or field at that call — `surface.alpha`, `sheet.alpha`, `GoStyle.card(…, alpha)` | ratio `0.0–1.0` | **this one window** |
+| ② | `GoConfig.container_alpha_overrides[kind]` | ratio `0.0–1.0` | **one kind** across the project |
+| ③ | `GoConfig.metric_overrides[<kind>_alpha]` | **percent** `0–100` | projects that keep every measurement in one place |
+| ④ | `GoConfig.container_alpha` | ratio `0.0–1.0` | **every panel** in the project at once |
+| ⑤ | the theme's `GoHud/constants/<kind>_alpha` | **percent** `0–100` | what the look itself decides — **the source of truth** |
 
-With none of them set the value is 100 (solid) — so a theme that predates these tokens, or someone else's
+With none of them set the value is 1.0 (solid) — so a theme that predates these tokens, or someone else's
 theme, draws exactly as it did before.
 
-🛑 **Themes and config fields take a percentage; code arguments take a ratio.** Different layers, different
-units: editor fields need integers (a `Theme` constant cannot hold a float) while a StyleBox colour's alpha
-is a ratio. Mixing them truncates `0.8` to `0` in a config field and **the panel disappears**. Write `80`
-in settings, `0.8` in code.
+🔑 **Everywhere you handle opacity, it is a ratio (0.0–1.0)** — every widget's `alpha` field (including the
+ones exported to the inspector), the `GoStyle` arguments, both `GoConfig` fields and what
+`GoUi.surface_alpha()` returns. That matches `Color.a` and `modulate.a`. A negative value means "not set"
+and falls through to the layer below.
+
+🛑 **Percentages exist in exactly one layer: the theme's constants**, because a `Theme` constant cannot hold
+a float. So the theme's `<kind>_alpha` and **the channel that overrides it** (`metric_overrides` — same
+names, same integer type as the theme's measurements) are written as `80`. Everything else is `0.8`.
 
 ```gdscript
 # ① One window only — a confirm dialog that must not hide the fight behind it
 surface.alpha = 0.6
 sheet.alpha = 0.7
+dialogs.alpha = 0.9
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # ② Per kind — keep the HUD nearly solid, because its text sits straight over the world
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,    # dialogs and sheets can breathe
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,   # dialogs and sheets can breathe
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                # 🛑 call this to redraw widgets that are already open
 
 # ③ The whole project — busy worlds want their panels back to solid
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 # ④ In the theme (the source of truth) — or in a palette JSON, where the generator

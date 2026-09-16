@@ -187,6 +187,9 @@ func log_line(message: String, tone := GoTheme.TEXT) -> void:
 
 ## 명령 한 줄을 실행한다(콘솔을 열지 않고 코드에서 불러도 된다).
 func run(line: String) -> String:
+	# 🛑 **`open()` 만 막아서는 소용이 없다.** 콘솔을 열지 않고 코드에서 `run("give …")` 을 부를 수
+	#    있으므로, 치트가 릴리스 빌드에 그대로 남는다 — 막는 자리는 여기다.
+	if debug_only and not OS.is_debug_build(): return ""
 	var trimmed := line.strip_edges()
 	if trimmed.is_empty(): return ""
 	var parts := trimmed.split(" ", false)

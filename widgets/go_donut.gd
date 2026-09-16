@@ -202,11 +202,13 @@ func _sync_accessibility() -> void:
 	var parts := visible_slices()
 	var sum := 0.0
 	for slice in parts: sum += float(slice["value"])
+	# 🛑 백분율 형식도 문구다(위 `GoRadar` 와 같은 이유) — `bar_percent` 키를 탄다.
 	var spoken: Array[String] = []
 	for slice in parts:
 		var portion := 0.0 if sum <= 0.0 else float(slice["value"]) / sum * 100.0
-		spoken.append("%s %d%%" % [str(slice["label"]), roundi(portion)])
-	accessibility_name = ", ".join(spoken)
+		var share := GoUi.text(&"bar_percent").format({"percent": roundi(portion)})
+		spoken.append(GoUi.spoken([str(slice["label"]), share]))
+	accessibility_name = GoUi.spoken(spoken)
 
 
 func _on_ui_changed() -> void:

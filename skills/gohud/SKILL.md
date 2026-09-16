@@ -95,11 +95,13 @@ Reply in the language the user writes in; keep code identifiers as they are.
     anchors, set `offset_*`, not `position`: `Control.position` is parent-space and ignores the anchors.
 13. **Containers are 80% opaque; things you press are not.** Panels (`GoSurface`/`GoSheet`/`GoDialogs`/cards/
     HUD panels/alerts/snackbars) fade their **face only** — never use `modulate.a` for this, it fades the text too.
-    Five layers decide the value, most specific first: the call's `alpha` argument (ratio `0.0–1.0`, negative =
-    unset) → `GoConfig.container_alpha_overrides[GoTheme.BOX_*]` → `metric_overrides[<kind>_alpha]` →
-    `GoConfig.container_alpha` → theme `GoHud/constants/<kind>_alpha`. 🛑 **Config and theme fields are percent
-    integers** (`80`), code arguments are ratios (`0.8`) — `0.8` in a config field truncates to `0` and the panel
-    disappears. Call `GoUi.refresh()` after changing it from code. Read the resolved value with
+    Five layers decide the value, most specific first: the `alpha` argument or field at that call →
+    `GoConfig.container_alpha_overrides[GoTheme.BOX_*]` → `metric_overrides[<kind>_alpha]` →
+    `GoConfig.container_alpha` → theme `GoHud/constants/<kind>_alpha`. 🔑 **Every one of them is a ratio
+    `0.0–1.0`** (negative = not set), including `@export` fields such as `dialogs.alpha` and `drawer.alpha` —
+    same units everywhere, so there is nothing to memorise per widget. 🛑 The **two exceptions are the theme's
+    constants and `metric_overrides`**, which are percent integers (`80`) because a `Theme` constant cannot hold
+    a float. Call `GoUi.refresh()` after changing it from code. Read the resolved value with
     `GoUi.surface_alpha(variant)`; apply it to a panel gohud did not build with `GoStyle.fade_panel(node)` (after
     `add_child`). A `GoSkin` subclass overriding `surface_box`/`floating_box`/`alert_box` **must carry the `alpha`
     parameter** or the script will not parse. Details: `references/theming.md` §4.

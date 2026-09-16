@@ -223,7 +223,7 @@ settings.preset = GoThemePresets.MEDIEVAL_LIGHT
 var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: Color("#7c5cff")}
 settings.color_overrides = colors                 # 강조색만 바꿔도 된다
 settings.base_font_size = 15
-settings.container_alpha = 70                     # 판 전부를 70% 불투명 (-1 이면 테마 값)
+settings.container_alpha = 0.7                    # 판 전부를 70% 불투명 (음수면 테마 값)
 GoUi.config = settings
 ```
 
@@ -321,34 +321,40 @@ GoUi.surface_alpha(GoTheme.BOX_PANEL)       # 판 불투명도 — 비율 0.0~1.
 
 | 순서 | 어디서 | 단위 | 쓰는 때 |
 |---|---|---|---|
-| ① | 그 자리의 인자 — `surface.alpha`, `GoStyle.card(…, alpha)` | 비율 `0.0~1.0` | **이 창 하나만** 다르게 |
-| ② | `GoConfig.container_alpha_overrides[종류]` | 퍼센트 `0~100` | 이 프로젝트에서 **이 종류만** 다르게 |
-| ③ | `GoConfig.metric_overrides[<종류>_alpha]` | 퍼센트 `0~100` | 치수를 한 곳에 모아 두는 프로젝트의 관습을 따를 때 |
-| ④ | `GoConfig.container_alpha` | 퍼센트 `0~100` | 프로젝트의 **판 전부**를 한 번에 |
-| ⑤ | 테마의 `GoHud/constants/<종류>_alpha` | 퍼센트 `0~100` | 생김새 묶음이 정한 값 — **정본** |
+| ① | 그 자리의 인자·칸 — `surface.alpha`, `sheet.alpha`, `GoStyle.card(…, alpha)` | 비율 `0.0~1.0` | **이 창 하나만** 다르게 |
+| ② | `GoConfig.container_alpha_overrides[종류]` | 비율 `0.0~1.0` | 이 프로젝트에서 **이 종류만** 다르게 |
+| ③ | `GoConfig.metric_overrides[<종류>_alpha]` | **퍼센트** `0~100` | 치수를 한 곳에 모아 두는 프로젝트의 관습을 따를 때 |
+| ④ | `GoConfig.container_alpha` | 비율 `0.0~1.0` | 프로젝트의 **판 전부**를 한 번에 |
+| ⑤ | 테마의 `GoHud/constants/<종류>_alpha` | **퍼센트** `0~100` | 생김새 묶음이 정한 값 — **정본** |
 
-넷 다 비어 있으면 100(꽉 찬 색)이다 — 이 토큰을 모르는 옛 테마·남의 테마를 그대로 꽂아도 화면이 예전과 같다.
+넷 다 비어 있으면 1.0(꽉 찬 색)이다 — 이 토큰을 모르는 옛 테마·남의 테마를 그대로 꽂아도 화면이 예전과 같다.
 
-🛑 **테마·설정 칸은 퍼센트 정수, 코드 인자는 비율**이다. 층이 다르므로 단위도 다르다 — 에디터 칸은 정수라야
-다루기 쉽고(`Theme` 의 constant 는 정수만 담는다), StyleBox 의 색 알파는 비율이다. 섞어 쓰면 설정에 적은
-`0.8` 이 `0` 으로 잘려 **판이 통째로 사라진다.** 설정에는 `80`, 코드에는 `0.8` 이다.
+🔑 **불투명도를 다루는 자리는 전부 비율(0.0~1.0)이다.** 위젯의 `alpha` 칸(인스펙터에 나가는 것까지),
+`GoStyle` 인자, `GoConfig` 의 두 칸, `GoUi.surface_alpha()` 의 반환값 — `Color.a`·`modulate.a` 와 같은
+엔진 관례를 따른다. 음수는 "정하지 않았다" 로, 아래 층으로 넘어간다.
+
+🛑 **퍼센트는 테마 상수 한 층에만 있다** — `Theme` 의 constant 가 정수만 담을 수 있기 때문이다.
+그래서 테마의 `<종류>_alpha` 와 **그것을 덮는 통로**(`metric_overrides` — 이름도 타입도 테마 치수와 같다)
+두 자리만 `80` 처럼 적는다. 나머지는 모두 `0.8` 이다.
 
 ```gdscript
 # ① 창 하나만 — 뒤의 전투가 보여야 하는 확인창
 surface.alpha = 0.6
 sheet.alpha = 0.7
+dialogs.alpha = 0.9
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # ② 종류별 — HUD 만 거의 꽉 차게(월드 위에서 글자가 읽혀야 한다)
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,    # 대화상자·시트는 시원하게
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,   # 대화상자·시트는 시원하게
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                # 🛑 떠 있는 위젯까지 다시 그리려면 부른다
 
 # ③ 프로젝트 전부 — 그림이 복잡한 게임은 꽉 찬 색으로 되돌린다
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 # ④ 테마에서(정본) — 팔레트 JSON 의 shape 에 적으면 생성기가 토큰까지 내려 준다

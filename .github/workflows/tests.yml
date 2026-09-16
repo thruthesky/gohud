@@ -39,14 +39,21 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Godot 내려받기
+        # 🛑 **저장소 밖(`/tmp`)에 푼다.** 체크아웃한 폴더에 풀면 그 폴더가 그대로
+        #    `/tmp/host/addons/gohud` 로 링크되어, 패키징 검사(⑤)가 애드온 ZIP 을 만들 때
+        #    100MB 짜리 엔진 실행 파일까지 담는다 — 비밀키 스캐너가 그 바이너리의 임의 바이트를
+        #    API 키로 보고 막는다(2026-09-16 CI 로그: `addons/gohud/Godot_v4.6-stable_linux.x86_64`
+        #    에서 "API 키·비밀키로 보이는 문자열이 들어갔다").
+        #    로컬에서는 엔진이 저장소 밖에 있어 이 검사가 통과하므로 **CI 에서만** 드러난다.
+        # 🔑 게이트 자체는 제 일을 했다 — 애드온 ZIP 에 있으면 안 될 것이 들어갔다고 정확히 말했다.
         run: |
           set -euo pipefail
           BASE="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}"
           FILE="Godot_v${GODOT_VERSION}_linux.x86_64"
-          curl -fsSL -o godot.zip "${BASE}/${FILE}.zip"
-          unzip -q godot.zip
-          chmod +x "${FILE}"
-          echo "GODOT_BIN=${PWD}/${FILE}" >> "$GITHUB_ENV"
+          curl -fsSL -o /tmp/godot.zip "${BASE}/${FILE}.zip"
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x "/tmp/${FILE}"
+          echo "GODOT_BIN=/tmp/${FILE}" >> "$GITHUB_ENV"
 
       - name: 검사용 빈 프로젝트를 짓고 애드온을 넣는다
         # 🛑 gohud 저장소에는 `project.godot` 이 없다 — 애드온이지 게임이 아니다.
@@ -80,4 +87,4 @@ jobs:
         if: failure()
         run: |
           echo "— 마지막 단위 검사 출력 —"
-          "${GODOT_BIN}" --headless --path /tmp/host -s res://addons/gohud/tests/gohud_test.gd 2>&1 | tail -60 || true
+          "$GODOT_BIN" --headless --path /tmp/host -s res://addons/gohud/tests/gohud_test.gd 2>&1 | tail -60 || true

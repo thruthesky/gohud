@@ -40,13 +40,14 @@ enum ActionLayout { VERTICAL, HORIZONTAL, AUTO }
 ## 카드의 최대 폭(dp).
 @export var max_width := 420.0
 
-## 🪟 카드 바탕의 **불투명도(%)** — 확인창만 다르게. **-1 이면 테마·설정이 정한 값**(기본).
+## 🪟 카드 바탕의 **불투명도**(0.0~1.0) — 확인창만 다르게. **음수면 테마·설정이 정한 값**(기본).
 ## 🔑 되돌릴 수 없는 조작을 묻는 창은 값을 올리는 편이 낫다 — 뒤가 덜 보일수록 물음에 집중한다.
-## 🛑 `0.8` 이 아니라 `80` 이다(퍼센트 정수 · 에디터 칸이라 정수로 둔다).
-@export_range(-1, 100) var surface_alpha := -1:
+## 🛑 이름을 `GoSheet.alpha`·`GoSurface.alpha` 와 같게 둔다 — 같은 뜻을 위젯마다 다른 이름·다른
+##    단위로 두면 부르는 쪽이 위젯별로 외워야 한다(`GoUi.surface_alpha()` 는 **조회 함수**로 따로다).
+@export_range(-1.0, 1.0, 0.01) var alpha := -1.0:
 	set(value):
-		surface_alpha = value
-		if _surface != null: _surface.alpha = -1.0 if value < 0 else float(value) / 100.0
+		alpha = value
+		if _surface != null: _surface.alpha = value
 
 ## 버튼 배치 — `VERTICAL`(기본) · `HORIZONTAL`(한 줄) · `AUTO`(한 줄에 들어갈 때만 한 줄).
 @export var action_layout := ActionLayout.VERTICAL
@@ -140,7 +141,7 @@ func _ready() -> void:
 	# `new()` 뒤에 바꿨을 수 있는 값을 반영한다.
 	_layer.layer = layer_index
 	_surface.max_width = max_width
-	_surface.alpha = -1.0 if surface_alpha < 0 else float(surface_alpha) / 100.0
+	_surface.alpha = alpha
 	# 화면을 돌리면 카드 폭이 바뀐다 — 한 줄에 들어가는지 다시 본다.
 	if not Engine.is_editor_hint(): get_viewport().size_changed.connect(_on_viewport_resized)
 

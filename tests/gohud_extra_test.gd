@@ -112,6 +112,12 @@ func _snackbar() -> void:
 	await frames(3)
 	check(picked[0] == 0, "스낵바: 눌린 버튼 번호가 돌아온다 (%d)" % picked[0])
 	check(log.has("되돌림"), "스낵바: 버튼의 콜백이 불린다")
+	# 🛑 되돌리기는 이 위젯의 존재 이유인 버튼이다 — `Tone.BARE` 라도 터치 하한을 지켜야 한다.
+	for node in _all(card):
+		var action := node as Button
+		if action != null and action.text == "되돌리기":
+			check(action.custom_minimum_size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
+				"스낵바: 버튼이 터치 하한을 지킨다 (%.0f)" % action.custom_minimum_size.y)
 
 	# 큐 — 셋을 연달아 띄우면 하나만 뜨고 둘이 기다린다
 	snack.clear()
@@ -135,10 +141,26 @@ func _snackbar() -> void:
 	await frames(4)
 	check(card.mouse_filter == Control.MOUSE_FILTER_IGNORE, "스낵바: 순수 알림은 입력을 통과시킨다")
 	check(card.accessibility_name == "통과", "스낵바: 스크린리더 이름 (%s)" % card.accessibility_name)
+	# 🪟 판 불투명도를 바꿔도 **의미색 테두리를 잃지 않는다.**
+	# 🛑 판을 다시 입히는 자리에서 색을 빼먹으면 떠 있는 위험 알림의 테두리가 사라진다 — 화면에는
+	#    "조금 연해졌다" 로만 보여 알아채기 어렵다(2026-09-16 `alpha` setter 가 실제로 그랬다).
+	snack.show_text("Danger", GoTheme.DANGER)
+	await frames(2)
+	var toned := snack._card.get_theme_stylebox(&"panel")
+	var tone_edge: Color = toned.get(&"border_color") if &"border_color" in toned else Color.TRANSPARENT
+	snack.alpha = 0.5
+	await frames(1)
+	var after := snack._card.get_theme_stylebox(&"panel")
+	var after_edge: Color = after.get(&"border_color") if &"border_color" in after else Color.TRANSPARENT
+	check(absf(GoSkin.box_background(after).a - 0.5) < 0.02,
+		"스낵바: 불투명도가 판에 닿는다 (%.2f)" % GoSkin.box_background(after).a)
+	check(tone_edge.a <= 0.0 or absf(after_edge.r - tone_edge.r) < 0.02,
+		"스낵바: 불투명도를 바꿔도 의미색 테두리는 그대로")
+	snack.alpha = -1.0
+
 	snack.queue_free()
 	await frames(1)
 	section("snackbar")
-
 
 func _ask_snack(snack: GoSnackbar, log: Array[String], out: Array) -> void:
 	out[0] = await snack.post({"text": "아이템을 버렸습니다", "tone": GoTheme.WARNING, "seconds": 0.0,
@@ -415,8 +437,15 @@ func _popover() -> void:
 	var second := GoPopover.open(anchor, GoStyle.label("둘째"))
 	await frames(3)
 	check(second != null and not is_instance_valid(first), "팝오버: 한 번에 하나만")
+	# 🛑 **닫는 세 길이 모두 `close_requested` 를 낸다.** 문서가 `await …close_requested` 를 권하는데
+	#    `close()`·재열기가 신호 없이 층만 지우면 그 `await` 가 영영 풀리지 않는다(2026-09-16 실측).
+	var signalled := [false]
+	var watched := GoPopover.open(anchor, GoStyle.label("신호"))
+	if watched != null: watched.close_requested.connect(func() -> void: signalled[0] = true)
+	await frames(3)
 	GoPopover.close()
-	await frames(2)
+	await frames(3)
+	check(signalled[0], "팝오버: close() 도 close_requested 를 낸다")
 	check(not GoPopover.is_open(), "팝오버: 닫힌다")
 	anchor.queue_free()
 	await frames(1)
@@ -453,6 +482,23 @@ func _table() -> void:
 		if node is Label: cell_heights.append((node as Label).size.y)
 	check(not cell_heights.is_empty() and cell_heights.min() > 4.0,
 		"표: 칸 글자가 보이는 높이를 갖는다 (가장 낮은 칸 %.0f)" % (cell_heights.min() if not cell_heights.is_empty() else -1.0))
+	# 🛑 **호스트가 넘긴 `Control` 셀을 죽이지 않는다** — 정렬·테마 교체마다 줄을 다시 짓는데,
+	#    그때 빌려 온 노드까지 free 하면 다음 줄 짓기가 죽은 노드를 붙이려 한다(2026-09-16 실측).
+	var borrowed := GoStyle.label("빌려온 칸")
+	var lend := GoTable.make([{"text": "A"}, {"text": "B"}], [[1, borrowed], [2, "글자"]])
+	root.add_child(lend)
+	await frames(3)
+	lend.sort_by(0, false)
+	await frames(3)
+	check(is_instance_valid(borrowed), "표: 넘겨받은 셀을 정렬 뒤에도 살려 둔다")
+	lend.set_rows([[3, borrowed]])
+	await frames(3)
+	check(is_instance_valid(borrowed), "표: 줄을 갈아 끼워도 넘겨받은 셀이 산다")
+	# 🛑 누르는 머리 줄이라 터치 하한을 지켜야 한다(`Tone.BARE` 는 하한을 걸지 않는다).
+	var header := lend.head.get_child(0) as Button
+	check(header != null and header.custom_minimum_size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
+		"표: 머리 버튼이 터치 하한을 지킨다 (%.0f)" % (header.custom_minimum_size.y if header else -1.0))
+	lend.queue_free(); borrowed.queue_free()
 	table.queue_free()
 	await frames(1)
 	section("table")
@@ -513,17 +559,28 @@ func _drawer() -> void:
 	var drawer_themed := GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a
 	check(absf(drawer_themed - GoUi.surface_alpha(GoTheme.BOX_CARD)) < 0.02,
 		"서랍: 기본은 테마·설정이 정한 카드 값 (%.2f)" % drawer_themed)
-	drawer.alpha = 40
+	drawer.alpha = 0.40
 	await frames(1)
 	check(absf(GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a - 0.40) < 0.02,
-		"서랍: 퍼센트 40 → 판 바탕 0.40")
-	drawer.alpha = -1
+		"서랍: 비율 0.40 → 판 바탕 0.40")
+	drawer.alpha = -1.0
 	await frames(1)
 	check(absf(GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a - drawer_themed) < 0.02,
 		"서랍: -1 로 되돌리면 테마 값으로")
 	drawer.close()
 	await frames(2)
 	check(not drawer.is_open(), "서랍: 닫힌다")
+	# 🛑 트리에서 빠지면 **상태도 내린다** — 안 내리면 다시 넣고 닫을 때 뒤로가기 차지를 한 번 더
+	#    놓아 다른 창의 차지까지 깎는다.
+	drawer.open("다시")
+	await frames(2)
+	var owners_open := GoBackPolicy.owners()
+	root.remove_child(drawer)
+	await frames(2)
+	check(not drawer.is_open(), "서랍: 트리에서 빠지면 열림 상태도 내린다")
+	check(GoBackPolicy.owners() == owners_open - 1, "서랍: 뒤로가기 차지를 한 번만 놓는다")
+	root.add_child(drawer)
+	await frames(2)
 	drawer.queue_free()
 	await frames(1)
 	section("drawer")
@@ -688,6 +745,8 @@ func _console() -> void:
 	check(console.run("give sword 3") == "지급 sword 3", "콘솔: 명령을 실행한다")
 	# 🔑 기본 문구는 영어다 — 개발 도구의 공통어이고, 애드온 코드에 한 언어를 박지 않는다.
 	check(console.run("no_such_command").contains("unknown"), "콘솔: 모르는 명령을 알린다")
+	# 🛑 `open()` 만 막으면 소용없다 — 코드에서 `run()` 을 직접 부를 수 있다.
+	check(console.debug_only and OS.is_debug_build(), "콘솔: 이 검사는 디버그 빌드에서 돈다")
 	console.unregister("give")
 	check(not console.commands().has("give"), "콘솔: 명령을 뺀다")
 	# 🛑 릴리스 빌드에서는 열리지 않는다 — 치트가 플레이어 손에 들어가면 안 된다.

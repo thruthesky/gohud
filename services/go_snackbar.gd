@@ -108,7 +108,7 @@ class Ticket extends RefCounted:
 var alpha := -1.0:
 	set(value):
 		alpha = value
-		if _card != null: _card.add_theme_stylebox_override(&"panel", _face(Color.TRANSPARENT))
+		_restyle_card()
 
 
 func _init() -> void:
@@ -512,12 +512,22 @@ func _process(delta: float) -> void:
 	_finish(-1)
 
 
+## 카드 판을 **지금 떠 있는 것의 의미색으로** 다시 입힌다(빈 카드면 색 없이).
+##
+## 🛑 판을 다시 입히는 자리에서 `_face(Color.TRANSPARENT)` 를 그냥 부르면 안 된다 — 떠 있는
+##    위험 알림의 **테두리 색이 사라진다.** 색은 지금 보여 주는 항목의 `tone` 에 있으므로 그것을
+##    읽어 와야 하고, 그 한 줄은 빠뜨리기 쉬워 여기로 모았다(2026-09-16 `alpha` 칸에서 실제로 그랬다).
+func _restyle_card() -> void:
+	if _card == null: return
+	var accent := Color.TRANSPARENT
+	if not _current.is_empty() and _current["tone"] != GoTheme.TEXT:
+		accent = GoUi.color(_current["tone"])
+	_card.add_theme_stylebox_override(&"panel", _face(accent))
+
+
 func _on_ui_changed() -> void:
-	if _current.is_empty():
-		_card.add_theme_stylebox_override(&"panel", _face(Color.TRANSPARENT))
-		return
-	var ink := GoUi.color(_current["tone"])
-	_card.add_theme_stylebox_override(&"panel", _face(ink if _current["tone"] != GoTheme.TEXT else Color.TRANSPARENT))
+	_restyle_card()
+	if _current.is_empty(): return
 	_retranslate()
 	_relayout()
 

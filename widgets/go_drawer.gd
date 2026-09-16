@@ -59,9 +59,9 @@ enum Side {
 		max_width = value
 		_relayout()
 
-## 🪟 서랍 판 바탕의 **불투명도(%)**. **-1 이면 테마·설정이 정한 카드 값**(기본).
-## 🛑 `0.8` 이 아니라 `80` 이다(퍼센트 정수). 바탕만 묽어지고 글자·버튼은 선명하다.
-@export_range(-1, 100) var alpha := -1:
+## 🪟 서랍 판 바탕의 **불투명도**(0.0~1.0). **음수면 테마·설정이 정한 카드 값**(기본).
+## 🛑 바탕만 묽어진다 — 글자·아이콘·버튼은 선명한 채로 남는다.
+@export_range(-1.0, 1.0, 0.01) var alpha := -1.0:
 	set(value):
 		alpha = value
 		if panel != null: _restyle()
@@ -287,7 +287,7 @@ func _scrim_input(event: InputEvent) -> void:
 
 func _restyle() -> void:
 	panel.add_theme_stylebox_override(&"panel", GoUi.skin().surface_box(
-		GoTheme.BOX_CARD, Color.TRANSPARENT, -1.0 if alpha < 0 else float(alpha) / 100.0))
+		GoTheme.BOX_CARD, Color.TRANSPARENT, alpha))
 	_scrim.color = _scrim_color(_open)
 
 
