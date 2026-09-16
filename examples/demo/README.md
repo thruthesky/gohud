@@ -1,22 +1,49 @@
-# gohud simulation demo
+# gohud demo app
 
-Run this from the add-on root:
+Open this folder in Godot, or run it straight from a terminal:
 
 ```bash
-bash examples/demo/run.sh
+cd examples/demo
+godot
 ```
 
-The script prepares the folder first, then launches Godot. In a copy installed from the Asset
-Store it restores `project.godot` from `project.godot.demo` and links the add-on into
-`addons/gohud`; after that you can also open this folder in Godot directly. The shipped copy
-keeps `project.godot` asleep on purpose — a nested one would make your own editor warn
-"Detected another project.godot".
+There is nothing to set up first. When `addons/gohud` or the import cache is missing, the app
+says so on screen, links the add-on, imports the project once and reopens itself; every run
+after that starts on the home screen. (That link is generated locally and ignored by Git — it
+points back at the add-on root, and a checked-in loop would send recursive tools into it.)
 
-On a fresh Git checkout, run `bash examples/demo/run.sh --setup` from the add-on root before
-opening the demo in the editor. The recursive `addons/gohud` link is generated locally and
-ignored by Git so GitHub Pages can publish the repository root without following a link loop.
+`bash examples/demo/run.sh` from the add-on root does the same and, in a copy installed from
+the Asset Store, also restores `project.godot` from `project.godot.demo`. The shipped copy keeps
+`project.godot` asleep on purpose — a nested one would make your own editor warn "Detected
+another project.godot".
 
-The app waits on its Start screen and offers two ways in:
+## Home screen
+
+`main.tscn` is the main scene: a doorway that checks the add-on and then hands over to
+`home.tscn`. The home screen is built from nothing but gohud widgets, and offers four ways in.
+
+| Key | Screen | Source |
+|---|---|---|
+| `1` | **Widget gallery** — every widget on one page | `examples/gallery/gallery.gd` |
+| `2` | **Guided tour** — 15 chapters, played or hands-on | `examples/demo/sim.gd` |
+| `3` | **Showcase screen** — six cards on one screen | `examples/demo/demo.gd` |
+| `4` | **Medieval look** — the same widgets, another preset | `examples/medieval/medieval.gd` |
+
+Under those rows the home screen puts the kit itself within reach: one card of live widgets
+(button tones, an HP bar with a slider, a toggle, a segmented control, quick slots, a notice, a
+dialog, a bottom sheet, a prompt card and a coach-mark tour), and then one small card per class
+carrying a one-line description and the line of code that uses it.
+
+The screen you pick opens inside the same window, with a bar across the top naming it and the
+file it lives in; **Home** goes back. To skip the home screen entirely:
+
+```bash
+godot -- --open=gallery      # gallery | tour | showcase | medieval
+```
+
+## Guided tour
+
+The tour waits on its Start screen and offers two ways in:
 
 - **Start demo** plays a guided simulation of 15 chapters. The cursor uses real mouse and
   keyboard events to click buttons, type into fields, select menu items, drag sliders and
@@ -28,7 +55,7 @@ The app waits on its Start screen and offers two ways in:
   running folds the tour and opens that widget. On narrow windows the sidebar becomes a
   **Widgets** menu in the top bar.
 
-The **Theme** dropdown at the top of both `demo.tscn` and `sim.tscn` selects **Default theme**,
+The **Theme** dropdown on the home screen and at the top of both `demo.tscn` and `sim.tscn` selects **Default theme**,
 **Sci-fi theme**, or **Medieval theme** (the dark preset of each family). It is also available on
 the simulation's Start and completion screens. Colours, frames and icons change together;
 the Themes & icons example compares the selected family's dark and light variants.
@@ -75,7 +102,8 @@ For an on-screen recording preview or a still image:
 
 ```bash
 bash examples/demo/run.sh -- --auto --cinema --exit
-bash examples/demo/run.sh --shot /tmp/gohud-start.png
+bash examples/demo/run.sh --shot /tmp/gohud-home.png                   # the home screen
+SHOT_SCENE=res://sim.tscn bash examples/demo/run.sh --shot /tmp/gohud-start.png
 bash examples/demo/run.sh --shot /tmp/gohud-hud.png -- --explore=hud   # one widget, explore mode
 bash examples/demo/run.sh -- --explore=surfaces                          # open the app on a widget
 ```
@@ -121,13 +149,18 @@ command fail.
 
 ## Add-on link
 
-`addons/gohud` is a symlink to `../../..`, the add-on root. This keeps the demo on the same
-source code as the add-on. The nested demo is excluded from recursive scanning.
-If a ZIP download has no link, run `bash examples/demo/run.sh --setup` once before opening
-the project in the editor. The launcher imports assets and reports import errors.
+`addons/gohud` is a symlink to `../../..`, the add-on root, so the demo always runs the same
+source code as the add-on. The nested demo is excluded from recursive scanning. The link is not
+checked in; `main.gd` makes it on first run, and `bash examples/demo/run.sh --setup` makes the
+same one without launching anything.
 
-The older card overview remains available as `demo.tscn` (nine widget cards plus the language
-card); `sim.tscn` is the main scene.
+`main.tscn` is the main scene. It carries no gohud class name on purpose: with the link or the
+import cache missing those names do not parse, and a main scene that cannot parse leaves an
+empty window and one `Identifier "GoUi" not declared` line. The doorway stays up in that state,
+which is how it can explain itself and repair the folder.
+
+`sim.tscn` (the tour), `demo.tscn` (the card overview plus the language card), and the gallery
+and medieval scenes under `addons/gohud/examples` all still open on their own.
 
 ## Adding a chapter
 

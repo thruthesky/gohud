@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Standalone demo integration checks, with error-log and timeout guards.
+# Standalone demo integration checks (doorway, home screen, guided tour), with error-log and timeout guards.
 # GODOT_BIN=/path/to/godot bash tools/check_demo.sh
 set -euo pipefail
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
@@ -30,6 +30,10 @@ def run(name, args, env=None, marker=None):
     print(f'PASS {name}', flush=True)
 
 run('import', ['--import'])
+# The doorway and the home screen come first: they are what `godot` alone lands on.
+for size in ['1680x940', '720x450', '390x844']:
+    run('home-' + size, ['--fixed-fps', '60', '-s', 'res://addons/gohud/tests/home_test.gd'],
+        dict(os.environ, DEMO_TEST_SIZE=size), marker='HOME TEST RESULT: ')
 for size in ['1680x940', '720x450', '390x844']:
     run(size, ['--fixed-fps', '60', '-s', 'res://addons/gohud/tests/sim_test.gd'],
         dict(os.environ, DEMO_TEST_SIZE=size), marker='DEMO TEST RESULT:')

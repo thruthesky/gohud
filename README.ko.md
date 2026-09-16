@@ -505,22 +505,31 @@ Forward+/Mobile 렌더러. 안전영역·햅틱 코드는 휴대 기기에서만
 |---|---|---|
 | 갤러리 | `res://addons/gohud/examples/gallery/gallery.tscn` 을 F6 | 모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체. 서버·오토로드·프로젝트 설정이 필요 없다. |
 | 중세 | `res://addons/gohud/examples/medieval/medieval.tscn` 을 F6 | `medieval_dark`·`medieval_light` 의 캐릭터 정보·가방·퀘스트 일지 |
-| 데모 | `bash examples/demo/run.sh` | 실제 입력으로 진행하는 15장면 자동 시연과, 위젯 하나를 직접 만져 보는 탐색 모드 |
+| 데모 앱 | `cd examples/demo && godot` | 갤러리·15장면 자동 시연·쇼케이스·중세 화면을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다. |
 
-### 데모 — 자동 시연과 직접 탐색
+### 데모 앱 — 홈에서 고르고, 그 자리에서 본다
 
-`examples/demo/project.godot`을 실행한다. **Start demo**를 누르면 15개 장면이 순서대로 진행되며,
-커서가 실제 입력으로 버튼·메뉴를 선택하고, 글자를 입력하고, 슬라이더·조이스틱을 끌고, 목록을 스크롤한다.
+```bash
+cd examples/demo && godot
+```
+
+준비할 것이 없다. 애드온 링크나 임포트 캐시가 없으면 앱이 그 사실을 화면에 적고, 링크를 만들고
+한 번 임포트한 뒤 스스로 창을 다시 연다. 그다음부터는 바로 **홈 화면**이다. 홈의 네 줄이
+위젯 갤러리·자동 시연·쇼케이스 화면·중세 화면을 **같은 창 안에서** 연다(`1`~`4` 키도 같다).
+그 아래에는 직접 눌러 보는 위젯 카드 한 장과, 클래스마다 한 줄 설명과 코드 한 줄을 담은 카드가 깔린다.
+
+자동 시연에서 **Start demo**를 누르면 15개 장면이 순서대로 진행되며, 커서가 실제 입력으로
+버튼·메뉴를 선택하고, 글자를 입력하고, 슬라이더·조이스틱을 끌고, 목록을 스크롤한다.
 **Explore widgets** 또는 왼쪽 사이드바의 항목을 누르면 그 위젯 하나만 무대에 지어져 **직접 만져 볼 수 있고**,
 오른쪽 **Play this widget** 버튼으로 그 위젯만 봇이 시연하게 할 수 있다. 시연 중 사이드바를 누르면
 시연을 접고 그 위젯을 연다. 좁은 창에서는 사이드바 대신 상단의 **Widgets** 메뉴가 나온다.
 표시 문구는 모두 영어이며, 큰 데스크톱 창에서는 글자와 위젯도 함께 커진다.
 
 ```bash
-bash examples/demo/run.sh --setup                      # git 에서 새로 받았을 때 한 번
-bash examples/demo/run.sh
+bash examples/demo/run.sh                             # 애드온 루트에서 같은 앱을 연다
+bash examples/demo/run.sh -- --open=gallery           # 홈을 건너뛰고 바로 그 화면으로
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi # 전체 시연 1080p / 60fps 녹화
-bash examples/demo/run.sh --shot /tmp/gohud-start.png
+bash examples/demo/run.sh --shot /tmp/gohud-home.png
 bash examples/demo/run.sh -- --explore=surfaces        # 위젯 하나를 탐색 모드로 바로 연다
 ```
 

@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Run the standalone demo; import assets and register script classes first.
-# bash run.sh                            Interactive Start screen
-# bash run.sh --shot /tmp/start.png       Capture the Start screen
+# Plain `godot` in this folder works too — the demo links the add-on and imports on first run.
+# bash run.sh                             Home screen: gallery, guided tour, showcase, medieval
+# bash run.sh -- --open=gallery           Skip the home screen (gallery | tour | showcase | medieval)
+# bash run.sh --shot /tmp/home.png        Capture the home screen
+# SHOT_SCENE=res://sim.tscn bash run.sh --shot /tmp/start.png   Capture another screen
 # bash run.sh --languages                 Check all built-in languages render (headless)
 # bash run.sh --shot-languages /tmp/l.png Capture the language card
 # bash run.sh --record /tmp/demo.avi      Record the full tour at 1080p / 60 fps
 # bash run.sh -- --auto --cinema --exit   Preview the recording layout
-# bash run.sh -- --explore=hud             Open one widget in explore mode (hands-on, no bot)
+# bash run.sh -- --explore=hud            Open one widget in explore mode (hands-on, no bot)
 # GODOT_BIN=/path/to/godot bash run.sh
 set -euo pipefail
 
