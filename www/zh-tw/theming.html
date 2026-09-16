@@ -271,37 +271,39 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 的副本</code></pre>
     <thead><tr><th>順序</th><th>在哪裡</th><th>單位</th><th>影響範圍</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>那次呼叫傳進去的參數 — <code>surface.alpha</code>、<code>GoStyle.card(…, alpha)</code></td><td>比例 <code>0.0–1.0</code></td><td>一個視窗</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>百分比 <code>0–100</code></td><td>某一類面板，整個專案都算</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>比例 <code>0.0–1.0</code></td><td>某一類面板，整個專案都算</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>百分比</td><td>把所有尺寸集中放在一處的專案</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>百分比</td><td>一次套到所有面板</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>比例 <code>0.0–1.0</code></td><td>一次套到所有面板</td></tr>
       <tr><td>⑤</td><td>佈景主題的 <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>百分比</td><td>這套外觀自己的決定 — <b>最終依據</b></td></tr>
     </tbody>
   </table>
   <p>五層都沒設定時，值就是 100，所以舊佈景主題不會有任何改變。</p>
 
   <div class="note">
-    <b>設定給的是百分比；程式碼給的是比例。</b>層不同，單位就不同 — 編輯器欄位要的是整數
-    （<code>Theme</code> 常數存不了浮點數），而 StyleBox 顏色的 alpha 是比例。
-    在設定欄位裡寫 <code>0.8</code> 會被截成 <code>0</code>，<b>面板就不見了</b>。
-    設定裡是 <code>80</code>，程式碼裡是 <code>0.8</code>。
+    <b>不透明度到處都是比例 — 只有佈景主題例外。</b>每個 <code>alpha</code> 欄位與參數收的都是
+    0.0–1.0，跟 <code>Color.a</code>、<code>modulate.a</code> 同一套單位，負值表示「沒設定」。
+    唯一的例外是佈景主題的常數，因為 <code>Theme</code> 常數存不了浮點數：它們，以及覆寫它們的那條管道
+    （<code>metric_overrides</code>，它沿用佈景主題的名稱與整數型別），寫成 <code>80</code>。
+    其他地方都不是。
   </div>
 
   <pre><code># 只影響一個視窗 — 確認對話框不該擋住後面的戰鬥
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export，所以是百分比
+dialogs.alpha = 0.9                          # @export 欄位也是比例
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # 依類別 — HUD 保持幾乎不透明，因為它的文字直接疊在世界上
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # 對話框與底部頁面可以透一點
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # 對話框與底部頁面可以透一點
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # 重畫已經開著的控制項
 
 # 整個專案 — 畫面很忙的世界會想把面板調回不透明
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 算好的比例，例如 0.8</code></pre>

@@ -277,37 +277,39 @@ GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
     <thead><tr><th>الترتيب</th><th>الموضع</th><th>الوحدة</th><th>المدى</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>الوسيط عند ذلك الاستدعاء — <code>surface.alpha</code>، <code>GoStyle.card(…, alpha)</code></td><td>نسبة <code>0.0–1.0</code></td><td>نافذة واحدة</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>نسبة مئوية <code>0–100</code></td><td>نوع واحد من اللوحات، في المشروع كله</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>نسبة <code>0.0–1.0</code></td><td>نوع واحد من اللوحات، في المشروع كله</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>نسبة مئوية</td><td>المشاريع التي تجمع كل المقاسات في مكان واحد</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>نسبة مئوية</td><td>كل اللوحات دفعةً واحدة</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>نسبة <code>0.0–1.0</code></td><td>كل اللوحات دفعةً واحدة</td></tr>
       <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> في السمة</td><td>نسبة مئوية</td><td>ما يقرّره المظهر العام — <b>مصدر الحقيقة</b></td></tr>
     </tbody>
   </table>
   <p>وإن لم يُضبط أيٌّ منها كانت القيمة 100، فلا يتغيّر في السمة الأقدم شيء.</p>
 
   <div class="note">
-    <b>الإعدادات تأخذ نسبة مئوية، والشيفرة تأخذ نسبة عشرية.</b> طبقات مختلفة ووحدات مختلفة — فحقل المحرّر
-    يحتاج عددًا صحيحًا (وثابت <code>Theme</code> لا يسع عددًا عشريًّا) بينما ألفا لون StyleBox نسبة.
-    وكتابة <code>0.8</code> في حقل إعدادات تقتطعها إلى <code>0</code> فـ<b>تختفي اللوحة</b>. فهي
-    <code>80</code> في الإعدادات و<code>0.8</code> في الشيفرة.
+    <b>العتامة نسبة في كل موضع — إلا في السمة.</b> فكل حقل <code>alpha</code> وكل وسيط يأخذ 0.0–1.0،
+    بالوحدات نفسها التي يأخذها <code>Color.a</code> و<code>modulate.a</code>، والقيمة السالبة تعني
+    «غير مضبوطة». والاستثناء الوحيد ثوابتُ السمة، لأنّ ثابت <code>Theme</code> لا يسع عددًا عشريًّا:
+    فهي والقناة التي تتجاوزها (<code>metric_overrides</code>، وهي تشارك السمة أسماءها ونوعها الصحيح)
+    تُكتب <code>80</code>. ولا شيء غير ذلك.
   </div>
 
   <pre><code># نافذة واحدة فقط — مربع حوار تأكيد يجب ألّا يحجب القتال خلفه
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export، فهي نسبة مئوية
+dialogs.alpha = 0.9                          # حقول @export نسبٌ هي الأخرى
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # حسب النوع — أبقِ HUD معتمًا تقريبًا، لأن نصّه يجلس فوق العالم مباشرةً
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # مربعات الحوار والأوراق تستطيع أن تتنفّس
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # مربعات الحوار والأوراق تستطيع أن تتنفّس
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # يعيد رسم الودجات المفتوحة سلفًا
 
 # المشروع كله — عالم مزدحم يريد لوحاته معتمة من جديد
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # النسبة الناتجة، مثلًا 0.8</code></pre>

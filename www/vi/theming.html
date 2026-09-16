@@ -279,37 +279,39 @@ GoUi.box(GoTheme.BOX_CARD)             # một bản sao của StyleBox</code></
     <thead><tr><th>Thứ tự</th><th>Ở đâu</th><th>Đơn vị</th><th>Tầm với</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>đối số ngay tại lệnh gọi đó — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>tỉ lệ <code>0.0–1.0</code></td><td>một cửa sổ</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>phần trăm <code>0–100</code></td><td>một loại tấm nền, trên toàn dự án</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>tỉ lệ <code>0.0–1.0</code></td><td>một loại tấm nền, trên toàn dự án</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>phần trăm</td><td>những dự án gom mọi số đo về một chỗ</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>phần trăm</td><td>mọi tấm nền cùng một lúc</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>tỉ lệ <code>0.0–1.0</code></td><td>mọi tấm nền cùng một lúc</td></tr>
       <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> của theme</td><td>phần trăm</td><td>điều mà diện mạo quyết định — <b>nguồn chân lý</b></td></tr>
     </tbody>
   </table>
   <p>Không đặt cái nào cả thì giá trị là 100, nên một theme cũ không thay đổi gì hết.</p>
 
   <div class="note">
-    <b>Phần cài đặt nhận phần trăm; code nhận tỉ lệ.</b> Khác tầng thì khác đơn vị — một trường trong trình
-    soạn thảo cần số nguyên (một hằng số <code>Theme</code> không giữ được số thực), còn alpha của màu trong
-    StyleBox lại là một tỉ lệ. Viết <code>0.8</code> vào một trường config thì nó bị cắt thành <code>0</code>
-    và <b>tấm nền biến mất</b>. Là <code>80</code> trong phần cài đặt và <code>0.8</code> trong code.
+    <b>Độ đục ở đâu cũng là tỉ lệ — trừ trong theme.</b> Mọi trường và đối số <code>alpha</code> đều nhận
+    0.0–1.0, cùng đơn vị với <code>Color.a</code> và <code>modulate.a</code>, còn giá trị âm nghĩa là "chưa
+    đặt". Ngoại lệ duy nhất là các hằng số của theme, bởi một hằng số <code>Theme</code> không giữ được số
+    thực: những thứ đó và kênh ghi đè lên chúng (<code>metric_overrides</code>, vốn dùng chung tên gọi và
+    kiểu số nguyên với theme) được viết là <code>80</code>. Ngoài ra không còn chỗ nào nữa.
   </div>
 
   <pre><code># Chỉ một cửa sổ — hộp thoại xác nhận không được che mất trận đánh phía sau nó
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export, nên là phần trăm
+dialogs.alpha = 0.9                          # trường @export cũng là tỉ lệ
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # Theo từng loại — giữ HUD gần như đặc, vì chữ của nó nằm thẳng trên thế giới
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # hộp thoại và bảng trượt có thể thoáng hơn
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # hộp thoại và bảng trượt có thể thoáng hơn
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # vẽ lại các widget đang mở
 
 # Cả dự án — một thế giới quá rối mắt thì muốn tấm nền đặc trở lại
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # tỉ lệ đã tính xong, ví dụ 0.8</code></pre>

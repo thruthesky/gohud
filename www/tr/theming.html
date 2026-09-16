@@ -281,37 +281,39 @@ GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
     <thead><tr><th>Sıra</th><th>Nerede</th><th>Birim</th><th>Kapsam</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>o çağrıdaki argüman — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>oran <code>0.0–1.0</code></td><td>tek bir pencere</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>yüzde <code>0–100</code></td><td>proje genelinde tek bir panel türü</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>oran <code>0.0–1.0</code></td><td>proje genelinde tek bir panel türü</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>yüzde</td><td>bütün ölçüleri tek yerde tutan projeler</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>yüzde</td><td>bütün paneller birden</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>oran <code>0.0–1.0</code></td><td>bütün paneller birden</td></tr>
       <tr><td>⑤</td><td>temanın <code>GoHud/constants/&lt;kind&gt;_alpha</code> değeri</td><td>yüzde</td><td>görünüşün kararı — <b>doğrunun kaynağı</b></td></tr>
     </tbody>
   </table>
   <p>Hiçbiri ayarlanmamışsa değer 100'dür; yani eski bir temada hiçbir şey değişmez.</p>
 
   <div class="note">
-    <b>Ayarlar yüzde alır; kod oran alır.</b> Farklı katmanlar, farklı birimler — bir düzenleyici alanı tam
-    sayı ister (bir <code>Theme</code> sabiti float tutamaz), bir StyleBox renginin alfası ise orandır. Bir
-    yapılandırma alanına <code>0.8</code> yazmak onu <code>0</code>'a kırpar ve <b>panel gözden kaybolur</b>.
-    Ayarlarda <code>80</code>, kodda <code>0.8</code>.
+    <b>Opaklık her yerde bir orandır — tema dışında.</b> Her <code>alpha</code> alanı ve argümanı 0.0–1.0
+    alır; <code>Color.a</code> ve <code>modulate.a</code> ile aynı birim, negatif bir değer ise
+    "ayarlanmadı" demektir. Tek istisna temanın sabitleridir, çünkü bir <code>Theme</code> sabiti float
+    tutamaz: bunlar ve onları geçersiz kılan kanal (temanın adlarını ve tam sayı türünü paylaşan
+    <code>metric_overrides</code>) <code>80</code> biçiminde yazılır. Başka hiçbir şey öyle yazılmaz.
   </div>
 
   <pre><code># Yalnızca tek bir pencere — arkasındaki dövüşü gizlememesi gereken bir onay diyaloğu
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export, yani yüzde
+dialogs.alpha = 0.9                          # @export alanları da orandır
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # Tür bazında — HUD'u neredeyse dolu tutun, çünkü yazısı doğrudan dünyanın üstünde durur
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # diyaloglar ve sayfalar nefes alabilir
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # diyaloglar ve sayfalar nefes alabilir
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # zaten açık olan widget'ları yeniden çizer
 
 # Bütün proje — kalabalık bir dünya panellerini yeniden dolu ister
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # çözümlenmiş oran, örneğin 0.8</code></pre>

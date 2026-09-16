@@ -278,37 +278,39 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
     <thead><tr><th>順</th><th>どこ</th><th>単位</th><th>及ぶ範囲</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>その呼び出しの引数 — <code>surface.alpha</code>、<code>GoStyle.card(…, alpha)</code></td><td>比率 <code>0.0–1.0</code></td><td>1つのウィンドウ</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>パーセント <code>0–100</code></td><td>1種類のパネル、プロジェクト全体で</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>比率 <code>0.0–1.0</code></td><td>1種類のパネル、プロジェクト全体で</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>パーセント</td><td>寸法をすべて1か所にまとめているプロジェクト</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>パーセント</td><td>すべてのパネルを一度に</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>比率 <code>0.0–1.0</code></td><td>すべてのパネルを一度に</td></tr>
       <tr><td>⑤</td><td>テーマの <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>パーセント</td><td>見た目が決めること — <b>大もとはここだ</b></td></tr>
     </tbody>
   </table>
   <p>どれも設定しなければ値は 100 だ。だから古いテーマは何も変わらない。</p>
 
   <div class="note">
-    <b>設定はパーセント、コードは比率。</b> 層が違えば単位も違う — エディタのフィールドには整数が要る
-    （<code>Theme</code> の定数は小数を持てない）のに対し、StyleBox の色のアルファは比率だ。設定の
-    フィールドに <code>0.8</code> と書けば <code>0</code> に切り捨てられ、<b>パネルは消える</b>。
-    設定では <code>80</code>、コードでは <code>0.8</code> だ。
+    <b>不透明度はどこでも比率だ — テーマの中だけが例外だ。</b> <code>alpha</code> という名のフィールドも
+    引数も、すべて 0.0–1.0 を取る。<code>Color.a</code> や <code>modulate.a</code> と同じ単位で、負の値は
+    「設定なし」を意味する。唯一の例外はテーマの定数だ。<code>Theme</code> の定数は小数を持てないからで、
+    その定数と、それを上書きする経路（テーマと同じ名前と整数型を共有する
+    <code>metric_overrides</code>）だけが <code>80</code> と書かれる。ほかはどこもそうではない。
   </div>
 
   <pre><code># 1つのウィンドウだけ — 背後の戦いを隠してはならない確認ダイアログ
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export なのでパーセント
+dialogs.alpha = 0.9                          # @export のフィールドも比率だ
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # 種類ごと — HUD はほぼ不透明に保つ。その文字は世界の上に直接載るからだ
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # ダイアログとシートは息をつける
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # ダイアログとシートは息をつける
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # すでに開いているウィジェットを描き直す
 
 # プロジェクト全体 — 情報の多い世界では、パネルを不透明に戻したくなる
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 解決された比率。たとえば 0.8</code></pre>

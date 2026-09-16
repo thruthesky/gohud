@@ -279,37 +279,40 @@ GoUi.box(GoTheme.BOX_CARD)             # a copy of a StyleBox</code></pre>
     <thead><tr><th>Order</th><th>Where</th><th>Unit</th><th>Reach</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>the argument at that call — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>ratio <code>0.0–1.0</code></td><td>one window</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>percent <code>0–100</code></td><td>one kind of panel, project-wide</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>ratio <code>0.0–1.0</code></td><td>one kind of panel, project-wide</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>percent</td><td>projects that keep every measurement in one place</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>percent</td><td>every panel at once</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>ratio <code>0.0–1.0</code></td><td>every panel at once</td></tr>
       <tr><td>⑤</td><td>the theme's <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>percent</td><td>what the look decides — <b>the source of truth</b></td></tr>
     </tbody>
   </table>
   <p>With none of them set the value is 100, so nothing about an older theme changes.</p>
 
   <div class="note">
-    <b>Settings take a percentage; code takes a ratio.</b> Different layers, different units — an editor
-    field needs an integer (a <code>Theme</code> constant cannot hold a float) while a StyleBox colour's
-    alpha is a ratio. Writing <code>0.8</code> in a config field truncates it to <code>0</code> and
-    <b>the panel disappears</b>. It is <code>80</code> in settings and <code>0.8</code> in code.
+    <b>Opacity is a ratio everywhere — except in the theme.</b> Every <code>alpha</code> field and
+    argument takes 0.0–1.0, the same units as <code>Color.a</code> and <code>modulate.a</code>, and a
+    negative value means "not set". The one exception is the theme's constants, because a
+    <code>Theme</code> constant cannot hold a float: those and the channel that overrides them
+    (<code>metric_overrides</code>, which shares the theme's names and integer type) are written as
+    <code>80</code>. Nothing else is.
   </div>
 
   <pre><code># One window only — a confirm dialog that must not hide the fight behind it
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export, so a percent
+dialogs.alpha = 0.9                          # @export fields are ratios too
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # Per kind — keep the HUD nearly solid, because its text sits straight over the world
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # dialogs and sheets can breathe
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # dialogs and sheets can breathe
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # redraws widgets that are already open
 
 # The whole project — a busy world wants its panels back to solid
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # the resolved ratio, e.g. 0.8</code></pre>

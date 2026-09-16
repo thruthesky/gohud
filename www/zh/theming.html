@@ -273,36 +273,38 @@ GoUi.box(GoTheme.BOX_CARD)             # 一份 StyleBox 的副本</code></pre>
     <thead><tr><th>顺序</th><th>写在哪里</th><th>单位</th><th>影响范围</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>调用时传进去的参数 —— <code>surface.alpha</code>、<code>GoStyle.card(…, alpha)</code></td><td>比例 <code>0.0–1.0</code></td><td>一个窗口</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>百分数 <code>0–100</code></td><td>整个项目里的某一类面板</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>比例 <code>0.0–1.0</code></td><td>整个项目里的某一类面板</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>百分数</td><td>把所有尺寸集中放在一处的项目</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>百分数</td><td>一次管住所有面板</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>比例 <code>0.0–1.0</code></td><td>一次管住所有面板</td></tr>
       <tr><td>⑤</td><td>主题里的 <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>百分数</td><td>这套外观自己的决定 —— <b>事实来源</b></td></tr>
     </tbody>
   </table>
   <p>五层一个都没设的时候，值就是 100，所以旧主题不会有任何变化。</p>
 
   <div class="note">
-    <b>设置里给百分数，代码里给比例。</b> 层不一样，单位也不一样 —— 编辑器里的字段要整数（<code>Theme</code>
-    常量存不了浮点数），而 StyleBox 颜色的 alpha 是比例。在配置字段里写 <code>0.8</code>，它会被截断成
-    <code>0</code>，<b>面板就消失了</b>。设置里是 <code>80</code>，代码里是 <code>0.8</code>。
+    <b>不透明度处处都是比例 —— 只有主题例外。</b> 每一个 <code>alpha</code> 字段和参数都取 0.0–1.0，
+    跟 <code>Color.a</code>、<code>modulate.a</code> 是同一套单位，负数表示“没设”。唯一的例外是主题里的常量，
+    因为 <code>Theme</code> 常量存不了浮点数：它们，以及覆盖它们的那一层（<code>metric_overrides</code>，
+    它和主题共用同一批名字、同样的整数类型），写成 <code>80</code>。别的地方都不是。
   </div>
 
   <pre><code># 只作用于一个窗口 —— 这个确认框不能挡住背后的战斗
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export，所以是百分数
+dialogs.alpha = 0.9                          # @export 字段也是比例
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # 按类别 —— HUD 几乎保持不透明，因为它的文字直接压在世界上
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # 对话框和底部页面可以透透气
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # 对话框和底部页面可以透透气
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # 重画已经打开的控件
 
 # 整个项目 —— 画面太热闹的世界会想把面板调回不透明
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 解析之后的比例，例如 0.8</code></pre>

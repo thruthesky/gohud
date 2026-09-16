@@ -279,37 +279,40 @@ GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
     <thead><tr><th>Urutan</th><th>Di mana</th><th>Satuan</th><th>Jangkauan</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>argumen pada pemanggilan itu — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>rasio <code>0.0–1.0</code></td><td>satu jendela</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>persen <code>0–100</code></td><td>satu jenis panel, seluruh proyek</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>rasio <code>0.0–1.0</code></td><td>satu jenis panel, seluruh proyek</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>persen</td><td>proyek yang menyimpan setiap ukuran di satu tempat</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>persen</td><td>semua panel sekaligus</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>rasio <code>0.0–1.0</code></td><td>semua panel sekaligus</td></tr>
       <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> milik temanya</td><td>persen</td><td>apa yang diputuskan tampilannya — <b>sumber kebenarannya</b></td></tr>
     </tbody>
   </table>
   <p>Tanpa satu pun dari itu disetel, nilainya 100, jadi tak ada yang berubah pada tema lama.</p>
 
   <div class="note">
-    <b>Setelan memakai persentase; kode memakai rasio.</b> Lapis berbeda, satuan berbeda — sebuah kolom di
-    editor butuh bilangan bulat (sebuah konstanta <code>Theme</code> tidak bisa memuat float) sementara alfa warna
-    sebuah StyleBox adalah rasio. Menulis <code>0.8</code> di kolom konfigurasi akan memangkasnya menjadi <code>0</code> dan
-    <b>panelnya lenyap</b>. Jadi <code>80</code> di setelan dan <code>0.8</code> di kode.
+    <b>Opasitas adalah rasio di mana-mana — kecuali di dalam temanya.</b> Setiap kolom dan argumen
+    <code>alpha</code> menerima 0.0–1.0, satuan yang sama dengan <code>Color.a</code> dan <code>modulate.a</code>,
+    dan nilai negatif berarti "tidak disetel". Satu-satunya pengecualian adalah konstanta milik temanya, karena
+    sebuah konstanta <code>Theme</code> tidak bisa memuat float: konstanta itu dan kanal yang menimpanya
+    (<code>metric_overrides</code>, yang memakai nama dan tipe bilangan bulat yang sama dengan temanya) ditulis
+    sebagai <code>80</code>. Selain itu tidak ada.
   </div>
 
   <pre><code># Satu jendela saja — dialog konfirmasi yang tak boleh menutupi pertarungan di belakangnya
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export, jadi sebuah persen
+dialogs.alpha = 0.9                          # kolom @export pun rasio
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # Per jenis — jaga HUD tetap nyaris pekat, karena teksnya duduk langsung di atas dunianya
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # dialog dan lembar bisa bernapas
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # dialog dan lembar bisa bernapas
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # menggambar ulang widget yang sudah terbuka
 
 # Seluruh proyek — dunia yang ramai ingin panelnya kembali pekat
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # rasio hasilnya, mis. 0.8</code></pre>

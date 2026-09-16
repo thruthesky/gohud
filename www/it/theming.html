@@ -279,37 +279,40 @@ GoUi.box(GoTheme.BOX_CARD)             # una copia di uno StyleBox</code></pre>
     <thead><tr><th>Ordine</th><th>Dove</th><th>Unità</th><th>Portata</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>l'argomento in quella chiamata — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>rapporto <code>0.0–1.0</code></td><td>una sola finestra</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>percentuale <code>0–100</code></td><td>un tipo di pannello, in tutto il progetto</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>rapporto <code>0.0–1.0</code></td><td>un tipo di pannello, in tutto il progetto</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>percentuale</td><td>progetti che tengono tutte le misure in un unico posto</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>percentuale</td><td>tutti i pannelli in una volta sola</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>rapporto <code>0.0–1.0</code></td><td>tutti i pannelli in una volta sola</td></tr>
       <tr><td>⑤</td><td>il <code>GoHud/constants/&lt;kind&gt;_alpha</code> del tema</td><td>percentuale</td><td>quel che decide l'aspetto — <b>la fonte di verità</b></td></tr>
     </tbody>
   </table>
   <p>Se non ne è impostato nessuno il valore è 100, quindi in un tema più vecchio non cambia nulla.</p>
 
   <div class="note">
-    <b>Le impostazioni vogliono una percentuale; il codice vuole un rapporto.</b> Livelli diversi, unità diverse — un campo
-    dell'editor ha bisogno di un intero (una costante di <code>Theme</code> non può contenere un float) mentre l'alpha del
-    colore di uno StyleBox è un rapporto. Scrivere <code>0.8</code> in un campo di configurazione lo tronca a <code>0</code> e
-    <b>il pannello sparisce</b>. È <code>80</code> nelle impostazioni e <code>0.8</code> nel codice.
+    <b>L'opacità è un rapporto ovunque — tranne che nel tema.</b> Ogni campo e ogni argomento
+    <code>alpha</code> vuole 0.0–1.0, le stesse unità di <code>Color.a</code> e <code>modulate.a</code>, e un
+    valore negativo significa "non impostato". L'unica eccezione sono le costanti del tema, perché una
+    costante di <code>Theme</code> non può contenere un float: quelle e il canale che le sovrascrive
+    (<code>metric_overrides</code>, che ne condivide i nomi e il tipo intero) si scrivono come
+    <code>80</code>. Nient'altro.
   </div>
 
   <pre><code># Una sola finestra — una richiesta di conferma che non deve nascondere il combattimento dietro di sé
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export, quindi una percentuale
+dialogs.alpha = 0.9                          # anche i campi @export sono rapporti
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # Per tipo — tieni l'HUD quasi opaco, perché il suo testo sta direttamente sopra il mondo
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # finestre di dialogo e sheet possono respirare
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # finestre di dialogo e sheet possono respirare
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # ridisegna i widget già aperti
 
 # Tutto il progetto — un mondo affollato rivuole i suoi pannelli opachi
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # il rapporto risolto, ad es. 0.8</code></pre>

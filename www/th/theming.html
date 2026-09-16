@@ -277,37 +277,39 @@ GoUi.box(GoTheme.BOX_CARD)             # สำเนาของ StyleBox ห�
     <thead><tr><th>ลำดับ</th><th>อยู่ที่ไหน</th><th>หน่วย</th><th>มีผลถึงไหน</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>อาร์กิวเมนต์ ณ จุดที่เรียก — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>อัตราส่วน <code>0.0–1.0</code></td><td>หน้าต่างเดียว</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>เปอร์เซ็นต์ <code>0–100</code></td><td>พาเนลชนิดเดียว ทั่วทั้งโปรเจกต์</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>อัตราส่วน <code>0.0–1.0</code></td><td>พาเนลชนิดเดียว ทั่วทั้งโปรเจกต์</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>เปอร์เซ็นต์</td><td>โปรเจกต์ที่เก็บค่าขนาดทุกตัวไว้ที่เดียว</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>เปอร์เซ็นต์</td><td>พาเนลทุกอันพร้อมกัน</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>อัตราส่วน <code>0.0–1.0</code></td><td>พาเนลทุกอันพร้อมกัน</td></tr>
       <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> ของธีม</td><td>เปอร์เซ็นต์</td><td>สิ่งที่ลุคเป็นผู้กำหนด — <b>แหล่งความจริง</b></td></tr>
     </tbody>
   </table>
   <p>ถ้าไม่ได้ตั้งสักชั้นเลย ค่าจะเป็น 100 ธีมเก่าจึงไม่มีอะไรเปลี่ยน</p>
 
   <div class="note">
-    <b>การตั้งค่ารับเป็นเปอร์เซ็นต์ โค้ดรับเป็นอัตราส่วน</b> คนละชั้น คนละหน่วย — ช่องในเอดิเตอร์ต้องการ
-    จำนวนเต็ม (ค่าคงที่ของ <code>Theme</code> เก็บทศนิยมไม่ได้) ส่วนอัลฟาของสีใน StyleBox เป็นอัตราส่วน
-    เขียน <code>0.8</code> ลงในช่องคอนฟิกจะถูกตัดเหลือ <code>0</code> แล้ว
-    <b>พาเนลจะหายไป</b> ในการตั้งค่าคือ <code>80</code> ในโค้ดคือ <code>0.8</code>
+    <b>ความทึบเป็นอัตราส่วนทุกที่ — ยกเว้นในธีม</b> ช่อง <code>alpha</code> และอาร์กิวเมนต์ทุกตัว
+    รับ 0.0–1.0 หน่วยเดียวกับ <code>Color.a</code> และ <code>modulate.a</code> และค่าติดลบ
+    หมายถึง "ไม่ได้ตั้ง" ข้อยกเว้นเดียวคือค่าคงที่ของธีม เพราะค่าคงที่ของ <code>Theme</code>
+    เก็บทศนิยมไม่ได้: ค่าเหล่านั้นกับช่องทางที่เขียนทับมัน (<code>metric_overrides</code>
+    ซึ่งใช้ชื่อและชนิดจำนวนเต็มร่วมกับธีม) เขียนเป็น <code>80</code> นอกนั้นไม่มีอะไรเขียนแบบนั้นอีก
   </div>
 
   <pre><code># หน้าต่างเดียวเท่านั้น — ไดอะล็อกยืนยันที่ต้องไม่บังการต่อสู้ที่อยู่ข้างหลัง
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export จึงเป็นเปอร์เซ็นต์
+dialogs.alpha = 0.9                          # ช่อง @export ก็เป็นอัตราส่วนเช่นกัน
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # แยกตามชนิด — ให้ HUD เกือบทึบตัน เพราะตัวอักษรของมันวางทับโลกตรง ๆ
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # ไดอะล็อกกับชีตหายใจได้
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # ไดอะล็อกกับชีตหายใจได้
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # วาดวิดเจ็ตที่เปิดอยู่แล้วใหม่
 
 # ทั้งโปรเจกต์ — โลกที่รกตาอยากได้พาเนลทึบตันกลับคืน
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # อัตราส่วนที่คำนวณแล้ว เช่น 0.8</code></pre>

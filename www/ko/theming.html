@@ -273,37 +273,39 @@ GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
     <thead><tr><th>순서</th><th>어디에</th><th>단위</th><th>미치는 범위</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>그 호출의 인자 — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>비율 <code>0.0–1.0</code></td><td>창 하나</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>퍼센트 <code>0–100</code></td><td>판 한 종류, 프로젝트 전체</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>비율 <code>0.0–1.0</code></td><td>판 한 종류, 프로젝트 전체</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>퍼센트</td><td>치수를 한곳에 모아 두는 프로젝트</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>퍼센트</td><td>모든 판을 한꺼번에</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>비율 <code>0.0–1.0</code></td><td>모든 판을 한꺼번에</td></tr>
       <tr><td>⑤</td><td>테마의 <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>퍼센트</td><td>생김새가 정하는 값 — <b>정본</b></td></tr>
     </tbody>
   </table>
   <p>하나도 정하지 않으면 값은 100 이다. 그래서 예전 테마는 달라지는 것이 없다.</p>
 
   <div class="note">
-    <b>설정은 퍼센트로, 코드는 비율로 받는다.</b> 층이 다르니 단위도 다르다 — 에디터 칸은 정수여야 하고
-    (<code>Theme</code> 상수는 실수를 담지 못한다), StyleBox 색의 알파는 비율이다. 설정 칸에
-    <code>0.8</code> 을 적으면 <code>0</code> 으로 잘려 <b>판이 사라진다</b>. 설정에서는 <code>80</code>,
-    코드에서는 <code>0.8</code> 이다.
+    <b>불투명도는 어디서나 비율이다 — 테마만 빼고.</b> 모든 <code>alpha</code> 칸과 인자는 0.0–1.0 을
+    받는다. <code>Color.a</code>·<code>modulate.a</code> 와 같은 단위이고, 음수는 "정하지 않았다" 는
+    뜻이다. 예외는 테마의 상수뿐이다 — <code>Theme</code> 상수는 실수를 담지 못하기 때문이다. 그 상수와
+    그것을 덮어쓰는 통로(<code>metric_overrides</code> — 테마와 이름도 정수 타입도 같이 쓴다)만
+    <code>80</code> 처럼 적는다. 그 밖에는 없다.
   </div>
 
   <pre><code># 창 하나만 — 뒤의 전투를 가리면 안 되는 확인창
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export 라서 퍼센트
+dialogs.alpha = 0.9                          # @export 칸도 비율이다
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # 종류별 — HUD 는 글자가 세계 위에 바로 얹히므로 거의 꽉 채워 둔다
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # 확인창과 시트는 숨 쉴 여유를 준다
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # 확인창과 시트는 숨 쉴 여유를 준다
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # 이미 열려 있는 위젯을 다시 그린다
 
 # 프로젝트 전체 — 화면이 바쁜 게임은 판을 다시 꽉 채우고 싶어 한다
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 계산이 끝난 비율, 예를 들어 0.8</code></pre>

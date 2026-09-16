@@ -279,37 +279,40 @@ GoUi.box(GoTheme.BOX_CARD)             # копія StyleBox</code></pre>
     <thead><tr><th>Порядок</th><th>Де</th><th>Одиниця</th><th>Охоплення</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>аргумент у самому виклику — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>частка <code>0.0–1.0</code></td><td>одне вікно</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>відсоток <code>0–100</code></td><td>один вид панелі, на весь проєкт</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>частка <code>0.0–1.0</code></td><td>один вид панелі, на весь проєкт</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>відсоток</td><td>проєкти, які тримають усі розміри в одному місці</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>відсоток</td><td>усі панелі відразу</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>частка <code>0.0–1.0</code></td><td>усі панелі відразу</td></tr>
       <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> у темі</td><td>відсоток</td><td>те, що вирішує образ, — <b>джерело правди</b></td></tr>
     </tbody>
   </table>
   <p>Якщо не задано жодного з них, значення дорівнює 100, тож у старішій темі не змінюється нічого.</p>
 
   <div class="note">
-    <b>Налаштування беруть відсоток; код бере частку.</b> Різні шари — різні одиниці: поле
-    редактора потребує цілого числа (константа <code>Theme</code> не вміє тримати дробове), а альфа кольору
-    в StyleBox — це частка. Написавши <code>0.8</code> у полі конфігурації, ви обріжете його до <code>0</code>, і
-    <b>панель зникне</b>. У налаштуваннях це <code>80</code>, у коді — <code>0.8</code>.
+    <b>Непрозорість усюди частка — окрім теми.</b> Кожне поле <code>alpha</code> й кожен
+    аргумент беруть 0.0–1.0, ті самі одиниці, що <code>Color.a</code> та <code>modulate.a</code>, а
+    від'ємне значення означає «не задано». Єдиний виняток — константи теми, бо константа
+    <code>Theme</code> не вміє тримати дробове: їх і той канал, що їх заміщує
+    (<code>metric_overrides</code>, який поділяє з темою її назви та цілий тип), пишуть як
+    <code>80</code>. Більше ніде.
   </div>
 
   <pre><code># Лише одне вікно — діалог підтвердження, який не має ховати бій за собою
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export, тобто відсоток
+dialogs.alpha = 0.9                          # поля @export теж частки
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # За видом — HUD лишаємо майже щільним, бо його текст лежить просто над світом
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # діалоги та аркуші можуть дихати
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # діалоги та аркуші можуть дихати
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # перемальовує вже відкриті віджети
 
 # Весь проєкт — насичений світ хоче, щоб його панелі знову стали щільними
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # обчислена частка, напр. 0.8</code></pre>

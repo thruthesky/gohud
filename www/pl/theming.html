@@ -279,37 +279,39 @@ GoUi.box(GoTheme.BOX_CARD)             # kopia StyleBoxa</code></pre>
     <thead><tr><th>Kolejność</th><th>Gdzie</th><th>Jednostka</th><th>Zasięg</th></tr></thead>
     <tbody>
       <tr><td>①</td><td>argument przy tym wywołaniu — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>ułamek <code>0.0–1.0</code></td><td>jedno okno</td></tr>
-      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>procent <code>0–100</code></td><td>jeden rodzaj panelu, w całym projekcie</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>ułamek <code>0.0–1.0</code></td><td>jeden rodzaj panelu, w całym projekcie</td></tr>
       <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>procent</td><td>projekty, które trzymają wszystkie wymiary w jednym miejscu</td></tr>
-      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>procent</td><td>wszystkie panele naraz</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>ułamek <code>0.0–1.0</code></td><td>wszystkie panele naraz</td></tr>
       <tr><td>⑤</td><td>motywowe <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>procent</td><td>to, co rozstrzyga wygląd — <b>źródło prawdy</b></td></tr>
     </tbody>
   </table>
   <p>Gdy nie ustawiono żadnej z nich, wartość wynosi 100 — więc w starszym motywie nic się nie zmienia.</p>
 
   <div class="note">
-    <b>Ustawienia biorą procent, kod bierze ułamek.</b> Inne warstwy, inne jednostki — pole w edytorze
-    potrzebuje liczby całkowitej (stała <code>Theme</code> nie pomieści liczby zmiennoprzecinkowej), a alfa
-    koloru StyleBoxa jest ułamkiem. Wpisanie <code>0.8</code> w polu konfiguracji obcina je do <code>0</code>
-    i <b>panel znika</b>. W ustawieniach jest <code>80</code>, w kodzie <code>0.8</code>.
+    <b>Krycie wszędzie jest ułamkiem — poza motywem.</b> Każde pole i każdy argument <code>alpha</code>
+    bierze 0.0–1.0, te same jednostki co <code>Color.a</code> i <code>modulate.a</code>, a wartość ujemna
+    znaczy „nie ustawiono”. Jedynym wyjątkiem są stałe motywu, bo stała <code>Theme</code> nie pomieści
+    liczby zmiennoprzecinkowej: one i kanał, który je nadpisuje (<code>metric_overrides</code>, dzielący
+    z motywem nazwy i całkowity typ), zapisuje się jako <code>80</code>. Nic poza tym.
   </div>
 
   <pre><code># Tylko jedno okno — okno potwierdzenia, które nie może zasłonić walki za nim
 surface.alpha = 0.6
 sheet.alpha = 0.7
-dialogs.surface_alpha = 90                   # @export, więc procent
+dialogs.alpha = 0.9                          # pola @export też są ułamkami
+drawer.alpha = 0.7
 GoPopover.open(slot, body, {"alpha": 0.9})
 var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
 
 # Na rodzaj — HUD zostaje prawie lity, bo jego tekst leży wprost na świecie
 GoUi.config.container_alpha_overrides = {
-    GoTheme.BOX_PANEL: 70,                   # okna dialogowe i arkusze mogą odetchnąć
-    GoTheme.BOX_HUD: 95,
+    GoTheme.BOX_PANEL: 0.7,                   # okna dialogowe i arkusze mogą odetchnąć
+    GoTheme.BOX_HUD: 0.95,
 }
 GoUi.refresh()                               # przerysowuje widżety, które są już otwarte
 
 # Cały projekt — zatłoczony świat chce paneli z powrotem litych
-GoUi.config.container_alpha = 100
+GoUi.config.container_alpha = 1.0
 GoUi.refresh()
 
 GoUi.surface_alpha(GoTheme.BOX_PANEL)        # rozstrzygnięty ułamek, np. 0.8</code></pre>
