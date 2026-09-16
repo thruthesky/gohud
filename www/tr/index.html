@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — Godot 4 için HUD ve UI kiti</title>
+<meta name="description" content="Godot 4.6+ için özelleştirilebilir bir HUD ve UI kiti. Yüzen pencereler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, HUD çubukları, hızlı slotlar ve sanal joystick; altı ön ayarla — varsayılan, bilimkurgu ve ortaçağ.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">Neler yapar</a>
+      <a href="#install">Kurulum</a>
+      <a href="#start">Hızlı başlangıç</a>
+      <a href="#presets">Ön ayarlar</a>
+      <a href="#examples">Örnekler</a>
+      <a href="#ai">AI komutları</a>
+      <a href="theming.html">Tema ↗</a>
+      <a href="widgets.html">Widget'lar ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Tek bir kaynakla sürülen oyun arayüzü</h1>
+    <p class="lead">
+      gohud, Godot 4.6 ve sonrası için bir HUD ve UI kitidir. Yüzen pencereler, alt sayfalar, iletişim kutuları,
+      formlar, snackbar'lar, rehber işaretleri, HUD çubukları, hızlı slotlar ve sanal joystick <b>tek bir temayla ve
+      değiştirilebilir tek bir simge setiyle</b> çalışır; güvenli alanı, sanal klavyeyi, RTL'i ve dokunma hedeflerini
+      sizin yerinize halleder. <b>Altı ön ayar</b> — varsayılan, bilimkurgu ve ortaçağ, her biri koyu ve açık —
+      rengi ve biçimi tek satırda değiştirir.
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
+      <span class="badge">Saf GDScript</span>
+      <span class="badge">Autoload gerekmez</span>
+      <span class="badge">MIT</span>
+      <span class="badge">6 ön ayar</span>
+      <span class="badge">21 dil</span>
+      <span class="badge">100 simge dahil</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">Kurulum</a>
+      <a class="btn" href="#presets">Ön ayarları gör</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="showcase">
+  <h2>Bir oyunda nasıl görünüyor</h2>
+  <p class="sub">
+    Ortaçağ ve bilimkurgu ön ayarları — karakter sayfaları, envanterler ve görevler; formlar, ızgaralar ve
+    soru kartları; köşeli paneller ve dokunmatik denetimler. Ön ayarı değiştirmek tek satır koddur.
+  </p>
+  <figure>
+    <img src="../img/showcase-medieval-quests.webp" alt="gohud ortaçağ teması — can, mana ve dayanıklılık çubukları olan bir karakter sayfası, hızlı slotlardan oluşan bir heybe ve dövme altın çerçeveler içinde bir görev günlüğü">
+    <figcaption><b>Ortaçağ</b> — karakter, envanter ve görevler</figcaption>
+  </figure>
+  <div class="shots">
+    <figure>
+      <img src="../img/showcase-medieval-forms.webp" alt="gohud ortaçağ teması — ad alanı, anahtar, onay kutuları ve ses kaydırıcısı olan bir giriş paneli, karolardan oluşan bir ızgara ve Kabul Et ile Reddet seçenekli bir grup daveti soru kartı" loading="lazy">
+      <figcaption><b>Ortaçağ</b> — formlar, ızgaralar ve soru kartları</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/showcase-scifi-touch.webp" alt="gohud bilimkurgu teması — altıgen joystick, Sabit / Takip / Göreli anahtarı ve yuvarlak eylem düğmeleri olan pahlı bir dokunmatik denetim paneli" loading="lazy">
+      <figcaption><b>Bilimkurgu</b> — köşeli paneller ve dokunmatik denetimler</figcaption>
+    </figure>
+  </div>
+  <p><a href="#presets">Altı ön ayarın tamamı ve nasıl değiştirilecekleri →</a></p>
+</section>
+
+<section id="what">
+  <h2>Sizin elinizden aldıkları</h2>
+  <p class="sub">
+    Oyun arayüzünde en çok zamanı yiyen şey bir düğmenin biçimi değildir — cihazdan cihaza birbirinden
+    ayrışan her şeydir. gohud bu ayrışmayı tek bir yerde halleder.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Her ölçü bir token'dır</h3>
+      <p>Boşluklar, köşeler ve yazı boyutları sayı olarak yazılmaz, adıyla çağrılır. Temayı değiştirin, ekranın tamamı onunla birlikte hareket eder.</p>
+    </div>
+    <div class="card">
+      <h3>Görünen boyut ≠ basılabilir boyut</h3>
+      <p>Bir kapatma düğmesi 36dp görünür ama dokunma hedefi 48dp'dir. Sıkışık slotlar üst üste bindiğinde, basışı merkezi daha yakın olan alır.</p>
+    </div>
+    <div class="card">
+      <h3>Çentikler ve klavyeler</h3>
+      <p>HUD parçaları güvenli alanın içinde durur; sanal klavye belirdiğinde bir giriş alanı onun üstüne yükselir.</p>
+    </div>
+    <div class="card">
+      <h3>Geri, tek bir şeyi kapatır</h3>
+      <p>Escape ve Android'in Geri tuşu <b>yalnızca en üstteki yüzeyi</b> kapatır. Üst üste açılmış pencereler birlikte yok olmaz.</p>
+    </div>
+    <div class="card">
+      <h3>Bildirimler girdiyi çalmaz</h3>
+      <p>Bir snackbar'ın üstüne basın, altındaki düğme basışı alır. Odak da elinden alınmaz.</p>
+    </div>
+    <div class="card">
+      <h3>Simgeler adıyla istenir</h3>
+      <p>Widget'lar yalnızca <code>GoIconSet.CLOSE</code> bilir. Seti değiştirin, tek satır koda dokunmadan bütün çizimler değişsin.</p>
+    </div>
+    <div class="card">
+      <h3>Altı görünüm, tek satır</h3>
+      <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu veya dövme ortaçağ çerçeveleri.</p>
+    </div>
+    <div class="card">
+      <h3>Okunaklılık ölçülerek</h3>
+      <p>Her tema WCAG'a göre denetlenir; düğme durumları ve saf beyaz ile saf siyah üstündeki yarı saydam HUD panelleri dahil.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Her şey eklenti etkinleştirilmeden de çalışır.</b> Etkinleştirmek, pencere boyutunu, dp ölçeğini ve
+    klavye yüksekliğini izleyen bir GoRuntime autoload'u ile yapılandırma kaynağı ve ön ayar için proje
+    ayarlarını ekler — kolaylıktır, zorunluluk değil.
+  </div>
+</section>
+
+<section id="install">
+  <h2>Kurulum</h2>
+  <p class="sub">Eklenti klasörünü projenize koyun. Kurulacak başka bir şey yok.</p>
+
+  <h3>Asset Store'dan veya bir sürüm ZIP'inden</h3>
+  <p>Proje kökünüze çıkarın; sonuçta <code>res://addons/gohud/</code> elde etmelisiniz. Hepsi bu. İsterseniz
+    <b>Project → Project Settings → Plugins → gohud</b> yolundan etkinleştirin.</p>
+
+  <h3>git submodule olarak</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # isteğe bağlı: bir etikete veya commit'e sabitle</code></pre>
+  <p>Deponun kökü <b>doğrudan</b> eklenti klasörüdür, yani tam olarak Godot'un beklediği yere iner. Yerinde
+    düzenleyin, <code>addons/gohud</code> içinde commit'leyip push'layın, sonra oyununuzda submodule
+    işaretçisini commit'leyin.</p>
+
+  <div class="note warn">
+    <b>Godot 4.6 veya daha yenisi gerekir.</b> gohud, 4.5'te gelen API'leri kullanır (DPITexture,
+    FoldableContainer, erişilebilirlik özellikleri); dolayısıyla daha eski her sürümde <b>ayrıştırma
+    sırasında hata verir</b>. Desteklenen alt sınır 4.6'dır ve <code>GoUi.MIN_ENGINE</code> içinde kayıtlıdır.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Hızlı başlangıç</h2>
+  <p class="sub">Her widget <code>.new()</code> ve <code>add_child()</code> ile gelir — sahne dosyası yok, autoload yok.</p>
+
+  <h3>Arayüzü kurmadan önce bir görünüm seçin (isteğe bağlı)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # bunu atlarsanız default_dark kullanılır</code></pre>
+
+  <h3><code>await</code> ile beklediğiniz bir onay</h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Kaydı sil", "Bu geri alınamaz."):
+    delete_save()</code></pre>
+  <p><code>destructive = true</code> (son argüman) geçirin; onay düğmesi dolgulu tehlike düğmesi olarak çizilir.</p>
+
+  <h3>Sabit bir arama alanı ve alt bilgisi olan bir alt sayfa</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Envanter")
+sheet.toolbar().add_child(GoStyle.line_edit("Ara…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Kapat", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Sabit satırlar neden kaydırılan gövdeden ayrı.</b> Onay ve iptali <code>body</code> içine koyarsanız
+    uzun bir liste onları ekrandan dışarı iter. <code>footer()</code> her zaman görünürdür.
+  </div>
+
+  <h3>Bir HUD köşesi</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3>HUD'a değmeyen içerik</h3>
+  <pre><code>form.avoid_hud = true                  # görünen her GoHudAnchor'dan uzak dur
+joystick_anchor.reserve_space = false  # …yalnızca parmak altında beliren anchor'lar hariç
+notice_anchor.avoid_peers = true       # bildirim sabit HUD'ın üstünü kapatmak yerine altına yerleşir</code></pre>
+  <p>Her dikdörtgenden, en az alana mal olan yönde kaçınılır — dikey tutulan bir telefonda aşağı doğru,
+    yatayda yana doğru. <a href="widgets.html#hud">HUD kendinden nasıl kaçınıyor →</a></p>
+</section>
+
+<section id="presets">
+  <h2>Görünümü değiştirin — renkleri <em>ve</em> biçimi</h2>
+  <p class="sub">
+    Bir Theme yalnızca motorun çizdiğini yeniden biçimlendirebilir. StyleBoxFlat'in sahip olduğu tek köşe
+    yuvarlak köşedir; joystick, hızlı slotlar ve rehber işareti ise kodla çizilir — dolayısıyla tek başına bir
+    tema onların biçimini asla değiştiremez. gohud bu yüzden <b>ön ayarlarla</b> gelir: tek bir birim olarak
+    seçilen bir tema, bir kaplama ve bir simge seti.
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # tema, kaplama ve simgeler birlikte</code></pre>
+
+  <table>
+    <thead><tr><th>Ön ayar</th><th>Görünüm</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code></td><td>Özgün gohud — yuvarlak köşeler, yumuşak mavi vurgu</td></tr>
+      <tr><td><code>default_light</code></td><td>Aynı biçimler, açık bir palet üstünde</td></tr>
+      <tr><td><code>scifi_dark</code></td><td>Pahlı köşeler, camgöbeği neon kenarlar ve ışıma, altıgen joystick, hedefleme köşelikleri</td></tr>
+      <tr><td><code>scifi_light</code></td><td>Aynı köşeli biçimler, parlak bir teknik çizim paletinde</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>Koyu demir ve deri, antika altın çerçeveler, perçinler, gravür simgeler, Cinzel başlıklar</td></tr>
+      <tr><td><code>medieval_light</code></td><td>Parşömen, mürekkep ve bronz; aynı dövme çerçevelerle</td></tr>
+    </tbody>
+  </table>
+
+  <div class="shots">
+    <figure>
+      <img src="../img/preset-default-dark.png" alt="default_dark ön ayarıyla gohud galerisi — yuvarlak köşeler, mavi vurgu" loading="lazy">
+      <figcaption><code>default_dark</code> — yuvarlak köşeler, yumuşak mavi vurgu</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-default-light.png" alt="default_light ön ayarı — aynı biçimler, açık bir palet üstünde" loading="lazy">
+      <figcaption><code>default_light</code> — aynı biçimler, açık palet</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-dark.png" alt="scifi_dark ön ayarı — pahlı köşeler ve camgöbeği neon" loading="lazy">
+      <figcaption><code>scifi_dark</code> — pahlı köşeler, camgöbeği neon</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-light.png" alt="scifi_light ön ayarı — aynı köşeli biçimler, teknik çizim paletinde" loading="lazy">
+      <figcaption><code>scifi_light</code> — aynı köşeli biçimler, teknik çizim paleti</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Bu dördü <b>aynı galeri ekranıdır</b>. Tek bir satır kod bile farklı değil — yalnızca ön ayarın adı.
+    Düğme köşeleri, anahtar biçimleri, liste satırları ve giriş kenarlıkları hep birlikte hareket eder.
+  </p>
+
+  <h3>Ortaçağ koleksiyonu</h3>
+  <p>
+    <code>medieval_dark</code> demir ve deriyi antika altınla eşleştirir; <code>medieval_light</code> parşömen ve
+    mürekkep kullanır. Menü çerçeveleri bir perçin ve küçük bir köşe süsü taşırken sürekli görünen HUD sessiz
+    kalır; 16 gravür simge nesne adlarını yeniden çizer ve yalnızca başlıklar ile alt başlıklar pakete dahil
+    Cinzel yazı tipini kullanır.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark — karakter sayfası, hızlı slotlardan oluşan heybe ve görev günlüğü" loading="lazy">
+      <figcaption><code>medieval_dark</code> — demir ve deri</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light — aynı karakter, heybe ve görev ekranları parşömen üstünde" loading="lazy">
+      <figcaption><code>medieval_light</code> — parşömen ve mürekkep</figcaption>
+    </figure>
+  </div>
+  <p>Her iki görüntü de standart widget'lardan kurulmuş <code>examples/medieval/medieval.tscn</code> dosyasıdır.
+    <a href="theming.html#medieval">Ortaçağ rehberi ve kendi krallığınızı nasıl kuracağınız →</a></p>
+
+  <h3>Aynı ekran telefonda ve masaüstünde</h3>
+  <p>
+    Galeri görüntüleri dikey tutulan bir telefondur. Aşağıdaki ise <b>aynı kodun</b> 1280×800'deki hali —
+    içerik okunabilir bir genişlikte (480dp) durur ve ortalanır, HUD ise köşelerde kalır. Form, yüzen HUD
+    parçalarının etrafından dolaşır ama <b>onlardan zaten uzaktaysa yerinden kıpırdamaz</b>: yine de itmek
+    geniş bir ekranda içeriği merkezden kaydırırdı.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/desktop-default-dark.png" alt="1280x800'de default_dark — içerik ortalanmış, HUD köşelerde" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/desktop-scifi-dark.png" alt="1280x800'de scifi_dark — pahlı paneller ve neonla aynı yerleşim" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <h3>Aynı sayfa, başka bir görünüm</h3>
+  <div class="shots">
+    <figure>
+      <img src="../img/sheet-default-dark.png" alt="default_dark içinde bir alt sayfa" loading="lazy">
+      <figcaption>Varsayılan — yuvarlak kart, sabit arama satırı ve alt bilgi</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/sheet-scifi-dark.png" alt="scifi_dark içinde bir alt sayfa — üst kenar boyunca neon vurgu kenarı" loading="lazy">
+      <figcaption>Bilimkurgu — üstte vurgu kenarı, kesik köşeler, ışıma</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Birini <b>Project Settings → gohud → Theme → Preset</b> yolundan seçin ya da <code>GoConfig.preset</code>
+    değerini verin. <code>theme</code>, <code>skin</code> veya <code>icons</code> alanlarını açıkça doldurmak
+    ön ayarı <b>geçersiz kılar</b>; böylece bir ön ayarı alıp yalnızca birini değiştirebilirsiniz.
+  </p>
+
+  <div class="note">
+    <b>Yeni bir tema tek bir JSON dosyasıdır.</b> <code>new_theme.py kingdom --from medieval_dark</code>,
+    devralınan her değeri açık açık yazan bir palet oluşturur; <code>make_theme.py kingdom</code> temayı,
+    denetim grafiklerini ve kaplama ayarlarını üretir, ardından ön ayar seçicide belirir.
+    <a href="theming.html#own">Her ayar ve her düğme →</a>
+  </div>
+</section>
+
+<section id="skin">
+  <h2>Kaplamalar — bir Theme'in erişemediği yer</h2>
+  <p class="sub">
+    Bir kaplama; joystick'e, hızlı slot yüzlerine, rehber işareti halkasına, chip'lere, iskeletlere, uyarılara,
+    ayırıcılara ve bölüm başlıklarına sahiptir. Alt sınıfını türetin ve yalnızca değiştirmek istediğinizi ezin.
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>Sınıf</th><th>Yapabildiği biçimler</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Çapraz kesilmiş köşeler (pah), kalınlaştırılmış tek bir vurgu kenarı, dışa doğru ışıma</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>İçeriği kuşatmadan yalnızca köşe işaretleri</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Perçinli, köşesi gravürlü, eğim ışıltılı ve malzeme dokulu dövme bir çerçeve</td></tr>
+    </tbody>
+  </table>
+  <p>Üçü de bir Theme kaynağına serileştirilir — bir temanın yalnızca rengi değil <b>biçimi</b> de
+    değiştirebilmesini sağlayan şey budur. Pakete dahil alt sınıflar <code>GoSkinSciFi</code> ve
+    <code>GoSkinMedieval</code>'dir.</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> her zaman bir <code>StyleBoxFlat</code> döndürür</b>, çünkü çağıran kod onu
+    alıp <code>bg_color</code> veya <code>corner_radius</code> değerini ayarlar. Özel bir biçimin hayatta
+    kalması gerekiyorsa <code>GoStyle.surface()</code> kullanın.
+  </div>
+</section>
+
+<section id="widgets">
+  <h2>Widget'lar</h2>
+  <p class="sub">Parçalar, tek bir tabloda. <a href="widgets.html">Her biri ayrıntılı olarak →</a></p>
+
+  <table>
+    <thead><tr><th>Sınıf</th><th>Temel</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSurface</code></td><td>Control</td><td>Yüzen kart kabuğu — ortada, altta veya bir denetime sabitlenmiş yerleşim, sabit başlık ve alt bilgi, kaydırılan gövde, sürükleyerek yeniden boyutlandırma</td></tr>
+      <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>Alttan yükselen sayfalar; kendi katmanlarında olduklarından HUD'ın üstünde dururlar</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td><code>await</code> ettiğiniz onaylar ve uyarılar; geri alınamayan eylemler için <code>destructive</code></td></tr>
+      <tr><td><code>GoForm</code></td><td style="white-space:nowrap">MarginContainer</td><td>Genişliği sınırlı formlar; sanal klavyeden ve <code>avoid_hud</code> ile HUD'dan kaçınır</td></tr>
+      <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>Dokunmatik kaydırma; kaydırma çubuğu kartın iç boşluğuna gizlenir</td></tr>
+      <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>Ne girdi ne de odak alan bir snackbar</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>Oyunu durdurmayan bir soru</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Control</td><td>Gerçek denetimleri gösteren rehberli bir tur; hedefe basmak turu ilerletir</td></tr>
+      <tr><td><code>GoHudAnchor</code></td><td>Control</td><td>HUD parçalarını güvenli alandaki dokuz noktadan birine sabitler</td></tr>
+      <tr><td><code>GoBar</code></td><td>Control</td><td>Yumuşatılmış geçişlerle can, mana ve deneyim çubukları</td></tr>
+      <tr><td><code>GoSlot</code></td><td>Button</td><td>Bir hızlı slot — simge, adet, bekleme süresi ve kısayol tek bir yüzde</td></tr>
+      <tr><td><code>GoJoystick</code></td><td>Control</td><td>Sabit, takip veya göreli kipte sanal joystick</td></tr>
+      <tr><td><code>GoIconButton</code></td><td>Button</td><td>Küçük görünür, büyük basılır</td></tr>
+      <tr><td><code>GoStyle</code></td><td>static</td><td>Düğmeler, liste satırları, giriş alanları, chip'ler, tablolar, sekmeler ve dahası; hepsi tek ve tutarlı bir yoldan üretilir</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="examples">
+  <h2>Çalıştırabileceğiniz örnekler</h2>
+  <p class="sub">Tek satır yazmadan gohud'u görmenin üç yolu — hiçbiri sunucu ya da autoload istemez.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Örnek</th><th>Nasıl açılır</th><th>Ne gösterir</th></tr></thead>
+    <tbody>
+      <tr><td>Galeri</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Her widget, kurulu her ön ayar için bir seçici ve simge setinin tamamı</td></tr>
+      <tr><td>Ortaçağ</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Bir karakter sayfası, heybe ve görev günlüğü; düğmeler demir ile parşömen arasında geçiş yapar ve nesne ayrıntılarını açar</td></tr>
+      <tr><td>Demo</td><td><code>bash examples/demo/run.sh</code></td><td>Gerçek girdiyle sürülen 15 bölümlük rehberli bir tur ve tek bir widget'ı elle denemek için bir keşif kipi</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>bash examples/demo/run.sh --setup                       # taze bir git checkout'ta bir kez
+bash examples/demo/run.sh                               # Demoyu başlat veya widget'ları keşfet
+bash examples/demo/run.sh -- --explore=surfaces         # doğrudan tek bir widget'ı aç
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # turun 1080p / 60 fps kaydı</code></pre>
+  <p>Demoda <b>C</b> Sinema kipini açıp kapatır, <b>F11</b> tam ekran yapar, <b>Space</b> duraklatır (keşif
+    sırasında ise o anki widget'ı oynatır), oklar bölüm değiştirir ve <b>Escape</b> başlangıca döner.</p>
+  <p>Bir AI kodlama ajanı mı kullanıyorsunuz? <a href="#ai">Üçünü de tek komutla açın →</a></p>
+</section>
+
+<section id="ai">
+  <h2>AI kodlama ajanınızdan açın</h2>
+  <p class="sub">
+    gohud, eğik çizgi komutları olan bir Claude Code eklentisiyle gelir. Birini yazın; galeri ya da demo
+    kendi Godot penceresinde açılsın — başlatılacak bir editör, bulunacak bir sahne yok.
+  </p>
+
+  <h3>Komutları bir kez kurun</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# ardından Claude Code'u yeniden başlatın</code></pre>
+  <p>Codex gibi başka ajanlar da aynı beceriyi kullanabilir: bu depodaki <code>skills/gohud</code> klasörünü
+    ajanın beceri klasörüne kopyalayın.</p>
+
+  <h3><code>/gohud:preview</code> — widget galerisi</h3>
+  <p>Galeriyi açar: her widget, altı ön ayarın tamamı için bir seçici ve simge setinin tamamı. Komutu kendi Godot
+    projenizin içinde yazarsanız <b>sizin</b> <code>addons/gohud</code> klasörünüzü kullanır; proje yoksa eklentiyle
+    gelen kopyayı ya da taze bir klonu kullanır. Kullan-at bir sandbox projesinde çalışır, böylece autoload'larınıza
+    ve içe aktarma önbelleğinize dokunulmaz; pencere siz kapatana kadar açık kalır.</p>
+
+  <h3><code>/gohud:preview demo</code> — 15 bölümlük rehberli tur</h3>
+  <p>Demoyu başlangıç ekranında açar. <b>Demoyu başlat</b> turu gerçek girdiyle oynatır; <b>Widget'ları keşfet</b>
+    tek bir widget'ı elle denemenizi sağlar. <a href="#examples">Örnekler</a> altında listelenen tuşlar burada da
+    çalışır.</p>
+
+  <h3>Diğer pek çok komut</h3>
+  <table>
+    <thead><tr><th>Komut</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>Ortaçağ ön ayarlarında karakter sayfası, heybe ve görev günlüğü</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>Demoyu doğrudan tek bir bölümde açar — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>Galeriyi tek bir ön ayarda açar; 390×844'lük bir telefon penceresi için <code>--phone</code>, herhangi bir boyut için <code>--size 1920x1080</code> ekleyin</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Kendi projenizden bir sahne, o projenin içinde çalıştırılır</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>Her hedef, ön ayar id'si ve demo bölüm anahtarı</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>Pencere açmayan hızlı bir sağlık kontrolü — betik hatalarında başarısız olur</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>Her özellik, gruplanmış, her biri tek satır kodla</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>Tek bir alan derinlemesine — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Ya da sadece sorun.</b> Beceri, ajana gohud'un bütün API'sini öğretir; dolayısıyla düz istekler de işe yarar —
+    <i>"gohud ile bir duraklatma menüsü kur"</i>. <code>~/.claude/skills/gohud</code> içinde düz bir beceri olarak
+    kurulduğunda komutlar boşlukla yazılır: <code>/gohud preview demo</code>, <code>/gohud features</code>.
+    Önizlemeler için <code>PATH</code> üzerinde Godot 4.6 veya daha yenisi gerekir; ya da
+    <code>--godot /path/to/godot</code> geçirin.
+  </div>
+</section>
+
+<section id="readable">
+  <h2>Okunaklılık göz kararı değil, ölçümle</h2>
+  <p class="sub">
+    "Güzel" zevk meselesidir; <b>"okunaklı" ölçülebilir.</b> Soluk gri bir yazı iyi bir monitörde hoş görünür
+    ve gün ışığındaki bir telefonda kaybolur — göz kararı seçmek bunu er ya da geç garanti eder.
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    Her renk çifti ve <b>her düğme durumunun etiketi, üstünde durduğu panele karşı</b> altı temanın hepsinde
+    WCAG'a göre ölçülür. Yarı saydam renkler önce gerçek arka planlarıyla birleştirilir — doğrudan ölçmek
+    ekranda görünenden daha iyi bir oran bildirir.
+  </p>
+  <p>
+    Bu yüzden yazı renkleri <b>seçilmez, türetilir</b>: üretici, paletteki değeri bir başlangıç noktası alır ve
+    inebileceği her yüzeyde eşiği geçene kadar açıklığını iter. Paleti değiştirin, kontrast onu izlesin.
+    <a href="theming.html#contrast">Kurallar ve arkalarındaki tuzaklar →</a>
+  </p>
+</section>
+
+<section id="develop">
+  <h2>Denetimler, sürümler ve bu site</h2>
+  <p class="sub">Tek bir giriş noktası bütün denetimleri çalıştırır; her parça diğerlerinin göremediği bir şeyi görür.</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>Denetim</th><th>Neyi yakalar</th></tr></thead>
+    <tbody>
+      <tr><td>Dört ekran boyutunda <code>run_tests.sh</code></td><td>Widget davranışı ve yerleşimi, RTL konumları, klavye odağı, çalışma anındaki kaplama kontrastı, her ön ayar</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>Barındıran projeye gizli bağımlılıklar; <code>--zip</code> ile yayımlandığı haliyle sürüm, <code>--export</code> ile bir Web derlemesi</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>Her tema dosyasının WCAG kontrastı; düğme durumları ve yarı saydam paneller dahil</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Üretilen temalar paletleriyle uyuşuyor mu; kullan-at bir tema derleniyor ve kontrastı geçiyor mu</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Sürüm artırımları, değişiklik günlüğü taşımaları ve ZIP içeriği, geçici kopyalar üzerinde</td></tr>
+      <tr><td><code>check_site.py</code></td><td>Bu sitenin bağlantıları, çapaları, sayfa dili, sözlüğü ve ayar tabloları</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>Kaydedilen son çalıştırma — 2026-09-13, Godot 4.7.2, macOS, Compatibility oluşturucu.</b> Boş bir projede
+    390×844, 844×390, 768×1024 ve 1280×800 boyutlarında 438 denetimin 438'i; GoRuntime autoload ile yine 438'in
+    438'i; bir Web dışa aktarımı; altı temada sıfır kontrast hatası. Godot 4.6 ile fiziksel Android veya iOS
+    cihazları bu çalıştırmaya dahil değildi.
+  </div>
+
+  <h3>Sürüm yayımlama</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>Başarılı bir çalıştırma <code>plugin.cfg</code>, <code>GoUi.VERSION</code> ve <code>CHANGELOG.md</code>
+    dosyalarını birlikte günceller, Unreleased notlarını tarihli bir girdiye taşır. Başarısız bir çalıştırma
+    hiçbir şeyi değiştirmez ve var olan bir ZIP asla üzerine yazılmaz. ZIP; bu web sitesini, testleri ve
+    araçları dışarıda bırakır.</p>
+
+  <h3>Bu site</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # sözlük ve kaplama ayarı tabloları, kaynaktan üretilir
+python3 addons/gohud/tools/check_site.py           # bağlantılar, çapalar, dil, sözlük, üretilen tablolar
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # her sayfanın masaüstü ve telefon ekran görüntüleri</code></pre>
+  <p>Sayfalar <code>www/</code> içinde düz HTML'dir — kökte İngilizce, <code>ko/</code> içinde Korece. Bir GitHub
+    Actions iş akışı bu klasörü sitenin kökü olarak yayımlar.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud <b>MIT</b> lisanslıdır — 84 varsayılan simge ve 16 ortaçağ simgesi dahil olmak üzere kod ve
+      grafikler. Pakete dahil Cinzel yazı tipi SIL Open Font License 1.1 altındadır.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Değişiklik günlüğü</a></p>
+    <p style="font-size:13px"><b>Altı çizili bir terimin</b> üstüne gelin, dokunun veya odaklanın; ne anlama geldiğini görün.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

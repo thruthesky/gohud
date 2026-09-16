@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主题 — gohud</title>
+<meta name="description" content="gohud 的主题、皮肤和预设如何改变颜色与形状：令牌速查、自定义 StyleBox，以及对比度为什么是推导出来的而不是挑出来的。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">概览</a>
+      <a href="theming.html">主题</a>
+      <a href="widgets.html">控件</a>
+      <a href="#medieval">中世纪</a>
+      <a href="#tokens">令牌</a>
+      <a href="#skin">皮肤</a>
+      <a href="#own">你的预设</a>
+      <a href="#contrast">可读性</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>主题</h1>
+    <p class="lead">
+      gohud 的外观分成<b>三层</b>。可以只改颜色，也可以把形状整个换掉。
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>三层结构</h2>
+  <p class="sub">一套预设把三层打包在一起。留空的字段会回退到默认值。</p>
+
+  <table>
+    <thead><tr><th>层</th><th>决定什么</th><th>怎么改</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>颜色、尺寸、文字缩放，以及<b>引擎自己绘制</b>的一切的形状 —— 按钮面板、输入框、标签页、开关贴图</td>
+        <td>手写一份 <code>.tres</code>，或用 <code>tools/make_theme.py</code> 生成</td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td><b>由代码绘制</b>的一切的形状 —— 摇杆、快捷槽的面、引导标记的光圈、标签片、骨架屏、分隔线、分节标题</td>
+        <td>继承它，只重写你在意的那几个方法</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>按名字取用的图标 —— 84 个默认图形，或者中世纪图标集覆盖其上的 16 个雕刻图形。可以是贴图包，也可以是图标字体；调用方的代码完全一样</td>
+        <td>提供一整套，或者只覆盖其中几个名字</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>为什么光有 Theme 还不够。</b> <code>StyleBoxFlat</code> 只有圆角这一种角 ——
+    把半径设成零得到的是直角，中间没有别的可能。斜切的角、单独一条加粗的边、外发光：引擎一个都画不出来。
+    而摇杆和引导标记是在 <code>_draw()</code> 里画的，主题根本够不着那里。
+  </div>
+</section>
+
+<section id="pick">
+  <h2>挑一套</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>这一行会把主题、皮肤和图标一起换掉。在编辑器里可以用
+    <b>项目设置 → Gohud → Theme → Preset</b>；用设置资源的话就是 <code>GoConfig.preset</code>。</p>
+
+  <h3>保留其中一项由自己决定</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # 图标用自己的，其余全部用预设的</code></pre>
+  <p>显式设置 <code>theme</code>、<code>skin</code> 或 <code>icons</code> 会<b>压过</b>预设。</p>
+
+  <h3>六套内置预设</h3>
+  <table>
+    <thead><tr><th>预设</th><th>面板</th><th>皮肤 · 图标</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>圆角 <code>StyleBoxFlat</code> 面板，配分级的阴影层次；主按钮按下时会有升起和沉下的感觉</td><td><code>GoSkin</code> · 84 个默认图标</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>带霓虹边和辉光的切角 <code>GoStyleBoxCut</code> 面板；焦点标记用 <code>GoStyleBoxBracket</code></td><td><code>GoSkinSciFi</code> —— 六边形摇杆 · 默认图标</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>锻造的 <code>GoStyleBoxMedieval</code> 边框 —— 铁与皮革，或羊皮纸 —— 菜单上带铆钉和角落纹饰</td><td><code>GoSkinMedieval</code> · 覆盖默认集的 16 个雕刻图标</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>中世纪：铁、皮革与羊皮纸</h2>
+  <p><code>medieval_dark</code> 把暗铁和皮革配上仿古金，<code>medieval_light</code>
+    则用羊皮纸和墨水。两者都使用 <code>GoSkinMedieval</code>、现有的控件，以及 16 个带雕刻细节的原创图标；
+    导航类图标回退到原本的图标集。</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# 或者：GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>请在创建 UI 之前选好预设。显式设置的 <code>GoConfig.theme</code>、
+    <code>skin</code> 或 <code>icons</code> 依然优先。打开
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code> 并按 F6，就能看到一套能用的
+    角色面板、行囊和任务日志。里面的按钮可以切换风格变体并打开物品详情。</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="中世纪铁质风格的角色、背包和任务界面" loading="lazy"><figcaption>铁与皮革</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="中世纪羊皮纸风格的角色、背包和任务界面" loading="lazy"><figcaption>羊皮纸与墨水</figcaption></figure>
+  </div>
+  <p>菜单边框带一颗铆钉和小小的角落纹饰；常驻显示的 HUD 则保持素净的边。
+    生命、魔法和耐力分别用红、蓝、橄榄绿填充。Cinzel 只用在标题和副标题上；
+    正文仍沿用宿主项目或默认的字体。随包字体的许可证放在
+    <code>assets/fonts/cinzel/OFL.txt</code>。</p>
+  <p>雕刻图标集重画了 <code>bag</code>、<code>book</code>、<code>box</code>、<code>coin</code>、<code>crown</code>、
+    <code>flag</code>、<code>heart</code>、<code>key</code>、<code>map</code>、<code>potion</code>、<code>shield</code>、
+    <code>star</code>、<code>sword</code> 和 <code>user</code>，另外新增了 <code>scroll</code> 和 <code>seal</code>。
+    其余名字一律回退到默认集，所以 <code>close</code> 和 <code>settings</code> 在任何预设下都保持默认图形。
+    Cinzel 只覆盖拉丁字母；本地化后的标题请通过
+    <code>shape.fonts</code> 指定各自的字体。</p>
+  <div class="note">
+    <b>测试套件对两个变体都检查了什么。</b> 中世纪皮肤确实被选中；菜单和 HUD 面板是锻造边框，且纹饰只出现在菜单上；
+    标题使用 Cinzel 而正文保持继承来的字体；雕刻图标以 <code>DPITexture</code> 导入；
+    真实的快捷槽确实用上了该皮肤；改动一份皮肤副本的旋钮能传到快捷槽而不必碰预设；
+    切回去之后默认和科幻的几何形状能够恢复。
+  </div>
+  <h3>造一个自己的王国</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# 编辑 themes/palettes/kingdom.json，然后：
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# 在 GDScript 里，创建控件之前：
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>JSON 主题可以继承别的 JSON 主题。省略的值沿用父主题的设置；
+    循环继承会被拒绝。生成出来的预设会保留父主题的图标集。</p>
+  <table><thead><tr><th>设置项</th><th>效果</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0：铁 · 1：皮革 · 2：羊皮纸。决定表面的纹路。</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>纹理不透明度。设为 0 得到干净的表面。</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>菜单角落纹饰的大小，以及斜面高光的强度。</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>把 title、subtitle、caption、body 和 button 这几个角色映射到插件内的 res:// 字体文件。省略的角色保持继承来的字体。</td></tr>
+    <tr><td><code>skin.dials</code></td><td>快捷槽圆角、铆钉是否显示、纹理和高光。下面的完整表格列出了每一个旋钮。</td></tr>
+  </tbody></table>
+</section>
+
+<section id="tokens">
+  <h2>令牌</h2>
+  <p class="sub">
+    每一种颜色和尺寸都放在 Theme 的 <code>GoHud</code> 类型下，按名字取用。
+    不写死数字是铁律：换主题的时候，名字会自己跟上。
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # 颜色
+GoUi.metric(GoTheme.GAP)               # 尺寸（dp）
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # 某个文字角色的字号
+GoUi.box(GoTheme.BOX_CARD)             # 一份 StyleBox 的副本</code></pre>
+
+  <h3>颜色</h3>
+  <table>
+    <thead><tr><th>名字</th><th>用在哪里</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>整个画面的底色</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>三层面板 —— 面板、卡片、凸起的单元格</td></tr>
+      <tr><td><code>border</code></td><td>卡片和按钮的边框</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>三级文字 —— 正文、辅助、弱化</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>强调色，以及压在它上面的文字</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>状态<b>文字</b>颜色</td></tr>
+      <tr><td><code>*_fill</code></td><td>同样这几种状态的<b>填充</b>色 —— 用于状态条等大面积区域</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>弹层背后的遮罩、阴影、状态条的底槽</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b><code>*_fill</code> 为什么要存在。</b> 含义相同，要求却相反。<code>warning</code>
+    当文字用时必须够深，才能在浅色背景上读清；当经验条的填充用时又必须够亮，才能引起注意。
+    一个令牌不可能兼顾两者 —— 浅色主题的状态条曾因此变成了褐色。
+    没有 <code>_fill</code> 变体的主题会自动回退到基础名字，所以早于这些令牌的旧主题照样能用。
+  </div>
+
+  <h3>尺寸（dp）</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>文字角色</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> —— 角色命名的是<b>一个字号</b>，
+    而不是一种用途。是“最大的那号字”，不是“标题”。这样一来，即使某个界面拿它派了别的用场，整套字号体系依然成立。
+  </p>
+
+  <h3>类型变体</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="skin">
+  <h2>皮肤 —— Theme 够不着的地方</h2>
+
+  <table>
+    <thead><tr><th>方法</th><th>决定什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>卡片和面板的表面、浮动层，以及压在游戏画面或地图上的胶囊标签</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>标签片的面板，以及<b>压在它上面仍然读得清的文字颜色</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>快捷槽的面和上面的文字</td></tr>
+      <tr><td><code>disc_box</code></td><td>头像或徽标背后的圆形</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>内联提醒、占位骨架、分段控件</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>新手引导圈在目标周围的那个标记</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td><b>直接绘制</b>出来的东西 —— 摇杆和它的指针</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>分隔线和分节标题</td></tr>
+      <tr><td><code>badge_box</code></td><td>快捷槽上的角标 —— 数量和剩余时间</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>状态条填充（当填充色在底槽上达不到 3:1 时加描边）和消息条</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # 控件已经把位置算好了 —— 这里只负责画
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>StyleBoxFlat 画不出来的形状</h3>
+  <table>
+    <thead><tr><th>类</th><th>它画出什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>斜切的角、一条加粗的强调边、外发光</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>只画四角的标记，不把内容围起来</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>锻造边框 —— 铆钉、角落雕花、斜面高光，以及铁、皮革或羊皮纸的纹理</td></tr>
+    </tbody>
+  </table>
+  <p>三者都能像别的 StyleBox 一样序列化进 Theme 资源 —— 正是这一点让主题能够改变形状。</p>
+
+  <div class="note warn">
+    <b>内边距要通过 <code>content_margin_*</code> 给。</b> 在 GDScript 里继承 StyleBox 意味着
+    <code>_get_style_margin()</code> 永远不会被调用（在 Godot 4.7 上实测）。请把内置字段填上，
+    否则内容会紧贴边框。
+  </div>
+</section>
+
+<section id="own">
+  <h2>你自己的预设 —— 一个文件</h2>
+  <p class="sub">
+    从前加一套主题意味着手工改四个地方 —— 生成器的调色板、形状、一份皮肤、一份预设资源。
+    现在一条命令就把它们全部就位。
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # 主题 .tres + 控件贴图
+godot --headless --path . --import                  # 把新贴图导入一次
+GoUi.use_preset(&amp;"neon")                             # 完成 —— 它也会出现在选择器里</code></pre>
+  <p>
+    第一行会写出 <code>themes/palettes/neon.json</code> 和 <code>themes/presets/neon.tres</code>。
+    这份 JSON 会把<b>所继承主题的每一个值</b>都完整列出来，因此它同时也是一份“能改什么”的清单：
+    删掉一个键就沿用父主题的值，写上一个键就覆盖它。预设是通过<b>扫描</b>
+    <code>themes/presets/</code> 找到的，所以不必改任何注册表代码 —— 项目设置里的下拉框也会自动认出它。
+  </p>
+
+  <h3>能改什么 —— 一页看完</h3>
+  <table>
+    <thead><tr><th>位置</th><th>改什么</th><th>怎么写</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>父主题</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … 或者另一份 JSON 主题。省略的键继承它的值；继承成环会失败</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>背景 · 三层表面 · 边框 · 三级文字 · 强调色 · 四种状态色 · 遮罩 · 阴影 · 状态条底槽</td><td><code>"#RRGGBB"</code>，带透明度写成 <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>仅用于填充的鲜艳色 <code>*_vivid</code></td><td>即使文字颜色不得不压暗，状态条也保持饱和 —— 漏写一个，生成器会告诉你</td></tr>
+      <tr data-group="palette"><td>可读性</td><td><b>不需要手工调。</b> 文字、边框、强调色以及压在它上面的文字，都由生成器推到达标为止 —— 你只改强调色，检查照样能过</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code>（圆角） · <code>cut</code>（切角） · <code>medieval</code>（锻造边框）</td></tr>
+      <tr data-group="shape"><td>尺寸</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> —— 令牌会跟着走，所以面板和控件内部的计算永远不会对不上</td></tr>
+      <tr data-group="shape"><td>仅 <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code>（<code>diagonal</code>|<code>all</code>） · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>仅 <code>medieval</code></td><td><code>material</code>（0 铁 · 1 皮革 · 2 羊皮纸） · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> —— 把 <code>title</code>、<code>subtitle</code>、<code>caption</code>、<code>body</code>、<code>button</code> 映射到插件内的 <code>res://</code> 字体文件</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> —— 代码自绘之处（摇杆、快捷槽、角标、引导标记光圈、标签片、分隔线）所属的家族</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> —— 这些地方的<b>数值</b>：快捷槽边框宽度和着色、角标内边距、标签片和提醒的不透明度、摇杆圆环的宽度和不透明度、科幻切角尺寸、辉光与角标记</td><td>父主题的每个值都在 JSON 里写全了。生成器把它们写进 <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> —— <b>完全不碰皮肤代码</b>。只有想改画法本身时才需要跑 <code>--new-skin</code>，它会搭出一个 <code>GoSkin</code> 子类的骨架</td></tr>
+      <tr><td><code>icons</code></td><td>图标集</td><td>指向某个 <code>GoIconSet</code> 资源的 <code>res://</code> 路径 —— 省略时沿用 JSON 父主题的图标集</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>选择器里怎么显示它</td><td>布尔值 · 字符串</td></tr>
+    </tbody>
+  </table>
+
+  <h3>全部旋钮</h3>
+  <p>
+    下面这张表由 <code>tools/make_site.py</code> <b>直接从皮肤脚本的</b>
+    <code>@export</code> 行生成 —— 加一个旋钮或改一个默认值，表格自动跟上。在 JSON 的
+    <code>skin.dials</code> 下就用这些名字。默认值写成 <code>14</code> 的是整数，写成
+    <code>10.0</code> 的是浮点数 —— JSON 里两种写法都行，生成器会转换成脚本里的类型。
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>默认皮肤 <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>旋钮</th><th>默认值</th><th>它设定什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="默认值">0.16</td><td>标签片面板填充的不透明度。</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="默认值">0.45</td><td>标签片面板边缘的不透明度。</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="默认值">0.1</td><td>提醒框的面板向它的状态色偏移多少。</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="默认值">0.24</td><td>冷却进行中的快捷槽面板带多少强调色。</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="默认值">0.08</td><td>空闲状态下快捷槽面板带多少强调色。</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="默认值">2</td><td>冷却进行中的快捷槽边框宽度（dp）。</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="默认值">1</td><td>空闲状态下快捷槽的边框宽度（dp）。</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="默认值">5</td><td>角标（数量、剩余时间）的水平内边距（dp）。</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="默认值">1</td><td>角标的垂直内边距（dp）。</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="默认值">0.6</td><td>角标面板边缘的不透明度。</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="默认值">0.45</td><td>浮动卡片（引导标记、提示卡片）的阴影不透明度。</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="默认值">14</td><td>浮动卡片的阴影模糊半径（dp）。</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="默认值">4</td><td>浮动卡片阴影向下的偏移量（dp）。</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="默认值">10.0</td><td>以发光代替投影的浮动面板（例如科幻切角面板）的辉光扩散距离（dp）。</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="默认值">0.42</td><td>摇杆底盘的不透明度。</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="默认值">0.45</td><td>摇杆圆环的不透明度。</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="默认值">2.0</td><td>摇杆圆环的宽度（dp）。</td></tr>
+    </tbody>
+  </table>
+  <h4>科幻皮肤 <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>旋钮</th><th>默认值</th><th>它设定什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="默认值">7.0</td><td>标签片面板的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="默认值">5.0</td><td>骨架屏面板的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="默认值">8.0</td><td>提醒框的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="默认值">8.0</td><td>分段控件的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="默认值">6.0</td><td>快捷槽面板的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="默认值">0.24</td><td>头像和圆盘的切角 = 直径 × 这个比例。</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="默认值">0.45</td><td>冷却进行中的快捷槽的辉光不透明度。</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="默认值">6.0</td><td>冷却进行中的快捷槽的辉光扩散距离（dp）。</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="默认值">12.0</td><td>引导标记瞄准框的边臂长度（dp）。</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="默认值">2.0</td><td>引导标记瞄准框的线条粗细（dp）。</td></tr>
+    </tbody>
+  </table>
+  <h4>中世纪皮肤 <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>旋钮</th><th>默认值</th><th>它设定什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="默认值">4.0</td><td>中世纪快捷槽边框的圆角半径（dp）。</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="默认值">0.035</td><td>快捷槽内部那层淡淡皮革纹路的不透明度。</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="默认值">1.0</td><td>快捷槽四角金属装饰的缩放。菜单边框用的是 shape.ornament_scale。</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="默认值">0.18</td><td>快捷槽边缘金属高光的强度。</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="默认值">1</td><td>是否在快捷槽上显示小金属铆钉：0 隐藏，1 显示。</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>继承皮肤（可选）</h3>
+  <p>只有主题和形状够不着的东西 —— 摇杆的六边形、快捷槽角标、引导标记的瞄准框 ——
+    才住在皮肤里。继承 <code>GoSkin</code>，只重写那几个方法，再把 JSON 的
+    <code>skin</code> 指向那份资源。只改颜色的主题可以跳过这一步。</p>
+
+  <div class="note">
+    <b>有一项检查在替这个承诺兜底。</b> <code>tools/check_scaffold.sh</code> 每次运行都会造一套一次性主题 ——
+    改掉强调色、把圆角设成 4 —— 并验证生成、令牌传播和对比度全过之后再把它删掉。
+    第一次运行就发现：一套只改了强调色的主题竟有 <b>8 对颜色</b>不达标 ——
+    生成器推高了文字颜色，却原封不动地用了强调色。现在它连强调色和压在上面的文字也一起推。
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>可读性是量出来的</h2>
+  <p class="sub">
+    “好看”是口味问题；<b>“看得清”却可以测量。</b> 灰得发淡的文字在好显示器上没问题，
+    到了白天的手机屏上就消失了 —— 靠眼睛挑颜色，迟早会出这种事。
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>对象</th><th>要求</th></tr></thead>
+    <tbody>
+      <tr><td>正文文字</td><td>4.5 : 1</td></tr>
+      <tr><td>大号文字（24px 及以上）</td><td>3 : 1</td></tr>
+      <tr><td>强调色的边框和图标</td><td>3 : 1</td></tr>
+      <tr><td>装饰性边框</td><td>2 : 1 —— WCAG 的 3:1 规则不适用于纯装饰</td></tr>
+      <tr><td>相邻表面</td><td>1.12 : 1 —— 足以让卡片从背景中区分出来</td></tr>
+    </tbody>
+  </table>
+
+  <h3>同色相文字压在同色相底色上</h3>
+  <p>
+    这个坑在本项目里出现过<b>三次</b> —— 按下状态的按钮（强调色面板配强调色文字）、
+    危险按钮，以及标签片。它在色卡上看着挺好，一测就崩，
+    因为两者色相相同，明度上也就没有差别。
+  </p>
+  <p>
+    所以文字颜色<b>不是手工挑的</b>。主题生成器和 <code>GoSkin</code> 各自只推明度 ——
+    而且只推明度 —— 直到它在文字真正落脚的那块面板上达标为止。色相和饱和度保持不变，
+    因此调色板保留了自己的性格，改动它也不会丢掉对比度。
+  </p>
+
+  <h3>当文字读的颜色和当色块涂的颜色，要求正好相反</h3>
+  <p>
+    在浅色主题上，警告色<b>当文字用</b>时必须压暗才读得清（<code>#96500A</code>）。
+    而状态条的填充要是继承了这个值，经验条就变成<b>褐色</b>了。光靠颜色解决不了：
+    黄色本身就亮，所以哪怕底槽完全不加灰也能过 3:1，而把底槽压暗只会让情况<b>更糟</b>（1.52 → 1.06）。
+  </p>
+  <p>
+    于是把两者分开。<b>颜色保持鲜艳</b> —— 调色板里带有仅用于填充的颜色，例如
+    <code>warning_vivid</code>。<b>对比度交给边缘来扛</b> —— 只要某个填充在自己的底槽上达不到 3:1，
+    <code>GoSkin</code> 就给它画一圈 1dp 的描边，这样“到底满了多少”依然看得清。
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # 当文字读
+    warning_vivid=hexc("F2A007"),   # 涂在状态条上
+)</code></pre>
+  <div class="note">
+    <b>漏写了会被报出来。</b> 少了 <code>*_vivid</code> 时，若填充色算出来偏暗，生成器就会打印
+    <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code>（生成器实际输出的原文，意为“状态条发暗 —— 请在调色板里加上 warning_vivid”）。
+    以前会悄悄劣化的地方，现在会开口说话。
+  </div>
+
+  <h3>浮动面板不可能知道自己背后是什么</h3>
+  <p>
+    HUD 是画<b>在</b>游戏画面之上的 —— 背后可能是雪原，也可能是洞窟。如果它的面板半透明，
+    背后的东西就会透上来，<b>改变面板的颜色</b>，文字对比度也跟着被拖下去。
+    在 82% 不透明度下，深色主题的弱化文字在明亮背景上掉到了 <code>3.74:1</code> —— 低于下限。
+  </p>
+  <p>
+    所以半透明面板一律以<b>纯白和纯黑</b>作为背景来测量；游戏场景能给出的最坏情况也就是这两种了。
+    随包主题的 HUD 面板不透明到足以达标（92%），同时仍保留那种玻璃质感。
+  </p>
+  <p>
+    同理，<b>图标颜色也不写死</b>。快捷槽里的图形原本被硬编码成白色，在浅色主题上量出
+    <code>1.11:1</code> —— 现在它会跟随自己所在的面板，和文字的做法完全一样。
+  </p>
+
+  <div class="note">
+    <b>两个检查器，两段够得着的范围。</b> <code>check_contrast.py</code> 读的是主题文件；
+    皮肤在<b>运行时</b>混出来的颜色（标签片、快捷槽）则由测试套件在 Godot 内部的
+    <code>skin contrast</code> 一节来测量。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">← 概览</a> · <a href="widgets.html">控件 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

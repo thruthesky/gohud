@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temas — gohud</title>
+<meta name="description" content="Cómo los temas, skins y preajustes de gohud cambian el color y la forma: la referencia de tokens, los StyleBox personalizados y cómo el contraste se deriva en vez de elegirse.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Introducción</a>
+      <a href="theming.html">Temas</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="#medieval">Medieval</a>
+      <a href="#tokens">Tokens</a>
+      <a href="#skin">Skins</a>
+      <a href="#own">Tu preajuste</a>
+      <a href="#contrast">Legibilidad</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Temas</h1>
+    <p class="lead">
+      La apariencia de gohud tiene <b>tres capas</b>. Cambia solo los colores, o sustituye las formas por completo.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>Tres capas</h2>
+  <p class="sub">Un preajuste agrupa las tres. Los campos que dejes vacíos recurren a los valores predeterminados.</p>
+
+  <table>
+    <thead><tr><th>Capa</th><th>Decide</th><th>Cómo se cambia</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>Colores, tamaños, escala de texto y la forma de todo <b>lo que dibuja el motor</b> — paneles de botón, campos de entrada, pestañas, gráficos de los interruptores</td>
+        <td>Escribe un <code>.tres</code>, o genera uno con <code>tools/make_theme.py</code></td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td>La forma de todo <b>lo que dibuja el código</b> — el joystick, las caras de las ranuras rápidas, el anillo de la marca guía, los chips, los esqueletos, los separadores, los encabezados de sección</td>
+        <td>Créale una subclase y sobrescribe solo los métodos que te importen</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>Iconos por nombre — 84 dibujos predeterminados, o los 16 dibujos grabados del juego medieval por encima de ellos. Un paquete de texturas o una fuente de iconos; el código que los llama es idéntico en ambos casos</td>
+        <td>Proporciona un juego completo, o sobrescribe solo unos pocos nombres</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Por qué un Theme por sí solo no basta.</b> Redondeada es la única esquina que tiene <code>StyleBoxFlat</code> —
+    pon el radio a cero y obtienes un ángulo recto; no hay nada intermedio. Esquinas cortadas en diagonal,
+    un único borde engrosado, un resplandor exterior: el motor no dibuja ninguno de ellos. Y el joystick y la marca guía
+    se dibujan en <code>_draw()</code>, donde un tema no llega en absoluto.
+  </div>
+</section>
+
+<section id="pick">
+  <h2>Cómo elegir uno</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>Esa única línea cambia el tema, el skin y los iconos. Desde el editor, usa
+    <b>Ajustes del proyecto → Gohud → Theme → Preset</b>; desde un recurso de configuración, <code>GoConfig.preset</code>.</p>
+
+  <h3>Cómo conservar un campo propio</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # tus iconos, y del preajuste todo lo demás</code></pre>
+  <p>Asignar <code>theme</code>, <code>skin</code> o <code>icons</code> de forma explícita <b>tiene prioridad sobre</b> el preajuste.</p>
+
+  <h3>Los seis preajustes incluidos</h3>
+  <table>
+    <thead><tr><th>Preajuste</th><th>Paneles</th><th>Skin · iconos</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>Paneles <code>StyleBoxFlat</code> redondeados sobre una escala graduada de sombras; los botones primarios se elevan y se hunden al pulsarlos</td><td><code>GoSkin</code> · 84 iconos predeterminados</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>Paneles <code>GoStyleBoxCut</code> achaflanados con borde de neón y resplandor; marcas de foco <code>GoStyleBoxBracket</code></td><td><code>GoSkinSciFi</code> — joystick hexagonal · iconos predeterminados</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Marcos <code>GoStyleBoxMedieval</code> forjados — hierro y cuero, o pergamino — con remaches y ornamentos de esquina en los menús</td><td><code>GoSkinMedieval</code> · 16 iconos grabados por encima de los predeterminados</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>Medieval: hierro, cuero y pergamino</h2>
+  <p><code>medieval_dark</code> combina hierro y cuero oscuros con oro antiguo. <code>medieval_light</code>
+    usa pergamino y tinta. Ambos usan <code>GoSkinMedieval</code>, los widgets existentes y 16 iconos
+    originales con detalles de grabado; los iconos de navegación recurren al juego original.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# O bien: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>Elige el preajuste antes de crear tu interfaz. Las sobrescrituras explícitas de <code>GoConfig.theme</code>,
+    <code>skin</code> o <code>icons</code> siguen teniendo prioridad. Abre
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code> y pulsa F6 para ver una hoja de personaje,
+    un zurrón y un diario de misiones en funcionamiento. Sus botones alternan las variantes y abren el detalle de los objetos.</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="Interfaces medievales de hierro para personaje, inventario y misiones" loading="lazy"><figcaption>Hierro y cuero</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="Interfaces medievales de pergamino para personaje, inventario y misiones" loading="lazy"><figcaption>Pergamino y tinta</figcaption></figure>
+  </div>
+  <p>Los marcos de menú llevan un remache y un pequeño ornamento de esquina; el HUD siempre visible mantiene un borde discreto.
+    La vida, el maná y la resistencia usan rellenos rojo, azul y oliva. Cinzel se limita a títulos y subtítulos;
+    el texto del cuerpo conserva la fuente del proyecto anfitrión o la predeterminada. La fuente incluida trae su licencia en
+    <code>assets/fonts/cinzel/OFL.txt</code>.</p>
+  <p>El juego grabado redibuja <code>bag</code>, <code>book</code>, <code>box</code>, <code>coin</code>, <code>crown</code>,
+    <code>flag</code>, <code>heart</code>, <code>key</code>, <code>map</code>, <code>potion</code>, <code>shield</code>,
+    <code>star</code>, <code>sword</code> y <code>user</code>, y añade <code>scroll</code> y <code>seal</code>.
+    Cualquier otro nombre recurre al juego predeterminado, así que <code>close</code> y <code>settings</code> conservan sus dibujos
+    predeterminados en todos los preajustes. Cinzel cubre el alfabeto latino; dale a los encabezados localizados una fuente propia a través de
+    <code>shape.fonts</code>.</p>
+  <div class="note">
+    <b>Qué verifica la batería de pruebas en ambas variantes.</b> Que el skin medieval queda seleccionado; que los paneles de menú y de HUD son marcos
+    forjados, con el ornamento solo en los menús; que los títulos usan Cinzel mientras el texto del cuerpo conserva la fuente heredada; que los iconos
+    grabados se importan como <code>DPITexture</code>; que una ranura rápida real usa el skin; que cambiar los dials de un skin copiado llega
+    a la ranura sin tocar el preajuste; y que al volver atrás se restaura la geometría predeterminada y la de ciencia ficción.
+  </div>
+  <h3>Crea un reino propio</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# Edita themes/palettes/kingdom.json y luego:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# En GDScript, antes de crear los widgets:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>Los temas JSON pueden heredar de otros temas JSON. Los valores omitidos conservan los del padre;
+    la herencia circular se rechaza. El preajuste generado conserva el juego de iconos de su padre.</p>
+  <table><thead><tr><th>Ajuste</th><th>Efecto</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: hierro · 1: cuero · 2: pergamino. Controla las marcas de la superficie.</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>Opacidad de la textura. Usa 0 para una superficie limpia.</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>Tamaño del ornamento de esquina del menú e intensidad del realce biselado.</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>Asigna los roles de título, subtítulo, leyenda, cuerpo y botón a archivos de fuente res:// locales del add-on. Los roles omitidos conservan su fuente heredada.</td></tr>
+    <tr><td><code>skin.dials</code></td><td>Radio de las ranuras rápidas, visibilidad de los remaches, grano y realce. La tabla completa de más abajo enumera cada dial.</td></tr>
+  </tbody></table>
+</section>
+
+<section id="tokens">
+  <h2>Tokens</h2>
+  <p class="sub">
+    Cada color y cada medida viven bajo el tipo <code>GoHud</code> dentro del Theme, y se direccionan por nombre.
+    La regla es no escribir números: los nombres acompañan al tema cuando se cambia.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # color
+GoUi.metric(GoTheme.GAP)               # medida (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # tamaño para un rol de texto
+GoUi.box(GoTheme.BOX_CARD)             # una copia de un StyleBox</code></pre>
+
+  <h3>Colores</h3>
+  <table>
+    <thead><tr><th>Nombre</th><th>Se usa para</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>El fondo de la pantalla</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>Tres capas de panel — panel, tarjeta, celda elevada</td></tr>
+      <tr><td><code>border</code></td><td>Bordes de tarjetas y botones</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>Tres niveles de texto — cuerpo, apoyo, atenuado</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>El acento y el texto que se coloca sobre él</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>Colores de estado para <b>texto</b></td></tr>
+      <tr><td><code>*_fill</code></td><td>Los mismos estados como <b>relleno</b> — barras y otras áreas grandes</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>El velo detrás de los emergentes, las sombras, el carril de la barra</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Por qué existe <code>*_fill</code>.</b> El mismo significado, requisitos opuestos. <code>warning</code>
+    usado como texto debe ser lo bastante oscuro para leerse sobre un fondo claro; usado como relleno de una barra de experiencia
+    debe ser lo bastante brillante para notarse. Un solo token no puede ser ambas cosas — la barra del tema claro salía marrón.
+    Un tema sin la variante <code>_fill</code> recurre automáticamente al nombre base, así que los temas
+    anteriores a estos tokens siguen funcionando.
+  </div>
+
+  <h3>Medidas (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>Roles de texto</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — un rol nombra <b>un tamaño</b>, no un
+    propósito. "El texto más grande", no "el encabezado". Así la escala se mantiene aunque una pantalla lo use
+    para otra cosa.
+  </p>
+
+  <h3>Variaciones de tipo</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="skin">
+  <h2>Skins — allí donde un Theme no llega</h2>
+
+  <table>
+    <thead><tr><th>Método</th><th>Decide</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>Las caras de tarjetas y paneles, las superficies flotantes, las píldoras superpuestas sobre el juego o un mapa</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>El panel de un chip y <b>el color de etiqueta que sigue siendo legible sobre él</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>Las caras de las ranuras rápidas y su texto</td></tr>
+      <tr><td><code>disc_box</code></td><td>El círculo detrás de un avatar o una insignia</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>Alertas en línea, marcadores de posición, controles segmentados</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>La marca que un recorrido guiado dibuja alrededor de su objetivo</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td>Las cosas <b>dibujadas directamente</b> — el joystick y su puntero</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>Separadores y encabezados de sección</td></tr>
+      <tr><td><code>badge_box</code></td><td>Insignias de ranura rápida — cantidad y tiempo restante</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>Rellenos de barra (con contorno cuando un relleno no alcanza 3:1 sobre su carril) y snackbars</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # El widget ya ha calculado las posiciones — aquí solo se dibuja
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>Formas que StyleBoxFlat no puede crear</h3>
+  <table>
+    <thead><tr><th>Clase</th><th>Qué dibuja</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Esquinas cortadas en diagonal, un borde de acento engrosado, un resplandor exterior</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Solo marcas en las esquinas, dejando el contenido sin encerrar</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Un marco forjado — remaches, grabado en las esquinas, un realce biselado y grano de hierro, cuero o pergamino</td></tr>
+    </tbody>
+  </table>
+  <p>Las tres se serializan dentro de un recurso Theme como cualquier otro StyleBox — y eso es lo que permite que un tema cambie la forma.</p>
+
+  <div class="note warn">
+    <b>Define el relleno mediante <code>content_margin_*</code>.</b> Crear una subclase de StyleBox en GDScript implica que
+    <code>_get_style_margin()</code> nunca se llama (comprobado en Godot 4.7). Rellena los campos integrados o el
+    contenido quedará pegado al borde.
+  </div>
+</section>
+
+<section id="own">
+  <h2>Tu propio preajuste — un solo archivo</h2>
+  <p class="sub">
+    Añadir un tema solía significar editar cuatro lugares a mano — la paleta del generador, la forma, un skin,
+    un recurso de preajuste. Ahora un solo comando los deja todos en su sitio.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # .tres del tema + gráficos de control
+godot --headless --path . --import                  # importa los gráficos nuevos una vez
+GoUi.use_preset(&amp;"neon")                             # listo — también aparece en el selector</code></pre>
+  <p>
+    La primera línea escribe <code>themes/palettes/neon.json</code> y <code>themes/presets/neon.tres</code>. El
+    JSON lleva <b>todos los valores del tema del que hereda</b>, detallados por completo, así que sirve además como
+    la lista de lo que puedes cambiar: borra una clave para conservar el valor del padre, escribe una para sobrescribirlo. Los preajustes
+    se localizan <b>recorriendo</b> <code>themes/presets/</code>, así que no hay que cambiar código de registro — el
+    desplegable del ajuste de proyecto también lo detecta.
+  </p>
+
+  <h3>Qué puedes cambiar — en una sola página</h3>
+  <table>
+    <thead><tr><th>Dónde</th><th>Qué</th><th>Cómo</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>el tema padre</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … u otro tema JSON. Las claves omitidas heredan sus valores; un ciclo de herencia falla</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>fondo · tres superficies · borde · tres tonos de texto · acento · cuatro colores de estado · velo · sombra · carril de la barra</td><td><code>"#RRGGBB"</code>, el alfa como <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>colores vivos solo para relleno <code>*_vivid</code></td><td>mantienen las barras saturadas aunque el color del texto tenga que oscurecerse — si omites alguno, el generador lo indica</td></tr>
+      <tr data-group="palette"><td>legibilidad</td><td><b>no se ajusta a mano.</b> El texto, los bordes, el acento y la etiqueta que va sobre él los empuja el generador hasta que superan los umbrales — cambia solo el acento y las verificaciones siguen pasando</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (redondeado) · <code>cut</code> (esquinas achaflanadas) · <code>medieval</code> (marcos forjados)</td></tr>
+      <tr data-group="shape"><td>tamaños</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — los tokens los siguen, así que los paneles y los cálculos de los widgets nunca se contradicen</td></tr>
+      <tr data-group="shape"><td>solo <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>solo <code>medieval</code></td><td><code>material</code> (0 hierro · 1 cuero · 2 pergamino) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> asignados a archivos de fuente <code>res://</code> locales del add-on</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — la familia para los sitios donde el código dibuja por su cuenta (joystick, ranuras, insignias, anillo de la marca guía, chips, separadores)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — los <b>números</b> de esos sitios: ancho y tinte del borde de la ranura, relleno de la insignia, opacidad de chips y alertas, ancho y opacidad del anillo del joystick, tamaños del chaflán de ciencia ficción, resplandor y corchete</td><td>Cada valor del padre viene detallado en el JSON. El generador los escribe en <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>no se toca nada del código del skin</b>. Solo para cambiar los dibujos en sí ejecutas <code>--new-skin</code>, que genera el esqueleto de una subclase de <code>GoSkin</code></td></tr>
+      <tr><td><code>icons</code></td><td>el juego de iconos</td><td>una ruta <code>res://</code> a un recurso <code>GoIconSet</code> — se conserva la del padre JSON cuando se omite</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>cómo lo muestra el selector</td><td>booleano · cadena</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Todos los dials</h3>
+  <p>
+    La tabla de abajo la rellena <code>tools/make_site.py</code> <b>directamente desde las líneas</b>
+    <code>@export</code> de los scripts de skin — añade un dial o cambia un valor predeterminado y la tabla lo sigue. Usa estos nombres bajo
+    <code>skin.dials</code> en el JSON. Un dial cuyo valor predeterminado se lee <code>14</code> es un entero, y uno que se lee
+    <code>10.0</code> es un flotante — escribe cualquiera de las dos formas en el JSON y el generador lo convierte al tipo del script.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>Skin predeterminado <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Predeterminado</th><th>Qué define</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Predeterminado">0.16</td><td>Opacidad del relleno del panel de un chip.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Predeterminado">0.45</td><td>Opacidad del borde del panel de un chip.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Predeterminado">0.1</td><td>Cuánto se tiñe el panel de una caja de alerta hacia su color de estado.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Predeterminado">0.24</td><td>Tinte de acento del panel de una ranura rápida mientras corre su enfriamiento.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Predeterminado">0.08</td><td>Tinte de acento del panel de una ranura rápida en reposo.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Predeterminado">2</td><td>Ancho del borde (dp) de una ranura rápida mientras corre su enfriamiento.</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Predeterminado">1</td><td>Ancho del borde (dp) de una ranura rápida en reposo.</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Predeterminado">5</td><td>Relleno interior horizontal (dp) de una insignia (cantidad, tiempo restante).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Predeterminado">1</td><td>Relleno interior vertical (dp) de una insignia.</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Predeterminado">0.6</td><td>Opacidad del borde del panel de una insignia.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Predeterminado">0.45</td><td>Opacidad de la sombra de las tarjetas flotantes (marca guía, tarjeta de pregunta).</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Predeterminado">14</td><td>Desenfoque (dp) de la sombra de las tarjetas flotantes.</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Predeterminado">4</td><td>Desplazamiento hacia abajo (dp) de la sombra de una tarjeta flotante.</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Predeterminado">10.0</td><td>Distancia del resplandor (dp) de un panel flotante que resplandece en vez de proyectar sombra, como el panel achaflanado de ciencia ficción.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Predeterminado">0.42</td><td>Opacidad del disco base del joystick.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Predeterminado">0.45</td><td>Opacidad del anillo del joystick.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Predeterminado">2.0</td><td>Ancho (dp) del anillo del joystick.</td></tr>
+    </tbody>
+  </table>
+  <h4>Skin de ciencia ficción <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Predeterminado</th><th>Qué define</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Predeterminado">7.0</td><td>Tamaño del chaflán (dp) del panel de un chip.</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Predeterminado">5.0</td><td>Tamaño del chaflán (dp) de un panel de esqueleto.</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Predeterminado">8.0</td><td>Tamaño del chaflán (dp) de una caja de alerta.</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Predeterminado">8.0</td><td>Tamaño del chaflán (dp) de un control segmentado.</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Predeterminado">6.0</td><td>Tamaño del chaflán (dp) del panel de una ranura rápida.</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Predeterminado">0.24</td><td>El chaflán de avatares y discos = diámetro × esta proporción.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Predeterminado">0.45</td><td>Opacidad del resplandor de una ranura cuyo enfriamiento está corriendo.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Predeterminado">6.0</td><td>Distancia del resplandor (dp) de una ranura cuyo enfriamiento está corriendo.</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Predeterminado">12.0</td><td>Longitud del brazo (dp) del corchete de puntería de la marca guía.</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Predeterminado">2.0</td><td>Grosor de línea (dp) del corchete de puntería de la marca guía.</td></tr>
+    </tbody>
+  </table>
+  <h4>Skin medieval <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Predeterminado</th><th>Qué define</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Predeterminado">4.0</td><td>Radio de esquina (dp) del marco de la ranura rápida medieval.</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Predeterminado">0.035</td><td>Opacidad de las marcas sutiles de cuero dentro de las ranuras rápidas.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Predeterminado">1.0</td><td>Escala de las decoraciones metálicas en las esquinas de las ranuras rápidas. Los marcos de menú usan shape.ornament_scale.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Predeterminado">0.18</td><td>Intensidad del realce metálico a lo largo de los bordes de las ranuras rápidas.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Predeterminado">1</td><td>Mostrar pequeños remaches metálicos en las ranuras rápidas: 0 los oculta, 1 los muestra.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>Crear una subclase del skin (opcional)</h3>
+  <p>En un skin vive únicamente lo que el tema y la forma no alcanzan — el hexágono del joystick, las insignias de las ranuras, el corchete de
+    puntería de la marca guía. Crea una subclase de <code>GoSkin</code>, sobrescribe solo esos métodos y apunta el
+    campo <code>skin</code> del JSON a ese recurso. Un tema que solo cambia colores se salta este paso.</p>
+
+  <div class="note">
+    <b>Una verificación mantiene la promesa.</b> <code>tools/check_scaffold.sh</code> crea un tema desechable en cada ejecución —
+    cambia el acento, pone el radio en 4 — y comprueba la generación, la propagación de tokens y un contraste
+    limpio antes de eliminarlo. La primera ejecución encontró un tema con solo el acento cambiado que fallaba
+    en <b>8 pares</b>: el generador empujaba los colores de texto pero usaba el acento tal cual. Ahora también empuja el acento
+    y la etiqueta que va sobre él.
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>La legibilidad se mide</h2>
+  <p class="sub">
+    "Bonito" es cuestión de gusto; <b>"legible" se puede medir.</b> Un texto gris tenue se ve bien en un buen monitor y
+    desaparece en un teléfono a la luz del día — elegir a ojo lo garantiza tarde o temprano.
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>Qué</th><th>Exigido</th></tr></thead>
+    <tbody>
+      <tr><td>Texto del cuerpo</td><td>4.5 : 1</td></tr>
+      <tr><td>Texto grande (24px en adelante)</td><td>3 : 1</td></tr>
+      <tr><td>Bordes de acento e iconos</td><td>3 : 1</td></tr>
+      <tr><td>Bordes decorativos</td><td>2 : 1 — la WCAG no aplica su regla de 3:1 a la decoración</td></tr>
+      <tr><td>Superficies adyacentes</td><td>1.12 : 1 — lo justo para que una tarjeta se distinga de su fondo</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Texto de un tono sobre un tinte del mismo tono</h3>
+  <p>
+    Esta trampa apareció <b>tres veces</b> en este código — botones pulsados (panel de acento, etiqueta de acento),
+    botones de peligro y chips. Se ve bien en una muestra de color y se derrumba en cuanto se mide, porque
+    ambos comparten el tono y por tanto no tienen diferencia de luminosidad.
+  </p>
+  <p>
+    Por eso los colores de etiqueta <b>no se eligen a mano</b>. El generador de temas y <code>GoSkin</code> empujan cada uno
+    la luminosidad — y solo la luminosidad — hasta superar el umbral sobre el panel en el que el texto realmente
+    se apoya. El tono y la saturación sobreviven, así que la paleta conserva su carácter y, al cambiarla, conserva su contraste.
+  </p>
+
+  <h3>El color leído como texto y el color pintado como área quieren cosas opuestas</h3>
+  <p>
+    En un tema claro, un color de advertencia debe oscurecerse para seguir siendo legible <b>como texto</b> (<code>#96500A</code>).
+    Cuando el relleno de la barra hereda ese color, la barra de experiencia se vuelve <b>marrón</b>. El color por sí solo no lo arregla:
+    el amarillo es intrínsecamente brillante, así que supera el 3:1 sobre un carril gris cualquiera, y oscurecer el carril
+    lo <b>empeora</b> (1.52 → 1.06).
+  </p>
+  <p>
+    Por eso los dos se separan. <b>El color se mantiene vivo</b> — la paleta lleva colores solo para relleno como
+    <code>warning_vivid</code>. <b>El borde es el que aporta el contraste</b> — <code>GoSkin</code> dibuja un
+    contorno de 1dp sobre cualquier relleno que no alcance 3:1 contra su carril, para que "cuánto queda" siga siendo legible.
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # leído como texto
+    warning_vivid=hexc("F2A007"),   # pintado en la barra
+)</code></pre>
+  <div class="note">
+    <b>Si lo omites, se te avisa.</b> Sin un <code>*_vivid</code>, un relleno que sale oscuro hace que el
+    generador imprima <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code> (en coreano: "la barra
+    se ve apagada — añade warning_vivid a la paleta"). Un punto que antes se degradaba en silencio ahora lo dice.
+  </div>
+
+  <h3>Un panel flotante no puede saber qué hay detrás</h3>
+  <p>
+    Un HUD se dibuja <b>sobre</b> el juego — un campo nevado, o una cueva. Si su panel es translúcido, lo que haya
+    detrás se filtra y <b>cambia el color del panel</b>, arrastrando el contraste del texto con él.
+    Al 82% de opacidad, el texto atenuado de los temas oscuros caía a <code>3.74:1</code> sobre un fondo brillante — por debajo
+    del mínimo.
+  </p>
+  <p>
+    Por eso los paneles translúcidos se miden con <b>blanco puro y negro puro</b> detrás; eso es lo peor que puede
+    ofrecer una escena de juego. El panel de HUD de los temas incluidos es lo bastante opaco para pasar (92%) sin
+    perder el aspecto vidrioso.
+  </p>
+  <p>
+    Por la misma razón, <b>los colores de los iconos tampoco son fijos</b>. El glifo de la ranura rápida estaba escrito a fuego
+    en blanco y medía <code>1.11:1</code> en un tema claro — ahora sigue al panel sobre el que se apoya, exactamente
+    igual que las etiquetas.
+  </p>
+
+  <div class="note">
+    <b>Dos verificadores, dos alcances.</b> <code>check_contrast.py</code> lee los archivos de tema;
+    los colores que un skin mezcla <b>en tiempo de ejecución</b> (chips, ranuras) los mide la sección
+    <code>skin contrast</code> de la batería de pruebas dentro de Godot.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">← Introducción</a> · <a href="widgets.html">Widgets →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

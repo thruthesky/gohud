@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widget — gohud</title>
+<meta name="description" content="Setiap widget gohud — permukaan mengambang, lembar bawah, dialog, formulir, snackbar, coach mark, bar HUD, slot cepat, dan joystick virtual.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Ringkasan</a>
+      <a href="theming.html">Tema</a>
+      <a href="widgets.html">Widget</a>
+      <a href="#surfaces">Jendela</a>
+      <a href="#messages">Pesan</a>
+      <a href="#hud">HUD</a>
+      <a href="#factory">GoStyle</a>
+      <a href="#hooks">Kait</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Widget</h1>
+    <p class="lead">
+      Semuanya cukup <code>.new()</code> dan <code>add_child()</code> — tanpa file scene, tanpa autoload.
+      Catatan bertanda <b>🛑</b> adalah jebakan yang ditemui di layar sungguhan, bukan teori.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>Jendela mengambang</h2>
+
+  <h3><code>GoSurface</code> — cangkangnya</h3>
+  <p>Popup, lembar, dan dropdown semuanya memakai yang satu ini. Ia mengurus area aman, keyboard virtual,
+    header dan footer yang menempel, body yang bergulir, jendela mana yang paling atas, pemulihan fokus, kepemilikan
+    tombol kembali, dan tarik untuk mengubah ukuran.</p>
+  <table>
+    <thead><tr><th>Penempatan</th><th>Tampak seperti</th><th>Dipakai untuk</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>Sebuah kartu di tengah</td><td>Konfirmasi, setelan</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>Sebuah lembar yang naik dari bawah</td><td>Daftar, halaman pengelolaan</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>Sebuah kartu yang disematkan di samping sebuah kontrol</td><td>Dropdown, menu konteks</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Ia tidak menghapus dirinya sendiri.</b> Menanggapi <code>close_requested</code> — menyembunyikan atau membebaskannya — adalah
+    tugas layar yang memilikinya, karena cangkangnya tidak bisa tahu <i>kenapa</i> ia ditutup (simpan lalu tutup, atau buang).
+  </div>
+
+  <h3><code>GoSheet</code> — sebuah halaman dari bawah</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventaris")
+sheet.toolbar().add_child(GoStyle.line_edit("Cari…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Tutup", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>Ia memiliki <code>CanvasLayer</code> sendiri, jadi ia pasti berada di atas HUD. <code>open()</code> mengosongkan
+    body dan <b>mematikan</b> tombol kembali serta baris yang menempel — tombol mati di layar yang tidak punya tempat
+    untuk kembali akan terbaca sebagai rusak.</p>
+
+  <h3><code>GoDialogs</code> — konfirmasi yang bisa Anda <code>await</code></h3>
+  <pre><code>if await dialogs.confirm("Hapus simpanan", "Tindakan ini tidak bisa dibatalkan."):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — semua yang ada setelah body bersifat
+    opsional, dan <code>alert()</code> bekerja dengan cara yang sama dengan satu tombol saja. Setel <code>destructive</code> untuk
+    sesuatu yang tak bisa dibatalkan: tombol konfirmasinya berubah menjadi tombol <code>GoStyle.Tone.DANGER_SOLID</code>
+    yang berisi penuh. Pada tema terang, label bahaya yang dironai harus digelapkan sampai terbaca seperti teks hitam; tombol berisi penuh
+    mempertahankan teks putih di atas merah. Nada warnanya diterapkan ulang pada setiap pemanggilan karena satu jendela dipakai berulang, dan
+    <code>confirm()</code> kedua ketika satu dialog masih terbuka langsung mengembalikan <code>false</code>. <code>confirm_key()</code> menerima
+    kunci terjemahan.</p>
+  <p><b>Tata letak tombol.</b> <code>action_layout</code> secara default adalah <code>VERTICAL</code> (aman untuk terjemahan yang panjang),
+    <code>HORIZONTAL</code> untuk satu baris dengan lebar separuh-separuh, atau <code>AUTO</code>, yang memakai satu baris hanya bila kedua
+    labelnya muat pada separuh kartu dalam satu baris dan menumpuknya bila tidak. <code>action_gap</code> adalah jarak antar
+    tombol dan <code>body_gap</code> jarak di atasnya — buat yang terakhir lebih lebar daripada jarak antartombol agar pertanyaan dan
+    pilihannya terbaca sebagai dua bagian. Untuk satu dialog saja, panggil <code>set_next_action_layout()</code> sebelum membukanya.
+    Baris tombolnya dibangun saat sebuah dialog pertama kali dibuka, jadi <code>GoDialogs</code> yang di-autoload tidak menambah apa pun saat startup.</p>
+
+  <h3><code>GoForm</code> — formulir berlebar terbatas</h3>
+  <div class="note warn">
+    <b>Ia menjamin label keturunannya membungkus baris.</b> Tanpa itu, satu kalimat panjang akan merentang menjadi
+    satu baris yang lebar minimumnya melebihi layar, dan sisi-sisinya terpotong — Anda bahkan tak bisa tahu
+    sedang berada di layar apa. Menyalakan pembungkusan baris secara manual per scene selalu terlupakan.
+  </div>
+
+  <h3><code>GoScroll</code> — gulir sentuh</h3>
+  <p>Taruh <b>satu</b> hal saja di dalamnya. Header dan baris tombol tempatnya di luar — daftar yang panjang tidak boleh mendorongnya
+    keluar layar. <code>use_panel_edge()</code> memindahkan bilah gulirnya ke dalam padding kartu yang sudah ada
+    sementara kontennya mempertahankan indentasinya.</p>
+</section>
+
+<section id="messages">
+  <h2>Menyampaikan sesuatu kepada pemain</h2>
+
+  <h3><code>GoNotice</code> — snackbar</h3>
+  <div class="note warn">
+    <b>Ia tidak pernah mencegat input.</b> Sebuah pemberitahuan itu dibaca, bukan ditekan. Ia tidak mengambil fokus, tidak menghalangi
+    input game, dan tombol di bawahnya masih bisa ditekan. Bila butuh konfirmasi pakailah
+    <code>GoDialogs</code>; bila butuh pilihan, <code>GoPromptCard</code>.
+  </div>
+
+  <h3><code>GoPromptCard</code> — pertanyaan yang tidak menghentikan jalannya game</h3>
+  <p>Mengambang di salah satu sisi tanpa selubung. Game-nya terus berjalan.</p>
+
+  <h3><code>GoCoachMark</code> — tur berpemandu</h3>
+  <p>Menunjuk kontrol sungguhan satu per satu. Hanya kartunya yang menerima input, sehingga <b>menekan kontrol yang disorot
+    itu sendiri akan melanjutkan tur</b> — "tekan di sini" menjadi sebuah tindakan, bukan sekadar kalimat.</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "Tas", "body": "Semua yang Anda pungut mendarat di sini."},
+    {"target": map_button, "title": "Peta", "body": "Tekan untuk membuka peta lengkap."},
+])</code></pre>
+  <p><code>title</code> dan <code>body</code> boleh berupa kunci terjemahan atau teks biasa. Langkah yang sasarannya sudah
+    menghilang akan dilewati.</p>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>Hal-hal kecil yang menentukan bagus atau tidaknya</h3>
+  <p>
+    Poles panel besarnya sesuka Anda — yang selalu menyita perhatian justru sesuatu yang kecil: satu kata terbelah
+    dua, pendar yang terpotong, slot yang sempit. Empat hal semacam itu ditunjukkan pada 2026-09-13 lalu diperbaiki di
+    widget dan temanya, bukan di layar demonya, sehingga setiap layar mendapat hasil yang sama.
+  </p>
+  <table>
+    <thead><tr><th>Apa yang terlihat</th><th>Penyebab</th><th>Perbaikan</th></tr></thead>
+    <tbody>
+      <tr><td><code>Done</code> pada coach mark menjadi <code>Don</code>/<code>e</code></td>
+          <td>Tombol dengan pembungkusan baris menyala <b>mengurangi lebar teksnya</b> dari lebar minimumnya — sempitkan sedikit dan ia patah di tengah kata</td>
+          <td><code>GoStyle.fit_words()</code>: satu kata tidak pernah dipenggal; beberapa kata boleh membungkus, tetapi <b>kata terpanjang</b> selalu muat — dinilai pada teks yang <b>ditampilkan</b>, bukan pada kunci terjemahannya, dan diterapkan ulang oleh formulir ketika bahasanya berganti</td></tr>
+      <tr><td>Pendar tombol selebar layar terpotong secara vertikal di sisi kiri</td>
+          <td>Kontainer gulir memotong di tepinya, tanpa kecuali. Hanya sisi kanan yang selamat, berkat celah relnya</td>
+          <td><code>GoScroll</code> meminjam padding induknya untuk mendorong tepinya 12dp keluar lalu mengembalikannya di dalam — <b>kontennya tidak bergeser</b></td></tr>
+      <tr><td>Waktu, ikon, dan jumlah menumpuk vertikal di dalam sebuah slot</td>
+          <td>Tiga baris di dalam 48dp</td>
+          <td>Ikon besar di tengah, pintasan di kiri atas, jumlah sebagai <b>lencana</b> di kanan bawah, sisa waktu sebagai lencana di atas ikonnya — panel lencananya berasal dari <code>badge_box()</code> milik skin</td></tr>
+      <tr><td>Dropdown datar tanpa pilihan yang terlihat</td>
+          <td>Sorotan butir memakai panel tombol; penanda radionya adalah default mesin yang samar</td>
+          <td>Panel sorotan tersendiri (rona aksen lembut), gambar radio yang sama dengan kotak centang, tinggi butir yang pas untuk sentuhan</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Dropdown yang terbuka — panel sorotan aksen lembut dan penanda radio pada butir yang dipilih" loading="lazy">
+      <figcaption>Dropdown — panel sorotan dan penanda radio</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Empat slot cepat — pintasan di kiri atas, lencana jumlah di kanan bawah, yang pertama dengan lencana sisa waktu" loading="lazy">
+      <figcaption>Slot — lencana sudut dan sisa waktu (sci-fi)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Berikan deskripsi pada tombol yang hanya berisi ikon lewat <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    tooltip untuk pengguna tetikus dan nama aksesibilitas untuk pembaca layar keduanya berasal dari satu nilai itu.
+    gohud menggambar tooltip-nya sendiri: default mesinnya memecah teks <b>satu karakter per baris</b> ketika
+    perhitungan lebarnya meleset (terukur selebar 1dp).
+  </p>
+
+  <h4>Kartu coach mark menjauh dari perabot layar</h4>
+  <p>
+    Pada mode lanskap, kartunya dulu dilempar ke tepi paling atas atau paling bawah — persis tempat header dan bagian
+    HUD berada; di dalam demo ia mendarat di atas <code>→ ×</code> milik header. Kini ia tetap sejajar dengan sasarannya,
+    memutari setiap <code>GoHudAnchor</code> yang memesan ruang, dan menerima hal-hal lain yang harus dihindari lewat
+    <code>keep_clear</code>. Ia bergerak sependek mungkin untuk melewati penghalang tanpa menutupi
+    sasarannya, dan tetap diam bila layarnya terlalu kecil untuk melewati semuanya — bertumpuk lebih baik daripada menghilang.
+    Kedalamannya — agar ia terbaca <b>di atas</b> halaman — berasal dari kenop skin
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; skin bersudut potong memakai <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # perabot layar yang bukan anchor</code></pre>
+
+  <h3>Layar dengan tetikus dan papan ketik</h3>
+  <p>
+    Jari <b>tidak punya keadaan hover.</b> Bangun hanya untuk seluler dan dua keadaan khas desktop luput dari pemeriksaan —
+    dan salah satunya memang rusak: <b>cincin fokus gohud tidak terlihat pada tombol primer.</b> Panelnya
+    berwarna aksen dan cincinnya pun begitu: <code>1,00:1</code>, warna yang sama digambar di atas dirinya sendiri. Bergerak
+    dengan papan ketik, tak ada cara untuk tahu Anda sedang berada di mana.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="Baris tombol yang sama dalam tiga keadaan — normal, hover tetikus, fokus papan ketik" loading="lazy">
+    <figcaption>Dari atas ke bawah: <b>normal · hover · fokus</b>. Tombol berisi penuh mendapat cincin yang kontras dengan panelnya.</figcaption>
+  </figure>
+  <p>
+    Tombol berisi penuh (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) memakai cincin yang
+    <b>kontras dengan panelnya sendiri</b> — gelap pada tema gelap, putih pada tema terang, kurung penanda sasaran
+    yang gelap pada sci-fi. Pemeriksa kontras mengukur <b>cincin fokus terhadap panel tempatnya berada</b>, sehingga
+    aturannya bertahan saat paletnya berubah (WCAG 2.4.11 meminta 3:1 pada penanda fokus).
+  </p>
+
+  <h3><code>GoHudAnchor</code> — sembilan titik</h3>
+  <p>Menghormati area aman dan margin tepi. Berikan <code>landscape_spot</code> dan ia berpindah saat
+    lanskap — kontrol yang duduk di tengah bawah pada mode potret bisa pindah ke kanan bawah.</p>
+  <div class="note">
+    <b>Kenapa ia ada.</b> Ditulis manual untuk tiap bagian HUD, anchor dan offset-nya akan melenceng: bar darah berakhir
+    di bawah lubang kamera pada perangkat ber-notch, dan tombol kontrol mendarat di atas gesture bar saat
+    lanskap. Hitung-hitungan itu tinggal di satu tempat.
+  </div>
+
+  <h4>Menjaga konten tidak masuk ke bawah HUD</h4>
+  <p>
+    Ketika layar yang bergulir berbagi tampilan dengan HUD, kontennya menyelinap <b>ke bawahnya</b> dan kedua
+    kumpulan teksnya bertumpuk sampai tak satu pun terbaca. Itu terjadi dua kali di add-on ini: teks contoh sebuah
+    kolom masukan terjepit di antara slot cepat, dan kenop sakelar pada setelan mendarat di atas bar darah.
+  </p>
+  <pre><code>form.avoid_hud = true                  # menjauh dari setiap GoHudAnchor yang terlihat
+joystick_anchor.reserve_space = false  # …kecuali yang hanya muncul di bawah jari</code></pre>
+  <p>
+    Setiap persegi dihindari ke arah yang <b>paling sedikit memakan luas</b>. Bar di kanan atas
+    diputari ke bawah pada ponsel potret (13% dari tingginya) dan ke samping pada lanskap (21% dari
+    lebarnya) — menghindarinya secara vertikal pada lanskap akan memakan 27% dari layar. Ruang yang sudah direlakan
+    dikurangkan lebih dulu sebelum persegi berikutnya diukur.
+  </p>
+
+  <h4>Bagian-bagian HUD juga bertabrakan satu sama lain</h4>
+  <p>
+    Kesembilan titik itu membagi layar; mereka tidak menjamin bagian-bagiannya <b>saling luput</b>. Sebuah
+    snackbar lebar di tengah atas mendarat tepat di atas bar darah di kanan atas, menyembunyikan nilainya — Anda tidak
+    bisa membaca berapa sisa darahnya.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # turun ke bawah HUD tetap
+notice_anchor.reserve_space = false   # dan tidak mendorong halamannya selagi ia muncul</code></pre>
+  <p>
+    Ia menyingkir <b>secara vertikal saja</b> — menyingkir ke samping juga akan membuat toast yang terpusat muncul di
+    tempat yang berbeda-beda setiap kali. Dan ia hanya menghindari bagian yang <b>tidak</b> ikut menyingkir
+    sendiri: kalau keduanya mengalah, keduanya akan bertukar tempat selamanya.
+  </p>
+
+  <h3><code>GoBar</code> — darah, mana, pengalaman</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token khusus isian
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Perubahannya dilandaikan selama 0,18 detik — bar darah yang melompat tidak memberi tahu Anda seberapa keras Anda terpukul.
+    <code>reduce_motion</code> membuatnya seketika. Angka besar disingkat menjadi <code>12.3k</code> supaya
+    lebar bar-nya tidak bergetar saat jumlah digitnya berubah.</p>
+
+  <h3><code>GoSlot</code> — satu slot cepat</h3>
+  <p>Ikon, jumlah, waktu jeda, dan pintasan pada <b>satu muka</b>. Menggantung lencana pada lingkaran kecil
+    membuat tiap slot punya lebar berbeda dan barisannya goyah.</p>
+  <div class="note">
+    <b>Ukuran terlihat dan ukuran sentuh berbeda.</b> Slot yang berdempetan punya kotak sentuh 48dp yang saling tumpang tindih;
+    tumpang tindihnya jatuh ke <b>slot yang pusatnya lebih dekat</b> — beri tahu mereka satu sama lain lewat
+    <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> mati secara default, supaya barisan delapan slot tidak menghalangi pengguna papan ketik dari
+    setiap kontrol setelan dalam urutan Tab. Nyalakan bila papan ketik atau gamepad adalah satu-satunya input.</p>
+
+  <h3><code>GoJoystick</code> — stik virtual</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>Perilaku</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Selalu di tempat yang sama — mudah ditemukan tanpa melihat</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Muncul di tempat ibu jari mendarat</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Terus mengikuti ibu jari setelah muncul — nyaman untuk gerakan panjang</td></tr>
+    </tbody>
+  </table>
+  <p><code>Vector2</code> dari <code>moved</code> panjangnya 0–1, jadi Anda bisa langsung mengalikannya dengan
+    sebuah kecepatan; nilainya tidak berubah mengikuti ukuran layar atau DPI.</p>
+
+  <h3><code>GoIconButton</code> — terlihat kecil, ditekan besar</h3>
+  <div class="note warn">
+    <b>Hanya aman selama saudara-saudaranya mengabaikan input.</b> Bila area yang diperlebar itu menutupi tombol berikutnya,
+    tombol itu berhenti merespons. Tombol ikon yang berjajar butuh <code>touch_peers</code>.
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — satu tempat segala sesuatu dibuat</h2>
+  <p class="sub">
+    Panggil <code>Button.new()</code> langsung dan padding, tinggi, serta pembungkusan barisnya akan melenceng sedikit dari layar ke
+    layar. Kelencengan itu tak terlihat saat tinjauan kode dan kentara sekali pada tangkapan layar.
+  </p>
+
+  <table>
+    <thead><tr><th>Kelompok</th><th>Fungsi</th></tr></thead>
+    <tbody>
+      <tr><td>Struktur</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Teks</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Tombol</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>Masukan</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>Tampilan</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>Bagian permukaan</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>Pembantu</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> selalu mengembalikan <code>StyleBoxFlat</code></b>, karena pemanggilnya menerima objek itu lalu
+    menyetel <code>bg_color</code> atau <code>corner_radius</code>. Pakai <code>surface()</code> bila bentuk khusus
+    harus tetap bertahan.
+  </div>
+
+  <h3>Baris daftar dengan deskripsi</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Penjaga Sumpah", _inspect, Color.TRANSPARENT,
+    "Pedang panjang  /  Serangan 42", false)</code></pre>
+  <p>Baris dengan baris kedua mendapat <b>padding atas dan bawah yang sama</b>, lebih lapang daripada baris satu baris, dan pasangan
+    judul/deskripsinya tetap <b>terpusat secara vertikal</b> di samping ikonnya — juga ketika sebuah kontainer merentangkan barisnya
+    menjadi lebih tinggi, dan setelah deskripsinya membungkus menjadi beberapa baris. Seluruh barisnya tetap satu target ketukan.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="Contoh medieval_light — baris daftar dua baris, slot cepat, dan bar" loading="lazy">
+    <figcaption>Baris dua baris, slot, dan bar pada contoh abad pertengahan — pemanggilan pabrik yang sama di bawah <code>medieval_light</code>.</figcaption>
+  </figure>
+
+  <h3>Baris yang mengalir</h3>
+  <p>Taruh kontrol ke dalam <code>wrap_row</code> pada <b>lebar alaminya</b>. Dengan pembungkusan baris dibiarkan menyala, lebar minimum
+    sebuah tombol turun hampir menjadi nol dan barisnya mengukur selnya berdasarkan itu — labelnya menciut menjadi satu karakter per baris.
+    Pabriknya mencegah hal itu untuk Anda.</p>
+
+  <h3>Jangan pernah membiarkan daftar kosong benar-benar kosong</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Belum ada apa-apa di sini"))</code></pre>
+  <p>Orang membaca layar kosong sebagai <b>rusak</b>.</p>
+</section>
+
+<section id="hooks">
+  <h2>Kait untuk subkelas</h2>
+  <p class="sub">
+    Setiap tempat sebuah widget anak dibangun melewati sebuah metode yang bisa ditimpa, sehingga proyek yang
+    menurunkan tipe-tipe gohud bisa menempatkan subkelasnya sendiri <b>di dalam</b> widget tanpa menyalin kode.
+  </p>
+  <table>
+    <thead><tr><th>Kait</th><th>Widget</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Menyembunyikan kartunya selagi sebuah modal terbuka</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← Tema</a> · <a href="./">Ringkasan →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

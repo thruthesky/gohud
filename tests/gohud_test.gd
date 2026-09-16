@@ -2125,10 +2125,12 @@ func _widgets() -> void:
 	# 🔑 칩 — 아이콘만 · 아이콘 + 글자 · 경고 테두리 · 누를 수 있는 칩 버튼(채움).
 	var icon_chip := GoStyle.chip("", pick_ink, false, GoIconSet.HEART, 20)
 	var icon_face := icon_chip.get_theme_stylebox(&"panel")
-	check(icon_chip.get_child_count() == 1 and icon_chip.get_child(0) is Label
+	# 🔑 아이콘 칸은 세트에 따라 글리프 라벨이거나 텍스처다 — 어느 쪽이든 같은 칸을 차지한다.
+	check(icon_chip.get_child_count() == 1 and icon_chip.get_child(0) is Control
 		and (icon_chip.get_child(0) as Control).custom_minimum_size == Vector2(20, 20)
 		and near(icon_face.get_margin(SIDE_LEFT), icon_face.get_margin(SIDE_TOP)),
-		"chip(icon): 글자가 없으면 아이콘 한 칸만 들고 판도 정사각(좌우 여백 = 위아래 여백)")
+		"chip(icon): 글자가 없으면 아이콘 한 칸만 들고 판도 정사각 (좌 %.1f · 위 %.1f · 자식 %d)"
+			% [icon_face.get_margin(SIDE_LEFT), icon_face.get_margin(SIDE_TOP), icon_chip.get_child_count()])
 	var both_chip := GoStyle.chip("12", pick_ink, false, GoIconSet.HEART, 16)
 	var both_row := both_chip.get_child(0) as HBoxContainer
 	check(both_row != null and both_row.get_child_count() == 2 and both_row.get_child(1) is Label
@@ -2150,6 +2152,11 @@ func _widgets() -> void:
 	check(GoSkin.box_background(filled_button.get_theme_stylebox(&"normal")).a
 		> GoSkin.box_background(chip_button.get_theme_stylebox(&"normal")).a,
 		"style_chip_button(filled): 의미색으로 채운다")
+	var chip_label := GoStyle.label("42")
+	GoStyle.style_chip_label(chip_label, pick_ink)
+	check(chip_label.get_theme_stylebox(&"normal") != null and chip_label.has_theme_color_override(&"font_color"),
+		"style_chip_label: 이미 만든 라벨에 칩 판과 판 위에서 읽히는 글자색을 입힌다")
+	chip_label.free()
 	var hud_face := GoStyle.hud_panel(pick_ink).get_theme_stylebox(&"panel")
 	var chip_face := GoStyle.chip_panel(pick_ink).get_theme_stylebox(&"panel")
 	var tinted_face := GoStyle.chip_panel(pick_ink, 0.5).get_theme_stylebox(&"panel")
@@ -2157,6 +2164,17 @@ func _widgets() -> void:
 		and chip_face != null and chip_face.get_class() == GoUi.skin().chip_box(pick_ink).get_class()
 		and GoSkin.box_background(tinted_face).a > GoSkin.box_background(chip_face).a,
 		"hud_panel·chip_panel: 스킨 판을 그대로 입힌다 · fill_alpha 는 더 짙게 채운다")
+	# 🛑 HUD 판의 안쪽 여백 — 부르는 쪽이 준 값이 그대로 판에 실려야 한다. 이게 안 실리면 부르는 쪽이
+	#    `padding()` 칸을 덧대어 여백이 두 겹이 되고, 좁은 칸의 말줄임 글자가 통째로 사라진다.
+	var padded_face := GoStyle.hud_panel(pick_ink, 6.0, 5.0).get_theme_stylebox(&"panel")
+	var plain_face := GoUi.skin().floating_box(GoTheme.BOX_HUD, pick_ink)
+	check(padded_face.get_content_margin(SIDE_LEFT) == 6.0 and padded_face.get_content_margin(SIDE_RIGHT) == 6.0
+		and padded_face.get_content_margin(SIDE_TOP) == 5.0 and padded_face.get_content_margin(SIDE_BOTTOM) == 5.0
+		and hud_face.get_content_margin(SIDE_LEFT) == plain_face.get_content_margin(SIDE_LEFT)
+		and hud_face.get_content_margin(SIDE_TOP) == plain_face.get_content_margin(SIDE_TOP),
+		"hud_panel: 여백 인자는 판에 그대로 실리고 기본값이면 스킨 여백 그대로다 (준값 %s/%s · 기본 %s/%s)"
+			% [padded_face.get_content_margin(SIDE_LEFT), padded_face.get_content_margin(SIDE_TOP),
+				hud_face.get_content_margin(SIDE_LEFT), hud_face.get_content_margin(SIDE_TOP)])
 	icon_chip.free(); both_chip.free(); chip_button.free(); filled_button.free()
 	# 🔑 선택 격자 — 색 견본·아이콘·글자 카드. 하나만 선택, 칸마다 터치 하한, 고른 칸만 두꺼운 강조 테두리.
 	var chosen := [-1]

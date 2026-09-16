@@ -21,3 +21,11 @@ __pycache__/
 # examples/demo/run.sh --setup 이 로컬에 만드는 링크다. 애드온 루트로 되돌아가는 순환 링크라 커밋하면
 # 저장소를 따라 읽는 도구가 자기 안으로 끝없이 들어간다(옛 main /(root) Pages 빌드가 이것으로 실패했다).
 /examples/demo/addons/gohud
+
+# 🛑 cowork 는 개인 도구다 — 공개 저장소(github.com/thruthesky/gohud)에 절대 올리지 않는다.
+#    .claude/ 를 통째로 막고, 이미 추적 중인 .gdignore(Godot 이 이 폴더를 스캔하지 않게 한다)만 예외로 둔다.
+#    공개할 파일이 생기면 그때 `!.claude/<파일>` 로 예외를 추가한다.
+#    ⚠️ 공개 배포되는 gohud 플러그인 자산인 skills/gohud/ · .claude-plugin/ 은 여기에 해당하지 않는다.
+.claude/
+!.claude/.gdignore
+.cowork/

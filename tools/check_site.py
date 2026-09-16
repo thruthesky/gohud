@@ -29,6 +29,9 @@ import tempfile
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+# 🔑 언어 목록은 `tools/site_langs.py` 한 곳 — 검사도 생성기와 **같은 목록**을 본다.
+import site_langs
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
 # 🛑 사이트는 `www/` 루트가 영문, `www/ko/` 가 한국어다. GitHub Actions(`.github/workflows/pages.yml`)가
@@ -53,7 +56,7 @@ LEGACY_PAGES = ["%s/%s" % (old, page)
                 for old in ("docs/www", "docs")]
 # 공개 주소를 찾아볼 파일 종류와 건너뛸 폴더 — 빌드 산출물은 고칠 수 없고, `.env` 에는 키가 든다.
 URL_SOURCES = (".md", ".html", ".json", ".yml", ".cfg")
-SKIP_DIRS = {".git", ".godot", ".env", "builds", ".dist", "__pycache__", ".playwright-mcp"}
+SKIP_DIRS = {".git", ".godot", ".env", "builds", ".dist", "__pycache__", ".playwright-mcp", ".cowork"}
 
 
 def pages():
@@ -140,9 +143,8 @@ def check_glossary(glossary, problems):
 GENERATED = [
     os.path.join("site", "glossary.js"),
     os.path.join("site", "glossary.en.js"),
-    "theming.html",
-    os.path.join("ko", "theming.html"),
-]
+    NOT_FOUND,
+] + [site_langs.rel_path(lang.code, page) for lang in site_langs.ACTIVE for page in site_langs.PAGES]
 
 
 def check_fresh(problems):
@@ -277,6 +279,39 @@ def check_dials(problems):
         problems.append("영문 뜻이 없는 다이얼 — make_site.DIALS_EN 에 적는다: " + ", ".join(missing))
 
 
+def check_langs(problems):
+    """언어판이 다 있는가, 문서 언어 표시가 목록과 맞는가, 생성기가 채울 표식이 살아 있는가.
+
+    🛑 `site_langs.ACTIVE` 에 오른 언어는 **고르개가 실제로 데려가는 언어**다. 그 페이지가 없으면
+    고르개의 그 줄은 404 로 데려가고, hreflang 은 없는 글을 검색엔진에 알린다.
+    """
+    if HERE not in sys.path:
+        sys.path.insert(0, HERE)
+    import make_site
+    for lang in site_langs.ACTIVE:
+        for page in site_langs.PAGES:
+            rel = site_langs.rel_path(lang.code, page)
+            path = os.path.join(WWW, rel)
+            if not os.path.isfile(path):
+                problems.append("%s 가 없다 — 언어 고르개가 404 로 데려간다" % rel)
+                continue
+            text = open(path, encoding="utf-8").read()
+            if not re.search(r'<html[^>]*\blang="%s"' % re.escape(lang.html_lang), text):
+                problems.append('%s: <html lang="%s"> 가 아니다 — 화면 낭독기가 엉뚱한 발음으로 읽는다'
+                                % (rel, lang.html_lang))
+            if lang.direction == "rtl" and not re.search(r'<html[^>]*\bdir="rtl"', text):
+                problems.append('%s: 오른쪽에서 왼쪽으로 읽는 언어인데 dir="rtl" 이 없다' % rel)
+            for begin in (make_site.LANGS_BEGIN, make_site.HREFLANG_BEGIN):
+                if begin not in text:
+                    problems.append("%s 에 %s 표식이 없다 — 생성기가 채우지 못한다" % (rel, begin))
+    # 옮겨는 놓고 아직 올리지 않은 언어 — 잊고 넘어가지 않게 알려만 준다(문제로 세지는 않는다).
+    waiting = [lang.code for lang in site_langs.LANGS if not lang.ready
+               and os.path.isfile(os.path.join(WWW, site_langs.rel_path(lang.code, "index.html")))]
+    if waiting:
+        print("   ℹ 번역해 두고 아직 올리지 않은 언어: %s — site_langs.py 의 ready 를 True 로 바꾸면 고르개에 오른다"
+              % ", ".join(waiting))
+
+
 def main():
     problems = []
     if not os.path.isdir(WWW):
@@ -298,8 +333,10 @@ def main():
     check_glossary(english, problems)
     check_fresh(problems)
     check_dials(problems)
+    check_langs(problems)
 
-    print("페이지 %d개 · 공개 주소 %d곳 · 용어 %d(한국어) · %d(영문)" % (len(pages()), urls, len(glossary), len(english)))
+    print("언어 %d개 · 페이지 %d장 · 공개 주소 %d곳 · 용어 %d(한국어) · %d(영문)"
+          % (len(site_langs.ACTIVE), len(pages()), urls, len(glossary), len(english)))
     for line in problems:
         print("   🛑 %s" % line)
     print("\n%s 문제 %d" % ("🛑" if problems else "✅", len(problems)))

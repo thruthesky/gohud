@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — Godot 4 的 HUD 与 UI 套件</title>
+<meta name="description" content="面向 Godot 4.6+ 的可定制 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、消息条、HUD 状态条、快捷槽和虚拟摇杆，配有默认、科幻、中世纪共六套预设。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">它能做什么</a>
+      <a href="#install">安装</a>
+      <a href="#start">快速上手</a>
+      <a href="#presets">预设</a>
+      <a href="#examples">示例</a>
+      <a href="#ai">AI 命令</a>
+      <a href="theming.html">主题 ↗</a>
+      <a href="widgets.html">控件 ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>游戏 UI，用一份资源驱动</h1>
+    <p class="lead">
+      gohud 是面向 Godot 4.6 及以上版本的 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、
+      消息条、引导标记、HUD 状态条、快捷槽和虚拟摇杆全都由<b>一份主题和一份可替换的图标集</b>驱动，
+      安全区域、虚拟键盘、RTL 和触摸目标都替你处理好。
+      <b>六套预设</b> —— 默认、科幻和中世纪，每种各有深色与浅色 —— 一行代码就能换掉颜色和形状。
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
+      <span class="badge">纯 GDScript</span>
+      <span class="badge">无需自动加载</span>
+      <span class="badge">MIT</span>
+      <span class="badge">6 套预设</span>
+      <span class="badge">21 种语言</span>
+      <span class="badge">内置 100 个图标</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">安装</a>
+      <a class="btn" href="#presets">看看预设</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="showcase">
+  <h2>放进游戏里是什么样子</h2>
+  <p class="sub">
+    中世纪和科幻预设 —— 角色面板、背包和任务；表单、网格和提示卡片；棱角分明的面板与触摸操控。
+    切换预设只要一行代码。
+  </p>
+  <figure>
+    <img src="../img/showcase-medieval-quests.webp" alt="gohud 中世纪主题 —— 带生命、魔法和耐力条的角色面板，装满快捷槽的行囊，以及锻造金框的任务日志">
+    <figcaption><b>中世纪</b> —— 角色、背包与任务</figcaption>
+  </figure>
+  <div class="shots">
+    <figure>
+      <img src="../img/showcase-medieval-forms.webp" alt="gohud 中世纪主题 —— 含姓名输入框、开关、复选框和音量滑块的输入面板，方块网格，以及带接受和拒绝的组队邀请提示卡片" loading="lazy">
+      <figcaption><b>中世纪</b> —— 表单、网格与提示卡片</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/showcase-scifi-touch.webp" alt="gohud 科幻主题 —— 切角的触摸操控面板，配六边形摇杆、固定 / 跟随 / 相对切换开关和圆形动作按钮" loading="lazy">
+      <figcaption><b>科幻</b> —— 棱角面板与触摸操控</figcaption>
+    </figure>
+  </div>
+  <p><a href="#presets">全部六套预设以及切换方法 →</a></p>
+</section>
+
+<section id="what">
+  <h2>它替你接手了什么</h2>
+  <p class="sub">
+    游戏 UI 最费时间的从来不是按钮长什么样，而是那些会在各种设备之间慢慢跑偏的东西。
+    gohud 把这些偏差集中到一处处理。
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>每个尺寸都是一个令牌</h3>
+      <p>间距、圆角和字号都按名字取用，而不是写死数字。换掉主题，整个画面跟着一起变。</p>
+    </div>
+    <div class="card">
+      <h3>看得见的大小 ≠ 按得到的大小</h3>
+      <p>关闭按钮看上去是 36dp，触摸目标却有 48dp。密集的快捷槽互相重叠时，中心更近的那个接住这次点按。</p>
+    </div>
+    <div class="card">
+      <h3>刘海与键盘</h3>
+      <p>HUD 各部件待在安全区域之内，虚拟键盘弹出时输入框会抬到键盘上方。</p>
+    </div>
+    <div class="card">
+      <h3>返回只关掉一层</h3>
+      <p>Esc 和安卓返回键<b>只关闭最上面那一层</b>。叠起来的窗口不会一起消失。</p>
+    </div>
+    <div class="card">
+      <h3>提示条从不抢走输入</h3>
+      <p>隔着消息条按下去，底下的按钮照样收到。焦点也不会被夺走。</p>
+    </div>
+    <div class="card">
+      <h3>图标按名字取用</h3>
+      <p>控件只认识 <code>GoIconSet.CLOSE</code>。换掉图标集，所有画法随之改变，一行代码都不用动。</p>
+    </div>
+    <div class="card">
+      <h3>六种外观，一行代码</h3>
+      <p><code>GoUi.use_preset()</code> 把主题、皮肤和图标一起换掉 —— 圆角、科幻切角，或是锻造的中世纪边框。</p>
+    </div>
+    <div class="card">
+      <h3>可读性靠量出来</h3>
+      <p>每套主题都对照 WCAG 检查过，连按钮的各种状态和盖在纯白、纯黑之上的半透明 HUD 面板也不例外。</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>不启用插件也照样能用。</b> 启用之后会多一个 GoRuntime 自动加载节点，用来跟踪窗口尺寸、dp 缩放和键盘高度，
+    再加上配置资源和预设的项目设置项 —— 这些是方便，不是必需。
+  </div>
+</section>
+
+<section id="install">
+  <h2>安装</h2>
+  <p class="sub">把插件文件夹放进项目即可，没有别的要配置。</p>
+
+  <h3>从资源商店或发布 ZIP 安装</h3>
+  <p>解压到项目根目录，得到 <code>res://addons/gohud/</code>，这就完成了。也可以顺手启用
+    <b>项目 → 项目设置 → 插件 → gohud</b>。</p>
+
+  <h3>作为 git 子模块安装</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # 可选：固定到某个标签或提交</code></pre>
+  <p>仓库根目录<b>本身就是</b>插件文件夹，所以它会正好落在 Godot 期望的位置。直接在
+    <code>addons/gohud</code> 里改、提交、推送，然后在游戏项目里提交子模块指针。</p>
+
+  <div class="note warn">
+    <b>必须是 Godot 4.6 或更高版本。</b> gohud 用到了 4.5 引入的 API（DPITexture、
+    FoldableContainer、无障碍属性），所以在更旧的版本上会<b>在解析阶段就失败</b>。
+    4.6 是受支持的下限，记录在 <code>GoUi.MIN_ENGINE</code> 里。
+  </div>
+</section>
+
+<section id="start">
+  <h2>快速上手</h2>
+  <p class="sub">每个控件都是 <code>.new()</code> 加 <code>add_child()</code> —— 不用场景文件，也不用自动加载。</p>
+
+  <h3>先选一套外观，再开始搭 UI（可选）</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 不写这一行时用的是 default_dark</code></pre>
+
+  <h3>可以 <code>await</code> 的确认框</h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("删除存档", "此操作无法撤销。"):
+    delete_save()</code></pre>
+  <p>传入 <code>destructive = true</code>（最后一个参数），确认按钮就会画成实心的危险按钮。</p>
+
+  <h3>带常驻搜索框和底栏的底部面板</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("背包")
+sheet.toolbar().add_child(GoStyle.line_edit("搜索…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("关闭", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>常驻行为什么要和滚动主体分开。</b> 把确认和取消放进 <code>body</code>，列表一长就会把它们顶出屏幕。
+    <code>footer()</code> 则始终可见。
+  </div>
+
+  <h3>一个 HUD 角落</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3>让内容避开 HUD</h3>
+  <pre><code>form.avoid_hud = true                  # 避开每一个可见的 GoHudAnchor
+joystick_anchor.reserve_space = false  # …只在手指按下时才出现的那些除外
+notice_anchor.avoid_peers = true       # 提示条落到固定 HUD 下方，而不是盖住它</code></pre>
+  <p>每个矩形都朝着损失面积最小的方向避让 —— 竖屏手机上往下，横屏时往侧边。
+    <a href="widgets.html#hud">HUD 之间如何互相避让 →</a></p>
+</section>
+
+<section id="presets">
+  <h2>换外观 —— 换颜色，<em>也</em>换形状</h2>
+  <p class="sub">
+    Theme 只能改引擎自己绘制的那部分。StyleBoxFlat 只有圆角这一种角，而摇杆、快捷槽和引导标记是用代码画的 ——
+    所以光靠主题永远改不了它们的形状。为此 gohud 提供了<b>预设</b>：把一份主题、一份皮肤和一份图标集打包成一个整体。
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # 主题、皮肤和图标一起换</code></pre>
+
+  <table>
+    <thead><tr><th>预设</th><th>外观</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code></td><td>gohud 的原始外观 —— 圆角，柔和的蓝色强调色</td></tr>
+      <tr><td><code>default_light</code></td><td>同样的形状，换成浅色调色板</td></tr>
+      <tr><td><code>scifi_dark</code></td><td>切角、青色霓虹边与辉光、六边形摇杆、瞄准框</td></tr>
+      <tr><td><code>scifi_light</code></td><td>同样的棱角形状，用明亮的蓝图配色</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>暗铁与皮革、仿古金边框、铆钉、雕刻图标、Cinzel 标题字体</td></tr>
+      <tr><td><code>medieval_light</code></td><td>羊皮纸、墨水与青铜，配同样的锻造边框</td></tr>
+    </tbody>
+  </table>
+
+  <div class="shots">
+    <figure>
+      <img src="../img/preset-default-dark.png" alt="使用 default_dark 预设的 gohud 控件画廊 —— 圆角与蓝色强调色" loading="lazy">
+      <figcaption><code>default_dark</code> —— 圆角，柔和的蓝色强调色</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-default-light.png" alt="default_light 预设 —— 同样的形状换成浅色调色板" loading="lazy">
+      <figcaption><code>default_light</code> —— 形状不变，浅色调色板</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-dark.png" alt="scifi_dark 预设 —— 切角与青色霓虹" loading="lazy">
+      <figcaption><code>scifi_dark</code> —— 切角，青色霓虹</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-light.png" alt="scifi_light 预设 —— 同样的棱角形状换成蓝图配色" loading="lazy">
+      <figcaption><code>scifi_light</code> —— 棱角依旧，蓝图配色</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    这四张是<b>同一个画廊界面</b>。代码一行都没差，只换了预设名字。
+    按钮圆角、开关形状、列表行和输入框边框全都跟着一起变。
+  </p>
+
+  <h3>中世纪合集</h3>
+  <p>
+    <code>medieval_dark</code> 把铁与皮革配上仿古金；<code>medieval_light</code> 用羊皮纸和墨水。
+    菜单边框带一颗铆钉和小小的角落纹饰，而常驻显示的 HUD 保持素净；
+    16 个雕刻图标重画了对应的物品名，只有标题和副标题使用随包附带的 Cinzel 字体。
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark —— 角色面板、装满快捷槽的行囊和任务日志" loading="lazy">
+      <figcaption><code>medieval_dark</code> —— 铁与皮革</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light —— 同样的角色、行囊和任务界面，换成羊皮纸质感" loading="lazy">
+      <figcaption><code>medieval_light</code> —— 羊皮纸与墨水</figcaption>
+    </figure>
+  </div>
+  <p>两张图都出自 <code>examples/medieval/medieval.tscn</code>，全部由标准控件搭成。
+    <a href="theming.html#medieval">中世纪指南，以及如何造一个自己的王国 →</a></p>
+
+  <h3>同一个界面，在手机上和在桌面上</h3>
+  <p>
+    画廊截图是竖屏手机。下面是<b>同一份代码</b>在 1280×800 下的样子 —— 内容停在便于阅读的宽度（480dp）并居中，
+    HUD 仍待在四角。表单会绕开浮动的 HUD 部件，但<b>本来就没挡住时不会移动</b>：
+    在宽屏上硬推一把，只会让内容偏离中心。
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/desktop-default-dark.png" alt="1280x800 下的 default_dark —— 内容居中，HUD 在四角" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/desktop-scifi-dark.png" alt="1280x800 下的 scifi_dark —— 同样的布局，换成切角面板与霓虹" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <h3>同一个面板，不同的外观</h3>
+  <div class="shots">
+    <figure>
+      <img src="../img/sheet-default-dark.png" alt="default_dark 下的底部面板" loading="lazy">
+      <figcaption>默认 —— 圆角卡片，常驻搜索行与底栏</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/sheet-scifi-dark.png" alt="scifi_dark 下的底部面板 —— 顶边有霓虹强调线" loading="lazy">
+      <figcaption>科幻 —— 顶部强调边、切角、辉光</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    在<b>项目设置 → gohud → Theme → Preset</b> 里挑一套，或者设置 <code>GoConfig.preset</code>。
+    显式填写 <code>theme</code>、<code>skin</code> 或 <code>icons</code> 会<b>压过</b>预设，
+    所以你可以在一套预设的基础上只覆盖其中一项。
+  </p>
+
+  <div class="note">
+    <b>一套新主题就是一个 JSON 文件。</b> <code>new_theme.py kingdom --from medieval_dark</code>
+    会写出一份把所有继承值都列全的调色板；<code>make_theme.py kingdom</code> 生成主题、控件贴图和皮肤旋钮，
+    随后这套预设就会出现在选择器里。<a href="theming.html#own">全部设置项与旋钮 →</a>
+  </div>
+</section>
+
+<section id="skin">
+  <h2>皮肤 —— Theme 够不着的地方</h2>
+  <p class="sub">
+    皮肤管着摇杆、快捷槽的面、引导标记的光圈、标签片、骨架屏、内联提醒、分隔线和分节标题。
+    继承它，只重写你想改的部分。
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>类</th><th>能画出的形状</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>斜切的角（切角）、一条加粗的强调边、外发光</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>只画四角的标记，不把内容围起来</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>锻造边框，带铆钉、角落雕花、斜面高光和材质纹理</td></tr>
+    </tbody>
+  </table>
+  <p>三者都能序列化进 Theme 资源 —— 正是这一点让主题不只能换颜色，还能换<b>形状</b>。
+    <code>GoSkinSciFi</code> 和 <code>GoSkinMedieval</code> 是随包提供的子类。</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> 永远返回 <code>StyleBoxFlat</code></b>，因为调用方拿到它之后
+    还要调整 <code>bg_color</code> 或 <code>corner_radius</code>。需要保住自定义形状时，
+    请改用 <code>GoStyle.surface()</code>。
+  </div>
+</section>
+
+<section id="widgets">
+  <h2>控件</h2>
+  <p class="sub">全部部件，一张表看完。<a href="widgets.html">逐个细讲 →</a></p>
+
+  <table>
+    <thead><tr><th>类</th><th>基类</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSurface</code></td><td>Control</td><td>浮动卡片外壳 —— 居中、靠底或贴着控件摆放，常驻页眉页脚，滚动主体，可拖动改变大小</td></tr>
+      <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>从底部升起的页面，位于自己的图层上，因此始终盖在 HUD 之上</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td>可以 <code>await</code> 的确认框和提醒框；不可逆的操作用 <code>destructive</code></td></tr>
+      <tr><td><code>GoForm</code></td><td style="white-space:nowrap">MarginContainer</td><td>限定最大宽度的表单，会避开虚拟键盘，配合 <code>avoid_hud</code> 还会避开 HUD</td></tr>
+      <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>触摸滚动；滚动条收进卡片自带的内边距里</td></tr>
+      <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>既不吃输入也不抢焦点的消息条</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>不打断游戏的提问卡片</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Control</td><td>指向真实控件的新手引导；按下目标本身就能推进</td></tr>
+      <tr><td><code>GoHudAnchor</code></td><td>Control</td><td>把 HUD 部件钉在安全区域的九个位置之一</td></tr>
+      <tr><td><code>GoBar</code></td><td>Control</td><td>生命、魔法和经验条，数值变化带缓动</td></tr>
+      <tr><td><code>GoSlot</code></td><td>Button</td><td>一个快捷槽 —— 图标、数量、冷却和快捷键都在同一个面上</td></tr>
+      <tr><td><code>GoJoystick</code></td><td>Control</td><td>固定、跟随或相对模式的虚拟摇杆</td></tr>
+      <tr><td><code>GoIconButton</code></td><td>Button</td><td>看着小，按着大</td></tr>
+      <tr><td><code>GoStyle</code></td><td>static</td><td>按钮、列表行、输入框、标签片、表格、标签页等等，都用同一种方式造出来</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="examples">
+  <h2>能直接跑起来的示例</h2>
+  <p class="sub">不写一行代码就能看到 gohud 的三种方式 —— 都不需要服务器，也不需要自动加载。</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">示例</th><th>怎么打开</th><th>能看到什么</th></tr></thead>
+    <tbody>
+      <tr><td>控件画廊</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>每一个控件、一个可切换全部已安装预设的选择器，以及完整图标集</td></tr>
+      <tr><td>中世纪</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>角色面板、行囊和任务日志；按钮可在铁与羊皮纸之间切换，并打开物品详情</td></tr>
+      <tr><td>演示</td><td><code>bash examples/demo/run.sh</code></td><td>由真实输入驱动的 15 章导览，外加一个可以手动试用单个控件的探索模式</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>bash examples/demo/run.sh --setup                       # 刚 clone 下来时执行一次
+bash examples/demo/run.sh                               # 开始演示，或探索各个控件
+bash examples/demo/run.sh -- --explore=surfaces         # 直接打开某一个控件
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 以 1080p / 60 fps 录制整段导览</code></pre>
+  <p>在演示里，<b>C</b> 切换影院模式，<b>F11</b> 全屏，<b>Space</b> 暂停（在探索模式下则是播放当前控件），
+    方向键切换章节，<b>Esc</b> 回到开始界面。</p>
+  <p>在用 AI 编程助手？<a href="#ai">一条命令打开这三个示例 →</a></p>
+</section>
+
+<section id="ai">
+  <h2>从 AI 编程助手里打开它</h2>
+  <p class="sub">
+    gohud 附带一个带斜杠命令的 Claude Code 插件。敲一条命令，控件画廊或演示就会在自己的 Godot 窗口里打开 ——
+    不用启动编辑器，也不用去翻场景文件。
+  </p>
+
+  <h3>命令只需安装一次</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# 然后重启 Claude Code</code></pre>
+  <p>Codex 等其他助手也能用同一份技能：把本仓库的 <code>skills/gohud</code> 复制到该助手的技能目录即可。</p>
+
+  <h3><code>/gohud:preview</code> —— 控件画廊</h3>
+  <p>打开画廊：每一个控件、可切换全部六套预设的选择器，以及完整图标集。在你自己的 Godot 项目里敲这条命令，
+    它会用<b>你的</b> <code>addons/gohud</code>；没有的话就用插件自带的副本，或者新克隆一份。
+    它跑在一个用完即弃的沙箱项目里，因此不会动到你的自动加载和导入缓存，窗口会一直开着，直到你关掉为止。</p>
+
+  <h3><code>/gohud:preview demo</code> —— 15 章导览</h3>
+  <p>打开演示的开始界面。<b>开始演示</b>会用真实输入播放整段导览；<b>探索控件</b>让你手动试用单个控件。
+    <a href="#examples">示例</a>一节列出的按键在这里同样有效。</p>
+
+  <h3>还有很多命令</h3>
+  <table>
+    <thead><tr><th>命令</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>中世纪预设下的角色面板、行囊和任务日志</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>直接打开演示的某一章 —— <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>用指定预设打开画廊；加 <code>--phone</code> 得到 390×844 的手机窗口，或用 <code>--size 1920x1080</code> 指定任意尺寸</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>打开你自己项目里的场景，并在该项目中运行</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>列出全部目标、预设 id 和演示章节名</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>不开窗口的无头冒烟测试 —— 脚本报错就判定失败</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>全部功能分组列出，每项一行代码</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>深入讲一个领域 —— <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>直接开口问也行。</b> 这份技能把 gohud 的整套 API 都教给了助手，所以用大白话提要求同样管用 ——
+    <i>“用 gohud 做一个暂停菜单”</i>。如果是以普通技能的方式装在 <code>~/.claude/skills/gohud</code>，
+    命令要用空格分开：<code>/gohud preview demo</code>、<code>/gohud features</code>。
+    预览需要 <code>PATH</code> 上有 Godot 4.6 或更高版本，也可以用 <code>--godot /path/to/godot</code> 指定路径。
+  </div>
+</section>
+
+<section id="readable">
+  <h2>可读性是量出来的，不是看出来的</h2>
+  <p class="sub">
+    “好看”是口味问题；<b>“看得清”却可以测量。</b> 灰得发淡的文字在好显示器上没问题，
+    到了白天的手机屏上就消失了 —— 靠眼睛挑颜色，迟早会出这种事。
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    六套主题里的每一对颜色，以及<b>每个按钮状态下的文字与它所在的面板</b>，都会拿去对照 WCAG 测量。
+    半透明颜色会先与真实背景合成再测 —— 直接测半透明色，得到的比值会比屏幕上实际看到的更好看。
+  </p>
+  <p>
+    因此文字颜色是<b>推导出来的，而不是挑出来的</b>：生成器以调色板里的值为起点，不断推高它的明度，
+    直到它在每一个可能落脚的面上都达标为止。改了调色板，对比度会自动跟上。
+    <a href="theming.html#contrast">这些规则以及背后的坑 →</a>
+  </p>
+</section>
+
+<section id="develop">
+  <h2>检查、发布与这个网站</h2>
+  <p class="sub">一个入口跑完所有检查；每一部分都能发现其他部分看不到的问题。</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>检查</th><th>能抓到什么</th></tr></thead>
+    <tbody>
+      <tr><td>四种屏幕尺寸下的 <code>run_tests.sh</code></td><td>控件行为与布局、RTL 下的位置、键盘焦点、运行时皮肤对比度、全部预设</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>对宿主项目的隐藏依赖；加 <code>--zip</code> 检查实际发布的压缩包，加 <code>--export</code> 检查 Web 构建</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>每个主题文件的 WCAG 对比度，含按钮各状态与半透明面板</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>生成的主题与其调色板一致；临时主题能成功生成并通过对比度检查</td></tr>
+      <tr><td><code>check_package.py</code></td><td>版本号递增、变更日志的搬移和 ZIP 内容，全部在临时副本中验证</td></tr>
+      <tr><td><code>check_site.py</code></td><td>本站的链接、锚点、页面语言、术语表和旋钮表格</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>最近一次记录在案的运行 —— 2026-09-13，Godot 4.7.2，macOS，Compatibility 渲染器。</b>
+    在空项目中于 390×844、844×390、768×1024 和 1280×800 下 438 项检查全部通过；加上 GoRuntime 自动加载后再次 438 项全过；
+    完成一次 Web 导出；六套主题对比度零失败。这一轮没有覆盖 Godot 4.6，也没有覆盖 Android 或 iOS 真机。
+  </div>
+
+  <h3>发布版本</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>运行成功会同时更新 <code>plugin.cfg</code>、<code>GoUi.VERSION</code> 和 <code>CHANGELOG.md</code>，
+    把 Unreleased 下的记录挪进带日期的条目。运行失败则什么都不改，已存在的 ZIP 也绝不会被覆盖。
+    ZIP 里不包含这个网站、测试和工具。</p>
+
+  <h3>这个网站</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # 术语表和皮肤旋钮表格，直接从源码生成
+python3 addons/gohud/tools/check_site.py           # 检查链接、锚点、语言、术语表和生成的表格
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # 为每个页面截取桌面版和手机版截图</code></pre>
+  <p>这些页面就是 <code>www/</code> 下的普通 HTML —— 根目录是英文，<code>ko/</code> 是韩文。
+    一个 GitHub Actions 工作流把那个文件夹作为站点根目录发布出去。</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud 采用 <b>MIT</b> 许可 —— 代码和美术资源都包含在内，含 84 个默认图标和 16 个中世纪图标。
+      随包附带的 Cinzel 字体采用 SIL Open Font License 1.1。</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">变更日志</a></p>
+    <p style="font-size:13px">把鼠标悬停在<b>带下划线的术语</b>上、点一下它或让它获得焦点，就能看到它的含义。</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tema — gohud</title>
+<meta name="description" content="Bagaimana tema, skin, dan preset gohud mengubah warna dan bentuk: rujukan token, StyleBox buatan sendiri, dan bagaimana kontras diturunkan alih-alih dipilih.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Ringkasan</a>
+      <a href="theming.html">Tema</a>
+      <a href="widgets.html">Widget</a>
+      <a href="#medieval">Abad pertengahan</a>
+      <a href="#tokens">Token</a>
+      <a href="#skin">Skin</a>
+      <a href="#own">Preset Anda</a>
+      <a href="#contrast">Keterbacaan</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Tema</h1>
+    <p class="lead">
+      Penampilan gohud terdiri dari <b>tiga lapis</b>. Ubah warnanya saja, atau ganti bentuknya sama sekali.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>Tiga lapis</h2>
+  <p class="sub">Sebuah preset membundel ketiganya. Kolom yang Anda biarkan kosong kembali ke nilai default.</p>
+
+  <table>
+    <thead><tr><th>Lapis</th><th>Menentukan</th><th>Cara mengubahnya</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>Warna, ukuran, skala teks, dan bentuk dari segala sesuatu <b>yang digambar mesin</b> — panel tombol, kolom masukan, tab, gambar sakelar</td>
+        <td>Tulis sendiri sebuah <code>.tres</code>, atau hasilkan dengan <code>tools/make_theme.py</code></td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td>Bentuk dari segala sesuatu <b>yang digambar kode</b> — joystick, muka slot cepat, cincin coach mark, chip, kerangka pemuatan, pemisah, judul bagian</td>
+        <td>Turunkan kelasnya dan timpa hanya metode yang Anda perlukan</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>Ikon berdasarkan nama — 84 gambar default, atau 16 gambar ukiran set abad pertengahan di atasnya. Sebuah paket tekstur atau font ikon; kode pemanggilnya sama saja</td>
+        <td>Sediakan satu set, atau timpa beberapa nama saja</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Kenapa Theme saja tidak cukup.</b> Membulat adalah satu-satunya sudut yang dimiliki <code>StyleBoxFlat</code> —
+    setel radiusnya ke nol dan Anda dapat sudut siku-siku; tidak ada apa pun di antaranya. Sudut terpotong diagonal,
+    satu tepi yang ditebalkan, pendar di luar: mesin tidak menggambar satu pun dari itu. Lagi pula joystick dan coach mark
+    digambar di dalam <code>_draw()</code>, tempat yang sama sekali tak terjangkau oleh tema.
+  </div>
+</section>
+
+<section id="pick">
+  <h2>Memilih salah satu</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>Satu baris itu menukar tema, skin, dan ikon. Dari editor, gunakan
+    <b>Project Settings → Gohud → Theme → Preset</b>; dari resource setelan, <code>GoConfig.preset</code>.</p>
+
+  <h3>Mempertahankan satu kolom sebagai milik Anda</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
+  <p>Menyetel <code>theme</code>, <code>skin</code>, atau <code>icons</code> secara eksplisit <b>mengalahkan</b> preset.</p>
+
+  <h3>Enam preset bawaan</h3>
+  <table>
+    <thead><tr><th>Preset</th><th>Panel</th><th>Skin · ikon</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>Panel <code>StyleBoxFlat</code> membulat dengan skala bayangan bertingkat; tombol primer terangkat lalu tenggelam saat ditekan</td><td><code>GoSkin</code> · 84 ikon default</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>Panel <code>GoStyleBoxCut</code> bersudut potong dengan tepi neon dan pendar; penanda fokus <code>GoStyleBoxBracket</code></td><td><code>GoSkinSciFi</code> — joystick heksagonal · ikon default</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Bingkai tempaan <code>GoStyleBoxMedieval</code> — besi dan kulit, atau perkamen — dengan paku keling dan ornamen sudut pada menu</td><td><code>GoSkinMedieval</code> · 16 ikon ukiran di atas ikon default</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>Abad pertengahan: besi, kulit, dan perkamen</h2>
+  <p><code>medieval_dark</code> memadukan besi gelap dan kulit dengan emas antik. <code>medieval_light</code>
+    memakai perkamen dan tinta. Keduanya memakai <code>GoSkinMedieval</code>, widget yang sudah ada, dan 16 ikon
+    orisinal dengan detail ukiran; ikon navigasi kembali ke set aslinya.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# Atau: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>Pilih presetnya sebelum membuat UI Anda. Penimpaan eksplisit lewat <code>GoConfig.theme</code>,
+    <code>skin</code>, atau <code>icons</code> tetap diutamakan. Buka
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code> lalu tekan F6 untuk melihat lembar karakter,
+    tas, dan jurnal misi yang berfungsi. Tombol-tombolnya mengganti varian dan membuka rincian benda.</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="Antarmuka karakter, inventaris, dan misi Medieval Iron" loading="lazy"><figcaption>Besi dan kulit</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="Antarmuka karakter, inventaris, dan misi Medieval Parchment" loading="lazy"><figcaption>Perkamen dan tinta</figcaption></figure>
+  </div>
+  <p>Bingkai menu punya paku keling dan ornamen sudut kecil; HUD yang selalu terlihat mempertahankan tepi yang tenang.
+    HP, mana, dan stamina memakai isian merah, biru, dan zaitun. Cinzel dibatasi pada judul dan subjudul;
+    teks isi tetap memakai font induk/default. Font bawaannya menyertakan lisensinya di
+    <code>assets/fonts/cinzel/OFL.txt</code>.</p>
+  <p>Set ikon ukirannya menggambar ulang <code>bag</code>, <code>book</code>, <code>box</code>, <code>coin</code>, <code>crown</code>,
+    <code>flag</code>, <code>heart</code>, <code>key</code>, <code>map</code>, <code>potion</code>, <code>shield</code>,
+    <code>star</code>, <code>sword</code>, dan <code>user</code>, serta menambahkan <code>scroll</code> dan <code>seal</code>.
+    Semua nama lainnya kembali ke set default, sehingga <code>close</code> dan <code>settings</code> mempertahankan gambar
+    defaultnya di setiap preset. Cinzel mencakup aksara Latin; berikan font tersendiri untuk judul yang dilokalkan melalui
+    <code>shape.fonts</code>.</p>
+  <div class="note">
+    <b>Apa yang diperiksa rangkaian uji untuk kedua varian.</b> Skin abad pertengahan terpilih; panel menu dan HUD berupa
+    bingkai tempaan, dengan ornamen hanya pada menu; judul memakai Cinzel sementara teks isi mempertahankan font warisan; ikon
+    ukiran terimpor sebagai <code>DPITexture</code>; slot cepat sungguhan memakai skin tersebut; mengubah kenop pada salinan skin
+    sampai ke slot tanpa menyentuh presetnya; dan beralih kembali memulihkan geometri default serta sci-fi.
+  </div>
+  <h3>Bangun kerajaan Anda sendiri</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# Sunting themes/palettes/kingdom.json, lalu:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# Di GDScript, sebelum membuat widget-nya:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>Tema JSON bisa mewarisi tema JSON lain. Nilai yang dihilangkan mempertahankan setelan induknya;
+    pewarisan yang melingkar ditolak. Preset hasil generasi mempertahankan set ikon induknya.</p>
+  <table><thead><tr><th>Setelan</th><th>Efek</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: besi · 1: kulit · 2: perkamen. Menentukan guratan pada permukaannya.</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>Opasitas tekstur. Pakai 0 untuk permukaan yang bersih.</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>Ukuran ornamen sudut menu dan intensitas sorotan bevel.</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>Memetakan peran title, subtitle, caption, body, dan button ke berkas font res:// yang ada di dalam add-on. Peran yang dihilangkan mempertahankan font warisannya.</td></tr>
+    <tr><td><code>skin.dials</code></td><td>Radius slot cepat, tampilnya paku keling, serat, dan sorotan. Tabel lengkap di bawah memuat setiap kenop.</td></tr>
+  </tbody></table>
+</section>
+
+<section id="tokens">
+  <h2>Token</h2>
+  <p class="sub">
+    Setiap warna dan ukuran tinggal di bawah tipe <code>GoHud</code> di dalam Theme, dialamatkan lewat nama.
+    Tidak menulis angka adalah aturannya: nama ikut menyesuaikan ketika temanya ditukar.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # warna
+GoUi.metric(GoTheme.GAP)               # ukuran (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # ukuran untuk sebuah peran teks
+GoUi.box(GoTheme.BOX_CARD)             # salinan sebuah StyleBox</code></pre>
+
+  <h3>Warna</h3>
+  <table>
+    <thead><tr><th>Nama</th><th>Dipakai untuk</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>Dasar layar</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>Tiga lapis panel — panel, kartu, sel yang terangkat</td></tr>
+      <tr><td><code>border</code></td><td>Garis tepi kartu dan tombol</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>Tiga tingkat teks — isi, pendukung, diredupkan</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>Warna aksen dan teks yang diletakkan di atasnya</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>Warna <b>teks</b> status</td></tr>
+      <tr><td><code>*_fill</code></td><td>Status yang sama sebagai <b>isian</b> — bar dan bidang luas lainnya</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>Selubung di belakang popup, bayangan, dan alur bar</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Kenapa <code>*_fill</code> ada.</b> Makna yang sama, tuntutan yang berlawanan. <code>warning</code>
+    yang dipakai sebagai teks harus cukup gelap agar terbaca di atas latar terang; dipakai sebagai isian bar pengalaman ia
+    harus cukup cerah agar terlihat. Satu token tidak bisa menjadi keduanya — bar pada tema terang berubah cokelat.
+    Tema tanpa varian <code>_fill</code> otomatis kembali ke nama dasarnya, sehingga tema yang dibuat sebelum token ini ada
+    tetap berjalan.
+  </div>
+
+  <h3>Ukuran (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>Peran teks</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — sebuah peran menamai <b>satu ukuran</b>, bukan
+    satu tujuan. "Teks terbesar", bukan "judul". Dengan begitu skalanya tetap utuh walau sebuah layar memakainya
+    untuk hal lain.
+  </p>
+
+  <h3>Variasi tipe</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="skin">
+  <h2>Skin — tempat yang tak terjangkau Theme</h2>
+
+  <table>
+    <thead><tr><th>Metode</th><th>Menentukan</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>Muka kartu dan panel, permukaan mengambang, pil yang diletakkan di atas game atau peta</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>Panel sebuah chip dan <b>warna label yang tetap terbaca di atasnya</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>Muka slot cepat dan teksnya</td></tr>
+      <tr><td><code>disc_box</code></td><td>Lingkaran di belakang avatar atau lencana</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>Peringatan sebaris, penampung sementara, kontrol tersegmentasi</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>Penanda yang dipasang tur coach mark di sekeliling sasarannya</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td>Hal-hal yang <b>digambar langsung</b> — joystick dan penunjuknya</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>Pemisah dan judul bagian</td></tr>
+      <tr><td><code>badge_box</code></td><td>Lencana slot cepat — jumlah dan sisa waktu</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>Isian bar (diberi garis tepi bila isiannya tidak mencapai 3:1 terhadap alurnya) dan snackbar</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # Widget-nya sudah menghitung posisinya — di sini hanya terjadi penggambaran
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>Bentuk yang tak bisa dibuat StyleBoxFlat</h3>
+  <table>
+    <thead><tr><th>Kelas</th><th>Apa yang digambarnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Sudut terpotong diagonal, satu tepi aksen yang ditebalkan, pendar di luar</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Hanya penanda sudut, membiarkan kontennya tidak terkurung</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Bingkai tempaan — paku keling, ukiran sudut, sorotan bevel, dan serat besi, kulit, atau perkamen</td></tr>
+    </tbody>
+  </table>
+  <p>Ketiganya tersimpan ke dalam resource Theme seperti StyleBox mana pun — dan itulah yang membuat sebuah tema bisa mengubah bentuk.</p>
+
+  <div class="note warn">
+    <b>Berikan padding lewat <code>content_margin_*</code>.</b> Menurunkan kelas StyleBox di GDScript berarti
+    <code>_get_style_margin()</code> tidak pernah dipanggil (diukur pada Godot 4.7). Isi kolom bawaannya atau
+    konten akan menempel pada garis tepinya.
+  </div>
+</section>
+
+<section id="own">
+  <h2>Preset Anda sendiri — satu berkas</h2>
+  <p class="sub">
+    Dahulu menambah sebuah tema berarti menyunting empat tempat secara manual — palet pembangun tema, bentuknya, sebuah skin,
+    dan sebuah resource preset. Kini satu perintah menempatkan semuanya sekaligus.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # .tres tema + gambar kontrol
+godot --headless --path . --import                  # impor gambar barunya sekali saja
+GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul di pemilih juga</code></pre>
+  <p>
+    Baris pertama menulis <code>themes/palettes/neon.json</code> dan <code>themes/presets/neon.tres</code>.
+    JSON-nya membawa <b>setiap nilai dari tema yang diwarisinya</b>, dijabarkan seluruhnya, sehingga sekaligus berfungsi sebagai
+    daftar apa saja yang bisa Anda ubah: hapus sebuah kunci untuk mempertahankan nilai induknya, tulis satu untuk menimpanya. Preset
+    ditemukan dengan <b>memindai</b> <code>themes/presets/</code>, jadi tidak ada kode registri yang perlu diubah — dropdown
+    pada project setting pun langsung menangkapnya.
+  </p>
+
+  <h3>Apa yang bisa Anda ubah — dalam satu halaman</h3>
+  <table>
+    <thead><tr><th>Di mana</th><th>Apa</th><th>Bagaimana</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>tema induk</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … atau tema JSON lain. Kunci yang dihilangkan mewarisi nilainya; siklus pewarisan akan gagal</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>background · tiga surface · border · tiga nada teks · accent · empat warna status · scrim · shadow · alur bar</td><td><code>"#RRGGBB"</code>, alfa sebagai <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>warna cerah khusus isian <code>*_vivid</code></td><td>menjaga bar tetap pekat bahkan saat warna teksnya harus digelapkan — hilangkan satu dan pembangun tema akan memberi tahu</td></tr>
+      <tr data-group="palette"><td>keterbacaan</td><td><b>tidak disetel manual.</b> Teks, garis tepi, warna aksen, dan label di atasnya didorong oleh pembangun tema sampai melewati ambang batasnya — ubah aksennya saja dan pemeriksaannya tetap lolos</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (membulat) · <code>cut</code> (sudut terpotong) · <code>medieval</code> (bingkai tempaan)</td></tr>
+      <tr data-group="shape"><td>ukuran</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — token ikut menyesuaikan, sehingga panel dan perhitungan widget tidak pernah berselisih</td></tr>
+      <tr data-group="shape"><td>khusus <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>khusus <code>medieval</code></td><td><code>material</code> (0 besi · 1 kulit · 2 perkamen) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> dipetakan ke berkas font <code>res://</code> di dalam add-on</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — keluarga untuk tempat-tempat yang digambar kode sendiri (joystick, slot, lencana, cincin coach mark, chip, pemisah)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — <b>angka-angka</b> dari tempat-tempat itu: lebar garis tepi dan rona slot, padding lencana, opasitas chip dan peringatan, lebar dan opasitas cincin joystick, ukuran chamfer sci-fi, pendar, dan kurung</td><td>Setiap nilai induk dijabarkan di dalam JSON. Pembangun tema menuliskannya ke <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>tidak ada kode skin yang disentuh</b>. Hanya untuk mengubah gambarnya sendirilah Anda menjalankan <code>--new-skin</code>, yang menyiapkan kerangka subkelas <code>GoSkin</code></td></tr>
+      <tr><td><code>icons</code></td><td>set ikon</td><td>sebuah path <code>res://</code> ke resource <code>GoIconSet</code> — dipertahankan dari induk JSON bila dihilangkan</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>cara pemilih menampilkannya</td><td>boolean · string</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Setiap kenop</h3>
+  <p>
+    Tabel di bawah ini diisi oleh <code>tools/make_site.py</code> <b>langsung dari baris</b>
+    <code>@export</code> pada skrip skin — tambahkan sebuah kenop atau ubah nilai defaultnya dan tabelnya ikut menyesuaikan. Pakai nama-nama ini di bawah
+    <code>skin.dials</code> di dalam JSON. Kenop yang defaultnya tertulis <code>14</code> adalah integer, yang tertulis
+    <code>10.0</code> adalah float — tulis bentuk mana pun di JSON dan pembangun tema akan mengonversinya ke tipe milik skrip.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>Skin default <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Default">0.16</td><td>Opasitas isian panel sebuah chip.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Default">0.45</td><td>Opasitas tepi panel sebuah chip.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Default">0.1</td><td>Seberapa jauh panel kotak peringatan dironai ke arah warna statusnya.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Default">0.24</td><td>Rona aksen panel slot cepat selagi waktu jedanya berjalan.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Default">0.08</td><td>Rona aksen panel slot cepat saat diam.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Default">2</td><td>Lebar garis tepi slot cepat (dp) selagi waktu jedanya berjalan.</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Default">1</td><td>Lebar garis tepi slot cepat (dp) saat diam.</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Default">5</td><td>Padding dalam horizontal (dp) sebuah lencana (jumlah, sisa waktu).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Default">1</td><td>Padding dalam vertikal (dp) sebuah lencana.</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Default">0.6</td><td>Opasitas tepi panel sebuah lencana.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Default">0.45</td><td>Opasitas bayangan kartu mengambang (coach mark, kartu ajakan).</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Default">14</td><td>Kaburnya bayangan (dp) kartu mengambang.</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Default">4</td><td>Pergeseran ke bawah (dp) bayangan sebuah kartu mengambang.</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Default">10.0</td><td>Jarak pendar (dp) panel mengambang yang berpendar alih-alih menjatuhkan bayangan, seperti panel bersudut potong sci-fi.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Default">0.42</td><td>Opasitas cakram dasar joystick.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Default">0.45</td><td>Opasitas cincin joystick.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Default">2.0</td><td>Lebar (dp) cincin joystick.</td></tr>
+    </tbody>
+  </table>
+  <h4>Skin sci-fi <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Default">7.0</td><td>Ukuran chamfer (dp) panel sebuah chip.</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Default">5.0</td><td>Ukuran chamfer (dp) panel kerangka pemuatan.</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Default">8.0</td><td>Ukuran chamfer (dp) sebuah kotak peringatan.</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Default">8.0</td><td>Ukuran chamfer (dp) sebuah kontrol tersegmentasi.</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Default">6.0</td><td>Ukuran chamfer (dp) panel slot cepat.</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Default">0.24</td><td>Chamfer avatar dan cakram = diameter × rasio ini.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Default">0.45</td><td>Opasitas pendar sebuah slot yang waktu jedanya sedang berjalan.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Default">6.0</td><td>Jarak pendar (dp) sebuah slot yang waktu jedanya sedang berjalan.</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Default">12.0</td><td>Panjang lengan (dp) kurung penanda sasaran pada coach mark.</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Default">2.0</td><td>Ketebalan garis (dp) kurung penanda sasaran pada coach mark.</td></tr>
+    </tbody>
+  </table>
+  <h4>Skin abad pertengahan <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Default">4.0</td><td>Radius sudut (dp) bingkai slot cepat abad pertengahan.</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Default">0.035</td><td>Opasitas guratan kulit yang samar di dalam slot cepat.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Default">1.0</td><td>Skala hiasan logam di sudut-sudut slot cepat. Bingkai menu memakai shape.ornament_scale.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Default">0.18</td><td>Kekuatan sorotan logam di sepanjang tepi slot cepat.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Default">1</td><td>Menampilkan paku keling logam kecil pada slot cepat: 0 menyembunyikannya, 1 menampilkannya.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>Turunkan kelas skin (opsional)</h3>
+  <p>Hanya apa yang tak terjangkau tema dan bentuk — heksagon joystick, lencana slot, kurung penanda sasaran pada
+    coach mark — yang tinggal di dalam sebuah skin. Turunkan <code>GoSkin</code>, timpa metode-metode itu saja, lalu arahkan
+    kolom <code>skin</code> di JSON ke resource tersebut. Tema yang hanya mengubah warna melewatkan langkah ini.</p>
+
+  <div class="note">
+    <b>Sebuah pemeriksaan menjaga janji itu.</b> <code>tools/check_scaffold.sh</code> membuat tema sekali pakai pada setiap jalan uji —
+    mengubah aksennya, menyetel radiusnya ke 4 — lalu memverifikasi generasi, perambatan token, dan kelulusan
+    kontras sebelum menghapusnya. Jalan uji pertama menemukan sebuah tema yang hanya diubah aksennya gagal pada
+    <b>8 pasangan</b>: pembangun tema mendorong warna teks tetapi memakai aksennya apa adanya. Kini ia mendorong aksen
+    dan label di atasnya juga.
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>Keterbacaan itu diukur</h2>
+  <p class="sub">
+    "Cantik" itu selera; <b>"terbaca" itu bisa diukur.</b> Teks abu-abu samar terlihat baik-baik saja di monitor bagus dan
+    lenyap di ponsel saat siang bolong — memilih dengan mata telanjang menjamin hal itu cepat atau lambat terjadi.
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>Apa</th><th>Yang diwajibkan</th></tr></thead>
+    <tbody>
+      <tr><td>Teks isi</td><td>4,5 : 1</td></tr>
+      <tr><td>Teks besar (24px ke atas)</td><td>3 : 1</td></tr>
+      <tr><td>Garis tepi dan ikon beraksen</td><td>3 : 1</td></tr>
+      <tr><td>Garis tepi dekoratif</td><td>2 : 1 — WCAG tidak menerapkan aturan 3:1-nya pada dekorasi</td></tr>
+      <tr><td>Permukaan yang bersebelahan</td><td>1,12 : 1 — cukup agar sebuah kartu terbaca terpisah dari latarnya</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Teks berwarna senada di atas rona senada</h3>
+  <p>
+    Jebakan ini muncul <b>tiga kali</b> di basis kode ini — tombol yang ditekan (panel aksen, label aksen),
+    tombol bahaya, dan chip. Ia tampak bagus sebagai contoh warna lalu ambruk begitu diukur, karena
+    keduanya berbagi rona yang sama sehingga tidak ada beda terang di antaranya.
+  </p>
+  <p>
+    Karena itu warna label <b>tidak dipilih dengan tangan</b>. Pembangun tema dan <code>GoSkin</code> masing-masing
+    mendorong terangnya — dan hanya terangnya — sampai ambang batasnya terlewati pada panel tempat teks itu benar-benar
+    berada. Rona dan kepekatannya bertahan, sehingga paletnya menjaga wataknya dan mengubahnya tetap menjaga kontrasnya.
+  </p>
+
+  <h3>Warna yang dibaca sebagai teks dan warna yang dilukis sebagai bidang menuntut hal yang berlawanan</h3>
+  <p>
+    Pada tema terang, warna peringatan harus digelapkan agar tetap terbaca <b>sebagai teks</b> (<code>#96500A</code>).
+    Ketika isian bar mewarisi warna itu, bar pengalaman berubah <b>cokelat</b>. Warna saja tak bisa memperbaikinya:
+    kuning memang cerah secara hakiki, jadi ia melewati 3:1 bahkan tanpa alur abu-abu sama sekali, dan menggelapkan alurnya
+    justru membuatnya <b>lebih buruk</b> (1,52 → 1,06).
+  </p>
+  <p>
+    Maka keduanya dipisahkan. <b>Warnanya tetap cerah</b> — paletnya membawa warna khusus isian seperti
+    <code>warning_vivid</code>. <b>Tepinya yang membawa kontras</b> — <code>GoSkin</code> menggambar garis tepi 1dp
+    pada isian mana pun yang tak bisa mencapai 3:1 terhadap alurnya, sehingga "seberapa penuh isinya" tetap terbaca.
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # dibaca sebagai teks
+    warning_vivid=hexc("F2A007"),   # dilukis pada bar
+)</code></pre>
+  <div class="note">
+    <b>Melewatkannya akan dilaporkan.</b> Tanpa sebuah <code>*_vivid</code>, isian yang keluar gelap membuat
+    pembangun tema mencetak <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code> (bar-nya kusam — tambahkan
+    warning_vivid ke paletnya). Tempat yang dulu memburuk diam-diam kini bersuara.
+  </div>
+
+  <h3>Panel mengambang tak bisa tahu apa yang ada di belakangnya</h3>
+  <p>
+    Sebuah HUD digambar <b>di atas</b> game — padang salju, atau sebuah gua. Kalau panelnya tembus pandang, apa pun yang
+    ada di belakangnya akan merembes dan <b>mengubah warna panelnya</b>, sekaligus menyeret turun kontras teksnya.
+    Pada opasitas 82%, teks muted tema gelap jatuh ke <code>3,74:1</code> di atas latar yang cerah — di bawah
+    ambang minimum.
+  </p>
+  <p>
+    Maka panel tembus pandang diukur dengan <b>putih murni dan hitam murni</b> di belakangnya; itulah yang terburuk
+    yang bisa disodorkan sebuah adegan game. Panel HUD tema bawaan cukup pekat untuk lolos (92%) sambil
+    mempertahankan kesan kacanya.
+  </p>
+  <p>
+    Karena alasan yang sama, <b>warna ikon pun tidak dipatok</b>. Glif slot cepat dahulu dipatok putih
+    dan terukur <code>1,11:1</code> pada tema terang — kini ia mengikuti panel tempatnya berada, persis
+    seperti labelnya.
+  </p>
+
+  <div class="note">
+    <b>Dua pemeriksa, dua jangkauan.</b> <code>check_contrast.py</code> membaca berkas temanya;
+    warna yang dicampur sebuah skin <b>saat berjalan</b> (chip, slot) diukur oleh bagian
+    <code>skin contrast</code> pada rangkaian uji di dalam Godot.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">← Ringkasan</a> · <a href="widgets.html">Widget →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

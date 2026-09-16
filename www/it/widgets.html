@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widget — gohud</title>
+<meta name="description" content="Tutti i widget di gohud — superfici flottanti, fogli inferiori, finestre di dialogo, moduli, snackbar, coach mark, barre HUD, slot rapidi e un joystick virtuale.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Panoramica</a>
+      <a href="theming.html">Temi</a>
+      <a href="widgets.html">Widget</a>
+      <a href="#surfaces">Finestre</a>
+      <a href="#messages">Messaggi</a>
+      <a href="#hud">HUD</a>
+      <a href="#factory">GoStyle</a>
+      <a href="#hooks">Hook</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Widget</h1>
+    <p class="lead">
+      Ognuno è <code>.new()</code> e <code>add_child()</code> — niente file di scena, niente autoload.
+      Le note segnate con <b>🛑</b> sono trappole incontrate su schermi veri, non teoria.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>Finestre flottanti</h2>
+
+  <h3><code>GoSurface</code> — il guscio</h3>
+  <p>Popup, fogli e menu a tendina usano tutti questo. Si occupa dell'area sicura, della tastiera virtuale,
+    dell'intestazione e del piè di pagina fissi, di un corpo scorrevole, di quale finestra sia in cima, del ripristino del focus,
+    di chi possiede il tasto Indietro e del ridimensionamento con il trascinamento.</p>
+  <table>
+    <thead><tr><th>Collocazione</th><th>Che aspetto ha</th><th>Usata per</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>Una scheda al centro</td><td>Conferme, impostazioni</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>Un foglio che sale dal basso</td><td>Liste, pagine di gestione</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>Una scheda fissata accanto a un controllo</td><td>Menu a tendina, menu contestuali</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Non si rimuove da sé.</b> Reagire a <code>close_requested</code> — nascondendo o liberando — spetta alla
+    schermata proprietaria, perché il guscio non può sapere <i>perché</i> si sta chiudendo (salva e chiudi, oppure scarta).
+  </div>
+
+  <h3><code>GoSheet</code> — una pagina dal basso</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventario")
+sheet.toolbar().add_child(GoStyle.line_edit("Cerca…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Chiudi", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>Possiede un <code>CanvasLayer</code>, quindi sta sopra l'HUD in modo affidabile. <code>open()</code> svuota il
+    corpo e <b>disattiva</b> il tasto Indietro e le righe fisse — un pulsante morto su una schermata da cui non si torna
+    da nessuna parte si legge come un difetto.</p>
+
+  <h3><code>GoDialogs</code> — conferme da mettere in <code>await</code></h3>
+  <pre><code>if await dialogs.confirm("Elimina salvataggio", "L'operazione non è reversibile."):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — tutto ciò che segue il corpo è
+    facoltativo, e <code>alert()</code> funziona allo stesso modo con un solo pulsante. Imposta <code>destructive</code> per
+    qualcosa di irreversibile: il pulsante di conferma diventa il pulsante pieno <code>GoStyle.Tone.DANGER_SOLID</code>.
+    Su un tema chiaro un'etichetta di pericolo velata deve scurirsi finché non si legge come testo nero; il pulsante pieno
+    mantiene testo bianco su rosso. Il tono viene riapplicato a ogni chiamata perché la finestra viene riutilizzata, e una seconda
+    <code>confirm()</code> mentre una è già aperta restituisce subito <code>false</code>. <code>confirm_key()</code> accetta
+    chiavi di traduzione.</p>
+  <p><b>Disposizione dei pulsanti.</b> <code>action_layout</code> è <code>VERTICAL</code> per impostazione predefinita (sicura con traduzioni lunghe),
+    <code>HORIZONTAL</code> per una riga sola con metà larghezza ciascuno, oppure <code>AUTO</code>, che usa una riga sola quando entrambe
+    le etichette stanno in metà scheda su una riga e altrimenti le impila. <code>action_gap</code> è lo spazio tra
+    i pulsanti e <code>body_gap</code> lo spazio sopra di essi — rendilo più ampio dello spazio tra i pulsanti, così la domanda e
+    la scelta si leggono come due parti distinte. Per una sola finestra di dialogo, chiama <code>set_next_action_layout()</code> prima di aprirla.
+    La riga viene costruita alla prima apertura di una finestra di dialogo, quindi un <code>GoDialogs</code> in autoload non aggiunge nulla all'avvio.</p>
+
+  <h3><code>GoForm</code> — un modulo con larghezza limitata</h3>
+  <div class="note warn">
+    <b>Garantisce che le etichette discendenti vadano a capo.</b> Senza, una frase lunga si allunga in
+    una riga sola la cui larghezza minima supera lo schermo, e i lati vengono tagliati — non si capisce nemmeno
+    su quale schermata ci si trova. Attivare l'andata a capo a mano in ogni scena ci si dimentica ogni volta.
+  </div>
+
+  <h3><code>GoScroll</code> — scorrimento touch</h3>
+  <p>Mettici dentro <b>una cosa sola</b>. Intestazioni e righe di pulsanti stanno fuori — una lista lunga non deve
+    spingerle fuori dallo schermo. <code>use_panel_edge()</code> sposta la barra di scorrimento dentro il margine interno già presente
+    nella scheda, mentre il contenuto mantiene il suo rientro.</p>
+</section>
+
+<section id="messages">
+  <h2>Dire qualcosa a chi gioca</h2>
+
+  <h3><code>GoNotice</code> — snackbar</h3>
+  <div class="note warn">
+    <b>Non intercetta mai l'input.</b> Un avviso si legge, non si preme. Non prende il focus, non blocca
+    l'input di gioco, e il pulsante sotto di esso si preme comunque. Quando serve una conferma usa
+    <code>GoDialogs</code>; quando serve una scelta, <code>GoPromptCard</code>.
+  </div>
+
+  <h3><code>GoPromptCard</code> — una domanda che non blocca</h3>
+  <p>Fluttua su un lato senza velo. Il gioco continua a girare.</p>
+
+  <h3><code>GoCoachMark</code> — tour guidato</h3>
+  <p>Indica i controlli veri uno alla volta. Solo la scheda prende l'input, quindi <b>premere il controllo
+    evidenziato fa avanzare il tour</b> — "premi qui" diventa un'azione invece che una frase.</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "Borsa", "body": "Tutto ciò che raccogli finisce qui."},
+    {"target": map_button, "title": "Mappa", "body": "Premi per aprire la mappa completa."},
+])</code></pre>
+  <p><code>title</code> e <code>body</code> possono essere chiavi di traduzione o testo semplice. Un passaggio il cui bersaglio è
+    scomparso viene saltato.</p>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>Sono i dettagli a decidere se sta bene</h3>
+  <p>
+    Rifinisci quanto vuoi i pannelli grandi — ciò che salta all'occhio è sempre qualcosa di piccolo: una parola spezzata
+    in due, un bagliore tagliato, uno slot stretto. Quattro cose così sono state segnalate il 2026-09-13 e corrette nei
+    widget e nei temi, non nella schermata della demo, così ogni schermata ottiene lo stesso risultato.
+  </p>
+  <table>
+    <thead><tr><th>Che cosa si vedeva</th><th>Causa</th><th>Correzione</th></tr></thead>
+    <tbody>
+      <tr><td>Il <code>Done</code> del coach mark diventava <code>Don</code>/<code>e</code></td>
+          <td>Un pulsante con l'andata a capo attiva <b>sottrae la larghezza del testo</b> dal proprio minimo — stringilo e si spezza dentro una parola</td>
+          <td><code>GoStyle.fit_words()</code>: una parola sola non va mai a capo; più parole vanno a capo, ma la <b>parola più lunga</b> ci sta sempre — il giudizio è sul testo <b>mostrato</b>, non sulla chiave di traduzione, e viene riapplicato dal modulo quando cambia la lingua</td></tr>
+      <tr><td>Il bagliore di un pulsante a tutta larghezza risultava tagliato verticalmente a sinistra</td>
+          <td>Un contenitore di scorrimento taglia al proprio bordo, senza eccezioni. Sopravviveva solo il lato destro, grazie alla corsia della barra</td>
+          <td><code>GoScroll</code> prende in prestito il margine interno del genitore per spingere il proprio bordo 12dp più in fuori e lo restituisce all'interno — <b>il contenuto resta dov'è</b></td></tr>
+      <tr><td>Tempo, icona e conteggio impilati in verticale dentro uno slot</td>
+          <td>Tre righe dentro 48dp</td>
+          <td>Icona grande al centro, scorciatoia in alto a sinistra, conteggio come <b>badge</b> in basso a destra, tempo rimanente come badge sopra l'icona — i pannelli dei badge vengono dal <code>badge_box()</code> della skin</td></tr>
+      <tr><td>Un menu a tendina piatto senza selezione visibile</td>
+          <td>Il passaggio del mouse sulle voci usava il pannello del pulsante; i segni dei radio erano quelli tenui predefiniti del motore</td>
+          <td>Un pannello dedicato per il passaggio del mouse (velatura d'accento tenue), la stessa grafica dei radio usata per le caselle di spunta, altezza delle voci dimensionata per il tocco</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Un menu a tendina aperto — pannello tenue d'accento al passaggio del mouse e segno radio della voce scelta" loading="lazy">
+      <figcaption>Menu a tendina — pannello al passaggio del mouse e segno radio</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Quattro slot rapidi — scorciatoia in alto a sinistra, badge del conteggio in basso a destra, il primo con un badge del tempo rimanente" loading="lazy">
+      <figcaption>Slot — badge agli angoli e tempo rimanente (sci-fi)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Dai ai pulsanti di sola icona una descrizione con <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    il suggerimento per chi usa il mouse e il nome accessibile per i lettori di schermo vengono entrambi da quell'unico valore.
+    gohud disegna da sé il suggerimento: quello predefinito del motore spezza il testo <b>un carattere per riga</b> quando
+    il suo calcolo della larghezza va storto (misurato a 1dp di larghezza).
+  </p>
+
+  <h4>La scheda del coach mark sta lontana dagli elementi fissi</h4>
+  <p>
+    In orizzontale la scheda finiva sul bordo superiore o inferiore estremo — esattamente dove stanno intestazioni e pezzi
+    dell'HUD; nella demo si posava sul <code>→ ×</code> dell'intestazione. Ora resta al livello del suo bersaglio,
+    gira attorno a qualsiasi <code>GoHudAnchor</code> che riservi spazio, e accetta altri elementi da evitare tramite
+    <code>keep_clear</code>. Si sposta della distanza minima che libera l'ostacolo senza coprire il
+    bersaglio, e resta dov'è quando lo schermo è troppo piccolo per liberare tutto — sovrapporsi è meglio che sparire.
+    La sua profondità — così da leggersi come <b>sopra</b> la pagina — viene dalle manopole della skin
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; le skin smussate usano <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # elementi fissi che non sono ancore</code></pre>
+
+  <h3>Schermi con mouse e tastiera</h3>
+  <p>
+    Un dito <b>non ha lo stato di passaggio del mouse.</b> Sviluppa pensando solo al mobile e due stati esclusivi del desktop restano non verificati —
+    e uno dei due era rotto: in gohud <b>l'anello di focus era invisibile su un pulsante primario.</b> Il pannello è
+    del colore d'accento e lo era anche l'anello: <code>1,00:1</code>, lo stesso colore disegnato sopra sé stesso. Muovendosi
+    da tastiera non c'era modo di capire dove ci si trovasse.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="La stessa riga di pulsanti in tre stati — normale, passaggio del mouse, focus da tastiera" loading="lazy">
+    <figcaption>Dall'alto in basso: <b>normale · passaggio del mouse · focus</b>. I pulsanti pieni ricevono un anello che contrasta con il proprio pannello.</figcaption>
+  </figure>
+  <p>
+    I pulsanti pieni (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) usano un anello che
+    <b>contrasta con il proprio pannello</b> — scuro su un tema scuro, bianco su uno chiaro, una staffa di mira
+    scura in sci-fi. Il verificatore di contrasto misura <b>l'anello di focus rispetto al pannello su cui si trova</b>, così
+    la regola sopravvive a un cambio di palette (la WCAG 2.4.11 chiede 3:1 sugli indicatori di focus).
+  </p>
+
+  <h3><code>GoHudAnchor</code> — nove punti</h3>
+  <p>Rispetta l'area sicura e i margini dei bordi. Dagli un <code>landscape_spot</code> e si sposta in
+    orizzontale — controlli che in verticale stanno in basso al centro possono andare in basso a destra.</p>
+  <div class="note">
+    <b>Perché esiste.</b> Scritti a mano per ogni pezzo di HUD, ancoraggi e scostamenti si disallineano: una barra della salute finisce
+    sotto il foro della fotocamera su un dispositivo con notch, e un pulsante di comando atterra sulla barra dei gesti in
+    orizzontale. Quell'aritmetica vive in un unico punto.
+  </div>
+
+  <h4>Tenere il contenuto fuori da sotto l'HUD</h4>
+  <p>
+    Quando una schermata scorrevole condivide il display con un HUD, il contenuto scivola <b>sotto di esso</b> e i
+    due insiemi di testo si sovrappongono finché nessuno dei due è leggibile. È successo due volte in questo add-on: il testo
+    segnaposto di un campo veniva schiacciato tra gli slot rapidi, e la manopola di un interruttore delle impostazioni finiva sulla barra della salute.
+  </p>
+  <pre><code>form.avoid_hud = true                  # sta lontano da ogni GoHudAnchor visibile
+joystick_anchor.reserve_space = false  # …tranne quelli che compaiono solo sotto un dito</code></pre>
+  <p>
+    Ogni rettangolo viene evitato nella direzione che <b>costa meno area</b>. Una barra in alto a destra viene
+    aggirata verso il basso su un telefono in verticale (il 13% dell'altezza) e di lato in orizzontale (il 21% della
+    larghezza) — evitarla in verticale in orizzontale costerebbe il 27% dello schermo. Il terreno già ceduto viene
+    sottratto prima di misurare il rettangolo successivo.
+  </p>
+
+  <h4>Anche i pezzi dell'HUD si scontrano tra loro</h4>
+  <p>
+    I nove punti dividono lo schermo; non garantiscono che i pezzi <b>non si incontrino</b>. Una snackbar
+    larga in alto al centro finiva in pieno sulla barra della salute in alto a destra, nascondendone il valore — non si riusciva
+    a leggere quanta salute restasse.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # si posa sotto l'HUD fisso
+notice_anchor.reserve_space = false   # e non spinge la pagina mentre è visibile</code></pre>
+  <p>
+    Si sposta <b>solo in verticale</b> — muoversi anche di lato farebbe comparire un avviso centrato in un
+    punto diverso a ogni apparizione. E evita solo i pezzi che <b>non</b> si stanno spostando a loro
+    volta: se entrambi cedono, i due si scambiano di posto all'infinito.
+  </p>
+
+  <h3><code>GoBar</code> — salute, mana, esperienza</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # il token di solo riempimento
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Le variazioni sono smorzate su 0,18s — una barra della salute che salta di colpo non dice quanto è stato duro il colpo.
+    <code>reduce_motion</code> la rende istantanea. I numeri grandi vengono abbreviati in <code>12.3k</code> così la
+    larghezza della barra non sobbalza quando le cifre entrano ed escono.</p>
+
+  <h3><code>GoSlot</code> — uno slot rapido</h3>
+  <p>Icona, quantità, ricarica e scorciatoia su <b>una sola faccia</b>. Appendere badge a un cerchietto
+    rende ogni slot di larghezza diversa e la riga traballa.</p>
+  <div class="note">
+    <b>Dimensione visibile e dimensione di tocco sono diverse.</b> Slot affiancati hanno riquadri di tocco da 48dp sovrapposti; la
+    sovrapposizione va allo <b>slot il cui centro è più vicino</b> — comunicaglielo a vicenda tramite
+    <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> è disattivato per impostazione predefinita, così una fila di otto slot non si frappone tra chi usa la tastiera e
+    ogni controllo delle impostazioni nell'ordine di tabulazione. Attivalo quando l'unico input è una tastiera o un gamepad.</p>
+
+  <h3><code>GoJoystick</code> — stick virtuale</h3>
+  <table>
+    <thead><tr><th>Modalità</th><th>Comportamento</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Sempre nello stesso posto — facile da trovare senza guardare</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Compare dove si posa il pollice</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Continua a seguire il pollice dopo essere comparso — comodo per gli spostamenti lunghi</td></tr>
+    </tbody>
+  </table>
+  <p>Il <code>Vector2</code> di <code>moved</code> ha lunghezza 0–1, quindi puoi moltiplicarlo direttamente per
+    una velocità; non varia con la dimensione dello schermo o con i DPI.</p>
+
+  <h3><code>GoIconButton</code> — sembra piccolo, si preme grande</h3>
+  <div class="note warn">
+    <b>Sicuro solo finché i fratelli ignorano l'input.</b> Se l'area allargata copre il pulsante successivo, quel
+    pulsante smette di rispondere. Pulsanti icona affiancati richiedono <code>touch_peers</code>.
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — un unico posto in cui le cose si costruiscono</h2>
+  <p class="sub">
+    Chiama <code>Button.new()</code> direttamente e margine interno, altezza e andata a capo si disallineano un po' da schermata a
+    schermata. Quel disallineamento è invisibile in una revisione del codice ed evidente in uno screenshot.
+  </p>
+
+  <table>
+    <thead><tr><th>Gruppo</th><th>Funzioni</th></tr></thead>
+    <tbody>
+      <tr><td>Struttura</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Testo</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Pulsanti</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>Inserimento</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>Visualizzazione</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>Pezzi delle superfici</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>Utilità</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> restituisce sempre uno <code>StyleBoxFlat</code></b>, perché i chiamanti lo ricevono e ne
+    regolano <code>bg_color</code> o <code>corner_radius</code>. Usa <code>surface()</code> quando una forma
+    personalizzata deve sopravvivere.
+  </div>
+
+  <h3>Righe di lista con una descrizione</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Custode del Giuramento", _inspect, Color.TRANSPARENT,
+    "Spada lunga  /  Attacco 42", false)</code></pre>
+  <p>Una riga con una seconda linea riceve <b>margine interno uguale sopra e sotto</b>, più generoso di una riga a linea singola, e la
+    coppia titolo/descrizione resta <b>centrata verticalmente</b> accanto all'icona — anche quando un contenitore allunga la riga
+    in altezza, e dopo che la descrizione è andata a capo su più linee. L'intera riga resta un unico bersaglio di tocco.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="esempio medieval_light — righe di lista a due linee, slot rapidi e barre" loading="lazy">
+    <figcaption>Righe a due linee, slot e barre nell'esempio medievale — le stesse chiamate alla factory sotto <code>medieval_light</code>.</figcaption>
+  </figure>
+
+  <h3>Righe che vanno a capo</h3>
+  <p>Metti i controlli dentro <code>wrap_row</code> alla loro <b>larghezza naturale</b>. Con l'andata a capo attiva, la larghezza minima
+    di un pulsante scende quasi a zero e la riga dimensiona la cella su quella — l'etichetta collassa a un carattere per riga.
+    La factory lo impedisce al posto tuo.</p>
+
+  <h3>Non lasciare mai vuota una lista vuota</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Qui non c'è ancora nulla"))</code></pre>
+  <p>Chi guarda una schermata bianca la legge come <b>rotta</b>.</p>
+</section>
+
+<section id="hooks">
+  <h2>Hook per le sottoclassi</h2>
+  <p class="sub">
+    Ogni punto in cui viene costruito un widget figlio passa da un metodo sovrascrivibile, così un progetto che
+    estende i tipi di gohud può ottenere le proprie sottoclassi <b>dentro</b> i widget senza copiare codice.
+  </p>
+  <table>
+    <thead><tr><th>Hook</th><th>Widget</th><th>Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Nasconde la scheda mentre è aperto un elemento modale</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← Temi</a> · <a href="./">Panoramica →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

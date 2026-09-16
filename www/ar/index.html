@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — طقم HUD وواجهات لـ Godot 4</title>
+<meta name="description" content="طقم HUD وواجهات قابل للتخصيص لـ Godot 4.6+. أسطح عائمة، وأوراق سفلية، ومربعات حوار، ونماذج، وأشرطة إشعار، وأشرطة HUD، وخانات سريعة، وعصا توجيه افتراضية، مع ستة أنماط جاهزة — الافتراضي والخيال العلمي والعصور الوسطى.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">ما الذي يتكفّل به</a>
+      <a href="#install">التثبيت</a>
+      <a href="#start">بداية سريعة</a>
+      <a href="#presets">الأنماط الجاهزة</a>
+      <a href="#examples">الأمثلة</a>
+      <a href="#ai">أوامر الذكاء الاصطناعي</a>
+      <a href="theming.html">السمات ↗</a>
+      <a href="widgets.html">الودجات ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>واجهة اللعبة كلها يقودها مورد واحد</h1>
+    <p class="lead">
+      gohud طقم HUD وواجهات لـ Godot 4.6 وما بعده. النوافذ العائمة والأوراق السفلية ومربعات الحوار والنماذج
+      وأشرطة الإشعار والعلامات الإرشادية وأشرطة HUD والخانات السريعة وعصا التوجيه الافتراضية كلها تعمل بـ
+      <b>سمة واحدة ومجموعة أيقونات واحدة قابلة للاستبدال</b>، وتتكفّل نيابة عنك بالمنطقة الآمنة ولوحة المفاتيح
+      الافتراضية واتجاه RTL ومساحات اللمس.
+      <b>ستة أنماط جاهزة</b> — الافتراضي والخيال العلمي والعصور الوسطى، لكلٍّ منها داكن وفاتح — تغيّر الألوان والأشكال بسطر واحد.
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
+      <span class="badge">GDScript خالص</span>
+      <span class="badge">لا حاجة إلى autoload</span>
+      <span class="badge">MIT</span>
+      <span class="badge">6 أنماط جاهزة</span>
+      <span class="badge">21 لغة</span>
+      <span class="badge">100 أيقونة مضمّنة</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">التثبيت</a>
+      <a class="btn" href="#presets">شاهد الأنماط الجاهزة</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="showcase">
+  <h2>كيف يبدو داخل لعبة</h2>
+  <p class="sub">
+    نمطا العصور الوسطى والخيال العلمي — صفحات الشخصية والحقائب والمهام؛ النماذج والشبكات وبطاقات السؤال؛
+    اللوحات المشطوفة وأدوات التحكم باللمس. تبديل النمط الجاهز سطر برمجي واحد.
+  </p>
+  <figure>
+    <img src="../img/showcase-medieval-quests.webp" alt="سمة العصور الوسطى في gohud — صفحة شخصية فيها أشرطة صحة ومانا وقدرة تحمّل، وحقيبة من الخانات السريعة، وسجل مهام داخل إطارات ذهبية مطروقة">
+    <figcaption><b>العصور الوسطى</b> — الشخصية والحقيبة والمهام</figcaption>
+  </figure>
+  <div class="shots">
+    <figure>
+      <img src="../img/showcase-medieval-forms.webp" alt="سمة العصور الوسطى في gohud — لوحة إدخال فيها حقل اسم ومفتاح تبديل ومربعات اختيار وشريط مستوى صوت، وشبكة بلاطات، وبطاقة دعوة إلى الفريق فيها قبول ورفض" loading="lazy">
+      <figcaption><b>العصور الوسطى</b> — النماذج والشبكات وبطاقات السؤال</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/showcase-scifi-touch.webp" alt="سمة الخيال العلمي في gohud — لوحة تحكم باللمس بزوايا مشطوفة فيها عصا توجيه سداسية، ومبدّل بين الوضع الثابت والمتابع والنسبي، وأزرار حركة دائرية" loading="lazy">
+      <figcaption><b>الخيال العلمي</b> — لوحات حادة الزوايا وتحكّم باللمس</figcaption>
+    </figure>
+  </div>
+  <p><a href="#presets">← الأنماط الجاهزة الستة وكيف تبدّل بينها</a></p>
+</section>
+
+<section id="what">
+  <h2>ما الذي يتكفّل به بدلًا منك</h2>
+  <p class="sub">
+    أكثر ما يستهلك الوقت في واجهات الألعاب ليس شكل الزر — بل كل ما ينحرف بين جهاز وآخر.
+    gohud يعالج هذا الانحراف في مكان واحد.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>كل مقاس توكن له اسم</h3>
+      <p>المسافات والزوايا وأحجام النص تُطلب بأسمائها لا تُكتب أرقامًا. بدّل السمة فتتحرك الشاشة كلها معها.</p>
+    </div>
+    <div class="card">
+      <h3>الحجم المرئي ≠ الحجم الملموس</h3>
+      <p>زر الإغلاق يبدو بحجم 36dp لكن مساحة لمسه 48dp. وحيث تتداخل الخانات المتلاصقة، تأخذ الضغطةَ الخانةُ الأقرب مركزًا.</p>
+    </div>
+    <div class="card">
+      <h3>النتوءات ولوحات المفاتيح</h3>
+      <p>قطع HUD تجلس داخل المنطقة الآمنة، وحقل الإدخال يرتفع فوق لوحة المفاتيح الافتراضية حين تظهر.</p>
+    </div>
+    <div class="card">
+      <h3>الرجوع يغلق شيئًا واحدًا</h3>
+      <p>مفتاح Escape وزر الرجوع في أندرويد يغلقان <b>السطح الأعلى فقط</b>. النوافذ المتراكمة لا تختفي دفعة واحدة.</p>
+    </div>
+    <div class="card">
+      <h3>الإشعارات لا تسرق اللمس</h3>
+      <p>اضغط عبر شريط الإشعار فيصل الضغط إلى الزر الذي تحته. ولا يُسلب التركيز أيضًا.</p>
+    </div>
+    <div class="card">
+      <h3>الأيقونات تُطلب بالاسم</h3>
+      <p>الودجات لا تعرف سوى <code>GoIconSet.CLOSE</code>. بدّل المجموعة فتتغير كل الرسوم دون لمس سطر واحد من الكود.</p>
+    </div>
+    <div class="card">
+      <h3>ستة مظاهر بسطر واحد</h3>
+      <p><code>GoUi.use_preset()</code> يبدّل السمة والمظهر والأيقونات معًا — إطارات مدوّرة أو مشطوفة بطراز الخيال العلمي أو مطروقة بطراز العصور الوسطى.</p>
+    </div>
+    <div class="card">
+      <h3>وضوح مقيس لا مُقدَّر</h3>
+      <p>كل سمة تُفحص وفق معايير WCAG، بما في ذلك حالات الأزرار ولوحات HUD الشفافة فوق الأبيض الخالص والأسود الخالص.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>كل شيء يعمل دون تفعيل الإضافة.</b> تفعيلها يضيف autoload باسم GoRuntime يتتبّع حجم النافذة ومقياس dp
+    وارتفاع لوحة المفاتيح، إضافة إلى إعدادات مشروع لمورد الإعدادات وللنمط الجاهز — وسائل راحة، لا شروط.
+  </div>
+</section>
+
+<section id="install">
+  <h2>التثبيت</h2>
+  <p class="sub">ضع مجلد الإضافة في مشروعك. لا شيء آخر يحتاج إعدادًا.</p>
+
+  <h3>من متجر الأصول أو من ملف ZIP للإصدار</h3>
+  <p>فُكّ الضغط في جذر مشروعك بحيث تحصل على <code>res://addons/gohud/</code>. هذا كل شيء. واختياريًا فعّل
+    <b>Project → Project Settings → Plugins → gohud</b>.</p>
+
+  <h3>كوحدة فرعية في git</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # اختياري: ثبّت وسمًا أو كوميت بعينه</code></pre>
+  <p>جذر المستودع <b>هو</b> مجلد الإضافة نفسه، فيحطّ تمامًا حيث يتوقعه Godot. عدّل في مكانه، ثم أودِع وادفع
+    داخل <code>addons/gohud</code>، ثم أودِع مؤشّر الوحدة الفرعية في لعبتك.</p>
+
+  <div class="note warn">
+    <b>يلزم Godot 4.6 أو أحدث.</b> يستعمل gohud واجهات برمجية ظهرت في 4.5 (DPITexture و
+    FoldableContainer وخصائص الوصولية)، فعلى أي إصدار أقدم <b>يفشل أثناء التحليل</b>.
+    الإصدار 4.6 هو الحد الأدنى المدعوم، ومسجَّل في <code>GoUi.MIN_ENGINE</code>.
+  </div>
+</section>
+
+<section id="start">
+  <h2>بداية سريعة</h2>
+  <p class="sub">كل ودجت هو <code>.new()</code> ثم <code>add_child()</code> — لا ملفات مشاهد ولا autoload.</p>
+
+  <h3>اختر المظهر قبل بناء الواجهة (اختياري)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # يُستعمل default_dark إن تخطيت هذا السطر</code></pre>
+
+  <h3>تأكيد تنتظره بـ <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("حذف الحفظ", "لا يمكن التراجع عن هذا."):
+    delete_save()</code></pre>
+  <p>مرّر <code>destructive = true</code> (المعامل الأخير) فيُرسم زر التأكيد زرًّا مصمتًا بلون الخطر.</p>
+
+  <h3>ورقة سفلية بحقل بحث وتذييل ثابتين</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("الحقيبة")
+sheet.toolbar().add_child(GoStyle.line_edit("بحث…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("إغلاق", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>لماذا تنفصل الصفوف الثابتة عن الجسم المتمرر.</b> ضع التأكيد والإلغاء في
+    <code>body</code> فتدفعهما قائمة طويلة خارج الشاشة. أما <code>footer()</code> فيبقى ظاهرًا دائمًا.
+  </div>
+
+  <h3>ركن من HUD</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3>محتوى يتنحّى عن HUD</h3>
+  <pre><code>form.avoid_hud = true                  # ابتعد عن كل GoHudAnchor ظاهر
+joystick_anchor.reserve_space = false  # …إلا ما لا يظهر إلا تحت الإصبع
+notice_anchor.avoid_peers = true       # يستقر الإشعار تحت HUD الثابت بدل أن يغطيه</code></pre>
+  <p>كل مستطيل يُتفادى في الاتجاه الأقل كلفة من حيث المساحة — نزولًا على هاتف بالوضع الطولي،
+    وجانبًا في الوضع العرضي. <a href="widgets.html#hud">← كيف يتفادى HUD نفسه</a></p>
+</section>
+
+<section id="presets">
+  <h2>غيّر المظهر — الألوان <em>والشكل</em> معًا</h2>
+  <p class="sub">
+    السمة لا تستطيع إعادة تنسيق إلا ما يرسمه المحرك. والزوايا المدوّرة هي الزوايا الوحيدة التي يملكها
+    StyleBoxFlat، أما عصا التوجيه والخانات السريعة والعلامة الإرشادية فيرسمها الكود — ومن ثمّ لا تستطيع
+    السمة وحدها تغيير أشكالها أبدًا. لذلك يأتي gohud بـ <b>أنماط جاهزة</b>: سمة ومظهر ومجموعة أيقونات تُختار وحدةً واحدة.
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # السمة والمظهر والأيقونات معًا</code></pre>
+
+  <table>
+    <thead><tr><th>النمط الجاهز</th><th>المظهر</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code></td><td>gohud الأصلي — زوايا مدوّرة ولون تمييز أزرق هادئ</td></tr>
+      <tr><td><code>default_light</code></td><td>الأشكال نفسها على لوحة ألوان فاتحة</td></tr>
+      <tr><td><code>scifi_dark</code></td><td>زوايا مشطوفة، وحواف نيون سماوية متوهجة، وعصا توجيه سداسية، وأقواس تصويب</td></tr>
+      <tr><td><code>scifi_light</code></td><td>الأشكال الحادة نفسها بلوحة ألوان مخطط أزرق ساطع</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>حديد وجلد داكنان، وإطارات ذهب عتيق، ومسامير، وأيقونات محفورة، وعناوين بخط Cinzel</td></tr>
+      <tr><td><code>medieval_light</code></td><td>رقّ وحبر وبرونز مع الإطارات المطروقة نفسها</td></tr>
+    </tbody>
+  </table>
+
+  <div class="shots">
+    <figure>
+      <img src="../img/preset-default-dark.png" alt="معرض gohud بالنمط الجاهز default_dark — زوايا مدوّرة ولون تمييز أزرق" loading="lazy">
+      <figcaption><code>default_dark</code> — زوايا مدوّرة ولون تمييز أزرق هادئ</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-default-light.png" alt="النمط الجاهز default_light — الأشكال نفسها على لوحة ألوان فاتحة" loading="lazy">
+      <figcaption><code>default_light</code> — الأشكال نفسها، لوحة ألوان فاتحة</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-dark.png" alt="النمط الجاهز scifi_dark — زوايا مشطوفة ونيون سماوي" loading="lazy">
+      <figcaption><code>scifi_dark</code> — زوايا مشطوفة ونيون سماوي</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-light.png" alt="النمط الجاهز scifi_light — الأشكال الحادة نفسها بلوحة ألوان مخطط أزرق" loading="lazy">
+      <figcaption><code>scifi_light</code> — الأشكال الحادة نفسها، لوحة مخطط أزرق</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    هذه الأربع هي <b>شاشة المعرض ذاتها</b>. لا يختلف فيها سطر واحد من الكود — إنما اسم النمط الجاهز فقط.
+    زوايا الأزرار وأشكال مفاتيح التبديل وصفوف القوائم وحدود حقول الإدخال تتحرك كلها معًا.
+  </p>
+
+  <h3>مجموعة العصور الوسطى</h3>
+  <p>
+    <code>medieval_dark</code> يزاوج الحديد والجلد بالذهب العتيق، و<code>medieval_light</code> يستعمل الرقّ
+    والحبر. إطارات القوائم تحمل مسمارًا وزخرفة ركن صغيرة، بينما يبقى HUD الدائم الظهور هادئًا؛
+    و16 أيقونة محفورة تعيد رسم أسماء الأغراض، ولا يستعمل خط Cinzel المضمَّن سوى العناوين والعناوين الفرعية.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark — صفحة الشخصية وحقيبة الخانات السريعة وسجل المهام" loading="lazy">
+      <figcaption><code>medieval_dark</code> — حديد وجلد</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light — شاشات الشخصية والحقيبة والمهام نفسها على رقّ" loading="lazy">
+      <figcaption><code>medieval_light</code> — رقّ وحبر</figcaption>
+    </figure>
+  </div>
+  <p>اللقطتان كلتاهما من <code>examples/medieval/medieval.tscn</code>، مبنيّتان من الودجات القياسية.
+    <a href="theming.html#medieval">← دليل العصور الوسطى وكيف تصنع مملكتك أنت</a></p>
+
+  <h3>الشاشة ذاتها على هاتف وعلى سطح مكتب</h3>
+  <p>
+    لقطات المعرض لهاتف بالوضع الطولي. وأدناه <b>الكود نفسه</b> بمقاس 1280×800 — يتوقف المحتوى عند عرض
+    مريح للقراءة (480dp) ويتوسّط، بينما يبقى HUD في الأركان. والنموذج يلتفّ حول قطع HUD العائمة،
+    لكنه <b>لا يتحرك إن كان بعيدًا عنها أصلًا</b>: دفعه رغم ذلك يخرج المحتوى عن مركز الشاشة العريضة.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/desktop-default-dark.png" alt="default_dark بمقاس 1280x800 — محتوى متوسّط وHUD في الأركان" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/desktop-scifi-dark.png" alt="scifi_dark بمقاس 1280x800 — التخطيط نفسه بلوحات مشطوفة ونيون" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <h3>الورقة ذاتها بمظهر مختلف</h3>
+  <div class="shots">
+    <figure>
+      <img src="../img/sheet-default-dark.png" alt="ورقة سفلية بنمط default_dark" loading="lazy">
+      <figcaption>الافتراضي — بطاقة مدوّرة، وصف بحث وتذييل ثابتان</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/sheet-scifi-dark.png" alt="ورقة سفلية بنمط scifi_dark — حافة تمييز نيون على طول الأعلى" loading="lazy">
+      <figcaption>الخيال العلمي — حافة تمييز علوية وزوايا مقطوعة وتوهّج</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    اختر واحدًا من <b>Project Settings → gohud → Theme → Preset</b>، أو اضبط <code>GoConfig.preset</code>.
+    وتعبئة <code>theme</code> أو <code>skin</code> أو <code>icons</code> صراحةً <b>تغلب</b> النمط الجاهز،
+    فبإمكانك أن تأخذ نمطًا جاهزًا وتتجاوز واحدًا منها فقط.
+  </p>
+
+  <div class="note">
+    <b>السمة الجديدة ملف JSON واحد.</b> الأمر <code>new_theme.py kingdom --from medieval_dark</code> يكتب لوحة ألوان
+    تسرد كل قيمة موروثة صراحةً، و<code>make_theme.py kingdom</code> يبني السمة ورسوم عناصر التحكم
+    ومقابض المظهر، فيظهر النمط الجاهز في قائمة الاختيار. <a href="theming.html#own">← كل إعداد وكل مقبض</a>
+  </div>
+</section>
+
+<section id="skin">
+  <h2>المظاهر — حيث لا تصل السمة</h2>
+  <p class="sub">
+    المظهر يملك عصا التوجيه، ووجوه الخانات السريعة، وحلقة العلامة الإرشادية، والشرائح، والهياكل المؤقتة،
+    والتنبيهات، والفواصل، وعناوين الأقسام. اشتقّ منه صنفًا وتجاوز ما تريد تغييره فقط.
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>الصنف</th><th>الأشكال التي يصنعها</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>زوايا مقطوعة قطريًا (شطف)، وحافة تمييز واحدة أسمك، وتوهّج خارجي</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>علامات أركان فقط، دون إحاطة المحتوى</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>إطار مطروق بمسامير ونقش في الأركان وإبراز مشطوف وحبيبات مادة</td></tr>
+    </tbody>
+  </table>
+  <p>الثلاثة كلها تُسلسَل داخل مورد سمة — وهذا بالضبط ما يتيح للسمة أن تغيّر <b>الشكل</b> لا اللون وحده.
+    و<code>GoSkinSciFi</code> و<code>GoSkinMedieval</code> هما الصنفان المشتقّان المرفقان.</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> يعيد دائمًا <code>StyleBoxFlat</code></b>، لأن الكود المستدعي
+    يستلمه ثم يعدّل <code>bg_color</code> أو <code>corner_radius</code>. استعمل
+    <code>GoStyle.surface()</code> حين يجب أن يبقى شكل مخصّص على حاله.
+  </div>
+</section>
+
+<section id="widgets">
+  <h2>الودجات</h2>
+  <p class="sub">القطع كلها في جدول واحد. <a href="widgets.html">← كل واحدة بالتفصيل</a></p>
+
+  <table>
+    <thead><tr><th>الصنف</th><th>الأساس</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSurface</code></td><td>Control</td><td>قشرة بطاقة عائمة — وضع في الوسط أو الأسفل أو مثبّت بجانب عنصر، ورأس وتذييل ثابتان، وجسم متمرر، وتغيير الحجم بالسحب</td></tr>
+      <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>صفحات تصعد من الأسفل، على طبقتها الخاصة لتجلس فوق HUD</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td>تأكيدات وتنبيهات تنتظرها بـ <code>await</code>؛ و<code>destructive</code> للإجراءات التي لا رجعة فيها</td></tr>
+      <tr><td><code>GoForm</code></td><td style="white-space:nowrap">MarginContainer</td><td>نماذج محدودة العرض تتفادى لوحة المفاتيح الافتراضية، وتتفادى HUD أيضًا مع <code>avoid_hud</code></td></tr>
+      <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>تمرير باللمس؛ وشريط التمرير ينزوي داخل حشوة البطاقة</td></tr>
+      <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>شريط إشعار لا يأخذ لمسًا ولا تركيزًا</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>سؤال لا يوقف اللعبة</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Control</td><td>جولة إرشادية تشير إلى عناصر تحكم حقيقية؛ والضغط على الهدف ينتقل بها</td></tr>
+      <tr><td><code>GoHudAnchor</code></td><td>Control</td><td>يثبّت قطع HUD في واحدة من تسع مواضع داخل المنطقة الآمنة</td></tr>
+      <tr><td><code>GoBar</code></td><td>Control</td><td>أشرطة الصحة والمانا والخبرة بتغيّر متدرّج ناعم</td></tr>
+      <tr><td><code>GoSlot</code></td><td>Button</td><td>خانة سريعة — أيقونة وكمية ومهلة استعداد واختصار على وجه واحد</td></tr>
+      <tr><td><code>GoJoystick</code></td><td>Control</td><td>عصا افتراضية بوضع ثابت أو متابع أو نسبي</td></tr>
+      <tr><td><code>GoIconButton</code></td><td>Button</td><td>يبدو صغيرًا ويُضغط كبيرًا</td></tr>
+      <tr><td><code>GoStyle</code></td><td>ساكن</td><td>أزرار وصفوف قوائم وحقول إدخال وشرائح وجداول وتبويبات وغيرها، تُصنع كلها بطريقة واحدة متسقة</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="examples">
+  <h2>أمثلة تستطيع تشغيلها</h2>
+  <p class="sub">ثلاث طرق ترى بها gohud قبل أن تكتب سطرًا — ولا واحدة منها تحتاج خادمًا ولا autoload.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">المثال</th><th>كيف تفتحه</th><th>ما الذي يعرضه</th></tr></thead>
+    <tbody>
+      <tr><td>المعرض</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>كل ودجت، وقائمة اختيار لكل نمط جاهز مثبّت، ومجموعة الأيقونات كاملة</td></tr>
+      <tr><td>العصور الوسطى</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>صفحة شخصية وحقيبة وسجل مهام؛ والأزرار تبدّل بين الحديد والرقّ وتفتح تفاصيل الأغراض</td></tr>
+      <tr><td>العرض التوضيحي</td><td><code>bash examples/demo/run.sh</code></td><td>جولة إرشادية من 15 فصلًا تعمل بلمس حقيقي، ووضع استكشاف لتجربة ودجت واحدة بيدك</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>bash examples/demo/run.sh --setup                       # مرة واحدة، على نسخة git جديدة
+bash examples/demo/run.sh                               # ابدأ العرض، أو استكشف الودجات
+bash examples/demo/run.sh -- --explore=surfaces         # افتح مباشرة على ودجت واحدة
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # تسجيل الجولة بدقة 1080p و60 إطارًا/ثانية</code></pre>
+  <p>في العرض التوضيحي، يبدّل <b>C</b> وضع السينما، و<b>F11</b> ملء الشاشة، و<b>Space</b> يوقف مؤقتًا
+    (أو يشغّل الودجت الحالية أثناء الاستكشاف)، والأسهم تغيّر الفصول، و<b>Escape</b> يعود إلى البداية.</p>
+  <p>تستعمل وكيل برمجة بالذكاء الاصطناعي؟ <a href="#ai">← افتح الثلاثة بأمر واحد</a></p>
+</section>
+
+<section id="ai">
+  <h2>افتحه من وكيل البرمجة بالذكاء الاصطناعي</h2>
+  <p class="sub">
+    يأتي gohud بإضافة لـ Claude Code فيها أوامر مائلة. اكتب أحدها فيُفتح المعرض أو العرض التوضيحي في نافذة
+    Godot خاصة به — دون تشغيل المحرّر ودون البحث عن مشهد.
+  </p>
+
+  <h3>ثبّت الأوامر مرة واحدة</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# ثم أعد تشغيل Claude Code</code></pre>
+  <p>الوكلاء الآخرون مثل Codex يستطيعون استعمال المهارة نفسها: انسخ <code>skills/gohud</code> من هذا المستودع
+    إلى مجلد مهارات الوكيل.</p>
+
+  <h3><code>/gohud:preview</code> — معرض الودجات</h3>
+  <p>يفتح المعرض: كل ودجت، وقائمة اختيار للأنماط الجاهزة الستة، ومجموعة الأيقونات كاملة. اكتبه داخل مشروع Godot
+    خاصتك فيستعمل <code>addons/gohud</code> <b>الخاص بك</b>؛ وبدون ذلك يستعمل النسخة المرفقة مع الإضافة،
+    أو نسخة جديدة يستنسخها. يعمل داخل مشروع رملي مؤقت، فتبقى قوائم autoload وذاكرة الاستيراد عندك على حالها،
+    وتبقى النافذة مفتوحة حتى تغلقها أنت.</p>
+
+  <h3><code>/gohud:preview demo</code> — الجولة الإرشادية ذات الـ 15 فصلًا</h3>
+  <p>يفتح العرض التوضيحي على شاشة البداية. <b>ابدأ العرض</b> يشغّل الجولة بلمس حقيقي، و<b>استكشف الودجات</b>
+    يتيح لك تجربة ودجت واحدة بيدك. والمفاتيح المذكورة تحت <a href="#examples">الأمثلة</a> تعمل هنا أيضًا.</p>
+
+  <h3>أوامر أخرى كثيرة</h3>
+  <table>
+    <thead><tr><th>الأمر</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>صفحة الشخصية والحقيبة وسجل المهام بأنماط العصور الوسطى</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>العرض التوضيحي مفتوحًا مباشرة على فصل واحد — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>المعرض بنمط جاهز واحد؛ أضف <code>--phone</code> لنافذة هاتف بمقاس 390×844 أو <code>--size 1920x1080</code> لأي مقاس</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>مشهد من مشروعك أنت، يعمل داخل ذلك المشروع</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>كل هدف ومعرّف نمط جاهز ومفتاح فصل في العرض التوضيحي</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>فحص سريع بلا نافذة — يفشل عند أخطاء السكربتات</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>كل ميزة، مصنّفة، بسطر واحد من الكود لكل منها</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>مجال واحد بعمق — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>أو اطلب ببساطة.</b> المهارة تعلّم الوكيل واجهة gohud البرمجية كاملة، فتنجح الطلبات العادية أيضًا —
+    <i>"ابنِ قائمة إيقاف مؤقت بـ gohud"</i>. وإن ثُبّتت مهارةً عادية في <code>~/.claude/skills/gohud</code>، فالأوامر
+    تأخذ مسافة: <code>/gohud preview demo</code> و<code>/gohud features</code>. وتحتاج المعاينات إلى Godot 4.6 أو
+    أحدث على <code>PATH</code>، أو مرّر <code>--godot /path/to/godot</code>.
+  </div>
+</section>
+
+<section id="readable">
+  <h2>الوضوح يُقاس ولا يُقدَّر بالعين</h2>
+  <p class="sub">
+    "الجميل" مسألة ذوق، أما <b>"الواضح" فيمكن قياسه.</b> النص الرمادي الباهت يبدو جيدًا على شاشة جيدة
+    ويختفي على هاتف في ضوء النهار — والاختيار بالعين يضمن وقوع ذلك عاجلًا أو آجلًا.
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    كل زوج ألوان، و<b>نصّ كل حالة من حالات الزر فوق اللوحة التي يجلس عليها</b>، يُقاس وفق معايير
+    WCAG في السمات الست جميعها. والألوان الشفافة تُركَّب أولًا فوق خلفيتها الحقيقية — فقياسها مباشرةً
+    يعطي نسبة أفضل مما تُظهره الشاشة فعلًا.
+  </p>
+  <p>
+    ولذلك فألوان النصوص <b>مشتقّة لا مختارة</b>: يأخذ البنّاء مدخل لوحة الألوان نقطةَ انطلاق ثم يدفع
+    إضاءته حتى تتجاوز العتبة على كل سطح قد تحطّ عليه. غيّر لوحة الألوان فيتبعها التباين.
+    <a href="theming.html#contrast">← القواعد والمزالق التي وراءها</a>
+  </p>
+</section>
+
+<section id="develop">
+  <h2>الفحوص والإصدارات وهذا الموقع</h2>
+  <p class="sub">مدخل واحد يشغّل كل الفحوص؛ وكل جزء منها يرى ما لا يراه غيره.</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>الفحص</th><th>ما الذي يلتقطه</th></tr></thead>
+    <tbody>
+      <tr><td><code>run_tests.sh</code> بأربعة مقاسات شاشة</td><td>سلوك الودجات وتخطيطها، ومواضع RTL، وتركيز لوحة المفاتيح، وتباين المظهر أثناء التشغيل، وكل نمط جاهز</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>اعتمادات خفية على مشروع مضيف؛ ومع <code>--zip</code> الإصدارَ كما يُشحن، ومع <code>--export</code> بناءً للويب</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>تباين WCAG في كل ملف سمة، بما في ذلك حالات الأزرار واللوحات الشفافة</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>مطابقة السمات المولَّدة للوحات ألوانها؛ وبناء سمة مؤقتة ونجاحها في فحص التباين</td></tr>
+      <tr><td><code>check_package.py</code></td><td>رفع الإصدارات، ونقل سجل التغييرات، ومحتويات ملف ZIP، في نسخ مؤقتة</td></tr>
+      <tr><td><code>check_site.py</code></td><td>روابط هذا الموقع ومراسيه ولغة صفحاته ومسرد مصطلحاته وجداول مقابضه</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>آخر تشغيل مسجَّل — 2026-09-13، Godot 4.7.2، macOS، عارض Compatibility.</b> 438 فحصًا من 438 بمقاسات
+    390×844 و844×390 و768×1024 و1280×800 في مشروع فارغ؛ ثم 438 من 438 مجددًا مع autoload باسم GoRuntime؛
+    وتصدير للويب؛ وصفر إخفاقات تباين عبر السمات الست. ولم يشمل هذا التشغيل Godot 4.6 ولا أجهزة أندرويد أو iOS الحقيقية.
+  </div>
+
+  <h3>إصدارات النشر</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>التشغيل الناجح يحدّث <code>plugin.cfg</code> و<code>GoUi.VERSION</code> و<code>CHANGELOG.md</code>
+    معًا، ناقلًا ملاحظات Unreleased إلى مدخل مؤرَّخ. والتشغيل الفاشل لا يغيّر شيئًا، ولا يُستبدل ملف ZIP قائم أبدًا.
+    وملف ZIP لا يحوي هذا الموقع ولا الاختبارات ولا الأدوات.</p>
+
+  <h3>هذا الموقع</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # المسرد وجداول مقابض المظهر، مولَّدة من المصدر
+python3 addons/gohud/tools/check_site.py           # الروابط والمراسي واللغة والمسرد والجداول المولَّدة
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # لقطات سطح مكتب وهاتف لكل صفحة</code></pre>
+  <p>الصفحات ملفات HTML عادية في <code>www/</code> — الإنجليزية في الجذر، والكورية في <code>ko/</code>.
+    وسير عمل في GitHub Actions ينشر ذلك المجلد جذرًا للموقع.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud تحت رخصة <b>MIT</b> — الكود والرسوم، بما فيها 84 أيقونة افتراضية و16 أيقونة من طراز العصور الوسطى.
+      أما خط Cinzel المضمَّن فتحت رخصة SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">سجل التغييرات</a></p>
+    <p style="font-size:13px">مرّر المؤشر فوق <b>أي مصطلح تحته خط</b> أو المسه أو ركّز عليه لترى معناه.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

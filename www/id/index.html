@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — kit HUD &amp; UI untuk Godot 4</title>
+<meta name="description" content="Kit HUD dan UI yang bisa disesuaikan untuk Godot 4.6+. Permukaan mengambang, lembar bawah, dialog, formulir, snackbar, bar HUD, slot cepat, dan joystick virtual, dengan enam preset — default, sci-fi, dan abad pertengahan.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">Apa yang dikerjakan</a>
+      <a href="#install">Instalasi</a>
+      <a href="#start">Mulai cepat</a>
+      <a href="#presets">Preset</a>
+      <a href="#examples">Contoh</a>
+      <a href="#ai">Perintah AI</a>
+      <a href="theming.html">Tema ↗</a>
+      <a href="widgets.html">Widget ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>UI game, digerakkan oleh satu resource</h1>
+    <p class="lead">
+      gohud adalah kit HUD dan UI untuk Godot 4.6 ke atas. Jendela mengambang, lembar bawah, dialog, formulir,
+      snackbar, coach mark, bar HUD, slot cepat, dan joystick virtual semuanya berjalan dari <b>satu tema dan satu
+      set ikon yang bisa ditukar</b>, sekaligus mengurus area aman, keyboard virtual, RTL, dan target sentuh untuk Anda.
+      <b>Enam preset</b> — default, sci-fi, dan abad pertengahan, masing-masing gelap dan terang — mengubah warna dan bentuk dalam satu baris.
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
+      <span class="badge">GDScript murni</span>
+      <span class="badge">Tanpa autoload</span>
+      <span class="badge">MIT</span>
+      <span class="badge">6 preset</span>
+      <span class="badge">21 bahasa</span>
+      <span class="badge">100 ikon disertakan</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">Instalasi</a>
+      <a class="btn" href="#presets">Lihat presetnya</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="showcase">
+  <h2>Seperti apa tampilannya di dalam game</h2>
+  <p class="sub">
+    Preset abad pertengahan dan sci-fi — lembar karakter, inventaris, dan misi; formulir, grid, dan kartu
+    ajakan; panel bersudut dan kontrol sentuh. Mengganti preset cukup satu baris kode.
+  </p>
+  <figure>
+    <img src="../img/showcase-medieval-quests.webp" alt="Tema abad pertengahan gohud — lembar karakter dengan bar darah, mana, dan stamina, sebuah tas berisi slot cepat, serta jurnal misi dalam bingkai emas tempaan">
+    <figcaption><b>Abad pertengahan</b> — karakter, inventaris, dan misi</figcaption>
+  </figure>
+  <div class="shots">
+    <figure>
+      <img src="../img/showcase-medieval-forms.webp" alt="Tema abad pertengahan gohud — panel masukan dengan kolom nama, sakelar, kotak centang, dan penggeser volume, sebuah grid petak, serta kartu ajakan undangan kelompok dengan Terima dan Tolak" loading="lazy">
+      <figcaption><b>Abad pertengahan</b> — formulir, grid, dan kartu ajakan</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/showcase-scifi-touch.webp" alt="Tema sci-fi gohud — panel kontrol sentuh bersudut potong dengan joystick heksagonal, sakelar Fixed / Follow / Relative, dan tombol aksi bulat" loading="lazy">
+      <figcaption><b>Sci-fi</b> — panel bersudut dan kontrol sentuh</figcaption>
+    </figure>
+  </div>
+  <p><a href="#presets">Keenam preset dan cara menggantinya →</a></p>
+</section>
+
+<section id="what">
+  <h2>Apa yang tidak perlu lagi Anda urus</h2>
+  <p class="sub">
+    Yang paling menyita waktu di UI game bukanlah bentuk sebuah tombol — melainkan segala hal yang
+    berbeda-beda antarperangkat. gohud mengurus perbedaan itu di satu tempat.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Setiap ukuran adalah token</h3>
+      <p>Jarak, sudut, dan ukuran teks dipanggil lewat nama, bukan ditulis sebagai angka. Tukar temanya dan seluruh layar ikut berubah.</p>
+    </div>
+    <div class="card">
+      <h3>Ukuran terlihat ≠ ukuran yang bisa ditekan</h3>
+      <p>Tombol tutup terlihat 36dp tetapi target sentuhnya 48dp. Di tempat slot berdesakan saling tumpang tindih, yang pusatnya lebih dekat yang menerima tekanan.</p>
+    </div>
+    <div class="card">
+      <h3>Notch dan keyboard</h3>
+      <p>Bagian-bagian HUD duduk di dalam area aman, dan kolom masukan naik ke atas keyboard virtual begitu keyboard muncul.</p>
+    </div>
+    <div class="card">
+      <h3>Tombol kembali menutup satu hal</h3>
+      <p>Escape dan tombol Back Android menutup <b>hanya permukaan paling atas</b>. Jendela yang bertumpuk tidak lenyap bersamaan.</p>
+    </div>
+    <div class="card">
+      <h3>Pemberitahuan tidak pernah merampas input</h3>
+      <p>Tekan menembus snackbar dan tombol di bawahnya tetap menerimanya. Fokus pun tidak diambil.</p>
+    </div>
+    <div class="card">
+      <h3>Ikon diminta lewat namanya</h3>
+      <p>Widget hanya tahu <code>GoIconSet.CLOSE</code>. Tukar setnya dan semua gambar berubah tanpa menyentuh satu baris kode.</p>
+    </div>
+    <div class="card">
+      <h3>Enam tampilan, satu baris</h3>
+      <p><code>GoUi.use_preset()</code> menukar tema, skin, dan ikon sekaligus — bingkai membulat, sci-fi bersudut potong, atau tempaan abad pertengahan.</p>
+    </div>
+    <div class="card">
+      <h3>Keterbacaan yang terukur</h3>
+      <p>Setiap tema diperiksa terhadap WCAG, termasuk keadaan tombol dan panel HUD tembus pandang di atas putih murni dan hitam murni.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Semuanya berjalan tanpa mengaktifkan plugin.</b> Mengaktifkannya menambahkan autoload GoRuntime yang
+    melacak ukuran jendela, skala dp, dan tinggi keyboard, ditambah project setting untuk resource konfigurasi dan
+    preset — kemudahan, bukan keharusan.
+  </div>
+</section>
+
+<section id="install">
+  <h2>Instalasi</h2>
+  <p class="sub">Letakkan folder add-on ke dalam proyek Anda. Tidak ada lagi yang perlu disiapkan.</p>
+
+  <h3>Dari Asset Store atau ZIP rilis</h3>
+  <p>Ekstrak ke akar proyek sehingga terbentuk <code>res://addons/gohud/</code>. Itu saja. Bila mau, aktifkan
+    <b>Project → Project Settings → Plugins → gohud</b>.</p>
+
+  <h3>Sebagai submodule git</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # opsional: kunci ke satu tag atau commit</code></pre>
+  <p>Akar repositori <b>adalah</b> folder add-on itu sendiri, jadi ia mendarat persis di tempat yang diharapkan Godot.
+    Sunting langsung di tempat, commit dan push di dalam <code>addons/gohud</code>, lalu commit penunjuk submodule di game Anda.</p>
+
+  <div class="note warn">
+    <b>Godot 4.6 atau yang lebih baru wajib.</b> gohud memakai API yang diperkenalkan di 4.5 (DPITexture,
+    FoldableContainer, properti aksesibilitas), jadi pada versi yang lebih lama ia <b>gagal saat parsing</b>.
+    4.6 adalah batas bawah yang didukung, tercatat di <code>GoUi.MIN_ENGINE</code>.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Mulai cepat</h2>
+  <p class="sub">Setiap widget cukup <code>.new()</code> dan <code>add_child()</code> — tanpa file scene, tanpa autoload.</p>
+
+  <h3>Pilih tampilan sebelum membangun UI (opsional)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # default_dark dipakai kalau baris ini dilewati</code></pre>
+
+  <h3>Konfirmasi yang bisa Anda <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Hapus simpanan", "Tindakan ini tidak bisa dibatalkan."):
+    delete_save()</code></pre>
+  <p>Berikan <code>destructive = true</code> (argumen terakhir) dan tombol konfirmasi digambar sebagai tombol bahaya berisi penuh.</p>
+
+  <h3>Lembar bawah dengan kolom pencarian dan footer yang menempel</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventaris")
+sheet.toolbar().add_child(GoStyle.line_edit("Cari…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Tutup", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Kenapa baris yang menempel dipisahkan dari body yang bergulir.</b> Taruh tombol konfirmasi dan batal di
+    <code>body</code> dan daftar yang panjang akan mendorongnya keluar layar. <code>footer()</code> selalu terlihat.
+  </div>
+
+  <h3>Satu sudut HUD</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3>Konten yang menjauh dari HUD</h3>
+  <pre><code>form.avoid_hud = true                  # menjauh dari setiap GoHudAnchor yang terlihat
+joystick_anchor.reserve_space = false  # …kecuali yang hanya muncul di bawah jari
+notice_anchor.avoid_peers = true       # toast turun ke bawah HUD tetap alih-alih menutupinya</code></pre>
+  <p>Setiap persegi dihindari ke arah yang paling sedikit memakan luas — ke bawah pada ponsel potret,
+    ke samping pada lanskap. <a href="widgets.html#hud">Bagaimana HUD menghindari dirinya sendiri →</a></p>
+</section>
+
+<section id="presets">
+  <h2>Ubah tampilan — warna <em>dan</em> bentuk</h2>
+  <p class="sub">
+    Sebuah Theme hanya bisa mengubah gaya apa yang digambar mesin. Sudut membulat adalah satu-satunya sudut yang
+    dimiliki StyleBoxFlat, sedangkan joystick, slot cepat, dan coach mark digambar oleh kode — jadi tema saja tidak akan
+    pernah bisa mengubah bentuknya. Karena itu gohud menyediakan <b>preset</b>: tema, skin, dan set ikon yang dipilih sebagai satu paket.
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # tema, skin, dan ikon sekaligus</code></pre>
+
+  <table>
+    <thead><tr><th>Preset</th><th>Tampilan</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code></td><td>gohud yang asli — sudut membulat, aksen biru lembut</td></tr>
+      <tr><td><code>default_light</code></td><td>Bentuk yang sama pada palet terang</td></tr>
+      <tr><td><code>scifi_dark</code></td><td>Sudut potong, tepi dan pendar neon sian, joystick heksagonal, kurung penanda sasaran</td></tr>
+      <tr><td><code>scifi_light</code></td><td>Bentuk bersudut yang sama dalam palet cetak biru yang cerah</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>Besi gelap dan kulit, bingkai emas antik, paku keling, ikon ukiran, judul Cinzel</td></tr>
+      <tr><td><code>medieval_light</code></td><td>Perkamen, tinta, dan perunggu dengan bingkai tempaan yang sama</td></tr>
+    </tbody>
+  </table>
+
+  <div class="shots">
+    <figure>
+      <img src="../img/preset-default-dark.png" alt="Galeri gohud dengan preset default_dark — sudut membulat, aksen biru" loading="lazy">
+      <figcaption><code>default_dark</code> — sudut membulat, aksen biru lembut</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-default-light.png" alt="Preset default_light — bentuk yang sama pada palet terang" loading="lazy">
+      <figcaption><code>default_light</code> — bentuk sama, palet terang</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-dark.png" alt="Preset scifi_dark — sudut potong dan neon sian" loading="lazy">
+      <figcaption><code>scifi_dark</code> — sudut potong, neon sian</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-light.png" alt="Preset scifi_light — bentuk bersudut yang sama dalam palet cetak biru" loading="lazy">
+      <figcaption><code>scifi_light</code> — bentuk bersudut sama, palet cetak biru</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Keempatnya adalah <b>layar galeri yang sama</b>. Tidak ada satu baris kode pun yang berbeda — hanya nama presetnya.
+    Sudut tombol, bentuk sakelar, baris daftar, dan garis tepi kolom masukan semuanya berubah bersamaan.
+  </p>
+
+  <h3>Koleksi abad pertengahan</h3>
+  <p>
+    <code>medieval_dark</code> memadukan besi dan kulit dengan emas antik; <code>medieval_light</code> memakai perkamen
+    dan tinta. Bingkai menu membawa paku keling dan ornamen sudut kecil, sementara HUD yang selalu terlihat tetap tenang;
+    16 ikon ukiran menggambar ulang nama-nama benda, dan hanya judul serta subjudul yang memakai font Cinzel bawaan.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark — lembar karakter, tas berisi slot cepat, dan jurnal misi" loading="lazy">
+      <figcaption><code>medieval_dark</code> — besi dan kulit</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light — layar karakter, tas, dan misi yang sama di atas perkamen" loading="lazy">
+      <figcaption><code>medieval_light</code> — perkamen dan tinta</figcaption>
+    </figure>
+  </div>
+  <p>Kedua tangkapan layar itu adalah <code>examples/medieval/medieval.tscn</code>, dibangun dari widget standar.
+    <a href="theming.html#medieval">Panduan abad pertengahan dan cara membuat kerajaan Anda sendiri →</a></p>
+
+  <h3>Layar yang sama di ponsel dan di desktop</h3>
+  <p>
+    Tangkapan layar galeri itu ponsel dalam mode potret. Di bawah ini <b>kode yang sama</b> pada 1280×800 — kontennya
+    berhenti pada lebar yang nyaman dibaca (480dp) lalu memusat, sementara HUD tetap di sudut-sudut. Formulirnya
+    memutari bagian HUD yang mengambang, tetapi <b>tidak bergeser bila memang sudah tidak bertabrakan</b>: memaksanya
+    bergeser justru akan melempar konten keluar dari pusat pada layar lebar.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/desktop-default-dark.png" alt="default_dark pada 1280x800 — konten memusat, HUD di sudut-sudut" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/desktop-scifi-dark.png" alt="scifi_dark pada 1280x800 — tata letak sama dengan panel bersudut potong dan neon" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <h3>Lembar yang sama, tampilan yang berbeda</h3>
+  <div class="shots">
+    <figure>
+      <img src="../img/sheet-default-dark.png" alt="Sebuah lembar bawah dalam default_dark" loading="lazy">
+      <figcaption>Default — kartu membulat, baris pencarian dan footer yang menempel</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/sheet-scifi-dark.png" alt="Sebuah lembar bawah dalam scifi_dark — tepi aksen neon di sepanjang bagian atas" loading="lazy">
+      <figcaption>Sci-fi — tepi aksen di atas, sudut terpotong, pendar</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Pilih salah satu dari <b>Project Settings → gohud → Theme → Preset</b>, atau setel <code>GoConfig.preset</code>.
+    Mengisi <code>theme</code>, <code>skin</code>, atau <code>icons</code> secara eksplisit <b>mengalahkan</b>
+    preset, sehingga Anda bisa memakai sebuah preset dan menimpa salah satunya saja.
+  </p>
+
+  <div class="note">
+    <b>Tema baru cukup satu berkas JSON.</b> <code>new_theme.py kingdom --from medieval_dark</code> menulis palet yang
+    menjabarkan setiap nilai warisan; <code>make_theme.py kingdom</code> membangun temanya, gambar kontrolnya, dan
+    kenop skinnya, lalu presetnya muncul di pemilih. <a href="theming.html#own">Setiap setelan dan kenop →</a>
+  </div>
+</section>
+
+<section id="skin">
+  <h2>Skin — tempat yang tak terjangkau Theme</h2>
+  <p class="sub">
+    Sebuah skin memiliki joystick, muka slot cepat, cincin coach mark, chip, kerangka pemuatan, peringatan, pemisah,
+    dan judul bagian. Turunkan kelasnya dan timpa hanya apa yang ingin Anda ubah.
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>Kelas</th><th>Bentuk yang bisa dibuatnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Sudut terpotong diagonal (chamfer), satu tepi aksen yang ditebalkan, pendar di luar</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Hanya penanda sudut, tanpa mengurung kontennya</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Bingkai tempaan dengan paku keling, ukiran sudut, sorotan bevel, dan serat material</td></tr>
+    </tbody>
+  </table>
+  <p>Ketiganya tersimpan ke dalam resource Theme — dan itulah yang membuat sebuah tema bisa mengubah <b>bentuk</b>, bukan hanya warna.
+    <code>GoSkinSciFi</code> dan <code>GoSkinMedieval</code> adalah subkelas bawaan.</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> selalu mengembalikan <code>StyleBoxFlat</code></b>, karena kode pemanggilnya
+    menerima objek itu lalu menyetel <code>bg_color</code> atau <code>corner_radius</code>. Pakai
+    <code>GoStyle.surface()</code> bila bentuk khusus harus tetap bertahan.
+  </div>
+</section>
+
+<section id="widgets">
+  <h2>Widget</h2>
+  <p class="sub">Seluruh bagiannya dalam satu tabel. <a href="widgets.html">Rinciannya satu per satu →</a></p>
+
+  <table>
+    <thead><tr><th>Kelas</th><th>Basis</th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSurface</code></td><td>Control</td><td>Cangkang kartu mengambang — penempatan di tengah, bawah, atau tertambat, header dan footer yang menempel, body yang bergulir, tarik untuk mengubah ukuran</td></tr>
+      <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>Halaman yang naik dari bawah, pada lapisannya sendiri sehingga selalu berada di atas HUD</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td>Konfirmasi dan peringatan yang bisa Anda <code>await</code>; <code>destructive</code> untuk tindakan yang tak bisa dibatalkan</td></tr>
+      <tr><td><code>GoForm</code></td><td style="white-space:nowrap">MarginContainer</td><td>Formulir berlebar terbatas yang menghindari keyboard virtual dan, dengan <code>avoid_hud</code>, menghindari HUD</td></tr>
+      <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>Gulir sentuh; bilah gulirnya menyelip ke dalam padding kartu</td></tr>
+      <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>Snackbar yang tidak mengambil input maupun fokus</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>Pertanyaan yang tidak menghentikan jalannya game</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Control</td><td>Tur berpemandu yang menunjuk kontrol sungguhan; menekan sasarannya akan melanjutkan tur</td></tr>
+      <tr><td><code>GoHudAnchor</code></td><td>Control</td><td>Menyematkan bagian HUD ke salah satu dari sembilan titik area aman</td></tr>
+      <tr><td><code>GoBar</code></td><td>Control</td><td>Bar darah, mana, dan pengalaman dengan perubahan yang dilandaikan</td></tr>
+      <tr><td><code>GoSlot</code></td><td>Button</td><td>Satu slot cepat — ikon, jumlah, waktu jeda, dan pintasan pada satu muka</td></tr>
+      <tr><td><code>GoJoystick</code></td><td>Control</td><td>Stik virtual dalam mode tetap, mengikuti, atau relatif</td></tr>
+      <tr><td><code>GoIconButton</code></td><td>Button</td><td>Terlihat kecil, ditekan besar</td></tr>
+      <tr><td><code>GoStyle</code></td><td>statis</td><td>Tombol, baris daftar, kolom masukan, chip, tabel, tab, dan lainnya, dibuat dengan satu cara yang konsisten</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="examples">
+  <h2>Contoh yang bisa Anda jalankan</h2>
+  <p class="sub">Tiga cara melihat gohud sebelum menulis satu baris pun — tidak satu pun butuh server atau autoload.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Contoh</th><th>Cara membuka</th><th>Apa yang ditampilkan</th></tr></thead>
+    <tbody>
+      <tr><td>Galeri</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Setiap widget, pemilih untuk setiap preset yang terpasang, dan set ikon lengkap</td></tr>
+      <tr><td>Abad pertengahan</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Lembar karakter, tas, dan jurnal misi; tombol-tombolnya menukar besi dan perkamen serta membuka rincian benda</td></tr>
+      <tr><td>Demo</td><td><code>bash examples/demo/run.sh</code></td><td>Tur berpemandu 15 bab yang digerakkan input sungguhan, plus mode jelajah untuk mencoba satu widget secara manual</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>bash examples/demo/run.sh --setup                       # sekali saja, pada git checkout yang baru
+bash examples/demo/run.sh                               # Mulai demo, atau Jelajahi widget
+bash examples/demo/run.sh -- --explore=surfaces         # langsung membuka satu widget
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # rekaman tur 1080p / 60 fps</code></pre>
+  <p>Di dalam demo, <b>C</b> mengalihkan mode Sinema, <b>F11</b> layar penuh, <b>Spasi</b> menjeda (atau memainkan widget
+    yang sedang dilihat saat menjelajah), tombol panah mengganti bab, dan <b>Escape</b> kembali ke layar Mulai.</p>
+  <p>Memakai agen coding AI? <a href="#ai">Buka ketiganya dengan satu perintah →</a></p>
+</section>
+
+<section id="ai">
+  <h2>Buka dari agen coding AI Anda</h2>
+  <p class="sub">
+    gohud menyertakan plugin Claude Code beserta slash command-nya. Ketik salah satunya dan galeri atau demo terbuka di
+    jendela Godot tersendiri — tak perlu menjalankan editor, tak perlu mencari scene.
+  </p>
+
+  <h3>Pasang perintahnya sekali saja</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# lalu jalankan ulang Claude Code</code></pre>
+  <p>Agen lain seperti Codex bisa memakai skill yang sama: salin <code>skills/gohud</code> dari repositori ini ke
+    folder skill agen tersebut.</p>
+
+  <h3><code>/gohud:preview</code> — galeri widget</h3>
+  <p>Membuka galeri: setiap widget, pemilih untuk keenam preset, dan set ikon lengkap. Ketik di dalam proyek Godot
+    Anda dan ia memakai yang <b>milik Anda sendiri</b> di <code>addons/gohud</code>; bila tidak ada, ia memakai salinan bawaan plugin,
+    atau klon yang baru. Ia berjalan di proyek kotak pasir sekali pakai, sehingga autoload dan cache impor Anda tidak
+    terganggu, dan jendelanya tetap terbuka sampai Anda menutupnya.</p>
+
+  <h3><code>/gohud:preview demo</code> — tur berpemandu 15 bab</h3>
+  <p>Membuka demo pada layar awalnya. <b>Mulai demo</b> memainkan tur dengan input sungguhan; <b>Jelajahi widget</b>
+    membiarkan Anda mencoba satu widget secara manual. Tombol-tombol yang tercantum di <a href="#examples">Contoh</a> berlaku juga di sini.</p>
+
+  <h3>Banyak perintah lainnya</h3>
+  <table>
+    <thead><tr><th>Perintah</th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>Lembar karakter, tas, dan jurnal misi dalam preset abad pertengahan</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>Demo yang langsung dibuka pada satu bab — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>Galeri dalam satu preset; tambahkan <code>--phone</code> untuk jendela ponsel 390×844 atau <code>--size 1920x1080</code> untuk ukuran apa pun</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Scene milik proyek Anda sendiri, dijalankan di dalam proyek itu</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>Semua sasaran, id preset, dan kunci bab demo</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>Uji asap headless tanpa jendela — gagal bila ada kesalahan skrip</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>Setiap fitur, dikelompokkan, masing-masing satu baris kode</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>Satu bidang secara mendalam — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Atau tinggal minta saja.</b> Skill-nya mengajarkan seluruh API gohud kepada agen, jadi permintaan biasa pun jalan —
+    <i>"Buatkan menu jeda dengan gohud"</i>. Bila dipasang sebagai skill biasa di <code>~/.claude/skills/gohud</code>,
+    perintahnya memakai spasi: <code>/gohud preview demo</code>, <code>/gohud features</code>. Pratinjau membutuhkan Godot 4.6
+    atau yang lebih baru di <code>PATH</code> Anda, atau berikan <code>--godot /path/to/godot</code>.
+  </div>
+</section>
+
+<section id="readable">
+  <h2>Keterbacaan itu diukur, bukan dikira-kira</h2>
+  <p class="sub">
+    "Cantik" itu selera; <b>"terbaca" itu bisa diukur.</b> Teks abu-abu samar terlihat baik-baik saja di monitor bagus
+    dan lenyap di ponsel saat siang bolong — memilih dengan mata telanjang menjamin hal itu cepat atau lambat terjadi.
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    Setiap pasangan warna dan <b>setiap label keadaan tombol di atas panel tempatnya berada</b> diukur terhadap
+    WCAG, pada keenam tema. Warna tembus pandang lebih dulu dikomposit di atas latar sesungguhnya — mengukurnya
+    secara langsung akan melaporkan rasio yang lebih baik daripada yang tampak di layar.
+  </p>
+  <p>
+    Karena itu warna teks <b>diturunkan, bukan dipilih</b>: pembangun tema mengambil entri palet sebagai titik
+    berangkat lalu mendorong terangnya sampai melewati ambang batas pada setiap permukaan yang mungkin ditempatinya.
+    Ubah paletnya dan kontrasnya ikut menyesuaikan. <a href="theming.html#contrast">Aturannya dan jebakan di baliknya →</a>
+  </p>
+</section>
+
+<section id="develop">
+  <h2>Pemeriksaan, rilis, dan situs ini</h2>
+  <p class="sub">Satu titik masuk menjalankan semua pemeriksaan; tiap bagian melihat sesuatu yang tak terlihat oleh yang lain.</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>Pemeriksaan</th><th>Apa yang ditangkapnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>run_tests.sh</code> pada empat ukuran layar</td><td>Perilaku dan tata letak widget, posisi RTL, fokus keyboard, kontras skin saat runtime, semua preset</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>Ketergantungan tersembunyi pada proyek induk; dengan <code>--zip</code> menguji rilis apa adanya, dengan <code>--export</code> sebuah build Web</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>Kontras WCAG setiap berkas tema, termasuk keadaan tombol dan panel tembus pandang</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Tema hasil generasi cocok dengan paletnya; tema sekali pakai berhasil dibangun dan lolos uji kontras</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Kenaikan versi, perpindahan changelog, dan isi ZIP, pada salinan sementara</td></tr>
+      <tr><td><code>check_site.py</code></td><td>Tautan, jangkar, bahasa halaman, glosarium, dan tabel kenop situs ini</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>Jalan uji terakhir yang tercatat — 2026-09-13, Godot 4.7.2, macOS, renderer Compatibility.</b> 438 dari 438 pemeriksaan pada
+    390×844, 844×390, 768×1024, dan 1280×800 di proyek kosong; 438 dari 438 lagi dengan autoload GoRuntime;
+    satu ekspor Web; nol kegagalan kontras pada keenam tema. Godot 4.6 serta perangkat Android atau iOS sungguhan tidak
+    termasuk dalam jalan uji ini.
+  </div>
+
+  <h3>Versi rilis</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>Jalan yang berhasil memperbarui <code>plugin.cfg</code>, <code>GoUi.VERSION</code>, dan <code>CHANGELOG.md</code>
+    sekaligus, memindahkan catatan Unreleased menjadi entri bertanggal. Jalan yang gagal tidak mengubah apa pun, dan ZIP
+    yang sudah ada tidak pernah ditimpa. ZIP-nya tidak menyertakan situs web ini, berkas uji, dan tools.</p>
+
+  <h3>Situs ini</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # glosarium dan tabel kenop skin, dibuat dari kode sumber
+python3 addons/gohud/tools/check_site.py           # tautan, jangkar, bahasa, glosarium, tabel hasil generasi
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # tangkapan layar desktop dan ponsel untuk setiap halaman</code></pre>
+  <p>Halaman-halamannya HTML biasa di dalam <code>www/</code> — bahasa Inggris di akar, bahasa Korea di <code>ko/</code>. Sebuah
+    workflow GitHub Actions menerbitkan folder itu sebagai akar situs.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud berlisensi <b>MIT</b> — kode maupun karya gambarnya, termasuk 84 ikon default dan 16 ikon abad pertengahan. Font
+      Cinzel bawaan berada di bawah SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Changelog</a></p>
+    <p style="font-size:13px">Arahkan kursor, ketuk, atau fokuskan sebuah <b>istilah bergaris bawah</b> untuk melihat artinya.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

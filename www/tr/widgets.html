@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widget'lar — gohud</title>
+<meta name="description" content="Bütün gohud widget'ları — yüzen yüzeyler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, rehber işaretleri, HUD çubukları, hızlı slotlar ve sanal joystick.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Genel bakış</a>
+      <a href="theming.html">Tema</a>
+      <a href="widgets.html">Widget'lar</a>
+      <a href="#surfaces">Pencereler</a>
+      <a href="#messages">Mesajlar</a>
+      <a href="#hud">HUD</a>
+      <a href="#factory">GoStyle</a>
+      <a href="#hooks">Kancalar</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Widget'lar</h1>
+    <p class="lead">
+      Hepsi <code>.new()</code> ve <code>add_child()</code> ile gelir — sahne dosyası yok, autoload yok.
+      <b>🛑</b> ile işaretli notlar teoride değil, gerçek ekranlarda karşılaşılan tuzaklardır.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>Yüzen pencereler</h2>
+
+  <h3><code>GoSurface</code> — kabuk</h3>
+  <p>Açılır pencereler, sayfalar ve açılır listeler hep bunu kullanır. Güvenli alanı, sanal klavyeyi, sabit
+    başlık ve alt bilgiyi, kaydırılan gövdeyi, hangi pencerenin en üstte olduğunu, odağın geri verilmesini,
+    geri tuşunun sahipliğini ve sürükleyerek yeniden boyutlandırmayı üstlenir.</p>
+  <table>
+    <thead><tr><th>Yerleşim</th><th>Nasıl görünür</th><th>Nerede kullanılır</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>Ortada bir kart</td><td>Onaylar, ayarlar</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>Alttan yükselen bir sayfa</td><td>Listeler, yönetim sayfaları</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>Bir denetimin yanına sabitlenmiş kart</td><td>Açılır listeler, bağlam menüleri</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Kendini kaldırmaz.</b> <code>close_requested</code> sinyaline tepki vermek — gizlemek ya da bellekten
+    silmek — sahibi olan ekranın işidir, çünkü kabuk <i>neden</i> kapandığını bilemez (kaydedip kapatmak mı,
+    yoksa atmak mı).
+  </div>
+
+  <h3><code>GoSheet</code> — alttan gelen bir sayfa</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Envanter")
+sheet.toolbar().add_child(GoStyle.line_edit("Ara…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Kapat", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>Kendi <code>CanvasLayer</code>'ına sahiptir, bu yüzden güvenilir biçimde HUD'ın üstünde durur.
+    <code>open()</code> gövdeyi temizler ve geri düğmesiyle sabit satırları <b>kapatır</b> — geri dönülecek
+    yeri olmayan bir ekrandaki ölü bir düğme bozuk gibi okunur.</p>
+
+  <h3><code>GoDialogs</code> — <code>await</code> ettiğiniz onaylar</h3>
+  <pre><code>if await dialogs.confirm("Kaydı sil", "Bu geri alınamaz."):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — gövdeden sonraki her şey
+    isteğe bağlıdır ve <code>alert()</code> tek düğmeyle aynı şekilde çalışır. Geri alınamayacak bir şey için
+    <code>destructive</code> verin: onay düğmesi dolgulu <code>GoStyle.Tone.DANGER_SOLID</code> düğmesine dönüşür.
+    Açık bir temada tonlanmış bir tehlike etiketi siyah yazı gibi okunana dek koyulaşmak zorundadır; dolgulu düğme
+    ise kırmızı üstünde beyaz yazıyı korur. Tek bir pencere yeniden kullanıldığı için ton her çağrıda yeniden
+    uygulanır; biri açıkken ikinci bir <code>confirm()</code> anında <code>false</code> döndürür.
+    <code>confirm_key()</code> çeviri anahtarları alır.</p>
+  <p><b>Düğme yerleşimi.</b> <code>action_layout</code> varsayılan olarak <code>VERTICAL</code>'dır (uzun çeviriler
+    için güvenli), tek sırada ve her biri yarı genişlikte olması için <code>HORIZONTAL</code>, ya da
+    <code>AUTO</code> — bu da yalnızca iki etiket de kartın yarısına tek satırda sığdığında tek sıra kullanır,
+    aksi hâlde alt alta dizer. <code>action_gap</code> düğmeler arasındaki boşluk, <code>body_gap</code> ise
+    üstlerindeki boşluktur — soru ile seçimin iki ayrı parça olarak okunması için ikincisini düğme boşluğundan
+    geniş tutun. Yalnızca tek bir iletişim kutusu için, açmadan önce <code>set_next_action_layout()</code>
+    çağırın. Sıra ilk kez bir iletişim kutusu açıldığında kurulur; yani autoload edilmiş bir
+    <code>GoDialogs</code> açılışta hiçbir şey eklemez.</p>
+
+  <h3><code>GoForm</code> — genişliği sınırlı bir form</h3>
+  <div class="note warn">
+    <b>Altındaki etiketlerin satır kaydırmasını garanti eder.</b> Bu olmadan uzun bir cümle tek satıra
+    uzar, o satırın en küçük genişliği ekranı aşar ve kenarlar kırpılır — hangi ekranda olduğunuzu bile
+    anlayamazsınız. Sahne başına elle satır kaydırma açmak her seferinde unutulur.
+  </div>
+
+  <h3><code>GoScroll</code> — dokunmatik kaydırma</h3>
+  <p>İçine <b>tek bir</b> şey koyun. Başlıklar ve düğme sıraları dışarıda kalır — uzun bir liste onları
+    ekrandan dışarı itmemelidir. <code>use_panel_edge()</code>, içerik kendi girintisini korurken kaydırma
+    çubuğunu kartın var olan iç boşluğuna taşır.</p>
+</section>
+
+<section id="messages">
+  <h2>Oyuncuya bir şey söylemek</h2>
+
+  <h3><code>GoNotice</code> — snackbar</h3>
+  <div class="note warn">
+    <b>Girdiyi asla araya girip almaz.</b> Bir bildirim okunur, basılmaz. Odak almaz, oyun girdisini
+    engellemez ve altındaki düğme yine basılır. Onay gerektiğinde <code>GoDialogs</code>, seçim gerektiğinde
+    <code>GoPromptCard</code> kullanın.
+  </div>
+
+  <h3><code>GoPromptCard</code> — engellemeyen bir soru</h3>
+  <p>Perde olmadan bir kenarda yüzer. Oyun çalışmaya devam eder.</p>
+
+  <h3><code>GoCoachMark</code> — rehberli tur</h3>
+  <p>Gerçek denetimleri teker teker gösterir. Yalnızca kart girdi alır, dolayısıyla <b>vurgulanan denetimin
+    kendisine basmak turu ilerletir</b> — "buraya basın" bir cümle olmaktan çıkıp bir eyleme dönüşür.</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "Çanta", "body": "Topladığınız her şey buraya iner."},
+    {"target": map_button, "title": "Harita", "body": "Tam haritayı açmak için basın."},
+])</code></pre>
+  <p><code>title</code> ve <code>body</code> çeviri anahtarı ya da düz metin olabilir. Hedefi ortadan kaybolmuş
+    bir adım atlanır.</p>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>İyi görünüp görünmediğine küçük şeyler karar verir</h3>
+  <p>
+    Büyük panelleri istediğiniz kadar cilalayın — göze çarpan hep küçük bir şeydir: ikiye bölünmüş bir
+    kelime, kesilmiş bir ışıma, sıkışmış bir slot. 2026-09-13'te böyle dört şey işaret edildi ve demo
+    ekranında değil, widget'lar ile temalarda düzeltildi; böylece her ekran aynı sonucu alıyor.
+  </p>
+  <table>
+    <thead><tr><th>Görünen</th><th>Nedeni</th><th>Çözüm</th></tr></thead>
+    <tbody>
+      <tr><td>Rehber işaretinin <code>Done</code> yazısı <code>Don</code>/<code>e</code> oldu</td>
+          <td>Satır kaydırması açık bir düğme, <b>yazı genişliğini en küçük boyutundan düşer</b> — sıkıştırın, kelimenin ortasından bölünsün</td>
+          <td><code>GoStyle.fit_words()</code>: tek bir kelime asla bölünmez; birden çok kelime kaydırılır ama <b>en uzun kelime</b> her zaman sığar — karar çeviri anahtarına göre değil <b>görüntülenen</b> yazıya göre verilir ve dil değiştiğinde form tarafından yeniden uygulanır</td></tr>
+      <tr><td>Tam genişlikteki bir düğmenin ışıması solda dikey olarak kesildi</td>
+          <td>Bir kaydırma kabı kenarında istisnasız kırpar. Ray boşluğu sayesinde yalnızca sağ taraf kurtuldu</td>
+          <td><code>GoScroll</code>, kenarını 12dp dışarı itmek için üst öğenin iç boşluğunu ödünç alır ve içeride geri verir — <b>içerik yerinde kalır</b></td></tr>
+      <tr><td>Bir slotta süre, simge ve adet alt alta dizildi</td>
+          <td>48dp içinde üç satır</td>
+          <td>Simge ortada büyük, kısayol sol üstte, adet sağ altta bir <b>rozet</b>, kalan süre simgenin üstünde bir rozet — rozet panelleri kaplamanın <code>badge_box()</code> metodundan gelir</td></tr>
+      <tr><td>Seçimi görünmeyen yassı bir açılır liste</td>
+          <td>Öğe vurgusu düğme panelini kullanıyordu; radyo işaretleri motorun soluk varsayılanıydı</td>
+          <td>Kendine ait bir vurgu paneli (yumuşak vurgu tonu), onay kutularıyla aynı radyo grafiği, dokunmaya uygun öğe yüksekliği</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Açık bir açılır liste — yumuşak vurgu tonlu vurgu paneli ve seçili öğenin radyo işareti" loading="lazy">
+      <figcaption>Açılır liste — vurgu paneli ve radyo işareti</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Dört hızlı slot — sol üstte kısayol, sağ altta adet rozeti, ilkinde kalan süre rozeti" loading="lazy">
+      <figcaption>Slotlar — köşe rozetleri ve kalan süre (bilimkurgu)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Yalnızca simgeden oluşan düğmelere <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> ile bir
+    açıklama verin — fare kullananlar için ipucu ve ekran okuyucular için erişilebilirlik adı, ikisi de bu tek
+    değerden gelir. İpucunu gohud kendisi çizer: motorun varsayılanı, genişlik hesabı bozulduğunda yazıyı
+    <b>satır başına tek karakter</b> olarak böler (1dp genişlikte ölçüldü).
+  </p>
+
+  <h4>Rehber işareti kartı sabit parçalardan uzak durur</h4>
+  <p>
+    Yatay kipte kart eskiden tam üst ya da alt kenara gönderiliyordu — tam da başlıkların ve HUD parçalarının
+    bulunduğu yere; demoda başlığın <code>→ ×</code> kısmının üstüne oturmuştu. Artık hedefiyle aynı hizada
+    kalıyor, yer ayıran her <code>GoHudAnchor</code>'ın etrafından dolaşıyor ve kaçınılacak diğer şeyleri
+    <code>keep_clear</code> üzerinden alıyor. Engeli hedefin üstünü kapatmadan aşacak en kısa mesafeyi
+    hareket eder ve ekran her şeyden kaçınmaya yetmeyecek kadar küçükse yerinde kalır — üst üste binmek
+    yok olmaktan iyidir. Sayfanın <b>üstünde</b> okunmasını sağlayan derinliği kaplama ayarlarından gelir
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; pahlı kaplamalar <code>float_glow_size</code> kullanır).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # anchor olmayan sabit parçalar</code></pre>
+
+  <h3>Fareli ve klavyeli ekranlar</h3>
+  <p>
+    Bir parmağın <b>üstüne gelme durumu yoktur.</b> Yalnızca mobili düşünerek geliştirin, yalnızca masaüstünde
+    olan iki durum denetimsiz kalır — ve biri bozuktu: gohud'un <b>odak halkası birincil düğmede
+    görünmüyordu.</b> Panel vurgu rengiydi ve halka da öyleydi: <code>1.00:1</code>, kendi üstüne çizilmiş
+    aynı renk. Klavyeyle gezinirken nerede olduğunuzu anlamanın yolu yoktu.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="Aynı düğme sırası üç durumda — normal, fare üstünde, klavye odağı" loading="lazy">
+    <figcaption>Yukarıdan aşağıya: <b>normal · üstüne gelme · odak</b>. Dolgulu düğmeler, kendi paneliyle kontrast oluşturan bir halka alır.</figcaption>
+  </figure>
+  <p>
+    Dolgulu düğmeler (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) <b>kendi paneliyle
+    kontrast oluşturan</b> bir halka kullanır — koyu temada koyu, açık temada beyaz, bilimkurguda koyu bir
+    hedefleme köşeliği. Kontrast denetleyicisi <b>odak halkasını üstünde durduğu panele karşı</b> ölçer, bu
+    yüzden kural bir palet değişikliğinden sağ çıkar (WCAG 2.4.11 odak göstergelerinde 3:1 ister).
+  </p>
+
+  <h3><code>GoHudAnchor</code> — dokuz nokta</h3>
+  <p>Güvenli alana ve kenar boşluklarına uyar. Ona bir <code>landscape_spot</code> verin, yatay kipte yer
+    değiştirsin — dikeyde alt ortada duran denetimler bunun yerine sağ alta gidebilir.</p>
+  <div class="note">
+    <b>Neden var.</b> HUD parçası başına elle yazıldığında anchor'lar ve offset'ler birbirinden ayrışır: çentikli
+    bir cihazda can çubuğu kamera deliğinin altında kalır, yatay kipte bir denetim düğmesi hareket çubuğunun
+    üstüne iner. O aritmetik tek bir yerde yaşıyor.
+  </div>
+
+  <h4>İçeriği HUD'ın altından çıkarmak</h4>
+  <p>
+    Kaydırılan bir ekran, ekranı bir HUD ile paylaştığında içerik <b>onun altına</b> kayar ve iki yazı kümesi
+    hiçbiri okunmaz hâle gelene kadar üst üste biner. Bu eklentide iki kez oldu: bir giriş alanının yer tutucu
+    yazısı hızlı slotların arasından sıkışıp çıktı ve bir ayar anahtarının topuzu can çubuğunun üstüne indi.
+  </p>
+  <pre><code>form.avoid_hud = true                  # görünen her GoHudAnchor'dan uzak dur
+joystick_anchor.reserve_space = false  # …yalnızca parmak altında beliren anchor'lar hariç</code></pre>
+  <p>
+    Her dikdörtgenden <b>en az alana mal olan</b> yönde kaçınılır. Sağ üstteki bir çubuğun etrafından dikey
+    tutulan bir telefonda aşağı doğru (yüksekliğin %13'ü), yatayda ise yana doğru (genişliğin %21'i) dolaşılır —
+    yatay kipte dikey olarak kaçınmak ekranın %27'sine mal olurdu. Zaten feda edilmiş alan, bir sonraki
+    dikdörtgen ölçülmeden önce düşülür.
+  </p>
+
+  <h4>HUD parçaları birbiriyle de çarpışır</h4>
+  <p>
+    Dokuz nokta ekranı böler; parçaların <b>birbirini ıskalayacağını</b> garanti etmez. Üst ortadaki geniş bir
+    snackbar, sağ üstteki can çubuğunun tam üstüne indi ve değeri gizledi — ne kadar can kaldığını
+    okuyamıyordunuz.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # sabit HUD'ın altına yerleşir
+notice_anchor.reserve_space = false   # ve görünürken sayfayı itmez</code></pre>
+  <p>
+    <b>Yalnızca dikey olarak</b> kenara çekilir — yana da kaymak, ortalanmış bir bildirimin her görünüşünde
+    başka bir yerde belirmesine yol açardı. Üstelik yalnızca <b>kendisi kenara çekilmeyen</b> parçalardan
+    kaçınır: ikisi birden çekilirse, ikisi sonsuza dek yer değiştirir.
+  </p>
+
+  <h3><code>GoBar</code> — can, mana, deneyim</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # yalnızca dolguya özgü token
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Değişimler 0.18 saniyede yumuşatılır — zıplayan bir can çubuğu darbenin ne kadar sert olduğunu
+    anlatmaz. <code>reduce_motion</code> bunu anında yapar. Büyük sayılar <code>12.3k</code> gibi kısaltılır,
+    böylece basamaklar gelip gittikçe çubuğun genişliği titremez.</p>
+
+  <h3><code>GoSlot</code> — tek bir hızlı slot</h3>
+  <p>Simge, adet, bekleme süresi ve kısayol <b>tek bir yüzde</b>. Rozetleri küçük bir dairenin kenarına
+    asmak her slotu başka genişlikte yapar ve sıra yalpalar.</p>
+  <div class="note">
+    <b>Görünen boyut ile dokunma boyutu farklıdır.</b> Sıkışık slotların 48dp'lik dokunma kutuları üst üste
+    biner; çakışan bölge <b>merkezi daha yakın olan slota</b> gider — bunu birbirlerine
+    <code>touch_peers</code> üzerinden bildirin.
+  </div>
+
+  <p><code>keyboard_focus</code> varsayılan olarak kapalıdır, böylece sekiz slotluk bir sıra, Tab sırasında klavye
+    kullanan biriyle bütün ayar denetimlerinin arasına girmez. Girdi yalnızca klavye ya da oyun kumandasıysa açın.</p>
+
+  <h3><code>GoJoystick</code> — sanal joystick</h3>
+  <table>
+    <thead><tr><th>Kip</th><th>Davranış</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Her zaman aynı yerde — bakmadan bulması kolay</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Başparmağın indiği yerde belirir</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Belirdikten sonra başparmağı izlemeyi sürdürür — uzun hareketler için rahat</td></tr>
+    </tbody>
+  </table>
+  <p><code>moved</code> sinyalinden gelen <code>Vector2</code>'nin uzunluğu 0–1 arasındadır, yani doğrudan bir
+    hızla çarpabilirsiniz; ekran boyutuna ya da DPI'ya göre değişmez.</p>
+
+  <h3><code>GoIconButton</code> — küçük görünür, büyük basılır</h3>
+  <div class="note warn">
+    <b>Yalnızca kardeşleri girdiyi yok saydığı sürece güvenlidir.</b> Genişletilmiş alan bir sonraki
+    düğmenin üstünü kaplarsa, o düğme yanıt vermeyi bırakır. Yan yana duran simge düğmelerinin
+    <code>touch_peers</code>'a ihtiyacı vardır.
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — her şeyin üretildiği tek yer</h2>
+  <p class="sub">
+    Doğrudan <code>Button.new()</code> çağırın; iç boşluk, yükseklik ve satır kaydırma ekrandan ekrana
+    hafifçe ayrışsın. Bu ayrışma kod incelemesinde görünmez, ekran görüntüsünde apaçıktır.
+  </p>
+
+  <table>
+    <thead><tr><th>Grup</th><th>Fonksiyonlar</th></tr></thead>
+    <tbody>
+      <tr><td>Yapı</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Yazı</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Düğmeler</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>Girdi</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>Gösterim</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>Yüzey parçaları</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>Yardımcılar</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> her zaman bir <code>StyleBoxFlat</code> döndürür</b>, çünkü çağıranlar onu alıp
+    <code>bg_color</code> veya <code>corner_radius</code> değerini ayarlar. Özel bir biçimin hayatta kalması
+    gerekiyorsa <code>surface()</code> kullanın.
+  </div>
+
+  <h3>Açıklamalı liste satırları</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Yemin Tutan", _inspect, Color.TRANSPARENT,
+    "Uzun kılıç  /  Saldırı 42", false)</code></pre>
+  <p>İkinci satırı olan bir satır <b>eşit üst ve alt iç boşluk</b> alır, tek satırlık bir satırdan ferahtır ve
+    başlık/açıklama çifti simgenin yanında <b>dikeyde ortalanmış</b> kalır — bir kap satırı daha uzun hâle
+    getirdiğinde ve açıklama birkaç satıra kaydığında da. Satırın tamamı tek bir dokunma hedefi olarak kalır.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="medieval_light örneği — iki satırlı liste satırları, hızlı slotlar ve çubuklar" loading="lazy">
+    <figcaption>Ortaçağ örneğinde iki satırlı satırlar, slotlar ve çubuklar — <code>medieval_light</code> altında aynı fabrika çağrıları.</figcaption>
+  </figure>
+
+  <h3>Akan satırlar</h3>
+  <p>Denetimleri <code>wrap_row</code> içine <b>doğal genişlikleriyle</b> koyun. Satır kaydırma açık bırakılırsa
+    bir düğmenin en küçük genişliği neredeyse hiçe iner ve satır, hücresini buna göre boyutlandırır — etiket
+    satır başına tek karaktere çöker. Fabrika bunu sizin yerinize engeller.</p>
+
+  <h3>Boş bir listeyi asla boş bırakmayın</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Burada henüz bir şey yok"))</code></pre>
+  <p>İnsanlar boş bir ekranı <b>bozuk</b> diye okur.</p>
+</section>
+
+<section id="hooks">
+  <h2>Alt sınıf kancaları</h2>
+  <p class="sub">
+    Bir alt widget'ın oluşturulduğu her yer, ezilebilir bir metottan geçer; böylece gohud türlerinin alt
+    sınıfını türeten bir proje, kendi alt sınıflarını kod kopyalamadan widget'ların <b>içine</b> sokabilir.
+  </p>
+  <table>
+    <thead><tr><th>Kanca</th><th>Widget</th><th>Varsayılan</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Bir modal açıkken kartı gizler</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← Tema</a> · <a href="./">Genel bakış →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

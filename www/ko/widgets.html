@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
 <link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets.html">
 <link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets.html">
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets.html">
+<!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>위젯 — gohud</title>
 <meta name="description" content="gohud 의 위젯 하나하나 — 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바, 코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱.">
@@ -24,7 +27,16 @@
       <a href="#hud">HUD</a>
       <a href="#factory">팩토리</a>
       <a href="#hooks">훅</a>
-      <a href="../widgets.html">English ↗</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>한국어</summary>
+        <div class="langs-list">
+          <a href="../widgets.html" hreflang="en" lang="en">English</a>
+          <a href="widgets.html" hreflang="ko" lang="ko" aria-current="true">한국어</a>
+          <a href="../ja/widgets.html" hreflang="ja" lang="ja">日本語</a>
+        </div>
+      </details>
+      <!-- langs:end -->
     </nav>
   </div>
 </header>
@@ -289,7 +301,7 @@ hp.set_values(320, 500)                    # "320 / 500"</code></pre>
       <tr><td>버튼</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
       <tr><td>입력</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
       <tr><td>표시</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>dropdown</code> <code>progress</code> <code>empty_state</code></td></tr>
-      <tr><td>표면 조각</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code></td></tr>
+      <tr><td>표면 조각</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
       <tr><td>도우미</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
     </tbody>
   </table>

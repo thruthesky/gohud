@@ -27,9 +27,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `Button` — the HUD's status buttons, badges and small list actions. `filled` paints the face in the accent for an
   emphasised action; the caller sets the label colour. The focus face and `mouse_filter` are left alone, because a
   button laid over the game must keep `MOUSE_FILTER_STOP` or its press leaks into the world.
-- **`GoStyle.hud_panel(accent)` and `GoStyle.chip_panel(accent, fill_alpha)`** are the container versions of the
-  floating and chip faces: a dock or status bar laid over the game, and a pill that holds more than one line (a
-  roster card with a name, a level and a gauge). The host adds children and never builds a face of its own.
+- **`GoStyle.style_chip_label(node, accent, urgent)`** puts the chip face on a `Label` you already built, for places
+  that measure their own width and cannot use the `chip()` container — a badge in a HUD status bar, for one.
+- **`GoStyle.hud_panel(accent, pad_x, pad_y)` and `GoStyle.chip_panel(accent, fill_alpha)`** are the container versions
+  of the floating and chip faces: a dock or status bar laid over the game, and a pill that holds more than one line (a
+  roster card with a name, a level and a gauge). The host adds children and never builds a face of its own. A HUD has
+  touch geometry fixed per screen, so `hud_panel` takes the inner padding as an argument (negative keeps the skin's
+  own) — do **not** wrap a `padding()` box around it as well. Two layers of padding halve the content width, and a
+  one-line label that ellipsizes then disappears entirely while an assertion on its `text` still passes.
+  `GoStyle.face_padding(face, pad_x, pad_y)` applies the same to a face you hold yourself; the shape (border, glow,
+  corners) is untouched, so chamfered and medieval skins keep theirs.
 - **`GoStyle.choice_grid(items, selected, action, translate)`** lays out swatch, icon or text cards and keeps exactly
   one picked — for character colours, avatars or difficulty cards, where `segmented` (text only) and `chip`/`avatar`
   (not pressable) do not fit. An item is `{color, icon, texture, text, tooltip}`; a colour swatch is drawn with the

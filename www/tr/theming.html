@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tema — gohud</title>
+<meta name="description" content="gohud'un temaları, kaplamaları ve ön ayarları rengi ve biçimi nasıl değiştirir: token başvurusu, özel StyleBox'lar ve kontrastın neden seçilmeyip türetildiği.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">Genel bakış</a>
+      <a href="theming.html">Tema</a>
+      <a href="widgets.html">Widget'lar</a>
+      <a href="#medieval">Ortaçağ</a>
+      <a href="#tokens">Token'lar</a>
+      <a href="#skin">Kaplamalar</a>
+      <a href="#own">Kendi ön ayarınız</a>
+      <a href="#contrast">Okunaklılık</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Tema</h1>
+    <p class="lead">
+      gohud'un görünümü <b>üç katmandan</b> oluşur. Yalnızca renkleri değiştirin ya da biçimleri tümüyle değiştirin.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>Üç katman</h2>
+  <p class="sub">Bir ön ayar üçünü birden paketler. Boş bıraktığınız alanlar varsayılanlara döner.</p>
+
+  <table>
+    <thead><tr><th>Katman</th><th>Neye karar verir</th><th>Nasıl değiştirirsiniz</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>Renkler, boyutlar, yazı ölçeği ve <b>motorun çizdiği</b> her şeyin biçimi — düğme panelleri, giriş alanları, sekmeler, anahtar grafikleri</td>
+        <td>Bir <code>.tres</code> yazın ya da <code>tools/make_theme.py</code> ile üretin</td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td><b>Kodun çizdiği</b> her şeyin biçimi — joystick, hızlı slot yüzleri, rehber işareti halkası, chip'ler, iskeletler, ayırıcılar, bölüm başlıkları</td>
+        <td>Alt sınıfını türetin ve yalnızca önemsediğiniz metotları ezin</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>Adıyla çağrılan simgeler — 84 varsayılan çizim ya da ortaçağ setinin bunların üstüne gelen 16 gravür çizimi. Bir doku paketi ya da bir simge yazı tipi; çağıran kod her iki durumda da aynıdır</td>
+        <td>Bir set verin ya da yalnızca birkaç adı ezin</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Tek başına bir Theme neden yetmez.</b> <code>StyleBoxFlat</code>'in sahip olduğu tek köşe yuvarlak
+    köşedir — yarıçapı sıfır yapın, dik açı elde edersiniz; arada hiçbir şey yok. Çapraz kesilmiş köşeler,
+    kalınlaştırılmış tek bir kenar, dışa doğru ışıma: motor bunların hiçbirini çizmez. Üstelik joystick ile
+    rehber işareti <code>_draw()</code> içinde çizilir ve bir temanın oraya hiç erişimi yoktur.
+  </div>
+</section>
+
+<section id="pick">
+  <h2>Birini seçmek</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>Bu tek satır temayı, kaplamayı ve simgeleri birlikte değiştirir. Editörden
+    <b>Project Settings → Gohud → Theme → Preset</b> yolunu, bir ayar kaynağından ise
+    <code>GoConfig.preset</code> alanını kullanın.</p>
+
+  <h3>Tek bir alanı kendinize saklamak</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # simgeler sizin, geri kalan her şey ön ayarın</code></pre>
+  <p><code>theme</code>, <code>skin</code> veya <code>icons</code> alanını açıkça vermek ön ayarı <b>geçersiz kılar</b>.</p>
+
+  <h3>Yerleşik altı ön ayar</h3>
+  <table>
+    <thead><tr><th>Ön ayar</th><th>Paneller</th><th>Kaplama · simgeler</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>Kademeli bir gölge ölçeği üstünde yuvarlak <code>StyleBoxFlat</code> panelleri; birincil düğmeler basıldığında kalkar ve çöker</td><td><code>GoSkin</code> · 84 varsayılan simge</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>Neon kenarlı ve ışımalı pahlı <code>GoStyleBoxCut</code> panelleri; <code>GoStyleBoxBracket</code> odak işaretleri</td><td><code>GoSkinSciFi</code> — altıgen joystick · varsayılan simgeler</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Dövme <code>GoStyleBoxMedieval</code> çerçeveleri — demir ve deri ya da parşömen — menülerde perçinler ve köşe süsleriyle</td><td><code>GoSkinMedieval</code> · varsayılanların üstüne 16 gravür simge</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>Ortaçağ: demir, deri ve parşömen</h2>
+  <p><code>medieval_dark</code> koyu demir ve deriyi antika altınla eşleştirir. <code>medieval_light</code>
+    parşömen ve mürekkep kullanır. İkisi de <code>GoSkinMedieval</code>'i, mevcut widget'ları ve gravür
+    ayrıntıları olan 16 özgün simgeyi kullanır; gezinme simgeleri özgün sete geri düşer.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# Ya da: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>Ön ayarı arayüzünüzü oluşturmadan önce seçin. Açıkça verilen <code>GoConfig.theme</code>,
+    <code>skin</code> veya <code>icons</code> değerleri yine önceliklidir. Çalışan bir karakter sayfası, heybe
+    ve görev günlüğü için <code>res://addons/gohud/examples/medieval/medieval.tscn</code> dosyasını açıp F6'ya
+    basın. Düğmeleri varyantlar arasında geçiş yapar ve nesne ayrıntılarını açar.</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="Ortaçağ Demir karakter, envanter ve görev arayüzleri" loading="lazy"><figcaption>Demir ve deri</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="Ortaçağ Parşömen karakter, envanter ve görev arayüzleri" loading="lazy"><figcaption>Parşömen ve mürekkep</figcaption></figure>
+  </div>
+  <p>Menü çerçevelerinde bir perçin ve küçük bir köşe süsü vardır; sürekli görünen HUD ise sessiz bir kenar
+    korur. Can, mana ve dayanıklılık kırmızı, mavi ve zeytin yeşili dolgular kullanır. Cinzel yalnızca
+    başlıklar ve alt başlıklarla sınırlıdır; gövde metni barındıran projenin/varsayılanın yazı tipini korur.
+    Pakete dahil yazı tipinin lisansı <code>assets/fonts/cinzel/OFL.txt</code> içindedir.</p>
+  <p>Gravür seti <code>bag</code>, <code>book</code>, <code>box</code>, <code>coin</code>, <code>crown</code>,
+    <code>flag</code>, <code>heart</code>, <code>key</code>, <code>map</code>, <code>potion</code>, <code>shield</code>,
+    <code>star</code>, <code>sword</code> ve <code>user</code> simgelerini yeniden çizer, ayrıca <code>scroll</code> ile
+    <code>seal</code> ekler. Diğer bütün adlar varsayılan sete geri düşer; böylece <code>close</code> ve
+    <code>settings</code> her ön ayarda varsayılan çizimlerini korur. Cinzel Latin alfabesini kapsar;
+    yerelleştirilmiş başlıklara <code>shape.fonts</code> üzerinden kendi yazı tiplerini verin.</p>
+  <div class="note">
+    <b>Test paketinin her iki varyant için denetledikleri.</b> Ortaçağ kaplaması seçilmiş midir; menü ve HUD
+    panelleri dövme çerçeve midir ve süs yalnızca menülerde midir; başlıklar Cinzel kullanırken gövde metni
+    devraldığı yazı tipini korur mu; gravür simgeler <code>DPITexture</code> olarak içe aktarılır mı; gerçek bir
+    hızlı slot kaplamayı kullanır mı; kopyalanmış bir kaplamanın ayarlarını değiştirmek ön ayara dokunmadan
+    slota ulaşır mı; ve geri dönmek varsayılan ile bilimkurgu geometrisini eski haline getirir mi.
+  </div>
+  <h3>Kendi krallığınızı kurun</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# themes/palettes/kingdom.json dosyasını düzenleyin, sonra:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# GDScript'te, widget'ları oluşturmadan önce:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>JSON temaları başka JSON temalarını devralabilir. Atlanan değerler üst temanın ayarlarını korur;
+    döngüsel devralma reddedilir. Üretilen ön ayar, üst temanın simge setini korur.</p>
+  <table><thead><tr><th>Ayar</th><th>Etkisi</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: demir · 1: deri · 2: parşömen. Yüzey izlerini belirler.</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>Doku saydamsızlığı. Temiz bir yüzey için 0 kullanın.</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>Menü köşe süsünün boyutu ve eğim ışıltısının şiddeti.</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>Başlık, alt başlık, açıklama, gövde ve düğme rollerini eklenti içindeki res:// yazı tipi dosyalarıyla eşleştirir. Atlanan roller devraldıkları yazı tipini korur.</td></tr>
+    <tr><td><code>skin.dials</code></td><td>Hızlı slot yarıçapı, perçin görünürlüğü, doku ve ışıltı. Aşağıdaki tam tablo her ayarı listeler.</td></tr>
+  </tbody></table>
+</section>
+
+<section id="tokens">
+  <h2>Token'lar</h2>
+  <p class="sub">
+    Her renk ve her ölçü, Theme içindeki <code>GoHud</code> türü altında adıyla erişilecek şekilde yaşar.
+    Sayı yazmamak kuraldır: tema değiştiğinde adlar peşinden gelir.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # renk
+GoUi.metric(GoTheme.GAP)               # ölçü (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # bir yazı rolünün boyutu
+GoUi.box(GoTheme.BOX_CARD)             # bir StyleBox'ın kopyası</code></pre>
+
+  <h3>Renkler</h3>
+  <table>
+    <thead><tr><th>Ad</th><th>Nerede kullanılır</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>Ekranın zemini</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>Üç panel katmanı — panel, kart, yükseltilmiş hücre</td></tr>
+      <tr><td><code>border</code></td><td>Kart ve düğme kenarlıkları</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>Üç yazı düzeyi — gövde, destekleyici, soluk</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>Vurgu ve onun üstüne yerleşen yazı</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>Durum <b>yazısı</b> renkleri</td></tr>
+      <tr><td><code>*_fill</code></td><td>Aynı durumların <b>dolgu</b> hali — çubuklar ve diğer geniş alanlar</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>Açılır pencerelerin arkasındaki perde, gölgeler, çubuğun oluğu</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b><code>*_fill</code> neden var.</b> Aynı anlam, zıt gereksinimler. Yazı olarak kullanılan
+    <code>warning</code>, açık bir arka planda okunacak kadar koyu olmalıdır; bir deneyim çubuğunun dolgusu
+    olarak kullanıldığında ise fark edilecek kadar parlak olmalıdır. Tek bir token ikisini birden olamaz —
+    açık temanın çubuğu kahverengiye dönmüştü. <code>_fill</code> varyantı olmayan bir tema otomatik olarak
+    temel ada geri düşer; böylece bu token'lardan önce yazılmış temalar çalışmaya devam eder.
+  </div>
+
+  <h3>Ölçüler (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>Yazı rolleri</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — bir rol <b>bir boyutu</b> adlandırır,
+    bir amacı değil. "En büyük yazı", "başlık" değil. Böylece bir ekran onu başka bir şey için kullansa bile
+    ölçek bozulmaz.
+  </p>
+
+  <h3>Tür varyasyonları</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="skin">
+  <h2>Kaplamalar — bir Theme'in erişemediği yer</h2>
+
+  <table>
+    <thead><tr><th>Metot</th><th>Neye karar verir</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>Kart ve panel yüzleri, yüzen yüzeyler, oyunun ya da bir haritanın üstüne serilen hap biçimli etiketler</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>Bir chip'in paneli ve <b>onun üstünde okunaklı kalan etiket rengi</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>Hızlı slot yüzleri ve yazıları</td></tr>
+      <tr><td><code>disc_box</code></td><td>Bir avatarın ya da rozetin arkasındaki daire</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>Satır içi uyarılar, yer tutucular, bölümlü denetimler</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>Rehberli turun hedefinin çevresine koyduğu işaret</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td><b>Doğrudan çizilen</b> şeyler — joystick ve işaretçisi</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>Ayırıcılar ve bölüm başlıkları</td></tr>
+      <tr><td><code>badge_box</code></td><td>Hızlı slot rozetleri — adet ve kalan süre</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>Çubuk dolguları (dolgu kendi oluğuna karşı 3:1'e ulaşamıyorsa kenarlık çizilir) ve snackbar'lar</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # Widget konumları zaten hesapladı — burada yalnızca çizim yapılır
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>StyleBoxFlat'in yapamadığı biçimler</h3>
+  <table>
+    <thead><tr><th>Sınıf</th><th>Ne çizer</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Çapraz kesilmiş köşeler, kalınlaştırılmış tek bir vurgu kenarı, dışa doğru ışıma</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>İçeriği kuşatmadan yalnızca köşe işaretleri</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Dövme bir çerçeve — perçinler, köşe gravürü, eğim ışıltısı ve demir, deri ya da parşömen dokusu</td></tr>
+    </tbody>
+  </table>
+  <p>Üçü de diğer bütün StyleBox'lar gibi bir Theme kaynağına serileştirilir — bir temanın biçimi
+    değiştirebilmesini sağlayan şey budur.</p>
+
+  <div class="note warn">
+    <b>İç boşluğu <code>content_margin_*</code> üzerinden verin.</b> GDScript'te StyleBox'tan türetmek
+    <code>_get_style_margin()</code> metodunun hiç çağrılmaması demektir (Godot 4.7 üzerinde ölçüldü).
+    Yerleşik alanları doldurun, yoksa içerik kenarlığa yapışır.
+  </div>
+</section>
+
+<section id="own">
+  <h2>Kendi ön ayarınız — tek bir dosya</h2>
+  <p class="sub">
+    Eskiden bir tema eklemek dört yeri elle düzenlemek demekti — üreticinin paleti, biçim, bir kaplama, bir
+    ön ayar kaynağı. Artık tek bir komut hepsini yerine koyuyor.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # tema .tres + denetim grafikleri
+godot --headless --path . --import                  # yeni grafikleri bir kez içe aktar
+GoUi.use_preset(&amp;"neon")                             # bitti — seçicide de görünür</code></pre>
+  <p>
+    İlk satır <code>themes/palettes/neon.json</code> ve <code>themes/presets/neon.tres</code> dosyalarını
+    yazar. JSON, <b>devraldığı temanın her değerini</b> açık açık taşır; böylece aynı zamanda
+    değiştirebileceklerinizin listesi olur: üst temanın değerini korumak için bir anahtarı silin, ezmek için
+    yazın. Ön ayarlar <code>themes/presets/</code> klasörü <b>taranarak</b> bulunur, yani hiçbir kayıt kodu
+    değişmez — proje ayarındaki açılır liste de onu kendiliğinden alır.
+  </p>
+
+  <h3>Neleri değiştirebilirsiniz — tek sayfada</h3>
+  <table>
+    <thead><tr><th>Nerede</th><th>Ne</th><th>Nasıl</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>üst tema</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … ya da başka bir JSON teması. Atlanan anahtarlar onun değerlerini devralır; devralma döngüsü hata verir</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>arka plan · üç yüzey · kenarlık · üç yazı tonu · vurgu · dört durum rengi · scrim · gölge · çubuk oluğu</td><td><code>"#RRGGBB"</code>, alfa için <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>yalnızca dolguya özgü canlı renkler <code>*_vivid</code></td><td>yazı rengi koyulaşmak zorunda kalsa bile çubukları doygun tutar — birini eksik bırakırsanız üretici bunu bildirir</td></tr>
+      <tr data-group="palette"><td>okunaklılık</td><td><b>elle ayarlanmaz.</b> Yazı, kenarlıklar, vurgu ve onun üstündeki etiket, eşikleri geçene kadar üretici tarafından itilir — yalnızca vurguyu değiştirin, denetimler yine geçsin</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (yuvarlak) · <code>cut</code> (pahlı köşeler) · <code>medieval</code> (dövme çerçeveler)</td></tr>
+      <tr data-group="shape"><td>boyutlar</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — token'lar peşinden gelir, böylece paneller ile widget hesapları asla çelişmez</td></tr>
+      <tr data-group="shape"><td>yalnızca <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>yalnızca <code>medieval</code></td><td><code>material</code> (0 demir · 1 deri · 2 parşömen) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> eklenti içindeki <code>res://</code> yazı tipi dosyalarıyla eşleştirilir</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — kodun kendi çizdiği yerler için aile (joystick, slotlar, rozetler, rehber işareti halkası, chip'ler, ayırıcılar)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — o yerlerin <b>sayıları</b>: slot kenarlık kalınlığı ve tonu, rozet iç boşluğu, chip ve uyarı saydamsızlığı, joystick halka kalınlığı ve saydamsızlığı, bilimkurgu pah boyutları, ışıma ve köşelik</td><td>Üst temanın her değeri JSON'da açık açık yazılıdır. Üretici bunları <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> dosyasına yazar — <b>hiçbir kaplama koduna dokunulmaz</b>. Yalnızca çizimlerin kendisini değiştirmek için <code>--new-skin</code> çalıştırırsınız; bu da bir <code>GoSkin</code> alt sınıfının iskeletini oluşturur</td></tr>
+      <tr><td><code>icons</code></td><td>simge seti</td><td>bir <code>GoIconSet</code> kaynağına giden <code>res://</code> yolu — atlandığında JSON üst temasından korunur</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>seçicide nasıl görüneceği</td><td>boolean · metin</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Bütün ayarlar</h3>
+  <p>
+    Aşağıdaki tabloyu <code>tools/make_site.py</code> <b>doğrudan kaplama betiklerinin</b> <code>@export</code>
+    satırlarından doldurur — bir ayar ekleyin ya da bir varsayılanı değiştirin, tablo peşinden gelsin. Bu adları
+    JSON içinde <code>skin.dials</code> altında kullanın. Varsayılanı <code>14</code> okunan bir ayar tam sayıdır,
+    <code>10.0</code> okunan ise ondalıklıdır — JSON'a hangi biçimde yazarsanız yazın, üretici betiğin türüne
+    dönüştürür.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>Varsayılan kaplama <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Varsayılan">0.16</td><td>Bir chip panelinin dolgu saydamsızlığı.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Bir chip panelinin kenar saydamsızlığı.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Varsayılan">0.1</td><td>Bir uyarı kutusunun panelinin durum rengine ne kadar yaklaştırılacağı.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Varsayılan">0.24</td><td>Bekleme süresi işlerken hızlı slot panelinin vurgu tonu.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Varsayılan">0.08</td><td>Boştayken hızlı slot panelinin vurgu tonu.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Varsayılan">2</td><td>Bekleme süresi işlerken hızlı slot kenarlık kalınlığı (dp).</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Varsayılan">1</td><td>Boştayken hızlı slot kenarlık kalınlığı (dp).</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Varsayılan">5</td><td>Bir rozetin (adet, kalan süre) yatay iç boşluğu (dp).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Varsayılan">1</td><td>Bir rozetin dikey iç boşluğu (dp).</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Varsayılan">0.6</td><td>Bir rozet panelinin kenar saydamsızlığı.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Yüzen kartların (rehber işareti, soru kartı) gölge saydamsızlığı.</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Varsayılan">14</td><td>Yüzen kartların gölge bulanıklığı (dp).</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Varsayılan">4</td><td>Yüzen bir kartın gölgesinin aşağı doğru kayması (dp).</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Varsayılan">10.0</td><td>Gölge yerine ışıyan yüzen bir panelin ışıma mesafesi (dp); bilimkurgunun pahlı paneli gibi.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Varsayılan">0.42</td><td>Joystick'in taban diskinin saydamsızlığı.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Joystick halkasının saydamsızlığı.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Varsayılan">2.0</td><td>Joystick halkasının kalınlığı (dp).</td></tr>
+    </tbody>
+  </table>
+  <h4>Bilimkurgu kaplaması <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Varsayılan">7.0</td><td>Bir chip panelinin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Varsayılan">5.0</td><td>Bir iskelet panelinin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Varsayılan">8.0</td><td>Bir uyarı kutusunun pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Varsayılan">8.0</td><td>Bölümlü bir denetimin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Varsayılan">6.0</td><td>Bir hızlı slot panelinin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Varsayılan">0.24</td><td>Avatarların ve disklerin pahı = çap × bu oran.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Bekleme süresi işleyen bir slotun ışıma saydamsızlığı.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Varsayılan">6.0</td><td>Bekleme süresi işleyen bir slotun ışıma mesafesi (dp).</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Varsayılan">12.0</td><td>Rehber işaretinin hedefleme köşeliğinin kol uzunluğu (dp).</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Varsayılan">2.0</td><td>Rehber işaretinin hedefleme köşeliğinin çizgi kalınlığı (dp).</td></tr>
+    </tbody>
+  </table>
+  <h4>Ortaçağ kaplaması <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Varsayılan">4.0</td><td>Ortaçağ hızlı slot çerçevesinin köşe yarıçapı (dp).</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Varsayılan">0.035</td><td>Hızlı slotların içindeki hafif deri izlerinin saydamsızlığı.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Varsayılan">1.0</td><td>Hızlı slot köşelerindeki metal süslerin ölçeği. Menü çerçeveleri shape.ornament_scale kullanır.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Varsayılan">0.18</td><td>Hızlı slot kenarları boyunca uzanan metal ışıltının şiddeti.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Varsayılan">1</td><td>Hızlı slotlarda küçük metal perçinleri göster: 0 gizler, 1 gösterir.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>Kaplamanın alt sınıfını türetin (isteğe bağlı)</h3>
+  <p>Yalnızca temanın ve biçimin erişemediği şeyler — joystick'in altıgeni, slot rozetleri, rehber işaretinin
+    hedefleme köşeliği — bir kaplamada yaşar. <code>GoSkin</code>'in alt sınıfını türetin, yalnızca o metotları
+    ezin ve JSON'daki <code>skin</code> alanını o kaynağa yöneltin. Yalnızca renk değiştiren bir tema bu adımı
+    atlar.</p>
+
+  <div class="note">
+    <b>Bir denetim sözü tutar.</b> <code>tools/check_scaffold.sh</code> her çalıştırmada kullan-at bir tema
+    oluşturur — vurguyu değiştirir, yarıçapı 4 yapar — ve silmeden önce üretimi, token yayılımını ve temiz bir
+    kontrast geçişini doğrular. İlk çalıştırma, yalnızca vurgusu değiştirilmiş bir temanın <b>8 çiftte</b>
+    başarısız olduğunu ortaya çıkardı: üretici yazı renklerini itiyor ama vurguyu yazıldığı gibi kullanıyordu.
+    Artık vurguyu ve onun üstündeki etiketi de itiyor.
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>Okunaklılık ölçülür</h2>
+  <p class="sub">
+    "Güzel" zevk meselesidir; <b>"okunaklı" ölçülebilir.</b> Soluk gri bir yazı iyi bir monitörde hoş görünür
+    ve gün ışığındaki bir telefonda kaybolur — göz kararı seçmek bunu er ya da geç garanti eder.
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>Ne</th><th>Gereken</th></tr></thead>
+    <tbody>
+      <tr><td>Gövde metni</td><td>4.5 : 1</td></tr>
+      <tr><td>Büyük metin (24px ve üzeri)</td><td>3 : 1</td></tr>
+      <tr><td>Vurgu kenarlıkları ve simgeler</td><td>3 : 1</td></tr>
+      <tr><td>Süs amaçlı kenarlıklar</td><td>2 : 1 — WCAG, 3:1 kuralını süse uygulamaz</td></tr>
+      <tr><td>Komşu yüzeyler</td><td>1.12 : 1 — bir kartın arka planından ayrı okunmasına yetecek kadar</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Aynı tondaki bir yazı, aynı tondaki bir renk katmanı üstünde</h3>
+  <p>
+    Bu tuzak bu kod tabanında <b>üç kez</b> ortaya çıktı — basılı düğmeler (vurgu paneli, vurgu etiketi),
+    tehlike düğmeleri ve chip'ler. Bir renk örneğinde iyi görünür ve ölçüldüğü anda çöker, çünkü ikisi aynı
+    renk tonunu paylaşır ve dolayısıyla aralarında açıklık farkı yoktur.
+  </p>
+  <p>
+    Bu yüzden etiket renkleri <b>elle seçilmez</b>. Tema üreticisi ile <code>GoSkin</code>, yazının gerçekte
+    üstünde durduğu panelde eşik geçilene kadar açıklığı — yalnızca açıklığı — iter. Renk tonu ve doygunluk
+    hayatta kalır; böylece palet karakterini korur ve onu değiştirmek kontrastını da korur.
+  </p>
+
+  <h3>Yazı olarak okunan renk ile alan olarak boyanan renk zıt şeyler ister</h3>
+  <p>
+    Açık bir temada bir uyarı rengi <b>yazı olarak</b> okunaklı kalmak için koyulaşmak zorundadır
+    (<code>#96500A</code>). Çubuk dolgusu bunu devraldığında deneyim çubuğu <b>kahverengiye</b> döner. Bunu
+    tek başına renk çözemez: sarı doğası gereği parlaktır, yani hiç gri olmayan bir oluk üstünde 3:1'i geçer
+    ve oluğu koyulaştırmak durumu <b>daha da kötüleştirir</b> (1.52 → 1.06).
+  </p>
+  <p>
+    Bu yüzden ikisi ayrılmıştır. <b>Renk canlı kalır</b> — palet, <code>warning_vivid</code> gibi yalnızca
+    dolguya özgü renkler taşır. <b>Kontrastı kenar taşır</b> — <code>GoSkin</code>, oluğuna karşı 3:1'e
+    ulaşamayan her dolguya 1dp'lik bir kenarlık çizer; böylece "ne kadar dolu" sorusu okunaklı kalır.
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # yazı olarak okunur
+    warning_vivid=hexc("F2A007"),   # çubuğa boyanır
+)</code></pre>
+  <div class="note">
+    <b>Eksik bırakmak bildirilir.</b> <code>*_vivid</code> olmadan, koyu çıkan bir dolgu üreticinin
+    <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code> (çubuk soluk kaldı — palete
+    warning_vivid ekleyin) satırını yazdırmasına yol açar. Eskiden sessizce bozulan bir yer artık bunu
+    söylüyor.
+  </div>
+
+  <h3>Yüzen bir panel arkasında ne olduğunu bilemez</h3>
+  <p>
+    Bir HUD, oyunun <b>üstüne</b> çizilir — bir kar tarlasının ya da bir mağaranın. Paneli yarı saydamsa,
+    arkasındaki her şey sızar ve <b>panelin rengini değiştirir</b>, yazı kontrastını da beraberinde aşağı
+    çeker. %82 saydamsızlıkta koyu temaların soluk yazısı parlak bir arka plan üstünde <code>3.74:1</code>
+    değerine düştü — en düşük sınırın altına.
+  </p>
+  <p>
+    Bu yüzden yarı saydam paneller arkalarına <b>saf beyaz ve saf siyah</b> konarak ölçülür; bir oyun sahnesinin
+    sunabileceği en kötü durum bunlardır. Pakete dahil temaların HUD paneli, camsı görünümü korurken geçmeye
+    yetecek kadar (%92) donuktur.
+  </p>
+  <p>
+    Aynı nedenle <b>simge renkleri de sabit değildir</b>. Hızlı slotun sembolü koda beyaz olarak gömülmüştü ve
+    açık bir temada <code>1.11:1</code> ölçüldü — artık tam olarak etiketler gibi, üstünde durduğu paneli izliyor.
+  </p>
+
+  <div class="note">
+    <b>İki denetleyici, iki erişim alanı.</b> <code>check_contrast.py</code> tema dosyalarını okur; bir
+    kaplamanın <b>çalışma anında</b> karıştırdığı renkler (chip'ler, slotlar) ise test paketinin Godot içindeki
+    <code>skin contrast</code> bölümünde ölçülür.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">← Genel bakış</a> · <a href="widgets.html">Widget'lar →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

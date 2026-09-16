@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<!-- hreflang:begin -->
 <link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets.html">
 <link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets.html">
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets.html">
+<!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Widgets — gohud</title>
 <meta name="description" content="Every gohud widget — floating surfaces, bottom sheets, dialogs, forms, snackbars, coach marks, HUD bars, quick slots and a virtual joystick.">
@@ -25,7 +28,16 @@
       <a href="#hud">HUD</a>
       <a href="#factory">GoStyle</a>
       <a href="#hooks">Hooks</a>
-      <a href="ko/widgets.html">한국어 ↗</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>English</summary>
+        <div class="langs-list">
+          <a href="widgets.html" hreflang="en" lang="en" aria-current="true">English</a>
+          <a href="ko/widgets.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="ja/widgets.html" hreflang="ja" lang="ja">日本語</a>
+        </div>
+      </details>
+      <!-- langs:end -->
     </nav>
   </div>
 </header>
@@ -294,7 +306,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
       <tr><td>Buttons</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
       <tr><td>Input</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
       <tr><td>Display</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
-      <tr><td>Surface pieces</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code></td></tr>
+      <tr><td>Surface pieces</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
       <tr><td>Helpers</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
     </tbody>
   </table>
@@ -347,7 +359,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
 
 <footer class="bottom">
   <div class="wrap">
-    <p><a href="theming.html">← Theming</a> · <a href="./">Overview →</a> · <a href="ko/widgets.html">한국어</a></p>
+    <p><a href="theming.html">← Theming</a> · <a href="./">Overview →</a></p>
   </div>
 </footer>
 

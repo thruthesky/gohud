@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ウィジェット — gohud</title>
+<meta name="description" content="gohud のウィジェットのすべて — 浮かぶサーフェス、ボトムシート、ダイアログ、フォーム、スナックバー、コーチマーク、HUD バー、クイックスロット、バーチャルスティック。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">概要</a>
+      <a href="theming.html">テーマ</a>
+      <a href="widgets.html">ウィジェット</a>
+      <a href="#surfaces">ウィンドウ</a>
+      <a href="#messages">メッセージ</a>
+      <a href="#hud">HUD</a>
+      <a href="#factory">GoStyle</a>
+      <a href="#hooks">フック</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../widgets.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="widgets.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>ウィジェット</h1>
+    <p class="lead">
+      どれも <code>.new()</code> して <code>add_child()</code> するだけだ — シーンファイルもオートロードもいらない。
+      <b>🛑</b> の付いた注記は、机上の話ではなく実機の画面でぶつかった落とし穴だ。
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="surfaces">
+  <h2>浮かぶウィンドウ</h2>
+
+  <h3><code>GoSurface</code> — 外殻</h3>
+  <p>ポップアップもシートもドロップダウンも、すべてこれ1つを使う。セーフエリア、仮想キーボード、
+    固定ヘッダーとフッター、スクロールする本文、どのウィンドウが最前面か、フォーカスの復帰、
+    戻るボタンの所有権、ドラッグでのサイズ変更まで面倒をみる。</p>
+  <table>
+    <thead><tr><th>配置</th><th>見え方</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>中央のカード</td><td>確認、設定</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>下からせり上がるシート</td><td>リスト、管理画面</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>コントロールの脇に留まるカード</td><td>ドロップダウン、コンテキストメニュー</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>自分では消えない。</b> <code>close_requested</code> を受けて隠すか解放するかは、持ち主である画面の仕事だ。
+    外殻には<i>なぜ</i>閉じようとしているのか（保存して閉じるのか、破棄するのか）が分からないからである。
+  </div>
+
+  <h3><code>GoSheet</code> — 下から出るページ</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("インベントリ")
+sheet.toolbar().add_child(GoStyle.line_edit("検索…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("閉じる", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>自前の <code>CanvasLayer</code> を持つので、HUD より確実に上に出る。<code>open()</code> は本文を空にし、
+    戻るボタンと固定行を<b>いったん無効にする</b> — 戻る先のない画面で死んだボタンが見えていると、
+    壊れているように読めるからだ。</p>
+
+  <h3><code>GoDialogs</code> — <code>await</code> で受け取る確認</h3>
+  <pre><code>if await dialogs.confirm("セーブデータの削除", "元に戻せません。"):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — 本文より後ろはすべて省略でき、
+    <code>alert()</code> はボタン1つで同じように使える。取り消せない操作には <code>destructive</code> を立てる。
+    確認ボタンが塗りつぶしの <code>GoStyle.Tone.DANGER_SOLID</code> になる。ライトテーマでは、淡く色を付けた危険ラベルは
+    黒い文字に見えるまで暗くするしかないが、塗りつぶしのボタンなら赤地に白文字を保てる。ウィンドウは1つを使い回すので
+    トーンは呼び出しのたびに付け直され、1つ開いている間に2つめの <code>confirm()</code> を呼ぶと即座に
+    <code>false</code> が返る。<code>confirm_key()</code> は翻訳キーを受け取る。</p>
+  <p><b>ボタンの並べ方。</b> <code>action_layout</code> の既定は <code>VERTICAL</code>（長い訳文でも安全だ）、
+    <code>HORIZONTAL</code> なら半分ずつの幅で1行に、<code>AUTO</code> なら両方のラベルがカードの半分に1行で
+    収まるときだけ横に並べ、収まらなければ縦に積む。<code>action_gap</code> はボタンどうしの間隔、
+    <code>body_gap</code> はその上の間隔だ — ボタン間より広くとると、問いと選択肢が2つの塊として読める。
+    1つのダイアログにだけ効かせたいときは、開く前に <code>set_next_action_layout()</code> を呼ぶ。
+    ボタンの行は最初にダイアログを開いたときに組み立てられるので、オートロードした <code>GoDialogs</code> でも
+    起動時のコストはない。</p>
+
+  <h3><code>GoForm</code> — 幅に上限のあるフォーム</h3>
+  <div class="note warn">
+    <b>配下のラベルが必ず折り返すことを保証する。</b> これがないと、長い一文が1行に伸びて最小幅が画面を超え、
+    左右が切れる — 自分がどの画面にいるのかすら分からなくなる。シーンごとに手で折り返しを有効にする方法は、
+    毎回必ず忘れられる。
+  </div>
+
+  <h3><code>GoScroll</code> — タッチでのスクロール</h3>
+  <p>中に入れるのは<b>1つ</b>だけにする。見出しやボタンの行は外側だ — 長いリストがそれらを画面外へ
+    押し出してはならない。<code>use_panel_edge()</code> は、中身のインデントを保ったまま
+    スクロールバーをカードの既存の余白へ移す。</p>
+</section>
+
+<section id="messages">
+  <h2>プレイヤーに何かを伝える</h2>
+
+  <h3><code>GoNotice</code> — スナックバー</h3>
+  <div class="note warn">
+    <b>入力を横取りしない。</b> 通知は読むものであって、押すものではない。フォーカスを取らず、ゲームの入力も
+    塞がず、その下のボタンはそのまま押せる。確認が要るなら <code>GoDialogs</code>、選択が要るなら
+    <code>GoPromptCard</code> を使う。
+  </div>
+
+  <h3><code>GoPromptCard</code> — 画面を塞がない問いかけ</h3>
+  <p>幕を張らずに片側へ浮かぶ。ゲームは動き続ける。</p>
+
+  <h3><code>GoCoachMark</code> — ガイドツアー</h3>
+  <p>実物のコントロールを1つずつ指し示す。入力を受けるのはカードだけなので、<b>強調されたコントロールを
+    押すこと自体がツアーを進める</b> — 「ここを押してください」が文章ではなく操作になる。</p>
+  <pre><code>tour.start([
+    {"target": bag_button, "title": "かばん", "body": "拾ったものはすべてここに入る。"},
+    {"target": map_button, "title": "マップ", "body": "押すと全体マップが開く。"},
+])</code></pre>
+  <p><code>title</code> と <code>body</code> には翻訳キーでも、そのままの文字列でも渡せる。
+    対象が消えてしまったステップは飛ばされる。</p>
+</section>
+
+<section id="hud">
+  <h2>HUD</h2>
+
+  <h3>出来を決めるのは小さなところだ</h3>
+  <p>
+    大きなパネルをいくら磨いても、目に留まるのはいつも小さなものだ — 途中で切れた単語、欠けた発光、
+    窮屈なスロット。2026-09-13 にそうした4つが指摘され、デモ画面ではなくウィジェットとテーマの側で直した。
+    だから、どの画面でも同じ結果になる。
+  </p>
+  <table>
+    <thead><tr><th>何が起きたか</th><th>原因</th><th>直し方</th></tr></thead>
+    <tbody>
+      <tr><td>コーチマークの <code>Done</code> が <code>Don</code>/<code>e</code> になった</td>
+          <td>折り返しを有効にしたボタンは<b>文字幅を最小幅から差し引く</b> — 狭められると単語の途中で割れる</td>
+          <td><code>GoStyle.fit_words()</code>: 1単語なら決して折り返さず、複数語なら折り返すが<b>いちばん長い単語</b>は必ず収まる。判定は翻訳キーではなく<b>実際に表示される</b>文字で行い、言語が変わればフォームが付け直す</td></tr>
+      <tr><td>全幅ボタンの発光が、左側だけ縦に切れた</td>
+          <td>スクロールコンテナは例外なく自分の端で切り取る。右だけはレールの余白のおかげで残っていた</td>
+          <td><code>GoScroll</code> が親の余白を借りて端を 12dp 外へ押し出し、内側で返す — <b>中身の位置は動かない</b></td></tr>
+      <tr><td>スロットの中で、時間・アイコン・個数が縦に積み上がった</td>
+          <td>48dp の中に3行あった</td>
+          <td>アイコンは中央に大きく、ショートカットは左上、個数は右下の<b>バッジ</b>、残り時間はアイコンに重ねたバッジへ — バッジのパネルはスキンの <code>badge_box()</code> から来る</td></tr>
+      <tr><td>ドロップダウンが平坦で、どれを選んでいるか見えない</td>
+          <td>項目のホバーにボタンのパネルを使い、ラジオの印はエンジンの薄い既定のままだった</td>
+          <td>専用のホバーパネル（淡いアクセント）、チェックボックスと同じラジオの絵、タッチに合わせた項目の高さ</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="開いたドロップダウン — 淡いアクセントのホバーパネルと、選択中の項目のラジオ印" loading="lazy">
+      <figcaption>ドロップダウン — ホバーパネルとラジオ印</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="4つのクイックスロット — 左上にショートカット、右下に個数バッジ、先頭には残り時間のバッジ" loading="lazy">
+      <figcaption>スロット — 隅のバッジと残り時間（SF）</figcaption>
+    </figure>
+  </div>
+  <p>
+    アイコンだけのボタンには <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> で説明を与える —
+    マウス利用者へのツールチップも、スクリーンリーダー向けのアクセシビリティ名も、この1つの値から取る。
+    ツールチップは gohud が自分で描く。エンジンの既定は、幅の計算が狂うと文字を<b>1文字ずつ改行</b>してしまう
+    （幅 1dp と実測された）。
+  </p>
+
+  <h4>コーチマークのカードは固定物を避ける</h4>
+  <p>
+    横持ちでは、カードが画面のいちばん上か下の端へ送られていた — ヘッダーや HUD がちょうど居座る場所だ。
+    デモではヘッダーの <code>→ ×</code> の上に重なっていた。いまは対象と同じ高さにとどまり、場所を確保している
+    <code>GoHudAnchor</code> を回り込み、そのほか避けたいものは <code>keep_clear</code> で受け取る。
+    対象を覆わずに障害物から外れる最短の距離だけ動き、画面が狭くてすべてを避けきれないときはその場にとどまる —
+    重なるほうが、消えるよりましだ。<b>ページより上に</b>あると読めるだけの立体感は、スキンのダイヤルから来る
+    (<code>float_shadow_size</code>、<code>float_shadow_lift</code>、<code>float_shadow_alpha</code>。面取り系のスキンは <code>float_glow_size</code>)。
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # アンカーではない固定物</code></pre>
+
+  <h3>マウスとキーボードのある画面</h3>
+  <p>
+    指には<b>ホバー状態がない。</b> モバイルだけを見て作ると、デスクトップにしかない2つの状態が未確認のまま残る —
+    そして実際、片方は壊れていた。gohud の<b>フォーカスリングが主ボタンの上で見えなかった</b>のだ。パネルが
+    アクセント色で、リングも同じ色。<code>1.00:1</code>、同じ色を同じ色の上に描いていた。キーボードで移動すると、
+    自分がどこにいるのか分からなかった。
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="同じボタンの列を3つの状態で — 通常、マウスホバー、キーボードフォーカス" loading="lazy">
+    <figcaption>上から <b>通常 · ホバー · フォーカス</b>。塗りつぶしのボタンには、自分のパネルと対比するリングが付く。</figcaption>
+  </figure>
+  <p>
+    塗りつぶしのボタン（<code>GoPrimaryButton</code>、<code>GoDangerSolidButton</code>）は
+    <b>自分のパネルと対比する</b>リングを使う — ダークテーマでは暗く、ライトテーマでは白く、SF では暗い照準
+    ブラケットになる。コントラスト検査は<b>フォーカスリングを、それが載っているパネルに対して</b>測るので、
+    パレットを変えてもこの規則は生き残る（WCAG 2.4.11 はフォーカス表示に 3:1 を求めている）。
+  </p>
+
+  <h3><code>GoHudAnchor</code> — 9か所</h3>
+  <p>セーフエリアと画面端の余白を尊重する。<code>landscape_spot</code> を与えれば横持ちで移動する —
+    縦持ちで下中央にあるコントロールを、横持ちでは右下へ回せる。</p>
+  <div class="note">
+    <b>なぜ必要か。</b> HUD ごとに手で書いたアンカーとオフセットは必ずずれていく。ノッチのある端末では体力バーが
+    カメラの切り欠きの下に入り、横持ちでは操作ボタンがジェスチャーバーの上に載る。その算術を1か所に集めてある。
+  </div>
+
+  <h4>本文を HUD の下に潜り込ませない</h4>
+  <p>
+    スクロールする画面が HUD と同じ表示面を分け合うと、本文はその<b>下へ</b>滑り込み、2組の文字が重なって
+    どちらも読めなくなる。このアドオンでも2度起きた。入力欄のプレースホルダーがクイックスロットの間から
+    はみ出し、設定のトグルのつまみが体力バーの上に載った。
+  </p>
+  <pre><code>form.avoid_hud = true                  # 表示中の GoHudAnchor をすべて避ける
+joystick_anchor.reserve_space = false  # …指が触れたときだけ現れるものは除く</code></pre>
+  <p>
+    それぞれの矩形は<b>失う面積がいちばん小さい</b>方向へ避ける。右上のバーは、縦持ちのスマートフォンでは下へ
+    回り込み（高さの 13%）、横持ちでは横へ回り込む（幅の 21%） — 横持ちで縦に避ければ画面の 27% を失う。
+    すでに明け渡した領域は、次の矩形を測る前に差し引かれる。
+  </p>
+
+  <h4>HUD どうしもぶつかる</h4>
+  <p>
+    9か所は画面を分割するだけで、部品どうしが<b>ぶつからない</b>ことまでは保証しない。上中央の幅広い
+    スナックバーが、右上の体力バーの真上に着地して値を隠した — 残り体力が読めなかったのだ。
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # 固定 HUD の下へ落ち着く
+notice_anchor.reserve_space = false   # 出ている間にページを押しのけたりはしない</code></pre>
+  <p>
+    よけるのは<b>縦方向だけ</b>だ — 横にも動かすと、中央揃えのトーストが出るたびに違う場所に現れてしまう。
+    しかも、避けるのは<b>自分からはよけない</b>部品に対してだけだ。両方が譲ると、2つは永遠に場所を入れ替え続ける。
+  </p>
+
+  <h3><code>GoBar</code> — 体力・マナ・経験値</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 塗り専用のトークン
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>変化は 0.18 秒かけてなめらかに動く — 跳ねる体力バーは、どれだけ強く殴られたのかを伝えない。
+    <code>reduce_motion</code> にすれば即座に反映する。大きな数は <code>12.3k</code> のように略記するので、
+    桁が増減してもバーの幅が揺れない。</p>
+
+  <h3><code>GoSlot</code> — クイックスロット1つ</h3>
+  <p>アイコン、個数、クールダウン、ショートカットを<b>1つの面</b>に収める。小さな円にバッジをぶら下げると、
+    スロットごとに幅が変わって列が揺れてしまう。</p>
+  <div class="note">
+    <b>見える大きさと押せる大きさは違う。</b> 詰めて並べたスロットは 48dp のタッチ領域が重なる。重なった分は
+    <b>中心が近いほうのスロット</b>が取る — <code>touch_peers</code> で互いの存在を教えておく。
+  </div>
+
+  <p><code>keyboard_focus</code> は既定で無効だ。8個並んだスロットが、キーボード利用者と設定項目すべての間に
+    Tab 順で割り込まないようにするためである。キーボードやゲームパッドが唯一の入力手段なら有効にする。</p>
+
+  <h3><code>GoJoystick</code> — バーチャルスティック</h3>
+  <table>
+    <thead><tr><th>モード</th><th>ふるまい</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>常に同じ場所 — 見なくても指が届く</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>親指を置いた場所に現れる</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>現れたあとも親指を追い続ける — 長く動かすときに楽だ</td></tr>
+    </tbody>
+  </table>
+  <p><code>moved</code> が渡す <code>Vector2</code> は長さ 0〜1 なので、そのまま速度に掛けられる。
+    画面サイズや DPI で変わることもない。</p>
+
+  <h3><code>GoIconButton</code> — 小さく見えて大きく押せる</h3>
+  <div class="note warn">
+    <b>安全なのは、隣が入力を受け取らないときだけだ。</b> 広げた領域が隣のボタンに重なると、そのボタンは
+    反応しなくなる。並べて置くアイコンボタンには <code>touch_peers</code> が要る。
+  </div>
+</section>
+
+<section id="factory">
+  <h2><code>GoStyle</code> — 作る場所を1つにする</h2>
+  <p class="sub">
+    <code>Button.new()</code> を直に呼ぶと、余白も高さも折り返しも画面ごとに少しずつずれていく。
+    そのずれはコードレビューでは見えず、スクリーンショットでは一目で分かる。
+  </p>
+
+  <table>
+    <thead><tr><th>分類</th><th>関数</th></tr></thead>
+    <tbody>
+      <tr><td>構造</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>文字</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>ボタン</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>入力</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>表示</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>サーフェスの部品</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>補助</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> は必ず <code>StyleBoxFlat</code> を返す。</b> 呼び出し側が受け取って
+    <code>bg_color</code> や <code>corner_radius</code> を調整するからだ。独自の形を保ったままにしたいときは
+    <code>surface()</code> を使う。
+  </div>
+
+  <h3>説明の付いたリスト行</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "誓いの剣", _inspect, Color.TRANSPARENT,
+    "ロングソード  /  攻撃力 42", false)</code></pre>
+  <p>2行目のある行は<b>上下の余白が等しく</b>なり、1行の行より広めにとられる。タイトルと説明の組は
+    アイコンの脇で<b>上下中央</b>に保たれる — コンテナが行を縦に引き伸ばしたときも、説明が複数行に折り返した
+    あとも同じだ。行全体は1つのタップ対象のままである。</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="medieval_light の例 — 2行のリスト行、クイックスロット、バー" loading="lazy">
+    <figcaption>中世サンプルの2行リスト、スロット、バー — <code>medieval_light</code> の下での、同じファクトリ呼び出し。</figcaption>
+  </figure>
+
+  <h3>折り返して流れる行</h3>
+  <p>コントロールは<b>自然な幅</b>のまま <code>wrap_row</code> に入れる。折り返しを有効にしたままだと、
+    ボタンの最小幅はほとんど 0 まで落ち、行はその値でセルの大きさを決めてしまう — ラベルが1文字ずつ改行される。
+    ファクトリがこれを防いでくれる。</p>
+
+  <h3>空のリストを空のまま見せない</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "まだ何もない"))</code></pre>
+  <p>人は何もない画面を<b>壊れている</b>と読む。</p>
+</section>
+
+<section id="hooks">
+  <h2>継承用のフック</h2>
+  <p class="sub">
+    子ウィジェットを作るところはすべて上書き可能なメソッドを通る。だから gohud の型を継承したプロジェクトは、
+    コードを複製せずに自分のサブクラスをウィジェットの<b>内側</b>へ入れられる。
+  </p>
+  <table>
+    <thead><tr><th>フック</th><th>ウィジェット</th><th>既定</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>モーダルが開いている間はカードを隠す</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming.html">← テーマ</a> · <a href="./">概要 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

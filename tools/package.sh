@@ -99,6 +99,7 @@ mkdir -p "$STAGE/addons/gohud"
 #   🛑 `.git*`    .git · .gitignore · .gitattributes · .github — 저장소 살림이다.
 #                 (`.gdignore` 는 `.gd` 로 시작해 이 패턴에 걸리지 않는다 — 설치 후 동작에 필요하므로 남긴다.)
 #   🛑 `.claude`  에이전트 작업 설정.
+#   🛑 `.cowork`  cowork 5 AI 분석 산출물. 개인 도구의 내부 기록이다 — 배포본에 나가면 안 된다.
 #   🛑 `.review`  스토어 제출용 홍보 이미지 보관함. 넣으면 ZIP 이 20배가 된다.
 #   🛑 `www`      GitHub Pages 사이트(836KB). 애드온을 쓰는 데 필요 없다.
 #   🛑 `docs`     사이트 편집·배포 안내와 작업 기록. 애드온을 쓰는 데 필요 없다.
@@ -109,6 +110,7 @@ set -- \
   --exclude='.env' \
   --exclude='.git*' \
   --exclude='.claude' \
+  --exclude='.cowork' \
   --exclude='/.claude-plugin/' \
   --exclude='/skills/' \
   --exclude='.review' \

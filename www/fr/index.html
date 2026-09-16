@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — un kit HUD et UI pour Godot 4</title>
+<meta name="description" content="Un kit HUD et UI personnalisable pour Godot 4.6+. Surfaces flottantes, feuilles inférieures, boîtes de dialogue, formulaires, snackbars, barres de HUD, emplacements rapides et joystick virtuel, avec six préréglages — par défaut, science-fiction et médiéval.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">Ce qu'il fait</a>
+      <a href="#install">Installation</a>
+      <a href="#start">Démarrage rapide</a>
+      <a href="#presets">Préréglages</a>
+      <a href="#examples">Exemples</a>
+      <a href="#ai">Commandes IA</a>
+      <a href="theming.html">Thématisation ↗</a>
+      <a href="widgets.html">Widgets ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Une UI de jeu pilotée par une seule ressource</h1>
+    <p class="lead">
+      gohud est un kit HUD et UI pour Godot 4.6 et versions ultérieures. Fenêtres flottantes, feuilles inférieures,
+      boîtes de dialogue, formulaires, snackbars, repères guidés, barres de HUD, emplacements rapides et joystick
+      virtuel fonctionnent à partir d'<b>un seul thème et d'un seul jeu d'icônes interchangeable</b>, et prennent en
+      charge pour vous la zone sûre, le clavier virtuel, le sens RTL et les cibles tactiles.
+      <b>Six préréglages</b> — par défaut, science-fiction et médiéval, chacun en sombre et en clair — changent
+      les couleurs et les formes en une ligne.
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
+      <span class="badge">GDScript pur</span>
+      <span class="badge">Aucun autoload requis</span>
+      <span class="badge">MIT</span>
+      <span class="badge">6 préréglages</span>
+      <span class="badge">21 langues</span>
+      <span class="badge">100 icônes incluses</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">Installer</a>
+      <a class="btn" href="#presets">Voir les préréglages</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="showcase">
+  <h2>Ce que ça donne dans un jeu</h2>
+  <p class="sub">
+    Les préréglages médiéval et science-fiction — fiches de personnage, inventaires et quêtes ; formulaires,
+    grilles et cartes d'invite ; panneaux anguleux et commandes tactiles. Changer de préréglage tient en une
+    ligne de code.
+  </p>
+  <figure>
+    <img src="../img/showcase-medieval-quests.webp" alt="Thème médiéval de gohud — une fiche de personnage avec barres de vie, de mana et d'endurance, une besace d'emplacements rapides et un journal de quêtes dans des cadres d'or forgé">
+    <figcaption><b>Médiéval</b> — personnage, inventaire et quêtes</figcaption>
+  </figure>
+  <div class="shots">
+    <figure>
+      <img src="../img/showcase-medieval-forms.webp" alt="Thème médiéval de gohud — un panneau de saisie avec champ de nom, interrupteur, cases à cocher et curseur de volume, une grille de tuiles, et une carte d'invite d'invitation de groupe avec Accepter et Refuser" loading="lazy">
+      <figcaption><b>Médiéval</b> — formulaires, grilles et cartes d'invite</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/showcase-scifi-touch.webp" alt="Thème science-fiction de gohud — un panneau de commandes tactiles chanfreiné avec joystick hexagonal, un sélecteur Fixe / Suiveur / Relatif et des boutons d'action ronds" loading="lazy">
+      <figcaption><b>Science-fiction</b> — panneaux anguleux et commandes tactiles</figcaption>
+    </figure>
+  </div>
+  <p><a href="#presets">Les six préréglages et comment en changer →</a></p>
+</section>
+
+<section id="what">
+  <h2>Ce qu'il vous enlève des mains</h2>
+  <p class="sub">
+    Ce qui coûte le plus de temps dans une UI de jeu, ce n'est pas la forme d'un bouton — c'est tout ce qui
+    diverge d'un appareil à l'autre. gohud traite cette dérive en un seul endroit.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Chaque mesure est un token</h3>
+      <p>Les espacements, les coins et les tailles de texte sont appelés par leur nom, pas écrits en chiffres. Changez de thème et tout l'écran suit.</p>
+    </div>
+    <div class="card">
+      <h3>Taille visible ≠ taille pressable</h3>
+      <p>Un bouton de fermeture paraît faire 36 dp alors que sa cible tactile en fait 48. Là où des emplacements serrés se chevauchent, c'est celui dont le centre est le plus proche qui reçoit l'appui.</p>
+    </div>
+    <div class="card">
+      <h3>Encoches et claviers</h3>
+      <p>Les éléments du HUD restent dans la zone sûre, et un champ de saisie remonte au-dessus du clavier virtuel quand celui-ci apparaît.</p>
+    </div>
+    <div class="card">
+      <h3>Retour ne ferme qu'une chose</h3>
+      <p>Échap et le bouton Retour d'Android ne ferment <b>que la surface la plus haute</b>. Des fenêtres empilées ne disparaissent pas d'un seul coup.</p>
+    </div>
+    <div class="card">
+      <h3>Les snackbars ne captent jamais la saisie</h3>
+      <p>Appuyez à travers un snackbar et c'est le bouton en dessous qui reçoit l'appui. Le focus n'est pas pris non plus.</p>
+    </div>
+    <div class="card">
+      <h3>Les icônes se demandent par leur nom</h3>
+      <p>Les widgets ne connaissent que <code>GoIconSet.CLOSE</code>. Changez de jeu et tous les dessins changent sans toucher une ligne de code.</p>
+    </div>
+    <div class="card">
+      <h3>Six apparences, une ligne</h3>
+      <p><code>GoUi.use_preset()</code> change d'un coup le thème, le skin et les icônes — cadres arrondis, chanfreinés science-fiction ou forgés médiévaux.</p>
+    </div>
+    <div class="card">
+      <h3>Lisibilité mesurée</h3>
+      <p>Chaque thème est vérifié au regard des WCAG, y compris les états des boutons et les panneaux de HUD translucides sur blanc pur et noir pur.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Tout fonctionne sans activer le plugin.</b> L'activer ajoute un autoload GoRuntime qui suit la taille de
+    la fenêtre, l'échelle dp et la hauteur du clavier, ainsi que des paramètres de projet pour la ressource de
+    configuration et le préréglage — des commodités, pas des obligations.
+  </div>
+</section>
+
+<section id="install">
+  <h2>Installation</h2>
+  <p class="sub">Déposez le dossier de l'add-on dans votre projet. Il n'y a rien d'autre à configurer.</p>
+
+  <h3>Depuis l'Asset Store ou un ZIP de version</h3>
+  <p>Décompressez à la racine de votre projet pour obtenir <code>res://addons/gohud/</code>. C'est tout. Vous pouvez
+    éventuellement activer <b>Projet → Paramètres du projet → Extensions → gohud</b>.</p>
+
+  <h3>En sous-module git</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # facultatif : fixer un tag ou un commit</code></pre>
+  <p>La racine du dépôt <b>est</b> le dossier de l'add-on : il atterrit donc exactement là où Godot l'attend.
+    Modifiez-le sur place, committez et poussez depuis <code>addons/gohud</code>, puis committez le pointeur de
+    sous-module dans votre jeu.</p>
+
+  <div class="note warn">
+    <b>Godot 4.6 ou plus récent est requis.</b> gohud utilise des API introduites en 4.5 (DPITexture,
+    FoldableContainer, propriétés d'accessibilité) : sur une version antérieure, <b>l'analyse des scripts échoue</b>.
+    4.6 est le plancher pris en charge, consigné dans <code>GoUi.MIN_ENGINE</code>.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Démarrage rapide</h2>
+  <p class="sub">Chaque widget se crée avec <code>.new()</code> puis <code>add_child()</code> — aucun fichier de scène, aucun autoload.</p>
+
+  <h3>Choisissez une apparence avant de construire l'UI (facultatif)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # default_dark est utilisé si vous sautez cette étape</code></pre>
+
+  <h3>Une confirmation que vous <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Supprimer la sauvegarde", "Cette action est irréversible."):
+    delete_save()</code></pre>
+  <p>Passez <code>destructive = true</code> (le dernier argument) et le bouton de confirmation est dessiné comme un bouton de danger plein.</p>
+
+  <h3>Une feuille inférieure avec champ de recherche et pied de page fixes</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventaire")
+sheet.toolbar().add_child(GoStyle.line_edit("Rechercher…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Fermer", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Pourquoi les rangées fixes sont séparées du corps défilant.</b> Placez Confirmer et Annuler dans
+    <code>body</code> et une longue liste les pousse hors de l'écran. <code>footer()</code> reste toujours visible.
+  </div>
+
+  <h3>Un coin de HUD</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "PV"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3>Un contenu qui reste à l'écart du HUD</h3>
+  <pre><code>form.avoid_hud = true                  # reste à l'écart de chaque GoHudAnchor visible
+joystick_anchor.reserve_space = false  # …sauf ceux qui n'apparaissent que sous un doigt
+notice_anchor.avoid_peers = true       # un toast se pose sous le HUD fixe au lieu de le recouvrir</code></pre>
+  <p>Chaque rectangle est contourné dans la direction qui coûte le moins de surface — vers le bas sur un téléphone
+    en portrait, sur le côté en paysage. <a href="widgets.html#hud">Comment le HUD s'évite lui-même →</a></p>
+</section>
+
+<section id="presets">
+  <h2>Changer l'apparence — les couleurs <em>et</em> les formes</h2>
+  <p class="sub">
+    Un Theme ne peut restyler que ce que le moteur dessine. Les coins arrondis sont les seuls coins dont dispose
+    StyleBoxFlat, et le joystick, les emplacements rapides et le repère guidé sont dessinés par du code — un
+    thème seul ne peut donc jamais changer leur forme. gohud livre pour cela des <b>préréglages</b> : un thème,
+    un skin et un jeu d'icônes choisis d'un seul tenant.
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # thème, skin et icônes d'un seul coup</code></pre>
+
+  <table>
+    <thead><tr><th>Préréglage</th><th>Apparence</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code></td><td>Le gohud d'origine — coins arrondis, accent bleu doux</td></tr>
+      <tr><td><code>default_light</code></td><td>Les mêmes formes sur une palette claire</td></tr>
+      <tr><td><code>scifi_dark</code></td><td>Coins chanfreinés, arêtes néon cyan et halo, joystick hexagonal, crochets de visée</td></tr>
+      <tr><td><code>scifi_light</code></td><td>Les mêmes formes anguleuses dans une palette claire de plan technique</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>Fer sombre et cuir, cadres d'or ancien, rivets, icônes gravées, titres en Cinzel</td></tr>
+      <tr><td><code>medieval_light</code></td><td>Parchemin, encre et bronze avec les mêmes cadres forgés</td></tr>
+    </tbody>
+  </table>
+
+  <div class="shots">
+    <figure>
+      <img src="../img/preset-default-dark.png" alt="La galerie gohud avec le préréglage default_dark — coins arrondis, accent bleu" loading="lazy">
+      <figcaption><code>default_dark</code> — coins arrondis, accent bleu doux</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-default-light.png" alt="Préréglage default_light — les mêmes formes sur une palette claire" loading="lazy">
+      <figcaption><code>default_light</code> — mêmes formes, palette claire</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-dark.png" alt="Préréglage scifi_dark — coins chanfreinés et néon cyan" loading="lazy">
+      <figcaption><code>scifi_dark</code> — coins chanfreinés, néon cyan</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-light.png" alt="Préréglage scifi_light — les mêmes formes anguleuses dans une palette de plan technique" loading="lazy">
+      <figcaption><code>scifi_light</code> — mêmes formes anguleuses, palette de plan technique</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Ces quatre captures montrent <b>le même écran de galerie</b>. Pas une ligne de code ne diffère — seulement le
+    nom du préréglage. Coins des boutons, formes des interrupteurs, rangées de liste et bordures des champs de
+    saisie bougent ensemble.
+  </p>
+
+  <h3>Collection médiévale</h3>
+  <p>
+    <code>medieval_dark</code> associe le fer et le cuir à l'or ancien ; <code>medieval_light</code> emploie le
+    parchemin et l'encre. Les cadres de menu portent un rivet et un petit ornement d'angle tandis que le HUD,
+    toujours visible, reste discret ; 16 icônes gravées redessinent les noms d'objets, et seuls les titres et
+    sous-titres utilisent la police Cinzel fournie.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark — fiche de personnage, besace d'emplacements rapides et journal de quêtes" loading="lazy">
+      <figcaption><code>medieval_dark</code> — fer et cuir</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light — les mêmes écrans de personnage, de besace et de quêtes sur parchemin" loading="lazy">
+      <figcaption><code>medieval_light</code> — parchemin et encre</figcaption>
+    </figure>
+  </div>
+  <p>Les deux captures viennent de <code>examples/medieval/medieval.tscn</code>, construit à partir des widgets standard.
+    <a href="theming.html#medieval">Le guide médiéval et comment créer votre propre royaume →</a></p>
+
+  <h3>Le même écran sur téléphone et sur ordinateur</h3>
+  <p>
+    Les captures de la galerie sont prises sur un téléphone en portrait. Ci-dessous, <b>le même code</b> en
+    1280×800 — le contenu s'arrête à une largeur lisible (480 dp) et se centre, tandis que le HUD reste dans les
+    coins. Le formulaire contourne les éléments de HUD flottants, mais <b>ne bouge pas lorsqu'il en est déjà à
+    l'écart</b> : le décaler quand même décentrerait le contenu sur un écran large.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/desktop-default-dark.png" alt="default_dark en 1280x800 — contenu centré, HUD dans les coins" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/desktop-scifi-dark.png" alt="scifi_dark en 1280x800 — même mise en page avec panneaux chanfreinés et néon" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <h3>La même feuille, une autre apparence</h3>
+  <div class="shots">
+    <figure>
+      <img src="../img/sheet-default-dark.png" alt="Une feuille inférieure en default_dark" loading="lazy">
+      <figcaption>Par défaut — carte arrondie, rangée de recherche et pied de page fixes</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/sheet-scifi-dark.png" alt="Une feuille inférieure en scifi_dark — arête d'accent néon le long du haut" loading="lazy">
+      <figcaption>Science-fiction — arête d'accent en haut, coins coupés, halo</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Choisissez-en un dans <b>Paramètres du projet → gohud → Theme → Preset</b>, ou renseignez
+    <code>GoConfig.preset</code>. Remplir explicitement <code>theme</code>, <code>skin</code> ou <code>icons</code>
+    <b>l'emporte sur</b> le préréglage : vous pouvez donc partir d'un préréglage et n'en redéfinir qu'un seul.
+  </p>
+
+  <div class="note">
+    <b>Un nouveau thème tient dans un fichier JSON.</b> <code>new_theme.py kingdom --from medieval_dark</code> écrit
+    une palette qui détaille chaque valeur héritée ; <code>make_theme.py kingdom</code> construit le thème, ses
+    illustrations de contrôles et les molettes de son skin, et le préréglage apparaît dans le sélecteur.
+    <a href="theming.html#own">Chaque réglage et chaque molette →</a>
+  </div>
+</section>
+
+<section id="skin">
+  <h2>Les skins — là où un Theme n'atteint pas</h2>
+  <p class="sub">
+    Un skin possède le joystick, la face des emplacements rapides, l'anneau du repère guidé, les puces, les
+    squelettes de chargement, les alertes, les séparateurs et les en-têtes de section. Dérivez-le et ne
+    redéfinissez que ce que vous voulez changer.
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>Classe</th><th>Formes qu'elle peut produire</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Coins coupés en diagonale (chanfrein), une arête d'accent épaissie, un halo extérieur</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Des marques d'angle seules, sans enfermer le contenu</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Un cadre forgé avec rivets, gravure d'angle, un reflet biseauté et le grain du matériau</td></tr>
+    </tbody>
+  </table>
+  <p>Les trois se sérialisent dans une ressource Theme — c'est ce qui permet à un thème de changer la <b>forme</b>,
+    et pas seulement la couleur. <code>GoSkinSciFi</code> et <code>GoSkinMedieval</code> sont les sous-classes fournies.</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> renvoie toujours un <code>StyleBoxFlat</code></b>, parce que le code appelant le
+    reçoit et ajuste <code>bg_color</code> ou <code>corner_radius</code>. Utilisez
+    <code>GoStyle.surface()</code> lorsqu'une forme personnalisée doit survivre.
+  </div>
+</section>
+
+<section id="widgets">
+  <h2>Widgets</h2>
+  <p class="sub">Les pièces, en un tableau. <a href="widgets.html">Chacune en détail →</a></p>
+
+  <table>
+    <thead><tr><th>Classe</th><th>Base</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSurface</code></td><td>Control</td><td>Coque de carte flottante — placement au centre, en bas ou ancré, en-tête et pied fixes, corps défilant, redimensionnement par glissement</td></tr>
+      <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>Des pages qui montent depuis le bas, sur leur propre calque afin de passer au-dessus du HUD</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td>Confirmations et alertes que vous <code>await</code> ; <code>destructive</code> pour les actions irréversibles</td></tr>
+      <tr><td><code>GoForm</code></td><td style="white-space:nowrap">MarginContainer</td><td>Formulaires à largeur plafonnée qui évitent le clavier virtuel et, avec <code>avoid_hud</code>, le HUD</td></tr>
+      <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>Défilement tactile ; la barre de défilement se loge dans la marge intérieure de la carte</td></tr>
+      <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>Un snackbar qui ne prend ni la saisie ni le focus</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>Une question qui ne bloque pas le jeu</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Control</td><td>Une visite guidée qui désigne de vraies commandes ; appuyer sur la cible fait avancer</td></tr>
+      <tr><td><code>GoHudAnchor</code></td><td>Control</td><td>Épingle les éléments de HUD à l'une des neuf positions de la zone sûre</td></tr>
+      <tr><td><code>GoBar</code></td><td>Control</td><td>Barres de vie, de mana et d'expérience avec des variations amorties</td></tr>
+      <tr><td><code>GoSlot</code></td><td>Button</td><td>Un emplacement rapide — icône, quantité, temps de recharge et raccourci sur une seule face</td></tr>
+      <tr><td><code>GoJoystick</code></td><td>Control</td><td>Stick virtuel en mode fixe, suiveur ou relatif</td></tr>
+      <tr><td><code>GoIconButton</code></td><td>Button</td><td>Paraît petit, s'appuie grand</td></tr>
+      <tr><td><code>GoStyle</code></td><td>statique</td><td>Boutons, rangées de liste, champs de saisie, puces, tableaux, onglets et bien plus, fabriqués d'une seule manière cohérente</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="examples">
+  <h2>Des exemples que vous pouvez exécuter</h2>
+  <p class="sub">Trois façons de voir gohud avant d'écrire une ligne — aucune ne demande de serveur ni d'autoload.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Exemple</th><th>Comment l'ouvrir</th><th>Ce qu'il montre</th></tr></thead>
+    <tbody>
+      <tr><td>Galerie</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Tous les widgets, un sélecteur pour chaque préréglage installé, et le jeu d'icônes complet</td></tr>
+      <tr><td>Médiéval</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Une fiche de personnage, une besace et un journal de quêtes ; des boutons basculent entre fer et parchemin et ouvrent le détail des objets</td></tr>
+      <tr><td>Démo</td><td><code>bash examples/demo/run.sh</code></td><td>Une visite guidée en 15 chapitres pilotée par de vraies entrées, et un mode exploration pour essayer un widget à la main</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>bash examples/demo/run.sh --setup                       # une fois, sur un git checkout tout neuf
+bash examples/demo/run.sh                               # Démarrer la démo, ou Explorer les widgets
+bash examples/demo/run.sh -- --explore=surfaces         # ouvre directement sur un seul widget
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # enregistrement de la visite en 1080p / 60 ips</code></pre>
+  <p>Dans la démo, <b>C</b> active le mode cinéma, <b>F11</b> le plein écran, <b>Espace</b> met en pause (ou joue le
+    widget courant en mode exploration), les flèches changent de chapitre et <b>Échap</b> ramène à l'écran de départ.</p>
+  <p>Vous utilisez un agent de codage IA ? <a href="#ai">Ouvrez les trois avec une seule commande →</a></p>
+</section>
+
+<section id="ai">
+  <h2>Ouvrez-le depuis votre agent de codage IA</h2>
+  <p class="sub">
+    gohud fournit un plugin Claude Code avec des commandes slash. Tapez-en une et la galerie ou la démo s'ouvre
+    dans sa propre fenêtre Godot — aucun éditeur à lancer, aucune scène à chercher.
+  </p>
+
+  <h3>Installez les commandes une fois pour toutes</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# puis redémarrez Claude Code</code></pre>
+  <p>D'autres agents comme Codex peuvent utiliser la même skill : copiez <code>skills/gohud</code> depuis ce dépôt
+    dans le dossier de skills de l'agent.</p>
+
+  <h3><code>/gohud:preview</code> — la galerie des widgets</h3>
+  <p>Ouvre la galerie : tous les widgets, un sélecteur pour les six préréglages et le jeu d'icônes complet. Tapez-la
+    à l'intérieur de votre projet Godot et elle utilise <b>votre</b> <code>addons/gohud</code> ; en dehors, elle
+    utilise la copie fournie avec le plugin, ou un clone tout neuf. Elle s'exécute dans un projet bac à sable
+    jetable : vos autoloads et votre cache d'import restent intacts, et la fenêtre reste ouverte jusqu'à ce que
+    vous la fermiez.</p>
+
+  <h3><code>/gohud:preview demo</code> — la visite guidée en 15 chapitres</h3>
+  <p>Ouvre la démo sur son écran de départ. <b>Démarrer la démo</b> joue la visite avec de vraies entrées ;
+    <b>Explorer les widgets</b> vous laisse essayer un widget à la main. Les touches listées dans
+    <a href="#examples">Exemples</a> fonctionnent ici aussi.</p>
+
+  <h3>Bien d'autres commandes</h3>
+  <table>
+    <thead><tr><th>Commande</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>La fiche de personnage, la besace et le journal de quêtes dans les préréglages médiévaux</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>La démo ouverte directement sur un chapitre — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>La galerie dans un seul préréglage ; ajoutez <code>--phone</code> pour une fenêtre de téléphone 390×844 ou <code>--size 1920x1080</code> pour n'importe quelle taille</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Une scène de votre propre projet, exécutée dans ce projet</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>Toutes les cibles, tous les identifiants de préréglage et toutes les clés de chapitre de la démo</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>Un test de fumée headless sans fenêtre — échoue sur les erreurs de script</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>Toutes les fonctionnalités, regroupées, une ligne de code chacune</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>Un domaine en profondeur — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Ou demandez simplement.</b> La skill enseigne à l'agent toute l'API de gohud : une demande en langage
+    courant marche aussi — <i>« Construis un menu de pause avec gohud »</i>. Installées comme simple skill dans
+    <code>~/.claude/skills/gohud</code>, les commandes prennent une espace : <code>/gohud preview demo</code>,
+    <code>/gohud features</code>. Les aperçus ont besoin de Godot 4.6 ou plus récent dans votre <code>PATH</code>,
+    ou passez <code>--godot /path/to/godot</code>.
+  </div>
+</section>
+
+<section id="readable">
+  <h2>La lisibilité se mesure, elle ne s'estime pas à l'œil</h2>
+  <p class="sub">
+    « Joli » relève du goût ; <b>« lisible » se mesure.</b> Un gris pâle paraît très bien sur un bon écran et
+    disparaît sur un téléphone en plein jour — choisir à l'œil finit toujours par y mener.
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    Chaque paire de couleurs et <b>le libellé de chaque état de bouton sur le panneau qui le porte</b> sont mesurés
+    au regard des WCAG, dans les six thèmes. Les couleurs translucides sont d'abord composées sur leur fond réel —
+    les mesurer directement annonce un meilleur rapport que ce que l'écran montre.
+  </p>
+  <p>
+    Les couleurs de texte sont donc <b>dérivées, pas choisies</b> : le générateur part de l'entrée de la palette et
+    pousse sa clarté jusqu'à ce qu'elle franchisse le seuil sur chaque surface où elle peut se poser. Changez la
+    palette et le contraste suit. <a href="theming.html#contrast">Les règles et les pièges qui les motivent →</a>
+  </p>
+</section>
+
+<section id="develop">
+  <h2>Vérifications, versions et ce site</h2>
+  <p class="sub">Un seul point d'entrée lance toutes les vérifications ; chaque partie voit ce que les autres ne voient pas.</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>Vérification</th><th>Ce qu'elle attrape</th></tr></thead>
+    <tbody>
+      <tr><td><code>run_tests.sh</code> sur quatre tailles d'écran</td><td>Comportement et mise en page des widgets, positions en RTL, focus clavier, contraste du skin à l'exécution, chaque préréglage</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>Les dépendances cachées envers un projet hôte ; avec <code>--zip</code> la version telle qu'elle est livrée, avec <code>--export</code> une build Web</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>Le contraste WCAG de chaque fichier de thème, états des boutons et panneaux translucides compris</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Les thèmes générés correspondent à leurs palettes ; un thème jetable se construit et passe le contrôle de contraste</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Les montées de version, les déplacements dans le changelog et le contenu du ZIP, sur des copies temporaires</td></tr>
+      <tr><td><code>check_site.py</code></td><td>Les liens, les ancres, la langue des pages, le glossaire et les tableaux de molettes de ce site</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>Dernière exécution consignée — 2026-09-13, Godot 4.7.2, macOS, moteur de rendu Compatibility.</b> 438
+    vérifications sur 438 en 390×844, 844×390, 768×1024 et 1280×800 dans un projet vide ; 438 sur 438 à nouveau
+    avec l'autoload GoRuntime ; un export Web ; zéro échec de contraste sur les six thèmes. Godot 4.6 et les
+    appareils Android ou iOS physiques ne faisaient pas partie de cette exécution.
+  </div>
+
+  <h3>Publier des versions</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>Une exécution réussie met à jour <code>plugin.cfg</code>, <code>GoUi.VERSION</code> et <code>CHANGELOG.md</code>
+    ensemble, en déplaçant les notes Unreleased dans une entrée datée. Une exécution qui échoue ne change rien, et
+    un ZIP existant n'est jamais écrasé. Le ZIP laisse de côté ce site, les tests et les outils.</p>
+
+  <h3>Ce site</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # glossaire et tableaux de molettes de skin, générés depuis les sources
+python3 addons/gohud/tools/check_site.py           # liens, ancres, langue, glossaire, tableaux générés
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # captures d'écran de chaque page, en version bureau et téléphone</code></pre>
+  <p>Les pages sont du HTML simple dans <code>www/</code> — l'anglais à la racine, le coréen dans <code>ko/</code>.
+    Un workflow GitHub Actions publie ce dossier comme racine du site.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud est sous licence <b>MIT</b> — code et illustrations, dont 84 icônes par défaut et 16 icônes
+      médiévales. La police Cinzel fournie est sous SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Journal des modifications</a></p>
+    <p style="font-size:13px">Survolez, touchez ou mettez le focus sur un <b>terme souligné</b> pour en voir le sens.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

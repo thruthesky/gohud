@@ -23,6 +23,9 @@ import json
 import os
 import re
 
+# 🔑 언어 목록은 `tools/site_langs.py` 한 곳에 있다 — 페이지마다 언어 고르개와 hreflang 을 그 목록으로 다시 쓴다.
+import site_langs
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
 # 🛑 사이트는 `www/` 루트가 영문, `www/ko/` 가 한국어다(2026-09-15 docs 아래에서 저장소 루트로 옮겼다 —
@@ -540,8 +543,97 @@ def build(lang="ko"):
     return glossary
 
 
+# ── 언어 고르개와 hreflang ────────────────────────────────────────────
+# 🔑 언어 17 개 × 페이지 3 장 = 51 장이다. 고르개와 hreflang 을 손으로 넣으면 반드시 한두 장이
+#    어긋나고, **어긋나도 화면은 멀쩡해 보인다**(링크 하나가 딴 언어로 가거나, 검색엔진이 언어판을
+#    서로 남남으로 본다). 그래서 다이얼 표와 같은 방식으로 표식 사이를 여기서 채운다.
+LANGS_BEGIN = "<!-- langs:begin -->"
+LANGS_END = "<!-- langs:end -->"
+HREFLANG_BEGIN = "<!-- hreflang:begin -->"
+HREFLANG_END = "<!-- hreflang:end -->"
+
+
+def replace_marked(text, begin, end, body, tail=""):
+    """표식 사이를 갈아 끼운다 — 표식이 없으면 None 을 돌려준다(부르는 쪽이 알린다)."""
+    if begin not in text or end not in text:
+        return None
+    before, rest = text.split(begin, 1)
+    _old, after = rest.split(end, 1)
+    return before + begin + "\n" + body + "\n" + tail + end + after
+
+
+def langs_html(code, page):
+    """지금 언어만 보이다가 누르면 17 개가 **제 나라 말로** 펼쳐지는 고르개."""
+    rows = ['          <a href="%s" hreflang="%s" lang="%s"%s>%s</a>' % (
+        site_langs.link_from(code, lang.code, page), lang.hreflang, lang.html_lang,
+        ' aria-current="true"' if lang.code == code else "", lang.name) for lang in site_langs.ACTIVE]
+    return ('      <details class="langs">\n'
+            '        <summary>%s</summary>\n'
+            '        <div class="langs-list">\n%s\n        </div>\n'
+            '      </details>' % (site_langs.BY_CODE[code].name, "\n".join(rows)))
+
+
+def hreflang_html(page):
+    """검색엔진에 "같은 글의 다른 언어판" 을 알린다. 못 고른 경우의 기본(x-default)은 영어다."""
+    rows = ['<link rel="alternate" hreflang="%s" href="%s">' % (lang.hreflang, site_langs.public_url(lang.code, page))
+            for lang in site_langs.ACTIVE]
+    rows.append('<link rel="alternate" hreflang="x-default" href="%s">' % site_langs.public_url("en", page))
+    return "\n".join(rows)
+
+
+def write_langs():
+    """있는 언어판마다 고르개와 hreflang 을 다시 쓴다. 아직 번역하지 않은 언어는 건너뛴다."""
+    done, missing = 0, []
+    for lang in site_langs.ACTIVE:
+        for page in site_langs.PAGES:
+            rel = site_langs.rel_path(lang.code, page)
+            path = os.path.join(WWW, rel)
+            if not os.path.isfile(path):
+                missing.append(rel)
+                continue
+            text = open(path, encoding="utf-8").read()
+            body = replace_marked(text, HREFLANG_BEGIN, HREFLANG_END, hreflang_html(page))
+            if body is None:
+                print("🛑 %s 에 %s 표식이 없다 — hreflang 을 못 넣었다" % (rel, HREFLANG_BEGIN))
+                continue
+            body = replace_marked(body, LANGS_BEGIN, LANGS_END, langs_html(lang.code, page), "      ")
+            if body is None:
+                print("🛑 %s 에 %s 표식이 없다 — 언어 고르개를 못 넣었다" % (rel, LANGS_BEGIN))
+                continue
+            if body != text:
+                open(path, "w", encoding="utf-8").write(body)
+            done += 1
+    print("언어 고르개·hreflang — %d장%s" % (done, " · 아직 없는 언어판 %d장" % len(missing) if missing else ""))
+    return done
+
+
+def write_not_found_langs():
+    """`404.html` 의 언어 줄 — 없는 주소로 들어온 사람에게 **제 나라 말 문서로 가는 길**을 준다.
+
+    🛑 이 페이지는 사전도 툴팁도 style.css 도 불러오지 않는다(그것들까지 404 면 아무것도 못 한다).
+    그래서 고르개가 아니라 평범한 링크를 나열한다.
+    """
+    path = os.path.join(WWW, "404.html")
+    if not os.path.isfile(path):
+        return False
+    text = open(path, encoding="utf-8").read()
+    links = ['    <a href="%s" hreflang="%s" lang="%s">%s</a>' %
+             (site_langs.public_url(lang.code, "index.html"), lang.hreflang, lang.html_lang, lang.name)
+             for lang in site_langs.ACTIVE]
+    body = replace_marked(text, LANGS_BEGIN, LANGS_END, " ·\n".join(links), "    ")
+    if body is None:
+        print("🛑 404.html 에 %s 표식이 없다 — 언어 줄을 못 넣었다" % LANGS_BEGIN)
+        return False
+    if body != text:
+        open(path, "w", encoding="utf-8").write(body)
+    print("404.html — 언어 %d개" % len(site_langs.ACTIVE))
+    return True
+
+
 if __name__ == "__main__":
     build("ko")
     build("en")
     write_dials_section("ko")
     write_dials_section("en")
+    write_langs()
+    write_not_found_langs()

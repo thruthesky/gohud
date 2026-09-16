@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — Godot 4 の HUD・UI キット</title>
+<meta name="description" content="Godot 4.6+ 向けのカスタマイズできる HUD・UI キット。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、スナックバー、HUD バー、クイックスロット、バーチャルスティックを備え、デフォルト・SF・中世の6プリセットで見た目を切り替える。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">できること</a>
+      <a href="#install">インストール</a>
+      <a href="#start">クイックスタート</a>
+      <a href="#presets">プリセット</a>
+      <a href="#examples">サンプル</a>
+      <a href="#ai">AI コマンド</a>
+      <a href="theming.html">テーマ ↗</a>
+      <a href="widgets.html">ウィジェット ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/index.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="index.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>ゲーム UI を、リソース1枚で動かす</h1>
+    <p class="lead">
+      gohud は Godot 4.6 以降で使う HUD・UI キットだ。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、
+      スナックバー、コーチマーク、HUD バー、クイックスロット、バーチャルスティックが<b>テーマ1枚と
+      差し替え可能なアイコンセット1枚</b>で動き、セーフエリア・仮想キーボード・RTL・タッチターゲットを自分で面倒みる。
+      <b>6つのプリセット</b> — デフォルト・SF・中世、それぞれにダークとライト — が1行で色と形を同時に変える。
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
+      <span class="badge">純粋な GDScript</span>
+      <span class="badge">オートロード不要</span>
+      <span class="badge">MIT</span>
+      <span class="badge">プリセット6種</span>
+      <span class="badge">21言語</span>
+      <span class="badge">アイコン100種同梱</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">インストール</a>
+      <a class="btn" href="#presets">プリセットを見る</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="showcase">
+  <h2>ゲーム画面ではこう見える</h2>
+  <p class="sub">
+    中世と SF のプリセット — キャラクターシート、インベントリ、クエスト。フォーム、グリッド、
+    プロンプトカード。角張ったパネルとタッチ操作。プリセットの切り替えはコード1行だ。
+  </p>
+  <figure>
+    <img src="../img/showcase-medieval-quests.webp" alt="gohud 中世テーマ — 体力・マナ・スタミナのバーが並ぶキャラクターシート、クイックスロットの雑嚢、鍛造した金枠のクエストジャーナル">
+    <figcaption><b>中世</b> — キャラクター・インベントリ・クエスト</figcaption>
+  </figure>
+  <div class="shots">
+    <figure>
+      <img src="../img/showcase-medieval-forms.webp" alt="gohud 中世テーマ — 名前入力欄・トグル・チェックボックス・音量スライダーのある入力パネル、タイルのグリッド、承諾と辞退を選ぶパーティ招待のプロンプトカード" loading="lazy">
+      <figcaption><b>中世</b> — フォーム・グリッド・プロンプトカード</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/showcase-scifi-touch.webp" alt="gohud SF テーマ — 六角形のスティック、固定 / 追従 / 相対の切り替え、丸いアクションボタンを載せた面取りタッチ操作パネル" loading="lazy">
+      <figcaption><b>SF</b> — 角張ったパネルとタッチ操作</figcaption>
+    </figure>
+  </div>
+  <p><a href="#presets">6つのプリセットと切り替え方 →</a></p>
+</section>
+
+<section id="what">
+  <h2>肩代わりしてくれるもの</h2>
+  <p class="sub">
+    ゲーム UI で時間を食うのはボタンの形ではなく、端末ごとにずれていくすべてだ。
+    gohud はそのずれを1か所で引き受ける。
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>寸法はすべてトークン</h3>
+      <p>余白・角・文字サイズは数値で書かず名前で呼ぶ。テーマを差し替えれば画面全体がまとめて動く。</p>
+    </div>
+    <div class="card">
+      <h3>見える大きさ ≠ 押せる大きさ</h3>
+      <p>閉じるボタンは 36dp に見えてタッチターゲットは 48dp。スロットが密集して重なる場所は、中心が近いほうが押下を取る。</p>
+    </div>
+    <div class="card">
+      <h3>ノッチとキーボード</h3>
+      <p>HUD はセーフエリアの内側に収まり、仮想キーボードが出れば入力欄がその上へ持ち上がる。</p>
+    </div>
+    <div class="card">
+      <h3>戻るは1枚だけ閉じる</h3>
+      <p>Escape と Android の戻るは<b>最前面の1枚だけ</b>を閉じる。重ねたウィンドウがまとめて消えない。</p>
+    </div>
+    <div class="card">
+      <h3>通知は入力を奪わない</h3>
+      <p>スナックバーの上を押しても、その下のボタンが反応する。フォーカスも奪わない。</p>
+    </div>
+    <div class="card">
+      <h3>アイコンは名前で頼む</h3>
+      <p>ウィジェットが知っているのは <code>GoIconSet.CLOSE</code> だけ。セットを差し替えればコードに触れずに絵が変わる。</p>
+    </div>
+    <div class="card">
+      <h3>6つの見た目、1行</h3>
+      <p><code>GoUi.use_preset()</code> がテーマ・スキン・アイコンをまとめて入れ替える — 丸み、面取りの SF、鍛造した中世の枠。</p>
+    </div>
+    <div class="card">
+      <h3>読めるかどうかは測る</h3>
+      <p>どのテーマも WCAG で測ってある。ボタンの状態ごとのラベルも、純白・純黒の上に載る半透明 HUD パネルも含めて。</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>プラグインを有効にしなくても全部動く。</b> 有効にすると GoRuntime オートロードが付いてウィンドウサイズ・
+    dp 倍率・キーボード高さを追い、設定リソースとプリセットを選ぶプロジェクト設定が増える — 便利なだけで必須ではない。
+  </div>
+</section>
+
+<section id="install">
+  <h2>インストール</h2>
+  <p class="sub">アドオンのフォルダをプロジェクトに置くだけでよい。ほかに準備はない。</p>
+
+  <h3>アセットストアまたは配布 ZIP から</h3>
+  <p>プロジェクトのルートに展開して <code>res://addons/gohud/</code> になるようにする。それだけだ。必要なら
+    <b>プロジェクト → プロジェクト設定 → プラグイン → gohud</b> を有効にする。</p>
+
+  <h3>git サブモジュールとして</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # 任意: タグやコミットに固定する</code></pre>
+  <p>リポジトリのルートがそのままアドオンのフォルダなので、Godot が期待する場所にぴったり収まる。その場で編集し、
+    <code>addons/gohud</code> の中でコミットして push したうえで、ゲーム側からサブモジュールのポインタをコミットする。</p>
+
+  <div class="note warn">
+    <b>Godot 4.6 以降が必要だ。</b> gohud は 4.5 で入った API（DPITexture、FoldableContainer、
+    アクセシビリティ関連プロパティ）を使うため、それより古いエンジンでは<b>パース段階で落ちる</b>。
+    下限の 4.6 は <code>GoUi.MIN_ENGINE</code> に記録してある。
+  </div>
+</section>
+
+<section id="start">
+  <h2>クイックスタート</h2>
+  <p class="sub">どのウィジェットも <code>.new()</code> して <code>add_child()</code> するだけだ — シーンファイルもオートロードもいらない。</p>
+
+  <h3>UI を組む前に見た目を選ぶ（任意）</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # 指定しなければ default_dark が使われる</code></pre>
+
+  <h3><code>await</code> で受け取る確認ダイアログ</h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("セーブデータの削除", "元に戻せません。"):
+    delete_save()</code></pre>
+  <p>最後の引数 <code>destructive</code> を <code>true</code> にすると、確認ボタンが塗りつぶしの危険ボタンとして描かれる。</p>
+
+  <h3>検索欄とフッターを固定したボトムシート</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("インベントリ")
+sheet.toolbar().add_child(GoStyle.line_edit("検索…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("閉じる", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>固定行をスクロール本文と分ける理由。</b> 決定とキャンセルを <code>body</code> に入れると、
+    リストが長いだけで画面の外へ押し出される。<code>footer()</code> は常に見えている。
+  </div>
+
+  <h3>HUD の隅に体力バーを置く</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3>本文が HUD を避けるようにする</h3>
+  <pre><code>form.avoid_hud = true                  # 表示中の GoHudAnchor をすべて避ける
+joystick_anchor.reserve_space = false  # …指が触れたときだけ現れるものは除く
+notice_anchor.avoid_peers = true       # トーストは固定 HUD を覆わず、その下に落ち着く</code></pre>
+  <p>失う面積がいちばん小さい方向へ避ける — 縦持ちのスマートフォンでは下へ、横持ちでは横へ。
+    <a href="widgets.html#hud">HUD どうしが避け合うしくみ →</a></p>
+</section>
+
+<section id="presets">
+  <h2>見た目を変える — 色<em>だけでなく</em>形も</h2>
+  <p class="sub">
+    Theme が作り替えられるのは<b>エンジンが描くもの</b>だけだ。StyleBoxFlat が持つ角は丸だけで、
+    スティック・クイックスロット・コーチマークはコードが直接描くため、テーマをいくら替えても形は変わらない。
+    そこで gohud は、テーマ・スキン・アイコンをひとまとまりで選ぶ<b>プリセット</b>を用意している。
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # テーマ・スキン・アイコンがまとめて替わる</code></pre>
+
+  <table>
+    <thead><tr><th>プリセット</th><th>見た目</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code></td><td>gohud 本来の姿 — 丸い角、やわらかい青のアクセント</td></tr>
+      <tr><td><code>default_light</code></td><td>同じ形をライトパレットで</td></tr>
+      <tr><td><code>scifi_dark</code></td><td>面取りした角、シアンのネオン縁と発光、六角形のスティック、照準ブラケット</td></tr>
+      <tr><td><code>scifi_light</code></td><td>同じ角張った形を明るい設計図のパレットで</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>暗い鉄と革、アンティークゴールドの枠、リベット、彫刻風アイコン、Cinzel の見出し</td></tr>
+      <tr><td><code>medieval_light</code></td><td>羊皮紙・インク・青銅に同じ鍛造の枠</td></tr>
+    </tbody>
+  </table>
+
+  <div class="shots">
+    <figure>
+      <img src="../img/preset-default-dark.png" alt="default_dark プリセットの gohud ギャラリー — 丸い角と青のアクセント" loading="lazy">
+      <figcaption><code>default_dark</code> — 丸い角、やわらかい青のアクセント</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-default-light.png" alt="default_light プリセット — 同じ形をライトパレットで" loading="lazy">
+      <figcaption><code>default_light</code> — 同じ形、ライトパレット</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-dark.png" alt="scifi_dark プリセット — 面取りした角とシアンのネオン" loading="lazy">
+      <figcaption><code>scifi_dark</code> — 面取りの角、シアンのネオン</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-light.png" alt="scifi_light プリセット — 同じ角張った形を設計図のパレットで" loading="lazy">
+      <figcaption><code>scifi_light</code> — 同じ角張った形、設計図のパレット</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    この4枚は<b>同じギャラリー画面</b>だ。コードは1行も違わず、変えたのはプリセット名だけ。
+    ボタンの角、トグルの形、リストの行、入力欄の枠が、そろって動いているのが分かる。
+  </p>
+
+  <h3>中世コレクション</h3>
+  <p>
+    <code>medieval_dark</code> は鉄と革にアンティークゴールドを合わせ、<code>medieval_light</code> は羊皮紙とインクを使う。
+    メニューの枠にはリベットと小さな角飾りを置き、常に見えている HUD は静かなままにした。
+    彫刻風アイコン16種がアイテム名を描き直し、同梱の Cinzel フォントはタイトルとサブタイトルにだけ使う。
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark — キャラクターシート、クイックスロットの雑嚢、クエストジャーナル" loading="lazy">
+      <figcaption><code>medieval_dark</code> — 鉄と革</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light — 同じキャラクター・雑嚢・クエストの画面を羊皮紙で" loading="lazy">
+      <figcaption><code>medieval_light</code> — 羊皮紙とインク</figcaption>
+    </figure>
+  </div>
+  <p>どちらも標準ウィジェットだけで組んだ <code>examples/medieval/medieval.tscn</code> だ。
+    <a href="theming.html#medieval">中世テーマの解説と、自分だけの王国の作り方 →</a></p>
+
+  <h3>同じ画面を、スマートフォンでもデスクトップでも</h3>
+  <p>
+    ギャラリーの4枚は縦持ちのスマートフォンだ。下は<b>同じコード</b>を 1280×800 で開いたもので、本文は読みやすい幅
+    (480dp) で止まって中央に立ち、HUD は隅に残る。フォームは浮かぶ HUD をよけて回り込むが、
+    <b>もともと重なっていなければ動かない</b> — 広い画面で無理に押しやると、本文が中心からずれてしまう。
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/desktop-default-dark.png" alt="1280×800 の default_dark — 本文は中央、HUD は隅" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/desktop-scifi-dark.png" alt="1280×800 の scifi_dark — 同じ配置に面取りパネルとネオン" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <h3>同じシート、違う見た目</h3>
+  <div class="shots">
+    <figure>
+      <img src="../img/sheet-default-dark.png" alt="default_dark のボトムシート" loading="lazy">
+      <figcaption>デフォルト — 丸いカード、固定された検索行とフッター</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/sheet-scifi-dark.png" alt="scifi_dark のボトムシート — 上辺にネオンのアクセント" loading="lazy">
+      <figcaption>SF — 上辺のアクセント、切り落とした角、発光</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    エディタからは <b>プロジェクト設定 → gohud → Theme → Preset</b> で選び、設定リソースからは
+    <code>GoConfig.preset</code> で指定する。<code>theme</code>・<code>skin</code>・<code>icons</code> を明示的に
+    埋めると、そちらがプリセットより<b>優先される</b> — プリセットを選んだうえで1つだけ差し替えられる。
+  </p>
+
+  <div class="note">
+    <b>新しいテーマは JSON ファイル1枚だ。</b> <code>new_theme.py kingdom --from medieval_dark</code> が、
+    継承した値をすべて書き出したパレットを作る。<code>make_theme.py kingdom</code> がテーマ・コントロールの絵・
+    スキンのダイヤルまで生成し、プリセットは選択リストに自動で現れる。<a href="theming.html#own">設定とダイヤルのすべて →</a>
+  </div>
+</section>
+
+<section id="skin">
+  <h2>スキン — テーマが届かない場所</h2>
+  <p class="sub">
+    スキンが受け持つのは、スティック、クイックスロットの面、コーチマークのリング、チップ、スケルトン、
+    アラート、区切り線、セクション見出しだ。継承して、変えたいものだけを上書きすればよい。
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>クラス</th><th>作れる形</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>角を斜めに切り落とした面取り、1辺だけ太いアクセント縁、外へにじむ発光</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>中身を囲わず、四隅の印だけを引く</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>リベット・角の彫刻・ベベルのハイライト・素材の質感を持つ鍛造の枠</td></tr>
+    </tbody>
+  </table>
+  <p>3つとも Theme リソースへそのまま保存できる — だからこそテーマが色だけでなく<b>形</b>まで変えられる。
+    <code>GoSkinSciFi</code> と <code>GoSkinMedieval</code> が同梱のサブクラスだ。</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> は必ず <code>StyleBoxFlat</code> を返す。</b> 呼び出し側が受け取って
+    <code>bg_color</code> や <code>corner_radius</code> を調整するからだ。独自の形を保ったままにしたいときは
+    <code>GoStyle.surface()</code> を使う。
+  </div>
+</section>
+
+<section id="widgets">
+  <h2>ウィジェット</h2>
+  <p class="sub">部品を一覧で。<a href="widgets.html">ひとつずつ詳しく →</a></p>
+
+  <table>
+    <thead><tr><th>クラス</th><th>基底</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSurface</code></td><td>Control</td><td>浮かぶカードの外殻 — 中央・下・アンカー配置、固定ヘッダーとフッター、スクロール本文、ドラッグでのサイズ変更</td></tr>
+      <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>下からせり上がるページ。専用レイヤーを持つので HUD より確実に上に出る</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td><code>await</code> で受け取る確認と通知。取り消せない操作には <code>destructive</code></td></tr>
+      <tr><td><code>GoForm</code></td><td style="white-space:nowrap">MarginContainer</td><td>幅に上限を設け、仮想キーボードを、<code>avoid_hud</code> なら HUD も避けるフォーム</td></tr>
+      <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>タッチでのスクロール。スクロールバーはカードの余白へ収まる</td></tr>
+      <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>入力もフォーカスも奪わないスナックバー</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>ゲームを止めずに尋ねるカード</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Control</td><td>実物のコントロールを指し示すツアー。指した対象を押すと次へ進む</td></tr>
+      <tr><td><code>GoHudAnchor</code></td><td>Control</td><td>HUD をセーフエリア内の9か所のどれかに留める</td></tr>
+      <tr><td><code>GoBar</code></td><td>Control</td><td>体力・マナ・経験値のバー。変化はなめらかに補間される</td></tr>
+      <tr><td><code>GoSlot</code></td><td>Button</td><td>クイックスロット1つ — アイコン・個数・クールダウン・ショートカットを1つの面に</td></tr>
+      <tr><td><code>GoJoystick</code></td><td>Control</td><td>固定・追従・相対モードのバーチャルスティック</td></tr>
+      <tr><td><code>GoIconButton</code></td><td>Button</td><td>小さく見えて大きく押せる</td></tr>
+      <tr><td><code>GoStyle</code></td><td>静的</td><td>ボタン、リスト行、入力欄、チップ、表、タブなどを同じ流儀で作る</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="examples">
+  <h2>すぐ動かせるサンプル</h2>
+  <p class="sub">コードを1行も書かずに gohud を見る3つの方法 — どれもサーバーもオートロードもいらない。</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">サンプル</th><th>開き方</th><th>見られるもの</th></tr></thead>
+    <tbody>
+      <tr><td>ギャラリー</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>すべてのウィジェット、導入済みプリセットの選択リスト、アイコン一式</td></tr>
+      <tr><td>中世</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>キャラクターシート、雑嚢、クエストジャーナル。ボタンで鉄と羊皮紙を切り替え、アイテムの詳細を開く</td></tr>
+      <tr><td>デモ</td><td><code>bash examples/demo/run.sh</code></td><td>実際の入力で進む15章のツアーと、ウィジェットを手で触る探索モード</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>bash examples/demo/run.sh --setup                       # git から取得した直後に一度だけ
+bash examples/demo/run.sh                               # Start demo か Explore widgets を選ぶ
+bash examples/demo/run.sh -- --explore=surfaces         # ウィジェット1つを直接開く
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # ツアー全体を 1080p / 60fps で録画</code></pre>
+  <p>デモでは <b>C</b> でシネマモード、<b>F11</b> で全画面、<b>Space</b> で一時停止（探索中は今のウィジェットを再生）、
+    矢印キーで章の移動、<b>Escape</b> で開始画面へ戻る。</p>
+  <p>AI コーディングエージェントを使っているなら <a href="#ai">3つとも1コマンドで開ける →</a></p>
+</section>
+
+<section id="ai">
+  <h2>AI コーディングエージェントから開く</h2>
+  <p class="sub">
+    gohud にはスラッシュコマンド付きの Claude Code プラグインが同梱されている。1つ打てばギャラリーやデモが
+    Godot のウィンドウで開く — エディタを起動する必要も、シーンを探す必要もない。
+  </p>
+
+  <h3>コマンドは一度だけ導入する</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# そのあと Claude Code を再起動する</code></pre>
+  <p>Codex のような他のエージェントでも同じスキルを使える — このリポジトリの <code>skills/gohud</code> を
+    そのエージェントのスキルフォルダにコピーすればよい。</p>
+
+  <h3><code>/gohud:preview</code> — ウィジェットギャラリー</h3>
+  <p>ギャラリーを開く。すべてのウィジェット、6つのプリセットの選択リスト、アイコン一式が入っている。自分の Godot
+    プロジェクトの中で打てば<b>そのプロジェクトの</b> <code>addons/gohud</code> を使い、無ければプラグイン同梱の
+    コピーか、新しくクローンしたものを使う。使い捨てのサンドボックスプロジェクトで動くので、自分のオートロードや
+    インポートキャッシュには触れず、ウィンドウは閉じるまで開いたままだ。</p>
+
+  <h3><code>/gohud:preview demo</code> — 15章のガイドツアー</h3>
+  <p>デモを開始画面で開く。<b>Start demo</b> は実際の入力でツアーを再生し、<b>Explore widgets</b> は
+    ウィジェット1つを手で試させる。<a href="#examples">サンプル</a>に挙げたキー操作はここでも同じだ。</p>
+
+  <h3>ほかにも多くのコマンドがある</h3>
+  <table>
+    <thead><tr><th>コマンド</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>中世プリセットのキャラクターシート・雑嚢・クエストジャーナル</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>デモを1章だけ直接開く — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>プリセット1つを当てたギャラリー。<code>--phone</code> で 390×844 のスマートフォン窓、<code>--size 1920x1080</code> で任意のサイズ</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>自分のプロジェクトのシーンを、そのプロジェクトの中で実行する</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>開ける対象・プリセット id・デモの章キーの一覧</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>ウィンドウを出さないヘッドレス点検 — スクリプトエラーがあれば失敗する</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>機能を分類ごとに、1機能あたりコード1行で</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>1つの分野を深く — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>そのまま頼んでもよい。</b> スキルがエージェントに gohud の API 全体を教えるので、
+    <i>「gohud でポーズメニューを作って」</i>のような普通の依頼も通る。プラグインではなく素のスキルとして
+    <code>~/.claude/skills/gohud</code> に置いた場合はコマンドを空白で区切る — <code>/gohud preview demo</code>、
+    <code>/gohud features</code>。プレビューには <code>PATH</code> の通った Godot 4.6 以降が必要で、
+    無ければ <code>--godot /path/to/godot</code> で渡す。
+  </div>
+</section>
+
+<section id="readable">
+  <h2>読みやすさは目分量ではなく実測で決める</h2>
+  <p class="sub">
+    「きれい」は好みだが、<b>「読める」は測れる。</b> 薄い灰色の文字は良いモニタでは平気に見えて、
+    日中の屋外ではスマートフォンから消える — 目で選んでいれば、いつか必ずそうなる。
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    すべての色の組み合わせと、<b>ボタンの状態ごとのラベルとその下のパネル</b>を、6つのテーマすべてで WCAG に
+    照らして測る。半透明の色は実際の背景に合成してから測る — そのまま測ると、画面に出ている見え方より
+    良い比率が出てしまう。
+  </p>
+  <p>
+    だから文字色は<b>選ぶのではなく導き出す</b>。ビルダーはパレットの値を出発点にして、その文字が載りうる
+    すべての面でしきい値を超えるまで明度を押し上げる。パレットを変えればコントラストも追従する。
+    <a href="theming.html#contrast">その規則と、背後にある落とし穴 →</a>
+  </p>
+</section>
+
+<section id="develop">
+  <h2>検査・リリース・このサイト</h2>
+  <p class="sub">入口1つですべての検査が走る。それぞれが、ほかからは見えないものを見ている。</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>検査</th><th>捕まえるもの</th></tr></thead>
+    <tbody>
+      <tr><td>4つの画面サイズでの <code>run_tests.sh</code></td><td>ウィジェットの挙動とレイアウト、RTL での位置、キーボードフォーカス、実行時のスキンのコントラスト、全プリセット</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>ホストプロジェクトへの隠れた依存。<code>--zip</code> なら配布物そのまま、<code>--export</code> なら Web ビルドまで</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>全テーマファイルの WCAG コントラスト — ボタンの状態も半透明パネルも含めて</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>生成されたテーマがパレットと一致するか、使い捨てのテーマが生成できてコントラストを通るか</td></tr>
+      <tr><td><code>check_package.py</code></td><td>バージョンの繰り上げ、変更履歴の移動、ZIP の中身を一時コピー上で</td></tr>
+      <tr><td><code>check_site.py</code></td><td>このサイトのリンク・アンカー・文書言語・用語集・ダイヤル表</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>直近の記録 — 2026-09-13、Godot 4.7.2、macOS、Compatibility レンダラー。</b> 空のプロジェクトで
+    390×844・844×390・768×1024・1280×800 の4サイズとも 438/438、GoRuntime オートロードを有効にしても再び 438/438、
+    Web エクスポート成功、6テーマでコントラスト不足は 0。この実行に Godot 4.6 と Android・iOS の実機は含まれていない。
+  </div>
+
+  <h3>リリース版を作る</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>成功すると <code>plugin.cfg</code>・<code>GoUi.VERSION</code>・<code>CHANGELOG.md</code> がまとめて更新され、
+    Unreleased の記述が日付付きの項目へ移る。失敗すれば何も変わらず、既存の ZIP を上書きすることもない。
+    ZIP にはこのサイトもテストもツールも入らない。</p>
+
+  <h3>このサイト</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # 用語集とスキンのダイヤル表をソースから生成する
+python3 addons/gohud/tools/check_site.py           # リンク・アンカー・言語・用語集・生成された表を検査する
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # 各ページのデスクトップ幅とスマートフォン幅を撮る</code></pre>
+  <p>ページは <code>www/</code> にあるただの HTML だ — ルートが英語、<code>ko/</code> が韓国語。
+    GitHub Actions のワークフローがこのフォルダをサイトのルートとして公開する。</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud は <b>MIT</b> だ — コードも絵も、デフォルトアイコン84種と中世アイコン16種を含めて。同梱の
+      Cinzel フォントは SIL Open Font License 1.1 による。</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">変更履歴</a></p>
+    <p style="font-size:13px"><b>下線の付いた用語</b>にマウスを乗せるか、タップするか、フォーカスすると意味が出る。</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

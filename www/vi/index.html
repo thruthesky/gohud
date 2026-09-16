@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gohud — bộ HUD &amp; UI cho Godot 4</title>
+<meta name="description" content="Bộ HUD và UI tùy biến được cho Godot 4.6+. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, thanh HUD, ô nhanh và cần điều khiển ảo, với sáu preset — mặc định, sci-fi và trung cổ.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="#what">Làm được gì</a>
+      <a href="#install">Cài đặt</a>
+      <a href="#start">Bắt đầu nhanh</a>
+      <a href="#presets">Preset</a>
+      <a href="#examples">Ví dụ</a>
+      <a href="#ai">Lệnh AI</a>
+      <a href="theming.html">Theme ↗</a>
+      <a href="widgets.html">Widget ↗</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- langs:begin -->
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Giao diện game, chạy bằng một tài nguyên duy nhất</h1>
+    <p class="lead">
+      gohud là bộ HUD và UI cho Godot 4.6 trở lên. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu,
+      snackbar, coach mark, thanh HUD, ô nhanh và cần điều khiển ảo đều chạy từ <b>một theme và một bộ
+      biểu tượng thay được</b>, đồng thời tự lo vùng an toàn, bàn phím ảo, RTL và vùng chạm cho bạn.
+      <b>Sáu preset</b> — mặc định, sci-fi và trung cổ, mỗi loại có bản tối và sáng — đổi màu sắc lẫn hình dáng trong một dòng.
+    </p>
+    <div class="badges">
+      <span class="badge on">Godot 4.6+</span>
+      <span class="badge">v1.0.1</span>
+      <span class="badge">GDScript thuần</span>
+      <span class="badge">Không cần autoload</span>
+      <span class="badge">MIT</span>
+      <span class="badge">6 preset</span>
+      <span class="badge">21 ngôn ngữ</span>
+      <span class="badge">Kèm 100 biểu tượng</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">Cài đặt</a>
+      <a class="btn" href="#presets">Xem các preset</a>
+      <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="showcase">
+  <h2>Trông thế nào khi vào game</h2>
+  <p class="sub">
+    Preset trung cổ và sci-fi — bảng nhân vật, túi đồ và nhiệm vụ; biểu mẫu, lưới và prompt card;
+    tấm nền góc cạnh và điều khiển cảm ứng. Đổi preset chỉ tốn một dòng code.
+  </p>
+  <figure>
+    <img src="../img/showcase-medieval-quests.webp" alt="Theme trung cổ của gohud — bảng nhân vật với thanh máu, mana và thể lực, một túi đựng các ô nhanh và sổ nhiệm vụ trong khung vàng rèn">
+    <figcaption><b>Trung cổ</b> — nhân vật, túi đồ và nhiệm vụ</figcaption>
+  </figure>
+  <div class="shots">
+    <figure>
+      <img src="../img/showcase-medieval-forms.webp" alt="Theme trung cổ của gohud — bảng nhập liệu với ô tên, công tắc, hộp kiểm và thanh trượt âm lượng, một lưới các ô, và prompt card mời vào tổ đội với Chấp nhận và Từ chối" loading="lazy">
+      <figcaption><b>Trung cổ</b> — biểu mẫu, lưới và prompt card</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/showcase-scifi-touch.webp" alt="Theme sci-fi của gohud — tấm điều khiển cảm ứng vát góc với cần điều khiển hình lục giác, công tắc Fixed / Follow / Relative và các nút hành động tròn" loading="lazy">
+      <figcaption><b>Sci-fi</b> — tấm nền góc cạnh và điều khiển cảm ứng</figcaption>
+    </figure>
+  </div>
+  <p><a href="#presets">Cả sáu preset và cách chuyển giữa chúng →</a></p>
+</section>
+
+<section id="what">
+  <h2>Những việc nó gánh thay bạn</h2>
+  <p class="sub">
+    Thứ ngốn nhiều thời gian nhất khi làm UI game không phải hình dáng của một cái nút — mà là tất cả
+    những gì lệch dần giữa các thiết bị. gohud xử lý chỗ lệch đó ở một nơi duy nhất.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Mọi số đo đều là một token</h3>
+      <p>Khoảng cách, góc bo và cỡ chữ được gọi theo tên chứ không viết thành số. Đổi theme là cả màn hình đổi theo.</p>
+    </div>
+    <div class="card">
+      <h3>Cỡ nhìn thấy ≠ cỡ bấm được</h3>
+      <p>Nút đóng trông chỉ 36dp nhưng vùng chạm của nó là 48dp. Khi các ô chen nhau và vùng chạm chồng lên nhau, ô nào có tâm gần hơn sẽ nhận cú bấm.</p>
+    </div>
+    <div class="card">
+      <h3>Tai thỏ và bàn phím</h3>
+      <p>Các mảnh HUD nằm gọn trong vùng an toàn, và ô nhập liệu tự nâng lên trên bàn phím ảo khi bàn phím hiện ra.</p>
+    </div>
+    <div class="card">
+      <h3>Back chỉ đóng một thứ</h3>
+      <p>Phím Escape và nút Back của Android chỉ đóng <b>lớp trên cùng</b>. Các cửa sổ xếp chồng không biến mất cùng lúc.</p>
+    </div>
+    <div class="card">
+      <h3>Thông báo không cướp thao tác</h3>
+      <p>Bấm xuyên qua một snackbar thì nút nằm dưới vẫn nhận được. Focus cũng không bị lấy mất.</p>
+    </div>
+    <div class="card">
+      <h3>Biểu tượng được gọi theo tên</h3>
+      <p>Widget chỉ biết <code>GoIconSet.CLOSE</code>. Đổi bộ biểu tượng là mọi hình vẽ đổi theo mà không phải sửa một dòng code nào.</p>
+    </div>
+    <div class="card">
+      <h3>Sáu diện mạo, một dòng</h3>
+      <p><code>GoUi.use_preset()</code> đổi cùng lúc theme, skin và biểu tượng — khung bo tròn, khung vát góc kiểu sci-fi hay khung rèn kiểu trung cổ.</p>
+    </div>
+    <div class="card">
+      <h3>Dễ đọc là thứ đo được</h3>
+      <p>Mọi theme đều được đối chiếu với WCAG, kể cả các trạng thái của nút và những tấm HUD bán trong suốt đặt trên nền trắng tinh lẫn đen tuyền.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Mọi thứ đều chạy mà không cần bật plugin.</b> Bật lên thì có thêm autoload GoRuntime theo dõi
+    kích thước cửa sổ, tỉ lệ dp và chiều cao bàn phím, cùng vài mục project setting cho tài nguyên cấu hình và
+    preset — đó là tiện ích, không phải điều kiện bắt buộc.
+  </div>
+</section>
+
+<section id="install">
+  <h2>Cài đặt</h2>
+  <p class="sub">Đặt thư mục add-on vào dự án. Không phải thiết lập gì thêm.</p>
+
+  <h3>Từ Asset Store hoặc file ZIP bản phát hành</h3>
+  <p>Giải nén vào thư mục gốc của dự án sao cho có <code>res://addons/gohud/</code>. Chỉ vậy thôi. Nếu muốn, hãy bật
+    <b>Project → Project Settings → Plugins → gohud</b>.</p>
+
+  <h3>Dưới dạng git submodule</h3>
+  <pre><code>git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+git submodule update --init
+git -C addons/gohud checkout v1.0.0   # tùy chọn: ghim vào một tag hoặc commit</code></pre>
+  <p>Thư mục gốc của kho lưu trữ <b>chính là</b> thư mục add-on, nên nó nằm đúng chỗ Godot mong đợi. Sửa ngay tại chỗ,
+    commit và push bên trong <code>addons/gohud</code>, rồi commit con trỏ submodule trong game của bạn.</p>
+
+  <div class="note warn">
+    <b>Bắt buộc Godot 4.6 trở lên.</b> gohud dùng các API xuất hiện từ 4.5 (DPITexture,
+    FoldableContainer, các thuộc tính trợ năng), nên trên bản cũ hơn nó <b>lỗi ngay khi phân tích cú pháp</b>.
+    4.6 là mức thấp nhất được hỗ trợ, ghi trong <code>GoUi.MIN_ENGINE</code>.
+  </div>
+</section>
+
+<section id="start">
+  <h2>Bắt đầu nhanh</h2>
+  <p class="sub">Mọi widget đều là <code>.new()</code> rồi <code>add_child()</code> — không file scene, không autoload.</p>
+
+  <h3>Chọn diện mạo trước khi dựng UI (tùy chọn)</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # bỏ qua dòng này thì default_dark được dùng</code></pre>
+
+  <h3>Một hộp thoại xác nhận mà bạn <code>await</code></h3>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+if await dialogs.confirm("Xóa bản lưu", "Thao tác này không thể hoàn tác."):
+    delete_save()</code></pre>
+  <p>Truyền <code>destructive = true</code> (đối số cuối) thì nút xác nhận được vẽ thành nút nguy hiểm tô đặc.</p>
+
+  <h3>Bảng trượt dưới với ô tìm kiếm và chân trang cố định</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Túi đồ")
+sheet.toolbar().add_child(GoStyle.line_edit("Tìm kiếm…"))
+sheet.toolbar().visible = true
+for item in items:
+    sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, _use.bind(item),
+        Color.TRANSPARENT, item.description, false))
+sheet.footer().add_child(GoStyle.button("Đóng", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+
+  <div class="note">
+    <b>Vì sao hàng cố định tách khỏi phần thân cuộn được.</b> Đặt nút xác nhận và hủy vào
+    <code>body</code> thì một danh sách dài sẽ đẩy chúng ra khỏi màn hình. <code>footer()</code> thì luôn nhìn thấy được.
+  </div>
+
+  <h3>Một góc HUD</h3>
+  <pre><code>var corner := GoHudAnchor.new()
+corner.spot = GoHudAnchor.Spot.TOP_LEFT
+corner.landscape_spot = GoHudAnchor.Spot.TOP_RIGHT
+add_child(corner)
+
+var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)
+corner.add_child(hp)
+hp.set_values(320, 500)</code></pre>
+
+  <h3>Nội dung biết tránh khỏi HUD</h3>
+  <pre><code>form.avoid_hud = true                  # tránh mọi GoHudAnchor đang hiện
+joystick_anchor.reserve_space = false  # …trừ những cái chỉ hiện ra dưới ngón tay
+notice_anchor.avoid_peers = true       # thông báo nổi nằm xuống dưới HUD cố định thay vì che lên nó</code></pre>
+  <p>Mỗi hình chữ nhật được né theo hướng tốn ít diện tích nhất — xuống dưới trên điện thoại dọc,
+    sang ngang khi nằm ngang. <a href="widgets.html#hud">Cách các mảnh HUD tự né nhau →</a></p>
+</section>
+
+<section id="presets">
+  <h2>Đổi diện mạo — cả màu sắc <em>lẫn</em> hình dáng</h2>
+  <p class="sub">
+    Một Theme chỉ đổi được dáng vẻ của những gì engine tự vẽ. StyleBoxFlat chỉ có duy nhất một kiểu góc là
+    bo tròn, còn cần điều khiển, ô nhanh và coach mark thì do code vẽ ra — nên riêng theme không bao giờ đổi
+    được hình dáng của chúng. Vì vậy gohud kèm sẵn <b>preset</b>: một theme, một skin và một bộ biểu tượng chọn thành một khối.
+  </p>
+
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # theme, skin và biểu tượng cùng lúc</code></pre>
+
+  <table>
+    <thead><tr><th>Preset</th><th>Diện mạo</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code></td><td>gohud nguyên bản — góc bo tròn, màu nhấn xanh dịu</td></tr>
+      <tr><td><code>default_light</code></td><td>Vẫn hình dáng đó trên bảng màu sáng</td></tr>
+      <tr><td><code>scifi_dark</code></td><td>Góc vát, viền neon lam và ánh sáng tỏa, cần điều khiển hình lục giác, khung ngắm góc</td></tr>
+      <tr><td><code>scifi_light</code></td><td>Vẫn hình dáng góc cạnh đó trong bảng màu bản vẽ kỹ thuật sáng</td></tr>
+      <tr><td><code>medieval_dark</code></td><td>Sắt tối và da thuộc, khung vàng cổ, đinh tán, biểu tượng khắc chìm, tiêu đề Cinzel</td></tr>
+      <tr><td><code>medieval_light</code></td><td>Giấy da, mực và đồng thau với vẫn những khung rèn đó</td></tr>
+    </tbody>
+  </table>
+
+  <div class="shots">
+    <figure>
+      <img src="../img/preset-default-dark.png" alt="Màn hình gallery của gohud với preset default_dark — góc bo tròn, màu nhấn xanh" loading="lazy">
+      <figcaption><code>default_dark</code> — góc bo tròn, màu nhấn xanh dịu</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-default-light.png" alt="Preset default_light — vẫn hình dáng đó trên bảng màu sáng" loading="lazy">
+      <figcaption><code>default_light</code> — cùng hình dáng, bảng màu sáng</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-dark.png" alt="Preset scifi_dark — góc vát và neon lam" loading="lazy">
+      <figcaption><code>scifi_dark</code> — góc vát, neon lam</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/preset-scifi-light.png" alt="Preset scifi_light — vẫn hình dáng góc cạnh đó trong bảng màu bản vẽ kỹ thuật" loading="lazy">
+      <figcaption><code>scifi_light</code> — cùng hình dáng góc cạnh, bảng màu bản vẽ</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Bốn ảnh đó là <b>cùng một màn hình gallery</b>. Không khác nhau một dòng code nào — chỉ khác tên preset.
+    Góc nút, hình công tắc, hàng danh sách và viền ô nhập đều đổi theo cùng lúc.
+  </p>
+
+  <h3>Bộ sưu tập trung cổ</h3>
+  <p>
+    <code>medieval_dark</code> ghép sắt và da thuộc với vàng cổ; <code>medieval_light</code> dùng giấy da
+    và mực. Khung menu mang một chiếc đinh tán và một hoa văn góc nhỏ, còn HUD luôn hiện thì giữ nét trầm;
+    16 biểu tượng khắc chìm vẽ lại các món đồ, và chỉ tiêu đề với phụ đề mới dùng font Cinzel kèm theo.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/medieval-dark.png" alt="medieval_dark — bảng nhân vật, túi đựng ô nhanh và sổ nhiệm vụ" loading="lazy">
+      <figcaption><code>medieval_dark</code> — sắt và da thuộc</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/medieval-light.png" alt="medieval_light — vẫn các màn hình nhân vật, túi đồ và nhiệm vụ đó trên nền giấy da" loading="lazy">
+      <figcaption><code>medieval_light</code> — giấy da và mực</figcaption>
+    </figure>
+  </div>
+  <p>Cả hai ảnh đều là <code>examples/medieval/medieval.tscn</code>, dựng từ các widget tiêu chuẩn.
+    <a href="theming.html#medieval">Hướng dẫn trung cổ và cách tạo vương quốc của riêng bạn →</a></p>
+
+  <h3>Cùng một màn hình trên điện thoại và trên máy để bàn</h3>
+  <p>
+    Các ảnh gallery là điện thoại ở chế độ dọc. Bên dưới là <b>cùng đoạn code đó</b> ở 1280×800 — nội dung
+    dừng lại ở bề ngang dễ đọc (480dp) rồi canh giữa, còn HUD vẫn nằm ở các góc. Biểu mẫu bước tránh các
+    mảnh HUD nổi, nhưng <b>không nhúc nhích khi nó vốn đã không vướng</b>: cứ đẩy bừa thì trên màn hình
+    rộng nội dung sẽ lệch khỏi tâm.
+  </p>
+  <div class="shots">
+    <figure>
+      <img src="../img/desktop-default-dark.png" alt="default_dark ở 1280x800 — nội dung canh giữa, HUD ở các góc" loading="lazy">
+      <figcaption><code>default_dark</code> · 1280×800</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/desktop-scifi-dark.png" alt="scifi_dark ở 1280x800 — cùng bố cục với tấm nền vát góc và neon" loading="lazy">
+      <figcaption><code>scifi_dark</code> · 1280×800</figcaption>
+    </figure>
+  </div>
+
+  <h3>Cùng một bảng trượt, khác diện mạo</h3>
+  <div class="shots">
+    <figure>
+      <img src="../img/sheet-default-dark.png" alt="Một bảng trượt dưới ở default_dark" loading="lazy">
+      <figcaption>Mặc định — thẻ bo tròn, hàng tìm kiếm và chân trang cố định</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/sheet-scifi-dark.png" alt="Một bảng trượt dưới ở scifi_dark — viền nhấn neon chạy dọc mép trên" loading="lazy">
+      <figcaption>Sci-fi — viền nhấn ở mép trên, góc cắt, ánh sáng tỏa</figcaption>
+    </figure>
+  </div>
+
+  <p>
+    Chọn một preset trong <b>Project Settings → gohud → Theme → Preset</b>, hoặc đặt <code>GoConfig.preset</code>.
+    Điền thẳng <code>theme</code>, <code>skin</code> hay <code>icons</code> thì giá trị đó <b>thắng</b>
+    preset, nên bạn có thể lấy một preset rồi ghi đè đúng một phần của nó.
+  </p>
+
+  <div class="note">
+    <b>Một theme mới chỉ là một file JSON.</b> <code>new_theme.py kingdom --from medieval_dark</code> ghi ra một
+    bảng màu liệt kê rõ từng giá trị kế thừa; <code>make_theme.py kingdom</code> dựng theme, phần hình vẽ cho các
+    control và các núm chỉnh của skin, rồi preset hiện ra trong danh sách chọn. <a href="theming.html#own">Mọi thiết lập và núm chỉnh →</a>
+  </div>
+</section>
+
+<section id="skin">
+  <h2>Skin — nơi Theme không với tới</h2>
+  <p class="sub">
+    Skin nắm cần điều khiển, mặt các ô nhanh, vòng coach mark, chip, skeleton, alert, đường kẻ chia
+    và tiêu đề mục. Kế thừa nó rồi chỉ ghi đè đúng phần bạn muốn đổi.
+  </p>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func slot_box(accent: Color, lit: bool) -> StyleBox:
+    var box := GoStyleBoxCut.new()
+    box.bg_color = accent
+    box.cut = 6.0
+    box.edge_color = accent
+    return box</code></pre>
+
+  <table>
+    <thead><tr><th>Lớp</th><th>Hình dáng nó tạo ra được</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Góc cắt chéo (vát), một cạnh nhấn dày lên, ánh sáng tỏa ra ngoài</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Chỉ dấu ở bốn góc, không bao kín nội dung</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Khung rèn với đinh tán, hoa văn khắc ở góc, vệt sáng vát cạnh và vân vật liệu</td></tr>
+    </tbody>
+  </table>
+  <p>Cả ba đều tuần tự hóa được vào một tài nguyên Theme — chính điều đó cho phép một theme đổi <b>hình dáng</b>,
+    chứ không chỉ đổi màu. <code>GoSkinSciFi</code> và <code>GoSkinMedieval</code> là hai lớp con có sẵn.</p>
+
+  <div class="note warn">
+    <b><code>GoStyle.box()</code> luôn trả về một <code>StyleBoxFlat</code></b>, vì phía gọi nhận nó rồi
+    chỉnh <code>bg_color</code> hoặc <code>corner_radius</code>. Hãy dùng
+    <code>GoStyle.surface()</code> khi cần giữ nguyên một hình dáng tùy biến.
+  </div>
+</section>
+
+<section id="widgets">
+  <h2>Widget</h2>
+  <p class="sub">Toàn bộ các mảnh, gói trong một bảng. <a href="widgets.html">Chi tiết từng cái →</a></p>
+
+  <table>
+    <thead><tr><th>Lớp</th><th>Lớp cha</th><th>Làm gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSurface</code></td><td>Control</td><td>Vỏ thẻ nổi — đặt ở giữa, ở đáy hoặc neo vào một control, đầu và chân trang cố định, thân cuộn được, kéo để đổi kích thước</td></tr>
+      <tr><td><code>GoSheet</code></td><td>CanvasLayer</td><td>Trang trồi lên từ đáy, nằm trên lớp riêng nên luôn ở trên HUD</td></tr>
+      <tr><td><code>GoDialogs</code></td><td>Node</td><td>Hộp thoại xác nhận và cảnh báo mà bạn <code>await</code>; <code>destructive</code> cho các thao tác không thể hoàn tác</td></tr>
+      <tr><td><code>GoForm</code></td><td style="white-space:nowrap">MarginContainer</td><td>Biểu mẫu giới hạn bề ngang, tránh bàn phím ảo và, với <code>avoid_hud</code>, tránh cả HUD</td></tr>
+      <tr><td><code>GoScroll</code></td><td>ScrollContainer</td><td>Cuộn bằng ngón tay; thanh cuộn nép vào phần đệm sẵn có của thẻ</td></tr>
+      <tr><td><code>GoNotice</code></td><td>PanelContainer</td><td>Snackbar không nhận thao tác cũng không nhận focus</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>PanelContainer</td><td>Một câu hỏi không chặn game lại</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Control</td><td>Chuyến tham quan có hướng dẫn chỉ vào các control thật; bấm đúng mục tiêu là sang bước kế</td></tr>
+      <tr><td><code>GoHudAnchor</code></td><td>Control</td><td>Ghim các mảnh HUD vào một trong chín vị trí trong vùng an toàn</td></tr>
+      <tr><td><code>GoBar</code></td><td>Control</td><td>Thanh máu, mana và kinh nghiệm với chuyển động mượt</td></tr>
+      <tr><td><code>GoSlot</code></td><td>Button</td><td>Một ô nhanh — biểu tượng, số lượng, hồi chiêu và phím tắt trên cùng một mặt</td></tr>
+      <tr><td><code>GoJoystick</code></td><td>Control</td><td>Cần điều khiển ảo ở chế độ cố định, đi theo hoặc tương đối</td></tr>
+      <tr><td><code>GoIconButton</code></td><td>Button</td><td>Trông nhỏ, bấm rộng</td></tr>
+      <tr><td><code>GoStyle</code></td><td>static</td><td>Nút, hàng danh sách, ô nhập, chip, bảng, tab và nhiều thứ khác, làm ra theo một cách thống nhất</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="examples">
+  <h2>Những ví dụ chạy được ngay</h2>
+  <p class="sub">Ba cách xem gohud trước khi viết dòng nào — không cách nào cần server hay autoload.</p>
+
+  <table>
+    <thead><tr><th style="white-space:nowrap">Ví dụ</th><th>Cách mở</th><th>Cho thấy gì</th></tr></thead>
+    <tbody>
+      <tr><td>Gallery</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>Mọi widget, một danh sách chọn cho từng preset đã cài, và trọn bộ biểu tượng</td></tr>
+      <tr><td>Trung cổ</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>Bảng nhân vật, túi đồ và sổ nhiệm vụ; các nút chuyển giữa sắt và giấy da rồi mở chi tiết món đồ</td></tr>
+      <tr><td>Demo</td><td><code>bash examples/demo/run.sh</code></td><td>Chuyến tham quan 15 chương chạy bằng thao tác thật, kèm chế độ khám phá để tự thử từng widget</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>bash examples/demo/run.sh --setup                       # chạy một lần, trên bản git checkout mới
+bash examples/demo/run.sh                               # Bắt đầu demo, hoặc Khám phá widget
+bash examples/demo/run.sh -- --explore=surfaces         # mở thẳng vào một widget
+bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # quay chuyến tham quan ở 1080p / 60 fps</code></pre>
+  <p>Trong bản demo, <b>C</b> bật tắt chế độ Cinema, <b>F11</b> toàn màn hình, <b>Space</b> tạm dừng (hoặc chạy
+    widget hiện tại khi đang khám phá), các phím mũi tên đổi chương và <b>Escape</b> quay về màn hình đầu.</p>
+  <p>Đang dùng một AI coding agent? <a href="#ai">Mở cả ba bằng một lệnh →</a></p>
+</section>
+
+<section id="ai">
+  <h2>Mở nó từ AI coding agent của bạn</h2>
+  <p class="sub">
+    gohud kèm theo một plugin cho Claude Code với các lệnh gạch chéo. Gõ một lệnh là gallery hoặc bản demo mở ra
+    trong cửa sổ Godot riêng của nó — không phải khởi động trình soạn thảo, không phải đi tìm scene.
+  </p>
+
+  <h3>Cài các lệnh một lần</h3>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud
+# rồi khởi động lại Claude Code</code></pre>
+  <p>Các agent khác như Codex dùng được đúng skill đó: chép <code>skills/gohud</code> từ kho này vào
+    thư mục skill của agent.</p>
+
+  <h3><code>/gohud:preview</code> — gallery widget</h3>
+  <p>Mở gallery: mọi widget, một danh sách chọn cho cả sáu preset và trọn bộ biểu tượng. Gõ lệnh này bên trong dự án
+    Godot của bạn thì nó dùng <code>addons/gohud</code> của <b>bạn</b>; không có thì nó dùng bản kèm theo plugin,
+    hoặc clone mới một bản. Nó chạy trong một dự án sandbox dùng xong bỏ, nên autoload và bộ nhớ đệm import của bạn
+    không bị đụng tới, còn cửa sổ thì mở cho đến khi bạn đóng.</p>
+
+  <h3><code>/gohud:preview demo</code> — chuyến tham quan 15 chương</h3>
+  <p>Mở bản demo ở màn hình đầu. <b>Bắt đầu demo</b> chạy chuyến tham quan bằng thao tác thật; <b>Khám phá widget</b>
+    cho bạn tự thử từng widget. Các phím liệt kê ở mục <a href="#examples">Ví dụ</a> cũng dùng được ở đây.</p>
+
+  <h3>Nhiều lệnh khác</h3>
+  <table>
+    <thead><tr><th>Lệnh</th><th>Làm gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>/gohud:preview medieval</code></td><td>Bảng nhân vật, túi đồ và sổ nhiệm vụ trong các preset trung cổ</td></tr>
+      <tr><td><code>/gohud:preview demo --explore hud</code></td><td>Bản demo mở thẳng vào một chương — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
+      <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>Gallery trong một preset; thêm <code>--phone</code> để có cửa sổ điện thoại 390×844 hoặc <code>--size 1920x1080</code> cho kích thước bất kỳ</td></tr>
+      <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>Một scene trong dự án của bạn, chạy ngay bên trong dự án đó</td></tr>
+      <tr><td><code>/gohud:preview list</code></td><td>Mọi mục tiêu, id preset và khóa chương demo</td></tr>
+      <tr><td><code>/gohud:preview gallery --check</code></td><td>Một lượt kiểm tra nhanh không cửa sổ — sẽ báo lỗi nếu script có lỗi</td></tr>
+      <tr><td><code>/gohud:features</code></td><td>Mọi tính năng, xếp theo nhóm, mỗi cái một dòng code</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>Một mảng đi sâu — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Hoặc cứ hỏi thẳng.</b> Skill này dạy cho agent toàn bộ API của gohud, nên yêu cầu bằng lời bình thường cũng chạy —
+    <i>"Dựng giúp tôi một menu tạm dừng bằng gohud"</i>. Nếu cài như một skill thường ở <code>~/.claude/skills/gohud</code>,
+    các lệnh viết cách ra một khoảng trắng: <code>/gohud preview demo</code>, <code>/gohud features</code>. Xem trước cần
+    Godot 4.6 trở lên nằm trong <code>PATH</code>, hoặc truyền <code>--godot /path/to/godot</code>.
+  </div>
+</section>
+
+<section id="readable">
+  <h2>Dễ đọc là đo được, không phải ước lượng bằng mắt</h2>
+  <p class="sub">
+    "Đẹp" là chuyện gu; <b>"dễ đọc" thì đo được.</b> Chữ xám nhạt trông ổn trên màn hình tốt
+    và biến mất trên điện thoại giữa ban ngày — chọn bằng mắt thì sớm muộn cũng dính.
+  </p>
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+  <p>
+    Mọi cặp màu và <b>nhãn của từng trạng thái nút trên chính tấm nền nó nằm lên</b> đều được đo theo
+    WCAG, trên cả sáu theme. Màu bán trong suốt được ghép lên nền thật của nó trước — đo thẳng vào chúng
+    sẽ cho tỉ số đẹp hơn những gì màn hình thật sự hiển thị.
+  </p>
+  <p>
+    Vì vậy màu chữ là thứ <b>suy ra, không phải chọn</b>: trình dựng lấy màu trong bảng màu làm điểm
+    xuất phát rồi đẩy độ sáng của nó lên cho tới khi vượt ngưỡng trên mọi bề mặt mà nó có thể rơi vào.
+    Đổi bảng màu thì độ tương phản đi theo. <a href="theming.html#contrast">Các quy tắc và những cái bẫy phía sau chúng →</a>
+  </p>
+</section>
+
+<section id="develop">
+  <h2>Kiểm tra, phát hành và trang web này</h2>
+  <p class="sub">Một điểm vào chạy mọi lượt kiểm tra; mỗi phần thấy được thứ mà các phần kia không thấy.</p>
+
+  <pre><code>bash addons/gohud/tools/check_all.sh</code></pre>
+  <table>
+    <thead><tr><th>Lượt kiểm tra</th><th>Bắt được gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>run_tests.sh</code> ở bốn cỡ màn hình</td><td>Hành vi và bố cục widget, vị trí khi RTL, focus bàn phím, độ tương phản của skin lúc chạy, mọi preset</td></tr>
+      <tr><td><code>new_project_check.sh</code></td><td>Những phụ thuộc ngầm vào dự án chủ; với <code>--zip</code> là bản phát hành đúng như khi giao, với <code>--export</code> là một bản build Web</td></tr>
+      <tr><td><code>check_contrast.py</code></td><td>Độ tương phản WCAG của từng file theme, tính cả trạng thái nút và tấm nền bán trong suốt</td></tr>
+      <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Theme sinh ra khớp với bảng màu của nó; một theme dùng xong bỏ dựng được và qua được kiểm tra tương phản</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Việc tăng số phiên bản, chuyển mục changelog và nội dung file ZIP, trên các bản sao tạm</td></tr>
+      <tr><td><code>check_site.py</code></td><td>Liên kết, neo, ngôn ngữ trang, bảng thuật ngữ và bảng núm chỉnh của trang này</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>Lượt chạy gần nhất được ghi lại — 2026-09-13, Godot 4.7.2, macOS, renderer Compatibility.</b> 438 trên 438 lượt kiểm tra ở
+    390×844, 844×390, 768×1024 và 1280×800 trong một dự án trống; lại 438 trên 438 khi có autoload GoRuntime;
+    một bản export Web; không một lỗi tương phản nào trên cả sáu theme. Godot 4.6 và thiết bị Android hay iOS thật
+    không nằm trong lượt chạy này.
+  </div>
+
+  <h3>Phiên bản phát hành</h3>
+  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
+bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
+  <p>Một lượt chạy thành công cập nhật <code>plugin.cfg</code>, <code>GoUi.VERSION</code> và <code>CHANGELOG.md</code>
+    cùng lúc, chuyển phần ghi chú Unreleased thành một mục có ngày tháng. Lượt chạy hỏng thì không đổi gì cả, và một
+    file ZIP đã có sẽ không bao giờ bị ghi đè. File ZIP không chứa trang web này, phần kiểm thử và các công cụ.</p>
+
+  <h3>Trang web này</h3>
+  <pre><code>python3 addons/gohud/tools/make_site.py            # bảng thuật ngữ và bảng núm chỉnh của skin, sinh ra từ mã nguồn
+python3 addons/gohud/tools/check_site.py           # liên kết, neo, ngôn ngữ, bảng thuật ngữ, bảng được sinh ra
+bash addons/gohud/tools/site_shots.sh /tmp/shots   # ảnh chụp mọi trang ở cỡ máy để bàn và điện thoại</code></pre>
+  <p>Các trang là HTML thuần trong <code>www/</code> — tiếng Anh ở thư mục gốc, tiếng Hàn trong <code>ko/</code>. Một
+    workflow GitHub Actions xuất bản thư mục đó làm gốc của trang web.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud theo giấy phép <b>MIT</b> — cả code lẫn phần hình vẽ, gồm 84 biểu tượng mặc định và 16 biểu tượng trung cổ.
+      Font Cinzel kèm theo thuộc giấy phép SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Nhật ký thay đổi</a></p>
+    <p style="font-size:13px">Rê chuột, chạm hoặc focus vào một <b>thuật ngữ được gạch chân</b> để xem nghĩa của nó.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

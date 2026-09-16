@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>テーマ設定 — gohud</title>
+<meta name="description" content="gohud のテーマ・スキン・プリセットが色と形をどう変えるか。トークン一覧、独自の StyleBox、そしてコントラストを「選ぶ」のではなく「導き出す」しくみ。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <a href="./">概要</a>
+      <a href="theming.html">テーマ</a>
+      <a href="widgets.html">ウィジェット</a>
+      <a href="#medieval">中世</a>
+      <a href="#tokens">トークン</a>
+      <a href="#skin">スキン</a>
+      <a href="#own">自作プリセット</a>
+      <a href="#contrast">読みやすさ</a>
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../theming.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="theming.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>テーマ設定</h1>
+    <p class="lead">
+      gohud の見た目は<b>3つの層</b>でできている。色だけを変えることも、形ごと入れ替えることもできる。
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="layers">
+  <h2>3つの層</h2>
+  <p class="sub">プリセットは3つをまとめて束ねたものだ。空のままにした項目はデフォルトに落ちる。</p>
+
+  <table>
+    <thead><tr><th>層</th><th>決めるもの</th><th>変え方</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>色、サイズ、文字の大きさ、そして<b>エンジンが描くもの</b>すべての形 — ボタンのパネル、入力欄、タブ、トグルの絵</td>
+        <td><code>.tres</code> を書くか、<code>tools/make_theme.py</code> で生成する</td>
+      </tr>
+      <tr>
+        <td><code>GoSkin</code></td>
+        <td><b>コードが描くもの</b>すべての形 — スティック、クイックスロットの面、コーチマークのリング、チップ、スケルトン、区切り線、セクション見出し</td>
+        <td>継承して、気にするメソッドだけを上書きする</td>
+      </tr>
+      <tr>
+        <td><code>GoIconSet</code></td>
+        <td>名前で引くアイコン — デフォルトの84枚、あるいはその上に重ねる中世セットの彫刻風16枚。テクスチャパックでもアイコンフォントでもよく、呼び出すコードはどちらでも同じだ</td>
+        <td>セットを丸ごと渡すか、いくつかの名前だけ差し替える</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Theme だけでは足りない理由。</b> <code>StyleBoxFlat</code> が持つ角は丸だけだ —
+    半径を 0 にすれば直角になるが、その中間は存在しない。斜めに切り落とした角、1辺だけ太い縁、外へにじむ発光。
+    エンジンはそのどれも描かない。しかもスティックとコーチマークは <code>_draw()</code> の中で描かれており、
+    テーマはそこへ届かない。
+  </div>
+</section>
+
+<section id="pick">
+  <h2>選ぶ</h2>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)</code></pre>
+  <p>この1行でテーマ・スキン・アイコンが入れ替わる。エディタからは
+    <b>プロジェクト設定 → Gohud → Theme → Preset</b>、設定リソースからは <code>GoConfig.preset</code> で指定する。</p>
+
+  <h3>1つだけ自分のものを使う</h3>
+  <pre><code>GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセットのまま</code></pre>
+  <p><code>theme</code>・<code>skin</code>・<code>icons</code> を明示的に設定すると、プリセットより<b>優先される</b>。</p>
+
+  <h3>組み込みの6プリセット</h3>
+  <table>
+    <thead><tr><th>プリセット</th><th>パネル</th><th>スキン · アイコン</th></tr></thead>
+    <tbody>
+      <tr><td><code>default_dark</code> · <code>default_light</code></td><td>段階的な影を持つ丸い <code>StyleBoxFlat</code> のパネル。主ボタンは押すと沈み、離すと持ち上がる</td><td><code>GoSkin</code> · デフォルトアイコン84種</td></tr>
+      <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>ネオンの縁と発光を持つ面取りの <code>GoStyleBoxCut</code> パネル。フォーカス印は <code>GoStyleBoxBracket</code></td><td><code>GoSkinSciFi</code> — 六角形のスティック · デフォルトアイコン</td></tr>
+      <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>鍛造した <code>GoStyleBoxMedieval</code> の枠 — 鉄と革、あるいは羊皮紙 — にリベットと角飾りをメニューだけへ</td><td><code>GoSkinMedieval</code> · デフォルトの上に彫刻風16種</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="medieval">
+  <h2>中世 — 鉄、革、そして羊皮紙</h2>
+  <p><code>medieval_dark</code> は暗い鉄と革にアンティークゴールドを合わせる。<code>medieval_light</code>
+    は羊皮紙とインクを使う。どちらも <code>GoSkinMedieval</code> と既存のウィジェット、そして彫刻の描き込みを入れた
+    オリジナルアイコン16種を使う。ナビゲーション用のアイコンは元のセットに落ちる。</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+# または: GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)</code></pre>
+  <p>プリセットは UI を作る前に選ぶ。<code>GoConfig.theme</code>・<code>skin</code>・<code>icons</code> を
+    明示的に指定した場合は、そちらが優先されたままだ。
+    <code>res://addons/gohud/examples/medieval/medieval.tscn</code> を開いて F6 を押せば、動くキャラクターシート・
+    雑嚢・クエストジャーナルが見られる。ボタンでバリアントを切り替え、アイテムの詳細を開ける。</p>
+  <div class="shots">
+    <figure><img src="../img/medieval-dark.png" alt="中世 鉄 — キャラクター・インベントリ・クエストの画面" loading="lazy"><figcaption>鉄と革</figcaption></figure>
+    <figure><img src="../img/medieval-light.png" alt="中世 羊皮紙 — キャラクター・インベントリ・クエストの画面" loading="lazy"><figcaption>羊皮紙とインク</figcaption></figure>
+  </div>
+  <p>メニューの枠にはリベットと小さな角飾りがあり、常に見えている HUD は縁を静かに保つ。
+    体力・マナ・スタミナは赤・青・オリーブで塗る。Cinzel はタイトルとサブタイトルに限って使い、
+    本文はホスト側またはデフォルトのフォントのままだ。同梱フォントのライセンスは
+    <code>assets/fonts/cinzel/OFL.txt</code> にある。</p>
+  <p>彫刻セットが描き直すのは <code>bag</code>、<code>book</code>、<code>box</code>、<code>coin</code>、<code>crown</code>、
+    <code>flag</code>、<code>heart</code>、<code>key</code>、<code>map</code>、<code>potion</code>、<code>shield</code>、
+    <code>star</code>、<code>sword</code>、<code>user</code> で、さらに <code>scroll</code> と <code>seal</code> を足す。
+    それ以外の名前はデフォルトセットに落ちるので、<code>close</code> や <code>settings</code> はどのプリセットでも
+    同じ絵のままだ。Cinzel が持つのはラテン文字なので、各言語の見出しには <code>shape.fonts</code> から
+    専用のフォントを与える。</p>
+  <div class="note">
+    <b>テストスイートが両バリアントで確かめること。</b> 中世スキンが選ばれていること。メニューと HUD のパネルが
+    鍛造の枠で、角飾りはメニューにだけ付くこと。タイトルが Cinzel を使い、本文は継承したフォントを保つこと。
+    彫刻アイコンが <code>DPITexture</code> としてインポートされること。実物のクイックスロットがスキンを使うこと。
+    複製したスキンのダイヤルを変えると、プリセットに触れずにスロットへ届くこと。そして戻したときに、
+    デフォルトと SF のジオメトリが復元されること。
+  </div>
+  <h3>自分だけの王国を作る</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark
+# themes/palettes/kingdom.json を編集してから:
+python3 addons/gohud/tools/make_theme.py kingdom
+godot --headless --path . --import
+# GDScript では、ウィジェットを作る前に:
+GoUi.use_preset(&amp;"kingdom")</code></pre>
+  <p>JSON テーマは別の JSON テーマを継承できる。書かなかった値は親の設定をそのまま保ち、
+    循環する継承は拒否される。生成されたプリセットは親のアイコンセットを引き継ぐ。</p>
+  <table><thead><tr><th>設定</th><th>効果</th></tr></thead><tbody>
+    <tr><td><code>shape.material</code></td><td>0: 鉄 · 1: 革 · 2: 羊皮紙。表面の模様を決める。</td></tr>
+    <tr><td><code>shape.grain_alpha</code></td><td>質感の不透明度。0 にすると無地の面になる。</td></tr>
+    <tr><td><code>shape.ornament_scale</code> · <code>shape.bevel_strength</code></td><td>メニューの角飾りの大きさと、ベベルのハイライトの強さ。</td></tr>
+    <tr><td><code>shape.fonts</code></td><td>title・subtitle・caption・body・button の役割を、アドオン内の res:// フォントファイルへ割り当てる。書かなかった役割は継承したフォントのままだ。</td></tr>
+    <tr><td><code>skin.dials</code></td><td>クイックスロットの角丸、リベットの表示、質感、ハイライト。ダイヤルの全一覧は下の表にある。</td></tr>
+  </tbody></table>
+</section>
+
+<section id="tokens">
+  <h2>トークン</h2>
+  <p class="sub">
+    色と寸法はすべて Theme の <code>GoHud</code> タイプの下に名前で置かれている。
+    数値を書かないのが原則だ — 名前なら、テーマを差し替えたときに一緒に付いてくる。
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # 色
+GoUi.metric(GoTheme.GAP)               # 寸法(dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # 文字役割ごとのサイズ
+GoUi.box(GoTheme.BOX_CARD)             # StyleBox の複製</code></pre>
+
+  <h3>色</h3>
+  <table>
+    <thead><tr><th>名前</th><th>使いどころ</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>画面の地</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>パネルの3層 — パネル、カード、浮いたセル</td></tr>
+      <tr><td><code>border</code></td><td>カードとボタンの枠</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>文字の3段階 — 本文、補助、控えめ</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>アクセント色と、その上に載せる文字の色</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>状態を表す<b>文字</b>の色</td></tr>
+      <tr><td><code>*_fill</code></td><td>同じ状態を<b>塗り</b>として使う色 — バーなど面積の大きい場所</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>ポップアップ背後の幕、影、バーの溝</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b><code>*_fill</code> がある理由。</b> 意味は同じでも、求められるものが正反対だからだ。<code>warning</code>
+    は文字として使うなら明るい背景で読める程度に暗くなければならず、経験値バーの塗りとして使うなら目に留まる
+    程度に明るくなければならない。1つのトークンで両方は満たせない — 実際にライトテーマのバーは茶色になった。
+    <code>_fill</code> を持たないテーマは自動で元の名前に落ちるので、これらのトークン以前のテーマもそのまま動く。
+  </div>
+
+  <h3>寸法(dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3>文字の役割</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — 役割が指すのは<b>大きさ</b>であって
+    用途ではない。「見出し」ではなく「いちばん大きい文字」だ。そうしておけば、ある画面がそれを別の目的で
+    使っても尺度は崩れない。
+  </p>
+
+  <h3>タイプバリエーション</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+<section id="skin">
+  <h2>スキン — テーマが届かない場所</h2>
+
+  <table>
+    <thead><tr><th>メソッド</th><th>決めるもの</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>カードとパネルの面、浮かぶサーフェス、ゲームやマップの上に重ねるピル</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>チップのパネルと、<b>その上で読めるままのラベル色</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>クイックスロットの面とその文字</td></tr>
+      <tr><td><code>disc_box</code></td><td>アバターやバッジの背後にある円</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>インラインのアラート、プレースホルダー、セグメント選択</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>コーチツアーが対象の周りに置く印</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td><b>直接描かれるもの</b> — スティックとその指し示し</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>区切り線とセクション見出し</td></tr>
+      <tr><td><code>badge_box</code></td><td>クイックスロットのバッジ — 個数と残り時間</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>バーの塗り（溝に対して 3:1 に届かない塗りには輪郭を付ける）とスナックバー</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # 位置の計算はウィジェット側で済んでいる — ここでやるのは描画だけだ
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3>StyleBoxFlat では作れない形</h3>
+  <table>
+    <thead><tr><th>クラス</th><th>描くもの</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>斜めに切り落とした角、1辺だけ太いアクセント縁、外へにじむ発光</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>四隅の印だけを引き、中身は囲わない</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>鍛造の枠 — リベット、角の彫刻、ベベルのハイライト、そして鉄・革・羊皮紙の質感</td></tr>
+    </tbody>
+  </table>
+  <p>3つともほかの StyleBox と同じように Theme リソースへ保存される — だからテーマが形まで変えられる。</p>
+
+  <div class="note warn">
+    <b>余白は <code>content_margin_*</code> で与える。</b> GDScript で StyleBox を継承すると
+    <code>_get_style_margin()</code> は呼ばれない（Godot 4.7 で実測）。組み込みのフィールドを埋めないと、
+    中身が枠に貼り付いてしまう。
+  </div>
+</section>
+
+<section id="own">
+  <h2>自分のプリセットを、ファイル1枚で</h2>
+  <p class="sub">
+    テーマを1つ足すのに、かつては4か所を手で編集する必要があった — ビルダーのパレット、形、スキン、
+    プリセットのリソース。いまは1つのコマンドがすべてを置いてくれる。
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # テーマの .tres + コントロールの絵
+godot --headless --path . --import                  # 新しい絵を一度だけインポートする
+GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リストにも出てくる</code></pre>
+  <p>
+    最初の行が <code>themes/palettes/neon.json</code> と <code>themes/presets/neon.tres</code> を書く。
+    この JSON には<b>継承元テーマのすべての値</b>が省略なしで書き出されるので、そのまま「変えられるものの一覧」
+    にもなる。キーを消せば親の値のまま、書けば上書きだ。プリセットは <code>themes/presets/</code> を
+    <b>走査して</b>見つけるので、登録コードの変更はいらない — プロジェクト設定のドロップダウンにも同じように載る。
+  </p>
+
+  <h3>変えられるもの — 1ページで</h3>
+  <table>
+    <thead><tr><th>場所</th><th>何を</th><th>どう書くか</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>継承元のテーマ</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … あるいは別の JSON テーマ。書かなかったキーはその値を継承し、循環すると失敗する</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>背景 · 3つのサーフェス · 枠 · 3段階の文字色 · アクセント · 4つの状態色 · 幕 · 影 · バーの溝</td><td><code>"#RRGGBB"</code>、アルファ付きは <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>塗り専用の鮮やかな色 <code>*_vivid</code></td><td>文字色が暗くならざるを得ないときでもバーは鮮やかに保つ — 書き忘れるとビルダーが教えてくれる</td></tr>
+      <tr data-group="palette"><td>読みやすさ</td><td><b>手で調整しない。</b> 文字・枠・アクセント・その上のラベルは、しきい値を超えるまでビルダーが押し上げる — アクセントだけを変えても検査は通ったままだ</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code>（丸み） · <code>cut</code>（面取りした角） · <code>medieval</code>（鍛造の枠）</td></tr>
+      <tr data-group="shape"><td>寸法</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — トークンも一緒に動くので、パネルとウィジェットの計算が食い違わない</td></tr>
+      <tr data-group="shape"><td><code>cut</code> 専用</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code>(<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td><code>medieval</code> 専用</td><td><code>material</code>（0 鉄 · 1 革 · 2 羊皮紙） · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>、<code>subtitle</code>、<code>caption</code>、<code>body</code>、<code>button</code> をアドオン内の <code>res://</code> フォントファイルへ割り当てる</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — コードが自分で描く場所（スティック、スロット、バッジ、コーチマークのリング、チップ、区切り線）の系統</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — それらの場所の<b>数値</b>。スロットの枠の太さと色味、バッジの余白、チップとアラートの不透明度、スティックのリングの太さと不透明度、SF の面取り寸法、発光とブラケット</td><td>親の値はすべて JSON に書き出される。ビルダーがそれを <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> へ書き込む — <b>スキンのコードには触れない</b>。描画そのものを変えたいときだけ <code>--new-skin</code> を付け、<code>GoSkin</code> のサブクラスの雛形を作らせる</td></tr>
+      <tr><td><code>icons</code></td><td>アイコンセット</td><td><code>GoIconSet</code> リソースへの <code>res://</code> パス — 省略すると JSON の親から引き継ぐ</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>選択リストでの見せ方</td><td>真偽値 · 文字列</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ダイヤル一覧</h3>
+  <p>
+    下の表は <code>tools/make_site.py</code> がスキンスクリプトの <code>@export</code> 行から<b>直接</b>読んで埋める —
+    ダイヤルを足したり既定値を変えたりすれば、表も付いてくる。JSON の <code>skin.dials</code> の下では、この名前を使う。
+    既定値が <code>14</code> と書かれているダイヤルは整数、<code>10.0</code> と書かれているものは浮動小数点数だ。
+    JSON にはどちらの形で書いてもよく、ビルダーがスクリプトの型に合わせて変換する。
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4>デフォルトスキン <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="既定値">0.16</td><td>チップのパネルの塗りの不透明度。</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="既定値">0.45</td><td>チップのパネルの縁の不透明度。</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="既定値">0.1</td><td>アラートボックスのパネルが状態色へどれだけ寄るか。</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="既定値">0.24</td><td>クールダウン中のクイックスロットのパネルがアクセント色へ寄る度合い。</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="既定値">0.08</td><td>平常時のクイックスロットのパネルがアクセント色へ寄る度合い。</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="既定値">2</td><td>クールダウン中のクイックスロットの枠の太さ(dp)。</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="既定値">1</td><td>平常時のクイックスロットの枠の太さ(dp)。</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="既定値">5</td><td>バッジ（個数・残り時間）の内側の横余白(dp)。</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="既定値">1</td><td>バッジの内側の縦余白(dp)。</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="既定値">0.6</td><td>バッジのパネルの縁の不透明度。</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="既定値">0.45</td><td>浮かぶカード（コーチマーク、プロンプトカード）の影の不透明度。</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="既定値">14</td><td>浮かぶカードの影のぼかし(dp)。</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="既定値">4</td><td>浮かぶカードの影が下へずれる距離(dp)。</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="既定値">10.0</td><td>SF の面取りパネルのように、影ではなく発光を使う浮かぶパネルの発光距離(dp)。</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="既定値">0.42</td><td>スティックの土台の円の不透明度。</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="既定値">0.45</td><td>スティックのリングの不透明度。</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="既定値">2.0</td><td>スティックのリングの太さ(dp)。</td></tr>
+    </tbody>
+  </table>
+  <h4>SF スキン <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="既定値">7.0</td><td>チップのパネルの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="既定値">5.0</td><td>スケルトンのパネルの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="既定値">8.0</td><td>アラートボックスの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="既定値">8.0</td><td>セグメント選択の面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="既定値">6.0</td><td>クイックスロットのパネルの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="既定値">0.24</td><td>アバターや円の面取り = 直径 × この比率。</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="既定値">0.45</td><td>クールダウンが回っているスロットの発光の不透明度。</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="既定値">6.0</td><td>クールダウンが回っているスロットの発光距離(dp)。</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="既定値">12.0</td><td>コーチマークの照準ブラケットの腕の長さ(dp)。</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="既定値">2.0</td><td>コーチマークの照準ブラケットの線の太さ(dp)。</td></tr>
+    </tbody>
+  </table>
+  <h4>中世スキン <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="既定値">4.0</td><td>中世のクイックスロットの枠の角丸(dp)。</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="既定値">0.035</td><td>クイックスロットの内側にうっすら入る革の模様の不透明度。</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="既定値">1.0</td><td>クイックスロットの角に付く金属装飾の倍率。メニューの枠は shape.ornament_scale を使う。</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="既定値">0.18</td><td>クイックスロットの縁に沿う金属のハイライトの強さ。</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="既定値">1</td><td>クイックスロットに小さな金属リベットを出すか。0 で隠し、1 で表示。</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3>スキンを継承する（任意）</h3>
+  <p>スキンにあるのは、テーマと形では届かないものだけだ — スティックの六角形、スロットのバッジ、
+    コーチマークの照準ブラケット。<code>GoSkin</code> を継承してそれらのメソッドだけを上書きし、JSON の
+    <code>skin</code> をそのリソースへ向ける。色だけのテーマなら、この手順はいらない。</p>
+
+  <div class="note">
+    <b>約束を守らせるのは検査だ。</b> <code>tools/check_scaffold.sh</code> は実行のたびに使い捨てのテーマを作り —
+    アクセントを変え、半径を 4 にして — 生成・トークンの伝播・コントラスト検査の通過までを確かめてから消す。
+    最初の実行では、アクセントだけを変えたテーマが<b>8組</b>で不足していた。ビルダーが文字色は押し上げるのに、
+    アクセントは書かれたまま使っていたのだ。いまはアクセントと、その上のラベルも押し上げる。
+  </div>
+</section>
+
+<section id="contrast">
+  <h2>読みやすさは測って決める</h2>
+  <p class="sub">
+    「きれい」は好みだが、<b>「読める」は測れる。</b> 薄い灰色の文字は良いモニタでは平気に見えて、
+    日中の屋外ではスマートフォンから消える — 目で選んでいれば、いつか必ずそうなる。
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>対象</th><th>必要な比</th></tr></thead>
+    <tbody>
+      <tr><td>本文の文字</td><td>4.5 : 1</td></tr>
+      <tr><td>大きな文字(24px 以上)</td><td>3 : 1</td></tr>
+      <tr><td>アクセントの枠とアイコン</td><td>3 : 1</td></tr>
+      <tr><td>装飾の枠</td><td>2 : 1 — WCAG は装飾に 3:1 の規則を課していない</td></tr>
+      <tr><td>隣り合う面</td><td>1.12 : 1 — カードが背景と別物だと分かる程度</td></tr>
+    </tbody>
+  </table>
+
+  <h3>同系色の文字を同系色の淡い面に載せる</h3>
+  <p>
+    この落とし穴は、このコードベースで<b>3度</b>現れた — 押されたボタン（アクセントのパネルにアクセントの文字）、
+    危険ボタン、そしてチップだ。色見本の上ではよく見えるのに、測った瞬間に崩れる。
+    2つが同じ色相を共有していて、明度の差がないからだ。
+  </p>
+  <p>
+    だからラベルの色は<b>手で選ばない</b>。テーマのビルダーと <code>GoSkin</code> はそれぞれ、文字が実際に載る
+    パネルの上でしきい値を超えるまで明度だけを押し上げる。色相と彩度は残るので、パレットは持ち味を保ち、
+    変更してもコントラストは保たれる。
+  </p>
+
+  <h3>文字として読む色と、面として塗る色は求めるものが逆だ</h3>
+  <p>
+    ライトテーマでは、警告色は<b>文字として</b>読めるよう暗くしなければならない(<code>#96500A</code>)。
+    バーの塗りがそれを受け継ぐと、経験値バーは<b>茶色</b>になる。色だけでは直せない。黄色はそもそも明るく、
+    灰色の溝に対して 3:1 をまったく満たさないし、溝を暗くすると<b>もっと悪くなる</b>(1.52 → 1.06)。
+  </p>
+  <p>
+    そこで両者を切り離した。<b>色は鮮やかなまま</b> — パレットは <code>warning_vivid</code> のような
+    塗り専用の色を持つ。<b>コントラストは縁が担う</b> — <code>GoSkin</code> は、溝に対して 3:1 に届かない塗りに
+    1dp の輪郭を描く。こうして「どれだけ溜まっているか」は読めるままになる。
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # 文字として読む色
+    warning_vivid=hexc("F2A007"),   # バーに塗る色
+)</code></pre>
+  <div class="note">
+    <b>書き忘れは報告される。</b> <code>*_vivid</code> がないまま塗りが暗くなると、ビルダーは
+    <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code> と出力する（ビルダーが実際に出す文言）。
+    黙って劣化していた場所が、いまは声を上げる。
+  </div>
+
+  <h3>浮かぶパネルは、背後に何があるか知りようがない</h3>
+  <p>
+    HUD はゲームの<b>上</b>に描かれる — 雪原かもしれないし、洞窟かもしれない。パネルが半透明なら背後のものが
+    透けて<b>パネルの色そのものを変え</b>、文字のコントラストまで道連れにする。不透明度 82% では、明るい背景の上で
+    ダークテーマの控えめな文字が <code>3.74:1</code> まで落ちた — 最低基準を下回っている。
+  </p>
+  <p>
+    そこで半透明のパネルは<b>純白と純黒</b>を背後に置いて測る。ゲームの場面が出しうる最悪がその2つだからだ。
+    同梱テーマの HUD パネルは、ガラスのような見え方を保ったまま基準を通る不透明度 (92%) にしてある。
+  </p>
+  <p>
+    同じ理由で<b>アイコンの色も固定していない</b>。クイックスロットのグリフは白で決め打ちされていて、
+    ライトテーマで <code>1.11:1</code> と測れた — いまはラベルとまったく同じように、載っているパネルに従う。
+  </p>
+
+  <div class="note">
+    <b>2つの検査、2つの守備範囲。</b> <code>check_contrast.py</code> はテーマファイルを読む。
+    スキンが<b>実行中に</b>混ぜる色（チップ、スロット）は、Godot の中で走るテストスイートの
+    <code>skin contrast</code> の節が測る。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="./">← 概要</a> · <a href="widgets.html">ウィジェット →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+</body>
+</html>

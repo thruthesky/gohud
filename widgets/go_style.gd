@@ -623,12 +623,31 @@ static func card(accent := Color.TRANSPARENT) -> PanelContainer:
 
 ## 게임 화면 위에 **떠 있는 판** 한 장 — HUD 의 도크·상태 바처럼 월드 위에 얹는 자리다(내용은 부르는 쪽이 채운다).
 ## `card()` 의 HUD 짝이며, 모양은 스킨의 떠 있는 판을 그대로 쓴다(각진 판은 그림자 대신 발광이다).
-static func hud_panel(accent := Color.TRANSPARENT) -> PanelContainer:
+##
+## [param pad_x]·[param pad_y] 는 **판 안쪽 여백**이다(음수면 스킨이 준 여백 그대로). HUD 는 손가락이
+## 닿는 기하가 화면마다 정해져 있어 여백을 부르는 쪽이 준다 — 🛑 그때 `padding()` 칸을 **또** 두르지
+## 말 것. 판 여백과 겹쳐 내용 폭이 두 배로 깎이고, 좁은 칸의 말줄임 글자가 통째로 사라진다
+## (2026-09-16 파티 도크에서 이끌기 칩이 27 → 11 로 접혔다).
+static func hud_panel(accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "HudPanel"
 	node.theme = GoUi.theme()
-	node.add_theme_stylebox_override(&"panel", GoUi.skin().floating_box(GoTheme.BOX_HUD, accent))
+	var face := GoUi.skin().floating_box(GoTheme.BOX_HUD, accent)
+	face_padding(face, pad_x, pad_y)
+	node.add_theme_stylebox_override(&"panel", face)
 	return node
+
+
+## 판 안쪽 여백을 지정한 값으로 바꾼다 — 음수인 쪽은 판이 가진 값을 그대로 둔다.
+## 스킨이 준 커스텀 판에도 `StyleBox` 의 같은 속성이 있으므로 모양(테두리·발광·모서리)은 그대로다.
+static func face_padding(face: StyleBox, pad_x := -1.0, pad_y := -1.0) -> void:
+	if face == null: return
+	if pad_x >= 0.0:
+		face.content_margin_left = pad_x
+		face.content_margin_right = pad_x
+	if pad_y >= 0.0:
+		face.content_margin_top = pad_y
+		face.content_margin_bottom = pad_y
 
 
 ## 칩과 **같은 알약 판**에 내용을 채우는 빈 컨테이너 — 한 줄짜리 칩으로는 모자란 자리(이름·레벨·게이지가 함께 드는
@@ -788,6 +807,15 @@ static func _chip_face(color: Color, urgent: bool) -> StyleBox:
 static func restyle_chip(node: PanelContainer, ink: Color, urgent := false) -> void:
 	if node == null: return
 	node.add_theme_stylebox_override(&"panel", _chip_face(ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY), urgent))
+
+
+## **이미 만든 라벨**에 칩 판을 입힌다 — 폭을 직접 재서 칸을 잡는 자리(HUD 상태 바의 배지)처럼 `chip()` 의
+## 컨테이너를 쓸 수 없을 때. 글자색도 판 위에서 읽히도록 맞춘다.
+static func style_chip_label(node: Label, accent: Color, urgent := false) -> void:
+	node.theme = GoUi.theme()
+	var face := _chip_face(accent, urgent)
+	node.add_theme_stylebox_override(&"normal", face)
+	node.add_theme_color_override(&"font_color", GoUi.skin().chip_ink(accent))
 
 
 ## 🔑 **칩처럼 생긴 버튼** — 틴트 알약 판을 모든 상태에 입힌다. HUD 의 상태 버튼(따라가기·나가기), 알림 배지,
