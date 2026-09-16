@@ -539,10 +539,12 @@ cd examples/demo && godot
 ```
 
 Nothing to set up: if the add-on link or the import cache is missing, the app links, imports and
-reopens itself once, then lands on its **home screen**. Four rows open the widget gallery, the
+reopens itself once, then lands on its **home screen**. Four cards open the widget gallery, the
 guided tour, the showcase screen and the medieval look inside the same window — press `1`–`4`, or
-click. Below them the home screen holds a card of live widgets to press, and one small card per
-class with its one-line job and the line of code that does it.
+click. Around them the page is itself a tour of the kit: a live HUD beside the pitch, six cards of
+real widgets to press, and all 19 classes grouped by the job they do, each with the one line of
+code that uses it. It is built from add-on widgets alone, holds its text to a readable measure,
+folds to one column on a phone, and repaints with the preset picker.
 
 **Start demo**, on the tour, plays 15 chapters with a visible cursor using real input — buttons,
 fields, menus, scrolling, HUDs, dialogs, forms and more. **Explore widgets**, or any row in the

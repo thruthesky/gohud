@@ -99,7 +99,7 @@ func _live_widgets() -> void:
 
 	var pressed := 0
 	for button in _buttons(home):
-		if button.text in ["Primary", "Notice", "Bottom sheet", "Prompt card"]:
+		if button.text in ["Primary", "Notice", "Sheet", "Prompt"]:
 			button.pressed.emit()
 			await settle(4)
 			pressed += 1
