@@ -29,10 +29,26 @@ another project.godot".
 | `3` | **Showcase screen** — six cards on one screen | `examples/demo/demo.gd` |
 | `4` | **Medieval look** — the same widgets, another preset | `examples/medieval/medieval.gd` |
 
-Under those rows the home screen puts the kit itself within reach: one card of live widgets
-(button tones, an HP bar with a slider, a toggle, a segmented control, quick slots, a notice, a
-dialog, a bottom sheet, a prompt card and a coach-mark tour), and then one small card per class
-carrying a one-line description and the line of code that uses it.
+The page is laid out in four numbered parts, and the whole of it is built from add-on widgets:
+
+- **Hero** — the wordmark, a preset picker, and next to the pitch a *live* HUD: three `GoBar`
+  gauges and four `GoSlot` quick slots. Press a slot and the health bar answers.
+- **01 Pick a screen** — the four cards above, each one a `style_choice_card` button carrying an
+  icon disc, its shortcut, its blurb and the source file it opens.
+- **02 Try it right here** — six cards of real widgets: button tones and icon buttons, a text
+  field with a toggle and a slider, segments with a picker and a colour grid, an avatar with list
+  rows and a progress bar, the notice / dialog / sheet / prompt / coach-mark buttons, and a live
+  activity card that prints every callback they fire.
+- **03 The pieces** — all 19 classes grouped by the job they do (foundation, building a screen,
+  talking to the player, the game HUD), each with a one-line description and the line of code that
+  uses it.
+- **04 Where to go next** — README, docs, the example sources and `/gohud features`.
+
+Body text is held to a readable measure (`PAGE_MAX_WIDTH`, 1120 dp) instead of stretching to the
+window, and every block sits in a responsive grid, so a wide window gains columns while the lines
+stay the same length. On a phone the grids fold to one column and the wordmark row splits in two.
+A faint grid and two soft blooms sit behind it all, drawn from the current theme's tokens, so the
+backdrop changes with the preset.
 
 The screen you pick opens inside the same window, with a bar across the top naming it and the
 file it lives in; **Home** goes back. To skip the home screen entirely:

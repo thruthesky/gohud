@@ -11,14 +11,20 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `addons/gohud` link or the import cache is missing — the state that used to leave an empty window and one
   `Identifier "GoUi" not declared` line. In that state it says what is missing, makes the link, imports the project
   once and reopens the window; otherwise it hands straight over to `home.tscn`.
-  The home screen is built from nothing but add-on widgets and opens four screens inside the same window — the
-  widget gallery, the 15-chapter guided tour, the showcase screen and the medieval look (`1`–`4`, or a row; a bar
-  across the top names the screen and its source file, and **Home** returns). Under those rows sit a card of live
-  widgets to press — button tones, an HP bar with a slider, a toggle, a segmented control, quick slots, a notice, a
-  dialog, a bottom sheet, a prompt card and a coach-mark tour of the page itself — and one small card per class
-  carrying its one-line job and the line of code that does it. `godot -- --open=<gallery|tour|showcase|medieval>`
-  skips the home screen; recording flags (`--auto`, `--cinema`, `--exit`) open the tour with no shell around it, so
-  `run.sh --record` is unchanged. `shot.gd` now takes `SHOT_SCENE` and defaults to the home screen.
+  The home screen is built from nothing but add-on widgets, and it is itself a tour of the kit. Four
+  `style_choice_card` buttons open the widget gallery, the 15-chapter guided tour, the showcase screen and the
+  medieval look inside the same window (`1`–`4`, or a click; a bar across the top names the screen and its source
+  file, and **Home** returns). Beside the pitch sits a live HUD — three `GoBar` gauges and four `GoSlot` quick slots
+  that answer each other. Below it, six cards of widgets to press (button tones and icon buttons; a field, a toggle
+  and a slider; segments, a picker and a colour grid; an avatar, list rows and a progress bar; the notice, dialog,
+  sheet, prompt and coach-mark buttons; and a live activity card that prints every callback they fire), then all 19
+  classes grouped by the job they do, each with its one-line description and the line of code that uses it.
+  Body text is held to a readable measure (1120 dp) rather than stretched to the window, every block sits in a
+  responsive grid so a wider window gains columns instead of longer lines, the wordmark row splits in two on a
+  phone, and a faint grid with two soft blooms — drawn from the current theme's own tokens — sits behind it all.
+  `godot -- --open=<gallery|tour|showcase|medieval>` skips the home screen; recording flags (`--auto`, `--cinema`,
+  `--exit`) open the tour with no shell around it, so `run.sh --record` is unchanged. `shot.gd` now takes
+  `SHOT_SCENE` and defaults to the home screen.
 
 - **`GoStyle.style_choice_card(node, accent, selected, toggle, dim_disabled, filter)`** gives a `Button` the faces of a
   pick-one card. Every state has zero content margin — the card's inner `MarginContainer` pads once, so the chosen
