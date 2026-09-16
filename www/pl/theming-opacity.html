@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krycie — gra za panelem — gohud</title>
+<meta name="description" content="Wyskakujące okna, okna dialogowe, arkusze, karty, panele HUD, alerty i snackbary rysują swoje lico z kryciem 80%.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Przegląd</a>
+      <a href="install.html">Instalacja</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widżety</a>
+      <a href="theming.html" aria-current="page">Motywy</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Polski</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-opacity.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-opacity.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-opacity.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="theming-opacity.html" hreflang="pl" lang="pl" aria-current="true">Polski</a>
+          <a href="../it/theming-opacity.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-opacity.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-opacity.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Krycie — gra za panelem</h1>
+    <p class="lead"><a href="theming.html">← Motywy</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Motywy">
+  <!-- subnav:begin -->
+  <a href="theming.html">Motywy</a>
+  <a href="theming-presets.html">Trzy warstwy</a>
+  <a href="theming-tokens.html">Tokeny</a>
+  <a href="theming-opacity.html" aria-current="page">Krycie — gra za panelem</a>
+  <a href="theming-skins.html">Skórki — tam, gdzie motyw nie sięga</a>
+  <a href="theming-own.html">Twój własny preset — jeden plik</a>
+  <a href="theming-contrast.html">Czytelność się mierzy</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    Wyskakujące okna, okna dialogowe, arkusze, karty, panele HUD, alerty i snackbary rysują swoje lico
+    z <b>kryciem 80%</b>. Walka toczy się dalej za oknem potwierdzenia; mapa prześwituje pod arkuszem
+    ekwipunku. W grze to nie ozdoba — to właśnie trzyma gracza w orientacji. Panel do końca lity wymazuje
+    miejsce, w którym gracz stał, w chwili otwarcia okna.
+  </p>
+
+  <div class="note">
+    <b>Rzednie tylko lico.</b> Tekst, ikony, przyciski, plakietki i szybkie sloty zostają ostre, tak samo
+    obramowania i cienie. Półprzezroczysty panel czyta się jako szkło tylko dopóki jego obrys jest wyraźny;
+    przygaś obrys, a nie poznasz, gdzie panel się kończy. Przygaś treść, a interfejsu nie da się odczytać
+    w ogóle — to nie jest przezroczyste okno, to błąd. Dlatego wartość nigdy nie jest nakładana przez
+    <code>modulate.a</code>.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Pięć warstw, od najbardziej szczegółowej</h3>
+  <table>
+    <thead><tr><th>Kolejność</th><th>Gdzie</th><th>Jednostka</th><th>Zasięg</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>argument przy tym wywołaniu — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>ułamek <code>0.0–1.0</code></td><td>jedno okno</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>ułamek <code>0.0–1.0</code></td><td>jeden rodzaj panelu, w całym projekcie</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>procent</td><td>projekty, które trzymają wszystkie wymiary w jednym miejscu</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>ułamek <code>0.0–1.0</code></td><td>wszystkie panele naraz</td></tr>
+      <tr><td>⑤</td><td>motywowe <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>procent</td><td>to, co rozstrzyga wygląd — <b>źródło prawdy</b></td></tr>
+    </tbody>
+  </table>
+  <p>Gdy nie ustawiono żadnej z nich, wartość wynosi 100 — więc w starszym motywie nic się nie zmienia.</p>
+
+  <div class="note">
+    <b>Krycie wszędzie jest ułamkiem — poza motywem.</b> Każde pole i każdy argument <code>alpha</code>
+    bierze 0.0–1.0, te same jednostki co <code>Color.a</code> i <code>modulate.a</code>, a wartość ujemna
+    znaczy „nie ustawiono”. Jedynym wyjątkiem są stałe motywu, bo stała <code>Theme</code> nie pomieści
+    liczby zmiennoprzecinkowej: one i kanał, który je nadpisuje (<code>metric_overrides</code>, dzielący
+    z motywem nazwy i całkowity typ), zapisuje się jako <code>80</code>. Nic poza tym.
+  </div>
+
+  <pre><code># Tylko jedno okno — okno potwierdzenia, które nie może zasłonić walki za nim
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # pola @export też są ułamkami
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Na rodzaj — HUD zostaje prawie lity, bo jego tekst leży wprost na świecie
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # okna dialogowe i arkusze mogą odetchnąć
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # przerysowuje widżety, które są już otwarte
+
+# Cały projekt — zatłoczony świat chce paneli z powrotem litych
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # rozstrzygnięty ułamek, np. 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Co idzie za wartością, a co nie</h3>
+  <table>
+    <thead><tr><th>Idzie za nią — kontenery</th><th>Ignoruje ją — to, co naciskasz, i znaczniki</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (jedna powłoka za oknami dialogowymi, arkuszami i listami rozwijanymi) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>każdy przycisk · <code>GoSlot</code> (szybkie sloty) · <code>GoBadge</code> · kontrolki segmentowe · komórki wyboru · chipy · koła i awatary</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>cały tekst i wszystkie ikony</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Przycisk, którego stan wyblakł, przestaje mówić, czym jest, a plakietka istnieje po to, żeby dwa znaki
+    dały się odczytać — żadne z nich nie jest kontenerem, więc żadne nie idzie za wartością.
+  </p>
+
+  <div class="note">
+    <b>Menu wyskakujące zostają lite</b> (<code>popup_alpha</code> 100). Silnik może umieścić
+    <code>PopupMenu</code> we własnym <code>Window</code>, a tam system nie składa go z grą:
+    półprzezroczystość wychodzi czarna, nie prześwitująca. Obniżaj ją tylko w projektach, które osadzają
+    swoje podokna (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Trzy szczegóły, które wzięły się z prawdziwych ekranów</h3>
+  <ul>
+    <li>
+      <b>Wartość mnoży, nie zastępuje.</b> Domyślne lico HUD ma już alfę 0.92, więc
+      <code>hud_alpha</code> 80 ląduje na 0.736 — motyw, który celowo zrobił lico półprzezroczystym,
+      zachowuje tę decyzję. Druga strona: nałóż ją dwa razy, a panel zblednie dwa razy — dlatego alfa
+      mnożona jest w dokładnie jednym miejscu (<code>GoSkin.surface_box()</code>), a każda inna funkcja
+      lica przekazuje argument dalej, zamiast przygaszać własny wynik.
+    </li>
+    <li>
+      <b>Kolor, który podałeś, to kolor, który dostajesz.</b> <code>GoStyle.plate(…, fill)</code> trzyma
+      jawne wypełnienie dokładnie takim, jakie dostało: <code>Color(ink, 0.14)</code> już podaje swoją alfę,
+      a wmnożenie w nie krycia panelu przycięłoby zamiar wywołującego dwa razy.
+      <code>GoStyle.floating(…, opaque = true)</code> ignoruje wartość z tego samego powodu — wypełnienie
+      lica na lity to cały sens tej flagi.
+    </li>
+    <li>
+      <b>Panele, których gohud nie zbudował, dostają tę samą regułę.</b> <code>GoStyle.fade_panel(node)</code>
+      — po tym, jak węzeł znajdzie się w drzewie, żeby odczytał motyw, który dziedziczy. Jest idempotentna:
+      pierwotne lico zostaje zapisane i każde wywołanie liczy od niego na nowo, więc powtarzane
+      przerysowania nigdy się nie sumują. Po podmianie motywu <code>GoStyle.forget_face(node)</code> kasuje
+      tę pamięć, żeby kolejne wywołanie wzięło nowe lico.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Własne lica też bledną — i to jest ta część, która psuje się po cichu</h3>
+  <p>
+    Panel ze ściętymi narożnikami (<code>GoStyleBoxCut</code>) i kuta rama
+    (<code>GoStyleBoxMedieval</code>) nie są <code>StyleBoxFlat</code>; rysują się same. Włóż krycie tylko
+    w gałąź flat, a te motywy po cichu je zignorują, choć każdy test oparty na wartościach dalej
+    przechodzi. Obie przygaszają swoje tło i trzymają poświatę, nity, grawer w narożnikach oraz fazy na
+    pełnej sile — a faktura i faza średniowiecznego lica zawsze były proporcjonalne do alfy jego tła, więc
+    rzednieją razem z panelem.
+  </p>
+  <p>
+    A to szersza myśl: <code>bg_color.a == 0.8</code> to liczba. <em>Świat prześwituje, a tekst dalej da
+    się odczytać</em> — to jest wymaganie. gohud sprawdza pierwsze w swoim bezokiennym zestawie testów,
+    a drugie rysując panele na ukośnych pasach na wirtualnym monitorze
+    (<code>tests/gohud_alpha_shot.gd</code>) — na licu płaskim, ściętym i kutym, w motywie ciemnym
+    i jasnym.
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← Tokeny</a> · <a href="theming-skins.html">Skórki — tam, gdzie motyw nie sięga →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

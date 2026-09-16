@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-own.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-own.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-own.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-own.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-own.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-own.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-own.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-own.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-own.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-own.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-own.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-own.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-own.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-own.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-own.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-own.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-own.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-own.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preset của riêng bạn — một file — gohud</title>
+<meta name="description" content="Thêm một theme trước đây có nghĩa là sửa tay bốn chỗ — bảng màu của trình dựng, phần hình dáng, một skin, một tài nguyên preset.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Tổng quan</a>
+      <a href="install.html">Cài đặt</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html" aria-current="page">Theme</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Tiếng Việt</summary>
+        <div class="langs-list">
+          <a href="../theming-own.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-own.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-own.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-own.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-own.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-own.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-own.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-own.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-own.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-own.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-own.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-own.html" hreflang="it" lang="it">Italiano</a>
+          <a href="theming-own.html" hreflang="vi" lang="vi" aria-current="true">Tiếng Việt</a>
+          <a href="../id/theming-own.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-own.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-own.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-own.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Preset của riêng bạn — một file</h1>
+    <p class="lead"><a href="theming.html">← Theme</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Theme">
+  <!-- subnav:begin -->
+  <a href="theming.html">Theme</a>
+  <a href="theming-presets.html">Ba lớp</a>
+  <a href="theming-tokens.html">Token</a>
+  <a href="theming-opacity.html">Độ đục — game ở phía sau tấm nền</a>
+  <a href="theming-skins.html">Skin — nơi Theme không với tới</a>
+  <a href="theming-own.html" aria-current="page">Preset của riêng bạn — một file</a>
+  <a href="theming-contrast.html">Dễ đọc là thứ đo được</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="own">
+  <p class="sub">
+    Thêm một theme trước đây có nghĩa là sửa tay bốn chỗ — bảng màu của trình dựng, phần hình dáng, một skin,
+    một tài nguyên preset. Giờ một lệnh đặt tất cả vào đúng chỗ.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # file .tres của theme + hình vẽ cho các control
+godot --headless --path . --import                  # import phần hình vẽ mới một lần
+GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hiện ra trong danh sách chọn</code></pre>
+  <p>
+    Dòng đầu ghi ra <code>themes/palettes/neon.json</code> và <code>themes/presets/neon.tres</code>. File
+    JSON mang theo <b>mọi giá trị của theme mà nó kế thừa</b>, viết ra đầy đủ, nên nó kiêm luôn bản
+    liệt kê những gì bạn đổi được: xóa một khóa để giữ giá trị của theme cha, viết một khóa để ghi đè. Preset
+    được tìm bằng cách <b>quét</b> <code>themes/presets/</code>, nên không phải sửa code đăng ký nào cả — danh sách
+    thả xuống trong project setting cũng tự thấy nó.
+  </p>
+
+  <h3 id="what-you-can-change-on-one-page">Những gì bạn đổi được — gói trong một trang</h3>
+  <table>
+    <thead><tr><th>Ở đâu</th><th>Cái gì</th><th>Bằng cách nào</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>theme cha</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … hoặc một theme JSON khác. Khóa bỏ trống thì kế thừa giá trị của nó; kế thừa thành vòng tròn sẽ báo lỗi</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>nền · ba lớp bề mặt · viền · ba sắc độ chữ · màu nhấn · bốn màu trạng thái · lớp phủ mờ · bóng đổ · rãnh thanh</td><td><code>"#RRGGBB"</code>, alpha viết là <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>màu rực chỉ dùng để tô <code>*_vivid</code></td><td>giữ cho thanh luôn tươi ngay cả khi màu chữ buộc phải tối đi — bỏ sót một cái thì trình dựng sẽ báo</td></tr>
+      <tr data-group="palette"><td>độ dễ đọc</td><td><b>không chỉnh bằng tay.</b> Chữ, viền, màu nhấn và nhãn nằm trên nó đều được trình dựng đẩy cho tới khi vượt ngưỡng — chỉ đổi mỗi màu nhấn thì các lượt kiểm tra vẫn qua</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (bo tròn) · <code>cut</code> (góc vát) · <code>medieval</code> (khung rèn)</td></tr>
+      <tr data-group="shape"><td>kích thước</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — các token đi theo, nên tấm nền và phần tính toán của widget không bao giờ lệch nhau</td></tr>
+      <tr data-group="shape"><td>chỉ với <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>chỉ với <code>medieval</code></td><td><code>material</code> (0 sắt · 1 da thuộc · 2 giấy da) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> gán vào các file font <code>res://</code> nằm trong add-on</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — dòng skin cho những chỗ code tự vẽ lấy (cần điều khiển, ô nhanh, badge, vòng coach mark, chip, đường kẻ chia)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — <b>các con số</b> của những chỗ đó: bề rộng và sắc pha của viền ô nhanh, phần đệm của badge, độ đậm của chip và alert, bề rộng và độ đậm của vòng cần điều khiển, cỡ vát góc, ánh sáng tỏa và dấu góc của sci-fi</td><td>Mọi giá trị của theme cha đều được viết rõ trong file JSON. Trình dựng ghi chúng vào <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>không đụng tới code skin nào</b>. Chỉ khi muốn đổi chính hình vẽ bạn mới chạy <code>--new-skin</code>, lệnh này dựng khung sẵn cho một lớp con của <code>GoSkin</code></td></tr>
+      <tr><td><code>icons</code></td><td>bộ biểu tượng</td><td>một đường dẫn <code>res://</code> tới tài nguyên <code>GoIconSet</code> — bỏ trống thì giữ lại của theme JSON cha</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>cách danh sách chọn hiển thị nó</td><td>boolean · chuỗi</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="every-dial">Toàn bộ núm chỉnh</h3>
+  <p>
+    Bảng dưới đây do <code>tools/make_site.py</code> điền <b>thẳng từ các dòng <code>@export</code>
+    trong script của skin</b> — thêm một núm chỉnh hay đổi một giá trị mặc định thì bảng đi theo. Hãy dùng
+    đúng những cái tên này dưới <code>skin.dials</code> trong file JSON. Núm chỉnh có mặc định ghi là <code>14</code>
+    là số nguyên, cái ghi <code>10.0</code> là số thực — viết kiểu nào trong JSON cũng được, trình dựng sẽ ép về đúng kiểu của script.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4 id="default-skin-goskin-17">Skin mặc định <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Mặc định">0.16</td><td>Độ đậm phần tô trên tấm nền của một chip.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Mặc định">0.45</td><td>Độ đậm phần viền trên tấm nền của một chip.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Mặc định">0.1</td><td>Tấm nền của hộp alert ngả về màu trạng thái của nó bao nhiêu.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Mặc định">0.24</td><td>Mức pha màu nhấn vào tấm nền của ô nhanh khi hồi chiêu đang chạy.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Mặc định">0.08</td><td>Mức pha màu nhấn vào tấm nền của ô nhanh lúc bình thường.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Mặc định">2</td><td>Bề rộng viền ô nhanh (dp) khi hồi chiêu đang chạy.</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Mặc định">1</td><td>Bề rộng viền ô nhanh (dp) lúc bình thường.</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Mặc định">5</td><td>Phần đệm ngang bên trong (dp) của một badge (số lượng, thời gian còn lại).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Mặc định">1</td><td>Phần đệm dọc bên trong (dp) của một badge.</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Mặc định">0.6</td><td>Độ đậm phần viền trên tấm nền của một badge.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Mặc định">0.45</td><td>Độ đậm bóng đổ của các thẻ nổi (coach mark, prompt card).</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Mặc định">14</td><td>Độ nhòe (dp) của bóng đổ trên thẻ nổi.</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Mặc định">4</td><td>Khoảng lệch xuống dưới (dp) của bóng đổ trên thẻ nổi.</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Mặc định">10.0</td><td>Khoảng tỏa sáng (dp) của tấm nền nổi dùng ánh sáng thay cho bóng đổ, như tấm nền vát góc kiểu sci-fi.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Mặc định">0.42</td><td>Độ đậm của đĩa nền dưới cần điều khiển.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Mặc định">0.45</td><td>Độ đậm của vòng quanh cần điều khiển.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Mặc định">2.0</td><td>Bề rộng (dp) của vòng quanh cần điều khiển.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="sci-fi-skin-goskinscifi-10">Skin sci-fi <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Mặc định">7.0</td><td>Cỡ vát góc (dp) trên tấm nền của một chip.</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Mặc định">5.0</td><td>Cỡ vát góc (dp) của một tấm nền skeleton.</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Mặc định">8.0</td><td>Cỡ vát góc (dp) của một hộp alert.</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Mặc định">8.0</td><td>Cỡ vát góc (dp) của một control chia đoạn.</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Mặc định">6.0</td><td>Cỡ vát góc (dp) trên tấm nền của một ô nhanh.</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Mặc định">0.24</td><td>Vát góc của ảnh đại diện và đĩa tròn = đường kính × tỉ lệ này.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Mặc định">0.45</td><td>Độ đậm ánh sáng tỏa của một ô đang hồi chiêu.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Mặc định">6.0</td><td>Khoảng tỏa sáng (dp) của một ô đang hồi chiêu.</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Mặc định">12.0</td><td>Chiều dài nhánh (dp) của khung ngắm góc trên coach mark.</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Mặc định">2.0</td><td>Độ dày nét (dp) của khung ngắm góc trên coach mark.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="medieval-skin-goskinmedieval-5">Skin trung cổ <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Mặc định">4.0</td><td>Bán kính bo góc (dp) của khung ô nhanh kiểu trung cổ.</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Mặc định">0.035</td><td>Độ đậm của những vết da thuộc mờ bên trong các ô nhanh.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Mặc định">1.0</td><td>Tỉ lệ của các chi tiết kim loại ở góc ô nhanh. Khung menu dùng shape.ornament_scale.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Mặc định">0.18</td><td>Độ mạnh của vệt sáng kim loại dọc theo mép ô nhanh.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Mặc định">1</td><td>Hiện những chiếc đinh tán kim loại nhỏ trên ô nhanh: 0 là ẩn, 1 là hiện.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3 id="subclass-the-skin-optional">Kế thừa skin (tùy chọn)</h3>
+  <p>Chỉ những gì theme và hình dáng không với tới — hình lục giác của cần điều khiển, badge trên ô nhanh, khung ngắm
+    góc của coach mark — mới nằm trong một skin. Hãy kế thừa <code>GoSkin</code>, chỉ ghi đè đúng các phương thức đó, rồi trỏ
+    trường <code>skin</code> trong file JSON vào tài nguyên đó. Một theme chỉ đổi màu thì bỏ qua bước này.</p>
+
+  <div class="note">
+    <b>Một lượt kiểm tra giữ đúng lời hứa.</b> <code>tools/check_scaffold.sh</code> tạo một theme dùng xong bỏ ở mỗi lần chạy —
+    đổi màu nhấn, đặt bán kính bằng 4 — rồi xác minh việc sinh ra, việc token lan truyền và một lượt kiểm tra tương phản
+    sạch sẽ trước khi xóa nó đi. Lần chạy đầu tiên đã phát hiện một theme chỉ đổi mỗi màu nhấn mà hỏng mất
+    <b>8 cặp màu</b>: trình dựng đẩy màu chữ nhưng lại dùng màu nhấn đúng như được viết. Giờ nó đẩy cả màu nhấn
+    lẫn nhãn nằm trên đó.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-skins.html">← Skin — nơi Theme không với tới</a> · <a href="theming-contrast.html">Dễ đọc là thứ đo được →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

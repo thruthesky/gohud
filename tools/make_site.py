@@ -493,12 +493,18 @@ DIALS_BEGIN = "<!-- dials:begin -->"
 DIALS_END = "<!-- dials:end -->"
 
 
+# 🔑 다이얼 표는 `own` 절에 있었고, 2026-09-16 의 가르기(`tools/split_site.py`)로 그 절이
+#    `theming-own.html` 로 옮겨 갔다. 🛑 여기 이름을 함께 고치지 않으면 표식을 못 찾아
+#    **조용히 옛 표가 남는다** — 다이얼을 더해도 문서가 따라오지 않는다.
+DIALS_PAGE = "theming-own.html"
+
+
 def dials_page(lang="ko"):
-    return os.path.join(WWW, "theming.html" if lang == "en" else os.path.join("ko", "theming.html"))
+    return os.path.join(WWW, site_langs.rel_path(lang, DIALS_PAGE))
 
 
 def write_dials_section(lang="ko"):
-    """`theming.html` 의 표식 사이를 다시 채운다. 표식이 없으면 건드리지 않고 False."""
+    """`theming-own.html` 의 표식 사이를 다시 채운다. 표식이 없으면 건드리지 않고 False."""
     path = dials_page(lang)
     if not os.path.isfile(path):
         return False

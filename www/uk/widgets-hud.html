@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="Вилизуйте великі панелі скільки завгодно — око завжди чіпляється за щось маленьке: розірване надвоє слово, зрізане сяйво, затиснутий слот.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Огляд</a>
+      <a href="install.html">Встановлення</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Віджети</a>
+      <a href="theming.html">Оформлення</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Українська</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="widgets-hud.html" hreflang="uk" lang="uk" aria-current="true">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← Віджети</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Віджети">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Віджети</a>
+  <a href="widgets-surfaces.html">Плаваючі вікна</a>
+  <a href="widgets-messages.html">Як сказати щось гравцеві</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">Очікування, сповіщення, лічильники</a>
+  <a href="widgets-forms.html">Форми та списки</a>
+  <a href="widgets-shapes.html">Форми, якими ігри справді користуються</a>
+  <a href="widgets-overlays.html">Поверх екрана</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — одне місце, де все виготовляється</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">Дрібниці вирішують, чи має воно гарний вигляд</h3>
+  <p>
+    Вилизуйте великі панелі скільки завгодно — око завжди чіпляється за щось маленьке: розірване надвоє слово,
+    зрізане сяйво, затиснутий слот. Чотири такі речі показали 13 вересня 2026 року, і полагоджено їх було
+    у віджетах і темах, а не на екрані демо, тож той самий результат дістається кожному екрану.
+  </p>
+  <table>
+    <thead><tr><th>Що виявилося</th><th>Причина</th><th>Полагоджено</th></tr></thead>
+    <tbody>
+      <tr><td>Напис <code>Done</code> на коуч-мітці став <code>Don</code>/<code>e</code></td>
+          <td>Кнопка з увімкненим перенесенням <b>віднімає ширину свого тексту</b> від свого мінімуму — стисніть її, і вона розірветься всередині слова</td>
+          <td><code>GoStyle.fit_words()</code>: одне слово не переноситься ніколи; кілька слів переносяться, але <b>найдовше слово</b> вміщається завжди — рішення ухвалюється за <b>показаним</b> текстом, а не за ключем перекладу, і накладається наново формою, коли змінюється мова</td></tr>
+      <tr><td>У кнопки на всю ширину сяйво зрізалося по вертикалі зліва</td>
+          <td>Контейнер прокрутки обрізає на своєму краю без винятків. Уцілів лише правий бік — завдяки жолобу для смуги прокрутки</td>
+          <td><code>GoScroll</code> позичає поле в батька, щоб відсунути свій край на 12dp назовні, і повертає його всередині — <b>вміст лишається на місці</b></td></tr>
+      <tr><td>Час, іконка й кількість склалися в слоті стовпчиком</td>
+          <td>Три рядки всередині 48dp</td>
+          <td>Іконка велика по центру, гаряча клавіша вгорі зліва, кількість <b>бейджем</b> унизу справа, час, що лишився, — бейджем над іконкою; панелі бейджів приходять зі скінового <code>badge_box()</code></td></tr>
+      <tr><td>Плаский випадний список без видимого вибору</td>
+          <td>Наведення на пункт брало панель кнопки, а позначки-перемикачі були блідими типовими від рушія</td>
+          <td>Окрема панель наведення (м'яке акцентне підфарбування), та сама графіка перемикачів, що й у прапорців, висота пункту під дотик</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Відкритий випадний список — м'яка акцентна панель наведення й позначка обраного пункту" loading="lazy">
+      <figcaption>Випадний список — панель наведення й позначка вибору</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Чотири швидкі слоти — гаряча клавіша вгорі зліва, бейдж кількості внизу справа, у першого — бейдж часу, що лишився" loading="lazy">
+      <figcaption>Слоти — кутові бейджі й час, що лишився (сай-фай)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Дайте кнопкам лише з іконкою опис через <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    і підказка для тих, хто з мишею, і назва для зчитувачів екрана беруться з цього одного значення.
+    gohud малює підказку сам: типова від рушія розбиває текст <b>по одному символу на рядок</b>, коли її
+    обчислення ширини йде не так (виміряно на ширині 1dp).
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">Картка коуч-мітки тримається осторонь нерухомого</h4>
+  <p>
+    У ландшафті картку раніше відсилало на самий верхній або нижній край — рівно туди, де живуть заголовки
+    й частини HUD; у демо вона сіла на <code>→ ×</code> у заголовку. Тепер вона лишається на рівні своєї цілі,
+    обходить будь-який <code>GoHudAnchor</code>, що резервує місце, і приймає інші перешкоди через
+    <code>keep_clear</code>. Вона рухається на найкоротшу відстань, яка обходить перешкоду, не накриваючи ціль,
+    і лишається на місці, коли екран замалий, щоб обійти все, — перекритися краще, ніж зникнути.
+    Її глибина — щоб читалася як <b>над</b> сторінкою — береться з регуляторів скіна
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; скіни зі зрізаними кутами беруть <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # нерухомі елементи, що не є прив'язками</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Екрани з мишею та клавіатурою</h3>
+  <p>
+    У пальця <b>немає стану наведення.</b> Будуйте лише під мобільні — і два стани, які бувають тільки на
+    комп'ютері, лишаться неперевіреними; один із них таки був зламаний: у gohud <b>кільце фокуса було
+    невидиме на головній кнопці.</b> Панель мала колір акценту, і кільце теж: <code>1,00:1</code>, той самий
+    колір, намальований сам на собі. Рухаючись клавіатурою, годі було зрозуміти, де ти.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="Той самий ряд кнопок у трьох станах — звичайний, наведення мишею, фокус із клавіатури" loading="lazy">
+    <figcaption>Згори вниз: <b>звичайний · наведення · фокус</b>. Заліті кнопки дістають кільце, що контрастує з їхньою панеллю.</figcaption>
+  </figure>
+  <p>
+    Заліті кнопки (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) беруть кільце, яке
+    <b>контрастує з їхньою власною панеллю</b> — темне в темній темі, біле у світлій, темна прицільна дужка
+    в сай-фай. Перевіряльник контрасту вимірює <b>кільце фокуса проти панелі, на якій воно лежить</b>, тож
+    правило переживає зміну палітри (WCAG 2.4.11 вимагає 3:1 для індикаторів фокуса).
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>Віджети HUD</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — дев'ять місць</h3>
+  <p>Шанує безпечну зону та крайові поля. Дайте йому <code>landscape_spot</code> — і він переїде в ландшафті:
+    контроли, що в портреті сидять унизу по центру, можуть перейти вниз праворуч.</p>
+  <div class="note">
+    <b>Навіщо це існує.</b> Прописані вручну для кожної частини HUD прив'язки та зсуви розповзаються: смуга
+    здоров'я опиняється під вирізом камери на пристрої з «чубчиком», а кнопка керування сідає на жестову смугу
+    в ландшафті. Уся ця арифметика живе в одному місці.
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">Як не пускати вміст під HUD</h4>
+  <p>
+    Коли екран із прокруткою ділить дисплей із HUD, вміст з'їжджає <b>під нього</b>, і два набори тексту
+    накладаються, доки жодного не можна прочитати. У цьому доповненні таке траплялося двічі: підказка поля
+    вводу вичавлювалася між швидкими слотами, а повзунок перемикача в налаштуваннях сідав на смугу здоров'я.
+  </p>
+  <pre><code>form.avoid_hud = true                  # обходити кожен видимий GoHudAnchor
+joystick_anchor.reserve_space = false  # …окрім тих, що з'являються лише під пальцем</code></pre>
+  <p>
+    Кожен прямокутник обходиться в тому напрямку, який <b>коштує найменше площі</b>. Смуга вгорі справа
+    обходиться вниз на телефоні в портреті (13% висоти) і вбік у ландшафті (21% ширини) — обходити її по
+    вертикалі в ландшафті коштувало б 27% екрана. Уже віддану площу віднімають, перш ніж міряти наступний
+    прямокутник.
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">Частини HUD стикаються й між собою</h4>
+  <p>
+    Дев'ять місць ділять екран; вони не гарантують, що частини <b>розминуться</b>. Широкий снекбар угорі по
+    центру сів просто на смугу здоров'я вгорі справа й затулив значення — годі було прочитати, скільки здоров'я
+    лишилося.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # осідає під нерухомим HUD
+notice_anchor.reserve_space = false   # і не штовхає сторінку, поки висить</code></pre>
+  <p>
+    Він відступає <b>лише по вертикалі</b> — відступ убік означав би, що центрований снекбар щоразу з'являється
+    в іншому місці. І він обходить лише ті частини, які <b>не</b> відступають самі: якщо поступляться обидві,
+    вони мінятимуться місцями довіку.
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — здоров'я, мана, досвід</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # токен лише для заливки
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Зміни плавно йдуть за 0,18 с — смуга здоров'я, що стрибає, не каже, наскільки сильно вас вдарили.
+    <code>reduce_motion</code> робить зміну миттєвою. Великі числа скорочуються до <code>12.3k</code>, щоб
+    ширина смуги не сіпалася, коли цифри приходять і йдуть.</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — один швидкий слот</h3>
+  <p>Іконка, кількість, відкат і гаряча клавіша на <b>одному лицьовому боці</b>. Якщо чіпляти бейджі на
+    маленьке коло, кожен слот виходить іншої ширини, і ряд хитається.</p>
+  <div class="note">
+    <b>Видимий розмір і розмір дотику різні.</b> У щільно складених слотів області дотику в 48dp
+    перекриваються; перекриття дістається <b>тому слоту, чий центр ближче</b> — розкажіть їм одне про
+    одного через <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> типово вимкнено, щоб ряд із восьми слотів не стояв у порядку Tab між
+    користувачем клавіатури й кожним контролом налаштувань. Вмикайте його, коли клавіатура чи геймпад —
+    єдиний спосіб вводу.</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — віртуальний стик</h3>
+  <table>
+    <thead><tr><th>Режим</th><th>Поведінка</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Завжди на тому самому місці — легко знайти, не дивлячись</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>З'являється там, де ліг великий палець</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Після появи далі йде за пальцем — зручно для довгого руху</td></tr>
+    </tbody>
+  </table>
+  <p><code>Vector2</code> із сигналу <code>moved</code> має довжину 0–1, тож його можна одразу множити на
+    швидкість; він не залежить ні від розміру екрана, ні від DPI.</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — виглядає малою, натискається великою</h3>
+  <div class="note warn">
+    <b>Безпечно лише доти, доки сусіди ігнорують ввід.</b> Якщо розширена область накриє сусідню кнопку,
+    та перестане відповідати. Іконковим кнопкам, що стоять поруч, потрібен <code>touch_peers</code>.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← Як сказати щось гравцеві</a> · <a href="widgets-feedback.html">Очікування, сповіщення, лічильники →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

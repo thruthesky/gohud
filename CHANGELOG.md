@@ -26,6 +26,19 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   cells and chips stay solid, because a button whose state is washed out no longer says what it is. Popup
   menus stay solid too (`popup_alpha` 100) — the engine may put one in its own window, where the OS does not
   composite it with the game and translucency comes out black rather than see-through.
+  **Drag it yourself.** `examples/gallery/opacity_lab.gd` puts the value under a slider over a pattern — over
+  a flat colour a translucent panel is indistinguishable from a slightly different colour, which is why a
+  value check can never answer the only two questions that matter: does the world show through, and is the
+  text still readable? Three panels sit on that pattern, each reached by a different route (factory argument,
+  restyling a node in place, `fade_panel()` on a panel the add-on did not create), so one drag proves they all
+  land on the same result. The gallery hosts it with a **Busy background** toggle that patterns the whole
+  screen; the guided tour gained a sixteenth chapter where the bot drags the value and asserts the fill the
+  panel actually received; the demo home screen hosts it over its own patterned backdrop with a project-wide
+  **Apply to every panel**; and the medieval example hosts it on a face drawn by `_draw()`.
+  `GoStyle.card()` called with no arguments now follows the value as well — it reads the face the `GoCard`
+  theme variation draws and multiplies the opacity into that, so a host theme that redefines `GoCard` keeps
+  its shape while the default 80% still applies. At 100% the override is removed entirely and the face is
+  byte-for-byte what it was before these tokens existed.
 
 - **`GoSnackbar` — a snackbar that places itself, queues, and can carry a button.** It sits at the bottom
   (or the top), above the safe area and the virtual keyboard, and goes away on its own.
@@ -81,6 +94,26 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Changed
 
+- **The documentation site is nineteen pages instead of five, and the sidebar lists the pages of the
+  section you are in.** `widgets.html` had grown to 595 lines (40 KB) carrying thirty-two widgets, and
+  `theming.html` to 644 (44 KB): to read about one widget you scrolled past thirty-one others, and a link
+  you sent someone opened that whole page at a fragment. Each is now a **cover plus its sections** —
+  Widgets into eight pages (floating windows · telling the player · HUD · waiting, telling and counting ·
+  forms and lists · shapes games use · over the screen · GoStyle) and Theming into six (presets · tokens ·
+  opacity · skins · your own preset · readability). Pages are 7–15 KB.
+  The split is done by `tools/split_site.py` across all seventeen languages at once, and **no translation
+  was written for it**: the language editions share their `<section id>`s, so each section carries its own
+  translated prose, and every new page takes its `<h1>`, its `<meta description>` and its card blurb from
+  that language's own `<h2>` and first paragraph. The three original file names never move (released ZIPs
+  link to them); `tools/site_langs.py` gained the new names and `site_nav.py` now lights the **cover's**
+  menu entry while you read any page under it. `site/toc.js` lifts the in-page `<nav class="subnav">` to
+  the top of the sidebar, so the section's pages sit above this page's headings — and stay visible in the
+  body when JavaScript is off or the sidebar is folded on a narrow screen.
+  🛑 The reason this took so many asks: `site/toc.js` and `site_nav.py` both carried a rule saying *"do not
+  split further — the table of contents takes over from here"*, and that sentence was read as a settled
+  decision. A contents list guides you **within** a page; splitting shortens the page itself. Both comments
+  now say so.
+
 - **The documentation site is five pages instead of three, and its menu is generated.** `index.html` had
   grown to 563 lines carrying a landing page, an install guide, a tutorial, a reference summary and the
   repository's own tooling; it is now an overview that signposts [`install.html`](www/install.html) and a
@@ -113,6 +146,30 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   waiting when you leave the screen.
 
 ### Fixed
+
+- **Thirteen API mistakes in the documentation, two of which would not compile.** The new widgets were
+  written up from memory rather than from the source, so the docs told readers to call
+  `GoCodeInput.shake()` (there is no such method — `set_error()` marks the cells),
+  `GoPagination.Mode.MORE` (there is no such enum — `GoPagination.more(action)`), `GoTable.make(cols, rows,
+  1, false)` (the third argument is `selectable`; sorting is `sort_by()`), `console.register(name, action,
+  help)` (the order is `command, help, action`), `calendar.claim_requested` (the signal is `claimed`),
+  `field.control()` (a property, not a method), `GoDrawer.Side.START` (there are only `LEFT` and `RIGHT`;
+  RTL mirroring is `follow_text_direction`), `GoKbd.hide_on_touch` (it is `hide_on_handheld`) and
+  `GoConsole.allow_in_release` (it is `debug_only`), and it put `GoPopover` on layer 50 when it uses 95.
+  Two examples were worse than wrong — they **stopped the script from parsing**: a template instance
+  declared as `var hud: CanvasLayer` hides the template's own members, and `GoUi.runtime()` is typed `Node`
+  so `runtime.breakpoint_changed` cannot be reached with a dot (connect by name instead). Both were
+  confirmed against the engine: the correct script printed in one second, the copied one produced no output
+  at all and never exited.
+  `tools/check_docs_api.py` now compares every `GoX.y` in the docs — and every underscored name written in
+  prose — against the source, and `tools/check_all.sh` runs it as step ③-a.
+
+- **The five templates the skill hands out had no test at all.** `skills/gohud/assets/templates/` is code
+  people copy into their own project, and `SKILL.md` described it as "headless-tested", but nothing opened
+  those five files. `tests/gohud_templates_test.gd` now loads each one, stands it up in a tree and exercises
+  its public API (34 checks), and `check_all.sh` runs it as step ①-t. It earned its place immediately: the
+  first run caught a duplicate `_use()` that had just been introduced in `inventory_sheet.gd`, which made
+  the whole template fail to parse.
 
 - **The code "copy" button never appeared on a phone.** It was shown by `pre:hover`, and a finger has no
   hover state — the trap this site's own widgets page warns about. Since copying the install block into an

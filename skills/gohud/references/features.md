@@ -144,7 +144,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | One `GoConfig` resource (appearance, responsive, surface, feedback, localization, accessibility) that survives add-on updates | `GoUi.config = preload("res://ui/gohud_config.tres")` | setup.md §3 |
 | Optional plugin: project settings for config + preset, `GoRuntime` autoload (breakpoints, dp scale, keyboard), translations | Project → Project Settings → Plugins → gohud | setup.md §2 |
 | Subclass hooks `_make_scroll`, `_make_close_button`, `_make_surface`, `_should_pause` | `func _make_surface() -> GoSurface: return MySurface.new()` | surfaces.md §6 |
-| Gallery, medieval example, 15-chapter demo tour with explore mode | `/gohud:preview demo --explore hud` | SKILL.md §6 |
+| Gallery, medieval example, 19-chapter demo tour with explore mode | `/gohud:preview demo --explore hud` | SKILL.md §6 |
 | **693 headless checks** (`gohud_test.gd` 568 + `gohud_extra_test.gd` 125), WCAG contrast checker, packaging gates, CI on every push | `bash addons/gohud/tools/check_all.sh` | setup.md §6 |
 | **Screenshot check on a virtual monitor** — value checks know "how much", not "is it visible"; five layout faults were found this way with every headless check passing | `xvfb_run.sh --out shots -s res://addons/gohud/tests/gohud_shot.gd` | setup.md §6 |
 | **`/gohud update`** — update the add-on in your project and this skill to the latest release | `/gohud update` | setup.md §7 |

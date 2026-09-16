@@ -25,7 +25,7 @@ another project.godot".
 | Key | Screen | Source |
 |---|---|---|
 | `1` | **Widget gallery** — every widget on one page | `examples/gallery/gallery.gd` |
-| `2` | **Guided tour** — 15 chapters, played or hands-on | `examples/demo/sim.gd` |
+| `2` | **Guided tour** — 19 chapters, played or hands-on | `examples/demo/sim.gd` |
 | `3` | **Showcase screen** — six cards on one screen | `examples/demo/demo.gd` |
 | `4` | **Medieval look** — the same widgets, another preset | `examples/medieval/medieval.gd` |
 
@@ -61,7 +61,7 @@ godot -- --open=gallery      # gallery | tour | showcase | medieval
 
 The tour waits on its Start screen and offers two ways in:
 
-- **Start demo** plays a guided simulation of 15 chapters. The cursor uses real mouse and
+- **Start demo** plays a guided simulation of 19 chapters. The cursor uses real mouse and
   keyboard events to click buttons, type into fields, select menu items, drag sliders and
   joysticks, and scroll lists.
 - **Explore widgets** (or any row in the left sidebar) builds a single chapter and hands it
@@ -84,8 +84,29 @@ previous state. The choice lasts for the current run and does not edit project s
 All display text and built-in widget actions use English. The chapters cover HUD bars and
 slots, button styles, inputs, selection and menus, lists and accordions, data display,
 notices, dialogs and sheets, prompt cards, all three joystick modes, coach marks, scrolling
-and grids, forms, HUD anchors, and themes and icons. The **Live activity** panel reports
-actual widget callbacks, whether the bot or a person triggered them.
+and grids, forms, HUD anchors, themes and icons, container opacity, **waiting and counting**
+(a button that becomes a spinner, a snackbar you can undo, unread badges, key caps),
+**fields and pickers** (an error that lands on the row that is wrong, welded input groups, a
+combobox that searches inside names, coupon cells) and **shapes games use** (daily attendance,
+the stat pentagon with a dashed comparison, a damage-share ring with a written legend, and a
+banner carousel that never advances on its own). The **Live activity**
+panel reports actual widget callbacks, whether the bot or a person triggered them.
+
+## Container opacity
+
+Panels are translucent by default: 80% of the fill, with text, icons, borders and buttons left
+at full strength. Three places in this repository let you drag the value and watch it land:
+
+| Where | What it shows |
+|---|---|
+| **Home → Try it right here → SEEING THROUGH PANELS** | The home screen already draws a patterned backdrop, so lowering the value shows the grid and glow through the cards. **Apply to every panel** writes `GoConfig.container_alpha` and rebuilds the screen, so lists, notices and floating panels all follow. |
+| **Guided tour → Container opacity** (chapter 16) | The bot drags the value down, states that the floor is not a target, and drags it back. It asserts the value reached the panel itself, not just the slider handle. |
+| **Widget gallery → Container opacity** | The same lab, plus a **Busy background** toggle that puts a pattern behind the whole screen — the closest thing here to a HUD sitting over a game. |
+| **Medieval look** | The same lab on a custom-drawn face (`GoStyleBoxMedieval`): the iron fill thins out while rivets, bevels and grain keep their strength. |
+
+All four host the same widget, `examples/gallery/opacity_lab.gd`, which shows the four ways to
+set the value side by side — a factory argument, restyling a node in place, `GoStyle.fade_panel()`
+on a panel the add-on did not create, and the project-wide setting.
 
 ## Presentation and recording
 
@@ -185,3 +206,6 @@ screen and returns the nodes the bot needs, and `play_<key>(stage, bot, refs)` d
 real input. Explore mode calls only `build_`, so a chapter must be complete without the bot:
 anything only the bot used to trigger (data arriving, a tour starting) is a button the person can
 press too. Add the chapter to `SimActs.list()` with a title, note, icon and explore hint.
+A chapter whose point is visual rather than behavioural should assert what the screen actually
+received — chapter 16 reads the panel's own fill alpha, because a slider handle can move while
+the panel stays exactly as it was.

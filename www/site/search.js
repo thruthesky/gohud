@@ -25,7 +25,7 @@
   // 🔑 한 곳에 두고 `<html lang>` 으로 고른다 — 언어판 51 장에는 아무것도 넣지 않는다.
   var SAY = {
     'en':      { ph: 'Search the docs',        open: 'Search',   none: 'Nothing found for',    all: 'All sections',      recent: 'Recent',        load: 'Loading…',     hint: 'to open' },
-    'ko':      { ph: '문서 검색',                open: '검색',      none: '찾은 것이 없다:',          all: '모든 절',             recent: '최근 찾은 것',     load: '받는 중…',      hint: '로 열기' },
+    'ko':      { ph: '문서 검색',                open: '검색',      none: '검색 결과 없음:',          all: '전체 항목',           recent: '최근 검색',        load: '불러오는 중…',   hint: '키로 열기' },
     'ja':      { ph: 'ドキュメントを検索',          open: '検索',      none: '見つかりません:',          all: 'すべての項目',          recent: '最近',           load: '読み込み中…',    hint: 'で開く' },
     'zh-Hans': { ph: '搜索文档',                 open: '搜索',      none: '没有找到:',              all: '全部章节',            recent: '最近',           load: '加载中…',       hint: '打开' },
     'zh-Hant': { ph: '搜尋文件',                 open: '搜尋',      none: '找不到:',               all: '全部章節',            recent: '最近',           load: '載入中…',       hint: '開啟' },

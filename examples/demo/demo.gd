@@ -107,6 +107,9 @@ func _build() -> void:
 	_selection_card(grid)
 	_data_card(grid)
 	_states_card(grid)
+	_feedback_card(grid)
+	_forms_card(grid)
+	_shapes_card(grid)
 
 	page.add_child(_language_card())
 
@@ -575,6 +578,84 @@ func _states_card(grid: GridContainer) -> void:
 	var fold := GoStyle.foldable("Advanced options", true, null, false)
 	fold.add_child(GoStyle.label("Frame cap, shadow quality and telemetry live here.", GoTheme.ROLE_CAPTION, _subtitle_ink))
 	column.add_child(fold)
+
+
+# ── 10 Waiting & counting ─────────────────────────────────────────────
+
+## 🔑 기다림·알림·세기. 이 셋은 "게임이 지금 무엇을 하고 있는지" 를 말하는 위젯들이다.
+func _feedback_card(grid: GridContainer) -> void:
+	var column := _card(grid, "10", "Waiting & counting")
+
+	var waiting := GoStyle.row(12)
+	var spinner := GoSpinner.new()
+	spinner.custom_minimum_size = Vector2(26, 26)
+	spinner.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	waiting.add_child(spinner)
+	waiting.add_child(GoStyle.label("Finding a match…", GoTheme.ROLE_COMPACT, _subtitle_ink))
+	column.add_child(waiting)
+
+	# 🛑 배지는 **앵커**로 모서리에 반쯤 걸친다 — 부모가 자리를 잡은 뒤라야 그 자리가 정해지므로
+	#    트리에 든 다음 붙인다(바로 부르면 0,0 에 붙어 왼쪽 위로 삐져나온다).
+	var marks := GoStyle.wrap_row(14)
+	for spec in [["Mail", 3, ""], ["Shop", 0, "NEW"], ["Guild", 128, ""]]:
+		var host := GoStyle.button(str(spec[0]), Callable(), GoStyle.Tone.COMPACT)
+		marks.add_child(host)
+		GoBadge.attach.call_deferred(host, int(spec[1]), str(spec[2]))
+	column.add_child(marks)
+
+	var keys := GoStyle.wrap_row(8)
+	keys.add_child(GoStyle.label("Interact", GoTheme.ROLE_COMPACT, _subtitle_ink))
+	keys.add_child(GoKbd.make("E"))
+	keys.add_child(GoStyle.label("Save", GoTheme.ROLE_COMPACT, _subtitle_ink))
+	keys.add_child(GoKbd.make("Ctrl", "S"))
+	column.add_child(keys)
+
+
+# ── 11 Forms & lists ──────────────────────────────────────────────────
+
+## 🔑 **틀린 칸이 어느 것인지** 말하는 폼. 위의 한 줄짜리 "입력을 확인하세요" 는 다섯 칸 중
+##    어느 것이 문제인지 알려 주지 않는다.
+func _forms_card(grid: GridContainer) -> void:
+	var column := _card(grid, "11", "Forms & lists")
+
+	var taken := GoField.make("Guild name", GoStyle.line_edit("2-16 characters"), "Everyone sees this")
+	taken.set_error("That name is taken")
+	column.add_child(taken)
+
+	# 🔑 `suffix` 는 **컨트롤**을 받는다 — 글자만 주는 칸은 없다(아이콘만은 `suffix_icon`).
+	column.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
+		{"suffix": GoStyle.button("Send", Callable(), GoStyle.Tone.PRIMARY)}))
+	column.add_child(GoInputGroup.make(GoStyle.line_edit("Search by name"),
+		{"prefix_icon": GoIconSet.SEARCH}))
+
+	var coupon := GoCodeInput.make(8, 4)
+	coupon.set_code("GOHUD26")
+	column.add_child(GoField.make("Coupon", coupon))
+
+
+# ── 12 Shapes games use ───────────────────────────────────────────────
+
+## 🔑 범용 차트가 아니라 **게임이 실제로 쓰는 두 모양**이다 — 능력치 오각형과 비중 고리.
+func _shapes_card(grid: GridContainer) -> void:
+	var column := _card(grid, "12", "Shapes games use")
+
+	var shapes := GoStyle.row(14)
+	# 🛑 값은 0~1 로 정규화해 넘긴다 — 힘 120 과 지능 45 를 그대로 그리면 모양이 거짓말을 한다.
+	var radar := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45},
+		{"STR": 0.92, "AGI": 0.44, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+	radar.custom_minimum_size = Vector2(132, 132)
+	shapes.add_child(radar)
+
+	var donut := GoDonut.make([
+		{"label": "Physical", "value": 620}, {"label": "Magic", "value": 340},
+		{"label": "Pierce", "value": 90}])
+	donut.center_text = "1050"
+	donut.custom_minimum_size = Vector2(112, 112)
+	shapes.add_child(donut)
+	column.add_child(shapes)
+
+	# ♿ 색만으로는 읽히지 않는다 — 범례가 조각 이름과 비율을 글자로 함께 둔다.
+	column.add_child(donut.legend())
 
 
 func _change_theme(preset: StringName) -> void:

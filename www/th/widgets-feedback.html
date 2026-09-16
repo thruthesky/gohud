@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-feedback.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-feedback.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-feedback.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-feedback.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-feedback.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-feedback.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-feedback.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-feedback.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-feedback.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-feedback.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-feedback.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-feedback.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-feedback.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-feedback.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-feedback.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-feedback.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-feedback.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-feedback.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>การรอ การบอก การนับ — gohud</title>
+<meta name="description" content="วางตัวอยู่ด้านล่าง (หรือด้านบน) เหนือเซฟแอเรียและคีย์บอร์ด แล้วหายไปเอง ถ้าไม่มีมัน คุณต้องเขียนเลเยอร์ การจัดตำแหน่ง ตัวจับเวลา และการเก็บกวาด…">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">ภาพรวม</a>
+      <a href="install.html">ติดตั้ง</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">วิดเจ็ต</a>
+      <a href="theming.html">ธีม</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>ไทย</summary>
+        <div class="langs-list">
+          <a href="../widgets-feedback.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-feedback.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-feedback.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-feedback.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-feedback.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-feedback.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-feedback.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-feedback.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-feedback.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-feedback.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-feedback.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-feedback.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-feedback.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-feedback.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-feedback.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="widgets-feedback.html" hreflang="th" lang="th" aria-current="true">ไทย</a>
+          <a href="../ar/widgets-feedback.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>การรอ การบอก การนับ</h1>
+    <p class="lead"><a href="widgets.html">← วิดเจ็ต</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="วิดเจ็ต">
+  <!-- subnav:begin -->
+  <a href="widgets.html">วิดเจ็ต</a>
+  <a href="widgets-surfaces.html">หน้าต่างลอย</a>
+  <a href="widgets-messages.html">การบอกอะไรบางอย่างกับผู้เล่น</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html" aria-current="page">การรอ การบอก การนับ</a>
+  <a href="widgets-forms.html">ฟอร์มและรายการ</a>
+  <a href="widgets-shapes.html">รูปทรงที่เกมใช้จริง</a>
+  <a href="widgets-overlays.html">ทับอยู่บนหน้าจอ</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — ที่เดียวที่ทุกอย่างถูกสร้างขึ้น</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="feedback">
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — ข้อความที่จัดที่ให้ตัวเอง</h3>
+  <p>วางตัวอยู่ด้านล่าง (หรือด้านบน) เหนือเซฟแอเรียและคีย์บอร์ด แล้วหายไปเอง ถ้าไม่มีมัน คุณต้องเขียนเลเยอร์
+    การจัดตำแหน่ง ตัวจับเวลา และการเก็บกวาด ซ้ำในทุกหน้าจอที่ต้องบอกว่า "บันทึกแล้ว"</p>
+  <pre><code>snack.show_text("บันทึกแล้ว", GoTheme.SUCCESS)
+
+# โอกาสที่จะย้อนกลับ — 0 คือปุ่มแรก, -1 หมายถึงหมดเวลาไปเอง
+if await snack.post({"text": "ทิ้งไอเทมแล้ว", "actions": ["ย้อนกลับ"]}) == 0:
+    restore_item()</code></pre>
+  <p>ข้อความจะ<b>ต่อคิว</b>แทนที่จะเขียนทับกัน และบรรทัดเดิมที่ซ้ำกันจะถูกรวมเป็นอันเดียว — เซิร์ฟเวอร์ที่
+    ล้มเหลววินาทีละสี่ครั้งจะไม่กองการแจ้งเตือนทิ้งไว้สี่นาทีอีกต่อไป สแน็กบาร์ที่ไม่มีปุ่มจะปล่อยอินพุตผ่าน
+    เกมที่อยู่ข้างใต้จึงเดินต่อไปตามปกติ</p>
+  <div class="note warn">
+    <b>มันไม่ใช่ที่สำหรับถามอะไร</b> มันหายไปเอง ผู้เล่นจึงอาจไม่ทันเห็นมันเลย การยืนยันที่ย้อนกลับไม่ได้
+    เป็นหน้าที่ของ <code>GoDialogs</code> ปุ่มที่นี่ต้องเป็นตัวเลือกเสริมเท่านั้น — ย้อนกลับ
+    ดูรายละเอียด ลองใหม่
+  </div>
+  <p><code>GoNotice</code> คืออีกครึ่งหนึ่งของคู่นี้: มันไม่รับอินพุตหรือโฟกัสเด็ดขาด และหน้าจอที่เป็นเจ้าของมัน
+    เป็นคนตัดสินว่ามันจะไปอยู่ตรงไหน มันใส่ปุ่มไม่ได้ แต่ตัวนี้ใส่ได้</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — การรอที่ยังมองไม่เห็นปลายทาง</h3>
+  <p>เกมที่คุยกับเซิร์ฟเวอร์ต้องการตัวนี้มากกว่าอะไรทั้งหมดในหน้านี้: หน้าจอที่นิ่งอยู่เฉย ๆ คนอ่านว่าเกมค้าง
+    เรียกครั้งเดียวก็เปลี่ยนปุ่มที่คุณเพิ่งกดให้เป็นสปินเนอร์<b>ตรงที่เดิม</b></p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>ปุ่มยังคงขนาดเดิม — ป้ายข้อความกลายเป็นโปร่งใสแทนที่จะหายไป แถวจึงไม่กระโดด — และมันถูกปิดการกด
+    ขณะที่กำลังหมุน ส่วนหลังนั่นแหละคือประเด็น: การซื้อต้องไม่ถูกยิงสองครั้งระหว่างที่คุณ
+    <code>await</code> อยู่ ถ้าเปิด <code>reduce_motion</code> มันจะไม่หมุน แต่เป็นจุดสามจุดเต้นเป็นจังหวะแทน</p>
+  <p>ความคืบหน้าที่วัดได้คือ <code>GoBar</code> ส่วนสปินเนอร์ไม่ได้สัญญาอะไรเลยว่ามันจะจบเมื่อไร</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — จุดที่ยังไม่ได้อ่าน ป้าย "ใหม่" และเลข 99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # ซ่อนตัวเองเมื่อเป็นศูนย์
+GoBadge.attach(shop_button, 0, "ใหม่")
+GoBadge.attach(friend_button, 3, "", true) # จุดจุดเดียว — "มีอะไรอยู่ตรงนั้น"</code></pre>
+  <p>มันห้อยอยู่ที่มุมบนขวาของโฮสต์ด้วยแองเคอร์ จึงตามโฮสต์ที่ขนาดถูกกำหนดทีหลังได้ และการแนบซ้ำครั้งที่สอง
+    จะคืนแบดจ์อันเดิม ใช้ตัวเลขเมื่อจำนวนนั้นเปลี่ยนสิ่งที่ผู้เล่นจะทำ และใช้จุดเมื่อแค่ "มีอะไรอยู่" ก็พอแล้ว</p>
+  <p>สีตัวอักษรของมันถูกเลือกให้ตัดกับสีที่สกินทาแบดจ์ไว้ ไม่ว่าจะเป็นสีอะไรก็ตาม — ไม่ได้เดาเอาว่าเป็นสีขาว —
+    และมันมีชื่อเชิงการเข้าถึงติดมาด้วย เพราะจุดสี ๆ จุดเดียวไม่ได้บอกอะไรกับโปรแกรมอ่านหน้าจอเลย</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-hud.html">← HUD</a> · <a href="widgets-forms.html">ฟอร์มและรายการ →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

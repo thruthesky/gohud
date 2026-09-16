@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="Büyük panelleri istediğiniz kadar cilalayın — göze çarpan hep küçük bir şeydir: ikiye bölünmüş bir kelime, kesilmiş bir ışıma, sıkışmış bir slot.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Genel bakış</a>
+      <a href="install.html">Kurulum</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widget'lar</a>
+      <a href="theming.html">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Türkçe</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="widgets-hud.html" hreflang="tr" lang="tr" aria-current="true">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← Widget'lar</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget'lar">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget'lar</a>
+  <a href="widgets-surfaces.html">Yüzen pencereler</a>
+  <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">Beklemek, bildirmek, saymak</a>
+  <a href="widgets-forms.html">Formlar ve listeler</a>
+  <a href="widgets-shapes.html">Oyunların gerçekten kullandığı biçimler</a>
+  <a href="widgets-overlays.html">Ekranın üstünde</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — her şeyin üretildiği tek yer</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">İyi görünüp görünmediğine küçük şeyler karar verir</h3>
+  <p>
+    Büyük panelleri istediğiniz kadar cilalayın — göze çarpan hep küçük bir şeydir: ikiye bölünmüş bir
+    kelime, kesilmiş bir ışıma, sıkışmış bir slot. 2026-09-13'te böyle dört şey işaret edildi ve demo
+    ekranında değil, widget'lar ile temalarda düzeltildi; böylece her ekran aynı sonucu alıyor.
+  </p>
+  <table>
+    <thead><tr><th>Görünen</th><th>Nedeni</th><th>Çözüm</th></tr></thead>
+    <tbody>
+      <tr><td>Rehber işaretinin <code>Done</code> yazısı <code>Don</code>/<code>e</code> oldu</td>
+          <td>Satır kaydırması açık bir düğme, <b>yazı genişliğini en küçük boyutundan düşer</b> — sıkıştırın, kelimenin ortasından bölünsün</td>
+          <td><code>GoStyle.fit_words()</code>: tek bir kelime asla bölünmez; birden çok kelime kaydırılır ama <b>en uzun kelime</b> her zaman sığar — karar çeviri anahtarına göre değil <b>görüntülenen</b> yazıya göre verilir ve dil değiştiğinde form tarafından yeniden uygulanır</td></tr>
+      <tr><td>Tam genişlikteki bir düğmenin ışıması solda dikey olarak kesildi</td>
+          <td>Bir kaydırma kabı kenarında istisnasız kırpar. Ray boşluğu sayesinde yalnızca sağ taraf kurtuldu</td>
+          <td><code>GoScroll</code>, kenarını 12dp dışarı itmek için üst öğenin iç boşluğunu ödünç alır ve içeride geri verir — <b>içerik yerinde kalır</b></td></tr>
+      <tr><td>Bir slotta süre, simge ve adet alt alta dizildi</td>
+          <td>48dp içinde üç satır</td>
+          <td>Simge ortada büyük, kısayol sol üstte, adet sağ altta bir <b>rozet</b>, kalan süre simgenin üstünde bir rozet — rozet panelleri kaplamanın <code>badge_box()</code> metodundan gelir</td></tr>
+      <tr><td>Seçimi görünmeyen yassı bir açılır liste</td>
+          <td>Öğe vurgusu düğme panelini kullanıyordu; radyo işaretleri motorun soluk varsayılanıydı</td>
+          <td>Kendine ait bir vurgu paneli (yumuşak vurgu tonu), onay kutularıyla aynı radyo grafiği, dokunmaya uygun öğe yüksekliği</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Açık bir açılır liste — yumuşak vurgu tonlu vurgu paneli ve seçili öğenin radyo işareti" loading="lazy">
+      <figcaption>Açılır liste — vurgu paneli ve radyo işareti</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Dört hızlı slot — sol üstte kısayol, sağ altta adet rozeti, ilkinde kalan süre rozeti" loading="lazy">
+      <figcaption>Slotlar — köşe rozetleri ve kalan süre (bilimkurgu)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Yalnızca simgeden oluşan düğmelere <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> ile bir
+    açıklama verin — fare kullananlar için ipucu ve ekran okuyucular için erişilebilirlik adı, ikisi de bu tek
+    değerden gelir. İpucunu gohud kendisi çizer: motorun varsayılanı, genişlik hesabı bozulduğunda yazıyı
+    <b>satır başına tek karakter</b> olarak böler (1dp genişlikte ölçüldü).
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">Rehber işareti kartı sabit parçalardan uzak durur</h4>
+  <p>
+    Yatay kipte kart eskiden tam üst ya da alt kenara gönderiliyordu — tam da başlıkların ve HUD parçalarının
+    bulunduğu yere; demoda başlığın <code>→ ×</code> kısmının üstüne oturmuştu. Artık hedefiyle aynı hizada
+    kalıyor, yer ayıran her <code>GoHudAnchor</code>'ın etrafından dolaşıyor ve kaçınılacak diğer şeyleri
+    <code>keep_clear</code> üzerinden alıyor. Engeli hedefin üstünü kapatmadan aşacak en kısa mesafeyi
+    hareket eder ve ekran her şeyden kaçınmaya yetmeyecek kadar küçükse yerinde kalır — üst üste binmek
+    yok olmaktan iyidir. Sayfanın <b>üstünde</b> okunmasını sağlayan derinliği kaplama ayarlarından gelir
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; pahlı kaplamalar <code>float_glow_size</code> kullanır).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # anchor olmayan sabit parçalar</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Fareli ve klavyeli ekranlar</h3>
+  <p>
+    Bir parmağın <b>üstüne gelme durumu yoktur.</b> Yalnızca mobili düşünerek geliştirin, yalnızca masaüstünde
+    olan iki durum denetimsiz kalır — ve biri bozuktu: gohud'un <b>odak halkası birincil düğmede
+    görünmüyordu.</b> Panel vurgu rengiydi ve halka da öyleydi: <code>1.00:1</code>, kendi üstüne çizilmiş
+    aynı renk. Klavyeyle gezinirken nerede olduğunuzu anlamanın yolu yoktu.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="Aynı düğme sırası üç durumda — normal, fare üstünde, klavye odağı" loading="lazy">
+    <figcaption>Yukarıdan aşağıya: <b>normal · üstüne gelme · odak</b>. Dolgulu düğmeler, kendi paneliyle kontrast oluşturan bir halka alır.</figcaption>
+  </figure>
+  <p>
+    Dolgulu düğmeler (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) <b>kendi paneliyle
+    kontrast oluşturan</b> bir halka kullanır — koyu temada koyu, açık temada beyaz, bilimkurguda koyu bir
+    hedefleme köşeliği. Kontrast denetleyicisi <b>odak halkasını üstünde durduğu panele karşı</b> ölçer, bu
+    yüzden kural bir palet değişikliğinden sağ çıkar (WCAG 2.4.11 odak göstergelerinde 3:1 ister).
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>HUD widget'ları</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — dokuz nokta</h3>
+  <p>Güvenli alana ve kenar boşluklarına uyar. Ona bir <code>landscape_spot</code> verin, yatay kipte yer
+    değiştirsin — dikeyde alt ortada duran denetimler bunun yerine sağ alta gidebilir.</p>
+  <div class="note">
+    <b>Neden var.</b> HUD parçası başına elle yazıldığında anchor'lar ve offset'ler birbirinden ayrışır: çentikli
+    bir cihazda can çubuğu kamera deliğinin altında kalır, yatay kipte bir denetim düğmesi hareket çubuğunun
+    üstüne iner. O aritmetik tek bir yerde yaşıyor.
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">İçeriği HUD'ın altından çıkarmak</h4>
+  <p>
+    Kaydırılan bir ekran, ekranı bir HUD ile paylaştığında içerik <b>onun altına</b> kayar ve iki yazı kümesi
+    hiçbiri okunmaz hâle gelene kadar üst üste biner. Bu eklentide iki kez oldu: bir giriş alanının yer tutucu
+    yazısı hızlı slotların arasından sıkışıp çıktı ve bir ayar anahtarının topuzu can çubuğunun üstüne indi.
+  </p>
+  <pre><code>form.avoid_hud = true                  # görünen her GoHudAnchor'dan uzak dur
+joystick_anchor.reserve_space = false  # …yalnızca parmak altında beliren anchor'lar hariç</code></pre>
+  <p>
+    Her dikdörtgenden <b>en az alana mal olan</b> yönde kaçınılır. Sağ üstteki bir çubuğun etrafından dikey
+    tutulan bir telefonda aşağı doğru (yüksekliğin %13'ü), yatayda ise yana doğru (genişliğin %21'i) dolaşılır —
+    yatay kipte dikey olarak kaçınmak ekranın %27'sine mal olurdu. Zaten feda edilmiş alan, bir sonraki
+    dikdörtgen ölçülmeden önce düşülür.
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD parçaları birbiriyle de çarpışır</h4>
+  <p>
+    Dokuz nokta ekranı böler; parçaların <b>birbirini ıskalayacağını</b> garanti etmez. Üst ortadaki geniş bir
+    snackbar, sağ üstteki can çubuğunun tam üstüne indi ve değeri gizledi — ne kadar can kaldığını
+    okuyamıyordunuz.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # sabit HUD'ın altına yerleşir
+notice_anchor.reserve_space = false   # ve görünürken sayfayı itmez</code></pre>
+  <p>
+    <b>Yalnızca dikey olarak</b> kenara çekilir — yana da kaymak, ortalanmış bir bildirimin her görünüşünde
+    başka bir yerde belirmesine yol açardı. Üstelik yalnızca <b>kendisi kenara çekilmeyen</b> parçalardan
+    kaçınır: ikisi birden çekilirse, ikisi sonsuza dek yer değiştirir.
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — can, mana, deneyim</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # yalnızca dolguya özgü token
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Değişimler 0.18 saniyede yumuşatılır — zıplayan bir can çubuğu darbenin ne kadar sert olduğunu
+    anlatmaz. <code>reduce_motion</code> bunu anında yapar. Büyük sayılar <code>12.3k</code> gibi kısaltılır,
+    böylece basamaklar gelip gittikçe çubuğun genişliği titremez.</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — tek bir hızlı slot</h3>
+  <p>Simge, adet, bekleme süresi ve kısayol <b>tek bir yüzde</b>. Rozetleri küçük bir dairenin kenarına
+    asmak her slotu başka genişlikte yapar ve sıra yalpalar.</p>
+  <div class="note">
+    <b>Görünen boyut ile dokunma boyutu farklıdır.</b> Sıkışık slotların 48dp'lik dokunma kutuları üst üste
+    biner; çakışan bölge <b>merkezi daha yakın olan slota</b> gider — bunu birbirlerine
+    <code>touch_peers</code> üzerinden bildirin.
+  </div>
+
+  <p><code>keyboard_focus</code> varsayılan olarak kapalıdır, böylece sekiz slotluk bir sıra, Tab sırasında klavye
+    kullanan biriyle bütün ayar denetimlerinin arasına girmez. Girdi yalnızca klavye ya da oyun kumandasıysa açın.</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — sanal joystick</h3>
+  <table>
+    <thead><tr><th>Kip</th><th>Davranış</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Her zaman aynı yerde — bakmadan bulması kolay</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Başparmağın indiği yerde belirir</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Belirdikten sonra başparmağı izlemeyi sürdürür — uzun hareketler için rahat</td></tr>
+    </tbody>
+  </table>
+  <p><code>moved</code> sinyalinden gelen <code>Vector2</code>'nin uzunluğu 0–1 arasındadır, yani doğrudan bir
+    hızla çarpabilirsiniz; ekran boyutuna ya da DPI'ya göre değişmez.</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — küçük görünür, büyük basılır</h3>
+  <div class="note warn">
+    <b>Yalnızca kardeşleri girdiyi yok saydığı sürece güvenlidir.</b> Genişletilmiş alan bir sonraki
+    düğmenin üstünü kaplarsa, o düğme yanıt vermeyi bırakır. Yan yana duran simge düğmelerinin
+    <code>touch_peers</code>'a ihtiyacı vardır.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← Oyuncuya bir şey söylemek</a> · <a href="widgets-feedback.html">Beklemek, bildirmek, saymak →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

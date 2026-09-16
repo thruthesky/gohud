@@ -1,7 +1,7 @@
 # Surfaces — GoSurface, GoSheet, GoDialogs, GoForm, GoScroll
 
 Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`, `widgets/go_form.gd`,
-`widgets/go_scroll.gd`. Web: https://thruthesky.github.io/gohud/widgets.html#surfaces
+`widgets/go_scroll.gd`. Web: https://thruthesky.github.io/gohud/widgets-surfaces.html#surfaces
 
 ## Contents
 

@@ -77,7 +77,7 @@ TEXT = {
         "need": "You need Godot 4.6 or newer on your <code>PATH</code> for the preview commands.",
     },
     "ko": {
-        "copy_h2": "이 한 덩이를 코딩 에이전트에 붙여 넣는다",
+        "copy_h2": "이걸 코딩 에이전트에 붙여 넣는다",
         "copy_sub": "에이전트에서 Godot 프로젝트를 열고, 아래 글을 붙여 넣어 보낸다. 스킬과 애드온을 설치하고 "
                     "gohud 로 무엇을 할 수 있는지까지 알려 준다.",
         "copy_note": "이 글은 일부러 영어로 두었다 — 어떤 에이전트든 가장 정확히 읽는 말이다. 당신이 묻는 말은 "
@@ -94,12 +94,12 @@ TEXT = {
         "row_others": "그 밖",
         "copy_cta": "복사할 글 보기",
         "card_h2": "가장 빠른 길 — AI 에게 설치를 맡긴다",
-        "card_body": "글 한 덩이를 Claude Code·Codex·Cursor·Gemini CLI 에 붙여 넣으면 스킬과 애드온을 함께 설치하고 gohud 를 설명까지 해 준다. 그 길로 가면 이 카드 아래의 것은 하나도 필요 없다.",
-        "card_cta": "AI SKILL 쪽 열기 →",
+        "card_body": "아래 글을 그대로 Claude Code·Codex·Cursor·Gemini CLI 에 붙여 넣으면 스킬과 애드온을 함께 설치하고 gohud 를 설명까지 해 준다. 그 길로 가면 이 카드 아래의 것은 하나도 필요 없다.",
+        "card_cta": "AI SKILL 페이지 열기 →",
         "need": "미리보기 명령을 쓰려면 <code>PATH</code> 에 Godot 4.6 이상이 있어야 한다.",
     },
     "ja": {
-        "copy_h2": "このひとかたまりをコーディングエージェントに貼る",
+        "copy_h2": "これをコーディングエージェントに貼り付ける",
         "copy_sub": "エージェントで Godot プロジェクトを開き、下の文を貼って送る。スキルとアドオンを入れ、"
                     "gohud で何ができるかまで教えてくれる。",
         "copy_note": "この文はわざと英語にしてある — どのエージェントもいちばん正確に読む言葉だからだ。"
@@ -116,7 +116,7 @@ TEXT = {
         "row_others": "その他",
         "copy_cta": "貼る文を見る",
         "card_h2": "いちばん速い道 — AI にインストールを任せる",
-        "card_body": "ひとかたまりの文を Claude Code・Codex・Cursor・Gemini CLI に貼れば、スキルとアドオンを一緒に入れ、gohud の説明までしてくれる。その道を行くなら、このカードから下は一つも要らない。",
+        "card_body": "下の文をそのまま Claude Code・Codex・Cursor・Gemini CLI に貼れば、スキルとアドオンを一緒に入れ、gohud の説明までしてくれる。その道を行くなら、このカードから下は一つも要らない。",
         "card_cta": "AI SKILL のページを開く →",
         "need": "プレビューのコマンドには <code>PATH</code> に Godot 4.6 以上が要る。",
     },

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="大きなパネルをいくら磨いても、目に留まるのはいつも小さなものだ — 途中で切れた単語、欠けた発光、 窮屈なスロット。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">ウィジェット</a>
+      <a href="theming.html">テーマ</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="widgets-hud.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+          <a href="../zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← ウィジェット</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="ウィジェット">
+  <!-- subnav:begin -->
+  <a href="widgets.html">ウィジェット</a>
+  <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
+  <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">待たせる、伝える、数える</a>
+  <a href="widgets-forms.html">フォームとリスト</a>
+  <a href="widgets-shapes.html">ゲームで実際に使う形</a>
+  <a href="widgets-overlays.html">画面の上に重ねる</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 作る場所を1つにする</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">出来を決めるのは小さなところだ</h3>
+  <p>
+    大きなパネルをいくら磨いても、目に留まるのはいつも小さなものだ — 途中で切れた単語、欠けた発光、
+    窮屈なスロット。2026-09-13 にそうした4つが指摘され、デモ画面ではなくウィジェットとテーマの側で直した。
+    だから、どの画面でも同じ結果になる。
+  </p>
+  <table>
+    <thead><tr><th>何が起きたか</th><th>原因</th><th>直し方</th></tr></thead>
+    <tbody>
+      <tr><td>コーチマークの <code>Done</code> が <code>Don</code>/<code>e</code> になった</td>
+          <td>折り返しを有効にしたボタンは<b>文字幅を最小幅から差し引く</b> — 狭められると単語の途中で割れる</td>
+          <td><code>GoStyle.fit_words()</code>: 1単語なら決して折り返さず、複数語なら折り返すが<b>いちばん長い単語</b>は必ず収まる。判定は翻訳キーではなく<b>実際に表示される</b>文字で行い、言語が変わればフォームが付け直す</td></tr>
+      <tr><td>全幅ボタンの発光が、左側だけ縦に切れた</td>
+          <td>スクロールコンテナは例外なく自分の端で切り取る。右だけはレールの余白のおかげで残っていた</td>
+          <td><code>GoScroll</code> が親の余白を借りて端を 12dp 外へ押し出し、内側で返す — <b>中身の位置は動かない</b></td></tr>
+      <tr><td>スロットの中で、時間・アイコン・個数が縦に積み上がった</td>
+          <td>48dp の中に3行あった</td>
+          <td>アイコンは中央に大きく、ショートカットは左上、個数は右下の<b>バッジ</b>、残り時間はアイコンに重ねたバッジへ — バッジのパネルはスキンの <code>badge_box()</code> から来る</td></tr>
+      <tr><td>ドロップダウンが平坦で、どれを選んでいるか見えない</td>
+          <td>項目のホバーにボタンのパネルを使い、ラジオの印はエンジンの薄い既定のままだった</td>
+          <td>専用のホバーパネル（淡いアクセント）、チェックボックスと同じラジオの絵、タッチに合わせた項目の高さ</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="開いたドロップダウン — 淡いアクセントのホバーパネルと、選択中の項目のラジオ印" loading="lazy">
+      <figcaption>ドロップダウン — ホバーパネルとラジオ印</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="4つのクイックスロット — 左上にショートカット、右下に個数バッジ、先頭には残り時間のバッジ" loading="lazy">
+      <figcaption>スロット — 隅のバッジと残り時間（SF）</figcaption>
+    </figure>
+  </div>
+  <p>
+    アイコンだけのボタンには <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> で説明を与える —
+    マウス利用者へのツールチップも、スクリーンリーダー向けのアクセシビリティ名も、この1つの値から取る。
+    ツールチップは gohud が自分で描く。エンジンの既定は、幅の計算が狂うと文字を<b>1文字ずつ改行</b>してしまう
+    （幅 1dp と実測された）。
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">コーチマークのカードは固定物を避ける</h4>
+  <p>
+    横持ちでは、カードが画面のいちばん上か下の端へ送られていた — ヘッダーや HUD がちょうど居座る場所だ。
+    デモではヘッダーの <code>→ ×</code> の上に重なっていた。いまは対象と同じ高さにとどまり、場所を確保している
+    <code>GoHudAnchor</code> を回り込み、そのほか避けたいものは <code>keep_clear</code> で受け取る。
+    対象を覆わずに障害物から外れる最短の距離だけ動き、画面が狭くてすべてを避けきれないときはその場にとどまる —
+    重なるほうが、消えるよりましだ。<b>ページより上に</b>あると読めるだけの立体感は、スキンのダイヤルから来る
+    (<code>float_shadow_size</code>、<code>float_shadow_lift</code>、<code>float_shadow_alpha</code>。面取り系のスキンは <code>float_glow_size</code>)。
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # アンカーではない固定物</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">マウスとキーボードのある画面</h3>
+  <p>
+    指には<b>ホバー状態がない。</b> モバイルだけを見て作ると、デスクトップにしかない2つの状態が未確認のまま残る —
+    そして実際、片方は壊れていた。gohud の<b>フォーカスリングが主ボタンの上で見えなかった</b>のだ。パネルが
+    アクセント色で、リングも同じ色。<code>1.00:1</code>、同じ色を同じ色の上に描いていた。キーボードで移動すると、
+    自分がどこにいるのか分からなかった。
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="同じボタンの列を3つの状態で — 通常、マウスホバー、キーボードフォーカス" loading="lazy">
+    <figcaption>上から <b>通常 · ホバー · フォーカス</b>。塗りつぶしのボタンには、自分のパネルと対比するリングが付く。</figcaption>
+  </figure>
+  <p>
+    塗りつぶしのボタン（<code>GoPrimaryButton</code>、<code>GoDangerSolidButton</code>）は
+    <b>自分のパネルと対比する</b>リングを使う — ダークテーマでは暗く、ライトテーマでは白く、SF では暗い照準
+    ブラケットになる。コントラスト検査は<b>フォーカスリングを、それが載っているパネルに対して</b>測るので、
+    パレットを変えてもこの規則は生き残る（WCAG 2.4.11 はフォーカス表示に 3:1 を求めている）。
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>HUD ウィジェット</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 9か所</h3>
+  <p>セーフエリアと画面端の余白を尊重する。<code>landscape_spot</code> を与えれば横持ちで移動する —
+    縦持ちで下中央にあるコントロールを、横持ちでは右下へ回せる。</p>
+  <div class="note">
+    <b>なぜ必要か。</b> HUD ごとに手で書いたアンカーとオフセットは必ずずれていく。ノッチのある端末では体力バーが
+    カメラの切り欠きの下に入り、横持ちでは操作ボタンがジェスチャーバーの上に載る。その算術を1か所に集めてある。
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">本文を HUD の下に潜り込ませない</h4>
+  <p>
+    スクロールする画面が HUD と同じ表示面を分け合うと、本文はその<b>下へ</b>滑り込み、2組の文字が重なって
+    どちらも読めなくなる。このアドオンでも2度起きた。入力欄のプレースホルダーがクイックスロットの間から
+    はみ出し、設定のトグルのつまみが体力バーの上に載った。
+  </p>
+  <pre><code>form.avoid_hud = true                  # 表示中の GoHudAnchor をすべて避ける
+joystick_anchor.reserve_space = false  # …指が触れたときだけ現れるものは除く</code></pre>
+  <p>
+    それぞれの矩形は<b>失う面積がいちばん小さい</b>方向へ避ける。右上のバーは、縦持ちのスマートフォンでは下へ
+    回り込み（高さの 13%）、横持ちでは横へ回り込む（幅の 21%） — 横持ちで縦に避ければ画面の 27% を失う。
+    すでに明け渡した領域は、次の矩形を測る前に差し引かれる。
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD どうしもぶつかる</h4>
+  <p>
+    9か所は画面を分割するだけで、部品どうしが<b>ぶつからない</b>ことまでは保証しない。上中央の幅広い
+    スナックバーが、右上の体力バーの真上に着地して値を隠した — 残り体力が読めなかったのだ。
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # 固定 HUD の下へ落ち着く
+notice_anchor.reserve_space = false   # 出ている間にページを押しのけたりはしない</code></pre>
+  <p>
+    よけるのは<b>縦方向だけ</b>だ — 横にも動かすと、中央揃えのトーストが出るたびに違う場所に現れてしまう。
+    しかも、避けるのは<b>自分からはよけない</b>部品に対してだけだ。両方が譲ると、2つは永遠に場所を入れ替え続ける。
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 体力・マナ・経験値</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 塗り専用のトークン
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>変化は 0.18 秒かけてなめらかに動く — 跳ねる体力バーは、どれだけ強く殴られたのかを伝えない。
+    <code>reduce_motion</code> にすれば即座に反映する。大きな数は <code>12.3k</code> のように略記するので、
+    桁が増減してもバーの幅が揺れない。</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — クイックスロット1つ</h3>
+  <p>アイコン、個数、クールダウン、ショートカットを<b>1つの面</b>に収める。小さな円にバッジをぶら下げると、
+    スロットごとに幅が変わって列が揺れてしまう。</p>
+  <div class="note">
+    <b>見える大きさと押せる大きさは違う。</b> 詰めて並べたスロットは 48dp のタッチ領域が重なる。重なった分は
+    <b>中心が近いほうのスロット</b>が取る — <code>touch_peers</code> で互いの存在を教えておく。
+  </div>
+
+  <p><code>keyboard_focus</code> は既定で無効だ。8個並んだスロットが、キーボード利用者と設定項目すべての間に
+    Tab 順で割り込まないようにするためである。キーボードやゲームパッドが唯一の入力手段なら有効にする。</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — バーチャルスティック</h3>
+  <table>
+    <thead><tr><th>モード</th><th>ふるまい</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>常に同じ場所 — 見なくても指が届く</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>親指を置いた場所に現れる</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>現れたあとも親指を追い続ける — 長く動かすときに楽だ</td></tr>
+    </tbody>
+  </table>
+  <p><code>moved</code> が渡す <code>Vector2</code> は長さ 0〜1 なので、そのまま速度に掛けられる。
+    画面サイズや DPI で変わることもない。</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 小さく見えて大きく押せる</h3>
+  <div class="note warn">
+    <b>安全なのは、隣が入力を受け取らないときだけだ。</b> 広げた領域が隣のボタンに重なると、そのボタンは
+    反応しなくなる。並べて置くアイコンボタンには <code>touch_peers</code> が要る。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← プレイヤーに何かを伝える</a> · <a href="widgets-feedback.html">待たせる、伝える、数える →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

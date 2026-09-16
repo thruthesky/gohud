@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-own.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-own.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-own.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-own.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-own.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-own.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-own.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-own.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-own.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-own.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-own.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-own.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-own.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-own.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-own.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-own.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-own.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-own.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kendi ön ayarınız — tek bir dosya — gohud</title>
+<meta name="description" content="Eskiden bir tema eklemek dört yeri elle düzenlemek demekti — üreticinin paleti, biçim, bir kaplama, bir ön ayar kaynağı.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Genel bakış</a>
+      <a href="install.html">Kurulum</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget'lar</a>
+      <a href="theming.html" aria-current="page">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Türkçe</summary>
+        <div class="langs-list">
+          <a href="../theming-own.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-own.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-own.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-own.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-own.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-own.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-own.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-own.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-own.html" hreflang="fr" lang="fr">Français</a>
+          <a href="theming-own.html" hreflang="tr" lang="tr" aria-current="true">Türkçe</a>
+          <a href="../pl/theming-own.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-own.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-own.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-own.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-own.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-own.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-own.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Kendi ön ayarınız — tek bir dosya</h1>
+    <p class="lead"><a href="theming.html">← Tema</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Tema">
+  <!-- subnav:begin -->
+  <a href="theming.html">Tema</a>
+  <a href="theming-presets.html">Üç katman</a>
+  <a href="theming-tokens.html">Token'lar</a>
+  <a href="theming-opacity.html">Opaklık — panelin arkasındaki oyun</a>
+  <a href="theming-skins.html">Kaplamalar — bir Theme'in erişemediği yer</a>
+  <a href="theming-own.html" aria-current="page">Kendi ön ayarınız — tek bir dosya</a>
+  <a href="theming-contrast.html">Okunaklılık ölçülür</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="own">
+  <p class="sub">
+    Eskiden bir tema eklemek dört yeri elle düzenlemek demekti — üreticinin paleti, biçim, bir kaplama, bir
+    ön ayar kaynağı. Artık tek bir komut hepsini yerine koyuyor.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # tema .tres + denetim grafikleri
+godot --headless --path . --import                  # yeni grafikleri bir kez içe aktar
+GoUi.use_preset(&amp;"neon")                             # bitti — seçicide de görünür</code></pre>
+  <p>
+    İlk satır <code>themes/palettes/neon.json</code> ve <code>themes/presets/neon.tres</code> dosyalarını
+    yazar. JSON, <b>devraldığı temanın her değerini</b> açık açık taşır; böylece aynı zamanda
+    değiştirebileceklerinizin listesi olur: üst temanın değerini korumak için bir anahtarı silin, ezmek için
+    yazın. Ön ayarlar <code>themes/presets/</code> klasörü <b>taranarak</b> bulunur, yani hiçbir kayıt kodu
+    değişmez — proje ayarındaki açılır liste de onu kendiliğinden alır.
+  </p>
+
+  <h3 id="what-you-can-change-on-one-page">Neleri değiştirebilirsiniz — tek sayfada</h3>
+  <table>
+    <thead><tr><th>Nerede</th><th>Ne</th><th>Nasıl</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>üst tema</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … ya da başka bir JSON teması. Atlanan anahtarlar onun değerlerini devralır; devralma döngüsü hata verir</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>arka plan · üç yüzey · kenarlık · üç yazı tonu · vurgu · dört durum rengi · scrim · gölge · çubuk oluğu</td><td><code>"#RRGGBB"</code>, alfa için <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>yalnızca dolguya özgü canlı renkler <code>*_vivid</code></td><td>yazı rengi koyulaşmak zorunda kalsa bile çubukları doygun tutar — birini eksik bırakırsanız üretici bunu bildirir</td></tr>
+      <tr data-group="palette"><td>okunaklılık</td><td><b>elle ayarlanmaz.</b> Yazı, kenarlıklar, vurgu ve onun üstündeki etiket, eşikleri geçene kadar üretici tarafından itilir — yalnızca vurguyu değiştirin, denetimler yine geçsin</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (yuvarlak) · <code>cut</code> (pahlı köşeler) · <code>medieval</code> (dövme çerçeveler)</td></tr>
+      <tr data-group="shape"><td>boyutlar</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — token'lar peşinden gelir, böylece paneller ile widget hesapları asla çelişmez</td></tr>
+      <tr data-group="shape"><td>yalnızca <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>yalnızca <code>medieval</code></td><td><code>material</code> (0 demir · 1 deri · 2 parşömen) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> eklenti içindeki <code>res://</code> yazı tipi dosyalarıyla eşleştirilir</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — kodun kendi çizdiği yerler için aile (joystick, slotlar, rozetler, rehber işareti halkası, chip'ler, ayırıcılar)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — o yerlerin <b>sayıları</b>: slot kenarlık kalınlığı ve tonu, rozet iç boşluğu, chip ve uyarı saydamsızlığı, joystick halka kalınlığı ve saydamsızlığı, bilimkurgu pah boyutları, ışıma ve köşelik</td><td>Üst temanın her değeri JSON'da açık açık yazılıdır. Üretici bunları <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> dosyasına yazar — <b>hiçbir kaplama koduna dokunulmaz</b>. Yalnızca çizimlerin kendisini değiştirmek için <code>--new-skin</code> çalıştırırsınız; bu da bir <code>GoSkin</code> alt sınıfının iskeletini oluşturur</td></tr>
+      <tr><td><code>icons</code></td><td>simge seti</td><td>bir <code>GoIconSet</code> kaynağına giden <code>res://</code> yolu — atlandığında JSON üst temasından korunur</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>seçicide nasıl görüneceği</td><td>boolean · metin</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="every-dial">Bütün ayarlar</h3>
+  <p>
+    Aşağıdaki tabloyu <code>tools/make_site.py</code> <b>doğrudan kaplama betiklerinin</b> <code>@export</code>
+    satırlarından doldurur — bir ayar ekleyin ya da bir varsayılanı değiştirin, tablo peşinden gelsin. Bu adları
+    JSON içinde <code>skin.dials</code> altında kullanın. Varsayılanı <code>14</code> okunan bir ayar tam sayıdır,
+    <code>10.0</code> okunan ise ondalıklıdır — JSON'a hangi biçimde yazarsanız yazın, üretici betiğin türüne
+    dönüştürür.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4 id="default-skin-goskin-17">Varsayılan kaplama <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Varsayılan">0.16</td><td>Bir chip panelinin dolgu saydamsızlığı.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Bir chip panelinin kenar saydamsızlığı.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Varsayılan">0.1</td><td>Bir uyarı kutusunun panelinin durum rengine ne kadar yaklaştırılacağı.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Varsayılan">0.24</td><td>Bekleme süresi işlerken hızlı slot panelinin vurgu tonu.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Varsayılan">0.08</td><td>Boştayken hızlı slot panelinin vurgu tonu.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Varsayılan">2</td><td>Bekleme süresi işlerken hızlı slot kenarlık kalınlığı (dp).</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Varsayılan">1</td><td>Boştayken hızlı slot kenarlık kalınlığı (dp).</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Varsayılan">5</td><td>Bir rozetin (adet, kalan süre) yatay iç boşluğu (dp).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Varsayılan">1</td><td>Bir rozetin dikey iç boşluğu (dp).</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Varsayılan">0.6</td><td>Bir rozet panelinin kenar saydamsızlığı.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Yüzen kartların (rehber işareti, soru kartı) gölge saydamsızlığı.</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Varsayılan">14</td><td>Yüzen kartların gölge bulanıklığı (dp).</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Varsayılan">4</td><td>Yüzen bir kartın gölgesinin aşağı doğru kayması (dp).</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Varsayılan">10.0</td><td>Gölge yerine ışıyan yüzen bir panelin ışıma mesafesi (dp); bilimkurgunun pahlı paneli gibi.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Varsayılan">0.42</td><td>Joystick'in taban diskinin saydamsızlığı.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Joystick halkasının saydamsızlığı.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Varsayılan">2.0</td><td>Joystick halkasının kalınlığı (dp).</td></tr>
+    </tbody>
+  </table>
+  <h4 id="sci-fi-skin-goskinscifi-10">Bilimkurgu kaplaması <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Varsayılan">7.0</td><td>Bir chip panelinin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Varsayılan">5.0</td><td>Bir iskelet panelinin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Varsayılan">8.0</td><td>Bir uyarı kutusunun pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Varsayılan">8.0</td><td>Bölümlü bir denetimin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Varsayılan">6.0</td><td>Bir hızlı slot panelinin pah boyutu (dp).</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Varsayılan">0.24</td><td>Avatarların ve disklerin pahı = çap × bu oran.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Varsayılan">0.45</td><td>Bekleme süresi işleyen bir slotun ışıma saydamsızlığı.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Varsayılan">6.0</td><td>Bekleme süresi işleyen bir slotun ışıma mesafesi (dp).</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Varsayılan">12.0</td><td>Rehber işaretinin hedefleme köşeliğinin kol uzunluğu (dp).</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Varsayılan">2.0</td><td>Rehber işaretinin hedefleme köşeliğinin çizgi kalınlığı (dp).</td></tr>
+    </tbody>
+  </table>
+  <h4 id="medieval-skin-goskinmedieval-5">Ortaçağ kaplaması <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Varsayılan">4.0</td><td>Ortaçağ hızlı slot çerçevesinin köşe yarıçapı (dp).</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Varsayılan">0.035</td><td>Hızlı slotların içindeki hafif deri izlerinin saydamsızlığı.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Varsayılan">1.0</td><td>Hızlı slot köşelerindeki metal süslerin ölçeği. Menü çerçeveleri shape.ornament_scale kullanır.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Varsayılan">0.18</td><td>Hızlı slot kenarları boyunca uzanan metal ışıltının şiddeti.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Varsayılan">1</td><td>Hızlı slotlarda küçük metal perçinleri göster: 0 gizler, 1 gösterir.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3 id="subclass-the-skin-optional">Kaplamanın alt sınıfını türetin (isteğe bağlı)</h3>
+  <p>Yalnızca temanın ve biçimin erişemediği şeyler — joystick'in altıgeni, slot rozetleri, rehber işaretinin
+    hedefleme köşeliği — bir kaplamada yaşar. <code>GoSkin</code>'in alt sınıfını türetin, yalnızca o metotları
+    ezin ve JSON'daki <code>skin</code> alanını o kaynağa yöneltin. Yalnızca renk değiştiren bir tema bu adımı
+    atlar.</p>
+
+  <div class="note">
+    <b>Bir denetim sözü tutar.</b> <code>tools/check_scaffold.sh</code> her çalıştırmada kullan-at bir tema
+    oluşturur — vurguyu değiştirir, yarıçapı 4 yapar — ve silmeden önce üretimi, token yayılımını ve temiz bir
+    kontrast geçişini doğrular. İlk çalıştırma, yalnızca vurgusu değiştirilmiş bir temanın <b>8 çiftte</b>
+    başarısız olduğunu ortaya çıkardı: üretici yazı renklerini itiyor ama vurguyu yazıldığı gibi kullanıyordu.
+    Artık vurguyu ve onun üstündeki etiketi de itiyor.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-skins.html">← Kaplamalar — bir Theme'in erişemediği yer</a> · <a href="theming-contrast.html">Okunaklılık ölçülür →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

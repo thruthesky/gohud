@@ -84,8 +84,8 @@
 <section id="ai-first">
   <div class="note ai-card">
     <h2>가장 빠른 길 — AI 에게 설치를 맡긴다</h2>
-    <p>글 한 덩이를 Claude Code·Codex·Cursor·Gemini CLI 에 붙여 넣으면 스킬과 애드온을 함께 설치하고 gohud 를 설명까지 해 준다. 그 길로 가면 이 카드 아래의 것은 하나도 필요 없다.</p>
-    <p><a class="btn primary" href="ai.html#copy">AI SKILL 쪽 열기 →</a></p>
+    <p>아래 글을 그대로 Claude Code·Codex·Cursor·Gemini CLI 에 붙여 넣으면 스킬과 애드온을 함께 설치하고 gohud 를 설명까지 해 준다. 그 길로 가면 이 카드 아래의 것은 하나도 필요 없다.</p>
+    <p><a class="btn primary" href="ai.html#copy">AI SKILL 페이지 열기 →</a></p>
   </div>
 </section>
 
@@ -127,7 +127,7 @@ if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
   <h3 id="a-bottom-sheet-with-a-sticky-search-field-and-fo">검색 칸과 바닥 버튼이 고정된 바텀 시트</h3>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
-sheet.open("가방")
+sheet.open("인벤토리")
 sheet.toolbar().add_child(GoStyle.line_edit("검색…"))
 sheet.toolbar().visible = true
 for item in items:
@@ -158,7 +158,7 @@ hp.set_values(320, 500)</code></pre>
 joystick_anchor.reserve_space = false  # 손을 얹을 때만 나타나는 것은 빼고
 notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 그 아래로 내려앉는다</code></pre>
   <p>칸마다 잃는 면적이 가장 작은 방향으로 피한다 — 세로 화면에서는 아래로, 가로 화면에서는 옆으로.
-    <a href="widgets.html#hud">HUD 가 서로 비키는 방식 →</a></p>
+    <a href="widgets-hud.html#hud">HUD 가 서로 비키는 방식 →</a></p>
 </section>
 
 <section id="examples">
@@ -169,8 +169,8 @@ notice_anchor.avoid_peers = true       # 알림은 고정 HUD 를 덮지 않고 
     <thead><tr><th>예제</th><th>여는 법</th><th>보여 주는 것</th></tr></thead>
     <tbody>
       <tr><td>갤러리</td><td><code>examples/gallery/gallery.tscn</code> · F6</td><td>모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체</td></tr>
-      <tr><td>중세</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>캐릭터 정보·가방·퀘스트 일지. 버튼으로 철·양피지를 바꾸고 아이템 설명을 연다</td></tr>
-      <tr><td>데모 앱</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>갤러리·15장면 자동 시연·쇼케이스·중세 화면을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다</td></tr>
+      <tr><td>중세</td><td><code>examples/medieval/medieval.tscn</code> · F6</td><td>캐릭터 정보·인벤토리·퀘스트 일지. 버튼으로 철·양피지를 바꾸고 아이템 설명을 연다</td></tr>
+      <tr><td>데모 앱</td><td><code>cd examples/demo &amp;&amp; godot</code></td><td>갤러리·19장면 자동 시연·쇼케이스·중세 화면을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다</td></tr>
     </tbody>
   </table>
 

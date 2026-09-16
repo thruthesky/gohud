@@ -1,5 +1,5 @@
 ---
-description: Open a gohud preview window — the widget gallery, the medieval example, the demo app (home screen plus the 15-chapter tour), or one of your own scenes
+description: Open a gohud preview window — the widget gallery, the medieval example, the demo app (home screen plus the 19-chapter tour), or one of your own scenes
 argument-hint: "[gallery|medieval|demo|list|res://scene.tscn] [--preset scifi_dark] [--phone] [--explore hud] [--check]"
 allowed-tools: Bash(python3:*), Bash(python:*), Read
 ---

@@ -249,7 +249,7 @@
     </figure>
   </div>
   <p>Entrambe le immagini sono <code>examples/medieval/medieval.tscn</code>, costruita con i widget standard.
-    <a href="theming.html#medieval">La guida medievale e come creare il tuo regno →</a></p>
+    <a href="theming-presets.html#medieval">La guida medievale e come creare il tuo regno →</a></p>
 
   <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">La stessa schermata su telefono e su desktop</h3>
   <p>
@@ -290,7 +290,7 @@
   <div class="note">
     <b>Un tema nuovo è un solo file JSON.</b> <code>new_theme.py kingdom --from medieval_dark</code> scrive una palette che
     esplicita ogni valore ereditato; <code>make_theme.py kingdom</code> costruisce il tema, la grafica dei controlli e
-    le manopole della sua skin, e il preset compare nel selettore. <a href="theming.html#own">Ogni impostazione e ogni manopola →</a>
+    le manopole della sua skin, e il preset compare nel selettore. <a href="theming-own.html#own">Ogni impostazione e ogni manopola →</a>
   </div>
 </section>
 
@@ -351,6 +351,51 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyle</code></td><td>statico</td><td>Pulsanti, righe di lista, campi, chip, tabelle, schede e altro, fatti tutti nello stesso modo</td></tr>
     </tbody>
   </table>
+
+  <h3 id="waiting-telling-counting">Aspettare, dire, contare</h3>
+  <table>
+    <thead><tr><th>Classe</th><th>Base</th><th>Cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSnackbar</code></td><td>Node</td><td>il messaggio che si colloca da sé</td></tr>
+      <tr><td><code>GoSpinner</code></td><td>Control</td><td>un'attesa di cui non si vede la fine</td></tr>
+      <tr><td><code>GoBadge</code></td><td style="white-space:nowrap">PanelContainer</td><td>il puntino dei non letti, l'etichetta NUOVO, il 99+</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="forms-and-lists">Moduli e liste</h3>
+  <table>
+    <thead><tr><th>Classe</th><th>Base</th><th>Cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoField</code></td><td style="white-space:nowrap">VBoxContainer</td><td>la riga che può essere sbagliata</td></tr>
+      <tr><td><code>GoInputGroup</code></td><td style="white-space:nowrap">HBoxContainer</td><td>un campo saldato al suo pulsante</td></tr>
+      <tr><td><code>GoCombobox</code></td><td>Button</td><td>un selettore che cerca</td></tr>
+      <tr><td><code>GoCodeInput</code></td><td style="white-space:nowrap">VBoxContainer</td><td>codici coupon e codici regalo</td></tr>
+      <tr><td><code>GoTable</code></td><td style="white-space:nowrap">VBoxContainer</td><td>intestazioni ordinabili, righe selezionabili</td></tr>
+      <tr><td><code>GoPagination</code></td><td style="white-space:nowrap">HBoxContainer</td><td>pagine, oppure una riga Altro</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="shapes-games-actually-use">Forme che i giochi usano davvero</h3>
+  <table>
+    <thead><tr><th>Classe</th><th>Base</th><th>Cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoRewardCalendar</code></td><td style="white-space:nowrap">VBoxContainer</td><td>presenze giornaliere</td></tr>
+      <tr><td><code>GoRadar</code> · <code>GoDonut</code></td><td>Control</td><td>le statistiche a colpo d'occhio</td></tr>
+      <tr><td><code>GoCarousel</code></td><td style="white-space:nowrap">VBoxContainer</td><td>banner e selezione del personaggio</td></tr>
+      <tr><td><code>GoKbd</code></td><td style="white-space:nowrap">HBoxContainer</td><td>suggerimenti dei tasti che non mentono</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="over-the-screen">Sopra lo schermo</h3>
+  <table>
+    <thead><tr><th>Classe</th><th>Base</th><th>Cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDrawer</code></td><td style="white-space:nowrap">CanvasLayer</td><td>il pannello laterale</td></tr>
+      <tr><td><code>GoPopover</code></td><td>RefCounted</td><td>la scheda ancorata</td></tr>
+      <tr><td><code>GoContextMenu</code></td><td>RefCounted</td><td>pressione prolungata e clic destro</td></tr>
+      <tr><td><code>GoConsole</code></td><td style="white-space:nowrap">CanvasLayer</td><td>la console per lo sviluppo</td></tr>
+    </tbody>
+  </table>
 </section>
 
 <section id="ai" class="crumb">
@@ -374,7 +419,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <p>
     I colori del testo sono quindi <b>derivati, non scelti</b>: il generatore prende la voce della palette come
     punto di partenza e ne spinge la luminosità finché non supera la soglia su ogni superficie su cui può finire.
-    Cambia la palette e il contrasto la segue. <a href="theming.html#contrast">Le regole e le trappole dietro di esse →</a>
+    Cambia la palette e il contrasto la segue. <a href="theming-contrast.html#contrast">Le regole e le trappole dietro di esse →</a>
   </p>
 </section>
 

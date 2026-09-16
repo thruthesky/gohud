@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-own.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-own.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-own.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-own.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-own.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-own.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-own.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-own.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-own.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-own.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-own.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-own.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-own.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-own.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-own.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-own.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-own.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-own.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seu próprio preset — um arquivo — gohud</title>
+<meta name="description" content="Acrescentar um tema costumava significar editar quatro lugares na mão — a paleta do gerador, a forma, uma skin, um recurso de preset.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Visão geral</a>
+      <a href="install.html">Instalação</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="theming.html" aria-current="page">Temas</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Português</summary>
+        <div class="langs-list">
+          <a href="../theming-own.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-own.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-own.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-own.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-own.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-own.html" hreflang="es" lang="es">Español</a>
+          <a href="theming-own.html" hreflang="pt" lang="pt" aria-current="true">Português</a>
+          <a href="../ru/theming-own.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-own.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-own.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-own.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-own.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-own.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-own.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-own.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-own.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-own.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Seu próprio preset — um arquivo</h1>
+    <p class="lead"><a href="theming.html">← Temas</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Temas">
+  <!-- subnav:begin -->
+  <a href="theming.html">Temas</a>
+  <a href="theming-presets.html">Três camadas</a>
+  <a href="theming-tokens.html">Tokens</a>
+  <a href="theming-opacity.html">Opacidade — o jogo atrás do painel</a>
+  <a href="theming-skins.html">Skins — onde um Theme não alcança</a>
+  <a href="theming-own.html" aria-current="page">Seu próprio preset — um arquivo</a>
+  <a href="theming-contrast.html">A legibilidade é medida</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="own">
+  <p class="sub">
+    Acrescentar um tema costumava significar editar quatro lugares na mão — a paleta do gerador, a forma, uma skin,
+    um recurso de preset. Agora um comando coloca todos eles no lugar.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # o .tres do tema + a arte dos controles
+godot --headless --path . --import                  # importa a arte nova uma vez
+GoUi.use_preset(&amp;"neon")                             # pronto — ele também aparece no seletor</code></pre>
+  <p>
+    A primeira linha escreve <code>themes/palettes/neon.json</code> e <code>themes/presets/neon.tres</code>. O
+    JSON carrega <b>todos os valores do tema do qual ele herda</b>, escritos por extenso, então ele serve também como
+    a lista do que dá para mudar: apague uma chave para manter o valor do pai, escreva uma para sobrescrevê-lo. Os
+    presets são encontrados <b>varrendo</b> <code>themes/presets/</code>, então nenhum código de registro muda — a
+    lista suspensa da configuração de projeto também o reconhece.
+  </p>
+
+  <h3 id="what-you-can-change-on-one-page">O que dá para mudar — em uma página</h3>
+  <table>
+    <thead><tr><th>Onde</th><th>O quê</th><th>Como</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>o tema pai</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … ou outro tema em JSON. As chaves omitidas herdam os valores dele; um ciclo de herança falha</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>fundo · três superfícies · borda · três tons de texto · destaque · quatro cores de estado · véu · sombra · trilho da barra</td><td><code>"#RRGGBB"</code>, alfa como <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>cores vivas só de preenchimento <code>*_vivid</code></td><td>mantêm as barras saturadas mesmo quando a cor do texto precisa escurecer — deixe uma de fora e o gerador avisa</td></tr>
+      <tr data-group="palette"><td>legibilidade</td><td><b>não é ajustada na mão.</b> O texto, as bordas, o destaque e o rótulo sobre ele são empurrados pelo gerador até passarem dos limites — mude só o destaque e as verificações continuam passando</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (arredondado) · <code>cut</code> (cantos chanfrados) · <code>medieval</code> (molduras forjadas)</td></tr>
+      <tr data-group="shape"><td>tamanhos</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — os tokens acompanham, então os painéis e as contas dos widgets nunca discordam</td></tr>
+      <tr data-group="shape"><td>só para <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>só para <code>medieval</code></td><td><code>material</code> (0 ferro · 1 couro · 2 pergaminho) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code> mapeados para arquivos de fonte <code>res://</code> internos ao add-on</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — a família dos lugares em que o próprio código desenha (joystick, slots, badges, anel do coach mark, chips, divisores)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — os <b>números</b> desses lugares: largura e tonalização da borda do slot, respiro do badge, opacidade de chips e alertas, largura e opacidade do anel do joystick, tamanhos de chanfro do sci-fi, brilho e colchete</td><td>Todo valor do pai vem escrito por extenso no JSON. O gerador os escreve em <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>nenhum código de skin é tocado</b>. Só para mudar os desenhos em si é que você roda <code>--new-skin</code>, que cria o esqueleto de uma subclasse de <code>GoSkin</code></td></tr>
+      <tr><td><code>icons</code></td><td>o conjunto de ícones</td><td>um caminho <code>res://</code> para um recurso <code>GoIconSet</code> — herdado de um pai em JSON quando omitido</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>como o seletor o exibe</td><td>booleano · string</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="every-dial">Cada dial</h3>
+  <p>
+    A tabela abaixo é preenchida pelo <code>tools/make_site.py</code> <b>direto das linhas</b>
+    <code>@export</code> dos scripts das skins — acrescente um dial ou mude um valor padrão e a tabela
+    acompanha. Use esses nomes sob <code>skin.dials</code> no JSON. Um dial cujo padrão aparece como <code>14</code>
+    é um inteiro, um que aparece como <code>10.0</code> é um float — escreva qualquer uma das formas no JSON e o
+    gerador converte para o tipo do script.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4 id="default-skin-goskin-17">Skin padrão <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Padrão</th><th>O que ele define</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Padrão">0.16</td><td>Opacidade do preenchimento do painel de um chip.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Padrão">0.45</td><td>Opacidade da borda do painel de um chip.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Padrão">0.1</td><td>O quanto o painel de uma caixa de alerta é puxado na direção da cor do estado dela.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Padrão">0.24</td><td>Tonalização de destaque do painel de um slot rápido enquanto o cooldown dele corre.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Padrão">0.08</td><td>Tonalização de destaque do painel de um slot rápido em repouso.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Padrão">2</td><td>Largura da borda (dp) do slot rápido enquanto o cooldown dele corre.</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Padrão">1</td><td>Largura da borda (dp) do slot rápido em repouso.</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Padrão">5</td><td>Respiro interno horizontal (dp) de um badge (quantidade, tempo restante).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Padrão">1</td><td>Respiro interno vertical (dp) de um badge.</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Padrão">0.6</td><td>Opacidade da borda do painel de um badge.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Padrão">0.45</td><td>Opacidade da sombra dos cartões flutuantes (coach mark, prompt card).</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Padrão">14</td><td>Desfoque (dp) da sombra dos cartões flutuantes.</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Padrão">4</td><td>Deslocamento para baixo (dp) da sombra de um cartão flutuante.</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Padrão">10.0</td><td>Distância do brilho (dp) de um painel flutuante que brilha em vez de projetar sombra, como o painel chanfrado do sci-fi.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Padrão">0.42</td><td>Opacidade do disco da base do joystick.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Padrão">0.45</td><td>Opacidade do anel do joystick.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Padrão">2.0</td><td>Largura (dp) do anel do joystick.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="sci-fi-skin-goskinscifi-10">Skin sci-fi <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Padrão</th><th>O que ele define</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Padrão">7.0</td><td>Tamanho do chanfro (dp) do painel de um chip.</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Padrão">5.0</td><td>Tamanho do chanfro (dp) de um painel de esqueleto de carregamento.</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Padrão">8.0</td><td>Tamanho do chanfro (dp) de uma caixa de alerta.</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Padrão">8.0</td><td>Tamanho do chanfro (dp) de um controle segmentado.</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Padrão">6.0</td><td>Tamanho do chanfro (dp) do painel de um slot rápido.</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Padrão">0.24</td><td>Chanfro de avatares e discos = diâmetro × esta proporção.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Padrão">0.45</td><td>Opacidade do brilho de um slot cujo cooldown está correndo.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Padrão">6.0</td><td>Distância do brilho (dp) de um slot cujo cooldown está correndo.</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Padrão">12.0</td><td>Comprimento do braço (dp) do colchete de mira do coach mark.</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Padrão">2.0</td><td>Espessura da linha (dp) do colchete de mira do coach mark.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="medieval-skin-goskinmedieval-5">Skin medieval <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Padrão</th><th>O que ele define</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Padrão">4.0</td><td>Raio dos cantos (dp) da moldura do slot rápido medieval.</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Padrão">0.035</td><td>Opacidade das marcas sutis de couro dentro dos slots rápidos.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Padrão">1.0</td><td>Escala das decorações de metal nos cantos dos slots rápidos. As molduras de menu usam shape.ornament_scale.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Padrão">0.18</td><td>Intensidade do realce metálico ao longo das bordas dos slots rápidos.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Padrão">1</td><td>Mostra pequenos rebites de metal nos slots rápidos: 0 esconde, 1 mostra.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3 id="subclass-the-skin-optional">Crie uma subclasse da skin (opcional)</h3>
+  <p>Só o que o tema e a forma não alcançam — o hexágono do joystick, os badges dos slots, o colchete de mira do
+    coach mark — vive em uma skin. Crie uma subclasse de <code>GoSkin</code>, sobrescreva apenas esses métodos e
+    aponte o <code>skin</code> do JSON para esse recurso. Um tema que só muda cores pula esta etapa.</p>
+
+  <div class="note">
+    <b>Uma verificação mantém a promessa.</b> O <code>tools/check_scaffold.sh</code> cria um tema descartável a cada
+    execução — muda o destaque, põe o raio em 4 — e confere a geração, a propagação dos tokens e uma passagem limpa
+    de contraste antes de removê-lo. Na primeira execução, um tema com apenas o destaque alterado reprovou em
+    <b>8 pares</b>: o gerador empurrava as cores de texto, mas usava o destaque como estava escrito. Agora ele
+    empurra também o destaque e o rótulo sobre ele.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-skins.html">← Skins — onde um Theme não alcança</a> · <a href="theming-contrast.html">A legibilidade é medida →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

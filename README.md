@@ -206,7 +206,7 @@ can change. Delete a key to keep the parent's value.
 | `dark`, `title` | How the picker lists it. |
 
 Every dial with its default and meaning is listed on the
-[theming page](https://thruthesky.github.io/gohud/theming.html#own), generated from the skin
+[theming page](https://thruthesky.github.io/gohud/theming-own.html#own), generated from the skin
 scripts. `tools/check_scaffold.sh` builds a throwaway theme on every run, changes its accent and radius,
 and checks generation, token propagation and contrast. Use `new_theme.py --new-skin` only when the
 drawings themselves must change, and `new_theme.py --remove kingdom` to delete what it created.
@@ -413,6 +413,29 @@ Faces drawn by hand — the cut-corner panel (`GoStyleBoxCut`), the forged frame
 fade their background only. Glow, rivets, corner engraving and bevels keep their strength; the medieval
 face's grain and bevel were always proportional to the background alpha, so they thin out with the panel.
 
+#### Drag it yourself — four places in the demos
+
+Reading a number is not the same as dragging it. Four screens let you drag the value and watch the
+panels thin out **as you drag**.
+
+| Where | What it shows |
+|---|---|
+| **Home → Try it right here → SEEING THROUGH PANELS** | The home screen already draws a patterned backdrop, so lowering the value shows its grid and glow through the cards. `Apply to every panel` writes `GoConfig.container_alpha` and rebuilds the screen, so list rows, notices and floating panels follow too |
+| **Guided tour, chapter 16 `Container opacity`** | The bot drags the value down, says that the floor is not a target, and drags it back. It asserts the **fill the panel actually received**, not the slider handle |
+| **Widget gallery, `Container opacity`** | The same lab plus a `Busy background` toggle that puts a pattern behind the whole screen — the closest thing here to a HUD sitting over a game |
+| **Medieval example** | Whether a face drawn by `_draw()` behaves the same: the iron fill thins out while rivets and bevels keep their strength |
+
+All four host the **same widget** (`examples/gallery/opacity_lab.gd`), which puts the four ways to set the
+value side by side — a factory argument, restyling a node in place, `GoStyle.fade_panel()`, and the
+project-wide setting.
+🛑 None of the demos builds its own slider: if only one of them were fixed, nothing would say which usage
+is the correct one.
+
+🔑 **Without a pattern behind it, this feature is invisible.** Over a flat colour, a translucent panel is
+indistinguishable from a slightly different colour — which is why the lab draws its own pattern inside the
+preview. The reverse also bites: a crisp pattern behind the **whole screen** leaves text that sits outside a
+panel completely unreadable (measured on the first screenshot). Screen-wide patterns go on faintly.
+
 ### Skins and custom StyleBoxes
 
 `GoSkin` owns the shapes a theme cannot reach — the joystick, quick slot faces, the coach-mark ring,
@@ -503,7 +526,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoRadar` | Control | The stat pentagon — strength, agility, intellect, vitality, luck in one shape. `set_compare()` overlays a **dashed** second line for the gear you are about to equip (dashed, so colour-blind players still see two lines) |
 | `GoDonut` | Control | Damage share, currency splits, party contribution. Beyond `collapse_to` slices the rest is merged into one, the centre carries the total, and `legend()` says every slice in words as well as in colour |
 | `GoCarousel` | VBoxContainer | Event banners and character select. It **never moves on its own** — an auto-advancing banner steals the tap the player was aiming at; dots are pressable and the page is announced |
-| `GoKbd` | HBoxContainer | Key caps for hints. `GoKbd.for_action(&"interact")` reads the real binding from the InputMap, so remapping a key changes the hint too, and `hide_on_touch` keeps it off phones |
+| `GoKbd` | HBoxContainer | Key caps for hints. `GoKbd.for_action(&"interact")` reads the real binding from the InputMap, so remapping a key changes the hint too, and `hide_on_handheld` keeps it off phones |
 
 ### Over the screen
 
@@ -512,7 +535,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoDrawer` | CanvasLayer | A panel that slides in from either side, for screens wider than a phone. It respects the safe area, closes on Back and on the scrim, and mirrors itself in RTL |
 | `GoPopover` | RefCounted | An info card beside the thing you pressed — the item tooltip, the "what is this stat" card. One at a time, flips to the other side when it would go off-screen, and follows its anchor on resize |
 | `GoContextMenu` | RefCounted | Long-press (0.5 s) or right-click on any control. A finger that moves more than 12 dp cancels it, so a long list still scrolls |
-| `GoConsole` | CanvasLayer | The developer console: registered commands, arguments, history and completion. `allow_in_release` defaults to `false`, so it cannot open in a shipped build |
+| `GoConsole` | CanvasLayer | The developer console: registered commands, arguments, history and completion. `debug_only` defaults to `true`, so it cannot open in a shipped build |
 
 ### Subclass hooks
 
@@ -663,7 +686,7 @@ activate on handheld platforms, so they are exercised by the suite but not on re
 |---|---|---|
 | Gallery | `res://addons/gohud/examples/gallery/gallery.tscn`, F6 | Every widget, a picker for every installed preset, and the full icon set. Needs no server, autoload or project setup. |
 | Medieval | `res://addons/gohud/examples/medieval/medieval.tscn`, F6 | A character sheet, satchel and quest journal in `medieval_dark` and `medieval_light`. |
-| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 15-chapter tour, the showcase screen or the medieval look — plus live widgets and one card per class. |
+| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 19-chapter tour, the showcase screen or the medieval look — plus live widgets and one card per class. |
 
 ### Demo app
 
@@ -679,7 +702,7 @@ real widgets to press, and all 19 classes grouped by the job they do, each with 
 code that uses it. It is built from add-on widgets alone, holds its text to a readable measure,
 folds to one column on a phone, and repaints with the preset picker.
 
-**Start demo**, on the tour, plays 15 chapters with a visible cursor using real input — buttons,
+**Start demo**, on the tour, plays 19 chapters with a visible cursor using real input — buttons,
 fields, menus, scrolling, HUDs, dialogs, forms and more. **Explore widgets**, or any row in the
 sidebar, opens a single widget for you to try by hand, with a **Play this widget** button that
 lets the bot demonstrate just that one. All demo text is English. Large desktop windows enlarge

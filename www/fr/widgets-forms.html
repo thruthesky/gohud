@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-forms.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-forms.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-forms.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-forms.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-forms.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-forms.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-forms.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-forms.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-forms.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-forms.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-forms.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-forms.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-forms.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-forms.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formulaires et listes — gohud</title>
+<meta name="description" content="Une seule ligne en haut d'un formulaire à cinq champs qui dit « vérifiez votre saisie » ne dit pas quel champ.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Aperçu</a>
+      <a href="install.html">Installation</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widgets</a>
+      <a href="theming.html">Thématisation</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Français</summary>
+        <div class="langs-list">
+          <a href="../widgets-forms.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-forms.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-forms.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-forms.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-forms.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-forms.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-forms.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-forms.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="widgets-forms.html" hreflang="fr" lang="fr" aria-current="true">Français</a>
+          <a href="../tr/widgets-forms.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-forms.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-forms.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-forms.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-forms.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-forms.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-forms.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-forms.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Formulaires et listes</h1>
+    <p class="lead"><a href="widgets.html">← Widgets</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widgets">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widgets</a>
+  <a href="widgets-surfaces.html">Fenêtres flottantes</a>
+  <a href="widgets-messages.html">Dire quelque chose au joueur</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Attendre, dire, compter</a>
+  <a href="widgets-forms.html" aria-current="page">Formulaires et listes</a>
+  <a href="widgets-shapes.html">Les formes que les jeux utilisent vraiment</a>
+  <a href="widgets-overlays.html">Par-dessus l'écran</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — un seul endroit où les choses se fabriquent</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="forms-lists">
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — la rangée qui peut être en erreur</h3>
+  <p>Une seule ligne en haut d'un formulaire à cinq champs qui dit « vérifiez votre saisie » ne dit pas <i>quel</i>
+    champ. C'est cette seule chose qui fait abandonner une inscription.</p>
+  <pre><code>var name_field := GoField.make("Nom du personnage", GoStyle.line_edit("2-12"), "Impossible à changer ensuite")
+name_field.set_error("Ce nom est déjà pris")   # le serveur a refusé
+name_field.clear_error()</code></pre>
+  <p>L'indication se masque pendant qu'une erreur s'affiche : la rangée ne grandit donc pas d'une ligne en
+    poussant tout ce qui se trouve en dessous, et le texte d'erreur est joint au nom accessible de la commande —
+    une bordure rouge, à elle seule, ne dit rien à qui ne voit pas le rouge.</p>
+  <p><code>GoStyle.field()</code> en est la version statique : libellé, commande, indication, sans état d'erreur.
+    Prenez la fabrique quand rien ne peut mal tourner, et le nœud pour tout ce qu'un serveur peut refuser.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — une saisie soudée à son bouton</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Nom"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>Ce qu'il règle, ce sont les coins. Deux formes arrondies qui se rejoignent au milieu paraissent pincées, et
+    l'écart par défaut les fait lire comme deux objets. Les coins extérieurs restent ronds, ceux qui se touchent
+    deviennent carrés — dans chaque état du bouton, sinon le groupe se scinde à l'instant où l'on appuie dessus.
+    Les skins chanfreinés n'ont aucun champ de coin : là, il les laisse tranquilles et les faces carrées se rejoignent proprement.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — un sélecteur qui cherche</h3>
+  <p>En dessous de dix entrées, <code>GoStyle.select()</code> vaut mieux : un appui de moins et toute la liste est
+    visible. Au-delà de trente, parcourir devient un travail.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "Choisissez un serveur")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>La recherche correspond à l'intérieur des noms, pas seulement à leur début.</b> Une correspondance par
+    préfixe ne trouve presque rien dans une liste coréenne ou japonaise, où le mot qui distingue deux éléments est rarement le premier.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — codes promo et codes cadeaux</h3>
+  <p>Un code est bien plus souvent collé depuis un message que saisi au clavier. Douze vrais champs casseraient le
+    collage dès la première case et perdraient des caractères à cause d'un IME : un seul champ masqué reçoit donc
+    le texte, et les cases sont dessinées. <code>ABCD-EFGH-IJKL</code> perd ses tirets en chemin.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Déjà utilisé")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — des en-têtes triables, des rangées sélectionnables</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "Rang", "width": 56}, {"text": "Nom"}, {"text": "Score", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>, sinon le classement s'inverse.</b> Comparé comme du texte, <code>"9124"</code>
+    passe devant <code>"91240"</code> — et les scores, l'or et les dégâts ont tous un nombre de chiffres variable.
+  </div>
+  <p><code>row_selected</code> donne l'indice dans votre tableau d'origine, pas la position triée. Le sens du tri
+    est indiqué par un glyphe, pas seulement par une couleur, et la rangée entière s'appuie : personne n'a à viser
+    une cellule. <code>GoStyle.table()</code> reste la grille en lecture seule.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — des pages, ou une rangée « Voir plus »</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # la variante adaptée au mobile</code></pre>
+  <p>Les numéros sont une interface à la souris ; sur un téléphone, la rangée « Voir plus » se lit mieux. La page
+    courante reste centrée dans la fenêtre : appuyer sur suivant ne rebat donc pas tous les numéros. Un total de 0
+    signifie « inconnu » et seules les flèches sont dessinées — il n'invente pas un nombre de pages qu'on ne lui a pas donné.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-feedback.html">← Attendre, dire, compter</a> · <a href="widgets-shapes.html">Les formes que les jeux utilisent vraiment →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

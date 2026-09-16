@@ -17,6 +17,10 @@
 class_name SimActs
 extends RefCounted
 
+## 🔬 판 불투명도 실험실 — **갤러리와 같은 위젯**을 쓴다. 데모마다 슬라이더를 다시 만들면 한쪽만
+## 고쳐지고, 그러면 무엇이 맞는 사용법인지 알 수 없게 된다.
+const OpacityLab := preload("res://addons/gohud/examples/gallery/opacity_lab.gd")
+
 
 ## 장면 차례. 제목·설명·아이콘은 무대 머리글과 사이드바가 함께 쓴다. `hint` 는 탐색 모드의 안내.
 static func list() -> Array[Dictionary]:
@@ -66,6 +70,18 @@ static func list() -> Array[Dictionary]:
 		{"key": &"theming", "title": "Themes & icons", "icon": GoIconSet.SUN,
 			"note": "Switch between light and dark appearances.",
 			"hint": "Flip the preview between dark and light. Every icon below ships with the kit."},
+		{"key": &"opacity", "title": "Container opacity", "icon": GoIconSet.DISPLAY,
+			"note": "Let the game show through the panels.",
+			"hint": "Drag the slider and watch the stripes appear behind the panels. Text stays sharp."},
+		{"key": &"waiting", "title": "Waiting & counting", "icon": GoIconSet.HOURGLASS,
+			"note": "A wait with no end in sight, a message you can undo, and the unread count.",
+			"hint": "Press the slow button and watch it become a spinner. Undo the message before it goes."},
+		{"key": &"fields", "title": "Fields & pickers", "icon": GoIconSet.CHECK,
+			"note": "A form row that says which box is wrong, and pickers that search.",
+			"hint": "Submit with an empty guild name to see the error land on that row."},
+		{"key": &"shapes", "title": "Shapes games use", "icon": GoIconSet.CROWN,
+			"note": "Attendance, the stat pentagon, damage share and a banner.",
+			"hint": "Only today can be claimed. Press the banner dots; nothing moves on its own."},
 	]
 
 
@@ -1185,6 +1201,64 @@ func play_theming(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 
 
+# ── 16 판 불투명도 ─────────────────────────────────────────────────────
+#
+# 🔑 이 장면은 **갤러리와 같은 실험실 위젯**을 쓴다(`examples/gallery/opacity_lab.gd`) — 데모마다
+#    슬라이더를 다시 만들면 한쪽만 고쳐지고, 그러면 무엇이 맞는 사용법인지 알 수 없게 된다.
+# 🛑 여기서는 "프로젝트 전체에 적용" 을 보이지 않는다. 그 설정은 전역이라 장면을 떠난 뒤에도 남아
+#    다음 장면의 판까지 묽게 만든다 — 투어는 장면마다 처음 상태로 시작해야 한다.
+
+func build_opacity(stage: SimStage, bot: SimBot) -> Dictionary:
+	stage.body.add_child(GoStyle.label(
+		"Panels can let the world show through. The fill thins out; text, icons and borders do not.",
+		GoTheme.ROLE_BODY))
+	var lab := OpacityLab.new()
+	lab.allow_project_wide = false
+	stage.body.add_child(lab)
+	stage.body.add_child(GoStyle.label(
+		"A theme ships the defaults, a project can override them, and one widget can always ask for "
+		+ "its own value.", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	# 🔑 되돌리기 버튼을 손으로 만질 수 있게 둔다 — 실험실의 전체 적용 버튼과 달리 이것은 이 장면의
+	#    미리보기만 건드린다.
+	var restore := GoStyle.button("Back to the theme value",
+		_restore_opacity.bind(lab, bot), GoStyle.Tone.COMPACT)
+	stage.body.add_child(restore)
+	return {"lab": lab, "dial": lab.dial(), "restore": restore}
+
+
+## 🛑 여러 줄 람다 **뒤에 인자를 더 붙이지 않는다** — 람다 본문의 끝이 어디인지 파서가 알 수 없다.
+##    그래서 되돌리기는 이름 있는 함수로 둔다.
+func _restore_opacity(lab: OpacityLab, bot: SimBot) -> void:
+	lab.dial().value = GoUi.surface_alpha(GoTheme.BOX_CARD)
+	bot.note("Opacity: theme default")
+
+
+func play_opacity(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var dial: HSlider = refs.dial
+	var lab: OpacityLab = refs.lab
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.say("Panels are 80% opaque by default — the game shows through.")
+	if bot.skipping(): return
+	await bot.drag_slider(dial, 0.30, "Thin the panel fill right down.")
+	if bot.skipping(): return
+	await bot.wait(0.8)
+	if bot.skipping(): return
+	# 🛑 손잡이가 움직인 것으로는 모자란다 — **판에 박힌 값**을 읽어야 값이 도달했는지 알 수 있다.
+	bot.expect(lab.fill_alpha() < 0.5, "Panel fill follows the slider")
+	await bot.say("Too far: the stripes now fight the text. That is the floor, not a target.")
+	if bot.skipping(): return
+	await bot.drag_slider(dial, 1.0, "Back to a solid panel.")
+	if bot.skipping(): return
+	bot.expect(lab.fill_alpha() > 0.9, "A solid panel hides everything behind it")
+	await bot.wait(0.8)
+	if bot.skipping(): return
+	await bot.click(refs.restore, "Return to the value the theme ships.")
+	if bot.skipping(): return
+	await bot.wait(1.0)
+	if bot.skipping(): return
+
+
 # ── 거들기 ─────────────────────────────────────────────────────────────
 
 ## 화면 전체를 덮는 장면의 바탕 레이어. 무대가 비워질 때 함께 사라진다.
@@ -1214,3 +1288,238 @@ static func _find_button(root: Node, text: String) -> Button:
 		var found := _find_button(child, text)
 		if found != null: return found
 	return null
+
+
+# ── 17 기다림과 세기 ───────────────────────────────────────────────────
+
+func build_waiting(stage: SimStage, bot: SimBot) -> Dictionary:
+	stage.body.add_child(GoStyle.section("A wait with no end in sight", false))
+	# 🔑 스피너는 **버튼 자리에서** 돈다. 따로 띄우면 버튼은 여전히 눌리고, 느린 요청이 두 번 간다.
+	var slow := GoStyle.button("Save to the cloud", Callable(), GoStyle.Tone.PRIMARY)
+	var busy := {"runs": 0}
+	slow.pressed.connect(func() -> void:
+		if GoSpinner.is_busy(slow): return
+		busy.runs += 1
+		GoSpinner.busy(slow, true)
+		bot.note("Save started — the button cannot fire again")
+		await stage.get_tree().create_timer(1.6).timeout
+		if is_instance_valid(slow): GoSpinner.busy(slow, false))
+	stage.body.add_child(slow)
+
+	stage.body.add_child(GoStyle.section("A message you can take back", false))
+	var snackbar := GoSnackbar.new()
+	stage.add_child(snackbar)
+	var undone := {"count": 0}
+	var drop := GoStyle.button("Drop the iron sword", func() -> void:
+		# 🛑 `post()` 를 `await` 로 붙들지 않는다 — 여기서 기다리면 장면이 멈춘다. 답은 콜백으로 받는다.
+		var answer: int = await snackbar.post({"text": "Iron sword dropped", "actions": ["Undo"],
+			"tone": GoTheme.WARNING, "seconds": 6.0})
+		if answer == 0:
+			undone.count += 1
+			bot.note("Undo pressed — the sword is back")
+		else:
+			bot.note("The message expired; the sword stays dropped"))
+	stage.body.add_child(drop)
+
+	stage.body.add_child(GoStyle.section("The unread count", false))
+	var marks := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+	stage.body.add_child(marks)
+	var mail := GoStyle.button("Mail", Callable(), GoStyle.Tone.COMPACT)
+	marks.add_child(mail)
+	var shop := GoStyle.button("Shop", Callable(), GoStyle.Tone.COMPACT)
+	marks.add_child(shop)
+	# 🛑 배지는 앵커로 모서리에 걸린다 — 자리가 정해진 **다음 프레임**에 붙인다.
+	GoBadge.attach.call_deferred(mail, 3)
+	GoBadge.attach.call_deferred(shop, 0, "NEW")
+
+	var keys := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_TINY))
+	keys.add_child(GoStyle.label("Save", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
+	keys.add_child(GoKbd.make("Ctrl", "S"))
+	stage.body.add_child(keys)
+	return {"slow": slow, "busy": busy, "drop": drop, "undone": undone, "snackbar": snackbar, "mail": mail}
+
+
+func play_waiting(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.say("A slow request turns its button into a spinner, in place and disabled.")
+	if bot.skipping(): return
+	await bot.click(refs.slow, "The label steps aside; the button keeps its size.")
+	if bot.skipping(): return
+	bot.expect(refs.busy.runs == 1, "Slow save started once")
+	await bot.wait(1.0)
+	if bot.skipping(): return
+	bot.expect(GoSpinner.is_busy(refs.slow), "The button is still busy")
+	await bot.wait(1.2)
+	if bot.skipping(): return
+	await bot.say("A cheap, reversible action asks with a button instead of stopping the game.")
+	if bot.skipping(): return
+	await bot.click(refs.drop, "The snackbar carries Undo, and passes input through elsewhere.")
+	if bot.skipping(): return
+	await bot.wait(1.2)
+	if bot.skipping(): return
+	var undo: Button = _snackbar_action(refs.snackbar)
+	if undo != null:
+		await bot.click(undo, "Undo puts the sword back.")
+		if bot.skipping(): return
+		bot.expect(refs.undone.count == 1, "Undo was pressed")
+	await bot.reveal(refs.mail)
+	if bot.skipping(): return
+	await bot.say("A badge hangs off the corner and hides itself at zero.")
+	if bot.skipping(): return
+	await bot.wait(1.4)
+	if bot.skipping(): return
+
+
+## 떠 있는 스낵바의 첫 버튼. 🔑 봇이 누르려면 **실제 노드**가 필요하다 — 없으면 null.
+func _snackbar_action(snackbar: GoSnackbar) -> Button:
+	for node in _descendants(snackbar):
+		if node is Button and (node as Button).text != "": return node as Button
+	return null
+
+
+func _descendants(node: Node) -> Array:
+	var out: Array = []
+	for child in node.get_children():
+		out.append(child)
+		out.append_array(_descendants(child))
+	return out
+
+
+# ── 18 칸과 고르개 ─────────────────────────────────────────────────────
+
+func build_fields(stage: SimStage, bot: SimBot) -> Dictionary:
+	stage.body.add_child(GoStyle.section("The row that can be wrong", false))
+	var guild := GoField.make("Guild name", GoStyle.line_edit("2-16 characters"), "Everyone sees this")
+	stage.body.add_child(guild)
+
+	var submit := GoStyle.button("Create guild", Callable(), GoStyle.Tone.PRIMARY)
+	var tries := {"errors": 0}
+	submit.pressed.connect(func() -> void:
+		var typed: String = (guild.control as LineEdit).text.strip_edges()
+		if typed.length() < 2:
+			# 🛑 서버가 준 문장은 번역 키가 아니다 — 그대로 싣는다.
+			guild.set_error("Enter at least two characters")
+			tries.errors += 1
+			bot.note("The error landed on the guild name row")
+			return
+		guild.clear_error()
+		bot.note("Guild created: %s" % typed))
+	stage.body.add_child(submit)
+
+	stage.body.add_child(GoStyle.section("An input welded to its button", false))
+	stage.body.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
+		{"suffix": GoStyle.button("Send", Callable(), GoStyle.Tone.PRIMARY)}))
+	stage.body.add_child(GoInputGroup.make(GoStyle.line_edit("Search by name"),
+		{"prefix_icon": GoIconSet.SEARCH}))
+
+	stage.body.add_child(GoStyle.section("A picker that searches inside names", false))
+	var friends: Array = []
+	for name in ["Ada Lovelace", "Grace Hopper", "Rusty sword", "Iron sword", "Mana potion",
+			"Dragon scale", "Tower key", "Northern marches"]:
+		friends.append(name)
+	var combo := GoCombobox.make(friends, -1, "Find an item")
+	stage.body.add_child(combo)
+
+	stage.body.add_child(GoStyle.section("Coupon codes", false))
+	var coupon := GoCodeInput.make(8, 4)
+	stage.body.add_child(coupon)
+	return {"guild": guild, "submit": submit, "tries": tries, "combo": combo, "coupon": coupon}
+
+
+func play_fields(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.say("One line saying \"check your input\" makes you hunt. This marks the box itself.")
+	if bot.skipping(): return
+	await bot.click(refs.submit, "Submitting empty puts the reason under that row.")
+	if bot.skipping(): return
+	bot.expect(refs.guild.has_error(), "The field is holding an error")
+	await bot.wait(1.6)
+	if bot.skipping(): return
+	await bot.reveal(refs.combo)
+	if bot.skipping(): return
+	await bot.say("The picker searches inside names, so \"sword\" finds \"Rusty sword\".")
+	if bot.skipping(): return
+	await bot.wait(1.4)
+	if bot.skipping(): return
+	await bot.reveal(refs.coupon)
+	if bot.skipping(): return
+	await bot.say("Coupon cells are drawn; one hidden field holds the text, so pasting works.")
+	if bot.skipping(): return
+	await bot.wait(1.4)
+	if bot.skipping(): return
+
+
+# ── 19 게임이 쓰는 모양 ────────────────────────────────────────────────
+
+func build_shapes(stage: SimStage, bot: SimBot) -> Dictionary:
+	stage.body.add_child(GoStyle.section("Daily attendance", false))
+	var days: Array = []
+	for index in 7:
+		days.append({"icon": GoIconSet.COIN if index < 6 else GoIconSet.CROWN,
+			"amount": 50 * (index + 1), "special": index == 6})
+	var calendar := GoRewardCalendar.make(days, 2)
+	var claims := {"count": 0}
+	calendar.claimed.connect(func(day: int) -> void:
+		claims.count += 1
+		calendar.set_claimed_until(day)
+		bot.note("Day %d claimed" % (day + 1)))
+	stage.body.add_child(calendar)
+
+	stage.body.add_child(GoStyle.section("Stats at a glance", false))
+	var shapes := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+	# 🛑 값은 0~1 로 정규화한다 — 힘 120 과 지능 45 를 그대로 그리면 모양이 거짓말을 한다.
+	var radar := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45},
+		{"STR": 0.92, "AGI": 0.44, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
+	radar.custom_minimum_size = Vector2(150, 150)
+	shapes.add_child(radar)
+	var donut := GoDonut.make([{"label": "Physical", "value": 620}, {"label": "Magic", "value": 340},
+		{"label": "Pierce", "value": 90}])
+	donut.center_text = "1050"
+	donut.custom_minimum_size = Vector2(130, 130)
+	shapes.add_child(donut)
+	stage.body.add_child(shapes)
+	stage.body.add_child(donut.legend())
+
+	stage.body.add_child(GoStyle.section("Banners that never move on their own", false))
+	var carousel := GoCarousel.new()
+	var banners: Array[Control] = []
+	for spec in [["Midsummer festival", GoTheme.WARNING], ["Double crowns", GoTheme.ACCENT],
+			["New region: the north", GoTheme.INFO]]:
+		var card := GoStyle.card()
+		var inset := GoStyle.padding(GoUi.metric(GoTheme.GAP))
+		card.add_child(inset)
+		inset.add_child(GoStyle.label(str(spec[0]), GoTheme.ROLE_SUBTITLE, GoUi.color(spec[1])))
+		banners.append(card)
+	# 🛑 `autoplay_seconds` 는 0 인 채로 둔다 — 저절로 넘어가는 배너는 사람이 누르려던 것을 가로챈다.
+	carousel.set_pages(banners)
+	stage.body.add_child(carousel)
+	return {"calendar": calendar, "claims": claims, "radar": radar, "donut": donut, "carousel": carousel}
+
+
+func play_shapes(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.say("Attendance: claimed days, today, and days still to come. Only today can be pressed.")
+	if bot.skipping(): return
+	await bot.wait(1.6)
+	if bot.skipping(): return
+	await bot.reveal(refs.radar)
+	if bot.skipping(): return
+	await bot.say("The pentagon shows the build; the dashed line is the gear you would equip.")
+	if bot.skipping(): return
+	await bot.wait(1.6)
+	if bot.skipping(): return
+	await bot.reveal(refs.donut)
+	if bot.skipping(): return
+	await bot.say("The legend says each slice in words too — colour alone is not a label.")
+	if bot.skipping(): return
+	await bot.wait(1.6)
+	if bot.skipping(): return
+	await bot.reveal(refs.carousel)
+	if bot.skipping(): return
+	await bot.say("A banner that advances by itself steals the tap you were aiming at. This one waits.")
+	if bot.skipping(): return
+	await bot.wait(1.6)
+	if bot.skipping(): return

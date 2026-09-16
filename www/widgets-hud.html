@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="Polish the big panels all you like — what catches the eye is always something small: a word split in two, a glow chopped off, a cramped slot.">
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Overview</a>
+      <a href="install.html">Install</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widgets</a>
+      <a href="theming.html">Theming</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>English</summary>
+        <div class="langs-list">
+          <a href="widgets-hud.html" hreflang="en" lang="en" aria-current="true">English</a>
+          <a href="ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← Widgets</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widgets">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widgets</a>
+  <a href="widgets-surfaces.html">Floating windows</a>
+  <a href="widgets-messages.html">Telling the player something</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">Waiting, telling, counting</a>
+  <a href="widgets-forms.html">Forms and lists</a>
+  <a href="widgets-shapes.html">Shapes games actually use</a>
+  <a href="widgets-overlays.html">Over the screen</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — one place things are made</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">The small things decide whether it looks good</h3>
+  <p>
+    Polish the big panels all you like — what catches the eye is always something small: a word split in
+    two, a glow chopped off, a cramped slot. Four such things were pointed out on 2026-09-13 and fixed in
+    the widgets and themes, not in the demo screen, so every screen gets the same result.
+  </p>
+  <table>
+    <thead><tr><th>What showed</th><th>Cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>The coach mark's <code>Done</code> became <code>Don</code>/<code>e</code></td>
+          <td>A button with wrapping on <b>subtracts its text width</b> from its minimum — squeeze it and it breaks inside a word</td>
+          <td><code>GoStyle.fit_words()</code>: one word never wraps; several words wrap, but the <b>longest word</b> always fits — judged on the <b>displayed</b> text, not the translation key, and re-applied by the form when the language changes</td></tr>
+      <tr><td>A full-width button's glow cut off vertically on the left</td>
+          <td>A scroll container clips at its edge, no exceptions. Only the right survived, thanks to the rail gutter</td>
+          <td><code>GoScroll</code> borrows the parent's padding to push its edge 12dp out and gives it back inside — <b>content stays put</b></td></tr>
+      <tr><td>Time, icon and count stacked vertically in a slot</td>
+          <td>Three rows inside 48dp</td>
+          <td>Icon large in the centre, shortcut top-left, count as a bottom-right <b>badge</b>, remaining time as a badge over the icon — badge panels come from the skin's <code>badge_box()</code></td></tr>
+      <tr><td>A flat dropdown with no visible selection</td>
+          <td>Item hover used the button panel; radio marks were the engine's faint default</td>
+          <td>A dedicated hover panel (soft accent tint), the same radio artwork as checkboxes, item height sized for touch</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="img/dropdown-default-dark.png" alt="An open dropdown — soft accent hover panel and the radio mark of the chosen item" loading="lazy">
+      <figcaption>Dropdown — hover panel and radio mark</figcaption>
+    </figure>
+    <figure>
+      <img src="img/slots-scifi-dark.png" alt="Four quick slots — shortcut top-left, count badge bottom-right, the first with a remaining-time badge" loading="lazy">
+      <figcaption>Slots — corner badges and remaining time (sci-fi)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Give icon-only buttons a description with <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    the tooltip for mouse users and the accessibility name for screen readers both come from that one value.
+    gohud draws the tooltip itself: the engine's default splits the text <b>one character per line</b> when
+    its width calculation goes wrong (measured at 1dp wide).
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">The coach-mark card keeps off fixtures</h4>
+  <p>
+    In landscape the card used to be sent to the very top or bottom edge — exactly where headers and HUD
+    pieces live; in the demo it sat on the header's <code>→ ×</code>. It now stays level with its target,
+    steps around any <code>GoHudAnchor</code> that reserves space, and takes other things to avoid via
+    <code>keep_clear</code>. It moves the shortest distance that clears the obstacle without covering the
+    target, and stays put when the screen is too small to clear everything — overlapping beats vanishing.
+    Its depth — so it reads as <b>above</b> the page — comes from skin dials
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; chamfered skins use <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # fixtures that are not anchors</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Screens with a mouse and a keyboard</h3>
+  <p>
+    A finger has <b>no hover state.</b> Build against mobile only and two desktop-only states go unchecked —
+    and one of them was broken: gohud's <b>focus ring was invisible on a primary button.</b> The panel is
+    the accent colour and so was the ring: <code>1.00:1</code>, the same colour drawn over itself. Moving
+    by keyboard, there was no way to tell where you were.
+  </p>
+  <figure>
+    <img src="img/desktop-states.png" alt="The same button row in three states — normal, mouse hover, keyboard focus" loading="lazy">
+    <figcaption>Top to bottom: <b>normal · hover · focus</b>. Filled buttons get a ring that contrasts with their panel.</figcaption>
+  </figure>
+  <p>
+    Filled buttons (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) use a ring that
+    <b>contrasts with their own panel</b> — dark on a dark theme, white on a light one, a dark targeting
+    bracket in sci-fi. The contrast checker measures <b>the focus ring against the panel it sits on</b>, so
+    the rule survives a palette change (WCAG 2.4.11 asks for 3:1 on focus indicators).
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>The HUD widgets</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — nine spots</h3>
+  <p>Respects the safe area and edge margins. Give it a <code>landscape_spot</code> and it moves in
+    landscape — controls that sit bottom-centre in portrait can go bottom-right instead.</p>
+  <div class="note">
+    <b>Why it exists.</b> Written by hand per HUD piece, anchors and offsets drift: a health bar ends up
+    under the camera cutout on a notched device, and a control button lands on the gesture bar in
+    landscape. That arithmetic lives in one place.
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">Keeping content out from under the HUD</h4>
+  <p>
+    When a scrolling screen shares the display with a HUD, the content slides <b>underneath it</b> and the
+    two sets of text overlap until neither can be read. It happened twice in this add-on: an input's
+    placeholder squeezed out between the quick slots, and a settings toggle's knob landed on the health bar.
+  </p>
+  <pre><code>form.avoid_hud = true                  # keep clear of every visible GoHudAnchor
+joystick_anchor.reserve_space = false  # …except ones that only appear under a finger</code></pre>
+  <p>
+    Each rectangle is avoided in whichever direction <b>costs the least area</b>. A bar in the top-right is
+    stepped around downwards on a portrait phone (13% of the height) and sideways in landscape (21% of the
+    width) — avoiding it vertically in landscape would cost 27% of the screen. Ground already given up is
+    subtracted before the next rectangle is measured.
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD pieces collide with each other too</h4>
+  <p>
+    The nine spots divide the screen; they do not guarantee the pieces <b>miss each other</b>. A wide
+    snackbar at top-centre landed squarely on the health bar at top-right, hiding the value — you could not
+    read how much health was left.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # settles below the fixed HUD
+notice_anchor.reserve_space = false   # and does not push the page while it is up</code></pre>
+  <p>
+    It steps aside <b>vertically only</b> — moving sideways as well would make a centred toast appear in a
+    different place each time it shows. And it only avoids pieces that are <b>not</b> stepping aside
+    themselves: if both yield, the two swap places forever.
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — health, mana, experience</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # the fill-only token
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Changes ease over 0.18s — a health bar that jumps does not tell you how hard you were hit.
+    <code>reduce_motion</code> makes it instant. Large numbers abbreviate to <code>12.3k</code> so the
+    bar's width does not jitter as digits come and go.</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — one quick slot</h3>
+  <p>Icon, quantity, cooldown and shortcut on <b>a single face</b>. Hanging badges off a small circle
+    makes each slot a different width and the row wobbles.</p>
+  <div class="note">
+    <b>Visible size and touch size differ.</b> Packed slots have overlapping 48dp touch boxes; the
+    overlap goes to <b>whichever slot's centre is nearer</b> — tell them about each other through
+    <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> is off by default, so a row of eight slots does not sit between a keyboard user and
+    every settings control in the Tab order. Turn it on when a keyboard or gamepad is the only input.</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — virtual stick</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Always the same place — easy to find without looking</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Appears where the thumb lands</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Keeps following the thumb after appearing — comfortable for long movement</td></tr>
+    </tbody>
+  </table>
+  <p>The <code>Vector2</code> from <code>moved</code> has length 0–1, so you can multiply it straight into
+    a speed; it does not vary with screen size or DPI.</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — looks small, presses large</h3>
+  <div class="note warn">
+    <b>Only safe while its siblings ignore input.</b> If the widened area covers the next button, that
+    button stops responding. Side-by-side icon buttons need <code>touch_peers</code>.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← Telling the player something</a> · <a href="widgets-feedback.html">Waiting, telling, counting →</a></p>
+  </div>
+</footer>
+
+<script src="site/glossary.en.js"></script>
+<script src="site/tooltip.js"></script>
+<script src="site/toc.js"></script>
+<script src="site/search.js"></script>
+<script src="site/ux.js"></script>
+</body>
+</html>

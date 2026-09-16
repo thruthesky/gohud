@@ -82,492 +82,55 @@
 
 <main class="wrap">
 
-<section id="surfaces">
-  <h2>النوافذ العائمة</h2>
+<nav class="subnav" aria-label="الودجات">
+  <!-- subnav:begin -->
+  <a href="widgets.html" aria-current="page">الودجات</a>
+  <a href="widgets-surfaces.html">النوافذ العائمة</a>
+  <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">الانتظار والإخبار والعدّ</a>
+  <a href="widgets-forms.html">النماذج والقوائم</a>
+  <a href="widgets-shapes.html">أشكال تستعملها الألعاب فعلًا</a>
+  <a href="widgets-overlays.html">فوق الشاشة</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — المكان الواحد الذي تُصنع فيه الأشياء</a>
+  <!-- subnav:end -->
+</nav>
 
-  <h3 id="gosurface-the-shell"><code>GoSurface</code> — القشرة</h3>
-  <p>النوافذ المنبثقة والأوراق والقوائم المنسدلة كلها تستعمل هذه الواحدة. وهي تتكفّل بالمنطقة الآمنة ولوحة
-    المفاتيح الافتراضية، وبالرأس والتذييل الثابتين، وبالجسم المتمرر، وبتحديد النافذة الأعلى، واستعادة التركيز،
-    وملكية زر الرجوع، وتغيير الحجم بالسحب.</p>
-  <table>
-    <thead><tr><th>الموضع</th><th>كيف يبدو</th><th>يُستعمل لـ</th></tr></thead>
-    <tbody>
-      <tr><td><code>CENTER</code></td><td>بطاقة في الوسط</td><td>التأكيدات، الإعدادات</td></tr>
-      <tr><td><code>BOTTOM</code></td><td>ورقة تصعد من الأسفل</td><td>القوائم، صفحات الإدارة</td></tr>
-      <tr><td><code>ANCHOR</code></td><td>بطاقة مثبّتة بجانب عنصر تحكم</td><td>القوائم المنسدلة، قوائم السياق</td></tr>
-    </tbody>
-  </table>
-  <div class="note warn">
-    <b>هي لا تزيل نفسها.</b> التجاوب مع <code>close_requested</code> — بالإخفاء أو بالتحرير — مسؤولية
-    الشاشة المالكة، لأن القشرة لا تستطيع أن تعرف <i>لماذا</i> تُغلَق (حفظ وإغلاق، أم تجاهل).
+<section id="pages">
+  <div class="grid">
+    <div class="card">
+      <h3 id="floating-windows"><a href="widgets-surfaces.html">النوافذ العائمة</a></h3>
+      <p>النوافذ المنبثقة والأوراق والقوائم المنسدلة كلها تستعمل هذه الواحدة.</p>
+    </div>
+    <div class="card">
+      <h3 id="telling-the-player-something"><a href="widgets-messages.html">أن تخبر اللاعب بشيء</a></h3>
+      <p>يطفو على أحد الجانبين بلا حجاب معتم.</p>
+    </div>
+    <div class="card">
+      <h3 id="hud"><a href="widgets-hud.html">HUD</a></h3>
+      <p>اصقل اللوحات الكبيرة ما شئت — فالذي يلفت النظر دائمًا شيء صغير: كلمة انقسمت نصفين، أو توهّج قُصّ طرفه، أو خانة مزدحمة.</p>
+    </div>
+    <div class="card">
+      <h3 id="waiting-telling-counting"><a href="widgets-feedback.html">الانتظار والإخبار والعدّ</a></h3>
+      <p>يجلس في الأسفل (أو في الأعلى)، فوق المنطقة الآمنة ولوحة المفاتيح، ثم يمضي من تلقاء نفسه.</p>
+    </div>
+    <div class="card">
+      <h3 id="forms-and-lists"><a href="widgets-forms.html">النماذج والقوائم</a></h3>
+      <p>سطر واحد في أعلى نموذج من خمسة حقول يقول &quot;راجع ما أدخلتَه&quot; لا يقول أيّ حقل.</p>
+    </div>
+    <div class="card">
+      <h3 id="shapes-games-actually-use"><a href="widgets-shapes.html">أشكال تستعملها الألعاب فعلًا</a></h3>
+      <p>أشكال مألوفة من الويب، أُعيد بناؤها حول ما تحتاجه اللعبة منها.</p>
+    </div>
+    <div class="card">
+      <h3 id="over-the-screen"><a href="widgets-overlays.html">فوق الشاشة</a></h3>
+      <p>GoSheet يأتي من الأسفل، وهو الصواب لهاتف يُمسك قائمًا.</p>
+    </div>
+    <div class="card">
+      <h3 id="gostyle-one-place-things-are-made"><a href="widgets-style.html"><code>GoStyle</code> — المكان الواحد الذي تُصنع فيه الأشياء</a></h3>
+      <p>استدعِ Button.new() مباشرةً وستنحرف الحشوة والارتفاع والالتفاف انحرافًا طفيفًا من شاشة إلى أخرى.</p>
+    </div>
   </div>
-
-  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — صفحة من الأسفل</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("الحقيبة")
-sheet.toolbar().add_child(GoStyle.line_edit("بحث…"))
-sheet.toolbar().visible = true
-sheet.footer().add_child(GoStyle.button("إغلاق", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-  <p>هي تملك <code>CanvasLayer</code> خاصًّا بها، فتجلس فوق HUD بلا تردّد. و<code>open()</code> يفرّغ
-    الجسم و<b>يطفئ</b> زر الرجوع والصفوف الثابتة — فالزر الميت على شاشة لا مكان للرجوع منها يُقرأ على أنه عطل.</p>
-
-  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — تأكيدات تنتظرها بـ <code>await</code></h3>
-  <pre><code>if await dialogs.confirm("حذف الحفظ", "لا يمكن التراجع عن هذا."):
-    delete_save()</code></pre>
-  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — كل ما بعد المتن
-    اختياري، و<code>alert()</code> يعمل بالطريقة نفسها بزر واحد. اضبط <code>destructive</code> لما لا رجعة
-    فيه: فيصير زر التأكيد زرّ <code>GoStyle.Tone.DANGER_SOLID</code> المصمت. ففي السمة الفاتحة يضطر نص
-    الخطر المصبوغ إلى الدكانة حتى يُقرأ كنصّ أسود؛ أما الزر المصمت فيحتفظ بنص أبيض على أحمر. وتُعاد النبرة
-    عند كل استدعاء لأن النافذة نفسها يُعاد استعمالها، واستدعاء <code>confirm()</code> ثانٍ بينما الأول
-    مفتوح يعيد <code>false</code> فورًا. أما <code>confirm_key()</code> فيأخذ مفاتيح ترجمة.</p>
-  <p><b>ترتيب الأزرار.</b> <code>action_layout</code> هو <code>VERTICAL</code> افتراضيًا (وهو الآمن مع
-    الترجمات الطويلة)، و<code>HORIZONTAL</code> لصفّ واحد يأخذ كل زر فيه نصف العرض، أو <code>AUTO</code>
-    الذي لا يستعمل صفًّا واحدًا إلا حين يتسع النصّان في نصف البطاقة على سطر واحد، وإلا رصّهما فوق بعضهما.
-    و<code>action_gap</code> هو المسافة بين الأزرار، و<code>body_gap</code> المسافة فوقها — اجعلها أوسع من
-    مسافة الأزرار ليُقرأ السؤال والاختيار جزأين منفصلين. ولمربع حوار واحد فقط، استدعِ
-    <code>set_next_action_layout()</code> قبل فتحه. والصفّ يُبنى عند أول فتح لمربع حوار، فلا يضيف
-    <code>GoDialogs</code> المحمَّل تلقائيًا شيئًا عند الإقلاع.</p>
-
-  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — نموذج محدود العرض</h3>
-  <div class="note warn">
-    <b>يضمن التفاف نصوص كل ما تحته.</b> فبدون ذلك تمتدّ جملة طويلة واحدة على سطر واحد يتجاوز عرضه الأدنى
-    عرضَ الشاشة، فتُقصّ الجوانب — حتى إنك لا تعرف على أي شاشة أنت. وتشغيل الالتفاف يدويًا في كل مشهد
-    يُنسى في كل مرة.
-  </div>
-
-  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — تمرير باللمس</h3>
-  <p>ضع <b>شيئًا واحدًا</b> بداخله. أما الرؤوس وصفوف الأزرار فمكانها خارجه — إذ لا يصحّ أن تدفعها قائمة
-    طويلة خارج الشاشة. و<code>use_panel_edge()</code> ينقل شريط التمرير إلى حشوة البطاقة القائمة
-    بينما يحتفظ المحتوى بإزاحته.</p>
-</section>
-
-<section id="messages">
-  <h2>أن تخبر اللاعب بشيء</h2>
-
-  <h3 id="gonotice-snackbar"><code>GoNotice</code> — شريط الإشعار</h3>
-  <div class="note warn">
-    <b>لا يعترض اللمس أبدًا.</b> الإشعار يُقرأ ولا يُضغط. فهو لا يأخذ تركيزًا، ولا يحجب مدخلات اللعبة،
-    والزر الذي تحته يظلّ يُضغط. وحين يلزم تأكيد استعمل <code>GoDialogs</code>؛
-    وحين يلزم اختيار، <code>GoPromptCard</code>.
-  </div>
-
-  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — سؤال لا يوقف اللعبة</h3>
-  <p>يطفو على أحد الجانبين بلا حجاب معتم. واللعبة تواصل عملها.</p>
-
-  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — جولة إرشادية</h3>
-  <p>يشير إلى عناصر تحكم حقيقية واحدًا تلو الآخر. والبطاقة وحدها هي التي تأخذ اللمس، فـ<b>الضغط على عنصر
-    التحكم المُبرَز نفسه ينتقل بالجولة</b> — فتصير "اضغط هنا" فعلًا لا جملة.</p>
-  <pre><code>tour.start([
-    {"target": bag_button, "title": "الحقيبة", "body": "كل ما تلتقطه يحطّ هنا."},
-    {"target": map_button, "title": "الخريطة", "body": "اضغط لفتح الخريطة كاملة."},
-])</code></pre>
-  <p>يجوز أن يكون <code>title</code> و<code>body</code> مفاتيح ترجمة أو نصًّا صريحًا. وأي خطوة اختفى هدفها
-    تُتخطّى.</p>
-</section>
-
-<section id="hud">
-  <h2>HUD</h2>
-
-  <h3 id="the-small-things-decide-whether-it-looks-good">التفاصيل الصغيرة هي التي تقرّر إن كان يبدو جيدًا</h3>
-  <p>
-    اصقل اللوحات الكبيرة ما شئت — فالذي يلفت النظر دائمًا شيء صغير: كلمة انقسمت نصفين، أو توهّج قُصّ طرفه،
-    أو خانة مزدحمة. أربعة أمور كهذه رُصدت في 2026-09-13 وأُصلحت في الودجات والسمات، لا في شاشة العرض
-    التوضيحي، فتنال كل شاشة النتيجة نفسها.
-  </p>
-  <table>
-    <thead><tr><th>ما ظهر</th><th>السبب</th><th>الإصلاح</th></tr></thead>
-    <tbody>
-      <tr><td>كلمة <code>Done</code> في العلامة الإرشادية صارت <code>Don</code>/<code>e</code></td>
-          <td>الزرّ المفعَّل فيه الالتفاف <b>يطرح عرض نصّه</b> من حدّه الأدنى — فإن ضُغط انكسر داخل الكلمة</td>
-          <td><code>GoStyle.fit_words()</code>: الكلمة الواحدة لا تلتفّ أبدًا؛ وعدة كلمات تلتفّ، لكن <b>أطول كلمة</b> تتّسع دائمًا — والحكم على النص <b>المعروض</b> لا على مفتاح الترجمة، ويعيده النموذج عند تغيّر اللغة</td></tr>
-      <tr><td>توهّج زرّ بعرض الشاشة كاملًا قُصّ رأسيًا من جهة اليسار</td>
-          <td>حاوية التمرير تقصّ عند حافتها بلا استثناء. ولم ينجُ إلا الجانب الأيمن، بفضل مجرى شريط التمرير</td>
-          <td><code>GoScroll</code> يستعير حشوة الأب ليدفع حافته 12dp إلى الخارج ثم يعيدها في الداخل — <b>فيبقى المحتوى في مكانه</b></td></tr>
-      <tr><td>الوقت والأيقونة والعدد مرصوصة رأسيًا داخل خانة</td>
-          <td>ثلاثة صفوف داخل 48dp</td>
-          <td>أيقونة كبيرة في الوسط، والاختصار أعلى اليسار، والعدد <b>شارةً</b> أسفل اليمين، والوقت المتبقي شارةً فوق الأيقونة — ولوحات الشارات تأتي من <code>badge_box()</code> في المظهر</td></tr>
-      <tr><td>قائمة منسدلة مسطّحة بلا تحديد ظاهر</td>
-          <td>تمرير المؤشر فوق العنصر كان يستعمل لوحة الزر؛ وعلامات الاختيار الدائرية كانت علامات المحرك الباهتة الافتراضية</td>
-          <td>لوحة تمرير مخصّصة (بصبغة تمييز هادئة)، ورسوم الاختيار الدائري نفسها المستعملة في مربعات الاختيار، وارتفاع عنصر يناسب اللمس</td></tr>
-    </tbody>
-  </table>
-  <div class="shots">
-    <figure>
-      <img src="../img/dropdown-default-dark.png" alt="قائمة منسدلة مفتوحة — لوحة تمرير بصبغة تمييز هادئة وعلامة الاختيار الدائرية للعنصر المختار" loading="lazy">
-      <figcaption>القائمة المنسدلة — لوحة التمرير وعلامة الاختيار</figcaption>
-    </figure>
-    <figure>
-      <img src="../img/slots-scifi-dark.png" alt="أربع خانات سريعة — الاختصار أعلى اليسار، وشارة العدد أسفل اليمين، والأولى عليها شارة وقت متبقٍّ" loading="lazy">
-      <figcaption>الخانات — شارات الأركان والوقت المتبقي (طراز الخيال العلمي)</figcaption>
-    </figure>
-  </div>
-  <p>
-    امنح الأزرار الأيقونية وصفًا عبر <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
-    فالتلميح لمستخدمي الفأرة، واسم الوصولية لقارئات الشاشة، كلاهما يأتي من تلك القيمة الواحدة.
-    وgohud يرسم التلميح بنفسه: فتلميح المحرك الافتراضي يقسم النص <b>حرفًا في كل سطر</b> حين يخطئ
-    حسابُ عرضه (قيس بعرض 1dp).
-  </p>
-
-  <h4 id="the-coach-mark-card-keeps-off-fixtures">بطاقة العلامة الإرشادية تتنحّى عن التجهيزات الثابتة</h4>
-  <p>
-    في الوضع العرضي كانت البطاقة تُرسَل إلى الحافة العليا أو السفلى تمامًا — حيث تعيش الرؤوس وقطع HUD
-    بالضبط؛ وفي العرض التوضيحي كانت تجلس على <code>→ ×</code> في الرأس. أما الآن فتبقى بمحاذاة هدفها،
-    وتلتفّ حول أي <code>GoHudAnchor</code> يحجز مساحة، وتأخذ ما سواه من عوائق عبر
-    <code>keep_clear</code>. وتتحرك أقصر مسافة تتجاوز بها العائق دون أن تغطّي الهدف، وتبقى مكانها حين
-    تضيق الشاشة عن تجاوز كل شيء — فالتداخل أهون من الاختفاء.
-    أما عمقها — أي أن تُقرأ <b>فوق</b> الصفحة — فيأتي من مقابض المظهر
-    (<code>float_shadow_size</code> و<code>float_shadow_lift</code> و<code>float_shadow_alpha</code>؛ والمظاهر المشطوفة تستعمل <code>float_glow_size</code>).
-  </p>
-  <pre><code>tour.keep_clear = [header_bar, toolbar]   # تجهيزات ثابتة ليست مراسيَ</code></pre>
-
-  <h3 id="screens-with-a-mouse-and-a-keyboard">الشاشات ذات الفأرة ولوحة المفاتيح</h3>
-  <p>
-    الإصبع <b>لا حالة تمرير له.</b> ابنِ للهاتف وحده فتمرّ حالتان خاصتان بسطح المكتب بلا فحص —
-    وإحداهما كانت معطوبة: <b>حلقة التركيز في gohud كانت غير مرئية على الزر الأساسي.</b> فاللوحة
-    بلون التمييز والحلقة كذلك: <code>1.00:1</code>، أي اللون نفسه مرسومًا فوق نفسه. وبالتنقّل بلوحة
-    المفاتيح لم تكن هناك وسيلة لمعرفة أين أنت.
-  </p>
-  <figure>
-    <img src="../img/desktop-states.png" alt="صف الأزرار نفسه في ثلاث حالات — عادي، وتمرير الفأرة، وتركيز لوحة المفاتيح" loading="lazy">
-    <figcaption>من الأعلى إلى الأسفل: <b>عادي · تمرير · تركيز</b>. والأزرار المصمتة تنال حلقة تتباين مع لوحتها.</figcaption>
-  </figure>
-  <p>
-    الأزرار المصمتة (<code>GoPrimaryButton</code> و<code>GoDangerSolidButton</code>) تستعمل حلقة
-    <b>تتباين مع لوحتها هي</b> — داكنة على سمة داكنة، بيضاء على فاتحة، وقوس تصويب داكن في طراز الخيال
-    العلمي. وفاحص التباين يقيس <b>حلقة التركيز مقابل اللوحة التي تجلس عليها</b>، فتصمد القاعدة عند تغيير
-    لوحة الألوان (إذ تطلب WCAG 2.4.11 نسبة 3:1 لمؤشرات التركيز).
-  </p>
-
-</section>
-
-<section id="hud-widgets">
-  <h2>ودجات الـ HUD</h2>
-  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — تسعة مواضع</h3>
-  <p>يحترم المنطقة الآمنة وهوامش الحواف. امنحه <code>landscape_spot</code> فينتقل في الوضع العرضي —
-    فأدوات التحكم التي تجلس أسفل الوسط في الوضع الطولي يمكن أن تنتقل إلى أسفل اليمين.</p>
-  <div class="note">
-    <b>لماذا هو موجود.</b> إن كُتبت المراسي والإزاحات بخط اليد لكل قطعة من HUD انحرفت: فينتهي شريط
-    الصحة تحت فتحة الكاميرا في جهاز منتوء الشاشة، ويحطّ زر تحكم على شريط الإيماءات في الوضع العرضي.
-    وهذا الحساب يعيش في مكان واحد.
-  </div>
-
-  <h4 id="keeping-content-out-from-under-the-hud">إبقاء المحتوى من تحت HUD</h4>
-  <p>
-    حين تتقاسم شاشة متمررة العرضَ مع HUD، ينزلق المحتوى <b>تحته</b> فتتداخل مجموعتا النص حتى لا تُقرأ
-    أيّ منهما. وقد حدث ذلك مرتين في هذه الإضافة: نصّ نائب في حقل إدخال انعصر بين الخانات السريعة،
-    ومقبض مفتاح تبديل في الإعدادات حطّ على شريط الصحة.
-  </p>
-  <pre><code>form.avoid_hud = true                  # ابتعد عن كل GoHudAnchor ظاهر
-joystick_anchor.reserve_space = false  # …إلا ما لا يظهر إلا تحت الإصبع</code></pre>
-  <p>
-    كل مستطيل يُتفادى في الاتجاه <b>الأقل كلفة من حيث المساحة</b>. فالشريط في أعلى اليمين يُلتفّ حوله
-    نزولًا على هاتف بالوضع الطولي (13% من الارتفاع) وجانبًا في الوضع العرضي (21% من العرض) — إذ إن تفاديه
-    رأسيًا في الوضع العرضي يكلّف 27% من الشاشة. والأرض التي تُخلى تُطرح قبل قياس المستطيل التالي.
-  </p>
-
-  <h4 id="hud-pieces-collide-with-each-other-too">قطع HUD تتصادم فيما بينها أيضًا</h4>
-  <p>
-    المواضع التسعة تقسم الشاشة؛ لكنها لا تضمن أن <b>تتفادى القطع بعضها</b>. فشريط إشعار عريض في أعلى
-    الوسط حطّ تمامًا على شريط الصحة في أعلى اليمين فأخفى قيمته — ولم يكن بوسعك أن تقرأ كم بقي من الصحة.
-  </p>
-  <pre><code>notice_anchor.avoid_peers = true      # يستقرّ تحت HUD الثابت
-notice_anchor.reserve_space = false   # ولا يدفع الصفحة ما دام ظاهرًا</code></pre>
-  <p>
-    وهو يتنحّى <b>رأسيًا فقط</b> — إذ إن تحركه جانبًا كذلك يجعل الإشعار المتوسّط يظهر في مكان مختلف في كل
-    مرة. وهو لا يتفادى إلا القطع التي <b>لا</b> تتنحّى هي الأخرى: فلو تنحّى الاثنان لتبادلا المكانين إلى الأبد.
-  </p>
-
-  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — الصحة والمانا والخبرة</h3>
-  <pre><code>var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # التوكن الخاص بالتعبئة وحدها
-hp.set_values(320, 500)                     # "320 / 500"</code></pre>
-  <p>التغيّرات تتدرّج على مدى 0.18 ثانية — فشريط صحة يقفز لا يخبرك بمقدار الضربة التي تلقّيتها.
-    و<code>reduce_motion</code> يجعله فوريًا. والأعداد الكبيرة تُختصر إلى <code>12.3k</code> حتى لا يهتزّ
-    عرض الشريط كلما زادت الخانات أو نقصت.</p>
-
-  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — خانة سريعة واحدة</h3>
-  <p>الأيقونة والكمية ومهلة الاستعداد والاختصار على <b>وجه واحد</b>. فتعليق الشارات على دائرة صغيرة
-    يجعل لكل خانة عرضًا مختلفًا فيتمايل الصف.</p>
-  <div class="note">
-    <b>الحجم المرئي وحجم اللمس مختلفان.</b> الخانات المتلاصقة لها صناديق لمس 48dp متداخلة؛ ويذهب
-    التداخل إلى <b>الخانة الأقرب مركزًا</b> — فعرّفها ببعضها عبر
-    <code>touch_peers</code>.
-  </div>
-
-  <p><code>keyboard_focus</code> مطفأ افتراضيًا، حتى لا يقف صفّ من ثماني خانات بين مستخدم لوحة المفاتيح وكل
-    عناصر الإعدادات في ترتيب Tab. شغّله حين تكون لوحة المفاتيح أو ذراع التحكم هي وسيلة الإدخال الوحيدة.</p>
-
-  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — عصا افتراضية</h3>
-  <table>
-    <thead><tr><th>الوضع</th><th>السلوك</th></tr></thead>
-    <tbody>
-      <tr><td><code>FIXED</code></td><td>في المكان نفسه دائمًا — يسهل إيجاده دون النظر</td></tr>
-      <tr><td><code>FOLLOW</code></td><td>يظهر حيث يحطّ الإبهام</td></tr>
-      <tr><td><code>RELATIVE</code></td><td>يظلّ يتبع الإبهام بعد ظهوره — مريح في الحركة الطويلة</td></tr>
-    </tbody>
-  </table>
-  <p>قيمة <code>Vector2</code> القادمة من <code>moved</code> طولها بين 0 و1، فتستطيع ضربها مباشرةً في
-    سرعة؛ وهي لا تتغير بتغيّر حجم الشاشة ولا كثافتها.</p>
-
-  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — يبدو صغيرًا ويُضغط كبيرًا</h3>
-  <div class="note warn">
-    <b>آمن فقط ما دام جيرانه يتجاهلون اللمس.</b> فإن غطّت المساحة الموسَّعة الزرَّ التالي، توقّف ذلك
-    الزر عن الاستجابة. والأزرار الأيقونية المتجاورة تحتاج <code>touch_peers</code>.
-  </div>
-</section>
-
-<section id="feedback">
-  <h2>الانتظار والإخبار والعدّ</h2>
-
-  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — الرسالة التي تضع نفسها بنفسها</h3>
-  <p>يجلس في الأسفل (أو في الأعلى)، فوق المنطقة الآمنة ولوحة المفاتيح، ثم يمضي من تلقاء نفسه. وبدونه
-    تكتب الطبقة والموضع والمؤقّت والتحرير في كل شاشة عليها أن تقول "حُفظ".</p>
-  <pre><code>snack.show_text("حُفظ", GoTheme.SUCCESS)
-
-# فرصة للتراجع — 0 هو الزرّ الأول، و-1 يعني أن المهلة انتهت
-if await snack.post({"text": "أُسقط العنصر", "actions": ["تراجع"]}) == 0:
-    restore_item()</code></pre>
-  <p>الرسائل <b>تصطفّ</b> بدل أن يطمس بعضها بعضًا، وتكرارات السطر الواحد تُدمج — فخادم يفشل أربع مرات في
-    الثانية لم يعد يكدّس أربع دقائق من التنبيهات. والشريط الذي لا زرّ فيه يمرّر المدخلات، فتظلّ اللعبة
-    تحته تعمل.</p>
-  <div class="note warn">
-    <b>ليس مكانًا لطرح سؤال.</b> فهو يذهب من تلقاء نفسه، وقد لا يراه اللاعب أبدًا.
-    والتأكيدات التي لا رجعة فيها مكانها <code>GoDialogs</code>. والأزرار هنا يجب أن تكون اختيارية — تراجع،
-    تفاصيل، إعادة المحاولة.
-  </div>
-  <p>و<code>GoNotice</code> هو النصف الآخر من الزوج: فهو لا يأخذ مدخلًا ولا تركيزًا أبدًا، والشاشة المالكة
-    له هي التي تقرّر أين يذهب. وهو لا يحمل زرًّا؛ أما هذا فيحمل.</p>
-
-  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — انتظار لا تُرى نهايته</h3>
-  <p>الألعاب التي تكلّم خادمًا تحتاج هذا أكثر من أي شيء آخر في هذه الصفحة: فالشاشة الساكنة تُقرأ على أنها
-    انهيار. واستدعاء واحد يحوّل الزرَّ الذي ضغطتَه إلى دوّارة <b>في مكانه</b>.</p>
-  <pre><code>GoSpinner.busy(buy_button, true)
-var ok := await server.purchase(item)
-GoSpinner.busy(buy_button, false)</code></pre>
-  <p>الزرّ يحتفظ بحجمه — فالنصّ يصير شفافًا بدل أن يزول، فلا يقفز الصفّ — وهو معطَّل ما دام يدور. وهذا
-    الجزء الثاني هو المقصود: فالشراء يجب ألّا ينطلق مرتين وأنت في <code>await</code>. ومع تشغيل
-    <code>reduce_motion</code> لا يدور؛ بل تنبض ثلاث نقاط بدلًا من ذلك.</p>
-  <p>والتقدّم الذي يمكن قياسه هو <code>GoBar</code>. أما الدوّارة فلا تَعِد بشيء عن موعد انتهائها.</p>
-
-  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — نقطة غير المقروء، وعلامة «جديد»، والـ 99+</h3>
-  <pre><code>GoBadge.attach(mail_button, unread_count)   # يخفي نفسه عند الصفر
-GoBadge.attach(shop_button, 0, "جديد")
-GoBadge.attach(friend_button, 3, "", true) # نقطة — "هناك شيء ما"</code></pre>
-  <p>يتعلّق بالركن العلوي الأيمن للمضيف عبر المراسي، فيتبع مضيفًا يُقرَّر حجمه لاحقًا، والإلحاق مرتين يعيد
-    الشارة نفسها. استعمل عددًا حين يغيّر العددُ ما يفعله اللاعب، ونقطةً حين لا يهمّ إلا "أن هناك شيئًا".</p>
-  <p>ولون نصّه يُختار ليتباين مع أي لون صبغ به المظهرُ الشارةَ — ولا يُفترض أبيض أبدًا — وهو يحمل اسم
-    وصولية، لأن نقطة ملوّنة لا تقول شيئًا لقارئ الشاشة.</p>
-</section>
-
-<section id="forms-lists">
-  <h2>النماذج والقوائم</h2>
-
-  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — الصفّ الذي قد يكون خاطئًا</h3>
-  <p>سطر واحد في أعلى نموذج من خمسة حقول يقول "راجع ما أدخلتَه" لا يقول <i>أيّ</i> حقل. وهذا وحده هو ما
-    يجعل الناس يتركون التسجيل.</p>
-  <pre><code>var name_field := GoField.make("اسم الشخصية", GoStyle.line_edit("2-12"), "لا يمكن تغييره لاحقًا")
-name_field.set_error("هذا الاسم مأخوذ")   # قال الخادم لا
-name_field.clear_error()</code></pre>
-  <p>والتلميح يختفي ما دام الخطأ ظاهرًا، فلا يطول الصفّ سطرًا يدفع كل ما تحته، ونصّ الخطأ يُضمّ إلى اسم
-    الوصولية لعنصر التحكم — فالإطار الأحمر وحده لا يقول شيئًا لمن لا يرى الأحمر.</p>
-  <p>و<code>GoStyle.field()</code> هو النسخة الساكنة: عنوان وعنصر تحكم وتلميح، بلا حالة خطأ. استعمل المصنع
-    حين لا شيء يمكن أن يخطئ، والعقدة لكل ما يمكن أن يرفضه خادم.</p>
-
-  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — إدخال ملحوم بزرّه</h3>
-  <pre><code>GoInputGroup.make(GoStyle.line_edit("رسالة"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
-GoInputGroup.make(GoStyle.line_edit("الاسم"), {"prefix_icon": &amp;"search"})</code></pre>
-  <p>ما يحلّه هو الأركان. فشكلان مدوّران يلتقيان في الوسط يبدوان منقبضين، والفجوة الافتراضية تجعلهما
-    يُقرآن شيئين منفصلين. الأركان الخارجية تبقى مدوّرة، والملتقية تصير قائمة — في كل حالات الزرّ، وإلا
-    انشقّت المجموعة لحظة الضغط. أما المظاهر المشطوفة فلا حقول أركان فيها أصلًا، فيدعها هناك على حالها
-    وتلتقي الوجوه القائمة نظيفةً.</p>
-
-  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — منتقٍ يبحث</h3>
-  <p>دون العشرة مدخلات يكون <code>GoStyle.select()</code> أفضل: ضغطة أقلّ والقائمة كلها ظاهرة.
-    وبعد الثلاثين يصير المسح بالعين عملًا.</p>
-  <pre><code>var picker := GoCombobox.make(server_names, 0, "اختر خادمًا")
-picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
-  <div class="note warn">
-    <b>البحث يطابق داخل الأسماء، لا بداياتها وحدها.</b> فمطابقة البادئة لا تكاد تجد شيئًا في القوائم
-    الكورية أو اليابانية، حيث الكلمة التي تفرّق بين عنصرين نادرًا ما تكون الأولى.
-  </div>
-
-  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — رموز القسائم والهدايا</h3>
-  <p>الرمز يُلصق من رسالة أكثر بكثير مما يُكتب. واثنا عشر حقلًا حقيقيًا كانت ستكسر اللصق عند الخليّة الأولى
-    وتضيّع حروفًا في محرّر الإدخال، فحقلٌ واحد مخفيّ يأخذ النصّ والخلايا تُرسم رسمًا.
-    و<code>ABCD-EFGH-IJKL</code> يفقد شُرَطه في الطريق.</p>
-  <pre><code>var coupon := GoCodeInput.make(12, 4)
-coupon.completed.connect(func(code: String) -> void: server.redeem(code))
-coupon.set_error("مستعمَل من قبل")</code></pre>
-
-  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — رؤوس تُرتَّب وصفوف تُختار</h3>
-  <pre><code>var board := GoTable.make(
-    [{"text": "الرتبة", "width": 56}, {"text": "الاسم"}, {"text": "النقاط", "numeric": true}], rows)
-board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
-  <div class="note warn">
-    <b><code>numeric: true</code>، وإلا انقلب الترتيب.</b> فبالمقارنة نصًّا يتفوّق <code>"9124"</code> على
-    <code>"91240"</code> — والنقاط والذهب والضرر كلها أعداد خاناتها متفاوتة.
-  </div>
-  <p>و<code>row_selected</code> يعطي الفهرس في مصفوفتك الأصلية، لا الموضع بعد الترتيب. واتجاه الترتيب
-    يظهر برسمٍ لا بلون وحده، والصفوف كلها تُضغط فلا يضطر أحد إلى إصابة خليّة واحدة. أما
-    <code>GoStyle.table()</code> فيظلّ الشبكة للقراءة فقط.</p>
-
-  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — صفحات، أو صفّ «المزيد»</h3>
-  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
-var more := GoPagination.more(load_next)   # النسخة الملائمة للهاتف</code></pre>
-  <p>الأرقام واجهة فأرة؛ وعلى الهاتف يُقرأ صفّ «المزيد» أفضل. والصفحة الحالية تبقى متوسّطة في النافذة،
-    فالضغط على التالي لا يعيد خلط كل رقم. والمجموع 0 يعني "غير معروف" فتُرسم الأسهم وحدها — فهو لا يخترع
-    عدد صفحات لم يُعطَه.</p>
-</section>
-
-<section id="game-shapes">
-  <h2>أشكال تستعملها الألعاب فعلًا</h2>
-  <p>أشكال مألوفة من الويب، أُعيد بناؤها حول ما تحتاجه اللعبة منها.</p>
-
-  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — الحضور اليومي</h3>
-  <p>منتقي التواريخ لا يكاد ينفع في لعبة أبدًا. أما شكل التقويم فينفع — لمكافآت الحضور، حيث المهمّ هو
-    <b>في أي يوم أنت</b>، لا ما هو التاريخ.</p>
-  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
-attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
-  <p>خليّة اليوم وحدها هي التي تُضغط — فالزرّ الذي لا يفعل شيئًا عند ضغطه يُقرأ على أنه معطوب. والمستلَم
-    واليومُ والقادمُ تختلف بثلاثة أشياء معًا: علامة صحّ، وإطار بلون التمييز، وإعتام.</p>
-
-  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> و<code>GoDonut</code> — الإحصاءات بنظرة</h3>
-  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
-stats.set_compare(with_new_sword)          # طبقة متقطّعة فوقها
-
-var share := GoDonut.make([{"label": "فيزيائي", "value": 620}, {"label": "سحري", "value": 340}])
-card.add_child(share.legend())</code></pre>
-  <p>قيم الرادار بين 0 و1 لأن ما يُعدّ ملئًا قرارٌ تتخذه اللعبة — فـ120 STR خامًا بجانب 45 INT كانت سترسم
-    كذبة. أما قيم الدونت فخام وهو يقسمها عنك؛ وبعد خمس شرائح يطوي الباقي، إذ إن الشريحة السادسة خيطٌ لا
-    يقرؤه أحد. وخطّ المقارنة <b>متقطّع</b>، لا مجرّد لون آخر، ومفتاح الرسم يطبع النسبة المئوية كتابةً.</p>
-
-  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — اللافتات واختيار الشخصية</h3>
-  <pre><code>banners.set_pages([promo, event, pack])
-banners.autoplay_seconds = 5.0             # مطفأ افتراضيًا</code></pre>
-  <p>هو لا يتقدّم من تلقاء نفسه ما لم تطلب، والخمس ثوانٍ هي الحدّ الأدنى: فلافتة تتغيّر كل ثلاث تسحب النصّ
-    قبل أن يُقرأ. ولمسه يصفّر المؤقّت، ومع تشغيل <code>reduce_motion</code> لا يتقدّم من تلقاء نفسه أبدًا.
-    والنقاط تُضغط بالحدّ الأدنى للمس وإن كانت النقطة المرسومة صغيرة.</p>
-
-  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — تلميحات مفاتيح لا تكذب</h3>
-  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # يقرأ الارتباط الحقيقي</code></pre>
-  <p>عبارة "اضغط F" المكتوبة في الكود تظلّ تقول F بعد أن يغيّر اللاعب الارتباط — وهي أشيع كذبة في واجهات
-    الحاسوب. و<code>for_action()</code> يقرأ <code>InputMap</code>؛ فإن كان الفعل مرتبطًا بذراع تحكم بدلًا
-    من ذلك، أعاد فراغًا واختفت الودجة، لأن "لا شيء" ستكون كذبة أخرى. وعلى أندرويد وiOS يخفي نفسه.</p>
-</section>
-
-<section id="overlays">
-  <h2>فوق الشاشة</h2>
-
-  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — اللوحة الجانبية</h3>
-  <p><code>GoSheet</code> يأتي من الأسفل، وهو الصواب لهاتف يُمسك قائمًا. أما على لوح أو سطح مكتب فالورقة
-    نفسها تغطّي اللعبة؛ والدرج يأتي من الجانب بدلًا من ذلك.</p>
-  <pre><code>bag.side = GoDrawer.Side.RIGHT
-bag.open("الحقيبة")</code></pre>
-  <p>اللوحة تبلغ حافة الشاشة لكن المحتوى يبقى داخل المنطقة الآمنة، وإلا قصّ ركنٌ مدوّر الصفَّ الأول.
-    و<code>LEFT</code> تعني يسار الشاشة حتى في العربية؛ فشغّل <code>follow_text_direction</code> حين يكون
-    المقصود "جهة البداية"، فينقلب مع الكتابة من اليمين إلى اليسار.</p>
-
-  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — البطاقة المثبّتة</h3>
-  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
-  <p>هذا هو الموضع المثبّت من <code>GoSurface</code> وقد وُصلت له الطبقةُ والسطحُ والمرساةُ والتحريرُ سلفًا
-    — تلك الأسطر العشرة التي تكتبها كل لعبة مرارًا وتكرارًا. وواحدة تُفتح في المرة، لأن البطاقات المكدّسة
-    تدفن الشاشة فلا يعرف أحد أي بطاقة تخصّ أي خانة. والحجاب شفاف: فبطاقة فتحتَها لتقارن عتادًا يجب ألّا
-    تُعتم العتاد.</p>
-  <div class="note warn">
-    <b>ليس تلميحًا يظهر بتمرير الفأرة.</b> فاللمس لا تمرير فيه، وكل ما لا تكشفه إلا الفأرة غير مرئي
-    لنصف لاعبيك.
-  </div>
-
-  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — الضغط المطوَّل والنقر الأيمن</h3>
-  <pre><code>GoContextMenu.attach(item_slot, [
-    {"text": "استعمال", "action": use},
-    {"separator": true},
-    {"text": "إسقاط", "action": drop, "danger": true},
-])</code></pre>
-  <p><code>PopupMenu</code> موجود في المحرّك أصلًا. أما غير الموجود فالإيماءة: نصف ثانية للفتح، وتُلغى
-    <b>لحظة تحرّك الإصبع</b>، فتمرير قائمة لا يُظهر قائمة سياق أبدًا. ومرّر <code>Callable</code> بدل
-    مصفوفة حين تعتمد المدخلات على ما ضغطتَ عليه.</p>
-  <div class="note warn">
-    <b>الضغط المطوَّل يحتاج مدخلًا ثانيًا.</b> فلا أحد يكتشف إيماءة مخفيّة — اقرنه بزرّ <code>⋯</code>
-    ظاهر (<code>open_at()</code>)، أو أيقونة، أو علامة إرشادية عند أول تشغيل.
-  </div>
-
-  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — وحدة تحكّم المطوّر</h3>
-  <pre><code>console.register("give", "امنح عنصرًا: give &lt;id&gt; &lt;count&gt;", give)
-console.toggle()</code></pre>
-  <p>أوامر الغشّ والتنقيح، مع لوحة أوامر تُرشّح وأنت تكتب فلا يضطر أحد إلى حفظها، وسجلّ على مفاتيح الأسهم.
-    وهي تجلس فوق كل شيء، فتستطيع أن تنقّح فوق مربع حوار.</p>
-  <div class="note warn">
-    <b>ترفض أن تُفتح في بناء إصدار.</b> فـ<code>debug_only</code> مشغّل افتراضيًا؛ وأوامر الغشّ في يد لاعب
-    تنهي اقتصاد اللعبة في اليوم الأول.
-  </div>
-</section>
-
-<section id="factory">
-  <h2><code>GoStyle</code> — المكان الواحد الذي تُصنع فيه الأشياء</h2>
-  <p class="sub">
-    استدعِ <code>Button.new()</code> مباشرةً وستنحرف الحشوة والارتفاع والالتفاف انحرافًا طفيفًا من شاشة
-    إلى أخرى. وهذا الانحراف غير مرئي في مراجعة الكود، وبيّن تمامًا في لقطة شاشة.
-  </p>
-
-  <table>
-    <thead><tr><th>المجموعة</th><th>الدوال</th></tr></thead>
-    <tbody>
-      <tr><td>البنية</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
-      <tr><td>النص</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
-      <tr><td>الأزرار</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
-      <tr><td>الإدخال</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
-      <tr><td>العرض</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
-      <tr><td>قطع الأسطح</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
-      <tr><td>المساعدات</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note warn">
-    <b><code>box()</code> يعيد دائمًا <code>StyleBoxFlat</code></b>، لأن المستدعين يستلمونه ثم يعدّلون
-    <code>bg_color</code> أو <code>corner_radius</code>. استعمل <code>surface()</code> حين يجب أن يبقى
-    شكل مخصّص على حاله.
-  </div>
-
-  <h3 id="list-rows-with-a-description">صفوف القوائم ذات وصف</h3>
-  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "حافظ العهد", _inspect, Color.TRANSPARENT,
-    "سيف طويل  /  هجوم 42", false)</code></pre>
-  <p>الصفّ ذو السطر الثاني ينال <b>حشوة علوية وسفلية متساويتين</b>، أفسح من صفّ السطر الواحد، ويبقى زوج
-    العنوان والوصف <b>متوسّطًا رأسيًا</b> بجانب الأيقونة — حتى حين تمدّه حاوية ليصير أطول، وحتى بعد أن يلتفّ
-    الوصف على عدة أسطر. ويظلّ الصفّ كله هدف لمس واحدًا.</p>
-  <figure>
-    <img src="../img/medieval-light.png" alt="مثال medieval_light — صفوف قوائم من سطرين وخانات سريعة وأشرطة" loading="lazy">
-    <figcaption>صفوف من سطرين وخانات وأشرطة في مثال العصور الوسطى — استدعاءات المصنع نفسها تحت <code>medieval_light</code>.</figcaption>
-  </figure>
-
-  <h3 id="flowing-rows">الصفوف المتدفقة</h3>
-  <p>ضع عناصر التحكم في <code>wrap_row</code> بـ<b>عرضها الطبيعي</b>. فمع بقاء الالتفاف مفعَّلًا، يهبط الحدّ
-    الأدنى لعرض الزر إلى ما يقارب الصفر فيقيس الصفُّ خليّته عليه — فينهار النص إلى حرف واحد في كل سطر.
-    والمصنع يمنع ذلك عنك.</p>
-
-  <h3 id="never-leave-an-empty-list-empty">لا تترك قائمة فارغة فارغة</h3>
-  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "لا شيء هنا بعد"))</code></pre>
-  <p>الناس يقرؤون الشاشة الخالية على أنها <b>عطل</b>.</p>
-</section>
-
-<section id="hooks">
-  <h2>خطّافات الاشتقاق</h2>
-  <p class="sub">
-    كل موضع يُنشأ فيه ودجت ابن يمرّ عبر دالة قابلة للتجاوز، فيستطيع مشروع يشتقّ من أنواع gohud أن يضع
-    أصنافه هو <b>داخل</b> الودجات دون نسخ أي كود.
-  </p>
-  <table>
-    <thead><tr><th>الخطّاف</th><th>الودجت</th><th>الافتراضي</th></tr></thead>
-    <tbody>
-      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>، <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
-      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>، <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
-      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>، <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
-      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>يخفي البطاقة ما دام مربع حوار مشروط مفتوحًا</td></tr>
-    </tbody>
-  </table>
 </section>
 
 </main>

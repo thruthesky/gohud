@@ -134,11 +134,33 @@ func _initialize() -> void:
 			scroll.scroll_vertical = 0
 			await _settle(2)
 
+		# 🔬 **판 불투명도** — 값 검사로는 확인할 수 없는 유일한 기능이다. "뒤가 보이는가" 와
+		#    "글자가 아직 읽히는가" 는 그림만이 답한다. 세 장을 찍는다: 테마 값, 너무 낮춘 값,
+		#    그리고 화면 전체 뒤에 무늬를 깐 상태(실제 게임 위에 얹힌 모습).
+		var lab: Node = gallery.find_child("OpacityLab", true, false)
+		if lab != null and scroll != null:
+			scroll.ensure_control_visible(lab as Control)
+			await _settle(5)
+			_shot(label + "_6_opacity")
+			var dial := lab.call("dial") as Range
+			dial.value = 0.35
+			await _settle(3)
+			_shot(label + "_6b_opacity_low")
+			gallery.call("_set_busy_background", true)
+			dial.value = 0.72
+			await _settle(4)
+			_shot(label + "_6c_opacity_over_world")
+			gallery.call("_set_busy_background", false)
+			dial.value = GoUi.surface_alpha(GoTheme.BOX_CARD)
+			await _settle(2)
+			scroll.scroll_vertical = 0
+			await _settle(2)
+
 		gallery.call("_open_popup")
 		gallery.call("_show_prompt")
 		gallery.call("_show_notice")
 		await _settle(8)
-		_shot(label + "_6_overlays")
+		_shot(label + "_7_overlays")
 
 
 		gallery.queue_free()

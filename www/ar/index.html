@@ -247,7 +247,7 @@
     </figure>
   </div>
   <p>اللقطتان كلتاهما من <code>examples/medieval/medieval.tscn</code>، مبنيّتان من الودجات القياسية.
-    <a href="theming.html#medieval">دليل العصور الوسطى وكيف تصنع مملكتك أنت ←</a></p>
+    <a href="theming-presets.html#medieval">دليل العصور الوسطى وكيف تصنع مملكتك أنت ←</a></p>
 
   <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">الشاشة ذاتها على هاتف وعلى سطح مكتب</h3>
   <p>
@@ -287,7 +287,7 @@
   <div class="note">
     <b>السمة الجديدة ملف JSON واحد.</b> الأمر <code>new_theme.py kingdom --from medieval_dark</code> يكتب لوحة ألوان
     تسرد كل قيمة موروثة صراحةً، و<code>make_theme.py kingdom</code> يبني السمة ورسوم عناصر التحكم
-    ومقابض المظهر، فيظهر النمط الجاهز في قائمة الاختيار. <a href="theming.html#own">كل إعداد وكل مقبض ←</a>
+    ومقابض المظهر، فيظهر النمط الجاهز في قائمة الاختيار. <a href="theming-own.html#own">كل إعداد وكل مقبض ←</a>
   </div>
 </section>
 
@@ -348,6 +348,51 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyle</code></td><td>ساكن</td><td>أزرار وصفوف قوائم وحقول إدخال وشرائح وجداول وتبويبات وغيرها، تُصنع كلها بطريقة واحدة متسقة</td></tr>
     </tbody>
   </table>
+
+  <h3 id="waiting-telling-counting">الانتظار والإخبار والعدّ</h3>
+  <table>
+    <thead><tr><th>الصنف</th><th>الأساس</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSnackbar</code></td><td>Node</td><td>الرسالة التي تضع نفسها بنفسها</td></tr>
+      <tr><td><code>GoSpinner</code></td><td>Control</td><td>انتظار لا تُرى نهايته</td></tr>
+      <tr><td><code>GoBadge</code></td><td style="white-space:nowrap">PanelContainer</td><td>نقطة غير المقروء، وعلامة «جديد»، والـ 99+</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="forms-and-lists">النماذج والقوائم</h3>
+  <table>
+    <thead><tr><th>الصنف</th><th>الأساس</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoField</code></td><td style="white-space:nowrap">VBoxContainer</td><td>الصفّ الذي قد يكون خاطئًا</td></tr>
+      <tr><td><code>GoInputGroup</code></td><td style="white-space:nowrap">HBoxContainer</td><td>إدخال ملحوم بزرّه</td></tr>
+      <tr><td><code>GoCombobox</code></td><td>Button</td><td>منتقٍ يبحث</td></tr>
+      <tr><td><code>GoCodeInput</code></td><td style="white-space:nowrap">VBoxContainer</td><td>رموز القسائم والهدايا</td></tr>
+      <tr><td><code>GoTable</code></td><td style="white-space:nowrap">VBoxContainer</td><td>رؤوس تُرتَّب وصفوف تُختار</td></tr>
+      <tr><td><code>GoPagination</code></td><td style="white-space:nowrap">HBoxContainer</td><td>صفحات، أو صفّ «المزيد»</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="shapes-games-actually-use">أشكال تستعملها الألعاب فعلًا</h3>
+  <table>
+    <thead><tr><th>الصنف</th><th>الأساس</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoRewardCalendar</code></td><td style="white-space:nowrap">VBoxContainer</td><td>الحضور اليومي</td></tr>
+      <tr><td><code>GoRadar</code></td><td>Control</td><td>الإحصاءات بنظرة</td></tr>
+      <tr><td><code>GoCarousel</code></td><td style="white-space:nowrap">VBoxContainer</td><td>اللافتات واختيار الشخصية</td></tr>
+      <tr><td><code>GoKbd</code></td><td style="white-space:nowrap">HBoxContainer</td><td>تلميحات مفاتيح لا تكذب</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="over-the-screen">فوق الشاشة</h3>
+  <table>
+    <thead><tr><th>الصنف</th><th>الأساس</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDrawer</code></td><td style="white-space:nowrap">CanvasLayer</td><td>اللوحة الجانبية</td></tr>
+      <tr><td><code>GoPopover</code></td><td>RefCounted</td><td>البطاقة المثبّتة</td></tr>
+      <tr><td><code>GoContextMenu</code></td><td>RefCounted</td><td>الضغط المطوَّل والنقر الأيمن</td></tr>
+      <tr><td><code>GoConsole</code></td><td style="white-space:nowrap">CanvasLayer</td><td>وحدة تحكّم المطوّر</td></tr>
+    </tbody>
+  </table>
 </section>
 
 <section id="ai" class="crumb">
@@ -371,7 +416,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <p>
     ولذلك فألوان النصوص <b>مشتقّة لا مختارة</b>: يأخذ البنّاء مدخل لوحة الألوان نقطةَ انطلاق ثم يدفع
     إضاءته حتى تتجاوز العتبة على كل سطح قد تحطّ عليه. غيّر لوحة الألوان فيتبعها التباين.
-    <a href="theming.html#contrast">القواعد والمزالق التي وراءها ←</a>
+    <a href="theming-contrast.html#contrast">القواعد والمزالق التي وراءها ←</a>
   </p>
 </section>
 

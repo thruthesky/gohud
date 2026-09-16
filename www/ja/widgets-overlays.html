@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-overlays.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-overlays.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-overlays.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-overlays.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-overlays.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-overlays.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-overlays.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-overlays.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-overlays.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-overlays.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-overlays.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-overlays.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-overlays.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-overlays.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-overlays.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-overlays.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-overlays.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-overlays.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>画面の上に重ねる — gohud</title>
+<meta name="description" content="GoSheet は下から出る。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">ウィジェット</a>
+      <a href="theming.html">テーマ</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../widgets-overlays.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-overlays.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="widgets-overlays.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+          <a href="../zh/widgets-overlays.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-overlays.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-overlays.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-overlays.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-overlays.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-overlays.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-overlays.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-overlays.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-overlays.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-overlays.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-overlays.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-overlays.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-overlays.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-overlays.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>画面の上に重ねる</h1>
+    <p class="lead"><a href="widgets.html">← ウィジェット</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="ウィジェット">
+  <!-- subnav:begin -->
+  <a href="widgets.html">ウィジェット</a>
+  <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
+  <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">待たせる、伝える、数える</a>
+  <a href="widgets-forms.html">フォームとリスト</a>
+  <a href="widgets-shapes.html">ゲームで実際に使う形</a>
+  <a href="widgets-overlays.html" aria-current="page">画面の上に重ねる</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 作る場所を1つにする</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="overlays">
+
+  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 横から出るパネル</h3>
+  <p><code>GoSheet</code> は下から出る。縦に持ったスマートフォンにはそれが正しい。タブレットやデスクトップでは、
+    同じシートがゲームを覆ってしまう。ドロワーは代わりに横から出る。</p>
+  <pre><code>bag.side = GoDrawer.Side.RIGHT
+bag.open("かばん")</code></pre>
+  <p>パネルは画面の端まで届くが、中身はセーフエリアの内側に留まる。そうしないと、丸めた角が最初の行を切り
+    落とす。<code>LEFT</code> はアラビア語でも画面の左だ。「始まりの側」であることが要点なら
+    <code>follow_text_direction</code> を有効にする。RTL では左右が入れ替わる。</p>
+
+  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 脇に留まるカード</h3>
+  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
+  <p><code>GoSurface</code> の脇に留まる配置に、レイヤーもサーフェスもアンカーも後片付けも配線済みの
+    ものだ — どのゲームも何度も書く、あの10行である。開くのは一度に1つだけだ。カードが積み重なると画面が埋まり、
+    どのカードがどのスロットのものか分からなくなる。幕は透明だ。装備を見比べるために開いたカードが、その装備を
+    暗くしてはならない。</p>
+  <div class="note warn">
+    <b>ホバーのツールチップではない。</b> タッチにホバーはない。マウスでしか現れないものは、プレイヤーの半分
+    には見えないままだ。
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 長押しと右クリック</h3>
+  <pre><code>GoContextMenu.attach(item_slot, [
+    {"text": "使う", "action": use},
+    {"separator": true},
+    {"text": "捨てる", "action": drop, "danger": true},
+])</code></pre>
+  <p><code>PopupMenu</code> はエンジンにすでにある。ないのはジェスチャーのほうだ。開くまで 0.5 秒、
+    <b>指が動いた瞬間</b>に取り消す。だからリストをスクロールしてもメニューは出てこない。項目が「どれを押したか」
+    で変わるなら、配列の代わりに <code>Callable</code> を渡す。</p>
+  <div class="note warn">
+    <b>長押しには、もう1つの入り口が要る。</b> 隠れたジェスチャーは誰にも見つけられない — 目に見える
+    <code>⋯</code> ボタン（<code>open_at()</code>）や、アイコンや、初回のコーチマークと組み合わせる。
+  </div>
+
+  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 開発者コンソール</h3>
+  <pre><code>console.register("give", "アイテムを与える: give &lt;id&gt; &lt;count&gt;", give)
+console.toggle()</code></pre>
+  <p>チートとデバッグのコマンドだ。打つそばから絞り込むパレットが付くので、覚えておく必要はない。履歴は
+    矢印キーに載っている。すべての上に出るので、ダイアログの上からでもデバッグできる。</p>
+  <div class="note warn">
+    <b>リリースビルドでは開かない。</b> <code>debug_only</code> は既定で有効だ。チートコマンドがプレイヤーの手に
+    渡れば、ゲームの経済は初日で終わる。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-shapes.html">← ゲームで実際に使う形</a> · <a href="widgets-style.html"><code>GoStyle</code> — 作る場所を1つにする →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

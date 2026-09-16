@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-style.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-style.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-style.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-style.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-style.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-style.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-style.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-style.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-style.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-style.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-style.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-style.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-style.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-style.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoStyle — 만드는 자리를 하나로 — gohud</title>
+<meta name="description" content="Button.new() 를 직접 쓰면 화면마다 여백·높이·줄바꿈이 조금씩 달라진다.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">소개</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">위젯</a>
+      <a href="theming.html">테마</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>한국어</summary>
+        <div class="langs-list">
+          <a href="../widgets-style.html" hreflang="en" lang="en">English</a>
+          <a href="widgets-style.html" hreflang="ko" lang="ko" aria-current="true">한국어</a>
+          <a href="../ja/widgets-style.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-style.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-style.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-style.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-style.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-style.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-style.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-style.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-style.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-style.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-style.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-style.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-style.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-style.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-style.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1><code>GoStyle</code> — 만드는 자리를 하나로</h1>
+    <p class="lead"><a href="widgets.html">← 위젯</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="위젯">
+  <!-- subnav:begin -->
+  <a href="widgets.html">위젯</a>
+  <a href="widgets-surfaces.html">떠 있는 창</a>
+  <a href="widgets-messages.html">알리기</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">기다리기, 알리기, 세기</a>
+  <a href="widgets-forms.html">폼과 목록</a>
+  <a href="widgets-shapes.html">게임이 실제로 쓰는 모양</a>
+  <a href="widgets-overlays.html">화면 위에</a>
+  <a href="widgets-style.html" aria-current="page"><code>GoStyle</code> — 만드는 자리를 하나로</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="factory">
+  <p class="sub">
+    <code>Button.new()</code> 를 직접 쓰면 화면마다 여백·높이·줄바꿈이 조금씩 달라진다.
+    그 차이는 코드 리뷰로 잡히지 않고 스크린샷으로만 보인다.
+  </p>
+
+  <table>
+    <thead><tr><th>분류</th><th>함수</th></tr></thead>
+    <tbody>
+      <tr><td>뼈대</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>글자</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>버튼</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>입력</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>표시</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>dropdown</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>표면 조각</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>도우미</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> 는 언제나 <code>StyleBoxFlat</code> 을 돌려준다.</b> 돌려받아
+    <code>bg_color</code> 나 <code>corner_radius</code> 를 고치는 호출부와의 약속이기 때문이다.
+    커스텀 모양(각진 패널)을 지켜야 하면 <code>surface()</code> 를 쓴다.
+  </div>
+
+  <h3 id="list-rows-with-a-description">요약이 있는 목록 줄</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Oathkeeper", _inspect, Color.TRANSPARENT,
+    "Longsword  /  Attack 42", false)</code></pre>
+  <p>두 줄 항목은 <b>위아래 여백이 같고</b> 한 줄 항목보다 넉넉하며, 제목·요약 묶음이 아이콘 옆 <b>세로 가운데</b>에 선다 —
+    컨테이너가 줄을 더 높게 늘려도, 요약이 여러 줄로 접혀도 그렇다. 줄 전체가 그대로 한 번에 눌린다.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="medieval_light 예제 — 두 줄 목록, 퀵슬롯, 막대" loading="lazy">
+    <figcaption>중세 예제의 두 줄 목록·슬롯·막대 — <code>medieval_light</code> 에서 같은 팩토리 호출.</figcaption>
+  </figure>
+
+  <h3 id="flowing-rows">흐르는 줄의 함정</h3>
+  <p>
+    <code>wrap_row</code> 에 넣는 것은 <b>자연 폭</b>이어야 한다. 줄바꿈을 켠 채 두면 최소 폭이 거의 0 이
+    되고, 흐르는 줄은 그 최소 폭으로 칸을 잡는다 — 버튼 하나가 한 글자 폭으로 쪼그라들어 글자가
+    <b>세로로 한 자씩</b> 내려간다. 팩토리가 이것을 자동으로 막는다.
+  </p>
+
+  <h3 id="never-leave-an-empty-list-empty">빈 목록을 빈 채로 두지 않는다</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "아직 아무것도 없습니다"))</code></pre>
+  <p>사용자는 빈 화면을 <b>고장</b>으로 읽는다.</p>
+</section>
+
+<section id="hooks">
+  <h2>자식 클래스 훅</h2>
+  <p class="sub">
+    하위 위젯을 만드는 자리는 전부 덮어쓸 수 있는 메서드를 거친다. gohud 타입을 상속한 프로젝트가
+    코드를 복사하지 않고도 위젯 <b>안에</b> 자기 서브클래스를 끼울 수 있다.
+  </p>
+  <table>
+    <thead><tr><th>훅</th><th>위젯</th><th>기본</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>모달이 열려 있는 동안 카드를 숨긴다</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-overlays.html">← 화면 위에</a> · <a href="widgets.html">위젯 →</a></p>
+    <p style="font-size:13px">밑줄 친 용어에 마우스를 올리면 뜻이 뜬다.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

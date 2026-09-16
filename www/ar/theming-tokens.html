@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-tokens.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-tokens.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-tokens.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-tokens.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-tokens.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-tokens.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-tokens.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-tokens.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-tokens.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-tokens.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-tokens.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-tokens.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-tokens.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-tokens.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-tokens.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-tokens.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-tokens.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-tokens.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>التوكنات — gohud</title>
+<meta name="description" content="كل لون وكل مقاس يعيش تحت النوع GoHud داخل السمة، ويُطلب بالاسم.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">نظرة عامة</a>
+      <a href="install.html">التثبيت</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">الودجات</a>
+      <a href="theming.html" aria-current="page">السمات</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>العربية</summary>
+        <div class="langs-list">
+          <a href="../theming-tokens.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-tokens.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-tokens.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-tokens.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-tokens.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-tokens.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-tokens.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-tokens.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-tokens.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-tokens.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-tokens.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-tokens.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-tokens.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-tokens.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-tokens.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-tokens.html" hreflang="th" lang="th">ไทย</a>
+          <a href="theming-tokens.html" hreflang="ar" lang="ar" aria-current="true">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>التوكنات</h1>
+    <p class="lead"><a href="theming.html">← السمات</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="السمات">
+  <!-- subnav:begin -->
+  <a href="theming.html">السمات</a>
+  <a href="theming-presets.html">ثلاث طبقات</a>
+  <a href="theming-tokens.html" aria-current="page">التوكنات</a>
+  <a href="theming-opacity.html">العتامة — اللعبة خلف اللوحة</a>
+  <a href="theming-skins.html">المظاهر — حيث لا تصل السمة</a>
+  <a href="theming-own.html">نمطك الجاهز أنت — ملف واحد</a>
+  <a href="theming-contrast.html">الوضوح يُقاس</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="tokens">
+  <p class="sub">
+    كل لون وكل مقاس يعيش تحت النوع <code>GoHud</code> داخل السمة، ويُطلب بالاسم.
+    والقاعدة ألّا تكتب أرقامًا: فالأسماء تتبع السمة حين تُبدَّل.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # لون
+GoUi.metric(GoTheme.GAP)               # مقاس (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # حجم دور نصّي
+GoUi.box(GoTheme.BOX_CARD)             # نسخة من StyleBox</code></pre>
+
+  <h3 id="colours">الألوان</h3>
+  <table>
+    <thead><tr><th>الاسم</th><th>يُستعمل لـ</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>أرضية الشاشة</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>ثلاث طبقات لوحات — لوحة، بطاقة، خلية مرفوعة</td></tr>
+      <tr><td><code>border</code></td><td>حدود البطاقات والأزرار</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>ثلاثة مستويات نص — متن، مساند، خافت</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>لون التمييز والنص الموضوع فوقه</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>ألوان الحالة <b>نصًّا</b></td></tr>
+      <tr><td><code>*_fill</code></td><td>الحالات نفسها <b>تعبئةً</b> — للأشرطة وسائر المساحات الكبيرة</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>الحجاب خلف النوافذ المنبثقة، والظلال، ومجرى الشريط</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>لماذا يوجد <code>*_fill</code>.</b> المعنى واحد والمتطلبات متضادّة. فـ <code>warning</code>
+    المستعمل نصًّا يجب أن يكون داكنًا بما يكفي ليُقرأ على خلفية فاتحة؛ والمستعمل تعبئةً لشريط خبرة يجب أن
+    يكون ساطعًا بما يكفي ليُلحظ. ولا يستطيع توكن واحد أن يكون الاثنين — فشريط السمة الفاتحة صار بنيًّا.
+    والسمة التي تخلو من تنويعة <code>_fill</code> تعود إلى الاسم الأساسي تلقائيًا، فتبقى السمات الأقدم من
+    هذه التوكنات عاملة.
+  </div>
+
+  <h3 id="measurements-dp">المقاسات (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3 id="panel-opacity">عتامة اللوحة (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — إلى أي حدّ يكون وجه الحاوية معتمًا. <b>80</b> افتراضًا، فتبقى اللعبة
+    ظاهرة خلف مربع الحوار؛ و<code>popup_alpha</code> هو 100. والسمة التي تخلو من هذه التوكنات تعود إلى 100
+    فترسم تمامًا كما كانت ترسم من قبل. واقرأ القيمة الناتجة <b>نسبةً</b> بـ
+    <code>GoUi.surface_alpha(variant)</code>؛ والقواعد في قسم
+    <a href="theming-opacity.html#opacity">العتامة — اللعبة خلف اللوحة</a>.
+  </p>
+
+  <h3 id="text-roles">أدوار النص</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — الدور يسمّي <b>حجمًا</b> لا
+    غرضًا. "أكبر نص"، لا "العنوان". وبذلك يصمد السلّم حتى لو استعملته شاشة لشيء آخر.
+  </p>
+
+  <h3 id="type-variations">تنويعات النوع</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-presets.html">← ثلاث طبقات</a> · <a href="theming-opacity.html">العتامة — اللعبة خلف اللوحة →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

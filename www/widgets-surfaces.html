@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-surfaces.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-surfaces.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-surfaces.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-surfaces.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-surfaces.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-surfaces.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-surfaces.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-surfaces.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-surfaces.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-surfaces.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-surfaces.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-surfaces.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-surfaces.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-surfaces.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-surfaces.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-surfaces.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-surfaces.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-surfaces.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Floating windows — gohud</title>
+<meta name="description" content="Popups, sheets and dropdowns all use this one.">
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Overview</a>
+      <a href="install.html">Install</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widgets</a>
+      <a href="theming.html">Theming</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>English</summary>
+        <div class="langs-list">
+          <a href="widgets-surfaces.html" hreflang="en" lang="en" aria-current="true">English</a>
+          <a href="ko/widgets-surfaces.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="ja/widgets-surfaces.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="zh/widgets-surfaces.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="zh-tw/widgets-surfaces.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="es/widgets-surfaces.html" hreflang="es" lang="es">Español</a>
+          <a href="pt/widgets-surfaces.html" hreflang="pt" lang="pt">Português</a>
+          <a href="ru/widgets-surfaces.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="fr/widgets-surfaces.html" hreflang="fr" lang="fr">Français</a>
+          <a href="tr/widgets-surfaces.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="pl/widgets-surfaces.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="it/widgets-surfaces.html" hreflang="it" lang="it">Italiano</a>
+          <a href="vi/widgets-surfaces.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="id/widgets-surfaces.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="uk/widgets-surfaces.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="th/widgets-surfaces.html" hreflang="th" lang="th">ไทย</a>
+          <a href="ar/widgets-surfaces.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Floating windows</h1>
+    <p class="lead"><a href="widgets.html">← Widgets</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widgets">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widgets</a>
+  <a href="widgets-surfaces.html" aria-current="page">Floating windows</a>
+  <a href="widgets-messages.html">Telling the player something</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Waiting, telling, counting</a>
+  <a href="widgets-forms.html">Forms and lists</a>
+  <a href="widgets-shapes.html">Shapes games actually use</a>
+  <a href="widgets-overlays.html">Over the screen</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — one place things are made</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="surfaces">
+
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — the shell</h3>
+  <p>Popups, sheets and dropdowns all use this one. It handles the safe area, the virtual keyboard,
+    sticky header and footer, a scrolling body, which window is topmost, focus restoration, back-button
+    ownership and drag-to-resize.</p>
+  <table>
+    <thead><tr><th>Placement</th><th>Looks like</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>A card in the middle</td><td>Confirmations, settings</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>A sheet rising from below</td><td>Lists, management pages</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>A card pinned beside a control</td><td>Dropdowns, context menus</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>It does not remove itself.</b> Reacting to <code>close_requested</code> — hiding or freeing — is the
+    owning screen's job, because the shell cannot know <i>why</i> it is closing (save and close, or discard).
+  </div>
+
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — a page from the bottom</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventory")
+sheet.toolbar().add_child(GoStyle.line_edit("Search…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>It owns a <code>CanvasLayer</code>, so it reliably sits above the HUD. <code>open()</code> clears the
+    body and <b>turns off</b> the back button and sticky rows — a dead button on a screen with nowhere to
+    go back to reads as broken.</p>
+
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — confirmations you <code>await</code></h3>
+  <pre><code>if await dialogs.confirm("Delete save", "This cannot be undone."):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — everything after the body is
+    optional, and <code>alert()</code> works the same way with a single button. Set <code>destructive</code> for
+    something that cannot be undone: the confirm button becomes the filled <code>GoStyle.Tone.DANGER_SOLID</code>
+    button. On a light theme a tinted danger label has to darken until it reads as black text; the filled button
+    keeps white text on red. The tone is re-applied on every call because one window is reused, and a second
+    <code>confirm()</code> while one is open returns <code>false</code> at once. <code>confirm_key()</code> takes
+    translation keys.</p>
+  <p><b>Button layout.</b> <code>action_layout</code> is <code>VERTICAL</code> by default (safe for long translations),
+    <code>HORIZONTAL</code> for one row with half the width each, or <code>AUTO</code>, which uses one row only when both
+    labels fit half the card on a single line and stacks them otherwise. <code>action_gap</code> is the space between
+    the buttons and <code>body_gap</code> the space above them — make it wider than the button gap so the question and
+    the choice read as two parts. For one dialog only, call <code>set_next_action_layout()</code> before opening it.
+    The row is built when a dialog first opens, so an autoloaded <code>GoDialogs</code> adds nothing at startup.</p>
+
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — a width-capped form</h3>
+  <div class="note warn">
+    <b>It guarantees its descendant labels wrap.</b> Without that, one long sentence stretches into a
+    single line whose minimum width exceeds the screen, and the sides are clipped — you cannot even tell
+    what screen you are on. Turning wrapping on by hand per scene is forgotten every time.
+  </div>
+
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — touch scrolling</h3>
+  <p>Put <b>one</b> thing inside it. Headers and button rows belong outside — a long list must not push
+    them off screen. <code>use_panel_edge()</code> moves the scrollbar into the card's existing padding
+    while the content keeps its indent.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets.html">← Widgets</a> · <a href="widgets-messages.html">Telling the player something →</a></p>
+  </div>
+</footer>
+
+<script src="site/glossary.en.js"></script>
+<script src="site/tooltip.js"></script>
+<script src="site/toc.js"></script>
+<script src="site/search.js"></script>
+<script src="site/ux.js"></script>
+</body>
+</html>

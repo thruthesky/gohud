@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-skins.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-skins.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-skins.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-skins.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-skins.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-skins.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-skins.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-skins.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-skins.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-skins.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-skins.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-skins.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-skins.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-skins.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-skins.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-skins.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-skins.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-skins.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skins — onde um Theme não alcança — gohud</title>
+<meta name="description" content="class_name MySkin extends GoSkin func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float, knob_radius: float, ink: Color, base…">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Visão geral</a>
+      <a href="install.html">Instalação</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="theming.html" aria-current="page">Temas</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Português</summary>
+        <div class="langs-list">
+          <a href="../theming-skins.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-skins.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-skins.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-skins.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-skins.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-skins.html" hreflang="es" lang="es">Español</a>
+          <a href="theming-skins.html" hreflang="pt" lang="pt" aria-current="true">Português</a>
+          <a href="../ru/theming-skins.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-skins.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-skins.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-skins.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-skins.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-skins.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-skins.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-skins.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-skins.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-skins.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Skins — onde um Theme não alcança</h1>
+    <p class="lead"><a href="theming.html">← Temas</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Temas">
+  <!-- subnav:begin -->
+  <a href="theming.html">Temas</a>
+  <a href="theming-presets.html">Três camadas</a>
+  <a href="theming-tokens.html">Tokens</a>
+  <a href="theming-opacity.html">Opacidade — o jogo atrás do painel</a>
+  <a href="theming-skins.html" aria-current="page">Skins — onde um Theme não alcança</a>
+  <a href="theming-own.html">Seu próprio preset — um arquivo</a>
+  <a href="theming-contrast.html">A legibilidade é medida</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="skin">
+
+  <table>
+    <thead><tr><th>Método</th><th>Decide</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>Faces de cartões e painéis, superfícies flutuantes, pílulas sobrepostas ao jogo ou a um mapa</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>O painel de um chip e <b>a cor do rótulo que continua legível sobre ele</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>As faces dos slots rápidos e o texto delas</td></tr>
+      <tr><td><code>disc_box</code></td><td>O círculo atrás de um avatar ou de um badge</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>Alertas embutidos, espaços reservados, controles segmentados</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>A marca que um tour guiado coloca em volta do alvo</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td>Coisas <b>desenhadas diretamente</b> — o joystick e o ponteiro dele</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>Divisores e títulos de seção</td></tr>
+      <tr><td><code>badge_box</code></td><td>Badges dos slots rápidos — quantidade e tempo restante</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>Preenchimentos de barra (contornados quando o preenchimento não alcança 3:1 sobre o trilho) e snackbars</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # O widget já calculou as posições — aqui só acontece o desenho
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3 id="shapes-styleboxflat-cannot-make">Formas que o StyleBoxFlat não consegue fazer</h3>
+  <table>
+    <thead><tr><th>Classe</th><th>O que ela desenha</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>Cantos cortados na diagonal, uma borda de destaque mais grossa, um brilho externo</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>Só as marcas de canto, deixando o conteúdo sem cerco</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>Uma moldura forjada — rebites, gravação nos cantos, um realce de bisel e a textura de ferro, couro ou pergaminho</td></tr>
+    </tbody>
+  </table>
+  <p>As três serializam dentro de um recurso Theme como qualquer outro StyleBox — é isso que permite a um tema mudar a forma.</p>
+
+  <div class="note warn">
+    <b>Dê o respiro interno por <code>content_margin_*</code>.</b> Criar uma subclasse de StyleBox em GDScript
+    significa que <code>_get_style_margin()</code> nunca é chamado (medido no Godot 4.7). Preencha os campos
+    nativos ou o conteúdo vai encostar na borda.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-opacity.html">← Opacidade — o jogo atrás do painel</a> · <a href="theming-own.html">Seu próprio preset — um arquivo →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

@@ -116,8 +116,24 @@ extends GoDialogs
 # anywhere: if await Dialogs.confirm("Quit", "Leave the game?"): get_tree().quit()
 ```
 
-4. Layering: `GoDialogs.layer_index` = 100, `GoSheet` defaults its `CanvasLayer.layer` to 10, put the HUD on
-   a lower `CanvasLayer` (e.g. 5). A `GoSurface` you create yourself goes inside your own `CanvasLayer`.
+4. Layering — every surface that makes its own `CanvasLayer` picks a number that keeps the stack sane.
+   A `GoSurface` you create yourself goes inside your own `CanvasLayer`.
+
+   | Layer | What sits there | Field |
+   |---|---|---|
+   | 5 | your HUD (you choose this) | — |
+   | 10 | `GoSheet` | `CanvasLayer.layer` |
+   | 80 | `GoDrawer` | `CanvasLayer.layer` |
+   | 90 | `GoSnackbar` | `layer_index` |
+   | 95 | `GoPopover` | `"layer"` in the options dictionary |
+   | 100 | `GoDialogs` | `layer_index` |
+   | 200 | `GoConsole` | `layer_index` |
+
+   🔑 The order is deliberate: a snackbar must be readable **over** a drawer (it reports what just happened),
+   a popover belongs above it because it is attached to something the player just pressed, a dialog covers
+   both because it is asking a question, and the developer console covers everything — it is what you open
+   when the rest has gone wrong.
+   🛑 `GoConsole.debug_only` is `true` by default, so it refuses to open in a release build.
 5. While any surface is open, gameplay input should pause: `if GoSurface.is_any_open(): return`.
 
 ## 5. Project settings that matter

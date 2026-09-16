@@ -31,7 +31,7 @@ After a restart, two commands open gohud in its own Godot window — no editor, 
 | Command | What it does |
 |---|---|
 | **`/gohud:preview`** | Opens the **widget gallery** — every widget, a picker for all six presets and the full icon set. Inside your Godot project it uses your `addons/gohud`; without one it uses the copy bundled with the plugin. |
-| **`/gohud:preview demo`** | Opens the **15-chapter guided tour** — *Start demo* plays it with real input, *Explore widgets* lets you try one widget by hand. |
+| **`/gohud:preview demo`** | Opens the **19-chapter guided tour** — *Start demo* plays it with real input, *Explore widgets* lets you try one widget by hand. |
 
 Many other commands work too:
 

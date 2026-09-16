@@ -20,6 +20,8 @@ signal quit_confirmed
 @export var save_summary := "Chapter III · 2 h 14 m"
 
 var dialogs: GoDialogs
+## Kept so a slow load can turn it into a spinner — see `set_loading()`.
+var continue_button: Button
 
 
 func _ready() -> void:
@@ -29,6 +31,14 @@ func _ready() -> void:
 
 
 ## Builds (or rebuilds after a preset change) the whole screen.
+## Turns Continue into a spinner **in place** while the save is read: same size, disabled, and the
+## label comes back on `false`. Without this a slow load looks like a dead button and the player
+## presses it again — which is how a save gets loaded twice.
+func set_loading(waiting: bool) -> void:
+	if is_instance_valid(continue_button):
+		GoSpinner.busy(continue_button, waiting)
+
+
 func build() -> void:
 	for child in get_children():
 		remove_child(child)
@@ -69,8 +79,9 @@ func build() -> void:
 	rows.name = "MenuRows"
 	inset.add_child(rows)
 	if has_save:
-		rows.add_child(GoStyle.list_button(GoIconSet.PLAY, "Continue", _on_continue,
-			GoUi.color(GoTheme.ACCENT), save_summary, false, GoIconSet.CHEVRON_RIGHT))
+		continue_button = GoStyle.list_button(GoIconSet.PLAY, "Continue", _on_continue,
+			GoUi.color(GoTheme.ACCENT), save_summary, false, GoIconSet.CHEVRON_RIGHT)
+		rows.add_child(continue_button)
 	rows.add_child(GoStyle.list_button(GoIconSet.PLUS, "New game", _on_new_game, Color.TRANSPARENT, "", false))
 	rows.add_child(GoStyle.list_button(GoIconSet.SETTINGS, "Settings", _on_settings, Color.TRANSPARENT, "", false))
 	rows.add_child(GoStyle.divider())

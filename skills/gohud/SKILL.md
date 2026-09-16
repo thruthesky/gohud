@@ -104,7 +104,10 @@ Reply in the language the user writes in; keep code identifiers as they are.
     a float. Call `GoUi.refresh()` after changing it from code. Read the resolved value with
     `GoUi.surface_alpha(variant)`; apply it to a panel gohud did not build with `GoStyle.fade_panel(node)` (after
     `add_child`). A `GoSkin` subclass overriding `surface_box`/`floating_box`/`alert_box` **must carry the `alpha`
-    parameter** or the script will not parse. Details: `references/theming.md` §4.
+    parameter** or the script will not parse. 🔑 **Drag it before you argue about the number**: the opacity lab
+    (`examples/gallery/opacity_lab.gd`) is hosted by the gallery, the guided tour (chapter 16), the home screen
+    and the medieval example — it shows the four ways to set the value on one screen, over a pattern, because a
+    value check cannot tell you whether the text is still readable. Details: `references/theming.md` §4.
 14. **Never hand-edit gohud's generated themes**; recolour through `color_overrides`, a Theme copy in your project,
     a project-local `GoThemePreset`, or the JSON theme tools (`references/theming.md`).
 
@@ -144,11 +147,11 @@ Each is a complete, headless-tested script with no scene file. Copy, then connec
 
 | File | Extends | Builds | Public API |
 |---|---|---|---|
-| `main_menu.gd` | Control | Title, Continue / New game / Settings / Quit rows, confirm dialogs | signals `continue_requested` `new_game_requested` `settings_requested` `quit_confirmed` · `build()` |
-| `game_hud.gd` | CanvasLayer (5) | HP/MP/XP panel, menu button, 4 quick slots, FOLLOW joystick, toast, prompt card | signals `menu_requested` `slot_used(index)` `move_input(vector)` · `set_health/set_mana/set_experience(v, max)` · `toast(msg, tone)` · `ask(title, subtitle, accept_text, accept, decline_text, decline)` |
-| `pause_menu.gd` | CanvasLayer (50) | Centred GoSurface, pauses the tree, Escape opens/closes, quit confirm | signals `resumed` `settings_requested` `quit_to_title_requested` · `open()` `resume()` `toggle()` `is_open()` |
-| `inventory_sheet.gd` | Node | GoSheet with search + category filter, detail page with Back, Use / Drop | signals `item_used(item)` `item_dropped(item)` · `items` · `open()` `show_list()` `show_item(item)` |
-| `settings_menu.gd` | Control | GoForm, foldable Display/Audio/Controls/Language sections, draft + Save/Reset, discard check | signals `closed(saved)` `settings_changed(values)` · `settings` · `save()` `request_back()` `reset_to_defaults()` |
+| `main_menu.gd` | Control | Title, Continue / New game / Settings / Quit rows, confirm dialogs, a Continue button that becomes a spinner | signals `continue_requested` `new_game_requested` `settings_requested` `quit_confirmed` · `build()` · `set_loading(waiting)` |
+| `game_hud.gd` | CanvasLayer (5) | HP/MP/XP panel, menu button with an unread badge, 4 quick slots, FOLLOW joystick, toast, prompt card, snackbar | signals `menu_requested` `slot_used(index)` `move_input(vector)` · `set_health/set_mana/set_experience(v, max)` · `toast(msg, tone)` · `await say(msg, actions, tone)` · `set_unread(count)` · `ask(title, subtitle, accept_text, accept, decline_text, decline)` |
+| `pause_menu.gd` | CanvasLayer (50) | Centred GoSurface, pauses the tree, Escape opens/closes, a key cap that reads the real binding, quit confirm | signals `resumed` `settings_requested` `quit_to_title_requested` · `open()` `resume()` `toggle()` `is_open()` |
+| `inventory_sheet.gd` | Node | GoSheet with search + category filter, long-press menu on each row, detail page with Back, Use / Drop with Undo | signals `item_used(item)` `item_dropped(item)` · `items` · `open()` `show_list()` `show_item(item)` |
+| `settings_menu.gd` | Control | GoForm, foldable Display/Audio/Controls/Language sections built from `GoField` (so a row can show its own error), draft + Save/Reset, discard check | signals `closed(saved)` `settings_changed(values)` · `settings` · `save()` `request_back()` `reset_to_defaults()` |
 
 Wiring them together and more screens (login, shop, quest log, character sheet, dropdown menus, tutorial tour):
 `references/recipes.md`.
@@ -169,7 +172,7 @@ If `${CLAUDE_SKILL_DIR}` is not expanded, use the first existing path of
 |---|---|
 | *(none)* / `gallery` · `--preset scifi_dark` · `--phone` · `--size 1920x1080` | Every widget, preset picker, icon set |
 | `medieval` | Character sheet, satchel, quest journal |
-| `demo` · `demo --explore hud` | 15-chapter guided tour / one chapter (`list` shows keys) |
+| `demo` · `demo --explore hud` | 19-chapter guided tour / one chapter (`list` shows keys) |
 | `res://ui/main_menu.tscn` | A scene of the user's project, inside that project |
 | `list` · `--check` · `--dry-run` · `--godot PATH` | Keys · headless smoke test · print command · Godot binary |
 

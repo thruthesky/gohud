@@ -10,6 +10,9 @@
 ##    한다. 그것이 이 예제의 존재 이유다.
 extends Control
 
+## 🔬 판 불투명도 실험실 — 같은 파일을 sim 투어와 홈도 쓴다.
+const OpacityLab := preload("opacity_lab.gd")
+
 var _sheet: GoSheet
 var _dialogs: GoDialogs
 var _notice: GoNotice
@@ -26,6 +29,8 @@ var _console: GoConsole
 var _gallery_field: GoField
 var _popover_anchor: Button
 var _menu_anchor: Button
+## 뒤에 무늬를 깔았는가. 🔑 `_rebuild()` 는 이 노드의 `_ready` 를 다시 부르므로 이 값이 살아남는다.
+var _busy_background := false
 
 
 func _ready() -> void:
@@ -39,6 +44,17 @@ func _ready() -> void:
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
+
+	# 🔬 **판 불투명도를 눈으로 보려면 뒤가 단색이면 안 된다.** 불투명도 절의 토글이 이것을 켠다 —
+	#    켜면 화면 전체가 "게임 위" 가 되어, 모든 판이 무엇을 통과시키는지 한눈에 보인다.
+	var busy := OpacityLab.Backdrop.new()
+	busy.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# 🛑 **옅게 깐다.** 미리보기 칸 안에서는 선명해야 하지만, 화면 전체에 선명한 무늬를 깔면 판
+	#    밖에 놓인 본문 글자가 한 줄도 읽히지 않는다(2026-09-16 첫 촬영에서 실측). 실제 게임의
+	#    배경도 이 정도다 — 그래서 판이 없는 자리의 글자도 살아남는다.
+	busy.intensity = 0.3
+	busy.visible = _busy_background
+	add_child(busy)
 
 	_build_page()
 	_build_hud()
@@ -195,9 +211,29 @@ func _build_page() -> void:
 		GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
 	page.add_child(GoStyle.button("Toggle light / dark", _toggle_theme, GoStyle.Tone.COMPACT))
 
+	_build_opacity(page)
 	_build_new_widgets(page)
 
 	page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet", false))
+
+
+## 🔬 **판 불투명도** — 슬라이더를 끌면 그 자리에서 판이 묽어진다.
+##
+## 🛑 값 검사로는 이 기능을 확인할 수 없다 — "뒤가 보이는가", "글자가 아직 읽히는가" 는 그려 봐야
+##    안다. 그래서 실험실을 갤러리 안에 두고, 뒤에 무늬를 깔 토글까지 준다.
+func _build_opacity(page: VBoxContainer) -> void:
+	var lab := OpacityLab.new()
+	# ④ 프로젝트 전체에 적용하면 화면을 다시 짓는다 — 이미 태어난 위젯은 스스로 옷을 갈지 않는다.
+	lab.applied.connect(func(_alpha: float) -> void: _rebuild())
+	lab.backdrop_wanted.connect(_set_busy_background)
+	page.add_child(lab)
+
+
+## 화면 전체 뒤의 무늬를 켜고 끈다 — 판이 무엇을 통과시키는지 보는 자리.
+func _set_busy_background(on: bool) -> void:
+	_busy_background = on
+	var busy := get_node_or_null(^"Backdrop")
+	if busy != null: (busy as Control).visible = on
 
 
 ## 🆕 뒤에 들인 위젯들 — **여기서 직접 눌러 볼 수 있어야** 있는 줄 안다.

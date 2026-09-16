@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-forms.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-forms.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-forms.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-forms.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-forms.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-forms.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-forms.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-forms.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-forms.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-forms.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-forms.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-forms.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-forms.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-forms.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>表單與清單 — gohud</title>
+<meta name="description" content="五個欄位的表單，最上面寫一句「請檢查輸入內容」，並沒有說是哪一個欄位。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html">安裝</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">控制項</a>
+      <a href="theming.html">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../widgets-forms.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-forms.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-forms.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-forms.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="widgets-forms.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/widgets-forms.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-forms.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-forms.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-forms.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-forms.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-forms.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-forms.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-forms.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-forms.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-forms.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-forms.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-forms.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>表單與清單</h1>
+    <p class="lead"><a href="widgets.html">← 控制項</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="控制項">
+  <!-- subnav:begin -->
+  <a href="widgets.html">控制項</a>
+  <a href="widgets-surfaces.html">浮動視窗</a>
+  <a href="widgets-messages.html">告訴玩家某件事</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">等待、告知、計數</a>
+  <a href="widgets-forms.html" aria-current="page">表單與清單</a>
+  <a href="widgets-shapes.html">遊戲真的會用到的形狀</a>
+  <a href="widgets-overlays.html">蓋在畫面上</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 東西統一在一個地方產生</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="forms-lists">
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 會出錯的那一列</h3>
+  <p>五個欄位的表單，最上面寫一句「請檢查輸入內容」，並沒有說是<i>哪一個</i>欄位。
+    就是這一件事，讓人放棄註冊。</p>
+  <pre><code>var name_field := GoField.make("角色名稱", GoStyle.line_edit("2-12"), "之後無法變更")
+name_field.set_error("這個名稱已經有人用了")   # 伺服器說不行
+name_field.clear_error()</code></pre>
+  <p>錯誤顯示的期間提示文字會隱藏，所以那一列不會多長出一行、把底下全部往下推；
+    錯誤文字也會併進控制項的無障礙名稱裡 — 只有一圈紅色外框，對看不見紅色的人什麼也沒說。</p>
+  <p><code>GoStyle.field()</code> 是靜態版：標籤、控制項、提示文字，沒有錯誤狀態。
+    不會出錯的地方用工廠函式，伺服器有可能打回票的就用節點。</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — 和按鈕焊在一起的輸入欄</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("訊息"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("名稱"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>它解決的是圓角。兩個圓角形狀在中間碰頭，看起來像被捏了一下，而預設的間距讓它們讀起來
+    是兩個東西。外側的角維持圓的，碰在一起的那兩個角變方 — 每一種按鈕狀態都要這樣，
+    否則一按下去整組就裂開。切角外觀根本沒有圓角欄位，所以在那裡它什麼都不動，
+    方正的面自然就接得乾淨。</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 會搜尋的選擇器</h3>
+  <p>不到十項時 <code>GoStyle.select()</code> 更好：少按一下，而且整份清單都看得到。
+    超過三十項，用眼睛找就變成工作了。</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "選擇伺服器")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>搜尋會比對名稱內部，不是只比對開頭。</b>在韓文或日文的清單裡，前綴比對幾乎找不到東西 —
+    那些清單中，用來分辨兩個項目的那個詞，很少是第一個。
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — 優惠券與禮物碼</h3>
+  <p>序號從訊息裡貼上的次數，遠多於用打的。十二個真的輸入欄會讓貼上動作卡在第一格，
+    字元還會被輸入法吃掉，所以文字由一個隱藏欄位接收，格子只是畫出來的。
+    <code>ABCD-EFGH-IJKL</code> 進來的路上會把連字號去掉。</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("已經使用過了")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 可排序的標題列、可選取的資料列</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "排名", "width": 56}, {"text": "名稱"}, {"text": "分數", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>，不然排名會顛倒。</b>當成文字比較時，<code>"9124"</code> 會贏過
+    <code>"91240"</code> — 而分數、金幣與傷害的位數本來就長短不一。
+  </div>
+  <p><code>row_selected</code> 給的是你原本陣列裡的索引，不是排序後的位置。排序方向用符號表示，
+    不是只靠顏色；整列都按得動，沒有人需要去戳某一個儲存格。<code>GoStyle.table()</code>
+    仍然是唯讀的表格。</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — 頁碼，或是一列「更多」</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # 對手機比較友善的版本</code></pre>
+  <p>頁碼是滑鼠介面的東西；在手機上，一列「更多」讀起來比較順。目前頁碼會保持在視窗正中間，
+    所以按下一頁不會把每個數字重洗一次。總數給 0 表示「不知道」，這時只畫箭頭 —
+    它不會憑空生出一個沒人告訴它的頁數。</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-feedback.html">← 等待、告知、計數</a> · <a href="widgets-shapes.html">遊戲真的會用到的形狀 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

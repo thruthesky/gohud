@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI SKILL — gohud</title>
-<meta name="description" content="Claude Code·Codex·Cursor·Gemini CLI 등 어떤 코딩 에이전트에도 gohud AI 스킬을 설치한다 — 복사해 붙여 넣을 한 덩이.">
+<meta name="description" content="Claude Code·Codex·Cursor·Gemini CLI 등 어떤 코딩 에이전트에도 gohud AI 스킬을 설치한다 — 복사해서 붙여 넣을 텍스트 하나.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -74,7 +74,7 @@
   <div class="wrap">
     <h1>AI SKILL</h1>
     <p class="lead">
-      gohud 에는 AI 스킬이 들어 있다 — API 전부와 바로 돌아가는 템플릿, 미리보기 실행기. 아래 한 덩이를 코딩 에이전트에 붙여 넣으면 gohud 를 설치하고 쓰는 법까지 익힌다.
+      gohud 에는 AI 스킬이 들어 있다 — API 전부와 바로 돌아가는 템플릿, 미리보기 실행기. 아래 글을 통째로 코딩 에이전트에 붙여 넣으면 gohud 를 설치하고 쓰는 법까지 익힌다.
     </p>
     <div class="cta">
       <a class="btn primary" href="#copy">복사할 글 보기</a>
@@ -86,7 +86,7 @@
 <main class="wrap">
 
 <section id="copy">
-  <h2>이 한 덩이를 코딩 에이전트에 붙여 넣는다</h2>
+  <h2>이걸 코딩 에이전트에 붙여 넣는다</h2>
   <p class="sub">에이전트에서 Godot 프로젝트를 열고, 아래 글을 붙여 넣어 보낸다. 스킬과 애드온을 설치하고 gohud 로 무엇을 할 수 있는지까지 알려 준다.</p>
   <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
@@ -135,7 +135,7 @@ Docs: https://thruthesky.github.io/gohud/</code></pre>
     일회용 샌드박스 프로젝트에서 돌기 때문에 내 프로젝트의 오토로드·임포트 캐시는 건드리지 않고, 창은 직접 닫을
     때까지 떠 있다.</p>
 
-  <h3 id="gohud-preview-demo-the-15-chapter-guided-tour"><code>/gohud:preview demo</code> — 15장면 안내 투어</h3>
+  <h3 id="gohud-preview-demo-the-19-chapter-guided-tour"><code>/gohud:preview demo</code> — 19장면 안내 투어</h3>
   <p>데모를 시작 화면으로 연다. <b>Start demo</b> 는 실제 입력으로 진행하는 자동 시연, <b>Explore widgets</b> 는
     위젯 하나를 직접 만져 보는 탐색 모드다. <a href="install.html#examples">예제</a>에 적은 단축키가 여기서도 그대로 통한다.</p>
 
@@ -143,14 +143,14 @@ Docs: https://thruthesky.github.io/gohud/</code></pre>
   <table>
     <thead><tr><th>명령</th><th>하는 일</th></tr></thead>
     <tbody>
-      <tr><td><code>/gohud:preview medieval</code></td><td>중세 프리셋의 캐릭터 정보·가방·퀘스트 일지</td></tr>
+      <tr><td><code>/gohud:preview medieval</code></td><td>중세 프리셋의 캐릭터 정보·인벤토리·퀘스트 일지</td></tr>
       <tr><td><code>/gohud:preview demo --explore hud</code></td><td>데모를 장면 하나로 바로 연다 — <code>hud</code> <code>buttons</code> <code>inputs</code> <code>selection</code> <code>lists</code> <code>data</code> <code>states</code> <code>surfaces</code> <code>prompt</code> <code>touch</code> <code>coach</code> <code>scrolling</code> <code>forms</code> <code>anchors</code> <code>theming</code></td></tr>
       <tr><td><code>/gohud:preview gallery --preset scifi_dark</code></td><td>프리셋 하나를 입힌 갤러리. <code>--phone</code> 을 붙이면 390×844 폰 창, <code>--size 1920x1080</code> 이면 원하는 크기로</td></tr>
       <tr><td><code>/gohud:preview res://ui/main_menu.tscn</code></td><td>내 프로젝트의 씬을 그 프로젝트 안에서 실행</td></tr>
       <tr><td><code>/gohud:preview list</code></td><td>열 수 있는 대상·프리셋 이름·데모 장면 키 전부</td></tr>
       <tr><td><code>/gohud:preview gallery --check</code></td><td>창 없이 도는 헤드리스 점검 — 스크립트 오류가 나면 실패</td></tr>
-      <tr><td><code>/gohud:features</code></td><td>gohud 기능 전부를 갈래별로, 기능마다 코드 한 줄씩</td></tr>
-      <tr><td><code>/gohud:features hud</code></td><td>한 갈래를 깊이 — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
+      <tr><td><code>/gohud:features</code></td><td>gohud 기능 전부를 분야별로, 기능마다 코드 한 줄씩</td></tr>
+      <tr><td><code>/gohud:features hud</code></td><td>한 분야를 깊이 — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
     </tbody>
   </table>
   <p>미리보기 명령을 쓰려면 <code>PATH</code> 에 Godot 4.6 이상이 있어야 한다.</p>

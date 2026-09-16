@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opacità — il gioco dietro il pannello — gohud</title>
+<meta name="description" content="Popup, finestre di dialogo, sheet, schede, pannelli HUD, avvisi e snackbar disegnano la propria faccia all'80% di opacità.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Panoramica</a>
+      <a href="install.html">Installazione</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html" aria-current="page">Temi</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Italiano</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-opacity.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-opacity.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-opacity.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-opacity.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="theming-opacity.html" hreflang="it" lang="it" aria-current="true">Italiano</a>
+          <a href="../vi/theming-opacity.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-opacity.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Opacità — il gioco dietro il pannello</h1>
+    <p class="lead"><a href="theming.html">← Temi</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Temi">
+  <!-- subnav:begin -->
+  <a href="theming.html">Temi</a>
+  <a href="theming-presets.html">Tre livelli</a>
+  <a href="theming-tokens.html">Token</a>
+  <a href="theming-opacity.html" aria-current="page">Opacità — il gioco dietro il pannello</a>
+  <a href="theming-skins.html">Skin — dove un Theme non arriva</a>
+  <a href="theming-own.html">Il tuo preset — un solo file</a>
+  <a href="theming-contrast.html">La leggibilità si misura</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    Popup, finestre di dialogo, sheet, schede, pannelli HUD, avvisi e snackbar disegnano la propria faccia all'<b>80% di opacità</b>.
+    Il combattimento prosegue dietro una richiesta di conferma; la mappa si vede sotto lo sheet dell'inventario. In un gioco questa
+    non è decorazione — è ciò che tiene il giocatore orientato. Un pannello del tutto opaco cancella il punto in cui si trovava
+    nell'istante stesso in cui si apre una finestra.
+  </p>
+
+  <div class="note">
+    <b>Si assottiglia solo la faccia.</b> Testo, icone, pulsanti, badge e slot rapidi restano nitidi, e con loro
+    bordi e ombre. Un pannello traslucido si legge come vetro solo finché il suo contorno è netto; sfuma il
+    contorno e non capisci più dove finisce il pannello. Sfuma il contenuto e l'interfaccia non si legge affatto —
+    quella non è una finestra trasparente, è un bug. Per questo il valore non viene mai applicato tramite
+    <code>modulate.a</code>.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Cinque livelli, dal più specifico</h3>
+  <table>
+    <thead><tr><th>Ordine</th><th>Dove</th><th>Unità</th><th>Portata</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>l'argomento in quella chiamata — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>rapporto <code>0.0–1.0</code></td><td>una sola finestra</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>rapporto <code>0.0–1.0</code></td><td>un tipo di pannello, in tutto il progetto</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>percentuale</td><td>progetti che tengono tutte le misure in un unico posto</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>rapporto <code>0.0–1.0</code></td><td>tutti i pannelli in una volta sola</td></tr>
+      <tr><td>⑤</td><td>il <code>GoHud/constants/&lt;kind&gt;_alpha</code> del tema</td><td>percentuale</td><td>quel che decide l'aspetto — <b>la fonte di verità</b></td></tr>
+    </tbody>
+  </table>
+  <p>Se non ne è impostato nessuno il valore è 100, quindi in un tema più vecchio non cambia nulla.</p>
+
+  <div class="note">
+    <b>L'opacità è un rapporto ovunque — tranne che nel tema.</b> Ogni campo e ogni argomento
+    <code>alpha</code> vuole 0.0–1.0, le stesse unità di <code>Color.a</code> e <code>modulate.a</code>, e un
+    valore negativo significa "non impostato". L'unica eccezione sono le costanti del tema, perché una
+    costante di <code>Theme</code> non può contenere un float: quelle e il canale che le sovrascrive
+    (<code>metric_overrides</code>, che ne condivide i nomi e il tipo intero) si scrivono come
+    <code>80</code>. Nient'altro.
+  </div>
+
+  <pre><code># Una sola finestra — una richiesta di conferma che non deve nascondere il combattimento dietro di sé
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # anche i campi @export sono rapporti
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Per tipo — tieni l'HUD quasi opaco, perché il suo testo sta direttamente sopra il mondo
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # finestre di dialogo e sheet possono respirare
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # ridisegna i widget già aperti
+
+# Tutto il progetto — un mondo affollato rivuole i suoi pannelli opachi
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # il rapporto risolto, ad es. 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Che cosa segue il valore e che cosa no</h3>
+  <table>
+    <thead><tr><th>Lo segue — i contenitori</th><th>Lo ignora — le cose che premi, e i contrassegni</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (l'unico guscio dietro finestre di dialogo, sheet e menu a tendina) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>ogni pulsante · <code>GoSlot</code> (slot rapidi) · <code>GoBadge</code> · controlli segmentati · celle di scelta · chip · dischi e avatar</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>tutto il testo e tutte le icone</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Un pulsante il cui stato è slavato non dice più che cos'è, e un badge esiste per rendere leggibili due caratteri —
+    nessuno dei due è un contenitore, quindi nessuno dei due segue il valore.
+  </p>
+
+  <div class="note">
+    <b>I menu popup restano opachi</b> (<code>popup_alpha</code> 100). Il motore può ospitare un
+    <code>PopupMenu</code> in una <code>Window</code> propria, e lì il sistema operativo non lo compone con il
+    gioco: la traslucenza viene fuori nera anziché trasparente. Abbassalo solo nei progetti che incorporano le
+    proprie sottofinestre (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Tre dettagli che vengono da schermi veri</h3>
+  <ul>
+    <li>
+      <b>Il valore moltiplica, non sostituisce.</b> La faccia HUD di default è già a 0.92 di alpha, quindi
+      <code>hud_alpha</code> 80 arriva a 0.736 — un tema che ha reso traslucida una faccia di proposito mantiene
+      quella decisione. Il rovescio: applicalo due volte e il pannello sfuma due volte, ed è per questo che l'alpha
+      viene moltiplicata in un solo punto (<code>GoSkin.surface_box()</code>) e ogni altra funzione di faccia
+      inoltra l'argomento invece di sfumare il proprio risultato.
+    </li>
+    <li>
+      <b>Un colore che hai passato è il colore che ottieni.</b> <code>GoStyle.plate(…, fill)</code> mantiene un
+      riempimento esplicito esattamente com'è stato dato: <code>Color(ink, 0.14)</code> dichiara già la sua alpha, e
+      moltiplicarci dentro l'opacità del pannello taglierebbe due volte l'intento di chi chiama. <code>GoStyle.floating(…, opaque = true)</code>
+      ignora il valore per un motivo dello stesso tipo — riempire la faccia fino a renderla opaca è l'intero scopo di quel flag.
+    </li>
+    <li>
+      <b>Ai pannelli che gohud non ha costruito vale la stessa regola.</b> <code>GoStyle.fade_panel(node)</code> — dopo che il
+      nodo è nell'albero, così legge il tema che eredita. È idempotente: la faccia originale viene registrata e ogni
+      chiamata ricalcola da quella, quindi i ridisegni ripetuti non si accumulano mai. Dopo un cambio di tema,
+      <code>GoStyle.forget_face(node)</code> lascia cadere quella memoria perché la chiamata successiva prenda la faccia nuova.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Anche le facce personalizzate sfumano — ed è la parte che si rompe in silenzio</h3>
+  <p>
+    Il pannello dagli angoli tagliati (<code>GoStyleBoxCut</code>) e la cornice forgiata
+    (<code>GoStyleBoxMedieval</code>) non sono <code>StyleBoxFlat</code>; si disegnano da sé. Metti
+    l'opacità solo nel ramo flat e questi temi la ignorano in silenzio mentre ogni test basato sui valori continua a
+    passare. Entrambe sfumano il proprio sfondo e tengono bagliore, rivetti, incisione agli angoli e bisellature a piena intensità —
+    e la grana e il bisello della faccia medievale sono sempre stati proporzionali all'alpha del loro sfondo, quindi
+    si assottigliano insieme al pannello.
+  </p>
+  <p>
+    Ed è questo il punto più generale: <code>bg_color.a == 0.8</code> è un numero. <em>Il mondo si vede attraverso e
+    il testo resta leggibile</em> è il requisito. gohud verifica il primo nella sua suite headless e il
+    secondo disegnando pannelli sopra strisce diagonali su un monitor virtuale
+    (<code>tests/gohud_alpha_shot.gd</code>) — sulla faccia flat, su quella tagliata e su quella forgiata, sia nel tema
+    scuro sia in quello chiaro.
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← Token</a> · <a href="theming-skins.html">Skin — dove un Theme non arriva →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

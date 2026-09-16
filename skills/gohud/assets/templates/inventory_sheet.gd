@@ -1,4 +1,5 @@
-## Inventory in a GoSheet: sticky search + category filter, list rows, a detail page with Back, Use / Drop.
+## Inventory in a GoSheet: sticky search + category filter, list rows with a long-press menu, a detail
+## page with Back, Use / Drop — and a snackbar that lets a drop be taken back.
 ## Copy to your project (e.g. res://ui/inventory_sheet.gd):
 ##     var inventory := preload("res://ui/inventory_sheet.gd").new()
 ##     add_child(inventory)
@@ -30,6 +31,9 @@ var items: Array[Dictionary] = [
 
 var sheet: GoSheet
 var dialogs: GoDialogs
+## Bottom-of-screen messages with buttons — a drop is reversible, so it is offered here rather than
+## behind a confirm dialog. Created on demand so the template still works without it.
+var snackbar: GoSnackbar
 var _filter := "All"
 var _query := ""
 
@@ -97,8 +101,18 @@ func _fill_list() -> void:
 		sheet.body.add_child(GoStyle.empty_state(GoIconSet.BAG, "Nothing matches", false))
 		return
 	for item in shown:
-		sheet.body.add_child(GoStyle.list_button(item.icon, "%s  ×%d" % [item.name, item.quantity],
-			show_item.bind(item), Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+		var row := GoStyle.list_button(item.icon, "%s  ×%d" % [item.name, item.quantity],
+			show_item.bind(item), Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT)
+		sheet.body.add_child(row)
+		# Long-press (or right-click) for the actions without opening the detail page.
+		# 🛑 This is a shortcut, never the only route — touch has no hover and no right-click, so a
+		#    player who never long-presses must still reach Use and Drop on the detail page.
+		GoContextMenu.attach(row, [
+			{"text": "Use", "icon": GoIconSet.CHECK, "action": _use.bind(item)},
+			{"separator": true},
+			{"text": "Drop", "icon": GoIconSet.TRASH, "danger": true, "action": _drop.bind(item)},
+		])
+
 
 
 func _matches(item: Dictionary) -> bool:
@@ -121,23 +135,37 @@ func _on_category(index: int) -> void:
 
 
 func _use(item: Dictionary) -> void:
+	var name: String = item.name
 	item.quantity -= 1
 	if item.quantity <= 0:
 		items.erase(item)
 	GoFeedback.confirmed()
 	item_used.emit(item)
 	show_list()
+	_say("Used %s" % name, [], GoTheme.SUCCESS)
 
 
+## 🔑 Dropping is **reversible here**, so it does not stop the game to ask. A snackbar reports it and
+##    offers Undo; `post()` returns the index of the button pressed, or -1 when it expired.
+##    Keep `GoDialogs.confirm(…, destructive = true)` for what cannot be taken back — selling a unique
+##    item, deleting a save. A dialog for every small action trains players to dismiss dialogs.
 func _drop(item: Dictionary) -> void:
-	# 🛑 gohud 1.0.3 and older fill {placeholders} in the body only — building the title here works on every version.
-	var yes := await dialogs.confirm("Drop %s?" % item.name, "{name} will be gone for good.", "Drop", "Keep",
-		"", {"name": item.name}, true)
-	if not yes:
-		return
+	var name: String = item.name
 	items.erase(item)
 	item_dropped.emit(item)
 	show_list()
+	if await _say("Dropped %s" % name, ["Undo"], GoTheme.WARNING) == 0:
+		items.append(item)
+		show_list()
+
+
+## Bottom-of-screen message. The snackbar is made on first use, so a copy of this template that never
+## says anything never builds one.
+func _say(message: String, actions: Array, tone: StringName) -> int:
+	if not is_instance_valid(snackbar):
+		snackbar = GoSnackbar.new()
+		add_child(snackbar)
+	return await snackbar.post({"text": message, "actions": actions, "tone": tone})
 
 
 ## Frees a container's children immediately (remove first, so counts and layout update this frame).

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>不透明度 — 面板背後的遊戲 — gohud</title>
+<meta name="description" content="彈出層、對話框、底部頁面、卡片、HUD 面板、行內提示與浮動訊息，它們的面都畫在 80% 不透明度上。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html">安裝</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">控制項</a>
+      <a href="theming.html" aria-current="page">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-opacity.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-opacity.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-opacity.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-opacity.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-opacity.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-opacity.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-opacity.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>不透明度 — 面板背後的遊戲</h1>
+    <p class="lead"><a href="theming.html">← 佈景主題</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="佈景主題">
+  <!-- subnav:begin -->
+  <a href="theming.html">佈景主題</a>
+  <a href="theming-presets.html">三層</a>
+  <a href="theming-tokens.html">Token</a>
+  <a href="theming-opacity.html" aria-current="page">不透明度 — 面板背後的遊戲</a>
+  <a href="theming-skins.html">外觀 — 佈景主題碰不到的地方</a>
+  <a href="theming-own.html">你自己的預設集 — 一個檔案</a>
+  <a href="theming-contrast.html">可讀性是量出來的</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    彈出層、對話框、底部頁面、卡片、HUD 面板、行內提示與浮動訊息，它們的面都畫在 <b>80% 不透明度</b>上。
+    確認對話框後面的戰鬥還在打；庫存頁面底下的地圖還看得見。在遊戲裡這不是裝飾 — 是它讓玩家知道自己在哪裡。
+    完全不透明的面板，會在視窗打開的那一瞬間抹掉玩家原本站的地方。
+  </p>
+
+  <div class="note">
+    <b>只有面變淡。</b>文字、圖示、按鈕、徽章與快捷格都保持清晰，邊框與陰影也是。
+    半透明的面板，只有在輪廓俐落時才讀得出玻璃感；輪廓一淡，就分不出面板到哪裡結束。
+    內容一淡，介面根本讀不了 — 那不是透明視窗，那是 bug。這就是為什麼這個值從來不透過
+    <code>modulate.a</code> 套用。
+  </div>
+
+  <h3 id="five-layers-most-specific-first">五層，由最明確的開始</h3>
+  <table>
+    <thead><tr><th>順序</th><th>在哪裡</th><th>單位</th><th>影響範圍</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>那次呼叫傳進去的參數 — <code>surface.alpha</code>、<code>GoStyle.card(…, alpha)</code></td><td>比例 <code>0.0–1.0</code></td><td>一個視窗</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>比例 <code>0.0–1.0</code></td><td>某一類面板，整個專案都算</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>百分比</td><td>把所有尺寸集中放在一處的專案</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>比例 <code>0.0–1.0</code></td><td>一次套到所有面板</td></tr>
+      <tr><td>⑤</td><td>佈景主題的 <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>百分比</td><td>這套外觀自己的決定 — <b>最終依據</b></td></tr>
+    </tbody>
+  </table>
+  <p>五層都沒設定時，值就是 100，所以舊佈景主題不會有任何改變。</p>
+
+  <div class="note">
+    <b>不透明度到處都是比例 — 只有佈景主題例外。</b>每個 <code>alpha</code> 欄位與參數收的都是
+    0.0–1.0，跟 <code>Color.a</code>、<code>modulate.a</code> 同一套單位，負值表示「沒設定」。
+    唯一的例外是佈景主題的常數，因為 <code>Theme</code> 常數存不了浮點數：它們，以及覆寫它們的那條管道
+    （<code>metric_overrides</code>，它沿用佈景主題的名稱與整數型別），寫成 <code>80</code>。
+    其他地方都不是。
+  </div>
+
+  <pre><code># 只影響一個視窗 — 確認對話框不該擋住後面的戰鬥
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # @export 欄位也是比例
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# 依類別 — HUD 保持幾乎不透明，因為它的文字直接疊在世界上
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # 對話框與底部頁面可以透一點
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # 重畫已經開著的控制項
+
+# 整個專案 — 畫面很忙的世界會想把面板調回不透明
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 算好的比例，例如 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">哪些跟著這個值走，哪些不跟</h3>
+  <table>
+    <thead><tr><th>跟著走 — 容器</th><th>不跟 — 會去按的東西，以及標記</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code>（對話框、底部頁面與下拉選單共用的那層外殼）· <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>所有按鈕 · <code>GoSlot</code>（快捷格）· <code>GoBadge</code> · 分段控制項 · 選項儲存格 · 標籤片 · 圓底與頭像</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>所有文字與圖示</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    狀態被沖淡的按鈕，說不清自己現在是什麼；而徽章存在的理由，就是讓兩個字看得清楚 —
+    兩者都不是容器，所以都不跟著這個值走。
+  </p>
+
+  <div class="note">
+    <b>彈出選單保持不透明</b>（<code>popup_alpha</code> 100）。引擎可能把
+    <code>PopupMenu</code> 放進它自己的 <code>Window</code>，在那裡作業系統不會把它和遊戲合成：
+    半透明出來是黑的，而不是透出背後。只有在把子視窗內嵌起來的專案
+    （<code>gui_embed_subwindows</code>）裡才調低它。
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">三個從實際畫面上得來的細節</h3>
+  <ul>
+    <li>
+      <b>這個值是相乘，不是取代。</b>預設 HUD 的面本來就是 0.92 alpha，所以
+      <code>hud_alpha</code> 80 落在 0.736 — 刻意把某個面做成半透明的佈景主題，那個決定會留著。
+      反過來說：套兩次，面板就淡兩次，所以 alpha 只在唯一一個地方相乘
+      （<code>GoSkin.surface_box()</code>），其他每個畫面的函式都只是把參數往下傳，
+      而不是去淡化自己的結果。
+    </li>
+    <li>
+      <b>你傳進去什麼顏色，拿到的就是什麼顏色。</b><code>GoStyle.plate(…, fill)</code>
+      會原封不動地保留明確給定的填色：<code>Color(ink, 0.14)</code> 已經把自己的 alpha 講清楚了，
+      再把面板不透明度乘進去，等於把呼叫端的意圖砍了兩次。基於同一類理由，
+      <code>GoStyle.floating(…, opaque = true)</code> 也忽略這個值 — 把面填滿本來就是那個旗標的全部目的。
+    </li>
+    <li>
+      <b>不是 gohud 做的面板，適用同一條規則。</b><code>GoStyle.fade_panel(node)</code> —
+      要在節點進到樹裡之後呼叫，這樣它才讀得到繼承來的佈景主題。它是冪等的：
+      原本的面會被記下來，每次呼叫都從那裡重算，所以重畫再多次也不會疊加。
+      換過佈景主題之後，<code>GoStyle.forget_face(node)</code> 會丟掉那份記憶，
+      下一次呼叫才拿得到新的面。
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">自訂的面也會變淡 — 而這正是會默默壞掉的地方</h3>
+  <p>
+    斜切角的面板（<code>GoStyleBoxCut</code>）與鍛造框（<code>GoStyleBoxMedieval</code>）
+    不是 <code>StyleBoxFlat</code>，它們自己畫自己。把不透明度只寫進 flat 那條分支，
+    這兩套佈景主題就會默默忽略它，而所有看數值的測試照樣通過。兩者都會淡化自己的背景，
+    同時把光暈、鉚釘、角落雕刻與斜角維持在滿強度 — 而中世紀面的紋理與斜角本來就和它的背景
+    alpha 成正比，所以會跟著面板一起變淡。
+  </p>
+  <p>
+    說到底是這麼一回事：<code>bg_color.a == 0.8</code> 是一個數字。<em>世界透得出來，
+    而文字依然讀得清楚</em>才是要求。gohud 用無頭測試套件檢查前者，用虛擬螢幕把面板畫在
+    斜線條紋上檢查後者（<code>tests/gohud_alpha_shot.gd</code>）— 平面、斜切與鍛造三種面都測，
+    深色與淺色佈景主題也都測。
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← Token</a> · <a href="theming-skins.html">外觀 — 佈景主題碰不到的地方 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

@@ -37,6 +37,11 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Custom StyleBox content touches its border | `_get_style_margin()` is not called for GDScript StyleBoxes | Set `content_margin_*` on the StyleBox |
 | Card shape turns rounded under sci-fi / medieval | `GoStyle.box()` always returns `StyleBoxFlat` | Use `GoStyle.surface()` to keep the preset's shape |
 | A `HSeparator` looks thick | Engine separator carries theme margins | `GoStyle.divider()` |
+| A badge sits in the wrong corner, or drifts when the slot moves | `Control.position` is in **parent** coordinates and ignores anchors, so setting it fights the layout | `GoBadge.attach(node, count)` — it anchors to the top-right corner through `offset_*`, so it follows the host on move and resize |
+| A spinner appears outside its button, or the button jumps | The spinner was added as a child of the layout rather than put **into** the button | `GoSpinner.busy(button, true)` keeps the button's size and disables it; `false` brings the label back |
+| A code input overflows the screen at 12 cells | Fixed cells on a 360 dp phone need more width than there is | The cells wrap to a second line by themselves — do not force a width on `GoCodeInput` |
+| Table rows are blank, or one pixel high | A wrapping `Label` inside a cell whose width is still 0 reports a minimum height of 0 | Let `GoTable` build the cells (it sets a minimum height and gives each column its share); pass `Control` cells only when you size them yourself |
+| A snackbar card is far taller than its text | Height was measured in the same frame the width was set, so the folded value stuck | `GoSnackbar` waits two frames before placing itself — if you build a card by hand, do the same before reading `size` |
 
 ## 3. Text and translation
 
@@ -48,6 +53,8 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | My literal row text changes into another string | `list_button`/`foldable`/`section`/`toggle`/`checkbox` translate by default | Pass `translate = false` for literal text |
 | Empty boxes instead of Korean, Japanese, Thai, Arabic… | The theme font lacks the glyphs (no error is raised) | Add a font with those scripts to your Theme |
 | `Done` splits into `Don` / `e` after changing a label | Wrap rule computed for the old text | `GoStyle.fit_words(button)` after `button.text = …` |
+| A translation key shows up on screen verbatim, with a symbol in front | A glyph was glued onto the key (`"! " + key`) before translating, so the table has no such key | Translate first, then join: `"! " + GoUi.text(key)`. Field errors from a server are **not** keys — `GoField.set_error(text)` leaves them alone |
+| Numbers read wrong in Turkish or French screen readers | A percent sign was concatenated in code | Percentages are wording too — `GoUi.text(&"bar_percent").format({"percent": n})`, which `GoRadar` and `GoDonut` already use |
 
 ## 4. Input, focus and Back
 
@@ -61,6 +68,9 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Android Back quits with a window open, or never quits again | `quit_on_go_back` toggled without pairing | Use `GoBackPolicy.acquire/release` in pairs (release in `_exit_tree` too) |
 | `GoForm` ignores Android Back | When the form entered the tree no node named `BackButton` with `unique_name_in_owner` was owned by the form or by the form's owner; on gohud 1.0.3 and older also `owner = form` or a holder owning only the form and the button (cleared when the scroll moves into its edge frame) | Set `back.owner = form` + `unique_name_in_owner` before `add_child(form)`; on 1.0.3 and older own the whole branch from a holder — surfaces.md §4 |
 | Pause menu freezes when the tree is paused | Its layer inherits `PROCESS_MODE_PAUSABLE` | `process_mode = Node.PROCESS_MODE_ALWAYS` on the menu's layer |
+| Nobody finds the long-press menu | Touch has no right-click and no hover, so an attached `GoContextMenu` is invisible until someone guesses | Keep every action reachable somewhere visible too (footer button, detail page). The menu is a shortcut, never the only route |
+| A list stops scrolling where a context menu is attached | The press was held while the finger moved | Already handled: motion over 12 dp cancels the hold. If you wrote your own hold, cancel on `SLOP_DP` the same way |
+| A snackbar swallows taps meant for the game | It was given buttons, so it takes input | A `GoSnackbar` with no actions passes input straight through. Give it buttons only when there is something to press |
 
 ## 5. Lifecycle and configuration
 
@@ -74,6 +84,10 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | My custom icon set vanished after switching presets | `use_preset()` clears explicit `theme`/`skin`/`icons` | Assign overrides after `use_preset()` |
 | A second `confirm()` returns `false` at once | One dialog at a time per `GoDialogs` | `await` the first before asking again |
 | `GoSurface` never goes away | It only emits `close_requested` | The owner hides or frees it (`close_requested.connect(layer.queue_free)`) |
+| `get_meta()` prints an error even though a default was passed | `Object.get_meta(name, default)` still reports a missing key | Ask first: `node.get_meta(key) if node.has_meta(key) else null` — `GoBadge`, `GoSpinner` and `GoContextMenu` all do |
+| A whole widget file fails to load with a parse error about `tr` | `tr()` is a `Node` method and cannot be called from a `static func` | `TranslationServer.translate(text)` in static code |
+| Copying a recipe gives "Invalid access to property" and the script never runs | A template instance was declared with an ancestor type (`var hud: CanvasLayer`), which hides the template's own members | Leave it untyped, or give your copy of the template a `class_name` and use that |
+| A widget ignores a theme change until it is rebuilt | It never registered for the notification | `GoUi.watch(_on_ui_changed)` in `_ready`, `GoUi.unwatch(...)` in `_exit_tree` — every gohud widget that draws does this |
 
 ## 6. Themes and shapes
 
@@ -98,3 +112,6 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Screenshot image is null | `--headless` does not render | Capture in a real or virtual display; use headless only for logic and layout numbers |
 | Layout checks pass at the wrong size | The headless window is 64×64 and `root.size` does not enlarge it | Size the test viewport the way gohud's suite does (`GOHUD_VIEWPORT`, see `tests/gohud_test.gd`) or check visually with `gohud_preview.py <scene> --phone` |
 | A headless run never ends with no output | A parse error stops `_initialize` from running | Put a wall-clock timeout on test runs and read the `SCRIPT ERROR` lines |
+| Every headless check passes but the screen is visibly wrong | Headless checks read numbers, not pixels — a label with no width, a badge in the wrong corner and a key cap wrapped onto two lines all pass | Take a screenshot in a real or virtual display and **open it**. Five defects in the 2026-09-16 widgets were found this way, none by the suite |
+| A doc example does not compile in the reader's project | The example was written from memory | `python3 tools/check_docs_api.py` compares every `GoX.y` in the docs against the source |
+

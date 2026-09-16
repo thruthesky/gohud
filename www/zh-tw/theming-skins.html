@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-skins.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-skins.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-skins.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-skins.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-skins.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-skins.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-skins.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-skins.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-skins.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-skins.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-skins.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-skins.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-skins.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-skins.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-skins.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-skins.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-skins.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-skins.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>外觀 — 佈景主題碰不到的地方 — gohud</title>
+<meta name="description" content="class_name MySkin extends GoSkin func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float, knob_radius: float, ink: Color, base…">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html">安裝</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">控制項</a>
+      <a href="theming.html" aria-current="page">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../theming-skins.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-skins.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-skins.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-skins.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="theming-skins.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/theming-skins.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-skins.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-skins.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-skins.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-skins.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-skins.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-skins.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-skins.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-skins.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-skins.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-skins.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-skins.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>外觀 — 佈景主題碰不到的地方</h1>
+    <p class="lead"><a href="theming.html">← 佈景主題</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="佈景主題">
+  <!-- subnav:begin -->
+  <a href="theming.html">佈景主題</a>
+  <a href="theming-presets.html">三層</a>
+  <a href="theming-tokens.html">Token</a>
+  <a href="theming-opacity.html">不透明度 — 面板背後的遊戲</a>
+  <a href="theming-skins.html" aria-current="page">外觀 — 佈景主題碰不到的地方</a>
+  <a href="theming-own.html">你自己的預設集 — 一個檔案</a>
+  <a href="theming-contrast.html">可讀性是量出來的</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="skin">
+
+  <table>
+    <thead><tr><th>方法</th><th>決定什麼</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_box</code> · <code>floating_box</code> · <code>overlay_box</code></td><td>卡片與面板的面、浮動介面，以及疊在遊戲或地圖上的膠囊形</td></tr>
+      <tr><td><code>chip_box</code> · <code>chip_ink</code></td><td>標籤片的面板，以及<b>疊在它上面仍然看得清楚的標籤顏色</b></td></tr>
+      <tr><td><code>slot_box</code> · <code>slot_ink</code></td><td>快捷格的面與上面的文字</td></tr>
+      <tr><td><code>disc_box</code></td><td>頭像或徽章後面的圓</td></tr>
+      <tr><td><code>alert_box</code> · <code>skeleton_box</code> · <code>segment_box</code></td><td>行內提示、佔位、分段控制項</td></tr>
+      <tr><td><code>coach_ring_box</code></td><td>導覽套在目標周圍的那個記號</td></tr>
+      <tr><td><code>draw_joystick</code> · <code>draw_coach_pointer</code></td><td><b>直接畫出來</b>的東西 — 搖桿與它的指標</td></tr>
+      <tr><td><code>divider_color</code> · <code>divider_thickness</code> · <code>section_box</code></td><td>分隔線與區段標題</td></tr>
+      <tr><td><code>badge_box</code></td><td>快捷格的徽章 — 數量與剩餘時間</td></tr>
+      <tr><td><code>progress_fill_box</code> · <code>notice_box</code> · <code>tint_notice</code></td><td>量條的填色（填色在軌道上達不到 3:1 時會加外框）與訊息條</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>class_name MySkin extends GoSkin
+
+func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
+        radius: float, knob_radius: float, ink: Color, base: Color, active: bool) -&gt; void:
+    # 控制項已經算好位置 — 這裡只負責畫
+    canvas.draw_circle(center, radius, Color(base, 0.4))
+    canvas.draw_circle(knob, knob_radius, ink)</code></pre>
+
+  <h3 id="shapes-styleboxflat-cannot-make">StyleBoxFlat 畫不出來的形狀</h3>
+  <table>
+    <thead><tr><th>類別</th><th>畫得出什麼</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoStyleBoxCut</code></td><td>斜切的角、一道加粗的強調邊、外側光暈</td></tr>
+      <tr><td><code>GoStyleBoxBracket</code></td><td>只有角落的記號，不把內容框起來</td></tr>
+      <tr><td><code>GoStyleBoxMedieval</code></td><td>鍛造框 — 鉚釘、角落雕刻、斜角高光，以及鐵、皮革或羊皮紙的紋理</td></tr>
+    </tbody>
+  </table>
+  <p>這三種都能像其他 StyleBox 一樣序列化進 Theme 資源 — 這正是佈景主題改得了形狀的原因。</p>
+
+  <div class="note warn">
+    <b>內距要透過 <code>content_margin_*</code> 給。</b>在 GDScript 裡繼承 StyleBox 時，
+    <code>_get_style_margin()</code> 永遠不會被呼叫（在 Godot 4.7 上實測）。請填好內建欄位，
+    否則內容會貼在邊框上。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-opacity.html">← 不透明度 — 面板背後的遊戲</a> · <a href="theming-own.html">你自己的預設集 — 一個檔案 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

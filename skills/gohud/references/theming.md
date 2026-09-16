@@ -151,9 +151,37 @@ script fails to parse.
   calls never stack); after a theme swap call `GoStyle.forget_face(node)` first.
 - The multiplication is **relative**: the default HUD face is already 0.92 alpha, so `hud_alpha` 80 lands at
   0.736. A theme that deliberately made a face translucent keeps that decision.
+- `GoStyle.card()` called with **no arguments** does not build a face — it reads the one the `GoCard` theme
+  variation draws and multiplies the opacity into that, so a host theme that redefines `GoCard` keeps its
+  shape. At 100% the override is removed entirely, leaving the variation's face untouched.
 - Verify visually, not only by value: `tests/gohud_alpha_shot.gd` draws panels over diagonal stripes on a
-  virtual monitor. `bg_color.a == 0.8` is a number; "the world shows through and the text is still legible"
-  is the actual requirement.
+  virtual monitor, and `tests/gallery_shots.gd` photographs the lab below at three values (`*_6_opacity`,
+  `_6b_opacity_low`, `_6c_opacity_over_world`). `bg_color.a == 0.8` is a number; "the world shows through and
+  the text is still legible" is the actual requirement.
+
+### Drag it — the opacity lab
+
+`examples/gallery/opacity_lab.gd` is a self-contained widget (no `class_name`; `preload` it) that puts the
+value under a slider **over a pattern**, because over a flat colour a translucent panel cannot be told apart
+from a slightly different colour. Three panels sit on that pattern, each reached by a different route, so one
+drag proves all of them land on the same result:
+
+| Panel | Route |
+|---|---|
+| `GoStyle.card()` | the factory argument (`GoStyle.style_panel` with `surface(…, alpha)` to restyle) |
+| `GoStyle.hud_panel()` | `GoStyle.style_hud_panel(node, …, alpha)` — a node that already exists |
+| a bare `PanelContainer` | `GoStyle.fade_panel(node, alpha)` — a panel the add-on did not create |
+
+`Apply to every panel` writes `GoConfig.container_alpha` and emits `applied`, which the host connects to
+its own rebuild — widgets are dressed when they are born, so the project-wide layer needs a rebuild to show.
+Set `allow_project_wide = false` (before `add_child`) where that would leak into other screens, as the guided
+tour does. Connect `backdrop_wanted` to offer a screen-wide pattern; leave it unconnected and that toggle is
+not shown. 🛑 A screen-wide pattern must be drawn **faintly** (`Backdrop.intensity ≈ 0.3`): at full strength
+text outside a panel becomes unreadable.
+
+Hosted by: the widget gallery, the guided tour (chapter 16, where the bot drags it and asserts the panel's own
+fill), the demo home screen (whose backdrop is already patterned), and the medieval example (a face drawn by
+`_draw()`, proving the value reaches custom StyleBoxes).
 
 ## 5. A new theme from one JSON file
 

@@ -82,489 +82,55 @@
 
 <main class="wrap">
 
-<section id="surfaces">
-  <h2>浮動視窗</h2>
+<nav class="subnav" aria-label="控制項">
+  <!-- subnav:begin -->
+  <a href="widgets.html" aria-current="page">控制項</a>
+  <a href="widgets-surfaces.html">浮動視窗</a>
+  <a href="widgets-messages.html">告訴玩家某件事</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">等待、告知、計數</a>
+  <a href="widgets-forms.html">表單與清單</a>
+  <a href="widgets-shapes.html">遊戲真的會用到的形狀</a>
+  <a href="widgets-overlays.html">蓋在畫面上</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 東西統一在一個地方產生</a>
+  <!-- subnav:end -->
+</nav>
 
-  <h3 id="gosurface-the-shell"><code>GoSurface</code> — 外殼</h3>
-  <p>彈出視窗、面板與下拉選單全都用這一個。它負責安全區域、虛擬鍵盤、
-    固定的頁首與頁尾、可捲動的本文、哪一層視窗在最上面、焦點還原、返回鍵的歸屬
-    以及拖曳改變大小。</p>
-  <table>
-    <thead><tr><th>擺放</th><th>看起來像</th><th>用在哪</th></tr></thead>
-    <tbody>
-      <tr><td><code>CENTER</code></td><td>正中央的一張卡片</td><td>確認、設定</td></tr>
-      <tr><td><code>BOTTOM</code></td><td>從下方升起的面板</td><td>清單、管理頁</td></tr>
-      <tr><td><code>ANCHOR</code></td><td>釘在某個控制項旁邊的卡片</td><td>下拉選單、快顯選單</td></tr>
-    </tbody>
-  </table>
-  <div class="note warn">
-    <b>它不會自己移除。</b>對 <code>close_requested</code> 做出反應 — 隱藏或釋放 — 是
-    持有它的畫面的責任，因為外殼無從得知它<i>為什麼</i>要關（是存檔後關閉，還是捨棄）。
+<section id="pages">
+  <div class="grid">
+    <div class="card">
+      <h3 id="floating-windows"><a href="widgets-surfaces.html">浮動視窗</a></h3>
+      <p>彈出視窗、面板與下拉選單全都用這一個。</p>
+    </div>
+    <div class="card">
+      <h3 id="telling-the-player-something"><a href="widgets-messages.html">告訴玩家某件事</a></h3>
+      <p>浮在一側，沒有遮罩。</p>
+    </div>
+    <div class="card">
+      <h3 id="hud"><a href="widgets-hud.html">HUD</a></h3>
+      <p>大面板再怎麼磨，抓住視線的永遠是某個小東西：一個被切成兩半的字、一圈被削掉的光暈、 一格擠成一團的快捷格。</p>
+    </div>
+    <div class="card">
+      <h3 id="waiting-telling-counting"><a href="widgets-feedback.html">等待、告知、計數</a></h3>
+      <p>待在畫面底部（或頂部），在安全區域與鍵盤之上，時間到了自己離開。</p>
+    </div>
+    <div class="card">
+      <h3 id="forms-and-lists"><a href="widgets-forms.html">表單與清單</a></h3>
+      <p>五個欄位的表單，最上面寫一句「請檢查輸入內容」，並沒有說是哪一個欄位。</p>
+    </div>
+    <div class="card">
+      <h3 id="shapes-games-actually-use"><a href="widgets-shapes.html">遊戲真的會用到的形狀</a></h3>
+      <p>網頁上熟悉的那些形狀，照遊戲真正需要的樣子重做了一遍。</p>
+    </div>
+    <div class="card">
+      <h3 id="over-the-screen"><a href="widgets-overlays.html">蓋在畫面上</a></h3>
+      <p>GoSheet 從底部上來，這在直握的手機上是對的。</p>
+    </div>
+    <div class="card">
+      <h3 id="gostyle-one-place-things-are-made"><a href="widgets-style.html"><code>GoStyle</code> — 東西統一在一個地方產生</a></h3>
+      <p>直接呼叫 Button.new()，內距、高度與換行就會在不同畫面之間一點一點走樣。</p>
+    </div>
   </div>
-
-  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — 從底部上來的頁面</h3>
-  <pre><code>var sheet := GoSheet.new()
-add_child(sheet)
-sheet.open("背包")
-sheet.toolbar().add_child(GoStyle.line_edit("搜尋…"))
-sheet.toolbar().visible = true
-sheet.footer().add_child(GoStyle.button("關閉", sheet.close, GoStyle.Tone.PRIMARY))
-sheet.footer().visible = true</code></pre>
-  <p>它自己持有一個 <code>CanvasLayer</code>，所以能穩穩地待在 HUD 之上。<code>open()</code> 會清空
-    本文，並<b>關掉</b>返回鍵與固定列 — 在一個無處可回的畫面上擺一顆按不動的按鈕，看起來就像壞了。</p>
-
-  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — 可以 <code>await</code> 的確認</h3>
-  <pre><code>if await dialogs.confirm("刪除存檔", "此動作無法復原。"):
-    delete_save()</code></pre>
-  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — body 之後的全部
-    都是選用的，而 <code>alert()</code> 用法相同，只是只有一顆按鈕。碰到無法復原的事情就設定
-    <code>destructive</code>：確認按鈕會變成實心的 <code>GoStyle.Tone.DANGER_SOLID</code>
-    按鈕。在淺色佈景主題上，著色的危險標籤必須一路變深到看起來像黑字；實心按鈕則維持紅底白字。
-    因為同一個視窗會被重複使用，所以每次呼叫都會重新套用色調；而在一個對話方塊開著時再呼叫
-    <code>confirm()</code>，會立刻回傳 <code>false</code>。<code>confirm_key()</code> 收的是
-    翻譯鍵。</p>
-  <p><b>按鈕排列。</b><code>action_layout</code> 預設是 <code>VERTICAL</code>（對長翻譯比較安全），
-    <code>HORIZONTAL</code> 會排成一列、各佔一半寬度，而 <code>AUTO</code> 只在兩個標籤都能在單行內
-    塞進卡片一半寬度時才排成一列，否則就上下堆疊。<code>action_gap</code> 是按鈕之間的間距，
-    <code>body_gap</code> 是按鈕上方的間距 — 把後者調得比按鈕間距更寬，問題與選項才會讀起來像兩個部分。
-    只想改某一個對話方塊時，在開啟之前呼叫 <code>set_next_action_layout()</code>。
-    按鈕列是在對話方塊第一次開啟時才建立的，所以自動載入的 <code>GoDialogs</code> 在啟動時不會多做任何事。</p>
-
-  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — 限制寬度的表單</h3>
-  <div class="note warn">
-    <b>它保證底下的標籤會換行。</b>沒有這一點，一個長句子就會拉成單獨一行，
-    其最小寬度超過螢幕，兩側被裁掉 — 你甚至看不出自己在哪個畫面。
-    靠人工在每個場景手動打開換行，每次都會忘。
-  </div>
-
-  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — 觸控捲動</h3>
-  <p>裡面只放<b>一樣</b>東西。頁首與按鈕列要放在外面 — 長清單絕不能把它們推出畫面。
-    <code>use_panel_edge()</code> 會把捲軸移進卡片原有的內距裡，而內容仍保持它的縮排。</p>
-</section>
-
-<section id="messages">
-  <h2>告訴玩家某件事</h2>
-
-  <h3 id="gonotice-snackbar"><code>GoNotice</code> — 訊息條</h3>
-  <div class="note warn">
-    <b>它永遠不攔截輸入。</b>訊息條是拿來讀的，不是拿來按的。它不取得焦點、不擋住
-    遊戲輸入，底下的按鈕照樣按得動。需要確認時請用
-    <code>GoDialogs</code>；需要做選擇時，用 <code>GoPromptCard</code>。
-  </div>
-
-  <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — 不擋住遊戲的提問</h3>
-  <p>浮在一側，沒有遮罩。遊戲繼續跑。</p>
-
-  <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — 導覽</h3>
-  <p>一次指向一個真實的控制項。只有卡片會吃輸入，所以<b>直接按下被標示的控制項本身
-    就會推進導覽</b> — 「按這裡」於是變成一個動作，而不是一句話。</p>
-  <pre><code>tour.start([
-    {"target": bag_button, "title": "背包", "body": "撿到的東西都會放到這裡。"},
-    {"target": map_button, "title": "地圖", "body": "按下可開啟完整地圖。"},
-])</code></pre>
-  <p><code>title</code> 與 <code>body</code> 可以是翻譯鍵，也可以是純文字。目標已經消失的步驟會被跳過。</p>
-</section>
-
-<section id="hud">
-  <h2>HUD</h2>
-
-  <h3 id="the-small-things-decide-whether-it-looks-good">好不好看，是那些小地方決定的</h3>
-  <p>
-    大面板再怎麼磨，抓住視線的永遠是某個小東西：一個被切成兩半的字、一圈被削掉的光暈、
-    一格擠成一團的快捷格。2026-09-13 有人指出四件這樣的事，修正做在控制項與佈景主題裡，
-    而不是示範畫面裡，所以每一個畫面都得到同樣的結果。
-  </p>
-  <table>
-    <thead><tr><th>看到什麼</th><th>原因</th><th>修法</th></tr></thead>
-    <tbody>
-      <tr><td>導覽標記的 <code>Done</code> 變成 <code>Don</code>/<code>e</code></td>
-          <td>開了換行的按鈕會<b>從最小寬度中扣掉文字寬度</b> — 一被擠壓就從字中間斷開</td>
-          <td><code>GoStyle.fit_words()</code>：單一個字永遠不換行；多個字可以換行，但<b>最長的那個字</b>一定塞得下 — 判斷依據是<b>實際顯示</b>的文字，而不是翻譯鍵，而且語言變更時表單會重新套用</td></tr>
-      <tr><td>整行寬的按鈕，左側的光暈在垂直方向被切掉</td>
-          <td>捲動容器一律在自己的邊緣裁切，沒有例外。只有右側因為捲軸留出的溝槽而倖免</td>
-          <td><code>GoScroll</code> 借用上層的內距，把自己的邊緣往外推 12dp，再在內側還回去 — <b>內容原地不動</b></td></tr>
-      <tr><td>時間、圖示與數量在一格快捷格裡上下堆成三層</td>
-          <td>48dp 裡塞了三列</td>
-          <td>圖示放大置中，快速鍵在左上，數量當成右下的<b>徽章</b>，剩餘時間則是壓在圖示上的徽章 — 徽章面板來自外觀的 <code>badge_box()</code></td></tr>
-      <tr><td>下拉選單很平，看不出選了哪一個</td>
-          <td>項目的滑過狀態用的是按鈕面板；選項記號則是引擎那個很淡的預設圖案</td>
-          <td>專用的滑過面板（柔和的強調色著色）、與核取方塊相同的選項圖案，以及為觸控加高的項目高度</td></tr>
-    </tbody>
-  </table>
-  <div class="shots">
-    <figure>
-      <img src="../img/dropdown-default-dark.png" alt="展開的下拉選單 — 柔和的強調色滑過面板，以及被選中項目的選項記號" loading="lazy">
-      <figcaption>下拉選單 — 滑過面板與選項記號</figcaption>
-    </figure>
-    <figure>
-      <img src="../img/slots-scifi-dark.png" alt="四格快捷格 — 快速鍵在左上、數量徽章在右下，第一格還有剩餘時間徽章" loading="lazy">
-      <figcaption>快捷格 — 角落徽章與剩餘時間（科幻）</figcaption>
-    </figure>
-  </div>
-  <p>
-    用 <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> 給只有圖示的按鈕一段說明 —
-    給滑鼠使用者的工具提示，和給螢幕閱讀器的無障礙名稱，都來自這同一個值。
-    工具提示是 gohud 自己畫的：引擎預設的那個在寬度計算出錯時，會把文字拆成<b>一行一個字</b>
-    （實測寬度只有 1dp）。
-  </p>
-
-  <h4 id="the-coach-mark-card-keeps-off-fixtures">導覽標記的卡片會避開固定元素</h4>
-  <p>
-    橫向時，這張卡片以前會被送到畫面最上或最下的邊緣 — 那裡剛好就是頁首與 HUD
-    零件的地盤；在示範裡，它就壓在頁首的 <code>→ ×</code> 上。現在它會與目標保持齊高，
-    繞開任何有保留空間的 <code>GoHudAnchor</code>，也可以透過 <code>keep_clear</code>
-    告訴它還要避開什麼。它會用最短的距離移開障礙物，同時不遮住目標；
-    當螢幕小到怎麼挪都躲不掉時，它就留在原地 — 重疊總比消失好。
-    它的層次感 — 讓它讀起來像在頁面<b>之上</b> — 來自外觀的旋鈕
-    （<code>float_shadow_size</code>、<code>float_shadow_lift</code>、<code>float_shadow_alpha</code>；切角風格的外觀則用 <code>float_glow_size</code>）。
-  </p>
-  <pre><code>tour.keep_clear = [header_bar, toolbar]   # 不是錨點的固定元素</code></pre>
-
-  <h3 id="screens-with-a-mouse-and-a-keyboard">有滑鼠與鍵盤的畫面</h3>
-  <p>
-    手指<b>沒有滑過狀態。</b>只照著行動裝置開發，就會有兩個只出現在桌機的狀態沒被檢查 —
-    而其中一個確實壞了：gohud 的<b>焦點外框在主要按鈕上是看不見的。</b>面板是強調色，
-    外框也是同一個色：<code>1.00:1</code>，等於把同樣的顏色畫在自己身上。
-    用鍵盤移動時，根本看不出自己在哪裡。
-  </p>
-  <figure>
-    <img src="../img/desktop-states.png" alt="同一列按鈕的三種狀態 — 一般、滑鼠滑過、鍵盤焦點" loading="lazy">
-    <figcaption>由上到下：<b>一般 · 滑過 · 焦點</b>。實心按鈕會得到一圈與自己面板形成對比的外框。</figcaption>
-  </figure>
-  <p>
-    實心按鈕（<code>GoPrimaryButton</code>、<code>GoDangerSolidButton</code>）使用的外框
-    <b>與自己的面板形成對比</b> — 深色佈景主題上用深色，淺色上用白色，科幻風格則是深色的
-    瞄準框角。對比檢查器量的是<b>焦點外框與它所在的面板</b>，所以換了調色盤這條規則依然成立
-    （WCAG 2.4.11 要求焦點指示器達到 3:1）。
-  </p>
-
-</section>
-
-<section id="hud-widgets">
-  <h2>HUD 控制項</h2>
-  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 九個位置</h3>
-  <p>它會尊重安全區域與邊界留白。給它一個 <code>landscape_spot</code>，橫向時它就會換位置 —
-    直向時待在底部中央的操作鍵，橫向可以改到右下。</p>
-  <div class="note">
-    <b>它為什麼存在。</b>每個 HUD 零件各自手寫錨點與位移，數值就會慢慢走樣：
-    在有瀏海的裝置上，生命量條跑到相機開孔底下；橫向時，操作按鈕落在手勢列上。
-    那些算式只住在一個地方。
-  </div>
-
-  <h4 id="keeping-content-out-from-under-the-hud">別讓內容跑到 HUD 底下</h4>
-  <p>
-    當一個會捲動的畫面和 HUD 共用螢幕時，內容會滑<b>到它下面</b>，兩邊的文字互相重疊，
-    最後誰都讀不出來。這在這個附加元件裡發生過兩次：輸入欄的提示文字被擠在快捷格中間，
-    以及設定裡的切換開關的旋鈕落在生命量條上。
-  </p>
-  <pre><code>form.avoid_hud = true                  # 避開每一個顯示中的 GoHudAnchor
-joystick_anchor.reserve_space = false  # …但只在手指底下才出現的那些除外</code></pre>
-  <p>
-    每個矩形都往<b>損失面積最小</b>的方向避開。右上角的量條，在直向手機上往下繞
-    （高度的 13%），在橫向則往側邊繞（寬度的 21%） — 橫向時若改成垂直避開，會吃掉螢幕的 27%。
-    已經讓出去的地盤，會先扣掉，再去量下一個矩形。
-  </p>
-
-  <h4 id="hud-pieces-collide-with-each-other-too">HUD 零件彼此也會撞在一起</h4>
-  <p>
-    九個位置只是把畫面分好；它們並不保證零件<b>彼此不相碰</b>。一條很寬的訊息條擺在
-    上方中央，就正好壓在右上的生命量條上，把數值遮住 — 你根本讀不到還剩多少血。
-  </p>
-  <pre><code>notice_anchor.avoid_peers = true      # 停在固定 HUD 下方
-notice_anchor.reserve_space = false   # 顯示期間也不會推擠頁面</code></pre>
-  <p>
-    它<b>只在垂直方向</b>讓開 — 連橫向也一起挪的話，置中的提示訊息每次出現的位置就不一樣。
-    而且它只避開那些<b>本身不會讓開</b>的零件：如果雙方都讓，兩者就會永遠交換位置。
-  </p>
-
-  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 生命、魔力、經驗</h3>
-  <pre><code>var hp := GoBar.new()
-hp.label_text = "HP"
-hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 只用於填色的 token
-hp.set_values(320, 500)                     # "320 / 500"</code></pre>
-  <p>數值變化會在 0.18 秒內緩動 — 一條直接跳掉的生命量條，說不出你被打得多重。
-    <code>reduce_motion</code> 會讓它立即完成。大數字會縮寫成 <code>12.3k</code>，
-    讓量條的寬度不會隨著位數增減而抖動。</p>
-
-  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — 一格快捷格</h3>
-  <p>圖示、數量、冷卻與快速鍵都在<b>同一個面</b>上。把徽章掛在小圓圈外面，
-    會讓每一格寬度都不一樣，整列就歪歪扭扭。</p>
-  <div class="note">
-    <b>看得到的尺寸和按得到的尺寸不同。</b>擠在一起的快捷格，48dp 的觸控範圍會互相重疊；
-    重疊的部分歸<b>中心比較近的那一格</b> — 用 <code>touch_peers</code>
-    讓它們知道彼此的存在。
-  </div>
-
-  <p><code>keyboard_focus</code> 預設是關的，這樣八格一列的快捷格才不會卡在鍵盤使用者與 Tab 順序上
-    所有設定控制項之間。只有在鍵盤或遊戲手把是唯一輸入方式時才打開它。</p>
-
-  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — 虛擬搖桿</h3>
-  <table>
-    <thead><tr><th>模式</th><th>行為</th></tr></thead>
-    <tbody>
-      <tr><td><code>FIXED</code></td><td>永遠在同一個地方 — 不用看也找得到</td></tr>
-      <tr><td><code>FOLLOW</code></td><td>出現在拇指按下的位置</td></tr>
-      <tr><td><code>RELATIVE</code></td><td>出現之後繼續跟著拇指 — 長時間移動比較舒服</td></tr>
-    </tbody>
-  </table>
-  <p><code>moved</code> 傳出來的 <code>Vector2</code> 長度介於 0–1，所以可以直接乘上速度；
-    它不會隨螢幕大小或 DPI 改變。</p>
-
-  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 看起來小，按起來大</h3>
-  <div class="note warn">
-    <b>只有在旁邊的兄弟節點不吃輸入時才安全。</b>如果被放大的區域蓋到隔壁按鈕，
-    那顆按鈕就沒反應了。並排的圖示按鈕需要 <code>touch_peers</code>。
-  </div>
-</section>
-
-<section id="feedback">
-  <h2>等待、告知、計數</h2>
-
-  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — 會自己找位置的訊息</h3>
-  <p>待在畫面底部（或頂部），在安全區域與鍵盤之上，時間到了自己離開。沒有它，每一個得說一句
-    「已儲存」的畫面，都要自己寫視窗層、擺放位置、計時器與善後。</p>
-  <pre><code>snack.show_text("已儲存", GoTheme.SUCCESS)
-
-# 給一次復原的機會 — 0 是第一顆按鈕，-1 表示逾時消失
-if await snack.post({"text": "已丟棄道具", "actions": ["復原"]}) == 0:
-    restore_item()</code></pre>
-  <p>訊息會<b>排隊</b>，而不是互相覆蓋；同一句話重複出現則會合併 — 一秒失敗四次的伺服器，
-    不會再堆出四分鐘的警告。沒有按鈕的訊息條讓輸入穿過去，底下的遊戲照常跑。</p>
-  <div class="note warn">
-    <b>它不是拿來問問題的地方。</b>它會自己消失，所以玩家可能根本沒看到。
-    無法復原的確認請交給 <code>GoDialogs</code>。這裡的按鈕必須是可有可無的 — 復原、
-    詳細、重試。
-  </div>
-  <p><code>GoNotice</code> 是這一對的另一半：它從不接收輸入或焦點，位置由持有它的畫面決定。
-    它放不了按鈕，這個可以。</p>
-
-  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — 看不到盡頭的等待</h3>
-  <p>會跟伺服器說話的遊戲，對這一頁的東西裡最需要的就是它：一個定住不動的畫面，
-    看起來就像當掉了。一次呼叫，就把你按下的那顆按鈕<b>原地</b>變成轉圈。</p>
-  <pre><code>GoSpinner.busy(buy_button, true)
-var ok := await server.purchase(item)
-GoSpinner.busy(buy_button, false)</code></pre>
-  <p>按鈕維持原本的大小 — 文字是變透明，而不是拿掉，所以那一列不會跳動 — 而且轉圈期間它是停用的。
-    後面這一點才是重點：<code>await</code> 的時候，購買絕不能被觸發兩次。開了
-    <code>reduce_motion</code> 就不轉了，改成三個點在呼吸。</p>
-  <p>量得出進度的是 <code>GoBar</code>。轉圈對什麼時候結束不做任何承諾。</p>
-
-  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — 未讀圓點、「新」標籤、99+</h3>
-  <pre><code>GoBadge.attach(mail_button, unread_count)   # 為 0 時自己隱藏
-GoBadge.attach(shop_button, 0, "新")
-GoBadge.attach(friend_button, 3, "", true) # 一個圓點 — 「那裡有東西」</code></pre>
-  <p>它用錨點掛在宿主的右上角，所以宿主的大小就算之後才決定，它也跟得上；對同一個宿主掛第二次，
-    回傳的是同一個徽章。數量會改變玩家行動時用數字，只需要說「那裡有東西」時用圓點。</p>
-  <p>文字顏色是照外觀替徽章塗上的底色去挑對比出來的 — 從不假設是白色 — 而且它帶有無障礙名稱，
-    因為一個有顏色的圓點，對螢幕閱讀器什麼也沒說。</p>
-</section>
-
-<section id="forms-lists">
-  <h2>表單與清單</h2>
-
-  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 會出錯的那一列</h3>
-  <p>五個欄位的表單，最上面寫一句「請檢查輸入內容」，並沒有說是<i>哪一個</i>欄位。
-    就是這一件事，讓人放棄註冊。</p>
-  <pre><code>var name_field := GoField.make("角色名稱", GoStyle.line_edit("2-12"), "之後無法變更")
-name_field.set_error("這個名稱已經有人用了")   # 伺服器說不行
-name_field.clear_error()</code></pre>
-  <p>錯誤顯示的期間提示文字會隱藏，所以那一列不會多長出一行、把底下全部往下推；
-    錯誤文字也會併進控制項的無障礙名稱裡 — 只有一圈紅色外框，對看不見紅色的人什麼也沒說。</p>
-  <p><code>GoStyle.field()</code> 是靜態版：標籤、控制項、提示文字，沒有錯誤狀態。
-    不會出錯的地方用工廠函式，伺服器有可能打回票的就用節點。</p>
-
-  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — 和按鈕焊在一起的輸入欄</h3>
-  <pre><code>GoInputGroup.make(GoStyle.line_edit("訊息"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
-GoInputGroup.make(GoStyle.line_edit("名稱"), {"prefix_icon": &amp;"search"})</code></pre>
-  <p>它解決的是圓角。兩個圓角形狀在中間碰頭，看起來像被捏了一下，而預設的間距讓它們讀起來
-    是兩個東西。外側的角維持圓的，碰在一起的那兩個角變方 — 每一種按鈕狀態都要這樣，
-    否則一按下去整組就裂開。切角外觀根本沒有圓角欄位，所以在那裡它什麼都不動，
-    方正的面自然就接得乾淨。</p>
-
-  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 會搜尋的選擇器</h3>
-  <p>不到十項時 <code>GoStyle.select()</code> 更好：少按一下，而且整份清單都看得到。
-    超過三十項，用眼睛找就變成工作了。</p>
-  <pre><code>var picker := GoCombobox.make(server_names, 0, "選擇伺服器")
-picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
-  <div class="note warn">
-    <b>搜尋會比對名稱內部，不是只比對開頭。</b>在韓文或日文的清單裡，前綴比對幾乎找不到東西 —
-    那些清單中，用來分辨兩個項目的那個詞，很少是第一個。
-  </div>
-
-  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — 優惠券與禮物碼</h3>
-  <p>序號從訊息裡貼上的次數，遠多於用打的。十二個真的輸入欄會讓貼上動作卡在第一格，
-    字元還會被輸入法吃掉，所以文字由一個隱藏欄位接收，格子只是畫出來的。
-    <code>ABCD-EFGH-IJKL</code> 進來的路上會把連字號去掉。</p>
-  <pre><code>var coupon := GoCodeInput.make(12, 4)
-coupon.completed.connect(func(code: String) -> void: server.redeem(code))
-coupon.set_error("已經使用過了")</code></pre>
-
-  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 可排序的標題列、可選取的資料列</h3>
-  <pre><code>var board := GoTable.make(
-    [{"text": "排名", "width": 56}, {"text": "名稱"}, {"text": "分數", "numeric": true}], rows)
-board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
-  <div class="note warn">
-    <b><code>numeric: true</code>，不然排名會顛倒。</b>當成文字比較時，<code>"9124"</code> 會贏過
-    <code>"91240"</code> — 而分數、金幣與傷害的位數本來就長短不一。
-  </div>
-  <p><code>row_selected</code> 給的是你原本陣列裡的索引，不是排序後的位置。排序方向用符號表示，
-    不是只靠顏色；整列都按得動，沒有人需要去戳某一個儲存格。<code>GoStyle.table()</code>
-    仍然是唯讀的表格。</p>
-
-  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — 頁碼，或是一列「更多」</h3>
-  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
-var more := GoPagination.more(load_next)   # 對手機比較友善的版本</code></pre>
-  <p>頁碼是滑鼠介面的東西；在手機上，一列「更多」讀起來比較順。目前頁碼會保持在視窗正中間，
-    所以按下一頁不會把每個數字重洗一次。總數給 0 表示「不知道」，這時只畫箭頭 —
-    它不會憑空生出一個沒人告訴它的頁數。</p>
-</section>
-
-<section id="game-shapes">
-  <h2>遊戲真的會用到的形狀</h2>
-  <p>網頁上熟悉的那些形狀，照遊戲真正需要的樣子重做了一遍。</p>
-
-  <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — 每日簽到</h3>
-  <p>日期選擇器在遊戲裡幾乎派不上用場。日曆的形狀倒是有用 — 用在簽到獎勵上，
-    重要的是<b>你走到第幾天</b>，而不是今天幾號。</p>
-  <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
-attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</code></pre>
-  <p>只有今天那一格按得動 — 按了沒反應的按鈕，看起來就是壞的。已領取、今天與未來三種格子，
-    同時用三件事區分：勾號、強調色外框，以及變暗。</p>
-
-  <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> 與 <code>GoDonut</code> — 一眼看完的能力值</h3>
-  <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
-stats.set_compare(with_new_sword)          # 虛線疊圖
-
-var share := GoDonut.make([{"label": "物理", "value": 620}, {"label": "魔法", "value": 340}])
-card.add_child(share.legend())</code></pre>
-  <p>雷達圖的數值是 0–1，因為「滿」是多少要由遊戲自己決定 — 把原始的 120 STR 和 45 INT
-    擺在一起，畫出來的是一個謊。環圈圖收的是原始數值，比例由它幫你算；超過五塊就把剩下的併起來，
-    因為第六塊細得像一條線，沒有人讀得出來。比較用的那條線是<b>虛線</b>，不是只換個顏色，
-    而且圖例會把百分比用文字寫出來。</p>
-
-  <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — 橫幅與角色選擇</h3>
-  <pre><code>banners.set_pages([promo, event, pack])
-banners.autoplay_seconds = 5.0             # 預設關閉</code></pre>
-  <p>除非你開口要，否則它不會自己往前翻；五秒是下限：三秒換一次的橫幅，會在字被讀完之前
-    就把它收走。碰它一下計時器就重來，而開了 <code>reduce_motion</code> 之後它永遠不會自己翻頁。
-    圓點雖然畫得小，按得到的範圍仍然是觸控最小尺寸。</p>
-
-  <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — 不會說謊的按鍵提示</h3>
-  <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # 讀的是實際的按鍵設定</code></pre>
-  <p>寫死的「按 F」，在玩家改了按鍵之後還是繼續說 F — 這是 PC 介面上最常見的謊。
-    <code>for_action()</code> 會去讀 <code>InputMap</code>；如果那個動作綁的是遊戲手把，
-    它會回傳空的、控制項自己隱藏，因為顯示「無」本身也是一個謊。在 Android 與 iOS 上它會自己隱藏。</p>
-</section>
-
-<section id="overlays">
-  <h2>蓋在畫面上</h2>
-
-  <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 側邊面板</h3>
-  <p><code>GoSheet</code> 從底部上來，這在直握的手機上是對的。在平板或桌機上，
-    同一張頁面會把遊戲整個蓋住；側邊面板則改從側邊進來。</p>
-  <pre><code>bag.side = GoDrawer.Side.RIGHT
-bag.open("背包")</code></pre>
-  <p>面板本身貼到螢幕邊緣，但內容留在安全區域裡面，否則圓角會把第一列切掉。<code>LEFT</code>
-    就算在阿拉伯文底下也是指螢幕左側；如果你要的是「起始那一側」，請打開
-    <code>follow_text_direction</code>，它在 RTL 下會翻邊。</p>
-
-  <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 釘住的卡片</h3>
-  <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
-  <p>這是 <code>GoSurface</code> 的錨定擺放，只是視窗層、外殼、錨點與善後都先接好了 —
-    就是每個遊戲都要重寫一遍的那十行。同一時間只會開一個，因為卡片疊起來會把畫面埋掉，
-    誰也分不出哪張卡片屬於哪一格。遮罩是透明的：你打開來比較裝備的卡片，不可以把裝備變暗。</p>
-  <div class="note warn">
-    <b>它不是滑鼠停留提示。</b>觸控沒有停留這回事，所以只有滑鼠才叫得出來的東西，
-    對你一半的玩家來說是看不見的。
-  </div>
-
-  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 長按與右鍵</h3>
-  <pre><code>GoContextMenu.attach(item_slot, [
-    {"text": "使用", "action": use},
-    {"separator": true},
-    {"text": "丟棄", "action": drop, "danger": true},
-])</code></pre>
-  <p><code>PopupMenu</code> 引擎裡本來就有。沒有的是那個手勢：按住半秒才開，
-    <b>手指一動就取消</b>，所以捲動清單絕不會跳出選單。項目要看你按到誰才決定時，
-    傳一個 <code>Callable</code> 進去，而不是陣列。</p>
-  <div class="note warn">
-    <b>長按需要第二個入口。</b>沒有人會自己發現藏起來的手勢 — 請搭配一顆看得見的
-    <code>⋯</code> 按鈕（<code>open_at()</code>）、一個圖示，或是第一次進遊戲時的導覽標記。
-  </div>
-
-  <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 開發者主控台</h3>
-  <pre><code>console.register("give", "給予道具：give &lt;id&gt; &lt;count&gt;", give)
-console.toggle()</code></pre>
-  <p>作弊與除錯指令，附帶一個邊打邊篩選的指令面板，這樣就沒有人需要背它們，
-    方向鍵上還有歷史紀錄。它待在所有東西之上，所以你可以蓋在對話方塊上面除錯。</p>
-  <div class="note warn">
-    <b>在發行版本裡它拒絕開啟。</b><code>debug_only</code> 預設是開的；作弊指令落到玩家手上，
-    遊戲的經濟系統第一天就結束了。
-  </div>
-</section>
-
-<section id="factory">
-  <h2><code>GoStyle</code> — 東西統一在一個地方產生</h2>
-  <p class="sub">
-    直接呼叫 <code>Button.new()</code>，內距、高度與換行就會在不同畫面之間一點一點走樣。
-    這種走樣在程式碼審查時看不出來，在螢幕截圖裡卻一目了然。
-  </p>
-
-  <table>
-    <thead><tr><th>群組</th><th>函式</th></tr></thead>
-    <tbody>
-      <tr><td>結構</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
-      <tr><td>文字</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
-      <tr><td>按鈕</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
-      <tr><td>輸入</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
-      <tr><td>顯示</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
-      <tr><td>介面零件</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
-      <tr><td>輔助</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="note warn">
-    <b><code>box()</code> 一律回傳 <code>StyleBoxFlat</code></b>，因為呼叫端拿到它之後會去
-    調整 <code>bg_color</code> 或 <code>corner_radius</code>。當自訂形狀必須保留時，
-    請改用 <code>surface()</code>。
-  </div>
-
-  <h3 id="list-rows-with-a-description">帶說明的清單列</h3>
-  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "守誓者", _inspect, Color.TRANSPARENT,
-    "長劍  /  攻擊 42", false)</code></pre>
-  <p>有第二行的列會得到<b>上下相等的內距</b>，比單行的列更寬鬆，而標題與說明這一組會
-    在圖示旁邊<b>保持垂直置中</b> — 即使容器把這一列拉高，或說明換行成好幾行，也一樣。
-    整列仍然是單一個點擊目標。</p>
-  <figure>
-    <img src="../img/medieval-light.png" alt="medieval_light 範例 — 兩行式清單列、快捷格與量條" loading="lazy">
-    <figcaption>中世紀範例中的兩行式清單列、快捷格與量條 — 在 <code>medieval_light</code> 底下呼叫的是同一批工廠函式。</figcaption>
-  </figure>
-
-  <h3 id="flowing-rows">會換行的列</h3>
-  <p>把控制項放進 <code>wrap_row</code> 時，讓它們維持<b>自然寬度</b>。若放著換行不管，按鈕的最小寬度
-    會掉到幾乎為零，而該列就用這個值決定儲存格大小 — 標籤於是縮成一行一個字。
-    工廠函式替你擋掉了這件事。</p>
-
-  <h3 id="never-leave-an-empty-list-empty">永遠別讓空清單真的空著</h3>
-  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "這裡還沒有東西"))</code></pre>
-  <p>人看到一片空白的畫面，會讀成<b>壞掉了</b>。</p>
-</section>
-
-<section id="hooks">
-  <h2>子類別掛鉤</h2>
-  <p class="sub">
-    每一個會建立子控制項的地方，都經過一個可覆寫的方法，所以繼承了 gohud 型別的專案，
-    不必複製程式碼就能把自己的子類別放進控制項<b>內部</b>。
-  </p>
-  <table>
-    <thead><tr><th>掛鉤</th><th>控制項</th><th>預設</th></tr></thead>
-    <tbody>
-      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>、<code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
-      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>、<code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
-      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>、<code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
-      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>有互動視窗開著時隱藏卡片</td></tr>
-    </tbody>
-  </table>
 </section>
 
 </main>

@@ -23,6 +23,8 @@
 extends Control
 
 const ThemePicker := preload("theme_picker.gd")
+## 🔬 판 불투명도 실험실 — 갤러리·투어와 **같은 위젯**이다.
+const OpacityLab := preload("res://addons/gohud/examples/gallery/opacity_lab.gd")
 
 ## 본문이 넘지 않는 폭(dp). 넓은 창에서는 양옆이 여백이 된다.
 const PAGE_MAX_WIDTH := 1120.0
@@ -42,7 +44,7 @@ const TARGETS: Array[Dictionary] = [
 	{
 		"key": "tour", "scene": "res://sim.tscn",
 		"icon": GoIconSet.PLAY, "tone": GoTheme.INFO, "title": "Guided tour",
-		"note": "Fifteen scenes a bot plays for you — or pick one widget and try it with your own hands.",
+		"note": "Sixteen scenes a bot plays for you — or pick one widget and try it with your own hands.",
 		"file": "examples/demo/sim.gd",
 	},
 	{
@@ -156,6 +158,9 @@ const PIECES: Array[Dictionary] = [
 ## 테마를 갈아 끼우면 화면을 통째로 다시 짓는다 — 위젯은 태어날 때 옷을 입기 때문이다.
 ## 그때 돌아올 자리를 이 정적 값이 들고 있다(씬은 새로 만들어지므로 멤버로는 남지 않는다).
 static var _resume := ""
+## 🛑 판 불투명도도 같은 이유로 여기 둔다 — `_configure()` 가 씬마다 `GoConfig` 를 **새로 만들기**
+##    때문에, 설정에만 심어 두면 화면을 다시 짓는 순간 값이 사라진다. 음수면 테마 값 그대로.
+static var _opacity := -1.0
 
 var _stage: Control                ## 홈이든 예제든 여기 한 자리에 들어간다
 var _chrome: PanelContainer        ## 예제를 볼 때만 나오는 위쪽 줄
@@ -201,6 +206,8 @@ func _configure() -> void:
 	settings.color_overrides = colors
 	# 🔑 읽는 화면이다 — 기본보다 한 칸 큰 본문이 훑기에 편하다.
 	settings.base_font_size = 16
+	# 🔬 사람이 불투명도를 만졌다면 그 값으로 다시 짓는다(위 `_opacity` 주석).
+	settings.container_alpha = _opacity
 	ThemePicker.configure(settings, colors)
 	theme = GoUi.theme()
 
@@ -636,6 +643,7 @@ func _add_playground(page: VBoxContainer) -> void:
 	grid.add_child(_card_choices())
 	grid.add_child(_card_lists())
 	grid.add_child(_card_feedback())
+	grid.add_child(_card_opacity())
 	grid.add_child(_card_new_widgets())
 	grid.add_child(_card_activity())
 
@@ -848,6 +856,32 @@ func _card_feedback() -> Control:
 		"Each one handles focus and the back key for you, on a phone as much as on a desktop.",
 		GoTheme.INFO))
 	return card
+
+
+## 🔬 **판 불투명도** — 이 홈 화면의 뒤에는 이미 무늬가 깔려 있다(`Backdrop`). 그래서 여기서 값을
+## 내리면 카드 뒤로 그 격자와 빛이 배어 나오는 것이 **이 화면 자체에서** 보인다.
+##
+## 🛑 "모든 판에 적용" 은 프로젝트 설정을 건드린다 — 홈은 그 값을 심고 화면을 다시 지어, 카드·목록
+##    줄·떠 있는 알림까지 한꺼번에 그 값으로 입는 것을 보여 준다.
+func _card_opacity() -> Control:
+	var tone := GoUi.color(GoTheme.INFO)
+	var card := GoStyle.card(tone)
+	var body := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	card.add_child(body)
+	body.add_child(_card_head("SEEING THROUGH PANELS", GoIconSet.DISPLAY, tone))
+	var lab := OpacityLab.new()
+	lab.applied.connect(_on_opacity_applied)
+	body.add_child(lab)
+	return card
+
+
+## 프로젝트 전체의 판 불투명도가 바뀌었다 — 화면을 다시 짓는다. 🛑 이미 태어난 위젯은 스스로 옷을
+## 갈지 않는다(테마를 갈아 끼울 때와 같은 이유). 바뀐 모습이 곧 알림이라 기록줄에는 적지 않는다 —
+## 씬이 새로 태어나면서 그 줄도 함께 사라지기 때문이다.
+func _on_opacity_applied(alpha: float) -> void:
+	_opacity = alpha
+	_resume = _open_key
+	get_tree().reload_current_scene()
 
 
 ## 🆕 뒤에 들인 위젯을 **살아 있는 채로** 한 카드에. 목록에 이름만 적어 두면 아무도 눌러 보지 않는다.

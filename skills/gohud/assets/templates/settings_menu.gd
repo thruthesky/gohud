@@ -165,11 +165,16 @@ func _section(parent: Control, title: String, folded: bool, group: FoldableGroup
 	return inner
 
 
-func _field(caption: String, control: Control) -> VBoxContainer:
-	var box := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
-	box.add_child(GoStyle.label(caption, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY)))
-	box.add_child(control)
-	return box
+## A labelled row. `GoField` is exactly this shape — label, control, optional hint — and it adds the
+## one thing a hand-rolled column cannot do: `set_error("…")` marks **this** box, writes the reason
+## under it, and makes that reason the control's accessible description.
+##
+## ```gdscript
+## var name_row := _field("Player name", GoStyle.line_edit("2-16 characters"), "Others see this")
+## name_row.set_error("That name is taken")      # and clear_error() when it validates
+## ```
+func _field(caption: String, control: Control, hint := "") -> GoField:
+	return GoField.make(caption, control, hint)
 
 
 func _toggle(text: String, key: String) -> CheckButton:

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="اصقل اللوحات الكبيرة ما شئت — فالذي يلفت النظر دائمًا شيء صغير: كلمة انقسمت نصفين، أو توهّج قُصّ طرفه، أو خانة مزدحمة.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">نظرة عامة</a>
+      <a href="install.html">التثبيت</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">الودجات</a>
+      <a href="theming.html">السمات</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>العربية</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="widgets-hud.html" hreflang="ar" lang="ar" aria-current="true">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← الودجات</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="الودجات">
+  <!-- subnav:begin -->
+  <a href="widgets.html">الودجات</a>
+  <a href="widgets-surfaces.html">النوافذ العائمة</a>
+  <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">الانتظار والإخبار والعدّ</a>
+  <a href="widgets-forms.html">النماذج والقوائم</a>
+  <a href="widgets-shapes.html">أشكال تستعملها الألعاب فعلًا</a>
+  <a href="widgets-overlays.html">فوق الشاشة</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — المكان الواحد الذي تُصنع فيه الأشياء</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">التفاصيل الصغيرة هي التي تقرّر إن كان يبدو جيدًا</h3>
+  <p>
+    اصقل اللوحات الكبيرة ما شئت — فالذي يلفت النظر دائمًا شيء صغير: كلمة انقسمت نصفين، أو توهّج قُصّ طرفه،
+    أو خانة مزدحمة. أربعة أمور كهذه رُصدت في 2026-09-13 وأُصلحت في الودجات والسمات، لا في شاشة العرض
+    التوضيحي، فتنال كل شاشة النتيجة نفسها.
+  </p>
+  <table>
+    <thead><tr><th>ما ظهر</th><th>السبب</th><th>الإصلاح</th></tr></thead>
+    <tbody>
+      <tr><td>كلمة <code>Done</code> في العلامة الإرشادية صارت <code>Don</code>/<code>e</code></td>
+          <td>الزرّ المفعَّل فيه الالتفاف <b>يطرح عرض نصّه</b> من حدّه الأدنى — فإن ضُغط انكسر داخل الكلمة</td>
+          <td><code>GoStyle.fit_words()</code>: الكلمة الواحدة لا تلتفّ أبدًا؛ وعدة كلمات تلتفّ، لكن <b>أطول كلمة</b> تتّسع دائمًا — والحكم على النص <b>المعروض</b> لا على مفتاح الترجمة، ويعيده النموذج عند تغيّر اللغة</td></tr>
+      <tr><td>توهّج زرّ بعرض الشاشة كاملًا قُصّ رأسيًا من جهة اليسار</td>
+          <td>حاوية التمرير تقصّ عند حافتها بلا استثناء. ولم ينجُ إلا الجانب الأيمن، بفضل مجرى شريط التمرير</td>
+          <td><code>GoScroll</code> يستعير حشوة الأب ليدفع حافته 12dp إلى الخارج ثم يعيدها في الداخل — <b>فيبقى المحتوى في مكانه</b></td></tr>
+      <tr><td>الوقت والأيقونة والعدد مرصوصة رأسيًا داخل خانة</td>
+          <td>ثلاثة صفوف داخل 48dp</td>
+          <td>أيقونة كبيرة في الوسط، والاختصار أعلى اليسار، والعدد <b>شارةً</b> أسفل اليمين، والوقت المتبقي شارةً فوق الأيقونة — ولوحات الشارات تأتي من <code>badge_box()</code> في المظهر</td></tr>
+      <tr><td>قائمة منسدلة مسطّحة بلا تحديد ظاهر</td>
+          <td>تمرير المؤشر فوق العنصر كان يستعمل لوحة الزر؛ وعلامات الاختيار الدائرية كانت علامات المحرك الباهتة الافتراضية</td>
+          <td>لوحة تمرير مخصّصة (بصبغة تمييز هادئة)، ورسوم الاختيار الدائري نفسها المستعملة في مربعات الاختيار، وارتفاع عنصر يناسب اللمس</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="قائمة منسدلة مفتوحة — لوحة تمرير بصبغة تمييز هادئة وعلامة الاختيار الدائرية للعنصر المختار" loading="lazy">
+      <figcaption>القائمة المنسدلة — لوحة التمرير وعلامة الاختيار</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="أربع خانات سريعة — الاختصار أعلى اليسار، وشارة العدد أسفل اليمين، والأولى عليها شارة وقت متبقٍّ" loading="lazy">
+      <figcaption>الخانات — شارات الأركان والوقت المتبقي (طراز الخيال العلمي)</figcaption>
+    </figure>
+  </div>
+  <p>
+    امنح الأزرار الأيقونية وصفًا عبر <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    فالتلميح لمستخدمي الفأرة، واسم الوصولية لقارئات الشاشة، كلاهما يأتي من تلك القيمة الواحدة.
+    وgohud يرسم التلميح بنفسه: فتلميح المحرك الافتراضي يقسم النص <b>حرفًا في كل سطر</b> حين يخطئ
+    حسابُ عرضه (قيس بعرض 1dp).
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">بطاقة العلامة الإرشادية تتنحّى عن التجهيزات الثابتة</h4>
+  <p>
+    في الوضع العرضي كانت البطاقة تُرسَل إلى الحافة العليا أو السفلى تمامًا — حيث تعيش الرؤوس وقطع HUD
+    بالضبط؛ وفي العرض التوضيحي كانت تجلس على <code>→ ×</code> في الرأس. أما الآن فتبقى بمحاذاة هدفها،
+    وتلتفّ حول أي <code>GoHudAnchor</code> يحجز مساحة، وتأخذ ما سواه من عوائق عبر
+    <code>keep_clear</code>. وتتحرك أقصر مسافة تتجاوز بها العائق دون أن تغطّي الهدف، وتبقى مكانها حين
+    تضيق الشاشة عن تجاوز كل شيء — فالتداخل أهون من الاختفاء.
+    أما عمقها — أي أن تُقرأ <b>فوق</b> الصفحة — فيأتي من مقابض المظهر
+    (<code>float_shadow_size</code> و<code>float_shadow_lift</code> و<code>float_shadow_alpha</code>؛ والمظاهر المشطوفة تستعمل <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # تجهيزات ثابتة ليست مراسيَ</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">الشاشات ذات الفأرة ولوحة المفاتيح</h3>
+  <p>
+    الإصبع <b>لا حالة تمرير له.</b> ابنِ للهاتف وحده فتمرّ حالتان خاصتان بسطح المكتب بلا فحص —
+    وإحداهما كانت معطوبة: <b>حلقة التركيز في gohud كانت غير مرئية على الزر الأساسي.</b> فاللوحة
+    بلون التمييز والحلقة كذلك: <code>1.00:1</code>، أي اللون نفسه مرسومًا فوق نفسه. وبالتنقّل بلوحة
+    المفاتيح لم تكن هناك وسيلة لمعرفة أين أنت.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="صف الأزرار نفسه في ثلاث حالات — عادي، وتمرير الفأرة، وتركيز لوحة المفاتيح" loading="lazy">
+    <figcaption>من الأعلى إلى الأسفل: <b>عادي · تمرير · تركيز</b>. والأزرار المصمتة تنال حلقة تتباين مع لوحتها.</figcaption>
+  </figure>
+  <p>
+    الأزرار المصمتة (<code>GoPrimaryButton</code> و<code>GoDangerSolidButton</code>) تستعمل حلقة
+    <b>تتباين مع لوحتها هي</b> — داكنة على سمة داكنة، بيضاء على فاتحة، وقوس تصويب داكن في طراز الخيال
+    العلمي. وفاحص التباين يقيس <b>حلقة التركيز مقابل اللوحة التي تجلس عليها</b>، فتصمد القاعدة عند تغيير
+    لوحة الألوان (إذ تطلب WCAG 2.4.11 نسبة 3:1 لمؤشرات التركيز).
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>ودجات الـ HUD</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — تسعة مواضع</h3>
+  <p>يحترم المنطقة الآمنة وهوامش الحواف. امنحه <code>landscape_spot</code> فينتقل في الوضع العرضي —
+    فأدوات التحكم التي تجلس أسفل الوسط في الوضع الطولي يمكن أن تنتقل إلى أسفل اليمين.</p>
+  <div class="note">
+    <b>لماذا هو موجود.</b> إن كُتبت المراسي والإزاحات بخط اليد لكل قطعة من HUD انحرفت: فينتهي شريط
+    الصحة تحت فتحة الكاميرا في جهاز منتوء الشاشة، ويحطّ زر تحكم على شريط الإيماءات في الوضع العرضي.
+    وهذا الحساب يعيش في مكان واحد.
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">إبقاء المحتوى من تحت HUD</h4>
+  <p>
+    حين تتقاسم شاشة متمررة العرضَ مع HUD، ينزلق المحتوى <b>تحته</b> فتتداخل مجموعتا النص حتى لا تُقرأ
+    أيّ منهما. وقد حدث ذلك مرتين في هذه الإضافة: نصّ نائب في حقل إدخال انعصر بين الخانات السريعة،
+    ومقبض مفتاح تبديل في الإعدادات حطّ على شريط الصحة.
+  </p>
+  <pre><code>form.avoid_hud = true                  # ابتعد عن كل GoHudAnchor ظاهر
+joystick_anchor.reserve_space = false  # …إلا ما لا يظهر إلا تحت الإصبع</code></pre>
+  <p>
+    كل مستطيل يُتفادى في الاتجاه <b>الأقل كلفة من حيث المساحة</b>. فالشريط في أعلى اليمين يُلتفّ حوله
+    نزولًا على هاتف بالوضع الطولي (13% من الارتفاع) وجانبًا في الوضع العرضي (21% من العرض) — إذ إن تفاديه
+    رأسيًا في الوضع العرضي يكلّف 27% من الشاشة. والأرض التي تُخلى تُطرح قبل قياس المستطيل التالي.
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">قطع HUD تتصادم فيما بينها أيضًا</h4>
+  <p>
+    المواضع التسعة تقسم الشاشة؛ لكنها لا تضمن أن <b>تتفادى القطع بعضها</b>. فشريط إشعار عريض في أعلى
+    الوسط حطّ تمامًا على شريط الصحة في أعلى اليمين فأخفى قيمته — ولم يكن بوسعك أن تقرأ كم بقي من الصحة.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # يستقرّ تحت HUD الثابت
+notice_anchor.reserve_space = false   # ولا يدفع الصفحة ما دام ظاهرًا</code></pre>
+  <p>
+    وهو يتنحّى <b>رأسيًا فقط</b> — إذ إن تحركه جانبًا كذلك يجعل الإشعار المتوسّط يظهر في مكان مختلف في كل
+    مرة. وهو لا يتفادى إلا القطع التي <b>لا</b> تتنحّى هي الأخرى: فلو تنحّى الاثنان لتبادلا المكانين إلى الأبد.
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — الصحة والمانا والخبرة</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # التوكن الخاص بالتعبئة وحدها
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>التغيّرات تتدرّج على مدى 0.18 ثانية — فشريط صحة يقفز لا يخبرك بمقدار الضربة التي تلقّيتها.
+    و<code>reduce_motion</code> يجعله فوريًا. والأعداد الكبيرة تُختصر إلى <code>12.3k</code> حتى لا يهتزّ
+    عرض الشريط كلما زادت الخانات أو نقصت.</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — خانة سريعة واحدة</h3>
+  <p>الأيقونة والكمية ومهلة الاستعداد والاختصار على <b>وجه واحد</b>. فتعليق الشارات على دائرة صغيرة
+    يجعل لكل خانة عرضًا مختلفًا فيتمايل الصف.</p>
+  <div class="note">
+    <b>الحجم المرئي وحجم اللمس مختلفان.</b> الخانات المتلاصقة لها صناديق لمس 48dp متداخلة؛ ويذهب
+    التداخل إلى <b>الخانة الأقرب مركزًا</b> — فعرّفها ببعضها عبر
+    <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> مطفأ افتراضيًا، حتى لا يقف صفّ من ثماني خانات بين مستخدم لوحة المفاتيح وكل
+    عناصر الإعدادات في ترتيب Tab. شغّله حين تكون لوحة المفاتيح أو ذراع التحكم هي وسيلة الإدخال الوحيدة.</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — عصا افتراضية</h3>
+  <table>
+    <thead><tr><th>الوضع</th><th>السلوك</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>في المكان نفسه دائمًا — يسهل إيجاده دون النظر</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>يظهر حيث يحطّ الإبهام</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>يظلّ يتبع الإبهام بعد ظهوره — مريح في الحركة الطويلة</td></tr>
+    </tbody>
+  </table>
+  <p>قيمة <code>Vector2</code> القادمة من <code>moved</code> طولها بين 0 و1، فتستطيع ضربها مباشرةً في
+    سرعة؛ وهي لا تتغير بتغيّر حجم الشاشة ولا كثافتها.</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — يبدو صغيرًا ويُضغط كبيرًا</h3>
+  <div class="note warn">
+    <b>آمن فقط ما دام جيرانه يتجاهلون اللمس.</b> فإن غطّت المساحة الموسَّعة الزرَّ التالي، توقّف ذلك
+    الزر عن الاستجابة. والأزرار الأيقونية المتجاورة تحتاج <code>touch_peers</code>.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← أن تخبر اللاعب بشيء</a> · <a href="widgets-feedback.html">الانتظار والإخبار والعدّ →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

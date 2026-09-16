@@ -144,8 +144,9 @@ project's 2D coordinates, so only turn it on in a project designed for it.
 
 ```gdscript
 var runtime := GoUi.runtime()
+# 🛑 `GoUi.runtime()` is typed `Node`, so `runtime.breakpoint_changed` does not parse — connect by name.
 if runtime:
-	runtime.breakpoint_changed.connect(func(bp: GoScale.Bp) -> void: rebuild_for(bp))
+	runtime.connect(&"breakpoint_changed", func(bp: GoScale.Bp) -> void: rebuild_for(bp))
 ```
 
 ## 6. Back button and modality

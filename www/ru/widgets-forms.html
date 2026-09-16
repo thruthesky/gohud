@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-forms.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-forms.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-forms.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-forms.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-forms.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-forms.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-forms.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-forms.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-forms.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-forms.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-forms.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-forms.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-forms.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-forms.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Формы и списки — gohud</title>
+<meta name="description" content="Одна строка наверху формы из пяти полей со словами «проверьте ввод» не говорит, какое поле.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Обзор</a>
+      <a href="install.html">Установка</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Виджеты</a>
+      <a href="theming.html">Темы</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Русский</summary>
+        <div class="langs-list">
+          <a href="../widgets-forms.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-forms.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-forms.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-forms.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-forms.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-forms.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-forms.html" hreflang="pt" lang="pt">Português</a>
+          <a href="widgets-forms.html" hreflang="ru" lang="ru" aria-current="true">Русский</a>
+          <a href="../fr/widgets-forms.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-forms.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-forms.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-forms.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-forms.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-forms.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-forms.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-forms.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-forms.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Формы и списки</h1>
+    <p class="lead"><a href="widgets.html">← Виджеты</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Виджеты">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Виджеты</a>
+  <a href="widgets-surfaces.html">Плавающие окна</a>
+  <a href="widgets-messages.html">Как сообщить игроку</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Ожидание, сообщения, счётчики</a>
+  <a href="widgets-forms.html" aria-current="page">Формы и списки</a>
+  <a href="widgets-shapes.html">Формы, которые играм действительно нужны</a>
+  <a href="widgets-overlays.html">Поверх экрана</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — одно место, где всё создаётся</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="forms-lists">
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — строка, которая может быть неверной</h3>
+  <p>Одна строка наверху формы из пяти полей со словами «проверьте ввод» не говорит, <i>какое</i> поле. Именно
+    из-за этого одного бросают регистрацию.</p>
+  <pre><code>var name_field := GoField.make("Имя персонажа", GoStyle.line_edit("2-12"), "Изменить потом нельзя")
+name_field.set_error("Это имя занято")   # сервер сказал «нет»
+name_field.clear_error()</code></pre>
+  <p>Пока показана ошибка, подсказка прячется, поэтому строка не вырастает на строку и не выталкивает всё, что
+    под ней, а текст ошибки подмешивается в доступное имя элемента управления — одна красная рамка ничего не
+    говорит тому, кто не видит красного.</p>
+  <p><code>GoStyle.field()</code> — статичный вариант: подпись, элемент управления, подсказка, без состояния ошибки.
+    Берите фабрику там, где ничего не может пойти не так, и узел — везде, где сервер может отказать.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — поле ввода, сваренное со своей кнопкой</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("Сообщение"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Имя"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>Решает он углы. Две скруглённые формы, встречающиеся посередине, выглядят защемлёнными, а стандартный зазор
+    заставляет читать их как два предмета. Внешние углы остаются круглыми, соприкасающиеся становятся прямыми —
+    во всех состояниях кнопки, иначе группа распадается в момент нажатия. У скинов со срезанными углами полей
+    для углов нет вовсе, поэтому там он их не трогает, и прямые грани сходятся чисто.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — выбор с поиском</h3>
+  <p>Меньше десяти пунктов — лучше <code>GoStyle.select()</code>: на одно нажатие меньше, и виден весь список.
+    После тридцати просматривать глазами становится работой.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "Выберите сервер")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>Поиск совпадает внутри названий, а не только с их началом.</b> Поиск по префиксу почти ничего не находит
+    в корейских и японских списках, где слово, отличающее два пункта друг от друга, редко оказывается первым.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — купоны и подарочные коды</h3>
+  <p>Код куда чаще вставляют из сообщения, чем набирают. Двенадцать настоящих полей ломали бы вставку на первой
+    ячейке и теряли символы в IME, поэтому текст принимает одно скрытое поле, а ячейки рисуются.
+    <code>ABCD-EFGH-IJKL</code> теряет дефисы по дороге.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("Уже использован")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — сортируемые заголовки, выбираемые строки</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "Место", "width": 56}, {"text": "Имя"}, {"text": "Очки", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code>, иначе рейтинг перевернётся.</b> При сравнении как текста <code>"9124"</code>
+    оказывается больше <code>"91240"</code> — а у очков, золота и урона количество цифр всегда разное.
+  </div>
+  <p><code>row_selected</code> отдаёт индекс в вашем исходном массиве, а не позицию после сортировки. Направление
+    сортировки показано знаком, а не только цветом, и нажимается строка целиком, чтобы никому не приходилось
+    попадать в одну ячейку. <code>GoStyle.table()</code> остаётся сеткой только для чтения.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — страницы или строка «Ещё»</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # вариант для мобильных</code></pre>
+  <p>Номера — интерфейс под мышь; на телефоне строка «Ещё» читается лучше. Текущая страница держится в середине
+    окна, поэтому нажатие «дальше» не перетасовывает все номера. Всего 0 означает «неизвестно», и рисуются только
+    стрелки — число страниц, которого ему не дали, он не выдумывает.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-feedback.html">← Ожидание, сообщения, счётчики</a> · <a href="widgets-shapes.html">Формы, которые играм действительно нужны →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

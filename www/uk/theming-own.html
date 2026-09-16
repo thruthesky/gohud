@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-own.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-own.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-own.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-own.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-own.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-own.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-own.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-own.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-own.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-own.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-own.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-own.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-own.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-own.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-own.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-own.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-own.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-own.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ваш власний пресет — один файл — gohud</title>
+<meta name="description" content="Раніше додати тему означало правити вручну чотири місця — палітру конструктора, форму, скін, ресурс пресету.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Огляд</a>
+      <a href="install.html">Встановлення</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Віджети</a>
+      <a href="theming.html" aria-current="page">Оформлення</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Українська</summary>
+        <div class="langs-list">
+          <a href="../theming-own.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-own.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-own.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-own.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-own.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-own.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-own.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-own.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-own.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-own.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-own.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-own.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-own.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-own.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="theming-own.html" hreflang="uk" lang="uk" aria-current="true">Українська</a>
+          <a href="../th/theming-own.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-own.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Ваш власний пресет — один файл</h1>
+    <p class="lead"><a href="theming.html">← Оформлення</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Оформлення">
+  <!-- subnav:begin -->
+  <a href="theming.html">Оформлення</a>
+  <a href="theming-presets.html">Три шари</a>
+  <a href="theming-tokens.html">Токени</a>
+  <a href="theming-opacity.html">Непрозорість — гра за панеллю</a>
+  <a href="theming-skins.html">Скіни — там, куди темі не дістатися</a>
+  <a href="theming-own.html" aria-current="page">Ваш власний пресет — один файл</a>
+  <a href="theming-contrast.html">Читабельність вимірюють</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="own">
+  <p class="sub">
+    Раніше додати тему означало правити вручну чотири місця — палітру конструктора, форму, скін, ресурс пресету.
+    Тепер одна команда ставить усе це на місце.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # тема .tres + графіка контролів
+godot --headless --path . --import                  # один раз імпортувати нову графіку
+GoUi.use_preset(&amp;"neon")                             # готово — вона з'явиться й у списку вибору</code></pre>
+  <p>
+    Перший рядок пише <code>themes/palettes/neon.json</code> і <code>themes/presets/neon.tres</code>. Цей
+    JSON несе <b>кожне значення теми, від якої успадковується</b>, повністю розписане, тож він заразом править
+    за список того, що можна змінити: видаліть ключ, щоб зберегти батьківське значення, або впишіть його, щоб
+    перевизначити. Пресети знаходяться <b>скануванням</b> теки <code>themes/presets/</code>, тож коду реєстру
+    міняти не треба — випадний список у параметрах проєкту теж їх підхопить.
+  </p>
+
+  <h3 id="what-you-can-change-on-one-page">Що можна змінити — на одній сторінці</h3>
+  <table>
+    <thead><tr><th>Де</th><th>Що</th><th>Як</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>батьківська тема</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … або інша тема в JSON. Пропущені ключі успадковують її значення; цикл успадкування завершується помилкою</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>тло · три поверхні · рамка · три відтінки тексту · акцент · чотири кольори статусів · завіса · тінь · жолоб смуги</td><td><code>"#RRGGBB"</code>, альфа як <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>яскраві кольори лише для заливки <code>*_vivid</code></td><td>тримають смуги насиченими навіть тоді, коли колір тексту доводиться затемнити — пропустіть один, і конструктор про це скаже</td></tr>
+      <tr data-group="palette"><td>читабельність</td><td><b>не налаштовується вручну.</b> Текст, рамки, акцент і напис на ньому конструктор підіймає, доки вони не перевищать пороги — змініть лише акцент, і перевірки все одно пройдуть</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code> (заокруглені) · <code>cut</code> (зрізані кути) · <code>medieval</code> (ковані рами)</td></tr>
+      <tr data-group="shape"><td>розміри</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — токени йдуть услід, тож панелі й розрахунки віджетів ніколи не розходяться</td></tr>
+      <tr data-group="shape"><td>лише для <code>cut</code></td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code> (<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>лише для <code>medieval</code></td><td><code>material</code> (0 залізо · 1 шкіра · 2 пергамент) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>body</code>, <code>button</code>, зіставлені з файлами шрифтів <code>res://</code>, що лежать у доповненні</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — родина для місць, які код малює сам (стик, слоти, бейджі, кільце коуч-мітки, чипи, роздільники)</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — <b>числа</b> тих місць: ширина рамки слота й підфарбування, поля бейджа, непрозорість чипів і сповіщень, ширина та непрозорість кільця стика, розміри сай-фай фасок, сяйво й дужки</td><td>Кожне батьківське значення розписане в JSON. Конструктор записує їх у <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>коду скіна ніхто не чіпає</b>. Лише щоб змінити самі малюнки, запускають <code>--new-skin</code>, який створює каркас підкласу <code>GoSkin</code></td></tr>
+      <tr><td><code>icons</code></td><td>набір іконок</td><td>шлях <code>res://</code> до ресурсу <code>GoIconSet</code> — якщо пропустити, береться від батька в JSON</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>як його показує список вибору</td><td>булеве значення · рядок</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="every-dial">Усі регулятори</h3>
+  <p>
+    Таблицю нижче заповнює <code>tools/make_site.py</code> <b>просто з рядків</b> <code>@export</code>
+    у скриптах скінів — додайте регулятор чи змініть типове значення, і таблиця піде услід. Уживайте ці імена під
+    <code>skin.dials</code> у JSON. Регулятор, чиє типове значення читається як <code>14</code>, — ціле число, а той,
+    що читається як <code>10.0</code>, — дробове; пишіть у JSON будь-яку форму, конструктор зведе її до типу зі скрипта.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4 id="default-skin-goskin-17">Стандартний скін <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>Регулятор</th><th>Типове значення</th><th>Що задає</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="Типове значення">0.16</td><td>Непрозорість заливки панелі чипа.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="Типове значення">0.45</td><td>Непрозорість краю панелі чипа.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="Типове значення">0.1</td><td>Наскільки панель сповіщення підфарбовується в бік свого кольору статусу.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="Типове значення">0.24</td><td>Акцентне підфарбування панелі швидкого слота, поки триває відкат.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="Типове значення">0.08</td><td>Акцентне підфарбування панелі швидкого слота в спокої.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="Типове значення">2</td><td>Ширина рамки швидкого слота (dp), поки триває відкат.</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="Типове значення">1</td><td>Ширина рамки швидкого слота (dp) у спокої.</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="Типове значення">5</td><td>Горизонтальне внутрішнє поле (dp) бейджа (кількість, час, що лишився).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="Типове значення">1</td><td>Вертикальне внутрішнє поле (dp) бейджа.</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="Типове значення">0.6</td><td>Непрозорість краю панелі бейджа.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="Типове значення">0.45</td><td>Непрозорість тіні плаваючих карток (коуч-мітка, картка-запит).</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="Типове значення">14</td><td>Розмиття тіні (dp) плаваючих карток.</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="Типове значення">4</td><td>Зсув тіні плаваючої картки вниз (dp).</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="Типове значення">10.0</td><td>Відстань сяйва (dp) для плаваючої панелі, яка сяє замість того, щоб кидати тінь, як-от сай-фай панель зі зрізаними кутами.</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="Типове значення">0.42</td><td>Непрозорість опорного диска стика.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="Типове значення">0.45</td><td>Непрозорість кільця стика.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="Типове значення">2.0</td><td>Ширина (dp) кільця стика.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="sci-fi-skin-goskinscifi-10">Сай-фай скін <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>Регулятор</th><th>Типове значення</th><th>Що задає</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="Типове значення">7.0</td><td>Розмір фаски (dp) панелі чипа.</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="Типове значення">5.0</td><td>Розмір фаски (dp) панелі-скелетона.</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="Типове значення">8.0</td><td>Розмір фаски (dp) панелі сповіщення.</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="Типове значення">8.0</td><td>Розмір фаски (dp) сегментованого контрола.</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="Типове значення">6.0</td><td>Розмір фаски (dp) панелі швидкого слота.</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="Типове значення">0.24</td><td>Фаска аватарів і дисків = діаметр × це співвідношення.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="Типове значення">0.45</td><td>Непрозорість сяйва слота, у якого триває відкат.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="Типове значення">6.0</td><td>Відстань сяйва (dp) слота, у якого триває відкат.</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="Типове значення">12.0</td><td>Довжина плеча (dp) прицільної дужки коуч-мітки.</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="Типове значення">2.0</td><td>Товщина лінії (dp) прицільної дужки коуч-мітки.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="medieval-skin-goskinmedieval-5">Середньовічний скін <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>Регулятор</th><th>Типове значення</th><th>Що задає</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="Типове значення">4.0</td><td>Радіус кутів (dp) середньовічної рами швидкого слота.</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="Типове значення">0.035</td><td>Непрозорість ледь помітних слідів шкіри всередині швидких слотів.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="Типове значення">1.0</td><td>Масштаб металевих оздоб на кутах швидких слотів. Рами меню беруть shape.ornament_scale.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="Типове значення">0.18</td><td>Сила металевого відблиску вздовж країв швидкого слота.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="Типове значення">1</td><td>Показувати на швидких слотах маленькі металеві заклепки: 0 — ховає, 1 — показує.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3 id="subclass-the-skin-optional">Успадкувати скін (необов'язково)</h3>
+  <p>У скіні живе лише те, куди не дістаються тема та форма — шестикутник стика, бейджі слотів, прицільна дужка
+    коуч-мітки. Успадкуйте <code>GoSkin</code>, перевизначте саме ці методи й вкажіть у полі <code>skin</code>
+    вашого JSON на цей ресурс. Тема, що міняє лише кольори, цей крок пропускає.</p>
+
+  <div class="note">
+    <b>Обіцянку стереже перевірка.</b> <code>tools/check_scaffold.sh</code> щоразу створює одноразову тему —
+    міняє акцент, ставить радіус у 4 — і перевіряє генерацію, поширення токенів і чистий прохід за контрастом,
+    перш ніж її видалити. Перший же прогін виявив, що тема, у якій змінили лише акцент, провалює <b>8 пар</b>:
+    конструктор підіймав кольори тексту, але брав акцент таким, як написано. Тепер він підіймає й акцент,
+    і напис на ньому.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-skins.html">← Скіни — там, куди темі не дістатися</a> · <a href="theming-contrast.html">Читабельність вимірюють →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

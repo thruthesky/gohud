@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="Peaufinez les grands panneaux tant que vous voulez — ce qui accroche l'œil est toujours un détail : un mot coupé en deux, un halo tronqué, un emplacement à…">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Aperçu</a>
+      <a href="install.html">Installation</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widgets</a>
+      <a href="theming.html">Thématisation</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Français</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="widgets-hud.html" hreflang="fr" lang="fr" aria-current="true">Français</a>
+          <a href="../tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← Widgets</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widgets">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widgets</a>
+  <a href="widgets-surfaces.html">Fenêtres flottantes</a>
+  <a href="widgets-messages.html">Dire quelque chose au joueur</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">Attendre, dire, compter</a>
+  <a href="widgets-forms.html">Formulaires et listes</a>
+  <a href="widgets-shapes.html">Les formes que les jeux utilisent vraiment</a>
+  <a href="widgets-overlays.html">Par-dessus l'écran</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — un seul endroit où les choses se fabriquent</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">Ce sont les petites choses qui décident si c'est réussi</h3>
+  <p>
+    Peaufinez les grands panneaux tant que vous voulez — ce qui accroche l'œil est toujours un détail : un mot
+    coupé en deux, un halo tronqué, un emplacement à l'étroit. Quatre détails de ce genre ont été signalés le
+    2026-09-13 et corrigés dans les widgets et les thèmes, pas dans l'écran de démo, pour que tous les écrans en
+    profitent de la même façon.
+  </p>
+  <table>
+    <thead><tr><th>Ce qui se voyait</th><th>Cause</th><th>Correction</th></tr></thead>
+    <tbody>
+      <tr><td>Le <code>Done</code> du repère guidé devenait <code>Don</code>/<code>e</code></td>
+          <td>Un bouton dont le retour à la ligne est actif <b>retranche la largeur de son texte</b> de son minimum — serrez-le et il coupe au milieu d'un mot</td>
+          <td><code>GoStyle.fit_words()</code> : un mot seul ne se coupe jamais ; plusieurs mots peuvent passer à la ligne, mais <b>le mot le plus long</b> tient toujours — jugé sur le texte <b>affiché</b>, pas sur la clé de traduction, et réappliqué par le formulaire au changement de langue</td></tr>
+      <tr><td>Le halo d'un bouton pleine largeur était coupé verticalement à gauche</td>
+          <td>Un conteneur défilant rogne à son bord, sans exception. Seule la droite survivait, grâce à la gouttière de la barre</td>
+          <td><code>GoScroll</code> emprunte la marge intérieure du parent pour repousser son bord de 12 dp vers l'extérieur et la rend à l'intérieur — <b>le contenu ne bouge pas</b></td></tr>
+      <tr><td>Temps, icône et quantité empilés verticalement dans un emplacement</td>
+          <td>Trois rangées dans 48 dp</td>
+          <td>Icône en grand au centre, raccourci en haut à gauche, quantité en <b>badge</b> en bas à droite, temps restant en badge par-dessus l'icône — les panneaux de badge viennent du <code>badge_box()</code> du skin</td></tr>
+      <tr><td>Une liste déroulante plate sans sélection visible</td>
+          <td>Le survol d'un élément utilisait le panneau de bouton ; les marques radio étaient celles, pâles, du moteur</td>
+          <td>Un panneau de survol dédié (teinte d'accent douce), la même illustration radio que les cases à cocher, une hauteur d'élément calibrée pour le tactile</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Une liste déroulante ouverte — panneau de survol à l'accent doux et marque radio de l'élément choisi" loading="lazy">
+      <figcaption>Liste déroulante — panneau de survol et marque radio</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Quatre emplacements rapides — raccourci en haut à gauche, badge de quantité en bas à droite, le premier avec un badge de temps restant" loading="lazy">
+      <figcaption>Emplacements — badges d'angle et temps restant (science-fiction)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Donnez une description aux boutons sans libellé avec <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    l'infobulle pour les utilisateurs de souris et le nom d'accessibilité pour les lecteurs d'écran viennent tous
+    deux de cette seule valeur. gohud dessine l'infobulle lui-même : celle du moteur découpe le texte
+    <b>à raison d'un caractère par ligne</b> quand son calcul de largeur se trompe (mesurée à 1 dp de large).
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">La carte du repère guidé se tient à l'écart des éléments fixes</h4>
+  <p>
+    En paysage, la carte était envoyée tout en haut ou tout en bas — exactement là où vivent les en-têtes et les
+    éléments de HUD ; dans la démo, elle se posait sur le <code>→ ×</code> de l'en-tête. Elle reste désormais à la
+    hauteur de sa cible, contourne tout <code>GoHudAnchor</code> qui réserve de la place, et accepte d'autres
+    choses à éviter via <code>keep_clear</code>. Elle se déplace de la plus courte distance qui dégage l'obstacle
+    sans couvrir la cible, et ne bouge pas quand l'écran est trop petit pour tout dégager — mieux vaut un
+    chevauchement qu'une disparition. Sa profondeur — pour qu'elle se lise <b>au-dessus</b> de la page — vient des
+    molettes du skin
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code> ; les skins chanfreinés utilisent <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # des éléments fixes qui ne sont pas des ancres</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Les écrans avec souris et clavier</h3>
+  <p>
+    Un doigt n'a <b>pas d'état de survol.</b> Développez pour le mobile seul et deux états propres au bureau
+    restent non vérifiés — et l'un d'eux était cassé : <b>l'anneau de focus de gohud était invisible sur un bouton
+    principal.</b> Le panneau est de la couleur d'accent, et l'anneau l'était aussi : <code>1.00:1</code>, la même
+    couleur dessinée sur elle-même. En se déplaçant au clavier, impossible de savoir où l'on se trouvait.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="La même rangée de boutons dans trois états — normal, survol souris, focus clavier" loading="lazy">
+    <figcaption>De haut en bas : <b>normal · survol · focus</b>. Les boutons pleins reçoivent un anneau qui contraste avec leur panneau.</figcaption>
+  </figure>
+  <p>
+    Les boutons pleins (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) utilisent un anneau qui
+    <b>contraste avec leur propre panneau</b> — sombre sur un thème sombre, blanc sur un thème clair, un crochet
+    de visée sombre en science-fiction. Le vérificateur de contraste mesure <b>l'anneau de focus face au panneau
+    qui le porte</b> : la règle survit donc à un changement de palette (les WCAG 2.4.11 demandent 3:1 sur les
+    indicateurs de focus).
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>Les widgets du HUD</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — neuf positions</h3>
+  <p>Il respecte la zone sûre et les marges de bord. Donnez-lui un <code>landscape_spot</code> et il se déplace en
+    paysage — des commandes placées en bas au centre en portrait peuvent passer en bas à droite.</p>
+  <div class="note">
+    <b>Pourquoi il existe.</b> Écrits à la main pour chaque élément de HUD, les ancres et les décalages dérivent :
+    une barre de vie finit sous la découpe de la caméra sur un appareil à encoche, et un bouton de commande
+    atterrit sur la barre de gestes en paysage. Ce calcul vit en un seul endroit.
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">Empêcher le contenu de passer sous le HUD</h4>
+  <p>
+    Quand un écran défilant partage l'affichage avec un HUD, le contenu glisse <b>en dessous</b> et les deux textes
+    se superposent jusqu'à ce qu'aucun ne se lise. C'est arrivé deux fois dans cet add-on : le texte indicatif d'un
+    champ de saisie se retrouvait coincé entre les emplacements rapides, et le curseur d'un interrupteur de
+    réglages atterrissait sur la barre de vie.
+  </p>
+  <pre><code>form.avoid_hud = true                  # reste à l'écart de chaque GoHudAnchor visible
+joystick_anchor.reserve_space = false  # …sauf ceux qui n'apparaissent que sous un doigt</code></pre>
+  <p>
+    Chaque rectangle est contourné dans la direction qui <b>coûte le moins de surface</b>. Une barre en haut à
+    droite est contournée vers le bas sur un téléphone en portrait (13 % de la hauteur) et sur le côté en paysage
+    (21 % de la largeur) — l'éviter verticalement en paysage coûterait 27 % de l'écran. Le terrain déjà cédé est
+    soustrait avant de mesurer le rectangle suivant.
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">Les éléments de HUD se heurtent aussi entre eux</h4>
+  <p>
+    Les neuf positions découpent l'écran ; elles ne garantissent pas que les éléments <b>s'évitent</b>. Un snackbar
+    large en haut au centre atterrissait en plein sur la barre de vie en haut à droite, masquant la valeur — on ne
+    pouvait pas lire combien de vie il restait.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # se pose sous le HUD fixe
+notice_anchor.reserve_space = false   # et ne pousse pas la page tant qu'il est affiché</code></pre>
+  <p>
+    Il ne s'écarte que <b>verticalement</b> — se décaler aussi sur le côté ferait apparaître un toast centré à un
+    endroit différent à chaque fois. Et il n'évite que les éléments qui ne s'écartent <b>pas</b> eux-mêmes : si les
+    deux cèdent, ils échangent leurs places sans fin.
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — vie, mana, expérience</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "PV"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # le token réservé au remplissage
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Les variations s'amortissent sur 0,18 s — une barre de vie qui saute ne dit pas la force du coup encaissé.
+    <code>reduce_motion</code> les rend instantanées. Les grands nombres s'abrègent en <code>12.3k</code> pour que
+    la largeur de la barre ne tressaute pas au gré des chiffres.</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — un emplacement rapide</h3>
+  <p>Icône, quantité, temps de recharge et raccourci sur <b>une seule face</b>. Accrocher des badges autour d'un
+    petit cercle donne à chaque emplacement une largeur différente et la rangée se met à onduler.</p>
+  <div class="note">
+    <b>Taille visible et taille tactile diffèrent.</b> Des emplacements serrés ont des boîtes tactiles de 48 dp qui
+    se chevauchent ; le chevauchement revient à <b>l'emplacement dont le centre est le plus proche</b> — faites-les
+    se connaître via <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> est désactivé par défaut, pour qu'une rangée de huit emplacements ne s'intercale
+    pas, dans l'ordre de tabulation, entre un utilisateur au clavier et toutes les commandes de réglages.
+    Activez-le quand le clavier ou la manette est la seule entrée.</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — le stick virtuel</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>Comportement</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Toujours au même endroit — facile à trouver sans regarder</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Apparaît là où le pouce se pose</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Continue de suivre le pouce après être apparu — confortable pour les longs déplacements</td></tr>
+    </tbody>
+  </table>
+  <p>Le <code>Vector2</code> émis par <code>moved</code> a une longueur de 0 à 1 : vous pouvez le multiplier
+    directement par une vitesse ; il ne varie ni avec la taille de l'écran ni avec le DPI.</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — paraît petit, s'appuie grand</h3>
+  <div class="note warn">
+    <b>Sûr uniquement tant que ses voisins ignorent la saisie.</b> Si la zone élargie recouvre le bouton suivant,
+    ce bouton cesse de répondre. Des boutons d'icône côte à côte réclament <code>touch_peers</code>.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← Dire quelque chose au joueur</a> · <a href="widgets-feedback.html">Attendre, dire, compter →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

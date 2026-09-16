@@ -340,9 +340,33 @@ func _container_alpha() -> void:
 	var loud_card := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.25)
 	check(near(GoSkin.box_background(loud_card.get_theme_stylebox(&"panel")).a, 0.25, 0.02),
 		"GoStyle.card(…, alpha) 로 카드 하나만")
+	# 🔑 **인자 없는 카드도 판 불투명도를 따른다**(기본 80%) — 그러나 판을 새로 만들지는 않는다.
+	#    테마 변형(`GoCard`)이 그리는 그 판을 읽어 **알파만 곱한다.** 그래서 호스트가 자기 테마에서
+	#    `GoCard` 를 다르게 정의했으면 모양은 그 정의가 이긴다. 모서리를 함께 재서 그것을 확인한다.
 	var plain_card := GoStyle.card()
-	check(not plain_card.has_theme_stylebox_override(&"panel"),
-		"인자 없는 카드는 여전히 판을 덮지 않는다 — 호스트가 정의한 GoCard 변형을 지키다")
+	var card_ratio := GoUi.surface_alpha(GoTheme.BOX_CARD)
+	var faded_face := plain_card.get_theme_stylebox(&"panel")
+	# 🛑 애드온 테마를 직접 보지 않는다 — **노드가 실제로 받는 판**을 봐야 한다. 호스트 프로젝트가
+	#    자기 테마에서 `GoCard` 를 다르게 정의하면 그것이 이기고(라리엔 3D 에서 실제로 그렇다),
+	#    이 검사가 지켜야 하는 약속이 바로 "그 판을 그대로 쓴다" 는 것이다. 덮개를 걷으면 그 판이 나온다.
+	plain_card.remove_theme_stylebox_override(&"panel")
+	var base_face := plain_card.get_theme_stylebox(&"panel")
+	var faded_fill := GoSkin.box_background(faded_face)
+	var base_fill := GoSkin.box_background(base_face)
+	check(faded_face != null and base_face != null
+		and faded_face.get_class() == base_face.get_class()
+		and near(faded_fill.r, base_fill.r, 0.01) and near(faded_fill.g, base_fill.g, 0.01)
+		and near(faded_fill.b, base_fill.b, 0.01)
+		and near(faded_fill.a, base_fill.a * card_ratio, 0.02),
+		"인자 없는 카드: 판 종류·색조는 테마가 준 그대로 · 바탕만 %.0f%% 로 묽어진다" % [card_ratio * 100.0])
+	# 🛑 100% 에서는 **덮개가 아예 없어야** 한다 — 예전과 완전히 같은 판이라야 알파를 쓰지 않는
+	#    프로젝트가 이 변경을 느끼지 않는다.
+	GoUi.config.container_alpha = 1.0
+	var solid_card := GoStyle.card()
+	check(not solid_card.has_theme_stylebox_override(&"panel"),
+		"불투명도 100% 인 카드는 판을 덮지 않는다 — 호스트가 정의한 GoCard 변형을 그대로 쓴다")
+	GoUi.config.container_alpha = -1.0
+	solid_card.queue_free()
 	loud_card.queue_free()
 	plain_card.queue_free()
 
@@ -2754,8 +2778,11 @@ func _widgets() -> void:
 	check(quiet_card_face != null and loud_card_face != null
 		and loud_card_face.border_width_top == 3 and loud_card_face.border_width_top > quiet_card_face.border_width_top
 		and near(loud_card_face.border_color.a, 0.9, 0.01) and near(loud_card_face.get_margin(SIDE_LEFT), 7.0)
-		and not plain_card.has_theme_stylebox_override(&"panel"),
-		"card(강조): 테두리 굵기 %d·진하기 %.2f·여백 %.0f 는 인자 · 인자 없는 카드는 판을 덮지 않는다"
+		# 🔑 인자 없는 카드는 강조 테두리를 얻지 않는다 — 그 카드가 **판 불투명도만** 입는다는 검사는
+		#    `container alpha` 절에 있다(밑판이 호스트 테마에서 오므로 여기서는 비교할 기준이 없다).
+		and not near(GoSkin.box_background(plain_card.get_theme_stylebox(&"panel")).r,
+			loud_card_face.bg_color.r, 0.001),
+		"card(강조): 테두리 굵기 %d·진하기 %.2f·여백 %.0f 는 인자 · 인자 없는 카드는 그 강조를 받지 않는다"
 			% [loud_card_face.border_width_top, loud_card_face.border_color.a, loud_card_face.get_margin(SIDE_LEFT)])
 	# 🔑 뒤에 까는 바탕 칸 — 준 값만 덮고, 그림자·여백은 0 이며 입력을 통과시킨다.
 	var backdrop := GoStyle.plate(GoTheme.BOX_HUD, Color(pick_ink, 0.14), Color(pick_ink, 0.36), 8.0, 1.0)

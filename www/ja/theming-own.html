@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-own.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-own.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-own.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-own.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-own.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-own.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-own.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-own.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-own.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-own.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-own.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-own.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-own.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-own.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-own.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-own.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-own.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-own.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自分のプリセットを、ファイル1枚で — gohud</title>
+<meta name="description" content="テーマを1つ足すのに、かつては4か所を手で編集する必要があった — ビルダーのパレット、形、スキン、 プリセットのリソース。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">ウィジェット</a>
+      <a href="theming.html" aria-current="page">テーマ</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../theming-own.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-own.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="theming-own.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+          <a href="../zh/theming-own.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-own.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-own.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-own.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-own.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-own.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-own.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-own.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-own.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-own.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-own.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-own.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-own.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-own.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>自分のプリセットを、ファイル1枚で</h1>
+    <p class="lead"><a href="theming.html">← テーマ</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="テーマ">
+  <!-- subnav:begin -->
+  <a href="theming.html">テーマ</a>
+  <a href="theming-presets.html">3つの層</a>
+  <a href="theming-tokens.html">トークン</a>
+  <a href="theming-opacity.html">不透明度 — パネルの向こうのゲーム</a>
+  <a href="theming-skins.html">スキン — テーマが届かない場所</a>
+  <a href="theming-own.html" aria-current="page">自分のプリセットを、ファイル1枚で</a>
+  <a href="theming-contrast.html">読みやすさは測って決める</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="own">
+  <p class="sub">
+    テーマを1つ足すのに、かつては4か所を手で編集する必要があった — ビルダーのパレット、形、スキン、
+    プリセットのリソース。いまは1つのコマンドがすべてを置いてくれる。
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # テーマの .tres + コントロールの絵
+godot --headless --path . --import                  # 新しい絵を一度だけインポートする
+GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リストにも出てくる</code></pre>
+  <p>
+    最初の行が <code>themes/palettes/neon.json</code> と <code>themes/presets/neon.tres</code> を書く。
+    この JSON には<b>継承元テーマのすべての値</b>が省略なしで書き出されるので、そのまま「変えられるものの一覧」
+    にもなる。キーを消せば親の値のまま、書けば上書きだ。プリセットは <code>themes/presets/</code> を
+    <b>走査して</b>見つけるので、登録コードの変更はいらない — プロジェクト設定のドロップダウンにも同じように載る。
+  </p>
+
+  <h3 id="what-you-can-change-on-one-page">変えられるもの — 1ページで</h3>
+  <table>
+    <thead><tr><th>場所</th><th>何を</th><th>どう書くか</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>継承元のテーマ</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … あるいは別の JSON テーマ。書かなかったキーはその値を継承し、循環すると失敗する</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>背景 · 3つのサーフェス · 枠 · 3段階の文字色 · アクセント · 4つの状態色 · 幕 · 影 · バーの溝</td><td><code>"#RRGGBB"</code>、アルファ付きは <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>塗り専用の鮮やかな色 <code>*_vivid</code></td><td>文字色が暗くならざるを得ないときでもバーは鮮やかに保つ — 書き忘れるとビルダーが教えてくれる</td></tr>
+      <tr data-group="palette"><td>読みやすさ</td><td><b>手で調整しない。</b> 文字・枠・アクセント・その上のラベルは、しきい値を超えるまでビルダーが押し上げる — アクセントだけを変えても検査は通ったままだ</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code>（丸み） · <code>cut</code>（面取りした角） · <code>medieval</code>（鍛造の枠）</td></tr>
+      <tr data-group="shape"><td>寸法</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — トークンも一緒に動くので、パネルとウィジェットの計算が食い違わない</td></tr>
+      <tr data-group="shape"><td><code>cut</code> 専用</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code>(<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td><code>medieval</code> 専用</td><td><code>material</code>（0 鉄 · 1 革 · 2 羊皮紙） · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>、<code>subtitle</code>、<code>caption</code>、<code>body</code>、<code>button</code> をアドオン内の <code>res://</code> フォントファイルへ割り当てる</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — コードが自分で描く場所（スティック、スロット、バッジ、コーチマークのリング、チップ、区切り線）の系統</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — それらの場所の<b>数値</b>。スロットの枠の太さと色味、バッジの余白、チップとアラートの不透明度、スティックのリングの太さと不透明度、SF の面取り寸法、発光とブラケット</td><td>親の値はすべて JSON に書き出される。ビルダーがそれを <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> へ書き込む — <b>スキンのコードには触れない</b>。描画そのものを変えたいときだけ <code>--new-skin</code> を付け、<code>GoSkin</code> のサブクラスの雛形を作らせる</td></tr>
+      <tr><td><code>icons</code></td><td>アイコンセット</td><td><code>GoIconSet</code> リソースへの <code>res://</code> パス — 省略すると JSON の親から引き継ぐ</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>選択リストでの見せ方</td><td>真偽値 · 文字列</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="every-dial">ダイヤル一覧</h3>
+  <p>
+    下の表は <code>tools/make_site.py</code> がスキンスクリプトの <code>@export</code> 行から<b>直接</b>読んで埋める —
+    ダイヤルを足したり既定値を変えたりすれば、表も付いてくる。JSON の <code>skin.dials</code> の下では、この名前を使う。
+    既定値が <code>14</code> と書かれているダイヤルは整数、<code>10.0</code> と書かれているものは浮動小数点数だ。
+    JSON にはどちらの形で書いてもよく、ビルダーがスクリプトの型に合わせて変換する。
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4 id="default-skin-goskin-17">デフォルトスキン <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="既定値">0.16</td><td>チップのパネルの塗りの不透明度。</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="既定値">0.45</td><td>チップのパネルの縁の不透明度。</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="既定値">0.1</td><td>アラートボックスのパネルが状態色へどれだけ寄るか。</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="既定値">0.24</td><td>クールダウン中のクイックスロットのパネルがアクセント色へ寄る度合い。</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="既定値">0.08</td><td>平常時のクイックスロットのパネルがアクセント色へ寄る度合い。</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="既定値">2</td><td>クールダウン中のクイックスロットの枠の太さ(dp)。</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="既定値">1</td><td>平常時のクイックスロットの枠の太さ(dp)。</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="既定値">5</td><td>バッジ（個数・残り時間）の内側の横余白(dp)。</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="既定値">1</td><td>バッジの内側の縦余白(dp)。</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="既定値">0.6</td><td>バッジのパネルの縁の不透明度。</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="既定値">0.45</td><td>浮かぶカード（コーチマーク、プロンプトカード）の影の不透明度。</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="既定値">14</td><td>浮かぶカードの影のぼかし(dp)。</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="既定値">4</td><td>浮かぶカードの影が下へずれる距離(dp)。</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="既定値">10.0</td><td>SF の面取りパネルのように、影ではなく発光を使う浮かぶパネルの発光距離(dp)。</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="既定値">0.42</td><td>スティックの土台の円の不透明度。</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="既定値">0.45</td><td>スティックのリングの不透明度。</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="既定値">2.0</td><td>スティックのリングの太さ(dp)。</td></tr>
+    </tbody>
+  </table>
+  <h4 id="sci-fi-skin-goskinscifi-10">SF スキン <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="既定値">7.0</td><td>チップのパネルの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="既定値">5.0</td><td>スケルトンのパネルの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="既定値">8.0</td><td>アラートボックスの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="既定値">8.0</td><td>セグメント選択の面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="既定値">6.0</td><td>クイックスロットのパネルの面取りの大きさ(dp)。</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="既定値">0.24</td><td>アバターや円の面取り = 直径 × この比率。</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="既定値">0.45</td><td>クールダウンが回っているスロットの発光の不透明度。</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="既定値">6.0</td><td>クールダウンが回っているスロットの発光距離(dp)。</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="既定値">12.0</td><td>コーチマークの照準ブラケットの腕の長さ(dp)。</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="既定値">2.0</td><td>コーチマークの照準ブラケットの線の太さ(dp)。</td></tr>
+    </tbody>
+  </table>
+  <h4 id="medieval-skin-goskinmedieval-5">中世スキン <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="既定値">4.0</td><td>中世のクイックスロットの枠の角丸(dp)。</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="既定値">0.035</td><td>クイックスロットの内側にうっすら入る革の模様の不透明度。</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="既定値">1.0</td><td>クイックスロットの角に付く金属装飾の倍率。メニューの枠は shape.ornament_scale を使う。</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="既定値">0.18</td><td>クイックスロットの縁に沿う金属のハイライトの強さ。</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="既定値">1</td><td>クイックスロットに小さな金属リベットを出すか。0 で隠し、1 で表示。</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3 id="subclass-the-skin-optional">スキンを継承する（任意）</h3>
+  <p>スキンにあるのは、テーマと形では届かないものだけだ — スティックの六角形、スロットのバッジ、
+    コーチマークの照準ブラケット。<code>GoSkin</code> を継承してそれらのメソッドだけを上書きし、JSON の
+    <code>skin</code> をそのリソースへ向ける。色だけのテーマなら、この手順はいらない。</p>
+
+  <div class="note">
+    <b>約束を守らせるのは検査だ。</b> <code>tools/check_scaffold.sh</code> は実行のたびに使い捨てのテーマを作り —
+    アクセントを変え、半径を 4 にして — 生成・トークンの伝播・コントラスト検査の通過までを確かめてから消す。
+    最初の実行では、アクセントだけを変えたテーマが<b>8組</b>で不足していた。ビルダーが文字色は押し上げるのに、
+    アクセントは書かれたまま使っていたのだ。いまはアクセントと、その上のラベルも押し上げる。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-skins.html">← スキン — テーマが届かない場所</a> · <a href="theming-contrast.html">読みやすさは測って決める →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

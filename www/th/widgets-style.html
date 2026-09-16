@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-style.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-style.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-style.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-style.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-style.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-style.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-style.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-style.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-style.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-style.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-style.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-style.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-style.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-style.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoStyle — ที่เดียวที่ทุกอย่างถูกสร้างขึ้น — gohud</title>
+<meta name="description" content="ถ้าเรียก Button.new() ตรง ๆ ระยะขอบใน ความสูง และการตัดบรรทัด จะเพี้ยนไปทีละนิด จากหน้าจอหนึ่งไปอีกหน้าจอหนึ่ง ความเพี้ยนนั้นมองไม่เห็นตอนรีวิวโค้ด…">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">ภาพรวม</a>
+      <a href="install.html">ติดตั้ง</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">วิดเจ็ต</a>
+      <a href="theming.html">ธีม</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>ไทย</summary>
+        <div class="langs-list">
+          <a href="../widgets-style.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-style.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-style.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-style.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-style.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-style.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-style.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-style.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-style.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-style.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-style.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-style.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-style.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-style.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-style.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="widgets-style.html" hreflang="th" lang="th" aria-current="true">ไทย</a>
+          <a href="../ar/widgets-style.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1><code>GoStyle</code> — ที่เดียวที่ทุกอย่างถูกสร้างขึ้น</h1>
+    <p class="lead"><a href="widgets.html">← วิดเจ็ต</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="วิดเจ็ต">
+  <!-- subnav:begin -->
+  <a href="widgets.html">วิดเจ็ต</a>
+  <a href="widgets-surfaces.html">หน้าต่างลอย</a>
+  <a href="widgets-messages.html">การบอกอะไรบางอย่างกับผู้เล่น</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">การรอ การบอก การนับ</a>
+  <a href="widgets-forms.html">ฟอร์มและรายการ</a>
+  <a href="widgets-shapes.html">รูปทรงที่เกมใช้จริง</a>
+  <a href="widgets-overlays.html">ทับอยู่บนหน้าจอ</a>
+  <a href="widgets-style.html" aria-current="page"><code>GoStyle</code> — ที่เดียวที่ทุกอย่างถูกสร้างขึ้น</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="factory">
+  <p class="sub">
+    ถ้าเรียก <code>Button.new()</code> ตรง ๆ ระยะขอบใน ความสูง และการตัดบรรทัด จะเพี้ยนไปทีละนิด
+    จากหน้าจอหนึ่งไปอีกหน้าจอหนึ่ง ความเพี้ยนนั้นมองไม่เห็นตอนรีวิวโค้ด แต่เห็นชัดเจนในภาพหน้าจอ
+  </p>
+
+  <table>
+    <thead><tr><th>กลุ่ม</th><th>ฟังก์ชัน</th></tr></thead>
+    <tbody>
+      <tr><td>โครงสร้าง</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>ตัวอักษร</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>ปุ่ม</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>การรับข้อมูล</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>การแสดงผล</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>ชิ้นส่วนของพื้นผิว</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>ตัวช่วย</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> คืนค่าเป็น <code>StyleBoxFlat</code> เสมอ</b> เพราะผู้เรียกจะรับมันไปแล้วปรับ
+    <code>bg_color</code> หรือ <code>corner_radius</code> ต่อ ถ้าต้องการให้รูปทรงที่กำหนดเองอยู่รอด
+    ให้ใช้ <code>surface()</code> แทน
+  </div>
+
+  <h3 id="list-rows-with-a-description">แถวรายการที่มีคำอธิบาย</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "ดาบคำสาบาน", _inspect, Color.TRANSPARENT,
+    "ดาบยาว  /  โจมตี 42", false)</code></pre>
+  <p>แถวที่มีบรรทัดที่สองจะได้<b>ระยะขอบในด้านบนและล่างเท่ากัน</b> โปร่งกว่าแถวบรรทัดเดียว และคู่ของ
+    หัวเรื่องกับคำอธิบายจะ<b>จัดกึ่งกลางแนวตั้ง</b>ข้างไอคอนเสมอ — รวมถึงตอนที่คอนเทนเนอร์ยืดแถวให้สูงขึ้น
+    และหลังจากคำอธิบายตัดบรรทัดเป็นหลายบรรทัดแล้วด้วย ทั้งแถวยังคงเป็นเป้าหมายการแตะเดียวกัน</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="ตัวอย่าง medieval_light — แถวรายการสองบรรทัด ควิกสล็อต และแถบต่าง ๆ" loading="lazy">
+    <figcaption>แถวสองบรรทัด สล็อต และแถบ ในตัวอย่างยุคกลาง — เป็นการเรียกฟังก์ชันชุดเดียวกันภายใต้ <code>medieval_light</code></figcaption>
+  </figure>
+
+  <h3 id="flowing-rows">แถวที่ไหลต่อกัน</h3>
+  <p>ใส่คอนโทรลลงใน <code>wrap_row</code> ที่<b>ความกว้างตามธรรมชาติ</b>ของมัน ถ้าปล่อยให้การตัดบรรทัดเปิดอยู่
+    ความกว้างขั้นต่ำของปุ่มจะลดลงจนแทบเป็นศูนย์ แล้วแถวจะกำหนดขนาดเซลล์ตามนั้น — ป้ายข้อความจะยุบลงเหลือ
+    บรรทัดละตัวอักษร ตัวโรงงานป้องกันเรื่องนี้ให้คุณแล้ว</p>
+
+  <h3 id="never-leave-an-empty-list-empty">อย่าปล่อยรายการที่ว่างให้ว่างเปล่า</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "ยังไม่มีอะไรที่นี่"))</code></pre>
+  <p>คนอ่านหน้าจอเปล่า ๆ ว่า<b>มันพัง</b></p>
+</section>
+
+<section id="hooks">
+  <h2>ฮุกสำหรับการสืบทอด</h2>
+  <p class="sub">
+    ทุกจุดที่มีการสร้างวิดเจ็ตลูกจะผ่านเมธอดที่เขียนทับได้ โปรเจกต์ที่สืบทอดชนิดต่าง ๆ ของ gohud
+    จึงเอาซับคลาสของตัวเองเข้าไปอยู่<b>ข้างใน</b>วิดเจ็ตได้ โดยไม่ต้องคัดลอกโค้ด
+  </p>
+  <table>
+    <thead><tr><th>ฮุก</th><th>วิดเจ็ต</th><th>ค่าเริ่มต้น</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>ซ่อนการ์ดขณะที่มีหน้าต่างโมดัลเปิดอยู่</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-overlays.html">← ทับอยู่บนหน้าจอ</a> · <a href="widgets.html">วิดเจ็ต →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

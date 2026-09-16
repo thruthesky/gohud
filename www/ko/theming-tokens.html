@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-tokens.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-tokens.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-tokens.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-tokens.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-tokens.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-tokens.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-tokens.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-tokens.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-tokens.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-tokens.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-tokens.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-tokens.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-tokens.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-tokens.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-tokens.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-tokens.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-tokens.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-tokens.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>토큰 — gohud</title>
+<meta name="description" content="모든 색과 치수는 Theme 의 GoHud 타입 아래에 이름으로 산다.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">소개</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">위젯</a>
+      <a href="theming.html" aria-current="page">테마</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>한국어</summary>
+        <div class="langs-list">
+          <a href="../theming-tokens.html" hreflang="en" lang="en">English</a>
+          <a href="theming-tokens.html" hreflang="ko" lang="ko" aria-current="true">한국어</a>
+          <a href="../ja/theming-tokens.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-tokens.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-tokens.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-tokens.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-tokens.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-tokens.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-tokens.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-tokens.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-tokens.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-tokens.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-tokens.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-tokens.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-tokens.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-tokens.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-tokens.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>토큰</h1>
+    <p class="lead"><a href="theming.html">← 테마</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="테마">
+  <!-- subnav:begin -->
+  <a href="theming.html">테마</a>
+  <a href="theming-presets.html">세 층</a>
+  <a href="theming-tokens.html" aria-current="page">토큰</a>
+  <a href="theming-opacity.html">불투명도 — 패널 뒤의 게임</a>
+  <a href="theming-skins.html">스킨 — 테마가 닿지 못하는 자리</a>
+  <a href="theming-own.html">내 프리셋 만들기 — 파일 하나</a>
+  <a href="theming-contrast.html">가독성은 재서 지킨다</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="tokens">
+  <p class="sub">
+    모든 색과 치수는 Theme 의 <code>GoHud</code> 타입 아래에 이름으로 산다.
+    숫자를 코드에 쓰지 않는 것이 규칙이다 — 이름으로 부르면 테마를 갈아 끼울 때 전부 따라 움직인다.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # 색
+GoUi.metric(GoTheme.GAP)               # 치수(dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # 역할별 글자 크기
+GoUi.box(GoTheme.BOX_CARD)             # StyleBox 사본</code></pre>
+
+  <h3 id="colours">색</h3>
+  <table>
+    <thead><tr><th>이름</th><th>쓰이는 곳</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>화면 바닥</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>패널의 세 계층 — 패널, 카드, 도드라진 칸</td></tr>
+      <tr><td><code>border</code></td><td>카드·버튼 테두리</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>글자 세 단계 — 본문, 보조, 흐린 것</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>강조색과 그 위에 얹는 글자</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>상태 <b>글자</b> 색</td></tr>
+      <tr><td><code>*_fill</code></td><td>같은 상태의 <b>채움</b> 색 — 막대처럼 넓은 면적에 칠할 때</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>팝업 뒤 막, 그림자, 막대 바탕</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b><code>*_fill</code> 이 따로 있는 이유.</b> 같은 뜻인데 요구가 반대다. <code>warning</code> 은 글자로
+    쓰이므로 밝은 바탕에서 읽히려면 어두워야 하고, 경험치 막대의 채움으로 쓰이면 눈에 띄어야 하므로 밝아야 한다.
+    하나로 버티면 밝은 테마의 막대가 갈색이 된다. 테마에 <code>_fill</code> 이 없으면 <b>자동으로</b>
+    <code>_fill</code> 을 뗀 이름으로 떨어지므로, 이 토큰을 모르는 테마를 꽂아도 깨지지 않는다.
+  </div>
+
+  <h3 id="measurements-dp">치수(dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3 id="panel-opacity">패널 불투명도(%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — 컨테이너의 면이 얼마나 꽉 찼는가. 기본은 <b>80</b> 이라 확인창 뒤로
+    게임이 그대로 보인다. <code>popup_alpha</code> 만 100 이다. 이 토큰이 없는 테마는 100 으로 떨어져
+    예전과 똑같이 그려진다. 계산이 끝난 값은 <b>비율</b>로 읽는다 —
+    <code>GoUi.surface_alpha(variant)</code>. 규칙은
+    <a href="theming-opacity.html#opacity">불투명도 — 패널 뒤의 게임</a> 절에 있다.
+  </p>
+
+  <h3 id="text-roles">글자 역할</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — 역할은 <b>크기의 이름</b>이지
+    용도의 이름이 아니다. "제목" 이 아니라 "가장 큰 글자" 다. 그래야 화면마다 다른 뜻으로 쓰여도
+    크기 체계가 흔들리지 않는다.
+  </p>
+
+  <h3 id="type-variations">타입 변형</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code>
+    <code>GoSubtitleLabel</code> <code>GoCaptionLabel</code> <code>GoCompactLabel</code>
+    <code>GoMicroLabel</code>
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-presets.html">← 세 층</a> · <a href="theming-opacity.html">불투명도 — 패널 뒤의 게임 →</a></p>
+    <p style="font-size:13px">밑줄 친 용어에 마우스를 올리면 뜻이 뜬다.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-surfaces.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-surfaces.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-surfaces.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-surfaces.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-surfaces.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-surfaces.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-surfaces.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-surfaces.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-surfaces.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-surfaces.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-surfaces.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-surfaces.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-surfaces.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-surfaces.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-surfaces.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-surfaces.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-surfaces.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-surfaces.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>浮動視窗 — gohud</title>
+<meta name="description" content="彈出視窗、面板與下拉選單全都用這一個。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html">安裝</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">控制項</a>
+      <a href="theming.html">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../widgets-surfaces.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-surfaces.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-surfaces.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-surfaces.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="widgets-surfaces.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/widgets-surfaces.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-surfaces.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-surfaces.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-surfaces.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-surfaces.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-surfaces.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-surfaces.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-surfaces.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-surfaces.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-surfaces.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-surfaces.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-surfaces.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>浮動視窗</h1>
+    <p class="lead"><a href="widgets.html">← 控制項</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="控制項">
+  <!-- subnav:begin -->
+  <a href="widgets.html">控制項</a>
+  <a href="widgets-surfaces.html" aria-current="page">浮動視窗</a>
+  <a href="widgets-messages.html">告訴玩家某件事</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">等待、告知、計數</a>
+  <a href="widgets-forms.html">表單與清單</a>
+  <a href="widgets-shapes.html">遊戲真的會用到的形狀</a>
+  <a href="widgets-overlays.html">蓋在畫面上</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 東西統一在一個地方產生</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="surfaces">
+
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — 外殼</h3>
+  <p>彈出視窗、面板與下拉選單全都用這一個。它負責安全區域、虛擬鍵盤、
+    固定的頁首與頁尾、可捲動的本文、哪一層視窗在最上面、焦點還原、返回鍵的歸屬
+    以及拖曳改變大小。</p>
+  <table>
+    <thead><tr><th>擺放</th><th>看起來像</th><th>用在哪</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>正中央的一張卡片</td><td>確認、設定</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>從下方升起的面板</td><td>清單、管理頁</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>釘在某個控制項旁邊的卡片</td><td>下拉選單、快顯選單</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>它不會自己移除。</b>對 <code>close_requested</code> 做出反應 — 隱藏或釋放 — 是
+    持有它的畫面的責任，因為外殼無從得知它<i>為什麼</i>要關（是存檔後關閉，還是捨棄）。
+  </div>
+
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — 從底部上來的頁面</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("背包")
+sheet.toolbar().add_child(GoStyle.line_edit("搜尋…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("關閉", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>它自己持有一個 <code>CanvasLayer</code>，所以能穩穩地待在 HUD 之上。<code>open()</code> 會清空
+    本文，並<b>關掉</b>返回鍵與固定列 — 在一個無處可回的畫面上擺一顆按不動的按鈕，看起來就像壞了。</p>
+
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — 可以 <code>await</code> 的確認</h3>
+  <pre><code>if await dialogs.confirm("刪除存檔", "此動作無法復原。"):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — body 之後的全部
+    都是選用的，而 <code>alert()</code> 用法相同，只是只有一顆按鈕。碰到無法復原的事情就設定
+    <code>destructive</code>：確認按鈕會變成實心的 <code>GoStyle.Tone.DANGER_SOLID</code>
+    按鈕。在淺色佈景主題上，著色的危險標籤必須一路變深到看起來像黑字；實心按鈕則維持紅底白字。
+    因為同一個視窗會被重複使用，所以每次呼叫都會重新套用色調；而在一個對話方塊開著時再呼叫
+    <code>confirm()</code>，會立刻回傳 <code>false</code>。<code>confirm_key()</code> 收的是
+    翻譯鍵。</p>
+  <p><b>按鈕排列。</b><code>action_layout</code> 預設是 <code>VERTICAL</code>（對長翻譯比較安全），
+    <code>HORIZONTAL</code> 會排成一列、各佔一半寬度，而 <code>AUTO</code> 只在兩個標籤都能在單行內
+    塞進卡片一半寬度時才排成一列，否則就上下堆疊。<code>action_gap</code> 是按鈕之間的間距，
+    <code>body_gap</code> 是按鈕上方的間距 — 把後者調得比按鈕間距更寬，問題與選項才會讀起來像兩個部分。
+    只想改某一個對話方塊時，在開啟之前呼叫 <code>set_next_action_layout()</code>。
+    按鈕列是在對話方塊第一次開啟時才建立的，所以自動載入的 <code>GoDialogs</code> 在啟動時不會多做任何事。</p>
+
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — 限制寬度的表單</h3>
+  <div class="note warn">
+    <b>它保證底下的標籤會換行。</b>沒有這一點，一個長句子就會拉成單獨一行，
+    其最小寬度超過螢幕，兩側被裁掉 — 你甚至看不出自己在哪個畫面。
+    靠人工在每個場景手動打開換行，每次都會忘。
+  </div>
+
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — 觸控捲動</h3>
+  <p>裡面只放<b>一樣</b>東西。頁首與按鈕列要放在外面 — 長清單絕不能把它們推出畫面。
+    <code>use_panel_edge()</code> 會把捲軸移進卡片原有的內距裡，而內容仍保持它的縮排。</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets.html">← 控制項</a> · <a href="widgets-messages.html">告訴玩家某件事 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

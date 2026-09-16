@@ -44,6 +44,14 @@ func open() -> void:
 	surface.max_width = 380
 	surface.close_requested.connect(resume)
 	surface.body.add_child(GoStyle.list_button(GoIconSet.PLAY, "Resume", resume, GoUi.color(GoTheme.ACCENT), "", false))
+	# 🔑 The key cap reads the **real** binding from the InputMap, so remapping ui_cancel changes this
+	#    hint too — a hint that says Esc when the player has rebound it is worse than no hint.
+	#    `hide_on_handheld` is on by default, so phones never see a keyboard instruction.
+	var hint := GoStyle.row(GoUi.metric(GoTheme.GAP_TINY))
+	hint.alignment = BoxContainer.ALIGNMENT_CENTER
+	hint.add_child(GoStyle.label("Resume with", GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED)))
+	hint.add_child(GoKbd.for_action(&"ui_cancel"))
+	surface.body.add_child(hint)
 	surface.body.add_child(GoStyle.list_button(GoIconSet.SETTINGS, "Settings", _on_settings, Color.TRANSPARENT, "", false))
 	surface.body.add_child(GoStyle.list_button(GoIconSet.HELP, "How to play", _on_help, Color.TRANSPARENT, "", false))
 	surface.body.add_child(GoStyle.divider())

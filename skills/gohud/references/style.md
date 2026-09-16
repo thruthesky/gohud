@@ -106,7 +106,7 @@ pill.add_child(GoStyle.segmented(["Map", "Quests"], 0, _switch_layer, false, tru
 
 | Signature | Returns | Notes |
 |---|---|---|
-| `card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0, pad := -1.0, alpha := -1.0)` | `PanelContainer` | Bordered card (`GoCard`); add a padding/column child. With **no arguments it does not override the face** — the `GoCard` variation draws it. `alpha` = face opacity (§7) |
+| `card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0, pad := -1.0, alpha := -1.0)` | `PanelContainer` | Bordered card (`GoCard`); add a padding/column child. With **no arguments it builds no face of its own** — it reads the one the `GoCard` variation draws and multiplies panel opacity into that, so a host theme that redefines `GoCard` keeps its shape (at 100% the override is dropped entirely). `alpha` = face opacity (§7) |
 | `chip(text, ink := Color.TRANSPARENT, translate := false)` | `PanelContainer` | Status/tag pill; text contrast is corrected automatically |
 | `avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture: Texture2D = null)` | `Control` | Initials (max 2) or picture in a disc |
 | `art(texture: Texture2D = null, size := Vector2.ZERO, fit := Fit.CONTAIN)` | `TextureRect` | Picture cell. The addon owns stretch, alignment and mouse pass-through; the caller owns only *what* is shown, because the artwork belongs to the game. `Fit.CONTAIN` fits it whole, `COVER` fills the cell and crops the overflow, `FILL` stretches it |
@@ -146,6 +146,9 @@ game), `alert_box(ink, alpha := -1.0)`, `chip_box(color)`, `badge_box(ink)`,
 80% by default). Only the background thins out: borders, shadows, glow, text and icons keep full strength.
 Containers follow it; buttons, quick slots, badges, chips and segmented cells do not. Full rules, the
 five-layer precedence and the percent-vs-ratio trap: `references/theming.md` §4.
+🔑 **Drag it before picking a number.** `examples/gallery/opacity_lab.gd` shows the value under a slider over
+a pattern, with three panels reached by three different routes; the gallery, the guided tour (chapter 16), the
+demo home screen and the medieval example all host that one widget.
 
 ```gdscript
 var panel := PanelContainer.new()

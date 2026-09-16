@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-contrast.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-contrast.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-contrast.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-contrast.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-contrast.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-contrast.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-contrast.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-contrast.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-contrast.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-contrast.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-contrast.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-contrast.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-contrast.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-contrast.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-contrast.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-contrast.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-contrast.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-contrast.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>読みやすさは測って決める — gohud</title>
+<meta name="description" content="「きれい」は好みだが、「読める」は測れる。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">ウィジェット</a>
+      <a href="theming.html" aria-current="page">テーマ</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../theming-contrast.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-contrast.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="theming-contrast.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+          <a href="../zh/theming-contrast.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-contrast.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-contrast.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-contrast.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-contrast.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-contrast.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-contrast.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-contrast.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-contrast.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-contrast.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-contrast.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-contrast.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-contrast.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-contrast.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>読みやすさは測って決める</h1>
+    <p class="lead"><a href="theming.html">← テーマ</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="テーマ">
+  <!-- subnav:begin -->
+  <a href="theming.html">テーマ</a>
+  <a href="theming-presets.html">3つの層</a>
+  <a href="theming-tokens.html">トークン</a>
+  <a href="theming-opacity.html">不透明度 — パネルの向こうのゲーム</a>
+  <a href="theming-skins.html">スキン — テーマが届かない場所</a>
+  <a href="theming-own.html">自分のプリセットを、ファイル1枚で</a>
+  <a href="theming-contrast.html" aria-current="page">読みやすさは測って決める</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="contrast">
+  <p class="sub">
+    「きれい」は好みだが、<b>「読める」は測れる。</b> 薄い灰色の文字は良いモニタでは平気に見えて、
+    日中の屋外ではスマートフォンから消える — 目で選んでいれば、いつか必ずそうなる。
+  </p>
+
+  <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
+
+  <table>
+    <thead><tr><th>対象</th><th>必要な比</th></tr></thead>
+    <tbody>
+      <tr><td>本文の文字</td><td>4.5 : 1</td></tr>
+      <tr><td>大きな文字(24px 以上)</td><td>3 : 1</td></tr>
+      <tr><td>アクセントの枠とアイコン</td><td>3 : 1</td></tr>
+      <tr><td>装飾の枠</td><td>2 : 1 — WCAG は装飾に 3:1 の規則を課していない</td></tr>
+      <tr><td>隣り合う面</td><td>1.12 : 1 — カードが背景と別物だと分かる程度</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="same-hue-text-on-a-same-hue-tint">同系色の文字を同系色の淡い面に載せる</h3>
+  <p>
+    この落とし穴は、このコードベースで<b>3度</b>現れた — 押されたボタン（アクセントのパネルにアクセントの文字）、
+    危険ボタン、そしてチップだ。色見本の上ではよく見えるのに、測った瞬間に崩れる。
+    2つが同じ色相を共有していて、明度の差がないからだ。
+  </p>
+  <p>
+    だからラベルの色は<b>手で選ばない</b>。テーマのビルダーと <code>GoSkin</code> はそれぞれ、文字が実際に載る
+    パネルの上でしきい値を超えるまで明度だけを押し上げる。色相と彩度は残るので、パレットは持ち味を保ち、
+    変更してもコントラストは保たれる。
+  </p>
+
+  <h3 id="colour-read-as-text-and-colour-painted-as-area-w">文字として読む色と、面として塗る色は求めるものが逆だ</h3>
+  <p>
+    ライトテーマでは、警告色は<b>文字として</b>読めるよう暗くしなければならない(<code>#96500A</code>)。
+    バーの塗りがそれを受け継ぐと、経験値バーは<b>茶色</b>になる。色だけでは直せない。黄色はそもそも明るく、
+    灰色の溝に対して 3:1 をまったく満たさないし、溝を暗くすると<b>もっと悪くなる</b>(1.52 → 1.06)。
+  </p>
+  <p>
+    そこで両者を切り離した。<b>色は鮮やかなまま</b> — パレットは <code>warning_vivid</code> のような
+    塗り専用の色を持つ。<b>コントラストは縁が担う</b> — <code>GoSkin</code> は、溝に対して 3:1 に届かない塗りに
+    1dp の輪郭を描く。こうして「どれだけ溜まっているか」は読めるままになる。
+  </p>
+  <pre><code>MY_LIGHT = dict(
+    warning=hexc("9A5407"),         # 文字として読む色
+    warning_vivid=hexc("F2A007"),   # バーに塗る色
+)</code></pre>
+  <div class="note">
+    <b>書き忘れは報告される。</b> <code>*_vivid</code> がないまま塗りが暗くなると、ビルダーは
+    <code>막대가 칙칙하다 — 팔레트에 warning_vivid 를 더한다</code> と出力する（ビルダーが実際に出す文言）。
+    黙って劣化していた場所が、いまは声を上げる。
+  </div>
+
+  <h3 id="a-floating-panel-cannot-know-what-is-behind-it">浮かぶパネルは、背後に何があるか知りようがない</h3>
+  <p>
+    HUD はゲームの<b>上</b>に描かれる — 雪原かもしれないし、洞窟かもしれない。パネルが半透明なら背後のものが
+    透けて<b>パネルの色そのものを変え</b>、文字のコントラストまで道連れにする。不透明度 82% では、明るい背景の上で
+    ダークテーマの控えめな文字が <code>3.74:1</code> まで落ちた — 最低基準を下回っている。
+  </p>
+  <p>
+    そこで半透明のパネルは<b>純白と純黒</b>を背後に置いて測る。ゲームの場面が出しうる最悪がその2つだからだ。
+    同梱テーマの HUD パネルは、ガラスのような見え方を保ったまま基準を通る不透明度 (92%) にしてある。
+  </p>
+  <p>
+    同じ理由で<b>アイコンの色も固定していない</b>。クイックスロットのグリフは白で決め打ちされていて、
+    ライトテーマで <code>1.11:1</code> と測れた — いまはラベルとまったく同じように、載っているパネルに従う。
+  </p>
+
+  <div class="note">
+    <b>2つの検査、2つの守備範囲。</b> <code>check_contrast.py</code> はテーマファイルを読む。
+    スキンが<b>実行中に</b>混ぜる色（チップ、スロット）は、Godot の中で走るテストスイートの
+    <code>skin contrast</code> の節が測る。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-own.html">← 自分のプリセットを、ファイル1枚で</a> · <a href="theming.html">テーマ →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

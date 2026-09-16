@@ -934,10 +934,14 @@ static func card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width
 	node.name = "Card"
 	node.theme = GoUi.theme()
 	node.theme_type_variation = GoTheme.VAR_CARD
-	# 🛑 불투명도가 테마 값 그대로면(`alpha` 음수) 예전처럼 **판을 덮지 않는다** — 테마 변형이 그리게 둔다.
-	#    카드 하나에만 다른 값을 줬을 때만 판을 만든다. 그러지 않으면 `GoCard` 변형을 자기 테마에서
-	#    다르게 정의한 프로젝트의 모양이 `GoHud/styles/card` 로 바뀐다.
-	if accent.a <= 0 and border_alpha < 0.0 and border_width < 0.0 and pad < 0.0 and alpha < 0.0: return node
+	# 🛑 아무것도 주지 않은 카드는 **판을 새로 만들지 않는다** — `GoCard` 변형을 자기 테마에서 다르게
+	#    정의한 프로젝트의 모양이 `GoHud/styles/card` 로 바뀌기 때문이다. 그래도 **판 불투명도는
+	#    따라야 한다**(기본 80%): 그래서 테마 변형이 그리는 그 판을 읽어 **알파만 곱한다.**
+	#    🔑 이 길이라야 둘을 함께 지킨다 — 남의 테마가 정한 모양은 그대로, 불투명도는 설정대로.
+	#    불투명도가 100% 면 `fade_panel()` 이 덮개를 걷어내므로 예전과 완전히 같은 판이다.
+	if accent.a <= 0 and border_alpha < 0.0 and border_width < 0.0 and pad < 0.0 and alpha < 0.0:
+		fade_panel(node, -1.0, &"panel", GoTheme.BOX_CARD)
+		return node
 	var face := surface(GoTheme.BOX_CARD, accent, alpha)
 	_face_border(face, accent if border_alpha >= 0.0 else Color.TRANSPARENT, border_alpha, border_width)
 	if pad >= 0.0: face.set_content_margin_all(pad)
@@ -1138,6 +1142,9 @@ static func style_panel(node: Control, face: StyleBox, state := &"panel") -> voi
 ##
 ## [param alpha] 음수면 테마·설정 값(`GoUi.surface_alpha(variant)`), [param state] 는 테마 아이템 이름
 ## (패널류는 `panel`, 버튼류는 `normal`·`hover` …), [param variant] 는 어느 종류의 값을 따를 것인가다.
+##
+## 🔬 이 함수가 어떻게 보이는지는 `examples/gallery/opacity_lab.gd` 의 세 번째 판이 보여 준다 —
+##    무늬 위에 얹은 맨 `PanelContainer` 에 이것을 걸고, 슬라이더를 끌어 그 자리에서 확인한다.
 static func fade_panel(node: Control, alpha := -1.0, state := &"panel",
 		variant := GoTheme.BOX_PANEL) -> void:
 	if node == null: return

@@ -246,7 +246,7 @@
     </figure>
   </div>
   <p>どちらも標準ウィジェットだけで組んだ <code>examples/medieval/medieval.tscn</code> だ。
-    <a href="theming.html#medieval">中世テーマの解説と、自分だけの王国の作り方 →</a></p>
+    <a href="theming-presets.html#medieval">中世テーマの解説と、自分だけの王国の作り方 →</a></p>
 
   <h3 id="the-same-screen-on-a-phone-and-on-a-desktop">同じ画面を、スマートフォンでもデスクトップでも</h3>
   <p>
@@ -286,7 +286,7 @@
   <div class="note">
     <b>新しいテーマは JSON ファイル1枚だ。</b> <code>new_theme.py kingdom --from medieval_dark</code> が、
     継承した値をすべて書き出したパレットを作る。<code>make_theme.py kingdom</code> がテーマ・コントロールの絵・
-    スキンのダイヤルまで生成し、プリセットは選択リストに自動で現れる。<a href="theming.html#own">設定とダイヤルのすべて →</a>
+    スキンのダイヤルまで生成し、プリセットは選択リストに自動で現れる。<a href="theming-own.html#own">設定とダイヤルのすべて →</a>
   </div>
 </section>
 
@@ -347,11 +347,56 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
       <tr><td><code>GoStyle</code></td><td>静的</td><td>ボタン、リスト行、入力欄、チップ、表、タブなどを同じ流儀で作る</td></tr>
     </tbody>
   </table>
+
+  <h3 id="waiting-telling-counting">待たせる、伝える、数える</h3>
+  <table>
+    <thead><tr><th>クラス</th><th>基底</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoSnackbar</code></td><td>Node</td><td>自分で居場所を決めるメッセージ</td></tr>
+      <tr><td><code>GoSpinner</code></td><td>Control</td><td>終わりの見えない待ち時間</td></tr>
+      <tr><td><code>GoBadge</code></td><td style="white-space:nowrap">PanelContainer</td><td>未読の点、NEW の札、99+</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="forms-and-lists">フォームとリスト</h3>
+  <table>
+    <thead><tr><th>クラス</th><th>基底</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoField</code></td><td style="white-space:nowrap">VBoxContainer</td><td>間違いを抱えられる行</td></tr>
+      <tr><td><code>GoInputGroup</code></td><td style="white-space:nowrap">HBoxContainer</td><td>ボタンと溶接された入力欄</td></tr>
+      <tr><td><code>GoCombobox</code></td><td>Button</td><td>検索できるピッカー</td></tr>
+      <tr><td><code>GoCodeInput</code></td><td style="white-space:nowrap">VBoxContainer</td><td>クーポンとギフトコード</td></tr>
+      <tr><td><code>GoTable</code></td><td style="white-space:nowrap">VBoxContainer</td><td>並べ替えできる見出し、選べる行</td></tr>
+      <tr><td><code>GoPagination</code></td><td style="white-space:nowrap">HBoxContainer</td><td>ページ番号、あるいは「もっと見る」の行</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="shapes-games-actually-use">ゲームで実際に使う形</h3>
+  <table>
+    <thead><tr><th>クラス</th><th>基底</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoRewardCalendar</code></td><td style="white-space:nowrap">VBoxContainer</td><td>毎日のログインボーナス</td></tr>
+      <tr><td><code>GoRadar</code> · <code>GoDonut</code></td><td>Control</td><td>ひと目で分かるステータス</td></tr>
+      <tr><td><code>GoCarousel</code></td><td style="white-space:nowrap">VBoxContainer</td><td>バナーとキャラクター選択</td></tr>
+      <tr><td><code>GoKbd</code></td><td style="white-space:nowrap">HBoxContainer</td><td>嘘をつかないキー表示</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="over-the-screen">画面の上に重ねる</h3>
+  <table>
+    <thead><tr><th>クラス</th><th>基底</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDrawer</code></td><td style="white-space:nowrap">CanvasLayer</td><td>横から出るパネル</td></tr>
+      <tr><td><code>GoPopover</code></td><td>RefCounted</td><td>脇に留まるカード</td></tr>
+      <tr><td><code>GoContextMenu</code></td><td>RefCounted</td><td>長押しと右クリック</td></tr>
+      <tr><td><code>GoConsole</code></td><td style="white-space:nowrap">CanvasLayer</td><td>開発者コンソール</td></tr>
+    </tbody>
+  </table>
 </section>
 
 <section id="ai" class="crumb">
   <h2>AI SKILL</h2>
-  <p class="sub">gohud には AI スキルが入っている — API のすべて、すぐ動くテンプレート、プレビュー起動器。下の一かたまりをコーディングエージェントに貼れば、gohud を入れて使い方まで覚える。</p>
+  <p class="sub">gohud には AI スキルが入っている — API のすべて、すぐ動くテンプレート、プレビュー起動器。下の文をまるごとコーディングエージェントに貼れば、gohud を入れて使い方まで覚える。</p>
   <p><a class="btn primary" href="ai.html">AI SKILL</a></p>
 </section>
 
@@ -370,7 +415,7 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
   <p>
     だから文字色は<b>選ぶのではなく導き出す</b>。ビルダーはパレットの値を出発点にして、その文字が載りうる
     すべての面でしきい値を超えるまで明度を押し上げる。パレットを変えればコントラストも追従する。
-    <a href="theming.html#contrast">その規則と、背後にある落とし穴 →</a>
+    <a href="theming-contrast.html#contrast">その規則と、背後にある落とし穴 →</a>
   </p>
 </section>
 

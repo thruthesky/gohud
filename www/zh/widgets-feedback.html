@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-feedback.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-feedback.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-feedback.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-feedback.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-feedback.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-feedback.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-feedback.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-feedback.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-feedback.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-feedback.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-feedback.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-feedback.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-feedback.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-feedback.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-feedback.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-feedback.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-feedback.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-feedback.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>等待、告知、计数 — gohud</title>
+<meta name="description" content="它待在屏幕底部（或者顶部），避开安全区域和虚拟键盘，然后自己退场。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概览</a>
+      <a href="install.html">安装</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">控件</a>
+      <a href="theming.html">主题</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>简体中文</summary>
+        <div class="langs-list">
+          <a href="../widgets-feedback.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-feedback.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-feedback.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="widgets-feedback.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">简体中文</a>
+          <a href="../zh-tw/widgets-feedback.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-feedback.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-feedback.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-feedback.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-feedback.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-feedback.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-feedback.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-feedback.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-feedback.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-feedback.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-feedback.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-feedback.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-feedback.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>等待、告知、计数</h1>
+    <p class="lead"><a href="widgets.html">← 控件</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="控件">
+  <!-- subnav:begin -->
+  <a href="widgets.html">控件</a>
+  <a href="widgets-surfaces.html">浮动窗口</a>
+  <a href="widgets-messages.html">把消息传达给玩家</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html" aria-current="page">等待、告知、计数</a>
+  <a href="widgets-forms.html">表单与列表</a>
+  <a href="widgets-shapes.html">游戏真正用得上的形态</a>
+  <a href="widgets-overlays.html">盖在屏幕之上</a>
+  <a href="widgets-style.html"><code>GoStyle</code> —— 所有东西都在同一处造出来</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="feedback">
+
+  <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> —— 会自己找位置的消息条</h3>
+  <p>它待在屏幕底部（或者顶部），避开安全区域和虚拟键盘，然后自己退场。没有它，每一个需要说一句
+    “已保存”的界面，都得自己写一遍图层、摆放、计时和拆除。</p>
+  <pre><code>snack.show_text("已保存", GoTheme.SUCCESS)
+
+# 给一次撤销的机会 —— 0 是第一个按钮，-1 表示它自己超时消失了
+if await snack.post({"text": "物品已丢弃", "actions": ["撤销"]}) == 0:
+    restore_item()</code></pre>
+  <p>消息会<b>排队</b>，而不是互相覆盖；重复的同一句会被合并 —— 一秒失败四次的服务器，
+    不会再堆出四分钟的提示。没有按钮的消息条会放行输入，底下的游戏照常运行。</p>
+  <div class="note warn">
+    <b>它不是用来发问的地方。</b> 它会自己消失，所以玩家可能根本没看见。
+    不可撤销的确认请交给 <code>GoDialogs</code>。这里的按钮必须是可有可无的 —— 撤销、
+    详情、重试。
+  </div>
+  <p><code>GoNotice</code> 是这一对里的另一半：它从不接收输入、也不抢焦点，放在哪儿由拥有它的
+    那个界面决定。它挂不了按钮，而这个挂得了。</p>
+
+  <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> —— 看不到尽头的等待</h3>
+  <p>要和服务器打交道的游戏，本页上最需要的就是它：一个纹丝不动的界面，读起来就是卡死了。
+    一次调用，就把你按下的那颗按钮<b>就地</b>换成一个转圈。</p>
+  <pre><code>GoSpinner.busy(buy_button, true)
+var ok := await server.purchase(item)
+GoSpinner.busy(buy_button, false)</code></pre>
+  <p>按钮会保住原来的尺寸 —— 文字是变透明，而不是被拿走，所以这一行不会跳动 ——
+    而且转圈期间它是禁用的。后面这半句才是重点：在你 <code>await</code> 的时候，
+    一次购买绝不能触发两次。打开 <code>reduce_motion</code> 之后它不转圈，改成三个点在呼吸。</p>
+  <p>量得出来的进度用 <code>GoBar</code>。转圈对什么时候结束不作任何承诺。</p>
+
+  <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> —— 未读的小圆点、NEW 角标、99+</h3>
+  <pre><code>GoBadge.attach(mail_button, unread_count)   # 为 0 时自己隐藏
+GoBadge.attach(shop_button, 0, "NEW")
+GoBadge.attach(friend_button, 3, "", true) # 一个点 —— “那儿有东西”</code></pre>
+  <p>它靠锚点挂在宿主的右上角，所以宿主的尺寸就算是之后才定下来，它也跟得上；对同一个宿主挂两次，
+    拿回的是同一个角标。数量会左右玩家下一步动作时用数字，只是“那儿有东西”时用点。</p>
+  <p>它的文字颜色，是照着皮肤给角标涂的那个底色算对比度挑出来的 —— 从不想当然地用白色 ——
+    而且它带着无障碍名称，因为一个彩色的点，对读屏软件什么都没说。</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-hud.html">← HUD</a> · <a href="widgets-forms.html">表单与列表 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

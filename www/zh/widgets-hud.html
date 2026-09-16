@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="大面板再怎么打磨，真正扎眼的永远是某个小东西：一个词被劈成两截、一圈辉光被切掉、一个挤得慌的快捷槽。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概览</a>
+      <a href="install.html">安装</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">控件</a>
+      <a href="theming.html">主题</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>简体中文</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">简体中文</a>
+          <a href="../zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← 控件</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="控件">
+  <!-- subnav:begin -->
+  <a href="widgets.html">控件</a>
+  <a href="widgets-surfaces.html">浮动窗口</a>
+  <a href="widgets-messages.html">把消息传达给玩家</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">等待、告知、计数</a>
+  <a href="widgets-forms.html">表单与列表</a>
+  <a href="widgets-shapes.html">游戏真正用得上的形态</a>
+  <a href="widgets-overlays.html">盖在屏幕之上</a>
+  <a href="widgets-style.html"><code>GoStyle</code> —— 所有东西都在同一处造出来</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">好不好看，是小地方决定的</h3>
+  <p>
+    大面板再怎么打磨，真正扎眼的永远是某个小东西：一个词被劈成两截、一圈辉光被切掉、一个挤得慌的快捷槽。
+    2026-09-13 有人指出了四处这样的问题，修复落在控件和主题里，而不是演示界面上，
+    这样每一个界面都能得到同样的结果。
+  </p>
+  <table>
+    <thead><tr><th>看到的现象</th><th>原因</th><th>修法</th></tr></thead>
+    <tbody>
+      <tr><td>引导标记的 <code>Done</code> 变成了 <code>Don</code>/<code>e</code></td>
+          <td>开启换行的按钮会<b>把文字宽度从自己的最小宽度里减掉</b> —— 一挤就会从词中间断开</td>
+          <td><code>GoStyle.fit_words()</code>：单个词永不换行；多个词可以换行，但<b>最长的那个词</b>始终放得下 —— 判断依据是<b>实际显示</b>的文字而不是翻译键，并且语言切换时表单会重新应用一次</td></tr>
+      <tr><td>通栏按钮左侧的辉光被竖着切掉了</td>
+          <td>滚动容器一律在自己的边界处裁剪，没有例外。只有右侧因为滚动条留出的空隙才幸存下来</td>
+          <td><code>GoScroll</code> 借用父级的内边距，把自己的边界往外推 12dp，再在内部还回去 —— <b>内容位置不变</b></td></tr>
+      <tr><td>快捷槽里的时间、图标和数量竖着堆成一摞</td>
+          <td>48dp 里塞了三行</td>
+          <td>图标放大居中，快捷键放左上角，数量做成右下角的<b>角标</b>，剩余时间做成压在图标上的角标 —— 角标面板来自皮肤的 <code>badge_box()</code></td></tr>
+      <tr><td>下拉菜单一片扁平，看不出选中了哪一项</td>
+          <td>选项悬停用的是按钮面板；单选标记用的是引擎那个极淡的默认样式</td>
+          <td>专门的悬停面板（柔和的强调色底）、与复选框同款的单选图形，以及按触摸尺寸设定的选项高度</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="展开的下拉菜单 —— 柔和的强调色悬停面板和选中项的单选标记" loading="lazy">
+      <figcaption>下拉菜单 —— 悬停面板与单选标记</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="四个快捷槽 —— 左上角是快捷键，右下角是数量角标，第一个还带剩余时间角标" loading="lazy">
+      <figcaption>快捷槽 —— 角标与剩余时间（科幻）</figcaption>
+    </figure>
+  </div>
+  <p>
+    给纯图标按钮加一段描述：<code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> ——
+    给鼠标用户看的工具提示，和给读屏软件用的无障碍名称，都来自这同一个值。
+    工具提示由 gohud 自己绘制：引擎的默认实现在宽度计算出错时会把文字拆成<b>一行一个字</b>（实测宽度只有 1dp）。
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">引导卡片会避开固定部件</h4>
+  <p>
+    横屏时，这张卡片以前会被推到最上边或最下边 —— 而那正是页眉和 HUD 部件所在的位置；
+    在演示里它就正好压在了页眉的 <code>→ ×</code> 上。现在它会与目标保持齐平，
+    绕开任何会预留空间的 <code>GoHudAnchor</code>，还能通过
+    <code>keep_clear</code> 接收其他需要避开的东西。它以能让开障碍物又不遮住目标的最短距离移动，
+    屏幕小到无论如何都躲不开时就待在原地 —— 挡住一点也好过整个消失。
+    它的立体感 —— 让人一眼看出它<b>浮在</b>页面之上 —— 来自皮肤旋钮
+    （<code>float_shadow_size</code>、<code>float_shadow_lift</code>、<code>float_shadow_alpha</code>；切角皮肤用的是 <code>float_glow_size</code>）。
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # 不是锚点的那些固定部件</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">有鼠标和键盘的屏幕</h3>
+  <p>
+    手指<b>没有悬停状态。</b> 只照着移动端做，就会有两种只在桌面出现的状态没人检查 ——
+    其中一种当时确实是坏的：gohud 的<b>焦点框在主按钮上根本看不见。</b>
+    面板是强调色，焦点框也是强调色：<code>1.00:1</code>，等于用同一种颜色画在自己身上。
+    用键盘移动时，完全看不出焦点在哪里。
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="同一排按钮的三种状态 —— 常态、鼠标悬停、键盘焦点" loading="lazy">
+    <figcaption>从上到下：<b>常态 · 悬停 · 焦点</b>。实心按钮的焦点框会与自身面板形成对比。</figcaption>
+  </figure>
+  <p>
+    实心按钮（<code>GoPrimaryButton</code>、<code>GoDangerSolidButton</code>）使用<b>与自身面板形成对比</b>的焦点框 ——
+    深色主题上用深色，浅色主题上用白色，科幻风格下是一副深色瞄准框。对比度检查器测的是
+    <b>焦点框与它所在的面板</b>，所以换一套调色板这条规则依然成立（WCAG 2.4.11 要求焦点指示器达到 3:1）。
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>HUD 控件</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> —— 九个位置</h3>
+  <p>它会尊重安全区域和边缘留白。给它一个 <code>landscape_spot</code>，横屏时它就会换位置 ——
+    竖屏时待在底部居中的操控件，横屏可以改到右下角。</p>
+  <div class="note">
+    <b>它为什么存在。</b> 逐个 HUD 部件手写锚点和偏移，迟早会跑偏：生命条跑到刘海屏的摄像头开孔底下，
+    操控按钮在横屏时压上手势条。这些算术统一放在一个地方。
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">别让内容钻到 HUD 底下</h4>
+  <p>
+    当一个可滚动的界面和 HUD 共用屏幕时，内容会从 HUD <b>底下</b>滑过去，两组文字叠在一起，
+    最后哪一组都读不出来。这在本插件里发生过两次：输入框的占位文字从快捷槽之间挤了出来，
+    设置项开关的滑块落在了生命条上。
+  </p>
+  <pre><code>form.avoid_hud = true                  # 避开每一个可见的 GoHudAnchor
+joystick_anchor.reserve_space = false  # …只在手指按下时才出现的那些除外</code></pre>
+  <p>
+    每个矩形都朝着<b>损失面积最小</b>的方向避让。右上角的一根状态条，在竖屏手机上是往下绕（占高度的 13%），
+    横屏时则往侧边绕（占宽度的 21%）—— 横屏时若竖着避让要付出屏幕的 27%。
+    已经让出去的地盘会先扣掉，再去测量下一个矩形。
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD 部件之间也会打架</h4>
+  <p>
+    九个位置把屏幕分好了，却不保证各个部件<b>互不相撞</b>。顶部居中的一条宽消息条，
+    结结实实地压在了右上角的生命条上，把数值挡住了 —— 你根本看不出还剩多少血。
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # 落到固定 HUD 的下方
+notice_anchor.reserve_space = false   # 而且它显示时不会把页面顶开</code></pre>
+  <p>
+    它<b>只在竖直方向</b>让位 —— 要是连横向也动，居中的提示条每次出现的位置都不一样。
+    而且它只避开那些<b>不会</b>自己让位的部件：两边都让，就会永远交换位置换个不停。
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> —— 生命、魔法、经验</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 仅用于填充的令牌
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>数值变化会在 0.18 秒内缓动 —— 一根直接跳过去的生命条，没法让你感觉到这一下有多重。
+    <code>reduce_motion</code> 会让它瞬间完成。大数字会缩写成 <code>12.3k</code>，
+    这样位数增减时状态条的宽度不会抖来抖去。</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> —— 一个快捷槽</h3>
+  <p>图标、数量、冷却和快捷键都在<b>同一个面</b>上。把角标挂在一个小圆圈外面，
+    会让每个槽宽度都不一样，整排跟着晃。</p>
+  <div class="note">
+    <b>看得见的大小和能按到的大小不是一回事。</b> 排得紧密的快捷槽，48dp 的触摸区会互相重叠；
+    重叠部分归<b>中心更近的那个槽</b> —— 用 <code>touch_peers</code> 让它们互相知道彼此的存在。
+  </div>
+
+  <p><code>keyboard_focus</code> 默认关闭，这样一排八个快捷槽就不会横在键盘用户和后面每一个设置控件之间的 Tab 顺序里。
+    只有键盘或手柄可用时再把它打开。</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> —— 虚拟摇杆</h3>
+  <table>
+    <thead><tr><th>模式</th><th>行为</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>永远在同一个位置 —— 不用看也能摸到</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>拇指按在哪儿它就出现在哪儿</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>出现之后继续跟着拇指走 —— 长时间移动更省力</td></tr>
+    </tbody>
+  </table>
+  <p><code>moved</code> 传出的 <code>Vector2</code> 长度在 0–1 之间，可以直接乘到速度上；
+    它不随屏幕尺寸或 DPI 变化。</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> —— 看着小，按着大</h3>
+  <div class="note warn">
+    <b>只有在相邻控件不接收输入时才安全。</b> 如果扩大后的区域盖住了下一个按钮，
+    那个按钮就会失去响应。并排的图标按钮需要 <code>touch_peers</code>。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← 把消息传达给玩家</a> · <a href="widgets-feedback.html">等待、告知、计数 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

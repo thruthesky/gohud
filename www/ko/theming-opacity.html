@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>불투명도 — 패널 뒤의 게임 — gohud</title>
+<meta name="description" content="떠 있는 창, 확인창, 시트, 카드, HUD 패널, 알림 상자, 스낵바는 면을 80% 불투명도로 그린다.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">소개</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">위젯</a>
+      <a href="theming.html" aria-current="page">테마</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>한국어</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="theming-opacity.html" hreflang="ko" lang="ko" aria-current="true">한국어</a>
+          <a href="../ja/theming-opacity.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-opacity.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-opacity.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-opacity.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-opacity.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-opacity.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>불투명도 — 패널 뒤의 게임</h1>
+    <p class="lead"><a href="theming.html">← 테마</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="테마">
+  <!-- subnav:begin -->
+  <a href="theming.html">테마</a>
+  <a href="theming-presets.html">세 층</a>
+  <a href="theming-tokens.html">토큰</a>
+  <a href="theming-opacity.html" aria-current="page">불투명도 — 패널 뒤의 게임</a>
+  <a href="theming-skins.html">스킨 — 테마가 닿지 못하는 자리</a>
+  <a href="theming-own.html">내 프리셋 만들기 — 파일 하나</a>
+  <a href="theming-contrast.html">가독성은 재서 지킨다</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    떠 있는 창, 확인창, 시트, 카드, HUD 패널, 알림 상자, 스낵바는 면을 <b>80% 불투명도</b>로 그린다.
+    확인창 뒤에서 전투는 계속되고, 인벤토리 시트 아래로 지도가 비친다. 게임에서 이것은 장식이 아니다 —
+    플레이어가 자기 자리를 놓치지 않게 붙드는 것이다. 꽉 찬 패널은 창이 열리는 순간 그가 서 있던 자리를
+    지워 버린다.
+  </p>
+
+  <div class="note">
+    <b>옅어지는 것은 면뿐이다.</b> 글자·아이콘·버튼·배지·퀵슬롯은 또렷하게 남고, 테두리와 그림자도
+    그대로다. 반투명한 패널이 유리로 읽히는 것은 윤곽이 날카로울 때뿐이다 — 윤곽까지 옅게 하면 패널이 어디서
+    끝나는지 알 수 없다. 내용까지 옅게 하면 UI 는 아예 읽히지 않는다. 그건 투명한 창이 아니라 버그다.
+    이 값을 <code>modulate.a</code> 로 먹이지 않는 이유가 이것이다.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">다섯 층, 좁은 것부터</h3>
+  <table>
+    <thead><tr><th>순서</th><th>어디에</th><th>단위</th><th>미치는 범위</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>그 호출의 인자 — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>비율 <code>0.0–1.0</code></td><td>창 하나</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>비율 <code>0.0–1.0</code></td><td>패널 한 종류, 프로젝트 전체</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>퍼센트</td><td>치수를 한곳에 모아 두는 프로젝트</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>비율 <code>0.0–1.0</code></td><td>모든 패널을 한꺼번에</td></tr>
+      <tr><td>⑤</td><td>테마의 <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>퍼센트</td><td>생김새가 정하는 값 — <b>정본</b></td></tr>
+    </tbody>
+  </table>
+  <p>하나도 정하지 않으면 값은 100 이다. 그래서 예전 테마는 달라지는 것이 없다.</p>
+
+  <div class="note">
+    <b>불투명도는 어디서나 비율이다 — 테마만 빼고.</b> 모든 <code>alpha</code> 칸과 인자는 0.0–1.0 을
+    받는다. <code>Color.a</code>·<code>modulate.a</code> 와 같은 단위이고, 음수는 "정하지 않았다" 는
+    뜻이다. 예외는 테마의 상수뿐이다 — <code>Theme</code> 상수는 실수를 담지 못하기 때문이다. 그 상수와
+    그것을 덮어쓰는 통로(<code>metric_overrides</code> — 테마와 이름도 정수 타입도 같이 쓴다)만
+    <code>80</code> 처럼 적는다. 그 밖에는 없다.
+  </div>
+
+  <pre><code># 창 하나만 — 뒤의 전투를 가리면 안 되는 확인창
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # @export 칸도 비율이다
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# 종류별 — HUD 는 글자가 세계 위에 바로 얹히므로 거의 꽉 채워 둔다
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # 확인창과 시트는 숨 쉴 여유를 준다
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # 이미 열려 있는 위젯을 다시 그린다
+
+# 프로젝트 전체 — 화면이 바쁜 게임은 패널을 다시 꽉 채우고 싶어 한다
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 계산이 끝난 비율, 예를 들어 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">값을 따르는 것과 따르지 않는 것</h3>
+  <table>
+    <thead><tr><th>따른다 — 컨테이너</th><th>따르지 않는다 — 누르는 것과 표식</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code>(확인창·시트·드롭다운이 함께 쓰는 틀 하나) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>모든 버튼 · <code>GoSlot</code>(퀵슬롯) · <code>GoBadge</code> · 분절 선택 · 선택 칸 · 칩 · 원과 아바타</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>모든 글자와 아이콘</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    상태가 옅어진 버튼은 자기가 무엇인지 더 말하지 못하고, 배지는 글자 두 자를 읽히게 하려고 있는 것이다.
+    둘 다 컨테이너가 아니니 값을 따르지 않는다.
+  </p>
+
+  <div class="note">
+    <b>팝업 메뉴는 꽉 찬 채로 둔다</b>(<code>popup_alpha</code> 100). 엔진은 <code>PopupMenu</code> 를
+    자기 <code>Window</code> 에 띄우기도 하는데, 거기서는 OS 가 게임과 합성하지 않는다 — 반투명이 비쳐
+    보이는 대신 검게 나온다. 서브 창을 게임 안에 품는 프로젝트(<code>gui_embed_subwindows</code>)에서만
+    낮춘다.
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">실제 화면에서 나온 세 가지</h3>
+  <ul>
+    <li>
+      <b>값은 곱해진다. 갈아 끼우는 것이 아니다.</b> 기본 HUD 면은 이미 알파 0.92 라서
+      <code>hud_alpha</code> 80 은 0.736 에 닿는다 — 면을 일부러 반투명하게 만든 테마는 그 결정을
+      지킨다. 뒤집으면 이렇다: 두 번 먹이면 패널도 두 번 옅어진다. 그래서 알파를 곱하는 자리는 딱
+      한 곳(<code>GoSkin.surface_box()</code>)뿐이고, 나머지 면 함수는 자기 결과를 옅게 하지 않고 인자를
+      넘기기만 한다.
+    </li>
+    <li>
+      <b>넘긴 색은 넘긴 그대로 나온다.</b> <code>GoStyle.plate(…, fill)</code> 은 채움을 명시하면 그
+      색을 받은 그대로 쓴다. <code>Color(ink, 0.14)</code> 는 이미 자기 알파를 말하고 있으니, 거기에
+      패널 불투명도를 곱하면 부른 쪽의 뜻이 두 번 깎인다. <code>GoStyle.floating(…, opaque = true)</code>
+      가 값을 무시하는 것도 같은 종류의 이유다 — 면을 꽉 채우는 것이 그 플래그의 존재 이유다.
+    </li>
+    <li>
+      <b>gohud 가 만들지 않은 패널에도 같은 규칙이 간다.</b> <code>GoStyle.fade_panel(node)</code> —
+      노드가 트리에 들어간 뒤에 부른다. 그래야 물려받은 테마를 읽는다. 여러 번 불러도 결과는 같다:
+      원래 면을 적어 두고 호출마다 그 값에서 다시 계산하므로, 몇 번을 다시 그려도 옅어짐가 쌓이지 않는다.
+      테마를 갈아 끼운 뒤에는 <code>GoStyle.forget_face(node)</code> 로 그 기억을 지운다 — 다음 호출이
+      새 면을 집는다.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">직접 그리는 면도 옅어진다 — 말없이 깨지는 자리가 여기다</h3>
+  <p>
+    모서리를 자른 패널(<code>GoStyleBoxCut</code>)과 단조 프레임(<code>GoStyleBoxMedieval</code>)은
+    <code>StyleBoxFlat</code> 이 아니다. 스스로 그린다. 불투명도를 flat 분기에만 넣어 두면 이 테마들은
+    말없이 그것을 무시하는데, 값을 재는 검사는 하나도 빠짐없이 통과한다. 둘 다 배경만 옅게 하고 발광·리벳·
+    모서리 각인·베벨은 제 세기로 남긴다 — 중세 면의 질감과 베벨은 원래부터 배경 알파에 비례했으므로
+    패널을 따라 함께 옅어진다.
+  </p>
+  <p>
+    여기서 더 넓은 이야기가 나온다. <code>bg_color.a == 0.8</code> 은 숫자다. <em>세계가 비쳐 보이고
+    글자는 여전히 읽힌다</em> 가 요구다. gohud 는 앞의 것을 헤드리스 검사 스위트로 재고, 뒤의 것은
+    가상 모니터에서 사선 줄무늬 위에 패널을 그려 확인한다(<code>tests/gohud_alpha_shot.gd</code>) —
+    flat 면·자른 면·단조 면 각각, 어두운 테마와 밝은 테마 양쪽에서.
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← 토큰</a> · <a href="theming-skins.html">스킨 — 테마가 닿지 못하는 자리 →</a></p>
+    <p style="font-size:13px">밑줄 친 용어에 마우스를 올리면 뜻이 뜬다.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

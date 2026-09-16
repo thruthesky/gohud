@@ -54,7 +54,36 @@ ACTIVE = [lang for lang in LANGS if lang.ready]
 # 🛑 `index.html`·`theming.html`·`widgets.html` **세 이름은 바꾸지 않는다.** 이미 배포된 ZIP 1.0.2·1.0.3
 #    의 README 가 그 주소를 절대 주소로 박아 두었고 고칠 수 없다(`tools/build_site.sh` 머리말).
 #    쪽은 **더하기만** 한다.
-PAGES = ("index.html", "install.html", "ai.html", "widgets.html", "theming.html")
+# 🔑 머리띠에 오르는 다섯 쪽과, 그 아래로 갈린 쪽들(2026-09-16 사람 지시 — `tools/split_site.py`).
+#    갈린 쪽은 **표지 바로 뒤에** 차례대로 둔다 — 검색 결과의 쪽 딱지와 사이드바가 이 차례를 따른다.
+PAGES = (
+	"index.html",
+	"install.html",
+	"ai.html",
+	"widgets.html",
+	"widgets-surfaces.html",
+	"widgets-messages.html",
+	"widgets-hud.html",
+	"widgets-feedback.html",
+	"widgets-forms.html",
+	"widgets-shapes.html",
+	"widgets-overlays.html",
+	"widgets-style.html",
+	"theming.html",
+	"theming-presets.html",
+	"theming-tokens.html",
+	"theming-opacity.html",
+	"theming-skins.html",
+	"theming-own.html",
+	"theming-contrast.html",
+)
+
+# 갈린 쪽 → 그 표지. 머리띠는 표지만 올리고(`site_nav.NAV_PAGES`), 하위 쪽에서는 그 표지 칸이
+# 켜져 보여야 한다 — 독자가 "지금 위젯 묶음을 읽고 있다" 를 머리띠에서도 알 수 있게.
+COVER_OF = {}
+for _page in PAGES:
+	if "-" in _page:
+		COVER_OF[_page] = _page.split("-", 1)[0] + ".html"
 
 PUBLIC = "https://thruthesky.github.io/gohud/"
 BY_CODE = {lang.code: lang for lang in LANGS}

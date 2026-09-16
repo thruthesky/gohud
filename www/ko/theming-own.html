@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-own.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-own.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-own.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-own.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-own.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-own.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-own.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-own.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-own.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-own.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-own.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-own.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-own.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-own.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-own.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-own.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-own.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-own.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 프리셋 만들기 — 파일 하나 — gohud</title>
+<meta name="description" content="테마 하나를 더하려면 원래 네 군데를 손으로 만져야 했다 — 생성기의 팔레트, 형태, 스킨, 프리셋 리소스.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">소개</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">위젯</a>
+      <a href="theming.html" aria-current="page">테마</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>한국어</summary>
+        <div class="langs-list">
+          <a href="../theming-own.html" hreflang="en" lang="en">English</a>
+          <a href="theming-own.html" hreflang="ko" lang="ko" aria-current="true">한국어</a>
+          <a href="../ja/theming-own.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-own.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-own.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-own.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-own.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-own.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-own.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-own.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-own.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-own.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-own.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-own.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-own.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-own.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-own.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>내 프리셋 만들기 — 파일 하나</h1>
+    <p class="lead"><a href="theming.html">← 테마</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="테마">
+  <!-- subnav:begin -->
+  <a href="theming.html">테마</a>
+  <a href="theming-presets.html">세 층</a>
+  <a href="theming-tokens.html">토큰</a>
+  <a href="theming-opacity.html">불투명도 — 패널 뒤의 게임</a>
+  <a href="theming-skins.html">스킨 — 테마가 닿지 못하는 자리</a>
+  <a href="theming-own.html" aria-current="page">내 프리셋 만들기 — 파일 하나</a>
+  <a href="theming-contrast.html">가독성은 재서 지킨다</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="own">
+  <p class="sub">
+    테마 하나를 더하려면 원래 네 군데를 손으로 만져야 했다 — 생성기의 팔레트, 형태, 스킨, 프리셋 리소스.
+    이제 <b>명령 한 줄</b>이 그 자리를 다 놓아 준다.
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # 테마 .tres + 컨트롤 그림
+godot --headless --path . --import                  # 새 그림을 한 번 임포트
+GoUi.use_preset(&amp;"neon")                             # 끝 — 선택기에도 저절로 뜬다</code></pre>
+  <p>
+    첫 줄이 <code>themes/palettes/neon.json</code> 과 <code>themes/presets/neon.tres</code> 를 만든다. JSON 에는
+    <code>from</code> 으로 물려받은 테마의 값이 <b>전부 풀어 적혀</b> 있어, 무엇을 바꿀 수 있는지가 그대로
+    목록이 된다. 지우면 부모 값이 쓰이고, 적으면 덮어쓴다. 프리셋은 <code>themes/presets/</code> 폴더를
+    <b>스캔</b>하므로 레지스트리 코드를 고칠 일이 없다 — 프로젝트 설정의 드롭다운에도 바로 뜬다.
+  </p>
+
+  <h3 id="what-you-can-change-on-one-page">바꿀 수 있는 것 — 한 장</h3>
+  <table>
+    <thead><tr><th>어디</th><th>무엇</th><th>어떻게</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>물려받을 테마</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … 또는 다른 JSON 테마. 적지 않은 키는 부모 값을 따르고, 순환 상속은 오류다</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>바탕·표면 3단·테두리·글자 3단·강조·상태색 4·스크림·그림자·막대 바탕</td><td><code>"#RRGGBB"</code> · 알파는 <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>막대 채움 전용 원색 <code>*_vivid</code></td><td>글자색이 어두워져도 막대는 선명하게 — 없으면 생성기가 <code>막대가 칙칙하다</code> 고 알린다</td></tr>
+      <tr data-group="palette"><td>가독성</td><td><b>손으로 맞추지 않는다.</b> 글자·테두리·강조색·강조 버튼 글자는 생성기가 기준을 넘을 때까지 민다 — 강조색 하나만 바꿔도 검사를 통과한다</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code>(둥근) · <code>cut</code>(사선 모서리) · <code>medieval</code>(단조 프레임)</td></tr>
+      <tr data-group="shape"><td>치수</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — 토큰까지 함께 바뀌어 패널과 위젯 계산이 어긋나지 않는다</td></tr>
+      <tr data-group="shape"><td><code>cut</code> 전용</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code>(<code>diagonal</code>|<code>all</code>) · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td><code>medieval</code> 전용</td><td><code>material</code>(0 철 · 1 가죽 · 2 양피지) · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — <code>title</code>·<code>subtitle</code>·<code>caption</code>·<code>body</code>·<code>button</code> 역할별 애드온 내부 <code>res://</code> 글꼴</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — 코드가 직접 그리는 자리(조이스틱·슬롯·배지·코치마크 링·칩·구분선)의 계열</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — 그 자리의 <b>숫자</b>: 슬롯 테두리 두께·틴트, 배지 여백, 칩·알림 투명도, 조이스틱 링 두께·투명도, sci-fi 의 잘린 모서리·발광·조준 표식</td><td>JSON 에 부모 값이 전부 풀어 적혀 있다. 생성기가 <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> 로 내려보낸다 — <b>스킨 코드를 안 만진다</b>. 그림 자체를 바꿀 때만 <code>--new-skin</code> 으로 <code>GoSkin</code> 상속 틀를 만든다</td></tr>
+      <tr><td><code>icons</code></td><td>아이콘 세트</td><td><code>GoIconSet</code> 리소스의 <code>res://</code> 경로 — 적지 않으면 JSON 부모의 세트를 따른다</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>선택기 표시</td><td>불리언 · 문자열</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="every-dial">다이얼 — 전부</h3>
+  <p>
+    아래 표는 <code>tools/make_site.py</code> 가 스킨 스크립트의 <code>@export</code> 에서 <b>직접 읽어</b> 채운다 —
+    다이얼을 더하거나 기본값을 바꾸면 표도 따라온다. JSON 의 <code>skin.dials</code> 에 이 이름으로 적는다.
+    기본값이 <code>14</code> 인 다이얼은 정수, <code>10.0</code> 인 다이얼은 실수다 — JSON 에 어느 쪽으로
+    적어도 생성기가 스크립트의 형에 맞춰 내려보낸다.
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <details class="dial-group" open>
+  <summary><h4 id="default-skin-goskin-17">기본 스킨 <code>GoSkin</code> — 17</h4></summary>
+  <table>
+    <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="기본값">0.16</td><td>칩 판 채움의 투명도.</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="기본값">0.45</td><td>칩 판 테두리의 투명도.</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="기본값">0.1</td><td>알림 상자 판이 상태색 쪽으로 물드는 비율.</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="기본값">0.24</td><td>쿨다운 중인 퀵슬롯 판이 강조색 쪽으로 물드는 비율.</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="기본값">0.08</td><td>평소 퀵슬롯 판이 강조색 쪽으로 물드는 비율.</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="기본값">2</td><td>쿨다운 중인 퀵슬롯의 테두리 두께(dp).</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="기본값">1</td><td>평소 퀵슬롯의 테두리 두께(dp).</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="기본값">5</td><td>배지(수량·남은 시간) 판의 가로 안쪽 여백(dp).</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="기본값">1</td><td>배지 판의 세로 안쪽 여백(dp).</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="기본값">0.6</td><td>배지 판 테두리의 투명도.</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="기본값">0.45</td><td>떠 있는 카드(코치마크·프롬프트 카드) 그림자의 투명도.</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="기본값">14</td><td>떠 있는 카드 그림자의 번짐(dp).</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="기본값">4</td><td>떠 있는 카드 그림자가 아래로 밀리는 거리(dp).</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="기본값">10.0</td><td>사선 판(sci-fi)처럼 그림자 대신 <b>발광</b>을 쓰는 판이 떠 있을 때의 발광 거리(dp).</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="기본값">0.42</td><td>조이스틱 바탕 원의 투명도.</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="기본값">0.45</td><td>조이스틱 링의 투명도.</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="기본값">2.0</td><td>조이스틱 링의 두께(dp).</td></tr>
+    </tbody>
+  </table>
+  </details>
+  <details class="dial-group">
+  <summary><h4 id="sci-fi-skin-goskinscifi-10">sci-fi 스킨 <code>GoSkinSciFi</code> — 10</h4></summary>
+  <table>
+    <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="기본값">7.0</td><td>칩 판의 잘린 모서리 크기(dp).</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="기본값">5.0</td><td>스켈레톤 판의 잘린 모서리 크기(dp).</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="기본값">8.0</td><td>알림 상자 판의 잘린 모서리 크기(dp).</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="기본값">8.0</td><td>분절 선택 판의 잘린 모서리 크기(dp).</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="기본값">6.0</td><td>퀵슬롯 판의 잘린 모서리 크기(dp).</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="기본값">0.24</td><td>아바타·디스크의 잘린 모서리 = 지름 × 이 비율.</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="기본값">0.45</td><td>쿨다운이 도는 슬롯의 발광 투명도.</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="기본값">6.0</td><td>쿨다운이 도는 슬롯의 발광 거리(dp).</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="기본값">12.0</td><td>코치마크 조준 표식의 팔 길이(dp).</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="기본값">2.0</td><td>코치마크 조준 표식의 선 두께(dp).</td></tr>
+    </tbody>
+  </table>
+  </details>
+  <details class="dial-group">
+  <summary><h4 id="medieval-skin-goskinmedieval-5">중세 스킨 <code>GoSkinMedieval</code> — 5</h4></summary>
+  <table>
+    <thead><tr><th>다이얼</th><th>기본값</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="기본값">4.0</td><td>퀵슬롯 금속 프레임의 모서리 반경(dp).</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="기본값">0.035</td><td>퀵슬롯 가죽 표면 질감의 투명도.</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="기본값">1.0</td><td>퀵슬롯 모서리의 금속 장식 배율. 메뉴 프레임은 팔레트의 shape에서 조절한다.</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="기본값">0.18</td><td>퀵슬롯 위쪽 금속 반사의 강도.</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="기본값">1</td><td>퀵슬롯에 리벳을 표시할지(0: 없음, 1: 표시).</td></tr>
+    </tbody>
+  </table>
+  </details>
+  </div>
+  <!-- dials:end -->
+
+  <h3 id="subclass-the-skin-optional">스킨을 상속한다(선택)</h3>
+  <p>테마와 형태로 닿지 않는 자리 — 조이스틱의 육각, 슬롯 배지, 코치마크의 조준 표식 — 만 스킨이다.
+    <code>GoSkin</code> 을 상속해 바꿀 메서드만 덮어쓰고, JSON 의 <code>skin</code> 에 그 리소스를 가리키면 된다.
+    색만 바꾸는 테마는 이 단계가 없다.</p>
+
+  <div class="note">
+    <b>약속을 검사가 지킨다.</b> <code>tools/check_scaffold.sh</code> 가 매번 임시 테마를 만들어 —
+    강조색을 바꾸고 반경을 4 로 — 생성·토큰 반영·가독성 검사 통과까지 확인하고 되돌린다.
+    처음 돌렸을 때 강조색 하나 바꾼 테마가 <b>8쌍 미달</b>이었다: 생성기가 글자색은 밀면서 강조색은 그대로
+    쓰고 있었다. 그래서 강조색과 그 위 글자도 이제 생성기가 민다.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-skins.html">← 스킨 — 테마가 닿지 못하는 자리</a> · <a href="theming-contrast.html">가독성은 재서 지킨다 →</a></p>
+    <p style="font-size:13px">밑줄 친 용어에 마우스를 올리면 뜻이 뜬다.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

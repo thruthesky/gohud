@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-tokens.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-tokens.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-tokens.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-tokens.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-tokens.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-tokens.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-tokens.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-tokens.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-tokens.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-tokens.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-tokens.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-tokens.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-tokens.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-tokens.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-tokens.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-tokens.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-tokens.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-tokens.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tokens — gohud</title>
+<meta name="description" content="Cada color y cada medida viven bajo el tipo GoHud dentro del Theme, y se direccionan por nombre.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Introducción</a>
+      <a href="install.html">Instalación</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="theming.html" aria-current="page">Temas</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Español</summary>
+        <div class="langs-list">
+          <a href="../theming-tokens.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-tokens.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-tokens.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-tokens.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-tokens.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="theming-tokens.html" hreflang="es" lang="es" aria-current="true">Español</a>
+          <a href="../pt/theming-tokens.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-tokens.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-tokens.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-tokens.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-tokens.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-tokens.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-tokens.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-tokens.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-tokens.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-tokens.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-tokens.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Tokens</h1>
+    <p class="lead"><a href="theming.html">← Temas</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Temas">
+  <!-- subnav:begin -->
+  <a href="theming.html">Temas</a>
+  <a href="theming-presets.html">Tres capas</a>
+  <a href="theming-tokens.html" aria-current="page">Tokens</a>
+  <a href="theming-opacity.html">Opacidad — el juego detrás del panel</a>
+  <a href="theming-skins.html">Skins — allí donde un Theme no llega</a>
+  <a href="theming-own.html">Tu propio preajuste — un solo archivo</a>
+  <a href="theming-contrast.html">La legibilidad se mide</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="tokens">
+  <p class="sub">
+    Cada color y cada medida viven bajo el tipo <code>GoHud</code> dentro del Theme, y se direccionan por nombre.
+    La regla es no escribir números: los nombres acompañan al tema cuando se cambia.
+  </p>
+
+  <pre><code>GoUi.color(GoTheme.ACCENT)             # color
+GoUi.metric(GoTheme.GAP)               # medida (dp)
+GoUi.font_size(GoTheme.ROLE_CAPTION)   # tamaño para un rol de texto
+GoUi.box(GoTheme.BOX_CARD)             # una copia de un StyleBox</code></pre>
+
+  <h3 id="colours">Colores</h3>
+  <table>
+    <thead><tr><th>Nombre</th><th>Se usa para</th></tr></thead>
+    <tbody>
+      <tr><td><code>background</code></td><td>El fondo de la pantalla</td></tr>
+      <tr><td><code>surface</code> · <code>surface_soft</code> · <code>surface_high</code></td><td>Tres capas de panel — panel, tarjeta, celda elevada</td></tr>
+      <tr><td><code>border</code></td><td>Bordes de tarjetas y botones</td></tr>
+      <tr><td><code>text</code> · <code>secondary</code> · <code>muted</code></td><td>Tres niveles de texto — cuerpo, apoyo, atenuado</td></tr>
+      <tr><td><code>accent</code> · <code>on_accent</code></td><td>El acento y el texto que se coloca sobre él</td></tr>
+      <tr><td><code>success</code> · <code>warning</code> · <code>danger</code> · <code>info</code></td><td>Colores de estado para <b>texto</b></td></tr>
+      <tr><td><code>*_fill</code></td><td>Los mismos estados como <b>relleno</b> — barras y otras áreas grandes</td></tr>
+      <tr><td><code>scrim</code> · <code>shadow</code> · <code>track</code></td><td>El velo detrás de los emergentes, las sombras, el carril de la barra</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Por qué existe <code>*_fill</code>.</b> El mismo significado, requisitos opuestos. <code>warning</code>
+    usado como texto debe ser lo bastante oscuro para leerse sobre un fondo claro; usado como relleno de una barra de experiencia
+    debe ser lo bastante brillante para notarse. Un solo token no puede ser ambas cosas — la barra del tema claro salía marrón.
+    Un tema sin la variante <code>_fill</code> recurre automáticamente al nombre base, así que los temas
+    anteriores a estos tokens siguen funcionando.
+  </div>
+
+  <h3 id="measurements-dp">Medidas (dp)</h3>
+  <p>
+    <code>touch</code> <code>button_height</code> <code>gap_tiny</code> <code>gap_small</code>
+    <code>gap</code> <code>gap_large</code> <code>padding</code> <code>padding_compact</code>
+    <code>compact_padding_x</code> <code>compact_padding_y</code>
+    <code>radius_small</code> <code>radius</code> <code>radius_large</code> <code>screen_margin</code>
+    <code>scroll_deadzone</code> <code>scroll_edge</code> <code>scrollbar_width</code>
+    <code>list_glyph</code> <code>icon_size</code> <code>notice_duration_ms</code>
+  </p>
+
+  <h3 id="panel-opacity">Opacidad del panel (%)</h3>
+  <p>
+    <code>panel_alpha</code> <code>card_alpha</code> <code>hud_alpha</code> <code>notice_alpha</code>
+    <code>popup_alpha</code> — qué tan sólida es la cara de un contenedor. <b>80</b> de forma predeterminada, así el juego sigue
+    visible detrás de un diálogo; <code>popup_alpha</code> es 100. Un tema sin estos tokens recurre a 100
+    y se dibuja exactamente igual que antes. Lee el valor resuelto como <b>proporción</b> con
+    <code>GoUi.surface_alpha(variant)</code>; la sección
+    <a href="theming-opacity.html#opacity">Opacidad — el juego detrás del panel</a> tiene las reglas.
+  </p>
+
+  <h3 id="text-roles">Roles de texto</h3>
+  <p>
+    <code>micro</code> · <code>compact</code> · <code>caption</code> · <code>body</code> ·
+    <code>button</code> · <code>subtitle</code> · <code>title</code> — un rol nombra <b>un tamaño</b>, no un
+    propósito. "El texto más grande", no "el encabezado". Así la escala se mantiene aunque una pantalla lo use
+    para otra cosa.
+  </p>
+
+  <h3 id="type-variations">Variaciones de tipo</h3>
+  <p>
+    <code>GoPanel</code> <code>GoCard</code> <code>GoButton</code> <code>GoPrimaryButton</code>
+    <code>GoDangerButton</code> <code>GoDangerSolidButton</code> <code>GoBareButton</code> <code>GoCompactButton</code>
+    <code>GoIconButton</code> <code>GoListButton</code> <code>GoTitleLabel</code> <code>GoSubtitleLabel</code>
+    <code>GoCaptionLabel</code> <code>GoCompactLabel</code> <code>GoMicroLabel</code>
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-presets.html">← Tres capas</a> · <a href="theming-opacity.html">Opacidad — el juego detrás del panel →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

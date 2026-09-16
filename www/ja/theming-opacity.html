@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>不透明度 — パネルの向こうのゲーム — gohud</title>
+<meta name="description" content="ポップアップ、ダイアログ、シート、カード、HUD パネル、アラート、スナックバーは、面を不透明度 80% で描く。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">ウィジェット</a>
+      <a href="theming.html" aria-current="page">テーマ</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-opacity.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="theming-opacity.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-opacity.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-opacity.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-opacity.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-opacity.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-opacity.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>不透明度 — パネルの向こうのゲーム</h1>
+    <p class="lead"><a href="theming.html">← テーマ</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="テーマ">
+  <!-- subnav:begin -->
+  <a href="theming.html">テーマ</a>
+  <a href="theming-presets.html">3つの層</a>
+  <a href="theming-tokens.html">トークン</a>
+  <a href="theming-opacity.html" aria-current="page">不透明度 — パネルの向こうのゲーム</a>
+  <a href="theming-skins.html">スキン — テーマが届かない場所</a>
+  <a href="theming-own.html">自分のプリセットを、ファイル1枚で</a>
+  <a href="theming-contrast.html">読みやすさは測って決める</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    ポップアップ、ダイアログ、シート、カード、HUD パネル、アラート、スナックバーは、面を<b>不透明度 80%</b>
+    で描く。確認ダイアログの背後では戦いが続き、インベントリのシートの下には地図が見えている。ゲームでは
+    これは飾りではない — プレイヤーが自分の居場所を見失わずにいられる理由だ。完全に不透明なパネルは、
+    ウィンドウが開いたその瞬間に、プレイヤーが立っていた場所を消してしまう。
+  </p>
+
+  <div class="note">
+    <b>薄くなるのは面だけだ。</b> 文字、アイコン、ボタン、バッジ、クイックスロットははっきりしたままで、
+    枠と影もそのままだ。半透明のパネルがガラスに見えるのは、その輪郭が鋭いあいだだけだ。輪郭まで薄めれば、
+    パネルがどこで終わるのか分からなくなる。中身を薄めれば UI はもう読めない — それは透けた窓ではなく、
+    ただの不具合だ。だからこの値は <code>modulate.a</code> を通しては決して適用されない。
+  </div>
+
+  <h3 id="five-layers-most-specific-first">5つの層、具体的なものから順に</h3>
+  <table>
+    <thead><tr><th>順</th><th>どこ</th><th>単位</th><th>及ぶ範囲</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>その呼び出しの引数 — <code>surface.alpha</code>、<code>GoStyle.card(…, alpha)</code></td><td>比率 <code>0.0–1.0</code></td><td>1つのウィンドウ</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>比率 <code>0.0–1.0</code></td><td>1種類のパネル、プロジェクト全体で</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>パーセント</td><td>寸法をすべて1か所にまとめているプロジェクト</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>比率 <code>0.0–1.0</code></td><td>すべてのパネルを一度に</td></tr>
+      <tr><td>⑤</td><td>テーマの <code>GoHud/constants/&lt;kind&gt;_alpha</code></td><td>パーセント</td><td>見た目が決めること — <b>大もとはここだ</b></td></tr>
+    </tbody>
+  </table>
+  <p>どれも設定しなければ値は 100 だ。だから古いテーマは何も変わらない。</p>
+
+  <div class="note">
+    <b>不透明度はどこでも比率だ — テーマの中だけが例外だ。</b> <code>alpha</code> という名のフィールドも
+    引数も、すべて 0.0–1.0 を取る。<code>Color.a</code> や <code>modulate.a</code> と同じ単位で、負の値は
+    「設定なし」を意味する。唯一の例外はテーマの定数だ。<code>Theme</code> の定数は小数を持てないからで、
+    その定数と、それを上書きする経路（テーマと同じ名前と整数型を共有する
+    <code>metric_overrides</code>）だけが <code>80</code> と書かれる。ほかはどこもそうではない。
+  </div>
+
+  <pre><code># 1つのウィンドウだけ — 背後の戦いを隠してはならない確認ダイアログ
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # @export のフィールドも比率だ
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# 種類ごと — HUD はほぼ不透明に保つ。その文字は世界の上に直接載るからだ
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # ダイアログとシートは息をつける
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # すでに開いているウィジェットを描き直す
+
+# プロジェクト全体 — 情報の多い世界では、パネルを不透明に戻したくなる
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # 解決された比率。たとえば 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">この値に従うもの、従わないもの</h3>
+  <table>
+    <thead><tr><th>従うもの — コンテナ</th><th>無視するもの — 押すもの、そして印</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code>（ダイアログ、シート、ドロップダウンの背後にある唯一の外殻） · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>すべてのボタン · <code>GoSlot</code>（クイックスロット） · <code>GoBadge</code> · セグメント選択 · 選択セル · チップ · 円とアバター</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>すべての文字とアイコン</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    状態が薄れたボタンは、自分が何であるかをもう伝えない。バッジは2文字を読ませるために存在する —
+    どちらもコンテナではないから、どちらもこの値には従わない。
+  </p>
+
+  <div class="note">
+    <b>ポップアップメニューは不透明のままだ</b>（<code>popup_alpha</code> は 100）。エンジンは
+    <code>PopupMenu</code> を独立した <code>Window</code> に載せることがあり、そこでは OS がゲームと
+    合成してくれない — 半透明は透けるのではなく黒く出る。下げてよいのは、サブウィンドウを埋め込んでいる
+    プロジェクト（<code>gui_embed_subwindows</code>）だけだ。
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">実際の画面から分かった3つのこと</h3>
+  <ul>
+    <li>
+      <b>この値は掛かるのであって、置き換えるのではない。</b> 既定の HUD の面はすでにアルファ 0.92 だから、
+      <code>hud_alpha</code> 80 は 0.736 に着く — 面をわざと半透明にしたテーマは、その判断を保つ。
+      裏を返せば、2回かければパネルは2回薄くなる。だからアルファを掛けるのはただ1か所
+      （<code>GoSkin.surface_box()</code>）だけで、ほかの面を作る関数はどれも、自分の結果を薄めずに
+      引数をそのまま渡す。
+    </li>
+    <li>
+      <b>渡した色は、渡したとおりに返る。</b> <code>GoStyle.plate(…, fill)</code> は、明示された塗りを
+      与えられたまま保つ。<code>Color(ink, 0.14)</code> はすでに自分のアルファを述べていて、そこへパネルの
+      不透明度を掛ければ、呼び出し側の意図を二重に削ることになる。
+      <code>GoStyle.floating(…, opaque = true)</code> が同じたぐいの理由でこの値を無視する —
+      面を不透明に塗りつぶすことが、そのフラグの目的そのものだからだ。
+    </li>
+    <li>
+      <b>gohud が作ったのではないパネルにも、同じ規則が及ぶ。</b> <code>GoStyle.fade_panel(node)</code> —
+      ノードがツリーに入ったあとで呼ぶ。そうすれば、継承したテーマを読める。この関数は冪等だ。元の面を
+      記録しておき、呼ぶたびにそこから計算し直すので、描き直しを繰り返しても効果が積み重なることはない。
+      テーマを差し替えたあとは <code>GoStyle.forget_face(node)</code> でその記憶を捨てる。すると次の
+      呼び出しが新しい面を拾う。
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">独自の面も薄くなる — そして、黙って壊れるのはここだ</h3>
+  <p>
+    面取りのパネル（<code>GoStyleBoxCut</code>）と鍛造の枠（<code>GoStyleBoxMedieval</code>）は
+    <code>StyleBoxFlat</code> ではない — 自分で描く。不透明度をフラットの枝にだけ入れると、これらの
+    テーマは黙ってそれを無視し、それでいて値を見るテストはすべて通ってしまう。どちらも背景を薄くし、
+    発光、リベット、角の彫刻、ベベルは強さを保つ。そして中世の面の質感とベベルはもともと背景のアルファに
+    比例していたので、パネルと一緒に薄くなる。
+  </p>
+  <p>
+    ここから広い話になる。<code>bg_color.a == 0.8</code> は数値にすぎない。<em>世界が透けて見え、それでも
+    文字が読める</em> — これが要件だ。gohud は前者をヘッドレスの検査で確かめ、後者を仮想モニタ上で斜めの縞
+    の上にパネルを描いて確かめる（<code>tests/gohud_alpha_shot.gd</code>）— フラットの面、面取りの面、
+    鍛造の面で、ダークとライトの両方のテーマで。
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← トークン</a> · <a href="theming-skins.html">スキン — テーマが届かない場所 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

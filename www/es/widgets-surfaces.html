@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-surfaces.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-surfaces.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-surfaces.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-surfaces.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-surfaces.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-surfaces.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-surfaces.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-surfaces.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-surfaces.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-surfaces.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-surfaces.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-surfaces.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-surfaces.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-surfaces.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-surfaces.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-surfaces.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-surfaces.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-surfaces.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ventanas flotantes — gohud</title>
+<meta name="description" content="Los emergentes, las hojas y los desplegables usan todos este.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Introducción</a>
+      <a href="install.html">Instalación</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widgets</a>
+      <a href="theming.html">Temas</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Español</summary>
+        <div class="langs-list">
+          <a href="../widgets-surfaces.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-surfaces.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-surfaces.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-surfaces.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-surfaces.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="widgets-surfaces.html" hreflang="es" lang="es" aria-current="true">Español</a>
+          <a href="../pt/widgets-surfaces.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-surfaces.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-surfaces.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-surfaces.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-surfaces.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-surfaces.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-surfaces.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-surfaces.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-surfaces.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-surfaces.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-surfaces.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Ventanas flotantes</h1>
+    <p class="lead"><a href="widgets.html">← Widgets</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widgets">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widgets</a>
+  <a href="widgets-surfaces.html" aria-current="page">Ventanas flotantes</a>
+  <a href="widgets-messages.html">Decirle algo al jugador</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Esperar, avisar, contar</a>
+  <a href="widgets-forms.html">Formularios y listas</a>
+  <a href="widgets-shapes.html">Formas que los juegos usan de verdad</a>
+  <a href="widgets-overlays.html">Por encima de la pantalla</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — un solo lugar donde se crean las cosas</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="surfaces">
+
+  <h3 id="gosurface-the-shell"><code>GoSurface</code> — el contenedor</h3>
+  <p>Los emergentes, las hojas y los desplegables usan todos este. Se encarga del área segura, el teclado virtual,
+    el encabezado y el pie fijos, el cuerpo desplazable, qué ventana está encima, la restauración del foco, la
+    propiedad del botón Atrás y el redimensionado por arrastre.</p>
+  <table>
+    <thead><tr><th>Colocación</th><th>Se ve como</th><th>Se usa para</th></tr></thead>
+    <tbody>
+      <tr><td><code>CENTER</code></td><td>Una tarjeta en el medio</td><td>Confirmaciones, ajustes</td></tr>
+      <tr><td><code>BOTTOM</code></td><td>Una hoja que sube desde abajo</td><td>Listas, páginas de gestión</td></tr>
+      <tr><td><code>ANCHOR</code></td><td>Una tarjeta fijada junto a un control</td><td>Desplegables, menús contextuales</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>No se elimina a sí mismo.</b> Reaccionar a <code>close_requested</code> — ocultarlo o liberarlo — es tarea de la
+    pantalla que lo posee, porque el contenedor no puede saber <i>por qué</i> se está cerrando (guardar y cerrar, o descartar).
+  </div>
+
+  <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — una página desde abajo</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+sheet.open("Inventario")
+sheet.toolbar().add_child(GoStyle.line_edit("Buscar…"))
+sheet.toolbar().visible = true
+sheet.footer().add_child(GoStyle.button("Cerrar", sheet.close, GoStyle.Tone.PRIMARY))
+sheet.footer().visible = true</code></pre>
+  <p>Posee un <code>CanvasLayer</code>, así que queda de forma fiable por encima del HUD. <code>open()</code> vacía el
+    cuerpo y <b>desactiva</b> el botón Atrás y las filas fijas — un botón muerto en una pantalla a la que no hay adónde
+    volver se lee como algo roto.</p>
+
+  <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — confirmaciones con <code>await</code></h3>
+  <pre><code>if await dialogs.confirm("Borrar partida", "Esto no se puede deshacer."):
+    delete_save()</code></pre>
+  <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — todo lo que va después del cuerpo es
+    opcional, y <code>alert()</code> funciona igual pero con un solo botón. Activa <code>destructive</code> para
+    algo que no se puede deshacer: el botón de confirmar pasa a ser el botón relleno <code>GoStyle.Tone.DANGER_SOLID</code>.
+    En un tema claro, una etiqueta de peligro teñida tiene que oscurecerse hasta leerse como texto negro; el botón relleno
+    mantiene texto blanco sobre rojo. El tono se vuelve a aplicar en cada llamada porque se reutiliza una sola ventana, y un segundo
+    <code>confirm()</code> mientras hay uno abierto devuelve <code>false</code> de inmediato. <code>confirm_key()</code> acepta
+    claves de traducción.</p>
+  <p><b>Disposición de los botones.</b> <code>action_layout</code> es <code>VERTICAL</code> por omisión (seguro para traducciones largas),
+    <code>HORIZONTAL</code> para una sola fila con la mitad del ancho cada uno, o <code>AUTO</code>, que usa una fila solo cuando ambas
+    etiquetas caben en la mitad de la tarjeta en una sola línea y las apila en caso contrario. <code>action_gap</code> es el espacio entre
+    los botones y <code>body_gap</code> el espacio por encima de ellos — hazlo más ancho que el hueco entre botones para que la pregunta y
+    la elección se lean como dos partes. Para un único diálogo, llama a <code>set_next_action_layout()</code> antes de abrirlo.
+    La fila se construye cuando un diálogo se abre por primera vez, así que un <code>GoDialogs</code> en autoload no añade nada al arranque.</p>
+
+  <h3 id="goform-a-width-capped-form"><code>GoForm</code> — un formulario de ancho limitado</h3>
+  <div class="note warn">
+    <b>Garantiza que las etiquetas descendientes se ajusten por líneas.</b> Sin eso, una frase larga se estira en una
+    sola línea cuyo ancho mínimo supera el de la pantalla, y los lados quedan recortados — ni siquiera puedes saber
+    en qué pantalla estás. Activar el ajuste a mano en cada escena se olvida siempre.
+  </div>
+
+  <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — desplazamiento táctil</h3>
+  <p>Mete <b>una sola</b> cosa dentro. Los encabezados y las filas de botones van fuera — una lista larga no debe
+    empujarlos fuera de la pantalla. <code>use_panel_edge()</code> mueve la barra de desplazamiento al relleno que la tarjeta ya tiene
+    mientras el contenido mantiene su sangría.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets.html">← Widgets</a> · <a href="widgets-messages.html">Decirle algo al jugador →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

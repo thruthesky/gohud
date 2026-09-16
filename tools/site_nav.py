@@ -18,10 +18,17 @@
 
 ## 메뉴에 무엇을 올리나 — 규칙 넷
 
-- **R1. 쪽만 올린다.** 문서 안의 한 절(`#medieval`·`#tokens`·`#own` …)은 전역 메뉴에 올리지 않는다.
-  그 자리는 `site/toc.js` 의 왼쪽 목차가 맡는다. 실제로 `toc.js` 는 목차가 뜨면 머리띠의 앵커 링크를
-  **숨겨 왔다**(`body.gotoc-on header.top nav a[href^="#"]{display:none}`) — 지금까지 그 라벨들은
-  자바스크립트가 꺼졌을 때만 보이면서 번역 표류만 낳고 있었다.
+- **R1. 머리띠에는 묶음의 표지만 올린다.** 그 아래 쪽들은 **왼쪽 사이드바**가 맡는다
+  (`site/toc.js` 가 문서 안의 `<nav class="subnav">` 를 목차 맨 위로 올린다).
+  머리띠에 열아홉 칸을 올리면 좁은 화면에서 줄이 넘치고, 지금 어느 묶음을 읽는지도 흐려진다.
+
+  🛑 **2026-09-16, 이 자리에는 "절 단위로 더 쪼개지 않는다" 가 적혀 있었다.** 같은 말이
+  `site/toc.js` 에도 있었고, 그 두 줄을 근거로 **"문서를 작게 나눠 달라" 는 사람의 요청이 여러 차례
+  '이미 결정된 것' 으로 처리됐다.** 사람의 지시가 규칙 주석을 덮는다 — 쪽은 `tools/split_site.py`
+  가 갈랐고(`widgets` 표지+8 · `theming` 표지+6), 목차와 가르기는 **서로를 대신하지 않는다**:
+  목차는 한 쪽 안을 안내하고, 가르기는 쪽 자체를 줄인다.
+  머리띠가 앵커 링크를 숨기는 규칙(`body.gotoc-on header.top nav a[href^="#"]{display:none}`)은
+  그대로 둔다 — 머리띠에 앵커는 여전히 올리지 않는다.
 - **R2. 독자가 코드에서 볼 문자열은 번역하지 않는다.** `HUD`·`GoStyle`·`Preset`·`Skin`·`Token`.
   16/17 개 언어가 이미 `GoStyle` 을, 17/17 이 `HUD` 를 그대로 두고 있었다 — 그 관행을 규칙으로 올린다.
 - **R3. 제품 범주 이름은 그 언어에 자리 잡은 역어가 있으면 번역한다.** Widget(위젯·ウィジェット·控件),
@@ -40,6 +47,8 @@
 `TITLE`  새 쪽의 `<title>`·`<h1>`·설명. 옛 세 쪽은 제 파일에 있는 것을 그대로 쓴다.
 """
 from collections import OrderedDict
+
+import site_langs
 
 # 머리띠에 올리는 쪽 — 순서가 곧 화면 순서다. (키, 파일, 표에서 읽을 이름)
 NAV_PAGES = (
@@ -89,10 +98,13 @@ def nav_html(code, page, indent="      "):
     🔑 링크는 **같은 폴더 안의 상대 주소**다 — 언어판은 제 폴더 안에서 서로를 부르므로
     `../` 가 필요 없다(언어 고르개만 폴더를 건넌다).
     """
+    # 🔑 갈린 쪽(`widgets-forms.html`)에서는 그 **표지 칸**(Widgets)이 켜져야 한다 —
+    #    독자가 머리띠만 보고도 지금 어느 묶음 안에 있는지 안다. 표는 `site_langs.COVER_OF`.
+    current = site_langs.COVER_OF.get(page, page)
     rows = []
     for key, file in NAV_PAGES:
         href = "./" if file == "index.html" else file
-        here = ' aria-current="page"' if file == page else ""
+        here = ' aria-current="page"' if file == current else ""
         cls = ' class="nav-ai"' if key == "ai" else ""
         rows.append('%s<a%s href="%s"%s>%s</a>' % (indent, cls, href, here, label(code, key)))
     rows.append('%s<a href="%s">GitHub ↗</a>' % (indent, GITHUB))
@@ -124,12 +136,12 @@ TITLE = {
                         "릴리스 ZIP, git 서브모듈.",
         "ai_title": "AI SKILL",
         "ai_lead": "gohud 에는 AI 스킬이 들어 있다 — API 전부와 바로 돌아가는 템플릿, 미리보기 실행기. "
-                   "아래 한 덩이를 코딩 에이전트에 붙여 넣으면 gohud 를 설치하고 쓰는 법까지 익힌다.",
+                   "아래 글을 통째로 코딩 에이전트에 붙여 넣으면 gohud 를 설치하고 쓰는 법까지 익힌다.",
         "ai_desc": "Claude Code·Codex·Cursor·Gemini CLI 등 어떤 코딩 에이전트에도 gohud AI 스킬을 설치한다 — "
-                   "복사해 붙여 넣을 한 덩이.",
+                   "복사해서 붙여 넣을 텍스트 하나.",
         "start_title": "빠른 시작",
-        "start_lead": "다섯 줄이면 테마가 입혀진 화면이 뜬다. 처음부터 끝까지는 설치 쪽에 있다.",
-        "more": "이 쪽 전부 읽기",
+        "start_lead": "다섯 줄이면 테마가 입혀진 화면이 뜬다. 처음부터 끝까지는 설치 페이지에 있다.",
+        "more": "이 페이지 전부 읽기",
     },
     "ja": {
         "install_title": "gohud をインストール",
@@ -139,9 +151,9 @@ TITLE = {
                         "リリース ZIP、git サブモジュール。",
         "ai_title": "AI SKILL",
         "ai_lead": "gohud には AI スキルが入っている — API のすべて、すぐ動くテンプレート、プレビュー起動器。"
-                   "下の一かたまりをコーディングエージェントに貼れば、gohud を入れて使い方まで覚える。",
+                   "下の文をまるごとコーディングエージェントに貼れば、gohud を入れて使い方まで覚える。",
         "ai_desc": "Claude Code・Codex・Cursor・Gemini CLI など、どのコーディングエージェントにも gohud の "
-                   "AI スキルを入れる — コピーして貼る一かたまり。",
+                   "AI スキルを入れる — コピーして貼るだけのテキスト。",
         "start_title": "クイックスタート",
         "start_lead": "五行でテーマの当たった画面が出る。最初から最後までは、インストールのページに。",
         "more": "このページを全部読む",

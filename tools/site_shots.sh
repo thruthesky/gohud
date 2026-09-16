@@ -46,9 +46,17 @@ shots=0; failed=0
 #    (목차·검색창·코드 칸이 모두 방향을 뒤집는다).
 # 🔑 쪽이 다섯이 된 뒤로는 새 쪽(install·ai)도 찍는다 — 안 찍으면 그 두 장은 눈으로 한 번도
 #    확인되지 않는다. 한국어는 전부, 아랍어는 오른쪽에서 왼쪽으로 흐르는 판만 표본으로.
-for page in index install ai theming widgets \
-           ko/index ko/install ko/ai ko/theming ko/widgets \
-           ar/index ar/ai ar/theming; do
+# 🛑 목록을 여기 손으로 두지 않는다 — 2026-09-16 의 가르기로 쪽이 5 → 19 가 되었는데, 손으로 둔
+#    목록은 그대로여서 **새로 갈린 열네 장이 눈으로 한 번도 확인되지 않은 채** 있었다.
+#    정본은 `tools/site_langs.py` 의 `PAGES` 하나다.
+ALL_PAGES="$(python3 -c "
+import sys; sys.path.insert(0, '$ADDON/tools')
+import site_langs
+print(' '.join(page[:-5] for page in site_langs.PAGES))
+")"
+for page in $ALL_PAGES \
+           $(for p in $ALL_PAGES; do echo "ko/$p"; done) \
+           ar/index ar/ai ar/widgets ar/widgets-forms ar/theming ar/theming-tokens; do
   [ -n "$ONLY" ] && [[ "$page" != *"$ONLY"* ]] && continue
   file="$ADDON/www/$page.html"
   [ -f "$file" ] || { echo "🛑 없음: $file"; failed=$((failed+1)); continue; }

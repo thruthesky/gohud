@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="大面板再怎麼磨，抓住視線的永遠是某個小東西：一個被切成兩半的字、一圈被削掉的光暈、 一格擠成一團的快捷格。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html">安裝</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">控制項</a>
+      <a href="theming.html">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-hud.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← 控制項</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="控制項">
+  <!-- subnav:begin -->
+  <a href="widgets.html">控制項</a>
+  <a href="widgets-surfaces.html">浮動視窗</a>
+  <a href="widgets-messages.html">告訴玩家某件事</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">等待、告知、計數</a>
+  <a href="widgets-forms.html">表單與清單</a>
+  <a href="widgets-shapes.html">遊戲真的會用到的形狀</a>
+  <a href="widgets-overlays.html">蓋在畫面上</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 東西統一在一個地方產生</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">好不好看，是那些小地方決定的</h3>
+  <p>
+    大面板再怎麼磨，抓住視線的永遠是某個小東西：一個被切成兩半的字、一圈被削掉的光暈、
+    一格擠成一團的快捷格。2026-09-13 有人指出四件這樣的事，修正做在控制項與佈景主題裡，
+    而不是示範畫面裡，所以每一個畫面都得到同樣的結果。
+  </p>
+  <table>
+    <thead><tr><th>看到什麼</th><th>原因</th><th>修法</th></tr></thead>
+    <tbody>
+      <tr><td>導覽標記的 <code>Done</code> 變成 <code>Don</code>/<code>e</code></td>
+          <td>開了換行的按鈕會<b>從最小寬度中扣掉文字寬度</b> — 一被擠壓就從字中間斷開</td>
+          <td><code>GoStyle.fit_words()</code>：單一個字永遠不換行；多個字可以換行，但<b>最長的那個字</b>一定塞得下 — 判斷依據是<b>實際顯示</b>的文字，而不是翻譯鍵，而且語言變更時表單會重新套用</td></tr>
+      <tr><td>整行寬的按鈕，左側的光暈在垂直方向被切掉</td>
+          <td>捲動容器一律在自己的邊緣裁切，沒有例外。只有右側因為捲軸留出的溝槽而倖免</td>
+          <td><code>GoScroll</code> 借用上層的內距，把自己的邊緣往外推 12dp，再在內側還回去 — <b>內容原地不動</b></td></tr>
+      <tr><td>時間、圖示與數量在一格快捷格裡上下堆成三層</td>
+          <td>48dp 裡塞了三列</td>
+          <td>圖示放大置中，快速鍵在左上，數量當成右下的<b>徽章</b>，剩餘時間則是壓在圖示上的徽章 — 徽章面板來自外觀的 <code>badge_box()</code></td></tr>
+      <tr><td>下拉選單很平，看不出選了哪一個</td>
+          <td>項目的滑過狀態用的是按鈕面板；選項記號則是引擎那個很淡的預設圖案</td>
+          <td>專用的滑過面板（柔和的強調色著色）、與核取方塊相同的選項圖案，以及為觸控加高的項目高度</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="展開的下拉選單 — 柔和的強調色滑過面板，以及被選中項目的選項記號" loading="lazy">
+      <figcaption>下拉選單 — 滑過面板與選項記號</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="四格快捷格 — 快速鍵在左上、數量徽章在右下，第一格還有剩餘時間徽章" loading="lazy">
+      <figcaption>快捷格 — 角落徽章與剩餘時間（科幻）</figcaption>
+    </figure>
+  </div>
+  <p>
+    用 <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> 給只有圖示的按鈕一段說明 —
+    給滑鼠使用者的工具提示，和給螢幕閱讀器的無障礙名稱，都來自這同一個值。
+    工具提示是 gohud 自己畫的：引擎預設的那個在寬度計算出錯時，會把文字拆成<b>一行一個字</b>
+    （實測寬度只有 1dp）。
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">導覽標記的卡片會避開固定元素</h4>
+  <p>
+    橫向時，這張卡片以前會被送到畫面最上或最下的邊緣 — 那裡剛好就是頁首與 HUD
+    零件的地盤；在示範裡，它就壓在頁首的 <code>→ ×</code> 上。現在它會與目標保持齊高，
+    繞開任何有保留空間的 <code>GoHudAnchor</code>，也可以透過 <code>keep_clear</code>
+    告訴它還要避開什麼。它會用最短的距離移開障礙物，同時不遮住目標；
+    當螢幕小到怎麼挪都躲不掉時，它就留在原地 — 重疊總比消失好。
+    它的層次感 — 讓它讀起來像在頁面<b>之上</b> — 來自外觀的旋鈕
+    （<code>float_shadow_size</code>、<code>float_shadow_lift</code>、<code>float_shadow_alpha</code>；切角風格的外觀則用 <code>float_glow_size</code>）。
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # 不是錨點的固定元素</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">有滑鼠與鍵盤的畫面</h3>
+  <p>
+    手指<b>沒有滑過狀態。</b>只照著行動裝置開發，就會有兩個只出現在桌機的狀態沒被檢查 —
+    而其中一個確實壞了：gohud 的<b>焦點外框在主要按鈕上是看不見的。</b>面板是強調色，
+    外框也是同一個色：<code>1.00:1</code>，等於把同樣的顏色畫在自己身上。
+    用鍵盤移動時，根本看不出自己在哪裡。
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="同一列按鈕的三種狀態 — 一般、滑鼠滑過、鍵盤焦點" loading="lazy">
+    <figcaption>由上到下：<b>一般 · 滑過 · 焦點</b>。實心按鈕會得到一圈與自己面板形成對比的外框。</figcaption>
+  </figure>
+  <p>
+    實心按鈕（<code>GoPrimaryButton</code>、<code>GoDangerSolidButton</code>）使用的外框
+    <b>與自己的面板形成對比</b> — 深色佈景主題上用深色，淺色上用白色，科幻風格則是深色的
+    瞄準框角。對比檢查器量的是<b>焦點外框與它所在的面板</b>，所以換了調色盤這條規則依然成立
+    （WCAG 2.4.11 要求焦點指示器達到 3:1）。
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>HUD 控制項</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 九個位置</h3>
+  <p>它會尊重安全區域與邊界留白。給它一個 <code>landscape_spot</code>，橫向時它就會換位置 —
+    直向時待在底部中央的操作鍵，橫向可以改到右下。</p>
+  <div class="note">
+    <b>它為什麼存在。</b>每個 HUD 零件各自手寫錨點與位移，數值就會慢慢走樣：
+    在有瀏海的裝置上，生命量條跑到相機開孔底下；橫向時，操作按鈕落在手勢列上。
+    那些算式只住在一個地方。
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">別讓內容跑到 HUD 底下</h4>
+  <p>
+    當一個會捲動的畫面和 HUD 共用螢幕時，內容會滑<b>到它下面</b>，兩邊的文字互相重疊，
+    最後誰都讀不出來。這在這個附加元件裡發生過兩次：輸入欄的提示文字被擠在快捷格中間，
+    以及設定裡的切換開關的旋鈕落在生命量條上。
+  </p>
+  <pre><code>form.avoid_hud = true                  # 避開每一個顯示中的 GoHudAnchor
+joystick_anchor.reserve_space = false  # …但只在手指底下才出現的那些除外</code></pre>
+  <p>
+    每個矩形都往<b>損失面積最小</b>的方向避開。右上角的量條，在直向手機上往下繞
+    （高度的 13%），在橫向則往側邊繞（寬度的 21%） — 橫向時若改成垂直避開，會吃掉螢幕的 27%。
+    已經讓出去的地盤，會先扣掉，再去量下一個矩形。
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">HUD 零件彼此也會撞在一起</h4>
+  <p>
+    九個位置只是把畫面分好；它們並不保證零件<b>彼此不相碰</b>。一條很寬的訊息條擺在
+    上方中央，就正好壓在右上的生命量條上，把數值遮住 — 你根本讀不到還剩多少血。
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # 停在固定 HUD 下方
+notice_anchor.reserve_space = false   # 顯示期間也不會推擠頁面</code></pre>
+  <p>
+    它<b>只在垂直方向</b>讓開 — 連橫向也一起挪的話，置中的提示訊息每次出現的位置就不一樣。
+    而且它只避開那些<b>本身不會讓開</b>的零件：如果雙方都讓，兩者就會永遠交換位置。
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 生命、魔力、經驗</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 只用於填色的 token
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>數值變化會在 0.18 秒內緩動 — 一條直接跳掉的生命量條，說不出你被打得多重。
+    <code>reduce_motion</code> 會讓它立即完成。大數字會縮寫成 <code>12.3k</code>，
+    讓量條的寬度不會隨著位數增減而抖動。</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — 一格快捷格</h3>
+  <p>圖示、數量、冷卻與快速鍵都在<b>同一個面</b>上。把徽章掛在小圓圈外面，
+    會讓每一格寬度都不一樣，整列就歪歪扭扭。</p>
+  <div class="note">
+    <b>看得到的尺寸和按得到的尺寸不同。</b>擠在一起的快捷格，48dp 的觸控範圍會互相重疊；
+    重疊的部分歸<b>中心比較近的那一格</b> — 用 <code>touch_peers</code>
+    讓它們知道彼此的存在。
+  </div>
+
+  <p><code>keyboard_focus</code> 預設是關的，這樣八格一列的快捷格才不會卡在鍵盤使用者與 Tab 順序上
+    所有設定控制項之間。只有在鍵盤或遊戲手把是唯一輸入方式時才打開它。</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — 虛擬搖桿</h3>
+  <table>
+    <thead><tr><th>模式</th><th>行為</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>永遠在同一個地方 — 不用看也找得到</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>出現在拇指按下的位置</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>出現之後繼續跟著拇指 — 長時間移動比較舒服</td></tr>
+    </tbody>
+  </table>
+  <p><code>moved</code> 傳出來的 <code>Vector2</code> 長度介於 0–1，所以可以直接乘上速度；
+    它不會隨螢幕大小或 DPI 改變。</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 看起來小，按起來大</h3>
+  <div class="note warn">
+    <b>只有在旁邊的兄弟節點不吃輸入時才安全。</b>如果被放大的區域蓋到隔壁按鈕，
+    那顆按鈕就沒反應了。並排的圖示按鈕需要 <code>touch_peers</code>。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← 告訴玩家某件事</a> · <a href="widgets-feedback.html">等待、告知、計數 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

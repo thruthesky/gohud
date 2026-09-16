@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-forms.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-forms.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-forms.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-forms.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-forms.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-forms.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-forms.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-forms.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-forms.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-forms.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-forms.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-forms.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-forms.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-forms.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>폼과 목록 — gohud</title>
+<meta name="description" content="입력 칸이 다섯인 폼 맨 위에 &quot;입력을 확인하세요&quot; 한 줄이 떠도, 그것은 어느 칸인지 말해 주지 않는다.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">소개</a>
+      <a href="install.html">설치</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">위젯</a>
+      <a href="theming.html">테마</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>한국어</summary>
+        <div class="langs-list">
+          <a href="../widgets-forms.html" hreflang="en" lang="en">English</a>
+          <a href="widgets-forms.html" hreflang="ko" lang="ko" aria-current="true">한국어</a>
+          <a href="../ja/widgets-forms.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-forms.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-forms.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-forms.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-forms.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-forms.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-forms.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-forms.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-forms.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-forms.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-forms.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-forms.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-forms.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-forms.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-forms.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>폼과 목록</h1>
+    <p class="lead"><a href="widgets.html">← 위젯</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="위젯">
+  <!-- subnav:begin -->
+  <a href="widgets.html">위젯</a>
+  <a href="widgets-surfaces.html">떠 있는 창</a>
+  <a href="widgets-messages.html">알리기</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">기다리기, 알리기, 세기</a>
+  <a href="widgets-forms.html" aria-current="page">폼과 목록</a>
+  <a href="widgets-shapes.html">게임이 실제로 쓰는 모양</a>
+  <a href="widgets-overlays.html">화면 위에</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 만드는 자리를 하나로</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="forms-lists">
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 틀릴 수 있는 줄</h3>
+  <p>입력 칸이 다섯인 폼 맨 위에 "입력을 확인하세요" 한 줄이 떠도, 그것은 <i>어느 칸</i>인지 말해 주지
+    않는다. 가입을 도중에 그만두게 만드는 것은 딱 그 하나다.</p>
+  <pre><code>var name_field := GoField.make("캐릭터 이름", GoStyle.line_edit("2~12자"), "나중에 바꿀 수 없습니다")
+name_field.set_error("이미 쓰고 있는 이름입니다")   # 서버가 거절했다
+name_field.clear_error()</code></pre>
+  <p>오류가 떠 있는 동안 도움말은 숨는다 — 줄이 한 줄만큼 자라 아래를 전부 밀어내지 않게. 그리고 오류
+    문구는 컨트롤의 접근성 이름에 함께 붙는다. 빨간 테두리만으로는 빨강을 못 보는 사람에게 아무 말도
+    되지 않는다.</p>
+  <p><code>GoStyle.field()</code> 는 정적 버전이다 — 라벨·컨트롤·도움말, 오류 상태는 없다. 틀릴 일이
+    없으면 팩토리를, 서버가 거절할 수 있는 것에는 노드를 쓴다.</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — 버튼과 한 덩어리로 붙은 입력칸</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("메시지"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("이름"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>이것이 푸는 문제는 모서리다. 둥근 두 모양이 가운데서 만나면 잘록해 보이고, 기본 간격까지 있으면
+    따로 노는 두 물건으로 읽힌다. 바깥 모서리는 둥근 채로 두고 맞닿는 쪽만 각지게 한다 — 버튼의 모든
+    상태에서. 아니면 누르는 순간 덩어리가 갈라진다. 모서리를 깎아 낸 스킨에는 모서리 항목 자체가
+    없으므로 거기서는 손대지 않고, 각진 면끼리 깔끔하게 만난다.</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 검색되는 선택기</h3>
+  <p>항목이 열 개 아래면 <code>GoStyle.select()</code> 가 낫다 — 누르는 횟수가 하나 줄고 목록이 한눈에
+    다 보인다. 서른을 넘으면 눈으로 훑는 것이 일이 된다.</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "서버를 고르세요")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>검색은 이름의 첫머리가 아니라 이름 안을 본다.</b> 앞글자만 맞춰서는 한국어·일본어 목록에서 거의
+    아무것도 찾지 못한다 — 두 항목을 갈라 주는 단어이 맨 앞에 오는 일은 드물다.
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — 쿠폰·선물 코드</h3>
+  <p>코드는 손으로 치기보다 메시지에서 붙여넣는 경우가 훨씬 많다. 진짜 입력칸을 열두 개 두면 붙여넣기가
+    첫 칸에서 끊기고 IME 에 글자를 잃는다. 그래서 글자는 숨은 입력칸 하나가 받고 칸은 그려서 보여 준다.
+    <code>ABCD-EFGH-IJKL</code> 은 들어오는 길에 붙임표를 떼어 낸다.</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("이미 사용한 코드입니다")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 정렬되는 머리줄, 눌리는 줄</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "순위", "width": 56}, {"text": "이름"}, {"text": "점수", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code> 를 빠뜨리면 순위가 뒤집힌다.</b> 글자로 견주면 <code>"9124"</code> 가
+    <code>"91240"</code> 를 이긴다 — 점수도 골드도 피해량도 자릿수가 제각각이다.
+  </div>
+  <p><code>row_selected</code> 는 정렬된 자리가 아니라 원래 배열의 인덱스를 준다. 정렬 방향은 색만이 아니라
+    글리프로 보여 주고, 줄 전체가 눌리므로 칸 하나를 겨눌 필요가 없다. 읽기 전용 격자는 여전히
+    <code>GoStyle.table()</code> 이다.</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — 페이지, 아니면 더 보기 줄</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # 모바일에 어울리는 변형</code></pre>
+  <p>번호는 마우스의 UI 다. 휴대폰에서는 더 보기 줄이 더 잘 읽힌다. 지금 페이지는 늘 창 가운데에 머무르므로
+    다음을 눌러도 번호가 통째로 뒤섞이지 않는다. 총 개수 0 은 "모른다" 는 뜻이고 화살표만 그린다 —
+    받지 않은 페이지 수를 지어내지 않는다.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-feedback.html">← 기다리기, 알리기, 세기</a> · <a href="widgets-shapes.html">게임이 실제로 쓰는 모양 →</a></p>
+    <p style="font-size:13px">밑줄 친 용어에 마우스를 올리면 뜻이 뜬다.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

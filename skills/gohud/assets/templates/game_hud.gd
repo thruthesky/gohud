@@ -2,9 +2,10 @@
 ## scene: `add_child(preload("res://ui/game_hud.gd").new())`. It is its own CanvasLayer (layer 5), so
 ## GoSheet (10) and GoDialogs (100) always draw above it.
 ##
-## Top-left: HP / MP / XP bars on a floating panel · top-right: menu button · top-centre: toasts that step
-## below the bars · centre-right: a non-blocking prompt card · bottom-right: four quick slots ·
-## lower-left zone: a FOLLOW joystick (touch devices by default).
+## Top-left: HP / MP / XP bars on a floating panel · top-right: menu button with an unread badge ·
+## top-centre: toasts that step below the bars · centre-right: a non-blocking prompt card ·
+## bottom-right: four quick slots · lower-left zone: a FOLLOW joystick (touch devices by default) ·
+## bottom: a snackbar (layer 90) for messages the player can act on.
 extends CanvasLayer
 
 signal menu_requested
@@ -34,6 +35,10 @@ var slots: Array[GoSlot] = []
 var joystick: GoJoystick
 var notice: GoNotice
 var prompt: GoPromptCard
+## Bottom-of-screen messages that can carry buttons. It makes its own CanvasLayer (90), above this HUD.
+var snackbar: GoSnackbar
+var menu_button: Button
+var _unread := 0
 
 
 func _ready() -> void:
@@ -59,6 +64,7 @@ func build() -> void:
 	_build_touch_controls()
 	_build_toast()
 	_build_prompt()
+	_build_snackbar()
 
 
 # ── Public API ───────────────────────────────────────────────────────────
@@ -70,6 +76,24 @@ func set_experience(value: float, maximum: float) -> void: xp.set_values(value, 
 
 func toast(message: String, tone := GoTheme.TEXT) -> void:
 	notice.show_text(message, tone)
+
+
+## A message the player can act on — "Item dropped / Undo". Returns the index of the button that was
+## pressed, or -1 when it expired. With no actions it takes no input at all, like a toast.
+##
+## Use this instead of `toast()` when there is something to press, and instead of a confirm dialog
+## when the action is cheap and reversible — a dialog stops the fight to ask.
+func say(message: String, actions: Array = [], tone := GoTheme.TEXT) -> int:
+	return await snackbar.post({"text": message, "actions": actions, "tone": tone})
+
+
+## The unread count on the menu button. 0 hides the badge.
+## 🛑 The badge anchors to the button's corner, so it can only place itself once the button is in the
+##    tree — this is called after `build()`, which is why `attach` is deferred there too.
+func set_unread(count: int) -> void:
+	_unread = maxi(0, count)
+	if is_instance_valid(menu_button):
+		GoBadge.attach(menu_button, _unread)
 
 
 ## Shows a question that does not pause the game. `decline` defaults to just hiding the card.
@@ -126,9 +150,13 @@ func _build_menu_button() -> void:
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box())
 	anchor.add_child(panel)
-	panel.add_child(GoStyle.icon_button(GoIconSet.MENU, func() -> void:
+	menu_button = GoStyle.icon_button(GoIconSet.MENU, func() -> void:
 		GoFeedback.tapped()
-		menu_requested.emit(), -1, &"Menu"))
+		menu_requested.emit(), -1, &"Menu")
+	panel.add_child(menu_button)
+	# 🛑 Deferred: a badge hangs off a corner through anchors, and the corner is only known once the
+	#    button has been laid out. Attaching in the same frame pins it to (0, 0).
+	GoBadge.attach.call_deferred(menu_button, _unread)
 
 
 func _build_slots() -> void:
@@ -193,6 +221,15 @@ func _build_toast() -> void:
 	notice = GoNotice.new()
 	notice.custom_minimum_size.x = 260
 	anchor.add_child(notice)
+
+
+## 🔑 The snackbar makes its own CanvasLayer (90), so it is added to this node, **not** to `root` —
+##    putting it inside the HUD's Control tree would nail it to layer 5 and a sheet would cover it.
+func _build_snackbar() -> void:
+	if is_instance_valid(snackbar):
+		return
+	snackbar = GoSnackbar.new()
+	add_child(snackbar)
 
 
 func _build_prompt() -> void:

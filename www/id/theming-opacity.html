@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opasitas — game di balik panel — gohud</title>
+<meta name="description" content="Popup, dialog, lembar, kartu, panel HUD, peringatan, dan snackbar menggambar mukanya pada opasitas 80%.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Ringkasan</a>
+      <a href="install.html">Instalasi</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html" aria-current="page">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Bahasa Indonesia</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-opacity.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-opacity.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-opacity.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-opacity.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-opacity.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-opacity.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="theming-opacity.html" hreflang="id" lang="id" aria-current="true">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Opasitas — game di balik panel</h1>
+    <p class="lead"><a href="theming.html">← Tema</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Tema">
+  <!-- subnav:begin -->
+  <a href="theming.html">Tema</a>
+  <a href="theming-presets.html">Tiga lapis</a>
+  <a href="theming-tokens.html">Token</a>
+  <a href="theming-opacity.html" aria-current="page">Opasitas — game di balik panel</a>
+  <a href="theming-skins.html">Skin — tempat yang tak terjangkau Theme</a>
+  <a href="theming-own.html">Preset Anda sendiri — satu berkas</a>
+  <a href="theming-contrast.html">Keterbacaan itu diukur</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    Popup, dialog, lembar, kartu, panel HUD, peringatan, dan snackbar menggambar mukanya pada <b>opasitas 80%</b>.
+    Pertarungan terus berjalan di balik sebuah dialog konfirmasi; petanya tampak di bawah lembar inventaris. Di dalam
+    sebuah game ini bukan hiasan — inilah yang menjaga pemain tetap tahu di mana ia berada. Panel yang sepenuhnya pekat
+    menghapus tempat ia tadi berdiri begitu sebuah jendela terbuka.
+  </p>
+
+  <div class="note">
+    <b>Hanya mukanya yang menipis.</b> Teks, ikon, tombol, lencana, dan slot cepat tetap tajam, begitu pula
+    garis tepi dan bayangannya. Panel tembus pandang terbaca sebagai kaca hanya selama garis luarnya tegas; pudarkan
+    garis luarnya dan Anda tak bisa tahu di mana panelnya berakhir. Pudarkan kontennya dan UI-nya tak terbaca sama sekali —
+    itu bukan jendela transparan, itu bug. Karena itulah nilainya tidak pernah diterapkan lewat
+    <code>modulate.a</code>.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Lima lapis, yang paling spesifik dulu</h3>
+  <table>
+    <thead><tr><th>Urutan</th><th>Di mana</th><th>Satuan</th><th>Jangkauan</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>argumen pada pemanggilan itu — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>rasio <code>0.0–1.0</code></td><td>satu jendela</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>rasio <code>0.0–1.0</code></td><td>satu jenis panel, seluruh proyek</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>persen</td><td>proyek yang menyimpan setiap ukuran di satu tempat</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>rasio <code>0.0–1.0</code></td><td>semua panel sekaligus</td></tr>
+      <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> milik temanya</td><td>persen</td><td>apa yang diputuskan tampilannya — <b>sumber kebenarannya</b></td></tr>
+    </tbody>
+  </table>
+  <p>Tanpa satu pun dari itu disetel, nilainya 100, jadi tak ada yang berubah pada tema lama.</p>
+
+  <div class="note">
+    <b>Opasitas adalah rasio di mana-mana — kecuali di dalam temanya.</b> Setiap kolom dan argumen
+    <code>alpha</code> menerima 0.0–1.0, satuan yang sama dengan <code>Color.a</code> dan <code>modulate.a</code>,
+    dan nilai negatif berarti "tidak disetel". Satu-satunya pengecualian adalah konstanta milik temanya, karena
+    sebuah konstanta <code>Theme</code> tidak bisa memuat float: konstanta itu dan kanal yang menimpanya
+    (<code>metric_overrides</code>, yang memakai nama dan tipe bilangan bulat yang sama dengan temanya) ditulis
+    sebagai <code>80</code>. Selain itu tidak ada.
+  </div>
+
+  <pre><code># Satu jendela saja — dialog konfirmasi yang tak boleh menutupi pertarungan di belakangnya
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # kolom @export pun rasio
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Per jenis — jaga HUD tetap nyaris pekat, karena teksnya duduk langsung di atas dunianya
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # dialog dan lembar bisa bernapas
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # menggambar ulang widget yang sudah terbuka
+
+# Seluruh proyek — dunia yang ramai ingin panelnya kembali pekat
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # rasio hasilnya, mis. 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Apa yang mengikuti nilainya, dan apa yang tidak</h3>
+  <table>
+    <thead><tr><th>Mengikutinya — wadah</th><th>Mengabaikannya — yang Anda tekan, dan penanda</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (cangkang tunggal di balik dialog, lembar, dan dropdown) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>setiap tombol · <code>GoSlot</code> (slot cepat) · <code>GoBadge</code> · kontrol tersegmentasi · sel pilihan · chip · cakram dan avatar</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>semua teks dan ikon</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Tombol yang statusnya pudar tak lagi mengatakan dirinya apa, dan lencana ada supaya dua huruf terbaca —
+    keduanya bukan wadah, jadi keduanya tidak mengikuti nilai itu.
+  </p>
+
+  <div class="note">
+    <b>Menu popup tetap pekat</b> (<code>popup_alpha</code> 100). Mesin bisa menempatkan sebuah
+    <code>PopupMenu</code> di dalam <code>Window</code>-nya sendiri, dan di sana OS tidak mengomposisinya dengan
+    game: tembus pandangnya keluar hitam alih-alih tembus. Turunkan hanya pada proyek yang menyematkan
+    subjendelanya (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Tiga rincian yang datang dari layar sungguhan</h3>
+  <ul>
+    <li>
+      <b>Nilainya mengalikan, bukan menggantikan.</b> Muka HUD default sudah beralfa 0.92, jadi
+      <code>hud_alpha</code> 80 mendarat di 0.736 — tema yang sengaja membuat sebuah muka tembus pandang mempertahankan
+      keputusan itu. Sisi sebaliknya: terapkan dua kali dan panelnya memudar dua kali, dan karena itulah alfanya
+      dikalikan tepat di satu tempat (<code>GoSkin.surface_box()</code>) sementara setiap fungsi muka lain
+      meneruskan argumennya alih-alih memudarkan hasilnya sendiri.
+    </li>
+    <li>
+      <b>Warna yang Anda berikan adalah warna yang Anda dapat.</b> <code>GoStyle.plate(…, fill)</code> mempertahankan
+      isian eksplisit persis seperti yang diberikan: <code>Color(ink, 0.14)</code> sudah menyatakan alfanya, dan mengalikan
+      opasitas panel ke dalamnya akan memotong maksud pemanggilnya dua kali. <code>GoStyle.floating(…, opaque = true)</code>
+      mengabaikan nilainya karena alasan sejenis — mengisi mukanya sampai pekat adalah seluruh tujuan flag itu.
+    </li>
+    <li>
+      <b>Panel yang bukan buatan gohud dapat aturan yang sama.</b> <code>GoStyle.fade_panel(node)</code> — setelah
+      node-nya ada di dalam tree, sehingga ia membaca tema yang diwarisinya. Ia idempoten: muka aslinya
+      dicatat dan setiap pemanggilan menghitung ulang dari situ, jadi penggambaran ulang berkali-kali tak pernah menumpuk.
+      Setelah menukar tema, <code>GoStyle.forget_face(node)</code> membuang catatan itu supaya pemanggilan berikutnya mengambil muka yang baru.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Muka buatan sendiri pun memudar — dan di situlah bagian yang diam-diam rusak</h3>
+  <p>
+    Panel bersudut potong (<code>GoStyleBoxCut</code>) dan bingkai tempaan
+    (<code>GoStyleBoxMedieval</code>) bukan <code>StyleBoxFlat</code>; keduanya menggambar dirinya sendiri. Taruh
+    opasitasnya hanya di cabang flat dan tema-tema ini diam-diam mengabaikannya sementara setiap uji berbasis nilai tetap
+    lolos. Keduanya memudarkan latarnya dan mempertahankan pendar, paku keling, ukiran sudut, serta bevel pada kekuatan penuh —
+    dan serat maupun bevel muka abad pertengahan memang selalu sebanding dengan alfa latarnya, jadi keduanya ikut menipis
+    bersama panelnya.
+  </p>
+  <p>
+    Dan itulah poin yang lebih luas: <code>bg_color.a == 0.8</code> adalah sebuah angka. <em>Dunianya tampak menembus dan
+    teksnya tetap terbaca</em> adalah persyaratannya. gohud memeriksa yang pertama di rangkaian uji headless-nya dan yang
+    kedua dengan menggambar panel di atas garis-garis diagonal pada monitor virtual
+    (<code>tests/gohud_alpha_shot.gd</code>) — pada muka flat, muka terpotong, dan muka tempaan, di tema gelap
+    maupun di tema terang.
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← Token</a> · <a href="theming-skins.html">Skin — tempat yang tak terjangkau Theme →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

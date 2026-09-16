@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-hud.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-hud.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-hud.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-hud.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-hud.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-hud.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-hud.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-hud.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-hud.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-hud.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-hud.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-hud.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-hud.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-hud.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-hud.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-hud.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD — gohud</title>
+<meta name="description" content="Poles panel besarnya sesuka Anda — yang selalu menyita perhatian justru sesuatu yang kecil: satu kata terbelah dua, pendar yang terpotong, slot yang sempit.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Ringkasan</a>
+      <a href="install.html">Instalasi</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widget</a>
+      <a href="theming.html">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Bahasa Indonesia</summary>
+        <div class="langs-list">
+          <a href="../widgets-hud.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-hud.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-hud.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-hud.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-hud.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-hud.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-hud.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-hud.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-hud.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-hud.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-hud.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-hud.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-hud.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="widgets-hud.html" hreflang="id" lang="id" aria-current="true">Bahasa Indonesia</a>
+          <a href="../uk/widgets-hud.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-hud.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-hud.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>HUD</h1>
+    <p class="lead"><a href="widgets.html">← Widget</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget</a>
+  <a href="widgets-surfaces.html">Jendela mengambang</a>
+  <a href="widgets-messages.html">Menyampaikan sesuatu kepada pemain</a>
+  <a href="widgets-hud.html" aria-current="page">HUD</a>
+  <a href="widgets-feedback.html">Menunggu, memberi tahu, menghitung</a>
+  <a href="widgets-forms.html">Formulir dan daftar</a>
+  <a href="widgets-shapes.html">Bentuk-bentuk yang benar-benar dipakai game</a>
+  <a href="widgets-overlays.html">Di atas layar</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — satu tempat segala sesuatu dibuat</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="hud">
+
+  <h3 id="the-small-things-decide-whether-it-looks-good">Hal-hal kecil yang menentukan bagus atau tidaknya</h3>
+  <p>
+    Poles panel besarnya sesuka Anda — yang selalu menyita perhatian justru sesuatu yang kecil: satu kata terbelah
+    dua, pendar yang terpotong, slot yang sempit. Empat hal semacam itu ditunjukkan pada 2026-09-13 lalu diperbaiki di
+    widget dan temanya, bukan di layar demonya, sehingga setiap layar mendapat hasil yang sama.
+  </p>
+  <table>
+    <thead><tr><th>Apa yang terlihat</th><th>Penyebab</th><th>Perbaikan</th></tr></thead>
+    <tbody>
+      <tr><td><code>Done</code> pada coach mark menjadi <code>Don</code>/<code>e</code></td>
+          <td>Tombol dengan pembungkusan baris menyala <b>mengurangi lebar teksnya</b> dari lebar minimumnya — sempitkan sedikit dan ia patah di tengah kata</td>
+          <td><code>GoStyle.fit_words()</code>: satu kata tidak pernah dipenggal; beberapa kata boleh membungkus, tetapi <b>kata terpanjang</b> selalu muat — dinilai pada teks yang <b>ditampilkan</b>, bukan pada kunci terjemahannya, dan diterapkan ulang oleh formulir ketika bahasanya berganti</td></tr>
+      <tr><td>Pendar tombol selebar layar terpotong secara vertikal di sisi kiri</td>
+          <td>Kontainer gulir memotong di tepinya, tanpa kecuali. Hanya sisi kanan yang selamat, berkat celah relnya</td>
+          <td><code>GoScroll</code> meminjam padding induknya untuk mendorong tepinya 12dp keluar lalu mengembalikannya di dalam — <b>kontennya tidak bergeser</b></td></tr>
+      <tr><td>Waktu, ikon, dan jumlah menumpuk vertikal di dalam sebuah slot</td>
+          <td>Tiga baris di dalam 48dp</td>
+          <td>Ikon besar di tengah, pintasan di kiri atas, jumlah sebagai <b>lencana</b> di kanan bawah, sisa waktu sebagai lencana di atas ikonnya — panel lencananya berasal dari <code>badge_box()</code> milik skin</td></tr>
+      <tr><td>Dropdown datar tanpa pilihan yang terlihat</td>
+          <td>Sorotan butir memakai panel tombol; penanda radionya adalah default mesin yang samar</td>
+          <td>Panel sorotan tersendiri (rona aksen lembut), gambar radio yang sama dengan kotak centang, tinggi butir yang pas untuk sentuhan</td></tr>
+    </tbody>
+  </table>
+  <div class="shots">
+    <figure>
+      <img src="../img/dropdown-default-dark.png" alt="Dropdown yang terbuka — panel sorotan aksen lembut dan penanda radio pada butir yang dipilih" loading="lazy">
+      <figcaption>Dropdown — panel sorotan dan penanda radio</figcaption>
+    </figure>
+    <figure>
+      <img src="../img/slots-scifi-dark.png" alt="Empat slot cepat — pintasan di kiri atas, lencana jumlah di kanan bawah, yang pertama dengan lencana sisa waktu" loading="lazy">
+      <figcaption>Slot — lencana sudut dan sisa waktu (sci-fi)</figcaption>
+    </figure>
+  </div>
+  <p>
+    Berikan deskripsi pada tombol yang hanya berisi ikon lewat <code>GoStyle.icon_button(icon, action, -1, <b>tooltip_key</b>)</code> —
+    tooltip untuk pengguna tetikus dan nama aksesibilitas untuk pembaca layar keduanya berasal dari satu nilai itu.
+    gohud menggambar tooltip-nya sendiri: default mesinnya memecah teks <b>satu karakter per baris</b> ketika
+    perhitungan lebarnya meleset (terukur selebar 1dp).
+  </p>
+
+  <h4 id="the-coach-mark-card-keeps-off-fixtures">Kartu coach mark menjauh dari perabot layar</h4>
+  <p>
+    Pada mode lanskap, kartunya dulu dilempar ke tepi paling atas atau paling bawah — persis tempat header dan bagian
+    HUD berada; di dalam demo ia mendarat di atas <code>→ ×</code> milik header. Kini ia tetap sejajar dengan sasarannya,
+    memutari setiap <code>GoHudAnchor</code> yang memesan ruang, dan menerima hal-hal lain yang harus dihindari lewat
+    <code>keep_clear</code>. Ia bergerak sependek mungkin untuk melewati penghalang tanpa menutupi
+    sasarannya, dan tetap diam bila layarnya terlalu kecil untuk melewati semuanya — bertumpuk lebih baik daripada menghilang.
+    Kedalamannya — agar ia terbaca <b>di atas</b> halaman — berasal dari kenop skin
+    (<code>float_shadow_size</code>, <code>float_shadow_lift</code>, <code>float_shadow_alpha</code>; skin bersudut potong memakai <code>float_glow_size</code>).
+  </p>
+  <pre><code>tour.keep_clear = [header_bar, toolbar]   # perabot layar yang bukan anchor</code></pre>
+
+  <h3 id="screens-with-a-mouse-and-a-keyboard">Layar dengan tetikus dan papan ketik</h3>
+  <p>
+    Jari <b>tidak punya keadaan hover.</b> Bangun hanya untuk seluler dan dua keadaan khas desktop luput dari pemeriksaan —
+    dan salah satunya memang rusak: <b>cincin fokus gohud tidak terlihat pada tombol primer.</b> Panelnya
+    berwarna aksen dan cincinnya pun begitu: <code>1,00:1</code>, warna yang sama digambar di atas dirinya sendiri. Bergerak
+    dengan papan ketik, tak ada cara untuk tahu Anda sedang berada di mana.
+  </p>
+  <figure>
+    <img src="../img/desktop-states.png" alt="Baris tombol yang sama dalam tiga keadaan — normal, hover tetikus, fokus papan ketik" loading="lazy">
+    <figcaption>Dari atas ke bawah: <b>normal · hover · fokus</b>. Tombol berisi penuh mendapat cincin yang kontras dengan panelnya.</figcaption>
+  </figure>
+  <p>
+    Tombol berisi penuh (<code>GoPrimaryButton</code>, <code>GoDangerSolidButton</code>) memakai cincin yang
+    <b>kontras dengan panelnya sendiri</b> — gelap pada tema gelap, putih pada tema terang, kurung penanda sasaran
+    yang gelap pada sci-fi. Pemeriksa kontras mengukur <b>cincin fokus terhadap panel tempatnya berada</b>, sehingga
+    aturannya bertahan saat paletnya berubah (WCAG 2.4.11 meminta 3:1 pada penanda fokus).
+  </p>
+
+</section>
+
+<section id="hud-widgets">
+  <h2>Widget HUD</h2>
+  <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — sembilan titik</h3>
+  <p>Menghormati area aman dan margin tepi. Berikan <code>landscape_spot</code> dan ia berpindah saat
+    lanskap — kontrol yang duduk di tengah bawah pada mode potret bisa pindah ke kanan bawah.</p>
+  <div class="note">
+    <b>Kenapa ia ada.</b> Ditulis manual untuk tiap bagian HUD, anchor dan offset-nya akan melenceng: bar darah berakhir
+    di bawah lubang kamera pada perangkat ber-notch, dan tombol kontrol mendarat di atas gesture bar saat
+    lanskap. Hitung-hitungan itu tinggal di satu tempat.
+  </div>
+
+  <h4 id="keeping-content-out-from-under-the-hud">Menjaga konten tidak masuk ke bawah HUD</h4>
+  <p>
+    Ketika layar yang bergulir berbagi tampilan dengan HUD, kontennya menyelinap <b>ke bawahnya</b> dan kedua
+    kumpulan teksnya bertumpuk sampai tak satu pun terbaca. Itu terjadi dua kali di add-on ini: teks contoh sebuah
+    kolom masukan terjepit di antara slot cepat, dan kenop sakelar pada setelan mendarat di atas bar darah.
+  </p>
+  <pre><code>form.avoid_hud = true                  # menjauh dari setiap GoHudAnchor yang terlihat
+joystick_anchor.reserve_space = false  # …kecuali yang hanya muncul di bawah jari</code></pre>
+  <p>
+    Setiap persegi dihindari ke arah yang <b>paling sedikit memakan luas</b>. Bar di kanan atas
+    diputari ke bawah pada ponsel potret (13% dari tingginya) dan ke samping pada lanskap (21% dari
+    lebarnya) — menghindarinya secara vertikal pada lanskap akan memakan 27% dari layar. Ruang yang sudah direlakan
+    dikurangkan lebih dulu sebelum persegi berikutnya diukur.
+  </p>
+
+  <h4 id="hud-pieces-collide-with-each-other-too">Bagian-bagian HUD juga bertabrakan satu sama lain</h4>
+  <p>
+    Kesembilan titik itu membagi layar; mereka tidak menjamin bagian-bagiannya <b>saling luput</b>. Sebuah
+    snackbar lebar di tengah atas mendarat tepat di atas bar darah di kanan atas, menyembunyikan nilainya — Anda tidak
+    bisa membaca berapa sisa darahnya.
+  </p>
+  <pre><code>notice_anchor.avoid_peers = true      # turun ke bawah HUD tetap
+notice_anchor.reserve_space = false   # dan tidak mendorong halamannya selagi ia muncul</code></pre>
+  <p>
+    Ia menyingkir <b>secara vertikal saja</b> — menyingkir ke samping juga akan membuat toast yang terpusat muncul di
+    tempat yang berbeda-beda setiap kali. Dan ia hanya menghindari bagian yang <b>tidak</b> ikut menyingkir
+    sendiri: kalau keduanya mengalah, keduanya akan bertukar tempat selamanya.
+  </p>
+
+  <h3 id="gobar-health-mana-experience"><code>GoBar</code> — darah, mana, pengalaman</h3>
+  <pre><code>var hp := GoBar.new()
+hp.label_text = "HP"
+hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token khusus isian
+hp.set_values(320, 500)                     # "320 / 500"</code></pre>
+  <p>Perubahannya dilandaikan selama 0,18 detik — bar darah yang melompat tidak memberi tahu Anda seberapa keras Anda terpukul.
+    <code>reduce_motion</code> membuatnya seketika. Angka besar disingkat menjadi <code>12.3k</code> supaya
+    lebar bar-nya tidak bergetar saat jumlah digitnya berubah.</p>
+
+  <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — satu slot cepat</h3>
+  <p>Ikon, jumlah, waktu jeda, dan pintasan pada <b>satu muka</b>. Menggantung lencana pada lingkaran kecil
+    membuat tiap slot punya lebar berbeda dan barisannya goyah.</p>
+  <div class="note">
+    <b>Ukuran terlihat dan ukuran sentuh berbeda.</b> Slot yang berdempetan punya kotak sentuh 48dp yang saling tumpang tindih;
+    tumpang tindihnya jatuh ke <b>slot yang pusatnya lebih dekat</b> — beri tahu mereka satu sama lain lewat
+    <code>touch_peers</code>.
+  </div>
+
+  <p><code>keyboard_focus</code> mati secara default, supaya barisan delapan slot tidak menghalangi pengguna papan ketik dari
+    setiap kontrol setelan dalam urutan Tab. Nyalakan bila papan ketik atau gamepad adalah satu-satunya input.</p>
+
+  <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — stik virtual</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>Perilaku</th></tr></thead>
+    <tbody>
+      <tr><td><code>FIXED</code></td><td>Selalu di tempat yang sama — mudah ditemukan tanpa melihat</td></tr>
+      <tr><td><code>FOLLOW</code></td><td>Muncul di tempat ibu jari mendarat</td></tr>
+      <tr><td><code>RELATIVE</code></td><td>Terus mengikuti ibu jari setelah muncul — nyaman untuk gerakan panjang</td></tr>
+    </tbody>
+  </table>
+  <p><code>Vector2</code> dari <code>moved</code> panjangnya 0–1, jadi Anda bisa langsung mengalikannya dengan
+    sebuah kecepatan; nilainya tidak berubah mengikuti ukuran layar atau DPI.</p>
+
+  <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — terlihat kecil, ditekan besar</h3>
+  <div class="note warn">
+    <b>Hanya aman selama saudara-saudaranya mengabaikan input.</b> Bila area yang diperlebar itu menutupi tombol berikutnya,
+    tombol itu berhenti merespons. Tombol ikon yang berjajar butuh <code>touch_peers</code>.
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-messages.html">← Menyampaikan sesuatu kepada pemain</a> · <a href="widgets-feedback.html">Menunggu, memberi tahu, menghitung →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

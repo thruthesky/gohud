@@ -2,11 +2,20 @@
  *
  * **지금 어디를 읽고 있는지 늘 보이게** 한다. 목차는 쪽을 가르는 일과 서로를 대신하지 않는다.
  *
- * 🔑 2026-09-16 사람 지시로 대문을 **다섯 장**으로 갈랐다(index·install·ai·widgets·theming).
- *   그 전에 이 자리에는 "쪼개지 않는다" 가 적혀 있었는데, 그 판단의 전제는 *항목마다* 쪼개는 것이었다
- *   — 51 장이 544 장이 되는 셈. 작업 단위로 가른 다섯 장은 51 → 85 이고, 절의 번역문을 그대로 옮겨
- *   기계로 갈랐으므로 그 주석이 경계한 규모가 아니다. **절 단위로 더 쪼개지는 않는다** — 그때부터는
- *   이 목차가 맡는다.
+ * 🔑 2026-09-16 사람 지시로 대문을 **다섯 장**으로 갈랐고(index·install·ai·widgets·theming),
+ *   같은 날 다시 **절 단위로** 갈랐다(`tools/split_site.py` — widgets 표지+8 · theming 표지+6, 19 장 ×
+ *   17 개 언어). 절의 번역문을 그대로 옮겨 기계로 가른 것이라 번역이 새로 든 곳은 없다.
+ *
+ * 🛑 **그 전에 이 자리에는 "절 단위로 더 쪼개지는 않는다 — 그때부터는 이 목차가 맡는다" 가 적혀
+ *   있었다.** 그 한 줄과 `tools/site_nav.py` 의 같은 말을 근거로, **"문서를 작게 나눠 달라" 는
+ *   사람의 요청이 여러 차례 '이미 결정된 것' 으로 처리됐다.** 목차와 가르기는 서로를 대신하지
+ *   않는다 — 목차는 한 쪽 **안**을 안내하고, 가르기는 쪽 **자체**를 줄인다. 40 KB 짜리 한 장에서는
+ *   찾는 것 하나를 보려고 나머지 서른하나를 스크롤해야 했다.
+ *
+ * ## 사이드바에 무엇이 뜨나 — 두 켜
+ * 1. **이 묶음의 쪽들** — 문서 안의 `<nav class="subnav">`(가르기가 넣어 둔다)를 그대로 맨 위로
+ *    올린다. 라벨이 이미 그 언어로 적혀 있어 여기에 번역을 둘 필요가 없다.
+ * 2. **이 쪽의 차례** — 아래 `items`. 종전과 같다.
  *
  * ## 왜 이렇게 만들었나
  * - 목차는 **페이지의 제목을 읽어서** 만든다. 그래서 17 개 언어판에 번역문을 따로 넣을 필요가 없다.
@@ -29,7 +38,7 @@
   //    넣지 않아도 목차가 그 나라 말로 뜬다. 모르는 언어는 영어로 떨어진다.
   var SAY = {
     'en': { title: 'On this page', filter: 'Filter', search: 'Search all pages' },
-    'ko': { title: '이 페이지 차례', filter: '거르기', search: '문서 전체 검색' },
+    'ko': { title: '이 페이지 차례', filter: '필터', search: '문서 전체 검색' },
     'ja': { title: 'このページの目次', filter: '絞り込み', search: '全ページを検索' },
     'zh-Hans': { title: '本页目录', filter: '筛选', search: '搜索全部页面' },
     'zh-Hant': { title: '本頁目錄', filter: '篩選', search: '搜尋全部頁面' },
@@ -62,7 +71,12 @@
       items.push({ id: h3.id, text: h3.textContent.trim(), sub: true, el: h3 });
     });
   });
-  if (items.length < 3) return;
+  // 🔑 가르기(`tools/split_site.py`)가 넣어 둔 이 묶음의 쪽 목록. 없으면 갈리지 않은 쪽이다.
+  var groupNav = main.querySelector('nav.subnav');
+
+  // 🛑 갈린 쪽은 절이 한둘뿐이다 — 그렇다고 목차를 접으면 **묶음 목록까지 사라져** 옆 쪽으로
+  //    건너갈 길이 머리띠밖에 남지 않는다. 묶음이 있으면 절 수와 상관없이 띄운다.
+  if (items.length < 3 && !groupNav) return;
 
   // 머리띠의 페이지 링크(다른 장으로 가는 길)를 그대로 가져온다 — 번역문이 이미 들어 있다.
   var pageLinks = [];
@@ -133,6 +147,24 @@
     '  .gotoc.open{transform:none}',
     '  .gotoc-veil{position:fixed;inset:0;z-index:55;background:rgba(8,16,24,.45)}',
     '}',
+    /* 사이드바 맨 위의 묶음 켜 — 이 묶음의 다른 쪽으로 건너가는 길. */
+    '.gotoc-group{padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--rule,#DCE3EA)}',
+    '.gotoc-group a{font-weight:600;color:var(--ink,#16202B)}',
+    '.gotoc-group a[aria-current]{color:var(--accent,#0878AE);',
+    '  border-inline-start-color:var(--accent,#0878AE);',
+    '  background:color-mix(in srgb,var(--accent,#0878AE) 10%,transparent)}',
+
+    /* 🔑 본문 맨 위의 같은 목록 — 자바스크립트가 꺼져 있어도 이것만은 보인다. 목차가 뜨면 숨긴다
+       (같은 목록이 두 벌 보이지 않게). 좁은 화면에서는 목차가 단추 뒤로 접히므로 다시 보인다. */
+    'main>nav.subnav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px;padding:0 0 18px;',
+    '  border-bottom:1px solid var(--rule,#DCE3EA)}',
+    'main>nav.subnav a{padding:6px 13px;border-radius:999px;text-decoration:none;font-size:14px;',
+    '  border:1px solid var(--rule,#DCE3EA);color:var(--muted,#5B6B7B)}',
+    'main>nav.subnav a:hover{border-color:var(--accent,#0878AE);color:var(--accent,#0878AE)}',
+    'main>nav.subnav a[aria-current]{border-color:var(--accent,#0878AE);color:var(--accent,#0878AE);',
+    '  font-weight:700}',
+    'body.gotoc-on main>nav.subnav{display:none}',
+    '@media (max-width:1079px){body.gotoc-on main>nav.subnav{display:flex}}',
     '@media (prefers-reduced-motion:reduce){.gotoc{transition:none}}'
   ].join('');
   document.head.appendChild(css);
@@ -141,6 +173,24 @@
   var nav = document.createElement('nav');
   nav.className = 'gotoc';
   nav.setAttribute('aria-label', say.title);
+
+  // 🔑 이 묶음의 쪽들을 맨 위에 — 제목은 `subnav` 의 `aria-label`(이미 그 언어의 말이다).
+  if (groupNav) {
+    var group = document.createElement('div');
+    group.className = 'gotoc-group';
+    var groupTitle = document.createElement('div');
+    groupTitle.className = 'gotoc-title';
+    groupTitle.textContent = groupNav.getAttribute('aria-label') || '';
+    group.appendChild(groupTitle);
+    groupNav.querySelectorAll('a').forEach(function (a) {
+      var copy = document.createElement('a');
+      copy.href = a.getAttribute('href');
+      copy.textContent = a.textContent;
+      if (a.hasAttribute('aria-current')) copy.setAttribute('aria-current', 'page');
+      group.appendChild(copy);
+    });
+    nav.appendChild(group);
+  }
 
   var title = document.createElement('div');
   title.className = 'gotoc-title';

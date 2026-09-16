@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-style.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-style.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-style.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-style.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-style.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-style.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-style.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-style.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-style.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-style.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-style.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-style.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-style.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-style.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoStyle — her şeyin üretildiği tek yer — gohud</title>
+<meta name="description" content="Doğrudan Button.new() çağırın; iç boşluk, yükseklik ve satır kaydırma ekrandan ekrana hafifçe ayrışsın.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Genel bakış</a>
+      <a href="install.html">Kurulum</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widget'lar</a>
+      <a href="theming.html">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Türkçe</summary>
+        <div class="langs-list">
+          <a href="../widgets-style.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-style.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-style.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-style.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-style.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-style.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-style.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-style.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-style.html" hreflang="fr" lang="fr">Français</a>
+          <a href="widgets-style.html" hreflang="tr" lang="tr" aria-current="true">Türkçe</a>
+          <a href="../pl/widgets-style.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-style.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-style.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-style.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-style.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-style.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-style.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1><code>GoStyle</code> — her şeyin üretildiği tek yer</h1>
+    <p class="lead"><a href="widgets.html">← Widget'lar</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget'lar">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget'lar</a>
+  <a href="widgets-surfaces.html">Yüzen pencereler</a>
+  <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Beklemek, bildirmek, saymak</a>
+  <a href="widgets-forms.html">Formlar ve listeler</a>
+  <a href="widgets-shapes.html">Oyunların gerçekten kullandığı biçimler</a>
+  <a href="widgets-overlays.html">Ekranın üstünde</a>
+  <a href="widgets-style.html" aria-current="page"><code>GoStyle</code> — her şeyin üretildiği tek yer</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="factory">
+  <p class="sub">
+    Doğrudan <code>Button.new()</code> çağırın; iç boşluk, yükseklik ve satır kaydırma ekrandan ekrana
+    hafifçe ayrışsın. Bu ayrışma kod incelemesinde görünmez, ekran görüntüsünde apaçıktır.
+  </p>
+
+  <table>
+    <thead><tr><th>Grup</th><th>Fonksiyonlar</th></tr></thead>
+    <tbody>
+      <tr><td>Yapı</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Yazı</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Düğmeler</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>Girdi</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>Gösterim</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>Yüzey parçaları</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>Yardımcılar</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> her zaman bir <code>StyleBoxFlat</code> döndürür</b>, çünkü çağıranlar onu alıp
+    <code>bg_color</code> veya <code>corner_radius</code> değerini ayarlar. Özel bir biçimin hayatta kalması
+    gerekiyorsa <code>surface()</code> kullanın.
+  </div>
+
+  <h3 id="list-rows-with-a-description">Açıklamalı liste satırları</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Yemin Tutan", _inspect, Color.TRANSPARENT,
+    "Uzun kılıç  /  Saldırı 42", false)</code></pre>
+  <p>İkinci satırı olan bir satır <b>eşit üst ve alt iç boşluk</b> alır, tek satırlık bir satırdan ferahtır ve
+    başlık/açıklama çifti simgenin yanında <b>dikeyde ortalanmış</b> kalır — bir kap satırı daha uzun hâle
+    getirdiğinde ve açıklama birkaç satıra kaydığında da. Satırın tamamı tek bir dokunma hedefi olarak kalır.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="medieval_light örneği — iki satırlı liste satırları, hızlı slotlar ve çubuklar" loading="lazy">
+    <figcaption>Ortaçağ örneğinde iki satırlı satırlar, slotlar ve çubuklar — <code>medieval_light</code> altında aynı fabrika çağrıları.</figcaption>
+  </figure>
+
+  <h3 id="flowing-rows">Akan satırlar</h3>
+  <p>Denetimleri <code>wrap_row</code> içine <b>doğal genişlikleriyle</b> koyun. Satır kaydırma açık bırakılırsa
+    bir düğmenin en küçük genişliği neredeyse hiçe iner ve satır, hücresini buna göre boyutlandırır — etiket
+    satır başına tek karaktere çöker. Fabrika bunu sizin yerinize engeller.</p>
+
+  <h3 id="never-leave-an-empty-list-empty">Boş bir listeyi asla boş bırakmayın</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Burada henüz bir şey yok"))</code></pre>
+  <p>İnsanlar boş bir ekranı <b>bozuk</b> diye okur.</p>
+</section>
+
+<section id="hooks">
+  <h2>Alt sınıf kancaları</h2>
+  <p class="sub">
+    Bir alt widget'ın oluşturulduğu her yer, ezilebilir bir metottan geçer; böylece gohud türlerinin alt
+    sınıfını türeten bir proje, kendi alt sınıflarını kod kopyalamadan widget'ların <b>içine</b> sokabilir.
+  </p>
+  <table>
+    <thead><tr><th>Kanca</th><th>Widget</th><th>Varsayılan</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Bir modal açıkken kartı gizler</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-overlays.html">← Ekranın üstünde</a> · <a href="widgets.html">Widget'lar →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

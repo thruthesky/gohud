@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-own.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-own.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-own.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-own.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-own.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-own.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-own.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-own.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-own.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-own.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-own.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-own.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-own.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-own.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-own.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-own.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-own.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-own.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>你自己的預設集 — 一個檔案 — gohud</title>
+<meta name="description" content="以前要加一份佈景主題，得手動改四個地方 — 產生器的調色盤、形狀、一份外觀、一個預設集資源。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">總覽</a>
+      <a href="install.html">安裝</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">控制項</a>
+      <a href="theming.html" aria-current="page">佈景主題</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>繁體中文</summary>
+        <div class="langs-list">
+          <a href="../theming-own.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-own.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-own.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-own.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="theming-own.html" hreflang="zh-Hant" lang="zh-Hant" aria-current="true">繁體中文</a>
+          <a href="../es/theming-own.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-own.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-own.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-own.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-own.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-own.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-own.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-own.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-own.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-own.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-own.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-own.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>你自己的預設集 — 一個檔案</h1>
+    <p class="lead"><a href="theming.html">← 佈景主題</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="佈景主題">
+  <!-- subnav:begin -->
+  <a href="theming.html">佈景主題</a>
+  <a href="theming-presets.html">三層</a>
+  <a href="theming-tokens.html">Token</a>
+  <a href="theming-opacity.html">不透明度 — 面板背後的遊戲</a>
+  <a href="theming-skins.html">外觀 — 佈景主題碰不到的地方</a>
+  <a href="theming-own.html" aria-current="page">你自己的預設集 — 一個檔案</a>
+  <a href="theming-contrast.html">可讀性是量出來的</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="own">
+  <p class="sub">
+    以前要加一份佈景主題，得手動改四個地方 — 產生器的調色盤、形狀、一份外觀、一個預設集資源。
+    現在一道指令就把它們全部就位。
+  </p>
+  <pre><code>python3 addons/gohud/tools/new_theme.py neon --from scifi_dark --title "Neon"
+python3 addons/gohud/tools/make_theme.py neon      # 佈景主題 .tres + 控制項圖檔
+godot --headless --path . --import                  # 把新圖檔匯入一次
+GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器裡也會出現</code></pre>
+  <p>
+    第一行會寫出 <code>themes/palettes/neon.json</code> 與 <code>themes/presets/neon.tres</code>。這份
+    JSON 會把<b>它所繼承的佈景主題的每一個值</b>都完整寫出來，所以它同時就是一份「可以改什麼」的清單：
+    刪掉一個鍵就沿用上層的值，寫上去就覆寫它。預設集是靠<b>掃描</b>
+    <code>themes/presets/</code> 找到的，所以不用改任何註冊用的程式碼 — 專案設定的下拉選單也會自動抓到。
+  </p>
+
+  <h3 id="what-you-can-change-on-one-page">可以改的東西 — 一頁看完</h3>
+  <table>
+    <thead><tr><th>位置</th><th>改什麼</th><th>怎麼寫</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code></td><td>上層佈景主題</td><td><code>dark</code> · <code>light</code> · <code>scifi_dark</code> · <code>medieval_dark</code> · … 或另一份 JSON 佈景主題。省略的鍵沿用它的值；繼承成環就會失敗</td></tr>
+      <tr><td rowspan="3"><code>palette</code></td><td>背景 · 三層面板 · 邊框 · 三級文字 · 強調色 · 四種狀態色 · 遮罩 · 陰影 · 量條軌道</td><td><code>"#RRGGBB"</code>，帶 alpha 時寫成 <code>"#RRGGBB@0.35"</code></td></tr>
+      <tr data-group="palette"><td>只用於填色的鮮豔顏色 <code>*_vivid</code></td><td>即使文字顏色必須變深，量條仍能保持飽和 — 漏掉一個，產生器會提醒你</td></tr>
+      <tr data-group="palette"><td>可讀性</td><td><b>不是手動調的。</b>文字、邊框、強調色，以及疊在強調色上的標籤，都由產生器推到達標為止 — 你只改強調色，檢查照樣會過</td></tr>
+      <tr><td rowspan="4"><code>shape</code></td><td><code>kind</code></td><td><code>flat</code>（圓角） · <code>cut</code>（切角） · <code>medieval</code>（鍛造框）</td></tr>
+      <tr data-group="shape"><td>尺寸</td><td><code>radius</code> · <code>radius_small</code> · <code>radius_large</code> · <code>gap</code> · <code>gap_small</code> · <code>gap_large</code> · <code>padding</code> · <code>button_height</code> · <code>button_padding[4]</code> — token 會跟著走，所以面板與控制項的計算永遠不會對不上</td></tr>
+      <tr data-group="shape"><td>只有 <code>cut</code> 才有</td><td><code>cut_ratio</code> · <code>cut_max</code> · <code>corners</code>（<code>diagonal</code>|<code>all</code>） · <code>glow</code> · <code>edge</code></td></tr>
+      <tr data-group="shape"><td>只有 <code>medieval</code> 才有</td><td><code>material</code>（0 鐵 · 1 皮革 · 2 羊皮紙） · <code>grain_alpha</code> · <code>ornament_scale</code> · <code>bevel_strength</code> · <code>fonts</code> — 把 <code>title</code>、<code>subtitle</code>、<code>caption</code>、<code>body</code>、<code>button</code> 對應到附加元件本地的 <code>res://</code> 字型檔</td></tr>
+      <tr><td rowspan="2"><code>skin</code></td><td><code>base</code> — 那些由程式碼自己畫的地方（搖桿、快捷格、徽章、導覽標記的圈、標籤片、分隔線）屬於哪個家族</td><td><code>default</code> · <code>scifi</code> · <code>medieval</code></td></tr>
+      <tr data-group="skin"><td><code>dials</code> — 那些地方的<b>數字</b>：快捷格邊框寬度與著色、徽章內距、標籤片與行內提示的不透明度、搖桿圈的寬度與不透明度、科幻切角大小、光暈與框角</td><td>上層的每一個值都在 JSON 裡寫得清清楚楚。產生器會把它們寫進 <code>themes/skins/gohud_skin_&lt;id&gt;.tres</code> — <b>完全不動外觀的程式碼</b>。只有要改圖案本身時才需要跑 <code>--new-skin</code>，它會搭出一個 <code>GoSkin</code> 子類別</td></tr>
+      <tr><td><code>icons</code></td><td>圖示組</td><td>指向 <code>GoIconSet</code> 資源的 <code>res://</code> 路徑 — 省略時沿用 JSON 上層的設定</td></tr>
+      <tr><td><code>dark</code> · <code>title</code></td><td>選擇器裡怎麼顯示</td><td>布林值 · 字串</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="every-dial">所有旋鈕</h3>
+  <p>
+    下面的表格由 <code>tools/make_site.py</code> <b>直接從外觀指令碼的</b>
+    <code>@export</code> 行填出來 — 加一個旋鈕或改一個預設值，表格就跟著變。在 JSON 的
+    <code>skin.dials</code> 底下使用這些名稱。預設值寫成 <code>14</code> 的旋鈕是整數，寫成
+    <code>10.0</code> 的是浮點數 — JSON 裡兩種寫法都行，產生器會轉成指令碼所要的型別。
+  </p>
+  <!-- dials:begin -->
+  <div class="dials">
+  <h4 id="default-skin-goskin-17">預設外觀 <code>GoSkin</code> — 17</h4>
+  <table>
+    <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
+    <tbody>
+      <tr><td><code>chip_fill_alpha</code></td><td data-label="預設值">0.16</td><td>標籤片面板的填色不透明度。</td></tr>
+      <tr><td><code>chip_edge_alpha</code></td><td data-label="預設值">0.45</td><td>標籤片面板的邊緣不透明度。</td></tr>
+      <tr><td><code>alert_tint</code></td><td data-label="預設值">0.1</td><td>行內提示的面板往它的狀態色偏多少。</td></tr>
+      <tr><td><code>slot_tint_lit</code></td><td data-label="預設值">0.24</td><td>冷卻進行中的快捷格面板的強調色著色量。</td></tr>
+      <tr><td><code>slot_tint_idle</code></td><td data-label="預設值">0.08</td><td>閒置時快捷格面板的強調色著色量。</td></tr>
+      <tr><td><code>slot_border_lit</code></td><td data-label="預設值">2</td><td>冷卻進行中的快捷格邊框寬度（dp）。</td></tr>
+      <tr><td><code>slot_border_idle</code></td><td data-label="預設值">1</td><td>閒置時的快捷格邊框寬度（dp）。</td></tr>
+      <tr><td><code>badge_pad_x</code></td><td data-label="預設值">5</td><td>徽章（數量、剩餘時間）的水平內距（dp）。</td></tr>
+      <tr><td><code>badge_pad_y</code></td><td data-label="預設值">1</td><td>徽章的垂直內距（dp）。</td></tr>
+      <tr><td><code>badge_edge_alpha</code></td><td data-label="預設值">0.6</td><td>徽章面板的邊緣不透明度。</td></tr>
+      <tr><td><code>float_shadow_alpha</code></td><td data-label="預設值">0.45</td><td>浮動卡片（導覽標記、提示卡）的陰影不透明度。</td></tr>
+      <tr><td><code>float_shadow_size</code></td><td data-label="預設值">14</td><td>浮動卡片的陰影模糊（dp）。</td></tr>
+      <tr><td><code>float_shadow_lift</code></td><td data-label="預設值">4</td><td>浮動卡片陰影往下的位移（dp）。</td></tr>
+      <tr><td><code>float_glow_size</code></td><td data-label="預設值">10.0</td><td>不投影而改用發光的浮動面板（例如科幻的切角面板）的光暈距離（dp）。</td></tr>
+      <tr><td><code>joystick_base_alpha</code></td><td data-label="預設值">0.42</td><td>搖桿底盤的不透明度。</td></tr>
+      <tr><td><code>joystick_ring_alpha</code></td><td data-label="預設值">0.45</td><td>搖桿外圈的不透明度。</td></tr>
+      <tr><td><code>joystick_ring_width</code></td><td data-label="預設值">2.0</td><td>搖桿外圈的寬度（dp）。</td></tr>
+    </tbody>
+  </table>
+  <h4 id="sci-fi-skin-goskinscifi-10">科幻外觀 <code>GoSkinSciFi</code> — 10</h4>
+  <table>
+    <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
+    <tbody>
+      <tr><td><code>cut_chip</code></td><td data-label="預設值">7.0</td><td>標籤片面板的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_skeleton</code></td><td data-label="預設值">5.0</td><td>骨架佔位面板的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_alert</code></td><td data-label="預設值">8.0</td><td>行內提示框的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_segment</code></td><td data-label="預設值">8.0</td><td>分段控制項的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_slot</code></td><td data-label="預設值">6.0</td><td>快捷格面板的切角大小（dp）。</td></tr>
+      <tr><td><code>cut_disc_ratio</code></td><td data-label="預設值">0.24</td><td>頭像與圓盤的切角 = 直徑 × 這個比例。</td></tr>
+      <tr><td><code>slot_glow_alpha</code></td><td data-label="預設值">0.45</td><td>冷卻進行中的快捷格的光暈不透明度。</td></tr>
+      <tr><td><code>slot_glow_size</code></td><td data-label="預設值">6.0</td><td>冷卻進行中的快捷格的光暈距離（dp）。</td></tr>
+      <tr><td><code>bracket_arm</code></td><td data-label="預設值">12.0</td><td>導覽標記瞄準框角的臂長（dp）。</td></tr>
+      <tr><td><code>bracket_thickness</code></td><td data-label="預設值">2.0</td><td>導覽標記瞄準框角的線條粗細（dp）。</td></tr>
+    </tbody>
+  </table>
+  <h4 id="medieval-skin-goskinmedieval-5">中世紀外觀 <code>GoSkinMedieval</code> — 5</h4>
+  <table>
+    <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
+    <tbody>
+      <tr><td><code>slot_radius</code></td><td data-label="預設值">4.0</td><td>中世紀快捷格外框的圓角半徑（dp）。</td></tr>
+      <tr><td><code>leather_grain_alpha</code></td><td data-label="預設值">0.035</td><td>快捷格內側細微皮革紋路的不透明度。</td></tr>
+      <tr><td><code>ornament_scale</code></td><td data-label="預設值">1.0</td><td>快捷格角落金屬裝飾的縮放。選單框用的是 shape.ornament_scale。</td></tr>
+      <tr><td><code>bevel_strength</code></td><td data-label="預設值">0.18</td><td>快捷格邊緣金屬高光的強度。</td></tr>
+      <tr><td><code>slot_rivets</code></td><td data-label="預設值">1</td><td>是否在快捷格上顯示小金屬鉚釘：0 隱藏，1 顯示。</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <!-- dials:end -->
+
+  <h3 id="subclass-the-skin-optional">繼承外觀（選用）</h3>
+  <p>只有佈景主題與形狀碰不到的東西 — 搖桿的六邊形、快捷格徽章、導覽標記的
+    瞄準框角 — 才住在外觀裡。繼承 <code>GoSkin</code>，只覆寫那幾個方法，再把 JSON 的
+    <code>skin</code> 指向那份資源。只改顏色的佈景主題可以略過這一步。</p>
+
+  <div class="note">
+    <b>有一項檢查替這個承諾把關。</b><code>tools/check_scaffold.sh</code> 每次執行都會建立一份用完即丟的佈景主題 —
+    改掉強調色、把圓角半徑設成 4 — 並在刪掉它之前驗證產生、token 傳遞與乾淨的對比檢查。
+    第一次跑就抓到：只改了強調色的佈景主題有<b>8 組配色</b>不合格 — 產生器推了文字顏色，
+    卻照著原樣使用強調色。現在連強調色與疊在它上面的標籤也一起推。
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-skins.html">← 外觀 — 佈景主題碰不到的地方</a> · <a href="theming-contrast.html">可讀性是量出來的 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-style.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-style.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-style.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-style.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-style.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-style.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-style.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-style.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-style.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-style.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-style.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-style.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-style.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-style.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoStyle —— 所有东西都在同一处造出来 — gohud</title>
+<meta name="description" content="直接调 Button.new()，内边距、高度和换行就会在不同界面之间一点点跑偏。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概览</a>
+      <a href="install.html">安装</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">控件</a>
+      <a href="theming.html">主题</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>简体中文</summary>
+        <div class="langs-list">
+          <a href="../widgets-style.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-style.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-style.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="widgets-style.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">简体中文</a>
+          <a href="../zh-tw/widgets-style.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-style.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-style.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-style.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-style.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-style.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-style.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-style.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-style.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-style.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-style.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-style.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-style.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1><code>GoStyle</code> —— 所有东西都在同一处造出来</h1>
+    <p class="lead"><a href="widgets.html">← 控件</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="控件">
+  <!-- subnav:begin -->
+  <a href="widgets.html">控件</a>
+  <a href="widgets-surfaces.html">浮动窗口</a>
+  <a href="widgets-messages.html">把消息传达给玩家</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">等待、告知、计数</a>
+  <a href="widgets-forms.html">表单与列表</a>
+  <a href="widgets-shapes.html">游戏真正用得上的形态</a>
+  <a href="widgets-overlays.html">盖在屏幕之上</a>
+  <a href="widgets-style.html" aria-current="page"><code>GoStyle</code> —— 所有东西都在同一处造出来</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="factory">
+  <p class="sub">
+    直接调 <code>Button.new()</code>，内边距、高度和换行就会在不同界面之间一点点跑偏。
+    这种偏差在代码评审里看不出来，在截图里却一眼就能看到。
+  </p>
+
+  <table>
+    <thead><tr><th>分组</th><th>函数</th></tr></thead>
+    <tbody>
+      <tr><td>结构</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>文字</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>按钮</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>输入</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>展示</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>浮层部件</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>辅助</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> 永远返回 <code>StyleBoxFlat</code></b>，因为调用方拿到它之后还要调整
+    <code>bg_color</code> 或 <code>corner_radius</code>。需要保住自定义形状时，请改用
+    <code>surface()</code>。
+  </div>
+
+  <h3 id="list-rows-with-a-description">带说明的列表行</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "守誓者", _inspect, Color.TRANSPARENT,
+    "长剑  /  攻击 42", false)</code></pre>
+  <p>带第二行的行会获得<b>上下相等的内边距</b>，比单行的行更宽松，标题与说明这一组始终
+    <b>与图标垂直居中对齐</b> —— 容器把行拉高时如此，说明换成好几行之后也是如此。整行仍然是一个点按目标。</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="medieval_light 示例 —— 两行式列表行、快捷槽和状态条" loading="lazy">
+    <figcaption>中世纪示例里的两行式列表行、快捷槽和状态条 —— 在 <code>medieval_light</code> 下调用的是同样的工厂方法。</figcaption>
+  </figure>
+
+  <h3 id="flowing-rows">会自动折行的一排控件</h3>
+  <p>把控件按<b>自然宽度</b>放进 <code>wrap_row</code>。若保持换行开启，按钮的最小宽度会掉到几乎为零，
+    而这一排会按这个值来分配单元格 —— 标签于是被压成一行一个字。工厂方法替你挡住了这个问题。</p>
+
+  <h3 id="never-leave-an-empty-list-empty">永远别让空列表就这么空着</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "这里还什么都没有"))</code></pre>
+  <p>人看到一片空白，会当成<b>坏了</b>。</p>
+</section>
+
+<section id="hooks">
+  <h2>子类钩子</h2>
+  <p class="sub">
+    每一处构造子控件的地方都走的是可重写的方法，所以继承了 gohud 类型的项目，
+    不必复制代码就能把自己的子类用到控件<b>内部</b>。
+  </p>
+  <table>
+    <thead><tr><th>钩子</th><th>控件</th><th>默认实现</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>、<code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>、<code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>、<code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>模态窗口打开期间隐藏卡片</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-overlays.html">← 盖在屏幕之上</a> · <a href="widgets.html">控件 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

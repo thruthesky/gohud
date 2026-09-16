@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-style.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-style.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-style.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-style.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-style.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-style.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-style.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-style.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-style.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-style.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-style.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-style.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-style.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-style.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoStyle — одно место, где всё создаётся — gohud</title>
+<meta name="description" content="Вызовите Button.new() напрямую — и внутренние отступы, высота и перенос строк начнут слегка расходиться от экрана к экрану.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Обзор</a>
+      <a href="install.html">Установка</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Виджеты</a>
+      <a href="theming.html">Темы</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Русский</summary>
+        <div class="langs-list">
+          <a href="../widgets-style.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-style.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-style.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-style.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-style.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-style.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-style.html" hreflang="pt" lang="pt">Português</a>
+          <a href="widgets-style.html" hreflang="ru" lang="ru" aria-current="true">Русский</a>
+          <a href="../fr/widgets-style.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-style.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-style.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-style.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-style.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-style.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-style.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-style.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-style.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1><code>GoStyle</code> — одно место, где всё создаётся</h1>
+    <p class="lead"><a href="widgets.html">← Виджеты</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Виджеты">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Виджеты</a>
+  <a href="widgets-surfaces.html">Плавающие окна</a>
+  <a href="widgets-messages.html">Как сообщить игроку</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Ожидание, сообщения, счётчики</a>
+  <a href="widgets-forms.html">Формы и списки</a>
+  <a href="widgets-shapes.html">Формы, которые играм действительно нужны</a>
+  <a href="widgets-overlays.html">Поверх экрана</a>
+  <a href="widgets-style.html" aria-current="page"><code>GoStyle</code> — одно место, где всё создаётся</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="factory">
+  <p class="sub">
+    Вызовите <code>Button.new()</code> напрямую — и внутренние отступы, высота и перенос строк начнут слегка
+    расходиться от экрана к экрану. Это расхождение незаметно при разборе кода и очевидно на скриншоте.
+  </p>
+
+  <table>
+    <thead><tr><th>Группа</th><th>Функции</th></tr></thead>
+    <tbody>
+      <tr><td>Структура</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Текст</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Кнопки</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>Ввод</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>Отображение</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>Части поверхности</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>Вспомогательные</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> всегда возвращает <code>StyleBoxFlat</code></b>, потому что вызывающий код получает его и
+    правит <code>bg_color</code> или <code>corner_radius</code>. Если нестандартная форма должна уцелеть,
+    используйте <code>surface()</code>.
+  </div>
+
+  <h3 id="list-rows-with-a-description">Строки списка с описанием</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Хранитель клятвы", _inspect, Color.TRANSPARENT,
+    "Длинный меч  /  Атака 42", false)</code></pre>
+  <p>Строка со второй строкой текста получает <b>равные верхний и нижний отступы</b>, просторнее однострочной, а пара
+    «заголовок и описание» остаётся <b>выровненной по вертикали</b> рядом с иконкой — в том числе когда контейнер
+    растягивает строку выше и когда описание переносится на несколько строк. Вся строка при этом остаётся одной целью нажатия.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="Пример medieval_light — двухстрочные строки списка, быстрые слоты и полосы" loading="lazy">
+    <figcaption>Двухстрочные строки, слоты и полосы в средневековом примере — те же вызовы фабрики под <code>medieval_light</code>.</figcaption>
+  </figure>
+
+  <h3 id="flowing-rows">Перетекающие ряды</h3>
+  <p>Кладите элементы управления в <code>wrap_row</code> при их <b>естественной ширине</b>. Если перенос оставить включённым,
+    минимальная ширина кнопки падает почти до нуля, и ряд меряет свою ячейку по ней — подпись схлопывается до одного символа
+    на строку. Фабрика не даёт этому случиться.</p>
+
+  <h3 id="never-leave-an-empty-list-empty">Никогда не оставляйте пустой список пустым</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Здесь пока пусто"))</code></pre>
+  <p>Пустой экран люди читают как <b>сломанный</b>.</p>
+</section>
+
+<section id="hooks">
+  <h2>Хуки для наследования</h2>
+  <p class="sub">
+    Каждое место, где создаётся дочерний виджет, проходит через переопределяемый метод, поэтому проект,
+    наследующий типы gohud, может получить свои подклассы <b>внутри</b> виджетов, не копируя код.
+  </p>
+  <table>
+    <thead><tr><th>Хук</th><th>Виджет</th><th>По умолчанию</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Скрывает карточку, пока открыто модальное окно</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-overlays.html">← Поверх экрана</a> · <a href="widgets.html">Виджеты →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

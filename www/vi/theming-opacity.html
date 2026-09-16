@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Độ đục — game ở phía sau tấm nền — gohud</title>
+<meta name="description" content="Popup, hộp thoại, bảng trượt, thẻ, tấm nền HUD, alert và snackbar vẽ mặt của mình ở mức đục 80%.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Tổng quan</a>
+      <a href="install.html">Cài đặt</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget</a>
+      <a href="theming.html" aria-current="page">Theme</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Tiếng Việt</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-opacity.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-opacity.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/theming-opacity.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/theming-opacity.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-opacity.html" hreflang="it" lang="it">Italiano</a>
+          <a href="theming-opacity.html" hreflang="vi" lang="vi" aria-current="true">Tiếng Việt</a>
+          <a href="../id/theming-opacity.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Độ đục — game ở phía sau tấm nền</h1>
+    <p class="lead"><a href="theming.html">← Theme</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Theme">
+  <!-- subnav:begin -->
+  <a href="theming.html">Theme</a>
+  <a href="theming-presets.html">Ba lớp</a>
+  <a href="theming-tokens.html">Token</a>
+  <a href="theming-opacity.html" aria-current="page">Độ đục — game ở phía sau tấm nền</a>
+  <a href="theming-skins.html">Skin — nơi Theme không với tới</a>
+  <a href="theming-own.html">Preset của riêng bạn — một file</a>
+  <a href="theming-contrast.html">Dễ đọc là thứ đo được</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    Popup, hộp thoại, bảng trượt, thẻ, tấm nền HUD, alert và snackbar vẽ mặt của mình ở <b>mức đục 80%</b>.
+    Trận đánh vẫn tiếp diễn phía sau một hộp thoại xác nhận; bản đồ vẫn hiện dưới bảng trượt túi đồ. Trong
+    một trò chơi, đây không phải chuyện trang trí — đó là thứ giữ cho người chơi biết mình đang ở đâu. Một
+    tấm nền đặc kín xóa sạch chỗ họ vừa đứng, ngay khoảnh khắc một cửa sổ mở ra.
+  </p>
+
+  <div class="note">
+    <b>Chỉ riêng mặt nền mỏng đi.</b> Chữ, biểu tượng, nút, badge và ô nhanh vẫn sắc nét, viền và bóng đổ
+    cũng vậy. Một tấm nền trong mờ chỉ đọc ra là kính khi đường viền của nó còn sắc; làm nhạt đường viền thì
+    không còn biết tấm nền kết thúc ở đâu. Làm nhạt nội dung thì UI không đọc được nữa — đó không phải cửa
+    sổ trong suốt, đó là lỗi. Chính vì vậy giá trị này không bao giờ được áp qua
+    <code>modulate.a</code>.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Năm tầng, cụ thể nhất đi trước</h3>
+  <table>
+    <thead><tr><th>Thứ tự</th><th>Ở đâu</th><th>Đơn vị</th><th>Tầm với</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>đối số ngay tại lệnh gọi đó — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>tỉ lệ <code>0.0–1.0</code></td><td>một cửa sổ</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>tỉ lệ <code>0.0–1.0</code></td><td>một loại tấm nền, trên toàn dự án</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>phần trăm</td><td>những dự án gom mọi số đo về một chỗ</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>tỉ lệ <code>0.0–1.0</code></td><td>mọi tấm nền cùng một lúc</td></tr>
+      <tr><td>⑤</td><td><code>GoHud/constants/&lt;kind&gt;_alpha</code> của theme</td><td>phần trăm</td><td>điều mà diện mạo quyết định — <b>nguồn chân lý</b></td></tr>
+    </tbody>
+  </table>
+  <p>Không đặt cái nào cả thì giá trị là 100, nên một theme cũ không thay đổi gì hết.</p>
+
+  <div class="note">
+    <b>Độ đục ở đâu cũng là tỉ lệ — trừ trong theme.</b> Mọi trường và đối số <code>alpha</code> đều nhận
+    0.0–1.0, cùng đơn vị với <code>Color.a</code> và <code>modulate.a</code>, còn giá trị âm nghĩa là "chưa
+    đặt". Ngoại lệ duy nhất là các hằng số của theme, bởi một hằng số <code>Theme</code> không giữ được số
+    thực: những thứ đó và kênh ghi đè lên chúng (<code>metric_overrides</code>, vốn dùng chung tên gọi và
+    kiểu số nguyên với theme) được viết là <code>80</code>. Ngoài ra không còn chỗ nào nữa.
+  </div>
+
+  <pre><code># Chỉ một cửa sổ — hộp thoại xác nhận không được che mất trận đánh phía sau nó
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # trường @export cũng là tỉ lệ
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Theo từng loại — giữ HUD gần như đặc, vì chữ của nó nằm thẳng trên thế giới
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # hộp thoại và bảng trượt có thể thoáng hơn
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # vẽ lại các widget đang mở
+
+# Cả dự án — một thế giới quá rối mắt thì muốn tấm nền đặc trở lại
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # tỉ lệ đã tính xong, ví dụ 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Cái gì đi theo giá trị này, cái gì thì không</h3>
+  <table>
+    <thead><tr><th>Đi theo — các container</th><th>Bỏ qua — những thứ bạn bấm, và những thứ đánh dấu</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (lớp vỏ duy nhất nằm sau hộp thoại, bảng trượt và danh sách thả xuống) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>mọi nút · <code>GoSlot</code> (ô nhanh) · <code>GoBadge</code> · control chia đoạn · ô lựa chọn · chip · vòng tròn và ảnh đại diện</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>toàn bộ chữ và biểu tượng</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Một cái nút bị nhạt mất trạng thái thì không còn nói lên nó đang là gì, còn badge sinh ra chính là để hai
+    ký tự đọc được — cả hai đều không phải container, nên cả hai đều không đi theo giá trị này.
+  </p>
+
+  <div class="note">
+    <b>Menu popup vẫn đặc</b> (<code>popup_alpha</code> 100). Engine có thể đặt một <code>PopupMenu</code>
+    vào <code>Window</code> riêng của nó, và ở đó hệ điều hành không ghép nó chung với game: phần trong mờ
+    hiện ra màu đen chứ không nhìn xuyên qua được. Chỉ hạ giá trị này ở những dự án có nhúng cửa sổ con vào
+    bên trong (<code>gui_embed_subwindows</code>).
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Ba chi tiết đến từ màn hình thật</h3>
+  <ul>
+    <li>
+      <b>Giá trị này nhân vào, chứ không thay thế.</b> Mặt HUD mặc định vốn đã ở alpha 0.92, nên
+      <code>hud_alpha</code> 80 rơi xuống 0.736 — một theme cố ý làm mặt nền trong mờ thì vẫn giữ được quyết
+      định đó. Mặt trái: áp hai lần thì tấm nền nhạt đi hai lần, vì vậy alpha chỉ được nhân ở đúng một chỗ
+      (<code>GoSkin.surface_box()</code>) còn mọi hàm dựng mặt nền khác đều chuyển tiếp đối số thay vì làm
+      nhạt kết quả của chính mình.
+    </li>
+    <li>
+      <b>Màu bạn truyền vào là màu bạn nhận lại.</b> <code>GoStyle.plate(…, fill)</code> giữ nguyên phần tô
+      đã nêu rõ, đúng như được đưa: <code>Color(ink, 0.14)</code> đã nói rõ alpha của nó rồi, nhân thêm độ
+      đục của tấm nền vào là cắt ý định của phía gọi thêm một lần nữa.
+      <code>GoStyle.floating(…, opaque = true)</code> bỏ qua giá trị này cũng vì lý do cùng loại — tô kín mặt
+      nền chính là toàn bộ mục đích của cái cờ đó.
+    </li>
+    <li>
+      <b>Những tấm nền không do gohud dựng cũng theo đúng quy tắc ấy.</b> <code>GoStyle.fade_panel(node)</code>
+      — gọi sau khi node đã nằm trong cây, để nó đọc được theme mà nó kế thừa. Hàm này lũy đẳng: mặt nền gốc
+      được ghi lại và mỗi lần gọi đều tính lại từ đó, nên vẽ lại bao nhiêu lần cũng không chồng lên nhau. Sau
+      khi đổi theme, <code>GoStyle.forget_face(node)</code> xóa phần ghi nhớ ấy để lần gọi kế tiếp bắt lấy mặt
+      nền mới.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Mặt nền tự vẽ cũng nhạt đi — và đó chính là chỗ âm thầm hỏng</h3>
+  <p>
+    Tấm nền góc cắt chéo (<code>GoStyleBoxCut</code>) và khung rèn (<code>GoStyleBoxMedieval</code>) không
+    phải <code>StyleBoxFlat</code>; chúng tự vẽ lấy mình. Chỉ đặt độ đục ở nhánh flat thì các theme này lặng
+    lẽ bỏ qua nó, trong khi mọi bài kiểm tra dựa trên giá trị vẫn qua hết. Cả hai đều làm nhạt phần nền của
+    mình và giữ nguyên độ mạnh của ánh sáng tỏa, đinh tán, hoa văn khắc ở góc và vệt sáng vát cạnh — còn vân
+    và vệt vát của mặt trung cổ thì xưa nay vẫn tỉ lệ với alpha nền của nó, nên chúng mỏng đi cùng với tấm nền.
+  </p>
+  <p>
+    Và đó mới là điểm lớn hơn: <code>bg_color.a == 0.8</code> là một con số. <em>Thế giới hiện xuyên qua được
+    mà chữ vẫn đọc được</em> mới là yêu cầu. gohud kiểm tra cái thứ nhất trong bộ kiểm thử headless, còn
+    cái thứ hai thì bằng cách vẽ các tấm nền lên những vạch chéo trên một màn hình ảo
+    (<code>tests/gohud_alpha_shot.gd</code>) — trên mặt flat, mặt góc cắt và mặt rèn, ở cả theme tối lẫn theme
+    sáng.
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← Token</a> · <a href="theming-skins.html">Skin — nơi Theme không với tới →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

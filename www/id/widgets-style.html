@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-style.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-style.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-style.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-style.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-style.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-style.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-style.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-style.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-style.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-style.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-style.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-style.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-style.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-style.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-style.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-style.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoStyle — satu tempat segala sesuatu dibuat — gohud</title>
+<meta name="description" content="Panggil Button.new() langsung dan padding, tinggi, serta pembungkusan barisnya akan melenceng sedikit dari layar ke layar.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Ringkasan</a>
+      <a href="install.html">Instalasi</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">Widget</a>
+      <a href="theming.html">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Bahasa Indonesia</summary>
+        <div class="langs-list">
+          <a href="../widgets-style.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-style.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-style.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-style.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-style.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-style.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-style.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-style.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-style.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-style.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-style.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-style.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-style.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="widgets-style.html" hreflang="id" lang="id" aria-current="true">Bahasa Indonesia</a>
+          <a href="../uk/widgets-style.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-style.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-style.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1><code>GoStyle</code> — satu tempat segala sesuatu dibuat</h1>
+    <p class="lead"><a href="widgets.html">← Widget</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget</a>
+  <a href="widgets-surfaces.html">Jendela mengambang</a>
+  <a href="widgets-messages.html">Menyampaikan sesuatu kepada pemain</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Menunggu, memberi tahu, menghitung</a>
+  <a href="widgets-forms.html">Formulir dan daftar</a>
+  <a href="widgets-shapes.html">Bentuk-bentuk yang benar-benar dipakai game</a>
+  <a href="widgets-overlays.html">Di atas layar</a>
+  <a href="widgets-style.html" aria-current="page"><code>GoStyle</code> — satu tempat segala sesuatu dibuat</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="factory">
+  <p class="sub">
+    Panggil <code>Button.new()</code> langsung dan padding, tinggi, serta pembungkusan barisnya akan melenceng sedikit dari layar ke
+    layar. Kelencengan itu tak terlihat saat tinjauan kode dan kentara sekali pada tangkapan layar.
+  </p>
+
+  <table>
+    <thead><tr><th>Kelompok</th><th>Fungsi</th></tr></thead>
+    <tbody>
+      <tr><td>Struktur</td><td><code>column</code> <code>row</code> <code>wrap_row</code> <code>padding</code> <code>spacer</code> <code>divider</code> <code>responsive_grid</code> <code>aspect</code> <code>foldable</code></td></tr>
+      <tr><td>Teks</td><td><code>label</code> <code>label_key</code> <code>line</code> <code>section</code> <code>typography</code></td></tr>
+      <tr><td>Tombol</td><td><code>button</code> <code>button_key</code> <code>icon_button</code> <code>list_button</code> <code>list_row</code> <code>apply_icon</code> <code>style_choice_card</code> <code>style_chip_button</code> <code>style_chip_label</code></td></tr>
+      <tr><td>Masukan</td><td><code>line_edit</code> <code>textarea</code> <code>toggle</code> <code>checkbox</code> <code>slider</code> <code>picker</code> <code>select</code> <code>dropdown</code> <code>radio_group</code> <code>segmented</code> <code>choice_grid</code></td></tr>
+      <tr><td>Tampilan</td><td><code>card</code> <code>chip</code> <code>hud_panel</code> <code>chip_panel</code> <code>avatar</code> <code>skeleton</code> <code>alert</code> <code>table</code> <code>tabs</code> <code>breadcrumb</code> <code>progress</code> <code>empty_state</code></td></tr>
+      <tr><td>Bagian permukaan</td><td><code>surface</code> <code>box</code> <code>floating</code> <code>disc</code> <code>face_padding</code></td></tr>
+      <tr><td>Pembantu</td><td><code>form</code> <code>fit_words</code> <code>natural_width</code> <code>tooltip_node</code> <code>card_body</code> <code>let_input_through</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b><code>box()</code> selalu mengembalikan <code>StyleBoxFlat</code></b>, karena pemanggilnya menerima objek itu lalu
+    menyetel <code>bg_color</code> atau <code>corner_radius</code>. Pakai <code>surface()</code> bila bentuk khusus
+    harus tetap bertahan.
+  </div>
+
+  <h3 id="list-rows-with-a-description">Baris daftar dengan deskripsi</h3>
+  <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Penjaga Sumpah", _inspect, Color.TRANSPARENT,
+    "Pedang panjang  /  Serangan 42", false)</code></pre>
+  <p>Baris dengan baris kedua mendapat <b>padding atas dan bawah yang sama</b>, lebih lapang daripada baris satu baris, dan pasangan
+    judul/deskripsinya tetap <b>terpusat secara vertikal</b> di samping ikonnya — juga ketika sebuah kontainer merentangkan barisnya
+    menjadi lebih tinggi, dan setelah deskripsinya membungkus menjadi beberapa baris. Seluruh barisnya tetap satu target ketukan.</p>
+  <figure>
+    <img src="../img/medieval-light.png" alt="Contoh medieval_light — baris daftar dua baris, slot cepat, dan bar" loading="lazy">
+    <figcaption>Baris dua baris, slot, dan bar pada contoh abad pertengahan — pemanggilan pabrik yang sama di bawah <code>medieval_light</code>.</figcaption>
+  </figure>
+
+  <h3 id="flowing-rows">Baris yang mengalir</h3>
+  <p>Taruh kontrol ke dalam <code>wrap_row</code> pada <b>lebar alaminya</b>. Dengan pembungkusan baris dibiarkan menyala, lebar minimum
+    sebuah tombol turun hampir menjadi nol dan barisnya mengukur selnya berdasarkan itu — labelnya menciut menjadi satu karakter per baris.
+    Pabriknya mencegah hal itu untuk Anda.</p>
+
+  <h3 id="never-leave-an-empty-list-empty">Jangan pernah membiarkan daftar kosong benar-benar kosong</h3>
+  <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Belum ada apa-apa di sini"))</code></pre>
+  <p>Orang membaca layar kosong sebagai <b>rusak</b>.</p>
+</section>
+
+<section id="hooks">
+  <h2>Kait untuk subkelas</h2>
+  <p class="sub">
+    Setiap tempat sebuah widget anak dibangun melewati sebuah metode yang bisa ditimpa, sehingga proyek yang
+    menurunkan tipe-tipe gohud bisa menempatkan subkelasnya sendiri <b>di dalam</b> widget tanpa menyalin kode.
+  </p>
+  <table>
+    <thead><tr><th>Kait</th><th>Widget</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>_make_scroll()</code></td><td><code>GoCoachMark</code>, <code>GoSurface</code></td><td><code>GoScroll.new()</code></td></tr>
+      <tr><td><code>_make_close_button()</code></td><td><code>GoPromptCard</code>, <code>GoSurface</code></td><td><code>GoIconButton.new()</code></td></tr>
+      <tr><td><code>_make_surface()</code></td><td><code>GoSheet</code>, <code>GoDialogs</code></td><td><code>GoSurface.new()</code></td></tr>
+      <tr><td><code>_should_pause()</code></td><td><code>GoCoachMark</code></td><td>Menyembunyikan kartunya selagi sebuah modal terbuka</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-overlays.html">← Di atas layar</a> · <a href="widgets.html">Widget →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

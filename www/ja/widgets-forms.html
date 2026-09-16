@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-forms.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-forms.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-forms.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-forms.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-forms.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-forms.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-forms.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-forms.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-forms.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-forms.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-forms.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-forms.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-forms.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-forms.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-forms.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-forms.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>フォームとリスト — gohud</title>
+<meta name="description" content="入力欄が5つあるフォームの先頭に「入力を確認してください」と1行あっても、どの欄なのかは分からない。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html" aria-current="page">ウィジェット</a>
+      <a href="theming.html">テーマ</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../widgets-forms.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-forms.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="widgets-forms.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+          <a href="../zh/widgets-forms.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-forms.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-forms.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-forms.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-forms.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-forms.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-forms.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-forms.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-forms.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-forms.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-forms.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-forms.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-forms.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-forms.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>フォームとリスト</h1>
+    <p class="lead"><a href="widgets.html">← ウィジェット</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="ウィジェット">
+  <!-- subnav:begin -->
+  <a href="widgets.html">ウィジェット</a>
+  <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
+  <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">待たせる、伝える、数える</a>
+  <a href="widgets-forms.html" aria-current="page">フォームとリスト</a>
+  <a href="widgets-shapes.html">ゲームで実際に使う形</a>
+  <a href="widgets-overlays.html">画面の上に重ねる</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 作る場所を1つにする</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="forms-lists">
+
+  <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 間違いを抱えられる行</h3>
+  <p>入力欄が5つあるフォームの先頭に「入力を確認してください」と1行あっても、<i>どの</i>欄なのかは分からない。
+    その1点だけで、人は新規登録をやめてしまう。</p>
+  <pre><code>var name_field := GoField.make("キャラクター名", GoStyle.line_edit("2〜12文字"), "あとから変更できない")
+name_field.set_error("その名前は使われている")   # サーバーが断った
+name_field.clear_error()</code></pre>
+  <p>エラーが出ている間ヒントは隠れるので、行が1行ぶん伸びて下のすべてを押し下げることがない。エラーの文は
+    コントロールの読み上げ名にも連結される — 赤い枠だけでは、赤が見えない人には何も伝わらない。</p>
+  <p><code>GoStyle.field()</code> は静的な版だ。ラベル、コントロール、ヒント、エラー状態なし。何も失敗しよう
+    がないところはファクトリで、サーバーに断られうるものはノードで作る。</p>
+
+  <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — ボタンと溶接された入力欄</h3>
+  <pre><code>GoInputGroup.make(GoStyle.line_edit("メッセージ"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
+GoInputGroup.make(GoStyle.line_edit("名前"), {"prefix_icon": &amp;"search"})</code></pre>
+  <p>これが解くのは角の問題だ。丸い形が2つ真ん中で出会うとくびれて見えるし、既定の隙間があると2つの物体と
+    して読めてしまう。外側の角は丸いまま、触れ合う角は四角にする — それをボタンのどの状態でも行う。さもないと、
+    押した瞬間にグループが割れる。面取りのスキンにはそもそも角の項目がないので、そこでは何も触らず、四角い
+    面どうしがきれいに合わさる。</p>
+
+  <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 検索できるピッカー</h3>
+  <p>項目が10個までなら <code>GoStyle.select()</code> のほうがよい。タップが1回少なく、リスト全体が見える。
+    30 を超えると、目で追うこと自体が作業になる。</p>
+  <pre><code>var picker := GoCombobox.make(server_names, 0, "サーバーを選ぶ")
+picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
+  <div class="note warn">
+    <b>検索は名前の先頭だけでなく、途中にも一致する。</b> 前方一致では、日本語や韓国語のリストはほとんど
+    引っかからない。2つの項目を見分ける語が先頭に来ることは、めったにないからだ。
+  </div>
+
+  <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — クーポンとギフトコード</h3>
+  <p>コードは打ち込まれるより、メッセージから貼り付けられることのほうがずっと多い。本物の入力欄を12個並べると、
+    貼り付けは最初のマスで止まり、IME が文字を食う。だから文字を受け取るのは隠した1つの欄で、マスは描かれた
+    ものだ。<code>ABCD-EFGH-IJKL</code> は、入るときにハイフンが落ちる。</p>
+  <pre><code>var coupon := GoCodeInput.make(12, 4)
+coupon.completed.connect(func(code: String) -> void: server.redeem(code))
+coupon.set_error("使用済み")</code></pre>
+
+  <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 並べ替えできる見出し、選べる行</h3>
+  <pre><code>var board := GoTable.make(
+    [{"text": "順位", "width": 56}, {"text": "名前"}, {"text": "スコア", "numeric": true}], rows)
+board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
+  <div class="note warn">
+    <b><code>numeric: true</code> を忘れると、順位が逆さになる。</b> 文字として比べると <code>"9124"</code> が
+    <code>"91240"</code> に勝つ — スコアも所持金もダメージも、桁数はばらばらだ。
+  </div>
+  <p><code>row_selected</code> が渡すのは、並べ替え後の位置ではなく元の配列での添字だ。並べ替えの向きは色だけで
+    なく記号でも示され、行は全体が押せるので、1つのセルを狙う必要はない。<code>GoStyle.table()</code> は
+    読み取り専用の表のまま残る。</p>
+
+  <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — ページ番号、あるいは「もっと見る」の行</h3>
+  <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
+var more := GoPagination.more(load_next)   # スマートフォン向きの変種</code></pre>
+  <p>番号はマウスの UI だ。スマートフォンなら「もっと見る」の行のほうが読みやすい。現在のページは窓の中央に
+    留まるので、次を押すたびに番号が全部並び替わることはない。合計 0 は「不明」を意味し、矢印だけが描かれる —
+    渡されていないページ数を、勝手に作り出したりはしない。</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-feedback.html">← 待たせる、伝える、数える</a> · <a href="widgets-shapes.html">ゲームで実際に使う形 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

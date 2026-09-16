@@ -1,7 +1,7 @@
 ## ▶️ **gohud 데모 — 스스로 돌기도 하고, 손으로 만지기도 한다.**
 ##
 ## 두 가지 길이 있다.
-##   **Tour**    시작을 누르면 열다섯 장면을 차례로 지난다. 장면마다 화면을 새로 짓고, 봇이 그
+##   **Tour**    시작을 누르면 열여섯 장면을 차례로 지난다. 장면마다 화면을 새로 짓고, 봇이 그
 ##               위젯을 실제로 누르고·치고·끌고·굴린다(`SimBot`).
 ##   **Explore** 왼쪽 사이드바에서 위젯 하나를 고르면 그 장면만 짓고 **사람이 직접** 만진다.
 ##               오른쪽 "Play this widget" 을 누르면 같은 화면 위에서 봇이 그 장면만 시연한다.
@@ -389,7 +389,7 @@ func _side_panel() -> Control:
 		var labels := row.find_children("*", "Label", true, false)
 		var label := labels[0] as Label if not labels.is_empty() else null
 		if label != null:
-			# 한 줄에 맞춘다 — 목록이 접히면 열다섯 개가 화면을 넘긴다.
+			# 한 줄에 맞춘다 — 목록이 접히면 열여섯 개가 화면을 넘긴다.
 			label.add_theme_font_size_override(&"font_size", 15)
 			label.autowrap_mode = TextServer.AUTOWRAP_OFF
 			label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS

@@ -258,6 +258,11 @@ static func box(key: StringName) -> StyleBox:
 ## `GoConfig` 의 두 칸, 그리고 이 함수의 반환값까지. **`Theme` 의 constant 는 정수만 담을 수 있어서**
 ## 테마의 `<종류>_alpha` 와 그것을 덮는 통로(`metric_overrides` — 이름·타입이 테마 치수와 같다)만
 ## 퍼센트다. 그 두 자리에서만 100 으로 나눈다.
+##
+## ## 🔬 숫자를 고르기 전에 **끌어 본다**
+## 이 값이 얼마여야 하는지는 화면을 봐야 안다 — 뒤가 보이는가, 그 위의 글자가 아직 읽히는가.
+## 그래서 슬라이더 하나로 그 자리에서 판이 묽어지는 실험실을 예제에 두었다
+## (`examples/gallery/opacity_lab.gd` · 위젯 갤러리 · 가이드 투어 16장 · 데모 홈 · 중세 예제).
 static func surface_alpha(variant := GoTheme.BOX_CARD) -> float:
 	var settings := config
 	var chosen: float = settings.container_alpha_overrides.get(variant, -1.0)

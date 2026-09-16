@@ -273,7 +273,9 @@ def check_public_urls(problems, site):
 
 def check_dials(problems):
     """다이얼 표 — 표식이 있는가, 영문 뜻이 빠진 다이얼은 없는가."""
-    for rel in ("theming.html", os.path.join("ko", "theming.html")):
+    # 🔑 다이얼 표는 `own` 절에 있었고, 그 절은 가르기로 `theming-own.html` 로 옮겨 갔다
+    #    (`tools/split_site.py`). 여기 이름을 함께 고치지 않으면 표식을 영영 못 찾는다.
+    for rel in ("theming-own.html", os.path.join("ko", "theming-own.html")):
         path = os.path.join(WWW, rel)
         text = open(path, encoding="utf-8").read() if os.path.isfile(path) else ""
         if "<!-- dials:begin -->" not in text or "<!-- dials:end -->" not in text:
@@ -386,6 +388,40 @@ def check_search(problems):
                             % (counts["en"], ", ".join(thin)))
 
 
+# 🛑 번역이 다시 어긋나지 않게 — 언어별 금칙어.
+#    2026-09-16: 한국어판이 영어 낱말에 고유어를 1:1 로 갈아 끼워 `block→덩이` · `shell→껍데기` ·
+#    `header→머리띠` · `picker→고르개` · `fade→묽다` 가 됐다. 문장력이 아니라 **용어 결정**이
+#    문제였고, 그래서 독자가 본문에서 배운 말로 API(`GoStyle.hud_panel()`)를 찾지 못했다.
+#    일본어도 `ひとかたまり` 로 같은 병을 옮았다. 사람 눈으로는 17개 언어를 다시 못 본다 — 검사가 본다.
+# 🔑 "판"(panel)은 여기 넣지 않는다 — "판단"·"판정" 과 겹쳐 오탐이 쏟아진다. 대신 영어의
+#    `panel` 수와 크게 어긋나면 사람이 보도록 §아래 비율 검사가 잡는다.
+BANNED = {
+    "ko": (("덩이", "block — 원문에 없는 말이다. '아래 글' 로"),
+           ("껍데기", "shell — '알맹이 없는 것' 이라는 부정 함의. '틀' 로"),
+           ("낱말", "word — 기술 문서의 관용어는 '단어'"),
+           ("고르개", "picker — 에디터 화면 용어와 맞춰 '선택기'"),
+           ("머리띠", "header — 머리띠는 액세서리다. '헤더' 로"),
+           ("묽", "fade/thin — '묽다' 는 액체 농도 전용. '옅다' 로")),
+    "ja": (("かたまり", "block — 「ブロック」か「下の文」で受ける"),),
+}
+
+
+def check_wording(problems):
+    """번역판에 다시 들어오면 안 되는 말을 잡는다."""
+    for code, rules in BANNED.items():
+        folder = os.path.join(WWW, code)
+        if not os.path.isdir(folder):
+            continue
+        for name in sorted(os.listdir(folder)):
+            if not name.endswith(".html"):
+                continue
+            text = open(os.path.join(folder, name), encoding="utf-8").read()
+            for word, why in rules:
+                n = text.count(word)
+                if n:
+                    problems.append("%s/%s: 금칙어 '%s' %d곳 — %s" % (code, name, word, n, why))
+
+
 def main():
     problems = []
     if not os.path.isdir(WWW):
@@ -409,6 +445,7 @@ def main():
     check_dials(problems)
     check_langs(problems)
     check_search(problems)
+    check_wording(problems)
 
     print("언어 %d개 · 페이지 %d장 · 공개 주소 %d곳 · 용어 %d(한국어) · %d(영문)"
           % (len(site_langs.ACTIVE), len(pages()), urls, len(glossary), len(english)))

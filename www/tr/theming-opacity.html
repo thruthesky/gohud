@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/theming-opacity.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/theming-opacity.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/theming-opacity.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/theming-opacity.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/theming-opacity.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/theming-opacity.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/theming-opacity.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/theming-opacity.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/theming-opacity.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/theming-opacity.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/theming-opacity.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/theming-opacity.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/theming-opacity.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/theming-opacity.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/theming-opacity.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/theming-opacity.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opaklık — panelin arkasındaki oyun — gohud</title>
+<meta name="description" content="Açılır pencereler, diyaloglar, sayfalar, kartlar, HUD panelleri, uyarılar ve snackbar'lar yüzlerini %80 opaklıkla çizer.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Genel bakış</a>
+      <a href="install.html">Kurulum</a>
+      <a class="nav-ai" href="ai.html">AI SKILL</a>
+      <a href="widgets.html">Widget'lar</a>
+      <a href="theming.html" aria-current="page">Tema</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Türkçe</summary>
+        <div class="langs-list">
+          <a href="../theming-opacity.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/theming-opacity.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/theming-opacity.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/theming-opacity.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/theming-opacity.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/theming-opacity.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/theming-opacity.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/theming-opacity.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/theming-opacity.html" hreflang="fr" lang="fr">Français</a>
+          <a href="theming-opacity.html" hreflang="tr" lang="tr" aria-current="true">Türkçe</a>
+          <a href="../pl/theming-opacity.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/theming-opacity.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/theming-opacity.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/theming-opacity.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/theming-opacity.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/theming-opacity.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/theming-opacity.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Opaklık — panelin arkasındaki oyun</h1>
+    <p class="lead"><a href="theming.html">← Tema</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Tema">
+  <!-- subnav:begin -->
+  <a href="theming.html">Tema</a>
+  <a href="theming-presets.html">Üç katman</a>
+  <a href="theming-tokens.html">Token'lar</a>
+  <a href="theming-opacity.html" aria-current="page">Opaklık — panelin arkasındaki oyun</a>
+  <a href="theming-skins.html">Kaplamalar — bir Theme'in erişemediği yer</a>
+  <a href="theming-own.html">Kendi ön ayarınız — tek bir dosya</a>
+  <a href="theming-contrast.html">Okunaklılık ölçülür</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="opacity">
+  <p class="sub">
+    Açılır pencereler, diyaloglar, sayfalar, kartlar, HUD panelleri, uyarılar ve snackbar'lar yüzlerini
+    <b>%80 opaklıkla</b> çizer. Bir onay diyaloğunun arkasında dövüş sürer; bir envanter sayfasının altından
+    harita görünür. Bir oyunda bu süsleme değildir — oyuncunun nerede olduğunu bilmesini sağlayan şeydir.
+    Tamamen dolu bir panel, pencere açıldığı anda oyuncunun nerede durduğunu siler.
+  </p>
+
+  <div class="note">
+    <b>Yalnızca yüz incelir.</b> Yazılar, simgeler, düğmeler, rozetler ve hızlı slotlar keskin kalır;
+    kenarlıklar ve gölgeler de öyle. Yarı saydam bir panel ancak dış çizgisi net kaldığı sürece cam gibi
+    okunur; dış çizgiyi soldurun, panelin nerede bittiğini anlayamazsınız. İçeriği soldurun, arayüz hiç
+    okunamaz — o saydam bir pencere değil, bir hatadır. Değer bu yüzden asla
+    <code>modulate.a</code> üzerinden uygulanmaz.
+  </div>
+
+  <h3 id="five-layers-most-specific-first">Beş katman, en özel olandan başlayarak</h3>
+  <table>
+    <thead><tr><th>Sıra</th><th>Nerede</th><th>Birim</th><th>Kapsam</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>o çağrıdaki argüman — <code>surface.alpha</code>, <code>GoStyle.card(…, alpha)</code></td><td>oran <code>0.0–1.0</code></td><td>tek bir pencere</td></tr>
+      <tr><td>②</td><td><code>GoConfig.container_alpha_overrides[kind]</code></td><td>oran <code>0.0–1.0</code></td><td>proje genelinde tek bir panel türü</td></tr>
+      <tr><td>③</td><td><code>GoConfig.metric_overrides[&lt;kind&gt;_alpha]</code></td><td>yüzde</td><td>bütün ölçüleri tek yerde tutan projeler</td></tr>
+      <tr><td>④</td><td><code>GoConfig.container_alpha</code></td><td>oran <code>0.0–1.0</code></td><td>bütün paneller birden</td></tr>
+      <tr><td>⑤</td><td>temanın <code>GoHud/constants/&lt;kind&gt;_alpha</code> değeri</td><td>yüzde</td><td>görünüşün kararı — <b>doğrunun kaynağı</b></td></tr>
+    </tbody>
+  </table>
+  <p>Hiçbiri ayarlanmamışsa değer 100'dür; yani eski bir temada hiçbir şey değişmez.</p>
+
+  <div class="note">
+    <b>Opaklık her yerde bir orandır — tema dışında.</b> Her <code>alpha</code> alanı ve argümanı 0.0–1.0
+    alır; <code>Color.a</code> ve <code>modulate.a</code> ile aynı birim, negatif bir değer ise
+    "ayarlanmadı" demektir. Tek istisna temanın sabitleridir, çünkü bir <code>Theme</code> sabiti float
+    tutamaz: bunlar ve onları geçersiz kılan kanal (temanın adlarını ve tam sayı türünü paylaşan
+    <code>metric_overrides</code>) <code>80</code> biçiminde yazılır. Başka hiçbir şey öyle yazılmaz.
+  </div>
+
+  <pre><code># Yalnızca tek bir pencere — arkasındaki dövüşü gizlememesi gereken bir onay diyaloğu
+surface.alpha = 0.6
+sheet.alpha = 0.7
+dialogs.alpha = 0.9                          # @export alanları da orandır
+drawer.alpha = 0.7
+GoPopover.open(slot, body, {"alpha": 0.9})
+var glass := GoStyle.card(Color.TRANSPARENT, -1.0, -1.0, -1.0, 0.5)
+
+# Tür bazında — HUD'u neredeyse dolu tutun, çünkü yazısı doğrudan dünyanın üstünde durur
+GoUi.config.container_alpha_overrides = {
+    GoTheme.BOX_PANEL: 0.7,                   # diyaloglar ve sayfalar nefes alabilir
+    GoTheme.BOX_HUD: 0.95,
+}
+GoUi.refresh()                               # zaten açık olan widget'ları yeniden çizer
+
+# Bütün proje — kalabalık bir dünya panellerini yeniden dolu ister
+GoUi.config.container_alpha = 1.0
+GoUi.refresh()
+
+GoUi.surface_alpha(GoTheme.BOX_PANEL)        # çözümlenmiş oran, örneğin 0.8</code></pre>
+
+  <h3 id="what-follows-the-value-and-what-does-not">Değeri ne izler, ne izlemez</h3>
+  <table>
+    <thead><tr><th>İzleyenler — kapsayıcılar</th><th>Yok sayanlar — bastığınız şeyler ve işaretler</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GoSurface</code> (diyalogların, sayfaların ve açılır listelerin arkasındaki tek kabuk) · <code>GoSheet</code> · <code>GoDialogs</code> · <code>GoDrawer</code> · <code>GoPopover</code> · <code>GoNotice</code> · <code>GoSnackbar</code> · <code>GoPromptCard</code> · <code>GoCoachMark</code> · <code>GoConsole</code></td>
+        <td>her düğme · <code>GoSlot</code> (hızlı slotlar) · <code>GoBadge</code> · bölümlü denetimler · seçim hücreleri · chip'ler · daireler ve avatarlar</td>
+      </tr>
+      <tr>
+        <td><code>GoStyle.card()</code> · <code>hud_panel()</code> · <code>overlay_panel()</code> · <code>alert()</code> · <code>plate()</code> · <code>edge_card_panel()</code> · <code>style_notice_panel()</code> · <code>floating()</code> · <code>box()</code> · <code>surface()</code></td>
+        <td>bütün yazılar ve simgeler</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Durumu solmuş bir düğme artık ne olduğunu söylemez ve bir rozet iki karakteri okunaklı kılmak için
+    vardır — ikisi de kapsayıcı değildir, bu yüzden ikisi de değeri izlemez.
+  </p>
+
+  <div class="note">
+    <b>Açılır menüler dolu kalır</b> (<code>popup_alpha</code> 100). Motor bir <code>PopupMenu</code>'yü
+    kendi <code>Window</code>'unda barındırabilir ve orada işletim sistemi onu oyunla birleştirmez: yarı
+    saydamlık, arkası görünen değil siyah çıkar. Bu değeri yalnızca alt pencerelerini gömen projelerde
+    (<code>gui_embed_subwindows</code>) düşürün.
+  </div>
+
+  <h3 id="three-details-that-come-from-real-screens">Gerçek ekranlardan gelen üç ayrıntı</h3>
+  <ul>
+    <li>
+      <b>Değer çarpar, yerine geçmez.</b> Varsayılan HUD yüzü zaten 0.92 alfadadır; dolayısıyla
+      <code>hud_alpha</code> 80, 0.736'ya iner — bir yüzü bilerek yarı saydam yapmış bir tema o kararını
+      korur. Madalyonun öbür yüzü: iki kez uygularsanız panel iki kez solar. Alfa bu yüzden tam olarak tek
+      bir yerde (<code>GoSkin.surface_box()</code>) çarpılır ve diğer bütün yüz fonksiyonları kendi
+      sonucunu soldurmak yerine argümanı iletir.
+    </li>
+    <li>
+      <b>Geçirdiğiniz renk, aldığınız renktir.</b> <code>GoStyle.plate(…, fill)</code> açıkça verilmiş bir
+      dolguyu verildiği gibi korur: <code>Color(ink, 0.14)</code> alfasını zaten söylemiştir, panel
+      opaklığını onunla çarpmak çağıranın niyetini ikinci kez kısardı.
+      <code>GoStyle.floating(…, opaque = true)</code> aynı türden bir nedenle değeri yok sayar — yüzü dolu
+      doldurmak zaten o bayrağın bütün amacıdır.
+    </li>
+    <li>
+      <b>gohud'un kurmadığı paneller de aynı kurala tabidir.</b> <code>GoStyle.fade_panel(node)</code> —
+      düğüm ağaca girdikten sonra çağrılır, böylece devraldığı temayı okur. İdempotenttir: özgün yüz
+      kaydedilir ve her çağrı onun üstünden yeniden hesaplar, böylece tekrarlanan yeniden çizimler üst üste
+      binmez. Tema değiştirdikten sonra <code>GoStyle.forget_face(node)</code> o kaydı düşürür; sonraki
+      çağrı yeni yüzü alır.
+    </li>
+  </ul>
+
+  <h3 id="custom-faces-fade-too-and-that-is-the-part-that">Özel yüzler de solar — ve sessizce bozulan kısım tam da budur</h3>
+  <p>
+    Kesik köşeli panel (<code>GoStyleBoxCut</code>) ve dövme çerçeve (<code>GoStyleBoxMedieval</code>) birer
+    <code>StyleBoxFlat</code> değildir; kendilerini kendileri çizer. Opaklığı yalnızca flat dalına koyun, bu
+    temalar onu sessizce yok sayar, üstelik değere bakan bütün testler geçmeye devam eder. İkisi de arka
+    planını soldurur; ışımayı, perçinleri, köşe gravürünü ve eğimleri tam güçte tutar — ortaçağ yüzünün
+    dokusu ve eğimi ise en baştan beri arka plan alfasıyla orantılıydı, bu yüzden panelle birlikte incelir.
+  </p>
+  <p>
+    Asıl mesele de bu: <code>bg_color.a == 0.8</code> bir sayıdır. <em>Dünya arkadan görünüyor ve yazı hâlâ
+    okunaklı</em> ise gereksinimdir. gohud birincisini headless test takımında, ikincisini ise sanal bir
+    monitörde panelleri çapraz şeritlerin üstüne çizerek (<code>tests/gohud_alpha_shot.gd</code>) denetler —
+    flat, kesik ve dövme yüzde, hem koyu hem açık temada.
+  </p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="theming-tokens.html">← Token'lar</a> · <a href="theming-skins.html">Kaplamalar — bir Theme'in erişemediği yer →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

@@ -29,6 +29,13 @@ step "①-a 단위 검사 — 나중에 들인 위젯"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_extra_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-t 단위 검사 — 스킬이 나눠 주는 템플릿 다섯"
+# 🛑 `skills/gohud/assets/templates/` 는 사람이 **제 프로젝트로 복사해 그대로 쓰는 코드**인데,
+#    2026-09-16 까지 그 다섯 장을 여는 검사가 하나도 없었다(문서에는 "headless-tested" 라고 적혀
+#    있었다). 그 자리에 템플릿을 고치다 함수 이름을 겹쳐 놓았고, 이 검사가 그것을 바로 잡았다.
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_templates_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 # 🛑 **화면 하나로만 돌리면 다른 화면에서만 도는 코드가 통째로 미검증이다.** 폼의 폭 제한이 그랬고
 #    (폰에서는 상한이 "없음"), HUD 의 가로 자리 이동도 그랬다. 크기를 바꿔 같은 검사를 다시 돌린다.
 for VIEWPORT in 844x390 768x1024 1280x800; do
@@ -68,6 +75,11 @@ python3 "$ADDON/tools/check_contrast.py" --quiet || FAILED=1
 
 step "③ 홈페이지"
 python3 "$ADDON/tools/check_site.py" || FAILED=1
+
+step "③-a 문서가 가리키는 gohud API 가 실재하는가"
+# 🛑 글은 검사가 없으면 아무도 안 본다 — 2026-09-16 에 새 위젯을 문서에 적으면서 **코드를 열지 않고
+#    기억으로 쓴 호출이 아홉 군데 틀렸고**, 그중 둘은 베껴 쓰면 파싱 오류가 나는 코드였다.
+python3 "$ADDON/tools/check_docs_api.py" || FAILED=1
 
 step "④ 테마 생성물이 소스와 맞는가"
 # 🛑 팔레트를 고치고 `make_theme.py` 를 안 돌리면 `.tres` 가 낡은 채로 남는다 — 눈에 안 띈다.
