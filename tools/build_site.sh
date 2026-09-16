@@ -21,4 +21,33 @@ fi
 mkdir -p "$OUT/docs/www"
 cp -R "$ADDON/www/." "$OUT/"
 cp -R "$ADDON/www/img" "$OUT/docs/www/img"
+
+# 🔑 옛 문서 주소에는 **넘겨 주는 페이지를 실물로** 둔다.
+#   404.html 의 스크립트도 같은 일을 하지만 그 응답의 상태 코드는 404 다 — 사람이 브라우저로 열 때만
+#   넘어가고, 검색엔진·링크 검사기·채팅 미리보기에는 끝까지 "깨진 주소" 로 남는다. 여기 둔 파일은 200 이다.
+#   옛 구조 두 벌을 모두 덮는다: `docs/www/…`(2026-09-15 직전)와 그 전의 `docs/…`.
+for page in index.html theming.html widgets.html ko/index.html ko/theming.html ko/widgets.html; do
+  for old in docs/www docs; do
+    rel="$old/$page"
+    up="$(dirname "$rel" | awk -F/ '{for (i = 1; i <= NF; i++) printf "../"}')"
+    target="$up$page"
+    mkdir -p "$OUT/$(dirname "$rel")"
+    cat > "$OUT/$rel" <<HTML
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>gohud — this page moved</title>
+<link rel="canonical" href="$target">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=$target">
+<script>location.replace("$target" + location.search + location.hash);</script>
+</head>
+<body>
+<p>This page moved. <a href="$target">Open it at its new address →</a></p>
+</body>
+</html>
+HTML
+  done
+done
 echo "사이트 조립 $(find "$OUT" -type f | wc -l | tr -d ' ') 파일 → $OUT"

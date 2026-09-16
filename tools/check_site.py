@@ -44,6 +44,13 @@ LEGACY_IMAGES = [
     "docs/www/img/preset-default-dark.png",
     "docs/www/img/preset-scifi-dark.png",
 ]
+# 🔑 옛 문서 주소 — `tools/build_site.sh` 가 배포본에 **넘겨 주는 페이지를 실물로** 둔다.
+#    404.html 의 스크립트도 넘기지만 그 응답은 상태 코드가 404 라, 검색엔진·링크 검사기·채팅 미리보기에는
+#    끝까지 깨진 주소로 남는다. 여기 적힌 자리는 200 이어야 한다.
+LEGACY_PAGES = ["%s/%s" % (old, page)
+                for page in ("index.html", "theming.html", "widgets.html",
+                             "ko/index.html", "ko/theming.html", "ko/widgets.html")
+                for old in ("docs/www", "docs")]
 # 공개 주소를 찾아볼 파일 종류와 건너뛸 폴더 — 빌드 산출물은 고칠 수 없고, `.env` 에는 키가 든다.
 URL_SOURCES = (".md", ".html", ".json", ".yml", ".cfg")
 SKIP_DIRS = {".git", ".godot", ".env", "builds", ".dist", "__pycache__", ".playwright-mcp"}
@@ -204,6 +211,16 @@ def check_entry(problems, site):
         for rel in LEGACY_IMAGES:
             if not os.path.isfile(os.path.join(site, rel)):
                 problems.append("배포본에 옛 그림 %s 가 없다 — 배포된 ZIP 의 README 그림이 깨진다" % rel)
+        for rel in LEGACY_PAGES:
+            path = os.path.join(site, rel)
+            if not os.path.isfile(path):
+                problems.append("배포본에 옛 주소 %s 가 없다 — 404 로 남아 넘겨 주지 못한다" % rel)
+                continue
+            moved = re.search(r'http-equiv="refresh" content="0; url=([^"]+)"', open(path, encoding="utf-8").read())
+            if not moved:
+                problems.append("%s 가 새 주소로 넘기지 않는다" % rel)
+            elif not os.path.isfile(os.path.normpath(os.path.join(os.path.dirname(path), moved.group(1)))):
+                problems.append("%s 가 없는 곳으로 넘긴다 — %s" % (rel, moved.group(1)))
     for stale in ("index.html", ".nojekyll"):
         if Path(ADDON, stale).exists():
             problems.append("루트 %s 가 남았다 — 옛 main /(root) 배포용이다. 이제 Pages 는 www/ 만 올린다" % stale)
