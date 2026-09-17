@@ -1797,7 +1797,12 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 	var count := options.size()
 	for index in count:
 		var item := Button.new()
-		item.text = str(options[index])
+		# 🔑 An option is a label, or `{"text", "icon", "tooltip"}` — an icon beside the label (inventory kinds, map
+		#    layers), or alone with a tooltip that then doubles as its accessible name.
+		var option: Variant = options[index]
+		var spec: Dictionary = option if option is Dictionary else {"text": str(option)}
+		item.text = str(spec.get("text", ""))
+		item.tooltip_text = str(spec.get("tooltip", ""))
 		item.toggle_mode = true
 		item.button_group = group
 		item.button_pressed = index == selected
@@ -1816,6 +1821,22 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 			item.add_theme_stylebox_override(state, face)
 		item.add_theme_color_override(&"font_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
 		item.add_theme_color_override(&"font_hover_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
+		var mark := StringName(str(spec.get("icon", "")))
+		if not mark.is_empty():
+			apply_icon(item, mark, GoUi.metric(GoTheme.LIST_GLYPH))
+			# 🛑 The icon follows the label's color in every state — left alone it stays light on the chosen
+			#    (accent-filled) cell while the label turns dark, and the cell reads as two things.
+			for state in [&"icon_pressed_color", &"icon_hover_pressed_color"]:
+				item.add_theme_color_override(state, GoUi.color(GoTheme.ON_ACCENT))
+			# 🛑 Read from the **theme resource**, not `item.get_theme_color()` — the button is not in the tree yet,
+			#    and there a lookup falls through to the engine's default gray instead of the variation's color.
+			var look := GoUi.theme()
+			var kind := item.theme_type_variation
+			for pair in [[&"icon_normal_color", &"font_color"], [&"icon_hover_color", &"font_hover_color"],
+					[&"icon_focus_color", &"font_focus_color"]]:
+				var tone: Color = look.get_color(pair[1], kind) if look != null and look.has_color(pair[1], kind) \
+					else GoUi.color(GoTheme.TEXT)
+				item.add_theme_color_override(pair[0], tone)
 		if action.is_valid(): item.pressed.connect(action.bind(index))
 		line.add_child(item)
 	return line

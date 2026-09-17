@@ -9,7 +9,8 @@
 ## grid.slot_count = 30
 ## grid.cell_size = 60
 ## sheet.body.add_child(grid)
-## grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12, "accent": Color("e5484d"), "tooltip": "Apple"})
+## var red := Color("e5484d")
+## grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12, "accent": red, "ink": red, "tooltip": "Apple"})
 ## grid.set_cell(1, {})                                  # vacant
 ## grid.slot_pressed.connect(func(index): grid.selected = index)
 ## grid.slot_moved.connect(func(from, to): bag.move(from, to))   # only when `draggable`
@@ -80,7 +81,8 @@ func cell(index: int) -> Dictionary:
 
 
 ## Draws one cell. `{}` makes it vacant. Keys, all optional:
-## `icon` (name) · `quantity` (int; leave out for "no count", e.g. equipment) · `accent` (Color) ·
+## `icon` (name) · `quantity` (int; leave out for "no count", e.g. equipment) · `accent` (Color, the border) ·
+## `ink` (Color, the icon itself — contrast-corrected by the slot; leave out for the text color) ·
 ## `tooltip` (String — also the accessible name) · `disabled` (bool) · `timer` (String, e.g. "2h").
 func set_cell(index: int, data: Dictionary) -> void:
 	if index < 0 or index >= slot_count: return
@@ -125,6 +127,8 @@ func _paint(index: int) -> void:
 	made.quantity = int(data["quantity"]) if data.has("quantity") else GoSlot.NONE
 	var accent: Variant = data.get("accent", Color.TRANSPARENT)
 	made.accent = accent if accent is Color else Color(str(accent))
+	var ink: Variant = data.get("ink", Color.TRANSPARENT)
+	made.icon_ink = ink if ink is Color else Color(str(ink))
 	made.timer_text = str(data.get("timer", ""))
 	made.disabled = bool(data.get("disabled", false))
 	made.tooltip_text = str(data.get("tooltip", ""))

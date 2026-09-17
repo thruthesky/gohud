@@ -6,19 +6,25 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
-- **Game icon set — 184 icons for inventories, shops and items.** `icons/game/` + `icons/gohud_icons_game.tres`,
+- **Game icon set — 187 icons for inventories, shops and items.** `icons/game/` + `icons/gohud_icons_game.tres`,
   names on the new `GoGameIcons` class in nine groups (inventory & storage, shop & trade, equipment & tools,
   food & consumables, resources & materials, tech & space, buildings & furniture, creatures, rewards & social).
   Plug it in with `GoUi.config.icons = GoGameIcons.icon_set()` after `use_preset()`; it falls back to the default
   set, so `close`, `bag`, `coin` … still resolve, and no name redraws a default icon. Vector (`DPITexture`)
-  textures — sharp in a 64 dp cell. 168 icons use path data from **Tabler Icons 3.46.0 (MIT)**, 16 were drawn for
+  textures — sharp in a 64 dp cell. 171 icons use path data from **Tabler Icons 3.46.0 (MIT)**, 16 were drawn for
   gohud where Tabler has none (ring, necklace, gloves, ore, crystal, ingot, oxygen tank, dome …); the MIT notice is
   in `THIRD_PARTY_NOTICES.md`. One table in `tools/make_game_icons.py` generates the SVGs, the set and the name
-  constants (`--check` compares them; path data is kept in the script, nothing is downloaded).
+  constants (`--check` compares them; path data is kept in the script, nothing is downloaded). `microphone`,
+  `microphone_off` and `send` sit in the rewards & social group for voice and chat composers.
 - **`GoSlotGrid` — an inventory grid.** *N* `GoSlot` cells that wrap to the width: `set_cell(index, {icon, quantity,
   accent, tooltip, disabled, timer})`, `{}` for a vacant cell, one `selected` cell, `slot_pressed(index)` and — with
   `draggable` on, for mouse play — `slot_moved(from, to)`. It holds what to draw, never item data. Cells pass the
   finger drag to the scroll they sit in.
+- **`GoSlot.icon_ink`** (and the `ink` key of a `GoSlotGrid` cell) colours the icon itself — an item's colour in a bag —
+  corrected for contrast against the slot face so the hue survives on any theme. From `visual_size` 56 up the
+  quantity badge uses the compact text size; the micro size turned into a speck on a 60 dp inventory cell.
+- **`GoStyle.segmented()` options may carry an icon**: `{"text", "icon", "tooltip"}` beside plain strings. The icon
+  follows the label's colour in every state, including the accent-filled chosen cell.
 - **`GoSlot.selected`** (lit border without the cooldown's dimmed icon), **vacant cells** (no icon and
   `quantity = NONE` draw faint), and a `visual_size` above the touch minimum now grows the slot's own box instead
   of being clamped back to 48 dp.

@@ -24,6 +24,8 @@ extends Button
 const UNKNOWN := -1
 ## This slot has no notion of quantity — the quantity row is not drawn (skill and ability slots).
 const NONE := -2
+## From this `visual_size` up the quantity badge uses the compact text size instead of the micro one.
+const LARGE_CELL := 56
 
 ## Icon name.
 @export var icon_name: StringName = &"":
@@ -35,6 +37,15 @@ const NONE := -2
 @export var accent := Color.TRANSPARENT:
 	set(value):
 		accent = value
+		refresh()
+
+## The icon's own color (an item's color in a bag). Transparent = the readable text color, as before.
+## 🔑 It is **corrected for contrast against the slot face** (`GoSkin.readable_on`), so a dark blue item on a dark
+##    panel is lifted until it reads, and a pale one on a light theme is lowered — the hue survives, the icon never sinks in.
+##    An empty (`quantity = 0`) or disabled slot still fades to the muted color: state outranks decoration.
+@export var icon_ink := Color.TRANSPARENT:
+	set(value):
+		icon_ink = value
 		refresh()
 
 ## The quantity held. `UNKNOWN` (-1) shows `…`, `NONE` (-2) hides the quantity row entirely (skill slots and such),
@@ -271,14 +282,17 @@ func refresh() -> void:
 	if icons != null and icons.tint.a > 0 and not icons.tint.is_equal_approx(Color.WHITE):
 		_icon.modulate = Color.WHITE
 	else:
-		_icon.modulate = GoUi.skin().readable_on(
-			GoUi.color(GoTheme.MUTED) if faded else GoUi.color(GoTheme.TEXT), on_face)
+		var wanted := icon_ink if icon_ink.a > 0 else GoUi.color(GoTheme.TEXT)
+		_icon.modulate = GoUi.skin().readable_on(GoUi.color(GoTheme.MUTED) if faded else wanted, on_face)
 		# 🛑 During a cooldown the icon is **pulled back toward the panel color** — the time left on top of it is the star.
 		#    Colors are blended rather than alpha multiplied (in a light theme alpha erases the slot entirely).
 		if lit: _icon.modulate = on_face.lerp(_icon.modulate, 0.45)
 
 	_quantity_badge.visible = quantity != NONE
 	if _quantity_badge.visible:
+		# 🔑 A big cell gets a bigger count — the micro size is tuned for a 44dp quick slot and turns into a speck
+		#    on a 60dp inventory cell, where the count is the second thing a player looks for (after the icon).
+		GoStyle.typography(_quantity, GoTheme.ROLE_COMPACT if visual_size >= LARGE_CELL else GoTheme.ROLE_MICRO)
 		_quantity.text = GoUi.text(&"slot_unknown") if quantity == UNKNOWN \
 			else GoUi.text(&"slot_quantity").format({"count": GoBar.format_amount(quantity)})
 		var badge := GoUi.skin().badge_box(face_ink)

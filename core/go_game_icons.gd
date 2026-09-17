@@ -1,4 +1,4 @@
-## 🎮 Names for the **game icon set** — 184 icons for inventories, shops, equipment, food, resources,
+## 🎮 Names for the **game icon set** — 187 icons for inventories, shops, equipment, food, resources,
 ## tech & space, places and rewards. The drawings live in `icons/game/`, the set in `icons/gohud_icons_game.tres`.
 ##
 ## ```gdscript
@@ -219,6 +219,9 @@ const THUMB_UP := &"thumb_up"
 const HANDSHAKE := &"handshake"
 const MEGAPHONE := &"megaphone"
 const STOPWATCH := &"stopwatch"
+const MICROPHONE := &"microphone"
+const MICROPHONE_OFF := &"microphone_off"
+const SEND := &"send"
 
 ## Group key → its icon names, in drawing order. The gallery and icon pickers walk this.
 const GROUPS: Dictionary[StringName, Array] = {
@@ -230,7 +233,7 @@ const GROUPS: Dictionary[StringName, Array] = {
 	&"tech": [&"atom", &"battery", &"battery_full", &"bulb", &"chip", &"plug", &"engine", &"rocket", &"planet", &"satellite", &"ufo", &"alien", &"solar_panel", &"antenna", &"telescope", &"meteor", &"robot", &"drone", &"radar", &"microscope", &"dna", &"test_tube", &"radioactive", &"biohazard", &"recycle", &"fuel", &"oxygen_tank", &"dome", &"power_core"],
 	&"places": [&"factory", &"house", &"tower", &"windmill", &"tent", &"campfire", &"bed", &"lamp", &"door", &"window", &"fence", &"ladder", &"armchair", &"car", &"tractor", &"forklift", &"crane"],
 	&"creatures": [&"paw", &"bug", &"ghost", &"pig", &"horse"],
-	&"rewards": [&"trophy", &"medal", &"award", &"certificate", &"sparkles", &"confetti", &"balloon", &"dice", &"puzzle", &"anchor", &"palette", &"notebook", &"scroll", &"thumb_up", &"handshake", &"megaphone", &"stopwatch"],
+	&"rewards": [&"trophy", &"medal", &"award", &"certificate", &"sparkles", &"confetti", &"balloon", &"dice", &"puzzle", &"anchor", &"palette", &"notebook", &"scroll", &"thumb_up", &"handshake", &"megaphone", &"stopwatch", &"microphone", &"microphone_off", &"send"],
 }
 
 ## Group key → a title to show above it (English; translate in your own table if you show it to players).
@@ -248,7 +251,7 @@ const GROUP_TITLES: Dictionary[StringName, String] = {
 
 
 ## The set itself. 🛑 Loaded on first use rather than `preload`ed — a project that never asks for it
-##    never pays for 184 textures.
+##    never pays for 187 textures.
 static func icon_set() -> GoIconSet:
 	return load(SET_PATH) as GoIconSet
 

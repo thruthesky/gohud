@@ -79,6 +79,7 @@ Give it a width: `bar.custom_minimum_size.x = 180` (or put it in an expanding co
 | `shortcut_label` | `""` | Top-left key hint — display only, handle input yourself |
 | `visual_size` | `44` | Face size; touch area stays ≥ `min_touch_size`. Above the touch minimum (an inventory cell at 56–64) the slot's own box grows with it |
 | `selected` | `false` | Picked cell — lit border **without** the cooldown's dimmed icon |
+| `icon_ink` | transparent → text colour | The icon's own colour (an item's colour). Corrected for contrast against the slot face, so the hue survives and the icon never sinks in; empty / disabled slots still fade |
 | `keyboard_focus` | `false` | Opt into Tab / gamepad focus |
 | `touch_peers: Array[Control]` | `[]` | Overlapping 48 dp areas go to the nearer centre |
 | `set_cooldown(left, total)` · `start_cooldown(seconds)` · `cooldown_ratio()` · `refresh()` | | `start_cooldown` counts down itself |
@@ -98,6 +99,10 @@ for i in 4:
 for slot in slots: (slot as GoSlot).touch_peers = slots
 ```
 
+From `visual_size` 56 up (`GoSlot.LARGE_CELL`) the quantity badge uses the compact text size instead of the micro one.
+🛑 HUD buttons over gameplay (`GoIconButton`, `GoStyle.button*`) keep keyboard focus after a click, and Space then presses
+them again instead of reaching the game — set `focus_mode = Control.FOCUS_NONE` on them (`pitfalls.md`).
+
 A slot with **no icon and `quantity = GoSlot.NONE`** is a *vacant cell* and draws faint, so a half-full bag reads as
 "items, then room".
 
@@ -112,7 +117,7 @@ shelf. It holds **what to draw**, never item data; the game decides what a press
 | `cell_size` | `56` | Face size of every cell (dp) |
 | `draggable` | `false` | Drag a cell onto another → `slot_moved`. 🛑 Inside a scroll the finger drag belongs to the scroll — turn on for mouse play (`not DisplayServer.is_touchscreen_available()`) and keep a tap route (pick → Move → tap target) |
 | `selected` | `-1` | The one picked cell; out of range clears it |
-| `set_cell(index, data)` · `set_cells(list)` | | `data`: `{icon, quantity, accent, tooltip, disabled, timer}` — all optional, `{}` = vacant, no `quantity` key = no count badge (equipment) |
+| `set_cell(index, data)` · `set_cells(list)` | | `data`: `{icon, quantity, accent, ink, tooltip, disabled, timer}` — all optional, `{}` = vacant, no `quantity` key = no count badge (equipment) |
 | `cell(index) -> Dictionary` · `slot(index) -> GoSlot` | | Read back / reach the slot for cooldowns and shortcut labels |
 | signals | | `slot_pressed(index)` (vacant cells too) · `slot_moved(from, to)` (the grid moves nothing itself) |
 

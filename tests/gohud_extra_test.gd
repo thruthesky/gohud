@@ -43,6 +43,7 @@ func _initialize() -> void:
 	await _console()
 	await _carousel()
 	await _slot_grid()
+	await _segmented_icons()
 	await _game_icons()
 	await _theme_follow()
 
@@ -867,6 +868,30 @@ func _slot_grid() -> void:
 	check(moves == [[0, 4]], "slot grid: a drop reports slot_moved and moves nothing itself %s" % str(moves))
 	check(grid.cell(4).is_empty(), "slot grid: the game decides what a move means")
 
+	# The icon's own color — kept in hue, corrected for contrast against the face.
+	var plain_icon: Color = grid.slot(1).get_node(^"Face/IconSlot").modulate
+	grid.set_cell(1, {"icon": GoIconSet.SWORD, "ink": Color("10204a")})
+	await frames(1)
+	var inked: Color = grid.slot(1).get_node(^"Face/IconSlot").modulate
+	var face_back := GoSkin.blend(GoSkin.box_background(grid.slot(1).get_node(^"Face").get_theme_stylebox(&"panel")), GoUi.color(GoTheme.SURFACE_SOFT))
+	check(inked != plain_icon and inked.b > inked.r, "slot grid: `ink` colors the icon and keeps its hue (%s)" % str(inked))
+	check(GoSkin.contrast_ratio(inked, face_back) >= 4.5, "slot grid: a dark ink is lifted until it reads on the face (%.2f)" % GoSkin.contrast_ratio(inked, face_back))
+	grid.set_cell(1, {"icon": GoIconSet.SWORD, "ink": Color("10204a"), "disabled": true})
+	await frames(1)
+	check(grid.slot(1).get_node(^"Face/IconSlot").modulate != inked, "slot grid: a disabled cell fades even an inked icon")
+	grid.set_cell(1, {"icon": GoIconSet.SWORD})
+	# A big cell gets a bigger count.
+	var small := GoSlot.new()
+	small.quantity = 3
+	holder.add_child(small)
+	await frames(2)
+	var big_count: Label = first.get_node(^"Face/QuantityBadge/Quantity")
+	var small_count: Label = small.get_node(^"Face/QuantityBadge/Quantity")
+	check(big_count.get_theme_font_size(&"font_size") > small_count.get_theme_font_size(&"font_size"),
+		"slot grid: a 60dp cell reads its count larger than a 44dp quick slot (%d > %d)"
+			% [big_count.get_theme_font_size(&"font_size"), small_count.get_theme_font_size(&"font_size")])
+	small.queue_free()
+
 	grid.slot_count = 6
 	await frames(2)
 	check(grid.find_children("*", "GoSlot", true, false).size() == 6 and grid.cell(0).get("quantity") == 7,
@@ -876,6 +901,30 @@ func _slot_grid() -> void:
 	holder.queue_free()
 	await frames(1)
 	section("slot grid")
+
+
+# ── Segmented with icons ──────────────────────────────────────────────
+
+func _segmented_icons() -> void:
+	var picked: Array[int] = []
+	var line := GoStyle.segmented([{"text": "All", "icon": GoIconSet.GRID}, "Plain", {"icon": GoIconSet.STAR, "tooltip": "Starred"}],
+		0, func(index: int) -> void: picked.append(index))
+	root.add_child(line)
+	await frames(2)
+	var first := line.get_child(0) as Button
+	var plain := line.get_child(1) as Button
+	var bare := line.get_child(2) as Button
+	check(first.text == "All" and first.icon == GoUi.icons().texture(GoIconSet.GRID), "segmented: a {text, icon} option shows both")
+	check(plain.text == "Plain" and plain.icon == null, "segmented: a plain string option is unchanged")
+	check(bare.text == "" and bare.icon != null and bare.tooltip_text == "Starred", "segmented: an icon-only option carries its name as the tooltip")
+	check(first.get_theme_color(&"icon_pressed_color") == GoUi.color(GoTheme.ON_ACCENT)
+		and first.get_theme_color(&"icon_normal_color") == first.get_theme_color(&"font_color"),
+		"segmented: the icon takes the label's color in every state")
+	bare.pressed.emit()
+	check(picked == [2], "segmented: the action still gets the index %s" % str(picked))
+	line.queue_free()
+	await frames(1)
+	section("segmented icons")
 
 
 # ── Game icon set ─────────────────────────────────────────────────────

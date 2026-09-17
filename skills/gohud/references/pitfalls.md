@@ -33,6 +33,9 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | A toast covers the health bar | Nine spots do not prevent collisions | Toast anchor: `avoid_peers = true`, `reserve_space = false` |
 | A whole row of content disappears near a hidden joystick | Its anchor still reserves space | `reserve_space = false` on anchors that appear only sometimes |
 | `GoBar`s in a column overlap / a bar has no width | `Control` gives no width by itself | `bar.custom_minimum_size.x = 180` or an expanding parent |
+| A sheet or window stays at 72% of the screen although `height_ratio = 0.9` | The per-surface `height_ratio` is clamped by the global `GoConfig.surface_max_height_ratio` (0.72) — silently | Raise `GoUi.config.surface_max_height_ratio` (it applies to every surface) and call `GoUi.refresh()`, or make the content shorter: lay the sticky rows out side by side on a landscape screen |
+| A wide landscape screen shows a narrow 480 dp sheet | `GoConfig.surface_max_width` caps every surface | `sheet.surface.max_width = GoUi.metric(GoTheme.TOUCH) * 15` for the one sheet that needs room (an inventory grid) |
+| Icons vanish from a row of buttons | An expanding sibling took the spare width, the buttons shrank to their text and `expand_icon` squeezed the icon to 0 px | Give the sibling `SIZE_SHRINK_BEGIN` and the button row `SIZE_EXPAND_FILL` |
 | Sheet list's last row cut off behind the footer | Confirm/Close put in `body` | Sticky actions go in `footer()` (and `toolbar()` for search) with `.visible = true` |
 | Custom StyleBox content touches its border | `_get_style_margin()` is not called for GDScript StyleBoxes | Set `content_margin_*` on the StyleBox |
 | Card shape turns rounded under sci-fi / medieval | `GoStyle.box()` always returns `StyleBoxFlat` | Use `GoStyle.surface()` to keep the preset's shape |
@@ -60,6 +63,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| After clicking a HUD button, Space / Enter presses **it** again instead of reaching the game (attack, jump) — a sheet flickers open and shut | A clicked `Button` keeps keyboard focus and the engine's accept action (Space / Enter) activates the focused button before `_unhandled_key_input` sees the key. `GoSlot` opts out by default (`keyboard_focus`); `GoIconButton` and `GoStyle.button*` do not | On HUD buttons over gameplay: `button.focus_mode = Control.FOCUS_NONE`, and give each a shortcut key instead |
 | The game ignores taps where the HUD is empty | A full-rect `Control` defaults to `MOUSE_FILTER_STOP` | HUD root `mouse_filter = MOUSE_FILTER_IGNORE` |
 | A button next to an icon button stops responding | The icon button's touch area grows to 48 dp over it | Set `touch_peers` on side-by-side `GoIconButton`s / `GoSlot`s |
 | Dragging a list that starts on a button does not scroll | Button uses `MOUSE_FILTER_STOP` | Build rows with `GoStyle` (PASS) inside `GoScroll` (prepares children) |
