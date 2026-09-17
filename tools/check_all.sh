@@ -90,6 +90,9 @@ step "④ do the generated theme files match the source?"
 # 🛑 Edit a palette and forget to run `make_theme.py` and the `.tres` stays stale — invisibly.
 python3 "$ADDON/tools/check_generated.py" || FAILED=1
 
+step "④-a do the game icon files match their table?"
+python3 "$ADDON/tools/make_game_icons.py" --check || FAILED=1
+
 step "④-c theme scaffolding"
 # 🛑 The promise of "more themes to come" — does one file produce a theme that passes the contrast check? It is fast, so always run it.
 bash "$ADDON/tools/check_scaffold.sh" || FAILED=1

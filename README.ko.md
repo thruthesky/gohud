@@ -278,6 +278,26 @@ GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close") # 36dp 그림 · 48
 기본 84종과 중세 16종은 gohud 를 위해 그린 원본이고 **MIT** 라 재배포에 제약이 없다.
 `DPITexture` 로 임포트돼 UI 배율을 올려도 다시 래스터화된다.
 
+### 게임 아이콘 세트 — 인벤토리·상점·아이템
+
+아이콘 184종을 아홉 묶음(가방·보관, 상점·거래, 장비·도구, 음식·소모품, 자원·재료, 기술·우주, 건물·가구, 생물,
+보상·소셜)으로 더 담았다. 이름은 `GoGameIcons` 의 상수이고, 세트가 기본 세트를 fallback 으로 두므로 이미 쓰던
+이름은 그대로 그려진다.
+
+```gdscript
+GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+GoUi.config.icons = GoGameIcons.icon_set()      # use_preset() 뒤에 — use_preset() 이 config.icons 를 비운다
+
+var grid := GoSlotGrid.new()                    # GoSlot 칸으로 된 인벤토리 격자
+grid.slot_count = 30
+grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12, "tooltip": "사과"})
+menu.add_child(GoStyle.list_button(GoGameIcons.SHOP, "상점", open_shop, Color.TRANSPARENT, "", false))
+```
+
+168종은 [Tabler Icons](https://tabler.io/icons)(MIT, © Paweł Kuna)의 경로 데이터를 쓴다 — 기본 세트와 같은 24px 격자·
+2px 둥근 선이라 나란히 놓아도 어긋나지 않는다. 나머지 16종(반지·목걸이·장갑·광석·수정·산소통·돔 …)은 gohud 를 위해
+그렸다. 아이콘을 더하려면 `tools/make_game_icons.py` 의 표를 고치고 실행한다 — SVG·세트·상수를 한 번에 다시 만든다.
+
 > 상용 아이콘 폰트는 보통 게임 안에서 쓰는 것만 허락하고 재배포는 막는다. gohud 를 공개 포크할 때는
 > 그 폰트를 넣지 말고 게임 프로젝트에 둔다. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 참고.
 
@@ -741,5 +761,6 @@ ZIP 에는 사이트·검사·도구와 독립 프로젝트 `examples/usage` 가
 
 MIT — [LICENSE](LICENSE). 코드와 함께 든 그림(기본 아이콘 84종, 중세 아이콘 16종, 생성된 컨트롤 그림)은
 gohud 를 위해 만든 것이라 역시 MIT 다. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
+게임 아이콘 세트 184종도 MIT 다 — 168종은 Tabler Icons(MIT, Copyright (c) 2020-2026 Paweł Kuna)의 경로 데이터를 쓰고 16종은 gohud 를 위해 그렸다.
 Cinzel 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`).
 자세한 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

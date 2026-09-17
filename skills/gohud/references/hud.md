@@ -77,7 +77,8 @@ Give it a width: `bar.custom_minimum_size.x = 180` (or put it in an expanding co
 | `quantity` | `GoSlot.UNKNOWN` (-1) | `-1` shows `…`, `GoSlot.NONE` (-2) hides the badge (skills), `0` fades the slot |
 | `timer_text` | `""` | Text badge over the icon (buff time) |
 | `shortcut_label` | `""` | Top-left key hint — display only, handle input yourself |
-| `visual_size` | `44` | Face size; touch area stays ≥ `min_touch_size` |
+| `visual_size` | `44` | Face size; touch area stays ≥ `min_touch_size`. Above the touch minimum (an inventory cell at 56–64) the slot's own box grows with it |
+| `selected` | `false` | Picked cell — lit border **without** the cooldown's dimmed icon |
 | `keyboard_focus` | `false` | Opt into Tab / gamepad focus |
 | `touch_peers: Array[Control]` | `[]` | Overlapping 48 dp areas go to the nearer centre |
 | `set_cooldown(left, total)` · `start_cooldown(seconds)` · `cooldown_ratio()` · `refresh()` | | `start_cooldown` counts down itself |
@@ -95,6 +96,36 @@ for i in 4:
 	row.add_child(slot)
 	slots.append(slot)
 for slot in slots: (slot as GoSlot).touch_peers = slots
+```
+
+A slot with **no icon and `quantity = GoSlot.NONE`** is a *vacant cell* and draws faint, so a half-full bag reads as
+"items, then room".
+
+### GoSlotGrid — inventory grid
+
+`class_name GoSlotGrid extends HFlowContainer` — *N* `GoSlot` cells that wrap to the width given: a bag, a chest, a shop
+shelf. It holds **what to draw**, never item data; the game decides what a press or a move means.
+
+| Member | Default | Notes |
+|---|---|---|
+| `slot_count` | `20` | Rebuilds cells; kept cells redraw what they held |
+| `cell_size` | `56` | Face size of every cell (dp) |
+| `draggable` | `false` | Drag a cell onto another → `slot_moved`. 🛑 Inside a scroll the finger drag belongs to the scroll — turn on for mouse play (`not DisplayServer.is_touchscreen_available()`) and keep a tap route (pick → Move → tap target) |
+| `selected` | `-1` | The one picked cell; out of range clears it |
+| `set_cell(index, data)` · `set_cells(list)` | | `data`: `{icon, quantity, accent, tooltip, disabled, timer}` — all optional, `{}` = vacant, no `quantity` key = no count badge (equipment) |
+| `cell(index) -> Dictionary` · `slot(index) -> GoSlot` | | Read back / reach the slot for cooldowns and shortcut labels |
+| signals | | `slot_pressed(index)` (vacant cells too) · `slot_moved(from, to)` (the grid moves nothing itself) |
+
+```gdscript
+var grid := GoSlotGrid.new()
+grid.slot_count = 30
+grid.cell_size = 60
+grid.draggable = not DisplayServer.is_touchscreen_available()
+sheet.body.add_child(grid)
+for index in bag.size():
+	grid.set_cell(index, {"icon": bag[index].icon, "quantity": bag[index].count, "accent": bag[index].color, "tooltip": bag[index].name})
+grid.slot_pressed.connect(func(index: int) -> void: grid.selected = index)
+grid.slot_moved.connect(func(from: int, to: int) -> void: swap_items(from, to))
 ```
 
 ## 4. GoJoystick

@@ -41,8 +41,9 @@ dark and light.
   sections, `accessibility_name` for screen readers, `mouse_behavior_recursive` for input-transparent
   notices, `last_wrap_alignment` for flowing rows.
 - **Pure GDScript.** No autoload required, no engine module, no GDExtension.
-- **MIT** code and artwork, including 84 default icons and 16 engraved medieval icons. The medieval
-  headings use the bundled Cinzel font under the SIL Open Font License 1.1.
+- **MIT** code and artwork, including 84 default icons, 16 engraved medieval icons and a **184-icon game set**
+  for inventories, shops and items (168 of those from Tabler Icons, MIT). The medieval headings use the bundled
+  Cinzel font under the SIL Open Font License 1.1.
 
 ## Requirements
 
@@ -259,6 +260,26 @@ var close := GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close")
 
 The names you can rely on are the 84 constants on `GoIconSet`. Any other name works too, as long as
 your set defines it — the medieval set adds `scroll` and `seal` this way.
+
+### The game icon set — inventories, shops, items
+
+184 more icons in nine groups (inventory & storage, shop & trade, equipment & tools, food & consumables,
+resources & materials, tech & space, buildings & furniture, creatures, rewards & social). The names are constants
+on `GoGameIcons`; the set falls back to the default one, so nothing you already use changes.
+
+```gdscript
+GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+GoUi.config.icons = GoGameIcons.icon_set()      # after use_preset() — it clears config.icons
+
+var grid := GoSlotGrid.new()                    # an inventory grid of GoSlot cells
+grid.slot_count = 30
+grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12, "tooltip": "Apple"})
+menu.add_child(GoStyle.list_button(GoGameIcons.SHOP, "Shop", open_shop))
+```
+
+168 of the drawings use path data from [Tabler Icons](https://tabler.io/icons) (MIT, © Paweł Kuna) — the same 24 px
+grid and 2 px round stroke as the default set — and 16 were drawn for gohud. Edit the table in
+`tools/make_game_icons.py` and run it to add your own; it regenerates the SVGs, the set and the constants.
 
 ### Replacing the whole set with your own SVGs
 
@@ -773,6 +794,7 @@ Packaging checks in `check_all.sh` use temporary copies and do not increment you
 ## License
 
 MIT — see [LICENSE](LICENSE). The code and the bundled artwork (84 default icons, 16 medieval icons
-and the generated control artwork) were made for gohud and are MIT as well. The Cinzel font is
+and the generated control artwork) were made for gohud and are MIT as well. The 184-icon game set is MIT too:
+168 of its icons use path data from Tabler Icons (MIT, Copyright (c) 2020-2026 Paweł Kuna), 16 were drawn for gohud. The Cinzel font is
 distributed unmodified under the SIL Open Font License 1.1 (`assets/fonts/cinzel/OFL.txt`); see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

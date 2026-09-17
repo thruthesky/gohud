@@ -49,6 +49,7 @@ editor plugin only adds conveniences. Every widget is built with `.new()` + `add
 | `GoHudAnchor` pins pieces to 9 safe-area spots, optional landscape spot, `reserve_space`, `avoid_peers` | `corner.spot = GoHudAnchor.Spot.TOP_LEFT` | hud.md §1 |
 | `GoBar` HP/MP/XP bar, eased, value / fraction / percent readout, number abbreviation | `hp.set_values(320, 500)` | hud.md §2 |
 | `GoSlot` quick slot: icon, quantity badge, cooldown, shortcut, shared touch areas | `slot.start_cooldown(5.0)` | hud.md §3 |
+| **`GoSlotGrid`** inventory grid: *N* wrapping cells, vacant cells drawn faint, one picked cell, drag-to-move for mouse play | `grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12})` | hud.md §3 |
 | `GoJoystick` virtual stick, `FIXED` / `FOLLOW` / `RELATIVE`, dead zone, normalized vector | `pad.moved.connect(func(v): player.direction = v)` | hud.md §4 |
 | `GoIconButton` 36 dp visual, 48 dp touch, tooltip = accessible name | `GoStyle.icon_button(&"close", close, -1, &"close")` | hud.md §5 |
 | `GoPromptCard` non-blocking question card (party invite, trade request) | `card.set_actions([{"text": "Accept", "action": ok, "primary": true}])` | hud.md §7 |
@@ -122,6 +123,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Skins own code-drawn shapes (joystick, slots, coach ring, chips, alerts); 32 numeric dials | `class_name MySkin extends GoSkin` | theming.md §6 |
 | Custom StyleBoxes: `GoStyleBoxCut` (chamfer, edge, glow), `GoStyleBoxBracket` (corner marks), `GoStyleBoxMedieval` (forged frame) | `var box := GoStyleBoxCut.new()` | theming.md §7 |
 | Icons by name: 84 default + 16 engraved medieval (MIT, `DPITexture`); swap to your SVGs or an icon font, or override a few | `GoUi.icons().node(&"settings", 20)` | platform.md §1 |
+| **Game icon set** — 184 icons for inventories, shops, equipment, food, resources, tech & space, places and rewards (MIT; 168 from Tabler Icons, 16 drawn for gohud), falls back to the default set | `GoUi.config.icons = GoGameIcons.icon_set()` | platform.md §1 |
 
 ## 9. Mobile, desktop, accessibility, languages
 

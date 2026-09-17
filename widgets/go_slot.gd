@@ -57,10 +57,21 @@ const NONE := -2
 		refresh()
 
 ## One side of the visible panel (dp). Touch grows out to `GoConfig.min_touch_size`.
+## 🔑 A panel **larger** than the touch minimum (an inventory cell at 56–64dp) grows the slot's own box with it —
+##    otherwise the face is clamped back to the touch size and every cell of a bag looks like a quick slot.
 @export_range(16, 128) var visual_size := 44:
 	set(value):
 		visual_size = value
+		_fit_box()
+		_rebuild_icon()
 		_fit()
+
+## This slot is the picked one (an inventory cell whose detail is open, a drop target). It gets the lit border
+## **without** the cooldown's dimmed icon — picked means "look here", a cooldown means "not yet".
+@export var selected := false:
+	set(value):
+		selected = value
+		refresh()
 
 ## Overlapping neighbour slots. The overlap goes to whichever center is closer.
 var touch_peers: Array[Control] = []
@@ -141,8 +152,13 @@ func _exit_tree() -> void:
 ## Puts the current theme and touch minimum on this slot. 🛑 Pulled out because **the same thing** has to be redone when the look changes.
 func _adopt_theme() -> void:
 	theme = GoUi.theme()
-	var touch := GoUi.config.min_touch_size
-	custom_minimum_size = Vector2(touch, touch)
+	_fit_box()
+
+
+## The slot's own box: the touch minimum, or the visible panel when that is larger.
+func _fit_box() -> void:
+	var side := maxi(GoUi.config.min_touch_size, visual_size)
+	custom_minimum_size = Vector2(side, side)
 
 
 ## 🎨 The whole look changed — called by `GoUi.use_preset()`·`GoUi.refresh()`.
@@ -227,13 +243,16 @@ func refresh() -> void:
 	var color := accent if accent.a > 0 else GoUi.color(GoTheme.ACCENT)
 	var lit := _cooldown_left > 0.0 or not timer_text.is_empty()
 	var empty := quantity == 0
-	var faded := empty or disabled
+	# 🔑 No icon and no quantity row = **a vacant cell** (an empty inventory space). It is drawn faint like a
+	#    spent slot, so a half-full bag reads as "items, then room" rather than a wall of identical frames.
+	var vacant := icon_name.is_empty() and quantity == NONE
+	var faded := empty or disabled or vacant
 
 	# 🛑 Dimming **never multiplies alpha** (it used to be `modulate.a = 0.55`) — in a light theme it multiplies into
 	#    an already pale color and the slot **disappears** entirely (measured 2026-09-13 in the light gallery: empty slots were invisible).
 	#    The color is **moved** toward the dim end instead. In any theme that reads as "faint but still there".
 	var face_ink := GoUi.color(GoTheme.MUTED) if faded else color
-	var style := GoUi.skin().slot_box(face_ink, lit)
+	var style := GoUi.skin().slot_box(color if selected else face_ink, lit or selected)
 	_face.add_theme_stylebox_override(&"panel", style)
 
 	# 🛑 The text has to be readable **on this panel**. How the panel is painted is the skin's call — a host may fill

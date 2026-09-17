@@ -1503,7 +1503,9 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 		text_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		text_node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	if icon.is_empty():
-		node.add_child(text_node)
+		# 🛑 No text and no icon leaves nothing to add — `add_child(null)` is an engine error, not an empty chip
+		#    (met 2026-09-17 with a character name that was still empty).
+		if text_node != null: node.add_child(text_node)
 		return node
 	var glyph := GoUi.icons().node(icon, GoUi.metric(GoTheme.LIST_GLYPH) if icon_size < 0 else icon_size, ink_on_chip)
 	if text_node == null:

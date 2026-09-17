@@ -2627,6 +2627,10 @@ func _widgets() -> void:
 		and near(icon_face.get_margin(SIDE_LEFT), icon_face.get_margin(SIDE_TOP)),
 		"chip(icon): with no text it holds one icon box and the panel is square too (left %.1f · top %.1f · children %d)"
 			% [icon_face.get_margin(SIDE_LEFT), icon_face.get_margin(SIDE_TOP), icon_chip.get_child_count()])
+	# 🛑 Neither text nor icon — an empty pill, not `add_child(null)` (a name that has not arrived yet).
+	var bare_chip := GoStyle.chip("")
+	check(bare_chip != null and bare_chip.get_child_count() == 0, "chip(\"\"): an empty chip holds nothing and raises no error")
+	bare_chip.free()
 	var both_chip := GoStyle.chip("12", pick_ink, false, GoIconSet.HEART, 16)
 	var both_row := both_chip.get_child(0) as HBoxContainer
 	check(both_row != null and both_row.get_child_count() == 2 and both_row.get_child(1) is Label

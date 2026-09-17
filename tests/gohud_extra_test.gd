@@ -42,6 +42,8 @@ func _initialize() -> void:
 	await _code_input()
 	await _console()
 	await _carousel()
+	await _slot_grid()
+	await _game_icons()
 	await _theme_follow()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -805,12 +807,119 @@ func _carousel() -> void:
 	section("carousel")
 
 
-# ── Does a change of look follow through ──────────────────────────────
+# ── Inventory grid ────────────────────────────────────────────────────
 
-## 🛑 **This is the most important check in this file.** `GoUi.use_preset()` promises that "theme, skin and
-##    icons move together". Yet before 2026-09-16 **only freshly built widgets** changed —
-##    an HP bar or quick slot already on screen kept its old colours, and standing next to the new ones one
-##    screen carried two looks at once. It happens because a widget that registers no `GoUi.watch()` is never re-read.
+func _slot_grid() -> void:
+	var holder := Control.new()
+	holder.size = Vector2(360, 600)
+	root.add_child(holder)
+	var grid := GoSlotGrid.new()
+	grid.slot_count = 12
+	grid.cell_size = 60
+	grid.size = Vector2(360, 0)
+	holder.add_child(grid)
+	await frames(2)
+	var cells: Array = grid.find_children("*", "GoSlot", true, false)
+	check(cells.size() == 12, "slot grid: one GoSlot per cell (%d)" % cells.size())
+	var first := grid.slot(0)
+	check(first.custom_minimum_size.x >= 60.0, "slot grid: a cell larger than the touch minimum grows its box (%s)" % str(first.custom_minimum_size))
+	check(first.get_node(^"Face").size.x >= 59.0, "slot grid: the face is the asked size, not clamped to touch (%s)" % str(first.get_node(^"Face").size))
+	check(first.mouse_filter == Control.MOUSE_FILTER_PASS, "slot grid: cells hand the finger drag to the scroll")
+	check(grid.slot(5).position.y > first.position.y, "slot grid: cells wrap to the width")
+
+	var vacant_face := _face_color(first)
+	grid.set_cell(0, {"icon": GoIconSet.POTION, "quantity": 7, "accent": Color("e5484d"), "tooltip": "Potion"})
+	await frames(2)
+	check(first.icon_name == GoIconSet.POTION and first.quantity == 7, "slot grid: set_cell draws icon and count")
+	check(first.tooltip_text == "Potion", "slot grid: the tooltip is the cell's accessible name")
+	check(_face_color(first) != vacant_face, "slot grid: a vacant cell is drawn fainter than a filled one")
+	check(first.get_node(^"Face/QuantityBadge").visible, "slot grid: a counted cell shows its badge")
+	grid.set_cell(1, {"icon": GoIconSet.SWORD})
+	await frames(1)
+	check(not grid.slot(1).get_node(^"Face/QuantityBadge").visible, "slot grid: a cell without `quantity` hides the badge (equipment)")
+	check(grid.cell(0).get("quantity") == 7 and grid.cell(3).is_empty(), "slot grid: cell() reads back what was drawn")
+
+	var pressed: Array[int] = []
+	grid.slot_pressed.connect(func(index: int) -> void: pressed.append(index))
+	grid.slot(0).pressed.emit()
+	grid.slot(3).pressed.emit()
+	check(pressed == [0, 3], "slot grid: vacant cells report presses too %s" % str(pressed))
+	var idle_face := _face_color(first)
+	grid.selected = 0
+	await frames(1)
+	check(first.selected and not grid.slot(1).selected, "slot grid: one cell picked at a time")
+	check(_face_color(first) != idle_face, "slot grid: the picked cell is drawn lit")
+	grid.selected = 99
+	check(grid.selected == -1 and not first.selected, "slot grid: an out-of-range pick clears the selection")
+
+	# Drag to move — the three forwarded callbacks, called the way the engine calls them.
+	var moves: Array = []
+	grid.slot_moved.connect(func(from: int, to: int) -> void: moves.append([from, to]))
+	check(grid._drag_from(Vector2.ZERO, 0) == null, "slot grid: nothing drags while `draggable` is off")
+	grid.draggable = true
+	check(grid._drag_from(Vector2.ZERO, 3) == null, "slot grid: a vacant cell cannot be dragged")
+	var carried: Variant = grid._drag_from(Vector2.ZERO, 0)
+	check(carried is Dictionary and carried.get("index") == 0, "slot grid: a filled cell starts a drag")
+	check(grid._can_drop_on(Vector2.ZERO, carried, 4) and not grid._can_drop_on(Vector2.ZERO, carried, 0),
+		"slot grid: drops on another cell, never on itself")
+	check(not grid._can_drop_on(Vector2.ZERO, {"go_slot_grid": 1, "index": 2}, 4), "slot grid: another grid's drag is refused")
+	grid._drop_on(Vector2.ZERO, carried, 4)
+	check(moves == [[0, 4]], "slot grid: a drop reports slot_moved and moves nothing itself %s" % str(moves))
+	check(grid.cell(4).is_empty(), "slot grid: the game decides what a move means")
+
+	grid.slot_count = 6
+	await frames(2)
+	check(grid.find_children("*", "GoSlot", true, false).size() == 6 and grid.cell(0).get("quantity") == 7,
+		"slot grid: shrinking keeps what the kept cells drew")
+	grid.set_cells([{"icon": GoIconSet.KEY, "quantity": 1}])
+	check(grid.slot(0).icon_name == GoIconSet.KEY and grid.cell(1).is_empty(), "slot grid: set_cells vacates the rest")
+	holder.queue_free()
+	await frames(1)
+	section("slot grid")
+
+
+# ── Game icon set ─────────────────────────────────────────────────────
+
+func _game_icons() -> void:
+	var game := GoGameIcons.icon_set()
+	check(game != null and game.fallback == GoUi.DEFAULT_ICONS, "game icons: the set loads and falls back to the default set")
+	var names := GoGameIcons.names()
+	check(names.size() == game.textures.size(), "game icons: every texture has a name constant (%d / %d)" % [names.size(), game.textures.size()])
+	var blurry: Array = []
+	var undrawn: Array = []
+	for icon: StringName in names:
+		if game.texture(icon) == null: undrawn.append(icon)
+		elif not game.texture(icon) is DPITexture: blurry.append(icon)
+	check(undrawn.is_empty(), "game icons: every name draws %s" % str(undrawn))
+	check(blurry.is_empty(), "game icons: vector textures — sharp in a 64dp inventory cell %s" % str(blurry))
+	var constants: Dictionary = (load(ADDON + "/core/go_game_icons.gd") as Script).get_script_constant_map()
+	var orphans: Array = []
+	for key: String in constants:
+		if constants[key] is StringName and not names.has(constants[key]): orphans.append(key)
+	check(orphans.is_empty(), "game icons: every constant belongs to a group %s" % str(orphans))
+	var clash: Array = []
+	for icon: StringName in names:
+		if GoUi.DEFAULT_ICONS.textures.has(icon): clash.append(icon)
+	check(clash.is_empty(), "game icons: no name redraws a default icon %s" % str(clash))
+	check(game.texture(GoIconSet.CLOSE) == GoUi.DEFAULT_ICONS.texture(GoIconSet.CLOSE), "game icons: default names still resolve")
+	check(game.attribution.contains("Tabler") and game.attribution.contains("MIT"), "game icons: the set carries its attribution")
+	check(GoGameIcons.GROUP_TITLES.keys() == GoGameIcons.GROUPS.keys(), "game icons: every group has a title")
+
+	GoUi.config.icons = game
+	var slot := GoSlot.new()
+	slot.icon_name = GoGameIcons.BACKPACK
+	root.add_child(slot)
+	await frames(2)
+	var drawn := slot.get_node(^"Face/IconSlot/Icon") as TextureRect
+	check(drawn != null and drawn.texture == game.texture(GoGameIcons.BACKPACK), "game icons: a slot draws a game icon once the set is plugged in")
+	slot.queue_free()
+	GoUi.config.icons = null
+	await frames(1)
+	section("game icons")
+
+
+# ── Theme follow ──────────────────────────────────────────────────────
+
 func _theme_follow() -> void:
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	await frames(2)
