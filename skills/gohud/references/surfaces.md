@@ -23,7 +23,8 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 |---|---|
 | signals | `close_requested` · `back_requested` · `height_changed(ratio: float)` |
 | `enum Placement { CENTER, BOTTOM, ANCHOR }` | `placement` (CENTER) |
-| size | `max_width` / `max_height` / `height_ratio` (0 = GoConfig value) · `fit_content` (true — short content, short card) · `compact` (smaller padding) |
+| size | `max_width` / `max_height` / `height_ratio` / `max_height_ratio` (0 = GoConfig value) · `fit_content` (true — short content, short card) · `compact` (smaller padding) · `height_ratio_cap()` |
+| ceiling | 🛑 `height_ratio` above `max_height_ratio` (default `GoConfig.surface_max_height_ratio`, 0.72) is cut — raise `max_height_ratio` on the one surface that needs it; a debug build warns once. A centered `fit_content` card still grows to `surface_fit_max_height_ratio` (0.94) for long content. Drag-resize stops at the same ceiling |
 | behaviour | `dismiss_on_scrim` (config default) · `scrim_transparent` · `fade_in` · `resizable` (drag the title) · `show_header` (true) · `scroll_body` (true) · `close_enabled` (true) · `initial_focus: Control` |
 | opacity | `alpha` — the **card face's** opacity, ratio 0.0–1.0, negative = theme/config value (**80%** by default). Text, buttons and the border stay sharp; the scrim behind is separate (`scrim_transparent`, `GoTheme.SCRIM`). `theming.md` §4 |
 | anchor | `anchor_control` · `anchor_width` (320) · `anchor_min_width` (210) · `anchor_max_height` (520) — opens below, or above when there is more room |
@@ -83,7 +84,7 @@ Sub-pages inside one surface: `surface.clear()`, rebuild `body`, `surface.set_ti
 | Member | Notes |
 |---|---|
 | signals | `closed` · `page_changed` |
-| vars | `body` (scrolls) · `surface` · `dismissable` (true — set false for trade/irreversible screens) · `height_ratio` (0.6) |
+| vars | `body` (scrolls) · `surface` · `dismissable` (true — set false for trade/irreversible screens) · `height_ratio` (0.6) · `max_height_ratio` (0 = config 0.72 — set it with a taller `height_ratio`) |
 | `open(title)` / `open_key(key)` | Shows the sheet, clears `body`, hides back button, **frees toolbar children and `add_footer()` nodes**, hides toolbar and footer |
 | `set_title(text)` | Title only — for list → detail inside one sheet |
 | `toolbar()` / `footer()` | Sticky rows under the header / at the bottom. Set `.visible = true` after adding |

@@ -36,7 +36,8 @@ SCENES = {
     "medieval": "res://addons/gohud/examples/medieval/medieval.tscn",
 }
 DEMO_CHAPTERS = ["hud", "buttons", "inputs", "selection", "lists", "data", "states", "surfaces",
-                 "prompt", "touch", "coach", "scrolling", "forms", "anchors", "theming"]
+                 "prompt", "touch", "coach", "scrolling", "forms", "anchors", "theming", "opacity",
+                 "waiting", "fields", "shapes", "inventory", "overlays", "records", "choices"]
 # Never copied into a sandbox: repository housekeeping, site, tests, tools and nested projects.
 SKIP_NAMES = {".git", ".github", ".godot", ".claude", ".claude-plugin", ".review", ".env", ".dist",
               ".playwright-mcp", "__pycache__", "builds", "docs", "tests", "tools", "skills", ".DS_Store"}

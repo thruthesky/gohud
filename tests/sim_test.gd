@@ -40,7 +40,11 @@ func _run() -> void:
 	check(root.get_visible_rect().encloses(sim._stage.get_global_rect()), "Stage fits the viewport")
 	for expected in ["Class: Ranger", "Menu item: 1", "Repeated click: 6", "Prompt card closed",
 			"Tour: Complete", "Form submitted: Aria", "HUD position: Bottom left", "Theme: Light",
-			"Inventory loaded: 3 rows", "Sheet opened: 20 items", "Popup closed", "Download started"]:
+			"Inventory loaded: 3 rows", "Sheet opened: 20 items", "Popup closed", "Download started",
+			"Filter: Potions", "Used: Health potion (11 left)", "Item moved: 2 → 10", "Popover: equipped",
+			"Menu: Equip", "Drawer: Potion 3", "Console: give potion 3", "Table sorted by Score down",
+			"Row picked: Brin", "Page 2", "Server: Northern marches", "Skin: Cocoa", "Difficulty: Hard",
+			"Map layer: Quests"]:
 		check(activity.has(expected), "Observed callback: %s" % expected)
 	check(not GoSurface.is_any_open(), "No modal surface survives the tour")
 

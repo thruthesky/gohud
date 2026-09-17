@@ -151,16 +151,16 @@ func _push(event: InputEvent) -> void:
 	Input.parse_input_event(event.xformed_by(view.get_final_transform()))
 
 
-func _button(pressed: bool) -> void:
+func _button(pressed: bool, which := MOUSE_BUTTON_LEFT) -> void:
 	# Restore hover before each edge; native pointer movement may arrive between frames.
 	_place(_point)
-	_down = pressed
+	if which == MOUSE_BUTTON_LEFT: _down = pressed
 	var event := InputEventMouseButton.new()
-	event.button_index = MOUSE_BUTTON_LEFT
+	event.button_index = which
 	event.pressed = pressed
 	event.position = _point
 	event.global_position = _point
-	event.button_mask = MOUSE_BUTTON_MASK_LEFT if pressed else 0
+	event.button_mask = (MOUSE_BUTTON_MASK_LEFT if which == MOUSE_BUTTON_LEFT else MOUSE_BUTTON_MASK_RIGHT) if pressed else 0
 	_push(event)
 	if pressed: _ring = 1.0
 	_canvas.queue_redraw()
@@ -278,12 +278,38 @@ func _check(node: Control) -> void:
 	expect(false, "Click reaches %s (%s) at %s, hovered: %s" % [node.name, node.get_class(), node.get_global_rect(), under])
 
 
+## **Right-clicks** a target — how a desktop player opens a context menu at once.
+## 🛑 Not a long press: `GoContextMenu` times the hold with a real 0.5 s timer, and the sped-up bot never holds that long.
+func right_click(node: Control, note_text := "") -> void:
+	if _skip: return
+	say(note_text)
+	if not is_instance_valid(node) or not node.is_visible_in_tree():
+		expect(false, "Right-click target is visible")
+		return
+	await move_to(node)
+	if _skip: return
+	_check(node)
+	_button(true, MOUSE_BUTTON_RIGHT)
+	await wait(0.11)
+	if _skip: return
+	_button(false, MOUSE_BUTTON_RIGHT)
+	await wait(0.22)
+
+
 ## Presses one coordinate — for aiming at **a spot inside a node**, such as a tab bar or a foldable's title.
 func click_at(point: Vector2, note_text := "") -> void:
 	if _skip: return
 	say(note_text)
 	await move(point)
 	await tap()
+
+
+## Presses and releases a key on purpose — Enter to submit a typed command, say.
+func press_key(code: Key, note_text := "") -> void:
+	if _skip: return
+	say(note_text)
+	await _tap_key(code)
+	await wait(0.2)
 
 
 ## Presses and releases a single key.
@@ -328,7 +354,8 @@ func pick_with_keys(popup: PopupMenu, index: int, note_text := "") -> void:
 	await wait(0.3)
 	await _tap_key(KEY_ENTER)
 	await wait(0.35)
-	if not _skip: expect(not popup.visible, "Menu closed after selection")
+	# A context menu frees itself once it hides — gone counts as closed.
+	if not _skip: expect(not is_instance_valid(popup) or not popup.visible, "Menu closed after selection")
 
 
 func pick_in_menu(popup: PopupMenu, index: int, note_text := "") -> void:

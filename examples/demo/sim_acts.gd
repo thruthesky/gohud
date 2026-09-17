@@ -82,6 +82,21 @@ static func list() -> Array[Dictionary]:
 		{"key": &"shapes", "title": "Shapes games use", "icon": GoIconSet.CROWN,
 			"note": "Attendance, the stat pentagon, damage share and a banner.",
 			"hint": "Only today can be claimed. Press the banner dots; nothing moves on its own."},
+		# 🛑 New chapters go **at the end** — `sim_test.gd` opens chapters by number, and the showreel pairs
+		#    chapter N with theme N % 3, so the count must not become a multiple of three (every chapter would wear
+		#    one look only).
+		{"key": &"inventory", "title": "Inventory & items", "icon": GoIconSet.BAG,
+			"note": "A bag grid in each item's colour, a detail card, and the game icon set.",
+			"hint": "Filter by kind, pick an item, use it, then Move it: press Move and pick an empty space."},
+		{"key": &"overlays", "title": "Popovers, menus & drawers", "icon": GoIconSet.MORE,
+			"note": "A card beside what you pressed, a right-click menu, a side drawer and a cheat console.",
+			"hint": "Inspect the sword, right-click (or hold) the row, open the drawer and the console."},
+		{"key": &"records", "title": "Tables & pages", "icon": GoIconSet.SORT,
+			"note": "Sort a leaderboard, turn pages, and pick from a long list in a tall sheet.",
+			"hint": "Press Score to sort, pick a row, go to page 2, then choose a server."},
+		{"key": &"choices", "title": "Pick by picture", "icon": GoIconSet.STAR,
+			"note": "Swatches, choice cards, a pill over the map, and HUD buttons that leave Space to the game.",
+			"hint": "Pick a colour, a difficulty card and a map layer. The HUD buttons never keep keyboard focus."},
 	]
 
 
@@ -1522,4 +1537,513 @@ func play_shapes(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	await bot.say("A banner that advances by itself steals the tap you were aiming at. This one waits.")
 	if bot.skipping(): return
 	await bot.wait(1.6)
+	if bot.skipping(): return
+
+
+# ── 20 Inventory and items ─────────────────────────────────────────────
+#
+# 🛑 `GoSlotGrid` draws with the **global** icon set, and a chapter never changes global settings — the next chapter
+#    and the theme picker would inherit them. So the grid uses default-set names, and the game icon set gets a row of
+#    its own, drawn straight from `GoGameIcons.icon_set()`.
+
+const BAG_ITEMS: Array[Dictionary] = [
+	{"icon": GoIconSet.SWORD, "name": "Iron sword", "kind": 1, "ink": Color("c9d1d9"), "rarity": "Common",
+		"about": "A plain blade that holds its edge.", "stats": [["Attack", "+12"], ["Weight", "3.5"]]},
+	{"icon": GoIconSet.POTION, "name": "Health potion", "kind": 2, "quantity": 12, "ink": Color("e5484d"),
+		"rarity": "Common", "about": "Restores 150 health over two seconds.", "stats": [["Heals", "150"], ["Cooldown", "8s"]]},
+	{"icon": GoIconSet.POTION, "name": "Mana potion", "kind": 2, "quantity": 7, "ink": Color("3e63dd"),
+		"rarity": "Rare", "about": "Restores 80 mana at once.", "stats": [["Mana", "80"], ["Cooldown", "12s"]]},
+	{"icon": GoIconSet.SHIELD, "name": "Oak shield", "kind": 1, "ink": Color("ad7f58"), "rarity": "Common",
+		"about": "Blocks the first hit of every fight.", "stats": [["Defence", "+8"], ["Weight", "5.0"]]},
+	{"icon": GoIconSet.KEY, "name": "Tower key", "kind": 0, "quantity": 1, "ink": Color("ffc53d"), "rarity": "Quest",
+		"about": "Opens the north tower. It cannot be dropped.", "stats": []},
+	{"icon": GoIconSet.COIN, "name": "Gold", "kind": 0, "quantity": 1250, "ink": Color("ffc53d"), "rarity": "Currency",
+		"about": "Spent at any shop.", "stats": []},
+	{"icon": GoIconSet.GIFT, "name": "Sealed gift", "kind": 0, "quantity": 1, "ink": Color("8e4ec6"), "rarity": "Event",
+		"about": "Opens at the festival. Until then it stays locked.", "stats": [], "locked": true},
+]
+
+func build_inventory(stage: SimStage, bot: SimBot) -> Dictionary:
+	var bag: Array = []
+	for index in 12: bag.append(BAG_ITEMS[index].duplicate(true) if index < BAG_ITEMS.size() else {})
+	var state := {"filter": 0, "moving": -1}
+	# 🛑 A lambda cannot reach itself through the variable it is being assigned to — the redraws live in a dictionary.
+	var redraw := {}
+
+	# 🔑 Icons in segments — the kinds read at a glance, and an icon-only cell is named by its tooltip.
+	var filter := GoStyle.segmented([{"text": "All", "icon": GoIconSet.GRID}, {"icon": GoIconSet.SWORD, "tooltip": "Gear"},
+		{"icon": GoIconSet.POTION, "tooltip": "Potions"}], 0, Callable(), false, true)
+	stage.body.add_child(filter)
+
+	var grid := GoSlotGrid.new()
+	grid.slot_count = bag.size()
+	grid.cell_size = 60
+	# A bag inside a tour: Space belongs to the tour (pause), not to the last cell pressed — the hotbar rule.
+	grid.keyboard_focus = false
+	stage.body.add_child(grid)
+	var hint := GoStyle.label("Pick an item to see what it is.", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+	stage.body.add_child(hint)
+	var detail := GoStyle.column(0)
+	stage.body.add_child(detail)
+
+	redraw.paint = func() -> void:
+		for index in bag.size():
+			var item: Dictionary = bag[index]
+			if item.is_empty():
+				grid.set_cell(index, {})
+				continue
+			var cell := {"icon": item.icon, "ink": item.ink, "tooltip": item.name,
+				# Filtered out and locked read the same way: still there, not for now.
+				"disabled": bool(item.get("locked", false)) or (state.filter != 0 and int(item.kind) != state.filter)}
+			if item.has("quantity"): cell["quantity"] = int(item.quantity)
+			grid.set_cell(index, cell)
+
+	redraw.show = func(index: int) -> void:
+		for child in detail.get_children():
+			detail.remove_child(child)
+			child.queue_free()
+		var item: Dictionary = bag[index]
+		var spec := {"icon": item.icon, "ink": item.ink, "title": item.name, "subtitle": item.rarity,
+			"body": item.about, "stats": item.stats, "chips": []}
+		if item.has("quantity"): spec.chips.append({"text": "×%d" % int(item.quantity), "ink": GoUi.color(GoTheme.INFO)})
+		if bool(item.get("locked", false)): spec.chips.append({"text": "Locked", "ink": GoUi.color(GoTheme.WARNING), "icon": GoIconSet.LOCK})
+		var actions: Array = []
+		if int(item.get("quantity", 0)) > 0 and int(item.kind) == 2:
+			actions.append({"text": "Use", "tone": GoStyle.Tone.PRIMARY, "action": func() -> void:
+				item.quantity = int(item.quantity) - 1
+				bot.note("Used: %s (%d left)" % [item.name, int(item.quantity)])
+				redraw.paint.call()
+				redraw.show.call(index)})
+		actions.append({"text": "Move", "action": func() -> void:
+			state.moving = index
+			hint.text = "Now pick the space the %s goes to." % item.name
+			bot.note("Moving: %s" % item.name)})
+		spec["actions"] = actions
+		detail.add_child(GoStyle.item_card(spec))
+
+	filter.get_meta(&"group").pressed.connect(func(button: BaseButton) -> void:
+		state.filter = button.get_index()
+		redraw.paint.call()
+		bot.note("Filter: %s" % ["All", "Gear", "Potions"][state.filter]))
+
+	grid.slot_pressed.connect(func(index: int) -> void:
+		# The tap route to rearrange — a finger drag belongs to the scroll, so Move, then the target.
+		if state.moving >= 0:
+			var from: int = state.moving
+			state.moving = -1
+			if from != index:
+				var carried: Dictionary = bag[from]
+				bag[from] = bag[index]
+				bag[index] = carried
+				bot.note("Item moved: %d → %d" % [from + 1, index + 1])
+			hint.text = "Pick an item to see what it is."
+			redraw.paint.call()
+			grid.selected = index
+			redraw.show.call(index)
+			return
+		var item: Dictionary = bag[index]
+		if item.is_empty():
+			grid.selected = -1
+			hint.text = "An empty space — room for one more."
+			for child in detail.get_children(): child.queue_free()
+			return
+		grid.selected = index
+		redraw.show.call(index)
+		bot.note("Inventory: %s" % item.name))
+	redraw.paint.call()
+	# 🛑 The two lambdas and the dictionary hold each other — clear it when the chapter goes, or neither is ever freed
+	#    (the check caught it as `res://sim_acts.gd` still in use at exit).
+	grid.tree_exiting.connect(func() -> void: redraw.clear())
+
+	stage.body.add_child(GoStyle.section("The game icon set — %d more icons" % GoGameIcons.names().size(), false))
+	var game_icons := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+	var game_set := GoGameIcons.icon_set()
+	for icon_name in [GoGameIcons.BACKPACK, GoGameIcons.CHEST, GoGameIcons.GEM, GoGameIcons.RING, GoGameIcons.NECKLACE,
+			GoGameIcons.HELMET, GoGameIcons.ARMOR, GoGameIcons.AXE, GoGameIcons.BOW, GoGameIcons.WAND, GoGameIcons.PICKAXE,
+			GoGameIcons.APPLE, GoGameIcons.MEAT, GoGameIcons.FLASK, GoGameIcons.SHOP, GoGameIcons.COINS]:
+		game_icons.add_child(game_set.node(icon_name, 26, GoUi.color(GoTheme.SECONDARY)))
+	stage.body.add_child(game_icons)
+	stage.body.add_child(GoStyle.label("GoUi.config.icons = GoGameIcons.icon_set() — the default names keep working.",
+		GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED)))
+	return {"filter": filter, "grid": grid, "bag": bag, "state": state, "detail": detail, "icons": game_icons}
+
+
+func play_inventory(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var filter: HBoxContainer = refs.filter
+	var grid: GoSlotGrid = refs.grid
+	var bag: Array = refs.bag
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.say("Each item keeps its own colour, lifted until it reads on the slot.")
+	if bot.skipping(): return
+	await bot.click(filter.get_child(2) as Control, "Filter to potions: the rest fade but keep their place.")
+	if bot.skipping(): return
+	bot.expect(refs.state.filter == 2, "Potion filter chosen")
+	await bot.wait(0.8)
+	if bot.skipping(): return
+	await bot.click(filter.get_child(0) as Control, "Back to everything.")
+	if bot.skipping(): return
+	await bot.click(grid.slot(1), "Pick the health potion: its card shows what it is and what it does.")
+	if bot.skipping(): return
+	bot.expect(grid.selected == 1, "Health potion picked")
+	await bot.wait(0.8)
+	if bot.skipping(): return
+	await bot.click(_find_button(refs.detail, "Use"), "Use one.")
+	if bot.skipping(): return
+	bot.expect(int(bag[1].quantity) == 11, "One potion used")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+	await bot.click(_find_button(refs.detail, "Move"), "Rearrange by tapping: Move, then the space.")
+	if bot.skipping(): return
+	await bot.click(grid.slot(9), "Drop it into an empty space.")
+	if bot.skipping(): return
+	bot.expect(not (bag[9] as Dictionary).is_empty() and bag[9].name == "Health potion", "Potion moved to space 10")
+	await bot.wait(0.8)
+	if bot.skipping(): return
+	await bot.reveal(refs.icons)
+	if bot.skipping(): return
+	await bot.say("A second icon set for bags and shops, falling back to the default one.")
+	if bot.skipping(): return
+	await bot.wait(1.4)
+	if bot.skipping(): return
+
+
+# ── 21 Popovers, menus and drawers ─────────────────────────────────────
+
+func build_overlays(stage: SimStage, bot: SimBot) -> Dictionary:
+	stage.body.add_child(GoStyle.label(
+		"Panels that open beside the game and close again — no trip to another screen.",
+		GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY)))
+
+	stage.body.add_child(GoStyle.section("A card beside what you pressed", false))
+	var equipped := {"count": 0}
+	var popover := {"surface": null}
+	var inspect := GoStyle.button("Inspect the sword", Callable(), GoStyle.Tone.COMPACT)
+	# 🛑 Natural width — a compact button squeezed to the row start folded "Inspect the sword" into three lines.
+	GoStyle.natural_width(inspect)
+	inspect.pressed.connect(func() -> void:
+		# 🔑 The same detail card as the bag, unframed — the popover is the frame.
+		var card := GoStyle.item_card({"icon": GoIconSet.SWORD, "title": "Iron sword", "subtitle": "Common",
+			"body": "A plain blade that holds its edge.", "stats": [["Attack", "+12"]],
+			"actions": [{"text": "Equip", "tone": GoStyle.Tone.PRIMARY, "action": func() -> void:
+				equipped.count += 1
+				bot.note("Popover: equipped")
+				GoPopover.close()}]}, false)
+		popover.surface = GoPopover.open(inspect, card, {"title": "Item", "width": 300})
+		bot.note("Popover opened"))
+	stage.body.add_child(inspect)
+
+	stage.body.add_child(GoStyle.section("Right-click or hold for more", false))
+	var menu_picks := {"text": ""}
+	var pick := func(word: String) -> void:
+		menu_picks.text = word
+		bot.note("Menu: %s" % word)
+	var row := GoStyle.list_button(GoIconSet.SWORD, "Iron sword", bot.note.bind("Row pressed"), Color.TRANSPARENT,
+		"Right-click, or hold a finger on it", false, GoIconSet.MORE)
+	GoContextMenu.attach(row, [
+		{"text": "Use", "action": pick.bind("Use")},
+		{"text": "Equip", "action": pick.bind("Equip")},
+		{"separator": true},
+		{"text": "Drop", "danger": true, "action": pick.bind("Drop")},
+	])
+	stage.body.add_child(row)
+
+	stage.body.add_child(GoStyle.section("A drawer from the side", false))
+	var drawer := GoDrawer.new()
+	stage.add_child(drawer)
+	for index in 6:
+		drawer.body.add_child(GoStyle.list_button(GoIconSet.POTION, "Potion %d" % (index + 1), func() -> void:
+			bot.note("Drawer: Potion %d" % (index + 1))
+			drawer.close(), Color.TRANSPARENT, "Restores health", false))
+	drawer.closed.connect(func() -> void: bot.note("Drawer closed"))
+	var open_drawer := GoStyle.button("Open the bag drawer", func() -> void:
+		drawer.open("Bag")
+		bot.note("Drawer opened"), GoStyle.Tone.COMPACT)
+	GoStyle.natural_width(open_drawer)
+	stage.body.add_child(open_drawer)
+
+	stage.body.add_child(GoStyle.section("A cheat console for testing", false))
+	var console := GoConsole.new()
+	# 🛑 Below the tour's cursor (layer 200), or the cursor vanishes behind it. The default 200 is right in a game.
+	console.layer_index = 150
+	stage.add_child(console)
+	console.register("give", "Grant an item: give <item> <count>", func(args: PackedStringArray) -> String:
+		bot.note("Console: give %s" % " ".join(args))
+		return "Granted %s" % " ".join(args))
+	console.register("exit", "Close the console", func(_args: PackedStringArray) -> String:
+		console.close.call_deferred()
+		return "")
+	var open_console := GoStyle.button("Open the console", func() -> void:
+		console.open()
+		bot.note("Console opened" if console.is_open() else "Console refused: release build"), GoStyle.Tone.COMPACT)
+	GoStyle.natural_width(open_console)
+	stage.body.add_child(open_console)
+	stage.body.add_child(GoStyle.label("It refuses to open in a release build — cheats never reach players.",
+		GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED)))
+	return {"inspect": inspect, "popover": popover, "equipped": equipped, "row": row, "menu": menu_picks,
+		"drawer": drawer, "open_drawer": open_drawer, "console": console, "open_console": open_console}
+
+
+func play_overlays(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var drawer: GoDrawer = refs.drawer
+	var console: GoConsole = refs.console
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.click(refs.inspect, "A popover opens beside what you pressed and keeps the screen in view.")
+	if bot.skipping(): return
+	await bot.wait(0.7)
+	if bot.skipping(): return
+	var surface := refs.popover.surface as GoSurface
+	if is_instance_valid(surface):
+		await bot.click(_find_button(surface, "Equip"), "Act on it right there.")
+		if bot.skipping(): return
+	bot.expect(refs.equipped.count == 1, "Equipped from the popover")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+	await bot.right_click(refs.row, "Right-click for the actions; a finger holds instead.")
+	if bot.skipping(): return
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	var popup := (refs.row as Node).find_child("ContextMenu", false, false) as PopupMenu
+	if popup != null:
+		await bot.pick_in_menu(popup, 1, "Choose Equip. Drop is marked as the dangerous one.")
+		if bot.skipping(): return
+	bot.expect(refs.menu.text == "Equip", "Equip picked from the context menu")
+	await bot.wait(0.5)
+	if bot.skipping(): return
+	await bot.click(refs.open_drawer, "A drawer slides in from the side on wider screens.")
+	if bot.skipping(): return
+	await bot.settle(0.6)
+	if bot.skipping(): return
+	await bot.click(drawer.body.get_child(2) as Control, "Pick from it and it closes.")
+	if bot.skipping(): return
+	bot.expect(not drawer.is_open(), "Drawer closed after the pick")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+	if not OS.is_debug_build(): return
+	await bot.click(refs.open_console, "The console lists matching commands as you type.")
+	if bot.skipping(): return
+	await bot.wait(0.3)
+	if bot.skipping(): return
+	await bot.type_text(console.input, "give potion 3")
+	if bot.skipping(): return
+	await bot.press_key(KEY_ENTER, "Enter runs it.")
+	if bot.skipping(): return
+	await bot.wait(0.8)
+	if bot.skipping(): return
+	await bot.type_text(console.input, "exit")
+	if bot.skipping(): return
+	await bot.press_key(KEY_ENTER)
+	if bot.skipping(): return
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	bot.expect(not console.is_open(), "Console closed with exit")
+
+
+# ── 22 Tables and pages ────────────────────────────────────────────────
+
+const SERVERS: Array[String] = ["Northern marches", "Sunken coast", "Ember wastes", "Glass forest", "High pass",
+	"Old capital", "Salt flats", "Moon harbour", "Iron hills", "Silent bay", "Red canyon", "Frost reach",
+	"Bramble vale", "Cinder isle", "Duskwood", "Last light", "Stone gate", "Willow ford", "Amber steppe",
+	"Hollow peak", "Rain court", "Dune sea", "Pale shore", "Kings road"]
+
+func build_records(stage: SimStage, bot: SimBot) -> Dictionary:
+	stage.body.add_child(GoStyle.section("A leaderboard you can sort", false))
+	var board := GoTable.make(
+		[{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}],
+		[[1, "Aria", 9124], [2, "Brin", 91240], [3, "Cade", 48210], [4, "Dane", 500], [5, "Esme", 12800]])
+	board.sorted.connect(func(column: int, ascending: bool) -> void:
+		bot.note("Table sorted by %s %s" % [["Rank", "Name", "Score"][column], "up" if ascending else "down"]))
+	board.row_selected.connect(func(index: int) -> void:
+		bot.note("Row picked: %s" % str(board.rows()[index][1])))
+	stage.body.add_child(board)
+	stage.body.add_child(GoStyle.label("Numbers sort as numbers: 91240 is above 9124.", GoTheme.ROLE_MICRO,
+		GoUi.color(GoTheme.MUTED)))
+
+	stage.body.add_child(GoStyle.section("Pages, the current one lit", false))
+	# 🛑 Every page button is a full touch target (48dp), and the row does not wrap — on a 390dp phone twelve pages ran
+	#    past the stage and the next button was off screen. A phone-width row holds about five buttons.
+	var pager := GoPagination.make(1, 3, func(page: int) -> void: bot.note("Page %d" % page))
+	stage.body.add_child(pager)
+
+	stage.body.add_child(GoStyle.section("One pick from a long list", false))
+	var chosen := {"name": ""}
+	var picked_label := GoStyle.label("No server chosen yet.", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY))
+	var sheet := GoSheet.new()
+	# 🔑 A long list earns a tall sheet — `height_ratio` above the global 0.72 ceiling needs this sheet's own ceiling.
+	sheet.max_height_ratio = 0.9
+	sheet.height_ratio = 0.86
+	stage.add_child(sheet)
+	sheet.closed.connect(func() -> void: bot.note("Server sheet closed"))
+	var rows: Array[Button] = []
+	var open_sheet := GoStyle.button("Choose a server", func() -> void:
+		sheet.open("Servers")
+		rows.clear()
+		for server in SERVERS:
+			var line := GoStyle.list_button(GoIconSet.GLOBE, server, Callable(), Color.TRANSPARENT, "", false)
+			line.pressed.connect(func() -> void:
+				chosen.name = server
+				# Only the faces change — the rows are not rebuilt on every pick.
+				for other in rows: GoStyle.restyle_list_row(other, other == line)
+				picked_label.text = "Server: %s" % server
+				bot.note("Server: %s" % server))
+			GoStyle.restyle_list_row(line, server == chosen.name)
+			sheet.body.add_child(line)
+			rows.append(line)
+		sheet.add_footer(GoStyle.button("Done", sheet.close, GoStyle.Tone.PRIMARY))
+		bot.note("Server sheet opened"), GoStyle.Tone.COMPACT)
+	GoStyle.natural_width(open_sheet)
+	stage.body.add_child(open_sheet)
+	stage.body.add_child(picked_label)
+	return {"board": board, "pager": pager, "sheet": sheet, "open_sheet": open_sheet, "rows": rows, "chosen": chosen}
+
+
+func play_records(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var board: GoTable = refs.board
+	var pager: GoPagination = refs.pager
+	var sheet: GoSheet = refs.sheet
+	await bot.settle()
+	if bot.skipping(): return
+	for press in 2:
+		await bot.reveal(board)
+		if bot.skipping(): return
+		await bot.click(board.head.get_child(2) as Control,
+			"Press a header to sort." if press == 0 else "Press it again for the other direction.")
+		if bot.skipping(): return
+		await bot.wait(0.6)
+		if bot.skipping(): return
+	var top := board.rows_box.get_child(0) as Control
+	bot.expect(top != null and top.name == "Pick1", "Highest score first after sorting down")
+	await bot.click(top, "Pick a row.")
+	if bot.skipping(): return
+	bot.expect(board.selected() == 1, "Brin's row picked")
+	await bot.wait(0.5)
+	if bot.skipping(): return
+	await bot.click(pager.get_child(pager.get_child_count() - 1) as Control, "Next page.")
+	if bot.skipping(): return
+	bot.expect(pager.page() == 2, "Page 2")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+	await bot.click(refs.open_sheet, "A long list gets a tall sheet of its own.")
+	if bot.skipping(): return
+	await bot.settle(0.8)
+	if bot.skipping(): return
+	var rows: Array[Button] = refs.rows
+	if rows.size() > 2:
+		await bot.click(rows[2], "The pick gets a border, not just a colour.")
+		if bot.skipping(): return
+		bot.expect(rows[2].get_meta(&"go_selected", false) and not rows[0].get_meta(&"go_selected", false),
+			"Only the picked server is marked")
+		await bot.wait(0.8)
+		if bot.skipping(): return
+		await bot.click(rows[0], "Pick another: the mark moves.")
+		if bot.skipping(): return
+		await bot.wait(0.6)
+		if bot.skipping(): return
+	var done := sheet.footer().get_child(sheet.footer().get_child_count() - 1) as Control
+	await bot.click(done, "Done.")
+	if bot.skipping(): return
+	bot.expect(refs.chosen.name == SERVERS[0], "Northern marches chosen")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+
+
+# ── 23 Pick by picture ─────────────────────────────────────────────────
+
+func build_choices(stage: SimStage, bot: SimBot) -> Dictionary:
+	stage.body.add_child(GoStyle.section("Swatches", false))
+	var skins := [["Porcelain", Color("f3d9c6")], ["Honey", Color("d9a066")], ["Cocoa", Color("8d5524")],
+		["Umber", Color("5c3a21")], ["Moss", Color("7a9a5a")]]
+	var swatch_items: Array = []
+	for pair in skins: swatch_items.append({"color": pair[1], "tooltip": pair[0]})
+	var swatches := GoStyle.choice_grid(swatch_items, 0, func(index: int) -> void:
+		bot.note("Skin: %s" % skins[index][0]))
+	stage.body.add_child(swatches)
+
+	stage.body.add_child(GoStyle.section("Cards you choose from", false))
+	var cards := GoStyle.responsive_grid(150, GoUi.metric(GoTheme.GAP_SMALL))
+	var group := ButtonGroup.new()
+	var picked := {"text": "Normal"}
+	for spec in [["Story", GoTheme.SUCCESS, GoIconSet.BOOK, "Enemies go easy on you."],
+			["Normal", GoTheme.INFO, GoIconSet.SWORD, "The fight as designed."],
+			["Hard", GoTheme.DANGER, GoIconSet.SKULL, "Every mistake costs."]]:
+		var accent := GoUi.color(spec[1])
+		var card := Button.new()
+		card.name = "Card%s" % spec[0]
+		card.button_group = group
+		# 🛑 PASS — the card sits in a scroll, and a drag that starts on it must still scroll the page.
+		GoStyle.style_choice_card(card, accent, false, true, true, Control.MOUSE_FILTER_PASS)
+		card.button_pressed = spec[0] == picked.text
+		card.accessibility_name = spec[0]
+		var body := GoStyle.card_body(card)
+		body.add_child(GoUi.icons().node(spec[2], GoUi.metric(GoTheme.ICON_SIZE), accent))
+		body.add_child(GoStyle.label(spec[0], GoTheme.ROLE_SUBTITLE))
+		body.add_child(GoStyle.label(spec[3], GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY)))
+		# 🛑 The card is the button — text and icons on it must not swallow the press or the hover.
+		GoStyle.let_input_through(body)
+		card.pressed.connect(func() -> void:
+			picked.text = spec[0]
+			bot.note("Difficulty: %s" % spec[0]))
+		cards.add_child(card)
+	stage.body.add_child(cards)
+
+	stage.body.add_child(GoStyle.section("A pill over the map", false))
+	var map := PanelContainer.new()
+	map.custom_minimum_size.y = 96
+	map.add_theme_stylebox_override(&"panel", GoStyle.surface(GoTheme.BOX_CARD, GoUi.color(GoTheme.SUCCESS)))
+	var pill := GoStyle.overlay_panel()
+	pill.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	pill.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var layer := {"index": 0}
+	var layers := GoStyle.segmented([{"icon": GoIconSet.MAP, "tooltip": "Terrain"}, {"icon": GoIconSet.FLAG, "tooltip": "Quests"},
+		{"icon": GoIconSet.USERS, "tooltip": "Party"}], 0, func(index: int) -> void:
+			layer.index = index
+			bot.note("Map layer: %s" % ["Terrain", "Quests", "Party"][index]), false, true)
+	pill.add_child(layers)
+	map.add_child(pill)
+	stage.body.add_child(map)
+
+	stage.body.add_child(GoStyle.section("HUD buttons that leave Space to the game", false))
+	var hud := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+	var hud_buttons: Array[Control] = []
+	for spec in [[GoIconSet.BAG, "Open the bag"], [GoIconSet.MAP, "Open the map"], [GoIconSet.SETTINGS, "Settings"]]:
+		# Plain words or your own translation key — the tooltip goes through the translation server either way.
+		var mark := GoStyle.icon_button(spec[0], bot.note.bind("HUD: %s" % spec[1]), -1, StringName(spec[1]))
+		# 🔑 Off over gameplay: a clicked button would keep focus, and Space would press it again instead of jumping.
+		mark.keyboard_focus = false
+		hud.add_child(mark)
+		hud_buttons.append(mark)
+	for mark in hud_buttons: (mark as GoIconButton).touch_peers = hud_buttons
+	stage.body.add_child(hud)
+	stage.body.add_child(GoStyle.label("keyboard_focus = false — or GoHudAnchor.keyboard_focus = false for a whole corner.",
+		GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED)))
+	return {"swatches": swatches, "cards": cards, "picked": picked, "layers": layers, "layer": layer, "hud": hud_buttons}
+
+
+func play_choices(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var swatches: HFlowContainer = refs.swatches
+	var cards: Control = refs.cards
+	var layers: HBoxContainer = refs.layers
+	await bot.settle()
+	if bot.skipping(): return
+	if swatches.get_child_count() > 2:
+		await bot.click(swatches.get_child(2) as Control, "Pick a colour: the chosen swatch gets a thick border, never a tint.")
+		if bot.skipping(): return
+	await bot.wait(0.5)
+	if bot.skipping(): return
+	await bot.click(cards.get_child(2) as Control, "Cards carry more than a name. One stays chosen.")
+	if bot.skipping(): return
+	bot.expect(refs.picked.text == "Hard", "Hard difficulty chosen")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+	await bot.click(layers.get_child(1) as Control, "Small icon segments in a pill over the map.")
+	if bot.skipping(): return
+	bot.expect(refs.layer.index == 1, "Quest layer shown")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+	var bag: Control = refs.hud[0]
+	await bot.click(bag, "A HUD button over gameplay does not keep keyboard focus.")
+	if bot.skipping(): return
+	bot.expect(stage.get_viewport().gui_get_focus_owner() != bag, "The HUD button left keyboard focus alone")
+	await bot.wait(1.0)
 	if bot.skipping(): return

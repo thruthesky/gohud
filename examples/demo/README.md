@@ -25,7 +25,7 @@ another project.godot".
 | Key | Screen | Source |
 |---|---|---|
 | `1` | **Widget gallery** — every widget on one page | `examples/gallery/gallery.gd` |
-| `2` | **Guided tour** — 19 chapters, played or hands-on | `examples/demo/sim.gd` |
+| `2` | **Guided tour** — 23 chapters, played or hands-on | `examples/demo/sim.gd` |
 | `3` | **Showcase screen** — six cards on one screen | `examples/demo/demo.gd` |
 | `4` | **Medieval look** — the same widgets, another preset | `examples/medieval/medieval.gd` |
 | `5` | **Showreel** — 20 seconds, a widget every half second, the theme changing each step | `examples/demo/showreel.gd` |
@@ -62,7 +62,7 @@ godot -- --open=gallery      # gallery | tour | showcase | medieval
 
 The tour waits on its Start screen and offers two ways in:
 
-- **Start demo** plays a guided simulation of 19 chapters. The cursor uses real mouse and
+- **Start demo** plays a guided simulation of 23 chapters. The cursor uses real mouse and
   keyboard events to click buttons, type into fields, select menu items, drag sliders and
   joysticks, and scroll lists.
 - **Explore widgets** (or any row in the left sidebar) builds a single chapter and hands it
@@ -90,7 +90,13 @@ and grids, forms, HUD anchors, themes and icons, container opacity, **waiting an
 **fields and pickers** (an error that lands on the row that is wrong, welded input groups, a
 combobox that searches inside names, coupon cells) and **shapes games use** (daily attendance,
 the stat pentagon with a dashed comparison, a damage-share ring with a written legend, and a
-banner carousel that never advances on its own). The **Live activity**
+banner carousel that never advances on its own), **inventory and items** (a bag grid with each item in
+its own colour, icon segments as a filter, the detail card, a tap route to move an item, and the game
+icon set), **popovers, menus and drawers** (a detail card beside the button, a right-click menu, a side
+drawer and the cheat console), **tables and pages** (a leaderboard that sorts numbers as numbers, page
+buttons, and a server list in a sheet taller than the default ceiling with the pick marked by a border)
+and **pick by picture** (colour swatches, choice cards, icon segments in a pill over a map, and HUD icon
+buttons that never keep keyboard focus). The **Live activity**
 panel reports actual widget callbacks, whether the bot or a person triggered them.
 
 ## Container opacity
@@ -147,7 +153,8 @@ bash examples/demo/run.sh -- --explore=surfaces                          # open 
 ```
 
 `--explore=<key>` takes a chapter key: `hud`, `buttons`, `inputs`, `selection`, `lists`, `data`,
-`states`, `surfaces`, `prompt`, `touch`, `coach`, `scrolling`, `forms`, `anchors`, `theming`.
+`states`, `surfaces`, `prompt`, `touch`, `coach`, `scrolling`, `forms`, `anchors`, `theming`,
+`opacity`, `waiting`, `fields`, `shapes`, `inventory`, `overlays`, `records`, `choices`.
 
 ## Showreel
 
@@ -169,7 +176,7 @@ bash examples/demo/run.sh --record-showreel /tmp/reel.avi --showreel-seconds=28.
 |---|---|---|
 | `--showreel-seconds=` | `20` | How long the whole reel runs |
 | `--showreel-step=` | `0.5` | How long each widget stays up — the bot's speed follows it (6× at 0.5 s) |
-| `--showreel-order=` | `cycle` | `cycle` walks the 19 chapters in order and rotates the three themes each step — no chapter–theme pair repeats before 57 steps, so 28.5 s shows every widget in every look; `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
+| `--showreel-order=` | `cycle` | `cycle` walks the 23 chapters in order and rotates the three themes each step — no chapter–theme pair repeats before 69 steps, so 34.5 s shows every widget in every look (keep the chapter count off multiples of three, or each chapter wears one look only); `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
 | `--showreel-seed=` | `0` | Fixes the random order; `0` draws a fresh one each run |
 | `--exit` | off | Quit when the reel ends — `--record-showreel` passes it; without it a Replay card is shown |
 
@@ -237,7 +244,8 @@ Each chapter in `sim_acts.gd` is a pair of functions: `build_<key>(stage, bot)` 
 screen and returns the nodes the bot needs, and `play_<key>(stage, bot, refs)` drives them with
 real input. Explore mode calls only `build_`, so a chapter must be complete without the bot:
 anything only the bot used to trigger (data arriving, a tour starting) is a button the person can
-press too. Add the chapter to `SimActs.list()` with a title, note, icon and explore hint.
+press too. Add the chapter **at the end** of `SimActs.list()` with a title, note, icon and explore hint —
+`tests/sim_test.gd` opens chapters by number, and the showreel pairs chapter *N* with theme *N* % 3.
 A chapter whose point is visual rather than behavioural should assert what the screen actually
 received — chapter 16 reads the panel's own fill alpha, because a slider handle can move while
 the panel stays exactly as it was.

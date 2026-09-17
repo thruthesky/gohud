@@ -19,8 +19,8 @@
 ## Arguments (all optional):
 ##   `--showreel-seconds=20`  how long the whole reel runs
 ##   `--showreel-step=0.5`    how long each widget stays up
-##   `--showreel-order=cycle` `cycle` walks the chapters in order and rotates the three themes — with 19
-##                            chapters and 3 themes no pair repeats before 57 steps; `random` shuffles
+##   `--showreel-order=cycle` `cycle` walks the chapters in order and rotates the three themes — with 23
+##                            chapters and 3 themes no pair repeats before 69 steps; `random` shuffles
 ##                            the chapters and picks a theme that differs from the one before
 ##   `--showreel-seed=0`      fixes the random order (0 = a fresh one each run)
 ##   `--exit`                 quit once the reel is over (recording); otherwise a Replay card is shown

@@ -499,19 +499,19 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | Class | Base | Purpose |
 |---|---|---|
 | `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize |
-| `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer |
+| `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer; `max_height_ratio` lets one sheet grow past the global 0.72 ceiling (a debug build warns when a ratio is cut) |
 | `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically |
 | `GoForm` | MarginContainer | Forms that cap their width per breakpoint, avoid the virtual keyboard (and, with `avoid_hud`, floating HUD pieces) and guarantee label wrapping |
 | `GoScroll` | ScrollContainer | Touch-friendly scrolling; the scrollbar tucks into the card padding; RTL-aware |
 | `GoNotice` | PanelContainer | Snackbar that never takes input or focus |
 | `GoPromptCard` | PanelContainer | Non-blocking question card; keeps pressed buttons alive across refreshes |
 | `GoCoachMark` | Control | Guided tour that points at real controls; pressing the target advances; the card steps around HUD anchors and `keep_clear` controls |
-| `GoHudAnchor` | Control | Pins HUD pieces to one of nine safe-area spots, with an optional landscape spot, `reserve_space` and `avoid_peers` |
+| `GoHudAnchor` | Control | Pins HUD pieces to one of nine safe-area spots, with an optional landscape spot, `reserve_space` and `avoid_peers`; `keyboard_focus = false` keeps every button in the corner from swallowing Space / Enter |
 | `GoBar` | Control | HP/MP/XP bars with value, fraction or percent readouts and eased changes |
 | `GoSlot` | Button | Quick slot with icon, quantity, cooldown and shortcut on a single face; shared hit areas in tight rows; `keyboard_focus` opts into Tab order |
 | `GoJoystick` | Control | Virtual joystick in fixed, follow or relative mode, with dead zone |
-| `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name |
-| `GoStyle` | factory | Buttons, labels, list rows, inputs, selects, dropdowns, chips, cards, tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
+| `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |
+| `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips, cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
 | `GoThemePresets` | static | The six built-in presets, presets found in `themes/presets/`, and `register()` for your own |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` | Resource | The shapes code draws, with numeric dials |
@@ -707,7 +707,7 @@ activate on handheld platforms, so they are exercised by the suite but not on re
 |---|---|---|
 | Gallery | `res://addons/gohud/examples/gallery/gallery.tscn`, F6 | Every widget, a picker for every installed preset, and the full icon set. Needs no server, autoload or project setup. |
 | Medieval | `res://addons/gohud/examples/medieval/medieval.tscn`, F6 | A character sheet, satchel and quest journal in `medieval_dark` and `medieval_light`. |
-| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 19-chapter tour, the showcase screen, the medieval look or a 20-second showreel — plus live widgets and one card per class. |
+| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 23-chapter tour, the showcase screen, the medieval look or a 20-second showreel — plus live widgets and one card per class. |
 
 ### Demo app
 
@@ -723,7 +723,7 @@ real widgets to press, and all 19 classes grouped by the job they do, each with 
 code that uses it. It is built from add-on widgets alone, holds its text to a readable measure,
 folds to one column on a phone, and repaints with the preset picker.
 
-**Start demo**, on the tour, plays 19 chapters with a visible cursor using real input — buttons,
+**Start demo**, on the tour, plays 23 chapters with a visible cursor using real input — buttons,
 fields, menus, scrolling, HUDs, dialogs, forms and more. **Explore widgets**, or any row in the
 sidebar, opens a single widget for you to try by hand, with a **Play this widget** button that
 lets the bot demonstrate just that one. All demo text is English. Large desktop windows enlarge

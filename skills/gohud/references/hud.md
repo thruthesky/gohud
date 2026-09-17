@@ -30,6 +30,7 @@ its own rect — give it **one** child (a container or a panel).
 | `reserve_space` | `true` | `GoForm.avoid_hud` keeps content clear of it. Turn **off** for pieces that only appear sometimes (joystick, toasts, prompts) |
 | `avoid_peers` | `false` | Steps vertically out of the way of fixed anchors (`reserve_space` true). For transient toasts at `TOP_CENTER` |
 | `use_safe_area` | `true` | Off only for full-bleed backgrounds |
+| `keyboard_focus` | `true` | **Off** for a corner of buttons over gameplay: nothing under the anchor takes focus (`focus_behavior_recursive`), later children included, so Space / Enter reach the game. 🛑 Text inputs are blocked too — keep a chat line in its own anchor |
 | `active_spot()` | | The spot in effect now |
 
 ```gdscript
@@ -100,8 +101,8 @@ for slot in slots: (slot as GoSlot).touch_peers = slots
 ```
 
 From `visual_size` 56 up (`GoSlot.LARGE_CELL`) the quantity badge uses the compact text size instead of the micro one.
-🛑 HUD buttons over gameplay (`GoIconButton`, `GoStyle.button*`) keep keyboard focus after a click, and Space then presses
-them again instead of reaching the game — set `focus_mode = Control.FOCUS_NONE` on them (`pitfalls.md`).
+🛑 HUD buttons over gameplay keep keyboard focus after a click, and Space then presses them again instead of reaching the
+game — `GoIconButton.keyboard_focus = false`, or `GoHudAnchor.keyboard_focus = false` for the whole corner (`pitfalls.md`).
 
 A slot with **no icon and `quantity = GoSlot.NONE`** is a *vacant cell* and draws faint, so a half-full bag reads as
 "items, then room".
@@ -116,9 +117,11 @@ shelf. It holds **what to draw**, never item data; the game decides what a press
 | `slot_count` | `20` | Rebuilds cells; kept cells redraw what they held |
 | `cell_size` | `56` | Face size of every cell (dp) |
 | `draggable` | `false` | Drag a cell onto another → `slot_moved`. 🛑 Inside a scroll the finger drag belongs to the scroll — turn on for mouse play (`not DisplayServer.is_touchscreen_available()`) and keep a tap route (pick → Move → tap target) |
-| `selected` | `-1` | The one picked cell; out of range clears it |
+| `selected` | `-1` | The one picked cell; out of range clears it. Kept when set before the grid is in the tree |
+| `keyboard_focus` | `true` | Tab / gamepad reach the cells (a bag in a sheet). **Off** for a hotbar over gameplay |
 | `set_cell(index, data)` · `set_cells(list)` | | `data`: `{icon, quantity, accent, ink, tooltip, disabled, timer}` — all optional, `{}` = vacant, no `quantity` key = no count badge (equipment) |
 | `cell(index) -> Dictionary` · `slot(index) -> GoSlot` | | Read back / reach the slot for cooldowns and shortcut labels |
+| icons | | 🛑 Cells draw with the **global** set — `GoGameIcons` names need `GoUi.config.icons = GoGameIcons.icon_set()` first |
 | signals | | `slot_pressed(index)` (vacant cells too) · `slot_moved(from, to)` (the grid moves nothing itself) |
 
 ```gdscript
@@ -171,7 +174,8 @@ func _physics_process(delta: float) -> void:
 | `icon_name` · `set_icon_name(name)` | | |
 | `icon_tint` | transparent → theme colour | |
 | `native_texture_size` | `false` | Draw a texture icon at its own pixel size |
-| `tooltip_text_name` | `&""` | Passed through `GoUi.text()` — a built-in name (`close`, `back`…) is translated, anything else is shown as written. Also sets `accessibility_name` |
+| `tooltip_text_name` | `&""` | Passed through `GoUi.text()` — a built-in name (`close`, `back`…) through `text_keys`, anything else (your translation key or plain words) through the translation server. Also sets `accessibility_name` |
+| `keyboard_focus` | `true` | **Off** over gameplay — a clicked button would keep focus and Space would press it again |
 | `touch_peers` | `[]` | Required when icon buttons sit side by side |
 
 🛑 The widened touch area covers neighbours. Only put it next to non-interactive siblings, or set `touch_peers`.

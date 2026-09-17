@@ -200,6 +200,38 @@ static func _font_size_in_chain(theme: Theme, type: StringName) -> int:
 	return 0
 
 
+## 🔑 **A control's color, read straight from a theme resource** — `name` on `type`, climbing the variation's base
+## chain and then the engine's class chain (`GoCompactButton` → `Button` → `BaseButton` → `Control`).
+## Returns `missing` when no type on the way defines it.
+##
+## 🛑 Why not `Theme.has_color()`: it looks at **that one type only**. A variation that defines no colors of its own
+##    (most gohud button variations) answers "no" although its base has the color.
+## 🛑 Why not `Control.get_theme_color()`: on a control that is **not in the tree yet** it hands back the engine's
+##    default (a light gray) — even when the control's own `theme` is set (measured 2026-09-17, Godot 4.7.2). Factories
+##    build their nodes before anyone adds them, so they read through here (`GoUi.theme_color`).
+static func color_in_chain(theme: Theme, name: StringName, type: StringName, missing := Color.TRANSPARENT) -> Color:
+	var defined_on := _color_owner(theme, name, type)
+	return missing if defined_on.is_empty() else theme.get_color(name, defined_on)
+
+
+## Does some type on `type`'s base chain define the color `name`?
+static func has_color_in_chain(theme: Theme, name: StringName, type: StringName) -> bool:
+	return not _color_owner(theme, name, type).is_empty()
+
+
+## The first type on the chain that defines the color, or `&""`.
+static func _color_owner(theme: Theme, name: StringName, type: StringName) -> StringName:
+	if theme == null: return &""
+	var current := type
+	for _depth in 12:
+		if current.is_empty(): break
+		if theme.has_color(name, current): return current
+		var base := theme.get_type_variation_base(current)
+		if base.is_empty() and ClassDB.class_exists(current): base = ClassDB.get_parent_class(current)
+		current = base
+	return &""
+
+
 ## The **opacity token name** of a panel variant. An unfamiliar variant is read as a card — rather than have an unknown
 ## panel suddenly turn solid or disappear, following the card's rule keeps the screen reading as one piece.
 static func alpha_token(variant: StringName) -> StringName:

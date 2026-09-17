@@ -46,7 +46,7 @@ const TARGETS: Array[Dictionary] = [
 	{
 		"key": "tour", "scene": "res://sim.tscn",
 		"icon": GoIconSet.PLAY, "tone": GoTheme.INFO, "title": "Guided tour",
-		"note": "Sixteen scenes a bot plays for you — or pick one widget and try it with your own hands.",
+		"note": "Twenty-three scenes a bot plays for you — or pick one widget and try it with your own hands.",
 		"file": "examples/demo/sim.gd",
 	},
 	{
@@ -125,6 +125,10 @@ const PIECES: Array[Dictionary] = [
 		"code": "slot.quantity = 12"},
 	{"group": 3, "name": "GoJoystick", "note": "A thumbstick that appears where the thumb lands.",
 		"code": "joystick.moved.connect(_move)"},
+	{"group": 3, "name": "GoSlotGrid", "note": "A bag of slots that wraps to the width, each item in its own colour.",
+		"code": "grid.set_cell(0, {\"icon\": icon, \"quantity\": 12})"},
+	{"group": 0, "name": "GoGameIcons", "note": "187 more icons for bags, shops and rewards, on top of the default set.",
+		"code": "GoUi.config.icons = GoGameIcons.icon_set()"},
 	{"group": 2, "name": "GoSnackbar", "note": "Places itself at the bottom, queues, and can carry Undo.",
 		"code": "await snack.post(options)"},
 	{"group": 2, "name": "GoPopover", "note": "An info card beside the thing you pressed — one at a time.",

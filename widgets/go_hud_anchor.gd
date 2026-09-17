@@ -77,6 +77,19 @@ const GROUP := &"gohud_hud_anchor"
 		reserve_space = value
 		_wake_dodgers()
 
+## 🔑 **May anything in this corner take keyboard focus?** On by default (nothing changes).
+##
+## Turn it **off** for a corner of buttons over gameplay. A clicked `Button` keeps focus, and the engine's accept
+## action (Space / Enter) then presses that button again instead of reaching the game — the attack key reopens the
+## bag. Off blocks focus for **every** control under the anchor, including ones added later
+## (`focus_behavior_recursive`), so there is no button to forget.
+## 🛑 That includes text inputs — a chat line under an anchor with this off cannot be typed into. Keep inputs in an
+##    anchor of their own, or leave this on and set `keyboard_focus = false` on the buttons one by one.
+@export var keyboard_focus := true:
+	set(value):
+		keyboard_focus = value
+		focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED if value else Control.FOCUS_BEHAVIOR_DISABLED
+
 ## Whether to respect the safe area. Turn it off only for things that must fill the screen, like a backdrop.
 @export var use_safe_area := true:
 	set(value):
@@ -110,10 +123,6 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_relayout)
-
-
-## 🎨 The whole look changed — `GoUi.use_preset()` and `GoUi.refresh()` call this.
-## 🛑 Without it **only the widgets already on screen stay on the old theme** (measured 2026-09-16).
 
 
 ## 🛑 Listen for a child's **minimum size and visibility changes** — this box has to grow along when a

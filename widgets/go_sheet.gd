@@ -58,6 +58,19 @@ var height_ratio := 0.6:
 	get:
 		return surface.height_ratio if is_instance_valid(surface) and surface.height_ratio > 0.0 else height_ratio
 
+## 🔑 **This sheet's ceiling on `height_ratio`** (`GoSurface.max_height_ratio`). 0 means
+## `GoConfig.surface_max_height_ratio` (0.72) — a `height_ratio` above that is cut back unless this is raised too.
+## It is also how far the player can drag the sheet up.
+##
+## ```gdscript
+## sheet.max_height_ratio = 0.9
+## sheet.height_ratio = 0.86    # a bag grid that needs the room
+## ```
+var max_height_ratio := 0.0:
+	set(value):
+		max_height_ratio = value
+		if is_instance_valid(surface): surface.max_height_ratio = value
+
 var _back_action := Callable()
 ## This page's footer nodes, added through `add_footer()` — the next `open()` clears them away.
 var _page_footer: Array[Node] = []

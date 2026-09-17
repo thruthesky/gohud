@@ -75,7 +75,9 @@ const LARGE_CELL := 56
 		visual_size = value
 		_fit_box()
 		_rebuild_icon()
-		_fit()
+		# 🛑 `refresh()` too — the count's text size is chosen there (`LARGE_CELL`), so a cell resized after entering
+		#    the tree kept the old size until something else happened to refresh it.
+		refresh()
 
 ## This slot is the picked one (an inventory cell whose detail is open, a drop target). It gets the lit border
 ## **without** the cooldown's dimmed icon — picked means "look here", a cooldown means "not yet".
@@ -96,6 +98,8 @@ var _timer_badge: PanelContainer
 var _shortcut: Label
 var _cooldown_left := 0.0
 var _cooldown_total := 0.0
+## The `disabled` value the panel was last painted for — `disabled` belongs to `BaseButton` and has no setter here.
+var _painted_disabled := false
 
 
 ## 🔑 **Should this slot be reachable by keyboard and gamepad?**
@@ -187,6 +191,9 @@ func _line(node_name: String, role: StringName) -> Label:
 	var node := GoStyle.label("", role)
 	node.name = node_name
 	node.autowrap_mode = TextServer.AUTOWRAP_OFF
+	# 🛑 A form (`GoForm`, `GoStyle.form`) turns wrapping on for every label below it — a count badge sized to its text
+	#    then folds one character per line ("×", "1", "2" stacked; a bag grid in the widget gallery, 2026-09-18).
+	node.set_meta(&"go_no_wrap", true)
 	node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	node.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	# 🛑 Numbers and key labels do not flip with the language.
@@ -257,6 +264,7 @@ func refresh() -> void:
 	# 🔑 No icon and no quantity row = **a vacant cell** (an empty inventory space). It is drawn faint like a
 	#    spent slot, so a half-full bag reads as "items, then room" rather than a wall of identical frames.
 	var vacant := icon_name.is_empty() and quantity == NONE
+	_painted_disabled = disabled
 	var faded := empty or disabled or vacant
 
 	# 🛑 Dimming **never multiplies alpha** (it used to be `modulate.a = 0.55`) — in a light theme it multiplies into
@@ -320,14 +328,29 @@ func refresh() -> void:
 	_shortcut.add_theme_color_override(&"font_color",
 		GoUi.skin().readable_on(GoUi.color(GoTheme.MUTED), on_face))
 
+	# ♿ A slot shows no text of its own — a screen reader gets the name (the tooltip), the count and the time left.
+	accessibility_name = GoUi.spoken([tooltip_text, _quantity.text if _quantity_badge.visible else "", seconds])
 	_fit()
 
 
-## This slot's own rectangular touch area — the test before it is shared out with the neighbours.
+## 🛑 The engine's default tooltip can break a short name into one character per line — the same gohud tooltip
+##    as `GoIconButton` (an inventory cell's tooltip is its item name).
+func _make_custom_tooltip(for_text: String) -> Object:
+	if for_text.is_empty(): return null
+	return GoStyle.tooltip_node(for_text)
+
+
 ## 🛑 The quantity label ("×3") goes through a translation key too — it is rebuilt when the language changes.
+## 🛑 `disabled` is a `BaseButton` property, so no setter here notices it. Changing it redraws the button, so the draw
+##    notification is where a slot learns it must fade (or come back).
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		refresh()
+	elif what == NOTIFICATION_DRAW and disabled != _painted_disabled:
+		refresh.call_deferred()
+
+
+## This slot's own rectangular touch area — the test before it is shared out with the neighbours.
 
 
 func touch_hit(point: Vector2) -> bool:

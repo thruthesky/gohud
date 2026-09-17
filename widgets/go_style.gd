@@ -546,10 +546,11 @@ static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.
 		return
 	# 🛑 No texture, so this falls through to a **child label**. The button theme's icon color does not reach a
 	#    child, so when no color was passed, pick the same one up here — otherwise it draws white.
+	# 🛑 Not `node.get_theme_color()` — factories call this before the button is in the tree, where that lookup
+	#    returns the engine's default instead of the theme's (`GoUi.theme_color_of`).
 	var glyph_ink := ink
 	if glyph_ink.a <= 0:
-		glyph_ink = node.get_theme_color(&"icon_normal_color") if node.has_theme_color(&"icon_normal_color") \
-			else GoUi.color(GoTheme.SECONDARY)
+		glyph_ink = GoUi.theme_color_of(node, &"icon_normal_color", GoUi.color(GoTheme.SECONDARY))
 	var glyph := GoUi.icons().node(icon, px, glyph_ink)
 	glyph.name = "IconGlyph"
 	glyph.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT, Control.PRESET_MODE_MINSIZE)
@@ -770,6 +771,34 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 	fit_content_height(node, inset)
 	if action.is_valid(): node.pressed.connect(action)
 	return node
+
+
+## 🔑 **Marks a list item as the chosen one** (or clears it) — a server picker, the language list, the equipped title.
+##
+## ```gdscript
+## for row in rows: GoStyle.restyle_list_row(row, row == picked)
+## ```
+##
+## The chosen row gets the same face as a chosen `style_choice_card`: a tint of `accent` (the theme accent when
+## transparent) and a **2dp border** — a shape, not a color alone, so the pick still reads without color vision.
+## Cleared, the row goes back to the theme's list face.
+## 🛑 Only the face changes — the row is not rebuilt, so call it again whenever the pick moves. (`list_row` adds its
+##    children each time it is called; calling it again stacks a second label.)
+## 🛑 Not `toggle_mode` — `GoListButton`'s pressed face is its hover face, so a pressed row would not look chosen.
+static func restyle_list_row(node: Button, selected: bool, accent := Color.TRANSPARENT) -> void:
+	if node == null: return
+	var states := [&"normal", &"hover", &"pressed", &"hover_pressed"]
+	node.set_meta(&"go_selected", selected)
+	if not selected:
+		for state: StringName in states: node.remove_theme_stylebox_override(state)
+		return
+	var face := _choice_face(accent if accent.a > 0 else GoUi.color(GoTheme.ACCENT))
+	# The theme's list face decides the padding; the chosen face keeps it, so the row does not shift when picked.
+	var resting := GoUi.theme().get_stylebox(&"normal", GoTheme.VAR_LIST_BUTTON) \
+		if GoUi.theme() != null and GoUi.theme().has_stylebox(&"normal", GoTheme.VAR_LIST_BUTTON) else null
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		face.set_content_margin(side, resting.get_content_margin(side) if resting != null else 0.0)
+	for state: StringName in states: node.add_theme_stylebox_override(state, face)
 
 
 # ── Inputs ─────────────────────────────────────────────────────────────
@@ -1462,6 +1491,137 @@ static func card_body(card: Control, padding := -1, spacing := -1) -> VBoxContai
 	return body
 
 
+## 🔑 **The picked item's detail card** — an icon, a title, chips, a description, stat rows and an action row, in one call.
+## A shop, a crafting bench, a quest log and a bag all show this same shape: the thing you picked, what it is, and
+## what you can do with it.
+##
+## ```gdscript
+## var card := GoStyle.item_card({
+## 	"icon": GoIconSet.SWORD, "ink": Color("e5484d"), "title": "Iron sword", "subtitle": "One-handed · level 12",
+## 	"chips": [{"text": "Rare", "ink": GoUi.color(GoTheme.INFO)}, "Tradable"],
+## 	"body": "A plain blade that holds its edge.",
+## 	"stats": [["Attack", "+12"], ["Weight", "3.5"]],
+## 	"actions": [{"text": "Equip", "action": equip, "tone": GoStyle.Tone.PRIMARY}, {"text": "Drop", "action": drop}],
+## })
+## GoPopover.open(slot, GoStyle.item_card(spec, false))   # inside a popover or a sheet: no second frame
+## ```
+##
+## Every key is optional. Chips are a string or `{text, ink, icon}`; actions are `{text, action, tone, icon}`.
+## `accent` colors the frame, `ink` the icon (contrast-corrected against its disc), and `translate` treats every
+## text as a translation key. The parts are named for later updates: `Icon` · `Title` · `Subtitle` · `Chips` ·
+## `Body` · `Stats` · `Actions`.
+## 🛑 **It holds what to draw, never the item** — the actions call back into the game, the same rule as `GoSlotGrid`.
+## 🛑 In a sheet, leave `actions` out and give the buttons to `sheet.add_footer()` — inside the scrolling body a long
+##    description pushes them out of sight.
+## 🛑 Pass `framed = false` inside a `GoPopover`, a sheet or a card of your own — a framed card there draws two borders.
+static func item_card(spec: Dictionary, framed := true) -> Control:
+	var translate := bool(spec.get("translate", false))
+	var content := column(GoUi.metric(GoTheme.GAP_SMALL))
+	content.name = "ItemCard"
+	content.mouse_filter = Control.MOUSE_FILTER_PASS
+
+	var head := row(GoUi.metric(GoTheme.GAP))
+	head.name = "Head"
+	content.add_child(head)
+	var mark := StringName(str(spec.get("icon", "")))
+	if not mark.is_empty():
+		var ink: Color = spec.get("ink") if spec.get("ink") is Color else GoUi.color(GoTheme.ACCENT)
+		var diameter := float(GoUi.metric(GoTheme.TOUCH))
+		var disc_node := disc_panel(diameter, ink)
+		disc_node.name = "Icon"
+		# The icon has to read on its own disc, not on the card — an item's color is often the disc's color too.
+		var on_disc := GoSkin.blend(GoSkin.box_background(disc_node.get_theme_stylebox(&"panel")), GoUi.color(GoTheme.SURFACE))
+		var glyph := GoUi.icons().node(mark, roundi(diameter * 0.55), GoUi.skin().readable_on(ink, on_disc))
+		glyph.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		glyph.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		disc_node.add_child(glyph)
+		head.add_child(disc_node)
+	var words := column(GoUi.metric(GoTheme.GAP_TINY))
+	words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	words.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	head.add_child(words)
+	var pieces := {"Title": [GoTheme.ROLE_SUBTITLE, GoUi.color(GoTheme.TEXT)],
+		"Subtitle": [GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)]}
+	for part: String in pieces:
+		var said := str(spec.get(part.to_lower(), ""))
+		if said.is_empty(): continue
+		var text_node := label_key(said, pieces[part][0], pieces[part][1]) if translate \
+			else label(said, pieces[part][0], pieces[part][1])
+		text_node.name = part
+		words.add_child(text_node)
+
+	var chip_specs: Array = spec.get("chips", [])
+	if not chip_specs.is_empty():
+		var chips := wrap_row(GoUi.metric(GoTheme.GAP_TINY))
+		chips.name = "Chips"
+		for entry: Variant in chip_specs:
+			var one: Dictionary = entry if entry is Dictionary else {"text": str(entry)}
+			chips.add_child(chip(str(one.get("text", "")), one.get("ink") if one.get("ink") is Color else Color.TRANSPARENT,
+				translate, StringName(str(one.get("icon", "")))))
+		content.add_child(chips)
+
+	var about := str(spec.get("body", ""))
+	if not about.is_empty():
+		var body_node := label_key(about, GoTheme.ROLE_BODY, GoUi.color(GoTheme.SECONDARY)) if translate \
+			else label(about, GoTheme.ROLE_BODY, GoUi.color(GoTheme.SECONDARY))
+		body_node.name = "Body"
+		content.add_child(body_node)
+
+	var stat_rows: Array = spec.get("stats", [])
+	if not stat_rows.is_empty():
+		var stats := GridContainer.new()
+		stats.name = "Stats"
+		stats.columns = 2
+		stats.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stats.add_theme_constant_override(&"h_separation", GoUi.metric(GoTheme.GAP))
+		stats.add_theme_constant_override(&"v_separation", GoUi.metric(GoTheme.GAP_TINY))
+		for pair: Variant in stat_rows:
+			var cells: Array = pair if pair is Array else [str(pair), ""]
+			var key_text := str(cells[0]) if cells.size() > 0 else ""
+			var name_node := label_key(key_text, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)) if translate \
+				else label(key_text, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+			stats.add_child(name_node)
+			# A value is a number or a short reading — shown as it is, right-aligned so a column of numbers lines up.
+			var value_node := label(str(cells[1]) if cells.size() > 1 else "", GoTheme.ROLE_BODY)
+			value_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			value_node.text_direction = Control.TEXT_DIRECTION_LTR
+			stats.add_child(value_node)
+		content.add_child(stats)
+
+	var action_specs: Array = spec.get("actions", [])
+	if not action_specs.is_empty():
+		var actions := wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+		actions.name = "Actions"
+		for entry: Variant in action_specs:
+			var one: Dictionary = entry if entry is Dictionary else {"text": str(entry)}
+			var tone := (int(one["tone"]) if one.get("tone") is int else Tone.COMPACT) as Tone
+			var callback: Callable = one.get("action") if one.get("action") is Callable else Callable()
+			var pressable := button_key(str(one.get("text", "")), callback, tone) if translate \
+				else button(str(one.get("text", "")), callback, tone)
+			var glyph_name := StringName(str(one.get("icon", "")))
+			if not glyph_name.is_empty():
+				apply_icon(pressable, glyph_name, -1, Color.TRANSPARENT, float(GoUi.metric(GoTheme.GAP_SMALL)))
+				pressable.expand_icon = false
+			# One row, one height — a primary action beside a compact one otherwise stands taller than its neighbour.
+			pressable.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
+			natural_width(pressable)
+			actions.add_child(pressable)
+		content.add_child(actions)
+
+	if not framed: return content
+	var accent: Color = spec.get("accent") if spec.get("accent") is Color else Color.TRANSPARENT
+	var frame := card(accent, 0.6 if accent.a > 0 else -1.0)
+	frame.name = "ItemCard"
+	content.name = "Content"
+	# 🛑 A card's face brings no inner padding of its own — without this the disc and the title touch the border.
+	var inset := padding()
+	inset.mouse_filter = Control.MOUSE_FILTER_PASS
+	frame.add_child(inset)
+	inset.add_child(content)
+	return frame
+
+
 ## Makes this node and every control under it **take no input** — so text and icons on a card button do not swallow press and hover.
 ## 🔑 A container defaults to PASS and does hand the event to its parent, but it takes the mouse entry first, and the card's hover face never lights.
 static func let_input_through(node: Node) -> void:
@@ -1823,23 +1983,53 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 		item.add_theme_color_override(&"font_hover_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
 		var mark := StringName(str(spec.get("icon", "")))
 		if not mark.is_empty():
-			apply_icon(item, mark, GoUi.metric(GoTheme.LIST_GLYPH))
-			# 🛑 The icon follows the label's color in every state — left alone it stays light on the chosen
-			#    (accent-filled) cell while the label turns dark, and the cell reads as two things.
-			for state in [&"icon_pressed_color", &"icon_hover_pressed_color"]:
-				item.add_theme_color_override(state, GoUi.color(GoTheme.ON_ACCENT))
-			# 🛑 Read from the **theme resource**, not `item.get_theme_color()` — the button is not in the tree yet,
-			#    and there a lookup falls through to the engine's default gray instead of the variation's color.
-			var look := GoUi.theme()
-			var kind := item.theme_type_variation
-			for pair in [[&"icon_normal_color", &"font_color"], [&"icon_hover_color", &"font_hover_color"],
-					[&"icon_focus_color", &"font_focus_color"]]:
-				var tone: Color = look.get_color(pair[1], kind) if look != null and look.has_color(pair[1], kind) \
-					else GoUi.color(GoTheme.TEXT)
-				item.add_theme_color_override(pair[0], tone)
+			_segment_icon(item, mark)
+		# ♿ An icon-only cell has no text — its tooltip is the only name a screen reader could say.
+		if item.text.is_empty() and not item.tooltip_text.is_empty():
+			item.accessibility_name = item.tooltip_text
 		if action.is_valid(): item.pressed.connect(action.bind(index))
 		line.add_child(item)
 	return line
+
+
+## Puts an icon on one segment cell that **follows the label's color in every state**.
+## 🛑 Left alone the icon stays light on the chosen (accent-filled) cell while the label turns dark, and the cell reads
+##    as two things.
+## 🛑 The label colors are read through `GoUi.theme_color` — the cell is not in the tree yet (`get_theme_color()` gives
+##    the engine default there), and `Theme.has_color()` on `GoCompactButton` says "no" because the color lives on its
+##    base `Button`.
+static func _segment_icon(item: Button, mark: StringName) -> void:
+	var kind := item.theme_type_variation
+	var chosen := GoUi.color(GoTheme.ON_ACCENT)
+	var rest := GoUi.theme_color(&"font_color", kind, GoUi.color(GoTheme.TEXT))
+	var tones := {
+		&"icon_normal_color": rest,
+		&"icon_hover_color": GoUi.theme_color(&"font_hover_color", kind, rest),
+		&"icon_focus_color": GoUi.theme_color(&"font_focus_color", kind, rest),
+		&"icon_pressed_color": chosen,
+		&"icon_hover_pressed_color": chosen,
+	}
+	var glyph_px := GoUi.metric(GoTheme.LIST_GLYPH)
+	if GoUi.icons().texture(mark) != null:
+		apply_icon(item, mark, glyph_px)
+		# 🛑 Beside text, `expand_icon` leaves the icon out of the cell's minimum width — in a snug (`compact`) cell sized
+		#    to its label the icon was squeezed to a dot (virtual-monitor shot 2026-09-18). Unexpanded, `icon_max_width`
+		#    still caps it and the width counts it. An icon-only cell keeps expanding into its touch-size width.
+		if not item.text.is_empty(): item.expand_icon = false
+		for state: StringName in tones: item.add_theme_color_override(state, tones[state])
+		return
+	# 🛑 **A font icon set** draws the glyph as a child label: the button's `icon_*_color` never reaches it, and with no
+	#    inset it sits on top of the text. Beside text, push the text past it; alone, centre it; and repaint it when
+	#    the cell is chosen or let go.
+	apply_icon(item, mark, glyph_px, rest, -1.0 if item.text.is_empty() else float(GoUi.metric(GoTheme.GAP_SMALL)))
+	var glyph := item.get_node_or_null(^"IconGlyph") as Control
+	if glyph == null: return
+	if item.text.is_empty():
+		glyph.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
+	var paint := func(on: bool) -> void:
+		if is_instance_valid(glyph): glyph.add_theme_color_override(&"font_color", chosen if on else rest)
+	paint.call(item.button_pressed)
+	item.toggled.connect(paint)
 
 
 ## The small cell face — padding from the small button token, no face on an unchosen cell, a faint ring on focus, and the rest rounded per cell with no border.

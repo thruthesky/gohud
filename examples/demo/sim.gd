@@ -1,7 +1,7 @@
 ## ▶️ **The gohud demo — it runs itself, and you can work it by hand.**
 ##
 ## There are two ways in.
-##   **Tour**    Press start and it walks through sixteen scenes. Each one builds its screen afresh and
+##   **Tour**    Press start and it walks through twenty-three scenes. Each one builds its screen afresh and
 ##               the bot really presses, types, drags and scrolls those widgets (`SimBot`).
 ##   **Explore** Pick one widget in the left sidebar and only that scene is built, for **you** to work
 ##               by hand. Press "Play this widget" on the right and the bot demonstrates that one
@@ -390,7 +390,7 @@ func _side_panel() -> Control:
 		var labels := row.find_children("*", "Label", true, false)
 		var label := labels[0] as Label if not labels.is_empty() else null
 		if label != null:
-			# Keep it to one line — wrapped, the sixteen entries run off the screen.
+			# Keep it to one line — wrapped, the entries run off the screen.
 			label.add_theme_font_size_override(&"font_size", 15)
 			label.autowrap_mode = TextServer.AUTOWRAP_OFF
 			label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS

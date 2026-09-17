@@ -474,19 +474,19 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | 클래스 | 바탕 | 하는 일 |
 |---|---|---|
 | `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절 |
-| `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터 |
+| `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터. `max_height_ratio` 로 그 시트만 전역 상한 0.72 를 넘겨 키운다(비율이 깎이면 디버그 빌드에서 경고) |
 | `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼, `action_layout` 으로 버튼 세로·한 줄·자동 |
 | `GoForm` | MarginContainer | 브레이크포인트마다 폭을 제한하고 가상 키보드를(`avoid_hud` 면 HUD 까지) 피하며 라벨 줄바꿈을 보장하는 폼 |
 | `GoScroll` | ScrollContainer | 손가락 스크롤, 스크롤바가 카드 여백 자리로 들어간다, RTL 대응 |
 | `GoNotice` | PanelContainer | 입력도 포커스도 가져가지 않는 스낵바 |
 | `GoPromptCard` | PanelContainer | 화면을 막지 않는 질문 카드. 새로 그려도 눌린 버튼이 살아 있다 |
 | `GoCoachMark` | Control | 실제 컨트롤을 가리키는 안내 투어. 대상을 누르면 다음으로, 카드는 HUD 앵커와 `keep_clear` 를 피한다 |
-| `GoHudAnchor` | Control | HUD 를 안전영역 아홉 자리 중 하나에 붙인다. 가로 자리·`reserve_space`·`avoid_peers` |
+| `GoHudAnchor` | Control | HUD 를 안전영역 아홉 자리 중 하나에 붙인다. 가로 자리·`reserve_space`·`avoid_peers`. `keyboard_focus = false` 면 그 모서리의 버튼이 스페이스·엔터를 가로채지 않는다 |
 | `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간 |
 | `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
 | `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
-| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름 |
-| `GoStyle` | 팩토리 | 버튼·라벨·목록 줄·입력·선택·드롭다운·칩·카드·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
+| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
+| `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 여섯, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
@@ -673,7 +673,7 @@ Forward+/Mobile 렌더러. 안전영역·햅틱 코드는 휴대 기기에서만
 |---|---|---|
 | 갤러리 | `res://addons/gohud/examples/gallery/gallery.tscn` 을 F6 | 모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체. 서버·오토로드·프로젝트 설정이 필요 없다. |
 | 중세 | `res://addons/gohud/examples/medieval/medieval.tscn` 을 F6 | `medieval_dark`·`medieval_light` 의 캐릭터 정보·가방·퀘스트 일지 |
-| 데모 앱 | `cd examples/demo && godot` | 갤러리·19장면 자동 시연·쇼케이스·중세 화면·20초 쇼릴을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다. |
+| 데모 앱 | `cd examples/demo && godot` | 갤러리·23장면 자동 시연·쇼케이스·중세 화면·20초 쇼릴을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다. |
 
 ### 데모 앱 — 홈에서 고르고, 그 자리에서 본다
 
@@ -688,7 +688,7 @@ cd examples/demo && godot
 그리고 하는 일별로 묶은 19개 클래스가 저마다 코드 한 줄을 달고 깔린다. 전부 애드온 위젯으로만
 지었고, 글줄은 읽히는 폭 안에 머물며, 폰에서는 한 줄로 접히고, 테마 선택기로 통째로 다시 칠해진다.
 
-자동 시연에서 **Start demo**를 누르면 19개 장면이 순서대로 진행되며, 커서가 실제 입력으로
+자동 시연에서 **Start demo**를 누르면 23개 장면이 순서대로 진행되며, 커서가 실제 입력으로
 버튼·메뉴를 선택하고, 글자를 입력하고, 슬라이더·조이스틱을 끌고, 목록을 스크롤한다.
 **Explore widgets** 또는 왼쪽 사이드바의 항목을 누르면 그 위젯 하나만 무대에 지어져 **직접 만져 볼 수 있고**,
 오른쪽 **Play this widget** 버튼으로 그 위젯만 봇이 시연하게 할 수 있다. 시연 중 사이드바를 누르면

@@ -153,6 +153,8 @@ func _build_menu_button() -> void:
 	menu_button = GoStyle.icon_button(GoIconSet.MENU, func() -> void:
 		GoFeedback.tapped()
 		menu_requested.emit(), -1, &"Menu")
+	# 🛑 Over gameplay: a clicked button would keep keyboard focus, and Space (jump, attack) would press it again.
+	menu_button.keyboard_focus = false
 	panel.add_child(menu_button)
 	# 🛑 Deferred: a badge hangs off a corner through anchors, and the corner is only known once the
 	#    button has been laid out. Attaching in the same frame pins it to (0, 0).

@@ -217,6 +217,35 @@ static func color(key: StringName) -> Color:
 	return GoTheme.color_of(theme(), key, _fallback_theme())
 
 
+## 🔑 **A control color from the theme, safe before the node is in the tree** — `name` on a theme type
+## (`&"font_color"` on `GoTheme.VAR_COMPACT_BUTTON`), climbing the variation's base chain.
+##
+## ```gdscript
+## var ink := GoUi.theme_color(&"font_color", GoTheme.VAR_LIST_BUTTON)
+## ```
+##
+## Looks in the current theme, then the backup theme. When neither defines it: `missing` if one was passed, otherwise
+## the engine's default theme (what a control in the tree would get).
+## 🛑 `node.get_theme_color()` on a node not added yet returns the engine default instead of gohud's color — see
+##    `GoTheme.color_in_chain`. For a node you already hold, `theme_color_of(node, name)` picks the right road.
+static func theme_color(name: StringName, type: StringName, missing := Color.TRANSPARENT) -> Color:
+	for look: Theme in [theme(), _fallback_theme()]:
+		if GoTheme.has_color_in_chain(look, name, type): return GoTheme.color_in_chain(look, name, type)
+	if missing.a > 0: return missing
+	return GoTheme.color_in_chain(ThemeDB.get_default_theme(), name, type, Color.WHITE)
+
+
+## `theme_color` for a control you hold — its own override first, then the engine lookup once it is in the tree,
+## and before that the theme resource (the node's own `theme` if set, else gohud's) along its variation or class.
+static func theme_color_of(node: Control, name: StringName, missing := Color.TRANSPARENT) -> Color:
+	if node.has_theme_color_override(name): return node.get_theme_color(name)
+	if node.is_inside_tree(): return node.get_theme_color(name)
+	var type := node.theme_type_variation if not node.theme_type_variation.is_empty() else StringName(node.get_class())
+	if node.theme != null and node.theme != theme() and GoTheme.has_color_in_chain(node.theme, name, type):
+		return GoTheme.color_in_chain(node.theme, name, type)
+	return theme_color(name, type, missing)
+
+
 ## Is this color token **actually defined** in the current theme (or the backup theme).
 static func _has_color(key: StringName) -> bool:
 	var current := theme()
@@ -292,14 +321,16 @@ static func font_size(role: StringName = GoTheme.ROLE_BODY) -> int:
 
 ## Return one gohud string, **translated**.
 ##
-## Order: `text_overrides` (the literal text) → the key from `text_keys` through `tr()` → the name as is.
+## Order: `text_overrides` (the literal text) → the key from `text_keys` through `tr()` → **the name itself** through `tr()`.
+## 🔑 The last step is what lets a widget take **your own translation key** (`icon_button(…, &"HUD_BAG")`) without
+##    registering it in `text_keys` first. A name with no translation comes back as written, so plain words still work.
 ## 🛑 If the key is not in the translation table, `tr()` hands the key straight back — `gohud_close` showing
 ##    on screen means the translations are not attached, not that the code is wrong.
 static func text(name: StringName) -> String:
 	var overrides := config.text_overrides
 	if overrides.has(name): return overrides[name]
 	var key: String = config.text_keys.get(name, "")
-	if key.is_empty(): return String(name)
+	if key.is_empty(): return TranslationServer.translate(String(name))
 	return TranslationServer.translate(key)
 
 

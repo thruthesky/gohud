@@ -25,6 +25,30 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   quantity badge uses the compact text size; the micro size turned into a speck on a 60 dp inventory cell.
 - **`GoStyle.segmented()` options may carry an icon**: `{"text", "icon", "tooltip"}` beside plain strings. The icon
   follows the label's colour in every state, including the accent-filled chosen cell.
+- **`GoStyle.item_card(spec, framed := true)` — the picked item's detail card.** Icon on a disc (the item's colour,
+  contrast-corrected), title, subtitle, chips, a description, stat rows and an action row from one dictionary; every
+  key optional, parts named (`Icon`, `Title`, `Chips`, `Actions` …) for later updates. A shop, a crafting bench, a
+  quest log and a bag no longer assemble it by hand. `framed = false` inside a popover or a sheet.
+- **`GoStyle.restyle_list_row(row, selected, accent)`** marks the chosen list row with a tint and a 2 dp border (the
+  chosen `style_choice_card` face) or clears it — without rebuilding the row, so a server or language list can move
+  its pick. `list_button` had no selected state, and `toggle_mode` did not show one (the pressed face is the hover face).
+- **`GoSurface.max_height_ratio` / `GoSheet.max_height_ratio`** — this surface's own ceiling on `height_ratio`. A
+  `height_ratio` of 0.86 was cut to the global `surface_max_height_ratio` (0.72) without a word; now one sheet can
+  ask for the room, and a debug build warns once when a requested ratio is cut. `height_ratio_cap()` reads it.
+- **`keyboard_focus` on `GoIconButton` (default on), `GoHudAnchor` (default on) and `GoSlotGrid` (default on).** A
+  clicked HUD button kept keyboard focus and Space / Enter pressed it again instead of reaching the game. Off on the
+  anchor blocks focus for everything under it, later children included (`focus_behavior_recursive`); defaults are
+  unchanged.
+- **`GoUi.theme_color(name, type)` · `GoUi.theme_color_of(node, name)` · `GoTheme.color_in_chain()`** read a control
+  color from the theme resource, climbing the variation's base chain. `get_theme_color()` on a control that is not in
+  the tree yet returns the engine default even when the control's own `theme` is set (measured on Godot 4.7.2), and
+  `Theme.has_color()` does not look at a variation's base.
+- **Guided tour: 23 chapters.** *Inventory & items* (GoSlotGrid with item colours, icon segments as a filter, the
+  detail card, a tap route to move an item, the game icon set), *Popovers, menus & drawers* (GoPopover, GoContextMenu
+  by right-click, GoDrawer, GoConsole), *Tables & pages* (GoTable sorting and rows, GoPagination, a server list in a
+  sheet taller than 0.72 with `restyle_list_row`) and *Pick by picture* (`choice_grid`, `style_choice_card` cards, icon
+  segments in a pill over a map, HUD icon buttons with `keyboard_focus` off). `SimBot.right_click()` and
+  `press_key()`. The widget gallery gains an inventory section; the demo home lists `GoSlotGrid` and `GoGameIcons`.
 - **`GoSlot.selected`** (lit border without the cooldown's dimmed icon), **vacant cells** (no icon and
   `quantity = NONE` draw faint), and a `visual_size` above the touch minimum now grows the slot's own box instead
   of being clamped back to 48 dp.
@@ -124,6 +148,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Changed
 
+- **`GoUi.text(name)` sends a name that is not in `text_keys` through the translation server** instead of returning
+  it as written. An icon button's tooltip can take the host's own translation key (`&"HUD_BAG"`) without registering
+  it in `text_keys`; plain words with no translation still come back unchanged. A host table with a message id equal
+  to such a name now translates it.
+
 - **The documentation site is nineteen pages instead of five, and the sidebar lists the pages of the
   section you are in.** `widgets.html` had grown to 595 lines (40 KB) carrying thirty-two widgets, and
   `theming.html` to 644 (44 KB): to read about one widget you scrolled past thirty-one others, and a link
@@ -178,6 +207,20 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 ### Fixed
 
 - `GoStyle.chip("")` with neither text nor icon raised `add_child(null)`; it now returns an empty chip.
+- **`GoSlotGrid.set_cell()` before the grid is in the tree failed with "Invalid assignment of index"** — the initial
+  `slot_count` never ran its setter, so the data array stayed empty until `_ready`. A `selected` set before the tree
+  was also dropped. The grid now follows a preset change (its gaps did not), a disabled cell no longer starts a drag,
+  and an `ink` / `accent` given as a colour string or `null` is read instead of raising a parse error.
+- **`GoSlot`** inside a form (`GoForm`, `GoStyle.form`) folded its count one character per line — the form turned
+  wrapping on for the badge label. Resizing after entering the tree left the count at the old text size; setting only `disabled` did not
+  fade the slot; the tooltip was the engine's default one; a screen reader got no name (now the tooltip, the count and
+  the time left).
+- **Icons in `GoStyle.segmented()`** took the `text` token instead of the button's text color — right only because the
+  built-in themes use the same value for both — and with a font icon set the glyph sat on top of the label and did not
+  repaint on the chosen cell. An icon-only cell is now named by its tooltip for screen readers.
+- `GoStyle.apply_icon()` with a font icon set on a button not yet in the tree colored the glyph with the engine default.
+- **Drag-resizing a sheet above the height ceiling** stored and reported (`height_changed`) a ratio up to 0.95 while the
+  sheet stopped growing at 0.72, so dragging back down did nothing until that invisible part was undone.
 - **Thirteen API mistakes in the documentation, two of which would not compile.** The new widgets were
   written up from memory rather than from the source, so the docs told readers to call
   `GoCodeInput.shake()` (there is no such method — `set_error()` marks the cells),

@@ -16,6 +16,9 @@
 ## grid.slot_moved.connect(func(from, to): bag.move(from, to))   # only when `draggable`
 ## ```
 ##
+## 🛑 The cells draw with the **global** icon set (`GoUi.icons()`) — `GoGameIcons` names need
+##    `GoUi.config.icons = GoGameIcons.icon_set()` first, or the cells stay empty and warn `icon set has no …`.
+##
 ## ## 🛑 Inside a scroll the finger belongs to the scroll
 ## Cells pass the drag on (`MOUSE_FILTER_PASS`), so dragging over the grid scrolls the sheet it sits in. That is
 ## also why `draggable` is **off** by default: drag-to-move and drag-to-scroll cannot share a finger. Turn it
@@ -45,10 +48,20 @@ signal slot_moved(from: int, to: int)
 ## Let a cell be dragged onto another (`slot_moved`). See the 🛑 above before turning it on for touch.
 @export var draggable := false
 
+## 🔑 **Reachable by Tab and gamepad?** On by default — a bag in a sheet is walked with the arrows.
+## 🛑 Turn it **off** for a grid used as a HUD hotbar over gameplay: a clicked cell keeps focus, and Space / Enter
+##    then presses the cell again instead of reaching the game (`GoSlot.keyboard_focus`, pitfalls.md).
+@export var keyboard_focus := true:
+	set(value):
+		keyboard_focus = value
+		for cell in _cells: cell.keyboard_focus = value
+
 ## The picked cell, or -1. Only one cell is picked at a time.
+## 🔑 Checked against `slot_count`, not the cells built so far — a pick made before the grid enters the tree is
+##    kept and drawn when the cells are made.
 var selected := -1:
 	set(value):
-		selected = value if value >= 0 and value < _cells.size() else -1
+		selected = value if value >= 0 and value < slot_count else -1
 		for index in _cells.size(): _cells[index].selected = index == selected
 
 var _cells: Array[GoSlot] = []
@@ -60,14 +73,28 @@ func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	alignment = FlowContainer.ALIGNMENT_CENTER
+	# 🛑 A variable's initial value does not run its setter — without this `_data` stays empty until `_ready`, and
+	#    `set_cell()` on a grid that is not in the tree yet fails with "Invalid assignment of index".
+	_data.resize(slot_count)
 
 
 func _ready() -> void:
+	_restyle()
+	_rebuild()
+	GoUi.watch(_restyle)
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_restyle)
+
+
+## 🎨 Theme and cell spacing — run again on `GoUi.use_preset()` / `GoUi.refresh()`, so the gaps follow the new
+##    preset (the cells follow by themselves).
+func _restyle() -> void:
 	theme = GoUi.theme()
 	var gap := GoUi.metric(GoTheme.GAP_SMALL)
 	add_theme_constant_override(&"h_separation", gap)
 	add_theme_constant_override(&"v_separation", gap)
-	_rebuild()
 
 
 ## The `GoSlot` of one cell — for a cooldown, a shortcut label or anything else the cell dictionary does not cover.
@@ -111,7 +138,7 @@ func _rebuild() -> void:
 		made.visual_size = cell_size
 		# 🛑 The finger drag goes to the scroll this grid sits in (the same reason as `choice_grid`).
 		made.mouse_filter = Control.MOUSE_FILTER_PASS
-		made.keyboard_focus = true
+		made.keyboard_focus = keyboard_focus
 		made.pressed.connect(_on_pressed.bind(index))
 		made.set_drag_forwarding(_drag_from.bind(index), _can_drop_on.bind(index), _drop_on.bind(index))
 		_cells.append(made)
@@ -125,14 +152,19 @@ func _paint(index: int) -> void:
 	var data := _data[index]
 	made.icon_name = StringName(str(data.get("icon", "")))
 	made.quantity = int(data["quantity"]) if data.has("quantity") else GoSlot.NONE
-	var accent: Variant = data.get("accent", Color.TRANSPARENT)
-	made.accent = accent if accent is Color else Color(str(accent))
-	var ink: Variant = data.get("ink", Color.TRANSPARENT)
-	made.icon_ink = ink if ink is Color else Color(str(ink))
+	made.accent = _color(data.get("accent"))
+	made.icon_ink = _color(data.get("ink"))
 	made.timer_text = str(data.get("timer", ""))
 	made.disabled = bool(data.get("disabled", false))
 	made.tooltip_text = str(data.get("tooltip", ""))
 	made.selected = index == selected
+
+
+## A `Color`, or a colour string (`"e5484d"`) from a data file. Anything else — a missing key, `null` — is transparent.
+static func _color(value: Variant) -> Color:
+	if value is Color: return value
+	if (value is String or value is StringName) and Color.html_is_valid(str(value)): return Color.html(str(value))
+	return Color.TRANSPARENT
 
 
 func _on_pressed(index: int) -> void:
@@ -143,7 +175,8 @@ func _on_pressed(index: int) -> void:
 # `set_drag_forwarding` hands the three drag callbacks of every cell to the grid, with the cell index bound last.
 
 func _drag_from(_at: Vector2, index: int) -> Variant:
-	if not draggable or cell(index).is_empty(): return null
+	# A disabled cell (locked, cooling down) stays where it is, like a vacant one.
+	if not draggable or cell(index).is_empty() or bool(cell(index).get("disabled", false)): return null
 	var icon := StringName(str(cell(index).get("icon", "")))
 	if not icon.is_empty():
 		var ghost := Control.new()

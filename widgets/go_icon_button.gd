@@ -44,11 +44,23 @@ extends Button
 		native_texture_size = value
 		_refresh_icon()
 
-## The gohud string name to use as the tooltip (translated through `GoUi.text`). Empty means no tooltip.
+## The tooltip, through `GoUi.text`: a gohud string name (`close`, `back` …), **your own translation key**, or plain
+## words — keys and words both go through the translation server. Empty means no tooltip.
 @export var tooltip_text_name: StringName = &"":
 	set(value):
 		tooltip_text_name = value
 		_refresh_tooltip()
+
+## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** On by default — a close button in a
+## dialog or a settings header has to be reachable without a mouse.
+## 🛑 Turn it **off** for a button over gameplay (a HUD bag or map button): a clicked button keeps focus, and the
+##    engine's accept action (Space / Enter) then presses **it** again instead of reaching the game — a jump that
+##    reopens the bag. `GoSlot.keyboard_focus` is the same switch, off by default there. For a whole HUD corner at
+##    once, `GoHudAnchor.keyboard_focus = false`.
+@export var keyboard_focus := true:
+	set(value):
+		keyboard_focus = value
+		focus_mode = Control.FOCUS_ALL if value else Control.FOCUS_NONE
 
 ## The sibling icon buttons placed alongside. Where the widened hit areas overlap, **whichever centre is nearer** takes the press.
 var touch_peers: Array[Control] = []

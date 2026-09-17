@@ -2,7 +2,7 @@
 ##
 ## ```gdscript
 ## # Press a slot and the description opens beside it
-## GoPopover.open(slot, item_card(item))
+## GoPopover.open(slot, GoStyle.item_card(spec, false))   # unframed — the popover is the frame
 ##
 ## # With a title, and not closing on an outside tap
 ## GoPopover.open(button, body, {"title": "Upgrade odds", "dismissable": false})

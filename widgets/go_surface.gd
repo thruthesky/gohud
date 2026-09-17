@@ -51,6 +51,12 @@ var placement := Placement.CENTER
 var max_width := 0.0            ## 0 means `GoConfig.surface_max_width`
 var max_height := 0.0           ## 0 means `GoConfig.surface_max_height`
 var height_ratio := 0.0         ## 0 means `GoConfig.surface_height_ratio`
+## 🔑 **This surface's ceiling on `height_ratio`.** 0 means `GoConfig.surface_max_height_ratio` (0.72).
+## 🛑 Without it a `height_ratio` above the global ceiling is cut back to it — ask for 0.86 and get 0.72. That ceiling
+##    exists so a window still reads as floating over the game; raise it here for the one surface that needs the room
+##    (an inventory grid, a long list) instead of for every surface in `GoConfig`. A debug build warns once when a
+##    requested ratio is cut.
+var max_height_ratio := 0.0
 ## Short content makes a short card. Turn it off to always take up `height_ratio`.
 var fit_content := true
 ## Drops padding and text one step on narrow screens.
@@ -127,6 +133,8 @@ var _keyboard_px := 0
 var _scrim_pressed := false
 var _scrim_origin := Vector2.ZERO
 var _holds_back := false
+## A cut `height_ratio` has been reported (debug builds) — once per surface, since `relayout` runs every frame while content settles.
+var _warned_height_cap := false
 var _fade: Tween
 var _runtime: Node
 
@@ -457,6 +465,19 @@ func _exit_tree() -> void:
 
 # ── Layout math ────────────────────────────────────────────────────────
 
+## The ceiling on `height_ratio` in force for this surface — its own `max_height_ratio`, or the config's.
+func height_ratio_cap() -> float:
+	return max_height_ratio if max_height_ratio > 0.0 else GoUi.config.surface_max_height_ratio
+
+
+## 🛑 A ratio that is silently cut costs an afternoon ("I asked for 0.86 and got 0.72") — say so once, in debug builds.
+func _warn_height_cap(ratio: float, ratio_cap: float) -> void:
+	if _warned_height_cap or not OS.is_debug_build() or Engine.is_editor_hint(): return
+	_warned_height_cap = true
+	push_warning("gohud: %s asks for height_ratio %.2f but is capped at %.2f — set max_height_ratio on this surface (or GoConfig.surface_max_height_ratio for all)."
+		% [String(get_path()) if is_inside_tree() else String(name), ratio, ratio_cap])
+
+
 func relayout() -> void:
 	if card == null or not is_inside_tree(): return
 	var settings := GoUi.config
@@ -473,8 +494,10 @@ func relayout() -> void:
 	var cap_width := max_width if max_width > 0.0 else settings.surface_max_width
 	var cap_height := max_height if max_height > 0.0 else settings.surface_max_height
 	var ratio := height_ratio if height_ratio > 0.0 else settings.surface_height_ratio
+	var ratio_cap := height_ratio_cap()
+	if ratio > ratio_cap + 0.001: _warn_height_cap(ratio, ratio_cap)
 	var width := maxf(1.0, minf(cap_width, area.size.x * width_ratio))
-	var height := maxf(1.0, minf(cap_height, area.size.y * minf(ratio, settings.surface_max_height_ratio)))
+	var height := maxf(1.0, minf(cap_height, area.size.y * minf(ratio, ratio_cap)))
 	if fit_content:
 		# 🔑 Short content shrinks it, and **long content grows it as far as the screen allows.** Scrolling while screen
 		#    space is left over makes users who never noticed the scroll submit with unseen fields empty (`surface_fit_max_height_ratio`).
@@ -563,7 +586,7 @@ func _relayout_anchor(area: Rect2) -> void:
 	var below := area.end.y - anchor.end.y - gap - edge
 	var above := anchor.position.y - area.position.y - gap - edge
 	var opens_up := below < above
-	var cap := minf(anchor_max_height, area.size.y * GoUi.config.surface_max_height_ratio)
+	var cap := minf(anchor_max_height, area.size.y * height_ratio_cap())
 	var height := clampf(above if opens_up else below, 0, cap)
 	if fit_content: height = minf(height, _desired_height())
 	card.size = Vector2(maxf(1, width), maxf(1, height)).round()
@@ -653,7 +676,10 @@ func _input(event: InputEvent) -> void:
 	if not is_zero_approx(dy):
 		var area := GoSafeArea.usable_rect(get_window())
 		var current := height_ratio if height_ratio > 0.0 else GoUi.config.surface_height_ratio
-		height_ratio = clampf(current - dy / maxf(1.0, area.size.y), 0.3, 0.95)
+		# 🛑 The same ceiling the layout uses — clamped to 0.95 here while the layout stopped at 0.72, a drag past the
+		#    ceiling moved nothing, `height_changed` reported a height that was never drawn, and dragging back down did
+		#    nothing until the finger had undone the invisible part.
+		height_ratio = clampf(current - dy / maxf(1.0, area.size.y), minf(0.3, height_ratio_cap()), height_ratio_cap())
 		relayout()
 		height_changed.emit(height_ratio)
 	get_viewport().set_input_as_handled()

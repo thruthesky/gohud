@@ -172,7 +172,7 @@ If `${CLAUDE_SKILL_DIR}` is not expanded, use the first existing path of
 |---|---|
 | *(none)* / `gallery` · `--preset scifi_dark` · `--phone` · `--size 1920x1080` | Every widget, preset picker, icon set |
 | `medieval` | Character sheet, satchel, quest journal |
-| `demo` · `demo --explore hud` | 19-chapter guided tour / one chapter (`list` shows keys) |
+| `demo` · `demo --explore hud` | 23-chapter guided tour / one chapter (`list` shows keys) |
 | `res://ui/main_menu.tscn` | A scene of the user's project, inside that project |
 | `list` · `--check` · `--dry-run` · `--godot PATH` | Keys · headless smoke test · print command · Godot binary |
 

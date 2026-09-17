@@ -263,7 +263,8 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	for pair in [[3, ""], [0, "NEW"], [128, ""]]:
 		var host := GoIconButton.new()
 		host.icon_name = GoIconSet.BELL
-		host.tooltip_text_name = &"close"
+		# Plain words or your own translation key — the tooltip goes through the translation server either way.
+		host.tooltip_text_name = &"Notifications"
 		host.pressed.connect(_say.bind("badge host"))
 		badges.add_child(host)
 		GoBadge.attach.call_deferred(host, int(pair[0]), str(pair[1]))
@@ -302,6 +303,33 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	page.add_child(board)
 	var pager := GoPagination.make(1, 12, func(value: int) -> void: _say("page %d" % value))
 	page.add_child(pager)
+
+	page.add_child(GoStyle.section("Inventory", false))
+	page.add_child(GoStyle.segmented([{"text": "All", "icon": GoIconSet.GRID}, {"icon": GoIconSet.SWORD, "tooltip": "Gear"},
+		{"icon": GoIconSet.POTION, "tooltip": "Potions"}], 0, func(index: int) -> void: _say("filter %d" % index), false, true))
+	var bag := GoSlotGrid.new()
+	bag.slot_count = 10
+	bag.cell_size = 60
+	var items := [
+		{"icon": GoIconSet.SWORD, "ink": Color("c9d1d9"), "tooltip": "Iron sword"},
+		{"icon": GoIconSet.POTION, "quantity": 12, "ink": Color("e5484d"), "tooltip": "Health potion"},
+		{"icon": GoIconSet.POTION, "quantity": 7, "ink": Color("3e63dd"), "tooltip": "Mana potion"},
+		{"icon": GoIconSet.COIN, "quantity": 1250, "ink": Color("ffc53d"), "tooltip": "Gold"},
+		{"icon": GoIconSet.GIFT, "quantity": 1, "ink": Color("8e4ec6"), "tooltip": "Sealed gift", "disabled": true},
+	]
+	bag.set_cells(items)
+	page.add_child(bag)
+	var detail := GoStyle.column(0)
+	page.add_child(detail)
+	bag.slot_pressed.connect(func(index: int) -> void:
+		bag.selected = index if not bag.cell(index).is_empty() else -1
+		for child in detail.get_children(): child.queue_free()
+		if bag.selected < 0: return
+		var picked := bag.cell(index)
+		detail.add_child(GoStyle.item_card({"icon": picked.icon, "ink": picked.ink, "title": picked.tooltip,
+			"chips": [{"text": "×%d" % int(picked.quantity), "ink": GoUi.color(GoTheme.INFO)}] if picked.has("quantity") else [],
+			"actions": [{"text": "Use", "tone": GoStyle.Tone.PRIMARY, "action": _say.bind("use %s" % picked.tooltip)}]}))
+		_say("slot %d" % index))
 
 	page.add_child(GoStyle.section("Over the screen", false))
 	var overlays := GoStyle.wrap_row()

@@ -44,6 +44,14 @@ func _initialize() -> void:
 	await _carousel()
 	await _slot_grid()
 	await _segmented_icons()
+	await _slot_grid_followups()
+	await _theme_color_lookup()
+	await _segmented_theme_chain()
+	await _surface_height_cap()
+	await _hud_focus()
+	await _tooltip_translation()
+	await _item_card()
+	await _list_row_selection()
 	await _game_icons()
 	await _theme_follow()
 
@@ -925,6 +933,340 @@ func _segmented_icons() -> void:
 	line.queue_free()
 	await frames(1)
 	section("segmented icons")
+
+
+# ── Slot grid: before the tree, focus, resizing, disabled ─────────────
+
+func _slot_grid_followups() -> void:
+	# 🛑 Found 2026-09-17: a grid filled before it is added failed with "Invalid assignment of index" — the
+	#    initial `slot_count` never ran its setter, so the data array was still empty.
+	var early := GoSlotGrid.new()
+	early.set_cell(2, {"icon": GoIconSet.POTION, "quantity": 4})
+	early.selected = 2
+	check(early.cell(2).get("quantity") == 4, "slot grid: set_cell works before the grid is in the tree")
+	check(early.selected == 2, "slot grid: a pick made before the tree is kept (%d)" % early.selected)
+	early.keyboard_focus = false
+	var holder := Control.new()
+	holder.size = Vector2(360, 600)
+	root.add_child(holder)
+	holder.add_child(early)
+	await frames(2)
+	check(early.slot(2).icon_name == GoIconSet.POTION and early.slot(2).selected,
+		"slot grid: cells drawn on entry show what was set before")
+	check(early.slot(0).focus_mode == Control.FOCUS_NONE, "slot grid: keyboard_focus = false keeps the cells out of focus (hotbar)")
+	early.keyboard_focus = true
+	check(early.slot(0).focus_mode == Control.FOCUS_ALL, "slot grid: keyboard_focus reaches the cells that exist")
+
+	# The count's text size follows a size change made after entering the tree.
+	var count: Label = early.slot(2).get_node(^"Face/QuantityBadge/Quantity")
+	early.cell_size = 44
+	await frames(1)
+	var small_size := count.get_theme_font_size(&"font_size")
+	early.cell_size = 64
+	await frames(1)
+	check(count.get_theme_font_size(&"font_size") > small_size,
+		"slot grid: growing the cells after entry grows the count (%d > %d)" % [count.get_theme_font_size(&"font_size"), small_size])
+
+	# `disabled` belongs to BaseButton — the slot must still notice it and fade.
+	var slot := early.slot(2)
+	var lit_face := _face_color(slot)
+	slot.selected = false
+	await frames(1)
+	var resting_face := _face_color(slot)
+	slot.disabled = true
+	await frames(2)
+	check(_face_color(slot) != resting_face, "slot: setting only `disabled` fades the slot (%s)" % _face_color(slot))
+	slot.disabled = false
+	await frames(2)
+	check(_face_color(slot) == resting_face, "slot: clearing `disabled` brings the face back")
+	check(lit_face != resting_face, "slot: the picked face differs from the resting one")
+
+	# A disabled cell does not start a drag; a string colour from a data file still paints; null is ignored.
+	early.draggable = true
+	early.set_cell(3, {"icon": GoIconSet.SWORD, "disabled": true, "ink": "e5484d", "accent": null})
+	await frames(1)
+	check(early._drag_from(Vector2.ZERO, 3) == null, "slot grid: a disabled cell cannot be dragged")
+	check(early.slot(3).icon_ink.is_equal_approx(Color("e5484d")), "slot grid: an `ink` colour string is read")
+	check(early.slot(3).accent == Color.TRANSPARENT, "slot grid: a null accent is transparent, not a parse error")
+
+	# A form forces wrapping onto labels below it — the count badge must stay one line.
+	GoStyle.form(holder)
+	await frames(2)
+	var badge_text: Label = early.slot(2).get_node(^"Face/QuantityBadge/Quantity")
+	check(badge_text.autowrap_mode == TextServer.AUTOWRAP_OFF and badge_text.get_line_count() == 1,
+		"slot: inside a form the count stays on one line")
+
+	# ♿ A cell says its name and its count.
+	early.set_cell(2, {"icon": GoIconSet.POTION, "quantity": 4, "tooltip": "Potion"})
+	await frames(1)
+	check(early.slot(2).accessibility_name.contains("Potion") and early.slot(2).accessibility_name.contains("4"),
+		"slot grid: the accessible name carries the tooltip and the count (%s)" % early.slot(2).accessibility_name)
+	check(early.slot(2)._make_custom_tooltip("Potion") is Control, "slot: the tooltip is gohud's, not the engine's")
+
+	# The gaps follow a preset change.
+	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+	await frames(1)
+	check(early.theme == GoUi.theme(), "slot grid: a preset change reaches the grid itself")
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.reduce_motion = true
+	await frames(1)
+	holder.queue_free()
+	await frames(1)
+	section("slot grid follow-ups")
+
+
+# ── Theme colors read before the tree ─────────────────────────────────
+
+func _theme_color_lookup() -> void:
+	var look := GoUi.theme()
+	var expected := look.get_color(&"font_color", &"Button")
+	# 🛑 The engine's lookup before the tree: the default gray, even with the node's own theme set (measured 2026-09-17).
+	var loose := Button.new()
+	loose.theme = look
+	loose.theme_type_variation = GoTheme.VAR_COMPACT_BUTTON
+	check(not look.has_color(&"font_color", GoTheme.VAR_COMPACT_BUTTON),
+		"theme color: the compact variation defines no font color of its own (the chain matters)")
+	check(GoTheme.has_color_in_chain(look, &"font_color", GoTheme.VAR_COMPACT_BUTTON),
+		"theme color: the chain finds the color on the variation's base")
+	check(GoUi.theme_color(&"font_color", GoTheme.VAR_COMPACT_BUTTON) == expected,
+		"theme color: GoUi.theme_color climbs to Button's color")
+	check(GoUi.theme_color_of(loose, &"font_color") == expected,
+		"theme color: theme_color_of reads the theme for a node not in the tree")
+	check(GoUi.theme_color(&"no_such_color", GoTheme.VAR_COMPACT_BUTTON, Color.RED) == Color.RED,
+		"theme color: a color nobody defines gives the passed fallback")
+	loose.add_theme_color_override(&"font_color", Color.GREEN)
+	check(GoUi.theme_color_of(loose, &"font_color") == Color.GREEN, "theme color: an override wins")
+	loose.free()
+	section("theme color lookup")
+
+
+# ── Segmented icons under a host theme and a font icon set ────────────
+
+func _segmented_theme_chain() -> void:
+	# A host theme whose button text differs from the `text` token — the default themes hide the chain bug
+	# because both colors are the same value there.
+	var host: Theme = GoUi.theme().duplicate()
+	var orange := Color("ff9a3c")
+	host.set_color(&"font_color", &"Button", orange)
+	GoUi.config.theme = host
+	var line := GoStyle.segmented([{"text": "All", "icon": GoIconSet.GRID}, "Plain"], 1)
+	root.add_child(line)
+	await frames(2)
+	var first := line.get_child(0) as Button
+	check(first.get_theme_color(&"icon_normal_color") == orange and first.get_theme_color(&"font_color") == orange,
+		"segmented: the icon follows a host theme's button text color (%s)" % str(first.get_theme_color(&"icon_normal_color")))
+	line.queue_free()
+	GoUi.config.theme = null
+
+	# 🛑 A snug (compact) cell sized to its label squeezed an expanding icon to a dot (virtual-monitor shot 2026-09-18).
+	# A label long enough to clear the touch-size floor, so the widths compare the content.
+	var snug := GoStyle.segmented([{"text": "Potions", "icon": GoIconSet.POTION}, "Potions"], 0, Callable(), false, true)
+	root.add_child(snug)
+	await frames(2)
+	var with_icon := (snug.get_child(0) as Button).get_combined_minimum_size().x
+	var text_only := (snug.get_child(1) as Button).get_combined_minimum_size().x
+	check(with_icon >= text_only + GoUi.metric(GoTheme.LIST_GLYPH) - 1.0,
+		"segmented: a compact cell makes room for its icon beside the text (%.0f ≥ %.0f + %d)" % [with_icon, text_only, GoUi.metric(GoTheme.LIST_GLYPH)])
+	snug.queue_free()
+
+	# A font icon set: the glyph is a child label — it must not sit on the text and must repaint when chosen.
+	var fonts := GoIconSet.new()
+	fonts.font = ThemeDB.fallback_font
+	fonts.codepoints = {&"star": 0x2605}
+	fonts.fallback = GoUi.DEFAULT_ICONS
+	GoUi.config.icons = fonts
+	var picked: Array[int] = []
+	var font_line := GoStyle.segmented([{"text": "Starred", "icon": &"star"}, "Other"], 1,
+		func(index: int) -> void: picked.append(index))
+	root.add_child(font_line)
+	await frames(3)
+	var starred := font_line.get_child(0) as Button
+	var glyph := starred.get_node_or_null(^"IconGlyph") as Label
+	check(glyph != null, "segmented: a font set puts the glyph on the cell")
+	if glyph != null:
+		var text_start := starred.get_theme_stylebox(&"normal").content_margin_left
+		check(glyph.position.x + glyph.size.x <= text_start + 0.5,
+			"segmented: the font glyph ends before the text starts (%.0f ≤ %.0f)" % [glyph.position.x + glyph.size.x, text_start])
+		check(glyph.get_theme_color(&"font_color") != GoUi.color(GoTheme.ON_ACCENT), "segmented: an unchosen font glyph uses the label color")
+		starred.pressed.emit()
+		starred.button_pressed = true
+		await frames(1)
+		check(glyph.get_theme_color(&"font_color") == GoUi.color(GoTheme.ON_ACCENT),
+			"segmented: the chosen cell repaints its font glyph")
+	font_line.queue_free()
+	GoUi.config.icons = null
+	var bare := GoStyle.segmented([{"icon": GoIconSet.STAR, "tooltip": "Starred"}])
+	check((bare.get_child(0) as Button).accessibility_name == "Starred", "segmented: an icon-only cell is named by its tooltip")
+	bare.free()
+	await frames(1)
+	section("segmented theme chain")
+
+
+# ── Per-surface height ceiling ────────────────────────────────────────
+
+func _surface_height_cap() -> void:
+	var area := GoSafeArea.usable_rect(root)
+	var sheet := GoSheet.new()
+	sheet.height_ratio = 0.86
+	# The dp ceiling (`surface_max_height`, 700) would stop a tall test window first — lift it to measure the ratio.
+	sheet.surface.max_height = 4000.0
+	root.add_child(sheet)
+	sheet.open("Tall")
+	for index in 40: sheet.body.add_child(GoStyle.label("Row %d" % index))
+	await frames(4)
+	var capped := sheet.surface.card.size.y
+	check(capped <= area.size.y * GoUi.config.surface_max_height_ratio + 1.0,
+		"height cap: without max_height_ratio 0.86 is still cut to the global ceiling (%.0f)" % capped)
+	check(sheet.surface._warned_height_cap == OS.is_debug_build(), "height cap: a debug build reports the cut once")
+	sheet.max_height_ratio = 0.9
+	sheet.surface.relayout()
+	await frames(2)
+	check(sheet.surface.card.size.y > capped + 10.0 and sheet.surface.card.size.y <= area.size.y * 0.86 + 1.0,
+		"height cap: max_height_ratio lets this sheet reach 0.86 (%.0f > %.0f)" % [sheet.surface.card.size.y, capped])
+	# Dragging stops at the ceiling that is drawn, and `height_changed` never reports more.
+	sheet.max_height_ratio = 0.0
+	var reported: Array[float] = []
+	sheet.surface.height_changed.connect(func(ratio: float) -> void: reported.append(ratio))
+	sheet.surface._dragging = true
+	var drag := InputEventMouseMotion.new()
+	drag.relative = Vector2(0, -area.size.y)
+	sheet.surface._input(drag)
+	sheet.surface._dragging = false
+	check(not reported.is_empty() and reported.back() <= GoUi.config.surface_max_height_ratio + 0.001,
+		"height cap: a drag past the ceiling reports the ceiling (%s)" % str(reported))
+	sheet.queue_free()
+	await frames(2)
+	section("surface height cap")
+
+
+# ── HUD buttons and keyboard focus ────────────────────────────────────
+
+func _hud_focus() -> void:
+	var mark := GoStyle.icon_button(GoIconSet.BAG)
+	check(mark.focus_mode == Control.FOCUS_ALL, "hud focus: an icon button keeps focus by default (unchanged)")
+	mark.keyboard_focus = false
+	check(mark.focus_mode == Control.FOCUS_NONE, "hud focus: GoIconButton.keyboard_focus = false leaves the Tab order")
+	mark.free()
+
+	var corner := GoHudAnchor.new()
+	root.add_child(corner)
+	var row := GoStyle.row()
+	corner.add_child(row)
+	var menu := GoStyle.button("Menu", Callable(), GoStyle.Tone.COMPACT)
+	row.add_child(menu)
+	var chat := GoStyle.line_edit("Say something")
+	row.add_child(chat)
+	await frames(2)
+	menu.grab_focus()
+	check(menu.has_focus(), "hud focus: a button under an anchor takes focus by default")
+	root.gui_release_focus()
+	corner.keyboard_focus = false
+	# A button added later is covered too — no button to forget.
+	var later := GoStyle.button("Map", Callable(), GoStyle.Tone.COMPACT)
+	row.add_child(later)
+	await frames(1)
+	check(later.get_focus_mode_with_override() == Control.FOCUS_NONE and menu.get_focus_mode_with_override() == Control.FOCUS_NONE,
+		"hud focus: keyboard_focus = false on the anchor blocks focus for every button, later ones too")
+	check(chat.get_focus_mode_with_override() == Control.FOCUS_NONE,
+		"hud focus: it blocks text inputs too — documented, keep inputs in another anchor")
+	corner.keyboard_focus = true
+	check(menu.get_focus_mode_with_override() == Control.FOCUS_ALL, "hud focus: turning it back on restores focus")
+	corner.queue_free()
+	await frames(1)
+	section("hud focus")
+
+
+# ── Tooltip keys that are the host's own ──────────────────────────────
+
+func _tooltip_translation() -> void:
+	var table := Translation.new()
+	table.locale = TranslationServer.get_locale()
+	table.add_message(&"HUD_BAG_TOOLTIP", "Open the bag")
+	TranslationServer.add_translation(table)
+	var mark := GoStyle.icon_button(GoIconSet.BAG, Callable(), -1, &"HUD_BAG_TOOLTIP")
+	root.add_child(mark)
+	await frames(1)
+	check(mark.tooltip_text == "Open the bag", "tooltip: a host translation key translates without text_keys (%s)" % mark.tooltip_text)
+	check(GoUi.text(&"Zoom in") == "Zoom in", "tooltip: plain words with no translation come back as written")
+	check(GoUi.text(&"close") == TranslationServer.translate(GoUi.config.text_keys[&"close"]),
+		"tooltip: a built-in name still goes through text_keys")
+	TranslationServer.remove_translation(table)
+	mark.queue_free()
+	await frames(1)
+	section("tooltip translation")
+
+
+# ── Item detail card ──────────────────────────────────────────────────
+
+func _item_card() -> void:
+	var used: Array[String] = []
+	var card := GoStyle.item_card({
+		"icon": GoIconSet.SWORD, "ink": Color("10204a"), "title": "Iron sword", "subtitle": "One-handed",
+		"chips": [{"text": "Rare", "ink": GoUi.color(GoTheme.INFO)}, "Tradable"],
+		"body": "A plain blade that holds its edge.",
+		"stats": [["Attack", "+12"], ["Weight", "3.5"]],
+		"actions": [{"text": "Equip", "action": func() -> void: used.append("equip"), "tone": GoStyle.Tone.PRIMARY},
+			{"text": "Drop", "action": func() -> void: used.append("drop")}],
+	})
+	var holder := VBoxContainer.new()
+	holder.size = Vector2(360, 0)
+	root.add_child(holder)
+	holder.add_child(card)
+	await frames(2)
+	check(card is PanelContainer and card.find_child("Title", true, false).text == "Iron sword",
+		"item card: a framed card with its title")
+	check((card.find_child("Chips", true, false) as Control).get_child_count() == 2, "item card: one chip per entry")
+	check((card.find_child("Stats", true, false) as GridContainer).get_child_count() == 4, "item card: stat rows are label + value")
+	var title_node := card.find_child("Icon", true, false) as Control
+	check(title_node.get_global_rect().position.x - card.get_global_rect().position.x >= GoUi.metric(GoTheme.PADDING_COMPACT),
+		"item card: a framed card keeps its content off the border")
+	var action_row := card.find_child("Actions", true, false) as Control
+	check(is_equal_approx((action_row.get_child(0) as Control).size.y, (action_row.get_child(1) as Control).size.y),
+		"item card: a primary and a plain action stand the same height")
+	var disc := card.find_child("Icon", true, false) as PanelContainer
+	var glyph := disc.get_child(0) as Control
+	var on_disc := GoSkin.blend(GoSkin.box_background(disc.get_theme_stylebox(&"panel")), GoUi.color(GoTheme.SURFACE))
+	check(GoSkin.contrast_ratio(GoSkin.blend(glyph.modulate, on_disc), on_disc) >= 4.4,
+		"item card: a dark item color is lifted to read on its disc (%.2f)" % GoSkin.contrast_ratio(glyph.modulate, on_disc))
+	var actions := card.find_child("Actions", true, false) as Control
+	(actions.get_child(0) as Button).pressed.emit()
+	(actions.get_child(1) as Button).pressed.emit()
+	check(used == ["equip", "drop"], "item card: actions call back %s" % str(used))
+	var bare := GoStyle.item_card({"title": "Bare"}, false)
+	check(bare is VBoxContainer and bare.find_child("Icon", true, false) == null and bare.find_child("Actions", true, false) == null,
+		"item card: unframed and empty keys build nothing extra")
+	bare.free()
+	holder.queue_free()
+	await frames(1)
+	section("item card")
+
+
+# ── Chosen list row ───────────────────────────────────────────────────
+
+func _list_row_selection() -> void:
+	var holder := VBoxContainer.new()
+	holder.size = Vector2(320, 0)
+	root.add_child(holder)
+	var row_a := GoStyle.list_button(GoIconSet.GLOBE, "Asia", Callable(), Color.TRANSPARENT, "", false)
+	var row_b := GoStyle.list_button(GoIconSet.GLOBE, "Europe", Callable(), Color.TRANSPARENT, "", false)
+	holder.add_child(row_a)
+	holder.add_child(row_b)
+	await frames(2)
+	var height := row_a.size.y
+	var resting := row_a.get_theme_stylebox(&"normal")
+	GoStyle.restyle_list_row(row_a, true)
+	await frames(2)
+	var chosen := row_a.get_theme_stylebox(&"normal")
+	check(chosen != resting and row_a.has_theme_stylebox_override(&"hover"), "list row: the chosen row gets its own face")
+	check(&"border_color" in chosen and (chosen.get(&"border_color") as Color).a > 0.5, "list row: the pick is a border, not a color alone")
+	check(is_equal_approx(row_a.size.y, height), "list row: picking does not change the row height (%.0f → %.0f)" % [height, row_a.size.y])
+	check(not row_b.has_theme_stylebox_override(&"normal"), "list row: other rows stay as they were")
+	GoStyle.restyle_list_row(row_a, false)
+	check(not row_a.has_theme_stylebox_override(&"normal") and row_a.get_child_count() == 1,
+		"list row: clearing goes back to the theme face without rebuilding the row")
+	holder.queue_free()
+	await frames(1)
+	section("list row selection")
 
 
 # ── Game icon set ─────────────────────────────────────────────────────

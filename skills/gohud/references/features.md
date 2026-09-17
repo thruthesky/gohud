@@ -104,9 +104,9 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 |---|---|
 | Structure | `column` `row` `wrap_row` `padding` `insets` `edge_insets` `gap` `spacing` `spacer` `divider` `line` `responsive_grid` `aspect` `foldable` |
 | Text | `label` `label_key` `section` `typography` `font_role` `pin_font_size` `style_mono_text` `text_shadow` `glyph_text` `glyph_type` `glyph_width` |
-| Buttons | `button` `button_key` `style_button` `icon_button` `list_button` `list_row` `apply_icon` `fit_words` `center_button_content` `tint_button` `style_brand_button` `style_overlay_button` `style_disc_button` `touch_face` — tones `NORMAL` `PRIMARY` `DANGER` `DANGER_SOLID` `BARE` `COMPACT` |
+| Buttons | `button` `button_key` `style_button` `icon_button` `list_button` `list_row` `restyle_list_row` `apply_icon` `fit_words` `center_button_content` `tint_button` `style_brand_button` `style_overlay_button` `style_disc_button` `touch_face` — tones `NORMAL` `PRIMARY` `DANGER` `DANGER_SOLID` `BARE` `COMPACT` |
 | Input | `line_edit` `textarea` `toggle` `checkbox` `slider` `picker` `select` `dropdown` `radio_group` `segmented` `choice_grid` `style_choice_card` `field` |
-| Display | `card` `card_body` `chip` `chip_panel` `restyle_chip` `style_chip_button` `style_chip_label` `avatar` `skeleton` `alert` `table` `tabs` `breadcrumb` `progress` `tint_progress` `empty_state` `style_count_badge` |
+| Display | `card` `card_body` `item_card` `chip` `chip_panel` `restyle_chip` `style_chip_button` `style_chip_label` `avatar` `skeleton` `alert` `table` `tabs` `breadcrumb` `progress` `tint_progress` `empty_state` `style_count_badge` |
 | Panels & faces | `surface` `box` `floating` `disc` `plate` `hud_panel` `style_hud_panel` `overlay_panel` `style_overlay_panel` `bare_panel` `style_panel` `style_notice_panel` `disc_panel` `style_disc_panel` `style_disc_label` `style_hud_disc` `edge_card` `edge_card_panel` `face_padding` `face_insets` `style_slot_face` |
 | Helpers | `form` `fade` `tooltip_node` `natural_width` `fit_content_height` `let_input_through` `style_popup` `audit_compact_padding` |
 
@@ -123,7 +123,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Skins own code-drawn shapes (joystick, slots, coach ring, chips, alerts); 32 numeric dials | `class_name MySkin extends GoSkin` | theming.md §6 |
 | Custom StyleBoxes: `GoStyleBoxCut` (chamfer, edge, glow), `GoStyleBoxBracket` (corner marks), `GoStyleBoxMedieval` (forged frame) | `var box := GoStyleBoxCut.new()` | theming.md §7 |
 | Icons by name: 84 default + 16 engraved medieval (MIT, `DPITexture`); swap to your SVGs or an icon font, or override a few | `GoUi.icons().node(&"settings", 20)` | platform.md §1 |
-| **Game icon set** — 184 icons for inventories, shops, equipment, food, resources, tech & space, places and rewards (MIT; 168 from Tabler Icons, 16 drawn for gohud), falls back to the default set | `GoUi.config.icons = GoGameIcons.icon_set()` | platform.md §1 |
+| **Game icon set** — 187 icons for inventories, shops, equipment, food, resources, tech & space, places and rewards (MIT; 171 from Tabler Icons, 16 drawn for gohud), falls back to the default set | `GoUi.config.icons = GoGameIcons.icon_set()` | platform.md §1 |
 
 ## 9. Mobile, desktop, accessibility, languages
 
@@ -146,7 +146,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | One `GoConfig` resource (appearance, responsive, surface, feedback, localization, accessibility) that survives add-on updates | `GoUi.config = preload("res://ui/gohud_config.tres")` | setup.md §3 |
 | Optional plugin: project settings for config + preset, `GoRuntime` autoload (breakpoints, dp scale, keyboard), translations | Project → Project Settings → Plugins → gohud | setup.md §2 |
 | Subclass hooks `_make_scroll`, `_make_close_button`, `_make_surface`, `_should_pause` | `func _make_surface() -> GoSurface: return MySurface.new()` | surfaces.md §6 |
-| Gallery, medieval example, 19-chapter demo tour with explore mode | `/gohud:preview demo --explore hud` | SKILL.md §6 |
+| Gallery, medieval example, 23-chapter demo tour with explore mode | `/gohud:preview demo --explore hud` | SKILL.md §6 |
 | **693 headless checks** (`gohud_test.gd` 568 + `gohud_extra_test.gd` 125), WCAG contrast checker, packaging gates, CI on every push | `bash addons/gohud/tools/check_all.sh` | setup.md §6 |
 | **Screenshot check on a virtual monitor** — value checks know "how much", not "is it visible"; five layout faults were found this way with every headless check passing | `xvfb_run.sh --out shots -s res://addons/gohud/tests/gohud_shot.gd` | setup.md §6 |
 | **`/gohud update`** — update the add-on in your project and this skill to the latest release | `/gohud update` | setup.md §7 |

@@ -31,7 +31,7 @@ The 84 constants on `GoIconSet` (value = lowercase name):
 | Layout | `LIST` `GRID` `COLUMNS` `CHART` |
 | Game | `SWORD` `BOLT` `TARGET` `FLAG` `POTION` `SKULL` `RUN` |
 
-**The game set** — 184 more icons for inventories, shops and items, names on `GoGameIcons` (`GoGameIcons.BACKPACK`,
+**The game set** — 187 more icons for inventories, shops and items, names on `GoGameIcons` (`GoGameIcons.BACKPACK`,
 `SHOP`, `COINS`, `PICKAXE`, `OXYGEN_TANK` …). It is **not** plugged in by default; every default name keeps working
 because the set falls back to the default one. Vector textures (`DPITexture`), so a 64 dp inventory cell stays sharp.
 
@@ -52,9 +52,9 @@ for icon in GoGameIcons.GROUPS[&"shop"]: row.add_child(GoUi.icons().node(icon, 2
 | `tech` — Tech & space | `atom` `battery` `battery_full` `bulb` `chip` `plug` `engine` `rocket` `planet` `satellite` `ufo` `alien` `solar_panel` `antenna` `telescope` `meteor` `robot` `drone` `radar` `microscope` `dna` `test_tube` `radioactive` `biohazard` `recycle` `fuel` `oxygen_tank` `dome` `power_core` |
 | `places` — Buildings & furniture | `factory` `house` `tower` `windmill` `tent` `campfire` `bed` `lamp` `door` `window` `fence` `ladder` `armchair` `car` `tractor` `forklift` `crane` |
 | `creatures` — Creatures | `paw` `bug` `ghost` `pig` `horse` |
-| `rewards` — Rewards & social | `trophy` `medal` `award` `certificate` `sparkles` `confetti` `balloon` `dice` `puzzle` `anchor` `palette` `notebook` `scroll` `thumb_up` `handshake` `megaphone` `stopwatch` |
+| `rewards` — Rewards & social | `trophy` `medal` `award` `certificate` `sparkles` `confetti` `balloon` `dice` `puzzle` `anchor` `palette` `notebook` `scroll` `thumb_up` `handshake` `megaphone` `stopwatch` `microphone` `microphone_off` `send` |
 
-168 of them use path data from **Tabler Icons** (MIT, Copyright (c) 2020-2026 Paweł Kuna); 16 were drawn for gohud. The
+171 of them use path data from **Tabler Icons** (MIT, Copyright (c) 2020-2026 Paweł Kuna); 16 were drawn for gohud. The
 MIT notice travels in `THIRD_PARTY_NOTICES.md`. Add or change icons in the table of `tools/make_game_icons.py` and
 run it — it rewrites `icons/game/*.svg`, `icons/gohud_icons_game.tres` and `core/go_game_icons.gd` (`--check` compares).
 
@@ -106,7 +106,7 @@ GoUi.config.number_formatter = func(amount: float) -> String:        # CJK group
 TranslationServer.set_locale("ko")                                  # widgets re-translate themselves
 ```
 
-- `GoUi.text(name)` returns translated text (override → key → name); `GoUi.text_key(name)` returns the key.
+- `GoUi.text(name)` returns translated text (override → `text_keys` key → **the name itself through the translation server**, so a tooltip can take your own key without registering it); `GoUi.text_key(name)` returns the key.
 - Built-in translations (21 locales: en ko ja zh zh_TW es pt de fr it nl pl ru uk tr vi id th hi ar he) load
   automatically once the CSV is imported; turn off with `load_builtin_translations = false` if your keys collide.
 - 🛑 Placeholders are filled only via `args` (`GoDialogs`, `GoNotice.show_key`, `GoPromptCard.set_title_key`);

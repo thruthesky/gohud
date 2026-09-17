@@ -57,10 +57,11 @@ DANGER tinted, DANGER_SOLID filled (irreversible confirm), BARE text-only, COMPA
 | `button(text, action := Callable(), tone := Tone.NORMAL)` | `Button` | Non-compact tones expand horizontally and use `button_height` |
 | `button_key(key, action := Callable(), tone := Tone.NORMAL)` | `Button` | |
 | `style_button(button, tone := Tone.NORMAL)` | void | Style a Button from a scene |
-| `icon_button(icon, action := Callable(), visual := -1, tooltip_key: StringName = &"")` | `GoIconButton` | Always give `tooltip_key` (tooltip + accessible name) |
+| `icon_button(icon, action := Callable(), visual := -1, tooltip_key: StringName = &"")` | `GoIconButton` | Always give `tooltip_key` (tooltip + accessible name): a gohud name (`close`), **your own translation key**, or plain words — all go through the translation server. Over gameplay set `keyboard_focus = false` on the result |
 | `apply_icon(button, icon, size := -1, ink := Color.TRANSPARENT)` | void | Texture sets use `Button.icon`; font sets add a child label |
 | `list_button(icon, key, action := Callable(), ink := Color.TRANSPARENT, sub_key := "", translate := true, trailing: StringName = &"")` | `Button` | Menu/settings row: icon, title, optional description line, optional trailing icon (e.g. `CHEVRON_RIGHT`). Whole row is the tap target |
 | `list_row(button, icon, key, …same…)` | `Button` | Same, on an existing Button |
+| `restyle_list_row(button, selected: bool, accent := Color.TRANSPARENT)` | void | Marks a list row as **the chosen one** (tint + 2 dp border, like a chosen `style_choice_card`) or clears it. Face only — call it again when the pick moves; never call `list_row` twice on one button |
 
 🛑 `list_button(..., translate := true)` treats `key` as a translation key. For literal text pass
 `translate = false` (the sixth argument) — otherwise an untranslated key simply shows as typed, but a key that
@@ -108,6 +109,7 @@ pill.add_child(GoStyle.segmented(["Map", "Quests"], 0, _switch_layer, false, tru
 |---|---|---|
 | `card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0, pad := -1.0, alpha := -1.0)` | `PanelContainer` | Bordered card (`GoCard`); add a padding/column child. With **no arguments it builds no face of its own** — it reads the one the `GoCard` variation draws and multiplies panel opacity into that, so a host theme that redefines `GoCard` keeps its shape (at 100% the override is dropped entirely). `alpha` = face opacity (§7) |
 | `chip(text, ink := Color.TRANSPARENT, translate := false)` | `PanelContainer` | Status/tag pill; text contrast is corrected automatically |
+| `item_card(spec: Dictionary, framed := true)` | `Control` | **The picked item's detail card** — `{icon, ink, accent, title, subtitle, chips: [text \| {text, ink, icon}], body, stats: [[label, value]], actions: [{text, action, tone, icon}], translate}`, every key optional. Parts are named `Icon` `Title` `Subtitle` `Chips` `Body` `Stats` `Actions`. `framed = false` inside a `GoPopover`, a sheet or your own card (no double border); in a sheet give the buttons to `add_footer()` instead of `actions` |
 | `avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture: Texture2D = null)` | `Control` | Initials (max 2) or picture in a disc |
 | `art(texture: Texture2D = null, size := Vector2.ZERO, fit := Fit.CONTAIN)` | `TextureRect` | Picture cell. The addon owns stretch, alignment and mouse pass-through; the caller owns only *what* is shown, because the artwork belongs to the game. `Fit.CONTAIN` fits it whole, `COVER` fills the cell and crops the overflow, `FILL` stretches it |
 | `style_art(node, texture = null, fit := Fit.CONTAIN, keep_when_null := true)` | — | Swap the picture in a cell that already exists. A `null` texture is ignored by default, so a slot waiting on a background load is not blanked; pass `keep_when_null = false` where a missing asset must clear the cell instead of leaving the previous picture on screen |
@@ -194,7 +196,7 @@ name_field.clear_error()
 ### GoInputGroup — welded input and button
 
 ```gdscript
-GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(&"send", send)})
+GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(GoGameIcons.SEND, send)})   # needs GoGameIcons.icon_set() as the icon set
 GoInputGroup.make(GoStyle.line_edit("Name"), {"prefix_icon": &"search"})
 GoInputGroup.make(qty, {"prefix": minus, "suffix": plus})
 ```
