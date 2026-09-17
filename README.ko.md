@@ -653,7 +653,7 @@ Forward+/Mobile 렌더러. 안전영역·햅틱 코드는 휴대 기기에서만
 |---|---|---|
 | 갤러리 | `res://addons/gohud/examples/gallery/gallery.tscn` 을 F6 | 모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체. 서버·오토로드·프로젝트 설정이 필요 없다. |
 | 중세 | `res://addons/gohud/examples/medieval/medieval.tscn` 을 F6 | `medieval_dark`·`medieval_light` 의 캐릭터 정보·가방·퀘스트 일지 |
-| 데모 앱 | `cd examples/demo && godot` | 갤러리·19장면 자동 시연·쇼케이스·중세 화면을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다. |
+| 데모 앱 | `cd examples/demo && godot` | 갤러리·19장면 자동 시연·쇼케이스·중세 화면·20초 쇼릴을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다. |
 
 ### 데모 앱 — 홈에서 고르고, 그 자리에서 본다
 
@@ -662,8 +662,8 @@ cd examples/demo && godot
 ```
 
 준비할 것이 없다. 애드온 링크나 임포트 캐시가 없으면 앱이 그 사실을 화면에 적고, 링크를 만들고
-한 번 임포트한 뒤 스스로 창을 다시 연다. 그다음부터는 바로 **홈 화면**이다. 홈의 카드 네 장이
-위젯 갤러리·자동 시연·쇼케이스 화면·중세 화면을 **같은 창 안에서** 연다(`1`~`4` 키도 같다).
+한 번 임포트한 뒤 스스로 창을 다시 연다. 그다음부터는 바로 **홈 화면**이다. 홈의 카드 다섯 장이
+위젯 갤러리·자동 시연·쇼케이스 화면·중세 화면·쇼릴을 **같은 창 안에서** 연다(`1`~`5` 키도 같다).
 그 둘레가 곧 이 키트의 안내다 — 소개 옆에 살아 있는 HUD, 직접 눌러 보는 위젯 카드 여섯 장,
 그리고 하는 일별로 묶은 19개 클래스가 저마다 코드 한 줄을 달고 깔린다. 전부 애드온 위젯으로만
 지었고, 글줄은 읽히는 폭 안에 머물며, 폰에서는 한 줄로 접히고, 테마 선택기로 통째로 다시 칠해진다.
@@ -679,6 +679,7 @@ cd examples/demo && godot
 bash examples/demo/run.sh                             # 애드온 루트에서 같은 앱을 연다
 bash examples/demo/run.sh -- --open=gallery           # 홈을 건너뛰고 바로 그 화면으로
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi # 전체 시연 1080p / 60fps 녹화
+bash examples/demo/run.sh --record-showreel /tmp/reel.avi # 20초 쇼릴 1080p / 60fps — 0.5초마다 위젯 하나, 단계마다 테마가 바뀐다
 bash examples/demo/run.sh --shot /tmp/gohud-home.png
 bash examples/demo/run.sh -- --explore=surfaces        # 위젯 하나를 탐색 모드로 바로 연다
 ```

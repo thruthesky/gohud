@@ -1,7 +1,7 @@
 ## 🏠 **The demo's home** — pick what to look at, and open it inside this screen.
 ##
 ## ## Why there is a home
-## This is the first scene a newcomer gets when they type `godot`. The four examples each show something
+## This is the first scene a newcomer gets when they type `godot`. The five examples each show something
 ## different, and if only those who know which file to open can see them, they may as well not exist. So
 ## there is one place to choose from, and **what you chose opens inside this screen** — the way back
 ## (the `Home` bar at the top) is always there.
@@ -21,7 +21,7 @@
 ## godot -- --open=gallery     # skip home and go straight to that screen
 ## ```
 ##
-## Press `1`–`4` on home to pick a screen. While an example is up, press `Home` at the top to come back.
+## Press `1`–`5` on home to pick a screen. While an example is up, press `Home` at the top to come back.
 extends Control
 
 const ThemePicker := preload("theme_picker.gd")
@@ -35,7 +35,7 @@ const ICON_COUNT := 84
 const LANGUAGE_COUNT := 21
 
 ## The screens that can be opened. The home cards and the `--open=` argument both read this one table.
-## `tone` is the meaning color that card wears — the four are told apart at a glance.
+## `tone` is the meaning color that card wears — the five are told apart at a glance.
 const TARGETS: Array[Dictionary] = [
 	{
 		"key": "gallery", "scene": "res://addons/gohud/examples/gallery/gallery.tscn",
@@ -60,6 +60,12 @@ const TARGETS: Array[Dictionary] = [
 		"icon": GoIconSet.CROWN, "tone": GoTheme.SUCCESS, "title": "Medieval look",
 		"note": "The same widgets under another preset — a character sheet, a satchel and a quest log.",
 		"file": "examples/medieval/medieval.gd",
+	},
+	{
+		"key": "showreel", "scene": "res://showreel.tscn",
+		"icon": GoIconSet.DISPLAY, "tone": GoTheme.DANGER, "title": "Showreel",
+		"note": "Twenty seconds, one widget every half second, the theme changing with each — cut for a 1080p movie.",
+		"file": "examples/demo/showreel.gd",
 	},
 ]
 
@@ -632,7 +638,7 @@ func _target_card(index: int, item: Dictionary) -> Button:
 	# 🛑 The card is the button — if the text and icons on it intercept the mouse, the hover panel never lights up.
 	_pass_through(body)
 	if index == 0:
-		_guides.append({"target": card, "title": "Four screens, one window",
+		_guides.append({"target": card, "title": "Five screens, one window",
 			"body": "A card opens its example in place. The bar across the top names the file it lives in."})
 	return card
 

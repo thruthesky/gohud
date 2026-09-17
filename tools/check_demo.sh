@@ -37,5 +37,11 @@ for size in ['1680x940', '720x450', '390x844']:
 for size in ['1680x940', '720x450', '390x844']:
     run(size, ['--fixed-fps', '60', '-s', 'res://addons/gohud/tests/sim_test.gd'],
         dict(os.environ, DEMO_TEST_SIZE=size), marker='DEMO TEST RESULT:')
+# The showreel: paced steps, theme per step, clean end, Replay, teardown — then the recording path itself.
+for size in ['1920x1080', '720x450']:
+    run('showreel-' + size, ['--fixed-fps', '60', '-s', 'res://addons/gohud/tests/showreel_test.gd'],
+        dict(os.environ, DEMO_TEST_SIZE=size), marker='SHOWREEL TEST RESULT:')
+run('showreel-record-path', ['--fixed-fps', '60', '--', '--open=showreel', '--exit',
+                             '--showreel-seconds=2', '--showreel-step=0.5'], marker='SHOWREEL: done')
 print('gohud demo tests: PASS', flush=True)
 PY

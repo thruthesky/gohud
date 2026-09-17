@@ -20,7 +20,7 @@ another project.godot".
 ## Home screen
 
 `main.tscn` is the main scene: a doorway that checks the add-on and then hands over to
-`home.tscn`. The home screen is built from nothing but gohud widgets, and offers four ways in.
+`home.tscn`. The home screen is built from nothing but gohud widgets, and offers five ways in.
 
 | Key | Screen | Source |
 |---|---|---|
@@ -28,12 +28,13 @@ another project.godot".
 | `2` | **Guided tour** — 19 chapters, played or hands-on | `examples/demo/sim.gd` |
 | `3` | **Showcase screen** — six cards on one screen | `examples/demo/demo.gd` |
 | `4` | **Medieval look** — the same widgets, another preset | `examples/medieval/medieval.gd` |
+| `5` | **Showreel** — 20 seconds, a widget every half second, the theme changing each step | `examples/demo/showreel.gd` |
 
 The page is laid out in four numbered parts, and the whole of it is built from add-on widgets:
 
 - **Hero** — the wordmark, a preset picker, and next to the pitch a *live* HUD: three `GoBar`
   gauges and four `GoSlot` quick slots. Press a slot and the health bar answers.
-- **01 Pick a screen** — the four cards above, each one a `style_choice_card` button carrying an
+- **01 Pick a screen** — the five cards above, each one a `style_choice_card` button carrying an
   icon disc, its shortcut, its blurb and the source file it opens.
 - **02 Try it right here** — six cards of real widgets: button tones and icon buttons, a text
   field with a toggle and a slider, segments with a picker and a colour grid, an avatar with list
@@ -147,6 +148,37 @@ bash examples/demo/run.sh -- --explore=surfaces                          # open 
 
 `--explore=<key>` takes a chapter key: `hud`, `buttons`, `inputs`, `selection`, `lists`, `data`,
 `states`, `surfaces`, `prompt`, `touch`, `coach`, `scrolling`, `forms`, `anchors`, `theming`.
+
+## Showreel
+
+The tour takes minutes and shows one look at a time. The **showreel** is the trailer: in
+**20 seconds** it walks the same chapters at **one widget every half second**, and every step
+wears a different theme — default, sci-fi, medieval — so a short clip says "the same widgets,
+three looks" without a word. The bot drives each widget for the half second it is up, so
+bars fill, slots cool down, menus open and the cursor really presses; the caption under the
+stage names the widget and shows the last callback it fired. It is the home screen's fifth
+card (`5`), and `--open=showreel` opens it directly.
+
+```bash
+bash examples/demo/run.sh --record-showreel /tmp/gohud-showreel.avi    # 1920×1080 · 60 fps · 20 s, then quits
+bash examples/demo/run.sh -- --open=showreel                           # watch it in a window; Replay at the end
+bash examples/demo/run.sh --record-showreel /tmp/reel.avi --showreel-seconds=28.5 --showreel-order=random
+```
+
+| Argument | Default | Meaning |
+|---|---|---|
+| `--showreel-seconds=` | `20` | How long the whole reel runs |
+| `--showreel-step=` | `0.5` | How long each widget stays up — the bot's speed follows it (6× at 0.5 s) |
+| `--showreel-order=` | `cycle` | `cycle` walks the 19 chapters in order and rotates the three themes each step — no chapter–theme pair repeats before 57 steps, so 28.5 s shows every widget in every look; `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
+| `--showreel-seed=` | `0` | Fixes the random order; `0` draws a fresh one each run |
+| `--exit` | off | Quit when the reel ends — `--record-showreel` passes it; without it a Replay card is shown |
+
+Everything on the reel comes from the tour: the chapters are `SimActs`, the stage is `SimStage`,
+the hand is `SimBot`, and the theme changes through the same `ThemePicker`. Widgets keep the theme
+they were built with, so each step tears the stage down and builds the next one under its preset.
+The picture is a 1280×720 logical canvas, letterboxed in other window shapes, which a 1080p movie
+scales by exactly 1.5. `tests/showreel_test.gd` (run by `tools/check_demo.sh`) checks the pacing,
+the theme per step, the callbacks, the clean end, Replay, and tearing the scene down mid-run.
 
 ## Languages
 

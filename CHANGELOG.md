@@ -6,6 +6,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **Showreel — the demo's 20-second trailer.** `examples/demo/showreel.gd` (home card `5`, `--open=showreel`)
+  walks the tour's chapters at one widget every half second, each step under a different preset —
+  default, sci-fi, medieval — with the bot pressing, dragging and typing for the half second the widget
+  is up. `bash examples/demo/run.sh --record-showreel /tmp/reel.avi` writes it at 1920×1080 / 60 fps and
+  quits; `--showreel-seconds=` `--showreel-step=` `--showreel-order=cycle|random` `--showreel-seed=`
+  tune it (28.5 s in `cycle` order shows every widget in every look). In a window a Replay card follows.
+  `tests/showreel_test.gd` runs from `tools/check_demo.sh`.
 - **Container opacity — the game stays visible behind a panel.** Popups, dialogs, sheets, cards, HUD panels,
   alerts and snackbars now draw their face at **80% opacity** by default, so the fight carries on behind a
   confirm dialog and the map shows under an inventory sheet. Only the *face* thins out: text, icons, buttons,

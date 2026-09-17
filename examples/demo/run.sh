@@ -9,6 +9,8 @@
 # bash run.sh --shot-languages /tmp/l.png Capture the language card
 # bash run.sh --record /tmp/demo.avi      Record the full tour at 1080p / 60 fps
 # bash run.sh -- --auto --cinema --exit   Preview the recording layout
+# bash run.sh --record-showreel /tmp/reel.avi   Record the 20-second showreel at 1080p / 60 fps
+# bash run.sh -- --open=showreel         Watch the showreel in a window (--showreel-seconds= --showreel-step= --showreel-order=random)
 # bash run.sh -- --explore=hud            Open one widget in explore mode (hands-on, no bot)
 # GODOT_BIN=/path/to/godot bash run.sh
 set -euo pipefail
@@ -65,6 +67,16 @@ case "${1:-}" in
     MOVIE="$(cd "$(dirname "$MOVIE")" && pwd)/$(basename "$MOVIE")"
     "$GODOT" --path "$HERE" --resolution 1920x1080 --fixed-fps "${DEMO_FPS:-60}" \
       --write-movie "$MOVIE" "$@" -- --auto --cinema --exit
+    echo "Movie: $MOVIE"
+    ;;
+  --record-showreel)
+    MOVIE="${2:?Provide an AVI or OGV output path}"; shift 2
+    case "$MOVIE" in *.avi|*.ogv) ;; *) echo "Use an .avi or .ogv output path." >&2; exit 2 ;; esac
+    mkdir -p "$(dirname "$MOVIE")"
+    MOVIE="$(cd "$(dirname "$MOVIE")" && pwd)/$(basename "$MOVIE")"
+    # Extra arguments are showreel options: --showreel-seconds=28.5 --showreel-order=random --showreel-seed=7
+    "$GODOT" --path "$HERE" --resolution 1920x1080 --fixed-fps "${DEMO_FPS:-60}" \
+      --write-movie "$MOVIE" -- --open=showreel --exit "$@"
     echo "Movie: $MOVIE"
     ;;
   *) "$GODOT" --path "$HERE" "$@" ;;

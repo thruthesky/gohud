@@ -686,7 +686,7 @@ activate on handheld platforms, so they are exercised by the suite but not on re
 |---|---|---|
 | Gallery | `res://addons/gohud/examples/gallery/gallery.tscn`, F6 | Every widget, a picker for every installed preset, and the full icon set. Needs no server, autoload or project setup. |
 | Medieval | `res://addons/gohud/examples/medieval/medieval.tscn`, F6 | A character sheet, satchel and quest journal in `medieval_dark` and `medieval_light`. |
-| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 19-chapter tour, the showcase screen or the medieval look — plus live widgets and one card per class. |
+| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 19-chapter tour, the showcase screen, the medieval look or a 20-second showreel — plus live widgets and one card per class. |
 
 ### Demo app
 
@@ -695,9 +695,9 @@ cd examples/demo && godot
 ```
 
 Nothing to set up: if the add-on link or the import cache is missing, the app links, imports and
-reopens itself once, then lands on its **home screen**. Four cards open the widget gallery, the
-guided tour, the showcase screen and the medieval look inside the same window — press `1`–`4`, or
-click. Around them the page is itself a tour of the kit: a live HUD beside the pitch, six cards of
+reopens itself once, then lands on its **home screen**. Five cards open the widget gallery, the
+guided tour, the showcase screen, the medieval look and the showreel inside the same window — press
+`1`–`5`, or click. Around them the page is itself a tour of the kit: a live HUD beside the pitch, six cards of
 real widgets to press, and all 19 classes grouped by the job they do, each with the one line of
 code that uses it. It is built from add-on widgets alone, holds its text to a readable measure,
 folds to one column on a phone, and repaints with the preset picker.
@@ -712,6 +712,7 @@ the UI along with the canvas.
 bash examples/demo/run.sh                               # the same app, from the add-on root
 bash examples/demo/run.sh -- --open=gallery             # skip the home screen
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi  # 1080p / 60 fps, complete tour
+bash examples/demo/run.sh --record-showreel /tmp/reel.avi   # 1080p / 60 fps, 20 s: a widget every 0.5 s, theme changing each step
 bash examples/demo/run.sh --shot /tmp/gohud-home.png
 bash examples/demo/run.sh -- --explore=surfaces         # open the app on one widget
 ```
