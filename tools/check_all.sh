@@ -97,7 +97,7 @@ step "④-c theme scaffolding"
 # 🛑 The promise of "more themes to come" — does one file produce a theme that passes the contrast check? It is fast, so always run it.
 bash "$ADDON/tools/check_scaffold.sh" || FAILED=1
 
-step "⑤ packaging version bump — checked on a temporary copy"
+step "⑤ packaging from the package.json version — checked on a temporary copy"
 python3 "$ADDON/tools/check_package.py" || FAILED=1
 
 # 🛑 **What the checks actually catch** cannot be told from how many there are. It is slow (a full

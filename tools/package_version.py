@@ -1,60 +1,91 @@
-"""Internal version preparation/publishing for package.sh (Python standard library only).
+"""Internal version reading/preparation/publishing for package.sh (Python standard library only).
 
-Prepare changes in the packaging workspace; update the checkout only after every
-archive gate passes. package.sh holds the per-checkout lock across both operations.
+The release version lives in package.json and nothing here ever increments it. Prepare applies it
+to the packaging workspace; the checkout is updated only after every archive gate passes.
+package.sh holds the per-checkout lock across both operations.
 """
 from datetime import date
 from pathlib import Path
+import json
 import os
 import re
 import shutil
 import sys
 import tempfile
 
+MANIFEST = "package.json"
 FILES = ("plugin.cfg", "core/go_ui.gd", "CHANGELOG.md")
 SEMVER = r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
 
 
-def prepare(stage, increase):
+def read_version(addon):
+    path = addon / MANIFEST
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise ValueError(f'{MANIFEST} is missing — create it with {{"version": "1.2.3"}}')
+    except json.JSONDecodeError as error:
+        raise ValueError(f"{MANIFEST} is not valid JSON: {error}")
+    version = manifest.get("version") if isinstance(manifest, dict) else None
+    if not isinstance(version, str):
+        raise ValueError(f'{MANIFEST} needs a "version" string (for example: "1.2.3")')
+    if not re.fullmatch(SEMVER, version):
+        raise ValueError(f"the version in {MANIFEST} must be in major.minor.patch form "
+                         f"(for example: 1.2.3), not {version!r}")
+    return version
+
+
+def prepare(stage, version):
+    if not re.fullmatch(SEMVER, version):
+        raise ValueError(f"the version must be in major.minor.patch form (for example: 1.2.3), not {version!r}")
     package = stage / "addons/gohud"
     plugin = (package / FILES[0]).read_text(encoding="utf-8")
     code = (package / FILES[1]).read_text(encoding="utf-8")
     changelog = (package / FILES[2]).read_text(encoding="utf-8")
-    versions = re.findall(r'^version="([^"]+)"$', plugin, re.M)
-    code_versions = re.findall(r'^const VERSION := "([^"]+)"$', code, re.M)
-    if len(versions) != 1 or versions != code_versions:
-        raise ValueError("plugin.cfg and GoUi.VERSION must be one and the same version")
-    match = re.fullmatch(SEMVER, versions[0])
-    if not match:
-        raise ValueError("the version must be in major.minor.patch form (for example: 1.2.3)")
-    major, minor, patch = map(int, match.groups())
-    if increase == "minor":
-        minor, patch = minor + 1, 0
+    versions = re.findall(r'^version="([^"]*)"$', plugin, re.M)
+    code_versions = re.findall(r'^const VERSION := "([^"]*)"$', code, re.M)
+    if len(versions) != 1:
+        raise ValueError("plugin.cfg must have exactly one version= line")
+    if len(code_versions) != 1:
+        raise ValueError("core/go_ui.gd must have exactly one const VERSION line")
+    notes = []
+    previous = sorted(set(versions + code_versions))
+    if previous == [version]:
+        notes.append(f"plugin.cfg · GoUi.VERSION: already {version}")
     else:
-        patch += 1
-    version = f"{major}.{minor}.{patch}"
-    if re.search(rf"^## \[{re.escape(version)}\](?:\s|$)", changelog, re.M):
-        raise ValueError(f"CHANGELOG.md already has [{version}]")
-    heading = f"## [{version}] - {date.today().isoformat()}"
+        notes.append(f"plugin.cfg · GoUi.VERSION: {' / '.join(previous)} → {version}")
+
     unreleased = re.compile(r"^## \[Unreleased\][^\n]*", re.M)
     if len(unreleased.findall(changelog)) > 1:
         raise ValueError("CHANGELOG.md has more than one Unreleased entry")
-    if unreleased.search(changelog):
-        changelog = unreleased.sub("## [Unreleased]\n\n" + heading, changelog, count=1)
+    if re.search(rf"^## \[{re.escape(version)}\](?:\s|$)", changelog, re.M):
+        # Packaging the same version again — the release entry is already written.
+        notes.append(f"CHANGELOG.md: [{version}] already recorded — unchanged")
+        pending = re.search(r"^## \[Unreleased\][^\n]*\n(.*?)(?=^## |\Z)", changelog, re.M | re.S)
+        if pending and pending.group(1).strip():
+            notes.append(f"⚠️  Unreleased notes stay under Unreleased, yet their code is in this ZIP — "
+                         f"raise the version in {MANIFEST} to release them")
     else:
-        first_release = re.search(r"^## ", changelog, re.M)
-        offset = first_release.start() if first_release else len(changelog)
-        changelog = (changelog[:offset].rstrip() + "\n\n## [Unreleased]\n\n"
-                     + heading + "\n\n" + changelog[offset:])
+        heading = f"## [{version}] - {date.today().isoformat()}"
+        if unreleased.search(changelog):
+            changelog = unreleased.sub("## [Unreleased]\n\n" + heading, changelog, count=1)
+        else:
+            first_release = re.search(r"^## ", changelog, re.M)
+            offset = first_release.start() if first_release else len(changelog)
+            changelog = (changelog[:offset].rstrip() + "\n\n## [Unreleased]\n\n"
+                         + heading + "\n\n" + changelog[offset:])
+        notes.append(f"CHANGELOG.md: Unreleased notes moved into [{version}]")
+
     for relative in FILES:
         backup = stage / "originals" / relative
         backup.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(package / relative, backup)
-    plugin = re.sub(r'^version="[^"]+"$', f'version="{version}"', plugin, count=1, flags=re.M)
-    code = re.sub(r'^const VERSION := "[^"]+"$', f'const VERSION := "{version}"', code, count=1, flags=re.M)
+    (stage / "originals" / MANIFEST).write_text(version, encoding="utf-8")
+    plugin = re.sub(r'^version="[^"]*"$', f'version="{version}"', plugin, count=1, flags=re.M)
+    code = re.sub(r'^const VERSION := "[^"]*"$', f'const VERSION := "{version}"', code, count=1, flags=re.M)
     for relative, content in zip(FILES, (plugin, code, changelog)):
         (package / relative).write_text(content, encoding="utf-8")
-    print(version)
+    print("\n".join(notes))
 
 
 def atomic_write(path, content):
@@ -75,10 +106,12 @@ def publish(addon, stage, destination):
     for relative, content in originals.items():
         if (addon / relative).read_bytes() != content:
             raise ValueError(f"{relative} changed while packaging. Keeping the change and stopping")
-    if destination.exists():
-        raise ValueError(f"a ZIP of the same version already exists: {destination}")
+    packaged = (stage / "originals" / MANIFEST).read_text(encoding="utf-8")
+    if read_version(addon) != packaged:
+        raise ValueError(f"{MANIFEST} changed while packaging. Keeping the change and stopping")
+    replacing = destination.exists()
     # Copy to the destination filesystem before publishing (also works with --out
-    # on another volume). Any copy failure occurs before the source version changes.
+    # on another volume). Any copy failure occurs before the source files change.
     fd, temporary = tempfile.mkstemp(prefix=".gohud-package-", suffix=".tmp", dir=destination.parent)
     os.close(fd)
     temporary = Path(temporary)
@@ -87,8 +120,12 @@ def publish(addon, stage, destination):
         shutil.copyfile(stage / "package.zip", temporary)
         temporary.chmod(0o644)
         for relative in FILES:
+            content = (stage / "addons/gohud" / relative).read_bytes()
+            if content == originals[relative]:
+                continue  # leave untouched files alone, mtime included
             updated.append(relative)
-            atomic_write(addon / relative, (stage / "addons/gohud" / relative).read_bytes())
+            atomic_write(addon / relative, content)
+        # Same version, same file name — the new ZIP replaces the previous one in one step.
         os.replace(temporary, destination)
     except BaseException:
         for relative in reversed(updated):
@@ -96,11 +133,15 @@ def publish(addon, stage, destination):
         raise
     finally:
         temporary.unlink(missing_ok=True)
+    if replacing:
+        print("replaced the existing ZIP of the same version")
 
 
 if __name__ == "__main__":
     try:
-        if len(sys.argv) == 4 and sys.argv[1] == "prepare" and sys.argv[3] in ("patch", "minor"):
+        if len(sys.argv) == 3 and sys.argv[1] == "read":
+            print(read_version(Path(sys.argv[2])))
+        elif len(sys.argv) == 4 and sys.argv[1] == "prepare":
             prepare(Path(sys.argv[2]), sys.argv[3])
         elif len(sys.argv) == 5 and sys.argv[1] == "publish":
             publish(*(Path(arg) for arg in sys.argv[2:]))

@@ -186,7 +186,7 @@ gohud's own tooling (present in a git checkout, not in the release ZIP):
 | `bash addons/gohud/tools/check_all.sh` | Every check: tests at 4 screen sizes, contrast, site, generated themes, scaffolding, packaging |
 | `python3 addons/gohud/tools/check_contrast.py` | WCAG contrast of every theme |
 | `python3 addons/gohud/tools/new_theme.py <id> --from <parent>` · `make_theme.py <id>` | Scaffold and build a theme (theming.md §5) |
-| `bash addons/gohud/tools/package.sh` | Release ZIP, bumps patch version (`--increase-minor-version`) |
+| `bash addons/gohud/tools/package.sh` | Release ZIP for the version in `package.json` (never raises it) |
 | `bash addons/gohud/examples/demo/run.sh` | The demo app (`--setup`, `--shot`, `--record`, `--record-showreel`, `-- --explore=<chapter>`, `-- --open=showreel`) |
 
 ## 7. Updating gohud and this skill

@@ -431,7 +431,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>การพึ่งพาโปรเจกต์แม่แบบซ่อนเร้น ใส่ <code>--zip</code> เพื่อตรวจไฟล์รีลีสอย่างที่ส่งมอบจริง ใส่ <code>--export</code> เพื่อตรวจบิลด์ Web</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>คอนทราสต์ตาม WCAG ของไฟล์ธีมทุกไฟล์ รวมสถานะของปุ่มและพาเนลกึ่งโปร่งใส</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>ธีมที่สร้างขึ้นตรงกับจานสีของมัน และธีมชั่วคราวหนึ่งธีมสร้างได้และผ่านการวัดคอนทราสต์</td></tr>
-      <tr><td><code>check_package.py</code></td><td>การขยับเลขเวอร์ชัน การย้ายบันทึกการเปลี่ยนแปลง และเนื้อในไฟล์ ZIP ทดสอบบนสำเนาชั่วคราว</td></tr>
+      <tr><td><code>check_package.py</code></td><td>เวอร์ชันที่อ่านจาก package.json การย้ายบันทึกการเปลี่ยนแปลง และเนื้อในไฟล์ ZIP ทดสอบบนสำเนาชั่วคราว</td></tr>
       <tr><td><code>check_site.py</code></td><td>ลิงก์ จุดยึด ภาษาของหน้า อภิธานศัพท์ และตารางค่าปรับของเว็บไซต์นี้</td></tr>
     </tbody>
   </table>
@@ -443,11 +443,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">การออกเวอร์ชัน</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>การรันที่สำเร็จจะอัปเดต <code>plugin.cfg</code>, <code>GoUi.VERSION</code> และ <code>CHANGELOG.md</code>
-    ไปพร้อมกัน โดยย้ายบันทึกในหัวข้อ Unreleased ไปเป็นรายการที่มีวันที่กำกับ ถ้ารันแล้วล้มเหลวจะไม่มีอะไรเปลี่ยน
-    และไฟล์ ZIP ที่มีอยู่แล้วจะไม่ถูกเขียนทับเด็ดขาด ไฟล์ ZIP ไม่รวมเว็บไซต์นี้ เทสต์ และเครื่องมือต่าง ๆ</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>เวอร์ชันคือค่าที่เขียนไว้ใน <code>package.json</code> การแพ็กเกจจะไม่เพิ่มเลขให้เองเด็ดขาด
+    ถ้าจะออกเวอร์ชันใหม่ให้แก้เลขนั้นก่อน การรันที่สำเร็จจะตั้ง <code>plugin.cfg</code> และ
+    <code>GoUi.VERSION</code> ให้ตรงกับค่านั้น และเฉพาะครั้งแรกที่แพ็กเกจเวอร์ชันนั้นจะย้ายบันทึกในหัวข้อ Unreleased
+    ของ <code>CHANGELOG.md</code> ไปเป็นรายการที่มีวันที่กำกับ ถ้าแพ็กเกจเวอร์ชันเดิมซ้ำจะสร้างไฟล์ ZIP
+    ใหม่มาแทนที่ไฟล์เดิม ถ้ารันแล้วล้มเหลวจะไม่มีอะไรเปลี่ยน ไฟล์ ZIP ไม่รวมเว็บไซต์นี้ เทสต์ เครื่องมือต่าง ๆ และ
+    <code>package.json</code></p>
 
   <h3 id="this-site">เว็บไซต์นี้</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # อภิธานศัพท์และตารางค่าปรับของสกิน สร้างจากซอร์สโดยตรง

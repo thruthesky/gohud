@@ -428,7 +428,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>对宿主项目的隐藏依赖；加 <code>--zip</code> 检查实际发布的压缩包，加 <code>--export</code> 检查 Web 构建</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>每个主题文件的 WCAG 对比度，含按钮各状态与半透明面板</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>生成的主题与其调色板一致；临时主题能成功生成并通过对比度检查</td></tr>
-      <tr><td><code>check_package.py</code></td><td>版本号递增、变更日志的搬移和 ZIP 内容，全部在临时副本中验证</td></tr>
+      <tr><td><code>check_package.py</code></td><td>采用 package.json 的版本号、变更日志的搬移和 ZIP 内容，全部在临时副本中验证</td></tr>
       <tr><td><code>check_site.py</code></td><td>本站的链接、锚点、页面语言、术语表和旋钮表格</td></tr>
     </tbody>
   </table>
@@ -439,11 +439,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">发布版本</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>运行成功会同时更新 <code>plugin.cfg</code>、<code>GoUi.VERSION</code> 和 <code>CHANGELOG.md</code>，
-    把 Unreleased 下的记录挪进带日期的条目。运行失败则什么都不改，已存在的 ZIP 也绝不会被覆盖。
-    ZIP 里不包含这个网站、测试和工具。</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>版本号就是 <code>package.json</code> 里写的那个，打包绝不会自动递增。
+    要发布新版本，先改这个数字。
+    运行成功会把 <code>plugin.cfg</code> 和 <code>GoUi.VERSION</code> 设为该版本，并且只在该版本第一次打包时，把 <code>CHANGELOG.md</code> 中 Unreleased 下的记录挪进带日期的条目。
+    同一版本再次打包会重新生成 ZIP 并替换旧的。运行失败则什么都不改。
+    ZIP 里不包含这个网站、测试、工具和 <code>package.json</code>。</p>
 
   <h3 id="this-site">这个网站</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # 术语表和皮肤旋钮表格，直接从源码生成

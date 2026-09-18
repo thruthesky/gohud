@@ -431,7 +431,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>Ukryte zależności od projektu-gospodarza; z <code>--zip</code> wydanie w postaci wysyłkowej, z <code>--export</code> build webowy</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>Kontrast WCAG każdego pliku motywu, wliczając stany przycisków i półprzezroczyste panele</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Wygenerowane motywy zgadzają się ze swoimi paletami; jednorazowy motyw buduje się i przechodzi kontrolę kontrastu</td></tr>
-      <tr><td><code>check_package.py</code></td><td>Podbicia wersji, przenoszenie wpisów changelogu i zawartość ZIP-a, w kopiach tymczasowych</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Wersja brana z package.json, przenoszenie wpisów changelogu i zawartość ZIP-a, w kopiach tymczasowych</td></tr>
       <tr><td><code>check_site.py</code></td><td>Linki tej strony, kotwice, język stron, słowniczek i tabele pokręteł</td></tr>
     </tbody>
   </table>
@@ -443,11 +443,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">Wydawanie wersji</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>Udany przebieg aktualizuje razem <code>plugin.cfg</code>, <code>GoUi.VERSION</code> i <code>CHANGELOG.md</code>,
-    przenosząc notatki z sekcji Unreleased do datowanego wpisu. Nieudany przebieg nie zmienia niczego, a istniejący
-    ZIP nigdy nie jest nadpisywany. ZIP pomija tę witrynę, testy i narzędzia.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>Wersja to ta zapisana w <code>package.json</code> — pakowanie nigdy jej nie podbija. Aby wydać nową wersję,
+    najpierw zmień ten numer. Udany przebieg ustawia <code>plugin.cfg</code> i <code>GoUi.VERSION</code> na tę
+    wartość, a przy pierwszym pakowaniu danej wersji przenosi notatki z sekcji Unreleased w
+    <code>CHANGELOG.md</code> do datowanego wpisu. Ponowne pakowanie tej samej wersji buduje jej ZIP od nowa i
+    zastępuje poprzedni. Nieudany przebieg nie zmienia niczego. ZIP pomija tę witrynę, testy, narzędzia i
+    <code>package.json</code>.</p>
 
   <h3 id="this-site">Ta witryna</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # słowniczek i tabele pokręteł skórek, generowane ze źródeł

@@ -1,11 +1,14 @@
 ## How to package
 
-- By default, the command below bumps the patch version only
+- The version comes from `package.json`. Packaging never raises it.
+
+{
+  "version": "1.2.3"
+}
+
+- Build the ZIP for that version. Running it again with the same version rebuilds and replaces the ZIP.
 
 bash tools/package.sh
-# 1.0.0 → 1.0.1
+# builds/1.2.3/gohud-1.2.3.zip
 
-- To bump the minor version, run this instead.
-
-bash tools/package.sh --increase-minor-version
-# 1.0.1 → 1.1.0
+- To release a new version, edit `package.json` first, then run the same command.

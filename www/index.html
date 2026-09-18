@@ -432,7 +432,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>Hidden dependencies on a host project; with <code>--zip</code> the release as shipped, with <code>--export</code> a Web build</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>WCAG contrast of every theme file, button states and translucent panels included</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Generated themes match their palettes; a throwaway theme builds and passes contrast</td></tr>
-      <tr><td><code>check_package.py</code></td><td>Version bumps, changelog moves and ZIP contents, in temporary copies</td></tr>
+      <tr><td><code>check_package.py</code></td><td>The version taken from package.json, changelog moves and ZIP contents, in temporary copies</td></tr>
       <tr><td><code>check_site.py</code></td><td>This site's links, anchors, page language, glossary and dial tables</td></tr>
     </tbody>
   </table>
@@ -444,11 +444,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">Release versions</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>A successful run updates <code>plugin.cfg</code>, <code>GoUi.VERSION</code> and <code>CHANGELOG.md</code>
-    together, moving the Unreleased notes into a dated entry. A failed run changes nothing, and an existing ZIP is
-    never overwritten. The ZIP leaves out this website, the tests and the tools.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>The version is the one written in <code>package.json</code> — packaging never raises it. To release a new
+    version, change that number first. A successful run sets <code>plugin.cfg</code> and <code>GoUi.VERSION</code>
+    to it and, the first time that version is packaged, moves the Unreleased notes of <code>CHANGELOG.md</code> into
+    a dated entry. Packaging the same version again rebuilds its ZIP and replaces the old one. A failed run changes
+    nothing. The ZIP leaves out this website, the tests, the tools and <code>package.json</code>.</p>
 
   <h3 id="this-site">This site</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # glossary and skin-dial tables, generated from source

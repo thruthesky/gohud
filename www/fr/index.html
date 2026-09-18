@@ -440,7 +440,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>Les dépendances cachées envers un projet hôte ; avec <code>--zip</code> la version telle qu'elle est livrée, avec <code>--export</code> une build Web</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>Le contraste WCAG de chaque fichier de thème, états des boutons et panneaux translucides compris</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Les thèmes générés correspondent à leurs palettes ; un thème jetable se construit et passe le contrôle de contraste</td></tr>
-      <tr><td><code>check_package.py</code></td><td>Les montées de version, les déplacements dans le changelog et le contenu du ZIP, sur des copies temporaires</td></tr>
+      <tr><td><code>check_package.py</code></td><td>La version reprise de package.json, les déplacements dans le changelog et le contenu du ZIP, sur des copies temporaires</td></tr>
       <tr><td><code>check_site.py</code></td><td>Les liens, les ancres, la langue des pages, le glossaire et les tableaux de molettes de ce site</td></tr>
     </tbody>
   </table>
@@ -452,11 +452,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">Publier des versions</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>Une exécution réussie met à jour <code>plugin.cfg</code>, <code>GoUi.VERSION</code> et <code>CHANGELOG.md</code>
-    ensemble, en déplaçant les notes Unreleased dans une entrée datée. Une exécution qui échoue ne change rien, et
-    un ZIP existant n'est jamais écrasé. Le ZIP laisse de côté ce site, les tests et les outils.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>La version est celle écrite dans <code>package.json</code> : l'empaquetage ne l'augmente jamais. Pour publier
+    une nouvelle version, changez d'abord ce numéro. Une exécution réussie aligne <code>plugin.cfg</code> et
+    <code>GoUi.VERSION</code> sur cette valeur et, la première fois que cette version est empaquetée, déplace les
+    notes Unreleased de <code>CHANGELOG.md</code> dans une entrée datée. Réempaqueter la même version reconstruit
+    son ZIP et remplace l'ancien. Une exécution qui échoue ne change rien. Le ZIP laisse de côté ce site, les tests,
+    les outils et <code>package.json</code>.</p>
 
   <h3 id="this-site">Ce site</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # glossaire et tableaux de molettes de skin, générés depuis les sources

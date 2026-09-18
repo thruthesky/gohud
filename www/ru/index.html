@@ -433,7 +433,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>Скрытые зависимости от проекта-хозяина; с <code>--zip</code> — релиз в том виде, в каком он поставляется, с <code>--export</code> — сборку для Web</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>Контраст по WCAG в каждом файле темы, включая состояния кнопок и полупрозрачные панели</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Сгенерированные темы совпадают со своими палитрами; одноразовая тема собирается и проходит проверку контраста</td></tr>
-      <tr><td><code>check_package.py</code></td><td>Повышение версии, перенос записей в журнале изменений и содержимое ZIP — во временных копиях</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Версия из package.json, перенос записей в журнале изменений и содержимое ZIP — во временных копиях</td></tr>
       <tr><td><code>check_site.py</code></td><td>Ссылки этого сайта, якоря, язык страницы, глоссарий и таблицы регуляторов</td></tr>
     </tbody>
   </table>
@@ -445,11 +445,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">Версии релизов</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>Успешный прогон обновляет <code>plugin.cfg</code>, <code>GoUi.VERSION</code> и <code>CHANGELOG.md</code>
-    вместе, перенося заметки из раздела Unreleased в датированную запись. Неудачный прогон не меняет ничего, а уже
-    существующий ZIP никогда не перезаписывается. В ZIP не попадают этот сайт, тесты и инструменты.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>Версия — та, что записана в <code>package.json</code>: упаковка её никогда не повышает. Чтобы выпустить новую
+    версию, сначала измените это число. Успешный прогон выставляет это значение в <code>plugin.cfg</code> и
+    <code>GoUi.VERSION</code>, а при первой упаковке этой версии переносит заметки из раздела Unreleased в
+    <code>CHANGELOG.md</code> в датированную запись. Повторная упаковка той же версии заново собирает её ZIP и
+    заменяет прежний. Неудачный прогон не меняет ничего. В ZIP не попадают этот сайт, тесты, инструменты и
+    <code>package.json</code>.</p>
 
   <h3 id="this-site">Этот сайт</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # глоссарий и таблицы регуляторов скина, порождённые из исходников

@@ -774,22 +774,22 @@ python3 addons/gohud/tools/check_contrast.py      # WCAG contrast for every them
 python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark   # scaffold a theme
 python3 addons/gohud/tools/make_theme.py          # regenerate the themes; pass an id to build one
 python3 addons/gohud/tools/make_icons.py          # regenerate the default icon SVGs
-bash addons/gohud/tools/package.sh                # patch +1; builds/<version>/gohud-<version>.zip
-bash addons/gohud/tools/package.sh --increase-minor-version # minor +1, patch resets to 0
+bash addons/gohud/tools/package.sh                # the version in package.json; builds/<version>/gohud-<version>.zip
 python3 addons/gohud/tools/check_package.py       # packaging regression checks in temporary copies
 ```
 
-`package.sh` requires Python 3 and automatically increments the patch version on each successful
-run (for example, `1.2.9` → `1.2.10`). `--increase-minor-version` instead produces `1.3.0`.
-`--out DIR` changes the output folder and still increments the version. Versions must use the
-stable `major.minor.patch` format.
+`package.sh` requires Python 3 and packages the version written in `package.json`
+(`{"version": "1.2.3"}`). It never raises that number — to release a new version, edit
+`package.json` first. `--out DIR` changes the output folder. Versions must use the stable
+`major.minor.patch` format.
 
-The script updates `plugin.cfg`, `GoUi.VERSION` and `CHANGELOG.md` together. Pending `Unreleased`
-notes move into a dated entry for the new version, leaving an empty `Unreleased` section.
-Version files remain unchanged if packaging fails, and existing release ZIPs are never overwritten.
-Version mismatches, missing documents and references outside `addons/gohud/` still fail validation.
-The ZIP leaves out the website, tests, tools and the standalone `examples/usage` project.
-Packaging checks in `check_all.sh` use temporary copies and do not increment your working version.
+A successful run sets `plugin.cfg` and `GoUi.VERSION` to that version. The first time a version is
+packaged, pending `Unreleased` notes move into a dated entry for it, leaving an empty `Unreleased`
+section; packaging a version `CHANGELOG.md` already has leaves the changelog alone and rebuilds that
+version's ZIP, replacing the previous one. Version files remain unchanged if packaging fails.
+A missing or malformed `package.json`, missing documents and references outside `addons/gohud/` fail validation.
+The ZIP leaves out the website, tests, tools, `package.json` and the standalone `examples/usage` project.
+Packaging checks in `check_all.sh` use temporary copies and do not touch your working copy.
 
 ## License
 

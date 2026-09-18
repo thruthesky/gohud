@@ -148,6 +148,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Changed
 
+- **The release version is written in `package.json`, and `tools/package.sh` never raises it.** Every run used to
+  add one to the patch number (`--increase-minor-version` for the minor one), so rebuilding a ZIP meant a new
+  version. Now `{"version": "1.2.3"}` in `package.json` decides it: a run sets `plugin.cfg` and `GoUi.VERSION` to
+  that version, moves the Unreleased notes into a dated entry only the first time that version is packaged, and
+  running again with the same version rebuilds and replaces its ZIP. `--increase-minor-version` is gone, and
+  `package.json` stays out of the ZIP.
+
 - **`GoUi.text(name)` sends a name that is not in `text_keys` through the translation server** instead of returning
   it as written. An icon button's tooltip can take the host's own translation key (`&"HUD_BAG"`) without registering
   it in `text_keys`; plain words with no translation still come back unchanged. A host table with a message id equal

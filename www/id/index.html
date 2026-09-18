@@ -432,7 +432,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>Ketergantungan tersembunyi pada proyek induk; dengan <code>--zip</code> menguji rilis apa adanya, dengan <code>--export</code> sebuah build Web</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>Kontras WCAG setiap berkas tema, termasuk keadaan tombol dan panel tembus pandang</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Tema hasil generasi cocok dengan paletnya; tema sekali pakai berhasil dibangun dan lolos uji kontras</td></tr>
-      <tr><td><code>check_package.py</code></td><td>Kenaikan versi, perpindahan changelog, dan isi ZIP, pada salinan sementara</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Versi yang diambil dari package.json, perpindahan changelog, dan isi ZIP, pada salinan sementara</td></tr>
       <tr><td><code>check_site.py</code></td><td>Tautan, jangkar, bahasa halaman, glosarium, dan tabel kenop situs ini</td></tr>
     </tbody>
   </table>
@@ -444,11 +444,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">Versi rilis</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>Jalan yang berhasil memperbarui <code>plugin.cfg</code>, <code>GoUi.VERSION</code>, dan <code>CHANGELOG.md</code>
-    sekaligus, memindahkan catatan Unreleased menjadi entri bertanggal. Jalan yang gagal tidak mengubah apa pun, dan ZIP
-    yang sudah ada tidak pernah ditimpa. ZIP-nya tidak menyertakan situs web ini, berkas uji, dan tools.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>Versinya adalah yang tertulis di <code>package.json</code> — pengemasan tidak pernah menaikkannya. Untuk merilis
+    versi baru, ubah dulu angka itu. Jalan yang berhasil menyamakan <code>plugin.cfg</code> dan
+    <code>GoUi.VERSION</code> dengan nilai itu, dan saat versi itu dikemas pertama kali, memindahkan catatan
+    Unreleased di <code>CHANGELOG.md</code> menjadi entri bertanggal. Mengemas versi yang sama lagi akan membangun
+    ulang ZIP-nya dan menggantikan yang lama. Jalan yang gagal tidak mengubah apa pun. ZIP-nya tidak menyertakan
+    situs web ini, berkas uji, tools, dan <code>package.json</code>.</p>
 
   <h3 id="this-site">Situs ini</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # glosarium dan tabel kenop skin, dibuat dari kode sumber

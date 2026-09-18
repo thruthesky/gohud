@@ -430,7 +430,7 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>ホストプロジェクトへの隠れた依存。<code>--zip</code> なら配布物そのまま、<code>--export</code> なら Web ビルドまで</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>全テーマファイルの WCAG コントラスト — ボタンの状態も半透明パネルも含めて</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>生成されたテーマがパレットと一致するか、使い捨てのテーマが生成できてコントラストを通るか</td></tr>
-      <tr><td><code>check_package.py</code></td><td>バージョンの繰り上げ、変更履歴の移動、ZIP の中身を一時コピー上で</td></tr>
+      <tr><td><code>check_package.py</code></td><td>package.json のバージョンの反映、変更履歴の移動、ZIP の中身を一時コピー上で</td></tr>
       <tr><td><code>check_site.py</code></td><td>このサイトのリンク・アンカー・文書言語・用語集・ダイヤル表</td></tr>
     </tbody>
   </table>
@@ -441,11 +441,13 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
   </div>
 
   <h3 id="release-versions">リリース版を作る</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>成功すると <code>plugin.cfg</code>・<code>GoUi.VERSION</code>・<code>CHANGELOG.md</code> がまとめて更新され、
-    Unreleased の記述が日付付きの項目へ移る。失敗すれば何も変わらず、既存の ZIP を上書きすることもない。
-    ZIP にはこのサイトもテストもツールも入らない。</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>バージョンは <code>package.json</code> に書かれた値で、パッケージングがそれを上げることはない。
+    新しいバージョンを出すときは、先にその数字を書き換える。
+    成功すると <code>plugin.cfg</code>・<code>GoUi.VERSION</code> をその値に合わせ、そのバージョンを初めてパッケージングしたときだけ <code>CHANGELOG.md</code> の Unreleased の記述を日付付きの項目へ移す。
+    同じバージョンでもう一度実行すると ZIP を作り直して前のものと置き換える。失敗すれば何も変わらない。
+    ZIP にはこのサイトもテストもツールも <code>package.json</code> も入らない。</p>
 
   <h3 id="this-site">このサイト</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # 用語集とスキンのダイヤル表をソースから生成する

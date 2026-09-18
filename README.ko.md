@@ -741,21 +741,21 @@ python3 tools/check_contrast.py                 # 테마 전부의 WCAG 대비
 python3 tools/new_theme.py kingdom --from medieval_dark   # 테마 스캐폴딩
 python3 tools/make_theme.py                     # 테마 전부 재생성 — id 를 주면 그 테마만
 python3 tools/make_icons.py                     # 기본 아이콘 SVG 재생성
-bash tools/package.sh                           # patch +1; builds/<버전>/gohud-<버전>.zip
-bash tools/package.sh --increase-minor-version  # minor +1, patch는 0
+bash tools/package.sh                           # package.json 의 버전; builds/<버전>/gohud-<버전>.zip
 python3 tools/check_package.py                  # 임시 사본에서 패키징 회귀 검사
 ```
 
-`package.sh`는 Python 3가 필요하며, 성공할 때마다 패치 버전을 자동으로 올린다.
-예를 들어 `1.2.9`는 `1.2.10`이 되고, `--increase-minor-version`을 주면 `1.3.0`이 된다.
-`--out DIR`로 출력 폴더를 바꿔도 버전은 올라간다. 버전은 `major.minor.patch` 형식을 사용한다.
+`package.sh`는 Python 3가 필요하며, `package.json`에 적힌 버전(`{"version": "1.2.3"}`)으로 패키징한다.
+그 숫자를 올리지 않는다 — 새 버전을 내려면 먼저 `package.json`을 고친다.
+`--out DIR`로 출력 폴더를 바꾼다. 버전은 `major.minor.patch` 형식을 사용한다.
 
-`plugin.cfg`의 `version`, `core/go_ui.gd`의 `VERSION`, `CHANGELOG.md`를 함께 갱신한다.
-`Unreleased` 변경 내역은 날짜가 붙은 새 버전 항목으로 옮기고 빈 `Unreleased` 항목을 남긴다.
-패키징이 실패하면 버전 파일은 바뀌지 않고, 같은 버전의 기존 ZIP도 덮어쓰지 않는다.
-버전 불일치·문서 누락·애드온 밖 참조는 계속 검사한다.
-ZIP 에는 사이트·검사·도구와 독립 프로젝트 `examples/usage` 가 들어가지 않는다.
-`check_all.sh`의 패키징 검사는 임시 사본에서 실행하므로 작업 중인 버전은 올라가지 않는다.
+성공하면 `plugin.cfg`의 `version`과 `core/go_ui.gd`의 `VERSION`을 그 버전으로 맞춘다.
+그 버전을 처음 패키징할 때 `Unreleased` 변경 내역을 날짜가 붙은 버전 항목으로 옮기고 빈 `Unreleased` 항목을 남긴다.
+`CHANGELOG.md`에 이미 있는 버전을 다시 패키징하면 변경 기록은 그대로 두고 그 버전의 ZIP을 새로 만들어 이전 것과 바꾼다.
+패키징이 실패하면 버전 파일은 바뀌지 않는다.
+`package.json`이 없거나 형식이 틀린 경우·문서 누락·애드온 밖 참조는 계속 검사한다.
+ZIP 에는 사이트·검사·도구·`package.json`과 독립 프로젝트 `examples/usage` 가 들어가지 않는다.
+`check_all.sh`의 패키징 검사는 임시 사본에서 실행하므로 작업 사본은 바뀌지 않는다.
 
 ## 라이선스
 

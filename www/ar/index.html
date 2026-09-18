@@ -431,7 +431,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>اعتمادات خفية على مشروع مضيف؛ ومع <code>--zip</code> الإصدارَ كما يُشحن، ومع <code>--export</code> بناءً للويب</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>تباين WCAG في كل ملف سمة، بما في ذلك حالات الأزرار واللوحات الشفافة</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>مطابقة السمات المولَّدة للوحات ألوانها؛ وبناء سمة مؤقتة ونجاحها في فحص التباين</td></tr>
-      <tr><td><code>check_package.py</code></td><td>رفع الإصدارات، ونقل سجل التغييرات، ومحتويات ملف ZIP، في نسخ مؤقتة</td></tr>
+      <tr><td><code>check_package.py</code></td><td>الإصدار المأخوذ من package.json، ونقل سجل التغييرات، ومحتويات ملف ZIP، في نسخ مؤقتة</td></tr>
       <tr><td><code>check_site.py</code></td><td>روابط هذا الموقع ومراسيه ولغة صفحاته ومسرد مصطلحاته وجداول مقابضه</td></tr>
     </tbody>
   </table>
@@ -442,11 +442,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">إصدارات النشر</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>التشغيل الناجح يحدّث <code>plugin.cfg</code> و<code>GoUi.VERSION</code> و<code>CHANGELOG.md</code>
-    معًا، ناقلًا ملاحظات Unreleased إلى مدخل مؤرَّخ. والتشغيل الفاشل لا يغيّر شيئًا، ولا يُستبدل ملف ZIP قائم أبدًا.
-    وملف ZIP لا يحوي هذا الموقع ولا الاختبارات ولا الأدوات.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>الإصدار هو المكتوب في <code>package.json</code>، والتحزيم لا يرفعه أبدًا. لنشر إصدار جديد غيّر هذا الرقم أولًا.
+    التشغيل الناجح يضبط <code>plugin.cfg</code> و<code>GoUi.VERSION</code> على تلك القيمة، وفي أول تحزيم لذلك
+    الإصدار فقط ينقل ملاحظات Unreleased في <code>CHANGELOG.md</code> إلى مدخل مؤرَّخ. وإعادة تحزيم الإصدار نفسه تبني
+    ملف ZIP من جديد وتستبدل به القديم. والتشغيل الفاشل لا يغيّر شيئًا. وملف ZIP لا يحوي هذا الموقع ولا الاختبارات
+    ولا الأدوات ولا <code>package.json</code>.</p>
 
   <h3 id="this-site">هذا الموقع</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # المسرد وجداول مقابض المظهر، مولَّدة من المصدر

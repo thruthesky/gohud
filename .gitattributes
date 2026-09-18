@@ -1,6 +1,7 @@
 # `git archive`·GitHub 소스 ZIP 으로 배포본을 만들 때 유지보수 전용 파일을 뺀다.
 # 🛑 스토어에 올리는 ZIP 은 이 파일이 아니라 tools/package.sh 가 만든다 — 두 목록을 함께 고친다.
 .env/          export-ignore
+/package.json  export-ignore
 .claude/       export-ignore
 .cowork/       export-ignore
 .claude-plugin/ export-ignore

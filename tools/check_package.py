@@ -1,10 +1,12 @@
-"""Exercise package.sh in temporary checkouts; never increment the working copy.
+"""Exercise package.sh in temporary checkouts; never touch the working copy.
 
+The release version comes from package.json and packaging must never raise it.
 Run: python3 tools/check_package.py
 """
 import contextlib
 import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import shutil
@@ -18,6 +20,7 @@ ADDON = Path(__file__).resolve().parent.parent
 spec = importlib.util.spec_from_file_location("package_version", ADDON / "tools/package_version.py")
 versioning = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(versioning)
+TRACKED = versioning.FILES + (versioning.MANIFEST,)
 
 
 class PackageTests(unittest.TestCase):
@@ -30,6 +33,7 @@ class PackageTests(unittest.TestCase):
         (self.addon / "core").mkdir()
         for name in ("package.sh", "package_version.py"):
             shutil.copy2(ADDON / "tools" / name, self.addon / "tools" / name)
+        self.set_manifest("1.2.9")
         (self.addon / "plugin.cfg").write_text('[plugin]\nversion="1.2.9"\n')
         (self.addon / "core/go_ui.gd").write_text('const VERSION := "1.2.9"\n')
         (self.addon / "CHANGELOG.md").write_text(
@@ -38,8 +42,11 @@ class PackageTests(unittest.TestCase):
         for name in ("LICENSE", "README.md", "THIRD_PARTY_NOTICES.md"):
             (self.addon / name).write_text(name + "\n")
 
+    def set_manifest(self, version):
+        (self.addon / "package.json").write_text(json.dumps({"version": version}, indent=2) + "\n")
+
     def snapshot(self):
-        return {name: (self.addon / name).read_bytes() for name in versioning.FILES}
+        return {name: (self.addon / name).read_bytes() for name in TRACKED if (self.addon / name).exists()}
 
     def run_package(self, *args, ok=True, env=None):
         before = self.snapshot()
@@ -54,82 +61,121 @@ class PackageTests(unittest.TestCase):
         return result
 
     def assert_release(self, version, archive=None):
+        self.assertEqual(json.loads((self.addon / "package.json").read_text())["version"], version,
+                         "packaging must never change package.json")
         self.assertIn(f'version="{version}"', (self.addon / "plugin.cfg").read_text())
         self.assertIn(f'const VERSION := "{version}"', (self.addon / "core/go_ui.gd").read_text())
-        self.assertIn(f'## [{version}] - ', (self.addon / "CHANGELOG.md").read_text())
+        self.assertRegex((self.addon / "CHANGELOG.md").read_text(), rf'(?m)^## \[{version}\]')
         archive = archive or self.addon / f"builds/{version}/gohud-{version}.zip"
         with zipfile.ZipFile(archive) as zipped:
             for name in versioning.FILES:
                 self.assertEqual(zipped.read("addons/gohud/" + name), (self.addon / name).read_bytes())
+            self.assertNotIn("addons/gohud/package.json", zipped.namelist())
         self.assertFalse((self.addon / "builds/.package-lock").exists())
+        return archive
 
-    def test_patch_increments_each_run_and_moves_notes(self):
-        self.run_package()
-        self.assert_release("1.2.10")
+    def test_same_version_every_run(self):
+        before = self.snapshot()
+        first = self.run_package()
+        archive = self.assert_release("1.2.9")
+        self.assertEqual(self.snapshot(), before, "an already released version changes nothing")
+        self.assertNotIn("replaced", first.stdout)
+        self.assertIn("Unreleased notes stay under Unreleased", first.stdout)
+        archive.write_bytes(b'previous build')
+        second = self.run_package()
+        self.assert_release("1.2.9")
+        self.assertEqual(self.snapshot(), before)
+        self.assertIn("replaced the existing ZIP", second.stdout)
+        self.assertEqual([p.name for p in (self.addon / "builds").iterdir() if not p.name.startswith(".")],
+                         ["1.2.9"])
+
+    def test_new_version_follows_package_json(self):
+        self.set_manifest("2.0.0")
+        result = self.run_package()
+        self.assert_release("2.0.0")
+        self.assertIn("1.2.9 → 2.0.0", result.stdout)
         text = (self.addon / "CHANGELOG.md").read_text()
-        self.assertLess(text.index('## [1.2.10]'), text.index('- Pending fix.'))
+        self.assertIn('## [2.0.0] - ', text)
+        self.assertLess(text.index('## [Unreleased]'), text.index('## [2.0.0]'))
+        self.assertLess(text.index('## [2.0.0]'), text.index('- Pending fix.'))
         self.assertLess(text.index('- Pending fix.'), text.index('## [1.2.9]'))
+        after = self.snapshot()
         self.run_package()
-        self.assert_release("1.2.11")
+        self.assert_release("2.0.0")
+        self.assertEqual(self.snapshot(), after, "the second run of a version must not move anything")
         self.assertEqual((self.addon / "CHANGELOG.md").read_text().count('- Pending fix.'), 1)
 
-    def test_minor_resets_patch_with_custom_output(self):
-        output = self.root / "output with spaces '"
-        self.run_package('--out', str(output), '--increase-minor-version')
-        self.assert_release("1.3.0", output / "gohud-1.3.0.zip")
+    def test_lower_version_is_taken_as_written(self):
+        self.set_manifest("1.0.0")
         self.run_package()
-        self.assert_release("1.3.1")
+        self.assert_release("1.0.0")
+
+    def test_custom_output(self):
+        output = self.root / "output with spaces '"
+        self.set_manifest("1.3.0")
+        self.run_package('--out', str(output))
+        self.assert_release("1.3.0", output / "gohud-1.3.0.zip")
+        self.assertFalse((self.addon / "builds/1.3.0").exists())
 
     def test_changelog_without_unreleased(self):
         p = self.addon / "CHANGELOG.md"
         p.write_text('# Changelog\n\n## [1.2.9]\n\n- Existing notes.\n')
+        self.set_manifest("1.2.10")
         self.run_package()
         self.assert_release("1.2.10")
         self.assertIn('## [1.2.9]\n\n- Existing notes.', p.read_text())
+
+    def test_mismatched_version_files_are_brought_in_line(self):
+        (self.addon / "plugin.cfg").write_text('[plugin]\nversion="1.2.8"\n')
+        self.run_package()
+        self.assert_release("1.2.9")
 
     def test_help_and_invalid_options_do_not_change_versions(self):
         before = self.snapshot()
         self.run_package('--help')
         self.assertEqual(self.snapshot(), before)
-        for args in (('--out',), ('--out', '--increase-minor-version'), ('--unknown',)):
+        for args in (('--out',), ('--out', '--full'), ('--unknown',), ('--increase-minor-version',)):
             with self.subTest(args=args):
                 self.run_package(*args, ok=False)
 
-    def test_invalid_or_mismatched_versions(self):
-        for value in ('1.2', '01.2.9', '1.2.9-beta', '1.2.9+build', '1.2.8'):
-            with self.subTest(version=value):
-                (self.addon / "plugin.cfg").write_text(f'[plugin]\nversion="{value}"\n')
-                if value != '1.2.8':
-                    (self.addon / "core/go_ui.gd").write_text(f'const VERSION := "{value}"\n')
+    def test_invalid_package_json(self):
+        manifest = self.addon / "package.json"
+        for content in ('', '{', '[]', '{}', '{"version": 1.3}', '{"version": "1.2"}',
+                        '{"version": "01.2.9"}', '{"version": "1.2.9-beta"}', '{"version": "1.2.9+build"}',
+                        '{"version": " 1.2.9"}'):
+            with self.subTest(content=content):
+                manifest.write_text(content)
+                result = self.run_package(ok=False)
+                self.assertIn("package.json", result.stderr)
+        manifest.unlink()
+        self.assertIn("package.json is missing", self.run_package(ok=False).stderr)
+
+    def test_unreadable_version_lines(self):
+        for name, content in (("plugin.cfg", '[plugin]\n'), ("plugin.cfg", 'version="1.2.9"\nversion="1.2.9"\n'),
+                              ("core/go_ui.gd", 'extends Node\n')):
+            with self.subTest(name=name, content=content):
+                original = (self.addon / name).read_bytes()
+                (self.addon / name).write_text(content)
                 self.run_package(ok=False)
+                (self.addon / name).write_bytes(original)
 
     def test_late_gate_failure_keeps_original_version(self):
+        self.set_manifest("1.3.0")
         (self.addon / 'invalid.key').write_text('test fixture, not a key')
         self.run_package(ok=False)
+        self.assertIn('version="1.2.9"', (self.addon / "plugin.cfg").read_text())
         self.assertFalse((self.addon / "builds/.package-lock").exists())
         (self.addon / 'invalid.key').unlink()
         self.run_package()
-        self.assert_release('1.2.10')
+        self.assert_release('1.3.0')
 
     def test_zip_failure_keeps_original_version(self):
+        self.set_manifest("1.3.0")
         commands = self.root / 'bin'
         commands.mkdir()
         (commands / 'zip').write_text('#!/bin/sh\nexit 7\n')
         (commands / 'zip').chmod(0o755)
         self.run_package(ok=False, env=dict(os.environ, PATH=str(commands) + os.pathsep + os.environ['PATH']))
-
-    def test_existing_archive_is_preserved(self):
-        output = self.root / 'output'
-        output.mkdir()
-        existing = output / 'gohud-1.2.10.zip'
-        existing.write_bytes(b'previous artifact')
-        self.run_package('--out', str(output), ok=False)
-        self.assertEqual(existing.read_bytes(), b'previous artifact')
-
-    def test_existing_release_heading_is_rejected(self):
-        path = self.addon / 'CHANGELOG.md'
-        path.write_text(path.read_text() + '\n## [1.2.10]\n')
-        self.run_package(ok=False)
 
     def test_concurrent_package_is_rejected(self):
         lock = self.addon / 'builds/.package-lock'
@@ -137,18 +183,19 @@ class PackageTests(unittest.TestCase):
         self.run_package(ok=False)
         self.assertTrue(lock.is_dir(), 'must preserve the other process lock')
 
-    def prepare_publish(self):
+    def prepare_publish(self, version="1.3.0"):
+        self.set_manifest(version)
         stage = self.root / 'stage'
         shutil.copytree(self.addon, stage / 'addons/gohud')
         with contextlib.redirect_stdout(io.StringIO()):
-            versioning.prepare(stage, 'patch')
+            versioning.prepare(stage, version)
         (stage / 'package.zip').write_bytes(b'validated archive fixture')
         return stage
 
     def test_publish_failure_restores_metadata(self):
-        before = self.snapshot()
         stage = self.prepare_publish()
-        destination = self.root / 'gohud-1.2.10.zip'
+        before = self.snapshot()
+        destination = self.root / 'gohud-1.3.0.zip'
         replace = os.replace
 
         def fail_archive(source, target):
@@ -171,21 +218,27 @@ class PackageTests(unittest.TestCase):
             versioning.publish(self.addon, stage, self.root / 'package.zip')
         self.assertEqual(self.snapshot(), before)
 
+    def test_publish_stops_when_package_json_changes(self):
+        stage = self.prepare_publish()
+        self.set_manifest("1.4.0")
+        before = self.snapshot()
+        with self.assertRaises(ValueError):
+            versioning.publish(self.addon, stage, self.root / 'package.zip')
+        self.assertEqual(self.snapshot(), before)
+        self.assertFalse((self.root / 'package.zip').exists())
+
     def test_real_addon_archive(self):
         self.addon = self.root / 'real-addon'
         shutil.copytree(ADDON, self.addon, symlinks=True, ignore=shutil.ignore_patterns(
             '.git*', '.env*', '.claude', '.review', '.playwright-mcp', '.godot',
             'builds', '.dist', 'docs', 'www', '__pycache__', '*.zip', '*.tmp'))
-        original = (self.addon / 'plugin.cfg').read_text().split('version="')[1].split('"')[0]
-        major, minor, patch_number = map(int, original.split('.'))
+        version = versioning.read_version(self.addon)
         usage = self.addon / 'examples/usage'
         usage.mkdir(parents=True, exist_ok=True)
         (usage / 'project.godot').write_text('config_version=5\n')
         (usage / 'main.gd').write_text('extends Node\nconst SCENE = "res://main.tscn"\n')
         self.run_package()
-        version = f'{major}.{minor}.{patch_number + 1}'
-        self.assert_release(version)
-        archive = self.addon / 'builds' / version / f'gohud-{version}.zip'
+        archive = self.assert_release(version)
         with zipfile.ZipFile(archive) as package:
             self.assertFalse(any(name.startswith('addons/gohud/examples/usage/')
                                  for name in package.namelist()))

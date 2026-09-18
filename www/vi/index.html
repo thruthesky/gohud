@@ -432,7 +432,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>Những phụ thuộc ngầm vào dự án chủ; với <code>--zip</code> là bản phát hành đúng như khi giao, với <code>--export</code> là một bản build Web</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>Độ tương phản WCAG của từng file theme, tính cả trạng thái nút và tấm nền bán trong suốt</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Theme sinh ra khớp với bảng màu của nó; một theme dùng xong bỏ dựng được và qua được kiểm tra tương phản</td></tr>
-      <tr><td><code>check_package.py</code></td><td>Việc tăng số phiên bản, chuyển mục changelog và nội dung file ZIP, trên các bản sao tạm</td></tr>
+      <tr><td><code>check_package.py</code></td><td>Phiên bản lấy từ package.json, việc chuyển mục changelog và nội dung file ZIP, trên các bản sao tạm</td></tr>
       <tr><td><code>check_site.py</code></td><td>Liên kết, neo, ngôn ngữ trang, bảng thuật ngữ và bảng núm chỉnh của trang này</td></tr>
     </tbody>
   </table>
@@ -444,11 +444,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">Phiên bản phát hành</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>Một lượt chạy thành công cập nhật <code>plugin.cfg</code>, <code>GoUi.VERSION</code> và <code>CHANGELOG.md</code>
-    cùng lúc, chuyển phần ghi chú Unreleased thành một mục có ngày tháng. Lượt chạy hỏng thì không đổi gì cả, và một
-    file ZIP đã có sẽ không bao giờ bị ghi đè. File ZIP không chứa trang web này, phần kiểm thử và các công cụ.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>Phiên bản chính là số ghi trong <code>package.json</code> — việc đóng gói không bao giờ tự tăng nó. Muốn phát
+    hành phiên bản mới, hãy đổi số đó trước. Một lượt chạy thành công đặt <code>plugin.cfg</code> và
+    <code>GoUi.VERSION</code> theo giá trị đó, và chỉ ở lần đầu đóng gói phiên bản ấy mới chuyển phần ghi chú
+    Unreleased trong <code>CHANGELOG.md</code> thành một mục có ngày tháng. Đóng gói lại cùng phiên bản sẽ dựng lại
+    file ZIP và thay thế file cũ. Lượt chạy hỏng thì không đổi gì cả. File ZIP không chứa trang web này, phần kiểm
+    thử, các công cụ và <code>package.json</code>.</p>
 
   <h3 id="this-site">Trang web này</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # bảng thuật ngữ và bảng núm chỉnh của skin, sinh ra từ mã nguồn

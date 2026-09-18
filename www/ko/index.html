@@ -434,7 +434,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
       <tr><td><code>new_project_check.sh</code></td><td>호스트 프로젝트에 몰래 기대는 것. <code>--zip</code> 이면 배포본 그대로, <code>--export</code> 면 Web 빌드까지</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>테마 파일 전부의 WCAG 대비 — 버튼 상태와 반투명 패널 포함</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>생성된 테마가 팔레트와 맞는가, 임시 테마가 만들어지고 대비를 통과하는가</td></tr>
-      <tr><td><code>check_package.py</code></td><td>버전 올림·CHANGELOG 이동·ZIP 내용을 임시 사본에서</td></tr>
+      <tr><td><code>check_package.py</code></td><td>package.json 버전 적용·CHANGELOG 이동·ZIP 내용을 임시 사본에서</td></tr>
       <tr><td><code>check_site.py</code></td><td>이 사이트의 링크·절 앵커·문서 언어·용어 사전·다이얼 표</td></tr>
     </tbody>
   </table>
@@ -445,11 +445,12 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
   </div>
 
   <h3 id="release-versions">배포 버전</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>성공하면 <code>plugin.cfg</code>·<code>GoUi.VERSION</code>·<code>CHANGELOG.md</code> 가 함께 바뀌고 Unreleased
-    항목이 날짜 붙은 버전으로 옮겨진다. 실패하면 아무것도 바뀌지 않고, 이미 있는 ZIP 은 덮어쓰지 않는다.
-    ZIP 에는 이 사이트·검사·도구가 들어가지 않는다.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>버전은 <code>package.json</code> 에 적힌 값이다 — 패키징이 올리지 않는다. 새 버전을 내려면 먼저 그 숫자를 바꾼다. 성공하면
+    <code>plugin.cfg</code>·<code>GoUi.VERSION</code> 을 그 값으로 맞추고, 그 버전을 처음 패키징할 때만 <code>CHANGELOG.md</code> 의
+    Unreleased 항목을 날짜 붙은 버전으로 옮긴다. 같은 버전을 다시 패키징하면 ZIP 을 새로 만들어 이전 것과 바꾼다. 실패하면 아무것도 바뀌지 않는다. ZIP 에는 이 사이트·검사·도구와
+    <code>package.json</code> 이 들어가지 않는다.</p>
 
   <h3 id="this-site">이 사이트</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # 용어 사전과 다이얼 표를 소스에서 생성

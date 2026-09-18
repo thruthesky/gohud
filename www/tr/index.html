@@ -437,7 +437,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>new_project_check.sh</code></td><td>Barındıran projeye gizli bağımlılıklar; <code>--zip</code> ile yayımlandığı haliyle sürüm, <code>--export</code> ile bir Web derlemesi</td></tr>
       <tr><td><code>check_contrast.py</code></td><td>Her tema dosyasının WCAG kontrastı; düğme durumları ve yarı saydam paneller dahil</td></tr>
       <tr><td><code>check_generated.py</code> · <code>check_scaffold.sh</code></td><td>Üretilen temalar paletleriyle uyuşuyor mu; kullan-at bir tema derleniyor ve kontrastı geçiyor mu</td></tr>
-      <tr><td><code>check_package.py</code></td><td>Sürüm artırımları, değişiklik günlüğü taşımaları ve ZIP içeriği, geçici kopyalar üzerinde</td></tr>
+      <tr><td><code>check_package.py</code></td><td>package.json'dan alınan sürüm, değişiklik günlüğü taşımaları ve ZIP içeriği, geçici kopyalar üzerinde</td></tr>
       <tr><td><code>check_site.py</code></td><td>Bu sitenin bağlantıları, çapaları, sayfa dili, sözlüğü ve ayar tabloları</td></tr>
     </tbody>
   </table>
@@ -449,12 +449,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </div>
 
   <h3 id="release-versions">Sürüm yayımlama</h3>
-  <pre><code>bash addons/gohud/tools/package.sh                           # 1.0.1 → 1.0.2 · builds/1.0.2/gohud-1.0.2.zip
-bash addons/gohud/tools/package.sh --increase-minor-version  # 1.0.1 → 1.1.0</code></pre>
-  <p>Başarılı bir çalıştırma <code>plugin.cfg</code>, <code>GoUi.VERSION</code> ve <code>CHANGELOG.md</code>
-    dosyalarını birlikte günceller, Unreleased notlarını tarihli bir girdiye taşır. Başarısız bir çalıştırma
-    hiçbir şeyi değiştirmez ve var olan bir ZIP asla üzerine yazılmaz. ZIP; bu web sitesini, testleri ve
-    araçları dışarıda bırakır.</p>
+  <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
+  <p>Sürüm, <code>package.json</code> içinde yazan sürümdür; paketleme onu asla artırmaz. Yeni bir sürüm yayımlamak
+    için önce o numarayı değiştirin. Başarılı bir çalıştırma <code>plugin.cfg</code> ve <code>GoUi.VERSION</code>
+    değerlerini ona eşitler ve o sürüm ilk kez paketlendiğinde <code>CHANGELOG.md</code> içindeki Unreleased
+    notlarını tarihli bir girdiye taşır. Aynı sürümü yeniden paketlemek ZIP'ini baştan oluşturur ve eskisinin yerine
+    koyar. Başarısız bir çalıştırma hiçbir şeyi değiştirmez. ZIP; bu web sitesini, testleri, araçları ve
+    <code>package.json</code> dosyasını dışarıda bırakır.</p>
 
   <h3 id="this-site">Bu site</h3>
   <pre><code>python3 addons/gohud/tools/make_site.py            # sözlük ve kaplama ayarı tabloları, kaynaktan üretilir

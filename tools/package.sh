@@ -1,10 +1,11 @@
 #!/bin/bash
 # The gohud release ZIP — builds the file uploaded to the Godot Asset Store (store.godotengine.org).
 #
-#   bash addons/gohud/tools/package.sh                           # patch +1 → builds/<version>/gohud-<version>.zip
-#   bash addons/gohud/tools/package.sh --increase-minor-version  # minor +1, patch = 0
-#   bash addons/gohud/tools/package.sh --out DIR                 # change where it is written (the version is still bumped)
-# Needs Python 3. Only on success are plugin.cfg, GoUi.VERSION and CHANGELOG.md updated together.
+#   bash addons/gohud/tools/package.sh            # the version in package.json → builds/<version>/gohud-<version>.zip
+#   bash addons/gohud/tools/package.sh --out DIR  # change where it is written
+# The version is whatever package.json says ({"version": "1.2.3"}) — packaging never raises it.
+# Edit package.json to release a new version; running again with the same version rebuilds and replaces that ZIP.
+# Needs Python 3. Only on success are plugin.cfg, GoUi.VERSION and CHANGELOG.md brought in line with it.
 #
 # Paths inside the ZIP are always `addons/gohud/...` — unpacking it at the **project root** installs it as-is.
 #
@@ -16,9 +17,9 @@
 #    core/, widgets/ and icons/ scatter across someone else's project root.
 #
 # 🛑 Gates — if any one trips, no ZIP is built
-#   ① the version in plugin.cfg and GoUi.VERSION are the same
+#   ① package.json has a major.minor.patch version — plugin.cfg and GoUi.VERSION are set to it
 #   ② LICENSE, README.md, THIRD_PARTY_NOTICES.md and CHANGELOG.md exist
-#   ③ a new version entry is created and the Unreleased notes moved into it — stop if that version already exists
+#   ③ CHANGELOG.md gets an entry for that version (the Unreleased notes move into it) unless it already has one
 #   ④ no code, scene or resource points at a `res://` **outside** the addon — that breaks in someone else's project
 #   ⑤ no secrets inside the ZIP (.env, API keys)
 #   ⑥ every entry in the ZIP is under `addons/gohud/`
@@ -31,11 +32,9 @@ set -eu
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
 FULL=0
 OUT=""
-INCREASE="patch"
 while [ $# -gt 0 ]; do
   case "$1" in
     --full) FULL=1 ;;                       # include tools/ as well (internal distribution — never for the store)
-    --increase-minor-version) INCREASE="minor" ;;
     --out)
       [ $# -ge 2 ] && [ -n "$2" ] && [[ "$2" != --* ]] || { echo "--out needs a destination folder" >&2; exit 2; }
       shift; OUT="$1" ;;
@@ -47,7 +46,7 @@ done
 
 fail() { echo "🛑 $*" >&2; exit 1; }
 
-# Serialize: two runs on the same checkout must not produce the same next version.
+# Serialize: two runs on the same checkout must not write the same ZIP and version files at once.
 mkdir -p "$ADDON/builds"
 LOCK="$ADDON/builds/.package-lock"
 mkdir "$LOCK" 2>/dev/null || fail "another packaging run is in progress ($LOCK)"
@@ -61,10 +60,8 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 # ── ① version ───────────────────────────────────────────────────────────
-VERSION="$(sed -n 's/^version="\(.*\)"$/\1/p' "$ADDON/plugin.cfg")"
-[ -n "$VERSION" ] || fail "could not read version from plugin.cfg"
-CODE_VERSION="$(sed -n 's/^const VERSION := "\(.*\)"$/\1/p' "$ADDON/core/go_ui.gd")"
-[ "$VERSION" = "$CODE_VERSION" ] || fail "version mismatch — plugin.cfg=$VERSION · GoUi.VERSION=$CODE_VERSION"
+# 🔑 package.json is the one place the release version is written. Nothing here increments it.
+VERSION="$(python3 "$ADDON/tools/package_version.py" read "$ADDON")"
 
 # ── ② documents ─────────────────────────────────────────────────────────
 for doc in LICENSE README.md THIRD_PARTY_NOTICES.md CHANGELOG.md; do
@@ -96,6 +93,7 @@ mkdir -p "$STAGE/addons/gohud"
 
 # Exclusion list — things with no reason to be in an installation.
 #   🛑 `.env`     holds the store API key. It must never get out, whatever happens.
+#   🛑 `package.json` is the packager's version source. Inside the addon, plugin.cfg carries the version.
 #   🛑 `.git*`    .git, .gitignore, .gitattributes, .github — repository housekeeping.
 #                 (`.gdignore` starts with `.gd` and does not match this pattern — it is needed after installation, so it stays.)
 #   🛑 `.claude`  agent working configuration.
@@ -108,6 +106,7 @@ mkdir -p "$STAGE/addons/gohud"
 #   🛑 `examples/demo/addons` is a **symlink** to the addon root — it becomes a broken link where it is installed.
 set -- \
   --exclude='.env' \
+  --exclude='/package.json' \
   --exclude='.git*' \
   --exclude='.claude' \
   --exclude='.cowork' \
@@ -138,13 +137,11 @@ if [ "$FULL" -eq 0 ]; then set -- "$@" --exclude='tools' --exclude='docs'; fi
 rsync -a --no-links "$@" "$ADDON/" "$STAGE/addons/gohud/"
 
 # The version and changelog are prepared on the copy. The original is updated only once every ZIP check passes.
-PREVIOUS_VERSION="$VERSION"
-VERSION="$(python3 "$ADDON/tools/package_version.py" prepare "$STAGE" "$INCREASE")"
+NOTES="$(python3 "$ADDON/tools/package_version.py" prepare "$STAGE" "$VERSION")"
 DIST="${OUT:-$ADDON/builds/$VERSION}"
 mkdir -p "$DIST"
 DIST="$(cd "$DIST" && pwd)"
 DESTINATION="$DIST/gohud-$VERSION.zip"
-[ ! -e "$DESTINATION" ] || fail "a ZIP of the same version already exists: $DESTINATION"
 ZIP="$STAGE/package.zip"
 
 # 🛑 A nested project.godot makes the installing editor warn:
@@ -192,7 +189,8 @@ done
 
 COUNT="$(unzip -Z1 "$ZIP" | grep -vc '/$')"
 SIZE="$(du -h "$ZIP" | cut -f1 | tr -d ' ')"
-python3 "$ADDON/tools/package_version.py" publish "$ADDON" "$STAGE" "$DESTINATION"
+REPLACED="$(python3 "$ADDON/tools/package_version.py" publish "$ADDON" "$STAGE" "$DESTINATION")"
 echo "✅ $DESTINATION"
-echo "   version bumped automatically: $PREVIOUS_VERSION → $VERSION"
-echo "   version $VERSION · $COUNT files · $SIZE · $([ "$FULL" -eq 1 ] && echo 'full (tools included)' || echo 'for the store')"
+echo "   version $VERSION (package.json) · $COUNT files · $SIZE · $([ "$FULL" -eq 1 ] && echo 'full (tools included)' || echo 'for the store')"
+printf '%s\n' "$NOTES" | sed 's/^/   /'
+[ -z "$REPLACED" ] || echo "   $REPLACED"
