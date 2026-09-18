@@ -175,7 +175,10 @@ func _on_keyboard(height_px: int) -> void:
 	if height_px == _keyboard_px: return
 	_keyboard_px = height_px
 	_relayout()
-	if scroll == null: return
+	# 🛑 `change_scene_to_*` takes the old screen out of the tree **at once** and frees it only at the end of the
+	#    frame. The keyboard drops in that gap (Back on a form with the keyboard up), `get_viewport()` is null, and a
+	#    release export has no null check — the app died (SIGSEGV in `Viewport::gui_get_focus_owner`).
+	if scroll == null or not is_inside_tree(): return
 	var focus := get_viewport().gui_get_focus_owner()
 	if focus != null and scroll.is_ancestor_of(focus): scroll.ensure_control_visible.call_deferred(focus)
 

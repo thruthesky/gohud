@@ -213,6 +213,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Dragging a `GoScroll` by a row no longer drags the rows' highlight along.** On a phone the pressed row kept
+  its focus, its hover stuck to the finger and hopped from row to row as the finger passed over them, and pressing a
+  row half under the edge pulled the list to it before the finger moved. Once a finger drag starts the scroll now drops
+  the focus that press handed out and stops the rows taking the mouse until the list comes to rest; it follows
+  keyboard and gamepad focus only (`follow_keyboard_focus`, on by default — the engine's `follow_focus` is off).
 - `GoStyle.chip("")` with neither text nor icon raised `add_child(null)`; it now returns an empty chip.
 - **`GoSlotGrid.set_cell()` before the grid is in the tree failed with "Invalid assignment of index"** — the initial
   `slot_count` never ran its setter, so the data array stayed empty until `_ready`. A `selected` set before the tree

@@ -613,7 +613,8 @@ func _on_keyboard(height_px: int) -> void:
 	if height_px == _keyboard_px: return
 	_keyboard_px = height_px
 	relayout()
-	if scroll == null: return
+	# 🛑 Out of the tree (a scene change removes it before freeing it) `get_viewport()` is null — see `GoForm._on_keyboard`.
+	if scroll == null or not is_inside_tree(): return
 	var focus := get_viewport().gui_get_focus_owner()
 	if focus != null and scroll.is_ancestor_of(focus): scroll.ensure_control_visible.call_deferred(focus)
 

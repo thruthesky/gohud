@@ -21,6 +21,11 @@ var _content_inset: MarginContainer
 var _edge_gutter := 0
 ## How far the scroll bounds are pushed outward so a glow has room to spread (dp).
 var _bleed := 0
+## Bring a descendant into view when **keyboard or gamepad** focus lands on it. Use this instead of the
+## engine's `follow_focus`, which stays off here (see `_init`).
+@export var follow_keyboard_focus := true
+## Children whose mouse was switched off for a finger drag, with the value to put back.
+var _drag_muted := {}
 
 
 func _init() -> void:
@@ -29,7 +34,12 @@ func _init() -> void:
 	vertical_scroll_mode = SCROLL_MODE_AUTO
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	follow_focus = true
+	# 🛑 The engine's `follow_focus` also fires on the focus a **finger press** hands out — press a row half
+	#    under the edge to start a drag and the list jumps to it before the finger has moved. `_on_focus_changed`
+	#    follows keyboard and gamepad focus only.
+	follow_focus = false
+	scroll_started.connect(_on_drag_started)
+	scroll_ended.connect(_on_drag_ended)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	# 🛑 The scroll **rail is always on the physical right** — in Arabic and Urdu as well.
 	#    The children each decide the direction of their own content (`_prepare_branch` puts them back to LOCALE).
@@ -41,6 +51,19 @@ func _ready() -> void:
 	scroll_deadzone = GoUi.metric(GoTheme.SCROLL_DEADZONE)
 	child_entered_tree.connect(_prepare_branch)
 	for child in get_children(): _prepare_branch(child)
+
+
+func _enter_tree() -> void:
+	var viewport := get_viewport()
+	if not viewport.gui_focus_changed.is_connected(_on_focus_changed):
+		viewport.gui_focus_changed.connect(_on_focus_changed)
+
+
+func _exit_tree() -> void:
+	var viewport := get_viewport()
+	if viewport.gui_focus_changed.is_connected(_on_focus_changed):
+		viewport.gui_focus_changed.disconnect(_on_focus_changed)
+	_on_drag_ended()
 
 
 ## A scroll that runs horizontally (a row of chips, a row of thumbnails).
@@ -184,3 +207,35 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and _content_inset != null:
 		# When the language changes the children flip left-to-right — fit them back inside our physical right inset.
 		_content_inset.queue_sort.call_deferred()
+
+
+## Keyboard and gamepad focus scrolls into view; the focus a pointer press hands out does not.
+## 🛑 Asking `has_focus(true)` is not enough — with `gui/common/show_focus_state_on_pointer_event` set to
+##    Always a click's focus is not hidden either. A held left button (a finger arrives as one) is the tell.
+func _on_focus_changed(control: Control) -> void:
+	if not follow_keyboard_focus or control == null or not is_ancestor_of(control): return
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT): return
+	ensure_control_visible(control)
+
+
+## 🔑 **A finger drag scrolls the list, and nothing inside it reacts.** The engine already cancels the press
+## the drag started on; this takes away the rest of what made the rows look like they were being dragged:
+## - the focus that press handed out is dropped (it was never a choice),
+## - the rows stop taking the mouse until the scroll stops, so the hover highlight neither sticks to the row
+##   under the finger nor hops from row to row as the finger passes over them.
+## 🛑 `mouse_behavior_recursive` rather than each row's `mouse_filter` — the motion still travels up to this
+##    scroll (an ignored control is skipped, not a dead end), and the rows' own filters are never touched.
+func _on_drag_started() -> void:
+	var focused := get_viewport().gui_get_focus_owner()
+	if focused != null and is_ancestor_of(focused): focused.release_focus()
+	for child in get_children():
+		if child is Control and not _drag_muted.has(child):
+			_drag_muted[child] = child.mouse_behavior_recursive
+			child.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED
+
+
+## The scroll came to rest (the finger lifted without a fling, the fling ran out, or a tap stopped it).
+func _on_drag_ended() -> void:
+	for child: Control in _drag_muted:
+		if is_instance_valid(child): child.mouse_behavior_recursive = _drag_muted[child]
+	_drag_muted.clear()

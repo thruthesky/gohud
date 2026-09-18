@@ -85,6 +85,7 @@ func _initialize() -> void:
 	await _section("coach mark", _coach)
 	await _section("form", _form)
 	await _section("feedback", _feedback)
+	await _section("scroll drag", _scroll_drag)
 	await _section("rtl", _rtl)
 	await _section("standalone", _standalone)
 	# 🛑 Leaving a lambda in a static variable can crash during shutdown — clear them before finishing.
@@ -2431,6 +2432,90 @@ func _feedback() -> void:
 	GoUi.config.sound_cues = GoConfig.new().sound_cues
 	GoFeedback.sound_handler = Callable()
 	GoFeedback.haptic_handler = Callable()
+
+
+# ── Finger drag on a scroll ───────────────────────────────────────────
+
+## 🛑 Dragging a list by a row must move the list, not the row's highlight — the focus the press handed out, the
+##    hover under the finger and the jump to a half-hidden row all read as "the buttons are being dragged".
+##    Headless has no touchscreen, so the engine never starts a drag itself; the start and stop are raised the way
+##    `ScrollContainer` raises them, and the pointer events are real.
+func _scroll_drag() -> void:
+	var scroll := GoScroll.new()
+	scroll.size_flags_vertical = Control.SIZE_FILL
+	scroll.position = Vector2(8, 8)
+	scroll.size = Vector2(300, 260)
+	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(column)
+	var rows: Array[Button] = []
+	var presses := [0]
+	for i in 20:
+		var row := Button.new()
+		row.text = "Row %d" % i
+		row.custom_minimum_size = Vector2(0, 48)
+		row.pressed.connect(func() -> void: presses[0] += 1)
+		column.add_child(row)
+		rows.append(row)
+	root.add_child(scroll)
+	await frames(3)
+	check(not scroll.follow_focus, "the engine's follow_focus is off — GoScroll follows key focus itself")
+	# The row the bottom edge cuts through: pressing its visible part must not pull the list.
+	var bottom := scroll.get_global_rect().end.y
+	var cut: Button = null
+	for row in rows:
+		var rect := row.get_global_rect()
+		if rect.position.y < bottom and rect.end.y > bottom: cut = row
+	check(cut != null, "a row is cut by the bottom edge")
+	if cut == null:
+		scroll.queue_free()
+		return
+	var point := Vector2(cut.get_global_rect().get_center().x, (cut.get_global_rect().position.y + bottom) * 0.5)
+	_pointer(point, true, true)
+	await frames(2)
+	check(root.gui_get_focus_owner() == cut and cut.is_hovered(), "the press lands on the half-hidden row")
+	check(scroll.scroll_vertical == 0, "a finger press does not pull the list to the row (%d)" % scroll.scroll_vertical)
+	scroll.propagate_notification(Control.NOTIFICATION_SCROLL_BEGIN)
+	scroll.scroll_started.emit()
+	await frames(1)
+	check(root.gui_get_focus_owner() == null, "the drag drops the focus the press handed out")
+	check(not cut.is_hovered(), "the row under the finger loses its hover once the drag starts")
+	for step in 6:
+		point.y -= 30.0
+		_pointer(point, true, false)
+		await frames(1)
+	var lit := rows.filter(func(row: Button) -> bool: return row.is_hovered())
+	check(lit.is_empty(), "no row lights up as the finger passes over it (%d lit)" % lit.size())
+	_pointer(point, false, true)
+	await frames(1)
+	check(presses[0] == 0, "releasing after a drag presses nothing")
+	scroll.scroll_ended.emit()
+	check(column.mouse_behavior_recursive == Control.MOUSE_BEHAVIOR_INHERITED, "the rows take the mouse again once the list stops")
+	_pointer(point, false, false)
+	await frames(1)
+	check(rows.any(func(row: Button) -> bool: return row.is_hovered()), "hover works again after the drag")
+	rows[15].grab_focus()
+	await frames(1)
+	check(scroll.scroll_vertical > 0, "keyboard focus still scrolls the row into view (%d)" % scroll.scroll_vertical)
+	scroll.queue_free()
+	await frames(1)
+
+
+func _pointer(point: Vector2, held: bool, button: bool) -> void:
+	var event: InputEventMouse
+	if button:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = held
+		event = click
+	else:
+		var motion := InputEventMouseMotion.new()
+		motion.relative = Vector2(0, -30)
+		event = motion
+	event.position = point
+	event.global_position = point
+	event.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
+	Input.parse_input_event(event.xformed_by(root.get_final_transform()))
 
 
 # ── Left-to-right and right-to-left ──────────────────────────────────

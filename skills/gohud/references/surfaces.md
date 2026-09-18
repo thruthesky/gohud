@@ -214,8 +214,11 @@ func build_login() -> void:
 
 ## 5. GoScroll
 
-`class_name GoScroll extends ScrollContainer`. Vertical by default, `follow_focus`, deadzone from tokens,
+`class_name GoScroll extends ScrollContainer`. Vertical by default, deadzone from tokens,
 buttons inside get `MOUSE_FILTER_PASS` so drags scroll; the rail stays on the physical right in RTL.
+Follows keyboard/gamepad focus only (`follow_keyboard_focus`; the engine's `follow_focus` is off — it also fired on
+the focus a finger press hands out). While a finger drag runs, the rows drop that focus and ignore the mouse, so no
+highlight rides along with the finger.
 
 | Member | Notes |
 |---|---|
