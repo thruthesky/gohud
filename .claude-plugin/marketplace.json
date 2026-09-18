@@ -5,13 +5,13 @@
     "url": "https://github.com/thruthesky"
   },
   "metadata": {
-    "description": "AI coding skill for gohud, the HUD & UI kit for Godot 4.6+. Build menus, HUDs, dialogs, sheets, forms and themes with gohud, preview its demo scenes, and list its features."
+    "description": "AI coding skill for gohud, the HUD & UI kit for Godot 4.6+. Build menus, HUDs, dialogs, sheets, forms and themes with gohud, preview its demo scenes, and list its features. Install it with /plugin install gohud --marketplace thruthesky/gohud."
   },
   "plugins": [
     {
       "name": "gohud",
       "source": "./",
-      "description": "Build Godot 4.6+ game UI with gohud: menus, HUD bars, quick slots, joystick, dialogs, bottom sheets, forms, notices, coach marks, presets (default, sci-fi, medieval), JSON themes, skins and icon sets. Includes /gohud:preview to launch the gallery or demo and /gohud:features to explain every feature.",
+      "description": "Build Godot 4.6+ game UI with gohud: menus, HUD bars, quick slots, joystick, dialogs, bottom sheets, forms, notices, coach marks, presets (default, sci-fi, medieval), JSON themes, skins and icon sets. Includes /gohud:preview to launch the gallery or demo and /gohud:features to explain every feature. Install: /plugin install gohud --marketplace thruthesky/gohud (Claude Code 2.1.275+); on older versions, /plugin marketplace add thruthesky/gohud first, then /plugin install gohud@gohud.",
       "author": {
         "name": "JaeHo Song",
         "url": "https://github.com/thruthesky"

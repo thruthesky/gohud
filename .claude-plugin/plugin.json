@@ -1,7 +1,7 @@
 {
   "name": "gohud",
   "displayName": "gohud",
-  "description": "Build Godot 4.6+ game UI with gohud: menus, HUD bars, quick slots, joystick, dialogs, bottom sheets, forms, notices, coach marks, presets, JSON themes, skins and icon sets. /gohud:preview launches the gallery or demo; /gohud:features explains every feature.",
+  "description": "Build Godot 4.6+ game UI with gohud: menus, HUD bars, quick slots, joystick, dialogs, bottom sheets, forms, notices, coach marks, presets, JSON themes, skins and icon sets. Install: /plugin install gohud --marketplace thruthesky/gohud (Claude Code 2.1.275+). /gohud:preview launches the gallery or demo; /gohud:features explains every feature.",
   "author": {
     "name": "JaeHo Song",
     "url": "https://github.com/thruthesky"
