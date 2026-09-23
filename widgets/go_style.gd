@@ -423,6 +423,8 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	#    SHRINK_BEGIN/END, and pinning EXPAND_FILL here overwrites what they set already (2026-09-12, 5 call
 	#    sites in the game gohud grew out of). The height is the touch floor.
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH if compact else GoTheme.BUTTON_HEIGHT)
+	# 🛑 …and so is the width — a short word on a compact face ("Alert") came out 46dp wide in a host font (2026-09-23).
+	node.custom_minimum_size.x = maxf(node.custom_minimum_size.x, float(GoUi.metric(GoTheme.TOUCH)))
 	if not compact: node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 

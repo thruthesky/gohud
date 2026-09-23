@@ -155,6 +155,13 @@ func _audit_bites() -> void:
 	check(_has(found, "sits 0/"), "audit: text on the face's border is caught")
 	check(_has(found, "past the side of the screen"), "audit: a control wider than the screen is caught")
 	check(not _has(found, String(corner.get_path())), "audit: a go_overlay node is left out")
+	# Every gohud button is at least the touch size both ways, whatever the font makes of a short word.
+	var touch := float(GoUi.metric(GoTheme.TOUCH))
+	for tone in [GoStyle.Tone.NORMAL, GoStyle.Tone.PRIMARY, GoStyle.Tone.DANGER, GoStyle.Tone.COMPACT, GoStyle.Tone.BARE]:
+		var short := GoStyle.button("OK", Callable(), tone)
+		check(short.custom_minimum_size.x + 0.5 >= touch and short.custom_minimum_size.y + 0.5 >= touch,
+			"button tone %d: \"OK\" keeps the touch size (%s)" % [tone, short.custom_minimum_size])
+		short.free()
 	stage.queue_free()
 	await frames(1)
 	section("the audit catches each fault")

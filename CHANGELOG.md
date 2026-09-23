@@ -68,7 +68,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   three skins (the scifi accent bar is a flat face so the room does not stretch it).
 - **`GoBadge` text is picked against the face actually painted.** It was chosen against red but drawn on the surface
   colour — 1.69:1 in the default dark theme. A dot badge is a solid dot; an attached badge re-centres when its count grows.
-- A `Tone.BARE` button is at least the touch size both ways; a donut legend's key is a solid dot; the quick slot's
+- Every `GoStyle` button is at least the touch size both ways (a short word on a compact face was 46 dp wide); a
+  donut legend's key is a solid dot; the quick slot's
   shortcut number keeps clear of the face's border and corner.
 
 - **`GoRewardCalendar` is laid out by its content.** Cells are square, padded, the same size and never below the
