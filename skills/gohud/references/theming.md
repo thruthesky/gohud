@@ -232,13 +232,14 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 |---|---|
 | `surface_box(variant := BOX_CARD, accent := transparent) -> StyleBox` · `floating_box(...)` · `overlay_box(h_margin := -1, v_margin := -1, fill_alpha := 0.82)` | Card/panel faces, floating HUD panels, pills over the game |
 | `chip_box(color)` · `chip_ink(color) -> Color` | Chip face and legible chip text |
-| `slot_box(accent, lit: bool)` · `slot_ink(accent, lit)` · `badge_box(ink)` | Quick slot face (`lit` = cooldown running), text, badges |
+| `slot_box(accent, lit: bool)` · `slot_ink(accent, lit)` · `badge_box(ink)` | Quick slot face (`lit` = cooldown running), text, the faint text badge on a slot corner |
+| `dot_box(ink, diameter)` | A solid round mark — carousel page dots, a dot badge, a chart legend key. Not `badge_box`, which on a dot draws a hollow speck |
 | `disc_box(diameter, accent, fill_alpha := 0.14, edge_alpha := 0.38)` | Avatar/icon discs |
 | `alert_box(ink)` · `skeleton_box()` · `segment_box(index, count, state)` | Inline alerts, placeholders, segmented control faces |
 | `progress_fill_box(ink)` · `notice_box(accent, compact)` · `tint_notice(box, accent)` | Bar fills (outlined when < 3:1), snackbars |
 | `coach_ring_box(accent)` · `draw_coach_pointer(canvas, start, tip, direction, ink)` | Coach mark ring and arrow |
 | `draw_joystick(canvas, center, knob, radius, knob_radius, ink, base, active)` | Joystick |
-| `divider_color()` · `divider_thickness()` · `section_box()` | Dividers, section headings |
+| `divider_color()` · `divider_thickness()` · `section_box()` · `section_rhythm(face)` | Dividers, section headings. A skin's own `section_box()` ends with `return section_rhythm(face)` — it puts more room above a heading than below, so the heading belongs to the group it opens |
 | static `luminance(c)` · `contrast_ratio(a, b)` · `blend(top, bottom)` · `readable_on(ink, back, need := 4.5)` · `box_background(box)` | Contrast helpers |
 
 Dials (`@export`, set on a skin resource or JSON `skin.dials`):

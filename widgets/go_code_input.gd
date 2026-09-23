@@ -53,8 +53,9 @@ signal changed(code: String)
 
 ## The **invisible** field that actually holds the code.
 var edit: LineEdit
-## The row the cells are drawn in.
-var cells_row: HBoxContainer
+## The box the cells are drawn in. A **flow** row: the groups sit on one line when it fits and fold onto the next
+## line **at a group break** when it does not — `ABCD EFGH` / `IJKL`, never a code cut off the screen.
+var cells_row: HFlowContainer
 ## The error line.
 var error_label: Label
 
@@ -79,9 +80,15 @@ func _init() -> void:
 	_stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	add_child(_stack)
 
-	cells_row = GoStyle.row(GoUi.metric(GoTheme.GAP_TINY))
+	# 🛑 **It folds at the group breaks instead of running off the screen.** One row of twelve cells needed 404dp even
+	#    with its own spacing — past a 390dp phone's 350dp body, and the gallery page was dragged 121dp wider than the
+	#    screen (measured 2026-09-23). Narrowing the cells further would clip the characters; a code reads fine on two lines.
+	cells_row = HFlowContainer.new()
 	cells_row.name = "Cells"
-	cells_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	cells_row.alignment = FlowContainer.ALIGNMENT_CENTER
+	cells_row.last_wrap_alignment = FlowContainer.LAST_WRAP_ALIGNMENT_CENTER
+	cells_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_space_cells()
 	# 🛑 A code is a **physical sequence** — it fills from the left even in Arabic.
 	cells_row.layout_direction = Control.LAYOUT_DIRECTION_LTR
 	cells_row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -192,43 +199,56 @@ func _clean(raw: String) -> String:
 
 func _rebuild() -> void:
 	if cells_row == null: return
-	# 🛑 Clearing only `_cells` leaves the **gap** spacers at the break positions behind, and they pile up
-	#    every time the length changes (measured 2026-09-16: grew from 19 to 22). Empty the whole row.
-	for child in cells_row.get_children(): child.queue_free()
+	# 🛑 Clearing only `_cells` leaves the group boxes behind, and they pile up every time the length changes
+	#    (measured 2026-09-16: grew from 19 to 22). Empty the whole row.
+	for child in cells_row.get_children():
+		cells_row.remove_child(child)
+		child.queue_free()
 	_cells.clear()
 	edit.max_length = length
+	_space_cells()
 	var side := cell_width if cell_width > 0.0 else float(GoUi.font_size(GoTheme.ROLE_SUBTITLE)) * 1.7
+	var holder: Control = cells_row
 	for index in length:
-		# Open a gap at the break — `ABCD EFGH IJKL` reads far better than twelve characters in one lump.
-		if group > 0 and index > 0 and index % group == 0:
-			var gap := Control.new()
-			gap.name = "Gap%d" % index
-			gap.custom_minimum_size.x = GoUi.metric(GoTheme.GAP_SMALL)
-			gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			cells_row.add_child(gap)
+		# A group is one box, so the flow folds **between** groups — `ABCD EFGH IJKL` reads far better than
+		# twelve characters in one lump, and a fold never splits a group.
+		if group > 0 and index % group == 0:
+			var box := GoStyle.row(GoUi.metric(GoTheme.GAP_TINY))
+			box.name = "Group%d" % (index / group)
+			box.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+			box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			box.set_meta(&"go_own_spacing", true)
+			cells_row.add_child(box)
+			holder = box
 		var cell := PanelContainer.new()
 		cell.name = "Cell%d" % index
 		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		# 🛑 **Claim only a minimum width and share out what is left.** Give 12 cells a fixed width and they
-		#    come to 669dp on a 720dp phone — with the side margins added the cells were clipped off the
-		#    screen (captured 2026-09-16). Cells narrowing along with the screen beats cells being clipped.
-		cell.custom_minimum_size = Vector2(minf(side, 28.0), side * 1.25)
-		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		# A cell is as wide as a wide capital needs — the flow folds groups rather than squeezing the characters.
+		cell.custom_minimum_size = Vector2(side, side * 1.25)
 		var glyph := GoStyle.label("", GoTheme.ROLE_SUBTITLE)
 		glyph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		glyph.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		glyph.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		glyph.text_direction = Control.TEXT_DIRECTION_LTR
 		# It is a single character — there is nothing to wrap, and leaving it on makes the height jump in a narrow cell.
-		glyph.autowrap_mode = TextServer.AUTOWRAP_OFF
+		GoStyle.one_line(glyph)
 		# 🛑 **Do not let the glyph decide the cell width.** With `clip_text` on, the label's minimum width is 0,
 		#    so a filled cell stays as wide as an empty one (captured 2026-09-16: the leading cells were wider and ragged).
 		glyph.clip_text = true
 		glyph.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		cell.add_child(glyph)
 		_cells.append(cell)
-		cells_row.add_child(cell)
+		holder.add_child(cell)
 	_paint()
+
+
+## The gap between groups is the break (`gap_small`); between the lines of a folded code it is `gap_tiny`.
+## Without groups every cell is its own item, so the cells sit `gap_tiny` apart.
+func _space_cells() -> void:
+	if cells_row == null: return
+	var between := GoUi.metric(GoTheme.GAP_SMALL if group > 0 else GoTheme.GAP_TINY)
+	cells_row.add_theme_constant_override(&"h_separation", between)
+	cells_row.add_theme_constant_override(&"v_separation", GoUi.metric(GoTheme.GAP_TINY))
 
 
 func _paint() -> void:

@@ -82,7 +82,7 @@ func _init() -> void:
 	subtitle_label = GoStyle.label("", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 	subtitle_label.name = "Subtitle"
 	# One status line — if it wraps, the card grows taller and covers more of the screen. One line by default.
-	subtitle_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	GoStyle.one_line(subtitle_label)
 	subtitle_label.clip_text = true
 	subtitle_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	subtitle_label.visible = false
@@ -166,10 +166,11 @@ func set_subtitle_lines(lines: int) -> void:
 
 func _set_lines(node: Label, lines: int) -> void:
 	if lines <= 1:
-		node.autowrap_mode = TextServer.AUTOWRAP_OFF
+		GoStyle.one_line(node)
 		node.clip_text = true
 		node.max_lines_visible = 1
 	else:
+		node.remove_meta(&"go_no_wrap")
 		node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		node.clip_text = false
 		node.max_lines_visible = lines

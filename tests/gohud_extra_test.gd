@@ -522,8 +522,13 @@ func _table() -> void:
 func _pagination() -> void:
 	var moved := [-1]
 	var pager := GoPagination.make(1, 12, func(p: int) -> void: moved[0] = p)
-	root.add_child(pager)
-	await frames(2)
+	# A wide row — five numbers fit. How it narrows is `gohud_layout_test.gd`.
+	var wide := Control.new()
+	wide.size = Vector2(700, 80)
+	root.add_child(wide)
+	wide.add_child(pager)
+	pager.size = Vector2(700, 56)
+	await frames(3)
 	pager.set_page(5)
 	await frames(2)
 	check(pager.page() == 5 and moved[0] == 5, "pagination: it moves page")
@@ -542,7 +547,7 @@ func _pagination() -> void:
 	root.add_child(more)
 	await frames(2)
 	check(more.get_child_count() == 1, "pagination: load-more is a single row")
-	pager.queue_free(); endless.queue_free(); more.queue_free()
+	wide.queue_free(); endless.queue_free(); more.queue_free()
 	await frames(1)
 	section("pagination")
 
@@ -1022,10 +1027,9 @@ func _carousel() -> void:
 	carousel.set_pages([GoStyle.card(), GoStyle.card(), GoStyle.card()])
 	await frames(3)
 	check(carousel.pages().size() == 3, "carousel: three pages")
-	check(carousel._dots.get_child_count() == 3, "carousel: three dots")
-	# 🛑 The dot may look small, but the place you press is the touch minimum.
-	var dot := carousel._dots.get_child(0) as Control
-	check(dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) * 0.55, "carousel: the dot's press area is generous")
+	check(carousel.dot_rects().size() == 3, "carousel: three dots")
+	# 🛑 The dot may look small, but the place you press is the touch minimum — the dot bar is a finger tall.
+	check(carousel._dots.size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5, "carousel: the dot bar is a finger tall (%.0f)" % carousel._dots.size.y)
 	carousel.next()
 	await frames(2)
 	check(carousel.index() == 1, "carousel: next")
@@ -1040,12 +1044,9 @@ func _carousel() -> void:
 	await frames(1)
 	# ♿ For someone who reduced motion it never moves on its own (reduce_motion is on right now).
 	check(not carousel.is_processing(), "carousel: under reduce_motion it does not auto-advance")
-	# 🛑 The press area stays at the touch minimum — a dot that looks small is no reason to shave it.
-	# 🛑 The dots are **rebuilt** whenever the page changes — reading one grabbed earlier touches an already
-	#    freed node and raises `previously freed` (the verdict still passes, only errors pile up). Fetch it again at use.
-	var live_dot := carousel._dots.get_child(0) as Control
-	check(live_dot != null and live_dot.custom_minimum_size.x >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
-		"carousel: the dot's press area keeps the touch minimum (%.1f)" % (live_dot.custom_minimum_size.x if live_dot else -1.0))
+	# 🛑 The press area stays at the touch minimum after a page change too — a dot that looks small is no reason to shave it.
+	check(carousel._dots.custom_minimum_size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
+		"carousel: the dot bar keeps the touch minimum (%.1f)" % carousel._dots.custom_minimum_size.y)
 	# 🛑 Out of sight it does not turn — a covered banner must not burn battery.
 	GoUi.config.reduce_motion = false
 	carousel.autoplay_seconds = 5.0

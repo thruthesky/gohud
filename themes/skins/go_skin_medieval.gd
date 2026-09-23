@@ -65,7 +65,8 @@ func section_box() -> StyleBox:
 	rule.border_color = Color(GoUi.color(GoTheme.ACCENT), 0.45)
 	rule.border_width_bottom = 1
 	rule.content_margin_bottom = GoUi.metric(GoTheme.GAP_SMALL)
-	return rule
+	# The rule line already keeps 8dp under the text — the heading gets that much more above, so it still leans down.
+	return section_rhythm(rule)
 
 
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,

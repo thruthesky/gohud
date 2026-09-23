@@ -73,6 +73,9 @@ func _init() -> void:
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	_label.text_direction = Control.TEXT_DIRECTION_LTR
+	# 🛑 A count is one token — never wrapped. Inside a `GoForm` it was: a wrapping label is 1dp wide, `NEW` folded letter
+	#    by letter, and the badge copied that height into its width — a 65×65 block instead of 33×16 (measured 2026-09-23).
+	GoStyle.one_line(_label)
 	add_child(_label)
 
 
@@ -107,12 +110,13 @@ func _refresh() -> void:
 	_label.visible = not dot
 	_label.text = "" if dot else words
 	GoStyle.typography(_label, GoTheme.ROLE_MICRO, GoUi.color(GoTheme.ON_ACCENT))
-	_label.add_theme_color_override(&"font_color", _on_badge(color))
-	add_theme_stylebox_override(&"panel", GoUi.skin().badge_box(color))
+	# A dot is a solid circle of a set diameter — there is no text, so give it a minimum size ourselves.
+	var px := maxf(6.0, float(GoUi.metric(GoTheme.GAP_SMALL)))
+	var face := GoUi.skin().dot_box(color, px) if dot else GoUi.skin().badge_box(color)
+	add_theme_stylebox_override(&"panel", face)
+	_label.add_theme_color_override(&"font_color", _on_badge(face, color))
 
-	# A dot is a circle of a set diameter — there is no text, so give it a minimum size ourselves.
 	if dot:
-		var px := maxf(6.0, float(GoUi.metric(GoTheme.GAP_SMALL)))
 		custom_minimum_size = Vector2(px, px)
 	else:
 		# Keep a single digit round too — narrower than it is tall and it reads as a squashed pill.
@@ -128,13 +132,14 @@ func _refresh() -> void:
 	else: accessibility_name = ""
 
 
-## The text colour that stays legible on the badge panel.
-## 🛑 Do not just take `ON_ACCENT` — white text on a yellow warning badge does not even reach 2:1.
-##    Pick **whichever has the greater contrast**. The skin decides how the panel is painted, so no colour can be hard-coded.
-func _on_badge(background: Color) -> Color:
-	var light := GoUi.color(GoTheme.ON_ACCENT)
-	var dark := GoUi.color(GoTheme.BACKGROUND)
-	return light if GoSkin.contrast_ratio(light, background) >= GoSkin.contrast_ratio(dark, background) else dark
+## The text colour that stays legible on the badge panel — the badge's own colour, pushed until it reads **on the face
+## the skin actually paints**. The skin decides how the panel is painted, so no colour can be hard-coded.
+## 🛑 Measure against the painted face, not the badge colour. The text used to be picked against red while the skin
+##    paints the face in the surface colour: `on_accent` on `surface_high` is 1.69:1 in the default dark theme — the
+##    count could not be read (measured 2026-09-23). The slot's quantity badge already reads its face this way.
+func _on_badge(face: StyleBox, ink: Color) -> Color:
+	var back := GoSkin.blend(GoSkin.box_background(face), GoUi.color(GoTheme.SURFACE))
+	return GoSkin.readable_on(ink, back)
 
 
 func _on_ui_changed() -> void:
@@ -187,6 +192,10 @@ static func attach(host: Control, count := 0, words := "", as_dot := false,
 		node.anchor_top = 0.0
 		node.anchor_right = 1.0
 		node.anchor_bottom = 0.0
+		# It hangs over the host's corner on purpose — layout checks leave it out (`GoStyle.audit_layout`).
+		node.set_meta(&"go_overlay", true)
+		# 🔑 The count changes the badge's size (`3` → `128`), and the corner has to stay at its center — re-pinned each time.
+		node.minimum_size_changed.connect(node._pin_to_corner, CONNECT_DEFERRED)
 		host.add_child(node)
 		host.set_meta(_ATTACHED, node)
 		node.tree_exited.connect(func() -> void:
@@ -196,19 +205,24 @@ static func attach(host: Control, count := 0, words := "", as_dot := false,
 	node.dot = as_dot
 	node.ink = color
 	node.set_count(count)
-	node.reset_size()
-	# Overlap by half — put the top right corner at the **centre** of the badge.
-	#
-	# 🛑 With anchors it is `offset_*`, not `position`. `Control.position` is in **parent coordinates**, so it
-	#    ignores the anchors and simply goes to that value — measured 2026-09-16: with the anchor on the right
-	#    (1.0), `position = (-8, -8)` took effect as written and put the badge **outside the parent's top left**.
-	#    (Before that, adding the parent width to `position` flung it one width off the other way.)
-	var half := node.size * 0.5
-	node.offset_left = -half.x
-	node.offset_top = -half.y
-	node.offset_right = half.x
-	node.offset_bottom = half.y
+	node._pin_to_corner()
 	return node
+
+
+## Overlap by half — put the host's top right corner at the **centre** of the badge.
+##
+## 🛑 With anchors it is `offset_*`, not `position`. `Control.position` is in **parent coordinates**, so it
+##    ignores the anchors and simply goes to that value — measured 2026-09-16: with the anchor on the right
+##    (1.0), `position = (-8, -8)` took effect as written and put the badge **outside the parent's top left**.
+##    (Before that, adding the parent width to `position` flung it one width off the other way.)
+## 🛑 From the minimum size, and again whenever it changes — measured once at attach time, the offsets froze and a count
+##    that grew from `3` to `128` hung off-center.
+func _pin_to_corner() -> void:
+	var half := get_combined_minimum_size() * 0.5
+	offset_left = -half.x
+	offset_top = -half.y
+	offset_right = half.x
+	offset_bottom = half.y
 
 
 ## Detach the attached badge. Does nothing if there is none.

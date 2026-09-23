@@ -290,9 +290,24 @@ func slot_ink(accent: Color, lit: bool) -> Color:
 
 ## Panel for a section heading (`GoStyle.section()`). 🛑 By default it **draws nothing** — the original
 ## look is a single dim line of text, and drawing anything here would be changing that default look.
-## A skin that wants a marker overrides it.
+## A skin that wants a marker overrides it — and keeps the rhythm with `section_rhythm()`.
+##
+## 🔑 **It does push the heading away from what came before.** A heading belongs to what follows it: in a column it sat
+##    12dp from the group above and 12dp from its own, so the eye could not tell where one group ended (2026-09-23 audit).
 func section_box() -> StyleBox:
-	return StyleBoxEmpty.new()
+	return section_rhythm(StyleBoxEmpty.new())
+
+
+## 🔑 Gives a heading face **more room above than below**: the column's gap on top of whatever the face keeps under its
+## text. A heading then sits `gap + bottom` further from the group above than from its own. Returns the face.
+## The room above is space, not heading — a face that draws (a rule, a side bar) still starts at the text.
+func section_rhythm(face: StyleBox) -> StyleBox:
+	var above := float(GoUi.metric(GoTheme.GAP)) + maxf(0.0, face.content_margin_bottom)
+	var added := above - maxf(0.0, face.content_margin_top)
+	face.content_margin_top = above
+	var flat := face as StyleBoxFlat
+	if flat != null: flat.expand_margin_top = -added
+	return face
 
 
 ## Color of a single divider line. This is where the rhythm of the screen comes from.
@@ -457,6 +472,19 @@ func _edge_fill(box: StyleBox, ink: Color) -> void:
 
 
 # ── HUD ────────────────────────────────────────────────────────────────
+
+## 🔑 Face of an **indicator dot** — a carousel's page dots, a badge in dot mode, a chart legend's key. A solid round mark
+## [param diameter] tall in [param ink] (a longer box draws a pill — the lit page dot).
+## 🛑 Not `badge_box` — that is a text badge's faint face (surface colour, a thin outline, 5dp padding). On an 8dp dot it
+##    drew a hollow speck, and a legend key showed its colour only in a hairline (user report 2026-09-23).
+func dot_box(ink: Color, diameter := 8.0) -> StyleBox:
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = Color(ink, 1.0)
+	flat.set_corner_radius_all(maxi(1, ceili(diameter * 0.5)))
+	flat.corner_detail = 8
+	flat.set_content_margin_all(0)
+	return flat
+
 
 ## Panel for the **small badge** (quantity·shortcut) laid on a slot corner. Hanging it over the corner
 ## instead of stacking icon and text vertically leaves the icon large and centered (2026-09-13 — stacked

@@ -6,6 +6,25 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **The icon library — 1,000 more icons in 32 groups (`GoIconLibrary`).** Arrows, system and status, devices and
+  signal, media, messages, documents, commerce, currencies, map, buildings, vehicles, weather, nature, animals, food,
+  health, sport, games, faces, hands, shapes, symbols, zodiac, charts, math and more — Tabler Icons 3.46.0 path data
+  (MIT), the same 24 px grid and 2 px round stroke as the default set. `GoUi.add_icons(GoIconLibrary.icon_set())`
+  makes 1,271 names drawable (the library falls back to the game set). No brand logos, no letters or numbers, nothing
+  the game set already draws; a drawing that repeats a default icon became an alias of it (`x` → `close`). Built from
+  the table `tools/icon_library_data.py` by `tools/make_icon_library.py` (`--check`, `--import <tabler package>`).
+- **Extra icon sets that survive a preset — `GoConfig.extra_icons` and `GoUi.add_icons(set)`.** `GoUi.icons()` layers
+  them under the set in use, so the medieval preset keeps its engraved sword while the game set and the library fill
+  in the names it lacks. Before, plugging the game set into `config.icons` replaced the preset's set.
+- **Finding icons — `GoIconSet.search()`, `group_names()`, `names_in_group()`, `group_title()`, `group_of()`,
+  `canonical()`**, fed by the new data fields `aliases`, `groups`, `group_titles` and `tags` (every bundled set has
+  them; the default set's 84 names sit in nine groups). **`GoIconSet.from_folder(dir)`** makes a set of a folder of
+  pictures, file name = icon name.
+- **`GoIconSet.paths` (+ `folder`) — drawings loaded when first drawn**, and **`layers`** — more sets to look in.
+  A `.tres` holding 1,000 textures read them all on open (≈90 ms on a desktop); a table of paths reads in ≈5 ms and
+  each icon in ≈0.2 ms. The game set and the library use it.
+- **An Icons page on the website, in 17 languages** — the whole catalog with search, set and group filters and the code
+  to use a picked icon, then how a name is found, presets and extra sets, your own drawings, naming and licenses.
 - **One contract for content inside a pressable cell — `GoStyle.cell_body()`, `cell_inset()`, `center_in()`,
   `face_clearance()` and `audit_cell_layout()`.** A `Button` is not a container: its face pads only its own text, and it
   does not grow for a child, so every widget that stacked content inside one had to get padding, sizing and
@@ -15,8 +34,42 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   both axes. `center_in(node)` centers a mark by its own size. `audit_cell_layout(root)` lists the boxes that break
   the contract (box smaller than its content, padding thinner than the face, text cut or folded, a mark off center);
   the tests run it over every cell-shaped widget in all six looks, inside a form and out, left to right and right to left.
+- **`GoStyle.audit_layout(root)` — measures a whole laid-out screen.** It lists what a clipping parent cuts, what runs
+  past the side of the screen, what reaches outside a non-container parent, what is squeezed, a label folding inside a
+  word, text on its face's side and a button too small to press. Every widget had passed its own checks while the gallery
+  was broken on a phone; `tests/gohud_layout_test.gd` now opens the real gallery in all six looks at 320, 390 and 1280 dp,
+  in both directions and in German and Russian, and must find nothing — after proving each rule catches a built fault.
+- **`GoStyle.one_line(label)`** keeps a label on one line inside a `GoForm` too. A check fails any add-on code that sets
+  `AUTOWRAP_OFF` without it.
+- **`GoSkin.dot_box(ink, diameter)`** — a solid round mark for page dots, dot badges and legend keys — and
+  **`GoSkin.section_rhythm(face)`** for skins that draw their own section heading. **`GoDrawer.min_width`** (320).
 
 ### Changed
+
+- **How a name is found: every set's own drawings first, then fallbacks, then one alias hop.** `GoIconSet` looks level by
+  level through the set, its `layers` and their `fallback`s, so a partial set whose fallback is the default set no longer
+  hides a medieval engraving layered after it. A plain fallback chain resolves exactly as before.
+- **The game set holds paths, not textures** (`GoGameIcons.icon_set().textures` is empty; read `paths`) — asking for the
+  set no longer reads its 187 drawings. It gained groups, search words and each Tabler row's Tabler name as an alias.
+- **The website counts icons from the sets.** The front page said "100 icons" and `v1.0.1` in 17 languages while there
+  were 287 icons and 1.1.0; badges and license lines now carry `data-n` counts that `tools/make_icons_page.py` rewrites.
+- **`GoStyle.form()` fills in only what a widget left unspecified.** A box whose spacing is not `gap` keeps it (an input
+  group's 0, a field's 4, a carousel's 8), and a button or field with its own height keeps it (a 36 dp icon button, a
+  48 dp compact button). Inside a form an input group had been torn 12 dp apart and icon buttons stretched to 36×52.
+- **`GoCarousel` is as tall as its tallest page, and its dots are one bar.** The pages' height is fed up, so a banner
+  is never sliced (a fixed 120 dp cut the gallery's banner title in half). The dots are solid and close together, the lit
+  one a longer pill; the bar is a finger tall — a press on a dot goes to that page, a press either side goes one page.
+- **`GoPagination` fits the width it is given** — fewer numbers on a narrow row, `‹ 5 / 12 ›` when not even three fit.
+  A 12-page pager needed 457 dp and pushed a 390 dp phone's whole gallery page 121 dp off the screen.
+- **`GoCodeInput` folds at its group breaks** (`cells_row` is now a flow row) instead of running past a phone's width.
+- **`GoDrawer` keeps a readable width on a phone** — 320 dp, or the screen less a strip to tap it shut; 42% of a
+  390 dp phone was 164 dp and broke words in two.
+- **Section headings sit closer to the group they open** — room above a heading is now larger than below, in all
+  three skins (the scifi accent bar is a flat face so the room does not stretch it).
+- **`GoBadge` text is picked against the face actually painted.** It was chosen against red but drawn on the surface
+  colour — 1.69:1 in the default dark theme. A dot badge is a solid dot; an attached badge re-centres when its count grows.
+- A `Tone.BARE` button is at least the touch size both ways; a donut legend's key is a solid dot; the quick slot's
+  shortcut number keeps clear of the face's border and corner.
 
 - **`GoRewardCalendar` is laid out by its content.** Cells are square, padded, the same size and never below the
   touch minimum; the picture is 24 dp (a positive `cell_size` is now a floor and sets the picture to 36% of it); the
@@ -30,6 +83,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoStyle.card()` wears the gohud card face in a project with no theme of its own.** It read its face before the
+  theme had settled on the new node and recorded the engine's bare panel — no padding, a 3 dp corner, text on the
+  border. The face is now read from the theme itself (`fade_panel`); a host project's own theme had been hiding it.
+- **A count badge, a key hint's `+` and a pager's `…` stay one line inside a `GoForm`** — the badge had grown to 65×65.
 - **Icon-font glyphs no longer wrap inside a `GoForm`.** A form turns wrapping on for every label unless told not
   to, and a glyph label grew from 24 to 51 dp tall — the crown made day 7 of the gallery's calendar a size larger
   than the other days. `GoIconSet.node()` marks its glyphs `go_no_wrap` (and `go_icon`).

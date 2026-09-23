@@ -201,7 +201,7 @@ func _build_head() -> void:
 			var text := GoStyle.label(tr(words) if bool(col["translate"]) else words,
 				GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 			text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if bool(col["numeric"]) else HORIZONTAL_ALIGNMENT_LEFT
-			text.autowrap_mode = TextServer.AUTOWRAP_OFF
+			GoStyle.one_line(text)
 			text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			node = text
 		_size_cell(node, col)
@@ -244,7 +244,7 @@ func _make_row(source: int, position: int) -> Control:
 			#    `Button` (not a container) by anchors, so **its width is 0 on the first layout**. The minimum height of a
 			#    wrapping label was taken as 1dp there and set that way, leaving nothing but the panel on screen with the text
 			#    gone entirely (found in a virtual-monitor capture 2026-09-16 — all 120 headless tests had passed).
-			text.autowrap_mode = TextServer.AUTOWRAP_OFF
+			GoStyle.one_line(text)
 			text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			text.size_flags_vertical = Control.SIZE_FILL
 			text.clip_text = true

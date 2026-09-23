@@ -59,6 +59,13 @@ enum Side {
 		max_width = value
 		_relayout()
 
+## The narrowest it gets (dp) — on a phone the ratio gives way to this, less a strip left to tap the drawer shut.
+## 🛑 42% of a 390dp phone is 164dp: "Potion 1" broke inside the word and so did the header's "Bag" (measured 2026-09-23).
+@export var min_width := 320.0:
+	set(value):
+		min_width = value
+		_relayout()
+
 ## 🪟 **Opacity** of the drawer panel's ground (0.0~1.0). **Negative uses the card value the theme and settings decide** (default).
 ## 🛑 Only the ground thins out — text, icons and buttons stay crisp.
 @export_range(-1.0, 1.0, 0.01) var alpha := -1.0:
@@ -222,7 +229,10 @@ func _relayout() -> void:
 	#    safe area — pull the panel inward and a band of page colour appears at the edge, making the drawer look like it floats.
 	var full := window.get_visible_rect()
 	var area := GoSafeArea.usable_rect(window)
-	var width := minf(full.size.x * width_ratio, max_width) if max_width > 0.0 else full.size.x * width_ratio
+	# The ratio on a wide screen, a readable floor on a narrow one — minus a strip of screen left to tap it shut.
+	var tap_away := float(GoUi.metric(GoTheme.TOUCH) + GoUi.metric(GoTheme.GAP_SMALL))
+	var width := maxf(full.size.x * width_ratio, minf(min_width, full.size.x - tap_away))
+	if max_width > 0.0: width = minf(width, max_width)
 	width = maxf(width, 160.0)
 	panel.size = Vector2(width, full.size.y)
 	var at_left := effective_side() == Side.LEFT

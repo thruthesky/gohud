@@ -145,7 +145,7 @@ func _joiner() -> Control:
 	var plus := GoStyle.label("+", GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED))
 	plus.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	plus.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	plus.autowrap_mode = TextServer.AUTOWRAP_OFF
+	GoStyle.one_line(plus)
 	plus.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	return plus
 

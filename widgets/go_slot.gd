@@ -149,6 +149,8 @@ func _ready() -> void:
 	_quantity_badge = PanelContainer.new()
 	_quantity_badge.name = "QuantityBadge"
 	_quantity_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# It hangs 2dp over the bottom-right corner on purpose — layout checks leave it out.
+	_quantity_badge.set_meta(&"go_overlay", true)
 	_face.add_child(_quantity_badge)
 	_quantity = _line("Quantity", GoTheme.ROLE_MICRO)
 	_quantity_badge.add_child(_quantity)
@@ -244,9 +246,11 @@ func _fit() -> void:
 	var timer_size := _timer_badge.get_combined_minimum_size()
 	_timer_badge.size = timer_size
 	_timer_badge.position = ((Vector2(visual, visual) - timer_size) * 0.5).round()
-	# Shortcut: top-left corner, natural size.
+	# Shortcut: top-left corner, natural size — inside the room the face's border and rounded corner need.
+	# 🛑 It sat at a fixed (3, 1): 1dp under the top border, and into the corner's curve on a thicker skin (2026-09-23 audit).
 	var shortcut_size := _shortcut.get_combined_minimum_size()
-	_shortcut.position = Vector2(3.0, 1.0)
+	var inset := float(GoStyle.face_clearance(_face))
+	_shortcut.position = Vector2(inset, inset)
 	_shortcut.size = shortcut_size
 	_shortcut.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	# Quantity badge: hangs on the bottom-right corner.

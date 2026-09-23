@@ -18,7 +18,13 @@
 ## auto-advance **does not happen** — nothing is lost, since the dots still flip pages by hand.
 ##
 ## ## 🔑 The dots say how many pages there are and which one you are on
-## Without dots you cannot even tell the strip swipes sideways. The dots are **pressable**, and they keep the touch minimum.
+## Without dots you cannot even tell the strip swipes sideways. The dots are **one bar the height of a finger**: a press
+## on a dot goes to that page, and a press on the open bar either side goes one page that way — so the press area is the
+## whole width however close the dots sit. The arrow keys step too, and a screen reader hears "2 / 3".
+##
+## ## 🔑 It is as tall as its tallest page
+## The pages' minimum height is fed up to the carousel, so a banner's text is never sliced off. `custom_minimum_size`
+## stays a floor — give it for a fixed art height, not to make room.
 @tool
 class_name GoCarousel
 extends VBoxContainer
@@ -49,8 +55,11 @@ signal page_changed(index: int)
 
 var _viewport: Control
 var _strip: Control
-var _dots: HBoxContainer
+## The page dots — **one bar**, drawn, not a button per dot (see `_build_dots`).
+var _dots: Control
 var _pages: Array[Control] = []
+## The frame a press was last handled on — a touch and the mouse press emulated from it must not step twice.
+var _pressed_frame := -1
 var _index := 0
 var _tween: Tween
 var _drag_from := Vector2.INF
@@ -69,6 +78,8 @@ func _init() -> void:
 	_viewport.gui_input.connect(_on_input)
 	# 🛑 The swipe direction is **physical** — flipping the order of dots and pages with the text direction is only confusing.
 	_viewport.layout_direction = Control.LAYOUT_DIRECTION_LTR
+	# The page strip runs past the viewport sideways on purpose — `GoStyle.audit_layout` reads this.
+	_viewport.set_meta(&"go_pages", true)
 	add_child(_viewport)
 
 	_strip = Control.new()
@@ -76,10 +87,18 @@ func _init() -> void:
 	_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_viewport.add_child(_strip)
 
-	_dots = GoStyle.row(GoUi.metric(GoTheme.GAP_TINY))
+	_dots = Control.new()
 	_dots.name = "Dots"
-	_dots.alignment = BoxContainer.ALIGNMENT_CENTER
+	# 🛑 Physical, like the swipe — the dots run the same way the pages slide.
 	_dots.layout_direction = Control.LAYOUT_DIRECTION_LTR
+	_dots.mouse_filter = Control.MOUSE_FILTER_STOP
+	_dots.focus_mode = Control.FOCUS_ALL
+	_dots.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_dots.draw.connect(_draw_dots)
+	_dots.gui_input.connect(_on_dots_input)
+	_dots.focus_entered.connect(_dots.queue_redraw)
+	_dots.focus_exited.connect(_dots.queue_redraw)
+	_dots.resized.connect(_dots.queue_redraw)
 	add_child(_dots)
 
 
@@ -99,7 +118,9 @@ func set_pages(pages: Array) -> void:
 	# 🛑 **Never free the page nodes handed in** — call this twice reusing the same banner and you end up re-parenting a
 	#    freed node. Ownership stays with the caller (the same rule as `GoTable`).
 	for node in _pages:
-		if is_instance_valid(node) and node.get_parent() == _strip: _strip.remove_child(node)
+		if not is_instance_valid(node): continue
+		if node.minimum_size_changed.is_connected(_fit_height): node.minimum_size_changed.disconnect(_fit_height)
+		if node.get_parent() == _strip: _strip.remove_child(node)
 	for child in _strip.get_children(): child.queue_free()
 	_pages.clear()
 	for page in pages:
@@ -108,7 +129,10 @@ func set_pages(pages: Array) -> void:
 		node.mouse_filter = Control.MOUSE_FILTER_PASS
 		_pages.append(node)
 		_strip.add_child(node)
+		# Deferred — growing the viewport inside the signal that measured the page would re-enter the layout pass.
+		node.minimum_size_changed.connect(_fit_height, CONNECT_DEFERRED)
 	_index = clampi(_index, 0, maxi(0, _pages.size() - 1))
+	_fit_height()
 	_build_dots()
 	_relayout()
 	_sync_timer()
@@ -144,6 +168,19 @@ func previous() -> void:
 	go_to(_index - 1)
 
 
+## 🔑 **The height is the tallest page's.** The viewport is a plain `Control` (it has to clip the strip), and a plain
+##    `Control` does not take its children's minimum size — so the pages' height is fed to it here.
+## 🛑 Measured 2026-09-23 on the gallery: a 120dp carousel left the viewport 52dp for a banner that needs 84, and the
+##    banner's title was sliced through the middle (user report).
+func _fit_height() -> void:
+	if _viewport == null: return
+	var tallest := 0.0
+	for page in _pages:
+		if is_instance_valid(page): tallest = maxf(tallest, page.get_combined_minimum_size().y)
+	# 🛑 Only when it really changes — setting the same size again fires `minimum_size_changed` forever.
+	if not is_equal_approx(_viewport.custom_minimum_size.y, tallest): _viewport.custom_minimum_size.y = tallest
+
+
 func _relayout() -> void:
 	if _viewport == null: return
 	var box := _viewport.size
@@ -166,40 +203,110 @@ func _slide(animate: bool) -> void:
 	_tween.tween_property(_strip, "position:x", rest, motion_seconds).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 
 
+## 🔑 **The dots are one bar the height of a finger** — drawn, not a button per dot.
+## 🛑 A 48dp button per dot kept the touch minimum but spread three 8dp dots about 60dp apart, and the badge face
+##    they borrowed drew them as hollow outlines — specks, not "page 1 of 3" (user report 2026-09-23). Overlapping the
+##    buttons at a tight pitch was the other way out, but then the middle dot's real share is only the pitch — the touch
+##    minimum broken in fact. One bar keeps the press area wide and lets the dots sit close.
 func _build_dots() -> void:
 	if _dots == null: return
-	for child in _dots.get_children(): child.queue_free()
 	_dots.visible = show_dots and _pages.size() > 1
-	if not _dots.visible: return
+	_dots.custom_minimum_size = Vector2(_dots_width(), float(GoUi.metric(GoTheme.TOUCH)))
+	# ♿ "2 / 3" — the drawing on its own reads as nothing. 🔑 The "n / m" form goes through a text key.
+	_dots.accessibility_name = GoUi.text(&"bar_fraction").format({"value": _index + 1, "max": maxi(1, _pages.size())})
+	_dots.queue_redraw()
+
+
+## One dot's side (dp). The lit one is a pill this tall and 2.5× as long — its length says "you are here" without
+## leaning on colour alone.
+func _dot_side() -> float:
+	return float(GoUi.metric(GoTheme.GAP_SMALL))
+
+
+func _dots_width() -> float:
+	var count := _pages.size()
+	if count < 2: return 0.0
+	var side := _dot_side()
+	return side * 2.5 + side * float(count - 1) * 2.0
+
+
+## Where each dot sits in the bar — centered, left to right.
+func dot_rects() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	if _dots == null: return out
+	var side := _dot_side()
+	var x := (_dots.size.x - _dots_width()) * 0.5
+	var y := (_dots.size.y - side) * 0.5
 	for i in _pages.size():
-		var dot := Button.new()
-		dot.theme = GoUi.theme()
-		dot.theme_type_variation = GoTheme.VAR_BARE_BUTTON
-		dot.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-		# 🛑 The dot may look small, but **the press target stays at the touch minimum**. Multiplying by 0.6 to shrink it to
-		#    28.8dp was breaking that minimum ourselves (measured 2026-09-16). If the dots look crowded, shrink the dot,
-		#    never the press target.
-		var touch := float(GoUi.metric(GoTheme.TOUCH))
-		dot.custom_minimum_size = Vector2(touch, touch)
-		var lit := i == _index
-		# 🛑 A `Panel`, not a `PanelContainer` — the badge face pads 5dp a side, which made the container wider than the
-		#    dot and drew an oval. And centered by its own size (`center_in`): anchors alone put its corner on the center.
-		var glyph := Panel.new()
-		glyph.name = "Dot"
-		glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var side := float(GoUi.metric(GoTheme.GAP_SMALL)) * (1.0 if lit else 0.7)
-		glyph.custom_minimum_size = Vector2(side, side)
-		glyph.add_theme_stylebox_override(&"panel", GoUi.skin().badge_box(
-			GoUi.color(GoTheme.ACCENT) if lit else GoUi.color(GoTheme.MUTED)))
-		dot.add_child(glyph)
-		GoStyle.center_in(glyph)
-		var target := i
-		dot.pressed.connect(func() -> void:
+		var length := side * 2.5 if i == _index else side
+		out.append(Rect2(Vector2(x, y).round(), Vector2(length, side)))
+		x += length + side
+	return out
+
+
+func _draw_dots() -> void:
+	var rects := dot_rects()
+	if rects.is_empty(): return
+	var idle := _idle_ink()
+	var lit := GoUi.color(GoTheme.ACCENT)
+	for i in rects.size():
+		_dots.draw_style_box(GoUi.skin().dot_box(lit if i == _index else idle, rects[i].size.y), rects[i])
+	# ⌨ The focus ring goes round the dots, not round the whole bar.
+	if _dots.has_focus():
+		var ring := _dots.get_theme_stylebox(&"focus", &"Button")
+		if ring != null:
+			var around := Rect2(rects[0].position, Vector2(rects[-1].end.x - rects[0].position.x, rects[0].size.y))
+			_dots.draw_style_box(ring, around.grow(_dot_side()))
+
+
+## The dots that are not lit — dimmer than the lit one, but still a graphic that must read (3:1 on the page).
+func _idle_ink() -> Color:
+	return GoSkin.readable_on(GoUi.color(GoTheme.MUTED), GoUi.color(GoTheme.BACKGROUND), 3.0)
+
+
+func _on_dots_input(event: InputEvent) -> void:
+	var at := Vector2.INF
+	var touch := event as InputEventScreenTouch
+	if touch != null and not touch.pressed: at = touch.position
+	var mouse := event as InputEventMouseButton
+	if mouse != null and mouse.button_index == MOUSE_BUTTON_LEFT and not mouse.pressed: at = mouse.position
+	if at.is_finite():
+		_dots.accept_event()
+		if _pressed_frame == Engine.get_process_frames(): return
+		_pressed_frame = Engine.get_process_frames()
+		press_dots_at(at)
+		return
+	if event.is_action_pressed(&"ui_left"):
+		_dots.accept_event()
+		_step(-1)
+	elif event.is_action_pressed(&"ui_right"):
+		_dots.accept_event()
+		_step(1)
+
+
+## A press on the dot bar at [param at] (bar coordinates). On the dots it goes to the dot nearest the press — you land
+## on the page you pointed at. On the open bar either side it goes one page that way.
+## 🔑 That keeps both promises: the page you pointed at, and a press area far wider than the touch minimum. Split the
+##    bar into equal parts instead and the parts no longer sit under the dots — every dot of a centered row of three
+##    falls in the middle third.
+func press_dots_at(at: Vector2) -> void:
+	var rects := dot_rects()
+	if _index >= rects.size(): return
+	var reach := _dot_side() * 0.5
+	if at.x >= rects[0].position.x - reach and at.x <= rects[-1].end.x + reach:
+		var nearest := 0
+		for i in rects.size():
+			if absf(rects[i].get_center().x - at.x) < absf(rects[nearest].get_center().x - at.x): nearest = i
+		if nearest != _index:
 			GoFeedback.tapped()
-			go_to(target))
-		# ♿ "2 of 3" — the dot graphic on its own reads as nothing.
-		dot.accessibility_name = GoUi.text(&"bar_fraction").format({"value": i + 1, "max": _pages.size()})
-		_dots.add_child(dot)
+			go_to(nearest)
+		return
+	_step(-1 if at.x < rects[0].position.x else 1)
+
+
+func _step(direction: int) -> void:
+	GoFeedback.tapped()
+	go_to(_index + direction)
 
 
 func _on_input(event: InputEvent) -> void:
@@ -248,6 +355,7 @@ func _sync_timer() -> void:
 
 func _on_ui_changed() -> void:
 	add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_SMALL))
+	_fit_height()
 	_build_dots()
 	_sync_timer()
 

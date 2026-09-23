@@ -225,6 +225,8 @@ func _build_page() -> void:
 	_build_opacity(page)
 	_build_new_widgets(page)
 
+	# A heading of its own — straight under the carousel's dots, the empty state read as part of the carousel.
+	page.add_child(GoStyle.section("Empty state", false))
 	page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet", false))
 
 
@@ -383,18 +385,19 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	page.add_child(charts)
 	page.add_child(donut.legend())
 
+	page.add_child(GoStyle.section("Carousel", false))
+	# 🔑 No fixed height — the carousel is as tall as its tallest banner. (A fixed 120 sliced the title in half, 2026-09-23.)
 	var carousel := GoCarousel.new()
-	carousel.custom_minimum_size.y = 120
 	page.add_child(carousel)
 	var banners: Array[Control] = []
 	for pair in [["Spring event", GoTheme.ACCENT], ["Double XP", GoTheme.SUCCESS], ["New skins", GoTheme.WARNING]]:
+		# The card's face pads its content — no second `padding()` inside it.
 		var banner := GoStyle.card(GoUi.color(pair[1]))
-		var inner := GoStyle.padding()
 		var words := GoStyle.label(str(pair[0]), GoTheme.ROLE_SUBTITLE, GoUi.color(pair[1]))
 		words.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		words.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		inner.add_child(words)
-		banner.add_child(inner)
+		words.custom_minimum_size.y = float(GoUi.metric(GoTheme.TOUCH)) * 1.5
+		banner.add_child(words)
 		banners.append(banner)
 	carousel.set_pages(banners)
 	carousel.page_changed.connect(func(index: int) -> void: _say("banner %d" % index))

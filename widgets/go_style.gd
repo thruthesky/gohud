@@ -415,6 +415,9 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 		# Clears faces (overrides) left on a scene-built button — a bare button is whatever the theme variation draws.
 		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]:
 			node.remove_theme_stylebox_override(state)
+		# 🛑 No face, but still a place a finger presses — a short word ("Bare", "OK") left it 36dp wide (2026-09-23 audit).
+		var touch := float(GoUi.metric(GoTheme.TOUCH))
+		node.custom_minimum_size = node.custom_minimum_size.max(Vector2(touch, touch))
 		return
 	# 🛑 A small button (COMPACT) **leaves the width flag alone** — the caller often places it with
 	#    SHRINK_BEGIN/END, and pinning EXPAND_FILL here overwrites what they set already (2026-09-12, 5 call
@@ -1224,7 +1227,7 @@ static func fade_panel(node: Control, alpha := -1.0, state := &"panel",
 	if base == null:
 		# 🛑 Lift the override off first — otherwise an already thinned face is recorded as the "original face".
 		node.remove_theme_stylebox_override(state)
-		base = node.get_theme_stylebox(state)
+		base = _theme_face(node, state)
 		if base == null: return
 		node.set_meta(key, base)
 	var opacity := alpha if alpha >= 0.0 else GoUi.surface_alpha(variant)
@@ -1232,6 +1235,31 @@ static func fade_panel(node: Control, alpha := -1.0, state := &"panel",
 		node.remove_theme_stylebox_override(state)
 		return
 	node.add_theme_stylebox_override(state, GoSkin.fade_box(base.duplicate(), opacity))
+
+
+## The face the theme gives [param node] for [param state], **read from the theme itself** — its type variation first,
+## then its class and the classes above it — and only then asked of the node.
+## 🛑 Not `get_theme_stylebox()` on a node just made: until the theme settles on it (a frame later) that answers from the
+##    engine's default theme. `card()` recorded that bare face as "the original" and every gohud card lost its own —
+##    no padding, a 3dp corner, the text on the border (measured 2026-09-23 in a project with no theme of its own; a host
+##    project's theme had been hiding it).
+static func _theme_face(node: Control, state: StringName) -> StyleBox:
+	# Only the themes that really apply to the node — its own, then its parents'. Nothing themed: ask the engine.
+	var walk: Node = node
+	while walk != null:
+		var owner := walk as Control
+		if owner != null and owner.theme != null:
+			var theme := owner.theme
+			var kind := node.theme_type_variation
+			while kind != &"":
+				if theme.has_stylebox(state, kind): return theme.get_stylebox(state, kind)
+				kind = theme.get_type_variation_base(kind)
+			var type := StringName(node.get_class())
+			while type != &"" and type != &"Control":
+				if theme.has_stylebox(state, type): return theme.get_stylebox(state, type)
+				type = ClassDB.get_parent_class(type)
+		walk = walk.get_parent()
+	return node.get_theme_stylebox(state)
 
 
 ## **Forgets** the "original face" `fade_panel()` recorded — so that after a theme or look swap the next
@@ -1842,23 +1870,64 @@ static func tooltip_node(text: String, max_width := 260.0) -> Control:
 ## 🛑🛑 It **guarantees** wrapping on descendant `Label`s. Without it one long sentence runs on a single line
 ##    and its minimum width runs off the screen, cutting both sides — you cannot even tell which screen you are on.
 ##    Turning it on by hand per scene **is always forgotten somewhere.** So the container guarantees it itself.
+##    A label that must stay on one line (a count, a `+`, a `…`) says so with `one_line()`.
+##
+## 🔑 **It fills in only what was left unspecified — a value a widget chose on purpose is kept.**
+## - Spacing: a box whose `separation` differs from the `gap` token keeps it (an input group's 0, a field's 4, a
+##   carousel's 8). A box left at `gap` — or with no spacing of its own — gets the form's `gap`.
+## - Height: a button or a field that already has a `custom_minimum_size.y` keeps it (a 36dp icon button, a 48dp compact
+##   button, a page dot). One with none gets the button height.
+## 🛑 Measured 2026-09-23 on the gallery, while the form still overwrote everything: an input group torn 12dp apart, a
+##    field's label pushed off its field, a pager 457dp wide, icon buttons stretched to 36×52 — every widget looked right
+##    outside a form and wrong inside one.
 static func form(node: Node) -> void:
 	# 🛑 A group that keeps its own spacing (`field()` — its label must stay attached to its field) is left alone.
 	if node is BoxContainer and not node.has_meta(&"go_own_spacing"):
-		node.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP))
+		# 🛑 Not `has_theme_constant_override()` — `column()` and `row()` set one on every box they make, so that would
+		#    excuse every box gohud builds. The value tells: anything but `gap` was chosen.
+		var gap := GoUi.metric(GoTheme.GAP)
+		var own: bool = node.has_theme_constant_override(&"separation") and not node.has_meta(&"go_form_spacing") \
+			and node.get_theme_constant(&"separation") != gap
+		if not own:
+			node.add_theme_constant_override(&"separation", gap)
+			node.set_meta(&"go_form_spacing", true)
 	if node is Button:
-		node.custom_minimum_size.y = maxf(node.custom_minimum_size.y, GoUi.metric(GoTheme.BUTTON_HEIGHT))
+		_form_height(node)
 		# 🛑 Anything shown at natural width (a cell in a flow row, a single word like "Back") is left alone.
 		if GoUi.config.autowrap_text: fit_words(node)
-		if node.get_class() == "Button" and node.theme_type_variation == &"":
+		# A scene-built button with no look of its own gets the spec. One a widget already sized is that widget's.
+		if node.get_class() == "Button" and node.theme_type_variation == &"" and node.has_meta(&"go_form_height"):
 			style_button(node)
 	if node is Label:
 		node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if GoUi.config.autowrap_text and not node.has_meta(&"go_no_wrap") and node.autowrap_mode == TextServer.AUTOWRAP_OFF:
 			node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if node is LineEdit:
-		node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
+		_form_height(node)
 	for child in node.get_children(): form(child)
+
+
+## Gives a button or a field the form's height — unless it already has one of its own, or its parent hands it one
+## (anchored top to bottom in a box that is not a container, like a code field laid over its cells).
+static func _form_height(node: Control) -> void:
+	if node.custom_minimum_size.y > 0.0 and not node.has_meta(&"go_form_height"): return
+	var parent := node.get_parent() as Control
+	if parent != null and not (parent is Container) and not is_equal_approx(node.anchor_top, node.anchor_bottom): return
+	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
+	node.set_meta(&"go_form_height", true)
+
+
+## 🔑 **Keeps a label on one line** — a count, a `+` between keys, a `…`, a code character, a value next to a bar.
+## Turns wrapping off and marks it (`go_no_wrap`), so `form()` does not turn it back on. Returns the label.
+##
+## 🛑 Setting `autowrap_mode = AUTOWRAP_OFF` alone is not enough inside a `GoForm`: the form turns wrapping on for
+##    every label left at OFF, and a wrapping label's minimum width is 1dp. A count badge's `NEW` folded letter by letter
+##    and the badge copied that height into its width — a 65×65 block; the `+` of a key hint went 1dp wide
+##    (measured 2026-09-23). A check in the tests fails any widget that sets OFF without this.
+static func one_line(node: Label) -> Label:
+	node.autowrap_mode = TextServer.AUTOWRAP_OFF
+	node.set_meta(&"go_no_wrap", true)
+	return node
 
 
 # ── Selection and menus ────────────────────────────────────────────────
@@ -2308,10 +2377,9 @@ static func avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture:
 	for word in text.split(" ", false):
 		initials += word.substr(0, 1).to_upper()
 		if initials.length() >= 2: break
-	var mark := label(initials, GoTheme.ROLE_BUTTON, ink)
+	var mark := one_line(label(initials, GoTheme.ROLE_BUTTON, ink))
 	mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	mark.autowrap_mode = TextServer.AUTOWRAP_OFF
 	mark.add_theme_font_size_override(&"font_size", maxi(8, roundi(size * 0.4)))
 	node.add_child(mark)
 	return node
@@ -2572,3 +2640,176 @@ static func _audit_centered(node: Control, problems: Array[String]) -> void:
 	if offset.length() > 1.0:
 		var where := str(node.get_path()) if node.is_inside_tree() else node.name
 		problems.append("%s: %.1fdp off its parent's center" % [where, offset.length()])
+
+
+# ── Layout audit — a whole screen ──────────────────────────────────────
+#
+# 🛑 A value check never saw these: a carousel slicing its banner in half, a pager dragging the whole page 121dp off a
+#    phone, a `+` squeezed to 1dp — each widget looked right on its own (the gallery, 2026-09-23). Only measuring the
+#    laid-out tree finds them, so the rules are written once, here, and the tests run them over the real gallery.
+
+## 🔎 **Finds what is cut, spilled or squeezed on a laid-out screen** — empty means clean. Returns `"path: problem"` lines:
+## - **cut** — a control cut by a clipping ancestor on an axis that does not scroll (a carousel's page strip scrolls sideways).
+## - **past the screen** — a control running past the side of the window (nothing scrolls sideways at the top).
+## - **outside** — a control reaching outside a parent that is not a container (a `Button`, a `Panel`, a plain `Control`).
+## - **squeezed** — a control smaller than its own minimum size.
+## - **folds inside a word** — a wrapping label whose box is narrower than its longest word.
+## - **touches the edge** — a label's text closer to the side of the face drawn behind it than the face needs (`face_clearance`).
+## - **small to press** — a button smaller than the touch size on a side (`GoIconButton` counts its widened reach).
+## It also runs `audit_cell_layout()`. A node that hangs over an edge on purpose (a corner badge) carries `go_overlay` and is
+## left out with everything inside it.
+## 🛑 It reads nodes. Text drawn with `draw_string` (a radar's axis names, a donut's center) is invisible to it.
+## 🛑 Lay the tree out first — a frame or two after it enters. An unmeasured tree has nothing to find.
+static func audit_layout(root: Node) -> Array[String]:
+	var problems: Array[String] = []
+	_audit_layout(root, problems)
+	problems.append_array(audit_cell_layout(root))
+	return problems
+
+
+static func _audit_layout(node: Node, problems: Array[String]) -> void:
+	var control := node as Control
+	if control != null:
+		if not control.is_visible_in_tree() or control.has_meta(&"go_overlay"): return
+		_audit_box(control, problems)
+	elif node is CanvasLayer and not (node as CanvasLayer).visible: return
+	elif node is Window and not (node as Window).visible: return
+	for child in node.get_children(): _audit_layout(child, problems)
+
+
+static func _audit_box(control: Control, problems: Array[String]) -> void:
+	var rect := control.get_global_rect()
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0: return
+	var where := str(control.get_path()) if control.is_inside_tree() else String(control.name)
+	var parent := control.get_parent_control()
+	# Cut by a clipping ancestor — reported once, on the outermost control that crosses the edge.
+	var clipper := _clipping_ancestor(control)
+	if clipper != null and clipper.get_global_rect().intersects(rect):
+		var cut := _reach_out(rect, clipper)
+		var parent_cut := _reach_out(parent.get_global_rect(), clipper) if parent != null and parent != clipper else 0.0
+		if cut > 0.5 and parent_cut <= 0.5:
+			problems.append("%s: cut %.0fdp by %s" % [where, cut, clipper.name])
+	# Past the side of the screen — again only where it starts.
+	var view := control.get_viewport_rect()
+	var past := maxf(rect.end.x - view.end.x, view.position.x - rect.position.x)
+	if past > 0.5 and clipper == null:
+		var parent_past := 0.0
+		if parent != null:
+			var outer := parent.get_global_rect()
+			parent_past = maxf(outer.end.x - view.end.x, view.position.x - outer.position.x)
+		if parent_past <= 0.5:
+			problems.append("%s: runs %.0fdp past the side of the screen (it needs %.0fdp)" % [where, past,
+				control.get_combined_minimum_size().x])
+	# Outside a parent that does not lay it out.
+	if parent != null and not (parent is Container) and not parent.clip_contents and not control.top_level:
+		var outer := parent.get_global_rect()
+		var out := maxf(maxf(outer.position.x - rect.position.x, rect.end.x - outer.end.x),
+			maxf(outer.position.y - rect.position.y, rect.end.y - outer.end.y))
+		if out > 0.5 and outer.size.x > 0.0 and outer.size.y > 0.0:
+			problems.append("%s: reaches %.0fdp outside %s" % [where, out, parent.name])
+	var need := control.get_combined_minimum_size()
+	if control.size.x + 0.5 < need.x or control.size.y + 0.5 < need.y:
+		problems.append("%s: is %.0fx%.0f but needs %.0fx%.0f" % [where, control.size.x, control.size.y, need.x, need.y])
+	var label := control as Label
+	if label != null and not label.text.strip_edges().is_empty() and not label.has_meta(&"go_icon"):
+		_audit_words(label, where, problems)
+		_audit_text_edge(label, where, problems)
+	var pressable := control as BaseButton
+	if pressable != null and not pressable.disabled and pressable.mouse_filter != Control.MOUSE_FILTER_IGNORE:
+		var touch := float(GoUi.metric(GoTheme.TOUCH))
+		var reach := rect.size
+		# A `GoIconButton` draws small and presses big — its hit test reaches out to the touch size.
+		if control is GoIconButton: reach = reach.max(Vector2.ONE * float(GoUi.config.min_touch_size))
+		if reach.x + 0.5 < touch or reach.y + 0.5 < touch:
+			var words := (control as Button).text if control is Button else ""
+			problems.append("%s%s: %.0fx%.0f is small to press (touch %.0f)" % [where, " \"%s\"" % words if not words.is_empty() else "",
+				reach.x, reach.y, touch])
+
+
+## A wrapping label narrower than its longest word breaks the word itself (`Poti` / `on`).
+static func _audit_words(label: Label, where: String, problems: Array[String]) -> void:
+	if label.autowrap_mode == TextServer.AUTOWRAP_OFF: return
+	var font := label.get_theme_font(&"font")
+	var px := label.get_theme_font_size(&"font_size")
+	var shown := label.text.to_upper() if label.uppercase else label.text
+	var longest := 0.0
+	for word in shown.split(" ", false):
+		longest = maxf(longest, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1.0, px).x)
+	var room := label.size.x - label.get_theme_stylebox(&"normal").get_minimum_size().x
+	if longest > room + 1.0:
+		problems.append("%s: \"%s\" folds inside a word (a %.0fdp word in %.0fdp)" % [where, label.text.left(24), longest, room])
+
+
+## Text closer to the side of the face behind it than the face needs. Sideways only — a line box already carries the
+## font's own leading above and below, so a tight badge reads fine there.
+static func _audit_text_edge(label: Label, where: String, problems: Array[String]) -> void:
+	var face := _face_behind(label)
+	if face == null: return
+	var need := float(maxi(1, face_clearance(face)))
+	var box := face.get_global_rect()
+	var ink := label.get_global_rect()
+	if label.autowrap_mode == TextServer.AUTOWRAP_OFF and not label.clip_text \
+			and label.text_overrun_behavior == TextServer.OVERRUN_NO_TRIMMING:
+		var shown := label.text.to_upper() if label.uppercase else label.text
+		var wide := label.get_theme_font(&"font").get_string_size(shown, HORIZONTAL_ALIGNMENT_LEFT, -1.0,
+			label.get_theme_font_size(&"font_size")).x
+		if wide < ink.size.x:
+			var align := label.horizontal_alignment
+			if align == HORIZONTAL_ALIGNMENT_LEFT and label.is_layout_rtl(): align = HORIZONTAL_ALIGNMENT_RIGHT
+			elif align == HORIZONTAL_ALIGNMENT_RIGHT and label.is_layout_rtl(): align = HORIZONTAL_ALIGNMENT_LEFT
+			match align:
+				HORIZONTAL_ALIGNMENT_CENTER: ink = Rect2(ink.position.x + (ink.size.x - wide) * 0.5, ink.position.y, wide, ink.size.y)
+				HORIZONTAL_ALIGNMENT_RIGHT: ink = Rect2(ink.end.x - wide, ink.position.y, wide, ink.size.y)
+				_: ink = Rect2(ink.position.x, ink.position.y, wide, ink.size.y)
+	var left := ink.position.x - box.position.x
+	var right := box.end.x - ink.end.x
+	# Past the face altogether is "outside"/"cut", not this.
+	if left < -0.5 or right < -0.5: return
+	if left + 0.5 < need or right + 0.5 < need:
+		problems.append("%s: \"%s\" sits %.0f/%.0fdp from the sides of %s (the face needs %.0f)" % [where, label.text.left(24),
+			left, right, face.name, need])
+
+
+## The nearest ancestor that draws a face behind a control — a button's face, a panel's.
+static func _face_behind(control: Control) -> Control:
+	var node := control.get_parent_control()
+	while node != null:
+		var face: StyleBox = null
+		if node is Button: face = node.get_theme_stylebox(&"normal")
+		elif node is PanelContainer or node is Panel: face = node.get_theme_stylebox(&"panel")
+		if face != null and _face_is_drawn(face): return node
+		node = node.get_parent_control()
+	return null
+
+
+static func _face_is_drawn(face: StyleBox) -> bool:
+	if face is StyleBoxEmpty or face is StyleBoxLine: return false
+	var flat := face as StyleBoxFlat
+	if flat == null: return true
+	var edge := flat.border_width_left + flat.border_width_top + flat.border_width_right + flat.border_width_bottom
+	return (flat.draw_center and flat.bg_color.a > 0.05) or (edge > 0 and flat.border_color.a > 0.05)
+
+
+static func _clipping_ancestor(control: Control) -> Control:
+	var node := control.get_parent_control()
+	while node != null:
+		if node.clip_contents: return node
+		node = node.get_parent_control()
+	return null
+
+
+## How far [param rect] reaches out of [param clipper] on the axes that do not scroll.
+static func _reach_out(rect: Rect2, clipper: Control) -> float:
+	var room := clipper.get_global_rect()
+	var scroll_x := false
+	var scroll_y := false
+	var scroller := clipper as ScrollContainer
+	if scroller != null:
+		scroll_x = scroller.horizontal_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED
+		scroll_y = scroller.vertical_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED
+	# A strip of pages runs past its window sideways on purpose (`GoCarousel`).
+	elif clipper.has_meta(&"go_pages"): scroll_x = true
+	var worst := 0.0
+	if not scroll_x: worst = maxf(worst, maxf(room.position.x - rect.position.x, rect.end.x - room.end.x))
+	if not scroll_y: worst = maxf(worst, maxf(room.position.y - rect.position.y, rect.end.y - room.end.y))
+	return worst

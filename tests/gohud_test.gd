@@ -358,6 +358,10 @@ func _container_alpha() -> void:
 	# 🛑 Do not read the add-on theme directly — read **the panel the node actually receives**. If the host project
 	#    defines `GoCard` differently in its own theme, that wins (as it really does in Laryen 3D),
 	#    and the promise this check guards is exactly "that panel is used as-is". Remove the override and that panel appears.
+	# 🛑 **In the tree, a frame later** — asked right after it is made, a node answers from the engine's default theme, and
+	#    this check once matched `card()` recording that bare face (a project with no theme of its own, 2026-09-23).
+	root.add_child(plain_card)
+	await frames(1)
 	plain_card.remove_theme_stylebox_override(&"panel")
 	var base_face := plain_card.get_theme_stylebox(&"panel")
 	var faded_fill := GoSkin.box_background(faded_face)
@@ -2876,9 +2880,11 @@ func _widgets() -> void:
 		and loud_card_face.border_width_top == 3 and loud_card_face.border_width_top > quiet_card_face.border_width_top
 		and near(loud_card_face.border_color.a, 0.9, 0.01) and near(loud_card_face.get_margin(SIDE_LEFT), 7.0)
 		# 🔑 A card with no argument gets no accent border — the check that such a card wears **panel alpha only** lives in
-		#    the `container alpha` section (the base panel comes from the host theme, so there is no yardstick to compare here).
-		and not near(GoSkin.box_background(plain_card.get_theme_stylebox(&"panel")).r,
-			loud_card_face.bg_color.r, 0.001),
+		#    the `container alpha` section. Measured on the border the accent paints (the fill was a false yardstick: it
+		#    only differed while `card()` wore the engine's bare face).
+		and not (plain_card.get_theme_stylebox(&"panel") is StyleBoxFlat
+			and (plain_card.get_theme_stylebox(&"panel") as StyleBoxFlat).border_width_top == 3
+			and near((plain_card.get_theme_stylebox(&"panel") as StyleBoxFlat).border_color.r, loud_card_face.border_color.r, 0.001)),
 		"card(accent): border width %d · strength %.2f · padding %.0f come from the arguments · a card with no argument gets none of that accent"
 			% [loud_card_face.border_width_top, loud_card_face.border_color.a, loud_card_face.get_margin(SIDE_LEFT)])
 	# 🔑 The plate laid behind — it overrides only the values given, has zero shadow and padding, and lets input through.

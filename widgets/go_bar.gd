@@ -81,13 +81,13 @@ func _init() -> void:
 
 	_name_label = GoStyle.label(label_text, GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.SECONDARY))
 	_name_label.name = "Name"
-	_name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	GoStyle.one_line(_name_label)
 	_name_label.visible = not label_text.is_empty()
 	head.add_child(_name_label)
 
 	_value_label = GoStyle.label("", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.SECONDARY))
 	_value_label.name = "Value"
-	_value_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	GoStyle.one_line(_value_label)
 	_value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	# 🛑 Numbers always read **left to right** — even in Arabic the order of `320 / 500` stays as it is.
 	_value_label.text_direction = Control.TEXT_DIRECTION_LTR

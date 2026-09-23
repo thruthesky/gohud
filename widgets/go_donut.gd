@@ -181,7 +181,8 @@ func legend() -> Control:
 		var dot := PanelContainer.new()
 		dot.custom_minimum_size = Vector2.ONE * float(GoUi.font_size(GoTheme.ROLE_MICRO))
 		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		dot.add_theme_stylebox_override(&"panel", GoUi.skin().badge_box(color))
+		# The key has to show the slice's colour — a solid dot, not the faint badge face that showed it only in a hairline.
+		dot.add_theme_stylebox_override(&"panel", GoUi.skin().dot_box(color, dot.custom_minimum_size.y))
 		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		row.add_child(dot)
 		var name := GoStyle.label(str(slice["label"]), GoTheme.ROLE_COMPACT)

@@ -123,15 +123,13 @@ func segment_box(index: int, count: int, state: StringName) -> StyleBox:
 
 ## An accent bar to the left of a section heading — it makes the screen read as divided into blocks.
 func section_box() -> StyleBox:
-	var box := GoStyleBoxCut.new()
+	# A plain accent bar down the left — a flat face, so the room `section_rhythm` adds above does not stretch the bar.
+	var box := StyleBoxFlat.new()
 	box.draw_center = false
-	box.border_width = 0.0
-	box.cut = 0.0
-	box.edge_color = GoUi.color(GoTheme.ACCENT)
-	box.edge_width = 3.0
-	box.edge_side = SIDE_LEFT
+	box.border_color = GoUi.color(GoTheme.ACCENT)
+	box.border_width_left = 3
 	box.content_margin_left = GoUi.metric(GoTheme.GAP_SMALL)
-	return box
+	return section_rhythm(box)
 
 
 ## Dividers in the accent colour — they read like the lines of an instrument panel parcelling out the screen.

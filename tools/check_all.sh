@@ -36,6 +36,12 @@ step "①-t unit tests — the five templates the skill ships"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_templates_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-l layout — the real gallery in every look, narrow and wide, both directions"
+# 🛑 Every widget passed its own checks while the gallery was broken on a phone — a banner sliced in half, the whole
+#    page 121dp off the screen (2026-09-23). Only measuring a laid-out screen finds that (`GoStyle.audit_layout`).
+GOHUD_TEST_TIMEOUT=500 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_layout_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 # 🛑 **Running one screen size leaves code that only runs on other sizes entirely unverified.** The
 #    form width cap was such a case (on a phone the cap is "none"), as was the HUD moving sideways — so the same tests run again at different sizes.
 for VIEWPORT in 844x390 768x1024 1280x800; do

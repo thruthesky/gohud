@@ -380,8 +380,9 @@ GoBadge.detach(mail_button)
 - `attach()` pins it to the **top-right corner of the host**, half outside, with anchors — so it follows a
   host whose size is decided later. Attaching twice returns the same badge.
 - 🔑 A number when the count changes what the player does; a dot when only "there is something" matters.
-- ♿ The badge carries an `accessibility_name`, and its text colour is picked for contrast against whatever
-  colour the skin painted the badge — never assumed white.
+- ♿ The badge carries an `accessibility_name`, and its text colour is its own colour pushed until it reads on the
+  face the skin **actually paints** — never assumed white, never measured against a colour that is not drawn.
+- It stays one line and re-centres on the corner when its size changes (`3` → `128`). A dot badge is a solid dot.
 
 ## 13. GoRewardCalendar — daily attendance
 
@@ -447,4 +448,8 @@ banners.autoplay_seconds = 5.0                 # off by default
 - 🛑 **It does not advance on its own unless you ask**, and 5 s is the floor — a banner that changes every
   3 s takes the text away before it is read. Touching it resets the timer.
 - ♿ With `reduce_motion` on, autoplay is off entirely; the dots still work, so nothing is lost.
-- The dots are pressable at the touch minimum even though the drawn dot is small.
+- 🔑 **It is as tall as its tallest page** — the pages' minimum height is fed up, so a banner is never sliced.
+  `custom_minimum_size` is a floor, not the room (a fixed 120 once cut a banner's title in half).
+- The dots are **one bar a finger tall**, drawn close together: a press on a dot goes to that page, a press on the open
+  bar either side goes one page that way. So the press area is far wider than the touch minimum however small the dots.
+  The lit dot is a longer pill — position is not told by colour alone. ←/→ step, and a screen reader hears `2 / 3`.

@@ -175,7 +175,8 @@ panel.add_theme_stylebox_override(&"panel", GoStyle.surface(GoTheme.BOX_PANEL))
 
 | Signature | Notes |
 |---|---|
-| `form(node)` | Applies form rules to a subtree (GoForm calls it for you) |
+| `form(node)` | Applies form rules to a subtree (GoForm calls it for you). 🔑 It **fills in only what is unspecified**: a box whose `separation` is not `gap`, a button or field with its own `custom_minimum_size.y`, a label marked `go_no_wrap` — each keeps what its widget chose |
+| `one_line(label) -> Label` | Keeps a label on one line inside a `GoForm` too (`AUTOWRAP_OFF` + `go_no_wrap`). 🛑 `AUTOWRAP_OFF` alone is turned back on by the form — a count badge ballooned to 65×65 and a `+` went 1dp wide |
 | `fit_words(button)` | Re-run after changing a button's text: one word never wraps, longest word always fits |
 | `natural_width(node)` | Keep a control at natural width (used by `wrap_row`) |
 | `fit_content_height(control, content)` | Grow a Button/Control to its content's height |
@@ -186,6 +187,7 @@ panel.add_theme_stylebox_override(&"panel", GoStyle.surface(GoTheme.BOX_PANEL))
 | `cell_inset(cell, content, padding := -1, vertical := -1, square := false) -> MarginContainer` | The same for content you built yourself (a row of table cells) |
 | `center_in(node) -> Control` | Centers a control on its parent **by its own size** and keeps it centered as it resizes. 🛑 `set_anchors_preset(PRESET_CENTER)` alone puts the control's top-left corner on the center |
 | `face_clearance(control) -> int` | Room a box's face needs before content: border, a skin's edge line, what a rounded or cut corner takes |
+| `audit_layout(root) -> Array[String]` | 🔎 **Measures a laid-out screen** and lists what is cut by a clipping parent, runs past the side of the screen, reaches outside a non-container parent, is squeezed below its minimum, folds inside a word, sits on its face's side, or is too small to press — plus `audit_cell_layout`. `go_overlay` marks an intentional overhang. Run it a frame or two after the screen enters; text drawn with `draw_string` is invisible to it |
 | `audit_cell_layout(root) -> Array[String]` | Lists cells (`cell_body`/`cell_inset`) and centered marks (`center_in`) that break the contract: box smaller than content, padding thinner than the face, content past the padding, text cut or folded, a mark off center. `go_overlay` marks an intentional overhang. Empty over a screen with no such boxes means "not looked at" |
 
 ## 9. Form and list widgets (classes, not factories)
@@ -259,7 +261,8 @@ coupon.set_error("Already used")
 - 🛑 **One hidden `LineEdit` receives the text; the cells are drawn.** Twelve real fields would break pasting
   at the first cell and lose characters to an IME — and a code is pasted from a message far more often than
   it is typed. `ABCD-EFGH-IJKL` loses its dashes on the way in.
-- Cells share the leftover width, so twelve of them still fit a 720 dp phone.
+- 🔑 **The groups fold onto the next line when the row does not fit** — `ABCD EFGH` / `IJKL`, never a group split and never
+  a character squeezed. Twelve cells in one row needed 404 dp, past a 390 dp phone's body. `cells_row` is a flow row.
 
 ### GoTable — sortable, selectable rows
 
@@ -291,8 +294,12 @@ pager.set_busy(true)                       # while the request is in flight
 var more := GoPagination.more(load_next)   # the mobile-friendly variant
 ```
 
-`window` 5 · signals `page_changed(page)` `more_requested` · `page()` `total()` `set_page(v, notify)`
+`window` 5 (the most) · signals `page_changed(page)` `more_requested` · `page()` `total()` `set_page(v, notify)`
 `set_total()` `set_busy()` `is_busy()`.
+
+- 🔑 **It fits the width it is given.** Numbers are 48 dp touch cells, so a narrow row shows fewer (down to 3), and
+  when not even three fit it reads `‹ 5 / 12 ›`. Its minimum width is that compact form — it never drags a page wider
+  than the screen (a 12-page pager once needed 457 dp and cut a 390 dp phone's whole page).
 
 - Numbers are a mouse UI; on a phone `more()` reads better. The current page stays **centred** in the window,
   so pressing next does not reshuffle every number.

@@ -101,7 +101,7 @@ func _build() -> void:
 	progress_label = GoStyle.label("", GoTheme.ROLE_CAPTION, accent)
 	progress_label.name = "Progress"
 	progress_label.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	progress_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	GoStyle.one_line(progress_label)
 	progress_label.text_direction = Control.TEXT_DIRECTION_LTR
 	_header.add_child(progress_label)
 	title_label = GoStyle.label_key("", GoTheme.ROLE_BODY)
