@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`examples/icon_buttons` — buttons made from the icon library.** A toolbar of icon-only buttons, text buttons with
+  an icon in every tone, toggles whose icon follows the state, menu rows, a compact segmented choice, a whole group as
+  buttons (`names_in_group(&"weather")`) and buttons found by a live `search()`. Open it with `/gohud:preview icons`;
+  the extra tests check it draws what it claims and fits a 320dp phone, and `tests/icon_shots.gd` photographs it.
 - **The icon library — 1,000 more icons in 32 groups (`GoIconLibrary`).** Arrows, system and status, devices and
   signal, media, messages, documents, commerce, currencies, map, buildings, vehicles, weather, nature, animals, food,
   health, sport, games, faces, hands, shapes, symbols, zodiac, charts, math and more — Tabler Icons 3.46.0 path data
@@ -84,6 +88,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoStyle.apply_icon()` draws the icon on a button that sizes to its text.** With `expand_icon` on, the icon was
+  left out of the button's minimum width, so in a flow row or any shrink-to-fit place the button stayed as wide as its
+  text and the icon was never drawn. Up to the drawing's own size the icon is now scaled by `icon_max_width` alone and
+  counted in the width; only a larger icon still expands.
 - **`GoStyle.card()` wears the gohud card face in a project with no theme of its own.** It read its face before the
   theme had settled on the new node and recorded the engine's bare panel — no padding, a 3 dp corner, text on the
   border. The face is now read from the theme itself (`fade_panel`); a host project's own theme had been hiding it.

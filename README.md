@@ -749,6 +749,7 @@ activate on handheld platforms, so they are exercised by the suite but not on re
 |---|---|---|
 | Gallery | `res://addons/gohud/examples/gallery/gallery.tscn`, F6 | Every widget, a picker for every installed preset, and the full icon set. Needs no server, autoload or project setup. |
 | Medieval | `res://addons/gohud/examples/medieval/medieval.tscn`, F6 | A character sheet, satchel and quest journal in `medieval_dark` and `medieval_light`. |
+| Icon buttons | `res://addons/gohud/examples/icon_buttons/icon_buttons.tscn`, F6 | Every way to put a library icon on a button — a toolbar of icon buttons, text buttons with an icon, toggles whose icon follows the state, menu rows, a segmented choice, a whole group and buttons found by a live search. |
 | Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 23-chapter tour, the showcase screen, the medieval look or a 20-second showreel — plus live widgets and one card per class. |
 
 ### Demo app

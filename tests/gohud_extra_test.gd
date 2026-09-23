@@ -56,6 +56,7 @@ func _initialize() -> void:
 	await _game_icons()
 	await _icon_library()
 	await _icon_lookup()
+	await _icon_buttons_example()
 	await _theme_follow()
 	await _list_lab()
 
@@ -1664,6 +1665,63 @@ func _icon_lookup() -> void:
 	check(GoUi.icons() == GoUi.DEFAULT_ICONS, "icon lookup: with no extra sets, icons() is the plain set again")
 	await frames(1)
 	section("icon lookup")
+
+
+# ── Icon buttons example ──────────────────────────────────────────────
+# 🔑 `examples/icon_buttons` is documentation people copy from — it must keep drawing what it claims, and must fit a phone.
+
+func _icon_buttons_example() -> void:
+	var library := GoIconLibrary.icon_set()
+	var screen: Control = (load(ADDON + "/examples/icon_buttons/icon_buttons.tscn") as PackedScene).instantiate()
+	root.add_child(screen)
+	await frames(3)
+	var tools := screen.find_child("Toolbar", true, false).get_children()
+	check(tools.size() == 6 and (tools[1] as Button).icon == library.texture(GoIconLibrary.CAMERA),
+		"icon buttons example: the toolbar draws library icons")
+	(tools[0] as Button).pressed.emit()
+	check((screen.find_child("Log", true, false) as Label).text == "Pressed: Controller", "icon buttons example: a press reaches the log")
+	var text_buttons := screen.find_child("TextButtons", true, false).get_children()
+	check(text_buttons.size() == 4 and text_buttons.all(func(node: Node) -> bool: return (node as Button).icon != null),
+		"icon buttons example: every text button carries its icon")
+	var sound := screen.find_child("SoundToggle", true, false) as GoIconButton
+	var before := sound.icon
+	sound.pressed.emit()
+	await frames(1)
+	check(sound.icon_name == GoIconLibrary.MUSIC_OFF and sound.icon == library.texture(GoIconLibrary.MUSIC_OFF) and sound.icon != before,
+		"icon buttons example: the toggle swaps its drawing with the state")
+	var weather := GoUi.icons().names_in_group(&"weather")
+	check(screen.find_child("WeatherGroup", true, false).get_child_count() == weather.size() and weather.size() > 20,
+		"icon buttons example: a whole group becomes buttons (%d)" % weather.size())
+	var found := screen.find_child("Found", true, false)
+	check(found.get_child_count() == GoUi.icons().search("arrow", 24).size() and found.get_child_count() > 0,
+		"icon buttons example: a search fills the row with buttons")
+	var field := screen.find_child("Search", true, false) as LineEdit
+	field.text = "rain"
+	field.text_changed.emit("rain")
+	await frames(2)
+	check(found.get_child_count() > 0 and (found.get_child(0) as GoIconButton).icon_name == &"cloud_rain",
+		"icon buttons example: a new word rebuilds the buttons, best match first")
+	# 🛑 Measured on a laid-out phone, not trusted: a row of buttons side by side is exactly what runs off a 320dp screen.
+	var aspect := root.content_scale_aspect
+	var stretch := root.content_scale_size
+	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
+	for width in [320.0, 390.0]:
+		var ask := Vector2(width, 844.0)
+		for _attempt in 6:
+			root.content_scale_size = Vector2i(ask.round())
+			await frames(2)
+			var got := root.get_visible_rect().size
+			if absf(got.x - width) < 1.0: break
+			ask *= Vector2(width, 844.0) / got
+		await frames(2)
+		var faults := GoStyle.audit_layout(screen)
+		check(faults.is_empty(), "icon buttons example: nothing spills at %.0fdp %s" % [width, str(faults.slice(0, 3))])
+	root.content_scale_aspect = aspect
+	root.content_scale_size = stretch
+	screen.queue_free()
+	GoUi.config.extra_icons = []
+	await frames(2)
+	section("icon buttons example")
 
 
 # ── Theme follow ──────────────────────────────────────────────────────

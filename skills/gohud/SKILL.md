@@ -192,6 +192,7 @@ If `${CLAUDE_SKILL_DIR}` is not expanded, use the first existing path of
 |---|---|
 | *(none)* / `gallery` · `--preset scifi_dark` · `--phone` · `--size 1920x1080` | Every widget, preset picker, icon set; **List rows → Readable lists** opens the before/after list lab |
 | `medieval` | Character sheet, satchel, quest journal |
+| `icons` | Buttons from the 1,000-icon library: toolbar, text + icon, toggles, menu rows, segmented, a group, live search |
 | `demo` · `demo --explore hud` | 23-chapter guided tour / one chapter (`list` shows keys) |
 | `res://ui/main_menu.tscn` | A scene of the user's project, inside that project |
 | `list` · `--check` · `--dry-run` · `--godot PATH` | Keys · headless smoke test · print command · Godot binary |

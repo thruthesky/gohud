@@ -1,6 +1,6 @@
 ---
 description: Open a gohud preview window — the widget gallery, the medieval example, the demo app (home screen plus the 23-chapter tour), or one of your own scenes
-argument-hint: "[gallery|medieval|demo|list|res://scene.tscn] [--preset scifi_dark] [--phone] [--explore hud] [--check]"
+argument-hint: "[gallery|medieval|icons|demo|list|res://scene.tscn] [--preset scifi_dark] [--phone] [--explore hud] [--check]"
 allowed-tools: Bash(python3:*), Bash(python:*), Read
 ---
 
@@ -31,6 +31,7 @@ one it uses the gohud copy bundled with the plugin, or clones https://github.com
 | *(none)* / `gallery` | Every widget, a preset picker and the full icon set |
 | `gallery --preset medieval_dark` · `--phone` · `--size 1920x1080` | Same, with a look / a 390×844 phone window / a size |
 | `medieval` | Character sheet, satchel and quest journal in the medieval presets |
+| `icons` | Buttons made from the 1,000-icon library — a toolbar, text buttons, toggles, menu rows, a segmented choice, a whole group and a live search |
 | `demo` · `demo --explore surfaces` | The demo app: a home screen opening the gallery, the guided tour, the showcase and the medieval look, plus live widgets and a card per class; `--explore` jumps to one tour chapter |
 | `res://ui/main_menu.tscn` | A scene of the user's project, run inside that project |
 | `list` | Targets, preset ids and demo chapter keys |

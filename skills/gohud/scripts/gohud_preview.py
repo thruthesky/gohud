@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Launch a gohud preview (gallery, medieval example, demo tour, or any scene) in Godot.
+"""Launch a gohud preview (gallery, medieval example, icon buttons example, demo tour, or any scene) in Godot.
 
     python3 gohud_preview.py                          # gallery in a window (sandbox project)
     python3 gohud_preview.py gallery --preset scifi_dark --phone
     python3 gohud_preview.py medieval
+    python3 gohud_preview.py icons                    # buttons made from the 1,000-icon library
     python3 gohud_preview.py demo                     # demo app home screen (gallery / tour / showcase / medieval)
     python3 gohud_preview.py demo --explore hud       # ...opened straight on one tour chapter
     python3 gohud_preview.py res://ui/main_menu.tscn  # a scene of YOUR project (runs in your project)
@@ -34,6 +35,7 @@ PRESETS = ["default_dark", "default_light", "scifi_dark", "scifi_light", "mediev
 SCENES = {
     "gallery": "res://addons/gohud/examples/gallery/gallery.tscn",
     "medieval": "res://addons/gohud/examples/medieval/medieval.tscn",
+    "icons": "res://addons/gohud/examples/icon_buttons/icon_buttons.tscn",
 }
 DEMO_CHAPTERS = ["hud", "buttons", "inputs", "selection", "lists", "data", "states", "surfaces",
                  "prompt", "touch", "coach", "scrolling", "forms", "anchors", "theming", "opacity",
@@ -276,7 +278,7 @@ def run(command, args, log_name):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("target", nargs="?", default="gallery",
-                        help="gallery (default) | medieval | demo | list | res://path/scene.tscn")
+                        help="gallery (default) | medieval | icons | demo | list | res://path/scene.tscn")
     parser.add_argument("--preset", choices=None, help="preset id for gallery/scene runs, e.g. scifi_dark")
     parser.add_argument("--size", default="1280x800", help="window size WxH (default 1280x800)")
     parser.add_argument("--phone", action="store_true", help="portrait phone window, 390x844")
@@ -294,7 +296,7 @@ def main():
     args = parser.parse_args()
 
     if args.target == "list":
-        print("targets : gallery, medieval, demo, res://<your scene>.tscn")
+        print("targets : gallery, medieval, icons, demo, res://<your scene>.tscn")
         print("presets : " + ", ".join(PRESETS) + " (plus any themes/presets/<id>.tres)")
         print("demo    : --explore " + " | ".join(DEMO_CHAPTERS))
         return 0

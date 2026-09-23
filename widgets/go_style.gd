@@ -544,8 +544,12 @@ static func apply_icon(node: Button, icon: StringName, size := -1, ink := Color.
 	var found := GoUi.icons().texture(icon)
 	if found != null:
 		node.icon = found
-		node.expand_icon = true
-			# 🛑 Turn on `expand_icon` without `icon_max_width` and the icon grows to the button's height.
+		# 🛑 `expand_icon` leaves the icon **out of the button's minimum width** — a button that sizes to its text (a flow
+		#    row, a dialog's action) then has no room for it and the icon is not drawn at all (measured 2026-09-23: "Play"
+		#    stayed 65dp wide, its text alone). Up to the drawing's own size `icon_max_width` scales it and the button counts
+		#    it, so only an icon larger than the drawing expands — and then the caller has to leave room.
+		# 🛑 Never `expand_icon` without `icon_max_width` — the icon grows to the button's height.
+		node.expand_icon = px > found.get_width()
 		node.add_theme_constant_override(&"icon_max_width", px)
 		if ink.a > 0: node.add_theme_color_override(&"icon_normal_color", ink)
 		return

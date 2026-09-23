@@ -1144,6 +1144,17 @@ func _style() -> void:
 	var unsized := GoStyle.button("Zero")
 	check(GoStyle.center_button_content(unsized, 12.0) < 0.0, "while the width is still 0 it writes nothing")
 	unsized.free()
+	# 🛑 A button that sizes to its text must make room for its icon — with `expand_icon` the icon was left out of the minimum
+	#    width and never drawn in a flow row (2026-09-23).
+	var bare := GoStyle.button("Play")
+	var with_icon := GoStyle.button("Play")
+	GoStyle.apply_icon(with_icon, GoIconSet.SAVE)
+	brand_host.add_child(bare)
+	brand_host.add_child(with_icon)
+	var room := with_icon.get_combined_minimum_size().x - bare.get_combined_minimum_size().x
+	check(room >= float(GoUi.metric(GoTheme.ICON_SIZE)), "apply_icon — the icon counts in the button's width (%.0f more)" % room)
+	bare.queue_free()
+	with_icon.queue_free()
 	# 🛑 Bring the icon inside the panel padding — widen both sides together so the text never rides over the icon (the child-label route).
 	# 🔑 The built-in set is textures and goes through `Button.icon`, so **a deliberately unknown name** is passed to take the child-label route
 	#    (the route a host using a font set takes). The single "not in the icon set" warning line in the log is intended.

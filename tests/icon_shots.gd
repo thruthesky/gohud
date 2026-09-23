@@ -1,6 +1,6 @@
 ## 📸 **Shoots the icon sets the way a game sees them** — one drawing from every group of every set, then the lookup
 ## order made visible: the same four names under the default preset and under the medieval one, with the
-## 1,000-icon library added on top.
+## 1,000-icon library added on top — and the buttons example (`examples/icon_buttons`) in each look.
 ##
 ##   bash <godot skill>/scripts/xvfb_run.sh --out <folder> --size 720x1600 -s res://addons/gohud/tests/icon_shots.gd
 ##
@@ -26,6 +26,7 @@ func _initialize() -> void:
 		GoUi.use_preset(look)
 		GoUi.add_icons(GoIconLibrary.icon_set())
 		await _shoot(look)
+		await _shoot_example(look)
 	print("✅ icon shots done — %s" % _dir)
 	quit(0)
 
@@ -60,6 +61,21 @@ func _shoot(look: StringName) -> void:
 		grid.add_child(_cell(icons, StringName(names[0]), 32))
 	page.add_child(grid)
 	await _save("icons_%s" % look)
+
+
+## The buttons example (`examples/icon_buttons`) as a person opens it — its first screen, then scrolled to the end.
+func _shoot_example(look: StringName) -> void:
+	for child in root.get_children():
+		if child is Control: child.queue_free()
+	await process_frame
+	var screen := (load("res://addons/gohud/examples/icon_buttons/icon_buttons.tscn") as PackedScene).instantiate()
+	root.add_child(screen)
+	await _save("icon_buttons_%s" % look)
+	# The lower half — the segmented choice, a whole group and the search results.
+	var scroll := screen.find_child("Scroll", true, false) as ScrollContainer
+	if scroll != null:
+		scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+		await _save("icon_buttons_%s_bottom" % look)
 
 
 ## A drawing with its name under it.

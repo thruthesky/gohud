@@ -712,6 +712,7 @@ Forward+/Mobile 렌더러. 안전영역·햅틱 코드는 휴대 기기에서만
 |---|---|---|
 | 갤러리 | `res://addons/gohud/examples/gallery/gallery.tscn` 을 F6 | 모든 위젯, 설치된 프리셋 전부를 고르는 선택기, 아이콘 전체. 서버·오토로드·프로젝트 설정이 필요 없다. |
 | 중세 | `res://addons/gohud/examples/medieval/medieval.tscn` 을 F6 | `medieval_dark`·`medieval_light` 의 캐릭터 정보·가방·퀘스트 일지 |
+| 아이콘 버튼 | `res://addons/gohud/examples/icon_buttons/icon_buttons.tscn` 을 F6 | 라이브러리 아이콘을 버튼에 다는 모든 방법 — 아이콘만 있는 도구 막대, 글자와 아이콘 버튼, 상태에 따라 아이콘이 바뀌는 토글, 메뉴 행, 세그먼트 선택, 한 묶음 통째로, 검색어로 찾은 버튼. |
 | 데모 앱 | `cd examples/demo && godot` | 갤러리·23장면 자동 시연·쇼케이스·중세 화면·20초 쇼릴을 한 창에서 고르는 홈 화면. 만져 보는 위젯 카드와 클래스별 한 줄 소개가 함께 있다. |
 
 ### 데모 앱 — 홈에서 고르고, 그 자리에서 본다
