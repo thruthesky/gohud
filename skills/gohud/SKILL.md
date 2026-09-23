@@ -51,6 +51,7 @@ Reply in the language the user writes in; keep code identifiers as they are.
    Lists and forms: sortable/selectable rows → `GoTable`, pages → `GoPagination`, searchable picker →
    `GoCombobox`, a field that can show an error → `GoField`, input welded to a button → `GoInputGroup`.
    Waiting → `GoSpinner` (`GoSpinner.busy(button, true)` also blocks the double press).
+   A list the player scans (quests, mail, a shop) → rule 15 in §3 and the recipe in `references/recipes.md` §16.
 4. **Start from a template** when one fits (§5): copy it into the project (e.g. `res://ui/`), rename, adjust, wire
    its signals. Otherwise compose with `GoStyle` factories (`references/style.md`).
 5. **Follow the rules in §3.** Look up exact signatures in the references before using a member you are not sure
@@ -110,6 +111,25 @@ Reply in the language the user writes in; keep code identifiers as they are.
     value check cannot tell you whether the text is still readable. Details: `references/theming.md` §4.
 14. **Never hand-edit gohud's generated themes**; recolour through `color_overrides`, a Theme copy in your project,
     a project-local `GoThemePreset`, or the JSON theme tools (`references/theming.md`).
+15. **Lists must scan** — a list the player reads (quests, mail, a shop, a roster) is judged by numbers, not taste.
+    ① **Space outside a row > space inside it ≥ space between its lines:** rows at least `GAP_SMALL` (8) apart
+    (`GAP` 12 when there is room), a two-line row padded 8 above and below and 12 at the sides, its two lines
+    `GAP_TINY` (4) apart — `list_button()` already pads its row this way. A cramped panel that used 4 for all three
+    ran its rows together. ② **The heading must be a size above the row titles.** Rows are `ROLE_BODY` (16) with a
+    `ROLE_CAPTION` (13) second line in `MUTED`; the heading the player reads first is `ROLE_SUBTITLE` (22). A
+    `GoSurface` or `GoSheet` short of height (or `compact`) drops **its own** title to `body`, so a list under it
+    becomes one size — put that heading in the body instead. ③ Say a thing once: no header line repeating the first
+    row. ④ Warning colours and warning icons only on rows where something is wrong; a level gate is a `LOCK` and
+    `MUTED` text (never `modulate.a` — rule 13). A badge that repeats on every row carries nothing — drop it; an icon
+    that states each row's own state (a lock, a check) may repeat. ⑤ A value at a row's end (`0 / 1`, a price)
+    is a label with `SIZE_SHRINK_END` — `GoStyle.label()` expands by default and would split the width with the
+    title. `list_button()` has no text slot at the end: build that row yourself and keep its padding and
+    `GoStyle.fit_content_height()`. ⑥ Your spacing does not survive everywhere: `GoStyle.form()` (every `GoForm`)
+    sets each box's `separation` to `GAP` unless it carries `set_meta(&"go_own_spacing", true)`, and a
+    `wrap_row()` forces everything inside it — all the way down — to natural width with wrapping off, so never put a
+    card or a row with an expanding title in one. **See it before you build it:** the gallery's List rows section
+    opens a lab (`examples/gallery/list_lab.gd`) with a cramped quest panel next to the same panel built by this
+    rule, each measured from its own nodes. Recipe: `references/recipes.md` §16.
 
 More traps with their causes: `references/pitfalls.md`.
 
@@ -170,7 +190,7 @@ If `${CLAUDE_SKILL_DIR}` is not expanded, use the first existing path of
 
 | Arguments | Opens |
 |---|---|
-| *(none)* / `gallery` · `--preset scifi_dark` · `--phone` · `--size 1920x1080` | Every widget, preset picker, icon set |
+| *(none)* / `gallery` · `--preset scifi_dark` · `--phone` · `--size 1920x1080` | Every widget, preset picker, icon set; **List rows → Readable lists** opens the before/after list lab |
 | `medieval` | Character sheet, satchel, quest journal |
 | `demo` · `demo --explore hud` | 23-chapter guided tour / one chapter (`list` shows keys) |
 | `res://ui/main_menu.tscn` | A scene of the user's project, inside that project |
@@ -192,7 +212,7 @@ use `--check`.
 | `references/style.md` | Every `GoStyle` factory signature: structure, text, buttons and tones, inputs, select/dropdown/segmented/tabs, cards, chips, tables, styleboxes, helpers |
 | `references/theming.md` | Presets and resolution order, all tokens, **container opacity (§4)**, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins and dials, custom StyleBoxes, project-local presets, contrast |
 | `references/platform.md` | The 84 icon names and custom icon sets/fonts, localization and RTL, sound and haptics, accessibility, safe area, breakpoints, dp scale, Android Back |
-| `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, character sheet, context menu, tutorial, theme switcher |
+| `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, a quest list that scans (§16), character sheet, context menu, tutorial, theme switcher |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |
 
 Web (same content, with screenshots): overview https://thruthesky.github.io/gohud/ ·

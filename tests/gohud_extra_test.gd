@@ -54,6 +54,7 @@ func _initialize() -> void:
 	await _list_row_selection()
 	await _game_icons()
 	await _theme_follow()
+	await _list_lab()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -1370,3 +1371,64 @@ func _face_color(slot: GoSlot) -> String:
 func _panel_color(node: PanelContainer) -> String:
 	var box: StyleBox = node.get_theme_stylebox(&"panel")
 	return "%s %s" % [box.get_class(), str(box.get(&"bg_color"))] if box != null else ""
+
+
+# ── Readable-list lab (examples/gallery/list_lab.gd) ──────────────────
+## The lab's whole claim is a line of numbers read from its own nodes — so check those numbers say what the lab
+## says: Before is the cramped screen (rows 4 apart, title the size of a row, a badge and a warning on every row),
+## After follows skill rule 15. Then the gallery path: the button opens it **outside the page's `GoForm`**, where
+## a form would have turned Before's 4 dp into 12 and made the comparison lie.
+func _list_lab() -> void:
+	section("list lab")
+	var lab: Control = load(ADDON + "/examples/gallery/list_lab.gd").new()
+	root.add_child(lab)
+	await frames(4)
+	lab.call("show_view", 2)
+	await frames(4)
+	var before: Dictionary = lab.call("measure", 0)
+	var after: Dictionary = lab.call("measure", 1)
+	var tiny := GoUi.metric(GoTheme.GAP_TINY)
+	var small := GoUi.metric(GoTheme.GAP_SMALL)
+	check(before.row_gap == tiny, "list lab: Before keeps the shipped 4 dp between rows (%d)" % before.row_gap)
+	check(before.row_inset == tiny, "list lab: Before keeps the shipped 4 dp inside a row (%d)" % before.row_inset)
+	check(after.row_gap >= small, "list lab: After's rows are at least GAP_SMALL apart (%d)" % after.row_gap)
+	check(after.row_inset >= small, "list lab: After's rows keep GAP_SMALL inside (%d)" % after.row_inset)
+	check(before.header == before.title, "list lab: Before's panel title is the size of a row title (%d / %d)" % [before.header, before.title])
+	check(after.header > after.title and after.title > after.meta,
+		"list lab: After steps down header > row title > second line (%d / %d / %d)" % [after.header, after.title, after.meta])
+	check(before.badges == before.rows and after.badges == 0,
+		"list lab: the repeated badge goes (%d of %d → %d)" % [before.badges, before.rows, after.badges])
+	check(before.warnings >= 4 and after.warnings <= 1,
+		"list lab: warnings only where something is wrong (%d → %d)" % [before.warnings, after.warnings])
+	check(before.rows == 5 and after.rows == before.rows, "list lab: both sides show the same five quests (%d / %d)" % [before.rows, after.rows])
+	check(before.height > 0 and after.height > 0, "list lab: both panels are laid out (%d / %d dp)" % [before.height, after.height])
+	var asked := [false]
+	lab.connect(&"closed", func() -> void: asked[0] = true)
+	lab.call("close")
+	check(asked[0], "list lab: close() asks the owner to remove it")
+	lab.queue_free()
+	await frames(2)
+
+	var gallery: Node = (load(ADDON + "/examples/gallery/gallery.tscn") as PackedScene).instantiate()
+	root.add_child(gallery)
+	await frames(4)
+	var button := gallery.find_child("ListLabButton", true, false) as Button
+	check(button != null, "gallery: the List rows section has the list lab button")
+	if button == null:
+		gallery.queue_free()
+		await frames(2)
+		return
+	button.pressed.emit()
+	await frames(4)
+	var opened := gallery.find_child("ListLab", true, false)
+	var form := gallery.find_child("Form", true, false)
+	check(opened != null and opened.get_parent() is CanvasLayer, "gallery: the button opens the lab on a layer of its own")
+	check(opened != null and form != null and not form.is_ancestor_of(opened), "gallery: the lab is outside the page's GoForm")
+	if opened != null:
+		var inside: Dictionary = opened.call("measure", 0)
+		check(inside.row_gap == tiny, "gallery: opened from the gallery, Before still measures 4 dp (%d)" % inside.row_gap)
+		opened.call("close")
+		await frames(3)
+		check(gallery.find_child("ListLab", true, false) == null, "gallery: closing the lab removes it")
+	gallery.queue_free()
+	await frames(2)

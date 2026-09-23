@@ -23,7 +23,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 |---|---|
 | signals | `close_requested` · `back_requested` · `height_changed(ratio: float)` |
 | `enum Placement { CENTER, BOTTOM, ANCHOR }` | `placement` (CENTER) |
-| size | `max_width` / `max_height` / `height_ratio` / `max_height_ratio` (0 = GoConfig value) · `fit_content` (true — short content, short card) · `compact` (smaller padding) · `height_ratio_cap()` |
+| size | `max_width` / `max_height` / `height_ratio` / `max_height_ratio` (0 = GoConfig value) · `fit_content` (true — short content, short card) · `compact` (smaller padding) · `height_ratio_cap()`. 🛑 With `compact` on, a viewport under 420 high or content that overflows, the surface goes **dense**: padding drops to `padding_compact` and the **title drops to `body`** (16), re-applied on every relayout — a list under it loses its top step. Put the heading players read first in the body (`SKILL.md` rule 15) |
 | ceiling | 🛑 `height_ratio` above `max_height_ratio` (default `GoConfig.surface_max_height_ratio`, 0.72) is cut — raise `max_height_ratio` on the one surface that needs it; a debug build warns once. A centered `fit_content` card still grows to `surface_fit_max_height_ratio` (0.94) for long content. Drag-resize stops at the same ceiling |
 | behaviour | `dismiss_on_scrim` (config default) · `scrim_transparent` · `fade_in` · `resizable` (drag the title) · `show_header` (true) · `scroll_body` (true) · `close_enabled` (true) · `initial_focus: Control` |
 | opacity | `alpha` — the **card face's** opacity, ratio 0.0–1.0, negative = theme/config value (**80%** by default). Text, buttons and the border stay sharp; the scrim behind is separate (`scrim_transparent`, `GoTheme.SCRIM`). `theming.md` §4 |

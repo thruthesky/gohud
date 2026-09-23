@@ -25,9 +25,9 @@ follow the same idea.
 |---|---|---|
 | `column(spacing := -1)` | `VBoxContainer` | -1 → `gap`; expands horizontally |
 | `row(spacing := -1)` | `HBoxContainer` | |
-| `wrap_row(spacing := -1, alignment := FlowContainer.ALIGNMENT_BEGIN, last_line := FlowContainer.LAST_WRAP_ALIGNMENT_BEGIN)` | `HFlowContainer` | Children get natural width automatically — chips, tags, button groups |
-| `padding(amount := -1)` | `MarginContainer` | -1 → `padding` token on all sides |
-| `insets(margin_container, amount := -1)` | void | Same, on an existing node |
+| `wrap_row(spacing := -1, alignment := FlowContainer.ALIGNMENT_BEGIN, last_line := FlowContainer.LAST_WRAP_ALIGNMENT_BEGIN)` | `HFlowContainer` | Children get natural width automatically — chips, tags, button groups. 🛑 **Everything inside, all the way down**, is set to `SIZE_SHRINK_BEGIN` with wrapping off (`natural_width`) — never put a card, a panel or a row with an expanding title in one |
+| `padding(amount := -1, vertical := -1)` | `MarginContainer` | -1 → `padding` token on all sides. `vertical` ≥ 0 gives the top and bottom that value (sides keep `amount`) — roomy sides, tighter top and bottom for a list cell |
+| `insets(margin_container, amount := -1, vertical := -1)` | void | Same, on an existing node |
 | `gap(container, token := GoTheme.GAP)` | void | Sets separation (h/v for Grid/Flow) |
 | `spacer(minimum := 0.0)` | `Control` | Expands; pushes siblings apart |
 | `divider(vertical := false)` | `Control` | 1 dp line in the skin's divider colour (not `HSeparator`) |
@@ -46,6 +46,20 @@ follow the same idea.
 
 Roles: `ROLE_MICRO` `ROLE_COMPACT` `ROLE_CAPTION` `ROLE_BODY` `ROLE_BUTTON` `ROLE_SUBTITLE` `ROLE_TITLE`.
 Ink: pass a colour, usually `GoUi.color(GoTheme.MUTED)` / `SECONDARY` / a status colour.
+
+| Role | Default size | Use it for |
+|---|---|---|
+| `ROLE_TITLE` | 28 | The screen's own name — one per screen |
+| `ROLE_SUBTITLE` | 22 | A panel or surface heading, the name at the top of a detail card |
+| `ROLE_BODY` · `ROLE_BUTTON` | 16 | Row titles, sentences, button text |
+| `ROLE_CAPTION` | 13 | A row's second line (in `MUTED`), `section()` headings |
+| `ROLE_COMPACT` | 12 | Chips, dense readouts |
+| `ROLE_MICRO` | 10 | Badges and counters only — never a sentence |
+
+🔑 **Step down one size per level** — heading 22 → row title 16 → second line 13 — and let colour add the
+second cue (`TEXT` → `MUTED`). Two levels at the same size read as one (`SKILL.md` rule 15).
+🛑 `label()` and `label_key()` expand horizontally by default. A value at a row's end (`0 / 1`, a price, "Now")
+needs `SIZE_SHRINK_END`, or it splits the width with the title and floats in the middle of the row.
 
 ## 3. Buttons
 
@@ -107,7 +121,7 @@ pill.add_child(GoStyle.segmented(["Map", "Quests"], 0, _switch_layer, false, tru
 
 | Signature | Returns | Notes |
 |---|---|---|
-| `card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0, pad := -1.0, alpha := -1.0)` | `PanelContainer` | Bordered card (`GoCard`); add a padding/column child. With **no arguments it builds no face of its own** — it reads the one the `GoCard` variation draws and multiplies panel opacity into that, so a host theme that redefines `GoCard` keeps its shape (at 100% the override is dropped entirely). `alpha` = face opacity (§7) |
+| `card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width := -1.0, pad := -1.0, alpha := -1.0)` | `PanelContainer` | Bordered card (`GoCard`); put a `column()` straight in — **the face already pads** (`pad` sets it). 🛑 A `padding()` around that column doubles the padding; `card_body()` is for faces with no padding of their own. With **no arguments it builds no face of its own** — it reads the one the `GoCard` variation draws and multiplies panel opacity into that, so a host theme that redefines `GoCard` keeps its shape (at 100% the override is dropped entirely). `alpha` = face opacity (§7) |
 | `chip(text, ink := Color.TRANSPARENT, translate := false)` | `PanelContainer` | Status/tag pill; text contrast is corrected automatically |
 | `item_card(spec: Dictionary, framed := true)` | `Control` | **The picked item's detail card** — `{icon, ink, accent, title, subtitle, chips: [text \| {text, ink, icon}], body, stats: [[label, value]], actions: [{text, action, tone, icon}], translate}`, every key optional. Parts are named `Icon` `Title` `Subtitle` `Chips` `Body` `Stats` `Actions`. `framed = false` inside a `GoPopover`, a sheet or your own card (no double border); in a sheet give the buttons to `add_footer()` instead of `actions` |
 | `avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture: Texture2D = null)` | `Control` | Initials (max 2) or picture in a disc |
@@ -122,8 +136,8 @@ pill.add_child(GoStyle.segmented(["Map", "Quests"], 0, _switch_layer, false, tru
 
 ```gdscript
 var stats := GoStyle.table(["Stat", "Base", "Bonus"], [["Attack", "42", "+6"], ["Defence", "28", "+2"]])
-var tile := GoStyle.card(GoUi.color(GoTheme.ACCENT))
-var inner := GoStyle.padding()
+var tile := GoStyle.card(GoUi.color(GoTheme.ACCENT))     # the face pads — the column goes straight in
+var inner := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 tile.add_child(inner)
 inner.add_child(GoStyle.label("Legendary", GoTheme.ROLE_SUBTITLE))
 ```

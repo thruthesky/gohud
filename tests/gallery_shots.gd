@@ -156,6 +156,19 @@ func _initialize() -> void:
 			scroll.scroll_vertical = 0
 			await _settle(2)
 
+		# 📋 **Readable lists** — the cramped quest list next to the same list built by skill rule 15. Whether "rows 8
+		#    apart" really reads better is answered by a picture only, so open the lab and shoot both sides.
+		gallery.call("_open_list_lab")
+		await _settle(10)
+		var list_lab: Node = gallery.find_child("ListLab", true, false)
+		if list_lab != null:
+			_shot(label + "_6d_list_lab")
+			list_lab.call("show_view", 0)
+			await _settle(6)
+			_shot(label + "_6e_list_lab_before")
+			list_lab.call("close")
+			await _settle(3)
+
 		gallery.call("_open_popup")
 		gallery.call("_show_prompt")
 		gallery.call("_show_notice")

@@ -12,6 +12,7 @@ extends Control
 
 ## 🔬 The container-opacity lab — the sim tour and the home screen use this same file.
 const OpacityLab := preload("opacity_lab.gd")
+const ListLab := preload("list_lab.gd")
 
 var _sheet: GoSheet
 var _dialogs: GoDialogs
@@ -117,7 +118,8 @@ func _build_page() -> void:
 
 	# List items
 	page.add_child(GoStyle.section("List rows", false))
-	var list := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
+	# Rows sit `GAP_SMALL` apart — more than the 4 dp between a row's own two lines (skill rule 15).
+	var list := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	list.add_child(GoStyle.list_button(GoIconSet.USER, "Profile", _say.bind("profile"),
 		Color.TRANSPARENT, "Name, avatar and title", false))
 	list.add_child(GoStyle.list_button(GoIconSet.VOLUME_HIGH, "Sound", _say.bind("sound"),
@@ -128,6 +130,12 @@ func _build_page() -> void:
 	list.add_child(GoStyle.list_button(GoIconSet.LOGOUT, "Sign out", _say.bind("sign out"),
 		GoUi.color(GoTheme.DANGER), "", false))
 	page.add_child(list)
+	# 📋 A cramped quest list next to the same list built by the rules — measured, full screen.
+	var list_lab := GoStyle.wrap_row()
+	var list_lab_button := GoStyle.button("Readable lists — before / after", _open_list_lab, GoStyle.Tone.COMPACT)
+	list_lab_button.name = "ListLabButton"
+	list_lab.add_child(list_lab_button)
+	page.add_child(list_lab)
 
 	# Inputs
 	page.add_child(GoStyle.section("Inputs", false))
@@ -638,6 +646,22 @@ func _open_popup() -> void:
 		+ "and closes on Escape, Android Back, the X button, or a tap on the scrim."))
 	surface.footer.add_child(GoStyle.button("Got it", func() -> void: surface.request_close(), GoStyle.Tone.PRIMARY))
 	surface.footer.visible = true
+
+
+## 📋 Opens the readable-list lab over the whole screen.
+## 🛑 On a `CanvasLayer` of its own, not in the page: the page is a `GoForm`, and a form sets every box's spacing to
+##    `GAP` — the cramped side's 4 dp would come out as 12. Not in a `GoSurface` either: one short of height drops
+##    its title to `body`, which would shrink the readable side's heading. The lab brings its own way out.
+func _open_list_lab() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "ListLabLayer"
+	layer.layer = 50
+	add_child(layer)
+	var lab := ListLab.new()
+	lab.closed.connect(func() -> void:
+		layer.queue_free()
+		_say("list lab closed"))
+	layer.add_child(lab)
 
 
 func _show_notice() -> void:

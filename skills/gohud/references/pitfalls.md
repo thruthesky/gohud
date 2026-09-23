@@ -45,6 +45,12 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | A code input overflows the screen at 12 cells | Fixed cells on a 360 dp phone need more width than there is | The cells wrap to a second line by themselves — do not force a width on `GoCodeInput` |
 | Table rows are blank, or one pixel high | A wrapping `Label` inside a cell whose width is still 0 reports a minimum height of 0 | Let `GoTable` build the cells (it sets a minimum height and gives each column its share); pass `Control` cells only when you size them yourself |
 | A snackbar card is far taller than its text | Height was measured in the same frame the width was set, so the folded value stuck | `GoSnackbar` waits two frames before placing itself — if you build a card by hand, do the same before reading `size` |
+| A list reads as one block — the eye cannot tell where a row ends | The space between rows equals the space inside them (a shipped quest panel used 4 / 4 / 4 dp) | Rows at least `GAP_SMALL` apart, `list_button()`'s padding inside, a row's lines `GAP_TINY` apart — `SKILL.md` rule 15. Compare in the gallery: **List rows → Readable lists** |
+| The panel heading is the same size as its rows | A `GoSurface` or `GoSheet` short of height (or `compact`) drops its own title to `body` (16) and its padding to `padding_compact` | Put the heading players read first in the body as `ROLE_SUBTITLE` (22); give the surface room (`max_height_ratio`) or show fewer rows |
+| A panel looks like an error screen | A warning colour or icon on most rows — a level gate drawn as a warning | Warnings only where something is wrong; a gate is `GoIconSet.LOCK` with `MUTED` text |
+| The spacing you gave a column comes out as 12 | `GoStyle.form()` — run by every `GoForm` on everything added — sets each box's `separation` to `GAP` | `box.set_meta(&"go_own_spacing", true)` on the box you want kept |
+| Rows shrink to their text; titles stop expanding and wrapping | They sit inside a `wrap_row()`, which forces every descendant to natural width with wrapping off | Only chips and buttons in a `wrap_row()`; lay panels out with `column()`, `row()` or a `GridContainer` |
+| A number meant for a row's end sits in the middle of it | `GoStyle.label()` expands horizontally by default and splits the width with the title | `SIZE_SHRINK_END` on that label |
 
 ## 3. Text and translation
 

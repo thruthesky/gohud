@@ -20,6 +20,7 @@ headless-tested versions of the first screens; copy them rather than retyping.
 13. [A developer console you cannot ship](#13-a-developer-console-you-cannot-ship)
 14. [A form that says which box is wrong](#14-a-form-that-says-which-box-is-wrong)
 15. [A side panel on a wide screen](#15-a-side-panel-on-a-wide-screen)
+16. [A quest list that scans](#16-a-quest-list-that-scans)
 
 ## 1. App flow
 
@@ -228,7 +229,8 @@ func build_quest_log(parent: Control, quests: Array) -> void:
 	parent.add_child(column)
 	var tabs := GoStyle.tabs(["Active", "Completed"])
 	column.add_child(tabs)
-	var list := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
+	# Cards sit GAP_SMALL apart — more than the 4 dp inside one (SKILL.md rule 15).
+	var list := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	column.add_child(list)
 	var fill := func(tab: int) -> void:
 		for old in list.get_children():
@@ -238,11 +240,9 @@ func build_quest_log(parent: Control, quests: Array) -> void:
 		if shown.is_empty():
 			list.add_child(GoStyle.empty_state(GoIconSet.BOOK, "No quests here", false))
 		for quest in shown:
-			var card := GoStyle.card()
-			var inner := GoStyle.padding()
-			card.add_child(inner)
+			var card := GoStyle.card()               # its face already pads — no padding() around the column
 			var body := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
-			inner.add_child(body)
+			card.add_child(body)
 			body.add_child(GoStyle.label(quest.title, GoTheme.ROLE_SUBTITLE))
 			for step in quest.steps:                    # {text, done}
 				var box := GoStyle.checkbox(step.text, false)
@@ -525,3 +525,62 @@ func _on_party_pressed() -> void:
 
 🔑 It closes on Back and on the scrim, and keeps clear of the safe area. Like every surface it lives on its
 own layer, so it does not fight the HUD.
+
+## 16. A quest list that scans
+
+A quest giver's panel: one quest that can be done now, the rest waiting on the player's level. Built by
+`SKILL.md` rule 15 — the gallery's **List rows → Readable lists** lab shows this next to the cramped version it
+replaces, with both measured.
+
+```gdscript
+func build_quest_giver(body: VBoxContainer, giver: String, quests: Array) -> void:
+	# Groups sit a large gap apart; inside a group things sit closer — the eye reads the groups first.
+	GoStyle.gap(body, GoTheme.GAP_LARGE)
+	var names := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
+	names.add_child(GoStyle.label(giver, GoTheme.ROLE_SUBTITLE))      # a size above the rows' 16
+	names.add_child(GoStyle.label("%d quests" % quests.size(), GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	body.add_child(names)
+
+	var current: Dictionary = quests[0]                               # {title, item, have, need}
+	var now_group := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	now_group.add_child(GoStyle.section("Current quest", false))
+	var card := GoStyle.card(GoUi.color(GoTheme.ACCENT))              # its face pads — the column goes straight in
+	var inside := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	card.add_child(inside)
+	var top := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+	var title := GoStyle.label(current.title, GoTheme.ROLE_BODY)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_child(title)
+	top.add_child(GoStyle.chip("Now", GoUi.color(GoTheme.ACCENT)))
+	inside.add_child(top)
+	var progress := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+	var item := GoStyle.label(current.item, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY))
+	progress.add_child(item)
+	var count := GoStyle.label("%d / %d" % [current.have, current.need], GoTheme.ROLE_BODY)
+	count.size_flags_horizontal = Control.SIZE_SHRINK_END           # a label expands by default
+	progress.add_child(count)
+	inside.add_child(progress)
+	now_group.add_child(card)
+	body.add_child(now_group)
+
+	var later := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	later.add_child(GoStyle.section("Unlocks with level", false))
+	var list := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))       # rows 8 apart, 8 inside each
+	for quest in quests.slice(1):                                     # {title, level}
+		list.add_child(GoStyle.list_button(GoIconSet.LOCK, quest.title, _open_quest.bind(quest),
+			Color.TRANSPARENT, "Requires level %d" % quest.level, false))
+	later.add_child(list)
+	body.add_child(later)
+```
+
+🔑 The level gate is a lock and muted text, not a warning — a warning on four rows of five stops meaning
+anything, and the one row that really is wrong disappears among them. The lock repeats on every row and that
+is fine: it says something about each row. A badge that is the same on every row does not.
+
+🛑 **Inside a `GoForm` your spacing is replaced** — `GoStyle.form()` sets every box's `separation` to `GAP`.
+Mark a box you want kept with `list.set_meta(&"go_own_spacing", true)`. And do not put the card or the rows in a
+`wrap_row()`: it forces everything inside it to natural width, so the title stops expanding and `0 / 1` lands in
+the middle of the row.
+
+🛑 **In a `GoSheet` or `GoSurface`, keep the heading in the body** as above. A surface short of height drops its
+own title to `body` (16) — the same size as the row titles, and the panel loses its top step.
