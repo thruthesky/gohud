@@ -44,7 +44,7 @@ stays `ai.html` so links already shared keep working.
 
 ## 각 표
 
-`NAV`    언어별 메뉴 라벨 다섯. 🔑 Overview·Install·Widgets·Theming 은 **이미 그 언어판에 있던 번역을
+`NAV`    Menu labels per language — six since 2026-09-23 (`icons`: the everyday word for "icons" in that language). 🔑 Overview·Install·Widgets·Theming 은 **이미 그 언어판에 있던 번역을
          그대로 옮겨 적은 것**이다 — 새로 지어낸 말이 아니다(ko 의 Theming 만 "생김새"→"테마").
 `TITLE`  새 쪽의 `<title>`·`<h1>`·설명. 옛 세 쪽은 제 파일에 있는 것을 그대로 쓴다.
 """
@@ -59,6 +59,7 @@ NAV_PAGES = (
     ("ai", "ai.html"),
     ("widgets", "widgets.html"),
     ("theming", "theming.html"),
+    ("icons", "icons.html"),
 )
 
 GITHUB = "https://github.com/thruthesky/gohud"
@@ -67,23 +68,23 @@ GITHUB = "https://github.com/thruthesky/gohud"
 AI_LABEL = "Go HUD Skill"
 
 NAV = {
-    "en":    {"overview": "Overview",     "install": "Install",       "widgets": "Widgets",     "theming": "Theming"},
-    "ko":    {"overview": "소개",          "install": "설치",           "widgets": "위젯",        "theming": "테마"},
-    "ja":    {"overview": "概要",          "install": "インストール",      "widgets": "ウィジェット",   "theming": "テーマ"},
-    "zh":    {"overview": "概览",          "install": "安装",           "widgets": "控件",        "theming": "主题"},
-    "zh-tw": {"overview": "總覽",          "install": "安裝",           "widgets": "控制項",      "theming": "佈景主題"},
-    "es":    {"overview": "Introducción", "install": "Instalación",   "widgets": "Widgets",     "theming": "Temas"},
-    "pt":    {"overview": "Visão geral",  "install": "Instalação",    "widgets": "Widgets",     "theming": "Temas"},
-    "ru":    {"overview": "Обзор",        "install": "Установка",     "widgets": "Виджеты",     "theming": "Темы"},
-    "fr":    {"overview": "Aperçu",       "install": "Installation",  "widgets": "Widgets",     "theming": "Thématisation"},
-    "tr":    {"overview": "Genel bakış",  "install": "Kurulum",       "widgets": "Widget'lar",  "theming": "Tema"},
-    "pl":    {"overview": "Przegląd",     "install": "Instalacja",    "widgets": "Widżety",     "theming": "Motywy"},
-    "it":    {"overview": "Panoramica",   "install": "Installazione", "widgets": "Widget",      "theming": "Temi"},
-    "vi":    {"overview": "Tổng quan",    "install": "Cài đặt",       "widgets": "Widget",      "theming": "Theme"},
-    "id":    {"overview": "Ringkasan",    "install": "Instalasi",     "widgets": "Widget",      "theming": "Tema"},
-    "uk":    {"overview": "Огляд",        "install": "Встановлення",  "widgets": "Віджети",     "theming": "Оформлення"},
-    "th":    {"overview": "ภาพรวม",        "install": "ติดตั้ง",          "widgets": "วิดเจ็ต",      "theming": "ธีม"},
-    "ar":    {"overview": "نظرة عامة",     "install": "التثبيت",        "widgets": "الودجات",      "theming": "السمات"},
+    "en":    {"overview": "Overview",     "install": "Install",       "widgets": "Widgets",     "theming": "Theming", "icons": "Icons"},
+    "ko":    {"overview": "소개",          "install": "설치",           "widgets": "위젯",        "theming": "테마", "icons": "아이콘"},
+    "ja":    {"overview": "概要",          "install": "インストール",      "widgets": "ウィジェット",   "theming": "テーマ", "icons": "アイコン"},
+    "zh":    {"overview": "概览",          "install": "安装",           "widgets": "控件",        "theming": "主题", "icons": "图标"},
+    "zh-tw": {"overview": "總覽",          "install": "安裝",           "widgets": "控制項",      "theming": "佈景主題", "icons": "圖示"},
+    "es":    {"overview": "Introducción", "install": "Instalación",   "widgets": "Widgets",     "theming": "Temas", "icons": "Iconos"},
+    "pt":    {"overview": "Visão geral",  "install": "Instalação",    "widgets": "Widgets",     "theming": "Temas", "icons": "Ícones"},
+    "ru":    {"overview": "Обзор",        "install": "Установка",     "widgets": "Виджеты",     "theming": "Темы", "icons": "Иконки"},
+    "fr":    {"overview": "Aperçu",       "install": "Installation",  "widgets": "Widgets",     "theming": "Thématisation", "icons": "Icônes"},
+    "tr":    {"overview": "Genel bakış",  "install": "Kurulum",       "widgets": "Widget'lar",  "theming": "Tema", "icons": "Simgeler"},
+    "pl":    {"overview": "Przegląd",     "install": "Instalacja",    "widgets": "Widżety",     "theming": "Motywy", "icons": "Ikony"},
+    "it":    {"overview": "Panoramica",   "install": "Installazione", "widgets": "Widget",      "theming": "Temi", "icons": "Icone"},
+    "vi":    {"overview": "Tổng quan",    "install": "Cài đặt",       "widgets": "Widget",      "theming": "Theme", "icons": "Biểu tượng"},
+    "id":    {"overview": "Ringkasan",    "install": "Instalasi",     "widgets": "Widget",      "theming": "Tema", "icons": "Ikon"},
+    "uk":    {"overview": "Огляд",        "install": "Встановлення",  "widgets": "Віджети",     "theming": "Оформлення", "icons": "Іконки"},
+    "th":    {"overview": "ภาพรวม",        "install": "ติดตั้ง",          "widgets": "วิดเจ็ต",      "theming": "ธีม", "icons": "ไอคอน"},
+    "ar":    {"overview": "نظرة عامة",     "install": "التثبيت",        "widgets": "الودجات",      "theming": "السمات", "icons": "الأيقونات"},
 }
 
 

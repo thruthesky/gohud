@@ -211,7 +211,7 @@ use `--check`.
 | `references/hud.md` | `GoHudAnchor` spots and avoidance, `GoBar`, `GoSlot`, `GoJoystick`, `GoIconButton`, `GoNotice`, `GoPromptCard`, `GoCoachMark`, composing a HUD |
 | `references/style.md` | Every `GoStyle` factory signature: structure, text, buttons and tones, inputs, select/dropdown/segmented/tabs, cards, chips, tables, styleboxes, helpers |
 | `references/theming.md` | Presets and resolution order, all tokens, **container opacity (§4)**, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins and dials, custom StyleBoxes, project-local presets, contrast |
-| `references/platform.md` | The 84 icon names and custom icon sets/fonts, localization and RTL, sound and haptics, accessibility, safe area, breakpoints, dp scale, Android Back |
+| `references/platform.md` | Icons — the 84 default names, the game set (187) and the icon library (1,000) with `GoUi.add_icons()`, search and groups, custom icon sets/fonts/folders, localization and RTL, sound and haptics, accessibility, safe area, breakpoints, dp scale, Android Back |
 | `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, a quest list that scans (§16), character sheet, context menu, tutorial, theme switcher |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |
 

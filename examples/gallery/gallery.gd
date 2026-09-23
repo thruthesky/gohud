@@ -197,12 +197,39 @@ func _build_page() -> void:
 		grid.add_child(tile)
 	page.add_child(grid)
 
-	# The whole icon set
+	# The icon set, one group at a time. 🛑 Not every name at once — with the library added that is 1,271 nodes, and
+	#    drawing a name is what reads its file (`GoIconSet.paths`), so a group costs only its own drawings.
 	page.add_child(GoStyle.section("Icon set — swap it in GoConfig.icons", false))
+	var set := GoUi.icons()
+	var keys := Array(set.group_names())
+	var listed := {}
+	for key: String in keys:
+		for icon in set.names_in_group(StringName(key)): listed[icon] = true
+	var loose := Array(set.icon_names()).filter(func(icon: String) -> bool: return not listed.has(icon))
+	var titles: Array = []
+	for key: String in keys: titles.append("%s (%d)" % [set.group_title(StringName(key)), set.names_in_group(StringName(key)).size()])
+	if not loose.is_empty(): titles.append("Other (%d)" % loose.size())
+	var group_picker := GoStyle.select(titles)
 	var icons := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP))
-	for icon in GoUi.icons().icon_names():
-		icons.add_child(GoUi.icons().node(StringName(icon), 22, GoUi.color(GoTheme.SECONDARY)))
+	var show_group := func(index: int) -> void:
+		for child in icons.get_children(): child.queue_free()
+		var names: Array = Array(set.names_in_group(StringName(keys[index]))) if index < keys.size() else loose
+		for icon: String in names:
+			icons.add_child(set.node(StringName(icon), 22, GoUi.color(GoTheme.SECONDARY)))
+	group_picker.item_selected.connect(show_group)
+	# 🛑 A flow row, not a row — the picker and the button side by side need ~390dp and ran a 320dp phone's whole page
+	#    off the screen (`tests/gohud_layout_test.gd`, 2026-09-23).
+	var icon_bar := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP))
+	icon_bar.add_child(group_picker)
+	if not GoUi.config.extra_icons.has(GoIconLibrary.icon_set()):
+		icon_bar.add_child(GoStyle.button("Add 1,000 more icons", func() -> void:
+			GoUi.add_icons(GoIconLibrary.icon_set())
+			_rebuild(), GoStyle.Tone.COMPACT))
+	page.add_child(icon_bar)
 	page.add_child(icons)
+	if not titles.is_empty():
+		group_picker.select(0)
+		show_group.call(0)
 
 	# Pick a look — not just the colors but the **shapes** change with it (theme + skin).
 	page.add_child(GoStyle.section("Theme preset", false))

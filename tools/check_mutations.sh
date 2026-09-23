@@ -274,9 +274,23 @@ mutate "widgets/go_style.gd" \
 
 printf "\n\033[1m── icons & text\033[0m\n"
 mutate "core/go_icon_set.gd" \
-  "	if fallback != null: return fallback._resolve(icon, seen)" \
-  "	if false: return fallback._resolve(icon, seen)" \
+  "		if here.fallback != null: next.append(here.fallback)" \
+  "		if false: next.append(here.fallback)" \
   "the icon set falls through to its fallback"
+mutate "core/go_icon_set.gd" \
+  "		var next: Array = here.layers.duplicate()" \
+  "		var next: Array = []" \
+  "layered icon sets are looked in"
+mutate "core/go_icon_set.gd" \
+  "	if paths.has(icon):
+		drawn = _load_path(icon)" \
+  "	if false:
+		drawn = _load_path(icon)" \
+  "an icon set draws from its paths"
+mutate "core/go_icon_set.gd" \
+  "		if each.aliases.has(icon):" \
+  "		if false:" \
+  "an alias leads to its icon"
 mutate "core/go_ui.gd" \
   "	if overrides.has(name): return overrides[name]" \
   "	if false: return overrides[name]" \

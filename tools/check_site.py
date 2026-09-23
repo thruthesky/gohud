@@ -147,6 +147,7 @@ def check_glossary(glossary, problems):
 GENERATED = [
     os.path.join("site", "glossary.js"),
     os.path.join("site", "glossary.en.js"),
+    os.path.join("site", "icons.js"),
     NOT_FOUND,
 ] + [site_langs.rel_path(lang.code, page) for lang in site_langs.ACTIVE for page in site_langs.PAGES] \
   + [os.path.join("site", "search", "%s.js" % (lang.code or "en")) for lang in site_langs.ACTIVE]

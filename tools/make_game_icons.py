@@ -7,7 +7,9 @@
 It writes three things, all from the one table `GROUPS`:
 
   icons/game/<name>.svg          one 24x24 white stroke icon per row
-  icons/gohud_icons_game.tres    the `GoIconSet` (fallback = the default set, so `close`, `bag`, `coin` … still resolve)
+  icons/gohud_icons_game.tres    the `GoIconSet` — drawings as `paths` (read when a name is first drawn), groups, search
+                                 words, and each Tabler row's Tabler name as an alias. Fallback = the default set, so
+                                 `close`, `bag`, `coin` … still resolve
   core/go_game_icons.gd          `GoGameIcons` — a name constant per icon, the groups, and `icon_set()`
 
 ## Where the drawings come from
@@ -28,6 +30,9 @@ The path data is **kept in this file** so the set rebuilds offline and byte for 
 import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import icon_set_tres  # noqa: E402
 
 ADDON = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 TABLER_VERSION = "3.46.0"
@@ -254,6 +259,198 @@ GROUPS = [
   ]),
 ]
 
+# Name → search words (English). Tabler rows carry that icon's own tags from Tabler 3.46.0, cleaned by
+# `icon_set_tres.clean_tags()`; the sixteen gohud drawings got theirs by hand. `GoIconSet.search()` reads them.
+TAGS = {
+  "backpack":      "education school learning adventure travel store purchase shopping",
+  "chest":         "treasure pirate gold loot reward wealth adventure box",
+  "crate":         "box container package store purchase shopping retail business",
+  "crates":        "delivery boxes storage packages",
+  "barrel":        "beer wine fuel tank cask",
+  "bucket":        "collection container water liquid creative artistic visual aesthetic",
+  "stack":         "pile elements layout wrap creative artistic visual aesthetic",
+  "cube":          "3d pattern abstract geometric shape geometry form figure",
+  "warehouse":     "store inventory stuff things machinery building architecture structure",
+  "hand_grab":     "hold fist drop catch touch action motion interaction",
+  "shop":          "shopping supermarket market products retail buy sell building",
+  "cart":          "shop store buy purchase product bag trolley supermarket",
+  "cart_add":      "increase boost enhance supplement grow amplify expand augment",
+  "shopping_bag":  "shop store ecommerce buy purchase retail business",
+  "basket":        "shop store online shopping purchase retail business",
+  "tag":           "label price store purchase shopping retail business",
+  "tags":          "label price shopping promotion store purchase retail business",
+  "receipt":       "bill restaurant shop price pay money total tax",
+  "wallet":        "money pay banknote coin payment bank",
+  "cash":          "currency payment money pay store purchase finance dollar",
+  "banknote":      "money pay bank dollar pound yen business cash",
+  "coins":         "money cash finance currency dollar store purchase shopping",
+  "money_bag":     "finance cash dollar currency bank moneybag wealth rich",
+  "piggy_bank":    "coin finance saving pig money creature wildlife nature",
+  "gem":           "jewellery crystal mineral jewelry ring diamond",
+  "scale":         "weigh balance amount heavy light libra",
+  "discount":      "sale reduction price cost money shopping bargain store",
+  "percent":       "sign math economics cash bank account chart graph diagram",
+  "credit_card":   "money purchase payment cc store shopping retail business",
+  "exchange":      "direction west east arrows navigation flow movement route",
+  "delivery":      "order purchase online shop store e-commerce lorry truck",
+  "trolley":       "shopping market shop delivery transport travel vehicle automobile",
+  "bank":          "architecture city urban construction money credit loan workplace",
+  "auction":       "justice law hammer legal gavel",
+  "gift_card":     "coupon present voucher shopping birthday store purchase retail",
+  "ticket":        "cinema event theatre entry fine coupon pass",
+  "price_up":      "arrow grow increase progress trending top navigation flow",
+  "price_down":    "arrow decrease fall progress trending bottom navigation flow",
+  "credit":        "currency token premium points",
+  "helmet":        "safety f1 racing motorcycle builder athletic fitness exercise",
+  "armor":         "gear outfit mocker shirt store purchase shopping retail",
+  "boots":         "sport boot footwear sneaker nike adidas shoe store",
+  "glasses":       "summer sun look shades eyewear sunglasses medical wellness",
+  "mask":          "edit layer tool design creative artistic visual aesthetic",
+  "wardrobe":      "clothes hook hang wooden plastic wire shop store",
+  "gloves":        "hand gauntlet armor equipment",
+  "ring":          "jewelry jewel accessory gem",
+  "necklace":      "jewelry amulet pendant accessory",
+  "space_helmet":  "astronaut spacesuit visor suit",
+  "swords":        "weapon knight blade war minecraft warrior entertainment playing",
+  "axe":           "blade wood tool hatchet entertainment playing recreation fun",
+  "bow":           "arrow archer hunt hunter athletic fitness exercise game",
+  "wand":          "magic tool color pixel design",
+  "hammer":        "tool repair building construction",
+  "pickaxe":       "select choose grab pluck individual option choice preference",
+  "shovel":        "garden tool digging farm dirt gardening",
+  "wrench":        "preferences edit settings tool operation function management",
+  "tools":         "preferences edit settings creative artistic visual aesthetic style",
+  "knife":         "cut chop portion kitchen tool slice creative artistic",
+  "fish_hook":     "fishing bait hanging catch water",
+  "brush":         "paint art picture paintbrush painter theme creative artistic",
+  "binoculars":    "birds explorer field glasses magnifying eye glasses observe view watch",
+  "compass":       "navigation safari travel direction discover location geography place",
+  "magnet":        "magnetic field pole iron attract",
+  "bomb":          "explosion weapon military war",
+  "apple":         "fruit healthy diet fitness meal cuisine eating nutrition",
+  "meat":          "food beef steak chicken sasuage dinner meal cuisine",
+  "bread":         "food breakfast sandwich toast baking meal cuisine eating",
+  "bottle":        "water drink beer energy wine meal cuisine eating",
+  "flask":         "liquid container glass chemistry test laboratory experimental beta",
+  "flask_round":   "liquid container glass chemistry test laboratory experimental beta",
+  "pill":          "drug medication illness sickness doctor prescription medical wellness",
+  "medkit":        "medical healthcare hospital health first aid kit wellness",
+  "bandage":       "patch wound cut pain medical wellness healthcare treatment",
+  "syringe":       "illness sickness disease injection medicine medical doctor nurse",
+  "candy":         "sweet food sugar cane halloween meal cuisine eating",
+  "milk":          "food drink cow healthy breakfast bottle coffee meal",
+  "egg":           "food easter chicken meal cuisine eating nutrition culinary",
+  "fish":          "food sea animal fishing ocean sushi creature wildlife",
+  "carrot":        "food healthy rabbit vegetable meal cuisine eating nutrition",
+  "mushroom":      "food vegetable cooking fungus mushrooming meal cuisine eating",
+  "cookie":        "biscuit treat dessert snack sweet bake confection dough",
+  "cheese":        "food mouse cooking pizza sandwiches product edam gouda",
+  "cake":          "baking birthday party chocolate sweet meal cuisine eating",
+  "pizza":         "food cheese italy pepperoni margherita capricciosa rucole meal",
+  "soup":          "food cooking restaurant bowl hot kitchen meal cuisine",
+  "salad":         "food vegetable vegan healthy meal cuisine eating nutrition",
+  "ice_cream":     "candy dessert frozen sweet meal cuisine eating nutrition",
+  "coffee":        "espresso hot cup latte cafe drink meal cuisine",
+  "cup":           "coffee drink water food meal cuisine eating nutrition",
+  "drink":         "wine cup goblet glass full meal cuisine eating",
+  "wood":          "tree forest natural timber log",
+  "leaf":          "nature plant tree autumn fall greenery flower forest",
+  "seedling":      "nature greenery grow soil harvest plant flower tree",
+  "plant":         "nature green flower pot tree leaf greenery root",
+  "flower":        "plant garden rose lotus environment natural outdoor ecosystem",
+  "wheat":         "food nature greenary grow soil harvest plant leaf",
+  "seeds":         "dots pattern random round circle nodes grain",
+  "cactus":        "plant desert spikes nature garden environment natural outdoor",
+  "tree":          "nature greenery park leaf trunk stem root forest",
+  "droplet":       "water rain liquid creative artistic visual aesthetic style",
+  "flame":         "fire fireplace light burn bonfire smoke barbecue",
+  "snowflake":     "winter weather cold frost climate forecast meteorology atmospheric",
+  "wind":          "weather breeze tornado typhoon cyclone hurricane climate forecast",
+  "bone":          "skeleton human dog body meal cuisine eating nutrition",
+  "feather":       "bird animal nature environment natural outdoor ecosystem earth",
+  "mountain":      "alps camping mount everest trekking environment natural outdoor ecosystem",
+  "bricks":        "brick security firewall building renovation construction wall architecture",
+  "ore":           "rock stone mineral mining",
+  "crystal":       "gem shard mana mineral",
+  "ingot":         "bar metal gold iron smelt",
+  "goo":           "slime liquid blob gel",
+  "shell":         "sea beach clam snail",
+  "spore":         "fungus seed mushroom spread",
+  "steel_beam":    "girder construction metal",
+  "floor_panel":   "tile floor plate building",
+  "atom":          "unit part electrons particle molecule science physics chemistry",
+  "battery":       "energy power electricity charge technology electric electronic gadget",
+  "battery_full":  "energy power electricity charge technology electric electronic gadget",
+  "bulb":          "energy power electricity creativity light idea",
+  "chip":          "processor computer technology electronic cpu gadget equipment",
+  "plug":          "electricity charger socket connection technology electronic gadget equipment",
+  "engine":        "car motor automotive dashboard transport travel vehicle automobile",
+  "rocket":        "universe galaxy space journey discover extraterrestrial spaceship location",
+  "planet":        "earth uranus universe space galaxy orbit atmosphere location",
+  "satellite":     "orbit space moon earth planet communication information celestial",
+  "ufo":           "alien space astronomy spaceship galaxy entertainment playing recreation",
+  "alien":         "universe extraterrestrial ufo space galaxy planet creature foreign",
+  "solar_panel":   "energy sun power ecology electricity section area region",
+  "antenna":       "reach tv network connetion signal communication technology electronic",
+  "telescope":     "astronomy moon observation vision space astrology",
+  "meteor":        "space comet astronomy galaxy cosmos environment natural outdoor",
+  "robot":         "technology ai machine bot android entertainment playing recreation",
+  "drone":         "device fly aircraft surveillance autonomous transport travel vehicle",
+  "radar":         "location navigation gps find signal technology submarine geography",
+  "microscope":    "school education learning laboratory experimental chemistry biology medical",
+  "dna":           "genetics biology chain genetic virus organism medical wellness",
+  "test_tube":     "sample color flask liquid container glass chemistry laboratory",
+  "radioactive":   "dangerous precarious danger sign warning caution chernobyl reactor",
+  "biohazard":     "danger radioactive toxic microbe virus biotoxin sign mark",
+  "recycle":       "trash rubbish recyclable reuse waste sign mark emblem",
+  "fuel":          "oil cars vehicles shop distributor gas station transport",
+  "oxygen_tank":   "air cylinder diving gas",
+  "dome":          "habitat base colony shelter",
+  "power_core":    "reactor energy battery generator",
+  "factory":       "goods manufature machine trade produce product worker industry",
+  "house":         "small countryside live farm rural outskirts building cottage",
+  "tower":         "building castle fortress palace architecture structure construction property",
+  "windmill":      "generate power blade energy electricity location navigation geography",
+  "tent":          "camping holiday vacation outdoor survival travel adventure location",
+  "campfire":      "camping bonfire wood camp burn flame location navigation",
+  "bed":           "furniture sleeping comfortable bedroom mattress resting relax sleep",
+  "lamp":          "light room decoration electic energy",
+  "door":          "entrance home house room",
+  "window":        "house view glass apartment vehicle light frame home",
+  "fence":         "garden home house farm wood barrier architecture structure",
+  "ladder":        "up equipment garden climb climbing",
+  "armchair":      "seat chair sofa home furniture comfort relax",
+  "car":           "vehicle drive driver engine motor journey trip transport",
+  "tractor":       "countryside vehicle harvest machine motor farm trailer transport",
+  "forklift":      "store warehouse inventory exporting transport travel vehicle automobile",
+  "crane":         "construction building machine lifting transport travel vehicle automobile",
+  "paw":           "animal dog cat foot pets",
+  "bug":           "germ insect error nature",
+  "ghost":         "spirit transparent fairytale horror movie shadow haunt entertainment",
+  "pig":           "animal farm pork mud pink piggy bank creature",
+  "horse":         "equine equestrian stallion mare pony steed riding hoofed-animal",
+  "trophy":        "success win prize winner",
+  "medal":         "decorate uniform design",
+  "award":         "prize reward competition contest win",
+  "certificate":   "document official attest signature birth death gift authenticity",
+  "sparkles":      "star light fire shine",
+  "confetti":      "party celebrate streamers paper parade wedding celebration",
+  "balloon":       "party birthday decoration",
+  "dice":          "game boardgame roll throw cube numbers gambling entertainment",
+  "puzzle":        "jigsaw extension add-on entertainment playing recreation fun activity",
+  "anchor":        "hold ship harbor docks location navigation geography place",
+  "palette":       "color paint painter picture board artist creative artistic",
+  "notebook":      "study learn diary write journal page paper jot down",
+  "scroll":        "document script file paper text record",
+  "thumb_up":      "like emotion good love top increase operation rise",
+  "handshake":     "support care friends couple relation heart love like",
+  "megaphone":     "voice loud microphone loudspeaker event protest speaker shout",
+  "stopwatch":     "timer time watch clock run race operation function",
+  "microphone":    "record sound listen entertainment multimedia broadcast audio",
+  "microphone_off": "record sound listen entertainment disabled inactive multimedia",
+  "send":          "message mail email gmail paper airplane aeroplane contact",
+}
+
 SET_NAME = "gohud game icons"
 ATTRIBUTION = ("gohud game icon set, MIT. {tabler} icons use path data from Tabler Icons %s (https://tabler.io/icons), "
                "MIT License, Copyright (c) 2020-2026 Pawel Kuna. {own} icons were drawn for gohud. "
@@ -308,18 +505,23 @@ def outputs():
 
 	ordered = sorted(names)
 	tabler = sum(1 for _n, source, _b in rows() if source.startswith("tabler:"))
-	tres = ['[gd_resource type="Resource" script_class="GoIconSet" load_steps=%d format=3]' % (len(ordered) + 3), "",
-		'[ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]',
-		'[ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]']
-	for index, name in enumerate(ordered):
-		tres.append('[ext_resource type="Texture2D" path="res://addons/gohud/icons/game/%s.svg" id="g%d"]' % (name, index))
-	pairs = ", ".join('&"%s": ExtResource("g%d")' % (name, index) for index, name in enumerate(ordered))
-	tres += ["", "[resource]", 'script = ExtResource("script")', 'set_name = "%s"' % SET_NAME,
-		'attribution = "%s"' % ATTRIBUTION.format(tabler=tabler, own=len(ordered) - tabler),
-		'fallback = ExtResource("fallback")',
-		"textures = Dictionary[StringName, Texture2D]({%s})" % pairs,
-		"codepoints = Dictionary[StringName, int]({})", "font_size_ratio = 1.0", ""]
-	files["icons/gohud_icons_game.tres"] = "\n".join(tres)
+	missing = sorted(set(names) - set(TAGS))
+	if missing:
+		sys.exit("🛑 no search words in TAGS for: %s" % " ".join(missing))
+	# 🔑 A Tabler row's own Tabler name leads to it too (`treasure_chest` → `chest`) — someone who found the drawing on
+	#    tabler.io can ask for it by that name. Numbered Tabler names (`stack-2`) are left out.
+	aliases = {}
+	for name, source, _body in rows():
+		if not source.startswith("tabler:"): continue
+		alias = source[len("tabler:"):].replace("-", "_")
+		if alias != name and not re.search(r"_\d+$", alias) and alias not in names and alias not in default_names():
+			aliases[alias] = name
+	files["icons/gohud_icons_game.tres"] = icon_set_tres.icon_set_tres(
+		SET_NAME, ATTRIBUTION.format(tabler=tabler, own=len(ordered) - tabler),
+		"res://addons/gohud/icons/gohud_icons.tres", "res://addons/gohud/icons/game",
+		{name: "%s.svg" % name for name in ordered},
+		[(key, title, [name for name, _s, _b in items]) for key, title, items in GROUPS],
+		{name: TAGS[name].split() for name in ordered}, aliases)
 
 	gd = ['## 🎮 Names for the **game icon set** — %d icons for inventories, shops, equipment, food, resources,' % len(ordered),
 		"## tech & space, places and rewards. The drawings live in `icons/game/`, the set in `icons/gohud_icons_game.tres`.",
@@ -351,8 +553,8 @@ def outputs():
 	for key, title, _items in GROUPS:
 		gd.append('\t&"%s": "%s",' % (key, title))
 	gd += ["}", "", "",
-		"## The set itself. 🛑 Loaded on first use rather than `preload`ed — a project that never asks for it",
-		"##    never pays for %d textures." % len(ordered),
+		"## The set itself. 🛑 Loaded on first use rather than `preload`ed, and it holds **paths**, not textures —",
+		"##    a drawing is read the first time its name is drawn, so asking for the set costs a table of %d paths." % len(ordered),
 		"static func icon_set() -> GoIconSet:",
 		"\treturn load(SET_PATH) as GoIconSet", "", "",
 		"## Every name of this set (without the default set's names), in drawing order.",

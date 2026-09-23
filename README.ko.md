@@ -42,7 +42,7 @@
   `FoldableContainer` 접이식 섹션, 화면 낭독기를 위한 `accessibility_name`,
   알림이 입력을 먹지 않게 하는 `mouse_behavior_recursive`, 흐르는 줄의 `last_wrap_alignment`.
 - **순수 GDScript.** 오토로드 불필요, 엔진 모듈·GDExtension 없음.
-- **MIT** — 코드와 그림 전부, 기본 아이콘 84종과 중세 각인 아이콘 16종 포함. 중세 제목에 쓰는
+- **MIT** — 코드와 그림 전부, 기본 아이콘 84종·중세 각인 아이콘 16종·게임 아이콘 187종·아이콘 라이브러리 1,000종 포함. 중세 제목에 쓰는
   Cinzel 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
 
 ## 요구 사항
@@ -274,31 +274,68 @@ var node := GoUi.icons().node(GoIconSet.CLOSE, 20)         # 알아서 TextureRe
 GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close") # 36dp 그림 · 48dp 터치 · 툴팁 = 접근성 이름
 ```
 
-믿고 쓸 수 있는 이름은 `GoIconSet` 의 상수 84개다. 세트에 정의돼 있으면 다른 이름도 된다 — 중세 세트의
+믿고 쓸 수 있는 이름은 `GoIconSet` 의 상수 84개다. 찾는 길 위의 세트가 그리기만 하면 다른 이름도 된다 — 중세 세트의
 `scroll`·`seal` 이 그렇다. `icons/gohud_icons_medieval.tres` 가 "몇 개만 교체" 의 실제 예다(기본 세트 위에 16장).
-
-기본 84종과 중세 16종은 gohud 를 위해 그린 원본이고 **MIT** 라 재배포에 제약이 없다.
-`DPITexture` 로 임포트돼 UI 배율을 올려도 다시 래스터화된다.
-
-### 게임 아이콘 세트 — 인벤토리·상점·아이템
-
-아이콘 187종을 아홉 묶음(가방·보관, 상점·거래, 장비·도구, 음식·소모품, 자원·재료, 기술·우주, 건물·가구, 생물,
-보상·소셜)으로 더 담았다. 이름은 `GoGameIcons` 의 상수이고, 세트가 기본 세트를 fallback 으로 두므로 이미 쓰던
-이름은 그대로 그려진다.
+그림 전부는 [아이콘 페이지](https://thruthesky.github.io/gohud/ko/icons.html)에서 검색하고 이름을 복사할 수 있다.
+기본 84종과 중세 16종은 gohud 를 위해 그린 원본이고, 모든 아이콘은 `DPITexture` 로 임포트돼 UI 배율을 올려도 다시 래스터화된다.
 
 ```gdscript
-GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
-GoUi.config.icons = GoGameIcons.icon_set()      # use_preset() 뒤에 — use_preset() 이 config.icons 를 비운다
+# 폴더 하나를 통째로 — 파일 이름이 아이콘 이름이 되고, 처음 그릴 때 읽는다
+GoUi.config.icons = GoIconSet.from_folder("res://icons", GoUi.icons())
+```
+
+### 세트 넷, 찾는 길 하나 — 그림 1,287장
+
+| 세트 | 이름 | 상수 | 켜는 법 |
+|---|---|---|---|
+| 기본 | 84 | `GoIconSet` | 늘 켜져 있다 |
+| 중세 | 각인 16 | — | `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` |
+| 게임 — 인벤토리·상점·아이템 | 아홉 묶음 187 | `GoGameIcons` | `GoUi.add_icons(GoGameIcons.icon_set())` |
+| 라이브러리 — 화살표·장치·날씨·운동·표정 … | 32 묶음 1,000 | `GoIconLibrary` | `GoUi.add_icons(GoIconLibrary.icon_set())` |
+
+```gdscript
+GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+GoUi.add_icons(GoIconLibrary.icon_set())        # 라이브러리는 게임 세트로 넘어간다 — 한 줄로 이름 1,271개
 
 var grid := GoSlotGrid.new()                    # GoSlot 칸으로 된 인벤토리 격자
 grid.slot_count = 30
 grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12, "tooltip": "사과"})
-menu.add_child(GoStyle.list_button(GoGameIcons.SHOP, "상점", open_shop, Color.TRANSPARENT, "", false))
+menu.add_child(GoStyle.list_button(GoIconLibrary.CLOUD_RAIN, "날씨", open_weather, Color.TRANSPARENT, "", false))
 ```
 
-171종은 [Tabler Icons](https://tabler.io/icons)(MIT, © Paweł Kuna)의 경로 데이터를 쓴다 — 기본 세트와 같은 24px 격자·
-2px 둥근 선이라 나란히 놓아도 어긋나지 않는다. 나머지 16종(반지·목걸이·장갑·광석·수정·산소통·돔 …)은 gohud 를 위해
-그렸다. 아이콘을 더하려면 `tools/make_game_icons.py` 의 표를 고치고 실행한다 — SVG·세트·상수를 한 번에 다시 만든다.
+`GoUi.add_icons()` 는 세트를 `GoConfig.extra_icons` 에 넣는다. `use_preset()` 은 이 목록을 남기므로, 프리셋의 자기
+그림(위의 각인된 칼)은 그대로 위에 있고 더한 세트는 프리셋에 없는 이름만 채운다.
+(`GoUi.config.icons = GoGameIcons.icon_set()` 도 여전히 되지만, 프리셋의 세트를 통째로 갈아 끼운다.)
+
+큰 세트는 텍스처가 아니라 **경로**를 들고 있다 — 그림은 그 이름을 처음 그릴 때 읽는다. 라이브러리를 더하는 비용은
+텍스처 1,000장이 아니라 경로 표 하나다(데스크톱에서 한 번 약 30 ms). 🛑 경로는 문자열이지 의존성이 아니다 —
+리소스를 골라 내보내는 export 는 `addons/gohud/icons/` 를 넣어야 한다(기본값 "모든 리소스 내보내기"는 따로 할 것이 없다).
+
+게임 그림 171장과 라이브러리 1,000장은 [Tabler Icons](https://tabler.io/icons) 3.46.0(MIT, © Paweł Kuna)의 경로
+데이터를 쓴다 — 기본 세트와 같은 24px 격자·2px 둥근 선이라 나란히 놓아도 어긋나지 않는다. 게임 그림 16장(반지·목걸이·
+장갑·광석·수정·산소통·돔 …)은 gohud 를 위해 그렸다. 표는 `tools/make_game_icons.py` 와 `tools/icon_library_data.py`
+이고, `tools/make_game_icons.py`·`tools/make_icon_library.py` 를 실행하면 SVG·세트·상수를 한 번에 다시 만든다.
+
+### 이름을 찾는 순서
+
+1. **모든 세트의 자기 그림이 먼저다** — 지금 쓰는 세트, 그다음 더한 세트들, 그다음 그 세트들의 fallback 을 한 단씩 본다.
+   자기 그림이란 텍스처·경로·아이콘 폰트 글리프다.
+2. 아무도 그리지 못하면 **별칭**을 본다(`gear` → `settings`, `x` → `close`). 한 번만 건너간다.
+3. 그래도 없으면 자리를 지키는 빈 상자가 되고, 디버그 빌드에서는 경고가 뜬다.
+
+### 이름 찾기 — 검색·묶음·별칭
+
+```gdscript
+var icons := GoUi.icons()
+icons.search("arrow left", 5)        # 잘 맞는 것부터: back, arrow_bar_left …
+icons.group_names()                  # 묶음 키 전부
+icons.names_in_group(&"weather")     # 한 묶음 — 모든 세트의 몫을 모아서
+icons.canonical(&"gear")             # &"settings"
+```
+
+이름은 lower_snake_case 로, 그린 것을 먼저 쓰고 상태를 뒤에 붙인다(`volume_off`, `battery_charging`). 묶음 접두사는
+붙이지 않는다. 라이브러리 이름은 Tabler 이름의 `-` 를 `_` 로 바꾼 것이고, gohud 에 이미 있던 그림의 Tabler 이름은
+별칭으로 그 그림에 닿는다(`map_pin` → `location`).
 
 > 상용 아이콘 폰트는 보통 게임 안에서 쓰는 것만 허락하고 재배포는 막는다. gohud 를 공개 포크할 때는
 > 그 폰트를 넣지 말고 게임 프로젝트에 둔다. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 참고.
@@ -767,6 +804,6 @@ ZIP 에는 사이트·검사·도구·`package.json`과 독립 프로젝트 `exa
 
 MIT — [LICENSE](LICENSE). 코드와 함께 든 그림(기본 아이콘 84종, 중세 아이콘 16종, 생성된 컨트롤 그림)은
 gohud 를 위해 만든 것이라 역시 MIT 다. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
-게임 아이콘 세트 187종도 MIT 다 — 171종은 Tabler Icons(MIT, Copyright (c) 2020-2026 Paweł Kuna)의 경로 데이터를 쓰고 16종은 gohud 를 위해 그렸다.
+게임 아이콘 세트 187종과 아이콘 라이브러리 1,000종도 MIT 다 — 게임 171종과 라이브러리 전부는 Tabler Icons(MIT, Copyright (c) 2020-2026 Paweł Kuna)의 경로 데이터를 쓰고, 게임 16종은 gohud 를 위해 그렸다.
 Cinzel 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`).
 자세한 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

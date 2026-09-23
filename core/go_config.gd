@@ -71,6 +71,21 @@ signal changed_settings
 		emit_changed()
 		changed_settings.emit()
 
+## 🧩 **More icon sets**, looked in after the one above (or the preset's) — for names it does not draw.
+## `GoUi.use_preset()` leaves this list alone, so a preset's own drawings (the medieval engravings) stay on top and
+## these only fill in the names it lacks. `GoUi.add_icons()` appends to it.
+##
+## ```gdscript
+## GoUi.add_icons(GoIconLibrary.icon_set())   # 1,000 more names — plus the game set's 187, which it falls back to
+## ```
+## 🛑 Assign a new array (or call `GoUi.refresh()` after changing this one in place) — an in-place `append` has no
+##    setter to tell the widgets on screen.
+@export var extra_icons: Array[GoIconSet] = []:
+	set(value):
+		extra_icons = value
+		emit_changed()
+		changed_settings.emit()
+
 ## Individual color overrides — for when you want to change just `accent` without building a whole theme.
 ## The keys are token names such as `GoTheme.ACCENT`.
 @export var color_overrides: Dictionary[StringName, Color] = {}

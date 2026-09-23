@@ -54,6 +54,8 @@ func _initialize() -> void:
 	await _item_card()
 	await _list_row_selection()
 	await _game_icons()
+	await _icon_library()
+	await _icon_lookup()
 	await _theme_follow()
 	await _list_lab()
 
@@ -1521,7 +1523,8 @@ func _game_icons() -> void:
 	var game := GoGameIcons.icon_set()
 	check(game != null and game.fallback == GoUi.DEFAULT_ICONS, "game icons: the set loads and falls back to the default set")
 	var names := GoGameIcons.names()
-	check(names.size() == game.textures.size(), "game icons: every texture has a name constant (%d / %d)" % [names.size(), game.textures.size()])
+	check(names.size() == game.paths.size(), "game icons: every drawing has a name constant (%d / %d)" % [names.size(), game.paths.size()])
+	check(game.textures.is_empty(), "game icons: the set holds paths, not textures — asking for it reads no drawing")
 	var blurry: Array = []
 	var undrawn: Array = []
 	for icon: StringName in names:
@@ -1553,6 +1556,114 @@ func _game_icons() -> void:
 	GoUi.config.icons = null
 	await frames(1)
 	section("game icons")
+
+
+# ── Icon library ──────────────────────────────────────────────────────
+# 🔑 Integrity of all 1,000 files is `tools/make_icon_library.py --check`'s job — here one drawing per group is
+#    loaded, so this section stays fast and still proves that the table, the set and the files agree.
+
+func _icon_library() -> void:
+	var core := GoUi.DEFAULT_ICONS
+	var grouped: Array = []
+	for key: StringName in core.groups: grouped.append_array(Array(core.groups[key]))
+	var names_84 := core.icon_names()
+	check(grouped.size() == 84 and Array(names_84).all(func(icon: String) -> bool: return grouped.has(icon)) and core.group_names().size() == 9,
+		"default icons: all 84 names sit in one of 9 groups (%d listed)" % grouped.size())
+	check(core.search("gear", 1) == PackedStringArray(["settings"]) and core.search("mute").has("volume_off"),
+		"default icons: search works on the default set alone (gear → settings, mute → volume_off)")
+	var library := GoIconLibrary.icon_set()
+	var game := GoGameIcons.icon_set()
+	check(library != null and library.fallback == game, "icon library: the set loads and falls back to the game set")
+	check(library._loaded.is_empty() and library.textures.is_empty(), "icon library: opening the set reads no drawing (%d read)" % library._loaded.size())
+	var names := GoIconLibrary.names()
+	check(names.size() == 1000 and library.paths.size() == 1000, "icon library: 1,000 names, 1,000 paths (%d / %d)" % [names.size(), library.paths.size()])
+	check(library.icon_names().size() == 1271, "icon library: with its fallbacks it draws 1,271 names (%d)" % library.icon_names().size())
+	var keys := GoIconLibrary.group_keys()
+	check(keys.size() == 32 and keys.all(func(key: StringName) -> bool: return library.group_titles.has(key)), "icon library: 32 groups, each with a title")
+	var constants: Dictionary = (load(ADDON + "/core/go_icon_library.gd") as Script).get_script_constant_map()
+	var orphans: Array = []
+	for key: String in constants:
+		if constants[key] is StringName and not names.has(constants[key]): orphans.append(key)
+	check(orphans.is_empty(), "icon library: every constant belongs to a group %s" % str(orphans))
+	var clash: Array = []
+	for icon: StringName in names:
+		if GoUi.DEFAULT_ICONS.textures.has(icon) or game.paths.has(icon): clash.append(icon)
+	check(clash.is_empty(), "icon library: no name repeats the default or game set %s" % str(clash))
+	var blurry: Array = []
+	for key: StringName in keys:
+		var first := StringName(library.groups[key][0])
+		if not library.texture(first) is DPITexture: blurry.append(first)
+	check(blurry.is_empty(), "icon library: one drawing per group loads as a vector DPITexture %s" % str(blurry))
+	check(library._loaded.size() == keys.size(), "icon library: only what was drawn got read (%d)" % library._loaded.size())
+	check(library.attribution.contains("Tabler") and library.attribution.contains("MIT"), "icon library: the set carries its attribution")
+	var broken: Array = []
+	for alias: StringName in library.aliases:
+		if library.icon_names().has(String(alias)) or library.canonical(alias) != library.aliases[alias]: broken.append(alias)
+	check(broken.is_empty(), "icon library: every alias is a new name that leads to a drawn one %s" % str(broken))
+	check(library.canonical(&"x") == GoIconSet.CLOSE and library.canonical(&"treasure_chest") == GoGameIcons.CHEST,
+		"icon library: Tabler's names reach the default and game drawings (x → close, treasure_chest → chest)")
+	check(library.search("arrow left", 1) == PackedStringArray(["back"]), "icon library: search puts the name an alias points at first %s" % str(library.search("arrow left", 3)))
+	check(library.search("rain")[0] == "cloud_rain" and library.search("rain", 2).size() == 2, "icon library: search ranks the name before its tags, and limit holds")
+	check(library.search("gear")[0] == "settings" and library.search("treasure").has("chest"), "icon library: search reads aliases and search words")
+	check(library.search("  ").is_empty() and library.search("zzqx").is_empty(), "icon library: an empty or unknown query finds nothing")
+	var food := library.names_in_group(&"food")
+	check(food.has("apple") and food.has("avocado") and library.group_title(&"food") == "Food & drink",
+		"icon library: a group key gathers every set's icons (game apple + library avocado)")
+	check(library.group_of(GoIconLibrary.CLOUD_RAIN) == &"weather", "icon library: group_of finds a name's group")
+	section("icon library")
+
+
+# ── Icon lookup: layers, aliases, extra sets ──────────────────────────
+
+func _icon_lookup() -> void:
+	var library := GoIconLibrary.icon_set()
+	var medieval: GoIconSet = GoThemePresets.find(GoThemePresets.MEDIEVAL_DARK).icons
+	var star := GoUi.DEFAULT_ICONS.texture(GoIconSet.STAR)
+	var mine := GoIconSet.new()
+	mine.fallback = GoUi.DEFAULT_ICONS
+	mine.textures = {&"mine_only": star, &"gear": star}
+	var stack := GoIconSet.new()
+	stack.layers = [mine, medieval, library] as Array[GoIconSet]
+	# 🛑 This is the order that matters: `mine` falls back to the default set, which draws a plain sword. Only because
+	#    every layer's own drawings come before any fallback does the medieval engraving win.
+	check(stack.texture(GoIconSet.SWORD) == medieval.texture(GoIconSet.SWORD), "icon lookup: own drawings of every layer beat any fallback (engraved sword)")
+	check(stack.texture(&"mine_only") == star and stack.texture(GoIconSet.CLOSE) == GoUi.DEFAULT_ICONS.texture(GoIconSet.CLOSE),
+		"icon lookup: the first layer's own names and the default set's names both resolve")
+	check(stack.texture(&"scroll") == medieval.texture(&"scroll") and stack.has_icon(GoGameIcons.BACKPACK),
+		"icon lookup: the medieval scroll wins over the game scroll; game names still resolve")
+	check(stack.texture(&"gear") == star, "icon lookup: a set that draws an alias name itself keeps it (gear stays yours)")
+	var hops := GoIconSet.new()
+	hops.fallback = GoUi.DEFAULT_ICONS
+	hops.aliases = {&"first": &"second", &"second": GoIconSet.CLOSE}
+	check(hops.has_icon(&"second") and not hops.has_icon(&"first"), "icon lookup: an alias is followed one hop only")
+	var missing := GoIconSet.new()
+	missing.paths = {&"gone": "res://addons/gohud/icons/no_such_file.svg"}
+	check(missing.has_icon(&"gone") and missing.texture(&"gone") == null, "icon lookup: a path that does not load draws nothing")
+	var folder := GoIconSet.from_folder(ADDON + "/icons/medieval", GoUi.DEFAULT_ICONS)
+	check(folder.paths.size() == 16 and folder.texture(GoIconSet.SWORD) is DPITexture and folder.has_icon(GoIconSet.CLOSE),
+		"icon lookup: from_folder names each picture by its file (%d) and keeps the fallback" % folder.paths.size())
+
+	GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+	GoUi.add_icons(library)
+	GoUi.add_icons(library)
+	var icons := GoUi.icons()
+	check(GoUi.config.extra_icons.size() == 1 and icons == GoUi.icons(), "icon lookup: add_icons adds once; icons() hands back the same object")
+	check(icons.texture(GoIconSet.SWORD) == medieval.texture(GoIconSet.SWORD) and icons.has_icon(GoIconLibrary.CLOUD_RAIN) and icons.has_icon(GoGameIcons.BACKPACK),
+		"icon lookup: an extra set under the medieval preset keeps the engravings and adds 1,187 names")
+	var slot := GoSlot.new()
+	slot.icon_name = GoIconLibrary.DEVICE_GAMEPAD
+	root.add_child(slot)
+	await frames(2)
+	var drawn := slot.get_node_or_null(^"Face/IconSlot/Icon") as TextureRect
+	check(drawn != null and drawn.texture == library.texture(GoIconLibrary.DEVICE_GAMEPAD), "icon lookup: a slot draws a library icon once the set is added")
+	slot.queue_free()
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	check(GoUi.config.extra_icons.has(library) and GoUi.icons().texture(GoIconSet.SWORD) == GoUi.DEFAULT_ICONS.texture(GoIconSet.SWORD),
+		"icon lookup: use_preset keeps the extra sets and the new preset's drawings take over")
+	GoUi.config.extra_icons = []
+	check(GoUi.icons() == GoUi.DEFAULT_ICONS, "icon lookup: with no extra sets, icons() is the plain set again")
+	await frames(1)
+	section("icon lookup")
 
 
 # ── Theme follow ──────────────────────────────────────────────────────

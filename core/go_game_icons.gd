@@ -250,8 +250,8 @@ const GROUP_TITLES: Dictionary[StringName, String] = {
 }
 
 
-## The set itself. 🛑 Loaded on first use rather than `preload`ed — a project that never asks for it
-##    never pays for 187 textures.
+## The set itself. 🛑 Loaded on first use rather than `preload`ed, and it holds **paths**, not textures —
+##    a drawing is read the first time its name is drawn, so asking for the set costs a table of 187 paths.
 static func icon_set() -> GoIconSet:
 	return load(SET_PATH) as GoIconSet
 

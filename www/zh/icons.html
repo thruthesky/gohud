@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/icons.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/icons.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/icons.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/icons.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/icons.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/icons.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/icons.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/icons.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/icons.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/icons.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/icons.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/icons.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/icons.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/icons.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/icons.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/icons.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/icons.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/icons.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>图标 — gohud</title>
+<meta name="description" content="按名称调用的 Godot 游戏 UI 图标 1,287 个 —— 在目录中查找，再了解 gohud 如何查找、替换和加载图标。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概览</a>
+      <a href="install.html">安装</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html">控件</a>
+      <a href="theming.html">主题</a>
+      <a href="icons.html" aria-current="page">图标</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>简体中文</summary>
+        <div class="langs-list">
+          <a href="../icons.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/icons.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/icons.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="icons.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">简体中文</a>
+          <a href="../zh-tw/icons.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/icons.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/icons.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/icons.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/icons.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/icons.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/icons.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/icons.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/icons.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/icons.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/icons.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/icons.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/icons.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>图标</h1>
+    <p class="lead">
+      按名称调用的图形 1,287 个 —— 常驻的 84 个、游戏用的 187 个、图标库中的 1,000 个。在下面找到一个并复制名称，gohud 的任何控件都能绘制它。
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#catalog">查找图标</a>
+      <a class="btn" href="#resolution">名称的查找顺序</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="names">
+  <h2>用名称调用图标</h2>
+  <p class="sub">控件从不持有图片。它只询问名称，画什么由当前使用的图标集决定 —— 换一套图标集，所有图标随之改变，一行代码都不用改。</p>
+  <pre><code>GoStyle.icon_button(GoIconSet.SETTINGS, open_settings)   # a button
+slot.icon_name = GoGameIcons.BACKPACK                     # a quick slot
+var mark := GoUi.icons().node(&amp;"cloud_rain", 24)          # a bare Control, any size</code></pre>
+  <p><code>GoUi.icons()</code> 就是当前使用的图标集。画不出的名称会变成一个保留位置的空框，调试构建中会给出警告，所以缺一个图标也不会让整行错位。</p>
+</section>
+
+<section id="catalog">
+  <h2>查找图标</h2>
+  <p class="sub">gohud 自带的全部图形。按名称或外观搜索，按图标集或分组筛选，选中图标即可复制名称。</p>
+  <div class="icat" id="icon-catalog" data-count="{n} 个图标" data-empty="没有匹配的图标。名称和搜索词都是英文 —— 换个词试试。" data-copy="复制名称" data-copied="已复制" data-needs="只需添加一次这一行：" data-always="所有控件都能绘制 —— 无需设置。" data-preset="启用中世纪预设时绘制。" data-all-groups="全部分组">
+    <div class="icat-bar">
+      <label class="icat-search"><span>搜索图标</span><input type="search" id="icat-q" placeholder="arrow, rain, sword …" autocomplete="off" spellcheck="false"></label>
+      <label class="icat-group"><span>分组</span><select id="icat-g"><option value="">全部分组</option></select></label>
+      <div class="icat-sets" role="group" aria-label="图标集">
+        <button type="button" data-set="" data-title="全部" aria-pressed="true">全部 <span>1,287</span></button>
+        <button type="button" data-set="default" data-title="默认" aria-pressed="false">默认 <span>84</span></button>
+        <button type="button" data-set="game" data-title="游戏" aria-pressed="false">游戏 <span>187</span></button>
+        <button type="button" data-set="library" data-title="图标库" aria-pressed="false">图标库 <span>1,000</span></button>
+        <button type="button" data-set="medieval" data-title="中世纪" aria-pressed="false">中世纪 <span>16</span></button>
+      </div>
+    </div>
+    <p class="icat-count" aria-live="polite"></p>
+    <div class="icat-grid"></div>
+    <button type="button" class="btn icat-more" hidden>显示更多</button>
+    <div class="icat-detail" hidden></div>
+  </div>
+  <p class="note">名称和搜索词在任何语言中都保持英文 —— 因为它们就是你在代码里输入的内容。</p>
+</section>
+
+<section id="sets">
+  <h2>四套图标集，一条查找路径</h2>
+  <p class="sub">每套图标集都响应同一个调用。大的图标集叠加在当前图标集之上使用。</p>
+  <table>
+    <thead><tr><th>图标集</th><th>名称</th><th>常量</th><th>启用方式</th></tr></thead>
+    <tbody>
+      <tr><td>默认</td><td data-label="名称">84</td><td data-label="常量"><code>GoIconSet</code></td><td data-label="启用方式">始终启用</td></tr>
+      <tr><td>中世纪</td><td data-label="名称">雕刻图形 16 个</td><td data-label="常量">—</td><td data-label="启用方式"><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)</code></td></tr>
+      <tr><td>游戏</td><td data-label="名称">187</td><td data-label="常量"><code>GoGameIcons</code></td><td data-label="启用方式"><code>GoUi.add_icons(GoGameIcons.icon_set())</code></td></tr>
+      <tr><td>图标库</td><td data-label="名称">1,000</td><td data-label="常量"><code>GoIconLibrary</code></td><td data-label="启用方式"><code>GoUi.add_icons(GoIconLibrary.icon_set())</code></td></tr>
+    </tbody>
+  </table>
+  <pre><code>GoUi.add_icons(GoIconLibrary.icon_set())   # the library — and the game set under it
+GoUi.add_icons(GoGameIcons.icon_set())     # or the game set alone</code></pre>
+  <p>图标库回退到游戏图标集，游戏图标集再回退到默认图标集，因此一行代码就能绘制 1,271 个名称。图标集以路径记录图形，只在某个名称第一次被绘制时才读取文件 —— 添加图标库读取的是一张路径表（桌面端约 30 ms），而不是 1,000 张纹理。</p>
+  <div class="note">路径只是字符串，不是依赖项。按资源选择导出时，必须包含 <code>addons/gohud/icons/</code>；默认的“导出所有资源”无需任何操作。</div>
+</section>
+
+<section id="resolution">
+  <h2>名称的查找顺序</h2>
+  <p class="sub">所有图标集遵循同一顺序，所以你能预知哪个图形胜出。</p>
+  <ol class="steps">
+    <li>先看所有图标集自己的图形 —— 当前图标集，然后是每个附加图标集，再逐层查看它们的回退。图标集自己的图形指纹理、路径或图标字体字形。</li>
+    <li>如果都画不出，就尝试别名：<code>gear</code> 指向 <code>settings</code>，<code>x</code> 指向 <code>close</code>。只跳转一次。</li>
+    <li>仍然没有：一个保留位置的空框。</li>
+  </ol>
+  <p>正因为这个顺序，在中世纪预设上添加图标库后，雕刻风格的剑依然在最上层 —— 中世纪图标集自己的图形会先于任何回退被找到。</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+GoUi.add_icons(GoIconLibrary.icon_set())
+
+GoUi.icons().texture(&amp;"sword")      # the medieval engraving — its own drawing comes first
+GoUi.icons().texture(&amp;"rocket")     # from the game set
+GoUi.icons().canonical(&amp;"gear")     # &amp;"settings" — an alias</code></pre>
+</section>
+
+<section id="swap">
+  <h2>预设、你的图标集和附加图标集</h2>
+  <p class="sub">画什么由三处决定。</p>
+  <table>
+    <thead><tr><th>调用</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoUi.use_preset(…)</code></td><td data-label="作用">一次性切换主题、皮肤和图标集。清空 <code>config.icons</code>，保留 <code>config.extra_icons</code>。</td></tr>
+      <tr><td><code>GoUi.config.icons = my_set</code></td><td data-label="作用">用你的图标集替换预设的图标集。</td></tr>
+      <tr><td><code>GoUi.add_icons(set)</code></td><td data-label="作用">添加一套在当前图标集之后查找的图标集，切换预设后依然保留。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="custom">
+  <h2>使用你自己的图形</h2>
+  <p class="sub">覆盖几个名称、添加整个文件夹，或接入图标字体 —— 调用代码保持不变。</p>
+  <pre><code># Override a few names — everything else still comes from the set in use
+var mine := GoIconSet.new()
+mine.fallback = GoUi.icons()
+mine.textures = {GoIconSet.CLOSE: preload("res://art/close.svg")}
+GoUi.config.icons = mine
+
+# A folder of drawings — file name = icon name, each read when first drawn
+GoUi.config.icons = GoIconSet.from_folder("res://art/icons", GoUi.icons())</code></pre>
+  <ul>
+    <li>在 24×24 网格上用白色描边绘制。颜色通过 <code>modulate</code> 施加，而它只能变暗 —— 黑色的图形在任何主题下都保持黑色。</li>
+    <li>将 SVG 导入为 <code>DPITexture</code>，这样在 64 dp 的背包格子里也依然清晰。</li>
+    <li>在从右到左书写的语言中，图标也不会镜像。只有 <code>back</code> 和 <code>forward</code> 会改变方向，而它们由名称来选择。</li>
+    <li>图标字体同样可用：填写 <code>font</code> 和 <code>codepoints</code> 即可，其余不变。</li>
+  </ul>
+</section>
+
+<section id="naming">
+  <h2>名称、分组与搜索</h2>
+  <p class="sub">自带图标集遵循的规则，以及查找名称的调用。</p>
+  <ul>
+    <li>使用 lower_snake_case，先写所画之物，状态放在后面：<code>volume_off</code>、<code>battery_charging</code>、<code>arrow_bar_left</code>。</li>
+    <li>不加分组前缀。分组是数据，所以无论归入哪个分组，名称都不变。</li>
+    <li>图标库的名称就是把 Tabler 名称中的连字符换成下划线：tabler.io 上的 <code>cloud-rain</code> 在这里是 <code>cloud_rain</code>。gohud 原本已有的图形，其 Tabler 名称作为别名指向它（<code>shopping_cart</code> → <code>cart</code>）。</li>
+    <li>同义词是别名，而不是第二个图形。</li>
+  </ul>
+  <h3 id="search"><code>search()</code></h3>
+  <pre><code>var icons := GoUi.icons()
+icons.search("arrow left", 5)       # best matches first: back, arrow_bar_left …
+icons.search("rain")                # cloud_rain, then drawings tagged "rain"</code></pre>
+  <h3 id="group-names-names-in-group"><code>group_names()</code> · <code>names_in_group()</code></h3>
+  <pre><code>icons.group_names()                 # every group key, in lookup order
+icons.names_in_group(&amp;"weather")    # one group, in display order — every set's share of it
+icons.group_title(&amp;"weather")       # "Weather &amp; sky"</code></pre>
+  <h3 id="canonical-has-icon"><code>canonical()</code> · <code>has_icon()</code></h3>
+  <pre><code>icons.canonical(&amp;"gear")            # &amp;"settings"
+icons.canonical(&amp;"treasure_chest")  # &amp;"chest" — Tabler's name for a game drawing
+icons.has_icon(&amp;"cloud_rain")       # true once the library is added — nothing is loaded to answer</code></pre>
+</section>
+
+<section id="license">
+  <h2>图形的来源</h2>
+  <p class="sub">全部采用 MIT 许可。声明以 <code>THIRD_PARTY_NOTICES.md</code> 的形式随 ZIP 一起分发。</p>
+  <table>
+    <thead><tr><th>图标集</th><th>来源</th><th>许可</th></tr></thead>
+    <tbody>
+      <tr><td>默认</td><td data-label="来源">为 gohud 绘制</td><td data-label="许可">MIT</td></tr>
+      <tr><td>中世纪</td><td data-label="来源">为 gohud 绘制</td><td data-label="许可">MIT</td></tr>
+      <tr><td>游戏</td><td data-label="来源">171 个来自 Tabler Icons 3.46.0，16 个为 gohud 绘制</td><td data-label="许可">MIT</td></tr>
+      <tr><td>图标库</td><td data-label="来源">Tabler Icons 3.46.0</td><td data-label="许可">MIT</td></tr>
+    </tbody>
+  </table>
+  <p>如果接入他人的图标，请在 <code>GoIconSet.attribution</code> 中写明来源 —— 商用图标字体只放在你的游戏里，不要放进你公开的分支。</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>gohud 采用 <b>MIT</b> 许可 —— 代码和美术资源都包含在内，含 <span data-n="core">84</span> 个默认、<span data-n="medieval">16</span> 个中世纪、<span data-n="game">187</span> 个游戏和 <span data-n="library">1,000</span> 个图标库图标（其中来自 Tabler Icons 的路径数据同样是 MIT）。
+      随包附带的 Cinzel 字体采用 SIL Open Font License 1.1。</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">变更日志</a></p>
+    <p style="font-size:13px">把鼠标悬停在<b>带下划线的术语</b>上、点一下它或让它获得焦点，就能看到它的含义。</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+<script src="../site/icons.js"></script>
+<script src="../site/icon-catalog.js"></script>
+</body>
+</html>

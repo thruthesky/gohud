@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/icons.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/icons.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/icons.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/icons.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/icons.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/icons.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/icons.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/icons.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/icons.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/icons.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/icons.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/icons.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/icons.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/icons.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/icons.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/icons.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/icons.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/icons.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ícones — gohud</title>
+<meta name="description" content="1.287 ícones para a interface de jogos no Godot, chamados pelo nome — pesquise no catálogo e veja como o gohud os encontra, troca e carrega.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Visão geral</a>
+      <a href="install.html">Instalação</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html">Widgets</a>
+      <a href="theming.html">Temas</a>
+      <a href="icons.html" aria-current="page">Ícones</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Português</summary>
+        <div class="langs-list">
+          <a href="../icons.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/icons.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/icons.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/icons.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/icons.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/icons.html" hreflang="es" lang="es">Español</a>
+          <a href="icons.html" hreflang="pt" lang="pt" aria-current="true">Português</a>
+          <a href="../ru/icons.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/icons.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/icons.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/icons.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/icons.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/icons.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/icons.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/icons.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/icons.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/icons.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Ícones</h1>
+    <p class="lead">
+      1.287 desenhos que você chama pelo nome — 84 sempre presentes, 187 para jogos e mais 1.000 na biblioteca. Encontre um abaixo, copie o nome e qualquer widget do gohud consegue desenhá-lo.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#catalog">Encontrar um ícone</a>
+      <a class="btn" href="#resolution">Como um nome é encontrado</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="names">
+  <h2>Um ícone é chamado pelo nome</h2>
+  <p class="sub">Os widgets nunca guardam uma imagem. Eles pedem um nome, e o conjunto de ícones em uso decide o que é desenhado — troque o conjunto e todos os ícones mudam sem tocar em uma linha de código.</p>
+  <pre><code>GoStyle.icon_button(GoIconSet.SETTINGS, open_settings)   # a button
+slot.icon_name = GoGameIcons.BACKPACK                     # a quick slot
+var mark := GoUi.icons().node(&amp;"cloud_rain", 24)          # a bare Control, any size</code></pre>
+  <p><code>GoUi.icons()</code> é o conjunto em uso. Um nome que ele não consegue desenhar vira uma caixa vazia que mantém o espaço, com um aviso nas builds de depuração, então um ícone ausente nunca desloca uma linha.</p>
+</section>
+
+<section id="catalog">
+  <h2>Encontrar um ícone</h2>
+  <p class="sub">Todos os desenhos que o gohud traz. Pesquise pelo nome ou pelo que mostram, filtre por conjunto ou grupo e escolha um ícone para copiar o nome.</p>
+  <div class="icat" id="icon-catalog" data-count="{n} ícones" data-empty="Nenhum ícone corresponde. Os nomes e as palavras de busca estão em inglês — tente outra palavra." data-copy="Copiar nome" data-copied="Copiado" data-needs="Adicione esta linha uma vez:" data-always="Todo widget o desenha — nada a configurar." data-preset="Desenhado enquanto o preset medieval está ativo." data-all-groups="Todos os grupos">
+    <div class="icat-bar">
+      <label class="icat-search"><span>Pesquisar ícones</span><input type="search" id="icat-q" placeholder="arrow, rain, sword …" autocomplete="off" spellcheck="false"></label>
+      <label class="icat-group"><span>Grupo</span><select id="icat-g"><option value="">Todos os grupos</option></select></label>
+      <div class="icat-sets" role="group" aria-label="Conjunto">
+        <button type="button" data-set="" data-title="Todos" aria-pressed="true">Todos <span>1.287</span></button>
+        <button type="button" data-set="default" data-title="Padrão" aria-pressed="false">Padrão <span>84</span></button>
+        <button type="button" data-set="game" data-title="Jogo" aria-pressed="false">Jogo <span>187</span></button>
+        <button type="button" data-set="library" data-title="Biblioteca" aria-pressed="false">Biblioteca <span>1.000</span></button>
+        <button type="button" data-set="medieval" data-title="Medieval" aria-pressed="false">Medieval <span>16</span></button>
+      </div>
+    </div>
+    <p class="icat-count" aria-live="polite"></p>
+    <div class="icat-grid"></div>
+    <button type="button" class="btn icat-more" hidden>Mostrar mais</button>
+    <div class="icat-detail" hidden></div>
+  </div>
+  <p class="note">Os nomes e as palavras de busca ficam em inglês em todos os idiomas — são o que você digita no código.</p>
+</section>
+
+<section id="sets">
+  <h2>Quatro conjuntos, uma única busca</h2>
+  <p class="sub">Todo conjunto responde à mesma chamada. Os grandes são adicionados por cima do conjunto em uso.</p>
+  <table>
+    <thead><tr><th>Conjunto</th><th>Nomes</th><th>Constantes</th><th>Como ativar</th></tr></thead>
+    <tbody>
+      <tr><td>Padrão</td><td data-label="Nomes">84</td><td data-label="Constantes"><code>GoIconSet</code></td><td data-label="Como ativar">Sempre ativo</td></tr>
+      <tr><td>Medieval</td><td data-label="Nomes">16 gravados</td><td data-label="Constantes">—</td><td data-label="Como ativar"><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)</code></td></tr>
+      <tr><td>Jogo</td><td data-label="Nomes">187</td><td data-label="Constantes"><code>GoGameIcons</code></td><td data-label="Como ativar"><code>GoUi.add_icons(GoGameIcons.icon_set())</code></td></tr>
+      <tr><td>Biblioteca</td><td data-label="Nomes">1.000</td><td data-label="Constantes"><code>GoIconLibrary</code></td><td data-label="Como ativar"><code>GoUi.add_icons(GoIconLibrary.icon_set())</code></td></tr>
+    </tbody>
+  </table>
+  <pre><code>GoUi.add_icons(GoIconLibrary.icon_set())   # the library — and the game set under it
+GoUi.add_icons(GoGameIcons.icon_set())     # or the game set alone</code></pre>
+  <p>A biblioteca recorre ao conjunto de jogo, e este ao padrão, então uma linha torna 1.271 nomes desenháveis. Um conjunto guarda os desenhos como caminhos e só lê um arquivo na primeira vez que o nome é desenhado: adicionar a biblioteca lê uma tabela de caminhos (cerca de 30 ms num desktop), não 1.000 texturas.</p>
+  <div class="note">Caminhos são texto, não dependências. Uma exportação que escolhe recursos precisa incluir <code>addons/gohud/icons/</code>; o padrão “exportar todos os recursos” não precisa de nada.</div>
+</section>
+
+<section id="resolution">
+  <h2>Como um nome é encontrado</h2>
+  <p class="sub">Uma única ordem para todos os conjuntos, para você saber qual desenho vence.</p>
+  <ol class="steps">
+    <li>Primeiro os desenhos próprios de cada conjunto — o conjunto em uso, depois cada conjunto adicionado e então os fallbacks deles, nível por nível. O desenho próprio de um conjunto é uma textura, um caminho ou um glifo de fonte de ícones.</li>
+    <li>Se ninguém o desenhou, tenta-se um alias: <code>gear</code> leva a <code>settings</code>, <code>x</code> a <code>close</code>. Só um salto.</li>
+    <li>Ainda nada: uma caixa vazia que mantém o espaço.</li>
+  </ol>
+  <p>É por essa ordem que a espada gravada do preset medieval continua no topo quando você adiciona a biblioteca — o desenho próprio dele é encontrado antes do fallback de qualquer um.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+GoUi.add_icons(GoIconLibrary.icon_set())
+
+GoUi.icons().texture(&amp;"sword")      # the medieval engraving — its own drawing comes first
+GoUi.icons().texture(&amp;"rocket")     # from the game set
+GoUi.icons().canonical(&amp;"gear")     # &amp;"settings" — an alias</code></pre>
+</section>
+
+<section id="swap">
+  <h2>Presets, o seu conjunto e conjuntos extras</h2>
+  <p class="sub">Três lugares decidem o que é desenhado.</p>
+  <table>
+    <thead><tr><th>Chamada</th><th>O que faz</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoUi.use_preset(…)</code></td><td data-label="O que faz">Tema, skin e conjunto de ícones de uma vez. Limpa <code>config.icons</code> e mantém <code>config.extra_icons</code>.</td></tr>
+      <tr><td><code>GoUi.config.icons = my_set</code></td><td data-label="O que faz">Troca o conjunto de ícones do preset pelo seu.</td></tr>
+      <tr><td><code>GoUi.add_icons(set)</code></td><td data-label="O que faz">Adiciona um conjunto consultado depois do que está em uso. Sobrevive às trocas de preset.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="custom">
+  <h2>Seus próprios desenhos</h2>
+  <p class="sub">Substitua alguns nomes, adicione uma pasta inteira ou conecte uma fonte de ícones — o código que chama continua igual.</p>
+  <pre><code># Override a few names — everything else still comes from the set in use
+var mine := GoIconSet.new()
+mine.fallback = GoUi.icons()
+mine.textures = {GoIconSet.CLOSE: preload("res://art/close.svg")}
+GoUi.config.icons = mine
+
+# A folder of drawings — file name = icon name, each read when first drawn
+GoUi.config.icons = GoIconSet.from_folder("res://art/icons", GoUi.icons())</code></pre>
+  <ul>
+    <li>Desenhe numa grade de 24×24 com traço branco. A cor vem de <code>modulate</code>, que só consegue escurecer — um desenho preto continua preto em qualquer tema.</li>
+    <li>Importe os SVG como <code>DPITexture</code> para que fiquem nítidos num espaço de inventário de 64 dp.</li>
+    <li>Os ícones nunca espelham em idiomas da direita para a esquerda. Só <code>back</code> e <code>forward</code> mudam de direção, e você escolhe esses pelo nome.</li>
+    <li>Uma fonte de ícones também funciona: preencha <code>font</code> e <code>codepoints</code>. Nada mais muda.</li>
+  </ul>
+</section>
+
+<section id="naming">
+  <h2>Nomes, grupos e busca</h2>
+  <p class="sub">As regras que os conjuntos incluídos seguem e as chamadas que encontram um nome.</p>
+  <ul>
+    <li>lower_snake_case, primeiro o que é desenhado e por último o estado: <code>volume_off</code>, <code>battery_charging</code>, <code>arrow_bar_left</code>.</li>
+    <li>Sem prefixos de grupo. Grupos são dados, então um nome continua o mesmo onde quer que esteja arquivado.</li>
+    <li>Os nomes da biblioteca são os nomes do Tabler com sublinhados: <code>cloud-rain</code> no tabler.io é <code>cloud_rain</code> aqui. Os nomes do Tabler para desenhos que o gohud já tinha levam a eles como aliases (<code>shopping_cart</code> → <code>cart</code>).</li>
+    <li>Um sinônimo é um alias, nunca um segundo desenho.</li>
+  </ul>
+  <h3 id="search"><code>search()</code></h3>
+  <pre><code>var icons := GoUi.icons()
+icons.search("arrow left", 5)       # best matches first: back, arrow_bar_left …
+icons.search("rain")                # cloud_rain, then drawings tagged "rain"</code></pre>
+  <h3 id="group-names-names-in-group"><code>group_names()</code> · <code>names_in_group()</code></h3>
+  <pre><code>icons.group_names()                 # every group key, in lookup order
+icons.names_in_group(&amp;"weather")    # one group, in display order — every set's share of it
+icons.group_title(&amp;"weather")       # "Weather &amp; sky"</code></pre>
+  <h3 id="canonical-has-icon"><code>canonical()</code> · <code>has_icon()</code></h3>
+  <pre><code>icons.canonical(&amp;"gear")            # &amp;"settings"
+icons.canonical(&amp;"treasure_chest")  # &amp;"chest" — Tabler's name for a game drawing
+icons.has_icon(&amp;"cloud_rain")       # true once the library is added — nothing is loaded to answer</code></pre>
+</section>
+
+<section id="license">
+  <h2>De onde vêm os desenhos</h2>
+  <p class="sub">Tudo é MIT. Os avisos viajam no ZIP como <code>THIRD_PARTY_NOTICES.md</code>.</p>
+  <table>
+    <thead><tr><th>Conjunto</th><th>Origem</th><th>Licença</th></tr></thead>
+    <tbody>
+      <tr><td>Padrão</td><td data-label="Origem">Desenhados para o gohud</td><td data-label="Licença">MIT</td></tr>
+      <tr><td>Medieval</td><td data-label="Origem">Desenhados para o gohud</td><td data-label="Licença">MIT</td></tr>
+      <tr><td>Jogo</td><td data-label="Origem">171 do Tabler Icons 3.46.0, 16 desenhados para o gohud</td><td data-label="Licença">MIT</td></tr>
+      <tr><td>Biblioteca</td><td data-label="Origem">Tabler Icons 3.46.0</td><td data-label="Licença">MIT</td></tr>
+    </tbody>
+  </table>
+  <p>Se você conectar ícones de outra pessoa, escreva a origem em <code>GoIconSet.attribution</code> — e mantenha fontes de ícones comerciais dentro do seu jogo, não num fork que você publica.</p>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>O gohud é <b>MIT</b> — código e arte, incluindo <span data-n="core">84</span> ícones padrão, <span data-n="medieval">16</span> medievais, <span data-n="game">187</span> de jogo e <span data-n="library">1.000</span> da biblioteca (os traçados do Tabler Icons entre eles também são MIT). A fonte
+      Cinzel que acompanha o pacote está sob a SIL Open Font License 1.1.</p>
+    <p><a href="https://github.com/thruthesky/gohud">GitHub</a> ·
+      <a href="https://github.com/thruthesky/gohud/blob/main/CHANGELOG.md">Changelog</a></p>
+    <p style="font-size:13px">Passe o mouse, toque ou foque um <b>termo sublinhado</b> para ver o que ele significa.</p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+<script src="../site/icons.js"></script>
+<script src="../site/icon-catalog.js"></script>
+</body>
+</html>

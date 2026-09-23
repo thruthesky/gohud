@@ -69,6 +69,10 @@ static var _translations_loaded := false
 static var _mobile_type := false
 static var _base_font_sizes := {}
 static var _default_skin: GoSkin
+# The set `icons()` builds when `GoConfig.extra_icons` is filled, and what it was built from.
+static var _stacked: GoIconSet
+static var _stacked_main: GoIconSet
+static var _stacked_extra: Array[GoIconSet] = []
 
 
 ## The config in use. On the first read it automatically loads the path written in the project settings.
@@ -148,6 +152,7 @@ static func preset() -> GoThemePreset:
 ##
 ## 🛑 It **clears** any `config.theme`·`skin`·`icons` you plugged in by hand — that is what lets the chosen bundle show as it is.
 ##    To keep one of those fields as your own, fill that field back in after this call.
+##    `config.extra_icons` is **kept** — extra icon sets sit under whichever preset comes next.
 static func use_preset(value: Variant) -> void:
 	var chosen: GoThemePreset = null
 	var id: StringName = &""
@@ -196,12 +201,43 @@ static func skin() -> GoSkin:
 
 
 ## The icon set in use. If the config is empty, the chosen bundle's set; failing that, gohud's default set.
+## With `GoConfig.extra_icons` filled, a set that looks in that one first and then in the extra sets — built once and
+## kept, so two calls hand back the same object (and with no extra sets, exactly the set above).
 static func icons() -> GoIconSet:
+	var main := _main_icons()
+	var extra := config.extra_icons
+	if extra.is_empty(): return main
+	if _stacked == null or _stacked_main != main or _stacked_extra != extra:
+		_stacked = GoIconSet.new()
+		_stacked.set_name = "%s + %d more" % [main.set_name, extra.size()]
+		var layers: Array[GoIconSet] = [main]
+		layers.append_array(extra)
+		_stacked.layers = layers
+		_stacked_main = main
+		_stacked_extra = extra.duplicate()
+	return _stacked
+
+
+static func _main_icons() -> GoIconSet:
 	var value := config.icons
 	if value != null: return value
 	var chosen := preset()
 	if chosen != null and chosen.icons != null: return chosen.icons
 	return DEFAULT_ICONS
+
+
+## 🧩 Adds an icon set to `GoConfig.extra_icons` (once — adding it again does nothing) and redraws what is open.
+## Its names become drawable by every widget, under whatever preset is in use — the preset's drawings still win.
+##
+## ```gdscript
+## GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+## GoUi.add_icons(GoIconLibrary.icon_set())   # engraved sword, and 1,187 names the medieval set does not draw
+## ```
+static func add_icons(extra: GoIconSet) -> void:
+	if extra == null or config.extra_icons.has(extra): return
+	var list := config.extra_icons.duplicate()
+	list.append(extra)
+	config.extra_icons = list
 
 
 ## A single color. `GoConfig.color_overrides` takes precedence over the theme.
@@ -429,5 +465,8 @@ static func reset() -> void:
 	_mobile_type = false
 	_base_font_sizes.clear()
 	_default_skin = null
+	_stacked = null
+	_stacked_main = null
+	_stacked_extra = []
 	GoThemePresets.reset()
 	_watchers.clear()

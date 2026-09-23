@@ -396,6 +396,64 @@ figcaption { color: var(--muted); font-size: 13px; margin-top: 9px; }
 .shots { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .shots figure { margin: 0; }
 
+/* ── Icon catalog (icons.html · site/icon-catalog.js) ──────────
+   🔑 Name labels never go below 13px — it is tempting to squeeze more cells in, but the reader came to read a
+      name and copy it. Measured on --card: names (--ink-2) 9.81:1 light · 11.14:1 dark, the count (--muted)
+      5.76:1 · 6.79:1, the selected ring and set (--accent) 4.87:1 · 8.43:1.
+   🔑 Everything pressable (search, set buttons, icon cells, copy) is at least 44px tall.
+   🛑 Inputs are outlined in --muted, not --rule-2: a field's edge is a non-text boundary and needs 3:1 — --rule-2
+      is 1.52:1 on a light card. */
+.icat { margin-top: 8px; }
+.icat-bar { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
+.icat-bar label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted); font-weight: 600; }
+.icat-search { flex: 1 1 240px; }
+.icat-bar input, .icat-bar select {
+  font: inherit; font-size: 16px; min-height: 44px; padding: 8px 12px; color: var(--ink);
+  border: 1px solid var(--muted); border-radius: var(--radius-s); background: var(--card);
+}
+.icat-bar select { max-width: 100%; }
+.icat-sets { display: flex; flex-wrap: wrap; gap: 6px; }
+.icat-sets button {
+  min-height: 44px; padding: 6px 14px; border: 1px solid var(--rule-2); border-radius: 999px;
+  background: var(--card); color: var(--ink-2); font: inherit; font-size: 14px; cursor: pointer;
+}
+.icat-sets button:hover { border-color: var(--accent); }
+.icat-sets button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
+.icat-sets button span { opacity: .85; margin-inline-start: 2px; }
+.icat-count { margin: 14px 0 10px; color: var(--muted); font-size: 14px; }
+.icat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
+.icat-grid button {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  min-height: 92px; padding: 12px 6px 10px; border: 1px solid var(--rule); border-radius: var(--radius-s);
+  background: var(--card); color: var(--ink); cursor: pointer; font: inherit;
+}
+.icat-grid button:hover { border-color: var(--accent); background: var(--tint); }
+.icat-grid button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+.icat-grid svg { flex: none; }
+.icat-grid span { font-family: var(--mono); font-size: 13px; line-height: 1.3; color: var(--ink-2); text-align: center; overflow-wrap: anywhere; }
+.icat-more { margin: 16px auto 0; display: flex; cursor: pointer; font: inherit; font-weight: 650; }
+.icat-more[hidden], .icat-detail[hidden] { display: none; }
+/* The picked icon — it sticks to the bottom while the list scrolls: name, copy and the code to use it at a glance. */
+.icat-detail {
+  position: sticky; bottom: 12px; z-index: 5; margin-top: 16px; padding: 14px 16px;
+  display: grid; grid-template-columns: auto 1fr auto; gap: 8px 16px; align-items: center;
+  border: 1px solid var(--rule-2); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow-2);
+}
+.icat-pic { color: var(--ink); line-height: 0; }
+.icat-meta { font-size: 14px; color: var(--muted); }
+.icat-name { font-size: 16px; font-weight: 700; color: var(--ink); }
+.icat-aka { font-family: var(--mono); font-size: 13px; }
+.icat-copy { cursor: pointer; font: inherit; font-weight: 650; min-height: 44px; }
+.icat-copy.done { border-color: var(--accent); color: var(--accent); }
+.icat-code { grid-column: 1 / -1; }
+.icat-code p { margin: 6px 0 4px; font-size: 14px; color: var(--muted); }
+.icat-code pre { margin: 0; }
+@media (max-width: 640px) {
+  .icat-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+  .icat-detail { grid-template-columns: auto 1fr; }
+  .icat-copy { grid-column: 1 / -1; justify-content: center; }
+}
+
 footer.bottom {
   border-top: 1px solid var(--rule); padding: 34px 0 64px; color: var(--muted); font-size: 14px;
   background: linear-gradient(180deg, transparent, var(--bg-2));

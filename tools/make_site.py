@@ -806,6 +806,9 @@ if __name__ == "__main__":
     #    reports "differs from the source" (measured 2026-09-16: all 17 pages red).
     import make_ai_page
     make_ai_page.main()
+    # 🛑 `icons.html` is rewritten wholesale too — before the heading anchors, for the same reason.
+    import make_icons_page
+    make_icons_page.main()
     build("ko")
     build("en")
     write_dials_section("ko")

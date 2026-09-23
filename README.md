@@ -31,8 +31,10 @@ run releases it.
 - **Six presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and
   icons together — rounded default panels, chamfered sci-fi panels with neon glow, or forged medieval
   frames with engraved icons.
-- **Swap the icons, keep the code.** Widgets ask for icons by name (`GoIconSet.CLOSE`). Point
-  `GoConfig.icons` at your own SVG set or icon font and every widget follows — or override just a few.
+- **1,287 icons, called by name.** Widgets ask for icons by name (`GoIconSet.CLOSE`); 84 are always there, and
+  `GoUi.add_icons(GoIconLibrary.icon_set())` adds the 187-icon game set and a 1,000-icon library under any preset.
+  Search them in code (`GoUi.icons().search("rain")`) or on the website. Point `GoConfig.icons` at your own SVG set,
+  folder or icon font and every widget follows — or override just a few.
 - **Themes are data.** `new_theme.py` writes one JSON file that inherits a built-in theme. The builder
   generates the theme, its control artwork and skin dials, and pushes text, borders and the accent until
   they pass WCAG contrast checks.
@@ -44,8 +46,8 @@ run releases it.
   sections, `accessibility_name` for screen readers, `mouse_behavior_recursive` for input-transparent
   notices, `last_wrap_alignment` for flowing rows.
 - **Pure GDScript.** No autoload required, no engine module, no GDExtension.
-- **MIT** code and artwork, including 84 default icons, 16 engraved medieval icons and a **187-icon game set**
-  for inventories, shops and items (171 of those from Tabler Icons, MIT). The medieval headings use the bundled
+- **MIT** code and artwork, including 84 default icons, 16 engraved medieval icons, a **187-icon game set**
+  for inventories, shops and items and a **1,000-icon library** (1,171 of those from Tabler Icons, MIT). The medieval headings use the bundled
   Cinzel font under the SIL Open Font License 1.1.
 
 ## Requirements
@@ -262,27 +264,61 @@ var close := GoStyle.icon_button(GoIconSet.CLOSE, _on_close, -1, "close")
 ```
 
 The names you can rely on are the 84 constants on `GoIconSet`. Any other name works too, as long as
-your set defines it — the medieval set adds `scroll` and `seal` this way.
+a set in the lookup draws it — the medieval set adds `scroll` and `seal` this way. Browse and search every
+drawing on the [Icons page](https://thruthesky.github.io/gohud/icons.html) and copy its name.
 
-### The game icon set — inventories, shops, items
+### Three sets, one lookup — 1,287 drawings
 
-187 more icons in nine groups (inventory & storage, shop & trade, equipment & tools, food & consumables,
-resources & materials, tech & space, buildings & furniture, creatures, rewards & social). The names are constants
-on `GoGameIcons`; the set falls back to the default one, so nothing you already use changes.
+| Set | Names | Constants | Turn it on |
+|---|---|---|---|
+| Default | 84 | `GoIconSet` | always on |
+| Medieval | 16 engraved redraws | — | `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` |
+| Game — inventories, shops, items | 187 in 9 groups | `GoGameIcons` | `GoUi.add_icons(GoGameIcons.icon_set())` |
+| Library — arrows, devices, weather, sport, faces … | 1,000 in 32 groups | `GoIconLibrary` | `GoUi.add_icons(GoIconLibrary.icon_set())` |
 
 ```gdscript
-GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
-GoUi.config.icons = GoGameIcons.icon_set()      # after use_preset() — it clears config.icons
+GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+GoUi.add_icons(GoIconLibrary.icon_set())        # the library falls back to the game set: 1,271 names in one line
 
 var grid := GoSlotGrid.new()                    # an inventory grid of GoSlot cells
 grid.slot_count = 30
 grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12, "tooltip": "Apple"})
-menu.add_child(GoStyle.list_button(GoGameIcons.SHOP, "Shop", open_shop))
+menu.add_child(GoStyle.list_button(GoIconLibrary.CLOUD_RAIN, "Weather", open_weather))
 ```
 
-171 of the drawings use path data from [Tabler Icons](https://tabler.io/icons) (MIT, © Paweł Kuna) — the same 24 px
-grid and 2 px round stroke as the default set — and 16 were drawn for gohud. Edit the table in
-`tools/make_game_icons.py` and run it to add your own; it regenerates the SVGs, the set and the constants.
+`GoUi.add_icons()` puts a set in `GoConfig.extra_icons`, which `use_preset()` keeps — so the preset's own drawings
+(the engraved sword above) stay on top and the added set only fills in the names the preset lacks.
+(`GoUi.config.icons = GoGameIcons.icon_set()` still works, but it replaces the preset's set.)
+
+The big sets hold **paths**, not textures: a drawing is read the first time its name is drawn. Adding the library
+costs a table of paths (≈30 ms once on a desktop) instead of 1,000 textures. 🛑 Paths are strings, not dependencies —
+an export that picks resources must include `addons/gohud/icons/` (the default "export all resources" needs nothing).
+
+171 game drawings and all 1,000 library drawings use path data from [Tabler Icons](https://tabler.io/icons) 3.46.0
+(MIT, © Paweł Kuna) — the same 24 px grid and 2 px round stroke as the default set; 16 game drawings were drawn for
+gohud. The tables are `tools/make_game_icons.py` and `tools/icon_library_data.py`; running
+`tools/make_game_icons.py` or `tools/make_icon_library.py` regenerates the SVGs, the set and the constants.
+
+### How a name is found
+
+1. **Every set's own drawings first** — the set in use, then each extra set, then their fallbacks, level by level.
+   A set's own drawing is a texture, a path or an icon-font glyph.
+2. Nothing drew it → an **alias** is tried (`gear` → `settings`, `x` → `close`). One hop only.
+3. Still nothing → an empty box that keeps its space, with a warning in debug builds.
+
+### Finding names — search, groups, aliases
+
+```gdscript
+var icons := GoUi.icons()
+icons.search("arrow left", 5)        # best matches first: back, arrow_bar_left …
+icons.group_names()                  # every group key
+icons.names_in_group(&"weather")     # one group, in display order — every set's share of it
+icons.canonical(&"gear")             # &"settings"
+```
+
+Names are lower_snake_case with the thing drawn first and its state last (`volume_off`, `battery_charging`), and
+never carry a group prefix. Library names are Tabler's names with `_` for `-`; Tabler's names for drawings gohud
+already had lead there as aliases (`map_pin` → `location`).
 
 ### Replacing the whole set with your own SVGs
 
@@ -295,6 +331,9 @@ mine.textures = {
 	GoIconSet.SETTINGS: preload("res://ui/icons/gear.svg"),
 }
 GoUi.config.icons = mine
+
+# Or a whole folder — each file name becomes an icon name, read when first drawn
+GoUi.config.icons = GoIconSet.from_folder("res://ui/icons", GoUi.icons())
 ```
 
 Draw icons in white and let gohud tint them. Import SVGs as **DPITexture** (Import dock →
@@ -313,8 +352,8 @@ GoUi.config.icons = font_icons
 
 ### Overriding only a few icons
 
-Set `fallback` to `GoUi.DEFAULT_ICONS` and define only the names you want to change. Lookups go
-textures → codepoints → fallback. `icons/gohud_icons_medieval.tres` is a working example: 16 textures
+Set `fallback` to `GoUi.icons()` (or `GoUi.DEFAULT_ICONS`) and define only the names you want to change — your
+own drawings are found before any fallback. `icons/gohud_icons_medieval.tres` is a working example: 16 textures
 over the default set.
 
 > Commercial icon fonts are usually licensed for use inside your game, not for redistribution. Keep
@@ -802,7 +841,8 @@ Packaging checks in `check_all.sh` use temporary copies and do not touch your wo
 ## License
 
 MIT — see [LICENSE](LICENSE). The code and the bundled artwork (84 default icons, 16 medieval icons
-and the generated control artwork) were made for gohud and are MIT as well. The 187-icon game set is MIT too:
-171 of its icons use path data from Tabler Icons (MIT, Copyright (c) 2020-2026 Paweł Kuna), 16 were drawn for gohud. The Cinzel font is
+and the generated control artwork) were made for gohud and are MIT as well. The 187-icon game set and the
+1,000-icon library are MIT too: 171 game icons and every library icon use path data from Tabler Icons (MIT,
+Copyright (c) 2020-2026 Paweł Kuna), 16 game icons were drawn for gohud. The Cinzel font is
 distributed unmodified under the SIL Open Font License 1.1 (`assets/fonts/cinzel/OFL.txt`); see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

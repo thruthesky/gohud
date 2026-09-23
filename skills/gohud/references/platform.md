@@ -1,6 +1,6 @@
 # Platform — icons, languages, sound & haptics, accessibility, screens, Back
 
-Source: `core/go_icon_set.gd`, `core/go_ui.gd`, `core/go_feedback.gd`, `core/go_safe_area.gd`,
+Source: `core/go_icon_set.gd`, `core/go_game_icons.gd`, `core/go_icon_library.gd`, `core/go_ui.gd`, `core/go_feedback.gd`, `core/go_safe_area.gd`,
 `core/go_scale.gd`, `core/go_back_policy.gd`, `core/go_runtime.gd`, `i18n/gohud.csv`.
 
 ## Contents
@@ -31,16 +31,25 @@ The 84 constants on `GoIconSet` (value = lowercase name):
 | Layout | `LIST` `GRID` `COLUMNS` `CHART` |
 | Game | `SWORD` `BOLT` `TARGET` `FLAG` `POTION` `SKULL` `RUN` |
 
-**The game set** — 187 more icons for inventories, shops and items, names on `GoGameIcons` (`GoGameIcons.BACKPACK`,
-`SHOP`, `COINS`, `PICKAXE`, `OXYGEN_TANK` …). It is **not** plugged in by default; every default name keeps working
-because the set falls back to the default one. Vector textures (`DPITexture`), so a 64 dp inventory cell stays sharp.
+**Three sets, one lookup.** The default set (84, always on) · the **game set** (187, `GoGameIcons`) · the **icon
+library** (1,000, `GoIconLibrary`, 32 groups). The two big ones are **not** on by default — add them with
+`GoUi.add_icons()`: that lists them in `GoConfig.extra_icons`, which `use_preset()` keeps, so a preset's own drawings
+(the medieval engravings) stay on top and the added set only fills in names the preset lacks. The library falls back
+to the game set and that one to the default set — adding the library makes **1,271 names** drawable.
 
 ```gdscript
-GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
-GoUi.config.icons = GoGameIcons.icon_set()          # after use_preset() — it clears config.icons
+GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)
+GoUi.add_icons(GoIconLibrary.icon_set())            # + the game set under it; survives later use_preset() calls
 slot.icon_name = GoGameIcons.BACKPACK
-for icon in GoGameIcons.GROUPS[&"shop"]: row.add_child(GoUi.icons().node(icon, 24))
+GoStyle.list_button(GoIconLibrary.CLOUD_RAIN, "Weather", open_weather)
+for icon in GoUi.icons().names_in_group(&"shop"): row.add_child(GoUi.icons().node(StringName(icon), 24))
 ```
+
+🔑 The old way still works — `GoUi.config.icons = GoGameIcons.icon_set()` **after** `use_preset()` — but it replaces
+the preset's set (the medieval engravings are lost). Prefer `add_icons()`.
+🛑 **Finding a library name:** grep `core/go_icon_library.gd` (one constant per icon, grouped under comments) or call
+`GoIconLibrary.icon_set().search("arrow left")`. Library names are Tabler's names with `_` for `-` (`cloud-rain` →
+`cloud_rain`); Tabler names of drawings gohud already had are aliases (`x` → `close`, `map_pin` → `location`).
 
 | Group key | Names (`GoGameIcons.<UPPER_CASE>`) |
 |---|---|
@@ -58,16 +67,66 @@ for icon in GoGameIcons.GROUPS[&"shop"]: row.add_child(GoUi.icons().node(icon, 2
 MIT notice travels in `THIRD_PARTY_NOTICES.md`. Add or change icons in the table of `tools/make_game_icons.py` and
 run it — it rewrites `icons/game/*.svg`, `icons/gohud_icons_game.tres` and `core/go_game_icons.gd` (`--check` compares).
 
+**The icon library** — 1,000 Tabler Icons 3.46.0 drawings (MIT), same 24 px grid and 2 px stroke:
+
+| Group key — title | Icons | Typical names (`GoIconLibrary.<UPPER_CASE>`) |
+|---|---|---|
+| `arrows` — Arrows & directions | 50 | `arrow_big_up` `arrow_narrow_left` `caret_down` `chevrons_right` `rotate` `switch_horizontal` |
+| `system` — System & status | 173 | `calendar` `dashboard` `fingerprint` `history` `loader` `toggle_left` `user_check` `zzz` |
+| `devices` — Devices & signal | 72 | `device_gamepad` `wifi_off` `battery_charging` `bluetooth` `keyboard` `phone_call` |
+| `media` — Media & playback | 37 | `camera` `music` `player_skip_forward` `repeat` `video_off` `volume_2` |
+| `communication` — Messages & mail | 20 | `mail` `mail_opened` `message_circle` `messages` `rss` `message_plus` |
+| `documents` — Documents & files | 38 | `bookmark` `clipboard_list` `file_text` `folder_open` `notes` `paperclip` |
+| `commerce` — Commerce & clothing | 23 | `cash_register` `credit_card_pay` `jacket` `tie` `transfer_in` `truck_loading` |
+| `currency` — Currencies | 12 | `currency_won` `currency_ruble` `currency_lira` `currency_real` `currency_baht` `currency_cent` |
+| `map` — Map & places | 62 | `gps` `route` `road_sign` `traffic_cone` `zoom_in` `world_latitude` |
+| `buildings` — Buildings | 39 | `building_castle` `building_hospital` `building_lighthouse` `smart_home` `bath` `car_garage` |
+| `vehicles` — Vehicles | 46 | `plane` `ship` `train` `truck` `helicopter` `submarine` |
+| `weather` — Weather & sky | 26 | `cloud_rain` `cloud_storm` `sunrise` `temperature` `tornado` `rainbow` |
+| `nature` — Nature | 16 | `acorn` `butterfly` `cherry` `clover` `snowman` `iceberg` |
+| `animals` — Animals | 8 | `cat` `dog` `dragon` `deer` `spider` `bat` |
+| `food` — Food & drink | 38 | `burger` `beer` `banana` `mug` `teapot` `chef_hat` |
+| `health` — Health & body | 40 | `heart_broken` `pills` `stethoscope` `thermometer` `brain` `lungs` |
+| `sport` — Sport | 44 | `ball_football` `chess_knight` `golf` `swimming` `yoga` `scoreboard` |
+| `games` — Games & luck | 18 | `dice_6` `joker` `poker_chip` `play_card` `roulette` `sword_off` |
+| `mood` — Faces & moods | 23 | `mood_happy` `mood_sad` `mood_angry` `mood_wink` `mood_cry` `mood_nerd` |
+| `gestures` — Hands & gestures | 11 | `hand_click` `hand_stop` `hand_move` `hand_love_you` `hand_two_fingers` `hand_off` |
+| `shapes` — Shapes & marks | 38 | `circle` `hexagon` `square_check` `triangle` `clubs` `spade` |
+| `symbols` — Symbols & ratings | 22 | `copyright` `yin_yang` `peace` `rating_18_plus` `trademark` `ankh` |
+| `badges` — Badges | 5 | `badge` `badges` `badge_4k` `badge_ad` `badge_cc` |
+| `zodiac` — Zodiac | 12 | `zodiac_leo` `zodiac_aries` `zodiac_virgo` `zodiac_pisces` `zodiac_scorpio` `zodiac_libra` |
+| `charts` — Charts | 11 | `chart_pie` `chart_line` `chart_donut` `chart_radar` `chart_area` `chart_candle` |
+| `math` — Math | 22 | `infinity` `divide` `equal` `sum` `multiplier_2x` `abacus` |
+| `data` — Data & tables | 6 | `database` `table` `table_export` `table_import` `relation_one_to_one` `row_insert_top` |
+| `computers` — Computers & networks | 4 | `binary` `binary_tree` `network` `topology_star` |
+| `development` — Development | 14 | `api` `apps` `sitemap` `prompt` `auth_2fa` `versions` |
+| `design` — Design & editing | 48 | `color_picker` `crop` `layers_union` `pencil` `ruler` `scissors` |
+| `photography` — Photography | 16 | `aperture` `brightness` `exposure` `focus` `polaroid` `screenshot` |
+| `electrical` — Electrical | 6 | `circuit_bulb` `circuit_cell` `circuit_motor` `circuit_diode` `circuit_ground` `circuit_ammeter` |
+
+The table is `tools/icon_library_data.py`; `python3 tools/make_icon_library.py` rebuilds `icons/library/`, the set and
+`core/go_icon_library.gd` (`--check` compares, `--import <tabler package>` refreshes drawings and search words).
+The whole catalog, searchable, is on the website's Icons page (`www/icons.html`).
+
 The medieval set (`res://addons/gohud/icons/gohud_icons_medieval.tres`) redraws `bag book box coin crown flag heart
 key map potion shield star sword user` and adds `&"scroll"` and `&"seal"`; every other name falls back to default.
 
 | API | Notes |
 |---|---|
-| `node(icon, size: int, ink := Color.TRANSPARENT) -> Control` | `TextureRect` (texture set) or `Label` (font set), exact square min size. Unknown name → empty box + debug warning |
-| `texture(icon) -> Texture2D` · `glyph(icon) -> String` · `glyph_font(icon)` · `has_icon(icon)` · `icon_names()` | |
-| fields | `set_name` · `attribution` · `textures: Dictionary[StringName, Texture2D]` · `font` · `codepoints: Dictionary[StringName, int]` · `font_size_ratio` · `fallback: GoIconSet` · `tint` |
-| lookup order | `textures` → `codepoints` → `fallback` |
+| `node(icon, size: int, ink := Color.TRANSPARENT) -> Control` | `TextureRect` (texture) or `Label` (font glyph), exact square min size. Unknown name → empty box + debug warning |
+| `texture(icon) -> Texture2D` · `glyph(icon) -> String` · `glyph_font(icon)` · `has_icon(icon)` · `icon_names()` | `has_icon`/`icon_names` load nothing |
+| `search(words, limit := 0) -> PackedStringArray` | best first — whole name, then a name an alias of which is the query, then name words, aliases, `tags` |
+| `group_names()` · `names_in_group(key)` · `group_title(key)` · `group_of(icon)` | group keys are shared: `names_in_group(&"food")` gathers every set's food |
+| `canonical(icon) -> StringName` | the name that draws it (`gear` → `settings`), `&""` if none |
+| `GoIconSet.from_folder(dir, below := null)` | a set of the pictures in a folder, file name = icon name, loaded when first drawn |
+| drawing fields | `textures: Dictionary[StringName, Texture2D]` · `paths: Dictionary[StringName, String]` (+ `folder`) · `font` + `codepoints` · `font_size_ratio` · `fallback` · `layers: Array[GoIconSet]` · `tint` |
+| finding fields | `aliases: Dictionary[StringName, StringName]` · `groups` · `group_titles` · `tags` — data only, they draw nothing |
+| lookup order | **every set's own drawings first** (this set, its `layers`, then their `fallback`s level by level; own = `textures` → `paths` → `codepoints`), then one alias hop, then an empty box |
+| `GoUi.icons()` | `config.icons` → preset's set → `DEFAULT_ICONS`, with `config.extra_icons` layered under it (cached; the same object while nothing changes) |
 | on buttons | `GoStyle.apply_icon(button, GoIconSet.SAVE)` · `GoStyle.icon_button(...)` |
+
+🛑 `paths` are strings, not dependencies: an export that **picks resources** must include `addons/gohud/icons/`
+(the default "export all resources" needs nothing). A path that fails to load warns once in debug builds.
 
 ```gdscript
 # Your own SVGs over the defaults (draw them white; import as DPITexture so they stay sharp)
@@ -76,6 +135,9 @@ mine.set_name = "Studio icons"
 mine.fallback = GoUi.DEFAULT_ICONS
 mine.textures = {GoIconSet.CLOSE: preload("res://ui/icons/close.svg"), &"quest": preload("res://ui/icons/quest.svg")}
 GoUi.config.icons = mine
+
+# A folder of your drawings — file name = icon name
+GoUi.config.icons = GoIconSet.from_folder("res://ui/icons", GoUi.icons())
 
 # An icon font (keep commercial fonts in your project, not in a gohud fork)
 var font_set := GoIconSet.new()

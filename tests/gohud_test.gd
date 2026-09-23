@@ -752,6 +752,28 @@ func _icons() -> void:
 	first.fallback = null
 	second.fallback = null
 
+	# 🔑 The three ways a name reaches a drawing beyond `textures` — `check_mutations.sh` breaks each one and this
+	#    file (the one it runs) must notice. The full library checks live in `gohud_extra_test.gd`.
+	var star := icon_set.texture(GoIconSet.STAR)
+	var by_path := GoIconSet.new()
+	by_path.paths = {&"star_by_path": "star.svg"}
+	by_path.folder = ADDON + "/icons/default"
+	check(by_path.texture(&"star_by_path") is DPITexture and by_path.icon_names().size() == 1,
+		"paths — a name drawn from a file path, read when first drawn")
+	var aliased := GoIconSet.new()
+	aliased.fallback = icon_set
+	aliased.aliases = {&"gear": GoIconSet.SETTINGS}
+	check(aliased.texture(&"gear") == icon_set.texture(GoIconSet.SETTINGS) and aliased.canonical(&"gear") == GoIconSet.SETTINGS,
+		"aliases — gear leads to settings")
+	var engraved := GoIconSet.new()
+	engraved.textures = {GoIconSet.SWORD: star}
+	var partial := GoIconSet.new()
+	partial.fallback = icon_set
+	var stack := GoIconSet.new()
+	stack.layers = [partial, engraved] as Array[GoIconSet]
+	check(stack.texture(GoIconSet.SWORD) == star and stack.texture(GoIconSet.CLOSE) == icon_set.texture(GoIconSet.CLOSE),
+		"layers — every layer's own drawing beats a fallback (partial set over the default does not hide the second layer)")
+
 	GoUi.config.icons = custom
 	check(GoUi.icons() == custom, "GoConfig.icons swaps the set")
 	GoUi.config.icons = null

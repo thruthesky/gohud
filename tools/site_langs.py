@@ -76,6 +76,7 @@ PAGES = (
 	"theming-skins.html",
 	"theming-own.html",
 	"theming-contrast.html",
+	"icons.html",
 )
 
 # 갈린 쪽 → 그 표지. 머리띠는 표지만 올리고(`site_nav.NAV_PAGES`), 하위 쪽에서는 그 표지 칸이
