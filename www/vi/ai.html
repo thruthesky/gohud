@@ -24,7 +24,7 @@
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/ai.html">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI SKILL — gohud</title>
+<title>Go HUD Skill — gohud</title>
 <meta name="description" content="Cài AI skill của gohud vào Claude Code, Codex, Cursor, Gemini CLI hay bất kỳ tác nhân nào — một khối để chép và dán.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
@@ -37,7 +37,7 @@
       <!-- nav:begin -->
       <a href="./">Tổng quan</a>
       <a href="install.html">Cài đặt</a>
-      <a class="nav-ai" href="ai.html" aria-current="page">AI SKILL</a>
+      <a class="nav-ai" href="ai.html" aria-current="page">Go HUD Skill</a>
       <a href="widgets.html">Widget</a>
       <a href="theming.html">Theme</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
@@ -72,12 +72,12 @@
 
 <div class="hero">
   <div class="wrap">
-    <h1>AI SKILL</h1>
+    <h1>Go HUD Skill</h1>
     <p class="lead">
       gohud có sẵn một AI skill: toàn bộ API, mẫu chạy được ngay và trình mở xem trước. Dán một khối dưới đây vào tác nhân lập trình của bạn, nó sẽ cài gohud và biết cách dùng.
     </p>
     <div class="cta">
-      <a class="btn primary" href="#copy">Xem khối để dán</a>
+      <a class="btn primary" href="#copy" data-copy="install-prompt" data-copied="Đã chép — giờ dán vào tác nhân của bạn">Chép lời nhắc cài đặt</a>
       <a class="btn" href="install.html">Cài đặt</a>
     </div>
   </div>
@@ -88,11 +88,16 @@
 <section id="copy">
   <h2>Dán khối này vào tác nhân lập trình của bạn</h2>
   <p class="sub">Mở dự án Godot trong tác nhân, dán khối bên dưới rồi gửi. Nó cài skill và add-on, sau đó kể cho bạn nghe gohud làm được những gì.</p>
-  <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+  <ol class="steps">
+    <li>Mở terminal trong thư mục dự án Godot và khởi động tác nhân lập trình ở đó — ví dụ <code>claude</code>.</li>
+    <li>Bấm <b>Chép</b> trên khối bên dưới, dán vào tác nhân rồi gửi.</li>
+    <li>Khi xong, khởi động lại tác nhân nếu nó yêu cầu, rồi hỏi: <i>gohud làm được gì?</i></li>
+  </ol>
+  <pre id="install-prompt"><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
 
 1. Install the gohud AI skill.
-   Claude Code:
+   Claude Code - run these two commands in a shell:
      claude plugin marketplace add thruthesky/gohud
      claude plugin install gohud@gohud
    Any other agent (Codex, Cursor, Gemini CLI, ...):
@@ -100,17 +105,32 @@
      Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
      ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
 
-2. Install the add-on itself, if addons/gohud/plugin.cfg is missing here.
+2. Install the add-on itself, unless addons/gohud/plugin.cfg already exists here.
    In a git repository:
      git submodule add https://github.com/thruthesky/gohud.git addons/gohud
    Otherwise copy the clone to addons/gohud without its .git folder.
    Then run: godot --headless --path . --import
+   (If godot is not on PATH, ask me where Godot 4.6+ is.)
 
-3. Restart yourself so the skill loads, then tell me what gohud can do
-   and how to preview it.
+3. Check the result: addons/gohud/plugin.cfg exists and the import printed
+   no "SCRIPT ERROR" or "Parse Error" lines.
+
+4. A new skill loads when the agent starts. Tell me if I have to restart you,
+   then tell me what gohud can do and how to preview it.
 
 Docs: https://thruthesky.github.io/gohud/</code></pre>
   <div class="note">Khối này cố ý viết bằng tiếng Anh — đó là thứ mọi tác nhân đọc chính xác nhất. Bạn cứ hỏi bằng ngôn ngữ nào cũng được; skill trả lời bằng đúng ngôn ngữ bạn viết.</div>
+</section>
+
+<section id="claude-code">
+  <h2>Hoặc gõ hai lệnh — Claude Code</h2>
+  <p class="sub">Cách này cài skill dưới dạng plugin của Claude Code. Trong terminal:</p>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud</code></pre>
+  <p>Đang ở trong Claude Code rồi? Hãy gõ những lệnh này:</p>
+  <pre><code>/plugin marketplace add thruthesky/gohud
+/plugin install gohud@gohud</code></pre>
+  <p>Sau đó khởi động lại Claude Code và gõ <code>/gohud:features</code> — nếu hiện danh sách tính năng của gohud thì skill đã được cài. Bản thân add-on vẫn phải nằm trong <code>addons/gohud</code>: <a href="install.html">Cài đặt →</a></p>
 </section>
 
 <section id="agents">

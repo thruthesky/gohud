@@ -24,7 +24,7 @@
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/ai.html">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI SKILL — gohud</title>
+<title>Go HUD Skill — gohud</title>
 <meta name="description" content="Установите ИИ-навык gohud в Claude Code, Codex, Cursor, Gemini CLI или любой агент — один блок, который нужно скопировать и вставить.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
@@ -37,7 +37,7 @@
       <!-- nav:begin -->
       <a href="./">Обзор</a>
       <a href="install.html">Установка</a>
-      <a class="nav-ai" href="ai.html" aria-current="page">AI SKILL</a>
+      <a class="nav-ai" href="ai.html" aria-current="page">Go HUD Skill</a>
       <a href="widgets.html">Виджеты</a>
       <a href="theming.html">Темы</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
@@ -72,12 +72,12 @@
 
 <div class="hero">
   <div class="wrap">
-    <h1>AI SKILL</h1>
+    <h1>Go HUD Skill</h1>
     <p class="lead">
       В gohud входит ИИ-навык: весь API, готовые шаблоны и запуск предпросмотра. Вставьте один блок в своего агента — он установит gohud и будет знать, как им пользоваться.
     </p>
     <div class="cta">
-      <a class="btn primary" href="#copy">К блоку для вставки</a>
+      <a class="btn primary" href="#copy" data-copy="install-prompt" data-copied="Скопировано — вставьте в агент">Скопировать промпт установки</a>
       <a class="btn" href="install.html">Установка</a>
     </div>
   </div>
@@ -88,11 +88,16 @@
 <section id="copy">
   <h2>Вставьте это в свой ИИ-агент</h2>
   <p class="sub">Откройте проект Godot в агенте, вставьте блок и отправьте. Он установит навык и дополнение, а потом расскажет, что умеет gohud.</p>
-  <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+  <ol class="steps">
+    <li>Откройте терминал в папке проекта Godot и запустите там свой ИИ-агент — например, <code>claude</code>.</li>
+    <li>Нажмите <b>Копировать</b> на блоке ниже, вставьте его в агент и отправьте.</li>
+    <li>Когда он закончит, перезапустите агент, если он попросит, и спросите: <i>Что умеет gohud?</i></li>
+  </ol>
+  <pre id="install-prompt"><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
 
 1. Install the gohud AI skill.
-   Claude Code:
+   Claude Code - run these two commands in a shell:
      claude plugin marketplace add thruthesky/gohud
      claude plugin install gohud@gohud
    Any other agent (Codex, Cursor, Gemini CLI, ...):
@@ -100,17 +105,32 @@
      Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
      ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
 
-2. Install the add-on itself, if addons/gohud/plugin.cfg is missing here.
+2. Install the add-on itself, unless addons/gohud/plugin.cfg already exists here.
    In a git repository:
      git submodule add https://github.com/thruthesky/gohud.git addons/gohud
    Otherwise copy the clone to addons/gohud without its .git folder.
    Then run: godot --headless --path . --import
+   (If godot is not on PATH, ask me where Godot 4.6+ is.)
 
-3. Restart yourself so the skill loads, then tell me what gohud can do
-   and how to preview it.
+3. Check the result: addons/gohud/plugin.cfg exists and the import printed
+   no "SCRIPT ERROR" or "Parse Error" lines.
+
+4. A new skill loads when the agent starts. Tell me if I have to restart you,
+   then tell me what gohud can do and how to preview it.
 
 Docs: https://thruthesky.github.io/gohud/</code></pre>
   <div class="note">Блок намеренно написан по-английски — так его точнее всего читает любой агент. Свои вопросы задавайте на любом языке: навык отвечает на том языке, на котором вы пишете.</div>
+</section>
+
+<section id="claude-code">
+  <h2>Или две команды — Claude Code</h2>
+  <p class="sub">Так навык ставится как плагин Claude Code. В терминале:</p>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud</code></pre>
+  <p>Уже внутри Claude Code? Тогда введите это:</p>
+  <pre><code>/plugin marketplace add thruthesky/gohud
+/plugin install gohud@gohud</code></pre>
+  <p>Затем перезапустите Claude Code и введите <code>/gohud:features</code> — если появился список возможностей gohud, навык установлен. Само дополнение по-прежнему должно лежать в <code>addons/gohud</code>: <a href="install.html">Установка →</a></p>
 </section>
 
 <section id="agents">

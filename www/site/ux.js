@@ -1,9 +1,12 @@
-/* gohud homepage — two small touches.
+/* gohud homepage — three small touches.
  *
  * 1. **Copy button on code blocks** — every code block here is a snippet meant to be pasted and
  *    run as is. Selecting it by hand drags along leading and trailing whitespace even though
  *    there are no line numbers. The button appears only on the block under the pointer.
- * 2. **Lazy images** — there are a dozen-odd screenshots, and fetching the ones below the fold
+ * 2. **Copy from elsewhere** — `<a data-copy="<pre id>" href="#…">` copies that block in one click
+ *    (the Go HUD Skill page's hero button copies the install prompt). Without script, or when the
+ *    clipboard refuses, it stays a plain link to the block.
+ * 3. **Lazy images** — there are a dozen-odd screenshots, and fetching the ones below the fold
  *    along with everything else makes the first paint slow.
  *
  * 🛑 The CSS lives in the `.gocopy` rules of `site/style.css` (this file injects no styles).
@@ -32,7 +35,7 @@
     btn.className = 'gocopy';
     btn.textContent = say[0];
     btn.addEventListener('click', function () {
-      copy(pre.textContent.replace(/\s+$/, ''), function (ok) {
+      copy(textOf(pre), function (ok) {
         if (!ok) return;
         btn.textContent = say[1];
         btn.classList.add('done');
@@ -41,6 +44,31 @@
     });
     pre.appendChild(btn);
   });
+
+  document.querySelectorAll('[data-copy]').forEach(function (link) {
+    var pre = document.getElementById(link.getAttribute('data-copy'));
+    if (!pre) return;
+    var idle = link.textContent;
+    var done = link.getAttribute('data-copied') || say[1];
+    link.addEventListener('click', function (event) {
+      event.preventDefault();
+      copy(textOf(pre), function (ok) {
+        // Refused (file://, an old browser): follow the link, so the block is on screen to copy by hand.
+        if (!ok) { location.hash = link.hash; return; }
+        link.textContent = done;
+        setTimeout(function () { link.textContent = idle; }, 2400);
+      });
+    });
+  });
+
+  /** The text of a code block, without the Copy button that lives inside it.
+   *  🛑 `pre.textContent` includes the button's label — every copy ended in "Copy" (measured 2026-09-23:
+   *     the install prompt's last line came out as `…/gohud/Copy`, a broken URL). */
+  function textOf(pre) {
+    var clone = pre.cloneNode(true);
+    clone.querySelectorAll('.gocopy').forEach(function (b) { b.remove(); });
+    return clone.textContent.replace(/\s+$/, '');
+  }
 
   function copy(text, then) {
     if (navigator.clipboard && navigator.clipboard.writeText) {

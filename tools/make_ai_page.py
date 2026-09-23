@@ -100,13 +100,30 @@ def build(code):
 
     body = []
     # ── #copy — comes first. The block before the explanation. ─────
+    # 🔑 `id="install-prompt"` is what the hero button copies (`data-copy` in `site/ux.js`).
+    steps = "\n".join("    <li>%s</li>" % say(k) for k in ("step1", "step2", "step3"))
     body.append(
         '<section id="copy">\n'
         '  <h2>%s</h2>\n'
         '  <p class="sub">%s</p>\n'
-        '  <pre><code>%s</code></pre>\n'
+        '  <ol class="steps">\n%s\n  </ol>\n'
+        '  <pre id="install-prompt"><code>%s</code></pre>\n'
         '  <div class="note">%s</div>\n'
-        '</section>\n' % (say("copy_h2"), say("copy_sub"), esc(site_ai_text.COPY_BLOCK), say("copy_note")))
+        '</section>\n' % (say("copy_h2"), say("copy_sub"), steps, esc(site_ai_text.COPY_BLOCK), say("copy_note")))
+
+    # ── #claude-code — the same install without an agent, two commands ──
+    # 🛑 No `<div class="note">` and no `<table>` here: `kept_html()` takes the **last** note and the
+    #    first table after the `#commands` heading, and this section sits before both.
+    body.append(
+        '<section id="claude-code">\n'
+        '  <h2>%s</h2>\n'
+        '  <p class="sub">%s</p>\n'
+        '  <pre><code>%s</code></pre>\n'
+        '  <p>%s</p>\n'
+        '  <pre><code>%s</code></pre>\n'
+        '  <p>%s <a href="install.html">%s →</a></p>\n'
+        '</section>\n' % (say("cc_h2"), say("cc_sub"), esc(site_ai_text.CLAUDE_TERMINAL), say("cc_inside"),
+                          esc(site_ai_text.CLAUDE_INSIDE), say("cc_check"), site_nav.label(code, "install")))
 
     # ── #agents — where to put it by hand ──────────────────────────
     body.append(
@@ -137,10 +154,11 @@ def build(code):
     hero = ('<div class="hero">\n  <div class="wrap">\n    <h1>%s</h1>\n'
             '    <p class="lead">\n      %s\n    </p>\n'
             '    <div class="cta">\n'
-            '      <a class="btn primary" href="#copy">%s</a>\n'
+            '      <a class="btn primary" href="#copy" data-copy="install-prompt" data-copied="%s">%s</a>\n'
             '      <a class="btn" href="install.html">%s</a>\n'
             '    </div>\n  </div>\n</div>\n\n'
-            % (t["ai_title"], t["ai_lead"], say("copy_cta"), site_nav.label(code, "install")))
+            % (t["ai_title"], t["ai_lead"], say("copied_cta").replace('"', "&quot;"), say("copy_cta"),
+               site_nav.label(code, "install")))
 
     return head + hero + '<main class="wrap">\n\n' + "\n".join(body) + '\n</main>' + tail
 

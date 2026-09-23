@@ -101,8 +101,8 @@ header.top nav > a {
 header.top nav > a:hover { color: var(--accent); background: var(--tint); }
 /* 지금 보고 있는 쪽 — 다섯 칸 중 어디에 서 있는지 글자만으로 알린다. */
 header.top nav > a[aria-current="page"] { color: var(--ink); font-weight: 700; background: var(--tint); }
-/* 🔑 AI SKILL 한 칸만 테두리를 준다 — 이 사이트에서 가장 빨리 끝나는 설치 경로이고,
-   나머지 넷은 문서인데 이것만 "해 보는 것" 이라 성격이 다르다. */
+/* 🔑 Only the Go HUD Skill item gets a border — it is the quickest way to install on this site, and
+   the other four are documents while this one is something you do. */
 header.top nav > a.nav-ai {
   color: var(--accent); font-weight: 700; letter-spacing: .01em;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
@@ -363,8 +363,8 @@ td code { white-space: nowrap; }
   color: var(--ink-2);
 }
 .note b { color: var(--blue); }
-/* 🔑 설치 쪽 맨 위의 AI SKILL 카드 — 안내 상자보다 크고 절보다 작다. 설치하러 온 사람에게
-   "훨씬 빠른 길이 있다" 를 먼저 보이려고 절 대신 카드로 둔다. */
+/* 🔑 The Go HUD Skill card at the top of the install page — bigger than a note, smaller than a section.
+   It is a card, not a section, so someone who came to install sees "there is a much faster way" first. */
 .ai-card {
   border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   border-inline-start-width: 3px; border-radius: var(--radius);
@@ -373,6 +373,10 @@ td code { white-space: nowrap; }
 .ai-card h2 { margin: 0 0 8px; font-size: 21px; border: 0; padding: 0; }
 .ai-card p { margin: 0 0 14px; max-width: 68ch; }
 .ai-card p:last-child { margin-bottom: 0; }
+/* Numbered steps above the block to paste (the Go HUD Skill page). `inline-start` keeps the numbers
+   on the right side in Arabic. */
+ol.steps { margin: 0 0 16px; padding-inline-start: 1.5em; max-width: 72ch; }
+ol.steps li { margin: 6px 0; padding-inline-start: 4px; }
 /* 🛑 경고 색은 변수로 둔다 — 어두운 판에서 재정의되지 않아 네 조합 모두 AA 미달이었다. */
 .warn {
   border-inline-start-color: var(--warn);

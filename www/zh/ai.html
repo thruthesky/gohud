@@ -24,7 +24,7 @@
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/ai.html">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI SKILL — gohud</title>
+<title>Go HUD Skill — gohud</title>
 <meta name="description" content="为 Claude Code、Codex、Cursor、Gemini CLI 等任意编码代理安装 gohud AI 技能 —— 复制粘贴一段即可。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
@@ -37,7 +37,7 @@
       <!-- nav:begin -->
       <a href="./">概览</a>
       <a href="install.html">安装</a>
-      <a class="nav-ai" href="ai.html" aria-current="page">AI SKILL</a>
+      <a class="nav-ai" href="ai.html" aria-current="page">Go HUD Skill</a>
       <a href="widgets.html">控件</a>
       <a href="theming.html">主题</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
@@ -72,12 +72,12 @@
 
 <div class="hero">
   <div class="wrap">
-    <h1>AI SKILL</h1>
+    <h1>Go HUD Skill</h1>
     <p class="lead">
       gohud 自带 AI 技能：完整 API、可直接运行的模板和预览启动器。把下面这一段粘贴给你的编码代理，它就会装好 gohud 并知道怎么用。
     </p>
     <div class="cta">
-      <a class="btn primary" href="#copy">查看要粘贴的内容</a>
+      <a class="btn primary" href="#copy" data-copy="install-prompt" data-copied="已复制 —— 粘贴到你的代理里">复制安装提示词</a>
       <a class="btn" href="install.html">安装</a>
     </div>
   </div>
@@ -88,11 +88,16 @@
 <section id="copy">
   <h2>把这一段粘贴给你的编码代理</h2>
   <p class="sub">在代理里打开你的 Godot 项目，粘贴下面这段并发送。它会装好技能和插件，再告诉你 gohud 能做什么。</p>
-  <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+  <ol class="steps">
+    <li>在 Godot 项目文件夹中打开终端，并在那里启动编码代理 —— 例如 <code>claude</code>。</li>
+    <li>点击下方代码块上的<b>复制</b>，粘贴到代理中并发送。</li>
+    <li>完成后，如果代理要求就重启它，然后问它：<i>gohud 能做什么？</i></li>
+  </ol>
+  <pre id="install-prompt"><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
 
 1. Install the gohud AI skill.
-   Claude Code:
+   Claude Code - run these two commands in a shell:
      claude plugin marketplace add thruthesky/gohud
      claude plugin install gohud@gohud
    Any other agent (Codex, Cursor, Gemini CLI, ...):
@@ -100,17 +105,32 @@
      Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
      ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
 
-2. Install the add-on itself, if addons/gohud/plugin.cfg is missing here.
+2. Install the add-on itself, unless addons/gohud/plugin.cfg already exists here.
    In a git repository:
      git submodule add https://github.com/thruthesky/gohud.git addons/gohud
    Otherwise copy the clone to addons/gohud without its .git folder.
    Then run: godot --headless --path . --import
+   (If godot is not on PATH, ask me where Godot 4.6+ is.)
 
-3. Restart yourself so the skill loads, then tell me what gohud can do
-   and how to preview it.
+3. Check the result: addons/gohud/plugin.cfg exists and the import printed
+   no "SCRIPT ERROR" or "Parse Error" lines.
+
+4. A new skill loads when the agent starts. Tell me if I have to restart you,
+   then tell me what gohud can do and how to preview it.
 
 Docs: https://thruthesky.github.io/gohud/</code></pre>
   <div class="note">这段特意用英文写 —— 那是所有代理读得最准的语言。你自己提问用什么语言都行，技能会用你写的语言回答。</div>
+</section>
+
+<section id="claude-code">
+  <h2>或者输入两条命令 —— Claude Code</h2>
+  <p class="sub">这会把技能作为 Claude Code 插件安装。在终端中：</p>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud</code></pre>
+  <p>已经在 Claude Code 里了？改为输入：</p>
+  <pre><code>/plugin marketplace add thruthesky/gohud
+/plugin install gohud@gohud</code></pre>
+  <p>然后重启 Claude Code 并输入 <code>/gohud:features</code> —— 列出 gohud 的功能就说明技能已装好。gohud 插件本体仍需放在 <code>addons/gohud</code>： <a href="install.html">安装 →</a></p>
 </section>
 
 <section id="agents">

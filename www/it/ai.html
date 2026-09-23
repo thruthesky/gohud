@@ -24,7 +24,7 @@
 <link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/ai.html">
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI SKILL — gohud</title>
+<title>Go HUD Skill — gohud</title>
 <meta name="description" content="Installa la skill IA di gohud in Claude Code, Codex, Cursor, Gemini CLI o in qualsiasi agente — un blocco da copiare e incollare.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
@@ -37,7 +37,7 @@
       <!-- nav:begin -->
       <a href="./">Panoramica</a>
       <a href="install.html">Installazione</a>
-      <a class="nav-ai" href="ai.html" aria-current="page">AI SKILL</a>
+      <a class="nav-ai" href="ai.html" aria-current="page">Go HUD Skill</a>
       <a href="widgets.html">Widget</a>
       <a href="theming.html">Temi</a>
       <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
@@ -72,12 +72,12 @@
 
 <div class="hero">
   <div class="wrap">
-    <h1>AI SKILL</h1>
+    <h1>Go HUD Skill</h1>
     <p class="lead">
       gohud include una skill IA: tutta l'API, modelli pronti all'uso e un avviatore di anteprima. Incolla un blocco nel tuo agente: installa gohud e sa come usarlo.
     </p>
     <div class="cta">
-      <a class="btn primary" href="#copy">Vedi il blocco</a>
+      <a class="btn primary" href="#copy" data-copy="install-prompt" data-copied="Copiato: ora incollalo nel tuo agente">Copia il prompt di installazione</a>
       <a class="btn" href="install.html">Installazione</a>
     </div>
   </div>
@@ -88,11 +88,16 @@
 <section id="copy">
   <h2>Incolla questo nel tuo agente di codice</h2>
   <p class="sub">Apri il progetto Godot nell'agente, incolla il blocco e invialo. Installa la skill e l'add-on, poi ti racconta cosa sa fare gohud.</p>
-  <pre><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+  <ol class="steps">
+    <li>Apri un terminale nella cartella del progetto Godot e avvia lì il tuo agente di codice, per esempio <code>claude</code>.</li>
+    <li>Premi <b>Copia</b> sul blocco qui sotto, incollalo nell'agente e invialo.</li>
+    <li>Quando ha finito, riavvia l'agente se te lo chiede, poi chiedigli: <i>Cosa sa fare gohud?</i></li>
+  </ol>
+  <pre id="install-prompt"><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
 
 1. Install the gohud AI skill.
-   Claude Code:
+   Claude Code - run these two commands in a shell:
      claude plugin marketplace add thruthesky/gohud
      claude plugin install gohud@gohud
    Any other agent (Codex, Cursor, Gemini CLI, ...):
@@ -100,17 +105,32 @@
      Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
      ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
 
-2. Install the add-on itself, if addons/gohud/plugin.cfg is missing here.
+2. Install the add-on itself, unless addons/gohud/plugin.cfg already exists here.
    In a git repository:
      git submodule add https://github.com/thruthesky/gohud.git addons/gohud
    Otherwise copy the clone to addons/gohud without its .git folder.
    Then run: godot --headless --path . --import
+   (If godot is not on PATH, ask me where Godot 4.6+ is.)
 
-3. Restart yourself so the skill loads, then tell me what gohud can do
-   and how to preview it.
+3. Check the result: addons/gohud/plugin.cfg exists and the import printed
+   no "SCRIPT ERROR" or "Parse Error" lines.
+
+4. A new skill loads when the agent starts. Tell me if I have to restart you,
+   then tell me what gohud can do and how to preview it.
 
 Docs: https://thruthesky.github.io/gohud/</code></pre>
   <div class="note">Il blocco è in inglese di proposito: è ciò che ogni agente legge in modo più affidabile. Le tue domande puoi farle in qualsiasi lingua; la skill risponde nella lingua in cui scrivi.</div>
+</section>
+
+<section id="claude-code">
+  <h2>Oppure digita due comandi: Claude Code</h2>
+  <p class="sub">Così la skill si installa come plugin di Claude Code. In un terminale:</p>
+  <pre><code>claude plugin marketplace add thruthesky/gohud
+claude plugin install gohud@gohud</code></pre>
+  <p>Sei già dentro Claude Code? Digita invece questi:</p>
+  <pre><code>/plugin marketplace add thruthesky/gohud
+/plugin install gohud@gohud</code></pre>
+  <p>Poi riavvia Claude Code e digita <code>/gohud:features</code>: se compare l'elenco delle funzioni di gohud, la skill è installata. L'add-on vero e proprio va comunque in <code>addons/gohud</code>: <a href="install.html">Installazione →</a></p>
 </section>
 
 <section id="agents">

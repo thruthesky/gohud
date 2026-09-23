@@ -9,7 +9,7 @@ Every language has the **same five pages**, listed in `PAGES` in that same file:
 |---|---|
 | `index.html` | Overview — showcase, what it takes off your hands, presets, skins, a widget summary, and signposts to install / quick start / AI skill |
 | `install.html` | The AI-skill card first, then install, quick start, examples, and the repository's own checks |
-| `ai.html` | AI SKILL — the block to paste into a coding agent, where each agent keeps skills, the commands, and "or just ask" |
+| `ai.html` | Go HUD Skill — the block to paste into a coding agent, where each agent keeps skills, the commands, and "or just ask" |
 | `widgets.html` | Widget reference |
 | `theming.html` | Themes, tokens, skins and readability |
 

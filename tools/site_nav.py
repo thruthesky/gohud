@@ -36,9 +36,11 @@
 - **R4. 소유격·대명사를 메뉴에 쓰지 않는다.** "내 프리셋"(`Your preset`)·`Tu preajuste`·
   `Votre préréglage` 가 전부 같은 이유로 어색했다.
 
-🛑 `AI SKILL` 은 17 개 언어 모두 **영어 그대로** 둔다. 제품 기능의 이름이고, 그 쪽이 알려 주는
-명령(`/gohud:preview`)·폴더 이름(`skills/gohud`)·붙여 넣을 문구가 전부 영어라 **메뉴와 화면의 말이
-같아야** 독자가 같은 것을 가리킨다고 안다.
+🛑 `Go HUD Skill` (the `ai.html` page — named `AI SKILL` until 2026-09-23, renamed at the owner's request)
+stays **in English in all 17 languages**. It is the name of a product feature, and what that page teaches —
+the commands (`/gohud:preview`), the folder (`skills/gohud`), the prompt to paste — is all English, so the
+menu and the page must use the same words for readers to know they point at the same thing. The file name
+stays `ai.html` so links already shared keep working.
 
 ## 각 표
 
@@ -61,8 +63,8 @@ NAV_PAGES = (
 
 GITHUB = "https://github.com/thruthesky/gohud"
 
-# 언어별 메뉴 라벨. 🛑 `ai` 는 전 언어 공통 "AI SKILL" 이라 표에 넣지 않는다(아래 AI_LABEL).
-AI_LABEL = "AI SKILL"
+# Menu labels per language. 🛑 `ai` is the same "Go HUD Skill" in every language, so it is not in this table (AI_LABEL).
+AI_LABEL = "Go HUD Skill"
 
 NAV = {
     "en":    {"overview": "Overview",     "install": "Install",       "widgets": "Widgets",     "theming": "Theming"},
@@ -120,7 +122,7 @@ TITLE = {
                         "there is nothing else to set up.",
         "install_desc": "How to install gohud in a Godot 4.6+ project — with an AI coding agent in one paste, "
                         "from a release ZIP, or as a git submodule.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud ships an AI skill: the whole API, runnable templates and a preview launcher. "
                    "Paste one block into your coding agent and it installs gohud and knows how to use it.",
         "ai_desc": "Install the gohud AI skill in Claude Code, Codex, Cursor, Gemini CLI or any coding agent — "
@@ -134,7 +136,7 @@ TITLE = {
         "install_lead": "길은 둘이다. AI 에게 시키거나, 폴더를 프로젝트에 넣거나 — 그 밖에 설정할 것은 없다.",
         "install_desc": "Godot 4.6+ 프로젝트에 gohud 를 설치하는 법 — AI 코딩 에이전트에 한 번 붙여 넣기, "
                         "릴리스 ZIP, git 서브모듈.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud 에는 AI 스킬이 들어 있다 — API 전부와 바로 돌아가는 템플릿, 미리보기 실행기. "
                    "아래 글을 통째로 코딩 에이전트에 붙여 넣으면 gohud 를 설치하고 쓰는 법까지 익힌다.",
         "ai_desc": "Claude Code·Codex·Cursor·Gemini CLI 등 어떤 코딩 에이전트에도 gohud AI 스킬을 설치한다 — "
@@ -149,7 +151,7 @@ TITLE = {
                         "ほかに設定するものはない。",
         "install_desc": "Godot 4.6+ のプロジェクトに gohud を入れる方法 — AI コーディングエージェントに一度貼るだけ、"
                         "リリース ZIP、git サブモジュール。",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud には AI スキルが入っている — API のすべて、すぐ動くテンプレート、プレビュー起動器。"
                    "下の文をまるごとコーディングエージェントに貼れば、gohud を入れて使い方まで覚える。",
         "ai_desc": "Claude Code・Codex・Cursor・Gemini CLI など、どのコーディングエージェントにも gohud の "
@@ -162,7 +164,7 @@ TITLE = {
         "install_title": "安装 gohud",
         "install_lead": "两条路：让 AI 代理替你装，或把文件夹放进项目 —— 此外无需任何配置。",
         "install_desc": "在 Godot 4.6+ 项目中安装 gohud 的方法 —— 向 AI 编码代理粘贴一次、发行版 ZIP、git 子模块。",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud 自带 AI 技能：完整 API、可直接运行的模板和预览启动器。"
                    "把下面这一段粘贴给你的编码代理，它就会装好 gohud 并知道怎么用。",
         "ai_desc": "为 Claude Code、Codex、Cursor、Gemini CLI 等任意编码代理安装 gohud AI 技能 —— 复制粘贴一段即可。",
@@ -174,7 +176,7 @@ TITLE = {
         "install_title": "安裝 gohud",
         "install_lead": "兩條路：讓 AI 代理替你裝，或把資料夾放進專案 —— 此外不必設定任何東西。",
         "install_desc": "在 Godot 4.6+ 專案中安裝 gohud 的方法 —— 向 AI 編碼代理貼上一次、發行版 ZIP、git 子模組。",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud 內建 AI 技能：完整 API、可直接執行的範本與預覽啟動器。"
                    "把下面這一段貼給你的編碼代理，它就會裝好 gohud 並知道怎麼用。",
         "ai_desc": "為 Claude Code、Codex、Cursor、Gemini CLI 等任何編碼代理安裝 gohud AI 技能 —— 複製貼上一段即可。",
@@ -188,7 +190,7 @@ TITLE = {
                         "no hay nada más que configurar.",
         "install_desc": "Cómo instalar gohud en un proyecto de Godot 4.6+ — con un agente de IA en un solo pegado, "
                         "desde un ZIP de la versión o como submódulo de git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud trae una skill de IA: toda la API, plantillas listas para ejecutar y un lanzador de "
                    "vista previa. Pega un bloque en tu agente y él instala gohud y sabe usarlo.",
         "ai_desc": "Instala la skill de IA de gohud en Claude Code, Codex, Cursor, Gemini CLI o cualquier agente — "
@@ -203,7 +205,7 @@ TITLE = {
                         "não há mais nada para configurar.",
         "install_desc": "Como instalar o gohud num projeto Godot 4.6+ — com um agente de IA numa única colagem, "
                         "a partir de um ZIP da versão ou como submódulo git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "O gohud traz uma skill de IA: toda a API, modelos prontos a correr e um lançador de "
                    "pré-visualização. Cole um bloco no seu agente e ele instala o gohud e sabe usá-lo.",
         "ai_desc": "Instale a skill de IA do gohud no Claude Code, Codex, Cursor, Gemini CLI ou qualquer agente — "
@@ -217,7 +219,7 @@ TITLE = {
         "install_lead": "Два пути. Поручите ИИ-агенту или положите папку в проект — больше настраивать нечего.",
         "install_desc": "Как установить gohud в проект Godot 4.6+ — одной вставкой в ИИ-агента, из ZIP-архива "
                         "релиза или как подмодуль git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "В gohud входит ИИ-навык: весь API, готовые шаблоны и запуск предпросмотра. "
                    "Вставьте один блок в своего агента — он установит gohud и будет знать, как им пользоваться.",
         "ai_desc": "Установите ИИ-навык gohud в Claude Code, Codex, Cursor, Gemini CLI или любой агент — "
@@ -232,7 +234,7 @@ TITLE = {
                         "il n'y a rien d'autre à configurer.",
         "install_desc": "Comment installer gohud dans un projet Godot 4.6+ — avec un agent IA en un seul collage, "
                         "depuis un ZIP de version ou en sous-module git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud embarque une compétence IA : toute l'API, des modèles exécutables et un lanceur "
                    "d'aperçu. Collez un bloc dans votre agent : il installe gohud et sait s'en servir.",
         "ai_desc": "Installez la compétence IA de gohud dans Claude Code, Codex, Cursor, Gemini CLI ou tout "
@@ -247,7 +249,7 @@ TITLE = {
                         "başka ayarlanacak bir şey yok.",
         "install_desc": "gohud'u bir Godot 4.6+ projesine kurma yolları — yapay zekâ ajanına tek yapıştırma, "
                         "sürüm ZIP'i ya da git alt modülü.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud bir yapay zekâ becerisiyle gelir: API'nin tamamı, çalışmaya hazır şablonlar ve "
                    "önizleme başlatıcı. Tek bloğu ajanınıza yapıştırın; gohud'u kurar ve nasıl kullanacağını bilir.",
         "ai_desc": "gohud yapay zekâ becerisini Claude Code, Codex, Cursor, Gemini CLI ya da herhangi bir ajana "
@@ -262,7 +264,7 @@ TITLE = {
                         "nie ma nic więcej do ustawienia.",
         "install_desc": "Jak zainstalować gohud w projekcie Godot 4.6+ — jednym wklejeniem do agenta AI, "
                         "z ZIP-a wydania albo jako submoduł gita.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud zawiera umiejętność AI: całe API, gotowe do uruchomienia szablony i podgląd. "
                    "Wklej jeden blok do swojego agenta — zainstaluje gohud i będzie wiedział, jak go używać.",
         "ai_desc": "Zainstaluj umiejętność AI gohud w Claude Code, Codex, Cursor, Gemini CLI lub dowolnym "
@@ -277,7 +279,7 @@ TITLE = {
                         "non c'è altro da configurare.",
         "install_desc": "Come installare gohud in un progetto Godot 4.6+ — con un agente IA in un solo incolla, "
                         "da uno ZIP della release o come sottomodulo git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud include una skill IA: tutta l'API, modelli pronti all'uso e un avviatore di anteprima. "
                    "Incolla un blocco nel tuo agente: installa gohud e sa come usarlo.",
         "ai_desc": "Installa la skill IA di gohud in Claude Code, Codex, Cursor, Gemini CLI o in qualsiasi "
@@ -291,7 +293,7 @@ TITLE = {
         "install_lead": "Hai lối vào. Để tác nhân AI làm hộ, hoặc thả thư mục vào dự án — không còn gì phải cấu hình.",
         "install_desc": "Cách cài gohud vào dự án Godot 4.6+ — dán một lần cho tác nhân AI, từ ZIP bản phát hành, "
                         "hoặc làm submodule git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud có sẵn một AI skill: toàn bộ API, mẫu chạy được ngay và trình mở xem trước. "
                    "Dán một khối dưới đây vào tác nhân lập trình của bạn, nó sẽ cài gohud và biết cách dùng.",
         "ai_desc": "Cài AI skill của gohud vào Claude Code, Codex, Cursor, Gemini CLI hay bất kỳ tác nhân nào — "
@@ -306,7 +308,7 @@ TITLE = {
                         "tidak ada lagi yang perlu diatur.",
         "install_desc": "Cara memasang gohud di proyek Godot 4.6+ — sekali tempel ke agen AI, dari ZIP rilis, "
                         "atau sebagai submodul git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud membawa AI skill: seluruh API, templat siap jalan, dan peluncur pratinjau. "
                    "Tempelkan satu blok ke agen codingmu — ia memasang gohud dan tahu cara memakainya.",
         "ai_desc": "Pasang AI skill gohud di Claude Code, Codex, Cursor, Gemini CLI, atau agen apa pun — "
@@ -320,7 +322,7 @@ TITLE = {
         "install_lead": "Два шляхи. Доручіть ШІ-агенту або покладіть теку у свій проєкт — більше нічого налаштовувати.",
         "install_desc": "Як встановити gohud у проєкт Godot 4.6+ — одним вставленням у ШІ-агента, із ZIP-архіву "
                         "випуску або як підмодуль git.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud має ШІ-навичку: увесь API, готові до запуску шаблони та запуск попереднього перегляду. "
                    "Вставте один блок у свого агента — він встановить gohud і знатиме, як ним користуватися.",
         "ai_desc": "Встановіть ШІ-навичку gohud у Claude Code, Codex, Cursor, Gemini CLI чи будь-який агент — "
@@ -334,7 +336,7 @@ TITLE = {
         "install_lead": "มีสองทาง ให้เอเจนต์ AI ทำให้ หรือวางโฟลเดอร์ลงในโปรเจกต์ของคุณ — ไม่มีอะไรต้องตั้งค่าเพิ่ม",
         "install_desc": "วิธีติดตั้ง gohud ในโปรเจกต์ Godot 4.6+ — วางครั้งเดียวให้เอเจนต์ AI จาก ZIP ของรุ่น "
                         "หรือเป็น submodule ของ git",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "gohud มี AI skill มาให้ — API ทั้งหมด เทมเพลตที่รันได้ทันที และตัวเปิดพรีวิว "
                    "วางบล็อกเดียวด้านล่างให้เอเจนต์เขียนโค้ดของคุณ แล้วมันจะติดตั้ง gohud และรู้วิธีใช้",
         "ai_desc": "ติดตั้ง AI skill ของ gohud ใน Claude Code, Codex, Cursor, Gemini CLI หรือเอเจนต์ใด ๆ — "
@@ -349,7 +351,7 @@ TITLE = {
                         "لا شيء آخر يحتاج إلى إعداد.",
         "install_desc": "كيفية تثبيت gohud في مشروع Godot 4.6+ — بلصقة واحدة في وكيل ذكاء اصطناعي، من ملف ZIP "
                         "للإصدار، أو كوحدة git فرعية.",
-        "ai_title": "AI SKILL",
+        "ai_title": AI_LABEL,
         "ai_lead": "يأتي gohud بمهارة ذكاء اصطناعي: واجهة البرمجة كاملة، وقوالب جاهزة للتشغيل، ومشغّل معاينة. "
                    "الصق الكتلة أدناه في وكيل البرمجة لديك فيثبّت gohud ويعرف كيف يستخدمه.",
         "ai_desc": "ثبّت مهارة gohud للذكاء الاصطناعي في Claude Code أو Codex أو Cursor أو Gemini CLI أو أي "
