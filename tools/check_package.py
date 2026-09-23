@@ -20,7 +20,7 @@ ADDON = Path(__file__).resolve().parent.parent
 spec = importlib.util.spec_from_file_location("package_version", ADDON / "tools/package_version.py")
 versioning = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(versioning)
-TRACKED = versioning.FILES + (versioning.MANIFEST,)
+TRACKED = versioning.FILES + (versioning.MANIFEST,) + versioning.READMES
 
 
 class PackageTests(unittest.TestCase):
@@ -39,8 +39,13 @@ class PackageTests(unittest.TestCase):
         (self.addon / "CHANGELOG.md").write_text(
             '# Changelog\n\n## [Unreleased]\n\n### Fixed\n\n- Pending fix.\n\n'
             '## [1.2.9]\n\n- Previous release.\n')
-        for name in ("LICENSE", "README.md", "THIRD_PARTY_NOTICES.md"):
-            (self.addon / name).write_text(name + "\n")
+        (self.addon / "LICENSE").write_text("LICENSE\n")
+        (self.addon / "THIRD_PARTY_NOTICES.md").write_text("THIRD_PARTY_NOTICES.md\n")
+        self.set_readmes("1.2.9")
+
+    def set_readmes(self, version):
+        (self.addon / "README.md").write_text(f"# gohud\n\n**Version {version}.** What is new.\n")
+        (self.addon / "README.ko.md").write_text(f"# gohud\n\n**\ubc84\uc804 {version}.** \uc0c8\ub85c\uc6b4 \uac83.\n")
 
     def set_manifest(self, version):
         (self.addon / "package.json").write_text(json.dumps({"version": version}, indent=2) + "\n")
@@ -91,6 +96,7 @@ class PackageTests(unittest.TestCase):
 
     def test_new_version_follows_package_json(self):
         self.set_manifest("2.0.0")
+        self.set_readmes("2.0.0")
         result = self.run_package()
         self.assert_release("2.0.0")
         self.assertIn("1.2.9 → 2.0.0", result.stdout)
@@ -107,12 +113,14 @@ class PackageTests(unittest.TestCase):
 
     def test_lower_version_is_taken_as_written(self):
         self.set_manifest("1.0.0")
+        self.set_readmes("1.0.0")
         self.run_package()
         self.assert_release("1.0.0")
 
     def test_custom_output(self):
         output = self.root / "output with spaces '"
         self.set_manifest("1.3.0")
+        self.set_readmes("1.3.0")
         self.run_package('--out', str(output))
         self.assert_release("1.3.0", output / "gohud-1.3.0.zip")
         self.assertFalse((self.addon / "builds/1.3.0").exists())
@@ -121,6 +129,7 @@ class PackageTests(unittest.TestCase):
         p = self.addon / "CHANGELOG.md"
         p.write_text('# Changelog\n\n## [1.2.9]\n\n- Existing notes.\n')
         self.set_manifest("1.2.10")
+        self.set_readmes("1.2.10")
         self.run_package()
         self.assert_release("1.2.10")
         self.assertIn('## [1.2.9]\n\n- Existing notes.', p.read_text())
@@ -137,6 +146,17 @@ class PackageTests(unittest.TestCase):
         for args in (('--out',), ('--out', '--full'), ('--unknown',), ('--increase-minor-version',)):
             with self.subTest(args=args):
                 self.run_package(*args, ok=False)
+
+    def test_readme_must_announce_the_packaged_version(self):
+        self.set_manifest("1.3.0")
+        result = self.run_package(ok=False)          # both READMEs still say 1.2.9
+        self.assertIn("README.md announces version 1.2.9", result.stderr)
+        self.set_readmes("1.3.0")
+        (self.addon / "README.ko.md").write_text("# gohud\n\nno version here\n")
+        self.assertIn("README.ko.md must say the version once", self.run_package(ok=False).stderr)
+        self.set_readmes("1.3.0")
+        self.run_package()
+        self.assert_release("1.3.0")
 
     def test_invalid_package_json(self):
         manifest = self.addon / "package.json"
@@ -161,6 +181,7 @@ class PackageTests(unittest.TestCase):
 
     def test_late_gate_failure_keeps_original_version(self):
         self.set_manifest("1.3.0")
+        self.set_readmes("1.3.0")
         (self.addon / 'invalid.key').write_text('test fixture, not a key')
         self.run_package(ok=False)
         self.assertIn('version="1.2.9"', (self.addon / "plugin.cfg").read_text())
@@ -171,6 +192,7 @@ class PackageTests(unittest.TestCase):
 
     def test_zip_failure_keeps_original_version(self):
         self.set_manifest("1.3.0")
+        self.set_readmes("1.3.0")
         commands = self.root / 'bin'
         commands.mkdir()
         (commands / 'zip').write_text('#!/bin/sh\nexit 7\n')
@@ -185,6 +207,7 @@ class PackageTests(unittest.TestCase):
 
     def prepare_publish(self, version="1.3.0"):
         self.set_manifest(version)
+        self.set_readmes(version)
         stage = self.root / 'stage'
         shutil.copytree(self.addon, stage / 'addons/gohud')
         with contextlib.redirect_stdout(io.StringIO()):

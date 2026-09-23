@@ -450,6 +450,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
   <h3 id="release-versions">Sürüm yayımlama</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # tüm denetimler → ZIP → o ZIP boş bir projede
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>Sürüm, <code>package.json</code> içinde yazan sürümdür; paketleme onu asla artırmaz. Yeni bir sürüm yayımlamak
     için önce o numarayı değiştirin. Başarılı bir çalıştırma <code>plugin.cfg</code> ve <code>GoUi.VERSION</code>

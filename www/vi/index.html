@@ -445,6 +445,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
   <h3 id="release-versions">Phiên bản phát hành</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # toàn bộ kiểm tra → ZIP → file ZIP đó trong dự án trống
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>Phiên bản chính là số ghi trong <code>package.json</code> — việc đóng gói không bao giờ tự tăng nó. Muốn phát
     hành phiên bản mới, hãy đổi số đó trước. Một lượt chạy thành công đặt <code>plugin.cfg</code> và

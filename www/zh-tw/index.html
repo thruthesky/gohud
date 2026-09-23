@@ -442,6 +442,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
   <h3 id="release-versions">發行版本</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # 全部檢查 → ZIP → 在空專案中驗證
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>版本就是 <code>package.json</code> 裡寫的那個，打包絕不會自動調高。
     要發行新版本，先改這個數字。

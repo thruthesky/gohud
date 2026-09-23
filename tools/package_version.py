@@ -16,6 +16,11 @@ import tempfile
 MANIFEST = "package.json"
 FILES = ("plugin.cfg", "core/go_ui.gd", "CHANGELOG.md")
 SEMVER = r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
+# 🛑 The READMEs ship inside the ZIP and open the store page's repository. Theirs is the one version a
+#    reader sees first, and it had stood at 1.0.1 while 1.0.2 and 1.0.3 shipped (found 2026-09-23) —
+#    packaging cannot fix that sentence for them, because what is new in a release is written by a person.
+READMES = ("README.md", "README.ko.md")
+STATED_VERSION = re.compile(r"\*\*(?:Version|버전) (\d+\.\d+\.\d+)\.?\*\*")
 
 
 def read_version(addon):
@@ -48,6 +53,14 @@ def prepare(stage, version):
         raise ValueError("plugin.cfg must have exactly one version= line")
     if len(code_versions) != 1:
         raise ValueError("core/go_ui.gd must have exactly one const VERSION line")
+    for readme in READMES:
+        stated = STATED_VERSION.findall((package / readme).read_text(encoding="utf-8"))
+        if len(stated) != 1:
+            raise ValueError(f"{readme} must say the version once, as **Version 1.2.3.** "
+                             f"(found {len(stated)} such lines)")
+        if stated[0] != version:
+            raise ValueError(f"{readme} announces version {stated[0]}, but this release is {version} — "
+                             f"write what is new in it and correct that line, then package again")
     notes = []
     previous = sorted(set(versions + code_versions))
     if previous == [version]:

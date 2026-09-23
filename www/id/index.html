@@ -445,6 +445,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
   <h3 id="release-versions">Versi rilis</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # semua pemeriksaan → ZIP → ZIP itu di proyek kosong
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>Versinya adalah yang tertulis di <code>package.json</code> — pengemasan tidak pernah menaikkannya. Untuk merilis
     versi baru, ubah dulu angka itu. Jalan yang berhasil menyamakan <code>plugin.cfg</code> dan

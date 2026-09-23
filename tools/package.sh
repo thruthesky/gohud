@@ -17,7 +17,8 @@
 #    core/, widgets/ and icons/ scatter across someone else's project root.
 #
 # 🛑 Gates — if any one trips, no ZIP is built
-#   ① package.json has a major.minor.patch version — plugin.cfg and GoUi.VERSION are set to it
+#   ① package.json has a major.minor.patch version — plugin.cfg and GoUi.VERSION are set to it,
+#     and README.md · README.ko.md announce that same version (what is new in a release is written by a person)
 #   ② LICENSE, README.md, THIRD_PARTY_NOTICES.md and CHANGELOG.md exist
 #   ③ CHANGELOG.md gets an entry for that version (the Unreleased notes move into it) unless it already has one
 #   ④ no code, scene or resource points at a `res://` **outside** the addon — that breaks in someone else's project

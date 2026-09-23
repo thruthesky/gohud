@@ -38,6 +38,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **A boxed `GoPromptCard` icon keeps its size.** A texture icon set stretched it over the whole 44 dp disc instead
   of the 22 dp asked for.
 
+## [1.1.0] - 2026-09-23
+
 ### Added
 
 - **Game icon set — 187 icons for inventories, shops and items.** `icons/game/` + `icons/gohud_icons_game.tres`,
@@ -182,6 +184,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Changed
 
+- **A release is one command: `tools/release.sh`.** Every check → the ZIP for the version in `package.json` →
+  that ZIP installed into an empty project, in that order, stopping at the first failure. The steps existed
+  before as three separate commands, and the one that got skipped was the last one — the ZIP itself.
+  Committing, tagging and uploading stay with a person; the closing lines say what to run.
+
+- **Packaging refuses a README that announces another version.** `README.md` and `README.ko.md` open the
+  repository the store page links to, and they had said 1.0.1 while 1.0.2 and 1.0.3 shipped. The line is not
+  written automatically — what is new in a release is a sentence a person writes — so packaging stops until
+  it is right.
+
 - **The release version is written in `package.json`, and `tools/package.sh` never raises it.** Every run used to
   add one to the patch number (`--increase-minor-version` for the minor one), so rebuilding a ZIP meant a new
   version. Now `{"version": "1.2.3"}` in `package.json` decides it: a run sets `plugin.cfg` and `GoUi.VERSION` to
@@ -246,6 +258,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   waiting when you leave the screen.
 
 ### Fixed
+
+- **Three checks stood red for reasons that were not the code, and hid the ones that were.**
+  ① `check_generated.py` compared theme `.tres` files byte for byte, so opening a theme in the Godot editor
+  and saving it — which writes uids, `10.0` for `10` and drops properties holding the engine default — was
+  reported as the themes having drifted from their palettes. A `.tres` is now compared by what it says
+  (`tools/tres_canonical.py`), references resolved by the content they point at, and the check names the
+  property that differs (`corner_radius_top_left 12 ≠ 13`) instead of a whole StyleBox.
+  ② The unit tests asked for a viewport size, but the **host project's** UI scale multiplied it: a request
+  for 844x390 was really measured at 667x308, and the size guard failed. The tests now ask for the stretch
+  base that lands on the size they wanted under that factor, so every screen size is checked at the size it
+  claims. ③ The website glossary was missing `GoGameIcons` and `GoSlotGrid`.
 
 - **Dragging a `GoScroll` by a row no longer drags the rows' highlight along.** On a phone the pressed row kept
   its focus, its hover stuck to the finger and hopped from row to row as the finger passed over them, and pressing a

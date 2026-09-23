@@ -446,6 +446,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
 
   <h3 id="release-versions">배포 버전</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # 검사 전부 → ZIP → 빈 프로젝트에서 검증
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>버전은 <code>package.json</code> 에 적힌 값이다 — 패키징이 올리지 않는다. 새 버전을 내려면 먼저 그 숫자를 바꾼다. 성공하면
     <code>plugin.cfg</code>·<code>GoUi.VERSION</code> 을 그 값으로 맞추고, 그 버전을 처음 패키징할 때만 <code>CHANGELOG.md</code> 의

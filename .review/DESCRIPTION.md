@@ -107,9 +107,10 @@ properties and `mouse_behavior_recursive`. Developed and verified on **4.7.2**.
 
 ### 📦 What's included
 
-Pure GDScript (no GDExtension, no engine module) · 32 scripts · six presets · 100 icons ·
-Cinzel heading font · strings in 21 languages · gallery and medieval example scenes ·
-438 headless tests you can run yourself with `addons/gohud/tools/run_tests.sh`.
+Pure GDScript (no GDExtension, no engine module) · 48 classes · six presets · 287 icons
+(84 default, 16 medieval, a 187-icon game set for inventories and shops) · Cinzel heading font ·
+strings in 21 languages · gallery, medieval and 23-chapter demo scenes ·
+902 headless tests you can run yourself with `addons/gohud/tools/run_tests.sh`.
 
 ### 📜 License
 

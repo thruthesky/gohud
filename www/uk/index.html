@@ -447,6 +447,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
   <h3 id="release-versions">Версії релізів</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # усі перевірки → ZIP → цей ZIP у порожньому проєкті
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>Версія — та, що записана в <code>package.json</code>: пакування ніколи її не підвищує. Щоб випустити нову
     версію, спершу змініть це число. Успішний прогін виставляє це значення в <code>plugin.cfg</code> і

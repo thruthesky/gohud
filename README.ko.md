@@ -23,8 +23,10 @@
 
 > 넣으면 그냥 동작한다. 에디터 플러그인을 켜는 것은 편의 기능일 뿐이다.
 
-**버전 1.0.1.** 중세 프리셋과 목록 줄 여백 개선은 `main` 에 들어 있고 [변경 기록](CHANGELOG.md)의
-*Unreleased* 에 적혀 있다 — 다음 `tools/package.sh` 실행 때 배포 버전에 포함된다.
+**버전 1.1.0.** 위젯 열다섯 개(스낵바·스피너·표·출석 보상 …), 게임 아이콘 187개와 인벤토리 격자
+`GoSlotGrid`, 아이템 카드, 판 뒤로 게임이 비치는 컨테이너 불투명도, 23장짜리 안내 투어가 들어 있다 —
+목록은 [변경 기록](CHANGELOG.md)에 있다. 그 뒤의 작업은 거기 *Unreleased* 에 모인다 — `package.json` 의
+버전을 올리고 `tools/package.sh` 를 실행하면 배포에 들어간다.
 
 - **프리셋 여섯, 코드 한 줄.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` 가 테마·스킨·아이콘을
   함께 바꾼다 — 둥근 기본 판, 네온이 번지는 사선 모서리의 sci-fi, 각인 아이콘과 단조 프레임의 중세.
@@ -741,9 +743,13 @@ python3 tools/check_contrast.py                 # 테마 전부의 WCAG 대비
 python3 tools/new_theme.py kingdom --from medieval_dark   # 테마 스캐폴딩
 python3 tools/make_theme.py                     # 테마 전부 재생성 — id 를 주면 그 테마만
 python3 tools/make_icons.py                     # 기본 아이콘 SVG 재생성
-bash tools/package.sh                           # package.json 의 버전; builds/<버전>/gohud-<버전>.zip
+bash tools/release.sh                           # 배포 한 번: 검사 전부 → ZIP → 그 ZIP 을 빈 프로젝트에서 검증
+bash tools/package.sh                           # ZIP 만; package.json 의 버전
 python3 tools/check_package.py                  # 임시 사본에서 패키징 회귀 검사
 ```
+
+`release.sh`는 배포 절차 전체를 순서대로 실행한다 — 검사 전부 → ZIP → 그 ZIP 을 빈 프로젝트에 설치해 검증하며,
+처음 실패하는 곳에서 멈춘다. 커밋·태그·업로드는 사람이 한다.
 
 `package.sh`는 Python 3가 필요하며, `package.json`에 적힌 버전(`{"version": "1.2.3"}`)으로 패키징한다.
 그 숫자를 올리지 않는다 — 새 버전을 내려면 먼저 `package.json`을 고친다.
@@ -753,7 +759,7 @@ python3 tools/check_package.py                  # 임시 사본에서 패키징 
 그 버전을 처음 패키징할 때 `Unreleased` 변경 내역을 날짜가 붙은 버전 항목으로 옮기고 빈 `Unreleased` 항목을 남긴다.
 `CHANGELOG.md`에 이미 있는 버전을 다시 패키징하면 변경 기록은 그대로 두고 그 버전의 ZIP을 새로 만들어 이전 것과 바꾼다.
 패키징이 실패하면 버전 파일은 바뀌지 않는다.
-`package.json`이 없거나 형식이 틀린 경우·문서 누락·애드온 밖 참조는 계속 검사한다.
+`package.json`이 없거나 형식이 틀린 경우·README 가 다른 버전을 말하는 경우·문서 누락·애드온 밖 참조는 계속 검사한다.
 ZIP 에는 사이트·검사·도구·`package.json`과 독립 프로젝트 `examples/usage` 가 들어가지 않는다.
 `check_all.sh`의 패키징 검사는 임시 사본에서 실행하므로 작업 사본은 바뀌지 않는다.
 

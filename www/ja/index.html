@@ -442,6 +442,7 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
 
   <h3 id="release-versions">リリース版を作る</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # 検査すべて → ZIP → 空プロジェクトで検証
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>バージョンは <code>package.json</code> に書かれた値で、パッケージングがそれを上げることはない。
     新しいバージョンを出すときは、先にその数字を書き換える。

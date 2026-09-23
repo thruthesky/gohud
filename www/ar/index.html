@@ -443,6 +443,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
   <h3 id="release-versions">إصدارات النشر</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # كل الفحوص ← ZIP ← ذلك الملف في مشروع فارغ
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>الإصدار هو المكتوب في <code>package.json</code>، والتحزيم لا يرفعه أبدًا. لنشر إصدار جديد غيّر هذا الرقم أولًا.
     التشغيل الناجح يضبط <code>plugin.cfg</code> و<code>GoUi.VERSION</code> على تلك القيمة، وفي أول تحزيم لذلك

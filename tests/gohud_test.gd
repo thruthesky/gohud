@@ -57,6 +57,14 @@ func _initialize() -> void:
 		wanted = Vector2i(maxi(200, int(parts[0])), maxi(200, int(parts[1])))
 	root.content_scale_size = wanted
 	await frames(2)
+	# 🛑 The **host project** scales the UI on top of this: laryen3d's UiScale autoload sets
+	#    `content_scale_factor` to 1.265, so a request for 844x390 came out as a 667x308 viewport and the size
+	#    check failed for a reason outside gohud (measured 2026-09-23). The factor belongs to the host, but the
+	#    stretch base is ours — ask for the base that lands on the wanted size under that factor.
+	var factor := maxf(0.1, root.content_scale_factor)
+	if not is_equal_approx(factor, 1.0):
+		root.content_scale_size = Vector2i((Vector2(wanted) * factor).round())
+		await frames(2)
 	var view := root.get_visible_rect().size
 	print("  viewport %s" % str(view))
 	check(minf(view.x, view.y) >= 320.0, "test viewport is large enough (%s)" % str(view))

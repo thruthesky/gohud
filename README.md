@@ -22,8 +22,11 @@ dark and light.
 
 > Drop it in and it works. Enabling the editor plugin only adds conveniences.
 
-**Version 1.0.1.** The medieval presets and the balanced list rows are on `main` and listed under
-*Unreleased* in the [changelog](CHANGELOG.md); the next `tools/package.sh` run puts them in a release.
+**Version 1.1.0.** Fifteen more widgets (snackbar, spinner, table, reward calendar …), the 187-icon game
+set with the `GoSlotGrid` inventory grid, item cards, container opacity that leaves the game visible behind
+a panel, and a 23-chapter guided tour — the [changelog](CHANGELOG.md) lists them. Work done since is
+collected under *Unreleased* there: raise the version in `package.json` and the next `tools/package.sh`
+run releases it.
 
 - **Six presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and
   icons together — rounded default panels, chamfered sci-fi panels with neon glow, or forged medieval
@@ -774,9 +777,13 @@ python3 addons/gohud/tools/check_contrast.py      # WCAG contrast for every them
 python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark   # scaffold a theme
 python3 addons/gohud/tools/make_theme.py          # regenerate the themes; pass an id to build one
 python3 addons/gohud/tools/make_icons.py          # regenerate the default icon SVGs
-bash addons/gohud/tools/package.sh                # the version in package.json; builds/<version>/gohud-<version>.zip
+bash addons/gohud/tools/release.sh               # a release: every check → the ZIP → that ZIP in an empty project
+bash addons/gohud/tools/package.sh                # only the ZIP, for the version in package.json
 python3 addons/gohud/tools/check_package.py       # packaging regression checks in temporary copies
 ```
+
+`release.sh` is the whole release in order — it runs every check, builds the ZIP and installs that very ZIP
+into an empty project, stopping at the first failure. Committing, tagging and uploading stay with you.
 
 `package.sh` requires Python 3 and packages the version written in `package.json`
 (`{"version": "1.2.3"}`). It never raises that number — to release a new version, edit
@@ -787,7 +794,8 @@ A successful run sets `plugin.cfg` and `GoUi.VERSION` to that version. The first
 packaged, pending `Unreleased` notes move into a dated entry for it, leaving an empty `Unreleased`
 section; packaging a version `CHANGELOG.md` already has leaves the changelog alone and rebuilds that
 version's ZIP, replacing the previous one. Version files remain unchanged if packaging fails.
-A missing or malformed `package.json`, missing documents and references outside `addons/gohud/` fail validation.
+A missing or malformed `package.json`, a README announcing a different version, missing documents and
+references outside `addons/gohud/` fail validation.
 The ZIP leaves out the website, tests, tools, `package.json` and the standalone `examples/usage` project.
 Packaging checks in `check_all.sh` use temporary copies and do not touch your working copy.
 

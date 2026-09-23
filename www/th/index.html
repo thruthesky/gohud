@@ -444,6 +444,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
   <h3 id="release-versions">การออกเวอร์ชัน</h3>
   <pre><code>cat addons/gohud/package.json       # { "version": "1.1.0" }
+bash addons/gohud/tools/release.sh  # ตรวจทั้งหมด → ZIP → ทดสอบ ZIP นั้นในโปรเจกต์เปล่า
 bash addons/gohud/tools/package.sh  # 1.1.0 → builds/1.1.0/gohud-1.1.0.zip</code></pre>
   <p>เวอร์ชันคือค่าที่เขียนไว้ใน <code>package.json</code> การแพ็กเกจจะไม่เพิ่มเลขให้เองเด็ดขาด
     ถ้าจะออกเวอร์ชันใหม่ให้แก้เลขนั้นก่อน การรันที่สำเร็จจะตั้ง <code>plugin.cfg</code> และ

@@ -21,7 +21,7 @@ class_name GoUi
 extends RefCounted
 
 ## The version of this addon. It moves together with `CHANGELOG.md`.
-const VERSION := "1.0.3"
+const VERSION := "1.1.0"
 
 ## The **lowest engine version** this addon requires. `[major, minor]`.
 ##
