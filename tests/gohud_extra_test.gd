@@ -38,6 +38,7 @@ func _initialize() -> void:
 	await _drawer()
 	await _combobox()
 	await _reward_calendar()
+	await _cell_contract()
 	await _charts()
 	await _code_input()
 	await _console()
@@ -660,12 +661,255 @@ func _reward_calendar() -> void:
 	(cells[2] as Button).pressed.emit()
 	await frames(2)
 	check(got[0] == 2, "rewards: the claim signal")
+	# 🛑 **A real click** — `pressed.emit()` never asks whether the number, picture and amount laid over the cell let the
+	#    press through to it, so content that swallowed input would still pass the line above.
+	got[0] = -1
+	var point := (cells[2] as Control).get_global_rect().get_center()
+	for held in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = held
+		click.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
+		click.position = point
+		click.global_position = point
+		Input.parse_input_event(click.xformed_by(root.get_final_transform()))
+		await frames(2)
+	check(got[0] == 2, "rewards: a real click on today's cell reaches it through its content (%d)" % got[0])
+	# 📐 The content sits inside the cell with room to spare — the preview had the day number on the top edge and the amount below the cell.
+	var today_cell := cells[2] as Control
+	var number := today_cell.find_children("*", "Label", true, false)[0] as Label
+	var amount := today_cell.find_children("*", "Label", true, false)[-1] as Label
+	var room := float(GoUi.metric(GoTheme.GAP_TINY))
+	check(number.global_position.y - today_cell.global_position.y >= room,
+		"rewards: the day number clears the top edge (%.1f)" % (number.global_position.y - today_cell.global_position.y))
+	var bottom := today_cell.global_position.y + today_cell.size.y - (amount.global_position.y + amount.size.y)
+	check(bottom >= room, "rewards: the amount stays inside the cell (%.1f from the bottom)" % bottom)
+	check(is_equal_approx(today_cell.size.x, today_cell.size.y), "rewards: cells stay square (%s)" % today_cell.size)
+	# 🛑 Every state keeps its face — only `normal`·`disabled` were set, and pressing today's cell showed the theme's empty face.
+	var lit := (cells[2] as Button).get_theme_stylebox(&"normal")
+	check((cells[2] as Button).get_theme_stylebox(&"pressed") == lit and (cells[2] as Button).get_theme_stylebox(&"hover") == lit,
+		"rewards: today's cell keeps its face while hovered and pressed")
 	cal.set_claimed_until(6)
 	await frames(2)
 	check(cal.today() == -1, "rewards: with everything claimed there is no today")
 	cal.queue_free()
 	await frames(1)
 	section("reward calendar")
+
+
+# ── Cell contract — content inside boxes that are not containers ──────
+
+## 🔑 **Every cell-shaped widget, in every look, inside a form and out, on a phone strip and in RTL** — checked by the
+## same audit. The preview the user pointed at (2026-09-23) had day numbers glued to the top of each reward cell and
+## the amounts drawn below it: the gallery wraps everything in `GoStyle.form()`, which rewrote the cell's spacing to 12,
+## and nothing measured where the content really ended up. `GoStyle.audit_cell_layout` measures it.
+func _cell_contract() -> void:
+	# 🧪 Positive controls first — an audit that catches nothing proves nothing.
+	var host := Control.new()
+	host.size = Vector2(400, 400)
+	root.add_child(host)
+	var cell := Button.new()
+	cell.theme = GoUi.theme()
+	cell.theme_type_variation = GoTheme.VAR_BARE_BUTTON
+	cell.add_theme_stylebox_override(&"normal", GoUi.skin().slot_box(GoUi.color(GoTheme.ACCENT), true))
+	host.add_child(cell)
+	var body := GoStyle.cell_body(cell)
+	for words in ["1", "×100"]: body.add_child(GoStyle.label(words, GoTheme.ROLE_MICRO))
+	await frames(3)
+	check(GoStyle.audit_cell_layout(host).is_empty(), "cells: a cell_body cell passes the audit %s" % str(GoStyle.audit_cell_layout(host)))
+	var need := (cell.get_meta(&"go_cell_inset") as Control).get_combined_minimum_size()
+	check(cell.size.x + 0.5 >= need.x and cell.size.y + 0.5 >= need.y, "cells: the box grows to its content (%s ≥ %s)" % [cell.size, need])
+	# ① content that outgrew its box — checked before the deferred fit catches up, the moment a hand-built cell lives in forever
+	var tall := Control.new()
+	tall.custom_minimum_size = Vector2(10, 400)
+	body.add_child(tall)
+	check(GoStyle.audit_cell_layout(host).size() >= 1, "cells: the audit catches content taller than its box")
+	await frames(3)
+	check(GoStyle.audit_cell_layout(host).is_empty(), "cells: the box grows to the taller content %s" % str(GoStyle.audit_cell_layout(host)))
+	tall.queue_free()
+	# ② padding thinner than the face needs
+	var inset := cell.get_meta(&"go_cell_inset") as MarginContainer
+	var top := inset.get_theme_constant(&"margin_top")
+	inset.add_theme_constant_override(&"margin_top", 0)
+	check(GoStyle.audit_cell_layout(host).size() >= 1, "cells: the audit catches padding thinner than the face")
+	# ④ a one-line label folded, and a label cut short
+	var folded := GoStyle.label("×100")
+	folded.set_meta(&"go_no_wrap", true)
+	folded.custom_minimum_size.x = 1
+	folded.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	body.add_child(folded)
+	await frames(2)
+	var caught := GoStyle.audit_cell_layout(host)
+	check(caught.any(func(line: String) -> bool: return line.contains("folds")), "cells: the audit catches a folded one-line label %s" % str(caught))
+	folded.autowrap_mode = TextServer.AUTOWRAP_OFF
+	folded.clip_text = true
+	await frames(2)
+	caught = GoStyle.audit_cell_layout(host)
+	check(caught.any(func(line: String) -> bool: return line.contains("is cut")), "cells: the audit catches a label cut short %s" % str(caught))
+	# ⑤ a badge hanging over the edge on purpose is not a problem
+	folded.set_meta(&"go_overlay", true)
+	inset.add_theme_constant_override(&"margin_top", top)
+	await frames(2)
+	check(GoStyle.audit_cell_layout(host).is_empty(), "cells: a go_overlay node is left out %s" % str(GoStyle.audit_cell_layout(host)))
+	# ③ a mark centered by anchors alone — its top-left corner on the center
+	var mark := ColorRect.new()
+	mark.custom_minimum_size = Vector2(20, 20)
+	var dot_host := Control.new()
+	dot_host.size = Vector2(48, 48)
+	host.add_child(dot_host)
+	dot_host.add_child(mark)
+	GoStyle.center_in(mark)
+	await frames(2)
+	var centered := GoStyle.audit_cell_layout(dot_host).is_empty()
+	mark.set_anchors_preset(Control.PRESET_CENTER)
+	mark.offset_left = 0; mark.offset_top = 0; mark.offset_right = 20; mark.offset_bottom = 20
+	check(centered and GoStyle.audit_cell_layout(dot_host).size() == 1,
+		"cells: center_in centers, and the audit catches the anchors-only mistake")
+	host.queue_free()
+	await frames(1)
+
+	# The real widgets, in all six looks.
+	var looks: Array[StringName] = [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT, GoThemePresets.SCIFI_DARK,
+		GoThemePresets.SCIFI_LIGHT, GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT]
+	for look in looks:
+		GoUi.use_preset(look)
+		for in_form in [false, true]:
+			for rtl in [false, true]:
+				await _cell_page(look, in_form, rtl)
+	# 🔤 An icon-**font** set: its glyphs are `Label`s, and a form turned wrapping on for them — in the gallery the crown
+	#    grew from 24 to 51dp and made day 7's whole column and row larger than the rest (2026-09-23).
+	var glyphs := GoIconSet.new()
+	var points: Dictionary[StringName, int] = {&"coin": 0x25CF, &"crown": 0x265B, &"check": 0x2713, &"star": 0x2605}
+	glyphs.codepoints = points
+	GoUi.config.icons = glyphs
+	await _cell_page(GoThemePresets.SCIFI_DARK, true, false)
+	GoUi.config.icons = null
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await _cell_live_changes()
+	section("cell contract")
+
+
+## The same calendar through what happens to it on a live screen: the look swapped, the language swapped, a host's own cell size.
+func _cell_live_changes() -> void:
+	var days: Array = []
+	for i in 7: days.append({"icon": &"coin", "amount": (i + 1) * 100})
+	var calendar := GoRewardCalendar.make(days, 2)
+	calendar.size = Vector2(700, 0)
+	root.add_child(calendar)
+	await frames(4)
+	GoUi.use_preset(GoThemePresets.MEDIEVAL_LIGHT)
+	await frames(4)
+	check(GoStyle.audit_cell_layout(calendar).is_empty(), "cells: after a live look swap %s" % str(GoStyle.audit_cell_layout(calendar)))
+	calendar.notification(NOTIFICATION_TRANSLATION_CHANGED)
+	await frames(4)
+	check(GoStyle.audit_cell_layout(calendar).is_empty(), "cells: after a language swap %s" % str(GoStyle.audit_cell_layout(calendar)))
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	for side in [30.0, 120.0]:
+		calendar.cell_size = side
+		await frames(4)
+		var cell := calendar._grid.get_child(0) as Control
+		check(GoStyle.audit_cell_layout(calendar).is_empty() and is_equal_approx(cell.size.x, cell.size.y)
+			and cell.size.x >= maxf(side, GoUi.metric(GoTheme.TOUCH)) - 0.5,
+			"cells: cell_size %d is a floor and the cell stays square (%s) %s" % [side, cell.size, str(GoStyle.audit_cell_layout(calendar))])
+	calendar.queue_free()
+	await frames(1)
+
+
+func _cell_page(look: StringName, in_form: bool, rtl: bool) -> void:
+	var tag := "%s%s%s" % [look, " · form" if in_form else "", " · rtl" if rtl else ""]
+	var page := GoStyle.column()
+	page.size = Vector2(700, 1400)
+	page.layout_direction = Control.LAYOUT_DIRECTION_RTL if rtl else Control.LAYOUT_DIRECTION_LTR
+	root.add_child(page)
+	var days: Array = []
+	for i in 7: days.append({"icon": &"crown" if i == 6 else &"coin", "amount": (i + 1) * 100, "special": i == 6})
+	var calendar := GoRewardCalendar.make(days, 2)
+	page.add_child(calendar)
+	# 📱 A phone (390 wide, minus the page padding) and a width that holds six cells but not seven.
+	var strips: Array[GoRewardCalendar] = []
+	for width in [350, 560]:
+		var strip := GoStyle.column(0)
+		strip.custom_minimum_size.x = width
+		strip.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		var fitted := GoRewardCalendar.make(days, 2)
+		strip.add_child(fitted)
+		page.add_child(strip)
+		strips.append(fitted)
+	var narrow := strips[0]
+	var month: Array = []
+	for i in 28: month.append({"icon": &"coin", "amount": 100000 if i == 27 else 50})
+	page.add_child(GoRewardCalendar.make(month, 10))
+	var table := GoTable.make([{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}],
+		[[1, "Aria", 91240], [2, "Brin", 48210]])
+	page.add_child(table)
+	page.add_child(GoStyle.choice_grid([{"color": "e5484d"}, {"icon": GoIconSet.STAR, "text": "Star"}, "Plain"], 1))
+	var carousel := GoCarousel.new()
+	carousel.custom_minimum_size = Vector2(200, 80)
+	carousel.set_pages([ColorRect.new(), ColorRect.new(), ColorRect.new()])
+	page.add_child(carousel)
+	var card := GoPromptCard.new()
+	card.fade_in = false
+	card.set_title("Party invite")
+	card.set_icon(GoIconSet.STAR, Color.TRANSPARENT, true)
+	page.add_child(card)
+	card.show()
+	if in_form: GoStyle.form(page)
+	await frames(4)
+
+	var problems := GoStyle.audit_cell_layout(page)
+	check(problems.is_empty(), "cells [%s]: every cell holds its content inside its padding %s" % [tag, str(problems.slice(0, 3))])
+	var audited := page.find_children("*", "Control", true, false).filter(
+		func(node: Node) -> bool: return node.has_meta(&"go_cell_inset")).size()
+	# 7 + 7 + 7 + 28 reward cells and 2 table rows — the audit really looked at them.
+	check(audited >= 51, "cells [%s]: the audit covered the cells (%d)" % [tag, audited])
+
+	# 📱 Never wider than its strip: the row wraps sooner instead — and evenly, never one day left alone on a line.
+	for fitted in strips:
+		var width := (fitted.get_parent() as Control).custom_minimum_size.x
+		var row_width := fitted._grid.get_combined_minimum_size().x
+		var per_row := fitted._grid.columns
+		var last := 7 - (ceili(7.0 / per_row) - 1) * per_row
+		check(row_width <= width + 0.5 and last >= ceili(per_row / 2.0),
+			"cells [%s]: the calendar fits %ddp in even rows (%.0fdp · %d a row · %d on the last)" % [tag, width, row_width, per_row, last])
+	# Width **and** height — a tall glyph on day 7 once grew only its own row and column.
+	var sides: Array[float] = []
+	for child in narrow._grid.get_children():
+		sides.append((child as Control).size.x)
+		sides.append((child as Control).size.y)
+	check(sides.min() >= GoUi.metric(GoTheme.TOUCH) - 0.5 and sides.max() - sides.min() <= 1.0,
+		"cells [%s]: every reward cell is the same square and keeps the touch minimum (%.0f–%.0f)" % [tag, sides.min(), sides.max()])
+
+	# Inside a form, the cell keeps its own spacing and one-line text.
+	var first := calendar._grid.get_child(0)
+	var cell_body := first.find_child("Body", true, false) as BoxContainer
+	check(cell_body != null and cell_body.get_theme_constant(&"separation") == GoUi.metric(GoTheme.GAP_TINY),
+		"cells [%s]: a cell keeps its own spacing" % tag)
+	for node in first.find_children("*", "Label", true, false):
+		var text := node as Label
+		check(text.autowrap_mode == TextServer.AUTOWRAP_OFF and text.get_line_count() == 1,
+			"cells [%s]: cell text stays on one line (%s)" % [tag, text.text])
+
+	# ♿ Every number and amount reads on its face (4.5:1), in every state — no alpha dimming.
+	for index in [0, 3, 5]:
+		var day := calendar._grid.get_child(index) as Button
+		check(is_equal_approx(day.modulate.a, 1.0), "cells [%s]: day %d is dimmed by color, not alpha" % [tag, index + 1])
+		var face := day.get_theme_stylebox(&"disabled" if day.disabled else &"normal")
+		var back := GoSkin.blend(GoSkin.box_background(face), GoUi.color(GoTheme.SURFACE_SOFT))
+		# Text at 4.5:1. An icon-font glyph is a graphic (3:1) — and a claimed day's picture is dimmed on purpose under its
+		# check mark, so there the check mark carries the 3:1.
+		var marks: Array[float] = []
+		for node in day.find_children("*", "Label", true, false):
+			var ink := (node as Label).get_theme_color(&"font_color")
+			var ratio := GoSkin.contrast_ratio(GoSkin.blend(ink, back), back)
+			if node.has_meta(&"go_icon"):
+				marks.append(ratio)
+				continue
+			check(ratio >= 4.5, "cells [%s]: day %d \"%s\" reads on its face (%.2f:1)" % [tag, index + 1, (node as Label).text, ratio])
+		if not marks.is_empty():
+			var needed: float = marks.max() if index <= 1 else marks.min()
+			check(needed >= 3.0, "cells [%s]: day %d's glyphs stand out from the face (%.2f:1)" % [tag, index + 1, needed])
+	page.queue_free()
+	await frames(1)
 
 
 # ── Radar · donut ─────────────────────────────────────────────────────

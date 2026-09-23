@@ -395,12 +395,20 @@ attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))
 attendance.set_claimed_until(server_value)     # after the server confirms
 ```
 
-`columns` 7 · `cell_size` (−1 = touch × 1.4) · `today()` returns the claimable index, `-1` when done.
+`columns` 7 (at most per row) · `cell_size` (−1 = the content decides, never below touch; a positive value is a
+floor and sets the picture to 36% of it) · `wrap_to_width` (on) · `today()` returns the claimable index, `-1` when done.
 
+- 📐 **A cell is sized by what it holds.** Day number, picture (24 dp) and amount sit inside padding
+  (`GoStyle.cell_body`) and the cell grows to fit, square — the content never touches the border or spills past it,
+  inside a `GoForm` too. Cells are the same size and at least the touch minimum.
+- 📱 **A row never runs off a phone.** When `columns` cells do not fit the width, the row wraps sooner and evenly
+  (seven days on a phone: 4 + 3, never 6 + 1). The days are positions in a streak, not weekdays, so wrapping loses
+  nothing. `wrap_to_width = false` keeps exactly `columns` per row and leaves the width to you (~600 dp for seven).
 - 🛑 **Only today's cell is pressable.** Claimed and future cells are disabled — a button that does nothing
   when pressed reads as broken.
 - ♿ Claimed / today / future differ by **three things**: a tick glyph, an accent border, and dimming — and
-  the state is in the accessible name. Dimming alone cannot separate "claimed" from "not yet".
+  the state is in the accessible name. Dimming alone cannot separate "claimed" from "not yet". Dimming moves
+  **colours** toward the muted end (never `modulate` alpha), and every number and amount keeps 4.5:1 on its face.
 
 ## 14. GoRadar and GoDonut — stats at a glance
 

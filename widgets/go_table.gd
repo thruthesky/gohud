@@ -33,6 +33,8 @@ signal sorted(column: int, ascending: bool)
 var head: HBoxContainer
 ## The container the rows stack in.
 var rows_box: VBoxContainer
+## 🔑 The header sits behind the same side padding as the rows' content, so every column lines up with its header.
+var _head_inset: MarginContainer
 
 var _columns: Array[Dictionary] = []
 var _rows: Array = []
@@ -48,7 +50,10 @@ func _init() -> void:
 	add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_TINY))
 	head = GoStyle.row(GoUi.metric(GoTheme.GAP))
 	head.name = "Head"
-	add_child(head)
+	_head_inset = GoStyle.padding(_side_padding(), 0)
+	_head_inset.name = "HeadInset"
+	_head_inset.add_child(head)
+	add_child(_head_inset)
 	add_child(GoStyle.divider())
 	rows_box = GoStyle.column(0)
 	rows_box.name = "Rows"
@@ -248,7 +253,13 @@ func _make_row(source: int, position: int) -> Control:
 		_size_cell(node, col)
 		line.add_child(node)
 
-	if not _selectable: return line
+	if not _selectable:
+		# No face to keep off, but the columns still line up with the header and the selectable rows.
+		var plain := GoStyle.padding(_side_padding(), 0)
+		plain.name = "Row%d" % source
+		line.name = "Cells"
+		plain.add_child(line)
+		return plain
 	# 🔑 The whole row is the button — a finger is never asked to hit one cell precisely.
 	var button := Button.new()
 	button.name = "Pick%d" % source
@@ -272,8 +283,10 @@ func _make_row(source: int, position: int) -> Control:
 			if node != null: node.button_pressed = node == button)
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for child in line.get_children(): (child as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
-	button.add_child(line)
-	line.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# 🛑 A `Button` does not pad or grow for a child — laid straight over the row, the first and last cells sat on the
+	#    face's edges (`1` and `91240` touching the row, 2026-09-23). The row is padded and sized to its cells.
+	line.name = "Cells"
+	GoStyle.cell_inset(button, line, _side_padding(), GoUi.metric(GoTheme.GAP_TINY))
 	# ♿ A screen reader reads the row as one chunk — the cell values are joined for it.
 	var spoken: Array[String] = []
 	for value in cells: spoken.append(str(value) if not (value is Control) else "")
@@ -293,8 +306,14 @@ func _size_cell(node: Control, col: Dictionary) -> void:
 
 func _on_ui_changed() -> void:
 	add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_TINY))
+	GoStyle.insets(_head_inset, _side_padding(), 0)
 	_build_head()
 	_build_rows()
+
+
+## Room between a row's edge and its first and last cell (dp) — the header uses the same so columns line up.
+static func _side_padding() -> int:
+	return GoUi.metric(GoTheme.GAP_SMALL)
 
 
 func _notification(what: int) -> void:

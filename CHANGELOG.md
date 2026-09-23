@@ -6,6 +6,40 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **One contract for content inside a pressable cell — `GoStyle.cell_body()`, `cell_inset()`, `center_in()`,
+  `face_clearance()` and `audit_cell_layout()`.** A `Button` is not a container: its face pads only its own text, and it
+  does not grow for a child, so every widget that stacked content inside one had to get padding, sizing and
+  centering right by hand — and the reward calendar did not (day numbers on the top border, amounts drawn below
+  the cell in the widget gallery). `cell_body(button)` lays the content behind padding (raised to what the skin's
+  face needs — a cut corner, a top edge line), keeps its spacing inside a `GoForm`, and grows the box to fit on
+  both axes. `center_in(node)` centers a mark by its own size. `audit_cell_layout(root)` lists the boxes that break
+  the contract (box smaller than its content, padding thinner than the face, text cut or folded, a mark off center);
+  the tests run it over every cell-shaped widget in all six looks, inside a form and out, left to right and right to left.
+
+### Changed
+
+- **`GoRewardCalendar` is laid out by its content.** Cells are square, padded, the same size and never below the
+  touch minimum; the picture is 24 dp (a positive `cell_size` is now a floor and sets the picture to 36% of it); the
+  amount reads a step larger than the day number. A row holds **at most** `columns` cells and wraps sooner — and
+  evenly — when the width runs out, so seven days fit a phone as 4 + 3 instead of running 170 dp off the screen
+  (`wrap_to_width = false` keeps the old fixed row). Claimed and upcoming days are dimmed by colour, not by
+  `modulate` alpha, and every number and amount keeps 4.5:1 on its face; the claimed check sits on the picture.
+  Every state has its face — pressing today's cell no longer showed the theme's empty face.
+- **`GoTable` rows keep their cells off the row's edge.** Selectable rows are padded and sized to their cells
+  (`cell_inset`); the header and plain rows take the same side padding so the columns still line up.
+
+### Fixed
+
+- **Icon-font glyphs no longer wrap inside a `GoForm`.** A form turns wrapping on for every label unless told not
+  to, and a glyph label grew from 24 to 51 dp tall — the crown made day 7 of the gallery's calendar a size larger
+  than the other days. `GoIconSet.node()` marks its glyphs `go_no_wrap` (and `go_icon`).
+- **Carousel dots are round and centered.** They were a padded badge container (wider than the dot, so an oval)
+  placed by anchors alone (its corner on the center).
+- **A boxed `GoPromptCard` icon keeps its size.** A texture icon set stretched it over the whole 44 dp disc instead
+  of the 22 dp asked for.
+
+### Added
+
 - **Game icon set — 187 icons for inventories, shops and items.** `icons/game/` + `icons/gohud_icons_game.tres`,
   names on the new `GoGameIcons` class in nine groups (inventory & storage, shop & trade, equipment & tools,
   food & consumables, resources & materials, tech & space, buildings & furniture, creatures, rewards & social).

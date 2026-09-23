@@ -109,6 +109,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Display | `card` `card_body` `item_card` `chip` `chip_panel` `restyle_chip` `style_chip_button` `style_chip_label` `avatar` `skeleton` `alert` `table` `tabs` `breadcrumb` `progress` `tint_progress` `empty_state` `style_count_badge` |
 | Panels & faces | `surface` `box` `floating` `disc` `plate` `hud_panel` `style_hud_panel` `overlay_panel` `style_overlay_panel` `bare_panel` `style_panel` `style_notice_panel` `disc_panel` `style_disc_panel` `style_disc_label` `style_hud_disc` `edge_card` `edge_card_panel` `face_padding` `face_insets` `style_slot_face` |
 | Helpers | `form` `fade` `tooltip_node` `natural_width` `fit_content_height` `let_input_through` `style_popup` `audit_compact_padding` |
+| Cells | `cell_body` `cell_inset` `center_in` `face_clearance` `audit_cell_layout` — content inside a `Button`: padded, sized to fit, marks centered, and an audit that finds the ones that are not |
 
 ## 8. Looks
 

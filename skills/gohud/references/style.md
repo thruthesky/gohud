@@ -182,6 +182,11 @@ panel.add_theme_stylebox_override(&"panel", GoStyle.surface(GoTheme.BOX_PANEL))
 | `fade(canvas_item, previous_tween, shown) -> Tween` | Fade in honouring `reduce_motion` |
 | `tooltip_node(text, max_width := 260.0)` | Return from `_make_custom_tooltip()` to avoid one-letter-per-line tooltips |
 | `audit_compact_padding(root, include_overrides := false, variations := [GoTheme.VAR_COMPACT_BUTTON]) -> Array[String]` | Lists compact buttons whose padding is below `compact_padding_x` |
+| `cell_body(cell, padding := -1, spacing := -1, vertical := -1, square := false) -> VBoxContainer` | 🔑 **The way to stack content inside a `Button` (or any box that is not a container).** Padding (`gap_small`, raised to what the face needs) + a centered column (`gap_tiny`, kept inside `GoForm`), and the box **grows to fit** both ways — it never keeps content on its border or draws it past its edge. Fill it, then `let_input_through(body)` |
+| `cell_inset(cell, content, padding := -1, vertical := -1, square := false) -> MarginContainer` | The same for content you built yourself (a row of table cells) |
+| `center_in(node) -> Control` | Centers a control on its parent **by its own size** and keeps it centered as it resizes. 🛑 `set_anchors_preset(PRESET_CENTER)` alone puts the control's top-left corner on the center |
+| `face_clearance(control) -> int` | Room a box's face needs before content: border, a skin's edge line, what a rounded or cut corner takes |
+| `audit_cell_layout(root) -> Array[String]` | Lists cells (`cell_body`/`cell_inset`) and centered marks (`center_in`) that break the contract: box smaller than content, padding thinner than the face, content past the padding, text cut or folded, a mark off center. `go_overlay` marks an intentional overhang. Empty over a screen with no such boxes means "not looked at" |
 
 ## 9. Form and list widgets (classes, not factories)
 

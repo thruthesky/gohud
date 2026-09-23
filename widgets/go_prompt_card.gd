@@ -186,8 +186,10 @@ func set_icon(icon: StringName, ink := Color.TRANSPARENT, boxed := false) -> voi
 	var diameter := float(GoUi.config.min_touch_size) - 4.0
 	var glyph_size := roundi(diameter * 0.5) if boxed else GoUi.font_size(GoTheme.ROLE_TITLE)
 	var glyph := GoUi.icons().node(icon, glyph_size, ink)
-	glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	icon_slot.add_child(glyph)
+	# 🛑 Centered at its own size, not stretched over the slot — a texture icon set (`EXPAND_IGNORE_SIZE`) filled the whole
+	#    44dp disc instead of the 22dp asked for; a font set hid it because a glyph keeps its font size.
+	GoStyle.center_in(glyph)
 	icon_slot.custom_minimum_size = Vector2(diameter, diameter) if boxed else Vector2(glyph_size, glyph_size)
 	icon_slot.set_meta(&"go_ink", ink)
 	if boxed: _restyle_icon()

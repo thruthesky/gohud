@@ -2378,3 +2378,197 @@ static func table(headers: Array, rows: Array) -> GridContainer:
 				var text := label(str(cell))
 				grid.add_child(text)
 	return grid
+
+
+# ── Cells — content inside a box that is not a container ───────────────
+#
+# 🛑 A `Button` (or a bare `Control`) is **not a `Container`**. Its face's `content_margin_*` pads only the button's own text
+#    and icon — never a child you add — and it does not grow to fit its children. Anchor a column to `PRESET_FULL_RECT`
+#    inside one and the content sits **on the border**, and whatever does not fit is drawn **past the bottom edge**.
+#    Measured 2026-09-23 on the daily reward calendar: day numbers glued to the top edge, amounts drawn below the cell.
+#    Everything below is the one way to do it: an inset layer, the content's size fed back to the box, overlays centered
+#    by their own size — and an audit that finds the boxes breaking that contract.
+
+## 🔑 **Lays `content` inside `cell` behind one layer of padding, and grows `cell` to fit it** — both ways.
+##
+## The inset fills the whole box, so the content is centered in whatever room the box ends up with, and the box's
+## minimum size becomes `content + padding` (never less than the box's `custom_minimum_size` at call time — the floor).
+## It follows wrapping, translation, font and preset changes by itself: nothing is placed by coordinates.
+##
+## - [param padding] is the left and right padding (dp), and also the top and bottom when [param vertical] is negative.
+##   Negative means the `gap_small` token. Either is raised to `face_clearance(cell)` when the skin's face needs more room
+##   (a thick border, a cut corner, a top edge line).
+## - [param square] keeps the box square — the longer side of `content + padding` wins.
+## 🛑 Not for a `PanelContainer` whose face already pads (`card()`) — the padding would double there.
+## 🛑 When the box is a button, call `let_input_through(content)` once it is filled — the box is what gets pressed.
+static func cell_inset(cell: Control, content: Control, padding := -1, vertical := -1, square := false) -> MarginContainer:
+	var safe := face_clearance(cell)
+	var side := maxi(safe, GoUi.metric(GoTheme.GAP_SMALL) if padding < 0 else padding)
+	var down := side if vertical < 0 else maxi(safe, vertical)
+	var inset := MarginContainer.new()
+	inset.name = "Inset"
+	insets(inset, side, down)
+	inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cell.add_child(inset)
+	inset.add_child(content)
+	cell.set_meta(&"go_cell_inset", inset)
+	var update := _fit_cell.bind(weakref(cell), weakref(inset), cell.custom_minimum_size, square)
+	# 🛑 Deferred — growing the box inside the signal that measured it would re-enter the layout pass.
+	inset.minimum_size_changed.connect(update, CONNECT_DEFERRED)
+	update.call()
+	return inset
+
+
+## 🔑 **The content column of a cell** — `cell_inset()` with a centered vertical row in it. For a tile that stacks a
+## label, a picture and a number (a reward day, a picked option, a stat).
+##
+## ```gdscript
+## var cell := Button.new()
+## var body := GoStyle.cell_body(cell)
+## body.add_child(GoStyle.line("Day 1", GoTheme.ROLE_MICRO))
+## body.add_child(GoUi.icons().node(GoIconSet.COIN, 24))
+## GoStyle.let_input_through(body)
+## ```
+##
+## [param spacing] negative means the `gap_tiny` token. The column keeps it inside `GoForm` too (`go_own_spacing` — a form
+## otherwise rewrites every box's spacing to `gap`, which pushed a cell's three rows 24dp further apart).
+## [param padding], [param vertical] and [param square] work as in `cell_inset()`.
+static func cell_body(cell: Control, padding := -1, spacing := -1, vertical := -1, square := false) -> VBoxContainer:
+	var body := column(GoUi.metric(GoTheme.GAP_TINY) if spacing < 0 else spacing)
+	body.name = "Body"
+	body.alignment = BoxContainer.ALIGNMENT_CENTER
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.set_meta(&"go_own_spacing", true)
+	cell_inset(cell, body, padding, vertical, square)
+	return body
+
+
+static func _fit_cell(cell_ref: WeakRef, inset_ref: WeakRef, floor_size: Vector2, square: bool) -> void:
+	var cell := cell_ref.get_ref() as Control
+	var inset := inset_ref.get_ref() as Control
+	if cell == null or inset == null: return
+	var need := inset.get_combined_minimum_size()
+	var fit := Vector2(maxf(floor_size.x, need.x), maxf(floor_size.y, need.y))
+	if square: fit = Vector2.ONE * maxf(fit.x, fit.y)
+	# 🛑 Only when it really changes — setting the same size again fires `minimum_size_changed` forever.
+	if not cell.custom_minimum_size.is_equal_approx(fit): cell.custom_minimum_size = fit
+
+
+## 🔑 **Centers a control on its parent by its own size** — a mark over a cell, a dot inside a button, a spinner.
+##
+## 🛑 `set_anchors_preset(PRESET_CENTER)` on its own moves only the anchors: the offsets stay 0, so the control's
+##    **top-left corner** lands on the center and the whole thing hangs down and to the right (the claimed-day check
+##    mark and the carousel dots, 2026-09-23). This sets the offsets from the minimum size and grows it both ways,
+##    so it stays centered when its size changes later.
+static func center_in(node: Control) -> Control:
+	node.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
+	node.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	node.grow_vertical = Control.GROW_DIRECTION_BOTH
+	node.set_meta(&"go_centered", true)
+	return node
+
+
+## The room (dp) a box's own face needs before content may start — its border, a skin's edge line, and what a rounded
+## or cut corner takes off. Read from the face the skin really painted, so a host skin with a thicker frame gets more.
+## Works on a `Button` (every state face) and on anything that draws a `panel` face. 0 when there is no face.
+static func face_clearance(control: Control) -> int:
+	if control == null: return 0
+	var faces: Array[StyleBox] = []
+	if control is BaseButton:
+		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+			if control.has_theme_stylebox(state): faces.append(control.get_theme_stylebox(state))
+	elif control.has_theme_stylebox(&"panel"):
+		faces.append(control.get_theme_stylebox(&"panel"))
+	var room := 0.0
+	for face in faces: room = maxf(room, _face_room(face))
+	return ceili(room)
+
+
+static func _face_room(face: StyleBox) -> float:
+	if face == null or face is StyleBoxEmpty: return 0.0
+	var border := 0.0
+	var corner := 0.0
+	var flat := face as StyleBoxFlat
+	if flat != null:
+		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: border = maxf(border, flat.get_border_width(side))
+		for index in 4: corner = maxf(corner, flat.get_corner_radius(index))
+	else:
+		# A skin's own face (angular, medieval) — read by name, the way the skins are read everywhere else.
+		if &"border_width" in face: border = float(face.get(&"border_width"))
+		if &"edge_width" in face and &"edge_color" in face and (face.get(&"edge_color") as Color).a > 0.0:
+			border += float(face.get(&"edge_width"))
+		if &"cut" in face: corner = float(face.get(&"cut"))
+		elif &"radius" in face: corner = float(face.get(&"radius"))
+	# A rounded corner of radius r leaves the corner's content box about 0.3r in from each edge.
+	return border + corner * 0.3
+
+
+## 🔎 **Lists the boxes that break the cell contract** — empty means every one is fine. Returns `"path: problem"` lines.
+##
+## It checks what `cell_inset()`·`cell_body()` and `center_in()` promise, on the layout as it stands:
+## ① a cell is at least as large as its content plus padding (nothing drawn past its edge),
+## ② the padding is at least what the face needs (`face_clearance`), ③ the content sits inside the padded area,
+## ④ no text inside is cut short or folded (`go_no_wrap` labels stay on one line),
+## ⑤ a centered control's center is within 1dp of its parent's.
+## A node marked `go_overlay` (a badge hanging over a corner on purpose) is left out of ③ and ④.
+## 🛑 It only sees the boxes built with those helpers — an empty result over a screen that has none means "not looked at",
+##    not "fine". Run it after the layout settles (a frame or two): in a test over every look, or once on your own screen.
+static func audit_cell_layout(root: Node) -> Array[String]:
+	var problems: Array[String] = []
+	_audit_cells(root, problems)
+	return problems
+
+
+static func _audit_cells(node: Node, problems: Array[String]) -> void:
+	var control := node as Control
+	if control != null and control.is_visible_in_tree():
+		if control.has_meta(&"go_cell_inset"): _audit_cell(control, problems)
+		if control.has_meta(&"go_centered"): _audit_centered(control, problems)
+	for child in node.get_children(): _audit_cells(child, problems)
+
+
+static func _audit_cell(cell: Control, problems: Array[String]) -> void:
+	var inset := cell.get_meta(&"go_cell_inset") as MarginContainer
+	if not is_instance_valid(inset): return
+	var where := str(cell.get_path()) if cell.is_inside_tree() else cell.name
+	var need := inset.get_combined_minimum_size()
+	if cell.size.x + 0.5 < need.x or cell.size.y + 0.5 < need.y:
+		problems.append("%s: the content needs %dx%d but the box is %dx%d" % [where, need.x, need.y, cell.size.x, cell.size.y])
+	var safe := face_clearance(cell)
+	var pads := {}
+	for side in [&"margin_left", &"margin_top", &"margin_right", &"margin_bottom"]:
+		pads[side] = inset.get_theme_constant(side)
+		if pads[side] < safe:
+			problems.append("%s: %s is %d but the face needs %d" % [where, side, pads[side], safe])
+	var room := Rect2(cell.global_position, cell.size)
+	room = room.grow_individual(-pads[&"margin_left"], -pads[&"margin_top"], -pads[&"margin_right"], -pads[&"margin_bottom"])
+	for child in inset.get_children():
+		var content := child as Control
+		# 🔑 A node marked `go_overlay` hangs over the edge on purpose (a corner badge) — it is not content.
+		if content == null or not content.visible or content.has_meta(&"go_overlay"): continue
+		var box := Rect2(content.global_position, content.size)
+		if not room.grow(0.5).encloses(box):
+			problems.append("%s: %s reaches past the padding (%s outside %s)" % [where, content.name, box, room])
+	# ④ No text lost — a rectangle check passes a label that is cut short or folded one character per line.
+	for node in inset.find_children("*", "Label", true, false):
+		var text := node as Label
+		# An icon-font glyph (`go_icon`) is a picture — its advance is not a line of text that can be cut.
+		if not text.is_visible_in_tree() or text.text.is_empty() or text.has_meta(&"go_overlay") or text.has_meta(&"go_icon"): continue
+		if text.has_meta(&"go_no_wrap") and text.get_line_count() > 1:
+			problems.append("%s: \"%s\" folds onto %d lines" % [where, text.text, text.get_line_count()])
+		elif text.autowrap_mode == TextServer.AUTOWRAP_OFF:
+			var font := text.get_theme_font(&"font")
+			var shown := text.text.to_upper() if text.uppercase else text.text
+			var wide := font.get_string_size(shown, HORIZONTAL_ALIGNMENT_LEFT, -1.0, text.get_theme_font_size(&"font_size")).x
+			if wide > text.size.x + 1.0:
+				problems.append("%s: \"%s\" needs %.0fdp but has %.0fdp — it is cut" % [where, text.text, wide, text.size.x])
+
+
+static func _audit_centered(node: Control, problems: Array[String]) -> void:
+	var parent := node.get_parent_control()
+	if parent == null: return
+	var offset := (node.global_position + node.size * 0.5) - (parent.global_position + parent.size * 0.5)
+	if offset.length() > 1.0:
+		var where := str(node.get_path()) if node.is_inside_tree() else node.name
+		problems.append("%s: %.1fdp off its parent's center" % [where, offset.length()])

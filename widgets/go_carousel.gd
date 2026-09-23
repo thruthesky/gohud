@@ -182,14 +182,17 @@ func _build_dots() -> void:
 		var touch := float(GoUi.metric(GoTheme.TOUCH))
 		dot.custom_minimum_size = Vector2(touch, touch)
 		var lit := i == _index
-		var glyph := PanelContainer.new()
+		# 🛑 A `Panel`, not a `PanelContainer` — the badge face pads 5dp a side, which made the container wider than the
+		#    dot and drew an oval. And centered by its own size (`center_in`): anchors alone put its corner on the center.
+		var glyph := Panel.new()
+		glyph.name = "Dot"
 		glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var side := float(GoUi.metric(GoTheme.GAP_SMALL)) * (1.0 if lit else 0.7)
 		glyph.custom_minimum_size = Vector2(side, side)
-		glyph.set_anchors_preset(Control.PRESET_CENTER)
 		glyph.add_theme_stylebox_override(&"panel", GoUi.skin().badge_box(
 			GoUi.color(GoTheme.ACCENT) if lit else GoUi.color(GoTheme.MUTED)))
 		dot.add_child(glyph)
+		GoStyle.center_in(glyph)
 		var target := i
 		dot.pressed.connect(func() -> void:
 			GoFeedback.tapped()

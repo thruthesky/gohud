@@ -208,6 +208,7 @@ func node(icon: StringName, size: int, ink := Color.TRANSPARENT) -> Control:
 		# 🛑 An icon must never flip left-right with the language (the close ×, a cog). The only ones that have to
 		#    flip direction are `back`/`forward`, and the caller picks those by changing the name.
 		rect.layout_direction = Control.LAYOUT_DIRECTION_LTR
+		rect.set_meta(&"go_icon", true)
 		return rect
 	var label := Label.new()
 	label.name = "Icon"
@@ -219,6 +220,10 @@ func node(icon: StringName, size: int, ink := Color.TRANSPARENT) -> Control:
 	label.layout_direction = Control.LAYOUT_DIRECTION_LTR
 	label.clip_text = false
 	label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	# 🛑 A glyph is a picture, not text — `GoStyle.form()` turns wrapping on for every label under a form unless told not to,
+	#    and a wrapping glyph grew from 24 to 51dp tall: the crown made its reward cell a size larger than the others (2026-09-23).
+	label.set_meta(&"go_no_wrap", true)
+	label.set_meta(&"go_icon", true)
 	label.add_theme_color_override(&"font_color", color)
 	if found.has("codepoint"):
 		label.text = String.chr(found.codepoint)
