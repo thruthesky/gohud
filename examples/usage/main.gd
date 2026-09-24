@@ -129,7 +129,7 @@ func _ready() -> void:
 	# &"default_dark" is a value of the type StringName.
 	# It is much like the plain string "default_dark", but is a type for handling names used over and over.
 	# Here, read it as "the name of the preset to pick".
-	GoUi.use_preset(&"default_dark")
+	GoUi.use_preset(&"medieval_light")
 
 
 	# GoUi.theme() hands back the Godot Theme object currently picked.
