@@ -22,9 +22,10 @@ dark and light.
 
 > Drop it in and it works. Enabling the editor plugin only adds conveniences.
 
-**Version 1.1.0.** Fifteen more widgets (snackbar, spinner, table, reward calendar …), the 187-icon game
-set with the `GoSlotGrid` inventory grid, item cards, container opacity that leaves the game visible behind
-a panel, and a 23-chapter guided tour — the [changelog](CHANGELOG.md) lists them. Work done since is
+**Version 1.2.0.** A 1,000-icon library in 32 groups (`GoIconLibrary`) with name search, extra icon sets
+that survive a preset change, buttons made from those icons, an Icons page in 17 languages, one layout
+contract for content inside a pressable cell, and a whole-screen layout audit that keeps every widget
+inside a 320 dp phone — the [changelog](CHANGELOG.md) lists them. Work done since is
 collected under *Unreleased* there: raise the version in `package.json` and the next `tools/package.sh`
 run releases it.
 
