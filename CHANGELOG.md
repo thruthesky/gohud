@@ -4,6 +4,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-24
+
 ### Added
 
 - **`examples/icon_buttons` — buttons made from the icon library.** A toolbar of icon-only buttons, text buttons with
