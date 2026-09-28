@@ -48,9 +48,9 @@
 
 ## 요구 사항
 
-Godot **4.6 이상**. `DPITexture`·`FoldableContainer`·접근성 속성 등 4.5 에서 들어온 API 를 쓰므로
-그보다 낮은 엔진에서는 파싱 단계에서 죽는다. 지원 하한은 4.6 이고 `GoUi.MIN_ENGINE` 에 적혀 있다.
-`tools/check_all.sh` 는 4.7 에서 검사를 돌리고, `GODOT_46` 에 4.6 실행 파일을 주면 4.6 에서도 돌린다.
+Godot 4.7 에서 테스트했고, Godot **4.7 이상**을 공식 지원한다. 지원 하한 4.7 은 `GoUi.MIN_ENGINE` 에 적혀 있고,
+`tools/check_all.sh` 와 CI 는 4.7 에서 검사를 돌린다. `DPITexture`·`FoldableContainer`·접근성 속성 등
+4.5 에서 들어온 API 를 쓰므로 4.5 보다 낮은 엔진에서는 파싱 단계에서 죽는다.
 
 ## 설치
 
@@ -704,7 +704,7 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 | `check_scaffold.sh` — 중세 부모 포함 | 통과 |
 | `check_package.py` | 테스트 13개 통과 |
 
-**이번 실행에 포함되지 않은 것**: Godot 4.6(`GODOT_46` 미지정), 배포 ZIP 자체(`--zip`), Android·iOS 실기기,
+**이번 실행에 포함되지 않은 것**: 배포 ZIP 자체(`--zip`), Android·iOS 실기기,
 Forward+/Mobile 렌더러. 안전영역·햅틱 코드는 휴대 기기에서만 켜지므로 검사로는 지나가지만 실기기에서는 확인하지 않았다.
 
 ## 예제

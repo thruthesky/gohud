@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>安裝 gohud — gohud</title>
-<meta name="description" content="在 Godot 4.6+ 專案中安裝 gohud 的方法 —— 向 AI 編碼代理貼上一次、發行版 ZIP、git 子模組。">
+<meta name="description" content="在 Godot 4.7+ 專案中安裝 gohud 的方法 —— 向 AI 編碼代理貼上一次、發行版 ZIP、git 子模組。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -106,9 +106,9 @@ git -C addons/gohud checkout v1.0.0   # 選用：固定在某個標籤或提交<
     在 <code>addons/gohud</code> 裡 commit 與 push，再到你的遊戲專案裡 commit 子模組指標。</p>
 
   <div class="note warn">
-    <b>需要 Godot 4.6 以上。</b>gohud 用到 4.5 才有的 API（DPITexture、
+    <b>已在 Godot 4.7 上測試，正式支援 Godot 4.7 以上版本。</b>gohud 用到 4.5 才有的 API（DPITexture、
     FoldableContainer、無障礙屬性），版本更舊就會<b>在解析階段直接失敗</b>。
-    支援的下限是 4.6，記錄在 <code>GoUi.MIN_ENGINE</code>。
+    支援的下限是 4.7，記錄在 <code>GoUi.MIN_ENGINE</code>。
   </div>
 </section>
 

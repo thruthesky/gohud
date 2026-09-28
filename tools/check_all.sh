@@ -3,7 +3,6 @@
 #
 #   bash addons/gohud/tools/check_all.sh
 #   GOHUD_PROJECT=/path/to/project bash .../check_all.sh     # pick the project to verify against
-#   GODOT_46=/path/to/Godot4.6 bash .../check_all.sh          # unit tests on both engines
 #
 # Why they are bundled
 #   The checks come in three kinds — because **each can see a different range**.
@@ -12,7 +11,7 @@
 #     ③ site check (Python)     links, images and glossary of www (English at the root, ko/ in Korean)
 #   Remembering to run them separately always drops one. So there is a single entry point.
 #
-# 🛑 4.6 compatibility cannot be verified with 4.7. Give `GODOT_46` and the unit tests run on **both engines**.
+# 🛑 gohud is tested on Godot 4.7 and officially supports 4.7 and newer (`GoUi.MIN_ENGINE`) — run this on 4.7.
 set -uo pipefail
 
 ADDON="$(cd "$(dirname "$0")/.." && pwd)"
@@ -48,18 +47,6 @@ for VIEWPORT in 844x390 768x1024 1280x800; do
   step "①-$VIEWPORT unit tests — another screen"
   GOHUD_VIEWPORT="$VIEWPORT" bash "$ADDON/tools/run_tests.sh" | tail -2 || FAILED=1
 done
-
-if [ -n "${GODOT_46:-}" ]; then
-  if [ -x "$GODOT_46" ]; then
-    step "①-b unit tests — Godot 4.6"
-    # 🛑 4.6 needs **a project folder of its own**, because the `.godot` cache differs per version.
-    GODOT_BIN="$GODOT_46" GOHUD_PROJECT="${GOHUD_PROJECT_46:-${GOHUD_PROJECT:-}}" \
-      bash "$ADDON/tools/run_tests.sh" || FAILED=1
-  else
-    echo "🛑 GODOT_46 is not an executable — $GODOT_46" >&2
-    FAILED=1
-  fi
-fi
 
 step "①-c do the workflows parse?"
 # 🛑 **CI cannot tell you about the job it failed to start.** A syntax error in the workflow YAML

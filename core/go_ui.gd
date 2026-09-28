@@ -23,12 +23,13 @@ extends RefCounted
 ## The version of this addon. It moves together with `CHANGELOG.md`.
 const VERSION := "1.2.0"
 
-## The **lowest engine version** this addon requires. `[major, minor]`.
+## The **lowest engine version** this addon is tested on and officially supports. `[major, minor]`.
 ##
-## 🛑 On an engine below this it does not turn on — and not merely "does not turn on": it **dies at the parsing stage**,
-##    because it uses names that version does not have, such as `FoldableContainer`·`DPITexture`·`mouse_behavior_recursive`.
-##    So checking at runtime is pointless; this constant is here to **give the checks and the docs one place to look**.
-const MIN_ENGINE := [4, 6]
+## 🛑 Below 4.5 it does not turn on — and not merely "does not turn on": it **dies at the parsing stage**,
+##    because it uses names those versions do not have, such as `FoldableContainer`·`DPITexture`·`mouse_behavior_recursive`.
+##    4.5 and 4.6 are neither tested nor supported. Checking at runtime is pointless; this constant is here to
+##    **give the checks and the docs one place to look**.
+const MIN_ENGINE := [4, 7]
 
 
 ## Can the engine we are on run this addon.
@@ -38,7 +39,7 @@ static func engine_supported() -> bool:
 	return int(info.minor) >= int(MIN_ENGINE[1])
 
 
-## The minimum version as readable text, like `"4.6"`.
+## The minimum version as readable text, like `"4.7"`.
 static func min_engine_string() -> String:
 	return "%d.%d" % [MIN_ENGINE[0], MIN_ENGINE[1]]
 

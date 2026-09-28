@@ -12,7 +12,7 @@ conveniences.
 Copy the text below and paste it into Claude Code or Codex (or any coding agent that can run shell commands) inside your Godot project. It installs the **gohud skill** — the full API, templates and recipes — and the add-on itself.
 
 ```text
-Install gohud for this Godot 4.6+ project, then use it for all game UI (menus, HUD, dialogs, forms, themes).
+Install gohud for this Godot 4.7+ project, then use it for all game UI (menus, HUD, dialogs, forms, themes).
 1. Install the gohud AI skill.
    Claude Code: claude plugin marketplace add thruthesky/gohud && claude plugin install gohud@gohud
    Other agents: git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud
@@ -47,7 +47,7 @@ Many other commands work too:
 | `/gohud:features hud` | One area in depth: `surfaces`, `hud`, `style`, `theming`, `icons`, `i18n`, `accessibility`, `config` |
 
 Installed as a plain skill in `~/.claude/skills/gohud`, write them with a space: `/gohud preview demo`,
-`/gohud features`. Previews need Godot 4.6+ on your `PATH` (or `--godot /path/to/godot`). Or just ask, for
+`/gohud features`. Previews need Godot 4.7+ on your `PATH` (or `--godot /path/to/godot`). Or just ask, for
 example: *"Build a pause menu with gohud"* or *"Add HP bars and quick slots to my HUD in the sci-fi preset"*.
 
 ### 🧩 Widgets
@@ -102,8 +102,8 @@ portrait/landscape layouts, Android Back handling, focus rings only for keyboard
 
 ### 🛠️ Requirements
 
-Godot **4.6 or newer** — gohud uses `DPITexture`, `FoldableContainer`, the accessibility
-properties and `mouse_behavior_recursive`. Developed and verified on **4.7.2**.
+Tested on **Godot 4.7**; **Godot 4.7 and newer** are officially supported. gohud uses `DPITexture`,
+`FoldableContainer`, the accessibility properties and `mouse_behavior_recursive`.
 
 ### 📦 What's included
 

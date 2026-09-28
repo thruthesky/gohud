@@ -114,7 +114,7 @@ func _build() -> void:
 
 	page.add_child(_language_card())
 
-	var footer := GoStyle.label("Godot 4.6+    /    Pure GDScript    /    MIT license",
+	var footer := GoStyle.label("Godot 4.7+    /    Pure GDScript    /    MIT license",
 		GoTheme.ROLE_CAPTION, _subtitle_ink)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	page.add_child(footer)

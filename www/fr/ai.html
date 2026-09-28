@@ -94,7 +94,7 @@
     <li>Appuyez sur <b>Copier</b> sur le bloc ci-dessous, collez-le dans l'agent et envoyez.</li>
     <li>Quand il a fini, redémarrez l'agent s'il vous le demande, puis demandez-lui : <i>Que sait faire gohud ?</i></li>
   </ol>
-  <pre id="install-prompt"><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+  <pre id="install-prompt"><code>Install gohud for this Godot 4.7+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
 
 1. Install the gohud AI skill.
@@ -111,7 +111,7 @@
      git submodule add https://github.com/thruthesky/gohud.git addons/gohud
    Otherwise copy the clone to addons/gohud without its .git folder.
    Then run: godot --headless --path . --import
-   (If godot is not on PATH, ask me where Godot 4.6+ is.)
+   (If godot is not on PATH, ask me where Godot 4.7+ is.)
 
 3. Check the result: addons/gohud/plugin.cfg exists and the import printed
    no "SCRIPT ERROR" or "Parse Error" lines.
@@ -176,7 +176,7 @@ claude plugin install gohud@gohud</code></pre>
       <tr><td><code>/gohud:features hud</code></td><td>Un domaine en profondeur — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
     </tbody>
   </table>
-  <p>Les commandes d'aperçu demandent Godot 4.6 ou plus récent dans votre <code>PATH</code>.</p>
+  <p>Les commandes d'aperçu demandent Godot 4.7 ou plus récent dans votre <code>PATH</code>.</p>
 </section>
 
 <section id="ask">
@@ -184,7 +184,7 @@ claude plugin install gohud@gohud</code></pre>
   <div class="note"><b>Ou demandez simplement.</b> La skill enseigne à l'agent toute l'API de gohud : une demande en langage
     courant marche aussi — <i>« Construis un menu de pause avec gohud »</i>. Installées comme simple skill dans
     <code>~/.claude/skills/gohud</code>, les commandes prennent une espace : <code>/gohud preview demo</code>,
-    <code>/gohud features</code>. Les aperçus ont besoin de Godot 4.6 ou plus récent dans votre <code>PATH</code>,
+    <code>/gohud features</code>. Les aperçus ont besoin de Godot 4.7 ou plus récent dans votre <code>PATH</code>,
     ou passez <code>--godot /path/to/godot</code>.</div>
 </section>
 

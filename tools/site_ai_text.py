@@ -28,7 +28,7 @@ its word must match that language's label in `SAY` of `site/ux.js`.
 """
 
 # The text pasted into an agent — the same in every language. 🛑 Check the source list above when editing.
-COPY_BLOCK = """Install gohud for this Godot 4.6+ project, then use it for all game UI
+COPY_BLOCK = """Install gohud for this Godot 4.7+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
 
 1. Install the gohud AI skill.
@@ -45,7 +45,7 @@ COPY_BLOCK = """Install gohud for this Godot 4.6+ project, then use it for all g
      git submodule add https://github.com/thruthesky/gohud.git addons/gohud
    Otherwise copy the clone to addons/gohud without its .git folder.
    Then run: godot --headless --path . --import
-   (If godot is not on PATH, ask me where Godot 4.6+ is.)
+   (If godot is not on PATH, ask me where Godot 4.7+ is.)
 
 3. Check the result: addons/gohud/plugin.cfg exists and the import printed
    no "SCRIPT ERROR" or "Parse Error" lines.
@@ -92,7 +92,7 @@ TEXT = {
         "card_h2": "Fastest way — let your AI agent install it",
         "card_body": "One block of text, pasted into Claude Code, Codex, Cursor or Gemini CLI, installs both the skill and the add-on and then explains gohud to you. Nothing below this card is needed if you take that road.",
         "card_cta": "Open the Go HUD Skill page →",
-        "need": "You need Godot 4.6 or newer on your <code>PATH</code> for the preview commands.",
+        "need": "You need Godot 4.7 or newer on your <code>PATH</code> for the preview commands.",
         "copied_cta": "Copied — now paste it into your agent",
         "step1": "Open a terminal in your Godot project folder and start your coding agent there — for example <code>claude</code>.",
         "step2": "Press <b>Copy</b> on the block below, paste it into the agent and send it.",
@@ -122,7 +122,7 @@ TEXT = {
         "card_h2": "가장 빠른 길 — AI 에게 설치를 맡긴다",
         "card_body": "아래 글을 그대로 Claude Code·Codex·Cursor·Gemini CLI 에 붙여 넣으면 스킬과 애드온을 함께 설치하고 gohud 를 설명까지 해 준다. 그 길로 가면 이 카드 아래의 것은 하나도 필요 없다.",
         "card_cta": "Go HUD Skill 페이지 열기 →",
-        "need": "미리보기 명령을 쓰려면 <code>PATH</code> 에 Godot 4.6 이상이 있어야 한다.",
+        "need": "미리보기 명령을 쓰려면 <code>PATH</code> 에 Godot 4.7 이상이 있어야 한다.",
         "copied_cta": "복사함 — 이제 에이전트에 붙여 넣는다",
         "step1": "Godot 프로젝트 폴더에서 터미널을 열고 그 자리에서 코딩 에이전트를 실행한다 — 예: <code>claude</code>.",
         "step2": "아래 블록의 <b>복사</b> 버튼을 눌러 에이전트에 붙여 넣고 보낸다.",
@@ -152,7 +152,7 @@ TEXT = {
         "card_h2": "いちばん速い道 — AI にインストールを任せる",
         "card_body": "下の文をそのまま Claude Code・Codex・Cursor・Gemini CLI に貼れば、スキルとアドオンを一緒に入れ、gohud の説明までしてくれる。その道を行くなら、このカードから下は一つも要らない。",
         "card_cta": "Go HUD Skill のページを開く →",
-        "need": "プレビューのコマンドには <code>PATH</code> に Godot 4.6 以上が要る。",
+        "need": "プレビューのコマンドには <code>PATH</code> に Godot 4.7 以上が要る。",
         "copied_cta": "コピーしました — エージェントに貼り付ける",
         "step1": "Godot プロジェクトのフォルダーでターミナルを開き、そこでコーディングエージェントを起動する — 例: <code>claude</code>。",
         "step2": "下のブロックの<b>コピー</b>を押し、エージェントに貼って送る。",
@@ -181,7 +181,7 @@ TEXT = {
         "card_h2": "最快的路 —— 让 AI 代理替你安装",
         "card_body": "把一段文字粘贴到 Claude Code、Codex、Cursor 或 Gemini CLI，它会同时装好技能和插件，再为你讲解 gohud。走这条路，这张卡片以下的内容一样都不需要。",
         "card_cta": "打开 Go HUD Skill 页 →",
-        "need": "预览命令需要 <code>PATH</code> 中有 Godot 4.6 或更新版本。",
+        "need": "预览命令需要 <code>PATH</code> 中有 Godot 4.7 或更新版本。",
         "copied_cta": "已复制 —— 粘贴到你的代理里",
         "step1": "在 Godot 项目文件夹中打开终端，并在那里启动编码代理 —— 例如 <code>claude</code>。",
         "step2": "点击下方代码块上的<b>复制</b>，粘贴到代理中并发送。",
@@ -210,7 +210,7 @@ TEXT = {
         "card_h2": "最快的路 —— 讓 AI 代理替你安裝",
         "card_body": "把一段文字貼到 Claude Code、Codex、Cursor 或 Gemini CLI，它會同時裝好技能與外掛，再為你講解 gohud。走這條路，這張卡片以下的內容一樣都不需要。",
         "card_cta": "開啟 Go HUD Skill 頁 →",
-        "need": "預覽指令需要 <code>PATH</code> 中有 Godot 4.6 或更新版本。",
+        "need": "預覽指令需要 <code>PATH</code> 中有 Godot 4.7 或更新版本。",
         "copied_cta": "已複製 —— 貼到你的代理裡",
         "step1": "在 Godot 專案資料夾中開啟終端機，並在那裡啟動編碼代理 —— 例如 <code>claude</code>。",
         "step2": "點下方程式碼區塊上的<b>複製</b>，貼到代理中並送出。",
@@ -240,7 +240,7 @@ TEXT = {
         "card_h2": "La vía más rápida: que lo instale tu agente de IA",
         "card_body": "Un bloque de texto, pegado en Claude Code, Codex, Cursor o Gemini CLI, instala la skill y el complemento y luego te explica gohud. Si tomas ese camino, nada de lo que hay debajo de esta tarjeta hace falta.",
         "card_cta": "Abrir la página Go HUD Skill →",
-        "need": "Los comandos de vista previa necesitan Godot 4.6 o superior en tu <code>PATH</code>.",
+        "need": "Los comandos de vista previa necesitan Godot 4.7 o superior en tu <code>PATH</code>.",
         "copied_cta": "Copiado: ahora pégalo en tu agente",
         "step1": "Abre una terminal en la carpeta de tu proyecto de Godot e inicia allí tu agente de código; por ejemplo, <code>claude</code>.",
         "step2": "Pulsa <b>Copiar</b> en el bloque de abajo, pégalo en el agente y envíalo.",
@@ -270,7 +270,7 @@ TEXT = {
         "card_h2": "O caminho mais rápido: deixe o seu agente de IA instalar",
         "card_body": "Um bloco de texto, colado no Claude Code, Codex, Cursor ou Gemini CLI, instala a skill e o add-on e depois explica-lhe o gohud. Se seguir por aí, nada abaixo deste cartão é preciso.",
         "card_cta": "Abrir a página Go HUD Skill →",
-        "need": "Os comandos de pré-visualização precisam do Godot 4.6 ou mais recente no seu <code>PATH</code>.",
+        "need": "Os comandos de pré-visualização precisam do Godot 4.7 ou mais recente no seu <code>PATH</code>.",
         "copied_cta": "Copiado — agora cole-o no seu agente",
         "step1": "Abra um terminal na pasta do seu projeto Godot e inicie lá o seu agente de código — por exemplo, <code>claude</code>.",
         "step2": "Clique em <b>Copiar</b> no bloco abaixo, cole-o no agente e envie.",
@@ -300,7 +300,7 @@ TEXT = {
         "card_h2": "Самый быстрый путь — поручите установку ИИ-агенту",
         "card_body": "Один блок текста, вставленный в Claude Code, Codex, Cursor или Gemini CLI, установит и навык, и дополнение, а потом объяснит вам gohud. На этом пути ничего ниже этой карточки не нужно.",
         "card_cta": "Открыть страницу Go HUD Skill →",
-        "need": "Для команд предпросмотра нужен Godot 4.6 или новее в <code>PATH</code>.",
+        "need": "Для команд предпросмотра нужен Godot 4.7 или новее в <code>PATH</code>.",
         "copied_cta": "Скопировано — вставьте в агент",
         "step1": "Откройте терминал в папке проекта Godot и запустите там свой ИИ-агент — например, <code>claude</code>.",
         "step2": "Нажмите <b>Копировать</b> на блоке ниже, вставьте его в агент и отправьте.",
@@ -330,7 +330,7 @@ TEXT = {
         "card_h2": "Le chemin le plus rapide : laissez votre agent IA installer",
         "card_body": "Un bloc de texte collé dans Claude Code, Codex, Cursor ou Gemini CLI installe la compétence et l'extension, puis vous explique gohud. Sur cette voie, rien de ce qui suit cette carte n'est nécessaire.",
         "card_cta": "Ouvrir la page Go HUD Skill →",
-        "need": "Les commandes d'aperçu demandent Godot 4.6 ou plus récent dans votre <code>PATH</code>.",
+        "need": "Les commandes d'aperçu demandent Godot 4.7 ou plus récent dans votre <code>PATH</code>.",
         "copied_cta": "Copié — collez-le dans votre agent",
         "step1": "Ouvrez un terminal dans le dossier de votre projet Godot et lancez-y votre agent de code — par exemple <code>claude</code>.",
         "step2": "Appuyez sur <b>Copier</b> sur le bloc ci-dessous, collez-le dans l'agent et envoyez.",
@@ -360,7 +360,7 @@ TEXT = {
         "card_h2": "En hızlı yol — kurulumu yapay zekâ ajanınıza bırakın",
         "card_body": "Claude Code, Codex, Cursor ya da Gemini CLI'a yapıştırılan tek bir metin bloğu hem beceriyi hem eklentiyi kurar, sonra size gohud'u anlatır. Bu yolu seçerseniz bu kartın altındakilerin hiçbiri gerekmez.",
         "card_cta": "Go HUD Skill sayfasını aç →",
-        "need": "Önizleme komutları için <code>PATH</code> içinde Godot 4.6 veya üstü gerekir.",
+        "need": "Önizleme komutları için <code>PATH</code> içinde Godot 4.7 veya üstü gerekir.",
         "copied_cta": "Kopyalandı — şimdi ajanınıza yapıştırın",
         "step1": "Godot proje klasörünüzde bir terminal açın ve kodlama ajanınızı orada başlatın — örneğin <code>claude</code>.",
         "step2": "Aşağıdaki bloktaki <b>Kopyala</b> düğmesine basın, ajana yapıştırıp gönderin.",
@@ -390,7 +390,7 @@ TEXT = {
         "card_h2": "Najszybsza droga — niech zainstaluje to agent AI",
         "card_body": "Jeden blok tekstu wklejony do Claude Code, Codex, Cursora lub Gemini CLI instaluje i umiejętność, i dodatek, a potem objaśnia ci gohud. Na tej drodze nic poniżej tej karty nie jest potrzebne.",
         "card_cta": "Otwórz stronę Go HUD Skill →",
-        "need": "Polecenia podglądu wymagają Godota 4.6 lub nowszego w <code>PATH</code>.",
+        "need": "Polecenia podglądu wymagają Godota 4.7 lub nowszego w <code>PATH</code>.",
         "copied_cta": "Skopiowano — wklej to do agenta",
         "step1": "Otwórz terminal w folderze projektu Godota i uruchom tam swojego agenta kodu — na przykład <code>claude</code>.",
         "step2": "Kliknij <b>Kopiuj</b> na bloku poniżej, wklej go do agenta i wyślij.",
@@ -420,7 +420,7 @@ TEXT = {
         "card_h2": "La via più rapida: lascia installare al tuo agente IA",
         "card_body": "Un blocco di testo, incollato in Claude Code, Codex, Cursor o Gemini CLI, installa sia la skill sia l'add-on e poi ti spiega gohud. Se prendi quella strada, nulla sotto questa scheda serve.",
         "card_cta": "Apri la pagina Go HUD Skill →",
-        "need": "I comandi di anteprima richiedono Godot 4.6 o successivo nel tuo <code>PATH</code>.",
+        "need": "I comandi di anteprima richiedono Godot 4.7 o successivo nel tuo <code>PATH</code>.",
         "copied_cta": "Copiato: ora incollalo nel tuo agente",
         "step1": "Apri un terminale nella cartella del progetto Godot e avvia lì il tuo agente di codice, per esempio <code>claude</code>.",
         "step2": "Premi <b>Copia</b> sul blocco qui sotto, incollalo nell'agente e invialo.",
@@ -450,7 +450,7 @@ TEXT = {
         "card_h2": "Cách nhanh nhất — để tác nhân AI cài hộ",
         "card_body": "Một khối văn bản dán vào Claude Code, Codex, Cursor hay Gemini CLI sẽ cài cả skill lẫn add-on, rồi giải thích gohud cho bạn. Đi đường đó thì mọi thứ dưới thẻ này đều không cần.",
         "card_cta": "Mở trang Go HUD Skill →",
-        "need": "Lệnh xem trước cần Godot 4.6 trở lên trong <code>PATH</code>.",
+        "need": "Lệnh xem trước cần Godot 4.7 trở lên trong <code>PATH</code>.",
         "copied_cta": "Đã chép — giờ dán vào tác nhân của bạn",
         "step1": "Mở terminal trong thư mục dự án Godot và khởi động tác nhân lập trình ở đó — ví dụ <code>claude</code>.",
         "step2": "Bấm <b>Chép</b> trên khối bên dưới, dán vào tác nhân rồi gửi.",
@@ -480,7 +480,7 @@ TEXT = {
         "card_h2": "Jalan tercepat — biarkan agen AI yang memasang",
         "card_body": "Satu blok teks, ditempel ke Claude Code, Codex, Cursor, atau Gemini CLI, memasang skill sekaligus add-on lalu menjelaskan gohud padamu. Lewat jalan itu, tak satu pun di bawah kartu ini diperlukan.",
         "card_cta": "Buka halaman Go HUD Skill →",
-        "need": "Perintah pratinjau butuh Godot 4.6 atau lebih baru di <code>PATH</code>.",
+        "need": "Perintah pratinjau butuh Godot 4.7 atau lebih baru di <code>PATH</code>.",
         "copied_cta": "Tersalin — sekarang tempel ke agenmu",
         "step1": "Buka terminal di folder proyek Godot-mu dan jalankan agen coding di sana — misalnya <code>claude</code>.",
         "step2": "Tekan <b>Salin</b> pada blok di bawah, tempel ke agen, lalu kirim.",
@@ -510,7 +510,7 @@ TEXT = {
         "card_h2": "Найшвидший шлях — доручіть встановлення ШІ-агенту",
         "card_body": "Один блок тексту, вставлений у Claude Code, Codex, Cursor чи Gemini CLI, встановить і навичку, і доповнення, а тоді пояснить вам gohud. На цьому шляху ніщо нижче цієї картки не потрібне.",
         "card_cta": "Відкрити сторінку Go HUD Skill →",
-        "need": "Команди попереднього перегляду потребують Godot 4.6 або новішого у <code>PATH</code>.",
+        "need": "Команди попереднього перегляду потребують Godot 4.7 або новішого у <code>PATH</code>.",
         "copied_cta": "Скопійовано — вставте в агент",
         "step1": "Відкрийте термінал у теці проєкту Godot і запустіть там свій ШІ-агент — наприклад, <code>claude</code>.",
         "step2": "Натисніть <b>Копіювати</b> на блоці нижче, вставте його в агент і надішліть.",
@@ -540,7 +540,7 @@ TEXT = {
         "card_h2": "ทางที่เร็วที่สุด — ให้เอเจนต์ AI ติดตั้งให้",
         "card_body": "ข้อความบล็อกเดียว วางลงใน Claude Code, Codex, Cursor หรือ Gemini CLI จะติดตั้งทั้ง skill และแอดออน แล้วอธิบาย gohud ให้คุณฟัง ถ้าไปทางนี้ ทุกอย่างใต้การ์ดนี้ไม่จำเป็นเลย",
         "card_cta": "เปิดหน้า Go HUD Skill →",
-        "need": "คำสั่งพรีวิวต้องมี Godot 4.6 ขึ้นไปอยู่ใน <code>PATH</code>",
+        "need": "คำสั่งพรีวิวต้องมี Godot 4.7 ขึ้นไปอยู่ใน <code>PATH</code>",
         "copied_cta": "คัดลอกแล้ว — วางลงในเอเจนต์ได้เลย",
         "step1": "เปิดเทอร์มินัลในโฟลเดอร์โปรเจกต์ Godot แล้วเริ่มเอเจนต์เขียนโค้ดที่นั่น — เช่น <code>claude</code>",
         "step2": "กด <b>คัดลอก</b> ที่บล็อกด้านล่าง วางลงในเอเจนต์แล้วส่ง",
@@ -570,7 +570,7 @@ TEXT = {
         "card_h2": "أسرع طريق — دع وكيل الذكاء الاصطناعي يثبّته",
         "card_body": "كتلة نصية واحدة، تُلصق في Claude Code أو Codex أو Cursor أو Gemini CLI، تثبّت المهارة والإضافة معًا ثم تشرح لك gohud. إن سلكت هذا الطريق فلا حاجة لأي شيء أسفل هذه البطاقة.",
         "card_cta": "افتح صفحة Go HUD Skill →",
-        "need": "تحتاج أوامر المعاينة إلى Godot 4.6 أو أحدث في <code>PATH</code>.",
+        "need": "تحتاج أوامر المعاينة إلى Godot 4.7 أو أحدث في <code>PATH</code>.",
         "copied_cta": "تم النسخ — الصقه الآن في وكيلك",
         "step1": "افتح طرفية في مجلد مشروع Godot وشغّل وكيل البرمجة هناك — مثلًا <code>claude</code>.",
         "step2": "اضغط <b>نسخ</b> على الكتلة أدناه، والصقها في الوكيل ثم أرسلها.",

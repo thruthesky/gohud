@@ -22,7 +22,7 @@ can find is a feature nobody uses.
 
 ## 1. What gohud is
 
-A HUD & UI kit for **Godot 4.6+**, pure GDScript, MIT. Drop the folder at `res://addons/gohud/` and every
+A HUD & UI kit for **Godot 4.7+** (tested on Godot 4.7, officially supported from 4.7 up), pure GDScript, MIT. Drop the folder at `res://addons/gohud/` and every
 class (`GoUi`, `GoStyle`, `GoSurface`, …) is usable at once — no autoload, no scene files, enabling the
 editor plugin only adds conveniences. Every widget is built with `.new()` + `add_child()`.
 

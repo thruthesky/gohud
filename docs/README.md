@@ -82,4 +82,4 @@ is required.
 After validation, commit the changes and push `main`; the Pages workflow deploys the site automatically.
 
 References: [GitHub Pages publishing sources](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site),
-[Godot 4.6 DPITexture API](https://docs.godotengine.org/en/4.6/classes/class_dpitexture.html).
+[Godot 4.7 DPITexture API](https://docs.godotengine.org/en/4.7/classes/class_dpitexture.html).

@@ -30,7 +30,7 @@ import time
 from pathlib import Path
 
 REPO_URL = "https://github.com/thruthesky/gohud.git"
-MIN_ENGINE = (4, 6)
+MIN_ENGINE = (4, 7)
 PRESETS = ["default_dark", "default_light", "scifi_dark", "scifi_light", "medieval_dark", "medieval_light"]
 SCENES = {
     "gallery": "res://addons/gohud/examples/gallery/gallery.tscn",
@@ -100,7 +100,7 @@ def find_godot(explicit):
             say("skipping %s (Godot %d.%d; gohud needs %d.%d+)" % ((binary,) + version + MIN_ENGINE))
             continue
         return binary, version
-    fail("Godot 4.6+ was not found. Install it, or pass --godot PATH / set GODOT_BIN.", 2)
+    fail("Godot 4.7+ was not found. Install it, or pass --godot PATH / set GODOT_BIN.", 2)
 
 
 # ── Add-on source ────────────────────────────────────────────────────────
@@ -292,7 +292,7 @@ def main():
     parser.add_argument("--wait", action="store_true", help="stay attached until the window closes")
     parser.add_argument("--dry-run", action="store_true", help="print the commands only")
     parser.add_argument("--update", action="store_true", help="git pull the cached clone first")
-    parser.add_argument("--godot", help="Godot 4.6+ executable")
+    parser.add_argument("--godot", help="Godot 4.7+ executable")
     args = parser.parse_args()
 
     if args.target == "list":

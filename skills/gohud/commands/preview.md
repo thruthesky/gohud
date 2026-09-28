@@ -44,7 +44,7 @@ use `--check` instead.
 ## 3. Report
 
 - Say what opened (target, preset, size) and where the log is.
-- Exit code 2 = Godot 4.6+ not found or bad arguments: tell the user to install Godot 4.6+ or pass
+- Exit code 2 = Godot 4.7+ not found or bad arguments: tell the user to install Godot 4.7+ or pass
   `--godot /path/to/godot` (or set `GODOT_BIN`).
 - Exit code 1 = import or launch failed: show the error lines the script printed.
 - Reply in the language the user writes in.

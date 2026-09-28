@@ -1,7 +1,7 @@
 ---
 name: gohud
 description: >-
-  Build Godot 4.6+ game UI with gohud (res://addons/gohud): main menus, pause menus, settings screens,
+  Build Godot 4.7+ game UI with gohud (res://addons/gohud; tested on Godot 4.7, officially supports 4.7 and newer): main menus, pause menus, settings screens,
   inventories, HUDs with HP/MP bars, quick slots and a virtual joystick, dialogs, bottom sheets, forms,
   snackbars, prompt cards, coach-mark tours, and looks from presets (default, sci-fi, medieval), JSON
   themes, skins and icon sets — touch-safe, safe-area aware, RTL and translation ready. Use whenever
@@ -16,9 +16,10 @@ metadata:
   repository: https://github.com/thruthesky/gohud
 ---
 
-# gohud — game UI for Godot 4.6+
+# gohud — game UI for Godot 4.7+
 
-gohud is a pure-GDScript HUD & UI kit. Every class is global once the folder sits at `res://addons/gohud/`;
+gohud is a pure-GDScript HUD & UI kit, tested on Godot 4.7 and officially supported on Godot 4.7
+and newer. Every class is global once the folder sits at `res://addons/gohud/`;
 widgets are made with `.new()` + `add_child()` and styled by one theme, one skin and one icon set.
 This skill carries the whole API (`references/`), runnable screen templates (`assets/templates/`) and a
 preview launcher (`scripts/gohud_preview.py`).
@@ -38,7 +39,7 @@ Reply in the language the user writes in; keep code identifiers as they are.
 
 ## 2. Workflow for building UI
 
-1. **Check the project.** `test -f project.godot`, `test -f addons/gohud/plugin.cfg`, `godot --version` (needs 4.6+).
+1. **Check the project.** `test -f project.godot`, `test -f addons/gohud/plugin.cfg`, `godot --version` (needs 4.7+).
    Note the gohud version (`version=` in `plugin.cfg`) — rules 4, 5 and 7 differ for 1.0.3 and older.
    Missing add-on → install it (`references/setup.md` §1), then `godot --headless --path . --import`.
 2. **Pick the look first.** `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` (or the project setting) before any widget
@@ -198,7 +199,7 @@ If `${CLAUDE_SKILL_DIR}` is not expanded, use the first existing path of
 | `list` · `--check` · `--dry-run` · `--godot PATH` | Keys · headless smoke test · print command · Godot binary |
 
 gohud's examples run in a sandbox project under the user cache, so the user's project is not modified. The script
-detaches and prints the process id and log path. Exit 2 = Godot 4.6+ not found or bad arguments; exit 1 = import
+detaches and prints the process id and log path. Exit 2 = Godot 4.7+ not found or bad arguments; exit 1 = import
 or launch error (it prints the error lines). A visible window is what `/gohud preview` is for; for your own checks
 use `--check`.
 

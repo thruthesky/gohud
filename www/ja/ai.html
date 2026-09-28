@@ -94,7 +94,7 @@
     <li>下のブロックの<b>コピー</b>を押し、エージェントに貼って送る。</li>
     <li>終わったら、求められればエージェントを再起動し、こう聞く: <i>gohud で何ができる？</i></li>
   </ol>
-  <pre id="install-prompt"><code>Install gohud for this Godot 4.6+ project, then use it for all game UI
+  <pre id="install-prompt"><code>Install gohud for this Godot 4.7+ project, then use it for all game UI
 (menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
 
 1. Install the gohud AI skill.
@@ -111,7 +111,7 @@
      git submodule add https://github.com/thruthesky/gohud.git addons/gohud
    Otherwise copy the clone to addons/gohud without its .git folder.
    Then run: godot --headless --path . --import
-   (If godot is not on PATH, ask me where Godot 4.6+ is.)
+   (If godot is not on PATH, ask me where Godot 4.7+ is.)
 
 3. Check the result: addons/gohud/plugin.cfg exists and the import printed
    no "SCRIPT ERROR" or "Parse Error" lines.
@@ -174,7 +174,7 @@ claude plugin install gohud@gohud</code></pre>
       <tr><td><code>/gohud:features hud</code></td><td>1つの分野を深く — <code>surfaces</code> <code>hud</code> <code>style</code> <code>theming</code> <code>icons</code> <code>i18n</code> <code>accessibility</code> <code>config</code></td></tr>
     </tbody>
   </table>
-  <p>プレビューのコマンドには <code>PATH</code> に Godot 4.6 以上が要る。</p>
+  <p>プレビューのコマンドには <code>PATH</code> に Godot 4.7 以上が要る。</p>
 </section>
 
 <section id="ask">
@@ -182,7 +182,7 @@ claude plugin install gohud@gohud</code></pre>
   <div class="note"><b>そのまま頼んでもよい。</b> スキルがエージェントに gohud の API 全体を教えるので、
     <i>「gohud でポーズメニューを作って」</i>のような普通の依頼も通る。プラグインではなく素のスキルとして
     <code>~/.claude/skills/gohud</code> に置いた場合はコマンドを空白で区切る — <code>/gohud preview demo</code>、
-    <code>/gohud features</code>。プレビューには <code>PATH</code> の通った Godot 4.6 以降が必要で、
+    <code>/gohud features</code>。プレビューには <code>PATH</code> の通った Godot 4.7 以降が必要で、
     無ければ <code>--godot /path/to/godot</code> で渡す。</div>
 </section>
 

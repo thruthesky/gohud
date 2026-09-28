@@ -349,7 +349,40 @@ func _open(key: String) -> void:
 	_chrome_file.text = String(item["file"])
 	# 🛑 While recording or auto-playing, strip the shell away — nothing that is not the demo may end up in the video.
 	_chrome.visible = not _is_bare()
+	# 🛑 **A scene whose script does not compile still loads** — it opens as a bare Control with nothing in it,
+	#    and all a person sees is an empty stage (the gallery on a stale class cache, 2026-09-24). Say so instead.
+	var broken := _broken_script(packed)
+	if not broken.is_empty():
+		push_error("%s did not compile — %s opens without it" % [broken, item["scene"]])
+		_stage.add_child(_build_broken(broken))
+		return
 	_stage.add_child(packed.instantiate())
+
+
+## The script on a screen's root when that script did not compile — empty when it did (or there is none).
+func _broken_script(packed: PackedScene) -> String:
+	var state := packed.get_state()
+	for index in state.get_node_property_count(0):
+		if state.get_node_property_name(0, index) != &"script": continue
+		var script := state.get_node_property_value(0, index) as Script
+		if script != null and not script.can_instantiate(): return script.resource_path
+	return ""
+
+
+## What the stage shows in place of a screen that did not compile: which file, and the likeliest way out.
+func _build_broken(script_path: String) -> Control:
+	var centre := CenterContainer.new()
+	centre.name = "BrokenScreen"
+	centre.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var column := GoStyle.column(GoUi.metric(GoTheme.GAP))
+	column.custom_minimum_size.x = minf(560.0, get_viewport_rect().size.x - 2.0 * GoUi.metric(GoTheme.PADDING))
+	centre.add_child(column)
+	column.add_child(GoStyle.label("This screen did not compile", GoTheme.ROLE_TITLE))
+	column.add_child(GoStyle.alert("%s failed to parse — the error is in the Output log." % script_path,
+		GoTheme.DANGER))
+	column.add_child(GoStyle.label("Just updated gohud? Quit and start the demo again — it re-imports on the way in. "
+		+ "Or run  bash run.sh  in this folder to see the import log.", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	return centre
 
 
 ## **Clear away what is floating before swapping the screen.** Swap the board underneath while a sheet or
@@ -536,7 +569,7 @@ func _hero_words() -> Control:
 	var body := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	card.add_child(body)
 
-	body.add_child(GoStyle.section("GODOT 4.6+   ·   MIT   ·   NO AUTOLOAD", false))
+	body.add_child(GoStyle.section("GODOT 4.7+   ·   MIT   ·   NO AUTOLOAD", false))
 	var headline := GoStyle.label("Your game UI, already built.", GoTheme.ROLE_TITLE)
 	body.add_child(headline)
 	body.add_child(GoStyle.label(

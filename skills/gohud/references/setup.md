@@ -12,9 +12,9 @@
 
 ## 1. Requirements and install
 
-- **Godot 4.6 or newer** (`GoUi.MIN_ENGINE = [4, 6]`). gohud uses `DPITexture`, `FoldableContainer`,
-  `accessibility_name` and `mouse_behavior_recursive`; older engines fail **while parsing**, not at run time.
-  Verified on 4.7.2. Check with `godot --version`.
+- **Godot 4.7 or newer** — tested on Godot 4.7 and officially supported from 4.7 up (`GoUi.MIN_ENGINE = [4, 7]`).
+  gohud uses `DPITexture`, `FoldableContainer`, `accessibility_name` and `mouse_behavior_recursive`; engines
+  before 4.5 fail **while parsing**, not at run time. Check with `godot --version`.
 - The add-on must live exactly at `res://addons/gohud/` — every internal path is `res://addons/gohud/...`.
 
 | Way | Command |

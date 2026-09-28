@@ -4,6 +4,22 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Changed
+
+- **Tested on Godot 4.7; Godot 4.7 and newer are officially supported.** `GoUi.MIN_ENGINE` is now `[4, 7]`, CI runs
+  on 4.7-stable, and the READMEs, `plugin.cfg`, the store listing, the AI skill, the plugin manifests and the website
+  in all 17 languages say so. `tools/check_all.sh` no longer takes `GODOT_46`, and `/gohud:preview` skips engines
+  older than 4.7.
+
+### Fixed
+
+- **The demo's widget gallery no longer opens blank after an update.** The demo's doorway (`main.gd`) treated the
+  import cache as ready once it found `GoUi`, but running the game never refreshes that cache — so a demo imported
+  before 1.2.0 came up without `GoIconLibrary`, and the gallery, which uses it, failed to parse and stood empty. The
+  doorway now checks every `class_name` the project declares (and where it lives) and re-imports when one is missing;
+  home shows which script did not compile rather than an empty stage; and `tests/home_test.gd` checks each screen
+  opens with its script and its content, and that the doorway notices a stale cache.
+
 ## [1.2.0] - 2026-09-24
 
 ### Added

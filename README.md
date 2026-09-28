@@ -9,7 +9,7 @@
 [Changelog](CHANGELOG.md) ·
 [GitHub](https://github.com/thruthesky/gohud)
 
-**A customizable HUD & UI kit for Godot 4.6+.** Floating surfaces, bottom sheets, dialogs, forms,
+**A customizable HUD & UI kit for Godot 4.7+.** Floating surfaces, bottom sheets, dialogs, forms,
 snackbars, prompt cards, coach marks, HUD bars, quick slots and a virtual joystick — driven by one
 theme and one swappable icon set, and aware of safe areas, virtual keyboards, RTL languages and touch.
 Six built-in presets change colours **and** shapes in one line: default, sci-fi and medieval, each in
@@ -53,10 +53,10 @@ run releases it.
 
 ## Requirements
 
-Godot **4.6 or newer**. gohud relies on APIs introduced in 4.5 (`DPITexture`, `FoldableContainer`,
-accessibility properties), so older engines fail while parsing. 4.6 is the supported floor and is
-recorded in `GoUi.MIN_ENGINE`. `tools/check_all.sh` runs the suite on 4.7 and — when `GODOT_46`
-points at a 4.6 binary — on 4.6 as well.
+Tested on Godot 4.7; Godot **4.7 and newer** are officially supported. 4.7 is the supported floor and is
+recorded in `GoUi.MIN_ENGINE`; `tools/check_all.sh` and CI run the suite on 4.7. gohud relies on APIs
+introduced in 4.5 (`DPITexture`, `FoldableContainer`, accessibility properties), so engines before 4.5
+fail while parsing.
 
 ## Installation
 
@@ -740,8 +740,8 @@ the add-on files of this revision copied into empty projects:
 | `check_scaffold.sh`, including a medieval parent | pass |
 | `check_package.py` | 13 tests pass |
 
-**Not part of this run:** Godot 4.6 (`GODOT_46` was not set), the release ZIP itself (`--zip`), physical
-Android or iOS devices, and the Forward+ and Mobile renderers. The safe-area and haptics code paths only
+**Not part of this run:** the release ZIP itself (`--zip`), physical Android or iOS devices, and the
+Forward+ and Mobile renderers. The safe-area and haptics code paths only
 activate on handheld platforms, so they are exercised by the suite but not on real hardware.
 
 ## Examples

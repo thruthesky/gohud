@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud をインストール — gohud</title>
-<meta name="description" content="Godot 4.6+ のプロジェクトに gohud を入れる方法 — AI コーディングエージェントに一度貼るだけ、リリース ZIP、git サブモジュール。">
+<meta name="description" content="Godot 4.7+ のプロジェクトに gohud を入れる方法 — AI コーディングエージェントに一度貼るだけ、リリース ZIP、git サブモジュール。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -106,9 +106,9 @@ git -C addons/gohud checkout v1.0.0   # 任意: タグやコミットに固定�
     <code>addons/gohud</code> の中でコミットして push したうえで、ゲーム側からサブモジュールのポインタをコミットする。</p>
 
   <div class="note warn">
-    <b>Godot 4.6 以降が必要だ。</b> gohud は 4.5 で入った API（DPITexture、FoldableContainer、
+    <b>Godot 4.7 でテストしており、Godot 4.7 以降を公式にサポートする。</b> gohud は 4.5 で入った API（DPITexture、FoldableContainer、
     アクセシビリティ関連プロパティ）を使うため、それより古いエンジンでは<b>パース段階で落ちる</b>。
-    下限の 4.6 は <code>GoUi.MIN_ENGINE</code> に記録してある。
+    下限の 4.7 は <code>GoUi.MIN_ENGINE</code> に記録してある。
   </div>
 </section>
 

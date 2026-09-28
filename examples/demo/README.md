@@ -7,9 +7,10 @@ cd examples/demo
 godot
 ```
 
-There is nothing to set up first. When `addons/gohud` or the import cache is missing, the app
-says so on screen, links the add-on, imports the project once and reopens itself; every run
-after that starts on the home screen. (That link is generated locally and ignored by Git — it
+There is nothing to set up first. When `addons/gohud` or the import cache is missing — or the
+cache is older than the add-on and lacks a class it has since gained — the app says so on screen,
+links the add-on, imports the project once and reopens itself; every run after that starts on
+the home screen. (That link is generated locally and ignored by Git — it
 points back at the add-on root, and a checked-in loop would send recursive tools into it.)
 
 `bash examples/demo/run.sh` from the add-on root does the same and, in a copy installed from
@@ -234,6 +235,13 @@ same one without launching anything.
 import cache missing those names do not parse, and a main scene that cannot parse leaves an
 empty window and one `Identifier "GoUi" not declared` line. The doorway stays up in that state,
 which is how it can explain itself and repair the folder.
+
+It checks **every** `class_name` the project declares against the cache, not just `GoUi`. Only an
+import or the editor writes that cache — running the game never does — so after pulling a gohud
+that adds a class, an old cache still has `GoUi` while the new name does not parse. That is how
+the widget gallery once opened blank: 1.2.0 added `GoIconLibrary`, the gallery uses it, and a
+demo imported earlier let every other screen through. Should a screen still fail to compile,
+home says which script on the stage instead of leaving it empty.
 
 `sim.tscn` (the tour), `demo.tscn` (the card overview plus the language card), and the gallery
 and medieval scenes under `addons/gohud/examples` all still open on their own.

@@ -36,6 +36,7 @@ func _run() -> void:
 		_finish()
 		return
 	home = current_scene
+	_front_door()
 
 	var chrome := home.find_child("Chrome", true, false) as Control
 	check(chrome != null and not chrome.visible, "The top bar stays out of the way on the home screen")
@@ -52,6 +53,25 @@ func _finish() -> void:
 	quit(0 if failures.is_empty() else 1)
 
 
+## Does the doorway see a **stale** class cache? One that still has `GoUi` but lacks a class added later
+## let the demo come up with the gallery failing to parse (gohud 1.2.0's `GoIconLibrary`, 2026-09-24).
+func _front_door() -> void:
+	var main := load("res://main.gd") as Script
+	var registered := ProjectSettings.get_global_class_list()
+	check(main.unregistered_classes(registered).is_empty(), "The doorway finds every class registered after an import")
+
+	var without: Array[Dictionary] = []
+	var moved: Array[Dictionary] = []
+	for entry in registered:
+		if String(entry["class"]) != "GoIconLibrary": without.append(entry)
+		var copy := entry.duplicate()
+		if String(entry["class"]) == "GoUi": copy["path"] = "res://elsewhere/go_ui.gd"
+		moved.append(copy)
+	check(Array(main.unregistered_classes(without)) == ["GoIconLibrary"],
+		"The doorway names a class the cache is missing")
+	check(Array(main.unregistered_classes(moved)) == ["GoUi"], "The doorway notices a class the cache puts elsewhere")
+
+
 ## Does each of the four rows open its own screen, and does `Home` put us back home?
 func _rows() -> void:
 	var chrome := home.find_child("Chrome", true, false) as Control
@@ -62,6 +82,10 @@ func _rows() -> void:
 		var stage := home.find_child("Stage", true, false) as Control
 		var opened: Node = stage.get_child(stage.get_child_count() - 1) if stage.get_child_count() > 0 else null
 		check(opened != null and opened.visible, "%s opens on the stage" % key)
+		# 🛑 "Something opened" is not enough — a screen whose script failed to parse opens as a bare Control
+		#    with no children, and the gallery stood blank that way while this check passed (2026-09-24).
+		check(opened != null and opened.get_script() != null and opened.get_child_count() > 0,
+			"%s opens with its script and its content" % key)
 		check(chrome.visible, "%s shows the top bar" % key)
 		var title := home.find_child("Chrome", true, false).find_child("Inset", true, false)
 		check(title != null, "The top bar carries its contents")

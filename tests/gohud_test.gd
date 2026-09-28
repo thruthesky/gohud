@@ -463,7 +463,8 @@ func _presets() -> void:
 		and GoThemePresets.names()[0] == GoThemePresets.DEFAULT_DARK,
 		"names() keeps the built-in order and appends the folder's presets %s" % str(GoThemePresets.names()))
 
-	# 🛑 Below 4.6 this add-on **dies at the parse stage** — reaching this line already proves it passed, but
+	# 🛑 Below 4.5 this add-on **dies at the parse stage**, and 4.7 is the floor it is tested on and supports.
+	#    Reaching this line already proves it parsed, but
 	#    recording the engine actually used in the log lets you ask later "which version did it pass on".
 	var info := Engine.get_version_info()
 	check(GoUi.engine_supported(), "engine %d.%d is at least %s — inside the supported range" % [

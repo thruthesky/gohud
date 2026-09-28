@@ -18,7 +18,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Identifier "GoUi" not declared` | Classes not registered yet, or the folder is not `res://addons/gohud/` | Put it exactly there, run `godot --headless --path . --import` |
-| Parse errors inside gohud (`FoldableContainer`, `DPITexture` unknown) | Godot older than 4.6 | Use Godot 4.6+ (`GoUi.MIN_ENGINE`) |
+| Parse errors inside gohud (`FoldableContainer`, `DPITexture` unknown) | Godot older than 4.7, the supported floor | Use Godot 4.7+ (`GoUi.MIN_ENGINE`) |
 | "Detected another project.godot" in the editor | A restored `examples/demo/project.godot` inside your project | Run the demo through `gohud_preview.py demo` (sandbox) or keep it as `project.godot.demo` |
 | A new JSON theme will not load | Its generated SVGs are not imported | `godot --headless --path . --import` after `make_theme.py` |
 

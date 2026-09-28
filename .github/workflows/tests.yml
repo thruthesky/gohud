@@ -13,8 +13,8 @@
 #   `tools/check_all.sh` alone calls all of that. We use the **same entry point** here —
 #   when CI looks at something different from local, "it works on my machine" is born.
 #
-# 🛑 When raising the Godot version, raise `GoUi.MIN_ENGINE` with it. 4.6 compatibility cannot be
-#   verified with 4.7.
+# 🛑 When raising the Godot version, raise `GoUi.MIN_ENGINE` with it. The checks run on the floor
+#   version itself — gohud is tested on 4.7 and officially supports 4.7 and newer.
 name: Tests
 
 on:
@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 20
     env:
       # 🔑 The minimum version this add-on requires, and the version the checks run on.
-      GODOT_VERSION: 4.6-stable
+      GODOT_VERSION: 4.7-stable
     steps:
       - uses: actions/checkout@v7
 
@@ -74,7 +74,7 @@ jobs:
           config_version=5
           [application]
           config/name="gohud CI"
-          config/features=PackedStringArray("4.6")
+          config/features=PackedStringArray("4.7")
           CFG
           echo "GOHUD_PROJECT=/tmp/host" >> "$GITHUB_ENV"
 
