@@ -41,6 +41,13 @@ step "①-l layout — the real gallery in every look, narrow and wide, both dir
 GOHUD_TEST_TIMEOUT=500 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_layout_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-x does loading gohud leave anything in memory at exit?"
+# 🛑 1.2.0 exported `GoIconSet.layers` as `Array[GoIconSet]`, and every headless run that loaded it ended with
+#    "ERROR: 1 resources still in use at exit" — a game team's pipeline that stops on `ERROR:` stopped (2026-09-28).
+#    Every check here passed: Godot prints that after `quit()`, and nothing read it.
+GOHUD_EXIT_CLEAN=1 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_exit_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 # 🛑 **Running one screen size leaves code that only runs on other sizes entirely unverified.** The
 #    form width cap was such a case (on a phone the cap is "none"), as was the HUD moving sideways — so the same tests run again at different sizes.
 for VIEWPORT in 844x390 768x1024 1280x800; do

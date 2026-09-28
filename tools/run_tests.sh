@@ -5,6 +5,7 @@
 #   GOHUD_PROJECT=/path/to/project bash .../run_tests.sh        # name the host project explicitly
 #   GOHUD_TEST_SCRIPT=res://somewhere/gohud_test.gd bash ...     # move the test script (for verifying the store ZIP)
 #   GODOT_BIN=/path/to/godot bash ...
+#   GOHUD_EXIT_CLEAN=1 bash ...                                  # also fail when an add-on file is still in use at exit
 #
 # 🛑 Why not just call godot
 #   A **parse error** in a gohud script or a test file never reaches `_initialize`, so there are 0 lines of
@@ -36,9 +37,14 @@ esac
 SCRIPT="${GOHUD_TEST_SCRIPT:-res://$REL/tests/gohud_test.gd}"
 LIMIT="${GOHUD_TEST_TIMEOUT:-240}"
 LOG="$(mktemp)"
+# 🧹 Godot reports what is left in memory only after `quit()`, where no test can read it, and only `--verbose` names
+#    the files. Off by default: the unit tests leave their own test nodes behind (tests/gohud_exit_test.gd).
+EXIT_CLEAN="${GOHUD_EXIT_CLEAN:-}"
+VERBOSE=""
+[ -n "$EXIT_CLEAN" ] && VERBOSE="--verbose"
 
 echo "gohud tests — project $PROJECT · $SCRIPT"
-"$GODOT" --headless --path "$PROJECT" -s "$SCRIPT" > "$LOG" 2>&1 &
+"$GODOT" --headless $VERBOSE --path "$PROJECT" -s "$SCRIPT" > "$LOG" 2>&1 &
 PID=$!
 waited=0
 while kill -0 "$PID" 2>/dev/null; do
@@ -65,6 +71,17 @@ if grep -A3 "SCRIPT ERROR" "$LOG" | grep -q "addons/gohud\|gohud_test"; then
   echo "🛑 gohud script error:" >&2
   grep -A3 "SCRIPT ERROR" "$LOG" | head -30 >&2
   CODE=1
+fi
+if [ -n "$EXIT_CLEAN" ]; then
+  # 🔑 Only the add-on's own files count — a host project's autoloads may leave their own things behind.
+  LEFT="$(grep -E "^Resource still in use: res://$REL/" "$LOG")"
+  if [ -n "$LEFT" ]; then
+    echo "🛑 still in use at exit — Godot prints 'ERROR: N resources still in use at exit' for these:" >&2
+    echo "$LEFT" | head -20 >&2
+    CODE=1
+  else
+    echo "  ok   nothing under res://$REL is left in memory at exit"
+  fi
 fi
 if ! grep -qE "^gohud( [a-z]+)* tests:" "$LOG"; then
   echo "🛑 no summary line — the tests did not run to the end" >&2

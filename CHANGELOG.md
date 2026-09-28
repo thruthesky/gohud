@@ -13,6 +13,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Loading gohud no longer ends every headless run with `ERROR: 1 resources still in use at exit`.** Since 1.2.0,
+  `GoIconSet.layers` was an exported `Array[GoIconSet]` — an array typed to its own class. Godot's editor build (so
+  every `godot --headless` run, CI included) caches each export's default value, here an empty array typed to
+  `go_icon_set.gd` itself, and never clears that cache, so the script kept itself alive and Godot printed the error at
+  exit. Games were unaffected, but a pipeline that stops on any `ERROR:` line stopped on it. `layers` is now a plain
+  `Array` whose export hint still offers only icon sets in the inspector; any array of sets can be assigned, as before,
+  and an entry that is not a set is skipped. A list assigned as `[a, b]` now stays a plain array, so reading it into
+  an `Array[GoIconSet]` variable needs `.assign()`. The
+  new `tests/gohud_exit_test.gd` loads every gohud script, stacks icon sets and quits, and `tools/check_all.sh` fails
+  when anything under the add-on is still in use at exit (`GOHUD_EXIT_CLEAN=1` in `tools/run_tests.sh`).
 - **The demo's widget gallery no longer opens blank after an update.** The demo's doorway (`main.gd`) treated the
   import cache as ready once it found `GoUi`, but running the game never refreshes that cache — so a demo imported
   before 1.2.0 came up without `GoIconLibrary`, and the gallery, which uses it, failed to parse and stood empty. The

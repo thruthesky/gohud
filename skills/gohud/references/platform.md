@@ -119,7 +119,7 @@ key map potion shield star sword user` and adds `&"scroll"` and `&"seal"`; every
 | `group_names()` · `names_in_group(key)` · `group_title(key)` · `group_of(icon)` | group keys are shared: `names_in_group(&"food")` gathers every set's food |
 | `canonical(icon) -> StringName` | the name that draws it (`gear` → `settings`), `&""` if none |
 | `GoIconSet.from_folder(dir, below := null)` | a set of the pictures in a folder, file name = icon name, loaded when first drawn |
-| drawing fields | `textures: Dictionary[StringName, Texture2D]` · `paths: Dictionary[StringName, String]` (+ `folder`) · `font` + `codepoints` · `font_size_ratio` · `fallback` · `layers: Array[GoIconSet]` · `tint` |
+| drawing fields | `textures: Dictionary[StringName, Texture2D]` · `paths: Dictionary[StringName, String]` (+ `folder`) · `font` + `codepoints` · `font_size_ratio` · `fallback` · `layers` (any array of sets — a plain `Array`, see below) · `tint` |
 | finding fields | `aliases: Dictionary[StringName, StringName]` · `groups` · `group_titles` · `tags` — data only, they draw nothing |
 | lookup order | **every set's own drawings first** (this set, its `layers`, then their `fallback`s level by level; own = `textures` → `paths` → `codepoints`), then one alias hop, then an empty box |
 | `GoUi.icons()` | `config.icons` → preset's set → `DEFAULT_ICONS`, with `config.extra_icons` layered under it (cached; the same object while nothing changes) |
@@ -127,6 +127,13 @@ key map potion shield star sword user` and adds `&"scroll"` and `&"seal"`; every
 
 🛑 `paths` are strings, not dependencies: an export that **picks resources** must include `addons/gohud/icons/`
 (the default "export all resources" needs nothing). A path that fails to load warns once in debug builds.
+
+🛑 `layers` is a plain `Array` on purpose — its inspector hint still offers only icon sets, any array of sets can be
+assigned, and an entry that is not a set is skipped. A list assigned as `[a, b]` stays a plain array — read it into an
+`Array[GoIconSet]` variable with `.assign()`. Your own resources have the same trap: an **exported** `Array[X]` or
+`Dictionary[K, X]` declared inside `X` itself keeps `X`'s script alive at exit in the editor build, so every
+`godot --headless` run ends with `ERROR: 1 resources still in use at exit` (Godot 4.7.2). Type it through the hint:
+`@export_custom(PROPERTY_HINT_TYPE_STRING, "%d/%d:X" % [TYPE_OBJECT, PROPERTY_HINT_RESOURCE_TYPE]) var items: Array = []`.
 
 ```gdscript
 # Your own SVGs over the defaults (draw them white; import as DPITexture so they stay sharp)

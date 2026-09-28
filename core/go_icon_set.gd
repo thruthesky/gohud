@@ -194,7 +194,12 @@ const RUN := &"run"
 ## More sets to look in, in this order, after this set's own drawings — each one brings its own `fallback`.
 ## Every set's own drawings are tried before any fallback (see "How a name is found" above), which is what lets
 ## `GoUi.icons()` stack a preset's engraved icons over the game icons without either hiding the other.
-@export var layers: Array[GoIconSet] = []
+## Any array of sets will do — `[a, b]` or an `Array[GoIconSet]`; an entry that is not a `GoIconSet` is skipped.
+## 🛑 Typed through its export hint, not as `Array[GoIconSet]` — the inspector gets the same list of icon sets either
+##    way. An exported array typed to its own class keeps this script alive at exit in the editor build (so every
+##    `godot --headless` run) and prints "1 resources still in use at exit": Godot caches each export's default, here
+##    an empty array typed to this very script, and nothing clears that cache (Godot 4.7.2, measured 2026-09-28).
+@export_custom(PROPERTY_HINT_TYPE_STRING, "%d/%d:GoIconSet" % [TYPE_OBJECT, PROPERTY_HINT_RESOURCE_TYPE]) var layers: Array = []
 
 ## The default color multiplied into texture icons. Transparent means the color the caller gave is used as is.
 @export var tint := Color.TRANSPARENT
@@ -438,7 +443,7 @@ func _chain() -> Array[GoIconSet]:
 		var next: Array = here.layers.duplicate()
 		if here.fallback != null: next.append(here.fallback)
 		for other in next:
-			if other == null or seen.has(other.get_instance_id()): continue
+			if not other is GoIconSet or seen.has(other.get_instance_id()): continue
 			seen[other.get_instance_id()] = true
 			order.append(other)
 	return order
