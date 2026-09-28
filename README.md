@@ -22,10 +22,10 @@ dark and light.
 
 > Drop it in and it works. Enabling the editor plugin only adds conveniences.
 
-**Version 1.2.0.** A 1,000-icon library in 32 groups (`GoIconLibrary`) with name search, extra icon sets
-that survive a preset change, buttons made from those icons, an Icons page in 17 languages, one layout
-contract for content inside a pressable cell, and a whole-screen layout audit that keeps every widget
-inside a 320 dp phone — the [changelog](CHANGELOG.md) lists them. Work done since is
+**Version 1.2.1.** A maintenance release: a headless run that loads gohud no longer ends with
+`ERROR: 1 resources still in use at exit`, the demo's widget gallery no longer opens blank after an
+update, and Godot 4.7 is the engine gohud is tested on and officially supports — the
+[changelog](CHANGELOG.md) lists them. Work done since is
 collected under *Unreleased* there: raise the version in `package.json` and the next `tools/package.sh`
 run releases it.
 
