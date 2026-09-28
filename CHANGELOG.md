@@ -4,6 +4,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-09-28
+
 ### Changed
 
 - **Tested on Godot 4.7; Godot 4.7 and newer are officially supported.** `GoUi.MIN_ENGINE` is now `[4, 7]`, CI runs
