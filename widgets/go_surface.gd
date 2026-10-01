@@ -47,20 +47,51 @@ static func is_any_open() -> bool:
 
 # ── Placement ──────────────────────────────────────────────────────────
 
-var placement := Placement.CENTER
-var max_width := 0.0            ## 0 means `GoConfig.surface_max_width`
-var max_height := 0.0           ## 0 means `GoConfig.surface_max_height`
-var height_ratio := 0.0         ## 0 means `GoConfig.surface_height_ratio`
+## 🔑 Every layout input below is a setter that marks the layout dirty **only when the value really changes** — a
+##    `fit_content` surface re-measures on the next frame instead of every frame (see `_process`). Assigning a field
+##    directly (`surface.height_ratio = 0.9`) therefore still takes effect without calling `relayout()` by hand.
+var placement := Placement.CENTER:
+	set(value):
+		if placement == value: return
+		placement = value
+		_layout_dirty = true
+var max_width := 0.0:            ## 0 means `GoConfig.surface_max_width`
+	set(value):
+		if max_width == value: return
+		max_width = value
+		_layout_dirty = true
+var max_height := 0.0:           ## 0 means `GoConfig.surface_max_height`
+	set(value):
+		if max_height == value: return
+		max_height = value
+		_layout_dirty = true
+var height_ratio := 0.0:         ## 0 means `GoConfig.surface_height_ratio`
+	set(value):
+		if height_ratio == value: return
+		height_ratio = value
+		_layout_dirty = true
 ## 🔑 **This surface's ceiling on `height_ratio`.** 0 means `GoConfig.surface_max_height_ratio` (0.72).
 ## 🛑 Without it a `height_ratio` above the global ceiling is cut back to it — ask for 0.86 and get 0.72. That ceiling
 ##    exists so a window still reads as floating over the game; raise it here for the one surface that needs the room
 ##    (an inventory grid, a long list) instead of for every surface in `GoConfig`. A debug build warns once when a
 ##    requested ratio is cut.
-var max_height_ratio := 0.0
+var max_height_ratio := 0.0:
+	set(value):
+		if max_height_ratio == value: return
+		max_height_ratio = value
+		_layout_dirty = true
 ## Short content makes a short card. Turn it off to always take up `height_ratio`.
-var fit_content := true
+var fit_content := true:
+	set(value):
+		if fit_content == value: return
+		fit_content = value
+		_layout_dirty = true
 ## Drops padding and text one step on narrow screens.
-var compact := false
+var compact := false:
+	set(value):
+		if compact == value: return
+		compact = value
+		_layout_dirty = true
 ## Can pressing the backdrop close it? Defaults to the config value.
 var dismiss_on_scrim := false
 ## Make the scrim transparent — for a dropdown over the game screen, where what is behind must stay visible.
@@ -91,10 +122,26 @@ var close_enabled := true
 var initial_focus: Control
 
 ## ANCHOR placement — attaches right below this control (above it when there is no room).
-var anchor_control: Control
-var anchor_width := 320.0
-var anchor_min_width := 210.0
-var anchor_max_height := 520.0
+var anchor_control: Control:
+	set(value):
+		if anchor_control == value: return
+		anchor_control = value
+		_layout_dirty = true
+var anchor_width := 320.0:
+	set(value):
+		if anchor_width == value: return
+		anchor_width = value
+		_layout_dirty = true
+var anchor_min_width := 210.0:
+	set(value):
+		if anchor_min_width == value: return
+		anchor_min_width = value
+		_layout_dirty = true
+var anchor_max_height := 520.0:
+	set(value):
+		if anchor_max_height == value: return
+		anchor_max_height = value
+		_layout_dirty = true
 
 # ── Children ───────────────────────────────────────────────────────────
 
@@ -133,8 +180,16 @@ var _keyboard_px := 0
 var _scrim_pressed := false
 var _scrim_origin := Vector2.ZERO
 var _holds_back := false
-## A cut `height_ratio` has been reported (debug builds) — once per surface, since `relayout` runs every frame while content settles.
+## A cut `height_ratio` has been reported (debug builds) — once per surface, since `relayout` runs again whenever content changes.
 var _warned_height_cap := false
+## 🔑 Something the layout reads has changed since the last `relayout()` — a section's minimum size or visibility, or a
+##    layout field above. A `fit_content` surface re-measures on the next frame **only then**.
+## 🛑 It used to re-measure **every frame** while open: 50–220 µs a frame on a desktop CPU for the 23-row Laryen Guide
+##    sheet, paid for as long as the sheet stayed open even when nobody touched it (fix/guide-sheet-lag, 2026-10-01).
+var _layout_dirty := true
+## A handle drag moved `height_ratio` this frame. Applied once in `_process` — a fast finger can deliver several drag
+## events in one frame, and each used to run a full `relayout()`.
+var _resize_pending := false
 var _fade: Tween
 var _runtime: Node
 
@@ -231,6 +286,17 @@ func _build() -> void:
 	footer.visible = false
 	_column.add_child(footer)
 
+	# 🔑 What `_desired_height()` reads. The engine emits `minimum_size_changed` (deferred, and only when the value really
+	#    changed) all the way up from a re-wrapped label, a row added or freed, or the scrollbar appearing — so these
+	#    two signals per section are the whole list of "the content asks for a different height".
+	for section: Control in [header, toolbar, body, status, footer]:
+		section.minimum_size_changed.connect(_mark_layout_dirty)
+		section.visibility_changed.connect(_mark_layout_dirty)
+
+
+func _mark_layout_dirty() -> void:
+	_layout_dirty = true
+
 
 ## Builds the close button. 🔑 A host that wants a `GoIconButton` subclass (its own art and size) overrides this in a
 ## subclass — the surface only uses the `GoIconButton` API.
@@ -277,7 +343,7 @@ func _ready() -> void:
 
 
 ## Reapplies the card panel — this is where opacity is decided.
-## 🛑 **Not called every frame** (`relayout` runs every frame on fit-content windows). It duplicates the stylebox, so it
+## 🛑 **Not called from `relayout`** (which re-runs whenever a fit-content window's content changes). It duplicates the stylebox, so it
 ##    costs more than a layout pass, and only needs doing on change — a config change, an `alpha` assignment, opening.
 func _restyle() -> void:
 	if card == null or not is_inside_tree(): return
@@ -479,6 +545,9 @@ func _warn_height_cap(ratio: float, ratio_cap: float) -> void:
 
 
 func relayout() -> void:
+	# Cleared first — a value set from here on (an override that sets `max_height` before `super()`, say) is already in.
+	_layout_dirty = false
+	_resize_pending = false
 	if card == null or not is_inside_tree(): return
 	var settings := GoUi.config
 	var area := GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px)
@@ -606,7 +675,9 @@ func _process(_delta: float) -> void:
 	# Without the autoload the keyboard is polled here (with it, it arrives as a signal).
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
-	if fit_content: relayout()
+	# 🔑 Fit to content **only when something it reads changed** (`_layout_dirty`). An anchored popover still follows
+	#    its anchor every frame — the anchor can move (a scrolled list) without telling anyone.
+	if _resize_pending or (fit_content and (_layout_dirty or placement == Placement.ANCHOR)): relayout()
 
 
 func _on_keyboard(height_px: int) -> void:
@@ -681,7 +752,8 @@ func _input(event: InputEvent) -> void:
 		#    ceiling moved nothing, `height_changed` reported a height that was never drawn, and dragging back down did
 		#    nothing until the finger had undone the invisible part.
 		height_ratio = clampf(current - dy / maxf(1.0, area.size.y), minf(0.3, height_ratio_cap()), height_ratio_cap())
-		relayout()
+		# 🔑 Applied once per frame in `_process` (input is flushed before it, so the card still moves in the same frame).
+		_resize_pending = true
 		height_changed.emit(height_ratio)
 	get_viewport().set_input_as_handled()
 
