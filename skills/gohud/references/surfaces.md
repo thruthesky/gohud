@@ -214,8 +214,13 @@ func build_login() -> void:
 
 ## 5. GoScroll
 
-`class_name GoScroll extends ScrollContainer`. Vertical by default, deadzone from tokens,
-buttons inside get `MOUSE_FILTER_PASS` so drags scroll; the rail stays on the physical right in RTL.
+`class_name GoScroll extends ScrollContainer`. Vertical by default, deadzone from tokens; the rail stays on the
+physical right in RTL. **A finger swipe that starts on anything inside scrolls it**: the touch policy turns every
+`MOUSE_FILTER_STOP` descendant (cards, panels, `ColorRect`, plain `RichTextLabel` bodies, buttons) into PASS, when it
+enters and once more a frame later, so nobody passes a filter by hand. Controls whose own drag means something keep
+STOP — text fields, selectable text, sliders and spin boxes, `OptionButton`, `ItemList`/`Tree`/`GraphEdit`, and
+anything marked `set_meta(GoScroll.OWNS_GESTURE, true)` (a pannable map). Outside a scroll nothing changes, so a HUD
+panel over the world keeps STOP.
 Follows keyboard/gamepad focus only (`follow_keyboard_focus`; the engine's `follow_focus` is off — it also fired on
 the focus a finger press hands out). While a finger drag runs, the rows drop that focus and ignore the mouse, so no
 highlight rides along with the finger.
@@ -227,6 +232,8 @@ highlight rides along with the finger.
 | `static containing(node) -> GoScroll` | Nearest scrolling ancestor |
 | `use_panel_edge(parent_padding)` · `set_panel_padding(p)` | Move the scrollbar into the card padding (GoSurface/GoForm call it) |
 | `set_section_visible(v)` | Hide the scroll plus its edge frame |
+| `OWNS_GESTURE` · `static owns_gesture(control)` | Meta key a control sets to keep its own drag · the policy's verdict |
+| `static audit_touch(root) -> Array[String]` | For screen tests: STOP controls inside a scroll and plain `ScrollContainer`s under `root` (empty = clean) |
 
 ```gdscript
 var strip := GoScroll.horizontal()

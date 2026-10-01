@@ -4,6 +4,37 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Fixed
+
+- **A finger swipe on a `GoScroll` scrolls it wherever it starts — not only on a button.** On phones, a swipe that
+  started on a card, a panel or a text body did nothing; only holding the thin scrollbar moved the list. Godot's
+  `ScrollContainer` starts a drag-to-scroll in its own `gui_input`, so it only sees what its children pass up, and
+  `MOUSE_FILTER_STOP` — the engine default for `PanelContainer`, `Panel`, `ColorRect` and `RichTextLabel` — stopped
+  the drag on the way. `GoScroll` used to turn only `Button`s to PASS. Its touch policy now turns every STOP
+  descendant to PASS, when it enters the scroll and once more a frame later (a caller that sets STOP right after
+  `add_child`, or a `_ready` that does, no longer wins). Controls whose own drag means something keep STOP:
+  `LineEdit`, `TextEdit`, a `RichTextLabel` with `selection_enabled`, `Range` controls other than progress bars,
+  `OptionButton`, `ItemList`, `Tree`, `GraphEdit`. Nothing changes outside a scroll, so a HUD control over the game
+  keeps STOP. Taps still land, a swipe that starts on a button still does not press it, a swipe that ends on a link
+  does not open it, and a carousel inside a sheet still turns its pages sideways while an up-and-down swipe scrolls
+  the sheet.
+
+### Added
+
+- **`GoScroll.OWNS_GESTURE`** — set this meta to `true` on a control that owns a competing drag (a pannable map, a
+  drawing pad) and the scroll leaves its `mouse_filter` alone. `GoScroll.owns_gesture(control)` gives the policy's
+  verdict.
+- **`GoScroll.audit_touch(root) -> Array[String]`** — for screen tests: reports a STOP control inside a scroll that
+  does not own a gesture, and a plain `ScrollContainer` under `root`. Empty means a finger can swipe every list.
+- The tests now drive the engine's own drag (touch emulation gives the headless run a touchscreen) instead of raising
+  `scroll_started` by hand, across buttons, cards, panels, `ColorRect`, text bodies, art, chips, item cards, alerts,
+  nested plates and a horizontal row inside a vertical sheet.
+
+### Changed
+
+- `GoStyle.style_choice_card`'s `filter` argument is only for a card **outside** a scroll now; inside a `GoScroll`
+  the touch policy handles it.
+
 ## [1.2.1] - 2026-09-28
 
 ### Changed
