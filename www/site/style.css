@@ -240,6 +240,12 @@ b, strong { color: var(--ink); font-weight: 680; }
 .card:hover::before { opacity: 1; }
 .card h3 { margin: 0 0 6px; font-size: 17.5px; }
 .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+/* The All widgets page (`tools/site_catalog.py`) — a card per widget: what it does, what it extends, an example. */
+.catalog h2 small { color: var(--muted); font-weight: 400; font-size: .7em; }
+.catalog .card p.catalog-base { margin-top: 6px; font-size: 12.5px; }
+.catalog .grid { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+/* 🔑 Long example lines fold inside the card instead of running out of it — every line stays readable without scrolling. */
+.catalog .card pre { margin: 10px 0 0; font-size: 12.5px; white-space: pre-wrap; overflow-wrap: break-word; tab-size: 4; }
 
 /* 🛑 합자(ligature)를 끈다 — IBM Plex Mono 는 `--` 를 한 줄로 이어 붙인다. 그러면 화면의
    `git clone --depth 1` 이 `git clone —depth 1` 로 보여, 읽는 사람이 붙임표를 하나로 센다.

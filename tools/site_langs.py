@@ -61,6 +61,7 @@ PAGES = (
 	"install.html",
 	"ai.html",
 	"widgets.html",
+	"widgets-catalog.html",
 	"widgets-surfaces.html",
 	"widgets-messages.html",
 	"widgets-hud.html",

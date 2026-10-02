@@ -60,7 +60,7 @@ refresh.refresh_requested.connect(func() -> void:
 | `GoListView` (GoScroll) | `make(rows, extent, build)` · `recycle(rows, extent, create, bind)` · `set_count(rows)` · `refresh()` · `scroll_to_index(i)` · `row(i)` · `built_indexes()` · `item_extent` · `spacing` · `overscan` · `end_threshold` · signals `end_reached` · `row_shown(index)` |
 | `GoRefresh` (Control) | `attach(scroll, action)` · `finish()` · `refreshing` · `trigger_dp` · `rest_dp` · signal `refresh_requested` |
 | `GoSwipeRow` (Container) | `wrap(row, end, start)` · `trigger(direction)` · `threshold` · `free_on_dismiss` · `content` · signals `swiped(direction)` · `dismissed` — an action is `{"icon", "text", "tone", "action", "dismiss"}` |
-| `GoTabView` (VBoxContainer) | `make(names, pages, selected, translate)` · `current()` · `page(i)` · `set_tab(i, animate)` · `tab_bar` · `swipe_slop` · signal `tab_changed(index)` |
+| `GoTabView` (VBoxContainer) | `make(names, pages, selected, translate)` · `current()` · `page(i)` · `set_tab(i, animate)` · `tab_bar` (a `GoStyle.tabs` row with `fill` on) · `swipe_slop` · signal `tab_changed(index)` — the pages keep a `GAP` from the tab line |
 | `GoReorderList` (Container) | `make(rows, with_grips)` · `add_row(row)` · `remove_row(row)` · `rows()` · `move_row(from, to)` · `is_dragging()` · `grips` · `hold_ms` · `spacing` · signal `reordered(from, to)` |
 | `GoZoomView` (Control) | `wrap(content, most)` · `set_content(content)` · `get_zoom()` · `zoom_to(zoom, around, animate)` · `reset(animate)` · `min_zoom` · `max_zoom` · `double_tap_zoom` · `wheel_step` · signal `zoom_changed(zoom)` |
 | `GoBanner` (PanelContainer) | `make(message, actions, icon, translate)` · `message()` · `dismiss()` · signal `closed` — an action is `{"text", "action", "keep"}` |
@@ -93,11 +93,11 @@ steps.finished.connect(place_order)
 
 | Class | Members |
 |---|---|
-| `GoTimePicker` (Container) | `make(at_hour, at_minute, action, twenty_four)` · `get_time()` · `set_time(hour, minute)` · `show_part(part)` · `current_part()` · `use_24h` · `hour` · `minute` · signal `picked(hour, minute)` |
+| `GoTimePicker` (Container) | `make(at_hour, at_minute, action, twenty_four)` · `get_time()` · `set_time(hour, minute)` · `show_part(part)` · `current_part()` · `use_24h` · `hour` · `minute` · signal `picked(hour, minute)` — Up / Down on a focused hour or minute box turn it by one |
 | `GoDatePicker` range | `range_mode` · `get_range() -> [start, end]` · `set_range(start, end)` · signal `range_picked(start, end)` |
 | `GoRangeSlider` (Control) | `make(minimum, maximum, from, to, snap)` · `set_range(from, to)` · `low` · `high` · `min_value` · `max_value` · `step` · `min_gap` · signals `changed(low, high)` · `change_ended(low, high)` |
 | `GoWheelPicker` (Control) | `make(choices, selected, action, as_keys)` · `set_items(choices, selected)` · `select(index, animate)` · `get_selected()` · `get_text()` · `item_height` · `visible_items` · `translate` · signal `changed(index)` |
-| `GoStepper` (VBoxContainer) | `make(steps, current, translate)` · `current()` · `set_step(i, force)` · `next()` · `back()` · `set_error(i, wrong)` · `state_of(i)` · `layout` (`Layout.VERTICAL` / `HORIZONTAL`) · `can_continue` · signals `step_changed(index)` · `finished` |
+| `GoStepper` (VBoxContainer) | `make(steps, current, translate)` · `current()` · `set_step(i, force)` · `next()` · `back()` · `set_error(i, wrong)` · `state_of(i)` · `layout` (`Layout.VERTICAL` / `HORIZONTAL` — in a row each marker sits over its title, so three or four steps fit a phone) · `can_continue` · signals `step_changed(index)` · `finished` |
 
 - 🔑 The time picker's dial turns to the minutes by itself once the hour is set, as on Android. A 24-hour dial puts
   13–00 on an inner ring.
