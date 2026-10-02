@@ -63,6 +63,7 @@ func _initialize() -> void:
 	await _edge_bars()
 	await _grid_contract()
 	await _side_bars()
+	_safe_area_units()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -2514,3 +2515,37 @@ func _side_bars() -> void:
 	check(GoEdgeBar.edge_insets(Rect2(0, 720, 400, 60), tall_usable, phone, GoEdgeBar.Edge.BOTTOM).w == phone.end.y - tall_usable.end.y,
 		"safe area: a bottom bar on the screen's bottom pads what GoNavBar pads (%.0f)" % (phone.end.y - tall_usable.end.y))
 	section("side bars")
+
+
+## The safe area arrives in screen pixels and the UI lives in its own units. The figures are what a Galaxy A12 reported
+## (720×1600, a 45px cutout at the top, 2026-10-03): under the project's own `canvas_items` stretch the old division by
+## `content_scale_factor` (1 there) put the top bar 45 units down instead of 24, and lost the bottom and right insets.
+func _safe_area_units() -> void:
+	var portrait := Rect2(0, 0, 390, 866)
+	var safe_px := Rect2(0, 45, 720, 1555)
+	var stretch := Transform2D.IDENTITY.scaled(Vector2(1.846154, 1.847575))
+	var clipped := GoSafeArea.clip_to_safe(portrait, safe_px, stretch)
+	check(_close(clipped.position.y, 45.0 / 1.847575, 0.05),
+		"safe area: a 45px cutout comes down by the stretch (%.2f units, not 45)" % clipped.position.y)
+	check(_close(clipped.end.y, portrait.end.y, 0.05), "safe area: an immersive screen keeps its bottom")
+	# GoScale on — base = window pixels, content_scale_factor 2.0625: the 21.8 the phone reported.
+	var dp := GoSafeArea.clip_to_safe(Rect2(0, 0, 349.0909, 775.7576), safe_px, Transform2D.IDENTITY.scaled(Vector2(2.0625, 2.0625)))
+	check(_close(dp.position.y, 21.818, 0.05), "safe area: with GoScale on it is the cutout over the dp scale (%.2f)" % dp.position.y)
+	# The far edges: a 120px gesture bar, and the cutout turned to the right in reverse landscape. Their pixels run
+	# past the UI's edge, so only a conversion into units cuts them.
+	var gesture := GoSafeArea.clip_to_safe(portrait, Rect2(0, 45, 720, 1435), stretch)
+	check(_close(gesture.end.y, 1480.0 / 1.847575, 0.05),
+		"safe area: a gesture bar at the bottom is cut (%.1f units over it)" % (portrait.end.y - gesture.end.y))
+	var landscape := Rect2(0, 0, 866, 390)
+	var turned := GoSafeArea.clip_to_safe(landscape, Rect2(0, 0, 1555, 720), Transform2D.IDENTITY.scaled(Vector2(1.847575, 1.846154)))
+	check(_close(landscape.end.x - turned.end.x, 45.0 / 1.847575, 0.05),
+		"safe area: a cutout on the right in reverse landscape is cut (%.1f units)" % (landscape.end.x - turned.end.x))
+	# A letterboxed window (aspect keep) is offset as well as scaled — the offset comes off first.
+	var boxed := GoSafeArea.clip_to_safe(Rect2(0, 0, 360, 700), Rect2(0, 120, 720, 1400), Transform2D(0.0, Vector2(2, 2), 0.0, Vector2(0, 100)))
+	check(_close(boxed.position.y, 10.0, 0.05) and _close(boxed.end.y, 700.0, 0.05),
+		"safe area: a letterboxed window takes its offset off before the scale (%s)" % boxed)
+	check(GoSafeArea.clip_to_safe(portrait, Rect2(), stretch) == portrait, "safe area: none reported → the whole screen")
+	check(GoSafeArea.clip_to_safe(portrait, safe_px, Transform2D(Vector2.ZERO, Vector2.ZERO, Vector2.ZERO)) == portrait,
+		"safe area: a collapsed transform (before the first layout) → the whole screen")
+	check(GoSafeArea.px_to_units(null, 300) == 300.0, "keyboard: with no window the pixels stand")
+	section("safe area units")

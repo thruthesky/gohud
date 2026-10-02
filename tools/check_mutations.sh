@@ -420,6 +420,10 @@ mutate_extra "widgets/go_edge_bar.gd" \
   "		if avoid_keyboard and at == Edge.BOTTOM: usable = GoSafeArea.usable_rect_with_keyboard(window, _keyboard_px)" \
   "		pass" \
   "avoid_keyboard lifts a bottom bar"
+mutate_extra "core/go_safe_area.gd" \
+  "	var result := area.intersection(to_screen.affine_inverse() * safe_px)" \
+  "	var result := area.intersection(safe_px)" \
+  "the safe area comes into UI units by the stretch"
 mutate_extra "widgets/go_edge_bar.gd" \
   "(_pinned or not _in_scroll())" \
   "_pinned" \

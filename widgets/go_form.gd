@@ -110,7 +110,7 @@ func _relayout() -> void:
 	var side := float(_side_margin())
 	var cap := _max_width()
 	if cap > 0 and area.size.x > float(cap): side = maxf(side, (area.size.x - float(cap)) * 0.5)
-	var keyboard := float(_keyboard_px) / maxf(1.0, get_window().content_scale_factor)
+	var keyboard := GoSafeArea.px_to_units(get_window(), _keyboard_px)
 	# 🛑 **Overlap is judged where the form will actually sit.** Measured against the whole safe area, a form that is
 	#    already pulled to the center on a wide screen by the width cap — nowhere near the HUD — gets **pushed aside**
 	#    again and its centering breaks (the body drifted 214dp to the left on a 1280 screen — measured 2026-09-13 on desktop).

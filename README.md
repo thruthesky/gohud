@@ -800,7 +800,7 @@ font sizes unchanged.
 - Surfaces cap their height at 72 % of the usable area by default, so a floating window always
   reads as floating; in landscape they use a narrower share of the width.
 - Every widget measures against `GoSafeArea.usable_rect()`, which excludes notches and gesture bars
-  on Android and iOS.
+  on Android and iOS — under whatever stretch the project uses.
 - `GoStyle.responsive_grid(min_cell_width)` recomputes its column count whenever its width changes.
 
 ## Localization

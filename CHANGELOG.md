@@ -6,6 +6,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **The safe area under the project's own stretch.** `GoSafeArea.usable_rect()` divided the screen-pixel safe area by
+  `content_scale_factor` alone, which is right only while the stretch ratio is 1 (`GoScale` on). Under the plain
+  `canvas_items` stretch the setup guide recommends, a Galaxy A12 (720×1600 on a 390×844 base) took its 45 px camera
+  cutout as 45 units instead of 24 — the top bar sat 39 px lower than it needed — and lost the bottom and right insets
+  outright: in reverse landscape the right side bar sat on the cutout and the ends of the top and bottom bars ran past
+  the safe area. The safe area and the keyboard height now come into UI units through the window's final transform
+  (`GoSafeArea.clip_to_safe`, `GoSafeArea.px_to_units`), so every widget that measures against it — the edge and side
+  bars, `GoNavBar`, `GoAppBar`, `GoFab`, `GoDrawer`, surfaces, `GoForm`, the snackbar — holds under any stretch.
+  Measured on the phone before and after, in portrait and reverse landscape, with and without `GoScale`.
+
 - **The AI skill's references, checked against the code** — what an agent copied from them now runs as written:
   `container_alpha_overrides` takes a ratio (`0.95`, not `95`, which was clamped to opaque); `GoStyle.floating(…,
   opaque = true)` was a named argument GDScript does not have; the context-menu recipe's code block swallowed the

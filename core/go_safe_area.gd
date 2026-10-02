@@ -35,12 +35,19 @@ static func usable_rect(window: Window) -> Rect2:
 	var area := window.get_visible_rect()
 	if not GoUi.config.respect_safe_area: return area
 	if not GoUi.is_handheld_platform(): return area
-	var safe := DisplayServer.get_display_safe_area()
-	if safe.size.x <= 0 or safe.size.y <= 0: return area
-	# The safe area arrives in **physical pixels** — bring it down to the UI coordinate space by dividing by the stretch ratio.
-	var factor := maxf(1.0, window.content_scale_factor)
-	var scaled := Rect2(Vector2(safe.position) / factor, Vector2(safe.size) / factor)
-	var result := area.intersection(scaled)
+	return clip_to_safe(area, Rect2(DisplayServer.get_display_safe_area()), window.get_final_transform())
+
+
+## `area` (UI units) cut down to the safe area `safe_px` (**screen pixels**). `to_screen` is the window's final
+## transform — UI units to screen pixels, the project's stretch and `content_scale_factor` together.
+## 🛑 Dividing by `content_scale_factor` alone is right only while the stretch ratio is 1 (GoScale on). Under the plain
+##    `canvas_items` stretch the setup guide recommends, a Galaxy A12 (720×1600 on a 390×844 base) got its 45px cutout
+##    as 45 units instead of 24, and lost the bottom and right insets outright — the screen's pixels run past the UI's
+##    edge, so the intersection never cut them (measured 2026-10-03).
+static func clip_to_safe(area: Rect2, safe_px: Rect2, to_screen: Transform2D) -> Rect2:
+	if safe_px.size.x <= 0.0 or safe_px.size.y <= 0.0: return area
+	if is_zero_approx(to_screen.determinant()): return area
+	var result := area.intersection(to_screen.affine_inverse() * safe_px)
 	# If the intersection comes out empty (the first frame, before the scale is settled) fall back to the whole screen — never build a zero-sized card.
 	return result if result.size.x > 1.0 and result.size.y > 1.0 else area
 
@@ -49,10 +56,17 @@ static func usable_rect(window: Window) -> Rect2:
 static func usable_rect_with_keyboard(window: Window, keyboard_px: int) -> Rect2:
 	var area := usable_rect(window)
 	if keyboard_px <= 0 or window == null: return area
-	var keyboard := float(keyboard_px) / maxf(1.0, window.content_scale_factor)
+	var keyboard := px_to_units(window, keyboard_px)
 	var bottom := window.get_visible_rect().size.y - keyboard
 	area.size.y = maxf(0.0, minf(area.end.y, bottom) - area.position.y)
 	return area
+
+
+## A height in screen pixels (the virtual keyboard's) in this window's UI units — by the same final transform as above.
+## Never larger than the pixels: a window drawn below 1:1 (a headless run) keeps the figure as it is.
+static func px_to_units(window: Window, px: float) -> float:
+	if window == null: return px
+	return px / maxf(1.0, absf(window.get_final_transform().get_scale().y))
 
 
 func _layout() -> void:

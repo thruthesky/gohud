@@ -756,7 +756,7 @@ var sort: int = await dialogs.choose("정렬", ["최신순", "안 읽은 것 먼
 
 - 브레이크포인트는 화면 **짧은 변의 dp** 로 정한다 — 576 까지 모바일, 991 까지 태블릿, 그 위는 데스크톱. 둘 다 바꿀 수 있다.
 - 표면은 기본으로 쓸 수 있는 영역 높이의 72% 에서 멈춘다 — 떠 있는 창이 늘 떠 있어 보이게. 가로 화면에서는 폭을 더 좁게 쓴다.
-- 위젯은 전부 `GoSafeArea.usable_rect()` 를 기준으로 잰다 — Android·iOS 의 노치와 제스처 바를 뺀 영역이다.
+- 위젯은 전부 `GoSafeArea.usable_rect()` 를 기준으로 잰다 — Android·iOS 의 노치와 제스처 바를 뺀 영역이다. 프로젝트가 어떤 stretch 를 쓰든 맞다.
 - `GoStyle.responsive_grid(min_cell_width)` 는 폭이 바뀔 때마다 열 수를 다시 계산한다.
 - 터치 목표는 시각적으로 작아도 **48dp 아래로 내려가지 않는다**.
 

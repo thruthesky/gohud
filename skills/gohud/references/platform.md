@@ -231,8 +231,9 @@ own button handlers for a consistent feel.
 
 | API | Notes |
 |---|---|
-| `GoSafeArea.usable_rect(window) -> Rect2` | Excludes notch/gesture bar on Android/iOS; full rect on desktop or when `respect_safe_area` is off |
+| `GoSafeArea.usable_rect(window) -> Rect2` | Excludes notch/gesture bar on Android/iOS; full rect on desktop or when `respect_safe_area` is off. The OS reports the safe area in screen pixels; it comes into UI units through the window's final transform, so it holds under any stretch (the project's own `canvas_items` base, `GoScale`, letterboxing) |
 | `GoSafeArea.usable_rect_with_keyboard(window, keyboard_px)` | Also removes the virtual keyboard |
+| `GoSafeArea.clip_to_safe(area, safe_px, to_screen) -> Rect2` · `GoSafeArea.px_to_units(window, px) -> float` | The two conversions above as pure functions — feed a phone's figures to test a layout on the desktop |
 | `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch |
 | `enum GoScale.Bp { MOBILE, TABLET, DESKTOP }` | Short side in dp: ≤ `mobile_max_dp` (576) mobile, ≤ `tablet_max_dp` (991) tablet |
 | `GoScale.breakpoint_for_dp(dp)` · `form_width_for(bp)` · `gain_for(bp, handheld, portrait)` · `display_scale(raw_scale, dpi, screen_px)` · `breakpoint_name(bp)` | Pure functions |
