@@ -42,6 +42,14 @@ var _holder_filter := Control.MOUSE_FILTER_PASS
 ## Say why next to the line — every other control inside a scroll lets the finger through.
 const OWNS_GESTURE := &"go_scroll_owns_gesture"
 
+## A press held back until the finger shows which way it is going (`_arbitrate`) — see `_input`.
+var _touch := {}
+## True while a held press is handed back to the viewport — every scroll's and every `_Yield`'s `_input` lets it pass,
+## so exactly one of them holds a press.
+static var _replaying := false
+## Meta that `scroll_through()` leaves on a control: whether the PASS it has now was set by that function.
+const _THROUGH := &"go_scroll_through"
+
 
 func _init() -> void:
 	name = "Scroll"
@@ -287,7 +295,8 @@ func _settle_branch(node: Node) -> void:
 	for child in node.get_children(): _settle_branch(child)
 
 
-## 🔑 **Does this control's own drag mean something?** Then a finger on it does not scroll the list.
+## 🔑 **Does this control's own drag mean something?** Then it keeps its press (STOP) — and only if that drag is
+## sideways or a tap (`yields_vertical`) does an up-and-down swipe that starts on it still scroll the list.
 ## - text fields: a press places the caret and a drag selects (`LineEdit`, `TextEdit`),
 ## - a text body the player may select and copy (`RichTextLabel.selection_enabled`),
 ## - value controls whose drag *is* the value: `Slider`, `ScrollBar`, `SpinBox` (a `ProgressBar` takes no input),
@@ -302,6 +311,203 @@ static func owns_gesture(control: Control) -> bool:
 	if control is RichTextLabel: return (control as RichTextLabel).selection_enabled
 	if control is Range: return not (control is ProgressBar or control is TextureProgressBar)
 	return control is ItemList or control is Tree or control is GraphEdit
+
+
+## 🔑 **Is this gesture owner's own gesture sideways or a tap?** Then an up-and-down swipe that starts on it scrolls the
+## list (`_input`) — it has no up-and-down of its own to lose:
+## - a single-line field (`LineEdit`, also the hidden one under `GoCodeInput` and the one in a `GoField`),
+## - a horizontal slider (`HSlider`),
+## - a multi-line field whose text still fits (`TextEdit` with no vertical scrollbar showing),
+## - anything that acts **on the press** rather than the release — a dropdown (`OptionButton`, `MenuButton`, any button
+##   with `ACTION_MODE_BUTTON_PRESS`) and a tab row (`TabBar` switches on the press). A button that acts on the release
+##   needs none of this: the engine cancels its press when the list starts to move. These cannot wait for that — a
+##   swipe that started on a tab switched the tab (seen on a Galaxy A17, 2026-10-02).
+## A control that moves up and down itself keeps the whole gesture: a vertical slider, a scrollbar, a spin box (an
+## up-and-down drag changes its value), a `TextEdit` that scrolls, `ItemList`·`Tree`·`GraphEdit`, and anything a screen
+## marked with [constant OWNS_GESTURE].
+static func yields_vertical(control: Control) -> bool:
+	if control.has_meta(OWNS_GESTURE): return false
+	if control is LineEdit: return not (control.get_parent() is SpinBox)
+	if control is HSlider or control is TabBar: return true
+	if control is BaseButton: return (control as BaseButton).action_mode == BaseButton.ACTION_MODE_BUTTON_PRESS
+	if control is TextEdit: return not (control as TextEdit).get_v_scroll_bar().visible
+	return false
+
+
+## 🔑 **A gohud part that takes no drag of its own lets a finger swipe through to the scroll that holds it** — any
+## scroll: this one, or the engine's plain `ScrollContainer`, which runs none of the touch policy above.
+## STOP is the engine default for a tab row, a progress bar and a panel, and inside a plain scroll it ate every swipe
+## that started on one (2026-10-02). The part turns PASS when it enters a tree under a `ScrollContainer` and keeps its
+## own filter anywhere else — standing over the game, a press on it must still stop there. Returns [param control].
+## 🛑 Only a filter still at STOP is changed, and a PASS this function set is put back when the part leaves the scroll.
+static func scroll_through(control: Control) -> Control:
+	if control == null or control.has_meta(_THROUGH): return control
+	control.set_meta(_THROUGH, false)
+	control.tree_entered.connect(_place_through.bind(control))
+	return control
+
+
+static func _place_through(control: Control) -> void:
+	var inside := false
+	var node := control.get_parent()
+	while node != null:
+		if node is ScrollContainer:
+			inside = true
+			break
+		node = node.get_parent()
+	if inside and control.mouse_filter == Control.MOUSE_FILTER_STOP and not owns_gesture(control):
+		control.mouse_filter = Control.MOUSE_FILTER_PASS
+		control.set_meta(_THROUGH, true)
+	elif not inside and bool(control.get_meta(_THROUGH, false)) and control.mouse_filter == Control.MOUSE_FILTER_PASS:
+		control.mouse_filter = Control.MOUSE_FILTER_STOP
+		control.set_meta(_THROUGH, false)
+
+
+## 🔑 **An up-and-down swipe scrolls the list even when it starts on a slider, a text field or a dropdown.**
+## Those keep their press (`owns_gesture`) — a slider moves sideways, a field places its caret, a dropdown opens on the
+## press — but none of them scrolls up and down (`yields_vertical`). So a finger that lands on one is held back here,
+## before the GUI sees it, until it shows where it is going:
+## - up or down past the deadzone → the press goes to the list instead (the control is skipped for that one press),
+##   and the list follows the finger as it does from any other row;
+## - sideways past the deadzone, or a lift without moving → the press goes to the control as if it had just arrived,
+##   so a slider drags, a tap places the caret, a dropdown opens.
+## Android's ScrollView treats a SeekBar or an EditText the same way.
+## 🛑 Touch only — with a mouse the list does not drag-scroll (`DisplayServer.is_touchscreen_available()` is false),
+##    so a press goes straight to the control as before.
+## 🛑 The innermost scroll decides (`containing()`); a press on a control in a row inside this list is that row's to hold.
+func _input(event: InputEvent) -> void:
+	if _replaying or Engine.is_editor_hint() or not is_visible_in_tree(): return
+	_arbitrate(event, _touch, _held_target, float(scroll_deadzone), get_viewport())
+
+
+func _held_target(point: Vector2) -> Control:
+	var target := control_at(self, point)
+	return target if target != null and yields_vertical(target) and containing(target) == self else null
+
+
+## 🔑 **The arbiter shared by every scroll and every `_Yield`.** [param state] keeps the held press between events,
+## [param find] maps a press point to the control to hold (or `null`: the press goes on untouched).
+## 🛑 A real finger arrives twice — as `InputEventScreenTouch`/`ScreenDrag` and as the mouse events the engine makes from
+##    them — and a control may answer either: holding only the mouse press, a dropdown still opened on the touch (measured
+##    on a Galaxy A17, 2026-10-02). So both presses of the first finger are held, and handed on together.
+static func _arbitrate(event: InputEvent, state: Dictionary, find: Callable, deadzone: float, viewport: Viewport) -> void:
+	var touch := event as InputEventScreenTouch
+	var click := event as InputEventMouseButton
+	if (touch != null and touch.index != 0) or (click != null and click.button_index != MOUSE_BUTTON_LEFT): return
+	if touch != null or click != null:
+		var pressed := touch.pressed if touch != null else click.pressed
+		var point: Vector2 = touch.position if touch != null else click.position
+		if pressed:
+			if state.is_empty():
+				if not DisplayServer.is_touchscreen_available(): return
+				var target: Control = find.call(point)
+				if target == null: return
+				state.merge({"control": target, "presses": [], "start": point, "way": &""})
+			elif state["way"] != &"" or point.distance_to(state["start"]) > 1.0:
+				return
+			(state["presses"] as Array).append(event.duplicate())
+			viewport.set_input_as_handled()
+		elif not state.is_empty():
+			# A tap: the control gets its presses now, and this release right after them.
+			if state["way"] == &"": _replay_all(viewport, state["presses"])
+			state.clear()
+		return
+	var drag := event as InputEventScreenDrag
+	var motion := event as InputEventMouseMotion
+	if (drag == null and motion == null) or (drag != null and drag.index != 0): return
+	if state.is_empty() or state["way"] != &"": return
+	# 🔑 The direction is read from **one stream** — the mouse one the GUI itself follows. The touch drags of the same
+	#    finger are held while the press is, then let through. (Touch made from a mouse, as the headless checks make it,
+	#    carries drag positions in another space: read from them, every sideways drag came out vertical.)
+	#    Only a project that turned the mouse-from-touch emulation off has no mouse stream to read — then the touch decides.
+	if drag != null and ProjectSettings.get_setting("input_devices/pointing/emulate_mouse_from_touch", true):
+		viewport.set_input_as_handled()
+		return
+	var at: Vector2 = drag.position if drag != null else motion.position
+	var step: Vector2 = drag.relative if drag != null else motion.relative
+	var travelled: Vector2 = at - state["start"]
+	if travelled.length() < maxf(deadzone, 8.0):
+		viewport.set_input_as_handled()
+		return
+	var control: Control = state["control"] if is_instance_valid(state["control"]) else null
+	if control != null and absf(travelled.y) > absf(travelled.x):
+		state["way"] = &"vertical"
+		# The presses land on what lies under the control — the list — and the GUI keeps sending this finger there.
+		var filter := control.mouse_filter
+		control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_replay_all(viewport, state["presses"])
+		control.mouse_filter = filter
+		# Catch the list up with the distance already travelled; this motion then carries on as usual.
+		var catch_up := event.duplicate()
+		catch_up.set(&"relative", travelled - step)
+		catch_up.set(&"position", at - step)
+		_replay(viewport, catch_up)
+	else:
+		state["way"] = &"sideways"
+		_replay_all(viewport, state["presses"])
+
+
+static func _replay_all(viewport: Viewport, events: Array) -> void:
+	for event: InputEvent in events: _replay(viewport, event)
+
+
+static func _replay(viewport: Viewport, event: InputEvent) -> void:
+	_replaying = true
+	viewport.push_input(event, true)
+	_replaying = false
+
+
+## 🔑 **A gohud field, dropdown or slider brings the same arbiter into a plain `ScrollContainer`** — a scroll that is not
+## a `GoScroll` has no `_input` of its own to hold the press, so the control carries a small `_Yield` node that does.
+## Inside a `GoScroll` that node stands aside: the scroll already holds the press. Returns [param control].
+static func yield_vertical(control: Control) -> Control:
+	if control == null or control.has_node(^"GoScrollYield"): return control
+	var helper := _Yield.new()
+	helper.name = "GoScrollYield"
+	control.add_child(helper, false, Node.INTERNAL_MODE_BACK)
+	return control
+
+
+## The arbiter a gohud field, dropdown or slider carries into a plain `ScrollContainer` (`yield_vertical`).
+class _Yield extends Node:
+	var _touch := {}
+
+	func _input(event: InputEvent) -> void:
+		var control := get_parent() as Control
+		if GoScroll._replaying or Engine.is_editor_hint() or control == null or not control.is_visible_in_tree(): return
+		var scroll := _plain_scroll(control)
+		if scroll == null: return
+		GoScroll._arbitrate(event, _touch, _target.bind(control, scroll), float(scroll.scroll_deadzone), get_viewport())
+
+	## The plain scroll around the control — `null` inside a `GoScroll` (it holds the press itself) or outside any scroll.
+	static func _plain_scroll(control: Control) -> ScrollContainer:
+		var node := control.get_parent()
+		while node != null:
+			if node is GoScroll: return null
+			if node is ScrollContainer: return node
+			node = node.get_parent()
+		return null
+
+	static func _target(point: Vector2, control: Control, scroll: ScrollContainer) -> Control:
+		return control if GoScroll.yields_vertical(control) and GoScroll.control_at(scroll, point) == control else null
+
+
+## The control a press at [param point] (viewport coordinates) reaches under [param node] — the topmost visible one that
+## takes the mouse, found the way the GUI finds it. `null` when nothing there takes the press.
+## 🛑 A clipping control (a scroll, a row with `clip_contents`) hides what lies outside it — its subtree is skipped there.
+static func control_at(node: Node, point: Vector2) -> Control:
+	var control := node as Control
+	if control != null:
+		var local := control.get_global_transform_with_canvas().affine_inverse() * point
+		var inside := Rect2(Vector2.ZERO, control.size).has_point(local)
+		if not inside and (control.clip_contents or control is Container): return null
+		for index in range(node.get_child_count() - 1, -1, -1):
+			var child := node.get_child(index)
+			if not child is Control or not (child as Control).visible or (child as Control).top_level: continue
+			var found := control_at(child, point)
+			if found != null: return found
+		return control if inside and control.mouse_filter != Control.MOUSE_FILTER_IGNORE else null
+	return null
 
 
 ## 🧪 **What under [param root] can swallow a finger drag** — one line per problem, empty when clean.

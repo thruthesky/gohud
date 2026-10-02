@@ -6,6 +6,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **An up-and-down swipe that starts on a tab row, a list row, a progress bar, a field, a slider or a dropdown scrolls
+  the list.** Inside a `GoScroll` the swipe used to stop dead on a field, a horizontal slider, a dropdown or a tab row
+  (they keep their press), and a swipe that started on a tab switched the tab. The scroll now holds such a press until
+  the finger shows its way: up or down goes to the list, sideways or a lift goes to the control, so a slider still
+  drags and a tap still focuses, opens or switches (`GoScroll.yields_vertical`). In the engine's plain
+  `ScrollContainer` the gohud parts do it themselves: tab rows, progress bars, cards, panels, chips, alerts and
+  `GoIconButton` pass the swipe through while they sit in a scroll (`GoScroll.scroll_through`), and `GoStyle` fields,
+  sliders and dropdowns carry the same arbiter (`GoScroll.yield_vertical`). Spin boxes, vertical sliders, a
+  `TextEdit` that scrolls and anything marked `OWNS_GESTURE` keep the whole gesture. Measured with real touch on a
+  Galaxy A17 and A12.
 - **A tooltip's text takes the theme's tooltip colour** (`TooltipLabel/colors/font_color`, the colour paired with the
   `TooltipPanel` plate and the one `tools/check_contrast.py` measures) instead of the body `TEXT` token. The six
   earlier themes give both the same colour, so nothing changes there; a theme with a dark tooltip on a light page no

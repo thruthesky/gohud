@@ -97,6 +97,7 @@ func _initialize() -> void:
 	await _section("feedback", _feedback)
 	await _section("scroll drag", _scroll_drag)
 	await _section("scroll finger swipe", _scroll_swipe)
+	await _section("scroll yields", _scroll_yields)
 	await _section("rtl", _rtl)
 	await _section("standalone", _standalone)
 	# 🛑 Leaving a lambda in a static variable can crash during shutdown — clear them before finishing.
@@ -3035,7 +3036,7 @@ func _hit(point: Vector2) -> Control:
 
 
 ## A finger press, a drag of [param distance] in steps, a lift. Returns how far [param scroll] moved before the lift.
-func _swipe(scroll: GoScroll, start: Vector2, distance: float, sideways := false) -> int:
+func _swipe(scroll: ScrollContainer, start: Vector2, distance: float, sideways := false) -> int:
 	_finger_motion(start, Vector2.ZERO, false)
 	_finger_button(start, true)
 	await frames(1)
@@ -3051,6 +3052,178 @@ func _swipe(scroll: GoScroll, start: Vector2, distance: float, sideways := false
 	_finger_button(point, false)
 	await frames(2)
 	return moved
+
+
+## 🛑 **An up-and-down swipe scrolls the list from a control whose own gesture is sideways or a tap.** Reported
+##    2026-10-02: on phones a swipe that started on a slider, a field or a dropdown did not scroll the list — and in a
+##    plain `ScrollContainer` neither did one that started on a tab row, a progress bar, a card or an icon button.
+##    Their own gesture still works: a sideways drag moves the slider, a tap focuses the field and opens the dropdown.
+##    A control that moves up and down itself keeps the whole gesture.
+func _scroll_yields() -> void:
+	var emulated := Input.emulate_touch_from_mouse
+	Input.emulate_touch_from_mouse = true
+	var kinds := {
+		"slider": func() -> Control:
+			var slider := GoStyle.slider()
+			slider.value = 0.5
+			return slider,
+		"field": func() -> Control: return GoStyle.line_edit("Name"),
+		"dropdown": func() -> Control: return GoStyle.select(["Low", "Medium", "High"]),
+		"field in a GoField": func() -> Control: return GoField.make("Name", GoStyle.line_edit("2-16")),
+		"code input": func() -> Control: return GoCodeInput.make(8, 4),
+		"textarea whose text fits": func() -> Control:
+			var text := GoStyle.textarea("Notes", 4)
+			text.text = "fits"
+			return text,
+		"tab row": func() -> Control: return GoStyle.tabs(["For you", "Following", "News"]),
+		"menu button": func() -> Control: return GoStyle.dropdown("Sort", ["Newest", "Oldest"]),
+		"progress bar": func() -> Control:
+			var bar := GoStyle.progress()
+			bar.custom_minimum_size.y = 24
+			return bar,
+		"card": func() -> Control:
+			var card := GoStyle.card()
+			card.add_child(GoStyle.label("Card"))
+			return card,
+		"icon button": func() -> Control:
+			var icon := GoIconButton.new()
+			icon.icon_name = GoIconSet.BELL
+			return icon,
+		"table": func() -> Control: return GoTable.make(["Name", "Score"], [["Ann", "9"], ["Bo", "7"]]),
+	}
+	var keepers := {
+		"spin box (drags its value up and down)": func() -> Control: return SpinBox.new(),
+		"textarea that scrolls": func() -> Control:
+			var text := GoStyle.textarea("Notes", 2)
+			text.text = "line\n".repeat(12)
+			return text,
+		"vertical slider": func() -> Control:
+			var slider := VSlider.new()
+			slider.custom_minimum_size = Vector2(48, 120)
+			return slider,
+	}
+	var pressed_down := [0]
+	for plain in [false, true]:
+		var where := "plain ScrollContainer" if plain else "GoScroll"
+		for kind: String in kinds:
+			var part: Control = (kinds[kind] as Callable).call()
+			pressed_down[0] = 0
+			# `pressed` is the button's action — on the press for a dropdown, on the release for the rest (a swipe cancels that).
+			if part is BaseButton: (part as BaseButton).pressed.connect(func() -> void: pressed_down[0] += 1)
+			var scroll := await _yield_list(part, plain)
+			var moved := await _swipe(scroll, part.get_global_rect().get_center(), -150.0)
+			check(moved > 60, "%s: an up-and-down swipe that starts on a %s scrolls the list (%d)" % [where, kind, moved])
+			if part is HSlider: check(is_equal_approx((part as HSlider).value, 0.5), "%s: and the slider keeps its value" % where)
+			if part is TabBar: check((part as TabBar).current_tab == 0, "%s: and the tab row keeps its tab" % where)
+			if part is BaseButton: check(not (part as BaseButton).is_pressed() and pressed_down[0] == 0,
+				"%s: and the swipe does not press the %s (%d)" % [where, kind, pressed_down[0]])
+			scroll.queue_free()
+			await frames(1)
+		for kind: String in keepers:
+			var part: Control = (keepers[kind] as Callable).call()
+			var scroll := await _yield_list(part, plain)
+			var moved := await _swipe(scroll, part.get_global_rect().get_center(), -150.0)
+			check(moved == 0, "%s: a %s keeps its own up-and-down drag (%d)" % [where, kind, moved])
+			scroll.queue_free()
+			await frames(1)
+		# Their own gestures still work.
+		var tabs := GoStyle.tabs(["For you", "Following", "News"])
+		var list := await _yield_list(tabs, plain)
+		var second := tabs.get_tab_rect(1)
+		await _tap(tabs.get_global_rect().position + second.get_center())
+		check(tabs.current_tab == 1, "%s: a tap on a tab still switches to it (%d)" % [where, tabs.current_tab])
+		list.queue_free()
+		await frames(1)
+		var slider := GoStyle.slider()
+		slider.value = 0.5
+		list = await _yield_list(slider, plain)
+		var start := slider.get_global_rect().get_center()
+		_finger_motion(start, Vector2.ZERO, false)
+		_finger_button(start, true)
+		await frames(1)
+		var point := start
+		for i in 10:
+			point += Vector2(-12, 0)
+			_finger_motion(point, Vector2(-12, 0), true)
+			await frames(1)
+		_finger_button(point, false)
+		await frames(2)
+		check(slider.value < 0.4 and list.scroll_vertical == 0,
+			"%s: a sideways drag moves the slider, not the list (%.2f · %d)" % [where, slider.value, list.scroll_vertical])
+		list.queue_free()
+		await frames(1)
+		var field := GoStyle.line_edit("Name")
+		list = await _yield_list(field, plain)
+		await _tap(field.get_global_rect().get_center())
+		check(field.has_focus(), "%s: a tap on the field focuses it" % where)
+		list.queue_free()
+		await frames(1)
+		var opened := [0]
+		var dropdown := GoStyle.select(["Low", "Medium", "High"])
+		dropdown.button_down.connect(func() -> void: opened[0] += 1)
+		list = await _yield_list(dropdown, plain)
+		await _tap(dropdown.get_global_rect().get_center())
+		check(opened[0] == 1, "%s: a tap on the dropdown presses it once (%d)" % [where, opened[0]])
+		dropdown.get_popup().hide()
+		list.queue_free()
+		await frames(1)
+
+	# 🛑 With a mouse the list does not drag-scroll, so a press goes straight to the control — nothing is held back.
+	Input.emulate_touch_from_mouse = false
+	var mouse_slider := GoStyle.slider()
+	mouse_slider.value = 0.9
+	var mouse_list := await _yield_list(mouse_slider, false)
+	var rect := mouse_slider.get_global_rect()
+	_finger_motion(rect.position + Vector2(rect.size.x * 0.1, rect.size.y * 0.5), Vector2.ZERO, false)
+	_finger_button(rect.position + Vector2(rect.size.x * 0.1, rect.size.y * 0.5), true)
+	await frames(1)
+	check(mouse_slider.value < 0.5, "with a mouse a press on the slider reaches it at once (%.2f)" % mouse_slider.value)
+	_finger_button(rect.position + Vector2(rect.size.x * 0.1, rect.size.y * 0.5), false)
+	await frames(1)
+	mouse_list.queue_free()
+	Input.emulate_touch_from_mouse = true
+
+	# 🛑 Outside a scroll a gohud part keeps STOP — and gets it back when it leaves the scroll it was in.
+	var plain_scroll := ScrollContainer.new()
+	root.add_child(plain_scroll)
+	var card := GoStyle.card()
+	plain_scroll.add_child(card)
+	await frames(1)
+	check(card.mouse_filter == Control.MOUSE_FILTER_PASS, "a gohud card inside a plain ScrollContainer is PASS")
+	card.reparent(root)
+	await frames(1)
+	check(card.mouse_filter == Control.MOUSE_FILTER_STOP, "and STOP again once it leaves the scroll")
+	card.queue_free()
+	plain_scroll.queue_free()
+	var lone_tabs := GoStyle.tabs(["A", "B"])
+	root.add_child(lone_tabs)
+	await frames(1)
+	check(lone_tabs.mouse_filter == Control.MOUSE_FILTER_STOP, "a tab row outside any scroll keeps STOP")
+	lone_tabs.queue_free()
+	await frames(1)
+	Input.emulate_touch_from_mouse = emulated
+
+
+## A list ([param plain]: the engine's `ScrollContainer`, else a `GoScroll`) with [param part] near its top and room to scroll.
+func _yield_list(part: Control, plain: bool) -> ScrollContainer:
+	var scroll: ScrollContainer = ScrollContainer.new() if plain else GoScroll.new()
+	scroll.position = Vector2(8, 8)
+	scroll.size = Vector2(340, 420)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	var column := GoStyle.column()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(column)
+	var above := Control.new()
+	above.custom_minimum_size.y = 80
+	column.add_child(above)
+	part.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.add_child(part)
+	var below := Control.new()
+	below.custom_minimum_size.y = 1400
+	column.add_child(below)
+	root.add_child(scroll)
+	await frames(4)
+	return scroll
 
 
 func _tap(point: Vector2) -> void:

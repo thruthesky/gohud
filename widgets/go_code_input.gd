@@ -99,6 +99,7 @@ func _init() -> void:
 	#    never reaches it and the virtual keyboard never opens. It covers the cells, so any tap focuses it.
 	edit = LineEdit.new()
 	edit.name = "Hidden"
+	GoScroll.yield_vertical(edit)   # an up-and-down swipe that starts on the cells scrolls the list that holds them
 	edit.max_length = length
 	edit.flat = true
 	edit.alignment = HORIZONTAL_ALIGNMENT_CENTER

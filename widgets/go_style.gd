@@ -139,6 +139,7 @@ static func edge_card(accent: Color, rtl := false, width := -1.0, alpha := -1.0)
 static func edge_card_panel(accent: Color, rtl := false, pad := -1.0, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "EdgeCard"
+	GoScroll.scroll_through(node)   # a swipe that starts on it scrolls the list that holds it
 	node.theme = GoUi.theme()
 	var face := edge_card(accent, rtl, -1.0, alpha)
 	face_padding(face, pad if pad >= 0.0 else float(GoUi.metric(GoTheme.PADDING_COMPACT)),
@@ -894,6 +895,7 @@ static func line_edit(placeholder := "", translate_placeholder := false) -> Line
 	#    (2026-09-12, 3 search hints in the game gohud grew out of).
 	if translate_placeholder: node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
+	GoScroll.yield_vertical(node)   # an up-and-down swipe that starts on the field scrolls the list that holds it
 	return node
 
 
@@ -923,6 +925,7 @@ static func checkbox(key := "", translate := true) -> CheckBox:
 static func slider(minimum := 0.0, maximum := 1.0, step := 0.01) -> HSlider:
 	var node := HSlider.new()
 	node.theme = GoUi.theme()
+	GoScroll.yield_vertical(node)   # an up-and-down swipe that starts on the slider scrolls the list that holds it
 	node.min_value = minimum
 	node.max_value = maximum
 	node.step = step
@@ -934,6 +937,7 @@ static func picker() -> OptionButton:
 	var node := OptionButton.new()
 	node.theme = GoUi.theme()
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
+	GoScroll.yield_vertical(node)   # an up-and-down swipe that starts on the dropdown scrolls the list that holds it
 	return node
 
 
@@ -941,6 +945,7 @@ static func progress(ink := Color.TRANSPARENT) -> ProgressBar:
 	var node := ProgressBar.new()
 	node.theme = GoUi.theme()
 	node.show_percentage = false
+	GoScroll.scroll_through(node)   # a swipe that starts on it scrolls the list that holds it
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.GAP_SMALL)
 	if ink.a > 0: tint_progress(node, ink)
 	return node
@@ -1045,6 +1050,7 @@ static func card(accent := Color.TRANSPARENT, border_alpha := -1.0, border_width
 		pad := -1.0, alpha := -1.0) -> PanelContainer:
 	var node := PanelContainer.new()
 	node.name = "Card"
+	GoScroll.scroll_through(node)   # a swipe that starts on it scrolls the list that holds it
 	node.theme = GoUi.theme()
 	node.theme_type_variation = GoTheme.VAR_CARD
 	# 🛑 A card given nothing **builds no new face** — the look of a project that defined the `GoCard`
@@ -1221,6 +1227,7 @@ static func style_hud_panel(node: PanelContainer, accent := Color.TRANSPARENT, p
 		variant := GoTheme.BOX_HUD, alpha := -1.0) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
+	GoScroll.scroll_through(node)   # a swipe that starts on it scrolls the list that holds it
 	var face := GoUi.skin().floating_box(variant, accent, alpha)
 	face_padding(face, pad_x, pad_y)
 	node.add_theme_stylebox_override(&"panel", face)
@@ -1351,6 +1358,7 @@ static func overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> Panel
 static func style_overlay_panel(node: PanelContainer, pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> void:
 	if node == null: return
 	node.theme = GoUi.theme()
+	GoScroll.scroll_through(node)   # a swipe that starts on it scrolls the list that holds it
 	node.add_theme_stylebox_override(&"panel", GoUi.skin().overlay_box(pad_x, pad_y, fill_alpha))
 
 
@@ -1485,6 +1493,7 @@ static func chip_panel(accent := Color.TRANSPARENT, fill_alpha := -1.0) -> Panel
 	var color := accent if accent.a > 0 else GoUi.color(GoTheme.SECONDARY)
 	var node := PanelContainer.new()
 	node.name = "ChipPanel"
+	GoScroll.scroll_through(node)   # a swipe that starts on it scrolls the list that holds it
 	node.theme = GoUi.theme()
 	var face := _chip_face(color, false)
 	if fill_alpha >= 0.0 and &"bg_color" in face: face.set(&"bg_color", Color(color, fill_alpha))
@@ -2012,6 +2021,7 @@ static func dropdown(text: String, items: Array, action := Callable(), translate
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	GoScroll.yield_vertical(node)   # it opens on the press — an up-and-down swipe that starts on it scrolls the list instead
 	# 🛑 **It stands next to `select()` (OptionButton)** — in the demo the two are stacked one above the other, and
 	#    their text alignment and arrow size differed enough that they read as different parts (measured 2026-09-13
 	#    on a demo capture). The text goes left, and the arrow is matched to the size of the art OptionButton uses.
@@ -2290,6 +2300,8 @@ static func _choice_cell(item: Dictionary, translate: bool) -> Button:
 static func tabs(names: Array, selected := 0, translate := false) -> TabBar:
 	var bar := TabBar.new()
 	bar.theme = GoUi.theme()
+	GoScroll.scroll_through(bar)   # a swipe that starts on the tab row scrolls the list that holds it
+	GoScroll.yield_vertical(bar)   # …and does not switch the tab it started on
 	bar.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 	for name in names: bar.add_tab(str(name))
 	bar.current_tab = clampi(selected, 0, maxi(0, names.size() - 1))
@@ -2328,6 +2340,7 @@ static func textarea(placeholder := "", lines := 4, translate_placeholder := fal
 	var node := TextEdit.new()
 	node.theme = GoUi.theme()
 	node.placeholder_text = placeholder
+	GoScroll.yield_vertical(node)   # while its text fits, an up-and-down swipe that starts on it scrolls the list
 	if translate_placeholder: node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
 	node.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	node.scroll_fit_content_height = false
@@ -2465,6 +2478,7 @@ static func alert(message: String, tone := GoTheme.INFO, icon: StringName = &"",
 	var ink := GoUi.color(tone)
 	var node := PanelContainer.new()
 	node.name = "Alert"
+	GoScroll.scroll_through(node)   # a swipe that starts on it scrolls the list that holds it
 	node.theme = GoUi.theme()
 	node.add_theme_stylebox_override(&"panel", GoUi.skin().alert_box(ink, alpha))
 	var line := row(GoUi.metric(GoTheme.GAP_SMALL))

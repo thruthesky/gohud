@@ -222,6 +222,15 @@ enters and once more a frame later, so nobody passes a filter by hand. Controls 
 STOP — text fields, selectable text, sliders and spin boxes, `OptionButton`, `ItemList`/`Tree`/`GraphEdit`, and
 anything marked `set_meta(GoScroll.OWNS_GESTURE, true)` (a pannable map). Outside a scroll nothing changes, so a HUD
 panel over the world keeps STOP.
+**An up-and-down swipe still scrolls when it starts on a control whose own gesture is sideways or a tap**
+(`yields_vertical`): a single-line field, a horizontal slider, a `TextEdit` whose text fits, a dropdown and a tab row.
+The scroll holds the press (touch and the mouse made from it) until the finger has moved past the deadzone: up or down
+hands it to the list, sideways or a lift hands it to the control — a slider still drags, a tap still places the caret,
+opens the dropdown, switches the tab. Spin boxes, vertical sliders, a `TextEdit` that scrolls and `OWNS_GESTURE`
+controls keep the whole gesture. Touch only; a mouse press goes straight to the control.
+In the engine's plain `ScrollContainer` the gohud parts do the same on their own: tab rows, progress bars, cards,
+panels, chips, alerts and icon buttons pass the swipe through (`scroll_through`), and `GoStyle` fields, sliders and
+dropdowns carry the arbiter with them (`yield_vertical`).
 Follows keyboard/gamepad focus only (`follow_keyboard_focus`; the engine's `follow_focus` is off — it also fired on
 the focus a finger press hands out). While a finger drag runs, the rows drop that focus and ignore the mouse, so no
 highlight rides along with the finger.
@@ -234,6 +243,10 @@ highlight rides along with the finger.
 | `use_panel_edge(parent_padding)` · `set_panel_padding(p)` | Move the scrollbar into the card padding (GoSurface/GoForm call it) |
 | `set_section_visible(v)` | Hide the scroll plus its edge frame |
 | `OWNS_GESTURE` · `static owns_gesture(control)` | Meta key a control sets to keep its own drag · the policy's verdict |
+| `static yields_vertical(control) -> bool` | Whether an up-and-down swipe that starts on this gesture owner scrolls the list (above) |
+| `static scroll_through(control) -> Control` | PASS while the control sits under any `ScrollContainer`, its own filter elsewhere; only a STOP filter is changed and put back when it leaves. `GoStyle` panels, tabs, progress bars, chips and `GoIconButton` call it |
+| `static yield_vertical(control) -> Control` | Gives a field, slider or dropdown the press arbiter inside a plain `ScrollContainer` (inside a `GoScroll` the scroll already holds it). `GoStyle.line_edit/slider/select/textarea/tabs/dropdown` call it |
+| `static control_at(node, point) -> Control` | The control a press at a viewport point reaches under `node` (topmost visible, not IGNORE, clipped by containers) |
 | `static audit_touch(root) -> Array[String]` | For screen tests: STOP controls inside a scroll and plain `ScrollContainer`s under `root` (empty = clean) |
 
 ```gdscript

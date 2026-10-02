@@ -70,6 +70,7 @@ var _glyph: Control
 
 func _init() -> void:
 	theme_type_variation = GoTheme.VAR_ICON_BUTTON
+	GoScroll.scroll_through(self)   # a swipe that starts on the icon scrolls the list that holds it
 	custom_minimum_size = Vector2.ONE * visual_size
 	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER

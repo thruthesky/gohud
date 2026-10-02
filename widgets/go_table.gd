@@ -263,6 +263,7 @@ func _make_row(source: int, position: int) -> Control:
 	# 🔑 The whole row is the button — a finger is never asked to hit one cell precisely.
 	var button := Button.new()
 	button.name = "Pick%d" % source
+	GoScroll.scroll_through(button)   # a swipe that starts on a row scrolls the list that holds the table
 	button.theme = GoUi.theme()
 	button.theme_type_variation = GoTheme.VAR_LIST_BUTTON
 	button.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
