@@ -141,6 +141,26 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **`material` shape for themes** — `"shape": "material"` in a palette JSON, built by the new `tools/theme_material.py`.
   It only replaces the boxes and entries the generator already makes, so the other six themes are generated exactly
   as before.
+- **From Flutter — the widgets a Flutter app reaches for that a game kit lacks**, each drawn through a `GoSkin` hook
+  (every preset's own shape, the M3 component's under Material): `GoScaffold` (app bar, a scrolling page, bottom bar,
+  FAB and drawer wired together), `GoListView` (builds only the rows in view, or rebinds a few with `recycle()`;
+  `end_reached` for the next page), `GoRefresh` (pull to refresh), `GoSwipeRow` (swipe a row aside — only a sideways
+  drag is the row's), `GoTabView` (tabs over swipeable pages), `GoReorderList` (drag rows into order by a grip or a
+  long press; Up/Down on a focused grip), `GoZoomView` (pinch, wheel and double tap to zoom, pan inside the edges),
+  `GoBanner`, `GoRangeSlider`, `GoStepper`, `GoTimePicker` (the M3 dial, 12 or 24 hours) and `GoWheelPicker`.
+  Added to existing parts: `GoDialogs.choose()` (one of a few options, a bottom sheet on a phone),
+  `GoDatePicker.range_mode` (`range_picked`, `get_range()`, `set_range()`), `GoStyle.Tone.OUTLINED`,
+  `GoStyle.bottom_app_bar()`, `GoNavBar.drawer_list()`, and `GoAppBar.Size` with `expanded_title()` (the large title
+  scrolls away under the bar). The skill's new `references/flutter.md` maps Flutter's catalogue to gohud and Godot.
+- **`GoSkin` hooks** for them — `outlined_button_box`, `outlined_button_ink`, `banner_box`, `refresh_disc_box`,
+  `step_marker_box`, `step_marker_ink`, `time_selector_box`, `time_ink`, `dial_colors`, `reorder_lift_box`,
+  `reorder_grip_ink`, `wheel_band_box`, `wheel_ink`; `date_cell_box`/`date_ink` take the kind `&"in_range"`; and
+  `variation_box(type, key)` is public and follows a type variation to its base (`GoButton` draws with `Button`'s
+  boxes).
+- **`GoScroll.SIDEWAYS`** — a control whose own drag is sideways (a range slider) keeps its press inside a scroll while
+  an up-and-down swipe from it still scrolls the list.
+- **5 more built-in strings in 21 languages** — `am`, `pm`, `hour`, `minute` (the time picker) and `reorder` (a reorder
+  grip's name).
 
 - **`GoConfig.button_glow`** (off by default) and **`GoStyle.glow(button, on := true) -> Button`** — raise filled
   buttons with the glow they used to have. They switch the button to the new type variations

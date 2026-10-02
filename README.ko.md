@@ -209,11 +209,13 @@ var tonal := GoUi.color(&"md_secondary_container")   # M3 색 역할도 전부 �
   스켈레톤을 `surface-container-highest` 로 그리고, 아이콘 버튼의 그림을 24dp 로 둔다.
 - 앱 컴포넌트([앱 화면](#앱-화면))도 여기서는 M3 컴포넌트 토큰을 따른다 — 56×32 표시자의 내비게이션 바, 스크롤하면
   떠오르는 상단 앱 바, FAB 크기, 검색 바 알약, 필터·입력 칩, 플로팅 툴바, 분할 버튼, 웨이브 진행 표시, Expressive 로딩
-  인디케이터, 날짜 선택기.
+  인디케이터, 날짜 선택기. [Flutter 에서 온 위젯](#flutter-에서-온-위젯)도 같다 — 외곽선 버튼, 시간 선택기의 다이얼과 칸,
+  기간 띠, 배너, 스테퍼 표시, 휠의 띠, 들어 올린 줄.
 
 gohud 자체 검사가 규격보다 앞서는 곳: 밝은 프리셋에서 카드는 surface-dim, 들린 칸은 outline-variant 다(gohud 는 판·카드·
 들린 칸을 1.12:1 이상 떼어 둔다). `secondary` 와 `muted` 는 둘 다 on-surface-variant 이고, 비활성 글자는 읽히는 대비를
 유지하며(M3 는 38% 로 흐린다), 스낵바는 밝은 판을 쓰고, 채운 버튼의 포커스 링은 판 안쪽에 그 버튼의 on 색으로 그린다.
+시간 선택기의 오전·오후는 각각 48dp 이고 시·분 칸도 그만큼 높다(M3 는 80dp 를 40dp 둘로 나눠 손가락에 작다).
 스프링 모션·버튼의 모양 변형·리플·다이나믹 컬러는 테마에 담을 수 없다. Material 은 Google 의 공개 디자인 시스템이고, 이
 프리셋은 그 토큰(material-web `tokens/versions/latest`, Material 3 v34.0.21)으로 만든 비공식 프리셋이다.
 
@@ -558,7 +560,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 |---|---|---|
 | `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절 |
 | `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터. `max_height_ratio` 로 그 시트만 전역 상한 0.72 를 넘겨 키운다(비율이 깎이면 디버그 빌드에서 경고) |
-| `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼, `action_layout` 으로 버튼 세로·한 줄·자동 |
+| `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼, `action_layout` 으로 버튼 세로·한 줄·자동. `await choose()` 는 몇 가지 중 고른 것의 번호 |
 | `GoForm` | MarginContainer | 브레이크포인트마다 폭을 제한하고 가상 키보드를(`avoid_hud` 면 HUD 까지) 피하며 라벨 줄바꿈을 보장하는 폼 |
 | `GoScroll` | ScrollContainer | 손가락 스크롤, 스크롤바가 카드 여백 자리로 들어간다, RTL 대응 |
 | `GoNotice` | PanelContainer | 입력도 포커스도 가져가지 않는 스낵바 |
@@ -569,7 +571,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
 | `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
 | `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
-| `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
+| `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·아래 앱 바·외곽선 버튼(`Tone.OUTLINED`)·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 여덟, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
@@ -680,6 +682,46 @@ screen.add_child(actions)
 ```
 
 `START`·`END` 는 레이아웃 방향을 따르므로 앱 화면은 아랍어·히브리어에서 좌우가 뒤집힌다. 흐름 안(컨테이너 아래)에서 바는 열의 첫째나 마지막 자식이다 — 스크롤되는 페이지는 바의 형제로 둔다. `pin_to_edge = ALWAYS` 면 컨테이너 안에서도 화면 가장자리를 지킨다. 서명과 규칙은 스킬의 `references/style.md` §1.
+
+### Flutter 에서 온 위젯
+
+Flutter 앱이 흔히 쓰는데 게임 UI 키트에는 보통 없는 위젯들. 모두 `GoSkin` 훅으로 그리므로 프리셋마다 자기 모양,
+Material 에서는 M3 컴포넌트 모양이다. 스킬의 `references/flutter.md` 가 Flutter 위젯 목록 전체를 gohud·Godot 에
+짝지어 둔다.
+
+| Flutter | gohud | 하는 일 |
+|---|---|---|
+| `Scaffold` | `GoScaffold` | 앱 화면을 한 번에 엮는다 — 앱 바는 페이지 스크롤을 따르고, FAB 는 아래 바 위에 뜨고, 메뉴 버튼은 서랍을 연다 |
+| `ListView.builder` | `GoListView` | 보이는 줄만 만든다(`recycle()` 이면 몇 줄을 다시 채워 쓴다) — 10만 줄도 20줄 비용. `end_reached` 로 다음 쪽을 부른다 |
+| `RefreshIndicator` | `GoRefresh` | 목록 맨 위에서 아래로 당겨 새로 고침 — `attach(scroll)`, 데이터가 오면 `finish()` |
+| `Dismissible` | `GoSwipeRow` | 줄을 옆으로 밀어 지우기·보관. 옆으로 끄는 것만 줄의 것이라 목록 스크롤과 탭은 그대로 |
+| `TabBarView` | `GoTabView` | 밀어서 넘기는 페이지와 탭이 함께 움직인다 |
+| `ReorderableListView` | `GoReorderList` | 손잡이(또는 길게 누르기)로 줄 순서를 바꾼다. 손잡이에 초점을 두고 위·아래 키로도 된다 |
+| `InteractiveViewer` | `GoZoomView` | 지도·그림을 두 손가락·휠·두 번 탭으로 확대, 가장자리 안에서 이동 |
+| `SimpleDialog`, 액션 시트 | `GoDialogs.choose()` | 몇 가지 중 하나를 `await` — 폰에서는 아래 시트, 데스크톱에서는 카드 |
+| `MaterialBanner` | `GoBanner` | 처리할 때까지 페이지에 남는 알림("오프라인입니다 — 다시 시도") |
+| `RangeSlider` | `GoRangeSlider` | 서로 넘지 않는 손잡이 두 개. "40 – 220" 처럼 읽힌다 |
+| `showTimePicker` | `GoTimePicker` | 시계 다이얼 — 시를 고르면 분으로 넘어간다. 오전/오후 또는 24시간 안쪽 고리 |
+| `showDateRangePicker` | `GoDatePicker.range_mode` | 두 번 눌러 기간을 고른다. 띠가 시작부터 끝까지 이어진다 |
+| `CupertinoPicker` | `GoWheelPicker` | 돌다가 띠 위에 항목 하나를 세우는 휠 |
+| `Stepper` | `GoStepper` | 번호 붙은 단계와 다음·이전, 단계마다 관문(`can_continue`), 끝난 단계·틀린 단계 표시 |
+| `OutlinedButton` · `BottomAppBar` · `NavigationDrawer` · `SliverAppBar.large` | `Tone.OUTLINED` · `GoStyle.bottom_app_bar()` · `GoNavBar.drawer_list()` · `GoAppBar.expanded_title()` | |
+
+```gdscript
+var page := GoStyle.column()
+var screen := GoScaffold.make("메일", page, true)          # 바, 스크롤 페이지, 메뉴 버튼 → 서랍
+screen.set_drawer(GoDrawer.new())
+screen.set_fab(GoFab.make(GoIconSet.EDIT, "", compose))
+add_child(screen)
+for mail in inbox:
+	page.add_child(GoSwipeRow.wrap(mail_row(mail),
+		{"icon": GoIconSet.TRASH, "text": "삭제", "tone": GoTheme.DANGER, "action": delete.bind(mail)}))
+var refresh := GoRefresh.attach(screen.scroll)
+refresh.refresh_requested.connect(func() -> void:
+	await sync_mail()
+	refresh.finish())
+var sort: int = await dialogs.choose("정렬", ["최신순", "안 읽은 것 먼저"])
+```
 
 ### 자식 클래스 훅
 

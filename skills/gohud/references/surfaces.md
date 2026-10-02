@@ -131,9 +131,11 @@ stays visible. Default 80%; `theming.md` §4.
 | `@export layer_index` (100) · `max_width` (420) · `action_layout` · `action_gap` (-1 → `gap_small`) · `body_gap` (-1) | Set before `add_child` |
 | `enum ActionLayout { VERTICAL, HORIZONTAL, AUTO }` | AUTO = one row only if both labels fit half the card |
 | `set_next_action_layout(layout)` · `is_open()` · signal `answered(yes)` | One-shot layout for the next dialog |
+| `choose(title, options, cancel_text := "", translate := false) -> int` | `await` it — the picked option's index, `-1` for Cancel, the X or Back (Flutter's `SimpleDialog`, an action sheet). An option is a string or `{"text", "icon", "subtitle", "danger"}`. A bottom sheet on a phone, centred on a desktop |
 
 - `destructive = true` draws the confirm button as `Tone.DANGER_SOLID` (filled red, legible on light themes).
-- A second `confirm()` while one is open returns `false` immediately; `alert()` returns immediately.
+- A second `confirm()` while one is open returns `false` immediately; `alert()` returns immediately; `choose()`
+  returns `-1`.
 - The header X counts as Cancel on `confirm`, as OK on `alert`.
 - 🛑 `{name}` placeholders are filled only through `args` — `tr()` alone leaves `{name}` on screen. The same `args`
   fill the title (after translation for `*_key`); gohud 1.0.3 and older fill only the body — build the title there.
@@ -272,6 +274,8 @@ strip.add_child(row)
 |---|---|
 | Must answer before continuing (delete, quit, buy) | `GoDialogs.confirm` |
 | Tell something, one button | `GoDialogs.alert` |
+| Pick one of a few options (sort by, share to) | `GoDialogs.choose` |
+| A message that stays on the page until dealt with ("You're offline — Retry") | `GoBanner` (flutter.md §2) |
 | Tell something, no button, game keeps going | `GoNotice` (hud.md §6) |
 | Optional question while playing (invite, trade) | `GoPromptCard` (hud.md §7) |
 | List / management page over the game | `GoSheet` |

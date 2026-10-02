@@ -221,12 +221,14 @@ var tonal := GoUi.color(&"md_secondary_container")   # every M3 colour role is a
 - The app components (below, [App screens](#app-screens)) follow their M3 component tokens here: the navigation
   bar with its 56×32 indicator, the top app bar that lifts on scroll, the FAB sizes, the search bar pill, filter
   and input chips, the floating toolbar, the split button, the wavy progress indicator, the Expressive loading
-  indicator and the date picker.
+  indicator and the date picker — and so do the widgets [from Flutter](#from-flutter): the outlined button, the time
+  picker's dial and boxes, the date range band, the banner, the stepper's markers, the wheel's band and a lifted row.
 
 Where gohud's own checks win over the spec: on the light preset a card is surface-dim and the raised cell is
 outline-variant (gohud keeps panel, card and raised cell 1.12:1 apart), `secondary` and `muted` are both
-on-surface-variant, a disabled label stays readable (M3 fades it to 38%), snackbars keep a light plate, and a filled
-button's focus ring sits inside the plate in its on-colour. A theme cannot hold spring motion, a button's shape
+on-surface-variant, a disabled label stays readable (M3 fades it to 38%), snackbars keep a light plate, a filled
+button's focus ring sits inside the plate in its on-colour, and the time picker's AM and PM are 48dp each (M3 splits
+80dp into two 40dp halves, too small for a finger) with the hour and minute boxes as tall. A theme cannot hold spring motion, a button's shape
 morphing, ripples or dynamic colour. Material is Google's public design system; these are unofficial presets built
 from its tokens (material-web `tokens/versions/latest`, Material 3 v34.0.21).
 
@@ -591,7 +593,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 |---|---|---|
 | `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize |
 | `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer; `max_height_ratio` lets one sheet grow past the global 0.72 ceiling (a debug build warns when a ratio is cut) |
-| `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically |
+| `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically; `await choose()` returns the index of one of a few options |
 | `GoForm` | MarginContainer | Forms that cap their width per breakpoint, avoid the virtual keyboard (and, with `avoid_hud`, floating HUD pieces) and guarantee label wrapping |
 | `GoScroll` | ScrollContainer | Touch-friendly scrolling — a finger swipe that starts on any card, panel or text inside scrolls it; the scrollbar tucks into the card padding; RTL-aware |
 | `GoNotice` | PanelContainer | Snackbar that never takes input or focus |
@@ -602,7 +604,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoSlot` | Button | Quick slot with icon, quantity, cooldown and shortcut on a single face; shared hit areas in tight rows; `keyboard_focus` opts into Tab order |
 | `GoJoystick` | Control | Virtual joystick in fixed, follow or relative mode, with dead zone |
 | `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |
-| `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips (and `filter_chip`, `input_chip`), floating toolbars, cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
+| `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips (and `filter_chip`, `input_chip`), floating toolbars, the bottom app bar, outlined buttons (`Tone.OUTLINED`), cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
 | `GoThemePresets` | static | The eight built-in presets, presets found in `themes/presets/`, and `register()` for your own |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | The shapes code draws, with numeric dials |
@@ -716,6 +718,46 @@ screen.add_child(actions)
 `START` and `END` follow the layout direction, so an app screen mirrors in Arabic and Hebrew. In the flow (under a
 container) a bar is the first or last child of a column — keep the page that scrolls as its sibling; `pin_to_edge =
 ALWAYS` holds the screen edge even from inside a container. Signatures and rules: the skill's `references/style.md` §1.
+
+### From Flutter
+
+The widgets a Flutter app reaches for that a game kit usually lacks — each drawn through a `GoSkin` hook, so it takes
+every preset's shape and the M3 component's under Material. The skill's `references/flutter.md` maps the whole
+Flutter catalogue to gohud and Godot.
+
+| Flutter | gohud | What it does |
+|---|---|---|
+| `Scaffold` | `GoScaffold` | An app screen wired together: the app bar follows the page's scroll, the FAB floats above the bottom bar, the menu button opens the drawer |
+| `ListView.builder` | `GoListView` | Builds only the rows in view (or rebinds a handful with `recycle()`), so a list of 100 000 costs what 20 do; `end_reached` asks for the next page |
+| `RefreshIndicator` | `GoRefresh` | Pull the list down at its top to reload — `attach(scroll)`, then `finish()` when the data is in |
+| `Dismissible` | `GoSwipeRow` | Swipe a row aside to delete or archive. Only a sideways drag is the row's, so the list still scrolls and a tap still opens it |
+| `TabBarView` | `GoTabView` | Tabs over pages that swipe, kept in step |
+| `ReorderableListView` | `GoReorderList` | Drag rows into order by a grip (or a long press); Up and Down on a focused grip do it from the keyboard |
+| `InteractiveViewer` | `GoZoomView` | Pinch, wheel and double tap to zoom a map or a picture; it pans inside its edges |
+| `SimpleDialog`, action sheet | `GoDialogs.choose()` | `await` one of a few options — a sheet on a phone, a card on a desktop |
+| `MaterialBanner` | `GoBanner` | A message that stays on the page until dealt with ("You're offline — Retry") |
+| `RangeSlider` | `GoRangeSlider` | Two handles that never cross; spoken as "40 – 220" |
+| `showTimePicker` | `GoTimePicker` | The clock dial: hour, then minutes; AM/PM or a 24-hour inner ring |
+| `showDateRangePicker` | `GoDatePicker.range_mode` | Two taps pick a range; the band runs from one end to the other |
+| `CupertinoPicker` | `GoWheelPicker` | A wheel that spins and settles one item on its band |
+| `Stepper` | `GoStepper` | Numbered steps with Next and Back, a gate per step (`can_continue`), steps marked done or wrong |
+| `OutlinedButton` · `BottomAppBar` · `NavigationDrawer` · `SliverAppBar.large` | `Tone.OUTLINED` · `GoStyle.bottom_app_bar()` · `GoNavBar.drawer_list()` · `GoAppBar.expanded_title()` | |
+
+```gdscript
+var page := GoStyle.column()
+var screen := GoScaffold.make("Mail", page, true)          # bar, scrolling page, menu button → drawer
+screen.set_drawer(GoDrawer.new())
+screen.set_fab(GoFab.make(GoIconSet.EDIT, "", compose))
+add_child(screen)
+for mail in inbox:
+	page.add_child(GoSwipeRow.wrap(mail_row(mail),
+		{"icon": GoIconSet.TRASH, "text": "Delete", "tone": GoTheme.DANGER, "action": delete.bind(mail)}))
+var refresh := GoRefresh.attach(screen.scroll)
+refresh.refresh_requested.connect(func() -> void:
+	await sync_mail()
+	refresh.finish())
+var sort: int = await dialogs.choose("Sort by", ["Newest", "Unread first"])
+```
 
 ### Subclass hooks
 

@@ -109,8 +109,10 @@ needs `SIZE_SHRINK_END`, or it splits the width with the title and floats in the
 
 ## 3. Buttons
 
-`enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID }` — PRIMARY for the main action,
-DANGER tinted, DANGER_SOLID filled (irreversible confirm), BARE text-only, COMPACT small pill (touch height).
+`enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID, OUTLINED }` — PRIMARY for the main action,
+DANGER tinted, DANGER_SOLID filled (irreversible confirm), BARE text-only, COMPACT small pill (touch height),
+OUTLINED the normal button's shape with an edge and no fill (`GoSkin.outlined_button_box`) — a second action beside a
+filled one.
 Filled buttons (PRIMARY, DANGER_SOLID) sit **flat** — no shadow — unless you raise them: `GoStyle.glow(button)` for
 one, `GoConfig.button_glow = true` for all.
 
@@ -175,6 +177,7 @@ pill.add_child(GoStyle.segmented(["Map", "Quests"], 0, _switch_layer, false, tru
 | `filter_chip(text, selected := false, toggled := Callable(), icon := &"", translate := false)` | `Button` | A chip that **toggles** — several can be on at once (for exactly one, `segmented()`). A check mark while on, `icon` while off; `toggled` gets the new state. `restyle_filter_chip(node)` re-dresses one whose state was set from code without the signal |
 | `input_chip(text, removed := Callable(), icon := &"", translate := false)` | `PanelContainer` | An entered value (a recipient, a tag) with a ✕ that calls `removed` and frees the chip |
 | `toolbar(items: Array, vertical := false)` | `PanelContainer` | A floating pill of icon actions — items `{"icon", "tooltip", "action"}`; spaced so each 48 dp touch area meets the next |
+| `bottom_app_bar(items: Array, fab: GoFab = null)` | `PanelContainer` | The 80 dp bar along the bottom with icon actions at the start and the FAB at the end (Flutter's `BottomAppBar`); grows by the gesture-bar inset |
 | `item_card(spec: Dictionary, framed := true)` | `Control` | **The picked item's detail card** — `{icon, ink, accent, title, subtitle, chips: [text \| {text, ink, icon}], body, stats: [[label, value]], actions: [{text, action, tone, icon}], translate}`, every key optional. Parts are named `Icon` `Title` `Subtitle` `Chips` `Body` `Stats` `Actions`. `framed = false` inside a `GoPopover`, a sheet or your own card (no double border); in a sheet give the buttons to `add_footer()` instead of `actions` |
 | `avatar(text := "", size := 40, accent := Color.TRANSPARENT, texture: Texture2D = null)` | `Control` | Initials (max 2) or picture in a disc |
 | `art(texture: Texture2D = null, size := Vector2.ZERO, fit := Fit.CONTAIN)` | `TextureRect` | Picture cell. The addon owns stretch, alignment and mouse pass-through; the caller owns only *what* is shown, because the artwork belongs to the game. `Fit.CONTAIN` fits it whole, `COVER` fills the cell and crops the overflow, `FILL` stretches it |

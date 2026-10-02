@@ -56,6 +56,10 @@ Reply in the language the user writes in; keep code identifiers as they are.
    with actions → `GoAppBar`, the main action → `GoFab`, search field → `GoSearchBar`, toggling filters →
    `GoStyle.filter_chip`, main action with variants → `GoSplitButton`, known progress → `GoProgress`, a short wait →
    `GoLoadingIndicator`, a date → `GoDatePicker` (`references/hud.md` §16).
+   Coming from Flutter: a whole app screen → `GoScaffold`, a long list → `GoListView`, pull to refresh → `GoRefresh`,
+   swipe to delete → `GoSwipeRow`, swiping tab pages → `GoTabView`, drag to reorder → `GoReorderList`, pinch to zoom →
+   `GoZoomView`, one of a few options → `GoDialogs.choose`, a range / time / wheel / steps → `GoRangeSlider` /
+   `GoTimePicker` / `GoWheelPicker` / `GoStepper` (`references/flutter.md` maps every Flutter widget).
    A list the player scans (quests, mail, a shop) → rule 15 in §3 and the recipe in `references/recipes.md` §16.
    Placing, not drawing: items along the top or bottom edge in one to three slots → `GoTopBar` / `GoBottomBar`,
    equal columns → `GoGrid` (`references/style.md` §1 "Layout classes").
@@ -222,6 +226,7 @@ use `--check`.
 | `references/platform.md` | Icons — the 84 default names, the game set (187) and the icon library (1,000) with `GoUi.add_icons()`, search and groups, custom icon sets/fonts/folders, localization and RTL, sound and haptics, accessibility, safe area, breakpoints, dp scale, Android Back |
 | `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, a quest list that scans (§16), character sheet, context menu, tutorial, theme switcher |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |
+| `references/flutter.md` | Coming from Flutter — every Flutter widget and its gohud (or Godot) counterpart, and the widgets ported from it: `GoScaffold`, `GoListView`, `GoRefresh`, `GoSwipeRow`, `GoTabView`, `GoReorderList`, `GoZoomView`, `GoRangeSlider`, `GoTimePicker`, `GoWheelPicker`, `GoStepper`, `GoBanner` |
 
 Web (same content, with screenshots): overview https://thruthesky.github.io/gohud/ ·
 install https://thruthesky.github.io/gohud/install.html · AI skill https://thruthesky.github.io/gohud/ai.html ·

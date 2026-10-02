@@ -229,6 +229,9 @@ GoUi.use_preset(&"kingdom")
 🔑 The app components draw through these hooks too, so a new skin gets them in its own shape: the defaults use the
 theme's own boxes (the primary button face for a FAB, the text field face for a search bar), and `GoSkinMaterial`
 overrides them with the M3 component tokens.
+🛑 A hook's default must not call another hook that a skin may answer by calling it back — `time_ink()` reads the
+default fill, not `time_selector_box()`, because Material's box asks for the ink (its state layer) and the two called
+each other until the stack ran out.
 
 Override only what you need; everything else keeps the parent's drawing. Assign with
 `GoUi.config.skin = MySkin.new()` (after `use_preset`) or put it in a preset.
@@ -248,7 +251,11 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 | `drawer_box(at_left, alpha)` · `compact_segment_box(face, state)` · `icon_button_glyph(visual_size) -> int` · `chip_glyph_size() -> int` · `chip_text_role()` · `chip_height()` · `chip_state_box(face, state)` · `choice_box(state)` | A drawer's panel, a small segmented cell, an icon button's glyph, a chip's icon, label, height and press state, a choice cell. Each default is the code the widget ran before the hook existed |
 | `nav_bar_box(vertical)` · `nav_indicator_box(selected, state)` · `nav_ink(selected, label)` | Navigation bar and rail (`GoNavBar`) |
 | `app_bar_box(scrolled)` · `fab_box(extent, state)` · `fab_ink()` · `search_bar_box(state)` · `toolbar_box(vertical)` · `split_button_box(face, leading, state, open)` | Top app bar, FAB, search bar, floating toolbar, split button halves |
-| `filter_chip_box(selected, state)` · `filter_chip_ink(selected)` · `loading_colors(contained) -> Array[Color]` · `date_cell_box(kind, state)` · `date_ink(kind)` | Filter and input chips, the loading indicator, date picker days |
+| `filter_chip_box(selected, state)` · `filter_chip_ink(selected)` · `loading_colors(contained) -> Array[Color]` · `date_cell_box(kind, state)` · `date_ink(kind)` | Filter and input chips, the loading indicator, date picker days (`kind` `&"in_range"` is a day between the two ends of a range) |
+| `outlined_button_box(face, state)` · `outlined_button_ink()` · `banner_box()` · `refresh_disc_box()` | The outlined button (`Tone.OUTLINED`, made from the normal button's face), a banner, the pull-to-refresh disc |
+| `step_marker_box(state)` · `step_marker_ink(state)` · `time_selector_box(selected, state, period)` · `time_ink(selected, period)` · `dial_colors() -> Array[Color]` | Stepper markers (`&"done"`, `&"active"`, `&"todo"`, `&"error"`), the time picker's hour, minute and AM/PM boxes, its dial `[face, hand, numbers, number under the hand]` |
+| `reorder_lift_box()` · `reorder_grip_ink()` · `wheel_band_box()` · `wheel_ink(chosen)` | A row lifted in a reorder list, its grip, a wheel picker's band and items |
+| `variation_box(type, key)` | A copy of a theme box, following the type variation to its base (`GoButton` → `Button`) |
 | static `luminance(c)` · `contrast_ratio(a, b)` · `blend(top, bottom)` · `readable_on(ink, back, need := 4.5)` · `box_background(box)` | Contrast helpers |
 
 Dials (`@export`, set on a skin resource or JSON `skin.dials`):

@@ -498,3 +498,41 @@ compose.float_in(self, nav.get_combined_minimum_size().y)
 - ♿ `GoProgress` speaks its percentage (`bar_percent`) or "Loading…"; `GoLoadingIndicator` says "Loading…".
   With `reduce_motion` the wave stands still and the loading shape only breathes.
 - 📱 A date picker on a 320 dp phone keeps seven columns: each day narrows to 36 dp but stays 48 dp tall.
+
+## 17. From Flutter — scaffold, lazy list, refresh, swipe, tabs, reorder, zoom, pickers, steps
+
+The widgets a Flutter app reaches for that a game kit usually lacks. Every one draws through a `GoSkin` hook. The
+member tables and the full Flutter → gohud catalogue are in `references/flutter.md`.
+
+```gdscript
+var page := GoStyle.column()
+var screen := GoScaffold.make("Mail", page, true)        # app bar with a menu button, the page scrolls under it
+screen.set_drawer(GoDrawer.new())
+add_child(screen)
+for mail in inbox:
+	page.add_child(GoSwipeRow.wrap(mail_row(mail),
+		{"icon": GoIconSet.TRASH, "text": "Delete", "tone": GoTheme.DANGER, "action": delete.bind(mail)}))
+var refresh := GoRefresh.attach(screen.scroll)
+refresh.refresh_requested.connect(func() -> void:
+	await sync()
+	refresh.finish())
+```
+
+| Need | Use |
+|---|---|
+| A screen with a bar, a page, a bottom bar, a FAB and a drawer, wired together | `GoScaffold` |
+| Thousands of rows of one height | `GoListView` (`make` builds, `recycle` rebinds) |
+| Pull down to reload | `GoRefresh.attach(scroll)` |
+| Swipe a row aside to act on it | `GoSwipeRow.wrap(row, end, start)` |
+| Tabs whose pages swipe | `GoTabView` |
+| Put rows in order by dragging | `GoReorderList` |
+| Pinch and pan a map or a picture | `GoZoomView` |
+| A range, a time, a range of dates, a wheel, steps | `GoRangeSlider`, `GoTimePicker`, `GoDatePicker.range_mode`, `GoWheelPicker`, `GoStepper` |
+| One of a few options · a message until dealt with | `GoDialogs.choose()` · `GoBanner` |
+| An outlined button · the bottom app bar · a drawer's destinations | `GoStyle.Tone.OUTLINED` · `GoStyle.bottom_app_bar()` · `GoNavBar.drawer_list()` |
+
+- 🔑 None of these takes the page's scroll from it: a sideways swipe is the row's or the tab page's, a downward pull at
+  the top is the refresh's, a drag that starts on a grip, a zoom view, a wheel or the time dial is theirs — any other
+  drag scrolls the page.
+- ♿ The grip, the zoom view and the wheel take the keyboard (Up/Down, `+` `-` `0` and arrows, Up/Down); a swipe action
+  must also be on the row's menu or detail screen.

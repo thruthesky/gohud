@@ -20,6 +20,7 @@ can find is a feature nobody uses.
 9. [Mobile, desktop, accessibility, languages](#9-mobile-desktop-accessibility-languages)
 10. [Configuration, tooling and examples](#10-configuration-tooling-and-examples)
 11. [App screens — navigation, app bar, FAB, search, chips, progress, dates](#11-app-screens)
+12. [From Flutter — scaffold, lazy list, refresh, swipe, tabs, reorder, zoom, pickers](#12-from-flutter)
 
 ## 1. What gohud is
 
@@ -154,7 +155,7 @@ one-column bottom bar spreading its items with equal gaps (`GoBottomBar.make(1, 
 | Optional plugin: project settings for config + preset, `GoRuntime` autoload (breakpoints, dp scale, keyboard), translations | Project → Project Settings → Plugins → gohud | setup.md §2 |
 | Subclass hooks `_make_scroll`, `_make_close_button`, `_make_surface`, `_should_pause` | `func _make_surface() -> GoSurface: return MySurface.new()` | surfaces.md §6 |
 | Gallery, medieval example, 23-chapter demo tour with explore mode | `/gohud:preview demo --explore hud` | SKILL.md §6 |
-| **693 headless checks** (`gohud_test.gd` 568 + `gohud_extra_test.gd` 125), WCAG contrast checker, packaging gates, CI on every push | `bash addons/gohud/tools/check_all.sh` | setup.md §6 |
+| **2,291 headless checks** (`gohud_test.gd` 1,387 + `gohud_extra_test.gd` 904), WCAG contrast checker, packaging gates, CI on every push | `bash addons/gohud/tools/check_all.sh` | setup.md §6 |
 | **Screenshot check on a virtual monitor** — value checks know "how much", not "is it visible"; five layout faults were found this way with every headless check passing | `xvfb_run.sh --out shots -s res://addons/gohud/tests/gohud_shot.gd` | setup.md §6 |
 | **`/gohud update`** — update the add-on in your project and this skill to the latest release | `/gohud update` | setup.md §7 |
 
@@ -175,3 +176,26 @@ own shape and Material gives it the M3 component's (theming.md §6).
 | **`GoProgress`** known progress as a line or a ring, wavy or flat, with the stop dot; `indeterminate` until the size is known | `GoProgress.linear().value = 0.4` | hud.md §16 |
 | **`GoLoadingIndicator`** the Expressive wait mark that morphs through seven shapes; still under `reduce_motion` | `page.add_child(GoLoadingIndicator.new())` | hud.md §16 |
 | **`GoDatePicker`** a month to tap with today, the pick, limits and translated names; fits a 320 dp phone | `GoDatePicker.make({}, on_pick)` | hud.md §16 |
+
+## 12. From Flutter
+
+The widgets a Flutter app reaches for, each in every preset's shape. The whole Flutter → gohud catalogue:
+`references/flutter.md`.
+
+| Feature | One line | Reference |
+|---|---|---|
+| **`GoScaffold`** app bar, a scrolling page, bottom bar, FAB and drawer wired together | `GoScaffold.make("Inbox", page, true)` | flutter.md §2 |
+| **`GoListView`** builds only the rows in view (or rebinds a few) — a list of 100 000 costs what 20 do | `GoListView.make(rows, 56.0, build_row)` | flutter.md §2 |
+| **`GoRefresh`** pull down at the top to reload | `GoRefresh.attach(scroll).refresh_requested.connect(reload)` | flutter.md §2 |
+| **`GoSwipeRow`** swipe a row aside to delete or archive; the page still scrolls | `GoSwipeRow.wrap(row, {"icon": GoIconSet.TRASH, "text": "Delete", "action": delete})` | flutter.md §2 |
+| **`GoTabView`** tabs over pages that swipe | `GoTabView.make(["Posts", "Saved"], [posts, saved])` | flutter.md §2 |
+| **`GoReorderList`** drag rows into order by a grip (or a long press) | `GoReorderList.make(rows).reordered.connect(move)` | flutter.md §2 |
+| **`GoZoomView`** pinch, wheel and double tap to zoom; pan inside the edges | `GoZoomView.wrap(map, 4.0)` | flutter.md §2 |
+| **`GoDialogs.choose`** one of a few options, as a sheet on a phone | `await dialogs.choose("Sort by", ["Newest", "Price"])` | surfaces.md §3 |
+| **`GoBanner`** a message that stays until dealt with | `GoBanner.make("You're offline.", [{"text": "Retry", "action": retry}])` | flutter.md §2 |
+| **`GoRangeSlider`** two handles that never cross | `GoRangeSlider.make(0.0, 500.0, 40.0, 220.0, 10.0)` | flutter.md §3 |
+| **`GoTimePicker`** the clock dial, 12 or 24 hours | `GoTimePicker.make(9, 30, on_time)` | flutter.md §3 |
+| **`GoDatePicker.range_mode`** two taps pick a range of days | `picker.range_mode = true` | flutter.md §3 |
+| **`GoWheelPicker`** a wheel that settles one item on its band | `GoWheelPicker.make(["x1", "x5", "x10"], 0, on_amount)` | flutter.md §3 |
+| **`GoStepper`** numbered steps with Next and Back, a gate per step | `GoStepper.make([{"title": "Cart", "content": cart}])` | flutter.md §3 |
+| **Outlined button, bottom app bar, drawer destinations, large app bar** | `GoStyle.button("Details", open, GoStyle.Tone.OUTLINED)` | style.md §3 |
