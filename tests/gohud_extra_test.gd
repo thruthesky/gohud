@@ -49,6 +49,7 @@ func _initialize() -> void:
 	await _theme_color_lookup()
 	await _segmented_theme_chain()
 	await _surface_height_cap()
+	await _surface_event_relayout()
 	await _hud_focus()
 	await _tooltip_translation()
 	await _item_card()
@@ -1386,6 +1387,77 @@ func _surface_height_cap() -> void:
 	sheet.queue_free()
 	await frames(2)
 	section("surface height cap")
+
+
+## Counts `relayout()` calls — the surface itself is untouched.
+class _CountingSurface extends GoSurface:
+	var calls := 0
+
+	func relayout() -> void:
+		calls += 1
+		super()
+
+
+## 🔑 A `fit_content` surface re-measures **only when something it reads changed** — it used to run `relayout()` every
+##    frame while open (50–220 µs a frame for a 23-row sheet on a desktop CPU), and once per drag event.
+func _surface_event_relayout() -> void:
+	var layer := CanvasLayer.new()
+	root.add_child(layer)
+	var surface := _CountingSurface.new()
+	surface.placement = GoSurface.Placement.BOTTOM
+	surface.resizable = true
+	surface.height_ratio = 0.6
+	# The dp ceiling (`surface_max_height`, 700 in Laryen) would hold a tall test window still — lift it to see the drag.
+	surface.max_height = 4000.0
+	for index in 30:
+		var line := GoStyle.label("Row %d — a sentence long enough to wrap on a narrow phone screen" % index)
+		line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		surface.body.add_child(line)
+	layer.add_child(surface)
+	await frames(8)
+	var settled := surface.calls
+	await frames(30)
+	check(surface.calls == settled, "event relayout: an idle open surface does not relayout (%d calls over 30 frames)" % (surface.calls - settled))
+	# Content shrinks → the card follows on the next frames (fit_content still fits).
+	var tall := surface.card.size.y
+	for child in surface.body.get_children():
+		if child.get_index() >= 2:
+			surface.body.remove_child(child)
+			child.free()
+	await frames(4)
+	check(surface.card.size.y < tall - 20.0, "event relayout: removed content shrinks the card (%.0f → %.0f)" % [tall, surface.card.size.y])
+	check(surface.calls > settled, "event relayout: a content change triggers a relayout")
+	# A field assigned without `relayout()` still takes effect next frame (85 call sites in Laryen do exactly that).
+	var calls := surface.calls
+	surface.max_width = 300.0
+	await frames(2)
+	check(surface.calls > calls and surface.card.size.x <= 300.0 + 0.5,
+		"event relayout: assigning max_width applies next frame (width %.0f)" % surface.card.size.x)
+	surface.max_width = 300.0
+	calls = surface.calls
+	await frames(3)
+	check(surface.calls == calls, "event relayout: assigning the same value does not relayout")
+	# Refill so the card is tall enough to drag, then send four drag events inside one frame.
+	for index in 30: surface.body.add_child(GoStyle.label("Row %d" % index))
+	await frames(6)
+	var before := surface.card.size.y
+	surface._dragging = true
+	surface._touch_index = 0
+	calls = surface.calls
+	for index in 4:
+		var drag := InputEventScreenDrag.new()
+		drag.index = 0
+		drag.relative = Vector2(0, 12)
+		surface._input(drag)
+	check(surface.calls == calls, "event relayout: drag events do not relayout one by one")
+	await frames(1)
+	check(surface.calls == calls + 1, "event relayout: four drag events in a frame → one relayout (%d)" % (surface.calls - calls))
+	check(surface.card.size.y < before - 1.0, "event relayout: the dragged card still moves in that frame (%.0f → %.0f)" % [before, surface.card.size.y])
+	surface._dragging = false
+	surface._touch_index = -1
+	layer.queue_free()
+	await frames(2)
+	section("surface event relayout")
 
 
 # ── HUD buttons and keyboard focus ────────────────────────────────────
