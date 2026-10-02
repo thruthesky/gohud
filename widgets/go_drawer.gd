@@ -93,6 +93,8 @@ var _root: Control
 var _scroll: GoScroll
 var _tween: Tween
 var _open := false
+## The side the panel face was last made for (`_restyle`).
+var _styled_left := true
 
 
 func _init() -> void:
@@ -236,6 +238,7 @@ func _relayout() -> void:
 	width = maxf(width, 160.0)
 	panel.size = Vector2(width, full.size.y)
 	var at_left := effective_side() == Side.LEFT
+	if at_left != _styled_left: _restyle()
 	panel.position = Vector2(0.0 if at_left else full.size.x - width, 0.0).round()
 
 	# Only the content moves inside the safe area — clear of the notch and the gesture bar.
@@ -296,8 +299,9 @@ func _scrim_input(event: InputEvent) -> void:
 
 
 func _restyle() -> void:
-	panel.add_theme_stylebox_override(&"panel", GoUi.skin().surface_box(
-		GoTheme.BOX_CARD, Color.TRANSPARENT, alpha))
+	# The skin may round only the inner edge (`GoSkin.drawer_box`), so the face follows the side it is docked to.
+	_styled_left = effective_side() == Side.LEFT
+	panel.add_theme_stylebox_override(&"panel", GoUi.skin().drawer_box(_styled_left, alpha))
 	_scrim.color = _scrim_color(_open)
 
 

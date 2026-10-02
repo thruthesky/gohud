@@ -52,6 +52,10 @@ Reply in the language the user writes in; keep code identifiers as they are.
    Lists and forms: sortable/selectable rows → `GoTable`, pages → `GoPagination`, searchable picker →
    `GoCombobox`, a field that can show an error → `GoField`, input welded to a button → `GoInputGroup`.
    Waiting → `GoSpinner` (`GoSpinner.busy(button, true)` also blocks the double press).
+   App screens (social, news, shopping): bottom destinations → `GoNavBar` (`rail()` on a wide screen), screen title
+   with actions → `GoAppBar`, the main action → `GoFab`, search field → `GoSearchBar`, toggling filters →
+   `GoStyle.filter_chip`, main action with variants → `GoSplitButton`, known progress → `GoProgress`, a short wait →
+   `GoLoadingIndicator`, a date → `GoDatePicker` (`references/hud.md` §16).
    A list the player scans (quests, mail, a shop) → rule 15 in §3 and the recipe in `references/recipes.md` §16.
 4. **Start from a template** when one fits (§5): copy it into the project (e.g. `res://ui/`), rename, adjust, wire
    its signals. Otherwise compose with `GoStyle` factories (`references/style.md`).

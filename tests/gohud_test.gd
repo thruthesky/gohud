@@ -98,6 +98,7 @@ func _initialize() -> void:
 	await _section("scroll drag", _scroll_drag)
 	await _section("scroll finger swipe", _scroll_swipe)
 	await _section("scroll yields", _scroll_yields)
+	await _section("app components", _app_components)
 	await _section("rtl", _rtl)
 	await _section("standalone", _standalone)
 	# 🛑 Leaving a lambda in a static variable can crash during shutdown — clear them before finishing.
@@ -594,7 +595,41 @@ func _material() -> void:
 	for preset in [GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK]:
 		GoUi.use_preset(preset)
 		var theme := GoUi.theme()
-		check(not (GoUi.skin() is GoSkinSciFi) and not (GoUi.skin() is GoSkinMedieval), "%s: the default skin draws the code-drawn parts" % preset)
+		check(GoUi.skin() is GoSkinMaterial, "%s: the Material skin draws the code-drawn parts" % preset)
+		var skin := GoUi.skin() as GoSkinMaterial
+		# 🔑 The code-drawn parts read back as the M3 components, not as gohud's default shapes.
+		var cell := skin.segment_box(1, 3, &"pressed") as StyleBoxFlat
+		var middle := skin.segment_box(1, 3, &"normal") as StyleBoxFlat
+		check(cell != null and cell.corner_radius_top_left == 20 and middle.corner_radius_top_left == skin.segment_inner_radius
+			and cell.bg_color == GoUi.color(&"md_secondary") and middle.bg_color == GoUi.color(&"md_secondary_container"),
+			"%s: the segmented control is the connected button group" % preset)
+		var chip_face := skin.chip_box(GoUi.color(GoTheme.SUCCESS)) as StyleBoxFlat
+		check(chip_face.bg_color.a == 0.0 and chip_face.border_width_top == 1 and chip_face.border_color == GoUi.color(&"md_outline_variant"),
+			"%s: chips are assist chips" % preset)
+		check(skin.divider_color() == GoUi.color(&"md_outline_variant") and (skin.badge_box(GoUi.color(GoTheme.DANGER)) as StyleBoxFlat).corner_radius_top_left >= 999,
+			"%s: dividers are outline-variant and badges are pills" % preset)
+		# A chip is 32dp tall with text alone and with an 18dp icon beside it.
+		var words_chip := GoStyle.chip("New", GoUi.color(GoTheme.SUCCESS))
+		var icon_chip := GoStyle.chip("New", GoUi.color(GoTheme.SUCCESS), false, GoIconSet.BELL)
+		root.add_child(words_chip)
+		root.add_child(icon_chip)
+		await frames(2)
+		check(near(words_chip.size.y, 32.0, 0.5) and near(icon_chip.size.y, 32.0, 0.5),
+			"%s: chips are 32dp with or without an icon (%.1f · %.1f)" % [preset, words_chip.size.y, icon_chip.size.y])
+		words_chip.queue_free()
+		icon_chip.queue_free()
+		check(skin.icon_button_glyph(36.0) == 24, "%s: an icon button's glyph is 24dp" % preset)
+		var pill := skin.overlay_box() as StyleBoxFlat
+		check(pill.border_width_top == 0 and pill.shadow_size > 0 and pill.bg_color.to_html(false) == GoUi.color(&"md_surface_container").to_html(false),
+			"%s: the overlay pill is the floating toolbar" % preset)
+		var drawer := skin.drawer_box(true) as StyleBoxFlat
+		check(drawer.corner_radius_top_left == 0 and drawer.corner_radius_top_right == 16, "%s: a drawer rounds only its inner edge" % preset)
+		check((skin.skeleton_box() as StyleBoxFlat).bg_color == GoUi.color(&"md_surface_container_highest"), "%s: skeletons are surface-container-highest" % preset)
+		var fab_face := skin.fab_box(56.0, &"normal") as StyleBoxFlat
+		check(fab_face.corner_radius_top_left == 16 and fab_face.bg_color == GoUi.color(&"md_primary_container"),
+			"%s: the FAB is primary-container with corner.large" % preset)
+		check((skin.nav_indicator_box(true, &"normal") as StyleBoxFlat).bg_color == GoUi.color(&"md_secondary_container"),
+			"%s: the navigation indicator is secondary-container" % preset)
 		# 🔑 The M3 button: a pill plate drawn 40dp tall inside the 48dp touch target.
 		var button := GoStyle.button("Save", Callable(), GoStyle.Tone.PRIMARY)
 		root.add_child(button)
@@ -3270,6 +3305,234 @@ func _pointer(point: Vector2, held: bool, button: bool) -> void:
 	event.global_position = point
 	event.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
 	Input.parse_input_event(event.xformed_by(root.get_final_transform()))
+
+
+# ── App components (navigation bar, app bar, FAB, search, chips, toolbar, split button, progress, date) ──
+#
+# 🛑 **Every new part has to work on all eight presets** — its shape comes from a `GoSkin` hook with a default, so the
+#    default, sci-fi and medieval looks draw it their own way and Material draws the M3 component. Built through the
+#    public factories, put in the tree, and read back from the drawn nodes.
+
+func _app_components() -> void:
+	for preset in GoThemePresets.BUILTIN:
+		GoUi.use_preset(preset)
+		var skin := GoUi.skin()
+		var page := GoUi.color(GoTheme.BACKGROUND)
+
+		# Navigation bar — a destination per cell, the chosen one on its pill, a badge on an icon.
+		var picked := [-1]
+		var nav := GoNavBar.make([
+			{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.SEARCH, "text": "Search"},
+			{"icon": GoIconSet.BELL, "text": "Alerts", "badge": 3}, {"icon": GoIconSet.USER, "text": "Profile"},
+		], 0, func(index: int) -> void: picked[0] = index)
+		nav.position = Vector2(0, 600)
+		nav.size = Vector2(390, 64)
+		root.add_child(nav)
+		await frames(3)
+		check(nav.size.y >= GoNavBar.BAR_EXTENT and nav.cell(3) != null and nav.cell(4) == null,
+			"%s: the navigation bar is 64dp with one cell per destination" % preset)
+		check(nav.cell(0).button_pressed and nav.selected_index() == 0, "%s: the first destination starts chosen" % preset)
+		await _tap(nav.cell(2).get_global_rect().get_center())
+		check(picked[0] == 2 and nav.selected_index() == 2 and not nav.cell(0).button_pressed,
+			"%s: a tap on a destination chooses it and calls back (%d)" % [preset, picked[0]])
+		var chosen_pill := (nav.cell(2).get_meta(&"go_nav_pill") as PanelContainer).get_theme_stylebox(&"panel")
+		var other_pill := (nav.cell(1).get_meta(&"go_nav_pill") as PanelContainer).get_theme_stylebox(&"panel")
+		check(GoSkin.box_background(chosen_pill).a > GoSkin.box_background(other_pill).a,
+			"%s: the chosen destination carries the indicator pill" % preset)
+		var bar_back := GoSkin.blend(GoSkin.box_background(nav.get_theme_stylebox(&"panel")), page)
+		var label_ink := (nav.cell(2).get_meta(&"go_nav_label") as Label).get_theme_color(&"font_color")
+		var rest_ink := (nav.cell(1).get_meta(&"go_nav_label") as Label).get_theme_color(&"font_color")
+		check(GoSkin.contrast_ratio(label_ink, bar_back) >= 4.5 and GoSkin.contrast_ratio(rest_ink, bar_back) >= 4.5,
+			"%s: chosen and other labels read on the bar (%.2f · %.2f)" % [preset,
+				GoSkin.contrast_ratio(label_ink, bar_back), GoSkin.contrast_ratio(rest_ink, bar_back)])
+		# 🛑 A trimming label shrunk to its minimum drew 1px wide — every bar showed icons only (2026-10-02 screenshots).
+		var home_label := nav.cell(0).get_meta(&"go_nav_label") as Label
+		check(home_label.size.x >= home_label.get_theme_font(&"font").get_string_size("Home").x,
+			"%s: the destination's label has room for its word (%.0f)" % [preset, home_label.size.x])
+		var bell: Control = nav.cell(2).get_meta(&"go_nav_icon")
+		check(bell.has_meta(&"gohud_badge"), "%s: the destination's badge hangs on its icon" % preset)
+		# 🛑 The icon's tint must not reach the badge — a modulated icon turned the red badge near-black (A17 screenshot).
+		check(bell.modulate.is_equal_approx(Color.WHITE), "%s: the icon's colour does not tint its badge" % preset)
+		nav.set_selected(0)
+		check(nav.cell(0).button_pressed and picked[0] == 2, "%s: set_selected moves the pill without calling back" % preset)
+		nav.queue_free()
+		var rail := GoNavBar.rail([{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.USER, "text": "Me"}])
+		root.add_child(rail)
+		await frames(2)
+		check(rail.vertical and rail.size.x >= GoNavBar.RAIL_EXTENT, "%s: the rail is a 96dp column" % preset)
+		rail.queue_free()
+
+		# Top app bar — leading button, title, actions; lifted once the page under it scrolls.
+		var went_back := [false]
+		var app_bar := GoAppBar.make("Inbox", GoIconSet.BACK, func() -> void: went_back[0] = true)
+		app_bar.add_action(GoIconSet.SEARCH, &"search")
+		var list := ScrollContainer.new()
+		var tall := Control.new()
+		tall.custom_minimum_size = Vector2(10, 2000)
+		list.add_child(tall)
+		list.size = Vector2(390, 400)
+		list.position = Vector2(0, 80)
+		app_bar.size = Vector2(390, 64)
+		root.add_child(app_bar)
+		root.add_child(list)
+		await frames(2)
+		app_bar.follow(list)
+		check(app_bar.size.y >= GoAppBar.EXTENT and app_bar.title_label.text == "Inbox", "%s: the app bar is 64dp with its title" % preset)
+		check(app_bar.leading_button.tooltip_text == GoUi.text(&"back") and app_bar.actions.get_child_count() == 1,
+			"%s: the back button is named and the action sits at the end" % preset)
+		var rest_face := app_bar.get_theme_stylebox(&"panel")
+		list.scroll_vertical = 200
+		await frames(2)
+		check(app_bar.scrolled and app_bar.get_theme_stylebox(&"panel") != rest_face, "%s: the bar lifts once the page scrolls" % preset)
+		list.scroll_vertical = 0
+		await frames(2)
+		check(not app_bar.scrolled, "%s: back at the top the bar sits flat" % preset)
+		app_bar.leading_button.pressed.emit()
+		check(went_back[0], "%s: the leading button runs its action" % preset)
+		app_bar.queue_free()
+		list.queue_free()
+
+		# FAB — a 56dp square, an extended FAB 56dp tall and wider, a 40dp one still 48dp to the finger.
+		var fab := GoFab.make(GoIconSet.PLUS)
+		var wide := GoFab.make(GoIconSet.PLUS, "Add to cart")
+		var tiny := GoFab.make(GoIconSet.PLUS, "", Callable(), GoFab.Size.SMALL)
+		for node in [fab, wide, tiny]: root.add_child(node)
+		await frames(2)
+		check(near(fab.size.x, 56.0) and near(fab.size.y, 56.0), "%s: a FAB is a 56dp square (%s)" % [preset, fab.size])
+		check(near(wide.size.y, 56.0) and wide.size.x > 100.0, "%s: an extended FAB is 56dp tall and holds its label" % preset)
+		check(tiny._has_point(Vector2(-3.0, 20.0)), "%s: a 40dp FAB takes presses 48dp wide" % preset)
+		var fab_back := GoSkin.blend(GoSkin.box_background(skin.fab_box(56.0, &"normal")), page)
+		check(GoSkin.contrast_ratio(skin.fab_ink(), fab_back) >= 4.5,
+			"%s: the FAB's label reads on its face (%.2f)" % [preset, GoSkin.contrast_ratio(skin.fab_ink(), fab_back)])
+		wide.expanded = false
+		await frames(1)
+		check(near(wide.size.x, 56.0), "%s: a folded extended FAB is its icon alone" % preset)
+		for node in [fab, wide, tiny]: node.queue_free()
+
+		# Search bar — 56dp, the clear button only with text, Enter submits.
+		var asked := [""]
+		var search := GoSearchBar.make("", func(query: String) -> void: asked[0] = query)
+		search.size = Vector2(360, 56)
+		root.add_child(search)
+		await frames(2)
+		check(near(search.size.y, 56.0) and search.field.placeholder_text == GoUi.text(&"search"),
+			"%s: the search bar is 56dp with the search placeholder" % preset)
+		check(not search._clear.visible, "%s: no clear button while empty" % preset)
+		search.field.text = "shoes"
+		search.field.text_changed.emit("shoes")
+		await frames(1)
+		check(search._clear.visible and search.get_text() == "shoes", "%s: typing shows the clear button" % preset)
+		search.field.text_submitted.emit(search.get_text())
+		check(asked[0] == "shoes", "%s: Enter hands over the query" % preset)
+		var search_back := GoSkin.blend(GoSkin.box_background(search.get_theme_stylebox(&"panel")), page)
+		check(GoSkin.contrast_ratio(GoUi.color(GoTheme.TEXT), search_back) >= 4.5, "%s: typed text reads in the bar" % preset)
+		search.queue_free()
+
+		# Filter and input chips — on and off read apart, the ✕ removes.
+		var flips := [0]
+		var filter := GoStyle.filter_chip("In stock", false, func(_on: bool) -> void: flips[0] += 1)
+		root.add_child(filter)
+		await frames(1)
+		var off_face := filter.get_theme_stylebox(&"normal")
+		filter.button_pressed = true
+		await frames(1)
+		check(flips[0] == 1 and filter.get_theme_stylebox(&"pressed") != off_face, "%s: a filter chip toggles its face" % preset)
+		var on_back := GoSkin.blend(GoSkin.box_background(skin.filter_chip_box(true, &"normal")), page)
+		var off_back := GoSkin.blend(GoSkin.box_background(skin.filter_chip_box(false, &"normal")), page)
+		check(GoSkin.contrast_ratio(skin.filter_chip_ink(true), on_back) >= 4.5
+			and GoSkin.contrast_ratio(skin.filter_chip_ink(false), off_back) >= 4.5,
+			"%s: a filter chip's label reads on and off" % preset)
+		check(filter.get_node_or_null(^"IconGlyph") != null or filter.icon != null, "%s: a chosen filter chip shows its check" % preset)
+		filter.queue_free()
+		var gone := [false]
+		var tag := GoStyle.input_chip("Ann", func() -> void: gone[0] = true)
+		root.add_child(tag)
+		await frames(1)
+		(tag.find_child("Remove", true, false) as GoIconButton).pressed.emit()
+		await frames(1)
+		check(gone[0] and not is_instance_valid(tag), "%s: an input chip's ✕ removes it" % preset)
+
+		# Toolbar — icon actions in a pill, each 48dp to the finger.
+		var used := [0]
+		var tools := GoStyle.toolbar([{"icon": GoIconSet.EDIT, "tooltip": &"Edit", "action": func() -> void: used[0] += 1},
+			{"icon": GoIconSet.HEART, "tooltip": &"Like"}])
+		root.add_child(tools)
+		await frames(1)
+		var first_tool := tools.get_child(0).get_child(0) as GoIconButton
+		first_tool.pressed.emit()
+		var second_tool := tools.get_child(0).get_child(1) as GoIconButton
+		var reach := (float(GoUi.config.min_touch_size) - first_tool.size.y) * 0.5
+		check(used[0] == 1 and first_tool._has_point(Vector2(-reach + 1.0, first_tool.size.y * 0.5))
+			and first_tool.touch_peers.size() == 2
+			and second_tool.position.x - first_tool.position.x - first_tool.size.x >= reach * 2.0 - 0.5,
+			"%s: toolbar actions run, take presses 48dp wide and do not overlap" % preset)
+		tools.queue_free()
+
+		# Split button — the label runs the action, the arrow's menu picks a variant.
+		var runs := [0, -1]
+		var split := GoSplitButton.make("Send", func() -> void: runs[0] += 1, ["Send later", "Save as draft"])
+		split.chosen.connect(func(index: int) -> void: runs[1] = index)
+		root.add_child(split)
+		await frames(2)
+		split.main_button.pressed.emit()
+		split.menu_button.get_popup().index_pressed.emit(1)
+		check(runs[0] == 1 and runs[1] == 1 and split.menu_button.get_popup().item_count == 2,
+			"%s: the split button's halves run the action and the menu" % preset)
+		check(split.menu_button.tooltip_text == GoUi.text(&"more"), "%s: the arrow half is named" % preset)
+		split.queue_free()
+
+		# Progress and loading — sizes, the spoken value, and the shape on its container.
+		var line := GoProgress.linear()
+		line.value = 0.4
+		var ring := GoProgress.circular(true)
+		var wait := GoLoadingIndicator.new()
+		wait.contained = true
+		for node in [line, ring, wait]: root.add_child(node)
+		await frames(3)
+		check(line.accessibility_name.contains("40") and ring.accessibility_name == GoUi.text(&"loading"),
+			"%s: progress says its value, or loading" % preset)
+		check(near(ring.size.x, 48.0) and near(wait.size.x, 48.0), "%s: the ring and the loading indicator are 48dp" % preset)
+		# 🛑 The track must show on the page — medieval's bar ground is the page colour (2026-10-02 screenshots).
+		var tones := line._colors()
+		check(GoSkin.contrast_ratio(GoSkin.blend(tones[1], page), page) >= GoProgress.LAYER - 0.005,
+			"%s: the progress track shows on the page (%.2f)" % [preset, GoSkin.contrast_ratio(GoSkin.blend(tones[1], page), page)])
+		var shades := skin.loading_colors(true)
+		check(GoSkin.contrast_ratio(shades[0], GoSkin.blend(shades[1], page)) >= 3.0,
+			"%s: the loading shape stands out on its container" % preset)
+		for node in [line, ring, wait]: node.queue_free()
+
+		# Date picker — a 6×7 grid, today ringed, a tap picks, out-of-range days do not.
+		var day := [{}]
+		var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 2}, func(date: Dictionary) -> void: day[0] = date)
+		picker.min_date = {"year": 2026, "month": 10, "day": 10}
+		root.add_child(picker)
+		await frames(2)
+		var grid := picker.find_child("Days", true, false) as GridContainer
+		check(grid != null and grid.get_child_count() == 42, "%s: the month is six rows of seven" % preset)
+		# 1 October 2026 is a Thursday — four blanks before it from Sunday.
+		check(grid.get_child(4) is Button and not (grid.get_child(3) is Button), "%s: the first day sits under its weekday" % preset)
+		var title := picker.find_child("Title", true, false) as Label
+		check(title.text == GoUi.text(&"date_month_year").format({"month": GoUi.text(&"month_10"), "year": "2026"}),
+			"%s: the month title is translated (%s)" % [preset, title.text])
+		var early := grid.get_child(4 + 4) as Button   # 5 October
+		check(early.disabled, "%s: a day before min_date cannot be picked" % preset)
+		var later := grid.get_child(4 + 14) as Button  # 15 October
+		later.pressed.emit()
+		check(int(day[0].get("day", 0)) == 15, "%s: a tap picks the day" % preset)
+		await frames(1)
+		grid = picker.find_child("Days", true, false) as GridContainer
+		var selected_cell := grid.get_child(4 + 14) as Button
+		var cell_back := GoSkin.blend(GoSkin.box_background(selected_cell.get_theme_stylebox(&"normal")), page)
+		check(GoSkin.contrast_ratio(selected_cell.get_theme_color(&"font_color"), cell_back) >= 4.5,
+			"%s: the picked day's number reads on its fill" % preset)
+		picker.first_weekday = 1
+		await frames(1)
+		grid = picker.find_child("Days", true, false) as GridContainer
+		check(grid.get_child(3) is Button and not (grid.get_child(2) is Button), "%s: a Monday-first month starts one cell earlier" % preset)
+		picker.queue_free()
+		await frames(1)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.preset = &""
 
 
 # ── Left-to-right and right-to-left ──────────────────────────────────

@@ -453,3 +453,48 @@ banners.autoplay_seconds = 5.0                 # off by default
 - The dots are **one bar a finger tall**, drawn close together: a press on a dot goes to that page, a press on the open
   bar either side goes one page that way. So the press area is far wider than the touch minimum however small the dots.
   The lit dot is a longer pill — position is not told by colour alone. ←/→ step, and a screen reader hears `2 / 3`.
+
+## 16. App screens — navigation bar, app bar, FAB, search, split button, progress, loading, dates
+
+The parts of a social, news or shopping app screen. Every one draws through a `GoSkin` hook (theming.md §6): each
+preset gives it its own shape, and the Material presets give it the M3 component's measures.
+
+```gdscript
+var screen := VBoxContainer.new()                      # a full-rect column
+var bar := GoAppBar.make("Inbox", GoIconSet.MENU, open_drawer)
+bar.add_action(GoIconSet.SEARCH, &"search", open_search)
+screen.add_child(bar)
+var list := GoScroll.new()
+list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+screen.add_child(list)
+bar.follow(list)                                       # flat at the top, lifted once the page scrolls
+var nav := GoNavBar.make([
+	{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.BELL, "text": "Alerts", "badge": 3},
+], 0, show_tab)
+screen.add_child(nav)
+var compose := GoFab.make(GoIconSet.EDIT, "", write)
+compose.tooltip_text_name = &"Compose"                 # an icon-only FAB needs its name
+compose.float_in(self, nav.get_combined_minimum_size().y)
+```
+
+| Class | Members |
+|---|---|
+| `GoNavBar` (PanelContainer) | `make(items, chosen, action, translate)` · `rail(...)` · signal `selected(index)` · `selected_index()` · `set_selected(i)` (no signal) · `set_badge(i, count, words, as_dot)` · `cell(i) -> Button` · `vertical` · `safe_area` · items `{"icon", "text", "badge", "dot"}` |
+| `GoAppBar` (PanelContainer) | `make(title, leading, action, translate)` · `set_title()` · `set_leading(icon, action)` · `add_action(icon, tooltip, action) -> GoIconButton` · `follow(scroll)` · `scrolled` · `centered` · `safe_area` · signal `navigated` · `title_label` · `leading_button` · `actions` |
+| `GoFab` (Button) | `make(icon, text, action, size)` · `Size.SMALL/REGULAR/MEDIUM/LARGE` (40/56/80/96) · `label_text` (extended) · `expanded` · `follow(scroll)` · `float_in(host, above)` · `tooltip_text_name` |
+| `GoSearchBar` (PanelContainer) | `make(placeholder, action, translate)` · signals `submitted(query)` · `text_changed(query)` · `add_action(icon, tooltip, action)` · `get_text()` · `set_text()` · `field` · `actions` |
+| `GoSplitButton` (HBoxContainer) | `make(text, action, items, tone, translate)` · signal `chosen(index)` · `main_button` · `menu_button` |
+| `GoProgress` (Control) | `linear(indeterminate)` · `circular(indeterminate)` · `value` 0–1 · `indeterminate` · `wavy` · `thick` · `kind` |
+| `GoLoadingIndicator` (Control) | `contained` — 48 dp, runs while visible |
+| `GoDatePicker` (Container) | `make(selected, action)` · signal `picked(date)` · `get_date()` · `set_date()` · `show_month(year, month)` · `shown_month()` · `min_date` · `max_date` · `first_weekday` · static `today()` — dates are `{"year", "month", "day"}` |
+
+- 🔑 **One FAB per screen** — it says "this is what you came here to do". Two say nothing.
+- 🔑 **A navigation item switches the page**; an action goes on a FAB or in the app bar. More than five
+  destinations do not fit a phone — move the rest into a `GoDrawer`.
+- 🛑 `GoFab.float_in(host, …)` needs a host that is **not a container** (a container would lay the FAB out itself).
+- ♿ Icon-only parts carry their names: app bar actions and the FAB take a tooltip name, the split button's arrow is
+  "More options", the search bar's clear button "Clear", the date arrows "Previous month" / "Next month" — all from
+  gohud's translations (`GoConfig.text_keys`), so they follow the game's language.
+- ♿ `GoProgress` speaks its percentage (`bar_percent`) or "Loading…"; `GoLoadingIndicator` says "Loading…".
+  With `reduce_motion` the wave stands still and the loading shape only breathes.
+- 📱 A date picker on a 320 dp phone keeps seven columns: each day narrows to 36 dp but stays 48 dp tall.

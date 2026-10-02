@@ -203,7 +203,8 @@ var tonal := GoUi.color(&"md_secondary_container")   # every M3 colour role is a
 
 - Buttons are pills: a 40dp plate inside the 48dp touch target. The normal tone is M3's filled tonal button,
   `Tone.PRIMARY` the filled button, `Tone.BARE` the text button and `Tone.COMPACT` the 32dp extra-small button.
-  A selected toggle turns `secondary` with a squarer corner.
+  A press shows the M3 state layer and the squarer pressed corner; a toggled-on button keeps that face (the engine
+  draws one face for both), so a choice that must read as chosen belongs in `segmented()` or a filter chip.
 - Dialogs and sheets are surface-container-high with 28dp corners, cards are filled with no outline, menus have
   16dp corners, tooltips are inverse-surface, and text fields are outlined (4dp corners, a 3dp primary outline when
   focused). Surfaces are opaque, icons are 24dp, and keyboard focus is the 3dp `secondary` ring 2dp outside the plate.
@@ -213,15 +214,21 @@ var tonal := GoUi.color(&"md_secondary_container")   # every M3 colour role is a
   it only while your project sets no font (`gui/theme/custom_font` or `gui/theme/custom`), so a Korean, Japanese or
   Chinese font of your own is not replaced.
 - The skin, `GoSkinMaterial`, draws the segmented control as the Expressive connected button group (pill ends, 8dp
-  inner corners, a 2dp gap, the chosen cell a full `secondary` pill), chips as assist chips, dividers in
-  `outline-variant` and badges as filled pills.
+  inner corners, a 2dp gap, the chosen cell a full `secondary` pill — the small one keeps its pills inside the
+  floating toolbar), chips as 32dp assist chips with an 18dp icon and a state layer when pressable, dividers in
+  `outline-variant`, badges as filled pills, a drawer as the modal side sheet (16dp on the inner edge only),
+  skeletons in `surface-container-highest` and an icon button's glyph at 24dp.
+- The app components (below, [App screens](#app-screens)) follow their M3 component tokens here: the navigation
+  bar with its 56×32 indicator, the top app bar that lifts on scroll, the FAB sizes, the search bar pill, filter
+  and input chips, the floating toolbar, the split button, the wavy progress indicator, the Expressive loading
+  indicator and the date picker.
 
 Where gohud's own checks win over the spec: on the light preset a card is surface-dim and the raised cell is
 outline-variant (gohud keeps panel, card and raised cell 1.12:1 apart), `secondary` and `muted` are both
 on-surface-variant, a disabled label stays readable (M3 fades it to 38%), snackbars keep a light plate, and a filled
-button's focus ring sits inside the plate in its on-colour. A theme cannot hold spring motion, shape morphing,
-ripples, dynamic colour or the other new Expressive components (split buttons, floating toolbars, loading
-indicators). Material is Google's public design system; these are unofficial presets built from its tokens.
+button's focus ring sits inside the plate in its on-colour. A theme cannot hold spring motion, a button's shape
+morphing, ripples or dynamic colour. Material is Google's public design system; these are unofficial presets built
+from its tokens (material-web `tokens/versions/latest`, Material 3 v34.0.21).
 
 ### Your own theme in one file
 
@@ -595,7 +602,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoSlot` | Button | Quick slot with icon, quantity, cooldown and shortcut on a single face; shared hit areas in tight rows; `keyboard_focus` opts into Tab order |
 | `GoJoystick` | Control | Virtual joystick in fixed, follow or relative mode, with dead zone |
 | `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |
-| `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips, cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
+| `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips (and `filter_chip`, `input_chip`), floating toolbars, cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
 | `GoThemePresets` | static | The eight built-in presets, presets found in `themes/presets/`, and `register()` for your own |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | The shapes code draws, with numeric dials |
@@ -642,6 +649,47 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoContextMenu` | RefCounted | Long-press (0.5 s) or right-click on any control. A finger that moves more than 12 dp cancels it, so a long list still scrolls |
 | `GoConsole` | CanvasLayer | The developer console: registered commands, arguments, history and completion. `debug_only` defaults to `true`, so it cannot open in a shipped build |
 
+### App screens
+
+The parts of a social, news or shopping app screen. Each draws through a `GoSkin` hook, so the default, sci-fi and
+medieval presets give it their own shape and Material gives it the M3 component's.
+
+| Class | Base | Purpose |
+|---|---|---|
+| `GoNavBar` | PanelContainer | The three to five destinations along the bottom of an app screen — the chosen one on an indicator pill, a badge on any icon. `vertical` (or `GoNavBar.rail()`) is the navigation rail of a wide screen. A bottom bar grows by the gesture-bar inset |
+| `GoAppBar` | PanelContainer | The top app bar: a back or menu button, the title, icon actions. `follow(scroll)` lifts it once the page under it scrolls; it grows by the status-bar inset |
+| `GoFab` | Button | The screen's main action floating in the bottom corner — 40, 56, 80 or 96 dp, or extended with a label that folds to the icon while the list scrolls down (`follow`). `float_in(screen, above)` keeps it clear of a navigation bar and the gesture bar, mirrored in RTL |
+| `GoSearchBar` | PanelContainer | The rounded search field at the top of a feed or a shop: a clear button once something is typed, room for an action or two, `submitted` on Enter |
+| `GoSplitButton` | HBoxContainer | "Send ▾" — the label half runs the main action, the arrow half opens its variants |
+| `GoProgress` | Control | How far a download or upload has come, as a line or a ring — wavy (Material 3 Expressive) or flat, with the 4 dp gap and the stop dot; `indeterminate` while the size is unknown |
+| `GoLoadingIndicator` | Control | Material 3 Expressive's wait mark: one shape that turns and morphs through seven, on its own or on a round container. It stands still and breathes under `reduce_motion` |
+| `GoDatePicker` | Container | A month to tap — today ringed, the picked day filled, `min_date`/`max_date`, Sunday- or Monday-first. Month and weekday names follow the game's language; seven columns fit a 320 dp phone (days stay 48 dp tall) |
+
+```gdscript
+var screen := VBoxContainer.new()                       # the screen's column, under a full-rect root
+var bar := GoAppBar.make("Shop", GoIconSet.MENU, open_drawer)
+bar.add_action(GoIconSet.SEARCH, &"search", open_search)
+screen.add_child(bar)
+var list := GoScroll.new()                               # the page that scrolls
+list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+screen.add_child(list)
+bar.follow(list)
+var page := GoStyle.column()
+list.add_child(page)
+page.add_child(GoSearchBar.make("Search products", find))
+var filters := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+for tag in ["In stock", "Free delivery", "On sale"]: filters.add_child(GoStyle.filter_chip(tag, false, refilter.bind(tag)))
+page.add_child(filters)
+var nav := GoNavBar.make([{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.USER, "text": "Me"}], 0, show_tab)
+screen.add_child(nav)
+var cart := GoFab.make(GoIconSet.PLUS, "Add to cart", add_to_cart)
+cart.float_in(self, nav.get_combined_minimum_size().y)  # self: the screen's full-rect root; above the nav bar
+cart.follow(list)
+```
+
+`GoStyle.filter_chip()` is a chip that toggles (several on at once — for "exactly one", use `segmented()`),
+`GoStyle.input_chip()` an entered value with a ✕, and `GoStyle.toolbar()` a floating pill of icon actions.
+
 ### Subclass hooks
 
 Every widget that builds child widgets does so through an overridable method, so a host that
@@ -657,7 +705,8 @@ subclasses *inside* the widgets without copying code:
 | `GoScroll.as_horizontal(node)` | static | the configuration step of `horizontal()`, for `static func horizontal() -> MyScroll` |
 
 `GoIconButton.native_texture_size = true` draws a texture icon at its own pixel size instead of
-scaling it to 58 % of `visual_size`.
+scaling it to the skin's glyph size (`GoSkin.icon_button_glyph`: 58 % of `visual_size`, 24 dp on the 36 dp button under
+Material).
 
 ## Plugin
 
@@ -684,7 +733,7 @@ font sizes unchanged.
 
 ## Localization
 
-gohud's own 16 strings ship in **21 languages** (`i18n/gohud.csv`): English, Korean, Japanese,
+gohud's own 41 strings ship in **21 languages** (`i18n/gohud.csv`): English, Korean, Japanese,
 Chinese (Simplified `zh` and Traditional `zh_TW`), Spanish, Portuguese, German, French, Italian,
 Dutch, Polish, Russian, Ukrainian, Turkish, Vietnamese, Indonesian, Thai, Hindi, Arabic and Hebrew.
 They load automatically; disable that with `load_builtin_translations`. Numbers, joysticks and scroll
@@ -697,7 +746,7 @@ build if one appears. Text reaches the screen through exactly two doors:
 | Where it comes from | How you change it |
 |---|---|
 | You pass it in — dialog titles and bodies, button labels, form fields, list rows, empty states | Just pass your own string or translation key |
-| gohud supplies it — the 16 named strings below | `text_overrides` (literal) or `text_keys` (your own translation keys) |
+| gohud supplies it — the 41 named strings below | `text_overrides` (literal) or `text_keys` (your own translation keys) |
 
 ```gdscript
 # Your wording, no translation table involved
@@ -707,10 +756,11 @@ GoUi.config.text_overrides = {&"confirm": "Yes", &"cancel": "No"}
 GoUi.config.text_keys[&"confirm"] = "MY_DIALOG_YES"
 ```
 
-The 16 names: `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty`
-`retry`, plus five **format strings** — `bar_fraction` (`{value} / {max}`), `bar_percent`
-(`{percent}%`), `coach_progress` (`{step} / {total}`), `slot_quantity` (`×{count}`) and
-`slot_unknown` (`…`).
+The 41 names: `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty`
+`retry` `menu` `more` `clear` `previous_month` `next_month`, five **format strings** — `bar_fraction`
+(`{value} / {max}`), `bar_percent` (`{percent}%`), `coach_progress` (`{step} / {total}`), `slot_quantity`
+(`×{count}`) and `slot_unknown` (`…`) — and the date picker's `date_month_year` (`{month} {year}`; Korean writes
+`{year}년 {month}`), `month_1` … `month_12` and the one-letter weekday marks `weekday_0` (Sunday) … `weekday_6`.
 
 Formats are translatable because punctuation is not universal: Turkish puts the percent sign in
 *front* (`%50`), French separates it (`50 %`). Placeholders use `{name}`, so a translation that
@@ -727,7 +777,7 @@ GoUi.config.number_formatter = func(amount: float) -> String:
 
 > **Bring a font for your languages.** The bundled fonts are Cinzel, which only the medieval presets assign
 > (to titles and subtitles), and Roboto, which only the Material presets assign (to titles, captions and
-> button labels). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
+> button labels — and to body text while the project sets no font of its own). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
 > your own theme font; a Latin-only font draws them as empty boxes and raises no error. Traditional
 > Chinese needs its own coverage too: a Simplified subset does not contain those forms.
 

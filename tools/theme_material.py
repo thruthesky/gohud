@@ -253,9 +253,10 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
 
     # ── Buttons (`_md-comp-button-{small,xsmall,filled,tonal,text}.scss`) ──
     # 🔑 gohud's NORMAL tone is M3's **filled tonal** button — the medium-emphasis button that reads on
-    #    every surface. PRIMARY is the filled button. The pressed face doubles as the **selected** face of a
-    #    toggle, so it takes the selected colours and the selected shape (corner.medium) — an instant
-    #    shape change, which is as much of the Expressive shape morph as a StyleBox can hold.
+    #    every surface. PRIMARY is the filled button. The pressed face is the M3 pressed state (a 10% state
+    #    layer and the squarer pressed corner — an instant shape change, as much of the Expressive shape morph as
+    #    a StyleBox can hold). The engine also draws it for a toggled-on button; a choice that must read as
+    #    chosen belongs in `segmented()` or a filter chip (see the 🛑 below).
     tonal, on_tonal = r["secondary_container"], r["on_secondary_container"]
     box("btn_normal", bg=tonal, radius=FULL, margins=pad, inset=plate, detail=16)
     # 🛑 No hover shadow: gohud's buttons sit flat, and M3's raised (elevated) look is the `*_glow` twin below.

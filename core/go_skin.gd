@@ -471,6 +471,290 @@ func _edge_fill(box: StyleBox, ink: Color) -> void:
 		box.set(&"border_width", maxf(1.0, float(box.get(&"border_width"))))
 
 
+# ── Parts of existing widgets ──────────────────────────────────────────
+#
+# 🔑 Each default below is the code the widget ran before the hook existed, moved here unchanged — a skin that does not
+#    override one draws exactly what it drew before.
+
+## The panel of a drawer (`GoDrawer`) that slides in from one side and runs the full height of the screen.
+## [param _at_left] is the side it is docked to, [param alpha] the panel opacity (negative uses the card value).
+## Default: the card panel, the same on either side.
+func drawer_box(_at_left: bool, alpha := -1.0) -> StyleBox:
+	return surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, alpha)
+
+
+## One cell of a **small** segmented control (`GoStyle.segmented(..., compact = true)`), which sits inside an
+## `overlay_box` pill. [param face] is this skin's `segment_box` for the same cell and state.
+## Default: an unchosen cell draws nothing (no border doubles up with the pill around it), focus is the soft ring, and a
+## chosen or hovered cell keeps the face with no border, small corners and no shadow.
+func compact_segment_box(face: StyleBox, state: StringName) -> StyleBox:
+	if state == &"focus": return GoUi.box(GoTheme.BOX_FOCUS_SOFT)
+	if state == &"normal": return GoUi.box(GoTheme.BOX_EMPTY)
+	var flat := face as StyleBoxFlat
+	if flat != null:
+		flat.set_border_width_all(0)
+		flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
+		flat.shadow_size = 0
+	return face
+
+
+## Size (dp) of the glyph on an icon-only button (`GoIconButton`) whose visible square is [param visual_size].
+## Default: 58% of the square — the size of a font glyph on a 36dp button.
+func icon_button_glyph(visual_size: float) -> int:
+	return maxi(8, roundi(visual_size * 0.58))
+
+
+## Size (dp) of the icon in front of a chip's text (`GoStyle.chip`, filter and input chips). Default: the list glyph token.
+func chip_glyph_size() -> int:
+	return GoUi.metric(GoTheme.LIST_GLYPH)
+
+
+## Text role of a chip's label (`GoStyle.chip`). Default: the compact role.
+func chip_text_role() -> StringName:
+	return GoTheme.ROLE_COMPACT
+
+
+## Height of a chip (dp) — `0` lets the content decide (the default: padding plus the line or the icon).
+func chip_height() -> float:
+	return 0.0
+
+
+## A chip button's face for [param _state] (`GoStyle.style_chip_button`) — [param face] is the chip face it starts from.
+## Default: the same face in every state, as it always was.
+func chip_state_box(face: StyleBox, _state: StringName) -> StyleBox:
+	return face
+
+
+# ── App components ─────────────────────────────────────────────────────
+#
+# 🔑 The navigation bar, top app bar, FAB, search bar, filter chips, toolbar and split button. Every default draws with
+#    gohud's own tokens and the theme's own boxes, so the default, sci-fi and medieval looks get these parts in their
+#    own shapes; `GoSkinMaterial` redraws them to the M3 component tokens.
+
+## One face of a **filter chip** (`GoStyle.filter_chip`) — a chip that toggles. [param selected] is whether it is on,
+## [param state] `&"normal"`·`&"hover"`·`&"pressed"`·`&"disabled"`·`&"focus"`.
+## Default: the chip face in the secondary colour while off, in the accent colour while on — filled further and edged
+## in the full accent, so "on" reads without colour alone. Hover and press deepen the fill.
+## 🛑 The same padding in every state, or the chip changes width as it is pressed.
+func filter_chip_box(selected: bool, state: StringName) -> StyleBox:
+	var accent := GoUi.color(GoTheme.ACCENT)
+	var face := chip_box(accent if selected else GoUi.color(GoTheme.SECONDARY))
+	if state == &"focus":
+		var ring := GoUi.box(GoTheme.BOX_FOCUS_SOFT)
+		ring.content_margin_left = face.content_margin_left
+		ring.content_margin_right = face.content_margin_right
+		ring.content_margin_top = face.content_margin_top
+		ring.content_margin_bottom = face.content_margin_bottom
+		return ring
+	if &"bg_color" in face:
+		var fill: Color = face.get(&"bg_color")
+		var amount := fill.a * (2.0 if selected else 1.0)
+		if state == &"hover": amount += 0.08
+		elif state == &"pressed": amount += 0.14
+		elif state == &"disabled": amount *= 0.5
+		face.set(&"bg_color", Color(fill, clampf(amount, 0.0, 1.0)))
+	if selected and &"border_color" in face: face.set(&"border_color", accent)
+	return face
+
+
+## Text and icon colour of a filter chip — pushed until it reads on [method filter_chip_box].
+func filter_chip_ink(selected: bool) -> Color:
+	var ink := GoUi.color(GoTheme.ACCENT) if selected else GoUi.color(GoTheme.TEXT)
+	var back := blend(box_background(filter_chip_box(selected, &"normal")), GoUi.color(GoTheme.SURFACE_SOFT))
+	return readable_on(ink, back)
+
+
+## The panel of a navigation bar (`GoNavBar`) docked to the bottom of the screen, or of a navigation rail
+## ([param vertical]) docked to its side. Default: the card colour with square corners and a hairline on the side
+## that faces the page — it runs into the screen's edge, so rounded corners would leave gaps there.
+func nav_bar_box(vertical: bool) -> StyleBox:
+	var face := surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
+	var flat := face as StyleBoxFlat
+	if flat != null:
+		flat.set_corner_radius_all(0)
+		flat.shadow_size = 0
+		flat.set_border_width_all(0)
+		if not vertical: flat.border_width_top = 1
+		flat.border_color = GoUi.color(GoTheme.BORDER)
+	face.set_content_margin_all(0)
+	return face
+
+
+## The pill behind a navigation destination's icon — shown on the chosen one, and as the state layer of the others.
+## [param state] is `&"normal"`·`&"hover"`·`&"pressed"`·`&"focus"`. Default: an accent tint, deeper when chosen.
+func nav_indicator_box(selected: bool, state: StringName) -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.set_corner_radius_all(FULL_ROUND)
+	face.corner_detail = 16
+	var accent := GoUi.color(GoTheme.ACCENT)
+	if state == &"focus":
+		face.draw_center = false
+		face.border_color = accent
+		face.set_border_width_all(2)
+		return face
+	var fill := chip_fill_alpha * 1.5 if selected else 0.0
+	if state == &"hover": fill += 0.08
+	elif state == &"pressed": fill += 0.14
+	face.bg_color = Color(accent, fill)
+	return face
+
+
+## Colour of a navigation destination's icon ([param label] false) or label ([param label] true).
+## Default: the accent while chosen, the muted text colour otherwise — each pushed until it reads where it sits.
+func nav_ink(selected: bool, label: bool) -> Color:
+	var back := blend(box_background(nav_bar_box(false)), GoUi.color(GoTheme.BACKGROUND))
+	if not selected: return readable_on(GoUi.color(GoTheme.MUTED), back)
+	if not label: back = blend(box_background(nav_indicator_box(true, &"normal")), back)
+	return readable_on(GoUi.color(GoTheme.ACCENT), back)
+
+
+## The panel of a top app bar (`GoAppBar`). [param scrolled] is true once the content under it has scrolled — the bar
+## then has to stand apart from the content passing beneath it. Default: the card colour with square corners, plus a
+## hairline and the floating shadow below it while scrolled.
+func app_bar_box(scrolled: bool) -> StyleBox:
+	var face := surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
+	var flat := face as StyleBoxFlat
+	if flat != null:
+		flat.set_corner_radius_all(0)
+		flat.set_border_width_all(0)
+		flat.shadow_size = 0
+		if scrolled:
+			flat.border_width_bottom = 1
+			flat.border_color = GoUi.color(GoTheme.BORDER)
+			flat.shadow_color = Color(GoUi.color(GoTheme.SHADOW), float_shadow_alpha * 0.5)
+			flat.shadow_size = maxi(2, roundi(float_shadow_size * 0.5))
+			flat.shadow_offset = Vector2(0, 2)
+	face.set_content_margin_all(0)
+	return face
+
+
+## A floating action button's face (`GoFab`) — [param extent] is its height in dp (40, 56, 80 or 96; an extended FAB
+## is 56 tall), [param state] `&"normal"`·`&"hover"`·`&"pressed"`·`&"disabled"`·`&"focus"`.
+## Default: the theme's own primary button face (so it is cut on sci-fi and framed on medieval), with the corner grown
+## to the button and the floating shadow under it — a FAB floats over the content.
+func fab_box(extent: float, state: StringName) -> StyleBox:
+	var key := &"normal" if state == &"disabled" else state
+	var face := _variation_box(GoTheme.VAR_PRIMARY_BUTTON, key)
+	var flat := face as StyleBoxFlat
+	if flat != null:
+		if state != &"focus":
+			flat.expand_margin_left = 0.0
+			flat.expand_margin_top = 0.0
+			flat.expand_margin_right = 0.0
+			flat.expand_margin_bottom = 0.0
+			flat.shadow_color = Color(GoUi.color(GoTheme.SHADOW), float_shadow_alpha)
+			flat.shadow_size = float_shadow_size
+			flat.shadow_offset = Vector2(0, float_shadow_lift)
+		flat.set_corner_radius_all(roundi(extent * 0.28))
+		flat.corner_detail = 12
+		if state == &"disabled": flat.bg_color = Color(flat.bg_color, flat.bg_color.a * 0.45)
+	elif state == &"disabled":
+		fade_box(face, 0.45)
+	return face
+
+
+## Icon and label colour on a FAB. Default: the primary button's label colour.
+func fab_ink() -> Color:
+	var theme := GoUi.theme()
+	for candidate in [theme, GoUi.DEFAULT_THEME]:
+		if candidate != null and candidate.has_color(&"font_color", GoTheme.VAR_PRIMARY_BUTTON):
+			return candidate.get_color(&"font_color", GoTheme.VAR_PRIMARY_BUTTON)
+	return GoUi.color(GoTheme.ON_ACCENT)
+
+
+## The container of a search bar (`GoSearchBar`). [param state] is `&"normal"`·`&"hover"`·`&"focus"`.
+## Default: the theme's own text-field face (`LineEdit`), rounded into a pill when it is a plain flat box.
+func search_bar_box(state: StringName) -> StyleBox:
+	var face := _variation_box(&"LineEdit", &"focus" if state == &"focus" else &"normal")
+	var flat := face as StyleBoxFlat
+	if flat != null:
+		flat.set_corner_radius_all(FULL_ROUND)
+		flat.corner_detail = 16
+		if state == &"hover": flat.bg_color = flat.bg_color.lerp(GoUi.color(GoTheme.TEXT), 0.04)
+	face.set_content_margin_all(0)
+	return face
+
+
+## The panel of a toolbar (`GoStyle.toolbar`) — a row (or, [param _vertical], a column) of actions floating over the
+## content. Default: the pill laid over the screen (`overlay_box`) with the toolbar's 8dp inner space.
+func toolbar_box(_vertical: bool) -> StyleBox:
+	var space := GoUi.metric(GoTheme.GAP_SMALL)
+	return overlay_box(space, space)
+
+
+## One half of a split button (`GoSplitButton`). [param face] is the theme's button face for [param state]; the leading
+## half carries the label, the trailing half the menu arrow. [param open] is true while the trailing half's menu is open.
+## Default: the outer side keeps the button's corner, the inner side (where the halves meet) is squared to a quarter
+## of it, so the two halves read as one control with a seam.
+func split_button_box(face: StyleBox, leading: bool, state: StringName, open: bool) -> StyleBox:
+	var flat := face as StyleBoxFlat
+	if flat == null or state == &"focus": return face
+	var outer := flat.corner_radius_top_left
+	var inner := maxi(2, roundi(outer * 0.25))
+	if not leading and open: inner = outer
+	if leading:
+		flat.corner_radius_top_right = inner
+		flat.corner_radius_bottom_right = inner
+	else:
+		flat.corner_radius_top_left = inner
+		flat.corner_radius_bottom_left = inner
+	return flat
+
+
+## Colours of a loading indicator (`GoLoadingIndicator`): `[shape, container]`. [param contained] puts the shape on a
+## round container. Default: the accent on a faint accent disc.
+func loading_colors(contained: bool) -> Array[Color]:
+	var accent := GoUi.color(GoTheme.ACCENT)
+	if not contained: return [accent, Color.TRANSPARENT]
+	return [accent, Color(accent, chip_fill_alpha)]
+
+
+## One day of a date picker (`GoDatePicker`). [param kind] is `&"day"`·`&"today"`·`&"selected"`, [param state]
+## `&"normal"`·`&"hover"`·`&"pressed"`·`&"focus"`. Default: a round cell — filled with the accent when picked, ringed
+## when it is today.
+func date_cell_box(kind: StringName, state: StringName) -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.set_corner_radius_all(FULL_ROUND)
+	face.corner_detail = 16
+	var accent := GoUi.color(GoTheme.ACCENT)
+	if state == &"focus":
+		face.draw_center = false
+		face.border_color = accent
+		face.set_border_width_all(2)
+		return face
+	face.bg_color = accent if kind == &"selected" else Color(GoUi.color(GoTheme.TEXT), 0.0)
+	if kind != &"selected":
+		if state == &"hover": face.bg_color = Color(GoUi.color(GoTheme.TEXT), 0.08)
+		elif state == &"pressed": face.bg_color = Color(GoUi.color(GoTheme.TEXT), 0.14)
+	if kind == &"today":
+		face.border_color = accent
+		face.set_border_width_all(1)
+	return face
+
+
+## Text colour of a date picker day ([param kind] as in [method date_cell_box]).
+func date_ink(kind: StringName) -> Color:
+	if kind == &"selected": return readable_on(GoUi.color(GoTheme.ON_ACCENT), GoUi.color(GoTheme.ACCENT))
+	var back := GoUi.color(GoTheme.SURFACE)
+	return readable_on(GoUi.color(GoTheme.ACCENT) if kind == &"today" else GoUi.color(GoTheme.TEXT), back)
+
+
+## Taller than any part, so StyleBoxFlat rounds both ends into a pill. 🛑 Not for a box that mixes a pill end with small
+## corners — StyleBoxFlat then shrinks every corner by the same ratio (see `GoSkinMaterial.segment_box`).
+const FULL_ROUND := 999
+
+
+## A copy of a theme box of a type variation (`GoPrimaryButton`, `LineEdit` …) — from the current theme, else gohud's
+## default theme, else a plain flat box in the surface colour.
+func _variation_box(type: StringName, key: StringName) -> StyleBox:
+	for candidate in [GoUi.theme(), GoUi.DEFAULT_THEME]:
+		if candidate != null and candidate.has_stylebox(key, type):
+			return candidate.get_stylebox(key, type).duplicate()
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = GoUi.color(GoTheme.SURFACE)
+	return flat
+
+
 # ── HUD ────────────────────────────────────────────────────────────────
 
 ## 🔑 Face of an **indicator dot** — a carousel's page dots, a badge in dot mode, a chart legend's key. A solid round mark

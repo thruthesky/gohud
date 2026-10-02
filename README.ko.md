@@ -192,7 +192,9 @@ var tonal := GoUi.color(&"md_secondary_container")   # M3 색 역할도 전부 �
 ```
 
 - 버튼은 알약 모양이다 — 48dp 터치 영역 안에 40dp 판. 일반 톤은 M3 의 tonal 버튼, `Tone.PRIMARY` 는 채운 버튼,
-  `Tone.BARE` 는 텍스트 버튼, `Tone.COMPACT` 는 32dp 초소형 버튼이다. 선택된 토글은 `secondary` 색과 덜 둥근 모서리가 된다.
+  `Tone.BARE` 는 텍스트 버튼, `Tone.COMPACT` 는 32dp 초소형 버튼이다. 누르면 M3 상태층과 덜 둥근 눌림 모서리가 보이고,
+  켜진 토글 버튼도 그 면을 그대로 쓴다(엔진이 두 상태에 면 하나를 쓴다) — "골랐다"가 보여야 하는 선택은 `segmented()` 나
+  필터 칩에 둔다.
 - 대화상자·시트는 surface-container-high 에 모서리 28dp, 카드는 외곽선 없는 채운 카드, 메뉴는 모서리 16dp,
   툴팁은 inverse-surface, 입력란은 외곽선형(모서리 4dp, 초점이면 3dp primary 외곽선)이다. 판은 불투명하고 아이콘은 24dp 며,
   키보드 포커스는 판 바깥 2dp 에 두른 3dp `secondary` 링이다.
@@ -202,13 +204,18 @@ var tonal := GoUi.color(&"md_secondary_container")   # M3 색 역할도 전부 �
   (`gui/theme/custom_font` 또는 `gui/theme/custom`)이 없을 때만 Roboto 를 쓰므로, 한국어·일본어·중국어 글꼴을 따로
   쓰는 프로젝트는 그 글꼴이 바뀌지 않는다.
 - 스킨 `GoSkinMaterial` 이 분절 선택을 Expressive 의 연결 버튼 그룹(알약 끝, 안쪽 모서리 8dp, 칸 사이 2dp, 고른 칸은
-  `secondary` 알약)으로, 칩을 어시스트 칩으로, 구분선을 `outline-variant` 로, 배지를 채운 알약으로 그린다.
+  `secondary` 알약 — 작은 분절은 플로팅 툴바 안에서 알약 칸을 유지)으로, 칩을 18dp 아이콘이 든 32dp 어시스트 칩(누를 수
+  있으면 상태층)으로, 구분선을 `outline-variant` 로, 배지를 채운 알약으로, 드로어를 모달 사이드 시트(안쪽 모서리만 16dp)로,
+  스켈레톤을 `surface-container-highest` 로 그리고, 아이콘 버튼의 그림을 24dp 로 둔다.
+- 앱 컴포넌트([앱 화면](#앱-화면))도 여기서는 M3 컴포넌트 토큰을 따른다 — 56×32 표시자의 내비게이션 바, 스크롤하면
+  떠오르는 상단 앱 바, FAB 크기, 검색 바 알약, 필터·입력 칩, 플로팅 툴바, 분할 버튼, 웨이브 진행 표시, Expressive 로딩
+  인디케이터, 날짜 선택기.
 
 gohud 자체 검사가 규격보다 앞서는 곳: 밝은 프리셋에서 카드는 surface-dim, 들린 칸은 outline-variant 다(gohud 는 판·카드·
 들린 칸을 1.12:1 이상 떼어 둔다). `secondary` 와 `muted` 는 둘 다 on-surface-variant 이고, 비활성 글자는 읽히는 대비를
 유지하며(M3 는 38% 로 흐린다), 스낵바는 밝은 판을 쓰고, 채운 버튼의 포커스 링은 판 안쪽에 그 버튼의 on 색으로 그린다.
-스프링 모션·모양 변형·리플·다이나믹 컬러, 그리고 나머지 새 Expressive 컴포넌트(분할 버튼·플로팅 툴바·로딩
-인디케이터)는 테마에 담을 수 없다. Material 은 Google 의 공개 디자인 시스템이고, 이 프리셋은 그 토큰으로 만든 비공식 프리셋이다.
+스프링 모션·버튼의 모양 변형·리플·다이나믹 컬러는 테마에 담을 수 없다. Material 은 Google 의 공개 디자인 시스템이고, 이
+프리셋은 그 토큰(material-web `tokens/versions/latest`, Material 3 v34.0.21)으로 만든 비공식 프리셋이다.
 
 ### 테마 하나 더 — 파일 하나
 
@@ -562,7 +569,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
 | `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
 | `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
-| `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
+| `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 여덟, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
@@ -609,6 +616,47 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoContextMenu` | RefCounted | 어떤 컨트롤에든 길게 누르기(0.5초)·오른쪽 클릭. 손가락이 12dp 넘게 움직이면 **취소한다** — 그래야 긴 목록이 그대로 스크롤된다 |
 | `GoConsole` | CanvasLayer | 개발자 콘솔 — 등록한 명령, 인자, 기록, 자동완성. `debug_only` 가 기본 `true` 라 **배포 빌드에서는 열리지 않는다** |
 
+### 앱 화면
+
+소셜·뉴스·쇼핑 앱 화면의 부품. 모두 `GoSkin` 훅으로 그리므로 기본·sci-fi·중세 프리셋은 자기 모양으로, Material 은 M3
+컴포넌트 모양으로 그린다.
+
+| 클래스 | 바탕 | 하는 일 |
+|---|---|---|
+| `GoNavBar` | PanelContainer | 앱 화면 아래의 목적지 3~5개 — 고른 것은 표시자 알약 위에, 아이콘마다 배지. `vertical`(또는 `GoNavBar.rail()`)이면 넓은 화면의 내비게이션 레일. 아래 바는 제스처 바 높이만큼 자란다 |
+| `GoAppBar` | PanelContainer | 상단 앱 바 — 뒤로·메뉴 버튼, 제목, 아이콘 동작. `follow(scroll)` 이면 아래 페이지가 스크롤될 때 떠오른다. 상태 표시줄 높이만큼 자란다 |
+| `GoFab` | Button | 화면의 주 동작을 아래 구석에 띄운다 — 40·56·80·96dp, 또는 라벨이 붙은 확장 FAB(목록을 내리는 동안 아이콘만 남는다 — `follow`). `float_in(screen, above)` 가 내비게이션 바와 제스처 바를 피해 놓고, RTL 에서는 반대쪽 구석이다 |
+| `GoSearchBar` | PanelContainer | 피드·쇼핑몰 위의 둥근 검색칸 — 입력하면 지우기 버튼, 끝에 동작 한두 개, Enter 에 `submitted` |
+| `GoSplitButton` | HBoxContainer | "보내기 ▾" — 글자 쪽은 주 동작, 화살표 쪽은 변형 메뉴 |
+| `GoProgress` | Control | 내려받기·올리기가 얼마나 왔는지 선이나 고리로 — 웨이브(Material 3 Expressive) 또는 평평한 것, 4dp 틈과 끝 점. 크기를 모르면 `indeterminate` |
+| `GoLoadingIndicator` | Control | Material 3 Expressive 의 기다림 표시 — 한 모양이 돌면서 일곱 모양으로 바뀐다. 그대로 또는 둥근 바탕 위에. `reduce_motion` 이면 멈춰서 숨만 쉰다 |
+| `GoDatePicker` | Container | 한 달을 눌러 고른다 — 오늘은 고리, 고른 날은 채움, `min_date`·`max_date`, 일요일·월요일 시작. 달·요일 이름은 게임 언어를 따르고, 일곱 칸이 320dp 폰에 들어간다(날짜 칸 높이는 48dp 유지) |
+
+```gdscript
+var screen := VBoxContainer.new()                       # 화면 전체를 채운 루트 아래의 세로줄
+var bar := GoAppBar.make("쇼핑", GoIconSet.MENU, open_drawer)
+bar.add_action(GoIconSet.SEARCH, &"search", open_search)
+screen.add_child(bar)
+var list := GoScroll.new()                               # 스크롤되는 페이지
+list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+screen.add_child(list)
+bar.follow(list)
+var page := GoStyle.column()
+list.add_child(page)
+page.add_child(GoSearchBar.make("상품 검색", find))
+var filters := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+for tag in ["재고 있음", "무료 배송", "할인"]: filters.add_child(GoStyle.filter_chip(tag, false, refilter.bind(tag)))
+page.add_child(filters)
+var nav := GoNavBar.make([{"icon": GoIconSet.HOME, "text": "홈"}, {"icon": GoIconSet.USER, "text": "나"}], 0, show_tab)
+screen.add_child(nav)
+var cart := GoFab.make(GoIconSet.PLUS, "장바구니에 담기", add_to_cart)
+cart.float_in(self, nav.get_combined_minimum_size().y)  # self: 화면 전체를 채운 루트 — 내비 바 위에
+cart.follow(list)
+```
+
+`GoStyle.filter_chip()` 은 켜고 끄는 칩(여럿을 함께 켠다 — "하나만"이면 `segmented()`), `GoStyle.input_chip()` 은 ✕ 가
+붙은 입력값, `GoStyle.toolbar()` 는 아이콘 동작을 담은 떠 있는 알약이다.
+
 ### 자식 클래스 훅
 
 하위 위젯을 만드는 곳은 전부 덮어쓸 수 있는 메서드를 거친다. gohud 타입을 상속한 호스트(자기 타입 힌트·자기 닫기
@@ -622,7 +670,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `_should_pause()` | `GoCoachMark` | `GoSurface.is_any_open()` — 모달이 열려 있는 동안 카드를 숨긴다 |
 | `GoScroll.as_horizontal(node)` | 정적 | `horizontal()` 의 설정 단계 — `static func horizontal() -> MyScroll` 을 자식이 다시 만들 때 |
 
-`GoIconButton.native_texture_size = true` 는 텍스처 아이콘을 `visual_size` 의 58% 로 늘리지 않고 원래 픽셀 크기로 그린다.
+`GoIconButton.native_texture_size = true` 는 텍스처 아이콘을 스킨의 그림 크기(`GoSkin.icon_button_glyph` — `visual_size` 의
+58%, Material 에서는 36dp 버튼에 24dp)로 늘리지 않고 원래 픽셀 크기로 그린다.
 
 ## 플러그인
 
@@ -645,7 +694,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 ## 번역
 
-문구 16개가 **21개 언어**로 들어 있다 (`i18n/gohud.csv`) — 영어·한국어·일본어·
+문구 41개가 **21개 언어**로 들어 있다 (`i18n/gohud.csv`) — 영어·한국어·일본어·
 중국어(간체 `zh`·번체 `zh_TW`)·스페인어·포르투갈어·독일어·프랑스어·이탈리아어·네덜란드어·
 폴란드어·러시아어·우크라이나어·터키어·베트남어·인도네시아어·태국어·힌디어·아랍어·히브리어.
 자동으로 읽히고, `load_builtin_translations = false` 로 끈다.
@@ -659,7 +708,7 @@ RTL(`ar`·`he`)에서도 숫자·조이스틱·스크롤 레일은 왼쪽에서 
 | 어디서 오나 | 바꾸는 법 |
 |---|---|
 | **당신이 넘긴다** — 대화상자 제목·본문, 버튼 라벨, 폼 항목, 목록 줄, 빈 상태 | 그냥 원하는 문자열이나 번역 키를 넘긴다 |
-| **gohud 가 준다** — 아래 이름 16개 | `text_overrides`(원문) 또는 `text_keys`(프로젝트의 키) |
+| **gohud 가 준다** — 아래 이름 41개 | `text_overrides`(원문) 또는 `text_keys`(프로젝트의 키) |
 
 ```gdscript
 # 번역 테이블 없이 내 문구로
@@ -669,9 +718,11 @@ GoUi.config.text_overrides = {&"confirm": "예", &"cancel": "아니오"}
 GoUi.config.text_keys[&"confirm"] = "MY_DIALOG_YES"
 ```
 
-이름 16개: `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty`
-`retry` 와 **형식 문자열** 다섯 — `bar_fraction`(`{value} / {max}`) · `bar_percent`(`{percent}%`) ·
-`coach_progress`(`{step} / {total}`) · `slot_quantity`(`×{count}`) · `slot_unknown`(`…`).
+이름 41개: `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty`
+`retry` `menu` `more` `clear` `previous_month` `next_month`, **형식 문자열** 다섯 — `bar_fraction`(`{value} / {max}`) ·
+`bar_percent`(`{percent}%`) · `coach_progress`(`{step} / {total}`) · `slot_quantity`(`×{count}`) · `slot_unknown`(`…`),
+그리고 날짜 선택기의 `date_month_year`(`{month} {year}` — 한국어는 `{year}년 {month}`) · `month_1` … `month_12` ·
+한 글자 요일 표시 `weekday_0`(일요일) … `weekday_6`.
 
 🔑 **형식도 번역 대상이다** — 구두점은 만국 공통이 아니다. 터키어는 백분율 기호를 **앞**에 붙이고
 (`%50`), 프랑스어는 띄운다(`50 %`). 자리표시자는 `{이름}` 이라, 번역자가 하나 빠뜨려도 화면이
@@ -687,7 +738,7 @@ GoUi.config.number_formatter = func(amount: float) -> String:
 ```
 
 > 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제)과 Roboto(Material
-> 프리셋의 제목·캡션·버튼 글자) 둘이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
+> 프리셋의 제목·캡션·버튼 글자 — 프로젝트에 글꼴 설정이 없으면 본문까지) 둘이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
 > 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용
 > 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**. 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
 

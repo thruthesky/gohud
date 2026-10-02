@@ -429,6 +429,48 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	carousel.set_pages(banners)
 	carousel.page_changed.connect(func(index: int) -> void: _say("banner %d" % index))
 
+	# ── App components — the parts of a social, news or shopping app screen, in every preset's own shape.
+	page.add_child(GoStyle.section("App components", false))
+	var app_bar := GoAppBar.make("Inbox", GoIconSet.MENU, _say.bind("menu"))
+	app_bar.add_action(GoIconSet.SEARCH, &"search", _say.bind("search"))
+	app_bar.add_action(GoIconSet.MORE, &"more", _say.bind("more"))
+	app_bar.safe_area = false
+	page.add_child(app_bar)
+	var search := GoSearchBar.make("Search products", func(query: String) -> void: _say("search %s" % query))
+	search.add_action(GoIconSet.FILTER, &"Filter", _say.bind("filters"))
+	page.add_child(search)
+	var filters := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+	for pair in [["In stock", true], ["Free delivery", false], ["On sale", false]]:
+		filters.add_child(GoStyle.filter_chip(str(pair[0]), bool(pair[1]),
+			func(on: bool) -> void: _say("%s %s" % [pair[0], "on" if on else "off"])))
+	filters.add_child(GoStyle.input_chip("Ann", _say.bind("removed Ann"), GoIconSet.USER))
+	page.add_child(filters)
+	var actions := GoStyle.wrap_row()
+	actions.add_child(GoSplitButton.make("Send", _say.bind("send"), ["Send later", "Save as draft"]))
+	actions.add_child(GoFab.make(GoIconSet.EDIT, "", _say.bind("compose"), GoFab.Size.SMALL))
+	actions.add_child(GoFab.make(GoIconSet.PLUS, "Add to cart", _say.bind("add to cart")))
+	page.add_child(actions)
+	page.add_child(GoStyle.toolbar([
+		{"icon": GoIconSet.EDIT, "tooltip": &"Edit", "action": _say.bind("edit")},
+		{"icon": GoIconSet.HEART, "tooltip": &"Like", "action": _say.bind("like")},
+		{"icon": GoIconSet.SEARCH, "tooltip": &"search", "action": _say.bind("find")},
+	]))
+	var waits := GoStyle.row(GoUi.metric(GoTheme.GAP))
+	var upload := GoProgress.linear()
+	upload.value = 0.62
+	waits.add_child(upload)
+	waits.add_child(GoProgress.circular(true))
+	var loading := GoLoadingIndicator.new()
+	loading.contained = true
+	waits.add_child(loading)
+	page.add_child(waits)
+	page.add_child(GoDatePicker.make({"year": 2026, "month": 10, "day": 2},
+		func(date: Dictionary) -> void: _say("date %d-%02d-%02d" % [date.year, date.month, date.day])))
+	page.add_child(GoNavBar.make([
+		{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.SEARCH, "text": "Search"},
+		{"icon": GoIconSet.BELL, "text": "Alerts", "badge": 3}, {"icon": GoIconSet.USER, "text": "Profile"},
+	], 0, func(index: int) -> void: _say("destination %d" % index)))
+
 
 # ── The HUD floating over the screen ───────────────────────────────────
 

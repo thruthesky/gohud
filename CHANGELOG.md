@@ -53,6 +53,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Changed
 
+- **`tools/check_contrast.py` measures tab labels and checkbox and switch labels.** A tab names its faces and colours
+  differently (`tab_selected` with `font_selected_color` …) and a checkbox draws no plate (`StyleBoxEmpty`), so neither
+  produced a single row before. Tabs now pair each face with its own colour, and a face that draws nothing is measured
+  over the backdrop and the card. All eight themes pass.
+- **`GoIconButton` takes its glyph size from the skin** (`GoSkin.icon_button_glyph`, 58% of `visual_size` as before;
+  24dp on the 36dp button under Material), and chips their icon size, label role and height (`chip_glyph_size`,
+  `chip_text_role`, `chip_height`) — unchanged on the existing presets.
 - **Filled buttons sit flat by default.** The primary button (`Tone.PRIMARY`) drew a soft accent shadow under its
   plate — a glow on the sci-fi shape — and the filled danger button (`Tone.DANGER_SOLID`) a red one, the only depth
   in a row of flat buttons. Every built-in theme now draws both flat in every state. The old look is one option
@@ -74,7 +81,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 - **Material 3 presets — `material_light` and `material_dark`** (`GoThemePresets.MATERIAL_LIGHT`, `MATERIAL_DARK`): the
   M3 baseline (source `#6750A4`) for app screens. Pill buttons with a 40dp plate in the 48dp touch target (filled,
-  tonal, text, error and a 32dp extra-small button; a selected toggle turns `secondary`), 28dp dialogs and sheets,
+  tonal, text, error and a 32dp extra-small button; a press shows the M3 state layer and pressed corner), 28dp dialogs and sheets,
   borderless filled cards, 16dp menus, outlined text fields, primary tabs with the 3dp indicator, inverse-surface
   tooltips, M3 switches, checkboxes and radio buttons, the Expressive slider (16dp track, bar handle), progress bars on
   a `secondary-container` track, a 3dp `secondary` focus ring outside the plate, opaque surfaces, 24dp icons and the M3
@@ -85,9 +92,34 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   colours pass every contrast gate as the M3 tokens give them; where a gate overrules the spec the README lists it. Set
   `GoUi.config.shrink_type_on_mobile = false` to keep the M3 type sizes on phones.
 - **`GoSkinMaterial`** — the skin of the Material presets. The segmented control becomes the M3 Expressive connected
-  button group (pill ends, 8dp inner corners, a 2dp gap, the chosen cell a full pill in `secondary`), chips become M3
-  assist chips, dividers take `outline-variant` and badges are filled pills. Dials: `segment_gap`,
-  `segment_inner_radius`.
+  button group (pill ends, 8dp inner corners, a 2dp gap, the chosen cell a full pill in `secondary`; the small one keeps
+  its pill cells inside the floating toolbar), chips become 32dp M3 assist chips with an 18dp icon and a state layer
+  when pressable, dividers take `outline-variant`, badges are filled pills, the pill laid over the screen is the M3
+  floating toolbar, a drawer is the modal side sheet (16dp on the inner edge only), skeletons take
+  `surface-container-highest`, an icon button's glyph is 24dp, and choice cells take the card corner with an
+  `on-surface` hover layer. Dials: `segment_gap`, `segment_inner_radius`.
+- **App screens — eight new widgets for social, news and shopping app screens**, each drawn through a `GoSkin` hook so
+  every preset gives it its own shape and the Material presets the M3 component's:
+  `GoNavBar` (navigation bar, and `rail()` for a wide screen — indicator pill, badges, gesture-bar inset),
+  `GoAppBar` (top app bar that lifts once the page under it scrolls, status-bar inset), `GoFab` (40/56/80/96dp and the
+  extended FAB that folds while the list scrolls down; `float_in()` keeps it clear of a navigation bar),
+  `GoSearchBar`, `GoSplitButton`, `GoProgress` (linear or circular, wavy or flat, the 4dp gap and the stop dot,
+  indeterminate), `GoLoadingIndicator` (the Expressive shape that turns and morphs through seven shapes; still under
+  `reduce_motion`) and `GoDatePicker` (today, the pick, `min_date`/`max_date`, Sunday- or Monday-first; seven columns
+  fit a 320dp phone). Factories: `GoStyle.filter_chip()` / `restyle_filter_chip()`, `GoStyle.input_chip()` and
+  `GoStyle.toolbar()`. All are in the gallery, so the layout check measures them on every preset at 320, 390 and
+  1280dp, LTR and RTL.
+- **`GoSkin` hooks** for those parts — `nav_bar_box`, `nav_indicator_box`, `nav_ink`, `app_bar_box`, `fab_box`,
+  `fab_ink`, `search_bar_box`, `toolbar_box`, `split_button_box`, `filter_chip_box`, `filter_chip_ink`,
+  `loading_colors`, `date_cell_box`, `date_ink` — and for parts of existing widgets that only code could change:
+  `drawer_box`, `compact_segment_box`, `icon_button_glyph`, `chip_glyph_size`, `chip_text_role`, `chip_height`,
+  `chip_state_box`. Each default is the code the widget ran before, so a skin that overrides none draws exactly as
+  before.
+- **25 more built-in strings in 21 languages** — `menu`, `more`, `clear`, `previous_month`, `next_month`, the date
+  title format `date_month_year` (`{month} {year}`; `{year}년 {month}` in Korean), `month_1` … `month_12` and the
+  weekday marks `weekday_0` … `weekday_6`.
+- **`go_touch_floor`** meta for `GoStyle.audit_layout()`: a control that carries it may be that narrow (a calendar day
+  on a 320dp phone) but never shorter than the touch size.
 - **`material` shape for themes** — `"shape": "material"` in a palette JSON, built by the new `tools/theme_material.py`.
   It only replaces the boxes and entries the generator already makes, so the other six themes are generated exactly
   as before.

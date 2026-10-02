@@ -15,3 +15,28 @@ gohud_bar_percent,{percent}%,{percent}%,{percent}%,{percent}%,{percent}%,{percen
 gohud_coach_progress,{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total},{step} / {total}
 gohud_slot_quantity,×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count},×{count}
 gohud_slot_unknown,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…,…
+gohud_menu,Menu,메뉴,メニュー,菜单,Menú,Menu,Menü,Menu,Меню,मेनू,القائمة,Menü,Menu,Menu,เมนู,Menu,Menu,Меню,Menu,選單,תפריט
+gohud_more,More options,옵션 더 보기,その他のオプション,更多选项,Más opciones,Mais opções,Weitere Optionen,Plus d'options,Другие параметры,अधिक विकल्प,خيارات إضافية,Diğer seçenekler,Tùy chọn khác,Opsi lainnya,ตัวเลือกเพิ่มเติม,Altre opzioni,Więcej opcji,Інші параметри,Meer opties,更多選項,אפשרויות נוספות
+gohud_clear,Clear,지우기,クリア,清除,Borrar,Limpar,Löschen,Effacer,Очистить,साफ़ करें,مسح,Temizle,Xóa,Hapus,ล้าง,Cancella,Wyczyść,Очистити,Wissen,清除,נקה
+gohud_previous_month,Previous month,이전 달,前の月,上个月,Mes anterior,Mês anterior,Vorheriger Monat,Mois précédent,Предыдущий месяц,पिछला महीना,الشهر السابق,Önceki ay,Tháng trước,Bulan sebelumnya,เดือนก่อนหน้า,Mese precedente,Poprzedni miesiąc,Попередній місяць,Vorige maand,上個月,החודש הקודם
+gohud_next_month,Next month,다음 달,次の月,下个月,Mes siguiente,Próximo mês,Nächster Monat,Mois suivant,Следующий месяц,अगला महीना,الشهر التالي,Sonraki ay,Tháng sau,Bulan berikutnya,เดือนถัดไป,Mese successivo,Następny miesiąc,Наступний місяць,Volgende maand,下個月,החודש הבא
+gohud_date_month_year,{month} {year},{year}년 {month},{year}年{month},{year}年{month},{month} de {year},{month} de {year},{month} {year},{month} {year},{month} {year},{month} {year},{month} {year},{month} {year},{month} năm {year},{month} {year},{month} {year},{month} {year},{month} {year},{month} {year},{month} {year},{year}年{month},{month} {year}
+gohud_month_1,January,1월,1月,1月,enero,janeiro,Januar,janvier,Январь,जनवरी,يناير,Ocak,Tháng 1,Januari,มกราคม,gennaio,styczeń,Січень,januari,1月,ינואר
+gohud_month_2,February,2월,2月,2月,febrero,fevereiro,Februar,février,Февраль,फ़रवरी,فبراير,Şubat,Tháng 2,Februari,กุมภาพันธ์,febbraio,luty,Лютий,februari,2月,פברואר
+gohud_month_3,March,3월,3月,3月,marzo,março,März,mars,Март,मार्च,مارس,Mart,Tháng 3,Maret,มีนาคม,marzo,marzec,Березень,maart,3月,מרץ
+gohud_month_4,April,4월,4月,4月,abril,abril,April,avril,Апрель,अप्रैल,أبريل,Nisan,Tháng 4,April,เมษายน,aprile,kwiecień,Квітень,april,4月,אפריל
+gohud_month_5,May,5월,5月,5月,mayo,maio,Mai,mai,Май,मई,مايو,Mayıs,Tháng 5,Mei,พฤษภาคม,maggio,maj,Травень,mei,5月,מאי
+gohud_month_6,June,6월,6月,6月,junio,junho,Juni,juin,Июнь,जून,يونيو,Haziran,Tháng 6,Juni,มิถุนายน,giugno,czerwiec,Червень,juni,6月,יוני
+gohud_month_7,July,7월,7月,7月,julio,julho,Juli,juillet,Июль,जुलाई,يوليو,Temmuz,Tháng 7,Juli,กรกฎาคม,luglio,lipiec,Липень,juli,7月,יולי
+gohud_month_8,August,8월,8月,8月,agosto,agosto,August,août,Август,अगस्त,أغسطس,Ağustos,Tháng 8,Agustus,สิงหาคม,agosto,sierpień,Серпень,augustus,8月,אוגוסט
+gohud_month_9,September,9월,9月,9月,septiembre,setembro,September,septembre,Сентябрь,सितंबर,سبتمبر,Eylül,Tháng 9,September,กันยายน,settembre,wrzesień,Вересень,september,9月,ספטמבר
+gohud_month_10,October,10월,10月,10月,octubre,outubro,Oktober,octobre,Октябрь,अक्टूबर,أكتوبر,Ekim,Tháng 10,Oktober,ตุลาคม,ottobre,październik,Жовтень,oktober,10月,אוקטובר
+gohud_month_11,November,11월,11月,11月,noviembre,novembro,November,novembre,Ноябрь,नवंबर,نوفمبر,Kasım,Tháng 11,November,พฤศจิกายน,novembre,listopad,Листопад,november,11月,נובמבר
+gohud_month_12,December,12월,12月,12月,diciembre,dezembro,Dezember,décembre,Декабрь,दिसंबर,ديسمبر,Aralık,Tháng 12,Desember,ธันวาคม,dicembre,grudzień,Грудень,december,12月,דצמבר
+gohud_weekday_0,S,일,日,日,D,D,S,D,Вс,र,ح,Paz,CN,Min,อา,D,N,Нд,zo,日,א׳
+gohud_weekday_1,M,월,月,一,L,S,M,L,Пн,सो,ن,Pzt,T2,Sen,จ,L,P,Пн,ma,一,ב׳
+gohud_weekday_2,T,화,火,二,M,T,D,M,Вт,मं,ث,Sal,T3,Sel,อ,M,W,Вт,di,二,ג׳
+gohud_weekday_3,W,수,水,三,X,Q,M,M,Ср,बु,ر,Çar,T4,Rab,พ,M,Ś,Ср,wo,三,ד׳
+gohud_weekday_4,T,목,木,四,J,Q,D,J,Чт,गु,خ,Per,T5,Kam,พฤ,G,C,Чт,do,四,ה׳
+gohud_weekday_5,F,금,金,五,V,S,F,V,Пт,शु,ج,Cum,T6,Jum,ศ,V,P,Пт,vr,五,ו׳
+gohud_weekday_6,S,토,土,六,S,S,S,S,Сб,श,س,Cmt,T7,Sab,ส,S,S,Сб,za,六,ש׳

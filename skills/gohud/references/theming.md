@@ -226,6 +226,10 @@ GoUi.use_preset(&"kingdom")
 
 ## 6. Skins
 
+🔑 The app components draw through these hooks too, so a new skin gets them in its own shape: the defaults use the
+theme's own boxes (the primary button face for a FAB, the text field face for a search bar), and `GoSkinMaterial`
+overrides them with the M3 component tokens.
+
 Override only what you need; everything else keeps the parent's drawing. Assign with
 `GoUi.config.skin = MySkin.new()` (after `use_preset`) or put it in a preset.
 
@@ -241,6 +245,10 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 | `coach_ring_box(accent)` · `draw_coach_pointer(canvas, start, tip, direction, ink)` | Coach mark ring and arrow |
 | `draw_joystick(canvas, center, knob, radius, knob_radius, ink, base, active)` | Joystick |
 | `divider_color()` · `divider_thickness()` · `section_box()` · `section_rhythm(face)` | Dividers, section headings. A skin's own `section_box()` ends with `return section_rhythm(face)` — it puts more room above a heading than below, so the heading belongs to the group it opens |
+| `drawer_box(at_left, alpha)` · `compact_segment_box(face, state)` · `icon_button_glyph(visual_size) -> int` · `chip_glyph_size() -> int` · `chip_text_role()` · `chip_height()` · `chip_state_box(face, state)` · `choice_box(state)` | A drawer's panel, a small segmented cell, an icon button's glyph, a chip's icon, label, height and press state, a choice cell. Each default is the code the widget ran before the hook existed |
+| `nav_bar_box(vertical)` · `nav_indicator_box(selected, state)` · `nav_ink(selected, label)` | Navigation bar and rail (`GoNavBar`) |
+| `app_bar_box(scrolled)` · `fab_box(extent, state)` · `fab_ink()` · `search_bar_box(state)` · `toolbar_box(vertical)` · `split_button_box(face, leading, state, open)` | Top app bar, FAB, search bar, floating toolbar, split button halves |
+| `filter_chip_box(selected, state)` · `filter_chip_ink(selected)` · `loading_colors(contained) -> Array[Color]` · `date_cell_box(kind, state)` · `date_ink(kind)` | Filter and input chips, the loading indicator, date picker days |
 | static `luminance(c)` · `contrast_ratio(a, b)` · `blend(top, bottom)` · `readable_on(ink, back, need := 4.5)` · `box_background(box)` | Contrast helpers |
 
 Dials (`@export`, set on a skin resource or JSON `skin.dials`):

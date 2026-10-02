@@ -19,6 +19,7 @@ can find is a feature nobody uses.
 8. [Looks — presets, themes, skins, icons](#8-looks)
 9. [Mobile, desktop, accessibility, languages](#9-mobile-desktop-accessibility-languages)
 10. [Configuration, tooling and examples](#10-configuration-tooling-and-examples)
+11. [App screens — navigation, app bar, FAB, search, chips, progress, dates](#11-app-screens)
 
 ## 1. What gohud is
 
@@ -106,7 +107,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Text | `label` `label_key` `section` `typography` `font_role` `pin_font_size` `style_mono_text` `text_shadow` `glyph_text` `glyph_type` `glyph_width` |
 | Buttons | `button` `button_key` `style_button` `icon_button` `list_button` `list_row` `restyle_list_row` `apply_icon` `fit_words` `center_button_content` `tint_button` `style_brand_button` `style_overlay_button` `style_disc_button` `touch_face` `glow` — tones `NORMAL` `PRIMARY` `DANGER` `DANGER_SOLID` `BARE` `COMPACT` |
 | Input | `line_edit` `textarea` `toggle` `checkbox` `slider` `picker` `select` `dropdown` `radio_group` `segmented` `choice_grid` `style_choice_card` `field` |
-| Display | `card` `card_body` `item_card` `chip` `chip_panel` `restyle_chip` `style_chip_button` `style_chip_label` `avatar` `skeleton` `alert` `table` `tabs` `breadcrumb` `progress` `tint_progress` `empty_state` `style_count_badge` |
+| Display | `card` `card_body` `item_card` `chip` `chip_panel` `restyle_chip` `style_chip_button` `style_chip_label` `filter_chip` `restyle_filter_chip` `input_chip` `toolbar` `avatar` `skeleton` `alert` `table` `tabs` `breadcrumb` `progress` `tint_progress` `empty_state` `style_count_badge` |
 | Panels & faces | `surface` `box` `floating` `disc` `plate` `hud_panel` `style_hud_panel` `overlay_panel` `style_overlay_panel` `bare_panel` `style_panel` `style_notice_panel` `disc_panel` `style_disc_panel` `style_disc_label` `style_hud_disc` `edge_card` `edge_card_panel` `face_padding` `face_insets` `style_slot_face` |
 | Helpers | `form` `fade` `tooltip_node` `natural_width` `fit_content_height` `let_input_through` `style_popup` `audit_compact_padding` |
 | Cells | `cell_body` `cell_inset` `center_in` `face_clearance` `audit_cell_layout` — content inside a `Button`: padded, sized to fit, marks centered, and an audit that finds the ones that are not |
@@ -115,7 +116,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 
 | Feature | One line | Reference |
 |---|---|---|
-| Six presets swap theme + skin + icons together: `default_dark/light`, `scifi_dark/light`, `medieval_dark/light` | `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` | theming.md §1 |
+| Eight presets swap theme + skin + icons together: `default_dark/light`, `scifi_dark/light`, `medieval_dark/light`, `material_light/dark` (Material 3 Expressive for app screens) | `GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)` | theming.md §1 |
 | **Switching a preset reaches widgets that are already on screen** — bars, slots, joysticks, badges and the rest re-read colours and icons in place | `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` | theming.md §1 |
 | Tokens: 17 colours + 5 fill colours, 20 metrics, **5 panel-opacity values**, 8 styleboxes, 7 text roles, 15 type variations | `GoUi.color(GoTheme.ACCENT)` · `GoUi.metric(GoTheme.GAP)` | theming.md §2 |
 | Per-project overrides without a new theme | `GoUi.config.color_overrides[GoTheme.ACCENT] = Color("#ff7a00")` | theming.md §3 |
@@ -135,7 +136,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Breakpoints by short side in dp (mobile ≤ 576, tablet ≤ 991); optional 1 unit = 1 dp scaling | `GoScale.breakpoint_for_dp(dp)` | platform.md §5 |
 | Android Back / Escape ownership shared across windows | `GoBackPolicy.acquire(get_tree())` | platform.md §6 |
 | Focus rings only for keyboard/gamepad, focus trapped in windows and restored on close | `GoConfig.suppress_pointer_focus_ring` | platform.md §4 |
-| 16 built-in strings in 21 languages, RTL (`ar`, `he`), translatable number formats, CJK number hook | `GoUi.config.text_overrides = {&"confirm": "Yes"}` | platform.md §2 |
+| 41 built-in strings in 21 languages, RTL (`ar`, `he`), translatable number formats, CJK number hook | `GoUi.config.text_overrides = {&"confirm": "Yes"}` | platform.md §2 |
 | Sound cues and haptics routed to your audio system (gohud ships no audio) | `GoFeedback.sound_handler = func(cue): $Audio.play(cue)` | platform.md §3 |
 | `reduce_motion`, `autowrap_text`, `min_touch_size`, `accessibility_name` on icon buttons | `GoUi.config.reduce_motion = true` | platform.md §4 |
 | **`GoUi.spoken()`** joins the pieces a screen reader should hear as one phrase, in one place | `node.accessibility_name = GoUi.spoken([label.text, error.text])` | platform.md §4 |
@@ -151,3 +152,21 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | **693 headless checks** (`gohud_test.gd` 568 + `gohud_extra_test.gd` 125), WCAG contrast checker, packaging gates, CI on every push | `bash addons/gohud/tools/check_all.sh` | setup.md §6 |
 | **Screenshot check on a virtual monitor** — value checks know "how much", not "is it visible"; five layout faults were found this way with every headless check passing | `xvfb_run.sh --out shots -s res://addons/gohud/tests/gohud_shot.gd` | setup.md §6 |
 | **`/gohud update`** — update the add-on in your project and this skill to the latest release | `/gohud update` | setup.md §7 |
+
+## 11. App screens
+
+The parts of a social, news or shopping app screen. Each draws through a `GoSkin` hook, so every preset gives it its
+own shape and Material gives it the M3 component's (theming.md §6).
+
+| Feature | One line | Reference |
+|---|---|---|
+| **`GoNavBar`** three to five destinations along the bottom, the chosen one on a pill, badges on icons; `rail()` for a wide screen; grows by the gesture-bar inset | `GoNavBar.make(items, 0, show_tab)` | hud.md §16 |
+| **`GoAppBar`** back/menu, title, icon actions; lifts once the page under it scrolls | `GoAppBar.make("Inbox", GoIconSet.MENU, open_drawer).follow(list)` | hud.md §16 |
+| **`GoFab`** the main action in the bottom corner — 40/56/80/96 dp or extended with a label that folds while the list scrolls down | `GoFab.make(GoIconSet.PLUS, "Add to cart", add).float_in(self, nav_height)` | hud.md §16 |
+| **`GoSearchBar`** the rounded search field with a clear button and trailing actions | `GoSearchBar.make("Search products", find)` | hud.md §16 |
+| **`GoSplitButton`** a main action plus its variants behind an arrow | `GoSplitButton.make("Send", send, ["Send later"])` | hud.md §16 |
+| **Filter and input chips** — `filter_chip` toggles (several on at once), `input_chip` carries a ✕ | `GoStyle.filter_chip("In stock", false, refilter)` | style.md §6 |
+| **`GoStyle.toolbar`** a floating pill of icon actions | `GoStyle.toolbar([{"icon": GoIconSet.EDIT, "tooltip": &"Edit", "action": edit}])` | style.md §6 |
+| **`GoProgress`** known progress as a line or a ring, wavy or flat, with the stop dot; `indeterminate` until the size is known | `GoProgress.linear().value = 0.4` | hud.md §16 |
+| **`GoLoadingIndicator`** the Expressive wait mark that morphs through seven shapes; still under `reduce_motion` | `page.add_child(GoLoadingIndicator.new())` | hud.md §16 |
+| **`GoDatePicker`** a month to tap with today, the pick, limits and translated names; fits a 320 dp phone | `GoDatePicker.make({}, on_pick)` | hud.md §16 |

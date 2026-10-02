@@ -37,7 +37,8 @@ extends Button
 		icon_tint = value
 		_refresh_icon()
 
-## Draw a texture icon at **its native pixel size** — the default scales it to 58% of `visual_size` (the same size as a font glyph).
+## Draw a texture icon at **its native pixel size** — the default scales it to the skin's glyph size for `visual_size`
+## (`GoSkin.icon_button_glyph`: 58% — the size of a font glyph — or 24dp on the 36dp button under Material).
 ## Turn it on where the host wants its own SVG size kept: scaling up and down differs by 1px (measured by pixel comparison).
 @export var native_texture_size := false:
 	set(value):
@@ -110,7 +111,7 @@ func _refresh_icon() -> void:
 		_glyph = null
 	icon = null
 	if icon_name.is_empty(): return
-	var glyph_size := maxi(8, roundi(visual_size * 0.58))
+	var glyph_size := GoUi.skin().icon_button_glyph(visual_size)
 	var icon_set := GoUi.icons()
 	var found := icon_set.texture(icon_name)
 	if found != null:

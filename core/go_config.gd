@@ -273,6 +273,11 @@ signal changed_settings
 	&"loading": "gohud_loading",
 	&"empty": "gohud_empty",
 	&"retry": "gohud_retry",
+	&"menu": "gohud_menu",
+	&"more": "gohud_more",
+	&"clear": "gohud_clear",
+	&"previous_month": "gohud_previous_month",
+	&"next_month": "gohud_next_month",
 	# 🔑 **The format that wraps a number is a string too.** If a widget hard-codes `"%d / %d"`, that one
 	#    line stays in English convention forever — Turkish puts the percent sign in **front** (%50) and
 	#    French spaces the number and the sign apart. So even format strings are pulled out as translation keys.
@@ -283,6 +288,28 @@ signal changed_settings
 	&"coach_progress": "gohud_coach_progress",  # {step} / {total}
 	&"slot_quantity": "gohud_slot_quantity",    # ×{count}
 	&"slot_unknown": "gohud_slot_unknown",      # …
+	# The date picker: "{month} {year}" (the order differs by language — "{year}년 {month}"), the month names and
+	# the weekdays' one-letter marks, Sunday = 0.
+	&"date_month_year": "gohud_date_month_year",   # {month} {year}
+	&"month_1": "gohud_month_1",
+	&"month_2": "gohud_month_2",
+	&"month_3": "gohud_month_3",
+	&"month_4": "gohud_month_4",
+	&"month_5": "gohud_month_5",
+	&"month_6": "gohud_month_6",
+	&"month_7": "gohud_month_7",
+	&"month_8": "gohud_month_8",
+	&"month_9": "gohud_month_9",
+	&"month_10": "gohud_month_10",
+	&"month_11": "gohud_month_11",
+	&"month_12": "gohud_month_12",
+	&"weekday_0": "gohud_weekday_0",
+	&"weekday_1": "gohud_weekday_1",
+	&"weekday_2": "gohud_weekday_2",
+	&"weekday_3": "gohud_weekday_3",
+	&"weekday_4": "gohud_weekday_4",
+	&"weekday_5": "gohud_weekday_5",
+	&"weekday_6": "gohud_weekday_6",
 }
 
 ## Text used **as is**, without going through translation. An escape hatch for projects that do not use a translation table.

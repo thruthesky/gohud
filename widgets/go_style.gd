@@ -1725,13 +1725,14 @@ static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARE
 
 ## A small pill-shaped mark (a state, a tag, a quantity).
 ## Pass [param icon] and the icon set's art goes before the text — with the text empty it is an **icon-only** chip (HUD buff marks and the like).
-## [param icon_size] negative means the `list_glyph` token. [param urgent] puts a warning border on what is about to go (a buff with little time left).
+## [param icon_size] negative means the skin's chip glyph (`GoSkin.chip_glyph_size`: the `list_glyph` token, 18dp under Material). [param urgent] puts a warning border on what is about to go (a buff with little time left).
 static func chip(text: String, ink := Color.TRANSPARENT, translate := false, icon: StringName = &"",
 		icon_size := -1, urgent := false) -> PanelContainer:
 	var color := ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY)
 	var node := PanelContainer.new()
 	node.name = "Chip"
 	node.theme = GoUi.theme()
+	node.custom_minimum_size.y = GoUi.skin().chip_height()
 	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	node.add_theme_stylebox_override(&"panel", _chip_face(color, urgent))
@@ -1739,8 +1740,8 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 	var ink_on_chip := GoUi.skin().chip_ink(color)
 	var text_node: Label = null
 	if not text.is_empty():
-		text_node = label_key(text, GoTheme.ROLE_COMPACT, ink_on_chip) if translate \
-			else label(text, GoTheme.ROLE_COMPACT, ink_on_chip)
+		var role := GoUi.skin().chip_text_role()
+		text_node = label_key(text, role, ink_on_chip) if translate else label(text, role, ink_on_chip)
 		text_node.autowrap_mode = TextServer.AUTOWRAP_OFF
 		text_node.set_meta(&"go_no_wrap", true)
 		text_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1750,7 +1751,7 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 		#    (met 2026-09-17 with a character name that was still empty).
 		if text_node != null: node.add_child(text_node)
 		return node
-	var glyph := GoUi.icons().node(icon, GoUi.metric(GoTheme.LIST_GLYPH) if icon_size < 0 else icon_size, ink_on_chip)
+	var glyph := GoUi.icons().node(icon, GoUi.skin().chip_glyph_size() if icon_size < 0 else icon_size, ink_on_chip)
 	if text_node == null:
 		# 🔑 An icon-only chip stays **close to square** — the left and right padding shrinks to match the top and bottom (for rows of identical cells, like a HUD buff row).
 		var face := node.get_theme_stylebox(&"panel")
@@ -1808,11 +1809,162 @@ static func style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, u
 		var face := _chip_face(accent, urgent)
 		if fill_alpha >= 0.0 and &"bg_color" in face: face.set(&"bg_color", Color(accent, fill_alpha))
 		if state == &"normal": face_ink = GoUi.skin().readable_on(accent, GoSkin.blend(GoSkin.box_background(face), GoUi.color(GoTheme.SURFACE)))
-		node.add_theme_stylebox_override(state, face)
+		# The skin may add a state layer (`GoSkin.chip_state_box` — none by default, M3's under Material).
+		node.add_theme_stylebox_override(state, GoUi.skin().chip_state_box(face, state))
 	# 🛑 The text must read **on the chip face** — this is the classic place where text is laid on a tint of its
 	#    own color (the same rule as `chip()`). On a filled face this value goes toward the dark side.
 	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
 		node.add_theme_color_override(key, face_ink)
+
+
+## 🏷️ **A filter chip** — one filter in a row of them ("In stock", "Free delivery", "4★ & up") that turns on and off.
+## It shows a check mark while on; [param icon] is shown while off. [param toggled] is called with the new state.
+##
+## ```gdscript
+## var filters := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+## for name in ["In stock", "Free delivery", "On sale"]:
+## 	filters.add_child(GoStyle.filter_chip(name, false, _refilter.bind(name)))
+## ```
+## 🔑 Several can be on at once — that is what makes it a filter. For "exactly one of these" use `segmented()`.
+## The skin draws the faces (`GoSkin.filter_chip_box`): a tinted chip by default, M3's filter chip under Material
+## (outlined while off, `secondary-container` while on, a 32dp plate in the 48dp touch target).
+static func filter_chip(text: String, selected := false, toggled := Callable(), icon: StringName = &"",
+		translate := false) -> Button:
+	var node := Button.new()
+	node.name = "FilterChip"
+	node.theme = GoUi.theme()
+	node.theme_type_variation = GoTheme.VAR_COMPACT_BUTTON
+	node.text = text
+	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	node.toggle_mode = true
+	node.button_pressed = selected
+	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
+	natural_width(node)
+	GoScroll.scroll_through(node)   # a swipe that starts on a chip scrolls the list that holds it
+	node.set_meta(&"go_chip_icon", icon)
+	restyle_filter_chip(node)
+	node.toggled.connect(func(on: bool) -> void:
+		restyle_filter_chip(node)
+		if toggled.is_valid(): toggled.call(on))
+	return node
+
+
+## Puts a filter chip's faces, colours and mark on it for its current state — after `button_pressed` was set from code
+## with `set_pressed_no_signal`, or after the look changed.
+## 🔑 A toggled-on button draws its `pressed` face, so the "on" faces go there and the "off" faces on `normal`/`hover`.
+static func restyle_filter_chip(node: Button) -> void:
+	var skin := GoUi.skin()
+	var on := node.button_pressed
+	node.add_theme_stylebox_override(&"normal", skin.filter_chip_box(false, &"normal"))
+	node.add_theme_stylebox_override(&"hover", skin.filter_chip_box(false, &"hover"))
+	node.add_theme_stylebox_override(&"pressed", skin.filter_chip_box(true, &"normal"))
+	node.add_theme_stylebox_override(&"hover_pressed", skin.filter_chip_box(true, &"hover"))
+	node.add_theme_stylebox_override(&"disabled", skin.filter_chip_box(on, &"disabled"))
+	node.add_theme_stylebox_override(&"focus", skin.filter_chip_box(on, &"focus"))
+	var off_ink := skin.filter_chip_ink(false)
+	var on_ink := skin.filter_chip_ink(true)
+	for key in [&"font_color", &"font_hover_color", &"icon_normal_color", &"icon_hover_color"]:
+		node.add_theme_color_override(key, off_ink)
+	for key in [&"font_pressed_color", &"font_hover_pressed_color", &"icon_pressed_color", &"icon_hover_pressed_color"]:
+		node.add_theme_color_override(key, on_ink)
+	node.add_theme_color_override(&"font_focus_color", on_ink if on else off_ink)
+	node.add_theme_color_override(&"icon_focus_color", on_ink if on else off_ink)
+	# The mark: a check while on, the chip's own icon (if any) while off.
+	var old := node.get_node_or_null(^"IconGlyph")
+	if old != null:
+		node.remove_child(old)
+		old.queue_free()
+	node.icon = null
+	var mark: StringName = GoIconSet.CHECK if on else StringName(node.get_meta(&"go_chip_icon")) \
+		if node.has_meta(&"go_chip_icon") else &""
+	if not mark.is_empty():
+		apply_icon(node, mark, skin.chip_glyph_size(), on_ink if on else off_ink,
+			float(GoUi.metric(GoTheme.COMPACT_PADDING_X)))
+
+
+## 🏷️ **An input chip** — one thing the user entered or picked (a recipient, a tag, a search term), with a ✕ that
+## removes it. [param removed] is called before the chip frees itself. [param icon] goes before the text.
+##
+## ```gdscript
+## for name in recipients:
+## 	to_row.add_child(GoStyle.input_chip(name, func() -> void: recipients.erase(name)))
+## ```
+static func input_chip(text: String, removed := Callable(), icon: StringName = &"", translate := false) -> PanelContainer:
+	var skin := GoUi.skin()
+	var node := PanelContainer.new()
+	node.name = "InputChip"
+	node.theme = GoUi.theme()
+	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
+	node.add_theme_stylebox_override(&"panel", skin.filter_chip_box(false, &"normal"))
+	GoScroll.scroll_through(node)
+	var ink := skin.filter_chip_ink(false)
+	var line := row(GoUi.metric(GoTheme.GAP_TINY))
+	line.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	node.add_child(line)
+	if not icon.is_empty():
+		var glyph := GoUi.icons().node(icon, skin.chip_glyph_size(), ink)
+		glyph.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		line.add_child(glyph)
+	var words := label_key(text, GoTheme.ROLE_BUTTON, ink) if translate else label(text, GoTheme.ROLE_BUTTON, ink)
+	words.autowrap_mode = TextServer.AUTOWRAP_OFF
+	words.set_meta(&"go_no_wrap", true)
+	words.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(words)
+	var close := GoIconButton.new()
+	close.name = "Remove"
+	close.icon_name = GoIconSet.CLOSE
+	close.icon_tint = ink
+	close.visual_size = 24
+	close.tooltip_text_name = &"close"
+	close.pressed.connect(func() -> void:
+		if removed.is_valid(): removed.call()
+		node.queue_free())
+	line.add_child(close)
+	# ♿ The ✕ alone says "Close" — name it after what it removes.
+	close.accessibility_name = GoUi.spoken([GoUi.text(&"close"), TranslationServer.translate(text) if translate else text])
+	return node
+
+
+## 🧰 **A floating toolbar** — a pill of icon actions floating over the content (an editor's tools, a selection's
+## actions, a media player's controls). [param items] are `{"icon": StringName, "tooltip": StringName, "action": Callable}`.
+## [param vertical] stacks them in a column.
+##
+## ```gdscript
+## var tools := GoStyle.toolbar([
+## 	{"icon": GoIconSet.EDIT, "tooltip": &"Edit", "action": edit},
+## 	{"icon": GoIconSet.HEART, "tooltip": &"Like", "action": like},
+## 	{"icon": GoIconSet.TRASH, "tooltip": &"Delete", "action": remove},
+## ])
+## ```
+## The skin draws the pill (`GoSkin.toolbar_box`): the overlay pill by default, Material's floating toolbar
+## (`surface-container`, level 3, 64dp) under Material. Every button is 48dp to the finger.
+static func toolbar(items: Array, vertical := false) -> PanelContainer:
+	var node := PanelContainer.new()
+	node.name = "Toolbar"
+	node.theme = GoUi.theme()
+	node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	node.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().toolbar_box(vertical))
+	GoScroll.scroll_through(node)
+	var line: BoxContainer = VBoxContainer.new() if vertical else HBoxContainer.new()
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	node.add_child(line)
+	var peers: Array[Control] = []
+	for spec: Dictionary in items:
+		var button := GoIconButton.new()
+		button.icon_name = StringName(spec.get("icon", &""))
+		button.tooltip_text_name = StringName(spec.get("tooltip", &""))
+		# 🔑 Spaced so each button's 48dp touch area meets its neighbour's instead of overlapping it.
+		line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - button.visual_size))
+		var action: Callable = spec.get("action", Callable())
+		if action.is_valid(): button.pressed.connect(action)
+		line.add_child(button)
+		peers.append(button)
+	for peer in peers: (peer as GoIconButton).touch_peers = peers
+	return node
 
 
 ## 🔑 **A round control button** — puts the state faces on the round buttons floating over art, like a map's zoom ＋/－ or "my location".
@@ -2167,20 +2319,11 @@ static func _segment_icon(item: Button, mark: StringName) -> void:
 	item.toggled.connect(paint)
 
 
-## The small cell face — padding from the small button token, no face on an unchosen cell, a faint ring on focus, and the rest rounded per cell with no border.
-## 🔑 The rule holds even when the skin gives a custom face (angular, medieval) — an unchosen cell gets an empty face, and a chosen or hovered cell keeps the skin face with only the padding matched.
+## The small cell face — the skin decides it (`GoSkin.compact_segment_box`: no face on an unchosen cell, a faint ring on
+## focus, the rest without a border), and the padding comes from the small button token here.
+## 🔑 The padding holds even when the skin gives a custom face (angular, medieval) — only the padding is matched.
 static func _compact_segment(face: StyleBox, state: StringName) -> StyleBox:
-	var result := face
-	if state == &"focus":
-		result = GoUi.box(GoTheme.BOX_FOCUS_SOFT)
-	elif state == &"normal":
-		result = GoUi.box(GoTheme.BOX_EMPTY)
-	else:
-		var flat := face as StyleBoxFlat
-		if flat != null:
-			flat.set_border_width_all(0)
-			flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
-			flat.shadow_size = 0
+	var result: StyleBox = GoUi.skin().compact_segment_box(face, state)
 	_compact_insets(result)
 	return result
 
@@ -2725,7 +2868,8 @@ static func _audit_centered(node: Control, problems: Array[String]) -> void:
 ## - **squeezed** — a control smaller than its own minimum size.
 ## - **folds inside a word** — a wrapping label whose box is narrower than its longest word.
 ## - **touches the edge** — a label's text closer to the side of the face drawn behind it than the face needs (`face_clearance`).
-## - **small to press** — a button smaller than the touch size on a side (`GoIconButton` counts its widened reach).
+## - **small to press** — a button smaller than the touch size on a side (`GoIconButton` and `GoFab` count their widened
+##   reach; a control with the `go_touch_floor` meta — a calendar day — may be that narrow, never shorter).
 ## It also runs `audit_cell_layout()`. A node that hangs over an edge on purpose (a corner badge) carries `go_overlay` and is
 ## left out with everything inside it.
 ## 🛑 It reads nodes. Text drawn with `draw_string` (a radar's axis names, a donut's center) is invisible to it.
@@ -2788,9 +2932,13 @@ static func _audit_box(control: Control, problems: Array[String]) -> void:
 	if pressable != null and not pressable.disabled and pressable.mouse_filter != Control.MOUSE_FILTER_IGNORE:
 		var touch := float(GoUi.metric(GoTheme.TOUCH))
 		var reach := rect.size
-		# A `GoIconButton` draws small and presses big — its hit test reaches out to the touch size.
-		if control is GoIconButton: reach = reach.max(Vector2.ONE * float(GoUi.config.min_touch_size))
-		if reach.x + 0.5 < touch or reach.y + 0.5 < touch:
+		# A `GoIconButton` or a small `GoFab` draws small and presses big — its hit test reaches out to the touch size.
+		if control is GoIconButton or control is GoFab: reach = reach.max(Vector2.ONE * float(GoUi.config.min_touch_size))
+		# A day in a calendar may be narrower — seven columns have to fit a 320dp phone. It carries `go_touch_floor`, the
+		# narrowest it is meant to get, and stays full height (`GoDatePicker`).
+		var floor_x := touch
+		if control.has_meta(&"go_touch_floor"): floor_x = minf(touch, float(control.get_meta(&"go_touch_floor")))
+		if reach.x + 0.5 < floor_x or reach.y + 0.5 < touch:
 			var words := (control as Button).text if control is Button else ""
 			problems.append("%s%s: %.0fx%.0f is small to press (touch %.0f)" % [where, " \"%s\"" % words if not words.is_empty() else "",
 				reach.x, reach.y, touch])
