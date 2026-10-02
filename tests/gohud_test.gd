@@ -99,6 +99,7 @@ func _initialize() -> void:
 	await _section("scroll finger swipe", _scroll_swipe)
 	await _section("scroll yields", _scroll_yields)
 	await _section("app components", _app_components)
+	await _section("flutter widgets", _flutter_widgets)
 	await _section("rtl", _rtl)
 	await _section("standalone", _standalone)
 	# 🛑 Leaving a lambda in a static variable can crash during shutdown — clear them before finishing.
@@ -3325,7 +3326,8 @@ func _app_components() -> void:
 			{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.SEARCH, "text": "Search"},
 			{"icon": GoIconSet.BELL, "text": "Alerts", "badge": 3}, {"icon": GoIconSet.USER, "text": "Profile"},
 		], 0, func(index: int) -> void: picked[0] = index)
-		nav.position = Vector2(0, 600)
+		# On the screen's bottom edge whatever the viewport — at y 600 it was off a 390dp-tall landscape screen.
+		nav.position = Vector2(0, root.get_visible_rect().size.y - 64.0)
 		nav.size = Vector2(390, 64)
 		root.add_child(nav)
 		await frames(3)
@@ -3533,6 +3535,592 @@ func _app_components() -> void:
 		await frames(1)
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	GoUi.config.preset = &""
+
+
+# ── Flutter's widgets, the gohud way (scaffold, lazy list, pull to refresh, swipe rows, tab pages, choice sheet,
+#    banner, outlined button, bottom app bar, drawer list, large app bar, range slider, stepper, time picker,
+#    date range, reorder list, zoom view, wheel picker) ──
+#
+# 🛑 Each part draws from a `GoSkin` hook on all eight presets — its text has to read on its own face there — and its
+#    gesture is driven here the way a finger drives it.
+
+func _flutter_widgets() -> void:
+	for preset in GoThemePresets.BUILTIN:
+		GoUi.use_preset(preset)
+		var skin := GoUi.skin()
+		var page := GoUi.color(GoTheme.BACKGROUND)
+		var marks: Array[String] = []
+		for state: StringName in [&"active", &"done", &"error"]:
+			var disc := GoSkin.blend(GoSkin.box_background(skin.step_marker_box(state)), page)
+			if GoSkin.contrast_ratio(skin.step_marker_ink(state), disc) < 4.5: marks.append(String(state))
+		if GoSkin.contrast_ratio(skin.step_marker_ink(&"todo"), page) < 4.5: marks.append("todo")
+		check(marks.is_empty(), "%s: every step marker's number reads on it (%s)" % [preset, ", ".join(marks)])
+		var boxes: Array[String] = []
+		for selected: bool in [true, false]:
+			for period: bool in [false, true]:
+				var box := GoSkin.blend(GoSkin.box_background(skin.time_selector_box(selected, &"normal", period)), page)
+				if GoSkin.contrast_ratio(skin.time_ink(selected, period), box) < 4.5:
+					boxes.append("%s%s" % ["chosen " if selected else "", "period" if period else "box"])
+		check(boxes.is_empty(), "%s: the time picker's digits read on their boxes (%s)" % [preset, ", ".join(boxes)])
+		var dial := skin.dial_colors()
+		var face := GoSkin.blend(dial[0], page)
+		check(GoSkin.contrast_ratio(dial[2], face) >= 4.5 and GoSkin.contrast_ratio(dial[3], dial[1]) >= 4.5,
+			"%s: the dial's numbers read on the dial and under the hand (%.2f · %.2f)" % [preset,
+				GoSkin.contrast_ratio(dial[2], face), GoSkin.contrast_ratio(dial[3], dial[1])])
+		var band := GoSkin.blend(GoSkin.box_background(skin.date_cell_box(&"in_range", &"normal")), page)
+		check(GoSkin.contrast_ratio(skin.date_ink(&"in_range"), band) >= 4.5,
+			"%s: a day inside a range reads on the band (%.2f)" % [preset, GoSkin.contrast_ratio(skin.date_ink(&"in_range"), band)])
+		var wheel_band := GoSkin.blend(GoSkin.box_background(skin.wheel_band_box()), page)
+		check(GoSkin.contrast_ratio(skin.wheel_ink(true), wheel_band) >= 4.5
+			and GoSkin.contrast_ratio(skin.wheel_ink(false), page) >= 4.5,
+			"%s: the wheel's items read on the band and around it" % preset)
+		var outlined := GoStyle.button("Details", Callable(), GoStyle.Tone.OUTLINED)
+		root.add_child(outlined)
+		var filled := GoStyle.button("Details")
+		root.add_child(filled)
+		var banner := GoBanner.make("You're offline.", [{"text": "Retry"}], GoIconSet.WARNING)
+		root.add_child(banner)
+		var stepper := GoStepper.make([{"title": "Cart"}, {"title": "Address"}, {"title": "Pay"}])
+		root.add_child(stepper)
+		var clock := GoTimePicker.make(9, 30)
+		root.add_child(clock)
+		var wheel := GoWheelPicker.make(["1", "5", "10"], 1)
+		root.add_child(wheel)
+		var span := GoRangeSlider.make(0.0, 100.0, 20.0, 80.0)
+		root.add_child(span)
+		await frames(2)
+		var outline_face := outlined.get_theme_stylebox(&"normal") as StyleBoxFlat
+		check(outline_face == null or (outline_face.bg_color.a < 0.01 and outline_face.border_width_top >= 1),
+			"%s: an outlined button has an edge and no fill" % preset)
+		check(GoSkin.contrast_ratio(outlined.get_theme_color(&"font_color"), page) >= 4.5,
+			"%s: the outlined button's label reads on the page" % preset)
+		# 🛑 It keeps the button's own shape and size — read from the `GoButton` variation alone, it was a bare square
+		#    (2026-10-02 screenshots).
+		var filled_face := filled.get_theme_stylebox(&"normal") as StyleBoxFlat
+		check(near(outlined.size.y, filled.size.y) and (outline_face == null or filled_face == null
+			or outline_face.corner_radius_top_left == filled_face.corner_radius_top_left),
+			"%s: an outlined button has the button's height and corners (%.0f/%.0f)" % [preset, outlined.size.y, filled.size.y])
+		var banner_back := GoSkin.blend(GoSkin.box_background(banner.get_theme_stylebox(&"panel")), page)
+		check(GoSkin.contrast_ratio((banner.find_child("Message", true, false) as Label).get_theme_color(&"font_color"),
+			banner_back) >= 4.5, "%s: the banner's message reads on it" % preset)
+		check(GoSkin.box_background(skin.refresh_disc_box()).a > 0.9 and skin.reorder_lift_box() != null,
+			"%s: the refresh disc is solid and a lifted row has a face" % preset)
+		var marker := stepper.find_child("Marker", true, false) as PanelContainer
+		check(marker != null and near(marker.size.x, GoStepper.MARKER), "%s: a step marker is 24dp" % preset)
+		check(clock.size.x >= 240.0 and clock.get_time() == {"hour": 9, "minute": 30}, "%s: the time picker shows its time" % preset)
+		check(near(wheel.size.y, wheel.item_height * wheel.visible_items) and wheel.get_text() == "5",
+			"%s: the wheel is five items tall with its choice on the band" % preset)
+		check(span.size.y >= float(GoUi.metric(GoTheme.TOUCH)), "%s: the range slider is a full touch target tall" % preset)
+		for node in [outlined, filled, banner, stepper, clock, wheel, span]: node.queue_free()
+		await frames(1)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.preset = &""
+	await _flutter_layouts()
+	await _flutter_gestures()
+	await _flutter_pickers()
+
+
+func _flutter_layouts() -> void:
+	# Scaffold — bar on top, the page scrolls under it, the FAB floats above the bottom bar, the menu opens the drawer.
+	var rows := GoStyle.column()
+	for i in 40: rows.add_child(GoStyle.label("Message %d" % i))
+	var scaffold := GoScaffold.make("Inbox", rows, true)
+	scaffold.set_bottom_bar(GoNavBar.make([{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.USER, "text": "Me"}]))
+	scaffold.set_fab(GoFab.make(GoIconSet.PLUS))
+	scaffold.set_drawer(GoDrawer.new())
+	root.add_child(scaffold)
+	await frames(4)
+	check(scaffold.scroll is GoScroll and rows.get_parent() == scaffold.scroll, "scaffold: the page is put in a scroll")
+	check(scaffold.app_bar.get_global_rect().end.y <= scaffold.scroll.get_global_rect().position.y + 0.5
+		and scaffold.scroll.get_global_rect().end.y <= scaffold.bottom_bar.get_global_rect().position.y + 0.5,
+		"scaffold: the bar, the page and the bottom bar stack without overlapping")
+	check(scaffold.fab.get_global_rect().end.y <= scaffold.bottom_bar.get_global_rect().position.y + 0.5,
+		"scaffold: the FAB floats above the bottom bar (%s)" % scaffold.fab.get_global_rect())
+	scaffold.scroll.scroll_vertical = 200
+	await frames(2)
+	check(scaffold.app_bar.scrolled, "scaffold: the bar lifts as the page scrolls")
+	scaffold.app_bar.leading_button.pressed.emit()
+	await frames(2)
+	check(scaffold.drawer.is_open(), "scaffold: the menu button opens the drawer")
+	check(scaffold.snackbar_margin() >= scaffold.bottom_bar.size.y, "scaffold: a snackbar keeps above the bottom bar")
+	scaffold.drawer.close()
+	scaffold.queue_free()
+	await frames(2)
+
+	# Lazy list — builds only what shows, follows the scroll, says when the end is near.
+	var made := [0]
+	var lazy := GoListView.make(1000, 48.0, func(index: int) -> Control:
+		made[0] += 1
+		return GoStyle.label(str(index)))
+	var ends := [0]
+	lazy.end_reached.connect(func() -> void: ends[0] += 1)
+	lazy.size = Vector2(390, 480)
+	root.add_child(lazy)
+	await frames(3)
+	var most := ceili(480.0 / 48.0) + 2 * lazy.overscan + 2
+	check(lazy.row(0) != null and lazy.row(500) == null and lazy.built_indexes().size() <= most,
+		"list view: only the rows in view are built (%d of 1000)" % lazy.built_indexes().size())
+	lazy.scroll_to_index(500)
+	await frames(3)
+	check(lazy.row(500) != null and lazy.row(0) == null and near(lazy.row(500).get_global_rect().position.y,
+		lazy.get_global_rect().position.y, 1.5), "list view: scrolled to row 500 it sits at the top")
+	check(ends[0] == 0, "list view: no end yet in the middle")
+	lazy.scroll_to_index(999)
+	await frames(3)
+	check(ends[0] == 1 and made[0] < 80, "list view: the end is reported once, and few rows were ever made (%d)" % made[0])
+	lazy.queue_free()
+	var created := [0]
+	var reused := GoListView.recycle(200, 40.0, func() -> Control:
+			created[0] += 1
+			return Label.new(),
+		func(row: Control, index: int) -> void: (row as Label).text = str(index))
+	reused.size = Vector2(390, 400)
+	root.add_child(reused)
+	await frames(3)
+	reused.scroll_to_index(150)
+	await frames(3)
+	reused.scroll_to_index(20)
+	await frames(3)
+	# In view plus the spare rows above and below — never one per index.
+	var enough := ceili(400.0 / 40.0) + 2 * reused.overscan + 2
+	check(created[0] <= enough and (reused.row(20) as Label).text == "20",
+		"list view: recycling binds the same rows again (%d made)" % created[0])
+	reused.queue_free()
+
+	# Tab pages — tabs and pages move together; a sideways swipe turns the page.
+	var changed := [-1]
+	var pages: Array = []
+	for word in ["One", "Two", "Three"]:
+		var paper := GoStyle.label(word)
+		paper.mouse_filter = Control.MOUSE_FILTER_PASS
+		pages.append(paper)
+	var tabs := GoTabView.make(["One", "Two", "Three"], pages)
+	tabs.tab_changed.connect(func(index: int) -> void: changed[0] = index)
+	tabs.position = Vector2(0, 100)
+	tabs.size = Vector2(390, 400)
+	root.add_child(tabs)
+	await frames(3)
+	tabs.set_tab(1, false)
+	await frames(1)
+	check(tabs.current() == 1 and tabs.tab_bar.current_tab == 1 and changed[0] == 1, "tab view: set_tab moves page and tab")
+	var middle := tabs.page(1).get_global_rect().get_center()
+	_finger_motion(middle, Vector2.ZERO, false)
+	_finger_button(middle, true)
+	await frames(1)
+	var point := middle
+	for i in 10:
+		point += Vector2(-24, 0)
+		_finger_motion(point, Vector2(-24, 0), true)
+		await frames(1)
+	_finger_button(point, false)
+	await create_timer(0.4).timeout
+	check(tabs.current() == 2 and tabs.tab_bar.current_tab == 2, "tab view: a swipe toward the start turns to the next page")
+	tabs.queue_free()
+
+	# Bottom app bar, drawer list, large app bar, banner.
+	var used := [0]
+	var bottom := GoStyle.bottom_app_bar([{"icon": GoIconSet.SEARCH, "tooltip": &"search", "action": func() -> void: used[0] += 1},
+		{"icon": GoIconSet.HEART, "tooltip": &"Like"}], GoFab.make(GoIconSet.PLUS))
+	root.add_child(bottom)
+	await frames(2)
+	check(bottom.size.y >= 80.0 and bottom.find_children("*", "GoFab", true, false).size() == 1,
+		"bottom app bar: 80dp with its actions and the FAB")
+	(bottom.find_children("*", "GoIconButton", true, false)[0] as GoIconButton).pressed.emit()
+	check(used[0] == 1, "bottom app bar: an action runs")
+	bottom.queue_free()
+	var went := [-1]
+	var list := GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Inbox"}, {"icon": GoIconSet.STAR, "text": "Starred"}],
+		0, func(index: int) -> void: went[0] = index)
+	list.size.x = 300
+	root.add_child(list)
+	await frames(2)
+	check(list.vertical and near(list.cell(1).size.y, 56.0, 1.0) and list.cell(1).size.x >= 250.0,
+		"drawer list: full-width 56dp rows (%s)" % list.cell(1).size)
+	await _tap(list.cell(1).get_global_rect().get_center())
+	check(went[0] == 1 and list.selected_index() == 1, "drawer list: a tap picks the destination")
+	list.queue_free()
+	var big := GoAppBar.make("Settings")
+	var page_scroll := GoScroll.new()
+	var column := GoStyle.column()
+	column.add_child(big.expanded_title(GoAppBar.Size.LARGE))
+	var filler := Control.new()
+	filler.custom_minimum_size.y = 2000
+	column.add_child(filler)
+	page_scroll.add_child(column)
+	page_scroll.position = Vector2(0, 64)
+	page_scroll.size = Vector2(390, 600)
+	big.size = Vector2(390, 64)
+	root.add_child(big)
+	root.add_child(page_scroll)
+	await frames(3)
+	big.follow(page_scroll)
+	var headline := column.find_child("Headline", true, false) as Label
+	check(headline != null and headline.text == "Settings" and big.title_label.modulate.a < 0.01,
+		"large app bar: the big title shows and the small one waits")
+	page_scroll.scroll_vertical = 300
+	await frames(2)
+	check(big.title_label.modulate.a > 0.99, "large app bar: scrolled past, the small title shows")
+	big.queue_free()
+	page_scroll.queue_free()
+	var retried := [0]
+	var closed := [false]
+	var offline := GoBanner.make("You're offline.", [{"text": "Retry", "action": func() -> void: retried[0] += 1}])
+	offline.closed.connect(func() -> void: closed[0] = true)
+	root.add_child(offline)
+	await frames(1)
+	((offline.find_child("Actions", true, false) as Control).get_child(0) as Button).pressed.emit()
+	await frames(1)
+	check(retried[0] == 1 and closed[0] and not is_instance_valid(offline), "banner: an action runs and folds it away")
+	var plain := GoBanner.make("Saved.")
+	root.add_child(plain)
+	await frames(1)
+	check(plain.find_child("Actions", true, false).visible == false and plain.find_children("*", "GoIconButton", true, false).size() == 1,
+		"banner: with no actions it has a close button")
+	plain.queue_free()
+
+	# Choice sheet — the picked option's index, -1 for cancel.
+	var dialogs := GoDialogs.new()
+	root.add_child(dialogs)
+	await frames(2)
+	create_timer(0.05).timeout.connect(func() -> void:
+		(dialogs.find_child("Choice", true, false).find_child("Option1", true, false) as Button).pressed.emit())
+	var picked: int = await dialogs.choose("Sort by", ["Newest", "Price", {"text": "Delete", "danger": true}])
+	check(picked == 1, "choose: the tapped option's index comes back (%d)" % picked)
+	# 🔑 Look inside the choice sheet — the confirm dialog has a (hidden) Cancel button of its own.
+	create_timer(0.05).timeout.connect(func() -> void:
+		(dialogs.find_child("Choice", true, false).find_child("Cancel", true, false) as Button).pressed.emit())
+	var none: int = await dialogs.choose("Sort by", ["Newest"])
+	check(none == -1 and not dialogs.is_open(), "choose: cancel answers -1 and closes")
+	dialogs.queue_free()
+	await frames(2)
+
+
+func _flutter_gestures() -> void:
+	# Pull to refresh — a pull from the top past the trigger asks once; finish() puts the disc away.
+	var scroll := GoScroll.new()
+	var tall := GoStyle.column()
+	for i in 30: tall.add_child(GoStyle.label("Post %d" % i))
+	scroll.add_child(tall)
+	scroll.position = Vector2(0, 80)
+	scroll.size = Vector2(390, 500)
+	root.add_child(scroll)
+	var asked := [0]
+	var refresh := GoRefresh.attach(scroll, func() -> void: asked[0] += 1)
+	await frames(3)
+	var start := scroll.get_global_rect().get_center() - Vector2(0, 150)
+	_finger_motion(start, Vector2.ZERO, false)
+	_finger_button(start, true)
+	await frames(1)
+	var at := start
+	for i in 12:
+		at += Vector2(0, 16)
+		_finger_motion(at, Vector2(0, 16), true)
+		await frames(1)
+	_finger_button(at, false)
+	await frames(3)
+	check(asked[0] == 1 and refresh.refreshing and refresh.visible, "refresh: a pull from the top asks for fresh data")
+	await create_timer(0.5).timeout
+	check(refresh._disc.position.y >= refresh.rest_dp - 1.0, "refresh: the whole disc shows while it spins (%.0f)" % refresh._disc.position.y)
+	refresh.finish()
+	# 🔑 Animations are waited out in time, not frames — a headless frame can be a fraction of a millisecond.
+	await create_timer(0.6).timeout
+	check(not refresh.refreshing and not refresh.visible, "refresh: finish() puts the indicator away")
+	scroll.scroll_vertical = 300
+	await frames(2)
+	_finger_button(start, true)
+	await frames(1)
+	at = start
+	for i in 12:
+		at += Vector2(0, 16)
+		_finger_motion(at, Vector2(0, 16), true)
+		await frames(1)
+	_finger_button(at, false)
+	await frames(2)
+	check(asked[0] == 1, "refresh: a list that is not at its top just scrolls")
+	scroll.queue_free()
+
+	# Swipe row — a sideways swipe past the threshold acts; an up-and-down one does not.
+	var acted := [0]
+	var row_button := GoStyle.list_button(GoIconSet.USER, "Ann", Callable())
+	var swipe := GoSwipeRow.wrap(row_button, {"icon": GoIconSet.TRASH, "text": "Delete", "tone": GoTheme.DANGER,
+		"action": func() -> void: acted[0] += 1})
+	var gone := [false]
+	swipe.dismissed.connect(func() -> void: gone[0] = true)
+	swipe.position = Vector2(0, 200)
+	swipe.size = Vector2(390, 56)
+	root.add_child(swipe)
+	await frames(2)
+	var centre := swipe.get_global_rect().get_center()
+	_finger_motion(centre, Vector2.ZERO, false)
+	_finger_button(centre, true)
+	await frames(1)
+	at = centre
+	for i in 8:
+		at += Vector2(0, 10)
+		_finger_motion(at, Vector2(0, 10), true)
+		await frames(1)
+	_finger_button(at, false)
+	await frames(2)
+	check(acted[0] == 0, "swipe row: an up-and-down drag does not act")
+	swipe._set_offset(-100.0)
+	await frames(1)
+	var window := swipe.get_node(^"Behind") as Control
+	check(window.visible and near(window.size.x, 100.0) and near(window.position.x, swipe.size.x - 100.0),
+		"swipe row: the strip shows only where the row moved off it (%s)" % window.get_rect())
+	swipe._set_offset(0.0)
+	await frames(1)
+	_finger_motion(centre, Vector2.ZERO, false)
+	_finger_button(centre, true)
+	await frames(1)
+	at = centre
+	for i in 10:
+		at += Vector2(-25, 0)
+		_finger_motion(at, Vector2(-25, 0), true)
+		await frames(1)
+	_finger_button(at, false)
+	await create_timer(0.9).timeout
+	check(acted[0] == 1 and gone[0], "swipe row: a swipe toward the start runs the end action and folds the row")
+	if is_instance_valid(swipe): swipe.queue_free()
+
+	# Reorder list — dragging a grip moves the row; the keyboard moves it too.
+	var moves: Array = []
+	var songs: Array = []
+	for word in ["Intro", "Theme", "Boss", "Credits"]:
+		var line := Button.new()
+		line.text = word
+		line.custom_minimum_size.y = 48
+		songs.append(line)
+	var order := GoReorderList.make(songs)
+	order.reordered.connect(func(from: int, to: int) -> void: moves.append([from, to]))
+	order.position = Vector2(0, 100)
+	order.size = Vector2(390, 220)
+	root.add_child(order)
+	await frames(3)
+	var grip := order.rows()[0].get_parent().get_node(^"Grip") as Control
+	check(grip.size.x >= 48.0 and grip.accessibility_name == GoUi.text(&"reorder"), "reorder: each row has a named 48dp grip")
+	var hold := grip.get_global_rect().get_center()
+	_finger_motion(hold, Vector2.ZERO, false)
+	_finger_button(hold, true)
+	await frames(1)
+	check(order.is_dragging(), "reorder: a press on the grip lifts the row")
+	at = hold
+	for i in 10:
+		at += Vector2(0, 10.6)
+		_finger_motion(at, Vector2(0, 10.6), true)
+		await frames(1)
+	_finger_button(at, false)
+	await create_timer(0.3).timeout
+	var names: Array[String] = []
+	for row in order.rows(): names.append((row as Button).text)
+	check(moves == [[0, 2]] and names == ["Theme", "Boss", "Intro", "Credits"],
+		"reorder: dragged two rows down it lands third (%s · %s)" % [str(moves), ", ".join(names)])
+	var key_grip := order.rows()[2].get_parent().get_node(^"Grip") as Control
+	key_grip.grab_focus()
+	_action_key(&"ui_down")
+	await frames(2)
+	check(moves.size() == 2 and moves[1] == [2, 3] and (order.rows()[3] as Button).text == "Intro",
+		"reorder: Down on a focused grip moves its row one place")
+	order.queue_free()
+
+	# Zoom view — the wheel zooms around the pointer, a drag pans inside the edges, reset goes back.
+	var picture := ColorRect.new()
+	var zoom := GoZoomView.wrap(picture, 3.0)
+	var zooms := [0]
+	zoom.zoom_changed.connect(func(_zoom: float) -> void: zooms[0] += 1)
+	zoom.position = Vector2(20, 100)
+	zoom.size = Vector2(300, 300)
+	root.add_child(zoom)
+	await frames(2)
+	check(picture.mouse_filter == Control.MOUSE_FILTER_PASS and picture.size == zoom.size, "zoom view: the content fills the view")
+	var spot := zoom.get_global_rect().get_center()
+	var wheel_event := InputEventMouseButton.new()
+	wheel_event.button_index = MOUSE_BUTTON_WHEEL_UP
+	wheel_event.pressed = true
+	wheel_event.factor = 1.0
+	wheel_event.position = spot
+	wheel_event.global_position = spot
+	Input.parse_input_event(wheel_event.xformed_by(root.get_final_transform()))
+	Input.flush_buffered_events()
+	await frames(1)
+	check(near(zoom.get_zoom(), zoom.wheel_step, 0.01) and zooms[0] == 1, "zoom view: a wheel notch zooms in (%.2f)" % zoom.get_zoom())
+	zoom.zoom_to(2.0, Vector2.INF, false)
+	_finger_motion(spot, Vector2.ZERO, false)
+	_finger_button(spot, true)
+	await frames(1)
+	for i in 6:
+		_finger_motion(spot + Vector2(80 * (i + 1), 0), Vector2(80, 0), true)
+		await frames(1)
+	_finger_button(spot + Vector2(480, 0), false)
+	await frames(1)
+	check(near(picture.position.x, 0.0) and picture.position.y <= 0.0 and picture.position.y >= -300.0,
+		"zoom view: a pan stops at the content's edge (%s)" % picture.position)
+	zoom.reset(false)
+	check(near(zoom.get_zoom(), 1.0, 0.001) and picture.position == Vector2.ZERO, "zoom view: reset goes back to 1×")
+	zoom.queue_free()
+	await frames(1)
+
+
+func _flutter_pickers() -> void:
+	# Range slider — a press moves the nearer handle; the handles never cross.
+	var spans := [0, 0]
+	var span := GoRangeSlider.make(0.0, 100.0, 20.0, 80.0, 10.0)
+	span.changed.connect(func(_low: float, _high: float) -> void: spans[0] += 1)
+	span.change_ended.connect(func(_low: float, _high: float) -> void: spans[1] += 1)
+	span.position = Vector2(20, 300)
+	span.size = Vector2(300, 48)
+	root.add_child(span)
+	await frames(2)
+	var line_y := span.get_global_rect().get_center().y
+	var low_x := span.global_position.x + span._x_of(20.0)
+	_finger_motion(Vector2(low_x, line_y), Vector2.ZERO, false)
+	_finger_button(Vector2(low_x, line_y), true)
+	await frames(1)
+	var to_x := span.global_position.x + span._x_of(95.0)
+	_finger_motion(Vector2(to_x, line_y), Vector2(to_x - low_x, 0), true)
+	await frames(1)
+	_finger_button(Vector2(to_x, line_y), false)
+	await frames(1)
+	check(near(span.low, 80.0, 0.01) and near(span.high, 80.0, 0.01) and spans[0] >= 1 and spans[1] == 1,
+		"range slider: the low handle stops at the high one (%.0f – %.0f)" % [span.low, span.high])
+	span.set_range(30.0, 61.0)
+	check(near(span.low, 30.0) and near(span.high, 60.0) and span.accessibility_name == "30 – 60",
+		"range slider: values snap to the step and are spoken as a range")
+	span.queue_free()
+
+	# Stepper — Next goes on through can_continue, an error marks the step, the last Next finishes.
+	var done := [false]
+	var stepper := GoStepper.make([{"title": "Cart", "content": GoStyle.label("3 items")},
+		{"title": "Address", "content": GoStyle.label("Seoul")}, {"title": "Pay", "content": GoStyle.label("Card")}])
+	stepper.finished.connect(func() -> void: done[0] = true)
+	root.add_child(stepper)
+	await frames(2)
+	stepper.can_continue = func(_at: int) -> bool: return false
+	stepper.next()
+	check(stepper.current() == 0, "stepper: can_continue can hold a step")
+	stepper.can_continue = Callable()
+	stepper.next()
+	await frames(1)
+	check(stepper.current() == 1 and stepper.state_of(0) == &"done" and stepper.state_of(2) == &"todo",
+		"stepper: Next moves on and marks the step done")
+	stepper.set_error(1, true)
+	check(stepper.state_of(1) == &"error", "stepper: a step can be marked wrong")
+	stepper.back()
+	check(stepper.current() == 0, "stepper: Back goes back")
+	stepper.next()
+	stepper.next()
+	stepper.next()
+	check(done[0] and stepper.state_of(1) != &"error", "stepper: the last Next finishes (and moving on clears the error)")
+	stepper.layout = GoStepper.Layout.HORIZONTAL
+	await frames(2)
+	check(stepper.find_children("Step*", "Button", true, false).size() == 3, "stepper: the horizontal layout keeps every step")
+	stepper.queue_free()
+
+	# Time picker — a tap on the dial sets the hour and turns to the minutes; AM/PM; the inner ring of 24 hours.
+	var times: Array = []
+	var clock := GoTimePicker.make(9, 30, func(h: int, m: int) -> void: times.append([h, m]))
+	clock.position = Vector2(0, 40)
+	clock.size = Vector2(390, 500)
+	root.add_child(clock)
+	await frames(3)
+	var dial: Control = clock._dial
+	var face := dial.get_global_rect()
+	var radius := minf(face.size.x, face.size.y) * 0.5
+	await _tap(face.get_center() + Vector2(radius * 0.75, 0))
+	check(clock.hour == 3 and clock.current_part() == 1 and times.back() == [3, 30],
+		"time picker: a tap at three o'clock sets 3 and turns to the minutes (%d:%d)" % [clock.hour, clock.minute])
+	await _tap(face.get_center() + Vector2(0, radius * 0.75))
+	check(clock.minute == 30 and clock.current_part() == 1, "time picker: a tap at six on the minutes is :30")
+	await _tap(face.get_center() + Vector2(-radius * 0.75, 0))
+	check(clock.minute == 45, "time picker: nine on the minutes is :45")
+	clock._pm.pressed.emit()
+	check(clock.hour == 15 and times.back() == [15, 45], "time picker: PM moves the hour past noon")
+	var am_back := GoSkin.blend(GoSkin.box_background(clock._pm.get_theme_stylebox(&"normal")), GoUi.color(GoTheme.BACKGROUND))
+	check(GoSkin.contrast_ratio(clock._pm.get_theme_color(&"font_color"), am_back) >= 4.5, "time picker: the chosen period reads")
+	# 🛑 Each of AM and PM takes a finger — M3's halves are 40dp, which the layout audit flagged.
+	check(clock._am.size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5 and near(clock._hour_box.size.y, clock._am.size.y * 2.0, 1.0),
+		"time picker: AM and PM are a full touch target tall, the hour box as tall as both (%.0f · %.0f)" % [clock._am.size.y,
+			clock._hour_box.size.y])
+	clock.use_24h = true
+	clock.set_time(0, 0)
+	clock.show_part(0)
+	await frames(2)
+	face = clock._dial.get_global_rect()
+	radius = minf(face.size.x, face.size.y) * 0.5
+	await _tap(face.get_center() + Vector2(0, radius * 0.35))
+	check(clock.hour == 18, "time picker: the inner ring of a 24-hour dial is the afternoon (%d)" % clock.hour)
+	check(clock._am == null, "time picker: a 24-hour clock has no AM/PM")
+	clock.queue_free()
+
+	# Date range — two taps make a range; the days between sit on the band.
+	var ranges: Array = []
+	var dates := GoDatePicker.make({"year": 2026, "month": 10, "day": 2})
+	dates.range_mode = true
+	dates.range_picked.connect(func(a: Dictionary, b: Dictionary) -> void: ranges.append([int(a.day), int(b.day)]))
+	root.add_child(dates)
+	await frames(2)
+	var grid := dates.find_child("Days", true, false) as GridContainer
+	(grid.get_child(4 + 9) as Button).pressed.emit()   # 10 October
+	await frames(1)
+	grid = dates.find_child("Days", true, false) as GridContainer
+	(grid.get_child(4 + 14) as Button).pressed.emit()  # 15 October
+	await frames(1)
+	check(ranges == [[10, 15]] and dates.get_range().size() == 2, "date range: two taps pick 10 – 15 (%s)" % str(ranges))
+	grid = dates.find_child("Days", true, false) as GridContainer
+	var between := GoSkin.box_background((grid.get_child(4 + 12) as Button).get_theme_stylebox(&"normal"))
+	var outside := GoSkin.box_background((grid.get_child(4 + 20) as Button).get_theme_stylebox(&"normal"))
+	check(between.a > 0.5 and outside.a < 0.01, "date range: the days between are on the band, the others are not")
+	var ends := grid.get_children().filter(func(cell: Node) -> bool: return cell.has_meta(&"go_range_side"))
+	check(ends.size() == 2 and int(ends[0].get_meta(&"go_range_side")) == 1 and int(ends[1].get_meta(&"go_range_side")) == -1,
+		"date range: the band runs on under the start and the end")
+	(grid.get_child(4 + 5) as Button).pressed.emit()   # 6 October starts over
+	check(dates.get_range().is_empty() and ranges.size() == 1, "date range: a third tap starts a new range")
+	dates.queue_free()
+
+	# Wheel — select, keys and a drag settle on an item; `changed` once per new item.
+	var settled: Array = []
+	var digits: Array = []
+	for i in 10: digits.append(str(i))
+	var wheel := GoWheelPicker.make(digits, 3, func(index: int) -> void: settled.append(index))
+	wheel.position = Vector2(100, 200)
+	root.add_child(wheel)
+	await frames(2)
+	wheel.select(5, false)
+	check(wheel.get_selected() == 5 and settled == [5] and wheel.accessibility_name == "5", "wheel: select() lands and says the item")
+	wheel.grab_focus()
+	_action_key(&"ui_down")
+	await create_timer(0.6).timeout
+	check(wheel.get_selected() == 6 and settled == [5, 6], "wheel: Down turns one item")
+	var middle := wheel.get_global_rect().get_center()
+	_finger_motion(middle, Vector2.ZERO, false)
+	_finger_button(middle, true)
+	await frames(1)
+	var at := middle
+	for i in 8:
+		at += Vector2(0, -wheel.item_height * 0.25)
+		_finger_motion(at, Vector2(0, -wheel.item_height * 0.25), true)
+		await frames(1)
+	await create_timer(0.15).timeout
+	_finger_button(at, false)
+	await create_timer(0.6).timeout
+	check(wheel.get_selected() == 8 and settled.back() == 8, "wheel: a drag up two items settles two further (%d)" % wheel.get_selected())
+	await _tap(middle + Vector2(0, wheel.item_height))
+	await create_timer(0.6).timeout
+	check(wheel.get_selected() == 9, "wheel: a tap below the band brings that item up")
+	wheel.queue_free()
+	await frames(1)
+
+
+func _action_key(action: StringName) -> void:
+	var key := InputEventAction.new()
+	key.action = action
+	key.pressed = true
+	Input.parse_input_event(key)
+	Input.flush_buffered_events()
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
+	Input.flush_buffered_events()
 
 
 # ── Left-to-right and right-to-left ──────────────────────────────────

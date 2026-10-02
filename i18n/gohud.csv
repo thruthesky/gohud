@@ -40,3 +40,8 @@ gohud_weekday_3,W,수,水,三,X,Q,M,M,Ср,बु,ر,Çar,T4,Rab,พ,M,Ś,Ср,w
 gohud_weekday_4,T,목,木,四,J,Q,D,J,Чт,गु,خ,Per,T5,Kam,พฤ,G,C,Чт,do,四,ה׳
 gohud_weekday_5,F,금,金,五,V,S,F,V,Пт,शु,ج,Cum,T6,Jum,ศ,V,P,Пт,vr,五,ו׳
 gohud_weekday_6,S,토,土,六,S,S,S,S,Сб,श,س,Cmt,T7,Sab,ส,S,S,Сб,za,六,ש׳
+gohud_am,AM,오전,午前,上午,a. m.,AM,AM,AM,AM,am,ص,ÖÖ,SA,AM,AM,AM,AM,дп,a.m.,上午,לפנה״צ
+gohud_pm,PM,오후,午後,下午,p. m.,PM,PM,PM,PM,pm,م,ÖS,CH,PM,PM,PM,PM,пп,p.m.,下午,אחה״צ
+gohud_hour,Hour,시,時,小时,Hora,Hora,Stunde,Heure,Часы,घंटा,الساعة,Saat,Giờ,Jam,ชั่วโมง,Ora,Godzina,Години,Uur,小時,שעה
+gohud_minute,Minute,분,分,分钟,Minuto,Minuto,Minute,Minute,Минуты,मिनट,الدقيقة,Dakika,Phút,Menit,นาที,Minuto,Minuta,Хвилини,Minuut,分鐘,דקה
+gohud_reorder,Reorder,순서 바꾸기,並べ替え,重新排序,Reordenar,Reordenar,Neu anordnen,Réorganiser,Изменить порядок,क्रम बदलें,إعادة الترتيب,Yeniden sırala,Sắp xếp lại,Ubah urutan,จัดลำดับใหม่,Riordina,Zmień kolejność,Змінити порядок,Volgorde wijzigen,重新排序,שינוי סדר

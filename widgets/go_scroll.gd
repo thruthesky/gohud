@@ -42,6 +42,11 @@ var _holder_filter := Control.MOUSE_FILTER_PASS
 ## Say why next to the line — every other control inside a scroll lets the finger through.
 const OWNS_GESTURE := &"go_scroll_owns_gesture"
 
+## 🔑 Meta key a control sets when **its own drag is sideways** (a range slider, a swipe row of its own): it keeps its
+## press like a slider, and an up-and-down swipe that starts on it still scrolls the list (`yields_vertical`).
+## A `GoTabView` does not turn its page from a press that lands on it either.
+const SIDEWAYS := &"go_scroll_sideways"
+
 ## A press held back until the finger shows which way it is going (`_arbitrate`) — see `_input`.
 var _touch := {}
 ## True while a held press is handed back to the viewport — every scroll's and every `_Yield`'s `_input` lets it pass,
@@ -307,6 +312,7 @@ func _settle_branch(node: Node) -> void:
 ##    link does not open it (`_on_drag_started` turns the rows' mouse off until the scroll stops).
 static func owns_gesture(control: Control) -> bool:
 	if control.has_meta(OWNS_GESTURE): return bool(control.get_meta(OWNS_GESTURE))
+	if control.has_meta(SIDEWAYS): return true
 	if control is LineEdit or control is TextEdit or control is OptionButton: return true
 	if control is RichTextLabel: return (control as RichTextLabel).selection_enabled
 	if control is Range: return not (control is ProgressBar or control is TextureProgressBar)
@@ -327,6 +333,7 @@ static func owns_gesture(control: Control) -> bool:
 ## marked with [constant OWNS_GESTURE].
 static func yields_vertical(control: Control) -> bool:
 	if control.has_meta(OWNS_GESTURE): return false
+	if control.has_meta(SIDEWAYS): return true
 	if control is LineEdit: return not (control.get_parent() is SpinBox)
 	if control is HSlider or control is TabBar: return true
 	if control is BaseButton: return (control as BaseButton).action_mode == BaseButton.ACTION_MODE_BUTTON_PRESS

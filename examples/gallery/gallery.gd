@@ -83,6 +83,11 @@ func _build_page() -> void:
 	var scroll := GoScroll.new()
 	scroll.name = "Scroll"
 	form.add_child(scroll)
+	# Pull the page down from its top — Flutter's `RefreshIndicator`.
+	var refresh := GoRefresh.attach(scroll)
+	refresh.refresh_requested.connect(func() -> void:
+		_say("refreshing")
+		get_tree().create_timer(1.2).timeout.connect(refresh.finish))
 
 	var page := GoStyle.column()
 	page.name = "Page"
@@ -505,6 +510,89 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 		tile.add_child(GoStyle.label("Tile %d" % (index + 1)))
 		tiles.add_child(tile)
 	page.add_child(tiles)
+	_build_from_flutter(page)
+
+
+## ── Flutter's widgets, the gohud way — the parts a Flutter app reaches for that a game UI kit usually lacks.
+func _build_from_flutter(page: VBoxContainer) -> void:
+	page.add_child(GoStyle.section("From Flutter", false))
+	page.add_child(GoBanner.make("You're offline. Showing saved posts.",
+		[{"text": "Dismiss"}, {"text": "Retry", "action": _say.bind("retry")}], GoIconSet.WARNING))
+	var buttons := GoStyle.wrap_row()
+	buttons.add_child(GoStyle.button("Details", _say.bind("details"), GoStyle.Tone.OUTLINED))
+	buttons.add_child(GoStyle.button("Sort by…", _choose_sort))
+	page.add_child(buttons)
+	var price := GoRangeSlider.make(0.0, 500.0, 40.0, 220.0, 10.0)
+	price.change_ended.connect(func(low: float, high: float) -> void: _say("price %d – %d" % [low, high]))
+	page.add_child(price)
+	var steps := GoStepper.make([
+		{"title": "Cart", "subtitle": "3 items", "content": GoStyle.label("Check the items in your cart.")},
+		{"title": "Address", "content": GoStyle.label("Where should it go?")},
+		{"title": "Payment", "content": GoStyle.label("Pay by card or wallet.")},
+	])
+	steps.finished.connect(_say.bind("order placed"))
+	page.add_child(steps)
+	page.add_child(GoTimePicker.make(9, 30, func(hour: int, minute: int) -> void: _say("time %d:%02d" % [hour, minute])))
+	var stay := GoDatePicker.make({"year": 2026, "month": 10, "day": 2})
+	stay.range_mode = true
+	stay.set_range({"year": 2026, "month": 10, "day": 9}, {"year": 2026, "month": 10, "day": 12})
+	stay.range_picked.connect(func(start: Dictionary, end: Dictionary) -> void: _say("stay %d – %d" % [start.day, end.day]))
+	page.add_child(stay)
+	var wheels := GoStyle.row(GoUi.metric(GoTheme.GAP))
+	var hours: Array = []
+	for i in 24: hours.append(str(i).pad_zeros(2))
+	var minutes: Array = []
+	for i in 12: minutes.append(str(i * 5).pad_zeros(2))
+	wheels.add_child(GoWheelPicker.make(hours, 9, func(index: int) -> void: _say("wheel hour %d" % index)))
+	wheels.add_child(GoWheelPicker.make(minutes, 6, func(index: int) -> void: _say("wheel minute %d" % (index * 5))))
+	wheels.add_child(GoWheelPicker.make(["x1", "x5", "x10", "x50"], 1, func(index: int) -> void: _say("amount %d" % index)))
+	page.add_child(wheels)
+	var queue: Array = []
+	for title in ["Intro", "Village theme", "Boss battle", "Credits"]:
+		queue.append(GoStyle.list_row(Button.new(), GoIconSet.PLAY, title, Callable(), Color.TRANSPARENT, "", false))
+	var playlist := GoReorderList.make(queue)
+	playlist.reordered.connect(func(from: int, to: int) -> void: _say("moved %d → %d" % [from, to]))
+	page.add_child(playlist)
+	for who in ["Ann", "Ben"]:
+		page.add_child(GoSwipeRow.wrap(GoStyle.list_row(Button.new(), GoIconSet.CHAT, "Message from %s" % who, Callable(),
+			Color.TRANSPARENT, "", false),
+			{"icon": GoIconSet.TRASH, "text": "Delete", "tone": GoTheme.DANGER, "action": _say.bind("deleted %s" % who)},
+			{"icon": GoIconSet.CHECK, "text": "Read", "tone": GoTheme.SUCCESS, "action": _say.bind("read %s" % who),
+				"dismiss": false}))
+	var tabs := GoTabView.make(["Posts", "Photos", "Saved"], [
+		GoStyle.label("Swipe sideways to turn the page."), GoStyle.label("Photos go here."), GoStyle.label("Nothing saved yet.")])
+	tabs.custom_minimum_size.y = 120
+	page.add_child(tabs)
+	var feed := GoListView.make(1000, 48.0, func(index: int) -> Control:
+		return GoStyle.list_row(Button.new(), GoIconSet.USER, "Player %d" % (index + 1), Callable(), Color.TRANSPARENT, "", false))
+	feed.custom_minimum_size.y = 220
+	feed.end_reached.connect(_say.bind("load more"))
+	page.add_child(feed)
+	var map := GridContainer.new()
+	map.columns = 6
+	for i in 36:
+		var cell := ColorRect.new()
+		cell.color = GoUi.color(GoTheme.ACCENT if (i + i / 6) % 2 == 0 else GoTheme.SURFACE_SOFT)
+		cell.custom_minimum_size = Vector2(24, 24)
+		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		cell.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		cell.mouse_filter = Control.MOUSE_FILTER_PASS
+		map.add_child(cell)
+	var zoom := GoZoomView.wrap(map, 4.0)
+	zoom.custom_minimum_size.y = 200
+	page.add_child(zoom)
+	page.add_child(GoNavBar.drawer_list([
+		{"icon": GoIconSet.HOME, "text": "Inbox"}, {"icon": GoIconSet.STAR, "text": "Starred"},
+		{"icon": GoIconSet.SETTINGS, "text": "Settings"}], 0, func(index: int) -> void: _say("drawer %d" % index)))
+	page.add_child(GoStyle.bottom_app_bar([
+		{"icon": GoIconSet.SEARCH, "tooltip": &"search", "action": _say.bind("search")},
+		{"icon": GoIconSet.HEART, "tooltip": &"Like", "action": _say.bind("like")}],
+		GoFab.make(GoIconSet.PLUS, "", _say.bind("new post"))))
+
+
+func _choose_sort() -> void:
+	var index := await _dialogs.choose("Sort by", ["Newest", "Price: low to high", "Rating"])
+	_say("sort %d" % index)
 
 
 # ── The HUD floating over the screen ───────────────────────────────────

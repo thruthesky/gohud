@@ -431,6 +431,158 @@ func loading_colors(contained: bool) -> Array[Color]:
 		role(&"md_primary_container", GoUi.color(GoTheme.ACCENT))]
 
 
+## The M3 refresh indicator's disc: `surface-container-high` at level 1 (Flutter's M3 `RefreshIndicator`).
+func refresh_disc_box() -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.bg_color = role(&"md_surface_container_high", GoUi.color(GoTheme.SURFACE))
+	face.set_corner_radius_all(FULL)
+	face.corner_detail = 16
+	_lift(face, 1)
+	face.set_content_margin_all(6)
+	return face
+
+
+## A banner on `surface-container-low`, square, with an `outline-variant` divider below.
+func banner_box() -> StyleBox:
+	var face := super.banner_box() as StyleBoxFlat
+	if face == null: return super.banner_box()
+	face.bg_color = role(&"md_surface_container_low", face.bg_color)
+	face.border_color = role(&"md_outline_variant", face.border_color)
+	return face
+
+
+## The M3 outlined button (`_md-comp-button-outlined.scss`): no container, a 1dp `outline` edge, the `primary` label
+## and a `primary` state layer on hover (8%) and press (10%). The pill and the 40dp plate stay the tonal button's.
+func outlined_button_box(face: StyleBox, state: StringName) -> StyleBox:
+	var flat := face as StyleBoxFlat
+	if flat == null or state == &"focus": return face
+	var primary := role(&"md_primary", GoUi.color(GoTheme.ACCENT))
+	flat.bg_color = Color(primary, 0.0)
+	if state == &"hover": flat.bg_color = Color(primary, HOVER)
+	elif state == &"pressed" or state == &"hover_pressed": flat.bg_color = Color(primary, PRESSED)
+	var edge := role(&"md_outline", GoUi.color(GoTheme.BORDER))
+	flat.border_color = edge if state != &"disabled" else Color(role(&"md_on_surface", GoUi.color(GoTheme.TEXT)), 0.12)
+	flat.set_border_width_all(1)
+	flat.shadow_size = 0
+	return flat
+
+
+## `primary`.
+func outlined_button_ink() -> Color:
+	return role(&"md_primary", super.outlined_button_ink())
+
+
+## The M3 date range picker (`_md-comp-date-picker-modal.scss`): the days between the two ends sit on a
+## `secondary-container` band; the ends stay the `primary` circle.
+func date_cell_box(kind: StringName, state: StringName) -> StyleBox:
+	var face := super.date_cell_box(kind, state) as StyleBoxFlat
+	if face == null or kind != &"in_range" or state == &"focus": return super.date_cell_box(kind, state)
+	var band := role(&"md_secondary_container", face.bg_color)
+	var layer := role(&"md_on_secondary_container", GoUi.color(GoTheme.TEXT))
+	face.bg_color = band
+	if state == &"hover": face.bg_color = band.lerp(layer, HOVER)
+	elif state == &"pressed": face.bg_color = band.lerp(layer, PRESSED)
+	return face
+
+
+## `on-secondary-container` on the range band.
+func date_ink(kind: StringName) -> Color:
+	if kind == &"in_range": return role(&"md_on_secondary_container", super.date_ink(kind))
+	return super.date_ink(kind)
+
+
+## Flutter's M3 `Stepper`: `primary` discs with `on-primary` numbers, an `outline` ring for steps ahead, `error` for a
+## step that went wrong.
+func step_marker_box(state: StringName) -> StyleBox:
+	var face := super.step_marker_box(state) as StyleBoxFlat
+	if face == null: return super.step_marker_box(state)
+	match state:
+		&"error": face.bg_color = role(&"md_error", face.bg_color)
+		&"todo": face.border_color = role(&"md_outline", face.border_color)
+		_: face.bg_color = role(&"md_primary", face.bg_color)
+	return face
+
+
+func step_marker_ink(state: StringName) -> Color:
+	match state:
+		&"error": return role(&"md_on_error", super.step_marker_ink(state))
+		&"todo": return role(&"md_on_surface_variant", super.step_marker_ink(state))
+	return role(&"md_on_primary", super.step_marker_ink(state))
+
+
+## The M3 time picker (`_md-comp-time-picker.scss`): the hour and minute boxes are `primary-container` while chosen
+## and `surface-container-highest` otherwise; the AM/PM boxes carry a 1dp `outline` and turn `tertiary-container` when
+## chosen. corner.small (8dp) all round.
+func time_selector_box(selected: bool, state: StringName, period := false) -> StyleBox:
+	var face := super.time_selector_box(selected, state, period) as StyleBoxFlat
+	if face == null or state == &"focus": return super.time_selector_box(selected, state, period)
+	face.set_corner_radius_all(8)
+	var base: Color
+	if period:
+		base = role(&"md_tertiary_container", face.bg_color) if selected else Color(face.bg_color, 0.0)
+		face.border_color = role(&"md_outline", face.border_color)
+	else:
+		base = role(&"md_primary_container", face.bg_color) if selected \
+			else role(&"md_surface_container_highest", face.bg_color)
+	var layer := time_ink(selected, period)
+	face.bg_color = base
+	if state == &"hover": face.bg_color = _layered(base, layer, HOVER)
+	elif state == &"pressed" or state == &"hover_pressed": face.bg_color = _layered(base, layer, PRESSED)
+	return face
+
+
+func time_ink(selected: bool, period := false) -> Color:
+	if period:
+		return role(&"md_on_tertiary_container", super.time_ink(selected, period)) if selected \
+			else role(&"md_on_surface_variant", super.time_ink(selected, period))
+	return role(&"md_on_primary_container", super.time_ink(selected, period)) if selected \
+		else role(&"md_on_surface", super.time_ink(selected, period))
+
+
+## The M3 clock dial: `surface-container-highest`, a `primary` hand, `on-surface` numbers, `on-primary` under the hand.
+func dial_colors() -> Array[Color]:
+	var colors := super.dial_colors()
+	return [role(&"md_surface_container_highest", colors[0]), role(&"md_primary", colors[1]),
+		role(&"md_on_surface", colors[2]), role(&"md_on_primary", colors[3])]
+
+
+## The dragged row of a reorder list rides on `surface-container-high` at level 3 with corner.medium (12dp).
+func reorder_lift_box() -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.bg_color = role(&"md_surface_container_high", GoUi.color(GoTheme.SURFACE))
+	face.set_corner_radius_all(12)
+	face.corner_detail = 12
+	_lift(face, 3)
+	face.set_content_margin_all(0)
+	return face
+
+
+## `on-surface-variant`, as an M3 drag handle.
+func reorder_grip_ink() -> Color:
+	return role(&"md_on_surface_variant", super.reorder_grip_ink())
+
+
+## The band of a wheel on `surface-container-highest`, corner.small.
+func wheel_band_box() -> StyleBox:
+	var face := super.wheel_band_box() as StyleBoxFlat
+	if face == null: return super.wheel_band_box()
+	face.bg_color = role(&"md_surface_container_highest", face.bg_color)
+	face.set_corner_radius_all(8)
+	return face
+
+
+## `on-surface` on the band, `on-surface-variant` around it.
+func wheel_ink(chosen: bool) -> Color:
+	return role(&"md_on_surface", super.wheel_ink(chosen)) if chosen \
+		else role(&"md_on_surface_variant", super.wheel_ink(chosen))
+
+
+## A state layer of [param layer] at [param amount] over [param base]; a see-through base gets the layer alone.
+static func _layered(base: Color, layer: Color, amount: float) -> Color:
+	if base.a <= 0.0: return Color(layer, amount)
+	return base.lerp(layer, amount)
+
+
 ## Lays M3 elevation [param level] on a face as its shadow.
 static func _lift(face: StyleBoxFlat, level: int) -> void:
 	var step: Vector3 = ELEVATION[level]

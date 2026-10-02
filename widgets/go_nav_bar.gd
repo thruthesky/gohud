@@ -25,6 +25,10 @@
 ## With `safe_area` on (the default) a bottom bar grows by the screen's bottom inset (`GoSafeArea`), so the labels never
 ## sit under Android's gesture bar or the iPhone home indicator while the bar's colour still runs to the edge.
 ## A rail does not pad — place it inside your own safe-area margin.
+##
+## ## 🔑 In a drawer
+## `GoNavBar.drawer_list()` lays the same destinations as full-width rows — icon and label on one line, the chosen
+## row on a full-width pill (Material's navigation drawer, Flutter's `NavigationDrawer`). Put it in a `GoDrawer`'s body.
 @tool
 class_name GoNavBar
 extends PanelContainer
@@ -57,6 +61,10 @@ var _translate := false
 var _group := ButtonGroup.new()
 var _cells: Array[Button] = []
 var _pad: MarginContainer
+## Full-width rows for a drawer (`drawer_list()`).
+var _drawer := false
+## Height of a drawer row (dp) — `_md-comp-navigation-drawer.scss` active-indicator-height.
+const DRAWER_ROW := 56.0
 
 
 func _init() -> void:
@@ -85,6 +93,15 @@ static func make(items: Array, chosen := 0, action := Callable(), translate := f
 	node._selected = clampi(chosen, 0, maxi(0, items.size() - 1))
 	node._action = action
 	node._translate = translate
+	return node
+
+
+## The destinations as the rows of a navigation drawer — put it in a `GoDrawer`'s body.
+static func drawer_list(items: Array, chosen := 0, action := Callable(), translate := false) -> GoNavBar:
+	var node := make(items, chosen, action, translate)
+	node._drawer = true
+	node.vertical = true
+	node.safe_area = false
 	return node
 
 
@@ -132,18 +149,22 @@ func _rebuild() -> void:
 		remove_child(child)
 		child.queue_free()
 	_cells.clear()
-	add_theme_stylebox_override(&"panel", GoUi.skin().nav_bar_box(vertical))
+	# A drawer list lies on the drawer's own panel — no face of its own.
+	add_theme_stylebox_override(&"panel", StyleBoxEmpty.new() if _drawer else GoUi.skin().nav_bar_box(vertical))
 	_pad = MarginContainer.new()
 	_pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_pad)
 	var line: BoxContainer = VBoxContainer.new() if vertical else HBoxContainer.new()
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	line.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_TINY) if vertical else 0)
+	line.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_TINY) if vertical and not _drawer else 0)
 	if vertical: line.alignment = BoxContainer.ALIGNMENT_BEGIN
 	_pad.add_child(line)
 	for index in _items.size():
 		line.add_child(_make_cell(index))
-	if vertical:
+	if _drawer:
+		custom_minimum_size = Vector2.ZERO
+		size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	elif vertical:
 		custom_minimum_size = Vector2(RAIL_EXTENT, 0)
 		_pad.add_theme_constant_override(&"margin_top", GoUi.metric(GoTheme.GAP_LARGE))
 	else:
@@ -157,6 +178,7 @@ func _rebuild() -> void:
 
 
 func _make_cell(index: int) -> Button:
+	if _drawer: return _make_row(index)
 	var spec: Dictionary = _items[index]
 	var button := Button.new()
 	button.name = "Destination%d" % index
@@ -232,8 +254,91 @@ func _make_cell(index: int) -> Button:
 	return button
 
 
+## One drawer row: a full-width pill holding the icon and the label side by side.
+func _make_row(index: int) -> Button:
+	var spec: Dictionary = _items[index]
+	var button := Button.new()
+	button.name = "Destination%d" % index
+	button.toggle_mode = true
+	button.button_group = _group
+	button.button_pressed = index == _selected
+	button.focus_mode = Control.FOCUS_ALL
+	button.mouse_filter = Control.MOUSE_FILTER_PASS
+	GoScroll.scroll_through(button)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.custom_minimum_size = Vector2(0.0, DRAWER_ROW)
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]:
+		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	var text := str(spec.get("text", ""))
+	button.accessibility_name = tr(text) if _translate else text
+	var pill := PanelContainer.new()
+	pill.name = "Indicator"
+	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pill.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	button.add_child(pill)
+	var ring := Panel.new()
+	ring.name = "FocusRing"
+	ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ring.visible = false
+	pill.add_child(ring)
+	var pad := MarginContainer.new()
+	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pad.add_theme_constant_override(&"margin_left", GoUi.metric(GoTheme.GAP))
+	pad.add_theme_constant_override(&"margin_right", GoUi.metric(GoTheme.GAP))
+	pill.add_child(pad)
+	var line := HBoxContainer.new()
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_theme_constant_override(&"separation", 12)
+	pad.add_child(line)
+	var icon := GoUi.icons().node(StringName(spec.get("icon", &"")), GoUi.metric(GoTheme.ICON_SIZE))
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(icon)
+	var words := GoStyle.label_key(text, GoTheme.ROLE_BUTTON) if _translate else GoStyle.label(text, GoTheme.ROLE_BUTTON)
+	words.name = "Label"
+	words.autowrap_mode = TextServer.AUTOWRAP_OFF
+	words.set_meta(&"go_no_wrap", true)
+	words.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(words)
+	button.set_meta(&"go_nav_icon", icon)
+	button.set_meta(&"go_nav_pill", pill)
+	button.set_meta(&"go_nav_label", words)
+	button.set_meta(&"go_nav_ring", ring)
+	button.set_meta(&"go_nav_held", false)
+	button.toggled.connect(func(on: bool) -> void:
+		_paint_all()
+		if not on: return
+		_selected = index
+		selected.emit(index)
+		if _action.is_valid(): _action.call(index))
+	for signal_name in [&"mouse_entered", &"mouse_exited", &"focus_entered", &"focus_exited"]:
+		button.connect(signal_name, _paint.bind(button))
+	button.button_down.connect(func() -> void:
+		button.set_meta(&"go_nav_held", true)
+		_paint(button))
+	button.button_up.connect(func() -> void:
+		button.set_meta(&"go_nav_held", false)
+		_paint(button))
+	if int(spec.get("badge", 0)) > 0 or bool(spec.get("dot", false)) or not str(spec.get("badge_text", "")).is_empty():
+		GoBadge.attach.call_deferred(icon, int(spec.get("badge", 0)), str(spec.get("badge_text", "")),
+			bool(spec.get("dot", false)))
+	_cells.append(button)
+	return button
+
+
 func _paint_all() -> void:
 	for button in _cells: _paint(button)
+
+
+## In a drawer the pill holds the label, so its ends round at half the row, not at the skin's `FULL_ROUND` — the layout
+## audit reads the radius to know how far the words keep from the edge, and 999 asked them for 300dp.
+func _row_pill(face: StyleBox) -> StyleBox:
+	var flat := face as StyleBoxFlat
+	if not _drawer or flat == null: return face
+	var half := int(DRAWER_ROW * 0.5)
+	for corner in 4: flat.set_corner_radius(corner, mini(flat.get_corner_radius(corner), half))
+	return flat
 
 
 ## Puts the state on one destination: the indicator pill, the icon and label colours, and the keyboard focus ring.
@@ -245,12 +350,12 @@ func _paint(button: Button) -> void:
 	if bool(button.get_meta(&"go_nav_held")): state = &"pressed"
 	elif button.is_hovered(): state = &"hover"
 	(button.get_meta(&"go_nav_pill") as PanelContainer).add_theme_stylebox_override(&"panel",
-		skin.nav_indicator_box(chosen, state))
+		_row_pill(skin.nav_indicator_box(chosen, state)))
 	var ring: Panel = button.get_meta(&"go_nav_ring")
 	# 🛑 Only keyboard and gamepad focus shows the ring — the focus a tap hands out is hidden (`has_focus(true)`).
 	ring.visible = button.has_focus(true)
 	if ring.visible:
-		ring.add_theme_stylebox_override(&"panel", skin.nav_indicator_box(chosen, &"focus"))
+		ring.add_theme_stylebox_override(&"panel", _row_pill(skin.nav_indicator_box(chosen, &"focus")))
 		ring.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var icon: Control = button.get_meta(&"go_nav_icon")
 	var ink := skin.nav_ink(chosen, false)
@@ -260,7 +365,8 @@ func _paint(button: Button) -> void:
 		icon.modulate = Color.WHITE
 		icon.self_modulate = ink
 	elif icon is Label: icon.add_theme_color_override(&"font_color", ink)
-	(button.get_meta(&"go_nav_label") as Label).add_theme_color_override(&"font_color", skin.nav_ink(chosen, true))
+	# In a drawer the label sits on the pill with the icon, so it takes the icon's colour.
+	(button.get_meta(&"go_nav_label") as Label).add_theme_color_override(&"font_color", skin.nav_ink(chosen, not _drawer))
 
 
 ## A bottom bar grows by the bottom inset so its labels clear the gesture bar.

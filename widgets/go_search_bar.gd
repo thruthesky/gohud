@@ -94,11 +94,19 @@ func _init() -> void:
 	mouse_exited.connect(func() -> void:
 		_hovered = false
 		_restyle())
+	# Dressed now as well as in `_ready`, so it measures with its own faces as early as it can (see `_ready`).
+	theme = GoUi.theme()
+	_dress()
 
 
 func _ready() -> void:
 	theme = GoUi.theme()
 	_dress()
+	# 🛑 Out of the tree the engine measures the field with the project's own font: in laryen3d the bar came out 63–67dp
+	#    tall, a size set before `add_child` was stretched to that, and it stayed there once the minimum fell back to
+	#    56dp (reported by the layouts session, 2026-10-02). A container lays the bar out again by itself; anywhere
+	#    else it goes back to its own height here.
+	if not (get_parent() is Container): size.y = get_combined_minimum_size().y
 	GoUi.watch(_on_ui_changed)
 
 

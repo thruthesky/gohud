@@ -176,6 +176,73 @@ func alert_key(title_key: String, body_key: String, ok_key := "", extra := "", a
 		ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"), extra, args, true)
 
 
+## 📋 **Pick one of a few options** — a share target, a sort order, where a photo comes from (Flutter's
+## `SimpleDialog`, Cupertino's action sheet). `await` gives the index of the option pressed, or `-1` when it was
+## closed or cancelled.
+##
+## ```gdscript
+## var picked := await dialogs.choose("Sort posts", [
+## 	{"text": "Newest first", "icon": GoIconSet.CLOCK}, {"text": "Most liked", "icon": GoIconSet.HEART},
+## 	{"text": "Delete all", "icon": GoIconSet.TRASH, "danger": true}])
+## ```
+##
+## Each option is a String or `{"text", "icon", "danger", "subtitle"}`. On a phone the list comes up from the bottom,
+## within thumb reach (an action sheet); elsewhere it is a window in the centre. [param translate] treats the title and
+## the texts as translation keys.
+## 🛑 With a window already up it is `-1` right away — the same rule as `confirm()`.
+func choose(title: String, options: Array, cancel_text := "", translate := false) -> int:
+	if _open: return -1
+	_open = true
+	var sheet := _make_surface()
+	sheet.name = "Choice"
+	sheet.fit_content = true
+	sheet.max_width = max_width
+	sheet.alpha = alpha
+	sheet.placement = GoSurface.Placement.BOTTOM if GoUi.is_handheld_platform() else GoSurface.Placement.CENTER
+	_layer.add_child(sheet)
+	if translate: sheet.set_title_key(title)
+	else: sheet.set_title(title)
+	var answer := ChoiceTicket.new()
+	_choice = answer
+	var rows := GoStyle.column(0)
+	sheet.body.add_child(rows)
+	for index in options.size():
+		var spec: Dictionary = options[index] if options[index] is Dictionary else {"text": str(options[index])}
+		var row := GoStyle.list_button(StringName(spec.get("icon", &"")), str(spec.get("text", "")),
+			func() -> void: answer.picked.emit(index), GoUi.color(GoTheme.DANGER) if bool(spec.get("danger", false))
+			else Color.TRANSPARENT, str(spec.get("subtitle", "")), translate)
+		row.name = "Option%d" % index
+		rows.add_child(row)
+	sheet.footer.visible = true
+	var cancel := GoStyle.button_key(cancel_text if not cancel_text.is_empty() else GoUi.text_key(&"cancel"),
+		func() -> void: answer.picked.emit(-1)) if translate or cancel_text.is_empty() \
+		else GoStyle.button(cancel_text, func() -> void: answer.picked.emit(-1))
+	cancel.name = "Cancel"
+	sheet.footer.add_child(cancel)
+	sheet.close_requested.connect(func() -> void: answer.picked.emit(-1))
+	sheet.visible = true
+	sheet.relayout()
+	GoFeedback.opened()
+	var index: int = await answer.picked
+	_choice = null
+	_open = false
+	if index >= 0: GoFeedback.confirmed()
+	else: GoFeedback.canceled()
+	# Out of the tree at once — a choose() right after this one would otherwise meet it under the same name.
+	if sheet.get_parent() != null: sheet.get_parent().remove_child(sheet)
+	sheet.queue_free()
+	if not _queue.is_empty(): _pump.call_deferred()
+	return index
+
+
+## The answer of one `choose()`.
+class ChoiceTicket extends RefCounted:
+	signal picked(index: int)
+
+## The `choose()` that is up — answered `-1` if this node leaves the tree while it waits.
+var _choice: ChoiceTicket
+
+
 func is_open() -> bool:
 	return _open
 
@@ -391,6 +458,7 @@ func _notification(what: int) -> void:
 	#    logic held by `await dialogs.confirm(...)` never returns — the screen has already moved on while the
 	#    previous screen's coroutine lives on, doing nothing.
 	elif what == NOTIFICATION_EXIT_TREE:
+		if _choice != null: _choice.picked.emit(-1)
 		var ticket := _ticket
 		_ticket = null
 		_open = false

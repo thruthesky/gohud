@@ -634,7 +634,7 @@ func app_bar_box(scrolled: bool) -> StyleBox:
 ## to the button and the floating shadow under it — a FAB floats over the content.
 func fab_box(extent: float, state: StringName) -> StyleBox:
 	var key := &"normal" if state == &"disabled" else state
-	var face := _variation_box(GoTheme.VAR_PRIMARY_BUTTON, key)
+	var face := variation_box(GoTheme.VAR_PRIMARY_BUTTON, key)
 	var flat := face as StyleBoxFlat
 	if flat != null:
 		if state != &"focus":
@@ -665,7 +665,7 @@ func fab_ink() -> Color:
 ## The container of a search bar (`GoSearchBar`). [param state] is `&"normal"`·`&"hover"`·`&"focus"`.
 ## Default: the theme's own text-field face (`LineEdit`), rounded into a pill when it is a plain flat box.
 func search_bar_box(state: StringName) -> StyleBox:
-	var face := _variation_box(&"LineEdit", &"focus" if state == &"focus" else &"normal")
+	var face := variation_box(&"LineEdit", &"focus" if state == &"focus" else &"normal")
 	var flat := face as StyleBoxFlat
 	if flat != null:
 		flat.set_corner_radius_all(FULL_ROUND)
@@ -709,9 +709,9 @@ func loading_colors(contained: bool) -> Array[Color]:
 	return [accent, Color(accent, chip_fill_alpha)]
 
 
-## One day of a date picker (`GoDatePicker`). [param kind] is `&"day"`·`&"today"`·`&"selected"`, [param state]
-## `&"normal"`·`&"hover"`·`&"pressed"`·`&"focus"`. Default: a round cell — filled with the accent when picked, ringed
-## when it is today.
+## One day of a date picker (`GoDatePicker`). [param kind] is `&"day"`·`&"today"`·`&"selected"`·`&"in_range"` (a day
+## between the two ends of a range), [param state] `&"normal"`·`&"hover"`·`&"pressed"`·`&"focus"`. Default: a round
+## cell — filled with the accent when picked, ringed when it is today; days inside a range sit on a faint accent band.
 func date_cell_box(kind: StringName, state: StringName) -> StyleBox:
 	var face := StyleBoxFlat.new()
 	face.set_corner_radius_all(FULL_ROUND)
@@ -721,6 +721,13 @@ func date_cell_box(kind: StringName, state: StringName) -> StyleBox:
 		face.draw_center = false
 		face.border_color = accent
 		face.set_border_width_all(2)
+		return face
+	if kind == &"in_range":
+		face.set_corner_radius_all(0)
+		var band := GoUi.color(GoTheme.SURFACE).lerp(accent, RANGE_BAND)
+		face.bg_color = band
+		if state == &"hover": face.bg_color = band.lerp(GoUi.color(GoTheme.TEXT), 0.08)
+		elif state == &"pressed": face.bg_color = band.lerp(GoUi.color(GoTheme.TEXT), 0.14)
 		return face
 	face.bg_color = accent if kind == &"selected" else Color(GoUi.color(GoTheme.TEXT), 0.0)
 	if kind != &"selected":
@@ -736,7 +743,179 @@ func date_cell_box(kind: StringName, state: StringName) -> StyleBox:
 func date_ink(kind: StringName) -> Color:
 	if kind == &"selected": return readable_on(GoUi.color(GoTheme.ON_ACCENT), GoUi.color(GoTheme.ACCENT))
 	var back := GoUi.color(GoTheme.SURFACE)
+	if kind == &"in_range": back = back.lerp(GoUi.color(GoTheme.ACCENT), RANGE_BAND)
 	return readable_on(GoUi.color(GoTheme.ACCENT) if kind == &"today" else GoUi.color(GoTheme.TEXT), back)
+
+
+## How much accent the band under a date range carries.
+const RANGE_BAND := 0.18
+
+
+## The round marker of one step (`GoStepper`). [param state] is `&"done"`·`&"active"`·`&"todo"`·`&"error"`. Default:
+## an accent disc for a step done or open, a ring for one still ahead, the danger colour for one that went wrong.
+func step_marker_box(state: StringName) -> StyleBox:
+	var face := StyleBoxFlat.new()
+	# Half the 24dp marker, not `FULL_ROUND` — the layout audit reads the radius to know how far text must keep from
+	# the edge, and 999 asked a one-digit disc for 300dp.
+	face.set_corner_radius_all(12)
+	face.corner_detail = 12
+	face.set_content_margin_all(0)
+	match state:
+		&"error": face.bg_color = GoUi.color(GoTheme.DANGER)
+		&"todo":
+			face.bg_color = Color(GoUi.color(GoTheme.SURFACE), 0.0)
+			face.border_color = GoUi.color(GoTheme.MUTED)
+			face.set_border_width_all(2)
+		_: face.bg_color = GoUi.color(GoTheme.ACCENT)
+	return face
+
+
+## The number or mark inside a step marker ([param state] as in [method step_marker_box]).
+func step_marker_ink(state: StringName) -> Color:
+	match state:
+		&"error": return readable_on(GoUi.color(GoTheme.ON_ACCENT), GoUi.color(GoTheme.DANGER))
+		&"todo": return readable_on(GoUi.color(GoTheme.MUTED), GoUi.color(GoTheme.SURFACE))
+	return readable_on(GoUi.color(GoTheme.ON_ACCENT), GoUi.color(GoTheme.ACCENT))
+
+
+## One box at the top of a time picker (`GoTimePicker`) — the hour, the minute, or (with [param period]) AM or PM.
+## [param state] is a Button state. Default: a soft box, tinted with the accent when it is the part being set; the
+## AM/PM boxes carry an edge.
+func time_selector_box(selected: bool, state: StringName, period := false) -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
+	face.corner_detail = 8
+	face.set_content_margin_all(0)
+	var accent := GoUi.color(GoTheme.ACCENT)
+	if state == &"focus":
+		face.draw_center = false
+		face.border_color = accent
+		face.set_border_width_all(2)
+		face.set_expand_margin_all(2)
+		return face
+	var base := _time_fill(selected, period)
+	face.bg_color = base
+	if state == &"hover": face.bg_color = _wash(base, 0.08)
+	elif state == &"pressed" or state == &"hover_pressed": face.bg_color = _wash(base, 0.14)
+	if period:
+		face.border_color = GoUi.color(GoTheme.BORDER)
+		face.set_border_width_all(1)
+	return face
+
+
+## The digits (or AM/PM) on a time picker box.
+## 🛑 Reads the default fill, not `time_selector_box()` — a skin's box may ask for this ink (its state layer), and
+##    the two hooks would call each other forever (the Material skin did, 2026-10-02).
+func time_ink(selected: bool, period := false) -> Color:
+	var under := GoUi.color(GoTheme.SURFACE).blend(_time_fill(selected, period))
+	var ink := GoUi.color(GoTheme.ACCENT) if selected else GoUi.color(GoTheme.TEXT)
+	return readable_on(ink, under)
+
+
+## The default fill of a time picker box.
+static func _time_fill(selected: bool, period: bool) -> Color:
+	if selected: return GoUi.color(GoTheme.SURFACE).lerp(GoUi.color(GoTheme.ACCENT), 0.22)
+	return Color(GoUi.color(GoTheme.SURFACE), 0.0) if period else GoUi.color(GoTheme.SURFACE_SOFT)
+
+
+## The clock dial of a time picker: `[face, hand, numbers, number under the hand]`. Default: a soft disc, the accent
+## hand, body text, and the accent's readable ink where the hand sits.
+func dial_colors() -> Array[Color]:
+	var accent := GoUi.color(GoTheme.ACCENT)
+	var face := GoUi.color(GoTheme.SURFACE_SOFT)
+	return [face, accent, readable_on(GoUi.color(GoTheme.TEXT), GoUi.color(GoTheme.SURFACE).blend(face)),
+		readable_on(GoUi.color(GoTheme.ON_ACCENT), accent)]
+
+
+## The face a row lifts onto while it is dragged in a reorder list (`GoReorderList`). Default: the floating card,
+## with no padding of its own — the row keeps its own.
+func reorder_lift_box() -> StyleBox:
+	var face := floating_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
+	face.set_content_margin_all(0)
+	return face
+
+
+## The dots of a reorder grip.
+func reorder_grip_ink() -> Color:
+	return readable_on(GoUi.color(GoTheme.MUTED), GoUi.color(GoTheme.SURFACE), 3.0)
+
+
+## The band behind the item a wheel picker (`GoWheelPicker`) has settled on. Default: a soft rounded band.
+func wheel_band_box() -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.bg_color = GoUi.color(GoTheme.SURFACE_SOFT)
+	face.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL))
+	face.corner_detail = 8
+	return face
+
+
+## The text of a wheel picker item — [param chosen] for the one on the band, the others fade by distance on top.
+func wheel_ink(chosen: bool) -> Color:
+	var under := GoUi.color(GoTheme.SURFACE)
+	if chosen: under = under.blend(GoUi.color(GoTheme.SURFACE_SOFT))
+	return readable_on(GoUi.color(GoTheme.TEXT) if chosen else GoUi.color(GoTheme.SECONDARY), under)
+
+
+## [param base] with a state layer of the text colour over it ([param amount] 0–1), keeping the result opaque when
+## [param base] is see-through.
+static func _wash(base: Color, amount: float) -> Color:
+	var ink := GoUi.color(GoTheme.TEXT)
+	if base.a <= 0.0: return Color(ink, amount)
+	return Color(base.lerp(ink, amount), maxf(base.a, amount))
+
+
+## The raised disc a pull-to-refresh indicator rides on (`GoRefresh`). Default: the card colour in a circle with the
+## floating shadow.
+func refresh_disc_box() -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.bg_color = GoUi.color(GoTheme.SURFACE)
+	face.set_corner_radius_all(FULL_ROUND)
+	face.corner_detail = 16
+	face.border_color = GoUi.color(GoTheme.BORDER)
+	face.set_border_width_all(1)
+	face.shadow_color = Color(GoUi.color(GoTheme.SHADOW), float_shadow_alpha * 0.6)
+	face.shadow_size = maxi(2, roundi(float_shadow_size * 0.5))
+	face.shadow_offset = Vector2(0, 2)
+	face.set_content_margin_all(6)
+	return face
+
+
+## The panel of a banner (`GoBanner`) across the top of a page. Default: the card colour, square, with a hairline
+## below it.
+func banner_box() -> StyleBox:
+	var face := surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0)
+	var flat := face as StyleBoxFlat
+	if flat != null:
+		flat.set_corner_radius_all(0)
+		flat.set_border_width_all(0)
+		flat.border_width_bottom = 1
+		flat.border_color = GoUi.color(GoTheme.BORDER)
+		flat.shadow_size = 0
+	face.content_margin_left = GoUi.metric(GoTheme.GAP)
+	face.content_margin_right = GoUi.metric(GoTheme.GAP_SMALL)
+	face.content_margin_top = GoUi.metric(GoTheme.GAP)
+	face.content_margin_bottom = GoUi.metric(GoTheme.GAP_SMALL)
+	return face
+
+
+## One face of an outlined button (`GoStyle.Tone.OUTLINED`) — [param face] is the normal button's face for
+## [param state]. Default: no fill, a 1dp edge in the border colour, a faint accent wash on hover and press.
+func outlined_button_box(face: StyleBox, state: StringName) -> StyleBox:
+	var flat := face as StyleBoxFlat
+	if flat == null or state == &"focus": return face
+	var accent := GoUi.color(GoTheme.ACCENT)
+	flat.bg_color = Color(accent, 0.0)
+	if state == &"hover": flat.bg_color = Color(accent, 0.08)
+	elif state == &"pressed" or state == &"hover_pressed": flat.bg_color = Color(accent, 0.14)
+	flat.border_color = GoUi.color(GoTheme.BORDER) if state != &"disabled" else Color(GoUi.color(GoTheme.BORDER), 0.5)
+	flat.set_border_width_all(1)
+	flat.shadow_size = 0
+	return flat
+
+
+## The label colour of an outlined button. Default: the accent, pushed until it reads on the page.
+func outlined_button_ink() -> Color:
+	return readable_on(GoUi.color(GoTheme.ACCENT), GoUi.color(GoTheme.BACKGROUND))
 
 
 ## Taller than any part, so StyleBoxFlat rounds both ends into a pill. 🛑 Not for a box that mixes a pill end with small
@@ -746,10 +925,16 @@ const FULL_ROUND := 999
 
 ## A copy of a theme box of a type variation (`GoPrimaryButton`, `LineEdit` …) — from the current theme, else gohud's
 ## default theme, else a plain flat box in the surface colour.
-func _variation_box(type: StringName, key: StringName) -> StyleBox:
+## 🔑 Follows the variation to its base: `GoButton` draws with `Button`'s boxes, and asked for itself alone it handed
+##    back the plain square — the outlined button came out a bare box (2026-10-02 screenshots).
+func variation_box(type: StringName, key: StringName) -> StyleBox:
 	for candidate in [GoUi.theme(), GoUi.DEFAULT_THEME]:
-		if candidate != null and candidate.has_stylebox(key, type):
-			return candidate.get_stylebox(key, type).duplicate()
+		if candidate == null: continue
+		var kind := type
+		for depth in 8:
+			if kind == &"": break
+			if candidate.has_stylebox(key, kind): return candidate.get_stylebox(key, kind).duplicate()
+			kind = candidate.get_type_variation_base(kind)
 	var flat := StyleBoxFlat.new()
 	flat.bg_color = GoUi.color(GoTheme.SURFACE)
 	return flat

@@ -310,6 +310,13 @@ signal changed_settings
 	&"weekday_4": "gohud_weekday_4",
 	&"weekday_5": "gohud_weekday_5",
 	&"weekday_6": "gohud_weekday_6",
+	# The time picker: the AM/PM marks and the spoken names of its two boxes.
+	&"am": "gohud_am",
+	&"pm": "gohud_pm",
+	&"hour": "gohud_hour",
+	&"minute": "gohud_minute",
+	# The grip of a reorder list (its spoken name and tooltip).
+	&"reorder": "gohud_reorder",
 }
 
 ## Text used **as is**, without going through translation. An escape hatch for projects that do not use a translation table.

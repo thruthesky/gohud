@@ -395,7 +395,9 @@ static func section(text_or_key: String, translate := true) -> Label:
 # ── Buttons ────────────────────────────────────────────────────────────
 
 ## 🛑 Add values **at the end only** — insert one in the middle and numbers saved in scenes point at a different tone.
-enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID }
+## `OUTLINED` is the outlined button (Flutter's `OutlinedButton`): no fill, an edge, the accent label — a second action
+## beside a filled one ("Cancel" next to "Save") that should read lighter than a normal button.
+enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID, OUTLINED }
 
 ## Applies the gohud spec to an existing button (scene-built buttons too).
 static func style_button(node: Button, tone := Tone.NORMAL) -> void:
@@ -407,6 +409,7 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 		Tone.BARE: node.theme_type_variation = GoTheme.VAR_BARE_BUTTON
 		Tone.COMPACT: node.theme_type_variation = GoTheme.VAR_COMPACT_BUTTON
 		_: node.theme_type_variation = GoTheme.VAR_BUTTON
+	_outline(node, tone == Tone.OUTLINED)
 	if GoUi.config.button_glow: glow(node)
 	var compact := tone == Tone.COMPACT or tone == Tone.BARE
 	# 🛑 `MOUSE_FILTER_PASS` — a button inside a scroll must hand the finger drag to the `ScrollContainer`.
@@ -435,6 +438,28 @@ const _GLOW_TWINS := {
 	GoTheme.VAR_PRIMARY_BUTTON: GoTheme.VAR_PRIMARY_GLOW_BUTTON,
 	GoTheme.VAR_DANGER_SOLID_BUTTON: GoTheme.VAR_DANGER_SOLID_GLOW_BUTTON,
 }
+
+
+## Puts (or, with [param on] false, takes off) the outlined faces: the normal button's faces with no fill and an edge,
+## from the skin (`GoSkin.outlined_button_box`), and the accent label (`GoSkin.outlined_button_ink`).
+## 🛑 Taken off again when a button styled `OUTLINED` is styled with another tone — its overrides would otherwise stay.
+static func _outline(node: Button, on: bool) -> void:
+	var states: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]
+	if not on:
+		if not node.has_meta(&"go_outlined"): return
+		node.remove_meta(&"go_outlined")
+		for state in states: node.remove_theme_stylebox_override(state)
+		for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
+			node.remove_theme_color_override(key)
+		return
+	node.set_meta(&"go_outlined", true)
+	var skin := GoUi.skin()
+	for state in states:
+		var face: StyleBox = skin.variation_box(GoTheme.VAR_BUTTON, state)
+		node.add_theme_stylebox_override(state, skin.outlined_button_box(face, state))
+	var ink: Color = skin.outlined_button_ink()
+	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
+		node.add_theme_color_override(key, ink)
 
 
 ## ✨ Raise a **filled** button (`Tone.PRIMARY`, `Tone.DANGER_SOLID`) with a glow — a soft shadow in its own colour
@@ -1967,6 +1992,71 @@ static func toolbar(items: Array, vertical := false) -> PanelContainer:
 	return node
 
 
+## 🧰 **A bottom app bar** — a bar docked to the bottom of the screen with a few icon actions and, at its end, the
+## screen's main action (Flutter's `BottomAppBar`; Material's docked toolbar). For screens whose bottom is actions,
+## not destinations — destinations belong to `GoNavBar`.
+##
+## ```gdscript
+## screen.set_bottom_bar(GoStyle.bottom_app_bar([
+## 	{"icon": GoIconSet.SEARCH, "tooltip": &"search", "action": find},
+## 	{"icon": GoIconSet.HEART, "tooltip": &"Saved", "action": show_saved},
+## ], GoFab.make(GoIconSet.PLUS, "", add)))
+## ```
+## [param items] are as in `toolbar()`; [param fab] (optional) sits at the end. The bar is 80dp and grows by the
+## gesture-bar inset, the way `GoNavBar` does.
+static func bottom_app_bar(items: Array, fab: GoFab = null) -> PanelContainer:
+	var node := PanelContainer.new()
+	node.name = "BottomAppBar"
+	node.theme = GoUi.theme()
+	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	node.add_theme_stylebox_override(&"panel", GoUi.skin().nav_bar_box(false))
+	GoScroll.scroll_through(node)
+	var pad := MarginContainer.new()
+	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pad.add_theme_constant_override(&"margin_left", GoUi.metric(GoTheme.GAP_SMALL))
+	pad.add_theme_constant_override(&"margin_right", GoUi.metric(GoTheme.GAP))
+	node.add_child(pad)
+	var line := HBoxContainer.new()
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.custom_minimum_size.y = 80.0
+	line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - 36))
+	pad.add_child(line)
+	var peers: Array[Control] = []
+	for spec: Dictionary in items:
+		var button := GoIconButton.new()
+		button.icon_name = StringName(spec.get("icon", &""))
+		button.tooltip_text_name = StringName(spec.get("tooltip", &""))
+		button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		var action: Callable = spec.get("action", Callable())
+		if action.is_valid(): button.pressed.connect(action)
+		line.add_child(button)
+		peers.append(button)
+	for peer in peers: (peer as GoIconButton).touch_peers = peers
+	if fab != null:
+		var rest := Control.new()
+		rest.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		rest.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		line.add_child(rest)
+		fab.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		line.add_child(fab)
+	# The bar grows by the bottom inset (gesture bar, home indicator) — measured again when the window changes.
+	# 🛑 A lambda made here belongs to no object, so the engine does not drop its connection when the bar is freed:
+	#    it is tied to the bar's time in the tree, or a resize after the bar is gone calls into a freed node (the
+	#    layout check rebuilds the gallery per look, 2026-10-02).
+	var inset := func() -> void:
+		if not is_instance_valid(node) or not node.is_inside_tree() or Engine.is_editor_hint(): return
+		var window := node.get_window()
+		if window == null: return
+		pad.add_theme_constant_override(&"margin_bottom",
+			roundi(maxf(0.0, window.get_visible_rect().end.y - GoSafeArea.usable_rect(window).end.y)))
+	node.tree_entered.connect(func() -> void:
+		inset.call()
+		if not node.get_viewport().size_changed.is_connected(inset): node.get_viewport().size_changed.connect(inset))
+	node.tree_exiting.connect(func() -> void:
+		if node.get_viewport().size_changed.is_connected(inset): node.get_viewport().size_changed.disconnect(inset))
+	return node
+
+
 ## 🔑 **A round control button** — puts the state faces on the round buttons floating over art, like a map's zoom ＋/－ or "my location".
 ## The caller puts the text and icons in (`glyph_text()`, `font_role()`); this takes the face alone.
 ##
@@ -3025,6 +3115,10 @@ static func _reach_out(rect: Rect2, clipper: Control) -> float:
 	if scroller != null:
 		scroll_x = scroller.horizontal_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED
 		scroll_y = scroller.vertical_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED
+	elif clipper is GoZoomView:
+		# A zoom view pans its content both ways — what reaches past its edge is a drag away, as in a scroll.
+		scroll_x = true
+		scroll_y = true
 	# A strip of pages runs past its window sideways on purpose (`GoCarousel`).
 	elif clipper.has_meta(&"go_pages"): scroll_x = true
 	var worst := 0.0

@@ -23,6 +23,18 @@ extends Container
 
 ## A day was picked — `{"year": int, "month": int, "day": int}`.
 signal picked(date: Dictionary)
+## In `range_mode`, both ends of a range were picked (the earlier one first).
+signal range_picked(start: Dictionary, end: Dictionary)
+
+## 🔑 Pick a range — check-in to check-out, a report's from and to (Flutter's `showDateRangePicker`). The first tap
+## sets the start, the second the end (an earlier day starts over); the days between are marked. Turning it on
+## clears the picked day (the month shown stays) — `set_range()` shows a range picked before.
+@export var range_mode := false:
+	set(value):
+		if value and not range_mode: _selected = {}
+		range_mode = value
+		_end = {}
+		_rebuild()
 
 ## The first column's weekday: 0 Sunday … 6 Saturday (1 for a Monday-first calendar).
 @export_range(0, 6) var first_weekday := 0:
@@ -51,6 +63,8 @@ const CELL_MIN := 36.0
 var _year := 2026
 var _month := 1
 var _selected := {}
+## The range's end (`range_mode`); `_selected` is its start.
+var _end := {}
 var _action := Callable()
 var _title: Label
 var _grid: GridContainer
@@ -211,10 +225,34 @@ func _rebuild() -> void:
 			continue
 		var date := {"year": _year, "month": _month, "day": day}
 		var kind := &"day"
-		if _same(date, _selected): kind = &"selected"
+		if _same(date, _selected) or _same(date, _end): kind = &"selected"
+		elif range_mode and not _end.is_empty() and _order(date, _selected) > 0 and _order(date, _end) < 0: kind = &"in_range"
 		elif _same(date, now): kind = &"today"
-		_grid.add_child(_day_cell(date, kind, skin))
+		var cell := _day_cell(date, kind, skin)
+		# The ends of a range: the band runs on under their circles toward the days between.
+		if kind == &"selected" and range_mode and not _end.is_empty():
+			cell.set_meta(&"go_range_side", 1 if _same(date, _selected) else -1)
+		_grid.add_child(cell)
+	if range_mode and not _end.is_empty():
+		_grid.draw.connect(_draw_band.bind(_grid))
+		# 🛑 Drawn again once the days are laid out — drawn before, the halves landed on the first cell (2026-10-02).
+		_grid.sort_children.connect(_grid.queue_redraw)
 	# Six rows always — a month that needs five keeps the picker the same height, so nothing below it jumps.
+
+
+## Half a cell of the range band under the start and the end circle, on the side of the days between — drawn by the
+## grid under its days, so the band reaches the circles instead of stopping a gap short of them.
+func _draw_band(grid: GridContainer) -> void:
+	var face := GoUi.skin().date_cell_box(&"in_range", &"normal")
+	var lift := (CELL - minf(DATE, _cell)) * 0.5
+	var ahead := -1.0 if grid.is_layout_rtl() else 1.0
+	for child in grid.get_children():
+		if not child.has_meta(&"go_range_side"): continue
+		var cell := child as Control
+		var half := cell.size.x * 0.5
+		var toward := float(child.get_meta(&"go_range_side")) * ahead
+		var x := cell.position.x + (half if toward > 0.0 else 0.0)
+		grid.draw_style_box(face, Rect2(x, cell.position.y + lift, half, cell.size.y - lift * 2.0))
 
 
 func _get_minimum_size() -> Vector2:
@@ -264,6 +302,8 @@ func _day_cell(date: Dictionary, kind: StringName, skin: GoSkin) -> Button:
 		var face := skin.date_cell_box(kind, shown)
 		# 🔑 The round cell is 40dp inside the 48dp touch target (the focus ring stands outside it).
 		var shrink := inset - Vector2.ONE * (3.0 if state == &"focus" else 0.0)
+		# A day inside a range is a strip from edge to edge, so the marked days join into one band.
+		if kind == &"in_range" and state != &"focus": shrink.x = 0.0
 		face.expand_margin_left = -shrink.x
 		face.expand_margin_top = -shrink.y
 		face.expand_margin_right = -shrink.x
@@ -277,12 +317,44 @@ func _day_cell(date: Dictionary, kind: StringName, skin: GoSkin) -> Button:
 		and (max_date.is_empty() or _order(date, _clean(max_date)) <= 0)
 	button.disabled = not allowed
 	button.accessibility_name = GoUi.spoken([_month_title(), str(int(date.day))])
-	button.pressed.connect(func() -> void:
-		_selected = date.duplicate()
-		_rebuild()
-		picked.emit(date.duplicate())
-		if _action.is_valid(): _action.call(date.duplicate()))
+	button.pressed.connect(_pick.bind(date))
 	return button
+
+
+func _pick(date: Dictionary) -> void:
+	if range_mode:
+		# The first tap starts a range; the second ends it — or starts over when it is not after the start.
+		if _selected.is_empty() or not _end.is_empty() or _order(date, _selected) <= 0:
+			_selected = date.duplicate()
+			_end = {}
+		else:
+			_end = date.duplicate()
+	else:
+		_selected = date.duplicate()
+	_rebuild()
+	picked.emit(date.duplicate())
+	if _action.is_valid(): _action.call(date.duplicate())
+	if range_mode and not _end.is_empty(): range_picked.emit(_selected.duplicate(), _end.duplicate())
+
+
+## The picked range as `[start, end]` (`range_mode`); empty until both ends are picked.
+func get_range() -> Array:
+	return [] if _selected.is_empty() or _end.is_empty() else [_selected.duplicate(), _end.duplicate()]
+
+
+## Sets the range without emitting (`range_mode`).
+func set_range(start: Dictionary, end: Dictionary) -> void:
+	var a := _clean(start)
+	var b := _clean(end)
+	if _order(a, b) > 0:
+		var swap := a
+		a = b
+		b = swap
+	_selected = a
+	_end = b
+	_year = int(a.year)
+	_month = int(a.month)
+	_rebuild()
 
 
 ## "October 2026" in the game's language (`gohud_date_month_year` with `gohud_month_10`).

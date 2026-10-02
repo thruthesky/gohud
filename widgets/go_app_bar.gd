@@ -19,6 +19,16 @@
 ## Two or three icon actions fit beside a title on a phone. Put the rest behind a `GoIconSet.MORE` button that opens a
 ## menu (`GoContextMenu`). Every action needs its tooltip name — it is the only name a screen reader has.
 ##
+## ## 🔑 Medium and large — the title that scrolls away
+## `expanded_title()` gives the big headline of Material's medium and large top app bars (Flutter's `SliverAppBar`
+## with `expandedHeight`): put it first in the page. While it is on screen the bar's own title stays hidden; as it
+## scrolls up under the bar, the small title fades in.
+##
+## ```gdscript
+## page.add_child(bar.expanded_title(GoAppBar.Size.LARGE))   # first child of the scrolling page
+## bar.follow(list_scroll)
+## ```
+##
 ## ## 🛑 It pads itself clear of the status bar
 ## With `safe_area` on (the default) the bar grows by the screen's top inset (`GoSafeArea`), so a notch or the status bar
 ## never covers the title while the bar's colour still runs to the top edge.
@@ -28,6 +38,14 @@ extends PanelContainer
 
 ## The leading button (back, menu) was pressed.
 signal navigated
+
+## Material's top app bar sizes: the small bar alone, or a medium (112dp) or large (152dp) bar whose extra height is
+## the expanded title that scrolls away (`expanded_title()`).
+enum Size {
+	SMALL,   ## 64dp
+	MEDIUM,  ## 112dp — a 24sp headline under the bar
+	LARGE,   ## 152dp — a 28sp headline under the bar
+}
 
 ## Centre the title (Material's center-aligned top app bar) instead of starting it after the leading button.
 @export var centered := false:
@@ -56,10 +74,13 @@ var title_label: Label
 var leading_button: GoIconButton
 ## The row the action buttons go into.
 var actions: HBoxContainer
+## What the leading button does besides `navigated` (empty when it was set without one).
+var leading_action := Callable()
 
 var _pad: MarginContainer
 var _start: HBoxContainer
 var _followed: ScrollContainer
+var _headline: Control
 
 
 func _init() -> void:
@@ -120,6 +141,11 @@ static func make(title: String, leading: StringName = &"", action := Callable(),
 func set_title(text: String, translate := false) -> void:
 	title_label.text = text
 	title_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	if is_instance_valid(_headline):
+		var words := _headline.get_node_or_null(^"Headline") as Label
+		if words != null:
+			words.text = text
+			words.auto_translate_mode = title_label.auto_translate_mode
 
 
 ## Sets the leading icon button ([param icon] empty removes it). Its tooltip is "Back" for `GoIconSet.BACK` and
@@ -131,6 +157,7 @@ func set_leading(icon: StringName, action := Callable()) -> void:
 	if icon.is_empty():
 		_layout_title()
 		return
+	leading_action = action
 	leading_button = _icon_button(icon, &"back" if icon == GoIconSet.BACK else &"menu")
 	leading_button.name = "LeadingButton"
 	leading_button.pressed.connect(func() -> void:
@@ -166,6 +193,32 @@ func follow(scroll: ScrollContainer) -> void:
 
 func _on_scroll(value: float) -> void:
 	scrolled = value > 0.5
+	# The small title fades in as the expanded title scrolls up under the bar.
+	if is_instance_valid(_headline):
+		var tall := maxf(1.0, _headline.size.y)
+		title_label.modulate.a = clampf((value - tall * 0.5) / (tall * 0.5), 0.0, 1.0)
+
+
+## The expanded title of a medium or large bar — a headline row to put **first** in the scrolling page. It copies
+## the bar's title, and the bar shows its own small title only once this one has scrolled away.
+func expanded_title(bar_size := Size.LARGE) -> Control:
+	if is_instance_valid(_headline): _headline.queue_free()
+	var extra := 88.0 if bar_size == Size.LARGE else 48.0
+	var holder := MarginContainer.new()
+	holder.name = "ExpandedTitle"
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.custom_minimum_size.y = extra
+	holder.add_theme_constant_override(&"margin_left", GoUi.metric(GoTheme.GAP))
+	holder.add_theme_constant_override(&"margin_right", GoUi.metric(GoTheme.GAP))
+	holder.add_theme_constant_override(&"margin_bottom", GoUi.metric(GoTheme.GAP_LARGE) if bar_size == Size.LARGE else GoUi.metric(GoTheme.GAP))
+	var words := GoStyle.label(title_label.text, GoTheme.ROLE_TITLE if bar_size == Size.LARGE else GoTheme.ROLE_SUBTITLE)
+	words.name = "Headline"
+	words.auto_translate_mode = title_label.auto_translate_mode
+	words.size_flags_vertical = Control.SIZE_SHRINK_END
+	holder.add_child(words)
+	_headline = holder
+	title_label.modulate.a = 0.0
+	return holder
 
 
 func _icon_button(icon: StringName, tooltip: StringName) -> GoIconButton:
