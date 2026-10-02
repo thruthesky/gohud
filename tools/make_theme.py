@@ -1223,6 +1223,7 @@ SKIN_SCRIPTS = {
     "default": ("GoSkin", RES + "/core/go_skin.gd"),
     "scifi": ("GoSkinSciFi", RES + "/themes/skins/go_skin_scifi.gd"),
     "medieval": ("GoSkinMedieval", RES + "/themes/skins/go_skin_medieval.gd"),
+    "material": ("GoSkinMaterial", RES + "/themes/skins/go_skin_material.gd"),
 }
 SKINS_DIR = os.path.join(ADDON, "themes", "skins")
 
@@ -1231,6 +1232,7 @@ SKIN_SOURCES = {
     "default": os.path.join(ADDON, "core", "go_skin.gd"),
     "scifi": os.path.join(ADDON, "themes", "skins", "go_skin_scifi.gd"),
     "medieval": os.path.join(ADDON, "themes", "skins", "go_skin_medieval.gd"),
+    "material": os.path.join(ADDON, "themes", "skins", "go_skin_material.gd"),
 }
 DIALS_TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "skin_dials.json")
 

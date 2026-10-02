@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="GoSkin" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="GoSkinMaterial" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/gohud/core/go_skin.gd" id="script"]
+[ext_resource type="Script" path="res://addons/gohud/themes/skins/go_skin_material.gd" id="script"]
 
 [resource]
 script = ExtResource("script")

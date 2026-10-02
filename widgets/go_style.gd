@@ -648,6 +648,14 @@ static func style_brand_button(node: Button, fill: Color, ink: Color, edge: Colo
 		if face is StyleBoxFlat: (face as StyleBoxFlat).set_border_width_all(1)
 		elif &"border_width" in face: face.set(&"border_width", 1.0)
 		if &"shadow_size" in face: face.set(&"shadow_size", 0)
+		# 🛑 The brand spec fills the button's whole height — a theme that draws its plate inside the touch target (the
+		#    Material presets' negative expand margin) would shrink the 56dp sign-in button to 48.
+		if face is StyleBoxFlat:
+			var flat_face := face as StyleBoxFlat
+			flat_face.expand_margin_top = 0.0
+			flat_face.expand_margin_bottom = 0.0
+			flat_face.expand_margin_left = 0.0
+			flat_face.expand_margin_right = 0.0
 		if inset >= 0.0:
 			face.content_margin_left = inset
 			face.content_margin_right = inset
@@ -1899,6 +1907,9 @@ static func tooltip_node(text: String, max_width := 260.0) -> Control:
 	if look != null and GoTheme.has_color_in_chain(look, &"font_color", &"TooltipLabel"):
 		ink = GoTheme.color_in_chain(look, &"font_color", &"TooltipLabel")
 	typography(label, GoTheme.ROLE_CAPTION, ink)
+	# The theme's tooltip size too, when it has one (M3's plain tooltip is body-small, 12sp).
+	if look != null and look.get_font_size_list(&"TooltipLabel").has(&"font_size"):
+		label.add_theme_font_size_override(&"font_size", look.get_font_size(&"font_size", &"TooltipLabel"))
 	# A short phrase stays on one line. Only a long one folds, and **we give the width it folds at.**
 	var wide := label.get_theme_font(&"font").get_string_size(
 		text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, label.get_theme_font_size(&"font_size")).x

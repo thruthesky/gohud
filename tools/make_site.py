@@ -362,12 +362,15 @@ DIALS_EN = {
     "slot_glow_size": "Glow distance (dp) of a slot whose cooldown is running.",
     "bracket_arm": "Arm length (dp) of the coach mark's targeting bracket.",
     "bracket_thickness": "Line thickness (dp) of the coach mark's targeting bracket.",
+    "segment_gap": "Space (dp) between the cells of a Material connected button group.",
+    "segment_inner_radius": "Corner radius (dp) where two cells of a Material connected button group meet.",
 }
 
 SKIN_TITLES = {
     "medieval": {"ko": "중세 스킨", "en": "Medieval skin"},
     "default": {"ko": "기본 스킨", "en": "Default skin"},
     "scifi": {"ko": "sci-fi 스킨", "en": "Sci-fi skin"},
+    "material": {"ko": "Material 스킨", "en": "Material skin"},
 }
 
 

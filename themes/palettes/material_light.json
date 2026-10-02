@@ -1,12 +1,12 @@
 {
-  "_help": "Material 3 baseline (source #6750A4), light. The values are the M3 token set (material-web tokens/versions/latest). gohud's required keys are M3 roles: background = surface, surface = surface-container-high (the dialog), text = on-surface, secondary and muted = on-surface-variant, border = outline, accent = primary, danger = error, track = secondary-container. Two keys differ from the M3 card because gohud keeps panel, card and raised cell 1.12:1 apart (tools/check_contrast.py): surface_soft = surface-dim, surface_high = outline-variant. success, warning and info are M3 custom colors (harmonized with the source, tone 40). Every md_* key is the M3 role of the same name for app code: GoUi.color(&\"md_secondary_container\"). Change colors here, then run python3 tools/make_theme.py material_light.",
+  "_help": "Material 3 baseline (source #6750A4), light. The values are the M3 token set (material-web tokens/versions/latest). gohud's required keys are M3 roles: background = surface, surface = surface-container-high (the dialog), text = on-surface, secondary and muted = on-surface-variant, border = outline, accent = primary, danger = error, track = secondary-container. Two keys differ from the M3 card because gohud keeps panel, card and raised cell 1.12:1 apart (tools/check_contrast.py): surface_soft = surface-dim, surface_high = outline-variant. success, warning and info are M3 custom colors (harmonized with the source, tone 40). Every M3 colour role is also an md_* key of the same name for app code (the ones above repeated as md_primary, md_on_surface and so on): GoUi.color(&\"md_secondary_container\"). Change colors here, then run python3 tools/make_theme.py material_light.",
   "id": "material_light",
   "title": "Material Light",
   "from": "light",
   "dark": false,
   "shape": "material",
   "skin": {
-    "base": "default",
+    "base": "material",
     "name": "Material Light",
     "dials": {
       "float_shadow_alpha": 0.3,
@@ -61,6 +61,15 @@
     "md_surface_container_highest": "#E6E0E9",
     "md_inverse_surface": "#322F35",
     "md_inverse_on_surface": "#F5EFF7",
-    "md_inverse_primary": "#D0BCFF"
+    "md_inverse_primary": "#D0BCFF",
+    "md_primary": "#6750A4",
+    "md_on_primary": "#FFFFFF",
+    "md_surface": "#FEF7FF",
+    "md_on_surface": "#1D1B20",
+    "md_on_surface_variant": "#49454F",
+    "md_outline": "#79747E",
+    "md_error": "#B3261E",
+    "md_scrim": "#000000",
+    "md_shadow": "#000000"
   }
 }

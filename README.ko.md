@@ -157,8 +157,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `scifi_light` | 같은 각진 모양에 밝은 설계도 팔레트 | `GoSkinSciFi` |
 | `medieval_dark` | 어두운 철·가죽, 고금색 프레임, 리벳, 각인풍 아이콘, Cinzel 제목 | `GoSkinMedieval` |
 | `medieval_light` | 양피지·잉크·청동 색상의 같은 단조 프레임 | `GoSkinMedieval` |
-| `material_light` | 앱 화면용 Material 3 — 알약 버튼, 28dp 대화상자, 채운 카드, M3 스위치, Roboto 제목 | `GoSkin` |
-| `material_dark` | 같은 Material 3 모양을 어두운 기준 스킴으로 | `GoSkin` |
+| `material_light` | 앱 화면용 Material 3 — 알약 버튼, 28dp 대화상자, 채운 카드, M3 스위치, Roboto 제목 | `GoSkinMaterial` |
+| `material_dark` | 같은 Material 3 모양을 어두운 기준 스킴으로 | `GoSkinMaterial` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
 🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 프리셋보다 **우선한다** — 프리셋을 고른 뒤 한 칸만
@@ -194,16 +194,20 @@ var tonal := GoUi.color(&"md_secondary_container")   # M3 색 역할도 전부 �
 - 버튼은 알약 모양이다 — 48dp 터치 영역 안에 40dp 판. 일반 톤은 M3 의 tonal 버튼, `Tone.PRIMARY` 는 채운 버튼,
   `Tone.BARE` 는 텍스트 버튼, `Tone.COMPACT` 는 32dp 초소형 버튼이다. 선택된 토글은 `secondary` 색과 덜 둥근 모서리가 된다.
 - 대화상자·시트는 surface-container-high 에 모서리 28dp, 카드는 외곽선 없는 채운 카드, 메뉴는 모서리 16dp,
-  툴팁은 inverse-surface, 입력란은 외곽선형(모서리 4dp, 초점이면 2dp primary 외곽선)이다. 판은 불투명하고 아이콘은 24dp 다.
+  툴팁은 inverse-surface, 입력란은 외곽선형(모서리 4dp, 초점이면 3dp primary 외곽선)이다. 판은 불투명하고 아이콘은 24dp 며,
+  키보드 포커스는 판 바깥 2dp 에 두른 3dp `secondary` 링이다.
 - 스위치(52×32)·체크박스(18dp)·라디오(20dp)는 M3 토큰대로 그리고, 슬라이더는 Expressive 의 16dp 트랙과 막대 손잡이,
   진행 막대는 `secondary-container` 트랙을 쓴다.
-- 제목·부제·캡션·버튼 글자는 함께 든 Roboto 를 쓴다(버튼 글자는 굵기 500). 본문은 내 글꼴을 유지하므로 한국어·일본어·
-  중국어 글꼴을 따로 쓰는 프로젝트도 그 글꼴이 바뀌지 않는다.
+- 글자는 함께 든 Roboto 를 M3 크기·줄 높이로 쓴다(버튼·탭 글자는 굵기 500). 본문은 프로젝트에 글꼴 설정
+  (`gui/theme/custom_font` 또는 `gui/theme/custom`)이 없을 때만 Roboto 를 쓰므로, 한국어·일본어·중국어 글꼴을 따로
+  쓰는 프로젝트는 그 글꼴이 바뀌지 않는다.
+- 스킨 `GoSkinMaterial` 이 분절 선택을 Expressive 의 연결 버튼 그룹(알약 끝, 안쪽 모서리 8dp, 칸 사이 2dp, 고른 칸은
+  `secondary` 알약)으로, 칩을 어시스트 칩으로, 구분선을 `outline-variant` 로, 배지를 채운 알약으로 그린다.
 
 gohud 자체 검사가 규격보다 앞서는 곳: 밝은 프리셋에서 카드는 surface-dim, 들린 칸은 outline-variant 다(gohud 는 판·카드·
 들린 칸을 1.12:1 이상 떼어 둔다). `secondary` 와 `muted` 는 둘 다 on-surface-variant 이고, 비활성 글자는 읽히는 대비를
 유지하며(M3 는 38% 로 흐린다), 스낵바는 밝은 판을 쓰고, 채운 버튼의 포커스 링은 판 안쪽에 그 버튼의 on 색으로 그린다.
-스프링 모션·모양 변형·리플·다이나믹 컬러, 그리고 새 Expressive 컴포넌트(버튼 그룹·분할 버튼·플로팅 툴바·로딩
+스프링 모션·모양 변형·리플·다이나믹 컬러, 그리고 나머지 새 Expressive 컴포넌트(분할 버튼·플로팅 툴바·로딩
 인디케이터)는 테마에 담을 수 없다. Material 은 Google 의 공개 디자인 시스템이고, 이 프리셋은 그 토큰으로 만든 비공식 프리셋이다.
 
 ### 테마 하나 더 — 파일 하나
@@ -509,7 +513,7 @@ GoStyle.fade_panel(frame, 1.0)     # 되돌린다(판 덮기를 걷어낸다)
 ### 스킨과 커스텀 StyleBox
 
 `GoSkin` 이 테마가 닿지 못하는 모양을 맡는다 — 조이스틱, 퀵슬롯 판, 코치마크 링, 칩, 스켈레톤,
-알림 상자, 분절 선택, 구분선, 섹션 머리말. `GoSkinSciFi`·`GoSkinMedieval` 이 함께 들어 있는 상속 예다.
+알림 상자, 분절 선택, 구분선, 섹션 머리말. `GoSkinSciFi`·`GoSkinMedieval`·`GoSkinMaterial` 이 함께 들어 있는 상속 예다.
 상속해서 **바꾸고 싶은 것만** 덮어쓰면 나머지는 그대로다.
 
 ```gdscript
@@ -561,7 +565,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 여덟, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
-| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
 | `GoSafeArea` | Control / 정적 | 노치·둥근 모서리·키보드를 뺀 쓸 수 있는 사각형 |
 | `GoScale` | 정적 | 브레이크포인트와 dp 계산 |
 | `GoFeedback` | 정적 | 소리·햅틱 연결 |

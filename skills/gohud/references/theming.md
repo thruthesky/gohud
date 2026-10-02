@@ -21,7 +21,7 @@ Web: https://thruthesky.github.io/gohud/theming.html
 | Layer | Decides | Class |
 |---|---|---|
 | Theme | Colours, sizes, text scale, engine-drawn controls (buttons, inputs, tabs, toggles) | Godot `Theme` with a `GoHud` type |
-| Skin | Code-drawn shapes: joystick, slot faces, badges, coach ring/pointer, chips, skeletons, alerts, segments, dividers, section headings | `GoSkin` (`GoSkinSciFi`, `GoSkinMedieval`) |
+| Skin | Code-drawn shapes: joystick, slot faces, badges, coach ring/pointer, chips, skeletons, alerts, segments, dividers, section headings | `GoSkin` (`GoSkinSciFi`, `GoSkinMedieval`, `GoSkinMaterial`) |
 | Icons | Drawings by name | `GoIconSet` |
 
 A **preset** (`GoThemePreset`: `id`, `title`, `dark`, `theme`, `skin`, `icons`, `label()`) bundles the three.
@@ -31,7 +31,7 @@ A **preset** (`GoThemePreset`: `id`, `title`, `dark`, `theme`, `skin`, `icons`, 
 | `DEFAULT_DARK` · `DEFAULT_LIGHT` | Rounded flat panels, soft blue accent, graded shadows | `GoSkin` · 84 default |
 | `SCIFI_DARK` · `SCIFI_LIGHT` | `GoStyleBoxCut` chamfered panels, neon edge + glow, hex joystick, bracket focus | `GoSkinSciFi` · default |
 | `MEDIEVAL_DARK` · `MEDIEVAL_LIGHT` | `GoStyleBoxMedieval` iron/leather or parchment frames, rivets, Cinzel headings | `GoSkinMedieval` · 16 engraved over default |
-| `MATERIAL_LIGHT` · `MATERIAL_DARK` | Material 3 baseline for app screens: pill buttons (40dp plate in the 48dp target), 28dp dialogs, filled cards, 16dp menus, outlined fields, M3 switch/checkbox/radio, Expressive slider, opaque surfaces, 24dp icons, Roboto titles/captions/button labels (body keeps the host font), every M3 colour role as an `md_*` token | `GoSkin` · default |
+| `MATERIAL_LIGHT` · `MATERIAL_DARK` | Material 3 baseline for app screens: pill buttons (40dp plate in the 48dp target), 28dp dialogs, filled cards, 16dp menus, outlined fields, M3 switch/checkbox/radio, Expressive slider, connected button group, opaque surfaces, 24dp icons, Roboto at the M3 sizes (body only while the project sets no font), every M3 colour role as an `md_*` token | `GoSkinMaterial` · default |
 
 ```gdscript
 GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # String/StringName id or a GoThemePreset
@@ -250,6 +250,7 @@ Dials (`@export`, set on a skin resource or JSON `skin.dials`):
 | `GoSkin` (17) | `chip_fill_alpha` 0.16 · `chip_edge_alpha` 0.45 · `alert_tint` 0.1 · `slot_tint_lit` 0.24 · `slot_tint_idle` 0.08 · `slot_border_lit` 2 · `slot_border_idle` 1 · `badge_pad_x` 5 · `badge_pad_y` 1 · `badge_edge_alpha` 0.6 · `float_shadow_alpha` 0.45 · `float_shadow_size` 14 · `float_shadow_lift` 4 · `float_glow_size` 10.0 · `joystick_base_alpha` 0.42 · `joystick_ring_alpha` 0.45 · `joystick_ring_width` 2.0 |
 | `GoSkinSciFi` (+10) | `cut_chip` 7 · `cut_skeleton` 5 · `cut_alert` 8 · `cut_segment` 8 · `cut_slot` 6 · `cut_disc_ratio` 0.24 · `slot_glow_alpha` 0.45 · `slot_glow_size` 6 · `bracket_arm` 12 · `bracket_thickness` 2 |
 | `GoSkinMedieval` (+5) | `slot_radius` 4.0 · `leather_grain_alpha` 0.035 · `ornament_scale` 1.0 · `bevel_strength` 0.18 · `slot_rivets` 1 |
+| `GoSkinMaterial` (+2) | `segment_gap` 2.0 · `segment_inner_radius` 8 |
 
 ```gdscript
 class_name DiamondSkin extends GoSkin

@@ -1,12 +1,12 @@
 {
-  "_help": "Material 3 baseline (source #6750A4), dark. The values are the M3 token set (material-web tokens/versions/latest). gohud's required keys are M3 roles: background = surface, surface = surface-container-high (the dialog), surface_soft = surface-container-highest (the card), surface_high = surface-variant, text = on-surface, secondary and muted = on-surface-variant, border = outline, accent = primary, danger = error, track = secondary-container. success, warning and info are M3 custom colors (harmonized with the source, tone 80). Every md_* key is the M3 role of the same name for app code: GoUi.color(&\"md_secondary_container\"). Change colors here, then run python3 tools/make_theme.py material_dark.",
+  "_help": "Material 3 baseline (source #6750A4), dark. The values are the M3 token set (material-web tokens/versions/latest). gohud's required keys are M3 roles: background = surface, surface = surface-container-high (the dialog), surface_soft = surface-container-highest (the card), surface_high = surface-variant, text = on-surface, secondary and muted = on-surface-variant, border = outline, accent = primary, danger = error, track = secondary-container. success, warning and info are M3 custom colors (harmonized with the source, tone 80). Every M3 colour role is also an md_* key of the same name for app code (the ones above repeated as md_primary, md_on_surface and so on): GoUi.color(&\"md_secondary_container\"). Change colors here, then run python3 tools/make_theme.py material_dark.",
   "id": "material_dark",
   "title": "Material Dark",
   "from": "dark",
   "dark": true,
   "shape": "material",
   "skin": {
-    "base": "default",
+    "base": "material",
     "name": "Material Dark",
     "dials": {
       "float_shadow_alpha": 0.3,
@@ -61,6 +61,15 @@
     "md_surface_container_highest": "#36343B",
     "md_inverse_surface": "#E6E0E9",
     "md_inverse_on_surface": "#322F35",
-    "md_inverse_primary": "#6750A4"
+    "md_inverse_primary": "#6750A4",
+    "md_primary": "#D0BCFF",
+    "md_on_primary": "#381E72",
+    "md_surface": "#141218",
+    "md_on_surface": "#E6E0E9",
+    "md_on_surface_variant": "#CAC4D0",
+    "md_outline": "#938F99",
+    "md_error": "#F2B8B5",
+    "md_scrim": "#000000",
+    "md_shadow": "#000000"
   }
 }

@@ -45,7 +45,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 - **Filled buttons sit flat by default.** The primary button (`Tone.PRIMARY`) drew a soft accent shadow under its
   plate — a glow on the sci-fi shape — and the filled danger button (`Tone.DANGER_SOLID`) a red one, the only depth
-  in a row of flat buttons. All six built-in themes now draw both flat in every state. The old look is one option
+  in a row of flat buttons. Every built-in theme now draws both flat in every state. The old look is one option
   away: `GoConfig.button_glow = true` for every filled button, `GoStyle.glow(button)` for one. A theme generated
   with `tools/make_theme.py` or `tools/new_theme.py` before this change keeps its shadow until it is generated again.
 - **`GoSurface` lays out when something changes, not every frame.** A `fit_content` surface used to run `relayout()`
@@ -68,11 +68,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   borderless filled cards, 16dp menus, outlined text fields, primary tabs with the 3dp indicator, inverse-surface
   tooltips, M3 switches, checkboxes and radio buttons, the Expressive slider (16dp track, bar handle), progress bars on
   a `secondary-container` track, a 3dp `secondary` focus ring outside the plate, opaque surfaces, 24dp icons and the M3
-  type sizes. Titles, subtitles, captions and button labels use the bundled Roboto (SIL OFL 1.1; button labels at
-  weight 500 through a `FontVariation`), and body text keeps the host font. Every M3 colour role the gohud tokens do not
-  already carry is a token too (`GoUi.color(&"md_secondary_container")`). The colours pass every contrast gate as the M3
-  tokens give them; where a gate overrules the spec the README lists it. Set `GoUi.config.shrink_type_on_mobile = false`
-  to keep the M3 type sizes on phones.
+  type sizes with the M3 line heights. Text is the bundled Roboto (SIL OFL 1.1; button and tab labels at weight 500
+  through a `FontVariation`); body text uses it only while the project sets no font of its own
+  (`gui/theme/custom_font` or `gui/theme/custom`), so a project with a Korean, Japanese or Chinese font keeps it. Every
+  M3 colour role the gohud tokens do not already carry is a token too (`GoUi.color(&"md_secondary_container")`). The
+  colours pass every contrast gate as the M3 tokens give them; where a gate overrules the spec the README lists it. Set
+  `GoUi.config.shrink_type_on_mobile = false` to keep the M3 type sizes on phones.
+- **`GoSkinMaterial`** — the skin of the Material presets. The segmented control becomes the M3 Expressive connected
+  button group (pill ends, 8dp inner corners, a 2dp gap, the chosen cell a full pill in `secondary`), chips become M3
+  assist chips, dividers take `outline-variant` and badges are filled pills. Dials: `segment_gap`,
+  `segment_inner_radius`.
 - **`material` shape for themes** — `"shape": "material"` in a palette JSON, built by the new `tools/theme_material.py`.
   It only replaces the boxes and entries the generator already makes, so the other six themes are generated exactly
   as before.

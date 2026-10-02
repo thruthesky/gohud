@@ -434,6 +434,7 @@ func _presets() -> void:
 		var fresh_default := GoSkin.new()
 		var fresh_scifi := GoSkinSciFi.new()
 		var fresh_medieval := GoSkinMedieval.new()
+		var fresh_material := GoSkinMaterial.new()
 		var off: Array = []
 		for key in table.get("default", {}):
 			if not is_equal_approx(float(fresh_default.get(key)), float(table["default"][key])): off.append(key)
@@ -441,6 +442,8 @@ func _presets() -> void:
 			if not is_equal_approx(float(fresh_scifi.get(key)), float(table["scifi"][key])): off.append(key)
 		for key in table.get("medieval", {}):
 			if not is_equal_approx(float(fresh_medieval.get(key)), float(table["medieval"][key])): off.append(key)
+		for key in table.get("material", {}):
+			if not is_equal_approx(float(fresh_material.get(key)), float(table["material"][key])): off.append(key)
 		check(off.is_empty(), "the dial table matches the GDScript defaults %s" % str(off))
 
 	# ── A preset dropped in the folder shows up with no code change ─────
@@ -613,8 +616,13 @@ func _material() -> void:
 		check(theme.get_font(&"font", &"GoTitleLabel").resource_path.ends_with("Roboto.ttf"), "%s: titles use Roboto" % preset)
 		var label_font := theme.get_font(&"font", &"GoButton") as FontVariation
 		check(label_font != null and int(label_font.variation_opentype.get(wght, 0)) == 500, "%s: button labels are Roboto at weight 500" % preset)
-		check(not theme.has_font(&"font", &"Label") and theme.default_font == null and not theme.has_font(&"font", &"Button"),
-			"%s: body text, checkboxes, switches and dropdowns keep the host font" % preset)
+		# 🛑 `Theme.has_font()` is true for any type once the theme has a `default_font` — read the type's own list.
+		check(not theme.get_font_list(&"Label").has(&"font") and not theme.get_font_list(&"Button").has(&"font"),
+			"%s: body text, checkboxes, switches and dropdowns are not pinned to a font" % preset)
+		# 🔑 Roboto becomes the body font only when the project chose none — a project's own (CJK) font is never replaced.
+		var body_font: Variant = theme.get_meta(&"go_body_font", null)
+		check(body_font is Font and theme.default_font == (null if GoUi.project_has_font() else body_font),
+			"%s: Roboto is the body font only without a project font (project font: %s)" % [preset, GoUi.project_has_font()])
 		check(GoUi.color(&"md_secondary_container") != Color.MAGENTA and GoUi.color(&"md_inverse_surface") != Color.MAGENTA,
 			"%s: the M3 colour roles are tokens for app code" % preset)
 		# 🛑 A checked switch inherits Button's selected ink — white on a light page unless the theme gives it its own.
@@ -1382,7 +1390,7 @@ func _button_glow() -> void:
 	var pairs := [[GoTheme.VAR_PRIMARY_BUTTON, GoTheme.VAR_PRIMARY_GLOW_BUTTON],
 		[GoTheme.VAR_DANGER_SOLID_BUTTON, GoTheme.VAR_DANGER_SOLID_GLOW_BUTTON]]
 	var presets := GoThemePresets.all()
-	check(presets.size() == 6, "all six presets are there to measure (%d)" % presets.size())
+	check(presets.size() >= GoThemePresets.BUILTIN.size(), "every built-in preset is there to measure (%d)" % presets.size())
 	for preset in presets:
 		GoUi.use_preset(preset)
 		var look := GoUi.theme()

@@ -165,8 +165,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `scifi_light` | The same angular shapes in a bright blueprint palette | `GoSkinSciFi` |
 | `medieval_dark` | Dark iron and leather, antique-gold frames, rivets, engraved icons, Cinzel headings | `GoSkinMedieval` |
 | `medieval_light` | Parchment, ink and bronze with the same forged frames | `GoSkinMedieval` |
-| `material_light` | Material 3 for app screens: pill buttons, 28dp dialogs, filled cards, M3 switches, Roboto headings | `GoSkin` |
-| `material_dark` | The same Material 3 shapes on the dark baseline | `GoSkin` |
+| `material_light` | Material 3 for app screens: pill buttons, 28dp dialogs, filled cards, M3 switches, Roboto headings | `GoSkinMaterial` |
+| `material_dark` | The same Material 3 shapes on the dark baseline | `GoSkinMaterial` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
 Explicit `theme`, `skin` and `icons` fields still win over the preset, so you can take a preset and
@@ -205,19 +205,23 @@ var tonal := GoUi.color(&"md_secondary_container")   # every M3 colour role is a
   `Tone.PRIMARY` the filled button, `Tone.BARE` the text button and `Tone.COMPACT` the 32dp extra-small button.
   A selected toggle turns `secondary` with a squarer corner.
 - Dialogs and sheets are surface-container-high with 28dp corners, cards are filled with no outline, menus have
-  16dp corners, tooltips are inverse-surface, and text fields are outlined (4dp corners, a 2dp primary outline when
-  focused). Surfaces are opaque and icons are 24dp.
+  16dp corners, tooltips are inverse-surface, and text fields are outlined (4dp corners, a 3dp primary outline when
+  focused). Surfaces are opaque, icons are 24dp, and keyboard focus is the 3dp `secondary` ring 2dp outside the plate.
 - Switches (52×32), checkboxes (18dp) and radio buttons (20dp) are drawn to the M3 tokens; the slider has the
   Expressive 16dp track and bar handle, and progress bars run on a `secondary-container` track.
-- Titles, subtitles, captions and button labels use the bundled Roboto (button labels at weight 500). Body text
-  keeps your font, so a Korean, Japanese or Chinese font of your own is not replaced.
+- Text is the bundled Roboto at the M3 sizes and line heights (button and tab labels at weight 500). Body text uses
+  it only while your project sets no font (`gui/theme/custom_font` or `gui/theme/custom`), so a Korean, Japanese or
+  Chinese font of your own is not replaced.
+- The skin, `GoSkinMaterial`, draws the segmented control as the Expressive connected button group (pill ends, 8dp
+  inner corners, a 2dp gap, the chosen cell a full `secondary` pill), chips as assist chips, dividers in
+  `outline-variant` and badges as filled pills.
 
 Where gohud's own checks win over the spec: on the light preset a card is surface-dim and the raised cell is
 outline-variant (gohud keeps panel, card and raised cell 1.12:1 apart), `secondary` and `muted` are both
 on-surface-variant, a disabled label stays readable (M3 fades it to 38%), snackbars keep a light plate, and a filled
 button's focus ring sits inside the plate in its on-colour. A theme cannot hold spring motion, shape morphing,
-ripples, dynamic colour or the new Expressive components (button groups, split buttons, floating toolbars,
-loading indicators). Material is Google's public design system; these are unofficial presets built from its tokens.
+ripples, dynamic colour or the other new Expressive components (split buttons, floating toolbars, loading
+indicators). Material is Google's public design system; these are unofficial presets built from its tokens.
 
 ### Your own theme in one file
 
@@ -540,8 +544,8 @@ panel completely unreadable (measured on the first screenshot). Screen-wide patt
 ### Skins and custom StyleBoxes
 
 `GoSkin` owns the shapes a theme cannot reach — the joystick, quick slot faces, the coach-mark ring,
-chips, skeletons, alerts, segmented controls, choice-grid cells and colour swatches, dividers and section headings. `GoSkinSciFi` and
-`GoSkinMedieval` ship as subclasses. Subclass one and override only what you want to change;
+chips, skeletons, alerts, segmented controls, choice-grid cells and colour swatches, dividers and section headings. `GoSkinSciFi`,
+`GoSkinMedieval` and `GoSkinMaterial` ship as subclasses. Subclass one and override only what you want to change;
 everything you leave alone keeps its look.
 
 ```gdscript
@@ -594,7 +598,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips, cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
 | `GoThemePresets` | static | The eight built-in presets, presets found in `themes/presets/`, and `register()` for your own |
-| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` | Resource | The shapes code draws, with numeric dials |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | The shapes code draws, with numeric dials |
 | `GoSafeArea` | Control / static | Usable rectangle excluding notches, rounded corners and the keyboard |
 | `GoScale` | static | Breakpoint and dp math |
 | `GoFeedback` | static | Sound and haptic routing |

@@ -69,6 +69,8 @@ static var _resolved := false
 static var _translations_loaded := false
 static var _mobile_type := false
 static var _base_font_sizes := {}
+## Whether the project set a font of its own — read once (`project_has_font`). -1 means not read yet.
+static var _project_font := -1
 static var _default_skin: GoSkin
 # The set `icons()` builds when `GoConfig.extra_icons` is filled, and what it was built from.
 static var _stacked: GoIconSet
@@ -179,8 +181,27 @@ static func theme() -> Theme:
 	var value := config.theme
 	if value != null: return value
 	var chosen := preset()
-	if chosen != null and chosen.theme != null: return chosen.theme
+	if chosen != null and chosen.theme != null: return _with_body_font(chosen.theme)
 	return DEFAULT_THEME
+
+
+## 🔤 A preset theme may name a **body font** of its own (`go_body_font` metadata — the Material presets' Roboto). It
+## becomes the theme's `default_font` only when the project chose no font (Project Settings → GUI → Theme → Custom or
+## Custom Font): a project's own font — a Korean, Japanese or Chinese one above all — is never replaced.
+## 🛑 Not in the editor: the theme there is the resource on disk, and a font set on it could be saved into the file.
+static func _with_body_font(look: Theme) -> Theme:
+	if look.default_font != null or not look.has_meta(&"go_body_font") or Engine.is_editor_hint(): return look
+	if project_has_font(): return look
+	look.default_font = look.get_meta(&"go_body_font") as Font
+	return look
+
+
+## Did the project choose its own font — a custom theme or a custom font in Project Settings → GUI → Theme?
+static func project_has_font() -> bool:
+	if _project_font < 0:
+		var chosen := str(ProjectSettings.get_setting("gui/theme/custom_font", "")) + str(ProjectSettings.get_setting("gui/theme/custom", ""))
+		_project_font = 0 if chosen.strip_edges().is_empty() else 1
+	return _project_font == 1
 
 
 ## The backup theme that fills tokens in. `null` when `token_fallback` is off.

@@ -67,6 +67,11 @@ FONT_SIZES = dict(
     title=28,      # headline-medium
 )
 
+# md.sys.typescale line heights (dp). Godot adds `line_spacing` to the font's own height, and Roboto's ascent +
+# descent is 1.172 em — so the spacing is the line height minus that.
+LINE_HEIGHTS = dict(micro=16, compact=16, caption=20, body=24, subtitle=32, title=36)
+ROBOTO_EM = 1.172
+
 # md.sys.state — the state-layer opacities.
 HOVER, FOCUS, PRESSED, DRAGGED = 0.08, 0.10, 0.10, 0.16
 
@@ -110,6 +115,7 @@ def roles(pal):
         inverse_surface=md("inverse_surface", on_surface),
         inverse_on_surface=md("inverse_on_surface", surface),
         surface_container=md("surface_container", pal["surface"]),
+        surface_container_low=md("surface_container_low", pal["surface"]),
         surface_container_highest=md("surface_container_highest", pal["surface_high"]),
     )
     return out
@@ -124,6 +130,8 @@ def controls(pal):
     checkbox (`_md-comp-checkbox.scss`): 18dp, corner 2, outline 2.
     radio (`_md-comp-radio-button.scss`): 20dp, ring 2, dot 10.
     slider (`_md-comp-slider.scss`): the Expressive handle is a 4×44 bar, not a dot.
+    Disabled faces use the disabled roles of each token file (on-surface at 38% or 12%, the switch's handle in
+    `surface`) — not the enabled drawing faded, which would leave a selected control tinted primary.
     🛑 The engine draws these as they are — every colour is baked per theme, like the other families.
     """
     r = roles(pal)
@@ -131,6 +139,7 @@ def controls(pal):
     outline, variant = _svg(r["outline"]), _svg(r["on_surface_variant"])
     track_off = _svg(r["surface_container_highest"])
     ink = _svg(r["on_surface"])
+    ground = _svg(r["surface"])
 
     def wrap(w, h, body, disabled=False):
         group = '<g opacity=".38">%s</g>' % body if disabled else body
@@ -139,30 +148,40 @@ def controls(pal):
     def toggle(state_on, disabled, mirrored):
         if state_on:
             knob = 16 if mirrored else 36
-            body = ('<rect x="0" y="0" width="52" height="32" rx="16" fill="%s"/>'
-                    '<circle cx="%d" cy="16" r="12" fill="%s"/>') % (primary, knob, on_primary)
+            if disabled:   # track on-surface 12%, handle surface
+                body = ('<rect x="0" y="0" width="52" height="32" rx="16" fill="%s" fill-opacity=".12"/>'
+                        '<circle cx="%d" cy="16" r="12" fill="%s"/>') % (ink, knob, ground)
+            else:
+                body = ('<rect x="0" y="0" width="52" height="32" rx="16" fill="%s"/>'
+                        '<circle cx="%d" cy="16" r="12" fill="%s"/>') % (primary, knob, on_primary)
         else:
             knob = 36 if mirrored else 16
-            body = ('<rect x="1" y="1" width="50" height="30" rx="15" fill="%s" stroke="%s" stroke-width="2"/>'
-                    '<circle cx="%d" cy="16" r="8" fill="%s"/>') % (track_off, outline, knob, outline)
-        return wrap(52, 32, body, disabled)
+            if disabled:   # track and outline on-surface 12%, handle on-surface 38%
+                body = ('<rect x="1" y="1" width="50" height="30" rx="15" fill="%s" fill-opacity=".12" stroke="%s" '
+                        'stroke-opacity=".12" stroke-width="2"/><circle cx="%d" cy="16" r="8" fill="%s" fill-opacity=".38"/>'
+                        ) % (track_off, ink, knob, ink)
+            else:
+                body = ('<rect x="1" y="1" width="50" height="30" rx="15" fill="%s" stroke="%s" stroke-width="2"/>'
+                        '<circle cx="%d" cy="16" r="8" fill="%s"/>') % (track_off, outline, knob, outline)
+        return wrap(52, 32, body)
 
     def check(state_on, disabled):
         if state_on:
-            body = ('<rect x="0" y="0" width="18" height="18" rx="2" fill="%s"/>'
+            box_ink, mark = (ink, ground) if disabled else (primary, on_primary)
+            body = ('<rect x="0" y="0" width="18" height="18" rx="2" fill="%s"%s/>'
                     '<path d="M4.2 9.3 7.4 12.5 13.8 6" fill="none" stroke="%s" stroke-width="2" '
-                    'stroke-linecap="square" stroke-linejoin="miter"/>') % (primary, on_primary)
+                    'stroke-linecap="square" stroke-linejoin="miter"/>') % (box_ink, ' fill-opacity=".38"' if disabled else "", mark)
         else:
-            body = '<rect x="1" y="1" width="16" height="16" rx="1" fill="none" stroke="%s" stroke-width="2"/>' % variant
-        return wrap(18, 18, body, disabled)
+            body = '<rect x="1" y="1" width="16" height="16" rx="1" fill="none" stroke="%s"%s stroke-width="2"/>' % (
+                ink if disabled else variant, ' stroke-opacity=".38"' if disabled else "")
+        return wrap(18, 18, body)
 
     def radio(state_on, disabled):
-        if state_on:
-            body = ('<circle cx="10" cy="10" r="9" fill="none" stroke="%s" stroke-width="2"/>'
-                    '<circle cx="10" cy="10" r="5" fill="%s"/>') % (primary, primary)
-        else:
-            body = '<circle cx="10" cy="10" r="9" fill="none" stroke="%s" stroke-width="2"/>' % variant
-        return wrap(20, 20, body, disabled)
+        ring = ink if disabled else (primary if state_on else variant)
+        fade = ' opacity=".38"' if disabled else ""
+        body = '<circle cx="10" cy="10" r="9" fill="none" stroke="%s" stroke-width="2"/>' % ring
+        if state_on: body += '<circle cx="10" cy="10" r="5" fill="%s"/>' % ring
+        return wrap(20, 20, '<g%s>%s</g>' % (fade, body) if disabled else body)
 
     out = {}
     for state_on in (True, False):
@@ -239,8 +258,13 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     #    shape change, which is as much of the Expressive shape morph as a StyleBox can hold.
     tonal, on_tonal = r["secondary_container"], r["on_secondary_container"]
     box("btn_normal", bg=tonal, radius=FULL, margins=pad, inset=plate, detail=16)
-    box("btn_hover", bg=_mix(tonal, on_tonal, HOVER), radius=FULL, margins=pad, inset=plate, detail=16, **lift(1))
-    box("btn_pressed", bg=r["secondary"], radius=consts["radius"], margins=pad, inset=plate)
+    # 🛑 No hover shadow: gohud's buttons sit flat, and M3's raised (elevated) look is the `*_glow` twin below.
+    box("btn_hover", bg=_mix(tonal, on_tonal, HOVER), radius=FULL, margins=pad, inset=plate, detail=16)
+    # 🔑 A press is the M3 state layer (on-secondary-container at 10%) with the pressed shape (corner.small) — the
+    #    Expressive shape change, instant. 🛑 Not the selected colours: the engine shares this face between a press and a
+    #    toggled-on button, and a tap that flashed the dark `secondary` read as "now selected" on every plain button.
+    press_shape = consts["radius_small"]
+    box("btn_pressed", bg=_mix(tonal, on_tonal, PRESSED), radius=press_shape, margins=pad, inset=plate)
     # 🛑 M3 fades a disabled label to 38% — gohud keeps it readable (4.5:1), so only the plate fades.
     box("btn_disabled", bg=_alpha(r["on_surface"], 0.10), radius=FULL, margins=pad, inset=plate, detail=16)
     # md.sys.state.focus-indicator: 3dp in `secondary`, 2dp **outside** the plate (outer-offset).
@@ -256,8 +280,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
 
     filled, on_filled = r["primary"], r["on_primary"]
     box("btn_primary", bg=filled, radius=FULL, margins=pad, inset=plate, detail=16)
-    box("btn_primary_hover", bg=_mix(filled, on_filled, HOVER), radius=FULL, margins=pad, inset=plate, detail=16, **lift(1))
-    box("btn_primary_pressed", bg=_mix(filled, on_filled, PRESSED), radius=consts["radius"], margins=pad, inset=plate)
+    box("btn_primary_hover", bg=_mix(filled, on_filled, HOVER), radius=FULL, margins=pad, inset=plate, detail=16)
+    box("btn_primary_pressed", bg=_mix(filled, on_filled, PRESSED), radius=press_shape, margins=pad, inset=plate)
 
     # M3 has no "danger" button — the faint one is a tonal button in the error container colours,
     # the solid one a filled button in `error`.
@@ -266,8 +290,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         margins=pad, inset=plate, detail=16)
     box("btn_danger_solid", bg=r["error"], radius=FULL, margins=pad, inset=plate, detail=16)
     box("btn_danger_solid_hover", bg=_mix(r["error"], r["on_error"], HOVER), radius=FULL, margins=pad,
-        inset=plate, detail=16, **lift(1))
-    box("btn_danger_solid_pressed", bg=_mix(r["error"], r["on_error"], PRESSED), radius=consts["radius"],
+        inset=plate, detail=16)
+    box("btn_danger_solid_pressed", bg=_mix(r["error"], r["on_error"], PRESSED), radius=press_shape,
         margins=pad, inset=plate)
     # 🔑 The raised twins (`*_glow`, when the generator has them) are M3's **elevated** look — the same
     #    plate with a level-2 shadow instead of a glow.
@@ -284,10 +308,14 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     box("compact_normal", bg=tonal, radius=FULL, margins=cpad, inset=plate_xs, detail=16)
     box("compact_hover", bg=_mix(tonal, on_tonal, HOVER), radius=FULL, margins=cpad, inset=plate_xs, detail=16)
     box("compact_disabled", bg=_alpha(r["on_surface"], 0.10), radius=FULL, margins=cpad, inset=plate_xs, detail=16)
-    box("compact_pressed", bg=r["secondary"], radius=consts["radius"], margins=cpad, inset=plate_xs)
+    box("compact_pressed", bg=_mix(tonal, on_tonal, PRESSED), radius=press_shape, margins=cpad, inset=plate_xs)
     box("compact_focus", draw_center=False, border=r["secondary"], bw=3, radius=FULL, margins=cpad,
         inset=(5, -(edge_xs - 5), 5, -(edge_xs - 5)), detail=16)
-    box("icon_hover", bg=_alpha(r["on_surface_variant"], HOVER), radius=FULL, inset=(-4, -4, -4, -4), detail=16)
+    # 🛑 The icon button node is 36dp (`GoIconButton.visual_size`) — its 40dp state circle (icon-button-small) reaches
+    #    2dp past it, and the focus ring stands 2dp outside that circle, 3dp thick.
+    box("icon_hover", bg=_alpha(r["on_surface_variant"], HOVER), radius=FULL, inset=(2, 2, 2, 2), detail=16)
+    box("icon_pressed", bg=_alpha(r["on_surface_variant"], PRESSED), radius=FULL, inset=(2, 2, 2, 2), detail=16)
+    box("icon_focus", draw_center=False, border=r["secondary"], bw=3, radius=FULL, inset=(7, 7, 7, 7), detail=16)
     # Text button — gohud's bare button.
     box("text_hover", bg=_alpha(r["primary"], HOVER), radius=FULL, margins=pad, inset=plate, detail=16)
     box("text_pressed", bg=_alpha(r["primary"], PRESSED), radius=FULL, margins=pad, inset=plate, detail=16)
@@ -306,32 +334,39 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # Filled card (`_md-comp-filled-card.scss`): corner.medium, no outline, no shadow.
     padc = CARD_PADDING
     box("card", bg=pal["surface_soft"], radius=consts["radius"], margins=(padc, padc, padc, padc))
-    # Menu (`_md-comp-menus.scss`): corner.large, level 2, 8dp above and below the items.
-    box("popup", bg=r["surface_container"], radius=16, margins=(0, 8, 0, 8), detail=12, **lift(2))
-    box("menu_hover", bg=_alpha(r["on_surface"], HOVER), radius=consts["radius"], inset=(-4, 0, -4, 0))
-    # A HUD over an app screen is a floating toolbar (`_md-comp-toolbar-floating.scss`): surface-container, level 3.
+    # Menu (`_md-comp-menus.scss`, `_md-comp-menus-standard.scss`): surface-container-low, corner.large, level 2,
+    # 8dp above and below the items; an item's state layer has corner.extra-small, 4dp in from the menu's sides.
+    box("popup", bg=r["surface_container_low"], radius=16, margins=(0, 8, 0, 8), detail=12, **lift(2))
+    box("menu_hover", bg=_alpha(r["on_surface"], HOVER), radius=4, inset=(-4, 0, -4, 0))
+    # Divider (`_md-comp-divider.scss`): 1dp outline-variant with room above and below — a line, not a filled band.
+    boxes["menu_separator"] = ("StyleBoxLine", ["content_margin_top = 8", "content_margin_bottom = 8",
+                                                "color = %s" % C(r["outline_variant"]), "thickness = 1"])
+    # A HUD over an app screen takes the floating toolbar's colour and lift (`_md-comp-toolbar-floating.scss`:
+    # surface-container, level 3) — but corner.large, not the toolbar's pill: a HUD panel can hold several rows.
     small = consts["gap_small"]
     box("hud", bg=r["surface_container"], radius=16, margins=(small, small, small, small), detail=12, **lift(3))
     # Snackbar (`_md-comp-snackbar.scss`): corner.extra-small, level 3. 🛑 Not the inverse plate — see the header.
     gap = consts["gap"]
     box("notice", bg=r["surface_container_highest"], radius=4, margins=(gap + 4, gap, gap + 4, gap), **lift(3))
 
-    # Outlined text field (`_md-comp-outlined-text-field.scss`): 56dp, corner.extra-small, 1dp outline → 2dp primary.
+    # Outlined text field (`_md-comp-outlined-text-field.scss`): 56dp, corner.extra-small, 1dp outline → 3dp primary.
     field = (16, 18, 16, 18)
     box("edit_normal", draw_center=False, border=r["outline"], bw=1, radius=4, margins=field)
-    box("edit_focus", draw_center=False, border=r["primary"], bw=2, radius=4, margins=field)
+    box("edit_focus", draw_center=False, border=r["primary"], bw=3, radius=4, margins=field)
     box("edit_read_only", bg=_alpha(r["on_surface"], 0.04), border=_alpha(r["on_surface"], 0.12), bw=1, radius=4, margins=field)
     # The exposed dropdown is the same field — an OptionButton is a menu you open, not a button.
     box("field_hover", bg=_alpha(r["on_surface"], HOVER), border=r["on_surface"], bw=1, radius=4, margins=field)
-    box("field_open", draw_center=False, border=r["primary"], bw=2, radius=4, margins=field)
+    box("field_open", draw_center=False, border=r["primary"], bw=3, radius=4, margins=field)
+    box("field_focus", draw_center=False, border=r["primary"], bw=3, radius=4)
 
     # Slider (`_md-comp-slider-xsmall.scss`): 16dp track, inactive secondary-container, active primary.
     track = r["secondary_container"]
     box("slider_track", bg=track, radius=8, margins=(0, 8, 0, 8))
-    box("slider_grab", bg=r["primary"], radius=8, margins=(0, 8, 0, 8))
-    box("slider_grab_hover", bg=r["primary"], radius=8, margins=(0, 8, 0, 8))
+    # The active part rounds only its outer end; where it meets the handle the corner is 2dp (active.track.inner-corner).
+    box("slider_grab", bg=r["primary"], corners=(8, 2, 2, 8), margins=(0, 8, 0, 8))
+    box("slider_grab_hover", bg=r["primary"], corners=(8, 2, 2, 8), margins=(0, 8, 0, 8))
     box("vslider_track", bg=track, radius=8, margins=(8, 0, 8, 0))
-    box("vslider_grab", bg=r["primary"], radius=8, margins=(8, 0, 8, 0))
+    box("vslider_grab", bg=r["primary"], corners=(2, 2, 8, 8), margins=(8, 0, 8, 0))
 
     # Linear progress (`_md-comp-progress-indicator.scss`): track secondary-container, indicator primary, corner.full.
     box("bar_bg", bg=pal["track"], radius=FULL, detail=8)
@@ -383,21 +418,37 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                       ("GoMicroLabel/font_sizes/font_size", "micro")):
         put(key, FONT_SIZES[role])
 
+    # Line heights (md.sys.typescale): the space between lines of a wrapped paragraph — news and feed text reads at
+    # 24dp lines in M3, not the engine's tight default.
+    def spacing(role):
+        return max(0, int(round(LINE_HEIGHTS[role] - ROBOTO_EM * FONT_SIZES[role])))
+    for kind, role in (("Label", "body"), ("GoTitleLabel", "title"), ("GoSubtitleLabel", "subtitle"),
+                       ("GoCaptionLabel", "caption"), ("GoCompactLabel", "compact"), ("GoMicroLabel", "micro")):
+        put("%s/constants/line_spacing" % kind, spacing(role))
+    put("RichTextLabel/constants/line_separation", spacing("body"))
+
+    # 🔤 Body text is Roboto **only when the project chose no font of its own** — the theme carries it as metadata and
+    #    `GoUi.theme()` applies it at run time. Baked in as `default_font`, it would replace a project's own (Korean,
+    #    Japanese, Chinese) font in every gohud widget; left out, a project with no font gets the engine's semi-bold
+    #    default as body text, which is not M3's regular 400.
+    put("metadata/go_body_font", 'ExtResource("font_title")')
+
     # Button labels are label-large: Roboto at weight 500 — one variation of the same variable font.
     # 🔑 Set on gohud's button variations, not on `Button`: the engine's other Button subclasses (checkbox,
     #    switch, dropdown) carry body text and keep the host's font.
     boxes["font_medium"] = ("FontVariation", ['base_font = ExtResource("font_title")', "variation_opentype = {%d: 500}" % WGHT])
-    for kind in ("GoButton", "GoPrimaryButton", "GoDangerButton", "GoDangerSolidButton", "GoBareButton", "GoCompactButton"):
+    for kind in ("GoButton", "GoPrimaryButton", "GoDangerButton", "GoDangerSolidButton", "GoBareButton", "GoCompactButton",
+                 "TabBar", "TabContainer"):   # tabs: title-small, 500
         sb("%s/fonts/font" % kind, "font_medium")
 
-    # Tonal button text (NORMAL tone); the pressed face is the selected one.
+    # Tonal button text (NORMAL tone).
     for key in ("font_color", "font_hover_color", "font_focus_color", "font_hover_pressed_color"):
         put("Button/colors/%s" % key, C(on_tonal))
-    put("Button/colors/font_pressed_color", C(r["on_secondary"]))
-    put("Button/colors/font_hover_pressed_color", C(r["on_secondary"]))
+    put("Button/colors/font_pressed_color", C(on_tonal))
+    put("Button/colors/font_hover_pressed_color", C(on_tonal))
     put("Button/colors/icon_normal_color", C(on_tonal))
     put("Button/colors/icon_hover_color", C(on_tonal))
-    put("Button/colors/icon_pressed_color", C(r["on_secondary"]))
+    put("Button/colors/icon_pressed_color", C(on_tonal))
     put("Button/colors/icon_disabled_color", C(_alpha(r["on_surface"], 0.38)))
     put("Button/styles/hover_pressed", 'SubResource("btn_pressed")')
 
@@ -416,7 +467,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     for key in ("font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"):
         put("OptionButton/colors/%s" % key, C(r["on_surface"]))
     for state, bid in (("normal", "edit_normal"), ("hover", "field_hover"), ("pressed", "field_open"),
-                       ("hover_pressed", "field_open"), ("disabled", "edit_read_only"), ("focus", "focus_soft")):
+                       ("hover_pressed", "field_open"), ("disabled", "edit_read_only"), ("focus", "field_focus")):
         sb("OptionButton/styles/%s" % state, bid)
     put("OptionButton/constants/arrow_margin", 16)
     sb("LineEdit/styles/read_only", "edit_read_only")
@@ -442,16 +493,23 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     sb("GoCompactButton/styles/hover_pressed", "compact_pressed")
     sb("GoCompactButton/styles/focus", "compact_focus")
     sb("GoCompactButton/styles/disabled", "compact_disabled")
-    sb("GoIconButton/styles/focus", "btn_focus")
+    sb("GoIconButton/styles/pressed", "icon_pressed")
+    sb("GoIconButton/styles/hover_pressed", "icon_pressed")
+    sb("GoIconButton/styles/focus", "icon_focus")
+    # icon-button-standard: hovered and pressed icons stay on-surface-variant — primary is the selected state.
+    for key in ("icon_hover_color", "icon_pressed_color", "icon_focus_color"):
+        put("GoIconButton/colors/%s" % key, C(r["on_surface_variant"]))
 
     # List rows press with a state layer, not the accent.
     sb("GoListButton/styles/pressed", "list_pressed")
+    for key in ("font_pressed_color", "font_hover_pressed_color"):
+        put("GoListButton/colors/%s" % key, C(r["on_surface"]))
     sb("GoListButton/styles/hover_pressed", "list_pressed")
 
-    # Menus: 48dp items with 12dp at either end of the label.
+    # Menus: 48dp items, the label 16dp inside the item's state layer (menu-item leading/trailing space).
     put("PopupMenu/constants/v_separation", 30)
-    put("PopupMenu/constants/item_start_padding", 12)
-    put("PopupMenu/constants/item_end_padding", 12)
+    put("PopupMenu/constants/item_start_padding", 20)
+    put("PopupMenu/constants/item_end_padding", 20)
     put("PopupMenu/constants/icon_max_width", 24)
 
     # Tooltip text on the inverse plate.

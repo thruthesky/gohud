@@ -37,5 +37,9 @@
     "ornament_scale": 1.0,
     "bevel_strength": 0.18,
     "slot_rivets": 1
+  },
+  "material": {
+    "segment_gap": 2.0,
+    "segment_inner_radius": 8
   }
 }
