@@ -471,6 +471,41 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 		{"icon": GoIconSet.BELL, "text": "Alerts", "badge": 3}, {"icon": GoIconSet.USER, "text": "Profile"},
 	], 0, func(index: int) -> void: _say("destination %d" % index)))
 
+	# ── Layouts — they draw nothing and only place what they hold.
+	page.add_child(GoStyle.section("Layouts", false))
+	# In the flow: three slots, the title on the bar's centre however wide the sides are.
+	var heading := GoTopBar.make(3)
+	heading.edge_margin = 0
+	heading.add_start(GoStyle.icon_button(GoIconSet.BACK, _say.bind("back"), -1, &"back"))
+	heading.add_center(GoStyle.label("Stage 3"))
+	heading.add_end(GoStyle.chip("1,250"))
+	page.add_child(heading)
+	# Pinned: a plain Control is not a container, so the bars hold its top and bottom edges. The bottom bar is a HUD
+	# row — left to right in every language — spreading its buttons with the same gap between each pair.
+	var frame := Control.new()
+	frame.name = "LayoutFrame"
+	frame.custom_minimum_size.y = 200
+	var face := GoStyle.card()
+	face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame.add_child(face)
+	var top := GoTopBar.make(2)
+	top.add_start(GoStyle.label("Inbox"))
+	top.add_end(GoStyle.icon_button(GoIconSet.SEARCH, _say.bind("search"), -1, &"search"))
+	frame.add_child(top)
+	var actions_row := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+	actions_row.layout_direction = Control.LAYOUT_DIRECTION_LTR
+	for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL, GoIconSet.USER]:
+		actions_row.add_start(GoStyle.icon_button(icon, _say.bind(String(icon)), -1, icon))
+	frame.add_child(actions_row)
+	page.add_child(frame)
+	# Equal columns, as many 120dp-or-wider as fit.
+	var tiles := GoGrid.make(1, 120.0)
+	for index in 5:
+		var tile := GoStyle.card()
+		tile.add_child(GoStyle.label("Tile %d" % (index + 1)))
+		tiles.add_child(tile)
+	page.add_child(tiles)
+
 
 # ── The HUD floating over the screen ───────────────────────────────────
 

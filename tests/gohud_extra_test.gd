@@ -60,6 +60,8 @@ func _initialize() -> void:
 	await _icon_buttons_example()
 	await _theme_follow()
 	await _list_lab()
+	await _edge_bars()
+	await _grid_contract()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -1972,3 +1974,286 @@ func _list_lab() -> void:
 		check(gallery.find_child("ListLab", true, false) == null, "gallery: closing the lab removes it")
 	gallery.queue_free()
 	await frames(2)
+
+
+# ── Layouts: GoTopBar · GoBottomBar (GoEdgeBar) · GoGrid ──────────────
+
+## A plain box of a fixed minimum size — layout checks measure boxes, not text.
+func _layout_box(width: float, height: float) -> Control:
+	var box := Control.new()
+	box.custom_minimum_size = Vector2(width, height)
+	return box
+
+
+func _close(a: float, b: float, tolerance := 1.0) -> bool:
+	return absf(a - b) <= tolerance
+
+
+## 🔑 The bar's contract: slots, the order inside a slot, direction, pinning, the safe-area intersection, and what it
+##    must never touch on its items (filters, focus, the instances themselves).
+func _edge_bars() -> void:
+	var view := root.get_visible_rect().size
+	var host := Control.new()
+	host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	host.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(host)
+
+	# Slots: the helpers file an item and hand it back; a plain add_child is a start item.
+	var bar := GoTopBar.make(3)
+	bar.edge_margin = 0
+	bar.separation = 10
+	var first := bar.add_start(_layout_box(40, 40))
+	var second := bar.add_start(_layout_box(30, 40))
+	var middle := bar.add_center(_layout_box(60, 40))
+	var tail := bar.add_end(_layout_box(50, 40))
+	var plain := _layout_box(20, 40)
+	bar.add_child(plain)
+	host.add_child(bar)
+	await frames(3)
+	check(bar.slot_of(middle) == GoEdgeBar.Slot.CENTER and bar.slot_of(plain) == GoEdgeBar.Slot.START,
+		"edge bar: add_center files a centre item, a plain add_child is a start item")
+	check(bar.items(GoEdgeBar.Slot.START) == ([first, second, plain] as Array[Control]),
+		"edge bar: items() lists a slot in child order")
+	check(_close(second.position.x, first.position.x + 50.0) and _close(plain.position.x, second.position.x + 40.0),
+		"edge bar: several items in the start slot run from the start edge, a separation apart")
+	bar.set_slot(plain, GoEdgeBar.Slot.END)
+	await frames(2)
+	check(_close(plain.get_rect().end.x, bar.size.x) and _close(tail.get_rect().end.x, plain.position.x - 10.0),
+		"edge bar: set_slot moves an item, and the end slot's last item ends at the far edge")
+	# Right to left: the start slot goes right and its items reverse; the bar's own LTR keeps a HUD physical.
+	host.layout_direction = Control.LAYOUT_DIRECTION_RTL
+	await frames(2)
+	check(_close(first.get_rect().end.x, bar.size.x) and second.position.x < first.position.x,
+		"edge bar: right-to-left puts the start slot on the right and reverses the order inside it")
+	check(plain.position.x < tail.position.x and _close(plain.position.x, 0.0), "edge bar: right-to-left puts the end slot on the left")
+	bar.layout_direction = Control.LAYOUT_DIRECTION_LTR
+	await frames(2)
+	check(_close(first.position.x, 0.0) and second.position.x > first.position.x,
+		"edge bar: layout_direction = LTR keeps a HUD bar left to right in a right-to-left screen")
+	var words := GoStyle.label("مرحبا")
+	bar.add_center(words)
+	await frames(2)
+	check(words.text_direction != Control.TEXT_DIRECTION_INHERITED,
+		"edge bar: an LTR bar leaves its labels' text direction to the text (Arabic still reads right to left)")
+	bar.layout_direction = Control.LAYOUT_DIRECTION_INHERITED
+	host.layout_direction = Control.LAYOUT_DIRECTION_INHERITED
+	words.queue_free()
+	# Two columns have no middle: the centre item follows the start ones.
+	bar.set_slot(plain, GoEdgeBar.Slot.START)
+	bar.columns = 2
+	await frames(2)
+	check(_close(middle.position.x, plain.get_rect().end.x + 10.0) and _close(tail.get_rect().end.x, bar.size.x),
+		"edge bar: two columns put centre items after the start ones and the end slot at the far edge")
+	bar.columns = 3
+
+	# Three slots: the centre item on the bar's centre with unequal sides; crowded, it moves aside without overlapping.
+	var trio := GoTopBar.make(3)
+	trio.edge_margin = 0
+	trio.separation = 10
+	var lone := trio.add_start(_layout_box(24, 40))
+	var mid := trio.add_center(_layout_box(80, 32))
+	var long_end := trio.add_end(_layout_box(90, 40))
+	host.add_child(trio)
+	await frames(3)
+	check(_close(mid.get_rect().get_center().x, trio.size.x * 0.5),
+		"edge bar: the centre slot sits on the bar's centre with sides of 24 and 90 (%.1f of %.0f)" % [mid.get_rect().get_center().x, trio.size.x])
+	check(_close(mid.get_rect().get_center().y, trio.size.y * 0.5), "edge bar: a shorter item sits on the bar's middle line")
+	long_end.custom_minimum_size.x = trio.size.x * 0.5
+	await frames(2)
+	check(mid.get_rect().end.x <= long_end.position.x - 10.0 + 0.5 and mid.position.x >= lone.get_rect().end.x + 10.0 - 0.5,
+		"edge bar: crowded, the centre slot moves aside without overlapping a side")
+	trio.free()
+	# One column, spread: the first and last items at the edges, the same gap between every pair.
+	var spread := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+	spread.edge_margin = 0
+	spread.separation = 6
+	var run: Array[Control] = []
+	for width in [40.0, 60.0, 80.0, 50.0]: run.append(spread.add_start(_layout_box(width, 40)))
+	host.add_child(spread)
+	await frames(3)
+	var gaps: Array[float] = []
+	for index in range(1, run.size()): gaps.append(run[index].position.x - run[index - 1].get_rect().end.x)
+	check(_close(run[0].position.x, 0.0) and _close(run[3].get_rect().end.x, spread.size.x) and gaps.max() - gaps.min() <= 1.0 and gaps.min() > 6.0,
+		"edge bar: SPACE_BETWEEN puts the ends at the edges with equal gaps (%s)" % str(gaps))
+	spread.justify = GoBottomBar.Justify.END
+	await frames(2)
+	check(_close(run[3].get_rect().end.x, spread.size.x) and _close(run[1].position.x - run[0].get_rect().end.x, 6.0),
+		"edge bar: END packs the run against the far edge")
+	spread.free()
+
+	# The items are left as they are: filters, focus — and the same instances after every change.
+	var press := GoStyle.button("Go")
+	var press_filter := press.mouse_filter
+	var press_focus := press.focus_mode
+	bar.add_end(press)
+	await frames(2)
+	check(press.mouse_filter == press_filter and press.focus_mode == press_focus and bar.mouse_filter == Control.MOUSE_FILTER_IGNORE,
+		"edge bar: only the bar ignores the mouse — its buttons keep their filter and focus")
+	second.visible = false
+	press.text = "Go further"
+	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+	await frames(3)
+	check(bar.items(GoEdgeBar.Slot.START) == ([first, plain] as Array[Control]) and is_instance_valid(press) and press.get_parent() == bar,
+		"edge bar: hiding an item, new text and a new preset re-place the same instances")
+	bar.separation = -1
+	await frames(2)
+	check(_close(press.position.x - tail.get_rect().end.x, float(GoUi.metric(GoTheme.GAP))),
+		"edge bar: separation -1 follows the current preset's gap token (%d)" % GoUi.metric(GoTheme.GAP))
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	check(GoUi._watchers.has(bar._on_ui_changed), "edge bar: it watches the theme while in the tree")
+	host.remove_child(bar)
+	check(not GoUi._watchers.has(bar._on_ui_changed), "edge bar: leaving the tree stops watching the theme")
+	bar.free()
+
+	# Height: never under the touch height, even empty or holding a small label.
+	var empty := GoBottomBar.make(1)
+	empty.edge_margin = 0
+	host.add_child(empty)
+	var tiny := GoTopBar.make(1)
+	tiny.edge_margin = 0
+	tiny.add_start(GoStyle.label("v1.2", GoTheme.ROLE_MICRO))
+	host.add_child(tiny)
+	await frames(3)
+	var touch := float(GoUi.metric(GoTheme.TOUCH))
+	check(empty.size.y >= touch - 0.5 and tiny.size.y >= touch - 0.5,
+		"edge bar: an empty bar and a bar of one small label are still a touch row (%.0f · %.0f)" % [empty.size.y, tiny.size.y])
+	empty.free()
+	tiny.free()
+
+	# A label item keeps one line inside a GoForm too — the form turns wrapping on for every label it holds.
+	var form := GoForm.new()
+	var column := VBoxContainer.new()
+	form.add_child(column)
+	root.add_child(form)
+	var form_bar := GoBottomBar.make(1)
+	form_bar.edge_margin = 0
+	var caption := form_bar.add_start(GoStyle.label("Saved two minutes ago")) as Label
+	column.add_child(form_bar)
+	await frames(3)
+	check(caption.autowrap_mode == TextServer.AUTOWRAP_OFF and caption.size.x > 40.0 and caption.get_line_count() == 1,
+		"edge bar: a label item stays on one line inside a GoForm (%.0f wide)" % caption.size.x)
+	form.free()
+
+	# Side-by-side icon buttons know each other, so the nearer one takes a press in their widened touch areas.
+	var tools := GoBottomBar.make(1)
+	tools.separation = 0
+	var left_icon := tools.add_start(GoStyle.icon_button(GoIconSet.EDIT, Callable(), 24)) as GoIconButton
+	var right_icon := tools.add_start(GoStyle.icon_button(GoIconSet.SEARCH, Callable(), 24)) as GoIconButton
+	host.add_child(tools)
+	await frames(3)
+	check(left_icon.touch_peers.has(right_icon) and right_icon.touch_peers.has(left_icon),
+		"edge bar: side-by-side icon buttons are each other's touch peers")
+	var between := (left_icon.get_global_rect().end + Vector2(2, -left_icon.size.y * 0.5)) - left_icon.global_position
+	check(not left_icon._has_point(between), "edge bar: a press nearer the right icon does not press the left one")
+	tools.free()
+
+	# Pinning: AUTO under a plain control, NEVER leaves the anchors alone, ALWAYS lifts it out of a container.
+	var bottom := GoBottomBar.make(1)
+	bottom.add_start(_layout_box(40, 40))
+	host.add_child(bottom)
+	var free_bar := GoTopBar.make(1)
+	free_bar.pin_to_edge = GoEdgeBar.Pin.NEVER
+	free_bar.position = Vector2(30, 200)
+	host.add_child(free_bar)
+	await frames(3)
+	check(_close(bottom.get_global_rect().end.y, view.y) and _close(bottom.size.x, view.x), "edge bar: AUTO under a plain control pins to its edge")
+	check(_close(free_bar.position.x, 30.0) and _close(free_bar.position.y, 200.0) and is_zero_approx(free_bar.anchor_right),
+		"edge bar: NEVER leaves its position and anchors alone")
+	free_bar.free()
+	var stack := VBoxContainer.new()
+	stack.position = Vector2(0, 300)
+	stack.size = Vector2(200, 300)
+	host.add_child(stack)
+	var lifted := GoTopBar.make(1)
+	lifted.pin_to_edge = GoEdgeBar.Pin.ALWAYS
+	lifted.add_start(_layout_box(40, 40))
+	stack.add_child(lifted)
+	await frames(3)
+	check(lifted.top_level and _close(lifted.get_global_rect().position.y, 0.0) and _close(lifted.size.x, view.x),
+		"edge bar: ALWAYS inside a container holds the screen's top edge")
+	lifted.pin_to_edge = GoEdgeBar.Pin.AUTO
+	await frames(3)
+	check(not lifted.top_level and _close(lifted.get_global_rect().position.y, 300.0),
+		"edge bar: back to AUTO it returns to the container's flow")
+	# dock(): moved from a column to the plain host, pinned there.
+	bottom.free()
+	lifted.dock(host)
+	await frames(3)
+	check(lifted.get_parent() == host and _close(lifted.get_global_rect().position.y, 0.0), "edge bar: dock() moves it to the host and pins it")
+	lifted.free()
+	stack.free()
+	# In the flow inside a scrolling page it scrolls away with the page — the documented limit.
+	var pager := ScrollContainer.new()
+	pager.size = Vector2(300, 200)
+	host.add_child(pager)
+	var page := VBoxContainer.new()
+	pager.add_child(page)
+	var riding := GoBottomBar.make(1)
+	riding.add_start(_layout_box(40, 40))
+	page.add_child(riding)
+	for i in 6: page.add_child(_layout_box(10, 100))
+	await frames(3)
+	var before := riding.get_global_rect().position.y
+	pager.scroll_vertical = 150
+	await frames(2)
+	check(not riding.top_level and riding.get_global_rect().position.y < before - 100.0,
+		"edge bar: AUTO inside a scrolling page stays in its flow and scrolls with it")
+	host.free()
+
+	# The safe area: the intersection of the bar and the unsafe band — so nothing twice, and never past the screen.
+	var usable := Rect2(30, 40, 360, 700)
+	var screen := Rect2(0, 0, 400, 780)
+	check(GoEdgeBar.edge_insets(Rect2(0, 0, 400, 64), usable, screen, GoEdgeBar.Edge.TOP) == Vector4(30, 40, 10, 0),
+		"safe area: a top bar under the notch pads by the notch and by each side's own cut-out (30 · 10)")
+	check(GoEdgeBar.edge_insets(Rect2(0, 60, 400, 64), usable, screen, GoEdgeBar.Edge.TOP) == Vector4(30, 0, 10, 0),
+		"safe area: a top bar already below the notch adds no top inset")
+	check(GoEdgeBar.edge_insets(Rect2(0, 20, 400, 64), usable, screen, GoEdgeBar.Edge.TOP) == Vector4(30, 20, 10, 0),
+		"safe area: a bar half under the notch pads by the half it covers")
+	check(GoEdgeBar.edge_insets(Rect2(0, 700, 400, 80), usable, screen, GoEdgeBar.Edge.BOTTOM) == Vector4(30, 0, 10, 40),
+		"safe area: a bottom bar pads by the gesture bar it covers")
+	check(GoEdgeBar.edge_insets(Rect2(30, 40, 360, 64), usable, screen, GoEdgeBar.Edge.TOP) == Vector4.ZERO,
+		"safe area: a bar inside the safe area pads nothing — never twice")
+	check(GoEdgeBar.edge_insets(Rect2(0, 0, 5000, 64), usable, screen, GoEdgeBar.Edge.TOP) == Vector4(30, 40, 10, 0),
+		"safe area: a bar wider than the screen pads only by the band, so it cannot feed its own width")
+	section("edge bars")
+
+
+## 🔑 The grid's contract: equal cell rectangles whatever the children ask or flag, flags only inside a cell, a child
+##    wider than the minimum cell takes columns away, and the grid itself takes no input.
+func _grid_contract() -> void:
+	var grid := GoGrid.make(3, -1.0, 10)
+	grid.position = Vector2(10, 100)
+	grid.size = Vector2(320, 0)
+	var cells: Array[Control] = []
+	for wanted in [Vector2(20, 30), Vector2(90, 50), Vector2(40, 20), Vector2(60, 40)]:
+		cells.append(_layout_box(wanted.x, wanted.y))
+		grid.add_child(cells.back())
+	cells[2].size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	root.add_child(grid)
+	await frames(3)
+	var column := (grid.size.x - 20.0) / 3.0
+	check(grid.columns_in_use() == 3 and grid.mouse_filter == Control.MOUSE_FILTER_IGNORE, "grid: three columns, and no input of its own")
+	check(_close(cells[0].size.x, column) and _close(cells[1].size.x, column) and _close(cells[3].size.x, column),
+		"grid: the cells are equal although they ask 20, 90 and 60 wide (%.1f · %.1f · %.1f)" % [cells[0].size.x, cells[1].size.x, cells[3].size.x])
+	check(_close(cells[2].position.x, roundf((column + 10.0) * 2.0)) and _close(cells[2].size.x, 40.0),
+		"grid: a SHRINK child stays small at its cell's start — the cell keeps its width")
+	check(_close(cells[3].position.y, 60.0) and _close(cells[0].size.y, 50.0) and _close(grid.size.y, 100.0),
+		"grid: a row is as tall as its tallest cell, rows a gap apart, the grid as tall as its rows")
+	check(_close(cells[3].size.x, cells[0].size.x), "grid: a short last row keeps the column width")
+	grid.layout_direction = Control.LAYOUT_DIRECTION_RTL
+	await frames(2)
+	check(_close(cells[0].get_global_rect().end.x, grid.get_global_rect().end.x), "grid: right to left starts at the right")
+	grid.free()
+	# A child wider than min_cell widens every cell, so fewer columns fit — a wide card is never squeezed.
+	var fluid := GoGrid.make(1, 100.0, 10)
+	for index in 4: fluid.add_child(_layout_box(30, 30))
+	root.add_child(fluid)
+	fluid.size = Vector2(330, 0)
+	await frames(3)
+	check(fluid.columns_in_use() == 3, "grid: 330 wide at a 100 minimum cell makes 3 columns (%d)" % fluid.columns_in_use())
+	fluid.add_child(_layout_box(160, 30))
+	await frames(3)
+	check(fluid.columns_in_use() == 1 or fluid.columns_in_use() == 2 and fluid.get_child(4).size.x >= 160.0,
+		"grid: a 160-wide child takes columns away (%d) and keeps its width (%.0f)" % [fluid.columns_in_use(), (fluid.get_child(4) as Control).size.x])
+	fluid.free()
+	section("grid")

@@ -303,6 +303,63 @@ mutate "widgets/go_surface.gd" \
   "	return false" \
   "tells whether any surface is open"
 
+printf "\n\033[1m── layouts: GoTopBar · GoBottomBar · GoGrid (extra tests)\033[0m\n"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		var x := (inner.size.x - center_width) * 0.5" \
+  "		var x := low" \
+  "the centre slot sits on the bar's centre"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		x = clampf(x, low, high) if low <= high else low" \
+  "		pass" \
+  "a crowded centre slot never overlaps a side"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "			var step := gap if run.size() < 2 else maxf(gap, (inner.size.x - total) / float(run.size() - 1))" \
+  "			var step := gap" \
+  "SPACE_BETWEEN spreads to both edges"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		start.append_array(center)" \
+  "		pass" \
+  "two columns keep the centre items"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		var left := inner.size.x - x - wanted.x if rtl else x" \
+  "		var left := x" \
+  "start and end follow the layout direction"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	var hold := pin_to_edge == Pin.ALWAYS or (pin_to_edge == Pin.AUTO and not in_container)" \
+  "	var hold := pin_to_edge == Pin.ALWAYS" \
+  "a bar under a plain control pins itself"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	var top := maxf(0.0, usable.position.y - maxf(rect.position.y, screen.position.y)) if at == Edge.TOP else 0.0" \
+  "	var top := maxf(0.0, usable.position.y - screen.position.y) if at == Edge.TOP else 0.0" \
+  "the safe-area inset is only what the bar covers"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	var high := maxf(tall + margin * 2.0, float(GoUi.metric(GoTheme.TOUCH)))" \
+  "	var high := tall + margin * 2.0" \
+  "a bar is never under the touch height"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	GoStyle.natural_width(node)
+	_link_touch_peers.call_deferred()" \
+  "	_link_touch_peers.call_deferred()" \
+  "a label item in a bar keeps one line"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	GoStyle.natural_width(node)
+	_link_touch_peers.call_deferred()" \
+  "	GoStyle.natural_width(node)" \
+  "side-by-side icon buttons are touch peers"
+mutate_extra "widgets/go_grid.gd" \
+  "		fit_child_in_rect(cells[index], Rect2(left, roundf(y), maxf(0.0, right - left), heights[row]))" \
+  "		fit_child_in_rect(cells[index], Rect2(left, roundf(y), cells[index].get_combined_minimum_size().x, heights[row]))" \
+  "grid cells are equal whatever the children ask"
+mutate_extra "widgets/go_grid.gd" \
+  "	for cell in cells: widest = maxf(widest, cell.get_combined_minimum_size().x)
+	return widest" \
+  "	return widest" \
+  "a wide child takes grid columns away"
+mutate_extra "widgets/go_grid.gd" \
+  "		if rtl:" \
+  "		if false:" \
+  "a grid starts at the right in right-to-left"
+
 printf "\n\033[1m── surface layout pass (extra tests)\033[0m\n"
 mutate_extra "widgets/go_surface.gd" \
   "	if _resize_pending or (fit_content and (_layout_dirty or placement == Placement.ANCHOR)):" \

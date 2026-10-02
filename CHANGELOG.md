@@ -79,6 +79,24 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **Layouts — `GoTopBar`, `GoBottomBar` and `GoGrid`**: containers that draw nothing and only place what they hold
+  (the container ignores the mouse; its items keep their own filters and focus).
+  - `GoTopBar` / `GoBottomBar` (both `GoEdgeBar`) line items up along the top or bottom edge in one, two or three
+    slots — `add_start()`, `add_center()`, `add_end()`, several items per slot. The centre slot sits on the bar's
+    centre however wide the sides are, while `max(start, end) + separation` fits in half of what the centre leaves;
+    past that it moves only as far as it must not to overlap a side, and when nothing fits the bar asks for the total
+    width instead of cutting an item. A one-column bar places its run at the start, in the centre, at the end, or
+    `Justify.SPACE_BETWEEN` — the first and last items at the edges and the same gap between every pair.
+  - Under a container a bar flows like any child; under anything else it pins itself to the edge, full width
+    (`pin_to_edge`: `AUTO`, `ALWAYS` — even inside a container — or `NEVER`; `dock(host)`). Pinned, `safe_area` pads
+    by the part of the notch or gesture bar the bar actually covers, so a bar already clear of it pads nothing.
+  - `START` and `END` follow the layout direction, the items inside a slot too; a HUD gives the bar
+    `layout_direction = LTR`. Items keep their natural width (no label folds to 1dp, inside a `GoForm` too),
+    side-by-side icon buttons are made each other's `touch_peers`, and a bar is never shorter than the touch token.
+  - `GoGrid` gives columns of exactly equal width, fixed (`GoGrid.make(3)`) or as many as fit a minimum cell width
+    (`GoGrid.make(1, 160.0)`), whatever size flags the children carry — a child's flags act only inside its cell. A
+    child wider than the minimum cell takes columns away, and a responsive grid narrows back after a wide window.
+    `GoStyle.responsive_grid()` stays as it was.
 - **Material 3 presets — `material_light` and `material_dark`** (`GoThemePresets.MATERIAL_LIGHT`, `MATERIAL_DARK`): the
   M3 baseline (source `#6750A4`) for app screens. Pill buttons with a 40dp plate in the 48dp touch target (filled,
   tonal, text, error and a 32dp extra-small button; a press shows the M3 state layer and pressed corner), 28dp dialogs and sheets,

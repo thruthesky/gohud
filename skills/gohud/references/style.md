@@ -35,6 +35,52 @@ follow the same idea.
 | `aspect(ratio := 1.0)` | `AspectRatioContainer` | Thumbnails, portraits, minimap |
 | `foldable(title, folded := false, group: FoldableGroup = null, translate := true)` | `FoldableContainer` | Same `FoldableGroup` = accordion. Add one content child |
 
+### Layout classes
+
+Three containers that **draw nothing** — only the container ignores the mouse (`MOUSE_FILTER_IGNORE`); its items keep
+their own filters and focus. Not `GoAppBar`/`GoNavBar` (faces, a title, destinations), not `GoSlotGrid` (the inventory
+of `GoSlot`s), and not `responsive_grid()` (which stays, returning a `GridContainer`).
+
+| Class | Use | API |
+|---|---|---|
+| `GoTopBar` · `GoBottomBar` (both `GoEdgeBar`) | Items along the top or bottom edge in 1, 2 or 3 slots | `GoTopBar.make(count := 3)` · `GoBottomBar.make(count := 1, placing := Justify.START)` · `add_start(node)` `add_center(node)` `add_end(node)` (return the node) · `set_slot(node, slot)` `slot_of(node)` `items(slot)` · `columns` · `justify` (`START` `CENTER` `END` `SPACE_BETWEEN`, one column) · `separation` (-1 → `gap`) · `edge_margin` (-1 → `screen_margin`) · `safe_area` · `pin_to_edge` (`AUTO` `ALWAYS` `NEVER`) · `dock(host)` · static `edge_insets(rect, usable, screen, edge)` |
+| `GoGrid` | Columns of exactly equal width, fixed or responsive | `GoGrid.make(count := 2, min_cell := -1.0, gap := -1)` · `columns` · `min_cell_width` (> 0 → responsive) · `spacing` · `row_spacing` · `columns_in_use()` · cells with `add_child()` |
+
+```gdscript
+var bar := GoTopBar.make(3)
+bar.add_start(GoStyle.icon_button(GoIconSet.BACK, go_back, -1, &"back"))
+bar.add_center(GoStyle.label("Stage 3"))   # on the bar's centre, however wide the sides
+bar.add_end(GoStyle.chip("1,250"))
+screen.add_child(bar)                      # screen is not a container → pinned to the top edge
+
+var actions := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+actions.layout_direction = Control.LAYOUT_DIRECTION_LTR   # a HUD row: physical left and right in every language
+for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL]: actions.add_start(GoStyle.icon_button(icon, act.bind(icon)))
+screen.add_child(actions)
+
+var tiles := GoGrid.make(1, 160.0)         # as many 160dp-or-wider columns as fit
+for item in items: tiles.add_child(GoStyle.item_card(item))
+```
+
+- **Three slots**: the centre slot sits on the bar's centre while `max(start, end) + separation <= (width - centre) / 2`.
+  Past that it moves only as far as it must not to overlap a side; when the three cannot fit, the bar asks for their
+  total width and cuts nothing. Two slots: start and end (centre items follow the start ones, with a debug warning).
+- **One column**: every item in child order, placed by `justify`; `SPACE_BETWEEN` puts the first and last at the edges
+  with equal gaps between — never closer than `separation`, and one item stays at the start.
+- **Pinned or in the flow**: `AUTO` flows under a container and pins to the parent's edge (full width, as tall as its
+  items) under anything else; `ALWAYS` pins even inside a container (it turns `top_level`); `NEVER` leaves the anchors
+  alone. 🛑 In the flow, a bar stays at the bottom only as the sibling of the page that scrolls (the last child of a
+  column whose `GoScroll` expands) — inside the scrolling page it scrolls away. Pinned, `safe_area` pads by the part of
+  the notch or gesture bar the bar's own rectangle covers, so a bar already clear of it pads nothing.
+- **Direction**: `START` is the left in a left-to-right layout and the right in a right-to-left one, items inside a slot
+  reverse with it. A game HUD gives the bar `layout_direction = LTR`; labels still read by their own text.
+- 🛑 Items keep their natural width — wrapping is turned off on whatever enters (`natural_width`, as in `wrap_row`), so
+  no label folds to 1dp, inside a `GoForm` too. Buttons, chips, icons and short text; not cards. Side-by-side icon
+  buttons and slots are made each other's `touch_peers`. The bar is never shorter than the `touch` token.
+- `GoGrid`: the cell rectangles are equal (1px at most between them); a child's size flags act only inside its cell.
+  A child wider than `min_cell_width` widens every cell, so fewer columns fit. A responsive grid asks for one cell's
+  width, so it narrows back after a wide window.
+
 ## 2. Text
 
 | Signature | Returns | Notes |

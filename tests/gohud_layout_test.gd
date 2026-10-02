@@ -39,6 +39,7 @@ func _initialize() -> void:
 	await _slot_shortcut()
 	await _section_rhythm()
 	await _drawer_width()
+	await _bars_and_grid_fit()
 	await _gallery()
 
 	print("gohud layout tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -344,6 +345,110 @@ func _pagination_fits() -> void:
 		strip.queue_free()
 		await frames(1)
 	section("pagination")
+
+
+# ── Layouts at every width: GoTopBar · GoBottomBar · GoGrid ──────────
+
+func _layout_box(width: float, height: float) -> Control:
+	var box := Control.new()
+	box.custom_minimum_size = Vector2(width, height)
+	return box
+
+
+func _center_x(node: Control) -> float:
+	return node.get_global_rect().get_center().x
+
+
+## 🔑 Measured at 320, 390 and 844 dp: the three zones of a three-slot bar — the centre on the bar's centre while
+##    `max(L, R) + gap <= (W - C) / 2`, moved aside without overlap past that, and the total width asked for when the
+##    slots cannot fit — the one-column spread, and the responsive grid against `GoStyle.responsive_grid()`.
+func _bars_and_grid_fit() -> void:
+	for width in [320.0, 390.0, 844.0]:
+		var got := await _screen(width)
+		var host := Control.new()
+		host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		host.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		root.add_child(host)
+		var gap := 10.0
+		var bar := GoTopBar.make(3)
+		bar.edge_margin = 0
+		bar.separation = int(gap)
+		var start := bar.add_start(_layout_box(24, 40))
+		var center := bar.add_center(_layout_box(80, 32))
+		var end := bar.add_end(_layout_box(24, 40))
+		host.add_child(bar)
+		await frames(3)
+		# Zone ①: the end side up to the largest width that still leaves the centre on the bar's centre.
+		var room := (got - 80.0) * 0.5 - gap
+		end.custom_minimum_size.x = floorf(room)
+		await frames(2)
+		check(absf(_center_x(center) - bar.get_global_rect().get_center().x) <= 1.0,
+			"bars %.0f: zone 1 — the centre slot sits on the bar's centre with sides of 24 and %.0f" % [width, end.custom_minimum_size.x])
+		# Zone ②: one step wider, it moves aside — no overlap, at the edge of where it may go.
+		end.custom_minimum_size.x = floorf(room) + 30.0
+		await frames(2)
+		var c := center.get_global_rect()
+		check(c.end.x <= end.get_global_rect().position.x - gap + 0.5 and c.position.x >= start.get_global_rect().end.x + gap - 0.5,
+			"bars %.0f: zone 2 — the centre slot moves aside without overlapping (%s)" % [width, str(c)])
+		check(absf(c.end.x - (end.get_global_rect().position.x - gap)) <= 1.0, "bars %.0f: zone 2 — it moves only as far as it must" % width)
+		# Zone ③: the slots cannot fit — the bar asks for their total and cuts nothing.
+		end.custom_minimum_size.x = got
+		await frames(2)
+		check(absf(bar.get_combined_minimum_size().x - (24.0 + 80.0 + got + gap * 2.0)) <= 1.0 and absf(end.size.x - got) <= 0.5,
+			"bars %.0f: zone 3 — it asks for L + C + R + 2 gaps and cuts no item (%.0f)" % [width, bar.get_combined_minimum_size().x])
+		bar.free()
+
+		# One column, spread: equal gaps, edges touched; too many for the width — never closer than the separation.
+		var row := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+		row.edge_margin = 0
+		row.separation = 8
+		var items: Array[Control] = []
+		for index in 4: items.append(row.add_start(_layout_box(40, 40)))
+		host.add_child(row)
+		await frames(3)
+		var gaps: Array[float] = []
+		for index in range(1, items.size()): gaps.append(items[index].get_global_rect().position.x - items[index - 1].get_global_rect().end.x)
+		check(gaps.max() - gaps.min() <= 1.0 and absf(items[3].get_global_rect().end.x - row.get_global_rect().end.x) <= 1.0,
+			"bars %.0f: SPACE_BETWEEN spreads four items with equal gaps to both edges (%s)" % [width, str(gaps)])
+		for item in items: item.custom_minimum_size.x = got * 0.3
+		await frames(2)
+		check(absf(items[1].get_global_rect().position.x - items[0].get_global_rect().end.x - 8.0) <= 0.5,
+			"bars %.0f: SPACE_BETWEEN too crowded falls back to the separation, never a negative gap" % width)
+		host.free()
+
+		# Grid: the responsive count matches responsive_grid while every child fits the minimum cell.
+		var fluid := GoGrid.make(1, 100.0, 10)
+		var old := GoStyle.responsive_grid(100.0, 10)
+		for each: Container in [fluid, old]:
+			for index in 5: each.add_child(_layout_box(30, 30))
+		var column := GoStyle.column(0)
+		column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		root.add_child(column)
+		column.add_child(fluid)
+		column.add_child(old)
+		await frames(4)
+		check(fluid.columns_in_use() == old.columns, "grid %.0f: %d columns, like responsive_grid (%d)" % [width, fluid.columns_in_use(), old.columns])
+		check(GoStyle.audit_layout(column).is_empty(), "grid %.0f: nothing spills (%s)" % [width, str(GoStyle.audit_layout(column))])
+		column.free()
+		await frames(1)
+
+	# Wide → narrow: a responsive grid gives its width back.
+	await _screen(844.0)
+	var strip := GoStyle.column(0)
+	strip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root.add_child(strip)
+	var grid := GoGrid.make(1, 120.0)
+	for index in 6: grid.add_child(_layout_box(40, 40))
+	strip.add_child(grid)
+	await frames(3)
+	var wide_count := grid.columns_in_use()
+	var narrow := await _screen(320.0)
+	await frames(3)
+	check(wide_count > 2 and grid.columns_in_use() < wide_count and grid.size.x <= narrow + 0.5,
+		"grid: from 844 to 320 it narrows with the screen (%d → %d columns, %.0f wide)" % [wide_count, grid.columns_in_use(), grid.size.x])
+	strip.free()
+	await _screen(390.0)
+	section("bars and grid")
 
 
 # ── Coupon code ────────────────────────────────────────────────────────

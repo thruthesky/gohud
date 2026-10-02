@@ -690,6 +690,33 @@ cart.follow(list)
 `GoStyle.filter_chip()` is a chip that toggles (several on at once — for "exactly one", use `segmented()`),
 `GoStyle.input_chip()` an entered value with a ✕, and `GoStyle.toolbar()` a floating pill of icon actions.
 
+### Layouts
+
+Three containers that draw nothing — they only place what they hold. The container ignores the mouse; its items keep
+their own filters and focus.
+
+| Class | Base | Purpose |
+|---|---|---|
+| `GoTopBar` | Container (`GoEdgeBar`) | Items along the top edge in one, two or three slots — the start slot at the start, the centre slot on the bar's centre however wide the sides are, the end slot at the far end. Under a plain control it pins itself to the edge, full width, and pads by the part of the notch it covers |
+| `GoBottomBar` | Container (`GoEdgeBar`) | The same along the bottom edge; with one column its items go to the start, the centre or the end, or spread with the same gap between every pair (`Justify.SPACE_BETWEEN`) |
+| `GoGrid` | Container | Columns of exactly equal width — a fixed count, or as many as fit a minimum cell width (`GoGrid.make(1, 160.0)`); a child's size flags act only inside its cell |
+
+```gdscript
+var bar := GoTopBar.make(3)
+bar.add_start(GoStyle.icon_button(GoIconSet.BACK, go_back, -1, &"back"))
+bar.add_center(GoStyle.label("Stage 3"))
+bar.add_end(GoStyle.chip("1,250"))
+screen.add_child(bar)                                     # not a container → pinned to the top edge
+var actions := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+actions.layout_direction = Control.LAYOUT_DIRECTION_LTR  # a HUD row keeps left and right in every language
+for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL]: actions.add_start(GoStyle.icon_button(icon, act.bind(icon)))
+screen.add_child(actions)
+```
+
+`START` and `END` follow the layout direction, so an app screen mirrors in Arabic and Hebrew. In the flow (under a
+container) a bar is the first or last child of a column — keep the page that scrolls as its sibling; `pin_to_edge =
+ALWAYS` holds the screen edge even from inside a container. Signatures and rules: the skill's `references/style.md` §1.
+
 ### Subclass hooks
 
 Every widget that builds child widgets does so through an overridable method, so a host that

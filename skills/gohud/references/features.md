@@ -112,6 +112,11 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Helpers | `form` `fade` `tooltip_node` `natural_width` `fit_content_height` `let_input_through` `style_popup` `audit_compact_padding` |
 | Cells | `cell_body` `cell_inset` `center_in` `face_clearance` `audit_cell_layout` — content inside a `Button`: padded, sized to fit, marks centered, and an audit that finds the ones that are not |
 
+**Layout classes** — they draw nothing and only place what they hold (style.md §1 "Layout classes"):
+`GoTopBar` / `GoBottomBar` line items up along an edge in 1, 2 or 3 slots — the centre slot on the bar's centre, a
+one-column bottom bar spreading its items with equal gaps (`GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)`);
+`GoGrid` gives columns of exactly equal width, fixed or as many as fit (`GoGrid.make(1, 160.0)`).
+
 ## 8. Looks
 
 | Feature | One line | Reference |

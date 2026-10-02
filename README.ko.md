@@ -657,6 +657,30 @@ cart.follow(list)
 `GoStyle.filter_chip()` 은 켜고 끄는 칩(여럿을 함께 켠다 — "하나만"이면 `segmented()`), `GoStyle.input_chip()` 은 ✕ 가
 붙은 입력값, `GoStyle.toolbar()` 는 아이콘 동작을 담은 떠 있는 알약이다.
 
+### 레이아웃
+
+아무것도 그리지 않고 담은 것을 배치만 하는 컨테이너 셋. 컨테이너 자신만 마우스를 무시하고, 안의 아이템은 자기 필터와 포커스를 그대로 가진다.
+
+| 클래스 | 바탕 | 하는 일 |
+|---|---|---|
+| `GoTopBar` | Container (`GoEdgeBar`) | 위쪽 가장자리를 따라 1·2·3칸에 아이템을 놓는다 — 시작 칸은 시작 쪽에, 가운데 칸은 양옆 폭이 달라도 바의 가운데에, 끝 칸은 반대쪽 끝에. 컨테이너가 아닌 부모 아래에서는 스스로 가장자리 전폭에 붙고, 자기가 덮은 노치 부분만큼 여백을 둔다 |
+| `GoBottomBar` | Container (`GoEdgeBar`) | 아래쪽 가장자리에서 같은 일. 1칸이면 아이템을 시작·가운데·끝에 두거나, 아이템 사이 간격을 모두 같게 펼친다(`Justify.SPACE_BETWEEN`) |
+| `GoGrid` | Container | 폭이 정확히 같은 열 — 고정 개수, 또는 최소 칸 폭에 맞는 만큼(`GoGrid.make(1, 160.0)`). 자식의 크기 플래그는 자기 칸 안에서만 작동한다 |
+
+```gdscript
+var bar := GoTopBar.make(3)
+bar.add_start(GoStyle.icon_button(GoIconSet.BACK, go_back, -1, &"back"))
+bar.add_center(GoStyle.label("3단계"))
+bar.add_end(GoStyle.chip("1,250"))
+screen.add_child(bar)                                     # 컨테이너가 아니므로 위쪽 가장자리에 붙는다
+var actions := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+actions.layout_direction = Control.LAYOUT_DIRECTION_LTR  # HUD 줄은 어느 언어에서나 좌우를 지킨다
+for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL]: actions.add_start(GoStyle.icon_button(icon, act.bind(icon)))
+screen.add_child(actions)
+```
+
+`START`·`END` 는 레이아웃 방향을 따르므로 앱 화면은 아랍어·히브리어에서 좌우가 뒤집힌다. 흐름 안(컨테이너 아래)에서 바는 열의 첫째나 마지막 자식이다 — 스크롤되는 페이지는 바의 형제로 둔다. `pin_to_edge = ALWAYS` 면 컨테이너 안에서도 화면 가장자리를 지킨다. 서명과 규칙은 스킬의 `references/style.md` §1.
+
 ### 자식 클래스 훅
 
 하위 위젯을 만드는 곳은 전부 덮어쓸 수 있는 메서드를 거친다. gohud 타입을 상속한 호스트(자기 타입 힌트·자기 닫기
