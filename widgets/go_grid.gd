@@ -57,7 +57,8 @@ func _init() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
-func _ready() -> void:
+## 🔑 Watched on every entry — a watch set only in `_ready` was dropped for good by the first move (`reparent`).
+func _enter_tree() -> void:
 	GoUi.watch(_on_ui_changed)
 
 

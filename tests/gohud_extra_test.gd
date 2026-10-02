@@ -62,6 +62,7 @@ func _initialize() -> void:
 	await _list_lab()
 	await _edge_bars()
 	await _grid_contract()
+	await _side_bars()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -2257,3 +2258,259 @@ func _grid_contract() -> void:
 		"grid: a 160-wide child takes columns away (%d) and keeps its width (%.0f)" % [fluid.columns_in_use(), (fluid.get_child(4) as Control).size.x])
 	fluid.free()
 	section("grid")
+
+
+## 🔑 Side bars and the fixes made with them: tiers down the left or right edge (the middle one on the bar's middle),
+##    one tier placed at the top, middle or bottom, sides that stay physical in right-to-left screens, a thickness that
+##    panels fill, room left for top and bottom bars (`clear_of`), and the lifecycle — the theme watch survives a move,
+##    touch peers leave with their item, an item's own size flags are never overwritten.
+func _side_bars() -> void:
+	var view := root.get_visible_rect().size
+	var host := Control.new()
+	host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	host.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(host)
+
+	# Three tiers on the left: top at the top, bottom at the bottom, the middle on the bar's middle.
+	var left := GoLeftSideBar.make(3)
+	left.edge_margin = 0
+	left.separation = 10
+	var top_item := left.add_start(_layout_box(40, 40))
+	var top_second := left.add_start(_layout_box(40, 30))
+	var middle := left.add_center(_layout_box(40, 60))
+	var bottom_item := left.add_end(_layout_box(40, 40))
+	host.add_child(left)
+	await frames(3)
+	var bar := left.get_global_rect()
+	check(_close(bar.position.x, 0.0) and _close(bar.size.y, view.y) and _close(bar.position.y, 0.0),
+		"side bar: a left bar pins itself to the left edge, full height (%s)" % str(bar))
+	check(_close(bar.size.x, 48.0) or bar.size.x >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5,
+		"side bar: as wide as its items, never under the touch token (%.0f)" % bar.size.x)
+	check(_close(top_item.position.y, 0.0) and _close(top_second.position.y, 50.0),
+		"side bar: the top tier runs down from the top, a separation apart")
+	check(_close(bottom_item.get_rect().end.y, bar.size.y), "side bar: the bottom tier ends at the bottom")
+	check(_close(middle.get_rect().get_center().y, bar.size.y * 0.5),
+		"side bar: the middle tier sits on the bar's middle (%.1f of %.0f)" % [middle.get_rect().get_center().y, bar.size.y])
+	# Crowded: the top tier reaches past the middle — the middle tier moves down, never overlapping.
+	top_second.custom_minimum_size.y = view.y * 0.5
+	await frames(2)
+	check(middle.position.y >= top_second.get_rect().end.y + 10.0 - 0.5 and middle.get_rect().end.y <= bottom_item.position.y - 10.0 + 0.5,
+		"side bar: a crowded middle tier moves aside without overlapping")
+	top_second.custom_minimum_size.y = 30
+	# Right to left: the bar stays on the left and its tiers keep top-to-bottom order; follow_text_direction moves it.
+	host.layout_direction = Control.LAYOUT_DIRECTION_RTL
+	await frames(3)
+	check(_close(left.get_global_rect().position.x, 0.0) and _close(top_item.position.y, 0.0) and top_second.position.y > top_item.position.y,
+		"side bar: in a right-to-left screen it stays on the left, top tier still at the top")
+	left.follow_text_direction = true
+	await frames(3)
+	check(_close(left.get_global_rect().end.x, view.x), "side bar: follow_text_direction moves a left bar to the right in right-to-left")
+	left.follow_text_direction = false
+	host.layout_direction = Control.LAYOUT_DIRECTION_INHERITED
+	await frames(2)
+
+	check(left.tiers == 3 and left.columns == 3, "side bar: tiers is the side bar's name for columns")
+
+	# A top bar spreads one slot too, and centres it (decided 2026-10-02: the one-slot placings are not bottom-only).
+	var top_row := GoTopBar.make(1)
+	top_row.edge_margin = 0
+	top_row.separation = 6
+	top_row.justify = GoTopBar.Justify.SPACE_BETWEEN
+	var spread_items: Array[Control] = []
+	for width in [40.0, 70.0, 50.0]: spread_items.append(top_row.add_start(_layout_box(width, 40)))
+	host.add_child(top_row)
+	await frames(3)
+	var row_gaps := [spread_items[1].position.x - spread_items[0].get_rect().end.x, spread_items[2].position.x - spread_items[1].get_rect().end.x]
+	check(_close(spread_items[0].position.x, 0.0) and _close(spread_items[2].get_rect().end.x, top_row.size.x) and absf(row_gaps[0] - row_gaps[1]) <= 1.0,
+		"top bar SPACE_BETWEEN: the ends at the edges with equal gaps (%s)" % str(row_gaps))
+	top_row.justify = GoTopBar.Justify.CENTER
+	await frames(2)
+	check(_close((spread_items[0].position.x + spread_items[2].get_rect().end.x) * 0.5, top_row.size.x * 0.5), "top bar CENTER: the run is centred")
+	top_row.free()
+
+	# One tier: top, middle, bottom, spread.
+	var right := GoRightSideBar.make(1, GoRightSideBar.Justify.CENTER)
+	right.edge_margin = 0
+	right.separation = 8
+	var run: Array[Control] = []
+	for height in [40.0, 60.0, 50.0]: run.append(right.add_start(_layout_box(40, height)))
+	host.add_child(right)
+	await frames(3)
+	var r := right.get_global_rect()
+	check(_close(r.end.x, view.x) and _close(r.size.y, view.y), "side bar: a right bar pins itself to the right edge, full height")
+	var run_mid := (run[0].position.y + run[2].get_rect().end.y) * 0.5
+	check(_close(run_mid, r.size.y * 0.5), "side bar CENTER: the run sits on the bar's middle (%.1f)" % run_mid)
+	right.justify = GoRightSideBar.Justify.START
+	await frames(2)
+	check(_close(run[0].position.y, 0.0), "side bar START: the run starts at the top")
+	right.justify = GoRightSideBar.Justify.END
+	await frames(2)
+	check(_close(run[2].get_rect().end.y, r.size.y), "side bar END: the run ends at the bottom")
+	right.justify = GoRightSideBar.Justify.SPACE_BETWEEN
+	await frames(2)
+	var gaps := [run[1].position.y - run[0].get_rect().end.y, run[2].position.y - run[1].get_rect().end.y]
+	check(_close(run[0].position.y, 0.0) and _close(run[2].get_rect().end.y, r.size.y) and absf(gaps[0] - gaps[1]) <= 1.0,
+		"side bar SPACE_BETWEEN: the ends at top and bottom, equal gaps (%s)" % str(gaps))
+	right.free()
+
+	# Between a top and a bottom bar: clear_of keeps the corners for them and follows their height.
+	var top := GoTopBar.make(1)
+	top.add_start(_layout_box(40, 40))
+	var bottom := GoBottomBar.make(1)
+	bottom.add_start(_layout_box(40, 40))
+	host.add_child(top)
+	host.add_child(bottom)
+	left.clear_of([top, bottom] as Array[GoEdgeBar])
+	await frames(4)
+	check(_close(top_item.get_global_rect().position.y, top.extent() + float(GoUi.metric(GoTheme.SCREEN_MARGIN)) * 0.0, 1.0)
+		and top.extent() > 0.0 and bottom_item.get_global_rect().end.y <= view.y - bottom.extent() + 0.5,
+		"side bar: clear_of keeps its tiers between the top bar (%.0f) and the bottom bar (%.0f)" % [top.extent(), bottom.extent()])
+	(top.get_child(0) as Control).custom_minimum_size.y = 90
+	await frames(4)
+	check(top_item.get_global_rect().position.y >= top.extent() - 0.5, "side bar: clear_of follows a top bar that grew (%.0f)" % top.extent())
+	left.clear_of([] as Array[GoEdgeBar])
+	await frames(3)
+	check(_close(top_item.get_global_rect().position.y, 0.0), "side bar: clear_of([]) runs it edge to edge again")
+	check(is_zero_approx(GoTopBar.new().extent()), "extent(): 0 while a bar is not pinned")
+	# One way only: a top bar asked to clear a side bar that already clears it is skipped — nothing loops.
+	left.clear_of([top, bottom] as Array[GoEdgeBar])
+	top.clear_of([left] as Array[GoEdgeBar])
+	await frames(4)
+	check(top._clear_of.is_empty() and left._clear_of.has(top), "clear_of: a bar that already clears this one is skipped (no two-way loop)")
+	top.clear_of([top, bottom] as Array[GoEdgeBar])
+	check(top._clear_of.is_empty(), "clear_of: itself and bars along the same edge direction are ignored")
+
+	# A panel: thickness gives the width, SIZE_EXPAND_FILL takes it, KEEP_WRAP keeps its prose wrapping.
+	var notes := GoRightSideBar.make(1)
+	notes.thickness = 200
+	notes.edge_margin = 0
+	var card := GoStyle.card()
+	card.set_meta(GoEdgeBar.KEEP_WRAP, true)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var prose := GoStyle.label("A quest note long enough to wrap inside its card in a side bar.")
+	card.add_child(prose)
+	notes.add_start(card)
+	host.add_child(notes)
+	await frames(4)
+	check(_close(notes.size.x, 200.0) and _close(card.size.x, 200.0), "side bar: thickness sets the width and an EXPAND_FILL panel takes it (%.0f · %.0f)" % [notes.size.x, card.size.x])
+	check(prose.autowrap_mode != TextServer.AUTOWRAP_OFF and prose.get_line_count() > 1 and card.size_flags_horizontal == Control.SIZE_EXPAND_FILL,
+		"side bar: a KEEP_WRAP panel keeps its text wrapping and its own flags")
+	# Narrower: the text re-wraps to the new width and the card grows to hold it.
+	var tall := card.size.y
+	notes.thickness = 140
+	await frames(5)
+	check(_close(card.size.x, 140.0) and card.size.y > tall and _close(card.size.y, card.get_combined_minimum_size().y),
+		"side bar: a narrower thickness re-wraps the panel and its height follows (%.0f → %.0f)" % [tall, card.size.y])
+	notes.thickness = 10
+	await frames(3)
+	check(notes.size.x >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5, "side bar: a thickness under the touch token is raised to it")
+	notes.free()
+	left.free()
+	top.free()
+	bottom.free()
+
+	# One-slot top bar: an item marked GROW takes the room left, by its share; its size flags stay its own.
+	var search_bar := GoTopBar.make(1)
+	search_bar.edge_margin = 0
+	search_bar.separation = 10
+	var back := search_bar.add_start(_layout_box(40, 40))
+	var field := GoStyle.line_edit("Search")
+	field.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	field.set_meta(GoEdgeBar.GROW, true)
+	search_bar.add_start(field)
+	var tail := search_bar.add_start(_layout_box(40, 40))
+	host.add_child(search_bar)
+	await frames(3)
+	check(field.size_flags_horizontal == Control.SIZE_EXPAND_FILL, "edge bar: an item keeps the size flags it came with")
+	check(_close(field.position.x, back.get_rect().end.x + 10.0) and _close(field.get_rect().end.x, tail.position.x - 10.0) and _close(tail.get_rect().end.x, search_bar.size.x),
+		"edge bar: one GROW item fills the room between the others (%.0f wide)" % field.size.x)
+	var half := _layout_box(10, 40)
+	half.set_meta(GoEdgeBar.GROW, 0.5)
+	search_bar.add_start(half)
+	await frames(2)
+	check(absf((field.size.x - field.get_combined_minimum_size().x) - 2.0 * (half.size.x - 10.0)) <= 2.0,
+		"edge bar: GROW shares of 1 and 0.5 split the room 2 : 1 (%.0f · %.0f)" % [field.size.x, half.size.x])
+	search_bar.free()
+	# 🛑 Size flags alone do not grow an item: GoStyle.label() and GoStyle.button() come with SIZE_EXPAND_FILL, and a
+	#    draft that read that as "grow" filled a CENTER bar with them instead of centring them (2026-10-03).
+	var plain_bar := GoBottomBar.make(1, GoBottomBar.Justify.CENTER)
+	plain_bar.edge_margin = 0
+	plain_bar.separation = 10
+	var saved := plain_bar.add_start(GoStyle.label("Saved"))
+	var retry := plain_bar.add_start(GoStyle.button("Retry"))
+	host.add_child(plain_bar)
+	await frames(3)
+	check(saved.size_flags_horizontal & Control.SIZE_EXPAND and _close(saved.size.x, saved.get_combined_minimum_size().x)
+		and _close(retry.size.x, retry.get_combined_minimum_size().x),
+		"edge bar: a label and a button made by GoStyle keep their own length (%.0f · %.0f)" % [saved.size.x, retry.size.x])
+	check(_close((saved.position.x + retry.get_rect().end.x) * 0.5, plain_bar.size.x * 0.5),
+		"edge bar: CENTER still centres a label and a button made by GoStyle")
+	plain_bar.free()
+
+	# Lifecycle: a move keeps the theme watch; a moved icon button leaves its old neighbours' peers.
+	var first_home := Control.new()
+	var second_home := Control.new()
+	host.add_child(first_home)
+	host.add_child(second_home)
+	var mover := GoBottomBar.make(1)
+	first_home.add_child(mover)
+	var grid := GoGrid.make(2)
+	first_home.add_child(grid)
+	await frames(1)
+	mover.dock(second_home)
+	grid.reparent(second_home)
+	await frames(1)
+	check(GoUi._watchers.has(mover._on_ui_changed) and GoUi._watchers.has(grid._on_ui_changed),
+		"edge bar · grid: a moved bar and grid still follow the theme")
+	var bar_a := GoBottomBar.make(1)
+	var bar_b := GoTopBar.make(1)
+	host.add_child(bar_a)
+	host.add_child(bar_b)
+	var one := bar_a.add_start(GoStyle.icon_button(GoIconSet.EDIT)) as GoIconButton
+	var two := bar_a.add_start(GoStyle.icon_button(GoIconSet.SEARCH)) as GoIconButton
+	var mine := Panel.new()
+	two.touch_peers.append(mine)
+	await frames(2)
+	check(one.touch_peers.has(two) and two.touch_peers.has(one), "edge bar: side-by-side icon buttons are peers")
+	bar_b.add_start(two)
+	await frames(2)
+	check(not one.touch_peers.has(two) and not two.touch_peers.has(one) and two.touch_peers.has(mine),
+		"edge bar: a button moved to another bar leaves the old peers, and keeps the peer its caller set")
+	mine.free()
+
+	# The keyboard: a bottom bar that avoids it lifts its items by the keyboard's height.
+	var dock_bar := GoBottomBar.make(1)
+	dock_bar.edge_margin = 0
+	dock_bar.avoid_keyboard = true
+	var key_item := dock_bar.add_start(_layout_box(40, 40))
+	host.add_child(dock_bar)
+	await frames(3)
+	var resting := key_item.get_global_rect().end.y
+	dock_bar._on_keyboard(300)
+	await frames(3)
+	var shift := root.get_visible_rect().end.y - GoSafeArea.usable_rect_with_keyboard(root, 300).end.y
+	check(shift > 10.0 and _close(resting - key_item.get_global_rect().end.y, shift),
+		"edge bar: avoid_keyboard lifts a bottom bar's items above a 300px keyboard (%.0f → %.0f)" % [resting, key_item.get_global_rect().end.y])
+	dock_bar._on_keyboard(0)
+	await frames(3)
+	check(_close(key_item.get_global_rect().end.y, resting), "edge bar: and back down when the keyboard goes")
+	host.free()
+
+	# The safe area of a side bar: its own side as clearance, top and bottom by the part of the band it covers.
+	var usable := Rect2(44, 20, 750, 360)
+	var screen := Rect2(0, 0, 844, 390)
+	check(GoEdgeBar.edge_insets(Rect2(0, 0, 80, 390), usable, screen, GoEdgeBar.Edge.LEFT) == Vector4(44, 20, 0, 10),
+		"safe area: a left bar pads by the side notch and by the top and bottom band it covers")
+	check(GoEdgeBar.edge_insets(Rect2(764, 0, 80, 390), usable, screen, GoEdgeBar.Edge.RIGHT) == Vector4(0, 20, 50, 10),
+		"safe area: a right bar pads by the right cut-out")
+	check(GoEdgeBar.edge_insets(Rect2(50, 30, 80, 300), usable, screen, GoEdgeBar.Edge.LEFT) == Vector4.ZERO,
+		"safe area: a side bar inside the safe area pads nothing")
+	# Top and bottom bars: off the screen, the clearance is measured from the screen's edge; at the bottom edge it is the
+	# same inset GoNavBar pads by (screen bottom − usable bottom).
+	var tall_usable := Rect2(30, 40, 360, 700)
+	var phone := Rect2(0, 0, 400, 780)
+	check(GoEdgeBar.edge_insets(Rect2(0, -100, 400, 20), tall_usable, phone, GoEdgeBar.Edge.TOP).y == 40.0,
+		"safe area: a top bar above the screen still clears the notch from the screen's edge (40)")
+	check(GoEdgeBar.edge_insets(Rect2(0, 720, 400, 60), tall_usable, phone, GoEdgeBar.Edge.BOTTOM).w == phone.end.y - tall_usable.end.y,
+		"safe area: a bottom bar on the screen's bottom pads what GoNavBar pads (%.0f)" % (phone.end.y - tall_usable.end.y))
+	section("side bars")

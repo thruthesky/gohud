@@ -79,20 +79,29 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
-- **Layouts — `GoTopBar`, `GoBottomBar` and `GoGrid`**: containers that draw nothing and only place what they hold
-  (the container ignores the mouse; its items keep their own filters and focus).
-  - `GoTopBar` / `GoBottomBar` (both `GoEdgeBar`) line items up along the top or bottom edge in one, two or three
-    slots — `add_start()`, `add_center()`, `add_end()`, several items per slot. The centre slot sits on the bar's
-    centre however wide the sides are, while `max(start, end) + separation` fits in half of what the centre leaves;
-    past that it moves only as far as it must not to overlap a side, and when nothing fits the bar asks for the total
-    width instead of cutting an item. A one-column bar places its run at the start, in the centre, at the end, or
-    `Justify.SPACE_BETWEEN` — the first and last items at the edges and the same gap between every pair.
-  - Under a container a bar flows like any child; under anything else it pins itself to the edge, full width
-    (`pin_to_edge`: `AUTO`, `ALWAYS` — even inside a container — or `NEVER`; `dock(host)`). Pinned, `safe_area` pads
-    by the part of the notch or gesture bar the bar actually covers, so a bar already clear of it pads nothing.
-  - `START` and `END` follow the layout direction, the items inside a slot too; a HUD gives the bar
-    `layout_direction = LTR`. Items keep their natural width (no label folds to 1dp, inside a `GoForm` too),
-    side-by-side icon buttons are made each other's `touch_peers`, and a bar is never shorter than the touch token.
+- **Layouts — `GoTopBar`, `GoBottomBar`, `GoLeftSideBar`, `GoRightSideBar` and `GoGrid`**: containers that draw
+  nothing and only place what they hold (the container ignores the mouse; its items keep their own filters, focus and
+  size flags).
+  - One engine, `GoEdgeBar`, lines items up along any edge — across a top or bottom bar, down a side bar — in one, two
+    or three slots (`add_start()`, `add_center()`, `add_end()`, several items per slot). The centre slot sits on the
+    centre while `max(start, end) + separation` fits in half of what the centre leaves; past that it moves aside only
+    as far as it must not to overlap a side, and when nothing fits the bar asks for the total length instead of
+    cutting an item. One slot places its run at the start, in the centre, at the end, or `Justify.SPACE_BETWEEN` —
+    the first and last items at the ends and the same gap between every pair — on a top bar as on a bottom bar; an
+    item marked `GoEdgeBar.GROW` takes the room left, by its share (size flags never make an item grow along a bar).
+  - `GoLeftSideBar` / `GoRightSideBar` (both `GoSideBar`) hold buttons and panels in one to three tiers — top, middle
+    on the bar's middle, bottom — or one tier at the top, middle or bottom. They keep their physical side and
+    top-to-bottom order in Arabic and Hebrew (`follow_text_direction` swaps the side), take a `thickness`, and
+    `clear_of([top, bottom])` keeps them between the top and bottom bars, following their height (`extent()`).
+  - Under a container a bar flows like any child; under anything else it pins itself to its edge (`pin_to_edge`:
+    `AUTO`, `ALWAYS` — even inside a container — or `NEVER`; `dock(host)`). With `safe_area` the bar pads by the part
+    of the notch or gesture bar its own rectangle covers, pinned or in the flow (not inside a scrolling page), so a top
+    bar's items sit below the notch and a bar already clear of it pads nothing. `avoid_keyboard` lifts a bottom bar
+    above the virtual keyboard.
+  - Labels and buttons that enter keep one line (no label folds to 1dp, inside a `GoForm` too) without touching any
+    size flag; a panel of prose marked `GoEdgeBar.KEEP_WRAP` is left to wrap. Side-by-side icon buttons are made each
+    other's `touch_peers` and let go when one leaves. A bar is never thinner than the touch token, and a bar or grid
+    keeps following the theme after it is moved (`_enter_tree`).
   - `GoGrid` gives columns of exactly equal width, fixed (`GoGrid.make(3)`) or as many as fit a minimum cell width
     (`GoGrid.make(1, 160.0)`), whatever size flags the children carry — a child's flags act only inside its cell. A
     child wider than the minimum cell takes columns away, and a responsive grid narrows back after a wide window.

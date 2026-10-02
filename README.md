@@ -694,13 +694,14 @@ cart.follow(list)
 
 ### Layouts
 
-Three containers that draw nothing — they only place what they hold. The container ignores the mouse; its items keep
-their own filters and focus.
+Containers that draw nothing — they only place what they hold. The container ignores the mouse; its items keep their
+own filters, focus and size flags.
 
 | Class | Base | Purpose |
 |---|---|---|
 | `GoTopBar` | Container (`GoEdgeBar`) | Items along the top edge in one, two or three slots — the start slot at the start, the centre slot on the bar's centre however wide the sides are, the end slot at the far end. Under a plain control it pins itself to the edge, full width, and pads by the part of the notch it covers |
-| `GoBottomBar` | Container (`GoEdgeBar`) | The same along the bottom edge; with one column its items go to the start, the centre or the end, or spread with the same gap between every pair (`Justify.SPACE_BETWEEN`) |
+| `GoBottomBar` | Container (`GoEdgeBar`) | The same along the bottom edge. With one slot — on a top bar too — its items go to the start, the centre or the end, or spread with the same gap between every pair (`Justify.SPACE_BETWEEN`); an item marked `GoEdgeBar.GROW` takes the room left |
+| `GoLeftSideBar` · `GoRightSideBar` | Container (`GoSideBar` → `GoEdgeBar`) | Down the left or right edge in one, two or three tiers — the top tier at the top, the middle tier on the middle, the bottom tier at the bottom; one tier goes to the top, the middle or the bottom. Buttons and panels (`thickness` sets the width). It keeps its physical side in Arabic and Hebrew, and `clear_of([top_bar, bottom_bar])` keeps it between them |
 | `GoGrid` | Container | Columns of exactly equal width — a fixed count, or as many as fit a minimum cell width (`GoGrid.make(1, 160.0)`); a child's size flags act only inside its cell |
 
 ```gdscript
@@ -715,7 +716,8 @@ for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL]: actions.add_start
 screen.add_child(actions)
 ```
 
-`START` and `END` follow the layout direction, so an app screen mirrors in Arabic and Hebrew. In the flow (under a
+`START` and `END` of a top or bottom bar follow the layout direction, so an app screen mirrors in Arabic and Hebrew;
+a side bar stays on its side unless `follow_text_direction` is on. In the flow (under a
 container) a bar is the first or last child of a column — keep the page that scrolls as its sibling; `pin_to_edge =
 ALWAYS` holds the screen edge even from inside a container. Signatures and rules: the skill's `references/style.md` §1.
 

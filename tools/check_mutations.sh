@@ -305,15 +305,15 @@ mutate "widgets/go_surface.gd" \
 
 printf "\n\033[1m── layouts: GoTopBar · GoBottomBar · GoGrid (extra tests)\033[0m\n"
 mutate_extra "widgets/go_edge_bar.gd" \
-  "		var x := (inner.size.x - center_width) * 0.5" \
-  "		var x := low" \
+  "		var at := (length - center_length) * 0.5" \
+  "		var at := low" \
   "the centre slot sits on the bar's centre"
 mutate_extra "widgets/go_edge_bar.gd" \
-  "		x = clampf(x, low, high) if low <= high else low" \
+  "		at = clampf(at, low, high) if low <= high else low" \
   "		pass" \
   "a crowded centre slot never overlaps a side"
 mutate_extra "widgets/go_edge_bar.gd" \
-  "			var step := gap if run.size() < 2 else maxf(gap, (inner.size.x - total) / float(run.size() - 1))" \
+  "			var step := gap if run.size() < 2 else maxf(gap, (length - total) / float(run.size() - 1))" \
   "			var step := gap" \
   "SPACE_BETWEEN spreads to both edges"
 mutate_extra "widgets/go_edge_bar.gd" \
@@ -321,8 +321,8 @@ mutate_extra "widgets/go_edge_bar.gd" \
   "		pass" \
   "two columns keep the centre items"
 mutate_extra "widgets/go_edge_bar.gd" \
-  "		var left := inner.size.x - x - wanted.x if rtl else x" \
-  "		var left := x" \
+  "		var main_at := length - at - along if mirror else at" \
+  "		var main_at := at" \
   "start and end follow the layout direction"
 mutate_extra "widgets/go_edge_bar.gd" \
   "	var hold := pin_to_edge == Pin.ALWAYS or (pin_to_edge == Pin.AUTO and not in_container)" \
@@ -333,18 +333,18 @@ mutate_extra "widgets/go_edge_bar.gd" \
   "	var top := maxf(0.0, usable.position.y - screen.position.y) if at == Edge.TOP else 0.0" \
   "the safe-area inset is only what the bar covers"
 mutate_extra "widgets/go_edge_bar.gd" \
-  "	var high := maxf(tall + margin * 2.0, float(GoUi.metric(GoTheme.TOUCH)))" \
-  "	var high := tall + margin * 2.0" \
+  "	var across := maxf(maxf(thick + margin * 2.0, thickness), float(GoUi.metric(GoTheme.TOUCH)))" \
+  "	var across := maxf(thick + margin * 2.0, thickness)" \
   "a bar is never under the touch height"
 mutate_extra "widgets/go_edge_bar.gd" \
-  "	GoStyle.natural_width(node)
+  "	_one_line(node)
 	_link_touch_peers.call_deferred()" \
   "	_link_touch_peers.call_deferred()" \
   "a label item in a bar keeps one line"
 mutate_extra "widgets/go_edge_bar.gd" \
-  "	GoStyle.natural_width(node)
+  "	_one_line(node)
 	_link_touch_peers.call_deferred()" \
-  "	GoStyle.natural_width(node)" \
+  "	_one_line(node)" \
   "side-by-side icon buttons are touch peers"
 mutate_extra "widgets/go_grid.gd" \
   "		fit_child_in_rect(cells[index], Rect2(left, roundf(y), maxf(0.0, right - left), heights[row]))" \
@@ -359,6 +359,71 @@ mutate_extra "widgets/go_grid.gd" \
   "		if rtl:" \
   "		if false:" \
   "a grid starts at the right in right-to-left"
+
+printf "\n\033[1m── side bars and the layout fixes (extra tests)\033[0m\n"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	var mirror := not side and is_layout_rtl()" \
+  "	var mirror := is_layout_rtl()" \
+  "a side bar keeps top-to-bottom order in RTL"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	if _is_side() and is_layout_rtl(): held = Edge.LEFT if held == Edge.RIGHT else Edge.RIGHT" \
+  "	pass" \
+  "a side bar holds its physical side in RTL"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	if follow_text_direction and _is_side() and is_inside_tree() and is_layout_rtl():" \
+  "	if false:" \
+  "follow_text_direction swaps the side in RTL"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		if at == Edge.TOP or at == Edge.LEFT: next.x = maxf(next.x, bar.extent())" \
+  "		pass" \
+  "clear_of keeps a side bar off the top bar"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		if bar._clear_of.has(self):" \
+  "		if false:" \
+  "clear_of never runs both ways"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		var thick := across if cross_flags & Control.SIZE_EXPAND else minf(_cross(wanted), across)" \
+  "		var thick := minf(_cross(wanted), across)" \
+  "an item that expands across fills the thickness"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	var across := maxf(maxf(thick + margin * 2.0, thickness), float(GoUi.metric(GoTheme.TOUCH)))" \
+  "	var across := maxf(thick + margin * 2.0, float(GoUi.metric(GoTheme.TOUCH)))" \
+  "thickness sets a side bar's width"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	if stretch > 0.0 and length > packed:" \
+  "	if false:" \
+  "an expanding item takes the room left"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	return maxf(0.0, float(item.get_meta(GROW, 0.0)))" \
+  "	return 1.0 if (item.size_flags_vertical if _is_side() else item.size_flags_horizontal) & Control.SIZE_EXPAND else 0.0" \
+  "size flags alone never grow an item along a bar"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	if node.get_meta(KEEP_WRAP, false): return" \
+  "	pass" \
+  "a KEEP_WRAP panel keeps its text wrapping"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		for other in added: peers.erase(other)" \
+  "		pass" \
+  "a moved button leaves its old touch peers"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "	GoUi.watch(_on_ui_changed)
+	if Engine.is_editor_hint(): return" \
+  "	if Engine.is_editor_hint(): return" \
+  "a moved bar still follows the theme"
+mutate_extra "widgets/go_grid.gd" \
+  "func _enter_tree() -> void:
+	GoUi.watch(_on_ui_changed)" \
+  "func _enter_tree() -> void:
+	pass" \
+  "a moved grid still follows the theme"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "		if avoid_keyboard and at == Edge.BOTTOM: usable = GoSafeArea.usable_rect_with_keyboard(window, _keyboard_px)" \
+  "		pass" \
+  "avoid_keyboard lifts a bottom bar"
+mutate_extra "widgets/go_edge_bar.gd" \
+  "(_pinned or not _in_scroll())" \
+  "_pinned" \
+  "a bar in the flow pads for the safe area" env
 
 printf "\n\033[1m── surface layout pass (extra tests)\033[0m\n"
 mutate_extra "widgets/go_surface.gd" \

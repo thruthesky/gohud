@@ -62,7 +62,8 @@ Reply in the language the user writes in; keep code identifiers as they are.
    `GoTimePicker` / `GoWheelPicker` / `GoStepper` (`references/flutter.md` maps every Flutter widget).
    A list the player scans (quests, mail, a shop) → rule 15 in §3 and the recipe in `references/recipes.md` §16.
    Placing, not drawing: items along the top or bottom edge in one to three slots → `GoTopBar` / `GoBottomBar`,
-   equal columns → `GoGrid` (`references/style.md` §1 "Layout classes").
+   down a side in one to three tiers → `GoLeftSideBar` / `GoRightSideBar`, equal columns → `GoGrid`
+   (`references/style.md` §1 "Layout classes").
 4. **Start from a template** when one fits (§5): copy it into the project (e.g. `res://ui/`), rename, adjust, wire
    its signals. Otherwise compose with `GoStyle` factories (`references/style.md`).
 5. **Follow the rules in §3.** Look up exact signatures in the references before using a member you are not sure

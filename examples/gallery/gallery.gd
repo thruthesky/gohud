@@ -485,23 +485,39 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	heading.add_center(GoStyle.label("Stage 3"))
 	heading.add_end(GoStyle.chip("1,250"))
 	page.add_child(heading)
-	# Pinned: a plain Control is not a container, so the bars hold its top and bottom edges. The bottom bar is a HUD
-	# row — left to right in every language — spreading its buttons with the same gap between each pair.
+	# Pinned: a plain Control is not a container, so the bars hold its edges. The bottom bar is a HUD row — left to
+	# right in every language — spreading its buttons with the same gap between each pair. The side bars keep to
+	# their own side in every language and stay between the top and bottom bars (`clear_of`): three tiers on the
+	# left, one tier centred on the right.
 	var frame := Control.new()
 	frame.name = "LayoutFrame"
-	frame.custom_minimum_size.y = 200
+	frame.custom_minimum_size.y = 320
 	var face := GoStyle.card()
 	face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	frame.add_child(face)
 	var top := GoTopBar.make(2)
+	top.edge_margin = 8
 	top.add_start(GoStyle.label("Inbox"))
 	top.add_end(GoStyle.icon_button(GoIconSet.SEARCH, _say.bind("search"), -1, &"search"))
 	frame.add_child(top)
 	var actions_row := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+	actions_row.edge_margin = 8
 	actions_row.layout_direction = Control.LAYOUT_DIRECTION_LTR
 	for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL, GoIconSet.USER]:
 		actions_row.add_start(GoStyle.icon_button(icon, _say.bind(String(icon)), -1, icon))
 	frame.add_child(actions_row)
+	var left_tools := GoLeftSideBar.make(3)
+	left_tools.edge_margin = 8
+	left_tools.add_start(GoStyle.icon_button(GoIconSet.MENU, _say.bind("menu"), -1, &"menu"))
+	left_tools.add_center(GoStyle.icon_button(GoIconSet.FILTER, _say.bind("filter"), -1, &"Filter"))
+	left_tools.add_end(GoStyle.icon_button(GoIconSet.SETTINGS, _say.bind("settings"), -1, &"settings"))
+	frame.add_child(left_tools)
+	var right_tools := GoRightSideBar.make(1, GoRightSideBar.Justify.CENTER)
+	right_tools.edge_margin = 8
+	right_tools.add_start(GoStyle.icon_button(GoIconSet.PLUS, _say.bind("zoom in"), -1, &"Zoom in"))
+	right_tools.add_start(GoStyle.icon_button(GoIconSet.MINUS, _say.bind("zoom out"), -1, &"Zoom out"))
+	frame.add_child(right_tools)
+	for side: GoSideBar in [left_tools, right_tools]: side.clear_of([top, actions_row] as Array[GoEdgeBar])
 	page.add_child(frame)
 	# Equal columns, as many 120dp-or-wider as fit.
 	var tiles := GoGrid.make(1, 120.0)

@@ -37,13 +37,14 @@ follow the same idea.
 
 ### Layout classes
 
-Three containers that **draw nothing** — only the container ignores the mouse (`MOUSE_FILTER_IGNORE`); its items keep
-their own filters and focus. Not `GoAppBar`/`GoNavBar` (faces, a title, destinations), not `GoSlotGrid` (the inventory
-of `GoSlot`s), and not `responsive_grid()` (which stays, returning a `GridContainer`).
+Containers that **draw nothing** — only the container ignores the mouse (`MOUSE_FILTER_IGNORE`); its items keep their
+own filters, focus and size flags. Not `GoAppBar`/`GoNavBar` (faces, a title, destinations — `GoNavBar.rail()` too),
+not `GoDrawer` (a panel that slides in), not `GoSlotGrid` (the inventory of `GoSlot`s), and not `responsive_grid()`
+(which stays, returning a `GridContainer`).
 
 | Class | Use | API |
 |---|---|---|
-| `GoTopBar` · `GoBottomBar` (both `GoEdgeBar`) | Items along the top or bottom edge in 1, 2 or 3 slots | `GoTopBar.make(count := 3)` · `GoBottomBar.make(count := 1, placing := Justify.START)` · `add_start(node)` `add_center(node)` `add_end(node)` (return the node) · `set_slot(node, slot)` `slot_of(node)` `items(slot)` · `columns` · `justify` (`START` `CENTER` `END` `SPACE_BETWEEN`, one column) · `separation` (-1 → `gap`) · `edge_margin` (-1 → `screen_margin`) · `safe_area` · `pin_to_edge` (`AUTO` `ALWAYS` `NEVER`) · `dock(host)` · static `edge_insets(rect, usable, screen, edge)` |
+| `GoTopBar` · `GoBottomBar` · `GoSideBar` → `GoLeftSideBar` · `GoRightSideBar` (all `GoEdgeBar`) | Items along an edge in 1, 2 or 3 slots — the tiers of a side bar | `GoTopBar.make(count := 3)` · `GoBottomBar.make(count := 1, placing := Justify.START)` · `GoLeftSideBar.make(count := 3, placing := Justify.START)` (and `GoRightSideBar`) · `add_start(node)` `add_center(node)` `add_end(node)` (return the node) · `set_slot(node, slot)` `slot_of(node)` `items(slot)` · `columns` (`tiers` on a side bar) · `justify` (`START` `CENTER` `END` `SPACE_BETWEEN`, one slot) · `separation` (-1 → `gap`) · `edge_margin` (-1 → `screen_margin`) · `thickness` (0 → as thick as the items) · `safe_area` · `avoid_keyboard` · `pin_to_edge` (`AUTO` `ALWAYS` `NEVER`) · `follow_text_direction` (side bars) · `dock(host)` · `extent()` · `clear_of(bars)` · static `edge_insets(rect, usable, screen, edge)` · metas `GROW` and `KEEP_WRAP` |
 | `GoGrid` | Columns of exactly equal width, fixed or responsive | `GoGrid.make(count := 2, min_cell := -1.0, gap := -1)` · `columns` · `min_cell_width` (> 0 → responsive) · `spacing` · `row_spacing` · `columns_in_use()` · cells with `add_child()` |
 
 ```gdscript
@@ -58,28 +59,64 @@ actions.layout_direction = Control.LAYOUT_DIRECTION_LTR   # a HUD row: physical 
 for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL]: actions.add_start(GoStyle.icon_button(icon, act.bind(icon)))
 screen.add_child(actions)
 
+var tools := GoLeftSideBar.make(3)         # top · middle · bottom tiers down the left edge
+tools.add_start(GoStyle.icon_button(GoIconSet.MENU, open_menu, -1, &"menu"))
+tools.add_center(GoStyle.icon_button(GoIconSet.SEARCH, find, -1, &"search"))
+tools.add_end(GoStyle.icon_button(GoIconSet.SETTINGS, open_settings, -1, &"settings"))
+screen.add_child(tools)
+tools.clear_of([bar, actions])             # between the top and bottom bars, following their height
+
 var tiles := GoGrid.make(1, 160.0)         # as many 160dp-or-wider columns as fit
 for item in items: tiles.add_child(GoStyle.item_card(item))
 ```
 
-- **Three slots**: the centre slot sits on the bar's centre while `max(start, end) + separation <= (width - centre) / 2`.
-  Past that it moves only as far as it must not to overlap a side; when the three cannot fit, the bar asks for their
-  total width and cuts nothing. Two slots: start and end (centre items follow the start ones, with a debug warning).
-- **One column**: every item in child order, placed by `justify`; `SPACE_BETWEEN` puts the first and last at the edges
-  with equal gaps between — never closer than `separation`, and one item stays at the start.
-- **Pinned or in the flow**: `AUTO` flows under a container and pins to the parent's edge (full width, as tall as its
-  items) under anything else; `ALWAYS` pins even inside a container (it turns `top_level`); `NEVER` leaves the anchors
-  alone. 🛑 In the flow, a bar stays at the bottom only as the sibling of the page that scrolls (the last child of a
-  column whose `GoScroll` expands) — inside the scrolling page it scrolls away. Pinned, `safe_area` pads by the part of
-  the notch or gesture bar the bar's own rectangle covers, so a bar already clear of it pads nothing.
-- **Direction**: `START` is the left in a left-to-right layout and the right in a right-to-left one, items inside a slot
-  reverse with it. A game HUD gives the bar `layout_direction = LTR`; labels still read by their own text.
-- 🛑 Items keep their natural width — wrapping is turned off on whatever enters (`natural_width`, as in `wrap_row`), so
-  no label folds to 1dp, inside a `GoForm` too. Buttons, chips, icons and short text; not cards. Side-by-side icon
-  buttons and slots are made each other's `touch_peers`. The bar is never shorter than the `touch` token.
+- **One rule for every edge**: items line up along the **main axis** — across a top or bottom bar, down a side bar —
+  and the bar's size on the other, **cross** axis is its thickness (as thick as its items, never under the `touch`
+  token, or `thickness` if larger). `START` is the start of the main axis: the left of a top bar in a left-to-right
+  layout, the top of a side bar.
+
+| Slots | Top / bottom bar | Side bar (tiers) |
+|---|---|---|
+| 1 | one run placed by `justify`: at the start, centre or end, or `SPACE_BETWEEN` — both bars | one tier at the top, middle or bottom (`justify` `START` · `CENTER` · `END`), or spread |
+| 2 | start slot at the start, end slot at the far end | top tier at the top, bottom tier at the bottom |
+| 3 | + the centre slot on the centre | + the middle tier on the middle |
+
+- **The centre slot** sits on the centre of the area inside the margins and the safe-area padding while
+  `max(start, end) + separation <= (length - centre) / 2`. Past that it moves aside only as far as it must not to overlap
+  a side (it is not held on the centre); when the slots cannot fit, the bar asks for their total length and cuts
+  nothing. Two slots have no centre — centre items follow the start ones, with a debug warning.
+- **One slot**: every item in child order. `SPACE_BETWEEN` puts the first and last at the ends with equal gaps between —
+  never closer than `separation`; one item stays at the start. An item marked `set_meta(GoEdgeBar.GROW, true)` takes
+  the room left — the value is its share, 2.0 for twice another's — (a search field filling a top bar) and `justify`
+  is not used; two and three slots keep every item at its own length. 🛑 Size flags never make an item grow along the
+  bar: `GoStyle.label()` and `GoStyle.button()` come with `SIZE_EXPAND_FILL` and still keep their own length. Across the bar, an item with `SIZE_EXPAND` fills the
+  thickness; any other sits on the bar's middle line at its own size.
+- **Pinned or in the flow**: `AUTO` flows under a container and pins under anything else — full width for a top or
+  bottom bar, full height for a side bar; `ALWAYS` pins even inside a container (it turns `top_level`); `NEVER`
+  leaves the anchors as they are, including those an earlier pin set; `dock(host)` moves it under a non-container
+  control and pins it (unless `NEVER`). In the editor a pinned bar writes its anchors too. 🛑 In the flow, a bar stays
+  at the bottom only as the sibling of the page that scrolls (the last child of a column whose `GoScroll` expands) —
+  inside the scrolling page it scrolls away. A pinned side bar runs the full height, corners included —
+  `clear_of([top, bottom])` keeps it between them and follows them (one way only: a bar that already clears this one
+  is skipped). `extent()` is how far a pinned bar reaches in from its edge — a reading, not a reservation: keep the
+  page that far away yourself. Too long for its edge (three tall tiers on a 390dp landscape screen), a pinned bar runs
+  past it — nothing overlaps, nothing is cut — and warns once in a debug build; put a long tier in a `GoScroll`.
+- **Safe area**: the bar pads by the part of the notch, status bar or gesture bar its own rectangle covers, pinned or
+  in the flow (not inside a scrolling page, where it would grow as it scrolls), so a top bar's items sit below the
+  notch and a bar already inside the safe area pads nothing. On its own edge that is the clearance measured from the
+  screen's edge. `avoid_keyboard` (off by default, needs the `GoRuntime` autoload) lifts a bottom bar's items above the
+  virtual keyboard.
+- **Direction**: a top or bottom bar follows the layout direction — `START` is the right in a right-to-left layout and
+  items inside a slot reverse with it; a game HUD gives the bar `layout_direction = LTR`. A side bar stays on the
+  physical side it names and keeps top-to-bottom order in every language; `follow_text_direction` swaps its side in
+  a right-to-left language.
+- 🛑 Text keeps one line: labels and buttons that enter have wrapping turned off (`go_no_wrap`), down through the item,
+  so no label folds to 1dp, inside a `GoForm` too. A panel of prose is marked `set_meta(GoEdgeBar.KEEP_WRAP, true)`
+  before it is added — nothing under it is touched — and given a width (`thickness` on a side bar, `SIZE_EXPAND_FILL`
+  across). Side-by-side icon buttons and slots are made each other's `touch_peers` (and let go when one leaves).
 - `GoGrid`: the cell rectangles are equal (1px at most between them); a child's size flags act only inside its cell.
   A child wider than `min_cell_width` widens every cell, so fewer columns fit. A responsive grid asks for one cell's
-  width, so it narrows back after a wide window.
+  width, so it narrows back after a wide window. Bars and grids watch the theme from `_enter_tree`, so a move keeps it.
 
 ## 2. Text
 

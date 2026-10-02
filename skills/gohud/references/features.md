@@ -115,7 +115,9 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 
 **Layout classes** — they draw nothing and only place what they hold (style.md §1 "Layout classes"):
 `GoTopBar` / `GoBottomBar` line items up along an edge in 1, 2 or 3 slots — the centre slot on the bar's centre, a
-one-column bottom bar spreading its items with equal gaps (`GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)`);
+one-slot bar spreading its items with equal gaps (`GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)`);
+`GoLeftSideBar` / `GoRightSideBar` (both `GoSideBar`) do the same down a side in 1 to 3 tiers — top, middle, bottom —
+holding buttons or panels, between the top and bottom bars with `clear_of` (`GoLeftSideBar.make(3)`);
 `GoGrid` gives columns of exactly equal width, fixed or as many as fit (`GoGrid.make(1, 160.0)`).
 
 ## 8. Looks

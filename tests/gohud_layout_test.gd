@@ -40,6 +40,7 @@ func _initialize() -> void:
 	await _section_rhythm()
 	await _drawer_width()
 	await _bars_and_grid_fit()
+	await _side_bars_fit()
 	await _gallery()
 
 	print("gohud layout tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -449,6 +450,76 @@ func _bars_and_grid_fit() -> void:
 	strip.free()
 	await _screen(390.0)
 	section("bars and grid")
+
+
+## 🔑 Side bars measured in portrait and landscape: three tiers with the middle one on the bar's middle, kept between a
+##    top and a bottom bar by `clear_of`, no item of one bar over an item of another, nothing past the screen.
+func _side_bars_fit() -> void:
+	for wanted in [Vector2(390, 844), Vector2(844, 390)]:
+		await _screen(wanted.x, wanted.y)
+		var view := root.get_visible_rect().size
+		check(absf(view.y - wanted.y) <= 1.0, "side bars %.0fx%.0f: the screen reached that height (%.0f)" % [wanted.x, wanted.y, view.y])
+		var host := Control.new()
+		host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		host.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		root.add_child(host)
+		var top := GoTopBar.make(3)
+		top.add_start(GoStyle.icon_button(GoIconSet.BACK, Callable(), -1, &"back"))
+		top.add_center(GoStyle.label("Stage 3"))
+		top.add_end(GoStyle.chip("1,250"))
+		var bottom := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+		for icon in [GoIconSet.EDIT, GoIconSet.HEART, GoIconSet.BELL]: bottom.add_start(GoStyle.icon_button(icon, Callable(), -1, icon))
+		var left := GoLeftSideBar.make(3)
+		left.add_start(GoStyle.icon_button(GoIconSet.MENU, Callable(), -1, &"menu"))
+		var middle := left.add_center(GoStyle.icon_button(GoIconSet.SEARCH, Callable(), -1, &"search"))
+		left.add_end(GoStyle.icon_button(GoIconSet.USER, Callable(), -1, &"profile"))
+		var right := GoRightSideBar.make(1, GoRightSideBar.Justify.CENTER)
+		for icon in [GoIconSet.PLUS, GoIconSet.SETTINGS]: right.add_start(GoStyle.icon_button(icon, Callable(), -1, icon))
+		for bar in [top, bottom, left, right]: host.add_child(bar)
+		for side in [left, right]: side.clear_of([top, bottom] as Array[GoEdgeBar])
+		await frames(5)
+		var room := Rect2(0, top.extent(), view.x, view.y - top.extent() - bottom.extent())
+		check(absf(middle.get_global_rect().get_center().y - room.get_center().y) <= 1.0,
+			"side bars %.0fx%.0f: the middle tier sits on the middle of the room between the bars (%.1f vs %.1f)" % [
+				wanted.x, wanted.y, middle.get_global_rect().get_center().y, room.get_center().y])
+		var rects: Array[Rect2] = []
+		var owners: Array = []
+		for bar in [top, bottom, left, right]:
+			for item in bar.get_children():
+				if item is Control and item.visible:
+					rects.append(item.get_global_rect())
+					owners.append(bar)
+		var clashes := 0
+		for a in rects.size():
+			for b in range(a + 1, rects.size()):
+				if owners[a] != owners[b] and rects[a].intersects(rects[b]): clashes += 1
+		check(clashes == 0, "side bars %.0fx%.0f: no item of one bar sits over an item of another (%d)" % [wanted.x, wanted.y, clashes])
+		check(GoStyle.audit_layout(host).is_empty(), "side bars %.0fx%.0f: nothing past the screen (%s)" % [wanted.x, wanted.y, str(GoStyle.audit_layout(host))])
+		host.free()
+		await frames(1)
+	# Too long for a 390dp landscape edge: a pinned bar runs past it — nothing overlaps, nothing is cut — and warns.
+	await _screen(844.0, 390.0)
+	var crowded := GoLeftSideBar.make(3)
+	var tall_items: Array[Control] = []
+	for index in 3:
+		var box := Control.new()
+		box.custom_minimum_size = Vector2(40, 160)
+		tall_items.append(box)
+	crowded.add_start(tall_items[0])
+	crowded.add_center(tall_items[1])
+	crowded.add_end(tall_items[2])
+	root.add_child(crowded)
+	await frames(4)
+	var overlaps := 0
+	for a in 3:
+		for b in range(a + 1, 3):
+			if tall_items[a].get_global_rect().intersects(tall_items[b].get_global_rect()): overlaps += 1
+	check(overlaps == 0 and tall_items.all(func(box: Control) -> bool: return absf(box.size.y - 160.0) < 0.5),
+		"side bars 844x390: three 160dp tiers on a 390dp edge never overlap or shrink (%d overlaps)" % overlaps)
+	check(crowded._warned_overflow, "side bars 844x390: a bar too long for its edge warns once in a debug build")
+	crowded.free()
+	await _screen(390.0)
+	section("side bars")
 
 
 # ── Coupon code ────────────────────────────────────────────────────────
