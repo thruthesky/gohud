@@ -661,13 +661,24 @@ def build(pal, shape, variant, out_path):
         #    hover and focus were indistinguishable). Filled buttons get a ring that **contrasts with
         #    the panel**.
         box("btn_focus_on_fill", draw_center=False, border=pal["on_accent"], bw=2, radius=R, margins=PAD)
-    box("btn_primary", bg=pal["accent"], border=pal["accent"], bw=1, radius=R, margins=PAD,
+    # 🔑 **Filled buttons sit flat by default** — no shadow on the rounded shapes, no glow on the cut one.
+    #    The accent shadow under the primary button was the only depth in a row of flat buttons and read as
+    #    a stray smudge (user report 2026-10-02). The raised look lives on in the `*_glow` boxes below,
+    #    reached through the `GoPrimaryGlowButton`·`GoDangerSolidGlowButton` variations
+    #    (`GoConfig.button_glow` for every button, `GoStyle.glow()` for one).
+    #    🛑 The `*_glow` boxes are **the old boxes, unchanged** — switching the option on brings back exactly
+    #    the look gohud had before, so nothing that relied on it has to be retuned.
+    primary_hover_bg = mix(pal["accent"], pal["text"], 0.18)
+    box("btn_primary", bg=pal["accent"], border=pal["accent"], bw=1, radius=R, margins=PAD)
+    box("btn_primary_hover", bg=primary_hover_bg, border=pal["accent"], bw=1, radius=R, margins=PAD)
+    box("btn_primary_pressed", bg=primary_press_bg, border=pal["accent"], bw=1, radius=R, margins=PAD)
+    box("btn_primary_glow", bg=pal["accent"], border=pal["accent"], bw=1, radius=R, margins=PAD,
         glow=(alpha(pal["accent"], 0.55), 7),
         flat_shadow=(alpha(pal["accent"], 0.34), 8, (0, 3)))
-    box("btn_primary_hover", bg=mix(pal["accent"], pal["text"], 0.18), border=pal["accent"], bw=1, radius=R, margins=PAD,
+    box("btn_primary_glow_hover", bg=primary_hover_bg, border=pal["accent"], bw=1, radius=R, margins=PAD,
         glow=(alpha(pal["accent"], 0.75), 10),
         flat_shadow=(alpha(pal["accent"], 0.46), 11, (0, 4)))
-    box("btn_primary_pressed", bg=primary_press_bg, border=pal["accent"], bw=1, radius=R, margins=PAD,
+    box("btn_primary_glow_pressed", bg=primary_press_bg, border=pal["accent"], bw=1, radius=R, margins=PAD,
         flat_shadow=(alpha(pal["shadow"], pal["shadow"][3] * 0.25), 3, (0, 1)))
     box("btn_danger", bg=danger_bg, border=alpha(pal["danger"], 0.85), bw=1, radius=R, margins=PAD)
     box("btn_danger_hover", bg=danger_bg_hover, border=pal["danger"], bw=1, radius=R, margins=PAD)
@@ -675,15 +686,20 @@ def build(pal, shape, variant, out_path):
     #    forces the text very dark to be readable (`#9B2626` in the light theme), and then it is no
     #    longer "red", just black writing. Filling it and putting white text on raises contrast to
     #    5.7:1 and the danger reads at a glance.
-    box("btn_danger_solid", bg=pal["danger"], border=pal["danger"], bw=1, radius=R, margins=PAD,
-        flat_shadow=(alpha(pal["danger"], 0.34), 8, (0, 3)))
-    box("btn_danger_solid_hover", bg=mix(pal["danger"], pal["text"], 0.18), border=pal["danger"], bw=1,
-        radius=R, margins=PAD, flat_shadow=(alpha(pal["danger"], 0.46), 11, (0, 4)))
+    # Flat by default, the old raised look in `*_glow` — the same split as the accent button above.
+    danger_solid_hover_bg = mix(pal["danger"], pal["text"], 0.18)
     # 🛑 The pressed panel mixes **toward the text colour** (the same way the accent button does). Mixing
     #    toward the background brightens the panel in the light theme and white text falls to 3.87:1
     #    (measured 2026-09-13).
     danger_solid_press_bg = mix(pal["danger"], pal["text"], 0.22)
-    box("btn_danger_solid_pressed", bg=danger_solid_press_bg, border=pal["danger"],
+    box("btn_danger_solid", bg=pal["danger"], border=pal["danger"], bw=1, radius=R, margins=PAD)
+    box("btn_danger_solid_hover", bg=danger_solid_hover_bg, border=pal["danger"], bw=1, radius=R, margins=PAD)
+    box("btn_danger_solid_pressed", bg=danger_solid_press_bg, border=pal["danger"], bw=1, radius=R, margins=PAD)
+    box("btn_danger_solid_glow", bg=pal["danger"], border=pal["danger"], bw=1, radius=R, margins=PAD,
+        flat_shadow=(alpha(pal["danger"], 0.34), 8, (0, 3)))
+    box("btn_danger_solid_glow_hover", bg=danger_solid_hover_bg, border=pal["danger"], bw=1,
+        radius=R, margins=PAD, flat_shadow=(alpha(pal["danger"], 0.46), 11, (0, 4)))
+    box("btn_danger_solid_glow_pressed", bg=danger_solid_press_bg, border=pal["danger"],
         bw=1, radius=R, margins=PAD,
         flat_shadow=(alpha(pal["shadow"], pal["shadow"][3] * 0.25), 3, (0, 1)))
 
@@ -998,6 +1014,13 @@ def build(pal, shape, variant, out_path):
     sb("GoPrimaryButton/styles/pressed", "btn_primary_pressed")
     sb("GoPrimaryButton/styles/hover_pressed", "btn_primary_pressed")
     sb("GoPrimaryButton/styles/focus", "btn_focus_on_fill")
+    # 🔑 The raised version **hangs off the flat one** — only the four faces differ, so the text colours,
+    #    the focus ring and the disabled face come from `GoPrimaryButton` and cannot drift apart.
+    add("GoPrimaryGlowButton/base_type", '&"GoPrimaryButton"')
+    sb("GoPrimaryGlowButton/styles/normal", "btn_primary_glow")
+    sb("GoPrimaryGlowButton/styles/hover", "btn_primary_glow_hover")
+    sb("GoPrimaryGlowButton/styles/pressed", "btn_primary_glow_pressed")
+    sb("GoPrimaryGlowButton/styles/hover_pressed", "btn_primary_glow_pressed")
 
     # The filled danger button — its text is the same `on_accent` as the accent button's (the panel is
     # dark enough for white text to read).
@@ -1018,6 +1041,11 @@ def build(pal, shape, variant, out_path):
     sb("GoDangerSolidButton/styles/pressed", "btn_danger_solid_pressed")
     sb("GoDangerSolidButton/styles/hover_pressed", "btn_danger_solid_pressed")
     sb("GoDangerSolidButton/styles/focus", "btn_focus_on_fill")
+    add("GoDangerSolidGlowButton/base_type", '&"GoDangerSolidButton"')
+    sb("GoDangerSolidGlowButton/styles/normal", "btn_danger_solid_glow")
+    sb("GoDangerSolidGlowButton/styles/hover", "btn_danger_solid_glow_hover")
+    sb("GoDangerSolidGlowButton/styles/pressed", "btn_danger_solid_glow_pressed")
+    sb("GoDangerSolidGlowButton/styles/hover_pressed", "btn_danger_solid_glow_pressed")
 
     add("GoDangerButton/base_type", '&"Button"')
     add("GoDangerButton/colors/font_color", C(danger_ink))

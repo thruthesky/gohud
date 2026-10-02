@@ -55,7 +55,8 @@ PY
   # 🛑 Do not judge by the output — even a failure reads `gohud tests: 267/271 passed`, which contains "passed".
   #    (On the very first day this tool was used it fell into that trap and reported a false "all 10 missed".)
   #    Use the exit code.
-  if GOHUD_PROJECT="$PROJECT" bash "$ADDON/tools/run_tests.sh" > /dev/null 2>&1; then
+  if GOHUD_TEST_SCRIPT="${MUTATE_SCRIPT:-${GOHUD_TEST_SCRIPT:-}}" GOHUD_PROJECT="$PROJECT" \
+      bash "$ADDON/tools/run_tests.sh" > /dev/null 2>&1; then
     if [ "$expect" = "env" ]; then
       printf "   ·  %-46s cannot be verified here (real device only)\n" "$rule"
       SKIPPED=$((SKIPPED + 1))
@@ -69,6 +70,28 @@ PY
     CAUGHT=$((CAUGHT + 1))
   fi
   cp "$backup" "$path"; rm -f "$backup"
+}
+
+# mutate_extra … — the same, judged by `gohud_extra_test.gd`, where the surface layout checks live.
+# 🛑 That file has to pass **unbroken** in this project first — some of its checks depend on the window size, and a
+#    project where it already fails would report every mutation as caught. Measured once, on first use.
+EXTRA_SCRIPT="res://addons/gohud/tests/gohud_extra_test.gd"
+EXTRA_BASELINE=""
+mutate_extra() {
+  if [ -z "$EXTRA_BASELINE" ]; then
+    if GOHUD_TEST_SCRIPT="$EXTRA_SCRIPT" GOHUD_PROJECT="$PROJECT" bash "$ADDON/tools/run_tests.sh" > /dev/null 2>&1; then
+      EXTRA_BASELINE=pass
+    else
+      EXTRA_BASELINE=fail
+      echo "   ⚠️  gohud_extra_test.gd fails in this project before any mutation — its mutations are skipped"
+    fi
+  fi
+  if [ "$EXTRA_BASELINE" = fail ]; then
+    printf "   ·  %-46s cannot be verified here (extra tests red unbroken)\n" "$4"
+    SKIPPED=$((SKIPPED + 1))
+    return
+  fi
+  MUTATE_SCRIPT="$EXTRA_SCRIPT" mutate "$@"
 }
 
 echo "🧬 breaking the checks on purpose — only in the copy under $PROJECT, never the original"
@@ -86,6 +109,36 @@ mutate "widgets/go_notice.gd" \
   "mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED" \
   "mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_INHERITED" \
   "the snackbar does not steal input"
+
+printf "\n\033[1m── finger swipes in a scroll\033[0m\n"
+mutate "widgets/go_scroll.gd" \
+  "	if control is Button or control.mouse_filter == Control.MOUSE_FILTER_STOP:" \
+  "	if control is Button:" \
+  "a swipe that starts on a card scrolls the list"
+mutate "widgets/go_scroll.gd" \
+  "	if _settling.is_empty(): _settle.call_deferred()" \
+  "	pass" \
+  "a STOP set right after add_child still loses"
+mutate "widgets/go_scroll.gd" \
+  "	if control is LineEdit or control is TextEdit or control is OptionButton: return true" \
+  "	if false: return true" \
+  "a text field in a scroll keeps its own drag"
+mutate "widgets/go_scroll.gd" \
+  "	_holder_filter = Control.MOUSE_FILTER_PASS if _held_by_scroll() else Control.MOUSE_FILTER_STOP" \
+  "	_holder_filter = Control.MOUSE_FILTER_PASS" \
+  "a lone horizontal row keeps presses off the world"
+mutate "widgets/go_scroll.gd" \
+  "		if ancestor is ScrollContainer: return true" \
+  "		if false: return true" \
+  "a horizontal row in a sheet passes vertical swipes"
+mutate "widgets/go_scroll.gd" \
+  "	for key: Variant in branches:" \
+  "	for key: Node in branches:" \
+  "a row freed on entry does not end the second pass"
+mutate "widgets/go_scroll.gd" \
+  "	for child: Variant in _drag_muted:" \
+  "	for child: Control in _drag_muted:" \
+  "a list rebuilt mid-drag takes the mouse again"
 
 printf "\n\033[1m── layout\033[0m\n"
 mutate "widgets/go_style.gd" \
@@ -135,8 +188,7 @@ mutate "widgets/go_slot.gd" \
   "Color(" \
   "slot text is readable on its plate"
 mutate "widgets/go_slot.gd" \
-  "		_icon.modulate = GoUi.skin().readable_on(
-			GoUi.color(GoTheme.MUTED) if faded else GoUi.color(GoTheme.TEXT), on_face)" \
+  "		_icon.modulate = GoUi.skin().readable_on(GoUi.color(GoTheme.MUTED) if faded else wanted, on_face)" \
   "		_icon.modulate = Color.WHITE" \
   "slot icon is readable on its plate"
 mutate "widgets/go_icon_button.gd" \
@@ -250,6 +302,40 @@ mutate "widgets/go_surface.gd" \
   "	return _open_count > 0" \
   "	return false" \
   "tells whether any surface is open"
+
+printf "\n\033[1m── surface layout pass (extra tests)\033[0m\n"
+mutate_extra "widgets/go_surface.gd" \
+  "	if _resize_pending or (fit_content and (_layout_dirty or placement == Placement.ANCHOR)):" \
+  "	if true:" \
+  "an idle open surface does not lay out every frame"
+mutate_extra "widgets/go_surface.gd" \
+  "		if max_width == value: return
+		max_width = value
+		_layout_dirty = true" \
+  "		if max_width == value: return
+		max_width = value" \
+  "a size field set to a new value applies next frame"
+mutate_extra "widgets/go_surface.gd" \
+  "		section.minimum_size_changed.connect(_mark_layout_dirty)" \
+  "		pass" \
+  "the card follows its content"
+mutate_extra "widgets/go_surface.gd" \
+  "		_resize_pending = true
+		_height_unreported = true" \
+  "		_resize_pending = true
+		_height_unreported = true
+		relayout()" \
+  "drag events in one frame make one relayout"
+mutate_extra "widgets/go_surface.gd" \
+  "		_layout_dirty = false
+		_resize_pending = false
+		relayout()" \
+  "		relayout()" \
+  "a relayout() override without super() goes quiet"
+mutate_extra "widgets/go_surface.gd" \
+  "		_height_unreported = true" \
+  "		height_changed.emit(height_ratio)" \
+  "height_changed comes after the card is resized"
 
 printf "\n\033[1m── RTL (mirrored layout)\033[0m\n"
 mutate "widgets/go_scroll.gd" \

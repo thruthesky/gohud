@@ -264,7 +264,7 @@ GoUi.config = settings
 
 | 묶음 | 칸 |
 |---|---|
-| 겉모습 | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile` |
+| 겉모습 | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow`(**기본 꺼짐**) |
 | 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
 | 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
 | 피드백 | `haptics_enabled`, `haptic_tap/light/medium_ms` 와 세기, `sound_cues` |
@@ -384,8 +384,11 @@ icons.canonical(&"gear")             # &"settings"
 | 글자 역할 | `micro`, `compact`, `caption`, `body`, `button`, `subtitle`, `title` |
 
 타입 변형: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerButton`, `GoDangerSolidButton`,
-`GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`, `GoTitleLabel`, `GoSubtitleLabel`,
-`GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
+`GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`,
+`GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
+
+채운 버튼은 기본으로 평평하다. `*GlowButton` 두 변형은 버튼 자기 색의 부드러운 그림자(sci-fi 모양은 글로우)로 띄운다 —
+채운 버튼 전부는 `GoConfig.button_glow` 를 켜고, 버튼 하나만은 `GoStyle.glow(button)` 을 부른다.
 
 `GoHud` 토큰이 없는 테마를 꽂아도 동작한다 — `token_fallback` 이 켜져 있는 동안 빠진 토큰은 기본 테마에서 채운다.
 

@@ -144,6 +144,11 @@ const VAR_PRIMARY_BUTTON := &"GoPrimaryButton"
 const VAR_DANGER_BUTTON := &"GoDangerButton"
 ## The filled danger button — used only on the **confirm** button of an irreversible action. For a faint danger button use the one above.
 const VAR_DANGER_SOLID_BUTTON := &"GoDangerSolidButton"
+## The primary button **raised by a glow** — an accent shadow under the plate (a glow on the sci-fi cut shape).
+## Filled buttons sit flat by default; `GoConfig.button_glow` or `GoStyle.glow()` switches to this. Its base is `GoPrimaryButton`.
+const VAR_PRIMARY_GLOW_BUTTON := &"GoPrimaryGlowButton"
+## The filled danger button with the same raised look. Its base is `GoDangerSolidButton`.
+const VAR_DANGER_SOLID_GLOW_BUTTON := &"GoDangerSolidGlowButton"
 const VAR_BARE_BUTTON := &"GoBareButton"
 const VAR_COMPACT_BUTTON := &"GoCompactButton"
 const VAR_ICON_BUTTON := &"GoIconButton"

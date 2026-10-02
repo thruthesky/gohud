@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=74 format=3]
+[gd_resource type="Theme" load_steps=80 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_cut.gd" id="cut"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_bracket.gd" id="bracket"]
@@ -106,10 +106,46 @@ cut = 10.2
 cut_corners = 5
 border_width = 1
 border_color = Color(0, 0.494118, 0.662745, 1)
+
+[sub_resource type="StyleBox" id="btn_primary_hover"]
+script = ExtResource("cut")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.004941, 0.42353, 0.570275, 1)
+cut = 10.2
+cut_corners = 5
+border_width = 1
+border_color = Color(0, 0.494118, 0.662745, 1)
+
+[sub_resource type="StyleBox" id="btn_primary_pressed"]
+script = ExtResource("cut")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.006039, 0.407843, 0.549726, 1)
+cut = 10.2
+cut_corners = 5
+border_width = 1
+border_color = Color(0, 0.494118, 0.662745, 1)
+
+[sub_resource type="StyleBox" id="btn_primary_glow"]
+script = ExtResource("cut")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0, 0.494118, 0.662745, 1)
+cut = 10.2
+cut_corners = 5
+border_width = 1
+border_color = Color(0, 0.494118, 0.662745, 1)
 glow_color = Color(0, 0.494118, 0.662745, 0.55)
 glow_size = 7
 
-[sub_resource type="StyleBox" id="btn_primary_hover"]
+[sub_resource type="StyleBox" id="btn_primary_glow_hover"]
 script = ExtResource("cut")
 content_margin_left = 16
 content_margin_top = 10
@@ -123,7 +159,7 @@ border_color = Color(0, 0.494118, 0.662745, 1)
 glow_color = Color(0, 0.494118, 0.662745, 0.75)
 glow_size = 10
 
-[sub_resource type="StyleBox" id="btn_primary_pressed"]
+[sub_resource type="StyleBox" id="btn_primary_glow_pressed"]
 script = ExtResource("cut")
 content_margin_left = 16
 content_margin_top = 10
@@ -184,6 +220,42 @@ border_width = 1
 border_color = Color(0.745098, 0.168627, 0.262745, 1)
 
 [sub_resource type="StyleBox" id="btn_danger_solid_pressed"]
+script = ExtResource("cut")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.587216, 0.15396, 0.237726, 1)
+cut = 10.2
+cut_corners = 5
+border_width = 1
+border_color = Color(0.745098, 0.168627, 0.262745, 1)
+
+[sub_resource type="StyleBox" id="btn_danger_solid_glow"]
+script = ExtResource("cut")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.745098, 0.168627, 0.262745, 1)
+cut = 10.2
+cut_corners = 5
+border_width = 1
+border_color = Color(0.745098, 0.168627, 0.262745, 1)
+
+[sub_resource type="StyleBox" id="btn_danger_solid_glow_hover"]
+script = ExtResource("cut")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.615922, 0.156627, 0.242275, 1)
+cut = 10.2
+cut_corners = 5
+border_width = 1
+border_color = Color(0.745098, 0.168627, 0.262745, 1)
+
+[sub_resource type="StyleBox" id="btn_danger_solid_glow_pressed"]
 script = ExtResource("cut")
 content_margin_left = 16
 content_margin_top = 10
@@ -719,6 +791,11 @@ GoDangerSolidButton/styles/hover = SubResource("btn_danger_solid_hover")
 GoDangerSolidButton/styles/hover_pressed = SubResource("btn_danger_solid_pressed")
 GoDangerSolidButton/styles/normal = SubResource("btn_danger_solid")
 GoDangerSolidButton/styles/pressed = SubResource("btn_danger_solid_pressed")
+GoDangerSolidGlowButton/base_type = &"GoDangerSolidButton"
+GoDangerSolidGlowButton/styles/hover = SubResource("btn_danger_solid_glow_hover")
+GoDangerSolidGlowButton/styles/hover_pressed = SubResource("btn_danger_solid_glow_pressed")
+GoDangerSolidGlowButton/styles/normal = SubResource("btn_danger_solid_glow")
+GoDangerSolidGlowButton/styles/pressed = SubResource("btn_danger_solid_glow_pressed")
 GoHud/colors/accent = Color(0, 0.494118, 0.662745, 1)
 GoHud/colors/accent_fill = Color(0, 0.682353, 0.878431, 1)
 GoHud/colors/accent_vivid = Color(0, 0.682353, 0.878431, 1)
@@ -815,6 +892,11 @@ GoPrimaryButton/styles/hover = SubResource("btn_primary_hover")
 GoPrimaryButton/styles/hover_pressed = SubResource("btn_primary_pressed")
 GoPrimaryButton/styles/normal = SubResource("btn_primary")
 GoPrimaryButton/styles/pressed = SubResource("btn_primary_pressed")
+GoPrimaryGlowButton/base_type = &"GoPrimaryButton"
+GoPrimaryGlowButton/styles/hover = SubResource("btn_primary_glow_hover")
+GoPrimaryGlowButton/styles/hover_pressed = SubResource("btn_primary_glow_pressed")
+GoPrimaryGlowButton/styles/normal = SubResource("btn_primary_glow")
+GoPrimaryGlowButton/styles/pressed = SubResource("btn_primary_glow_pressed")
 GoSubtitleLabel/base_type = &"Label"
 GoSubtitleLabel/font_sizes/font_size = 22
 GoTitleLabel/base_type = &"Label"

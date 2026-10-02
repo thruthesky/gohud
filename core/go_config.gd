@@ -101,6 +101,12 @@ signal changed_settings
 ## 🛑 It does not shrink the touch size — a finger does not get smaller because the screen did.
 @export var shrink_type_on_mobile := true
 
+## ✨ Raise the **filled buttons** (`Tone.PRIMARY`, `Tone.DANGER_SOLID`) with a glow — a soft shadow in the button's
+## colour under the plate (a glow on the sci-fi cut shape). Off by default: every button sits flat.
+## For one button only, use `GoStyle.glow(button)`.
+## 🛑 It is read when a button is styled — set it before building the screen. Buttons already on screen keep their look.
+@export var button_glow := false
+
 
 # ── Responsive ─────────────────────────────────────────────────────────
 

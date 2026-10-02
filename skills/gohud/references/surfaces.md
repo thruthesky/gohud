@@ -21,7 +21,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 
 | Member | Notes |
 |---|---|
-| signals | `close_requested` · `back_requested` · `height_changed(ratio: float)` |
+| signals | `close_requested` · `back_requested` · `height_changed(ratio: float)` (handle drag — once per frame, after the card has that height) |
 | `enum Placement { CENTER, BOTTOM, ANCHOR }` | `placement` (CENTER) |
 | size | `max_width` / `max_height` / `height_ratio` / `max_height_ratio` (0 = GoConfig value) · `fit_content` (true — short content, short card) · `compact` (smaller padding) · `height_ratio_cap()`. 🛑 With `compact` on, a viewport under 420 high or content that overflows, the surface goes **dense**: padding drops to `padding_compact` and the **title drops to `body`** (16), re-applied on every relayout — a list under it loses its top step. Put the heading players read first in the body (`SKILL.md` rule 15) |
 | ceiling | 🛑 `height_ratio` above `max_height_ratio` (default `GoConfig.surface_max_height_ratio`, 0.72) is cut — raise `max_height_ratio` on the one surface that needs it; a debug build warns once. A centered `fit_content` card still grows to `surface_fit_max_height_ratio` (0.94) for long content. Drag-resize stops at the same ceiling |
@@ -30,6 +30,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 | anchor | `anchor_control` · `anchor_width` (320) · `anchor_min_width` (210) · `anchor_max_height` (520) — opens below, or above when there is more room |
 | parts | `card` PanelContainer · `header` HBox · `title_label` · `close_button` GoIconButton · `back_button` · `scroll` GoScroll (**created in `_ready`**) · `body` VBox · `toolbar` VBox (hidden) · `footer` VBox (hidden) |
 | methods | `set_title(text)` · `set_title_key(key)` · `set_back(callable)` (empty Callable hides) · `clear()` · `request_close()` · `is_top()` · `relayout()` · `content_inset()` · `section_gap()` · `attach_resize_handle(control)` |
+| layout pass | Runs **when something changes**, not every frame: a size field above set to a new value, a section's minimum size or visibility, the window, the keyboard, the config. Assign a field and it applies next frame — no `relayout()` call needed. An `ANCHOR` popover follows its anchor every frame. A subclass may replace `relayout()` outright (no `super()`) and still gets these calls |
 | static | `GoSurface.is_any_open() -> bool` — pause gameplay input while true |
 
 🛑 It never frees itself. The owner reacts to `close_requested` (hide, `queue_free`, save first…).
@@ -228,7 +229,7 @@ highlight rides along with the finger.
 | Member | Notes |
 |---|---|
 | one child | Headers and button rows stay outside |
-| `static horizontal() -> GoScroll` · `static as_horizontal(node)` | Chip rows, thumbnail strips |
+| `static horizontal() -> GoScroll` · `static as_horizontal(node)` | Chip rows, thumbnail strips. PASS while another scroll holds it (an up-and-down swipe on the row scrolls the sheet), STOP standing alone — a strip in a HUD never hands a press to the world. Set `mouse_filter` yourself after `horizontal()` and it stays yours |
 | `static containing(node) -> GoScroll` | Nearest scrolling ancestor |
 | `use_panel_edge(parent_padding)` · `set_panel_padding(p)` | Move the scrollbar into the card padding (GoSurface/GoForm call it) |
 | `set_section_visible(v)` | Hide the scroll plus its edge frame |

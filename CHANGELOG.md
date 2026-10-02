@@ -25,6 +25,40 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   keeps STOP. Taps still land, a swipe that starts on a button still does not press it, a swipe that ends on a link
   does not open it, and a carousel inside a sheet still turns its pages sideways while an up-and-down swipe scrolls
   the sheet.
+- **A horizontal `GoScroll` standing alone no longer lets a press through to the game.** `GoScroll.horizontal()` was
+  always PASS, so a strip placed straight over the world (in a HUD, not in a window) handed every press nothing took —
+  on a card, in the gap between two chips, even on a button, which does not accept the press — on to
+  `_unhandled_input`, where the game read it as a tap on the world. A horizontal row is now PASS only while another
+  scroll holds it (an up-and-down swipe on it still scrolls the sheet), and STOP standing alone. It decides each time
+  it enters the tree, and a `mouse_filter` the caller sets after `horizontal()` is left alone.
+- **A row freed in the frame it entered no longer stops `GoScroll`'s second touch pass.** The queued row was assigned
+  to a typed loop variable, a script error that ended the pass and left every row queued after it STOP — seen in a
+  list rebuilt in place.
+- **A list rebuilt while the finger drags takes the mouse again.** The rows muted for a drag were walked with a typed
+  loop variable too; a freed one raised a script error that skipped the restore and kept a stale entry, so every later
+  drag left the new rows ignoring the mouse.
+- **A `GoSurface` subclass that replaces `relayout()` without calling `super()` is not laid out every frame.** The
+  dirty flags are cleared before the call as well as inside it; such a subclass laid out every frame, and after one
+  handle drag kept doing so for good.
+
+### Changed
+
+- **Filled buttons sit flat by default.** The primary button (`Tone.PRIMARY`) drew a soft accent shadow under its
+  plate — a glow on the sci-fi shape — and the filled danger button (`Tone.DANGER_SOLID`) a red one, the only depth
+  in a row of flat buttons. All six built-in themes now draw both flat in every state. The old look is one option
+  away: `GoConfig.button_glow = true` for every filled button, `GoStyle.glow(button)` for one. A theme generated
+  with `tools/make_theme.py` or `tools/new_theme.py` before this change keeps its shadow until it is generated again.
+- **`GoSurface` lays out when something changes, not every frame.** A `fit_content` surface used to run `relayout()`
+  every frame for as long as it was open, and once per drag event while its handle was dragged — 70–95 µs a frame on a
+  desktop CPU for an idle 23-row sheet, paid continuously on a phone. The layout fields (`placement`, `max_width`,
+  `max_height`, `height_ratio`, `max_height_ratio`, `fit_content`, `compact`, `anchor_*`) are setters that mark the
+  layout dirty when the value really changes, each section (`header`, `toolbar`, `body`, `status`, `footer`) reports
+  a new minimum size or visibility, and a handle drag is applied once per frame. Assigning a field without calling
+  `relayout()` still takes effect on the next frame. An `ANCHOR` popover still follows its anchor every frame.
+- **`GoSurface.height_changed` goes out once per frame, after the card has that height** — it used to fire once per
+  drag event, before the resize was applied.
+- `GoStyle.style_choice_card`'s `filter` argument is only for a card **outside** a scroll now; inside a `GoScroll`
+  the touch policy handles it.
 
 ### Added
 
@@ -43,6 +77,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   It only replaces the boxes and entries the generator already makes, so the other six themes are generated exactly
   as before.
 
+- **`GoConfig.button_glow`** (off by default) and **`GoStyle.glow(button, on := true) -> Button`** — raise filled
+  buttons with the glow they used to have. They switch the button to the new type variations
+  **`GoPrimaryGlowButton`** and **`GoDangerSolidGlowButton`** (constants `GoTheme.VAR_PRIMARY_GLOW_BUTTON`,
+  `GoTheme.VAR_DANGER_SOLID_GLOW_BUTTON`), which hang off the flat ones and change only the faces, so text colours,
+  the focus ring and the disabled face stay shared. Other tones are left alone, and so is a button whose theme lacks
+  the variation. In a `.tscn`, type the variation name into *Theme Type Variation*.
 - **`GoScroll.OWNS_GESTURE`** — set this meta to `true` on a control that owns a competing drag (a pannable map, a
   drawing pad) and the scroll leaves its `mouse_filter` alone. `GoScroll.owns_gesture(control)` gives the policy's
   verdict.
@@ -51,11 +91,6 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - The tests now drive the engine's own drag (touch emulation gives the headless run a touchscreen) instead of raising
   `scroll_started` by hand, across buttons, cards, panels, `ColorRect`, text bodies, art, chips, item cards, alerts,
   nested plates and a horizontal row inside a vertical sheet.
-
-### Changed
-
-- `GoStyle.style_choice_card`'s `filter` argument is only for a card **outside** a scroll now; inside a `GoScroll`
-  the touch policy handles it.
 
 ## [1.2.1] - 2026-09-28
 

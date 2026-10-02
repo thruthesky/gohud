@@ -199,7 +199,7 @@ STATE_FONTS = {
 # Types to check — only the ones that hold text. Scrollbars and sliders have none.
 TEXT_TYPES = [
     "Button", "OptionButton", "GoButton", "GoPrimaryButton", "GoDangerButton", "GoDangerSolidButton",
-    "GoCompactButton", "GoListButton", "LineEdit", "TextEdit", "PopupMenu", "TabBar",
+    "GoPrimaryGlowButton", "GoDangerSolidGlowButton", "GoCompactButton", "GoListButton", "LineEdit", "TextEdit", "PopupMenu", "TabBar",
     "FoldableContainer",
 ]
 

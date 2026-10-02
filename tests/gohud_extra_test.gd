@@ -1383,6 +1383,8 @@ func _surface_height_cap() -> void:
 	drag.relative = Vector2(0, -area.size.y)
 	sheet.surface._input(drag)
 	sheet.surface._dragging = false
+	# Reported from the next `_process`, once the card has that height.
+	await frames(1)
 	check(not reported.is_empty() and reported.back() <= GoUi.config.surface_max_height_ratio + 0.001,
 		"height cap: a drag past the ceiling reports the ceiling (%s)" % str(reported))
 	sheet.queue_free()
@@ -1397,6 +1399,18 @@ class _CountingSurface extends GoSurface:
 	func relayout() -> void:
 		calls += 1
 		super()
+
+
+## Sizes its own card and never calls `super()` — the way a host replaces the layout outright.
+class _ReplacingSurface extends GoSurface:
+	var calls := 0
+
+	func relayout() -> void:
+		calls += 1
+		if card == null or not is_inside_tree(): return
+		var area := get_viewport_rect()
+		card.size = Vector2(area.size.x * 0.9, area.size.y * height_ratio).round()
+		card.position = Vector2(area.size.x * 0.05, area.size.y - card.size.y).round()
 
 
 ## 🔑 A `fit_content` surface re-measures **only when something it reads changed** — it used to run `relayout()` every
@@ -1442,6 +1456,9 @@ func _surface_event_relayout() -> void:
 	for index in 30: surface.body.add_child(GoStyle.label("Row %d" % index))
 	await frames(6)
 	var before := surface.card.size.y
+	# Each report notes the card height at that moment — it must already be the dragged one.
+	var reports: Array[float] = []
+	surface.height_changed.connect(func(_ratio: float) -> void: reports.append(surface.card.size.y))
 	surface._dragging = true
 	surface._touch_index = 0
 	calls = surface.calls
@@ -1454,8 +1471,44 @@ func _surface_event_relayout() -> void:
 	await frames(1)
 	check(surface.calls == calls + 1, "event relayout: four drag events in a frame → one relayout (%d)" % (surface.calls - calls))
 	check(surface.card.size.y < before - 1.0, "event relayout: the dragged card still moves in that frame (%.0f → %.0f)" % [before, surface.card.size.y])
+	check(reports.size() == 1, "event relayout: height_changed goes out once for the frame's four drag events (%d)" % reports.size())
+	check(not reports.is_empty() and is_equal_approx(reports[0], surface.card.size.y),
+		"event relayout: height_changed comes after the card took that height (%s · now %.0f)" % [str(reports), surface.card.size.y])
 	surface._dragging = false
 	surface._touch_index = -1
+	layer.queue_free()
+	await frames(2)
+
+	# 🛑 A subclass that **replaces** `relayout()` without `super()` (Laryen's inventory surface sizes its own card) never
+	#    clears the dirty flags itself. They are cleared before the call, or it lays out every frame — after one drag, forever.
+	layer = CanvasLayer.new()
+	root.add_child(layer)
+	var own := _ReplacingSurface.new()
+	own.placement = GoSurface.Placement.BOTTOM
+	own.resizable = true
+	own.height_ratio = 0.5
+	for index in 6: own.body.add_child(GoStyle.label("Row %d" % index))
+	layer.add_child(own)
+	await frames(6)
+	settled = own.calls
+	await frames(20)
+	check(own.calls == settled, "event relayout: a relayout() override without super() is not run every frame (%d calls over 20 frames)" % (own.calls - settled))
+	own._dragging = true
+	own._touch_index = 0
+	var pull := InputEventScreenDrag.new()
+	pull.index = 0
+	pull.relative = Vector2(0, -20)
+	own._input(pull)
+	own._dragging = false
+	own._touch_index = -1
+	await frames(1)
+	calls = own.calls
+	check(calls > settled, "event relayout: the override still gets the drag (%d)" % (calls - settled))
+	await frames(20)
+	check(own.calls == calls, "event relayout: …and after the drag it goes quiet again (%d calls over 20 frames)" % (own.calls - calls))
+	own.body.add_child(GoStyle.label("One more row"))
+	await frames(2)
+	check(own.calls > calls, "event relayout: …and a content change still reaches the override")
 	layer.queue_free()
 	await frames(2)
 	section("surface event relayout")

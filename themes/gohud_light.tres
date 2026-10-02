@@ -302,9 +302,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-shadow_color = Color(0.752941, 0.184314, 0.184314, 0.46)
-shadow_size = 11
-shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxFlat" id="btn_danger_solid_pressed"]
 content_margin_left = 16.0
@@ -321,9 +318,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-shadow_color = Color(0.062745, 0.086275, 0.121569, 0.075)
-shadow_size = 3
-shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxFlat" id="btn_danger_solid"]
 content_margin_left = 16.0
@@ -340,9 +334,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-shadow_color = Color(0.752941, 0.184314, 0.184314, 0.34)
-shadow_size = 8
-shadow_offset = Vector2(0, 3)
 
 [sub_resource type="StyleBoxFlat" id="hud"]
 content_margin_left = 8.0
@@ -466,9 +457,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-shadow_color = Color(0.05098, 0.490196, 0.701961, 0.46)
-shadow_size = 11
-shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxFlat" id="btn_primary_pressed"]
 content_margin_left = 16.0
@@ -485,9 +473,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-shadow_color = Color(0.062745, 0.086275, 0.121569, 0.075)
-shadow_size = 3
-shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxFlat" id="btn_primary"]
 content_margin_left = 16.0
@@ -504,9 +489,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-shadow_color = Color(0.05098, 0.490196, 0.701961, 0.34)
-shadow_size = 8
-shadow_offset = Vector2(0, 3)
 
 [sub_resource type="StyleBoxFlat" id="scroll_grab"]
 content_margin_left = 3.0
@@ -713,6 +695,120 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="btn_danger_solid_glow_hover"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.630117, 0.167373, 0.174432, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.752941, 0.184314, 0.184314, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.752941, 0.184314, 0.184314, 0.46)
+shadow_size = 11
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="btn_danger_solid_glow_pressed"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.602823, 0.163608, 0.172236, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.752941, 0.184314, 0.184314, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.062745, 0.086275, 0.121569, 0.075)
+shadow_size = 3
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="btn_danger_solid_glow"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.752941, 0.184314, 0.184314, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.752941, 0.184314, 0.184314, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.752941, 0.184314, 0.184314, 0.34)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="btn_primary_glow_hover"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.054509, 0.418196, 0.598902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.05098, 0.490196, 0.701961, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.05098, 0.490196, 0.701961, 0.46)
+shadow_size = 11
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="btn_primary_glow_pressed"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.055294, 0.402196, 0.576, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.05098, 0.490196, 0.701961, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.062745, 0.086275, 0.121569, 0.075)
+shadow_size = 3
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="btn_primary_glow"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.05098, 0.490196, 0.701961, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.05098, 0.490196, 0.701961, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.05098, 0.490196, 0.701961, 0.34)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+
 [resource]
 default_font_size = 16
 BoxContainer/constants/separation = 12
@@ -826,6 +922,11 @@ GoDangerSolidButton/styles/hover = SubResource("btn_danger_solid_hover")
 GoDangerSolidButton/styles/hover_pressed = SubResource("btn_danger_solid_pressed")
 GoDangerSolidButton/styles/normal = SubResource("btn_danger_solid")
 GoDangerSolidButton/styles/pressed = SubResource("btn_danger_solid_pressed")
+GoDangerSolidGlowButton/base_type = &"GoDangerSolidButton"
+GoDangerSolidGlowButton/styles/hover = SubResource("btn_danger_solid_glow_hover")
+GoDangerSolidGlowButton/styles/hover_pressed = SubResource("btn_danger_solid_glow_pressed")
+GoDangerSolidGlowButton/styles/normal = SubResource("btn_danger_solid_glow")
+GoDangerSolidGlowButton/styles/pressed = SubResource("btn_danger_solid_glow_pressed")
 GoHud/colors/accent = Color(0.05098, 0.490196, 0.701961, 1)
 GoHud/colors/accent_fill = Color(0, 0.625122, 0.901961, 1)
 GoHud/colors/accent_vivid = Color(0.054902, 0.603922, 0.847059, 1)
@@ -922,6 +1023,11 @@ GoPrimaryButton/styles/hover = SubResource("btn_primary_hover")
 GoPrimaryButton/styles/hover_pressed = SubResource("btn_primary_pressed")
 GoPrimaryButton/styles/normal = SubResource("btn_primary")
 GoPrimaryButton/styles/pressed = SubResource("btn_primary_pressed")
+GoPrimaryGlowButton/base_type = &"GoPrimaryButton"
+GoPrimaryGlowButton/styles/hover = SubResource("btn_primary_glow_hover")
+GoPrimaryGlowButton/styles/hover_pressed = SubResource("btn_primary_glow_pressed")
+GoPrimaryGlowButton/styles/normal = SubResource("btn_primary_glow")
+GoPrimaryGlowButton/styles/pressed = SubResource("btn_primary_glow_pressed")
 GoSubtitleLabel/base_type = &"Label"
 GoSubtitleLabel/font_sizes/font_size = 22
 GoTitleLabel/base_type = &"Label"

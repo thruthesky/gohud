@@ -71,6 +71,7 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | | `color_overrides` `Dictionary[StringName, Color]` · `metric_overrides` `Dictionary[StringName, int]` | Per-token overrides |
 | | `base_font_size` (0) | Body text size in dp; 0 = theme value |
 | | `shrink_type_on_mobile` (true) | One step smaller text on phones (needs `GoRuntime`); touch sizes unchanged |
+| | `button_glow` (false) | Raise every filled button (`PRIMARY`, `DANGER_SOLID`) with a soft shadow in its own colour (a glow on sci-fi). Read when a button is styled — set it before building the screen. One button: `GoStyle.glow(button)` |
 | Responsive | `scale_enabled` (false) | 1 unit = 1 dp via `content_scale_factor` — affects the whole project, opt in |
 | | `mobile_max_dp` (576) · `tablet_max_dp` (991) | Breakpoints by the screen's short side |
 | | `read_gain_mobile` (1.10) · `read_gain_tablet` (1.05) · `read_gain_desktop` (1.0) · `desktop_ui_gain` (1.0) | Scale gains when `scale_enabled` |

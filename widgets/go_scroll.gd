@@ -28,6 +28,14 @@ var _bleed := 0
 var _drag_muted := {}
 ## Branches that entered this frame (node → true) — the touch policy runs over them once more after the frame's code is done.
 var _settling := {}
+## 🔑 Set by `as_horizontal()`: a horizontal row is PASS **only while another scroll holds it**, so an up-and-down swipe
+##    on the row reaches the sheet around it. Standing alone (a strip in a HUD over the game) it is STOP — otherwise a
+##    press nothing takes runs on to `_unhandled_input` and reaches the world: on a card, in the gap between two chips,
+##    even on a button (a `Button` does not accept the press). Decided each time the row enters the tree.
+##    🛑 A `mouse_filter` the caller set after `as_horizontal()` wins — the row stops deciding (`_place_filter`).
+var _filter_by_holder := false
+## The filter `_place_filter` last gave — anything else in `mouse_filter` was the caller's choice.
+var _holder_filter := Control.MOUSE_FILTER_PASS
 
 ## 🔑 Meta key a screen sets to `true` on a control that **owns a competing drag** inside a scroll (a pannable map,
 ## a drawing pad, a value scrubber of its own). `GoScroll` then leaves that control's `mouse_filter` alone.
@@ -64,6 +72,7 @@ func _enter_tree() -> void:
 	var viewport := get_viewport()
 	if not viewport.gui_focus_changed.is_connected(_on_focus_changed):
 		viewport.gui_focus_changed.connect(_on_focus_changed)
+	if _filter_by_holder: _place_filter()
 
 
 func _exit_tree() -> void:
@@ -84,8 +93,33 @@ static func as_horizontal(node: GoScroll) -> GoScroll:
 	node.horizontal_scroll_mode = SCROLL_MODE_AUTO
 	node.vertical_scroll_mode = SCROLL_MODE_DISABLED
 	node.size_flags_vertical = Control.SIZE_FILL
+	# PASS until it enters the tree — `_place_filter` then turns a row that no scroll holds to STOP.
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	node._holder_filter = Control.MOUSE_FILTER_PASS
+	node._filter_by_holder = true
 	return node
+
+
+## PASS inside another scroll, STOP standing alone (see `_filter_by_holder`).
+## 🔑 Re-run on every entry: `GoSurface` builds its body **before** it wraps the body in a scroll, so a row placed in
+##    the body enters once alone, then again inside the scroll.
+func _place_filter() -> void:
+	if mouse_filter != _holder_filter:
+		_filter_by_holder = false
+		return
+	_holder_filter = Control.MOUSE_FILTER_PASS if _held_by_scroll() else Control.MOUSE_FILTER_STOP
+	mouse_filter = _holder_filter
+
+
+## Is there a scroll above this one that a passed event can reach? GUI input climbs parent controls only, and stops
+## at a `top_level` one.
+func _held_by_scroll() -> bool:
+	var ancestor := get_parent() as Control
+	while ancestor != null:
+		if ancestor is ScrollContainer: return true
+		if ancestor.top_level: return false
+		ancestor = ancestor.get_parent() as Control
+	return false
 
 
 ## The `GoScroll` this node sits inside (null if there is none).
@@ -234,8 +268,13 @@ func _let_finger_through(node: Node) -> void:
 func _settle() -> void:
 	var branches := _settling
 	_settling = {}
-	for branch: Node in branches:
-		if not is_instance_valid(branch) or not is_ancestor_of(branch): continue
+	# 🛑 Untyped loop variable — a row freed in the frame it entered is still a key here, and assigning a freed
+	#    instance to `branch: Node` is a script error that ends the pass, leaving every row after it STOP
+	#    (Laryen's inventory rebuilds its rows in place, 2026-10-02).
+	for key: Variant in branches:
+		if not is_instance_valid(key): continue
+		var branch := key as Node
+		if not is_ancestor_of(branch): continue
 		# A branch inside another queued branch is walked with it — walk each node once.
 		var outer := branch.get_parent()
 		while outer != self and not branches.has(outer): outer = outer.get_parent()
@@ -278,9 +317,10 @@ static func audit_touch(root: Node) -> Array[String]:
 static func _audit_touch(node: Node, inside: bool, root: Node, problems: Array[String]) -> void:
 	var where := str(root.get_path_to(node)) if root != node else str(node.name)
 	if node is ScrollContainer and not node is GoScroll:
-		problems.append("%s: a plain ScrollContainer — use GoScroll (UiScroll) so a finger swipe scrolls it" % where)
+		problems.append("%s: a plain ScrollContainer — use GoScroll so a finger swipe scrolls it" % where)
 	var control := node as Control
-	if inside and control != null and node != root and control.mouse_filter == Control.MOUSE_FILTER_STOP 			and not node is ScrollBar and not owns_gesture(control):
+	if inside and control != null and node != root and control.mouse_filter == Control.MOUSE_FILTER_STOP \
+			and not node is ScrollBar and not owns_gesture(control):
 		problems.append("%s: %s is STOP inside a scroll — a finger drag that starts on it never reaches the scroll" % [
 			where, control.get_class()])
 	if node is ScrollBar: return
@@ -320,6 +360,9 @@ func _on_drag_started() -> void:
 
 ## The scroll came to rest (the finger lifted without a fling, the fling ran out, or a tap stopped it).
 func _on_drag_ended() -> void:
-	for child: Control in _drag_muted:
-		if is_instance_valid(child): child.mouse_behavior_recursive = _drag_muted[child]
+	# 🛑 Untyped — a row freed mid-drag (a list rebuilt while the finger moves) is still a key. Assigning it to a
+	#    `Control` variable is a script error that skipped `clear()`, and the stale key broke every later drag's
+	#    restore, leaving the new rows deaf to the mouse.
+	for child: Variant in _drag_muted:
+		if is_instance_valid(child): (child as Control).mouse_behavior_recursive = _drag_muted[child]
 	_drag_muted.clear()

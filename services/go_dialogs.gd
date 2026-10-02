@@ -317,8 +317,9 @@ func _ensure_actions() -> void:
 
 
 ## Sets the button row's direction and gap, and the gap after the body.
-## 🛑 Called **only on open, on translation change and on window resize** — a fit-content surface runs `relayout`
-##    every frame, and leaning on that could flip between one row and vertical every frame.
+## 🛑 Called **only on open, on translation change and on window resize** — never from the surface's layout pass. A
+##    fit-content surface lays out again whenever its content changes size, and a row turning into a column is such a
+##    change, so leaning on that pass could flip the buttons between one row and vertical frame after frame.
 func _place_actions() -> void:
 	if _actions == null or not _open: return
 	var layout: int = _next_layout if _next_layout >= 0 else action_layout

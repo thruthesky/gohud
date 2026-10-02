@@ -81,6 +81,7 @@ func _initialize() -> void:
 	await _section("container alpha", _container_alpha)
 	await _section("widgets", _widgets)
 	await _section("style factories", _style)
+	await _section("button glow", _button_glow)
 	await _section("icon button", _icon_button)
 	await _section("surface", _surface)
 	await _section("sheet", _sheet)
@@ -1362,6 +1363,94 @@ func _style() -> void:
 
 
 # ── Icon button ──────────────────────────────────────────────────────
+
+## How far a face reaches past its plate — a shadow (round and medieval panels) or a glow (cut panels). 0 is flat.
+func _depth(face: StyleBox) -> float:
+	if face == null: return 0.0
+	var reach := 0.0
+	if &"shadow_size" in face and &"shadow_color" in face and (face.get(&"shadow_color") as Color).a > 0.0:
+		reach = maxf(reach, float(face.get(&"shadow_size")))
+	if &"glow_size" in face and &"glow_color" in face and (face.get(&"glow_color") as Color).a > 0.0:
+		reach = maxf(reach, float(face.get(&"glow_size")))
+	return reach
+
+
+func _button_glow() -> void:
+	# 🔑 Filled buttons sit flat by default and the raised look is an option (user report 2026-10-02 — the primary
+	#    button's accent shadow read as a smudge beside its flat neighbours). Measured in every preset, every state.
+	var states: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed"]
+	var pairs := [[GoTheme.VAR_PRIMARY_BUTTON, GoTheme.VAR_PRIMARY_GLOW_BUTTON],
+		[GoTheme.VAR_DANGER_SOLID_BUTTON, GoTheme.VAR_DANGER_SOLID_GLOW_BUTTON]]
+	var presets := GoThemePresets.all()
+	check(presets.size() == 6, "all six presets are there to measure (%d)" % presets.size())
+	for preset in presets:
+		GoUi.use_preset(preset)
+		var look := GoUi.theme()
+		for pair in pairs:
+			var flat: StringName = pair[0]
+			var raised: StringName = pair[1]
+			var depth := 0.0
+			for state in states:
+				depth = maxf(depth, _depth(look.get_stylebox(state, flat)))
+			check(depth == 0.0, "%s · %s draws no shadow or glow (%.0f)" % [preset.id, flat, depth])
+			# 🛑 The raised variation hangs off the flat one, so text colours and the focus ring cannot drift apart.
+			check(look.get_type_variation_base(raised) == flat and look.has_stylebox(&"normal", raised)
+				and not look.has_stylebox(&"focus", raised) and not look.has_color(&"font_color", raised),
+				"%s · %s hangs off %s and holds only its faces" % [preset.id, raised, flat])
+		check(_depth(look.get_stylebox(&"normal", GoTheme.VAR_PRIMARY_GLOW_BUTTON)) > 0.0
+			and _depth(look.get_stylebox(&"hover", GoTheme.VAR_PRIMARY_GLOW_BUTTON)) > 0.0,
+			"%s · the raised primary button glows at rest and on hover" % preset.id)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.preset = &""
+
+	var host := HBoxContainer.new()
+	root.add_child(host)
+	var plain := GoStyle.button("Flat", Callable(), GoStyle.Tone.PRIMARY)
+	var lifted := GoStyle.glow(GoStyle.button("Lifted", Callable(), GoStyle.Tone.PRIMARY))
+	var normal := GoStyle.glow(GoStyle.button("Normal"))
+	host.add_child(plain)
+	host.add_child(lifted)
+	host.add_child(normal)
+	await frames(1)
+	check(plain.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON and _depth(plain.get_theme_stylebox(&"normal")) == 0.0,
+		"a primary button sits flat by default")
+	check(lifted.theme_type_variation == GoTheme.VAR_PRIMARY_GLOW_BUTTON and _depth(lifted.get_theme_stylebox(&"normal")) > 0.0,
+		"GoStyle.glow raises one primary button")
+	check(lifted.get_theme_color(&"font_color") == plain.get_theme_color(&"font_color")
+		and lifted.get_theme_stylebox(&"focus") == plain.get_theme_stylebox(&"focus")
+		and lifted.get_theme_stylebox(&"disabled") == plain.get_theme_stylebox(&"disabled"),
+		"the raised button keeps the flat one's text colour, focus ring and disabled face")
+	check(normal.theme_type_variation == GoTheme.VAR_BUTTON, "glow leaves a tone with no raised face alone")
+	GoStyle.glow(lifted, false)
+	check(lifted.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON, "glow(button, false) lays it flat again")
+	# 🛑 A theme made before the variation existed — switching to a name it lacks would drop the filled face entirely.
+	var legacy := Button.new()
+	legacy.theme = Theme.new()
+	legacy.theme_type_variation = GoTheme.VAR_PRIMARY_BUTTON
+	GoStyle.glow(legacy)
+	check(legacy.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON, "a theme with no glow variation keeps its flat filled face")
+	legacy.free()
+
+	# The project-wide switch — every filled button is raised, including the ones gohud builds itself.
+	GoUi.config.button_glow = true
+	var all_primary := GoStyle.button("P", Callable(), GoStyle.Tone.PRIMARY)
+	var all_danger := GoStyle.button("D", Callable(), GoStyle.Tone.DANGER_SOLID)
+	var all_normal := GoStyle.button("N")
+	var all_compact := GoStyle.button("C", Callable(), GoStyle.Tone.COMPACT)
+	check(all_primary.theme_type_variation == GoTheme.VAR_PRIMARY_GLOW_BUTTON
+		and all_danger.theme_type_variation == GoTheme.VAR_DANGER_SOLID_GLOW_BUTTON
+		and all_normal.theme_type_variation == GoTheme.VAR_BUTTON
+		and all_compact.theme_type_variation == GoTheme.VAR_COMPACT_BUTTON,
+		"GoConfig.button_glow raises every filled button and only those")
+	GoStyle.style_button(all_primary, GoStyle.Tone.NORMAL)
+	check(all_primary.theme_type_variation == GoTheme.VAR_BUTTON, "restyled to another tone, the glow goes with the old tone")
+	GoUi.config.button_glow = false
+	var after := GoStyle.button("A", Callable(), GoStyle.Tone.PRIMARY)
+	check(after.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON, "switched off again, new buttons are flat")
+	for node in [all_primary, all_danger, all_normal, all_compact, after]: node.free()
+	host.queue_free()
+	await frames(1)
+
 
 func _icon_button() -> void:
 	var mark := GoStyle.icon_button(GoIconSet.CLOSE)
@@ -2755,7 +2844,39 @@ func _scroll_swipe() -> void:
 	await frames(2)
 	sneaky.mouse_filter = Control.MOUSE_FILTER_STOP
 	check(GoScroll.audit_touch(scroll).size() == 1, "the touch audit reports a STOP control inside a scroll %s" % str(GoScroll.audit_touch(scroll)))
+	# 🛑 A row freed in the frame it entered is still queued for the second pass — the pass skips it, and a row queued
+	#    after it still loses its late STOP (a list rebuilt in place frees rows that way).
+	var doomed := PanelContainer.new()
+	column.add_child(doomed)
+	var survivor := PanelContainer.new()
+	column.add_child(survivor)
+	survivor.mouse_filter = Control.MOUSE_FILTER_STOP
+	doomed.free()
+	await frames(2)
+	check(survivor.mouse_filter == Control.MOUSE_FILTER_PASS, "a row freed in the frame it entered does not stop the second pass")
 	scroll.queue_free()
+	await frames(1)
+
+	# 🛑 The list is rebuilt while the finger drags: the muted content is freed and a new one takes its place. The drag's
+	#    end must not trip over the freed one, and the next drag must hand the mouse back to the new content.
+	var rebuilt := GoScroll.new()
+	rebuilt.position = Vector2(8, 8)
+	rebuilt.size = Vector2(300, 300)
+	var old_list := GoStyle.column()
+	rebuilt.add_child(old_list)
+	root.add_child(rebuilt)
+	await frames(1)
+	rebuilt.scroll_started.emit()
+	old_list.free()
+	var new_list := GoStyle.column()
+	rebuilt.add_child(new_list)
+	rebuilt.scroll_ended.emit()
+	rebuilt.scroll_started.emit()
+	check(new_list.mouse_behavior_recursive == Control.MOUSE_BEHAVIOR_DISABLED, "a rebuilt list is muted by the next drag")
+	rebuilt.scroll_ended.emit()
+	check(new_list.mouse_behavior_recursive == Control.MOUSE_BEHAVIOR_INHERITED,
+		"a list rebuilt mid-drag takes the mouse again when the next drag ends (%d)" % new_list.mouse_behavior_recursive)
+	rebuilt.queue_free()
 
 	# 🛑 Outside a scroll nothing changes — a HUD panel over the world stays STOP so a tap does not walk the hero.
 	var hud := PanelContainer.new()
@@ -2763,6 +2884,66 @@ func _scroll_swipe() -> void:
 	await frames(1)
 	check(hud.mouse_filter == Control.MOUSE_FILTER_STOP, "a panel outside any scroll keeps STOP")
 	hud.queue_free()
+
+	# 🛑 A horizontal row that no scroll holds (a strip in a HUD over the game) is STOP. As PASS, a press that nothing
+	#    takes ran on to `_unhandled_input` and walked the hero — on a card, in the gap between two, even on a button.
+	var world := _World.new()
+	root.add_child(world)
+	var overlay := Control.new()
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(overlay)
+	var lone := GoScroll.horizontal()
+	lone.position = Vector2(8, 200)
+	lone.size = Vector2(300, 90)
+	overlay.add_child(lone)
+	var lane := GoStyle.row(24)
+	lone.add_child(lane)
+	var lone_card := GoStyle.card()
+	lone_card.custom_minimum_size = Vector2(110, 80)
+	lane.add_child(lone_card)
+	var lone_presses := [0]
+	var lone_button := GoStyle.button("Go", func() -> void: lone_presses[0] += 1)
+	lone_button.custom_minimum_size = Vector2(110, 80)
+	lane.add_child(lone_button)
+	for i in 6:
+		var filler := GoStyle.card()
+		filler.custom_minimum_size = Vector2(110, 80)
+		lane.add_child(filler)
+	await frames(3)
+	check(lone.mouse_filter == Control.MOUSE_FILTER_STOP, "a horizontal row no scroll holds is STOP")
+	var spots := {
+		"card": lone_card.get_global_rect().get_center(),
+		"button": lone_button.get_global_rect().get_center(),
+		"gap": Vector2(lone_card.get_global_rect().end.x + 12.0, lone_card.get_global_rect().get_center().y),
+	}
+	for spot: String in spots:
+		world.presses = 0
+		await _tap(spots[spot])
+		check(world.presses == 0, "a tap on a lone row (%s) does not reach the world (%d)" % [spot, world.presses])
+	check(lone_presses[0] == 1, "a tap on a button in a lone row still presses it (%d)" % lone_presses[0])
+	await _swipe(lone, lone_card.get_global_rect().get_center(), -150.0, true)
+	check(lone.scroll_horizontal > 0, "a sideways swipe still scrolls a lone row (%d)" % lone.scroll_horizontal)
+	# A filter the caller chose stays theirs.
+	var chosen := GoScroll.horizontal()
+	chosen.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.add_child(chosen)
+	await frames(1)
+	check(chosen.mouse_filter == Control.MOUSE_FILTER_IGNORE, "a horizontal row keeps a mouse_filter its caller set")
+	overlay.queue_free()
+	world.queue_free()
+	# A row put in a surface body before it opens: the body is wrapped in its scroll only in `_ready`, so the row first
+	# enters alone, then again inside the scroll — and has to end up PASS.
+	var tray := CanvasLayer.new()
+	root.add_child(tray)
+	var holder := GoSurface.new()
+	var held := GoScroll.horizontal()
+	holder.body.add_child(held)
+	tray.add_child(holder)
+	await frames(2)
+	check(held.mouse_filter == Control.MOUSE_FILTER_PASS, "a horizontal row in a surface body is PASS once the body scrolls")
+	tray.queue_free()
+	await frames(1)
 
 	# A horizontal row inside a vertical sheet: each axis still scrolls its own way.
 	var outer := GoScroll.new()
@@ -2787,6 +2968,7 @@ func _scroll_swipe() -> void:
 		stack.add_child(filler)
 	root.add_child(outer)
 	await frames(3)
+	check(strip.mouse_filter == Control.MOUSE_FILTER_PASS, "a horizontal row inside a sheet is PASS")
 	var on_strip := strip.get_global_rect().get_center()
 	await _swipe(outer, on_strip, -150.0)
 	check(outer.scroll_vertical > 0 and strip.scroll_horizontal == 0, "a vertical swipe on a horizontal row scrolls the sheet (%d · %d)" % [outer.scroll_vertical, strip.scroll_horizontal])
@@ -2828,6 +3010,14 @@ func _scroll_swipe() -> void:
 	sheet.queue_free()
 	await frames(1)
 	Input.emulate_touch_from_mouse = emulated
+
+
+## Stands in for the game world — what no control took arrives here.
+class _World extends Node:
+	var presses := 0
+
+	func _unhandled_input(event: InputEvent) -> void:
+		if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.is_pressed(): presses += 1
 
 
 ## The control the GUI would hand a press at this point (the topmost one that takes the mouse).

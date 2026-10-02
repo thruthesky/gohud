@@ -272,7 +272,7 @@ Leave a field empty or at its default to keep gohud's behaviour. Nothing needs t
 
 | Group | Fields |
 |---|---|
-| Appearance | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile` |
+| Appearance | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow` (**off by default**) |
 | Responsive | `scale_enabled` (1 unit = 1 dp, **off by default**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
 | Surface | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
 | Feedback | `haptics_enabled`, `haptic_tap/light/medium_ms` and amplitudes, `sound_cues` |
@@ -407,8 +407,12 @@ All tokens live in the **`GoHud`** theme type.
 | Text roles | `micro`, `compact`, `caption`, `body`, `button`, `subtitle`, `title` |
 
 Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerButton`,
-`GoDangerSolidButton`, `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`,
-`GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
+`GoDangerSolidButton`, `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`,
+`GoIconButton`, `GoListButton`, `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
+
+Filled buttons sit flat. The two `*GlowButton` variations raise them with a soft shadow in the button's own colour
+(a glow on the sci-fi shape): set `GoConfig.button_glow` for every filled button, or call
+`GoStyle.glow(button)` for one.
 
 A theme that lacks the `GoHud` tokens still works — missing tokens are filled from the default theme
 while `token_fallback` is on.

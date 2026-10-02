@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=91 format=3]
+[gd_resource type="Theme" load_steps=97 format=3]
 
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/roboto/Roboto.ttf" id="font_title"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/roboto/Roboto.ttf" id="font_subtitle"]
@@ -173,6 +173,57 @@ corner_detail = 8
 expand_margin_top = -4
 expand_margin_bottom = -4
 
+[sub_resource type="StyleBoxFlat" id="btn_primary_glow"]
+content_margin_left = 16
+content_margin_top = 15
+content_margin_right = 16
+content_margin_bottom = 15
+bg_color = Color(0.815686, 0.737255, 1, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+corner_detail = 16
+expand_margin_top = -4
+expand_margin_bottom = -4
+shadow_color = Color(0, 0, 0, 0.18)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="btn_primary_glow_hover"]
+content_margin_left = 16
+content_margin_top = 15
+content_margin_right = 16
+content_margin_bottom = 15
+bg_color = Color(0.768, 0.687686, 0.955765, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+corner_detail = 16
+expand_margin_top = -4
+expand_margin_bottom = -4
+shadow_color = Color(0, 0, 0, 0.18)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="btn_primary_glow_pressed"]
+content_margin_left = 16
+content_margin_top = 15
+content_margin_right = 16
+content_margin_bottom = 15
+bg_color = Color(0.756078, 0.675294, 0.944706, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 8
+expand_margin_top = -4
+expand_margin_bottom = -4
+shadow_color = Color(0, 0, 0, 0.18)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
 [sub_resource type="StyleBoxFlat" id="btn_danger"]
 content_margin_left = 16
 content_margin_top = 15
@@ -245,6 +296,57 @@ corner_radius_bottom_left = 12
 corner_detail = 8
 expand_margin_top = -4
 expand_margin_bottom = -4
+
+[sub_resource type="StyleBoxFlat" id="btn_danger_solid_glow"]
+content_margin_left = 16
+content_margin_top = 15
+content_margin_right = 16
+content_margin_bottom = 15
+bg_color = Color(0.94902, 0.721569, 0.709804, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+corner_detail = 16
+expand_margin_top = -4
+expand_margin_bottom = -4
+shadow_color = Color(0, 0, 0, 0.18)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="btn_danger_solid_glow_hover"]
+content_margin_left = 16
+content_margin_top = 15
+content_margin_right = 16
+content_margin_bottom = 15
+bg_color = Color(0.903216, 0.670118, 0.658039, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+corner_detail = 16
+expand_margin_top = -4
+expand_margin_bottom = -4
+shadow_color = Color(0, 0, 0, 0.18)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="btn_danger_solid_glow_pressed"]
+content_margin_left = 16
+content_margin_top = 15
+content_margin_right = 16
+content_margin_bottom = 15
+bg_color = Color(0.891765, 0.657255, 0.645098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 8
+expand_margin_top = -4
+expand_margin_bottom = -4
+shadow_color = Color(0, 0, 0, 0.18)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="compact_normal"]
 content_margin_left = 12
@@ -971,6 +1073,11 @@ GoDangerSolidButton/styles/hover = SubResource("btn_danger_solid_hover")
 GoDangerSolidButton/styles/hover_pressed = SubResource("btn_danger_solid_pressed")
 GoDangerSolidButton/styles/normal = SubResource("btn_danger_solid")
 GoDangerSolidButton/styles/pressed = SubResource("btn_danger_solid_pressed")
+GoDangerSolidGlowButton/base_type = &"GoDangerSolidButton"
+GoDangerSolidGlowButton/styles/hover = SubResource("btn_danger_solid_glow_hover")
+GoDangerSolidGlowButton/styles/hover_pressed = SubResource("btn_danger_solid_glow_pressed")
+GoDangerSolidGlowButton/styles/normal = SubResource("btn_danger_solid_glow")
+GoDangerSolidGlowButton/styles/pressed = SubResource("btn_danger_solid_glow_pressed")
 GoHud/colors/accent = Color(0.815686, 0.737255, 1, 1)
 GoHud/colors/accent_fill = Color(0.815686, 0.737255, 1, 1)
 GoHud/colors/accent_vivid = Color(0.815686, 0.737255, 1, 1)
@@ -1095,6 +1202,11 @@ GoPrimaryButton/styles/hover = SubResource("btn_primary_hover")
 GoPrimaryButton/styles/hover_pressed = SubResource("btn_primary_pressed")
 GoPrimaryButton/styles/normal = SubResource("btn_primary")
 GoPrimaryButton/styles/pressed = SubResource("btn_primary_pressed")
+GoPrimaryGlowButton/base_type = &"GoPrimaryButton"
+GoPrimaryGlowButton/styles/hover = SubResource("btn_primary_glow_hover")
+GoPrimaryGlowButton/styles/hover_pressed = SubResource("btn_primary_glow_pressed")
+GoPrimaryGlowButton/styles/normal = SubResource("btn_primary_glow")
+GoPrimaryGlowButton/styles/pressed = SubResource("btn_primary_glow_pressed")
 GoSubtitleLabel/base_type = &"Label"
 GoSubtitleLabel/font_sizes/font_size = 24
 GoSubtitleLabel/fonts/font = ExtResource("font_subtitle")

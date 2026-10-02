@@ -69,7 +69,7 @@ All tokens live in the Theme under type **`GoHud`**. Read them through `GoUi` (o
 | Panel opacity (5, optional, **% in the theme**) | `PANEL_ALPHA` `CARD_ALPHA` `HUD_ALPHA` `NOTICE_ALPHA` `POPUP_ALPHA` — how solid a container face is. **80** by default, `POPUP_ALPHA` 100; a theme without them falls back to 100. Percent only because a `Theme` constant cannot hold a float — read it as a *ratio* with `GoUi.surface_alpha(variant)`, and every other layer is a ratio too; §4 |
 | StyleBoxes (8) | `BOX_PANEL` `BOX_CARD` `BOX_HUD` `BOX_NOTICE` `BOX_POPUP` `BOX_EMPTY` `BOX_FOCUS` `BOX_FOCUS_SOFT` |
 | Text roles (7) | `ROLE_MICRO` `ROLE_COMPACT` `ROLE_CAPTION` `ROLE_BODY` `ROLE_BUTTON` `ROLE_SUBTITLE` `ROLE_TITLE` — names of sizes, not purposes |
-| Type variations (15) | `GoPanel` `GoCard` `GoButton` `GoPrimaryButton` `GoDangerButton` `GoDangerSolidButton` `GoBareButton` `GoCompactButton` `GoIconButton` `GoListButton` `GoTitleLabel` `GoSubtitleLabel` `GoCaptionLabel` `GoCompactLabel` `GoMicroLabel` (constants `VAR_*`) |
+| Type variations (17) | `GoPanel` `GoCard` `GoButton` `GoPrimaryButton` `GoDangerButton` `GoDangerSolidButton` `GoPrimaryGlowButton` `GoDangerSolidGlowButton` `GoBareButton` `GoCompactButton` `GoIconButton` `GoListButton` `GoTitleLabel` `GoSubtitleLabel` `GoCaptionLabel` `GoCompactLabel` `GoMicroLabel` (constants `VAR_*`). The two `*Glow*` ones hang off the flat filled buttons and differ only in their faces — a soft shadow (a glow on sci-fi); reached with `GoConfig.button_glow` or `GoStyle.glow()` |
 
 `TOUCH` always returns `GoConfig.min_touch_size`. Text colour meaning: `TEXT` body, `SECONDARY` supporting,
 `MUTED` dimmed; `ON_ACCENT` is the label colour on an accent fill. Custom controls stay consistent by using tokens:

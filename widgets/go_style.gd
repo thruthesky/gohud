@@ -406,6 +406,7 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 		Tone.BARE: node.theme_type_variation = GoTheme.VAR_BARE_BUTTON
 		Tone.COMPACT: node.theme_type_variation = GoTheme.VAR_COMPACT_BUTTON
 		_: node.theme_type_variation = GoTheme.VAR_BUTTON
+	if GoUi.config.button_glow: glow(node)
 	var compact := tone == Tone.COMPACT or tone == Tone.BARE
 	# 🛑 `MOUSE_FILTER_PASS` — a button inside a scroll must hand the finger drag to the `ScrollContainer`.
 	#    With STOP, a scroll that starts on the list does nothing.
@@ -426,6 +427,36 @@ static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	# 🛑 …and so is the width — a short word on a compact face ("Alert") came out 46dp wide in a host font (2026-09-23).
 	node.custom_minimum_size.x = maxf(node.custom_minimum_size.x, float(GoUi.metric(GoTheme.TOUCH)))
 	if not compact: node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+## Flat filled tone → its raised twin. Only the filled buttons have one.
+const _GLOW_TWINS := {
+	GoTheme.VAR_PRIMARY_BUTTON: GoTheme.VAR_PRIMARY_GLOW_BUTTON,
+	GoTheme.VAR_DANGER_SOLID_BUTTON: GoTheme.VAR_DANGER_SOLID_GLOW_BUTTON,
+}
+
+
+## ✨ Raise a **filled** button (`Tone.PRIMARY`, `Tone.DANGER_SOLID`) with a glow — a soft shadow in its own colour
+## under the plate (a glow on the sci-fi cut shape). `on = false` lays it flat again. Returns the button, so it chains:
+##
+## ```gdscript
+## row.add_child(GoStyle.glow(GoStyle.button("Play", _play, GoStyle.Tone.PRIMARY)))
+## ```
+##
+## 🔑 Buttons sit flat by default. To raise every filled button, set `GoConfig.button_glow` instead.
+## 🛑 Other tones have no raised face and are left as they are. So is a button whose theme has no glow variation
+##    (a theme made before it existed) — switching to a variation the theme lacks would drop the filled face entirely.
+static func glow(node: Button, on := true) -> Button:
+	var current := node.theme_type_variation
+	if on:
+		var raised: StringName = _GLOW_TWINS.get(current, &"")
+		var theme := node.theme if node.theme != null else GoUi.theme()
+		if not raised.is_empty() and theme != null and theme.get_type_variation_base(raised) == current:
+			node.theme_type_variation = raised
+	else:
+		for flat in _GLOW_TWINS:
+			if _GLOW_TWINS[flat] == current: node.theme_type_variation = flat
+	return node
 
 
 ## 🔑 Sets wrapping so **button text is never split character by character**. Call it again after changing the text.

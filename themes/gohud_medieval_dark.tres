@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=75 format=3]
+[gd_resource type="Theme" load_steps=81 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_medieval.gd" id="medieval"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/cinzel/Cinzel.ttf" id="font_title"]
@@ -142,11 +142,62 @@ material = 1
 ornament_scale = 1
 grain_alpha = 0.035
 bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_primary_hover"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.857882, 0.722196, 0.474039, 1)
+border_color = Color(0.835294, 0.678431, 0.392157, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 1
+ornament_scale = 1
+grain_alpha = 0.035
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_primary_pressed"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.862902, 0.731921, 0.492235, 1)
+border_color = Color(0.835294, 0.678431, 0.392157, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 1
+ornament_scale = 1
+grain_alpha = 0.035
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_primary_glow"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.835294, 0.678431, 0.392157, 1)
+border_color = Color(0.835294, 0.678431, 0.392157, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 1
+ornament_scale = 1
+grain_alpha = 0.035
+bevel_strength = 0.18
 shadow_color = Color(0.835294, 0.678431, 0.392157, 0.34)
 shadow_size = 8
 shadow_offset = Vector2(0, 3)
 
-[sub_resource type="StyleBox" id="btn_primary_hover"]
+[sub_resource type="StyleBox" id="btn_primary_glow_hover"]
 script = ExtResource("medieval")
 content_margin_left = 16
 content_margin_top = 10
@@ -166,7 +217,7 @@ shadow_color = Color(0.835294, 0.678431, 0.392157, 0.46)
 shadow_size = 11
 shadow_offset = Vector2(0, 4)
 
-[sub_resource type="StyleBox" id="btn_primary_pressed"]
+[sub_resource type="StyleBox" id="btn_primary_glow_pressed"]
 script = ExtResource("medieval")
 content_margin_left = 16
 content_margin_top = 10
@@ -236,11 +287,62 @@ material = 1
 ornament_scale = 1
 grain_alpha = 0.035
 bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_danger_solid_hover"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.890039, 0.580706, 0.551216, 1)
+border_color = Color(0.87451, 0.505882, 0.486275, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 1
+ornament_scale = 1
+grain_alpha = 0.035
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_danger_solid_pressed"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.89349, 0.597333, 0.565647, 1)
+border_color = Color(0.87451, 0.505882, 0.486275, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 1
+ornament_scale = 1
+grain_alpha = 0.035
+bevel_strength = 0.18
+
+[sub_resource type="StyleBox" id="btn_danger_solid_glow"]
+script = ExtResource("medieval")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.87451, 0.505882, 0.486275, 1)
+border_color = Color(0.87451, 0.505882, 0.486275, 1)
+border_width = 1
+radius = 4
+draw_center = true
+ornament = 1
+material = 1
+ornament_scale = 1
+grain_alpha = 0.035
+bevel_strength = 0.18
 shadow_color = Color(0.87451, 0.505882, 0.486275, 0.34)
 shadow_size = 8
 shadow_offset = Vector2(0, 3)
 
-[sub_resource type="StyleBox" id="btn_danger_solid_hover"]
+[sub_resource type="StyleBox" id="btn_danger_solid_glow_hover"]
 script = ExtResource("medieval")
 content_margin_left = 16
 content_margin_top = 10
@@ -260,7 +362,7 @@ shadow_color = Color(0.87451, 0.505882, 0.486275, 0.46)
 shadow_size = 11
 shadow_offset = Vector2(0, 4)
 
-[sub_resource type="StyleBox" id="btn_danger_solid_pressed"]
+[sub_resource type="StyleBox" id="btn_danger_solid_glow_pressed"]
 script = ExtResource("medieval")
 content_margin_left = 16
 content_margin_top = 10
@@ -970,6 +1072,11 @@ GoDangerSolidButton/styles/hover = SubResource("btn_danger_solid_hover")
 GoDangerSolidButton/styles/hover_pressed = SubResource("btn_danger_solid_pressed")
 GoDangerSolidButton/styles/normal = SubResource("btn_danger_solid")
 GoDangerSolidButton/styles/pressed = SubResource("btn_danger_solid_pressed")
+GoDangerSolidGlowButton/base_type = &"GoDangerSolidButton"
+GoDangerSolidGlowButton/styles/hover = SubResource("btn_danger_solid_glow_hover")
+GoDangerSolidGlowButton/styles/hover_pressed = SubResource("btn_danger_solid_glow_pressed")
+GoDangerSolidGlowButton/styles/normal = SubResource("btn_danger_solid_glow")
+GoDangerSolidGlowButton/styles/pressed = SubResource("btn_danger_solid_glow_pressed")
 GoHud/colors/accent = Color(0.835294, 0.678431, 0.392157, 1)
 GoHud/colors/accent_fill = Color(0.832941, 0.62139, 0.225882, 1)
 GoHud/colors/accent_vivid = Color(0.788235, 0.607843, 0.270588, 1)
@@ -1066,6 +1173,11 @@ GoPrimaryButton/styles/hover = SubResource("btn_primary_hover")
 GoPrimaryButton/styles/hover_pressed = SubResource("btn_primary_pressed")
 GoPrimaryButton/styles/normal = SubResource("btn_primary")
 GoPrimaryButton/styles/pressed = SubResource("btn_primary_pressed")
+GoPrimaryGlowButton/base_type = &"GoPrimaryButton"
+GoPrimaryGlowButton/styles/hover = SubResource("btn_primary_glow_hover")
+GoPrimaryGlowButton/styles/hover_pressed = SubResource("btn_primary_glow_pressed")
+GoPrimaryGlowButton/styles/normal = SubResource("btn_primary_glow")
+GoPrimaryGlowButton/styles/pressed = SubResource("btn_primary_glow_pressed")
 GoSubtitleLabel/base_type = &"Label"
 GoSubtitleLabel/font_sizes/font_size = 22
 GoSubtitleLabel/fonts/font = ExtResource("font_subtitle")

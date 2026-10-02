@@ -27,6 +27,7 @@ extends Control
 
 signal close_requested
 signal back_requested
+## The resize handle was dragged — once per frame, after the card has the height [param ratio] describes.
 signal height_changed(ratio: float)
 
 enum Placement { CENTER, BOTTOM, ANCHOR }
@@ -190,6 +191,9 @@ var _layout_dirty := true
 ## A handle drag moved `height_ratio` this frame. Applied once in `_process` — a fast finger can deliver several drag
 ## events in one frame, and each used to run a full `relayout()`.
 var _resize_pending := false
+## `height_changed` owes a report — sent once per frame **after** the card took the new height, so a listener that reads
+## `card.size` sees what is drawn (it used to be sent per drag event, before the resize was applied).
+var _height_unreported := false
 var _fade: Tween
 var _runtime: Node
 
@@ -476,6 +480,8 @@ func _sync_active() -> void:
 		if fade_in: _fade = GoStyle.fade(card, _fade, true)
 		_focus_default.call_deferred()
 	else:
+		# Closed in the frame of a drag — the last height still reaches a host that keeps it for the next open.
+		_report_height()
 		_release_back()
 		_restore_focus()
 
@@ -677,7 +683,19 @@ func _process(_delta: float) -> void:
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
 	# 🔑 Fit to content **only when something it reads changed** (`_layout_dirty`). An anchored popover still follows
 	#    its anchor every frame — the anchor can move (a scrolled list) without telling anyone.
-	if _resize_pending or (fit_content and (_layout_dirty or placement == Placement.ANCHOR)): relayout()
+	if _resize_pending or (fit_content and (_layout_dirty or placement == Placement.ANCHOR)):
+		# 🛑 Cleared here too, not only in `relayout()` — a subclass that replaces `relayout()` without calling `super()`
+		#    never clears them, and the surface went back to laying out every frame (and after one drag, forever).
+		_layout_dirty = false
+		_resize_pending = false
+		relayout()
+	_report_height()
+
+
+func _report_height() -> void:
+	if not _height_unreported: return
+	_height_unreported = false
+	height_changed.emit(height_ratio)
 
 
 func _on_keyboard(height_px: int) -> void:
@@ -752,9 +770,10 @@ func _input(event: InputEvent) -> void:
 		#    ceiling moved nothing, `height_changed` reported a height that was never drawn, and dragging back down did
 		#    nothing until the finger had undone the invisible part.
 		height_ratio = clampf(current - dy / maxf(1.0, area.size.y), minf(0.3, height_ratio_cap()), height_ratio_cap())
-		# 🔑 Applied once per frame in `_process` (input is flushed before it, so the card still moves in the same frame).
+		# 🔑 Applied once per frame in `_process` (input is flushed before it, so the card still moves in the same frame),
+		#    and `height_changed` goes out there too, after the card has the height it reports.
 		_resize_pending = true
-		height_changed.emit(height_ratio)
+		_height_unreported = true
 	get_viewport().set_input_as_handled()
 
 

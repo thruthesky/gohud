@@ -65,12 +65,15 @@ needs `SIZE_SHRINK_END`, or it splits the width with the title and floats in the
 
 `enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID }` — PRIMARY for the main action,
 DANGER tinted, DANGER_SOLID filled (irreversible confirm), BARE text-only, COMPACT small pill (touch height).
+Filled buttons (PRIMARY, DANGER_SOLID) sit **flat** — no shadow — unless you raise them: `GoStyle.glow(button)` for
+one, `GoConfig.button_glow = true` for all.
 
 | Signature | Returns | Notes |
 |---|---|---|
 | `button(text, action := Callable(), tone := Tone.NORMAL)` | `Button` | Non-compact tones expand horizontally and use `button_height` |
 | `button_key(key, action := Callable(), tone := Tone.NORMAL)` | `Button` | |
 | `style_button(button, tone := Tone.NORMAL)` | void | Style a Button from a scene |
+| `glow(button, on := true)` | `Button` | Raise a filled button with a glow (`GoPrimaryGlowButton` / `GoDangerSolidGlowButton`); `on = false` lays it flat. Other tones, and themes without the variation, are left alone. Chains: `GoStyle.glow(GoStyle.button("Play", play, GoStyle.Tone.PRIMARY))` |
 | `icon_button(icon, action := Callable(), visual := -1, tooltip_key: StringName = &"")` | `GoIconButton` | Always give `tooltip_key` (tooltip + accessible name): a gohud name (`close`), **your own translation key**, or plain words — all go through the translation server. Over gameplay set `keyboard_focus = false` on the result |
 | `apply_icon(button, icon, size := -1, ink := Color.TRANSPARENT)` | void | Texture sets use `Button.icon`; font sets add a child label |
 | `list_button(icon, key, action := Callable(), ink := Color.TRANSPARENT, sub_key := "", translate := true, trailing: StringName = &"")` | `Button` | Menu/settings row: icon, title, optional description line, optional trailing icon (e.g. `CHEVRON_RIGHT`). Whole row is the tap target |

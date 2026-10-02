@@ -104,7 +104,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 |---|---|
 | Structure | `column` `row` `wrap_row` `padding` `insets` `edge_insets` `gap` `spacing` `spacer` `divider` `line` `responsive_grid` `aspect` `foldable` |
 | Text | `label` `label_key` `section` `typography` `font_role` `pin_font_size` `style_mono_text` `text_shadow` `glyph_text` `glyph_type` `glyph_width` |
-| Buttons | `button` `button_key` `style_button` `icon_button` `list_button` `list_row` `restyle_list_row` `apply_icon` `fit_words` `center_button_content` `tint_button` `style_brand_button` `style_overlay_button` `style_disc_button` `touch_face` — tones `NORMAL` `PRIMARY` `DANGER` `DANGER_SOLID` `BARE` `COMPACT` |
+| Buttons | `button` `button_key` `style_button` `icon_button` `list_button` `list_row` `restyle_list_row` `apply_icon` `fit_words` `center_button_content` `tint_button` `style_brand_button` `style_overlay_button` `style_disc_button` `touch_face` `glow` — tones `NORMAL` `PRIMARY` `DANGER` `DANGER_SOLID` `BARE` `COMPACT` |
 | Input | `line_edit` `textarea` `toggle` `checkbox` `slider` `picker` `select` `dropdown` `radio_group` `segmented` `choice_grid` `style_choice_card` `field` |
 | Display | `card` `card_body` `item_card` `chip` `chip_panel` `restyle_chip` `style_chip_button` `style_chip_label` `avatar` `skeleton` `alert` `table` `tabs` `breadcrumb` `progress` `tint_progress` `empty_state` `style_count_badge` |
 | Panels & faces | `surface` `box` `floating` `disc` `plate` `hud_panel` `style_hud_panel` `overlay_panel` `style_overlay_panel` `bare_panel` `style_panel` `style_notice_panel` `disc_panel` `style_disc_panel` `style_disc_label` `style_hud_disc` `edge_card` `edge_card_panel` `face_padding` `face_insets` `style_slot_face` |
