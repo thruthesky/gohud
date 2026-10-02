@@ -197,11 +197,22 @@ STATE_FONTS = {
 }
 
 # Types to check — only the ones that hold text. Scrollbars and sliders have none.
+# 🛑 `CheckBox` and `CheckButton` draw no plate (their faces are `StyleBoxEmpty`), so their label sits straight on what is
+#    under them — measured on the backdrop and the card like any other see-through face.
 TEXT_TYPES = [
     "Button", "OptionButton", "GoButton", "GoPrimaryButton", "GoDangerButton", "GoDangerSolidButton",
-    "GoPrimaryGlowButton", "GoDangerSolidGlowButton", "GoCompactButton", "GoListButton", "LineEdit", "TextEdit", "PopupMenu", "TabBar",
-    "FoldableContainer",
+    "GoPrimaryGlowButton", "GoDangerSolidGlowButton", "GoCompactButton", "GoListButton", "LineEdit", "TextEdit", "PopupMenu",
+    "FoldableContainer", "CheckBox", "CheckButton",
 ]
+
+# 🛑 **A tab names its faces and its colours differently** — `tab_selected` with `font_selected_color` and so on — so the
+#    `normal`/`pressed` table above finds no row for it at all. Each tab face is paired with its own colour here.
+TAB_TYPES = ["TabBar", "TabContainer"]
+TAB_FACES = {
+    "tab_selected": ["font_selected_color", "font_color"],
+    "tab_unselected": ["font_unselected_color", "font_color"],
+    "tab_hovered": ["font_hovered_color", "font_unselected_color", "font_color"],
+}
 
 
 def font_for(fonts, bases, type_name, keys):
@@ -349,21 +360,53 @@ def floating_rows(path, colors):
     return rows
 
 
+def box_types(path):
+    """`sub_resource` id → its type (`StyleBoxFlat`, `StyleBoxEmpty` …)."""
+    found = {}
+    for line in open(path, encoding="utf-8"):
+        head = re.match(r'^\[sub_resource type="([^"]+)" id="([^"]+)"\]', line.strip())
+        if head:
+            found[head.group(2)] = head.group(1)
+    return found
+
+
+# A `StyleBoxFlat` that writes no `bg_color` draws the engine's default grey.
+FLAT_DEFAULT_BG = (0.6, 0.6, 0.6, 1.0)
+
+
+def plate_of(box_id, boxes, kinds):
+    """The face's background as `surface_rows` uses it: a colour, `None` (draws nothing — what is under shows through),
+    or `False` (a face this check cannot read — skipped)."""
+    if box_id in boxes:
+        return boxes[box_id]
+    kind = kinds.get(box_id)
+    if kind in ("StyleBoxEmpty", "StyleBoxLine"):
+        return None
+    if kind == "StyleBoxFlat":
+        return FLAT_DEFAULT_BG
+    return False
+
+
 def surface_rows(path, colors):
     """**Text over StyleBox backgrounds** — measure the combinations the eye actually sees."""
     boxes = parse_boxes(path)
+    kinds = box_types(path)
     styles, fonts, bases = parse_theme_map(path)
     under_names = ["background", "surface_soft"]      # buttons sit on the backdrop and inside cards
     rows = []
-    for type_name in TEXT_TYPES:
+    checks = [(name, STATE_FONTS, "button and input field text") for name in TEXT_TYPES]
+    checks += [(name, TAB_FACES, "tab label") for name in TAB_TYPES]
+    for type_name, faces, note in checks:
         table = styles.get(type_name)
         if not table:
             continue
-        for state, keys in STATE_FONTS.items():
+        for state, keys in faces.items():
             box_id = table.get(state)
-            if box_id is None or box_id not in boxes:
+            if box_id is None:
                 continue
-            box_bg = boxes[box_id]
+            box_bg = plate_of(box_id, boxes, kinds)
+            if box_bg is False:
+                continue
             ink = font_for(fonts, bases, type_name, keys)
             if ink is None:
                 continue
@@ -383,7 +426,7 @@ def surface_rows(path, colors):
                 continue
             rows.append({
                 "front": "%s.%s" % (type_name, state), "back": "on the plate (%s)" % worst_under,
-                "need": BODY, "ratio": worst, "note": "button and input field text",
+                "need": BODY, "ratio": worst, "note": note,
             })
     return rows
 
