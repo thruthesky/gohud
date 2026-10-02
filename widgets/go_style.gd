@@ -1463,9 +1463,10 @@ static func chip_panel(accent := Color.TRANSPARENT, fill_alpha := -1.0) -> Panel
 ## [param selected] — draws this card as the chosen one on a card with [param toggle] off (screens that rebuild the list on every pick).
 ## [param toggle] — on, `toggle_mode`'s pressed state is the selection. The caller ties one set together with a single `ButtonGroup`.
 ## [param dim_disabled] — on, a disabled card goes faint; off, the resting face is kept (so the color does not jump when it turns disabled).
-## [param filter] — negative leaves `mouse_filter` alone. 🛑 A card inside a scroll passes `MOUSE_FILTER_PASS` —
-##   with STOP a drag that starts on the card never reaches the scroll. The function does not decide on its own
-##   because a button floating over the world, a HUD's, must be STOP (with PASS the press event leaks into the world).
+## [param filter] — negative leaves `mouse_filter` alone. Inside a `GoScroll` there is nothing to pass: the scroll's
+##   touch policy lets a drag that starts on the card through by itself (`GoScroll._prepare_branch`). The argument is
+##   for a card **outside** a scroll — a button floating over the world, a HUD's, stays STOP so the press does not
+##   leak into the world, which is why the function does not decide on its own.
 static func style_choice_card(node: Button, accent: Color, selected := false, toggle := true,
 		dim_disabled := true, filter := -1) -> void:
 	node.theme = GoUi.theme()

@@ -94,6 +94,7 @@ func _initialize() -> void:
 	await _section("form", _form)
 	await _section("feedback", _feedback)
 	await _section("scroll drag", _scroll_drag)
+	await _section("scroll finger swipe", _scroll_swipe)
 	await _section("rtl", _rtl)
 	await _section("standalone", _standalone)
 	# 🛑 Leaving a lambda in a static variable can crash during shutdown — clear them before finishing.
@@ -2484,9 +2485,10 @@ func _feedback() -> void:
 
 ## 🛑 Dragging a list by a row must move the list, not the row's highlight — the focus the press handed out, the
 ##    hover under the finger and the jump to a half-hidden row all read as "the buttons are being dragged".
-##    Headless has no touchscreen, so the engine never starts a drag itself; the start and stop are raised the way
-##    `ScrollContainer` raises them, and the pointer events are real.
+##    The drag is the engine's own: touch emulation gives the headless run a touchscreen (see `_scroll_swipe`).
 func _scroll_drag() -> void:
+	var emulated := Input.emulate_touch_from_mouse
+	Input.emulate_touch_from_mouse = true
 	var scroll := GoScroll.new()
 	scroll.size_flags_vertical = Control.SIZE_FILL
 	scroll.position = Vector2(8, 8)
@@ -2521,30 +2523,313 @@ func _scroll_drag() -> void:
 	await frames(2)
 	check(root.gui_get_focus_owner() == cut and cut.is_hovered(), "the press lands on the half-hidden row")
 	check(scroll.scroll_vertical == 0, "a finger press does not pull the list to the row (%d)" % scroll.scroll_vertical)
-	scroll.propagate_notification(Control.NOTIFICATION_SCROLL_BEGIN)
-	scroll.scroll_started.emit()
+	var started := [false]
+	scroll.scroll_started.connect(func() -> void: started[0] = true, CONNECT_ONE_SHOT)
+	# The first move is past the deadzone — the engine starts the drag itself.
+	point.y -= 30.0
+	_pointer(point, true, false)
 	await frames(1)
+	check(started[0], "a move past the deadzone starts the engine's drag")
 	check(root.gui_get_focus_owner() == null, "the drag drops the focus the press handed out")
 	check(not cut.is_hovered(), "the row under the finger loses its hover once the drag starts")
-	for step in 6:
+	for step in 5:
 		point.y -= 30.0
 		_pointer(point, true, false)
 		await frames(1)
 	var lit := rows.filter(func(row: Button) -> bool: return row.is_hovered())
 	check(lit.is_empty(), "no row lights up as the finger passes over it (%d lit)" % lit.size())
+	check(scroll.scroll_vertical > 0, "the list follows the finger (%d)" % scroll.scroll_vertical)
+	var ended := [false]
+	scroll.scroll_ended.connect(func() -> void: ended[0] = true, CONNECT_ONE_SHOT)
 	_pointer(point, false, true)
 	await frames(1)
 	check(presses[0] == 0, "releasing after a drag presses nothing")
-	scroll.scroll_ended.emit()
+	# The release flings; the list comes to rest on its own.
+	for i in 600:
+		if ended[0]: break
+		await frames(1)
+	check(ended[0], "the fling comes to rest")
 	check(column.mouse_behavior_recursive == Control.MOUSE_BEHAVIOR_INHERITED, "the rows take the mouse again once the list stops")
 	_pointer(point, false, false)
 	await frames(1)
 	check(rows.any(func(row: Button) -> bool: return row.is_hovered()), "hover works again after the drag")
+	scroll.scroll_vertical = 0
+	await frames(1)
 	rows[15].grab_focus()
 	await frames(1)
 	check(scroll.scroll_vertical > 0, "keyboard focus still scrolls the row into view (%d)" % scroll.scroll_vertical)
 	scroll.queue_free()
 	await frames(1)
+	Input.emulate_touch_from_mouse = emulated
+
+
+## 🛑 **A swipe that starts on anything in the list scrolls it — not only one that starts on a button.**
+##    Reported 2026-10-01: on phones every sheet scrolled only by holding the thin rail, because the cards,
+##    panels and text bodies inside defaulted to `MOUSE_FILTER_STOP` and the drag never reached the scroll.
+##    This drives the engine's own drag (no faked `scroll_started`): `DisplayServer.is_touchscreen_available()`
+##    falls back to `Input.is_emulating_touch_from_mouse()` on the headless server, and `ScrollContainer` only
+##    starts a drag-to-scroll when it is true (scroll_container.cpp, 4.7.2).
+func _scroll_swipe() -> void:
+	var emulated := Input.emulate_touch_from_mouse
+	Input.emulate_touch_from_mouse = true
+	check(DisplayServer.is_touchscreen_available(), "touch emulation gives the headless run a touchscreen")
+	var body := "Long body text that wraps over several lines so the finger lands on words. " .repeat(3)
+	var swiped_links := []
+	var kinds := {
+		"button": func() -> Control: return GoStyle.button("Row"),
+		"PanelContainer card": func() -> Control:
+			var card := GoStyle.card()
+			card.add_child(GoStyle.label("Card"))
+			return card,
+		"Panel": func() -> Control: return Panel.new(),
+		"ColorRect": func() -> Control: return ColorRect.new(),
+		"RichTextLabel body": func() -> Control:
+			var text := RichTextLabel.new()
+			text.fit_content = true
+			text.bbcode_enabled = true
+			text.text = "[url=more]%s[/url]" % body
+			text.meta_clicked.connect(func(meta: Variant) -> void: swiped_links.append(meta))
+			return text,
+		"TextureRect": func() -> Control: return GoStyle.art(),
+		"nested containers": func() -> Control:
+			var outer := GoStyle.padding()
+			var plate := PanelContainer.new()
+			var column := GoStyle.column()
+			column.add_child(GoStyle.label("Nested"))
+			plate.add_child(column)
+			outer.add_child(plate)
+			return outer,
+		"choice card (no filter argument)": func() -> Control:
+			var choice := Button.new()
+			GoStyle.style_choice_card(choice, GoUi.color(GoTheme.ACCENT))
+			return choice,
+		"chip": func() -> Control: return GoStyle.chip("Chip"),
+		"item card": func() -> Control: return GoStyle.item_card({"title": "Item", "body": "A line of detail"}),
+		"alert": func() -> Control: return GoStyle.alert(body),
+		"STOP set after add_child": func() -> Control:
+			var late := PanelContainer.new()
+			late.ready.connect(func() -> void: late.mouse_filter = Control.MOUSE_FILTER_STOP)
+			return late,
+	}
+	for kind: String in kinds:
+		var scroll := GoScroll.new()
+		scroll.size_flags_vertical = Control.SIZE_FILL
+		scroll.position = Vector2(8, 8)
+		scroll.size = Vector2(300, 300)
+		var column := GoStyle.column()
+		column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		scroll.add_child(column)
+		root.add_child(scroll)
+		var rows: Array[Control] = []
+		for i in 16:
+			var row: Control = (kinds[kind] as Callable).call()
+			row.custom_minimum_size.y = maxf(row.custom_minimum_size.y, 72.0)
+			column.add_child(row)
+			rows.append(row)
+		await frames(3)
+		# Press on the first row that shows a good part of itself — on the row, never on the gap between rows.
+		var start := Vector2.INF
+		var target: Control = null
+		for row in rows:
+			var shown := row.get_global_rect().intersection(scroll.get_global_rect())
+			if shown.size.y >= 32.0:
+				start = shown.get_center()
+				target = row
+				break
+		var hit := _hit(start) if target != null else null
+		# A row that takes no mouse at all (IGNORE: art, chip) hands the press to the column — still inside the list.
+		var on_row := hit != null and (hit == target or target.is_ancestor_of(hit)
+			or (target.mouse_filter == Control.MOUSE_FILTER_IGNORE and scroll.is_ancestor_of(hit)))
+		check(on_row, "%s: the finger lands on the row (%s)" % [kind, hit])
+		var travelled := await _swipe(scroll, start, -180.0)
+		check(scroll.scroll_vertical > 60, "%s: a swipe that starts on it scrolls the list (%d)" % [kind, scroll.scroll_vertical])
+		check(travelled > 0, "%s: the list follows the finger before it lifts (%d)" % [kind, travelled])
+		scroll.queue_free()
+		await frames(1)
+	check(swiped_links.is_empty(), "a swipe that starts and ends on a link does not open it (%s)" % str(swiped_links))
+
+	# Taps still land, a swipe that starts on a button never presses it, and gesture owners keep their own drag.
+	var scroll := GoScroll.new()
+	scroll.size_flags_vertical = Control.SIZE_FILL
+	scroll.position = Vector2(8, 8)
+	scroll.size = Vector2(300, 300)
+	var column := GoStyle.column()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(column)
+	var presses := [0]
+	var tapped := GoStyle.button("Tap me", func() -> void: presses[0] += 1)
+	column.add_child(tapped)
+	var metas := []
+	var link := RichTextLabel.new()
+	link.fit_content = true
+	link.bbcode_enabled = true
+	link.text = "[url=more]Read more[/url]"
+	link.meta_clicked.connect(func(meta: Variant) -> void: metas.append(meta))
+	column.add_child(link)
+	var typing := GoStyle.line_edit("Name")
+	var sliding := GoStyle.slider()
+	var picking := GoStyle.picker()
+	var selectable := RichTextLabel.new()
+	selectable.fit_content = true
+	selectable.selection_enabled = true
+	selectable.text = "Copy me"
+	var claimed := Panel.new()
+	claimed.set_meta(GoScroll.OWNS_GESTURE, true)
+	for owner: Control in [typing, sliding, picking, selectable, claimed]:
+		owner.custom_minimum_size.y = 48
+		column.add_child(owner)
+	for i in 12:
+		var filler := GoStyle.card()
+		filler.custom_minimum_size.y = 72
+		column.add_child(filler)
+	root.add_child(scroll)
+	await frames(3)
+	await _tap(tapped.get_global_rect().get_center())
+	check(presses[0] == 1, "a tap on a button in the list presses it once (%d)" % presses[0])
+	await _tap(link.get_global_rect().position + Vector2(12, link.get_global_rect().size.y * 0.5))
+	check(metas == ["more"], "a tap on a link in a text body still opens it (%s)" % str(metas))
+	scroll.scroll_vertical = 0
+	await frames(1)
+	await _swipe(scroll, tapped.get_global_rect().get_center(), -120.0)
+	await frames(2)
+	check(presses[0] == 1, "a swipe that starts on a button does not press it (%d)" % presses[0])
+	check(scroll.scroll_vertical > 0, "and it scrolls the list (%d)" % scroll.scroll_vertical)
+	for owner: Control in [typing, sliding, picking, selectable, claimed]:
+		check(owner.mouse_filter == Control.MOUSE_FILTER_STOP, "%s keeps its own drag (STOP)" % owner.get_class())
+	check(GoScroll.audit_touch(scroll).is_empty(), "the touch audit passes a policy-clean list %s" % str(GoScroll.audit_touch(scroll)))
+	# Positive control: the audit catches a control that turned STOP behind the policy's back.
+	var sneaky := Panel.new()
+	column.add_child(sneaky)
+	await frames(2)
+	sneaky.mouse_filter = Control.MOUSE_FILTER_STOP
+	check(GoScroll.audit_touch(scroll).size() == 1, "the touch audit reports a STOP control inside a scroll %s" % str(GoScroll.audit_touch(scroll)))
+	scroll.queue_free()
+
+	# 🛑 Outside a scroll nothing changes — a HUD panel over the world stays STOP so a tap does not walk the hero.
+	var hud := PanelContainer.new()
+	root.add_child(hud)
+	await frames(1)
+	check(hud.mouse_filter == Control.MOUSE_FILTER_STOP, "a panel outside any scroll keeps STOP")
+	hud.queue_free()
+
+	# A horizontal row inside a vertical sheet: each axis still scrolls its own way.
+	var outer := GoScroll.new()
+	outer.size_flags_vertical = Control.SIZE_FILL
+	outer.position = Vector2(8, 8)
+	outer.size = Vector2(300, 300)
+	var stack := GoStyle.column()
+	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	outer.add_child(stack)
+	var strip := GoScroll.horizontal()
+	strip.custom_minimum_size.y = 90
+	var chips := GoStyle.row()
+	strip.add_child(chips)
+	for i in 12:
+		var chip := GoStyle.card()
+		chip.custom_minimum_size = Vector2(110, 80)
+		chips.add_child(chip)
+	stack.add_child(strip)
+	for i in 10:
+		var filler := GoStyle.card()
+		filler.custom_minimum_size.y = 72
+		stack.add_child(filler)
+	root.add_child(outer)
+	await frames(3)
+	var on_strip := strip.get_global_rect().get_center()
+	await _swipe(outer, on_strip, -150.0)
+	check(outer.scroll_vertical > 0 and strip.scroll_horizontal == 0, "a vertical swipe on a horizontal row scrolls the sheet (%d · %d)" % [outer.scroll_vertical, strip.scroll_horizontal])
+	outer.scroll_vertical = 0
+	await frames(2)
+	await _swipe(strip, strip.get_global_rect().get_center(), -150.0, true)
+	check(strip.scroll_horizontal > 0 and outer.scroll_vertical == 0, "a sideways swipe scrolls the row, not the sheet (%d · %d)" % [strip.scroll_horizontal, outer.scroll_vertical])
+	outer.queue_free()
+	await frames(1)
+
+	# A carousel inside a sheet: its sideways swipe still turns the page, an up-and-down swipe scrolls the sheet.
+	var sheet := GoScroll.new()
+	sheet.size_flags_vertical = Control.SIZE_FILL
+	sheet.position = Vector2(8, 8)
+	sheet.size = Vector2(300, 300)
+	var pile := GoStyle.column()
+	pile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sheet.add_child(pile)
+	var carousel := GoCarousel.new()
+	pile.add_child(carousel)
+	var pages: Array[Control] = []
+	for i in 3:
+		var page := GoStyle.card()
+		page.custom_minimum_size.y = 140
+		pages.append(page)
+	carousel.set_pages(pages)
+	for i in 8:
+		var filler := GoStyle.card()
+		filler.custom_minimum_size.y = 72
+		pile.add_child(filler)
+	root.add_child(sheet)
+	await frames(3)
+	var on_page := pages[0].get_global_rect().intersection(sheet.get_global_rect()).get_center()
+	await _swipe(sheet, on_page, -120.0, true)
+	await frames(2)
+	check(carousel.index() == 1 and sheet.scroll_vertical == 0, "a sideways swipe in a sheet turns the carousel page (%d · %d)" % [carousel.index(), sheet.scroll_vertical])
+	await _swipe(sheet, on_page, -150.0)
+	check(sheet.scroll_vertical > 0 and carousel.index() == 1, "an up-and-down swipe on the carousel scrolls the sheet (%d · %d)" % [sheet.scroll_vertical, carousel.index()])
+	sheet.queue_free()
+	await frames(1)
+	Input.emulate_touch_from_mouse = emulated
+
+
+## The control the GUI would hand a press at this point (the topmost one that takes the mouse).
+func _hit(point: Vector2) -> Control:
+	_finger_motion(point, Vector2.ZERO, false)
+	return root.gui_get_hovered_control()
+
+
+## A finger press, a drag of [param distance] in steps, a lift. Returns how far [param scroll] moved before the lift.
+func _swipe(scroll: GoScroll, start: Vector2, distance: float, sideways := false) -> int:
+	_finger_motion(start, Vector2.ZERO, false)
+	_finger_button(start, true)
+	await frames(1)
+	var before := scroll.scroll_horizontal if sideways else scroll.scroll_vertical
+	var point := start
+	var steps := 12
+	var step := Vector2(distance / steps, 0) if sideways else Vector2(0, distance / steps)
+	for i in steps:
+		point += step
+		_finger_motion(point, step, true)
+		await frames(1)
+	var moved := (scroll.scroll_horizontal if sideways else scroll.scroll_vertical) - before
+	_finger_button(point, false)
+	await frames(2)
+	return moved
+
+
+func _tap(point: Vector2) -> void:
+	_finger_motion(point, Vector2.ZERO, false)
+	_finger_button(point, true)
+	await frames(1)
+	_finger_button(point, false)
+	await frames(2)
+
+
+func _finger_button(point: Vector2, held: bool) -> void:
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = held
+	click.position = point
+	click.global_position = point
+	click.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
+	Input.parse_input_event(click.xformed_by(root.get_final_transform()))
+	Input.flush_buffered_events()
+
+
+func _finger_motion(point: Vector2, relative: Vector2, held: bool) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	motion.global_position = point
+	motion.relative = relative
+	motion.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
+	Input.parse_input_event(motion.xformed_by(root.get_final_transform()))
+	Input.flush_buffered_events()
 
 
 func _pointer(point: Vector2, held: bool, button: bool) -> void:

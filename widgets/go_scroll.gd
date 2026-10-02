@@ -26,6 +26,13 @@ var _bleed := 0
 @export var follow_keyboard_focus := true
 ## Children whose mouse was switched off for a finger drag, with the value to put back.
 var _drag_muted := {}
+## Branches that entered this frame (node → true) — the touch policy runs over them once more after the frame's code is done.
+var _settling := {}
+
+## 🔑 Meta key a screen sets to `true` on a control that **owns a competing drag** inside a scroll (a pannable map,
+## a drawing pad, a value scrubber of its own). `GoScroll` then leaves that control's `mouse_filter` alone.
+## Say why next to the line — every other control inside a scroll lets the finger through.
+const OWNS_GESTURE := &"go_scroll_owns_gesture"
 
 
 func _init() -> void:
@@ -49,8 +56,8 @@ func _init() -> void:
 func _ready() -> void:
 	theme = GoUi.theme()
 	scroll_deadzone = GoUi.metric(GoTheme.SCROLL_DEADZONE)
-	child_entered_tree.connect(_prepare_branch)
-	for child in get_children(): _prepare_branch(child)
+	child_entered_tree.connect(_on_branch_entered)
+	for child in get_children(): _on_branch_entered(child)
 
 
 func _enter_tree() -> void:
@@ -189,18 +196,95 @@ func _sync_edge_inset() -> void:
 	_content_inset.add_theme_constant_override(&"margin_right", maxi(0, _edge_gutter - reserved))
 
 
-## Ordinary buttons have to let the `ScrollContainer` see finger drags — that is what makes a scroll started on
-## top of the list work. Once the drag threshold is crossed the engine cancels the button press for us.
-## 🛑 Text editing, sliders and the `OptionButton` popup keep their own gestures, so they are left alone.
+## 🔑 **The touch policy: a finger drag that starts on anything in the list reaches the scroll.**
+## `ScrollContainer` starts a drag-to-scroll in its own `gui_input`, so it only sees the presses and motions its
+## children pass up. Every `MOUSE_FILTER_STOP` control in between eats them — and STOP is the engine default for
+## `PanelContainer`, `Panel`, `ColorRect`, `RichTextLabel` and `Button`, the very things cards, plates and text
+## bodies are made of (measured 4.7.2). So inside a scroll every STOP becomes PASS, except where the control's own
+## drag means something (`owns_gesture`). Once the drag passes the deadzone the engine cancels the button press
+## for us (`NOTIFICATION_SCROLL_BEGIN`), and `_on_drag_started` mutes the rest.
+## 🛑 Only inside a scroll. The scroll itself stays STOP, so a pass never reaches the world behind the sheet —
+##    a HUD control floating over the world is never a scroll descendant and keeps its STOP.
+## 🛑 The policy runs when a branch enters **and once more after that frame** (`_settle`) — a caller that adds a
+##    card and then sets `mouse_filter = STOP` on it, or a widget whose `_ready` sets STOP, would otherwise win.
 func _prepare_branch(node: Node) -> void:
 	if node is ScrollBar or node is ScrollContainer: return
 	if node is Control and node.get_parent() == self and node.layout_direction == Control.LAYOUT_DIRECTION_INHERITED:
 		node.layout_direction = Control.LAYOUT_DIRECTION_APPLICATION_LOCALE  # the 4.4+ name — `LOCALE` is a deprecated alias
-	if node is Button and not node is OptionButton:
-		node.mouse_filter = Control.MOUSE_FILTER_PASS
-	if not node.child_entered_tree.is_connected(_prepare_branch):
-		node.child_entered_tree.connect(_prepare_branch)
+	_let_finger_through(node)
+	if not node.child_entered_tree.is_connected(_on_branch_entered):
+		node.child_entered_tree.connect(_on_branch_entered)
 	for child in node.get_children(): _prepare_branch(child)
+
+
+func _on_branch_entered(node: Node) -> void:
+	_prepare_branch(node)
+	if _settling.is_empty(): _settle.call_deferred()
+	_settling[node] = true
+
+
+func _let_finger_through(node: Node) -> void:
+	var control := node as Control
+	if control == null or owns_gesture(control): return
+	# Buttons keep their old rule: PASS even when set IGNORE, so a row stays pressable.
+	if control is Button or control.mouse_filter == Control.MOUSE_FILTER_STOP:
+		control.mouse_filter = Control.MOUSE_FILTER_PASS
+
+
+func _settle() -> void:
+	var branches := _settling
+	_settling = {}
+	for branch: Node in branches:
+		if not is_instance_valid(branch) or not is_ancestor_of(branch): continue
+		# A branch inside another queued branch is walked with it — walk each node once.
+		var outer := branch.get_parent()
+		while outer != self and not branches.has(outer): outer = outer.get_parent()
+		if outer == self: _settle_branch(branch)
+
+
+func _settle_branch(node: Node) -> void:
+	if node is ScrollBar or node is ScrollContainer: return
+	_let_finger_through(node)
+	for child in node.get_children(): _settle_branch(child)
+
+
+## 🔑 **Does this control's own drag mean something?** Then a finger on it does not scroll the list.
+## - text fields: a press places the caret and a drag selects (`LineEdit`, `TextEdit`),
+## - a text body the player may select and copy (`RichTextLabel.selection_enabled`),
+## - value controls whose drag *is* the value: `Slider`, `ScrollBar`, `SpinBox` (a `ProgressBar` takes no input),
+## - `OptionButton` — its popup opens on the press,
+## - lists with their own scroll and selection: `ItemList`, `Tree`, `GraphEdit`,
+## - anything a screen marked with [constant OWNS_GESTURE] (a pannable map, a drawing pad).
+## 🛑 A plain `RichTextLabel` is not one — link (`meta`) taps still work through PASS, and a swipe that ends on a
+##    link does not open it (`_on_drag_started` turns the rows' mouse off until the scroll stops).
+static func owns_gesture(control: Control) -> bool:
+	if control.has_meta(OWNS_GESTURE): return bool(control.get_meta(OWNS_GESTURE))
+	if control is LineEdit or control is TextEdit or control is OptionButton: return true
+	if control is RichTextLabel: return (control as RichTextLabel).selection_enabled
+	if control is Range: return not (control is ProgressBar or control is TextureProgressBar)
+	return control is ItemList or control is Tree or control is GraphEdit
+
+
+## 🧪 **What under [param root] can swallow a finger drag** — one line per problem, empty when clean.
+## Reports a `MOUSE_FILTER_STOP` control inside a `GoScroll` that does not own a gesture (something turned it STOP
+## after the policy ran), and a plain `ScrollContainer` that is not a `GoScroll` (it gets none of this).
+## For screen tests: open a sheet, then `check(GoScroll.audit_touch(sheet).is_empty(), ...)`.
+static func audit_touch(root: Node) -> Array[String]:
+	var problems: Array[String] = []
+	_audit_touch(root, root is GoScroll, root, problems)
+	return problems
+
+
+static func _audit_touch(node: Node, inside: bool, root: Node, problems: Array[String]) -> void:
+	var where := str(root.get_path_to(node)) if root != node else str(node.name)
+	if node is ScrollContainer and not node is GoScroll:
+		problems.append("%s: a plain ScrollContainer — use GoScroll (UiScroll) so a finger swipe scrolls it" % where)
+	var control := node as Control
+	if inside and control != null and node != root and control.mouse_filter == Control.MOUSE_FILTER_STOP 			and not node is ScrollBar and not owns_gesture(control):
+		problems.append("%s: %s is STOP inside a scroll — a finger drag that starts on it never reaches the scroll" % [
+			where, control.get_class()])
+	if node is ScrollBar: return
+	for child in node.get_children(): _audit_touch(child, inside or node is GoScroll, root, problems)
 
 
 func _notification(what: int) -> void:

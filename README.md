@@ -545,7 +545,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer; `max_height_ratio` lets one sheet grow past the global 0.72 ceiling (a debug build warns when a ratio is cut) |
 | `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically |
 | `GoForm` | MarginContainer | Forms that cap their width per breakpoint, avoid the virtual keyboard (and, with `avoid_hud`, floating HUD pieces) and guarantee label wrapping |
-| `GoScroll` | ScrollContainer | Touch-friendly scrolling; the scrollbar tucks into the card padding; RTL-aware |
+| `GoScroll` | ScrollContainer | Touch-friendly scrolling — a finger swipe that starts on any card, panel or text inside scrolls it; the scrollbar tucks into the card padding; RTL-aware |
 | `GoNotice` | PanelContainer | Snackbar that never takes input or focus |
 | `GoPromptCard` | PanelContainer | Non-blocking question card; keeps pressed buttons alive across refreshes |
 | `GoCoachMark` | Control | Guided tour that points at real controls; pressing the target advances; the card steps around HUD anchors and `keep_clear` controls |
