@@ -216,6 +216,12 @@ def _which(name):
 
 
 def _host_project():
+	# 🔑 The project the checks run in, as `run_tests.sh` reads it — the repository itself has no `project.godot`, so in
+	#    CI (and in a bare clone) the walk up found nothing and every engine name in the prose (`add_child`) read as
+	#    missing: 50 false failures on 2026-10-03, while the same docs passed inside a host project.
+	named = os.environ.get("GOHUD_PROJECT", "")
+	if named and os.path.isfile(os.path.join(named, "project.godot")):
+		return named
 	folder = ADDON
 	while folder != "/":
 		if os.path.isfile(os.path.join(folder, "project.godot")):
