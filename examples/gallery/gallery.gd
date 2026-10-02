@@ -417,6 +417,15 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	page.add_child(charts)
 	page.add_child(donut.legend())
 
+	# A short column of choices tapped once — a summon list on a HUD side bar. The game marks what is out and greys
+	# what cannot act; the column never chooses by itself.
+	var summons := GoChoiceColumn.make(["Hen", "Cat", "Dog", "Pig", "Sheep", "Cow"], 4,
+		func(index: int) -> void: _say("summon %d" % index))
+	summons.set_selected(2, true)
+	summons.set_dimmed(4, true)
+	summons.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	page.add_child(summons)
+
 	page.add_child(GoStyle.section("Carousel", false))
 	# 🔑 No fixed height — the carousel is as tall as its tallest banner. (A fixed 120 sliced the title in half, 2026-09-23.)
 	var carousel := GoCarousel.new()

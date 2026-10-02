@@ -714,7 +714,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD e forme da gioco <small>(10)</small></h2>
+  <h2>HUD e forme da gioco <small>(11)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -753,6 +753,14 @@ pad.<wbr>moved.<wbr>connect(<wbr>func(<wbr>direction: Vector2) -&gt; void: playe
       <p>Tasti che leggono l'assegnazione reale, così riassegnarli non rende falso il suggerimento.</p>
       <p class="catalog-base">estende <code>HBoxContainer</code></p>
       <pre><code>hint.<wbr>add_child(<wbr>GoKbd.<wbr>for_action(<wbr>&amp;"interact"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gochoicecolumn"><code>GoChoiceColumn</code></h3>
+      <p>Una breve colonna di scelte da toccare una volta — un elenco di evocazioni; il gioco segna quante righe vuole.</p>
+      <p class="catalog-base">estende <code>Control</code></p>
+      <pre><code>var animals := GoChoiceColumn.<wbr>make(<wbr>[<wbr>"Hen",<wbr> "Cat",<wbr> "Dog",<wbr> "Pig",<wbr> "Cow"],<wbr> 4,<wbr> summon)
+animals.<wbr>set_selected(<wbr>2,<wbr> true)
+side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

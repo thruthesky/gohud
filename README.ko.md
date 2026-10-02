@@ -608,6 +608,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoDonut` | Control | 피해량 분포·재화 비율·파티 기여도. `collapse_to` 를 넘는 조각은 하나로 묶고, 가운데에 합계를 두며, `legend()` 가 조각마다 이름과 비율을 **글자로** 말한다 |
 | `GoCarousel` | VBoxContainer | 이벤트 배너와 캐릭터 선택. **저절로 넘어가지 않는다** — 자동으로 넘어가는 배너는 사람이 누르려던 것을 가로챈다. 점은 눌리고, 몇 번째인지 소리로 읽힌다 |
 | `GoKbd` | HBoxContainer | 키 안내. `GoKbd.for_action(&"interact")` 가 InputMap 에서 **실제 배치**를 읽으므로 키를 바꾸면 안내도 바뀐다. `hide_on_handheld` 가 폰에서는 감춘다 |
+| `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
 
 ### 화면 위에
 

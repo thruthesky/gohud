@@ -714,7 +714,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 與遊戲元件 <small>(10)</small></h2>
+  <h2>HUD 與遊戲元件 <small>(11)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -753,6 +753,14 @@ pad.<wbr>moved.<wbr>connect(<wbr>func(<wbr>direction: Vector2) -&gt; void: playe
       <p>讀取真實按鍵綁定的鍵帽，改鍵後提示也不會出錯。</p>
       <p class="catalog-base">繼承 <code>HBoxContainer</code></p>
       <pre><code>hint.<wbr>add_child(<wbr>GoKbd.<wbr>for_action(<wbr>&amp;"interact"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gochoicecolumn"><code>GoChoiceColumn</code></h3>
+      <p>點一下即可選的短直列——召喚清單；遊戲可標記任意多列。</p>
+      <p class="catalog-base">繼承 <code>Control</code></p>
+      <pre><code>var animals := GoChoiceColumn.<wbr>make(<wbr>[<wbr>"Hen",<wbr> "Cat",<wbr> "Dog",<wbr> "Pig",<wbr> "Cow"],<wbr> 4,<wbr> summon)
+animals.<wbr>set_selected(<wbr>2,<wbr> true)
+side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

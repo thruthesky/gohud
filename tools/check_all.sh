@@ -28,6 +28,12 @@ step "①-a unit tests — later widgets"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_extra_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-b unit tests — GoChoiceColumn"
+# Its own file so the people adding widgets to `gohud_extra_test.gd` never clash with it — and called here, or it
+# would never run at all.
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_choice_column_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-t unit tests — the five templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,
 #    yet until 2026-09-16 no check opened any of those five (the docs said "headless-tested").

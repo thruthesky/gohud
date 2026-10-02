@@ -641,6 +641,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoDonut` | Control | Damage share, currency splits, party contribution. Beyond `collapse_to` slices the rest is merged into one, the centre carries the total, and `legend()` says every slice in words as well as in colour |
 | `GoCarousel` | VBoxContainer | Event banners and character select. It **never moves on its own** — an auto-advancing banner steals the tap the player was aiming at; dots are pressable and the page is announced |
 | `GoKbd` | HBoxContainer | Key caps for hints. `GoKbd.for_action(&"interact")` reads the real binding from the InputMap, so remapping a key changes the hint too, and `hide_on_handheld` keeps it off phones |
+| `GoChoiceColumn` | Control | A short column of choices tapped once — the summon list on a HUD side bar. A few rows at a time, scrolled up and down; **one tap on any row acts** (no wheel to settle first); the game marks any number of rows as chosen (`set_selected`) or greys them (`set_dimmed`), and rows can draw their own picture (`item_drawer`). Keyboard focus is off over gameplay, so the arrow keys stay with the player |
 
 ### Over the screen
 

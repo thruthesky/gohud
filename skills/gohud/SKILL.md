@@ -60,6 +60,8 @@ Reply in the language the user writes in; keep code identifiers as they are.
    swipe to delete → `GoSwipeRow`, swiping tab pages → `GoTabView`, drag to reorder → `GoReorderList`, pinch to zoom →
    `GoZoomView`, one of a few options → `GoDialogs.choose`, a range / time / wheel / steps → `GoRangeSlider` /
    `GoTimePicker` / `GoWheelPicker` / `GoStepper` (`references/flutter.md` maps every Flutter widget).
+   A short list of actions on the HUD where one tap acts and several rows can be marked (a summon list) →
+   `GoChoiceColumn` (`references/hud.md` §18), not `GoWheelPicker` (which settles on one value).
    A list the player scans (quests, mail, a shop) → rule 15 in §3 and the recipe in `references/recipes.md` §16.
    Placing, not drawing: items along the top or bottom edge in one to three slots → `GoTopBar` / `GoBottomBar`,
    down a side in one to three tiers → `GoLeftSideBar` / `GoRightSideBar`, equal columns → `GoGrid`

@@ -96,6 +96,7 @@ Shapes that web UI kits have, reshaped for what games actually need.
 | **`GoRadar`** the character stat pentagon, with a **dashed** overlay to compare gear (dashed, not just a second colour, so it survives colour blindness) | `GoRadar.make({"STR": 0.8, "AGI": 0.5})` | hud.md §14 |
 | **`GoDonut`** damage share, currency split; collapses past five slices and carries a legend **with words**, not only colour | `GoDonut.make(slices).legend()` | hud.md §14 |
 | **`GoCarousel`** store banners and character select; does **not** advance on its own by default, and never when `reduce_motion` is on | `carousel.set_pages([a, b, c])` | hud.md §15 |
+| **`GoChoiceColumn`** a short column of choices tapped once — a HUD summon list: a few rows at a time, scrolls up and down, **one tap on any row acts**, the game marks any number of rows chosen or greyed, rows can draw their own picture | `GoChoiceColumn.make(animals, 4, summon).set_selected(2, true)` | hud.md §18 |
 | **`GoKbd`** key caps for PC/Steam builds; `for_action()` reads the **real binding** from `InputMap`, so rebinding does not make the hint lie; hides itself on handhelds | `GoKbd.for_action(&"interact")` | platform.md §7 |
 
 ## 7. GoStyle — the control factory

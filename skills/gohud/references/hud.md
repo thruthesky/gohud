@@ -536,3 +536,34 @@ refresh.refresh_requested.connect(func() -> void:
   drag scrolls the page.
 - ♿ The grip, the zoom view and the wheel take the keyboard (Up/Down, `+` `-` `0` and arrows, Up/Down); a swipe action
   must also be on the row's menu or detail screen.
+
+## 18. GoChoiceColumn — a column of choices you tap once
+
+A short list on the HUD — the animals a player can call, the friends to summon, the filters that are on. A few rows
+show at a time and the column scrolls up and down; **one tap on any row acts at once** (a `GoWheelPicker` settles on
+one value instead — wrong for a list of actions). Marks are the game's: the column never chooses by itself.
+
+```gdscript
+var animals := GoChoiceColumn.make(["Hen", "Cat", "Dog", "Pig", "Cow"], 4, func(index: int) -> void: summon(index))
+animals.set_selected(2, true)           # the dog is out — its row stands out
+animals.set_dimmed(4, true)             # the cow is resting — greyed, but a tap still says why
+side_bar.add_center(animals)
+# When the dog goes home:
+animals.set_selected(2, false)
+```
+
+| Member | Notes |
+|---|---|
+| `make(choices, rows := 4, action := Callable())` · `set_items(choices)` · `item_count()` | A choice is a text or `{"icon", "text", "tooltip"}`; `set_items` keeps the marks that still fit |
+| signal `item_pressed(index)` | A tap that lets go on the same row without moving, or Enter while focused |
+| `set_selected(i, on)` · `is_selected(i)` · `selected_indices()` · `clear_selected()` | Any number of rows; a plate and a ring in `selection_color` (the accent when transparent) |
+| `set_dimmed(i, on)` · `is_dimmed(i)` | Greys a row; it still fires |
+| `scroll_to(i, animate)` · `get_scroll()` · `max_scroll()` · `row_rect(i)` · `row_at(pos)` | Rows rest on whole rows after a drag or a flick; the mouse wheel moves one row |
+| `item_drawer` | `func(canvas, index, rect, chosen, dimmed)` — draw a face or a swatch inside `rect`; keep a `"text"` for the tooltip and the screen reader |
+| `item_height` · `visible_items` · `item_gap` · `padding` · `panel` · `selection_color` · `translate` | `item_height` never goes under the `touch` token |
+
+- 🛑 `focus_mode` is `FOCUS_NONE` by default — over a game the arrow keys keep walking the player. A menu turns it on:
+  Up / Down move a ring (keyboard focus only), Enter presses.
+- 🔑 A drag that starts on it is its own (`GoScroll.OWNS_GESTURE`); a move under 6 dp is still a tap.
+- ♿ The tooltip is the row's `tooltip` or text; the column's spoken name is the focused row and a ✓ when it is chosen.
+

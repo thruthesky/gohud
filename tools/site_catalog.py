@@ -1760,6 +1760,26 @@ pad.moved.connect(func(direction: Vector2) -> void: player.move(direction))""", 
 		"Клавіші, що читають справжнє призначення, — підказка не бреше після перепризначення.",
 		"แป้นที่อ่านการกำหนดปุ่มจริง เปลี่ยนปุ่มแล้วคำแนะนำก็ไม่ผิด",
 		"أغطية مفاتيح تقرأ الربط الفعلي، فلا يكذب التلميح بعد إعادة الربط.")),
+	("hud", "GoChoiceColumn", "Control", """var animals := GoChoiceColumn.make(["Hen", "Cat", "Dog", "Pig", "Cow"], 4, summon)
+animals.set_selected(2, true)
+side_bar.add_center(animals)""", T(
+		"A short column of choices tapped once — a summon list; the game marks any number of rows.",
+		"한 번 눌러 고르는 짧은 세로 목록 — 소환 목록. 게임이 여러 칸을 표시할 수 있다.",
+		"一度タップで選ぶ短い縦リスト — 召喚リスト。ゲームが何行でも印を付けられる。",
+		"点一下即可选的短竖列——召唤列表；游戏可标记任意多行。",
+		"點一下即可選的短直列——召喚清單；遊戲可標記任意多列。",
+		"Una columna corta de opciones que se tocan una vez —una lista de invocación—; el juego marca las filas que quiera.",
+		"Uma coluna curta de opções tocadas uma vez — uma lista de invocação; o jogo marca quantas linhas quiser.",
+		"Короткий столбец вариантов в одно касание — список призыва; игра отмечает сколько угодно строк.",
+		"Une courte colonne de choix qu'on touche une fois — une liste d'invocation ; le jeu marque autant de lignes qu'il veut.",
+		"Tek dokunuşla seçilen kısa bir sütun — çağırma listesi; oyun istediği kadar satırı işaretler.",
+		"Krótka kolumna wyborów jednym stuknięciem — lista przywołań; gra zaznacza dowolnie wiele wierszy.",
+		"Una breve colonna di scelte da toccare una volta — un elenco di evocazioni; il gioco segna quante righe vuole.",
+		"Cột lựa chọn ngắn chạm một lần — danh sách triệu hồi; trò chơi đánh dấu bao nhiêu hàng tùy ý.",
+		"Kolom pilihan pendek yang diketuk sekali — daftar pemanggilan; game menandai berapa pun baris.",
+		"Короткий стовпець варіантів одним дотиком — список виклику; гра позначає скільки завгодно рядків.",
+		"คอลัมน์ตัวเลือกสั้นๆ ที่แตะครั้งเดียว — รายการอัญเชิญ เกมทำเครื่องหมายได้หลายแถว",
+		"عمود قصير من الخيارات يُنقر مرة واحدة — قائمة استدعاء؛ تحدد اللعبة أي عدد من الصفوف.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",
