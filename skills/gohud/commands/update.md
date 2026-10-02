@@ -73,12 +73,14 @@ plugin and any `~/.claude/skills/gohud/` copy are built from it.
 ```bash
 grep -m1 '^version=' addons/gohud/plugin.cfg
 grep -m1 'Version described' <skill>/references/features.md
-godot --headless --path . -s res://addons/gohud/tests/gohud_test.gd 2>&1 | tail -1
-godot --headless --path . -s res://addons/gohud/tests/gohud_extra_test.gd 2>&1 | tail -1
+bash addons/gohud/tools/run_tests.sh 2>&1 | tail -1
+GOHUD_TEST_SCRIPT=res://addons/gohud/tests/gohud_extra_test.gd bash addons/gohud/tools/run_tests.sh 2>&1 | tail -1
 ```
 
-Both test lines must end `N/N passed`. The last two files exist only in a git checkout — skip them for a
-ZIP install and say so.
+Both test lines must end `N/N passed`. Run them through `run_tests.sh`, not `godot -s` directly: a parse error makes
+a direct run exit silently, which reads as a pass. The tests and tools exist only in a git checkout — skip them for
+a ZIP install and say so. `Version described` in `features.md` names the release the skill was written against plus
+`Unreleased` while `main` is ahead of it — the two agree when the skill's release is the add-on's `version=` or newer.
 
 Report:
 

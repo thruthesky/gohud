@@ -39,30 +39,31 @@ takes every preset's own shape and the M3 component's under the Material presets
 ## 2. Scaffold, lists and gestures
 
 ```gdscript
-var page := GoStyle.column()
-var screen := GoScaffold.make("Inbox", page, true)          # a menu button that opens the drawer
+var feed := GoListView.make(posts.size(), 72.0, func(index: int) -> Control: return post_row(posts[index]))
+feed.end_reached.connect(load_more)                          # near the end — fetch the next page, then set_count()
+var screen := GoScaffold.make("Inbox", feed, true)           # a list scrolls itself: placed as it is, not in a GoScroll
 screen.set_bottom_bar(GoNavBar.make([{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.USER, "text": "Me"}]))
 screen.set_fab(GoFab.make(GoIconSet.EDIT, "", compose))
 screen.set_drawer(GoDrawer.new())
 add_child(screen)
-
-var feed := GoListView.make(posts.size(), 72.0, func(index: int) -> Control: return post_row(posts[index]))
-feed.end_reached.connect(load_more)                          # near the end — fetch the next page, then set_count()
-var refresh := GoRefresh.attach(feed)
+var refresh := GoRefresh.attach(feed)                        # after the feed has a parent (the indicator goes beside it)
 refresh.refresh_requested.connect(func() -> void:
 	await reload()
 	refresh.finish())
 ```
 
+The whole screen — tabs over a lazy feed and a swipe-to-remove list, pull to refresh, load more, a drawer menu, a
+navigation bar with a badge, a FAB and an Undo snackbar — is `assets/templates/app_screen.gd`.
+
 | Class | Members |
 |---|---|
 | `GoScaffold` (Control) | `make(title, page, menu)` · `set_app_bar(bar)` · `set_body(page, scrolls)` · `set_bottom_bar(bar)` · `set_fab(fab)` · `set_drawer(drawer)` · `open_drawer()` · `snackbar_margin()` · `scroll` · `app_bar` · `body` · `bottom_bar` · `fab` · `drawer` |
-| `GoListView` (GoScroll) | `make(rows, extent, build)` · `recycle(rows, extent, create, bind)` · `set_count(rows)` · `refresh()` · `scroll_to_index(i)` · `row(i)` · `built_indexes()` · `item_extent` · `spacing` · `overscan` · `end_threshold` · signals `end_reached` · `row_shown(index)` |
+| `GoListView` (GoScroll) | `make(rows, extent, build)` · `recycle(rows, extent, create, bind)` · `set_count(rows)` (or the `count` property) · `refresh()` (rebuilds the rows in view — after the data behind them changed) · `scroll_to_index(i)` · `row(i)` · `built_indexes()` · `item_extent` · `spacing` · `overscan` · `end_threshold` · signals `end_reached` · `row_shown(index)` |
 | `GoRefresh` (Control) | `attach(scroll, action)` · `finish()` · `refreshing` · `trigger_dp` · `rest_dp` · signal `refresh_requested` |
-| `GoSwipeRow` (Container) | `wrap(row, end, start)` · `trigger(direction)` · `threshold` · `free_on_dismiss` · `content` · signals `swiped(direction)` · `dismissed` — an action is `{"icon", "text", "tone", "action", "dismiss"}` |
+| `GoSwipeRow` (Container) | `wrap(row, end, start)` · `trigger(direction)` · `threshold` · `free_on_dismiss` (on: a dismissed row frees itself — wrap the **list** in a margin, not each row, or the holder stays as a gap) · `content` · `end_action` · `start_action` · signals `swiped(direction)` · `dismissed` — an action is `{"icon", "text", "tone", "action", "dismiss"}` |
 | `GoTabView` (VBoxContainer) | `make(names, pages, selected, translate)` · `current()` · `page(i)` · `set_tab(i, animate)` · `tab_bar` (a `GoStyle.tabs` row with `fill` on) · `swipe_slop` · signal `tab_changed(index)` — the pages keep a `GAP` from the tab line |
 | `GoReorderList` (Container) | `make(rows, with_grips)` · `add_row(row)` · `remove_row(row)` · `rows()` · `move_row(from, to)` · `is_dragging()` · `grips` · `hold_ms` · `spacing` · signal `reordered(from, to)` |
-| `GoZoomView` (Control) | `wrap(content, most)` · `set_content(content)` · `get_zoom()` · `zoom_to(zoom, around, animate)` · `reset(animate)` · `min_zoom` · `max_zoom` · `double_tap_zoom` · `wheel_step` · signal `zoom_changed(zoom)` |
+| `GoZoomView` (Control) | `wrap(content, most)` · `set_content(content)` · `content` · `get_zoom()` · `zoom_to(zoom, around, animate)` · `reset(animate)` · `min_zoom` · `max_zoom` · `double_tap_zoom` · `wheel_step` · signal `zoom_changed(zoom)` |
 | `GoBanner` (PanelContainer) | `make(message, actions, icon, translate)` · `message()` · `dismiss()` · signal `closed` — an action is `{"text", "action", "keep"}` |
 | `GoDialogs.choose` | `await choose(title, options, cancel_text, translate) -> int` — an option is a string or `{"text", "icon", "subtitle", "danger"}`; a bottom sheet on a phone, centred on a desktop |
 
@@ -75,6 +76,8 @@ refresh.refresh_requested.connect(func() -> void:
 - ♿ A swipe and a drag are invisible until tried — keep the same action on the row's menu (`GoContextMenu`). A grip
   takes focus and moves its row with Up and Down; `GoZoomView` zooms with `+` `-` `0` and pans with the arrows.
 - 🛑 `GoRefresh.attach()` adds the indicator **beside** the scroll (deferred) — the scroll needs a parent.
+- 🛑 A `GoListView` is the scroll itself: never put it inside another vertical scroll (`GoScaffold.make(title, page)`
+  wraps a plain column in a `GoScroll`, but places a list, a `GoTabView` or any `ScrollContainer` as it is).
 
 ## 3. Pickers and steps
 
@@ -93,10 +96,10 @@ steps.finished.connect(place_order)
 
 | Class | Members |
 |---|---|
-| `GoTimePicker` (Container) | `make(at_hour, at_minute, action, twenty_four)` · `get_time()` · `set_time(hour, minute)` · `show_part(part)` · `current_part()` · `use_24h` · `hour` · `minute` · signal `picked(hour, minute)` — Up / Down on a focused hour or minute box turn it by one |
+| `GoTimePicker` (Container) | `make(at_hour, at_minute, action, twenty_four)` · `get_time()` · `set_time(hour, minute)` · `show_part(part)` (0 hour, 1 minute) · `current_part()` · `use_24h` · `hour` · `minute` (read them; assigning does not redraw — use `set_time()`) · signal `picked(hour, minute)` — Up / Down on a focused hour or minute box turn it by one |
 | `GoDatePicker` range | `range_mode` · `get_range() -> [start, end]` · `set_range(start, end)` · signal `range_picked(start, end)` |
 | `GoRangeSlider` (Control) | `make(minimum, maximum, from, to, snap)` · `set_range(from, to)` · `low` · `high` · `min_value` · `max_value` · `step` · `min_gap` · signals `changed(low, high)` · `change_ended(low, high)` |
-| `GoWheelPicker` (Control) | `make(choices, selected, action, as_keys)` · `set_items(choices, selected)` · `select(index, animate)` · `get_selected()` · `get_text()` · `item_height` · `visible_items` · `translate` · signal `changed(index)` |
+| `GoWheelPicker` (Control) | `make(choices, selected, action, as_keys)` · `set_items(choices, selected)` · `items` · `select(index, animate)` · `get_selected()` · `get_text()` · `item_height` · `visible_items` · `translate` · signal `changed(index)` |
 | `GoStepper` (VBoxContainer) | `make(steps, current, translate)` · `current()` · `set_step(i, force)` · `next()` · `back()` · `set_error(i, wrong)` · `state_of(i)` · `layout` (`Layout.VERTICAL` / `HORIZONTAL` — in a row each marker sits over its title, so three or four steps fit a phone) · `can_continue` · signals `step_changed(index)` · `finished` |
 
 - 🔑 The time picker's dial turns to the minutes by itself once the hour is set, as on Android. A 24-hour dial puts
@@ -113,12 +116,13 @@ steps.finished.connect(place_order)
 | `AppBar` | `GoAppBar` — `follow(scroll)` lifts it; `Size.MEDIUM` / `LARGE` with `expanded_title()` |
 | `NavigationBar`, `BottomNavigationBar`, `CupertinoTabBar` | `GoNavBar` |
 | `NavigationRail` | `GoNavBar.rail()` |
-| `Drawer`, `NavigationDrawer` | `GoDrawer` with `GoNavBar.drawer_list()` inside |
+| `Drawer`, `NavigationDrawer` | `GoDrawer` with `GoNavBar.drawer_list()` inside (destinations; a menu of actions is `GoStyle.list_button()` rows) |
 | `FloatingActionButton` (all sizes, extended) | `GoFab` |
 | `FilledButton` · `FilledButton.tonal` · `TextButton` · `OutlinedButton` · `ElevatedButton` | `GoStyle.button()` with `Tone.PRIMARY` · `NORMAL` · `BARE` · `OUTLINED` · `PRIMARY` + `GoStyle.glow()` |
 | `IconButton` | `GoIconButton`, `GoStyle.icon_button()` |
 | `SegmentedButton`, `CupertinoSegmentedControl` | `GoStyle.segmented()` |
 | `Chip`, `ActionChip` · `FilterChip` · `InputChip` · `ChoiceChip` | `GoStyle.chip()` · `filter_chip()` · `input_chip()` · `segmented()` / `choice_grid()` |
+| A scrolling column of `FilterChip`s / action rows on a side bar | `GoChoiceColumn` — one tap acts, any number of rows marked (`hud.md` §18) |
 | `Checkbox` · `Switch`, `CupertinoSwitch` · `Radio` | `GoStyle.checkbox()` · `toggle()` · `radio_group()` |
 | `Slider`, `CupertinoSlider` · `RangeSlider` | `GoStyle.slider()` · `GoRangeSlider` |
 | `TextField`, `TextFormField`, `Form` | `GoStyle.line_edit()` / `field()`, `GoField` (per-field errors), `GoForm` (keyboard avoidance, width caps) |
@@ -155,7 +159,9 @@ These are Godot's own building blocks; gohud adds the factories that keep sizes 
 | `Padding` · `Center`, `Align` | `MarginContainer`, `GoStyle.padding()` · `CenterContainer`, `GoStyle.center_in()` |
 | `Container`, `DecoratedBox` | `PanelContainer` with a skin face — `GoStyle.card()`, `GoStyle.surface()` |
 | `Stack`, `Positioned` | a plain `Control` with anchors and offsets |
-| `Wrap` · `GridView` | `GoStyle.wrap_row()` · `GoStyle.responsive_grid()`, `GridContainer` |
+| `Wrap` · `GridView.count` · `GridView.extent` | `GoStyle.wrap_row()` · `GoGrid.make(3)` · `GoGrid.make(1, 160.0)` (as many 160 dp-or-wider equal columns as fit; `GoStyle.responsive_grid()` returns a plain `GridContainer`) |
+| `Row` with `MainAxisAlignment.spaceBetween` along a screen edge · `BottomAppBar` actions | `GoTopBar` / `GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)` — one to three slots, the centre slot on the centre (`style.md` §1) |
+| A column of tools down a side (`NavigationRail`-like, without destinations) | `GoLeftSideBar` / `GoRightSideBar` — tiers at the top, middle and bottom; `clear_of([top, bottom])` |
 | `AspectRatio` | `GoStyle.aspect()` |
 | `SafeArea`, `MediaQuery` | `GoSafeArea`, `GoScale` (breakpoints and dp) |
 | `ListView`, `SingleChildScrollView` · `ListView.builder` | `GoScroll` with a column · `GoListView` |

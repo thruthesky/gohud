@@ -1,6 +1,6 @@
 ---
 description: Explain everything gohud can do — grouped, one line of code per feature, with links to the details
-argument-hint: "[optional area: surfaces | hud | style | theming | icons | i18n | accessibility | config]"
+argument-hint: "[optional area: surfaces | hud | style | layout | app | flutter | theming | icons | i18n | accessibility | config]"
 allowed-tools: Read
 ---
 
@@ -22,8 +22,12 @@ ${CLAUDE_PLUGIN_ROOT}/skills/gohud/references/features.md
 | Area | Also read (same `references/` folder) |
 |---|---|
 | surfaces, dialogs, sheets, forms, windows | `surfaces.md` |
-| hud, bars, slots, joystick, notices, prompts, tour | `hud.md` |
+| hud, bars, slots, joystick, notices, prompts, tour, badges, charts, carousel, summon column | `hud.md` |
 | style, buttons, inputs, lists, tables, factory | `style.md` |
+| layout, edge bars, side bars, grid | `style.md` §1 "Layout classes" (and `hud.md` §19) |
+| app screens, navigation bar, app bar, FAB, search, dates | `hud.md` §16 |
+| flutter, scaffold, list view, refresh, swipe, tabs, pickers, stepper | `flutter.md` |
+| every class by name, "is there a widget for …" | `catalog.md` |
 | theming, presets, themes, skins, colours | `theming.md` |
 | icons, i18n, languages, sound, haptics, accessibility, safe area | `platform.md` |
 | config, install, plugin, setup | `setup.md` |
@@ -31,7 +35,8 @@ ${CLAUDE_PLUGIN_ROOT}/skills/gohud/references/features.md
 
 ## 3. Answer
 
-- Without an area: present the seven groups of the catalogue as short tables — feature, one line of code.
+- Without an area: present the twelve groups of the catalogue (§1–§12 of `features.md`) as short tables — feature,
+  one line of code.
 - With an area: explain that area fully with the real signatures and one runnable snippet.
 - End with how to see it live: `/gohud:preview` (gallery), `/gohud:preview demo --explore <chapter>`, and the
   site https://thruthesky.github.io/gohud/.

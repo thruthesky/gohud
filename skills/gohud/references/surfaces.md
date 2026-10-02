@@ -1,7 +1,7 @@
-# Surfaces — GoSurface, GoSheet, GoDialogs, GoForm, GoScroll
+# Surfaces — GoSurface, GoSheet, GoDialogs, GoForm, GoScroll, GoSnackbar, GoDrawer, GoPopover
 
 Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`, `widgets/go_form.gd`,
-`widgets/go_scroll.gd`. Web: https://thruthesky.github.io/gohud/widgets-surfaces.html#surfaces
+`widgets/go_scroll.gd`, `services/go_snackbar.gd`, `widgets/go_drawer.gd`, `widgets/go_popover.gd`. Web: https://thruthesky.github.io/gohud/widgets-surfaces.html#surfaces
 
 ## Contents
 
@@ -12,6 +12,10 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 5. [GoScroll — touch scrolling](#5-goscroll)
 6. [Subclass hooks](#6-subclass-hooks)
 7. [Which one to use](#7-which-one-to-use)
+8. [GoSnackbar — the message that places itself](#8-gosnackbar--the-message-that-places-itself)
+9. [GoDrawer — the side panel](#9-godrawer--the-side-panel)
+10. [GoPopover — the anchored card](#10-gopopover--the-anchored-card)
+11. [Dialogs that queue](#11-dialogs-that-queue)
 
 ## 1. GoSurface
 
@@ -30,6 +34,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 | anchor | `anchor_control` · `anchor_width` (320) · `anchor_min_width` (210) · `anchor_max_height` (520) — opens below, or above when there is more room |
 | parts | `card` PanelContainer · `header` HBox · `title_label` · `close_button` GoIconButton · `back_button` · `scroll` GoScroll (**created in `_ready`**) · `body` VBox · `toolbar` VBox (hidden) · `footer` VBox (hidden) |
 | methods | `set_title(text)` · `set_title_key(key)` · `set_back(callable)` (empty Callable hides) · `clear()` · `request_close()` · `is_top()` · `relayout()` · `content_inset()` · `section_gap()` · `attach_resize_handle(control)` |
+| status line | `set_status_text(text, tone := StringName())` · `set_status_key(key, tone)` · `clear_status()` — one pinned line between the body and the footer ("Passwords do not match"), in a colour token's tone. 🛑 Not in the body: an error that lands below a long form's fold looks as if nothing happened. `status` (VBox) · `status_label` (created on first use) |
 | layout pass | Runs **when something changes**, not every frame: a size field above set to a new value, a section's minimum size or visibility, the window, the keyboard, the config. Assign a field and it applies next frame — no `relayout()` call needed. An `ANCHOR` popover follows its anchor every frame. A subclass may replace `relayout()` outright (no `super()`) and still gets these calls |
 | static | `GoSurface.is_any_open() -> bool` — pause gameplay input while true |
 
@@ -46,7 +51,7 @@ func open_settings() -> void:
 	surface.set_title("Settings")
 	surface.dismiss_on_scrim = true
 	surface.close_requested.connect(layer.queue_free)          # frees surface too
-	surface.body.add_child(GoStyle.toggle("Vibration", false))
+	surface.body.add_child(GoStyle.toggle("Vibration"))
 	surface.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
 	surface.footer.add_child(GoStyle.button("Done", surface.request_close, GoStyle.Tone.PRIMARY))
 	surface.footer.visible = true                              # sticky: never scrolls away
@@ -134,8 +139,9 @@ stays visible. Default 80%; `theming.md` §4.
 | `choose(title, options, cancel_text := "", translate := false) -> int` | `await` it — the picked option's index, `-1` for Cancel, the X or Back (Flutter's `SimpleDialog`, an action sheet). An option is a string or `{"text", "icon", "subtitle", "danger"}`. A bottom sheet on a phone, centred on a desktop |
 
 - `destructive = true` draws the confirm button as `Tone.DANGER_SOLID` (filled red, legible on light themes).
-- A second `confirm()` while one is open returns `false` immediately; `alert()` returns immediately; `choose()`
-  returns `-1`.
+- A second `confirm()` while one is open returns `false` immediately (unless `queue_when_busy`); `alert()` waits its
+  turn — it is queued (§11); `choose()` returns `-1`. `@export queue_limit` (8): past it the oldest waiting request is
+  answered `false`.
 - The header X counts as Cancel on `confirm`, as OK on `alert`.
 - 🛑 `{name}` placeholders are filled only through `args` — `tr()` alone leaves `{name}` on screen. The same `args`
   fill the title (after translation for `*_key`); gohud 1.0.3 and older fill only the body — build the title there.
@@ -168,7 +174,7 @@ using `form_max_width_*` per breakpoint; bottom margin grows with the virtual ke
 | structure | `GoForm` → `GoScroll` (node **name "Scroll"**, which `GoScroll.new()` already sets) → `VBoxContainer` |
 | `scroll` | Found in `_ready`; when the keyboard opens the focused field scrolls into view |
 | `@export min_side_margin` (-1 → `padding`) · `min_edge_margin` (-1 → `screen_margin`) | |
-| `@export route_back_button` (true) | Android Back presses the node with unique name `%BackButton`, looked up once in `_ready` (hides the keyboard first) |
+| `@export route_back_button` (true) | Android Back presses the node with unique name `%BackButton`, looked up once in `_ready`. While the keyboard is up, Back only hides it (the button is not pressed); while any `GoSurface` is open, Back is the surface's |
 | `@export avoid_hud` (false) | Keep content clear of visible `GoHudAnchor`s with `reserve_space`, stepping the cheapest direction |
 
 It applies `GoStyle.form()` to every descendant, now and later: labels wrap, buttons get `button_height`
@@ -245,6 +251,8 @@ highlight rides along with the finger.
 | `use_panel_edge(parent_padding)` · `set_panel_padding(p)` | Move the scrollbar into the card padding (GoSurface/GoForm call it) |
 | `set_section_visible(v)` | Hide the scroll plus its edge frame |
 | `OWNS_GESTURE` · `static owns_gesture(control)` | Meta key a control sets to keep its own drag · the policy's verdict |
+| `SIDEWAYS` | Meta key for a control whose own drag is sideways (a range slider): it keeps the press inside a scroll, while an up-and-down swipe from it still scrolls the list |
+| `reveal(control)` | Scrolls `control` into view after two frames (once its size is known) — for a field you just added or an error row |
 | `static yields_vertical(control) -> bool` | Whether an up-and-down swipe that starts on this gesture owner scrolls the list (above) |
 | `static scroll_through(control) -> Control` | PASS while the control sits under any `ScrollContainer`, its own filter elsewhere; only a STOP filter is changed and put back when it leaves. `GoStyle` panels, tabs, progress bars, chips and `GoIconButton` call it |
 | `static yield_vertical(control) -> Control` | Gives a field, slider or dropdown the press arbiter inside a plain `ScrollContainer` (inside a `GoScroll` the scroll already holds it). `GoStyle.line_edit/slider/select/textarea/tabs/dropdown` call it |
@@ -280,8 +288,12 @@ strip.add_child(row)
 | Optional question while playing (invite, trade) | `GoPromptCard` (hud.md §7) |
 | List / management page over the game | `GoSheet` |
 | Settings / details window | `GoSurface` CENTER |
-| Dropdown or context menu next to a control | `GoSurface` ANCHOR (or `GoStyle.dropdown`) |
+| Dropdown or context menu next to a control | `GoSurface` ANCHOR (or `GoStyle.dropdown`) · long press / right click → `GoContextMenu` (hud.md §9) |
+| A card about the thing under the finger (an item's stats next to its slot) | `GoPopover` (§10) |
+| A message with an optional button (Undo, Retry) that goes away by itself | `GoSnackbar` (§8) |
+| A list beside the game on a wide screen (bag, friends, chat), or an app's menu | `GoDrawer` (§9) |
 | Full-screen menu / login / character creation | Root Control + `GoForm` |
+| A whole app screen (bar, page, bottom bar, FAB, drawer) | `GoScaffold` (flutter.md §2, `assets/templates/app_screen.gd`) |
 
 ## 8. GoSnackbar — the message that places itself
 
@@ -294,7 +306,7 @@ snack.show_key("err_offline", {}, GoTheme.DANGER)
 
 # A chance to undo — 0 is the first button, -1 means it timed out
 if await snack.post({"text": "Item dropped", "icon": &"trash", "actions": ["Undo"]}) == 0:
-    restore_item()
+	restore_item()
 ```
 
 `layer_index` 90 (above the HUD, below `GoDialogs` at 100) · `max_width` 560 · `margin` (−1 = screen margin)
@@ -312,7 +324,9 @@ if await snack.post({"text": "Item dropped", "icon": &"trash", "actions": ["Undo
 - 🛑 **It is not a place to ask something.** It goes away on its own, so the player may never see it —
   irreversible confirmations belong in `GoDialogs`. Buttons here must be optional (Undo, Details, Retry).
 - Messages **queue**; repeats of the same line are merged (a server failing four times a second no longer
-  stacks four minutes of alerts); a snackbar with **no** button lets input through so the game keeps running.
+  stacks four minutes of alerts). Input: by default (`tap_to_dismiss` on) the card itself catches a tap to close —
+  only the area outside the card passes to the game; a snackbar with no button, no × and `tap_to_dismiss = false`
+  lets every press through.
 - 🔑 `GoNotice` vs `GoSnackbar`: the notice never takes input or focus and the screen decides where it goes —
   it cannot hold a button. The snackbar places itself, queues and can be pressed.
 
@@ -329,8 +343,11 @@ bag.open("Bag")
 bag.body.add_child(inventory_grid)
 ```
 
-`side` · `follow_text_direction` · `width_ratio` 0.42 · `max_width` 420 · `dismissable` · `motion_seconds`
-· `body` `header` `title_label` `panel` · signals `opened` `closed` · `clear()` `is_open()` `effective_side()`.
+A `CanvasLayer` on layer 80 (above the HUD and sheets, below snackbars at 90). `side` · `follow_text_direction` ·
+`width_ratio` 0.42 · `min_width` 320 · `max_width` 420 · `alpha` · `dismissable` · `motion_seconds` · `body` `header`
+`title_label` `panel` · signals `opened` `closed` · `open(title := "")` (the body is **not** emptied) · `close()` ·
+`clear()` · `is_open()` · `set_title()` · `set_title_key()` · `effective_side()`. In a `GoScaffold`, `set_drawer(drawer)`
+makes the app bar's menu button open it.
 
 - 🔑 `GoSheet` comes from the **bottom** — right for a phone held upright. A drawer comes from the **side** —
   right for a tablet or desktop, where a bottom sheet would cover the game. On a narrow phone the drawer
@@ -352,7 +369,9 @@ await GoPopover.open(slot, body).close_requested
 GoPopover.close()
 ```
 
-Options: `title` · `translate` · `width` 320 · `max_height` 520 · `dismissable` · `compact` · `layer` 95.
+Options: `title` · `translate` · `width` 320 · `max_height` 520 · `dismissable` · `compact` · `layer` 95 · `alpha`.
+`GoPopover.is_open()` · `GoPopover.close()`. 🛑 `open()` returns `null` when the anchor is not in the tree — check it
+before `await GoPopover.open(...).close_requested`.
 
 - This is `GoSurface`'s `ANCHOR` placement with the layer, the surface, the anchor and the teardown already
   wired — the thing every game writes ten lines of, over and over.

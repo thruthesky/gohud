@@ -34,7 +34,7 @@ step "①-b unit tests — GoChoiceColumn"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_choice_column_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
-step "①-t unit tests — the five templates the skill ships"
+step "①-t unit tests — the seven templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,
 #    yet until 2026-09-16 no check opened any of those five (the docs said "headless-tested").
 #    A duplicated function name was left behind while editing a template, and this check caught it.
@@ -95,6 +95,11 @@ python3 "$ADDON/tools/check_docs_api.py" || FAILED=1
 step "④ do the generated theme files match the source?"
 # 🛑 Edit a palette and forget to run `make_theme.py` and the `.tres` stays stale — invisibly.
 python3 "$ADDON/tools/check_generated.py" || FAILED=1
+
+step "④-s does the skill's widget index match the All widgets list?"
+# `skills/gohud/references/catalog.md` is generated from the same list as the website's All widgets page — a widget
+# added to one and not the other would be missing from what an AI reads to answer "is there a widget for …?".
+python3 "$ADDON/tools/site_catalog.py" --check || FAILED=1
 
 step "④-a do the game icon files match their table?"
 python3 "$ADDON/tools/make_game_icons.py" --check || FAILED=1

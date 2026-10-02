@@ -6,7 +6,10 @@ by words (never one letter per line), buttons inside scrolls pass drags to the s
 
 **Text vs key:** `label` / `button` show text as written (`AUTO_TRANSLATE_MODE_DISABLED`); `label_key` /
 `button_key` hold a translation key and re-translate on locale change. Functions with a `translate` flag
-follow the same idea.
+follow the same idea — with one catch: `toggle()`, `line_edit()` and `textarea()` given `false` **inherit** the parent's
+translation mode instead of turning it off, so a word that is also a key in your tables still gets translated. For
+literal text there, set `node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED` yourself. `checkbox()`,
+`select()` and `foldable()` do turn it off.
 
 ## Contents
 
@@ -18,6 +21,8 @@ follow the same idea.
 6. [Display](#6-display)
 7. [Surface styleboxes](#7-surface-styleboxes)
 8. [Helpers](#8-helpers)
+9. [Form and list widgets (classes, not factories)](#9-form-and-list-widgets-classes-not-factories)
+10. [Lower-level functions](#10-lower-level-functions)
 
 ## 1. Structure
 
@@ -31,7 +36,7 @@ follow the same idea.
 | `gap(container, token := GoTheme.GAP)` | void | Sets separation (h/v for Grid/Flow) |
 | `spacer(minimum := 0.0)` | `Control` | Expands; pushes siblings apart |
 | `divider(vertical := false)` | `Control` | 1 dp line in the skin's divider colour (not `HSeparator`) |
-| `responsive_grid(min_cell_width := 160.0, spacing := -1)` | `GridContainer` | Column count = floor(width / cell) on every resize; children forced to expand |
+| `responsive_grid(min_cell_width := 160.0, spacing := -1)` | `GridContainer` | Column count = floor((width + gap) / (cell + gap)) on every resize; children forced to expand. Equal columns that also keep `SIZE_FILL` children are `GoGrid` (below) |
 | `aspect(ratio := 1.0)` | `AspectRatioContainer` | Thumbnails, portraits, minimap |
 | `foldable(title, folded := false, group: FoldableGroup = null, translate := true)` | `FoldableContainer` | Same `FoldableGroup` = accordion. Add one content child |
 
@@ -44,7 +49,7 @@ not `GoDrawer` (a panel that slides in), not `GoSlotGrid` (the inventory of `GoS
 
 | Class | Use | API |
 |---|---|---|
-| `GoTopBar` · `GoBottomBar` · `GoSideBar` → `GoLeftSideBar` · `GoRightSideBar` (all `GoEdgeBar`) | Items along an edge in 1, 2 or 3 slots — the tiers of a side bar | `GoTopBar.make(count := 3)` · `GoBottomBar.make(count := 1, placing := Justify.START)` · `GoLeftSideBar.make(count := 3, placing := Justify.START)` (and `GoRightSideBar`) · `add_start(node)` `add_center(node)` `add_end(node)` (return the node) · `set_slot(node, slot)` `slot_of(node)` `items(slot)` · `columns` (`tiers` on a side bar) · `justify` (`START` `CENTER` `END` `SPACE_BETWEEN`, one slot) · `separation` (-1 → `gap`) · `edge_margin` (-1 → `screen_margin`) · `thickness` (0 → as thick as the items) · `safe_area` · `avoid_keyboard` · `pin_to_edge` (`AUTO` `ALWAYS` `NEVER`) · `follow_text_direction` (side bars) · `dock(host)` · `extent()` · `clear_of(bars)` · static `edge_insets(rect, usable, screen, edge)` · metas `GROW` and `KEEP_WRAP` |
+| `GoTopBar` · `GoBottomBar` · `GoSideBar` → `GoLeftSideBar` · `GoRightSideBar` (all `GoEdgeBar`) | Items along an edge in 1, 2 or 3 slots — the tiers of a side bar | `GoTopBar.make(count := 3)` · `GoBottomBar.make(count := 1, placing := Justify.START)` · `GoLeftSideBar.make(count := 3, placing := Justify.START)` (and `GoRightSideBar`) · `add_start(node)` `add_center(node)` `add_end(node)` (return the node) · `set_slot(node, slot)` `slot_of(node)` `items(slot)` (`slot` is `GoEdgeBar.Slot.START` / `CENTER` / `END`) · `edge` (`GoEdgeBar.Edge`, set by each subclass) · `columns` (`tiers` on a side bar) · `justify` (`START` `CENTER` `END` `SPACE_BETWEEN`, one slot) · `separation` (-1 → `gap`) · `edge_margin` (-1 → `screen_margin`) · `thickness` (0 → as thick as the items) · `safe_area` · `avoid_keyboard` · `pin_to_edge` (`AUTO` `ALWAYS` `NEVER`) · `follow_text_direction` (side bars) · `dock(host)` · `extent()` · `clear_of(bars)` · static `edge_insets(rect, usable, screen, edge)` · metas `GROW` and `KEEP_WRAP` |
 | `GoGrid` | Columns of exactly equal width, fixed or responsive | `GoGrid.make(count := 2, min_cell := -1.0, gap := -1)` · `columns` · `min_cell_width` (> 0 → responsive) · `spacing` · `row_spacing` · `columns_in_use()` · cells with `add_child()` |
 
 ```gdscript
@@ -155,12 +160,12 @@ one, `GoConfig.button_glow = true` for all.
 
 | Signature | Returns | Notes |
 |---|---|---|
-| `button(text, action := Callable(), tone := Tone.NORMAL)` | `Button` | Non-compact tones expand horizontally and use `button_height` |
+| `button(text, action := Callable(), tone := Tone.NORMAL)` | `Button` | NORMAL, PRIMARY, DANGER, DANGER_SOLID and OUTLINED expand horizontally and use `button_height`; COMPACT and BARE keep their own width at the `touch` height |
 | `button_key(key, action := Callable(), tone := Tone.NORMAL)` | `Button` | |
 | `style_button(button, tone := Tone.NORMAL)` | void | Style a Button from a scene |
 | `glow(button, on := true)` | `Button` | Raise a filled button with a glow (`GoPrimaryGlowButton` / `GoDangerSolidGlowButton`); `on = false` lays it flat. Other tones, and themes without the variation, are left alone. Chains: `GoStyle.glow(GoStyle.button("Play", play, GoStyle.Tone.PRIMARY))` |
 | `icon_button(icon, action := Callable(), visual := -1, tooltip_key: StringName = &"")` | `GoIconButton` | Always give `tooltip_key` (tooltip + accessible name): a gohud name (`close`), **your own translation key**, or plain words — all go through the translation server. Over gameplay set `keyboard_focus = false` on the result |
-| `apply_icon(button, icon, size := -1, ink := Color.TRANSPARENT)` | void | Texture sets use `Button.icon`; font sets add a child label |
+| `apply_icon(button, icon, size := -1, ink := Color.TRANSPARENT, inset := -1.0)` | void | Texture sets use `Button.icon`; font sets add a child label, moved in by `inset` (the text padding widens to match) |
 | `list_button(icon, key, action := Callable(), ink := Color.TRANSPARENT, sub_key := "", translate := true, trailing: StringName = &"")` | `Button` | Menu/settings row: icon, title, optional description line, optional trailing icon (e.g. `CHEVRON_RIGHT`). Whole row is the tap target |
 | `list_row(button, icon, key, …same…)` | `Button` | Same, on an existing Button |
 | `restyle_list_row(button, selected: bool, accent := Color.TRANSPARENT)` | void | Marks a list row as **the chosen one** (tint + 2 dp border, like a chosen `style_choice_card`) or clears it. Face only — call it again when the pick moves; never call `list_row` twice on one button |
@@ -173,9 +178,9 @@ one, `GoConfig.button_glow = true` for all.
 
 | Signature | Returns | Notes |
 |---|---|---|
-| `line_edit(placeholder := "", translate_placeholder := false)` | `LineEdit` | `button_height` tall. Set `secret = true` for passwords |
-| `textarea(placeholder := "", lines := 4, translate_placeholder := false)` | `TextEdit` | Word wrap, scrolls inside |
-| `toggle(key := "", translate := true)` | `CheckButton` | Switch; `button_pressed` to set |
+| `line_edit(placeholder := "", translate_placeholder := false)` | `LineEdit` | `button_height` tall. Set `secret = true` for passwords. `false` inherits the parent's translation mode (see the top) |
+| `textarea(placeholder := "", lines := 4, translate_placeholder := false)` | `TextEdit` | Word wrap, scrolls inside. Same translation catch |
+| `toggle(key := "", translate := true)` | `CheckButton` | Switch; `button_pressed` to set. The second argument is `translate`, **not** the starting value; `false` inherits the parent's translation mode |
 | `checkbox(key := "", translate := true)` | `CheckBox` | |
 | `slider(minimum := 0.0, maximum := 1.0, step := 0.01)` | `HSlider` | Set `size_flags_horizontal = SIZE_EXPAND_FILL` yourself |
 | `picker()` | `OptionButton` | Empty; `add_item()` yourself |
@@ -295,8 +300,9 @@ name_field.set_error("That name is taken")       # server said no
 name_field.clear_error()
 ```
 
-`label` `control` `hint_label` `error_label` · `set_control()` `set_error(msg, translate)` `clear_error()`
-`has_error()` `error_text()` · signal `error_changed(message)`.
+`GoField.make(label_text, node, hint := "", translate := false)` — 🛑 the opposite default of `GoStyle.field()`
+(`translate := true`) · `label` `control` `hint_label` `error_label` · `set_control()` `set_error(msg, translate)`
+`clear_error()` `has_error()` `error_text()` · signal `error_changed(message)`.
 
 - 🛑 **The error belongs next to the box.** One "check your input" line at the top of a five-field form does
   not say which field — that single thing is what makes people abandon a sign-up.
@@ -329,8 +335,9 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))
 GoCombobox.make([{"text": "Flame sword", "icon": &"sword", "hint": "ATK +12"}])
 ```
 
+`GoCombobox.make(items, selected := -1, hint := "")` — an entry is a `String` or `{"text", "icon", "hint", "disabled"}` ·
 `placeholder` · `search_threshold` 8 · `list_width` · `picked(index)` · `select(i, notify)` `selected()`
-`selected_text()` `set_items()`.
+`selected_text()` `set_items()` `items()`.
 
 - Under ten entries `GoStyle.select()` is better — one less tap and the whole list is visible. Past thirty,
   scanning is work; that is this widget.
@@ -348,7 +355,8 @@ coupon.set_error("Already used")
 ```
 
 `length` 12 · `group` 4 · `allowed` · `uppercase` · `cell_width` · `edit` `cells_row` `error_label`
-· signals `completed(code)` `changed(code)` · `set_code()` `code()` `clear()` `is_complete()` `focus()`.
+· signals `completed(code)` `changed(code)` · `GoCodeInput.make(digits := 12, group_size := 4)` · `set_code()` `code()`
+`clear()` `is_complete()` `focus()` `set_error()` `has_error()`.
 
 - 🛑 **One hidden `LineEdit` receives the text; the cells are drawn.** Twelve real fields would break pasting
   at the first cell and lose characters to an IME — and a code is pasted from a message far more often than
@@ -360,14 +368,14 @@ coupon.set_error("Already used")
 
 ```gdscript
 var board := GoTable.make(
-    [{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}], rows)
+	[{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -> void: open_profile(rows[i]))
 board.sort_by(2, false)
 ```
 
 Column keys: `text` · `width` · `numeric` · `sortable` · `translate`.
-`head` `rows_box` · signals `row_selected(index)` `sorted(column, ascending)` · `set_rows()` `set_columns()`
-`selected()` `rows()`.
+`GoTable.make(columns, rows, selectable := true)` · `sort_by(column, ascending := true)` · `head` `rows_box` · signals
+`row_selected(index)` `sorted(column, ascending)` · `set_rows()` `set_columns()` `selected()` `rows()`.
 
 - 🛑 **`numeric: true` or the ranking inverts** — compared as text, `"9124"` beats `"91240"`. Scores, gold
   and damage all have mixed digit counts.
@@ -397,3 +405,79 @@ var more := GoPagination.more(load_next)   # the mobile-friendly variant
   so pressing next does not reshuffle every number.
 - `total = 0` means "unknown" — only the arrows are drawn. Do not invent a page count you were not given.
 - `set_busy(true)` locks the buttons while a request is out, so two taps cannot skip a page.
+
+## 10. Lower-level functions
+
+The functions above build whole controls. These style a node you already have, return a bare face, or handle a
+case the factories do not — a sign-in button whose measures a platform's guideline fixes, a label pinned by anchors,
+a face whose colour changes at runtime without rebuilding the node. Reach for them when a factory almost fits.
+
+### Text and glyphs
+
+| Signature | Notes |
+|---|---|
+| `line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label` | A one-line label — never wraps, and cuts the overflow with an ellipsis (…). |
+| `font_role(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> void` | Sets the font size (and color) only from a role token — `theme_type_variation` is left alone. |
+| `text_shadow(node: Control, ink := Color.TRANSPARENT, offset_y := 1, offset_x := -1) -> void` | Text shadow — lays a shadow one step behind text that sits straight on the world, on art or on a photo, so it does not sink into the background (HUD names and levels, text floating with no face). |
+| `pin_font_size(node: Control, size: int) -> void` | Pins the font size in pixels — only where the spec comes from outside (an official sign-in button whose guideline is a text-to-height ratio, say). |
+| `glyph_text(node: Control, icons: Array, size := -1, ink := Color.TRANSPARENT, set: GoIconSet = null) -> void` | Makes the node's own text the icon glyph — swaps the font for the icon set's and puts the glyph in `text`. |
+| `glyph_width(icons: Array, size := -1, set: GoIconSet = null) -> float` | The width (dp) of the text `glyph_text()` would draw. |
+| `glyph_type(node: Control, size := -1, ink := Color.TRANSPARENT, states := true) -> void` | Restyles only the size and color of a node that already holds a glyph — for moving the color of an icon drawn once by `glyph_text()` on every state change (pressed, hovered, toggled on) without looking it up again. |
+| `style_mono_text(node: RichTextLabel, font: Font, selection := Color.TRANSPARENT, selected_ink := Color.TRANSPARENT) -> void` | A monospace text box — for diagnostics codes and logs, where characters must line up and the reader must be able to select and copy them. |
+
+### Form rows and spacing
+
+| Signature | Notes |
+|---|---|
+| `field(key: String, control: Control, hint := "", translate := true) -> Control` | A label + its input as one group. Builds one row (a field) of a form. |
+| `spacing(node: Container, horizontal: int, vertical := -9999) -> void` | Spacing given directly as a value — only for HUD geometry no token expresses. |
+
+### Panels and plates you place yourself
+
+| Signature | Notes |
+|---|---|
+| `hud_panel(accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0, variant := GoTheme.BOX_HUD, alpha := -1.0) -> PanelContainer` | One face floating above the game screen — for things laid over the world like a HUD dock or a status bar (the caller fills the content). |
+| `overlay_panel(pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> PanelContainer` | One pill face laid over a map or over world art — it lays a dark background and a thin border so the text is readable whatever the art behind it is (`GoSkin.overlay_box`). |
+| `chip_panel(accent := Color.TRANSPARENT, fill_alpha := -1.0) -> PanelContainer` | An empty container filling the same pill face as a chip — for places a one-line chip cannot serve (a roster card carrying a name, a level and a gauge together). |
+| `disc_panel(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> PanelContainer` | A disc cell — a container wearing the `disc()` face. |
+| `edge_card_panel(accent: Color, rtl := false, pad := -1.0, alpha := -1.0) -> PanelContainer` | A container wearing that stripe card face — the caller fills the content (the stripe counterpart of `card()`). |
+| `plate(variant := GoTheme.BOX_HUD, fill := Color.TRANSPARENT, edge := Color.TRANSPARENT, radius := -1.0, border := -1.0, alpha := -1.0) -> Panel` | One backing cell — a face that holds no content and is laid behind things (the tint cell of a portrait slot, a HUD surface that looks smaller than its touch cell). |
+| `bare_panel(node: Control) -> void` | A container that draws no face — place, stacking and spacing stay; only background, border, shadow and padding go. |
+
+### Faces as StyleBoxes and face tuning
+
+| Signature | Notes |
+|---|---|
+| `edge_card(accent: Color, rtl := false, width := -1.0, alpha := -1.0) -> StyleBoxFlat` | A card face with a semantic stripe on one edge only — shows state in a list without stacking blocks of color. |
+| `face_padding(face: StyleBox, pad_x := -1.0, pad_y := -1.0) -> void` | Sets a face's inner padding to the given values — a negative side keeps the value the face has. |
+| `face_insets(face: StyleBox, left := -1.0, top := -1.0, right := -1.0, bottom := -1.0) -> void` | Sets a face's four sides separately — a negative side is left alone. |
+| `style_panel(node: Control, face: StyleBox, state := &"panel") -> void` | Applies one face to any node you already built — gohud makes the face, the caller decides where it goes. |
+| `touch_face(button: Button, height := 38.0, face: StyleBox = null) -> Panel` | A visible face smaller than the press area — lays one face inside a button and has it follow the button's width. |
+
+### Restyling a node you already built (no rebuild when its state colour changes)
+
+| Signature | Notes |
+|---|---|
+| `style_hud_panel(node: PanelContainer, accent := Color.TRANSPARENT, pad_x := -1.0, pad_y := -1.0, variant := GoTheme.BOX_HUD, alpha := -1.0) -> void` | Applies the same floating face to a `PanelContainer` you already built — so places whose semantic color changes at runtime (an EXP badge turning green, orange or gray by its value) never rebuild the node. |
+| `style_overlay_panel(node: PanelContainer, pad_x := -1, pad_y := -1, fill_alpha := -1.0) -> void` | Applies the same pill face to a `PanelContainer` you already built. |
+| `style_notice_panel(node: Control, accent := Color.TRANSPARENT, tint := 0.0, padding := -1, alpha := -1.0) -> void` | Applies a notice face to a container you already built — the error or warning box that settles into the screen (to build a new one, see `alert()`). |
+| `style_disc_panel(node: Control, diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> void` | Applies the same disc to a face you already built (`Panel`, `PanelContainer`) — for places that must not rebuild the node every time the semantic color changes (the preview disc whose border follows the gender you pi |
+| `style_disc_label(node: Label, diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> void` | Applies a disc to a label you already built — for when the place is pinned with anchors and offsets, like a number badge, and `disc_panel()`'s container cannot be used (the round counterpart of `style_chip_label()`). |
+| `style_hud_disc(node: Control, diameter: float, edge_width := 0.0, edge_ink := Color.TRANSPARENT, fill := Color.TRANSPARENT, detail := 1, accent := Color.TRANSPARENT) -> StyleBox` | The disc face of a HUD round button — the face of the round icon buttons floating over the game screen (control pads, utility rows). |
+| `style_slot_face(node: Control, accent: Color, lit := false) -> void` | Applies the quick-slot face to a node — a host that built its own slots instead of using `GoSlot` (a game whose rows inside the cell differ) gets the same face. |
+| `style_count_badge(node: Label, fill: Color, ink := Color.TRANSPARENT, edge := Color.TRANSPARENT, edge_width := 0, radius := -1, pad_x := -1.0, detail := 1) -> void` | A solid badge — one cell for a number that must be noticed, like a count or an alert. |
+| `restyle_chip(node: PanelContainer, ink: Color, urgent := false) -> void` | Restyles the face only of a chip you already built — so places that refresh often never rebuild the node (a roster whose party leader changed, a mark counting a remaining time down). |
+| `style_chip_label(node: Label, accent: Color, urgent := false) -> void` | Applies a chip face to a label you already built — for when `chip()`'s container cannot be used, as where the caller measures the width itself to place the cell (a badge on the HUD status bar). |
+| `style_chip_button(node: Button, accent: Color, fill_alpha := -1.0, urgent := false) -> void` | A button shaped like a chip — puts the tinted pill face on every state. |
+| `style_disc_button(node: Button, diameter: float, accent: Color, fill := Color.TRANSPARENT, fill_alpha := 0.92, press_alpha := 0.34) -> void` | A round control button — puts the state faces on the round buttons floating over art, like a map's zoom ＋/－ or "my location". |
+| `style_overlay_button(node: Button, accent: Color, fill_alpha := 0.10) -> void` | A press area laid over a face — the transparent button laid on a card when the whole card is one tap. |
+| `style_choice_card(node: Button, accent: Color, selected := false, toggle := true, dim_disabled := true, filter := -1) -> void` | A choice card. Puts a face per state on one button — only the chosen card gets the semantic border and a faint fill, and hovering stains the border alone. |
+| `tint_button(node: Button, ink := Color.TRANSPARENT, active := Color.TRANSPARENT) -> void` | Sets text and icon color only, with no face — buttons that draw no background and say their state in color alone (link rows, quiet menus). |
+| `style_popup(popup: PopupMenu, spacing := -1, alpha := -1.0) -> void` | Spreads the rows of a popup menu so its items keep the touch floor — popup text is body size, which makes the rows thinner than a finger. |
+
+### Buttons whose spec comes from outside
+
+| Signature | Notes |
+|---|---|
+| `style_brand_button(node: Button, fill: Color, ink: Color, edge: Color, mark := -1, gap := -1, inset := -1.0, base: StyleBox = null, mark_ink := Color.WHITE) -> void` | A brand button whose spec comes from outside — a platform provider's sign-in button (Sign in with Google, Apple …), where face color, border and mark size are nailed down by review guidelines. |
+| `center_button_content(node: Button, min_inset := -1.0) -> float` | Stands mark and text together in the middle of the face — the shape of the providers' own buttons. |

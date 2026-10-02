@@ -177,9 +177,9 @@ func _show_error(message: String) -> void:
 ```gdscript
 func build_shop(sheet: GoSheet, dialogs: GoDialogs, notice: GoNotice, gold: int, offers: Array) -> void:
 	sheet.open("Merchant")
-	for old in sheet.footer().get_children():          # 1.0.3 and older; newer gohud: add buttons with add_footer()
-		sheet.footer().remove_child(old)
-		old.queue_free()
+	# A per-page button goes through add_footer(): the next open() removes it, so it never piles up.
+	# (gohud 1.0.3 and older have no add_footer() — remove the footer's children yourself there.)
+	sheet.add_footer(GoStyle.button("Leave", sheet.close))
 	sheet.toolbar().add_child(GoStyle.chip("%d gold" % gold, GoUi.color(GoTheme.WARNING)))
 	sheet.toolbar().visible = true
 	for offer in offers:                                # {name, price, icon, description}
@@ -328,10 +328,10 @@ GoContextMenu.attach(slot, [
 	{"separator": true},
 	{"text": "Drop", "icon": GoIconSet.TRASH, "action": _drop, "danger": true},
 ])
+```
 
 `items` may also be a `Callable` that builds the array **each time the menu opens** — use that whenever the
 actions depend on state (is this player the party leader? is the stack splittable?).
-```
 
 🔑 A finger that moves more than 12 dp cancels the press, so a long list still scrolls normally. Attaching
 twice replaces the first menu — call it again when the items change, don't stack them.
@@ -348,7 +348,7 @@ every action it holds somewhere else too (a footer button, a detail page), or fi
 ## 8. First-run tutorial
 
 ```gdscript
-func maybe_start_tutorial(hud: CanvasLayer, save: Dictionary) -> void:
+func maybe_start_tutorial(hud, save: Dictionary) -> void:     # untyped: `hp` and `slots` are the template's, not CanvasLayer's
 	if save.get("tutorial_done", false):
 		return
 	var tour := GoCoachMark.new()
@@ -427,17 +427,19 @@ func switch_look(id: StringName) -> void:
 	GoUi.use_preset(id)                                 # clears explicit theme/skin/icons, notifies widgets
 	RenderingServer.set_default_clear_color(GoUi.color(GoTheme.BACKGROUND))
 	for screen in get_tree().get_nodes_in_group(&"ui_screens"):
-		screen.build()                                  # every template exposes build(); rebuild keeps state you pass in
+		screen.build()                                  # main_menu, game_hud, settings_menu, app_screen and edge_bar_hud have build()
 ```
 
-Add each screen with `add_to_group(&"ui_screens")`. Settings persistence: store the preset id and re-apply it with
+Add each screen with `add_to_group(&"ui_screens")`. A pause menu or an inventory sheet has no `build()` — close it and
+open it again after the switch. Settings persistence: store the preset id and re-apply it with
 `GoUi.use_preset()` at boot before building the first screen.
 
 ## 12. Daily attendance rewards
 
 ```gdscript
 func build_attendance(page: VBoxContainer, save: Dictionary) -> void:
-	# days: [{"reward": "100 gold", "icon": GoIconSet.COIN}, …] — one entry per day of the run
+	# days: [{"icon": GoIconSet.COIN, "amount": 100}, {"icon": GoIconSet.CROWN, "amount": 1, "special": true}, …]
+	#       — one entry per day of the run; `label` replaces the amount with words ("100 gold")
 	# The second argument is the **last day already claimed** (-1 = nothing claimed yet).
 	var calendar := GoRewardCalendar.make(days, save.claimed_until)
 	calendar.claimed.connect(func(day: int) -> void:
@@ -472,8 +474,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		console.toggle()
 ```
 
-🛑 `debug_only` is `true` by default and should stay that way — `OS.has_feature("release")` decides, so the
-console simply refuses to open in a shipped build. Do not replace it with your own debug flag; flags get
+🛑 `debug_only` is `true` by default and should stay that way — `OS.is_debug_build()` decides, so the
+console simply refuses to open in a release export. Do not replace it with your own debug flag; flags get
 flipped for a test build and then forgotten.
 
 ## 14. A form that says which box is wrong
@@ -577,8 +579,9 @@ func build_quest_giver(body: VBoxContainer, giver: String, quests: Array) -> voi
 anything, and the one row that really is wrong disappears among them. The lock repeats on every row and that
 is fine: it says something about each row. A badge that is the same on every row does not.
 
-🛑 **Inside a `GoForm` your spacing is replaced** — `GoStyle.form()` sets every box's `separation` to `GAP`.
-Mark a box you want kept with `list.set_meta(&"go_own_spacing", true)`. And do not put the card or the rows in a
+🛑 **Inside a `GoForm` only spacing you chose survives** — `GoStyle.form()` gives the form's `GAP` to every box whose
+`separation` is `GAP` or unset, and keeps any other value (this list's 8 stays). `set_meta(&"go_own_spacing", true)`
+exempts a box entirely. And do not put the card or the rows in a
 `wrap_row()`: it forces everything inside it to natural width, so the title stops expanding and `0 / 1` lands in
 the middle of the row.
 

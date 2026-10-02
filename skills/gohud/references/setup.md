@@ -20,7 +20,7 @@
 | Way | Command |
 |---|---|
 | Release ZIP / Asset Store | Extract into the project root so `addons/gohud/plugin.cfg` exists. The ZIP's top folder is `addons/`. |
-| Git submodule (develop gohud with the game) | `git submodule add https://github.com/thruthesky/gohud.git addons/gohud && git submodule update --init` · pin: `git -C addons/gohud checkout v1.0.3` |
+| Git submodule (develop gohud with the game) | `git submodule add https://github.com/thruthesky/gohud.git addons/gohud && git submodule update --init` · pin a release: `git -C addons/gohud checkout v1.2.1` (`git -C addons/gohud tag` lists them) |
 | Plain copy (no git history) | `git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud && mkdir -p addons && cp -R /tmp/gohud addons/gohud && rm -rf addons/gohud/.git` |
 
 After installing, import once so `class_name` globals register: `godot --headless --path . --import`.
@@ -67,6 +67,7 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 |---|---|---|
 | Appearance | `preset` (`&""`) | Preset id; fills only the empty `theme`/`skin`/`icons` below |
 | | `theme` (null) · `skin` (null) · `icons` (null) | Explicit overrides — win over the preset |
+| | `extra_icons` `Array[GoIconSet]` (`[]`) | Sets that fill in names the main set lacks — what `GoUi.add_icons()` appends to; `use_preset()` keeps it |
 | | `token_fallback` (true) | Missing `GoHud` tokens come from the default theme |
 | | `color_overrides` `Dictionary[StringName, Color]` · `metric_overrides` `Dictionary[StringName, int]` | Per-token overrides |
 | | `base_font_size` (0) | Body text size in dp; 0 = theme value |
@@ -79,12 +80,13 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | | `respect_safe_area` (true) | Avoid notches on Android/iOS |
 | Surface | `surface_max_width` (480) · `surface_max_height` (700) | Card caps in dp |
 | | `surface_height_ratio` (0.68) · `surface_max_height_ratio` (0.72) | Share of usable height; the cap keeps windows reading as floating |
+| | `surface_fit_max_height_ratio` (0.94) | How tall a centred `fit_content` card may grow for long content |
 | | `surface_width_ratio_portrait` (0.94) · `surface_width_ratio_landscape` (0.72) | Share of width |
-| | `container_alpha` (**-1.0**) | Face opacity of **every** panel, as a **ratio** 0.0–1.0 (negative = theme value, 80%) |
+| | `container_alpha` (**-1.0**) | Face opacity of **every** panel, as a **ratio** 0.0–1.0 (negative = theme value: 80%, popups and the Material presets 100%) |
 | | `container_alpha_overrides` `Dictionary[StringName, float]` | Per-kind opacity, same ratio; key = `GoTheme.BOX_PANEL`/`BOX_CARD`/`BOX_HUD`/`BOX_NOTICE`/`BOX_POPUP`. Beats `container_alpha`; negative = not set. theming.md §4 |
 | | `dismiss_on_scrim` (false) · `surface_fade_in` (false) · `fade_seconds` (0.14) | Defaults for new surfaces |
 | | `close_button_visual` (36) · `suppress_pointer_focus_ring` (true) · `close_on_back` (true) | Header close button, focus ring policy, Escape/Back |
-| Feedback | `haptics_enabled` (true) · `haptic_tap_ms` (10) · `haptic_light_ms` (20) · `haptic_medium_ms` (40) + `_amplitude`s | Vibration on handhelds only |
+| Feedback | `haptics_enabled` (true) · `haptic_tap_ms` (10) · `haptic_light_ms` (20) · `haptic_medium_ms` (40) · `haptic_tap_amplitude` (0.35) · `haptic_light_amplitude` (0.5) · `haptic_medium_amplitude` (0.8) | Vibration on handhelds only; amplitude 0–1 where the device supports it |
 | | `sound_cues` | `opened→ui_open`, `closed→ui_close`, `tapped→ui_click`, `confirmed→ui_confirm`, `canceled→ui_cancel`, `failed→ui_error`, `fanfare→ui_fanfare` |
 | Localization | `text_keys` · `text_overrides` · `number_formatter` (Callable) · `load_builtin_translations` (true) | See platform.md §2 |
 | Accessibility | `min_touch_size` (48) · `reduce_motion` (false) · `autowrap_text` (true) | Touch floor, fades/pulses off, label wrapping |
@@ -152,7 +154,7 @@ extends GoDialogs
 godot --headless --path . --import                                   # registers class_name globals
 godot --headless --path . --quit-after 120 res://ui/main_menu.tscn 2>&1 | grep -E "SCRIPT ERROR|Parse Error|ERROR: Failed" && echo FAIL || echo OK
 python3 <skill>/scripts/gohud_preview.py res://ui/main_menu.tscn --check   # same, with the error scan built in
-bash addons/gohud/tools/run_tests.sh                                  # gohud's own 693 checks (git checkout only)
+bash addons/gohud/tools/run_tests.sh                                  # gohud's own checks, "gohud tests: N/N passed" (git checkout only)
 ```
 
 Headless runs cannot take screenshots (the viewport image is null). To *see* a screen, open a window with
@@ -237,8 +239,8 @@ bash addons/gohud/tools/check_all.sh     # git checkout only — confirms the ne
 | Install kind | Command |
 |---|---|
 | **Claude Code plugin** (`/plugin`) | `/plugin update gohud` — or Claude Code updates it on its own; `/plugin` lists what is installed |
-| **Personal skill** (`~/.claude/skills/gohud/`) | `rm -rf ~/.claude/skills/gohud && cp -R addons/gohud/skills/gohud ~/.claude/skills/gohud` |
-| **Project skill** (`.claude/skills/gohud/`) | `rm -rf .claude/skills/gohud && cp -R addons/gohud/skills/gohud .claude/skills/gohud` |
+| **Personal skill** (`~/.claude/skills/gohud/`) | `rm -rf ~/.claude/skills/gohud && cp -R addons/gohud/skills/gohud ~/.claude/skills/gohud` (git checkout of the add-on only — the release ZIP leaves `skills/` out; otherwise clone the repository and copy from there) |
+| **Project skill** (`.claude/skills/gohud/`) | `rm -rf .claude/skills/gohud && cp -R addons/gohud/skills/gohud .claude/skills/gohud` (same) |
 
 The skill's source of truth is `addons/gohud/skills/gohud/` in the repository — the plugin and any copies
 are built from it. Editing a copy is lost on the next update; change the repository copy.
@@ -253,8 +255,11 @@ grep -m1 'Version described' <skill>/references/features.md                     
 If the skill names a class the add-on does not have, the skill is ahead:
 
 ```bash
-godot --headless --path . -s res://addons/gohud/tests/gohud_test.gd | tail -1   # should end "N/N passed"
+bash addons/gohud/tools/run_tests.sh      # should end "gohud tests: N/N passed"
 ```
+
+🛑 Not `godot -s …/gohud_test.gd` directly: a parse error then exits with no output at all, which reads as a pass.
+`run_tests.sh` checks for that.
 
 ### 7.5 What changed
 

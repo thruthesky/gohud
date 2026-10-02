@@ -66,7 +66,7 @@ All tokens live in the Theme under type **`GoHud`**. Read them through `GoUi` (o
 | Colours (17) | `BACKGROUND` `SURFACE` `SURFACE_SOFT` `SURFACE_HIGH` `BORDER` `TEXT` `SECONDARY` `MUTED` `ACCENT` `ON_ACCENT` `SUCCESS` `WARNING` `DANGER` `INFO` `SCRIM` `SHADOW` `TRACK` |
 | Fill colours (5, optional) | `SUCCESS_FILL` `WARNING_FILL` `DANGER_FILL` `INFO_FILL` `ACCENT_FILL` — bars and large areas; fall back to the base colour |
 | Metrics (20, dp) | `TOUCH` `BUTTON_HEIGHT` `GAP_TINY` `GAP_SMALL` `GAP` `GAP_LARGE` `PADDING` `PADDING_COMPACT` `COMPACT_PADDING_X` `COMPACT_PADDING_Y` `RADIUS_SMALL` `RADIUS` `RADIUS_LARGE` `SCREEN_MARGIN` `SCROLL_DEADZONE` `SCROLL_EDGE` `SCROLLBAR_WIDTH` `LIST_GLYPH` `ICON_SIZE` `NOTICE_DURATION_MS` |
-| Panel opacity (5, optional, **% in the theme**) | `PANEL_ALPHA` `CARD_ALPHA` `HUD_ALPHA` `NOTICE_ALPHA` `POPUP_ALPHA` — how solid a container face is. **80** by default, `POPUP_ALPHA` 100; a theme without them falls back to 100. Percent only because a `Theme` constant cannot hold a float — read it as a *ratio* with `GoUi.surface_alpha(variant)`, and every other layer is a ratio too; §4 |
+| Panel opacity (5, optional, **% in the theme**) | `PANEL_ALPHA` `CARD_ALPHA` `HUD_ALPHA` `NOTICE_ALPHA` `POPUP_ALPHA` — how solid a container face is. **80** by default (every one of them **100** in the two Material themes — M3 surfaces are opaque), `POPUP_ALPHA` 100; a theme without them falls back to 100. Percent only because a `Theme` constant cannot hold a float — read it as a *ratio* with `GoUi.surface_alpha(variant)`, and every other layer is a ratio too; §4 |
 | StyleBoxes (8) | `BOX_PANEL` `BOX_CARD` `BOX_HUD` `BOX_NOTICE` `BOX_POPUP` `BOX_EMPTY` `BOX_FOCUS` `BOX_FOCUS_SOFT` |
 | Text roles (7) | `ROLE_MICRO` `ROLE_COMPACT` `ROLE_CAPTION` `ROLE_BODY` `ROLE_BUTTON` `ROLE_SUBTITLE` `ROLE_TITLE` — names of sizes, not purposes |
 | Type variations (17) | `GoPanel` `GoCard` `GoButton` `GoPrimaryButton` `GoDangerButton` `GoDangerSolidButton` `GoPrimaryGlowButton` `GoDangerSolidGlowButton` `GoBareButton` `GoCompactButton` `GoIconButton` `GoListButton` `GoTitleLabel` `GoSubtitleLabel` `GoCaptionLabel` `GoCompactLabel` `GoMicroLabel` (constants `VAR_*`). The two `*Glow*` ones hang off the flat filled buttons and differ only in their faces — a soft shadow (a glow on sci-fi); reached with `GoConfig.button_glow` or `GoStyle.glow()` |
@@ -100,7 +100,8 @@ A plain Theme without `GoHud` tokens also works while `token_fallback` is true.
 
 ## 4. Container opacity
 
-Containers draw their face at **80% opacity** by default, so the game stays visible behind a dialog or sheet.
+Containers draw their face at **80% opacity** by default (the Material presets: 100%, opaque), so the game stays
+visible behind a dialog or sheet.
 **Only the face thins out** — text, icons, buttons, badges, quick slots, borders and shadows keep full
 strength. Never reach for `modulate.a` to get this effect: it fades the content too.
 
@@ -212,7 +213,7 @@ GoUi.use_preset(&"kingdom")
 | `shape` sizes | `radius` `radius_small` `radius_large` `gap` `gap_small` `gap_large` `padding` `button_height` `button_padding[4]` (+ `compact_padding_x/y`) |
 | `shape` for `cut` | `cut_ratio` `cut_max` `corners` (`diagonal`/`all`) `glow` `edge` |
 | `shape` for `medieval` | `material` (0 iron · 1 leather · 2 parchment) `grain_alpha` `ornament_scale` `bevel_strength` `fonts` {`title`,`subtitle`,`caption`,`body`,`button`: addon-local `res://` font} |
-| `skin` | `base` (`default`/`scifi`/`medieval`), `name`, `dials` {name: number} (table in §5) |
+| `skin` | `base` (`default`/`scifi`/`medieval`/`material`), `name`, `dials` {name: number} (table in §6) |
 | `icons` | `res://` path to a `GoIconSet` resource |
 
 ```json
@@ -238,13 +239,13 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 
 | Method | Draws |
 |---|---|
-| `surface_box(variant := BOX_CARD, accent := transparent) -> StyleBox` · `floating_box(...)` · `overlay_box(h_margin := -1, v_margin := -1, fill_alpha := 0.82)` | Card/panel faces, floating HUD panels, pills over the game |
+| `surface_box(variant := BOX_CARD, accent := transparent, alpha := -1.0) -> StyleBox` · `floating_box(variant, accent, alpha := -1.0)` · `overlay_box(h_margin := -1, v_margin := -1, fill_alpha := -1.0)` (-1 → `GoUi.surface_alpha(BOX_HUD)`) | Card/panel faces, floating HUD panels, pills over the game. 🛑 An override keeps the `alpha` parameter or the script does not parse |
 | `chip_box(color)` · `chip_ink(color) -> Color` | Chip face and legible chip text |
 | `slot_box(accent, lit: bool)` · `slot_ink(accent, lit)` · `badge_box(ink)` | Quick slot face (`lit` = cooldown running), text, the faint text badge on a slot corner |
 | `dot_box(ink, diameter)` | A solid round mark — carousel page dots, a dot badge, a chart legend key. Not `badge_box`, which on a dot draws a hollow speck |
 | `disc_box(diameter, accent, fill_alpha := 0.14, edge_alpha := 0.38)` | Avatar/icon discs |
-| `alert_box(ink)` · `skeleton_box()` · `segment_box(index, count, state)` | Inline alerts, placeholders, segmented control faces |
-| `progress_fill_box(ink)` · `notice_box(accent, compact)` · `tint_notice(box, accent)` | Bar fills (outlined when < 3:1), snackbars |
+| `alert_box(ink, alpha := -1.0)` · `skeleton_box()` · `segment_box(index, count, state)` · `swatch_box(diameter, color)` | Inline alerts, placeholders, segmented control faces, the colour discs of `GoStyle.choice_grid()` |
+| `progress_fill_box(ink)` · `notice_box(accent, compact, alpha := -1.0)` · `tint_notice(box, accent)` | Bar fills (outlined when < 3:1), snackbars |
 | `coach_ring_box(accent)` · `draw_coach_pointer(canvas, start, tip, direction, ink)` | Coach mark ring and arrow |
 | `draw_joystick(canvas, center, knob, radius, knob_radius, ink, base, active)` | Joystick |
 | `divider_color()` · `divider_thickness()` · `section_box()` · `section_rhythm(face)` | Dividers, section headings. A skin's own `section_box()` ends with `return section_rhythm(face)` — it puts more room above a heading than below, so the heading belongs to the group it opens |

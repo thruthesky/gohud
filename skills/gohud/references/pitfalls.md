@@ -18,6 +18,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Identifier "GoUi" not declared` | Classes not registered yet, or the folder is not `res://addons/gohud/` | Put it exactly there, run `godot --headless --path . --import` |
+| `Identifier "GoNavBar" not declared` (or `GoTopBar`, `GoScaffold`, `GoChoiceColumn`, `MATERIAL_LIGHT` …) while `GoUi` works | The project's gohud is the 1.2.1 release or older; these came after it (`CHANGELOG.md` → Unreleased) | Update to `main` (`/gohud update`, setup.md §7), then `godot --headless --path . --import` |
 | Parse errors inside gohud (`FoldableContainer`, `DPITexture` unknown) | Godot older than 4.7, the supported floor | Use Godot 4.7+ (`GoUi.MIN_ENGINE`) |
 | "Detected another project.godot" in the editor | A restored `examples/demo/project.godot` inside your project | Run the demo through `gohud_preview.py demo` (sandbox) or keep it as `project.godot.demo` |
 | A new JSON theme will not load | Its generated SVGs are not imported | `godot --headless --path . --import` after `make_theme.py` |
@@ -57,6 +58,12 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | A mark meant for the middle hangs down and to the right | `set_anchors_preset(Control.PRESET_CENTER)` moves only the anchors — the offsets stay 0, so the **corner** lands on the center | `GoStyle.center_in(node)` |
 | Rows shrink to their text; titles stop expanding and wrapping | They sit inside a `wrap_row()`, which forces every descendant to natural width with wrapping off | Only chips and buttons in a `wrap_row()`; lay panels out with `column()`, `row()` or a `GridContainer` |
 | A number meant for a row's end sits in the middle of it | `GoStyle.label()` expands horizontally by default and splits the width with the title | `SIZE_SHRINK_END` on that label |
+| A side bar warns `LeftSideBar needs 438 along its edge but has 390` and its items run past the screen | On a landscape phone the top bar, the bottom bar and the side bar's items are stacked into 390 dp | Add the heights up: HP and MP side by side keep the top bar one row tall, a `GoChoiceColumn` shows three rows instead of four. On a portrait phone place the pieces with `GoHudAnchor` instead (template `edge_bar_hud.gd` fits 844×390) |
+| `clear_of()` seems to do nothing — the side bar's rect still runs the full height | It moves the bar's **items** between the other bars; the bar itself stays full height | Measure an item (`animals.get_global_rect()`), not the bar |
+| A gap stays where a swiped row was | The `GoSwipeRow` was wrapped in a holder (a margin) — a dismissed row frees itself, not its holder | Put the margin around the list's column, not around each row |
+| Pull to refresh never appears | `GoRefresh.attach()` adds its indicator **beside** the scroll, deferred — the scroll had no parent yet | Attach after the list is in the tree (after `add_child(screen)`) |
+| A `GoListView` builds every row, or a scroll sits inside a scroll | The list was put in a page column that a `GoScaffold` or `GoScroll` scrolls | A list scrolls itself: `GoScaffold.make(title, list)` places it as it is, so does a `GoTabView` page |
+| One row of a drawer menu is always highlighted | `GoNavBar.drawer_list()` is for destinations and clamps `chosen` to a real row | Menu actions in a drawer are `GoStyle.list_button()` rows in `drawer.body` |
 
 ## 3. Text and translation
 
@@ -126,7 +133,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 |---|---|---|
 | Godot exits with 0 but the scene never loaded | Load errors are printed, not returned | Scan output for `SCRIPT ERROR`, `Parse Error`, `ERROR: Failed`, `Cannot open file` — `gohud_preview.py … --check` does |
 | Screenshot image is null | `--headless` does not render | Capture in a real or virtual display; use headless only for logic and layout numbers |
-| Layout checks pass at the wrong size | The headless window is 64×64 and `root.size` does not enlarge it | Size the test viewport the way gohud's suite does (`GOHUD_VIEWPORT`, see `tests/gohud_test.gd`) or check visually with `gohud_preview.py <scene> --phone` |
+| Layout checks pass at the wrong size | The headless window is 64×64 and `root.size` does not enlarge it | Set the logical screen through the stretch: `root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS`, `root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE`, `root.content_scale_size = Vector2i(844, 390)` (as `tests/gohud_layout_test.gd` and `gohud_templates_test.gd` do), or check visually with `gohud_preview.py <scene> --phone` |
 | A headless run never ends with no output | A parse error stops `_initialize` from running | Put a wall-clock timeout on test runs and read the `SCRIPT ERROR` lines |
 | Every headless check passes but the screen is visibly wrong | Headless checks read numbers, not pixels — a label with no width, a badge in the wrong corner and a key cap wrapped onto two lines all pass | Take a screenshot in a real or virtual display and **open it**. Five defects in the 2026-09-16 widgets were found this way, none by the suite |
 | A doc example does not compile in the reader's project | The example was written from memory | `python3 tools/check_docs_api.py` compares every `GoX.y` in the docs against the source |

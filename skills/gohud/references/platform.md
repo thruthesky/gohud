@@ -158,12 +158,15 @@ GoUi.config.icons = font_set
 ## 2. Localization and RTL
 
 Widgets never hard-code display text. Text you pass (titles, labels, rows) is yours: literal with `label()` /
-`button()`, a translation key with `label_key()` / `button_key()` / `*_key()` methods. gohud's own 16 strings:
+`button()`, a translation key with `label_key()` / `button_key()` / `*_key()` methods. gohud's own 46 strings
+(`GoConfig.text_keys`, translated in `i18n/gohud.csv`):
 
 | Name | English | Kind |
 |---|---|---|
-| `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty` `retry` | Close, Back, … | words |
+| `close` `back` `next` `done` `skip` `confirm` `cancel` `search` `loading` `empty` `retry` `menu` `more` `clear` `reorder` | Close, Back, … | words (tooltips and spoken names too) |
 | `bar_fraction` · `bar_percent` · `coach_progress` · `slot_quantity` · `slot_unknown` | `{value} / {max}` · `{percent}%` · `{step} / {total}` · `×{count}` · `…` | formats (`{name}` placeholders) |
+| `previous_month` `next_month` · `date_month_year` · `month_1`…`month_12` · `weekday_0`…`weekday_6` | Previous month · `{month} {year}` · January… · S, M, T… (the calendar's column heads) | `GoDatePicker` |
+| `am` `pm` `hour` `minute` | AM, PM, Hour, Minute | `GoTimePicker` |
 
 ```gdscript
 GoUi.config.text_overrides = {&"confirm": "Yes", &"cancel": "No"}   # literal, no translation table
@@ -182,8 +185,9 @@ TranslationServer.set_locale("ko")                                  # widgets re
   `tr()` alone leaves `{name}` visible.
 - RTL (`ar`, `he`): give your root Control `layout_direction = Control.LAYOUT_DIRECTION_APPLICATION_LOCALE`.
   Numbers, joysticks, scroll rails, the safe area and HUD anchors stay physically left-to-right on purpose.
-- 🛑 Fonts: only Cinzel (Latin, medieval headings) ships. CJK, Thai, Arabic, Hebrew, Devanagari need a font with
-  those glyphs in your Theme — missing glyphs draw as empty boxes without any error.
+- 🛑 Fonts: two ship — Cinzel (Latin, medieval headings) and Roboto (the Material presets' text, used only when the
+  project sets no font of its own). CJK, Thai, Arabic, Hebrew, Devanagari need a font with those glyphs in your
+  Theme — missing glyphs draw as empty boxes without any error.
 
 ## 3. Sound and haptics
 
