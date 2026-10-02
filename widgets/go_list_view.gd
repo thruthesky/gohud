@@ -173,10 +173,21 @@ func _place(index: int) -> void:
 	else:
 		return
 	node.position = Vector2(0.0, index * _pitch())
-	node.size = Vector2(_strip.size.x, item_extent)
 	node.custom_minimum_size.y = item_extent
+	_fit_row(node)
+	# 🛑 Kept one extent tall: a row is measured once at zero width when it arrives, where its words wrap into a tall
+	#    column — a `list_row` grew to 213dp and the rows covered each other (the strip is no container, so nothing
+	#    shrank them back; 2026-10-03 gallery screenshot).
+	if not node.has_meta(&"go_list_row"):
+		node.set_meta(&"go_list_row", true)
+		node.minimum_size_changed.connect(_fit_row.bind(node), CONNECT_DEFERRED)
 	_live[index] = node
 	row_shown.emit(index)
+
+
+## One row at the strip's width and the list's extent.
+func _fit_row(node: Control) -> void:
+	if is_instance_valid(node) and _strip != null: node.size = Vector2(_strip.size.x, item_extent)
 
 
 func _release(index: int) -> void:
@@ -195,4 +206,4 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_SORT_CHILDREN and _strip != null:
 		# Rows are placed by hand inside the strip — keep their width with the strip's.
 		for node: Control in _live.values():
-			if is_instance_valid(node): node.size.x = _strip.size.x
+			if is_instance_valid(node): _fit_row(node)

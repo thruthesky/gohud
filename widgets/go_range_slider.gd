@@ -153,7 +153,7 @@ func _draw() -> void:
 	var mid := size.y * 0.5
 	var height := track.get_minimum_size().y if track != null else 4.0
 	height = maxf(height, 2.0)
-	if track != null: draw_style_box(track, Rect2(0.0, mid - height * 0.5, size.x, height))
+	if track != null: draw_style_box(_seen(track), Rect2(0.0, mid - height * 0.5, size.x, height))
 	var a := _x_of(low)
 	var b := _x_of(high)
 	if fill != null:
@@ -167,6 +167,24 @@ func _draw() -> void:
 			draw_texture(grab, Vector2(x, mid) - grab.get_size() * 0.5)
 		else:
 			draw_circle(Vector2(x, mid), 8.0, GoUi.color(GoTheme.ACCENT), true, -1.0, true)
+
+
+## The track as the theme draws it — lifted toward the accent when its ground is the page's own colour (a framed
+## track on medieval, a near-black one on dark presets), the way `GoProgress` lifts its track (2026-10-03 review).
+func _seen(track: StyleBox) -> StyleBox:
+	if not &"bg_color" in track: return track
+	var page := GoUi.color(GoTheme.BACKGROUND)
+	var ground: Color = track.get(&"bg_color")
+	var shown := GoSkin.blend(ground, page)
+	if GoSkin.contrast_ratio(shown, page) >= GoProgress.LAYER: return track
+	var ink := GoUi.color(GoTheme.ACCENT)
+	var step := 0.0
+	while GoSkin.contrast_ratio(shown, page) < GoProgress.LAYER and step < 0.6:
+		step += 0.05
+		shown = GoSkin.blend(ground, page).lerp(ink, step)
+	var lifted := track.duplicate() as StyleBox
+	lifted.set(&"bg_color", shown)
+	return lifted
 
 
 func _gui_input(event: InputEvent) -> void:

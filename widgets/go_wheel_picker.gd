@@ -26,6 +26,9 @@ extends Control
 ## The wheel settled on a new item.
 signal changed(index: int)
 
+## How far the band stays in from each side (dp) — room for its edge and a focus ring.
+const BAND_INSET := 6.0
+
 ## The height of one item (dp).
 @export var item_height := 40.0:
 	set(value):
@@ -64,7 +67,6 @@ func _init() -> void:
 	name = "WheelPicker"
 	focus_mode = Control.FOCUS_ALL
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	clip_contents = true
 	# 🔑 Turning the wheel is this control's own drag — the page around it does not take it.
 	set_meta(GoScroll.OWNS_GESTURE, true)
 
@@ -138,16 +140,19 @@ func _get_minimum_size() -> Vector2:
 		for item in items:
 			widest = maxf(widest, font.get_string_size(_shown(item), HORIZONTAL_ALIGNMENT_LEFT, -1,
 				GoUi.font_size(GoTheme.ROLE_SUBTITLE)).x)
-	return Vector2(maxf(widest + 32.0, float(GoUi.metric(GoTheme.TOUCH))), item_height * visible_items)
+	return Vector2(maxf(widest + 2.0 * (BAND_INSET + 16.0), float(GoUi.metric(GoTheme.TOUCH))), item_height * visible_items)
 
 
 func _draw() -> void:
 	var skin := GoUi.skin()
 	var middle := size.y * 0.5
-	var band := Rect2(0.0, middle - item_height * 0.5, size.x, item_height)
+	# 🔑 The band sits `BAND_INSET` in from the sides, so its edge, its corners and a focus ring around it all show —
+	#    drawn edge to edge, a theme's border and the ring were cut at both sides (2026-10-03).
+	var band := Rect2(BAND_INSET, middle - item_height * 0.5, size.x - BAND_INSET * 2.0, item_height)
 	var face := skin.wheel_band_box()
 	if face != null: draw_style_box(face, band)
-	if has_focus():
+	# Only keyboard and gamepad focus shows the ring — the focus a press hands out is hidden.
+	if has_focus(true):
 		var ring := get_theme_stylebox(&"focus", &"Button")
 		if ring != null: draw_style_box(ring, band)
 	var font := get_theme_font(&"font", &"Label")
@@ -187,7 +192,7 @@ func _gui_input(event: InputEvent) -> void:
 			accept_event()
 		elif click.button_index == MOUSE_BUTTON_LEFT:
 			if click.pressed:
-				grab_focus()
+				grab_focus(true)
 				if _tween != null: _tween.kill()
 				_dragging = true
 				_moved = false

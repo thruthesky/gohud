@@ -3592,6 +3592,17 @@ func _flutter_widgets() -> void:
 		var outline_face := outlined.get_theme_stylebox(&"normal") as StyleBoxFlat
 		check(outline_face == null or (outline_face.bg_color.a < 0.01 and outline_face.border_width_top >= 1),
 			"%s: an outlined button has an edge and no fill" % preset)
+		# 🛑 A skin's own face (cut, medieval) too — left whole it looked like the normal button (2026-10-03 review).
+		var any_face := outlined.get_theme_stylebox(&"normal")
+		check(not (&"bg_color" in any_face) or (any_face.get(&"bg_color") as Color).a < 0.01,
+			"%s: the outlined button's face draws no fill (%s)" % [preset, any_face.get_class()])
+		# 🛑 The range slider's track shows on the page — medieval draws it the page's colour (2026-10-03 review).
+		var groove := span._seen(span.get_theme_stylebox(&"slider", &"HSlider"))
+		var groove_ink: Color = groove.get(&"bg_color") if &"bg_color" in groove else Color.TRANSPARENT
+		check(not (&"bg_color" in groove) or GoSkin.contrast_ratio(GoSkin.blend(groove_ink, page), page) >= GoProgress.LAYER - 0.005,
+			"%s: the range slider's track shows on the page (%.2f)" % [preset, GoSkin.contrast_ratio(GoSkin.blend(groove_ink, page), page)])
+		check(not wheel.clip_contents and wheel.size.x >= wheel.get_combined_minimum_size().x,
+			"%s: the wheel does not clip its band's edge or focus ring" % preset)
 		check(GoSkin.contrast_ratio(outlined.get_theme_color(&"font_color"), page) >= 4.5,
 			"%s: the outlined button's label reads on the page" % preset)
 		# 🛑 It keeps the button's own shape and size — read from the `GoButton` variation alone, it was a bare square
@@ -3651,7 +3662,7 @@ func _flutter_layouts() -> void:
 	var made := [0]
 	var lazy := GoListView.make(1000, 48.0, func(index: int) -> Control:
 		made[0] += 1
-		return GoStyle.label(str(index)))
+		return GoStyle.list_row(Button.new(), GoIconSet.USER, "Player %d" % index, Callable(), Color.TRANSPARENT, "", false))
 	var ends := [0]
 	lazy.end_reached.connect(func() -> void: ends[0] += 1)
 	lazy.size = Vector2(390, 480)
@@ -3660,6 +3671,9 @@ func _flutter_layouts() -> void:
 	var most := ceili(480.0 / 48.0) + 2 * lazy.overscan + 2
 	check(lazy.row(0) != null and lazy.row(500) == null and lazy.built_indexes().size() <= most,
 		"list view: only the rows in view are built (%d of 1000)" % lazy.built_indexes().size())
+	# 🛑 A list row measured at zero width wraps its words tall — it grew to 213dp and the rows covered each other.
+	check(near(lazy.row(0).size.y, 48.0) and near(lazy.row(1).position.y, 48.0),
+		"list view: rows stay one extent tall (%.0f)" % lazy.row(0).size.y)
 	lazy.scroll_to_index(500)
 	await frames(3)
 	check(lazy.row(500) != null and lazy.row(0) == null and near(lazy.row(500).get_global_rect().position.y,
@@ -3703,6 +3717,10 @@ func _flutter_layouts() -> void:
 	tabs.set_tab(1, false)
 	await frames(1)
 	check(tabs.current() == 1 and tabs.tab_bar.current_tab == 1 and changed[0] == 1, "tab view: set_tab moves page and tab")
+	var bar_width := tabs.tab_bar.size.x
+	check(tabs.tab_bar.get_tab_rect(0).position.x <= 3.0 and tabs.tab_bar.get_tab_rect(2).end.x >= bar_width - 3.0,
+		"tab view: the tabs run from edge to edge (%.0f – %.0f of %.0f)" % [tabs.tab_bar.get_tab_rect(0).position.x,
+			tabs.tab_bar.get_tab_rect(2).end.x, bar_width])
 	var middle := tabs.page(1).get_global_rect().get_center()
 	_finger_motion(middle, Vector2.ZERO, false)
 	_finger_button(middle, true)
@@ -4012,7 +4030,16 @@ func _flutter_pickers() -> void:
 	check(done[0] and stepper.state_of(1) != &"error", "stepper: the last Next finishes (and moving on clears the error)")
 	stepper.layout = GoStepper.Layout.HORIZONTAL
 	await frames(2)
-	check(stepper.find_children("Step*", "Button", true, false).size() == 3, "stepper: the horizontal layout keeps every step")
+	var heads := stepper.find_children("Step*", "Button", true, false)
+	check(heads.size() == 3, "stepper: the horizontal layout keeps every step")
+	# 🛑 A head takes no size from what it holds — at zero width the titles ran over the joints (2026-10-03 review).
+	if heads.size() == 3:
+		var first := (heads[0] as Control).get_global_rect()
+		var second := (heads[1] as Control).get_global_rect()
+		var third := (heads[2] as Control).get_global_rect()
+		check(first.size.x >= GoStepper.MARKER and first.end.x <= second.position.x and second.end.x <= third.position.x
+			and third.end.x <= stepper.get_global_rect().end.x + 0.5,
+			"stepper: a row of heads side by side, sized to their titles and inside the stepper")
 	stepper.queue_free()
 
 	# Time picker — a tap on the dial sets the hour and turns to the minutes; AM/PM; the inner ring of 24 hours.
@@ -4036,10 +4063,22 @@ func _flutter_pickers() -> void:
 	check(clock.hour == 15 and times.back() == [15, 45], "time picker: PM moves the hour past noon")
 	var am_back := GoSkin.blend(GoSkin.box_background(clock._pm.get_theme_stylebox(&"normal")), GoUi.color(GoTheme.BACKGROUND))
 	check(GoSkin.contrast_ratio(clock._pm.get_theme_color(&"font_color"), am_back) >= 4.5, "time picker: the chosen period reads")
-	# 🛑 Each of AM and PM takes a finger — M3's halves are 40dp, which the layout audit flagged.
-	check(clock._am.size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5 and near(clock._hour_box.size.y, clock._am.size.y * 2.0, 1.0),
-		"time picker: AM and PM are a full touch target tall, the hour box as tall as both (%.0f · %.0f)" % [clock._am.size.y,
-			clock._hour_box.size.y])
+	# 🛑 Each of AM and PM takes a finger — M3's halves are 40dp, which the layout audit flagged — and they stand apart:
+	#    touching, their two edges read as one thick line (2026-10-03 review).
+	var apart := clock._pm.get_global_rect().position.y - clock._am.get_global_rect().end.y
+	check(clock._am.size.y >= float(GoUi.metric(GoTheme.TOUCH)) - 0.5 and apart >= 4.0
+		and near(clock._hour_box.size.y, clock._am.size.y * 2.0 + apart, 1.0),
+		"time picker: AM and PM are a full touch target tall and apart, the hour box as tall as both (%.0f · %.0f · %.0f)" % [
+			clock._am.size.y, apart, clock._hour_box.size.y])
+	# ♿ Up and Down on a focused box turn its value — the dial needs a pointer.
+	clock._minute_box.grab_focus()
+	_action_key(&"ui_down")
+	await frames(1)
+	clock._hour_box.grab_focus()
+	_action_key(&"ui_up")
+	await frames(1)
+	check(clock.minute == 44 and clock.hour == 16, "time picker: Up and Down on a focused box turn hour and minute (%d:%d)" % [
+		clock.hour, clock.minute])
 	clock.use_24h = true
 	clock.set_time(0, 0)
 	clock.show_part(0)

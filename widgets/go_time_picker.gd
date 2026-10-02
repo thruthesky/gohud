@@ -19,6 +19,9 @@
 ## ## 🔑 The look
 ## The skin draws the boxes (`GoSkin.time_selector_box`) and colours the dial (`GoSkin.dial_colors`) — the accent hand
 ## on a soft disc by default; under Material the M3 time picker's `primary-container` boxes and `primary` hand.
+##
+## ## ♿ Keys
+## Focus the hour or the minute box and Up / Down turn it by one; the boxes and AM / PM take Tab and Enter like buttons.
 @tool
 class_name GoTimePicker
 extends Container
@@ -145,7 +148,7 @@ func _rebuild() -> void:
 	head.alignment = BoxContainer.ALIGNMENT_CENTER
 	head.add_theme_constant_override(&"separation", 0)
 	_column.add_child(head)
-	_hour_box = _selector(GoUi.text(&"hour"), func() -> void: show_part(0))
+	_hour_box = _selector(GoUi.text(&"hour"), func() -> void: show_part(0), 0)
 	head.add_child(_hour_box)
 	var colon := GoStyle.label(":", GoTheme.ROLE_TITLE)
 	colon.custom_minimum_size = Vector2(24, BOX.y)
@@ -156,7 +159,7 @@ func _rebuild() -> void:
 	colon.add_theme_font_size_override(&"font_size", 48)
 	colon.layout_direction = Control.LAYOUT_DIRECTION_LTR
 	head.add_child(colon)
-	_minute_box = _selector(GoUi.text(&"minute"), func() -> void: show_part(1))
+	_minute_box = _selector(GoUi.text(&"minute"), func() -> void: show_part(1), 1)
 	head.add_child(_minute_box)
 	head.layout_direction = Control.LAYOUT_DIRECTION_LTR
 	_am = null
@@ -167,7 +170,8 @@ func _rebuild() -> void:
 		gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		head.add_child(gap)
 		var periods := VBoxContainer.new()
-		periods.add_theme_constant_override(&"separation", 0)
+		# 🔑 Apart, not touching — two edges side by side read as one thick line (2026-10-03 review).
+		periods.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP_SMALL))
 		periods.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		head.add_child(periods)
 		_am = _period(GoUi.text(&"am"), func() -> void: _set_hour(hour % 12))
@@ -182,8 +186,9 @@ func _rebuild() -> void:
 	_refresh()
 
 
-func _selector(name_words: String, action: Callable) -> Button:
+func _selector(name_words: String, action: Callable, part: int) -> Button:
 	var box := Button.new()
+	box.gui_input.connect(_nudge.bind(box, part))
 	box.custom_minimum_size = BOX
 	box.focus_mode = Control.FOCUS_ALL
 	box.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -194,11 +199,26 @@ func _selector(name_words: String, action: Callable) -> Button:
 	return box
 
 
+## ♿ Up and Down on a focused hour or minute box turn its value by one — the dial needs a pointer, this does not.
+func _nudge(event: InputEvent, box: Button, part: int) -> void:
+	var up := event.is_action_pressed(&"ui_up", true)
+	if not up and not event.is_action_pressed(&"ui_down", true): return
+	var way := 1 if up else -1
+	if part == 0:
+		if use_24h: _set_hour(posmod(hour + way, 24))
+		else: _set_hour(posmod(hour % 12 + way, 12) + (12 if hour >= 12 else 0))
+	else:
+		minute = posmod(minute + way, 60)
+		_refresh()
+		_emit()
+	box.accept_event()
+
+
 func _period(words: String, action: Callable) -> Button:
 	var box := Button.new()
 	box.text = words
-	# 🔑 Each half a full touch target tall — M3's 52×80 selector gives each 40dp, too little for a finger (the layout
-	#    audit flagged it); the hour and minute boxes grow to the same 96dp so the row stays even.
+	# 🔑 Each a full touch target tall — M3's 52×80 selector gives each half 40dp, too little for a finger (the layout
+	#    audit flagged it); the hour and minute boxes grow to the column's height so the row stays even.
 	box.custom_minimum_size = Vector2(PERIOD.x, maxf(PERIOD.y * 0.5, float(GoUi.metric(GoTheme.TOUCH))))
 	box.focus_mode = Control.FOCUS_ALL
 	box.mouse_filter = Control.MOUSE_FILTER_PASS

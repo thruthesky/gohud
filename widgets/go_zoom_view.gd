@@ -117,9 +117,16 @@ func _notification(what: int) -> void:
 
 
 func _draw() -> void:
-	if has_focus():
+	if has_focus(true):
 		var ring := get_theme_stylebox(&"focus", &"Button")
-		if ring != null: draw_style_box(ring, Rect2(Vector2.ZERO, size))
+		# Drawn inside the view: the view clips, and a ring that reaches out past its rect would lose its sides.
+		if ring != null:
+			var box := Rect2(Vector2.ZERO, size)
+			var flat := ring as StyleBoxFlat
+			if flat != null:
+				box = box.grow_individual(-flat.expand_margin_left, -flat.expand_margin_top, -flat.expand_margin_right,
+					-flat.expand_margin_bottom)
+			draw_style_box(ring, box)
 
 
 ## The content's size at 1× — the view, or the content's own minimum when bigger.

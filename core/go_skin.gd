@@ -902,8 +902,17 @@ func banner_box() -> StyleBox:
 ## [param state]. Default: no fill, a 1dp edge in the border colour, a faint accent wash on hover and press.
 func outlined_button_box(face: StyleBox, state: StringName) -> StyleBox:
 	var flat := face as StyleBoxFlat
-	if flat == null or state == &"focus": return face
+	if state == &"focus": return face
 	var accent := GoUi.color(GoTheme.ACCENT)
+	if flat == null:
+		# 🛑 A skin's own face (cut, medieval) keeps its shape and edge; only its fill goes — left whole, the outlined
+		#    button looked like the normal one on those presets (2026-10-03 review).
+		if &"bg_color" in face:
+			var wash := 0.0
+			if state == &"hover": wash = 0.08
+			elif state == &"pressed" or state == &"hover_pressed": wash = 0.14
+			face.set(&"bg_color", Color(accent, wash))
+		return face
 	flat.bg_color = Color(accent, 0.0)
 	if state == &"hover": flat.bg_color = Color(accent, 0.08)
 	elif state == &"pressed" or state == &"hover_pressed": flat.bg_color = Color(accent, 0.14)

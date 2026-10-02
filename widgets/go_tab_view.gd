@@ -43,13 +43,15 @@ func _init() -> void:
 	name = "TabView"
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_theme_constant_override(&"separation", 0)
+	# The pages keep a gap from the tab line — flush against it, a page's first line read as part of the tabs.
+	add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP))
 
 
 ## Tabs named [param names] over [param pages] (one `Control` per tab), [param selected] shown first.
 static func make(names: Array, pages: Array, selected := 0, translate := false) -> GoTabView:
 	var node := GoTabView.new()
-	node.tab_bar = GoStyle.tabs(names, selected, translate)
+	# Fixed tabs across the whole row, as Flutter's `TabBar` under a `TabBarView`.
+	node.tab_bar = GoStyle.tabs(names, selected, translate, true)
 	node.add_child(node.tab_bar)
 	node._pager = Control.new()
 	node._pager.name = "Pages"

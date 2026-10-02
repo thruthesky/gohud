@@ -2529,8 +2529,10 @@ static func _choice_cell(item: Dictionary, translate: bool) -> Button:
 
 
 ## 🔑 **A tab bar.** Builds a `TabBar` from an array of names. The caller switches the content on `tab_changed`
-## (to tie the content in too, give this theme to the engine's `TabContainer`).
-static func tabs(names: Array, selected := 0, translate := false) -> TabBar:
+## (to tie the content in too, give this theme to the engine's `TabContainer`; `GoTabView` ties swipeable pages to it).
+## [param fill] spreads the tabs over the whole row, like Flutter's fixed `TabBar` and M3 primary tabs; left off they
+## sit at the start, like scrollable tabs. Either way the line under the tabs runs the full width of the row.
+static func tabs(names: Array, selected := 0, translate := false, fill := false) -> TabBar:
 	var bar := TabBar.new()
 	bar.theme = GoUi.theme()
 	GoScroll.scroll_through(bar)   # a swipe that starts on the tab row scrolls the list that holds it
@@ -2541,7 +2543,62 @@ static func tabs(names: Array, selected := 0, translate := false) -> TabBar:
 	bar.tab_alignment = TabBar.ALIGNMENT_LEFT
 	bar.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# 🛑 The line under the tabs is each tab face's bottom edge, so it stopped after the last tab and the row looked
+	#    cut off (2026-10-03 review). The engine's `TabBar` draws no `tabbar_background` (measured), so the rest of the
+	#    line is drawn here, in the unselected face's edge colour and width.
+	bar.draw.connect(_tab_line.bind(weakref(bar)))
+	if fill:
+		# Centred, so the pixel or two the even split leaves over falls on both ends, where the line carries on.
+		bar.tab_alignment = TabBar.ALIGNMENT_CENTER
+		var spread := _spread_tabs.bind(weakref(bar))
+		bar.resized.connect(spread, CONNECT_DEFERRED)
+		bar.minimum_size_changed.connect(spread, CONNECT_DEFERRED)
+		spread.call_deferred()
 	return bar
+
+
+## Draws the tabs' bottom line where no tab covers it.
+static func _tab_line(ref: WeakRef) -> void:
+	var bar := ref.get_ref() as TabBar
+	if bar == null or bar.tab_count == 0: return
+	var face := bar.get_theme_stylebox(&"tab_unselected") as StyleBoxFlat
+	if face == null or face.border_width_bottom <= 0 or face.border_color.a <= 0.0: return
+	var start := INF
+	var end := -INF
+	for index in bar.tab_count:
+		var rect := bar.get_tab_rect(index)
+		start = minf(start, rect.position.x)
+		end = maxf(end, rect.end.x)
+	var width := float(face.border_width_bottom)
+	var y := bar.size.y - width
+	if start > 0.5: bar.draw_rect(Rect2(0.0, y, start, width), face.border_color)
+	if end < bar.size.x - 0.5: bar.draw_rect(Rect2(end, y, bar.size.x - end, width), face.border_color)
+
+
+## Spreads the room left in the row over the tabs — the same padding added to both sides of every tab — so the tabs
+## run from edge to edge. Called again when the row's width or the tabs' words change.
+static func _spread_tabs(ref: WeakRef) -> void:
+	var bar := ref.get_ref() as TabBar
+	if bar == null or bar.tab_count == 0 or bar.size.x <= 0.0: return
+	if not bar.has_meta(&"go_tab_base"):
+		var plain := bar.get_theme_stylebox(&"tab_unselected")
+		bar.set_meta(&"go_tab_base", plain.get_margin(SIDE_LEFT) if plain != null else 0.0)
+	var base := float(bar.get_meta(&"go_tab_base"))
+	var extra := float(bar.get_meta(&"go_tab_extra", 0.0))
+	var natural := 0.0
+	for index in bar.tab_count: natural += bar.get_tab_rect(index).size.x - extra * 2.0
+	# Short of room the padding gives way instead — down to 8dp a side — so four tabs still fit a phone.
+	var want := maxf(-maxf(0.0, base - 8.0), floorf((bar.size.x - natural) / (bar.tab_count * 2.0)))
+	if is_equal_approx(want, extra): return
+	bar.set_meta(&"go_tab_extra", want)
+	for key in [&"tab_selected", &"tab_unselected", &"tab_hovered", &"tab_disabled"]:
+		bar.remove_theme_stylebox_override(key)
+		var face := bar.get_theme_stylebox(key)
+		if face == null: continue
+		var wide := face.duplicate() as StyleBox
+		wide.content_margin_left = face.get_margin(SIDE_LEFT) + want
+		wide.content_margin_right = face.get_margin(SIDE_RIGHT) + want
+		bar.add_theme_stylebox_override(key, wide)
 
 
 ## 🔑 **A breadcrumb.** Joins the path items with `›`. The last one is where you are, so it cannot be pressed.

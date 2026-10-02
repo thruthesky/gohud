@@ -582,6 +582,7 @@ func _build_from_flutter(page: VBoxContainer) -> void:
 	var feed := GoListView.make(1000, 48.0, func(index: int) -> Control:
 		return GoStyle.list_row(Button.new(), GoIconSet.USER, "Player %d" % (index + 1), Callable(), Color.TRANSPARENT, "", false))
 	feed.custom_minimum_size.y = 220
+	feed.spacing = GoUi.metric(GoTheme.GAP_TINY)
 	feed.end_reached.connect(_say.bind("load more"))
 	page.add_child(feed)
 	var map := GridContainer.new()

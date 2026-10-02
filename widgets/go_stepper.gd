@@ -13,8 +13,8 @@
 ##
 ## ## 🔑 Two layouts
 ## `VERTICAL` (default) stacks the steps with the open one's content under its title — it fits a phone at any length.
-## `HORIZONTAL` puts the numbered steps in a row with the content below — for three or four short titles on a wider
-## screen.
+## `HORIZONTAL` puts the numbered steps in a row, each marker over its title, with the content below — three or four
+## short titles fit a phone.
 ##
 ## ## 🔑 Going back is free, going forward is checked
 ## A tap on a finished step's title goes back to it. Next runs `can_continue(index)` first (when set) and stays put
@@ -23,6 +23,9 @@
 @tool
 class_name GoStepper
 extends VBoxContainer
+
+## In a row, how far the marker sits below the top of its head (dp).
+const _ROW_TOP := 8.0
 
 ## The open step changed.
 signal step_changed(index: int)
@@ -196,15 +199,22 @@ func _build_row() -> void:
 	add_child(line)
 	for at in _steps.size():
 		if at > 0:
-			var joint := ColorRect.new()
+			# The joint between two steps runs level with their markers, not through their titles.
+			var joint := Control.new()
 			joint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			joint.color = GoUi.skin().divider_color()
-			joint.custom_minimum_size = Vector2(GoUi.metric(GoTheme.GAP_SMALL), 1.0)
+			joint.custom_minimum_size.x = GoUi.metric(GoTheme.GAP_SMALL)
 			joint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			joint.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			var rule := ColorRect.new()
+			rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			rule.color = GoUi.skin().divider_color()
+			rule.set_anchors_preset(Control.PRESET_TOP_WIDE)
+			rule.offset_top = _ROW_TOP + MARKER * 0.5 - 0.5
+			rule.offset_bottom = rule.offset_top + 1.0
+			joint.add_child(rule)
 			line.add_child(joint)
 		var head := _header(at, false)
 		head.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		head.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		line.add_child(head)
 	var holder := VBoxContainer.new()
 	holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -240,18 +250,33 @@ func _header(at: int, wide: bool) -> Button:
 	var pad := MarginContainer.new()
 	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pad.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	pad.add_theme_constant_override(&"margin_left", GoUi.metric(GoTheme.GAP))
-	pad.add_theme_constant_override(&"margin_right", GoUi.metric(GoTheme.GAP))
+	pad.add_theme_constant_override(&"margin_left", GoUi.metric(GoTheme.GAP if wide else GoTheme.GAP_SMALL))
+	pad.add_theme_constant_override(&"margin_right", GoUi.metric(GoTheme.GAP if wide else GoTheme.GAP_SMALL))
+	if not wide:
+		pad.add_theme_constant_override(&"margin_top", int(_ROW_TOP))
+		pad.add_theme_constant_override(&"margin_bottom", GoUi.metric(GoTheme.GAP_SMALL))
 	head.add_child(pad)
-	var row := HBoxContainer.new()
+	# 🔑 In a row the marker sits over its title, so three or four steps fit a phone. A `Button` takes no size from
+	#    what it holds, so the head is sized to its contents here — left at zero, the titles ran over the joints and the
+	#    last step off the screen (2026-10-03 review).
+	var row: BoxContainer = HBoxContainer.new() if wide else VBoxContainer.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_theme_constant_override(&"separation", 12)
+	row.add_theme_constant_override(&"separation", 12 if wide else GoUi.metric(GoTheme.GAP_TINY))
+	if not wide:
+		row.alignment = BoxContainer.ALIGNMENT_BEGIN
+		var fit := func() -> void:
+			if is_instance_valid(head) and is_instance_valid(pad):
+				head.custom_minimum_size = Vector2(pad.get_combined_minimum_size().x,
+					maxf(GoUi.metric(GoTheme.TOUCH), pad.get_combined_minimum_size().y))
+		pad.minimum_size_changed.connect(fit, CONNECT_DEFERRED)
+		fit.call_deferred()
 	pad.add_child(row)
 	var disc := PanelContainer.new()
 	disc.name = "Marker"
 	disc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	disc.custom_minimum_size = Vector2.ONE * MARKER
 	disc.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if not wide: disc.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	disc.add_theme_stylebox_override(&"panel", skin.step_marker_box(state))
 	row.add_child(disc)
 	var ink := skin.step_marker_ink(state)
@@ -270,14 +295,18 @@ func _header(at: int, wide: bool) -> Button:
 	var words := VBoxContainer.new()
 	words.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if not wide: words.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	words.add_theme_constant_override(&"separation", 0)
 	row.add_child(words)
 	var translate := bool(spec.get("translate", false))
 	var title_ink := GoUi.color(GoTheme.DANGER) if state == &"error" else \
 		(GoUi.color(GoTheme.TEXT) if state != &"todo" else GoUi.color(GoTheme.MUTED))
 	var title_text := str(spec.get("title", ""))
-	var title := GoStyle.label_key(title_text, GoTheme.ROLE_BUTTON, title_ink) if translate \
-		else GoStyle.label(title_text, GoTheme.ROLE_BUTTON, title_ink)
+	var role := GoTheme.ROLE_BUTTON if wide else GoTheme.ROLE_CAPTION
+	var title := GoStyle.label_key(title_text, role, title_ink) if translate else GoStyle.label(title_text, role, title_ink)
+	if not wide:
+		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		title.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	title.autowrap_mode = TextServer.AUTOWRAP_OFF
 	title.set_meta(&"go_no_wrap", true)
 	words.add_child(title)
