@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — zestaw HUD i UI dla Godota 4</title>
-<meta name="description" content="Konfigurowalny zestaw HUD i UI dla Godota 4.7+. Pływające powierzchnie, dolne arkusze, okna dialogowe, formularze, snackbary, paski HUD, szybkie sloty i wirtualny joystick, w sześciu presetach — domyślnym, sci-fi i średniowiecznym.">
+<meta name="description" content="Konfigurowalny zestaw HUD i UI dla Godota 4.7+. Pływające powierzchnie, dolne arkusze, okna dialogowe, formularze, snackbary, paski HUD, szybkie sloty i wirtualny joystick, w ośmiu presetach — domyślnym, sci-fi, średniowiecznym i Material 3.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud to zestaw HUD i UI dla Godota 4.7 i nowszych. Pływające okna, dolne arkusze, okna dialogowe, formularze,
       snackbary, wskazówki instruktażowe, paski HUD, szybkie sloty i wirtualny joystick działają na <b>jednym motywie
       i jednym wymiennym zestawie ikon</b>, a bezpieczny obszar, klawiaturę ekranową, RTL i obszary dotyku biorą na siebie.
-      <b>Sześć presetów</b> — domyślny, sci-fi i średniowieczny, każdy w wersji ciemnej i jasnej — zmienia kolory i kształty jedną linijką.
+      <b>Osiem presetów</b> — domyślny, sci-fi, średniowieczny i Material 3, każdy w wersji ciemnej i jasnej — zmienia kolory i kształty jedną linijką.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -121,7 +121,7 @@
       <figcaption><b>Sci-fi</b> — kanciaste panele i sterowanie dotykowe</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Wszystkie sześć presetów i jak je przełączać →</a></p>
+  <p><a href="#presets">Wszystkie osiem presetów i jak je przełączać →</a></p>
 </section>
 
 <section id="what">
@@ -157,8 +157,8 @@
       <p>Widżety znają tylko <code>GoIconSet.CLOSE</code>. Podmień zestaw, a zmienią się wszystkie rysunki bez ruszania jednej linijki kodu. <a href="icons.html">Ikony →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Sześć wyglądów, jedna linijka</h3>
-      <p><code>GoUi.use_preset()</code> podmienia motyw, skórkę i ikony naraz — zaokrąglone, ścięte sci-fi albo kute średniowieczne ramy.</p>
+      <h3 id="six-looks-one-line">Osiem wyglądów, jedna linijka</h3>
+      <p><code>GoUi.use_preset()</code> podmienia motyw, skórkę i ikony naraz — zaokrąglone, ścięte sci-fi, kute średniowieczne ramy albo komponenty aplikacji Material 3.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Czytelność z pomiaru</h3>
@@ -204,6 +204,8 @@
       <tr><td><code>scifi_light</code></td><td>Te same kanciaste kształty w jasnej palecie rysunku technicznego</td></tr>
       <tr><td><code>medieval_dark</code></td><td>Ciemne żelazo i skóra, ramy ze starego złota, nity, grawerowane ikony, nagłówki Cinzel</td></tr>
       <tr><td><code>medieval_light</code></td><td>Pergamin, atrament i brąz z tymi samymi kutymi ramami</td></tr>
+      <tr><td><code>material_light</code></td><td>Material 3 dla ekranów aplikacji — przyciski w kształcie pigułki, okna dialogowe 28dp, wypełnione karty, pasek nawigacji, FAB i pasek wyszukiwania aplikacji, Roboto</td></tr>
+      <tr><td><code>material_dark</code></td><td>Te same kształty Material 3 na ciemnej bazie</td></tr>
     </tbody>
   </table>
 
@@ -411,7 +413,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Każda para kolorów i <b>etykieta każdego stanu przycisku na panelu, na którym leży</b>, jest mierzona
-    względem WCAG, we wszystkich sześciu motywach. Półprzezroczyste kolory są najpierw składane na swoim
+    względem WCAG, we wszystkich ośmiu motywach. Półprzezroczyste kolory są najpierw składane na swoim
     prawdziwym tle — mierzenie ich wprost daje lepszy współczynnik, niż pokazuje ekran.
   </p>
   <p>

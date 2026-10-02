@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — un kit HUD et UI pour Godot 4</title>
-<meta name="description" content="Un kit HUD et UI personnalisable pour Godot 4.7+. Surfaces flottantes, feuilles inférieures, boîtes de dialogue, formulaires, snackbars, barres de HUD, emplacements rapides et joystick virtuel, avec six préréglages — par défaut, science-fiction et médiéval.">
+<meta name="description" content="Un kit HUD et UI personnalisable pour Godot 4.7+. Surfaces flottantes, feuilles inférieures, boîtes de dialogue, formulaires, snackbars, barres de HUD, emplacements rapides et joystick virtuel, avec huit préréglages — par défaut, science-fiction, médiéval et Material 3.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -79,7 +79,7 @@
       boîtes de dialogue, formulaires, snackbars, repères guidés, barres de HUD, emplacements rapides et joystick
       virtuel fonctionnent à partir d'<b>un seul thème et d'un seul jeu d'icônes interchangeable</b>, et prennent en
       charge pour vous la zone sûre, le clavier virtuel, le sens RTL et les cibles tactiles.
-      <b>Six préréglages</b> — par défaut, science-fiction et médiéval, chacun en sombre et en clair — changent
+      <b>Huit préréglages</b> — par défaut, science-fiction, médiéval et Material 3, chacun en sombre et en clair — changent
       les couleurs et les formes en une ligne.
     </p>
     <div class="badges">
@@ -124,7 +124,7 @@
       <figcaption><b>Science-fiction</b> — panneaux anguleux et commandes tactiles</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Les six préréglages et comment en changer →</a></p>
+  <p><a href="#presets">Les huit préréglages et comment en changer →</a></p>
 </section>
 
 <section id="what">
@@ -160,8 +160,8 @@
       <p>Les widgets ne connaissent que <code>GoIconSet.CLOSE</code>. Changez de jeu et tous les dessins changent sans toucher une ligne de code. <a href="icons.html">Icônes →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Six apparences, une ligne</h3>
-      <p><code>GoUi.use_preset()</code> change d'un coup le thème, le skin et les icônes — cadres arrondis, chanfreinés science-fiction ou forgés médiévaux.</p>
+      <h3 id="six-looks-one-line">Huit apparences, une ligne</h3>
+      <p><code>GoUi.use_preset()</code> change d'un coup le thème, le skin et les icônes — cadres arrondis, chanfreinés science-fiction, forgés médiévaux ou composants d'application Material 3.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Lisibilité mesurée</h3>
@@ -208,6 +208,8 @@
       <tr><td><code>scifi_light</code></td><td>Les mêmes formes anguleuses dans une palette claire de plan technique</td></tr>
       <tr><td><code>medieval_dark</code></td><td>Fer sombre et cuir, cadres d'or ancien, rivets, icônes gravées, titres en Cinzel</td></tr>
       <tr><td><code>medieval_light</code></td><td>Parchemin, encre et bronze avec les mêmes cadres forgés</td></tr>
+      <tr><td><code>material_light</code></td><td>Material 3 pour les écrans d'application — boutons en pilule, dialogues de 28dp, cartes pleines, la barre de navigation, le FAB et la barre de recherche d'une app, Roboto</td></tr>
+      <tr><td><code>material_dark</code></td><td>Les mêmes formes Material 3 sur la base sombre</td></tr>
     </tbody>
   </table>
 
@@ -420,7 +422,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Chaque paire de couleurs et <b>le libellé de chaque état de bouton sur le panneau qui le porte</b> sont mesurés
-    au regard des WCAG, dans les six thèmes. Les couleurs translucides sont d'abord composées sur leur fond réel —
+    au regard des WCAG, dans les huit thèmes. Les couleurs translucides sont d'abord composées sur leur fond réel —
     les mesurer directement annonce un meilleur rapport que ce que l'écran montre.
   </p>
   <p>

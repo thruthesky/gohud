@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 için HUD ve UI kiti</title>
-<meta name="description" content="Godot 4.7+ için özelleştirilebilir bir HUD ve UI kiti. Yüzen pencereler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, HUD çubukları, hızlı slotlar ve sanal joystick; altı ön ayarla — varsayılan, bilimkurgu ve ortaçağ.">
+<meta name="description" content="Godot 4.7+ için özelleştirilebilir bir HUD ve UI kiti. Yüzen pencereler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, HUD çubukları, hızlı slotlar ve sanal joystick; sekiz ön ayarla — varsayılan, bilimkurgu, ortaçağ ve Material 3.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud, Godot 4.7 ve sonrası için bir HUD ve UI kitidir. Yüzen pencereler, alt sayfalar, iletişim kutuları,
       formlar, snackbar'lar, rehber işaretleri, HUD çubukları, hızlı slotlar ve sanal joystick <b>tek bir temayla ve
       değiştirilebilir tek bir simge setiyle</b> çalışır; güvenli alanı, sanal klavyeyi, RTL'i ve dokunma hedeflerini
-      sizin yerinize halleder. <b>Altı ön ayar</b> — varsayılan, bilimkurgu ve ortaçağ, her biri koyu ve açık —
+      sizin yerinize halleder. <b>Sekiz ön ayar</b> — varsayılan, bilimkurgu, ortaçağ ve Material 3, her biri koyu ve açık —
       rengi ve biçimi tek satırda değiştirir.
     </p>
     <div class="badges">
@@ -122,7 +122,7 @@
       <figcaption><b>Bilimkurgu</b> — köşeli paneller ve dokunmatik denetimler</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Altı ön ayarın tamamı ve nasıl değiştirilecekleri →</a></p>
+  <p><a href="#presets">Sekiz ön ayarın tamamı ve nasıl değiştirilecekleri →</a></p>
 </section>
 
 <section id="what">
@@ -158,8 +158,8 @@
       <p>Widget'lar yalnızca <code>GoIconSet.CLOSE</code> bilir. Seti değiştirin, tek satır koda dokunmadan bütün çizimler değişsin. <a href="icons.html">Simgeler →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Altı görünüm, tek satır</h3>
-      <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu veya dövme ortaçağ çerçeveleri.</p>
+      <h3 id="six-looks-one-line">Sekiz görünüm, tek satır</h3>
+      <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu, dövme ortaçağ çerçeveleri veya Material 3 uygulama bileşenleri.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Okunaklılık ölçülerek</h3>
@@ -206,6 +206,8 @@
       <tr><td><code>scifi_light</code></td><td>Aynı köşeli biçimler, parlak bir teknik çizim paletinde</td></tr>
       <tr><td><code>medieval_dark</code></td><td>Koyu demir ve deri, antika altın çerçeveler, perçinler, gravür simgeler, Cinzel başlıklar</td></tr>
       <tr><td><code>medieval_light</code></td><td>Parşömen, mürekkep ve bronz; aynı dövme çerçevelerle</td></tr>
+      <tr><td><code>material_light</code></td><td>Uygulama ekranları için Material 3 — hap biçimli düğmeler, 28dp iletişim kutuları, dolgulu kartlar, bir uygulamanın gezinme çubuğu, FAB'ı ve arama çubuğu, Roboto</td></tr>
+      <tr><td><code>material_dark</code></td><td>Aynı Material 3 biçimleri koyu temel şemada</td></tr>
     </tbody>
   </table>
 
@@ -416,7 +418,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    Her renk çifti ve <b>her düğme durumunun etiketi, üstünde durduğu panele karşı</b> altı temanın hepsinde
+    Her renk çifti ve <b>her düğme durumunun etiketi, üstünde durduğu panele karşı</b> sekiz temanın hepsinde
     WCAG'a göre ölçülür. Yarı saydam renkler önce gerçek arka planlarıyla birleştirilir — doğrudan ölçmek
     ekranda görünenden daha iyi bir oran bildirir.
   </p>

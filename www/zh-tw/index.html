@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 的 HUD 與 UI 套件</title>
-<meta name="description" content="給 Godot 4.7+ 使用、可自訂的 HUD 與 UI 套件。浮動面板、底部面板、對話方塊、表單、訊息條、HUD 量條、快捷格與虛擬搖桿，並附六種預設集 — 預設、科幻與中世紀。">
+<meta name="description" content="給 Godot 4.7+ 使用、可自訂的 HUD 與 UI 套件。浮動面板、底部面板、對話方塊、表單、訊息條、HUD 量條、快捷格與虛擬搖桿，並附八種預設集 — 預設、科幻、中世紀與 Material 3。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud 是給 Godot 4.7 以上使用的 HUD 與 UI 套件。浮動視窗、底部面板、對話方塊、表單、
       訊息條、導覽標記、HUD 量條、快捷格與虛擬搖桿全都靠<b>一份佈景主題和一組可抽換的圖示組</b>驅動，
       並且替你處理好安全區域、虛擬鍵盤、RTL 與觸控目標。
-      <b>六種預設集</b> — 預設、科幻與中世紀，每種都有深色與淺色 — 一行程式碼就換掉顏色與形狀。
+      <b>八種預設集</b> — 預設、科幻、中世紀與 Material 3，每種都有深色與淺色 — 一行程式碼就換掉顏色與形狀。
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -121,7 +121,7 @@
       <figcaption><b>科幻</b> — 稜角分明的面板與觸控操作</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">六種預設集與切換方式 →</a></p>
+  <p><a href="#presets">八種預設集與切換方式 →</a></p>
 </section>
 
 <section id="what">
@@ -157,8 +157,8 @@
       <p>控制項只認得 <code>GoIconSet.CLOSE</code>。換掉整組圖示，所有圖案都跟著換，一行程式碼都不必動。 <a href="icons.html">圖示 →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">六種外觀，一行切換</h3>
-      <p><code>GoUi.use_preset()</code> 一次換掉佈景主題、外觀與圖示 — 圓角、切角的科幻，或鍛造的中世紀框。</p>
+      <h3 id="six-looks-one-line">八種外觀，一行切換</h3>
+      <p><code>GoUi.use_preset()</code> 一次換掉佈景主題、外觀與圖示 — 圓角、切角的科幻、鍛造的中世紀框，或 Material 3 的應用元件。</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">清晰度是量出來的</h3>
@@ -203,6 +203,8 @@
       <tr><td><code>scifi_light</code></td><td>同樣稜角分明的形狀，換成明亮的藍圖調色盤</td></tr>
       <tr><td><code>medieval_dark</code></td><td>暗鐵與皮革、古金色框、鉚釘、雕刻圖示、Cinzel 標題</td></tr>
       <tr><td><code>medieval_light</code></td><td>羊皮紙、墨水與青銅，配上同樣的鍛造框</td></tr>
+      <tr><td><code>material_light</code></td><td>給應用畫面的 Material 3 — 膠囊按鈕、28dp 對話方塊、填色卡片、應用的導覽列、FAB 與搜尋列、Roboto</td></tr>
+      <tr><td><code>material_dark</code></td><td>同樣的 Material 3 形狀，換成深色基準配色</td></tr>
     </tbody>
   </table>
 
@@ -409,7 +411,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    六種佈景主題中的每一組配色，以及<b>每個按鈕狀態下的標籤與它所在的面板</b>，都會對照 WCAG
+    八種佈景主題中的每一組配色，以及<b>每個按鈕狀態下的標籤與它所在的面板</b>，都會對照 WCAG
     量過。半透明的顏色會先合成到它真正的背景上 — 直接量它們，得到的比值會比畫面上看到的更好看。
   </p>
   <p>

@@ -663,11 +663,24 @@ def heading_slug(html, used):
     return name
 
 
+# 🔑 An English heading may pin its address with `data-anchor="…"`. A heading whose words change keeps the address
+#    links from outside already use — "Six looks" became "Eight looks" and `#six-looks-one-line` still lands there.
+ANCHOR_PIN = re.compile(r'data-anchor="([^"]+)"')
+
+
 def heading_ids(page):
     """The ids taken from the English headings — every language edition of that page uses them in this order."""
     used = set()
     text = open(os.path.join(WWW, page), encoding="utf-8").read()
-    return [heading_slug(m.group(3), used) for m in HEADING.finditer(text)]
+    ids = []
+    for m in HEADING.finditer(text):
+        pin = ANCHOR_PIN.search(m.group(2) or "")
+        if pin:
+            used.add(pin.group(1))
+            ids.append(pin.group(1))
+        else:
+            ids.append(heading_slug(m.group(3), used))
+    return ids
 
 
 def write_heading_ids():
