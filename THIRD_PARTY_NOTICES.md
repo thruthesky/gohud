@@ -1,7 +1,7 @@
 # Third-party notices
 
-gohud code and original artwork are covered by [`LICENSE`](LICENSE). The bundled Cinzel
-font is separately licensed under the SIL Open Font License 1.1; its notice is included below.
+gohud code and original artwork are covered by [`LICENSE`](LICENSE). The bundled Cinzel and Roboto
+fonts are separately licensed under the SIL Open Font License 1.1; their notices are listed below.
 
 | Asset | Origin | License |
 |---|---|---|
@@ -13,9 +13,12 @@ font is separately licensed under the SIL Open Font License 1.1; its notice is i
 | `icons/game/*.svg` (187 icons), listed in `tools/make_game_icons.py` | **171 icons** use path data from [Tabler Icons](https://tabler.io/icons) 3.46.0 (rows marked `tabler:<name>` in the table of that script; unchanged apart from whitespace and a white stroke). **16 icons** (`credit` `gloves` `ring` `necklace` `space_helmet` `ore` `crystal` `ingot` `goo` `shell` `spore` `steel_beam` `floor_panel` `oxygen_tank` `dome` `power_core`) were drawn for gohud from basic geometry. | Tabler Icons: [MIT](#tabler-icons--mit-license), Copyright (c) 2020-2026 Paweł Kuna · gohud drawings: MIT (this package) |
 | `icons/library/*.svg` (1,000 icons), listed in `tools/icon_library_data.py` | Path data from [Tabler Icons](https://tabler.io/icons) 3.46.0, every row (the Tabler name is the second column of that table); unchanged apart from whitespace, a white stroke, and `currentColor` fills turned white. | Tabler Icons: [MIT](#tabler-icons--mit-license), Copyright (c) 2020-2026 Paweł Kuna |
 | `assets/fonts/cinzel/Cinzel.ttf` | Copyright 2020 The Cinzel Project Authors; unmodified variable font from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/cinzel) | [SIL Open Font License 1.1](assets/fonts/cinzel/OFL.txt) |
+| `assets/fonts/roboto/Roboto.ttf` | Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic); unmodified variable font (`wght`, `wdth`) from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/roboto) | [SIL Open Font License 1.1](assets/fonts/roboto/OFL.txt) |
 
 Cinzel is assigned only to medieval titles and subtitles. Other text retains the host/default font.
-Keep `assets/fonts/cinzel/OFL.txt` with redistributed font files.
+Roboto is assigned only to the Material presets' titles, subtitles, captions and button labels; other text
+retains the host/default font there too.
+Keep `assets/fonts/cinzel/OFL.txt` and `assets/fonts/roboto/OFL.txt` with redistributed font files.
 
 ## Tabler Icons — MIT License
 

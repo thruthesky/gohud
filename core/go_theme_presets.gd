@@ -14,13 +14,16 @@
 class_name GoThemePresets
 extends RefCounted
 
-## The six gohud packs and ships.
+## The eight gohud packs and ships.
 const DEFAULT_DARK := &"default_dark"
 const DEFAULT_LIGHT := &"default_light"
 const SCIFI_DARK := &"scifi_dark"
 const SCIFI_LIGHT := &"scifi_light"
 const MEDIEVAL_DARK := &"medieval_dark"
 const MEDIEVAL_LIGHT := &"medieval_light"
+## Material 3 — the M3 baseline colours, shapes and type for app screens (`tools/theme_material.py`).
+const MATERIAL_LIGHT := &"material_light"
+const MATERIAL_DARK := &"material_dark"
 
 const FOLDER := "res://addons/gohud/themes/presets/"
 
@@ -32,6 +35,8 @@ const BUILTIN := {
 	SCIFI_LIGHT: FOLDER + "scifi_light.tres",
 	MEDIEVAL_DARK: FOLDER + "medieval_dark.tres",
 	MEDIEVAL_LIGHT: FOLDER + "medieval_light.tres",
+	MATERIAL_LIGHT: FOLDER + "material_light.tres",
+	MATERIAL_DARK: FOLDER + "material_dark.tres",
 }
 
 static var _loaded: Dictionary[StringName, GoThemePreset] = {}
@@ -70,7 +75,7 @@ static func names() -> Array[StringName]:
 
 
 ## Find one by name. `null` if it does not exist or has not been imported yet.
-## Even outside the built-in six, `themes/presets/<id>.tres` is read if it is there.
+## Even outside the built-in eight, `themes/presets/<id>.tres` is read if it is there.
 static func find(id: StringName) -> GoThemePreset:
 	if id.is_empty(): return null
 	if _extra.has(id): return _extra[id]
@@ -95,7 +100,7 @@ static func unregister(id: StringName) -> void:
 	_extra.erase(id)
 
 
-## Every name you can pick (the built-in six + whatever was registered). Only the ones that actually read are counted.
+## Every name you can pick (the built-in eight + whatever was registered). Only the ones that actually read are counted.
 static func ids() -> Array[StringName]:
 	var out: Array[StringName] = []
 	for id in names():

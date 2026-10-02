@@ -117,6 +117,11 @@ func _restyle() -> void:
 			face.set(&"corner_radius_bottom_left", radius if round_left else 0.0)
 			face.set(&"corner_radius_top_right", radius if round_right else 0.0)
 			face.set(&"corner_radius_bottom_right", radius if round_right else 0.0)
+			# 🛑 A face drawn **shorter than its control** (a negative expand margin — Material draws a 40dp plate in
+			#    the 48dp touch target) sits as a step beside the field it is joined to (seen 2026-10-02). Joined pieces
+			#    fill the group's height. A ring drawn outside (positive) is left alone.
+			for side in [&"expand_margin_top", &"expand_margin_bottom"]:
+				if side in face and float(face.get(side)) < 0.0: face.set(side, 0.0)
 			node.add_theme_stylebox_override(state, face)
 
 

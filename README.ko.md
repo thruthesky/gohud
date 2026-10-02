@@ -13,7 +13,7 @@
 
 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바, 안내 카드, 코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱을
 **테마 한 장과 교체 가능한 아이콘 세트 한 장**으로 굴린다. 안전영역·가상 키보드·RTL 언어·터치를
-스스로 챙긴다. 기본 제공 프리셋 여섯 — 기본·sci-fi·중세, 각각 어둡고 밝은 판 — 이 코드 한 줄로
+스스로 챙긴다. 기본 제공 프리셋 여덟 — 기본·sci-fi·중세·Material 3, 각각 어둡고 밝은 판 — 이 코드 한 줄로
 색과 **모양**을 함께 바꾼다.
 
 <p>
@@ -28,8 +28,9 @@
 열리지 않으며, Godot 4.7 을 검사하고 공식 지원하는 엔진으로 삼는다 — 목록은 [변경 기록](CHANGELOG.md)에 있다. 그 뒤의 작업은 거기 *Unreleased* 에 모인다 — `package.json` 의
 버전을 올리고 `tools/package.sh` 를 실행하면 배포에 들어간다.
 
-- **프리셋 여섯, 코드 한 줄.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` 가 테마·스킨·아이콘을
-  함께 바꾼다 — 둥근 기본 판, 네온이 번지는 사선 모서리의 sci-fi, 각인 아이콘과 단조 프레임의 중세.
+- **프리셋 여덟, 코드 한 줄.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` 가 테마·스킨·아이콘을
+  함께 바꾼다 — 둥근 기본 판, 네온이 번지는 사선 모서리의 sci-fi, 각인 아이콘과 단조 프레임의 중세,
+  앱 화면을 위한 Material 3 의 알약 버튼과 표면.
 - **아이콘을 갈아 끼워도 코드는 그대로.** 위젯은 아이콘을 이름으로 부른다(`GoIconSet.CLOSE`).
   `GoConfig.icons` 를 내 SVG 세트나 아이콘 폰트로 바꾸면 모든 위젯이 따라온다 — 몇 개만 바꿔도 된다.
 - **테마는 데이터다.** `new_theme.py` 가 내장 테마를 물려받는 JSON 파일 하나를 만든다. 생성기가 테마·컨트롤
@@ -43,7 +44,7 @@
   알림이 입력을 먹지 않게 하는 `mouse_behavior_recursive`, 흐르는 줄의 `last_wrap_alignment`.
 - **순수 GDScript.** 오토로드 불필요, 엔진 모듈·GDExtension 없음.
 - **MIT** — 코드와 그림 전부, 기본 아이콘 84종·중세 각인 아이콘 16종·게임 아이콘 187종·아이콘 라이브러리 1,000종 포함. 중세 제목에 쓰는
-  Cinzel 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
+  Cinzel 글꼴과 Material 제목·라벨에 쓰는 Roboto 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
 
 ## 요구 사항
 
@@ -156,6 +157,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `scifi_light` | 같은 각진 모양에 밝은 설계도 팔레트 | `GoSkinSciFi` |
 | `medieval_dark` | 어두운 철·가죽, 고금색 프레임, 리벳, 각인풍 아이콘, Cinzel 제목 | `GoSkinMedieval` |
 | `medieval_light` | 양피지·잉크·청동 색상의 같은 단조 프레임 | `GoSkinMedieval` |
+| `material_light` | 앱 화면용 Material 3 — 알약 버튼, 28dp 대화상자, 채운 카드, M3 스위치, Roboto 제목 | `GoSkin` |
+| `material_dark` | 같은 Material 3 모양을 어두운 기준 스킴으로 | `GoSkin` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
 🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 프리셋보다 **우선한다** — 프리셋을 고른 뒤 한 칸만
@@ -175,6 +178,33 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
   `sword`·`user` 를 다시 그리고 `scroll`·`seal` 을 더한다. 나머지 이름(`close` 등)은 기본 세트로 떨어진다.
 - 포함된 Cinzel 글꼴은 제목·부제에만 쓰고 본문은 테마 글꼴을 유지한다. Cinzel 은 라틴 문자만 담으므로
   다른 문자의 제목에는 `shape.fonts` 로 글꼴을 따로 준다.
+
+### Material 3
+
+`material_light`·`material_dark` 는 Material 3 기준 스킴(원본 색 `#6750A4`)을 앱 화면에 가져온다 — 게임이 아니라
+소셜·뉴스·쇼핑 앱 화면용이다. 색·모서리·컴포넌트 크기·글자 크기가 M3 토큰 값 그대로이고, 생성기가 그것을 gohud 의
+보통 토큰으로 써 넣으므로 모든 위젯이 다른 프리셋과 같은 방식으로 읽는다.
+
+```gdscript
+GoUi.config.shrink_type_on_mobile = false        # 폰에서도 M3 글자 크기를 유지
+GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)
+var tonal := GoUi.color(&"md_secondary_container")   # M3 색 역할도 전부 토큰이다
+```
+
+- 버튼은 알약 모양이다 — 48dp 터치 영역 안에 40dp 판. 일반 톤은 M3 의 tonal 버튼, `Tone.PRIMARY` 는 채운 버튼,
+  `Tone.BARE` 는 텍스트 버튼, `Tone.COMPACT` 는 32dp 초소형 버튼이다. 선택된 토글은 `secondary` 색과 덜 둥근 모서리가 된다.
+- 대화상자·시트는 surface-container-high 에 모서리 28dp, 카드는 외곽선 없는 채운 카드, 메뉴는 모서리 16dp,
+  툴팁은 inverse-surface, 입력란은 외곽선형(모서리 4dp, 초점이면 2dp primary 외곽선)이다. 판은 불투명하고 아이콘은 24dp 다.
+- 스위치(52×32)·체크박스(18dp)·라디오(20dp)는 M3 토큰대로 그리고, 슬라이더는 Expressive 의 16dp 트랙과 막대 손잡이,
+  진행 막대는 `secondary-container` 트랙을 쓴다.
+- 제목·부제·캡션·버튼 글자는 함께 든 Roboto 를 쓴다(버튼 글자는 굵기 500). 본문은 내 글꼴을 유지하므로 한국어·일본어·
+  중국어 글꼴을 따로 쓰는 프로젝트도 그 글꼴이 바뀌지 않는다.
+
+gohud 자체 검사가 규격보다 앞서는 곳: 밝은 프리셋에서 카드는 surface-dim, 들린 칸은 outline-variant 다(gohud 는 판·카드·
+들린 칸을 1.12:1 이상 떼어 둔다). `secondary` 와 `muted` 는 둘 다 on-surface-variant 이고, 비활성 글자는 읽히는 대비를
+유지하며(M3 는 38% 로 흐린다), 스낵바는 밝은 판을 쓰고, 채운 버튼의 포커스 링은 판 안쪽에 그 버튼의 on 색으로 그린다.
+스프링 모션·모양 변형·리플·다이나믹 컬러, 그리고 새 Expressive 컴포넌트(버튼 그룹·분할 버튼·플로팅 툴바·로딩
+인디케이터)는 테마에 담을 수 없다. Material 은 Google 의 공개 디자인 시스템이고, 이 프리셋은 그 토큰으로 만든 비공식 프리셋이다.
 
 ### 테마 하나 더 — 파일 하나
 
@@ -527,7 +557,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
 | `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
-| `GoThemePresets` | 정적 | 기본 프리셋 여섯, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
+| `GoThemePresets` | 정적 | 기본 프리셋 여덟, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
 | `GoSafeArea` | Control / 정적 | 노치·둥근 모서리·키보드를 뺀 쓸 수 있는 사각형 |
 | `GoScale` | 정적 | 브레이크포인트와 dp 계산 |
@@ -649,7 +679,8 @@ GoUi.config.number_formatter = func(amount: float) -> String:
     return str(roundi(amount))
 ```
 
-> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel 하나이고, 중세 프리셋만 제목·부제에 쓴다.
+> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제)과 Roboto(Material
+> 프리셋의 제목·캡션·버튼 글자) 둘이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
 > 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용
 > 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**. 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
 
@@ -698,7 +729,7 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 | 빈 프로젝트 헤드리스 검사 — 390×844·844×390·768×1024·1280×800 | 크기마다 438/438 |
 | 같은 검사 — `GoRuntime` 오토로드를 켠 상태 | 438/438 |
 | 그 빈 프로젝트의 Web 내보내기 | 성공(`index.pck` 728 KB) |
-| `check_contrast.py` — 여섯 테마 | 미달 0 |
+| `check_contrast.py` — 여덟 테마 | 미달 0 |
 | `check_generated.py` | 생성물 149개가 소스와 일치 |
 | `check_scaffold.sh` — 중세 부모 포함 | 통과 |
 | `check_package.py` | 테스트 13개 통과 |
@@ -806,5 +837,6 @@ ZIP 에는 사이트·검사·도구·`package.json`과 독립 프로젝트 `exa
 MIT — [LICENSE](LICENSE). 코드와 함께 든 그림(기본 아이콘 84종, 중세 아이콘 16종, 생성된 컨트롤 그림)은
 gohud 를 위해 만든 것이라 역시 MIT 다. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
 게임 아이콘 세트 187종과 아이콘 라이브러리 1,000종도 MIT 다 — 게임 171종과 라이브러리 전부는 Tabler Icons(MIT, Copyright (c) 2020-2026 Paweł Kuna)의 경로 데이터를 쓰고, 게임 16종은 gohud 를 위해 그렸다.
-Cinzel 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`).
+Cinzel·Roboto 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`,
+`assets/fonts/roboto/OFL.txt`).
 자세한 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

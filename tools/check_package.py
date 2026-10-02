@@ -268,7 +268,9 @@ class PackageTests(unittest.TestCase):
             for name in ('themes/presets/medieval_dark.tres', 'themes/presets/medieval_light.tres',
                          'themes/skins/go_skin_medieval.gd', 'widgets/go_stylebox_medieval.gd',
                          'icons/gohud_icons_medieval.tres', 'assets/fonts/cinzel/Cinzel.ttf',
-                         'assets/fonts/cinzel/OFL.txt', 'examples/medieval/medieval.tscn'):
+                         'assets/fonts/cinzel/OFL.txt', 'examples/medieval/medieval.tscn',
+                         'themes/presets/material_light.tres', 'themes/presets/material_dark.tres',
+                         'assets/fonts/roboto/Roboto.ttf', 'assets/fonts/roboto/OFL.txt'):
                 self.assertIn('addons/gohud/' + name, package.namelist())
 
 

@@ -72,6 +72,7 @@ func _initialize() -> void:
 	await _section("tokens · themes", _tokens)
 	await _section("presets · skins", _presets)
 	await _section("medieval theme", _medieval)
+	await _section("material theme", _material)
 	await _section("skin contrast", _skin_contrast)
 	await _section("icon sets", _icons)
 	await _section("localization", _i18n)
@@ -474,7 +475,8 @@ func _presets() -> void:
 	var ids := GoThemePresets.ids()
 	for wanted in [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT,
 			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT,
-			GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT]:
+			GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT,
+			GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK]:
 		check(ids.has(wanted), "the preset is there — %s" % wanted)
 	for preset in GoThemePresets.all():
 		check(preset.theme != null and preset.skin != null and not preset.label().is_empty(),
@@ -581,6 +583,55 @@ func _medieval() -> void:
 	GoUi.config.preset = &""
 
 
+# Material 3 — the M3 component shapes `tools/theme_material.py` writes, read through the public widget path.
+func _material() -> void:
+	var wght := TextServerManager.get_primary_interface().name_to_tag("wght")
+	for preset in [GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK]:
+		GoUi.use_preset(preset)
+		var theme := GoUi.theme()
+		check(not (GoUi.skin() is GoSkinSciFi) and not (GoUi.skin() is GoSkinMedieval), "%s: the default skin draws the code-drawn parts" % preset)
+		# 🔑 The M3 button: a pill plate drawn 40dp tall inside the 48dp touch target.
+		var button := GoStyle.button("Save", Callable(), GoStyle.Tone.PRIMARY)
+		root.add_child(button)
+		await frames(2)
+		var plate := button.get_theme_stylebox(&"normal") as StyleBoxFlat
+		check(plate != null and plate.corner_radius_top_left * 2 >= 40, "%s: the filled button is a pill" % preset)
+		check(button.size.y >= 48.0, "%s: the button keeps the 48dp touch target (%.1f)" % [preset, button.size.y])
+		check(plate != null and near(button.size.y + plate.expand_margin_top + plate.expand_margin_bottom, 40.0, 0.5),
+			"%s: its plate is drawn 40dp tall" % preset)
+		button.queue_free()
+		var panel := GoUi.box(GoTheme.BOX_PANEL) as StyleBoxFlat
+		check(panel != null and GoUi.metric(GoTheme.RADIUS_LARGE) == 28 and panel.corner_radius_top_left == GoUi.metric(GoTheme.RADIUS_LARGE),
+			"%s: the dialog plate is 28dp, the same as its token" % preset)
+		check(is_equal_approx(GoUi.surface_alpha(GoTheme.BOX_PANEL), 1.0) and is_equal_approx(GoUi.surface_alpha(GoTheme.BOX_CARD), 1.0),
+			"%s: app surfaces are opaque" % preset)
+		var card := GoUi.box(GoTheme.BOX_CARD) as StyleBoxFlat
+		check(card != null and card.border_width_top == 0 and card.shadow_size == 0, "%s: the filled card has no outline and no shadow" % preset)
+		check(GoUi.metric(GoTheme.ICON_SIZE) == 24, "%s: icons are 24dp" % preset)
+		# Roboto on titles and button labels; body text keeps the host font (the same rule as Cinzel).
+		check(theme.get_font(&"font", &"GoTitleLabel").resource_path.ends_with("Roboto.ttf"), "%s: titles use Roboto" % preset)
+		var label_font := theme.get_font(&"font", &"GoButton") as FontVariation
+		check(label_font != null and int(label_font.variation_opentype.get(wght, 0)) == 500, "%s: button labels are Roboto at weight 500" % preset)
+		check(not theme.has_font(&"font", &"Label") and theme.default_font == null and not theme.has_font(&"font", &"Button"),
+			"%s: body text, checkboxes, switches and dropdowns keep the host font" % preset)
+		check(GoUi.color(&"md_secondary_container") != Color.MAGENTA and GoUi.color(&"md_inverse_surface") != Color.MAGENTA,
+			"%s: the M3 colour roles are tokens for app code" % preset)
+		# 🛑 A checked switch inherits Button's selected ink — white on a light page unless the theme gives it its own.
+		var ink := GoTheme.color_in_chain(theme, &"font_pressed_color", &"CheckButton")
+		check(GoSkin.contrast_ratio(ink, GoUi.color(GoTheme.BACKGROUND)) >= 4.5, "%s: a checked switch's label reads on the page" % preset)
+		# The tooltip text takes the theme's tooltip ink, paired with the inverse plate.
+		var tip := GoStyle.tooltip_node("settings")
+		var tip_plate := theme.get_stylebox(&"panel", &"TooltipPanel") as StyleBoxFlat
+		check(tip_plate != null and GoSkin.contrast_ratio(tip.get_theme_color(&"font_color"), tip_plate.bg_color) >= 4.5,
+			"%s: tooltip text reads on the inverse plate" % preset)
+		tip.free()
+		check(GoStyle.box(GoTheme.BOX_PANEL) is StyleBoxFlat, "%s: legacy flat-box API stays compatible" % preset)
+		await frames(1)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	check(GoUi.theme() == GoUi.DEFAULT_THEME, "material returns to the unchanged default")
+	GoUi.config.preset = &""
+
+
 # ── Contrast of the colours the skin makes ───────────────────────────
 #
 # 🛑 `tools/check_contrast.py` reads theme `.tres` files only. The colours a skin makes **at run time**
@@ -590,7 +641,8 @@ func _skin_contrast() -> void:
 	var tones := [GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER, GoTheme.INFO, GoTheme.SECONDARY]
 	for preset in [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT,
 			GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT,
-			GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT]:
+			GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT,
+			GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK]:
 		GoUi.use_preset(preset)
 		var skin := GoUi.skin()
 		var under := GoSkin.blend(GoUi.color(GoTheme.SURFACE_SOFT), GoUi.color(GoTheme.BACKGROUND))

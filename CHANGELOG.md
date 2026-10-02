@@ -6,6 +6,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A tooltip's text takes the theme's tooltip colour** (`TooltipLabel/colors/font_color`, the colour paired with the
+  `TooltipPanel` plate and the one `tools/check_contrast.py` measures) instead of the body `TEXT` token. The six
+  earlier themes give both the same colour, so nothing changes there; a theme with a dark tooltip on a light page no
+  longer draws dark text on it.
+- **`GoInputGroup` drops a negative expand margin from the pieces it joins.** A button that draws its plate shorter
+  than its control (the Material presets draw a 40dp plate in the 48dp touch target) sat as a step beside the field.
+
 - **A finger swipe on a `GoScroll` scrolls it wherever it starts — not only on a button.** On phones, a swipe that
   started on a card, a panel or a text body did nothing; only holding the thin scrollbar moved the list. Godot's
   `ScrollContainer` starts a drag-to-scroll in its own `gui_input`, so it only sees what its children pass up, and
@@ -20,6 +27,21 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   the sheet.
 
 ### Added
+
+- **Material 3 presets — `material_light` and `material_dark`** (`GoThemePresets.MATERIAL_LIGHT`, `MATERIAL_DARK`): the
+  M3 baseline (source `#6750A4`) for app screens. Pill buttons with a 40dp plate in the 48dp touch target (filled,
+  tonal, text, error and a 32dp extra-small button; a selected toggle turns `secondary`), 28dp dialogs and sheets,
+  borderless filled cards, 16dp menus, outlined text fields, primary tabs with the 3dp indicator, inverse-surface
+  tooltips, M3 switches, checkboxes and radio buttons, the Expressive slider (16dp track, bar handle), progress bars on
+  a `secondary-container` track, a 3dp `secondary` focus ring outside the plate, opaque surfaces, 24dp icons and the M3
+  type sizes. Titles, subtitles, captions and button labels use the bundled Roboto (SIL OFL 1.1; button labels at
+  weight 500 through a `FontVariation`), and body text keeps the host font. Every M3 colour role the gohud tokens do not
+  already carry is a token too (`GoUi.color(&"md_secondary_container")`). The colours pass every contrast gate as the M3
+  tokens give them; where a gate overrules the spec the README lists it. Set `GoUi.config.shrink_type_on_mobile = false`
+  to keep the M3 type sizes on phones.
+- **`material` shape for themes** — `"shape": "material"` in a palette JSON, built by the new `tools/theme_material.py`.
+  It only replaces the boxes and entries the generator already makes, so the other six themes are generated exactly
+  as before.
 
 - **`GoScroll.OWNS_GESTURE`** — set this meta to `true` on a control that owns a competing drag (a pannable map, a
   drawing pad) and the scroll leaves its `mouse_filter` alone. `GoScroll.owns_gesture(control)` gives the policy's

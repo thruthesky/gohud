@@ -31,6 +31,7 @@ A **preset** (`GoThemePreset`: `id`, `title`, `dark`, `theme`, `skin`, `icons`, 
 | `DEFAULT_DARK` · `DEFAULT_LIGHT` | Rounded flat panels, soft blue accent, graded shadows | `GoSkin` · 84 default |
 | `SCIFI_DARK` · `SCIFI_LIGHT` | `GoStyleBoxCut` chamfered panels, neon edge + glow, hex joystick, bracket focus | `GoSkinSciFi` · default |
 | `MEDIEVAL_DARK` · `MEDIEVAL_LIGHT` | `GoStyleBoxMedieval` iron/leather or parchment frames, rivets, Cinzel headings | `GoSkinMedieval` · 16 engraved over default |
+| `MATERIAL_LIGHT` · `MATERIAL_DARK` | Material 3 baseline for app screens: pill buttons (40dp plate in the 48dp target), 28dp dialogs, filled cards, 16dp menus, outlined fields, M3 switch/checkbox/radio, Expressive slider, opaque surfaces, 24dp icons, Roboto titles/captions/button labels (body keeps the host font), every M3 colour role as an `md_*` token | `GoSkin` · default |
 
 ```gdscript
 GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # String/StringName id or a GoThemePreset
@@ -205,9 +206,9 @@ GoUi.use_preset(&"kingdom")
 | JSON block | Content |
 |---|---|
 | `id` · `title` · `dark` | Lowercase id (`[a-z][a-z0-9_]*`), picker label, grouping |
-| `from` | Parent: `dark`, `light`, `scifi_dark`, `scifi_light`, `medieval_dark`, `medieval_light` or another JSON id. Omitted keys inherit; cycles fail |
+| `from` | Parent: `dark`, `light`, `scifi_dark`, `scifi_light`, `medieval_dark`, `medieval_light`, `material_light`, `material_dark` or another JSON id. Omitted keys inherit; cycles fail |
 | `palette` | `background` `surface` `surface_soft` `surface_high` `border` `text` `secondary` `muted` `accent` `on_accent` `success` `warning` `danger` `info` `scrim` `shadow` `track` + `*_vivid` fills. Format `"#RRGGBB"` or `"#RRGGBB@0.35"`. Text, borders and accent are pushed to readable contrast |
-| `shape.kind` | `flat` (rounded) · `cut` (chamfer) · `medieval` (forged) |
+| `shape.kind` | `flat` (rounded) · `cut` (chamfer) · `medieval` (forged) · `material` (Material 3 — `tools/theme_material.py`; not the medieval `shape.material`, which is that frame's material) |
 | `shape` sizes | `radius` `radius_small` `radius_large` `gap` `gap_small` `gap_large` `padding` `button_height` `button_padding[4]` (+ `compact_padding_x/y`) |
 | `shape` for `cut` | `cut_ratio` `cut_max` `corners` (`diagonal`/`all`) `glow` `edge` |
 | `shape` for `medieval` | `material` (0 iron · 1 leather · 2 parchment) `grain_alpha` `ornament_scale` `bevel_strength` `fonts` {`title`,`subtitle`,`caption`,`body`,`button`: addon-local `res://` font} |

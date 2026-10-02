@@ -31,7 +31,8 @@ from pathlib import Path
 
 REPO_URL = "https://github.com/thruthesky/gohud.git"
 MIN_ENGINE = (4, 7)
-PRESETS = ["default_dark", "default_light", "scifi_dark", "scifi_light", "medieval_dark", "medieval_light"]
+PRESETS = ["default_dark", "default_light", "scifi_dark", "scifi_light", "medieval_dark", "medieval_light",
+           "material_light", "material_dark"]
 SCENES = {
     "gallery": "res://addons/gohud/examples/gallery/gallery.tscn",
     "medieval": "res://addons/gohud/examples/medieval/medieval.tscn",

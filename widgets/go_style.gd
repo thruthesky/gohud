@@ -1860,7 +1860,14 @@ static func tooltip_node(text: String, max_width := 260.0) -> Control:
 	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED   # what arrives is already translated
 	# 🛑 Leave `go_no_wrap` on it — a form forces wrapping onto descendant labels, and a tooltip is not one of them.
 	label.set_meta(&"go_no_wrap", true)
-	typography(label, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.TEXT))
+	# 🔑 The ink is the theme's **tooltip text colour** — it is paired with the `TooltipPanel` plate, and that pair is
+	#    what `tools/check_contrast.py` measures. Material lays a dark plate in a light theme; the body `TEXT` on it
+	#    was dark on dark (seen 2026-10-02). A theme without the entry keeps `TEXT`.
+	var ink := GoUi.color(GoTheme.TEXT)
+	var look := GoUi.theme()
+	if look != null and GoTheme.has_color_in_chain(look, &"font_color", &"TooltipLabel"):
+		ink = GoTheme.color_in_chain(look, &"font_color", &"TooltipLabel")
+	typography(label, GoTheme.ROLE_CAPTION, ink)
 	# A short phrase stays on one line. Only a long one folds, and **we give the width it folds at.**
 	var wide := label.get_theme_font(&"font").get_string_size(
 		text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, label.get_theme_font_size(&"font_size")).x

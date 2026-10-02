@@ -3,14 +3,17 @@ extends OptionButton
 
 signal theme_selected(preset: StringName)
 
-const PRESETS := [GoThemePresets.DEFAULT_DARK, GoThemePresets.SCIFI_DARK, GoThemePresets.MEDIEVAL_DARK]
-const LIGHT_PRESETS := [GoThemePresets.DEFAULT_LIGHT, GoThemePresets.SCIFI_LIGHT, GoThemePresets.MEDIEVAL_LIGHT]
+# 🛑 The two arrays and the titles below pair up **by index** — add a family to all three at once.
+const PRESETS := [GoThemePresets.DEFAULT_DARK, GoThemePresets.SCIFI_DARK, GoThemePresets.MEDIEVAL_DARK,
+	GoThemePresets.MATERIAL_DARK]
+const LIGHT_PRESETS := [GoThemePresets.DEFAULT_LIGHT, GoThemePresets.SCIFI_LIGHT, GoThemePresets.MEDIEVAL_LIGHT,
+	GoThemePresets.MATERIAL_LIGHT]
 static var active_preset: StringName = GoThemePresets.DEFAULT_DARK
 
 
 func _init() -> void:
 	name = "ThemePicker"
-	for title in ["Default theme", "Sci-fi theme", "Medieval theme"]: add_item(title)
+	for title in ["Default theme", "Sci-fi theme", "Medieval theme", "Material theme"]: add_item(title)
 	select(maxi(0, PRESETS.find(active_preset)))
 	custom_minimum_size = Vector2(190, 48)
 	size_flags_horizontal = Control.SIZE_SHRINK_BEGIN

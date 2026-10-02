@@ -14,6 +14,7 @@ const LOOKS := [
 	GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT,
 	GoThemePresets.SCIFI_DARK, GoThemePresets.SCIFI_LIGHT,
 	GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT,
+	GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK,
 ]
 ## Width of the phone strip (dp) — a 390 phone minus the page padding.
 const PHONE := 350.0

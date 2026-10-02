@@ -17,6 +17,8 @@ keep working untouched.
 """
 import os
 
+import theme_material  # Material 3 Expressive — the `material` shape (tools/theme_material.py)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
 RES = "res://addons/gohud"
@@ -247,6 +249,8 @@ CUT_ALL = CUT_TOP_LEFT | CUT_TOP_RIGHT | CUT_BOTTOM_RIGHT | CUT_BOTTOM_LEFT
 # ── Per-theme control artwork ───────────────────────────────────────────
 
 def control_svgs(pal, shape=SHAPE_DEFAULT):
+    if shape.get("controls") == "material":
+        return theme_material.controls(pal)
     acc, on, mut, sec, hi = (svg_hex(pal[k]) for k in ("accent", "on_accent", "muted", "secondary", "surface_high"))
 
     def wrap(w, h, body, disabled=False):
@@ -1075,6 +1079,8 @@ def build(pal, shape, variant, out_path):
     for role in fonts:
         ex(font_targets[role] + "/fonts/font", "font_" + role)
         if role == "body": ex("default_font", "font_" + role)
+    if shape["kind"] == "material":
+        theme_material.restyle(pal, consts, boxes, T, flat, C, contrast)
     steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + len(fonts)
     lines = ['[gd_resource type="Theme" load_steps=%d format=3]' % steps, ""]
     if cutting:
@@ -1123,7 +1129,8 @@ BUILTIN_THEMES = {
 SHAPES = {"flat": SHAPE_DEFAULT, "cut": SHAPE_CUT,
           "medieval": {"kind": "medieval", "controls": "rounded", "radius": 4, "radius_small": 3,
                        "radius_large": 6, "material": 1, "ornament_scale": 1.0,
-                       "grain_alpha": 0.035, "bevel_strength": 0.18}}
+                       "grain_alpha": 0.035, "bevel_strength": 0.18},
+          "material": theme_material.SHAPE}
 PALETTES_DIR = os.path.join(ADDON, "themes", "palettes")
 # Keys a palette must carry — without them generation dies halfway with a KeyError. Say so up front.
 PALETTE_KEYS = ("background", "surface", "surface_soft", "surface_high", "border", "text", "secondary",

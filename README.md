@@ -12,8 +12,8 @@
 **A customizable HUD & UI kit for Godot 4.7+.** Floating surfaces, bottom sheets, dialogs, forms,
 snackbars, prompt cards, coach marks, HUD bars, quick slots and a virtual joystick — driven by one
 theme and one swappable icon set, and aware of safe areas, virtual keyboards, RTL languages and touch.
-Six built-in presets change colours **and** shapes in one line: default, sci-fi and medieval, each in
-dark and light.
+Eight built-in presets change colours **and** shapes in one line: default, sci-fi, medieval and Material 3,
+each in dark and light.
 
 <p>
   <img src="https://thruthesky.github.io/gohud/img/preset-default-dark.png" alt="The gohud gallery with the default_dark preset" width="250">
@@ -29,9 +29,9 @@ update, and Godot 4.7 is the engine gohud is tested on and officially supports �
 collected under *Unreleased* there: raise the version in `package.json` and the next `tools/package.sh`
 run releases it.
 
-- **Six presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and
-  icons together — rounded default panels, chamfered sci-fi panels with neon glow, or forged medieval
-  frames with engraved icons.
+- **Eight presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and
+  icons together — rounded default panels, chamfered sci-fi panels with neon glow, forged medieval
+  frames with engraved icons, or Material 3 pills and surfaces for app screens.
 - **1,287 icons, called by name.** Widgets ask for icons by name (`GoIconSet.CLOSE`); 84 are always there, and
   `GoUi.add_icons(GoIconLibrary.icon_set())` adds the 187-icon game set and a 1,000-icon library under any preset.
   Search them in code (`GoUi.icons().search("rain")`) or on the website. Point `GoConfig.icons` at your own SVG set,
@@ -49,7 +49,7 @@ run releases it.
 - **Pure GDScript.** No autoload required, no engine module, no GDExtension.
 - **MIT** code and artwork, including 84 default icons, 16 engraved medieval icons, a **187-icon game set**
   for inventories, shops and items and a **1,000-icon library** (1,171 of those from Tabler Icons, MIT). The medieval headings use the bundled
-  Cinzel font under the SIL Open Font License 1.1.
+  Cinzel font and the Material headings and labels the bundled Roboto, both under the SIL Open Font License 1.1.
 
 ## Requirements
 
@@ -165,6 +165,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `scifi_light` | The same angular shapes in a bright blueprint palette | `GoSkinSciFi` |
 | `medieval_dark` | Dark iron and leather, antique-gold frames, rivets, engraved icons, Cinzel headings | `GoSkinMedieval` |
 | `medieval_light` | Parchment, ink and bronze with the same forged frames | `GoSkinMedieval` |
+| `material_light` | Material 3 for app screens: pill buttons, 28dp dialogs, filled cards, M3 switches, Roboto headings | `GoSkin` |
+| `material_dark` | The same Material 3 shapes on the dark baseline | `GoSkin` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
 Explicit `theme`, `skin` and `icons` fields still win over the preset, so you can take a preset and
@@ -185,6 +187,37 @@ between iron and parchment and open item details in a `GoDialogs` alert.
   as `close`, falls back to the default set.
 - Only titles and subtitles use the bundled Cinzel font; body text keeps your theme's font. Cinzel
   covers Latin script, so localized headings in other scripts need a font of your own (`shape.fonts`).
+
+### Material 3
+
+`material_light` and `material_dark` bring the Material 3 baseline (source colour `#6750A4`) to app screens —
+social, news and shopping apps rather than games. Colours, corner sizes, component sizes and type sizes are the
+values of the M3 token set; the generator writes them into gohud's ordinary tokens, so every widget reads them the
+way it reads the other presets.
+
+```gdscript
+GoUi.config.shrink_type_on_mobile = false        # keep M3's type sizes on phones
+GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)
+var tonal := GoUi.color(&"md_secondary_container")   # every M3 colour role is a token as well
+```
+
+- Buttons are pills: a 40dp plate inside the 48dp touch target. The normal tone is M3's filled tonal button,
+  `Tone.PRIMARY` the filled button, `Tone.BARE` the text button and `Tone.COMPACT` the 32dp extra-small button.
+  A selected toggle turns `secondary` with a squarer corner.
+- Dialogs and sheets are surface-container-high with 28dp corners, cards are filled with no outline, menus have
+  16dp corners, tooltips are inverse-surface, and text fields are outlined (4dp corners, a 2dp primary outline when
+  focused). Surfaces are opaque and icons are 24dp.
+- Switches (52×32), checkboxes (18dp) and radio buttons (20dp) are drawn to the M3 tokens; the slider has the
+  Expressive 16dp track and bar handle, and progress bars run on a `secondary-container` track.
+- Titles, subtitles, captions and button labels use the bundled Roboto (button labels at weight 500). Body text
+  keeps your font, so a Korean, Japanese or Chinese font of your own is not replaced.
+
+Where gohud's own checks win over the spec: on the light preset a card is surface-dim and the raised cell is
+outline-variant (gohud keeps panel, card and raised cell 1.12:1 apart), `secondary` and `muted` are both
+on-surface-variant, a disabled label stays readable (M3 fades it to 38%), snackbars keep a light plate, and a filled
+button's focus ring sits inside the plate in its on-colour. A theme cannot hold spring motion, shape morphing,
+ripples, dynamic colour or the new Expressive components (button groups, split buttons, floating toolbars,
+loading indicators). Material is Google's public design system; these are unofficial presets built from its tokens.
 
 ### Your own theme in one file
 
@@ -556,7 +589,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |
 | `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips, cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
-| `GoThemePresets` | static | The six built-in presets, presets found in `themes/presets/`, and `register()` for your own |
+| `GoThemePresets` | static | The eight built-in presets, presets found in `themes/presets/`, and `register()` for your own |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` | Resource | The shapes code draws, with numeric dials |
 | `GoSafeArea` | Control / static | Usable rectangle excluding notches, rounded corners and the keyboard |
 | `GoScale` | static | Breakpoint and dp math |
@@ -684,8 +717,9 @@ GoUi.config.number_formatter = func(amount: float) -> String:
     return str(roundi(amount))
 ```
 
-> **Bring a font for your languages.** The only bundled font is Cinzel, and only the medieval presets
-> assign it — to titles and subtitles. Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
+> **Bring a font for your languages.** The bundled fonts are Cinzel, which only the medieval presets assign
+> (to titles and subtitles), and Roboto, which only the Material presets assign (to titles, captions and
+> button labels). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
 > your own theme font; a Latin-only font draws them as empty boxes and raises no error. Traditional
 > Chinese needs its own coverage too: a Simplified subset does not contain those forms.
 
@@ -735,7 +769,7 @@ the add-on files of this revision copied into empty projects:
 | Headless suite in an empty project at 390×844, 844×390, 768×1024 and 1280×800 | 438/438 at each size |
 | The same suite with the `GoRuntime` autoload enabled | 438/438 |
 | Web export of that empty project | pass (`index.pck` 728 KB) |
-| `check_contrast.py` across the six themes | 0 failures |
+| `check_contrast.py` across the eight themes | 0 failures |
 | `check_generated.py` | 149 generated files match their sources |
 | `check_scaffold.sh`, including a medieval parent | pass |
 | `check_package.py` | 13 tests pass |
@@ -845,6 +879,7 @@ Packaging checks in `check_all.sh` use temporary copies and do not touch your wo
 MIT — see [LICENSE](LICENSE). The code and the bundled artwork (84 default icons, 16 medieval icons
 and the generated control artwork) were made for gohud and are MIT as well. The 187-icon game set and the
 1,000-icon library are MIT too: 171 game icons and every library icon use path data from Tabler Icons (MIT,
-Copyright (c) 2020-2026 Paweł Kuna), 16 game icons were drawn for gohud. The Cinzel font is
-distributed unmodified under the SIL Open Font License 1.1 (`assets/fonts/cinzel/OFL.txt`); see
+Copyright (c) 2020-2026 Paweł Kuna), 16 game icons were drawn for gohud. The Cinzel and Roboto fonts are
+distributed unmodified under the SIL Open Font License 1.1 (`assets/fonts/cinzel/OFL.txt`,
+`assets/fonts/roboto/OFL.txt`); see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

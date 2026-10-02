@@ -30,7 +30,8 @@ signal changed_settings
 
 @export_group("Appearance")
 
-## 🎁 **A look bundle** (`default_dark`·`default_light`·`scifi_dark`·`scifi_light`). Empty means the default bundle.
+## 🎁 **A look bundle** (`default_dark`·`default_light`·`scifi_dark`·`scifi_light`·`medieval_dark`·`medieval_light`·
+## `material_light`·`material_dark`). Empty means the default bundle.
 ##
 ## Of `theme`·`skin`·`icons` below, **only the empty fields** are filled from this bundle — so you pick a
 ## preset and then override just `theme` with your own. From code, `GoUi.use_preset()` is easier.

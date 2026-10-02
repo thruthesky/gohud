@@ -777,9 +777,10 @@ func _cell_contract() -> void:
 	host.queue_free()
 	await frames(1)
 
-	# The real widgets, in all six looks.
+	# The real widgets, in all eight looks.
 	var looks: Array[StringName] = [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT, GoThemePresets.SCIFI_DARK,
-		GoThemePresets.SCIFI_LIGHT, GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT]
+		GoThemePresets.SCIFI_LIGHT, GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT,
+		GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK]
 	for look in looks:
 		GoUi.use_preset(look)
 		for in_form in [false, true]:
