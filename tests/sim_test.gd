@@ -254,7 +254,9 @@ func theme_picker(scope: Node) -> OptionButton:
 
 func choose_theme(scope: Node, index: int) -> void:
 	var picker := theme_picker(scope)
-	check(picker != null and picker.item_count == 3, "Theme dropdown lists the three families")
+	var families: Array[StringName] = load("res://theme_picker.gd").darks()
+	check(picker != null and picker.item_count == families.size() and families.size() >= 5,
+		"Theme dropdown lists every family in themes/presets (%d)" % families.size())
 	if picker == null: return
 	check(root.get_visible_rect().encloses(picker.get_global_rect()), "Theme dropdown fits the viewport")
 	await click(picker)

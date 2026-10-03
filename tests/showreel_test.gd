@@ -64,7 +64,7 @@ func _cycle() -> void:
 	var seen: Array[StringName] = []
 	for item in steps:
 		if not seen.has(item.preset): seen.append(item.preset)
-	check(seen.size() == 3, "All three theme families appear")
+	check(seen.size() == reel._presets.size() and seen.size() >= 5, "Every theme family appears (%d)" % seen.size())
 	var alternates := true
 	for index in range(1, steps.size()):
 		if steps[index].preset == steps[index - 1].preset: alternates = false

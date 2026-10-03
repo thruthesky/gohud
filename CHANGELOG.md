@@ -6,6 +6,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **The demo app shows every theme.** Its theme picker listed families from a hand-kept list, so the showreel never
+  rotated into Material and Kids appeared nowhere. `examples/demo/theme_picker.gd` now reads the families from
+  `themes/presets/` (each `<family>_dark`, paired with `<family>_light` for the Themes & icons chapter), and the
+  showreel rotates through the same list — Default, Sci-fi, Medieval, Material and Kids today, and any theme
+  `tools/new_theme.py` adds later with no change to the demo.
+
 - **The safe area under the project's own stretch.** `GoSafeArea.usable_rect()` divided the screen-pixel safe area by
   `content_scale_factor` alone, which is right only while the stretch ratio is 1 (`GoScale` on). Under the plain
   `canvas_items` stretch the setup guide recommends, a Galaxy A12 (720×1600 on a 390×844 base) took its 45 px camera

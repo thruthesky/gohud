@@ -2,7 +2,7 @@
 ##
 ## The guided tour (`sim.gd`) takes minutes and shows one look at a time. This screen is the trailer:
 ## in **20 seconds** it walks the same chapters at **one widget every half second**, and every step wears
-## a different theme — default, sci-fi, medieval — so the movie says "the same widgets, three looks"
+## a different theme — default, sci-fi, medieval, material, kids — so the movie says "the same widgets, every look"
 ## without a single word. The bot drives each widget for the half second it is up (fast), so nothing
 ## on screen is a still: bars fill, slots cool down, menus open, the cursor really presses.
 ##
@@ -19,8 +19,8 @@
 ## Arguments (all optional):
 ##   `--showreel-seconds=20`  how long the whole reel runs
 ##   `--showreel-step=0.5`    how long each widget stays up
-##   `--showreel-order=cycle` `cycle` walks the chapters in order and rotates the three themes — with 23
-##                            chapters and 3 themes no pair repeats before 69 steps; `random` shuffles
+##   `--showreel-order=cycle` `cycle` walks the chapters in order and rotates the themes — with 23
+##                            chapters and 5 themes no pair repeats before 115 steps; `random` shuffles
 ##                            the chapters and picks a theme that differs from the one before
 ##   `--showreel-seed=0`      fixes the random order (0 = a fresh one each run)
 ##   `--exit`                 quit once the reel is over (recording); otherwise a Replay card is shown
@@ -28,12 +28,6 @@ extends Control
 
 const ThemePicker := preload("theme_picker.gd")
 
-const PRESETS: Array[StringName] = [GoThemePresets.DEFAULT_DARK, GoThemePresets.SCIFI_DARK, GoThemePresets.MEDIEVAL_DARK]
-const PRESET_NAMES := {
-	GoThemePresets.DEFAULT_DARK: "Default theme",
-	GoThemePresets.SCIFI_DARK: "Sci-fi theme",
-	GoThemePresets.MEDIEVAL_DARK: "Medieval theme",
-}
 ## The logical canvas. A 1920×1080 movie is this at 1.5×, so the stage is 840 px wide on film.
 const CANVAS := Vector2i(1280, 720)
 const HUD_LAYER := 70   ## Above a chapter's full-screen layer (60), below dialogs (100) and the cursor (200)
@@ -60,6 +54,8 @@ signal step_started(number: int, key: StringName, preset: StringName)
 signal finished
 
 var _acts := SimActs.new()
+## Every family the theme picker offers, dark preset first — the reel rotates through all of them.
+var _presets: Array[StringName] = ThemePicker.darks()
 var _entries: Array[Dictionary] = []
 var _plan: Array[Dictionary] = []
 var _bot: SimBot
@@ -145,12 +141,12 @@ func _make_plan() -> Array[Dictionary]:
 				if plan.size() > 0 and order.size() > 1 and order[0] == int(plan[-1].index):
 					order.reverse()
 			index = order.pop_front()
-			preset = PRESETS[rng.randi_range(0, PRESETS.size() - 1)]
-			while preset == last:
-				preset = PRESETS[rng.randi_range(0, PRESETS.size() - 1)]
+			preset = _presets[rng.randi_range(0, _presets.size() - 1)]
+			while preset == last and _presets.size() > 1:
+				preset = _presets[rng.randi_range(0, _presets.size() - 1)]
 		else:
 			index = number % _entries.size()
-			preset = PRESETS[number % PRESETS.size()]
+			preset = _presets[number % _presets.size()]
 		plan.append({"index": index, "preset": preset})
 		last = preset
 	return plan
@@ -349,7 +345,7 @@ func _top_bar(number: int, entry: Dictionary, preset: StringName) -> Control:
 	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	row.add_child(title)
 
-	var look := GoStyle.chip(PRESET_NAMES[preset], _accent, false, GoIconSet.SUN)
+	var look := GoStyle.chip(ThemePicker.title(preset), _accent, false, GoIconSet.SUN)
 	look.name = "Look"
 	look.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	row.add_child(look)
@@ -427,7 +423,7 @@ func _show_end_card() -> void:
 	card.add_child(column)
 	column.add_child(GoUi.icons().node(GoIconSet.SUCCESS, 44, _green))
 	column.add_child(GoStyle.label("Showreel complete", GoTheme.ROLE_TITLE))
-	column.add_child(GoStyle.label("%d widgets in %d looks, %.0f seconds." % [_plan.size(), PRESETS.size(), seconds],
+	column.add_child(GoStyle.label("%d widgets in %d looks, %.0f seconds." % [_plan.size(), _presets.size(), seconds],
 		GoTheme.ROLE_BODY, GoUi.color(GoTheme.SECONDARY)))
 	column.add_child(GoStyle.divider())
 	var again := GoStyle.button("Replay", _play, GoStyle.Tone.PRIMARY)

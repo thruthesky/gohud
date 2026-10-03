@@ -74,9 +74,13 @@ The tour waits on its Start screen and offers two ways in:
   **Widgets** menu in the top bar.
 
 The **Theme** dropdown on the home screen and at the top of both `demo.tscn` and `sim.tscn` selects **Default theme**,
-**Sci-fi theme**, or **Medieval theme** (the dark preset of each family). It is also available on
-the simulation's Start and completion screens. Colours, frames and icons change together;
+**Sci-fi theme**, **Medieval theme**, **Material theme** or **Kids theme** (the dark preset of each family). It is also
+available on the simulation's Start and completion screens. Colours, frames and icons change together;
 the Themes & icons example compares the selected family's dark and light variants.
+
+The list is not kept by hand: `theme_picker.gd` lists every `<family>_dark` preset in `themes/presets/`
+and pairs it with `<family>_light`, so a theme made with `tools/new_theme.py` appears here — and in the
+showreel — with no change to the demo.
 
 Changing themes rebuilds the displayed controls, resetting their sample values. Explore stays
 on the same widget. A playing tour restarts its current chapter with the new look, keeping speed
@@ -161,8 +165,8 @@ bash examples/demo/run.sh -- --explore=surfaces                          # open 
 
 The tour takes minutes and shows one look at a time. The **showreel** is the trailer: in
 **20 seconds** it walks the same chapters at **one widget every half second**, and every step
-wears a different theme — default, sci-fi, medieval — so a short clip says "the same widgets,
-three looks" without a word. The bot drives each widget for the half second it is up, so
+wears a different theme — default, sci-fi, medieval, material, kids — so a short clip says "the same
+widgets, every look" without a word. The bot drives each widget for the half second it is up, so
 bars fill, slots cool down, menus open and the cursor really presses; the caption under the
 stage names the widget and shows the last callback it fired. It is the home screen's fifth
 card (`5`), and `--open=showreel` opens it directly.
@@ -177,7 +181,7 @@ bash examples/demo/run.sh --record-showreel /tmp/reel.avi --showreel-seconds=28.
 |---|---|---|
 | `--showreel-seconds=` | `20` | How long the whole reel runs |
 | `--showreel-step=` | `0.5` | How long each widget stays up — the bot's speed follows it (6× at 0.5 s) |
-| `--showreel-order=` | `cycle` | `cycle` walks the 23 chapters in order and rotates the three themes each step — no chapter–theme pair repeats before 69 steps, so 34.5 s shows every widget in every look (keep the chapter count off multiples of three, or each chapter wears one look only); `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
+| `--showreel-order=` | `cycle` | `cycle` walks the 23 chapters in order and rotates the five themes each step — no chapter–theme pair repeats before 115 steps, so 57.5 s shows every widget in every look (keep the chapter count off multiples of the theme count, or each chapter wears one look only); `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
 | `--showreel-seed=` | `0` | Fixes the random order; `0` draws a fresh one each run |
 | `--exit` | off | Quit when the reel ends — `--record-showreel` passes it; without it a Replay card is shown |
 
@@ -253,7 +257,7 @@ screen and returns the nodes the bot needs, and `play_<key>(stage, bot, refs)` d
 real input. Explore mode calls only `build_`, so a chapter must be complete without the bot:
 anything only the bot used to trigger (data arriving, a tour starting) is a button the person can
 press too. Add the chapter **at the end** of `SimActs.list()` with a title, note, icon and explore hint —
-`tests/sim_test.gd` opens chapters by number, and the showreel pairs chapter *N* with theme *N* % 3.
+`tests/sim_test.gd` opens chapters by number, and the showreel pairs chapter *N* with theme *N* % 5.
 A chapter whose point is visual rather than behavioural should assert what the screen actually
 received — chapter 16 reads the panel's own fill alpha, because a slider handle can move while
 the panel stays exactly as it was.
