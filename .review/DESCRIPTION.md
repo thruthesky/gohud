@@ -31,7 +31,7 @@ After a restart, two commands open gohud in its own Godot window — no editor, 
 | Command | What it does |
 |---|---|
 | **`/gohud:preview`** | Opens the **widget gallery** — every widget, a picker for all six presets and the full icon set. Inside your Godot project it uses your `addons/gohud`; without one it uses the copy bundled with the plugin. |
-| **`/gohud:preview demo`** | Opens the **23-chapter guided tour** — *Start demo* plays it with real input, *Explore widgets* lets you try one widget by hand. |
+| **`/gohud:preview demo`** | Opens the **31-chapter guided tour** — *Start demo* plays it with real input, *Explore widgets* lets you try one widget by hand. |
 
 Many other commands work too:
 
@@ -109,7 +109,7 @@ Tested on **Godot 4.7**; **Godot 4.7 and newer** are officially supported. gohud
 
 Pure GDScript (no GDExtension, no engine module) · 48 classes · six presets · 287 icons
 (84 default, 16 medieval, a 187-icon game set for inventories and shops) · Cinzel heading font ·
-strings in 21 languages · gallery, medieval and 23-chapter demo scenes ·
+strings in 21 languages · gallery, medieval and 31-chapter demo scenes ·
 902 headless tests you can run yourself with `addons/gohud/tools/run_tests.sh`.
 
 ### 📜 License

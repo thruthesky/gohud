@@ -46,7 +46,7 @@ const TARGETS: Array[Dictionary] = [
 	{
 		"key": "tour", "scene": "res://sim.tscn",
 		"icon": GoIconSet.PLAY, "tone": GoTheme.INFO, "title": "Guided tour",
-		"note": "Twenty-three scenes a bot plays for you — or pick one widget and try it with your own hands.",
+		"note": "A scene for every widget, played by a bot — at Fast each in another theme — or pick one and try it yourself.",
 		"file": "examples/demo/sim.gd",
 	},
 	{

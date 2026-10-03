@@ -457,9 +457,26 @@ func _log_panel() -> Control:
 	column.add_child(head)
 	column.add_child(GoStyle.label("Every line is a real widget callback.",
 		GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED)))
+	# 🛑 The log sits in a window of its own that clips: nine lines that wrap under a theme with larger type (Kids)
+	#    otherwise stretch the panel, and the row with it, and push the caption bar off the bottom of the screen.
+	#    Lines that fit start at the top; once they do not, the newest stay in view and the oldest are cut off.
+	var window := Control.new()
+	window.name = "LogWindow"
+	window.clip_contents = true
+	window.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	window.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(window)
 	_log = GoStyle.column(3)
-	_log.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(_log)
+	window.add_child(_log)
+	# 🔑 Sized and placed by hand whenever either changes: a Control outside a container never shrinks back to its
+	#    minimum, and lines that wrapped at zero width left it 871 px tall (measured).
+	var hang := func() -> void:
+		if not is_instance_valid(_log) or not is_instance_valid(window): return
+		var tall := _log.get_combined_minimum_size().y
+		_log.size = Vector2(window.size.x, tall)
+		_log.position = Vector2(0.0, minf(0.0, window.size.y - tall))
+	window.resized.connect(hang, CONNECT_DEFERRED)
+	_log.minimum_size_changed.connect(hang, CONNECT_DEFERRED)
 	_log_empty = GoStyle.empty_state(GoIconSet.CHAT, "Nothing yet. Press, drag or type on the stage.", false)
 	_log_empty.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(_log_empty)
@@ -540,7 +557,7 @@ func _cover_screen() -> VBoxContainer:
 	var toolbar := GoStyle.padding(18)
 	toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	_cover.add_child(toolbar)
-	toolbar.add_child(_theme_bar())
+	toolbar.add_child(_theme_bar(false))
 	var card := GoStyle.card(_accent)
 	card.custom_minimum_size.x = minf(580.0, size.x - 36.0)
 	_cover_card = card
@@ -1071,7 +1088,9 @@ func _refresh_palette() -> void:
 	_subtitle_ink = SUBTITLE_INK if GoUi.config.preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.SECONDARY)
 
 
-func _theme_bar() -> HBoxContainer:
+## The theme picker row. [param naming] adds the chip that names what a Fast tour is wearing — on the screen itself,
+## not on the Start and finish cards, which come and go (a chip there would leave `_wearing` pointing at a freed node).
+func _theme_bar(naming := true) -> HBoxContainer:
 	var row := GoStyle.row(12)
 	var label := GoStyle.label("Theme", GoTheme.ROLE_CAPTION)
 	GoStyle.natural_width(label)
@@ -1088,6 +1107,7 @@ func _theme_bar() -> HBoxContainer:
 		_theme_popup_open = false
 		if _theme_pending.is_empty(): _bot.paused = _theme_paused_before)
 	row.add_child(picker)
+	if not naming: return row
 	# 🎨 What a Fast tour is wearing right now — the picker keeps saying what the person chose.
 	_wearing = GoStyle.chip(ThemePicker.title(GoUi.config.preset), _accent, false, GoIconSet.SUN)
 	_wearing.name = "Wearing"

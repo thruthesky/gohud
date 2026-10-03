@@ -917,7 +917,7 @@ activate on handheld platforms, so they are exercised by the suite but not on re
 | Gallery | `res://addons/gohud/examples/gallery/gallery.tscn`, F6 | Every widget, a picker for every installed preset, and the full icon set. Needs no server, autoload or project setup. |
 | Medieval | `res://addons/gohud/examples/medieval/medieval.tscn`, F6 | A character sheet, satchel and quest journal in `medieval_dark` and `medieval_light`. |
 | Icon buttons | `res://addons/gohud/examples/icon_buttons/icon_buttons.tscn`, F6 | Every way to put a library icon on a button — a toolbar of icon buttons, text buttons with an icon, toggles whose icon follows the state, menu rows, a segmented choice, a whole group and buttons found by a live search. |
-| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 23-chapter tour, the showcase screen, the medieval look or a 20-second showreel — plus live widgets and one card per class. |
+| Demo app | `cd examples/demo && godot` | A home screen that opens the gallery, a guided 31-chapter tour (at Fast, every chapter in another theme), the showcase screen, the medieval look or a 20-second showreel — plus live widgets and one card per class. |
 
 ### Demo app
 
@@ -933,7 +933,7 @@ real widgets to press, and all 19 classes grouped by the job they do, each with 
 code that uses it. It is built from add-on widgets alone, holds its text to a readable measure,
 folds to one column on a phone, and repaints with the preset picker.
 
-**Start demo**, on the tour, plays 23 chapters with a visible cursor using real input — buttons,
+**Start demo**, on the tour, plays 31 chapters with a visible cursor using real input — buttons,
 fields, menus, scrolling, HUDs, dialogs, forms and more. **Explore widgets**, or any row in the
 sidebar, opens a single widget for you to try by hand, with a **Play this widget** button that
 lets the bot demonstrate just that one. All demo text is English. Large desktop windows enlarge

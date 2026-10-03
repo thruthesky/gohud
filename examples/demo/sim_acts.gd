@@ -2304,7 +2304,10 @@ func build_edges(stage: SimStage, bot: SimBot) -> Dictionary:
 	var world := CenterContainer.new()
 	world.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	world.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	world.add_child(GoStyle.label("The game shows here", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	var placeholder := GoStyle.label("The game shows here", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+	# 🛑 Natural width — a wrapping label in a CenterContainer asks for no width and falls one letter per line.
+	GoStyle.natural_width(placeholder)
+	world.add_child(placeholder)
 	frame.add_child(world)
 
 	var top := GoTopBar.make(3)
@@ -2717,11 +2720,14 @@ func play_progress(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 # ── 31 Pinch and zoom ──────────────────────────────────────────────────
 
 func build_zoom(stage: SimStage, bot: SimBot) -> Dictionary:
-	var state := {"noted": 1.0}
+	var state := {"noted": 1.0, "resetting": false}
 	stage.body.add_child(GoStyle.label("A map you zoom with the wheel or two fingers, and pan once zoomed.",
 		GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY)))
 	var map := GridContainer.new()
 	map.columns = 8
+	# One piece of land, not tiles — no gaps between the cells.
+	map.add_theme_constant_override(&"h_separation", 0)
+	map.add_theme_constant_override(&"v_separation", 0)
 	for index in 48:
 		var cell := ColorRect.new()
 		var town := index in [9, 21, 30, 44]
@@ -2743,6 +2749,7 @@ func build_zoom(stage: SimStage, bot: SimBot) -> Dictionary:
 	controls.add_child(GoStyle.icon_button(GoIconSet.MINUS, func() -> void: view.zoom_to(view.get_zoom() / 1.5), -1,
 		&"Zoom out"))
 	var reset := GoStyle.button("Reset", func() -> void:
+		state.resetting = view.get_zoom() > 1.001
 		view.reset()
 		bot.note("Zoom reset"), GoStyle.Tone.COMPACT)
 	GoStyle.natural_width(reset)
@@ -2753,6 +2760,12 @@ func build_zoom(stage: SimStage, bot: SimBot) -> Dictionary:
 	stage.body.add_child(controls)
 	view.zoom_changed.connect(func(zoom: float) -> void:
 		reading.text = "%.1f×" % zoom
+		# The way back from Reset already has its line.
+		if state.resetting:
+			if is_equal_approx(zoom, 1.0):
+				state.resetting = false
+				state.noted = 1.0
+			return
 		# Every frame of a zoom reports — the log gets a line only for a real step.
 		if absf(zoom - state.noted) >= 0.2:
 			state.noted = zoom

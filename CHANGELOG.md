@@ -29,6 +29,18 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   with a white cross, and a jelly squish — wide and flat for 0.06 s, then an elastic spring back (only `scale` changes,
   around the centre; `reduce_motion` and headless runs skip it).
 - `tests/gohud_jelly_test.gd` (71 checks, step ①-j of `check_all.sh`).
+- **The guided tour covers the whole kit — 31 chapters, and Fast shows every theme.** Eight chapters join the demo's
+  tour for the 28 widgets it never showed: *An app screen* (`GoScaffold` wiring `GoAppBar`, `GoSearchBar`, filter and
+  input chips, `GoNavBar` with a badge, `GoFab` and a `GoDrawer` with `GoNavBar.drawer_list`), *Actions in reach*
+  (`GoBanner`, `GoSplitButton`, `GoStyle.toolbar`, `GoStyle.bottom_app_bar`), *Bars on the edges* (`GoTopBar`,
+  `GoBottomBar`, `GoLeftSideBar`, `GoRightSideBar`, `GoChoiceColumn`, `GoGrid`), *Tabs & steps* (`GoTabView`,
+  `GoStepper`), *Dates & times* (`GoDatePicker`, `GoTimePicker`, `GoWheelPicker`), *Long lists* (`GoListView`,
+  `GoRefresh`, `GoSwipeRow`, `GoReorderList`), *Progress & ranges* (`GoProgress`, `GoLoadingIndicator`,
+  `GoRangeSlider`) and *Pinch & zoom* (`GoZoomView`) — each driven by the bot with real input and checked.
+  **Fast** now plays at 3.2× (twice the old 1.6×) and is the theme carousel: every chapter wears the next family,
+  the whole screen rebuilt in it, while the picker keeps the person's choice and the tour ends back in it. The bot
+  now rolls the wheel where no list, map, slider or wheel inside the stage would take it, so it can reach what sits
+  below a nested list.
 
 ### Fixed
 

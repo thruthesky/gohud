@@ -44,17 +44,18 @@ func _run() -> void:
 	var stale := {"count": 0}
 	sim.tour_finished.connect(func() -> void: worn[-1] = true, CONNECT_ONE_SHOT)
 	while not worn.has(-1):
-		if sim._running and sim._index < SimActs.list().size() and sim._stage.body.get_child_count() > 0:
+		# Every frame, so the last word for a chapter is from while it ran (full-screen chapters leave the body empty).
+		if sim._running and sim._index < SimActs.list().size():
 			worn[sim._index] = GoUi.config.preset
 			# 🛑 One palette per screen — the bars around the stage are built again with it, so their chip names it.
 			var chip: Array = sim._wearing.find_children("*", "Label", true, false)
 			if not sim._wearing.visible or chip.is_empty() or (chip[0] as Label).text != ThemePicker.title(GoUi.config.preset):
 				stale.count += 1
 		await process_frame
-	var rotated := true
+	var off: Array[String] = []
 	for index in SimActs.list().size():
-		if worn.get(index, &"") != families[index % families.size()]: rotated = false
-	check(rotated, "Fast puts chapter N in family N (%s)" % str(worn.values().slice(0, 6)))
+		if worn.get(index, &"") != families[index % families.size()]: off.append("%d:%s" % [index + 1, worn.get(index, &"")])
+	check(off.is_empty(), "Fast puts chapter N in family N (off: %s)" % ", ".join(off))
 	check(stale.count == 0, "The bars around the stage are rebuilt in each chapter's theme (%d stale frames)" % stale.count)
 	check(GoUi.config.preset == picked and ThemePicker.active_preset == picked,
 		"A Fast tour ends in the theme the person picked")

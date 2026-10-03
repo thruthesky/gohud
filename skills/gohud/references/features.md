@@ -160,7 +160,7 @@ actions along the bottom — is the template `assets/templates/edge_bar_hud.gd`.
 | One `GoConfig` resource (appearance, responsive, surface, feedback, localization, accessibility) that survives add-on updates | `GoUi.config = preload("res://ui/gohud_config.tres")` | setup.md §3 |
 | Optional plugin: project settings for config + preset, `GoRuntime` autoload (breakpoints, dp scale, keyboard), translations | Project → Project Settings → Plugins → gohud | setup.md §2 |
 | Subclass hooks `_make_scroll`, `_make_close_button`, `_make_surface`, `_should_pause` | `func _make_surface() -> GoSurface: return MySurface.new()` | surfaces.md §6 |
-| Gallery, medieval example, 23-chapter demo tour with explore mode | `/gohud:preview demo --explore hud` | SKILL.md §6 |
+| Gallery, medieval example, 31-chapter demo tour with explore mode | `/gohud:preview demo --explore hud` | SKILL.md §6 |
 | Headless checks for every widget (`gohud_test.gd`, `gohud_extra_test.gd`, layout, the skill's templates, `GoChoiceColumn`), WCAG contrast checker, packaging gates, CI on every push | `bash addons/gohud/tools/check_all.sh` | setup.md §6 |
 | **Seven runnable templates** in the skill — main menu, game HUD, HUD on edge bars, pause menu, inventory sheet, settings, app screen — each checked headless | copy `assets/templates/app_screen.gd` to `res://ui/` | SKILL.md §5 |
 | **Screenshot check on a virtual monitor** — value checks know "how much", not "is it visible"; five layout faults were found this way with every headless check passing | `xvfb_run.sh --out shots -s res://addons/gohud/tests/gohud_shot.gd` | setup.md §6 |

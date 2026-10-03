@@ -26,7 +26,7 @@ another project.godot".
 | Key | Screen | Source |
 |---|---|---|
 | `1` | **Widget gallery** — every widget on one page | `examples/gallery/gallery.gd` |
-| `2` | **Guided tour** — 23 chapters, played or hands-on | `examples/demo/sim.gd` |
+| `2` | **Guided tour** — 31 chapters, played or hands-on | `examples/demo/sim.gd` |
 | `3` | **Showcase screen** — six cards on one screen | `examples/demo/demo.gd` |
 | `4` | **Medieval look** — the same widgets, another preset | `examples/medieval/medieval.gd` |
 | `5` | **Showreel** — 20 seconds, a widget every half second, the theme changing each step | `examples/demo/showreel.gd` |
@@ -63,9 +63,13 @@ godot -- --open=gallery      # gallery | tour | showcase | medieval
 
 The tour waits on its Start screen and offers two ways in:
 
-- **Start demo** plays a guided simulation of 23 chapters. The cursor uses real mouse and
+- **Start demo** plays a guided simulation of 31 chapters. The cursor uses real mouse and
   keyboard events to click buttons, type into fields, select menu items, drag sliders and
-  joysticks, and scroll lists.
+  joysticks, and scroll lists. Pick **Fast** first (3.2×) and every chapter wears the next theme
+  family — Default, Sci-fi, Medieval, Material, Kids, then round again — so one pass shows each
+  widget in a different look. The whole screen is rebuilt in that theme, side panels included,
+  and a chip beside the theme picker names it; the picker keeps the theme you chose, and the
+  tour ends back in it. Playing a single widget from explore mode keeps your theme.
 - **Explore widgets** (or any row in the left sidebar) builds a single chapter and hands it
   to you. Nothing moves on its own: press, drag and type yourself. The right panel describes
   the widget and its **Play this widget** button lets the bot demonstrate just that chapter,
@@ -100,8 +104,17 @@ its own colour, icon segments as a filter, the detail card, a tap route to move 
 icon set), **popovers, menus and drawers** (a detail card beside the button, a right-click menu, a side
 drawer and the cheat console), **tables and pages** (a leaderboard that sorts numbers as numbers, page
 buttons, and a server list in a sheet taller than the default ceiling with the pick marked by a border)
-and **pick by picture** (colour swatches, choice cards, icon segments in a pill over a map, and HUD icon
-buttons that never keep keyboard focus). The **Live activity**
+**pick by picture** (colour swatches, choice cards, icon segments in a pill over a map, and HUD icon
+buttons that never keep keyboard focus), **an app screen** (`GoScaffold` wiring `GoAppBar`, `GoSearchBar`
+with filter and input chips, `GoNavBar` with a badge, an extended `GoFab` and a `GoDrawer` holding
+`GoNavBar.drawer_list`), **actions in reach** (`GoBanner`, `GoSplitButton`, `GoStyle.toolbar` and
+`GoStyle.bottom_app_bar`), **bars on the edges** (`GoTopBar`, `GoBottomBar`, `GoLeftSideBar` and
+`GoRightSideBar` holding a HUD frame, a `GoChoiceColumn` of pets, and a `GoGrid`), **tabs and steps**
+(`GoTabView` turned by a tap and by a swipe, `GoStepper` through to Done), **dates and times**
+(`GoDatePicker`, the `GoTimePicker` dial and three `GoWheelPicker`s), **long lists** (a 1,000-row
+`GoListView` with `GoRefresh`, `GoSwipeRow` both ways and a `GoReorderList`), **progress and ranges**
+(`GoProgress` line and ring, `GoLoadingIndicator`, `GoRangeSlider`) and **pinch and zoom** (`GoZoomView`
+over a map). The **Live activity**
 panel reports actual widget callbacks, whether the bot or a person triggered them.
 
 ## Container opacity
@@ -132,7 +145,8 @@ controls together. Narrow windows show a responsive single-column stage.
   current widget — on narrow windows, where the right panel is hidden, the top-bar button is the way.
 - **Left / Right**: previous or next chapter, or previous or next widget while exploring.
 - **Escape**: stop and return to the Start screen.
-- The speed button cycles playback speeds. The Start screen offers Slow, Normal and Fast.
+- The speed button cycles Normal (1.0×), Fast (3.2×) and Slow (0.7×); the Start screen offers the same three.
+  Fast also turns on the theme carousel (one theme family per chapter).
 - While a text field has focus in explore mode, Space and the arrows go to the field.
 
 To record a complete 1920×1080, 60 fps movie with Godot's Movie Maker:
@@ -181,7 +195,7 @@ bash examples/demo/run.sh --record-showreel /tmp/reel.avi --showreel-seconds=28.
 |---|---|---|
 | `--showreel-seconds=` | `20` | How long the whole reel runs |
 | `--showreel-step=` | `0.5` | How long each widget stays up — the bot's speed follows it (6× at 0.5 s) |
-| `--showreel-order=` | `cycle` | `cycle` walks the 23 chapters in order and rotates the five themes each step — no chapter–theme pair repeats before 115 steps, so 57.5 s shows every widget in every look (keep the chapter count off multiples of the theme count, or each chapter wears one look only); `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
+| `--showreel-order=` | `cycle` | `cycle` walks the 31 chapters in order and rotates the five themes each step — no chapter–theme pair repeats before 155 steps, so 77.5 s shows every widget in every look (keep the chapter count off multiples of the theme count, or each chapter wears one look only); `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
 | `--showreel-seed=` | `0` | Fixes the random order; `0` draws a fresh one each run |
 | `--exit` | off | Quit when the reel ends — `--record-showreel` passes it; without it a Replay card is shown |
 
