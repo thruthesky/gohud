@@ -3,6 +3,8 @@
 ## Run through tools/check_demo.sh, which enforces a timeout and checks engine errors.
 extends SceneTree
 
+const ThemePicker := preload("res://theme_picker.gd")
+
 var sim: Control
 var failures: Array[String] = []
 var checks := 0
@@ -31,9 +33,31 @@ func _run() -> void:
 	check(TranslationServer.get_locale() == "en", "Demo forces the English locale")
 	var start := sim._cover.find_child("Start", true, false) as Button
 	check(root.get_visible_rect().encloses(start.get_global_rect()), "Start button fits the viewport")
+	# Fast is twice the old 1.6x, and it is the theme carousel: every chapter wears the next family.
+	await click(find_button(sim._cover, "Fast"))
+	check(is_equal_approx(sim._bot.speed, sim.FAST) and is_equal_approx(sim.FAST, 3.2), "Fast plays at 3.2x")
+	var picked: StringName = ThemePicker.active_preset
+	var families := ThemePicker.darks()
 	await click(start)
 	check(sim._running, "Clicking Start begins the tour")
-	await sim.tour_finished
+	var worn: Dictionary = {}
+	var stale := {"count": 0}
+	sim.tour_finished.connect(func() -> void: worn[-1] = true, CONNECT_ONE_SHOT)
+	while not worn.has(-1):
+		if sim._running and sim._index < SimActs.list().size() and sim._stage.body.get_child_count() > 0:
+			worn[sim._index] = GoUi.config.preset
+			# 🛑 One palette per screen — the bars around the stage are built again with it, so their chip names it.
+			var chip: Array = sim._wearing.find_children("*", "Label", true, false)
+			if not sim._wearing.visible or chip.is_empty() or (chip[0] as Label).text != ThemePicker.title(GoUi.config.preset):
+				stale.count += 1
+		await process_frame
+	var rotated := true
+	for index in SimActs.list().size():
+		if worn.get(index, &"") != families[index % families.size()]: rotated = false
+	check(rotated, "Fast puts chapter N in family N (%s)" % str(worn.values().slice(0, 6)))
+	check(stale.count == 0, "The bars around the stage are rebuilt in each chapter's theme (%d stale frames)" % stale.count)
+	check(GoUi.config.preset == picked and ThemePicker.active_preset == picked,
+		"A Fast tour ends in the theme the person picked")
 	check(sim._counter.get_line_count() == 1, "Chapter counter stays on one line")
 	check(sim._completed == SimActs.list().size(), "All chapters completed")
 	check(sim._bot.failures.is_empty(), "All interaction assertions passed")
@@ -44,7 +68,10 @@ func _run() -> void:
 			"Filter: Potions", "Used: Health potion (11 left)", "Item moved: 2 → 10", "Popover: equipped",
 			"Menu: Equip", "Drawer: Potion 3", "Console: give potion 3", "Table sorted by Score down",
 			"Row picked: Brin", "Page 2", "Server: Northern marches", "Skin: Cocoa", "Difficulty: Hard",
-			"Map layer: Quests"]:
+			"Map layer: Quests", "Search: sword", "Added to cart", "Tab: Alerts", "Drawer: Wish list", "Banner: Retry",
+			"Send later", "Toolbar: Like", "New post", "Pressed: Guard", "Dog called", "Tab view: Saved",
+			"Order placed", "Date: 2026-10-15", "Time: 3:45", "Amount: x10", "Feed refreshed", "Deleted: Ann",
+			"Read: Ben", "Moved: Credits → 2", "Download done", "Zoom reset"]:
 		check(activity.has(expected), "Observed callback: %s" % expected)
 	check(not GoSurface.is_any_open(), "No modal surface survives the tour")
 
@@ -135,6 +162,7 @@ func _explore_mode() -> void:
 	activity.clear()
 	await click(sim._play_one if wide else sim._pause_button)
 	check(sim._running and sim._explore == dialogs_index, "Play this widget starts the bot on that widget")
+	check(GoUi.config.preset == ThemePicker.active_preset, "Playing one widget at Fast keeps the picked theme")
 	check(sim._play_one.disabled, "Play button is disabled while the bot drives")
 	await sim.chapter_finished
 	await create_timer(0.1).timeout

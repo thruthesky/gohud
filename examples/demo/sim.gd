@@ -1,8 +1,9 @@
 ## ▶️ **The gohud demo — it runs itself, and you can work it by hand.**
 ##
 ## There are two ways in.
-##   **Tour**    Press start and it walks through twenty-three scenes. Each one builds its screen afresh and
-##               the bot really presses, types, drags and scrolls those widgets (`SimBot`).
+##   **Tour**    Press start and it walks through every scene in `SimActs.list()`. Each one builds its screen
+##               afresh and the bot really presses, types, drags and scrolls those widgets (`SimBot`).
+##               🎨 At **Fast** every scene wears the next theme family — one pass shows the kit in every look.
 ##   **Explore** Pick one widget in the left sidebar and only that scene is built, for **you** to work
 ##               by hand. Press "Play this widget" on the right and the bot demonstrates that one
 ##               scene on the same screen.
@@ -28,6 +29,8 @@ var _theme_pending: StringName = &""
 var _theme_state: Dictionary = {}
 var _theme_popup_open := false
 var _theme_paused_before := false
+var _rotation_from := 0           ## The scene a Fast tour started its theme carousel on — it wears the picked theme
+var _wearing: Control             ## The chip that names the theme a Fast tour is wearing right now
 
 const ACCENT := Color("#71d9e9")
 const VIOLET := Color("#8b7cf6")
@@ -39,6 +42,12 @@ const NARROW := 1080.0          ## Narrower than this and the sidebar and log fo
 const LOG_LINES := 9
 const SIDE_WIDTH := 236.0
 const PANEL_WIDTH := 256.0
+## Playback speeds the Start screen names. 🔑 **Fast is also the theme carousel** — a tour at Fast dresses the whole
+## screen in the next theme family before every scene (`_rotating`). The person's pick stays `ThemePicker.active_preset`;
+## only `GoUi.config.preset` changes, so a screen that compares the two (home) knows to rebuild.
+const SLOW := 0.7
+const NORMAL := 1.0
+const FAST := 3.2
 
 var _acts := SimActs.new()
 var _entries: Array[Dictionary] = []
@@ -248,7 +257,7 @@ func _build() -> void:
 
 
 func _panel_box(color := PANEL, radius := 14, inset := 16) -> StyleBox:
-	if ThemePicker.active_preset != GoThemePresets.DEFAULT_DARK:
+	if GoUi.config.preset != GoThemePresets.DEFAULT_DARK:
 		var frame := GoStyle.surface(GoTheme.BOX_CARD)
 		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: frame.set_content_margin(side, inset)
 		return frame
@@ -575,11 +584,13 @@ func _show_intro() -> void:
 
 	var speed_row := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
 	speed_row.add_child(GoStyle.label("Speed", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
-	var rates := [0.7, 1.0, 1.6]
+	var rates := [SLOW, NORMAL, FAST]
 	speed_row.add_child(GoStyle.segmented(["Slow", "Normal", "Fast"], maxi(0, rates.find(_bot.speed)), func(index: int) -> void:
 		_set_speed(rates[index])))
 	speed_row.add_child(GoStyle.spacer())
 	column.add_child(speed_row)
+	column.add_child(GoStyle.label("Fast plays at %.1fx and puts every widget in the next theme." % FAST,
+		GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED)))
 	var cinema := GoStyle.checkbox("Cinema mode · 3-second countdown", false)
 	cinema.button_pressed = _cinema
 	cinema.toggled.connect(func(on: bool) -> void:
@@ -655,6 +666,7 @@ func _start_range(from: int, to: int) -> void:
 	_index = from
 	_first = from
 	_last = to
+	_rotation_from = from
 	_jump = 0
 	_return_home = false
 	_pending_explore = -1
@@ -704,6 +716,8 @@ func _run() -> void:
 	_set_mode("TOUR" if _explore < 0 else "PLAYING", _accent)
 	while not _return_home and _index < _last:
 		var entry := _entries[_index]
+		if _wear(_chapter_preset(_index) if _rotating() else ThemePicker.active_preset):
+			_set_mode("TOUR" if _explore < 0 else "PLAYING", _accent)
 		_sync_marks()
 		_sync_about()
 		if _trace: print("[%02d] %s" % [_index + 1, entry.title])
@@ -735,6 +749,8 @@ func _run() -> void:
 	if not _theme_pending.is_empty():
 		_apply_theme()
 		return
+	# A Fast tour leaves in the theme the person picked, whatever the last scene wore.
+	_wear(ThemePicker.active_preset)
 	if _pending_explore >= 0:
 		var wanted := _pending_explore
 		_pending_explore = -1
@@ -868,9 +884,9 @@ func _sync_pause() -> void:
 
 
 func _cycle_speed() -> void:
-	var rates := [1.0, 1.6, 2.4, 0.7]
+	var rates := [NORMAL, FAST, SLOW]
 	var at := rates.find(snappedf(_bot.speed, 0.1))
-	_set_speed(rates[(at + 1) % rates.size()] if at >= 0 else 1.0)
+	_set_speed(rates[(at + 1) % rates.size()] if at >= 0 else NORMAL)
 
 
 func _set_speed(value: float) -> void:
@@ -964,8 +980,12 @@ func _on_said(text: String) -> void:
 
 
 func _on_logged(text: String) -> void:
-	if not is_instance_valid(_log): return
 	if _trace: print("      → %s" % text)
+	_add_log_line(text)
+
+
+func _add_log_line(text: String, animate := true) -> void:
+	if not is_instance_valid(_log): return
 	var line := GoStyle.row(6)
 	var mark := GoUi.icons().node(GoIconSet.CHEVRON_RIGHT, 12, _green)
 	mark.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
@@ -974,9 +994,10 @@ func _on_logged(text: String) -> void:
 	label.add_theme_font_size_override(&"font_size", 14)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.add_child(label)
+	line.set_meta(&"sim_text", text)
 	_log.add_child(line)
 	_log_empty.visible = false
-	if not GoUi.config.reduce_motion:
+	if animate and not GoUi.config.reduce_motion:
 		line.modulate.a = 0.0
 		create_tween().tween_property(line, "modulate:a", 1.0, 0.18)
 	while _log.get_child_count() > LOG_LINES:
@@ -1046,8 +1067,8 @@ func _on_shortcut(event: InputEvent) -> void:
 func _refresh_palette() -> void:
 	_accent = GoUi.color(GoTheme.ACCENT)
 	_green = GoUi.color(GoTheme.SUCCESS)
-	_bg = BG if ThemePicker.active_preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.BACKGROUND)
-	_subtitle_ink = SUBTITLE_INK if ThemePicker.active_preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.SECONDARY)
+	_bg = BG if GoUi.config.preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.BACKGROUND)
+	_subtitle_ink = SUBTITLE_INK if GoUi.config.preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.SECONDARY)
 
 
 func _theme_bar() -> HBoxContainer:
@@ -1067,6 +1088,13 @@ func _theme_bar() -> HBoxContainer:
 		_theme_popup_open = false
 		if _theme_pending.is_empty(): _bot.paused = _theme_paused_before)
 	row.add_child(picker)
+	# 🎨 What a Fast tour is wearing right now — the picker keeps saying what the person chose.
+	_wearing = GoStyle.chip(ThemePicker.title(GoUi.config.preset), _accent, false, GoIconSet.SUN)
+	_wearing.name = "Wearing"
+	_wearing.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_wearing.tooltip_text = "A Fast tour puts every widget in the next theme"
+	_wearing.visible = _rotating()
+	row.add_child(_wearing)
 	return row
 
 
@@ -1091,18 +1119,7 @@ func _apply_theme() -> void:
 	ThemePicker.active_preset = _theme_pending
 	_theme_pending = &""
 	_theme_popup_open = false
-	_stage.clear()
-	_drop_cover()
-	for child in get_children():
-		if child == _bot: continue
-		remove_child(child)
-		child.queue_free()
-	_rows.clear()
-	_row_labels.clear()
-	_gutters.clear()
-	# Keep typography, metrics, speed and verification settings; replace only the look.
-	_configure_theme()
-	_build()
+	_rebuild(ThemePicker.active_preset)
 	_explore = -1
 	_return_home = false
 	if int(state.explore) >= 0:
@@ -1121,8 +1138,57 @@ func _apply_theme() -> void:
 	_relayout()
 
 
-func _configure_theme() -> void:
+func _configure_theme(preset: StringName = &"") -> void:
 	var colors: Dictionary[StringName, Color] = {GoTheme.ACCENT: ACCENT, GoTheme.SUCCESS: GREEN,
 		GoTheme.MUTED: Color("#91a1b8"), GoTheme.SECONDARY: SUBTITLE_INK}
-	ThemePicker.configure(GoUi.config, colors)
+	ThemePicker.configure(GoUi.config, colors, preset)
 	_refresh_palette()
+
+
+## Tears the whole screen down and builds it again under [param preset] — the side panels and the bars as well as the
+## stage, since two palettes on one screen read as a bug. The run's state and the log's lines stay.
+## 🛑 Only between scenes: a scene's widgets would go with the stage.
+func _rebuild(preset: StringName) -> void:
+	var lines: Array[String] = []
+	if is_instance_valid(_log):
+		for line in _log.get_children(): lines.append(str(line.get_meta(&"sim_text", "")))
+	_stage.clear()
+	_drop_cover()
+	for child in get_children():
+		if child == _bot: continue
+		remove_child(child)
+		child.queue_free()
+	_rows.clear()
+	_row_labels.clear()
+	_gutters.clear()
+	# Keep typography, metrics, speed and verification settings; replace only the look.
+	_configure_theme(preset)
+	_build()
+	for line in lines: _add_log_line(line, false)
+	_set_speed(_bot.speed)
+	_sync_pause()
+	_relayout()
+
+
+## 🎨 Is this a Fast tour — the one that puts every widget in the next theme? Not a single widget played from
+## explore mode: that one keeps the theme the person is looking at.
+func _rotating() -> bool:
+	return _running and _explore < 0 and is_instance_valid(_bot) and _bot.speed >= FAST - 0.01
+
+
+## The theme family scene [param index] wears on a Fast tour — the picked one on the scene the tour started from,
+## then the next family in the picker's order for each scene after it.
+func _chapter_preset(index: int) -> StringName:
+	var families := ThemePicker.darks()
+	var home := maxi(0, families.find(ThemePicker.active_preset))
+	if families.is_empty(): return ThemePicker.active_preset
+	return families[posmod(home + index - _rotation_from, families.size())]
+
+
+## Dresses the screen in [param preset] unless it is wearing it already. Returns whether it rebuilt.
+func _wear(preset: StringName) -> bool:
+	if preset == GoUi.config.preset:
+		if is_instance_valid(_wearing): _wearing.visible = _rotating()
+		return false
+	_rebuild(preset)
+	return true

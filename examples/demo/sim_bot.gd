@@ -226,12 +226,34 @@ func reveal(node: Control) -> void:
 				if direction != 0 and wanted != direction: break
 				direction = wanted
 				var before := scroll.scroll_vertical
-				await move(view.get_center())
+				await move(_wheel_spot(scroll))
 				if _skip: return
 				_wheel(direction, clampf(absf(delta) / maxf(1.0, view.size.y / 8.0), 0.05, 3.0))
 				await wait(0.18)
 				if scroll.scroll_vertical == before: break
 		ancestor = ancestor.get_parent()
+
+
+## A spot inside [param scroll] where a wheel reaches **it** — off any list, map, slider or wheel inside it, which
+## would take the wheel for itself (a feed scrolls, a map zooms, a slider changes). A person moves the pointer off
+## those too. The middle when nothing is in the way.
+static func _wheel_spot(scroll: ScrollContainer) -> Vector2:
+	var view := scroll.get_global_rect()
+	var takers: Array[Rect2] = []
+	for node in scroll.find_children("*", "Control", true, false):
+		var inner := node as Control
+		if not inner.is_visible_in_tree(): continue
+		if inner is ScrollContainer or inner is Slider or inner is GoZoomView or inner is GoWheelPicker \
+				or inner is GoChoiceColumn or inner.has_meta(GoScroll.OWNS_GESTURE):
+			takers.append(inner.get_global_rect())
+	var middle := view.get_center()
+	var inside := view.grow(-4.0)
+	# Out from the middle, a step at a time: 0, +24, -24, +48, -48, …
+	for step in int(view.size.y / 24.0) + 1:
+		var spot := middle + Vector2(0.0, 24.0 * floori((step + 1) / 2.0) * (1.0 if step % 2 == 1 else -1.0))
+		if not inside.has_point(spot): continue
+		if takers.all(func(taken: Rect2) -> bool: return not taken.has_point(spot)): return spot
+	return middle
 
 
 func _wheel(direction: int, factor := 1.0) -> void:

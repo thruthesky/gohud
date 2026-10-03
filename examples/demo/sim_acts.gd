@@ -83,8 +83,8 @@ static func list() -> Array[Dictionary]:
 			"note": "Attendance, the stat pentagon, damage share and a banner.",
 			"hint": "Only today can be claimed. Press the banner dots; nothing moves on its own."},
 		# 🛑 New chapters go **at the end** — `sim_test.gd` opens chapters by number, and the showreel pairs
-		#    chapter N with theme N % 3, so the count must not become a multiple of three (every chapter would wear
-		#    one look only).
+		#    chapter N with theme N % (the theme count — five today), so the count must not become a multiple of it
+		#    (every chapter would wear one look only). 31 now.
 		{"key": &"inventory", "title": "Inventory & items", "icon": GoIconSet.BAG,
 			"note": "A bag grid in each item's colour, a detail card, and the game icon set.",
 			"hint": "Filter by kind, pick an item, use it, then Move it: press Move and pick an empty space."},
@@ -97,6 +97,30 @@ static func list() -> Array[Dictionary]:
 		{"key": &"choices", "title": "Pick by picture", "icon": GoIconSet.STAR,
 			"note": "Swatches, choice cards, a pill over the map, and HUD buttons that leave Space to the game.",
 			"hint": "Pick a colour, a difficulty card and a map layer. The HUD buttons never keep keyboard focus."},
+		{"key": &"app", "title": "An app screen", "icon": GoIconSet.HOME,
+			"note": "An app bar, a search bar, bottom tabs, a floating button and a drawer, wired together.",
+			"hint": "Search, flip a filter chip, add to cart, open Alerts, then the menu drawer."},
+		{"key": &"actions", "title": "Actions in reach", "icon": GoIconSet.BOLT,
+			"note": "A banner that waits, a split button, a floating toolbar and a bottom app bar.",
+			"hint": "Answer the banner, open the arrow half of Send, like a post from the toolbar."},
+		{"key": &"edges", "title": "Bars on the edges", "icon": GoIconSet.EXPAND,
+			"note": "Top, bottom and side bars that hold a HUD's edges, a tap-once column and an equal grid.",
+			"hint": "Press the buttons on each bar and call a pet from the side column. The sheep is resting."},
+		{"key": &"steps", "title": "Tabs & steps", "icon": GoIconSet.FORWARD,
+			"note": "Pages you swipe between, and a checkout taken one step at a time.",
+			"hint": "Tap a tab or swipe the page sideways. Walk the steps with Next and Back."},
+		{"key": &"dates", "title": "Dates & times", "icon": GoIconSet.CLOCK,
+			"note": "A month to tap, a clock dial, and wheels that settle on one.",
+			"hint": "Pick a day, tap the hour and then the minutes on the dial, spin a wheel."},
+		{"key": &"feeds", "title": "Long lists", "icon": GoIconSet.REFRESH,
+			"note": "A thousand rows built as you scroll, pull to refresh, rows you swipe and a queue you drag.",
+			"hint": "Pull the list down at its top. Swipe a message aside. Drag a song by its grip."},
+		{"key": &"progress", "title": "Progress & ranges", "icon": GoIconSet.DOWNLOAD,
+			"note": "Progress you can measure, waits you cannot, and a range with two handles.",
+			"hint": "Start the download, then drag either handle of the price range."},
+		{"key": &"zoom", "title": "Pinch & zoom", "icon": GoIconSet.MAP,
+			"note": "A map you zoom and pan, with buttons for anyone without a wheel.",
+			"hint": "Roll the wheel over the map, drag to pan, then press Reset."},
 	]
 
 
@@ -1154,7 +1178,8 @@ func play_anchors(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 
 func build_theming(stage: SimStage, bot: SimBot) -> Dictionary:
 	var preview := PanelContainer.new()
-	var pair: Array[Theme] = preload("theme_picker.gd").pair()
+	# The family the screen is wearing — on a Fast tour that is this scene's theme, not the one picked at the top.
+	var pair: Array[Theme] = preload("theme_picker.gd").pair(GoUi.config.preset)
 	preview.theme = pair[0]
 	preview.theme_type_variation = GoTheme.VAR_CARD
 	var inner := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
@@ -2046,4 +2071,719 @@ func play_choices(stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
 	if bot.skipping(): return
 	bot.expect(stage.get_viewport().gui_get_focus_owner() != bag, "The HUD button left keyboard focus alone")
 	await bot.wait(1.0)
+	if bot.skipping(): return
+
+
+## Waits until [param done] says yes, for at most [param seconds] of real time — for a widget that settles on its own
+## clock (a wheel spinning down, a page sliding, a timer finishing the work), which the bot's speed does not hurry.
+static func _until(bot: SimBot, done: Callable, seconds := 1.5) -> void:
+	var left := seconds
+	while left > 0.0 and not bot.skipping() and not done.call():
+		await bot.get_tree().process_frame
+		left -= bot.get_process_delta_time()
+
+
+## Waits until [param node] stops moving on screen — a row above it folding away, a page still settling — so a spot
+## taken from it is still right when the cursor gets there. At most [param seconds] of real time.
+static func _still(bot: SimBot, node: Control, seconds := 1.5) -> void:
+	var last := Vector2.INF
+	var calm := 0
+	var left := seconds
+	while left > 0.0 and calm < 3 and not bot.skipping() and is_instance_valid(node):
+		var now := node.get_global_rect().position
+		calm = calm + 1 if now.is_equal_approx(last) else 0
+		last = now
+		await bot.get_tree().process_frame
+		left -= bot.get_process_delta_time()
+
+
+# ── 24 An app screen ───────────────────────────────────────────────────
+#
+# 🔑 `GoScaffold` usually fills the window. Here it fills a phone-sized frame on the stage, so the app bar and the
+#    navigation bar turn `safe_area` off — the frame is not at a screen edge, and there is no notch to keep clear of.
+
+func build_app(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"query": "", "added": 0, "place": -1}
+	var page := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	var search := GoSearchBar.make("Search the shop", func(query: String) -> void:
+		state.query = query
+		bot.note("Search: %s" % query))
+	search.add_action(GoIconSet.FILTER, &"Filter", bot.note.bind("Search bar: Filter"))
+	page.add_child(search)
+	var chips := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP_SMALL))
+	var stock := GoStyle.filter_chip("In stock", false, func(on: bool) -> void:
+		bot.note("In stock: %s" % ("on" if on else "off")))
+	chips.add_child(stock)
+	chips.add_child(GoStyle.filter_chip("On sale", false, func(on: bool) -> void:
+		bot.note("On sale: %s" % ("on" if on else "off"))))
+	var tag := GoStyle.input_chip("Swords", bot.note.bind("Tag removed: Swords"), GoIconSet.SWORD)
+	chips.add_child(tag)
+	page.add_child(chips)
+	for spec in [[GoIconSet.SWORD, "Iron sword", "120 gold"], [GoIconSet.SHIELD, "Oak shield", "80 gold"],
+			[GoIconSet.POTION, "Health potion", "15 gold"], [GoIconSet.KEY, "Tower key", "Sold out"]]:
+		page.add_child(GoStyle.list_button(spec[0], spec[1], bot.note.bind("Opened: %s" % spec[1]), Color.TRANSPARENT,
+			spec[2], false))
+
+	var screen := GoScaffold.new()
+	screen.custom_minimum_size.y = 420
+	# 🔑 The frame is as tall as the stage shows, so its bottom tabs are on screen without scrolling the stage — a wheel
+	#    over the frame scrolls the shop page inside it, as on a phone, and never reaches the stage behind.
+	var fit := func() -> void:
+		if is_instance_valid(screen) and stage.scroll.size.y > 0.0:
+			screen.custom_minimum_size.y = clampf(stage.scroll.size.y - 2.0, 320.0, 560.0)
+	stage.scroll.resized.connect(fit)
+	screen.tree_exiting.connect(func() -> void:
+		if stage.scroll.resized.is_connected(fit): stage.scroll.resized.disconnect(fit))
+	fit.call_deferred()
+	var bar := GoAppBar.make("Shop", GoIconSet.MENU)
+	bar.safe_area = false
+	bar.add_action(GoIconSet.BAG, &"Bag", bot.note.bind("App bar: Bag"))
+	screen.set_app_bar(bar)
+	screen.set_body(page)
+	var nav := GoNavBar.make([{"icon": GoIconSet.HOME, "text": "Home"}, {"icon": GoIconSet.SEARCH, "text": "Search"},
+		{"icon": GoIconSet.BELL, "text": "Alerts", "badge": 3}, {"icon": GoIconSet.USER, "text": "Profile"}])
+	nav.safe_area = false
+	nav.selected.connect(func(index: int) -> void:
+		if index == 2: nav.set_badge(2, 0)   # read — the count goes, and the badge with it
+		bot.note("Tab: %s" % ["Home", "Search", "Alerts", "Profile"][index]))
+	screen.set_bottom_bar(nav)
+	var fab := GoFab.make(GoIconSet.PLUS, "Add to cart", func() -> void:
+		state.added += 1
+		bot.note("Added to cart"))
+	screen.set_fab(fab)
+	# The app bar's menu button opens the drawer by itself — the scaffold wires it.
+	var drawer := GoDrawer.new()
+	var places := ["Shop", "Wish list", "Orders"]
+	drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": places[0]},
+		{"icon": GoIconSet.HEART, "text": places[1]}, {"icon": GoIconSet.BOX, "text": places[2]}], 0,
+		func(index: int) -> void:
+			state.place = index
+			bot.note("Drawer: %s" % places[index])
+			drawer.close()))
+	screen.set_drawer(drawer)
+	stage.body.add_child(screen)
+	return {"search": search, "stock": stock, "tag": tag, "bar": bar, "nav": nav, "fab": fab, "drawer": drawer,
+		"state": state}
+
+
+func play_app(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var search: GoSearchBar = refs.search
+	var nav: GoNavBar = refs.nav
+	var drawer: GoDrawer = refs.drawer
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.say("GoScaffold wires an app bar, the page, bottom tabs, a floating button and a drawer together.")
+	if bot.skipping(): return
+	await bot.type_text(search.field, "sword", "The search bar: type, then Enter.")
+	if bot.skipping(): return
+	await bot.press_key(KEY_ENTER)
+	if bot.skipping(): return
+	bot.expect(refs.state.query == "sword", "Search submitted")
+	await bot.click(refs.stock, "Filter chips switch on and off, and a tick says which.")
+	if bot.skipping(): return
+	bot.expect((refs.stock as Button).button_pressed, "In stock filter on")
+	await bot.click((refs.tag as Node).find_child("Remove", true, false) as Control, "An input chip carries its own ✕.")
+	if bot.skipping(): return
+	await bot.wait(0.3)
+	if bot.skipping(): return
+	bot.expect(not is_instance_valid(refs.tag), "Tag chip removed")
+	await bot.click(refs.fab, "The one main action floats above the tabs.")
+	if bot.skipping(): return
+	bot.expect(refs.state.added == 1, "Added to cart")
+	await bot.click(nav.cell(2), "A bottom tab switches the whole page; its badge clears once read.")
+	if bot.skipping(): return
+	bot.expect(nav.selected_index() == 2, "Alerts tab chosen")
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	await bot.click((refs.bar as GoAppBar).leading_button, "The menu button opens the drawer.")
+	if bot.skipping(): return
+	await bot.settle(0.4)
+	if bot.skipping(): return
+	var places := drawer.body.get_child(0) as GoNavBar
+	if places != null:
+		await bot.click(places.cell(1), "Pick a place and the drawer closes.")
+		if bot.skipping(): return
+	bot.expect(refs.state.place == 1 and not drawer.is_open(), "Drawer pick closed it")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+
+
+# ── 25 Actions in reach ────────────────────────────────────────────────
+
+func build_actions(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"banner": "", "sent": "", "liked": 0, "posts": 0}
+	stage.body.add_child(GoStyle.section("A banner that waits for an answer", false))
+	var banner := GoBanner.make("You're offline. Showing saved posts.", [{"text": "Dismiss"},
+		{"text": "Retry", "action": func() -> void:
+			state.banner = "Retry"
+			bot.note("Banner: Retry")}], GoIconSet.WARNING)
+	banner.closed.connect(bot.note.bind("Banner folded away"))
+	stage.body.add_child(banner)
+
+	stage.body.add_child(GoStyle.section("One action, its variants a press away", false))
+	var send := GoSplitButton.make("Send", func() -> void:
+		state.sent = "now"
+		bot.note("Sent now"), ["Send later", "Save as draft"])
+	send.chosen.connect(func(index: int) -> void:
+		state.sent = ["later", "draft"][index]
+		bot.note(["Send later", "Saved as draft"][index]))
+	send.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	stage.body.add_child(send)
+
+	stage.body.add_child(GoStyle.section("A floating toolbar", false))
+	var tools := GoStyle.toolbar([
+		{"icon": GoIconSet.EDIT, "tooltip": &"Edit", "action": bot.note.bind("Toolbar: Edit")},
+		{"icon": GoIconSet.HEART, "tooltip": &"Like", "action": func() -> void:
+			state.liked += 1
+			bot.note("Toolbar: Like")},
+		{"icon": GoIconSet.TRASH, "tooltip": &"Delete", "action": bot.note.bind("Toolbar: Delete")},
+	])
+	stage.body.add_child(tools)
+
+	stage.body.add_child(GoStyle.section("A bottom app bar with the main action at its end", false))
+	var new_post := GoFab.make(GoIconSet.PLUS, "", func() -> void:
+		state.posts += 1
+		bot.note("New post"))
+	new_post.tooltip_text_name = &"New post"
+	stage.body.add_child(GoStyle.bottom_app_bar([
+		{"icon": GoIconSet.SEARCH, "tooltip": &"search", "action": bot.note.bind("Bottom bar: Search")},
+		{"icon": GoIconSet.HEART, "tooltip": &"Like", "action": bot.note.bind("Bottom bar: Saved")}], new_post))
+	return {"banner": banner, "send": send, "tools": tools, "new_post": new_post, "state": state}
+
+
+func play_actions(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var send: GoSplitButton = refs.send
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.click(_find_button(refs.banner, "Retry"), "A banner stays until it is answered. Retry acts and folds it away.")
+	if bot.skipping(): return
+	bot.expect(refs.state.banner == "Retry", "Banner answered with Retry")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+	await bot.click(send.main_button, "The wide half of a split button runs the usual action.")
+	if bot.skipping(): return
+	bot.expect(refs.state.sent == "now", "Sent now")
+	await bot.click(send.menu_button, "The arrow half opens the variants.")
+	if bot.skipping(): return
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	await bot.pick_in_menu(send.menu_button.get_popup(), 0, "Send it later instead.")
+	if bot.skipping(): return
+	bot.expect(refs.state.sent == "later", "Send later chosen from the menu")
+	var buttons: Array = (refs.tools as Node).find_children("*", "GoIconButton", true, false)
+	if buttons.size() > 1:
+		await bot.click(buttons[1] as Control, "A floating toolbar keeps a few actions over the content.")
+		if bot.skipping(): return
+	bot.expect(refs.state.liked == 1, "Liked from the toolbar")
+	await bot.click(refs.new_post, "A bottom app bar holds actions, and the main one at its end.")
+	if bot.skipping(): return
+	bot.expect(refs.state.posts == 1, "New post from the bottom app bar")
+	await bot.wait(0.8)
+	if bot.skipping(): return
+
+
+# ── 26 Bars on the edges ───────────────────────────────────────────────
+#
+# 🔑 The frame is a plain `Control`, not a container — so each bar pins itself to one of its edges, the way it pins to
+#    the screen's in a game. The side bars stay between the top and bottom bars (`clear_of`).
+
+func build_edges(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"pressed": ""}
+	var press := func(what: String) -> void:
+		state.pressed = what
+		bot.note("Pressed: %s" % what)
+	stage.body.add_child(GoStyle.label("A HUD frame: bars that hold the edges of whatever they sit in. They draw nothing.",
+		GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY)))
+	var frame := Control.new()
+	frame.name = "HudFrame"
+	frame.custom_minimum_size.y = 400
+	var face := GoStyle.card()
+	face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame.add_child(face)
+	var world := CenterContainer.new()
+	world.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	world.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	world.add_child(GoStyle.label("The game shows here", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	frame.add_child(world)
+
+	var top := GoTopBar.make(3)
+	top.edge_margin = 8
+	var back := GoStyle.icon_button(GoIconSet.BACK, press.bind("Back"), -1, &"back")
+	top.add_start(back)
+	top.add_center(GoStyle.label("Stage 3"))
+	top.add_end(GoStyle.chip("1,250", GoUi.color(GoTheme.WARNING), false, GoIconSet.COIN))
+	frame.add_child(top)
+	var actions := GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)
+	actions.edge_margin = 8
+	var moves: Array[Button] = []
+	for word in ["Attack", "Guard", "Item", "Run"]:
+		var move := GoStyle.button(word, press.bind(word), GoStyle.Tone.COMPACT)
+		GoStyle.natural_width(move)
+		actions.add_start(move)
+		moves.append(move)
+	frame.add_child(actions)
+	var tools := GoLeftSideBar.make(3)
+	tools.edge_margin = 8
+	var filter := GoStyle.icon_button(GoIconSet.FILTER, press.bind("Filter"), -1, &"Filter")
+	tools.add_start(GoStyle.icon_button(GoIconSet.MENU, press.bind("Menu"), -1, &"menu"))
+	tools.add_center(filter)
+	tools.add_end(GoStyle.icon_button(GoIconSet.SETTINGS, press.bind("Settings"), -1, &"settings"))
+	frame.add_child(tools)
+	# A tap-once column on the right: the pets a player can call. The game marks who is out and greys who cannot come.
+	var side := GoRightSideBar.make(1, GoRightSideBar.Justify.CENTER)
+	side.edge_margin = 8
+	var pets := ["Hen", "Cat", "Dog", "Pig", "Sheep", "Cow"]
+	var summons := GoChoiceColumn.make(pets, 4)
+	summons.set_dimmed(4, true)
+	summons.item_pressed.connect(func(index: int) -> void:
+		if summons.is_dimmed(index): return
+		var out := not summons.is_selected(index)
+		summons.set_selected(index, out)
+		bot.note("%s %s" % [pets[index], "called" if out else "sent home"]))
+	side.add_start(summons)
+	frame.add_child(side)
+	for bar: GoSideBar in [tools, side]: bar.clear_of([top, actions] as Array[GoEdgeBar])
+	stage.body.add_child(frame)
+
+	stage.body.add_child(GoStyle.section("Equal columns, as many as fit", false))
+	var tiles := GoGrid.make(1, 120.0)
+	for index in 5:
+		var tile := GoStyle.card()
+		tile.add_child(GoStyle.label("Tile %d" % (index + 1)))
+		tiles.add_child(tile)
+	stage.body.add_child(tiles)
+	return {"back": back, "moves": moves, "filter": filter, "summons": summons, "tiles": tiles, "state": state}
+
+
+func play_edges(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var summons: GoChoiceColumn = refs.summons
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.click(refs.back, "The top bar: back at the start, the title centred, the coins at the end.")
+	if bot.skipping(): return
+	bot.expect(refs.state.pressed == "Back", "Top bar button pressed")
+	await bot.click(refs.moves[1], "The bottom bar spreads its buttons with one gap between every pair.")
+	if bot.skipping(): return
+	bot.expect(refs.state.pressed == "Guard", "Bottom bar button pressed")
+	await bot.click(refs.filter, "The side bars keep between the top and the bottom bar.")
+	if bot.skipping(): return
+	bot.expect(refs.state.pressed == "Filter", "Side bar button pressed")
+	await bot.reveal(summons)
+	if bot.skipping(): return
+	await bot.click_at(summons.get_global_rect().position + summons.row_rect(2).get_center(),
+		"A tap on a row acts at once: call the dog.")
+	if bot.skipping(): return
+	bot.expect(summons.is_selected(2), "The dog is out")
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	await bot.click_at(summons.get_global_rect().position + summons.row_rect(4).get_center(),
+		"A greyed row cannot act now — the sheep is resting.")
+	if bot.skipping(): return
+	bot.expect(not summons.is_selected(4), "The resting sheep stays home")
+	await bot.reveal(refs.tiles)
+	if bot.skipping(): return
+	await bot.say("A grid of equal columns, counted again whenever the width changes.")
+	if bot.skipping(): return
+	await bot.wait(1.0)
+	if bot.skipping(): return
+
+
+# ── 27 Tabs and steps ──────────────────────────────────────────────────
+
+func build_steps(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"placed": 0}
+	var tab_names := ["Posts", "Photos", "Saved"]
+	stage.body.add_child(GoStyle.section("Tabs with pages you swipe", false))
+	var pages: Array = []
+	for spec in [[GoIconSet.CHAT, "Swipe the page sideways, or tap a tab."], [GoIconSet.STAR, "Photos go here."],
+			[GoIconSet.HEART, "Nothing saved yet."]]:
+		var paper := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+		# 🔑 PASS — a swipe that starts on the page must reach the tab view.
+		paper.mouse_filter = Control.MOUSE_FILTER_PASS
+		paper.add_child(GoUi.icons().node(spec[0], 24, GoUi.color(GoTheme.SECONDARY)))
+		paper.add_child(GoStyle.label(spec[1], GoTheme.ROLE_BODY))
+		pages.append(paper)
+	var tabs := GoTabView.make(tab_names, pages)
+	tabs.custom_minimum_size.y = 150
+	tabs.tab_changed.connect(func(index: int) -> void: bot.note("Tab view: %s" % tab_names[index]))
+	stage.body.add_child(tabs)
+
+	stage.body.add_child(GoStyle.section("Steps, one open at a time", false))
+	var step_names := ["Cart", "Address", "Payment"]
+	var steps := GoStepper.make([
+		{"title": step_names[0], "subtitle": "3 items", "content": GoStyle.label("Check the items in your cart.")},
+		{"title": step_names[1], "content": GoStyle.label("Where should it go?")},
+		{"title": step_names[2], "content": GoStyle.label("Pay by card or wallet.")},
+	])
+	steps.step_changed.connect(func(index: int) -> void: bot.note("Step: %s" % step_names[index]))
+	steps.finished.connect(func() -> void:
+		state.placed += 1
+		bot.note("Order placed"))
+	stage.body.add_child(steps)
+	return {"tabs": tabs, "steps": steps, "state": state}
+
+
+func play_steps(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var tabs: GoTabView = refs.tabs
+	var steps: GoStepper = refs.steps
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.reveal(tabs)
+	if bot.skipping(): return
+	var bar := tabs.tab_bar
+	await bot.click_at(bar.get_global_rect().position + bar.get_tab_rect(1).get_center(), "Tap a tab: its page slides in.")
+	if bot.skipping(): return
+	await _until(bot, func() -> bool: return tabs.current() == 1)
+	bot.expect(tabs.current() == 1, "Photos tab chosen")
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	var area := tabs.get_global_rect()
+	var middle := Vector2(area.get_center().x + area.size.x * 0.25, (bar.get_global_rect().end.y + area.end.y) * 0.5)
+	await bot.say("Or swipe the page itself toward the start.")
+	if bot.skipping(): return
+	await bot.drag([middle, middle - Vector2(area.size.x * 0.55, 0.0)])
+	if bot.skipping(): return
+	await _until(bot, func() -> bool: return tabs.current() == 2)
+	bot.expect(tabs.current() == 2, "A sideways swipe turned to Saved")
+	await bot.reveal(steps)
+	if bot.skipping(): return
+	for press in [["Next", "Next opens the following step and ticks this one."], ["Next", ""],
+			["Back", "Back is always free."], ["Next", ""], ["Next", "The last step's button says Done."]]:
+		await bot.click(steps.find_child(press[0], true, false) as Control, press[1])
+		if bot.skipping(): return
+		await bot.wait(0.35)
+		if bot.skipping(): return
+	bot.expect(refs.state.placed == 1, "The checkout finished")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+
+
+# ── 28 Dates and times ─────────────────────────────────────────────────
+
+func build_dates(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"date": {}, "time": [9, 30], "amount": 1}
+	stage.body.add_child(GoStyle.section("A day from a month", false))
+	var dates := GoDatePicker.make({"year": 2026, "month": 10, "day": 2}, func(date: Dictionary) -> void:
+		state.date = date
+		bot.note("Date: %d-%02d-%02d" % [date.year, date.month, date.day]))
+	stage.body.add_child(dates)
+
+	stage.body.add_child(GoStyle.section("A time on a dial", false))
+	var clock := GoTimePicker.make(9, 30, func(hour: int, minute: int) -> void:
+		state.time = [hour, minute]
+		bot.note("Time: %d:%02d" % [hour, minute]))
+	stage.body.add_child(clock)
+
+	stage.body.add_child(GoStyle.section("Wheels that settle on one", false))
+	var wheels := GoStyle.row(GoUi.metric(GoTheme.GAP))
+	var hours: Array = []
+	for hour in 24: hours.append(str(hour).pad_zeros(2))
+	var minutes: Array = []
+	for step in 12: minutes.append(str(step * 5).pad_zeros(2))
+	wheels.add_child(GoWheelPicker.make(hours, 9))
+	wheels.add_child(GoWheelPicker.make(minutes, 6))
+	var amounts := ["x1", "x5", "x10", "x50"]
+	var amount := GoWheelPicker.make(amounts, 1, func(index: int) -> void:
+		state.amount = index
+		bot.note("Amount: %s" % amounts[index]))
+	wheels.add_child(amount)
+	stage.body.add_child(wheels)
+	return {"dates": dates, "clock": clock, "amount": amount, "state": state}
+
+
+func play_dates(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var dates: GoDatePicker = refs.dates
+	var clock: GoTimePicker = refs.clock
+	var amount: GoWheelPicker = refs.amount
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.click(dates.find_child("Day15", true, false) as Control, "Today is ringed; the picked day is filled.")
+	if bot.skipping(): return
+	bot.expect(int(refs.state.date.get("day", 0)) == 15, "15 October picked")
+	await bot.wait(0.5)
+	if bot.skipping(): return
+	# 🛑 The dial is the picker's own child — the bot aims at it the way a finger would, by where the numbers are.
+	var dial: Control = clock._dial
+	await bot.reveal(dial)
+	if bot.skipping(): return
+	var face := dial.get_global_rect()
+	var reach := minf(face.size.x, face.size.y) * 0.5 * 0.75
+	await bot.click_at(face.get_center() + Vector2(reach, 0.0), "Tap the hour on the dial; it turns to the minutes.")
+	if bot.skipping(): return
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	await bot.click_at(face.get_center() - Vector2(reach, 0.0), "Then the minutes: nine o'clock is a quarter to.")
+	if bot.skipping(): return
+	bot.expect(refs.state.time == [3, 45], "Time set to 3:45")
+	await bot.reveal(amount)
+	if bot.skipping(): return
+	await bot.click_at(amount.get_global_rect().get_center() + Vector2(0.0, amount.item_height),
+		"A tap below the band brings that item up; it settles, then says so.")
+	if bot.skipping(): return
+	await _until(bot, func() -> bool: return refs.state.amount == 2)
+	bot.expect(amount.get_selected() == 2 and refs.state.amount == 2, "Amount wheel settled on x10")
+	await bot.wait(0.6)
+	if bot.skipping(): return
+
+
+# ── 29 Long lists ──────────────────────────────────────────────────────
+
+func build_feeds(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"refreshed": 0, "deleted": "", "read": "", "moves": []}
+	stage.body.add_child(GoStyle.section("A thousand rows, only the ones in view built", false))
+	var feed := GoListView.make(1000, 48.0, func(index: int) -> Control:
+		return GoStyle.list_row(Button.new(), GoIconSet.USER, "Player %d" % (index + 1), Callable(), Color.TRANSPARENT,
+			"", false))
+	feed.custom_minimum_size.y = 230
+	feed.spacing = GoUi.metric(GoTheme.GAP_TINY)
+	stage.body.add_child(feed)
+	# 🛑 Connect after `attach()` returns — a lambda handed to `attach()` would capture `refresh` before it is assigned.
+	var refresh := GoRefresh.attach(feed)
+	refresh.refresh_requested.connect(func() -> void:
+		bot.note("Feed refreshing")
+		await feed.get_tree().create_timer(0.8).timeout
+		if not is_instance_valid(refresh): return
+		refresh.finish()
+		state.refreshed += 1
+		bot.note("Feed refreshed"))
+	stage.body.add_child(GoStyle.label("At the top, pull the list down and let go to refresh it.", GoTheme.ROLE_MICRO,
+		GoUi.color(GoTheme.MUTED)))
+
+	stage.body.add_child(GoStyle.section("Rows you swipe aside", false))
+	var mails: Array[GoSwipeRow] = []
+	for who in ["Ann", "Ben"]:
+		var line := GoSwipeRow.wrap(GoStyle.list_row(Button.new(), GoIconSet.CHAT, "Message from %s" % who, Callable(),
+			Color.TRANSPARENT, "", false),
+			{"icon": GoIconSet.TRASH, "text": "Delete", "tone": GoTheme.DANGER, "action": func() -> void:
+				state.deleted = who
+				bot.note("Deleted: %s" % who)},
+			{"icon": GoIconSet.CHECK, "text": "Read", "tone": GoTheme.SUCCESS, "dismiss": false, "action": func() -> void:
+				state.read = who
+				bot.note("Read: %s" % who)})
+		stage.body.add_child(line)
+		mails.append(line)
+
+	stage.body.add_child(GoStyle.section("A queue you put in order", false))
+	var songs := ["Intro", "Village theme", "Boss battle", "Credits"]
+	var rows: Array = []
+	for title in songs:
+		rows.append(GoStyle.list_row(Button.new(), GoIconSet.PLAY, title, Callable(), Color.TRANSPARENT, "", false))
+	var queue := GoReorderList.make(rows)
+	queue.reordered.connect(func(from: int, to: int) -> void:
+		songs.insert(to, songs.pop_at(from))
+		state.moves.append([from, to])
+		bot.note("Moved: %s → %d" % [songs[to], to + 1]))
+	stage.body.add_child(queue)
+	return {"feed": feed, "refresh": refresh, "mails": mails, "queue": queue, "state": state}
+
+
+func play_feeds(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var feed: GoListView = refs.feed
+	var queue: GoReorderList = refs.queue
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.reveal(feed)
+	if bot.skipping(): return
+	var top := feed.get_global_rect()
+	var grab := Vector2(top.get_center().x, top.position.y + 24.0)
+	await bot.say("At the top of a list, pull it down and let go.")
+	if bot.skipping(): return
+	await bot.drag([grab, grab + Vector2(0.0, 90.0), grab + Vector2(0.0, 170.0)])
+	if bot.skipping(): return
+	await _until(bot, func() -> bool: return refs.state.refreshed >= 1, 3.0)
+	bot.expect(refs.state.refreshed == 1, "Pull to refresh ran once")
+	await bot.scroll_by(feed, 8, "Roll through a thousand rows: only the ones near the view exist.")
+	if bot.skipping(): return
+	bot.expect(feed.scroll_vertical > 0 and feed.built_indexes().size() < 40,
+		"Only the rows near the view are built (%d)" % feed.built_indexes().size())
+	var mails: Array[GoSwipeRow] = refs.mails
+	for at in mails.size():
+		var line := mails[at]
+		if not is_instance_valid(line): continue
+		await bot.reveal(line)
+		if bot.skipping(): return
+		await _still(bot, line)
+		var rect := line.get_global_rect()
+		var lean := rect.size.x * 0.32 * (1.0 if at == 0 else -1.0)
+		await bot.say("Swipe toward the start to delete." if at == 0 else "Toward the end marks it read and springs back.")
+		if bot.skipping(): return
+		await bot.drag([rect.get_center() + Vector2(lean, 0.0), rect.get_center() - Vector2(lean, 0.0) * 1.1])
+		if bot.skipping(): return
+		await bot.wait(0.6)
+		if bot.skipping(): return
+	bot.expect(refs.state.deleted == "Ann" and refs.state.read == "Ben", "Ann deleted, Ben read")
+	# 🛑 Ann's row is still folding away, and the queue rises with it — aim only once it has stopped.
+	await _still(bot, queue)
+	await bot.reveal(queue)
+	if bot.skipping(): return
+	await _still(bot, queue)
+	var rows := queue.rows()
+	var grip := rows[3].get_parent().get_node(^"Grip") as Control
+	var step := rows[3].get_global_rect().position.y - rows[2].get_global_rect().position.y
+	var hold := grip.get_global_rect().get_center()
+	await bot.say("Drag a row by its grip; the others step aside.")
+	if bot.skipping(): return
+	# 🛑 Upward — the queue sits at the foot of the stage, and a drag down there runs into the edge that scrolls.
+	await bot.drag([hold, hold - Vector2(0.0, step * 2.2)])
+	if bot.skipping(): return
+	await bot.wait(0.4)
+	if bot.skipping(): return
+	bot.expect(refs.state.moves == [[3, 1]], "Credits moved to second (%s)" % str(refs.state.moves))
+
+
+# ── 30 Progress and ranges ─────────────────────────────────────────────
+
+func build_progress(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"done": 0, "price": []}
+	stage.body.add_child(GoStyle.section("Progress you can measure", false))
+	var line := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+	var download := GoProgress.linear()
+	download.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	download.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(download)
+	var percent := GoStyle.label("0%", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.SECONDARY))
+	GoStyle.natural_width(percent)
+	percent.custom_minimum_size.x = 48
+	line.add_child(percent)
+	stage.body.add_child(line)
+	var start := GoStyle.button("Download the map pack", Callable(), GoStyle.Tone.PRIMARY)
+	start.pressed.connect(func() -> void:
+		if download.value > 0.0 and download.value < 1.0: return
+		bot.note("Download started")
+		var run := download.create_tween()
+		run.tween_method(func(at: float) -> void:
+			download.value = at
+			percent.text = "%d%%" % roundi(at * 100.0), 0.0, 1.0, 1.2)
+		run.finished.connect(func() -> void:
+			state.done += 1
+			bot.note("Download done")))
+	stage.body.add_child(start)
+
+	stage.body.add_child(GoStyle.section("Waits with no measure", false))
+	var waits := GoStyle.row(GoUi.metric(GoTheme.GAP))
+	waits.add_child(GoProgress.circular(true))
+	waits.add_child(GoLoadingIndicator.new())
+	var held := GoLoadingIndicator.new()
+	held.contained = true
+	waits.add_child(held)
+	stage.body.add_child(waits)
+	stage.body.add_child(GoStyle.label("A ring that turns, and a shape that keeps morphing — bare and on a disc.",
+		GoTheme.ROLE_MICRO, GoUi.color(GoTheme.MUTED)))
+
+	stage.body.add_child(GoStyle.section("A range with two handles", false))
+	var reading := GoStyle.label("40 – 220 gold", GoTheme.ROLE_BODY)
+	stage.body.add_child(reading)
+	var price := GoRangeSlider.make(0.0, 500.0, 40.0, 220.0, 10.0)
+	price.changed.connect(func(low: float, high: float) -> void: reading.text = "%d – %d gold" % [low, high])
+	price.change_ended.connect(func(low: float, high: float) -> void:
+		state.price = [low, high]
+		bot.note("Price: %d – %d" % [low, high]))
+	stage.body.add_child(price)
+	return {"download": download, "start": start, "waits": waits, "price": price, "state": state}
+
+
+func play_progress(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var download: GoProgress = refs.download
+	var price: GoRangeSlider = refs.price
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.click(refs.start, "A download knows how far it has come, so it shows it.")
+	if bot.skipping(): return
+	await _until(bot, func() -> bool: return refs.state.done >= 1, 3.0)
+	bot.expect(download.value >= 0.999 and refs.state.done == 1, "Download finished")
+	await bot.reveal(refs.waits)
+	if bot.skipping(): return
+	await bot.say("No measure yet? A ring that turns, or a shape that keeps morphing.")
+	if bot.skipping(): return
+	await bot.wait(1.2)
+	if bot.skipping(): return
+	await bot.reveal(price)
+	if bot.skipping(): return
+	# The handles' spots on the track — the same sum the slider makes when it draws them.
+	var y := price.get_global_rect().get_center().y
+	var from := Vector2(price.global_position.x + price._x_of(220.0), y)
+	var to := Vector2(price.global_position.x + price._x_of(300.0), y)
+	await bot.say("A press takes the nearer handle; the two never cross.")
+	if bot.skipping(): return
+	await bot.drag([from, to])
+	if bot.skipping(): return
+	bot.expect(absf(price.high - 300.0) <= 10.0 and is_equal_approx(price.low, 40.0),
+		"High handle moved to about 300 (%d – %d)" % [price.low, price.high])
+	await bot.wait(0.6)
+	if bot.skipping(): return
+
+
+# ── 31 Pinch and zoom ──────────────────────────────────────────────────
+
+func build_zoom(stage: SimStage, bot: SimBot) -> Dictionary:
+	var state := {"noted": 1.0}
+	stage.body.add_child(GoStyle.label("A map you zoom with the wheel or two fingers, and pan once zoomed.",
+		GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.SECONDARY)))
+	var map := GridContainer.new()
+	map.columns = 8
+	for index in 48:
+		var cell := ColorRect.new()
+		var town := index in [9, 21, 30, 44]
+		var land := (index % 8 + floori(index / 8.0)) % 3 != 0
+		cell.color = GoUi.color(GoTheme.WARNING if town else (GoTheme.SUCCESS if land else GoTheme.INFO))
+		cell.color.a = 1.0 if town else 0.55
+		cell.custom_minimum_size = Vector2(20, 20)
+		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		cell.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		# 🔑 PASS — a drag that starts on the map must reach the zoom view to pan it.
+		cell.mouse_filter = Control.MOUSE_FILTER_PASS
+		map.add_child(cell)
+	var view := GoZoomView.wrap(map, 4.0)
+	view.custom_minimum_size.y = 250
+	stage.body.add_child(view)
+	var controls := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+	var zoom_in := GoStyle.icon_button(GoIconSet.PLUS, func() -> void: view.zoom_to(view.get_zoom() * 1.5), -1, &"Zoom in")
+	controls.add_child(zoom_in)
+	controls.add_child(GoStyle.icon_button(GoIconSet.MINUS, func() -> void: view.zoom_to(view.get_zoom() / 1.5), -1,
+		&"Zoom out"))
+	var reset := GoStyle.button("Reset", func() -> void:
+		view.reset()
+		bot.note("Zoom reset"), GoStyle.Tone.COMPACT)
+	GoStyle.natural_width(reset)
+	controls.add_child(reset)
+	var reading := GoStyle.label("1.0×", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.SECONDARY))
+	reading.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	controls.add_child(reading)
+	stage.body.add_child(controls)
+	view.zoom_changed.connect(func(zoom: float) -> void:
+		reading.text = "%.1f×" % zoom
+		# Every frame of a zoom reports — the log gets a line only for a real step.
+		if absf(zoom - state.noted) >= 0.2:
+			state.noted = zoom
+			bot.note("Zoom: %.1f×" % zoom))
+	return {"view": view, "zoom_in": zoom_in, "reset": reset, "state": state}
+
+
+func play_zoom(_stage: SimStage, bot: SimBot, refs: Dictionary) -> void:
+	var view: GoZoomView = refs.view
+	await bot.settle()
+	if bot.skipping(): return
+	await bot.reveal(view)
+	if bot.skipping(): return
+	await bot.scroll_by(view, -3, "The wheel zooms in around the pointer.")
+	if bot.skipping(): return
+	await bot.wait(0.3)
+	if bot.skipping(): return
+	bot.expect(view.get_zoom() > 1.4, "The wheel zoomed in (%.2f)" % view.get_zoom())
+	var centre := view.get_global_rect().get_center()
+	await bot.say("Zoomed in, a drag pans. The map never slides out of the view.")
+	if bot.skipping(): return
+	await bot.drag([centre, centre + Vector2(-110.0, -50.0)])
+	if bot.skipping(): return
+	bot.expect(view.content.position != Vector2.ZERO, "The map panned")
+	await bot.click(refs.zoom_in, "Buttons zoom too — for anyone without a wheel or two fingers.")
+	if bot.skipping(): return
+	await bot.wait(0.5)
+	if bot.skipping(): return
+	await bot.click(refs.reset, "Reset goes back to the whole map.")
+	if bot.skipping(): return
+	await _until(bot, func() -> bool: return is_equal_approx(view.get_zoom(), 1.0))
+	bot.expect(is_equal_approx(view.get_zoom(), 1.0), "Back to 1×")
+	await bot.wait(0.5)
 	if bot.skipping(): return

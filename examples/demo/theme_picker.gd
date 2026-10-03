@@ -39,18 +39,22 @@ static func title(preset: StringName) -> String:
 	return TITLES.get(family, String(family).capitalize() + " theme")
 
 
-static func configure(settings: GoConfig, default_colors: Dictionary[StringName, Color]) -> void:
+## Puts [param settings] on and dresses it in [param preset] — the picked one when left empty. A Fast tour passes the
+## theme it is wearing for one scene; `active_preset` keeps the person's pick.
+static func configure(settings: GoConfig, default_colors: Dictionary[StringName, Color], preset: StringName = &"") -> void:
+	if preset.is_empty(): preset = active_preset
 	# Keep the original demo's presentation; other families use their own palette.
 	var colors: Dictionary[StringName, Color] = {}
-	if active_preset == GoThemePresets.DEFAULT_DARK: colors.assign(default_colors)
+	if preset == GoThemePresets.DEFAULT_DARK: colors.assign(default_colors)
 	settings.color_overrides = colors
 	GoUi.config = settings
-	GoUi.use_preset(active_preset)
+	GoUi.use_preset(preset)
 
 
-## The active family's dark and light themes. A family without a light preset shows its dark one twice.
-static func pair() -> Array[Theme]:
-	var dark := GoThemePresets.find(active_preset)
+## The family's dark and light themes — [param preset]'s family, or the picked one. A family without a light preset
+## shows its dark one twice.
+static func pair(preset: StringName = &"") -> Array[Theme]:
+	var dark := GoThemePresets.find(active_preset if preset.is_empty() else preset)
 	if dark == null: dark = GoThemePresets.find(GoThemePresets.DEFAULT_DARK)
 	var light := GoThemePresets.find(StringName(String(dark.id).trim_suffix("_dark") + "_light"))
 	return [dark.theme, light.theme if light != null else dark.theme]
