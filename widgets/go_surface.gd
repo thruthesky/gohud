@@ -32,9 +32,6 @@ signal height_changed(ratio: float)
 
 enum Placement { CENTER, BOTTOM, ANCHOR }
 
-## Threshold for falling back from dense to normal density — padding returns only once this much room is free (stops flicker).
-const RELAX := 0.85
-
 ## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
 ## Was the last input from a keyboard or gamepad? 🛑 A window opened with a pointer gets **no focus ring** —
@@ -581,7 +578,7 @@ func relayout() -> void:
 		if placement == Placement.CENTER and not resizable:
 			room = maxf(room, minf(cap_height, area.size.y * settings.surface_fit_max_height_ratio))
 		# If it looks like overflowing, try one step less padding and gap — then measure again.
-		_update_density(room)
+		_update_density(room, width)
 		height = clampf(_desired_height(), 1.0, room)
 	else:
 		_update_density()
@@ -598,11 +595,23 @@ func relayout() -> void:
 ##
 ## Pass `room` (greater than 0) to drop a step **when the content overflows that height** as well — a form with the
 ## virtual keyboard covering half the screen, say: not much room, yet everything has to be visible.
-## 🛑 Coming back needs slack (`RELAX`) — measuring right at the boundary makes the padding shrink and grow, flickering.
-func _update_density(room := 0.0) -> void:
+## Pass `width` (greater than 0) — the card width this relayout is about to apply — and the content is measured **at that
+## width, after the layout has been sorted** (`_sort_now`).
+## 🛑 Measuring before the sort reads the *previous* width and density: a wrapping row (`HFlowContainer` of reward cards)
+##    that fits two per line in one step wraps to one per line in the other, so the card flipped between the two
+##    every frame — title size, column count, scrollbar and height all jumping (Laryen supply crate, 2026-10-03).
+## 🔑 Both steps are measured, each at its own settled layout, and the roomier one is kept **only if it fits** — a pure
+##    function of (width, room, content). The old slack rule (return to normal density only below 0.85·room) could not stop this: dense
+##    content ≤ 0.85·room while roomy content > room alternates forever.
+func _update_density(room := 0.0, width := 0.0) -> void:
 	var small := compact or get_viewport_rect().size.y < 420
 	if not small and room > 0.0:
-		small = _desired_height() > (room * RELAX if _dense else room)
+		_apply_density(false, width)
+		small = _desired_height() > room
+	_apply_density(small, width)
+
+
+func _apply_density(small: bool, width: float) -> void:
 	_dense = small
 	var token := GoTheme.PADDING_COMPACT if small else GoTheme.PADDING
 	var next := GoUi.metric(token)
@@ -613,6 +622,20 @@ func _update_density(room := 0.0) -> void:
 		if scroll != null: scroll.set_panel_padding(next)
 	var role := GoTheme.ROLE_BODY if small else GoTheme.ROLE_SUBTITLE
 	if title_label.get_meta(&"go_text_role", &"") != role: GoStyle.typography(title_label, role)
+	if width > 0.0: _sort_now(width)
+
+
+## Gives the card `width` and sorts its whole subtree right now, top-down, so that wrapping rows and labels report the
+## minimum size they have **at that width** (the engine would only do it at the end of the frame).
+func _sort_now(width: float) -> void:
+	card.size = Vector2(width, maxf(card.size.y, 1.0)).round()
+	_sort_subtree(card)
+
+
+func _sort_subtree(node: Node) -> void:
+	if node is Container: node.notification(Container.NOTIFICATION_SORT_CHILDREN)
+	for child in node.get_children():
+		if child is Control and child.visible: _sort_subtree(child)
 
 
 ## The card's inner padding (dp) — one step smaller on narrow screens. 🔑 Decided after `relayout`.

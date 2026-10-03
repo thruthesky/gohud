@@ -6,6 +6,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A fit-content `GoSurface` no longer jitters between two sizes every frame.** `relayout()` chose the dense/normal
+  step from `_desired_height()` measured *before* the layout was sorted at the new width and padding, so a wrapping row
+  (reward cards in an `HFlowContainer`) read two-per-line, then one-per-line, then two again — title size, column
+  count, scrollbar and card height all flipped each frame. The step is now decided by measuring both candidates at
+  their own sorted layout (`_sort_now`) and keeping normal density only if it fits `room`; the `RELAX` slack
+  constant is gone (it could not stop a dense ≤ 0.85·room / normal > room cycle). Laryen repro:
+  `tests/crate_dialog_jitter_headless.gd` (36 width × height cases, 59 changes in 60 frames before, 0 after).
+
 - **The demo app shows every theme.** Its theme picker listed families from a hand-kept list, so the showreel never
   rotated into Material and Kids appeared nowhere. `examples/demo/theme_picker.gd` now reads the families from
   `themes/presets/` (each `<family>_dark`, paired with `<family>_light` for the Themes & icons chapter), and the
