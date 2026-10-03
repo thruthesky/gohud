@@ -11,7 +11,7 @@
     {
       "name": "gohud",
       "source": "./",
-      "description": "Build Godot 4.7+ game and app UI with gohud (tested on Godot 4.7; officially supports Godot 4.7 and newer): menus, HUDs placed by corner anchors or edge bars, quick slots, joystick, summon columns, dialogs, sheets, drawers, forms, snackbars, app screens with Flutter's widgets, presets (default, sci-fi, medieval, Material 3 Expressive), JSON themes, skins and icon sets. Includes /gohud:preview to launch the gallery or demo and /gohud:features to explain every feature. Install: /plugin install gohud --marketplace thruthesky/gohud (Claude Code 2.1.275+); on older versions, /plugin marketplace add thruthesky/gohud first, then /plugin install gohud@gohud.",
+      "description": "Build Godot 4.7+ game and app UI with gohud (tested on Godot 4.7; officially supports Godot 4.7 and newer): menus, HUDs placed by corner anchors or edge bars, quick slots, joystick, summon columns, dialogs, sheets, drawers, forms, snackbars, app screens with Flutter's widgets, presets (default, sci-fi, medieval, Material 3 Expressive, kids), JSON themes, skins and icon sets. Includes /gohud:preview to launch the gallery or demo and /gohud:features to explain every feature. Install: /plugin install gohud --marketplace thruthesky/gohud (Claude Code 2.1.275+); on older versions, /plugin marketplace add thruthesky/gohud first, then /plugin install gohud@gohud.",
       "author": {
         "name": "JaeHo Song",
         "url": "https://github.com/thruthesky"

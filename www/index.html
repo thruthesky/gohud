@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — a HUD &amp; UI kit for Godot 4</title>
-<meta name="description" content="A customizable HUD and UI kit for Godot 4.7+. Floating surfaces, bottom sheets, dialogs, forms, snackbars, HUD bars, quick slots and a virtual joystick, with eight presets — default, sci-fi, medieval and Material 3.">
+<meta name="description" content="A customizable HUD and UI kit for Godot 4.7+. Floating surfaces, bottom sheets, dialogs, forms, snackbars, HUD bars, quick slots and a virtual joystick, with ten presets — default, sci-fi, medieval, Material 3 and kids.">
 <link rel="stylesheet" href="site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud is a HUD and UI kit for Godot 4.7 and newer. Floating windows, bottom sheets, dialogs, forms,
       snackbars, coach marks, HUD bars, quick slots and a virtual joystick run off <b>one theme and one
       swappable icon set</b>, and handle the safe area, the virtual keyboard, RTL and touch targets for you.
-      <b>Eight presets</b> — default, sci-fi, medieval and Material 3, each dark and light — change colours and shapes in one line.
+      <b>Ten presets</b> — default, sci-fi, medieval, Material 3 and kids, each dark and light — change colours and shapes in one line.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -121,7 +121,7 @@
       <figcaption><b>Sci-fi</b> — angular panels and touch controls</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">All eight presets and how to switch them →</a></p>
+  <p><a href="#presets">All ten presets and how to switch them →</a></p>
 </section>
 
 <section id="what">
@@ -157,7 +157,7 @@
       <p>Widgets only know <code>GoIconSet.CLOSE</code>. Swap the set and every drawing changes without touching a line of code. <a href="icons.html">Icons →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line" data-anchor="six-looks-one-line">Eight looks, one line</h3>
+      <h3 id="six-looks-one-line" data-anchor="six-looks-one-line">Ten looks, one line</h3>
       <p><code>GoUi.use_preset()</code> swaps theme, skin and icons together — rounded, chamfered sci-fi, forged medieval frames or Material 3 app components.</p>
     </div>
     <div class="card">
@@ -414,7 +414,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Every colour pair and <b>every button state's label over the panel it sits on</b> is measured against
-    WCAG, in all eight themes. Translucent colours are composited over their real backdrop first — measuring
+    WCAG, in all ten themes. Translucent colours are composited over their real backdrop first — measuring
     them directly reports a better ratio than the screen shows.
   </p>
   <p>

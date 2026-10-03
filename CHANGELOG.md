@@ -115,6 +115,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **Two themes for children — `kids_light` and `kids_dark`: the toy box.** Chunky outlines and a solid lip under every
+  key, which sinks when pressed; sunken text fields, bubble tabs, jelly bars with a shine; each family of controls in its
+  own crayon — grape primary, sky normal, sunshine pills (mint at night), mint folding titles, a sunshine line under
+  section headings; candy quick slots that sink while cooling down, sticker badges, a rainbow joystick with a candy
+  knob, crayon chart slices. Round plates (18 · 12 · 34), solid panels (the HUD at 88%), a cream-and-peach day and a
+  blueberry night. The shapes are `tools/theme_kids.py` (the controls the engine draws) and `GoSkinKids` (the parts
+  gohud draws in code). Sizes are the default family's — a lip sits inside its control and the content margins keep
+  their sum — and no font is overridden, so a host's Korean, Japanese or Chinese font still draws. Both pass
+  `tools/check_contrast.py` with nothing below the bar.
+- **`GoSkin.chart_colors()`** — the colours a chart cycles through for slices given none (`GoDonut`). A skin gives its
+  own; the default is the colours `GoDonut` used before, and the kids skin gives crayons.
 - **Layouts — `GoTopBar`, `GoBottomBar`, `GoLeftSideBar`, `GoRightSideBar` and `GoGrid`**: containers that draw
   nothing and only place what they hold (the container ignores the mouse; its items keep their own filters, focus and
   size flags).

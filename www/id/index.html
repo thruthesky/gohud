@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — kit HUD &amp; UI untuk Godot 4</title>
-<meta name="description" content="Kit HUD dan UI yang bisa disesuaikan untuk Godot 4.7+. Permukaan mengambang, lembar bawah, dialog, formulir, snackbar, bar HUD, slot cepat, dan joystick virtual, dengan delapan preset — default, sci-fi, abad pertengahan, dan Material 3.">
+<meta name="description" content="Kit HUD dan UI yang bisa disesuaikan untuk Godot 4.7+. Permukaan mengambang, lembar bawah, dialog, formulir, snackbar, bar HUD, slot cepat, dan joystick virtual, dengan sepuluh preset — default, sci-fi, abad pertengahan, Material 3, dan anak-anak.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud adalah kit HUD dan UI untuk Godot 4.7 ke atas. Jendela mengambang, lembar bawah, dialog, formulir,
       snackbar, coach mark, bar HUD, slot cepat, dan joystick virtual semuanya berjalan dari <b>satu tema dan satu
       set ikon yang bisa ditukar</b>, sekaligus mengurus area aman, keyboard virtual, RTL, dan target sentuh untuk Anda.
-      <b>Delapan preset</b> — default, sci-fi, abad pertengahan, dan Material 3, masing-masing gelap dan terang — mengubah warna dan bentuk dalam satu baris.
+      <b>Sepuluh preset</b> — default, sci-fi, abad pertengahan, Material 3, dan anak-anak, masing-masing gelap dan terang — mengubah warna dan bentuk dalam satu baris.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -121,7 +121,7 @@
       <figcaption><b>Sci-fi</b> — panel bersudut dan kontrol sentuh</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Kedelapan preset dan cara menggantinya →</a></p>
+  <p><a href="#presets">Kesepuluh preset dan cara menggantinya →</a></p>
 </section>
 
 <section id="what">
@@ -157,7 +157,7 @@
       <p>Widget hanya tahu <code>GoIconSet.CLOSE</code>. Tukar setnya dan semua gambar berubah tanpa menyentuh satu baris kode. <a href="icons.html">Ikon →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Delapan tampilan, satu baris</h3>
+      <h3 id="six-looks-one-line">Sepuluh tampilan, satu baris</h3>
       <p><code>GoUi.use_preset()</code> menukar tema, skin, dan ikon sekaligus — bingkai membulat, sci-fi bersudut potong, tempaan abad pertengahan, atau komponen aplikasi Material 3.</p>
     </div>
     <div class="card">
@@ -414,7 +414,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Setiap pasangan warna dan <b>setiap label keadaan tombol di atas panel tempatnya berada</b> diukur terhadap
-    WCAG, pada kedelapan tema. Warna tembus pandang lebih dulu dikomposit di atas latar sesungguhnya — mengukurnya
+    WCAG, pada kesepuluh tema. Warna tembus pandang lebih dulu dikomposit di atas latar sesungguhnya — mengukurnya
     secara langsung akan melaporkan rasio yang lebih baik daripada yang tampak di layar.
   </p>
   <p>

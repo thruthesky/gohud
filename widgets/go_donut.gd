@@ -160,10 +160,11 @@ func _draw_center() -> void:
 		HORIZONTAL_ALIGNMENT_LEFT, -1, small, GoUi.color(GoTheme.MUTED))
 
 
-## The colors cycled through for slices given none. 🔑 Picked from theme tokens only — a hardcoded palette would not follow when the skin changes.
+## The colors cycled through for slices given none. 🔑 The skin's chart colours (`GoSkin.chart_colors`), picked from
+## theme tokens — a hardcoded palette would not follow when the skin changes.
 func _palette(index: int) -> Color:
-	var wheel := [GoTheme.ACCENT, GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.INFO, GoTheme.DANGER]
-	return GoUi.color(wheel[index % wheel.size()])
+	var wheel := GoUi.skin().chart_colors()
+	return wheel[index % wheel.size()] if not wheel.is_empty() else GoUi.color(GoTheme.ACCENT)
 
 
 ## The legend you read with your eyes. 🛑 **Never colored dots alone** — the name and the share go beside them as text.

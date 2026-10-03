@@ -885,7 +885,7 @@ var pill := GoStyle.overlay_panel()
 
 ### `GoUi · GoThemePresets`
 
-Extends `RefCounted`. Pick one of eight presets; read colours and sizes from the tokens. Details: `theming.md` §1 (Three layers and presets).
+Extends `RefCounted`. Pick a preset — default, sci-fi, medieval, Material or kids; read colours and sizes from the tokens. Details: `theming.md` §1 (Three layers and presets).
 
 ```gdscript
 GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)

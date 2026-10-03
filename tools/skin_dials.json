@@ -41,5 +41,10 @@
   "material": {
     "segment_gap": 2.0,
     "segment_inner_radius": 8
+  },
+  "kids": {
+    "toy_edge": 2,
+    "toy_lip": 4,
+    "crayon_tint": 0.28
   }
 }

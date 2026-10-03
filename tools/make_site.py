@@ -384,6 +384,9 @@ DIALS_EN = {
     "bracket_thickness": "Line thickness (dp) of the coach mark's targeting bracket.",
     "segment_gap": "Space (dp) between the cells of a Material connected button group.",
     "segment_inner_radius": "Corner radius (dp) where two cells of a Material connected button group meet.",
+    "toy_edge": "Outline width (dp) of a kids toy part — chips, slots, the FAB, alerts.",
+    "toy_lip": "The solid lip (dp) under a kids toy part you press; it shrinks when the part is pressed.",
+    "crayon_tint": "How much crayon colour fills a kids slot or chip face (0–1); the rest is the surface colour.",
 }
 
 SKIN_TITLES = {
@@ -391,6 +394,7 @@ SKIN_TITLES = {
     "default": {"ko": "기본 스킨", "en": "Default skin"},
     "scifi": {"ko": "sci-fi 스킨", "en": "Sci-fi skin"},
     "material": {"ko": "Material 스킨", "en": "Material skin"},
+    "kids": {"ko": "어린이 스킨", "en": "Kids skin"},
 }
 
 

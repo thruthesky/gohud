@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — bộ HUD &amp; UI cho Godot 4</title>
-<meta name="description" content="Bộ HUD và UI tùy biến được cho Godot 4.7+. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, thanh HUD, ô nhanh và cần điều khiển ảo, với tám preset — mặc định, sci-fi, trung cổ và Material 3.">
+<meta name="description" content="Bộ HUD và UI tùy biến được cho Godot 4.7+. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, thanh HUD, ô nhanh và cần điều khiển ảo, với mười preset — mặc định, sci-fi, trung cổ, Material 3 và trẻ em.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud là bộ HUD và UI cho Godot 4.7 trở lên. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu,
       snackbar, coach mark, thanh HUD, ô nhanh và cần điều khiển ảo đều chạy từ <b>một theme và một bộ
       biểu tượng thay được</b>, đồng thời tự lo vùng an toàn, bàn phím ảo, RTL và vùng chạm cho bạn.
-      <b>Tám preset</b> — mặc định, sci-fi, trung cổ và Material 3, mỗi loại có bản tối và sáng — đổi màu sắc lẫn hình dáng trong một dòng.
+      <b>Mười preset</b> — mặc định, sci-fi, trung cổ, Material 3 và trẻ em, mỗi loại có bản tối và sáng — đổi màu sắc lẫn hình dáng trong một dòng.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -121,7 +121,7 @@
       <figcaption><b>Sci-fi</b> — tấm nền góc cạnh và điều khiển cảm ứng</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Cả tám preset và cách chuyển giữa chúng →</a></p>
+  <p><a href="#presets">Cả mười preset và cách chuyển giữa chúng →</a></p>
 </section>
 
 <section id="what">
@@ -157,7 +157,7 @@
       <p>Widget chỉ biết <code>GoIconSet.CLOSE</code>. Đổi bộ biểu tượng là mọi hình vẽ đổi theo mà không phải sửa một dòng code nào. <a href="icons.html">Biểu tượng →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Tám diện mạo, một dòng</h3>
+      <h3 id="six-looks-one-line">Mười diện mạo, một dòng</h3>
       <p><code>GoUi.use_preset()</code> đổi cùng lúc theme, skin và biểu tượng — khung bo tròn, khung vát góc kiểu sci-fi, khung rèn kiểu trung cổ hay các thành phần ứng dụng của Material 3.</p>
     </div>
     <div class="card">
@@ -414,7 +414,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Mọi cặp màu và <b>nhãn của từng trạng thái nút trên chính tấm nền nó nằm lên</b> đều được đo theo
-    WCAG, trên cả tám theme. Màu bán trong suốt được ghép lên nền thật của nó trước — đo thẳng vào chúng
+    WCAG, trên cả mười theme. Màu bán trong suốt được ghép lên nền thật của nó trước — đo thẳng vào chúng
     sẽ cho tỉ số đẹp hơn những gì màn hình thật sự hiển thị.
   </p>
   <p>

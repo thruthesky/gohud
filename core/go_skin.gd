@@ -818,6 +818,15 @@ static func _time_fill(selected: bool, period: bool) -> Color:
 	return Color(GoUi.color(GoTheme.SURFACE), 0.0) if period else GoUi.color(GoTheme.SURFACE_SOFT)
 
 
+## The colours a chart cycles through for slices and series given none (`GoDonut`). Default: the theme's accent and
+## status colours — a look made for children cycles brighter crayons (`GoSkinKids`).
+func chart_colors() -> Array[Color]:
+	var out: Array[Color] = []
+	for token in [GoTheme.ACCENT, GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.INFO, GoTheme.DANGER]:
+		out.append(GoUi.color(token))
+	return out
+
+
 ## The clock dial of a time picker: `[face, hand, numbers, number under the hand]`. Default: a soft disc, the accent
 ## hand, body text, and the accent's readable ink where the hand sits.
 func dial_colors() -> Array[Color]:

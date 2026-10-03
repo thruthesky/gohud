@@ -167,6 +167,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `medieval_light` | Parchment, ink and bronze with the same forged frames | `GoSkinMedieval` |
 | `material_light` | Material 3 for app screens: pill buttons, 28dp dialogs, filled cards, M3 switches, Roboto headings | `GoSkinMaterial` |
 | `material_dark` | The same Material 3 shapes on the dark baseline | `GoSkinMaterial` |
+| `kids_light` | For children — the toy box: chunky outlines, a lip under every key that sinks when pressed, sunken fields, bubble tabs, jelly bars, a crayon colour for each kind of control, candy slots, sticker badges, a rainbow joystick; cream and peach with a grape primary — the host font is kept so non-Latin scripts still draw | `GoSkinKids` |
+| `kids_dark` | The same toy box at night: blueberry ground, sunny-yellow primary, mint pills | `GoSkinKids` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
 Explicit `theme`, `skin` and `icons` fields still win over the preset, so you can take a preset and

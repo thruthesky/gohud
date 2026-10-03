@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="GoSkinKids" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/themes/skins/go_skin_kids.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+skin_name = "kids_dark"
+alert_tint = 0.14
+badge_edge_alpha = 0.7
+badge_pad_x = 6
+badge_pad_y = 2
+chip_edge_alpha = 0.6
+chip_fill_alpha = 0.22
+crayon_tint = 0.34
+float_glow_size = 12.0
+float_shadow_alpha = 0.3
+float_shadow_lift = 5
+float_shadow_size = 8
+joystick_base_alpha = 0.45
+joystick_ring_alpha = 0.55
+joystick_ring_width = 3.0
+slot_border_idle = 2
+slot_border_lit = 3
+slot_tint_idle = 0.1
+slot_tint_lit = 0.3
+toy_edge = 2
+toy_lip = 4

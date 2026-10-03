@@ -21,7 +21,7 @@ Web: https://thruthesky.github.io/gohud/theming.html
 | Layer | Decides | Class |
 |---|---|---|
 | Theme | Colours, sizes, text scale, engine-drawn controls (buttons, inputs, tabs, toggles) | Godot `Theme` with a `GoHud` type |
-| Skin | Code-drawn shapes: joystick, slot faces, badges, coach ring/pointer, chips, skeletons, alerts, segments, dividers, section headings | `GoSkin` (`GoSkinSciFi`, `GoSkinMedieval`, `GoSkinMaterial`) |
+| Skin | Code-drawn shapes: joystick, slot faces, badges, coach ring/pointer, chips, skeletons, alerts, segments, dividers, section headings | `GoSkin` (`GoSkinSciFi`, `GoSkinMedieval`, `GoSkinMaterial`, `GoSkinKids`) |
 | Icons | Drawings by name | `GoIconSet` |
 
 A **preset** (`GoThemePreset`: `id`, `title`, `dark`, `theme`, `skin`, `icons`, `label()`) bundles the three.
@@ -32,6 +32,7 @@ A **preset** (`GoThemePreset`: `id`, `title`, `dark`, `theme`, `skin`, `icons`, 
 | `SCIFI_DARK` · `SCIFI_LIGHT` | `GoStyleBoxCut` chamfered panels, neon edge + glow, hex joystick, bracket focus | `GoSkinSciFi` · default |
 | `MEDIEVAL_DARK` · `MEDIEVAL_LIGHT` | `GoStyleBoxMedieval` iron/leather or parchment frames, rivets, Cinzel headings | `GoSkinMedieval` · 16 engraved over default |
 | `MATERIAL_LIGHT` · `MATERIAL_DARK` | Material 3 baseline for app screens: pill buttons (40dp plate in the 48dp target), 28dp dialogs, filled cards, 16dp menus, outlined fields, M3 switch/checkbox/radio, Expressive slider, connected button group, opaque surfaces, 24dp icons, Roboto at the M3 sizes (body only while the project sets no font), every M3 colour role as an `md_*` token | `GoSkinMaterial` · default |
+| `kids_light` · `kids_dark` (folder presets) | For children — **the toy box**: chunky outlines and a solid lip under every key (it sinks when pressed), sunken text fields, bubble tabs, jelly bars; each family of controls in its own crayon (grape primary, sky normal, sunshine pills — mint at night — mint folding titles); candy quick slots, sticker badges, a rainbow joystick with a candy knob, crayon chart slices; round plates (18 · 12 · 34), solid panels (`card/panel/notice/popup_alpha` 100, HUD 88). Cream-and-peach day · blueberry night with a sunny primary. Sizes are the default family's — a lip sits inside the control. 🛑 No font override — a Latin-only face turns CJK into tofu | `GoSkinKids` · default |
 
 ```gdscript
 GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # String/StringName id or a GoThemePreset
@@ -209,11 +210,11 @@ GoUi.use_preset(&"kingdom")
 | `id` · `title` · `dark` | Lowercase id (`[a-z][a-z0-9_]*`), picker label, grouping |
 | `from` | Parent: `dark`, `light`, `scifi_dark`, `scifi_light`, `medieval_dark`, `medieval_light`, `material_light`, `material_dark` or another JSON id. Omitted keys inherit; cycles fail |
 | `palette` | `background` `surface` `surface_soft` `surface_high` `border` `text` `secondary` `muted` `accent` `on_accent` `success` `warning` `danger` `info` `scrim` `shadow` `track` + `*_vivid` fills. Format `"#RRGGBB"` or `"#RRGGBB@0.35"`. Text, borders and accent are pushed to readable contrast |
-| `shape.kind` | `flat` (rounded) · `cut` (chamfer) · `medieval` (forged) · `material` (Material 3 — `tools/theme_material.py`; not the medieval `shape.material`, which is that frame's material) |
+| `shape.kind` | `flat` (rounded) · `cut` (chamfer) · `medieval` (forged) · `material` (Material 3 — `tools/theme_material.py`; not the medieval `shape.material`, which is that frame's material) · `kids` (the toy box — `tools/theme_kids.py`) |
 | `shape` sizes | `radius` `radius_small` `radius_large` `gap` `gap_small` `gap_large` `padding` `button_height` `button_padding[4]` (+ `compact_padding_x/y`) |
 | `shape` for `cut` | `cut_ratio` `cut_max` `corners` (`diagonal`/`all`) `glow` `edge` |
 | `shape` for `medieval` | `material` (0 iron · 1 leather · 2 parchment) `grain_alpha` `ornament_scale` `bevel_strength` `fonts` {`title`,`subtitle`,`caption`,`body`,`button`: addon-local `res://` font} |
-| `skin` | `base` (`default`/`scifi`/`medieval`/`material`), `name`, `dials` {name: number} (table in §6) |
+| `skin` | `base` (`default`/`scifi`/`medieval`/`material`/`kids`), `name`, `dials` {name: number} (table in §6) |
 | `icons` | `res://` path to a `GoIconSet` resource |
 
 ```json
@@ -248,6 +249,7 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 | `progress_fill_box(ink)` · `notice_box(accent, compact, alpha := -1.0)` · `tint_notice(box, accent)` | Bar fills (outlined when < 3:1), snackbars |
 | `coach_ring_box(accent)` · `draw_coach_pointer(canvas, start, tip, direction, ink)` | Coach mark ring and arrow |
 | `draw_joystick(canvas, center, knob, radius, knob_radius, ink, base, active)` | Joystick |
+| `chart_colors() -> Array[Color]` | The colours a chart cycles through for slices given none (`GoDonut`). Default: accent, success, warning, info, danger; `GoSkinKids` gives brighter crayons |
 | `divider_color()` · `divider_thickness()` · `section_box()` · `section_rhythm(face)` | Dividers, section headings. A skin's own `section_box()` ends with `return section_rhythm(face)` — it puts more room above a heading than below, so the heading belongs to the group it opens |
 | `drawer_box(at_left, alpha)` · `compact_segment_box(face, state)` · `icon_button_glyph(visual_size) -> int` · `chip_glyph_size() -> int` · `chip_text_role()` · `chip_height()` · `chip_state_box(face, state)` · `choice_box(state)` | A drawer's panel, a small segmented cell, an icon button's glyph, a chip's icon, label, height and press state, a choice cell. Each default is the code the widget ran before the hook existed |
 | `nav_bar_box(vertical)` · `nav_indicator_box(selected, state)` · `nav_ink(selected, label)` | Navigation bar and rail (`GoNavBar`) |
@@ -267,6 +269,7 @@ Dials (`@export`, set on a skin resource or JSON `skin.dials`):
 | `GoSkinSciFi` (+10) | `cut_chip` 7 · `cut_skeleton` 5 · `cut_alert` 8 · `cut_segment` 8 · `cut_slot` 6 · `cut_disc_ratio` 0.24 · `slot_glow_alpha` 0.45 · `slot_glow_size` 6 · `bracket_arm` 12 · `bracket_thickness` 2 |
 | `GoSkinMedieval` (+5) | `slot_radius` 4.0 · `leather_grain_alpha` 0.035 · `ornament_scale` 1.0 · `bevel_strength` 0.18 · `slot_rivets` 1 |
 | `GoSkinMaterial` (+2) | `segment_gap` 2.0 · `segment_inner_radius` 8 |
+| `GoSkinKids` (+3) | `toy_edge` 2 · `toy_lip` 4 · `crayon_tint` 0.28 |
 
 ```gdscript
 class_name DiamondSkin extends GoSkin

@@ -18,6 +18,7 @@ keep working untouched.
 import os
 
 import theme_material  # Material 3 Expressive — the `material` shape (tools/theme_material.py)
+import theme_kids  # the toy box — the `kids` shape (tools/theme_kids.py)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
@@ -251,6 +252,8 @@ CUT_ALL = CUT_TOP_LEFT | CUT_TOP_RIGHT | CUT_BOTTOM_RIGHT | CUT_BOTTOM_LEFT
 def control_svgs(pal, shape=SHAPE_DEFAULT):
     if shape.get("controls") == "material":
         return theme_material.controls(pal)
+    if shape.get("controls") == "kids":
+        return theme_kids.controls(pal)
     acc, on, mut, sec, hi = (svg_hex(pal[k]) for k in ("accent", "on_accent", "muted", "secondary", "surface_high"))
 
     def wrap(w, h, body, disabled=False):
@@ -578,7 +581,10 @@ def build(pal, shape, variant, out_path):
     #    defaults in `CONST`.
     consts = dict(CONST)
     for key in ("radius", "radius_small", "radius_large", "gap", "gap_small", "gap_large", "padding", "button_height",
-                "compact_padding_x", "compact_padding_y"):
+                "compact_padding_x", "compact_padding_y",
+                # 🪟 Panel opacity (%) belongs to the look, not to the host — a children's theme wants its colours
+                #    solid, a sci-fi HUD wants the world showing through. 2026-10-03, with the `kids_*` themes.
+                "panel_alpha", "card_alpha", "hud_alpha", "notice_alpha", "popup_alpha"):
         if key in shape: consts[key] = shape[key]
     R, G = consts["radius"], consts["radius_small"]
     PAD = tuple(shape.get("button_padding", (16, 10, 16, 10)))
@@ -1109,6 +1115,8 @@ def build(pal, shape, variant, out_path):
         if role == "body": ex("default_font", "font_" + role)
     if shape["kind"] == "material":
         theme_material.restyle(pal, consts, boxes, T, flat, C, contrast)
+    if shape["kind"] == "kids":
+        theme_kids.restyle(pal, consts, boxes, T, flat, C, contrast)
     steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + len(fonts)
     lines = ['[gd_resource type="Theme" load_steps=%d format=3]' % steps, ""]
     if cutting:
@@ -1158,7 +1166,9 @@ SHAPES = {"flat": SHAPE_DEFAULT, "cut": SHAPE_CUT,
           "medieval": {"kind": "medieval", "controls": "rounded", "radius": 4, "radius_small": 3,
                        "radius_large": 6, "material": 1, "ornament_scale": 1.0,
                        "grain_alpha": 0.035, "bevel_strength": 0.18},
-          "material": theme_material.SHAPE}
+          "material": theme_material.SHAPE,
+          # The toy box: the default family's sizes, its own shapes (tools/theme_kids.py).
+          "kids": dict(SHAPE_DEFAULT, **theme_kids.SHAPE)}
 PALETTES_DIR = os.path.join(ADDON, "themes", "palettes")
 # Keys a palette must carry — without them generation dies halfway with a KeyError. Say so up front.
 PALETTE_KEYS = ("background", "surface", "surface_soft", "surface_high", "border", "text", "secondary",
@@ -1224,6 +1234,7 @@ SKIN_SCRIPTS = {
     "scifi": ("GoSkinSciFi", RES + "/themes/skins/go_skin_scifi.gd"),
     "medieval": ("GoSkinMedieval", RES + "/themes/skins/go_skin_medieval.gd"),
     "material": ("GoSkinMaterial", RES + "/themes/skins/go_skin_material.gd"),
+    "kids": ("GoSkinKids", RES + "/themes/skins/go_skin_kids.gd"),
 }
 SKINS_DIR = os.path.join(ADDON, "themes", "skins")
 
@@ -1233,6 +1244,7 @@ SKIN_SOURCES = {
     "scifi": os.path.join(ADDON, "themes", "skins", "go_skin_scifi.gd"),
     "medieval": os.path.join(ADDON, "themes", "skins", "go_skin_medieval.gd"),
     "material": os.path.join(ADDON, "themes", "skins", "go_skin_material.gd"),
+    "kids": os.path.join(ADDON, "themes", "skins", "go_skin_kids.gd"),
 }
 DIALS_TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "skin_dials.json")
 

@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 の HUD・UI キット</title>
-<meta name="description" content="Godot 4.7+ 向けのカスタマイズできる HUD・UI キット。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、スナックバー、HUD バー、クイックスロット、バーチャルスティックを備え、デフォルト・SF・中世・Material 3 の8プリセットで見た目を切り替える。">
+<meta name="description" content="Godot 4.7+ 向けのカスタマイズできる HUD・UI キット。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、スナックバー、HUD バー、クイックスロット、バーチャルスティックを備え、デフォルト・SF・中世・Material 3・キッズの10プリセットで見た目を切り替える。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud は Godot 4.7 以降で使う HUD・UI キットだ。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、
       スナックバー、コーチマーク、HUD バー、クイックスロット、バーチャルスティックが<b>テーマ1枚と
       差し替え可能なアイコンセット1枚</b>で動き、セーフエリア・仮想キーボード・RTL・タッチターゲットを自分で面倒みる。
-      <b>8つのプリセット</b> — デフォルト・SF・中世・Material 3、それぞれにダークとライト — が1行で色と形を同時に変える。
+      <b>10のプリセット</b> — デフォルト・SF・中世・Material 3・キッズ、それぞれにダークとライト — が1行で色と形を同時に変える。
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -121,7 +121,7 @@
       <figcaption><b>SF</b> — 角張ったパネルとタッチ操作</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">8つのプリセットと切り替え方 →</a></p>
+  <p><a href="#presets">10のプリセットと切り替え方 →</a></p>
 </section>
 
 <section id="what">
@@ -157,7 +157,7 @@
       <p>ウィジェットが知っているのは <code>GoIconSet.CLOSE</code> だけ。セットを差し替えればコードに触れずに絵が変わる。 <a href="icons.html">アイコン →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">8つの見た目、1行</h3>
+      <h3 id="six-looks-one-line">10の見た目、1行</h3>
       <p><code>GoUi.use_preset()</code> がテーマ・スキン・アイコンをまとめて入れ替える — 丸み、面取りの SF、鍛造した中世の枠、Material 3 のアプリ部品。</p>
     </div>
     <div class="card">
@@ -411,7 +411,7 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    すべての色の組み合わせと、<b>ボタンの状態ごとのラベルとその下のパネル</b>を、8つのテーマすべてで WCAG に
+    すべての色の組み合わせと、<b>ボタンの状態ごとのラベルとその下のパネル</b>を、10のテーマすべてで WCAG に
     照らして測る。半透明の色は実際の背景に合成してから測る — そのまま測ると、画面に出ている見え方より
     良い比率が出てしまう。
   </p>

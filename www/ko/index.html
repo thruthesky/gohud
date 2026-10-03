@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 HUD·UI 키트</title>
-<meta name="description" content="Godot 4.7+ 용 커스터마이징 HUD·UI 키트. 떠 있는 창·바텀 시트·확인창·폼·스낵바·HUD 막대·퀵슬롯·가상 조이스틱을 테마 한 장으로 굴리고, 기본·sci-fi·중세·Material 3 프리셋 여덟으로 생김새를 바꾼다.">
+<meta name="description" content="Godot 4.7+ 용 커스터마이징 HUD·UI 키트. 떠 있는 창·바텀 시트·확인창·폼·스낵바·HUD 막대·퀵슬롯·가상 조이스틱을 테마 한 장으로 굴리고, 기본·sci-fi·중세·Material 3·어린이 프리셋 열로 생김새를 바꾼다.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -77,7 +77,7 @@
     <p class="lead">
       gohud 는 Godot 4.7 이상에서 쓰는 HUD·UI 키트다. 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바,
       코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱을 <b>테마 한 장과 아이콘 세트 한 장</b>으로 굴리고,
-      안전영역·가상 키보드·RTL·터치 타깃을 스스로 챙긴다. <b>프리셋 여덟</b> — 기본·sci-fi·중세·Material 3, 각각 다크·라이트 두 가지 —
+      안전영역·가상 키보드·RTL·터치 타깃을 스스로 챙긴다. <b>프리셋 열</b> — 기본·sci-fi·중세·Material 3·어린이, 각각 다크·라이트 두 가지 —
       이 한 줄로 색과 모양을 함께 바꾼다.
     </p>
     <div class="badges">
@@ -121,7 +121,7 @@
       <figcaption><b>Sci-fi</b> — 각진 패널과 터치 조작</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">프리셋 여덟과 바꾸는 법 →</a></p>
+  <p><a href="#presets">프리셋 열과 바꾸는 법 →</a></p>
 </section>
 
 <section id="what">
@@ -157,7 +157,7 @@
       <p>위젯은 <code>GoIconSet.CLOSE</code> 처럼 이름만 안다. 세트를 갈아 끼우면 코드를 한 줄도 안 고치고 그림이 바뀐다. <a href="icons.html">아이콘 →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">생김새 여덟, 코드 한 줄</h3>
+      <h3 id="six-looks-one-line">생김새 열, 코드 한 줄</h3>
       <p><code>GoUi.use_preset()</code> 이 테마·스킨·아이콘을 함께 바꾼다 — 둥근 패널, 모서리를 자른 sci-fi, 단조 프레임의 중세, Material 3 앱 컴포넌트.</p>
     </div>
     <div class="card">
@@ -416,7 +416,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    색 짝 전부와 <b>버튼 상태마다의 글자와 그 글자가 얹힌 패널</b>을 여덟 테마 모두에서 WCAG 로 잰다.
+    색 짝 전부와 <b>버튼 상태마다의 글자와 그 글자가 얹힌 패널</b>을 열 테마 모두에서 WCAG 로 잰다.
     반투명 색은 실제 배경에 합성한 뒤에 잰다 — 그대로 재면 화면에 보이는 것보다 좋은 비율이 나온다.
   </p>
   <p>
