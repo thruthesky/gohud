@@ -16,15 +16,20 @@ signal compose_requested
 signal search_requested
 ## Pulled down at the top of the feed. Hand the fresh posts to `set_posts()` — that ends the spinner.
 signal refresh_requested
-## The feed is near its end. Hand the next page to `add_posts()`.
+## The feed is near its end. Hand the next page to `add_posts()` — an empty page says it was the last.
 signal more_requested
 ## A destination on the navigation bar — 0 Home (this screen), 1 Alerts, 2 Profile. Switching screens is yours.
 signal destination_changed(index: int)
 ## A row in the drawer menu — 0 Settings, 1 Help, 2 Sign out.
 signal drawer_chosen(index: int)
+## The player swiped a saved post away and did not take it back — remove it on your side (the server, the save).
+signal saved_removed(post: Dictionary)
 
 var posts: Array = []
+## The saved posts on screen: what `set_saved()` handed over, less the ones swiped away and waiting for their Undo.
 var saved: Array = []
+var _given: Array = []
+var _removed: Array = []
 
 var screen: GoScaffold
 var tabs: GoTabView
@@ -45,6 +50,7 @@ func _ready() -> void:
 
 
 func build() -> void:
+	var tab := tabs.current() if is_instance_valid(tabs) else 0
 	if is_instance_valid(screen):
 		remove_child(screen)
 		screen.queue_free()
@@ -62,10 +68,11 @@ func build() -> void:
 	saved_page = GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	saved_page.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	margin.add_child(saved_page)
-	tabs = GoTabView.make(["Feed", "Saved"], [feed, saved_scroll])
+	tabs = GoTabView.make(["Feed", "Saved"], [feed, saved_scroll], tab)
 	# A tab view scrolls itself, so the scaffold places it as it is — no scroll around the tabs.
 	screen = GoScaffold.make("Home", tabs, true)
-	screen.app_bar.add_action(GoIconSet.SEARCH, &"Search", func() -> void: search_requested.emit())
+	# `&"search"` is one of gohud's own names: the tooltip and the spoken name come translated (21 languages).
+	screen.app_bar.add_action(GoIconSet.SEARCH, &"search", func() -> void: search_requested.emit())
 	nav = GoNavBar.make([
 		{"icon": GoIconSet.HOME, "text": "Home"},
 		{"icon": GoIconSet.BELL, "text": "Alerts", "badge": _unread},
@@ -104,14 +111,18 @@ func set_posts(list: Array) -> void:
 	if refresh.refreshing: refresh.finish()
 
 
-## Appends the next page — the answer to `more_requested`. The view stays where it is.
+## Appends the next page — the answer to `more_requested`. The view stays where it is. An empty page is the end:
+## the list stops asking (setting the same count again would ask once more, and again, forever).
 func add_posts(list: Array) -> void:
+	if list.is_empty(): return
 	posts.append_array(list)
 	feed.set_count(posts.size())
 
 
 func set_saved(list: Array) -> void:
-	saved = list.duplicate()
+	_given = list.duplicate()
+	_removed.clear()
+	_shown_saved()
 	_fill_saved()
 
 
@@ -168,16 +179,25 @@ func _fill_saved() -> void:
 			{"icon": GoIconSet.TRASH, "text": "Remove", "tone": GoTheme.DANGER, "action": _unsave.bind(post)}))
 
 
+func _shown_saved() -> void:
+	saved = _given.filter(func(post: Dictionary) -> bool: return not _removed.has(post))
+
+
 func _unsave(post: Dictionary) -> void:
-	var index := saved.find(post)
-	if index < 0: return
-	saved.remove_at(index)
+	if _removed.has(post): return
+	_removed.append(post)
+	_shown_saved()                                       # the swiped row frees itself; the data follows
 	# 🔑 A cheap, reversible action asks nothing first and offers Undo after — a dialog would stop the player to ask.
-	if await say("Removed from Saved", ["Undo"]) == 0:
-		saved.insert(mini(index, saved.size()), post)
-		_fill_saved()
-	elif saved.is_empty():
-		_fill_saved()                                    # the swiped row is gone — show the empty state
+	#    The title is in the message: the snackbar merges a line repeated word for word, and one Undo would then
+	#    answer for every post swiped away in a row.
+	var undo := await say("Removed “%s”" % str(post.get("title", "")), ["Undo"]) == 0
+	_removed.erase(post)
+	if not undo:
+		_given.erase(post)
+		saved_removed.emit(post)
+	_shown_saved()
+	# Taken back — the row returns to its own place in the order given; or the last row went — the empty state.
+	if undo or saved.is_empty(): _fill_saved()
 
 
 func _on_destination(index: int) -> void:

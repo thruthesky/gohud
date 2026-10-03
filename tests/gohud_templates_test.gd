@@ -62,6 +62,30 @@ func _all(node: Node) -> Array:
 	return out
 
 
+## Sets the screen to [param width] × [param height] dp. 🛑 A host project may scale the UI on top (laryen3d's UiScale
+## turned a requested 844×390 into 667×308, 2026-10-03), so the stretch size is corrected until the laid-out size lands —
+## it converges in a step or two, as in `gohud_layout_test.gd`. Returns the size it reached.
+func _screen(width: float, height: float) -> Vector2:
+	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
+	var wanted := Vector2(width, height)
+	var ask := wanted
+	var got := Vector2.ZERO
+	for _attempt in 6:
+		root.content_scale_size = Vector2i(ask.round())
+		await frames(2)
+		got = root.get_visible_rect().size
+		if absf(got.x - width) < 1.0 and absf(got.y - height) < 1.0: break
+		ask *= wanted / got
+	return got
+
+
+## The first button under [param node] that reads [param words].
+func _button(node: Node, words: String) -> Button:
+	for child in _all(node):
+		if child is Button and (child as Button).text == words: return child as Button
+	return null
+
+
 ## Is there a descendant of that type? 🔑 It tests with `is`, so subclasses count too.
 func _has(node: Node, kind: Variant) -> bool:
 	for child in _all(node):
@@ -244,6 +268,8 @@ func _app_screen() -> void:
 	check(not app.refresh.refreshing, "set_posts() ends the refresh spinner")
 	app.add_posts([{"title": "Post 200", "subtitle": ""}])
 	check(app.feed.count == 201, "add_posts() appends — %d" % app.feed.count)
+	app.add_posts([])
+	check(app.feed.count == 201, "an empty page is the end — the count stays (%d)" % app.feed.count)
 
 	# Saved: one swipe row per post, the empty state when there are none.
 	app.set_saved([many[0], many[1], many[2]])
@@ -252,6 +278,25 @@ func _app_screen() -> void:
 	for child in app.saved_page.get_children():
 		if child is GoSwipeRow: swipes += 1
 	check(swipes == 3, "set_saved() lays out one swipe row per post — %d" % swipes)
+
+	# Swiped away: the post leaves `saved`; Undo puts it back in its own place; no Undo — `saved_removed(post)`.
+	var removed: Array = []
+	app.saved_removed.connect(func(post: Dictionary) -> void: removed.append(post))
+	app._unsave(many[1])                                 # what the swipe calls; it then waits on the snackbar
+	await frames(2)
+	check(app.saved.size() == 2 and not app.saved.has(many[1]), "a swiped post leaves the saved list")
+	var undo := _button(app.snackbar, "Undo")
+	check(undo != null, "the snackbar offers Undo")
+	if undo != null: undo.pressed.emit()
+	await frames(3)
+	check(app.saved == [many[0], many[1], many[2]], "Undo puts the post back in its own place")
+	check(removed.is_empty(), "a post taken back is not reported as removed")
+	app._unsave(many[2])
+	await frames(2)
+	app.snackbar.dismiss()                               # the time ran out
+	await frames(3)
+	check(removed == [many[2]] and app.saved == [many[0], many[1]],
+		"without Undo the post stays gone and saved_removed(post) tells the game — %s" % str(removed))
 	app.set_saved([])
 	await frames(2)
 	swipes = 0
@@ -293,9 +338,7 @@ func _edge_bar_hud() -> void:
 	var aspect := root.content_scale_aspect
 	var stretch := root.content_scale_size
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
-	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
-	root.content_scale_size = Vector2i(844, 390)
-	await frames(2)
+	await _screen(844.0, 390.0)
 	var hud: CanvasLayer = _make("edge_bar_hud.gd")
 	check(hud != null, "edge_bar_hud is built")
 	if hud == null: return
@@ -307,7 +350,8 @@ func _edge_bar_hud() -> void:
 	var screen: Rect2 = hud.root.get_global_rect()
 	var top: Rect2 = hud.top.get_global_rect()
 	var bottom: Rect2 = hud.bottom.get_global_rect()
-	check(screen.size.is_equal_approx(Vector2(844, 390)), "the screen is a landscape phone — %s" % screen.size)
+	check(absf(screen.size.x - 844.0) < 1.0 and absf(screen.size.y - 390.0) < 1.0,
+		"the screen is a landscape phone — %s" % screen.size)
 	check(is_zero_approx(top.position.y) and is_equal_approx(bottom.end.y, screen.end.y),
 		"the top and bottom bars are pinned to their edges — %s / %s" % [top, bottom])
 	check(is_zero_approx(hud.left.get_global_rect().position.x) and is_equal_approx(hud.right.get_global_rect().end.x, screen.end.x),
@@ -356,7 +400,19 @@ func _edge_bar_hud() -> void:
 	hud.set_stage("Boss")
 	check(hud.coins.text == "99" and hud.stage.text == "Boss", "set_coins() and set_stage() show the values")
 	hud.set_summons(["Hen", "Cat"])
-	check(animals.item_count() == 2 and animals.is_selected(1), "set_summons() keeps the marks that still fit")
+	check(animals.item_count() == 2 and animals.selected_indices().is_empty() and not animals.is_dimmed(4),
+		"set_summons() clears the marks — they belonged to rows, not to animals")
+
+	# A rebuild (after a look switch) shows what the HUD showed, not the starting values.
+	hud.set_summoned(0)
+	hud.set_health(40.0, 500.0)
+	hud.build()
+	await frames(3)
+	check(hud.coins.text == "99" and hud.stage.text == "Boss", "build() keeps the coins and the stage name")
+	check(hud.animals.is_selected(0) and hud.animals.item_count() == 2, "build() keeps the list and its marks")
+	check(is_equal_approx(hud.hp.maximum(), 500.0) and is_equal_approx(hud.hp.value(), 40.0),
+		"build() keeps the health (%s / %s)" % [hud.hp.value(), hud.hp.maximum()])
+	check(hud.slots[0].quantity == 4, "build() keeps what is left in a slot (%d)" % hud.slots[0].quantity)
 	hud.queue_free()
 	await frames(2)
 	root.content_scale_size = stretch

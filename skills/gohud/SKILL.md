@@ -5,7 +5,7 @@ description: >-
   HUDs (HP/MP bars, quick slots, joystick, summon columns) placed by corner anchors or edge bars (GoTopBar,
   GoBottomBar, side bars, GoGrid), dialogs, sheets, drawers, popovers, forms, snackbars, and app screens with
   Flutter's widgets (scaffold, navigation and app bars, FAB, swipe tabs, lazy lists, pull to refresh, swipe rows,
-  date/time pickers) in eight presets (default, sci-fi, medieval, Material 3 Expressive), JSON themes, skins and
+  date/time pickers) in presets (default, sci-fi, medieval, Material 3 Expressive, …), JSON themes, skins and
   1,271 icons — touch-safe, safe-area aware, RTL and translation ready. Use whenever someone writes GDScript UI,
   HUD, menu or GUI code in a Godot project, ports a Flutter screen to Godot, mentions gohud or a Go* class (GoUi,
   GoStyle, GoSurface, GoSheet, GoDialogs, GoForm, GoHudAnchor, GoScaffold, GoChoiceColumn…), wants to install or
@@ -47,11 +47,15 @@ Reply in the language the user writes in; keep code identifiers as they are.
    parts (`GoNavBar`, `GoAppBar`, `GoFab`, `GoSearchBar`, `GoSplitButton`, `GoProgress`, `GoLoadingIndicator`,
    `GoDatePicker`), the Flutter widgets (`GoScaffold`, `GoListView`, `GoRefresh`, `GoSwipeRow`, `GoTabView`,
    `GoReorderList`, `GoZoomView`, `GoRangeSlider`, `GoTimePicker`, `GoWheelPicker`, `GoStepper`, `GoBanner`),
-   `GoChoiceColumn` and the Material presets. A project on 1.2.1 or older gets "Identifier not declared" for them —
-   update gohud (`/gohud update`, a git checkout of `main`) or build with what it has.
+   `GoChoiceColumn`, the Material presets, and these members: `GoDialogs.choose()`, `GoStyle.filter_chip()` /
+   `input_chip()` / `restyle_filter_chip()` / `toolbar()` / `bottom_app_bar()` / `glow()`, `GoStyle.Tone.OUTLINED`,
+   `GoConfig.button_glow`, `GoScroll.SIDEWAYS`. A project on 1.2.1 or older gets `Identifier "…" not declared` for a
+   class and `… not found in base …` for a member — update gohud (`/gohud update`, a git checkout of `main`) or build
+   with what it has.
 2. **Pick the look first.** `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` (or the project setting) before any widget
-   is built — eight presets: `DEFAULT_*`, `SCIFI_*`, `MEDIEVAL_*` for games, `MATERIAL_LIGHT`/`MATERIAL_DARK` (Material 3
-   Expressive) for app screens, each `_DARK` and `_LIGHT`. Call it **once at boot** (the main scene or an autoload), not
+   is built — `DEFAULT_*`, `SCIFI_*`, `MEDIEVAL_*` for games, `MATERIAL_LIGHT`/`MATERIAL_DARK` (Material 3 Expressive)
+   for app screens, each `_DARK` and `_LIGHT`; `GoThemePresets.names()` lists every preset this copy has, including
+   any `themes/presets/<id>.tres` added later (pass its id: `GoUi.use_preset(&"<id>")`). Call it **once at boot** (the main scene or an autoload), not
    in each screen: the preset is global, so a screen that sets it restyles every other screen too. gohud's own widgets
    restyle themselves on a switch, but a node keeps the `theme` it was built with — switching later means rebuilding the
    screen (`recipes.md` §11). The Material presets read Roboto, which has no Korean, Japanese or Chinese — for those
@@ -158,8 +162,9 @@ Reply in the language the user writes in; keep code identifiers as they are.
     anchors, set `offset_*`, not `position`: `Control.position` is parent-space and ignores the anchors.
 13. **Containers are 80% opaque (100% under the Material presets); things you press are not.** Panels (`GoSurface`/`GoSheet`/`GoDialogs`/cards/
     HUD panels/alerts/snackbars) fade their **face only** — never use `modulate.a` for this, it fades the text too.
-    Set a project-wide value at boot (or in your `GoConfig` `.tres`): a panel built before the change keeps its face
-    until it is rebuilt. Five layers decide the value, most specific first: the `alpha` argument or field at that call →
+    Set a project-wide value at boot (or in your `GoConfig` `.tres`); changed later, `GoUi.refresh()` repaints gohud's
+    own windows, but a face you put on a panel yourself (`GoStyle.floating()`, `hud_panel()`) keeps its value until
+    the panel is rebuilt. Five layers decide the value, most specific first: the `alpha` argument or field at that call →
     `GoConfig.container_alpha_overrides[GoTheme.BOX_*]` → `metric_overrides[<kind>_alpha]` →
     `GoConfig.container_alpha` → theme `GoHud/constants/<kind>_alpha`. 🔑 **Every one of them is a ratio
     `0.0–1.0`** (negative = not set), including `@export` fields such as `dialogs.alpha` and `drawer.alpha` —
@@ -235,11 +240,11 @@ Each is a complete script with no scene file, checked headless by `tests/gohud_t
 |---|---|---|---|
 | `main_menu.gd` | Control | Title, Continue / New game / Settings / Quit rows, confirm dialogs, a Continue button that becomes a spinner | signals `continue_requested` `new_game_requested` `settings_requested` `quit_confirmed` · `build()` · `set_loading(waiting)` |
 | `game_hud.gd` | CanvasLayer (5) | HUD by corner anchors: HP/MP/XP panel, menu button with an unread badge, 4 quick slots, FOLLOW joystick, toast, prompt card, snackbar | signals `menu_requested` `slot_used(index)` `move_input(vector)` · `build()` · `set_health/set_mana/set_experience(v, max)` · `toast(msg, tone)` · `await say(msg, actions, tone)` · `set_unread(count)` · `ask(title, subtitle, accept_text, accept, decline_text, decline)` |
-| `edge_bar_hud.gd` | CanvasLayer (5) | HUD by edge bars, for a landscape screen (fits 844×390 dp): HP/MP · stage name on the centre · coins and menu across the top, a `GoChoiceColumn` summon list on the left, quick slots on the right, Attack / Guard / Run along the bottom | signals `menu_requested` `summon_requested(index)` `slot_used(index)` `action_pressed(index)` · `build()` · `set_health/set_mana(v, max)` · `set_stage(title)` · `set_coins(amount)` · `set_summoned(index, out)` · `set_resting(index, resting)` · `set_summons(choices)` |
+| `edge_bar_hud.gd` | CanvasLayer (5) | HUD by edge bars, for a landscape screen (fits 844×390 dp): HP/MP · stage name on the centre · coins and menu across the top, a `GoChoiceColumn` summon list on the left, quick slots on the right, Attack / Guard / Run along the bottom | signals `menu_requested` `summon_requested(index)` `slot_used(index)` `action_pressed(index)` · `build()` (keeps what it shows) · `set_health/set_mana(v, max)` · `set_stage(title)` · `set_coins(amount)` · `set_summoned(index, out)` · `set_resting(index, resting)` · `set_summons(choices)` (clears the marks) |
 | `pause_menu.gd` | CanvasLayer (50) | Centred GoSurface, pauses the tree, Escape opens/closes, a key cap that reads the real binding, quit confirm | signals `resumed` `settings_requested` `quit_to_title_requested` · `open()` `resume()` `toggle()` `is_open()` |
 | `inventory_sheet.gd` | Node | GoSheet with search + category filter, long-press menu on each row, detail page with Back, Use / Drop with Undo | signals `item_used(item)` `item_dropped(item)` · `items` · `open()` `close()` `show_list()` `show_item(item)` |
 | `settings_menu.gd` | Control | GoForm, foldable Display/Audio/Controls/Language sections built from `GoField` (so a row can show its own error), draft + Save/Reset, discard check | signals `closed(saved)` `settings_changed(values)` · `settings` · `build()` `save()` `request_back()` `reset_to_defaults()` |
-| `app_screen.gd` | Control | An app screen (Flutter's `Scaffold`): app bar with a drawer menu and search · tabs over a lazy feed with pull to refresh and load more, and a Saved list you swipe away with Undo · navigation bar with a badge · compose FAB | signals `post_opened(post)` `compose_requested` `search_requested` `refresh_requested` `more_requested` `destination_changed(index)` `drawer_chosen(index)` · `build()` · `set_posts(list)` `add_posts(list)` `set_saved(list)` `set_unread(count)` `show_tab(index)` · `await say(msg, actions)` |
+| `app_screen.gd` | Control | An app screen (Flutter's `Scaffold`): app bar with a drawer menu and search · tabs over a lazy feed with pull to refresh and load more, and a Saved list you swipe away with Undo · navigation bar with a badge · compose FAB | signals `post_opened(post)` `compose_requested` `search_requested` `refresh_requested` `more_requested` `destination_changed(index)` `drawer_chosen(index)` `saved_removed(post)` (swiped away, no Undo) · `build()` · `set_posts(list)` `add_posts(list)` (an empty page ends "load more") `set_saved(list)` `set_unread(count)` `show_tab(index)` · `await say(msg, actions)` |
 
 Wiring them together and more screens (login, shop, quest log, character sheet, dropdown menus, tutorial tour):
 `references/recipes.md`.
@@ -274,13 +279,13 @@ use `--check`.
 
 | File | Read when |
 |---|---|
-| `references/catalog.md` | "Is there a widget for …?", a class you half remember, the whole kit at a glance — every class and factory group by name (97 entries in 9 groups), what it extends, one example, and the section with its members. Generated from the website's All widgets list |
+| `references/catalog.md` | "Is there a widget for …?", a class you half remember, the whole kit at a glance — every class and factory group by name, what it extends, one example, and the section with its members. Generated from the website's All widgets list |
 | `references/features.md` | `/gohud features`, or "what can gohud do" — catalogue of every feature with one-line code |
 | `references/setup.md` | Installing, **updating (§7 — add-on and skill, `/gohud update`)**, enabling the plugin, every `GoConfig` field and default, boot order, layers, project settings, headless verification, gohud's tool commands |
 | `references/surfaces.md` | `GoSurface` (placements, anchored menus, sub-pages, status line), `GoSheet`, `GoDialogs` (layouts, destructive, args, `choose`, queueing), `GoForm`, `GoScroll`, subclass hooks, which widget to use, `GoSnackbar`, `GoDrawer`, `GoPopover` |
 | `references/hud.md` | `GoHudAnchor` spots and avoidance, `GoBar`, `GoSlot`/`GoSlotGrid`, `GoJoystick`, `GoIconButton`, `GoNotice`, `GoPromptCard`, `GoCoachMark`, `GoContextMenu`, `GoConsole`, `GoSpinner`, `GoBadge`, `GoRewardCalendar`, `GoRadar`/`GoDonut`, `GoCarousel`, the app-screen parts (§16: `GoNavBar`, `GoAppBar`, `GoFab`, `GoSearchBar`, `GoSplitButton`, `GoProgress`, `GoLoadingIndicator`, `GoDatePicker`), `GoChoiceColumn` (§18), composing a HUD with anchors or edge bars (§19) |
 | `references/style.md` | Every `GoStyle` factory signature: structure and the **layout classes** (`GoTopBar`, `GoBottomBar`, `GoLeftSideBar`, `GoRightSideBar`, `GoGrid`), text, buttons and tones, inputs, select/dropdown/segmented/tabs, cards, chips, tables, styleboxes, helpers, the form and list classes (`GoField`, `GoInputGroup`, `GoCombobox`, `GoCodeInput`, `GoTable`, `GoPagination`) and the lower-level functions |
-| `references/theming.md` | The eight presets (default, sci-fi, medieval, Material 3 Expressive — each dark and light) and resolution order, all tokens, **container opacity (§4)**, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins, their hooks and dials, custom StyleBoxes, project-local presets, contrast |
+| `references/theming.md` | The presets (default, sci-fi, medieval, Material 3 Expressive — each dark and light — and how a new one is found) and resolution order, all tokens, **container opacity (§4)**, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins, their hooks and dials, custom StyleBoxes, project-local presets, contrast |
 | `references/platform.md` | Icons — the 84 default names, the game set (187) and the icon library (1,000) with `GoUi.add_icons()`, search and groups, custom icon sets/fonts/folders, localization and RTL, sound and haptics, accessibility, safe area, breakpoints, dp scale, Android Back |
 | `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, a quest list that scans (§16), character sheet, context menu, tutorial, loading/empty/error states, controls over a map, theme switcher, attendance, developer console, per-field errors, a side panel |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |

@@ -138,7 +138,7 @@ corner.add_child(GoStyle.hud_panel())
 
 ### `GoStyle.column · row · wrap_row`
 
-Extends `GoStyle`. Columns, rows and wrapping rows with gaps from the theme. Details: `style.md` §1 (Structure).
+A function of `GoStyle`. Columns, rows and wrapping rows with gaps from the theme. Details: `style.md` §1 (Structure).
 
 ```gdscript
 var page := GoStyle.column()
@@ -148,7 +148,7 @@ var chips := GoStyle.wrap_row()
 
 ### `GoStyle.responsive_grid · aspect`
 
-Extends `GoStyle`. A grid that adds columns as it widens; a box that keeps its ratio. Details: `style.md` §1 (Structure).
+A function of `GoStyle`. A grid that adds columns as it widens; a box that keeps its ratio. Details: `style.md` §1 (Structure).
 
 ```gdscript
 var tiles := GoStyle.responsive_grid(160)
@@ -157,7 +157,7 @@ var thumb := GoStyle.aspect(16.0 / 9.0)
 
 ### `GoStyle.padding · spacer · divider`
 
-Extends `GoStyle`. Padding, a spacer that takes the room left over, a divider line. Details: `style.md` §1 (Structure).
+A function of `GoStyle`. Padding, a spacer that takes the room left over, a divider line. Details: `style.md` §1 (Structure).
 
 ```gdscript
 var pad := GoStyle.padding(16)
@@ -167,7 +167,7 @@ page.add_child(GoStyle.divider())
 
 ### `GoStyle.foldable · section`
 
-Extends `GoStyle`. A section heading, and a section that folds open. Details: `style.md` §1 (Structure).
+A function of `GoStyle`. A section heading, and a section that folds open. Details: `style.md` §1 (Structure).
 
 ```gdscript
 page.add_child(GoStyle.section("Sound", false))
@@ -212,7 +212,7 @@ if await dialogs.confirm("Delete save", "This cannot be undone.", "", "", "", {}
 
 ### `GoDialogs.choose`
 
-Extends `GoDialogs`. One of a few options — a bottom sheet on a phone, a card on a desktop. Details: `surfaces.md` §3 (GoDialogs).
+A function of `GoDialogs`. One of a few options — a bottom sheet on a phone, a card on a desktop. Details: `surfaces.md` §3 (GoDialogs).
 
 ```gdscript
 var index := await dialogs.choose("Sort by", ["Newest", "Price", "Rating"])
@@ -361,7 +361,7 @@ refresh.refresh_requested.connect(func() -> void:
 
 ### `GoStyle.alert`
 
-Extends `GoStyle`. An inline message in the info, success, warning or danger tone. Details: `style.md` §6 (Display).
+A function of `GoStyle`. An inline message in the info, success, warning or danger tone. Details: `style.md` §6 (Display).
 
 ```gdscript
 page.add_child(GoStyle.alert("Maintenance at 3 AM", GoTheme.WARNING))
@@ -369,7 +369,7 @@ page.add_child(GoStyle.alert("Maintenance at 3 AM", GoTheme.WARNING))
 
 ### `GoStyle.skeleton · empty_state`
 
-Extends `GoStyle`. A placeholder while loading, and a message for an empty list. Details: `style.md` §6 (Display).
+A function of `GoStyle`. A placeholder while loading, and a message for an empty list. Details: `style.md` §6 (Display).
 
 ```gdscript
 page.add_child(GoStyle.skeleton(200))
@@ -378,7 +378,7 @@ page.add_child(GoStyle.empty_state(GoIconSet.BOX, "No items yet", false))
 
 ### `GoStyle.tooltip_node`
 
-Extends `GoStyle`. A tooltip in the theme's style that never splits its words. Details: `style.md` §8 (Helpers).
+A function of `GoStyle`. A tooltip in the theme's style that never splits its words. Details: `style.md` §8 (Helpers).
 
 ```gdscript
 func _make_custom_tooltip(text: String) -> Object:
@@ -410,7 +410,7 @@ var rail := GoNavBar.rail([{"icon": GoIconSet.HOME, "text": "Home"}])
 
 ### `GoNavBar.drawer_list`
 
-Extends `GoNavBar`. Full-width destination rows for a drawer. Details: `hud.md` §16 (App screens).
+A function of `GoNavBar`. Full-width destination rows for a drawer. Details: `hud.md` §16 (App screens).
 
 ```gdscript
 drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Inbox"},
@@ -455,7 +455,7 @@ tabs.tab_changed.connect(func(index: int) -> void: track_tab(index))
 
 ### `GoStyle.tabs`
 
-Extends `GoStyle`. A tab row, at the start or spread over the row; the line runs the full width. Details: `style.md` §5 (Selection and navigation).
+A function of `GoStyle`. A tab row, at the start or spread over the row; the line runs the full width. Details: `style.md` §5 (Selection and navigation).
 
 ```gdscript
 var row := GoStyle.tabs(["Overview", "Stats", "Gear"], 0, false, true)
@@ -464,7 +464,7 @@ row.tab_changed.connect(show_panel)
 
 ### `GoStyle.bottom_app_bar`
 
-Extends `GoStyle`. The bottom bar with icon actions and a FAB. Details: `style.md` §6 (Display).
+A function of `GoStyle`. The bottom bar with icon actions and a FAB. Details: `style.md` §6 (Display).
 
 ```gdscript
 screen.set_bottom_bar(GoStyle.bottom_app_bar([{"icon": GoIconSet.SEARCH, "tooltip": &"search"},
@@ -473,7 +473,7 @@ screen.set_bottom_bar(GoStyle.bottom_app_bar([{"icon": GoIconSet.SEARCH, "toolti
 
 ### `GoStyle.toolbar`
 
-Extends `GoStyle`. A floating pill of icon actions. Details: `style.md` §6 (Display).
+A function of `GoStyle`. A floating pill of icon actions. Details: `style.md` §6 (Display).
 
 ```gdscript
 page.add_child(GoStyle.toolbar([{"icon": GoIconSet.EDIT, "tooltip": &"Edit", "action": edit},
@@ -482,7 +482,7 @@ page.add_child(GoStyle.toolbar([{"icon": GoIconSet.EDIT, "tooltip": &"Edit", "ac
 
 ### `GoStyle.breadcrumb`
 
-Extends `GoStyle`. Where you are, as a path you can step back along. Details: `style.md` §5 (Selection and navigation).
+A function of `GoStyle`. Where you are, as a path you can step back along. Details: `style.md` §5 (Selection and navigation).
 
 ```gdscript
 page.add_child(GoStyle.breadcrumb(["Home", "Shop", "Swords"], go_to_level))
@@ -511,7 +511,7 @@ banners.set_pages([promo, event, pack])
 
 ### `GoStyle.button`
 
-Extends `GoStyle`. Buttons in seven tones: normal, primary, outlined, text, compact, danger and filled danger. Details: `style.md` §3 (Buttons).
+A function of `GoStyle`. Buttons in seven tones: normal, primary, outlined, text, compact, danger and filled danger. Details: `style.md` §3 (Buttons).
 
 ```gdscript
 row.add_child(GoStyle.button("Play", play, GoStyle.Tone.PRIMARY))
@@ -521,7 +521,7 @@ row.add_child(GoStyle.button("Skip", skip, GoStyle.Tone.BARE))
 
 ### `GoStyle.glow`
 
-Extends `GoStyle`. Raises a filled button with a glow. Details: `style.md` §3 (Buttons).
+A function of `GoStyle`. Raises a filled button with a glow. Details: `style.md` §3 (Buttons).
 
 ```gdscript
 row.add_child(GoStyle.glow(GoStyle.button("Play", play, GoStyle.Tone.PRIMARY)))
@@ -539,7 +539,7 @@ bell.icon_name = GoIconSet.BELL
 
 ### `GoStyle.chip`
 
-Extends `GoStyle`. A status or tag pill whose text always reads. Details: `style.md` §6 (Display).
+A function of `GoStyle`. A status or tag pill whose text always reads. Details: `style.md` §6 (Display).
 
 ```gdscript
 row.add_child(GoStyle.chip("Rare", GoUi.color(GoTheme.INFO)))
@@ -547,7 +547,7 @@ row.add_child(GoStyle.chip("Rare", GoUi.color(GoTheme.INFO)))
 
 ### `GoStyle.filter_chip · input_chip`
 
-Extends `GoStyle`. A chip that toggles, and an entered value with a ✕. Details: `style.md` §6 (Display).
+A function of `GoStyle`. A chip that toggles, and an entered value with a ✕. Details: `style.md` §6 (Display).
 
 ```gdscript
 filters.add_child(GoStyle.filter_chip("In stock", false, refilter))
@@ -556,7 +556,7 @@ to.add_child(GoStyle.input_chip("Ann", remove_ann, GoIconSet.USER))
 
 ### `GoStyle.segmented`
 
-Extends `GoStyle`. Exactly one of a few options, joined in a row. Details: `style.md` §5 (Selection and navigation).
+A function of `GoStyle`. Exactly one of a few options, joined in a row. Details: `style.md` §5 (Selection and navigation).
 
 ```gdscript
 page.add_child(GoStyle.segmented(["Day", "Week", "Month"], 0, show_range))
@@ -564,7 +564,7 @@ page.add_child(GoStyle.segmented(["Day", "Week", "Month"], 0, show_range))
 
 ### `GoStyle.choice_grid`
 
-Extends `GoStyle`. Pick one swatch — a colour, a skin — from a grid. Details: `style.md` §5 (Selection and navigation).
+A function of `GoStyle`. Pick one swatch — a colour, a skin — from a grid. Details: `style.md` §5 (Selection and navigation).
 
 ```gdscript
 var skins := GoStyle.choice_grid([{"color": "f6cfae", "tooltip": "Peach"},
@@ -573,7 +573,7 @@ var skins := GoStyle.choice_grid([{"color": "f6cfae", "tooltip": "Peach"},
 
 ### `GoStyle.radio_group`
 
-Extends `GoStyle`. Radio buttons, one of which is chosen. Details: `style.md` §5 (Selection and navigation).
+A function of `GoStyle`. Radio buttons, one of which is chosen. Details: `style.md` §5 (Selection and navigation).
 
 ```gdscript
 page.add_child(GoStyle.radio_group(["Easy", "Normal", "Hard"], 1))
@@ -581,7 +581,7 @@ page.add_child(GoStyle.radio_group(["Easy", "Normal", "Hard"], 1))
 
 ### `GoStyle.toggle · checkbox`
 
-Extends `GoStyle`. A switch and a check box with their labels. Details: `style.md` §4 (Input).
+A function of `GoStyle`. A switch and a check box with their labels. Details: `style.md` §4 (Input).
 
 ```gdscript
 var music := GoStyle.toggle("Music", false)
@@ -593,7 +593,7 @@ var terms := GoStyle.checkbox("I agree to the terms", false)
 
 ### `GoStyle.line_edit · textarea`
 
-Extends `GoStyle`. A one-line and a multi-line text field. Details: `style.md` §4 (Input).
+A function of `GoStyle`. A one-line and a multi-line text field. Details: `style.md` §4 (Input).
 
 ```gdscript
 var nickname := GoStyle.line_edit("Your name")
@@ -637,7 +637,7 @@ coupon.completed.connect(redeem)
 
 ### `GoStyle.select · dropdown`
 
-Extends `GoStyle`. A drop-down list, and a button that opens a menu. Details: `style.md` §5 (Selection and navigation).
+A function of `GoStyle`. A drop-down list, and a button that opens a menu. Details: `style.md` §5 (Selection and navigation).
 
 ```gdscript
 var quality := GoStyle.select(["Low", "Medium", "High"])
@@ -646,7 +646,7 @@ var sort := GoStyle.dropdown("Sort", ["Newest", "Price"], sort_by)
 
 ### `GoStyle.slider`
 
-Extends `GoStyle`. A slider in the theme's shape. Details: `style.md` §4 (Input).
+A function of `GoStyle`. A slider in the theme's shape. Details: `style.md` §4 (Input).
 
 ```gdscript
 var volume := GoStyle.slider(0.0, 1.0, 0.05)
@@ -704,7 +704,7 @@ checkout.finished.connect(place_order)
 
 ### `GoStyle.list_row · list_button`
 
-Extends `GoStyle`. A list row with an icon, a title, a summary and a trailing mark. Details: `style.md` §3 (Buttons).
+A function of `GoStyle`. A list row with an icon, a title, a summary and a trailing mark. Details: `style.md` §3 (Buttons).
 
 ```gdscript
 page.add_child(GoStyle.list_button(GoIconSet.SETTINGS, "Settings", open_settings, Color.TRANSPARENT, "", false))
@@ -742,13 +742,13 @@ inbox.add_child(GoSwipeRow.wrap(mail_row, {"icon": GoIconSet.TRASH, "text": "Del
 Extends `VBoxContainer`. Sortable headers and selectable rows; numbers sort as numbers. Details: `style.md` §9 (Form and list widgets (classes, not factories) › GoTable).
 
 ```gdscript
-var board := GoTable.make(["Name", "Score"], [["Ann", 9124], ["Ben", 91240]])
+var board := GoTable.make(["Name", {"text": "Score", "numeric": true}], [["Ann", 9124], ["Ben", 91240]])
 board.row_selected.connect(open_profile)
 ```
 
 ### `GoStyle.card · item_card`
 
-Extends `GoStyle`. A card, and the detail card of a picked item. Details: `style.md` §6 (Display).
+A function of `GoStyle`. A card, and the detail card of a picked item. Details: `style.md` §6 (Display).
 
 ```gdscript
 var card := GoStyle.card()
@@ -758,7 +758,7 @@ popup.add_child(GoStyle.item_card({"title": "Rusty sword", "subtitle": "Common"}
 
 ### `GoStyle.avatar`
 
-Extends `GoStyle`. Initials or a picture in a disc. Details: `style.md` §6 (Display).
+A function of `GoStyle`. Initials or a picture in a disc. Details: `style.md` §6 (Display).
 
 ```gdscript
 row.add_child(GoStyle.avatar("AK", 40))
@@ -766,7 +766,7 @@ row.add_child(GoStyle.avatar("AK", 40))
 
 ### `GoStyle.label`
 
-Extends `GoStyle`. Text in one of seven type roles, from micro to title. Details: `style.md` §2 (Text).
+A function of `GoStyle`. Text in one of seven type roles, from micro to title. Details: `style.md` §2 (Text).
 
 ```gdscript
 page.add_child(GoStyle.label("Level 12", GoTheme.ROLE_TITLE))
@@ -873,7 +873,7 @@ page.add_child(map)
 
 ### `GoStyle.hud_panel · overlay_panel`
 
-Extends `GoStyle`. Panels that float over the game, so text stays readable on any picture. Details: `style.md` §10 (Lower-level functions › Panels and plates you place yourself).
+A function of `GoStyle`. Panels that float over the game, so text stays readable on any picture. Details: `style.md` §10 (Lower-level functions › Panels and plates you place yourself).
 
 ```gdscript
 var bars := GoStyle.hud_panel()
@@ -917,7 +917,7 @@ func banner_box() -> StyleBox:
 
 ### `GoIconSet · GoGameIcons`
 
-Extends `Resource`. Icons by name: the default set, 187 game icons, or your own SVGs. Details: `platform.md` §1 (Icons).
+Extends `Resource · RefCounted`. Icons by name: the default set, 187 game icons, or your own SVGs. Details: `platform.md` §1 (Icons).
 
 ```gdscript
 GoUi.config.icons = GoGameIcons.icon_set()
@@ -940,7 +940,7 @@ Extends `Control · RefCounted`. Notches, the gesture bar and the keyboard; brea
 
 ```gdscript
 var usable := GoSafeArea.usable_rect(get_window())
-var size_class := GoScale.breakpoint_for_dp(usable.size.x)
+var size_class := GoScale.breakpoint_for_dp(minf(usable.size.x, usable.size.y))   # by the short side
 ```
 
 ### `GoFeedback`

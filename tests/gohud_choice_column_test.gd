@@ -17,6 +17,7 @@ func _initialize() -> void:
 	GoUi.use_preset(GoThemePresets.DEFAULT_LIGHT)
 	GoUi.config.reduce_motion = true
 	await _column()
+	await _caught_mid_glide()
 	await _presets()
 	print("gohud choice column tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -189,8 +190,10 @@ func _column() -> void:
 
 ## 🔑 Every preset — a part's text has to read on its own face in each look (the gohud rule for every widget): plain
 ## rows on the HUD plate, a chosen row on its accent wash, and the ring around it against the plate.
+## Every preset this copy has — the built-in ones and any `themes/presets/<id>.tres` added since (a project's own, a new
+## family), so a new look is checked the day it lands.
 func _presets() -> void:
-	for preset in GoThemePresets.BUILTIN:
+	for preset in GoThemePresets.names():
 		GoUi.use_preset(preset)
 		var column := GoChoiceColumn.make(["Hen", "Cat", "Dog", "Pig", "Cow"], 4)
 		column.set_selected(1, true)
@@ -199,7 +202,8 @@ func _presets() -> void:
 		root.add_child(column)
 		await frames(2)
 		var page := GoUi.color(GoTheme.BACKGROUND)
-		var plate := GoSkin.blend(GoSkin.box_background(GoUi.skin().floating_box(GoTheme.BOX_HUD)), page)
+		# The face the column really draws: the HUD surface, without the shadow and glow it drops (`_plate`).
+		var plate := GoSkin.blend(GoSkin.box_background(GoUi.skin().surface_box(GoTheme.BOX_HUD)), page)
 		var accent := GoUi.color(GoTheme.ACCENT)
 		var chosen := GoSkin.blend(Color(accent, 0.22), plate)
 		var ink := GoUi.color(GoTheme.TEXT)
@@ -214,3 +218,36 @@ func _presets() -> void:
 		column.queue_free()
 		await frames(1)
 	GoUi.use_preset(GoThemePresets.DEFAULT_LIGHT)
+
+
+## 🛑 A finger that lands on rows still gliding stops them — it presses nothing and they rest on a whole row. With
+## `reduce_motion` on (the rest of this file) nothing glides, which is how this slipped past the first checks.
+func _caught_mid_glide() -> void:
+	GoUi.config.reduce_motion = false
+	pressed.clear()
+	var column := GoChoiceColumn.make(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"], 4,
+		func(index: int) -> void: pressed.append(index))
+	column.position = Vector2(40, 40)
+	root.add_child(column)
+	await frames(3)
+	column.scroll_to(8, true)                 # an animated glide down the list
+	await frames(1)
+	var gliding := column.get_scroll()
+	check(gliding > 0.0 and gliding < column.max_scroll(), "glide: the rows are moving (%.1f)" % gliding)
+	await tap(column.get_global_rect().position + column.row_rect(column.row_at(Vector2(column.size.x * 0.5,
+		column.padding + column.item_height * 0.5))).get_center())
+	await create_timer(0.6).timeout
+	check(pressed.is_empty(), "glide: a tap on moving rows presses nothing (%s)" % str(pressed))
+	var step := maxf(column.item_height, float(GoUi.metric(GoTheme.TOUCH))) + column.item_gap
+	var rest := column.get_scroll()
+	# Within half a pixel of a multiple of the step — `fmod(52.0, 52.0)` came back as 52 from float rounding.
+	check(is_equal_approx(rest, column.max_scroll()) or absf(rest - roundf(rest / step) * step) < 0.5,
+		"glide: the caught rows rest on a whole row (%.1f, step %.1f)" % [rest, step])
+	# The next tap, on rows at rest, acts again.
+	var top := column.row_at(Vector2(column.size.x * 0.5, column.padding + step * 0.5))
+	await tap(column.get_global_rect().position + column.row_rect(top).get_center())
+	check(pressed == [top], "glide: once they rest, a tap presses the row under the finger (%s, want %d)" % [str(pressed), top])
+	column.queue_free()
+	GoUi.config.reduce_motion = true
+	await frames(2)
+

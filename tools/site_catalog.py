@@ -109,6 +109,10 @@ TEXT = {
 		"كل الودجات والتخطيطات بأسمائها، مع مثال لكل منها."),
 	"extends": T("extends", "바탕", "継承", "继承", "繼承", "extiende", "estende", "наследует", "étend", "türetildiği",
 		"rozszerza", "estende", "kế thừa", "turunan", "успадковує", "สืบทอดจาก", "يرث"),
+	# A factory or a method (`GoStyle.button`, `GoDialogs.choose`) belongs to its class — it does not extend it.
+	"member": T("a function of", "소속", "所属", "所属", "所屬", "función de", "função de", "функция класса", "fonction de",
+		"ait olduğu sınıf", "funkcja klasy", "funzione di", "hàm của", "fungsi dari", "функція класу", "ฟังก์ชันของ",
+		"دالة من"),
 }
 
 GROUPS = [
@@ -1593,7 +1597,7 @@ queue.reordered.connect(func(from: int, to: int) -> void: songs.insert(to, songs
 		"Рядок, який змахують, щоб видалити чи заархівувати; список і далі прокручується.",
 		"แถวที่ปัดออกด้านข้างเพื่อลบหรือเก็บถาวร รายการยังเลื่อนได้",
 		"صف تسحبه جانبًا للحذف أو الأرشفة؛ تبقى القائمة قابلة للتمرير.")),
-	("lists", "GoTable", "VBoxContainer", """var board := GoTable.make(["Name", "Score"], [["Ann", 9124], ["Ben", 91240]])
+	("lists", "GoTable", "VBoxContainer", """var board := GoTable.make(["Name", {"text": "Score", "numeric": true}], [["Ann", 9124], ["Ben", 91240]])
 board.row_selected.connect(open_profile)""", T(
 		"Sortable headers and selectable rows; numbers sort as numbers.",
 		"정렬되는 머리와 고를 수 있는 줄 — 숫자는 숫자로 정렬.",
@@ -1947,7 +1951,7 @@ func banner_box() -> StyleBox:
 		"Форми, які малює код, — чипи, слоти, стік, нові частини — у вашому стилі.",
 		"รูปทรงที่โค้ดวาด — ชิป ช่อง จอยสติก ชิ้นส่วนใหม่ — ตามสไตล์ของคุณ",
 		"الأشكال التي يرسمها الكود — الرقائق والخانات وعصا التحكم والأجزاء الجديدة — بأسلوبك.")),
-	("look", "GoIconSet · GoGameIcons", "Resource", """GoUi.config.icons = GoGameIcons.icon_set()
+	("look", "GoIconSet · GoGameIcons", "Resource · RefCounted", """GoUi.config.icons = GoGameIcons.icon_set()
 var gear := GoUi.icons().node(GoIconSet.SETTINGS, 24)""", T(
 		"Icons by name: the default set, 187 game icons, or your own SVGs.",
 		"이름으로 부르는 아이콘 — 기본 세트, 게임 아이콘 187개, 또는 내 SVG.",
@@ -1987,7 +1991,7 @@ panel.add_theme_stylebox_override(&"panel", face)""", T(
 		"หน้าแบบลบมุม แบบวงเล็บ และแบบตีเหล็ก สำหรับแผงของคุณ",
 		"أوجه مشطوفة وبأقواس ومطروقة للوحاتك.")),
 	("look", "GoSafeArea · GoScale", "Control · RefCounted", """var usable := GoSafeArea.usable_rect(get_window())
-var size_class := GoScale.breakpoint_for_dp(usable.size.x)""", T(
+var size_class := GoScale.breakpoint_for_dp(minf(usable.size.x, usable.size.y))   # by the short side""", T(
 		"Notches, the gesture bar and the keyboard; breakpoints in dp.",
 		"노치·제스처 바·키보드를 피한 영역, 그리고 dp 기준 구간.",
 		"ノッチ・ジェスチャーバー・キーボードを避けた領域と、dp 基準のブレークポイント。",
@@ -2075,7 +2079,8 @@ def _body(code):
 			rows.append('    <div class="card">')
 			rows.append('      <h3><code>%s</code></h3>' % _esc(name))
 			rows.append('      <p>%s</p>' % _esc(words[code]))
-			rows.append('      <p class="catalog-base">%s <code>%s</code></p>' % (_esc(TEXT["extends"][code]), _esc(base)))
+			label = TEXT["member" if "." in name else "extends"][code]
+			rows.append('      <p class="catalog-base">%s <code>%s</code></p>' % (_esc(label), _esc(base)))
 			rows.append('      <pre><code>%s</code></pre>' % _breakable(example))
 			rows.append('    </div>')
 		rows.append('  </div>')
@@ -2228,7 +2233,8 @@ def skill_catalog():
 				place = "§%s (%s)" % (number.group(1), " › ".join(part.split(" — ")[0] for part in number.group(2).split(" › "))) \
 					if number else where[1]
 				more = " Details: `%s` %s." % (where[0], place)
-			out += ["### `%s`" % name, "", "Extends `%s`. %s%s" % (base, words["en"], more), "", "```gdscript", example,
+			kind = "A function of `%s`." % base if "." in name else "Extends `%s`." % base
+			out += ["### `%s`" % name, "", "%s %s%s" % (kind, words["en"], more), "", "```gdscript", example,
 				"```", ""]
 	return "\n".join(out).rstrip("\n") + "\n"
 

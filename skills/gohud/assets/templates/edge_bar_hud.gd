@@ -49,6 +49,13 @@ var coins: Label
 var menu_button: Button
 var animals: GoChoiceColumn
 var slots: Array[GoSlot] = []
+# What the HUD shows, kept here so `build()` — after a look switch — puts it back instead of the starting values.
+var _health := Vector2(320, 500)
+var _mana := Vector2(88, 120)
+var _stage := "Stage 1"
+var _coins := 1250
+var _out := {}
+var _resting := {}
 
 
 func _ready() -> void:
@@ -74,29 +81,55 @@ func build() -> void:
 	_build_top()
 	_build_bottom()
 	_build_sides()
+	for index: int in _out: animals.set_selected(index, true)
+	for index: int in _resting: animals.set_dimmed(index, true)
 
 
 # ── Public API ───────────────────────────────────────────────────────────
 
-func set_health(value: float, maximum: float) -> void: hp.set_values(value, maximum)
-func set_mana(value: float, maximum: float) -> void: mp.set_values(value, maximum)
-func set_stage(title: String) -> void: stage.text = title
-func set_coins(amount: int) -> void: coins.text = str(amount)
+func set_health(value: float, maximum: float) -> void:
+	_health = Vector2(value, maximum)
+	hp.set_values(value, maximum)
+
+
+func set_mana(value: float, maximum: float) -> void:
+	_mana = Vector2(value, maximum)
+	mp.set_values(value, maximum)
+
+
+func set_stage(title: String) -> void:
+	_stage = title
+	stage.text = title
+
+
+func set_coins(amount: int) -> void:
+	_coins = amount
+	coins.text = str(amount)
 
 
 ## The animal at [param index] is out (or back home) — its row stands out. The column never marks a row by itself.
 func set_summoned(index: int, out := true) -> void:
+	if out: _out[index] = true
+	else: _out.erase(index)
 	animals.set_selected(index, out)
 
 
 ## The animal at [param index] is resting — greyed, but a tap still reaches `summon_requested` so you can say why.
 func set_resting(index: int, resting := true) -> void:
+	if resting: _resting[index] = true
+	else: _resting.erase(index)
 	animals.set_dimmed(index, resting)
 
 
+## A new list of animals. 🛑 The marks belong to rows, not to animals — they are cleared here, so mark the ones out
+## and resting again (a mark kept by index would move to whichever animal now stands in that row).
 func set_summons(choices: Array) -> void:
 	summons = choices.duplicate()
+	_out.clear()
+	_resting.clear()
 	animals.set_items(summons)
+	animals.clear_selected()
+	for index in animals.item_count(): animals.set_dimmed(index, false)
 
 
 # ── Pieces ───────────────────────────────────────────────────────────────
@@ -107,24 +140,24 @@ func _build_top() -> void:
 	var status := _plate()
 	var bars := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
 	status.add_child(bars)
-	hp = _bar(bars, "HP", GoTheme.DANGER_FILL, 320, 500)
-	mp = _bar(bars, "MP", GoTheme.INFO_FILL, 88, 120)
+	hp = _bar(bars, "HP", GoTheme.DANGER_FILL, _health.x, _health.y)
+	mp = _bar(bars, "MP", GoTheme.INFO_FILL, _mana.x, _mana.y)
 	top.add_start(status)
 	var title := _plate()
-	stage = GoStyle.label("Stage 1", GoTheme.ROLE_SUBTITLE)
+	stage = GoStyle.label(_stage, GoTheme.ROLE_SUBTITLE)
 	title.add_child(stage)
 	top.add_center(title)                                # on the bar's centre, however wide the two sides are
 	var purse := _plate()
 	var line := GoStyle.row(GoUi.metric(GoTheme.GAP_TINY))
 	line.add_child(GoUi.icons().node(GoIconSet.COIN, GoUi.metric(GoTheme.ICON_SIZE), GoUi.color(GoTheme.WARNING)))
-	coins = GoStyle.label("1250")
+	coins = GoStyle.label(str(_coins))
 	coins.size_flags_horizontal = Control.SIZE_SHRINK_END
 	line.add_child(coins)
 	purse.add_child(line)
 	top.add_end(purse)
 	menu_button = GoStyle.icon_button(GoIconSet.MENU, func() -> void:
 		GoFeedback.tapped()
-		menu_requested.emit(), -1, &"Menu")
+		menu_requested.emit(), -1, &"menu")               # gohud's own name: the tooltip comes translated
 	# 🛑 Over gameplay: a clicked button would keep keyboard focus, and Space (jump, attack) would press it again.
 	menu_button.keyboard_focus = false
 	var behind := PanelContainer.new()                   # an icon straight over the world drowns in it
@@ -193,6 +226,7 @@ func _on_slot(index: int) -> void:
 	GoFeedback.tapped()
 	if slot.quantity > 0:
 		slot.quantity -= 1
+		slot_specs[index][2] = slot.quantity             # a rebuild keeps what is left
 	slot.start_cooldown(slot_cooldown)
 	slot_used.emit(index)
 

@@ -18,7 +18,7 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Identifier "GoUi" not declared` | Classes not registered yet, or the folder is not `res://addons/gohud/` | Put it exactly there, run `godot --headless --path . --import` |
-| `Identifier "GoNavBar" not declared` (or `GoTopBar`, `GoScaffold`, `GoChoiceColumn`, `MATERIAL_LIGHT` …) while `GoUi` works | The project's gohud is the 1.2.1 release or older; these came after it (`CHANGELOG.md` → Unreleased) | Update to `main` (`/gohud update`, setup.md §7), then `godot --headless --path . --import` |
+| `Identifier "GoNavBar" not declared` (or `GoTopBar`, `GoScaffold`, `GoChoiceColumn` …) while `GoUi` works — or `… not found in base …` for `MATERIAL_LIGHT`, `GoDialogs.choose()`, `GoStyle.filter_chip()`, `Tone.OUTLINED` | The project's gohud is the 1.2.1 release or older; these came after it (`CHANGELOG.md` → Unreleased; the full list is in `SKILL.md` §2 step 1) | Update to `main` (`/gohud update`, setup.md §7), then `godot --headless --path . --import` |
 | Parse errors inside gohud (`FoldableContainer`, `DPITexture` unknown) | Godot older than 4.7, the supported floor | Use Godot 4.7+ (`GoUi.MIN_ENGINE`) |
 | "Detected another project.godot" in the editor | A restored `examples/demo/project.godot` inside your project | Run the demo through `gohud_preview.py demo` (sandbox) or keep it as `project.godot.demo` |
 | A new JSON theme will not load | Its generated SVGs are not imported | `godot --headless --path . --import` after `make_theme.py` |

@@ -192,7 +192,7 @@ corner.<wbr>add_child(<wbr>GoStyle.<wbr>hud_panel(<wbr>))</code></pre>
     <div class="card">
       <h3 id="gostyle-column-row-wrap-row"><code>GoStyle.column · row · wrap_row</code></h3>
       <p>Стовпці, рядки й рядки з перенесенням, з відступами з теми.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var page := GoStyle.<wbr>column(<wbr>)
 var line := GoStyle.<wbr>row(<wbr>)
 var chips := GoStyle.<wbr>wrap_row(<wbr>)</code></pre>
@@ -200,14 +200,14 @@ var chips := GoStyle.<wbr>wrap_row(<wbr>)</code></pre>
     <div class="card">
       <h3 id="gostyle-responsive-grid-aspect"><code>GoStyle.responsive_grid · aspect</code></h3>
       <p>Сітка, що додає стовпці при розширенні, і блок, який тримає пропорції.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var tiles := GoStyle.<wbr>responsive_grid(<wbr>160)
 var thumb := GoStyle.<wbr>aspect(<wbr>16.0 / 9.0)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-padding-spacer-divider"><code>GoStyle.padding · spacer · divider</code></h3>
       <p>Внутрішній відступ, розпірка на решту місця і роздільна лінія.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var pad := GoStyle.<wbr>padding(<wbr>16)
 line.<wbr>add_child(<wbr>GoStyle.<wbr>spacer(<wbr>))
 page.<wbr>add_child(<wbr>GoStyle.<wbr>divider(<wbr>))</code></pre>
@@ -215,7 +215,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>divider(<wbr>))</code></pre>
     <div class="card">
       <h3 id="gostyle-foldable-section"><code>GoStyle.foldable · section</code></h3>
       <p>Заголовок розділу і розділ, що розгортається.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>section(<wbr>"Sound",<wbr> false))
 var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> false)</code></pre>
     </div>
@@ -255,7 +255,7 @@ if await dialogs.<wbr>confirm(<wbr>"Delete save",<wbr> "This cannot be undone.",
     <div class="card">
       <h3 id="godialogs-choose"><code>GoDialogs.choose</code></h3>
       <p>Один із кількох варіантів — нижня панель на телефоні, картка на комп'ютері.</p>
-      <p class="catalog-base">успадковує <code>GoDialogs</code></p>
+      <p class="catalog-base">функція класу <code>GoDialogs</code></p>
       <pre><code>var index := await dialogs.<wbr>choose(<wbr>"Sort by",<wbr> [<wbr>"Newest",<wbr> "Price",<wbr> "Rating"])
 if index &gt;= 0: sort_by(<wbr>index)</code></pre>
     </div>
@@ -377,20 +377,20 @@ refresh.<wbr>refresh_requested.<wbr>connect(<wbr>func(<wbr>) -&gt; void:
     <div class="card">
       <h3 id="gostyle-alert"><code>GoStyle.alert</code></h3>
       <p>Вбудоване повідомлення в тоні інформації, успіху, попередження чи небезпеки.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>alert(<wbr>"Maintenance at 3 AM",<wbr> GoTheme.<wbr>WARNING))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-skeleton-empty-state"><code>GoStyle.skeleton · empty_state</code></h3>
       <p>Заглушка під час завантаження і повідомлення для порожнього списку.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>skeleton(<wbr>200))
 page.<wbr>add_child(<wbr>GoStyle.<wbr>empty_state(<wbr>GoIconSet.<wbr>BOX,<wbr> "No items yet",<wbr> false))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-tooltip-node"><code>GoStyle.tooltip_node</code></h3>
       <p>Підказка в стилі теми, яка не розриває слів.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>func _make_custom_tooltip(<wbr>text: String) -&gt; Object:
 	return GoStyle.<wbr>tooltip_node(<wbr>text)</code></pre>
     </div>
@@ -419,7 +419,7 @@ var rail := GoNavBar.<wbr>rail(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr
     <div class="card">
       <h3 id="gonavbar-drawer-list"><code>GoNavBar.drawer_list</code></h3>
       <p>Рядки пунктів на всю ширину для шухляди.</p>
-      <p class="catalog-base">успадковує <code>GoNavBar</code></p>
+      <p class="catalog-base">функція класу <code>GoNavBar</code></p>
       <pre><code>drawer.<wbr>body.<wbr>add_child(<wbr>GoNavBar.<wbr>drawer_list(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr> "text": "Inbox"},<wbr>
 	{<wbr>"icon": GoIconSet.<wbr>STAR,<wbr> "text": "Starred"}],<wbr> 0,<wbr> go_to))</code></pre>
     </div>
@@ -454,28 +454,28 @@ tabs.<wbr>tab_changed.<wbr>connect(<wbr>func(<wbr>index: int) -&gt; void: track_
     <div class="card">
       <h3 id="gostyle-tabs"><code>GoStyle.tabs</code></h3>
       <p>Ряд вкладок — на початку або на всю ширину; лінія йде до кінця.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var row := GoStyle.<wbr>tabs(<wbr>[<wbr>"Overview",<wbr> "Stats",<wbr> "Gear"],<wbr> 0,<wbr> false,<wbr> true)
 row.<wbr>tab_changed.<wbr>connect(<wbr>show_panel)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-bottom-app-bar"><code>GoStyle.bottom_app_bar</code></h3>
       <p>Нижня панель із діями-іконками та FAB.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>screen.<wbr>set_bottom_bar(<wbr>GoStyle.<wbr>bottom_app_bar(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>SEARCH,<wbr> "tooltip": &amp;"search"},<wbr>
 	{<wbr>"icon": GoIconSet.<wbr>HEART,<wbr> "tooltip": &amp;"Like"}],<wbr> GoFab.<wbr>make(<wbr>GoIconSet.<wbr>PLUS)))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-toolbar"><code>GoStyle.toolbar</code></h3>
       <p>Плаваюча капсула з діями-іконками.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>toolbar(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>EDIT,<wbr> "tooltip": &amp;"Edit",<wbr> "action": edit},<wbr>
 	{<wbr>"icon": GoIconSet.<wbr>TRASH,<wbr> "tooltip": &amp;"Delete",<wbr> "action": delete}]))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-breadcrumb"><code>GoStyle.breadcrumb</code></h3>
       <p>Де ви зараз — як шлях, яким можна повернутися.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>breadcrumb(<wbr>[<wbr>"Home",<wbr> "Shop",<wbr> "Swords"],<wbr> go_to_level))</code></pre>
     </div>
     <div class="card">
@@ -501,7 +501,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
       <p>Кнопки семи тонів: звичайна, основна, контурна, текстова, компактна, небезпечна й залита небезпечна.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Play",<wbr> play,<wbr> GoStyle.<wbr>Tone.<wbr>PRIMARY))
 row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Details",<wbr> open_details,<wbr> GoStyle.<wbr>Tone.<wbr>OUTLINED))
 row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle.<wbr>Tone.<wbr>BARE))</code></pre>
@@ -509,7 +509,7 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
     <div class="card">
       <h3 id="gostyle-glow"><code>GoStyle.glow</code></h3>
       <p>Підносить залиту кнопку сяйвом.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>glow(<wbr>GoStyle.<wbr>button(<wbr>"Play",<wbr> play,<wbr> GoStyle.<wbr>Tone.<wbr>PRIMARY)))</code></pre>
     </div>
     <div class="card">
@@ -523,39 +523,39 @@ bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
       <p>Капсула статусу чи мітки, текст якої завжди читається.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>chip(<wbr>"Rare",<wbr> GoUi.<wbr>color(<wbr>GoTheme.<wbr>INFO)))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-filter-chip-input-chip"><code>GoStyle.filter_chip · input_chip</code></h3>
       <p>Перемикний чип і введене значення з ✕.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>filters.<wbr>add_child(<wbr>GoStyle.<wbr>filter_chip(<wbr>"In stock",<wbr> false,<wbr> refilter))
 to.<wbr>add_child(<wbr>GoStyle.<wbr>input_chip(<wbr>"Ann",<wbr> remove_ann,<wbr> GoIconSet.<wbr>USER))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-segmented"><code>GoStyle.segmented</code></h3>
       <p>Рівно один із кількох варіантів, з'єднаних у ряд.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>segmented(<wbr>[<wbr>"Day",<wbr> "Week",<wbr> "Month"],<wbr> 0,<wbr> show_range))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-choice-grid"><code>GoStyle.choice_grid</code></h3>
       <p>Вибір одного зразка — кольору, обрису — із сітки.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var skins := GoStyle.<wbr>choice_grid(<wbr>[<wbr>{<wbr>"color": "f6cfae",<wbr> "tooltip": "Peach"},<wbr>
 	{<wbr>"color": "8d5a36",<wbr> "tooltip": "Cocoa"}],<wbr> 0,<wbr> pick_skin)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-radio-group"><code>GoStyle.radio_group</code></h3>
       <p>Радіокнопки, з яких вибрано одну.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>radio_group(<wbr>[<wbr>"Easy",<wbr> "Normal",<wbr> "Hard"],<wbr> 1))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-toggle-checkbox"><code>GoStyle.toggle · checkbox</code></h3>
       <p>Перемикач і прапорець із підписами.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var music := GoStyle.<wbr>toggle(<wbr>"Music",<wbr> false)
 var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</code></pre>
     </div>
@@ -568,7 +568,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
       <p>Однорядкове та багаторядкове текстові поля.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var nickname := GoStyle.<wbr>line_edit(<wbr>"Your name")
 var note := GoStyle.<wbr>textarea(<wbr>"Message",<wbr> 4)</code></pre>
     </div>
@@ -602,14 +602,14 @@ coupon.<wbr>completed.<wbr>connect(<wbr>redeem)</code></pre>
     <div class="card">
       <h3 id="gostyle-select-dropdown"><code>GoStyle.select · dropdown</code></h3>
       <p>Випадний список і кнопка, що відкриває меню.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var quality := GoStyle.<wbr>select(<wbr>[<wbr>"Low",<wbr> "Medium",<wbr> "High"])
 var sort := GoStyle.<wbr>dropdown(<wbr>"Sort",<wbr> [<wbr>"Newest",<wbr> "Price"],<wbr> sort_by)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-slider"><code>GoStyle.slider</code></h3>
       <p>Повзунок у формі теми.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var volume := GoStyle.<wbr>slider(<wbr>0.0,<wbr> 1.0,<wbr> 0.05)
 volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
     </div>
@@ -658,7 +658,7 @@ checkout.<wbr>finished.<wbr>connect(<wbr>place_order)</code></pre>
     <div class="card">
       <h3 id="gostyle-list-row-list-button"><code>GoStyle.list_row · list_button</code></h3>
       <p>Рядок списку з іконкою, заголовком, коротким описом і міткою в кінці.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>list_button(<wbr>GoIconSet.<wbr>SETTINGS,<wbr> "Settings",<wbr> open_settings,<wbr> Color.<wbr>TRANSPARENT,<wbr> "",<wbr> false))</code></pre>
     </div>
     <div class="card">
@@ -686,13 +686,13 @@ queue.<wbr>reordered.<wbr>connect(<wbr>func(<wbr>from: int,<wbr> to: int) -&gt; 
       <h3 id="gotable"><code>GoTable</code></h3>
       <p>Заголовки з сортуванням і рядки з вибором; числа сортуються як числа.</p>
       <p class="catalog-base">успадковує <code>VBoxContainer</code></p>
-      <pre><code>var board := GoTable.<wbr>make(<wbr>[<wbr>"Name",<wbr> "Score"],<wbr> [<wbr>[<wbr>"Ann",<wbr> 9124],<wbr> [<wbr>"Ben",<wbr> 91240]])
+      <pre><code>var board := GoTable.<wbr>make(<wbr>[<wbr>"Name",<wbr> {<wbr>"text": "Score",<wbr> "numeric": true}],<wbr> [<wbr>[<wbr>"Ann",<wbr> 9124],<wbr> [<wbr>"Ben",<wbr> 91240]])
 board.<wbr>row_selected.<wbr>connect(<wbr>open_profile)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-card-item-card"><code>GoStyle.card · item_card</code></h3>
       <p>Картка й картка подробиць обраного предмета.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var card := GoStyle.<wbr>card(<wbr>)
 card.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Daily quest"))
 popup.<wbr>add_child(<wbr>GoStyle.<wbr>item_card(<wbr>{<wbr>"title": "Rusty sword",<wbr> "subtitle": "Common"}))</code></pre>
@@ -700,13 +700,13 @@ popup.<wbr>add_child(<wbr>GoStyle.<wbr>item_card(<wbr>{<wbr>"title": "Rusty swor
     <div class="card">
       <h3 id="gostyle-avatar"><code>GoStyle.avatar</code></h3>
       <p>Ініціали або зображення в колі.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>avatar(<wbr>"AK",<wbr> 40))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-label"><code>GoStyle.label</code></h3>
       <p>Текст в одній із семи типографських ролей, від micro до title.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Level 12",<wbr> GoTheme.<wbr>ROLE_TITLE))
 page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> GoTheme.<wbr>ROLE_CAPTION,<wbr> GoUi.<wbr>color(<wbr>GoTheme.<wbr>MUTED)))</code></pre>
     </div>
@@ -794,7 +794,7 @@ page.<wbr>add_child(<wbr>map)</code></pre>
     <div class="card">
       <h3 id="gostyle-hud-panel-overlay-panel"><code>GoStyle.hud_panel · overlay_panel</code></h3>
       <p>Панелі над грою, щоб текст читався на будь-якому зображенні.</p>
-      <p class="catalog-base">успадковує <code>GoStyle</code></p>
+      <p class="catalog-base">функція класу <code>GoStyle</code></p>
       <pre><code>var bars := GoStyle.<wbr>hud_panel(<wbr>)
 var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
     </div>
@@ -833,7 +833,7 @@ func banner_box(<wbr>) -&gt; StyleBox:
     <div class="card">
       <h3 id="goiconset-gogameicons"><code>GoIconSet · GoGameIcons</code></h3>
       <p>Іконки за назвою: стандартний набір, 187 ігрових іконок або ваші SVG.</p>
-      <p class="catalog-base">успадковує <code>Resource</code></p>
+      <p class="catalog-base">успадковує <code>Resource · RefCounted</code></p>
       <pre><code>GoUi.<wbr>config.<wbr>icons = GoGameIcons.<wbr>icon_set(<wbr>)
 var gear := GoUi.<wbr>icons(<wbr>).<wbr>node(<wbr>GoIconSet.<wbr>SETTINGS,<wbr> 24)</code></pre>
     </div>
@@ -850,7 +850,7 @@ panel.<wbr>add_theme_stylebox_override(<wbr>&amp;"panel",<wbr> face)</code></pre
       <p>Вирізи, панель жестів і клавіатура; контрольні точки в dp.</p>
       <p class="catalog-base">успадковує <code>Control · RefCounted</code></p>
       <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_window(<wbr>))
-var size_class := GoScale.<wbr>breakpoint_for_dp(<wbr>usable.<wbr>size.<wbr>x)</code></pre>
+var size_class := GoScale.<wbr>breakpoint_for_dp(<wbr>minf(<wbr>usable.<wbr>size.<wbr>x,<wbr> usable.<wbr>size.<wbr>y))   # by the short side</code></pre>
     </div>
     <div class="card">
       <h3 id="gofeedback"><code>GoFeedback</code></h3>

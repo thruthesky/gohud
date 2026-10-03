@@ -91,6 +91,8 @@ var _offset := 0.0
 var _pressed_at := Vector2.INF
 var _press_row := -1
 var _dragging := false
+## The press caught the rows while they were still moving — it stops them and presses nothing.
+var _caught := false
 var _velocity := 0.0
 var _last_move := 0
 var _focus_row := 0
@@ -328,7 +330,7 @@ func _inside(ring: StyleBox, rect: Rect2) -> Rect2:
 		-maxf(0.0, flat.expand_margin_bottom - maxf(0.0, size.y - rect.end.y)))
 
 
-## The default row: the icon, then the text, centred when the row holds only one of them.
+## The default row: the icon, then the text (the text first in a right-to-left layout), centred together.
 func _draw_row(index: int, rect: Rect2, chosen: bool, dimmed: bool) -> void:
 	var row := _items[index]
 	var ink := GoUi.color(GoTheme.TEXT)
@@ -342,9 +344,14 @@ func _draw_row(index: int, rect: Rect2, chosen: bool, dimmed: bool) -> void:
 	var gap := float(GoUi.metric(GoTheme.GAP_SMALL)) if icon_size > 0.0 and not words.is_empty() else 0.0
 	var text_width := font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x \
 		if font != null and not words.is_empty() else 0.0
-	var x := rect.position.x + maxf(0.0, (rect.size.x - icon_size - gap - text_width) * 0.5)
+	var start := rect.position.x + maxf(0.0, (rect.size.x - icon_size - gap - text_width) * 0.5)
+	var icon_x := start
+	var text_x := start + icon_size + gap
+	if is_layout_rtl():
+		text_x = start
+		icon_x = start + text_width + gap
 	if icon_size > 0.0:
-		var box := Rect2(x, rect.get_center().y - icon_size * 0.5, icon_size, icon_size)
+		var box := Rect2(icon_x, rect.get_center().y - icon_size * 0.5, icon_size, icon_size)
 		var icons := GoUi.icons()
 		var texture := icons.texture(icon)
 		if texture != null:
@@ -358,10 +365,9 @@ func _draw_row(index: int, rect: Rect2, chosen: bool, dimmed: bool) -> void:
 				draw_string(glyph_font, Vector2(box.get_center().x - glyph_box.x * 0.5,
 					box.get_center().y + glyph_font.get_ascent(glyph_size) - glyph_box.y * 0.5), glyph,
 					HORIZONTAL_ALIGNMENT_LEFT, -1, glyph_size, ink)
-		x += icon_size + gap
 	if text_width > 0.0:
-		draw_string(font, Vector2(x, rect.get_center().y + font.get_ascent(font_size) - font.get_height(font_size) * 0.5),
-			words, HORIZONTAL_ALIGNMENT_LEFT, rect.end.x - x, font_size, ink)
+		draw_string(font, Vector2(text_x, rect.get_center().y + font.get_ascent(font_size) - font.get_height(font_size) * 0.5),
+			words, HORIZONTAL_ALIGNMENT_LEFT, rect.end.x - text_x, font_size, ink)
 
 
 ## Fade bands at an edge with more rows past it, and a small arrow that says so. The band fades into the plate's own
@@ -369,6 +375,8 @@ func _draw_row(index: int, rect: Rect2, chosen: bool, dimmed: bool) -> void:
 func _draw_edges(plate: StyleBox) -> void:
 	var band := minf(14.0, size.y * 0.25)
 	var under := GoSkin.box_background(plate) if plate != null else Color.TRANSPARENT
+	# A frame that paints no face has nothing for the rows to fade into — the arrow alone says there is more.
+	if plate != null and &"draw_center" in plate and not plate.get(&"draw_center"): under = Color.TRANSPARENT
 	var arrow := Color(GoUi.color(GoTheme.MUTED), 0.9)
 	var middle := size.x * 0.5
 	if _offset > 0.5:
@@ -389,19 +397,30 @@ func _band(plate: StyleBox, top: bool, band: float, under: Color) -> void:
 	var right := 0.0
 	var flat := plate as StyleBoxFlat
 	var cut := plate as GoStyleBoxCut
+	var forged := plate as GoStyleBoxMedieval
 	if flat != null:
 		inner = inner.grow_individual(-flat.border_width_left, -flat.border_width_top, -flat.border_width_right,
 			-flat.border_width_bottom)
 		left = (flat.corner_radius_top_left if top else flat.corner_radius_bottom_left) - flat.border_width_left
 		right = (flat.corner_radius_top_right if top else flat.corner_radius_bottom_right) - flat.border_width_right
 	elif cut != null:
-		var line := cut.edge_width if cut.edge_color.a > 0.0 and cut.edge_side == (SIDE_TOP if top else SIDE_BOTTOM) else 0.0
+		# The accent line on one side is thicker than the border — the band keeps clear of it on any side.
+		var line := cut.edge_width if cut.edge_color.a > 0.0 else 0.0
 		inner = inner.grow(-cut.border_width)
-		if top: inner = inner.grow_side(SIDE_TOP, -maxf(0.0, line - cut.border_width))
-		else: inner = inner.grow_side(SIDE_BOTTOM, -maxf(0.0, line - cut.border_width))
+		inner = inner.grow_side(cut.edge_side, -maxf(0.0, line - cut.border_width))
 		var chamfer := minf(cut.cut, minf(size.x, size.y) * 0.5)
 		left = chamfer if cut.cut_corners & (GoStyleBoxCut.TOP_LEFT if top else GoStyleBoxCut.BOTTOM_LEFT) else 0.0
 		right = chamfer if cut.cut_corners & (GoStyleBoxCut.TOP_RIGHT if top else GoStyleBoxCut.BOTTOM_RIGHT) else 0.0
+	elif forged != null:
+		# The forged frame: a rounded face with a border, and rivets set in from each corner — the cut leaves them
+		# uncovered (`GoStyleBoxMedieval._draw`: inset 6 × ornament_scale).
+		inner = inner.grow(-forged.border_width)
+		var round_corner := minf(forged.radius, minf(size.x, size.y) * 0.5) - forged.border_width
+		var rivets := 0.0
+		if forged.ornament > 0 and forged.draw_center:
+			rivets = 2.0 * minf(6.0 * forged.ornament_scale, minf(size.x, size.y) * 0.2) + 3.0
+		left = maxf(round_corner, rivets)
+		right = left
 	left = clampf(left, 0.0, inner.size.x * 0.5 - 1.0)
 	right = clampf(right, 0.0, inner.size.x * 0.5 - 1.0)
 	var edge := inner.position.y if top else inner.end.y
@@ -441,12 +460,15 @@ func _gui_input(event: InputEvent) -> void:
 		elif click.button_index == MOUSE_BUTTON_LEFT:
 			if click.pressed:
 				if focus_mode != Control.FOCUS_NONE: grab_focus(true)
+				# 🛑 A finger that lands on moving rows means "stop", not "this one" — pressing the row it happened to
+				#    land on summoned what nobody chose and left the rows resting between two (review, 2026-10-03).
+				_caught = _tween != null and _tween.is_running()
 				if _tween != null: _tween.kill()
 				_pressed_at = click.position
 				_dragging = false
 				_velocity = 0.0
 				_last_move = Time.get_ticks_msec()
-				_press_row = row_at(click.position)
+				_press_row = -1 if _caught else row_at(click.position)
 				queue_redraw()
 			elif _pressed_at != Vector2.INF:
 				var row := _press_row
@@ -454,12 +476,13 @@ func _gui_input(event: InputEvent) -> void:
 				_press_row = -1
 				if _dragging:
 					_fling()
-				elif row >= 0 and row == row_at(click.position):
+				elif not _caught and row >= 0 and row == row_at(click.position):
 					_focus_row = row
 					_press(row)
 				else:
 					# A tap that caught the rows mid-glide lands them on a whole row.
 					_glide(_snapped(_offset), true)
+				_caught = false
 				queue_redraw()
 			accept_event()
 		return
