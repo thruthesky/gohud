@@ -336,3 +336,10 @@ func _ready() -> void:
 borders, icons, focus rings 3:1 · decorative borders 2:1 · adjacent surfaces 1.12:1. Translucent panels are
 measured over pure white and pure black. When you tint things yourself, keep label colours legible with
 `GoUi.skin().readable_on(ink, background)` rather than same-hue text on a same-hue tint.
+
+🛑 **Set every state, or the engine fills it with white.** A colour a theme or an override leaves out is not borrowed
+from the next state — the engine draws its own default theme's, made for a dark editor. Recolouring a button or a
+toggle's label means all of `font_color`, `font_hover_color`, `font_pressed_color`, `font_hover_pressed_color` and
+`font_focus_color` (and the matching `icon_*_color`, since gohud icons are white artwork tinted by them) — leave out
+`font_hover_pressed_color` and a switched-on toggle's label turns white under the mouse. `TabContainer` reads its own
+tab colours, not `TabBar`'s. The checker looks colours up the way the engine does, so a gap shows up there.

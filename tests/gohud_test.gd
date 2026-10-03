@@ -74,6 +74,7 @@ func _initialize() -> void:
 	await _section("medieval theme", _medieval)
 	await _section("material theme", _material)
 	await _section("skin contrast", _skin_contrast)
+	await _section("theme fallbacks", _theme_fallbacks)
 	await _section("icon sets", _icons)
 	await _section("localization", _i18n)
 	await _section("text customisation", _text_customisation)
@@ -682,6 +683,81 @@ func _material() -> void:
 #
 # 🛑 `tools/check_contrast.py` reads theme `.tres` files only. The colours a skin makes **at run time**
 #    (a chip's same-hue tint, the slot panel, the alert box) fall outside it and are caught only here.
+
+## 🛑 **A colour a gohud theme leaves out is not borrowed from a neighbouring state — the engine draws its own
+##    default, made for a dark editor: white.** No theme had `font_hover_pressed_color`, so the label of a
+##    switched-on toggle or a ticked checkbox turned white under the mouse and vanished on every light theme, and a
+##    pressed primary button's label went white on its bright plate on every dark one (2026-10-03).
+##    Every text and icon colour the engine gives the controls gohud builds must come from the gohud theme.
+func _theme_fallbacks() -> void:
+	var engine := ThemeDB.get_default_theme()
+	var natives: Array[StringName] = [&"Button", &"CheckBox", &"CheckButton", &"OptionButton", &"MenuButton",
+		&"LinkButton", &"LineEdit", &"TextEdit", &"TabBar", &"TabContainer"]
+	# Drawn only with an outline or shadow size, which gohud leaves at 0.
+	var unused: Array[StringName] = [&"font_outline_color", &"font_shadow_color"]
+	var field_inks: Array[StringName] = [&"caret_color", &"selection_color", &"clear_button_color",
+		&"clear_button_color_pressed"]
+	for preset in GoThemePresets.all():
+		var theme := preset.theme
+		var types: Array[StringName] = natives.duplicate()
+		for type in theme.get_type_list():
+			if not types.has(type) and not ClassDB.class_exists(type): types.append(type)
+		var missing: Array[String] = []
+		for type in types:
+			var chain := _theme_chain(theme, type)
+			if chain.is_empty() or not natives.has(chain[chain.size() - 1]): continue
+			var native: StringName = chain[chain.size() - 1]
+			var names := {}
+			var engine_chain: Array[StringName] = [native]
+			if native != &"Button" and ClassDB.is_parent_class(native, &"Button"): engine_chain.append(&"Button")
+			for owner in engine_chain:
+				for name in engine.get_color_list(owner):
+					if unused.has(name): continue
+					if name.begins_with("font_") or name.begins_with("icon_") or field_inks.has(name): names[name] = true
+			for name: StringName in names:
+				var found := false
+				for owner in chain + ([&"Button"] if engine_chain.has(&"Button") else []):
+					if theme.has_color(name, owner):
+						found = true
+						break
+				if not found: missing.append("%s/%s" % [type, name])
+		check(missing.is_empty(), "%s: every text and icon colour comes from the theme, none from the engine %s"
+			% [preset.id, str(missing)])
+
+		# 🔑 Read it from **widgets that were really built** — a hovered pressed face is the pressed face, so the ink is
+		#    the pressed ink. The toggle is the one from the report (a display options window).
+		GoUi.use_preset(preset.id)
+		var built: Array[Button] = [GoStyle.toggle("Frame time", false), GoStyle.checkbox("Show names", false),
+			GoStyle.button("Normal"), GoStyle.button("Primary", Callable(), GoStyle.Tone.PRIMARY),
+			GoStyle.button("Danger", Callable(), GoStyle.Tone.DANGER),
+			GoStyle.button("Delete", Callable(), GoStyle.Tone.DANGER_SOLID),
+			GoStyle.button("Bare", Callable(), GoStyle.Tone.BARE), GoStyle.button("Chip", Callable(), GoStyle.Tone.COMPACT)]
+		for node in built:
+			root.add_child(node)
+		await frames(1)
+		for node in built:
+			var label := "%s: %s %s" % [preset.id, node.get_class(), node.theme_type_variation]
+			check(node.get_theme_color(&"font_hover_pressed_color") == node.get_theme_color(&"font_pressed_color"),
+				"%s — the hovered pressed label keeps the pressed ink" % label)
+			check(node.get_theme_color(&"icon_hover_pressed_color") == node.get_theme_color(&"icon_pressed_color"),
+				"%s — the hovered pressed icon keeps the pressed ink" % label)
+			node.queue_free()
+		await frames(1)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	GoUi.config.preset = &""
+
+
+## The order the engine searches one theme: the type, its `base_type` variations, then the native class and its parents.
+func _theme_chain(theme: Theme, type: StringName) -> Array[StringName]:
+	var chain: Array[StringName] = []
+	var current := type
+	while current != StringName() and not ClassDB.class_exists(current) and chain.size() < 8:
+		chain.append(current)
+		current = theme.get_type_variation_base(current)
+	if current == StringName(): return []
+	chain.append(current)
+	return chain
+
 
 func _skin_contrast() -> void:
 	var tones := [GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER, GoTheme.INFO, GoTheme.SECONDARY]

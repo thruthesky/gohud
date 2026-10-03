@@ -450,6 +450,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     put("Button/colors/icon_normal_color", C(on_tonal))
     put("Button/colors/icon_hover_color", C(on_tonal))
     put("Button/colors/icon_pressed_color", C(on_tonal))
+    put("Button/colors/icon_hover_pressed_color", C(on_tonal))
+    put("Button/colors/icon_focus_color", C(on_tonal))
     put("Button/colors/icon_disabled_color", C(_alpha(r["on_surface"], 0.38)))
     put("Button/styles/hover_pressed", 'SubResource("btn_pressed")')
 
@@ -470,6 +472,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     for state, bid in (("normal", "edit_normal"), ("hover", "field_hover"), ("pressed", "field_open"),
                        ("hover_pressed", "field_open"), ("disabled", "edit_read_only"), ("focus", "field_focus")):
         sb("OptionButton/styles/%s" % state, bid)
+        if state in ("normal", "hover", "pressed", "disabled"):
+            sb("OptionButton/styles/%s_mirrored" % state, bid)   # right-to-left: the same symmetric field
     put("OptionButton/constants/arrow_margin", 16)
     sb("LineEdit/styles/read_only", "edit_read_only")
     sb("TextEdit/styles/read_only", "edit_read_only")
@@ -479,13 +483,15 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         put("GoDangerButton/colors/%s" % key, C(r["on_error_container"]))
     for key in ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"):
         put("GoDangerSolidButton/colors/%s" % key, C(r["on_error"]))
-    put("GoDangerSolidButton/colors/icon_normal_color", C(r["on_error"]))
+    for key in ("icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "icon_focus_color"):
+        put("GoDangerSolidButton/colors/%s" % key, C(r["on_error"]))
     sb("GoDangerSolidButton/styles/focus", "btn_focus_on_error")
 
     # Text button (bare): primary label, a primary state layer.
     for key in ("font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"):
         put("GoBareButton/colors/%s" % key, C(r["primary"]))
-    put("GoBareButton/colors/icon_normal_color", C(r["primary"]))
+    for key in ("icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "icon_focus_color"):
+        put("GoBareButton/colors/%s" % key, C(r["primary"]))
     sb("GoBareButton/styles/hover", "text_hover")
     sb("GoBareButton/styles/pressed", "text_pressed")
     sb("GoBareButton/styles/hover_pressed", "text_pressed")
@@ -498,7 +504,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     sb("GoIconButton/styles/hover_pressed", "icon_pressed")
     sb("GoIconButton/styles/focus", "icon_focus")
     # icon-button-standard: hovered and pressed icons stay on-surface-variant — primary is the selected state.
-    for key in ("icon_hover_color", "icon_pressed_color", "icon_focus_color"):
+    for key in ("icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "icon_focus_color"):
         put("GoIconButton/colors/%s" % key, C(r["on_surface_variant"]))
 
     # List rows press with a state layer, not the accent.

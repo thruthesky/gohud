@@ -32,6 +32,21 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Text no longer turns white under the mouse — in every look.** A colour a theme leaves out is not borrowed from a
+  neighbouring state: the engine draws its own default theme's, made for a dark editor. No gohud theme had
+  `font_hover_pressed_color`, so hovering a switched-on toggle, a ticked checkbox, a selected list row or a pressed
+  toggle button turned its label white — gone on every light page, and white on the bright plate of a pressed
+  primary or filled danger button on every dark one. Every look now gives the hovered pressed face the pressed ink,
+  and also fills the other engine leaks behind the same kind of fault: icon tints for focus and hovered-pressed
+  (gohud icons are white artwork), the textarea's placeholder, caret and selection, a field's selected and read-only
+  text and clear button, `TabContainer`'s hovered and disabled tabs and tab icons, `LinkButton`'s text, the dropdown's
+  right-to-left faces (`*_mirrored` were the engine's dark plates) and the read-only textarea face. The pressed ink
+  itself must now read on the bare backdrop and cards too, since a checkbox, a switch and a text button lay it there
+  with no plate (medieval light was 3.85:1). `tools/check_contrast.py` looks a colour up the way the engine does —
+  the variation, the parent class, then the engine default — and measures the hovered-pressed face and the inputs'
+  placeholder; before, it fell back to `font_color` and stayed green. `gohud_test.gd` checks that every text and icon
+  colour of the controls gohud builds comes from the theme, on every preset.
+
 - **The kids looks pass the layout test again.** Chips and the navigation pill used a 999 radius, which the cell audit
   reads as "the label needs 300dp of room" (24 faults on every width, both looks); list rows used a 12dp corner that a
   table row's 4dp padding cannot hold. Chips and the pill take half their height (13 · 16), list rows a 6dp corner.

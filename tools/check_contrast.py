@@ -188,13 +188,40 @@ def parse_theme_map(path):
     return styles, fonts, bases
 
 
-# state -> the font color slots used in that state (falls back to the earlier one if absent)
+# state -> the font colour slot the engine draws in that state.
+# 🛑 **The engine never borrows a neighbouring state's colour.** A slot the theme leaves out is taken from the engine's
+#    own default theme (`ENGINE_INKS`), drawn for a dark editor — white. This table used to fall back to `font_color`
+#    and had no `hover_pressed` row at all, so it stayed green while a switched-on toggle's label turned white under
+#    the mouse on every light theme (2026-10-03).
 STATE_FONTS = {
     "normal": ["font_color"],
-    "hover": ["font_hover_color", "font_color"],
-    "pressed": ["font_pressed_color", "font_color"],
-    "disabled": ["font_disabled_color", "font_color"],
+    "hover": ["font_hover_color"],
+    "pressed": ["font_pressed_color"],
+    "hover_pressed": ["font_hover_pressed_color"],
+    "disabled": ["font_disabled_color"],
 }
+
+# What the engine's default theme (Godot 4.7) gives a slot this theme leaves out — read with
+# `ThemeDB.get_default_theme()`. Every engine control that draws text carries these.
+ENGINE_INKS = {
+    "font_color": (0.875, 0.875, 0.875, 1.0),
+    "font_hover_color": (0.95, 0.95, 0.95, 1.0),
+    "font_pressed_color": (1.0, 1.0, 1.0, 1.0),
+    "font_hover_pressed_color": (1.0, 1.0, 1.0, 1.0),
+    "font_focus_color": (0.95, 0.95, 0.95, 1.0),
+    "font_disabled_color": (0.875, 0.875, 0.875, 0.5),
+    "font_placeholder_color": (0.875, 0.875, 0.875, 0.6),
+    "font_selected_color": (0.95, 0.95, 0.95, 1.0),
+    "font_unselected_color": (0.7, 0.7, 0.7, 1.0),
+    "font_hovered_color": (0.95, 0.95, 0.95, 1.0),
+}
+
+# The engine also looks a colour up on the **parent class** inside the same theme before it falls back to its own
+# default — a checkbox with no `font_pressed_color` of its own uses this theme's `Button` one.
+NATIVE_PARENTS = {"CheckBox": "Button", "CheckButton": "Button", "OptionButton": "Button", "MenuButton": "Button"}
+
+# Text inputs also draw a hint while empty — measured on the field's own face.
+PLACEHOLDER_TYPES = ["LineEdit", "TextEdit"]
 
 # Types to check — only the ones that hold text. Scrollbars and sliders have none.
 # 🛑 `CheckBox` and `CheckButton` draw no plate (their faces are `StyleBoxEmpty`), so their label sits straight on what is
@@ -209,14 +236,15 @@ TEXT_TYPES = [
 #    `normal`/`pressed` table above finds no row for it at all. Each tab face is paired with its own colour here.
 TAB_TYPES = ["TabBar", "TabContainer"]
 TAB_FACES = {
-    "tab_selected": ["font_selected_color", "font_color"],
-    "tab_unselected": ["font_unselected_color", "font_color"],
-    "tab_hovered": ["font_hovered_color", "font_unselected_color", "font_color"],
+    "tab_selected": ["font_selected_color"],
+    "tab_unselected": ["font_unselected_color"],
+    "tab_hovered": ["font_hovered_color"],
 }
 
 
 def font_for(fonts, bases, type_name, keys):
-    """If the type has no such color, walk up `base_type` — that is how the engine looks it up."""
+    """Look the colour up the way the engine does: the type, up its `base_type` variations, up its parent class —
+    and when this theme has it nowhere, the engine's own default (`ENGINE_INKS`), which is what is really drawn."""
     seen = 0
     current = type_name
     while current and seen < 8:
@@ -224,8 +252,11 @@ def font_for(fonts, bases, type_name, keys):
         for key in keys:
             if key in table:
                 return table[key]
-        current = bases.get(current)
+        current = bases.get(current) or NATIVE_PARENTS.get(current)
         seen += 1
+    for key in keys:
+        if key in ENGINE_INKS:
+            return ENGINE_INKS[key]
     return None
 
 
@@ -396,12 +427,13 @@ def surface_rows(path, colors):
     rows = []
     checks = [(name, STATE_FONTS, "button and input field text") for name in TEXT_TYPES]
     checks += [(name, TAB_FACES, "tab label") for name in TAB_TYPES]
+    checks += [(name, {"placeholder": ["font_placeholder_color"]}, "input placeholder") for name in PLACEHOLDER_TYPES]
     for type_name, faces, note in checks:
         table = styles.get(type_name)
         if not table:
             continue
         for state, keys in faces.items():
-            box_id = table.get(state)
+            box_id = table.get("normal" if state == "placeholder" else state)
             if box_id is None:
                 continue
             box_bg = plate_of(box_id, boxes, kinds)

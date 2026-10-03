@@ -647,7 +647,10 @@ def build(pal, shape, variant, out_path):
     danger_bg_hover = alpha(pal["danger"], 0.20)
     danger_ink = ink_on(danger_bg, pal["danger"])
     danger_ink_hover = ink_on(danger_bg_hover, pal["danger"])
-    press_ink = ink_on(press_bg, pal["accent"])
+    # 🛑 The pressed ink is **inherited by controls with no plate** — a ticked checkbox, a switched-on toggle, a pressed
+    #    text button take `Button`'s pressed colour and lay it straight on the backdrop or a card. Measured only on
+    #    the pressed plate, it fell to 3.85:1 on medieval light's card (2026-10-03). So it must read on both.
+    press_ink = readable_everywhere(pal["accent"], [flatten(press_bg, s) for s in _surfaces] + _surfaces, 4.65)
     list_press_ink = ink_on(alpha(pal["text"], 0.09), pal["accent"])
     # The primary button while pressed — in the light theme, mixing the accent toward the background
     # **brightens** it and kills the white text. Mix toward the text colour so it always darkens.
@@ -836,14 +839,23 @@ def build(pal, shape, variant, out_path):
     states = [("normal", "btn_normal"), ("hover", "btn_hover"), ("pressed", "btn_pressed"),
               ("hover_pressed", "btn_pressed"), ("disabled", "btn_disabled"), ("focus", "btn_focus")]
 
+    # 🛑 **Every state the engine draws needs its own colour here.** A colour this theme leaves out is not taken
+    #    from a neighbouring state — the engine falls through to its own default theme, which is drawn for a dark
+    #    editor: white. `font_hover_pressed_color` was missing, so the label of a switched-on toggle, a ticked
+    #    checkbox or a selected row turned white under the mouse and vanished on every light page (2026-10-03,
+    #    seen in a game's display options window). The hovered-and-pressed face *is* the pressed face (`states`
+    #    below), so it takes the pressed ink. The same goes for icons, which are white artwork tinted here.
     add("Button/colors/font_color", C(pal["text"]))
     add("Button/colors/font_hover_color", C(pal["text"]))
     add("Button/colors/font_pressed_color", C(press_ink))
+    add("Button/colors/font_hover_pressed_color", C(press_ink))
     add("Button/colors/font_focus_color", C(pal["text"]))
     add("Button/colors/font_disabled_color", C(pal["muted"]))
     add("Button/colors/icon_normal_color", C(pal["secondary"]))
     add("Button/colors/icon_hover_color", C(pal["text"]))
     add("Button/colors/icon_pressed_color", C(pal["accent"]))
+    add("Button/colors/icon_hover_pressed_color", C(pal["accent"]))
+    add("Button/colors/icon_focus_color", C(pal["secondary"]))
     add("Button/colors/icon_disabled_color", C(alpha(pal["muted"], 0.5)))
     add("Button/constants/h_separation", CONST["gap_small"])
     add("Button/font_sizes/font_size", FONTS["button"])
@@ -855,17 +867,33 @@ def build(pal, shape, variant, out_path):
     add("RichTextLabel/colors/default_color", C(pal["text"]))
     add("RichTextLabel/font_sizes/normal_font_size", FONTS["body"])
 
+    # 🛑 The engine's own field colours are light grey and white (selected text, read-only text, the clear
+    #    button, the textarea's placeholder and caret) — gone on a light page. Every one is set here.
     add("LineEdit/colors/font_color", C(pal["text"]))
     add("LineEdit/colors/font_placeholder_color", C(pal["muted"]))
+    add("LineEdit/colors/font_selected_color", C(pal["text"]))
+    add("LineEdit/colors/font_uneditable_color", C(pal["muted"]))
     add("LineEdit/colors/caret_color", C(pal["accent"]))
     add("LineEdit/colors/selection_color", C(alpha(pal["accent"], 0.35)))
+    add("LineEdit/colors/clear_button_color", C(pal["secondary"]))
+    add("LineEdit/colors/clear_button_color_pressed", C(pal["accent"]))
     add("LineEdit/font_sizes/font_size", FONTS["body"])
     sb("LineEdit/styles/normal", "edit_normal")
     sb("LineEdit/styles/focus", "edit_focus")
     sb("LineEdit/styles/read_only", "btn_disabled")
     add("TextEdit/colors/font_color", C(pal["text"]))
+    add("TextEdit/colors/font_placeholder_color", C(pal["muted"]))
+    add("TextEdit/colors/font_selected_color", C(pal["text"]))
+    add("TextEdit/colors/font_readonly_color", C(pal["muted"]))
+    add("TextEdit/colors/caret_color", C(pal["accent"]))
+    add("TextEdit/colors/selection_color", C(alpha(pal["accent"], 0.35)))
     sb("TextEdit/styles/normal", "edit_normal")
     sb("TextEdit/styles/focus", "edit_focus")
+    sb("TextEdit/styles/read_only", "btn_disabled")
+    # `LinkButton` draws its text straight on the page with no plate — the engine's light grey vanished on a light one.
+    link_ink = readable_everywhere(pal["accent"], _surfaces, 4.6)
+    for key in ("font_color", "font_hover_color", "font_pressed_color", "font_focus_color"):
+        add("LinkButton/colors/%s" % key, C(link_ink))
 
     sb("Panel/styles/panel", "panel_solid")
     sb("PanelContainer/styles/panel", "panel_solid")
@@ -902,6 +930,11 @@ def build(pal, shape, variant, out_path):
     add("OptionButton/font_sizes/font_size", FONTS["body"])
     for state, bid in states:
         sb("OptionButton/styles/%s" % state, bid)
+    # 🛑 In a right-to-left language the dropdown draws its `*_mirrored` faces. Left out, those are the engine's
+    #    dark plates under this theme's text — unreadable on a light page. The faces are symmetric, so the same box serves.
+    for state, bid in states:
+        if state in ("normal", "hover", "pressed", "disabled"):
+            sb("OptionButton/styles/%s_mirrored" % state, bid)
     ex("OptionButton/icons/arrow", "arrow_down")
     # 🛑 Inset the arrow from the right edge **by the button's own padding**. At the engine default (4) its
     #    x lands 12dp off the arrow of a `dropdown()` beside it (MenuButton, icon inside the padding) and
@@ -945,18 +978,23 @@ def build(pal, shape, variant, out_path):
     for key, bid in [("tab_selected", "tab_selected"), ("tab_unselected", "tab_unselected"),
                      ("tab_hovered", "tab_hovered"), ("tab_disabled", "tab_unselected"), ("tab_focus", "focus_soft")]:
         sb("TabBar/styles/%s" % key, bid)
-    add("TabBar/colors/font_selected_color", C(pal["text"]))
-    add("TabBar/colors/font_unselected_color", C(pal["secondary"]))
-    add("TabBar/colors/font_hovered_color", C(pal["text"]))
-    add("TabBar/colors/font_disabled_color", C(pal["muted"]))
+    # 🛑 `TabContainer` draws its own tab row from its **own** colours — it does not read `TabBar`'s, so each one is
+    #    written for both. Left out, a hovered tab's label is the engine's white.
+    for kind in ("TabBar", "TabContainer"):
+        add("%s/colors/font_selected_color" % kind, C(pal["text"]))
+        add("%s/colors/font_unselected_color" % kind, C(pal["secondary"]))
+        add("%s/colors/font_hovered_color" % kind, C(pal["text"]))
+        add("%s/colors/font_disabled_color" % kind, C(pal["muted"]))
+        add("%s/colors/icon_selected_color" % kind, C(pal["text"]))
+        add("%s/colors/icon_unselected_color" % kind, C(pal["secondary"]))
+        add("%s/colors/icon_hovered_color" % kind, C(pal["text"]))
+        add("%s/colors/icon_disabled_color" % kind, C(alpha(pal["muted"], 0.5)))
     add("TabBar/font_sizes/font_size", FONTS["body"])
     add("TabBar/constants/h_separation", CONST["gap_small"])
     for key, bid in [("tab_selected", "tab_selected"), ("tab_unselected", "tab_unselected"),
                      ("tab_hovered", "tab_hovered"), ("tab_disabled", "tab_unselected"), ("tab_focus", "focus_soft"),
                      ("panel", "card")]:
         sb("TabContainer/styles/%s" % key, bid)
-    add("TabContainer/colors/font_selected_color", C(pal["text"]))
-    add("TabContainer/colors/font_unselected_color", C(pal["secondary"]))
     add("TabContainer/font_sizes/font_size", FONTS["body"])
 
     add("FoldableContainer/colors/font_color", C(pal["text"]))
@@ -1013,10 +1051,14 @@ def build(pal, shape, variant, out_path):
 
     add("GoButton/base_type", '&"Button"')
 
+    # 🔑 A filled button carries **one** ink on its plate in every state. Any state left out here falls back to
+    #    `Button`'s accent or text colour — the accent on the accent plate.
+    filled_states = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
+    filled_icons = ("icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color",
+                    "icon_focus_color")
     add("GoPrimaryButton/base_type", '&"Button"')
-    for key in ("font_color", "font_hover_color", "font_pressed_color", "font_focus_color"):
+    for key in filled_states + filled_icons:
         add("GoPrimaryButton/colors/%s" % key, C(pal["on_accent"]))
-    add("GoPrimaryButton/colors/icon_normal_color", C(pal["on_accent"]))
     sb("GoPrimaryButton/styles/normal", "btn_primary")
     sb("GoPrimaryButton/styles/hover", "btn_primary_hover")
     sb("GoPrimaryButton/styles/pressed", "btn_primary_pressed")
@@ -1041,9 +1083,8 @@ def build(pal, shape, variant, out_path):
         flatten(danger_solid_press_bg, _bg),
     ], 4.6)
     add("GoDangerSolidButton/base_type", '&"Button"')
-    for key in ("font_color", "font_hover_color", "font_pressed_color", "font_focus_color"):
+    for key in filled_states + filled_icons:
         add("GoDangerSolidButton/colors/%s" % key, C(danger_solid_ink))
-    add("GoDangerSolidButton/colors/icon_normal_color", C(danger_solid_ink))
     sb("GoDangerSolidButton/styles/normal", "btn_danger_solid")
     sb("GoDangerSolidButton/styles/hover", "btn_danger_solid_hover")
     sb("GoDangerSolidButton/styles/pressed", "btn_danger_solid_pressed")
@@ -1059,6 +1100,7 @@ def build(pal, shape, variant, out_path):
     add("GoDangerButton/colors/font_color", C(danger_ink))
     add("GoDangerButton/colors/font_hover_color", C(danger_ink_hover))
     add("GoDangerButton/colors/font_pressed_color", C(danger_ink_hover))
+    add("GoDangerButton/colors/font_hover_pressed_color", C(danger_ink_hover))
     sb("GoDangerButton/styles/normal", "btn_danger")
     sb("GoDangerButton/styles/hover", "btn_danger_hover")
     sb("GoDangerButton/styles/pressed", "btn_danger_hover")
@@ -1082,6 +1124,7 @@ def build(pal, shape, variant, out_path):
     add("GoIconButton/colors/icon_normal_color", C(pal["muted"]))
     add("GoIconButton/colors/icon_hover_color", C(pal["text"]))
     add("GoIconButton/colors/icon_pressed_color", C(pal["accent"]))
+    add("GoIconButton/colors/icon_hover_pressed_color", C(pal["accent"]))
     add("GoIconButton/colors/icon_focus_color", C(pal["secondary"]))
     add("GoIconButton/colors/icon_disabled_color", C(alpha(pal["muted"], 0.4)))
     sb("GoIconButton/styles/normal", "empty")
@@ -1095,6 +1138,7 @@ def build(pal, shape, variant, out_path):
     sb("GoListButton/styles/normal", "list_normal")
     sb("GoListButton/styles/hover", "list_hover")
     add("GoListButton/colors/font_pressed_color", C(list_press_ink))
+    add("GoListButton/colors/font_hover_pressed_color", C(list_press_ink))
     sb("GoListButton/styles/pressed", "list_hover")
     sb("GoListButton/styles/hover_pressed", "list_hover")
     sb("GoListButton/styles/disabled", "list_normal")
