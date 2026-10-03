@@ -239,6 +239,8 @@ SHAPE_CUT = dict(
 
 CUT_SCRIPT = RES + "/widgets/go_stylebox_cut.gd"
 MEDIEVAL_SCRIPT = RES + "/widgets/go_stylebox_medieval.gd"
+# The toy box draws its keys, panels and fields as jelly candies (tools/theme_kids.py writes them).
+JELLY_SCRIPT = RES + "/widgets/go_stylebox_jelly.gd"
 BRACKET_SCRIPT = RES + "/widgets/go_stylebox_bracket.gd"
 
 # `corners=(tl, tr, br, bl)` → the bitmask GoStyleBoxCut expects
@@ -1117,13 +1119,16 @@ def build(pal, shape, variant, out_path):
         theme_material.restyle(pal, consts, boxes, T, flat, C, contrast)
     if shape["kind"] == "kids":
         theme_kids.restyle(pal, consts, boxes, T, flat, C, contrast)
-    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + len(fonts)
+    jelly = any(body[:1] == ['script = ExtResource("jelly")'] for _, body in boxes.values())
+    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + int(jelly) + len(fonts)
     lines = ['[gd_resource type="Theme" load_steps=%d format=3]' % steps, ""]
     if cutting:
         lines.append('[ext_resource type="Script" path="%s" id="cut"]' % CUT_SCRIPT)
         lines.append('[ext_resource type="Script" path="%s" id="bracket"]' % BRACKET_SCRIPT)
     if forging:
         lines.append('[ext_resource type="Script" path="%s" id="medieval"]' % MEDIEVAL_SCRIPT)
+    if jelly:
+        lines.append('[ext_resource type="Script" path="%s" id="jelly"]' % JELLY_SCRIPT)
     for role, path in fonts.items():
         if not path.startswith(RES + "/") or not os.path.isfile(os.path.join(ADDON, path[len(RES) + 1:])):
             raise SystemExit("Font must exist inside the addon: %s" % path)

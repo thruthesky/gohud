@@ -77,6 +77,7 @@ func _init() -> void:
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	clip_text = false
+	GoStyle.press_feel(self)
 
 
 func _ready() -> void:

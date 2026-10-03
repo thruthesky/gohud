@@ -127,14 +127,14 @@ actions along the bottom — is the template `assets/templates/edge_bar_hud.gd`.
 
 | Feature | One line | Reference |
 |---|---|---|
-| Ten presets swap theme + skin + icons together: `default_dark/light`, `scifi_dark/light`, `medieval_dark/light`, `material_light/dark` (Material 3 Expressive for app screens), `kids_light/dark` (for children — the toy box: keys on a lip that sink when pressed, crayon colours, candy slots, a rainbow joystick) | `GoUi.use_preset(&"kids_light")` | theming.md §1 |
+| Ten presets swap theme + skin + icons together: `default_dark/light`, `scifi_dark/light`, `medieval_dark/light`, `material_light/dark` (Material 3 Expressive for app screens), `kids_light/dark` (for children — the toy box: jelly-candy keys, rows, fields and panels on a lip that sink when pressed and squish under the finger, a ribbon behind window titles, a candy close button, crayon colours, candy slots, a rainbow joystick) | `GoUi.use_preset(&"kids_light")` | theming.md §1 |
 | **Switching a preset reaches widgets that are already on screen** — bars, slots, joysticks, badges and the rest re-read colours and icons in place | `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` | theming.md §1 |
 | Tokens: 17 colours + 5 fill colours, 20 metrics, **5 panel-opacity values**, 8 styleboxes, 7 text roles, 17 type variations | `GoUi.color(GoTheme.ACCENT)` · `GoUi.metric(GoTheme.GAP)` | theming.md §2 |
 | Per-project overrides without a new theme | `GoUi.config.color_overrides[GoTheme.ACCENT] = Color("#ff7a00")` | theming.md §3 |
 | **Containers are 80% opaque so the game stays visible behind a dialog** (100% — opaque — under the Material presets) — face only; text, buttons, borders and shadows stay sharp. Set it per project, per panel kind, or per window | `surface.alpha = 0.6` · `GoUi.config.container_alpha = 1.0` | theming.md §4 |
 | A new theme is one JSON file inheriting a built-in one; builder enforces WCAG contrast | `python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark` | theming.md §5 |
 | Skins own code-drawn shapes (joystick, slots, coach ring, chips, alerts, app-screen parts, chart colours); 37 numeric dials | `class_name MySkin extends GoSkin` | theming.md §6 |
-| Custom StyleBoxes: `GoStyleBoxCut` (chamfer, edge, glow), `GoStyleBoxBracket` (corner marks), `GoStyleBoxMedieval` (forged frame) | `var box := GoStyleBoxCut.new()` | theming.md §7 |
+| Custom StyleBoxes: `GoStyleBoxCut` (chamfer, edge, glow), `GoStyleBoxBracket` (corner marks), `GoStyleBoxMedieval` (forged frame), `GoStyleBoxJelly` (jelly candy: outline, two tones, shine, a lip that sinks when pressed) | `var box := GoStyleBoxCut.new()` | theming.md §7 |
 | Icons by name: 84 default + 16 engraved medieval (MIT, `DPITexture`); swap to your SVGs or an icon font, or override a few | `GoUi.icons().node(&"settings", 20)` | platform.md §1 |
 | **Game icon set** — 187 icons for inventories, shops, equipment, food, resources, creatures, tech & space, places and rewards (MIT; 171 from Tabler Icons, 16 drawn for gohud), falls back to the default set | `GoUi.add_icons(GoGameIcons.icon_set())` | platform.md §1 |
 | **Icon library** — 1,000 Tabler icons in 32 groups, searchable by words; adding it makes 1,271 names drawable | `GoUi.add_icons(GoIconLibrary.icon_set())` · `GoIconLibrary.icon_set().search("arrow left")` | platform.md §1 |

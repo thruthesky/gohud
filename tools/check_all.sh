@@ -34,6 +34,9 @@ step "①-b unit tests — GoChoiceColumn"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_choice_column_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-j unit tests — the jelly look (GoStyleBoxJelly, the kids looks, the window-head and press hooks)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_jelly_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-t unit tests — the seven templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,
 #    yet until 2026-09-16 no check opened any of those five (the docs said "headless-tested").

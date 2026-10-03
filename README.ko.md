@@ -159,8 +159,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `medieval_light` | 양피지·잉크·청동 색상의 같은 단조 프레임 | `GoSkinMedieval` |
 | `material_light` | 앱 화면용 Material 3 — 알약 버튼, 28dp 대화상자, 채운 카드, M3 스위치, Roboto 제목 | `GoSkinMaterial` |
 | `material_dark` | 같은 Material 3 모양을 어두운 기준 스킴으로 | `GoSkinMaterial` |
-| `kids_light` | 어린이용 장난감 상자 — 굵은 테두리, 누르면 쏙 들어가는 턱이 달린 키, 움푹한 입력칸, 방울 탭, 젤리 막대, 컨트롤마다 다른 크레파스 색, 사탕 슬롯, 스티커 배지, 무지개 조이스틱 · 크림·살구 바탕에 포도빛 보라 기본 버튼 · 글꼴은 호스트 것을 그대로 써서 한글·CJK 가 깨지지 않는다 | `GoSkinKids` |
-| `kids_dark` | 같은 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼 | `GoSkinKids` |
+| `kids_light` | 어린이용 장난감 상자 — 키·목록 줄·입력칸·막대·판이 모두 젤리 사탕(`GoStyleBoxJelly` — 굵은 테두리, 밝은 위와 진한 띠, 하얀 반짝이, 누르면 쏙 들어가는 턱, 손가락 아래에서 말랑하게 튀는 누름), 창 제목 뒤의 햇살 리본과 동그란 사탕 닫기 버튼, 컨트롤마다 다른 크레파스 색, 사탕 슬롯, 스티커 배지, 무지개 조이스틱 · 크림·살구 바탕에 포도빛 보라 기본 버튼 · 글꼴은 호스트 것을 그대로 써서 한글·CJK 가 깨지지 않는다 | `GoSkinKids` |
+| `kids_dark` | 같은 젤리 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼과 민트 제목 리본 | `GoSkinKids` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
 🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 프리셋보다 **우선한다** — 프리셋을 고른 뒤 한 칸만

@@ -255,6 +255,7 @@ func _build() -> void:
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_label.resized.connect(func() -> void: _fit_title())
 	header.add_child(title_label)
 
 	close_button = _make_close_button()
@@ -349,6 +350,60 @@ func _ready() -> void:
 func _restyle() -> void:
 	if card == null or not is_inside_tree(): return
 	GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
+	_dress_chrome()
+
+
+## 🎀 The window's head in the look in force — a plate behind the title and the close button as the look dresses them
+## (`GoSkin.title_plate_box`, `dress_close_button`). What an earlier look put on is lifted off first, so a look that
+## has neither gets the plain head back. Only what this surface put on is taken off: a host's own title alignment stays.
+func _dress_chrome() -> void:
+	var skin := GoUi.skin()
+	var plate := skin.title_plate_box()
+	if plate != null:
+		title_label.add_theme_stylebox_override(&"normal", plate)
+		if not title_label.has_meta(&"go_plate_align"):
+			title_label.set_meta(&"go_plate_align", title_label.horizontal_alignment)
+		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var ink := skin.title_plate_ink()
+		if ink.a > 0.0: title_label.add_theme_color_override(&"font_color", ink)
+		else: title_label.remove_theme_color_override(&"font_color")
+	elif title_label.has_meta(&"go_plate_align"):
+		title_label.remove_theme_stylebox_override(&"normal")
+		title_label.remove_theme_color_override(&"font_color")
+		title_label.horizontal_alignment = title_label.get_meta(&"go_plate_align")
+		title_label.remove_meta(&"go_plate_align")
+	_fit_title()
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		close_button.remove_theme_stylebox_override(state)
+	close_button.icon_tint = Color.TRANSPARENT
+	skin.dress_close_button(close_button)
+
+
+## On a title plate the title stays on one line: past the plate's room it shrinks, down to
+## `GoSkin.title_plate_min_size()`, and only then folds. Without a plate the title keeps the size its role gives it.
+func _fit_title() -> void:
+	if title_label == null: return
+	var plate := title_label.get_theme_stylebox(&"normal") if title_label.has_meta(&"go_plate_align") else null
+	if plate == null or title_label.size.x <= 0.0 or title_label.text.is_empty():
+		if title_label.has_meta(&"go_title_fit"):
+			title_label.remove_meta(&"go_title_fit")
+			title_label.remove_theme_font_size_override(&"font_size")
+		return
+	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
+	var font := title_label.get_theme_font(&"font")
+	var natural := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var words := title_label.atr(title_label.text)
+	var fitted := natural
+	while fitted > GoUi.skin().title_plate_min_size() \
+			and font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x > room:
+		fitted -= 1
+	if fitted == natural:
+		if title_label.has_meta(&"go_title_fit"):
+			title_label.remove_meta(&"go_title_fit")
+			title_label.remove_theme_font_size_override(&"font_size")
+	elif title_label.get_theme_font_size(&"font_size") != fitted:
+		title_label.set_meta(&"go_title_fit", true)
+		title_label.add_theme_font_size_override(&"font_size", fitted)
 
 
 ## Config or theme changed. 🛑 **Forget** the remembered "original panel" and take it again — swapping the look
@@ -365,12 +420,14 @@ func _on_ui_changed() -> void:
 func set_title_key(key: String) -> void:
 	title_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
 	title_label.text = key
+	_fit_title.call_deferred()
 
 
 ## An already-translated phrase or a person's name as the title.
 func set_title(value: String) -> void:
 	title_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	title_label.text = value
+	_fit_title.call_deferred()
 
 
 ## The back button used by sub-screens inside the same surface. An empty `Callable` hides it.
@@ -621,7 +678,11 @@ func _apply_density(small: bool, width: float) -> void:
 		GoStyle.gap(_column, GoTheme.GAP_SMALL if small else GoTheme.GAP)
 		if scroll != null: scroll.set_panel_padding(next)
 	var role := GoTheme.ROLE_BODY if small else GoTheme.ROLE_SUBTITLE
-	if title_label.get_meta(&"go_text_role", &"") != role: GoStyle.typography(title_label, role)
+	if title_label.get_meta(&"go_text_role", &"") != role:
+		GoStyle.typography(title_label, role)
+		# typography() lifts the size override — a title on a plate measures itself again at its new role.
+		title_label.remove_meta(&"go_title_fit")
+		_fit_title()
 	if width > 0.0: _sort_now(width)
 
 
@@ -810,6 +871,8 @@ func _track_device(event: InputEvent) -> void:
 
 
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and title_label != null:
+		_fit_title.call_deferred()
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and is_top():
 		# Deferred so that one OS notification does not close several stacked windows.
 		request_close.call_deferred()

@@ -119,6 +119,7 @@ func _init() -> void:
 	auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	theme_type_variation = GoTheme.VAR_BARE_BUTTON
 	clip_text = false
+	GoStyle.press_feel(self)
 
 
 func _ready() -> void:

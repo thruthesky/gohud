@@ -4,7 +4,37 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- **The kids looks are jelly candies — `GoStyleBoxJelly`.** Every key, list row, folding title, text field, bar, slider
+  and panel of `kids_light` / `kids_dark` is now drawn by a new StyleBox (`widgets/go_stylebox_jelly.gd`): the chunky
+  outline and the lip under it as before, plus a body light on top and deeper below and a white shine at the top left.
+  Pressed, the lip goes and the body sinks into its place; a text field is the same jelly turned in (the deep band on
+  top, as a shadow inside the well). Switches, checkboxes, radios and slider knobs got the same two tones and shine.
+  The skin's own parts follow — quick slots are candy blocks that sink while cooling down, chips and the navigation
+  pill are small jellies, an avatar disc is a round candy, alerts and notices are sticker notes with a solid rim, a
+  floating panel casts a soft shadow. 🛑 Sizes do not change: the outline and lip are drawn inside the rectangle and
+  every face keeps the padding the theme gave it (`keep_margins()`), so a host that pins its sizes measures the same
+  parts. A see-through face (a danger key's tint, a faded HUD panel) gets its outline as a ring, so the outline colour
+  never shows through it. Fields match `StyleBoxFlat` (`bg_color`, `border_color`, `draw_center`, `shadow_*`,
+  `expand_margin_*`) and `GoStyleBoxMedieval` (`border_width`, `radius`), so `fade_box`, `box_background`, `_edge_fill`
+  and `GoDatePicker`'s inset day work on it unchanged. The other looks are untouched.
+- **A look can dress a window's head and the feel of a press.** Three `GoSkin` hooks, doing nothing by default:
+  `title_plate_box()` (with `title_plate_ink()` and `title_plate_min_size()`) puts a plate behind a `GoSurface` title —
+  the title is centred on it and shrinks, down to 15, to stay on one line; `dress_close_button(button)` dresses its
+  close button; `press_feedback(control)` runs the moment a finger lands on a button gohud made (`GoStyle.style_button`,
+  `list_row`, `GoSlot`, `GoIconButton` — and `GoStyle.press_feel(button)` hands any other button to it). The surface
+  lifts what a look put on before the next look dresses it, and gives the title its own alignment back. `GoSkinKids`
+  answers all three: a sunny ribbon (mint at night) behind the title, a round candy close button in the danger crayon
+  with a white cross, and a jelly squish — wide and flat for 0.06 s, then an elastic spring back (only `scale` changes,
+  around the centre; `reduce_motion` and headless runs skip it).
+- `tests/gohud_jelly_test.gd` (71 checks, step ①-j of `check_all.sh`).
+
 ### Fixed
+
+- **The kids looks pass the layout test again.** Chips and the navigation pill used a 999 radius, which the cell audit
+  reads as "the label needs 300dp of room" (24 faults on every width, both looks); list rows used a 12dp corner that a
+  table row's 4dp padding cannot hold. Chips and the pill take half their height (13 · 16), list rows a 6dp corner.
 
 - **A fit-content `GoSurface` no longer jitters between two sizes every frame.** `relayout()` chose the dense/normal
   step from `_desired_height()` measured *before* the layout was sorted at the new width and padding, so a wrapping row

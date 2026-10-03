@@ -14,8 +14,12 @@ the joystick, chart colours) are `themes/skins/go_skin_kids.gd`.
 🛑 **No size changes.** The lip lives inside the control's rectangle and the content margins keep their sum — a host
    that pins its own sizes (laryen3d's SSOT §9) sees the same minimum sizes. The label moves up by half the lip so it
    sits in the middle of the face, and a press moves the face (and the label) down.
-🛑 One `border_color` per StyleBoxFlat: the outline and the lip are one colour — a shade of the face for things you
+🛑 One `border_color` per face: the outline and the lip are one colour — a shade of the face for things you
    press, the panel's own border colour for panels (on the dark look that reads as a rim of light).
+🍬 Every face is a **jelly candy** (`GoStyleBoxJelly`, `widgets/go_stylebox_jelly.gd`): the outline and lip above,
+   plus a body light on top and deeper below and a white shine at the top left. Pressed, the lip goes and the body
+   sinks by PUSH; a text field is the same jelly turned in (the deep band on top). The geometry of the lip and the
+   content margins are exactly the StyleBoxFlat ones this file wrote before, so nothing that measures them moves.
 """
 import re
 
@@ -29,8 +33,17 @@ PRESSED_LIP = 2
 EDGE = 2
 # A panel's lip — a sticker block, not a key.
 PANEL_LIP = 4
-# Larger than any control — StyleBoxFlat rounds both ends into a pill.
+# Larger than any control — both ends round into a pill.
 FULL = 999
+# The jelly: how much of a key's body the deeper band takes, and how bright its shine is.
+BAND = 0.36
+GLOSS = 0.6
+# A panel keeps a thin band (it holds rows of text) and a softer shine.
+PANEL_BAND = 0.1
+PANEL_BAND_MAX = 7
+PANEL_GLOSS = 0.45
+# A list row's corner (dp) — small enough for a table row's 4dp padding.
+LIST_RADIUS = 6
 
 SHAPE = dict(
     kind="kids",
@@ -81,6 +94,8 @@ def controls(pal):
     A, ON, M, HI, S = _svg(acc), _svg(on), _svg(mut), _svg(hi), _svg(sur)
     LIPA, LIPM = _svg(_shade(acc, 0.35)), _svg(_shade(mut, 0.25))
     SHINE = _svg(_tint(acc, 0.55))
+    # 🍬 The jelly's light top (GoStyleBoxJelly): the upper half of a track, a box or a disc is a lighter tone.
+    TOPA, TOPHI, TOPS = _svg(_tint(acc, 0.28)), _svg(_tint(hi, 0.45)), _svg(_tint(sur, 0.6))
     sec = _svg(pal["secondary"])
 
     def wrap(w, h, body, disabled=False):
@@ -93,34 +108,42 @@ def controls(pal):
         if state_on:
             body = ('<rect x="1" y="2" width="38" height="21" rx="10.5" fill="%s"/>'          # lip
                     '<rect x="1" y="1" width="38" height="20" rx="10" fill="%s"/>'            # track
+                    '<rect x="2.5" y="2.2" width="35" height="9.6" rx="4.8" fill="%s"/>'      # light top
+                    '<rect x="%g" y="3.6" width="7" height="2.2" rx="1.1" fill="#FFFFFF" fill-opacity=".7"/>'  # track shine
                     '<circle cx="%d" cy="11.5" r="8" fill="%s"/>'                             # knob lip
                     '<circle cx="%d" cy="10.5" r="7.5" fill="%s"/>'
                     '<ellipse cx="%g" cy="8" rx="3.2" ry="1.8" fill="#FFFFFF" fill-opacity=".7"/>'  # shine
-                    ) % (LIPA, A, knob_x, LIPA, knob_x, ON, knob_x - 1.5)
+                    ) % (LIPA, A, TOPA, 5 if knob_x > 20 else 28, knob_x, LIPA, knob_x, ON, knob_x - 1.5)
         else:
             body = ('<rect x="1" y="2" width="38" height="21" rx="10.5" fill="%s"/>'
                     '<rect x="1.75" y="1.75" width="36.5" height="18.5" rx="9.25" fill="%s" stroke="%s" stroke-width="1.5"/>'
+                    '<rect x="3" y="3" width="34" height="8.4" rx="4.2" fill="%s"/>'
                     '<circle cx="%d" cy="11.5" r="6.5" fill="%s"/>'
-                    '<circle cx="%d" cy="10.5" r="6" fill="%s"/>') % (LIPM, HI, M, knob_x, LIPM, knob_x, M)
+                    '<circle cx="%d" cy="10.5" r="6" fill="%s"/>'
+                    '<ellipse cx="%g" cy="8.4" rx="2.2" ry="1.2" fill="#FFFFFF" fill-opacity=".55"/>') % (
+                LIPM, HI, M, TOPHI, knob_x, LIPM, knob_x, M, knob_x - 1.5)
         return wrap(40, 24, body, disabled)
 
     def check(state_on, disabled):
         if state_on:
             body = ('<rect x="1" y="2.5" width="18" height="16.5" rx="5.5" fill="%s"/>'
                     '<rect x="1" y="1" width="18" height="16" rx="5.5" fill="%s"/>'
+                    '<rect x="2.4" y="2.2" width="15.2" height="7.4" rx="3.7" fill="%s"/>'
                     '<path d="M5.2 9.1 8.4 12.2 14.6 5.9" fill="none" stroke="%s" stroke-width="2.4" '
-                    'stroke-linecap="round" stroke-linejoin="round"/>') % (LIPA, A, ON)
+                    'stroke-linecap="round" stroke-linejoin="round"/>') % (LIPA, A, TOPA, ON)
         else:
             body = ('<rect x="1" y="2.5" width="18" height="16.5" rx="5.5" fill="%s"/>'
                     '<rect x="1.75" y="1.75" width="16.5" height="14.5" rx="4.75" fill="%s" stroke="%s" '
-                    'stroke-width="1.5"/>') % (LIPM, S, M)
+                    'stroke-width="1.5"/>'
+                    '<rect x="4" y="3.6" width="5" height="1.8" rx=".9" fill="%s"/>') % (LIPM, S, M, TOPS)
         return wrap(20, 20, body, disabled)
 
     def radio(state_on, disabled):
         if state_on:
             body = ('<circle cx="10" cy="10.8" r="9" fill="%s"/>'
                     '<circle cx="10" cy="9.6" r="8.6" fill="%s"/>'
-                    '<circle cx="10" cy="9.6" r="3.8" fill="%s"/>') % (LIPA, A, ON)
+                    '<ellipse cx="10" cy="6.6" rx="6.6" ry="4.4" fill="%s"/>'
+                    '<circle cx="10" cy="9.6" r="3.8" fill="%s"/>') % (LIPA, A, TOPA, ON)
         else:
             body = ('<circle cx="10" cy="10.8" r="9" fill="%s"/>'
                     '<circle cx="10" cy="9.6" r="7.9" fill="%s" stroke="%s" stroke-width="1.5"/>') % (LIPM, S, M)
@@ -172,11 +195,12 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         return [float(f.get("content_margin_%s" % side, "-1")) for side in ("left", "top", "right", "bottom")]
 
     def toy(bid, lip=LIP, edge=EDGE, radius=None, pressed=False, ink=None, rim=None, well=False, shine=None,
-            centre=True, paint=None):
-        """Reshape box `bid`: outline `edge`, a lip of `lip` under it in `ink` (a shade of the face unless given),
-        the face sunk by PUSH when `pressed`. `rim` uses the panel's own border colour. `well` puts the heavy edge on
-        top (a sunken text field). `shine` puts a light edge on top only (a jelly fill). `centre` moves the label up
-        by half the lip so it sits in the middle of the face."""
+            centre=True, paint=None, band=BAND, gloss=GLOSS, band_max=0, inner=None):
+        """Reshape box `bid` into a jelly candy: outline `edge`, a lip of `lip` under it in `ink` (a shade of the face
+        unless given), the body sunk by PUSH when `pressed`. `rim` uses the panel's own border colour. `well` turns it
+        in (a sunken text field). `shine` is a jelly fill (a bar, a slider): no outline, a two-tone body and a shine.
+        `centre` moves the label up by half the lip so it sits in the middle of the face. `band`, `gloss`,
+        `band_max` and `inner` are the jelly's deep band, shine, band limit and second frame line."""
         f = field(bid)
         if f is None:
             return
@@ -198,8 +222,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                 colour = _shade(face, 0.32) if face is not None else old_edge
             bottom = PRESSED_LIP if pressed else lip
             widths = (edge, edge, edge, bottom)
-        lines = flat(bg=face, border=colour, radius=corner, borders=widths,
-                     margins=None, draw_center="draw_center = false" not in boxes[bid][1])
+        lines = ['script = ExtResource("jelly")']
         # The label sits in the middle of the face: up by half the lip, down by the sink when pressed. The two
         # content margins keep their sum, so the control keeps its size.
         if all(v >= 0 for v in m):
@@ -210,21 +233,37 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             top, bottom = m[1] + move, m[3] - move
             if top < 0 or bottom < 0:
                 top, bottom = m[1], m[3]
-            lines = ["content_margin_left = %g" % m[0], "content_margin_top = %g" % top,
-                     "content_margin_right = %g" % m[2], "content_margin_bottom = %g" % bottom] + lines
-        if pressed:
-            # 🔑 A **negative expand margin** takes the face's top down without moving the control — it sinks.
-            lines.append("expand_margin_top = %g" % -PUSH)
-        for key in ("expand_margin_left", "expand_margin_right", "expand_margin_bottom"):
-            if key in f:
-                lines.append("%s = %s" % (key, f[key]))
-        # Everything this does not reshape stays as the generator wrote it — a raised button's glow, anti-aliasing.
-        for key, value in f.items():
-            if key.startswith("shadow_") or key.startswith("anti_aliasing") or key.startswith("skew"):
-                lines.append("%s = %s" % (key, value))
-        if corner >= FULL:
-            lines = [l.replace("corner_detail = 8", "corner_detail = 16") for l in lines]
-        boxes[bid] = ("StyleBoxFlat", lines)
+            lines += ["content_margin_left = %g" % m[0], "content_margin_top = %g" % top,
+                      "content_margin_right = %g" % m[2], "content_margin_bottom = %g" % bottom]
+        if face is not None:
+            lines.append("bg_color = %s" % C(face))
+        if shine is not None:
+            # A jelly fill: no outline — the deep band and a bright shine carry it. The runtime tints `bg_color`
+            # (GoSkin.progress_fill_box) and the band follows it.
+            lines += ["border_width = 0", "lip = 0", "band = 0.42", "shine = 0.7"]
+        elif well:
+            lines += ["border_color = %s" % C(colour), "border_width = %g" % edge, "lip = 0", "sunken = true",
+                      "shine = 0"]
+        else:
+            lines += ["border_color = %s" % C(colour), "border_width = %g" % edge, "lip = %g" % lip,
+                      "band = %g" % band, "shine = %g" % (gloss * (0.7 if pressed else 1.0))]
+            if band_max:
+                lines.append("band_max = %g" % band_max)
+            if pressed:
+                lines += ["pressed = true", "sink = %g" % PUSH]
+            if inner is not None:
+                lines.append("inner_line = %s" % C(inner))
+        lines.append("radius = %g" % corner)
+        if "draw_center = false" in boxes[bid][1]:
+            lines.append("draw_center = false")
+        # A raised face keeps the shadow the generator gave it.
+        if "shadow_color" in f:
+            lines.append("shadow_color = %s" % f["shadow_color"])
+        if "shadow_size" in f:
+            lines.append("shadow_size = %s" % f["shadow_size"])
+        if "shadow_offset" in f:
+            lines.append("shadow_offset = %s" % f["shadow_offset"])
+        boxes[bid] = ("StyleBox", lines)
 
     accent = pal["accent"]
     danger = pal["danger"]
@@ -270,9 +309,10 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     #    so at night the hover goes **darker** (towards the backdrop), where the sunny accent still reads 4.5:1.
     hover_to = pal["background"] if night else text
     toy("compact_hover", lip=LIP_SMALL, radius=FULL, paint=_mix(sweet, hover_to, 0.18 if night else 0.06), ink=sweet_lip)
-    # List rows — little blocks stacked in a toy box.
+    # List rows — little blocks stacked in a toy box. 🛑 A small corner: a table packs a row 4dp from its cells
+    # (`GoTable`), and the cell audit wants the outline plus 0.3 × the corner inside that (`GoStyle.face_clearance`).
     for bid in ("list_normal", "list_hover"):
-        toy(bid, lip=LIP_SMALL, rim=True)
+        toy(bid, lip=LIP_SMALL, rim=True, radius=LIST_RADIUS)
     # Folding section titles — leaf-green blocks.
     for bid in ("fold_title", "fold_title_collapsed"):
         toy(bid, lip=LIP_SMALL, paint=leaf, ink=_shade(crayon(mint, 0.7), 0.15))
@@ -281,8 +321,16 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
 
     # ── Panels — sticker blocks: a rim and a lip in their own border colour. Margins stay as they are. ──
     for bid in ("panel", "panel_solid", "card", "popup", "hud", "notice"):
-        toy(bid, lip=PANEL_LIP, rim=True, centre=False)
-    toy("tooltip", lip=LIP_SMALL, paint=crayon(sun, 0.3 if night else 0.4), ink=_shade(sun, 0.25), centre=False)
+        g = field(bid)
+        rim_colour = _parse_color(g["border_color"]) if g is not None and "border_color" in g else None
+        face_colour = _parse_color(g["bg_color"]) if g is not None and "bg_color" in g else surface
+        # A window (panel, popup) carries a second frame line between its rim and its face.
+        second = _mix(rim_colour, face_colour, 0.55) if rim_colour is not None and bid in ("panel", "panel_solid", "popup") \
+            else None
+        toy(bid, lip=PANEL_LIP, rim=True, centre=False, band=PANEL_BAND, band_max=PANEL_BAND_MAX, gloss=PANEL_GLOSS,
+            inner=second)
+    toy("tooltip", lip=LIP_SMALL, paint=crayon(sun, 0.3 if night else 0.4), ink=_shade(sun, 0.25), centre=False,
+        band=0.15, gloss=0)
 
     # ── Text fields — a sunken well: the heavy edge on top. ──
     toy("edit_normal", lip=4, well=True, radius=RS + 2)
@@ -306,4 +354,4 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     for bid in ("scroll_grab", "scroll_grab_hover"):
         g = field(bid)
         if g is not None:
-            toy(bid, radius=FULL, edge=0, lip=0, centre=False)
+            toy(bid, radius=FULL, edge=0, lip=0, centre=False, band=0, gloss=0)

@@ -1037,6 +1037,41 @@ func coach_ring_box(accent: Color) -> StyleBox:
 	return ring
 
 
+# ── Window chrome and the feel of a press ──────────────────────────────
+#
+# 🔑 Three hooks a look uses to change **how a window's head and a press look and feel**, not only its colours. The
+#    defaults do nothing, so every look that does not override them stays exactly as it was. `GoSkinKids` is the one
+#    that does: a ribbon behind a window title, a round candy close button, a jelly squish on press.
+
+## The plate behind a window's title (`GoSurface`). `null`: the title sits on the window face, as it always has.
+## A look that returns one gets the title centred on it, shrunk (down to `title_plate_min_size`) to stay on one line.
+func title_plate_box() -> StyleBox:
+	return null
+
+
+## The title's colour on `title_plate_box()` (transparent: the theme's title colour).
+func title_plate_ink() -> Color:
+	return Color.TRANSPARENT
+
+
+## The smallest a title on a plate shrinks to before it may fold to a second line (dp).
+func title_plate_min_size() -> int:
+	return 15
+
+
+## Dresses a window's close button (`GoSurface`) — called whenever the window takes the look. The window lifts its
+## own overrides off the button first, so a look that leaves this empty gets the theme's plain icon button back.
+func dress_close_button(_button: GoIconButton) -> void:
+	pass
+
+
+## What a press feels like: called with the control the moment a finger or the mouse goes down on a button gohud
+## made (`GoStyle.style_button`, `list_row`, `GoSlot`, `GoIconButton`). The default does nothing.
+## 🛑 Change only `scale`/`pivot_offset` (or draw over it) — never its size or position, which the layout owns.
+func press_feedback(_control: Control) -> void:
+	pass
+
+
 # ── Direct drawing ─────────────────────────────────────────────────────
 
 ## The virtual joystick. Coordinates and state are computed by the widget and passed in — this **only draws**.

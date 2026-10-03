@@ -402,6 +402,7 @@ enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID, OUTLINED }
 ## Applies the gohud spec to an existing button (scene-built buttons too).
 static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	node.theme = GoUi.theme()
+	press_feel(node)
 	match tone:
 		Tone.PRIMARY: node.theme_type_variation = GoTheme.VAR_PRIMARY_BUTTON
 		Tone.DANGER: node.theme_type_variation = GoTheme.VAR_DANGER_BUTTON
@@ -510,6 +511,16 @@ static func fit_words(node: Button) -> void:
 		longest = maxf(longest, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1.0, size).x)
 	var frame := node.get_theme_stylebox(&"normal").get_minimum_size().x
 	node.custom_minimum_size.x = maxf(node.custom_minimum_size.x, ceilf(longest + frame + 2.0))
+
+
+## 🔑 Hands the press of [param node] to the look (`GoSkin.press_feedback`) — the look in force **at the press**, so a
+## theme swapped later still decides. Connected once however often it is called. `style_button`, `list_row`, `GoSlot`
+## and `GoIconButton` call it; call it on a button you dress yourself to give it the same feel.
+static func press_feel(node: BaseButton) -> void:
+	if node == null or node.has_meta(&"go_press_feel"): return
+	node.set_meta(&"go_press_feel", true)
+	node.button_down.connect(func() -> void:
+		if is_instance_valid(node): GoUi.skin().press_feedback(node))
 
 
 ## A button holding a translation key.
@@ -782,6 +793,7 @@ static func list_row(node: Button, icon: StringName, key: String, action := Call
 		ink := Color.TRANSPARENT, sub_key := "", translate := true, trailing: StringName = &"") -> Button:
 	node.theme = GoUi.theme()
 	node.theme_type_variation = GoTheme.VAR_LIST_BUTTON
+	press_feel(node)
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
