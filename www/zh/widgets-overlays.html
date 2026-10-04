@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控件</a>
   <a href="widgets-catalog.html">全部控件</a>
+  <a href="widgets-popups.html">弹窗与对话框</a>
   <a href="widgets-surfaces.html">浮动窗口</a>
   <a href="widgets-messages.html">把消息传达给玩家</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> —— 侧边抽屉</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — 从左侧或右侧滑入的面板。" loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — 从左侧或右侧滑入的面板。" loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> 是从底部升上来的，这对竖着拿的手机是对的。可在平板或者桌面上，
     同一张面板会把游戏盖住 —— 这时候换成从侧边推出来的抽屉。</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("背包")</code></pre>
     请打开 <code>follow_text_direction</code>，它在 RTL 下会翻过来。</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> —— 贴着控件的卡片</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — 在被点按之处旁边弹出的信息卡，一次一张。" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>它就是 <code>GoSurface</code> 的贴靠摆放，只不过图层、外壳、锚点和拆除都已经接好了 ——
     每个游戏都要反复写的那十行。同一时间只开着一张，因为卡片叠起来会把屏幕埋掉，
@@ -118,6 +124,7 @@ bag.open("背包")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> —— 长按与右键</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — 长按或右键弹出菜单；手指一移动就取消。" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "使用", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("背包")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> —— 开发者控制台</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — 带命令与历史记录的开发者控制台；发布版中关闭。" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "发放一件物品：give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>作弊和调试命令；命令面板会随着你输入即时筛选，谁也不用背下来，方向键上还留着历史记录。

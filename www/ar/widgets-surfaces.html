@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html" aria-current="page">النوافذ العائمة</a>
   <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,11 @@
 <section id="surfaces">
 
   <h3 id="gosurface-the-shell"><code>GoSurface</code> — القشرة</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="GoSurface — نافذة عائمة — في الوسط أو من الأسفل أو مثبتة على عنصر تحكم." loading="lazy"><figcaption><code>CENTER</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="GoSurface — نافذة عائمة — في الوسط أو من الأسفل أو مثبتة على عنصر تحكم." loading="lazy"><figcaption><code>BOTTOM</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="GoSurface — نافذة عائمة — في الوسط أو من الأسفل أو مثبتة على عنصر تحكم." loading="lazy"><figcaption><code>ANCHOR</code></figcaption></figure>
+  </div>
   <p>النوافذ المنبثقة والأوراق والقوائم المنسدلة كلها تستعمل هذه الواحدة. وهي تتكفّل بالمنطقة الآمنة ولوحة
     المفاتيح الافتراضية، وبالرأس والتذييل الثابتين، وبالجسم المتمرر، وبتحديد النافذة الأعلى، واستعادة التركيز،
     وملكية زر الرجوع، وتغيير الحجم بالسحب.</p>
@@ -115,6 +121,7 @@
   </div>
 
   <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — صفحة من الأسفل</h3>
+  <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — لوحة سفلية بصفحات وتنقل للخلف وتذييل ثابت." loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("الحقيبة")
@@ -126,6 +133,11 @@ sheet.footer().visible = true</code></pre>
     الجسم و<b>يطفئ</b> زر الرجوع والصفوف الثابتة — فالزر الميت على شاشة لا مكان للرجوع منها يُقرأ على أنه عطل.</p>
 
   <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — تأكيدات تنتظرها بـ <code>await</code></h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="GoDialogs — نوافذ تأكيد وتنبيه تنتظرها بـ await؛ تنتظر التنبيهات دورها." loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="GoDialogs — نوافذ تأكيد وتنبيه تنتظرها بـ await؛ تنتظر التنبيهات دورها." loading="lazy"><figcaption><code>destructive</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="GoDialogs.choose — خيار من بضعة خيارات — لوحة سفلية على الهاتف وبطاقة على سطح المكتب." loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+  </div>
   <pre><code>if await dialogs.confirm("حذف الحفظ", "لا يمكن التراجع عن هذا."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — كل ما بعد المتن
@@ -143,6 +155,7 @@ sheet.footer().visible = true</code></pre>
     <code>GoDialogs</code> المحمَّل تلقائيًا شيئًا عند الإقلاع.</p>
 
   <h3 id="goform-a-width-capped-form"><code>GoForm</code> — نموذج محدود العرض</h3>
+  <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — نموذج يحد عرضه ويبتعد عن لوحة المفاتيح وواجهة HUD." loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
   <div class="note warn">
     <b>يضمن التفاف نصوص كل ما تحته.</b> فبدون ذلك تمتدّ جملة طويلة واحدة على سطر واحد يتجاوز عرضه الأدنى
     عرضَ الشاشة، فتُقصّ الجوانب — حتى إنك لا تعرف على أي شاشة أنت. وتشغيل الالتفاف يدويًا في كل مشهد
@@ -150,6 +163,7 @@ sheet.footer().visible = true</code></pre>
   </div>
 
   <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — تمرير باللمس</h3>
+  <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — تمرير باللمس يعمل من أي مكان في المحتوى؛ يراعي اللغات من اليمين إلى اليسار." loading="lazy"><figcaption><code>GoScroll</code> · <code>GoScroll.horizontal()</code></figcaption></figure>
   <p>ضع <b>شيئًا واحدًا</b> بداخله. أما الرؤوس وصفوف الأزرار فمكانها خارجه — إذ لا يصحّ أن تدفعها قائمة
     طويلة خارج الشاشة. و<code>use_panel_edge()</code> ينقل شريط التمرير إلى حشوة البطاقة القائمة
     بينما يحتفظ المحتوى بإزاحته.</p>

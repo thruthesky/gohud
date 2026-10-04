@@ -86,7 +86,8 @@
       <span class="badge">純 GDScript</span>
       <span class="badge">不需要自動載入</span>
       <span class="badge">MIT</span>
-      <span class="badge">6 種預設集</span>
+      <span class="badge">10 種預設集</span>
+      <span class="badge new">新增：Material 3 · 兒童</span>
       <span class="badge">21 種語言</span>
       <span class="badge">內含 <span data-n="icons">1,287</span> 個圖示</span>
     </div>
@@ -100,6 +101,38 @@
 </div>
 
 <main class="wrap">
+
+<section id="new">
+  <h2>新增：Material 3，以及給孩子的外觀</h2>
+  <p class="sub">
+    兩個新系列加入了預設、科幻與中世紀的行列 — 現在共有<b>十種內建外觀</b>，每種都有深色與淺色。
+    每個控制項、彈出視窗與 HUD 元件都能直接套用，程式碼一行都不用改：換掉預設集，整個畫面就跟著變。
+  </p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="material_light 下的 gohud 藝廊 — 膠囊按鈕、填色卡片與 Material 3 配色" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark 下的 gohud 藝廊 — 同樣的 Material 3 形狀，換成深色基準配色" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light 下的 gohud 藝廊 — 陽光般明亮的頁面上，蠟筆色的厚實果凍按鈕" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 下的 gohud 藝廊 — 同一個玩具箱，放在夜藍色的頁面上" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="material-3-for-app-screens">Material 3 — 給應用畫面</h3>
+      <p>對照官方 M3 權杖逐項量過的 Material 3 Expressive：48dp 觸控目標裡附 40dp 底板的膠囊按鈕、
+        28dp 的對話方塊與底部面板、填色卡片、外框輸入欄，以及 Expressive 滑桿。應用元件 — 導覽列、頂端應用列、FAB、
+        搜尋列、方塊標籤、進度與日期選擇器 — 依循 M3 元件權杖，標題使用內附的 Roboto。適合商店、設定、收件匣，以及每一個應該讓人覺得像應用程式的畫面。</p>
+    </div>
+    <div class="card">
+      <h3 id="kids-the-toy-box">兒童 — 玩具箱</h3>
+      <p>為孩子而做：每個按鍵、清單列與面板都是一顆果凍糖，帶粗描邊與一道實心底邊，按下時會陷進去；
+        每類控制項各有自己的蠟筆顏色。快捷格是糖果方塊，徽章是貼紙，搖桿是一道彩虹，視窗有陽光色的標題緞帶與
+        圓形的糖果關閉按鈕，按下去還會被壓扁。尺寸與你專案的字型都維持原樣。</p>
+    </div>
+  </div>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # 或 MATERIAL_DARK
+GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</code></pre>
+  <p><a href="theming-presets.html#material">Material 3 詳解 →</a> · <a href="theming-presets.html#kids">兒童外觀詳解 →</a> ·
+    <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十種外觀下的樣子 →</a></p>
+</section>
 
 <section id="showcase">
   <h2>在遊戲裡長什麼樣</h2>
@@ -203,8 +236,10 @@
       <tr><td><code>scifi_light</code></td><td>同樣稜角分明的形狀，換成明亮的藍圖調色盤</td></tr>
       <tr><td><code>medieval_dark</code></td><td>暗鐵與皮革、古金色框、鉚釘、雕刻圖示、Cinzel 標題</td></tr>
       <tr><td><code>medieval_light</code></td><td>羊皮紙、墨水與青銅，配上同樣的鍛造框</td></tr>
-      <tr><td><code>material_light</code></td><td>給應用畫面的 Material 3 — 膠囊按鈕、28dp 對話方塊、填色卡片、應用的導覽列、FAB 與搜尋列、Roboto</td></tr>
-      <tr><td><code>material_dark</code></td><td>同樣的 Material 3 形狀，換成深色基準配色</td></tr>
+      <tr><td><code>material_light</code> <span class="badge new">新</span></td><td>給應用畫面的 Material 3 — 膠囊按鈕、28dp 對話方塊、填色卡片、應用的導覽列、FAB 與搜尋列、Roboto</td></tr>
+      <tr><td><code>material_dark</code> <span class="badge new">新</span></td><td>同樣的 Material 3 形狀，換成深色基準配色</td></tr>
+      <tr><td><code>kids_light</code> <span class="badge new">新</span></td><td>給孩子的玩具箱 — 帶粗描邊的果凍糖按鍵，下方一道底邊，按下時會陷進去；蠟筆色，陽光般明亮的頁面</td></tr>
+      <tr><td><code>kids_dark</code> <span class="badge new">新</span></td><td>同一個玩具箱，放在夜藍色的頁面上</td></tr>
     </tbody>
   </table>
 
@@ -315,10 +350,12 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxCut</code></td><td>斜切的角（切角）、一道加粗的強調邊、外側光暈</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>只有角落的記號，不把內容框起來</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>帶鉚釘、角落雕刻、斜角高光與材質紋理的鍛造框</td></tr>
+      <tr><td><code>GoStyleBoxJelly</code></td><td>果凍糖 — 粗描邊、按下時會陷進去的實心底邊、上淺下深的糖體，以及一道白色高光</td></tr>
     </tbody>
   </table>
-  <p>這三種都能序列化進 Theme 資源 — 這正是佈景主題改得了<b>形狀</b>、而不只是顏色的原因。
-    <code>GoSkinSciFi</code> 與 <code>GoSkinMedieval</code> 是內附的子類別。</p>
+  <p>這四種都能序列化進 Theme 資源 — 這正是佈景主題改得了<b>形狀</b>、而不只是顏色的原因。
+    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code> 與 <code>GoSkinKids</code> 是內附的子類別。</p>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="每一種內附外觀畫出的快捷格、搖桿與方塊標籤 — 預設、兒童、Material、中世紀與科幻" loading="lazy"><figcaption>外觀畫出的部分 — 預設、兒童、Material、中世紀、科幻</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> 一律回傳 <code>StyleBoxFlat</code></b>，因為呼叫端拿到它之後
@@ -329,7 +366,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 <section id="widgets">
   <h2>控制項</h2>
-  <p class="sub">所有零件，一張表看完。<a href="widgets.html">逐一細看 →</a></p>
+  <p class="sub">所有零件，一張表看完。<a href="widgets.html">逐一細看 →</a> ·
+    <a href="widgets-catalog.html">每個控制項都附一張圖 →</a> · <a href="widgets-popups.html">彈出視窗與對話方塊完整指南 →</a></p>
 
   <table>
     <thead><tr><th>類別</th><th>基底</th><th>功能</th></tr></thead>

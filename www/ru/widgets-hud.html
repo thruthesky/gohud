@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Виджеты</a>
   <a href="widgets-catalog.html">Все виджеты</a>
+  <a href="widgets-popups.html">Всплывающие окна и диалоги</a>
   <a href="widgets-surfaces.html">Плавающие окна</a>
   <a href="widgets-messages.html">Как сообщить игроку</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>Виджеты HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — девять точек</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Закрепляет элементы HUD в одной из девяти точек безопасной зоны." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Учитывает безопасную область и краевые отступы. Задайте ему <code>landscape_spot</code> — и он переедет
     в альбомной ориентации: элементы управления, стоящие снизу по центру в книжной, могут уйти вправо вниз.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # и не двигает страницу,
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — здоровье, мана, опыт</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Полосы HP, MP и XP со значением, дробью или процентом." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # токен только для заливки
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     ширина полосы не дёргалась от появления и исчезновения цифр.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — один быстрый слот</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Быстрый слот: иконка, количество, перезарядка и клавиша на одной грани." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Сетка инвентаря; предметы можно перетаскивать между ячейками." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Иконка, количество, перезарядка и горячая клавиша на <b>одной лицевой панели</b>. Если навешивать значки
     на маленький круг, каждый слот получает свою ширину и ряд начинает гулять.</p>
   <div class="note">
@@ -231,6 +238,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     клавиатуры и всеми элементами настроек в порядке обхода Tab. Включайте его, когда клавиатура или геймпад — единственный ввод.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — виртуальный стик</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Виртуальный стик — фиксированный, следующий за пальцем или относительный." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Режим</th><th>Поведение</th></tr></thead>
     <tbody>
@@ -243,6 +251,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     умножать на скорость; от размера экрана и DPI он не зависит.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — выглядит маленькой, нажимается большой</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Кнопка-иконка: маленькая на вид, 48 dp для пальца, с именем для экранного диктора." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Безопасна, только пока соседи игнорируют ввод.</b> Если расширенная область накроет следующую кнопку, та
     перестанет отзываться. Стоящим рядом кнопкам-иконкам нужен <code>touch_peers</code>.

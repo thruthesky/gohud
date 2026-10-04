@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控制項</a>
   <a href="widgets-catalog.html">所有控制項</a>
+  <a href="widgets-popups.html">彈出視窗與對話框</a>
   <a href="widgets-surfaces.html">浮動視窗</a>
   <a href="widgets-messages.html">告訴玩家某件事</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>網頁上熟悉的那些形狀，照遊戲真正需要的樣子重做了一遍。</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — 每日簽到</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — 每日簽到獎勵；只能點今天。" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>日期選擇器在遊戲裡幾乎派不上用場。日曆的形狀倒是有用 — 用在簽到獎勵上，
     重要的是<b>你走到第幾天</b>，而不是今天幾號。</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     同時用三件事區分：勾號、強調色外框，以及變暗。</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> 與 <code>GoDonut</code> — 一眼看完的能力值</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — 屬性五邊形，以虛線比較裝備。" loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — 以扇形顯示占比，圖例不僅有顏色也有文字。" loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # 虛線疊圖
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     而且圖例會把百分比用文字寫出來。</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — 橫幅與角色選擇</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — 橫幅與角色選擇，除非要求否則不會自行翻頁。" loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # 預設關閉</code></pre>
   <p>除非你開口要，否則它不會自己往前翻；五秒是下限：三秒換一次的橫幅，會在字被讀完之前
@@ -125,6 +132,7 @@ banners.autoplay_seconds = 5.0             # 預設關閉</code></pre>
     圓點雖然畫得小，按得到的範圍仍然是觸控最小尺寸。</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — 不會說謊的按鍵提示</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — 讀取真實按鍵綁定的鍵帽，改鍵後提示也不會出錯。" loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # 讀的是實際的按鍵設定</code></pre>
   <p>寫死的「按 F」，在玩家改了按鍵之後還是繼續說 F — 這是 PC 介面上最常見的謊。
     <code>for_action()</code> 會去讀 <code>InputMap</code>；如果那個動作綁的是遊戲手把，

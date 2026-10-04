@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">วิดเจ็ต</a>
   <a href="widgets-catalog.html">วิดเจ็ตทั้งหมด</a>
+  <a href="widgets-popups.html">ป๊อปอัปและกล่องโต้ตอบ</a>
   <a href="widgets-surfaces.html">หน้าต่างลอย</a>
   <a href="widgets-messages.html">การบอกอะไรบางอย่างกับผู้เล่น</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -171,6 +172,7 @@
 <section id="hud-widgets">
   <h2>วิดเจ็ต HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — เก้าตำแหน่ง</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — ตรึงชิ้นส่วน HUD ไว้ที่หนึ่งในเก้าตำแหน่งของพื้นที่ปลอดภัย" loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>เคารพเซฟแอเรียและระยะขอบจอ ใส่ <code>landscape_spot</code> ให้มันแล้วมันจะย้ายที่เมื่อวางแนวนอน —
     ปุ่มควบคุมที่อยู่กลางล่างในแนวตั้งจึงไปอยู่มุมล่างขวาแทนได้</p>
   <div class="note">
@@ -208,6 +210,7 @@ notice_anchor.reserve_space = false   # และไม่ดันหน้า�
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — พลังชีวิต มานา ค่าประสบการณ์</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — แถบ HP MP และ XP แสดงค่า เศษส่วน หรือเปอร์เซ็นต์" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # โทเคนที่ใช้เป็นสีเติมอย่างเดียว
@@ -217,6 +220,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     เพื่อไม่ให้ความกว้างของแถบกระตุกไปมาตามจำนวนหลักที่เพิ่มลด</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — ควิกสล็อตหนึ่งช่อง</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — ช่องด่วน ไอคอน จำนวน คูลดาวน์ และปุ่มลัดบนหน้าเดียว" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — กริดคลังไอเท็ม ลากไอเท็มระหว่างช่องได้" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>ไอคอน จำนวน คูลดาวน์ และปุ่มลัด อยู่บน<b>หน้าเดียวกัน</b> การเอาแบดจ์ไปห้อยรอบวงกลมเล็ก ๆ
     จะทำให้แต่ละสล็อตกว้างไม่เท่ากัน แล้วทั้งแถวก็โยกเยก</p>
   <div class="note">
@@ -229,6 +236,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     กับคอนโทรลในหน้าตั้งค่าทุกตัวในลำดับ Tab เปิดมันเมื่อคีย์บอร์ดหรือเกมแพดเป็นอินพุตเดียวที่มี</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — จอยสติ๊กเสมือน</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — จอยสติกเสมือน แบบคงที่ ตามนิ้วโป้ง หรือแบบสัมพัทธ์" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>โหมด</th><th>พฤติกรรม</th></tr></thead>
     <tbody>
@@ -241,6 +249,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     และค่านี้ไม่แปรตามขนาดหน้าจอหรือ DPI</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — ดูเล็ก แต่กดง่าย</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — ปุ่มไอคอนอย่างเดียว มองเห็นเล็ก แตะได้ 48dp มีชื่อสำหรับโปรแกรมอ่านหน้าจอ" loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>ปลอดภัยเฉพาะตอนที่เพื่อนบ้านของมันไม่รับอินพุต</b> ถ้าพื้นที่ที่ขยายออกไปครอบปุ่มถัดไป
     ปุ่มนั้นจะหยุดตอบสนอง ปุ่มไอคอนที่วางเรียงชิดกันต้องใช้ <code>touch_peers</code>

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget'lar</a>
   <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html">Açılır pencereler ve iletişim kutuları</a>
   <a href="widgets-surfaces.html">Yüzen pencereler</a>
   <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — kendi yerini bulan mesaj</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Altta sıraya giren ve düğme taşıyabilen bir mesaj." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>Altta (ya da üstte), güvenli alanın ve klavyenin üzerinde durur ve kendi kendine gider. O olmadan
     "kaydedildi" demesi gereken her ekranda katmanı, yerleşimi, sayacı ve temizliği siz yazarsınız.</p>
   <pre><code>snack.show_text("Kaydedildi", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "Eşya düşürüldü", "actions": ["Geri al"]}) ==
     ekran karar verir. O bir düğme taşıyamaz; bu taşır.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — sonu görünmeyen bir bekleyiş</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — Bekleme; düğmeyi yerinde döner simgeye çevirir, iki kez basılamaz." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>Sunucuyla konuşan oyunların bu sayfadaki her şeyden çok buna ihtiyacı vardır: kıpırdamayan bir ekran
     çökme gibi okunur. Tek bir çağrı, bastığınız düğmeyi <b>yerinde</b> bir spinner'a dönüştürür.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>Ölçebildiğiniz ilerleme bir <code>GoBar</code>'dır. Bir spinner ne zaman biteceğine dair hiçbir söz vermez.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — okunmamış noktası, YENİ etiketi, 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — Okunmamış noktası, NEW etiketi ve 99+, bir köşeye asılı." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # sıfırda kendini gizler
 GoBadge.attach(shop_button, 0, "YENİ")
 GoBadge.attach(friend_button, 3, "", true) # bir nokta — "orada bir şey var"</code></pre>

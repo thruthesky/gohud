@@ -166,6 +166,9 @@ header.top nav > a.nav-ai:hover { background: var(--tint); border-color: var(--a
   border-color: transparent; color: var(--on-accent);
   background: linear-gradient(100deg, var(--accent), var(--accent-2));
 }
+/* What just shipped (the Material 3 and kids looks, 2026-10). --warn is the colour already measured to read on --card. */
+.badge.new { border-color: var(--warn); color: var(--warn); }
+td .badge, h3 .badge { font-size: 11px; padding: 2px 8px; margin-inline-start: 6px; vertical-align: middle; }
 
 .cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .btn {
@@ -247,6 +250,21 @@ b, strong { color: var(--ink); font-weight: 680; }
 /* 🔑 Long example lines fold inside the card instead of running out of it — every line stays readable without scrolling. */
 .catalog .card pre { margin: 10px 0 0; font-size: 12.5px; white-space: pre-wrap; overflow-wrap: break-word; tab-size: 4; }
 
+/* Widget pictures (`tests/site_widget_shots.gd` → `tools/site_images.py`). A cropped widget shows at its own size
+   (the file holds twice the pixels); a whole phone screen is capped in height so one picture never fills the page.
+   🔑 `width: auto` + `height: auto` keep the ratio while the `width`/`height` attributes still reserve the space. */
+figure.shot { margin: 12px 0 10px; }
+figure.shot img { width: auto; height: auto; max-width: 100%; }
+figure.shot.phone img { max-height: 460px; }
+.catalog figure.shot { margin: 4px 0 12px; }
+.catalog figure.shot.phone img { max-height: 360px; }
+.shots figure.shot.phone img, .phones figure.shot.phone img { max-height: 560px; margin-inline: auto; }
+/* A row of phone screens — two to five across, each one the same width. */
+.phones { display: grid; gap: 18px; margin: 20px 0 24px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); align-items: start; }
+.phones figure { margin: 0; }
+.phones figure.shot.phone img { width: 100%; max-height: none; }
+.phones figcaption { text-align: center; }
+
 /* 🛑 합자(ligature)를 끈다 — IBM Plex Mono 는 `--` 를 한 줄로 이어 붙인다. 그러면 화면의
    `git clone --depth 1` 이 `git clone —depth 1` 로 보여, 읽는 사람이 붙임표를 하나로 센다.
    복사하면 글자는 멀쩡하지만 **보고 따라 치는 사람**이 틀린다(2026-09-16 촬영에서 확인). */
@@ -325,6 +343,10 @@ table {
 .dials td:nth-child(2), .dials th:nth-child(2) { white-space: nowrap; width: 10%; font-variant-numeric: tabular-nums; }
 .dials h4 { margin: 24px 0 8px; }
 th, td { border-bottom: 1px solid var(--rule); padding: 10px 13px; text-align: start; vertical-align: top; }
+/* 🔑 A cell breaks a word only when the word cannot fit — `overflow-wrap: anywhere` (inherited from body) also counts
+   every letter as a place to break when the browser sizes the columns, so a short first column shrank to one letter
+   and read "Scri / m", "Head / er" (website shots, 2026-10-04). */
+th, td { overflow-wrap: break-word; }
 th {
   font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 700;
   /* 🛑 아래 두 가지는 라틴 문자용 관습이다. 아랍 문자는 낱자가 서로 **이어져** 한 낱말을 이루므로

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Віджети</a>
   <a href="widgets-catalog.html">Усі віджети</a>
+  <a href="widgets-popups.html">Спливні вікна та діалоги</a>
   <a href="widgets-surfaces.html">Плаваючі вікна</a>
   <a href="widgets-messages.html">Як сказати щось гравцеві</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — рядок, який може бути хибним</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Підпис, елемент і підказка; помилка під хибним полем." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>Один рядок угорі форми з п'яти полів, який каже «перевірте введене», не каже, <i>яке саме</i> поле. Саме
     через цю одну річ люди й кидають реєстрацію.</p>
   <pre><code>var name_field := GoField.make("Ім'я персонажа", GoStyle.line_edit("2-12"), "Змінити потім не можна")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     там, де ніщо не може піти не так, і вузол — для всього, що сервер може відхилити.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — поле вводу, приварене до своєї кнопки</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Поле введення та його кнопки, зварені в одну форму." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Повідомлення"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Ім'я"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>Він розв'язує кути. Дві заокруглені форми, що сходяться посередині, мають защемлений вигляд, а типовий
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("Ім'я"), {"prefix_icon": &amp;"search"})<
     полів кута немає взагалі, тож там він їх не чіпає, і прямі грані сходяться чисто.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — вибирач, який шукає</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — Вибір із пошуком усередині назв, а не лише з початку." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>До десяти записів краще <code>GoStyle.select()</code>: на один дотик менше, і видно весь список.
     Після тридцяти переглядати очима — вже робота.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Виберіть сервер")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — купони та подарункові коди</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Коди купонів і подарунків у клітинках; вставлення та введення через IME працюють." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>Код куди частіше вставляють із повідомлення, ніж набирають. Дванадцять справжніх полів зламали б вставляння
     на першій комірці й губили б символи через IME, тож текст приймає одне приховане поле, а комірки просто
     малюються. <code>ABCD-EFGH-IJKL</code> дорогою втрачає свої дефіси.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Уже використано")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — заголовки для сортування, рядки для вибору</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Заголовки з сортуванням і рядки з вибором; числа сортуються як числа." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Місце", "width": 56}, {"text": "Ім'я"}, {"text": "Очки", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     в одну комірку. <code>GoStyle.table()</code> лишається сіткою тільки для читання.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — сторінки або рядок «Ще»</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Нумеровані сторінки з поточною посередині або один рядок «Завантажити ще»." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # варіант, зручний для мобільних</code></pre>
   <p>Номери — це інтерфейс для миші; на телефоні рядок «Ще» читається краще. Поточна сторінка лишається

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html">النوافذ العائمة</a>
   <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>ودجات الـ HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — تسعة مواضع</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — يثبت أجزاء HUD في إحدى تسع نقاط من المنطقة الآمنة." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>يحترم المنطقة الآمنة وهوامش الحواف. امنحه <code>landscape_spot</code> فينتقل في الوضع العرضي —
     فأدوات التحكم التي تجلس أسفل الوسط في الوضع الطولي يمكن أن تنتقل إلى أسفل اليمين.</p>
   <div class="note">
@@ -207,6 +209,7 @@ notice_anchor.reserve_space = false   # ولا يدفع الصفحة ما دام
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — الصحة والمانا والخبرة</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — أشرطة HP وMP وXP بقيمة أو كسر أو نسبة مئوية." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # التوكن الخاص بالتعبئة وحدها
@@ -216,6 +219,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     عرض الشريط كلما زادت الخانات أو نقصت.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — خانة سريعة واحدة</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — خانة سريعة: أيقونة وكمية وفترة تهدئة واختصار على وجه واحد." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — شبكة مخزون؛ يمكن سحب العناصر بين الخانات." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>الأيقونة والكمية ومهلة الاستعداد والاختصار على <b>وجه واحد</b>. فتعليق الشارات على دائرة صغيرة
     يجعل لكل خانة عرضًا مختلفًا فيتمايل الصف.</p>
   <div class="note">
@@ -228,6 +235,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     عناصر الإعدادات في ترتيب Tab. شغّله حين تكون لوحة المفاتيح أو ذراع التحكم هي وسيلة الإدخال الوحيدة.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — عصا افتراضية</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — عصا تحكم افتراضية — ثابتة أو تتبع الإبهام أو نسبية." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>الوضع</th><th>السلوك</th></tr></thead>
     <tbody>
@@ -240,6 +248,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     سرعة؛ وهي لا تتغير بتغيّر حجم الشاشة ولا كثافتها.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — يبدو صغيرًا ويُضغط كبيرًا</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — زر أيقونة فقط: صغير للعين، 48dp للمس، ومسمى لقارئات الشاشة." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>آمن فقط ما دام جيرانه يتجاهلون اللمس.</b> فإن غطّت المساحة الموسَّعة الزرَّ التالي، توقّف ذلك
     الزر عن الاستجابة. والأزرار الأيقونية المتجاورة تحتاج <code>touch_peers</code>.

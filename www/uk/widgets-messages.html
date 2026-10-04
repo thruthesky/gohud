@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Віджети</a>
   <a href="widgets-catalog.html">Усі віджети</a>
+  <a href="widgets-popups.html">Спливні вікна та діалоги</a>
   <a href="widgets-surfaces.html">Плаваючі вікна</a>
   <a href="widgets-messages.html" aria-current="page">Як сказати щось гравцеві</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — снекбар</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Сповіщення, яке не забирає ні введення, ні фокус." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Повідомлення внизу: стає в чергу й може мати кнопки." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Він ніколи не перехоплює ввід.</b> Сповіщення читають, а не натискають. Воно не бере фокуса,
     не блокує ігровий ввід, і кнопка під ним усе одно натискається. Коли потрібне підтвердження, беріть
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — запитання, яке не блокує</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Питання, яке не зупиняє гру, — запрошення, обмін." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Плаває збоку без затемнення. Гра йде далі.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — навчальний тур</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Навчальний тур, що вказує на справжні елементи." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Вказує на справжні контроли по одному. Ввід бере лише картка, тож <b>натискання на сам підсвічений
     контрол веде тур далі</b> — «натисніть тут» стає дією, а не реченням.</p>
   <pre><code>tour.start([

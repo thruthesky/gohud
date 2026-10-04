@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget'lar</a>
   <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html">Açılır pencereler ve iletişim kutuları</a>
   <a href="widgets-surfaces.html">Yüzen pencereler</a>
   <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>HUD widget'ları</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — dokuz nokta</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — HUD parçalarını güvenli alanın dokuz noktasından birine sabitler." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Güvenli alana ve kenar boşluklarına uyar. Ona bir <code>landscape_spot</code> verin, yatay kipte yer
     değiştirsin — dikeyde alt ortada duran denetimler bunun yerine sağ alta gidebilir.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # ve görünürken sayfayı itmez</code></
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — can, mana, deneyim</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Değer, kesir ya da yüzde gösteren HP, MP ve XP çubukları." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # yalnızca dolguya özgü token
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     böylece basamaklar gelip gittikçe çubuğun genişliği titremez.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — tek bir hızlı slot</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Hızlı yuva: simge, miktar, bekleme süresi ve kısayol tek yüzde." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Envanter ızgarası; eşyalar hücreler arasında sürüklenebilir." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Simge, adet, bekleme süresi ve kısayol <b>tek bir yüzde</b>. Rozetleri küçük bir dairenin kenarına
     asmak her slotu başka genişlikte yapar ve sıra yalpalar.</p>
   <div class="note">
@@ -231,6 +238,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     kullanan biriyle bütün ayar denetimlerinin arasına girmez. Girdi yalnızca klavye ya da oyun kumandasıysa açın.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — sanal joystick</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Sanal çubuk — sabit, başparmağı izleyen ya da göreli." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Kip</th><th>Davranış</th></tr></thead>
     <tbody>
@@ -243,6 +251,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     hızla çarpabilirsiniz; ekran boyutuna ya da DPI'ya göre değişmez.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — küçük görünür, büyük basılır</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Yalnızca simgeli düğme: görünüşte küçük, dokunmada 48 dp, ekran okuyucu için adlı." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Yalnızca kardeşleri girdiyi yok saydığı sürece güvenlidir.</b> Genişletilmiş alan bir sonraki
     düğmenin üstünü kaplarsa, o düğme yanıt vermeyi bırakır. Yan yana duran simge düğmelerinin

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Виджеты</a>
   <a href="widgets-catalog.html">Все виджеты</a>
+  <a href="widgets-popups.html">Всплывающие окна и диалоги</a>
   <a href="widgets-surfaces.html">Плавающие окна</a>
   <a href="widgets-messages.html">Как сообщить игроку</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — сообщение, которое само встаёт на место</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Сообщение внизу: встаёт в очередь и может нести кнопки." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>Садится снизу (или сверху), над безопасной областью и клавиатурой, и уходит сам. Без него слой, размещение,
     таймер и уборку вы пишете на каждом экране, которому нужно сказать «сохранено».</p>
   <pre><code>snack.show_text("Сохранено", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "Предмет выброшен", "actions": ["О�
     которому он принадлежит. Кнопку он держать не может; этот — может.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — ожидание без видимого конца</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — Ожидание; превращает кнопку в индикатор на месте, чтобы её не нажали дважды." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>Играм, которые разговаривают с сервером, это нужно больше всего остального на этой странице: замерший экран
     читается как вылет. Один вызов превращает нажатую кнопку в спиннер <b>на её же месте</b>.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>Прогресс, который можно измерить, — это <code>GoBar</code>. Спиннер ничего не обещает о том, когда закончится.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — точка непрочитанного, метка НОВОЕ, 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — Точка непрочитанного, метка NEW и 99+ в углу." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # при нуле прячется сам
 GoBadge.attach(shop_button, 0, "НОВОЕ")
 GoBadge.attach(friend_button, 3, "", true) # точка — «там что-то есть»</code></pre>

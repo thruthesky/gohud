@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">วิดเจ็ต</a>
   <a href="widgets-catalog.html">วิดเจ็ตทั้งหมด</a>
+  <a href="widgets-popups.html">ป๊อปอัปและกล่องโต้ตอบ</a>
   <a href="widgets-surfaces.html">หน้าต่างลอย</a>
   <a href="widgets-messages.html">การบอกอะไรบางอย่างกับผู้เล่น</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — ข้อความที่จัดที่ให้ตัวเอง</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — ข้อความด้านล่างที่เข้าคิวได้และมีปุ่มได้" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>วางตัวอยู่ด้านล่าง (หรือด้านบน) เหนือเซฟแอเรียและคีย์บอร์ด แล้วหายไปเอง ถ้าไม่มีมัน คุณต้องเขียนเลเยอร์
     การจัดตำแหน่ง ตัวจับเวลา และการเก็บกวาด ซ้ำในทุกหน้าจอที่ต้องบอกว่า "บันทึกแล้ว"</p>
   <pre><code>snack.show_text("บันทึกแล้ว", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "ทิ้งไอเทมแล้ว", "actions
     เป็นคนตัดสินว่ามันจะไปอยู่ตรงไหน มันใส่ปุ่มไม่ได้ แต่ตัวนี้ใส่ได้</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — การรอที่ยังมองไม่เห็นปลายทาง</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — การรอ เปลี่ยนปุ่มเป็นวงหมุนตรงที่เดิม กดซ้ำไม่ได้" loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>เกมที่คุยกับเซิร์ฟเวอร์ต้องการตัวนี้มากกว่าอะไรทั้งหมดในหน้านี้: หน้าจอที่นิ่งอยู่เฉย ๆ คนอ่านว่าเกมค้าง
     เรียกครั้งเดียวก็เปลี่ยนปุ่มที่คุณเพิ่งกดให้เป็นสปินเนอร์<b>ตรงที่เดิม</b></p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>ความคืบหน้าที่วัดได้คือ <code>GoBar</code> ส่วนสปินเนอร์ไม่ได้สัญญาอะไรเลยว่ามันจะจบเมื่อไร</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — จุดที่ยังไม่ได้อ่าน ป้าย "ใหม่" และเลข 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — จุดยังไม่อ่าน ป้าย NEW และ 99+ ติดไว้ที่มุม" loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # ซ่อนตัวเองเมื่อเป็นศูนย์
 GoBadge.attach(shop_button, 0, "ใหม่")
 GoBadge.attach(friend_button, 3, "", true) # จุดจุดเดียว — "มีอะไรอยู่ตรงนั้น"</code></pre>

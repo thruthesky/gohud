@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget'lar</a>
   <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html">Açılır pencereler ve iletişim kutuları</a>
   <a href="widgets-surfaces.html">Yüzen pencereler</a>
   <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Açıklamalı liste satırları</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Simge, başlık, özet ve sonda işaret içeren liste satırı." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Yemin Tutan", _inspect, Color.TRANSPARENT,
     "Uzun kılıç  /  Saldırı 42", false)</code></pre>
   <p>İkinci satırı olan bir satır <b>eşit üst ve alt iç boşluk</b> alır, tek satırlık bir satırdan ferahtır ve
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Akan satırlar</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Temanın boşluklarıyla sütunlar, satırlar ve kaydırmalı satırlar." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Denetimleri <code>wrap_row</code> içine <b>doğal genişlikleriyle</b> koyun. Satır kaydırma açık bırakılırsa
     bir düğmenin en küçük genişliği neredeyse hiçe iner ve satır, hücresini buna göre boyutlandırır — etiket
     satır başına tek karaktere çöker. Fabrika bunu sizin yerinize engeller.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Boş bir listeyi asla boş bırakmayın</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Yüklenirken bir yer tutucu ve boş liste için bir mesaj." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Burada henüz bir şey yok"))</code></pre>
   <p>İnsanlar boş bir ekranı <b>bozuk</b> diye okur.</p>
 </section>

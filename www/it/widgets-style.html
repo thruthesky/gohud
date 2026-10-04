@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tutti i widget</a>
+  <a href="widgets-popups.html">Popup e finestre di dialogo</a>
   <a href="widgets-surfaces.html">Finestre flottanti</a>
   <a href="widgets-messages.html">Dire qualcosa a chi gioca</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Righe di lista con una descrizione</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Una riga d&#x27;elenco con icona, titolo, riassunto e segno finale." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Custode del Giuramento", _inspect, Color.TRANSPARENT,
     "Spada lunga  /  Attacco 42", false)</code></pre>
   <p>Una riga con una seconda linea riceve <b>margine interno uguale sopra e sotto</b>, più generoso di una riga a linea singola, e la
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Righe che vanno a capo</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Colonne, righe e righe che vanno a capo, con gli spazi del tema." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Metti i controlli dentro <code>wrap_row</code> alla loro <b>larghezza naturale</b>. Con l'andata a capo attiva, la larghezza minima
     di un pulsante scende quasi a zero e la riga dimensiona la cella su quella — l'etichetta collassa a un carattere per riga.
     La factory lo impedisce al posto tuo.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Non lasciare mai vuota una lista vuota</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Un segnaposto durante il caricamento e un messaggio per un elenco vuoto." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Qui non c'è ancora nulla"))</code></pre>
   <p>Chi guarda una schermata bianca la legge come <b>rotta</b>.</p>
 </section>

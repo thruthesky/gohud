@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos los widgets</a>
+  <a href="widgets-popups.html">Ventanas emergentes y diálogos</a>
   <a href="widgets-surfaces.html">Ventanas flotantes</a>
   <a href="widgets-messages.html">Decirle algo al jugador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — el mensaje que se coloca solo</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Un mensaje abajo que hace cola y puede llevar botones." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>Se sitúa abajo (o arriba), por encima del área segura y del teclado, y se va por su cuenta. Sin él
     escribes la capa, la colocación, el temporizador y el desmontaje en cada pantalla que tenga que decir "guardado".</p>
   <pre><code>snack.show_text("Guardado", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "Objeto soltado", "actions": ["Deshacer"]}) == 0:
     lo posee decide dónde va. Aquel no puede llevar un botón; este sí.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — una espera sin final a la vista</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — Una espera; convierte un botón en un indicador en su sitio para que no se pulse dos veces." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>Los juegos que hablan con un servidor necesitan esto más que ninguna otra cosa de esta página: una pantalla que se queda quieta
     se lee como un cuelgue. Una sola llamada convierte el botón que has pulsado en un spinner <b>en su sitio</b>.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>El progreso que se puede medir es un <code>GoBar</code>. Un spinner no promete nada sobre cuándo termina.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — el punto de no leído, la etiqueta NUEVO, el 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — El punto de no leído, la etiqueta NEW y el 99+, colgados de una esquina." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # se oculta al llegar a cero
 GoBadge.attach(shop_button, 0, "NUEVO")
 GoBadge.attach(friend_button, 3, "", true) # un punto — "hay algo ahí"</code></pre>

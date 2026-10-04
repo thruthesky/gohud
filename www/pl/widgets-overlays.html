@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widżety</a>
   <a href="widgets-catalog.html">Wszystkie widżety</a>
+  <a href="widgets-popups.html">Wyskakujące okna i dialogi</a>
   <a href="widgets-surfaces.html">Pływające okna</a>
   <a href="widgets-messages.html">Jak powiedzieć coś graczowi</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — panel boczny</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Panel wysuwany z lewej lub z prawej." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Panel wysuwany z lewej lub z prawej." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> wysuwa się od dołu, co jest właściwe dla telefonu trzymanego pionowo. Na tablecie albo na
     komputerze ten sam arkusz zakrywa grę; panel boczny wchodzi zamiast tego z boku.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Sakwa")</code></pre>
     <code>follow_text_direction</code>, gdy chodzi o „stronę początku”, a odwróci się w układzie od prawej do lewej.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — karta przypięta do miejsca</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Karta informacji obok tego, co naciśnięto; jedna naraz." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>To umiejscowienie przy kotwicy z <code>GoSurface</code>, w którym warstwa, powłoka, kotwica i sprzątanie są już
     podłączone — te dziesięć linii, które każda gra pisze wciąż od nowa. Otwarta jest naraz jedna, bo karty ułożone w stos
@@ -118,6 +124,7 @@ bag.open("Sakwa")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — przytrzymanie i prawy przycisk myszy</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Menu po długim naciśnięciu lub prawym kliknięciu; ruch palca je anuluje." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Użyj", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Sakwa")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — konsola dewelopera</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Konsola deweloperska z poleceniami i historią; wyłączona w wydaniach." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Przyznaj przedmiot: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>Komendy cheatów i debugowania, z paletą filtrującą w trakcie pisania, żeby nikt nie musiał ich zapamiętywać, i

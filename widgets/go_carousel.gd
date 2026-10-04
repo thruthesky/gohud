@@ -179,6 +179,11 @@ func _fit_height() -> void:
 		if is_instance_valid(page): tallest = maxf(tallest, page.get_combined_minimum_size().y)
 	# 🛑 Only when it really changes — setting the same size again fires `minimum_size_changed` forever.
 	if not is_equal_approx(_viewport.custom_minimum_size.y, tallest): _viewport.custom_minimum_size.y = tallest
+	# 🛑 **Size the pages again.** A page is first laid out 1dp wide, where a wrapping title stacks one letter per line
+	#    and the page's minimum height runs to ~500dp. The page cannot be smaller than its minimum, so `_relayout()`
+	#    left it that tall; when the real width arrived the minimum dropped but the viewport did not resize, so nothing
+	#    sized the page again — a centred title sat far below the visible strip (website shots, 2026-10-04).
+	_relayout()
 
 
 func _relayout() -> void:

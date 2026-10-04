@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Виджеты</a>
   <a href="widgets-catalog.html">Все виджеты</a>
+  <a href="widgets-popups.html">Всплывающие окна и диалоги</a>
   <a href="widgets-surfaces.html">Плавающие окна</a>
   <a href="widgets-messages.html" aria-current="page">Как сообщить игроку</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — снекбар</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Уведомление, которое не забирает ни ввод, ни фокус." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Сообщение внизу: встаёт в очередь и может нести кнопки." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Он никогда не перехватывает ввод.</b> Уведомление читают, а не нажимают. Оно не берёт фокус, не блокирует
     игровой ввод, и кнопка под ним по-прежнему нажимается. Когда нужно подтверждение, берите
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — вопрос, который не блокирует</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Вопрос, который не останавливает игру, — приглашение, обмен." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Плавает сбоку без затемняющей подложки. Игра продолжает идти.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — обучающий тур</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Обучающий тур, указывающий на настоящие элементы." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Указывает на настоящие элементы управления, по одному за раз. Ввод берёт только карточка, поэтому <b>нажатие
     на сам подсвеченный элемент двигает тур дальше</b> — «нажмите здесь» становится действием, а не предложением.</p>
   <pre><code>tour.start([

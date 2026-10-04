@@ -2067,9 +2067,38 @@ def _slug(name):
 	return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
 
+# The widget pictures and their display sizes — `tools/site_images.py` writes both from the website shots
+# (`tests/site_widget_shots.gd`). A widget without a picture (`GoConfig`, `GoFeedback`, …) simply has none.
+SHOTS = os.path.join(WWW, "img", "shots.json")
+
+
+def _shot_sizes():
+	if not os.path.isfile(SHOTS): return {}
+	import json
+	return json.load(open(SHOTS, encoding="utf-8"))
+
+
+def _shot_name(name):
+	"""`GoStyle.toggle · checkbox` → `widgets/gostyle-toggle.webp` — the same rule the shot script names its files by."""
+	return "widgets/%s.webp" % name.split(" · ")[0].lower().replace(".", "-")
+
+
+def _figure(code, name, words, sizes, indent="      "):
+	rel = _shot_name(name)
+	if rel not in sizes: return ""
+	width, height = sizes[rel]
+	up = "../" if site_langs.BY_CODE[code].folder else ""
+	# A whole phone screen is tall — it gets its own class so the card can cap its height.
+	kind = "shot phone" if height > width * 1.6 else "shot"
+	alt = html.escape("%s — %s" % (name, words), quote=True)
+	return ('%s<figure class="%s"><img src="%simg/%s" width="%d" height="%d" alt="%s" loading="lazy"></figure>\n'
+		% (indent, kind, up, rel, width, height, alt))
+
+
 def _body(code):
 	"""The part of the page between the side menu and `</main>` in one language."""
 	rows = []
+	sizes = _shot_sizes()
 	for group, titles in GROUPS:
 		members = [w for w in WIDGETS if w[0] == group]
 		rows.append('<section id="%s" class="catalog">' % group)
@@ -2078,6 +2107,8 @@ def _body(code):
 		for _group, name, base, example, words in members:
 			rows.append('    <div class="card">')
 			rows.append('      <h3><code>%s</code></h3>' % _esc(name))
+			figure = _figure(code, name, words[code], sizes)
+			if figure: rows.append(figure.rstrip("\n"))
 			rows.append('      <p>%s</p>' % _esc(words[code]))
 			label = TEXT["member" if "." in name else "extends"][code]
 			rows.append('      <p class="catalog-base">%s <code>%s</code></p>' % (_esc(label), _esc(base)))
@@ -2107,11 +2138,12 @@ def _page(lang, template):
 	start = text.index('<nav class="subnav"')
 	end = text.index("</main>")
 	text = text[:start] + nav + "\n\n" + _body(code) + "\n" + text[end:]
-	# Footer: back to the cover, on to the first topic page.
-	first = re.search(r'<a href="widgets-surfaces.html">([^<]*)</a>', nav)
+	# Footer: back to the cover, on to the next page in the side menu (the popups guide, then the topic pages).
+	following = "widgets-popups.html" if 'href="widgets-popups.html"' in nav else "widgets-surfaces.html"
+	first = re.search(r'<a href="%s">([^<]*)</a>' % following, nav)
 	text = re.sub(r'(<footer class="bottom">\s*<div class="wrap">\s*)<p>.*?</p>',
-		lambda m: m.group(1) + '<p><a href="widgets.html">← %s</a> · <a href="widgets-surfaces.html">%s →</a></p>' % (
-			_esc(widgets), first.group(1) if first else "→"), text, count=1, flags=re.S)
+		lambda m: m.group(1) + '<p><a href="widgets.html">← %s</a> · <a href="%s">%s →</a></p>' % (
+			_esc(widgets), following, first.group(1) if first else "→"), text, count=1, flags=re.S)
 	return text
 
 

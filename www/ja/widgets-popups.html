@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ポップアップとダイアログ — gohud</title>
+<meta name="description" content="gohud のすべてのポップアップ — どれを選ぶか、どう開いて閉じるか、戻る操作と入力に何をするか、すべての見た目で。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概要</a>
+      <a href="install.html">インストール</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">ウィジェット</a>
+      <a href="theming.html">テーマ</a>
+      <a href="icons.html">アイコン</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>日本語</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="widgets-popups.html" hreflang="ja" lang="ja" aria-current="true">日本語</a>
+          <a href="../zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>ポップアップとダイアログ</h1>
+    <p class="lead">gohud のすべてのポップアップ — どれを選ぶか、どう開いて閉じるか、戻る操作と入力に何をするか、すべての見た目で。 <a href="widgets.html">← ウィジェット</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="ウィジェット">
+  <!-- subnav:begin -->
+  <a href="widgets.html">ウィジェット</a>
+  <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html" aria-current="page">ポップアップとダイアログ</a>
+  <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
+  <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">待たせる、伝える、数える</a>
+  <a href="widgets-forms.html">フォームとリスト</a>
+  <a href="widgets-shapes.html">ゲームで実際に使う形</a>
+  <a href="widgets-overlays.html">画面の上に重ねる</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — 作る場所を1つにする</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>ふさわしいポップアップを選ぶ</h2>
+  <p class="sub">ポップアップは流れを断ち切る。選ぶ前に、ひとつの問いにだけ答える：<b>ゲームが先へ進む前に、プレイヤーが
+    必ず答えなければならないか？</b> そうなら塞ぐ。そうでないなら決して塞がない — 頼んでもいない知らせでゲームを止める
+    カードは、プレイヤーにゲームを閉じさせるいちばんの近道だ。</p>
+  <ol class="steps">
+    <li><b>答えのある問い</b> — 購入、削除、退出、上書き → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>。確認してもらうだけのこと → <code>alert()</code>。いくつかから1つ → <code>choose()</code>。</li>
+    <li><b>それ自体が1つの画面</b> — 設定、キャラクターシート、ショップのアイテム → 画面中央の <a href="#popup-surface"><code>GoSurface</code></a>。</li>
+    <li><b>長いリストや管理画面</b> — かばん、メール、フレンド → スマホでは下から出る <a href="#popup-sheets"><code>GoSheet</code></a>、広い画面では横から出る <code>GoDrawer</code>。</li>
+    <li><b>今押したものについての情報</b> — アイテムのステータス、できる操作 → その脇に出る <a href="#popup-anchored"><code>GoPopover</code></a> か <code>GoContextMenu</code>。</li>
+    <li><b>ゲームを止めずに伝えられる知らせ</b> — 保存した、捨てた、招待された → <a href="#popup-nonblocking"><code>GoSnackbar</code>、<code>GoNotice</code>、<code>GoPromptCard</code></a>。これらは画面を占領しない。</li>
+    <li><b>操作を教える</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>。<b>開発中のチート</b> → <code>GoConsole</code>。</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">すべてのポップアップを一覧で</h3>
+  <table>
+    <thead><tr><th>ポップアップ</th><th>ゲームを止めるか</th><th>戻る / Escape</th><th>外側のタップ</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>はい</td><td>閉じる — confirm は <code>false</code> を返し、alert は await が終わる</td><td><code>dismiss_on_scrim</code> のときだけ閉じる</td><td>答えが必要な問い</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>はい</td><td>閉じる — <code>-1</code> を返す</td><td><code>dismiss_on_scrim</code> のときだけ閉じる</td><td>いくつかから1つを選ぶ</td></tr>
+      <tr><td><code>GoSurface</code></td><td>はい</td><td>最前面のウィンドウに閉じるよう求める</td><td><code>dismiss_on_scrim</code> なら閉じるよう求める</td><td>自作のウィンドウ</td></tr>
+      <tr><td><code>GoSheet</code></td><td>はい</td><td>シート全体を閉じる</td><td>閉じる</td><td>かばん、ショップのリスト、メール</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>はい</td><td>Android の戻るだけ</td><td>閉じる</td><td>広い画面の横のリスト</td></tr>
+      <tr><td><code>GoPopover</code></td><td>閉じるまで</td><td>閉じる</td><td>閉じる — そのタップは先へ届かない</td><td>アイテムやスキルの詳細</td></tr>
+      <tr><td><code>GoCombobox</code> のリスト</td><td>閉じるまで</td><td>閉じる</td><td>閉じる</td><td>検索できる選択リスト</td></tr>
+      <tr><td><code>GoContextMenu</code> · ドロップダウン · セレクト</td><td>エンジンのメニューに従う</td><td>エンジンのメニューに従う</td><td>閉じる</td><td>操作、短いリスト</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>いいえ</td><td>—</td><td>ゲームに届く</td><td>保存した · 元に戻す · 再試行</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>いいえ</td><td>—</td><td>ゲームに届く</td><td>招待、取引の申し込み</td></tr>
+      <tr><td><code>GoNotice</code></td><td>決して止めない</td><td>—</td><td>ゲームに届く</td><td>HUD 上に固定された1行</td></tr>
+      <tr><td><code>GoBanner</code></td><td>いいえ — ページの中にある</td><td>—</td><td>—</td><td>「オフラインです。再試行」</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>自分のカードだけ</td><td>ツアーを終える</td><td>ゲームに届く</td><td>初回起動のツアー</td></tr>
+      <tr><td><code>GoConsole</code></td><td>自分のパネルだけ</td><td>Escape キーで閉じる</td><td>ゲームに届く</td><td>デバッグコマンド</td></tr>
+    </tbody>
+  </table>
+  <p>それぞれがどのレイヤーで開くか、なぜその順なのかは <a href="#popup-stack">レイヤー、戻る、入力</a> にある。</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="ゲームの上の確認ダイアログ — 問いと「あとで」「購入」ボタン" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="画面中央の設定ウィンドウ — トグル、スライダー、保存とキャンセル" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="下からせり上がるインベントリのシート — 検索欄と閉じるボタン" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="右側から滑り込むかばんのドロワー" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="ポーションのクイックスロットの上に出た小さなアイテムカード" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="クイックスロットから開いた「使う」「移動」「捨てる」のメニュー" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="アイテムを捨てたことを知らせる下部のスナックバー — 「元に戻す」付き" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="画面上部のパーティ招待カード — 承諾と辞退" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="ツアー中にクイックスロットを指すコーチマークのカード" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="画面上部にかかる開発者コンソール — コマンドが1つ入力されている" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>このページの画像はすべて同じ小さなゲームだ — 左上に体力とマナ、右上にコイン、下にスティックとクイックスロット3つ —
+    を <code>default_dark</code> で表示し、その上にポップアップを1つ開いている。<a href="#popup-looks">同じ
+    ポップアップを10の見た目で →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>ポップアップの構造</h2>
+  <p class="sub">gohud でゲームを塞ぐポップアップのほとんど — ダイアログ、シート、ポップオーバー、コンボボックスのリスト、
+    自作のウィンドウ — は1つのノード、<code>GoSurface</code> だ。その部品を一度覚えれば、全部が分かる。</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="「キャラクター作成」ウィンドウ — ヘッダーの戻るボタンとタイトル、閉じるボタン、エラーの出た名前欄、クラスのボタン、赤いステータス行、下に固定された作成ボタン" loading="lazy"><figcaption>戻ると閉じるのあるヘッダー · 本文 · ステータス行 · フッター</figcaption></figure>
+  <table>
+    <thead><tr><th>部品</th><th>何か</th><th>触り方</th></tr></thead>
+    <tbody>
+      <tr><td>レイヤー</td><td>ポップアップが載る <code>CanvasLayer</code>。その番号で何を覆うかが決まる。</td><td><code>GoSurface</code> では自分で決める。ほかは組み込み（<a href="#popup-stack">表</a>）</td></tr>
+      <tr><td>幕</td><td>背後全体にかかる覆い。カードを外れたタップを受け止める。</td><td><code>scrim_transparent</code>、<code>dismiss_on_scrim</code>、テーマの <code>scrim</code> 色</td></tr>
+      <tr><td>カード</td><td>ウィンドウそのもの — テーマのパネルの面だ。見た目によって丸い、面取り、鍛造、ゼリーになる。</td><td><code>card</code>、<code>alpha</code></td></tr>
+      <tr><td>ヘッダー</td><td>任意の戻るボタン、タイトル（最大2行、あふれると「…」）、閉じるボタン。</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>ツールバー</td><td>ヘッダーの下に固定された行 — 検索欄、フィルターのチップ。使うまでは隠れている。</td><td><code>toolbar</code></td></tr>
+      <tr><td>本文</td><td>スクロールする部分。中身はここに入れる。</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>ステータス行</td><td>本文とフッターの間に固定された1行 — 「名前の確認に失敗」「保存中…」。</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>フッター</td><td>下に固定されたボタン。使うまでは隠れている。</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>固定したいものは固定の行に置く。</b> 検索欄やエラーや保存ボタンを本文に入れると、長いリストと一緒にスクロールして
+    消える — プレイヤーが名前を打ち間違えても、エラーは画面の下に埋もれ、何も起きていないように見える。
+    <code>toolbar</code>、ステータス行、<code>footer</code> を使う。本文がスクロールしても、その場に留まる。
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2><code>await</code> で受け取るダイアログ</h2>
+  <p class="sub"><code>GoDialogs</code> は尋ねて、待つ。ノード1つに問いが3種類 — 答えが同じ行に返ってくるので、
+    コードがプレイヤーの体験する順に読める。</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — 上に「あとで」、下に「購入」のある問い" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="取り消せない操作の確認 — 削除ボタンが赤く塗られている" loading="lazy"><figcaption><code>confirm(…, true)</code> — 取り消せない操作</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — レベルアップの知らせとボタン1つ" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — 「かばんの並べ替え」に選択肢4つとキャンセル" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="2つのボタンを横に並べた確認" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">3種類の問い</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # 待つなら await する
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # 翻訳キー</code></pre>
+  <table>
+    <thead><tr><th>呼び出し</th><th>戻り値</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> か <code>false</code></td><td>はいかいいえ — 購入、削除、退出、上書き。</td></tr>
+      <tr><td><code>alert()</code></td><td>なし — 待つなら <code>await</code> する</td><td>プレイヤーが必ず見るべきこと：報酬、切れた接続。</td></tr>
+      <tr><td><code>choose()</code></td><td>選んだ選択肢の番号、または <code>-1</code></td><td>いくつかから1つ。選択肢は String か <code>{text, icon, danger, subtitle}</code> だ。</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>同上</td><td>翻訳キーを使う同じ呼び出し — ダイアログを開いたまま言語を変えても、文言が追従する。</td></tr>
+    </tbody>
+  </table>
+  <p>ボタンの文言を空にすると、キット自身の言葉（<code>GoConfig.text_keys</code> の <code>confirm</code>、<code>cancel</code>）になる。
+    <code>extra</code> は本文の下に改行して足される。<code>args</code> はタイトル<b>と</b>本文の <code>{placeholders}</code> を
+    埋める：<code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>。</p>
+
+  <h3 id="every-way-out-has-an-answer">どう抜けても答えが返る</h3>
+  <table>
+    <thead><tr><th>プレイヤーが…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>OK / 選択肢を押す</td><td><code>true</code></td><td>await が終わる</td><td>選んだ選択肢の番号</td></tr>
+      <tr><td>キャンセルを押す</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>×、Escape、Android の戻るを押す</td><td><code>false</code></td><td>await が終わる</td><td><code>-1</code></td></tr>
+      <tr><td>幕をタップする（<code>dismiss_on_scrim</code> のときだけ）</td><td><code>false</code></td><td>await が終わる</td><td><code>-1</code></td></tr>
+      <tr><td><code>GoDialogs</code> ノードがツリーから外れる</td><td><code>false</code></td><td>await が終わる</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>だから <code>await</code> の後のコードは必ず実行される — ダイアログの下でシーンが変わっても、答えが宙に浮いたまま残ることはない。</p>
+
+  <h3 id="destructive-actions">取り消せない操作</h3>
+  <p>元に戻せないことには <code>destructive = true</code> を渡す。OK ボタンが塗りつぶしの
+    <code>Tone.DANGER_SOLID</code> ボタンになる — どの見た目でも赤地に白文字だ。淡く色を付けた危険ラベルでは、ライトテーマで
+    読めるようにするためにほぼ黒まで暗くするしかない。ウィンドウは使い回されるので、トーンは呼ぶたびに設定し直される。</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>キーボードフォーカスは OK にある。</b> どの確認も OK ボタンにフォーカスを置いて開くので、Enter や Space で確定する —
+    取り消せない確認でも同じだ。安全な選択が一目で分かる文言にし（「残す」）、うっかり一つでプレイヤーの進行が本当に
+    失われる操作は、もう一段階の手順の向こうに置く。
+  </div>
+
+  <h3 id="button-layout">ボタンの並べ方</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>すること</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code>（既定）</td><td>ボタンを全幅で縦に積む。どの言語でも安全だ — 長いドイツ語やロシア語のラベルでも窮屈にならない。</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>1行に半分ずつの幅で並べる。</td></tr>
+      <tr><td><code>AUTO</code></td><td>両方のラベルがカードの半分の幅に1行で収まるときだけ横に並べ、収まらなければ積む。言語やサイズが変わるたびに決め直す。</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> はボタンどうしの間隔、<code>body_gap</code> はその上の間隔だ — ボタン間より広くとると、
+    問いと選択肢が2つの部分として読める。1つのダイアログにだけ効かせたいときは、開く前に
+    <code>set_next_action_layout()</code> を呼ぶ。alert のボタン1つは常に全幅をとる。</p>
+
+  <h3 id="one-at-a-time">一度に1つ</h3>
+  <p>1つ開いている間に2つめの <code>confirm()</code> を呼ぶと、即座に <code>false</code> が返る — ダイアログがうっかり
+    ダイアログの上に積み重なることはない。<code>queue_when_busy</code> を有効にすると、代わりに順番を待つ。<code>alert()</code> は常に待つ。
+    <code>queue_limit</code>（8）が待ち行列の長さを抑え、あふれると最も古い要求に <code>false</code> が返る。
+    <code>pending()</code> は待っている要求を数え、<code>clear_pending()</code> はそのすべてに <code>false</code> を返す。
+    <code>choose()</code> は並ばない：すでにダイアログが開いていれば <code>-1</code> を返す。</p>
+
+  <h3 id="phone-and-desktop">スマホとデスクトップ</h3>
+  <p><code>choose()</code> は Android と iOS では親指の届く下からシートとして、デスクトップでは中央のカードとして
+    開く。確認は幅が <code>max_width</code>（420dp）で抑えられ、中央に置かれる。<code>layer_index</code>、
+    <code>max_width</code> などの export は <code>add_child</code> の<b>前に</b>設定する。ノードがツリーに入るときに適用されるからだ。</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — 自作のウィンドウ</h2>
+  <p class="sub">ポップアップが問い以上のもの — 設定、キャラクターシート、購入するアイテム — になるなら、
+    <code>GoSurface</code> の上に組む。セーフエリア、キーボード、固定の行、スクロール、戻る、フォーカス、サイズ変更はもう済んでいる。</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>自分では閉じない。</b> ×、Escape、戻る、幕のタップは <code>close_requested</code> を出すだけだ。ウィンドウを隠すか
+    解放するかは、持ち主である画面の仕事だ — 「閉じる」が保存なのか、破棄なのか、先に確認するのかは、その画面にしか分からない。
+  </div>
+
+  <h3 id="three-placements">3つの配置</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER — 画面中央のカード" loading="lazy"><figcaption><code>CENTER</code> — 確認、設定</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — 同じウィンドウが下からせり上がる" loading="lazy"><figcaption><code>BOTTOM</code> — リスト、管理画面</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — 並べ替えボタンの脇に留まる並べ替えメニュー" loading="lazy"><figcaption><code>ANCHOR</code> — コントロールの脇</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="中央のウィンドウに入った日付選択 — キャンセルと OK" loading="lazy"><figcaption><code>CENTER</code> ウィンドウの中の <code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> には <code>anchor_control</code> が要る。カードは <code>anchor_min_width</code> が収まればその右に、
+    収まらなければ広いほうの側に、それも無理なら画面の内側に置かれ、上の余地のほうが大きければ上向きに開く。動くアンカーには
+    毎フレーム追従する。大きさは <code>anchor_width</code>（320）と <code>anchor_max_height</code>（520）で決まる。</p>
+
+  <h3 id="how-big-it-gets">どこまで大きくなるか</h3>
+  <table>
+    <thead><tr><th>寸法</th><th>規則</th><th>変える方法</th></tr></thead>
+    <tbody>
+      <tr><td>余地</td><td>セーフエリアからキーボードと画面の余白（16dp、短辺の10%を超えない）を引いた範囲。</td><td>—</td></tr>
+      <tr><td>幅</td><td>縦向きでは余地の94%、横向きでは72%、最大480dp。</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>高さ</td><td>中身の高さ（<code>fit_content</code>）で、余地の68%まで、上限は72%。サイズ変更できない中央のカードは、スクロールを避けるために94%まで伸びることがある。</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>密度</td><td><code>compact</code> が設定されているか、画面の高さが420dp未満（横にしたスマホ）か、中身が収まらないと詰める：余白が減り、間隔が狭まり、タイトルが小さくなる。両方を測り、収まるうちでゆとりのあるほうを選ぶので、ちらつかない。</td><td><code>compact</code></td></tr>
+      <tr><td>サイズ変更</td><td><code>resizable</code> ならタイトルがハンドルになる：30%から上限までドラッグで変えられる。結果は <code>height_changed(ratio)</code> が知らせる。</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>上限を超える比率は切り詰められ、デバッグビルドで一度だけ警告が出る。キーボードはカードを押し上げ、フォーカスのある
+    入力欄が見えるようにスクロールする。セーフエリアのおかげで、Android と iOS でもノッチやジェスチャーバーにかからない。</p>
+
+  <h3 id="properties">プロパティ</h3>
+  <table>
+    <thead><tr><th>プロパティ</th><th>既定値</th><th>すること</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>、<code>BOTTOM</code>、<code>ANCHOR</code> のいずれか</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code>（false）</td><td>幕をタップすると閉じるよう求める。カードの中で始まったドラッグは数えない。</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>ゲームを見せたままにする — それでも幕は外側のタップを受け止める。</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>× を表示し、Escape と戻るで閉じるよう求められるようにする。</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>ヘッダーの行、スクロールする本文、ドラッグのハンドル。</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>中身に大きさを合わせる。最初から詰めて開く。</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code>（false）</td><td>開くときにカードをフェードインする。<code>reduce_motion</code> では即座に出る。</td></tr>
+      <tr><td><code>alpha</code></td><td>-1（テーマの値）</td><td>カードの面の不透明度を比率で。薄くなるのは面だけで、文字は決して薄くならない。</td></tr>
+      <tr><td><code>initial_focus</code></td><td>なし</td><td>開いたときにフォーカスを受けるコントロール。</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>これらは <code>add_child</code> の前に設定する：</b> <code>scrim_transparent</code>、<code>show_header</code>、<code>resizable</code>、
+    <code>scroll_body</code> はウィンドウがツリーに入るときに適用される。<code>dismiss_on_scrim</code>、<code>close_enabled</code>、
+    <code>fade_in</code>、<code>initial_focus</code> は随時読まれる。
+  </div>
+
+  <h3 id="signals-and-calls">シグナルと呼び出し</h3>
+  <table>
+    <thead><tr><th>名前</th><th>何か</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×、Escape、Android の戻る、幕のタップ — そして <code>request_close()</code>。出すのは最前面のウィンドウだけだ。</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>ヘッダーの戻るボタン。ページのあるウィンドウ用。空の <code>Callable</code> を渡すと隠れる。</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>ハンドルをドラッグした後。</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>このウィンドウが戻るを受け取るウィンドウか — そもそも開いているウィンドウがあるか。</td></tr>
+      <tr><td><code>relayout()</code></td><td>今すぐ配置し直す。サイズに関わるプロパティを変えれば、すでに自動で行われる。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>シートとドロワー</h2>
+  <p class="sub">場所の要るリストは、縦に持ったスマホでは親指のある下からせり上がり、タブレットやデスクトップでは
+    横から入ってくる — そこではシートがゲームを覆ってしまうからだ。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — 固定の検索欄、リスト、固定の閉じるボタンを持つインベントリ" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="左の GoDrawer — 町、ワールドマップ、クエスト、ギルド、設定のメニュー" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="右の GoDrawer — かばん" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — 下から出るページ</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li><code>BOTTOM</code> 配置でサイズ変更できる <code>GoSurface</code> を持つ <code>CanvasLayer</code>（レイヤー10）だ — だから
+      HUD より上に出て、プレイヤーはドラッグで高くできる。</li>
+    <li><code>open(title)</code> は新しいページを始める：本文、ツールバー、戻るボタンをクリアし、<code>add_footer()</code> で足したものを
+      解放する。同じシートで別のページを見せるには、もう一度呼ぶ。<code>set_back()</code> は最初のページへ戻るための戻るボタンを
+      表示する。<code>open_key()</code> は翻訳キーを受け取る。</li>
+    <li><code>close()</code> は隠す — 解放はしないので、次の <code>open()</code> は即座に開く。いつ起きたかは <code>closed</code> と
+      <code>page_changed</code> が知らせる。</li>
+    <li><code>height_ratio</code>（0.6）は開くときの高さ、<code>max_height_ratio</code> は上限を引き上げる。<code>dismissable</code>
+      （true）なら幕のタップで閉じる。</li>
+  </ul>
+  <div class="note warn">
+    <b>Escape と戻るはシート全体を閉じる</b>。<code>set_back()</code> のあるサブページでもそうだ — 1ページ戻るのは画面上の
+    戻るボタンだけだ。戻るで1段ずつ戻したいなら、<code>sheet.surface</code> の <code>close_requested</code> を自分で処理する。
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — 横から</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # 始まりの側：左、アラビア語では右
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>レイヤー80。幅は画面の42%（<code>width_ratio</code>）で、<code>min_width</code>（320dp）と <code>max_width</code>
+      （420dp）の間だ — スマホでは画面の大半を覆うので、そこではシートのほうがよい。</li>
+    <li>パネルは画面の端まで届き、中身だけがセーフエリアの内側に入る。だから丸めた角が最初の行を切り落とさない。</li>
+    <li><code>LEFT</code> はアラビア語でも画面の左だ。「始まりの側」であることが要点なら <code>follow_text_direction</code> を
+      有効にする。実際にどちらに出たかは <code>effective_side()</code> が教えてくれる。</li>
+    <li><code>open(title)</code> は本文をそのまま残す — 一度だけ埋める。<code>set_title("")</code> はヘッダーを隠す。
+      <code>motion_seconds</code>（0.2）で滑り込み、<code>reduce_motion</code> なら即座に出る。</li>
+  </ul>
+  <div class="note warn">
+    <b>Android の戻るはドロワーを閉じるが、Escape は閉じない。</b> ドロワーが聞くのはシステムの戻るだけだ。デスクトップでは
+    自分のキー割り当てから <code>drawer.close()</code> を呼ぶ — また、<code>GoSurface.is_any_open()</code> はドロワーを数えない
+    ことに注意する。<code>drawer.is_open()</code> に尋ねる。
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>コントロールの脇に出るカードとメニュー</h2>
+  <p class="sub">プレイヤーが今押したものには、画面の真ん中ではなく指のすぐ横で答えるべきだ。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — クイックスロットの横の回復ポーションのカード" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — 「使う」「スロット1へ移動」「捨てる」" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — ランキングの上に開いた並べ替えメニュー" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select — 低・中・高・最高を開いた画質の選択" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — 検索欄のあるフレンドリスト" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — 押したものに付くカード</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>レイヤー、アンカー、後片付けまで配線済みの <code>ANCHOR</code> サーフェスだ — どのゲームも何度も書く、あの10行である。
+    <b>一度に1つ</b>：2つめを開くと1つめが閉じる。カードが積み重なると画面が埋まり、どのカードがどのスロットのものか
+    誰にも分からなくなるからだ。幕は透明だ — 装備を見比べるために開いたカードが、その装備を暗くしてはならない —
+    が、外側の最初のタップは受け止める。そのタップはカードを閉じるだけで、先へは届かない。</p>
+  <table>
+    <thead><tr><th>オプション</th><th>既定値</th><th>すること</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>× 付きのヘッダー。空ならヘッダーなし。</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>カードの大きさ。</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>外側のタップで閉じる。</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>詰めた間隔、面の不透明度、タイトルを翻訳キーとして扱う。</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td>開く先の <code>CanvasLayer</code>。</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> と <code>GoPopover.is_open()</code> は static だ。<code>open()</code> はサーフェスを返す —
+    アンカーがツリーにないときは <code>null</code> なので、<code>await shown.close_requested</code> の前に確かめる。</p>
+  <div class="note warn">
+    <b>ホバーのツールチップではない。</b> タッチにホバーはない。マウスでしか現れないものは、プレイヤーの半分には見えない。
+    そして <code>dismissable = false</code> でタイトルもなければ、画面上にそれを閉じるものは何もない — Escape、戻る、自分で呼ぶ処理だけだ。
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 長押しと右クリック</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>右クリックはすぐに開く。指を0.5秒（<code>HOLD_SECONDS</code>）置くと開き、12dp を超えて動くと
+      取り消す — だからリストをスクロールしてもメニューは出てこない。</li>
+    <li>項目は <code>{text, action, icon, disabled, checked, separator, danger, translate}</code> だ。押したものによって項目が変わるなら、
+      配列の代わりに <code>Callable</code> を渡す。メニューが開くたびに呼ばれる。</li>
+    <li><code>danger</code> は文言の前に「⚠ 」を付ける — エンジンのメニューは全項目の色をまとめてしか変えられないからだ。</li>
+    <li>エンジンの <code>PopupMenu</code> を <code>GoStyle.style_popup()</code> で装ったものだ。開いているサーフェスとしては数えない。</li>
+  </ul>
+  <div class="note warn">
+    <b>長押しには、もう1つの入り口が要る。</b> 隠れたジェスチャーは誰にも見つけられない。目に見える <code>⋯</code> ボタン
+    （上のように <code>open_at()</code>）と組み合わせるか、コーチマークで一度教える。
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">ドロップダウン、セレクト、スプリットボタン</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>3つともエンジンのポップアップメニューを開く：<code>dropdown()</code> は操作を実行する <code>MenuButton</code>、
+    <code>select()</code> は値を保つ <code>OptionButton</code>、<code>GoSplitButton</code> はメインの操作に矢印側のメニューを
+    足したもの（<code>chosen(index)</code>）だ。メニューはあえて完全に不透明にしてある — 独立した OS ウィンドウに出るメニューは、
+    半透明のピクセルを黒くしてしまう。</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — 検索できるリスト</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>押すと、レイヤー96に透明な幕とともに脇に留まるリストを開く。項目が <code>search_threshold</code>（8）個以上あると
+    検索欄が現れてフォーカスを取る。大文字と小文字を区別せず、文言やヒントのどこにでも一致し、結果がなければそう
+    表示する。リストの幅は <code>list_width</code>（0 = ボタンの幅、最小180dp）で決める。</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>ゲームを決して止めないポップアップ</h2>
+  <p class="sub">プレイしながら読める知らせだ。どれにも幕はない。カードそのもの以外へのタップは
+    ゲームに届く。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — クイックスロットの上の「錆びた剣を捨てた」と「元に戻す」" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — HUD 上部の「ゲームを保存した」" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — 体力バーの下のパーティ招待" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="盾のスロットの上のカスタムツールチップ" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — 「元に戻す」付きのメッセージ</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th><code>post()</code> のキー</th><th>すること</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>メッセージ、任意の太字の行、<code>{placeholders}</code>、翻訳キー。</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>アクセントの色（<code>GoTheme.SUCCESS</code>、<code>WARNING</code>…）とアイコン。</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>ボタン — String か <code>{text, action}</code> — と ×。</td></tr>
+      <tr><td><code>seconds</code></td><td>表示する時間。負の値ならテーマの <code>notice_duration_ms</code>。<b>0 なら閉じられるまで</b> — そのときはボタンを付ける。</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> は押されたボタンの番号を返し、時間切れや閉じられたときは <code>-1</code> を返す。投稿は
+    順番待ちし（<code>queue_limit</code> 4、あふれると最も古いものが -1 で外れる）、表示中に同じ文言をもう一度投稿するとタイマーを
+    延ばすだけになる。下端（または上端、<code>placement</code>）のセーフエリアとキーボードの上、レイヤー90に出る — ドロワーの上でも
+    読める。<code>tap_to_dismiss</code>（有効）なら、ボタンのないカードはタップで閉じる。カードの外側のタップは常に
+    ゲームに届く。<code>show_text()</code> と <code>show_key()</code> は1行で書ける形だ。</p>
+  <div class="note warn">
+    <b>スナックバーで決して問いかけない。</b> スナックバーはひとりでに消える。大事な選択はダイアログの役目だ。
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — HUD 上の1行</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>自分で置く素のパネルだ — <code>GoHudAnchor</code> の中、隅、どこでも。入力もフォーカスも取らないので、
+    その上を押せば下のボタンに届き、新しいメッセージは古いものを置き換える。幅を与える：
+    <code>preferred_width(limit)</code> は短い文には自然な幅を返し、長い文は <code>limit</code> の中で折り返す。
+    <code>set_content()</code> は文字の代わりに任意のコントロールを表示する。</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — 待ってくれる問いかけ</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # 体力バーを覆わず、その下へよける
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>隠れた状態で始まる</b> — <code>show()</code> を呼ぶ。自前のタイマーはないので、問いに期限があるなら自分で付ける。</li>
+    <li>ボタンを押しても閉じない — どうするかは操作が決める。×（<code>set_closable(true)</code>）は <code>closed</code> を出す。</li>
+    <li><code>fit_width(width)</code> は幅を設定し、フォントから高さを予測する。だから、それに合わせて配置したものが1フレーム後に跳ねない。</li>
+    <li>面は <code>hud_alpha</code> に従う — ウィンドウではなく HUD の一部だ。</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> とツールチップ</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> はページそのものの中、
+    コンテンツの上に置かれ、時間切れにならない。ボタンを押すと閉じるが、<code>"keep": true</code> があれば残る。
+    <code>GoStyle.tooltip_node(text)</code> は <code>_make_custom_tooltip()</code> から返すものだ — 下地（<code>TooltipPanel</code>）は
+    エンジンが、文字は gohud が描き、260dp を超えると折り返す。ツールチップはマウス用だ。プレイヤーに必要なものを決してその陰に隠さない。</p>
+</section>
+
+<section id="popup-guides">
+  <h2>ツアーとコンソール</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — 2ステップ中の1つめ「クイックスロット」、ポーションのスロットを指している" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — give コマンドとその結果が見えるコンソールパネル" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — 実物のコントロールを巡るツアー</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>実物のコントロールを囲むリングと、その脇のカードだ。対象を押すと進む（その <code>pressed</code> シグナル、またはステップの
+      <code>"signal"</code>）。「次へ」と「スキップ」はカードにある。隠れた対象は飛ばされる。</li>
+    <li>カードは画面の中央（<code>avoid_center_band</code>）、HUD のアンカー、<code>keep_clear</code> を避けて置かれる。</li>
+    <li><code>GoSurface</code> が1つでも開いている間、ツアーは隠れて待つ。戻るか Escape は <code>finished(false)</code> でツアーを終える。</li>
+    <li>自前のレイヤーを持たない — 最後に追加するか、HUD より上のレイヤーに追加する。</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — 開発中のチート</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>レイヤー200 — すべての上なので、ダイアログの上からでもデバッグできる — で、ツリーが一時停止していても動き続ける。
+    打つそばからコマンドを提案するパレットが出て、上下キーで履歴をたどり、Escape で閉じる。組み込みのキーはない：自分で割り当てる。</p>
+  <div class="note warn">
+    <b><code>debug_only</code>（有効）はリリースビルドでコンソールを止める</b> — <code>open()</code> も <code>run()</code> も。チートコマンドが
+    プレイヤーの手に渡れば、ゲームの経済は初日で終わる。
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>レイヤー、戻る、入力</h2>
+  <p class="sub">何かが開いている間にプレイヤーが何に触れられるかは、3つの規則で決まる：何が上にあるか、
+    戻るは誰のものか、タップは誰が受けるか。</p>
+
+  <h3 id="what-sits-on-top">何が上にあるか</h3>
+  <table>
+    <thead><tr><th>レイヤー</th><th>そこにあるもの</th><th>設定方法</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>自分の HUD（自分で決める）</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>自作の <code>GoSurface</code> ウィンドウ、ポーズメニュー</td><td>自分の <code>CanvasLayer</code></td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td><code>"layer"</code> オプション</td></tr>
+      <tr><td>96</td><td><code>GoCombobox</code> のリスト</td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>この順には理由がある：スナックバーは今起きたことを知らせるので、ドロワーの上で読める。ポップオーバーは今押したものに
+    属するので、その上に乗る。ダイアログは問いを投げるので両方を覆う。コンソールはすべてを覆う — ほかが全部おかしくなった
+    ときに開くものだからだ。</p>
+
+  <h3 id="who-owns-back">戻るは誰のものか</h3>
+  <ul>
+    <li><b>答えるのは最前面のウィンドウだけだ。</b> 開いているサーフェスのうち、いちばん高いレイヤーのもの（同じならツリーで最も後のもの）が、
+      Escape、ゲームパッドのキャンセル（<code>ui_cancel</code>）、Android の戻る、幕のタップを受け取る。重ねたウィンドウは1枚ずつ閉じ、
+      まとめては閉じない。</li>
+    <li>Android の戻るは1フレーム遅れて処理されるので、1回押してウィンドウが2枚閉じることはない。</li>
+    <li>戻るを持つものが開いている間、Android の戻るはアプリを終了しない（<code>GoBackPolicy</code> が持ち主を数え、
+      最後の1つが閉じると <code>quit_on_go_back</code> を元に戻す）。戻るを受け取る自作のポップアップは
+      <code>GoBackPolicy.acquire()</code> と <code>release()</code> を呼ぶ — <code>_exit_tree</code> でも。</li>
+    <li>ドロワー、コーチマークのツアー、フォームは、サーフェスが開いている間は身を引く — 戻るはまずサーフェスに届く。</li>
+    <li><code>GoConfig.close_on_back</code>（有効）がサーフェスのスイッチだ。</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">タップは誰が受けるか</h3>
+  <ul>
+    <li>サーフェスは画面全体を覆って入力を止める — <b>透明な幕でもそうだ</b>。開いている間、下のレイヤーにあるものは
+      何も押せない。上のレイヤー（スナックバー）は押せる。</li>
+    <li>マウスホイールやピンチのジェスチャーもウィンドウで止まる：リストの端を越えてスクロールしても、ゲームはスクロールしない。</li>
+    <li>コントロールを通らないゲームの入力 — 移動用の <code>_unhandled_input</code>、カメラのドラッグ — は止めるべきだ：
+      <code>if GoSurface.is_any_open(): return</code>。これでダイアログ、シート、ポップオーバー、コンボボックスが含まれる。ドロワーには
+      別に <code>is_open()</code> を尋ねる。</li>
+    <li>スナックバー、通知、プロンプトカード、コーチマークは自分のカードでだけ入力を受ける。それ以外の場所では、ゲームが受け取る。</li>
+  </ul>
+
+  <h3 id="focus">フォーカス</h3>
+  <p>ポインターで開いたウィンドウは何にもフォーカスを与えない — タッチでフォーカスリングが光ることはない。キーボードやゲームパッドで
+    開くと、閉じるボタン（または <code>initial_focus</code>）がフォーカスを受ける。開いている間フォーカスはウィンドウの中に留まり、
+    閉じると、それまでフォーカスを持っていたコントロールへ戻る。ダイアログは毎回 OK にフォーカスを置く。</p>
+
+  <h3 id="pausing-the-game">ゲームの一時停止</h3>
+  <p>ツリーを一時停止するとポップアップも止まる — 動き続けるのはコンソールだけだ。ポーズメニューなら、そのレイヤーに
+    <code>process_mode = PROCESS_MODE_ALWAYS</code> を与える。すると、ゲームが止まっている間もウィンドウ、ボタン、戻るが動き続ける。</p>
+</section>
+
+<section id="popup-looks">
+  <h2>すべての見た目で同じポップアップ</h2>
+  <p class="sub">このページ冒頭の確認を同じゲームの上に出し、プリセットだけを変えた。コードは同一だ —
+    残りはテーマ、スキン、アイコンが受け持つ。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="default_dark の確認 — 丸い角、柔らかな青のアクセント" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="default_light の確認" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="scifi_dark の確認 — 面取りの角とネオンの縁" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="scifi_light の確認" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="medieval_dark の確認 — 鍛造の枠と Cinzel のタイトル" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="medieval_light の確認 — 羊皮紙とブロンズ" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="material_light の確認 — 28dp の角とピル型ボタン" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">新登場</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="material_dark の確認" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">新登場</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="kids_light の確認 — お日さま色のタイトルリボン、キャンディの閉じるボタン、ゼリーのボタン" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">新登場</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark の確認 — 夜空色のカードにミントのリボン" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">新登場</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">見た目ごとに変わるもの</h3>
+  <table>
+    <thead><tr><th>見た目</th><th>ウィンドウ</th><th>ヘッダーとボタン</th></tr></thead>
+    <tbody>
+      <tr><td>デフォルト</td><td>丸い角（18dp）、柔らかな影、ゲームの上で80%の不透明度</td><td>素直なタイトルと ×。主ボタンは浮き上がり、押すと沈む</td></tr>
+      <tr><td>SF</td><td>ネオンの縁と発光を持つ面取りの角。縁はアクセント色に染まる</td><td>ブラケット型のフォーカス印</td></tr>
+      <tr><td>中世</td><td>鍛造の枠 — 鉄と革、あるいは羊皮紙 — にリベットと角飾り</td><td>Cinzel のタイトル</td></tr>
+      <tr><td>Material 3</td><td>28dp の角、24dp の内側余白、完全に不透明</td><td>Roboto の 24sp 見出し。48dp のターゲットに 40dp の下地を収めたピル型ボタン</td></tr>
+      <tr><td>キッズ</td><td>柔らかな影の付いたゼリーキャンディのカード、完全に不透明</td><td>お日さま色のタイトルリボン（夜はミント）、丸いキャンディの閉じるボタン、押すとぷにっとつぶれるボタン</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">スキンでポップアップを装う</h3>
+  <p>スキンは、Theme が届かない部分を決める。ポップアップが呼ぶのは次のフックだ — 自分の
+    <code>GoSkin</code> サブクラスで上書きする。既定では何もしない。</p>
+  <table>
+    <thead><tr><th>フック</th><th>装うもの</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>ウィンドウのタイトルの背後に敷く下地。タイトルはその中央に乗り、1行に収まるよう最小サイズ（15）まで縮む。</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>ウィンドウの × — キッズでは丸いキャンディになる。</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>gohud が作ったボタンに指が触れた瞬間に走る — キッズではぷにっとつぶれる。</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>プロンプトカードとコーチマークのカード、スナックバーと通知、ドロワー、バナー、コンソールの面。</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>ツアーのリングとポインター。</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">どこまで透けるか</h3>
+  <p>ポップアップは種類ごとに自分の不透明度に従うので、HUD のカードは軽く、ダイアログはしっかりと保てる：ウィンドウ、シート、
+    ダイアログ、ポップオーバー、コンボボックスは <code>panel_alpha</code>、ドロワーとコーチマークのカードは <code>card_alpha</code>、
+    プロンプトカードとコンソールは <code>hud_alpha</code>、スナックバーと通知は <code>notice_alpha</code>、メニューは <code>popup_alpha</code> に従う。
+    Material とキッズはすべてを不透明にする。1種類だけ変えるなら <code>GoConfig.container_alpha_overrides</code>、全部なら
+    <code>container_alpha</code>（比率 — <code>0.95</code>）、ウィンドウ1つならその <code>alpha</code> で上書きする。薄くなるのは面だけで、
+    文字が透けることは決してない。<a href="theming-opacity.html">不透明度の詳細 →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>すべてのポップアップを形づくる設定</h2>
+  <p class="sub"><code>GoConfig</code>（<code>GoUi.config</code>）のフィールドだ。いくつかはウィンドウが作られるときにコピーされるので、
+    UI を作る前に設定する — あるいは変更後に <code>GoUi.refresh()</code> を呼ぶ。</p>
+  <table>
+    <thead><tr><th>フィールド</th><th>既定値</th><th>すること</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>ウィンドウの最大の大きさ。</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>ふだんの高さと上限（ドラッグの限界でもある）。</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>中身に合わせる中央のカードが、スクロールし始めるまでに伸びられる限度。</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>余地に対する幅の割合。</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>幕のタップでウィンドウとダイアログが閉じる。ウィンドウ作成時にコピーされる。</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>ウィンドウをフェードインするかどうかと、その速さ。</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Escape、<code>ui_cancel</code>、Android の戻るが最前面のウィンドウを閉じる。</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>× の見た目の大きさ — タッチターゲットは 48dp のまま。</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>タッチやマウスで開いたウィンドウにはフォーカスリングを出さない。</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>すべての面の不透明度、または種類ごとの不透明度（<code>GoTheme.BOX_*</code>）。</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>フェード、スライド、脈動、ぷにっとつぶれる動きをすべて止める。</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>プロンプトカードとコーチマークのボタンの高さ。</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>ウィンドウをノッチとジェスチャーバーから離す。</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>キット自身の言葉：閉じる、戻る、確認、キャンセル、次へ、完了、スキップ、検索、空…</td></tr>
+      <tr><td><code>sound_cues</code> · ハプティクス</td><td>—</td><td>開いた、閉じた、確定した、キャンセルした、タップしたときに <code>GoFeedback</code> が鳴らす音と振動。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>レシピ</h2>
+  <p class="sub">コピーして貼り付け、文言を変える。ここにある呼び出しは、すべてソースと照らし合わせて確かめてある。</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">価格入りの購入確認</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">保存ボタンを固定した設定ウィンドウ</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">何が間違っているかを伝えるフォーム</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">シートで日付を選ぶ</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">ポーズメニュー</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # ゲームが一時停止しても動き続ける
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">ポップアップを待つゲームプレイ</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>落とし穴</h2>
+  <ul>
+    <li><b><code>GoSurface</code> は自分では解放されない。</b> <code>close_requested</code> をつながないと、× を押しても何も起きない。</li>
+    <li><b><code>add_child</code> の後に設定したオプション</b> — <code>scrim_transparent</code>、<code>show_header</code>、<code>resizable</code>、
+      <code>scroll_body</code>、そして <code>GoDialogs</code> の <code>layer_index</code> と <code>max_width</code> — は適用されない。</li>
+    <li><b>2つめの <code>confirm()</code> は即座に <code>false</code> を返す。</b> 2つの問いが重なりうるなら <code>queue_when_busy</code> を有効にする。</li>
+    <li><b>Enter で確定する。</b> 取り消せないダイアログでも OK にフォーカスがある。</li>
+    <li><b>シートで戻るを押すと、シートが閉じる。</b> サブページが閉じるのではない。</li>
+    <li><b>Escape はドロワーを閉じず、</b> <code>is_any_open()</code> もドロワーを見ない。</li>
+    <li><b>ポップオーバーやコンボボックスのリストは、閉じるまでゲームを塞ぐ。</b> 幕が透明でもそうだ — しかも
+      <code>dismissable = false</code> でタイトルのないポップオーバーには、画面上に閉じる手段がない。</li>
+    <li><b>プロンプトカードは隠れた状態で始まり、</b> 時間切れもない。</li>
+    <li><b><code>seconds: 0</code> でボタンのないスナックバーは、いつまでも消えない。</b> しかも既定では自分のカードへのタップを受け取る。</li>
+    <li><b>誰も知らない長押しは、誰も使わない機能だ。</b> <code>⋯</code> も表示する。</li>
+    <li><b>一時停止したツリーはポップアップも止める。</b> そのレイヤーに <code>PROCESS_MODE_ALWAYS</code> を使う。</li>
+    <li><b>幅のない通知は</b> いちばん狭く縮む — <code>preferred_width()</code> を使う。</li>
+    <li><b>スナックバーで尋ねず、ダイアログで知らせない。</b> 無視された問いは消えてしまうし、知らせのためにゲームを止めるべきではない。</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← すべてのウィジェット</a> · <a href="widgets-surfaces.html">浮かぶウィンドウ →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

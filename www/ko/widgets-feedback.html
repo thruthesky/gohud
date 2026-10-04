@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">위젯</a>
   <a href="widgets-catalog.html">모든 위젯</a>
+  <a href="widgets-popups.html">팝업과 대화상자</a>
   <a href="widgets-surfaces.html">떠 있는 창</a>
   <a href="widgets-messages.html">알리기</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — 스스로 자리를 잡는 메시지</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — 아래에 뜨는 알림 — 줄을 서고 버튼도 달 수 있다." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>화면 아래(또는 위), 안전영역과 가상 키보드 위에 앉았다가 혼자 사라진다. 이것이 없으면 "저장했습니다"
     한마디를 띄우는 화면마다 레이어·배치·타이머·정리 코드를 다시 쓴다.</p>
   <pre><code>snack.show_text("저장했습니다", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "아이템을 버렸습니다", "actions": ["되돌
     둘지는 그것을 가진 화면이 정한다. 그쪽은 버튼을 달 수 없고, 이쪽은 달 수 있다.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — 끝이 보이지 않는 기다림</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — 기다림 표시 — 버튼을 그 자리에서 스피너로 바꿔 두 번 눌리지 않게 한다." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>서버와 이야기하는 게임에는 이 페이지의 무엇보다 이것이 먼저 필요하다 — 가만히 서 있는 화면은
     멈춘 게임으로 읽힌다. 한 줄이면 방금 누른 버튼이 <b>그 자리에서</b> 스피너가 된다.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>잴 수 있는 진행은 <code>GoBar</code> 다. 스피너는 언제 끝나는지 아무것도 약속하지 않는다.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — 안 읽은 점, NEW 딱지, 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — 안 읽음 점, NEW 표시, 99+ — 모서리에 건다." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # 0 이면 스스로 숨는다
 GoBadge.attach(shop_button, 0, "NEW")
 GoBadge.attach(friend_button, 3, "", true) # 점 하나 — "뭔가 있다"</code></pre>

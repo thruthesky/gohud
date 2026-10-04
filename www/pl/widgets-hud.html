@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widżety</a>
   <a href="widgets-catalog.html">Wszystkie widżety</a>
+  <a href="widgets-popups.html">Wyskakujące okna i dialogi</a>
   <a href="widgets-surfaces.html">Pływające okna</a>
   <a href="widgets-messages.html">Jak powiedzieć coś graczowi</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>Widżety HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — dziewięć miejsc</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Przypina elementy HUD do jednego z dziewięciu miejsc bezpiecznego obszaru." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Szanuje bezpieczny obszar i marginesy przy krawędziach. Daj mu <code>landscape_spot</code>, a przesunie się
     w orientacji poziomej — kontrolki, które w pionie siedzą na dole pośrodku, mogą trafić na dół po prawej.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # i nie przesuwa strony, dopóki jest wido
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — zdrowie, mana, doświadczenie</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Paski HP, MP i XP z wartością, ułamkiem lub procentem." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token tylko do wypełnień
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     <code>12.3k</code>, więc szerokość paska nie drga, gdy cyfry przybywają i ubywają.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — jeden szybki slot</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Szybki slot: ikona, ilość, odnowienie i skrót na jednej ściance." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Siatka ekwipunku; przedmioty można przeciągać między komórkami." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Ikona, liczba, odnowienie i skrót na <b>jednym licu</b>. Wieszanie plakietek na małym kółku sprawia, że
     każdy slot ma inną szerokość, a rząd faluje.</p>
   <div class="note">
@@ -231,6 +238,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     użytkownikiem klawiatury a wszystkimi kontrolkami ustawień. Włącz go, gdy klawiatura albo pad są jedynym wejściem.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — wirtualny joystick</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Wirtualna gałka — stała, podążająca za kciukiem lub względna." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Tryb</th><th>Zachowanie</th></tr></thead>
     <tbody>
@@ -243,6 +251,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     prędkość; nie zmienia się wraz z rozmiarem ekranu ani DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — wygląda na mały, naciska się duży</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Przycisk z samą ikoną: mały dla oka, 48 dp dla palca, nazwany dla czytników ekranu." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Bezpieczny tylko dopóki jego rodzeństwo ignoruje wejście.</b> Jeśli poszerzony obszar zakryje sąsiedni
     przycisk, ten przestanie odpowiadać. Przyciski z ikonami stojące obok siebie potrzebują <code>touch_peers</code>.

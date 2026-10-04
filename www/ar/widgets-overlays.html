@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html">النوافذ العائمة</a>
   <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — اللوحة الجانبية</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — لوحة تنزلق من اليسار أو اليمين." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — لوحة تنزلق من اليسار أو اليمين." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> يأتي من الأسفل، وهو الصواب لهاتف يُمسك قائمًا. أما على لوح أو سطح مكتب فالورقة
     نفسها تغطّي اللعبة؛ والدرج يأتي من الجانب بدلًا من ذلك.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("الحقيبة")</code></pre>
     المقصود "جهة البداية"، فينقلب مع الكتابة من اليمين إلى اليسار.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — البطاقة المثبّتة</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — بطاقة معلومات بجانب ما ضُغط عليه؛ واحدة في كل مرة." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>هذا هو الموضع المثبّت من <code>GoSurface</code> وقد وُصلت له الطبقةُ والسطحُ والمرساةُ والتحريرُ سلفًا
     — تلك الأسطر العشرة التي تكتبها كل لعبة مرارًا وتكرارًا. وواحدة تُفتح في المرة، لأن البطاقات المكدّسة
@@ -118,6 +124,7 @@ bag.open("الحقيبة")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — الضغط المطوَّل والنقر الأيمن</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — قائمة بالضغط المطول أو النقر الأيمن؛ تُلغى إن تحرك الإصبع." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "استعمال", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("الحقيبة")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — وحدة تحكّم المطوّر</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — وحدة تحكم للمطورين بأوامر وسجل؛ معطلة في إصدارات النشر." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "امنح عنصرًا: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>أوامر الغشّ والتنقيح، مع لوحة أوامر تُرشّح وأنت تكتب فلا يضطر أحد إلى حفظها، وسجلّ على مفاتيح الأسهم.

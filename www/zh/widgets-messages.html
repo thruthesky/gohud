@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控件</a>
   <a href="widgets-catalog.html">全部控件</a>
+  <a href="widgets-popups.html">弹窗与对话框</a>
   <a href="widgets-surfaces.html">浮动窗口</a>
   <a href="widgets-messages.html" aria-current="page">把消息传达给玩家</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> —— 消息条</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — 绝不抢占输入或焦点的提示。" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — 底部消息，可排队，也可带按钮。" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>它从不拦截输入。</b> 提示是用来读的，不是用来按的。它不抢焦点，不挡游戏输入，
     底下的按钮照样按得到。需要确认时请用
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> —— 不打断游戏的提问</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — 不打断游戏的询问——邀请、交易。" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>浮在一侧，不加遮罩。游戏照常进行。</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> —— 新手引导</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — 指向真实控件的引导教程。" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>一次指向一个真实控件。只有卡片接收输入，所以<b>按下被高亮的控件本身就能推进引导</b> ——
     “按这里”于是成了一个动作，而不只是一句话。</p>
   <pre><code>tour.start([

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">ウィジェット</a>
   <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html">ポップアップとダイアログ</a>
   <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
   <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 横から出るパネル</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — 左または右から滑り込むパネル。" loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — 左または右から滑り込むパネル。" loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> は下から出る。縦に持ったスマートフォンにはそれが正しい。タブレットやデスクトップでは、
     同じシートがゲームを覆ってしまう。ドロワーは代わりに横から出る。</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("かばん")</code></pre>
     <code>follow_text_direction</code> を有効にする。RTL では左右が入れ替わる。</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 脇に留まるカード</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — 押したものの横に出る情報カード。一度に一つ。" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p><code>GoSurface</code> の脇に留まる配置に、レイヤーもサーフェスもアンカーも後片付けも配線済みの
     ものだ — どのゲームも何度も書く、あの10行である。開くのは一度に1つだけだ。カードが積み重なると画面が埋まり、
@@ -118,6 +124,7 @@ bag.open("かばん")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 長押しと右クリック</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — 長押し・右クリックのメニュー。指が動くと取り消される。" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "使う", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("かばん")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 開発者コンソール</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — コマンドと履歴を持つ開発者コンソール。リリースビルドでは無効。" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "アイテムを与える: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>チートとデバッグのコマンドだ。打つそばから絞り込むパレットが付くので、覚えておく必要はない。履歴は

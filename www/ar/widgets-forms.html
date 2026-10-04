@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html">النوافذ العائمة</a>
   <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — الصفّ الذي قد يكون خاطئًا</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — تسمية وعنصر تحكم وتلميح، مع خطأ تحت الحقل الخاطئ." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>سطر واحد في أعلى نموذج من خمسة حقول يقول "راجع ما أدخلتَه" لا يقول <i>أيّ</i> حقل. وهذا وحده هو ما
     يجعل الناس يتركون التسجيل.</p>
   <pre><code>var name_field := GoField.make("اسم الشخصية", GoStyle.line_edit("2-12"), "لا يمكن تغييره لاحقًا")
@@ -109,6 +111,7 @@ name_field.clear_error()</code></pre>
     حين لا شيء يمكن أن يخطئ، والعقدة لكل ما يمكن أن يرفضه خادم.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — إدخال ملحوم بزرّه</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — حقل إدخال وأزراره ملحومة في شكل واحد." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("رسالة"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("الاسم"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>ما يحلّه هو الأركان. فشكلان مدوّران يلتقيان في الوسط يبدوان منقبضين، والفجوة الافتراضية تجعلهما
@@ -117,6 +120,7 @@ GoInputGroup.make(GoStyle.line_edit("الاسم"), {"prefix_icon": &amp;"search"
     وتلتقي الوجوه القائمة نظيفةً.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — منتقٍ يبحث</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — منتقٍ يبحث داخل الأسماء لا من بدايتها فقط." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>دون العشرة مدخلات يكون <code>GoStyle.select()</code> أفضل: ضغطة أقلّ والقائمة كلها ظاهرة.
     وبعد الثلاثين يصير المسح بالعين عملًا.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "اختر خادمًا")
@@ -127,6 +131,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — رموز القسائم والهدايا</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — رموز القسائم والهدايا في خانات؛ يبقى اللصق والإدخال عبر IME يعملان." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>الرمز يُلصق من رسالة أكثر بكثير مما يُكتب. واثنا عشر حقلًا حقيقيًا كانت ستكسر اللصق عند الخليّة الأولى
     وتضيّع حروفًا في محرّر الإدخال، فحقلٌ واحد مخفيّ يأخذ النصّ والخلايا تُرسم رسمًا.
     و<code>ABCD-EFGH-IJKL</code> يفقد شُرَطه في الطريق.</p>
@@ -135,6 +140,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("مستعمَل من قبل")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — رؤوس تُرتَّب وصفوف تُختار</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — عناوين قابلة للفرز وصفوف قابلة للاختيار؛ تُرتَّب الأرقام كأرقام." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "الرتبة", "width": 56}, {"text": "الاسم"}, {"text": "النقاط", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -147,6 +153,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     <code>GoStyle.table()</code> فيظلّ الشبكة للقراءة فقط.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — صفحات، أو صفّ «المزيد»</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — صفحات مرقمة تبقي الحالية في الوسط، أو صف واحد لتحميل المزيد." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # النسخة الملائمة للهاتف</code></pre>
   <p>الأرقام واجهة فأرة؛ وعلى الهاتف يُقرأ صفّ «المزيد» أفضل. والصفحة الحالية تبقى متوسّطة في النافذة،

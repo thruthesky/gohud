@@ -142,10 +142,28 @@ GoUi.config.icons = my_icons     # your icons, the preset's everything else</cod
       <tr><td><code>default_dark</code> · <code>default_light</code></td><td>Rounded <code>StyleBoxFlat</code> panels on a graded shadow scale; primary buttons lift and sink when pressed</td><td><code>GoSkin</code> · 84 default icons</td></tr>
       <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>Chamfered <code>GoStyleBoxCut</code> panels with a neon edge and glow; <code>GoStyleBoxBracket</code> focus marks</td><td><code>GoSkinSciFi</code> — hexagonal joystick · default icons</td></tr>
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Forged <code>GoStyleBoxMedieval</code> frames — iron and leather, or parchment — with rivets and corner ornaments on menus</td><td><code>GoSkinMedieval</code> · 16 engraved icons over the defaults</td></tr>
-      <tr><td><code>material_light</code> · <code>material_dark</code></td><td>Material 3 Expressive for app screens — pill buttons with a 40dp plate in the 48dp touch target, 28dp dialogs, filled cards, outlined fields, the Expressive slider; the app components (navigation bar, app bar, FAB, search bar, chips, progress, date picker) follow the M3 component tokens</td><td><code>GoSkinMaterial</code> · default icons</td></tr>
-      <tr><td><code>kids_light</code> · <code>kids_dark</code></td><td>For children — the toy box: chunky outlines and a solid lip under every key, which sinks when pressed; sunken text fields, bubble tabs, jelly bars; each kind of control in its own crayon colour, candy quick slots, sticker badges, a rainbow joystick and crayon charts. Sizes and the project's font stay as they are.</td><td><code>GoSkinKids</code> · default icons</td></tr>
+      <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">New</span></td><td>Material 3 Expressive for app screens — pill buttons with a 40dp plate in the 48dp touch target, 28dp dialogs, filled cards, outlined fields, the Expressive slider; the app components (navigation bar, app bar, FAB, search bar, chips, progress, date picker) follow the M3 component tokens</td><td><code>GoSkinMaterial</code> · default icons</td></tr>
+      <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">New</span></td><td>For children — the toy box: chunky outlines and a solid lip under every key, which sinks when pressed; sunken text fields, bubble tabs, jelly bars; each kind of control in its own crayon colour, candy quick slots, sticker badges, a rainbow joystick and crayon charts. Sizes and the project's font stay as they are.</td><td><code>GoSkinKids</code> · default icons</td></tr>
     </tbody>
   </table>
+</section>
+
+<section id="all-looks">
+  <h2>All ten, side by side</h2>
+  <p class="sub">The same gallery screen with only the preset name changed — not a line of widget code differs.
+    Each one is a phone held upright, 390×844.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/presets/gallery-default_dark.webp" width="300" height="649" alt="The gohud widget gallery in the default_dark preset" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-default_light.webp" width="300" height="649" alt="The gohud widget gallery in the default_light preset" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-scifi_dark.webp" width="300" height="649" alt="The gohud widget gallery in the scifi_dark preset" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-scifi_light.webp" width="300" height="649" alt="The gohud widget gallery in the scifi_light preset" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-medieval_dark.webp" width="300" height="649" alt="The gohud widget gallery in the medieval_dark preset" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-medieval_light.webp" width="300" height="649" alt="The gohud widget gallery in the medieval_light preset" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-material_light.webp" width="300" height="649" alt="The gohud widget gallery in the material_light preset" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-material_dark.webp" width="300" height="649" alt="The gohud widget gallery in the material_dark preset" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-kids_light.webp" width="300" height="649" alt="The gohud widget gallery in the kids_light preset" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-kids_dark.webp" width="300" height="649" alt="The gohud widget gallery in the kids_dark preset" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
 </section>
 
 <section id="medieval">
@@ -195,6 +213,83 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
     <tr><td><code>shape.fonts</code></td><td>Map title, subtitle, caption, body and button roles to addon-local res:// font files. Omitted roles keep their inherited font.</td></tr>
     <tr><td><code>skin.dials</code></td><td>Quick-slot radius, rivet visibility, grain and highlight. The full table below lists each dial.</td></tr>
   </tbody></table>
+</section>
+
+<section id="material">
+  <h2>Material 3: a look for app screens <span class="badge new">New</span></h2>
+  <p><code>material_light</code> and <code>material_dark</code> bring Material 3 Expressive to gohud — the shapes, sizes and
+    type of the M3 components, with every number read from the official M3 token set (material-web,
+    <code>tokens/versions/latest</code>). Reach for them where a screen should feel like an app rather than a game menu:
+    shops, inboxes, account and settings pages, leaderboards, a companion app.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)
+# Or: GoUi.use_preset(GoThemePresets.MATERIAL_DARK)</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/presets/gallery-material_light.webp" width="300" height="649" alt="The gohud gallery in material_light — pill buttons, filled cards and outlined fields" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-material_dark.webp" width="300" height="649" alt="The gohud gallery in material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-material_light.webp" width="300" height="649" alt="A confirmation dialog in material_light — 28dp corners and pill buttons over a game" loading="lazy"><figcaption><code>GoDialogs</code> · <code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-material_dark.webp" width="300" height="649" alt="A confirmation dialog in material_dark over a game" loading="lazy"><figcaption><code>GoDialogs</code> · <code>material_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes">What changes</h3>
+  <table>
+    <thead><tr><th>Part</th><th>In Material 3</th></tr></thead>
+    <tbody>
+      <tr><td>Buttons</td><td>Pills (the full corner). The plate is 40dp tall, centred in the 48dp touch target, so the press area does not shrink; a compact button's plate is 32dp. Labels use Roboto at weight 500.</td></tr>
+      <tr><td>Dialogs and sheets</td><td>28dp corners (extra-large), 24dp padding and a 24sp headline — <code>GoDialogs</code>, <code>GoSurface</code>, <code>GoSheet</code> and every popup built on them.</td></tr>
+      <tr><td>Cards</td><td>Filled cards with 12dp corners and 16dp padding.</td></tr>
+      <tr><td>Fields and sliders</td><td>Outlined text fields; the Expressive slider with its tall handle.</td></tr>
+      <tr><td>Chips and segments</td><td>8dp corners (small).</td></tr>
+      <tr><td>App components</td><td><code>GoNavBar</code>, <code>GoAppBar</code>, <code>GoFab</code>, <code>GoSearchBar</code>, the chips, <code>GoProgress</code> and <code>GoDatePicker</code> follow the M3 component tokens.</td></tr>
+      <tr><td>Type</td><td>The bundled Roboto for titles, subtitles, captions and buttons. Body text keeps your project's font, so Korean, Japanese, Chinese or Arabic still draw.</td></tr>
+      <tr><td>Opacity</td><td>Every panel is opaque — M3 surfaces are solid. (Default, sci-fi and medieval panels are 80% opaque, so the game shows through.)</td></tr>
+      <tr><td>Skin</td><td><code>GoSkinMaterial</code>: the drawer is the M3 modal side sheet, the console face is the M3 floating toolbar, banners sit on <code>surface_container_low</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>Where the spec gives way to legibility.</b> M3 fades a disabled label to 38%; gohud keeps it at 4.5:1 so it can
+    still be read. Snackbars keep a light plate, because their text colour is a token the widget picks — an inverse
+    plate would put dark text on dark. <code>tools/check_contrast.py</code> measures both looks like every other.
+  </div>
+  <p>Roboto is under the SIL Open Font License 1.1 (<code>assets/fonts/roboto/OFL.txt</code>) and is used by the Material
+    presets only.</p>
+</section>
+
+<section id="kids">
+  <h2>Kids: the toy box <span class="badge new">New</span></h2>
+  <p><code>kids_light</code> (cream and peach with a grape primary) and <code>kids_dark</code> (blueberry ground, sunny-yellow
+    primary, mint pills) are a look made for children's games and learning apps — chunky, bright and squishy, the
+    kind of thing a small finger wants to press.</p>
+  <pre><code>GoUi.use_preset(&amp;"kids_light")
+# Or: GoUi.use_preset(&amp;"kids_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/presets/gallery-kids_light.webp" width="300" height="649" alt="The gohud gallery in kids_light — jelly-candy buttons in crayon colours" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-kids_dark.webp" width="300" height="649" alt="The gohud gallery in kids_dark — the toy box on a night-blue page" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-kids_light.webp" width="300" height="649" alt="A confirmation dialog in kids_light — a sunny title ribbon and a round candy close button" loading="lazy"><figcaption><code>GoDialogs</code> · <code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-kids_dark.webp" width="300" height="649" alt="A confirmation dialog in kids_dark — a mint title ribbon and a candy close button" loading="lazy"><figcaption><code>GoDialogs</code> · <code>kids_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-2">What changes</h3>
+  <table>
+    <thead><tr><th>Part</th><th>In the kids looks</th></tr></thead>
+    <tbody>
+      <tr><td>Every face</td><td>A jelly candy, drawn by <code>GoStyleBoxJelly</code>: a chunky outline, a solid lip under everything you press, a body lighter on top and deeper below, and a white shine at the top left. Keys, list rows, folding titles, fields, bars, sliders and panels all wear it.</td></tr>
+      <tr><td>Pressing</td><td>The lip goes and the face sinks into its place, then a jelly squish — wide and flat for a moment, then an elastic spring back. It runs on every button gohud makes; <code>reduce_motion</code> turns it off.</td></tr>
+      <tr><td>Fields, tabs, bars</td><td>A text field is the same jelly turned in — a sunken well. Tabs are bubbles, bars have a jelly shine.</td></tr>
+      <tr><td>Colour</td><td>Each kind of control in its own crayon colour, chosen by the same generator as every look, so every contrast gate still holds.</td></tr>
+      <tr><td>Windows</td><td>A sunny ribbon (mint at night) behind a window's title — the title shrinks, down to 15, to stay on one line — and a round candy close button in the danger crayon with a white cross.</td></tr>
+      <tr><td>Skin parts</td><td><code>GoSkinKids</code>: quick slots are candy blocks that sink while cooling down, badges are stickers, chips and the navigation pill are small jellies, avatars are round candies, the joystick is a rainbow, charts use crayons, alerts and notices are sticker notes with a solid rim.</td></tr>
+      <tr><td>Opacity</td><td>Panels, cards, notices and popups are opaque.</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>No size changes.</b> The outline and the lip are drawn inside each control's rectangle and every face keeps the
+    padding the theme gave it, so a screen laid out in another look keeps its layout, and a host that pins its own sizes
+    measures the same parts. Your project's font is kept too, so non-Latin scripts still draw.
+  </div>
+  <figure class="shot"><img src="img/widgets/goskin.webp" width="382" height="600" alt="Quick slots, a joystick and a chip in every skin — default, kids, Material, medieval and sci-fi" loading="lazy"><figcaption>The parts a skin draws — the kids row is second</figcaption></figure>
+  <h3 id="make-a-toy-box-of-your-own">Make a toy box of your own</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py candy --from kids_light
+# Edit themes/palettes/candy.json, then:
+python3 addons/gohud/tools/make_theme.py candy
+GoUi.use_preset(&amp;"candy")</code></pre>
 </section>
 
 </main>

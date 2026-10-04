@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tutti i widget</a>
+  <a href="widgets-popups.html">Popup e finestre di dialogo</a>
   <a href="widgets-surfaces.html">Finestre flottanti</a>
   <a href="widgets-messages.html" aria-current="page">Dire qualcosa a chi gioca</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Un avviso che non prende mai input né focus." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Un messaggio in basso che si mette in coda e può avere pulsanti." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Non intercetta mai l'input.</b> Un avviso si legge, non si preme. Non prende il focus, non blocca
     l'input di gioco, e il pulsante sotto di esso si preme comunque. Quando serve una conferma usa
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — una domanda che non blocca</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Una domanda che non ferma il gioco: un invito, uno scambio." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Fluttua su un lato senza velo. Il gioco continua a girare.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — tour guidato</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Un tour guidato che indica i controlli reali." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Indica i controlli veri uno alla volta. Solo la scheda prende l'input, quindi <b>premere il controllo
     evidenziato fa avanzare il tour</b> — "premi qui" diventa un'azione invece che una frase.</p>
   <pre><code>tour.start([

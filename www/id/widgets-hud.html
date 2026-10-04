@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Semua widget</a>
+  <a href="widgets-popups.html">Popup dan dialog</a>
   <a href="widgets-surfaces.html">Jendela mengambang</a>
   <a href="widgets-messages.html">Menyampaikan sesuatu kepada pemain</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>Widget HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — sembilan titik</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Menyematkan bagian HUD ke salah satu dari sembilan titik area aman." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Menghormati area aman dan margin tepi. Berikan <code>landscape_spot</code> dan ia berpindah saat
     lanskap — kontrol yang duduk di tengah bawah pada mode potret bisa pindah ke kanan bawah.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # dan tidak mendorong halamannya selagi ia
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — darah, mana, pengalaman</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Bilah HP, MP, dan XP dengan nilai, pecahan, atau persen." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token khusus isian
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     lebar bar-nya tidak bergetar saat jumlah digitnya berubah.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — satu slot cepat</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Slot cepat: ikon, jumlah, jeda, dan pintasan dalam satu muka." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Grid inventaris; item bisa diseret antarsel." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Ikon, jumlah, waktu jeda, dan pintasan pada <b>satu muka</b>. Menggantung lencana pada lingkaran kecil
     membuat tiap slot punya lebar berbeda dan barisannya goyah.</p>
   <div class="note">
@@ -231,6 +238,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     setiap kontrol setelan dalam urutan Tab. Nyalakan bila papan ketik atau gamepad adalah satu-satunya input.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — stik virtual</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Stik virtual — tetap, mengikuti jempol, atau relatif." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Mode</th><th>Perilaku</th></tr></thead>
     <tbody>
@@ -243,6 +251,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     sebuah kecepatan; nilainya tidak berubah mengikuti ukuran layar atau DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — terlihat kecil, ditekan besar</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Tombol ikon saja: kecil dilihat, 48 dp disentuh, bernama untuk pembaca layar." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Hanya aman selama saudara-saudaranya mengabaikan input.</b> Bila area yang diperlebar itu menutupi tombol berikutnya,
     tombol itu berhenti merespons. Tombol ikon yang berjajar butuh <code>touch_peers</code>.

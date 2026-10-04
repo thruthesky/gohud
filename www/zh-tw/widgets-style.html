@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控制項</a>
   <a href="widgets-catalog.html">所有控制項</a>
+  <a href="widgets-popups.html">彈出視窗與對話框</a>
   <a href="widgets-surfaces.html">浮動視窗</a>
   <a href="widgets-messages.html">告訴玩家某件事</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">帶說明的清單列</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — 附圖示、標題、摘要與尾端標記的清單列。" loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "守誓者", _inspect, Color.TRANSPARENT,
     "長劍  /  攻擊 42", false)</code></pre>
   <p>有第二行的列會得到<b>上下相等的內距</b>，比單行的列更寬鬆，而標題與說明這一組會
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">會換行的列</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — 使用主題間距的欄、列與自動換行的列。" loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>把控制項放進 <code>wrap_row</code> 時，讓它們維持<b>自然寬度</b>。若放著換行不管，按鈕的最小寬度
     會掉到幾乎為零，而該列就用這個值決定儲存格大小 — 標籤於是縮成一行一個字。
     工廠函式替你擋掉了這件事。</p>
 
   <h3 id="never-leave-an-empty-list-empty">永遠別讓空清單真的空著</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — 載入時的佔位，以及空清單的提示。" loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "這裡還沒有東西"))</code></pre>
   <p>人看到一片空白的畫面，會讀成<b>壞掉了</b>。</p>
 </section>

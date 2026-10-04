@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Tous les widgets</a>
+  <a href="widgets-popups.html">Pop-ups et boîtes de dialogue</a>
   <a href="widgets-surfaces.html">Fenêtres flottantes</a>
   <a href="widgets-messages.html" aria-current="page">Dire quelque chose au joueur</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — le snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Un avis qui ne prend jamais la saisie ni le focus." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Un message en bas qui se met en file et peut porter des boutons." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Il n'intercepte jamais la saisie.</b> Un message éphémère se lit, il ne s'appuie pas. Il ne prend pas le
     focus, ne bloque pas les entrées du jeu, et le bouton qui se trouve dessous s'appuie toujours. Quand une
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — une question qui ne bloque pas</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Une question qui n&#x27;arrête pas le jeu : une invitation, un échange." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Elle flotte sur un côté, sans voile. Le jeu continue de tourner.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — la visite guidée</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Une visite guidée qui montre les vrais contrôles." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Elle désigne de vraies commandes, une à la fois. Seule la carte capte la saisie : <b>appuyer sur la commande
     mise en avant fait donc avancer la visite</b> — « appuyez ici » devient une action plutôt qu'une phrase.</p>
   <pre><code>tour.start([

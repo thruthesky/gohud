@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Віджети</a>
   <a href="widgets-catalog.html">Усі віджети</a>
+  <a href="widgets-popups.html">Спливні вікна та діалоги</a>
   <a href="widgets-surfaces.html">Плаваючі вікна</a>
   <a href="widgets-messages.html">Як сказати щось гравцеві</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Знайомі з вебу форми, перебудовані навколо того, що потрібно від них грі.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — щоденна відвідуваність</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Щоденні нагороди за відвідування; натиснути можна лише сьогодні." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>Вибирач дати в грі майже ніколи не стає в пригоді. А от форма календаря — так, для нагород за відвідування,
     де важить <b>який у вас день поспіль</b>, а не яке сьогодні число.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -108,6 +110,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     акцентною рамкою та притемненням.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> і <code>GoDonut</code> — характеристики з одного погляду</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — П&#x27;ятикутник характеристик із пунктиром для порівняння спорядження." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Частки у вигляді секторів, з легендою не лише кольором, а й словами." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # пунктирний шар зверху
 
@@ -119,6 +125,7 @@ card.add_child(share.legend())</code></pre>
     іншого кольору, а легенда виписує відсоток словами.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — банери та вибір персонажа</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Банери та вибір персонажа, які самі не гортаються, якщо не попросити." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # типово вимкнено</code></pre>
   <p>Сам він не гортає, доки ви не попросите, і п'ять секунд — це нижня межа: банер, що змінюється кожні три,
@@ -127,6 +134,7 @@ banners.autoplay_seconds = 5.0             # типово вимкнено</code
     й маленька.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — підказки клавіш, які не брешуть</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Клавіші, що читають справжнє призначення, — підказка не бреше після перепризначення." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # читає справжню прив'язку</code></pre>
   <p>Жорстко вписане «Натисніть F» каже F і далі, коли гравець перепризначив клавішу, — найпоширеніша неправда
     в інтерфейсі на ПК. <code>for_action()</code> читає <code>InputMap</code>; якщо дія натомість прив'язана

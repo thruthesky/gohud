@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控制項</a>
   <a href="widgets-catalog.html">所有控制項</a>
+  <a href="widgets-popups.html">彈出視窗與對話框</a>
   <a href="widgets-surfaces.html">浮動視窗</a>
   <a href="widgets-messages.html">告訴玩家某件事</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>HUD 控制項</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 九個位置</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — 把 HUD 元件固定在安全區域的九個位置之一。" loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>它會尊重安全區域與邊界留白。給它一個 <code>landscape_spot</code>，橫向時它就會換位置 —
     直向時待在底部中央的操作鍵，橫向可以改到右下。</p>
   <div class="note">
@@ -207,6 +209,7 @@ notice_anchor.reserve_space = false   # 顯示期間也不會推擠頁面</code>
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 生命、魔力、經驗</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — 顯示數值、分數或百分比的 HP、MP、XP 條。" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 只用於填色的 token
@@ -216,6 +219,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     讓量條的寬度不會隨著位數增減而抖動。</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — 一格快捷格</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — 快捷欄格：圖示、數量、冷卻與快捷鍵集於一面。" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — 背包網格；物品可在格子間拖動。" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>圖示、數量、冷卻與快速鍵都在<b>同一個面</b>上。把徽章掛在小圓圈外面，
     會讓每一格寬度都不一樣，整列就歪歪扭扭。</p>
   <div class="note">
@@ -228,6 +235,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     所有設定控制項之間。只有在鍵盤或遊戲手把是唯一輸入方式時才打開它。</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — 虛擬搖桿</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — 虛擬搖桿——固定、跟隨拇指或相對模式。" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>模式</th><th>行為</th></tr></thead>
     <tbody>
@@ -240,6 +248,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     它不會隨螢幕大小或 DPI 改變。</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 看起來小，按起來大</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — 僅圖示的按鈕：看起來小，可點區域 48dp，帶螢幕閱讀器名稱。" loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>只有在旁邊的兄弟節點不吃輸入時才安全。</b>如果被放大的區域蓋到隔壁按鈕，
     那顆按鈕就沒反應了。並排的圖示按鈕需要 <code>touch_peers</code>。

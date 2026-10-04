@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html">Cửa sổ nổi</a>
   <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — bảng bên hông</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Bảng trượt vào từ bên trái hoặc bên phải." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Bảng trượt vào từ bên trái hoặc bên phải." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> trồi lên từ đáy, đúng cho một chiếc điện thoại cầm dọc. Trên máy tính bảng hay máy để
     bàn thì cũng tấm bảng đó lại che mất game; thay vào đó, một cái ngăn kéo trượt ra từ bên hông.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Túi đồ")</code></pre>
     <code>follow_text_direction</code> khi điều quan trọng là "phía bắt đầu", và khi đó nó lật lại trong RTL.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — tấm thẻ ghim vào một chỗ</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Thẻ thông tin cạnh thứ vừa nhấn; mỗi lúc một thẻ." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Đây là kiểu đặt ghim của <code>GoSurface</code> với lớp, lớp vỏ, cái neo và phần dọn dẹp đã nối sẵn — mười
     dòng mà game nào cũng viết đi viết lại. Mỗi lúc chỉ mở được một cái, vì những tấm thẻ chồng lên nhau sẽ chôn
@@ -118,6 +124,7 @@ bag.open("Túi đồ")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — nhấn giữ và bấm chuột phải</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Menu khi nhấn giữ hoặc nhấp chuột phải; ngón tay di chuyển sẽ hủy." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Dùng", "action": use},
     {"separator": true},
@@ -133,6 +140,7 @@ bag.open("Túi đồ")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — bảng điều khiển của lập trình viên</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Bảng điều khiển cho nhà phát triển có lệnh và lịch sử; tắt trong bản phát hành." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Cấp một vật phẩm: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>Các lệnh cheat và debug, kèm một bảng lệnh tự lọc theo từng ký tự bạn gõ nên không ai phải học thuộc chúng,

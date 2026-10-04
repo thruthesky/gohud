@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">ウィジェット</a>
   <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html">ポップアップとダイアログ</a>
   <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
   <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">説明の付いたリスト行</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — アイコン・タイトル・概要・末尾マークを持つリスト行。" loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "誓いの剣", _inspect, Color.TRANSPARENT,
     "ロングソード  /  攻撃力 42", false)</code></pre>
   <p>2行目のある行は<b>上下の余白が等しく</b>なり、1行の行より広めにとられる。タイトルと説明の組は
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">折り返して流れる行</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — テーマの間隔を使う縦並び・横並び・折り返し行。" loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>コントロールは<b>自然な幅</b>のまま <code>wrap_row</code> に入れる。折り返しを有効にしたままだと、
     ボタンの最小幅はほとんど 0 まで落ち、行はその値でセルの大きさを決めてしまう — ラベルが1文字ずつ改行される。
     ファクトリがこれを防いでくれる。</p>
 
   <h3 id="never-leave-an-empty-list-empty">空のリストを空のまま見せない</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — 読み込み中のプレースホルダーと、空のリストの案内。" loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "まだ何もない"))</code></pre>
   <p>人は何もない画面を<b>壊れている</b>と読む。</p>
 </section>

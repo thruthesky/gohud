@@ -86,7 +86,8 @@
       <span class="badge">GDScript murni</span>
       <span class="badge">Tanpa autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">6 preset</span>
+      <span class="badge">10 preset</span>
+      <span class="badge new">Baru: Material 3 · Anak-anak</span>
       <span class="badge">21 bahasa</span>
       <span class="badge"><span data-n="icons">1.287</span> ikon disertakan</span>
     </div>
@@ -100,6 +101,40 @@
 </div>
 
 <main class="wrap">
+
+<section id="new">
+  <h2>Baru: Material 3 dan tampilan untuk anak-anak</h2>
+  <p class="sub">
+    Dua keluarga baru bergabung dengan default, sci-fi, dan abad pertengahan — kini ada <b>sepuluh tampilan bawaan</b>, masing-masing gelap dan terang.
+    Setiap widget, popup, dan bagian HUD langsung memakainya tanpa perubahan pada kode Anda: ganti presetnya dan seluruh layar ikut berubah.
+  </p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="Galeri gohud dalam material_light — tombol pil, kartu terisi, dan warna Material 3" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Galeri gohud dalam material_dark — bentuk Material 3 yang sama pada skema dasar gelap" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Galeri gohud dalam kids_light — tombol jeli tebal berwarna krayon di halaman yang cerah" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeri gohud dalam kids_dark — kotak mainan yang sama di halaman biru malam" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="material-3-for-app-screens">Material 3 — untuk layar aplikasi</h3>
+      <p>Material 3 Expressive, diukur terhadap token M3 resmi: tombol pil dengan pelat 40dp di dalam target sentuh
+        48dp, dialog dan lembar 28dp, kartu terisi, kolom bergaris tepi, dan slider Expressive. Komponen aplikasi —
+        bilah navigasi, bilah aplikasi atas, FAB, bilah pencarian, chip, progres, dan pemilih tanggal — mengikuti token komponen
+        M3, dan judulnya memakai font Roboto bawaan. Untuk toko, setelan, kotak masuk, dan setiap layar yang semestinya terasa seperti aplikasi.</p>
+    </div>
+    <div class="card">
+      <h3 id="kids-the-toy-box">Anak-anak — kotak mainan</h3>
+      <p>Dibuat untuk anak-anak: setiap tombol, baris, dan panel adalah permen jeli dengan garis tepi tebal dan bibir padat yang tenggelam saat
+        ditekan, setiap jenis kontrol dengan warna krayonnya sendiri. Slot cepat berupa balok permen, lencana berupa stiker,
+        joystick-nya pelangi, jendela mendapat pita judul yang cerah dan tombol tutup permen yang bulat, dan setiap tekanan membuatnya memipih.
+        Ukuran dan font proyek Anda tetap persis seperti semula.</p>
+    </div>
+  </div>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # atau MATERIAL_DARK
+GoUi.use_preset(&amp;"kids_light")                   # atau &amp;"kids_dark"</code></pre>
+  <p><a href="theming-presets.html#material">Material 3 secara rinci →</a> · <a href="theming-presets.html#kids">Anak-anak secara rinci →</a> ·
+    <a href="widgets-popups.html#popup-looks">Popup yang sama dalam kesepuluh tampilan →</a></p>
+</section>
 
 <section id="showcase">
   <h2>Seperti apa tampilannya di dalam game</h2>
@@ -204,8 +239,10 @@
       <tr><td><code>scifi_light</code></td><td>Bentuk bersudut yang sama dalam palet cetak biru yang cerah</td></tr>
       <tr><td><code>medieval_dark</code></td><td>Besi gelap dan kulit, bingkai emas antik, paku keling, ikon ukiran, judul Cinzel</td></tr>
       <tr><td><code>medieval_light</code></td><td>Perkamen, tinta, dan perunggu dengan bingkai tempaan yang sama</td></tr>
-      <tr><td><code>material_light</code></td><td>Material 3 untuk layar aplikasi — tombol berbentuk pil, dialog 28dp, kartu terisi, bilah navigasi, FAB, dan bilah pencarian sebuah aplikasi, Roboto</td></tr>
-      <tr><td><code>material_dark</code></td><td>Bentuk Material 3 yang sama pada skema dasar gelap</td></tr>
+      <tr><td><code>material_light</code> <span class="badge new">Baru</span></td><td>Material 3 untuk layar aplikasi — tombol berbentuk pil, dialog 28dp, kartu terisi, bilah navigasi, FAB, dan bilah pencarian sebuah aplikasi, Roboto</td></tr>
+      <tr><td><code>material_dark</code> <span class="badge new">Baru</span></td><td>Bentuk Material 3 yang sama pada skema dasar gelap</td></tr>
+      <tr><td><code>kids_light</code> <span class="badge new">Baru</span></td><td>Kotak mainan untuk anak-anak — tombol permen jeli dengan garis tepi tebal dan bibir yang tenggelam saat ditekan, warna krayon, halaman yang cerah</td></tr>
+      <tr><td><code>kids_dark</code> <span class="badge new">Baru</span></td><td>Kotak mainan yang sama di halaman biru malam</td></tr>
     </tbody>
   </table>
 
@@ -317,10 +354,12 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxCut</code></td><td>Sudut terpotong diagonal (chamfer), satu tepi aksen yang ditebalkan, pendar di luar</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>Hanya penanda sudut, tanpa mengurung kontennya</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Bingkai tempaan dengan paku keling, ukiran sudut, sorotan bevel, dan serat material</td></tr>
+      <tr><td><code>GoStyleBoxJelly</code></td><td>Permen jeli — garis tepi tebal, bibir padat yang tenggelam saat ditekan, badan yang lebih terang di bagian atas, dan kilau putih</td></tr>
     </tbody>
   </table>
-  <p>Ketiganya tersimpan ke dalam resource Theme — dan itulah yang membuat sebuah tema bisa mengubah <b>bentuk</b>, bukan hanya warna.
-    <code>GoSkinSciFi</code> dan <code>GoSkinMedieval</code> adalah subkelas bawaan.</p>
+  <p>Keempatnya tersimpan ke dalam resource Theme — dan itulah yang membuat sebuah tema bisa mengubah <b>bentuk</b>, bukan hanya warna.
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, dan <code>GoSkinKids</code> adalah subkelas bawaan.</p>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Slot cepat, joystick, dan chip yang digambar oleh setiap skin bawaan — default, anak-anak, Material, abad pertengahan, dan sci-fi" loading="lazy"><figcaption>Apa yang digambar sebuah skin — default, anak-anak, Material, abad pertengahan, sci-fi</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> selalu mengembalikan <code>StyleBoxFlat</code></b>, karena kode pemanggilnya
@@ -331,7 +370,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 <section id="widgets">
   <h2>Widget</h2>
-  <p class="sub">Seluruh bagiannya dalam satu tabel. <a href="widgets.html">Rinciannya satu per satu →</a></p>
+  <p class="sub">Seluruh bagiannya dalam satu tabel. <a href="widgets.html">Rinciannya satu per satu →</a> ·
+    <a href="widgets-catalog.html">Setiap widget beserta gambarnya →</a> · <a href="widgets-popups.html">Popup dan dialog, panduan lengkapnya →</a></p>
 
   <table>
     <thead><tr><th>Kelas</th><th>Basis</th><th>Fungsinya</th></tr></thead>

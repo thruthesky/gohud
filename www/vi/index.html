@@ -86,7 +86,8 @@
       <span class="badge">GDScript thuần</span>
       <span class="badge">Không cần autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">6 preset</span>
+      <span class="badge">10 preset</span>
+      <span class="badge new">Mới: Material 3 · Trẻ em</span>
       <span class="badge">21 ngôn ngữ</span>
       <span class="badge">Kèm <span data-n="icons">1.287</span> biểu tượng</span>
     </div>
@@ -100,6 +101,40 @@
 </div>
 
 <main class="wrap">
+
+<section id="new">
+  <h2>Mới: Material 3 và một diện mạo cho trẻ em</h2>
+  <p class="sub">
+    Hai họ mới gia nhập cùng mặc định, sci-fi và trung cổ — giờ đã có <b>mười diện mạo có sẵn</b>, mỗi cái đều có bản tối và sáng.
+    Mọi widget, cửa sổ bật lên và mảnh HUD đều nhận chúng mà không phải đổi code của bạn: đổi preset là cả màn hình đổi theo.
+  </p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="Màn hình gallery của gohud ở material_light — nút hình viên thuốc, thẻ tô nền và màu sắc Material 3" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Màn hình gallery của gohud ở material_dark — cùng các hình dạng Material 3 trên nền tối chuẩn" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Màn hình gallery của gohud ở kids_light — các nút kẹo thạch mập mạp màu bút sáp trên trang nền màu nắng" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Màn hình gallery của gohud ở kids_dark — cùng hộp đồ chơi đó trên trang nền xanh đêm" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="material-3-for-app-screens">Material 3 — cho màn hình ứng dụng</h3>
+      <p>Material 3 Expressive, đo đối chiếu với token M3 chính thức: nút hình viên thuốc với tấm nền 40dp nằm trong vùng chạm
+        48dp, hộp thoại và bảng trượt 28dp, thẻ tô nền, ô nhập có viền và thanh trượt Expressive. Các thành phần ứng dụng —
+        thanh điều hướng, thanh ứng dụng trên cùng, FAB, thanh tìm kiếm, chip, tiến trình và bộ chọn ngày — theo token thành phần
+        của M3, còn tiêu đề dùng font Roboto kèm theo. Dành cho cửa hàng, cài đặt, hộp thư và mọi màn hình nên mang cảm giác của một ứng dụng.</p>
+    </div>
+    <div class="card">
+      <h3 id="kids-the-toy-box">Trẻ em — hộp đồ chơi</h3>
+      <p>Làm cho trẻ em: mọi phím, hàng và tấm nền là một viên kẹo thạch với viền dày và một gờ đặc lún xuống khi
+        nhấn, mỗi loại điều khiển một màu bút sáp riêng. Ô nhanh là những khối kẹo, huy hiệu là nhãn dán, cần điều khiển
+        là cầu vồng, cửa sổ có dải băng tiêu đề màu nắng và nút đóng tròn hình viên kẹo, và mỗi lần nhấn thì bẹp xuống.
+        Kích thước và font của dự án bạn vẫn giữ nguyên như cũ.</p>
+    </div>
+  </div>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # hoặc MATERIAL_DARK
+GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"</code></pre>
+  <p><a href="theming-presets.html#material">Material 3 chi tiết →</a> · <a href="theming-presets.html#kids">Trẻ em chi tiết →</a> ·
+    <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười diện mạo →</a></p>
+</section>
 
 <section id="showcase">
   <h2>Trông thế nào khi vào game</h2>
@@ -204,8 +239,10 @@
       <tr><td><code>scifi_light</code></td><td>Vẫn hình dáng góc cạnh đó trong bảng màu bản vẽ kỹ thuật sáng</td></tr>
       <tr><td><code>medieval_dark</code></td><td>Sắt tối và da thuộc, khung vàng cổ, đinh tán, biểu tượng khắc chìm, tiêu đề Cinzel</td></tr>
       <tr><td><code>medieval_light</code></td><td>Giấy da, mực và đồng thau với vẫn những khung rèn đó</td></tr>
-      <tr><td><code>material_light</code></td><td>Material 3 cho màn hình ứng dụng — nút hình viên thuốc, hộp thoại 28dp, thẻ tô nền, thanh điều hướng, FAB và thanh tìm kiếm của ứng dụng, Roboto</td></tr>
-      <tr><td><code>material_dark</code></td><td>Cùng các hình dạng Material 3 trên nền tối chuẩn</td></tr>
+      <tr><td><code>material_light</code> <span class="badge new">Mới</span></td><td>Material 3 cho màn hình ứng dụng — nút hình viên thuốc, hộp thoại 28dp, thẻ tô nền, thanh điều hướng, FAB và thanh tìm kiếm của ứng dụng, Roboto</td></tr>
+      <tr><td><code>material_dark</code> <span class="badge new">Mới</span></td><td>Cùng các hình dạng Material 3 trên nền tối chuẩn</td></tr>
+      <tr><td><code>kids_light</code> <span class="badge new">Mới</span></td><td>Hộp đồ chơi cho trẻ em — phím kẹo thạch với viền dày và gờ lún xuống khi nhấn, màu bút sáp, trang nền màu nắng</td></tr>
+      <tr><td><code>kids_dark</code> <span class="badge new">Mới</span></td><td>Cùng hộp đồ chơi đó trên trang nền xanh đêm</td></tr>
     </tbody>
   </table>
 
@@ -317,10 +354,12 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxCut</code></td><td>Góc cắt chéo (vát), một cạnh nhấn dày lên, ánh sáng tỏa ra ngoài</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>Chỉ dấu ở bốn góc, không bao kín nội dung</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Khung rèn với đinh tán, hoa văn khắc ở góc, vệt sáng vát cạnh và vân vật liệu</td></tr>
+      <tr><td><code>GoStyleBoxJelly</code></td><td>Một viên kẹo thạch — viền dày, gờ đặc lún xuống khi nhấn, thân sáng hơn ở phía trên và một vệt bóng trắng</td></tr>
     </tbody>
   </table>
-  <p>Cả ba đều tuần tự hóa được vào một tài nguyên Theme — chính điều đó cho phép một theme đổi <b>hình dáng</b>,
-    chứ không chỉ đổi màu. <code>GoSkinSciFi</code> và <code>GoSkinMedieval</code> là hai lớp con có sẵn.</p>
+  <p>Cả bốn đều tuần tự hóa được vào một tài nguyên Theme — chính điều đó cho phép một theme đổi <b>hình dáng</b>,
+    chứ không chỉ đổi màu. <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> và <code>GoSkinKids</code> là các lớp con có sẵn.</p>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Ô nhanh, cần điều khiển và chip do từng skin có sẵn vẽ — mặc định, trẻ em, Material, trung cổ và sci-fi" loading="lazy"><figcaption>Những gì một skin vẽ — mặc định, trẻ em, Material, trung cổ, sci-fi</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> luôn trả về một <code>StyleBoxFlat</code></b>, vì phía gọi nhận nó rồi
@@ -331,7 +370,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 <section id="widgets">
   <h2>Widget</h2>
-  <p class="sub">Toàn bộ các mảnh, gói trong một bảng. <a href="widgets.html">Chi tiết từng cái →</a></p>
+  <p class="sub">Toàn bộ các mảnh, gói trong một bảng. <a href="widgets.html">Chi tiết từng cái →</a> ·
+    <a href="widgets-catalog.html">Mọi widget kèm hình ảnh →</a> · <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại, hướng dẫn đầy đủ →</a></p>
 
   <table>
     <thead><tr><th>Lớp</th><th>Lớp cha</th><th>Làm gì</th></tr></thead>

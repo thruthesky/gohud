@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widżety</a>
   <a href="widgets-catalog.html">Wszystkie widżety</a>
+  <a href="widgets-popups.html">Wyskakujące okna i dialogi</a>
   <a href="widgets-surfaces.html">Pływające okna</a>
   <a href="widgets-messages.html">Jak powiedzieć coś graczowi</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Znajome kształty z sieci, przebudowane wokół tego, czego potrzebuje od nich gra.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — codzienna obecność</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Codzienne nagrody za obecność; nacisnąć można tylko dzisiejszy dzień." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>Wybierak daty prawie nigdy nie przydaje się w grze. Kształt kalendarza — owszem: przy nagrodach za obecność, gdzie
     liczy się to, <b>który to dzień z rzędu</b>, a nie która jest data.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     Odebrane, dzisiejsze i przyszłe różnią się trzema rzeczami naraz: znaczkiem odhaczenia, ramką w kolorze akcentu i przygaszeniem.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> i <code>GoDonut</code> — statystyki na pierwszy rzut oka</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — Pięciokąt statystyk z linią przerywaną do porównania ekwipunku." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Udziały jako wycinki, z legendą w słowach, nie tylko kolorem." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # przerywana nakładka
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     kolorze, a legenda wypisuje procent słowami.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banery i wybór postaci</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Banery i wybór postaci, które same nie przewijają się, chyba że o to poprosisz." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # domyślnie wyłączone</code></pre>
   <p>Sam nie przesuwa się dalej, dopóki go o to nie poprosisz, a pięć sekund to dolna granica: baner zmieniający się co
@@ -126,6 +133,7 @@ banners.autoplay_seconds = 5.0             # domyślnie wyłączone</code></pre>
     rysowana kropka jest mała.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — podpowiedzi klawiszy, które nie kłamią</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Klawisze czytające prawdziwe przypisanie, więc zmiana nie okłamie podpowiedzi." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # czyta prawdziwe przypisanie</code></pre>
   <p>Wpisane na sztywno „Naciśnij F” wciąż mówi F po tym, jak gracz zmieni przypisanie — najczęstsze kłamstwo w interfejsie na komputerze.
     <code>for_action()</code> czyta <code>InputMap</code>; jeśli akcja przypisana jest zamiast tego do pada, zwraca

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html">Popups and dialogs</a>
   <a href="widgets-surfaces.html">Floating windows</a>
   <a href="widgets-messages.html">Telling the player something</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">List rows with a description</h3>
+  <figure class="shot"><img src="img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — A list row with an icon, a title, a summary and a trailing mark." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Oathkeeper", _inspect, Color.TRANSPARENT,
     "Longsword  /  Attack 42", false)</code></pre>
   <p>A row with a second line gets <b>equal top and bottom padding</b>, roomier than a single-line row, and the
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Flowing rows</h3>
+  <figure class="shot"><img src="img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Columns, rows and wrapping rows with gaps from the theme." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Put controls into <code>wrap_row</code> at their <b>natural width</b>. With wrapping left on, a button's minimum
     width drops to almost nothing and the row sizes its cell by it — the label collapses to one character per line.
     The factory prevents this for you.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Never leave an empty list empty</h3>
+  <figure class="shot"><img src="img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — A placeholder while loading, and a message for an empty list." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Nothing here yet"))</code></pre>
   <p>People read a blank screen as <b>broken</b>.</p>
 </section>

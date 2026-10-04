@@ -87,7 +87,8 @@
       <span class="badge">Чистий GDScript</span>
       <span class="badge">Без автозавантаження</span>
       <span class="badge">MIT</span>
-      <span class="badge">6 пресетів</span>
+      <span class="badge">10 пресетів</span>
+      <span class="badge new">Нове: Material 3 · дитячий образ</span>
       <span class="badge">21 мова</span>
       <span class="badge"><span data-n="icons">1 287</span> іконок у комплекті</span>
     </div>
@@ -101,6 +102,40 @@
 </div>
 
 <main class="wrap">
+
+<section id="new">
+  <h2>Нове: Material 3 та образ для дітей</h2>
+  <p class="sub">
+    До стандартного, сай-фай і середньовічного долучилися дві нові родини — тепер <b>десять вбудованих образів</b>, кожен у темному та світлому варіанті.
+    Кожен віджет, спливне вікно й елемент HUD приймає їх без жодної зміни у вашому коді: змініть пресет — і весь екран піде за ним.
+  </p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="Галерея gohud у material_light — кнопки-пігулки, заповнені картки й кольори Material 3" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Галерея gohud у material_dark — ті самі форми Material 3 на темній базовій схемі" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Галерея gohud у kids_light — пухкі желейні кнопки кольорів олівців на сонячній сторінці" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Галерея gohud у kids_dark — та сама коробка з іграшками на нічно-синій сторінці" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="material-3-for-app-screens">Material 3 — для екранів застосунків</h3>
+      <p>Material 3 Expressive, вивірений за офіційними токенами M3: кнопки-пігулки з плашкою 40dp у зоні дотику 48dp,
+        діалоги й аркуші з кутами 28dp, заповнені картки, поля з контуром і повзунок Expressive. Компоненти застосунків —
+        панель навігації, верхня панель, FAB, рядок пошуку, чипи, прогрес і вибір дати — дотримуються токенів компонентів M3,
+        а заголовки набрано вбудованим шрифтом Roboto. Для крамниць, налаштувань, пошти й кожного екрана, який має відчуватися як застосунок.</p>
+    </div>
+    <div class="card">
+      <h3 id="kids-the-toy-box">Дитячий образ — коробка з іграшками</h3>
+      <p>Створений для дітей: кожна клавіша, рядок і панель — желейна цукерка з товстим контуром і щільним бортиком, що просідає
+        від натискання, а кожен вид елементів має свій колір олівця. Швидкі слоти — цукеркові кубики, значки — наліпки,
+        стик — веселка, вікна мають сонячну стрічку заголовка й круглу кнопку закриття-цукерку, а натискання сплющує кнопку.
+        Розміри й шрифт вашого проєкту лишаються точно такими, як були.</p>
+    </div>
+  </div>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # або MATERIAL_DARK
+GoUi.use_preset(&amp;"kids_light")                   # або &amp;"kids_dark"</code></pre>
+  <p><a href="theming-presets.html#material">Material 3 докладно →</a> · <a href="theming-presets.html#kids">Дитячий образ докладно →</a> ·
+    <a href="widgets-popups.html#popup-looks">Те саме спливне вікно в усіх десяти образах →</a></p>
+</section>
 
 <section id="showcase">
   <h2>Який вигляд це має у грі</h2>
@@ -205,8 +240,10 @@
       <tr><td><code>scifi_light</code></td><td>Ті самі кутасті форми в яскравій «кресленицькій» палітрі</td></tr>
       <tr><td><code>medieval_dark</code></td><td>Темне залізо й шкіра, рами під старе золото, заклепки, гравійовані іконки, заголовки шрифтом Cinzel</td></tr>
       <tr><td><code>medieval_light</code></td><td>Пергамент, чорнило й бронза з тими самими кованими рамами</td></tr>
-      <tr><td><code>material_light</code></td><td>Material 3 для екранів застосунків — кнопки-пігулки, діалоги 28dp, заповнені картки, панель навігації, FAB і рядок пошуку застосунку, Roboto</td></tr>
-      <tr><td><code>material_dark</code></td><td>Ті самі форми Material 3 на темній базовій схемі</td></tr>
+      <tr><td><code>material_light</code> <span class="badge new">Нове</span></td><td>Material 3 для екранів застосунків — кнопки-пігулки, діалоги 28dp, заповнені картки, панель навігації, FAB і рядок пошуку застосунку, Roboto</td></tr>
+      <tr><td><code>material_dark</code> <span class="badge new">Нове</span></td><td>Ті самі форми Material 3 на темній базовій схемі</td></tr>
+      <tr><td><code>kids_light</code> <span class="badge new">Нове</span></td><td>Коробка з іграшками для дітей — клавіші-желейні цукерки з товстим контуром і бортиком, що просідає від натискання, кольори олівців, сонячна сторінка</td></tr>
+      <tr><td><code>kids_dark</code> <span class="badge new">Нове</span></td><td>Та сама коробка з іграшками на нічно-синій сторінці</td></tr>
     </tbody>
   </table>
 
@@ -319,10 +356,12 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxCut</code></td><td>Кути, зрізані по діагоналі (фаска), один потовщений акцентний край, зовнішнє сяйво</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>Лише кутові позначки, без обрамлення вмісту</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Кована рама із заклепками, кутовим гравіюванням, фаскою-відблиском і зернистістю матеріалу</td></tr>
+      <tr><td><code>GoStyleBoxJelly</code></td><td>Желейна цукерка — товстий контур, щільний бортик, що просідає від натискання, тіло, світліше згори, і білий відблиск</td></tr>
     </tbody>
   </table>
-  <p>Усі три серіалізуються в ресурс Theme — саме це й дозволяє темі міняти <b>форму</b>, а не лише колір.
-    <code>GoSkinSciFi</code> і <code>GoSkinMedieval</code> — вбудовані підкласи.</p>
+  <p>Усі чотири серіалізуються в ресурс Theme — саме це й дозволяє темі міняти <b>форму</b>, а не лише колір.
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> і <code>GoSkinKids</code> — вбудовані підкласи.</p>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Швидкі слоти, стик і чип у виконанні кожного вбудованого скіна — стандартного, дитячого, Material, середньовічного та сай-фай" loading="lazy"><figcaption>Що малює скін — стандартний, дитячий, Material, середньовічний, сай-фай</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> завжди повертає <code>StyleBoxFlat</code></b>, бо код, який його викликає,
@@ -333,7 +372,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 <section id="widgets">
   <h2>Віджети</h2>
-  <p class="sub">Усі складники в одній таблиці. <a href="widgets.html">Кожен докладно →</a></p>
+  <p class="sub">Усі складники в одній таблиці. <a href="widgets.html">Кожен докладно →</a> ·
+    <a href="widgets-catalog.html">Кожен віджет із зображенням →</a> · <a href="widgets-popups.html">Спливні вікна та діалоги — повний посібник →</a></p>
 
   <table>
     <thead><tr><th>Клас</th><th>Основа</th><th>Що робить</th></tr></thead>

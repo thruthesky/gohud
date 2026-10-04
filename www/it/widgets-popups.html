@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Popup e finestre di dialogo — gohud</title>
+<meta name="description" content="Tutti i popup di gohud: quale scegliere, come si aprono e si chiudono, cosa fanno con Indietro e con l&#x27;input, in ogni aspetto.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Panoramica</a>
+      <a href="install.html">Installazione</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">Widget</a>
+      <a href="theming.html">Temi</a>
+      <a href="icons.html">Icone</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Italiano</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="widgets-popups.html" hreflang="it" lang="it" aria-current="true">Italiano</a>
+          <a href="../vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Popup e finestre di dialogo</h1>
+    <p class="lead">Tutti i popup di gohud: quale scegliere, come si aprono e si chiudono, cosa fanno con Indietro e con l'input, in ogni aspetto. <a href="widgets.html">← Widget</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget</a>
+  <a href="widgets-catalog.html">Tutti i widget</a>
+  <a href="widgets-popups.html" aria-current="page">Popup e finestre di dialogo</a>
+  <a href="widgets-surfaces.html">Finestre flottanti</a>
+  <a href="widgets-messages.html">Dire qualcosa a chi gioca</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Aspettare, dire, contare</a>
+  <a href="widgets-forms.html">Moduli e liste</a>
+  <a href="widgets-shapes.html">Forme che i giochi usano davvero</a>
+  <a href="widgets-overlays.html">Sopra lo schermo</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — un unico posto in cui le cose si costruiscono</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>Scegliere il popup giusto</h2>
+  <p class="sub">Ogni finestra a comparsa interrompe. Prima di sceglierne uno, rispondi a una sola domanda: <b>chi gioca deve rispondere prima che il gioco
+    vada avanti?</b> Se sì, blocca. Se no, non bloccare mai — una scheda che ferma il gioco per una notizia che nessuno ha chiesto è il
+    modo più rapido per far chiudere il tuo gioco.</p>
+  <ol class="steps">
+    <li><b>Una domanda che vuole una risposta</b> — comprare, eliminare, uscire, sovrascrivere → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>. Qualcosa di cui prendere atto → <code>alert()</code>. Una tra poche opzioni → <code>choose()</code>.</li>
+    <li><b>Una schermata a sé</b> — le impostazioni, una scheda personaggio, un articolo del negozio → <a href="#popup-surface"><code>GoSurface</code></a> al centro dello schermo.</li>
+    <li><b>Una lista lunga o una pagina di gestione</b> — la borsa, la posta, gli amici → <a href="#popup-sheets"><code>GoSheet</code></a> dal basso su un telefono, <code>GoDrawer</code> di lato su uno schermo largo.</li>
+    <li><b>Qualcosa su ciò che è appena stato premuto</b> — le statistiche di un oggetto, le sue azioni → <a href="#popup-anchored"><code>GoPopover</code></a> o <code>GoContextMenu</code> lì accanto.</li>
+    <li><b>Notizie durante le quali il gioco può andare avanti</b> — salvato, lasciato cadere, invitato → <a href="#popup-nonblocking"><code>GoSnackbar</code>, <code>GoNotice</code> o <code>GoPromptCard</code></a>. Questi non occupano mai lo schermo.</li>
+    <li><b>Insegnare i controlli</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>. <b>Cheat mentre sviluppi</b> → <code>GoConsole</code>.</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">Tutti i popup a colpo d'occhio</h3>
+  <table>
+    <thead><tr><th>Popup</th><th>Ferma il gioco</th><th>Indietro / Esc</th><th>Un tocco fuori</th><th>Usalo per</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>Sì</td><td>La chiude — confirm risponde <code>false</code>, alert ritorna</td><td>La chiude solo con <code>dismiss_on_scrim</code></td><td>Domande che richiedono una risposta</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>Sì</td><td>La chiude — risponde <code>-1</code></td><td>La chiude solo con <code>dismiss_on_scrim</code></td><td>Sceglierne una tra poche</td></tr>
+      <tr><td><code>GoSurface</code></td><td>Sì</td><td>Chiede di chiudere la finestra più in alto</td><td>Chiede di chiudere con <code>dismiss_on_scrim</code></td><td>Finestre tutte tue</td></tr>
+      <tr><td><code>GoSheet</code></td><td>Sì</td><td>Chiude tutto il foglio</td><td>Lo chiude</td><td>La borsa, una lista del negozio, la posta</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>Sì</td><td>Solo Indietro di Android</td><td>Lo chiude</td><td>Una lista laterale su uno schermo largo</td></tr>
+      <tr><td><code>GoPopover</code></td><td>Finché non si chiude</td><td>La chiude</td><td>La chiude — e non va oltre</td><td>Dettagli di oggetti e abilità</td></tr>
+      <tr><td><code>GoCombobox</code> lista</td><td>Finché non si chiude</td><td>La chiude</td><td>La chiude</td><td>Una lista di scelta con ricerca</td></tr>
+      <tr><td><code>GoContextMenu</code> · dropdown · select</td><td>Il menu del motore</td><td>Il menu del motore</td><td>Lo chiude</td><td>Azioni, liste brevi</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>No</td><td>—</td><td>Arriva al gioco</td><td>Salvato · Annulla · Riprova</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>No</td><td>—</td><td>Arriva al gioco</td><td>Un invito, una richiesta di scambio</td></tr>
+      <tr><td><code>GoNotice</code></td><td>Mai</td><td>—</td><td>Arriva al gioco</td><td>Una riga fissa sull'HUD</td></tr>
+      <tr><td><code>GoBanner</code></td><td>No — sta dentro la pagina</td><td>—</td><td>—</td><td>"Sei offline. Riprova"</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Solo la sua scheda</td><td>Termina il tour</td><td>Arriva al gioco</td><td>Un tour al primo avvio</td></tr>
+      <tr><td><code>GoConsole</code></td><td>Solo il suo pannello</td><td>Il tasto Esc la chiude</td><td>Arriva al gioco</td><td>Comandi di debug</td></tr>
+    </tbody>
+  </table>
+  <p>Su quale livello si apre ciascuno, e perché in quell'ordine, è spiegato in <a href="#popup-stack">Livelli, Indietro e input</a>.</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="Una finestra di conferma sopra un gioco — una domanda con i pulsanti Non ora e Compra" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="Una finestra di impostazioni al centro dello schermo con interruttori, uno slider, Salva e Annulla" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="Un foglio dell'inventario che sale dal basso con un campo di ricerca e un pulsante Chiudi" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="Un pannello laterale con la borsa che scorre dal lato destro" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="Una piccola scheda oggetto sopra lo slot rapido della pozione" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="Un menu con Usa, Sposta e Lascia cadere aperto da uno slot rapido" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="Uno snackbar in basso che dice che un oggetto è stato lasciato cadere, con Annulla" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="Una scheda di invito al gruppo vicino alla parte alta dello schermo con Accetta e Rifiuta" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="Una scheda del coach mark che indica uno slot rapido durante un tour" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="La console per lo sviluppo lungo la parte alta dello schermo con un comando digitato" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>Ogni immagine di questa pagina mostra lo stesso piccolo gioco — salute e mana in alto a sinistra, monete in alto a destra, un joystick e
+    tre slot rapidi in basso — in <code>default_dark</code>, con un popup aperto sopra. <a href="#popup-looks">La stessa
+    conferma in tutti e dieci gli aspetti →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>Anatomia di un popup</h2>
+  <p class="sub">Quasi tutti i popup bloccanti di gohud — finestre di dialogo, fogli, schede ancorate, la lista del combobox e le tue
+    finestre — sono un solo nodo, <code>GoSurface</code>. Impara le sue parti una volta e le conosci tutte.</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="Una finestra Crea un personaggio: un pulsante Indietro e il titolo nell'intestazione, un pulsante di chiusura, un campo nome con un errore, pulsanti di classe, una riga di stato rossa e un pulsante Crea fissato in basso" loading="lazy"><figcaption>Intestazione con indietro e chiusura · corpo · riga di stato · piè di pagina</figcaption></figure>
+  <table>
+    <thead><tr><th>Parte</th><th>Che cos'è</th><th>Come ci arrivi</th></tr></thead>
+    <tbody>
+      <tr><td>Livello</td><td>Il <code>CanvasLayer</code> su cui vive il popup. Il suo numero decide che cosa copre.</td><td>Lo scegli tu per un <code>GoSurface</code>; integrato per gli altri (<a href="#popup-stack">tabella</a>)</td></tr>
+      <tr><td>Velo</td><td>Il velo steso su tutto ciò che sta dietro. Cattura i tocchi che mancano la scheda.</td><td><code>scrim_transparent</code>, <code>dismiss_on_scrim</code>, il colore <code>scrim</code> del tema</td></tr>
+      <tr><td>Scheda</td><td>La finestra stessa — la superficie del pannello del tema, arrotondata, smussata, forgiata o di gelatina a seconda dell'aspetto.</td><td><code>card</code>, <code>alpha</code></td></tr>
+      <tr><td>Intestazione</td><td>Un pulsante indietro facoltativo, il titolo (al massimo due righe, poi "…"), il pulsante di chiusura.</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>Barra degli strumenti</td><td>Una riga fissa sotto l'intestazione — un campo di ricerca, chip di filtro. Nascosta finché non la usi.</td><td><code>toolbar</code></td></tr>
+      <tr><td>Corpo</td><td>La parte che scorre. Il contenuto va qui.</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>Riga di stato</td><td>Una riga fissa tra il corpo e il piè di pagina — "Controllo del nome non riuscito", "Salvataggio…".</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>Piè di pagina</td><td>Pulsanti fissi in basso. Nascosto finché non lo usi.</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Ciò che deve restare fermo va nelle righe fisse.</b> Un campo di ricerca, un errore o un pulsante Salva messi nel corpo scorrono via
+    con una lista lunga — chi gioca scrive un nome sbagliato, l'errore è fuori vista e sembra che non succeda nulla.
+    Usa <code>toolbar</code>, la riga di stato e <code>footer</code>; restano al loro posto mentre il corpo scorre.
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2>Finestre di dialogo da mettere in <code>await</code></h2>
+  <p class="sub"><code>GoDialogs</code> chiede e aspetta. Un nodo, tre domande — e la risposta torna sulla stessa riga, così il codice
+    si legge nell'ordine in cui chi gioca lo vive.</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — una domanda con Non ora sopra e Compra sotto" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="Una conferma distruttiva — il pulsante Elimina è pieno e rosso" loading="lazy"><figcaption><code>confirm(…, true)</code> — distruttiva</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — Livello superiore! con un solo pulsante Fantastico" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — Ordina la borsa per, con quattro opzioni e Annulla" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="Una conferma con i due pulsanti affiancati" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">Le tre domande</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # await per aspettare
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # chiavi di traduzione</code></pre>
+  <table>
+    <thead><tr><th>Chiamata</th><th>Restituisce</th><th>Usala per</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> o <code>false</code></td><td>Sì o no — comprare, eliminare, uscire, sovrascrivere.</td></tr>
+      <tr><td><code>alert()</code></td><td>niente — mettila in <code>await</code> per aspettare</td><td>Qualcosa che chi gioca deve vedere: una ricompensa, una connessione persa.</td></tr>
+      <tr><td><code>choose()</code></td><td>l'indice dell'opzione, oppure <code>-1</code></td><td>Una tra poche. Un'opzione è una String o <code>{text, icon, danger, subtitle}</code>.</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>come sopra</td><td>Lo stesso con chiavi di traduzione — le parole seguono un cambio di lingua mentre la finestra di dialogo è aperta.</td></tr>
+    </tbody>
+  </table>
+  <p>Le etichette dei pulsanti lasciate vuote ricadono sulle parole del kit (<code>confirm</code>, <code>cancel</code> in <code>GoConfig.text_keys</code>).
+    <code>extra</code> viene aggiunto al corpo su una nuova riga. <code>args</code> riempie i <code>{placeholders}</code> nel titolo
+    <b>e</b> nel corpo: <code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>.</p>
+
+  <h3 id="every-way-out-has-an-answer">Ogni via d'uscita ha una risposta</h3>
+  <table>
+    <thead><tr><th>Chi gioca…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>preme OK / un'opzione</td><td><code>true</code></td><td>ritorna</td><td>l'indice dell'opzione</td></tr>
+      <tr><td>preme Annulla</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>preme ×, Esc o Indietro di Android</td><td><code>false</code></td><td>ritorna</td><td><code>-1</code></td></tr>
+      <tr><td>tocca il velo (solo con <code>dismiss_on_scrim</code>)</td><td><code>false</code></td><td>ritorna</td><td><code>-1</code></td></tr>
+      <tr><td>il nodo <code>GoDialogs</code> esce dall'albero</td><td><code>false</code></td><td>ritorna</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>Quindi il codice dopo <code>await</code> viene sempre eseguito — nessuna risposta resta in sospeso, nemmeno quando la scena cambia sotto la finestra di dialogo.</p>
+
+  <h3 id="destructive-actions">Azioni distruttive</h3>
+  <p>Passa <code>destructive = true</code> per qualcosa di irreversibile. Il pulsante OK diventa il pulsante pieno
+    <code>Tone.DANGER_SOLID</code> — bianco su rosso in ogni aspetto, laddove un'etichetta di pericolo colorata dovrebbe scurirsi fin quasi
+    al nero su un tema chiaro per restare leggibile. Il tono viene reimpostato a ogni chiamata, perché la finestra viene riutilizzata.</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>OK ha il focus della tastiera.</b> Ogni conferma si apre con il focus sul pulsante OK, quindi Invio o Spazio confermano —
+    anche in una conferma distruttiva. Formula i pulsanti in modo che la scelta sicura sia evidente ("Tienilo"), e metti le azioni
+    irreversibili dietro un secondo passaggio quando un errore costa a chi gioca progressi veri.
+  </div>
+
+  <h3 id="button-layout">Disposizione dei pulsanti</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>Che cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code> (predefinito)</td><td>Pulsanti impilati, a tutta larghezza. Sicuro in ogni lingua — una lunga etichetta in tedesco o in russo non viene mai schiacciata.</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>Una riga, metà larghezza ciascuno.</td></tr>
+      <tr><td><code>AUTO</code></td><td>Una riga solo quando entrambe le etichette stanno su una riga in metà scheda; altrimenti impilati. Deciso di nuovo a ogni cambio di lingua o ridimensionamento.</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> è lo spazio tra i pulsanti, <code>body_gap</code> lo spazio sopra di essi — rendilo più ampio dello spazio
+    tra i pulsanti, così la domanda e la scelta si leggono come due parti. Per una sola finestra di dialogo, chiama
+    <code>set_next_action_layout()</code> prima di aprirla. L'unico pulsante di un alert occupa sempre tutta la larghezza.</p>
+
+  <h3 id="one-at-a-time">Una alla volta</h3>
+  <p>Una seconda <code>confirm()</code> mentre una è aperta restituisce subito <code>false</code> — una finestra di dialogo non si impila mai
+    per sbaglio su un'altra. Attiva <code>queue_when_busy</code> e aspetta invece il suo turno; <code>alert()</code> aspetta sempre.
+    <code>queue_limit</code> (8) limita la coda, e quando trabocca la richiesta più vecchia riceve <code>false</code>.
+    <code>pending()</code> conta le richieste in attesa e <code>clear_pending()</code> risponde <code>false</code> a tutte.
+    <code>choose()</code> non si mette mai in coda: restituisce <code>-1</code> quando una finestra di dialogo è già aperta.</p>
+
+  <h3 id="phone-and-desktop">Telefono e desktop</h3>
+  <p><code>choose()</code> si apre come foglio dal basso su Android e iOS — dove sta il pollice — e come scheda al centro su desktop.
+    Una conferma è limitata a <code>max_width</code> (420dp) e centrata. Imposta <code>layer_index</code>, <code>max_width</code> e gli
+    altri export <b>prima di</b> <code>add_child</code>; vengono applicati quando il nodo entra nell'albero.</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — una finestra tutta tua</h2>
+  <p class="sub">Quando un popup è più di una domanda — le impostazioni, una scheda personaggio, un oggetto da comprare — costruiscilo su
+    <code>GoSurface</code>. Area sicura, tastiera, righe fisse, scorrimento, Indietro, focus e ridimensionamento sono già risolti.</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>Non si chiude mai da sola.</b> ×, Esc, Indietro e un tocco sul velo emettono soltanto <code>close_requested</code>. Nascondere o liberare
+    la finestra spetta alla schermata proprietaria — solo lei sa se "chiudi" significa salva, scarta o chiedi prima.
+  </div>
+
+  <h3 id="three-placements">Tre collocazioni</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER — una scheda al centro dello schermo" loading="lazy"><figcaption><code>CENTER</code> — conferme, impostazioni</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — la stessa finestra che sale dal basso" loading="lazy"><figcaption><code>BOTTOM</code> — liste, pagine di gestione</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — un menu di ordinamento fissato accanto al pulsante Ordina" loading="lazy"><figcaption><code>ANCHOR</code> — accanto a un controllo</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="Un selettore di data dentro una finestra centrata con Annulla e OK" loading="lazy"><figcaption>Un <code>GoDatePicker</code> in una finestra <code>CENTER</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> richiede <code>anchor_control</code>. La scheda va alla sua destra se <code>anchor_min_width</code> ci sta,
+    altrimenti sul lato più ampio, altrimenti dentro lo schermo, e si apre verso l'alto quando c'è più spazio sopra. Segue un ancoraggio
+    in movimento a ogni frame. <code>anchor_width</code> (320) e <code>anchor_max_height</code> (520) ne fissano le dimensioni.</p>
+
+  <h3 id="how-big-it-gets">Quanto diventa grande</h3>
+  <table>
+    <thead><tr><th>Misura</th><th>Regola</th><th>Si cambia con</th></tr></thead>
+    <tbody>
+      <tr><td>Spazio</td><td>L'area sicura, meno la tastiera, meno il margine dello schermo (16dp, mai più del 10% del lato corto).</td><td>—</td></tr>
+      <tr><td>Larghezza</td><td>Il 94% dello spazio in verticale, il 72% in orizzontale, al massimo 480dp.</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>Altezza</td><td>Alta quanto il contenuto (<code>fit_content</code>), fino al 68% dello spazio, con un tetto al 72%. Una scheda centrata non ridimensionabile può crescere fino al 94% per evitare lo scorrimento.</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>Densità</td><td>Compatta quando <code>compact</code> è impostato, quando lo schermo è alto meno di 420dp (un telefono in orizzontale) o quando il contenuto non ci sta: meno margine interno, spazi più piccoli, un titolo più piccolo. Misura entrambe le versioni e tiene la più ariosa che ci sta — senza sfarfallii.</td><td><code>compact</code></td></tr>
+      <tr><td>Ridimensionamento</td><td>Con <code>resizable</code>, il titolo fa da maniglia: trascinalo tra il 30% e il tetto. <code>height_changed(ratio)</code> riporta il risultato.</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>Un rapporto oltre il tetto viene ridotto, con un solo avviso in una build di debug. La tastiera spinge la scheda verso l'alto e fa scorrere
+    il campo con il focus finché non è visibile; l'area sicura la tiene lontana dal notch e dalla barra dei gesti su Android e iOS.</p>
+
+  <h3 id="properties">Proprietà</h3>
+  <table>
+    <thead><tr><th>Proprietà</th><th>Predefinito</th><th>Che cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>, <code>BOTTOM</code> o <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code> (false)</td><td>Un tocco sul velo chiede la chiusura. Un trascinamento iniziato dentro la scheda no.</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>Lascia il gioco visibile — il velo cattura comunque i tocchi esterni.</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>Mostra × e lascia che Esc e Indietro chiedano la chiusura.</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>La riga di intestazione, il corpo scorrevole, la maniglia di trascinamento.</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>Adatta la dimensione al contenuto; parti in modalità compatta.</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code> (false)</td><td>Fa apparire la scheda in dissolvenza all'apertura. Istantaneo con <code>reduce_motion</code>.</td></tr>
+      <tr><td><code>alpha</code></td><td>-1 (quella del tema)</td><td>L'opacità della superficie della scheda, come rapporto. Sbiadisce solo la superficie — mai il testo.</td></tr>
+      <tr><td><code>initial_focus</code></td><td>nessuno</td><td>Il controllo che riceve il focus all'apertura.</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Impostale prima di <code>add_child</code>:</b> <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code> e
+    <code>scroll_body</code> vengono applicate quando la finestra entra nell'albero. <code>dismiss_on_scrim</code>, <code>close_enabled</code>,
+    <code>fade_in</code> e <code>initial_focus</code> vengono lette in tempo reale.
+  </div>
+
+  <h3 id="signals-and-calls">Segnali e chiamate</h3>
+  <table>
+    <thead><tr><th>Nome</th><th>Che cos'è</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×, Esc, Indietro di Android o un tocco sul velo — e <code>request_close()</code>. Emesso solo dalla finestra più in alto.</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>Il pulsante indietro dell'intestazione, per una finestra con più pagine. Un <code>Callable</code> vuoto lo nasconde.</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>Dopo un trascinamento della maniglia.</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>È questa la finestra che riceve Indietro — c'è almeno una finestra aperta.</td></tr>
+      <tr><td><code>relayout()</code></td><td>Ricalcola subito la disposizione. Cambiare una proprietà di dimensionamento lo fa già per te.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>Fogli e pannelli laterali</h2>
+  <p class="sub">Una lista che ha bisogno di spazio sale dal basso su un telefono tenuto in verticale — dove sta il pollice — e arriva
+    di lato su un tablet o un desktop, dove un foglio coprirebbe il gioco.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — Inventario con un campo di ricerca fisso, una lista e un pulsante Chiudi fisso" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer a sinistra — un menu con Città, Mappa del mondo, Missioni, Gilda e Impostazioni" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer a destra — la borsa" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — pagine dal basso</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>È un <code>CanvasLayer</code> (livello 10) che contiene un <code>GoSurface</code> <code>BOTTOM</code> ridimensionabile — quindi sta
+      sopra l'HUD, e chi gioca può trascinarlo per allungarlo.</li>
+    <li><code>open(title)</code> inizia una pagina nuova: svuota il corpo, la barra degli strumenti e il pulsante indietro e libera ciò che
+      <code>add_footer()</code> ha aggiunto. Richiamalo per mostrare un'altra pagina nello stesso foglio; <code>set_back()</code> mostra un pulsante
+      indietro per tornare alla pagina iniziale. <code>open_key()</code> accetta una chiave di traduzione.</li>
+    <li><code>close()</code> lo nasconde — non viene liberato, quindi l'<code>open()</code> successivo è istantaneo. <code>closed</code> e
+      <code>page_changed</code> ti dicono quando succede.</li>
+    <li><code>height_ratio</code> (0.6) è l'altezza di apertura; <code>max_height_ratio</code> alza il tetto; <code>dismissable</code>
+      (true) lo chiude con un tocco sul velo.</li>
+  </ul>
+  <div class="note warn">
+    <b>Esc e Indietro chiudono tutto il foglio</b>, anche su una sottopagina con <code>set_back()</code> — solo il pulsante indietro sullo schermo
+    torna di una pagina. Se Indietro deve tornare di una pagina, gestisci tu <code>close_requested</code> su <code>sheet.surface</code>.
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — di lato</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # il lato d'inizio: sinistra, oppure destra in arabo
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>Livello 80. Largo il 42% dello schermo (<code>width_ratio</code>), tra <code>min_width</code> (320dp) e <code>max_width</code>
+      (420dp) — su un telefono copre quasi tutto lo schermo, ed è per questo che lì un foglio è la scelta migliore.</li>
+    <li>Il pannello arriva fino al bordo dello schermo; solo il suo contenuto rientra dall'area sicura, così un angolo arrotondato non taglia mai la prima riga.</li>
+    <li><code>LEFT</code> significa sinistra dello schermo anche in arabo. Attiva <code>follow_text_direction</code> quando il punto è "il lato
+      d'inizio"; <code>effective_side()</code> ti dice da che parte è finito.</li>
+    <li><code>open(title)</code> mantiene il corpo — riempilo una volta sola. <code>set_title("")</code> nasconde l'intestazione.
+      <code>motion_seconds</code> (0.2) lo fa scorrere; <code>reduce_motion</code> lo rende istantaneo.</li>
+  </ul>
+  <div class="note warn">
+    <b>Indietro di Android chiude un pannello laterale; Esc no.</b> Il pannello ascolta solo l'Indietro di sistema. Su desktop, chiama
+    <code>drawer.close()</code> da una tua scorciatoia da tastiera — e nota che <code>GoSurface.is_any_open()</code> non conta i pannelli laterali;
+    chiedi a <code>drawer.is_open()</code>.
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>Schede e menu accanto a un controllo</h2>
+  <p class="sub">Ciò che chi gioca ha appena premuto merita una risposta proprio accanto al dito, non al centro dello schermo.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — una scheda Pozione di salute accanto allo slot rapido" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Usa, Sposta nello slot 1 e Lascia cadere" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — un menu Ordina aperto sopra una classifica" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select — un selettore di qualità aperto con Bassa, Media, Alta e Ultra" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — una lista di amici con un campo di ricerca" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — una scheda su ciò che hai premuto</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>Una superficie <code>ANCHOR</code> con livello, ancoraggio e smontaggio già collegati — le dieci righe che ogni gioco riscrive una volta
+    dopo l'altra. <b>Una alla volta</b>: aprirne una seconda chiude la prima, perché le schede impilate seppelliscono lo schermo e nessuno
+    capisce più quale appartenga a quale slot. Il velo è trasparente — una scheda aperta per confrontare l'equipaggiamento non deve oscurare
+    l'equipaggiamento — ma cattura comunque il primo tocco esterno, che chiude la scheda e non va oltre.</p>
+  <table>
+    <thead><tr><th>Opzione</th><th>Predefinito</th><th>Che cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>Un'intestazione con ×. Vuoto: nessuna intestazione.</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>La dimensione della scheda.</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>Un tocco esterno la chiude.</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>Spaziatura compatta, opacità della superficie, titolo come chiave di traduzione.</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td>Il <code>CanvasLayer</code> su cui si apre.</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> e <code>GoPopover.is_open()</code> sono statici. <code>open()</code> restituisce la superficie — oppure
+    <code>null</code> quando l'ancoraggio non è nell'albero, quindi controlla prima di fare <code>await shown.close_requested</code>.</p>
+  <div class="note warn">
+    <b>Non è un tooltip al passaggio del mouse.</b> Il touch non ha il passaggio del mouse; tutto ciò che solo un mouse può rivelare è invisibile a metà di chi gioca.
+    E con <code>dismissable = false</code> e senza titolo, niente sullo schermo la chiude — solo Esc, Indietro o una tua chiamata.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — pressione prolungata e clic destro</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>Un clic destro lo apre subito. Un dito tenuto premuto per mezzo secondo (<code>HOLD_SECONDS</code>) lo apre; spostarsi di più di
+      12dp annulla — così scorrere una lista non fa mai saltare fuori un menu.</li>
+    <li>Una voce è <code>{text, action, icon, disabled, checked, separator, danger, translate}</code>. Passa un <code>Callable</code>
+      invece dell'array quando le voci dipendono da che cosa è stato premuto; viene chiamato a ogni apertura del menu.</li>
+    <li><code>danger</code> mette "⚠ " prima del testo — il menu del motore può colorare solo tutte le sue voci insieme.</li>
+    <li>È il <code>PopupMenu</code> del motore, vestito da <code>GoStyle.style_popup()</code>. Non conta come superficie aperta.</li>
+  </ul>
+  <div class="note warn">
+    <b>Una pressione prolungata ha bisogno di una seconda via d'accesso.</b> Nessuno scopre un gesto nascosto. Affiancale un pulsante <code>⋯</code> visibile
+    (<code>open_at()</code>, come sopra), oppure insegnala una volta con un coach mark.
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">Menu a tendina, selettori e pulsante diviso</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>Tutti e tre aprono il menu popup del motore: <code>dropdown()</code> è un <code>MenuButton</code> che esegue un'azione,
+    <code>select()</code> un <code>OptionButton</code> che conserva un valore, <code>GoSplitButton</code> un'azione principale più un menu sulla
+    sua freccia (<code>chosen(index)</code>). I menu restano completamente opachi di proposito — un menu mostrato in una propria finestra del
+    sistema operativo rende neri i pixel traslucidi.</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — una lista con ricerca</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>Quando lo premi, apre una lista ancorata sul livello 96 con un velo trasparente. Da <code>search_threshold</code> (8) voci in su compare
+    un campo di ricerca che prende il focus; trova corrispondenze in qualsiasi punto del testo o del suggerimento, senza distinguere maiuscole
+    e minuscole, e un risultato vuoto lo segnala. <code>list_width</code> (0 = la larghezza del pulsante, almeno 180dp) dimensiona la lista.</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>Popup che non fermano mai il gioco</h2>
+  <p class="sub">Notizie che chi gioca può leggere mentre gioca. Nessuno di questi ha un velo; un tocco in qualunque punto che non sia la
+    scheda stessa va al gioco.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Spada arrugginita lasciata cadere, con Annulla, sopra gli slot rapidi" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Partita salvata, in cima all'HUD" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — un invito al gruppo sotto le barre della salute" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="Un tooltip personalizzato sopra lo slot dello scudo" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — un messaggio con Annulla</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th>Chiave di <code>post()</code></th><th>Che cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>Il messaggio, una riga in grassetto facoltativa, i <code>{placeholders}</code>, le chiavi di traduzione.</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>Il colore d'accento (<code>GoTheme.SUCCESS</code>, <code>WARNING</code>…) e un'icona.</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>Pulsanti — String o <code>{text, action}</code> — e una ×.</td></tr>
+      <tr><td><code>seconds</code></td><td>Quanto resta visibile. Negativo: il <code>notice_duration_ms</code> del tema. <b>0: finché non viene chiuso</b> — in quel caso dagli un pulsante.</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> restituisce l'indice del pulsante premuto, oppure <code>-1</code> quando è scaduto o è stato chiuso. I messaggi si
+    mettono in coda (<code>queue_limit</code> 4, il più vecchio scartato con -1), e lo stesso testo inviato di nuovo mentre è visibile si limita
+    a ricaricare il suo timer. Sta in basso (o in alto, <code>placement</code>), sopra l'area sicura e la tastiera, sul livello 90 — leggibile
+    sopra un pannello laterale. Con <code>tap_to_dismiss</code> (attivo) un tocco su una scheda senza pulsanti la chiude; un tocco fuori dalla
+    scheda arriva sempre al gioco. <code>show_text()</code> e <code>show_key()</code> sono le forme in una riga.</p>
+  <div class="note warn">
+    <b>Non fare mai una domanda in uno snackbar.</b> Se ne va da solo; una scelta che conta va in una finestra di dialogo.
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — una riga sull'HUD</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>Un semplice pannello che posizioni tu — in un <code>GoHudAnchor</code>, in un angolo, ovunque. Non prende né input né focus, quindi
+    premere attraverso di esso raggiunge il pulsante sottostante, e un nuovo messaggio sostituisce il vecchio. Dagli una larghezza:
+    <code>preferred_width(limit)</code> restituisce la larghezza naturale di un testo breve e manda a capo un testo lungo entro <code>limit</code>.
+    <code>set_content()</code> mostra un controllo qualsiasi al posto del testo.</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — una domanda che può aspettare</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # scende sotto le barre della salute invece di coprirle
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>Parte nascosta</b> — chiama <code>show()</code>. Non ha un timer suo; aggiungine uno se la domanda scade.</li>
+    <li>I suoi pulsanti non la chiudono — decidono le azioni. × (<code>set_closable(true)</code>) emette <code>closed</code>.</li>
+    <li><code>fit_width(width)</code> imposta la larghezza e prevede l'altezza dal font, così niente di ciò che è disposto in base a essa salta un frame dopo.</li>
+    <li>La sua superficie segue <code>hud_alpha</code> — fa parte dell'HUD, non è una finestra.</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> e tooltip</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> sta nella pagina
+    stessa, sopra il contenuto, e non scade mai; un pulsante lo chiude, a meno che non abbia <code>"keep": true</code>.
+    <code>GoStyle.tooltip_node(text)</code> è ciò che va restituito da <code>_make_custom_tooltip()</code> — il motore disegna il fondo
+    (<code>TooltipPanel</code>), gohud il testo, mandato a capo oltre i 260dp. I tooltip sono per il mouse; non nascondere mai dietro un tooltip qualcosa di cui chi gioca ha bisogno.</p>
+</section>
+
+<section id="popup-guides">
+  <h2>Tour e console</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — passaggio 1 di 2, Slot rapidi, che indica lo slot della pozione" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — il pannello della console con un comando give e il suo risultato" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — un tour dei controlli veri</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>Un anello intorno al controllo vero e una scheda accanto. Premere il bersaglio fa avanzare (il suo segnale <code>pressed</code>, oppure
+      <code>"signal"</code> nel passaggio); Avanti e Salta sono sulla scheda. Un bersaglio nascosto viene saltato.</li>
+    <li>La scheda resta fuori dal centro dello schermo (<code>avoid_center_band</code>), lontana dagli ancoraggi dell'HUD e da <code>keep_clear</code>.</li>
+    <li>Finché un <code>GoSurface</code> è aperto, il tour si nasconde e aspetta. Indietro o Esc lo terminano con <code>finished(false)</code>.</li>
+    <li>Non ha un livello suo — aggiungilo per ultimo, oppure su un livello sopra l'HUD.</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — cheat mentre sviluppi</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>Livello 200 — sopra ogni cosa, così puoi fare debug sopra una finestra di dialogo — e continua a funzionare mentre l'albero è in pausa.
+    Una palette suggerisce i comandi mentre digiti; Su e Giù scorrono la cronologia; Esc la chiude. Non c'è un tasto predefinito: assegnane uno tu.</p>
+  <div class="note warn">
+    <b><code>debug_only</code> (attivo) la blocca in una build di rilascio</b> — sia <code>open()</code> sia <code>run()</code>. I comandi di
+    cheat nelle mani di chi gioca chiudono l'economia di un gioco il primo giorno.
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>Livelli, Indietro e input</h2>
+  <p class="sub">Tre regole decidono che cosa chi gioca può toccare mentre qualcosa è aperto: che cosa sta sopra, a chi appartiene Indietro e
+    chi riceve un tocco.</p>
+
+  <h3 id="what-sits-on-top">Che cosa sta sopra</h3>
+  <table>
+    <thead><tr><th>Livello</th><th>Che cosa ci sta</th><th>Si imposta con</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>Il tuo HUD (a tua scelta)</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>Le tue finestre <code>GoSurface</code>, un menu di pausa</td><td>il tuo <code>CanvasLayer</code></td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td>opzione <code>"layer"</code></td></tr>
+      <tr><td>96</td><td>lista di <code>GoCombobox</code></td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>L'ordine è voluto: uno snackbar riferisce ciò che è appena successo, quindi si legge sopra un pannello laterale; una scheda ancorata
+    appartiene a ciò che è appena stato premuto, quindi gli sta sopra; una finestra di dialogo fa una domanda e copre entrambi; la console copre
+    tutto, perché è ciò che apri quando tutto il resto è andato storto.</p>
+
+  <h3 id="who-owns-back">A chi appartiene Indietro</h3>
+  <ul>
+    <li><b>Risponde solo la finestra più in alto.</b> Tra le superfici aperte, quella sul livello più alto (poi l'ultima nell'albero) riceve
+      Esc, l'annullamento del gamepad (<code>ui_cancel</code>), Indietro di Android e i tocchi sul velo. Le finestre impilate si chiudono una
+      alla volta, mai insieme.</li>
+    <li>Indietro di Android viene gestito un frame dopo, così una sola pressione non può mai chiudere due finestre.</li>
+    <li>Finché è aperto qualcosa che possiede Indietro, Indietro di Android non chiude l'app (<code>GoBackPolicy</code> conta i proprietari e
+      ripristina <code>quit_on_go_back</code> dopo l'ultimo). Un tuo popup che prende Indietro deve chiamare
+      <code>GoBackPolicy.acquire()</code> e <code>release()</code> — anche in <code>_exit_tree</code>.</li>
+    <li>Un pannello laterale, un tour con coach mark e un modulo si fanno da parte mentre una superficie è aperta — Indietro va prima alla superficie.</li>
+    <li><code>GoConfig.close_on_back</code> (attivo) è l'interruttore per le superfici.</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">Chi riceve un tocco</h3>
+  <ul>
+    <li>Una superficie copre tutto lo schermo e ferma l'input — <b>anche con un velo trasparente</b>. Niente su un livello inferiore viene premuto
+      mentre è aperta; i livelli sopra (uno snackbar) sì.</li>
+    <li>Anche la rotella del mouse e il gesto di pizzico si fermano alla finestra: scorrere oltre la fine di una lista non fa mai scorrere il gioco.</li>
+    <li>L'input di gioco che non passa dai controlli — <code>_unhandled_input</code> per il movimento, un trascinamento della telecamera — deve
+      mettersi in pausa: <code>if GoSurface.is_any_open(): return</code>. Questo copre finestre di dialogo, fogli, schede ancorate e il combobox;
+      a un pannello laterale chiedi <code>is_open()</code> a parte.</li>
+    <li>Snackbar, avviso, prompt card e coach mark prendono l'input solo sulla propria scheda; ovunque altro lo riceve il gioco.</li>
+  </ul>
+
+  <h3 id="focus">Focus</h3>
+  <p>Una finestra aperta da un puntatore non mette il focus su niente — nessun anello lampeggia per un tocco. Se è aperta da tastiera o gamepad,
+    il focus va al pulsante di chiusura (o a <code>initial_focus</code>). Il focus resta dentro la finestra finché è aperta e torna al controllo
+    che lo aveva quando la finestra si chiude. Le finestre di dialogo mettono il focus su OK ogni volta.</p>
+
+  <h3 id="pausing-the-game">Mettere in pausa il gioco</h3>
+  <p>Mettere in pausa l'albero mette in pausa anche i popup — solo la console continua a funzionare. Per un menu di pausa, dai al suo livello
+    <code>process_mode = PROCESS_MODE_ALWAYS</code>; così la finestra, i suoi pulsanti e Indietro continuano a funzionare mentre il gioco è fermo.</p>
+</section>
+
+<section id="popup-looks">
+  <h2>Lo stesso popup in ogni aspetto</h2>
+  <p class="sub">La conferma di inizio pagina, sopra lo stesso gioco, cambiando solo il preset. Il codice è
+    identico — il tema, la skin e le icone fanno il resto.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="La conferma in default_dark — arrotondata, un accento blu tenue" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="La conferma in default_light" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="La conferma in scifi_dark — angoli smussati e un bordo al neon" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="La conferma in scifi_light" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="La conferma in medieval_dark — una cornice forgiata e un titolo in Cinzel" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="La conferma in medieval_light — pergamena e bronzo" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="La conferma in material_light — angoli da 28dp e pulsanti a pillola" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">Nuovo</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="La conferma in material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Nuovo</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="La conferma in kids_light — un nastro del titolo color sole, un pulsante di chiusura a caramella e pulsanti di gelatina" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Nuovo</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="La conferma in kids_dark — un nastro color menta su una scheda blu notte" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Nuovo</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">Che cosa cambia ogni aspetto</h3>
+  <table>
+    <thead><tr><th>Aspetto</th><th>La finestra</th><th>Intestazione e pulsanti</th></tr></thead>
+    <tbody>
+      <tr><td>Default</td><td>Arrotondata (18dp), un'ombra morbida, opaca all'80% sopra il gioco</td><td>Un titolo semplice e ×; i pulsanti primari si sollevano e affondano</td></tr>
+      <tr><td>Sci-fi</td><td>Angoli smussati con bordo al neon e bagliore, il bordo tinto dall'accento</td><td>Segni di focus a staffa</td></tr>
+      <tr><td>Medievale</td><td>Una cornice forgiata — ferro e cuoio, oppure pergamena — con rivetti e ornamenti angolari</td><td>Titoli in Cinzel</td></tr>
+      <tr><td>Material 3</td><td>Angoli da 28dp, margine interno da 24dp, completamente opaca</td><td>Un titolo da 24sp in Roboto; pulsanti a pillola con una piastra da 40dp in un'area da 48dp</td></tr>
+      <tr><td>Bambini</td><td>Una scheda a caramella di gelatina con un'ombra morbida, completamente opaca</td><td>Un nastro del titolo color sole (menta di notte), un pulsante di chiusura tondo a caramella, pulsanti che si schiacciano quando li premi</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">Vestire un popup da una skin</h3>
+  <p>Una skin decide le parti che un Theme non raggiunge. Questi hook sono quelli che chiamano i popup — sovrascrivili nella tua sottoclasse di
+    <code>GoSkin</code>; per impostazione predefinita non fanno nulla.</p>
+  <table>
+    <thead><tr><th>Hook</th><th>Che cosa veste</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Una piastra dietro il titolo di una finestra. Il titolo ci si centra sopra e si rimpicciolisce, fino alla dimensione minima (15), per restare su una riga.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>La × della finestra — l'aspetto bambini la trasforma in una caramella tonda.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Viene eseguito nell'istante in cui un dito tocca un pulsante creato da gohud — l'aspetto bambini lo schiaccia.</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Le superfici delle prompt card e delle schede del coach mark, degli snackbar e degli avvisi, del pannello laterale, dei banner, della console.</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>L'anello e il puntatore del tour.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">Quanto trasparente</h3>
+  <p>Ogni tipo di popup segue la propria opacità, così una scheda dell'HUD può restare leggera mentre una finestra di dialogo resta piena: finestre,
+    fogli, finestre di dialogo, schede ancorate e il combobox seguono <code>panel_alpha</code>; il pannello laterale e la scheda del coach mark
+    <code>card_alpha</code>; le prompt card e la console <code>hud_alpha</code>; snackbar e avvisi <code>notice_alpha</code>; i menu
+    <code>popup_alpha</code>. Material e bambini li rendono tutti opachi. Sovrascrivi un tipo con <code>GoConfig.container_alpha_overrides</code>,
+    tutti con <code>container_alpha</code> (un rapporto — <code>0.95</code>), o una sola finestra con il suo <code>alpha</code>. Sbiadisce solo la
+    superficie; il testo non è mai trasparente. <a href="theming-opacity.html">L'opacità nel dettaglio →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>Impostazioni che danno forma a ogni popup</h2>
+  <p class="sub">Campi di <code>GoConfig</code> (<code>GoUi.config</code>). Alcuni vengono copiati quando si crea una finestra, quindi impostali
+    prima di costruire la UI — oppure chiama <code>GoUi.refresh()</code> dopo averli cambiati.</p>
+  <table>
+    <thead><tr><th>Campo</th><th>Predefinito</th><th>Che cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>La dimensione massima di una finestra.</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>L'altezza abituale e il tetto (anche il limite di trascinamento).</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>Fin dove una scheda centrata adattata al contenuto può crescere prima di scorrere.</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>La larghezza come quota dello spazio disponibile.</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>Un tocco sul velo chiude finestre e finestre di dialogo. Copiato quando si crea la finestra.</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>Dissolvenza in entrata delle finestre, e con quale velocità.</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Esc, <code>ui_cancel</code> e Indietro di Android chiudono la finestra più in alto.</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>Quanto appare grande la × — la sua area di tocco resta di 48dp.</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>Nessun anello di focus quando una finestra viene aperta con il tocco o il mouse.</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>L'opacità di ogni superficie, o per tipo (<code>GoTheme.BOX_*</code>).</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>Niente dissolvenze, scorrimenti, pulsazioni né schiacciamenti.</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>L'altezza dei pulsanti di prompt card e coach mark.</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>Tiene le finestre lontane dal notch e dalla barra dei gesti.</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>Le parole del kit: chiudi, indietro, conferma, annulla, avanti, fatto, salta, cerca, vuoto…</td></tr>
+      <tr><td><code>sound_cues</code> · feedback aptico</td><td>—</td><td>Ciò che <code>GoFeedback</code> riproduce all'apertura, alla chiusura, alla conferma, all'annullamento e al tocco.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>Ricette</h2>
+  <p class="sub">Copia, incolla, cambia le parole. Ogni chiamata qui è verificata sul codice sorgente.</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">Un acquisto con il prezzo nel testo</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">Una finestra di impostazioni con Salva fisso</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">Un modulo che dice che cosa non va</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">Una data in un foglio</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">Un menu di pausa</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # continua a funzionare mentre il gioco è in pausa
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">Un gameplay che aspetta i popup</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>Trappole</h2>
+  <ul>
+    <li><b>Un <code>GoSurface</code> non si libera mai da solo.</b> Collega <code>close_requested</code>, altrimenti × non fa nulla.</li>
+    <li><b>Le opzioni impostate dopo <code>add_child</code></b> — <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code>,
+      <code>scroll_body</code>, e <code>layer_index</code> e <code>max_width</code> di <code>GoDialogs</code> — non vengono applicate.</li>
+    <li><b>Una seconda <code>confirm()</code> restituisce subito <code>false</code>.</b> Attiva <code>queue_when_busy</code> se due domande possono incrociarsi.</li>
+    <li><b>Invio conferma.</b> OK ha il focus, anche nelle finestre di dialogo distruttive.</li>
+    <li><b>Indietro su un foglio chiude il foglio,</b> non la sottopagina.</li>
+    <li><b>Esc non chiude un pannello laterale,</b> e <code>is_any_open()</code> non lo vede.</li>
+    <li><b>Una scheda ancorata o una lista di combobox blocca il gioco</b> finché non si chiude, anche con un velo trasparente — e una scheda ancorata con
+      <code>dismissable = false</code> e senza titolo non ha niente sullo schermo che la chiuda.</li>
+    <li><b>Una prompt card parte nascosta</b> e non scade mai.</li>
+    <li><b>Uno snackbar con <code>seconds: 0</code> e senza pulsanti non se ne va mai.</b> E per impostazione predefinita cattura i tocchi sulla sua scheda.</li>
+    <li><b>Una pressione prolungata che nessuno conosce è una funzione che nessuno usa.</b> Mostra anche un <code>⋯</code>.</li>
+    <li><b>Un albero in pausa mette in pausa il tuo popup.</b> Usa <code>PROCESS_MODE_ALWAYS</code> sul suo livello.</li>
+    <li><b>Un avviso senza larghezza</b> si restringe al minimo — usa <code>preferred_width()</code>.</li>
+    <li><b>Mai chiedere in uno snackbar, mai informare in una finestra di dialogo.</b> Una domanda ignorata sparisce; una notizia non deve fermare il gioco.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← Tutti i widget</a> · <a href="widgets-surfaces.html">Finestre flottanti →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

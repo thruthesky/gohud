@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html">Cửa sổ nổi</a>
   <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>Các widget HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — chín vị trí</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Gắn các phần HUD vào một trong chín vị trí của vùng an toàn." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Tôn trọng vùng an toàn và lề mép màn hình. Cho nó một <code>landscape_spot</code> thì nó đổi chỗ khi màn hình
     nằm ngang — những control nằm giữa đáy lúc màn hình dọc có thể dời sang góc dưới bên phải.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # và không đẩy trang trong lúc nó �
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — máu, mana, kinh nghiệm</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Thanh HP, MP và XP hiện giá trị, phân số hoặc phần trăm." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # token chỉ dùng để tô
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     bề rộng của thanh không giật lên giật xuống theo số chữ số.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — một ô nhanh</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Ô nhanh: biểu tượng, số lượng, hồi chiêu và phím tắt trên một mặt." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Lưới túi đồ; vật phẩm có thể kéo giữa các ô." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Biểu tượng, số lượng, hồi chiêu và phím tắt trên <b>cùng một mặt</b>. Treo badge lủng lẳng quanh một
     vòng tròn nhỏ sẽ làm mỗi ô một bề rộng khác nhau và cả hàng lắc lư.</p>
   <div class="note">
@@ -231,6 +238,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     mọi control cài đặt trong thứ tự Tab. Hãy bật nó khi bàn phím hoặc tay cầm là cách nhập liệu duy nhất.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — cần điều khiển ảo</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Cần ảo — cố định, theo ngón cái, hoặc tương đối." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Chế độ</th><th>Hành vi</th></tr></thead>
     <tbody>
@@ -243,6 +251,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     vào tốc độ được; nó không đổi theo kích thước màn hình hay DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — trông nhỏ, bấm rộng</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Nút chỉ có biểu tượng: nhìn nhỏ, vùng chạm 48 dp, có tên cho trình đọc màn hình." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Chỉ an toàn khi các nút bên cạnh bỏ qua thao tác.</b> Nếu vùng đã nới rộng phủ lên nút kế bên, nút đó
     sẽ không còn phản hồi. Các nút biểu tượng đặt sát nhau cần <code>touch_peers</code>.

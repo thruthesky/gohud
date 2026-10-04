@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tutti i widget</a>
+  <a href="widgets-popups.html">Popup e finestre di dialogo</a>
   <a href="widgets-surfaces.html" aria-current="page">Finestre flottanti</a>
   <a href="widgets-messages.html">Dire qualcosa a chi gioca</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,11 @@
 <section id="surfaces">
 
   <h3 id="gosurface-the-shell"><code>GoSurface</code> — il guscio</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="GoSurface — Una finestra fluttuante: centrata, dal basso o ancorata a un controllo." loading="lazy"><figcaption><code>CENTER</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="GoSurface — Una finestra fluttuante: centrata, dal basso o ancorata a un controllo." loading="lazy"><figcaption><code>BOTTOM</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="GoSurface — Una finestra fluttuante: centrata, dal basso o ancorata a un controllo." loading="lazy"><figcaption><code>ANCHOR</code></figcaption></figure>
+  </div>
   <p>Popup, fogli e menu a tendina usano tutti questo. Si occupa dell'area sicura, della tastiera virtuale,
     dell'intestazione e del piè di pagina fissi, di un corpo scorrevole, di quale finestra sia in cima, del ripristino del focus,
     di chi possiede il tasto Indietro e del ridimensionamento con il trascinamento.</p>
@@ -115,6 +121,7 @@
   </div>
 
   <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — una pagina dal basso</h3>
+  <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — Un foglio dal basso con pagine, navigazione indietro e piè di pagina fisso." loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventario")
@@ -127,6 +134,11 @@ sheet.footer().visible = true</code></pre>
     da nessuna parte si legge come un difetto.</p>
 
   <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — conferme da mettere in <code>await</code></h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="GoDialogs — Finestre di conferma e di avviso da attendere con await; gli avvisi aspettano il loro turno." loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="GoDialogs — Finestre di conferma e di avviso da attendere con await; gli avvisi aspettano il loro turno." loading="lazy"><figcaption><code>destructive</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="GoDialogs.choose — Una tra poche opzioni: foglio dal basso sul telefono, scheda sul desktop." loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+  </div>
   <pre><code>if await dialogs.confirm("Elimina salvataggio", "L'operazione non è reversibile."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — tutto ciò che segue il corpo è
@@ -144,6 +156,7 @@ sheet.footer().visible = true</code></pre>
     La riga viene costruita alla prima apertura di una finestra di dialogo, quindi un <code>GoDialogs</code> in autoload non aggiunge nulla all'avvio.</p>
 
   <h3 id="goform-a-width-capped-form"><code>GoForm</code> — un modulo con larghezza limitata</h3>
+  <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — Un modulo che limita la larghezza e si tiene lontano da tastiera e HUD." loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
   <div class="note warn">
     <b>Garantisce che le etichette discendenti vadano a capo.</b> Senza, una frase lunga si allunga in
     una riga sola la cui larghezza minima supera lo schermo, e i lati vengono tagliati — non si capisce nemmeno
@@ -151,6 +164,7 @@ sheet.footer().visible = true</code></pre>
   </div>
 
   <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — scorrimento touch</h3>
+  <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — Scorrimento al tocco da qualsiasi punto del contenuto; gestisce la scrittura da destra a sinistra." loading="lazy"><figcaption><code>GoScroll</code> · <code>GoScroll.horizontal()</code></figcaption></figure>
   <p>Mettici dentro <b>una cosa sola</b>. Intestazioni e righe di pulsanti stanno fuori — una lista lunga non deve
     spingerle fuori dallo schermo. <code>use_panel_edge()</code> sposta la barra di scorrimento dentro il margine interno già presente
     nella scheda, mentre il contenuto mantiene il suo rientro.</p>

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html">Cửa sổ nổi</a>
   <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Hàng danh sách có dòng mô tả</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Hàng danh sách có biểu tượng, tiêu đề, tóm tắt và dấu ở cuối." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Kiếm Thề Nguyện", _inspect, Color.TRANSPARENT,
     "Trường kiếm  /  Tấn công 42", false)</code></pre>
   <p>Một hàng có dòng thứ hai được cấp <b>phần đệm trên và dưới bằng nhau</b>, rộng rãi hơn hàng một dòng, và cặp
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Hàng tự xuống dòng</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Cột, hàng và hàng tự xuống dòng với khoảng cách lấy từ theme." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Hãy đặt các control vào <code>wrap_row</code> ở <b>bề rộng tự nhiên</b> của chúng. Nếu cứ để bật xuống dòng, bề rộng
     tối thiểu của một cái nút tụt xuống gần như bằng không và hàng lấy đó làm cỡ ô — nhãn co lại thành mỗi dòng một ký tự.
     Factory ngăn chuyện này giúp bạn.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Đừng bao giờ để một danh sách rỗng trống trơn</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Khung giữ chỗ khi đang tải, và thông báo cho danh sách trống." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Chưa có gì ở đây"))</code></pre>
   <p>Người ta đọc một màn hình trắng trơn ra là <b>hỏng</b>.</p>
 </section>

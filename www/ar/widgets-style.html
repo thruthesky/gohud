@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html">النوافذ العائمة</a>
   <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">صفوف القوائم ذات وصف</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — صف قائمة بأيقونة وعنوان وملخص وعلامة في النهاية." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "حافظ العهد", _inspect, Color.TRANSPARENT,
     "سيف طويل  /  هجوم 42", false)</code></pre>
   <p>الصفّ ذو السطر الثاني ينال <b>حشوة علوية وسفلية متساويتين</b>، أفسح من صفّ السطر الواحد، ويبقى زوج
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">الصفوف المتدفقة</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — أعمدة وصفوف وصفوف ملتفة بفواصل من السمة." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>ضع عناصر التحكم في <code>wrap_row</code> بـ<b>عرضها الطبيعي</b>. فمع بقاء الالتفاف مفعَّلًا، يهبط الحدّ
     الأدنى لعرض الزر إلى ما يقارب الصفر فيقيس الصفُّ خليّته عليه — فينهار النص إلى حرف واحد في كل سطر.
     والمصنع يمنع ذلك عنك.</p>
 
   <h3 id="never-leave-an-empty-list-empty">لا تترك قائمة فارغة فارغة</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — عنصر نائب أثناء التحميل، ورسالة لقائمة فارغة." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "لا شيء هنا بعد"))</code></pre>
   <p>الناس يقرؤون الشاشة الخالية على أنها <b>عطل</b>.</p>
 </section>

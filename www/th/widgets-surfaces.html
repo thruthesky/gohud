@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">วิดเจ็ต</a>
   <a href="widgets-catalog.html">วิดเจ็ตทั้งหมด</a>
+  <a href="widgets-popups.html">ป๊อปอัปและกล่องโต้ตอบ</a>
   <a href="widgets-surfaces.html" aria-current="page">หน้าต่างลอย</a>
   <a href="widgets-messages.html">การบอกอะไรบางอย่างกับผู้เล่น</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,11 @@
 <section id="surfaces">
 
   <h3 id="gosurface-the-shell"><code>GoSurface</code> — เปลือกนอก</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="GoSurface — หน้าต่างลอย — กึ่งกลาง จากด้านล่าง หรือยึดกับคอนโทรล" loading="lazy"><figcaption><code>CENTER</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="GoSurface — หน้าต่างลอย — กึ่งกลาง จากด้านล่าง หรือยึดกับคอนโทรล" loading="lazy"><figcaption><code>BOTTOM</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="GoSurface — หน้าต่างลอย — กึ่งกลาง จากด้านล่าง หรือยึดกับคอนโทรล" loading="lazy"><figcaption><code>ANCHOR</code></figcaption></figure>
+  </div>
   <p>ป๊อปอัป ชีต และดรอปดาวน์ ล้วนใช้ตัวนี้ตัวเดียว มันจัดการเซฟแอเรีย คีย์บอร์ดเสมือน
     หัวและท้ายที่ติดหนึบ เนื้อหาที่เลื่อนได้ การตัดสินว่าหน้าต่างไหนอยู่บนสุด การคืนโฟกัส
     ความเป็นเจ้าของปุ่มย้อนกลับ และการลากปรับขนาด</p>
@@ -116,6 +122,7 @@
   </div>
 
   <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — หน้าที่มาจากด้านล่าง</h3>
+  <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — แผ่นล่างที่มีหลายหน้า ปุ่มย้อนกลับ และส่วนท้ายที่ตรึงไว้" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("กระเป๋าของ")
@@ -128,6 +135,11 @@ sheet.footer().visible = true</code></pre>
     ทำให้คนอ่านว่าแอปพัง</p>
 
   <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — กล่องยืนยันที่ <code>await</code> ได้</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="GoDialogs — หน้าต่างยืนยันและแจ้งเตือนที่รอด้วย await การแจ้งเตือนจะรอคิว" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="GoDialogs — หน้าต่างยืนยันและแจ้งเตือนที่รอด้วย await การแจ้งเตือนจะรอคิว" loading="lazy"><figcaption><code>destructive</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="GoDialogs.choose — หนึ่งในไม่กี่ตัวเลือก — แผ่นล่างบนมือถือ การ์ดบนเดสก์ท็อป" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+  </div>
   <pre><code>if await dialogs.confirm("ลบไฟล์เซฟ", "การกระทำนี้ย้อนกลับไม่ได้"):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — ทุกอย่างหลังจากเนื้อความ
@@ -146,6 +158,7 @@ sheet.footer().visible = true</code></pre>
     การใส่ <code>GoDialogs</code> เป็น autoload จึงไม่เพิ่มภาระตอนเปิดเกมเลย</p>
 
   <h3 id="goform-a-width-capped-form"><code>GoForm</code> — ฟอร์มที่จำกัดความกว้าง</h3>
+  <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — ฟอร์มที่จำกัดความกว้างและหลบคีย์บอร์ดกับ HUD" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
   <div class="note warn">
     <b>มันรับประกันว่าป้ายข้อความที่เป็นลูกหลานของมันจะตัดบรรทัด</b> ถ้าไม่มีสิ่งนี้ ประโยคยาว ๆ ประโยคเดียว
     จะยืดเป็นบรรทัดเดียวที่ความกว้างขั้นต่ำเกินหน้าจอ แล้วสองข้างจะถูกตัดหาย — จนดูไม่ออกด้วยซ้ำว่า
@@ -153,6 +166,7 @@ sheet.footer().visible = true</code></pre>
   </div>
 
   <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — การเลื่อนด้วยนิ้ว</h3>
+  <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — เลื่อนด้วยการสัมผัสได้จากทุกจุดของเนื้อหา รองรับภาษาที่เขียนจากขวาไปซ้าย" loading="lazy"><figcaption><code>GoScroll</code> · <code>GoScroll.horizontal()</code></figcaption></figure>
   <p>ใส่ของไว้ข้างในแค่ <b>ชิ้นเดียว</b> ส่วนหัวและแถวปุ่มต้องอยู่ข้างนอก — รายการยาว ๆ ต้องไม่ดันมันตกจอไป
     <code>use_panel_edge()</code> ย้ายแถบเลื่อนเข้าไปอยู่ในระยะขอบที่การ์ดมีอยู่แล้ว
     ขณะที่เนื้อหายังคงระยะย่อหน้าเดิมไว้</p>

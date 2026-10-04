@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html">النوافذ العائمة</a>
   <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>أشكال مألوفة من الويب، أُعيد بناؤها حول ما تحتاجه اللعبة منها.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — الحضور اليومي</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — مكافآت حضور يومية؛ لا يُضغط إلا على اليوم." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>منتقي التواريخ لا يكاد ينفع في لعبة أبدًا. أما شكل التقويم فينفع — لمكافآت الحضور، حيث المهمّ هو
     <b>في أي يوم أنت</b>، لا ما هو التاريخ.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     واليومُ والقادمُ تختلف بثلاثة أشياء معًا: علامة صحّ، وإطار بلون التمييز، وإعتام.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> و<code>GoDonut</code> — الإحصاءات بنظرة</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — مخمس الإحصاءات، بخط متقطع لمقارنة العتاد." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — حصص على شكل شرائح، مع وسيلة إيضاح بالكلمات لا باللون فقط." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # طبقة متقطّعة فوقها
 
@@ -117,6 +123,7 @@ card.add_child(share.legend())</code></pre>
     يقرؤه أحد. وخطّ المقارنة <b>متقطّع</b>، لا مجرّد لون آخر، ومفتاح الرسم يطبع النسبة المئوية كتابةً.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — اللافتات واختيار الشخصية</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — لافتات واختيار شخصيات لا تتقلب وحدها إلا عند الطلب." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # مطفأ افتراضيًا</code></pre>
   <p>هو لا يتقدّم من تلقاء نفسه ما لم تطلب، والخمس ثوانٍ هي الحدّ الأدنى: فلافتة تتغيّر كل ثلاث تسحب النصّ
@@ -124,6 +131,7 @@ banners.autoplay_seconds = 5.0             # مطفأ افتراضيًا</code><
     والنقاط تُضغط بالحدّ الأدنى للمس وإن كانت النقطة المرسومة صغيرة.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — تلميحات مفاتيح لا تكذب</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — أغطية مفاتيح تقرأ الربط الفعلي، فلا يكذب التلميح بعد إعادة الربط." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # يقرأ الارتباط الحقيقي</code></pre>
   <p>عبارة "اضغط F" المكتوبة في الكود تظلّ تقول F بعد أن يغيّر اللاعب الارتباط — وهي أشيع كذبة في واجهات
     الحاسوب. و<code>for_action()</code> يقرأ <code>InputMap</code>؛ فإن كان الفعل مرتبطًا بذراع تحكم بدلًا

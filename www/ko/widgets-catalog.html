@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">위젯</a>
   <a href="widgets-catalog.html" aria-current="page">모든 위젯</a>
+  <a href="widgets-popups.html">팝업과 대화상자</a>
   <a href="widgets-surfaces.html">떠 있는 창</a>
   <a href="widgets-messages.html">알리기</a>
   <a href="widgets-hud.html">HUD</a>
@@ -100,6 +101,7 @@
   <div class="grid">
     <div class="card">
       <h3 id="goscaffold"><code>GoScaffold</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/goscaffold.webp" width="300" height="649" alt="GoScaffold — 앱 화면을 한 번에 엮는다 — 바, 스크롤 페이지, 아래 바, FAB, 서랍." loading="lazy"></figure>
       <p>앱 화면을 한 번에 엮는다 — 바, 스크롤 페이지, 아래 바, FAB, 서랍.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var page := GoStyle.<wbr>column(<wbr>)
@@ -109,6 +111,7 @@ add_child(<wbr>screen)</code></pre>
     </div>
     <div class="card">
       <h3 id="gotopbar"><code>GoTopBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotopbar.webp" width="390" height="80" alt="GoTopBar — 위쪽 가장자리를 따라 칸 1~3개 — 가운데 칸은 늘 가운데." loading="lazy"></figure>
       <p>위쪽 가장자리를 따라 칸 1~3개 — 가운데 칸은 늘 가운데.</p>
       <p class="catalog-base">바탕 <code>GoEdgeBar</code></p>
       <pre><code>var bar := GoTopBar.<wbr>make(<wbr>3)
@@ -118,6 +121,7 @@ bar.<wbr>add_end(<wbr>GoStyle.<wbr>chip(<wbr>"1,<wbr>250"))</code></pre>
     </div>
     <div class="card">
       <h3 id="gobottombar"><code>GoBottomBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobottombar.webp" width="390" height="96" alt="GoBottomBar — 아래쪽 가장자리를 따라 — 제스처 바를 피해서." loading="lazy"></figure>
       <p>아래쪽 가장자리를 따라 — 제스처 바를 피해서.</p>
       <p class="catalog-base">바탕 <code>GoEdgeBar</code></p>
       <pre><code>var actions := GoBottomBar.<wbr>make(<wbr>1,<wbr> GoBottomBar.<wbr>Justify.<wbr>SPACE_BETWEEN)
@@ -126,6 +130,7 @@ screen.<wbr>add_child(<wbr>actions)</code></pre>
     </div>
     <div class="card">
       <h3 id="goleftsidebar"><code>GoLeftSideBar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/goleftsidebar.webp" width="300" height="649" alt="GoLeftSideBar — 왼쪽 가장자리를 따라 최대 세 단." loading="lazy"></figure>
       <p>왼쪽 가장자리를 따라 최대 세 단.</p>
       <p class="catalog-base">바탕 <code>GoSideBar</code></p>
       <pre><code>var tools := GoLeftSideBar.<wbr>make(<wbr>3)
@@ -135,6 +140,7 @@ screen.<wbr>add_child(<wbr>tools)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorightsidebar"><code>GoRightSideBar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gorightsidebar.webp" width="300" height="649" alt="GoRightSideBar — 오른쪽 가장자리를 따라 최대 세 단." loading="lazy"></figure>
       <p>오른쪽 가장자리를 따라 최대 세 단.</p>
       <p class="catalog-base">바탕 <code>GoSideBar</code></p>
       <pre><code>var tools := GoRightSideBar.<wbr>make(<wbr>3)
@@ -144,6 +150,7 @@ screen.<wbr>add_child(<wbr>tools)</code></pre>
     </div>
     <div class="card">
       <h3 id="gosidebar"><code>GoSideBar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosidebar.webp" width="300" height="649" alt="GoSideBar — 위 둘의 바탕이 되는 옆 바 — 오른쪽에서 왼쪽으로 쓰는 언어에서도 제 쪽을 지킨다." loading="lazy"></figure>
       <p>위 둘의 바탕이 되는 옆 바 — 오른쪽에서 왼쪽으로 쓰는 언어에서도 제 쪽을 지킨다.</p>
       <p class="catalog-base">바탕 <code>GoEdgeBar</code></p>
       <pre><code>var rail := GoRightSideBar.<wbr>make(<wbr>1,<wbr> GoSideBar.<wbr>Justify.<wbr>CENTER)
@@ -151,6 +158,7 @@ rail.<wbr>add_start(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>MAP,<wbr> 
     </div>
     <div class="card">
       <h3 id="goedgebar"><code>GoEdgeBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/goedgebar.webp" width="390" height="80" alt="GoEdgeBar — 모든 가장자리 바가 공유하는 규칙 — 칸, 고르게 펼치기, 가장자리에 붙이기, 안전 영역." loading="lazy"></figure>
       <p>모든 가장자리 바가 공유하는 규칙 — 칸, 고르게 펼치기, 가장자리에 붙이기, 안전 영역.</p>
       <p class="catalog-base">바탕 <code>Container</code></p>
       <pre><code>var bar := GoTopBar.<wbr>make(<wbr>1)
@@ -159,6 +167,7 @@ bar.<wbr>pin_to_edge = GoEdgeBar.<wbr>Pin.<wbr>ALWAYS</code></pre>
     </div>
     <div class="card">
       <h3 id="gogrid"><code>GoGrid</code></h3>
+      <figure class="shot"><img src="../img/widgets/gogrid.webp" width="382" height="206" alt="GoGrid — 폭이 정확히 같은 열 — 정해진 수, 또는 들어가는 만큼." loading="lazy"></figure>
       <p>폭이 정확히 같은 열 — 정해진 수, 또는 들어가는 만큼.</p>
       <p class="catalog-base">바탕 <code>Container</code></p>
       <pre><code>var cards := GoGrid.<wbr>make(<wbr>1,<wbr> 160.0)
@@ -166,6 +175,7 @@ for item in items: cards.<wbr>add_child(<wbr>GoStyle.<wbr>item_card(<wbr>item))<
     </div>
     <div class="card">
       <h3 id="goform"><code>GoForm</code></h3>
+      <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — 폭을 제한하고 키보드와 HUD 를 피하는 폼." loading="lazy"></figure>
       <p>폭을 제한하고 키보드와 HUD 를 피하는 폼.</p>
       <p class="catalog-base">바탕 <code>MarginContainer</code></p>
       <pre><code>var form := GoForm.<wbr>new(<wbr>)
@@ -175,6 +185,7 @@ add_child(<wbr>form)</code></pre>
     </div>
     <div class="card">
       <h3 id="goscroll"><code>GoScroll</code></h3>
+      <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — 내용 어디서 시작해도 되는 터치 스크롤 — 오른쪽에서 왼쪽 언어도 맞춘다." loading="lazy"></figure>
       <p>내용 어디서 시작해도 되는 터치 스크롤 — 오른쪽에서 왼쪽 언어도 맞춘다.</p>
       <p class="catalog-base">바탕 <code>ScrollContainer</code></p>
       <pre><code>var list := GoScroll.<wbr>new(<wbr>)
@@ -183,6 +194,7 @@ var strip := GoScroll.<wbr>horizontal(<wbr>)</code></pre>
     </div>
     <div class="card">
       <h3 id="gohudanchor"><code>GoHudAnchor</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — HUD 조각을 안전 영역의 아홉 자리 중 하나에 고정한다." loading="lazy"></figure>
       <p>HUD 조각을 안전 영역의 아홉 자리 중 하나에 고정한다.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var corner := GoHudAnchor.<wbr>new(<wbr>)
@@ -191,6 +203,7 @@ corner.<wbr>add_child(<wbr>GoStyle.<wbr>hud_panel(<wbr>))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-column-row-wrap-row"><code>GoStyle.column · row · wrap_row</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column · row · wrap_row — 테마의 간격을 쓰는 세로줄·가로줄·줄바꿈 줄." loading="lazy"></figure>
       <p>테마의 간격을 쓰는 세로줄·가로줄·줄바꿈 줄.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var page := GoStyle.<wbr>column(<wbr>)
@@ -199,6 +212,7 @@ var chips := GoStyle.<wbr>wrap_row(<wbr>)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-responsive-grid-aspect"><code>GoStyle.responsive_grid · aspect</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-responsive_grid.webp" width="382" height="272" alt="GoStyle.responsive_grid · aspect — 넓어지면 열을 늘리는 격자, 그리고 비율을 지키는 상자." loading="lazy"></figure>
       <p>넓어지면 열을 늘리는 격자, 그리고 비율을 지키는 상자.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var tiles := GoStyle.<wbr>responsive_grid(<wbr>160)
@@ -206,6 +220,7 @@ var thumb := GoStyle.<wbr>aspect(<wbr>16.0 / 9.0)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-padding-spacer-divider"><code>GoStyle.padding · spacer · divider</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-padding.webp" width="382" height="159" alt="GoStyle.padding · spacer · divider — 안쪽 여백, 남는 자리를 차지하는 빈칸, 구분선." loading="lazy"></figure>
       <p>안쪽 여백, 남는 자리를 차지하는 빈칸, 구분선.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var pad := GoStyle.<wbr>padding(<wbr>16)
@@ -214,6 +229,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>divider(<wbr>))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-foldable-section"><code>GoStyle.foldable · section</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-foldable.webp" width="382" height="411" alt="GoStyle.foldable · section — 절 제목, 그리고 펼치고 접는 절." loading="lazy"></figure>
       <p>절 제목, 그리고 펼치고 접는 절.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>section(<wbr>"Sound",<wbr> false))
@@ -227,6 +243,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosurface.webp" width="300" height="649" alt="GoSurface — 떠 있는 창 — 가운데, 아래에서, 또는 컨트롤 옆에." loading="lazy"></figure>
       <p>떠 있는 창 — 가운데, 아래에서, 또는 컨트롤 옆에.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var window := GoSurface.<wbr>new(<wbr>)
@@ -236,6 +253,7 @@ layer.<wbr>add_child(<wbr>window)</code></pre>
     </div>
     <div class="card">
       <h3 id="gosheet"><code>GoSheet</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosheet.webp" width="300" height="649" alt="GoSheet — 페이지·뒤로 가기·고정 바닥줄이 있는 아래 시트." loading="lazy"></figure>
       <p>페이지·뒤로 가기·고정 바닥줄이 있는 아래 시트.</p>
       <p class="catalog-base">바탕 <code>CanvasLayer</code></p>
       <pre><code>var sheet := GoSheet.<wbr>new(<wbr>)
@@ -245,6 +263,7 @@ sheet.<wbr>body.<wbr>add_child(<wbr>bag_list)</code></pre>
     </div>
     <div class="card">
       <h3 id="godialogs"><code>GoDialogs</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/godialogs.webp" width="300" height="649" alt="GoDialogs — await 로 기다리는 확인·알림 창 — 알림은 차례를 기다린다." loading="lazy"></figure>
       <p>await 로 기다리는 확인·알림 창 — 알림은 차례를 기다린다.</p>
       <p class="catalog-base">바탕 <code>Node</code></p>
       <pre><code>var dialogs := GoDialogs.<wbr>new(<wbr>)
@@ -254,6 +273,7 @@ if await dialogs.<wbr>confirm(<wbr>"Delete save",<wbr> "This cannot be undone.",
     </div>
     <div class="card">
       <h3 id="godialogs-choose"><code>GoDialogs.choose</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/godialogs-choose.webp" width="300" height="649" alt="GoDialogs.choose — 몇 가지 중 하나 — 폰에서는 아래 시트, 데스크톱에서는 카드." loading="lazy"></figure>
       <p>몇 가지 중 하나 — 폰에서는 아래 시트, 데스크톱에서는 카드.</p>
       <p class="catalog-base">소속 <code>GoDialogs</code></p>
       <pre><code>var index := await dialogs.<wbr>choose(<wbr>"Sort by",<wbr> [<wbr>"Newest",<wbr> "Price",<wbr> "Rating"])
@@ -261,6 +281,7 @@ if index &gt;= 0: sort_by(<wbr>index)</code></pre>
     </div>
     <div class="card">
       <h3 id="godrawer"><code>GoDrawer</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/godrawer.webp" width="300" height="649" alt="GoDrawer — 왼쪽이나 오른쪽에서 밀려 들어오는 판." loading="lazy"></figure>
       <p>왼쪽이나 오른쪽에서 밀려 들어오는 판.</p>
       <p class="catalog-base">바탕 <code>CanvasLayer</code></p>
       <pre><code>var drawer := GoDrawer.<wbr>new(<wbr>)
@@ -270,18 +291,21 @@ drawer.<wbr>open(<wbr>"Bag")</code></pre>
     </div>
     <div class="card">
       <h3 id="gopopover"><code>GoPopover</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gopopover.webp" width="300" height="649" alt="GoPopover — 누른 것 옆의 정보 카드 — 한 번에 하나." loading="lazy"></figure>
       <p>누른 것 옆의 정보 카드 — 한 번에 하나.</p>
       <p class="catalog-base">바탕 <code>RefCounted</code></p>
       <pre><code>GoPopover.<wbr>open(<wbr>slot,<wbr> GoStyle.<wbr>item_card(<wbr>item,<wbr> false))</code></pre>
     </div>
     <div class="card">
       <h3 id="gocontextmenu"><code>GoContextMenu</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gocontextmenu.webp" width="300" height="649" alt="GoContextMenu — 길게 누르기·오른쪽 클릭 메뉴 — 손가락이 움직이면 취소된다." loading="lazy"></figure>
       <p>길게 누르기·오른쪽 클릭 메뉴 — 손가락이 움직이면 취소된다.</p>
       <p class="catalog-base">바탕 <code>RefCounted</code></p>
       <pre><code>GoContextMenu.<wbr>attach(<wbr>slot,<wbr> [<wbr>{<wbr>"text": "Use"},<wbr> {<wbr>"text": "Drop",<wbr> "danger": true}])</code></pre>
     </div>
     <div class="card">
       <h3 id="gocoachmark"><code>GoCoachMark</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gocoachmark.webp" width="300" height="649" alt="GoCoachMark — 실제 컨트롤을 가리키는 안내 투어." loading="lazy"></figure>
       <p>실제 컨트롤을 가리키는 안내 투어.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var tour := GoCoachMark.<wbr>new(<wbr>)
@@ -290,6 +314,7 @@ tour.<wbr>start(<wbr>[<wbr>{<wbr>"target": bag_button,<wbr> "title": "Bag",<wbr>
     </div>
     <div class="card">
       <h3 id="goconsole"><code>GoConsole</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/goconsole.webp" width="300" height="649" alt="GoConsole — 명령과 기록이 있는 개발자 콘솔 — 출시 빌드에서는 꺼진다." loading="lazy"></figure>
       <p>명령과 기록이 있는 개발자 콘솔 — 출시 빌드에서는 꺼진다.</p>
       <p class="catalog-base">바탕 <code>CanvasLayer</code></p>
       <pre><code>var console := GoConsole.<wbr>new(<wbr>)
@@ -304,6 +329,7 @@ console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code><
   <div class="grid">
     <div class="card">
       <h3 id="gosnackbar"><code>GoSnackbar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosnackbar.webp" width="300" height="649" alt="GoSnackbar — 아래에 뜨는 알림 — 줄을 서고 버튼도 달 수 있다." loading="lazy"></figure>
       <p>아래에 뜨는 알림 — 줄을 서고 버튼도 달 수 있다.</p>
       <p class="catalog-base">바탕 <code>Node</code></p>
       <pre><code>var snack := GoSnackbar.<wbr>new(<wbr>)
@@ -313,6 +339,7 @@ if await snack.<wbr>post(<wbr>{<wbr>"text": "Item dropped",<wbr> "actions": [<wb
     </div>
     <div class="card">
       <h3 id="gonotice"><code>GoNotice</code></h3>
+      <figure class="shot"><img src="../img/widgets/gonotice.webp" width="382" height="71" alt="GoNotice — 입력도 초점도 가져가지 않는 알림." loading="lazy"></figure>
       <p>입력도 초점도 가져가지 않는 알림.</p>
       <p class="catalog-base">바탕 <code>PanelContainer</code></p>
       <pre><code>var notice := GoNotice.<wbr>new(<wbr>)
@@ -321,6 +348,7 @@ notice.<wbr>show_text(<wbr>"Saved",<wbr> GoTheme.<wbr>SUCCESS)</code></pre>
     </div>
     <div class="card">
       <h3 id="gopromptcard"><code>GoPromptCard</code></h3>
+      <figure class="shot"><img src="../img/widgets/gopromptcard.webp" width="382" height="140" alt="GoPromptCard — 게임을 멈추지 않는 질문 — 초대, 거래." loading="lazy"></figure>
       <p>게임을 멈추지 않는 질문 — 초대, 거래.</p>
       <p class="catalog-base">바탕 <code>PanelContainer</code></p>
       <pre><code>var invite := GoPromptCard.<wbr>new(<wbr>)
@@ -329,6 +357,7 @@ invite.<wbr>set_actions(<wbr>[<wbr>{<wbr>"text": "Accept",<wbr> "action": accept
     </div>
     <div class="card">
       <h3 id="gobanner"><code>GoBanner</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobanner.webp" width="382" height="135" alt="GoBanner — 처리할 때까지 페이지에 남는 알림." loading="lazy"></figure>
       <p>처리할 때까지 페이지에 남는 알림.</p>
       <p class="catalog-base">바탕 <code>PanelContainer</code></p>
       <pre><code>var offline := GoBanner.<wbr>make(<wbr>"You're offline.",<wbr> [<wbr>{<wbr>"text": "Retry",<wbr> "action": reconnect}],<wbr> GoIconSet.<wbr>WARNING)
@@ -336,6 +365,7 @@ page.<wbr>add_child(<wbr>offline)</code></pre>
     </div>
     <div class="card">
       <h3 id="gospinner"><code>GoSpinner</code></h3>
+      <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — 기다림 표시 — 버튼을 그 자리에서 스피너로 바꿔 두 번 눌리지 않게 한다." loading="lazy"></figure>
       <p>기다림 표시 — 버튼을 그 자리에서 스피너로 바꿔 두 번 눌리지 않게 한다.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>GoSpinner.<wbr>busy(<wbr>buy_button,<wbr> true)
@@ -344,6 +374,7 @@ GoSpinner.<wbr>busy(<wbr>buy_button,<wbr> false)</code></pre>
     </div>
     <div class="card">
       <h3 id="gobadge"><code>GoBadge</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — 안 읽음 점, NEW 표시, 99+ — 모서리에 건다." loading="lazy"></figure>
       <p>안 읽음 점, NEW 표시, 99+ — 모서리에 건다.</p>
       <p class="catalog-base">바탕 <code>PanelContainer</code></p>
       <pre><code>GoBadge.<wbr>attach(<wbr>mail_button,<wbr> unread)
@@ -351,6 +382,7 @@ GoBadge.<wbr>attach(<wbr>shop_button,<wbr> 0,<wbr> "NEW")</code></pre>
     </div>
     <div class="card">
       <h3 id="goprogress"><code>GoProgress</code></h3>
+      <figure class="shot"><img src="../img/widgets/goprogress.webp" width="382" height="98" alt="GoProgress — 선이나 고리로 보이는 진행 — 물결 또는 평평, 크기를 모르면 무한." loading="lazy"></figure>
       <p>선이나 고리로 보이는 진행 — 물결 또는 평평, 크기를 모르면 무한.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var upload := GoProgress.<wbr>linear(<wbr>)
@@ -359,6 +391,7 @@ var ring := GoProgress.<wbr>circular(<wbr>true)</code></pre>
     </div>
     <div class="card">
       <h3 id="goloadingindicator"><code>GoLoadingIndicator</code></h3>
+      <figure class="shot"><img src="../img/widgets/goloadingindicator.webp" width="382" height="72" alt="GoLoadingIndicator — 모양이 바뀌는 Material 3 Expressive 기다림 표시 — reduce_motion 이면 멈춘다." loading="lazy"></figure>
       <p>모양이 바뀌는 Material 3 Expressive 기다림 표시 — reduce_motion 이면 멈춘다.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var wait := GoLoadingIndicator.<wbr>new(<wbr>)
@@ -367,6 +400,7 @@ page.<wbr>add_child(<wbr>wait)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorefresh"><code>GoRefresh</code></h3>
+      <figure class="shot"><img src="../img/widgets/gorefresh.webp" width="382" height="264" alt="GoRefresh — 목록 맨 위에서 아래로 당겨 새로 고친다." loading="lazy"></figure>
       <p>목록 맨 위에서 아래로 당겨 새로 고친다.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var refresh := GoRefresh.<wbr>attach(<wbr>feed)
@@ -376,12 +410,14 @@ refresh.<wbr>refresh_requested.<wbr>connect(<wbr>func(<wbr>) -&gt; void:
     </div>
     <div class="card">
       <h3 id="gostyle-alert"><code>GoStyle.alert</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-alert.webp" width="382" height="248" alt="GoStyle.alert — 정보·성공·주의·위험 톤의 본문 속 알림." loading="lazy"></figure>
       <p>정보·성공·주의·위험 톤의 본문 속 알림.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>alert(<wbr>"Maintenance at 3 AM",<wbr> GoTheme.<wbr>WARNING))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-skeleton-empty-state"><code>GoStyle.skeleton · empty_state</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton · empty_state — 불러오는 동안의 자리 표시, 그리고 빈 목록 안내." loading="lazy"></figure>
       <p>불러오는 동안의 자리 표시, 그리고 빈 목록 안내.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>skeleton(<wbr>200))
@@ -389,6 +425,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>empty_state(<wbr>GoIconSet.<wbr>BOX,<wbr> 
     </div>
     <div class="card">
       <h3 id="gostyle-tooltip-node"><code>GoStyle.tooltip_node</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-tooltip_node.webp" width="382" height="123" alt="GoStyle.tooltip_node — 테마 모양의 툴팁 — 단어를 쪼개지 않는다." loading="lazy"></figure>
       <p>테마 모양의 툴팁 — 단어를 쪼개지 않는다.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>func _make_custom_tooltip(<wbr>text: String) -&gt; Object:
@@ -402,6 +439,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>empty_state(<wbr>GoIconSet.<wbr>BOX,<wbr> 
   <div class="grid">
     <div class="card">
       <h3 id="goappbar"><code>GoAppBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/goappbar.webp" width="382" height="88" alt="GoAppBar — 위쪽 앱 바 — 페이지가 스크롤되면 떠오르고, 중간·큰 제목도 된다." loading="lazy"></figure>
       <p>위쪽 앱 바 — 페이지가 스크롤되면 떠오르고, 중간·큰 제목도 된다.</p>
       <p class="catalog-base">바탕 <code>PanelContainer</code></p>
       <pre><code>var bar := GoAppBar.<wbr>make(<wbr>"Inbox",<wbr> GoIconSet.<wbr>MENU,<wbr> open_drawer)
@@ -410,6 +448,7 @@ bar.<wbr>follow(<wbr>list)</code></pre>
     </div>
     <div class="card">
       <h3 id="gonavbar"><code>GoNavBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gonavbar.webp" width="382" height="88" alt="GoNavBar — 아래쪽 목적지 3~5개 — 넓은 화면에서는 레일." loading="lazy"></figure>
       <p>아래쪽 목적지 3~5개 — 넓은 화면에서는 레일.</p>
       <p class="catalog-base">바탕 <code>PanelContainer</code></p>
       <pre><code>var nav := GoNavBar.<wbr>make(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr> "text": "Home"},<wbr>
@@ -418,6 +457,7 @@ var rail := GoNavBar.<wbr>rail(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr
     </div>
     <div class="card">
       <h3 id="gonavbar-drawer-list"><code>GoNavBar.drawer_list</code></h3>
+      <figure class="shot"><img src="../img/widgets/gonavbar-drawer_list.webp" width="382" height="272" alt="GoNavBar.drawer_list — 서랍에 넣는 전체 폭 목적지 줄." loading="lazy"></figure>
       <p>서랍에 넣는 전체 폭 목적지 줄.</p>
       <p class="catalog-base">소속 <code>GoNavBar</code></p>
       <pre><code>drawer.<wbr>body.<wbr>add_child(<wbr>GoNavBar.<wbr>drawer_list(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr> "text": "Inbox"},<wbr>
@@ -425,6 +465,7 @@ var rail := GoNavBar.<wbr>rail(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr
     </div>
     <div class="card">
       <h3 id="gofab"><code>GoFab</code></h3>
+      <figure class="shot"><img src="../img/widgets/gofab.webp" width="382" height="80" alt="GoFab — 구석에 떠 있는 화면의 주 동작 — 40~96dp, 또는 라벨이 붙은 확장형." loading="lazy"></figure>
       <p>구석에 떠 있는 화면의 주 동작 — 40~96dp, 또는 라벨이 붙은 확장형.</p>
       <p class="catalog-base">바탕 <code>Button</code></p>
       <pre><code>var cart := GoFab.<wbr>make(<wbr>GoIconSet.<wbr>PLUS,<wbr> "Add to cart",<wbr> add_to_cart)
@@ -432,6 +473,7 @@ cart.<wbr>float_in(<wbr>self,<wbr> nav.<wbr>get_combined_minimum_size(<wbr>).<wb
     </div>
     <div class="card">
       <h3 id="gosearchbar"><code>GoSearchBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gosearchbar.webp" width="382" height="80" alt="GoSearchBar — 지우기 버튼과 끝 동작이 있는 둥근 검색칸." loading="lazy"></figure>
       <p>지우기 버튼과 끝 동작이 있는 둥근 검색칸.</p>
       <p class="catalog-base">바탕 <code>PanelContainer</code></p>
       <pre><code>var search := GoSearchBar.<wbr>make(<wbr>"Search products",<wbr> find)
@@ -439,6 +481,7 @@ search.<wbr>add_action(<wbr>GoIconSet.<wbr>FILTER,<wbr> &amp;"Filter",<wbr> open
     </div>
     <div class="card">
       <h3 id="gosplitbutton"><code>GoSplitButton</code></h3>
+      <figure class="shot"><img src="../img/widgets/gosplitbutton.webp" width="151" height="76" alt="GoSplitButton — 주 동작과, 화살표 뒤의 변형들." loading="lazy"></figure>
       <p>주 동작과, 화살표 뒤의 변형들.</p>
       <p class="catalog-base">바탕 <code>HBoxContainer</code></p>
       <pre><code>var send := GoSplitButton.<wbr>make(<wbr>"Send",<wbr> send_now,<wbr> [<wbr>"Send later",<wbr> "Save as draft"])
@@ -446,6 +489,7 @@ send.<wbr>chosen.<wbr>connect(<wbr>func(<wbr>index: int) -&gt; void: send_varian
     </div>
     <div class="card">
       <h3 id="gotabview"><code>GoTabView</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotabview.webp" width="382" height="224" alt="GoTabView — 줄 전체에 펼친 탭과, 밀어서 넘기는 페이지." loading="lazy"></figure>
       <p>줄 전체에 펼친 탭과, 밀어서 넘기는 페이지.</p>
       <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
       <pre><code>var tabs := GoTabView.<wbr>make(<wbr>[<wbr>"Posts",<wbr> "Photos",<wbr> "Saved"],<wbr> [<wbr>posts,<wbr> photos,<wbr> saved])
@@ -453,6 +497,7 @@ tabs.<wbr>tab_changed.<wbr>connect(<wbr>func(<wbr>index: int) -&gt; void: track_
     </div>
     <div class="card">
       <h3 id="gostyle-tabs"><code>GoStyle.tabs</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-tabs.webp" width="382" height="136" alt="GoStyle.tabs — 탭 줄 — 앞에 모으거나 줄 전체에 펼친다. 아래 선은 끝까지 이어진다." loading="lazy"></figure>
       <p>탭 줄 — 앞에 모으거나 줄 전체에 펼친다. 아래 선은 끝까지 이어진다.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var row := GoStyle.<wbr>tabs(<wbr>[<wbr>"Overview",<wbr> "Stats",<wbr> "Gear"],<wbr> 0,<wbr> false,<wbr> true)
@@ -460,6 +505,7 @@ row.<wbr>tab_changed.<wbr>connect(<wbr>show_panel)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-bottom-app-bar"><code>GoStyle.bottom_app_bar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-bottom_app_bar.webp" width="382" height="104" alt="GoStyle.bottom_app_bar — 아이콘 동작과 FAB 이 있는 아래 바." loading="lazy"></figure>
       <p>아이콘 동작과 FAB 이 있는 아래 바.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>screen.<wbr>set_bottom_bar(<wbr>GoStyle.<wbr>bottom_app_bar(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>SEARCH,<wbr> "tooltip": &amp;"search"},<wbr>
@@ -467,6 +513,7 @@ row.<wbr>tab_changed.<wbr>connect(<wbr>show_panel)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-toolbar"><code>GoStyle.toolbar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-toolbar.webp" width="382" height="124" alt="GoStyle.toolbar — 아이콘 동작을 담은 떠 있는 알약." loading="lazy"></figure>
       <p>아이콘 동작을 담은 떠 있는 알약.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>toolbar(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>EDIT,<wbr> "tooltip": &amp;"Edit",<wbr> "action": edit},<wbr>
@@ -474,12 +521,14 @@ row.<wbr>tab_changed.<wbr>connect(<wbr>show_panel)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-breadcrumb"><code>GoStyle.breadcrumb</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-breadcrumb.webp" width="327" height="72" alt="GoStyle.breadcrumb — 지금 있는 곳을, 되짚어 갈 수 있는 경로로." loading="lazy"></figure>
       <p>지금 있는 곳을, 되짚어 갈 수 있는 경로로.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>breadcrumb(<wbr>[<wbr>"Home",<wbr> "Shop",<wbr> "Swords"],<wbr> go_to_level))</code></pre>
     </div>
     <div class="card">
       <h3 id="gopagination"><code>GoPagination</code></h3>
+      <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — 현재 쪽을 가운데 두는 번호 쪽, 또는 &#x27;더 보기&#x27; 한 줄." loading="lazy"></figure>
       <p>현재 쪽을 가운데 두는 번호 쪽, 또는 '더 보기' 한 줄.</p>
       <p class="catalog-base">바탕 <code>HBoxContainer</code></p>
       <pre><code>var pages := GoPagination.<wbr>make(<wbr>1,<wbr> 12,<wbr> load_page)
@@ -487,6 +536,7 @@ page.<wbr>add_child(<wbr>pages)</code></pre>
     </div>
     <div class="card">
       <h3 id="gocarousel"><code>GoCarousel</code></h3>
+      <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — 배너와 캐릭터 선택 — 요청하지 않으면 스스로 넘어가지 않는다." loading="lazy"></figure>
       <p>배너와 캐릭터 선택 — 요청하지 않으면 스스로 넘어가지 않는다.</p>
       <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
       <pre><code>var banners := GoCarousel.<wbr>new(<wbr>)
@@ -500,6 +550,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-button.webp" width="382" height="204" alt="GoStyle.button — 일곱 가지 톤의 버튼 — 보통, 주요, 외곽선, 글자, 작은, 위험, 채운 위험." loading="lazy"></figure>
       <p>일곱 가지 톤의 버튼 — 보통, 주요, 외곽선, 글자, 작은, 위험, 채운 위험.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Play",<wbr> play,<wbr> GoStyle.<wbr>Tone.<wbr>PRIMARY))
@@ -508,12 +559,14 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
     </div>
     <div class="card">
       <h3 id="gostyle-glow"><code>GoStyle.glow</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-glow.webp" width="382" height="76" alt="GoStyle.glow — 채운 버튼을 빛으로 띄운다." loading="lazy"></figure>
       <p>채운 버튼을 빛으로 띄운다.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>glow(<wbr>GoStyle.<wbr>button(<wbr>"Play",<wbr> play,<wbr> GoStyle.<wbr>Tone.<wbr>PRIMARY)))</code></pre>
     </div>
     <div class="card">
       <h3 id="goiconbutton"><code>GoIconButton</code></h3>
+      <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — 아이콘만 있는 버튼 — 보이는 건 작게, 누르는 건 48dp, 화면 낭독기용 이름." loading="lazy"></figure>
       <p>아이콘만 있는 버튼 — 보이는 건 작게, 누르는 건 48dp, 화면 낭독기용 이름.</p>
       <p class="catalog-base">바탕 <code>Button</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>CLOSE,<wbr> close,<wbr> -1,<wbr> &amp;"close"))
@@ -522,12 +575,14 @@ bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-chip.webp" width="382" height="84" alt="GoStyle.chip — 글자가 늘 읽히는 상태·태그 알약." loading="lazy"></figure>
       <p>글자가 늘 읽히는 상태·태그 알약.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>chip(<wbr>"Rare",<wbr> GoUi.<wbr>color(<wbr>GoTheme.<wbr>INFO)))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-filter-chip-input-chip"><code>GoStyle.filter_chip · input_chip</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-filter_chip.webp" width="382" height="132" alt="GoStyle.filter_chip · input_chip — 켜고 끄는 칩, 그리고 ✕ 가 붙은 입력값." loading="lazy"></figure>
       <p>켜고 끄는 칩, 그리고 ✕ 가 붙은 입력값.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>filters.<wbr>add_child(<wbr>GoStyle.<wbr>filter_chip(<wbr>"In stock",<wbr> false,<wbr> refilter))
@@ -535,12 +590,14 @@ to.<wbr>add_child(<wbr>GoStyle.<wbr>input_chip(<wbr>"Ann",<wbr> remove_ann,<wbr>
     </div>
     <div class="card">
       <h3 id="gostyle-segmented"><code>GoStyle.segmented</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-segmented.webp" width="240" height="72" alt="GoStyle.segmented — 몇 가지 중 정확히 하나 — 한 줄로 이어 붙인다." loading="lazy"></figure>
       <p>몇 가지 중 정확히 하나 — 한 줄로 이어 붙인다.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>segmented(<wbr>[<wbr>"Day",<wbr> "Week",<wbr> "Month"],<wbr> 0,<wbr> show_range))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-choice-grid"><code>GoStyle.choice_grid</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-choice_grid.webp" width="382" height="81" alt="GoStyle.choice_grid — 격자에서 견본 하나 — 색, 스킨 — 를 고른다." loading="lazy"></figure>
       <p>격자에서 견본 하나 — 색, 스킨 — 를 고른다.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var skins := GoStyle.<wbr>choice_grid(<wbr>[<wbr>{<wbr>"color": "f6cfae",<wbr> "tooltip": "Peach"},<wbr>
@@ -548,12 +605,14 @@ to.<wbr>add_child(<wbr>GoStyle.<wbr>input_chip(<wbr>"Ann",<wbr> remove_ann,<wbr>
     </div>
     <div class="card">
       <h3 id="gostyle-radio-group"><code>GoStyle.radio_group</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-radio_group.webp" width="382" height="176" alt="GoStyle.radio_group — 하나만 고르는 라디오 버튼." loading="lazy"></figure>
       <p>하나만 고르는 라디오 버튼.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>radio_group(<wbr>[<wbr>"Easy",<wbr> "Normal",<wbr> "Hard"],<wbr> 1))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-toggle-checkbox"><code>GoStyle.toggle · checkbox</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-toggle.webp" width="382" height="260" alt="GoStyle.toggle · checkbox — 라벨이 붙은 스위치와 체크 상자." loading="lazy"></figure>
       <p>라벨이 붙은 스위치와 체크 상자.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var music := GoStyle.<wbr>toggle(<wbr>"Music",<wbr> false)
@@ -567,6 +626,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-line_edit.webp" width="382" height="244" alt="GoStyle.line_edit · textarea — 한 줄, 여러 줄 글 입력칸." loading="lazy"></figure>
       <p>한 줄, 여러 줄 글 입력칸.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var nickname := GoStyle.<wbr>line_edit(<wbr>"Your name")
@@ -574,6 +634,7 @@ var note := GoStyle.<wbr>textarea(<wbr>"Message",<wbr> 4)</code></pre>
     </div>
     <div class="card">
       <h3 id="gofield"><code>GoField</code></h3>
+      <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — 라벨·컨트롤·힌트 — 틀린 칸 아래에 오류를 단다." loading="lazy"></figure>
       <p>라벨·컨트롤·힌트 — 틀린 칸 아래에 오류를 단다.</p>
       <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
       <pre><code>var field := GoField.<wbr>make(<wbr>"Nickname",<wbr> GoStyle.<wbr>line_edit(<wbr>),<wbr> "3–12 letters",<wbr> false)
@@ -581,12 +642,14 @@ field.<wbr>set_error(<wbr>"That name is taken")</code></pre>
     </div>
     <div class="card">
       <h3 id="goinputgroup"><code>GoInputGroup</code></h3>
+      <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — 입력칸과 그 버튼을 한 모양으로 붙인다." loading="lazy"></figure>
       <p>입력칸과 그 버튼을 한 모양으로 붙인다.</p>
       <p class="catalog-base">바탕 <code>HBoxContainer</code></p>
       <pre><code>var chat := GoInputGroup.<wbr>make(<wbr>GoStyle.<wbr>line_edit(<wbr>"Message"),<wbr> {<wbr>"suffix": GoStyle.<wbr>button(<wbr>"Send",<wbr> send)})</code></pre>
     </div>
     <div class="card">
       <h3 id="gocombobox"><code>GoCombobox</code></h3>
+      <figure class="shot"><img src="../img/widgets/gocombobox.webp" width="382" height="76" alt="GoCombobox — 이름 처음만이 아니라 안쪽까지 찾는 선택기." loading="lazy"></figure>
       <p>이름 처음만이 아니라 안쪽까지 찾는 선택기.</p>
       <p class="catalog-base">바탕 <code>Button</code></p>
       <pre><code>var friend := GoCombobox.<wbr>make(<wbr>friends,<wbr> -1,<wbr> "Find a friend")
@@ -594,6 +657,7 @@ friend.<wbr>picked.<wbr>connect(<wbr>invite)</code></pre>
     </div>
     <div class="card">
       <h3 id="gocodeinput"><code>GoCodeInput</code></h3>
+      <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — 칸으로 보이는 쿠폰·선물 코드 — 붙여 넣기와 IME 입력이 그대로 된다." loading="lazy"></figure>
       <p>칸으로 보이는 쿠폰·선물 코드 — 붙여 넣기와 IME 입력이 그대로 된다.</p>
       <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
       <pre><code>var coupon := GoCodeInput.<wbr>make(<wbr>12,<wbr> 4)
@@ -601,6 +665,7 @@ coupon.<wbr>completed.<wbr>connect(<wbr>redeem)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-select-dropdown"><code>GoStyle.select · dropdown</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-select.webp" width="382" height="76" alt="GoStyle.select · dropdown — 펼침 목록, 그리고 메뉴를 여는 버튼." loading="lazy"></figure>
       <p>펼침 목록, 그리고 메뉴를 여는 버튼.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var quality := GoStyle.<wbr>select(<wbr>[<wbr>"Low",<wbr> "Medium",<wbr> "High"])
@@ -608,6 +673,7 @@ var sort := GoStyle.<wbr>dropdown(<wbr>"Sort",<wbr> [<wbr>"Newest",<wbr> "Price"
     </div>
     <div class="card">
       <h3 id="gostyle-slider"><code>GoStyle.slider</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-slider.webp" width="382" height="107" alt="GoStyle.slider — 테마 모양의 슬라이더." loading="lazy"></figure>
       <p>테마 모양의 슬라이더.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var volume := GoStyle.<wbr>slider(<wbr>0.0,<wbr> 1.0,<wbr> 0.05)
@@ -615,6 +681,7 @@ volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorangeslider"><code>GoRangeSlider</code></h3>
+      <figure class="shot"><img src="../img/widgets/gorangeslider.webp" width="382" height="107" alt="GoRangeSlider — 서로 넘지 않는 손잡이 두 개 — 가격·레벨 범위." loading="lazy"></figure>
       <p>서로 넘지 않는 손잡이 두 개 — 가격·레벨 범위.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var price := GoRangeSlider.<wbr>make(<wbr>0.0,<wbr> 500.0,<wbr> 40.0,<wbr> 220.0,<wbr> 10.0)
@@ -622,6 +689,7 @@ price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>
+      <figure class="shot"><img src="../img/widgets/godatepicker.webp" width="382" height="392" alt="GoDatePicker — 눌러 고르는 한 달 — range_mode 로 기간도." loading="lazy"></figure>
       <p>눌러 고르는 한 달 — range_mode 로 기간도.</p>
       <p class="catalog-base">바탕 <code>Container</code></p>
       <pre><code>var stay := GoDatePicker.<wbr>make(<wbr>)
@@ -630,6 +698,7 @@ stay.<wbr>range_picked.<wbr>connect(<wbr>func(<wbr>start: Dictionary,<wbr> end: 
     </div>
     <div class="card">
       <h3 id="gotimepicker"><code>GoTimePicker</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotimepicker.webp" width="382" height="408" alt="GoTimePicker — 시계 다이얼 — 시 다음 분, 12·24시간, 칸에서 위·아래 키." loading="lazy"></figure>
       <p>시계 다이얼 — 시 다음 분, 12·24시간, 칸에서 위·아래 키.</p>
       <p class="catalog-base">바탕 <code>Container</code></p>
       <pre><code>var alarm := GoTimePicker.<wbr>make(<wbr>7,<wbr> 30,<wbr> func(<wbr>hour: int,<wbr> minute: int) -&gt; void: set_alarm(<wbr>hour,<wbr> minute))
@@ -637,6 +706,7 @@ alarm.<wbr>use_24h = true</code></pre>
     </div>
     <div class="card">
       <h3 id="gowheelpicker"><code>GoWheelPicker</code></h3>
+      <figure class="shot"><img src="../img/widgets/gowheelpicker.webp" width="382" height="224" alt="GoWheelPicker — 돌다가 띠 위에 항목 하나를 세우는 휠." loading="lazy"></figure>
       <p>돌다가 띠 위에 항목 하나를 세우는 휠.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var amount := GoWheelPicker.<wbr>make(<wbr>[<wbr>"x1",<wbr> "x5",<wbr> "x10",<wbr> "x50"],<wbr> 0,<wbr> set_amount)
@@ -644,6 +714,7 @@ row.<wbr>add_child(<wbr>amount)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostepper"><code>GoStepper</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostepper.webp" width="382" height="315" alt="GoStepper — 다음·이전이 있는 번호 단계 — 세로로, 또는 한 줄로." loading="lazy"></figure>
       <p>다음·이전이 있는 번호 단계 — 세로로, 또는 한 줄로.</p>
       <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
       <pre><code>var checkout := GoStepper.<wbr>make(<wbr>[<wbr>{<wbr>"title": "Cart",<wbr> "content": cart},<wbr> {<wbr>"title": "Pay",<wbr> "content": pay}])
@@ -657,12 +728,14 @@ checkout.<wbr>finished.<wbr>connect(<wbr>place_order)</code></pre>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-list-row-list-button"><code>GoStyle.list_row · list_button</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row · list_button — 아이콘·제목·요약·끝 표시가 있는 목록 줄." loading="lazy"></figure>
       <p>아이콘·제목·요약·끝 표시가 있는 목록 줄.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>list_button(<wbr>GoIconSet.<wbr>SETTINGS,<wbr> "Settings",<wbr> open_settings,<wbr> Color.<wbr>TRANSPARENT,<wbr> "",<wbr> false))</code></pre>
     </div>
     <div class="card">
       <h3 id="golistview"><code>GoListView</code></h3>
+      <figure class="shot"><img src="../img/widgets/golistview.webp" width="382" height="324" alt="GoListView — 수천 줄 — 보이는 줄만 만든다." loading="lazy"></figure>
       <p>수천 줄 — 보이는 줄만 만든다.</p>
       <p class="catalog-base">바탕 <code>GoScroll</code></p>
       <pre><code>var feed := GoListView.<wbr>make(<wbr>10000,<wbr> 72.0,<wbr> func(<wbr>index: int) -&gt; Control: return post_row(<wbr>posts[<wbr>index]))
@@ -670,6 +743,7 @@ feed.<wbr>end_reached.<wbr>connect(<wbr>load_more)</code></pre>
     </div>
     <div class="card">
       <h3 id="goreorderlist"><code>GoReorderList</code></h3>
+      <figure class="shot"><img src="../img/widgets/goreorderlist.webp" width="382" height="216" alt="GoReorderList — 손잡이나 길게 누르기로 끌어 순서를 바꾸는 줄." loading="lazy"></figure>
       <p>손잡이나 길게 누르기로 끌어 순서를 바꾸는 줄.</p>
       <p class="catalog-base">바탕 <code>Container</code></p>
       <pre><code>var queue := GoReorderList.<wbr>make(<wbr>[<wbr>intro_row,<wbr> theme_row,<wbr> boss_row])
@@ -677,6 +751,7 @@ queue.<wbr>reordered.<wbr>connect(<wbr>func(<wbr>from: int,<wbr> to: int) -&gt; 
     </div>
     <div class="card">
       <h3 id="goswiperow"><code>GoSwipeRow</code></h3>
+      <figure class="shot"><img src="../img/widgets/goswiperow.webp" width="382" height="207" alt="GoSwipeRow — 옆으로 밀어 지우거나 보관하는 줄 — 목록 스크롤은 그대로." loading="lazy"></figure>
       <p>옆으로 밀어 지우거나 보관하는 줄 — 목록 스크롤은 그대로.</p>
       <p class="catalog-base">바탕 <code>Container</code></p>
       <pre><code>inbox.<wbr>add_child(<wbr>GoSwipeRow.<wbr>wrap(<wbr>mail_row,<wbr> {<wbr>"icon": GoIconSet.<wbr>TRASH,<wbr> "text": "Delete",<wbr>
@@ -684,6 +759,7 @@ queue.<wbr>reordered.<wbr>connect(<wbr>func(<wbr>from: int,<wbr> to: int) -&gt; 
     </div>
     <div class="card">
       <h3 id="gotable"><code>GoTable</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — 정렬되는 머리와 고를 수 있는 줄 — 숫자는 숫자로 정렬." loading="lazy"></figure>
       <p>정렬되는 머리와 고를 수 있는 줄 — 숫자는 숫자로 정렬.</p>
       <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
       <pre><code>var board := GoTable.<wbr>make(<wbr>[<wbr>"Name",<wbr> {<wbr>"text": "Score",<wbr> "numeric": true}],<wbr> [<wbr>[<wbr>"Ann",<wbr> 9124],<wbr> [<wbr>"Ben",<wbr> 91240]])
@@ -691,6 +767,7 @@ board.<wbr>row_selected.<wbr>connect(<wbr>open_profile)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-card-item-card"><code>GoStyle.card · item_card</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-card.webp" width="382" height="243" alt="GoStyle.card · item_card — 카드, 그리고 고른 아이템의 상세 카드." loading="lazy"></figure>
       <p>카드, 그리고 고른 아이템의 상세 카드.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var card := GoStyle.<wbr>card(<wbr>)
@@ -699,12 +776,14 @@ popup.<wbr>add_child(<wbr>GoStyle.<wbr>item_card(<wbr>{<wbr>"title": "Rusty swor
     </div>
     <div class="card">
       <h3 id="gostyle-avatar"><code>GoStyle.avatar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-avatar.webp" width="382" height="72" alt="GoStyle.avatar — 원 안의 이니셜이나 사진." loading="lazy"></figure>
       <p>원 안의 이니셜이나 사진.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>avatar(<wbr>"AK",<wbr> 40))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-label"><code>GoStyle.label</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-label.webp" width="382" height="153" alt="GoStyle.label — 마이크로부터 제목까지 일곱 가지 글자 역할 중 하나로." loading="lazy"></figure>
       <p>마이크로부터 제목까지 일곱 가지 글자 역할 중 하나로.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Level 12",<wbr> GoTheme.<wbr>ROLE_TITLE))
@@ -718,6 +797,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — 값·분수·퍼센트를 보여 주는 HP·MP·XP 막대." loading="lazy"></figure>
       <p>값·분수·퍼센트를 보여 주는 HP·MP·XP 막대.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var hp := GoBar.<wbr>new(<wbr>)
@@ -726,6 +806,7 @@ hp.<wbr>set_values(<wbr>320,<wbr> 500)</code></pre>
     </div>
     <div class="card">
       <h3 id="goslot"><code>GoSlot</code></h3>
+      <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — 퀵슬롯 — 아이콘·수량·쿨다운·단축키를 한 면에." loading="lazy"></figure>
       <p>퀵슬롯 — 아이콘·수량·쿨다운·단축키를 한 면에.</p>
       <p class="catalog-base">바탕 <code>Button</code></p>
       <pre><code>var potion := GoSlot.<wbr>new(<wbr>)
@@ -735,6 +816,7 @@ potion.<wbr>start_cooldown(<wbr>5.0)</code></pre>
     </div>
     <div class="card">
       <h3 id="goslotgrid"><code>GoSlotGrid</code></h3>
+      <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — 인벤토리 격자 — 칸 사이로 아이템을 끌어 옮길 수 있다." loading="lazy"></figure>
       <p>인벤토리 격자 — 칸 사이로 아이템을 끌어 옮길 수 있다.</p>
       <p class="catalog-base">바탕 <code>HFlowContainer</code></p>
       <pre><code>var bag := GoSlotGrid.<wbr>new(<wbr>)
@@ -742,6 +824,7 @@ bag.<wbr>set_cell(<wbr>0,<wbr> {<wbr>"icon": GoIconSet.<wbr>POTION,<wbr> "quanti
     </div>
     <div class="card">
       <h3 id="gojoystick"><code>GoJoystick</code></h3>
+      <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — 가상 스틱 — 고정, 엄지 따라가기, 상대." loading="lazy"></figure>
       <p>가상 스틱 — 고정, 엄지 따라가기, 상대.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var pad := GoJoystick.<wbr>new(<wbr>)
@@ -750,12 +833,14 @@ pad.<wbr>moved.<wbr>connect(<wbr>func(<wbr>direction: Vector2) -&gt; void: playe
     </div>
     <div class="card">
       <h3 id="gokbd"><code>GoKbd</code></h3>
+      <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — 실제 키 설정을 읽는 키캡 — 키를 바꿔도 안내가 거짓이 되지 않는다." loading="lazy"></figure>
       <p>실제 키 설정을 읽는 키캡 — 키를 바꿔도 안내가 거짓이 되지 않는다.</p>
       <p class="catalog-base">바탕 <code>HBoxContainer</code></p>
       <pre><code>hint.<wbr>add_child(<wbr>GoKbd.<wbr>for_action(<wbr>&amp;"interact"))</code></pre>
     </div>
     <div class="card">
       <h3 id="gochoicecolumn"><code>GoChoiceColumn</code></h3>
+      <figure class="shot"><img src="../img/widgets/gochoicecolumn.webp" width="184" height="236" alt="GoChoiceColumn — 한 번 눌러 고르는 짧은 세로 목록 — 소환 목록. 게임이 여러 칸을 표시할 수 있다." loading="lazy"></figure>
       <p>한 번 눌러 고르는 짧은 세로 목록 — 소환 목록. 게임이 여러 칸을 표시할 수 있다.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var animals := GoChoiceColumn.<wbr>make(<wbr>[<wbr>"Hen",<wbr> "Cat",<wbr> "Dog",<wbr> "Pig",<wbr> "Cow"],<wbr> 4,<wbr> summon)
@@ -764,6 +849,7 @@ side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — 매일 출석 보상 — 오늘 칸만 누를 수 있다." loading="lazy"></figure>
       <p>매일 출석 보상 — 오늘 칸만 누를 수 있다.</p>
       <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
       <pre><code>var attendance := GoRewardCalendar.<wbr>make(<wbr>days,<wbr> claimed_until)
@@ -771,6 +857,7 @@ attendance.<wbr>claimed.<wbr>connect(<wbr>func(<wbr>day: int) -&gt; void: server
     </div>
     <div class="card">
       <h3 id="goradar"><code>GoRadar</code></h3>
+      <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — 능력치 오각형 — 장비 비교는 점선으로." loading="lazy"></figure>
       <p>능력치 오각형 — 장비 비교는 점선으로.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var stats := GoRadar.<wbr>make(<wbr>{<wbr>"STR": 0.85,<wbr> "AGI": 0.5,<wbr> "INT": 0.3,<wbr> "VIT": 0.7,<wbr> "LUK": 0.45})
@@ -778,6 +865,7 @@ stats.<wbr>set_compare(<wbr>with_new_sword)</code></pre>
     </div>
     <div class="card">
       <h3 id="godonut"><code>GoDonut</code></h3>
+      <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — 몫을 조각으로 — 범례는 색만이 아니라 말로도." loading="lazy"></figure>
       <p>몫을 조각으로 — 범례는 색만이 아니라 말로도.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var share := GoDonut.<wbr>make(<wbr>[<wbr>{<wbr>"label": "Physical",<wbr> "value": 620},<wbr> {<wbr>"label": "Magic",<wbr> "value": 340}])
@@ -785,6 +873,7 @@ card.<wbr>add_child(<wbr>share.<wbr>legend(<wbr>))</code></pre>
     </div>
     <div class="card">
       <h3 id="gozoomview"><code>GoZoomView</code></h3>
+      <figure class="shot"><img src="../img/widgets/gozoomview.webp" width="382" height="284" alt="GoZoomView — 지도를 두 손가락·휠·두 번 탭으로 확대 — 가장자리 안에서 이동." loading="lazy"></figure>
       <p>지도를 두 손가락·휠·두 번 탭으로 확대 — 가장자리 안에서 이동.</p>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var map := GoZoomView.<wbr>wrap(<wbr>world_map,<wbr> 4.0)
@@ -793,6 +882,7 @@ page.<wbr>add_child(<wbr>map)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-hud-panel-overlay-panel"><code>GoStyle.hud_panel · overlay_panel</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-hud_panel.webp" width="382" height="151" alt="GoStyle.hud_panel · overlay_panel — 게임 위에 뜨는 판 — 어떤 그림 위에서도 글자가 읽힌다." loading="lazy"></figure>
       <p>게임 위에 뜨는 판 — 어떤 그림 위에서도 글자가 읽힌다.</p>
       <p class="catalog-base">소속 <code>GoStyle</code></p>
       <pre><code>var bars := GoStyle.<wbr>hud_panel(<wbr>)
@@ -806,6 +896,7 @@ var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
   <div class="grid">
     <div class="card">
       <h3 id="goui-gothemepresets"><code>GoUi · GoThemePresets</code></h3>
+      <figure class="shot"><img src="../img/widgets/goui.webp" width="682" height="571" alt="GoUi · GoThemePresets — 프리셋(기본·SF·중세·Material·어린이) 중 하나를 고르고, 색과 크기는 토큰에서 읽는다." loading="lazy"></figure>
       <p>프리셋(기본·SF·중세·Material·어린이) 중 하나를 고르고, 색과 크기는 토큰에서 읽는다.</p>
       <p class="catalog-base">바탕 <code>RefCounted</code></p>
       <pre><code>GoUi.<wbr>use_preset(<wbr>GoThemePresets.<wbr>MATERIAL_LIGHT)
@@ -822,6 +913,7 @@ GoUi.<wbr>refresh(<wbr>)</code></pre>
     </div>
     <div class="card">
       <h3 id="goskin"><code>GoSkin</code></h3>
+      <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="GoSkin — 코드가 그리는 모양 — 칩·슬롯·조이스틱·새 부품 — 을 내 방식으로." loading="lazy"></figure>
       <p>코드가 그리는 모양 — 칩·슬롯·조이스틱·새 부품 — 을 내 방식으로.</p>
       <p class="catalog-base">바탕 <code>Resource</code></p>
       <pre><code>class_name MySkin
@@ -832,6 +924,7 @@ func banner_box(<wbr>) -&gt; StyleBox:
     </div>
     <div class="card">
       <h3 id="goiconset-gogameicons"><code>GoIconSet · GoGameIcons</code></h3>
+      <figure class="shot"><img src="../img/widgets/goiconset.webp" width="382" height="136" alt="GoIconSet · GoGameIcons — 이름으로 부르는 아이콘 — 기본 세트, 게임 아이콘 187개, 또는 내 SVG." loading="lazy"></figure>
       <p>이름으로 부르는 아이콘 — 기본 세트, 게임 아이콘 187개, 또는 내 SVG.</p>
       <p class="catalog-base">바탕 <code>Resource · RefCounted</code></p>
       <pre><code>GoUi.<wbr>config.<wbr>icons = GoGameIcons.<wbr>icon_set(<wbr>)
@@ -839,6 +932,7 @@ var gear := GoUi.<wbr>icons(<wbr>).<wbr>node(<wbr>GoIconSet.<wbr>SETTINGS,<wbr> 
     </div>
     <div class="card">
       <h3 id="gostyleboxcut-gostyleboxbracket-gostyleboxmediev"><code>GoStyleBoxCut · GoStyleBoxBracket · GoStyleBoxMedieval</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyleboxcut.webp" width="382" height="110" alt="GoStyleBoxCut · GoStyleBoxBracket · GoStyleBoxMedieval — 내 판에 쓰는 모서리 깎인·괄호·단조 면." loading="lazy"></figure>
       <p>내 판에 쓰는 모서리 깎인·괄호·단조 면.</p>
       <p class="catalog-base">바탕 <code>StyleBox</code></p>
       <pre><code>var face := GoStyleBoxCut.<wbr>new(<wbr>)
@@ -872,7 +966,7 @@ GoFeedback.<wbr>haptic_handler = func(<wbr>ms: int,<wbr> amplitude: float) -&gt;
 
 <footer class="bottom">
   <div class="wrap">
-    <p><a href="widgets.html">← 위젯</a> · <a href="widgets-surfaces.html">떠 있는 창 →</a></p>
+    <p><a href="widgets.html">← 위젯</a> · <a href="widgets-popups.html">팝업과 대화상자 →</a></p>
     <p style="font-size:13px">밑줄 친 용어에 마우스를 올리면 뜻이 뜬다.</p>
   </div>
 </footer>

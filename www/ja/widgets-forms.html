@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">ウィジェット</a>
   <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html">ポップアップとダイアログ</a>
   <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
   <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 間違いを抱えられる行</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — ラベル・コントロール・ヒント。誤った欄の下にエラーを出す。" loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>入力欄が5つあるフォームの先頭に「入力を確認してください」と1行あっても、<i>どの</i>欄なのかは分からない。
     その1点だけで、人は新規登録をやめてしまう。</p>
   <pre><code>var name_field := GoField.make("キャラクター名", GoStyle.line_edit("2〜12文字"), "あとから変更できない")
@@ -109,6 +111,7 @@ name_field.clear_error()</code></pre>
     がないところはファクトリで、サーバーに断られうるものはノードで作る。</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — ボタンと溶接された入力欄</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — 入力欄とそのボタンを一つの形に溶接する。" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("メッセージ"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("名前"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>これが解くのは角の問題だ。丸い形が2つ真ん中で出会うとくびれて見えるし、既定の隙間があると2つの物体と
@@ -117,6 +120,7 @@ GoInputGroup.make(GoStyle.line_edit("名前"), {"prefix_icon": &amp;"search"})</
     面どうしがきれいに合わさる。</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 検索できるピッカー</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — 名前の先頭だけでなく中まで探す選択欄。" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>項目が10個までなら <code>GoStyle.select()</code> のほうがよい。タップが1回少なく、リスト全体が見える。
     30 を超えると、目で追うこと自体が作業になる。</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "サーバーを選ぶ")
@@ -127,6 +131,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — クーポンとギフトコード</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — マスで表示するクーポン・ギフトコード。貼り付けと IME 入力もそのまま使える。" loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>コードは打ち込まれるより、メッセージから貼り付けられることのほうがずっと多い。本物の入力欄を12個並べると、
     貼り付けは最初のマスで止まり、IME が文字を食う。だから文字を受け取るのは隠した1つの欄で、マスは描かれた
     ものだ。<code>ABCD-EFGH-IJKL</code> は、入るときにハイフンが落ちる。</p>
@@ -135,6 +140,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("使用済み")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 並べ替えできる見出し、選べる行</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — 並べ替えできる見出しと選べる行。数値は数値として並ぶ。" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "順位", "width": 56}, {"text": "名前"}, {"text": "スコア", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -147,6 +153,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     読み取り専用の表のまま残る。</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — ページ番号、あるいは「もっと見る」の行</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — 現在のページを中央に保つ番号付きページ、または「もっと見る」1 行。" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # スマートフォン向きの変種</code></pre>
   <p>番号はマウスの UI だ。スマートフォンなら「もっと見る」の行のほうが読みやすい。現在のページは窓の中央に

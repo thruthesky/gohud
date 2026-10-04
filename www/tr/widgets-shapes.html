@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget'lar</a>
   <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html">Açılır pencereler ve iletişim kutuları</a>
   <a href="widgets-surfaces.html">Yüzen pencereler</a>
   <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Web'den tanıdık biçimler, bir oyunun onlardan ne istediğine göre yeniden kurulmuş.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — günlük katılım</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Günlük giriş ödülleri; yalnızca bugüne basılabilir." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>Bir oyunda tarih seçici neredeyse hiç işe yaramaz. Takvim biçimi ise yarar — katılım ödülleri için; orada
     önemli olan hangi tarihte olduğunuz değil, <b>kaçıncı gündeyseniz</b> odur.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     Alınmış, bugün ve gelecek olan üç şeyle birden ayrılır: bir onay simgesi, bir vurgu kenarlığı ve soluklaştırma.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> ve <code>GoDonut</code> — bir bakışta istatistikler</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — Ekipmanı karşılaştırmak için kesikli çizgili istatistik beşgeni." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Payları dilimler halinde, yalnızca renkle değil sözcüklerle de açıklayan bir gösterge." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # kesik çizgili bir katman
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     yalnızca başka bir renk değil, <b>kesik çizgilidir</b>; gösterge de yüzdeyi yazıyla basar.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — afişler ve karakter seçimi</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — İstenmedikçe kendiliğinden dönmeyen afişler ve karakter seçimi." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # varsayılan olarak kapalı</code></pre>
   <p>Siz istemedikçe kendi kendine ilerlemez ve beş saniye alt sınırdır: üç saniyede bir değişen bir afiş, yazıyı
@@ -125,6 +132,7 @@ banners.autoplay_seconds = 5.0             # varsayılan olarak kapalı</code></
     ilerlemez. Çizilen nokta küçük olsa da noktalara dokunma alt sınırında basılabilir.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — yalan söylemeyen tuş ipuçları</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Gerçek atamayı okuyan tuşlar; yeniden atamak ipucunu yalancı yapmaz." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # gerçek atamayı okur</code></pre>
   <p>Koda gömülmüş bir "F'ye basın", oyuncu tuşu değiştirdikten sonra da F demeyi sürdürür — bir PC arayüzündeki
     en yaygın yalan. <code>for_action()</code>, <code>InputMap</code>'i okur; eylem bunun yerine bir kumandaya

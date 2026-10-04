@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tutti i widget</a>
+  <a href="widgets-popups.html">Popup e finestre di dialogo</a>
   <a href="widgets-surfaces.html">Finestre flottanti</a>
   <a href="widgets-messages.html">Dire qualcosa a chi gioca</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>I widget dell'HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — nove punti</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Fissa i pezzi dell&#x27;HUD in uno dei nove punti dell&#x27;area sicura." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Rispetta l'area sicura e i margini dei bordi. Dagli un <code>landscape_spot</code> e si sposta in
     orizzontale — controlli che in verticale stanno in basso al centro possono andare in basso a destra.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # e non spinge la pagina mentre è visibil
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — salute, mana, esperienza</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Barre HP, MP e XP con valore, frazione o percentuale." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # il token di solo riempimento
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     larghezza della barra non sobbalza quando le cifre entrano ed escono.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — uno slot rapido</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Uno slot rapido: icona, quantità, ricarica e scorciatoia su un&#x27;unica faccia." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Una griglia d&#x27;inventario; gli oggetti si trascinano tra le celle." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Icona, quantità, ricarica e scorciatoia su <b>una sola faccia</b>. Appendere badge a un cerchietto
     rende ogni slot di larghezza diversa e la riga traballa.</p>
   <div class="note">
@@ -231,6 +238,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     ogni controllo delle impostazioni nell'ordine di tabulazione. Attivalo quando l'unico input è una tastiera o un gamepad.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — stick virtuale</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Uno stick virtuale: fisso, che segue il pollice o relativo." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Modalità</th><th>Comportamento</th></tr></thead>
     <tbody>
@@ -243,6 +251,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     una velocità; non varia con la dimensione dello schermo o con i DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — sembra piccolo, si preme grande</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Un pulsante solo icona: piccolo alla vista, 48 dp al tocco, con nome per i lettori di schermo." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Sicuro solo finché i fratelli ignorano l'input.</b> Se l'area allargata copre il pulsante successivo, quel
     pulsante smette di rispondere. Pulsanti icona affiancati richiedono <code>touch_peers</code>.

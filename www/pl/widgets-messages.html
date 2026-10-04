@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widżety</a>
   <a href="widgets-catalog.html">Wszystkie widżety</a>
+  <a href="widgets-popups.html">Wyskakujące okna i dialogi</a>
   <a href="widgets-surfaces.html">Pływające okna</a>
   <a href="widgets-messages.html" aria-current="page">Jak powiedzieć coś graczowi</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Powiadomienie, które nie przejmuje ani wejścia, ani fokusu." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Komunikat na dole, który czeka w kolejce i może mieć przyciski." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Nigdy nie przechwytuje wejścia.</b> Powiadomienie się czyta, a nie naciska. Nie zabiera fokusu, nie
     blokuje wejścia gry, a przycisk pod nim nadal się naciska. Gdy potrzebne jest potwierdzenie, użyj
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — pytanie, które nie blokuje</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Pytanie, które nie zatrzymuje gry — zaproszenie, wymiana." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Pływa z jednej strony, bez zasłony. Gra działa dalej.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — przewodnik po interfejsie</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Przewodnik wskazujący prawdziwe kontrolki." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Wskazuje prawdziwe kontrolki, jedną po drugiej. Wejście przyjmuje tylko karta, więc <b>naciśnięcie samej
     podświetlonej kontrolki przesuwa przewodnik dalej</b> — „naciśnij tutaj” staje się czynnością, a nie zdaniem.</p>
   <pre><code>tour.start([

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos os widgets</a>
+  <a href="widgets-popups.html">Pop-ups e diálogos</a>
   <a href="widgets-surfaces.html">Janelas flutuantes</a>
   <a href="widgets-messages.html">Contando algo ao jogador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Formas conhecidas da web, refeitas em torno do que um jogo precisa delas.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — presença diária</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Recompensas de presença diária; só o dia de hoje pode ser tocado." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>Um seletor de data quase nunca serve em um jogo. Uma forma de calendário serve — para recompensas de
     presença, onde o que importa é <b>em que dia você está</b>, não que data é hoje.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -108,6 +110,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     borda de destaque e o escurecimento.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> e <code>GoDonut</code> — atributos de relance</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — O pentágono de atributos, com uma linha tracejada para comparar equipamentos." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Partes como fatias, com legenda em palavras além de cor." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"FOR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "SOR": 0.45})
 stats.set_compare(with_new_sword)          # uma sobreposição tracejada
 
@@ -120,6 +126,7 @@ card.add_child(share.legend())</code></pre>
     palavras.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banners e seleção de personagem</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Banners e seleção de personagem que não passam sozinhos, a menos que se peça." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # desligado por padrão</code></pre>
   <p>Ele não avança sozinho a não ser que você peça, e cinco segundos é o piso: um banner que muda a cada três leva
@@ -128,6 +135,7 @@ banners.autoplay_seconds = 5.0             # desligado por padrão</code></pre>
     desenhado sendo pequeno.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — dicas de tecla que não mentem</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Teclas que leem a atribuição real, então remapear nunca faz a dica mentir." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # lê o atalho de verdade</code></pre>
   <p>Um "Aperte F" escrito na mão continua dizendo F depois que o jogador remapeia — a mentira mais comum de uma
     interface de PC. O <code>for_action()</code> lê o <code>InputMap</code>; se a ação estiver mapeada em um

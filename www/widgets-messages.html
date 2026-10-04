@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html">Popups and dialogs</a>
   <a href="widgets-surfaces.html">Floating windows</a>
   <a href="widgets-messages.html" aria-current="page">Telling the player something</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/notice.webp" width="300" height="649" alt="GoNotice — A notice that never takes input or focus." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — A message at the bottom that queues and can carry buttons." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>It never intercepts input.</b> A notice is read, not pressed. It takes no focus, does not block
     game input, and the button beneath it still presses. When confirmation is needed use
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — a question that does not block</h3>
+  <figure class="shot phone"><img src="img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — A question that does not stop the game — an invite, a trade." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Floats at one side with no scrim. The game keeps running.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — guided tour</h3>
+  <figure class="shot phone"><img src="img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — A guided tour that points at real controls." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Points at real controls one at a time. Only the card takes input, so <b>pressing the highlighted
     control itself advances the tour</b> — "press here" becomes an action rather than a sentence.</p>
   <pre><code>tour.start([

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html">النوافذ العائمة</a>
   <a href="widgets-messages.html" aria-current="page">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — شريط الإشعار</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — إشعار لا يأخذ الإدخال ولا التركيز أبدًا." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — رسالة في الأسفل تنتظر دورها ويمكن أن تحمل أزرارًا." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>لا يعترض اللمس أبدًا.</b> الإشعار يُقرأ ولا يُضغط. فهو لا يأخذ تركيزًا، ولا يحجب مدخلات اللعبة،
     والزر الذي تحته يظلّ يُضغط. وحين يلزم تأكيد استعمل <code>GoDialogs</code>؛
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — سؤال لا يوقف اللعبة</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — سؤال لا يوقف اللعبة — دعوة أو مبادلة." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>يطفو على أحد الجانبين بلا حجاب معتم. واللعبة تواصل عملها.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — جولة إرشادية</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — جولة إرشادية تشير إلى عناصر تحكم حقيقية." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>يشير إلى عناصر تحكم حقيقية واحدًا تلو الآخر. والبطاقة وحدها هي التي تأخذ اللمس، فـ<b>الضغط على عنصر
     التحكم المُبرَز نفسه ينتقل بالجولة</b> — فتصير "اضغط هنا" فعلًا لا جملة.</p>
   <pre><code>tour.start([

@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>弹窗与对话框 — gohud</title>
+<meta name="description" content="gohud 的全部弹窗 —— 该选哪一个、如何打开和关闭、对返回键和输入做了什么，以及在每种外观下的样子。">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">概览</a>
+      <a href="install.html">安装</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">控件</a>
+      <a href="theming.html">主题</a>
+      <a href="icons.html">图标</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>简体中文</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>弹窗与对话框</h1>
+    <p class="lead">gohud 的全部弹窗 —— 该选哪一个、如何打开和关闭、对返回键和输入做了什么，以及在每种外观下的样子。 <a href="widgets.html">← 控件</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="控件">
+  <!-- subnav:begin -->
+  <a href="widgets.html">控件</a>
+  <a href="widgets-catalog.html">全部控件</a>
+  <a href="widgets-popups.html" aria-current="page">弹窗与对话框</a>
+  <a href="widgets-surfaces.html">浮动窗口</a>
+  <a href="widgets-messages.html">把消息传达给玩家</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">等待、告知、计数</a>
+  <a href="widgets-forms.html">表单与列表</a>
+  <a href="widgets-shapes.html">游戏真正用得上的形态</a>
+  <a href="widgets-overlays.html">盖在屏幕之上</a>
+  <a href="widgets-style.html"><code>GoStyle</code> —— 所有东西都在同一处造出来</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>选对弹窗</h2>
+  <p class="sub">弹窗会打断玩家。选用之前，先回答一个问题：<b>玩家必须先作答，游戏才能继续吗？</b>
+    是，就拦住；不是，就绝不拦——为了玩家并没有问过的消息把游戏停下来的卡片，是让玩家关掉你的游戏最快的办法。</p>
+  <ol class="steps">
+    <li><b>有答案的问题</b>——购买、删除、离开、覆盖 → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>。只需知晓的事 → <code>alert()</code>。从几项中选一项 → <code>choose()</code>。</li>
+    <li><b>自成一屏的界面</b>——设置、角色面板、商店里的一件物品 → 屏幕中央的 <a href="#popup-surface"><code>GoSurface</code></a>。</li>
+    <li><b>长列表或管理页面</b>——背包、邮件、好友 → 手机上从底部升起的 <a href="#popup-sheets"><code>GoSheet</code></a>，宽屏上从侧边滑入的 <code>GoDrawer</code>。</li>
+    <li><b>关于刚按下那个东西的信息</b>——物品属性、可执行的操作 → 在它旁边弹出的 <a href="#popup-anchored"><code>GoPopover</code></a> 或 <code>GoContextMenu</code>。</li>
+    <li><b>游戏可以照常进行的消息</b>——已保存、已丢弃、收到邀请 → <a href="#popup-nonblocking"><code>GoSnackbar</code>、<code>GoNotice</code> 或 <code>GoPromptCard</code></a>。它们从不占据屏幕。</li>
+    <li><b>教玩家怎么操作</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>。<b>开发时用的作弊</b> → <code>GoConsole</code>。</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">所有弹窗一览</h3>
+  <table>
+    <thead><tr><th>弹窗</th><th>是否挡住游戏</th><th>返回键 / Esc</th><th>点按外面</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>是</td><td>关闭——confirm 回答 <code>false</code>，alert 返回</td><td>仅在开启 <code>dismiss_on_scrim</code> 时关闭</td><td>需要回答的问题</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>是</td><td>关闭——回答 <code>-1</code></td><td>仅在开启 <code>dismiss_on_scrim</code> 时关闭</td><td>从几项中选一项</td></tr>
+      <tr><td><code>GoSurface</code></td><td>是</td><td>请求关闭最上层的窗口</td><td>开启 <code>dismiss_on_scrim</code> 时请求关闭</td><td>你自己的窗口</td></tr>
+      <tr><td><code>GoSheet</code></td><td>是</td><td>关闭整个底部面板</td><td>关闭</td><td>背包、商店列表、邮件</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>是</td><td>只响应 Android 返回键</td><td>关闭</td><td>宽屏上的侧边列表</td></tr>
+      <tr><td><code>GoPopover</code></td><td>关闭之前一直挡住</td><td>关闭</td><td>关闭——而且这次点按不再往下传</td><td>物品与技能详情</td></tr>
+      <tr><td><code>GoCombobox</code> 列表</td><td>关闭之前一直挡住</td><td>关闭</td><td>关闭</td><td>可搜索的选择列表</td></tr>
+      <tr><td><code>GoContextMenu</code> · dropdown · select</td><td>由引擎的菜单决定</td><td>由引擎的菜单决定</td><td>关闭</td><td>操作、短列表</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>否</td><td>—</td><td>传给游戏</td><td>已保存 · 撤销 · 重试</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>否</td><td>—</td><td>传给游戏</td><td>邀请、交易请求</td></tr>
+      <tr><td><code>GoNotice</code></td><td>从不</td><td>—</td><td>传给游戏</td><td>HUD 上固定的一行字</td></tr>
+      <tr><td><code>GoBanner</code></td><td>否——它就在页面里</td><td>—</td><td>—</td><td>“你已离线。重试”</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>只挡它的卡片</td><td>结束引导</td><td>传给游戏</td><td>首次启动时的引导</td></tr>
+      <tr><td><code>GoConsole</code></td><td>只挡它的面板</td><td>按 Esc 键关闭</td><td>传给游戏</td><td>调试命令</td></tr>
+    </tbody>
+  </table>
+  <p>每一种弹窗开在哪个图层上、为什么是这个顺序，见<a href="#popup-stack">图层、返回键与输入</a>。</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="盖在游戏上的确认对话框——一个问题，配“以后再说”和“购买”两个按钮" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="屏幕中央的设置窗口，有开关、滑块，以及“保存”和“取消”" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="从底部升起的物品栏底部面板，带搜索框和“关闭”按钮" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="从右侧滑入的背包抽屉" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="药水快捷槽上方的一张小物品卡片" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="从快捷槽打开的菜单，含“使用”“移动”和“丢弃”" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="屏幕底部的消息条，告知物品已丢弃，带“撤销”" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="屏幕上方附近的组队邀请卡片，带“接受”和“拒绝”" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="引导过程中指向快捷槽的引导标记卡片" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="横跨屏幕顶部的开发者控制台，已输入一条命令" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>本页的每张图都是同一个小游戏——左上角是生命和魔法，右上角是金币，底部是摇杆和三个快捷槽——用的是
+    <code>default_dark</code>，上面开着一个弹窗。<a href="#popup-looks">同一个弹窗在全部十种外观下的样子 →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>弹窗的构成</h2>
+  <p class="sub">gohud 里几乎所有会挡住游戏的弹窗——对话框、底部面板、贴靠卡片、组合框列表，以及你自己的窗口——
+    都是同一个节点：<code>GoSurface</code>。把它的各个部分认一遍，就全都认识了。</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="“创建角色”窗口：页眉里有返回按钮和标题，一个关闭按钮，一个带错误提示的名字输入框，职业按钮，一行红色状态文字，以及固定在底部的“创建”按钮" loading="lazy"><figcaption>带返回和关闭按钮的页眉 · 主体 · 状态行 · 页脚</figcaption></figure>
+  <table>
+    <thead><tr><th>部分</th><th>是什么</th><th>用什么控制</th></tr></thead>
+    <tbody>
+      <tr><td>图层</td><td>弹窗所在的 <code>CanvasLayer</code>。它的编号决定它能盖住什么。</td><td><code>GoSurface</code> 由你提供；其他弹窗已内置（见<a href="#popup-stack">表格</a>）</td></tr>
+      <tr><td>遮罩</td><td>盖在后面一切之上的那层幕布。没点中卡片的点按由它接住。</td><td><code>scrim_transparent</code>、<code>dismiss_on_scrim</code>、主题的 <code>scrim</code> 颜色</td></tr>
+      <tr><td>卡片</td><td>窗口本身——主题的面板表面，随外观不同而是圆角、切角、锻造或果冻。</td><td><code>card</code>、<code>alpha</code></td></tr>
+      <tr><td>页眉</td><td>可选的返回按钮、标题（最多两行，超出显示“…”）、关闭按钮。</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>工具栏</td><td>页眉下方固定的一行——搜索框、筛选纸片。不用就一直隐藏。</td><td><code>toolbar</code></td></tr>
+      <tr><td>主体</td><td>会滚动的部分。内容放在这里。</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>状态行</td><td>固定在主体和页脚之间的一行——“名字检查未通过”“正在保存…”。</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>页脚</td><td>固定在底部的按钮。不用就一直隐藏。</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>该固定的东西放进固定的行。</b>把搜索框、错误提示或“保存”按钮放进主体，列表一长就会被滚走——
+    玩家输错了名字，错误提示却在可视范围之外，看上去什么都没发生。
+    请用 <code>toolbar</code>、状态行和 <code>footer</code>；主体滚动时它们原地不动。
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2>可以 <code>await</code> 的对话框</h2>
+  <p class="sub"><code>GoDialogs</code> 负责提问并等待。一个节点，三种提问——答案就在同一行返回，
+    所以代码的顺序就是玩家经历的顺序。</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() —— 一个问题，上方是“以后再说”，下方是“购买”" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="破坏性确认——“删除”按钮是红色实心的" loading="lazy"><figcaption><code>confirm(…, true)</code> —— 破坏性操作</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() —— “升级了！”，只有一个“太好了”按钮" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() —— “背包排序方式”，四个选项和“取消”" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="两个按钮并排的确认框" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">三种提问</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # 用 await 等它结束
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # 翻译键</code></pre>
+  <table>
+    <thead><tr><th>调用</th><th>返回</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> 或 <code>false</code></td><td>是或否——购买、删除、离开、覆盖。</td></tr>
+      <tr><td><code>alert()</code></td><td>无——用 <code>await</code> 等它结束</td><td>玩家必须看到的事：奖励、连接断开。</td></tr>
+      <tr><td><code>choose()</code></td><td>选项的索引，或 <code>-1</code></td><td>从几项中选一项。选项可以是 String，也可以是 <code>{text, icon, danger, subtitle}</code>。</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>同上</td><td>同样的调用，只是改用翻译键——对话框开着时切换语言，文字也会跟着变。</td></tr>
+    </tbody>
+  </table>
+  <p>按钮标签留空时，会退回套件自带的文字（<code>GoConfig.text_keys</code> 中的 <code>confirm</code>、<code>cancel</code>）。
+    <code>extra</code> 会另起一行追加到正文后面。<code>args</code> 会填入标题<b>和</b>正文中的
+    <code>{placeholders}</code>：<code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>。</p>
+
+  <h3 id="every-way-out-has-an-answer">每一种退出方式都有答案</h3>
+  <table>
+    <thead><tr><th>玩家……</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>按下确定 / 某个选项</td><td><code>true</code></td><td>返回</td><td>该选项的索引</td></tr>
+      <tr><td>按下取消</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>按下 ×、Esc 或 Android 返回键</td><td><code>false</code></td><td>返回</td><td><code>-1</code></td></tr>
+      <tr><td>点按遮罩（仅在开启 <code>dismiss_on_scrim</code> 时）</td><td><code>false</code></td><td>返回</td><td><code>-1</code></td></tr>
+      <tr><td><code>GoDialogs</code> 节点离开场景树</td><td><code>false</code></td><td>返回</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>所以 <code>await</code> 之后的代码一定会执行——不会有哪个回答一直悬着，即便对话框底下的场景已经换掉了。</p>
+
+  <h3 id="destructive-actions">破坏性操作</h3>
+  <p>无法撤销的操作请传入 <code>destructive = true</code>。确定按钮会变成实心的
+    <code>Tone.DANGER_SOLID</code> 按钮——在每种外观下都是红底白字；而带底色的危险文字在浅色主题上
+    必须压暗到近乎黑色才读得清。因为窗口是复用的，色调在每次调用时都会重置。</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>确定按钮持有键盘焦点。</b>每个确认框打开时焦点都在确定按钮上，所以按 Enter 或空格就会确认——
+    破坏性的也一样。按钮的措辞要让安全的选择一目了然（“保留”）；一旦失手就会让玩家损失真实进度的不可逆操作，
+    请放到第二步之后。
+  </div>
+
+  <h3 id="button-layout">按钮排布</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code>（默认）</td><td>按钮上下堆叠、占满整宽。对每种语言都安全——德语或俄语的长标签永远不会被挤压。</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>排成一行，各占一半宽度。</td></tr>
+      <tr><td><code>AUTO</code></td><td>只有当两个标签都能在卡片一半宽度内单行放下时才排成一行，否则上下堆叠。切换语言或改变尺寸时会重新判断。</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> 是按钮之间的间距，<code>body_gap</code> 是按钮上方的间距——把后者调得比按钮间距更大，
+    问题和选项才会读成两个部分。只想改某一个对话框时，在打开之前调用
+    <code>set_next_action_layout()</code>。提示框唯一的那个按钮总是占满整宽。</p>
+
+  <h3 id="one-at-a-time">同一时间只开一个</h3>
+  <p>已经开着一个时再调用 <code>confirm()</code>，会立刻返回 <code>false</code>——对话框绝不会意外地叠在对话框上。
+    打开 <code>queue_when_busy</code>，它就改为排队等候；<code>alert()</code> 总是排队等候。
+    <code>queue_limit</code>（8）限制队伍的长度，超出时最早的请求会得到 <code>false</code>。
+    <code>pending()</code> 统计正在等候的请求数，<code>clear_pending()</code> 让它们全部得到 <code>false</code>。
+    <code>choose()</code> 从不排队：已有对话框开着时它返回 <code>-1</code>。</p>
+
+  <h3 id="phone-and-desktop">手机与桌面</h3>
+  <p>在 Android 和 iOS 上，<code>choose()</code> 以底部面板的形式从下方升起——那里正是拇指所在的位置；在桌面上则是
+    屏幕中央的一张卡片。确认框的宽度上限是 <code>max_width</code>（420dp），并居中显示。<code>layer_index</code>、
+    <code>max_width</code> 和其他导出属性请在 <code>add_child</code> <b>之前</b>设置；它们在节点进入场景树时才生效。</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> —— 你自己的窗口</h2>
+  <p class="sub">当弹窗不只是一个问题——设置、角色面板、要购买的物品——就在
+    <code>GoSurface</code> 上搭建。安全区域、键盘、固定行、滚动、返回键、焦点和尺寸调整都已经处理好了。</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>它从不自行关闭。</b>×、Esc、返回键和点按遮罩都只会发出 <code>close_requested</code>。隐藏还是释放
+    窗口，是拥有它的那个界面的事——只有它知道“关闭”意味着保存、丢弃，还是先问一句。
+  </div>
+
+  <h3 id="three-placements">三种摆放方式</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER —— 屏幕中央的一张卡片" loading="lazy"><figcaption><code>CENTER</code> —— 确认框、设置</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM —— 同一个窗口从底部升起" loading="lazy"><figcaption><code>BOTTOM</code> —— 列表、管理页面</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR —— 贴在“排序”按钮旁边的排序菜单" loading="lazy"><figcaption><code>ANCHOR</code> —— 贴在控件旁边</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="居中窗口里的日期选择器，带“取消”和“确定”" loading="lazy"><figcaption>放在 <code>CENTER</code> 窗口里的 <code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> 需要设置 <code>anchor_control</code>。右侧放得下 <code>anchor_min_width</code> 时，卡片放在它的右边；
+    否则放在较宽的那一侧；再不行就放在屏幕内；上方空间更大时则向上展开。锚点移动时，它每一帧都会跟上。
+    <code>anchor_width</code>（320）和 <code>anchor_max_height</code>（520）决定它的大小。</p>
+
+  <h3 id="how-big-it-gets">能长多大</h3>
+  <table>
+    <thead><tr><th>尺度</th><th>规则</th><th>用什么改</th></tr></thead>
+    <tbody>
+      <tr><td>可用空间</td><td>安全区域，减去键盘，再减去屏幕边距（16dp，且绝不超过短边的 10%）。</td><td>—</td></tr>
+      <tr><td>宽度</td><td>竖屏时为可用空间的 94%，横屏时为 72%，最多 480dp。</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>高度</td><td>跟内容一样高（<code>fit_content</code>），最多到可用空间的 68%，上限 72%。不可调整大小的居中卡片可以长到 94%，以免出现滚动。</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>密度</td><td>设置了 <code>compact</code>、屏幕高度不足 420dp（横着拿的手机）或内容放不下时变得紧凑：内边距更小、间距更小、标题更小。两种排布都会测量，保留放得下的那个更宽松的——不会来回跳动。</td><td><code>compact</code></td></tr>
+      <tr><td>调整大小</td><td>开启 <code>resizable</code> 后，标题就是拖动手柄：可以在 30% 和上限之间拖动。<code>height_changed(ratio)</code> 报告结果。</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>超过上限的比例会被截回，并在调试构建中给出一次警告。键盘会把卡片往上推，并把获得焦点的输入框
+    滚动到可见位置；在 Android 和 iOS 上，安全区域让它避开刘海和手势条。</p>
+
+  <h3 id="properties">属性</h3>
+  <table>
+    <thead><tr><th>属性</th><th>默认值</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>、<code>BOTTOM</code> 或 <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code>（false）</td><td>点按遮罩会请求关闭。从卡片内部开始的拖动不算。</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>让游戏保持可见——遮罩照样接住外面的点按。</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>显示 ×，并允许 Esc 和返回键请求关闭。</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>页眉行、滚动主体、拖动手柄。</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>按内容决定大小；一开始就用紧凑排布。</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code>（false）</td><td>打开时让卡片淡入。在 <code>reduce_motion</code> 下立即出现。</td></tr>
+      <tr><td><code>alpha</code></td><td>-1（使用主题的值）</td><td>卡片表面的不透明度，以比例表示。只有表面会变淡——文字绝不会。</td></tr>
+      <tr><td><code>initial_focus</code></td><td>无</td><td>打开时获得焦点的控件。</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>这些要在 <code>add_child</code> 之前设置：</b><code>scrim_transparent</code>、<code>show_header</code>、<code>resizable</code> 和
+    <code>scroll_body</code> 在窗口进入场景树时生效。<code>dismiss_on_scrim</code>、<code>close_enabled</code>、
+    <code>fade_in</code> 和 <code>initial_focus</code> 则是实时读取的。
+  </div>
+
+  <h3 id="signals-and-calls">信号与调用</h3>
+  <table>
+    <thead><tr><th>名称</th><th>是什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×、Esc、Android 返回键或点按遮罩——以及 <code>request_close()</code>。只有最上层的窗口会发出。</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>页眉里的返回按钮，用于有多个页面的窗口。传入空的 <code>Callable</code> 会隐藏它。</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>拖动手柄之后发出。</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>这是不是接收返回键的那个窗口——当前到底有没有窗口开着。</td></tr>
+      <tr><td><code>relayout()</code></td><td>立刻重新排版。修改尺寸相关的属性时已经会自动执行。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>底部面板与抽屉</h2>
+  <p class="sub">需要空间的列表，在竖着拿的手机上从底部升起——那里正是拇指所在的位置；在平板或桌面上则从
+    侧边滑入，因为在那里底部面板会把游戏盖住。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet —— 物品栏，带固定的搜索框、一个列表和固定的“关闭”按钮" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="左侧的 GoDrawer —— 含“城镇”“世界地图”“任务”“公会”和“设置”的菜单" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="右侧的 GoDrawer —— 背包" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> —— 从底部升起的页面</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>它是一个 <code>CanvasLayer</code>（图层 10），里面装着一个 <code>BOTTOM</code>、可调整大小的 <code>GoSurface</code>——所以它位于
+      HUD 之上，玩家还能把它拖高。</li>
+    <li><code>open(title)</code> 开始一个全新的页面：清空主体、工具栏和返回按钮，并释放
+      <code>add_footer()</code> 加进来的东西。再调用一次，就能在同一个底部面板里显示另一页；<code>set_back()</code> 会显示一个
+      用来回到首页的返回按钮。<code>open_key()</code> 接受翻译键。</li>
+    <li><code>close()</code> 只是隐藏它——并不释放，所以下一次 <code>open()</code> 瞬间完成。<code>closed</code> 和
+      <code>page_changed</code> 会告诉你何时发生。</li>
+    <li><code>height_ratio</code>（0.6）是它打开时的高度；<code>max_height_ratio</code> 提高上限；<code>dismissable</code>
+      （true）让点按遮罩时关闭它。</li>
+  </ul>
+  <div class="note warn">
+    <b>Esc 和返回键会关闭整个底部面板</b>，即使当前是用 <code>set_back()</code> 进入的子页面——只有屏幕上的返回按钮
+    才会退回上一页。如果返回键应该退回一页，请自己在 <code>sheet.surface</code> 上处理 <code>close_requested</code>。
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> —— 从侧边滑入</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # 起始一侧：一般在左边，阿拉伯语下在右边
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>图层 80。宽度为屏幕的 42%（<code>width_ratio</code>），介于 <code>min_width</code>（320dp）和 <code>max_width</code>
+      （420dp）之间——在手机上它会盖住大半个屏幕，所以在那里底部面板是更好的选择。</li>
+    <li>面板一直延伸到屏幕边缘；只有其中的内容会从安全区域往里缩，所以圆角绝不会裁掉第一行。</li>
+    <li>即使在阿拉伯语下，<code>LEFT</code> 也是指屏幕左边。要的是“起始一侧”时，请打开
+      <code>follow_text_direction</code>；<code>effective_side()</code> 会告诉你它最终在哪一侧。</li>
+    <li><code>open(title)</code> 会保留主体——填一次就够了。<code>set_title("")</code> 会隐藏页眉。
+      <code>motion_seconds</code>（0.2）控制滑入；<code>reduce_motion</code> 让它立即出现。</li>
+  </ul>
+  <div class="note warn">
+    <b>Android 返回键会关闭抽屉，Esc 不会。</b>抽屉只监听系统的返回键。在桌面上，请在你自己的按键绑定里调用
+    <code>drawer.close()</code>——另外注意，<code>GoSurface.is_any_open()</code> 不把抽屉算在内；
+    要问 <code>drawer.is_open()</code>。
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>控件旁边的卡片与菜单</h2>
+  <p class="sub">玩家刚按下的东西，答案应该出现在手指旁边，而不是屏幕中央。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover —— 快捷槽旁边的“生命药水”卡片" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu —— “使用”“移到槽位 1”和“丢弃”" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown —— 在排行榜上打开的“排序”菜单" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select —— 打开的画质选择框，有“低”“中”“高”和“极高”" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox —— 带搜索框的好友列表" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> —— 贴在被按下之物旁的卡片</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>一个 <code>ANCHOR</code> 摆放的窗口，图层、锚点和拆除都已经接好——就是每个游戏都要一遍遍重写的那十行。
+    <b>同一时间只开一张</b>：打开第二张会关掉第一张，因为卡片叠起来会把屏幕埋掉，谁也分不清哪张属于哪个格子。
+    遮罩是透明的——为了比较装备而打开的卡片，不该把装备压暗——但它照样会接住外面的第一次点按：
+    卡片随之关闭，这次点按也不再往下传。</p>
+  <table>
+    <thead><tr><th>选项</th><th>默认值</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>带 × 的页眉。为空表示没有页眉。</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>卡片的尺寸。</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>点按外面会关闭它。</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>紧凑间距、表面不透明度、把标题当作翻译键。</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td>它打开时所在的 <code>CanvasLayer</code>。</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> 和 <code>GoPopover.is_open()</code> 是静态方法。<code>open()</code> 返回这个窗口——锚点不在场景树中时则返回
+    <code>null</code>，所以在 <code>await shown.close_requested</code> 之前先检查一下。</p>
+  <div class="note warn">
+    <b>它不是悬停提示。</b>触摸屏没有悬停；只有鼠标才揭得开的东西，对你一半的玩家来说是看不见的。
+    而在 <code>dismissable = false</code> 又没有标题时，屏幕上没有任何东西能关闭它——只有 Esc、返回键或你自己的调用。
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> —— 长按与右键</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>右键立即打开。手指按住半秒（<code>HOLD_SECONDS</code>）打开；移动超过
+      12dp 就取消——这样滑动列表时绝不会弹出菜单。</li>
+    <li>菜单项是 <code>{text, action, icon, disabled, checked, separator, danger, translate}</code>。菜单项要看按下的是什么才定得下来时，
+      传一个 <code>Callable</code> 代替数组；每次打开菜单时都会调用它。</li>
+    <li><code>danger</code> 会在文字前加上“⚠ ”——引擎的菜单只能一次给全部菜单项上色。</li>
+    <li>它就是引擎的 <code>PopupMenu</code>，由 <code>GoStyle.style_popup()</code> 装扮。它不算作开着的窗口。</li>
+  </ul>
+  <div class="note warn">
+    <b>长按需要第二个入口。</b>藏起来的手势没人发现得了。请给它配一颗看得见的 <code>⋯</code> 按钮
+    （<code>open_at()</code>，如上），或者用引导标记教一次。
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">下拉菜单、选择框与拆分按钮</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>三者打开的都是引擎的弹出菜单：<code>dropdown()</code> 是执行操作的 <code>MenuButton</code>，
+    <code>select()</code> 是保存一个值的 <code>OptionButton</code>，<code>GoSplitButton</code> 是一个主操作，外加它箭头上的菜单
+    （<code>chosen(index)</code>）。菜单刻意保持完全不透明——显示在独立系统窗口里的菜单会把半透明的像素变成黑色。</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> —— 可搜索的列表</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>按下后，它会在图层 96 上打开一个贴靠的列表，遮罩是透明的。条目达到 <code>search_threshold</code>（8）个时，
+    会出现搜索框并获得焦点；它在文字或提示的任意位置匹配，不区分大小写，没有结果时也会明确告知。
+    <code>list_width</code>（0 = 按钮的宽度，至少 180dp）决定列表的宽度。</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>从不打断游戏的弹窗</h2>
+  <p class="sub">玩家可以边玩边读的消息。这些都没有遮罩；点按卡片本身以外的任何地方，
+    都会传给游戏。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar —— 快捷槽上方的“已丢弃生锈的剑”，带“撤销”" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice —— HUD 顶部的“游戏已保存”" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard —— 生命条下方的组队邀请" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="盾牌槽上方的自定义工具提示" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> —— 带“撤销”的消息</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th><code>post()</code> 的键</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>消息、可选的加粗行、<code>{placeholders}</code>、翻译键。</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>强调色（<code>GoTheme.SUCCESS</code>、<code>WARNING</code>……）和图标。</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>按钮——String 或 <code>{text, action}</code>——以及一个 ×。</td></tr>
+      <tr><td><code>seconds</code></td><td>停留多久。负数：使用主题的 <code>notice_duration_ms</code>。<b>0：直到被关闭</b>——这时一定要给它一个按钮。</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> 返回被按下的按钮的索引；超时或被关闭时返回 <code>-1</code>。消息会排队
+    （<code>queue_limit</code> 为 4，最早的一条以 -1 被丢弃），正在显示时再次发送相同的文字，只会重置它的计时。
+    它位于底部（或顶部，见 <code>placement</code>），在安全区域和键盘之上，图层 90——盖在抽屉上也读得到。
+    开启 <code>tap_to_dismiss</code>（默认开启）时，点按没有按钮的卡片会关闭它；点按卡片以外的地方则总是
+    传给游戏。<code>show_text()</code> 和 <code>show_key()</code> 是一行的简写。</p>
+  <div class="note warn">
+    <b>绝不要在消息条里提问。</b>它会自己消失；要紧的选择应该放进对话框。
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> —— HUD 上的一行字</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>一块由你自己摆放的普通面板——放进 <code>GoHudAnchor</code>、放在角落，放在哪里都行。它既不接收输入也不获取焦点，
+    所以隔着它按下去能按到底下的按钮；新消息会替换旧消息。记得给它一个宽度：
+    <code>preferred_width(limit)</code> 对短文字返回其自然宽度，对长文字则在 <code>limit</code> 之内换行。
+    <code>set_content()</code> 可以用任意控件代替文字显示。</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> —— 可以等一等的提问</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # 退到生命条下方，而不是盖住它们
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>它一开始是隐藏的</b>——要调用 <code>show()</code>。它没有自己的计时器；如果提问会过期，自己加一个。</li>
+    <li>它的按钮不会关闭它——由操作来决定。×（<code>set_closable(true)</code>）会发出 <code>closed</code>。</li>
+    <li><code>fit_width(width)</code> 设置宽度，并根据字体预测高度，所以依它排版的东西不会在下一帧跳一下。</li>
+    <li>它的表面跟随 <code>hud_alpha</code>——它是 HUD 的一部分，而不是窗口。</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> 与工具提示</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> 就放在页面里、
+    内容的上方，从不超时；按下按钮就会关闭它，除非该按钮带有 <code>"keep": true</code>。
+    <code>GoStyle.tooltip_node(text)</code> 是 <code>_make_custom_tooltip()</code> 应该返回的东西——底板由引擎绘制
+    （<code>TooltipPanel</code>），文字由 gohud 绘制，超过 260dp 时换行。工具提示是给鼠标用的；玩家需要的东西绝不要藏在它后面。</p>
+</section>
+
+<section id="popup-guides">
+  <h2>引导与控制台</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark —— 第 1 步（共 2 步）“快捷槽”，指向药水槽" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole —— 控制台面板，显示一条 give 命令及其结果" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> —— 带玩家认识真实的控件</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>真实控件周围的一个光圈，加上旁边的一张卡片。按下目标就会前进（靠它的 <code>pressed</code> 信号，或步骤里的
+      <code>"signal"</code>）；卡片上有“下一步”和“跳过”。隐藏的目标会被跳过。</li>
+    <li>卡片避开屏幕中间（<code>avoid_center_band</code>）、HUD 锚点和 <code>keep_clear</code>。</li>
+    <li>只要有任何 <code>GoSurface</code> 开着，引导就会隐藏并等待。返回键或 Esc 会以 <code>finished(false)</code> 结束它。</li>
+    <li>它没有自己的图层——请最后添加它，或者放在 HUD 之上的图层里。</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> —— 开发时用的作弊</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>图层 200——在所有东西之上，所以你可以盖在对话框上调试——而且场景树暂停时它照样运行。输入时命令面板会
+    提示命令；上下方向键浏览历史记录；Esc 关闭它。没有内置的快捷键：请自己绑定一个。</p>
+  <div class="note warn">
+    <b><code>debug_only</code>（默认开启）会在发布构建中拦住它</b>——<code>open()</code> 和 <code>run()</code> 都会被拦住。作弊命令一旦
+    落到玩家手里，一款游戏的经济系统第一天就完了。
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>图层、返回键与输入</h2>
+  <p class="sub">有东西开着时玩家能碰到什么，由三条规则决定：谁在最上面，谁拥有返回键，
+    谁接住点按。</p>
+
+  <h3 id="what-sits-on-top">谁在最上面</h3>
+  <table>
+    <thead><tr><th>图层</th><th>放着什么</th><th>用什么设置</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>你的 HUD（由你决定）</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>你自己的 <code>GoSurface</code> 窗口、暂停菜单</td><td>你的 <code>CanvasLayer</code></td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td><code>"layer"</code> 选项</td></tr>
+      <tr><td>96</td><td><code>GoCombobox</code> 列表</td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>这个顺序是刻意安排的：消息条报告的是刚刚发生的事，所以盖在抽屉上也要读得到；贴靠卡片属于刚按下的东西，
+    所以位于其上；对话框提出问题，把两者都盖住；控制台盖住一切，因为它是其他东西都出了问题时你要打开的那个。</p>
+
+  <h3 id="who-owns-back">谁拥有返回键</h3>
+  <ul>
+    <li><b>只有最上层的窗口会响应。</b>在开着的窗口中，图层最高的那个（同层时取场景树中最晚加入的）
+      接收 Esc、手柄的取消键（<code>ui_cancel</code>）、Android 返回键和遮罩点按。叠起来的窗口一次关一个，
+      绝不会一起关掉。</li>
+    <li>Android 返回键会延后一帧处理，所以按一下绝不会关掉两个窗口。</li>
+    <li>只要有任何拥有返回键的东西开着，Android 返回键就不会退出应用（<code>GoBackPolicy</code> 统计拥有者，
+      并在最后一个关闭后恢复 <code>quit_on_go_back</code>）。你自己的弹窗如果接管了返回键，应调用
+      <code>GoBackPolicy.acquire()</code> 和 <code>release()</code>——在 <code>_exit_tree</code> 里也要调用。</li>
+    <li>有窗口开着时，抽屉、引导和表单都会让路——返回键先交给窗口。</li>
+    <li><code>GoConfig.close_on_back</code>（默认开启）是窗口这一项的开关。</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">谁接住点按</h3>
+  <ul>
+    <li>窗口覆盖整个屏幕并拦住输入——<b>透明遮罩也一样</b>。它开着时，较低图层上的任何东西都按不到；
+      它上面的图层（比如消息条）照样按得到。</li>
+    <li>鼠标滚轮和捏合手势同样止于窗口：滚过列表末尾也绝不会滚动到游戏。</li>
+    <li>不经过控件的游戏输入——用于移动的 <code>_unhandled_input</code>、拖动镜头——应该暂停：
+      <code>if GoSurface.is_any_open(): return</code>。这涵盖了对话框、底部面板、贴靠卡片和组合框；抽屉要另外问它的
+      <code>is_open()</code>。</li>
+    <li>消息条、提示条、提示卡片和引导标记只在它们自己的卡片上接收输入；其余地方的输入都交给游戏。</li>
+  </ul>
+
+  <h3 id="focus">焦点</h3>
+  <p>用指针打开的窗口不聚焦任何东西——触摸时不会闪出焦点环。用键盘或手柄打开时，关闭按钮
+    （或 <code>initial_focus</code>）获得焦点。窗口开着时焦点留在窗口内，关闭后回到原先拥有
+    焦点的那个控件。对话框每次都会聚焦确定按钮。</p>
+
+  <h3 id="pausing-the-game">暂停游戏</h3>
+  <p>暂停场景树也会暂停弹窗——只有控制台照常工作。做暂停菜单时，给它的图层设置
+    <code>process_mode = PROCESS_MODE_ALWAYS</code>；这样游戏停下时，窗口、它的按钮和返回键都会继续运行。</p>
+</section>
+
+<section id="popup-looks">
+  <h2>同一个弹窗，每一种外观</h2>
+  <p class="sub">本页开头的那个确认框，盖在同一个游戏上，只换了预设。代码完全相同——
+    其余都交给主题、皮肤和图标。</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="default_dark 下的确认框——圆角，柔和的蓝色强调色" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="default_light 下的确认框" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="scifi_dark 下的确认框——切角和霓虹边" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="scifi_light 下的确认框" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="medieval_dark 下的确认框——锻造边框和 Cinzel 标题" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="medieval_light 下的确认框——羊皮纸与青铜" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="material_light 下的确认框——28dp 圆角和胶囊按钮" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">新</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="material_dark 下的确认框" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">新</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="kids_light 下的确认框——阳光色的标题彩带、糖果关闭按钮和果冻按钮" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">新</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark 下的确认框——夜蓝色卡片上的薄荷色彩带" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">新</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">每种外观改变了什么</h3>
+  <table>
+    <thead><tr><th>外观</th><th>窗口</th><th>标题与按钮</th></tr></thead>
+    <tbody>
+      <tr><td>默认</td><td>圆角（18dp）、柔和的阴影，盖在游戏上 80% 不透明</td><td>朴素的标题和 ×；主按钮按下时有升起和沉下的感觉</td></tr>
+      <tr><td>科幻</td><td>带霓虹边和辉光的切角，边的颜色随强调色</td><td>括号式的焦点标记</td></tr>
+      <tr><td>中世纪</td><td>锻造边框——铁与皮革，或羊皮纸——带铆钉和角落纹饰</td><td>标题用 Cinzel</td></tr>
+      <tr><td>Material 3</td><td>28dp 圆角、24dp 内边距、完全不透明</td><td>Roboto 的 24sp 标题；48dp 触摸目标里带 40dp 底板的胶囊按钮</td></tr>
+      <tr><td>儿童</td><td>带柔和阴影的果冻糖卡片，完全不透明</td><td>阳光色的标题彩带（夜间为薄荷色）、圆形的糖果关闭按钮、按下会被压扁的按钮</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">用皮肤装扮弹窗</h3>
+  <p>皮肤决定 Theme 够不着的那些部分。下面这些钩子是弹窗会调用的——在你自己的
+    <code>GoSkin</code> 子类里重写它们；默认它们什么都不做。</p>
+  <table>
+    <thead><tr><th>钩子</th><th>装扮什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>窗口标题背后的底板。标题在底板上居中，并会缩小（最小到 15）以保持在一行内。</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>窗口的 ×——儿童外观把它做成一颗圆糖果。</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>手指落在 gohud 创建的按钮上的那一刻运行——儿童外观会把按钮压扁。</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>提示卡片和引导卡片、消息条和提示条、抽屉、横幅、控制台的表面。</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>引导的光圈和指针。</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">透明到什么程度</h3>
+  <p>每一类弹窗各自遵循自己的不透明度，所以 HUD 卡片可以保持通透，而对话框保持实心：窗口、底部面板、对话框、
+    贴靠卡片和组合框遵循 <code>panel_alpha</code>；抽屉和引导卡片遵循 <code>card_alpha</code>；提示卡片和
+    控制台遵循 <code>hud_alpha</code>；消息条和提示条遵循 <code>notice_alpha</code>；菜单遵循 <code>popup_alpha</code>。Material 和儿童外观
+    让它们全部不透明。用 <code>GoConfig.container_alpha_overrides</code> 覆盖某一类，用
+    <code>container_alpha</code>（一个比例——<code>0.95</code>）覆盖全部，或用某个窗口自己的 <code>alpha</code> 覆盖单个窗口。只有表面会变淡；文字
+    绝不会变得半透明。<a href="theming-opacity.html">不透明度详解 →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>影响所有弹窗的设置</h2>
+  <p class="sub"><code>GoConfig</code>（<code>GoUi.config</code>）的字段。其中几个在窗口创建时就被复制，所以请在
+    搭建 UI 之前设置——或者修改之后调用 <code>GoUi.refresh()</code>。</p>
+  <table>
+    <thead><tr><th>字段</th><th>默认值</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>窗口最大能长到多大。</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>通常的高度和上限（也是拖动的极限）。</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>按内容定高的居中卡片，在开始滚动之前最多能长多高。</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>宽度占可用空间的比例。</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>点按遮罩会关闭窗口和对话框。在窗口创建时复制。</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>窗口是否淡入，以及淡入多快。</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Esc、<code>ui_cancel</code> 和 Android 返回键关闭最上层的窗口。</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>× 看起来多大——它的触摸目标保持 48dp。</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>用触摸或鼠标打开窗口时不显示焦点环。</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>所有表面的不透明度，或按类别分别设置（<code>GoTheme.BOX_*</code>）。</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>去掉淡入淡出、滑动、脉动和压扁效果。</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>提示卡片和引导标记里按钮的高度。</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>让窗口避开刘海和手势条。</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>套件自带的文字：关闭、返回、确认、取消、下一步、完成、跳过、搜索、空……</td></tr>
+      <tr><td><code>sound_cues</code> · 触感反馈</td><td>—</td><td><code>GoFeedback</code> 在打开、关闭、确认、取消和点按时播放什么。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>常用写法</h2>
+  <p class="sub">复制、粘贴、改改文字就行。这里的每一个调用都对照源码核对过。</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">把价格写进去的购买确认</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">带固定“保存”按钮的设置窗口</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">能说清哪里出错的表单</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">在底部面板里选日期</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">暂停菜单</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # 游戏暂停时也继续运行
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">等弹窗关闭后才响应的游戏操作</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>常见陷阱</h2>
+  <ul>
+    <li><b><code>GoSurface</code> 从不自行释放。</b>请连接 <code>close_requested</code>，否则按 × 毫无反应。</li>
+    <li><b>在 <code>add_child</code> 之后才设置的选项</b>——<code>scrim_transparent</code>、<code>show_header</code>、<code>resizable</code>、
+      <code>scroll_body</code>，以及 <code>GoDialogs</code> 的 <code>layer_index</code> 和 <code>max_width</code>——都不会生效。</li>
+    <li><b>第二个 <code>confirm()</code> 会立刻返回 <code>false</code>。</b>如果两个问题可能撞在一起，请打开 <code>queue_when_busy</code>。</li>
+    <li><b>Enter 会确认。</b>焦点在确定按钮上，破坏性对话框也一样。</li>
+    <li><b>底部面板上的返回键会关闭整个底部面板，</b>而不是退出子页面。</li>
+    <li><b>Esc 不会关闭抽屉，</b>而且 <code>is_any_open()</code> 也看不到它。</li>
+    <li><b>贴靠卡片或组合框列表会挡住游戏</b>，直到它关闭，即使遮罩是透明的——而一个
+      <code>dismissable = false</code> 又没有标题的贴靠卡片，屏幕上没有任何东西能关闭它。</li>
+    <li><b>提示卡片一开始是隐藏的</b>，而且没有超时。</li>
+    <li><b><code>seconds: 0</code> 又没有按钮的消息条永远不会离开。</b>而且默认情况下，它会接住落在卡片上的点按。</li>
+    <li><b>没人知道的长按，就是没人用的功能。</b>请同时显示一个 <code>⋯</code>。</li>
+    <li><b>场景树暂停时，你的弹窗也会暂停。</b>请给它的图层设置 <code>PROCESS_MODE_ALWAYS</code>。</li>
+    <li><b>没设宽度的提示条</b>会缩到最窄——请用 <code>preferred_width()</code>。</li>
+    <li><b>绝不在消息条里提问，绝不用对话框发通知。</b>问题被忽略就消失了；消息则不该让游戏停下。</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← 全部控件</a> · <a href="widgets-surfaces.html">浮动窗口 →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Виджеты</a>
   <a href="widgets-catalog.html">Все виджеты</a>
+  <a href="widgets-popups.html">Всплывающие окна и диалоги</a>
   <a href="widgets-surfaces.html">Плавающие окна</a>
   <a href="widgets-messages.html">Как сообщить игроку</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — строка, которая может быть неверной</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Подпись, элемент и подсказка; ошибка под неверным полем." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>Одна строка наверху формы из пяти полей со словами «проверьте ввод» не говорит, <i>какое</i> поле. Именно
     из-за этого одного бросают регистрацию.</p>
   <pre><code>var name_field := GoField.make("Имя персонажа", GoStyle.line_edit("2-12"), "Изменить потом нельзя")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     Берите фабрику там, где ничего не может пойти не так, и узел — везде, где сервер может отказать.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — поле ввода, сваренное со своей кнопкой</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Поле ввода и его кнопки, сваренные в одну форму." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Сообщение"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Имя"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>Решает он углы. Две скруглённые формы, встречающиеся посередине, выглядят защемлёнными, а стандартный зазор
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("Имя"), {"prefix_icon": &amp;"search"})</
     для углов нет вовсе, поэтому там он их не трогает, и прямые грани сходятся чисто.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — выбор с поиском</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — Выбор с поиском внутри названий, а не только с начала." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>Меньше десяти пунктов — лучше <code>GoStyle.select()</code>: на одно нажатие меньше, и виден весь список.
     После тридцати просматривать глазами становится работой.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Выберите сервер")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — купоны и подарочные коды</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Коды купонов и подарков в ячейках; вставка и ввод через IME работают." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>Код куда чаще вставляют из сообщения, чем набирают. Двенадцать настоящих полей ломали бы вставку на первой
     ячейке и теряли символы в IME, поэтому текст принимает одно скрытое поле, а ячейки рисуются.
     <code>ABCD-EFGH-IJKL</code> теряет дефисы по дороге.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Уже использован")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — сортируемые заголовки, выбираемые строки</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Сортируемые заголовки и выбираемые строки; числа сортируются как числа." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Место", "width": 56}, {"text": "Имя"}, {"text": "Очки", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     попадать в одну ячейку. <code>GoStyle.table()</code> остаётся сеткой только для чтения.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — страницы или строка «Ещё»</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Нумерованные страницы с текущей по центру или одна строка «Загрузить ещё»." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # вариант для мобильных</code></pre>
   <p>Номера — интерфейс под мышь; на телефоне строка «Ещё» читается лучше. Текущая страница держится в середине

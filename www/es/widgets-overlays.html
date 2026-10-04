@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos los widgets</a>
+  <a href="widgets-popups.html">Ventanas emergentes y diálogos</a>
   <a href="widgets-surfaces.html">Ventanas flotantes</a>
   <a href="widgets-messages.html">Decirle algo al jugador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — el panel lateral</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Un panel que entra deslizándose por la izquierda o la derecha." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Un panel que entra deslizándose por la izquierda o la derecha." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> viene desde abajo, que es lo correcto para un teléfono sujeto en vertical. En una tableta o en un
     escritorio esa misma hoja tapa el juego; un panel lateral viene desde el lado en su lugar.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Bolsa")</code></pre>
     <code>follow_text_direction</code> cuando lo que importa es "el lado de inicio", y así se invierte en RTL.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — la tarjeta anclada</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Una tarjeta de información junto a lo que se pulsó; una a la vez." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Esto es la colocación anclada de <code>GoSurface</code> con la capa, el contenedor, el anclaje y el
     desmontaje ya conectados — las diez líneas que todos los juegos escriben una y otra vez. Solo hay uno abierto a la vez, porque
@@ -118,6 +124,7 @@ bag.open("Bolsa")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — pulsación larga y clic derecho</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Menú con pulsación larga o clic derecho; un dedo que se mueve lo cancela." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Usar", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Bolsa")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — la consola de desarrollo</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Una consola de desarrollo con comandos e historial; desactivada en versiones publicadas." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Da un objeto: give &lt;id&gt; &lt;cantidad&gt;", give)
 console.toggle()</code></pre>
   <p>Comandos de trucos y de depuración, con una paleta que filtra según escribes para que nadie tenga que memorizarlos, y

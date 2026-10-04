@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Tous les widgets</a>
+  <a href="widgets-popups.html">Pop-ups et boîtes de dialogue</a>
   <a href="widgets-surfaces.html">Fenêtres flottantes</a>
   <a href="widgets-messages.html">Dire quelque chose au joueur</a>
   <a href="widgets-hud.html">HUD</a>
@@ -122,6 +123,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Rangées de liste avec une description</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Une ligne de liste avec icône, titre, résumé et marque de fin." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Garde-Serment", _inspect, Color.TRANSPARENT,
     "Épée longue  /  Attaque 42", false)</code></pre>
   <p>Une rangée à deux lignes reçoit <b>des marges haute et basse égales</b>, plus généreuses que celles d'une
@@ -134,11 +136,13 @@
   </figure>
 
   <h3 id="flowing-rows">Rangées qui s'écoulent</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Colonnes, rangées et rangées qui passent à la ligne, avec les espacements du thème." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Placez les commandes dans <code>wrap_row</code> à leur <b>largeur naturelle</b>. Si le retour à la ligne reste
     actif, la largeur minimale d'un bouton tombe à presque rien et la rangée dimensionne sa cellule d'après elle —
     le libellé s'effondre à un caractère par ligne. La fabrique vous l'évite.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Ne laissez jamais une liste vide rester vide</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Un emplacement pendant le chargement, et un message pour une liste vide." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Rien ici pour l'instant"))</code></pre>
   <p>Les gens lisent un écran vide comme <b>une panne</b>.</p>
 </section>

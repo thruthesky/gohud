@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Віджети</a>
   <a href="widgets-catalog.html">Усі віджети</a>
+  <a href="widgets-popups.html">Спливні вікна та діалоги</a>
   <a href="widgets-surfaces.html">Плаваючі вікна</a>
   <a href="widgets-messages.html">Як сказати щось гравцеві</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — повідомлення, яке саме себе розміщує</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Повідомлення внизу: стає в чергу й може мати кнопки." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>Сидить унизу (або вгорі), над безпечною зоною та клавіатурою, і йде собі сам. Без нього ви пишете шар,
     розміщення, таймер і прибирання на кожному екрані, який має сказати «збережено».</p>
   <pre><code>snack.show_text("Збережено", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "Річ викинуто", "actions": ["Скасу�
     вирішує екран-власник. Він не може тримати кнопку; цей може.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — очікування, кінця якому не видно</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — Очікування; перетворює кнопку на індикатор на місці, щоб її не натиснули двічі." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>Іграм, що розмовляють із сервером, це потрібне більше за все інше на цій сторінці: нерухомий екран
     читається як збій. Один виклик перетворює натиснуту кнопку на спінер <b>на її ж місці</b>.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>Поступ, який можна виміряти, — це <code>GoBar</code>. Спінер нічого не обіцяє про те, коли скінчиться.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — крапка непрочитаного, позначка «НОВЕ», оте 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — Крапка непрочитаного, мітка NEW і 99+ у куті." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # на нулі ховається сам
 GoBadge.attach(shop_button, 0, "НОВЕ")
 GoBadge.attach(friend_button, 3, "", true) # крапка — «щось там є»</code></pre>

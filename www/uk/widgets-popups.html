@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Спливні вікна та діалоги — gohud</title>
+<meta name="description" content="Усі спливні вікна gohud: яке обрати, як вони відкриваються й закриваються, що роблять із кнопкою «Назад» і введенням — у кожному вигляді.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Огляд</a>
+      <a href="install.html">Встановлення</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">Віджети</a>
+      <a href="theming.html">Оформлення</a>
+      <a href="icons.html">Іконки</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Українська</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="widgets-popups.html" hreflang="uk" lang="uk" aria-current="true">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Спливні вікна та діалоги</h1>
+    <p class="lead">Усі спливні вікна gohud: яке обрати, як вони відкриваються й закриваються, що роблять із кнопкою «Назад» і введенням — у кожному вигляді. <a href="widgets.html">← Віджети</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Віджети">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Віджети</a>
+  <a href="widgets-catalog.html">Усі віджети</a>
+  <a href="widgets-popups.html" aria-current="page">Спливні вікна та діалоги</a>
+  <a href="widgets-surfaces.html">Плаваючі вікна</a>
+  <a href="widgets-messages.html">Як сказати щось гравцеві</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Очікування, сповіщення, лічильники</a>
+  <a href="widgets-forms.html">Форми та списки</a>
+  <a href="widgets-shapes.html">Форми, якими ігри справді користуються</a>
+  <a href="widgets-overlays.html">Поверх екрана</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — одне місце, де все виготовляється</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>Як вибрати потрібне спливне вікно</h2>
+  <p class="sub">Спливне вікно перериває гру. Перш ніж вибирати, дайте відповідь на одне запитання: <b>чи мусить гравець відповісти, перш
+    ніж гра продовжиться?</b> Якщо так — блокуйте. Якщо ні — ніколи не блокуйте: картка, що зупиняє гру заради новини, про яку гравець
+    не просив, — найшвидший спосіб змусити його закрити вашу гру.</p>
+  <ol class="steps">
+    <li><b>Запитання, на яке потрібна відповідь</b> — купити, видалити, вийти, перезаписати → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>. Те, що треба просто взяти до відома → <code>alert()</code>. Один із кількох варіантів → <code>choose()</code>.</li>
+    <li><b>Окремий екран</b> — налаштування, картка персонажа, товар у крамниці → <a href="#popup-surface"><code>GoSurface</code></a> посередині екрана.</li>
+    <li><b>Довгий список або сторінка керування</b> — торба, пошта, друзі → <a href="#popup-sheets"><code>GoSheet</code></a> знизу на телефоні, <code>GoDrawer</code> збоку на широкому екрані.</li>
+    <li><b>Щось про щойно натиснутий елемент</b> — характеристики предмета, дії з ним → <a href="#popup-anchored"><code>GoPopover</code></a> або <code>GoContextMenu</code> поруч із ним.</li>
+    <li><b>Новини, за яких гра йде далі</b> — «Збережено», «Викинуто», «Вас запросили» → <a href="#popup-nonblocking"><code>GoSnackbar</code>, <code>GoNotice</code> або <code>GoPromptCard</code></a>. Вони ніколи не забирають екран.</li>
+    <li><b>Навчання керування</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>. <b>Чити на час розробки</b> → <code>GoConsole</code>.</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">Усі спливні вікна в одній таблиці</h3>
+  <table>
+    <thead><tr><th>Вікно</th><th>Зупиняє гру</th><th>«Назад» / Escape</th><th>Дотик зовні</th><th>Для чого</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>Так</td><td>Закриває — confirm відповідає <code>false</code>, alert повертається</td><td>Закриває лише з <code>dismiss_on_scrim</code></td><td>Запитання, на які потрібна відповідь</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>Так</td><td>Закриває — відповідає <code>-1</code></td><td>Закриває лише з <code>dismiss_on_scrim</code></td><td>Вибір одного з кількох</td></tr>
+      <tr><td><code>GoSurface</code></td><td>Так</td><td>Просить закрити найверхнє</td><td>Просить закрити з <code>dismiss_on_scrim</code></td><td>Ваші власні вікна</td></tr>
+      <tr><td><code>GoSheet</code></td><td>Так</td><td>Закриває весь аркуш</td><td>Закриває</td><td>Торба, список крамниці, пошта</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>Так</td><td>Лише «Назад» на Android</td><td>Закриває</td><td>Бічний список на широкому екрані</td></tr>
+      <tr><td><code>GoPopover</code></td><td>Доки не закриється</td><td>Закриває</td><td>Закриває — і далі не проходить</td><td>Опис предметів і навичок</td></tr>
+      <tr><td><code>GoCombobox</code> — список</td><td>Доки не закриється</td><td>Закриває</td><td>Закриває</td><td>Список вибору з пошуком</td></tr>
+      <tr><td><code>GoContextMenu</code> · випадне меню · список вибору</td><td>Меню рушія</td><td>Меню рушія</td><td>Закриває</td><td>Дії, короткі списки</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>Ні</td><td>—</td><td>Доходить до гри</td><td>«Збережено» · «Скасувати» · «Повторити»</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>Ні</td><td>—</td><td>Доходить до гри</td><td>Запрошення, пропозиція обміну</td></tr>
+      <tr><td><code>GoNotice</code></td><td>Ніколи</td><td>—</td><td>Доходить до гри</td><td>Незмінний рядок у HUD</td></tr>
+      <tr><td><code>GoBanner</code></td><td>Ні — він частина сторінки</td><td>—</td><td>—</td><td>«Немає мережі. Повторити»</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Лише своєю карткою</td><td>Завершує тур</td><td>Доходить до гри</td><td>Тур під час першого запуску</td></tr>
+      <tr><td><code>GoConsole</code></td><td>Лише своєю панеллю</td><td>Закривається клавішею Escape</td><td>Доходить до гри</td><td>Команди зневадження</td></tr>
+    </tbody>
+  </table>
+  <p>На якому шарі відкривається кожне вікно і чому саме в такому порядку — у розділі <a href="#popup-stack">Шари, «Назад» і ввід</a>.</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="Діалог підтвердження поверх гри — запитання з кнопками «Не зараз» і «Купити»" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="Вікно налаштувань посередині екрана з перемикачами, повзунком і кнопками «Зберегти» та «Скасувати»" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="Аркуш інвентарю, що підіймається знизу, з полем пошуку та кнопкою «Закрити»" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="Бічна панель торби, що виїжджає справа" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="Невелика картка предмета над швидким слотом із зіллям" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="Меню з пунктами «Використати», «Перемістити» та «Викинути», відкрите зі швидкого слота" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="Снекбар унизу повідомляє, що предмет викинуто, і пропонує «Скасувати»" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="Картка запрошення до загону біля верхнього краю екрана з кнопками «Прийняти» та «Відхилити»" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="Картка коуч-мітки вказує на швидкий слот під час туру" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="Консоль розробника через увесь верх екрана з набраною командою" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>Кожен знімок на цій сторінці — та сама маленька гра: здоров'я й мана ліворуч угорі, монети праворуч угорі, стик і три швидкі
+    слоти внизу — у пресеті <code>default_dark</code>, з одним відкритим поверх неї спливним вікном. <a href="#popup-looks">Те саме
+    вікно в усіх десяти виглядах →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>З чого складається спливне вікно</h2>
+  <p class="sub">Майже кожне блокувальне спливне вікно в gohud — діалоги, аркуші, приколені картки, список комбобокса та ваші власні
+    вікна — це один вузол, <code>GoSurface</code>. Розберіться в його частинах один раз — і ви знатимете їх усі.</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="Вікно «Створити персонажа»: у шапці кнопка «Назад» і заголовок, кнопка закриття, поле імені з помилкою, кнопки класів, червоний рядок стану та кнопка «Створити», закріплена внизу" loading="lazy"><figcaption>Шапка з кнопками «Назад» і закриття · тіло · рядок стану · підвал</figcaption></figure>
+  <table>
+    <thead><tr><th>Частина</th><th>Що це</th><th>Як до неї дістатися</th></tr></thead>
+    <tbody>
+      <tr><td>Шар</td><td><code>CanvasLayer</code>, на якому живе вікно. Його номер вирішує, що вікно перекриває.</td><td>Ваш — для <code>GoSurface</code>; в інших вбудований (<a href="#popup-stack">таблиця</a>)</td></tr>
+      <tr><td>Затемнення</td><td>Завіса над усім, що позаду. Вона ловить дотики повз картку.</td><td><code>scrim_transparent</code>, <code>dismiss_on_scrim</code>, колір <code>scrim</code> із теми</td></tr>
+      <tr><td>Картка</td><td>Саме вікно — лицьова панель із теми: заокруглена, зрізана, кована чи желейна, залежно від вигляду.</td><td><code>card</code>, <code>alpha</code></td></tr>
+      <tr><td>Шапка</td><td>Необов'язкова кнопка «Назад», заголовок (щонайбільше два рядки, далі «…»), кнопка закриття.</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>Панель інструментів</td><td>Закріплений рядок під шапкою — поле пошуку, чипи фільтрів. Прихована, доки ви нею не скористаєтеся.</td><td><code>toolbar</code></td></tr>
+      <tr><td>Тіло</td><td>Частина, що прокручується. Вміст кладіть сюди.</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>Рядок стану</td><td>Закріплений рядок між тілом і підвалом — «Ім'я не пройшло перевірку», «Збереження…».</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>Підвал</td><td>Закріплені кнопки внизу. Прихований, доки ви ним не скористаєтеся.</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Закріплене кладіть у закріплені рядки.</b> Поле пошуку, помилка чи кнопка «Зберегти», покладені в тіло, від'їжджають разом
+    із довгим списком: гравець вводить неправильне ім'я, помилка опиняється нижче видимої частини, і здається, що нічого не відбувається.
+    Користуйтеся <code>toolbar</code>, рядком стану та <code>footer</code> — вони лишаються на місці, поки тіло прокручується.
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2>Діалоги, на які ви робите <code>await</code></h2>
+  <p class="sub"><code>GoDialogs</code> питає й чекає. Один вузол, три запитання — і відповідь повертається в тому самому рядку, тож
+    код читається в тому самому порядку, у якому все відбувається з гравцем.</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — запитання з кнопкою «Не зараз» угорі та «Купити» внизу" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="Підтвердження незворотної дії — кнопку «Видалити» залито червоним" loading="lazy"><figcaption><code>confirm(…, true)</code> — незворотна дія</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — «Новий рівень!» з єдиною кнопкою «Чудово»" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — «Сортувати торбу за» з чотирма варіантами та кнопкою «Скасувати»" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="Підтвердження, у якого дві кнопки стоять поруч" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">Три запитання</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # зробіть await, щоб дочекатися
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # ключі перекладу</code></pre>
+  <table>
+    <thead><tr><th>Виклик</th><th>Повертає</th><th>Для чого</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> або <code>false</code></td><td>Так чи ні — купити, видалити, вийти, перезаписати.</td></tr>
+      <tr><td><code>alert()</code></td><td>нічого — зробіть <code>await</code>, щоб дочекатися</td><td>Те, що гравець мусить побачити: нагорода, втрачене з'єднання.</td></tr>
+      <tr><td><code>choose()</code></td><td>індекс варіанта або <code>-1</code></td><td>Один із кількох. Варіант — це String або <code>{text, icon, danger, subtitle}</code>.</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>як вище</td><td>Те саме з ключами перекладу — слова йдуть за зміною мови, навіть поки діалог відкритий.</td></tr>
+    </tbody>
+  </table>
+  <p>Порожні написи кнопок замінюються власними словами набору (<code>confirm</code>, <code>cancel</code> у <code>GoConfig.text_keys</code>).
+    <code>extra</code> додається до тіла з нового рядка. <code>args</code> заповнює <code>{placeholders}</code> у заголовку
+    <b>і</b> в тілі: <code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>.</p>
+
+  <h3 id="every-way-out-has-an-answer">Кожен вихід має відповідь</h3>
+  <table>
+    <thead><tr><th>Гравець…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>натискає OK / варіант</td><td><code>true</code></td><td>повертається</td><td>індекс варіанта</td></tr>
+      <tr><td>натискає «Скасувати»</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>натискає ×, Escape або «Назад» на Android</td><td><code>false</code></td><td>повертається</td><td><code>-1</code></td></tr>
+      <tr><td>торкається затемнення (лише з <code>dismiss_on_scrim</code>)</td><td><code>false</code></td><td>повертається</td><td><code>-1</code></td></tr>
+      <tr><td>вузол <code>GoDialogs</code> покидає дерево</td><td><code>false</code></td><td>повертається</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>Тож код після <code>await</code> виконується завжди — жодна відповідь не зависає, навіть коли сцена змінюється просто під діалогом.</p>
+
+  <h3 id="destructive-actions">Незворотні дії</h3>
+  <p>Передайте <code>destructive = true</code> для того, чого не можна скасувати. Кнопка OK стає залитою кнопкою
+    <code>Tone.DANGER_SOLID</code> — біле на червоному в кожному вигляді, тоді як підфарбованому напису небезпеки у світлій темі довелося б
+    темніти майже до чорного, щоб лишатися читабельним. Тон скидається при кожному виклику, бо вікно використовується повторно.</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>Фокус клавіатури — на OK.</b> Кожне підтвердження відкривається з фокусом на кнопці OK, тож Enter чи пробіл підтверджують —
+    і незворотну дію теж. Підписуйте кнопки так, щоб безпечний вибір був очевидним («Залишити»), і ховайте незворотні дії за другим
+    кроком, коли помилка коштує гравцеві справжнього поступу.
+  </div>
+
+  <h3 id="button-layout">Розкладка кнопок</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>Що робить</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code> (типово)</td><td>Кнопки одна під одною, на всю ширину. Безпечно для будь-якої мови — довгий німецький чи російський напис ніколи не стискається.</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>Один рядок, кожній кнопці по половині ширини.</td></tr>
+      <tr><td><code>AUTO</code></td><td>Один рядок лише тоді, коли обидва написи вміщаються в половину картки одним рядком; інакше стовпчиком. Вирішується знову при зміні мови чи розміру.</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> — проміжок між кнопками, <code>body_gap</code> — проміжок над ними; зробіть його ширшим за проміжок між
+    кнопками, щоб запитання й вибір читалися як дві частини. Лише для одного діалогу викличте
+    <code>set_next_action_layout()</code> перед його відкриттям. Єдина кнопка сповіщення завжди займає всю ширину.</p>
+
+  <h3 id="one-at-a-time">По одному</h3>
+  <p>Другий <code>confirm()</code>, поки відкритий перший, одразу повертає <code>false</code> — діалог ніколи не ляже на діалог
+    випадково. Увімкніть <code>queue_when_busy</code>, і він натомість дочекається своєї черги; <code>alert()</code> чекає завжди.
+    <code>queue_limit</code> (8) обмежує чергу, а в разі переповнення найстаріший запит отримує відповідь <code>false</code>.
+    <code>pending()</code> рахує запити, що чекають, а <code>clear_pending()</code> відповідає їм усім <code>false</code>.
+    <code>choose()</code> ніколи не стає в чергу: якщо діалог уже відкритий, він повертає <code>-1</code>.</p>
+
+  <h3 id="phone-and-desktop">Телефон і комп'ютер</h3>
+  <p><code>choose()</code> відкривається на Android та iOS як аркуш знизу — там, де великий палець, — а на комп'ютері як картка
+    посередині. Підтвердження обмежене шириною <code>max_width</code> (420dp) і стоїть по центру. Задавайте <code>layer_index</code>,
+    <code>max_width</code> та інші експортовані властивості <b>до</b> <code>add_child</code>: вони застосовуються, коли вузол входить у дерево.</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — ваше власне вікно</h2>
+  <p class="sub">Коли спливне вікно — більше ніж запитання (налаштування, картка персонажа, товар для купівлі), будуйте його на
+    <code>GoSurface</code>. Безпечна зона, клавіатура, закріплені рядки, прокрутка, «Назад», фокус і зміна розміру вже зроблені.</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>Воно ніколи не закривається саме.</b> ×, Escape, «Назад» і дотик до затемнення лише випромінюють <code>close_requested</code>.
+    Сховати чи звільнити вікно — робота екрана-власника: лише він знає, що означає «закрити» — зберегти, відкинути чи спершу запитати.
+  </div>
+
+  <h3 id="three-placements">Три розміщення</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER — картка посередині екрана" loading="lazy"><figcaption><code>CENTER</code> — підтвердження, налаштування</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — те саме вікно, що підіймається знизу" loading="lazy"><figcaption><code>BOTTOM</code> — списки, сторінки керування</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — меню сортування, приколене біля кнопки «Сортування»" loading="lazy"><figcaption><code>ANCHOR</code> — поруч із контролом</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="Вибір дати всередині вікна по центру з кнопками «Скасувати» та OK" loading="lazy"><figcaption><code>GoDatePicker</code> у вікні <code>CENTER</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> потребує <code>anchor_control</code>. Картка стає праворуч від нього, якщо вміщається <code>anchor_min_width</code>,
+    інакше — на ширший бік, інакше — всередину екрана, і відкривається вгору, коли згори більше місця. Вона стежить за рухомою прив'язкою
+    щокадру. Розмір задають <code>anchor_width</code> (320) і <code>anchor_max_height</code> (520).</p>
+
+  <h3 id="how-big-it-gets">Наскільки воно виростає</h3>
+  <table>
+    <thead><tr><th>Міра</th><th>Правило</th><th>Чим змінити</th></tr></thead>
+    <tbody>
+      <tr><td>Місце</td><td>Безпечна зона мінус клавіатура мінус поле екрана (16dp, але не більше 10% короткої сторони).</td><td>—</td></tr>
+      <tr><td>Ширина</td><td>94% місця в портретній орієнтації, 72% в альбомній, не більше 480dp.</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>Висота</td><td>За висотою вмісту (<code>fit_content</code>), до 68% місця, зі стелею 72%. Картка по центру без зміни розміру може вирости до 94%, щоб обійтися без прокрутки.</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>Щільність</td><td>Щільна розкладка, коли задано <code>compact</code>, екран нижчий за 420dp (телефон, повернутий набік) або вміст не вміщається: менше відступів, менші проміжки, менший заголовок. Вікно вимірює обидва варіанти й лишає просторіший із тих, що вміщаються, — без тремтіння.</td><td><code>compact</code></td></tr>
+      <tr><td>Зміна розміру</td><td>З <code>resizable</code> заголовок стає ручкою: тягніть його між 30% і стелею. <code>height_changed(ratio)</code> повідомляє результат.</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>Частка понад стелю урізається, з одним попередженням у зневаджувальній збірці. Клавіатура підіймає картку й прокручує поле
+    з фокусом у видиму зону; безпечна зона тримає її подалі від вирізу та смуги жестів на Android та iOS.</p>
+
+  <h3 id="properties">Властивості</h3>
+  <table>
+    <thead><tr><th>Властивість</th><th>Типово</th><th>Що робить</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>, <code>BOTTOM</code> або <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code> (false)</td><td>Дотик до затемнення просить закрити вікно. Перетягування, що почалося всередині картки, — ні.</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>Лишити гру видимою — затемнення все одно ловить дотики зовні.</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>Показати × і дозволити Escape та «Назад» просити про закриття.</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>Рядок шапки, тіло з прокруткою, ручка перетягування.</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>Підганяти розмір під вміст; починати зі щільної розкладки.</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code> (false)</td><td>Плавно проявляти картку під час відкриття. З <code>reduce_motion</code> — миттєво.</td></tr>
+      <tr><td><code>alpha</code></td><td>-1 (з теми)</td><td>Непрозорість лицьової панелі картки, часткою. Прозорішає лише панель — ніколи не текст.</td></tr>
+      <tr><td><code>initial_focus</code></td><td>немає</td><td>Контрол, що отримує фокус під час відкриття.</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Задавайте їх до <code>add_child</code>:</b> <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code> і
+    <code>scroll_body</code> застосовуються, коли вікно входить у дерево. <code>dismiss_on_scrim</code>, <code>close_enabled</code>,
+    <code>fade_in</code> та <code>initial_focus</code> читаються наживо.
+  </div>
+
+  <h3 id="signals-and-calls">Сигнали та виклики</h3>
+  <table>
+    <thead><tr><th>Ім'я</th><th>Що це</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×, Escape, «Назад» на Android або дотик до затемнення — а також <code>request_close()</code>. Випромінюється лише найверхнім вікном.</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>Кнопка «Назад» у шапці — для вікна зі сторінками. Порожній <code>Callable</code> її ховає.</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>Після перетягування ручки.</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>Чи це вікно отримує «Назад» — і чи відкрите взагалі хоч одне вікно.</td></tr>
+      <tr><td><code>relayout()</code></td><td>Розкласти знову просто зараз. Зміна властивості розміру вже робить це за вас.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>Аркуші та бічні панелі</h2>
+  <p class="sub">Список, якому потрібне місце, підіймається знизу на телефоні, який тримають вертикально, — там, де великий палець, — і
+    виїжджає збоку на планшеті чи комп'ютері, де аркуш затулив би гру.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — «Інвентар» із закріпленим полем пошуку, списком і закріпленою кнопкою «Закрити»" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer ліворуч — меню: «Місто», «Мапа світу», «Завдання», «Гільдія» та «Налаштування»" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer праворуч — торба" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — сторінки знизу</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>Це <code>CanvasLayer</code> (шар 10), у якому лежить <code>BOTTOM</code>-<code>GoSurface</code> зі змінним розміром, — тож він
+      сидить над HUD, а гравець може витягнути його вище.</li>
+    <li><code>open(title)</code> починає нову сторінку: очищає тіло, панель інструментів і кнопку «Назад» та звільняє те, що додав
+      <code>add_footer()</code>. Викличте його знову, щоб показати іншу сторінку в тому самому аркуші; <code>set_back()</code> показує
+      кнопку «Назад» для шляху додому. <code>open_key()</code> приймає ключ перекладу.</li>
+    <li><code>close()</code> ховає аркуш — він не звільняється, тож наступний <code>open()</code> миттєвий. Коли це стається,
+      повідомляють <code>closed</code> і <code>page_changed</code>.</li>
+    <li><code>height_ratio</code> (0.6) — висота під час відкриття; <code>max_height_ratio</code> піднімає стелю; <code>dismissable</code>
+      (true) закриває аркуш дотиком до затемнення.</li>
+  </ul>
+  <div class="note warn">
+    <b>Escape і «Назад» закривають увесь аркуш</b>, навіть на підсторінці з <code>set_back()</code>, — на сторінку назад веде лише
+    екранна кнопка «Назад». Якщо «Назад» має повертати на крок, обробіть <code>close_requested</code> у <code>sheet.surface</code> самі.
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — збоку</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # бік початку: ліворуч, а в арабській — праворуч
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>Шар 80. Ширина — 42% екрана (<code>width_ratio</code>), між <code>min_width</code> (320dp) і <code>max_width</code>
+      (420dp): на телефоні панель затуляє більшу частину екрана, тому там краще вибрати аркуш.</li>
+    <li>Панель дістає до краю екрана; всередину безпечної зони відступає лише її вміст, тож заокруглений кут ніколи не обріже перший рядок.</li>
+    <li><code>LEFT</code> означає «ліворуч на екрані» навіть в арабській. Вмикайте <code>follow_text_direction</code>, коли йдеться саме
+      про «бік початку»; <code>effective_side()</code> скаже, куди панель зрештою стала.</li>
+    <li><code>open(title)</code> зберігає тіло — заповніть його один раз. <code>set_title("")</code> ховає шапку.
+      <code>motion_seconds</code> (0.2) задає виїзд; <code>reduce_motion</code> робить його миттєвим.</li>
+  </ul>
+  <div class="note warn">
+    <b>«Назад» на Android закриває бічну панель, Escape — ні.</b> Панель слухає лише системну кнопку «Назад». На комп'ютері
+    викликайте <code>drawer.close()</code> із власного прив'язування клавіш — і зважте, що <code>GoSurface.is_any_open()</code> бічну
+    панель не рахує; питайте <code>drawer.is_open()</code>.
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>Картки та меню поруч із контролом</h2>
+  <p class="sub">Те, що гравець щойно натиснув, заслуговує на відповідь просто біля пальця, а не посередині екрана.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — картка «Зілля здоров'я» біля швидкого слота" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — «Використати», «Перемістити в слот 1» та «Викинути»" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — меню «Сортування», відкрите поверх таблиці лідерів" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select — відкритий вибір якості: низька, середня, висока й ультра" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — список друзів із полем пошуку" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — картка біля натиснутого елемента</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>Поверхня <code>ANCHOR</code>, у якій шар, прив'язка та прибирання вже з'єднані, — ті десять рядків, що їх кожна гра пише знову
+    й знову. <b>По одній</b>: відкриття другої картки закриває першу, бо складені стосом картки ховають екран, і вже годі сказати, яка
+    з них якому слоту належить. Затемнення прозоре — картка, відкрита, щоб порівняти спорядження, не повинна це спорядження
+    притемнювати, — але воно все одно ловить перший дотик зовні, який закриває картку й далі не проходить.</p>
+  <table>
+    <thead><tr><th>Параметр</th><th>Типово</th><th>Що робить</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>Шапка з ×. Порожньо — шапки немає.</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>Розмір картки.</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>Дотик зовні її закриває.</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>Щільні відступи, непрозорість лицьової панелі, заголовок як ключ перекладу.</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td><code>CanvasLayer</code>, на якому вона відкривається.</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> і <code>GoPopover.is_open()</code> — статичні. <code>open()</code> повертає поверхню — або
+    <code>null</code>, коли прив'язки немає в дереві, тож перевірте результат, перш ніж робити <code>await shown.close_requested</code>.</p>
+  <div class="note warn">
+    <b>Це не підказка при наведенні.</b> У дотику наведення немає; усе, що може показати лише миша, для половини ваших гравців невидиме.
+    А з <code>dismissable = false</code> і без заголовка на екрані немає нічого, що її закриє, — лише Escape, «Назад» чи ваш власний виклик.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — довге натискання та клац правою</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>Клац правою відкриває меню одразу. Палець, утримуваний пів секунди (<code>HOLD_SECONDS</code>), теж його відкриває; зсув
+      більш ніж на 12dp скасовує — тож прокрутка списку ніколи не викидає меню.</li>
+    <li>Пункт — це <code>{text, action, icon, disabled, checked, separator, danger, translate}</code>. Передавайте <code>Callable</code>
+      замість масиву, коли пункти залежать від того, на що натиснули; його викликають щоразу, коли меню відкривається.</li>
+    <li><code>danger</code> ставить «⚠ » перед текстом — меню рушія вміє фарбувати лише всі свої пункти разом.</li>
+    <li>Це <code>PopupMenu</code> рушія, оформлене <code>GoStyle.style_popup()</code>. Відкритою поверхнею воно не вважається.</li>
+  </ul>
+  <div class="note warn">
+    <b>Довгому натисканню потрібен другий вхід.</b> Прихованого жесту ніхто не знайде. Поставте поруч видиму кнопку <code>⋯</code>
+    (<code>open_at()</code>, як вище) або один раз навчіть його коуч-міткою.
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">Випадні меню, списки вибору та розділена кнопка</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>Усі три відкривають спливне меню рушія: <code>dropdown()</code> — це <code>MenuButton</code>, що запускає дію,
+    <code>select()</code> — <code>OptionButton</code>, що зберігає значення, <code>GoSplitButton</code> — головна дія плюс меню на
+    стрілці (<code>chosen(index)</code>). Меню навмисно лишаються цілком непрозорими: меню, показане у власному вікні ОС, перетворює
+    напівпрозорі пікселі на чорні.</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — список із пошуком</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>Після натискання він відкриває прив'язаний список на шарі 96 із прозорим затемненням. Починаючи з <code>search_threshold</code> (8)
+    пунктів з'являється поле пошуку й забирає фокус; воно шукає збіг у будь-якому місці тексту чи підказки без урахування регістру, а
+    порожній результат так і каже. Ширину списку задає <code>list_width</code> (0 = ширина кнопки, але не менше 180dp).</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>Спливні вікна, що ніколи не зупиняють гру</h2>
+  <p class="sub">Новини, які гравець може прочитати, не перериваючи гру. Жодне з цих вікон не має затемнення; дотик будь-де, крім
+    самої картки, іде в гру.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — «Іржавий меч викинуто» з кнопкою «Скасувати» над швидкими слотами" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — «Гру збережено» вгорі HUD" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — запрошення до загону під смугами здоров'я" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="Власна спливна підказка над слотом щита" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — повідомлення з «Скасувати»</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th>Ключ <code>post()</code></th><th>Що робить</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>Повідомлення, необов'язковий рядок жирним, <code>{placeholders}</code>, ключі перекладу.</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>Акцентний колір (<code>GoTheme.SUCCESS</code>, <code>WARNING</code>…) та іконка.</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>Кнопки — рядки або <code>{text, action}</code> — та ×.</td></tr>
+      <tr><td><code>seconds</code></td><td>Скільки він тримається. Від'ємне значення — <code>notice_duration_ms</code> із теми. <b>0 — доки його не закриють</b>; тоді дайте йому кнопку.</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> повертає індекс натиснутої кнопки або <code>-1</code>, якщо час вийшов чи снекбар закрили. Повідомлення стають
+    у чергу (<code>queue_limit</code> 4, найстаріше викидається з -1), а той самий текст, надісланий знову, поки він на екрані, лише
+    перезапускає таймер. Снекбар стоїть унизу (або вгорі — <code>placement</code>), над безпечною зоною та клавіатурою, на шарі 90 —
+    його видно поверх бічної панелі. З <code>tap_to_dismiss</code> (увімкнено) дотик до картки без кнопок закриває її; дотик повз картку
+    завжди доходить до гри. <code>show_text()</code> і <code>show_key()</code> — однорядкові форми.</p>
+  <div class="note warn">
+    <b>Ніколи не ставте запитання в снекбарі.</b> Він зникає сам; важливому вибору місце в діалозі.
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — рядок у HUD</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>Проста панель, яку ви розміщуєте самі, — у <code>GoHudAnchor</code>, у кутку, будь-де. Вона не бере ні вводу, ні фокуса, тож
+    натискання крізь неї доходить до кнопки під нею, а нове повідомлення замінює старе. Задайте їй ширину:
+    <code>preferred_width(limit)</code> повертає природну ширину короткого тексту й переносить довгий у межах <code>limit</code>.
+    <code>set_content()</code> показує замість тексту будь-який контрол.</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — запитання, яке може зачекати</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # стати під смугами здоров'я, а не затуляти їх
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>Картка стартує прихованою</b> — викличте <code>show()</code>. Власного таймера в неї немає; додайте його, якщо запитання має термін.</li>
+    <li>Її кнопки її не закривають — вирішують дії. × (<code>set_closable(true)</code>) випромінює <code>closed</code>.</li>
+    <li><code>fit_width(width)</code> задає ширину й передбачає висоту за шрифтом, тож ніщо, що розкладається відносно неї, не стрибне кадром пізніше.</li>
+    <li>Її лицьова панель іде за <code>hud_alpha</code> — це частина HUD, а не вікно.</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> і спливні підказки</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> стоїть у самій сторінці,
+    над вмістом, і ніколи не зникає за таймером; кнопка закриває його, якщо в неї немає <code>"keep": true</code>.
+    <code>GoStyle.tooltip_node(text)</code> — те, що слід повернути з <code>_make_custom_tooltip()</code>: плашку малює рушій
+    (<code>TooltipPanel</code>), а текст — gohud, з перенесенням після 260dp. Підказки — для миші; ніколи не ховайте за ними те, що потрібно гравцеві.</p>
+</section>
+
+<section id="popup-guides">
+  <h2>Тури та консоль</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — крок 1 із 2, «Швидкі слоти», вказує на слот із зіллям" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — панель консолі з командою give та її результатом" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — тур справжніми контролами</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>Кільце навколо справжнього контрола й картка поруч. Натискання на ціль веде тур далі (її сигнал <code>pressed</code> або
+      <code>"signal"</code> у кроці); «Далі» та «Пропустити» — на картці. Прихована ціль пропускається.</li>
+    <li>Картка тримається подалі від середини екрана (<code>avoid_center_band</code>), від прив'язок HUD і від <code>keep_clear</code>.</li>
+    <li>Поки відкрита будь-яка <code>GoSurface</code>, тур ховається й чекає. «Назад» чи Escape завершують його з <code>finished(false)</code>.</li>
+    <li>Власного шару в нього немає — додавайте його останнім або на шар вище за HUD.</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — чити на час розробки</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>Шар 200 — над усім, тож зневаджувати можна й поверх діалогу, — і консоль далі працює, поки дерево на паузі. Палітра підказує
+    команди, доки ви набираєте; стрілки вгору й униз гортають історію; Escape її закриває. Вбудованої клавіші немає: призначте свою.</p>
+  <div class="note warn">
+    <b><code>debug_only</code> (увімкнено) блокує її в релізній збірці</b> — і <code>open()</code>, і <code>run()</code>. Читерські
+    команди в руках гравця кінчають ігрову економіку першого ж дня.
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>Шари, «Назад» і ввід</h2>
+  <p class="sub">Три правила вирішують, чого може торкатися гравець, поки щось відкрите: що лежить згори, кому належить «Назад» і хто
+    отримує дотик.</p>
+
+  <h3 id="what-sits-on-top">Що лежить згори</h3>
+  <table>
+    <thead><tr><th>Шар</th><th>Що там лежить</th><th>Чим задається</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>Ваш HUD (на ваш вибір)</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>Ваші власні вікна <code>GoSurface</code>, меню паузи</td><td>ваш <code>CanvasLayer</code></td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td>параметр <code>"layer"</code></td></tr>
+      <tr><td>96</td><td>список <code>GoCombobox</code></td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>Порядок навмисний: снекбар повідомляє про щойно сталося, тож читається поверх бічної панелі; приколена картка належить до щойно
+    натиснутого, тож лежить над ним; діалог ставить запитання й накриває і те, і те; консоль накриває все, бо її відкривають, коли все
+    інше пішло не так.</p>
+
+  <h3 id="who-owns-back">Кому належить «Назад»</h3>
+  <ul>
+    <li><b>Відповідає лише найверхнє вікно.</b> Серед відкритих поверхонь вікно на найвищому шарі (а за рівності — останнє в дереві)
+      отримує Escape, скасування на геймпаді (<code>ui_cancel</code>), «Назад» на Android і дотики до затемнення. Вікна в стосі
+      закриваються по одному, ніколи разом.</li>
+    <li>«Назад» на Android обробляється кадром пізніше, тож одне натискання ніколи не закриє двох вікон.</li>
+    <li>Поки відкрите хоч щось, що володіє «Назад», кнопка «Назад» на Android не закриває застосунок (<code>GoBackPolicy</code> рахує
+      власників і відновлює <code>quit_on_go_back</code> після останнього). Ваше власне спливне вікно, що перехоплює «Назад», має
+      викликати <code>GoBackPolicy.acquire()</code> і <code>release()</code> — зокрема і в <code>_exit_tree</code>.</li>
+    <li>Бічна панель, тур коуч-міток і форма поступаються, поки відкрита поверхня, — «Назад» спершу дістається поверхні.</li>
+    <li><code>GoConfig.close_on_back</code> (увімкнено) — перемикач для поверхонь.</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">Хто отримує дотик</h3>
+  <ul>
+    <li>Поверхня накриває весь екран і зупиняє ввід — <b>прозоре затемнення теж</b>. Поки вона відкрита, ніщо на нижчих шарах не
+      натискається; шари над нею (снекбар) — натискаються.</li>
+    <li>Коліщатко миші та жест щипка теж зупиняються на вікні: прокрутка за кінець списку ніколи не прокручує гру.</li>
+    <li>Ігровий ввід, що йде не через контроли, — <code>_unhandled_input</code> для руху, перетягування камери — має ставати на паузу:
+      <code>if GoSurface.is_any_open(): return</code>. Це покриває діалоги, аркуші, приколені картки й комбобокс; бічну панель питайте
+      <code>is_open()</code> окремо.</li>
+    <li>Снекбар, сповіщення, картка-запитання й коуч-мітка беруть ввід лише на своїй картці; скрізь деінде його отримує гра.</li>
+  </ul>
+
+  <h3 id="focus">Фокус</h3>
+  <p>Вікно, відкрите вказівником, нічого не фокусує — на дотик жодне кільце не блимає. Якщо вікно відкрито з клавіатури чи геймпада,
+    фокус отримує кнопка закриття (або <code>initial_focus</code>). Поки вікно відкрите, фокус лишається всередині нього, а після
+    закриття повертається до контрола, який мав його раніше. Діалоги щоразу ставлять фокус на OK.</p>
+
+  <h3 id="pausing-the-game">Пауза в грі</h3>
+  <p>Пауза дерева ставить на паузу й спливні вікна — далі працює лише консоль. Для меню паузи задайте його шару
+    <code>process_mode = PROCESS_MODE_ALWAYS</code>; тоді вікно, його кнопки й «Назад» працюють, поки гра стоїть.</p>
+</section>
+
+<section id="popup-looks">
+  <h2>Те саме вікно в кожному вигляді</h2>
+  <p class="sub">Підтвердження з початку цієї сторінки, поверх тієї самої гри, — змінився лише пресет. Код ідентичний; решту
+    роблять тема, скін та іконки.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="Підтвердження в default_dark — заокруглені кути, м'який синій акцент" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="Підтвердження в default_light" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="Підтвердження в scifi_dark — зрізані кути й неоновий край" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="Підтвердження в scifi_light" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="Підтвердження в medieval_dark — кована рама й заголовок шрифтом Cinzel" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="Підтвердження в medieval_light — пергамент і бронза" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="Підтвердження в material_light — кути 28dp і кнопки-пігулки" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">Нове</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="Підтвердження в material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Нове</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="Підтвердження в kids_light — сонячна стрічка заголовка, кнопка закриття-цукерка та желейні кнопки" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Нове</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Підтвердження в kids_dark — м'ятна стрічка на нічно-синій картці" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Нове</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">Що змінює кожен вигляд</h3>
+  <table>
+    <thead><tr><th>Вигляд</th><th>Вікно</th><th>Його шапка й кнопки</th></tr></thead>
+    <tbody>
+      <tr><td>Стандартний</td><td>Заокруглене (18dp), м'яка тінь, непрозорість 80% поверх гри</td><td>Простий заголовок і ×; головні кнопки підіймаються й осідають</td></tr>
+      <tr><td>Сай-фай</td><td>Зрізані кути з неоновим краєм і сяйвом, край підфарбований акцентом</td><td>Позначки фокуса у вигляді дужок</td></tr>
+      <tr><td>Середньовічний</td><td>Кована рама — залізо та шкіра або пергамент — із заклепками й кутовими оздобами</td><td>Заголовки шрифтом Cinzel</td></tr>
+      <tr><td>Material 3</td><td>Кути 28dp, відступи 24dp, повна непрозорість</td><td>Заголовок 24sp шрифтом Roboto; кнопки-пігулки з плашкою 40dp у зоні дотику 48dp</td></tr>
+      <tr><td>Дитячий</td><td>Картка — желейна цукерка з м'якою тінню, повна непрозорість</td><td>Сонячна стрічка заголовка (вночі м'ятна), кругла кнопка закриття-цукерка, кнопки, що сплющуються від натискання</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">Оформити спливне вікно через скін</h3>
+  <p>Скін вирішує те, куди темі не дістатися. Нижче — хуки, які викликають спливні вікна: перевизначайте їх у власному підкласі
+    <code>GoSkin</code>; типово вони нічого не роблять.</p>
+  <table>
+    <thead><tr><th>Хук</th><th>Що оформлює</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Плашку за заголовком вікна. Заголовок центрується на ній і зменшується — аж до мінімального розміру (15), — щоб лишитися в один рядок.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>× вікна — дитячий вигляд робить її круглою цукеркою.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Спрацьовує тієї миті, коли палець торкається кнопки, створеної gohud, — дитячий вигляд її сплющує.</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Лицьові панелі карток-запитань і карток туру, снекбарів і сповіщень, бічної панелі, банерів, консолі.</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Кільце й вказівник туру.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">Наскільки прозоро</h3>
+  <p>Кожен вид спливних вікон іде за своєю непрозорістю, тож картка HUD може лишатися легкою, а діалог — щільним: вікна, аркуші,
+    діалоги, приколені картки й комбобокс ідуть за <code>panel_alpha</code>; бічна панель і картка туру — за <code>card_alpha</code>;
+    картки-запитання й консоль — за <code>hud_alpha</code>; снекбари й сповіщення — за <code>notice_alpha</code>; меню — за
+    <code>popup_alpha</code>. Material і дитячий вигляд роблять їх усі непрозорими. Перевизначте один вид через
+    <code>GoConfig.container_alpha_overrides</code>, усі разом — через <code>container_alpha</code> (частка — <code>0.95</code>), а одне
+    вікно — через його <code>alpha</code>. Прозорішає лише лицьова панель; текст ніколи не просвічує. <a href="theming-opacity.html">Непрозорість докладно →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>Налаштування, що визначають кожне спливне вікно</h2>
+  <p class="sub">Поля <code>GoConfig</code> (<code>GoUi.config</code>). Деякі копіюються під час створення вікна, тож задавайте їх
+    до побудови інтерфейсу — або викличте <code>GoUi.refresh()</code> після зміни.</p>
+  <table>
+    <thead><tr><th>Поле</th><th>Типово</th><th>Що робить</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>Найбільший розмір вікна.</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>Звичайна висота та стеля (вона ж межа перетягування).</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>Наскільки може вирости картка по центру, підігнана під вміст, перш ніж почне прокручуватися.</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>Ширина як частка місця.</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>Дотик до затемнення закриває вікна й діалоги. Копіюється під час створення вікна.</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>Плавна поява вікон і її швидкість.</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Escape, <code>ui_cancel</code> і «Назад» на Android закривають найверхнє вікно.</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>Видимий розмір × — його зона дотику лишається 48dp.</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>Жодного кільця фокуса, коли вікно відкрито дотиком чи мишею.</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>Непрозорість усіх лицьових панелей або окремо за видами (<code>GoTheme.BOX_*</code>).</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>Жодних проявів, виїздів, пульсацій і сплющувань.</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>Висота кнопок у картках-запитаннях і коуч-мітках.</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>Тримати вікна подалі від вирізу та смуги жестів.</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>Власні слова набору: закрити, назад, підтвердити, скасувати, далі, готово, пропустити, пошук, порожньо…</td></tr>
+      <tr><td><code>sound_cues</code> · вібрація</td><td>—</td><td>Що <code>GoFeedback</code> відтворює під час відкриття, закриття, підтвердження, скасування й дотику.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>Рецепти</h2>
+  <p class="sub">Скопіюйте, вставте, змініть слова. Кожен виклик тут звірено з вихідним кодом.</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">Купівля з ціною в тексті</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">Вікно налаштувань із закріпленою кнопкою «Зберегти»</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">Форма, яка каже, що не так</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">Дата в аркуші</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">Меню паузи</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # працює, поки гра на паузі
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">Ігровий процес, що чекає на спливні вікна</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>Підводні камені</h2>
+  <ul>
+    <li><b><code>GoSurface</code> ніколи не звільняє себе сама.</b> Під'єднайте <code>close_requested</code>, інакше × нічого не робить.</li>
+    <li><b>Параметри, задані після <code>add_child</code></b>, — <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code>,
+      <code>scroll_body</code>, а також у <code>GoDialogs</code> — <code>layer_index</code> і <code>max_width</code> — не застосовуються.</li>
+    <li><b>Другий <code>confirm()</code> одразу повертає <code>false</code>.</b> Увімкніть <code>queue_when_busy</code>, якщо два запитання можуть збігтися в часі.</li>
+    <li><b>Enter підтверджує.</b> Фокус на OK — і в діалогах незворотних дій теж.</li>
+    <li><b>«Назад» на аркуші закриває весь аркуш,</b> а не підсторінку.</li>
+    <li><b>Escape не закриває бічну панель,</b> а <code>is_any_open()</code> її не бачить.</li>
+    <li><b>Приколена картка чи список комбобокса блокують гру,</b> доки не закриються, навіть із прозорим затемненням, — а в приколеної
+      картки з <code>dismissable = false</code> і без заголовка на екрані немає нічого, що її закриє.</li>
+    <li><b>Картка-запитання стартує прихованою</b> і не має тайм-ауту.</li>
+    <li><b>Снекбар із <code>seconds: 0</code> і без кнопки ніколи не зникає.</b> До того ж типово він ловить дотики на своїй картці.</li>
+    <li><b>Довге натискання, про яке ніхто не знає, — функція, якою ніхто не користується.</b> Покажіть ще й <code>⋯</code>.</li>
+    <li><b>Дерево на паузі ставить на паузу й ваше спливне вікно.</b> Використовуйте <code>PROCESS_MODE_ALWAYS</code> на його шарі.</li>
+    <li><b>Сповіщення без ширини</b> стискається до найвужчого — використовуйте <code>preferred_width()</code>.</li>
+    <li><b>Ніколи не питайте в снекбарі й не повідомляйте в діалозі.</b> Запитання зникає, якщо його не помітити; новина не повинна зупиняти гру.</li>
+  </ul>
+</section>
+
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← Усі віджети</a> · <a href="widgets-surfaces.html">Плаваючі вікна →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

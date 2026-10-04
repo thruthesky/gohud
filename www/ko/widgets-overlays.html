@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">위젯</a>
   <a href="widgets-catalog.html">모든 위젯</a>
+  <a href="widgets-popups.html">팝업과 대화상자</a>
   <a href="widgets-surfaces.html">떠 있는 창</a>
   <a href="widgets-messages.html">알리기</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 옆에서 나오는 패널</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — 왼쪽이나 오른쪽에서 밀려 들어오는 판." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — 왼쪽이나 오른쪽에서 밀려 들어오는 판." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> 는 아래에서 올라온다. 세워 쥔 휴대폰에는 그게 맞다. 태블릿이나 데스크톱에서는
     같은 시트가 게임을 덮어 버린다 — 그 자리에는 옆에서 나오는 패널을 쓴다.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("인벤토리")</code></pre>
     <code>follow_text_direction</code> 을 켠다 — RTL 에서 좌우가 뒤집힌다.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 붙어서 뜨는 카드</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — 누른 것 옆의 정보 카드 — 한 번에 하나." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p><code>GoSurface</code> 의 붙는 배치에 레이어·표면·기준 컨트롤·정리까지 미리 이어 둔 것이다 —
     게임마다 몇 번이고 다시 쓰는 그 열 줄. 한 번에 하나만 열린다. 카드가 겹겹이 쌓이면 화면이 묻히고
@@ -118,6 +124,7 @@ bag.open("인벤토리")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 길게 누르기와 오른쪽 클릭</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — 길게 누르기·오른쪽 클릭 메뉴 — 손가락이 움직이면 취소된다." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "사용", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("인벤토리")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 개발자 콘솔</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — 명령과 기록이 있는 개발자 콘솔 — 출시 빌드에서는 꺼진다." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "아이템 지급: give &lt;id&gt; &lt;개수&gt;", give)
 console.toggle()</code></pre>
   <p>치트와 디버그 명령을 둔다. 치는 대로 걸러 주는 목록이 있어 아무도 명령을 외울 필요가 없고, 화살표

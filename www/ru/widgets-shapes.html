@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Виджеты</a>
   <a href="widgets-catalog.html">Все виджеты</a>
+  <a href="widgets-popups.html">Всплывающие окна и диалоги</a>
   <a href="widgets-surfaces.html">Плавающие окна</a>
   <a href="widgets-messages.html">Как сообщить игроку</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Знакомые по вебу формы, пересобранные вокруг того, что от них нужно игре.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — ежедневный вход</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Ежедневные награды за вход; нажать можно только сегодня." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>Выбор даты в игре почти никогда не нужен. А форма календаря — нужна: для наград за вход, где важно,
     <b>какой у вас день подряд</b>, а не какое сегодня число.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     Полученное, сегодняшнее и будущее различаются сразу тремя вещами: знаком галочки, акцентной рамкой и притемнением.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> и <code>GoDonut</code> — характеристики с одного взгляда</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — Пятиугольник характеристик с пунктиром для сравнения снаряжения." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Доли в виде секторов, с легендой не только цветом, но и словами." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # пунктирный слой поверх
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     а не просто другого цвета, а легенда пишет процент словами.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — баннеры и выбор персонажа</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Баннеры и выбор персонажа, которые сами не листаются, если не попросить." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # по умолчанию выключено</code></pre>
   <p>Сам он не листается, пока вы не попросите, и пять секунд — нижняя граница: баннер, который меняется каждые
@@ -126,6 +133,7 @@ banners.autoplay_seconds = 5.0             # по умолчанию выклю�
     нарисованная точка мала.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — подсказки клавиш, которые не врут</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Клавиши, читающие реальное назначение, — подсказка не врёт после переназначения." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # читает настоящую привязку</code></pre>
   <p>Жёстко вписанное «Нажмите F» продолжает говорить F после того, как игрок переназначил клавиши, — самая частая
     ложь в интерфейсе для ПК. <code>for_action()</code> читает <code>InputMap</code>; если действие привязано к

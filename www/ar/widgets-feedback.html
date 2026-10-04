@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">الودجات</a>
   <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html">النوافذ المنبثقة ومربعات الحوار</a>
   <a href="widgets-surfaces.html">النوافذ العائمة</a>
   <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — الرسالة التي تضع نفسها بنفسها</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — رسالة في الأسفل تنتظر دورها ويمكن أن تحمل أزرارًا." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>يجلس في الأسفل (أو في الأعلى)، فوق المنطقة الآمنة ولوحة المفاتيح، ثم يمضي من تلقاء نفسه. وبدونه
     تكتب الطبقة والموضع والمؤقّت والتحرير في كل شاشة عليها أن تقول "حُفظ".</p>
   <pre><code>snack.show_text("حُفظ", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "أُسقط العنصر", "actions": ["تراجع"
     له هي التي تقرّر أين يذهب. وهو لا يحمل زرًّا؛ أما هذا فيحمل.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — انتظار لا تُرى نهايته</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — انتظار؛ يحوّل الزر إلى مؤشر في مكانه فلا يُضغط مرتين." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>الألعاب التي تكلّم خادمًا تحتاج هذا أكثر من أي شيء آخر في هذه الصفحة: فالشاشة الساكنة تُقرأ على أنها
     انهيار. واستدعاء واحد يحوّل الزرَّ الذي ضغطتَه إلى دوّارة <b>في مكانه</b>.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>والتقدّم الذي يمكن قياسه هو <code>GoBar</code>. أما الدوّارة فلا تَعِد بشيء عن موعد انتهائها.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — نقطة غير المقروء، وعلامة «جديد»، والـ 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — نقطة غير المقروء ووسم NEW و+99 معلقة على زاوية." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # يخفي نفسه عند الصفر
 GoBadge.attach(shop_button, 0, "جديد")
 GoBadge.attach(friend_button, 3, "", true) # نقطة — "هناك شيء ما"</code></pre>

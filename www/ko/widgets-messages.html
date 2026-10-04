@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">위젯</a>
   <a href="widgets-catalog.html">모든 위젯</a>
+  <a href="widgets-popups.html">팝업과 대화상자</a>
   <a href="widgets-surfaces.html">떠 있는 창</a>
   <a href="widgets-messages.html" aria-current="page">알리기</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — 스낵바</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — 입력도 초점도 가져가지 않는 알림." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — 아래에 뜨는 알림 — 줄을 서고 버튼도 달 수 있다." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <p>새 메시지가 이전 것을 덮어쓰고 시간이 지나면 사라진다.</p>
   <div class="note warn">
     <b>절대 입력을 가로채지 않는다.</b> 알림은 <b>읽는 것</b>이지 누르는 것이 아니다. 포커스를 훔치지 않고,
@@ -106,9 +111,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — 화면을 막지 않는 질문</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — 게임을 멈추지 않는 질문 — 초대, 거래." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>스크림 없이 화면 한쪽에 떠서 묻는다. 게임은 계속 돈다.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — 안내 투어</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — 실제 컨트롤을 가리키는 안내 투어." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>실제 화면의 컨트롤을 하나씩 가리키며 무엇인지 알려 준다. 카드 영역만 입력을 받으므로
     <b>가리킨 컨트롤을 실제로 누르면 다음 단계로 넘어간다</b> — "여기를 누르세요" 가 말이 아니라 동작이 된다.</p>
   <pre><code>tour.start([

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget'lar</a>
   <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html">Açılır pencereler ve iletişim kutuları</a>
   <a href="widgets-surfaces.html">Yüzen pencereler</a>
   <a href="widgets-messages.html" aria-current="page">Oyuncuya bir şey söylemek</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Asla girdi ya da odak almayan bir bildirim." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Altta sıraya giren ve düğme taşıyabilen bir mesaj." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Girdiyi asla araya girip almaz.</b> Bir bildirim okunur, basılmaz. Odak almaz, oyun girdisini
     engellemez ve altındaki düğme yine basılır. Onay gerektiğinde <code>GoDialogs</code>, seçim gerektiğinde
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — engellemeyen bir soru</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Oyunu durdurmayan bir soru — davet, takas." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Perde olmadan bir kenarda yüzer. Oyun çalışmaya devam eder.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — rehberli tur</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Gerçek denetimleri gösteren rehberli tur." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Gerçek denetimleri teker teker gösterir. Yalnızca kart girdi alır, dolayısıyla <b>vurgulanan denetimin
     kendisine basmak turu ilerletir</b> — "buraya basın" bir cümle olmaktan çıkıp bir eyleme dönüşür.</p>
   <pre><code>tour.start([

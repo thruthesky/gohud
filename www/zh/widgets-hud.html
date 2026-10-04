@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控件</a>
   <a href="widgets-catalog.html">全部控件</a>
+  <a href="widgets-popups.html">弹窗与对话框</a>
   <a href="widgets-surfaces.html">浮动窗口</a>
   <a href="widgets-messages.html">把消息传达给玩家</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -170,6 +171,7 @@
 <section id="hud-widgets">
   <h2>HUD 控件</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> —— 九个位置</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — 把 HUD 部件固定在安全区域的九个位置之一。" loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>它会尊重安全区域和边缘留白。给它一个 <code>landscape_spot</code>，横屏时它就会换位置 ——
     竖屏时待在底部居中的操控件，横屏可以改到右下角。</p>
   <div class="note">
@@ -204,6 +206,7 @@ notice_anchor.reserve_space = false   # 而且它显示时不会把页面顶开<
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> —— 生命、魔法、经验</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — 显示数值、分数或百分比的 HP、MP、XP 条。" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 仅用于填充的令牌
@@ -213,6 +216,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     这样位数增减时状态条的宽度不会抖来抖去。</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> —— 一个快捷槽</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — 快捷栏格：图标、数量、冷却与快捷键集于一面。" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — 背包网格；物品可在格子间拖动。" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>图标、数量、冷却和快捷键都在<b>同一个面</b>上。把角标挂在一个小圆圈外面，
     会让每个槽宽度都不一样，整排跟着晃。</p>
   <div class="note">
@@ -224,6 +231,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     只有键盘或手柄可用时再把它打开。</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> —— 虚拟摇杆</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — 虚拟摇杆——固定、跟随拇指或相对模式。" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>模式</th><th>行为</th></tr></thead>
     <tbody>
@@ -236,6 +244,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     它不随屏幕尺寸或 DPI 变化。</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> —— 看着小，按着大</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — 仅图标的按钮：看起来小，可点区域 48dp，带屏幕阅读器名称。" loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>只有在相邻控件不接收输入时才安全。</b> 如果扩大后的区域盖住了下一个按钮，
     那个按钮就会失去响应。并排的图标按钮需要 <code>touch_peers</code>。

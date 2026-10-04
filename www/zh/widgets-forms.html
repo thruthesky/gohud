@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控件</a>
   <a href="widgets-catalog.html">全部控件</a>
+  <a href="widgets-popups.html">弹窗与对话框</a>
   <a href="widgets-surfaces.html">浮动窗口</a>
   <a href="widgets-messages.html">把消息传达给玩家</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> —— 会出错的那一行</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — 标签、控件与提示，错误显示在出错的字段下方。" loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>五个字段的表单，顶上只有一句“请检查输入”，并没有说是<i>哪一个</i>字段。
     就是这一件事，让人放弃了注册。</p>
   <pre><code>var name_field := GoField.make("角色名", GoStyle.line_edit("2-12"), "之后无法修改")
@@ -109,6 +111,7 @@ name_field.clear_error()</code></pre>
     不会出错的地方用工厂方法，可能被服务器打回来的地方用这个节点。</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> —— 和按钮焊在一起的输入框</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — 把输入框与按钮焊接成一个整体。" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("消息"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("名字"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>它解决的是圆角。两个圆角形状在中间相接，看着像被掐了一下；而默认的那道间距，
@@ -117,6 +120,7 @@ GoInputGroup.make(GoStyle.line_edit("名字"), {"prefix_icon": &amp;"search"})</
     平直的两个面自然接得干净。</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> —— 能搜索的选择器</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — 不仅从开头、也能在名称中间搜索的选择器。" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>不到十条时 <code>GoStyle.select()</code> 更好：少按一下，而且整张列表都看得见。
     超过三十条，一条条找就成了体力活。</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "选择服务器")
@@ -127,6 +131,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> —— 兑换码和礼品码</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — 以格子显示的优惠码与礼品码；粘贴与输入法照常可用。" loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>兑换码从消息里粘贴过来的次数，远远多于一个个敲进去。十二个真的输入框，会让粘贴卡在第一格，
     还会被输入法吃掉字符 —— 所以文字交给一个隐藏的输入框接住，格子只是画出来的。
     <code>ABCD-EFGH-IJKL</code> 进来的路上会自己去掉短横线。</p>
@@ -135,6 +140,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("已经用过了")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> —— 可排序的表头、可选中的行</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — 可排序的表头与可选择的行；数字按数值排序。" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "排名", "width": 56}, {"text": "名字"}, {"text": "分数", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -146,6 +152,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     不只靠颜色；整行都按得下去，谁也不必去戳某一个单元格。<code>GoStyle.table()</code> 仍然是只读的表格。</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> —— 页码，或者一行“更多”</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — 让当前页居中的页码，或一行“加载更多”。" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # 对手机更友好的那一种</code></pre>
   <p>页码是鼠标用的界面；在手机上，一行“更多”读起来更顺。当前页始终停在窗口中间，

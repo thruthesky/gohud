@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Tous les widgets</a>
+  <a href="widgets-popups.html">Pop-ups et boîtes de dialogue</a>
   <a href="widgets-surfaces.html">Fenêtres flottantes</a>
   <a href="widgets-messages.html">Dire quelque chose au joueur</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — la rangée qui peut être en erreur</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Libellé, contrôle et indice, avec l&#x27;erreur sous le champ fautif." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>Une seule ligne en haut d'un formulaire à cinq champs qui dit « vérifiez votre saisie » ne dit pas <i>quel</i>
     champ. C'est cette seule chose qui fait abandonner une inscription.</p>
   <pre><code>var name_field := GoField.make("Nom du personnage", GoStyle.line_edit("2-12"), "Impossible à changer ensuite")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     Prenez la fabrique quand rien ne peut mal tourner, et le nœud pour tout ce qu'un serveur peut refuser.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — une saisie soudée à son bouton</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Une saisie et ses boutons soudés en une seule forme." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Nom"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>Ce qu'il règle, ce sont les coins. Deux formes arrondies qui se rejoignent au milieu paraissent pincées, et
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("Nom"), {"prefix_icon": &amp;"search"})</cod
     Les skins chanfreinés n'ont aucun champ de coin : là, il les laisse tranquilles et les faces carrées se rejoignent proprement.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — un sélecteur qui cherche</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — Un sélecteur qui cherche à l&#x27;intérieur des noms, pas seulement au début." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>En dessous de dix entrées, <code>GoStyle.select()</code> vaut mieux : un appui de moins et toute la liste est
     visible. Au-delà de trente, parcourir devient un travail.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Choisissez un serveur")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — codes promo et codes cadeaux</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Codes promo et cadeaux en cases ; le collage et la saisie IME marchent toujours." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>Un code est bien plus souvent collé depuis un message que saisi au clavier. Douze vrais champs casseraient le
     collage dès la première case et perdraient des caractères à cause d'un IME : un seul champ masqué reçoit donc
     le texte, et les cases sont dessinées. <code>ABCD-EFGH-IJKL</code> perd ses tirets en chemin.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Déjà utilisé")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — des en-têtes triables, des rangées sélectionnables</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Des en-têtes triables et des lignes sélectionnables ; les nombres se trient comme des nombres." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Rang", "width": 56}, {"text": "Nom"}, {"text": "Score", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     une cellule. <code>GoStyle.table()</code> reste la grille en lecture seule.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — des pages, ou une rangée « Voir plus »</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Des pages numérotées qui gardent la courante au centre, ou une seule ligne Charger plus." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # la variante adaptée au mobile</code></pre>
   <p>Les numéros sont une interface à la souris ; sur un téléphone, la rangée « Voir plus » se lit mieux. La page

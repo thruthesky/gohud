@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos os widgets</a>
+  <a href="widgets-popups.html">Pop-ups e diálogos</a>
   <a href="widgets-surfaces.html">Janelas flutuantes</a>
   <a href="widgets-messages.html" aria-current="page">Contando algo ao jogador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Um aviso que nunca toma a entrada nem o foco." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Uma mensagem na parte de baixo que entra na fila e pode ter botões." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Ele nunca intercepta o toque.</b> Um aviso é lido, não pressionado. Ele não toma o foco, não bloqueia
     a entrada do jogo, e o botão embaixo dele continua respondendo. Quando é preciso confirmação, use o
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — uma pergunta que não bloqueia</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Uma pergunta que não para o jogo: um convite, uma troca." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Flutua em um dos lados, sem véu escurecendo a tela. O jogo continua rodando.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — tour guiado</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Um tour guiado que aponta para controles reais." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Aponta para controles de verdade, um de cada vez. Só o cartão recebe toque, então <b>pressionar o próprio
     controle destacado avança o tour</b> — "toque aqui" vira uma ação em vez de uma frase.</p>
   <pre><code>tour.start([

@@ -227,10 +227,14 @@ func _build() -> void:
 	card = PanelContainer.new()
 	card.name = "Card"
 	card.theme_type_variation = GoTheme.VAR_PANEL
-	card.clip_contents = true
 	add_child(card)
 
+	# 🛑 The content is clipped **one level in**, not on the card. A clip applies to the clipping item's own drawing
+	#    too, so `card.clip_contents` cut the card's shadow off at its rectangle: no shadow outside the card, and a
+	#    square dark patch in the four corners the rounded face leaves open (seen in the website shots, 2026-10-04).
+	#    The padding fills the card, so the content is clipped where it always was.
 	_margin = GoStyle.padding()
+	_margin.clip_contents = true
 	card.add_child(_margin)
 	_column = GoStyle.column()
 	_margin.add_child(_column)

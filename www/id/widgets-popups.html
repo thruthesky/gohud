@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Popup dan dialog — gohud</title>
+<meta name="description" content="Semua popup gohud — mana yang dipilih, cara membuka dan menutupnya, apa yang dilakukannya pada tombol Kembali dan input, di setiap tampilan.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Ringkasan</a>
+      <a href="install.html">Instalasi</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">Widget</a>
+      <a href="theming.html">Tema</a>
+      <a href="icons.html">Ikon</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Bahasa Indonesia</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="widgets-popups.html" hreflang="id" lang="id" aria-current="true">Bahasa Indonesia</a>
+          <a href="../uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Popup dan dialog</h1>
+    <p class="lead">Semua popup gohud — mana yang dipilih, cara membuka dan menutupnya, apa yang dilakukannya pada tombol Kembali dan input, di setiap tampilan. <a href="widgets.html">← Widget</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget</a>
+  <a href="widgets-catalog.html">Semua widget</a>
+  <a href="widgets-popups.html" aria-current="page">Popup dan dialog</a>
+  <a href="widgets-surfaces.html">Jendela mengambang</a>
+  <a href="widgets-messages.html">Menyampaikan sesuatu kepada pemain</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Menunggu, memberi tahu, menghitung</a>
+  <a href="widgets-forms.html">Formulir dan daftar</a>
+  <a href="widgets-shapes.html">Bentuk-bentuk yang benar-benar dipakai game</a>
+  <a href="widgets-overlays.html">Di atas layar</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — satu tempat segala sesuatu dibuat</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>Pilih popup yang tepat</h2>
+  <p class="sub">Setiap jendela yang muncul menyela permainan. Sebelum memilihnya, jawab satu pertanyaan saja: <b>haruskah pemain menjawab dulu sebelum
+    game berlanjut?</b> Jika ya, blokir. Jika tidak, jangan pernah memblokir — kartu yang menghentikan game demi kabar yang tidak
+    diminta pemain adalah cara tercepat membuat mereka menutup game Anda.</p>
+  <ol class="steps">
+    <li><b>Pertanyaan yang butuh jawaban</b> — beli, hapus, keluar, timpa → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>. Sesuatu yang cukup diketahui → <code>alert()</code>. Satu dari beberapa pilihan → <code>choose()</code>.</li>
+    <li><b>Layar tersendiri</b> — setelan, lembar karakter, barang di toko → <a href="#popup-surface"><code>GoSurface</code></a> di tengah layar.</li>
+    <li><b>Daftar panjang atau halaman pengelolaan</b> — tas, surat, teman → <a href="#popup-sheets"><code>GoSheet</code></a> dari bawah di ponsel, <code>GoDrawer</code> dari samping di layar lebar.</li>
+    <li><b>Sesuatu tentang benda yang baru ditekan</b> — statistik sebuah item, tindakan-tindakannya → <a href="#popup-anchored"><code>GoPopover</code></a> atau <code>GoContextMenu</code> tepat di sampingnya.</li>
+    <li><b>Kabar yang tidak perlu menghentikan game</b> — tersimpan, dibuang, diundang → <a href="#popup-nonblocking"><code>GoSnackbar</code>, <code>GoNotice</code>, atau <code>GoPromptCard</code></a>. Semua ini tidak pernah mengambil alih layar.</li>
+    <li><b>Mengajarkan kontrol</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>. <b>Cheat selama pengembangan</b> → <code>GoConsole</code>.</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">Semua popup dalam satu tabel</h3>
+  <table>
+    <thead><tr><th>Popup</th><th>Menghentikan game</th><th>Back / Escape</th><th>Ketukan di luar</th><th>Dipakai untuk</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>Ya</td><td>Menutupnya — confirm menjawab <code>false</code>, alert kembali</td><td>Menutupnya hanya dengan <code>dismiss_on_scrim</code></td><td>Pertanyaan yang butuh jawaban</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>Ya</td><td>Menutupnya — menjawab <code>-1</code></td><td>Menutupnya hanya dengan <code>dismiss_on_scrim</code></td><td>Memilih satu dari beberapa</td></tr>
+      <tr><td><code>GoSurface</code></td><td>Ya</td><td>Meminta jendela teratas ditutup</td><td>Meminta tutup dengan <code>dismiss_on_scrim</code></td><td>Jendela buatan Anda sendiri</td></tr>
+      <tr><td><code>GoSheet</code></td><td>Ya</td><td>Menutup seluruh lembar</td><td>Menutupnya</td><td>Tas, daftar toko, surat</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>Ya</td><td>Hanya tombol Kembali Android</td><td>Menutupnya</td><td>Daftar samping di layar lebar</td></tr>
+      <tr><td><code>GoPopover</code></td><td>Sampai ditutup</td><td>Menutupnya</td><td>Menutupnya — dan tidak diteruskan</td><td>Rincian item dan skill</td></tr>
+      <tr><td>Daftar <code>GoCombobox</code></td><td>Sampai ditutup</td><td>Menutupnya</td><td>Menutupnya</td><td>Daftar pilihan yang bisa dicari</td></tr>
+      <tr><td><code>GoContextMenu</code> · dropdown · kotak pilihan</td><td>Menu milik engine</td><td>Menu milik engine</td><td>Menutupnya</td><td>Tindakan, daftar pendek</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>Tidak</td><td>—</td><td>Sampai ke game</td><td>Tersimpan · Urungkan · Coba lagi</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>Tidak</td><td>—</td><td>Sampai ke game</td><td>Undangan, permintaan tukar barang</td></tr>
+      <tr><td><code>GoNotice</code></td><td>Tidak pernah</td><td>—</td><td>Sampai ke game</td><td>Satu baris tetap di HUD</td></tr>
+      <tr><td><code>GoBanner</code></td><td>Tidak — ia berada di dalam halaman</td><td>—</td><td>—</td><td>"Anda sedang offline. Coba lagi"</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Hanya kartunya</td><td>Mengakhiri tur</td><td>Sampai ke game</td><td>Tur saat pertama kali dijalankan</td></tr>
+      <tr><td><code>GoConsole</code></td><td>Hanya panelnya</td><td>Tombol Escape menutupnya</td><td>Sampai ke game</td><td>Perintah debug</td></tr>
+    </tbody>
+  </table>
+  <p>Di lapisan mana masing-masing terbuka, dan mengapa urutannya begitu, dijelaskan di <a href="#popup-stack">Lapisan, Kembali, dan input</a>.</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="Dialog konfirmasi di atas game — sebuah pertanyaan dengan tombol Nanti saja dan Beli" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="Jendela setelan di tengah layar dengan sakelar, slider, serta Simpan dan Batal" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="Lembar inventaris yang naik dari bawah dengan kolom pencarian dan tombol Tutup" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="Laci tas yang meluncur masuk dari sisi kanan" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="Kartu item kecil di atas slot cepat ramuan" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="Menu Pakai, Pindahkan, dan Buang yang dibuka dari sebuah slot cepat" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="Snackbar di bawah yang mengabarkan sebuah item dibuang, dengan Urungkan" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="Kartu undangan kelompok di dekat bagian atas layar dengan Terima dan Tolak" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="Kartu coach mark yang menunjuk sebuah slot cepat selama tur" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="Konsol pengembang membentang di bagian atas layar dengan sebuah perintah yang sudah diketik" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>Setiap gambar di halaman ini adalah game kecil yang sama — darah dan mana di kiri atas, koin di kanan atas, joystick dan tiga
+    slot cepat di bawah — dalam <code>default_dark</code>, dengan satu popup terbuka di atasnya. <a href="#popup-looks">Popup yang sama
+    dalam kesepuluh tampilan →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>Anatomi sebuah popup</h2>
+  <p class="sub">Hampir semua jendela yang memblokir di gohud — dialog, lembar, popover, daftar combobox, dan jendela buatan Anda
+    sendiri — adalah satu node, <code>GoSurface</code>. Pelajari bagian-bagiannya sekali dan Anda mengenal semuanya.</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="Jendela Buat karakter: tombol Kembali dan judul di header, tombol tutup, kolom nama dengan galat, tombol kelas, baris status merah, dan tombol Buat yang menempel di bawah" loading="lazy"><figcaption>Header dengan tombol kembali dan tutup · body · baris status · footer</figcaption></figure>
+  <table>
+    <thead><tr><th>Bagian</th><th>Apa itu</th><th>Cara menjangkaunya</th></tr></thead>
+    <tbody>
+      <tr><td>Lapisan</td><td><code>CanvasLayer</code> tempat popup itu berada. Angkanya menentukan apa yang ditutupinya.</td><td>Milik Anda untuk <code>GoSurface</code>; bawaan untuk yang lain (<a href="#popup-stack">tabel</a>)</td></tr>
+      <tr><td>Selubung</td><td>Tirai di atas semua yang ada di belakang. Ia menangkap ketukan yang meleset dari kartu.</td><td><code>scrim_transparent</code>, <code>dismiss_on_scrim</code>, warna <code>scrim</code> dari tema</td></tr>
+      <tr><td>Kartu</td><td>Jendelanya sendiri — muka panel dari tema, membulat, terpotong, tempaan, atau jeli tergantung tampilannya.</td><td><code>card</code>, <code>alpha</code></td></tr>
+      <tr><td>Header</td><td>Tombol kembali opsional, judul (paling banyak dua baris, lalu "…"), tombol tutup.</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>Bilah alat</td><td>Baris yang menempel di bawah header — kolom pencarian, chip filter. Tersembunyi sampai Anda memakainya.</td><td><code>toolbar</code></td></tr>
+      <tr><td>Body</td><td>Bagian yang bergulir. Taruh kontennya di sini.</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>Baris status</td><td>Baris yang menempel di antara body dan footer — "Pemeriksaan nama gagal", "Menyimpan…".</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>Footer</td><td>Tombol-tombol yang menempel di bawah. Tersembunyi sampai Anda memakainya.</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Yang harus menempel taruh di baris yang menempel.</b> Kolom pencarian, pesan galat, atau tombol Simpan yang ditaruh di body
+    ikut tergulir pergi bersama daftar yang panjang — pemain mengetik nama yang salah, galatnya ada di bawah lipatan, dan seolah tak terjadi apa-apa.
+    Pakai <code>toolbar</code>, baris status, dan <code>footer</code>; ketiganya diam di tempat sementara body bergulir.
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2>Dialog yang Anda <code>await</code></h2>
+  <p class="sub"><code>GoDialogs</code> bertanya lalu menunggu. Satu node, tiga jenis pertanyaan — dan jawabannya kembali di baris
+    yang sama, sehingga kodenya terbaca sesuai urutan yang dialami pemain.</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — sebuah pertanyaan dengan Nanti saja di atas dan Beli di bawah" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="Konfirmasi destruktif — tombol Hapus berisi penuh merah" loading="lazy"><figcaption><code>confirm(…, true)</code> — destruktif</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — Naik level! dengan satu tombol Mantap" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — Urutkan tas menurut, dengan empat pilihan dan Batal" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="Konfirmasi dengan dua tombol berdampingan" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">Tiga jenis pertanyaan</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # await untuk menunggunya
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # kunci terjemahan</code></pre>
+  <table>
+    <thead><tr><th>Pemanggilan</th><th>Mengembalikan</th><th>Dipakai untuk</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> atau <code>false</code></td><td>Ya atau tidak — beli, hapus, keluar, timpa.</td></tr>
+      <tr><td><code>alert()</code></td><td>tidak ada — <code>await</code> untuk menunggunya</td><td>Sesuatu yang wajib dilihat pemain: hadiah, koneksi yang terputus.</td></tr>
+      <tr><td><code>choose()</code></td><td>indeks pilihannya, atau <code>-1</code></td><td>Satu dari beberapa. Sebuah pilihan berupa String atau <code>{text, icon, danger, subtitle}</code>.</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>sama seperti di atas</td><td>Sama, tetapi dengan kunci terjemahan — teksnya ikut berganti saat bahasa diganti selagi dialog terbuka.</td></tr>
+    </tbody>
+  </table>
+  <p>Label tombol yang kosong kembali ke kata-kata milik kit sendiri (<code>confirm</code>, <code>cancel</code> di <code>GoConfig.text_keys</code>).
+    <code>extra</code> ditambahkan ke body pada baris baru. <code>args</code> mengisi <code>{placeholders}</code> di judul
+    <b>dan</b> body: <code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>.</p>
+
+  <h3 id="every-way-out-has-an-answer">Setiap jalan keluar punya jawaban</h3>
+  <table>
+    <thead><tr><th>Pemain…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>menekan OK / sebuah pilihan</td><td><code>true</code></td><td>kembali</td><td>indeks pilihannya</td></tr>
+      <tr><td>menekan Batal</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>menekan ×, Escape, atau tombol Kembali Android</td><td><code>false</code></td><td>kembali</td><td><code>-1</code></td></tr>
+      <tr><td>mengetuk selubung (hanya dengan <code>dismiss_on_scrim</code>)</td><td><code>false</code></td><td>kembali</td><td><code>-1</code></td></tr>
+      <tr><td>node <code>GoDialogs</code> keluar dari tree</td><td><code>false</code></td><td>kembali</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>Jadi kode setelah <code>await</code> selalu berjalan — tak ada jawaban yang dibiarkan menggantung, bahkan ketika scene berganti di bawah dialognya.</p>
+
+  <h3 id="destructive-actions">Tindakan yang tak bisa dibatalkan</h3>
+  <p>Berikan <code>destructive = true</code> untuk sesuatu yang tidak bisa dibatalkan. Tombol OK berubah menjadi tombol
+    <code>Tone.DANGER_SOLID</code> yang berisi penuh — putih di atas merah di setiap tampilan, sedangkan label bahaya yang hanya dironai harus digelapkan
+    hingga nyaris hitam pada tema terang agar tetap terbaca. Nadanya disetel ulang pada setiap pemanggilan, karena jendelanya dipakai ulang.</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>OK memegang fokus papan ketik.</b> Setiap konfirmasi terbuka dengan tombol OK-nya terfokus, sehingga Enter atau Space mengonfirmasi —
+    termasuk yang destruktif. Pilih kata pada tombol sehingga pilihan yang aman terlihat jelas ("Simpan saja"), dan taruh tindakan yang tak bisa diurungkan
+    di balik langkah kedua bila satu salah tekan membuat pemain kehilangan kemajuan yang sungguhan.
+  </div>
+
+  <h3 id="button-layout">Tata letak tombol</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code> (default)</td><td>Tombol bertumpuk, selebar penuh. Aman untuk setiap bahasa — label bahasa Jerman atau Rusia yang panjang tidak pernah terjepit.</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>Satu baris, masing-masing separuh lebar.</td></tr>
+      <tr><td><code>AUTO</code></td><td>Satu baris hanya bila kedua label muat di separuh kartu dalam satu baris; bertumpuk bila tidak. Diputuskan ulang saat bahasa berganti atau ukuran berubah.</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> adalah jarak antartombol, <code>body_gap</code> jarak di atasnya — buat lebih lebar daripada
+    jarak antartombol agar pertanyaan dan pilihannya terbaca sebagai dua bagian. Untuk satu dialog saja, panggil
+    <code>set_next_action_layout()</code> sebelum membukanya. Satu-satunya tombol pada alert selalu selebar penuh.</p>
+
+  <h3 id="one-at-a-time">Satu per satu</h3>
+  <p><code>confirm()</code> kedua selagi satu masih terbuka langsung mengembalikan <code>false</code> — dialog tidak pernah bertumpuk di atas dialog
+    secara tak sengaja. Nyalakan <code>queue_when_busy</code> dan ia akan antre menunggu gilirannya; <code>alert()</code> selalu menunggu.
+    <code>queue_limit</code> (8) membatasi panjang antrean, dan saat meluap permintaan tertua dijawab <code>false</code>.
+    <code>pending()</code> menghitung permintaan yang menunggu dan <code>clear_pending()</code> menjawab semuanya <code>false</code>.
+    <code>choose()</code> tidak pernah antre: ia mengembalikan <code>-1</code> bila sebuah dialog sudah terbuka.</p>
+
+  <h3 id="phone-and-desktop">Ponsel dan desktop</h3>
+  <p><code>choose()</code> terbuka sebagai lembar dari bawah di Android dan iOS — tempat ibu jari berada — dan sebagai kartu di
+    tengah di desktop. Sebuah konfirmasi dibatasi pada <code>max_width</code> (420dp) dan diletakkan di tengah. Setel <code>layer_index</code>,
+    <code>max_width</code>, dan export lainnya <b>sebelum</b> <code>add_child</code>; semuanya diterapkan saat node masuk ke tree.</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — jendela buatan Anda sendiri</h2>
+  <p class="sub">Bila sebuah popup lebih dari sekadar pertanyaan — setelan, lembar karakter, barang untuk dibeli — bangun di atas
+    <code>GoSurface</code>. Area aman, keyboard, baris yang menempel, gulir, Kembali, fokus, dan pengubahan ukuran sudah beres.</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>Ia tidak pernah menutup dirinya sendiri.</b> × , Escape, Kembali, dan ketukan pada selubung hanya memancarkan <code>close_requested</code>. Menyembunyikan atau membebaskan
+    jendela adalah tugas layar pemiliknya — hanya layar itu yang tahu apakah "tutup" berarti simpan, buang, atau bertanya dulu.
+  </div>
+
+  <h3 id="three-placements">Tiga penempatan</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER — sebuah kartu di tengah layar" loading="lazy"><figcaption><code>CENTER</code> — konfirmasi, setelan</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — jendela yang sama naik dari bawah" loading="lazy"><figcaption><code>BOTTOM</code> — daftar, halaman pengelolaan</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — menu pengurutan tersemat di samping tombol Urutkan" loading="lazy"><figcaption><code>ANCHOR</code> — di samping sebuah kontrol</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="Pemilih tanggal di dalam jendela di tengah dengan Batal dan OK" loading="lazy"><figcaption><code>GoDatePicker</code> di dalam jendela <code>CENTER</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> membutuhkan <code>anchor_control</code>. Kartunya ditaruh di kanan kontrol itu bila <code>anchor_min_width</code> muat,
+    kalau tidak di sisi yang lebih lebar, kalau tidak juga di dalam layar, dan terbuka ke atas bila ruang di atas lebih lapang. Ia mengikuti
+    anchor yang bergerak di setiap frame. <code>anchor_width</code> (320) dan <code>anchor_max_height</code> (520) menentukan ukurannya.</p>
+
+  <h3 id="how-big-it-gets">Seberapa besar jadinya</h3>
+  <table>
+    <thead><tr><th>Ukuran</th><th>Aturan</th><th>Diubah dengan</th></tr></thead>
+    <tbody>
+      <tr><td>Ruang</td><td>Area aman, dikurangi keyboard, dikurangi margin layar (16dp, tidak pernah lebih dari 10% sisi pendek).</td><td>—</td></tr>
+      <tr><td>Lebar</td><td>94% ruang dalam potret, 72% dalam lanskap, paling besar 480dp.</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>Tinggi</td><td>Setinggi kontennya (<code>fit_content</code>), sampai 68% ruang, dibatasi 72%. Kartu di tengah yang tidak bisa diubah ukurannya boleh tumbuh hingga 94% agar tak perlu bergulir.</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>Kerapatan</td><td>Rapat bila <code>compact</code> disetel, layar lebih pendek dari 420dp (ponsel dimiringkan), atau kontennya tidak muat: padding lebih sedikit, jarak lebih kecil, judul lebih kecil. Ia mengukur keduanya dan memakai yang lebih lega yang masih muat — tanpa bergetar.</td><td><code>compact</code></td></tr>
+      <tr><td>Ubah ukuran</td><td>Dengan <code>resizable</code>, judulnya menjadi pegangan: seret di antara 30% dan batasnya. <code>height_changed(ratio)</code> melaporkan hasilnya.</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>Rasio di atas batas dipotong kembali, dengan satu peringatan di build debug. Keyboard mendorong kartunya ke atas dan menggulir
+    kolom yang terfokus ke dalam pandangan; area aman menjauhkannya dari notch dan bilah gestur di Android dan iOS.</p>
+
+  <h3 id="properties">Properti</h3>
+  <table>
+    <thead><tr><th>Properti</th><th>Default</th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>, <code>BOTTOM</code>, atau <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code> (false)</td><td>Ketukan pada selubung meminta tutup. Seretan yang dimulai di dalam kartu tidak.</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>Biarkan game tetap terlihat — selubungnya tetap menangkap ketukan di luar.</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>Menampilkan × dan membiarkan Escape serta Kembali meminta tutup.</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>Baris header, body yang bergulir, pegangan seret.</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>Ukuran mengikuti konten; mulai dalam keadaan rapat.</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code> (false)</td><td>Memunculkan kartu perlahan saat terbuka. Seketika di bawah <code>reduce_motion</code>.</td></tr>
+      <tr><td><code>alpha</code></td><td>-1 (milik tema)</td><td>Opasitas muka kartu, sebagai rasio. Hanya mukanya yang memudar — teksnya tidak pernah.</td></tr>
+      <tr><td><code>initial_focus</code></td><td>tidak ada</td><td>Kontrol yang difokuskan saat terbuka.</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Setel ini sebelum <code>add_child</code>:</b> <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code>, dan
+    <code>scroll_body</code> diterapkan saat jendela masuk ke tree. <code>dismiss_on_scrim</code>, <code>close_enabled</code>,
+    <code>fade_in</code>, dan <code>initial_focus</code> dibaca langsung saat berjalan.
+  </div>
+
+  <h3 id="signals-and-calls">Sinyal dan pemanggilan</h3>
+  <table>
+    <thead><tr><th>Nama</th><th>Apa itu</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×, Escape, tombol Kembali Android, atau ketukan pada selubung — dan <code>request_close()</code>. Hanya dipancarkan oleh jendela teratas.</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>Tombol kembali di header, untuk jendela yang punya beberapa halaman. <code>Callable</code> kosong menyembunyikannya.</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>Setelah pegangannya diseret.</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>Apakah ini jendela yang menerima Kembali — apakah ada jendela yang terbuka sama sekali.</td></tr>
+      <tr><td><code>relayout()</code></td><td>Menata ulang sekarang juga. Mengubah properti ukuran sudah melakukannya untuk Anda.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>Lembar dan laci</h2>
+  <p class="sub">Daftar yang butuh ruang naik dari bawah pada ponsel yang dipegang tegak — tempat ibu jari berada — dan masuk dari
+    samping pada tablet atau desktop, tempat sebuah lembar akan menutupi game.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — Inventaris dengan kolom pencarian yang menempel, sebuah daftar, dan tombol Tutup yang menempel" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer di kiri — menu Kota, Peta dunia, Misi, Guild, dan Setelan" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer di kanan — tas" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — halaman-halaman dari bawah</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>Ia adalah <code>CanvasLayer</code> (lapisan 10) yang memuat <code>GoSurface</code> <code>BOTTOM</code> yang bisa diubah ukurannya — jadi ia berada
+      di atas HUD, dan pemain bisa menyeretnya lebih tinggi.</li>
+    <li><code>open(title)</code> memulai halaman baru: ia mengosongkan body, bilah alat, dan tombol kembali serta membebaskan apa yang
+      ditambahkan <code>add_footer()</code>. Panggil lagi untuk menampilkan halaman lain di lembar yang sama; <code>set_back()</code> menampilkan tombol kembali
+      untuk jalan pulang. <code>open_key()</code> menerima kunci terjemahan.</li>
+    <li><code>close()</code> menyembunyikannya — tidak dibebaskan, jadi <code>open()</code> berikutnya seketika. <code>closed</code> dan
+      <code>page_changed</code> memberi tahu Anda kapan itu terjadi.</li>
+    <li><code>height_ratio</code> (0.6) adalah tinggi saat dibuka; <code>max_height_ratio</code> menaikkan batasnya; <code>dismissable</code>
+      (true) menutupnya saat selubung diketuk.</li>
+  </ul>
+  <div class="note warn">
+    <b>Escape dan Kembali menutup seluruh lembar</b>, bahkan di subhalaman yang memakai <code>set_back()</code> — hanya tombol kembali di layar
+    yang mundur satu halaman. Bila Kembali seharusnya mundur selangkah, tangani sendiri <code>close_requested</code> pada <code>sheet.surface</code>.
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — dari samping</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # sisi awal: kiri, atau kanan dalam bahasa Arab
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>Lapisan 80. Lebarnya 42% layar (<code>width_ratio</code>), di antara <code>min_width</code> (320dp) dan <code>max_width</code>
+      (420dp) — di ponsel ia menutupi sebagian besar layar, itulah sebabnya lembar lebih tepat di sana.</li>
+    <li>Panelnya mencapai tepi layar; hanya kontennya yang bergeser masuk dari area aman, sehingga sudut membulat tidak pernah memotong baris pertama.</li>
+    <li><code>LEFT</code> berarti kiri layar bahkan dalam bahasa Arab. Nyalakan <code>follow_text_direction</code> bila yang dimaksud adalah
+      "sisi awal"; <code>effective_side()</code> memberi tahu ke mana ia akhirnya pergi.</li>
+    <li><code>open(title)</code> mempertahankan body — isi sekali saja. <code>set_title("")</code> menyembunyikan header.
+      <code>motion_seconds</code> (0.2) menggesernya masuk; <code>reduce_motion</code> membuatnya seketika.</li>
+  </ul>
+  <div class="note warn">
+    <b>Tombol Kembali Android menutup laci; Escape tidak.</b> Laci hanya mendengarkan Kembali dari sistem. Di desktop, panggil
+    <code>drawer.close()</code> dari tombol pintas Anda sendiri — dan perhatikan bahwa <code>GoSurface.is_any_open()</code> tidak menghitung laci;
+    tanyakan <code>drawer.is_open()</code>.
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>Kartu dan menu di samping sebuah kontrol</h2>
+  <p class="sub">Apa yang baru saja ditekan pemain layak dijawab tepat di samping jarinya, bukan di tengah layar.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — kartu Ramuan darah di samping slot cepat" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Pakai, Pindahkan ke slot 1, dan Buang" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — menu Urutkan terbuka di atas papan peringkat" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select — pemilih kualitas terbuka dengan Rendah, Sedang, Tinggi, dan Ultra" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — daftar teman dengan kolom pencarian" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — kartu pada benda yang ditekan</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>Sebuah jendela <code>ANCHOR</code> dengan lapisan, anchor, dan pembongkarannya sudah terpasang — sepuluh baris yang ditulis setiap game
+    berulang-ulang. <b>Satu per satu</b>: membuka yang kedua menutup yang pertama, karena kartu yang bertumpuk mengubur layar dan tak seorang pun
+    bisa tahu mana milik slot yang mana. Selubungnya transparan — kartu yang dibuka untuk membandingkan perlengkapan tidak boleh menggelapkan perlengkapannya —
+    tetapi ia tetap menangkap ketukan pertama di luar, yang menutup kartunya dan tidak diteruskan.</p>
+  <table>
+    <thead><tr><th>Opsi</th><th>Default</th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>Header dengan ×. Kosong berarti tanpa header.</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>Ukuran kartunya.</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>Ketukan di luar menutupnya.</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>Jarak yang rapat, opasitas muka, judul sebagai kunci terjemahan.</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td><code>CanvasLayer</code> tempat ia terbuka.</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> dan <code>GoPopover.is_open()</code> bersifat statis. <code>open()</code> mengembalikan jendelanya — atau
+    <code>null</code> bila anchor tidak ada di tree, jadi periksa dulu sebelum Anda <code>await shown.close_requested</code>.</p>
+  <div class="note warn">
+    <b>Ini bukan tooltip hover.</b> Layar sentuh tidak punya hover; apa pun yang hanya bisa dimunculkan tetikus tak terlihat oleh separuh pemain Anda.
+    Dan dengan <code>dismissable = false</code> tanpa judul, tak ada apa pun di layar yang bisa menutupnya — hanya Escape, Kembali, atau pemanggilan Anda sendiri.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — tekan lama dan klik kanan</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>Klik kanan langsung membukanya. Jari yang ditahan setengah detik (<code>HOLD_SECONDS</code>) membukanya; bergerak lebih dari
+      12dp membatalkannya — jadi menggulir daftar tidak pernah memunculkan menu.</li>
+    <li>Sebuah item berupa <code>{text, action, icon, disabled, checked, separator, danger, translate}</code>. Berikan <code>Callable</code>
+      alih-alih array bila entrinya bergantung pada apa yang ditekan; ia dipanggil setiap kali menu terbuka.</li>
+    <li><code>danger</code> menaruh "⚠ " di depan teks — menu milik engine hanya bisa mewarnai semua itemnya sekaligus.</li>
+    <li>Ini adalah <code>PopupMenu</code> milik engine, didandani oleh <code>GoStyle.style_popup()</code>. Ia tidak dihitung sebagai jendela yang terbuka.</li>
+  </ul>
+  <div class="note warn">
+    <b>Tekan lama butuh jalan masuk kedua.</b> Tak seorang pun menemukan gestur tersembunyi. Pasangkan dengan tombol <code>⋯</code> yang terlihat
+    (<code>open_at()</code>, seperti di atas), atau ajarkan sekali lewat coach mark.
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">Dropdown, kotak pilihan, dan tombol terbelah</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>Ketiganya membuka menu popup milik engine: <code>dropdown()</code> adalah <code>MenuButton</code> yang menjalankan sebuah tindakan,
+    <code>select()</code> adalah <code>OptionButton</code> yang menyimpan sebuah nilai, <code>GoSplitButton</code> adalah tindakan utama ditambah menu pada
+    panahnya (<code>chosen(index)</code>). Menu sengaja dibiarkan buram sepenuhnya — menu yang ditampilkan di jendela OS-nya sendiri mengubah
+    piksel tembus pandang menjadi hitam.</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — daftar yang bisa dicari</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>Saat ditekan, ia membuka daftar tertambat di lapisan 96 dengan selubung transparan. Mulai dari <code>search_threshold</code> (8) entri, sebuah
+    kolom pencarian muncul dan mengambil fokus; ia mencocokkan di bagian mana pun dari teks atau petunjuknya, tanpa membedakan huruf besar-kecil, dan hasil
+    kosong pun diberitahukan. <code>list_width</code> (0 = lebar tombolnya, minimal 180dp) menentukan lebar daftarnya.</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>Popup yang tidak pernah menghentikan game</h2>
+  <p class="sub">Kabar yang bisa dibaca pemain sambil bermain. Tak satu pun memiliki selubung; ketukan di mana saja selain kartunya sendiri
+    sampai ke game.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Pedang berkarat dibuang, dengan Urungkan, di atas slot cepat" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Game tersimpan, di bagian atas HUD" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — undangan kelompok di bawah bilah darah" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="Tooltip khusus di atas slot perisai" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — pesan dengan Urungkan</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th>Kunci <code>post()</code></th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>Pesannya, baris tebal opsional, <code>{placeholders}</code>, kunci terjemahan.</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>Warna aksen (<code>GoTheme.SUCCESS</code>, <code>WARNING</code>…) dan sebuah ikon.</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>Tombol — String atau <code>{text, action}</code> — dan sebuah ×.</td></tr>
+      <tr><td><code>seconds</code></td><td>Berapa lama ia bertahan. Negatif: <code>notice_duration_ms</code> dari tema. <b>0: sampai ditutup</b> — kalau begitu beri ia sebuah tombol.</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> mengembalikan indeks tombol yang ditekan, atau <code>-1</code> bila waktunya habis atau ditutup. Kiriman
+    mengantre (<code>queue_limit</code> 4, yang tertua dibuang dengan -1), dan teks yang sama yang dikirim lagi selagi tampil hanya mengisi ulang
+    pengatur waktunya. Ia berada di bawah (atau di atas, <code>placement</code>), di atas area aman dan keyboard, pada lapisan 90 — tetap terbaca
+    di atas laci. Dengan <code>tap_to_dismiss</code> (menyala) ketukan pada kartu tanpa tombol menutupnya; ketukan di luar kartu selalu
+    sampai ke game. <code>show_text()</code> dan <code>show_key()</code> adalah bentuk satu barisnya.</p>
+  <div class="note warn">
+    <b>Jangan pernah bertanya lewat snackbar.</b> Ia pergi dengan sendirinya; pilihan yang penting tempatnya di dialog.
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — satu baris di HUD</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>Panel polos yang Anda tempatkan sendiri — di dalam <code>GoHudAnchor</code>, di sebuah sudut, di mana saja. Ia tidak mengambil input maupun fokus,
+    sehingga menekan menembusnya sampai ke tombol di bawahnya, dan pesan baru menggantikan yang lama. Beri ia lebar:
+    <code>preferred_width(limit)</code> mengembalikan lebar alami teks pendek dan membungkus teks panjang di dalam <code>limit</code>.
+    <code>set_content()</code> menampilkan kontrol apa saja sebagai ganti teks.</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — pertanyaan yang bisa menunggu</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # turun ke bawah bilah darah alih-alih menutupinya
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>Ia mulai dalam keadaan tersembunyi</b> — panggil <code>show()</code>. Ia tidak punya pengatur waktu sendiri; tambahkan satu bila pertanyaannya bisa kedaluwarsa.</li>
+    <li>Tombol-tombolnya tidak menutupnya — tindakannya yang memutuskan. × (<code>set_closable(true)</code>) memancarkan <code>closed</code>.</li>
+    <li><code>fit_width(width)</code> menyetel lebar dan memperkirakan tingginya dari font, sehingga tidak ada yang ditata terhadapnya melompat satu frame kemudian.</li>
+    <li>Mukanya mengikuti <code>hud_alpha</code> — ia bagian dari HUD, bukan sebuah jendela.</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> dan tooltip</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> berada di dalam
+    halaman itu sendiri, di atas konten, dan tidak pernah kedaluwarsa; sebuah tombol menutupnya kecuali ia punya <code>"keep": true</code>.
+    <code>GoStyle.tooltip_node(text)</code> adalah yang dikembalikan dari <code>_make_custom_tooltip()</code> — engine menggambar pelatnya
+    (<code>TooltipPanel</code>), gohud menggambar teksnya, dibungkus setelah 260dp. Tooltip itu untuk tetikus; jangan pernah menyembunyikan apa yang dibutuhkan pemain di baliknya.</p>
+</section>
+
+<section id="popup-guides">
+  <h2>Tur dan konsol</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — langkah 1 dari 2, Slot cepat, menunjuk slot ramuan" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — panel konsol dengan perintah give dan hasilnya" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — tur pada kontrol yang sungguhan</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>Cincin di sekeliling kontrol yang sungguhan dan kartu di sampingnya. Menekan sasarannya melanjutkan tur (sinyal <code>pressed</code>-nya, atau
+      <code>"signal"</code> pada langkah itu); Lanjut dan Lewati ada di kartu. Sasaran yang tersembunyi dilewati.</li>
+    <li>Kartunya menjauh dari tengah layar (<code>avoid_center_band</code>), dari anchor HUD, dan dari <code>keep_clear</code>.</li>
+    <li>Selama ada <code>GoSurface</code> yang terbuka, tur bersembunyi dan menunggu. Kembali atau Escape mengakhirinya dengan <code>finished(false)</code>.</li>
+    <li>Ia tidak punya lapisan sendiri — tambahkan paling akhir, atau di lapisan di atas HUD.</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — cheat selama pengembangan</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>Lapisan 200 — di atas segalanya, jadi Anda bisa men-debug di atas dialog — dan ia tetap berjalan saat tree dijeda. Sebuah palet
+    menyarankan perintah selagi Anda mengetik; Atas dan Bawah menelusuri riwayat; Escape menutupnya. Tidak ada tombol bawaan: pasang tombol Anda sendiri.</p>
+  <div class="note warn">
+    <b><code>debug_only</code> (menyala) memblokirnya di build rilis</b> — baik <code>open()</code> maupun <code>run()</code>. Perintah cheat di
+    tangan pemain mengakhiri ekonomi sebuah game pada hari pertama.
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>Lapisan, Kembali, dan input</h2>
+  <p class="sub">Tiga aturan menentukan apa yang bisa disentuh pemain selagi sesuatu terbuka: apa yang ada di paling atas, siapa pemilik Kembali, dan siapa
+    yang menerima ketukan.</p>
+
+  <h3 id="what-sits-on-top">Apa yang ada di paling atas</h3>
+  <table>
+    <thead><tr><th>Lapisan</th><th>Isinya</th><th>Disetel dengan</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>HUD Anda (pilihan Anda)</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>Jendela <code>GoSurface</code> buatan Anda, menu jeda</td><td><code>CanvasLayer</code> milik Anda</td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td>opsi <code>"layer"</code></td></tr>
+      <tr><td>96</td><td>Daftar <code>GoCombobox</code></td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>Urutan ini disengaja: snackbar melaporkan apa yang baru terjadi, jadi ia harus terbaca di atas laci; popover milik apa yang baru
+    ditekan, jadi ia berada di atasnya; dialog mengajukan pertanyaan dan menutupi keduanya; konsol menutupi segalanya, karena itulah yang Anda
+    buka ketika semua yang lain sudah kacau.</p>
+
+  <h3 id="who-owns-back">Siapa pemilik Kembali</h3>
+  <ul>
+    <li><b>Hanya jendela teratas yang menjawab.</b> Di antara jendela yang terbuka, yang berada di lapisan tertinggi (lalu yang terbaru di tree)
+      menerima Escape, tombol batal gamepad (<code>ui_cancel</code>), tombol Kembali Android, dan ketukan pada selubung. Jendela yang bertumpuk tertutup
+      satu per satu, tidak pernah bersamaan.</li>
+    <li>Tombol Kembali Android ditangani satu frame kemudian, sehingga satu tekanan tidak pernah menutup dua jendela.</li>
+    <li>Selama masih ada pemilik Kembali yang terbuka, tombol Kembali Android tidak keluar dari aplikasi (<code>GoBackPolicy</code> menghitung pemiliknya dan
+      memulihkan <code>quit_on_go_back</code> setelah yang terakhir). Popup buatan Anda yang menerima Kembali sebaiknya memanggil
+      <code>GoBackPolicy.acquire()</code> dan <code>release()</code> — di <code>_exit_tree</code> juga.</li>
+    <li>Laci, tur coach mark, dan formulir mengalah selagi ada jendela yang terbuka — Kembali pergi ke jendela itu lebih dulu.</li>
+    <li><code>GoConfig.close_on_back</code> (menyala) adalah sakelarnya untuk jendela-jendela itu.</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">Siapa yang menerima ketukan</h3>
+  <ul>
+    <li>Sebuah jendela menutupi seluruh layar dan menghentikan input — <b>selubung transparan juga</b>. Tak ada apa pun di lapisan yang lebih rendah yang tertekan selagi
+      ia terbuka; lapisan di atasnya (sebuah snackbar) tetap bisa ditekan.</li>
+    <li>Roda tetikus dan gestur cubit juga berhenti di jendela itu: menggulir melewati ujung daftar tidak pernah menggulir game.</li>
+    <li>Input permainan yang tidak melewati kontrol — <code>_unhandled_input</code> untuk gerakan, seretan kamera — sebaiknya berhenti sejenak:
+      <code>if GoSurface.is_any_open(): return</code>. Itu mencakup dialog, lembar, popover, dan combobox; untuk laci tanyakan
+      <code>is_open()</code> secara terpisah.</li>
+    <li>Snackbar, pemberitahuan, kartu ajakan, dan coach mark hanya menerima input di kartunya sendiri; di tempat lain, game yang menerimanya.</li>
+  </ul>
+
+  <h3 id="focus">Fokus</h3>
+  <p>Jendela yang dibuka dengan pointer tidak memfokuskan apa pun — tidak ada cincin fokus yang berkedip saat disentuh. Bila dibuka dari papan ketik atau gamepad, tombol tutup
+    (atau <code>initial_focus</code>) mengambil fokus. Fokus tetap di dalam jendela selama ia terbuka dan kembali ke kontrol yang tadi
+    memegangnya saat jendela ditutup. Dialog selalu memfokuskan OK.</p>
+
+  <h3 id="pausing-the-game">Menjeda game</h3>
+  <p>Menjeda tree juga menjeda popup — hanya konsol yang tetap bekerja. Untuk menu jeda, beri lapisannya
+    <code>process_mode = PROCESS_MODE_ALWAYS</code>; maka jendela, tombol-tombolnya, dan Kembali tetap berjalan selagi game berhenti.</p>
+</section>
+
+<section id="popup-looks">
+  <h2>Popup yang sama di setiap tampilan</h2>
+  <p class="sub">Konfirmasi dari bagian atas halaman ini, di atas game yang sama, dengan hanya presetnya yang diganti. Kodenya
+    identik — tema, skin, dan ikon mengerjakan sisanya.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="Konfirmasi dalam default_dark — membulat, aksen biru lembut" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="Konfirmasi dalam default_light" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="Konfirmasi dalam scifi_dark — sudut terpotong dan tepi neon" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="Konfirmasi dalam scifi_light" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="Konfirmasi dalam medieval_dark — bingkai tempaan dan judul Cinzel" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="Konfirmasi dalam medieval_light — perkamen dan perunggu" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="Konfirmasi dalam material_light — sudut 28dp dan tombol pil" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">Baru</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="Konfirmasi dalam material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Baru</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="Konfirmasi dalam kids_light — pita judul cerah, tombol tutup permen, dan tombol jeli" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Baru</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Konfirmasi dalam kids_dark — pita mint pada kartu biru malam" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Baru</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">Apa yang diubah setiap tampilan</h3>
+  <table>
+    <thead><tr><th>Tampilan</th><th>Jendelanya</th><th>Kepala dan tombolnya</th></tr></thead>
+    <tbody>
+      <tr><td>Default</td><td>Membulat (18dp), bayangan lembut, 80% buram di atas game</td><td>Judul dan × polos; tombol primer terangkat lalu tenggelam</td></tr>
+      <tr><td>Sci-fi</td><td>Sudut terpotong dengan tepi neon dan pendar, tepinya diwarnai aksen</td><td>Penanda fokus berbentuk kurung</td></tr>
+      <tr><td>Abad pertengahan</td><td>Bingkai tempaan — besi dan kulit, atau perkamen — dengan paku keling dan ornamen sudut</td><td>Judul dalam Cinzel</td></tr>
+      <tr><td>Material 3</td><td>Sudut 28dp, padding 24dp, buram sepenuhnya</td><td>Judul 24sp dalam Roboto; tombol pil dengan pelat 40dp di dalam target 48dp</td></tr>
+      <tr><td>Anak-anak</td><td>Kartu permen jeli dengan bayangan lembut, buram sepenuhnya</td><td>Pita judul cerah (mint di malam hari), tombol tutup permen bulat, tombol yang memipih saat ditekan</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">Mendandani popup dari skin</h3>
+  <p>Skin menentukan bagian-bagian yang tak terjangkau Theme. Hook berikut adalah yang dipanggil popup — timpa di subkelas
+    <code>GoSkin</code> milik Anda; secara default semuanya tidak melakukan apa-apa.</p>
+  <table>
+    <thead><tr><th>Hook</th><th>Yang didandaninya</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Pelat di balik judul jendela. Judulnya memusat di atasnya dan mengecil, sampai ukuran minimum (15), agar tetap satu baris.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>Tombol × jendela — kids menjadikannya permen bulat.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Berjalan begitu jari menyentuh tombol buatan gohud — kids membuatnya memipih.</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Muka kartu ajakan dan kartu coach, snackbar dan pemberitahuan, laci, banner, konsol.</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Cincin dan penunjuk tur.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">Seberapa tembus pandang</h3>
+  <p>Setiap jenis popup mengikuti opasitasnya sendiri, sehingga kartu HUD bisa tetap ringan sementara dialog tetap pejal: jendela, lembar, dialog,
+    popover, dan combobox mengikuti <code>panel_alpha</code>; laci dan kartu coach <code>card_alpha</code>; kartu ajakan dan
+    konsol <code>hud_alpha</code>; snackbar dan pemberitahuan <code>notice_alpha</code>; menu <code>popup_alpha</code>. Material dan kids
+    membuat semuanya buram. Timpa satu jenis dengan <code>GoConfig.container_alpha_overrides</code>, semuanya dengan
+    <code>container_alpha</code> (sebuah rasio — <code>0.95</code>), atau satu jendela dengan <code>alpha</code>-nya. Hanya mukanya yang memudar; teks
+    tidak pernah tembus pandang. <a href="theming-opacity.html">Opasitas secara rinci →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>Setelan yang membentuk setiap popup</h2>
+  <p class="sub">Kolom-kolom <code>GoConfig</code> (<code>GoUi.config</code>). Beberapa disalin saat sebuah jendela dibuat, jadi setel
+    sebelum membangun UI — atau panggil <code>GoUi.refresh()</code> setelah mengubahnya.</p>
+  <table>
+    <thead><tr><th>Kolom</th><th>Default</th><th>Fungsinya</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>Ukuran terbesar sebuah jendela.</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>Tinggi yang biasa dan batasnya (juga batas seretan).</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>Seberapa besar kartu di tengah yang mengikuti konten boleh tumbuh sebelum bergulir.</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>Lebar sebagai bagian dari ruang.</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>Ketukan pada selubung menutup jendela dan dialog. Disalin saat jendela dibuat.</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>Memunculkan jendela perlahan, dan seberapa cepat.</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Escape, <code>ui_cancel</code>, dan tombol Kembali Android menutup jendela teratas.</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>Seberapa besar × terlihat — target sentuhnya tetap 48dp.</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>Tanpa cincin fokus bila jendela dibuka dengan sentuhan atau tetikus.</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>Opasitas setiap muka, atau per jenis (<code>GoTheme.BOX_*</code>).</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>Tanpa pudar, geser, denyut, atau pipih.</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>Tinggi tombol kartu ajakan dan coach mark.</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>Menjauhkan jendela dari notch dan bilah gestur.</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>Kata-kata milik kit sendiri: tutup, kembali, konfirmasi, batal, lanjut, selesai, lewati, cari, kosong…</td></tr>
+      <tr><td><code>sound_cues</code> · haptik</td><td>—</td><td>Apa yang dimainkan <code>GoFeedback</code> saat dibuka, ditutup, dikonfirmasi, dibatalkan, dan diketuk.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>Resep</h2>
+  <p class="sub">Salin, tempel, ganti kata-katanya. Setiap pemanggilan di sini diperiksa terhadap kode sumbernya.</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">Pembelian yang menyebutkan harganya</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">Jendela setelan dengan tombol Simpan yang menempel</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">Formulir yang mengatakan apa yang salah</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">Tanggal di dalam lembar</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">Menu jeda</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # tetap berjalan selagi game dijeda
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">Gameplay yang menunggu popup</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>Jebakan</h2>
+  <ul>
+    <li><b><code>GoSurface</code> tidak pernah membebaskan dirinya sendiri.</b> Sambungkan <code>close_requested</code>, atau × tidak melakukan apa-apa.</li>
+    <li><b>Opsi yang disetel setelah <code>add_child</code></b> — <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code>,
+      <code>scroll_body</code>, serta <code>layer_index</code> dan <code>max_width</code> milik <code>GoDialogs</code> — tidak diterapkan.</li>
+    <li><b><code>confirm()</code> kedua langsung mengembalikan <code>false</code>.</b> Nyalakan <code>queue_when_busy</code> bila dua pertanyaan bisa bertemu.</li>
+    <li><b>Enter mengonfirmasi.</b> OK memegang fokus, pada dialog destruktif juga.</li>
+    <li><b>Kembali pada lembar menutup lembarnya,</b> bukan subhalamannya.</li>
+    <li><b>Escape tidak menutup laci,</b> dan <code>is_any_open()</code> tidak melihatnya.</li>
+    <li><b>Popover atau daftar combobox memblokir game</b> sampai ditutup, bahkan dengan selubung transparan — dan popover dengan
+      <code>dismissable = false</code> tanpa judul tidak punya apa pun di layar yang bisa menutupnya.</li>
+    <li><b>Kartu ajakan mulai dalam keadaan tersembunyi</b> dan tidak punya batas waktu.</li>
+    <li><b>Snackbar dengan <code>seconds: 0</code> tanpa tombol tidak pernah pergi.</b> Dan secara default ia menangkap ketukan pada kartunya.</li>
+    <li><b>Tekan lama yang tak diketahui siapa pun adalah fitur yang tak dipakai siapa pun.</b> Tampilkan juga <code>⋯</code>.</li>
+    <li><b>Tree yang dijeda menjeda popup Anda.</b> Pakai <code>PROCESS_MODE_ALWAYS</code> pada lapisannya.</li>
+    <li><b>Pemberitahuan tanpa lebar</b> menyusut ke bentuk tersempitnya — pakai <code>preferred_width()</code>.</li>
+    <li><b>Jangan pernah bertanya lewat snackbar, jangan pernah sekadar memberi kabar lewat dialog.</b> Pertanyaan lenyap bila diabaikan; kabar tidak semestinya menghentikan game.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← Semua widget</a> · <a href="widgets-surfaces.html">Jendela mengambang →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

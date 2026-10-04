@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Semua widget</a>
+  <a href="widgets-popups.html">Popup dan dialog</a>
   <a href="widgets-surfaces.html">Jendela mengambang</a>
   <a href="widgets-messages.html">Menyampaikan sesuatu kepada pemain</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Baris daftar dengan deskripsi</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Baris daftar dengan ikon, judul, ringkasan, dan tanda di ujung." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Penjaga Sumpah", _inspect, Color.TRANSPARENT,
     "Pedang panjang  /  Serangan 42", false)</code></pre>
   <p>Baris dengan baris kedua mendapat <b>padding atas dan bawah yang sama</b>, lebih lapang daripada baris satu baris, dan pasangan
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Baris yang mengalir</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Kolom, baris, dan baris yang membungkus dengan jarak dari tema." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Taruh kontrol ke dalam <code>wrap_row</code> pada <b>lebar alaminya</b>. Dengan pembungkusan baris dibiarkan menyala, lebar minimum
     sebuah tombol turun hampir menjadi nol dan barisnya mengukur selnya berdasarkan itu — labelnya menciut menjadi satu karakter per baris.
     Pabriknya mencegah hal itu untuk Anda.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Jangan pernah membiarkan daftar kosong benar-benar kosong</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Penanda tempat saat memuat, dan pesan untuk daftar kosong." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Belum ada apa-apa di sini"))</code></pre>
   <p>Orang membaca layar kosong sebagai <b>rusak</b>.</p>
 </section>

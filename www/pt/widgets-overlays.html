@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos os widgets</a>
+  <a href="widgets-popups.html">Pop-ups e diálogos</a>
   <a href="widgets-surfaces.html">Janelas flutuantes</a>
   <a href="widgets-messages.html">Contando algo ao jogador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — o painel lateral</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Um painel que desliza da esquerda ou da direita." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Um painel que desliza da esquerda ou da direita." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p>O <code>GoSheet</code> vem de baixo, o que é certo para um celular na vertical. Em um tablet ou em um desktop
     essa mesma folha cobre o jogo; um drawer vem do lado.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Bolsa")</code></pre>
     <code>follow_text_direction</code> quando o que importa é "o lado de início", e ele inverte em RTL.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — o cartão ancorado</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Um cartão de informação ao lado do que foi tocado; um por vez." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Isto é o posicionamento ancorado do <code>GoSurface</code> com a camada, a superfície, a âncora e o desmonte
     já ligados — as dez linhas que todo jogo escreve de novo e de novo. Um de cada vez fica aberto, porque cartões
@@ -118,6 +124,7 @@ bag.open("Bolsa")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — toque longo e clique direito</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Menu com toque longo ou clique direito; um dedo que se move o cancela." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Usar", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Bolsa")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — o console de desenvolvimento</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Um console de desenvolvedor com comandos e histórico; desligado nas builds de lançamento." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Dar um item: give &lt;id&gt; &lt;quantidade&gt;", give)
 console.toggle()</code></pre>
   <p>Comandos de cheat e de depuração, com uma paleta que filtra conforme você digita, então ninguém precisa

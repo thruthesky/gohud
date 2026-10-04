@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html">Popups and dialogs</a>
   <a href="widgets-surfaces.html">Floating windows</a>
   <a href="widgets-messages.html">Telling the player something</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>The HUD widgets</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — nine spots</h3>
+  <figure class="shot phone"><img src="img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Pins HUD pieces to one of nine safe-area spots." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Respects the safe area and edge margins. Give it a <code>landscape_spot</code> and it moves in
     landscape — controls that sit bottom-centre in portrait can go bottom-right instead.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # and does not push the page while it is u
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — health, mana, experience</h3>
+  <figure class="shot"><img src="img/widgets/gobar.webp" width="382" height="135" alt="GoBar — HP, MP and XP bars with a value, a fraction or a percent." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # the fill-only token
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     bar's width does not jitter as digits come and go.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — one quick slot</h3>
+  <div class="shots">
+    <figure class="shot"><img src="img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — A quick slot: icon, quantity, cooldown and shortcut on one face." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — An inventory grid; items can be dragged between cells." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Icon, quantity, cooldown and shortcut on <b>a single face</b>. Hanging badges off a small circle
     makes each slot a different width and the row wobbles.</p>
   <div class="note">
@@ -231,6 +238,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     every settings control in the Tab order. Turn it on when a keyboard or gamepad is the only input.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — virtual stick</h3>
+  <figure class="shot"><img src="img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — A virtual stick — fixed, following the thumb, or relative." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
     <tbody>
@@ -243,6 +251,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     a speed; it does not vary with screen size or DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — looks small, presses large</h3>
+  <figure class="shot"><img src="img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — An icon-only button: small to see, 48dp to touch, named for screen readers." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Only safe while its siblings ignore input.</b> If the widened area covers the next button, that
     button stops responding. Side-by-side icon buttons need <code>touch_peers</code>.

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Віджети</a>
   <a href="widgets-catalog.html">Усі віджети</a>
+  <a href="widgets-popups.html">Спливні вікна та діалоги</a>
   <a href="widgets-surfaces.html">Плаваючі вікна</a>
   <a href="widgets-messages.html">Як сказати щось гравцеві</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — бічна панель</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Панель, що виїжджає зліва або справа." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Панель, що виїжджає зліва або справа." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> виїжджає знизу, і для телефона, який тримають вертикально, це правильно. На планшеті
     чи на комп'ютері той самий аркуш затуляє гру; шухляда натомість виїжджає збоку.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Торба")</code></pre>
     <code>follow_text_direction</code>, коли йдеться саме про «бік початку», — і в RTL він перевернеться.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — приколена картка</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Картка з інформацією біля натиснутого елемента; по одній." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Це прив'язане розміщення <code>GoSurface</code>, у якому шар, поверхня, прив'язка та прибирання вже
     з'єднані, — ті десять рядків, що їх кожна гра пише знову й знову. Відкрита завжди одна, бо складені стосом
@@ -118,6 +124,7 @@ bag.open("Торба")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — довге натискання та клац правою</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Меню за довгим натисканням або правим кліком; рух пальця його скасовує." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Використати", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Торба")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — консоль розробника</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Консоль розробника з командами та історією; у релізних збірках вимкнена." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Видати річ: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>Команди читів і зневадження, з палітрою, яка фільтрує, доки ви набираєте, тож нікому не треба їх

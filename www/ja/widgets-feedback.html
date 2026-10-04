@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">ウィジェット</a>
   <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html">ポップアップとダイアログ</a>
   <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
   <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — 自分で居場所を決めるメッセージ</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — 下に出るメッセージ。順番待ちし、ボタンも付けられる。" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>画面の下（あるいは上）に、セーフエリアと仮想キーボードを避けて出て、自分で消える。これがないと、
     「保存しました」と言うだけの画面ごとに、レイヤーも配置もタイマーも後片付けも書くことになる。</p>
   <pre><code>snack.show_text("保存しました", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "アイテムを捨てた", "actions": ["取り消�
     決める。あちらはボタンを持てないが、こちらは持てる。</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — 終わりの見えない待ち時間</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — 待機表示。ボタンをその場でスピナーに変え、二度押しを防ぐ。" loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>サーバーと話すゲームが、このページの中でいちばん必要とするものだ。止まったままの画面は、落ちたと
     読まれる。呼び出し1つで、押されたボタンが<b>その場で</b>スピナーに変わる。</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>測れる進捗なら <code>GoBar</code> だ。スピナーは、いつ終わるかを何も約束しない。</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — 未読の点、NEW の札、99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — 未読の点、NEW タグ、99+ を角に付ける。" loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # 0 のときは自分で隠れる
 GoBadge.attach(shop_button, 0, "NEW")
 GoBadge.attach(friend_button, 3, "", true) # 点 — 「何かある」</code></pre>

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos os widgets</a>
+  <a href="widgets-popups.html">Pop-ups e diálogos</a>
   <a href="widgets-surfaces.html">Janelas flutuantes</a>
   <a href="widgets-messages.html">Contando algo ao jogador</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>Os widgets do HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — nove pontos</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Fixa peças do HUD em um de nove pontos da área segura." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Respeita a área segura e as margens das bordas. Dê a ele um <code>landscape_spot</code> e ele se move em
     paisagem — controles que ficam embaixo e ao centro em retrato podem ir para o canto inferior direito.</p>
   <div class="note">
@@ -211,6 +213,7 @@ notice_anchor.reserve_space = false   # e não empurra a página enquanto está 
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — vida, mana, experiência</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Barras de HP, MP e XP com valor, fração ou porcentagem." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # o token só de preenchimento
@@ -220,6 +223,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     que a largura da barra não fique tremendo conforme os dígitos entram e saem.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — um slot rápido</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Um slot rápido: ícone, quantidade, recarga e atalho numa só face." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Uma grade de inventário; os itens podem ser arrastados entre células." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Ícone, quantidade, cooldown e atalho em <b>uma única face</b>. Pendurar badges em um círculo pequeno faz cada
     slot ter uma largura diferente e a fileira fica bamba.</p>
   <div class="note">
@@ -233,6 +240,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     forma de entrada.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — stick virtual</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Um analógico virtual: fixo, seguindo o polegar ou relativo." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Modo</th><th>Comportamento</th></tr></thead>
     <tbody>
@@ -245,6 +253,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     por uma velocidade; ele não varia com o tamanho da tela nem com o DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — parece pequeno, recebe toque grande</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Um botão só de ícone: pequeno à vista, 48 dp ao toque, com nome para leitores de tela." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Só é seguro enquanto os irmãos dele ignoram o toque.</b> Se a área ampliada cobrir o botão seguinte, esse
     botão para de responder. Botões de ícone lado a lado precisam de <code>touch_peers</code>.

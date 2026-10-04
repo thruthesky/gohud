@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">위젯</a>
   <a href="widgets-catalog.html">모든 위젯</a>
+  <a href="widgets-popups.html">팝업과 대화상자</a>
   <a href="widgets-surfaces.html">떠 있는 창</a>
   <a href="widgets-messages.html">알리기</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — 틀릴 수 있는 줄</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — 라벨·컨트롤·힌트 — 틀린 칸 아래에 오류를 단다." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>입력 칸이 다섯인 폼 맨 위에 "입력을 확인하세요" 한 줄이 떠도, 그것은 <i>어느 칸</i>인지 말해 주지
     않는다. 가입을 도중에 그만두게 만드는 것은 딱 그 하나다.</p>
   <pre><code>var name_field := GoField.make("캐릭터 이름", GoStyle.line_edit("2~12자"), "나중에 바꿀 수 없습니다")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     없으면 팩토리를, 서버가 거절할 수 있는 것에는 노드를 쓴다.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — 버튼과 한 덩어리로 붙은 입력칸</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — 입력칸과 그 버튼을 한 모양으로 붙인다." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("메시지"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("이름"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>이것이 푸는 문제는 모서리다. 둥근 두 모양이 가운데서 만나면 잘록해 보이고, 기본 간격까지 있으면
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("이름"), {"prefix_icon": &amp;"search"})</
     없으므로 거기서는 손대지 않고, 각진 면끼리 깔끔하게 만난다.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — 검색되는 선택기</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — 이름 처음만이 아니라 안쪽까지 찾는 선택기." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>항목이 열 개 아래면 <code>GoStyle.select()</code> 가 낫다 — 누르는 횟수가 하나 줄고 목록이 한눈에
     다 보인다. 서른을 넘으면 눈으로 훑는 것이 일이 된다.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "서버를 고르세요")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — 쿠폰·선물 코드</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — 칸으로 보이는 쿠폰·선물 코드 — 붙여 넣기와 IME 입력이 그대로 된다." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>코드는 손으로 치기보다 메시지에서 붙여넣는 경우가 훨씬 많다. 진짜 입력칸을 열두 개 두면 붙여넣기가
     첫 칸에서 끊기고 IME 에 글자를 잃는다. 그래서 글자는 숨은 입력칸 하나가 받고 칸은 그려서 보여 준다.
     <code>ABCD-EFGH-IJKL</code> 은 들어오는 길에 붙임표를 떼어 낸다.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("이미 사용한 코드입니다")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — 정렬되는 머리줄, 눌리는 줄</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — 정렬되는 머리와 고를 수 있는 줄 — 숫자는 숫자로 정렬." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "순위", "width": 56}, {"text": "이름"}, {"text": "점수", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     <code>GoStyle.table()</code> 이다.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — 페이지, 아니면 더 보기 줄</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — 현재 쪽을 가운데 두는 번호 쪽, 또는 &#x27;더 보기&#x27; 한 줄." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # 모바일에 어울리는 변형</code></pre>
   <p>번호는 마우스의 UI 다. 휴대폰에서는 더 보기 줄이 더 잘 읽힌다. 지금 페이지는 늘 창 가운데에 머무르므로

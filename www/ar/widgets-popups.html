@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>النوافذ المنبثقة ومربعات الحوار — gohud</title>
+<meta name="description" content="كل النوافذ المنبثقة في gohud — أيها تختار، وكيف تُفتح وتُغلق، وما تفعله بزر الرجوع وبالإدخال، في كل مظهر.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">نظرة عامة</a>
+      <a href="install.html">التثبيت</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">الودجات</a>
+      <a href="theming.html">السمات</a>
+      <a href="icons.html">الأيقونات</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>العربية</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="widgets-popups.html" hreflang="ar" lang="ar" aria-current="true">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>النوافذ المنبثقة ومربعات الحوار</h1>
+    <p class="lead">كل النوافذ المنبثقة في gohud — أيها تختار، وكيف تُفتح وتُغلق، وما تفعله بزر الرجوع وبالإدخال، في كل مظهر. <a href="widgets.html">← الودجات</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="الودجات">
+  <!-- subnav:begin -->
+  <a href="widgets.html">الودجات</a>
+  <a href="widgets-catalog.html">كل الودجات</a>
+  <a href="widgets-popups.html" aria-current="page">النوافذ المنبثقة ومربعات الحوار</a>
+  <a href="widgets-surfaces.html">النوافذ العائمة</a>
+  <a href="widgets-messages.html">أن تخبر اللاعب بشيء</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">الانتظار والإخبار والعدّ</a>
+  <a href="widgets-forms.html">النماذج والقوائم</a>
+  <a href="widgets-shapes.html">أشكال تستعملها الألعاب فعلًا</a>
+  <a href="widgets-overlays.html">فوق الشاشة</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — المكان الواحد الذي تُصنع فيه الأشياء</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>اختر النافذة المنبثقة المناسبة</h2>
+  <p class="sub">النافذة المنبثقة تقاطع اللاعب. وقبل أن تختار واحدة، أجب عن سؤال واحد: <b>هل يجب أن يجيب اللاعب قبل أن
+    تمضي اللعبة؟</b> إن كان الجواب نعم، فاحجب. وإن كان لا، فلا تحجب أبدًا — فبطاقة توقف اللعبة لتنقل خبرًا لم يطلبه
+    اللاعب هي أسرع طريقة لتجعله يغلق لعبتك.</p>
+  <ol class="steps">
+    <li><b>سؤال له جواب</b> — شراء، حذف، مغادرة، كتابة فوق حفظ ← <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>. أمر يجب الإقرار به ← <code>alert()</code>. واحد من خيارات قليلة ← <code>choose()</code>.</li>
+    <li><b>شاشة قائمة بذاتها</b> — الإعدادات، صفحة الشخصية، غرض في المتجر ← <a href="#popup-surface"><code>GoSurface</code></a> في وسط الشاشة.</li>
+    <li><b>قائمة طويلة أو صفحة إدارة</b> — الحقيبة، البريد، الأصدقاء ← <a href="#popup-sheets"><code>GoSheet</code></a> من الأسفل على الهاتف، و<code>GoDrawer</code> من الجانب على الشاشة العريضة.</li>
+    <li><b>شيء يخصّ ما ضُغط عليه للتو</b> — إحصاءات غرض، وما يمكن فعله به ← <a href="#popup-anchored"><code>GoPopover</code></a> أو <code>GoContextMenu</code> بجانبه.</li>
+    <li><b>خبر تستطيع اللعبة أن تمضي معه</b> — تمّ الحفظ، أُسقط غرض، وصلت دعوة ← <a href="#popup-nonblocking"><code>GoSnackbar</code> أو <code>GoNotice</code> أو <code>GoPromptCard</code></a>. وهذه لا تستولي على الشاشة أبدًا.</li>
+    <li><b>تعليم أدوات التحكم</b> ← <a href="#popup-guides"><code>GoCoachMark</code></a>. <b>أوامر الغشّ أثناء البناء</b> ← <code>GoConsole</code>.</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">كل النوافذ المنبثقة في لمحة</h3>
+  <table>
+    <thead><tr><th>النافذة المنبثقة</th><th>توقف اللعبة</th><th>الرجوع / Escape</th><th>نقرة خارجها</th><th>استعملها لـ</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>نعم</td><td>يغلقها — confirm يجيب <code>false</code>، وalert يعود</td><td>تغلقها فقط مع <code>dismiss_on_scrim</code></td><td>أسئلة تحتاج إلى جواب</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>نعم</td><td>يغلقها — ويجيب <code>-1</code></td><td>تغلقها فقط مع <code>dismiss_on_scrim</code></td><td>اختيار واحد من خيارات قليلة</td></tr>
+      <tr><td><code>GoSurface</code></td><td>نعم</td><td>يطلب إغلاق العليا</td><td>تطلب الإغلاق مع <code>dismiss_on_scrim</code></td><td>نوافذك أنت</td></tr>
+      <tr><td><code>GoSheet</code></td><td>نعم</td><td>يغلق الورقة كلها</td><td>تغلقها</td><td>الحقيبة، قائمة متجر، البريد</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>نعم</td><td>زر الرجوع في Android فقط</td><td>تغلقه</td><td>قائمة جانبية على شاشة عريضة</td></tr>
+      <tr><td><code>GoPopover</code></td><td>حتى تُغلق</td><td>يغلقها</td><td>تغلقها — ولا تمضي أبعد</td><td>تفاصيل الأغراض والمهارات</td></tr>
+      <tr><td>قائمة <code>GoCombobox</code></td><td>حتى تُغلق</td><td>يغلقها</td><td>تغلقها</td><td>قائمة اختيار فيها بحث</td></tr>
+      <tr><td><code>GoContextMenu</code> · القائمة المنسدلة · قائمة الاختيار</td><td>بحسب قائمة المحرّك</td><td>بحسب قائمة المحرّك</td><td>تغلقها</td><td>إجراءات، قوائم قصيرة</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>لا</td><td>—</td><td>تصل إلى اللعبة</td><td>تمّ الحفظ · تراجع · أعد المحاولة</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>لا</td><td>—</td><td>تصل إلى اللعبة</td><td>دعوة، طلب مقايضة</td></tr>
+      <tr><td><code>GoNotice</code></td><td>أبدًا</td><td>—</td><td>تصل إلى اللعبة</td><td>سطر ثابت على HUD</td></tr>
+      <tr><td><code>GoBanner</code></td><td>لا — فهي جزء من الصفحة</td><td>—</td><td>—</td><td>«أنت غير متصل. أعد المحاولة»</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>بطاقتها فقط</td><td>ينهي الجولة</td><td>تصل إلى اللعبة</td><td>جولة التشغيل الأول</td></tr>
+      <tr><td><code>GoConsole</code></td><td>لوحتها فقط</td><td>مفتاح Escape يغلقها</td><td>تصل إلى اللعبة</td><td>أوامر التنقيح</td></tr>
+    </tbody>
+  </table>
+  <p>على أي طبقة تُفتح كل واحدة، ولماذا بهذا الترتيب، تجده في <a href="#popup-stack">الطبقات وزر الرجوع والإدخال</a>.</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="مربع حوار تأكيد فوق لعبة — سؤال مع زرّي «ليس الآن» و«شراء»" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="نافذة إعدادات في وسط الشاشة فيها مفاتيح تبديل ومنزلق وزرّا حفظ وإلغاء" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="ورقة حقيبة تصعد من الأسفل مع حقل بحث وزر إغلاق" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="درج حقيبة ينزلق من الجهة اليمنى" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="بطاقة غرض صغيرة فوق خانة الجرعة السريعة" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="قائمة فيها استعمال ونقل وإسقاط، مفتوحة من خانة سريعة" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="شريط إشعار في الأسفل يقول إن غرضًا أُسقط، مع زر تراجع" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="بطاقة دعوة إلى فريق قرب أعلى الشاشة مع زرّي قبول ورفض" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="بطاقة علامة إرشادية تشير إلى خانة سريعة أثناء جولة" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="وحدة تحكّم المطوّر ممتدّة عبر أعلى الشاشة وفيها أمر مكتوب" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>كل صورة في هذه الصفحة هي اللعبة الصغيرة نفسها — الصحة والمانا أعلى اليسار، والعملات أعلى اليمين، وعصا توجيه وثلاث
+    خانات سريعة في الأسفل — بالنمط الجاهز <code>default_dark</code>، وفوقها نافذة منبثقة واحدة مفتوحة. <a href="#popup-looks">النافذة
+    المنبثقة نفسها بالمظاهر العشرة كلها ←</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>تشريح النافذة المنبثقة</h2>
+  <p class="sub">كل نافذة منبثقة حاجبة تقريبًا في gohud — مربعات الحوار والأوراق والبطاقات المنبثقة وقائمة المنتقي ونوافذك
+    أنت — هي عقدة واحدة: <code>GoSurface</code>. تعلّم أجزاءها مرة واحدة فتعرفها كلها.</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="نافذة «إنشاء شخصية»: زر رجوع والعنوان في الرأس، وزر إغلاق، وحقل اسم فيه خطأ، وأزرار الفئات، وسطر حالة أحمر، وزر «إنشاء» مثبّت في الأسفل" loading="lazy"><figcaption>رأس فيه الرجوع والإغلاق · الجسم · سطر الحالة · التذييل</figcaption></figure>
+  <table>
+    <thead><tr><th>الجزء</th><th>ما هو</th><th>كيف تصل إليه</th></tr></thead>
+    <tbody>
+      <tr><td>الطبقة</td><td>طبقة <code>CanvasLayer</code> التي تعيش عليها النافذة المنبثقة. ورقمها يقرّر ما الذي تغطيه.</td><td>من اختيارك في <code>GoSurface</code>؛ ومدمجة في البقية (<a href="#popup-stack">الجدول</a>)</td></tr>
+      <tr><td>الحجاب</td><td>الستار الممدود فوق كل ما خلفها. يلتقط النقرات التي تخطئ البطاقة.</td><td><code>scrim_transparent</code>، <code>dismiss_on_scrim</code>، ولون <code>scrim</code> في السمة</td></tr>
+      <tr><td>البطاقة</td><td>النافذة نفسها — وجه اللوحة في السمة، مدوّرة أو مشطوفة أو مطروقة أو هلامية بحسب المظهر.</td><td><code>card</code>، <code>alpha</code></td></tr>
+      <tr><td>الرأس</td><td>زر رجوع اختياري، والعنوان (سطران على الأكثر، ثم «…»)، وزر الإغلاق.</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>شريط الأدوات</td><td>صفّ ثابت تحت الرأس — حقل بحث، شرائح تصفية. مخفي حتى تستعمله.</td><td><code>toolbar</code></td></tr>
+      <tr><td>الجسم</td><td>الجزء المتمرّر. ضع المحتوى هنا.</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>سطر الحالة</td><td>سطر ثابت بين الجسم والتذييل — «فشل التحقّق من الاسم»، «جارٍ الحفظ…».</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>التذييل</td><td>أزرار ثابتة في الأسفل. مخفي حتى تستعمله.</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>ما يجب أن يثبت في مكانه يوضع في الصفوف الثابتة.</b> حقل بحث أو رسالة خطأ أو زر حفظ يوضع في الجسم يتمرّر بعيدًا
+    مع قائمة طويلة — يكتب اللاعب اسمًا خاطئًا، فتكون رسالة الخطأ تحت حافة الشاشة، ويبدو كأن شيئًا لم يحدث.
+    استعمل <code>toolbar</code> وسطر الحالة و<code>footer</code>؛ فهي تبقى في مكانها بينما يتمرّر الجسم.
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2>مربعات حوار تنتظرها بـ <code>await</code></h2>
+  <p class="sub"><code>GoDialogs</code> يسأل وينتظر. عقدة واحدة وثلاثة أسئلة — ويعود الجواب على السطر نفسه، فيُقرأ الكود
+    بالترتيب الذي يعيشه اللاعب.</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — سؤال، وفوق زر «شراء» زر «ليس الآن»" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="تأكيد لإجراء لا رجعة فيه — زر الحذف أحمر مصمت" loading="lazy"><figcaption><code>confirm(…, true)</code> — لا رجعة فيه</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — «ارتقيت مستوى!» بزر واحد «رائع»" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — «رتّب الحقيبة حسب» مع أربعة خيارات وزر إلغاء" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="تأكيد بزرّيه جنبًا إلى جنب" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">الأسئلة الثلاثة</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # انتظره بـ await
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # بمفاتيح ترجمة</code></pre>
+  <table>
+    <thead><tr><th>الاستدعاء</th><th>يعيد</th><th>استعمله لـ</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> أو <code>false</code></td><td>نعم أو لا — شراء، حذف، مغادرة، كتابة فوق حفظ.</td></tr>
+      <tr><td><code>alert()</code></td><td>لا شيء — انتظره بـ <code>await</code></td><td>ما يجب أن يراه اللاعب: مكافأة، انقطاع الاتصال.</td></tr>
+      <tr><td><code>choose()</code></td><td>فهرس الخيار، أو <code>-1</code></td><td>واحد من خيارات قليلة. والخيار نصّ String أو <code>{text, icon, danger, subtitle}</code>.</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>كما سبق</td><td>الشيء نفسه بمفاتيح ترجمة — فتتبع الكلماتُ تغييرَ اللغة ومربع الحوار مفتوح.</td></tr>
+    </tbody>
+  </table>
+  <p>تسميات الأزرار الفارغة تعود إلى كلمات الأداة نفسها (<code>confirm</code> و<code>cancel</code> في <code>GoConfig.text_keys</code>).
+    و<code>extra</code> يُضاف إلى المتن في سطر جديد. و<code>args</code> يملأ <code>{placeholders}</code> في العنوان
+    <b>و</b>المتن: <code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>.</p>
+
+  <h3 id="every-way-out-has-an-answer">لكل مخرج جواب</h3>
+  <table>
+    <thead><tr><th>اللاعب…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>يضغط موافق / خيارًا</td><td><code>true</code></td><td>يعود</td><td>فهرس الخيار</td></tr>
+      <tr><td>يضغط إلغاء</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>يضغط × أو Escape أو زر الرجوع في Android</td><td><code>false</code></td><td>يعود</td><td><code>-1</code></td></tr>
+      <tr><td>ينقر الحجاب (فقط مع <code>dismiss_on_scrim</code>)</td><td><code>false</code></td><td>يعود</td><td><code>-1</code></td></tr>
+      <tr><td>تغادر عقدة <code>GoDialogs</code> الشجرة</td><td><code>false</code></td><td>يعود</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>لذا فالكود بعد <code>await</code> يعمل دائمًا — لا يبقى سؤال معلّقًا بلا جواب أبدًا، حتى حين يتغيّر المشهد من تحت مربع الحوار.</p>
+
+  <h3 id="destructive-actions">الإجراءات التي لا رجعة فيها</h3>
+  <p>مرّر <code>destructive = true</code> لما لا يمكن التراجع عنه. فيصير زر الموافقة الزرَّ المصمت
+    <code>Tone.DANGER_SOLID</code> — أبيض على أحمر في كل مظهر، حيث كان نص الخطر المصبوغ سيضطر إلى الدكانة حتى يقارب
+    الأسود في السمة الفاتحة ليبقى مقروءًا. وتُعاد النبرة عند كل استدعاء، لأن النافذة يُعاد استعمالها.</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>زر الموافقة يأخذ تركيز لوحة المفاتيح.</b> كل تأكيد يُفتح وزر الموافقة فيه مركَّز، فيؤكّد Enter أو Space —
+    حتى في التأكيد الذي لا رجعة فيه. صُغ الأزرار بحيث يكون الخيار الآمن واضحًا («أبقِه»)، واجعل الإجراءات التي لا رجعة
+    فيها خلف خطوة ثانية حين تكلّف الزلّةُ اللاعبَ تقدّمًا حقيقيًا.
+  </div>
+
+  <h3 id="button-layout">ترتيب الأزرار</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code> (الافتراضي)</td><td>أزرار مرصوصة فوق بعضها بالعرض الكامل. آمن مع كل لغة — فلا تنضغط تسمية ألمانية أو روسية طويلة أبدًا.</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>صفّ واحد، لكل زر نصف العرض.</td></tr>
+      <tr><td><code>AUTO</code></td><td>صفّ واحد فقط حين تتّسع التسميتان في نصف البطاقة على سطر واحد، وإلا رُصّت. ويُعاد القرار عند تغيير اللغة أو الحجم.</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> هو المسافة بين الأزرار، و<code>body_gap</code> المسافة فوقها — اجعلها أوسع من
+    مسافة الأزرار ليُقرأ السؤال والاختيار جزأين. ولمربع حوار واحد فقط، استدعِ
+    <code>set_next_action_layout()</code> قبل فتحه. وزرّ التنبيه الوحيد يأخذ العرض الكامل دائمًا.</p>
+
+  <h3 id="one-at-a-time">واحد في كل مرة</h3>
+  <p>استدعاء <code>confirm()</code> ثانٍ بينما الأول مفتوح يعيد <code>false</code> فورًا — فلا يتكدّس مربع حوار فوق آخر
+    صدفةً. شغّل <code>queue_when_busy</code> فينتظر دوره بدلًا من ذلك؛ أما <code>alert()</code> فينتظر دائمًا.
+    و<code>queue_limit</code> (8) يحدّ طول الطابور، وعند الفيض يُجاب أقدم طلب بـ <code>false</code>.
+    و<code>pending()</code> يعدّ الطلبات المنتظرة، و<code>clear_pending()</code> يجيبها كلها بـ <code>false</code>.
+    أما <code>choose()</code> فلا يدخل الطابور أبدًا: يعيد <code>-1</code> حين يكون مربع حوار مفتوحًا أصلًا.</p>
+
+  <h3 id="phone-and-desktop">الهاتف وسطح المكتب</h3>
+  <p><code>choose()</code> يُفتح ورقةً من الأسفل على Android وiOS — حيث الإبهام — وبطاقةً في
+    الوسط على سطح المكتب. والتأكيد محدود بـ <code>max_width</code> (420dp) وموسَّط. اضبط <code>layer_index</code>
+    و<code>max_width</code> وسائر الخصائص المصدَّرة <b>قبل</b> <code>add_child</code>؛ فهي تُطبَّق حين تدخل العقدة الشجرة.</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — نافذة خاصة بك</h2>
+  <p class="sub">حين تكون النافذة المنبثقة أكثر من سؤال — إعدادات، صفحة شخصية، غرض للشراء — ابنها على
+    <code>GoSurface</code>. فالمنطقة الآمنة ولوحة المفاتيح والصفوف الثابتة والتمرير وزر الرجوع والتركيز وتغيير الحجم كلها منجزة.</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>لا تغلق نفسها أبدًا.</b> × وEscape وزر الرجوع ونقرة الحجاب لا تفعل سوى إطلاق <code>close_requested</code>. وإخفاء
+    النافذة أو تحريرها مهمّة الشاشة المالكة — فهي وحدها تعرف إن كان «الإغلاق» يعني الحفظ أم التجاهل أم السؤال أولًا.
+  </div>
+
+  <h3 id="three-placements">ثلاثة مواضع</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER — بطاقة في وسط الشاشة" loading="lazy"><figcaption><code>CENTER</code> — تأكيدات، إعدادات</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — النافذة نفسها تصعد من الأسفل" loading="lazy"><figcaption><code>BOTTOM</code> — قوائم، صفحات إدارة</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — قائمة ترتيب مثبّتة بجانب زر الترتيب" loading="lazy"><figcaption><code>ANCHOR</code> — بجانب عنصر تحكم</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="منتقي تاريخ داخل نافذة موسَّطة مع زرّي إلغاء وموافق" loading="lazy"><figcaption><code>GoDatePicker</code> في نافذة <code>CENTER</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> يحتاج <code>anchor_control</code>. تذهب البطاقة إلى يمينه إن اتّسع لها <code>anchor_min_width</code>،
+    وإلا إلى الجهة الأوسع، وإلا داخل الشاشة، وتُفتح إلى الأعلى حين يكون المتّسع فوقه أكبر. وهي تتبع المرساة
+    المتحرّكة في كل إطار. و<code>anchor_width</code> (320) و<code>anchor_max_height</code> (520) يحدّدان حجمها.</p>
+
+  <h3 id="how-big-it-gets">إلى أي حدّ تكبر</h3>
+  <table>
+    <thead><tr><th>المقياس</th><th>القاعدة</th><th>تغيّره بـ</th></tr></thead>
+    <tbody>
+      <tr><td>المتّسع</td><td>المنطقة الآمنة، ناقص لوحة المفاتيح، ناقص هامش الشاشة (16dp، ولا يزيد على 10% من الضلع الأقصر).</td><td>—</td></tr>
+      <tr><td>العرض</td><td>94% من المتّسع في الوضع العمودي، و72% في الأفقي، و480dp على الأكثر.</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>الارتفاع</td><td>بطول المحتوى (<code>fit_content</code>)، حتى 68% من المتّسع، وسقفه 72%. والبطاقة الموسَّطة غير القابلة لتغيير الحجم قد تكبر حتى 94% تفاديًا للتمرير.</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>الكثافة</td><td>تصير مكثّفة حين يُضبط <code>compact</code>، أو يقلّ ارتفاع الشاشة عن 420dp (هاتف على جنبه)، أو لا يتّسع المحتوى: حشوة أقل، وفجوات أصغر، وعنوان أصغر. وهي تقيس الحالتين وتُبقي الأرحب الذي يتّسع — بلا اهتزاز.</td><td><code>compact</code></td></tr>
+      <tr><td>تغيير الحجم</td><td>مع <code>resizable</code> يصير العنوان مقبضًا: اسحبه بين 30% والسقف. و<code>height_changed(ratio)</code> يبلّغ بالنتيجة.</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>النسبة التي تتجاوز السقف تُقصّ إليه، مع تحذير واحد في بناء التنقيح. ولوحة المفاتيح تدفع البطاقة إلى الأعلى وتمرّر
+    الحقل المركَّز إلى مجال الرؤية؛ والمنطقة الآمنة تبعدها عن النتوء وشريط الإيماءات على Android وiOS.</p>
+
+  <h3 id="properties">الخصائص</h3>
+  <table>
+    <thead><tr><th>الخاصية</th><th>الافتراضي</th><th>ما الذي تفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code> أو <code>BOTTOM</code> أو <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code> (false)</td><td>نقرة على الحجاب تطلب الإغلاق. أما سحبٌ بدأ داخل البطاقة فلا.</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>تُبقي اللعبة ظاهرة — ويظلّ الحجاب يلتقط النقرات الخارجية.</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>تُظهر × وتسمح لـ Escape وزر الرجوع بطلب الإغلاق.</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>صفّ الرأس، والجسم المتمرّر، ومقبض السحب.</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>الحجم على قدر المحتوى؛ والبدء مكثّفًا.</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code> (false)</td><td>تُظهر البطاقة بتلاشٍ تدريجي عند الفتح، وفورًا مع <code>reduce_motion</code>.</td></tr>
+      <tr><td><code>alpha</code></td><td>-1 (قيمة السمة)</td><td>عتامة وجه البطاقة، كنسبة. الوجه وحده يبهت — والنص أبدًا.</td></tr>
+      <tr><td><code>initial_focus</code></td><td>لا شيء</td><td>عنصر التحكم الذي يُركَّز عليه عند الفتح.</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>اضبط هذه قبل <code>add_child</code>:</b> <code>scrim_transparent</code> و<code>show_header</code> و<code>resizable</code> و
+    <code>scroll_body</code> تُطبَّق حين تدخل النافذة الشجرة. أما <code>dismiss_on_scrim</code> و<code>close_enabled</code> و
+    <code>fade_in</code> و<code>initial_focus</code> فتُقرأ حيّة.
+  </div>
+
+  <h3 id="signals-and-calls">الإشارات والاستدعاءات</h3>
+  <table>
+    <thead><tr><th>الاسم</th><th>ما هو</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>× أو Escape أو زر الرجوع في Android أو نقرة على الحجاب — و<code>request_close()</code>. ولا تطلقها إلا النافذة العليا.</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>زر الرجوع في الرأس، لنافذة ذات صفحات. و<code>Callable</code> فارغ يخفيه.</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>بعد سحب المقبض.</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>هل هذه هي النافذة التي تأخذ زر الرجوع — وهل ثمّة نافذة مفتوحة أصلًا.</td></tr>
+      <tr><td><code>relayout()</code></td><td>أعد التخطيط الآن. وتغيير خاصية من خصائص الحجم يفعل ذلك عنك أصلًا.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>الأوراق والأدراج</h2>
+  <p class="sub">القائمة التي تحتاج إلى متّسع تصعد من الأسفل على هاتف يُمسك قائمًا — حيث الإبهام — وتدخل من
+    الجانب على لوح أو سطح مكتب، حيث كانت الورقة ستغطّي اللعبة.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — الحقيبة مع حقل بحث ثابت وقائمة وزر إغلاق ثابت" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer على اليسار — قائمة فيها البلدة وخريطة العالم والمهام والنقابة والإعدادات" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer على اليمين — الحقيبة" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — صفحات من الأسفل</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>هي <code>CanvasLayer</code> (الطبقة 10) تحمل <code>GoSurface</code> من نوع <code>BOTTOM</code> قابلة لتغيير الحجم — فتجلس
+      فوق HUD، ويستطيع اللاعب سحبها لتطول.</li>
+    <li><code>open(title)</code> يبدأ صفحة جديدة: يفرّغ الجسم وشريط الأدوات وزر الرجوع، ويحرّر ما أضافه
+      <code>add_footer()</code>. استدعه مجددًا لتعرض صفحة أخرى في الورقة نفسها؛ و<code>set_back()</code> يُظهر زر رجوع
+      لطريق العودة. و<code>open_key()</code> يأخذ مفتاح ترجمة.</li>
+    <li><code>close()</code> يخفيها — ولا يحرّرها، فيكون <code>open()</code> التالي فوريًا. و<code>closed</code> و
+      <code>page_changed</code> يخبرانك متى.</li>
+    <li><code>height_ratio</code> (0.6) هو الارتفاع الذي تُفتح عليه؛ و<code>max_height_ratio</code> يرفع السقف؛ و<code>dismissable</code>
+      (true) يغلقها بنقرة على الحجاب.</li>
+  </ul>
+  <div class="note warn">
+    <b>Escape وزر الرجوع يغلقان الورقة كلها</b>، حتى في صفحة فرعية فيها <code>set_back()</code> — فزرّ الرجوع الظاهر على الشاشة
+    وحده يعود صفحةً إلى الوراء. وإن أردت أن يعود زر الرجوع خطوة، فتعامل مع <code>close_requested</code> على <code>sheet.surface</code> بنفسك.
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — من الجانب</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # جهة البداية: اليسار، أو اليمين في العربية
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>الطبقة 80. عرضه 42% من الشاشة (<code>width_ratio</code>)، بين <code>min_width</code> (320dp) و<code>max_width</code>
+      (420dp) — فهو على الهاتف يغطّي معظم الشاشة، ولهذا كانت الورقة الخيار الأفضل هناك.</li>
+    <li>اللوحة تبلغ حافة الشاشة؛ والمحتوى وحده يتراجع إلى داخل المنطقة الآمنة، فلا يقصّ ركنٌ مدوّر الصفَّ الأول أبدًا.</li>
+    <li><code>LEFT</code> تعني يسار الشاشة حتى في العربية. شغّل <code>follow_text_direction</code> حين يكون المقصود «جهة
+      البداية»؛ و<code>effective_side()</code> يخبرك أين ذهب.</li>
+    <li><code>open(title)</code> يحتفظ بالجسم — املأه مرة واحدة. و<code>set_title("")</code> يخفي الرأس.
+      و<code>motion_seconds</code> (0.2) يُدخله انزلاقًا؛ و<code>reduce_motion</code> يجعله فوريًا.</li>
+  </ul>
+  <div class="note warn">
+    <b>زر الرجوع في Android يغلق الدرج؛ أما Escape فلا.</b> الدرج لا يصغي إلا لزر الرجوع في النظام. وعلى سطح المكتب استدعِ
+    <code>drawer.close()</code> من ربط مفاتيحك أنت — ولاحظ أن <code>GoSurface.is_any_open()</code> لا يحسب الدرج؛
+    فاسأل <code>drawer.is_open()</code>.
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>بطاقات وقوائم بجانب عنصر التحكم</h2>
+  <p class="sub">ما ضغطه اللاعب للتو يستحقّ جوابًا بجانب إصبعه مباشرة، لا في وسط الشاشة.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — بطاقة جرعة الصحة بجانب الخانة السريعة" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — استعمال، ونقل إلى الخانة 1، وإسقاط" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — قائمة ترتيب مفتوحة فوق لوحة صدارة" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select — منتقي الجودة مفتوحًا على منخفضة ومتوسطة وعالية وفائقة" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — قائمة أصدقاء مع حقل بحث" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — بطاقة على ما ضُغط عليه</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>سطح من نوع <code>ANCHOR</code> وقد وُصلت له الطبقةُ والمرساةُ والتفكيكُ سلفًا — تلك الأسطر العشرة التي تكتبها كل لعبة
+    مرارًا وتكرارًا. <b>واحدة في كل مرة</b>: فتح الثانية يغلق الأولى، لأن البطاقات المكدّسة تدفن الشاشة فلا يعرف أحد
+    أي بطاقة تخصّ أي خانة. والحجاب شفاف — فبطاقة فُتحت لمقارنة العتاد يجب ألّا تُعتم العتاد — لكنه يظلّ يلتقط
+    أول نقرة خارجية، فتُغلق البطاقة ولا تمضي النقرة أبعد.</p>
+  <table>
+    <thead><tr><th>الخيار</th><th>الافتراضي</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>رأس فيه ×. والفارغ يعني بلا رأس.</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>حجم البطاقة.</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>النقرة الخارجية تغلقها.</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>تباعد مكثّف، وعتامة الوجه، والعنوان مفتاحَ ترجمة.</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td>طبقة <code>CanvasLayer</code> التي تُفتح عليها.</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> و<code>GoPopover.is_open()</code> ساكنتان. و<code>open()</code> يعيد السطح — أو
+    <code>null</code> حين لا تكون المرساة في الشجرة، فتحقّق من ذلك قبل <code>await shown.close_requested</code>.</p>
+  <div class="note warn">
+    <b>ليست تلميحًا يظهر بتمرير الفأرة.</b> فاللمس لا تمرير فيه؛ وكل ما لا تكشفه إلا الفأرة غير مرئي لنصف لاعبيك.
+    ومع <code>dismissable = false</code> وبلا عنوان، لا شيء على الشاشة يغلقها — إلا Escape أو زر الرجوع أو استدعاؤك أنت.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — الضغط المطوَّل والنقر الأيمن</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>النقر الأيمن يفتحها فورًا. وإصبع يبقى مضغوطًا نصف ثانية (<code>HOLD_SECONDS</code>) يفتحها؛ والتحرّك أكثر من
+      12dp يلغيها — فتمرير قائمة لا يُظهر قائمة سياق أبدًا.</li>
+    <li>العنصر هو <code>{text, action, icon, disabled, checked, separator, danger, translate}</code>. ومرّر <code>Callable</code>
+      بدل المصفوفة حين تعتمد المدخلات على ما ضُغط عليه؛ فيُستدعى في كل مرة تُفتح فيها القائمة.</li>
+    <li><code>danger</code> يضع «⚠ » قبل النص — فقائمة المحرّك لا تستطيع أن تلوّن إلا عناصرها كلها دفعة واحدة.</li>
+    <li>هي <code>PopupMenu</code> الخاصة بالمحرّك، يكسوها <code>GoStyle.style_popup()</code>. ولا تُحسب سطحًا مفتوحًا.</li>
+  </ul>
+  <div class="note warn">
+    <b>الضغط المطوَّل يحتاج مدخلًا ثانيًا.</b> فلا أحد يكتشف إيماءة مخفيّة. اقرنه بزرّ <code>⋯</code> ظاهر
+    (<code>open_at()</code>، كما في الأعلى)، أو علّمه مرة واحدة بعلامة إرشادية.
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">القوائم المنسدلة وقوائم الاختيار والزر المنقسم</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>الثلاثة كلها تفتح قائمة المحرّك المنبثقة: <code>dropdown()</code> هو <code>MenuButton</code> ينفّذ إجراءً،
+    و<code>select()</code> هو <code>OptionButton</code> يحتفظ بقيمة، و<code>GoSplitButton</code> إجراء رئيسي مع قائمة على
+    سهمه (<code>chosen(index)</code>). والقوائم تبقى معتمة تمامًا عن قصد — فالقائمة المعروضة في نافذة نظام تشغيل خاصة بها
+    تحوّل البكسلات نصف الشفافة إلى سوداء.</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — قائمة فيها بحث</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>عند الضغط عليه يفتح قائمة مثبّتة على الطبقة 96 بحجاب شفاف. وابتداءً من <code>search_threshold</code> (8) عناصر
+    يظهر حقل بحث ويأخذ التركيز؛ وهو يطابق في أي موضع من النص أو التلميح، متجاهلًا حالة الأحرف، والنتيجة الفارغة
+    تقول ذلك صراحة. و<code>list_width</code> (0 = عرض الزر، و180dp على الأقل) يحدّد حجم القائمة.</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>نوافذ منبثقة لا توقف اللعبة أبدًا</h2>
+  <p class="sub">أخبار يستطيع اللاعب قراءتها وهو يلعب. لا حجاب لأيّ منها؛ والنقرة في أي مكان غير البطاقة نفسها تذهب
+    إلى اللعبة.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — «أُسقط السيف الصدئ» مع زر تراجع، فوق الخانات السريعة" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — «حُفظت اللعبة» أعلى HUD" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — دعوة إلى فريق تحت أشرطة الصحة" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="تلميح مخصّص فوق خانة الدرع" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — رسالة مع زر تراجع</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th>مفتاح <code>post()</code></th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>الرسالة، وسطر عريض اختياري، و<code>{placeholders}</code>، ومفاتيح الترجمة.</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>لون التمييز (<code>GoTheme.SUCCESS</code> و<code>WARNING</code>…) وأيقونة.</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>أزرار — نصوص String أو <code>{text, action}</code> — و×.</td></tr>
+      <tr><td><code>seconds</code></td><td>مدة بقائه. السالب: <code>notice_duration_ms</code> من السمة. <b>0: حتى يُصرف</b> — فأعطه زرًا عندئذٍ.</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> يعيد فهرس الزر المضغوط، أو <code>-1</code> حين تنتهي المهلة أو يُصرف. والمنشورات تصطفّ
+    (<code>queue_limit</code> 4، ويُسقط الأقدم مع -1)، والنص نفسه إذا نُشر مجددًا وهو ظاهر لا يفعل سوى تجديد مؤقّته.
+    ويجلس في الأسفل (أو الأعلى، عبر <code>placement</code>)، فوق المنطقة الآمنة ولوحة المفاتيح، على الطبقة 90 — مقروءًا
+    فوق الدرج. ومع <code>tap_to_dismiss</code> (مشغّل) تغلقه النقرة على بطاقة بلا أزرار؛ أما النقرة خارج البطاقة فتصل
+    إلى اللعبة دائمًا. و<code>show_text()</code> و<code>show_key()</code> هما الصيغتان ذواتا السطر الواحد.</p>
+  <div class="note warn">
+    <b>لا تطرح سؤالًا في شريط إشعار أبدًا.</b> فهو يختفي من تلقاء نفسه؛ والاختيار المهمّ مكانه مربع حوار.
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — سطر على HUD</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>لوحة بسيطة تضعها بنفسك — في <code>GoHudAnchor</code>، أو في ركن، أو في أي مكان. لا تأخذ لمسًا ولا تركيزًا،
+    فالضغط عبرها يصل إلى الزر الذي تحتها، والرسالة الجديدة تحلّ محلّ القديمة. أعطها عرضًا:
+    <code>preferred_width(limit)</code> يعيد العرض الطبيعي للنص القصير ويلفّ النص الطويل داخل <code>limit</code>.
+    و<code>set_content()</code> يعرض أي عنصر تحكم بدل النص.</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — سؤال يحتمل الانتظار</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # انزل تحت أشرطة الصحة بدل أن تغطّيها
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>تبدأ مخفية</b> — استدعِ <code>show()</code>. وليس لها مؤقّت خاص؛ فأضف واحدًا إن كان للسؤال أجل.</li>
+    <li>أزرارها لا تغلقها — الإجراءات هي التي تقرّر. و× (<code>set_closable(true)</code>) يطلق <code>closed</code>.</li>
+    <li><code>fit_width(width)</code> يضبط العرض ويتنبّأ بالارتفاع من الخط، فلا يقفز شيء مُخطَّط بالنسبة إليها بعد إطار.</li>
+    <li>وجهها يتبع <code>hud_alpha</code> — فهي جزء من HUD، لا نافذة.</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> والتلميحات</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> تجلس في الصفحة
+    نفسها، فوق المحتوى، ولا تنتهي مهلتها أبدًا؛ والزر يصرفها ما لم يكن فيه <code>"keep": true</code>.
+    و<code>GoStyle.tooltip_node(text)</code> هو ما تعيده من <code>_make_custom_tooltip()</code> — المحرّك يرسم اللوح
+    (<code>TooltipPanel</code>)، وgohud يرسم النص ملفوفًا بعد 260dp. والتلميحات للفأرة؛ فلا تخبّئ خلف تلميح شيئًا يحتاجه اللاعب.</p>
+</section>
+
+<section id="popup-guides">
+  <h2>الجولات ووحدة التحكّم</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — الخطوة 1 من 2، «الخانات السريعة»، تشير إلى خانة الجرعة" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — لوحة وحدة التحكّم مع أمر give ونتيجته" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — جولة على عناصر التحكم الحقيقية</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>حلقة حول عنصر التحكم الحقيقي وبطاقة بجانبه. الضغط على الهدف ينتقل بالجولة (إشارة <code>pressed</code> الخاصة به، أو
+      <code>"signal"</code> في الخطوة)؛ وزرّا التالي والتخطّي على البطاقة. والهدف المخفي يُتخطّى.</li>
+    <li>البطاقة تبتعد عن وسط الشاشة (<code>avoid_center_band</code>)، وعن مراسي HUD، وعن <code>keep_clear</code>.</li>
+    <li>ما دامت أي <code>GoSurface</code> مفتوحة تختفي الجولة وتنتظر. وزر الرجوع أو Escape ينهيها بـ <code>finished(false)</code>.</li>
+    <li>ليست لها طبقة خاصة — أضفها أخيرًا، أو على طبقة فوق HUD.</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — أوامر الغشّ أثناء البناء</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>الطبقة 200 — فوق كل شيء، فتستطيع أن تنقّح فوق مربع حوار — وتظلّ تعمل والشجرة متوقفة مؤقتًا. ولوحة أوامر تقترح
+    الأوامر وأنت تكتب؛ والسهمان أعلى وأسفل يتنقّلان في السجلّ؛ وEscape يغلقها. ولا مفتاح مدمجًا لفتحها: اربط مفتاحك أنت.</p>
+  <div class="note warn">
+    <b><code>debug_only</code> (مشغّل) يحجبها في بناء الإصدار</b> — <code>open()</code> و<code>run()</code> كلاهما. فأوامر الغشّ
+    في يد لاعب تنهي اقتصاد اللعبة في اليوم الأول.
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>الطبقات وزر الرجوع والإدخال</h2>
+  <p class="sub">ثلاث قواعد تقرّر ما يستطيع اللاعب لمسه بينما شيء ما مفتوح: ما الذي في الأعلى، ومن يملك زر الرجوع، ومن
+    يأخذ النقرة.</p>
+
+  <h3 id="what-sits-on-top">ما الذي في الأعلى</h3>
+  <table>
+    <thead><tr><th>الطبقة</th><th>ما الذي يجلس فيها</th><th>تُضبط بـ</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>HUD الخاص بك (من اختيارك)</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>نوافذ <code>GoSurface</code> الخاصة بك، وقائمة الإيقاف المؤقت</td><td>طبقة <code>CanvasLayer</code> الخاصة بك</td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td>الخيار <code>"layer"</code></td></tr>
+      <tr><td>96</td><td>قائمة <code>GoCombobox</code></td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>الترتيب مقصود: شريط الإشعار يخبر بما حدث للتو، فيُقرأ فوق الدرج؛ والبطاقة المنبثقة تخصّ ما ضُغط للتو، فتجلس فوقه؛
+    ومربع الحوار يطرح سؤالًا ويغطّي الاثنين؛ ووحدة التحكّم تغطّي كل شيء، لأنها ما تفتحه حين يفسد كل ما عداها.</p>
+
+  <h3 id="who-owns-back">من يملك زر الرجوع</h3>
+  <ul>
+    <li><b>النافذة العليا وحدها تجيب.</b> من بين الأسطح المفتوحة، تأخذ التي على أعلى طبقة (ثم الأحدث في الشجرة)
+      مفتاح Escape وإلغاء ذراع التحكم (<code>ui_cancel</code>) وزر الرجوع في Android ونقرات الحجاب. والنوافذ المكدّسة تُغلق
+      واحدة واحدة، لا معًا أبدًا.</li>
+    <li>زر الرجوع في Android يُعالَج بعد إطار واحد، فلا تستطيع ضغطة واحدة أن تغلق نافذتين أبدًا.</li>
+    <li>ما دام شيء يملك زر الرجوع مفتوحًا، لا يُنهي زر الرجوع في Android التطبيق (<code>GoBackPolicy</code> يعدّ المالكين
+      ويعيد <code>quit_on_go_back</code> بعد آخرهم). ونافذتك المنبثقة الخاصة التي تأخذ زر الرجوع يجب أن تستدعي
+      <code>GoBackPolicy.acquire()</code> و<code>release()</code> — وفي <code>_exit_tree</code> أيضًا.</li>
+    <li>الدرج وجولة العلامات الإرشادية والنموذج تتنحّى ما دام سطح مفتوحًا — فزر الرجوع يذهب إلى السطح أولًا.</li>
+    <li><code>GoConfig.close_on_back</code> (مشغّل) هو المفتاح الخاص بالأسطح.</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">من يأخذ النقرة</h3>
+  <ul>
+    <li>السطح يغطّي الشاشة كلها ويوقف الإدخال — <b>والحجاب الشفاف كذلك</b>. لا يُضغط شيء على طبقة أدنى ما دام
+      مفتوحًا؛ أما الطبقات التي فوقه (شريط الإشعار) فتظلّ تُضغط.</li>
+    <li>عجلة الفأرة وإيماءات القرص تتوقّف عند النافذة أيضًا: فالتمرير إلى ما بعد نهاية القائمة لا يمرّر اللعبة أبدًا.</li>
+    <li>مدخلات اللعب التي لا تمرّ عبر عناصر التحكم — <code>_unhandled_input</code> للحركة، وسحب الكاميرا — يجب أن تتوقف:
+      <code>if GoSurface.is_any_open(): return</code>. وهذا يشمل مربعات الحوار والأوراق والبطاقات المنبثقة والمنتقي؛ أما الدرج
+      فاسأله <code>is_open()</code> على حدة.</li>
+    <li>شريط الإشعار والإشعار وبطاقة السؤال والعلامة الإرشادية لا تأخذ الإدخال إلا على بطاقتها؛ وفي كل مكان آخر تأخذه اللعبة.</li>
+  </ul>
+
+  <h3 id="focus">التركيز</h3>
+  <p>النافذة التي تُفتح بالمؤشّر لا تركّز على شيء — فلا تومض حلقة عند اللمس. وإن فُتحت من لوحة المفاتيح أو ذراع التحكم،
+    أخذ زر الإغلاق (أو <code>initial_focus</code>) التركيز. ويبقى التركيز داخل النافذة ما دامت مفتوحة، ويعود إلى عنصر التحكم
+    الذي كان يحمله حين تُغلق. ومربعات الحوار تركّز على زر الموافقة في كل مرة.</p>
+
+  <h3 id="pausing-the-game">إيقاف اللعبة مؤقتًا</h3>
+  <p>إيقاف الشجرة مؤقتًا يوقف النوافذ المنبثقة أيضًا — ووحدة التحكّم وحدها تواصل العمل. ولقائمة إيقاف مؤقت، أعطِ طبقتها
+    <code>process_mode = PROCESS_MODE_ALWAYS</code>؛ فتظلّ النافذة وأزرارها وزر الرجوع تعمل واللعبة متوقفة.</p>
+</section>
+
+<section id="popup-looks">
+  <h2>النافذة المنبثقة نفسها بكل مظهر</h2>
+  <p class="sub">التأكيد من أعلى هذه الصفحة، فوق اللعبة نفسها، ولم يتغيّر سوى النمط الجاهز. الكود متطابق — والسمة
+    والمظهر والأيقونات تتكفّل بالباقي.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="التأكيد بنمط default_dark — مدوّر، بلون تمييز أزرق هادئ" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="التأكيد بنمط default_light" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="التأكيد بنمط scifi_dark — زوايا مقطوعة وحافة نيون" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="التأكيد بنمط scifi_light" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="التأكيد بنمط medieval_dark — إطار مطروق وعنوان بخط Cinzel" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="التأكيد بنمط medieval_light — رقّ وبرونز" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="التأكيد بنمط material_light — زوايا 28dp وأزرار على شكل حبة" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">جديد</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="التأكيد بنمط material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">جديد</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="التأكيد بنمط kids_light — شريط عنوان مشمس، وزر إغلاق كالحلوى، وأزرار هلامية" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">جديد</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="التأكيد بنمط kids_dark — شريط بلون النعناع على بطاقة زرقاء ليلية" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">جديد</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">ما الذي يغيّره كل مظهر</h3>
+  <table>
+    <thead><tr><th>المظهر</th><th>النافذة</th><th>رأسها وأزرارها</th></tr></thead>
+    <tbody>
+      <tr><td>الافتراضي</td><td>مدوّرة (18dp)، بظلّ ناعم، معتمة بنسبة 80% فوق اللعبة</td><td>عنوان بسيط و×؛ والأزرار الأساسية ترتفع ثم تغوص</td></tr>
+      <tr><td>الخيال العلمي</td><td>زوايا مقطوعة بحافة نيون وتوهّج، والحافة مصبوغة بلون التمييز</td><td>علامات تركيز على شكل أقواس</td></tr>
+      <tr><td>العصور الوسطى</td><td>إطار مطروق — حديد وجلد، أو رقّ — بمسامير وزخارف أركان</td><td>عناوين بخط Cinzel</td></tr>
+      <tr><td>Material 3</td><td>زوايا 28dp، وحشوة 24dp، ومعتمة تمامًا</td><td>عنوان رئيسي 24sp بخط Roboto؛ وأزرار حبة بلوح 40dp داخل مساحة لمس 48dp</td></tr>
+      <tr><td>الأطفال</td><td>بطاقة حلوى هلامية بظلّ ناعم، معتمة تمامًا</td><td>شريط عنوان مشمس (بلون النعناع ليلًا)، وزر إغلاق مستدير كالحلوى، وأزرار تنضغط كالهلام عند الضغط</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">كسوة النافذة المنبثقة من المظهر</h3>
+  <p>المظهر يقرّر الأجزاء التي لا تبلغها السمة. وهذه الخطافات هي التي تستدعيها النوافذ المنبثقة — تجاوزها في صنف مشتقّ من
+    <code>GoSkin</code> خاص بك؛ وهي افتراضيًا لا تفعل شيئًا.</p>
+  <table>
+    <thead><tr><th>الخطّاف</th><th>ما الذي يكسوه</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>لوح خلف عنوان النافذة. يتوسّطه العنوان ويصغر، حتى الحجم الأدنى (15)، ليبقى على سطر واحد.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>زر × في النافذة — مظهر الأطفال يجعله حلوى مستديرة.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>يعمل لحظة يحطّ إصبع على زر صنعه gohud — مظهر الأطفال يجعله ينضغط كالهلام.</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>وجوه بطاقات السؤال وبطاقات الإرشاد، وأشرطة الإشعار والإشعارات، والدرج، واللافتات، ووحدة التحكّم.</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>حلقة الجولة ومؤشّرها.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">إلى أي حدّ تشفّ</h3>
+  <p>كل نوع من النوافذ المنبثقة يتبع عتامته الخاصة، فتبقى بطاقة HUD خفيفة بينما يبقى مربع الحوار مصمتًا: النوافذ والأوراق
+    ومربعات الحوار والبطاقات المنبثقة والمنتقي تتبع <code>panel_alpha</code>؛ والدرج وبطاقة الإرشاد <code>card_alpha</code>؛
+    وبطاقات السؤال ووحدة التحكّم <code>hud_alpha</code>؛ وأشرطة الإشعار والإشعارات <code>notice_alpha</code>؛ والقوائم <code>popup_alpha</code>.
+    أما مظهرا Material والأطفال فيجعلانها كلها معتمة. تجاوز نوعًا واحدًا بـ <code>GoConfig.container_alpha_overrides</code>، أو كلها بـ
+    <code>container_alpha</code> (نسبة — <code>0.95</code>)، أو نافذة واحدة بخاصية <code>alpha</code> الخاصة بها. الوجه وحده يبهت؛
+    والنص لا يشفّ أبدًا. <a href="theming-opacity.html">العتامة بالتفصيل ←</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>إعدادات تشكّل كل نافذة منبثقة</h2>
+  <p class="sub">حقول <code>GoConfig</code> (<code>GoUi.config</code>). بعضها يُنسخ حين تُنشأ النافذة، فاضبطها
+    قبل بناء الواجهة — أو استدعِ <code>GoUi.refresh()</code> بعد تغييرها.</p>
+  <table>
+    <thead><tr><th>الحقل</th><th>الافتراضي</th><th>ما الذي يفعله</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>أقصى ما تبلغه النافذة.</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>الارتفاع المعتاد والسقف (وهو حدّ السحب أيضًا).</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>إلى أي حدّ تكبر البطاقة الموسَّطة المحجَّمة على قدر محتواها قبل أن تتمرّر.</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>العرض كنسبة من المتّسع.</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>نقرة الحجاب تغلق النوافذ ومربعات الحوار. يُنسخ حين تُنشأ النافذة.</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>إظهار النوافذ بتلاشٍ تدريجي، وسرعته.</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Escape و<code>ui_cancel</code> وزر الرجوع في Android تغلق النافذة العليا.</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>الحجم الذي يبدو عليه × — وتبقى مساحة لمسه 48dp.</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>لا حلقة تركيز حين تُفتح النافذة باللمس أو الفأرة.</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>عتامة كل الوجوه، أو لكل نوع (<code>GoTheme.BOX_*</code>).</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>لا تلاشي ولا انزلاق ولا نبض ولا انضغاط.</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>ارتفاع أزرار بطاقة السؤال والعلامة الإرشادية.</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>إبعاد النوافذ عن النتوء وشريط الإيماءات.</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>كلمات الأداة نفسها: close وback وconfirm وcancel وnext وdone وskip وsearch وempty…</td></tr>
+      <tr><td><code>sound_cues</code> · الاهتزاز اللمسي</td><td>—</td><td>ما يشغّله <code>GoFeedback</code> عند الفتح والإغلاق والتأكيد والإلغاء والنقر.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>وصفات</h2>
+  <p class="sub">انسخ، والصق، وغيّر الكلمات. كل استدعاء هنا مُتحقَّق منه مقابل الشيفرة المصدرية.</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">شراء يذكر السعر</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">نافذة إعدادات بزر حفظ ثابت</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">نموذج يقول ما الخطأ</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">تاريخ في ورقة</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">قائمة إيقاف مؤقت</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # تواصل العمل واللعبة متوقفة مؤقتًا
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">لعب ينتظر النوافذ المنبثقة</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>مزالق</h2>
+  <ul>
+    <li><b><code>GoSurface</code> لا تحرّر نفسها أبدًا.</b> اربط <code>close_requested</code>، وإلا فلن يفعل × شيئًا.</li>
+    <li><b>الخيارات المضبوطة بعد <code>add_child</code></b> — <code>scrim_transparent</code> و<code>show_header</code> و<code>resizable</code> و
+      <code>scroll_body</code>، و<code>layer_index</code> و<code>max_width</code> في <code>GoDialogs</code> — لا تُطبَّق.</li>
+    <li><b>استدعاء <code>confirm()</code> الثاني يعيد <code>false</code> فورًا.</b> شغّل <code>queue_when_busy</code> إن كان سؤالان قد يلتقيان.</li>
+    <li><b>Enter يؤكّد.</b> زر الموافقة يحمل التركيز، في مربعات الحوار التي لا رجعة فيها أيضًا.</li>
+    <li><b>زر الرجوع على الورقة يغلق الورقة،</b> لا الصفحة الفرعية.</li>
+    <li><b>Escape لا يغلق الدرج،</b> و<code>is_any_open()</code> لا يراه.</li>
+    <li><b>البطاقة المنبثقة أو قائمة المنتقي تحجب اللعبة</b> حتى تُغلق، حتى مع حجاب شفاف — والبطاقة المنبثقة التي فيها
+      <code>dismissable = false</code> وبلا عنوان ليس على الشاشة ما يغلقها.</li>
+    <li><b>بطاقة السؤال تبدأ مخفية</b> وليست لها مهلة.</li>
+    <li><b>شريط الإشعار الذي فيه <code>seconds: 0</code> وبلا زر لا يرحل أبدًا.</b> وهو يلتقط النقرات على بطاقته افتراضيًا.</li>
+    <li><b>ضغطة مطوّلة لا يعرف بها أحد ميزةٌ لا يستعملها أحد.</b> أظهر <code>⋯</code> أيضًا.</li>
+    <li><b>الشجرة المتوقفة مؤقتًا توقف نافذتك المنبثقة.</b> استعمل <code>PROCESS_MODE_ALWAYS</code> على طبقتها.</li>
+    <li><b>الإشعار الذي بلا عرض</b> ينكمش إلى أضيق ما يكون — استعمل <code>preferred_width()</code>.</li>
+    <li><b>لا تسأل في شريط إشعار، ولا تُخبر في مربع حوار.</b> فالسؤال يختفي حين يُتجاهل؛ والخبر لا ينبغي أن يوقف اللعبة.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← كل الودجات</a> · <a href="widgets-surfaces.html">النوافذ العائمة →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

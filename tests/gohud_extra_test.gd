@@ -1077,6 +1077,27 @@ func _carousel() -> void:
 	GoUi.config.reduce_motion = true
 	carousel.queue_free()
 	await frames(1)
+
+	# 🛑 A page is first laid out 1dp wide, where a wrapping title stacks one letter per line and the page's minimum
+	#    height runs tall. When the real width arrives the page must be sized to the strip again — before, it kept the
+	#    tall size and a centred title sat far below the visible strip (website shots, 2026-10-04).
+	var banner := PanelContainer.new()
+	banner.custom_minimum_size.y = 120
+	var title := GoStyle.label("Summer event starts this weekend", GoTheme.ROLE_TITLE)
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	banner.add_child(title)
+	var strip := GoCarousel.new()
+	strip.custom_minimum_size.x = 300
+	strip.set_pages([banner])
+	root.add_child(strip)
+	await frames(4)
+	var view := strip._viewport.get_global_rect()
+	check(absf(banner.size.y - view.size.y) <= 0.5, "carousel: a page with a wrapping title fits the strip (%.0f / %.0f)" % [
+		banner.size.y, view.size.y])
+	check(title.get_global_rect().end.y <= view.end.y + 0.5, "carousel: that title stays in sight (%.0f ≤ %.0f)" % [
+		title.get_global_rect().end.y, view.end.y])
+	strip.queue_free()
+	await frames(1)
 	section("carousel")
 
 

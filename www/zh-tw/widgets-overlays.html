@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控制項</a>
   <a href="widgets-catalog.html">所有控制項</a>
+  <a href="widgets-popups.html">彈出視窗與對話框</a>
   <a href="widgets-surfaces.html">浮動視窗</a>
   <a href="widgets-messages.html">告訴玩家某件事</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — 側邊面板</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — 從左側或右側滑入的面板。" loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — 從左側或右側滑入的面板。" loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> 從底部上來，這在直握的手機上是對的。在平板或桌機上，
     同一張頁面會把遊戲整個蓋住；側邊面板則改從側邊進來。</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("背包")</code></pre>
     <code>follow_text_direction</code>，它在 RTL 下會翻邊。</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — 釘住的卡片</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — 在被點按之處旁邊彈出的資訊卡，一次一張。" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>這是 <code>GoSurface</code> 的錨定擺放，只是視窗層、外殼、錨點與善後都先接好了 —
     就是每個遊戲都要重寫一遍的那十行。同一時間只會開一個，因為卡片疊起來會把畫面埋掉，
@@ -117,6 +123,7 @@ bag.open("背包")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — 長按與右鍵</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — 長按或右鍵彈出選單；手指一移動就取消。" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "使用", "action": use},
     {"separator": true},
@@ -131,6 +138,7 @@ bag.open("背包")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — 開發者主控台</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — 具指令與歷史紀錄的開發者主控台；正式版中關閉。" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "給予道具：give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>作弊與除錯指令，附帶一個邊打邊篩選的指令面板，這樣就沒有人需要背它們，

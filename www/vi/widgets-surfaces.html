@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html" aria-current="page">Cửa sổ nổi</a>
   <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,11 @@
 <section id="surfaces">
 
   <h3 id="gosurface-the-shell"><code>GoSurface</code> — lớp vỏ</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="GoSurface — Cửa sổ nổi — ở giữa, từ dưới lên, hoặc neo vào một điều khiển." loading="lazy"><figcaption><code>CENTER</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="GoSurface — Cửa sổ nổi — ở giữa, từ dưới lên, hoặc neo vào một điều khiển." loading="lazy"><figcaption><code>BOTTOM</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="GoSurface — Cửa sổ nổi — ở giữa, từ dưới lên, hoặc neo vào một điều khiển." loading="lazy"><figcaption><code>ANCHOR</code></figcaption></figure>
+  </div>
   <p>Popup, bảng trượt và danh sách thả xuống đều dùng chung cái này. Nó lo vùng an toàn, bàn phím ảo,
     đầu và chân trang cố định, thân cuộn được, cửa sổ nào đang ở trên cùng, việc trả focus về chỗ cũ, quyền
     sở hữu nút Back và thao tác kéo để đổi kích thước.</p>
@@ -115,6 +121,7 @@
   </div>
 
   <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — một trang trồi lên từ đáy</h3>
+  <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — Bảng dưới có trang, nút quay lại và chân cố định." loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Túi đồ")
@@ -127,6 +134,11 @@ sheet.footer().visible = true</code></pre>
     quay về thì người ta đọc ra là hỏng.</p>
 
   <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — hộp thoại xác nhận mà bạn <code>await</code></h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="GoDialogs — Cửa sổ xác nhận và cảnh báo chờ bằng await; cảnh báo xếp hàng chờ lượt." loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="GoDialogs — Cửa sổ xác nhận và cảnh báo chờ bằng await; cảnh báo xếp hàng chờ lượt." loading="lazy"><figcaption><code>destructive</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="GoDialogs.choose — Một trong vài lựa chọn — bảng dưới trên điện thoại, thẻ trên máy tính." loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+  </div>
   <pre><code>if await dialogs.confirm("Xóa bản lưu", "Thao tác này không thể hoàn tác."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — mọi thứ sau phần thân đều
@@ -145,6 +157,7 @@ sheet.footer().visible = true</code></pre>
     <code>GoDialogs</code> nạp bằng autoload không thêm gì vào lúc khởi động.</p>
 
   <h3 id="goform-a-width-capped-form"><code>GoForm</code> — biểu mẫu giới hạn bề ngang</h3>
+  <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — Biểu mẫu giới hạn độ rộng và tránh bàn phím cùng HUD." loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
   <div class="note warn">
     <b>Nó bảo đảm mọi nhãn con cháu đều xuống dòng.</b> Không có điều đó, một câu dài sẽ kéo thành
     một dòng duy nhất có bề rộng tối thiểu vượt quá màn hình, rồi hai bên bị cắt cụt — đến mức bạn không
@@ -152,6 +165,7 @@ sheet.footer().visible = true</code></pre>
   </div>
 
   <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — cuộn bằng ngón tay</h3>
+  <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — Cuộn bằng chạm từ bất kỳ đâu trên nội dung; hỗ trợ ngôn ngữ viết từ phải sang trái." loading="lazy"><figcaption><code>GoScroll</code> · <code>GoScroll.horizontal()</code></figcaption></figure>
   <p>Chỉ đặt <b>một</b> thứ vào bên trong. Phần đầu trang và hàng nút thì để bên ngoài — một danh sách dài
     không được phép đẩy chúng ra khỏi màn hình. <code>use_panel_edge()</code> dời thanh cuộn vào phần đệm
     sẵn có của tấm thẻ mà nội dung vẫn giữ nguyên lề thụt.</p>

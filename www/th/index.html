@@ -86,7 +86,8 @@
       <span class="badge">GDScript ล้วน</span>
       <span class="badge">ไม่ต้องใช้ autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">6 พรีเซ็ต</span>
+      <span class="badge">10 พรีเซ็ต</span>
+      <span class="badge new">ใหม่: Material 3 · Kids</span>
       <span class="badge">21 ภาษา</span>
       <span class="badge">แถมไอคอน <span data-n="icons">1,287</span> แบบ</span>
     </div>
@@ -100,6 +101,39 @@
 </div>
 
 <main class="wrap">
+
+<section id="new">
+  <h2>ใหม่: Material 3 และลุคสำหรับเด็ก</h2>
+  <p class="sub">
+    สองตระกูลใหม่มาสมทบกับค่าเริ่มต้น ไซไฟ และยุคกลาง — ตอนนี้มี<b>ลุคในตัวสิบแบบ</b> แต่ละแบบมีทั้งโหมดมืดและโหมดสว่าง
+    วิดเจ็ต ป๊อปอัป และชิ้นส่วน HUD ทุกตัวรับลุคเหล่านี้ได้โดยไม่ต้องแก้โค้ดของคุณ: สลับพรีเซ็ตแล้วทั้งหน้าจอเปลี่ยนตาม
+  </p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="แกลเลอรีของ gohud ใน material_light — ปุ่มแคปซูล การ์ดแบบเติมสี และสีของ Material 3" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="แกลเลอรีของ gohud ใน material_dark — รูปทรง Material 3 แบบเดียวกันบนโทนมืดพื้นฐาน" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="แกลเลอรีของ gohud ใน kids_light — ปุ่มเยลลี่อวบ ๆ สีเทียนบนหน้าสีแดดสดใส" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="แกลเลอรีของ gohud ใน kids_dark — กล่องของเล่นเดียวกันบนหน้าสีน้ำเงินยามค่ำคืน" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="material-3-for-app-screens">Material 3 — สำหรับหน้าจอแอป</h3>
+      <p>Material 3 Expressive ที่วัดเทียบกับโทเคน M3 อย่างเป็นทางการ: ปุ่มแคปซูลที่มีแผ่นปุ่ม 40dp อยู่ภายในพื้นที่กดสัมผัส
+        48dp ไดอะล็อกและชีต 28dp การ์ดแบบเติมสี ช่องกรอกแบบมีขอบ และสไลเดอร์ Expressive คอมโพเนนต์แอป —
+        แถบนำทาง แถบแอป FAB แถบค้นหา ชิป ความคืบหน้า และตัวเลือกวันที่ — เป็นไปตามโทเคนคอมโพเนนต์ของ M3
+        และหัวเรื่องใช้ฟอนต์ Roboto ที่แถมมา เหมาะกับร้านค้า หน้าตั้งค่า กล่องจดหมาย และทุกหน้าจอที่ควรให้ความรู้สึกแบบแอป</p>
+    </div>
+    <div class="card">
+      <h3 id="kids-the-toy-box">สำหรับเด็ก — กล่องของเล่น</h3>
+      <p>ทำมาเพื่อเด็ก: ทุกปุ่ม ทุกแถว และทุกพาเนลคือลูกอมเยลลี่ที่มีขอบหนาอวบและฐานทึบซึ่งยุบลงเมื่อกด
+        คอนโทรลแต่ละชนิดมีสีเทียนของตัวเอง ควิกสล็อตเป็นก้อนลูกอม ป้ายเป็นสติกเกอร์ จอยสติ๊กเป็นสีรุ้ง หน้าต่างได้ริบบิ้น
+        ชื่อเรื่องสีแดดสดใสและปุ่มปิดลูกอมทรงกลม และการกดจะยุบนุ่ม ขนาดและฟอนต์ของโปรเจกต์คุณยังคงเหมือนเดิมทุกประการ</p>
+    </div>
+  </div>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # หรือ MATERIAL_DARK
+GoUi.use_preset(&amp;"kids_light")                   # หรือ &amp;"kids_dark"</code></pre>
+  <p><a href="theming-presets.html#material">Material 3 โดยละเอียด →</a> · <a href="theming-presets.html#kids">ลุคสำหรับเด็กโดยละเอียด →</a> ·
+    <a href="widgets-popups.html#popup-looks">ป๊อปอัปเดียวกันในทั้งสิบลุค →</a></p>
+</section>
 
 <section id="showcase">
   <h2>หน้าตาเมื่ออยู่ในเกมจริง</h2>
@@ -204,8 +238,10 @@
       <tr><td><code>scifi_light</code></td><td>รูปทรงเหลี่ยมแบบเดียวกันบนจานสีพิมพ์เขียวสว่าง</td></tr>
       <tr><td><code>medieval_dark</code></td><td>เหล็กดำและหนัง กรอบทองโบราณ หมุดย้ำ ไอคอนสลัก หัวข้อฟอนต์ Cinzel</td></tr>
       <tr><td><code>medieval_light</code></td><td>กระดาษหนัง หมึก และทองสัมฤทธิ์ บนกรอบตีขึ้นรูปแบบเดียวกัน</td></tr>
-      <tr><td><code>material_light</code></td><td>Material 3 สำหรับหน้าจอแอป — ปุ่มทรงแคปซูล ไดอะล็อก 28dp การ์ดแบบเติมสี แถบนำทาง FAB และแถบค้นหาของแอป Roboto</td></tr>
-      <tr><td><code>material_dark</code></td><td>รูปทรง Material 3 แบบเดียวกันบนโทนมืดพื้นฐาน</td></tr>
+      <tr><td><code>material_light</code> <span class="badge new">ใหม่</span></td><td>Material 3 สำหรับหน้าจอแอป — ปุ่มทรงแคปซูล ไดอะล็อก 28dp การ์ดแบบเติมสี แถบนำทาง FAB และแถบค้นหาของแอป Roboto</td></tr>
+      <tr><td><code>material_dark</code> <span class="badge new">ใหม่</span></td><td>รูปทรง Material 3 แบบเดียวกันบนโทนมืดพื้นฐาน</td></tr>
+      <tr><td><code>kids_light</code> <span class="badge new">ใหม่</span></td><td>กล่องของเล่นสำหรับเด็ก — ปุ่มลูกอมเยลลี่ที่มีขอบหนาอวบและฐานที่ยุบลงเมื่อกด สีเทียน หน้าสีแดดสดใส</td></tr>
+      <tr><td><code>kids_dark</code> <span class="badge new">ใหม่</span></td><td>กล่องของเล่นเดียวกันบนหน้าสีน้ำเงินยามค่ำคืน</td></tr>
     </tbody>
   </table>
 
@@ -316,10 +352,12 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxCut</code></td><td>มุมตัดเฉียง (chamfer) ขอบเน้นสีที่หนาขึ้นหนึ่งด้าน และแสงเรืองรอบนอก</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>เครื่องหมายมุมอย่างเดียว โดยไม่ล้อมกรอบเนื้อหา</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>กรอบตีขึ้นรูปพร้อมหมุดย้ำ ลายสลักที่มุม แสงไฮไลต์ตามขอบลาด และลายเนื้อวัสดุ</td></tr>
+      <tr><td><code>GoStyleBoxJelly</code></td><td>ลูกอมเยลลี่ — ขอบหนาอวบ ฐานทึบที่ยุบลงเมื่อกด ตัวที่ด้านบนสว่างกว่าด้านล่าง และประกายสีขาว</td></tr>
     </tbody>
   </table>
-  <p>ทั้งสามคลาสสามารถซีเรียลไลซ์ลงในรีซอร์ส Theme ได้ — นี่เองคือสิ่งที่ทำให้ธีมเปลี่ยน<b>รูปทรง</b>ได้ ไม่ใช่แค่สี
-    <code>GoSkinSciFi</code> และ <code>GoSkinMedieval</code> คือซับคลาสที่แถมมาให้</p>
+  <p>ทั้งสี่คลาสสามารถซีเรียลไลซ์ลงในรีซอร์ส Theme ได้ — นี่เองคือสิ่งที่ทำให้ธีมเปลี่ยน<b>รูปทรง</b>ได้ ไม่ใช่แค่สี
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> และ <code>GoSkinKids</code> คือซับคลาสที่แถมมาให้</p>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="ควิกสล็อต จอยสติ๊ก และชิป ที่วาดโดยสกินแต่ละตัวที่แถมมา — ค่าเริ่มต้น สำหรับเด็ก Material ยุคกลาง และไซไฟ" loading="lazy"><figcaption>สิ่งที่สกินวาด — ค่าเริ่มต้น สำหรับเด็ก Material ยุคกลาง ไซไฟ</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> คืนค่าเป็น <code>StyleBoxFlat</code> เสมอ</b> เพราะโค้ดที่เรียกใช้จะรับมันไป
@@ -330,7 +368,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 <section id="widgets">
   <h2>วิดเจ็ต</h2>
-  <p class="sub">ชิ้นส่วนทั้งหมดในตารางเดียว <a href="widgets.html">ดูรายละเอียดทีละชิ้น →</a></p>
+  <p class="sub">ชิ้นส่วนทั้งหมดในตารางเดียว <a href="widgets.html">ดูรายละเอียดทีละชิ้น →</a> ·
+    <a href="widgets-catalog.html">วิดเจ็ตทุกตัวพร้อมภาพ →</a> · <a href="widgets-popups.html">ป๊อปอัปและกล่องโต้ตอบ คู่มือฉบับเต็ม →</a></p>
 
   <table>
     <thead><tr><th>คลาส</th><th>สืบทอดจาก</th><th>ทำอะไร</th></tr></thead>

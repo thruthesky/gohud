@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">วิดเจ็ต</a>
   <a href="widgets-catalog.html">วิดเจ็ตทั้งหมด</a>
+  <a href="widgets-popups.html">ป๊อปอัปและกล่องโต้ตอบ</a>
   <a href="widgets-surfaces.html">หน้าต่างลอย</a>
   <a href="widgets-messages.html" aria-current="page">การบอกอะไรบางอย่างกับผู้เล่น</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — สแน็กบาร์</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — ประกาศที่ไม่แย่งการป้อนข้อมูลหรือโฟกัส" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — ข้อความด้านล่างที่เข้าคิวได้และมีปุ่มได้" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>มันไม่ดักอินพุตเด็ดขาด</b> ข้อความแจ้งเตือนมีไว้อ่าน ไม่ได้มีไว้กด มันไม่แย่งโฟกัส ไม่ขวางอินพุตของเกม
     และปุ่มที่อยู่ข้างใต้ก็ยังกดได้ ถ้าต้องการการยืนยันให้ใช้ <code>GoDialogs</code>
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — คำถามที่ไม่หยุดเกม</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — คำถามที่ไม่หยุดเกม — คำเชิญ การแลกเปลี่ยน" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>ลอยอยู่ด้านข้างโดยไม่มีฉากหลังทึบ เกมยังเดินต่อไปตามปกติ</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — ทัวร์แนะนำ</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — ทัวร์แนะนำที่ชี้ไปยังคอนโทรลจริง" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>ชี้ไปยังคอนโทรลจริงทีละอัน มีเพียงการ์ดเท่านั้นที่รับอินพุต ดังนั้น <b>การกดคอนโทรลที่ถูกไฮไลต์เอง
     จะพาทัวร์เดินหน้าต่อ</b> — "กดตรงนี้" จึงกลายเป็นการลงมือทำ แทนที่จะเป็นแค่ประโยคหนึ่ง</p>
   <pre><code>tour.start([

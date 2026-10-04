@@ -1636,6 +1636,11 @@ func _surface() -> void:
 		"the card is on screen (pos %s size %s view %s)" % [str(a.card.position), str(a.card.size), str(view)])
 	check(near(a.close_button.size.x, GoUi.config.close_button_visual), "the close button's visible size")
 	check(a.back_button.autowrap_mode == TextServer.AUTOWRAP_OFF, "the back button does not wrap (no empty pill)")
+	# 🛑 A clip also cuts the clipping item's own drawing — a clipping card lost its shadow outside the rectangle and
+	#    showed a dark square in the corners the rounded face leaves open. The content is clipped one level in.
+	check(not a.card.clip_contents, "the card does not clip its own shadow")
+	check(a._margin.clip_contents and a._margin.get_parent() == a.card and a._margin.size.is_equal_approx(a.card.size),
+		"the content is clipped at the card's edge, one level in (%s / %s)" % [str(a._margin.size), str(a.card.size)])
 
 	a.body.add_child(GoStyle.label("short"))
 	await frames(3)

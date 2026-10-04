@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">ウィジェット</a>
   <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html">ポップアップとダイアログ</a>
   <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
   <a href="widgets-messages.html" aria-current="page">プレイヤーに何かを伝える</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — スナックバー</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — 入力もフォーカスも奪わないお知らせ。" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — 下に出るメッセージ。順番待ちし、ボタンも付けられる。" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>入力を横取りしない。</b> 通知は読むものであって、押すものではない。フォーカスを取らず、ゲームの入力も
     塞がず、その下のボタンはそのまま押せる。確認が要るなら <code>GoDialogs</code>、選択が要るなら
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — 画面を塞がない問いかけ</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — ゲームを止めない問いかけ — 招待、取引。" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>幕を張らずに片側へ浮かぶ。ゲームは動き続ける。</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — ガイドツアー</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — 実際のコントロールを指し示すガイドツアー。" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>実物のコントロールを1つずつ指し示す。入力を受けるのはカードだけなので、<b>強調されたコントロールを
     押すこと自体がツアーを進める</b> — 「ここを押してください」が文章ではなく操作になる。</p>
   <pre><code>tour.start([

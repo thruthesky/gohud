@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html" aria-current="page">Tutti i widget</a>
+  <a href="widgets-popups.html">Popup e finestre di dialogo</a>
   <a href="widgets-surfaces.html">Finestre flottanti</a>
   <a href="widgets-messages.html">Dire qualcosa a chi gioca</a>
   <a href="widgets-hud.html">HUD</a>
@@ -100,6 +101,7 @@
   <div class="grid">
     <div class="card">
       <h3 id="goscaffold"><code>GoScaffold</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/goscaffold.webp" width="300" height="649" alt="GoScaffold — Una schermata d&#x27;app già collegata: barra, pagina scorrevole, barra in basso, FAB e cassetto." loading="lazy"></figure>
       <p>Una schermata d'app già collegata: barra, pagina scorrevole, barra in basso, FAB e cassetto.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var page := GoStyle.<wbr>column(<wbr>)
@@ -109,6 +111,7 @@ add_child(<wbr>screen)</code></pre>
     </div>
     <div class="card">
       <h3 id="gotopbar"><code>GoTopBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotopbar.webp" width="390" height="80" alt="GoTopBar — Elementi lungo il bordo superiore in uno-tre slot; il centro resta centrato." loading="lazy"></figure>
       <p>Elementi lungo il bordo superiore in uno-tre slot; il centro resta centrato.</p>
       <p class="catalog-base">estende <code>GoEdgeBar</code></p>
       <pre><code>var bar := GoTopBar.<wbr>make(<wbr>3)
@@ -118,6 +121,7 @@ bar.<wbr>add_end(<wbr>GoStyle.<wbr>chip(<wbr>"1,<wbr>250"))</code></pre>
     </div>
     <div class="card">
       <h3 id="gobottombar"><code>GoBottomBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobottombar.webp" width="390" height="96" alt="GoBottomBar — Elementi lungo il bordo inferiore, lontano dalla barra dei gesti." loading="lazy"></figure>
       <p>Elementi lungo il bordo inferiore, lontano dalla barra dei gesti.</p>
       <p class="catalog-base">estende <code>GoEdgeBar</code></p>
       <pre><code>var actions := GoBottomBar.<wbr>make(<wbr>1,<wbr> GoBottomBar.<wbr>Justify.<wbr>SPACE_BETWEEN)
@@ -126,6 +130,7 @@ screen.<wbr>add_child(<wbr>actions)</code></pre>
     </div>
     <div class="card">
       <h3 id="goleftsidebar"><code>GoLeftSideBar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/goleftsidebar.webp" width="300" height="649" alt="GoLeftSideBar — Fino a tre livelli lungo il bordo sinistro." loading="lazy"></figure>
       <p>Fino a tre livelli lungo il bordo sinistro.</p>
       <p class="catalog-base">estende <code>GoSideBar</code></p>
       <pre><code>var tools := GoLeftSideBar.<wbr>make(<wbr>3)
@@ -135,6 +140,7 @@ screen.<wbr>add_child(<wbr>tools)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorightsidebar"><code>GoRightSideBar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gorightsidebar.webp" width="300" height="649" alt="GoRightSideBar — Fino a tre livelli lungo il bordo destro." loading="lazy"></figure>
       <p>Fino a tre livelli lungo il bordo destro.</p>
       <p class="catalog-base">estende <code>GoSideBar</code></p>
       <pre><code>var tools := GoRightSideBar.<wbr>make(<wbr>3)
@@ -144,6 +150,7 @@ screen.<wbr>add_child(<wbr>tools)</code></pre>
     </div>
     <div class="card">
       <h3 id="gosidebar"><code>GoSideBar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosidebar.webp" width="300" height="649" alt="GoSideBar — La barra laterale alla base di entrambe; mantiene il suo lato nelle lingue da destra a sinistra." loading="lazy"></figure>
       <p>La barra laterale alla base di entrambe; mantiene il suo lato nelle lingue da destra a sinistra.</p>
       <p class="catalog-base">estende <code>GoEdgeBar</code></p>
       <pre><code>var rail := GoRightSideBar.<wbr>make(<wbr>1,<wbr> GoSideBar.<wbr>Justify.<wbr>CENTER)
@@ -151,6 +158,7 @@ rail.<wbr>add_start(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>MAP,<wbr> 
     </div>
     <div class="card">
       <h3 id="goedgebar"><code>GoEdgeBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/goedgebar.webp" width="390" height="80" alt="GoEdgeBar — Le regole comuni a tutte le barre di bordo: slot, distribuzione, ancoraggio al bordo, area sicura." loading="lazy"></figure>
       <p>Le regole comuni a tutte le barre di bordo: slot, distribuzione, ancoraggio al bordo, area sicura.</p>
       <p class="catalog-base">estende <code>Container</code></p>
       <pre><code>var bar := GoTopBar.<wbr>make(<wbr>1)
@@ -159,6 +167,7 @@ bar.<wbr>pin_to_edge = GoEdgeBar.<wbr>Pin.<wbr>ALWAYS</code></pre>
     </div>
     <div class="card">
       <h3 id="gogrid"><code>GoGrid</code></h3>
+      <figure class="shot"><img src="../img/widgets/gogrid.webp" width="382" height="206" alt="GoGrid — Colonne di larghezza esattamente uguale: un numero fisso o quante ne entrano." loading="lazy"></figure>
       <p>Colonne di larghezza esattamente uguale: un numero fisso o quante ne entrano.</p>
       <p class="catalog-base">estende <code>Container</code></p>
       <pre><code>var cards := GoGrid.<wbr>make(<wbr>1,<wbr> 160.0)
@@ -166,6 +175,7 @@ for item in items: cards.<wbr>add_child(<wbr>GoStyle.<wbr>item_card(<wbr>item))<
     </div>
     <div class="card">
       <h3 id="goform"><code>GoForm</code></h3>
+      <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — Un modulo che limita la larghezza e si tiene lontano da tastiera e HUD." loading="lazy"></figure>
       <p>Un modulo che limita la larghezza e si tiene lontano da tastiera e HUD.</p>
       <p class="catalog-base">estende <code>MarginContainer</code></p>
       <pre><code>var form := GoForm.<wbr>new(<wbr>)
@@ -175,6 +185,7 @@ add_child(<wbr>form)</code></pre>
     </div>
     <div class="card">
       <h3 id="goscroll"><code>GoScroll</code></h3>
+      <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — Scorrimento al tocco da qualsiasi punto del contenuto; gestisce la scrittura da destra a sinistra." loading="lazy"></figure>
       <p>Scorrimento al tocco da qualsiasi punto del contenuto; gestisce la scrittura da destra a sinistra.</p>
       <p class="catalog-base">estende <code>ScrollContainer</code></p>
       <pre><code>var list := GoScroll.<wbr>new(<wbr>)
@@ -183,6 +194,7 @@ var strip := GoScroll.<wbr>horizontal(<wbr>)</code></pre>
     </div>
     <div class="card">
       <h3 id="gohudanchor"><code>GoHudAnchor</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Fissa i pezzi dell&#x27;HUD in uno dei nove punti dell&#x27;area sicura." loading="lazy"></figure>
       <p>Fissa i pezzi dell'HUD in uno dei nove punti dell'area sicura.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var corner := GoHudAnchor.<wbr>new(<wbr>)
@@ -191,6 +203,7 @@ corner.<wbr>add_child(<wbr>GoStyle.<wbr>hud_panel(<wbr>))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-column-row-wrap-row"><code>GoStyle.column · row · wrap_row</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column · row · wrap_row — Colonne, righe e righe che vanno a capo, con gli spazi del tema." loading="lazy"></figure>
       <p>Colonne, righe e righe che vanno a capo, con gli spazi del tema.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var page := GoStyle.<wbr>column(<wbr>)
@@ -199,6 +212,7 @@ var chips := GoStyle.<wbr>wrap_row(<wbr>)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-responsive-grid-aspect"><code>GoStyle.responsive_grid · aspect</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-responsive_grid.webp" width="382" height="272" alt="GoStyle.responsive_grid · aspect — Una griglia che aggiunge colonne allargandosi e un riquadro che mantiene le proporzioni." loading="lazy"></figure>
       <p>Una griglia che aggiunge colonne allargandosi e un riquadro che mantiene le proporzioni.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var tiles := GoStyle.<wbr>responsive_grid(<wbr>160)
@@ -206,6 +220,7 @@ var thumb := GoStyle.<wbr>aspect(<wbr>16.0 / 9.0)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-padding-spacer-divider"><code>GoStyle.padding · spacer · divider</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-padding.webp" width="382" height="159" alt="GoStyle.padding · spacer · divider — Spaziatura interna, un distanziatore che occupa lo spazio avanzato, una linea divisoria." loading="lazy"></figure>
       <p>Spaziatura interna, un distanziatore che occupa lo spazio avanzato, una linea divisoria.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var pad := GoStyle.<wbr>padding(<wbr>16)
@@ -214,6 +229,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>divider(<wbr>))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-foldable-section"><code>GoStyle.foldable · section</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-foldable.webp" width="382" height="411" alt="GoStyle.foldable · section — Un titolo di sezione e una sezione che si apre." loading="lazy"></figure>
       <p>Un titolo di sezione e una sezione che si apre.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>section(<wbr>"Sound",<wbr> false))
@@ -227,6 +243,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosurface.webp" width="300" height="649" alt="GoSurface — Una finestra fluttuante: centrata, dal basso o ancorata a un controllo." loading="lazy"></figure>
       <p>Una finestra fluttuante: centrata, dal basso o ancorata a un controllo.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var window := GoSurface.<wbr>new(<wbr>)
@@ -236,6 +253,7 @@ layer.<wbr>add_child(<wbr>window)</code></pre>
     </div>
     <div class="card">
       <h3 id="gosheet"><code>GoSheet</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosheet.webp" width="300" height="649" alt="GoSheet — Un foglio dal basso con pagine, navigazione indietro e piè di pagina fisso." loading="lazy"></figure>
       <p>Un foglio dal basso con pagine, navigazione indietro e piè di pagina fisso.</p>
       <p class="catalog-base">estende <code>CanvasLayer</code></p>
       <pre><code>var sheet := GoSheet.<wbr>new(<wbr>)
@@ -245,6 +263,7 @@ sheet.<wbr>body.<wbr>add_child(<wbr>bag_list)</code></pre>
     </div>
     <div class="card">
       <h3 id="godialogs"><code>GoDialogs</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/godialogs.webp" width="300" height="649" alt="GoDialogs — Finestre di conferma e di avviso da attendere con await; gli avvisi aspettano il loro turno." loading="lazy"></figure>
       <p>Finestre di conferma e di avviso da attendere con await; gli avvisi aspettano il loro turno.</p>
       <p class="catalog-base">estende <code>Node</code></p>
       <pre><code>var dialogs := GoDialogs.<wbr>new(<wbr>)
@@ -254,6 +273,7 @@ if await dialogs.<wbr>confirm(<wbr>"Delete save",<wbr> "This cannot be undone.",
     </div>
     <div class="card">
       <h3 id="godialogs-choose"><code>GoDialogs.choose</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/godialogs-choose.webp" width="300" height="649" alt="GoDialogs.choose — Una tra poche opzioni: foglio dal basso sul telefono, scheda sul desktop." loading="lazy"></figure>
       <p>Una tra poche opzioni: foglio dal basso sul telefono, scheda sul desktop.</p>
       <p class="catalog-base">funzione di <code>GoDialogs</code></p>
       <pre><code>var index := await dialogs.<wbr>choose(<wbr>"Sort by",<wbr> [<wbr>"Newest",<wbr> "Price",<wbr> "Rating"])
@@ -261,6 +281,7 @@ if index &gt;= 0: sort_by(<wbr>index)</code></pre>
     </div>
     <div class="card">
       <h3 id="godrawer"><code>GoDrawer</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/godrawer.webp" width="300" height="649" alt="GoDrawer — Un pannello che scivola dentro da sinistra o da destra." loading="lazy"></figure>
       <p>Un pannello che scivola dentro da sinistra o da destra.</p>
       <p class="catalog-base">estende <code>CanvasLayer</code></p>
       <pre><code>var drawer := GoDrawer.<wbr>new(<wbr>)
@@ -270,18 +291,21 @@ drawer.<wbr>open(<wbr>"Bag")</code></pre>
     </div>
     <div class="card">
       <h3 id="gopopover"><code>GoPopover</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gopopover.webp" width="300" height="649" alt="GoPopover — Una scheda informativa accanto a ciò che è stato toccato; una alla volta." loading="lazy"></figure>
       <p>Una scheda informativa accanto a ciò che è stato toccato; una alla volta.</p>
       <p class="catalog-base">estende <code>RefCounted</code></p>
       <pre><code>GoPopover.<wbr>open(<wbr>slot,<wbr> GoStyle.<wbr>item_card(<wbr>item,<wbr> false))</code></pre>
     </div>
     <div class="card">
       <h3 id="gocontextmenu"><code>GoContextMenu</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gocontextmenu.webp" width="300" height="649" alt="GoContextMenu — Menu con pressione prolungata o clic destro; un dito che si muove lo annulla." loading="lazy"></figure>
       <p>Menu con pressione prolungata o clic destro; un dito che si muove lo annulla.</p>
       <p class="catalog-base">estende <code>RefCounted</code></p>
       <pre><code>GoContextMenu.<wbr>attach(<wbr>slot,<wbr> [<wbr>{<wbr>"text": "Use"},<wbr> {<wbr>"text": "Drop",<wbr> "danger": true}])</code></pre>
     </div>
     <div class="card">
       <h3 id="gocoachmark"><code>GoCoachMark</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gocoachmark.webp" width="300" height="649" alt="GoCoachMark — Un tour guidato che indica i controlli reali." loading="lazy"></figure>
       <p>Un tour guidato che indica i controlli reali.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var tour := GoCoachMark.<wbr>new(<wbr>)
@@ -290,6 +314,7 @@ tour.<wbr>start(<wbr>[<wbr>{<wbr>"target": bag_button,<wbr> "title": "Bag",<wbr>
     </div>
     <div class="card">
       <h3 id="goconsole"><code>GoConsole</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/goconsole.webp" width="300" height="649" alt="GoConsole — Una console per sviluppatori con comandi e cronologia; spenta nelle build di rilascio." loading="lazy"></figure>
       <p>Una console per sviluppatori con comandi e cronologia; spenta nelle build di rilascio.</p>
       <p class="catalog-base">estende <code>CanvasLayer</code></p>
       <pre><code>var console := GoConsole.<wbr>new(<wbr>)
@@ -304,6 +329,7 @@ console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code><
   <div class="grid">
     <div class="card">
       <h3 id="gosnackbar"><code>GoSnackbar</code></h3>
+      <figure class="shot phone"><img src="../img/widgets/gosnackbar.webp" width="300" height="649" alt="GoSnackbar — Un messaggio in basso che si mette in coda e può avere pulsanti." loading="lazy"></figure>
       <p>Un messaggio in basso che si mette in coda e può avere pulsanti.</p>
       <p class="catalog-base">estende <code>Node</code></p>
       <pre><code>var snack := GoSnackbar.<wbr>new(<wbr>)
@@ -313,6 +339,7 @@ if await snack.<wbr>post(<wbr>{<wbr>"text": "Item dropped",<wbr> "actions": [<wb
     </div>
     <div class="card">
       <h3 id="gonotice"><code>GoNotice</code></h3>
+      <figure class="shot"><img src="../img/widgets/gonotice.webp" width="382" height="71" alt="GoNotice — Un avviso che non prende mai input né focus." loading="lazy"></figure>
       <p>Un avviso che non prende mai input né focus.</p>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>var notice := GoNotice.<wbr>new(<wbr>)
@@ -321,6 +348,7 @@ notice.<wbr>show_text(<wbr>"Saved",<wbr> GoTheme.<wbr>SUCCESS)</code></pre>
     </div>
     <div class="card">
       <h3 id="gopromptcard"><code>GoPromptCard</code></h3>
+      <figure class="shot"><img src="../img/widgets/gopromptcard.webp" width="382" height="140" alt="GoPromptCard — Una domanda che non ferma il gioco: un invito, uno scambio." loading="lazy"></figure>
       <p>Una domanda che non ferma il gioco: un invito, uno scambio.</p>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>var invite := GoPromptCard.<wbr>new(<wbr>)
@@ -329,6 +357,7 @@ invite.<wbr>set_actions(<wbr>[<wbr>{<wbr>"text": "Accept",<wbr> "action": accept
     </div>
     <div class="card">
       <h3 id="gobanner"><code>GoBanner</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobanner.webp" width="382" height="135" alt="GoBanner — Un messaggio che resta sulla pagina finché non viene gestito." loading="lazy"></figure>
       <p>Un messaggio che resta sulla pagina finché non viene gestito.</p>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>var offline := GoBanner.<wbr>make(<wbr>"You're offline.",<wbr> [<wbr>{<wbr>"text": "Retry",<wbr> "action": reconnect}],<wbr> GoIconSet.<wbr>WARNING)
@@ -336,6 +365,7 @@ page.<wbr>add_child(<wbr>offline)</code></pre>
     </div>
     <div class="card">
       <h3 id="gospinner"><code>GoSpinner</code></h3>
+      <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — Un&#x27;attesa; trasforma sul posto un pulsante in indicatore, così non si preme due volte." loading="lazy"></figure>
       <p>Un'attesa; trasforma sul posto un pulsante in indicatore, così non si preme due volte.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>GoSpinner.<wbr>busy(<wbr>buy_button,<wbr> true)
@@ -344,6 +374,7 @@ GoSpinner.<wbr>busy(<wbr>buy_button,<wbr> false)</code></pre>
     </div>
     <div class="card">
       <h3 id="gobadge"><code>GoBadge</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — Il punto di non letto, l&#x27;etichetta NEW e il 99+, appesi a un angolo." loading="lazy"></figure>
       <p>Il punto di non letto, l'etichetta NEW e il 99+, appesi a un angolo.</p>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>GoBadge.<wbr>attach(<wbr>mail_button,<wbr> unread)
@@ -351,6 +382,7 @@ GoBadge.<wbr>attach(<wbr>shop_button,<wbr> 0,<wbr> "NEW")</code></pre>
     </div>
     <div class="card">
       <h3 id="goprogress"><code>GoProgress</code></h3>
+      <figure class="shot"><img src="../img/widgets/goprogress.webp" width="382" height="98" alt="GoProgress — Avanzamento a linea o ad anello, ondulato o piatto; indeterminato finché la dimensione è ignota." loading="lazy"></figure>
       <p>Avanzamento a linea o ad anello, ondulato o piatto; indeterminato finché la dimensione è ignota.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var upload := GoProgress.<wbr>linear(<wbr>)
@@ -359,6 +391,7 @@ var ring := GoProgress.<wbr>circular(<wbr>true)</code></pre>
     </div>
     <div class="card">
       <h3 id="goloadingindicator"><code>GoLoadingIndicator</code></h3>
+      <figure class="shot"><img src="../img/widgets/goloadingindicator.webp" width="382" height="72" alt="GoLoadingIndicator — Il segno d&#x27;attesa Material 3 Expressive che cambia forma; fermo con reduce_motion." loading="lazy"></figure>
       <p>Il segno d'attesa Material 3 Expressive che cambia forma; fermo con reduce_motion.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var wait := GoLoadingIndicator.<wbr>new(<wbr>)
@@ -367,6 +400,7 @@ page.<wbr>add_child(<wbr>wait)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorefresh"><code>GoRefresh</code></h3>
+      <figure class="shot"><img src="../img/widgets/gorefresh.webp" width="382" height="264" alt="GoRefresh — Tira giù l&#x27;elenco dall&#x27;alto per ricaricarlo." loading="lazy"></figure>
       <p>Tira giù l'elenco dall'alto per ricaricarlo.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var refresh := GoRefresh.<wbr>attach(<wbr>feed)
@@ -376,12 +410,14 @@ refresh.<wbr>refresh_requested.<wbr>connect(<wbr>func(<wbr>) -&gt; void:
     </div>
     <div class="card">
       <h3 id="gostyle-alert"><code>GoStyle.alert</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-alert.webp" width="382" height="248" alt="GoStyle.alert — Un messaggio in linea nel tono informazione, successo, avviso o pericolo." loading="lazy"></figure>
       <p>Un messaggio in linea nel tono informazione, successo, avviso o pericolo.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>alert(<wbr>"Maintenance at 3 AM",<wbr> GoTheme.<wbr>WARNING))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-skeleton-empty-state"><code>GoStyle.skeleton · empty_state</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton · empty_state — Un segnaposto durante il caricamento e un messaggio per un elenco vuoto." loading="lazy"></figure>
       <p>Un segnaposto durante il caricamento e un messaggio per un elenco vuoto.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>skeleton(<wbr>200))
@@ -389,6 +425,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>empty_state(<wbr>GoIconSet.<wbr>BOX,<wbr> 
     </div>
     <div class="card">
       <h3 id="gostyle-tooltip-node"><code>GoStyle.tooltip_node</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-tooltip_node.webp" width="382" height="123" alt="GoStyle.tooltip_node — Un suggerimento nello stile del tema che non spezza mai le parole." loading="lazy"></figure>
       <p>Un suggerimento nello stile del tema che non spezza mai le parole.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>func _make_custom_tooltip(<wbr>text: String) -&gt; Object:
@@ -402,6 +439,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>empty_state(<wbr>GoIconSet.<wbr>BOX,<wbr> 
   <div class="grid">
     <div class="card">
       <h3 id="goappbar"><code>GoAppBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/goappbar.webp" width="382" height="88" alt="GoAppBar — La barra superiore dell&#x27;app; si solleva quando la pagina scorre; titoli medi e grandi." loading="lazy"></figure>
       <p>La barra superiore dell'app; si solleva quando la pagina scorre; titoli medi e grandi.</p>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>var bar := GoAppBar.<wbr>make(<wbr>"Inbox",<wbr> GoIconSet.<wbr>MENU,<wbr> open_drawer)
@@ -410,6 +448,7 @@ bar.<wbr>follow(<wbr>list)</code></pre>
     </div>
     <div class="card">
       <h3 id="gonavbar"><code>GoNavBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gonavbar.webp" width="382" height="88" alt="GoNavBar — Da tre a cinque destinazioni in basso; una barra laterale sugli schermi larghi." loading="lazy"></figure>
       <p>Da tre a cinque destinazioni in basso; una barra laterale sugli schermi larghi.</p>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>var nav := GoNavBar.<wbr>make(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr> "text": "Home"},<wbr>
@@ -418,6 +457,7 @@ var rail := GoNavBar.<wbr>rail(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr
     </div>
     <div class="card">
       <h3 id="gonavbar-drawer-list"><code>GoNavBar.drawer_list</code></h3>
+      <figure class="shot"><img src="../img/widgets/gonavbar-drawer_list.webp" width="382" height="272" alt="GoNavBar.drawer_list — Righe di destinazioni a tutta larghezza per un cassetto." loading="lazy"></figure>
       <p>Righe di destinazioni a tutta larghezza per un cassetto.</p>
       <p class="catalog-base">funzione di <code>GoNavBar</code></p>
       <pre><code>drawer.<wbr>body.<wbr>add_child(<wbr>GoNavBar.<wbr>drawer_list(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr> "text": "Inbox"},<wbr>
@@ -425,6 +465,7 @@ var rail := GoNavBar.<wbr>rail(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>HOME,<wbr
     </div>
     <div class="card">
       <h3 id="gofab"><code>GoFab</code></h3>
+      <figure class="shot"><img src="../img/widgets/gofab.webp" width="382" height="80" alt="GoFab — L&#x27;azione principale fluttuante nell&#x27;angolo; 40–96 dp o estesa con etichetta." loading="lazy"></figure>
       <p>L'azione principale fluttuante nell'angolo; 40–96 dp o estesa con etichetta.</p>
       <p class="catalog-base">estende <code>Button</code></p>
       <pre><code>var cart := GoFab.<wbr>make(<wbr>GoIconSet.<wbr>PLUS,<wbr> "Add to cart",<wbr> add_to_cart)
@@ -432,6 +473,7 @@ cart.<wbr>float_in(<wbr>self,<wbr> nav.<wbr>get_combined_minimum_size(<wbr>).<wb
     </div>
     <div class="card">
       <h3 id="gosearchbar"><code>GoSearchBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gosearchbar.webp" width="382" height="80" alt="GoSearchBar — Il campo di ricerca arrotondato con pulsante per cancellare e azioni in fondo." loading="lazy"></figure>
       <p>Il campo di ricerca arrotondato con pulsante per cancellare e azioni in fondo.</p>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>var search := GoSearchBar.<wbr>make(<wbr>"Search products",<wbr> find)
@@ -439,6 +481,7 @@ search.<wbr>add_action(<wbr>GoIconSet.<wbr>FILTER,<wbr> &amp;"Filter",<wbr> open
     </div>
     <div class="card">
       <h3 id="gosplitbutton"><code>GoSplitButton</code></h3>
+      <figure class="shot"><img src="../img/widgets/gosplitbutton.webp" width="151" height="76" alt="GoSplitButton — Un&#x27;azione principale con le sue varianti dietro una freccia." loading="lazy"></figure>
       <p>Un'azione principale con le sue varianti dietro una freccia.</p>
       <p class="catalog-base">estende <code>HBoxContainer</code></p>
       <pre><code>var send := GoSplitButton.<wbr>make(<wbr>"Send",<wbr> send_now,<wbr> [<wbr>"Send later",<wbr> "Save as draft"])
@@ -446,6 +489,7 @@ send.<wbr>chosen.<wbr>connect(<wbr>func(<wbr>index: int) -&gt; void: send_varian
     </div>
     <div class="card">
       <h3 id="gotabview"><code>GoTabView</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotabview.webp" width="382" height="224" alt="GoTabView — Schede su tutta la riga sopra pagine da scorrere." loading="lazy"></figure>
       <p>Schede su tutta la riga sopra pagine da scorrere.</p>
       <p class="catalog-base">estende <code>VBoxContainer</code></p>
       <pre><code>var tabs := GoTabView.<wbr>make(<wbr>[<wbr>"Posts",<wbr> "Photos",<wbr> "Saved"],<wbr> [<wbr>posts,<wbr> photos,<wbr> saved])
@@ -453,6 +497,7 @@ tabs.<wbr>tab_changed.<wbr>connect(<wbr>func(<wbr>index: int) -&gt; void: track_
     </div>
     <div class="card">
       <h3 id="gostyle-tabs"><code>GoStyle.tabs</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-tabs.webp" width="382" height="136" alt="GoStyle.tabs — Una fila di schede, all&#x27;inizio o distribuita; la linea va da un bordo all&#x27;altro." loading="lazy"></figure>
       <p>Una fila di schede, all'inizio o distribuita; la linea va da un bordo all'altro.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var row := GoStyle.<wbr>tabs(<wbr>[<wbr>"Overview",<wbr> "Stats",<wbr> "Gear"],<wbr> 0,<wbr> false,<wbr> true)
@@ -460,6 +505,7 @@ row.<wbr>tab_changed.<wbr>connect(<wbr>show_panel)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-bottom-app-bar"><code>GoStyle.bottom_app_bar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-bottom_app_bar.webp" width="382" height="104" alt="GoStyle.bottom_app_bar — La barra in basso con azioni a icona e un FAB." loading="lazy"></figure>
       <p>La barra in basso con azioni a icona e un FAB.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>screen.<wbr>set_bottom_bar(<wbr>GoStyle.<wbr>bottom_app_bar(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>SEARCH,<wbr> "tooltip": &amp;"search"},<wbr>
@@ -467,6 +513,7 @@ row.<wbr>tab_changed.<wbr>connect(<wbr>show_panel)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-toolbar"><code>GoStyle.toolbar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-toolbar.webp" width="382" height="124" alt="GoStyle.toolbar — Una pillola fluttuante di azioni a icona." loading="lazy"></figure>
       <p>Una pillola fluttuante di azioni a icona.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>toolbar(<wbr>[<wbr>{<wbr>"icon": GoIconSet.<wbr>EDIT,<wbr> "tooltip": &amp;"Edit",<wbr> "action": edit},<wbr>
@@ -474,12 +521,14 @@ row.<wbr>tab_changed.<wbr>connect(<wbr>show_panel)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-breadcrumb"><code>GoStyle.breadcrumb</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-breadcrumb.webp" width="327" height="72" alt="GoStyle.breadcrumb — Dove sei, come un percorso lungo cui tornare indietro." loading="lazy"></figure>
       <p>Dove sei, come un percorso lungo cui tornare indietro.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>breadcrumb(<wbr>[<wbr>"Home",<wbr> "Shop",<wbr> "Swords"],<wbr> go_to_level))</code></pre>
     </div>
     <div class="card">
       <h3 id="gopagination"><code>GoPagination</code></h3>
+      <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Pagine numerate che tengono al centro quella attuale, o una sola riga Carica altro." loading="lazy"></figure>
       <p>Pagine numerate che tengono al centro quella attuale, o una sola riga Carica altro.</p>
       <p class="catalog-base">estende <code>HBoxContainer</code></p>
       <pre><code>var pages := GoPagination.<wbr>make(<wbr>1,<wbr> 12,<wbr> load_page)
@@ -487,6 +536,7 @@ page.<wbr>add_child(<wbr>pages)</code></pre>
     </div>
     <div class="card">
       <h3 id="gocarousel"><code>GoCarousel</code></h3>
+      <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Banner e selezione del personaggio che non girano da soli se non richiesto." loading="lazy"></figure>
       <p>Banner e selezione del personaggio che non girano da soli se non richiesto.</p>
       <p class="catalog-base">estende <code>VBoxContainer</code></p>
       <pre><code>var banners := GoCarousel.<wbr>new(<wbr>)
@@ -500,6 +550,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-button.webp" width="382" height="204" alt="GoStyle.button — Pulsanti in sette toni: normale, principale, contornato, testo, compatto, pericolo e pericolo pieno." loading="lazy"></figure>
       <p>Pulsanti in sette toni: normale, principale, contornato, testo, compatto, pericolo e pericolo pieno.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Play",<wbr> play,<wbr> GoStyle.<wbr>Tone.<wbr>PRIMARY))
@@ -508,12 +559,14 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
     </div>
     <div class="card">
       <h3 id="gostyle-glow"><code>GoStyle.glow</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-glow.webp" width="382" height="76" alt="GoStyle.glow — Solleva un pulsante pieno con un bagliore." loading="lazy"></figure>
       <p>Solleva un pulsante pieno con un bagliore.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>glow(<wbr>GoStyle.<wbr>button(<wbr>"Play",<wbr> play,<wbr> GoStyle.<wbr>Tone.<wbr>PRIMARY)))</code></pre>
     </div>
     <div class="card">
       <h3 id="goiconbutton"><code>GoIconButton</code></h3>
+      <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Un pulsante solo icona: piccolo alla vista, 48 dp al tocco, con nome per i lettori di schermo." loading="lazy"></figure>
       <p>Un pulsante solo icona: piccolo alla vista, 48 dp al tocco, con nome per i lettori di schermo.</p>
       <p class="catalog-base">estende <code>Button</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>CLOSE,<wbr> close,<wbr> -1,<wbr> &amp;"close"))
@@ -522,12 +575,14 @@ bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-chip.webp" width="382" height="84" alt="GoStyle.chip — Una pillola di stato o etichetta il cui testo si legge sempre." loading="lazy"></figure>
       <p>Una pillola di stato o etichetta il cui testo si legge sempre.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>chip(<wbr>"Rare",<wbr> GoUi.<wbr>color(<wbr>GoTheme.<wbr>INFO)))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-filter-chip-input-chip"><code>GoStyle.filter_chip · input_chip</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-filter_chip.webp" width="382" height="132" alt="GoStyle.filter_chip · input_chip — Un chip che si attiva e disattiva, e un valore inserito con una ✕." loading="lazy"></figure>
       <p>Un chip che si attiva e disattiva, e un valore inserito con una ✕.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>filters.<wbr>add_child(<wbr>GoStyle.<wbr>filter_chip(<wbr>"In stock",<wbr> false,<wbr> refilter))
@@ -535,12 +590,14 @@ to.<wbr>add_child(<wbr>GoStyle.<wbr>input_chip(<wbr>"Ann",<wbr> remove_ann,<wbr>
     </div>
     <div class="card">
       <h3 id="gostyle-segmented"><code>GoStyle.segmented</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-segmented.webp" width="240" height="72" alt="GoStyle.segmented — Esattamente una tra poche opzioni, unite in una riga." loading="lazy"></figure>
       <p>Esattamente una tra poche opzioni, unite in una riga.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>segmented(<wbr>[<wbr>"Day",<wbr> "Week",<wbr> "Month"],<wbr> 0,<wbr> show_range))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-choice-grid"><code>GoStyle.choice_grid</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-choice_grid.webp" width="382" height="81" alt="GoStyle.choice_grid — Scegli un campione — un colore, una skin — da una griglia." loading="lazy"></figure>
       <p>Scegli un campione — un colore, una skin — da una griglia.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var skins := GoStyle.<wbr>choice_grid(<wbr>[<wbr>{<wbr>"color": "f6cfae",<wbr> "tooltip": "Peach"},<wbr>
@@ -548,12 +605,14 @@ to.<wbr>add_child(<wbr>GoStyle.<wbr>input_chip(<wbr>"Ann",<wbr> remove_ann,<wbr>
     </div>
     <div class="card">
       <h3 id="gostyle-radio-group"><code>GoStyle.radio_group</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-radio_group.webp" width="382" height="176" alt="GoStyle.radio_group — Pulsanti di opzione, di cui uno è scelto." loading="lazy"></figure>
       <p>Pulsanti di opzione, di cui uno è scelto.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>radio_group(<wbr>[<wbr>"Easy",<wbr> "Normal",<wbr> "Hard"],<wbr> 1))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-toggle-checkbox"><code>GoStyle.toggle · checkbox</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-toggle.webp" width="382" height="260" alt="GoStyle.toggle · checkbox — Un interruttore e una casella di spunta con le loro etichette." loading="lazy"></figure>
       <p>Un interruttore e una casella di spunta con le loro etichette.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var music := GoStyle.<wbr>toggle(<wbr>"Music",<wbr> false)
@@ -567,6 +626,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-line_edit.webp" width="382" height="244" alt="GoStyle.line_edit · textarea — Un campo di testo a una riga e uno a più righe." loading="lazy"></figure>
       <p>Un campo di testo a una riga e uno a più righe.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var nickname := GoStyle.<wbr>line_edit(<wbr>"Your name")
@@ -574,6 +634,7 @@ var note := GoStyle.<wbr>textarea(<wbr>"Message",<wbr> 4)</code></pre>
     </div>
     <div class="card">
       <h3 id="gofield"><code>GoField</code></h3>
+      <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Etichetta, controllo e suggerimento, con l&#x27;errore sotto il campo sbagliato." loading="lazy"></figure>
       <p>Etichetta, controllo e suggerimento, con l'errore sotto il campo sbagliato.</p>
       <p class="catalog-base">estende <code>VBoxContainer</code></p>
       <pre><code>var field := GoField.<wbr>make(<wbr>"Nickname",<wbr> GoStyle.<wbr>line_edit(<wbr>),<wbr> "3–12 letters",<wbr> false)
@@ -581,12 +642,14 @@ field.<wbr>set_error(<wbr>"That name is taken")</code></pre>
     </div>
     <div class="card">
       <h3 id="goinputgroup"><code>GoInputGroup</code></h3>
+      <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Un input e i suoi pulsanti saldati in un&#x27;unica forma." loading="lazy"></figure>
       <p>Un input e i suoi pulsanti saldati in un'unica forma.</p>
       <p class="catalog-base">estende <code>HBoxContainer</code></p>
       <pre><code>var chat := GoInputGroup.<wbr>make(<wbr>GoStyle.<wbr>line_edit(<wbr>"Message"),<wbr> {<wbr>"suffix": GoStyle.<wbr>button(<wbr>"Send",<wbr> send)})</code></pre>
     </div>
     <div class="card">
       <h3 id="gocombobox"><code>GoCombobox</code></h3>
+      <figure class="shot"><img src="../img/widgets/gocombobox.webp" width="382" height="76" alt="GoCombobox — Un selettore che cerca dentro i nomi, non solo all&#x27;inizio." loading="lazy"></figure>
       <p>Un selettore che cerca dentro i nomi, non solo all'inizio.</p>
       <p class="catalog-base">estende <code>Button</code></p>
       <pre><code>var friend := GoCombobox.<wbr>make(<wbr>friends,<wbr> -1,<wbr> "Find a friend")
@@ -594,6 +657,7 @@ friend.<wbr>picked.<wbr>connect(<wbr>invite)</code></pre>
     </div>
     <div class="card">
       <h3 id="gocodeinput"><code>GoCodeInput</code></h3>
+      <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Codici coupon e regalo a celle; incolla e input IME continuano a funzionare." loading="lazy"></figure>
       <p>Codici coupon e regalo a celle; incolla e input IME continuano a funzionare.</p>
       <p class="catalog-base">estende <code>VBoxContainer</code></p>
       <pre><code>var coupon := GoCodeInput.<wbr>make(<wbr>12,<wbr> 4)
@@ -601,6 +665,7 @@ coupon.<wbr>completed.<wbr>connect(<wbr>redeem)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-select-dropdown"><code>GoStyle.select · dropdown</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-select.webp" width="382" height="76" alt="GoStyle.select · dropdown — Un elenco a discesa e un pulsante che apre un menu." loading="lazy"></figure>
       <p>Un elenco a discesa e un pulsante che apre un menu.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var quality := GoStyle.<wbr>select(<wbr>[<wbr>"Low",<wbr> "Medium",<wbr> "High"])
@@ -608,6 +673,7 @@ var sort := GoStyle.<wbr>dropdown(<wbr>"Sort",<wbr> [<wbr>"Newest",<wbr> "Price"
     </div>
     <div class="card">
       <h3 id="gostyle-slider"><code>GoStyle.slider</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-slider.webp" width="382" height="107" alt="GoStyle.slider — Un cursore nella forma del tema." loading="lazy"></figure>
       <p>Un cursore nella forma del tema.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var volume := GoStyle.<wbr>slider(<wbr>0.0,<wbr> 1.0,<wbr> 0.05)
@@ -615,6 +681,7 @@ volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorangeslider"><code>GoRangeSlider</code></h3>
+      <figure class="shot"><img src="../img/widgets/gorangeslider.webp" width="382" height="107" alt="GoRangeSlider — Due maniglie che non si incrociano mai: una fascia di prezzo o di livello." loading="lazy"></figure>
       <p>Due maniglie che non si incrociano mai: una fascia di prezzo o di livello.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var price := GoRangeSlider.<wbr>make(<wbr>0.0,<wbr> 500.0,<wbr> 40.0,<wbr> 220.0,<wbr> 10.0)
@@ -622,6 +689,7 @@ price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>
+      <figure class="shot"><img src="../img/widgets/godatepicker.webp" width="382" height="392" alt="GoDatePicker — Un mese da toccare; un intervallo di giorni con range_mode." loading="lazy"></figure>
       <p>Un mese da toccare; un intervallo di giorni con range_mode.</p>
       <p class="catalog-base">estende <code>Container</code></p>
       <pre><code>var stay := GoDatePicker.<wbr>make(<wbr>)
@@ -630,6 +698,7 @@ stay.<wbr>range_picked.<wbr>connect(<wbr>func(<wbr>start: Dictionary,<wbr> end: 
     </div>
     <div class="card">
       <h3 id="gotimepicker"><code>GoTimePicker</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotimepicker.webp" width="382" height="408" alt="GoTimePicker — Il quadrante: prima l&#x27;ora, poi i minuti; 12 o 24 ore; Su e Giù su una casella." loading="lazy"></figure>
       <p>Il quadrante: prima l'ora, poi i minuti; 12 o 24 ore; Su e Giù su una casella.</p>
       <p class="catalog-base">estende <code>Container</code></p>
       <pre><code>var alarm := GoTimePicker.<wbr>make(<wbr>7,<wbr> 30,<wbr> func(<wbr>hour: int,<wbr> minute: int) -&gt; void: set_alarm(<wbr>hour,<wbr> minute))
@@ -637,6 +706,7 @@ alarm.<wbr>use_24h = true</code></pre>
     </div>
     <div class="card">
       <h3 id="gowheelpicker"><code>GoWheelPicker</code></h3>
+      <figure class="shot"><img src="../img/widgets/gowheelpicker.webp" width="382" height="224" alt="GoWheelPicker — Una ruota che gira e posa un elemento sulla sua fascia." loading="lazy"></figure>
       <p>Una ruota che gira e posa un elemento sulla sua fascia.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var amount := GoWheelPicker.<wbr>make(<wbr>[<wbr>"x1",<wbr> "x5",<wbr> "x10",<wbr> "x50"],<wbr> 0,<wbr> set_amount)
@@ -644,6 +714,7 @@ row.<wbr>add_child(<wbr>amount)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostepper"><code>GoStepper</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostepper.webp" width="382" height="315" alt="GoStepper — Passi numerati con Avanti e Indietro, in colonna o in riga." loading="lazy"></figure>
       <p>Passi numerati con Avanti e Indietro, in colonna o in riga.</p>
       <p class="catalog-base">estende <code>VBoxContainer</code></p>
       <pre><code>var checkout := GoStepper.<wbr>make(<wbr>[<wbr>{<wbr>"title": "Cart",<wbr> "content": cart},<wbr> {<wbr>"title": "Pay",<wbr> "content": pay}])
@@ -657,12 +728,14 @@ checkout.<wbr>finished.<wbr>connect(<wbr>place_order)</code></pre>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-list-row-list-button"><code>GoStyle.list_row · list_button</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row · list_button — Una riga d&#x27;elenco con icona, titolo, riassunto e segno finale." loading="lazy"></figure>
       <p>Una riga d'elenco con icona, titolo, riassunto e segno finale.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>list_button(<wbr>GoIconSet.<wbr>SETTINGS,<wbr> "Settings",<wbr> open_settings,<wbr> Color.<wbr>TRANSPARENT,<wbr> "",<wbr> false))</code></pre>
     </div>
     <div class="card">
       <h3 id="golistview"><code>GoListView</code></h3>
+      <figure class="shot"><img src="../img/widgets/golistview.webp" width="382" height="324" alt="GoListView — Migliaia di righe; si costruiscono solo quelle visibili." loading="lazy"></figure>
       <p>Migliaia di righe; si costruiscono solo quelle visibili.</p>
       <p class="catalog-base">estende <code>GoScroll</code></p>
       <pre><code>var feed := GoListView.<wbr>make(<wbr>10000,<wbr> 72.0,<wbr> func(<wbr>index: int) -&gt; Control: return post_row(<wbr>posts[<wbr>index]))
@@ -670,6 +743,7 @@ feed.<wbr>end_reached.<wbr>connect(<wbr>load_more)</code></pre>
     </div>
     <div class="card">
       <h3 id="goreorderlist"><code>GoReorderList</code></h3>
+      <figure class="shot"><img src="../img/widgets/goreorderlist.webp" width="382" height="216" alt="GoReorderList — Righe da riordinare trascinando una maniglia o con pressione prolungata." loading="lazy"></figure>
       <p>Righe da riordinare trascinando una maniglia o con pressione prolungata.</p>
       <p class="catalog-base">estende <code>Container</code></p>
       <pre><code>var queue := GoReorderList.<wbr>make(<wbr>[<wbr>intro_row,<wbr> theme_row,<wbr> boss_row])
@@ -677,6 +751,7 @@ queue.<wbr>reordered.<wbr>connect(<wbr>func(<wbr>from: int,<wbr> to: int) -&gt; 
     </div>
     <div class="card">
       <h3 id="goswiperow"><code>GoSwipeRow</code></h3>
+      <figure class="shot"><img src="../img/widgets/goswiperow.webp" width="382" height="207" alt="GoSwipeRow — Una riga da scorrere di lato per eliminare o archiviare; l&#x27;elenco scorre ancora." loading="lazy"></figure>
       <p>Una riga da scorrere di lato per eliminare o archiviare; l'elenco scorre ancora.</p>
       <p class="catalog-base">estende <code>Container</code></p>
       <pre><code>inbox.<wbr>add_child(<wbr>GoSwipeRow.<wbr>wrap(<wbr>mail_row,<wbr> {<wbr>"icon": GoIconSet.<wbr>TRASH,<wbr> "text": "Delete",<wbr>
@@ -684,6 +759,7 @@ queue.<wbr>reordered.<wbr>connect(<wbr>func(<wbr>from: int,<wbr> to: int) -&gt; 
     </div>
     <div class="card">
       <h3 id="gotable"><code>GoTable</code></h3>
+      <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Intestazioni ordinabili e righe selezionabili; i numeri si ordinano come numeri." loading="lazy"></figure>
       <p>Intestazioni ordinabili e righe selezionabili; i numeri si ordinano come numeri.</p>
       <p class="catalog-base">estende <code>VBoxContainer</code></p>
       <pre><code>var board := GoTable.<wbr>make(<wbr>[<wbr>"Name",<wbr> {<wbr>"text": "Score",<wbr> "numeric": true}],<wbr> [<wbr>[<wbr>"Ann",<wbr> 9124],<wbr> [<wbr>"Ben",<wbr> 91240]])
@@ -691,6 +767,7 @@ board.<wbr>row_selected.<wbr>connect(<wbr>open_profile)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-card-item-card"><code>GoStyle.card · item_card</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-card.webp" width="382" height="243" alt="GoStyle.card · item_card — Una scheda e la scheda di dettaglio di un oggetto scelto." loading="lazy"></figure>
       <p>Una scheda e la scheda di dettaglio di un oggetto scelto.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var card := GoStyle.<wbr>card(<wbr>)
@@ -699,12 +776,14 @@ popup.<wbr>add_child(<wbr>GoStyle.<wbr>item_card(<wbr>{<wbr>"title": "Rusty swor
     </div>
     <div class="card">
       <h3 id="gostyle-avatar"><code>GoStyle.avatar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-avatar.webp" width="382" height="72" alt="GoStyle.avatar — Iniziali o un&#x27;immagine in un disco." loading="lazy"></figure>
       <p>Iniziali o un'immagine in un disco.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>avatar(<wbr>"AK",<wbr> 40))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-label"><code>GoStyle.label</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-label.webp" width="382" height="153" alt="GoStyle.label — Testo in uno dei sette ruoli tipografici, da micro a titolo." loading="lazy"></figure>
       <p>Testo in uno dei sette ruoli tipografici, da micro a titolo.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Level 12",<wbr> GoTheme.<wbr>ROLE_TITLE))
@@ -718,6 +797,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Barre HP, MP e XP con valore, frazione o percentuale." loading="lazy"></figure>
       <p>Barre HP, MP e XP con valore, frazione o percentuale.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var hp := GoBar.<wbr>new(<wbr>)
@@ -726,6 +806,7 @@ hp.<wbr>set_values(<wbr>320,<wbr> 500)</code></pre>
     </div>
     <div class="card">
       <h3 id="goslot"><code>GoSlot</code></h3>
+      <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Uno slot rapido: icona, quantità, ricarica e scorciatoia su un&#x27;unica faccia." loading="lazy"></figure>
       <p>Uno slot rapido: icona, quantità, ricarica e scorciatoia su un'unica faccia.</p>
       <p class="catalog-base">estende <code>Button</code></p>
       <pre><code>var potion := GoSlot.<wbr>new(<wbr>)
@@ -735,6 +816,7 @@ potion.<wbr>start_cooldown(<wbr>5.0)</code></pre>
     </div>
     <div class="card">
       <h3 id="goslotgrid"><code>GoSlotGrid</code></h3>
+      <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Una griglia d&#x27;inventario; gli oggetti si trascinano tra le celle." loading="lazy"></figure>
       <p>Una griglia d'inventario; gli oggetti si trascinano tra le celle.</p>
       <p class="catalog-base">estende <code>HFlowContainer</code></p>
       <pre><code>var bag := GoSlotGrid.<wbr>new(<wbr>)
@@ -742,6 +824,7 @@ bag.<wbr>set_cell(<wbr>0,<wbr> {<wbr>"icon": GoIconSet.<wbr>POTION,<wbr> "quanti
     </div>
     <div class="card">
       <h3 id="gojoystick"><code>GoJoystick</code></h3>
+      <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Uno stick virtuale: fisso, che segue il pollice o relativo." loading="lazy"></figure>
       <p>Uno stick virtuale: fisso, che segue il pollice o relativo.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var pad := GoJoystick.<wbr>new(<wbr>)
@@ -750,12 +833,14 @@ pad.<wbr>moved.<wbr>connect(<wbr>func(<wbr>direction: Vector2) -&gt; void: playe
     </div>
     <div class="card">
       <h3 id="gokbd"><code>GoKbd</code></h3>
+      <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Tasti che leggono l&#x27;assegnazione reale, così riassegnarli non rende falso il suggerimento." loading="lazy"></figure>
       <p>Tasti che leggono l'assegnazione reale, così riassegnarli non rende falso il suggerimento.</p>
       <p class="catalog-base">estende <code>HBoxContainer</code></p>
       <pre><code>hint.<wbr>add_child(<wbr>GoKbd.<wbr>for_action(<wbr>&amp;"interact"))</code></pre>
     </div>
     <div class="card">
       <h3 id="gochoicecolumn"><code>GoChoiceColumn</code></h3>
+      <figure class="shot"><img src="../img/widgets/gochoicecolumn.webp" width="184" height="236" alt="GoChoiceColumn — Una breve colonna di scelte da toccare una volta — un elenco di evocazioni; il gioco segna quante righe vuole." loading="lazy"></figure>
       <p>Una breve colonna di scelte da toccare una volta — un elenco di evocazioni; il gioco segna quante righe vuole.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var animals := GoChoiceColumn.<wbr>make(<wbr>[<wbr>"Hen",<wbr> "Cat",<wbr> "Dog",<wbr> "Pig",<wbr> "Cow"],<wbr> 4,<wbr> summon)
@@ -764,6 +849,7 @@ side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>
+      <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Premi di presenza giornaliera; si può premere solo oggi." loading="lazy"></figure>
       <p>Premi di presenza giornaliera; si può premere solo oggi.</p>
       <p class="catalog-base">estende <code>VBoxContainer</code></p>
       <pre><code>var attendance := GoRewardCalendar.<wbr>make(<wbr>days,<wbr> claimed_until)
@@ -771,6 +857,7 @@ attendance.<wbr>claimed.<wbr>connect(<wbr>func(<wbr>day: int) -&gt; void: server
     </div>
     <div class="card">
       <h3 id="goradar"><code>GoRadar</code></h3>
+      <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — Il pentagono delle statistiche, con una linea tratteggiata per confrontare l&#x27;equipaggiamento." loading="lazy"></figure>
       <p>Il pentagono delle statistiche, con una linea tratteggiata per confrontare l'equipaggiamento.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var stats := GoRadar.<wbr>make(<wbr>{<wbr>"STR": 0.85,<wbr> "AGI": 0.5,<wbr> "INT": 0.3,<wbr> "VIT": 0.7,<wbr> "LUK": 0.45})
@@ -778,6 +865,7 @@ stats.<wbr>set_compare(<wbr>with_new_sword)</code></pre>
     </div>
     <div class="card">
       <h3 id="godonut"><code>GoDonut</code></h3>
+      <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Quote come spicchi, con una legenda in parole oltre che a colori." loading="lazy"></figure>
       <p>Quote come spicchi, con una legenda in parole oltre che a colori.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var share := GoDonut.<wbr>make(<wbr>[<wbr>{<wbr>"label": "Physical",<wbr> "value": 620},<wbr> {<wbr>"label": "Magic",<wbr> "value": 340}])
@@ -785,6 +873,7 @@ card.<wbr>add_child(<wbr>share.<wbr>legend(<wbr>))</code></pre>
     </div>
     <div class="card">
       <h3 id="gozoomview"><code>GoZoomView</code></h3>
+      <figure class="shot"><img src="../img/widgets/gozoomview.webp" width="382" height="284" alt="GoZoomView — Pizzica, rotella o doppio tocco per ingrandire una mappa; si sposta entro i bordi." loading="lazy"></figure>
       <p>Pizzica, rotella o doppio tocco per ingrandire una mappa; si sposta entro i bordi.</p>
       <p class="catalog-base">estende <code>Control</code></p>
       <pre><code>var map := GoZoomView.<wbr>wrap(<wbr>world_map,<wbr> 4.0)
@@ -793,6 +882,7 @@ page.<wbr>add_child(<wbr>map)</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-hud-panel-overlay-panel"><code>GoStyle.hud_panel · overlay_panel</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyle-hud_panel.webp" width="382" height="151" alt="GoStyle.hud_panel · overlay_panel — Pannelli che fluttuano sopra il gioco, perché il testo resti leggibile su qualsiasi immagine." loading="lazy"></figure>
       <p>Pannelli che fluttuano sopra il gioco, perché il testo resti leggibile su qualsiasi immagine.</p>
       <p class="catalog-base">funzione di <code>GoStyle</code></p>
       <pre><code>var bars := GoStyle.<wbr>hud_panel(<wbr>)
@@ -806,6 +896,7 @@ var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
   <div class="grid">
     <div class="card">
       <h3 id="goui-gothemepresets"><code>GoUi · GoThemePresets</code></h3>
+      <figure class="shot"><img src="../img/widgets/goui.webp" width="682" height="571" alt="GoUi · GoThemePresets — Scegli un preset (predefinito, fantascienza, medievale, Material o bambini); leggi colori e dimensioni dai token." loading="lazy"></figure>
       <p>Scegli un preset (predefinito, fantascienza, medievale, Material o bambini); leggi colori e dimensioni dai token.</p>
       <p class="catalog-base">estende <code>RefCounted</code></p>
       <pre><code>GoUi.<wbr>use_preset(<wbr>GoThemePresets.<wbr>MATERIAL_LIGHT)
@@ -822,6 +913,7 @@ GoUi.<wbr>refresh(<wbr>)</code></pre>
     </div>
     <div class="card">
       <h3 id="goskin"><code>GoSkin</code></h3>
+      <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="GoSkin — Le forme disegnate dal codice — chip, slot, stick, parti nuove — nel tuo stile." loading="lazy"></figure>
       <p>Le forme disegnate dal codice — chip, slot, stick, parti nuove — nel tuo stile.</p>
       <p class="catalog-base">estende <code>Resource</code></p>
       <pre><code>class_name MySkin
@@ -832,6 +924,7 @@ func banner_box(<wbr>) -&gt; StyleBox:
     </div>
     <div class="card">
       <h3 id="goiconset-gogameicons"><code>GoIconSet · GoGameIcons</code></h3>
+      <figure class="shot"><img src="../img/widgets/goiconset.webp" width="382" height="136" alt="GoIconSet · GoGameIcons — Icone per nome: il set predefinito, 187 icone da gioco o i tuoi SVG." loading="lazy"></figure>
       <p>Icone per nome: il set predefinito, 187 icone da gioco o i tuoi SVG.</p>
       <p class="catalog-base">estende <code>Resource · RefCounted</code></p>
       <pre><code>GoUi.<wbr>config.<wbr>icons = GoGameIcons.<wbr>icon_set(<wbr>)
@@ -839,6 +932,7 @@ var gear := GoUi.<wbr>icons(<wbr>).<wbr>node(<wbr>GoIconSet.<wbr>SETTINGS,<wbr> 
     </div>
     <div class="card">
       <h3 id="gostyleboxcut-gostyleboxbracket-gostyleboxmediev"><code>GoStyleBoxCut · GoStyleBoxBracket · GoStyleBoxMedieval</code></h3>
+      <figure class="shot"><img src="../img/widgets/gostyleboxcut.webp" width="382" height="110" alt="GoStyleBoxCut · GoStyleBoxBracket · GoStyleBoxMedieval — Facce smussate, a parentesi e forgiate per i tuoi pannelli." loading="lazy"></figure>
       <p>Facce smussate, a parentesi e forgiate per i tuoi pannelli.</p>
       <p class="catalog-base">estende <code>StyleBox</code></p>
       <pre><code>var face := GoStyleBoxCut.<wbr>new(<wbr>)
@@ -872,7 +966,7 @@ GoFeedback.<wbr>haptic_handler = func(<wbr>ms: int,<wbr> amplitude: float) -&gt;
 
 <footer class="bottom">
   <div class="wrap">
-    <p><a href="widgets.html">← Widget</a> · <a href="widgets-surfaces.html">Finestre flottanti →</a></p>
+    <p><a href="widgets.html">← Widget</a> · <a href="widgets-popups.html">Popup e finestre di dialogo →</a></p>
   </div>
 </footer>
 

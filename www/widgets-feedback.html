@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html">Popups and dialogs</a>
   <a href="widgets-surfaces.html">Floating windows</a>
   <a href="widgets-messages.html">Telling the player something</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — the message that places itself</h3>
+  <figure class="shot phone"><img src="img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — A message at the bottom that queues and can carry buttons." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>Sits at the bottom (or the top), above the safe area and the keyboard, and leaves on its own. Without it
     you write the layer, the placement, the timer and the teardown on every screen that has to say "saved".</p>
   <pre><code>snack.show_text("Saved", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "Item dropped", "actions": ["Undo"]}) == 0:
     owns it decides where it goes. It cannot hold a button; this can.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — a wait with no end in sight</h3>
+  <figure class="shot"><img src="img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — A wait; turns a button into a spinner in place, so it cannot be pressed twice." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>Games that talk to a server need this more than anything else on this page: a screen that sits still
     reads as a crash. One call turns the button you pressed into a spinner <b>in place</b>.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>Progress you can measure is a <code>GoBar</code>. A spinner promises nothing about when it ends.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — the unread dot, the NEW tag, the 99+</h3>
+  <figure class="shot"><img src="img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — The unread dot, the NEW tag and 99+, hung on a corner." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # hides itself at zero
 GoBadge.attach(shop_button, 0, "NEW")
 GoBadge.attach(friend_button, 3, "", true) # a dot — "something is there"</code></pre>

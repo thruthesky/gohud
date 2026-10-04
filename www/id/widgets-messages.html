@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Semua widget</a>
+  <a href="widgets-popups.html">Popup dan dialog</a>
   <a href="widgets-surfaces.html">Jendela mengambang</a>
   <a href="widgets-messages.html" aria-current="page">Menyampaikan sesuatu kepada pemain</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Pemberitahuan yang tidak pernah mengambil input atau fokus." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Pesan di bawah yang mengantre dan bisa membawa tombol." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Ia tidak pernah mencegat input.</b> Sebuah pemberitahuan itu dibaca, bukan ditekan. Ia tidak mengambil fokus, tidak menghalangi
     input game, dan tombol di bawahnya masih bisa ditekan. Bila butuh konfirmasi pakailah
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — pertanyaan yang tidak menghentikan jalannya game</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Pertanyaan yang tidak menghentikan permainan — undangan, pertukaran." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Mengambang di salah satu sisi tanpa selubung. Game-nya terus berjalan.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — tur berpemandu</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Tur terpandu yang menunjuk kontrol sungguhan." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Menunjuk kontrol sungguhan satu per satu. Hanya kartunya yang menerima input, sehingga <b>menekan kontrol yang disorot
     itu sendiri akan melanjutkan tur</b> — "tekan di sini" menjadi sebuah tindakan, bukan sekadar kalimat.</p>
   <pre><code>tour.start([

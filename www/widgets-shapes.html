@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html">Popups and dialogs</a>
   <a href="widgets-surfaces.html">Floating windows</a>
   <a href="widgets-messages.html">Telling the player something</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Familiar web shapes, rebuilt around what a game needs from them.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — daily attendance</h3>
+  <figure class="shot"><img src="img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Daily attendance rewards; only today can be pressed." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>A date picker is almost never useful in a game. A calendar shape is — for attendance rewards, where
     what matters is <b>which day you are on</b>, not which date it is.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     today and future differ by three things at once: a tick glyph, an accent border and dimming.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> and <code>GoDonut</code> — stats at a glance</h3>
+  <div class="shots">
+    <figure class="shot"><img src="img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — The stat pentagon, with a dashed line to compare gear." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Shares as slices, with a legend in words as well as colour." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # a dashed overlay
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     and the legend prints the percentage in words.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banners and character select</h3>
+  <figure class="shot"><img src="img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Banners and character select that never turn on their own unless asked." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # off by default</code></pre>
   <p>It does not advance on its own unless you ask, and five seconds is the floor: a banner that changes
@@ -126,6 +133,7 @@ banners.autoplay_seconds = 5.0             # off by default</code></pre>
     even though the drawn dot is small.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — key hints that do not lie</h3>
+  <figure class="shot"><img src="img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Key caps that read the real binding, so rebinding never makes the hint lie." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # reads the real binding</code></pre>
   <p>A hard-coded "Press F" keeps saying F after the player rebinds — the most common lie in a PC UI.
     <code>for_action()</code> reads <code>InputMap</code>; if the action is bound to a pad instead, it returns

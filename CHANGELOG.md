@@ -6,6 +6,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **The website shows every widget, and has a guide to popups.** `tests/site_widget_shots.gd` photographs the kit on
+  the virtual monitor — each widget cropped to itself, the popups open over a small game with its HUD, one confirmation
+  in all ten looks, the gallery in every look and the parts each skin draws — and `tools/site_images.py` turns the
+  shots into WebP files under `www/img/` (1.8 MB for 142 pictures) with `shots.json` holding their display sizes. The
+  All widgets page now shows a picture on 93 of its 97 cards, the topic pages show one under each widget heading, and
+  a new page, *Popups and dialogs* (`widgets-popups.html`), covers every overlay: which to pick, the parts of a window,
+  dialogs and their answers, `GoSurface` sizing and properties, sheets and drawers, popovers and menus, the popups that
+  never stop the game, tours and the console, layers, Back and input, every look, the `GoConfig` fields, recipes and
+  pitfalls. The overview and the presets page announce the Material 3 and kids looks with their own sections. All 17
+  languages.
 - **The kids looks are jelly candies — `GoStyleBoxJelly`.** Every key, list row, folding title, text field, bar, slider
   and panel of `kids_light` / `kids_dark` is now drawn by a new StyleBox (`widgets/go_stylebox_jelly.gd`): the chunky
   outline and the lip under it as before, plus a body light on top and deeper below and a white shine at the top left.
@@ -44,6 +54,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Windows cast their whole shadow.** `GoSurface` clipped its card (`clip_contents`), and a clip cuts the clipping
+  item's own drawing too: the shadow vanished outside the card and showed as a dark square in the four corners the
+  rounded face leaves open — on every dialog, sheet, popover and window in every look. The content is now clipped one
+  level in, by the padding that fills the card, so it is clipped where it always was.
+- **A carousel page with a wrapping title fits its strip.** A page is first laid out 1dp wide, where its title stacks a
+  letter per line; the page kept that tall size after the real width arrived (1215dp for a 120dp strip), so a centred
+  title sat far below the visible strip and the banner showed blank. `GoCarousel` sizes its pages again whenever their
+  minimum size changes.
 - **The checks pass in a fresh project, so CI is green again.** The layout, later-widget, jelly and template checks set
   the screen size through `content_scale_size`, which only moves the screen while stretch is on — a project that turns
   it on (laryen3d) passed, while CI's empty host project left the `--headless` window at 64×64 and 100 checks failed on

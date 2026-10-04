@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控件</a>
   <a href="widgets-catalog.html">全部控件</a>
+  <a href="widgets-popups.html">弹窗与对话框</a>
   <a href="widgets-surfaces.html" aria-current="page">浮动窗口</a>
   <a href="widgets-messages.html">把消息传达给玩家</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,11 @@
 <section id="surfaces">
 
   <h3 id="gosurface-the-shell"><code>GoSurface</code> —— 外壳</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="GoSurface — 浮动窗口——居中、从底部弹出，或贴靠某个控件。" loading="lazy"><figcaption><code>CENTER</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="GoSurface — 浮动窗口——居中、从底部弹出，或贴靠某个控件。" loading="lazy"><figcaption><code>BOTTOM</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="GoSurface — 浮动窗口——居中、从底部弹出，或贴靠某个控件。" loading="lazy"><figcaption><code>ANCHOR</code></figcaption></figure>
+  </div>
   <p>弹窗、底部面板和下拉菜单用的都是它。它负责安全区域、虚拟键盘、
     常驻页眉页脚、滚动主体、谁是最上层窗口、焦点恢复、返回键的归属，以及拖动改变大小。</p>
   <table>
@@ -114,6 +120,7 @@
   </div>
 
   <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> —— 从底部升起的页面</h3>
+  <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — 带分页、返回导航与固定底栏的底部面板。" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("背包")
@@ -125,6 +132,11 @@ sheet.footer().visible = true</code></pre>
     主体，并<b>关掉</b>返回按钮和常驻行 —— 在一个无处可返回的界面上留一颗按不动的按钮，看上去就像坏了。</p>
 
   <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> —— 可以 <code>await</code> 的确认框</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="GoDialogs — 可 await 的确认与提示窗口；提示会排队等候。" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="GoDialogs — 可 await 的确认与提示窗口；提示会排队等候。" loading="lazy"><figcaption><code>destructive</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="GoDialogs.choose — 从几项中选一项——手机上是底部面板，桌面上是卡片。" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+  </div>
   <pre><code>if await dialogs.confirm("删除存档", "此操作无法撤销。"):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> —— 正文之后的参数全都可选，
@@ -141,12 +153,14 @@ sheet.footer().visible = true</code></pre>
     所以把 <code>GoDialogs</code> 放进自动加载也不会在启动时增加任何开销。</p>
 
   <h3 id="goform-a-width-capped-form"><code>GoForm</code> —— 限定最大宽度的表单</h3>
+  <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — 限制宽度并避开键盘与 HUD 的表单。" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
   <div class="note warn">
     <b>它保证其后代的标签会自动换行。</b> 否则一句长句子会拉成一整行，其最小宽度超过屏幕，
     两侧被裁掉 —— 甚至会让人看不出自己在哪个界面上。逐个场景手动打开换行，每次都会忘。
   </div>
 
   <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> —— 触摸滚动</h3>
+  <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — 从内容任意位置都能触控滚动，支持从右到左的语言。" loading="lazy"><figcaption><code>GoScroll</code> · <code>GoScroll.horizontal()</code></figcaption></figure>
   <p>里面只放<b>一样</b>东西。页眉和按钮行都该放在外面 —— 长列表绝不能把它们顶出屏幕。
     <code>use_panel_edge()</code> 会把滚动条移进卡片已有的内边距里，同时内容保持原来的缩进。</p>
 </section>

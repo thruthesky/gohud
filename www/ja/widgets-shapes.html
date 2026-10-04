@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">ウィジェット</a>
   <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html">ポップアップとダイアログ</a>
   <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
   <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>見慣れたウェブの形を、ゲームがそこに求めるものを軸に作り直したものだ。</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — 毎日のログインボーナス</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — 毎日の出席報酬。押せるのは今日だけ。" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>日付ピッカーがゲームで役に立つことは、ほとんどない。カレンダーの形は役に立つ — ログインボーナスだ。
     そこで問題になるのは<b>何日目か</b>であって、何月何日かではない。</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     これからの3つは、同時に3つの違いで見分けられる。チェックの記号、強調色の枠、そして暗さだ。</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> と <code>GoDonut</code> — ひと目で分かるステータス</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — ステータスの五角形。装備の比較は点線で。" loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — 割合を扇形で。凡例は色だけでなく言葉でも。" loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # 破線の重ね描き
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     割合が文字で出る。</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — バナーとキャラクター選択</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — バナーとキャラクター選択。頼まれない限り勝手にめくれない。" loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # 既定では動かない</code></pre>
   <p>頼まない限り自分では進まないし、5秒が下限だ。3秒ごとに変わるバナーは、読み終える前に文字を持ち去る。
@@ -125,6 +132,7 @@ banners.autoplay_seconds = 5.0             # 既定では動かない</code></pr
     が、押せる範囲はタッチの最小寸法を保つ。</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — 嘘をつかないキー表示</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — 実際の割り当てを読むキーキャップ。割り当てを変えても案内が嘘にならない。" loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # 実際の割り当てを読む</code></pre>
   <p>直接書き込んだ「F を押す」は、プレイヤーが割り当てを変えたあとも F と言い続ける — PC の UI でいちばん
     よくある嘘だ。<code>for_action()</code> は <code>InputMap</code> を読む。その操作がパッドに割り当てられて

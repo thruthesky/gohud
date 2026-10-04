@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Tous les widgets</a>
+  <a href="widgets-popups.html">Pop-ups et boîtes de dialogue</a>
   <a href="widgets-surfaces.html">Fenêtres flottantes</a>
   <a href="widgets-messages.html">Dire quelque chose au joueur</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — le message qui se place tout seul</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Un message en bas qui se met en file et peut porter des boutons." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>Il se pose en bas (ou en haut), au-dessus de la zone sûre et du clavier, et s'en va de lui-même. Sans lui,
     vous écrivez le calque, le placement, le minuteur et la libération sur chaque écran qui doit dire « enregistré ».</p>
   <pre><code>snack.show_text("Enregistré", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "Objet jeté", "actions": ["Annuler"]}) == 0:
     l'écran propriétaire qui décide où il se place. Il ne peut pas porter de bouton ; celui-ci le peut.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — une attente dont on ne voit pas la fin</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — Une attente ; transforme un bouton en indicateur sur place, pour qu&#x27;on ne le touche pas deux fois." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>Les jeux qui parlent à un serveur en ont besoin plus que de tout le reste de cette page : un écran qui ne
     bouge pas se lit comme un plantage. Un seul appel transforme le bouton que l'on vient d'appuyer en indicateur d'attente, <b>sur place</b>.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -128,6 +131,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>Une progression mesurable, c'est une <code>GoBar</code>. Un indicateur d'attente ne promet rien sur le moment où il s'arrête.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — la pastille de non-lu, l'étiquette NOUVEAU, le 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — Le point non lu, l&#x27;étiquette NEW et le 99+, accrochés à un coin." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # se masque à zéro
 GoBadge.attach(shop_button, 0, "NOUVEAU")
 GoBadge.attach(friend_button, 3, "", true) # une pastille — « il y a quelque chose »</code></pre>

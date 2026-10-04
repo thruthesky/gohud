@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Popups and dialogs — gohud</title>
+<meta name="description" content="Every popup gohud has — which to pick, how it opens and closes, what it does to Back and input, in every look.">
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Overview</a>
+      <a href="install.html">Install</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">Widgets</a>
+      <a href="theming.html">Theming</a>
+      <a href="icons.html">Icons</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>English</summary>
+        <div class="langs-list">
+          <a href="widgets-popups.html" hreflang="en" lang="en" aria-current="true">English</a>
+          <a href="ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Popups and dialogs</h1>
+    <p class="lead">Every popup gohud has — which to pick, how it opens and closes, what it does to Back and input, in every look. <a href="widgets.html">← Widgets</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widgets">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widgets</a>
+  <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html" aria-current="page">Popups and dialogs</a>
+  <a href="widgets-surfaces.html">Floating windows</a>
+  <a href="widgets-messages.html">Telling the player something</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Waiting, telling, counting</a>
+  <a href="widgets-forms.html">Forms and lists</a>
+  <a href="widgets-shapes.html">Shapes games actually use</a>
+  <a href="widgets-overlays.html">Over the screen</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — one place things are made</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>Pick the right popup</h2>
+  <p class="sub">A popup interrupts. Before choosing one, answer a single question: <b>must the player answer before the game
+    goes on?</b> If yes, block. If no, never block — a card that stops the game for news the player did not ask for is the
+    fastest way to make them close your game.</p>
+  <ol class="steps">
+    <li><b>A question with an answer</b> — buy, delete, leave, overwrite → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>. Something to acknowledge → <code>alert()</code>. One of a few options → <code>choose()</code>.</li>
+    <li><b>A screen of its own</b> — settings, a character sheet, a shop item → <a href="#popup-surface"><code>GoSurface</code></a> in the middle of the screen.</li>
+    <li><b>A long list or a management page</b> — the bag, mail, friends → <a href="#popup-sheets"><code>GoSheet</code></a> from the bottom on a phone, <code>GoDrawer</code> from the side on a wide screen.</li>
+    <li><b>Something about the thing just pressed</b> — an item's stats, its actions → <a href="#popup-anchored"><code>GoPopover</code></a> or <code>GoContextMenu</code> beside it.</li>
+    <li><b>News the game can carry on through</b> — saved, dropped, invited → <a href="#popup-nonblocking"><code>GoSnackbar</code>, <code>GoNotice</code> or <code>GoPromptCard</code></a>. These never take the screen.</li>
+    <li><b>Teaching the controls</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>. <b>Cheats while you build</b> → <code>GoConsole</code>.</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">Every popup at a glance</h3>
+  <table>
+    <thead><tr><th>Popup</th><th>Stops the game</th><th>Back / Escape</th><th>A tap outside</th><th>Use it for</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>Yes</td><td>Closes it — confirm answers <code>false</code>, alert returns</td><td>Closes it only with <code>dismiss_on_scrim</code></td><td>Questions that need an answer</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>Yes</td><td>Closes it — answers <code>-1</code></td><td>Closes it only with <code>dismiss_on_scrim</code></td><td>Picking one of a few</td></tr>
+      <tr><td><code>GoSurface</code></td><td>Yes</td><td>Asks to close the topmost</td><td>Asks to close with <code>dismiss_on_scrim</code></td><td>Windows of your own</td></tr>
+      <tr><td><code>GoSheet</code></td><td>Yes</td><td>Closes the whole sheet</td><td>Closes it</td><td>The bag, a shop list, mail</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>Yes</td><td>Android Back only</td><td>Closes it</td><td>A side list on a wide screen</td></tr>
+      <tr><td><code>GoPopover</code></td><td>Until it closes</td><td>Closes it</td><td>Closes it — and goes no further</td><td>Item and skill details</td></tr>
+      <tr><td><code>GoCombobox</code> list</td><td>Until it closes</td><td>Closes it</td><td>Closes it</td><td>A pick list that searches</td></tr>
+      <tr><td><code>GoContextMenu</code> · dropdown · select</td><td>The engine's menu</td><td>The engine's menu</td><td>Closes it</td><td>Actions, short lists</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>No</td><td>—</td><td>Reaches the game</td><td>Saved · Undo · Retry</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>No</td><td>—</td><td>Reaches the game</td><td>An invite, a trade request</td></tr>
+      <tr><td><code>GoNotice</code></td><td>Never</td><td>—</td><td>Reaches the game</td><td>A fixed line on the HUD</td></tr>
+      <tr><td><code>GoBanner</code></td><td>No — it is in the page</td><td>—</td><td>—</td><td>"You're offline. Retry"</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Its card only</td><td>Ends the tour</td><td>Reaches the game</td><td>A first-run tour</td></tr>
+      <tr><td><code>GoConsole</code></td><td>Its panel only</td><td>The Escape key closes it</td><td>Reaches the game</td><td>Debug commands</td></tr>
+    </tbody>
+  </table>
+  <p>Which layer each one opens on, and why in that order, is under <a href="#popup-stack">Layers, Back and input</a>.</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="img/popups/dialog-confirm.webp" width="300" height="649" alt="A confirmation dialog over a game — a question with Not now and Buy buttons" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="img/popups/surface-center.webp" width="300" height="649" alt="A settings window in the middle of the screen with toggles, a slider and Save and Cancel" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="img/popups/sheet.webp" width="300" height="649" alt="An inventory sheet rising from the bottom with a search field and a Close button" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="img/popups/drawer-right.webp" width="300" height="649" alt="A bag drawer sliding in from the right side" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="img/popups/popover.webp" width="300" height="649" alt="A small item card above the potion quick slot" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="img/popups/context-menu.webp" width="300" height="649" alt="A menu with Use, Move and Drop opened from a quick slot" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="img/popups/snackbar.webp" width="300" height="649" alt="A snackbar at the bottom saying an item was dropped, with Undo" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="img/popups/prompt-card.webp" width="300" height="649" alt="A party invite card near the top of the screen with Accept and Decline" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="img/popups/coach-mark.webp" width="300" height="649" alt="A coach-mark card pointing at a quick slot during a tour" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="img/popups/console.webp" width="300" height="649" alt="The developer console across the top of the screen with a command typed" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>Every picture on this page is the same little game — health and mana top left, coins top right, a joystick and three
+    quick slots at the bottom — in <code>default_dark</code>, with one popup open over it. <a href="#popup-looks">The same
+    popup in all ten looks →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>Anatomy of a popup</h2>
+  <p class="sub">Almost every blocking popup in gohud — dialogs, sheets, popovers, the combobox list and your own
+    windows — is one node, <code>GoSurface</code>. Learn its parts once and you know all of them.</p>
+  <figure class="shot phone"><img src="img/popups/surface-status.webp" width="300" height="649" alt="A Create a character window: a Back button and the title in the header, a close button, a name field with an error, class buttons, a red status line and a Create button pinned at the bottom" loading="lazy"><figcaption>Header with back and close · body · status line · footer</figcaption></figure>
+  <table>
+    <thead><tr><th>Part</th><th>What it is</th><th>How you reach it</th></tr></thead>
+    <tbody>
+      <tr><td>Layer</td><td>The <code>CanvasLayer</code> the popup lives on. Its number decides what it covers.</td><td>Yours for a <code>GoSurface</code>; built in for the others (<a href="#popup-stack">table</a>)</td></tr>
+      <tr><td>Scrim</td><td>The veil over everything behind. It catches the taps that miss the card.</td><td><code>scrim_transparent</code>, <code>dismiss_on_scrim</code>, the theme's <code>scrim</code> colour</td></tr>
+      <tr><td>Card</td><td>The window itself — the theme's panel face, rounded, cut, forged or jelly depending on the look.</td><td><code>card</code>, <code>alpha</code></td></tr>
+      <tr><td>Header</td><td>An optional back button, the title (two lines at most, then "…"), the close button.</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>Toolbar</td><td>A pinned row under the header — a search field, filter chips. Hidden until you use it.</td><td><code>toolbar</code></td></tr>
+      <tr><td>Body</td><td>The scrolling part. Put the content here.</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>Status line</td><td>A pinned line between the body and the footer — "Name check failed", "Saving…".</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>Footer</td><td>Pinned buttons at the bottom. Hidden until you use it.</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Pinned things go in the pinned rows.</b> A search field, an error or a Save button put in the body scrolls away
+    with a long list — the player types a wrong name, the error is under the fold, and nothing seems to happen.
+    Use <code>toolbar</code>, the status line and <code>footer</code>; they stay put while the body scrolls.
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2>Dialogs you <code>await</code></h2>
+  <p class="sub"><code>GoDialogs</code> asks and waits. One node, three questions — and the answer comes back on the same
+    line, so the code reads in the order the player experiences it.</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — a question with Not now above and Buy below" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/dialog-destructive.webp" width="300" height="649" alt="A destructive confirm — the Delete button is filled red" loading="lazy"><figcaption><code>confirm(…, true)</code> — destructive</figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — Level up! with a single Great button" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — Sort the bag by, with four options and Cancel" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/dialog-horizontal.webp" width="300" height="649" alt="A confirm with its two buttons side by side" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">The three questions</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # await it to wait
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # translation keys</code></pre>
+  <table>
+    <thead><tr><th>Call</th><th>Returns</th><th>Use it for</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> or <code>false</code></td><td>Yes or no — buy, delete, leave, overwrite.</td></tr>
+      <tr><td><code>alert()</code></td><td>nothing — <code>await</code> it to wait</td><td>Something the player must see: a reward, a lost connection.</td></tr>
+      <tr><td><code>choose()</code></td><td>the option's index, or <code>-1</code></td><td>One of a few. An option is a String or <code>{text, icon, danger, subtitle}</code>.</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>as above</td><td>The same with translation keys — the words follow a language change while the dialog is open.</td></tr>
+    </tbody>
+  </table>
+  <p>Empty button labels fall back to the kit's own words (<code>confirm</code>, <code>cancel</code> in <code>GoConfig.text_keys</code>).
+    <code>extra</code> is added to the body on a new line. <code>args</code> fills <code>{placeholders}</code> in the title
+    <b>and</b> the body: <code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>.</p>
+
+  <h3 id="every-way-out-has-an-answer">Every way out has an answer</h3>
+  <table>
+    <thead><tr><th>The player…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>presses OK / an option</td><td><code>true</code></td><td>returns</td><td>the option's index</td></tr>
+      <tr><td>presses Cancel</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>presses ×, Escape or Android Back</td><td><code>false</code></td><td>returns</td><td><code>-1</code></td></tr>
+      <tr><td>taps the scrim (only with <code>dismiss_on_scrim</code>)</td><td><code>false</code></td><td>returns</td><td><code>-1</code></td></tr>
+      <tr><td>the <code>GoDialogs</code> node leaves the tree</td><td><code>false</code></td><td>returns</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>So code after <code>await</code> always runs — no answer is ever left hanging, even when the scene changes under the dialog.</p>
+
+  <h3 id="destructive-actions">Destructive actions</h3>
+  <p>Pass <code>destructive = true</code> for something that cannot be undone. The OK button becomes the filled
+    <code>Tone.DANGER_SOLID</code> button — white on red in every look, where a tinted danger label would have to darken to
+    near-black on a light theme to stay legible. The tone is reset on every call, because the window is reused.</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>OK has the keyboard focus.</b> Every confirmation opens with its OK button focused, so Enter or Space confirms —
+    a destructive one too. Word the buttons so the safe choice is obvious ("Keep it"), and keep irreversible actions
+    behind a second step when a slip costs the player real progress.
+  </div>
+
+  <h3 id="button-layout">Button layout</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code> (default)</td><td>Buttons stacked, full width. Safe for every language — a long German or Russian label never squeezes.</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>One row, half the width each.</td></tr>
+      <tr><td><code>AUTO</code></td><td>One row only when both labels fit half the card on a single line; stacked otherwise. Decided again on a language change or a resize.</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> is the space between the buttons, <code>body_gap</code> the space above them — make it wider than
+    the button gap so the question and the choice read as two parts. For one dialog only, call
+    <code>set_next_action_layout()</code> before opening it. An alert's single button always takes the full width.</p>
+
+  <h3 id="one-at-a-time">One at a time</h3>
+  <p>A second <code>confirm()</code> while one is open returns <code>false</code> at once — a dialog never stacks on a dialog by
+    accident. Turn on <code>queue_when_busy</code> and it waits its turn instead; <code>alert()</code> always waits.
+    <code>queue_limit</code> (8) caps the line, and on overflow the oldest request is answered <code>false</code>.
+    <code>pending()</code> counts the waiting requests and <code>clear_pending()</code> answers them all <code>false</code>.
+    <code>choose()</code> never queues: it returns <code>-1</code> when a dialog is already open.</p>
+
+  <h3 id="phone-and-desktop">Phone and desktop</h3>
+  <p><code>choose()</code> opens as a sheet from the bottom on Android and iOS — where the thumb is — and as a card in the
+    middle on a desktop. A confirm is capped at <code>max_width</code> (420dp) and centred. Set <code>layer_index</code>,
+    <code>max_width</code> and the other exports <b>before</b> <code>add_child</code>; they are applied when the node enters the tree.</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — a window of your own</h2>
+  <p class="sub">When a popup is more than a question — settings, a character sheet, an item to buy — build it on
+    <code>GoSurface</code>. The safe area, the keyboard, pinned rows, scrolling, Back, focus and resizing are done.</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>It never closes itself.</b> × , Escape, Back and a scrim tap only emit <code>close_requested</code>. Hiding or freeing
+    the window is the owning screen's job — only it knows whether "close" means save, discard or ask first.
+  </div>
+
+  <h3 id="three-placements">Three placements</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/surface-center.webp" width="300" height="649" alt="CENTER — a card in the middle of the screen" loading="lazy"><figcaption><code>CENTER</code> — confirmations, settings</figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — the same window rising from the bottom" loading="lazy"><figcaption><code>BOTTOM</code> — lists, management pages</figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — a sort menu pinned beside the Sort button" loading="lazy"><figcaption><code>ANCHOR</code> — beside a control</figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/surface-date.webp" width="300" height="649" alt="A date picker inside a centred window with Cancel and OK" loading="lazy"><figcaption>A <code>GoDatePicker</code> in a <code>CENTER</code> window</figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> needs <code>anchor_control</code>. The card goes to the right of it if <code>anchor_min_width</code> fits,
+    otherwise to the wider side, otherwise inside the screen, and opens upward when there is more room above. It follows a
+    moving anchor every frame. <code>anchor_width</code> (320) and <code>anchor_max_height</code> (520) size it.</p>
+
+  <h3 id="how-big-it-gets">How big it gets</h3>
+  <table>
+    <thead><tr><th>Measure</th><th>Rule</th><th>Change it with</th></tr></thead>
+    <tbody>
+      <tr><td>Room</td><td>The safe area, minus the keyboard, minus the screen margin (16dp, never more than 10% of the short side).</td><td>—</td></tr>
+      <tr><td>Width</td><td>94% of the room in portrait, 72% in landscape, at most 480dp.</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>Height</td><td>As tall as the content (<code>fit_content</code>), up to 68% of the room, capped at 72%. A centred card that is not resizable may grow to 94% to avoid scrolling.</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>Density</td><td>Dense when <code>compact</code> is set, the screen is under 420dp tall (a phone on its side), or the content does not fit: less padding, smaller gaps, a smaller title. It measures both and keeps the roomier one that fits — no jitter.</td><td><code>compact</code></td></tr>
+      <tr><td>Resize</td><td>With <code>resizable</code>, the title is a handle: drag it between 30% and the cap. <code>height_changed(ratio)</code> reports the result.</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>A ratio above the cap is cut back, with one warning in a debug build. The keyboard pushes the card up and scrolls the
+    focused field into view; the safe area keeps it off the notch and the gesture bar on Android and iOS.</p>
+
+  <h3 id="properties">Properties</h3>
+  <table>
+    <thead><tr><th>Property</th><th>Default</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>, <code>BOTTOM</code> or <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code> (false)</td><td>A tap on the scrim asks to close. A drag that started inside the card does not.</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>Keep the game visible — the scrim still catches outside taps.</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>Show × and let Escape and Back ask to close.</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>The header row, the scrolling body, the drag handle.</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>Size to the content; start dense.</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code> (false)</td><td>Fade the card in when it opens. Instant under <code>reduce_motion</code>.</td></tr>
+      <tr><td><code>alpha</code></td><td>-1 (the theme's)</td><td>The card face's opacity, as a ratio. Only the face fades — never the text.</td></tr>
+      <tr><td><code>initial_focus</code></td><td>none</td><td>The control focused on open.</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Set these before <code>add_child</code>:</b> <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code> and
+    <code>scroll_body</code> are applied when the window enters the tree. <code>dismiss_on_scrim</code>, <code>close_enabled</code>,
+    <code>fade_in</code> and <code>initial_focus</code> are read live.
+  </div>
+
+  <h3 id="signals-and-calls">Signals and calls</h3>
+  <table>
+    <thead><tr><th>Name</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×, Escape, Android Back or a scrim tap — and <code>request_close()</code>. Emitted only by the topmost window.</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>The header's back button, for a window with pages. An empty <code>Callable</code> hides it.</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>After a drag on the handle.</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>Is this the window that takes Back — is any window open at all.</td></tr>
+      <tr><td><code>relayout()</code></td><td>Lay out again now. Changing a sizing property already does it for you.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>Sheets and drawers</h2>
+  <p class="sub">A list that needs room comes up from the bottom on a phone held upright — where the thumb is — and in from
+    the side on a tablet or a desktop, where a sheet would cover the game.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/sheet.webp" width="300" height="649" alt="GoSheet — Inventory with a pinned search field, a list and a pinned Close button" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer on the left — a menu of Town, World map, Quests, Guild and Settings" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer on the right — the bag" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — pages from the bottom</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>It is a <code>CanvasLayer</code> (layer 10) holding a <code>BOTTOM</code>, resizable <code>GoSurface</code> — so it sits
+      above the HUD, and the player can drag it taller.</li>
+    <li><code>open(title)</code> starts a fresh page: it clears the body, the toolbar and the back button and frees what
+      <code>add_footer()</code> added. Call it again to show another page in the same sheet; <code>set_back()</code> shows a back
+      button for the way home. <code>open_key()</code> takes a translation key.</li>
+    <li><code>close()</code> hides it — it is not freed, so the next <code>open()</code> is instant. <code>closed</code> and
+      <code>page_changed</code> tell you when.</li>
+    <li><code>height_ratio</code> (0.6) is the height it opens at; <code>max_height_ratio</code> lifts the cap; <code>dismissable</code>
+      (true) closes it on a scrim tap.</li>
+  </ul>
+  <div class="note warn">
+    <b>Escape and Back close the whole sheet</b>, even on a sub-page with <code>set_back()</code> — only the on-screen back button
+    walks back a page. If Back should step back, handle <code>close_requested</code> on <code>sheet.surface</code> yourself.
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — from the side</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # the start side: left, or right in Arabic
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>Layer 80. 42% of the screen wide (<code>width_ratio</code>), between <code>min_width</code> (320dp) and <code>max_width</code>
+      (420dp) — on a phone it covers most of the screen, which is why a sheet is the better choice there.</li>
+    <li>The panel reaches the screen edge; only its content steps in from the safe area, so a rounded corner never clips the first row.</li>
+    <li><code>LEFT</code> means screen-left even in Arabic. Turn on <code>follow_text_direction</code> when "the start side" is the
+      point; <code>effective_side()</code> tells you where it went.</li>
+    <li><code>open(title)</code> keeps the body — fill it once. <code>set_title("")</code> hides the header.
+      <code>motion_seconds</code> (0.2) slides it; <code>reduce_motion</code> makes it instant.</li>
+  </ul>
+  <div class="note warn">
+    <b>Android Back closes a drawer; Escape does not.</b> The drawer listens for the system Back only. On a desktop, call
+    <code>drawer.close()</code> from your own key binding — and note that <code>GoSurface.is_any_open()</code> does not count a drawer;
+    ask <code>drawer.is_open()</code>.
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>Cards and menus beside a control</h2>
+  <p class="sub">What the player just pressed deserves an answer right next to the finger, not in the middle of the screen.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/popover.webp" width="300" height="649" alt="GoPopover — a Health potion card beside the quick slot" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Use, Move to slot 1 and Drop" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — a Sort menu open over a leaderboard" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/select.webp" width="300" height="649" alt="GoStyle.select — a quality picker open with Low, Medium, High and Ultra" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — a friend list with a search field" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — a card on the thing pressed</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>An <code>ANCHOR</code> surface with the layer, the anchor and the teardown already wired — the ten lines every game writes
+    again and again. <b>One at a time</b>: opening a second closes the first, because stacked cards bury the screen and nobody
+    can tell which belongs to which slot. The scrim is transparent — a card opened to compare gear must not darken the gear —
+    but it still catches the first outside tap, which closes the card and goes no further.</p>
+  <table>
+    <thead><tr><th>Option</th><th>Default</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>A header with ×. Empty means no header.</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>The card's size.</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>An outside tap closes it.</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>Dense spacing, face opacity, title as a translation key.</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td>The <code>CanvasLayer</code> it opens on.</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> and <code>GoPopover.is_open()</code> are static. <code>open()</code> returns the surface — or
+    <code>null</code> when the anchor is not in the tree, so check before you <code>await shown.close_requested</code>.</p>
+  <div class="note warn">
+    <b>It is not a hover tooltip.</b> Touch has no hover; anything only a mouse can reveal is invisible to half your players.
+    And with <code>dismissable = false</code> and no title, nothing on screen closes it — only Escape, Back or your own call.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — long-press and right-click</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>A right-click opens it at once. A finger held for half a second (<code>HOLD_SECONDS</code>) opens it; moving more than
+      12dp cancels — so scrolling a list never pops a menu.</li>
+    <li>An item is <code>{text, action, icon, disabled, checked, separator, danger, translate}</code>. Pass a <code>Callable</code>
+      instead of the array when the entries depend on what was pressed; it is called each time the menu opens.</li>
+    <li><code>danger</code> puts "⚠ " before the text — the engine's menu can colour only all of its items at once.</li>
+    <li>It is the engine's <code>PopupMenu</code>, dressed by <code>GoStyle.style_popup()</code>. It does not count as an open surface.</li>
+  </ul>
+  <div class="note warn">
+    <b>A long press needs a second way in.</b> Nobody finds a hidden gesture. Pair it with a visible <code>⋯</code> button
+    (<code>open_at()</code>, as above), or teach it once with a coach mark.
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">Dropdowns, selects and the split button</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>All three open the engine's popup menu: <code>dropdown()</code> is a <code>MenuButton</code> that runs an action,
+    <code>select()</code> an <code>OptionButton</code> that keeps a value, <code>GoSplitButton</code> a main action plus a menu on
+    its arrow (<code>chosen(index)</code>). Menus stay fully opaque on purpose — a menu shown in its own OS window turns
+    translucent pixels black.</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — a list that searches</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>Pressed, it opens an anchored list on layer 96 with a transparent scrim. From <code>search_threshold</code> (8) entries a
+    search field appears and takes the focus; it matches anywhere in the text or the hint, ignoring case, and an empty result
+    says so. <code>list_width</code> (0 = the button's width, at least 180dp) sizes the list.</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>Popups that never stop the game</h2>
+  <p class="sub">News the player can read while playing. None of these has a scrim; a tap anywhere but the card itself goes
+    to the game.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Rusty sword dropped, with Undo, above the quick slots" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/notice.webp" width="300" height="649" alt="GoNotice — Game saved, at the top of the HUD" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — a party invite under the health bars" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/tooltip.webp" width="300" height="649" alt="A custom tooltip above the shield slot" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — a message with an Undo</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th>Key of <code>post()</code></th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>The message, an optional bold line, <code>{placeholders}</code>, translation keys.</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>The accent colour (<code>GoTheme.SUCCESS</code>, <code>WARNING</code>…) and an icon.</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>Buttons — Strings or <code>{text, action}</code> — and an ×.</td></tr>
+      <tr><td><code>seconds</code></td><td>How long it stays. Negative: the theme's <code>notice_duration_ms</code>. <b>0: until dismissed</b> — give it a button then.</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> returns the index of the button pressed, or <code>-1</code> when it timed out or was dismissed. Posts
+    queue (<code>queue_limit</code> 4, the oldest dropped with -1), and the same text posted again while it shows only refills its
+    timer. It sits at the bottom (or the top, <code>placement</code>), above the safe area and the keyboard, on layer 90 — readable
+    over a drawer. With <code>tap_to_dismiss</code> (on) a tap on a card without buttons closes it; a tap off the card always
+    reaches the game. <code>show_text()</code> and <code>show_key()</code> are the one-line forms.</p>
+  <div class="note warn">
+    <b>Never ask a question in a snackbar.</b> It goes away on its own; a choice that matters belongs in a dialog.
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — a line on the HUD</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>A plain panel you place yourself — in a <code>GoHudAnchor</code>, in a corner, anywhere. It takes neither input nor focus,
+    so pressing through it reaches the button underneath, and a new message replaces the old one. Give it a width:
+    <code>preferred_width(limit)</code> returns the natural width of short text and wraps long text within <code>limit</code>.
+    <code>set_content()</code> shows any control instead of text.</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — a question that can wait</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # step below the health bars instead of covering them
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>It starts hidden</b> — call <code>show()</code>. It has no timer of its own; add one if the question expires.</li>
+    <li>Its buttons do not close it — the actions decide. × (<code>set_closable(true)</code>) emits <code>closed</code>.</li>
+    <li><code>fit_width(width)</code> sets the width and predicts the height from the font, so nothing laid out against it jumps a frame later.</li>
+    <li>Its face follows <code>hud_alpha</code> — it is part of the HUD, not a window.</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> and tooltips</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> sits in the page
+    itself, above the content, and never times out; a button dismisses it unless it has <code>"keep": true</code>.
+    <code>GoStyle.tooltip_node(text)</code> is what to return from <code>_make_custom_tooltip()</code> — the engine draws the plate
+    (<code>TooltipPanel</code>), gohud the text, wrapped past 260dp. Tooltips are for a mouse; never hide what a player needs behind one.</p>
+</section>
+
+<section id="popup-guides">
+  <h2>Tours and the console</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — step 1 of 2, Quick slots, pointing at the potion slot" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/console.webp" width="300" height="649" alt="GoConsole — the console panel with a give command and its result" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — a tour of the real controls</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>A ring around the real control and a card beside it. Pressing the target advances (its <code>pressed</code> signal, or
+      <code>"signal"</code> in the step); Next and Skip are on the card. A hidden target is skipped.</li>
+    <li>The card stays out of the middle of the screen (<code>avoid_center_band</code>), off the HUD anchors and off <code>keep_clear</code>.</li>
+    <li>While any <code>GoSurface</code> is open the tour hides and waits. Back or Escape ends it with <code>finished(false)</code>.</li>
+    <li>It has no layer of its own — add it last, or on a layer above the HUD.</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — cheats while you build</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>Layer 200 — above everything, so you can debug over a dialog — and it keeps running while the tree is paused. A palette
+    suggests commands as you type; Up and Down walk the history; Escape closes it. There is no built-in key: bind your own.</p>
+  <div class="note warn">
+    <b><code>debug_only</code> (on) blocks it in a release build</b> — both <code>open()</code> and <code>run()</code>. Cheat commands in a
+    player's hands end a game's economy on the first day.
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>Layers, Back and input</h2>
+  <p class="sub">Three rules decide what the player can touch while something is open: what is on top, who owns Back, and who
+    takes a tap.</p>
+
+  <h3 id="what-sits-on-top">What sits on top</h3>
+  <table>
+    <thead><tr><th>Layer</th><th>What sits there</th><th>Set with</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>Your HUD (your choice)</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>Your own <code>GoSurface</code> windows, a pause menu</td><td>your <code>CanvasLayer</code></td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td><code>"layer"</code> option</td></tr>
+      <tr><td>96</td><td><code>GoCombobox</code> list</td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>The order is deliberate: a snackbar reports what just happened, so it reads over a drawer; a popover belongs to what was just
+    pressed, so it sits above that; a dialog asks a question and covers both; the console covers everything, because it is what you
+    open when the rest has gone wrong.</p>
+
+  <h3 id="who-owns-back">Who owns Back</h3>
+  <ul>
+    <li><b>Only the topmost window answers.</b> Among the open surfaces, the one on the highest layer (then the latest in the tree)
+      takes Escape, gamepad cancel (<code>ui_cancel</code>), Android Back and scrim taps. Stacked windows close one at a time, never
+      together.</li>
+    <li>Android Back is handled one frame later, so one press can never close two windows.</li>
+    <li>While anything that owns Back is open, Android Back does not quit the app (<code>GoBackPolicy</code> counts the owners and
+      restores <code>quit_on_go_back</code> after the last one). Your own popup that takes Back should call
+      <code>GoBackPolicy.acquire()</code> and <code>release()</code> — in <code>_exit_tree</code> too.</li>
+    <li>A drawer, a coach-mark tour and a form step aside while a surface is open — Back goes to the surface first.</li>
+    <li><code>GoConfig.close_on_back</code> (on) is the switch for surfaces.</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">Who takes a tap</h3>
+  <ul>
+    <li>A surface covers the whole screen and stops input — <b>a transparent scrim too</b>. Nothing on a lower layer is pressed while
+      it is open; layers above it (a snackbar) still are.</li>
+    <li>Mouse-wheel and pinch gestures stop at the window as well: scrolling past the end of a list never scrolls the game.</li>
+    <li>Gameplay input that does not go through controls — <code>_unhandled_input</code> for movement, a camera drag — should pause:
+      <code>if GoSurface.is_any_open(): return</code>. That covers dialogs, sheets, popovers and the combobox; ask a drawer
+      <code>is_open()</code> separately.</li>
+    <li>Snackbar, notice, prompt card and coach mark take input only on their own card; everywhere else, the game gets it.</li>
+  </ul>
+
+  <h3 id="focus">Focus</h3>
+  <p>A window opened by a pointer focuses nothing — no ring flashes for a touch. Opened from a keyboard or gamepad, the close button
+    (or <code>initial_focus</code>) takes focus. Focus stays inside the window while it is open and goes back to the control that had
+    it when the window closes. Dialogs focus OK every time.</p>
+
+  <h3 id="pausing-the-game">Pausing the game</h3>
+  <p>Pausing the tree pauses popups too — only the console keeps working. For a pause menu, give its layer
+    <code>process_mode = PROCESS_MODE_ALWAYS</code>; then the window, its buttons and Back keep running while the game is stopped.</p>
+</section>
+
+<section id="popup-looks">
+  <h2>The same popup in every look</h2>
+  <p class="sub">The confirmation from the top of this page, over the same game, with only the preset changed. The code is
+    identical — the theme, the skin and the icons do the rest.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/look-default_dark.webp" width="300" height="649" alt="The confirmation in default_dark — rounded, a soft blue accent" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-default_light.webp" width="300" height="649" alt="The confirmation in default_light" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-scifi_dark.webp" width="300" height="649" alt="The confirmation in scifi_dark — cut corners and a neon edge" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-scifi_light.webp" width="300" height="649" alt="The confirmation in scifi_light" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-medieval_dark.webp" width="300" height="649" alt="The confirmation in medieval_dark — a forged frame and a Cinzel title" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-medieval_light.webp" width="300" height="649" alt="The confirmation in medieval_light — parchment and bronze" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-material_light.webp" width="300" height="649" alt="The confirmation in material_light — 28dp corners and pill buttons" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">New</span></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-material_dark.webp" width="300" height="649" alt="The confirmation in material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">New</span></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-kids_light.webp" width="300" height="649" alt="The confirmation in kids_light — a sunny title ribbon, a candy close button and jelly buttons" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">New</span></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-kids_dark.webp" width="300" height="649" alt="The confirmation in kids_dark — a mint ribbon on a night-blue card" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">New</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">What each look changes</h3>
+  <table>
+    <thead><tr><th>Look</th><th>The window</th><th>Its head and buttons</th></tr></thead>
+    <tbody>
+      <tr><td>Default</td><td>Rounded (18dp), a soft shadow, 80% opaque over the game</td><td>A plain title and ×; primary buttons lift and sink</td></tr>
+      <tr><td>Sci-fi</td><td>Cut corners with a neon edge and glow, the edge tinted by the accent</td><td>Bracket focus marks</td></tr>
+      <tr><td>Medieval</td><td>A forged frame — iron and leather, or parchment — with rivets and corner ornaments</td><td>Titles in Cinzel</td></tr>
+      <tr><td>Material 3</td><td>28dp corners, 24dp padding, fully opaque</td><td>A 24sp headline in Roboto; pill buttons with a 40dp plate in a 48dp target</td></tr>
+      <tr><td>Kids</td><td>A jelly-candy card with a soft shadow, fully opaque</td><td>A sunny title ribbon (mint at night), a round candy close button, buttons that squish when pressed</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">Dress a popup from a skin</h3>
+  <p>A skin decides the parts a Theme cannot reach. These hooks are the ones popups call — override them in your own
+    <code>GoSkin</code> subclass; by default they do nothing.</p>
+  <table>
+    <thead><tr><th>Hook</th><th>What it dresses</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>A plate behind a window's title. The title centres on it and shrinks, down to the minimum size (15), to stay on one line.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>The window's × — kids makes it a round candy.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Runs the moment a finger lands on a button gohud made — kids squishes it.</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>The faces of prompt cards and coach cards, snackbars and notices, the drawer, banners, the console.</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>The tour's ring and pointer.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">How see-through</h3>
+  <p>Each kind of popup follows its own opacity, so a HUD card can stay light while a dialog stays solid: windows, sheets, dialogs,
+    popovers and the combobox follow <code>panel_alpha</code>; the drawer and coach card <code>card_alpha</code>; prompt cards and the
+    console <code>hud_alpha</code>; snackbars and notices <code>notice_alpha</code>; menus <code>popup_alpha</code>. Material and kids
+    make them all opaque. Override one kind with <code>GoConfig.container_alpha_overrides</code>, all of them with
+    <code>container_alpha</code> (a ratio — <code>0.95</code>), or one window with its <code>alpha</code>. Only the face fades; text is
+    never see-through. <a href="theming-opacity.html">Opacity in detail →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>Settings that shape every popup</h2>
+  <p class="sub">Fields of <code>GoConfig</code> (<code>GoUi.config</code>). A few are copied when a window is created, so set them
+    before building the UI — or call <code>GoUi.refresh()</code> after changing them.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Default</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>The largest a window gets.</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>The usual height and the cap (also the drag limit).</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>How far a centred fit-content card may grow before it scrolls.</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>Width as a share of the room.</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>A scrim tap closes windows and dialogs. Copied when the window is created.</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>Fade windows in, and how fast.</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Escape, <code>ui_cancel</code> and Android Back close the topmost window.</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>How big × looks — its touch target stays 48dp.</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>No focus ring when a window is opened by touch or mouse.</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>Opacity of every face, or per kind (<code>GoTheme.BOX_*</code>).</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>No fades, slides, pulses or squishes.</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>The height of prompt-card and coach-mark buttons.</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>Keep windows off the notch and the gesture bar.</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>The kit's own words: close, back, confirm, cancel, next, done, skip, search, empty…</td></tr>
+      <tr><td><code>sound_cues</code> · haptics</td><td>—</td><td>What <code>GoFeedback</code> plays on opened, closed, confirmed, canceled and tapped.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>Recipes</h2>
+  <p class="sub">Copy, paste, change the words. Every call here is checked against the source.</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">A purchase with the price in it</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">A settings window with a pinned Save</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">A form that says what is wrong</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">A date in a sheet</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">A pause menu</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # keeps running while the game is paused
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">Gameplay that waits for popups</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>Pitfalls</h2>
+  <ul>
+    <li><b>A <code>GoSurface</code> never frees itself.</b> Connect <code>close_requested</code>, or × does nothing.</li>
+    <li><b>Options set after <code>add_child</code></b> — <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code>,
+      <code>scroll_body</code>, and <code>GoDialogs</code>' <code>layer_index</code> and <code>max_width</code> — are not applied.</li>
+    <li><b>A second <code>confirm()</code> returns <code>false</code> at once.</b> Turn on <code>queue_when_busy</code> if two questions can meet.</li>
+    <li><b>Enter confirms.</b> OK has the focus, on destructive dialogs too.</li>
+    <li><b>Back on a sheet closes the sheet,</b> not the sub-page.</li>
+    <li><b>Escape does not close a drawer,</b> and <code>is_any_open()</code> does not see one.</li>
+    <li><b>A popover or combobox list blocks the game</b> until it closes, even with a transparent scrim — and a popover with
+      <code>dismissable = false</code> and no title has nothing on screen that closes it.</li>
+    <li><b>A prompt card starts hidden</b> and has no timeout.</li>
+    <li><b>A snackbar with <code>seconds: 0</code> and no button never leaves.</b> And it catches taps on its card by default.</li>
+    <li><b>A long press nobody knows about is a feature nobody uses.</b> Show a <code>⋯</code> too.</li>
+    <li><b>A paused tree pauses your popup.</b> Use <code>PROCESS_MODE_ALWAYS</code> on its layer.</li>
+    <li><b>A notice without a width</b> collapses to its narrowest — use <code>preferred_width()</code>.</li>
+    <li><b>Never ask in a snackbar, never inform in a dialog.</b> A question goes away when ignored; news should not stop the game.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← All widgets</a> · <a href="widgets-surfaces.html">Floating windows →</a></p>
+  </div>
+</footer>
+
+<script src="site/glossary.en.js"></script>
+<script src="site/tooltip.js"></script>
+<script src="site/toc.js"></script>
+<script src="site/search.js"></script>
+<script src="site/ux.js"></script>
+</body>
+</html>

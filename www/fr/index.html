@@ -88,7 +88,8 @@
       <span class="badge">GDScript pur</span>
       <span class="badge">Aucun autoload requis</span>
       <span class="badge">MIT</span>
-      <span class="badge">6 préréglages</span>
+      <span class="badge">10 préréglages</span>
+      <span class="badge new">Nouveau : Material 3 · Enfants</span>
       <span class="badge">21 langues</span>
       <span class="badge"><span data-n="icons">1 287</span> icônes incluses</span>
     </div>
@@ -102,6 +103,40 @@
 </div>
 
 <main class="wrap">
+
+<section id="new">
+  <h2>Nouveau : Material 3 et une apparence pour les enfants</h2>
+  <p class="sub">
+    Deux nouvelles familles rejoignent par défaut, science-fiction et médiéval — <b>dix apparences intégrées</b> désormais, chacune en sombre et en clair.
+    Chaque widget, pop-up et élément de HUD les adopte sans changer une ligne de votre code : changez de préréglage et tout l'écran suit.
+  </p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="La galerie gohud en material_light — boutons en pilule, cartes pleines et couleurs Material 3" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="La galerie gohud en material_dark — les mêmes formes Material 3 sur la base sombre" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="La galerie gohud en kids_light — de gros boutons en gelée aux couleurs de crayon sur une page ensoleillée" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="La galerie gohud en kids_dark — le même coffre à jouets sur une page bleu nuit" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="material-3-for-app-screens">Material 3 — pour les écrans d'application</h3>
+      <p>Material 3 Expressive, mesuré d'après les tokens M3 officiels : boutons en pilule avec une plaque de 40dp dans la cible
+        tactile de 48dp, boîtes de dialogue et feuilles de 28dp, cartes pleines, champs à contour et le curseur Expressive. Les
+        composants d'application — barre de navigation, barre d'app, FAB, barre de recherche, chips, progression et sélecteur de date —
+        suivent les tokens de composant M3, et les titres sont composés en Roboto, fournie avec le kit. Pour les boutiques, les réglages, les boîtes de réception et tout écran qui doit ressembler à une application.</p>
+    </div>
+    <div class="card">
+      <h3 id="kids-the-toy-box">Enfants — le coffre à jouets</h3>
+      <p>Conçu pour les enfants : chaque touche, rangée et panneau est un bonbon en gelée avec un contour épais et un rebord plein qui
+        s'enfonce à l'appui, chaque type de commande dans sa propre couleur de crayon. Les emplacements rapides sont des blocs de bonbon,
+        les badges des autocollants, le joystick un arc-en-ciel ; les fenêtres reçoivent un ruban de titre ensoleillé et un bouton de
+        fermeture rond en bonbon, et chaque appui écrase la gelée. Les tailles et la police de votre projet restent exactement les mêmes.</p>
+    </div>
+  </div>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # ou MATERIAL_DARK
+GoUi.use_preset(&amp;"kids_light")                   # ou &amp;"kids_dark"</code></pre>
+  <p><a href="theming-presets.html#material">Material 3 en détail →</a> · <a href="theming-presets.html#kids">Enfants en détail →</a> ·
+    <a href="widgets-popups.html#popup-looks">Le même pop-up dans les dix apparences →</a></p>
+</section>
 
 <section id="showcase">
   <h2>Ce que ça donne dans un jeu</h2>
@@ -208,8 +243,10 @@
       <tr><td><code>scifi_light</code></td><td>Les mêmes formes anguleuses dans une palette claire de plan technique</td></tr>
       <tr><td><code>medieval_dark</code></td><td>Fer sombre et cuir, cadres d'or ancien, rivets, icônes gravées, titres en Cinzel</td></tr>
       <tr><td><code>medieval_light</code></td><td>Parchemin, encre et bronze avec les mêmes cadres forgés</td></tr>
-      <tr><td><code>material_light</code></td><td>Material 3 pour les écrans d'application — boutons en pilule, dialogues de 28dp, cartes pleines, la barre de navigation, le FAB et la barre de recherche d'une app, Roboto</td></tr>
-      <tr><td><code>material_dark</code></td><td>Les mêmes formes Material 3 sur la base sombre</td></tr>
+      <tr><td><code>material_light</code> <span class="badge new">Nouveau</span></td><td>Material 3 pour les écrans d'application — boutons en pilule, dialogues de 28dp, cartes pleines, la barre de navigation, le FAB et la barre de recherche d'une app, Roboto</td></tr>
+      <tr><td><code>material_dark</code> <span class="badge new">Nouveau</span></td><td>Les mêmes formes Material 3 sur la base sombre</td></tr>
+      <tr><td><code>kids_light</code> <span class="badge new">Nouveau</span></td><td>Le coffre à jouets des enfants — des touches en bonbon gélifié avec un contour épais et un rebord qui s'enfonce à l'appui, des couleurs de crayon, une page ensoleillée</td></tr>
+      <tr><td><code>kids_dark</code> <span class="badge new">Nouveau</span></td><td>Le même coffre à jouets sur une page bleu nuit</td></tr>
     </tbody>
   </table>
 
@@ -325,10 +362,12 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxCut</code></td><td>Coins coupés en diagonale (chanfrein), une arête d'accent épaissie, un halo extérieur</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>Des marques d'angle seules, sans enfermer le contenu</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Un cadre forgé avec rivets, gravure d'angle, un reflet biseauté et le grain du matériau</td></tr>
+      <tr><td><code>GoStyleBoxJelly</code></td><td>Un bonbon en gelée — un contour épais, un rebord plein qui s'enfonce à l'appui, un corps plus clair en haut et un reflet blanc</td></tr>
     </tbody>
   </table>
-  <p>Les trois se sérialisent dans une ressource Theme — c'est ce qui permet à un thème de changer la <b>forme</b>,
-    et pas seulement la couleur. <code>GoSkinSciFi</code> et <code>GoSkinMedieval</code> sont les sous-classes fournies.</p>
+  <p>Les quatre se sérialisent dans une ressource Theme — c'est ce qui permet à un thème de changer la <b>forme</b>,
+    et pas seulement la couleur. <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> et <code>GoSkinKids</code> sont les sous-classes fournies.</p>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Des emplacements rapides, un joystick et une puce dessinés par chaque skin fourni — par défaut, enfants, Material, médiéval et science-fiction" loading="lazy"><figcaption>Ce que dessine un skin — par défaut, enfants, Material, médiéval, science-fiction</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> renvoie toujours un <code>StyleBoxFlat</code></b>, parce que le code appelant le
@@ -339,7 +378,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 <section id="widgets">
   <h2>Widgets</h2>
-  <p class="sub">Les pièces, en un tableau. <a href="widgets.html">Chacune en détail →</a></p>
+  <p class="sub">Les pièces, en un tableau. <a href="widgets.html">Chacune en détail →</a> ·
+    <a href="widgets-catalog.html">Chaque widget en image →</a> · <a href="widgets-popups.html">Pop-ups et boîtes de dialogue, le guide complet →</a></p>
 
   <table>
     <thead><tr><th>Classe</th><th>Base</th><th>Rôle</th></tr></thead>

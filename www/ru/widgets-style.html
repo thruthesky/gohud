@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Виджеты</a>
   <a href="widgets-catalog.html">Все виджеты</a>
+  <a href="widgets-popups.html">Всплывающие окна и диалоги</a>
   <a href="widgets-surfaces.html">Плавающие окна</a>
   <a href="widgets-messages.html">Как сообщить игроку</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Строки списка с описанием</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Строка списка с иконкой, заголовком, кратким текстом и меткой в конце." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Хранитель клятвы", _inspect, Color.TRANSPARENT,
     "Длинный меч  /  Атака 42", false)</code></pre>
   <p>Строка со второй строкой текста получает <b>равные верхний и нижний отступы</b>, просторнее однострочной, а пара
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Перетекающие ряды</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Столбцы, строки и переносимые строки с отступами из темы." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Кладите элементы управления в <code>wrap_row</code> при их <b>естественной ширине</b>. Если перенос оставить включённым,
     минимальная ширина кнопки падает почти до нуля, и ряд меряет свою ячейку по ней — подпись схлопывается до одного символа
     на строку. Фабрика не даёт этому случиться.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Никогда не оставляйте пустой список пустым</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Заглушка во время загрузки и сообщение для пустого списка." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Здесь пока пусто"))</code></pre>
   <p>Пустой экран люди читают как <b>сломанный</b>.</p>
 </section>

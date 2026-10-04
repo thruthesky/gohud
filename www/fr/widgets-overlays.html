@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Tous les widgets</a>
+  <a href="widgets-popups.html">Pop-ups et boîtes de dialogue</a>
   <a href="widgets-surfaces.html">Fenêtres flottantes</a>
   <a href="widgets-messages.html">Dire quelque chose au joueur</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — le panneau latéral</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Un panneau qui glisse depuis la gauche ou la droite." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Un panneau qui glisse depuis la gauche ou la droite." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> vient du bas, ce qui convient à un téléphone tenu à la verticale. Sur une tablette ou un
     ordinateur, la même feuille recouvre le jeu ; un tiroir vient du côté à la place.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Sac")</code></pre>
     <code>follow_text_direction</code> quand c'est « le côté du début » qui compte, et il bascule en RTL.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — la carte épinglée</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Une carte d&#x27;information à côté de ce qui a été touché ; une à la fois." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>C'est le placement épinglé de <code>GoSurface</code> avec le calque, la surface, l'ancre et la libération
     déjà câblés — les dix lignes que chaque jeu réécrit encore et encore. Une seule est ouverte à la fois, parce
@@ -118,6 +124,7 @@ bag.open("Sac")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — appui long et clic droit</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Un menu par appui long ou clic droit ; un doigt qui bouge l&#x27;annule." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Utiliser", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Sac")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — la console de développement</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Une console de développement avec commandes et historique ; désactivée en version publiée." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Donner un objet : give &lt;id&gt; &lt;quantité&gt;", give)
 console.toggle()</code></pre>
   <p>Des commandes de triche et de débogage, avec une palette qui filtre à mesure que vous tapez pour que personne

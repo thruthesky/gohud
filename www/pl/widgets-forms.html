@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widżety</a>
   <a href="widgets-catalog.html">Wszystkie widżety</a>
+  <a href="widgets-popups.html">Wyskakujące okna i dialogi</a>
   <a href="widgets-surfaces.html">Pływające okna</a>
   <a href="widgets-messages.html">Jak powiedzieć coś graczowi</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — wiersz, który może być błędny</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Etykieta, kontrolka i podpowiedź, z błędem pod złym polem." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>Jedna linia na górze formularza z pięcioma polami, mówiąca „sprawdź wprowadzone dane”, nie mówi, <i>które</i>
     pole. Właśnie to jedno sprawia, że ludzie porzucają rejestrację.</p>
   <pre><code>var name_field := GoField.make("Nazwa postaci", GoStyle.line_edit("2-12"), "Nie da się jej później zmienić")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     wtedy, gdy nic nie może pójść źle, a węzła — wszędzie tam, gdzie serwer może odmówić.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — pole wprowadzania zespawane ze swoim przyciskiem</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Pole i jego przyciski zespawane w jeden kształt." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Wiadomość"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Nazwa"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>Rozwiązuje sprawę narożników. Dwa zaokrąglone kształty spotykające się pośrodku wyglądają na ściśnięte, a domyślny
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("Nazwa"), {"prefix_icon": &amp;"search"})</c
     narożnikami nie mają pól narożników w ogóle, więc tam zostawia je w spokoju, a kwadratowe lica stykają się czysto.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — lista wyboru, która szuka</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — Wybór szukający wewnątrz nazw, nie tylko od początku." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>Poniżej dziesięciu pozycji lepszy jest <code>GoStyle.select()</code>: o jedno dotknięcie mniej i widać całą listę.
     Powyżej trzydziestu przeglądanie staje się pracą.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Wybierz serwer")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — kody kuponów i prezentów</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Kody kuponów i prezentów w komórkach; wklejanie i IME działają." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>Kod dużo częściej wkleja się z wiadomości, niż przepisuje ręcznie. Dwanaście prawdziwych pól złamałoby wklejanie
     na pierwszej komórce i gubiło znaki przez IME, więc tekst przyjmuje jedno ukryte pole, a komórki są rysowane.
     <code>ABCD-EFGH-IJKL</code> gubi po drodze myślniki.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Już wykorzystany")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — sortowalne nagłówki, wybieralne wiersze</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Sortowalne nagłówki i wybieralne wiersze; liczby sortują się jak liczby." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Miejsce", "width": 56}, {"text": "Nazwa"}, {"text": "Wynik", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     komórkę. <code>GoStyle.table()</code> pozostaje siatką tylko do odczytu.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — strony albo wiersz Więcej</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Numerowane strony z bieżącą na środku albo jeden wiersz Wczytaj więcej." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # wariant przyjazny telefonom</code></pre>
   <p>Numery to interfejs dla myszy; na telefonie lepiej czyta się wiersz Więcej. Bieżąca strona zostaje wyśrodkowana

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Віджети</a>
   <a href="widgets-catalog.html">Усі віджети</a>
+  <a href="widgets-popups.html">Спливні вікна та діалоги</a>
   <a href="widgets-surfaces.html">Плаваючі вікна</a>
   <a href="widgets-messages.html">Як сказати щось гравцеві</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -172,6 +173,7 @@
 <section id="hud-widgets">
   <h2>Віджети HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — дев'ять місць</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Закріплює елементи HUD в одній із дев&#x27;яти точок безпечної зони." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Шанує безпечну зону та крайові поля. Дайте йому <code>landscape_spot</code> — і він переїде в ландшафті:
     контроли, що в портреті сидять унизу по центру, можуть перейти вниз праворуч.</p>
   <div class="note">
@@ -210,6 +212,7 @@ notice_anchor.reserve_space = false   # і не штовхає сторінку,
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — здоров'я, мана, досвід</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Смуги HP, MP та XP зі значенням, дробом або відсотком." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # токен лише для заливки
@@ -219,6 +222,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     ширина смуги не сіпалася, коли цифри приходять і йдуть.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — один швидкий слот</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Швидкий слот: іконка, кількість, перезаряджання й клавіша на одній грані." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Сітка інвентарю; предмети можна перетягувати між клітинками." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Іконка, кількість, відкат і гаряча клавіша на <b>одному лицьовому боці</b>. Якщо чіпляти бейджі на
     маленьке коло, кожен слот виходить іншої ширини, і ряд хитається.</p>
   <div class="note">
@@ -232,6 +239,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     єдиний спосіб вводу.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — віртуальний стик</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Віртуальний стік — фіксований, що йде за пальцем, або відносний." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Режим</th><th>Поведінка</th></tr></thead>
     <tbody>
@@ -244,6 +252,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     швидкість; він не залежить ні від розміру екрана, ні від DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — виглядає малою, натискається великою</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Кнопка-іконка: мала на вигляд, 48 dp для пальця, з назвою для читача екрана." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Безпечно лише доти, доки сусіди ігнорують ввід.</b> Якщо розширена область накриє сусідню кнопку,
     та перестане відповідати. Іконковим кнопкам, що стоять поруч, потрібен <code>touch_peers</code>.

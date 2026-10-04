@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html">Cửa sổ nổi</a>
   <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Những hình dạng quen thuộc của web, dựng lại quanh cái mà một game cần ở chúng.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — điểm danh hằng ngày</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Phần thưởng điểm danh hằng ngày; chỉ nhấn được hôm nay." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>Một bộ chọn ngày gần như chẳng bao giờ có ích trong game. Hình dạng của một cuốn lịch thì có — cho phần
     thưởng điểm danh, nơi thứ quan trọng là <b>bạn đang ở ngày thứ mấy</b>, chứ không phải hôm nay là ngày nào.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     ô hôm nay và ô sắp tới khác nhau ở ba thứ cùng lúc: một dấu tích, một cái viền màu nhấn và độ mờ.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> và <code>GoDonut</code> — chỉ số nhìn một cái là thấy</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — Ngũ giác chỉ số, có đường nét đứt để so sánh trang bị." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Tỉ phần dạng miếng, có chú giải bằng chữ chứ không chỉ màu." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # một lớp phủ nét đứt
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     chứ không chỉ là thêm một màu khác, và phần chú giải in tỷ lệ phần trăm ra thành chữ.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banner và màn chọn nhân vật</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Banner và chọn nhân vật không tự chuyển trừ khi được yêu cầu." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # mặc định tắt</code></pre>
   <p>Nó không tự chuyển trang trừ khi bạn yêu cầu, và năm giây là mức sàn: một banner cứ ba giây đổi một lần sẽ
@@ -126,6 +133,7 @@ banners.autoplay_seconds = 5.0             # mặc định tắt</code></pre>
     dù cái chấm được vẽ ra thì nhỏ.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — gợi ý phím không nói dối</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Phím đọc cách gán thật, đổi phím cũng không làm gợi ý sai." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # đọc đúng phím đang gán</code></pre>
   <p>Một dòng "Nhấn F" viết chết trong code vẫn cứ nói F sau khi người chơi đổi phím — lời nói dối phổ biến nhất
     trong giao diện PC. <code>for_action()</code> đọc <code>InputMap</code>; nếu hành động đó lại được gán vào

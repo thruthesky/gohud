@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tutti i widget</a>
+  <a href="widgets-popups.html">Popup e finestre di dialogo</a>
   <a href="widgets-surfaces.html">Finestre flottanti</a>
   <a href="widgets-messages.html">Dire qualcosa a chi gioca</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — il pannello laterale</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Un pannello che scivola dentro da sinistra o da destra." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Un pannello che scivola dentro da sinistra o da destra." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> arriva dal basso, ed è quello che ci vuole per un telefono tenuto in verticale. Su un tablet o su un
     desktop lo stesso foglio copre il gioco; un pannello laterale arriva invece di fianco.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Borsa")</code></pre>
     <code>follow_text_direction</code> quando il punto è "il lato d'inizio", e allora si ribalta in RTL.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — la scheda ancorata</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Una scheda informativa accanto a ciò che è stato toccato; una alla volta." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Questa è la collocazione ancorata di <code>GoSurface</code> con il livello, la superficie, l'ancoraggio e lo
     smontaggio già collegati — le dieci righe che ogni gioco riscrive una volta dopo l'altra. Ne resta aperta una alla volta, perché
@@ -118,6 +124,7 @@ bag.open("Borsa")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — pressione prolungata e clic destro</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Menu con pressione prolungata o clic destro; un dito che si muove lo annulla." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Usa", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Borsa")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — la console per lo sviluppo</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Una console per sviluppatori con comandi e cronologia; spenta nelle build di rilascio." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Assegna un oggetto: give &lt;id&gt; &lt;quantità&gt;", give)
 console.toggle()</code></pre>
   <p>Comandi di cheat e di debug, con una palette che filtra mentre digiti così nessuno deve impararli a memoria, e

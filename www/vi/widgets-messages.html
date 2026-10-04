@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html">Cửa sổ nổi</a>
   <a href="widgets-messages.html" aria-current="page">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Thông báo không bao giờ chiếm thao tác hay tiêu điểm." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Thông báo ở dưới, có hàng chờ và có thể kèm nút." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Nó không bao giờ chặn thao tác.</b> Một thông báo là để đọc chứ không phải để bấm. Nó không lấy focus,
     không chặn thao tác trong game, và cái nút nằm dưới nó vẫn bấm được. Khi cần xác nhận thì dùng
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — câu hỏi không chặn game</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Câu hỏi không dừng trò chơi — lời mời, giao dịch." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Nổi ở một bên và không có lớp phủ mờ. Game vẫn chạy tiếp.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — chuyến tham quan có hướng dẫn</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Chuyến hướng dẫn chỉ vào các điều khiển thật." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Chỉ vào từng control thật một. Chỉ tấm thẻ mới nhận thao tác, nên <b>bấm thẳng vào chính control đang
     được làm nổi là sang bước kế</b> — "bấm vào đây" trở thành một hành động chứ không còn là một câu chữ.</p>
   <pre><code>tour.start([

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">ウィジェット</a>
   <a href="widgets-catalog.html">すべてのウィジェット</a>
+  <a href="widgets-popups.html">ポップアップとダイアログ</a>
   <a href="widgets-surfaces.html">浮かぶウィンドウ</a>
   <a href="widgets-messages.html">プレイヤーに何かを伝える</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -171,6 +172,7 @@
 <section id="hud-widgets">
   <h2>HUD ウィジェット</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — 9か所</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — HUD の部品をセーフエリアの 9 か所のどれかに固定する。" loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>セーフエリアと画面端の余白を尊重する。<code>landscape_spot</code> を与えれば横持ちで移動する —
     縦持ちで下中央にあるコントロールを、横持ちでは右下へ回せる。</p>
   <div class="note">
@@ -205,6 +207,7 @@ notice_anchor.reserve_space = false   # 出ている間にページを押しの�
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — 体力・マナ・経験値</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — 値・分数・パーセントを表示する HP・MP・XP バー。" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "HP"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # 塗り専用のトークン
@@ -214,6 +217,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     桁が増減してもバーの幅が揺れない。</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — クイックスロット1つ</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — クイックスロット。アイコン・数量・クールダウン・ショートカットを一面に。" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — インベントリのグリッド。マス間でアイテムをドラッグできる。" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>アイコン、個数、クールダウン、ショートカットを<b>1つの面</b>に収める。小さな円にバッジをぶら下げると、
     スロットごとに幅が変わって列が揺れてしまう。</p>
   <div class="note">
@@ -225,6 +232,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     Tab 順で割り込まないようにするためである。キーボードやゲームパッドが唯一の入力手段なら有効にする。</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — バーチャルスティック</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — 仮想スティック — 固定、親指に追従、相対。" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>モード</th><th>ふるまい</th></tr></thead>
     <tbody>
@@ -237,6 +245,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     画面サイズや DPI で変わることもない。</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — 小さく見えて大きく押せる</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — アイコンだけのボタン。見た目は小さく、押せる範囲は 48dp、読み上げ用の名前付き。" loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>安全なのは、隣が入力を受け取らないときだけだ。</b> 広げた領域が隣のボタンに重なると、そのボタンは
     反応しなくなる。並べて置くアイコンボタンには <code>touch_peers</code> が要る。

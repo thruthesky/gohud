@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Tous les widgets</a>
+  <a href="widgets-popups.html">Pop-ups et boîtes de dialogue</a>
   <a href="widgets-surfaces.html">Fenêtres flottantes</a>
   <a href="widgets-messages.html">Dire quelque chose au joueur</a>
   <a href="widgets-hud.html" aria-current="page">HUD</a>
@@ -175,6 +176,7 @@
 <section id="hud-widgets">
   <h2>Les widgets du HUD</h2>
   <h3 id="gohudanchor-nine-spots"><code>GoHudAnchor</code> — neuf positions</h3>
+  <figure class="shot phone"><img src="../img/widgets/gohudanchor.webp" width="300" height="649" alt="GoHudAnchor — Épingle des éléments du HUD à l&#x27;un des neuf emplacements de la zone sûre." loading="lazy"><figcaption><code>TOP_LEFT</code> · <code>TOP_RIGHT</code> · <code>BOTTOM_LEFT</code> · <code>BOTTOM_RIGHT</code></figcaption></figure>
   <p>Il respecte la zone sûre et les marges de bord. Donnez-lui un <code>landscape_spot</code> et il se déplace en
     paysage — des commandes placées en bas au centre en portrait peuvent passer en bas à droite.</p>
   <div class="note">
@@ -214,6 +216,7 @@ notice_anchor.reserve_space = false   # et ne pousse pas la page tant qu'il est 
   </p>
 
   <h3 id="gobar-health-mana-experience"><code>GoBar</code> — vie, mana, expérience</h3>
+  <figure class="shot"><img src="../img/widgets/gobar.webp" width="382" height="135" alt="GoBar — Des barres de PV, PM et XP avec valeur, fraction ou pourcentage." loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
   <pre><code>var hp := GoBar.new()
 hp.label_text = "PV"
 hp.ink = GoUi.color(GoTheme.DANGER_FILL)   # le token réservé au remplissage
@@ -223,6 +226,10 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     la largeur de la barre ne tressaute pas au gré des chiffres.</p>
 
   <h3 id="goslot-one-quick-slot"><code>GoSlot</code> — un emplacement rapide</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goslot.webp" width="382" height="72" alt="GoSlot — Un emplacement rapide : icône, quantité, recharge et raccourci sur une seule face." loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/goslotgrid.webp" width="382" height="208" alt="GoSlotGrid — Une grille d&#x27;inventaire ; on peut glisser les objets d&#x27;une case à l&#x27;autre." loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+  </div>
   <p>Icône, quantité, temps de recharge et raccourci sur <b>une seule face</b>. Accrocher des badges autour d'un
     petit cercle donne à chaque emplacement une largeur différente et la rangée se met à onduler.</p>
   <div class="note">
@@ -236,6 +243,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     Activez-le quand le clavier ou la manette est la seule entrée.</p>
 
   <h3 id="gojoystick-virtual-stick"><code>GoJoystick</code> — le stick virtuel</h3>
+  <figure class="shot"><img src="../img/widgets/gojoystick.webp" width="204" height="204" alt="GoJoystick — Un stick virtuel : fixe, qui suit le pouce, ou relatif." loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
   <table>
     <thead><tr><th>Mode</th><th>Comportement</th></tr></thead>
     <tbody>
@@ -248,6 +256,7 @@ hp.set_values(320, 500)                     # "320 / 500"</code></pre>
     directement par une vitesse ; il ne varie ni avec la taille de l'écran ni avec le DPI.</p>
 
   <h3 id="goiconbutton-looks-small-presses-large"><code>GoIconButton</code> — paraît petit, s'appuie grand</h3>
+  <figure class="shot"><img src="../img/widgets/goiconbutton.webp" width="382" height="60" alt="GoIconButton — Un bouton icône seule : petit à l&#x27;œil, 48 dp au toucher, nommé pour les lecteurs d&#x27;écran." loading="lazy"><figcaption><code>GoIconButton</code></figcaption></figure>
   <div class="note warn">
     <b>Sûr uniquement tant que ses voisins ignorent la saisie.</b> Si la zone élargie recouvre le bouton suivant,
     ce bouton cesse de répondre. Des boutons d'icône côte à côte réclament <code>touch_peers</code>.

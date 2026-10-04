@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Semua widget</a>
+  <a href="widgets-popups.html">Popup dan dialog</a>
   <a href="widgets-surfaces.html">Jendela mengambang</a>
   <a href="widgets-messages.html">Menyampaikan sesuatu kepada pemain</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — panel samping</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Panel yang meluncur masuk dari kiri atau kanan." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Panel yang meluncur masuk dari kiri atau kanan." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> datang dari bawah, dan itu tepat untuk ponsel yang dipegang tegak. Pada tablet atau
     desktop lembar yang sama menutupi game-nya; laci datang dari samping sebagai gantinya.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Tas")</code></pre>
     <code>follow_text_direction</code> bila "sisi awal" yang menjadi intinya, dan ia akan berbalik pada RTL.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — kartu yang disematkan</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Kartu info di samping yang ditekan; satu per satu." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Ini adalah penempatan tersemat milik <code>GoSurface</code> dengan lapisan, permukaan, anchor, dan
     pembongkarannya sudah terpasang — sepuluh baris yang ditulis setiap game berulang-ulang. Hanya satu yang terbuka pada satu waktu, karena
@@ -118,6 +124,7 @@ bag.open("Tas")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — tekan lama dan klik kanan</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Menu dengan tekan lama atau klik kanan; jari yang bergerak membatalkannya." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Pakai", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Tas")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — konsol pengembang</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Konsol pengembang dengan perintah dan riwayat; mati di build rilis." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Berikan sebuah item: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>Perintah cheat dan debug, dengan palet yang menyaring selagi Anda mengetik supaya tak seorang pun harus menghafalnya, dan

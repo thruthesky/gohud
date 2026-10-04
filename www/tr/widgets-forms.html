@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget'lar</a>
   <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html">Açılır pencereler ve iletişim kutuları</a>
   <a href="widgets-surfaces.html">Yüzen pencereler</a>
   <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — hatalı olabilen satır</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Etiket, denetim ve ipucu; hata, yanlış alanın altında." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>Beş alanlı bir formun tepesinde "girdinizi kontrol edin" diyen tek bir satır, <i>hangi</i> alan olduğunu
     söylemez. İnsanlara kaydı yarıda bıraktıran tek şey budur.</p>
   <pre><code>var name_field := GoField.make("Karakter adı", GoStyle.line_edit("2-12"), "Sonradan değiştirilemez")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     gidemeyeceği yerde fabrikayı, bir sunucunun reddedebileceği her şey için düğümü kullanın.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — düğmesine kaynaklanmış bir girdi</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Bir giriş ve düğmeleri tek biçimde kaynaştırılmış." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Mesaj"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Ad"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>Çözdüğü şey köşelerdir. Ortada buluşan iki yuvarlak biçim sıkışmış görünür, varsayılan boşluk da onları iki
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("Ad"), {"prefix_icon": &amp;"search"})</code
     ve köşeli yüzler temizce buluşur.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — arama yapan bir seçici</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — Yalnızca baştan değil, adların içinde de arayan seçici." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>On girdinin altında <code>GoStyle.select()</code> daha iyidir: bir dokunuş eksik ve listenin tamamı görünür.
     Otuzu geçtiğinde göz gezdirmek zahmete dönüşür.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Bir sunucu seçin")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — kupon ve hediye kodları</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Hücreler halinde kupon ve hediye kodları; yapıştırma ve IME girişi çalışır." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>Bir kod, yazılmaktan çok daha sık bir mesajdan yapıştırılır. On iki gerçek alan, yapıştırmayı ilk hücrede
     bozar ve karakterleri bir IME'ye kaptırırdı; bu yüzden yazıyı gizli tek bir alan alır, hücreler ise çizilir.
     <code>ABCD-EFGH-IJKL</code> girerken tirelerini bırakır.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Zaten kullanılmış")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — sıralanabilir başlıklar, seçilebilir satırlar</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Sıralanabilir başlıklar ve seçilebilir satırlar; sayılar sayı olarak sıralanır." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Sıra", "width": 56}, {"text": "Ad"}, {"text": "Puan", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     tamamı basılabilir. <code>GoStyle.table()</code> salt okunur ızgara olarak kalır.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — sayfalar ya da bir Daha fazla satırı</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Geçerli sayfayı ortada tutan numaralı sayfalar ya da tek bir Daha fazla satırı." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # mobil dostu değişke</code></pre>
   <p>Sayılar fareye göre bir arayüzdür; telefonda Daha fazla satırı daha iyi okunur. Geçerli sayfa pencerenin

@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Açılır pencereler ve iletişim kutuları — gohud</title>
+<meta name="description" content="gohud&#x27;un tüm açılır pencereleri: hangisini seçmeli, nasıl açılıp kapanır, Geri tuşuna ve girişe ne yapar — her görünümde.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Genel bakış</a>
+      <a href="install.html">Kurulum</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">Widget'lar</a>
+      <a href="theming.html">Tema</a>
+      <a href="icons.html">Simgeler</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Türkçe</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="widgets-popups.html" hreflang="tr" lang="tr" aria-current="true">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="../vi/widgets-popups.html" hreflang="vi" lang="vi">Tiếng Việt</a>
+          <a href="../id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Açılır pencereler ve iletişim kutuları</h1>
+    <p class="lead">gohud'un tüm açılır pencereleri: hangisini seçmeli, nasıl açılıp kapanır, Geri tuşuna ve girişe ne yapar — her görünümde. <a href="widgets.html">← Widget'lar</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget'lar">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget'lar</a>
+  <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html" aria-current="page">Açılır pencereler ve iletişim kutuları</a>
+  <a href="widgets-surfaces.html">Yüzen pencereler</a>
+  <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Beklemek, bildirmek, saymak</a>
+  <a href="widgets-forms.html">Formlar ve listeler</a>
+  <a href="widgets-shapes.html">Oyunların gerçekten kullandığı biçimler</a>
+  <a href="widgets-overlays.html">Ekranın üstünde</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — her şeyin üretildiği tek yer</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>Doğru açılır pencereyi seçin</h2>
+  <p class="sub">Bir açılır pencere oyunun akışını keser. Birini seçmeden önce tek bir soruyu yanıtlayın: <b>oyun devam etmeden
+    önce oyuncunun yanıt vermesi gerekiyor mu?</b> Evet ise engelleyin. Hayır ise asla engellemeyin — oyuncunun istemediği bir
+    haber için oyunu durduran bir kart, oyununuzu kapattırmanın en hızlı yoludur.</p>
+  <ol class="steps">
+    <li><b>Yanıtı olan bir soru</b> — satın al, sil, ayrıl, üzerine yaz → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>. Görülüp onaylanacak bir bilgi → <code>alert()</code>. Birkaç seçenekten biri → <code>choose()</code>.</li>
+    <li><b>Kendine ait bir ekran</b> — ayarlar, karakter sayfası, mağazadaki bir eşya → ekranın ortasında bir <a href="#popup-surface"><code>GoSurface</code></a>.</li>
+    <li><b>Uzun bir liste ya da bir yönetim sayfası</b> — çanta, posta, arkadaşlar → telefonda alttan <a href="#popup-sheets"><code>GoSheet</code></a>, geniş ekranda yandan <code>GoDrawer</code>.</li>
+    <li><b>Az önce basılan şeyle ilgili bir şey</b> — bir eşyanın özellikleri, eylemleri → hemen yanında <a href="#popup-anchored"><code>GoPopover</code></a> ya da <code>GoContextMenu</code>.</li>
+    <li><b>Oyun sürerken verilebilecek haberler</b> — kaydedildi, düşürüldü, davet edildin → <a href="#popup-nonblocking"><code>GoSnackbar</code>, <code>GoNotice</code> ya da <code>GoPromptCard</code></a>. Bunlar ekranı asla ele geçirmez.</li>
+    <li><b>Denetimleri öğretmek</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>. <b>Geliştirirken hileler</b> → <code>GoConsole</code>.</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">Tüm açılır pencereler bir bakışta</h3>
+  <table>
+    <thead><tr><th>Açılır pencere</th><th>Oyunu durdurur mu</th><th>Geri / Escape</th><th>Dışarıya dokunuş</th><th>Ne için kullanılır</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>Evet</td><td>Kapatır — confirm <code>false</code> yanıtlar, alert geri döner</td><td>Yalnızca <code>dismiss_on_scrim</code> ile kapatır</td><td>Yanıt gerektiren sorular</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>Evet</td><td>Kapatır — <code>-1</code> yanıtlar</td><td>Yalnızca <code>dismiss_on_scrim</code> ile kapatır</td><td>Birkaç seçenekten birini seçmek</td></tr>
+      <tr><td><code>GoSurface</code></td><td>Evet</td><td>En üsttekinin kapanmasını ister</td><td><code>dismiss_on_scrim</code> ile kapanmayı ister</td><td>Kendi pencereleriniz</td></tr>
+      <tr><td><code>GoSheet</code></td><td>Evet</td><td>Tüm alt sayfayı kapatır</td><td>Kapatır</td><td>Çanta, mağaza listesi, posta</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>Evet</td><td>Yalnızca Android Geri</td><td>Kapatır</td><td>Geniş ekranda yan liste</td></tr>
+      <tr><td><code>GoPopover</code></td><td>Kapanana dek</td><td>Kapatır</td><td>Kapatır — ve daha ileri gitmez</td><td>Eşya ve yetenek ayrıntıları</td></tr>
+      <tr><td><code>GoCombobox</code> listesi</td><td>Kapanana dek</td><td>Kapatır</td><td>Kapatır</td><td>Arama yapan bir seçim listesi</td></tr>
+      <tr><td><code>GoContextMenu</code> · dropdown · select</td><td>Motorun menüsü</td><td>Motorun menüsü</td><td>Kapatır</td><td>Eylemler, kısa listeler</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>Hayır</td><td>—</td><td>Oyuna ulaşır</td><td>Kaydedildi · Geri al · Yeniden dene</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>Hayır</td><td>—</td><td>Oyuna ulaşır</td><td>Bir davet, bir takas isteği</td></tr>
+      <tr><td><code>GoNotice</code></td><td>Asla</td><td>—</td><td>Oyuna ulaşır</td><td>HUD üzerinde sabit bir satır</td></tr>
+      <tr><td><code>GoBanner</code></td><td>Hayır — sayfanın içindedir</td><td>—</td><td>—</td><td>"Çevrimdışısınız. Yeniden dene"</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Yalnızca kendi kartı</td><td>Turu bitirir</td><td>Oyuna ulaşır</td><td>İlk açılış turu</td></tr>
+      <tr><td><code>GoConsole</code></td><td>Yalnızca kendi paneli</td><td>Escape tuşu kapatır</td><td>Oyuna ulaşır</td><td>Hata ayıklama komutları</td></tr>
+    </tbody>
+  </table>
+  <p>Her birinin hangi katmanda açıldığı ve sıranın neden böyle olduğu <a href="#popup-stack">Katmanlar, Geri ve girdi</a> bölümünde.</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="Oyunun üstünde bir onay iletişim kutusu — Şimdi değil ve Satın al düğmeleriyle bir soru" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="Ekranın ortasında anahtarlar, bir kaydırıcı ve Kaydet ile İptal düğmeleri olan bir ayarlar penceresi" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="Alttan yükselen, arama alanı ve Kapat düğmesi olan bir envanter sayfası" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="Sağ taraftan kayarak gelen bir çanta çekmecesi" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="İksir hızlı slotunun üstünde küçük bir eşya kartı" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="Bir hızlı slottan açılmış Kullan, Taşı ve Düşür seçenekli menü" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="Altta bir eşyanın düşürüldüğünü bildiren, Geri al düğmeli bir snackbar" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="Ekranın üst kısmına yakın, Kabul et ve Reddet düğmeli bir grup daveti kartı" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="Bir tur sırasında bir hızlı slotu gösteren rehber işareti kartı" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="Ekranın üst kısmı boyunca uzanan, içine bir komut yazılmış geliştirici konsolu" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>Bu sayfadaki her görüntü aynı küçük oyundur — sol üstte can ve mana, sağ üstte altınlar, altta bir joystick ve üç
+    hızlı slot — <code>default_dark</code> ile, üstünde tek bir açılır pencere açık. <a href="#popup-looks">Aynı açılır
+    pencere on görünümün hepsinde →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>Bir açılır pencerenin anatomisi</h2>
+  <p class="sub">gohud'daki engelleyen açılır pencerelerin neredeyse tamamı — iletişim kutuları, alt sayfalar, popover'lar, combobox
+    listesi ve kendi pencereleriniz — tek bir düğümdür: <code>GoSurface</code>. Parçalarını bir kez öğrenin, hepsini bilirsiniz.</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="Bir Karakter oluştur penceresi: başlık satırında bir Geri düğmesi ve başlık, bir kapatma düğmesi, hata gösteren bir ad alanı, sınıf düğmeleri, kırmızı bir durum satırı ve altta sabitlenmiş bir Oluştur düğmesi" loading="lazy"><figcaption>Geri ve kapatma düğmeli başlık satırı · gövde · durum satırı · alt bilgi</figcaption></figure>
+  <table>
+    <thead><tr><th>Parça</th><th>Nedir</th><th>Nasıl erişilir</th></tr></thead>
+    <tbody>
+      <tr><td>Katman</td><td>Açılır pencerenin üzerinde durduğu <code>CanvasLayer</code>. Numarası neyi örteceğine karar verir.</td><td><code>GoSurface</code> için sizin seçiminiz; diğerlerinde yerleşik (<a href="#popup-stack">tablo</a>)</td></tr>
+      <tr><td>Perde</td><td>Arkadaki her şeyin üstüne serilen örtü. Kartı ıskalayan dokunuşları yakalar.</td><td><code>scrim_transparent</code>, <code>dismiss_on_scrim</code>, temanın <code>scrim</code> rengi</td></tr>
+      <tr><td>Kart</td><td>Pencerenin kendisi — temanın panel yüzü; görünüme göre yuvarlak, pahlı, dövme ya da jöle.</td><td><code>card</code>, <code>alpha</code></td></tr>
+      <tr><td>Başlık satırı</td><td>İsteğe bağlı bir geri düğmesi, başlık (en fazla iki satır, sonrası "…") ve kapatma düğmesi.</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>Araç çubuğu</td><td>Başlık satırının altında sabit bir sıra — bir arama alanı, filtre chip'leri. Kullanana dek gizlidir.</td><td><code>toolbar</code></td></tr>
+      <tr><td>Gövde</td><td>Kayan kısım. İçeriği buraya koyun.</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>Durum satırı</td><td>Gövde ile alt bilgi arasında sabit bir satır — "Ad denetimi başarısız", "Kaydediliyor…".</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>Alt bilgi</td><td>Altta sabitlenmiş düğmeler. Kullanana dek gizlidir.</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Sabit kalması gerekenler sabit satırlara gider.</b> Gövdeye konan bir arama alanı, bir hata ya da bir Kaydet düğmesi uzun bir
+    listeyle birlikte kayıp gider — oyuncu yanlış bir ad yazar, hata görünen alanın altında kalır ve hiçbir şey olmuyormuş gibi görünür.
+    <code>toolbar</code>, durum satırı ve <code>footer</code> kullanın; gövde kayarken onlar yerinde kalır.
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2><code>await</code> ettiğiniz iletişim kutuları</h2>
+  <p class="sub"><code>GoDialogs</code> sorar ve bekler. Tek düğüm, üç soru — ve yanıt aynı satıra geri gelir; böylece kod,
+    oyuncunun yaşadığı sırayla okunur.</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — üstte Şimdi değil, altta Satın al düğmesi olan bir soru" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="Geri alınamaz bir onay — Sil düğmesi kırmızı dolgulu" loading="lazy"><figcaption><code>confirm(…, true)</code> — geri alınamaz</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — tek bir Harika düğmesiyle Seviye atladın!" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — dört seçenek ve İptal ile Çantayı sırala" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="İki düğmesi yan yana duran bir onay" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">Üç soru</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # beklemek için await edin
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # çeviri anahtarları</code></pre>
+  <table>
+    <thead><tr><th>Çağrı</th><th>Döndürdüğü</th><th>Ne için kullanılır</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> ya da <code>false</code></td><td>Evet ya da hayır — satın al, sil, ayrıl, üzerine yaz.</td></tr>
+      <tr><td><code>alert()</code></td><td>hiçbir şey — beklemek için <code>await</code> edin</td><td>Oyuncunun görmesi gereken bir şey: bir ödül, kopan bir bağlantı.</td></tr>
+      <tr><td><code>choose()</code></td><td>seçeneğin dizini ya da <code>-1</code></td><td>Birkaç seçenekten biri. Bir seçenek bir String ya da <code>{text, icon, danger, subtitle}</code> olabilir.</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>yukarıdaki gibi</td><td>Aynısı, çeviri anahtarlarıyla — iletişim kutusu açıkken dil değişirse sözcükler de değişir.</td></tr>
+    </tbody>
+  </table>
+  <p>Boş düğme etiketleri kitin kendi sözcüklerine döner (<code>GoConfig.text_keys</code> içindeki <code>confirm</code>, <code>cancel</code>).
+    <code>extra</code> gövdeye yeni bir satırda eklenir. <code>args</code>, başlıktaki <b>ve</b> gövdedeki <code>{placeholders}</code>
+    yer tutucularını doldurur: <code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>.</p>
+
+  <h3 id="every-way-out-has-an-answer">Her çıkış yolunun bir yanıtı var</h3>
+  <table>
+    <thead><tr><th>Oyuncu…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>Tamam'a ya da bir seçeneğe basarsa</td><td><code>true</code></td><td>geri döner</td><td>seçeneğin dizini</td></tr>
+      <tr><td>İptal'e basarsa</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>×, Escape ya da Android Geri'ye basarsa</td><td><code>false</code></td><td>geri döner</td><td><code>-1</code></td></tr>
+      <tr><td>perdeye dokunursa (yalnızca <code>dismiss_on_scrim</code> ile)</td><td><code>false</code></td><td>geri döner</td><td><code>-1</code></td></tr>
+      <tr><td><code>GoDialogs</code> düğümü ağaçtan ayrılırsa</td><td><code>false</code></td><td>geri döner</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>Bu yüzden <code>await</code> sonrasındaki kod her zaman çalışır — sahne iletişim kutusunun altında değişse bile hiçbir yanıt askıda kalmaz.</p>
+
+  <h3 id="destructive-actions">Geri alınamayan eylemler</h3>
+  <p>Geri alınamayacak bir şey için <code>destructive = true</code> verin. Tamam düğmesi dolgulu
+    <code>Tone.DANGER_SOLID</code> düğmesine dönüşür — her görünümde kırmızı üstünde beyaz; tonlanmış bir tehlike etiketi ise açık
+    bir temada okunaklı kalmak için neredeyse siyaha kadar koyulaşmak zorunda kalırdı. Pencere yeniden kullanıldığı için ton her
+    çağrıda sıfırlanır.</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>Klavye odağı Tamam'dadır.</b> Her onay Tamam düğmesi odaklanmış olarak açılır; yani Enter ya da Space onaylar —
+    geri alınamaz bir onayda da. Düğmeleri güvenli seçenek apaçık olacak biçimde adlandırın ("Kalsın") ve küçük bir dikkatsizlik
+    oyuncuya gerçek ilerlemesine mal olacaksa geri alınamayan eylemleri ikinci bir adımın arkasına koyun.
+  </div>
+
+  <h3 id="button-layout">Düğme yerleşimi</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code> (varsayılan)</td><td>Düğmeler alt alta, tam genişlikte. Her dil için güvenli — uzun bir Almanca ya da Rusça etiket asla sıkışmaz.</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>Tek sıra, her biri yarı genişlikte.</td></tr>
+      <tr><td><code>AUTO</code></td><td>Yalnızca iki etiket de kartın yarısına tek satırda sığdığında tek sıra; aksi hâlde alt alta. Dil ya da boyut değişince yeniden karar verilir.</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> düğmeler arasındaki boşluk, <code>body_gap</code> ise üstlerindeki boşluktur — soru ile seçimin iki
+    ayrı parça olarak okunması için bunu düğme boşluğundan geniş tutun. Yalnızca tek bir iletişim kutusu için, açmadan önce
+    <code>set_next_action_layout()</code> çağırın. Bir uyarının tek düğmesi her zaman tam genişliği alır.</p>
+
+  <h3 id="one-at-a-time">Aynı anda bir tane</h3>
+  <p>Biri açıkken çağrılan ikinci bir <code>confirm()</code> anında <code>false</code> döndürür — bir iletişim kutusu kazara başka
+    birinin üstüne yığılmaz. <code>queue_when_busy</code> açıksa bunun yerine sırasını bekler; <code>alert()</code> her zaman bekler.
+    <code>queue_limit</code> (8) sırayı sınırlar; sıra taşarsa en eski istek <code>false</code> ile yanıtlanır.
+    <code>pending()</code> bekleyen istekleri sayar, <code>clear_pending()</code> hepsini <code>false</code> ile yanıtlar.
+    <code>choose()</code> asla sıraya girmez: bir iletişim kutusu zaten açıksa <code>-1</code> döndürür.</p>
+
+  <h3 id="phone-and-desktop">Telefon ve masaüstü</h3>
+  <p><code>choose()</code> Android ve iOS'ta başparmağın olduğu yerde, alttan bir sayfa olarak açılır; masaüstünde ise ortada
+    bir kart olarak. Bir onay <code>max_width</code> (420dp) ile sınırlanır ve ortalanır. <code>layer_index</code>,
+    <code>max_width</code> ve diğer dışa aktarılan özellikleri <code>add_child</code> çağrısından <b>önce</b> ayarlayın; düğüm ağaca girdiğinde uygulanırlar.</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — kendi pencereniz</h2>
+  <p class="sub">Bir açılır pencere bir sorudan fazlası olduğunda — ayarlar, karakter sayfası, satın alınacak bir eşya — onu
+    <code>GoSurface</code> üzerine kurun. Güvenli alan, sanal klavye, sabit satırlar, kaydırma, Geri, odak ve yeniden boyutlandırma hazırdır.</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>Kendini asla kapatmaz.</b> × , Escape, Geri ve perdeye dokunuş yalnızca <code>close_requested</code> yayar. Pencereyi
+    gizlemek ya da bellekten silmek sahibi olan ekranın işidir — "kapat"ın kaydetmek mi, vazgeçmek mi yoksa önce sormak mı demek
+    olduğunu yalnızca o bilir.
+  </div>
+
+  <h3 id="three-placements">Üç yerleşim</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER — ekranın ortasında bir kart" loading="lazy"><figcaption><code>CENTER</code> — onaylar, ayarlar</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — aynı pencere alttan yükselirken" loading="lazy"><figcaption><code>BOTTOM</code> — listeler, yönetim sayfaları</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — Sırala düğmesinin yanına sabitlenmiş bir sıralama menüsü" loading="lazy"><figcaption><code>ANCHOR</code> — bir denetimin yanında</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="Ortalanmış bir pencerede İptal ve Tamam düğmeli bir tarih seçici" loading="lazy"><figcaption><code>CENTER</code> penceresinde bir <code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> için <code>anchor_control</code> gerekir. <code>anchor_min_width</code> sığıyorsa kart denetimin sağına
+    yerleşir, sığmıyorsa daha geniş tarafa, o da olmazsa ekranın içine; üstte daha çok yer varsa yukarı doğru açılır. Hareket eden
+    bir anchor'ı her karede izler. Boyutunu <code>anchor_width</code> (320) ve <code>anchor_max_height</code> (520) belirler.</p>
+
+  <h3 id="how-big-it-gets">Ne kadar büyür</h3>
+  <table>
+    <thead><tr><th>Ölçü</th><th>Kural</th><th>Neyle değiştirilir</th></tr></thead>
+    <tbody>
+      <tr><td>Alan</td><td>Güvenli alan, eksi sanal klavye, eksi ekran kenar boşluğu (16dp; kısa kenarın %10'undan asla fazla değil).</td><td>—</td></tr>
+      <tr><td>Genişlik</td><td>Dikeyde alanın %94'ü, yatayda %72'si; en fazla 480dp.</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>Yükseklik</td><td>İçerik kadar (<code>fit_content</code>), alanın %68'ine kadar; üst sınır %72. Yeniden boyutlandırılamayan ortalanmış bir kart, kaydırma gerekmesin diye %94'e kadar büyüyebilir.</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>Yoğunluk</td><td><code>compact</code> açıksa, ekran 420dp'den kısaysa (yan tutulmuş bir telefon) ya da içerik sığmıyorsa sıkışık: daha az iç boşluk, daha küçük aralıklar, daha küçük bir başlık. İkisini de ölçer ve sığanlar arasından daha ferah olanı tutar — titreme olmaz.</td><td><code>compact</code></td></tr>
+      <tr><td>Yeniden boyutlandırma</td><td><code>resizable</code> açıkken başlık bir tutamaç olur: onu %30 ile üst sınır arasında sürükleyin. Sonucu <code>height_changed(ratio)</code> bildirir.</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>Üst sınırı aşan bir oran geri kırpılır; hata ayıklama derlemesinde bir kez uyarı verilir. Sanal klavye kartı yukarı iter ve
+    odaktaki alanı görünür hâle kaydırır; güvenli alan kartı Android ve iOS'ta çentikten ve hareket çubuğundan uzak tutar.</p>
+
+  <h3 id="properties">Özellikler</h3>
+  <table>
+    <thead><tr><th>Özellik</th><th>Varsayılan</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>, <code>BOTTOM</code> ya da <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code> (false)</td><td>Perdeye dokunuş kapanmayı ister. Kartın içinde başlayan bir sürükleme istemez.</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>Oyunu görünür bırakır — perde dışarıdaki dokunuşları yine de yakalar.</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>× gösterir; Escape ve Geri'nin kapanmayı istemesine izin verir.</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>Başlık satırı, kayan gövde, sürükleme tutamacı.</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>İçeriğe göre boyutlanır; sıkışık başlar.</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code> (false)</td><td>Kart açılırken belirerek gelir. <code>reduce_motion</code> altında anında.</td></tr>
+      <tr><td><code>alpha</code></td><td>-1 (temanınki)</td><td>Kart yüzünün opaklığı, oran olarak. Yalnızca yüz solar — metin asla.</td></tr>
+      <tr><td><code>initial_focus</code></td><td>yok</td><td>Açılışta odaklanan denetim.</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Bunları <code>add_child</code> öncesinde ayarlayın:</b> <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code> ve
+    <code>scroll_body</code> pencere ağaca girdiğinde uygulanır. <code>dismiss_on_scrim</code>, <code>close_enabled</code>,
+    <code>fade_in</code> ve <code>initial_focus</code> ise anlık okunur.
+  </div>
+
+  <h3 id="signals-and-calls">Sinyaller ve çağrılar</h3>
+  <table>
+    <thead><tr><th>Ad</th><th>Nedir</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×, Escape, Android Geri ya da perdeye dokunuş — ve <code>request_close()</code>. Yalnızca en üstteki pencere yayar.</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>Sayfaları olan bir pencere için başlık satırındaki geri düğmesi. Boş bir <code>Callable</code> onu gizler.</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>Tutamaç sürüklendikten sonra.</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>Geri'yi alan pencere bu mu — hiç açık pencere var mı.</td></tr>
+      <tr><td><code>relayout()</code></td><td>Hemen yeniden yerleştirir. Bir boyutlandırma özelliğini değiştirmek bunu zaten sizin yerinize yapar.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>Alt sayfalar ve çekmeceler</h2>
+  <p class="sub">Yer isteyen bir liste, dik tutulan bir telefonda başparmağın olduğu yerden, yani alttan gelir; tablette ya da
+    masaüstünde ise yandan gelir, çünkü orada bir alt sayfa oyunun üstünü kaplardı.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — sabit bir arama alanı, bir liste ve sabit bir Kapat düğmesiyle Envanter" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="Solda GoDrawer — Kasaba, Dünya haritası, Görevler, Lonca ve Ayarlar menüsü" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="Sağda GoDrawer — çanta" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — alttan gelen sayfalar</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>İçinde <code>BOTTOM</code> yerleşimli, yeniden boyutlandırılabilir bir <code>GoSurface</code> taşıyan bir <code>CanvasLayer</code>'dır
+      (katman 10) — böylece HUD'ın üstünde durur ve oyuncu onu sürükleyerek uzatabilir.</li>
+    <li><code>open(title)</code> yeni bir sayfa başlatır: gövdeyi, araç çubuğunu ve geri düğmesini temizler, <code>add_footer()</code> ile
+      eklenenleri bellekten siler. Aynı alt sayfada başka bir sayfa göstermek için yeniden çağırın; <code>set_back()</code> başa dönüş
+      için bir geri düğmesi gösterir. <code>open_key()</code> bir çeviri anahtarı alır.</li>
+    <li><code>close()</code> onu gizler — bellekten silinmez, bu yüzden bir sonraki <code>open()</code> anında açılır. Ne zaman olduğunu
+      <code>closed</code> ve <code>page_changed</code> bildirir.</li>
+    <li><code>height_ratio</code> (0.6) açıldığı yüksekliktir; <code>max_height_ratio</code> üst sınırı yükseltir; <code>dismissable</code>
+      (true) perdeye dokununca onu kapatır.</li>
+  </ul>
+  <div class="note warn">
+    <b>Escape ve Geri tüm alt sayfayı kapatır</b>, <code>set_back()</code> kullanılan bir iç sayfada bile — bir sayfa geri yalnızca
+    ekrandaki geri düğmesi götürür. Geri bir adım geri gitmeliyse <code>sheet.surface</code> üzerindeki <code>close_requested</code>
+    sinyalini kendiniz ele alın.
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — yandan</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # başlangıç tarafı: solda, Arapçada sağda
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>Katman 80. Ekran genişliğinin %42'si (<code>width_ratio</code>), <code>min_width</code> (320dp) ile <code>max_width</code>
+      (420dp) arasında — telefonda ekranın çoğunu kaplar; orada alt sayfanın daha iyi bir seçim olmasının nedeni budur.</li>
+    <li>Panel ekranın kenarına dayanır; yalnızca içeriği güvenli alana göre içeri çekilir, böylece yuvarlak bir köşe ilk satırı asla kırpmaz.</li>
+    <li><code>LEFT</code>, Arapçada bile ekranın solu demektir. Asıl mesele "başlangıç tarafı" olduğunda
+      <code>follow_text_direction</code>'ı açın; nereye yerleştiğini <code>effective_side()</code> söyler.</li>
+    <li><code>open(title)</code> gövdeyi korur — bir kez doldurun. <code>set_title("")</code> başlık satırını gizler.
+      <code>motion_seconds</code> (0.2) kayarak gelmesini sağlar; <code>reduce_motion</code> bunu anlık yapar.</li>
+  </ul>
+  <div class="note warn">
+    <b>Android Geri bir çekmeceyi kapatır; Escape kapatmaz.</b> Çekmece yalnızca sistemin Geri tuşunu dinler. Masaüstünde
+    <code>drawer.close()</code>'u kendi tuş atamanızdan çağırın — ve <code>GoSurface.is_any_open()</code>'ın çekmeceyi saymadığını
+    unutmayın; <code>drawer.is_open()</code>'a sorun.
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>Bir denetimin yanındaki kartlar ve menüler</h2>
+  <p class="sub">Oyuncunun az önce bastığı şey, ekranın ortasında değil, parmağın hemen yanında bir yanıtı hak eder.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — hızlı slotun yanında bir Can iksiri kartı" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Kullan, 1. slota taşı ve Düşür" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — bir skor tablosunun üstünde açılmış bir Sırala menüsü" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select — Düşük, Orta, Yüksek ve Ultra seçenekleriyle açılmış bir kalite seçici" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — arama alanı olan bir arkadaş listesi" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — basılan şeyin üstünde bir kart</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>Katmanı, anchor'ı ve kapanıştaki temizliği önceden bağlanmış bir <code>ANCHOR</code> yüzeyi — her oyunun tekrar tekrar yazdığı
+    o on satır. <b>Aynı anda bir tane</b>: ikincisini açmak ilkini kapatır, çünkü üst üste yığılan kartlar ekranı gömer ve hangisinin
+    hangi slota ait olduğu anlaşılmaz. Perde saydamdır — ekipmanı karşılaştırmak için açılan bir kart ekipmanı karartmamalıdır —
+    ama dışarıdaki ilk dokunuşu yine de yakalar; bu dokunuş kartı kapatır ve daha ileri gitmez.</p>
+  <table>
+    <thead><tr><th>Seçenek</th><th>Varsayılan</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>× içeren bir başlık satırı. Boşsa başlık satırı olmaz.</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>Kartın boyutu.</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>Dışarıya dokunuş kartı kapatır.</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>Sıkışık aralıklar, yüz opaklığı, çeviri anahtarı olarak başlık.</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td>Açıldığı <code>CanvasLayer</code>.</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> ve <code>GoPopover.is_open()</code> statiktir. <code>open()</code> yüzeyi döndürür — anchor ağaçta
+    değilse <code>null</code>; bu yüzden <code>await shown.close_requested</code> yazmadan önce denetleyin.</p>
+  <div class="note warn">
+    <b>Üzerine gelince çıkan bir ipucu değildir.</b> Dokunmatikte üzerine gelme yoktur; yalnızca farenin ortaya çıkarabileceği her
+    şey oyuncularınızın yarısı için görünmezdir. Ayrıca <code>dismissable = false</code> verilmiş ve başlığı olmayan bir kartı
+    ekrandaki hiçbir şey kapatmaz — yalnızca Escape, Geri ya da kendi çağrınız.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — uzun basış ve sağ tık</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>Sağ tık onu hemen açar. Yarım saniye (<code>HOLD_SECONDS</code>) basılı tutulan bir parmak onu açar; 12dp'den fazla
+      kıpırdamak iptal eder — böylece bir listeyi kaydırmak asla menü açmaz.</li>
+    <li>Bir öğe <code>{text, action, icon, disabled, checked, separator, danger, translate}</code> biçimindedir. Girdiler neye
+      basıldığına bağlıysa dizi yerine bir <code>Callable</code> geçin; menü her açıldığında çağrılır.</li>
+    <li><code>danger</code> metnin önüne "⚠ " koyar — motorun menüsü öğelerini ancak hepsini birden renklendirebilir.</li>
+    <li>Motorun <code>PopupMenu</code>'sudur ve <code>GoStyle.style_popup()</code> tarafından giydirilir. Açık bir yüzey olarak sayılmaz.</li>
+  </ul>
+  <div class="note warn">
+    <b>Uzun basışın ikinci bir giriş yoluna ihtiyacı vardır.</b> Kimse gizli bir el hareketini keşfetmez. Onu görünür bir
+    <code>⋯</code> düğmesiyle eşleştirin (yukarıdaki gibi <code>open_at()</code>) ya da bir kez bir rehber işaretiyle öğretin.
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">Açılır menüler, seçiciler ve bölünmüş düğme</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>Üçü de motorun açılır menüsünü açar: <code>dropdown()</code> bir eylem çalıştıran bir <code>MenuButton</code>'dır,
+    <code>select()</code> bir değer tutan bir <code>OptionButton</code>, <code>GoSplitButton</code> ise bir ana eylem artı okunun
+    üstünde bir menüdür (<code>chosen(index)</code>). Menüler bilerek tamamen opak tutulur — kendi işletim sistemi penceresinde
+    gösterilen bir menü yarı saydam pikselleri siyaha çevirir.</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — arama yapan bir liste</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>Basıldığında 96. katmanda, saydam perdeli, sabitlenmiş bir liste açar. <code>search_threshold</code> (8) girdiden itibaren bir
+    arama alanı belirir ve odağı alır; büyük/küçük harfe bakmadan metnin ya da ipucunun herhangi bir yerinde eşleşir, sonuç boşsa
+    bunu da söyler. Listenin boyutunu <code>list_width</code> (0 = düğmenin genişliği, en az 180dp) belirler.</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>Oyunu asla durdurmayan açılır pencereler</h2>
+  <p class="sub">Oyuncunun oynarken okuyabileceği haberler. Hiçbirinde perde yoktur; kartın kendisi dışında herhangi bir yere
+    dokunuş oyuna gider.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — hızlı slotların üstünde Geri al düğmeli Paslı kılıç düşürüldü mesajı" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — HUD'ın üst kısmında Oyun kaydedildi" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — can çubuklarının altında bir grup daveti" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="Kalkan slotunun üstünde özel bir ipucu" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — Geri al düğmeli bir mesaj</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th><code>post()</code> anahtarı</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>Mesaj, isteğe bağlı kalın bir satır, <code>{placeholders}</code>, çeviri anahtarları.</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>Vurgu rengi (<code>GoTheme.SUCCESS</code>, <code>WARNING</code>…) ve bir simge.</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>Düğmeler — String'ler ya da <code>{text, action}</code> — ve bir ×.</td></tr>
+      <tr><td><code>seconds</code></td><td>Ekranda ne kadar kalacağı. Negatif: temanın <code>notice_duration_ms</code> değeri. <b>0: kapatılana dek</b> — o zaman ona bir düğme verin.</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> basılan düğmenin dizinini, süre dolduysa ya da kapatıldıysa <code>-1</code> döndürür. Gönderiler sıraya
+    girer (<code>queue_limit</code> 4; taşınca en eskisi -1 ile düşürülür) ve gösterilirken aynı metin yeniden gönderilirse yalnızca
+    zamanlayıcısı yenilenir. Altta (ya da <code>placement</code> ile üstte), güvenli alanın ve sanal klavyenin üstünde, 90. katmanda
+    durur — bir çekmecenin üstünde de okunur. <code>tap_to_dismiss</code> (açık) ile düğmesi olmayan bir karta dokunmak onu kapatır;
+    kartın dışına dokunuş her zaman oyuna ulaşır. <code>show_text()</code> ve <code>show_key()</code> tek satırlık biçimleridir.</p>
+  <div class="note warn">
+    <b>Snackbar'da asla soru sormayın.</b> Kendiliğinden kaybolur; önemli bir seçim bir iletişim kutusuna aittir.
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — HUD üzerinde bir satır</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>Kendiniz yerleştirdiğiniz sade bir panel — bir <code>GoHudAnchor</code> içinde, bir köşede, istediğiniz yerde. Ne girdi ne de
+    odak alır; bu yüzden üstüne basmak alttaki düğmeye ulaşır ve yeni bir mesaj eskisinin yerini alır. Ona bir genişlik verin:
+    <code>preferred_width(limit)</code> kısa metnin doğal genişliğini döndürür, uzun metni ise <code>limit</code> içinde satıra kaydırır.
+    <code>set_content()</code> metin yerine herhangi bir denetimi gösterir.</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — bekleyebilen bir soru</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # can çubuklarını örtmek yerine altlarına in
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>Gizli başlar</b> — <code>show()</code> çağırın. Kendi zamanlayıcısı yoktur; soru zaman aşımına uğrayacaksa bir tane ekleyin.</li>
+    <li>Düğmeleri onu kapatmaz — buna eylemler karar verir. × (<code>set_closable(true)</code>) <code>closed</code> yayar.</li>
+    <li><code>fit_width(width)</code> genişliği ayarlar ve yüksekliği yazı tipinden önceden hesaplar; böylece ona göre yerleştirilen hiçbir şey bir kare sonra zıplamaz.</li>
+    <li>Yüzü <code>hud_alpha</code>'yı izler — bir pencere değil, HUD'ın bir parçasıdır.</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> ve ipuçları</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> sayfanın kendisinde,
+    içeriğin üstünde durur ve asla zaman aşımına uğramaz; <code>"keep": true</code> verilmedikçe bir düğme onu kapatır.
+    <code>GoStyle.tooltip_node(text)</code>, <code>_make_custom_tooltip()</code>'tan döndürmeniz gereken şeydir — plakayı motor
+    (<code>TooltipPanel</code>), metni gohud çizer ve 260dp'yi geçen metin satıra kaydırılır. İpuçları fare içindir; oyuncunun
+    ihtiyaç duyduğu bir şeyi asla bir ipucunun arkasına saklamayın.</p>
+</section>
+
+<section id="popup-guides">
+  <h2>Turlar ve konsol</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — 2 adımdan 1.si, Hızlı slotlar, iksir slotunu gösteriyor" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — bir give komutu ve sonucuyla konsol paneli" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — gerçek denetimlerde bir tur</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>Gerçek denetimin çevresinde bir halka ve yanında bir kart. Hedefe basmak turu ilerletir (onun <code>pressed</code> sinyali
+      ya da adımdaki <code>"signal"</code>); İleri ve Atla kartın üstündedir. Gizli bir hedef atlanır.</li>
+    <li>Kart ekranın ortasından (<code>avoid_center_band</code>), HUD anchor'larından ve <code>keep_clear</code>'dan uzak durur.</li>
+    <li>Herhangi bir <code>GoSurface</code> açıkken tur gizlenir ve bekler. Geri ya da Escape onu <code>finished(false)</code> ile bitirir.</li>
+    <li>Kendi katmanı yoktur — onu en son ekleyin ya da HUD'ın üstündeki bir katmana koyun.</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — geliştirirken hileler</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>Katman 200 — her şeyin üstünde, böylece bir iletişim kutusunun üzerinde hata ayıklayabilirsiniz — ve ağaç duraklatılmışken de
+    çalışmaya devam eder. Bir palet siz yazdıkça komut önerir; Yukarı ve Aşağı tuşları geçmişte gezinir; Escape onu kapatır.
+    Yerleşik bir tuşu yoktur: kendinizinkini atayın.</p>
+  <div class="note warn">
+    <b><code>debug_only</code> (açık) onu yayın derlemesinde engeller</b> — hem <code>open()</code> hem <code>run()</code>.
+    Oyuncunun eline geçen hile komutları bir oyunun ekonomisini ilk günde bitirir.
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>Katmanlar, Geri ve girdi</h2>
+  <p class="sub">Bir şey açıkken oyuncunun neye dokunabileceğine üç kural karar verir: en üstte ne var, Geri kimin, bir dokunuşu
+    kim alır.</p>
+
+  <h3 id="what-sits-on-top">En üstte ne durur</h3>
+  <table>
+    <thead><tr><th>Katman</th><th>Orada ne durur</th><th>Neyle ayarlanır</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>HUD'ınız (sizin seçiminiz)</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>Kendi <code>GoSurface</code> pencereleriniz, bir duraklatma menüsü</td><td>kendi <code>CanvasLayer</code>'ınız</td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td><code>"layer"</code> seçeneği</td></tr>
+      <tr><td>96</td><td><code>GoCombobox</code> listesi</td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>Sıra bilinçlidir: bir snackbar az önce olanı bildirir, bu yüzden bir çekmecenin üstünde okunur; bir popover az önce basılan
+    şeye aittir, bu yüzden onun üstünde durur; bir iletişim kutusu soru sorar ve ikisini de örter; konsol her şeyi örter, çünkü geri
+    kalan her şey ters gittiğinde açtığınız şey odur.</p>
+
+  <h3 id="who-owns-back">Geri kimin</h3>
+  <ul>
+    <li><b>Yalnızca en üstteki pencere yanıt verir.</b> Açık yüzeyler arasında en yüksek katmandaki (eşitse ağaçta en son gelen)
+      Escape'i, oyun kumandasının iptal tuşunu (<code>ui_cancel</code>), Android Geri'yi ve perdeye dokunuşları alır. Üst üste açılmış
+      pencereler teker teker kapanır, asla birlikte değil.</li>
+    <li>Android Geri bir kare sonra ele alınır; böylece tek bir basış asla iki pencereyi kapatamaz.</li>
+    <li>Geri'nin sahibi olan herhangi bir şey açıkken Android Geri uygulamadan çıkmaz (<code>GoBackPolicy</code> sahipleri sayar ve
+      sonuncusu kapanınca <code>quit_on_go_back</code>'i geri yükler). Geri'yi alan kendi açılır pencereniz
+      <code>GoBackPolicy.acquire()</code> ve <code>release()</code> çağırmalıdır — <code>_exit_tree</code> içinde de.</li>
+    <li>Bir yüzey açıkken çekmece, rehber işareti turu ve form kenara çekilir — Geri önce yüzeye gider.</li>
+    <li><code>GoConfig.close_on_back</code> (açık) yüzeyler için açma/kapama anahtarıdır.</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">Dokunuşu kim alır</h3>
+  <ul>
+    <li>Bir yüzey tüm ekranı kaplar ve girdiyi durdurur — <b>saydam bir perde de</b>. O açıkken alt katmanlardaki hiçbir şeye
+      basılmaz; üstündeki katmanlara (bir snackbar) yine basılabilir.</li>
+    <li>Fare tekerleği ve iki parmakla yakınlaştırma hareketleri de pencerede durur: bir listenin sonunu geçecek kadar kaydırmak oyunu asla kaydırmaz.</li>
+    <li>Denetimlerden geçmeyen oyun girdisi — hareket için <code>_unhandled_input</code>, bir kamera sürüklemesi — beklemelidir:
+      <code>if GoSurface.is_any_open(): return</code>. Bu, iletişim kutularını, alt sayfaları, popover'ları ve combobox'ı kapsar;
+      çekmeceye <code>is_open()</code> ile ayrıca sorun.</li>
+    <li>Snackbar, bildirim, soru kartı ve rehber işareti girdiyi yalnızca kendi kartlarında alır; geri kalan her yerde girdi oyuna gider.</li>
+  </ul>
+
+  <h3 id="focus">Odak</h3>
+  <p>İşaretçiyle açılan bir pencere hiçbir şeye odaklanmaz — bir dokunuşta odak halkası yanıp sönmez. Klavyeyle ya da oyun
+    kumandasıyla açıldığında odağı kapatma düğmesi (ya da <code>initial_focus</code>) alır. Pencere açıkken odak onun içinde kalır,
+    pencere kapanınca da odağı önceden elinde tutan denetime geri döner. İletişim kutuları her seferinde Tamam'a odaklanır.</p>
+
+  <h3 id="pausing-the-game">Oyunu duraklatmak</h3>
+  <p>Ağacı duraklatmak açılır pencereleri de duraklatır — yalnızca konsol çalışmaya devam eder. Bir duraklatma menüsü için katmanına
+    <code>process_mode = PROCESS_MODE_ALWAYS</code> verin; o zaman oyun dururken pencere, düğmeleri ve Geri çalışmaya devam eder.</p>
+</section>
+
+<section id="popup-looks">
+  <h2>Her görünümde aynı açılır pencere</h2>
+  <p class="sub">Bu sayfanın başındaki onay, aynı oyunun üstünde, yalnızca ön ayar değiştirilerek. Kod birebir aynıdır —
+    gerisini tema, kaplama ve simgeler yapar.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="default_dark ile onay — yuvarlak köşeler, yumuşak mavi bir vurgu" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="default_light ile onay" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="scifi_dark ile onay — pahlı köşeler ve neon bir kenar" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="scifi_light ile onay" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="medieval_dark ile onay — dövme bir çerçeve ve Cinzel bir başlık" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="medieval_light ile onay — parşömen ve bronz" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="material_light ile onay — 28dp köşeler ve hap biçimli düğmeler" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">Yeni</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="material_dark ile onay" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Yeni</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="kids_light ile onay — güneş sarısı bir başlık kurdelesi, şeker gibi bir kapatma düğmesi ve jöle düğmeler" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Yeni</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark ile onay — gece mavisi bir kartın üstünde nane yeşili bir kurdele" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Yeni</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">Her görünüm neyi değiştirir</h3>
+  <table>
+    <thead><tr><th>Görünüm</th><th>Pencere</th><th>Başlığı ve düğmeleri</th></tr></thead>
+    <tbody>
+      <tr><td>Varsayılan</td><td>Yuvarlak (18dp), yumuşak bir gölge, oyunun üstünde %80 opak</td><td>Sade bir başlık ve ×; birincil düğmeler basılınca kalkar ve çöker</td></tr>
+      <tr><td>Bilimkurgu</td><td>Neon kenarlı ve ışımalı pahlı köşeler; kenar vurgu rengiyle tonlanır</td><td>Köşelik biçiminde odak işaretleri</td></tr>
+      <tr><td>Ortaçağ</td><td>Dövme bir çerçeve — demir ve deri ya da parşömen — perçinler ve köşe süsleriyle</td><td>Cinzel başlıklar</td></tr>
+      <tr><td>Material 3</td><td>28dp köşeler, 24dp iç boşluk, tamamen opak</td><td>Roboto ile 24sp bir başlık; 48dp hedef içinde 40dp plakalı hap biçimli düğmeler</td></tr>
+      <tr><td>Kids</td><td>Yumuşak gölgeli bir jöle şeker kart, tamamen opak</td><td>Güneş sarısı bir başlık kurdelesi (gece nane yeşili), yuvarlak şeker bir kapatma düğmesi, basılınca ezilen düğmeler</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">Bir açılır pencereyi kaplamayla giydirmek</h3>
+  <p>Kaplama, bir Theme'in erişemediği parçalara karar verir. Açılır pencerelerin çağırdığı kancalar bunlardır — onları kendi
+    <code>GoSkin</code> alt sınıfınızda ezin; varsayılan olarak hiçbir şey yapmazlar.</p>
+  <table>
+    <thead><tr><th>Kanca</th><th>Neyi giydirir</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Bir pencere başlığının arkasındaki plaka. Başlık onun üstünde ortalanır ve tek satırda kalmak için en küçük boyuta (15) kadar küçülür.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>Pencerenin × düğmesi — Kids onu yuvarlak bir şekere çevirir.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>gohud'un yaptığı bir düğmeye parmak değdiği anda çalışır — Kids düğmeyi ezer.</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Soru kartlarının ve rehber kartlarının, snackbar'ların ve bildirimlerin, çekmecenin, banner'ların ve konsolun yüzleri.</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Turun halkası ve işaretçisi.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">Ne kadar saydam</h3>
+  <p>Her açılır pencere türü kendi opaklığını izler; böylece bir HUD kartı hafif kalırken bir iletişim kutusu katı kalabilir:
+    pencereler, alt sayfalar, iletişim kutuları, popover'lar ve combobox <code>panel_alpha</code>'yı; çekmece ve rehber kartı
+    <code>card_alpha</code>'yı; soru kartları ve konsol <code>hud_alpha</code>'yı; snackbar'lar ve bildirimler
+    <code>notice_alpha</code>'yı; menüler <code>popup_alpha</code>'yı izler. Material ve Kids hepsini opak yapar. Tek bir türü
+    <code>GoConfig.container_alpha_overrides</code> ile, hepsini <code>container_alpha</code> ile (bir oran — <code>0.95</code>), tek
+    bir pencereyi de kendi <code>alpha</code> değeriyle geçersiz kılın. Yalnızca yüz solar; metin asla saydamlaşmaz.
+    <a href="theming-opacity.html">Opaklık ayrıntılı olarak →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>Her açılır pencereyi biçimlendiren ayarlar</h2>
+  <p class="sub"><code>GoConfig</code> (<code>GoUi.config</code>) alanları. Birkaçı pencere oluşturulurken kopyalanır; bu yüzden
+    onları arayüzü kurmadan önce ayarlayın — ya da değiştirdikten sonra <code>GoUi.refresh()</code> çağırın.</p>
+  <table>
+    <thead><tr><th>Alan</th><th>Varsayılan</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>Bir pencerenin ulaşabileceği en büyük boyut.</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>Olağan yükseklik ve üst sınır (aynı zamanda sürükleme sınırı).</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>İçeriğe göre boyutlanan ortalanmış bir kartın kaydırmaya geçmeden önce ne kadar büyüyebileceği.</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>Alanın payı olarak genişlik.</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>Perdeye dokunuş pencereleri ve iletişim kutularını kapatır. Pencere oluşturulurken kopyalanır.</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>Pencerelerin belirerek gelmesi ve bunun hızı.</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Escape, <code>ui_cancel</code> ve Android Geri en üstteki pencereyi kapatır.</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>× düğmesinin ne kadar büyük göründüğü — dokunma hedefi 48dp kalır.</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>Pencere dokunuşla ya da fareyle açıldığında odak halkası gösterilmez.</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>Tüm yüzlerin ya da türe göre (<code>GoTheme.BOX_*</code>) opaklık.</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>Belirme, kayma, nabız ya da ezilme olmaz.</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>Soru kartı ve rehber işareti düğmelerinin yüksekliği.</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>Pencereleri çentikten ve hareket çubuğundan uzak tutar.</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>Kitin kendi sözcükleri: kapat, geri, onayla, iptal, ileri, bitti, atla, ara, boş…</td></tr>
+      <tr><td><code>sound_cues</code> · titreşim</td><td>—</td><td><code>GoFeedback</code>'in açıldı, kapandı, onaylandı, iptal edildi ve dokunuldu anlarında çaldığı şey.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>Tarifler</h2>
+  <p class="sub">Kopyalayın, yapıştırın, sözcükleri değiştirin. Buradaki her çağrı kaynak koda karşı denetlenmiştir.</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">Fiyatı içinde yazan bir satın alma</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">Kaydet düğmesi sabit bir ayarlar penceresi</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">Neyin yanlış olduğunu söyleyen bir form</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">Alt sayfada bir tarih</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">Bir duraklatma menüsü</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # oyun duraklatılmışken de çalışmaya devam eder
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">Açılır pencereleri bekleyen oynanış</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>Tuzaklar</h2>
+  <ul>
+    <li><b>Bir <code>GoSurface</code> kendini asla bellekten silmez.</b> <code>close_requested</code>'i bağlayın, yoksa × hiçbir şey yapmaz.</li>
+    <li><b><code>add_child</code> sonrasında ayarlanan seçenekler</b> — <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code>,
+      <code>scroll_body</code> ve <code>GoDialogs</code>'un <code>layer_index</code> ile <code>max_width</code> değerleri — uygulanmaz.</li>
+    <li><b>İkinci bir <code>confirm()</code> anında <code>false</code> döndürür.</b> İki soru çakışabiliyorsa <code>queue_when_busy</code>'yi açın.</li>
+    <li><b>Enter onaylar.</b> Odak Tamam'dadır, geri alınamayan eylemlerin iletişim kutularında da.</li>
+    <li><b>Alt sayfada Geri, alt sayfayı kapatır,</b> iç sayfayı değil.</li>
+    <li><b>Escape bir çekmeceyi kapatmaz,</b> <code>is_any_open()</code> da onu görmez.</li>
+    <li><b>Bir popover ya da combobox listesi kapanana dek oyunu engeller</b>, saydam bir perdeyle bile — ve
+      <code>dismissable = false</code> verilmiş, başlığı olmayan bir popover'ı ekrandaki hiçbir şey kapatmaz.</li>
+    <li><b>Bir soru kartı gizli başlar</b> ve zaman aşımı yoktur.</li>
+    <li><b><code>seconds: 0</code> verilmiş ve düğmesi olmayan bir snackbar asla gitmez.</b> Üstelik varsayılan olarak kartına gelen dokunuşları yakalar.</li>
+    <li><b>Kimsenin bilmediği bir uzun basış, kimsenin kullanmadığı bir özelliktir.</b> Yanında bir <code>⋯</code> da gösterin.</li>
+    <li><b>Duraklatılmış bir ağaç açılır pencerenizi de duraklatır.</b> Katmanında <code>PROCESS_MODE_ALWAYS</code> kullanın.</li>
+    <li><b>Genişliği verilmemiş bir bildirim</b> en dar hâline büzülür — <code>preferred_width()</code> kullanın.</li>
+    <li><b>Snackbar'da asla soru sormayın, iletişim kutusunda asla bilgi vermeyin.</b> Görmezden gelinen bir soru kaybolur gider; haber oyunu durdurmamalıdır.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← Tüm widget'lar</a> · <a href="widgets-surfaces.html">Yüzen pencereler →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

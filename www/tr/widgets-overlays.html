@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget'lar</a>
   <a href="widgets-catalog.html">Tüm widget'lar</a>
+  <a href="widgets-popups.html">Açılır pencereler ve iletişim kutuları</a>
   <a href="widgets-surfaces.html">Yüzen pencereler</a>
   <a href="widgets-messages.html">Oyuncuya bir şey söylemek</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — yan panel</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Soldan ya da sağdan kayarak gelen bir panel." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Soldan ya da sağdan kayarak gelen bir panel." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> alttan gelir; bu da dik tutulan bir telefon için doğrudur. Bir tablette ya da
     masaüstünde aynı sayfa oyunun üstünü kaplar; çekmece ise bunun yerine yandan gelir.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Çanta")</code></pre>
     <code>follow_text_direction</code>'ı açın, o zaman RTL'de yön değiştirir.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — sabitlenmiş kart</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Basılan şeyin yanında bir bilgi kartı; aynı anda bir tane." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Bu, <code>GoSurface</code>'in sabitlenmiş yerleşimidir; katman, yüzey, anchor ve temizlik önceden
     bağlanmıştır — her oyunun tekrar tekrar yazdığı o on satır. Aynı anda yalnızca biri açıktır, çünkü üst üste
@@ -118,6 +124,7 @@ bag.open("Çanta")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — uzun basış ve sağ tık</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Uzun basma ya da sağ tıkla menü; hareket eden parmak iptal eder." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Kullan", "action": use},
     {"separator": true},
@@ -133,6 +140,7 @@ bag.open("Çanta")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — geliştirici konsolu</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Komutları ve geçmişi olan geliştirici konsolu; yayın derlemelerinde kapalı." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Bir eşya ver: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>Hile ve hata ayıklama komutları; kimse ezberlemek zorunda kalmasın diye siz yazdıkça süzen bir palet ve ok

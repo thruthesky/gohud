@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Semua widget</a>
+  <a href="widgets-popups.html">Popup dan dialog</a>
   <a href="widgets-surfaces.html">Jendela mengambang</a>
   <a href="widgets-messages.html">Menyampaikan sesuatu kepada pemain</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>Bentuk-bentuk web yang sudah dikenal, dibangun ulang di sekitar apa yang dibutuhkan game dari mereka.</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — absensi harian</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Hadiah kehadiran harian; hanya hari ini yang bisa ditekan." loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>Pemilih tanggal nyaris tak pernah berguna di dalam game. Bentuk kalender berguna — untuk hadiah absensi, yang
     pentingnya adalah <b>Anda sedang di hari ke berapa</b>, bukan tanggal berapa hari itu.</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     hari ini, dan hari mendatang berbeda dalam tiga hal sekaligus: glif centang, garis tepi aksen, dan peredupan.</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> dan <code>GoDonut</code> — statistik dalam sekali lihat</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — Segi lima statistik, dengan garis putus-putus untuk membandingkan perlengkapan." loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — Bagian sebagai irisan, dengan legenda berupa kata, bukan hanya warna." loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # hamparan bergaris putus-putus
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     dan legendanya mencetak persentasenya dalam bentuk kata.</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — banner dan pemilihan karakter</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — Banner dan pemilihan karakter yang tidak berganti sendiri kecuali diminta." loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # mati secara default</code></pre>
   <p>Ia tidak berpindah sendiri kecuali Anda memintanya, dan lima detik adalah batas bawahnya: banner yang berganti
@@ -126,6 +133,7 @@ banners.autoplay_seconds = 5.0             # mati secara default</code></pre>
     meskipun titik yang digambar itu kecil.</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — petunjuk tombol yang tidak berbohong</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — Tombol yang membaca pemetaan sebenarnya, jadi memetakan ulang tak membuat petunjuk bohong." loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # membaca pengikatan yang sebenarnya</code></pre>
   <p>Tulisan "Tekan F" yang ditanam di kode akan terus mengatakan F setelah pemainnya mengubah pengikatan tombol — kebohongan paling umum pada UI PC.
     <code>for_action()</code> membaca <code>InputMap</code>; bila aksinya justru terikat ke gamepad, ia mengembalikan nilai

@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">위젯</a>
   <a href="widgets-catalog.html">모든 위젯</a>
+  <a href="widgets-popups.html">팝업과 대화상자</a>
   <a href="widgets-surfaces.html" aria-current="page">떠 있는 창</a>
   <a href="widgets-messages.html">알리기</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,11 @@
 <section id="surfaces">
 
   <h3 id="gosurface-the-shell"><code>GoSurface</code> — 창의 틀</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="GoSurface — 떠 있는 창 — 가운데, 아래에서, 또는 컨트롤 옆에." loading="lazy"><figcaption><code>CENTER</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="GoSurface — 떠 있는 창 — 가운데, 아래에서, 또는 컨트롤 옆에." loading="lazy"><figcaption><code>BOTTOM</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="GoSurface — 떠 있는 창 — 가운데, 아래에서, 또는 컨트롤 옆에." loading="lazy"><figcaption><code>ANCHOR</code></figcaption></figure>
+  </div>
   <p>팝업·시트·드롭다운이 전부 이것 하나를 쓴다. 안전영역·가상 키보드·고정 머리말/바닥·스크롤 본문·
     가장 위 창 판정·포커스 복원·뒤로가기 소유권·끌어서 높이 조절을 한 곳에서 처리한다.</p>
   <table>
@@ -114,6 +120,7 @@
   </div>
 
   <h3 id="gosheet-a-page-from-the-bottom"><code>GoSheet</code> — 아래에서 올라오는 페이지</h3>
+  <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — 페이지·뒤로 가기·고정 바닥줄이 있는 아래 시트." loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
   <pre><code>var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("인벤토리")
@@ -130,6 +137,11 @@ sheet.footer().visible = true</code></pre>
   </div>
 
   <h3 id="godialogs-confirmations-you-await"><code>GoDialogs</code> — <code>await</code> 로 받는 확인·알림</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="GoDialogs — await 로 기다리는 확인·알림 창 — 알림은 차례를 기다린다." loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="GoDialogs — await 로 기다리는 확인·알림 창 — 알림은 차례를 기다린다." loading="lazy"><figcaption><code>destructive</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="GoDialogs.choose — 몇 가지 중 하나 — 폰에서는 아래 시트, 데스크톱에서는 카드." loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+  </div>
   <pre><code>if await dialogs.confirm("저장 삭제", "되돌릴 수 없습니다."):
     delete_save()</code></pre>
   <p><code>confirm(title, body, ok_text, cancel_text, extra, args, destructive)</code> — 본문 뒤는 전부 생략할 수 있고,
@@ -145,6 +157,7 @@ sheet.footer().visible = true</code></pre>
     버튼 줄은 처음 열 때 지어지므로 오토로드로 둔 <code>GoDialogs</code> 는 부팅 비용이 늘지 않는다.</p>
 
   <h3 id="goform-a-width-capped-form"><code>GoForm</code> — 폭을 제한하는 폼</h3>
+  <figure class="shot"><img src="../img/widgets/goform.webp" width="382" height="318" alt="GoForm — 폭을 제한하고 키보드와 HUD 를 피하는 폼." loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
   <p>브레이크포인트마다 최대 폭이 다르고, 가상 키보드가 올라오면 입력 칸이 그 위로 온다.</p>
   <div class="note warn">
     <b>자손 라벨의 줄바꿈을 보장한다.</b> 없으면 긴 문장 하나가 한 줄로 뻗고, 그 최소 폭이 화면을 넘겨
@@ -152,6 +165,7 @@ sheet.footer().visible = true</code></pre>
   </div>
 
   <h3 id="goscroll-touch-scrolling"><code>GoScroll</code> — 손가락 스크롤</h3>
+  <figure class="shot"><img src="../img/widgets/goscroll.webp" width="382" height="318" alt="GoScroll — 내용 어디서 시작해도 되는 터치 스크롤 — 오른쪽에서 왼쪽 언어도 맞춘다." loading="lazy"><figcaption><code>GoScroll</code> · <code>GoScroll.horizontal()</code></figcaption></figure>
   <p>안에 <b>하나만</b> 넣는다. 머리말과 버튼 줄은 밖에 둔다 — 목록이 길어지면 그것들이 화면 밖으로
     나가면 안 된다. <code>use_panel_edge()</code> 를 부르면 스크롤바가 카드의 기존 여백 자리로 나가고
     내용은 원래 들여쓰기를 유지한다.</p>

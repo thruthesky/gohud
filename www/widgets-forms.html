@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html">Popups and dialogs</a>
   <a href="widgets-surfaces.html">Floating windows</a>
   <a href="widgets-messages.html">Telling the player something</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — the row that can be wrong</h3>
+  <figure class="shot"><img src="img/widgets/gofield.webp" width="382" height="220" alt="GoField — Label, control and hint, with an error under the field that is wrong." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>One line at the top of a five-field form saying "check your input" does not say <i>which</i> field. That
     single thing is what makes people abandon a sign-up.</p>
   <pre><code>var name_field := GoField.make("Character name", GoStyle.line_edit("2-12"), "Cannot be changed later")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     when nothing can go wrong and the node for anything a server can reject.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — an input welded to its button</h3>
+  <figure class="shot"><img src="img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — An input and its buttons welded into one shape." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Name"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>What it solves is corners. Two rounded shapes meeting in the middle look pinched, and the default gap
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("Name"), {"prefix_icon": &amp;"search"})</co
     there it leaves them alone and the square faces meet cleanly.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — a picker that searches</h3>
+  <figure class="shot phone"><img src="img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — A picker that searches inside names, not just from their start." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>Under ten entries <code>GoStyle.select()</code> is better: one less tap and the whole list is visible.
     Past thirty, scanning is work.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Choose a server")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — coupon and gift codes</h3>
+  <figure class="shot"><img src="img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Coupon and gift codes as cells; paste and IME input keep working." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>A code is pasted from a message far more often than it is typed. Twelve real fields would break pasting
     at the first cell and lose characters to an IME, so one hidden field takes the text and the cells are
     drawn. <code>ABCD-EFGH-IJKL</code> loses its dashes on the way in.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Already used")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — sortable headers, selectable rows</h3>
+  <figure class="shot"><img src="img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Sortable headers and selectable rows; numbers sort as numbers." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Rank", "width": 56}, {"text": "Name"}, {"text": "Score", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     cell. <code>GoStyle.table()</code> remains the read-only grid.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — pages, or a More row</h3>
+  <figure class="shot"><img src="img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Numbered pages that keep the current one centred, or a single Load more row." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # the mobile-friendly variant</code></pre>
   <p>Numbers are a mouse UI; on a phone the More row reads better. The current page stays centred in the

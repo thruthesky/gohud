@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html">Cửa sổ nổi</a>
   <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — lời nhắn tự tìm lấy chỗ đứng</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Thông báo ở dưới, có hàng chờ và có thể kèm nút." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>Nằm ở đáy (hoặc trên đỉnh), phía trên vùng an toàn và bàn phím, rồi tự đi mất. Không có nó thì bạn
     phải viết lớp, chỗ đặt, đồng hồ đếm giờ và phần dọn dẹp ở mọi màn hình cần nói "đã lưu".</p>
   <pre><code>snack.show_text("Đã lưu", GoTheme.SUCCESS)
@@ -117,6 +119,7 @@ if await snack.post({"text": "Đã bỏ vật phẩm", "actions": ["Hoàn tác"]
     sở hữu nó mới quyết định nó nằm ở đâu. Nó không mang được một cái nút; cái này thì mang được.</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — cuộc chờ chưa thấy điểm dừng</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — Chờ đợi; biến nút thành vòng quay ngay tại chỗ để không bị nhấn hai lần." loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>Game có nói chuyện với server thì cần cái này hơn mọi thứ khác trên trang này: một màn hình đứng im
     được đọc ra là treo. Một lệnh gọi biến chính cái nút bạn vừa bấm thành spinner <b>ngay tại chỗ</b>.</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -129,6 +132,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>Tiến độ đo được thì là <code>GoBar</code>. Một spinner không hứa hẹn gì về lúc nó kết thúc.</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — chấm chưa đọc, nhãn MỚI, con số 99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — Chấm chưa đọc, nhãn NEW và 99+, gắn ở góc." loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # tự ẩn khi bằng không
 GoBadge.attach(shop_button, 0, "MỚI")
 GoBadge.attach(friend_button, 3, "", true) # một cái chấm — "có gì đó ở đây"</code></pre>

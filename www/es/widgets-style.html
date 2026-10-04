@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos los widgets</a>
+  <a href="widgets-popups.html">Ventanas emergentes y diálogos</a>
   <a href="widgets-surfaces.html">Ventanas flotantes</a>
   <a href="widgets-messages.html">Decirle algo al jugador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Filas de lista con descripción</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Una fila de lista con icono, título, resumen y marca final." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Guardajuramentos", _inspect, Color.TRANSPARENT,
     "Espada larga  /  Ataque 42", false)</code></pre>
   <p>Una fila con segunda línea recibe <b>el mismo relleno arriba y abajo</b>, más holgado que una fila de una sola línea, y el
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Filas que fluyen</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Columnas, filas y filas que se ajustan, con espacios del tema." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Mete los controles en <code>wrap_row</code> con su <b>ancho natural</b>. Con el ajuste de línea activado, el ancho mínimo de un
     botón baja hasta casi nada y la fila dimensiona su celda con ese valor — la etiqueta se reduce a un carácter por línea.
     La fábrica lo evita por ti.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Nunca dejes vacía una lista vacía</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Un marcador mientras carga y un mensaje para una lista vacía." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Aquí todavía no hay nada"))</code></pre>
   <p>La gente lee una pantalla en blanco como algo <b>roto</b>.</p>
 </section>

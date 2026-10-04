@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widżety</a>
   <a href="widgets-catalog.html">Wszystkie widżety</a>
+  <a href="widgets-popups.html">Wyskakujące okna i dialogi</a>
   <a href="widgets-surfaces.html">Pływające okna</a>
   <a href="widgets-messages.html">Jak powiedzieć coś graczowi</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">Wiersze list z opisem</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — Wiersz listy z ikoną, tytułem, opisem i znacznikiem na końcu." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Strażnik Przysięgi", _inspect, Color.TRANSPARENT,
     "Miecz długi  /  Atak 42", false)</code></pre>
   <p>Wiersz z drugą linią dostaje <b>równy margines górny i dolny</b>, luźniejszy niż wiersz jednoliniowy, a para
@@ -132,11 +134,13 @@
   </figure>
 
   <h3 id="flowing-rows">Rzędy, które się zawijają</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — Kolumny, wiersze i zawijane wiersze z odstępami z motywu." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>Wkładaj kontrolki do <code>wrap_row</code> w ich <b>naturalnej szerokości</b>. Przy pozostawionym zawijaniu
     minimalna szerokość przycisku spada do prawie niczego, a rząd wymierza po niej swoją komórkę — etykieta zapada
     się do jednego znaku na linię. Fabryka zapobiega temu za ciebie.</p>
 
   <h3 id="never-leave-an-empty-list-empty">Nigdy nie zostawiaj pustej listy pustą</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — Zaślepka podczas ładowania i komunikat dla pustej listy." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "Jeszcze nic tu nie ma"))</code></pre>
   <p>Ludzie czytają pusty ekran jako <b>zepsuty</b>.</p>
 </section>

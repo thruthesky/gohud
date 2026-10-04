@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">วิดเจ็ต</a>
   <a href="widgets-catalog.html">วิดเจ็ตทั้งหมด</a>
+  <a href="widgets-popups.html">ป๊อปอัปและกล่องโต้ตอบ</a>
   <a href="widgets-surfaces.html">หน้าต่างลอย</a>
   <a href="widgets-messages.html">การบอกอะไรบางอย่างกับผู้เล่น</a>
   <a href="widgets-hud.html">HUD</a>
@@ -99,6 +100,7 @@
   <p>รูปทรงที่คุ้นตาจากเว็บ สร้างขึ้นใหม่รอบสิ่งที่เกมต้องการจากมัน</p>
 
   <h3 id="gorewardcalendar-daily-attendance"><code>GoRewardCalendar</code> — การเช็กชื่อรายวัน</h3>
+  <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — รางวัลเช็กอินรายวัน กดได้เฉพาะวันนี้" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
   <p>ตัวเลือกวันที่แทบไม่มีประโยชน์ในเกมเลย แต่รูปทรงปฏิทินนั้นมี — สำหรับรางวัลเช็กชื่อ ที่สิ่งสำคัญคือ
     <b>คุณมาถึงวันที่เท่าไรแล้ว</b> ไม่ใช่ว่าวันนี้เป็นวันที่เท่าไร</p>
   <pre><code>var attendance := GoRewardCalendar.make(days, claimed_until)
@@ -107,6 +109,10 @@ attendance.claimed.connect(func(day: int) -&gt; void: server.claim_day(day))</co
     และช่องวันข้างหน้า ต่างกันสามอย่างพร้อมกัน: เครื่องหมายถูก ขอบสีเน้น และการหรี่แสง</p>
 
   <h3 id="goradar-and-godonut-stats-at-a-glance"><code>GoRadar</code> และ <code>GoDonut</code> — ค่าสถานะที่เห็นได้ในพริบตา</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/widgets/goradar.webp" width="284" height="264" alt="GoRadar — ห้าเหลี่ยมค่าสถานะ มีเส้นประไว้เทียบอุปกรณ์" loading="lazy"><figcaption><code>GoRadar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/widgets/godonut.webp" width="382" height="174" alt="GoDonut — สัดส่วนเป็นชิ้น พร้อมคำอธิบายเป็นคำ ไม่ใช่แค่สี" loading="lazy"><figcaption><code>GoDonut</code></figcaption></figure>
+  </div>
   <pre><code>var stats := GoRadar.make({"STR": 0.85, "AGI": 0.5, "INT": 0.3, "VIT": 0.7, "LUK": 0.45})
 stats.set_compare(with_new_sword)          # เส้นประที่วาดทับ
 
@@ -118,6 +124,7 @@ card.add_child(share.legend())</code></pre>
     ไม่ใช่แค่เปลี่ยนสี และคำอธิบายสัญลักษณ์พิมพ์เปอร์เซ็นต์ออกมาเป็นตัวหนังสือ</p>
 
   <h3 id="gocarousel-banners-and-character-select"><code>GoCarousel</code> — แบนเนอร์และหน้าเลือกตัวละคร</h3>
+  <figure class="shot"><img src="../img/widgets/gocarousel.webp" width="382" height="200" alt="GoCarousel — แบนเนอร์และการเลือกตัวละครที่ไม่เลื่อนเองเว้นแต่สั่ง" loading="lazy"><figcaption><code>GoCarousel</code></figcaption></figure>
   <pre><code>banners.set_pages([promo, event, pack])
 banners.autoplay_seconds = 5.0             # ปิดไว้เป็นค่าเริ่มต้น</code></pre>
   <p>มันไม่เลื่อนเองถ้าคุณไม่สั่ง และห้าวินาทีคือขั้นต่ำ: แบนเนอร์ที่เปลี่ยนทุกสามวินาทีเอาข้อความไปก่อน
@@ -125,6 +132,7 @@ banners.autoplay_seconds = 5.0             # ปิดไว้เป็นค�
     จุดบอกหน้ากดได้เต็มขนาดสัมผัสขั้นต่ำ ถึงแม้จุดที่วาดออกมาจะเล็กก็ตาม</p>
 
   <h3 id="gokbd-key-hints-that-do-not-lie"><code>GoKbd</code> — คำใบ้ปุ่มที่ไม่โกหก</h3>
+  <figure class="shot"><img src="../img/widgets/gokbd.webp" width="382" height="117" alt="GoKbd — แป้นที่อ่านการกำหนดปุ่มจริง เปลี่ยนปุ่มแล้วคำแนะนำก็ไม่ผิด" loading="lazy"><figcaption><code>GoKbd</code></figcaption></figure>
   <pre><code>hint.add_child(GoKbd.for_action(&amp;"interact"))   # อ่านคีย์ที่ผูกไว้จริง</code></pre>
   <p>"กด F" ที่เขียนตายตัวไว้จะยังบอกว่า F ต่อไปหลังผู้เล่นเปลี่ยนปุ่มไปแล้ว — คำโกหกที่พบบ่อยที่สุดใน UI ของ PC
     <code>for_action()</code> อ่านจาก <code>InputMap</code> ถ้าแอ็กชันนั้นถูกผูกไว้กับเกมแพดแทน มันจะคืนค่าว่าง

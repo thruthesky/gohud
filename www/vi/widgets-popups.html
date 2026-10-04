@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../site/favicon.svg">
+<!-- hreflang:begin -->
+<link rel="alternate" hreflang="en" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<link rel="alternate" hreflang="ko" href="https://thruthesky.github.io/gohud/ko/widgets-popups.html">
+<link rel="alternate" hreflang="ja" href="https://thruthesky.github.io/gohud/ja/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://thruthesky.github.io/gohud/zh/widgets-popups.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://thruthesky.github.io/gohud/zh-tw/widgets-popups.html">
+<link rel="alternate" hreflang="es" href="https://thruthesky.github.io/gohud/es/widgets-popups.html">
+<link rel="alternate" hreflang="pt" href="https://thruthesky.github.io/gohud/pt/widgets-popups.html">
+<link rel="alternate" hreflang="ru" href="https://thruthesky.github.io/gohud/ru/widgets-popups.html">
+<link rel="alternate" hreflang="fr" href="https://thruthesky.github.io/gohud/fr/widgets-popups.html">
+<link rel="alternate" hreflang="tr" href="https://thruthesky.github.io/gohud/tr/widgets-popups.html">
+<link rel="alternate" hreflang="pl" href="https://thruthesky.github.io/gohud/pl/widgets-popups.html">
+<link rel="alternate" hreflang="it" href="https://thruthesky.github.io/gohud/it/widgets-popups.html">
+<link rel="alternate" hreflang="vi" href="https://thruthesky.github.io/gohud/vi/widgets-popups.html">
+<link rel="alternate" hreflang="id" href="https://thruthesky.github.io/gohud/id/widgets-popups.html">
+<link rel="alternate" hreflang="uk" href="https://thruthesky.github.io/gohud/uk/widgets-popups.html">
+<link rel="alternate" hreflang="th" href="https://thruthesky.github.io/gohud/th/widgets-popups.html">
+<link rel="alternate" hreflang="ar" href="https://thruthesky.github.io/gohud/ar/widgets-popups.html">
+<link rel="alternate" hreflang="x-default" href="https://thruthesky.github.io/gohud/widgets-popups.html">
+<!-- hreflang:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cửa sổ bật lên và hộp thoại — gohud</title>
+<meta name="description" content="Mọi cửa sổ bật lên của gohud — chọn cái nào, mở và đóng ra sao, xử lý nút Quay lại và thao tác nhập thế nào, trong mọi giao diện.">
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">go<span>hud</span></a>
+    <nav>
+      <!-- nav:begin -->
+      <a href="./">Tổng quan</a>
+      <a href="install.html">Cài đặt</a>
+      <a class="nav-ai" href="ai.html">Go HUD Skill</a>
+      <a href="widgets.html" aria-current="page">Widget</a>
+      <a href="theming.html">Theme</a>
+      <a href="icons.html">Biểu tượng</a>
+      <a href="https://github.com/thruthesky/gohud">GitHub ↗</a>
+      <!-- nav:end -->
+      <!-- langs:begin -->
+      <details class="langs">
+        <summary>Tiếng Việt</summary>
+        <div class="langs-list">
+          <a href="../widgets-popups.html" hreflang="en" lang="en">English</a>
+          <a href="../ko/widgets-popups.html" hreflang="ko" lang="ko">한국어</a>
+          <a href="../ja/widgets-popups.html" hreflang="ja" lang="ja">日本語</a>
+          <a href="../zh/widgets-popups.html" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+          <a href="../zh-tw/widgets-popups.html" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+          <a href="../es/widgets-popups.html" hreflang="es" lang="es">Español</a>
+          <a href="../pt/widgets-popups.html" hreflang="pt" lang="pt">Português</a>
+          <a href="../ru/widgets-popups.html" hreflang="ru" lang="ru">Русский</a>
+          <a href="../fr/widgets-popups.html" hreflang="fr" lang="fr">Français</a>
+          <a href="../tr/widgets-popups.html" hreflang="tr" lang="tr">Türkçe</a>
+          <a href="../pl/widgets-popups.html" hreflang="pl" lang="pl">Polski</a>
+          <a href="../it/widgets-popups.html" hreflang="it" lang="it">Italiano</a>
+          <a href="widgets-popups.html" hreflang="vi" lang="vi" aria-current="true">Tiếng Việt</a>
+          <a href="../id/widgets-popups.html" hreflang="id" lang="id">Bahasa Indonesia</a>
+          <a href="../uk/widgets-popups.html" hreflang="uk" lang="uk">Українська</a>
+          <a href="../th/widgets-popups.html" hreflang="th" lang="th">ไทย</a>
+          <a href="../ar/widgets-popups.html" hreflang="ar" lang="ar">العربية</a>
+        </div>
+      </details>
+      <!-- langs:end -->
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Cửa sổ bật lên và hộp thoại</h1>
+    <p class="lead">Mọi cửa sổ bật lên của gohud — chọn cái nào, mở và đóng ra sao, xử lý nút Quay lại và thao tác nhập thế nào, trong mọi giao diện. <a href="widgets.html">← Widget</a></p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<nav class="subnav" aria-label="Widget">
+  <!-- subnav:begin -->
+  <a href="widgets.html">Widget</a>
+  <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html" aria-current="page">Cửa sổ bật lên và hộp thoại</a>
+  <a href="widgets-surfaces.html">Cửa sổ nổi</a>
+  <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
+  <a href="widgets-hud.html">HUD</a>
+  <a href="widgets-feedback.html">Chờ đợi, báo tin, đếm</a>
+  <a href="widgets-forms.html">Biểu mẫu và danh sách</a>
+  <a href="widgets-shapes.html">Những hình dạng mà game thật sự dùng</a>
+  <a href="widgets-overlays.html">Nằm đè lên màn hình</a>
+  <a href="widgets-style.html"><code>GoStyle</code> — một chỗ duy nhất để tạo ra mọi thứ</a>
+  <!-- subnav:end -->
+</nav>
+
+<section id="popup-map">
+  <h2>Chọn đúng cửa sổ bật lên</h2>
+  <p class="sub">Cửa sổ bật lên nào cũng cắt ngang người chơi. Trước khi chọn, hãy trả lời đúng một câu hỏi: <b>người chơi có buộc phải
+    trả lời rồi game mới chạy tiếp không?</b> Nếu có, hãy chặn lại. Nếu không, đừng bao giờ chặn — một tấm thẻ dừng cả game chỉ để
+    báo một tin mà người chơi chẳng hề hỏi là cách nhanh nhất khiến họ tắt game của bạn.</p>
+  <ol class="steps">
+    <li><b>Một câu hỏi cần câu trả lời</b> — mua, xóa, rời đi, ghi đè → <a href="#popup-dialogs"><code>GoDialogs.confirm()</code></a>. Một điều cần ghi nhận → <code>alert()</code>. Một trong vài lựa chọn → <code>choose()</code>.</li>
+    <li><b>Một màn hình riêng</b> — cài đặt, bảng nhân vật, một món hàng trong cửa hàng → <a href="#popup-surface"><code>GoSurface</code></a> ở giữa màn hình.</li>
+    <li><b>Một danh sách dài hoặc một trang quản lý</b> — túi đồ, hộp thư, bạn bè → <a href="#popup-sheets"><code>GoSheet</code></a> trồi lên từ đáy trên điện thoại, <code>GoDrawer</code> trượt vào từ bên hông trên màn hình rộng.</li>
+    <li><b>Điều gì đó về thứ vừa được nhấn</b> — chỉ số của một món đồ, các thao tác với nó → <a href="#popup-anchored"><code>GoPopover</code></a> hoặc <code>GoContextMenu</code> ngay bên cạnh.</li>
+    <li><b>Tin tức mà game vẫn chạy tiếp được</b> — đã lưu, đã vứt bỏ, được mời → <a href="#popup-nonblocking"><code>GoSnackbar</code>, <code>GoNotice</code> hoặc <code>GoPromptCard</code></a>. Những thứ này không bao giờ chiếm lấy màn hình.</li>
+    <li><b>Dạy cách điều khiển</b> → <a href="#popup-guides"><code>GoCoachMark</code></a>. <b>Lệnh cheat trong lúc phát triển</b> → <code>GoConsole</code>.</li>
+  </ol>
+
+  <h3 id="every-popup-at-a-glance">Mọi cửa sổ bật lên trong một bảng</h3>
+  <table>
+    <thead><tr><th>Cửa sổ bật lên</th><th>Dừng game</th><th>Back / Escape</th><th>Chạm ra ngoài</th><th>Dùng cho</th></tr></thead>
+    <tbody>
+      <tr><td><code>GoDialogs</code> confirm · alert</td><td>Có</td><td>Đóng lại — confirm trả lời <code>false</code>, alert trả về</td><td>Chỉ đóng khi có <code>dismiss_on_scrim</code></td><td>Câu hỏi cần câu trả lời</td></tr>
+      <tr><td><code>GoDialogs.choose</code></td><td>Có</td><td>Đóng lại — trả lời <code>-1</code></td><td>Chỉ đóng khi có <code>dismiss_on_scrim</code></td><td>Chọn một trong vài thứ</td></tr>
+      <tr><td><code>GoSurface</code></td><td>Có</td><td>Yêu cầu đóng cửa sổ trên cùng</td><td>Yêu cầu đóng khi có <code>dismiss_on_scrim</code></td><td>Cửa sổ của riêng bạn</td></tr>
+      <tr><td><code>GoSheet</code></td><td>Có</td><td>Đóng cả bảng trượt</td><td>Đóng lại</td><td>Túi đồ, danh sách cửa hàng, hộp thư</td></tr>
+      <tr><td><code>GoDrawer</code></td><td>Có</td><td>Chỉ nút Back của Android</td><td>Đóng lại</td><td>Danh sách bên hông trên màn hình rộng</td></tr>
+      <tr><td><code>GoPopover</code></td><td>Cho tới khi đóng</td><td>Đóng lại</td><td>Đóng lại — và không đi tiếp xuống dưới</td><td>Chi tiết vật phẩm và kỹ năng</td></tr>
+      <tr><td>Danh sách của <code>GoCombobox</code></td><td>Cho tới khi đóng</td><td>Đóng lại</td><td>Đóng lại</td><td>Danh sách chọn có tìm kiếm</td></tr>
+      <tr><td><code>GoContextMenu</code> · danh sách thả xuống · ô chọn</td><td>Menu của engine</td><td>Menu của engine</td><td>Đóng lại</td><td>Thao tác, danh sách ngắn</td></tr>
+      <tr><td><code>GoSnackbar</code></td><td>Không</td><td>—</td><td>Tới được game</td><td>Đã lưu · Hoàn tác · Thử lại</td></tr>
+      <tr><td><code>GoPromptCard</code></td><td>Không</td><td>—</td><td>Tới được game</td><td>Lời mời, yêu cầu giao dịch</td></tr>
+      <tr><td><code>GoNotice</code></td><td>Không bao giờ</td><td>—</td><td>Tới được game</td><td>Một dòng cố định trên HUD</td></tr>
+      <tr><td><code>GoBanner</code></td><td>Không — nó nằm ngay trong trang</td><td>—</td><td>—</td><td>"Bạn đang ngoại tuyến. Thử lại"</td></tr>
+      <tr><td><code>GoCoachMark</code></td><td>Chỉ tấm thẻ của nó</td><td>Kết thúc chuyến tham quan</td><td>Tới được game</td><td>Chuyến tham quan ở lần chạy đầu</td></tr>
+      <tr><td><code>GoConsole</code></td><td>Chỉ tấm bảng của nó</td><td>Phím Escape đóng nó</td><td>Tới được game</td><td>Lệnh debug</td></tr>
+    </tbody>
+  </table>
+  <p>Mỗi cái mở trên lớp nào, và vì sao lại theo thứ tự đó, xem ở <a href="#popup-stack">Lớp, Back và thao tác nhập</a>.</p>
+  <div class="phones">
+    <figure class="shot phone"><a href="#popup-dialogs"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="Hộp thoại xác nhận phủ lên game — một câu hỏi với hai nút Để sau và Mua" loading="lazy"></a><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-surface"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="Cửa sổ cài đặt ở giữa màn hình với công tắc, thanh trượt và hai nút Lưu, Hủy" loading="lazy"></a><figcaption><code>GoSurface</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/sheet.webp" width="300" height="649" alt="Bảng túi đồ trồi lên từ đáy với ô tìm kiếm và nút Đóng" loading="lazy"></a><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-sheets"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="Ngăn kéo túi đồ trượt vào từ bên phải" loading="lazy"></a><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/popover.webp" width="300" height="649" alt="Tấm thẻ vật phẩm nhỏ phía trên ô nhanh bình thuốc" loading="lazy"></a><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-anchored"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="Menu Dùng, Di chuyển và Vứt bỏ mở ra từ một ô nhanh" loading="lazy"></a><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="Snackbar ở đáy báo một món đồ vừa bị vứt bỏ, kèm nút Hoàn tác" loading="lazy"></a><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-nonblocking"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="Thẻ mời vào tổ đội gần mép trên màn hình với Chấp nhận và Từ chối" loading="lazy"></a><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="Thẻ coach mark chỉ vào một ô nhanh trong chuyến tham quan" loading="lazy"></a><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="Bảng điều khiển cho nhà phát triển trải ngang mép trên màn hình, có một lệnh vừa gõ" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+  <p>Mọi ảnh trên trang này đều là cùng một game nhỏ — máu và mana ở góc trên bên trái, xu ở góc trên bên phải, cần điều khiển và ba
+    ô nhanh ở dưới — trong <code>default_dark</code>, với một cửa sổ bật lên đang mở phía trên. <a href="#popup-looks">Cùng cửa sổ
+    bật lên đó trong cả mười diện mạo →</a></p>
+</section>
+
+<section id="popup-anatomy">
+  <h2>Cấu tạo của một cửa sổ bật lên</h2>
+  <p class="sub">Gần như mọi cửa sổ bật lên có chặn trong gohud — hộp thoại, bảng trượt, popover, danh sách của combobox và cửa sổ
+    của riêng bạn — đều là một node duy nhất, <code>GoSurface</code>. Học các phần của nó một lần là bạn biết tất cả.</p>
+  <figure class="shot phone"><img src="../img/popups/surface-status.webp" width="300" height="649" alt="Cửa sổ Tạo nhân vật: nút Quay lại và tiêu đề ở phần đầu, nút đóng, ô tên đang báo lỗi, các nút chọn lớp nhân vật, dòng trạng thái màu đỏ và nút Tạo ghim ở đáy" loading="lazy"><figcaption>Phần đầu có nút quay lại và nút đóng · phần thân · dòng trạng thái · chân trang</figcaption></figure>
+  <table>
+    <thead><tr><th>Phần</th><th>Là gì</th><th>Chạm tới bằng cách nào</th></tr></thead>
+    <tbody>
+      <tr><td>Lớp</td><td><code>CanvasLayer</code> mà cửa sổ bật lên nằm trên. Số của nó quyết định nó che những gì.</td><td>Do bạn đặt với <code>GoSurface</code>; có sẵn với những cái còn lại (<a href="#popup-stack">bảng</a>)</td></tr>
+      <tr><td>Lớp phủ mờ</td><td>Tấm màn phủ lên mọi thứ phía sau. Nó hứng những cú chạm trượt ra ngoài tấm thẻ.</td><td><code>scrim_transparent</code>, <code>dismiss_on_scrim</code>, màu <code>scrim</code> của theme</td></tr>
+      <tr><td>Tấm thẻ</td><td>Chính cái cửa sổ — mặt tấm nền của theme, bo tròn, vát góc, rèn hay như kẹo thạch tùy diện mạo.</td><td><code>card</code>, <code>alpha</code></td></tr>
+      <tr><td>Phần đầu</td><td>Nút quay lại (tùy chọn), tiêu đề (tối đa hai dòng, sau đó là "…"), nút đóng.</td><td><code>set_title()</code> · <code>set_title_key()</code> · <code>set_back()</code> · <code>close_enabled</code> · <code>show_header</code></td></tr>
+      <tr><td>Thanh công cụ</td><td>Một hàng ghim ngay dưới phần đầu — ô tìm kiếm, chip lọc. Ẩn cho tới khi bạn dùng.</td><td><code>toolbar</code></td></tr>
+      <tr><td>Phần thân</td><td>Phần cuộn được. Nội dung đặt ở đây.</td><td><code>body</code> · <code>scroll_body</code> · <code>clear()</code></td></tr>
+      <tr><td>Dòng trạng thái</td><td>Một dòng ghim giữa phần thân và chân trang — "Kiểm tra tên thất bại", "Đang lưu…".</td><td><code>set_status_text()</code> · <code>set_status_key()</code> · <code>clear_status()</code></td></tr>
+      <tr><td>Chân trang</td><td>Các nút ghim ở đáy. Ẩn cho tới khi bạn dùng.</td><td><code>footer</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Thứ cần ghim thì đặt vào hàng ghim.</b> Ô tìm kiếm, thông báo lỗi hay nút Lưu đặt trong phần thân sẽ cuộn mất theo một
+    danh sách dài — người chơi gõ sai tên, lỗi nằm khuất phía dưới, và trông như chẳng có gì xảy ra.
+    Hãy dùng <code>toolbar</code>, dòng trạng thái và <code>footer</code>; chúng đứng yên trong khi phần thân cuộn.
+  </div>
+</section>
+
+<section id="popup-dialogs">
+  <h2>Hộp thoại mà bạn <code>await</code></h2>
+  <p class="sub"><code>GoDialogs</code> hỏi rồi chờ. Một node, ba kiểu câu hỏi — và câu trả lời quay về ngay trên cùng dòng
+    đó, nên code đọc theo đúng thứ tự mà người chơi trải qua.</p>
+  <pre><code>var dialogs := GoDialogs.new()
+add_child(dialogs)
+
+if await dialogs.confirm("Buy the starter pack?", "300 gems for a sword, a shield and 10 potions.",
+        "Buy", "Not now"):
+    buy_starter_pack()</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/dialog-confirm.webp" width="300" height="649" alt="confirm() — một câu hỏi với Để sau ở trên và Mua ở dưới" loading="lazy"><figcaption><code>confirm()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-destructive.webp" width="300" height="649" alt="Một confirm không thể hoàn tác — nút Xóa tô đặc màu đỏ" loading="lazy"><figcaption><code>confirm(…, true)</code> — không thể hoàn tác</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-alert.webp" width="300" height="649" alt="alert() — Lên cấp! với một nút Tuyệt vời duy nhất" loading="lazy"><figcaption><code>alert()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-choose.webp" width="300" height="649" alt="choose() — Sắp xếp túi đồ theo, với bốn lựa chọn và Hủy" loading="lazy"><figcaption><code>choose()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dialog-horizontal.webp" width="300" height="649" alt="Một confirm có hai nút nằm cạnh nhau" loading="lazy"><figcaption><code>ActionLayout.HORIZONTAL</code></figcaption></figure>
+  </div>
+
+  <h3 id="the-three-questions">Ba kiểu câu hỏi</h3>
+  <pre><code>confirm(title, body, ok_text := "", cancel_text := "", extra := "",
+        args := {}, destructive := false) -&gt; bool
+alert(title, body, ok_text := "", extra := "", args := {})      # await nó để chờ
+choose(title, options: Array, cancel_text := "", translate := false) -&gt; int
+confirm_key(…) · alert_key(…)                                 # khóa dịch</code></pre>
+  <table>
+    <thead><tr><th>Lệnh gọi</th><th>Trả về</th><th>Dùng cho</th></tr></thead>
+    <tbody>
+      <tr><td><code>confirm()</code></td><td><code>true</code> hoặc <code>false</code></td><td>Có hay không — mua, xóa, rời đi, ghi đè.</td></tr>
+      <tr><td><code>alert()</code></td><td>không gì cả — <code>await</code> nó để chờ</td><td>Điều người chơi buộc phải thấy: một phần thưởng, một lần mất kết nối.</td></tr>
+      <tr><td><code>choose()</code></td><td>chỉ số của lựa chọn, hoặc <code>-1</code></td><td>Một trong vài thứ. Mỗi lựa chọn là một String hoặc <code>{text, icon, danger, subtitle}</code>.</td></tr>
+      <tr><td><code>confirm_key()</code> · <code>alert_key()</code></td><td>như trên</td><td>Tương tự nhưng dùng khóa dịch — chữ đổi theo khi đổi ngôn ngữ trong lúc hộp thoại đang mở.</td></tr>
+    </tbody>
+  </table>
+  <p>Nhãn nút để trống sẽ lùi về chữ của chính bộ kit (<code>confirm</code>, <code>cancel</code> trong <code>GoConfig.text_keys</code>).
+    <code>extra</code> được thêm vào phần thân trên một dòng mới. <code>args</code> điền các <code>{placeholders}</code> trong tiêu đề
+    <b>và</b> phần thân: <code>confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "", {"item": name, "price": 300})</code>.</p>
+
+  <h3 id="every-way-out-has-an-answer">Lối thoát nào cũng có câu trả lời</h3>
+  <table>
+    <thead><tr><th>Người chơi…</th><th><code>confirm</code></th><th><code>alert</code></th><th><code>choose</code></th></tr></thead>
+    <tbody>
+      <tr><td>nhấn OK / một lựa chọn</td><td><code>true</code></td><td>trả về</td><td>chỉ số của lựa chọn</td></tr>
+      <tr><td>nhấn Hủy</td><td><code>false</code></td><td>—</td><td><code>-1</code></td></tr>
+      <tr><td>nhấn ×, Escape hoặc nút Back của Android</td><td><code>false</code></td><td>trả về</td><td><code>-1</code></td></tr>
+      <tr><td>chạm vào lớp phủ mờ (chỉ khi có <code>dismiss_on_scrim</code>)</td><td><code>false</code></td><td>trả về</td><td><code>-1</code></td></tr>
+      <tr><td>node <code>GoDialogs</code> rời khỏi cây</td><td><code>false</code></td><td>trả về</td><td><code>-1</code></td></tr>
+    </tbody>
+  </table>
+  <p>Vì vậy code sau <code>await</code> luôn chạy — không câu trả lời nào bị treo lơ lửng, kể cả khi scene đổi ngay dưới hộp thoại.</p>
+
+  <h3 id="destructive-actions">Thao tác không thể hoàn tác</h3>
+  <p>Hãy truyền <code>destructive = true</code> cho việc không thể hoàn tác. Nút OK trở thành nút tô đặc
+    <code>Tone.DANGER_SOLID</code> — chữ trắng trên nền đỏ ở mọi diện mạo, trong khi một nhãn nguy hiểm chỉ pha màu sẽ phải tối
+    dần tới gần đen trên theme sáng mới đủ dễ đọc. Sắc thái được đặt lại ở mỗi lần gọi, vì cửa sổ được tái sử dụng.</p>
+  <pre><code>if await dialogs.confirm("Delete this save?", "Slot 2 — Aria, level 12. This cannot be undone.",
+        "Delete", "Keep it", "", {}, true):
+    delete_save(2)</code></pre>
+  <div class="note warn">
+    <b>OK giữ focus bàn phím.</b> Mọi hộp thoại xác nhận đều mở ra với nút OK đang có focus, nên Enter hoặc Space là xác nhận —
+    kể cả hộp thoại không thể hoàn tác. Hãy đặt chữ trên nút sao cho lựa chọn an toàn hiện rõ ("Giữ lại"), và đặt các thao tác
+    không thể đảo ngược sau một bước thứ hai khi một cú lỡ tay khiến người chơi mất tiến trình thật.
+  </div>
+
+  <h3 id="button-layout">Bố cục nút</h3>
+  <table>
+    <thead><tr><th><code>action_layout</code></th><th>Làm gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>VERTICAL</code> (mặc định)</td><td>Các nút xếp chồng, rộng hết cỡ. An toàn với mọi ngôn ngữ — một nhãn tiếng Đức hay tiếng Nga dài không bao giờ bị ép.</td></tr>
+      <tr><td><code>HORIZONTAL</code></td><td>Một hàng, mỗi nút rộng một nửa.</td></tr>
+      <tr><td><code>AUTO</code></td><td>Chỉ dùng một hàng khi cả hai nhãn vừa nửa tấm thẻ trên một dòng; còn không thì xếp chồng. Được quyết định lại khi đổi ngôn ngữ hoặc đổi kích thước.</td></tr>
+    </tbody>
+  </table>
+  <p><code>action_gap</code> là khoảng cách giữa các nút, <code>body_gap</code> là khoảng trống phía trên chúng — hãy để nó rộng hơn
+    khoảng cách giữa các nút để câu hỏi và lựa chọn đọc ra thành hai phần. Nếu chỉ muốn áp cho một hộp thoại, hãy gọi
+    <code>set_next_action_layout()</code> trước khi mở nó. Nút duy nhất của một alert luôn rộng hết cỡ.</p>
+
+  <h3 id="one-at-a-time">Mỗi lúc một cái</h3>
+  <p>Một <code>confirm()</code> thứ hai trong lúc cái trước còn mở sẽ trả về <code>false</code> ngay — hộp thoại không bao giờ vô
+    tình chồng lên hộp thoại. Bật <code>queue_when_busy</code> thì nó xếp hàng chờ tới lượt; <code>alert()</code> thì luôn chờ.
+    <code>queue_limit</code> (8) giới hạn độ dài hàng chờ, và khi tràn thì yêu cầu cũ nhất được trả lời <code>false</code>.
+    <code>pending()</code> đếm các yêu cầu đang chờ và <code>clear_pending()</code> trả lời <code>false</code> cho tất cả.
+    <code>choose()</code> không bao giờ xếp hàng: nó trả về <code>-1</code> khi đã có một hộp thoại đang mở.</p>
+
+  <h3 id="phone-and-desktop">Điện thoại và máy để bàn</h3>
+  <p><code>choose()</code> mở ra thành một bảng trượt từ đáy trên Android và iOS — nơi ngón cái ở — và thành một tấm thẻ ở
+    giữa trên máy để bàn. Một confirm bị giới hạn ở <code>max_width</code> (420dp) và canh giữa. Hãy đặt <code>layer_index</code>,
+    <code>max_width</code> và các export khác <b>trước</b> <code>add_child</code>; chúng được áp khi node vào cây.</p>
+  <pre><code>var picked := await dialogs.choose("Sort the bag by", [
+    {"text": "Newest first", "icon": GoIconSet.CLOCK},
+    {"text": "Rarity", "icon": GoIconSet.STAR},
+    {"text": "Drop everything", "icon": GoIconSet.TRASH, "danger": true}])
+if picked &gt;= 0:
+    sort_bag(picked)</code></pre>
+</section>
+
+<section id="popup-surface">
+  <h2><code>GoSurface</code> — cửa sổ của riêng bạn</h2>
+  <p class="sub">Khi một cửa sổ bật lên không chỉ là một câu hỏi — cài đặt, bảng nhân vật, một món đồ để mua — hãy dựng nó trên
+    <code>GoSurface</code>. Vùng an toàn, bàn phím ảo, hàng ghim, cuộn, Back, focus và đổi kích thước đều đã được lo sẵn.</p>
+  <pre><code>var layer := CanvasLayer.new()
+layer.layer = 50
+add_child(layer)
+
+var window := GoSurface.new()
+window.set_title("Settings")
+window.close_requested.connect(layer.queue_free)
+window.body.add_child(GoStyle.toggle("Music", false))
+window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+var row := GoStyle.row()
+row.add_child(GoStyle.button("Cancel", window.request_close))
+row.add_child(GoStyle.button("Save", save_and_close, GoStyle.Tone.PRIMARY))
+window.footer.add_child(row)
+window.footer.visible = true
+layer.add_child(window)</code></pre>
+  <div class="note warn">
+    <b>Nó không bao giờ tự đóng.</b> × , Escape, Back và cú chạm vào lớp phủ mờ chỉ phát <code>close_requested</code>. Ẩn hay giải phóng
+    cửa sổ là việc của màn hình sở hữu nó — chỉ màn hình đó biết "đóng" nghĩa là lưu, bỏ đi, hay hỏi lại trước.
+  </div>
+
+  <h3 id="three-placements">Ba vị trí đặt</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/surface-center.webp" width="300" height="649" alt="CENTER — một tấm thẻ ở giữa màn hình" loading="lazy"><figcaption><code>CENTER</code> — xác nhận, cài đặt</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-bottom.webp" width="300" height="649" alt="BOTTOM — cùng cửa sổ đó trồi lên từ đáy" loading="lazy"><figcaption><code>BOTTOM</code> — danh sách, trang quản lý</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-anchor.webp" width="300" height="649" alt="ANCHOR — menu sắp xếp ghim cạnh nút Sắp xếp" loading="lazy"><figcaption><code>ANCHOR</code> — cạnh một control</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/surface-date.webp" width="300" height="649" alt="Bộ chọn ngày trong một cửa sổ canh giữa với Hủy và OK" loading="lazy"><figcaption>Một <code>GoDatePicker</code> trong cửa sổ <code>CENTER</code></figcaption></figure>
+  </div>
+  <p><code>ANCHOR</code> cần <code>anchor_control</code>. Tấm thẻ nằm bên phải nó nếu <code>anchor_min_width</code> vừa,
+    không thì sang phía rộng hơn, không nữa thì vào trong màn hình, và mở lên trên khi phía trên còn nhiều chỗ hơn. Nó bám theo
+    một điểm neo đang di chuyển ở mỗi khung hình. <code>anchor_width</code> (320) và <code>anchor_max_height</code> (520) quyết định kích thước.</p>
+
+  <h3 id="how-big-it-gets">Nó to tới đâu</h3>
+  <table>
+    <thead><tr><th>Số đo</th><th>Quy tắc</th><th>Đổi bằng</th></tr></thead>
+    <tbody>
+      <tr><td>Khoảng trống</td><td>Vùng an toàn, trừ bàn phím, trừ lề màn hình (16dp, không bao giờ quá 10% cạnh ngắn).</td><td>—</td></tr>
+      <tr><td>Chiều rộng</td><td>94% khoảng trống khi cầm dọc, 72% khi cầm ngang, tối đa 480dp.</td><td><code>max_width</code> · <code>GoConfig.surface_width_ratio_*</code></td></tr>
+      <tr><td>Chiều cao</td><td>Cao bằng nội dung (<code>fit_content</code>), tới 68% khoảng trống, chặn ở 72%. Một tấm thẻ canh giữa không đổi kích thước được có thể cao tới 94% để khỏi phải cuộn.</td><td><code>height_ratio</code> · <code>max_height_ratio</code> · <code>max_height</code></td></tr>
+      <tr><td>Mật độ</td><td>Thu gọn khi đặt <code>compact</code>, khi màn hình thấp dưới 420dp (điện thoại nằm ngang), hoặc khi nội dung không vừa: ít đệm hơn, khoảng cách nhỏ hơn, tiêu đề nhỏ hơn. Nó đo cả hai cách và giữ cách rộng rãi hơn mà vẫn vừa — không bị giật.</td><td><code>compact</code></td></tr>
+      <tr><td>Đổi kích thước</td><td>Với <code>resizable</code>, tiêu đề là tay nắm: kéo nó trong khoảng từ 30% tới mức chặn. <code>height_changed(ratio)</code> báo kết quả.</td><td><code>resizable</code></td></tr>
+    </tbody>
+  </table>
+  <p>Tỉ lệ vượt mức chặn sẽ bị cắt về, kèm một cảnh báo trong bản build debug. Bàn phím đẩy tấm thẻ lên và cuộn ô đang có
+    focus vào tầm nhìn; vùng an toàn giữ nó tránh xa tai thỏ và thanh cử chỉ trên Android và iOS.</p>
+
+  <h3 id="properties">Thuộc tính</h3>
+  <table>
+    <thead><tr><th>Thuộc tính</th><th>Mặc định</th><th>Làm gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>placement</code></td><td><code>CENTER</code></td><td><code>CENTER</code>, <code>BOTTOM</code> hoặc <code>ANCHOR</code></td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td><code>GoConfig.dismiss_on_scrim</code> (false)</td><td>Chạm vào lớp phủ mờ là yêu cầu đóng. Một cú kéo bắt đầu bên trong tấm thẻ thì không.</td></tr>
+      <tr><td><code>scrim_transparent</code></td><td>false</td><td>Giữ cho game vẫn nhìn thấy được — lớp phủ mờ vẫn hứng các cú chạm bên ngoài.</td></tr>
+      <tr><td><code>close_enabled</code></td><td>true</td><td>Hiện × và cho Escape, Back yêu cầu đóng.</td></tr>
+      <tr><td><code>show_header</code> · <code>scroll_body</code> · <code>resizable</code></td><td>true · true · false</td><td>Hàng đầu, phần thân cuộn được, tay nắm để kéo.</td></tr>
+      <tr><td><code>fit_content</code> · <code>compact</code></td><td>true · false</td><td>Kích thước theo nội dung; bắt đầu ở dạng thu gọn.</td></tr>
+      <tr><td><code>fade_in</code></td><td><code>GoConfig.surface_fade_in</code> (false)</td><td>Cho tấm thẻ hiện dần khi mở. Tức thì khi có <code>reduce_motion</code>.</td></tr>
+      <tr><td><code>alpha</code></td><td>-1 (của theme)</td><td>Độ đục của mặt tấm thẻ, dạng tỉ lệ. Chỉ mặt thẻ mờ đi — chữ thì không bao giờ.</td></tr>
+      <tr><td><code>initial_focus</code></td><td>không có</td><td>Control nhận focus khi mở.</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn">
+    <b>Đặt những cái này trước <code>add_child</code>:</b> <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code> và
+    <code>scroll_body</code> được áp khi cửa sổ vào cây. <code>dismiss_on_scrim</code>, <code>close_enabled</code>,
+    <code>fade_in</code> và <code>initial_focus</code> được đọc trực tiếp lúc chạy.
+  </div>
+
+  <h3 id="signals-and-calls">Tín hiệu và lệnh gọi</h3>
+  <table>
+    <thead><tr><th>Tên</th><th>Là gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>close_requested</code></td><td>×, Escape, nút Back của Android hoặc cú chạm vào lớp phủ mờ — và <code>request_close()</code>. Chỉ cửa sổ trên cùng phát ra.</td></tr>
+      <tr><td><code>back_requested</code> · <code>set_back(action)</code></td><td>Nút quay lại ở phần đầu, cho cửa sổ có nhiều trang. Một <code>Callable</code> rỗng sẽ ẩn nó.</td></tr>
+      <tr><td><code>height_changed(ratio)</code></td><td>Sau một cú kéo tay nắm.</td></tr>
+      <tr><td><code>is_top()</code> · <code>GoSurface.is_any_open()</code></td><td>Đây có phải cửa sổ nhận Back không — có cửa sổ nào đang mở không.</td></tr>
+      <tr><td><code>relayout()</code></td><td>Dàn lại bố cục ngay bây giờ. Đổi một thuộc tính kích thước thì nó đã tự làm việc này.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-sheets">
+  <h2>Bảng trượt và ngăn kéo</h2>
+  <p class="sub">Một danh sách cần chỗ sẽ trồi lên từ đáy trên điện thoại cầm dọc — nơi ngón cái ở — và trượt vào từ
+    bên hông trên máy tính bảng hay máy để bàn, nơi một bảng trượt sẽ che mất game.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/sheet.webp" width="300" height="649" alt="GoSheet — Túi đồ với ô tìm kiếm ghim, một danh sách và nút Đóng ghim" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer bên trái — menu Thị trấn, Bản đồ thế giới, Nhiệm vụ, Bang hội và Cài đặt" loading="lazy"><figcaption><code>GoDrawer</code> · <code>LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer bên phải — túi đồ" loading="lazy"><figcaption><code>GoDrawer</code> · <code>RIGHT</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosheet-pages-from-the-bottom"><code>GoSheet</code> — các trang từ dưới lên</h3>
+  <pre><code>var sheet := GoSheet.new()
+add_child(sheet)
+
+func show_bag(items: Array) -&gt; void:
+    sheet.open("Bag")
+    var search := GoStyle.line_edit("Search the bag…")
+    search.text_changed.connect(filter_bag)
+    sheet.toolbar().add_child(search)
+    sheet.toolbar().visible = true
+    for item in items:
+        sheet.body.add_child(GoStyle.list_button(GoIconSet.BOX, item.name, show_item.bind(item),
+            Color.TRANSPARENT, item.description, false, GoIconSet.CHEVRON_RIGHT))
+    sheet.add_footer(GoStyle.button("Close", sheet.close, GoStyle.Tone.PRIMARY))</code></pre>
+  <ul>
+    <li>Nó là một <code>CanvasLayer</code> (lớp 10) chứa một <code>GoSurface</code> kiểu <code>BOTTOM</code> đổi kích thước được — nên nó nằm
+      trên HUD, và người chơi có thể kéo nó cao hơn.</li>
+    <li><code>open(title)</code> bắt đầu một trang mới: nó dọn phần thân, thanh công cụ và nút quay lại, và giải phóng những gì
+      <code>add_footer()</code> đã thêm vào. Gọi lại để hiện một trang khác trong cùng bảng trượt; <code>set_back()</code> hiện nút quay
+      lại để trở về trang đầu. <code>open_key()</code> nhận một khóa dịch.</li>
+    <li><code>close()</code> ẩn nó đi — không giải phóng, nên lần <code>open()</code> tiếp theo là tức thì. <code>closed</code> và
+      <code>page_changed</code> báo cho bạn biết khi nào.</li>
+    <li><code>height_ratio</code> (0.6) là chiều cao lúc mở; <code>max_height_ratio</code> nâng mức chặn; <code>dismissable</code>
+      (true) đóng nó khi chạm vào lớp phủ mờ.</li>
+  </ul>
+  <div class="note warn">
+    <b>Escape và Back đóng cả bảng trượt</b>, kể cả ở trang con có <code>set_back()</code> — chỉ nút quay lại trên màn hình
+    mới lùi về một trang. Nếu muốn Back lùi một bước, hãy tự xử lý <code>close_requested</code> trên <code>sheet.surface</code>.
+  </div>
+
+  <h3 id="godrawer-from-the-side"><code>GoDrawer</code> — từ bên hông</h3>
+  <pre><code>var drawer := GoDrawer.new()
+drawer.side = GoDrawer.Side.LEFT
+drawer.follow_text_direction = true      # phía bắt đầu: bên trái, hoặc bên phải trong tiếng Ả Rập
+add_child(drawer)
+drawer.body.add_child(GoNavBar.drawer_list([{"icon": GoIconSet.HOME, "text": "Town"},
+    {"icon": GoIconSet.MAP, "text": "World map"}], 0, go_to))
+drawer.open("Menu")</code></pre>
+  <ul>
+    <li>Lớp 80. Rộng 42% màn hình (<code>width_ratio</code>), trong khoảng <code>min_width</code> (320dp) tới <code>max_width</code>
+      (420dp) — trên điện thoại nó che gần hết màn hình, đó là lý do bảng trượt là lựa chọn tốt hơn ở đó.</li>
+    <li>Tấm nền chạm tới mép màn hình; chỉ nội dung lùi vào trong vùng an toàn, nên một góc bo tròn không bao giờ cắt mất hàng đầu tiên.</li>
+    <li><code>LEFT</code> nghĩa là bên trái màn hình, kể cả trong tiếng Ả Rập. Hãy bật <code>follow_text_direction</code> khi điều quan
+      trọng là "phía bắt đầu"; <code>effective_side()</code> cho bạn biết nó đã nằm ở đâu.</li>
+    <li><code>open(title)</code> giữ nguyên phần thân — chỉ cần điền một lần. <code>set_title("")</code> ẩn phần đầu.
+      <code>motion_seconds</code> (0.2) là thời gian trượt; <code>reduce_motion</code> làm nó tức thì.</li>
+  </ul>
+  <div class="note warn">
+    <b>Nút Back của Android đóng ngăn kéo; Escape thì không.</b> Ngăn kéo chỉ lắng nghe nút Back của hệ thống. Trên máy để bàn, hãy gọi
+    <code>drawer.close()</code> từ phím tắt của riêng bạn — và lưu ý rằng <code>GoSurface.is_any_open()</code> không tính ngăn kéo;
+    hãy hỏi <code>drawer.is_open()</code>.
+  </div>
+</section>
+
+<section id="popup-anchored">
+  <h2>Thẻ và menu bên cạnh một control</h2>
+  <p class="sub">Thứ người chơi vừa nhấn xứng đáng có câu trả lời ngay cạnh đầu ngón tay, chứ không phải ở giữa màn hình.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — thẻ Bình máu cạnh ô nhanh" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Dùng, Chuyển sang ô 1 và Vứt bỏ" loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/dropdown.webp" width="300" height="649" alt="GoStyle.dropdown — menu Sắp xếp mở ra trên một bảng xếp hạng" loading="lazy"><figcaption><code>GoStyle.dropdown()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/select.webp" width="300" height="649" alt="GoStyle.select — bộ chọn chất lượng đang mở với Thấp, Trung bình, Cao và Cực cao" loading="lazy"><figcaption><code>GoStyle.select()</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — danh sách bạn bè có ô tìm kiếm" loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
+  </div>
+
+  <h3 id="gopopover-a-card-on-the-thing-pressed"><code>GoPopover</code> — tấm thẻ trên thứ vừa được nhấn</h3>
+  <pre><code>slot.pressed.connect(func() -&gt; void:
+    var card := GoStyle.item_card({"icon": GoIconSet.POTION, "title": "Health potion",
+        "subtitle": "Heals 50 HP · 12 left"}, false)
+    GoPopover.open(slot, card, {"width": 280}))</code></pre>
+  <p>Một cửa sổ kiểu <code>ANCHOR</code> với lớp, điểm neo và phần dọn dẹp đã nối sẵn — mười dòng mà game nào cũng viết đi viết
+    lại. <b>Mỗi lúc một cái</b>: mở cái thứ hai sẽ đóng cái thứ nhất, vì những tấm thẻ chồng lên nhau sẽ chôn mất màn hình và chẳng
+    ai biết tấm nào thuộc về ô nào. Lớp phủ mờ thì trong suốt — một tấm thẻ mở ra để so trang bị không được làm tối chính món trang bị đó —
+    nhưng nó vẫn hứng cú chạm đầu tiên bên ngoài, cú chạm đó đóng tấm thẻ và không đi tiếp xuống dưới.</p>
+  <table>
+    <thead><tr><th>Tùy chọn</th><th>Mặc định</th><th>Làm gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>""</td><td>Phần đầu có ×. Để trống là không có phần đầu.</td></tr>
+      <tr><td><code>width</code> · <code>max_height</code></td><td>320 · 520</td><td>Kích thước của tấm thẻ.</td></tr>
+      <tr><td><code>dismissable</code></td><td>true</td><td>Chạm ra ngoài là đóng.</td></tr>
+      <tr><td><code>compact</code> · <code>alpha</code> · <code>translate</code></td><td>false · -1 · false</td><td>Khoảng cách thu gọn, độ đục của mặt thẻ, tiêu đề là khóa dịch.</td></tr>
+      <tr><td><code>layer</code></td><td>95</td><td><code>CanvasLayer</code> mà nó mở lên.</td></tr>
+    </tbody>
+  </table>
+  <p><code>GoPopover.close()</code> và <code>GoPopover.is_open()</code> là hàm tĩnh. <code>open()</code> trả về cửa sổ đó — hoặc
+    <code>null</code> khi điểm neo không nằm trong cây, nên hãy kiểm tra trước khi <code>await shown.close_requested</code>.</p>
+  <div class="note warn">
+    <b>Nó không phải tooltip hiện khi rê chuột.</b> Màn hình cảm ứng không có trạng thái rê chuột; bất cứ thứ gì chỉ chuột mới làm lộ ra đều vô hình với một nửa số người chơi của bạn.
+    Và với <code>dismissable = false</code> mà không có tiêu đề, chẳng có gì trên màn hình đóng được nó — chỉ Escape, Back hoặc lệnh gọi của chính bạn.
+  </div>
+
+  <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — nhấn giữ và bấm chuột phải</h3>
+  <pre><code>var menu := [
+    {"text": "Use", "icon": GoIconSet.POTION, "action": use},
+    {"separator": true},
+    {"text": "Drop", "icon": GoIconSet.TRASH, "action": drop, "danger": true}]
+GoContextMenu.attach(slot, menu)
+
+var more := GoStyle.icon_button(GoIconSet.MORE, Callable(), -1, &amp;"more")
+more.pressed.connect(func() -&gt; void: GoContextMenu.open_at(more, menu))</code></pre>
+  <ul>
+    <li>Bấm chuột phải là mở ngay. Ngón tay giữ nửa giây (<code>HOLD_SECONDS</code>) là mở; di chuyển quá
+      12dp thì hủy — nên cuộn một danh sách không bao giờ làm bật ra menu.</li>
+    <li>Mỗi mục là <code>{text, action, icon, disabled, checked, separator, danger, translate}</code>. Hãy truyền một <code>Callable</code>
+      thay cho mảng khi các mục phụ thuộc vào thứ vừa được nhấn; nó được gọi mỗi lần menu mở.</li>
+    <li><code>danger</code> đặt "⚠ " trước chữ — menu của engine chỉ tô màu được tất cả các mục cùng một lúc.</li>
+    <li>Đây là <code>PopupMenu</code> của engine, được <code>GoStyle.style_popup()</code> khoác áo. Nó không được tính là một cửa sổ đang mở.</li>
+  </ul>
+  <div class="note warn">
+    <b>Nhấn giữ cần thêm một lối vào thứ hai.</b> Chẳng ai tự tìm ra một cử chỉ ẩn. Hãy ghép nó với một nút <code>⋯</code> nhìn thấy được
+    (<code>open_at()</code>, như ở trên), hoặc dạy nó một lần bằng coach mark.
+  </div>
+
+  <h3 id="dropdowns-selects-and-the-split-button">Danh sách thả xuống, ô chọn và nút tách đôi</h3>
+  <pre><code>var sort := GoStyle.dropdown("Sort", ["Highest score", "Most wins", {"text": "Friends only", "disabled": true}],
+    func(index: int) -&gt; void: sort_board(index))
+var quality := GoStyle.select(["Low", "Medium", "High", "Ultra"], "Quality")
+quality.item_selected.connect(func(index: int) -&gt; void: settings.quality = index)
+var send := GoSplitButton.make("Send", send_now, ["Send later", "Save as draft"])</code></pre>
+  <p>Cả ba đều mở menu bật lên của engine: <code>dropdown()</code> là một <code>MenuButton</code> chạy một thao tác,
+    <code>select()</code> là một <code>OptionButton</code> giữ một giá trị, <code>GoSplitButton</code> là một thao tác chính cộng một menu trên
+    mũi tên của nó (<code>chosen(index)</code>). Menu cố ý giữ đục hoàn toàn — một menu hiện trong cửa sổ OS riêng sẽ biến các
+    pixel trong suốt thành màu đen.</p>
+
+  <h3 id="gocombobox-a-list-that-searches"><code>GoCombobox</code> — danh sách có tìm kiếm</h3>
+  <pre><code>var friend := GoCombobox.make(friend_names, -1, "Find a friend")
+friend.picked.connect(func(index: int) -&gt; void: invite(friend_names[index]))</code></pre>
+  <p>Khi được nhấn, nó mở một danh sách neo trên lớp 96 với lớp phủ mờ trong suốt. Từ <code>search_threshold</code> (8) mục trở lên, một
+    ô tìm kiếm xuất hiện và nhận focus; nó khớp ở bất kỳ đâu trong chữ hoặc gợi ý, không phân biệt hoa thường, và khi không có
+    kết quả thì nó nói rõ. <code>list_width</code> (0 = bằng chiều rộng của nút, tối thiểu 180dp) quyết định chiều rộng danh sách.</p>
+</section>
+
+<section id="popup-nonblocking">
+  <h2>Cửa sổ bật lên không bao giờ dừng game</h2>
+  <p class="sub">Tin tức mà người chơi đọc được ngay trong lúc chơi. Không cái nào có lớp phủ mờ; chạm vào bất cứ đâu ngoài chính tấm thẻ
+    là đi thẳng tới game.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Đã vứt Kiếm rỉ sét, kèm Hoàn tác, phía trên các ô nhanh" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Đã lưu game, ở mép trên của HUD" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — lời mời vào tổ đội ngay dưới các thanh máu" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/tooltip.webp" width="300" height="649" alt="Tooltip tùy biến phía trên ô khiên" loading="lazy"><figcaption><code>GoStyle.tooltip_node()</code></figcaption></figure>
+  </div>
+
+  <h3 id="gosnackbar-a-message-with-an-undo"><code>GoSnackbar</code> — lời nhắn kèm nút Hoàn tác</h3>
+  <pre><code>var snack := GoSnackbar.new()
+add_child(snack)
+
+if await snack.post({"text": "Dropped {name}", "args": {"name": item.name}, "icon": GoIconSet.TRASH,
+        "actions": ["Undo"], "seconds": 5.0}) == 0:
+    restore(item)</code></pre>
+  <table>
+    <thead><tr><th>Khóa của <code>post()</code></th><th>Làm gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>text</code> · <code>title</code> · <code>args</code> · <code>translate</code></td><td>Lời nhắn, một dòng in đậm tùy chọn, các <code>{placeholders}</code>, khóa dịch.</td></tr>
+      <tr><td><code>tone</code> · <code>icon</code></td><td>Màu nhấn (<code>GoTheme.SUCCESS</code>, <code>WARNING</code>…) và một biểu tượng.</td></tr>
+      <tr><td><code>actions</code> · <code>closable</code></td><td>Các nút — String hoặc <code>{text, action}</code> — và một nút ×.</td></tr>
+      <tr><td><code>seconds</code></td><td>Nó ở lại bao lâu. Số âm: <code>notice_duration_ms</code> của theme. <b>0: cho tới khi bị gạt đi</b> — khi đó hãy cho nó một nút.</td></tr>
+    </tbody>
+  </table>
+  <p><code>post()</code> trả về chỉ số của nút được nhấn, hoặc <code>-1</code> khi hết giờ hoặc bị gạt đi. Các lần post
+    xếp hàng (<code>queue_limit</code> 4, cái cũ nhất bị bỏ với -1), và cùng một chữ được post lại trong lúc đang hiện thì chỉ nạp lại
+    bộ đếm giờ. Nó nằm ở đáy (hoặc ở đỉnh, <code>placement</code>), phía trên vùng an toàn và bàn phím, trên lớp 90 — vẫn đọc được
+    khi nằm trên ngăn kéo. Với <code>tap_to_dismiss</code> (bật), chạm vào một tấm thẻ không có nút là đóng nó; chạm ra ngoài tấm thẻ
+    thì luôn tới được game. <code>show_text()</code> và <code>show_key()</code> là dạng viết một dòng.</p>
+  <div class="note warn">
+    <b>Đừng bao giờ đặt câu hỏi trong một snackbar.</b> Nó tự biến mất; một lựa chọn quan trọng thuộc về hộp thoại.
+  </div>
+
+  <h3 id="gonotice-a-line-on-the-hud"><code>GoNotice</code> — một dòng trên HUD</h3>
+  <pre><code>var notice := GoNotice.new()
+hud_corner.add_child(notice)
+notice.show_text("Game saved", GoTheme.SUCCESS)
+notice.custom_minimum_size.x = notice.preferred_width(340)</code></pre>
+  <p>Một tấm nền đơn giản do bạn tự đặt — trong một <code>GoHudAnchor</code>, ở một góc, ở bất cứ đâu. Nó không nhận thao tác lẫn focus,
+    nên nhấn xuyên qua nó sẽ tới nút nằm bên dưới, và lời nhắn mới thay thế lời nhắn cũ. Hãy cho nó một chiều rộng:
+    <code>preferred_width(limit)</code> trả về chiều rộng tự nhiên của chữ ngắn và cho chữ dài xuống dòng trong <code>limit</code>.
+    <code>set_content()</code> hiện một control bất kỳ thay cho chữ.</p>
+
+  <h3 id="gopromptcard-a-question-that-can-wait"><code>GoPromptCard</code> — câu hỏi có thể chờ</h3>
+  <pre><code>var spot := GoHudAnchor.new()
+spot.spot = GoHudAnchor.Spot.TOP_CENTER
+spot.reserve_space = false
+spot.avoid_peers = true            # lùi xuống dưới các thanh máu thay vì che chúng
+hud.add_child(spot)
+
+var invite := GoPromptCard.new()
+spot.add_child(invite)
+invite.set_icon(GoIconSet.USERS, Color.TRANSPARENT, true)
+invite.set_title("Party invite from Ann")
+invite.set_subtitle("Dragon's Lair · 3 / 4 members")
+invite.set_actions([{"text": "Accept", "action": accept, "primary": true},
+    {"text": "Decline", "action": invite.hide}])
+invite.fit_width(340)
+invite.show()
+get_tree().create_timer(15.0).timeout.connect(invite.hide)</code></pre>
+  <ul>
+    <li><b>Nó bắt đầu ở trạng thái ẩn</b> — hãy gọi <code>show()</code>. Nó không có bộ đếm giờ riêng; hãy thêm một cái nếu câu hỏi có hạn.</li>
+    <li>Các nút của nó không đóng nó — các thao tác tự quyết định. × (<code>set_closable(true)</code>) phát <code>closed</code>.</li>
+    <li><code>fit_width(width)</code> đặt chiều rộng và dự đoán chiều cao từ font, nên không thứ gì được dàn theo nó bị nhảy một khung hình sau đó.</li>
+    <li>Mặt của nó theo <code>hud_alpha</code> — nó là một phần của HUD, không phải một cửa sổ.</li>
+  </ul>
+
+  <h3 id="gobanner-and-tooltips"><code>GoBanner</code> và tooltip</h3>
+  <p><code>GoBanner.make("You're offline.", [{"text": "Retry", "action": reconnect}], GoIconSet.WARNING)</code> nằm ngay trong
+    trang, phía trên nội dung, và không bao giờ hết giờ; một nút sẽ gạt nó đi trừ khi nó có <code>"keep": true</code>.
+    <code>GoStyle.tooltip_node(text)</code> là thứ cần trả về từ <code>_make_custom_tooltip()</code> — engine vẽ tấm nền
+    (<code>TooltipPanel</code>), gohud vẽ chữ, xuống dòng khi quá 260dp. Tooltip là dành cho chuột; đừng bao giờ giấu thứ người chơi cần phía sau một tooltip.</p>
+</section>
+
+<section id="popup-guides">
+  <h2>Chuyến tham quan và bảng điều khiển</h2>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — bước 1 trên 2, Ô nhanh, chỉ vào ô bình thuốc" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — bảng điều khiển với lệnh give và kết quả của nó" loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
+  </div>
+
+  <h3 id="gocoachmark-a-tour-of-the-real-controls"><code>GoCoachMark</code> — chuyến tham quan các control thật</h3>
+  <pre><code>var tour := GoCoachMark.new()
+tour.keep_clear = [top_bar]
+tour_layer.add_child(tour)
+tour.finished.connect(func(completed: bool) -&gt; void: save.tutorial_done = true)
+tour.start([{"target": bag_button, "title": "Bag", "body": "Everything you pick up lands here."},
+    {"target": map_button, "title": "Map", "body": "Tap to open the full map."}])</code></pre>
+  <ul>
+    <li>Một vòng sáng quanh control thật và một tấm thẻ bên cạnh. Nhấn vào mục tiêu là sang bước kế (tín hiệu <code>pressed</code> của nó, hoặc
+      <code>"signal"</code> trong bước); Tiếp và Bỏ qua nằm trên tấm thẻ. Mục tiêu đang ẩn thì được bỏ qua.</li>
+    <li>Tấm thẻ tránh khỏi giữa màn hình (<code>avoid_center_band</code>), tránh các điểm neo HUD và tránh <code>keep_clear</code>.</li>
+    <li>Trong lúc có bất kỳ <code>GoSurface</code> nào đang mở, chuyến tham quan ẩn đi và chờ. Back hoặc Escape kết thúc nó với <code>finished(false)</code>.</li>
+    <li>Nó không có lớp riêng — hãy thêm nó sau cùng, hoặc trên một lớp nằm trên HUD.</li>
+  </ul>
+
+  <h3 id="goconsole-cheats-while-you-build"><code>GoConsole</code> — lệnh cheat trong lúc phát triển</h3>
+  <pre><code>var console := GoConsole.new()
+add_child(console)
+console.register("give", "give &lt;item&gt; &lt;count&gt;", func(args: PackedStringArray) -&gt; String:
+    return "gave %s x%s" % [args[0], args[1]] if args.size() &gt;= 2 else "give &lt;item&gt; &lt;count&gt;")
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+    if event.is_action_pressed(&amp;"dev_console"): console.toggle()</code></pre>
+  <p>Lớp 200 — trên tất cả, nên bạn debug được ngay trên một hộp thoại — và nó vẫn chạy khi cây đang tạm dừng. Một bảng lệnh
+    gợi ý lệnh khi bạn gõ; mũi tên Lên và Xuống duyệt lịch sử; Escape đóng nó. Không có phím mặc định: hãy tự gán phím của bạn.</p>
+  <div class="note warn">
+    <b><code>debug_only</code> (bật) chặn nó trong bản build release</b> — cả <code>open()</code> lẫn <code>run()</code>. Lệnh cheat lọt vào
+    tay người chơi sẽ kết liễu nền kinh tế của một game ngay trong ngày đầu tiên.
+  </div>
+</section>
+
+<section id="popup-stack">
+  <h2>Lớp, Back và thao tác nhập</h2>
+  <p class="sub">Ba quy tắc quyết định người chơi chạm được vào đâu khi có thứ gì đó đang mở: cái gì nằm trên cùng, ai sở hữu Back, và ai
+    nhận cú chạm.</p>
+
+  <h3 id="what-sits-on-top">Cái gì nằm trên cùng</h3>
+  <table>
+    <thead><tr><th>Lớp</th><th>Thứ nằm ở đó</th><th>Đặt bằng</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>HUD của bạn (tùy bạn chọn)</td><td>—</td></tr>
+      <tr><td>10</td><td><code>GoSheet</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>~50</td><td>Các cửa sổ <code>GoSurface</code> của riêng bạn, menu tạm dừng</td><td><code>CanvasLayer</code> của bạn</td></tr>
+      <tr><td>80</td><td><code>GoDrawer</code></td><td><code>CanvasLayer.layer</code></td></tr>
+      <tr><td>90</td><td><code>GoSnackbar</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>95</td><td><code>GoPopover</code></td><td>tùy chọn <code>"layer"</code></td></tr>
+      <tr><td>96</td><td>Danh sách của <code>GoCombobox</code></td><td>—</td></tr>
+      <tr><td>100</td><td><code>GoDialogs</code></td><td><code>layer_index</code></td></tr>
+      <tr><td>200</td><td><code>GoConsole</code></td><td><code>layer_index</code></td></tr>
+    </tbody>
+  </table>
+  <p>Thứ tự này là có chủ ý: snackbar báo điều vừa xảy ra, nên nó phải đọc được khi nằm trên ngăn kéo; popover thuộc về thứ vừa được
+    nhấn, nên nó nằm trên thứ đó; hộp thoại đặt một câu hỏi và che cả hai; bảng điều khiển che tất cả, vì đó là thứ bạn mở ra
+    khi mọi thứ khác đã hỏng.</p>
+
+  <h3 id="who-owns-back">Ai sở hữu Back</h3>
+  <ul>
+    <li><b>Chỉ cửa sổ trên cùng trả lời.</b> Trong các cửa sổ đang mở, cái nằm trên lớp cao nhất (rồi tới cái mới nhất trong cây)
+      nhận Escape, nút hủy của tay cầm (<code>ui_cancel</code>), nút Back của Android và cú chạm vào lớp phủ mờ. Các cửa sổ xếp chồng đóng
+      từng cái một, không bao giờ cùng lúc.</li>
+    <li>Nút Back của Android được xử lý trễ một khung hình, nên một lần nhấn không bao giờ đóng được hai cửa sổ.</li>
+    <li>Trong lúc còn bất kỳ thứ gì sở hữu Back đang mở, nút Back của Android không thoát ứng dụng (<code>GoBackPolicy</code> đếm số chủ sở hữu và
+      khôi phục <code>quit_on_go_back</code> sau khi cái cuối cùng đóng). Cửa sổ bật lên của riêng bạn mà nhận Back thì nên gọi
+      <code>GoBackPolicy.acquire()</code> và <code>release()</code> — cả trong <code>_exit_tree</code>.</li>
+    <li>Ngăn kéo, chuyến tham quan coach mark và biểu mẫu sẽ nhường bước khi có một cửa sổ đang mở — Back đi tới cửa sổ đó trước.</li>
+    <li><code>GoConfig.close_on_back</code> (bật) là công tắc dành cho các cửa sổ.</li>
+  </ul>
+
+  <h3 id="who-takes-a-tap">Ai nhận cú chạm</h3>
+  <ul>
+    <li>Một cửa sổ phủ toàn màn hình và chặn thao tác — <b>kể cả lớp phủ mờ trong suốt</b>. Không thứ gì trên lớp thấp hơn bị nhấn trong lúc
+      nó mở; các lớp phía trên nó (một snackbar) thì vẫn nhấn được.</li>
+    <li>Cuộn chuột và cử chỉ chụm ngón cũng dừng lại ở cửa sổ: cuộn quá cuối danh sách không bao giờ làm cuộn game.</li>
+    <li>Thao tác chơi không đi qua control — <code>_unhandled_input</code> cho việc di chuyển, kéo camera — nên tạm ngưng:
+      <code>if GoSurface.is_any_open(): return</code>. Điều đó bao trùm hộp thoại, bảng trượt, popover và combobox; với ngăn kéo thì hỏi
+      riêng <code>is_open()</code>.</li>
+    <li>Snackbar, notice, prompt card và coach mark chỉ nhận thao tác trên chính tấm thẻ của chúng; ở mọi chỗ khác, game nhận.</li>
+  </ul>
+
+  <h3 id="focus">Focus</h3>
+  <p>Cửa sổ mở bằng con trỏ thì không focus vào đâu cả — không có vòng focus nào lóe lên khi chạm. Mở từ bàn phím hoặc tay cầm thì nút đóng
+    (hoặc <code>initial_focus</code>) nhận focus. Focus ở yên trong cửa sổ khi nó còn mở và trở về control đã giữ nó
+    khi cửa sổ đóng. Hộp thoại lần nào cũng focus vào OK.</p>
+
+  <h3 id="pausing-the-game">Tạm dừng game</h3>
+  <p>Tạm dừng cây thì cửa sổ bật lên cũng tạm dừng — chỉ bảng điều khiển vẫn hoạt động. Với menu tạm dừng, hãy cho lớp của nó
+    <code>process_mode = PROCESS_MODE_ALWAYS</code>; khi đó cửa sổ, các nút của nó và Back vẫn chạy trong lúc game dừng.</p>
+</section>
+
+<section id="popup-looks">
+  <h2>Cùng một cửa sổ bật lên ở mọi diện mạo</h2>
+  <p class="sub">Hộp thoại xác nhận ở đầu trang này, trên cùng một game, chỉ đổi preset. Code y hệt nhau —
+    theme, skin và biểu tượng lo phần còn lại.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/look-default_dark.webp" width="300" height="649" alt="Hộp thoại xác nhận ở default_dark — bo tròn, màu nhấn xanh dịu" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-default_light.webp" width="300" height="649" alt="Hộp thoại xác nhận ở default_light" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_dark.webp" width="300" height="649" alt="Hộp thoại xác nhận ở scifi_dark — góc cắt và viền neon" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-scifi_light.webp" width="300" height="649" alt="Hộp thoại xác nhận ở scifi_light" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_dark.webp" width="300" height="649" alt="Hộp thoại xác nhận ở medieval_dark — khung rèn và tiêu đề Cinzel" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-medieval_light.webp" width="300" height="649" alt="Hộp thoại xác nhận ở medieval_light — giấy da và đồng thau" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="Hộp thoại xác nhận ở material_light — góc 28dp và nút hình viên thuốc" loading="lazy"><figcaption><code>material_light</code> <span class="badge new">Mới</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="Hộp thoại xác nhận ở material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Mới</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="Hộp thoại xác nhận ở kids_light — dải băng tiêu đề màu nắng, nút đóng hình viên kẹo và các nút như thạch" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Mới</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Hộp thoại xác nhận ở kids_dark — dải băng màu bạc hà trên tấm thẻ xanh đêm" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Mới</span></figcaption></figure>
+  </div>
+
+  <h3 id="what-each-look-changes">Mỗi diện mạo đổi những gì</h3>
+  <table>
+    <thead><tr><th>Diện mạo</th><th>Cửa sổ</th><th>Phần đầu và các nút</th></tr></thead>
+    <tbody>
+      <tr><td>Mặc định</td><td>Bo tròn (18dp), bóng mềm, đục 80% trên nền game</td><td>Tiêu đề và × đơn giản; nút chính nhô lên rồi lún xuống</td></tr>
+      <tr><td>Sci-fi</td><td>Góc cắt với viền neon và ánh sáng tỏa, viền nhuốm màu nhấn</td><td>Dấu focus dạng ngoặc góc</td></tr>
+      <tr><td>Trung cổ</td><td>Khung rèn — sắt và da thuộc, hoặc giấy da — với đinh tán và hoa văn góc</td><td>Tiêu đề bằng Cinzel</td></tr>
+      <tr><td>Material 3</td><td>Góc 28dp, đệm 24dp, đục hoàn toàn</td><td>Tiêu đề 24sp bằng Roboto; nút hình viên thuốc với tấm nền 40dp trong vùng chạm 48dp</td></tr>
+      <tr><td>Trẻ em</td><td>Tấm thẻ như kẹo thạch với bóng mềm, đục hoàn toàn</td><td>Dải băng tiêu đề màu nắng (màu bạc hà vào ban đêm), nút đóng tròn hình viên kẹo, các nút bẹp xuống khi nhấn</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="dress-a-popup-from-a-skin">Khoác áo cho cửa sổ bật lên từ skin</h3>
+  <p>Skin quyết định những phần mà Theme không với tới. Các hook dưới đây là những cái mà cửa sổ bật lên gọi — hãy ghi đè chúng trong lớp con
+    <code>GoSkin</code> của riêng bạn; mặc định chúng không làm gì cả.</p>
+  <table>
+    <thead><tr><th>Hook</th><th>Nó khoác áo cho gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Tấm nền phía sau tiêu đề cửa sổ. Tiêu đề canh giữa trên đó và co lại, tới cỡ tối thiểu (15), để nằm gọn trên một dòng.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>Nút × của cửa sổ — kids biến nó thành một viên kẹo tròn.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Chạy ngay khoảnh khắc ngón tay chạm vào một nút do gohud tạo ra — kids làm nó bẹp xuống.</td></tr>
+      <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Mặt của prompt card và thẻ coach, snackbar và notice, ngăn kéo, banner, bảng điều khiển.</td></tr>
+      <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Vòng sáng và con trỏ của chuyến tham quan.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="how-see-through">Nhìn xuyên được bao nhiêu</h3>
+  <p>Mỗi loại cửa sổ bật lên theo độ đục riêng, nên một thẻ HUD có thể giữ nhẹ trong khi hộp thoại vẫn đặc: cửa sổ, bảng trượt, hộp thoại,
+    popover và combobox theo <code>panel_alpha</code>; ngăn kéo và thẻ coach theo <code>card_alpha</code>; prompt card và
+    bảng điều khiển theo <code>hud_alpha</code>; snackbar và notice theo <code>notice_alpha</code>; menu theo <code>popup_alpha</code>. Material và kids
+    làm tất cả đều đục. Ghi đè một loại bằng <code>GoConfig.container_alpha_overrides</code>, tất cả bằng
+    <code>container_alpha</code> (một tỉ lệ — <code>0.95</code>), hoặc một cửa sổ bằng <code>alpha</code> của nó. Chỉ mặt nền mờ đi; chữ thì
+    không bao giờ trong suốt. <a href="theming-opacity.html">Độ đục chi tiết →</a></p>
+</section>
+
+<section id="popup-config">
+  <h2>Thiết lập định hình mọi cửa sổ bật lên</h2>
+  <p class="sub">Các trường của <code>GoConfig</code> (<code>GoUi.config</code>). Vài trường được sao chép lúc một cửa sổ được tạo, nên hãy đặt chúng
+    trước khi dựng UI — hoặc gọi <code>GoUi.refresh()</code> sau khi đổi.</p>
+  <table>
+    <thead><tr><th>Trường</th><th>Mặc định</th><th>Làm gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>surface_max_width</code> · <code>surface_max_height</code></td><td>480 · 700</td><td>Cỡ lớn nhất mà một cửa sổ đạt tới.</td></tr>
+      <tr><td><code>surface_height_ratio</code> · <code>surface_max_height_ratio</code></td><td>0.68 · 0.72</td><td>Chiều cao thông thường và mức chặn (cũng là giới hạn khi kéo).</td></tr>
+      <tr><td><code>surface_fit_max_height_ratio</code></td><td>0.94</td><td>Một tấm thẻ canh giữa cao theo nội dung được lớn tới đâu trước khi phải cuộn.</td></tr>
+      <tr><td><code>surface_width_ratio_portrait</code> · <code>…_landscape</code></td><td>0.94 · 0.72</td><td>Chiều rộng tính theo tỉ lệ của khoảng trống.</td></tr>
+      <tr><td><code>dismiss_on_scrim</code></td><td>false</td><td>Chạm vào lớp phủ mờ đóng cửa sổ và hộp thoại. Được sao chép lúc cửa sổ được tạo.</td></tr>
+      <tr><td><code>surface_fade_in</code> · <code>fade_seconds</code></td><td>false · 0.14</td><td>Cho cửa sổ hiện dần, và nhanh tới đâu.</td></tr>
+      <tr><td><code>close_on_back</code></td><td>true</td><td>Escape, <code>ui_cancel</code> và nút Back của Android đóng cửa sổ trên cùng.</td></tr>
+      <tr><td><code>close_button_visual</code></td><td>36</td><td>Nút × trông to bao nhiêu — vùng chạm của nó vẫn là 48dp.</td></tr>
+      <tr><td><code>suppress_pointer_focus_ring</code></td><td>true</td><td>Không có vòng focus khi cửa sổ được mở bằng chạm hoặc chuột.</td></tr>
+      <tr><td><code>container_alpha</code> · <code>container_alpha_overrides</code></td><td>-1 · {}</td><td>Độ đục của mọi mặt nền, hoặc theo từng loại (<code>GoTheme.BOX_*</code>).</td></tr>
+      <tr><td><code>reduce_motion</code></td><td>false</td><td>Không hiện dần, không trượt, không nhấp nháy, không bẹp.</td></tr>
+      <tr><td><code>min_touch_size</code></td><td>48</td><td>Chiều cao của các nút trong prompt card và coach mark.</td></tr>
+      <tr><td><code>respect_safe_area</code></td><td>true</td><td>Giữ cửa sổ tránh xa tai thỏ và thanh cử chỉ.</td></tr>
+      <tr><td><code>text_keys</code> · <code>text_overrides</code></td><td>—</td><td>Chữ của chính bộ kit: đóng, quay lại, xác nhận, hủy, tiếp, xong, bỏ qua, tìm kiếm, trống…</td></tr>
+      <tr><td><code>sound_cues</code> · rung phản hồi</td><td>—</td><td>Những gì <code>GoFeedback</code> phát khi mở, đóng, xác nhận, hủy và chạm.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="popup-recipes">
+  <h2>Công thức</h2>
+  <p class="sub">Sao chép, dán, đổi chữ. Mọi lệnh gọi ở đây đều được đối chiếu với mã nguồn.</p>
+
+  <h3 id="a-purchase-with-the-price-in-it">Một lần mua có ghi giá</h3>
+  <pre><code>func buy(item_name: String, price: int) -&gt; void:
+    if await dialogs.confirm("Buy {item}?", "It costs {price} gold.", "Buy", "", "",
+            {"item": item_name, "price": price}):
+        purchase(item_name)</code></pre>
+
+  <h3 id="a-settings-window-with-a-pinned-save">Cửa sổ cài đặt với nút Lưu được ghim</h3>
+  <pre><code>func open_settings() -&gt; void:
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    add_child(layer)
+    var window := GoSurface.new()
+    window.set_title("Settings")
+    window.dismiss_on_scrim = true
+    window.close_requested.connect(layer.queue_free)
+    window.body.add_child(GoStyle.section("Sound", false))
+    window.body.add_child(GoStyle.toggle("Music", false))
+    window.body.add_child(GoStyle.slider(0.0, 1.0, 0.05))
+    var row := GoStyle.row()
+    row.add_child(GoStyle.button("Cancel", window.request_close))
+    row.add_child(GoStyle.button("Save", func() -&gt; void:
+        save_settings()
+        layer.queue_free(), GoStyle.Tone.PRIMARY))
+    window.footer.add_child(row)
+    window.footer.visible = true
+    layer.add_child(window)</code></pre>
+
+  <h3 id="a-form-that-says-what-is-wrong">Biểu mẫu nói rõ chỗ sai</h3>
+  <pre><code>var field := GoField.make("Name", GoStyle.line_edit(), "3–12 letters")
+window.body.add_child(field)
+create_button.pressed.connect(func() -&gt; void:
+    if name_is_taken():
+        field.set_error("That name is taken")
+        window.set_status_text("Name check failed", GoTheme.DANGER)
+    else:
+        window.clear_status()
+        create_character())</code></pre>
+
+  <h3 id="a-date-in-a-sheet">Chọn ngày trong bảng trượt</h3>
+  <pre><code>sheet.open("Delivery date")
+var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 14}, func(date: Dictionary) -&gt; void:
+    delivery = date
+    sheet.close())
+picker.min_date = GoDatePicker.today()
+sheet.body.add_child(picker)</code></pre>
+
+  <h3 id="a-pause-menu">Menu tạm dừng</h3>
+  <pre><code>func pause() -&gt; void:
+    get_tree().paused = true
+    var layer := CanvasLayer.new()
+    layer.layer = 50
+    layer.process_mode = Node.PROCESS_MODE_ALWAYS      # vẫn chạy trong lúc game tạm dừng
+    add_child(layer)
+    var menu := GoSurface.new()
+    menu.set_title("Paused")
+    menu.close_requested.connect(func() -&gt; void:
+        get_tree().paused = false
+        layer.queue_free())
+    menu.body.add_child(GoStyle.button("Resume", menu.request_close, GoStyle.Tone.PRIMARY))
+    menu.body.add_child(GoStyle.button("Settings", open_settings))
+    menu.body.add_child(GoStyle.button("Quit to title", quit_to_title, GoStyle.Tone.DANGER))
+    layer.add_child(menu)</code></pre>
+
+  <h3 id="gameplay-that-waits-for-popups">Lối chơi biết chờ cửa sổ bật lên</h3>
+  <pre><code>func _unhandled_input(event: InputEvent) -&gt; void:
+    if GoSurface.is_any_open() or drawer.is_open():
+        return
+    handle_gameplay(event)</code></pre>
+</section>
+
+<section id="popup-pitfalls">
+  <h2>Những cái bẫy</h2>
+  <ul>
+    <li><b>Một <code>GoSurface</code> không bao giờ tự giải phóng.</b> Hãy kết nối <code>close_requested</code>, không thì × chẳng làm gì cả.</li>
+    <li><b>Tùy chọn đặt sau <code>add_child</code></b> — <code>scrim_transparent</code>, <code>show_header</code>, <code>resizable</code>,
+      <code>scroll_body</code>, cùng <code>layer_index</code> và <code>max_width</code> của <code>GoDialogs</code> — không được áp dụng.</li>
+    <li><b>Một <code>confirm()</code> thứ hai trả về <code>false</code> ngay.</b> Hãy bật <code>queue_when_busy</code> nếu hai câu hỏi có thể gặp nhau.</li>
+    <li><b>Enter là xác nhận.</b> OK giữ focus, kể cả ở hộp thoại không thể hoàn tác.</li>
+    <li><b>Back trên bảng trượt đóng cả bảng trượt,</b> chứ không phải trang con.</li>
+    <li><b>Escape không đóng ngăn kéo,</b> và <code>is_any_open()</code> không nhìn thấy nó.</li>
+    <li><b>Popover hay danh sách combobox chặn game</b> cho tới khi đóng, kể cả với lớp phủ mờ trong suốt — và một popover có
+      <code>dismissable = false</code> mà không có tiêu đề thì chẳng có gì trên màn hình đóng được nó.</li>
+    <li><b>Prompt card bắt đầu ở trạng thái ẩn</b> và không có thời hạn.</li>
+    <li><b>Snackbar có <code>seconds: 0</code> mà không có nút thì không bao giờ rời đi.</b> Và theo mặc định nó hứng các cú chạm trên tấm thẻ của nó.</li>
+    <li><b>Cú nhấn giữ không ai biết là tính năng không ai dùng.</b> Hãy hiện thêm một nút <code>⋯</code>.</li>
+    <li><b>Cây bị tạm dừng thì cửa sổ bật lên của bạn cũng dừng.</b> Hãy dùng <code>PROCESS_MODE_ALWAYS</code> trên lớp của nó.</li>
+    <li><b>Notice không có chiều rộng</b> sẽ co về mức hẹp nhất — hãy dùng <code>preferred_width()</code>.</li>
+    <li><b>Đừng bao giờ hỏi trong snackbar, đừng bao giờ báo tin bằng hộp thoại.</b> Câu hỏi sẽ biến mất khi bị lờ đi; tin tức thì không nên dừng game.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><a href="widgets-catalog.html">← Tất cả widget</a> · <a href="widgets-surfaces.html">Cửa sổ nổi →</a></p>
+  </div>
+</footer>
+
+<script src="../site/glossary.en.js"></script>
+<script src="../site/tooltip.js"></script>
+<script src="../site/toc.js"></script>
+<script src="../site/search.js"></script>
+<script src="../site/ux.js"></script>
+</body>
+</html>

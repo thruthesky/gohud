@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">위젯</a>
   <a href="widgets-catalog.html">모든 위젯</a>
+  <a href="widgets-popups.html">팝업과 대화상자</a>
   <a href="widgets-surfaces.html">떠 있는 창</a>
   <a href="widgets-messages.html">알리기</a>
   <a href="widgets-hud.html">HUD</a>
@@ -121,6 +122,7 @@
   </div>
 
   <h3 id="list-rows-with-a-description">요약이 있는 목록 줄</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-list_row.webp" width="382" height="181" alt="GoStyle.list_row — 아이콘·제목·요약·끝 표시가 있는 목록 줄." loading="lazy"><figcaption><code>GoStyle.list_button()</code></figcaption></figure>
   <pre><code>GoStyle.list_button(GoIconSet.SWORD, "Oathkeeper", _inspect, Color.TRANSPARENT,
     "Longsword  /  Attack 42", false)</code></pre>
   <p>두 줄 항목은 <b>위아래 여백이 같고</b> 한 줄 항목보다 넉넉하며, 제목·요약 묶음이 아이콘 옆 <b>세로 가운데</b>에 선다 —
@@ -131,6 +133,7 @@
   </figure>
 
   <h3 id="flowing-rows">흐르는 줄의 함정</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-column.webp" width="382" height="230" alt="GoStyle.column — 테마의 간격을 쓰는 세로줄·가로줄·줄바꿈 줄." loading="lazy"><figcaption><code>row()</code> · <code>wrap_row()</code></figcaption></figure>
   <p>
     <code>wrap_row</code> 에 넣는 것은 <b>자연 폭</b>이어야 한다. 줄바꿈을 켠 채 두면 최소 폭이 거의 0 이
     되고, 흐르는 줄은 그 최소 폭으로 칸을 잡는다 — 버튼 하나가 한 글자 폭으로 쪼그라들어 글자가
@@ -138,6 +141,7 @@
   </p>
 
   <h3 id="never-leave-an-empty-list-empty">빈 목록을 빈 채로 두지 않는다</h3>
+  <figure class="shot"><img src="../img/widgets/gostyle-skeleton.webp" width="382" height="180" alt="GoStyle.skeleton — 불러오는 동안의 자리 표시, 그리고 빈 목록 안내." loading="lazy"><figcaption><code>skeleton()</code> · <code>empty_state()</code></figcaption></figure>
   <pre><code>page.add_child(GoStyle.empty_state(GoIconSet.BOX, "아직 아무것도 없습니다"))</code></pre>
   <p>사용자는 빈 화면을 <b>고장</b>으로 읽는다.</p>
 </section>

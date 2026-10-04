@@ -86,7 +86,8 @@
       <span class="badge">순수 GDScript</span>
       <span class="badge">오토로드 불필요</span>
       <span class="badge">MIT</span>
-      <span class="badge">프리셋 6종</span>
+      <span class="badge">프리셋 10종</span>
+      <span class="badge new">신규: Material 3 · 어린이</span>
       <span class="badge">21개 언어</span>
       <span class="badge">아이콘 <span data-n="icons">1,287</span>종 포함</span>
     </div>
@@ -100,6 +101,40 @@
 </div>
 
 <main class="wrap">
+
+<section id="new">
+  <h2>새로 추가: Material 3 와 어린이용 생김새</h2>
+  <p class="sub">
+    기본·sci-fi·중세에 새 계열 둘이 더해졌다 — 이제 <b>기본 제공 생김새가 열</b>이고, 각각 다크와 라이트가 있다.
+    모든 위젯·팝업·HUD 부품이 코드를 한 줄도 고치지 않고 그대로 받는다: 프리셋을 바꾸면 화면 전체가 따라온다.
+  </p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="material_light 의 gohud 갤러리 — 알약 버튼, 채운 카드, Material 3 색상" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark 의 gohud 갤러리 — 같은 Material 3 모양을 어두운 기준 스킴으로" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light 의 gohud 갤러리 — 햇살 같은 페이지 위에 크레파스 색의 통통한 젤리 버튼" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 의 gohud 갤러리 — 밤하늘색 페이지 위의 같은 장난감 상자" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="material-3-for-app-screens">Material 3 — 앱 화면용</h3>
+      <p>Material 3 Expressive 를 공식 M3 토큰과 대조해 맞췄다: 48dp 터치 타깃 안에 40dp 판을 둔 알약 버튼,
+        28dp 대화상자와 시트, 채운 카드, 외곽선 입력란, Expressive 슬라이더. 앱 컴포넌트 — 내비게이션 바, 앱 바, FAB,
+        검색 바, 칩, 진행 표시, 날짜 선택기 — 는 M3 컴포넌트 토큰을 따르고, 제목은 함께 들어 있는 Roboto 로 쓴다.
+        상점, 설정, 받은 편지함 등 앱다운 느낌이 필요한 모든 화면에 쓴다.</p>
+    </div>
+    <div class="card">
+      <h3 id="kids-the-toy-box">어린이 — 장난감 상자</h3>
+      <p>어린이를 위해 만들었다: 모든 키·줄·패널이 굵은 테두리에 단단한 턱이 달린 젤리 사탕이고, 누르면 그 턱이 쏙
+        들어간다. 컨트롤마다 자기 크레파스 색을 입는다. 퀵슬롯은 사탕 블록, 배지는 스티커, 조이스틱은 무지개다.
+        창에는 햇살처럼 노란 제목 리본과 둥근 사탕 닫기 버튼이 붙고, 누르면 말랑하게 찌그러진다.
+        치수와 프로젝트 글꼴은 조금도 바뀌지 않는다.</p>
+    </div>
+  </div>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # 또는 MATERIAL_DARK
+GoUi.use_preset(&amp;"kids_light")                   # 또는 &amp;"kids_dark"</code></pre>
+  <p><a href="theming-presets.html#material">Material 3 자세히 →</a> · <a href="theming-presets.html#kids">어린이 자세히 →</a> ·
+    <a href="widgets-popups.html#popup-looks">같은 팝업을 열 가지 생김새로 →</a></p>
+</section>
 
 <section id="showcase">
   <h2>게임 화면에서는 이렇게 보인다</h2>
@@ -203,8 +238,10 @@
       <tr><td><code>scifi_light</code></td><td>같은 각진 모양에 밝은 설계도 팔레트</td></tr>
       <tr><td><code>medieval_dark</code></td><td>어두운 철·가죽, 고금색 프레임, 리벳, 각인풍 아이콘, Cinzel 제목</td></tr>
       <tr><td><code>medieval_light</code></td><td>양피지·잉크·청동 색상의 같은 단조 프레임</td></tr>
-      <tr><td><code>material_light</code></td><td>앱 화면용 Material 3 — 알약 버튼, 28dp 대화상자, 채운 카드, 앱의 내비게이션 바·FAB·검색 바, Roboto</td></tr>
-      <tr><td><code>material_dark</code></td><td>같은 Material 3 모양을 어두운 기준 스킴으로</td></tr>
+      <tr><td><code>material_light</code> <span class="badge new">신규</span></td><td>앱 화면용 Material 3 — 알약 버튼, 28dp 대화상자, 채운 카드, 앱의 내비게이션 바·FAB·검색 바, Roboto</td></tr>
+      <tr><td><code>material_dark</code> <span class="badge new">신규</span></td><td>같은 Material 3 모양을 어두운 기준 스킴으로</td></tr>
+      <tr><td><code>kids_light</code> <span class="badge new">신규</span></td><td>어린이를 위한 장난감 상자 — 굵은 테두리에 누르면 쏙 들어가는 턱이 달린 젤리 사탕 키, 크레파스 색, 햇살 같은 페이지</td></tr>
+      <tr><td><code>kids_dark</code> <span class="badge new">신규</span></td><td>같은 장난감 상자를 밤하늘색 페이지에</td></tr>
     </tbody>
   </table>
 
@@ -320,10 +357,12 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
       <tr><td><code>GoStyleBoxCut</code></td><td>모서리를 사선으로 자른 패널(챔퍼), 한 변만 굵은 강조선, 바깥으로 번지는 발광</td></tr>
       <tr><td><code>GoStyleBoxBracket</code></td><td>테두리를 두르지 않고 네 모서리만 짧게 긋는 조준 표식</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>리벳·모서리 각인·베벨 반사·재질 질감이 있는 단조 프레임</td></tr>
+      <tr><td><code>GoStyleBoxJelly</code></td><td>젤리 사탕 — 굵은 테두리, 누르면 쏙 들어가는 단단한 턱, 위쪽이 더 밝은 몸통과 흰 광택</td></tr>
     </tbody>
   </table>
-  <p>셋 모두 여느 StyleBox 처럼 Theme 리소스 안에 그대로 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.
-    <code>GoSkinSciFi</code>·<code>GoSkinMedieval</code> 이 함께 들어 있는 상속 예다.</p>
+  <p>넷 모두 여느 StyleBox 처럼 Theme 리소스 안에 그대로 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.
+    <code>GoSkinSciFi</code>·<code>GoSkinMedieval</code>·<code>GoSkinMaterial</code>·<code>GoSkinKids</code> 가 함께 들어 있는 상속 예다.</p>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="기본 제공 스킨마다 그린 퀵슬롯·조이스틱·칩 — 기본, 어린이, Material, 중세, sci-fi" loading="lazy"><figcaption>스킨이 그리는 것 — 기본, 어린이, Material, 중세, sci-fi</figcaption></figure>
 
   <div class="note warn">
     <b>GoStyle.box() 는 언제나 StyleBoxFlat 을 돌려준다.</b> 돌려받아 <code>bg_color</code> 나
@@ -334,7 +373,8 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
 
 <section id="widgets">
   <h2>위젯</h2>
-  <p class="sub">부품을 표 하나로. → <a href="widgets.html">위젯 하나하나 자세히 보기</a></p>
+  <p class="sub">부품을 표 하나로. <a href="widgets.html">위젯 하나하나 자세히 →</a> ·
+    <a href="widgets-catalog.html">그림과 함께 보는 모든 위젯 →</a> · <a href="widgets-popups.html">팝업과 대화상자 전체 안내 →</a></p>
 
   <table>
     <thead><tr><th>클래스</th><th>바탕</th><th>하는 일</th></tr></thead>

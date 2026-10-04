@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控制項</a>
   <a href="widgets-catalog.html">所有控制項</a>
+  <a href="widgets-popups.html">彈出視窗與對話框</a>
   <a href="widgets-surfaces.html">浮動視窗</a>
   <a href="widgets-messages.html">告訴玩家某件事</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="feedback">
 
   <h3 id="gosnackbar-the-message-that-places-itself"><code>GoSnackbar</code> — 會自己找位置的訊息</h3>
+  <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — 底部訊息，可排隊，也可帶按鈕。" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
   <p>待在畫面底部（或頂部），在安全區域與鍵盤之上，時間到了自己離開。沒有它，每一個得說一句
     「已儲存」的畫面，都要自己寫視窗層、擺放位置、計時器與善後。</p>
   <pre><code>snack.show_text("已儲存", GoTheme.SUCCESS)
@@ -116,6 +118,7 @@ if await snack.post({"text": "已丟棄道具", "actions": ["復原"]}) == 0:
     它放不了按鈕，這個可以。</p>
 
   <h3 id="gospinner-a-wait-with-no-end-in-sight"><code>GoSpinner</code> — 看不到盡頭的等待</h3>
+  <figure class="shot"><img src="../img/widgets/gospinner.webp" width="382" height="76" alt="GoSpinner — 等待指示；把按鈕原地變成轉圈，避免被按兩次。" loading="lazy"><figcaption><code>GoSpinner.busy()</code> · <code>GoSpinner</code></figcaption></figure>
   <p>會跟伺服器說話的遊戲，對這一頁的東西裡最需要的就是它：一個定住不動的畫面，
     看起來就像當掉了。一次呼叫，就把你按下的那顆按鈕<b>原地</b>變成轉圈。</p>
   <pre><code>GoSpinner.busy(buy_button, true)
@@ -127,6 +130,7 @@ GoSpinner.busy(buy_button, false)</code></pre>
   <p>量得出進度的是 <code>GoBar</code>。轉圈對什麼時候結束不做任何承諾。</p>
 
   <h3 id="gobadge-the-unread-dot-the-new-tag-the-99"><code>GoBadge</code> — 未讀圓點、「新」標籤、99+</h3>
+  <figure class="shot"><img src="../img/widgets/gobadge.webp" width="382" height="60" alt="GoBadge — 未讀圓點、NEW 標籤與 99+，掛在角上。" loading="lazy"><figcaption><code>GoBadge</code></figcaption></figure>
   <pre><code>GoBadge.attach(mail_button, unread_count)   # 為 0 時自己隱藏
 GoBadge.attach(shop_button, 0, "新")
 GoBadge.attach(friend_button, 3, "", true) # 一個圓點 — 「那裡有東西」</code></pre>

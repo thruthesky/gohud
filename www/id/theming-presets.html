@@ -142,10 +142,28 @@ GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
       <tr><td><code>default_dark</code> · <code>default_light</code></td><td>Panel <code>StyleBoxFlat</code> membulat dengan skala bayangan bertingkat; tombol primer terangkat lalu tenggelam saat ditekan</td><td><code>GoSkin</code> · 84 ikon default</td></tr>
       <tr><td><code>scifi_dark</code> · <code>scifi_light</code></td><td>Panel <code>GoStyleBoxCut</code> bersudut potong dengan tepi neon dan pendar; penanda fokus <code>GoStyleBoxBracket</code></td><td><code>GoSkinSciFi</code> — joystick heksagonal · ikon default</td></tr>
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Bingkai tempaan <code>GoStyleBoxMedieval</code> — besi dan kulit, atau perkamen — dengan paku keling dan ornamen sudut pada menu</td><td><code>GoSkinMedieval</code> · 16 ikon ukiran di atas ikon default</td></tr>
-      <tr><td><code>material_light</code> · <code>material_dark</code></td><td>Material 3 Expressive untuk layar aplikasi — tombol pil 40dp di dalam area sentuh 48dp, dialog 28dp, kartu terisi, kolom bergaris tepi, slider Expressive; komponen aplikasi (bilah navigasi, bilah aplikasi atas, FAB, bilah pencarian, chip, progres, pemilih tanggal) mengikuti token komponen M3</td><td><code>GoSkinMaterial</code> · ikon default</td></tr>
-      <tr><td><code>kids_light</code> · <code>kids_dark</code></td><td>Untuk anak-anak — kotak mainan: garis tepi tebal dan bibir padat di bawah setiap tombol, yang tenggelam saat ditekan; kolom teks cekung, tab gelembung, bilah jeli; setiap jenis kontrol dengan warna krayonnya sendiri, slot cepat seperti permen, lencana stiker, joystick pelangi, dan grafik berwarna. Ukuran dan font proyek tetap sama.</td><td><code>GoSkinKids</code> · ikon default</td></tr>
+      <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Baru</span></td><td>Material 3 Expressive untuk layar aplikasi — tombol pil 40dp di dalam area sentuh 48dp, dialog 28dp, kartu terisi, kolom bergaris tepi, slider Expressive; komponen aplikasi (bilah navigasi, bilah aplikasi atas, FAB, bilah pencarian, chip, progres, pemilih tanggal) mengikuti token komponen M3</td><td><code>GoSkinMaterial</code> · ikon default</td></tr>
+      <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Baru</span></td><td>Untuk anak-anak — kotak mainan: garis tepi tebal dan bibir padat di bawah setiap tombol, yang tenggelam saat ditekan; kolom teks cekung, tab gelembung, bilah jeli; setiap jenis kontrol dengan warna krayonnya sendiri, slot cepat seperti permen, lencana stiker, joystick pelangi, dan grafik berwarna. Ukuran dan font proyek tetap sama.</td><td><code>GoSkinKids</code> · ikon default</td></tr>
     </tbody>
   </table>
+</section>
+
+<section id="all-looks">
+  <h2>Kesepuluhnya, berdampingan</h2>
+  <p class="sub">Layar galeri yang sama dengan hanya nama presetnya yang diganti — tak satu baris pun kode widget yang berbeda.
+    Masing-masing adalah ponsel yang dipegang tegak, 390×844.</p>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-default_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset default_dark" loading="lazy"><figcaption><code>default_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-default_light.webp" width="300" height="649" alt="Galeri widget gohud dengan preset default_light" loading="lazy"><figcaption><code>default_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-scifi_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset scifi_dark" loading="lazy"><figcaption><code>scifi_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-scifi_light.webp" width="300" height="649" alt="Galeri widget gohud dengan preset scifi_light" loading="lazy"><figcaption><code>scifi_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-medieval_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset medieval_dark" loading="lazy"><figcaption><code>medieval_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-medieval_light.webp" width="300" height="649" alt="Galeri widget gohud dengan preset medieval_light" loading="lazy"><figcaption><code>medieval_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="Galeri widget gohud dengan preset material_light" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Galeri widget gohud dengan preset kids_light" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+  </div>
 </section>
 
 <section id="medieval">
@@ -195,6 +213,84 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
     <tr><td><code>shape.fonts</code></td><td>Memetakan peran title, subtitle, caption, body, dan button ke berkas font res:// yang ada di dalam add-on. Peran yang dihilangkan mempertahankan font warisannya.</td></tr>
     <tr><td><code>skin.dials</code></td><td>Radius slot cepat, tampilnya paku keling, serat, dan sorotan. Tabel lengkap di bawah memuat setiap kenop.</td></tr>
   </tbody></table>
+</section>
+
+<section id="material">
+  <h2>Material 3: tampilan untuk layar aplikasi <span class="badge new">Baru</span></h2>
+  <p><code>material_light</code> dan <code>material_dark</code> membawa Material 3 Expressive ke gohud — bentuk, ukuran, dan
+    tipografi komponen M3, dengan setiap angka dibaca dari set token M3 resmi (material-web,
+    <code>tokens/versions/latest</code>). Pakai keduanya di tempat sebuah layar semestinya terasa seperti aplikasi, bukan menu game:
+    toko, kotak masuk, halaman akun dan setelan, papan peringkat, aplikasi pendamping.</p>
+  <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)
+# Atau: GoUi.use_preset(GoThemePresets.MATERIAL_DARK)</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-material_light.webp" width="300" height="649" alt="Galeri gohud dalam material_light — tombol pil, kartu terisi, dan kolom bergaris tepi" loading="lazy"><figcaption><code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Galeri gohud dalam material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_light.webp" width="300" height="649" alt="Dialog konfirmasi dalam material_light — sudut 28dp dan tombol pil di atas game" loading="lazy"><figcaption><code>GoDialogs</code> · <code>material_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="Dialog konfirmasi dalam material_dark di atas game" loading="lazy"><figcaption><code>GoDialogs</code> · <code>material_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes">Apa yang berubah</h3>
+  <table>
+    <thead><tr><th>Bagian</th><th>Dalam Material 3</th></tr></thead>
+    <tbody>
+      <tr><td>Tombol</td><td>Pil (sudut penuh). Pelatnya setinggi 40dp, di tengah target sentuh 48dp, sehingga area tekannya tidak menyusut; pelat tombol ringkas 32dp. Labelnya memakai Roboto dengan ketebalan 500.</td></tr>
+      <tr><td>Dialog dan lembar</td><td>Sudut 28dp (extra-large), padding 24dp, dan judul 24sp — <code>GoDialogs</code>, <code>GoSurface</code>, <code>GoSheet</code>, dan setiap popup yang dibangun di atasnya.</td></tr>
+      <tr><td>Kartu</td><td>Kartu terisi dengan sudut 12dp dan padding 16dp.</td></tr>
+      <tr><td>Kolom dan slider</td><td>Kolom teks bergaris tepi; slider Expressive dengan pegangannya yang tinggi.</td></tr>
+      <tr><td>Chip dan segmen</td><td>Sudut 8dp (small).</td></tr>
+      <tr><td>Komponen aplikasi</td><td><code>GoNavBar</code>, <code>GoAppBar</code>, <code>GoFab</code>, <code>GoSearchBar</code>, chip, <code>GoProgress</code>, dan <code>GoDatePicker</code> mengikuti token komponen M3.</td></tr>
+      <tr><td>Tipografi</td><td>Roboto bawaan untuk judul, subjudul, keterangan, dan tombol. Teks isi tetap memakai font proyek Anda, sehingga bahasa Korea, Jepang, Tionghoa, atau Arab tetap tergambar.</td></tr>
+      <tr><td>Opasitas</td><td>Setiap panel buram — permukaan M3 itu pejal. (Panel default, sci-fi, dan abad pertengahan 80% buram, sehingga game terlihat di baliknya.)</td></tr>
+      <tr><td>Skin</td><td><code>GoSkinMaterial</code>: laci menjadi side sheet modal M3, muka konsol menjadi floating toolbar M3, banner berada di atas <code>surface_container_low</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>Di mana spesifikasi mengalah demi keterbacaan.</b> M3 memudarkan label nonaktif hingga 38%; gohud menjaganya di 4.5:1 agar
+    tetap terbaca. Snackbar mempertahankan pelat terang, karena warna teksnya adalah token yang dipilih widget — pelat terbalik
+    akan menaruh teks gelap di atas gelap. <code>tools/check_contrast.py</code> mengukur kedua tampilan ini seperti tampilan lainnya.
+  </div>
+  <p>Roboto berlisensi SIL Open Font License 1.1 (<code>assets/fonts/roboto/OFL.txt</code>) dan hanya dipakai oleh preset
+    Material.</p>
+</section>
+
+
+<section id="kids">
+  <h2>Anak-anak: kotak mainan <span class="badge new">Baru</span></h2>
+  <p><code>kids_light</code> (krem dan persik dengan warna primer ungu anggur) dan <code>kids_dark</code> (dasar biru blueberry, warna primer kuning
+    cerah, pil mint) adalah tampilan yang dibuat untuk game anak-anak dan aplikasi belajar — tebal, cerah, dan kenyal, jenis
+    benda yang ingin ditekan jari kecil.</p>
+  <pre><code>GoUi.use_preset(&amp;"kids_light")
+# Atau: GoUi.use_preset(&amp;"kids_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Galeri gohud dalam kids_light — tombol permen jeli berwarna krayon" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeri gohud dalam kids_dark — kotak mainan di halaman biru malam" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="Dialog konfirmasi dalam kids_light — pita judul cerah dan tombol tutup permen yang bulat" loading="lazy"><figcaption><code>GoDialogs</code> · <code>kids_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Dialog konfirmasi dalam kids_dark — pita judul mint dan tombol tutup permen" loading="lazy"><figcaption><code>GoDialogs</code> · <code>kids_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-2">Apa yang berubah</h3>
+  <table>
+    <thead><tr><th>Bagian</th><th>Dalam tampilan anak-anak</th></tr></thead>
+    <tbody>
+      <tr><td>Setiap muka</td><td>Permen jeli, digambar oleh <code>GoStyleBoxJelly</code>: garis tepi tebal, bibir padat di bawah semua yang Anda tekan, badan yang lebih terang di atas dan lebih pekat di bawah, serta kilau putih di kiri atas. Tombol, baris daftar, judul lipat, kolom, bilah, slider, dan panel semuanya memakainya.</td></tr>
+      <tr><td>Saat ditekan</td><td>Bibirnya hilang dan mukanya tenggelam ke tempatnya, lalu memipih seperti jeli — lebar dan pipih sesaat, lalu memantul kembali dengan lentur. Ini berjalan pada setiap tombol yang dibuat gohud; <code>reduce_motion</code> mematikannya.</td></tr>
+      <tr><td>Kolom, tab, bilah</td><td>Kolom teks adalah jeli yang sama yang dibalik ke dalam — sebuah sumur cekung. Tab berupa gelembung, bilah punya kilau jeli.</td></tr>
+      <tr><td>Warna</td><td>Setiap jenis kontrol dengan warna krayonnya sendiri, dipilih oleh generator yang sama seperti setiap tampilan, sehingga setiap gerbang kontras tetap terpenuhi.</td></tr>
+      <tr><td>Jendela</td><td>Pita cerah (mint di malam hari) di balik judul jendela — judulnya mengecil, sampai 15, agar tetap satu baris — dan tombol tutup permen yang bulat dalam krayon bahaya dengan silang putih.</td></tr>
+      <tr><td>Bagian skin</td><td><code>GoSkinKids</code>: slot cepat berupa balok permen yang tenggelam selama jeda, lencana berupa stiker, chip dan pil navigasi berupa jeli kecil, avatar berupa permen bulat, joystick-nya pelangi, grafik memakai krayon, peringatan dan pemberitahuan berupa catatan stiker dengan bingkai pejal.</td></tr>
+      <tr><td>Opasitas</td><td>Panel, kartu, pemberitahuan, dan popup buram.</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>Tidak ada perubahan ukuran.</b> Garis tepi dan bibirnya digambar di dalam persegi panjang setiap kontrol dan setiap muka mempertahankan
+    padding yang diberikan tema, sehingga layar yang ditata dalam tampilan lain tetap mempertahankan tata letaknya, dan proyek induk yang menyematkan ukurannya sendiri
+    mengukur bagian-bagian yang sama. Font proyek Anda juga dipertahankan, sehingga aksara non-Latin tetap tergambar.
+  </div>
+  <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Slot cepat, joystick, dan chip di setiap skin — default, anak-anak, Material, abad pertengahan, dan sci-fi" loading="lazy"><figcaption>Bagian-bagian yang digambar sebuah skin — baris anak-anak ada di urutan kedua</figcaption></figure>
+  <h3 id="make-a-toy-box-of-your-own">Buat kotak mainan Anda sendiri</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py candy --from kids_light
+# Sunting themes/palettes/candy.json, lalu:
+python3 addons/gohud/tools/make_theme.py candy
+GoUi.use_preset(&amp;"candy")</code></pre>
 </section>
 
 </main>

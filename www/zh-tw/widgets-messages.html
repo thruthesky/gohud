@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">控制項</a>
   <a href="widgets-catalog.html">所有控制項</a>
+  <a href="widgets-popups.html">彈出視窗與對話框</a>
   <a href="widgets-surfaces.html">浮動視窗</a>
   <a href="widgets-messages.html" aria-current="page">告訴玩家某件事</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — 訊息條</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — 絕不搶占輸入或焦點的提示。" loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — 底部訊息，可排隊，也可帶按鈕。" loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>它永遠不攔截輸入。</b>訊息條是拿來讀的，不是拿來按的。它不取得焦點、不擋住
     遊戲輸入，底下的按鈕照樣按得動。需要確認時請用
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — 不擋住遊戲的提問</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — 不打斷遊戲的詢問——邀請、交易。" loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>浮在一側，沒有遮罩。遊戲繼續跑。</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — 導覽</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — 指向真實控制項的引導教學。" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>一次指向一個真實的控制項。只有卡片會吃輸入，所以<b>直接按下被標示的控制項本身
     就會推進導覽</b> — 「按這裡」於是變成一個動作，而不是一句話。</p>
   <pre><code>tour.start([

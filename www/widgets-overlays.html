@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">All widgets</a>
+  <a href="widgets-popups.html">Popups and dialogs</a>
   <a href="widgets-surfaces.html">Floating windows</a>
   <a href="widgets-messages.html">Telling the player something</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — the side panel</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — A panel that slides in from the left or the right." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — A panel that slides in from the left or the right." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> comes from the bottom, which is right for a phone held upright. On a tablet or a
     desktop the same sheet covers the game; a drawer comes from the side instead.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Bag")</code></pre>
     <code>follow_text_direction</code> when "the start side" is the point, and it flips in RTL.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — the anchored card</h3>
+  <figure class="shot phone"><img src="img/popups/popover.webp" width="300" height="649" alt="GoPopover — An info card beside what was pressed; one at a time." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>This is <code>GoSurface</code>'s anchored placement with the layer, the surface, the anchor and the
     teardown already wired — the ten lines every game writes over and over. One is open at a time, because
@@ -118,6 +124,7 @@ bag.open("Bag")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — long-press and right-click</h3>
+  <figure class="shot phone"><img src="img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Long press or right click for a menu; a moving finger cancels it." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Use", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Bag")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — the developer console</h3>
+  <figure class="shot phone"><img src="img/popups/console.webp" width="300" height="649" alt="GoConsole — A developer console with commands and history; off in release builds." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Grant an item: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>Cheat and debug commands, with a palette that filters as you type so nobody has to memorise them, and

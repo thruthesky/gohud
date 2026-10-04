@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widget</a>
   <a href="widgets-catalog.html">Tất cả widget</a>
+  <a href="widgets-popups.html">Cửa sổ bật lên và hộp thoại</a>
   <a href="widgets-surfaces.html">Cửa sổ nổi</a>
   <a href="widgets-messages.html">Nói cho người chơi biết một điều gì đó</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — cái hàng có thể sai</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Nhãn, điều khiển và gợi ý, lỗi hiện dưới ô bị sai." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>Một dòng chữ trên đầu biểu mẫu năm ô nói "hãy kiểm tra lại thông tin" không cho biết là ô <i>nào</i>. Chỉ
     một chuyện đó thôi đã đủ làm người ta bỏ dở việc đăng ký.</p>
   <pre><code>var name_field := GoField.make("Tên nhân vật", GoStyle.line_edit("2-12"), "Không đổi được về sau")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     factory khi không có gì sai được, và dùng node cho bất cứ thứ gì mà server có thể từ chối.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — ô nhập hàn liền với cái nút của nó</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Ô nhập và các nút của nó hàn thành một khối." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Tin nhắn"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Tên"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>Thứ nó giải quyết là các góc. Hai hình bo tròn gặp nhau ở giữa trông như bị bóp lại, còn khoảng hở mặc định
@@ -118,6 +121,7 @@ GoInputGroup.make(GoStyle.line_edit("Tên"), {"prefix_icon": &amp;"search"})</co
     góc bo nào, nên ở đó nó để yên và các mặt vuông gặp nhau gọn ghẽ.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — bộ chọn có tìm kiếm</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — Bộ chọn tìm cả bên trong tên, không chỉ phần đầu." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>Dưới mười mục thì <code>GoStyle.select()</code> tốt hơn: bớt được một lần chạm và cả danh sách đều nhìn thấy.
     Quá ba mươi mục thì việc dò tìm trở thành lao động.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Chọn máy chủ")
@@ -128,6 +132,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — mã coupon và mã quà tặng</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Mã giảm giá và quà tặng dạng ô; dán và gõ IME vẫn hoạt động." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>Một cái mã được dán từ tin nhắn nhiều hơn hẳn so với được gõ tay. Mười hai ô nhập thật sẽ làm thao tác dán
     vỡ ngay ở ô đầu tiên và làm mất ký tự vào tay IME, nên một ô ẩn duy nhất nhận chữ còn các ô kia chỉ là hình
     vẽ. <code>ABCD-EFGH-IJKL</code> rụng hết dấu gạch ngang trên đường vào.</p>
@@ -136,6 +141,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Đã dùng rồi")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — tiêu đề cột sắp xếp được, hàng chọn được</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Tiêu đề sắp xếp được và hàng chọn được; số được sắp như số." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Hạng", "width": 56}, {"text": "Tên"}, {"text": "Điểm", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -148,6 +154,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     nhắm trúng một ô nhỏ. <code>GoStyle.table()</code> vẫn là cái lưới chỉ để đọc.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — trang số, hoặc một hàng Xem thêm</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Các trang đánh số giữ trang hiện tại ở giữa, hoặc một hàng Tải thêm." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # biến thể hợp với di động</code></pre>
   <p>Số trang là giao diện dành cho chuột; trên điện thoại thì hàng Xem thêm đọc ra dễ hơn. Trang hiện tại luôn

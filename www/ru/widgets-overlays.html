@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Виджеты</a>
   <a href="widgets-catalog.html">Все виджеты</a>
+  <a href="widgets-popups.html">Всплывающие окна и диалоги</a>
   <a href="widgets-surfaces.html">Плавающие окна</a>
   <a href="widgets-messages.html">Как сообщить игроку</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="overlays">
 
   <h3 id="godrawer-the-side-panel"><code>GoDrawer</code> — боковая панель</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/drawer-left.webp" width="300" height="649" alt="GoDrawer — Панель, выезжающая слева или справа." loading="lazy"><figcaption><code>Side.LEFT</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/drawer-right.webp" width="300" height="649" alt="GoDrawer — Панель, выезжающая слева или справа." loading="lazy"><figcaption><code>Side.RIGHT</code></figcaption></figure>
+  </div>
   <p><code>GoSheet</code> приходит снизу, и для телефона в книжной ориентации это правильно. На планшете или
     настольном компьютере тот же лист накрывает игру — там панель приходит сбоку.</p>
   <pre><code>bag.side = GoDrawer.Side.RIGHT
@@ -107,6 +112,7 @@ bag.open("Сумка")</code></pre>
     <code>follow_text_direction</code>, когда смысл именно в «стороне начала», и она перевернётся при письме справа налево.</p>
 
   <h3 id="gopopover-the-anchored-card"><code>GoPopover</code> — карточка с привязкой</h3>
+  <figure class="shot phone"><img src="../img/popups/popover.webp" width="300" height="649" alt="GoPopover — Карточка с информацией рядом с нажатым элементом; по одной." loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
   <pre><code>GoPopover.open(slot, item_card(item))</code></pre>
   <p>Это привязанное размещение <code>GoSurface</code>, где слой, поверхность, якорь и уборка уже связаны, — те
     десять строк, которые каждая игра пишет снова и снова. Открыта всегда одна, потому что сложенные стопкой
@@ -118,6 +124,7 @@ bag.open("Сумка")</code></pre>
   </div>
 
   <h3 id="gocontextmenu-long-press-and-right-click"><code>GoContextMenu</code> — долгое нажатие и правый клик</h3>
+  <figure class="shot phone"><img src="../img/popups/context-menu.webp" width="300" height="649" alt="GoContextMenu — Меню по долгому нажатию или правому клику; движение пальца его отменяет." loading="lazy"><figcaption><code>GoContextMenu</code></figcaption></figure>
   <pre><code>GoContextMenu.attach(item_slot, [
     {"text": "Использовать", "action": use},
     {"separator": true},
@@ -132,6 +139,7 @@ bag.open("Сумка")</code></pre>
   </div>
 
   <h3 id="goconsole-the-developer-console"><code>GoConsole</code> — консоль разработчика</h3>
+  <figure class="shot phone"><img src="../img/popups/console.webp" width="300" height="649" alt="GoConsole — Консоль разработчика с командами и историей; в релизных сборках выключена." loading="lazy"><figcaption><code>GoConsole</code></figcaption></figure>
   <pre><code>console.register("give", "Выдать предмет: give &lt;id&gt; &lt;count&gt;", give)
 console.toggle()</code></pre>
   <p>Читерские и отладочные команды, с палитрой, которая фильтрует по мере набора, чтобы их не приходилось

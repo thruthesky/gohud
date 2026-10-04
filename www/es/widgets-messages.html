@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos los widgets</a>
+  <a href="widgets-popups.html">Ventanas emergentes y diálogos</a>
   <a href="widgets-surfaces.html">Ventanas flotantes</a>
   <a href="widgets-messages.html" aria-current="page">Decirle algo al jugador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,10 @@
 <section id="messages">
 
   <h3 id="gonotice-snackbar"><code>GoNotice</code> — snackbar</h3>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/popups/notice.webp" width="300" height="649" alt="GoNotice — Un aviso que nunca toma la entrada ni el foco." loading="lazy"><figcaption><code>GoNotice</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/snackbar.webp" width="300" height="649" alt="GoSnackbar — Un mensaje abajo que hace cola y puede llevar botones." loading="lazy"><figcaption><code>GoSnackbar</code></figcaption></figure>
+  </div>
   <div class="note warn">
     <b>Nunca intercepta la entrada.</b> Un aviso se lee, no se pulsa. No toma el foco, no bloquea
     la entrada del juego, y el botón que hay debajo sigue pulsándose. Cuando hace falta una confirmación usa
@@ -105,9 +110,11 @@
   </div>
 
   <h3 id="gopromptcard-a-question-that-does-not-block"><code>GoPromptCard</code> — una pregunta que no bloquea</h3>
+  <figure class="shot phone"><img src="../img/popups/prompt-card.webp" width="300" height="649" alt="GoPromptCard — Una pregunta que no detiene el juego: una invitación, un intercambio." loading="lazy"><figcaption><code>GoPromptCard</code></figcaption></figure>
   <p>Flota a un lado sin velo de fondo. El juego sigue corriendo.</p>
 
   <h3 id="gocoachmark-guided-tour"><code>GoCoachMark</code> — recorrido guiado</h3>
+  <figure class="shot phone"><img src="../img/popups/coach-mark.webp" width="300" height="649" alt="GoCoachMark — Un recorrido guiado que señala controles reales." loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
   <p>Señala controles reales de uno en uno. Solo la tarjeta toma la entrada, así que <b>pulsar el propio control
     resaltado hace avanzar el recorrido</b> — "pulsa aquí" se convierte en una acción en vez de en una frase.</p>
   <pre><code>tour.start([

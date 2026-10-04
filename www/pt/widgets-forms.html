@@ -84,6 +84,7 @@
   <!-- subnav:begin -->
   <a href="widgets.html">Widgets</a>
   <a href="widgets-catalog.html">Todos os widgets</a>
+  <a href="widgets-popups.html">Pop-ups e diálogos</a>
   <a href="widgets-surfaces.html">Janelas flutuantes</a>
   <a href="widgets-messages.html">Contando algo ao jogador</a>
   <a href="widgets-hud.html">HUD</a>
@@ -98,6 +99,7 @@
 <section id="forms-lists">
 
   <h3 id="gofield-the-row-that-can-be-wrong"><code>GoField</code> — a linha que pode estar errada</h3>
+  <figure class="shot"><img src="../img/widgets/gofield.webp" width="382" height="220" alt="GoField — Rótulo, controle e dica, com o erro sob o campo errado." loading="lazy"><figcaption><code>GoField</code> · <code>set_error()</code></figcaption></figure>
   <p>Uma linha no topo de um formulário de cinco campos dizendo "verifique os dados" não diz <i>qual</i> campo. É
     essa única coisa que faz as pessoas abandonarem um cadastro.</p>
   <pre><code>var name_field := GoField.make("Nome do personagem", GoStyle.line_edit("2-12"), "Não pode ser alterado depois")
@@ -110,6 +112,7 @@ name_field.clear_error()</code></pre>
     quando nada pode dar errado, e o nó para qualquer coisa que um servidor possa recusar.</p>
 
   <h3 id="goinputgroup-an-input-welded-to-its-button"><code>GoInputGroup</code> — uma entrada soldada ao botão dela</h3>
+  <figure class="shot"><img src="../img/widgets/goinputgroup.webp" width="382" height="76" alt="GoInputGroup — Uma entrada e seus botões soldados em uma só forma." loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
   <pre><code>GoInputGroup.make(GoStyle.line_edit("Mensagem"), {"suffix": GoStyle.icon_button(&amp;"send", send)})
 GoInputGroup.make(GoStyle.line_edit("Nome"), {"prefix_icon": &amp;"search"})</code></pre>
   <p>O que ele resolve são os cantos. Duas formas arredondadas se encontrando no meio parecem estranguladas, e o
@@ -119,6 +122,7 @@ GoInputGroup.make(GoStyle.line_edit("Nome"), {"prefix_icon": &amp;"search"})</co
     emenda.</p>
 
   <h3 id="gocombobox-a-picker-that-searches"><code>GoCombobox</code> — um seletor que busca</h3>
+  <figure class="shot phone"><img src="../img/popups/combobox.webp" width="300" height="649" alt="GoCombobox — Um seletor que busca dentro dos nomes, não só no início." loading="lazy"><figcaption><code>GoCombobox</code></figcaption></figure>
   <p>Com menos de dez itens o <code>GoStyle.select()</code> é melhor: um toque a menos e a lista inteira fica
     visível. Passando de trinta, procurar vira trabalho.</p>
   <pre><code>var picker := GoCombobox.make(server_names, 0, "Escolha um servidor")
@@ -129,6 +133,7 @@ picker.picked.connect(func(i: int) -> void: connect_to(servers[i]))</code></pre>
   </div>
 
   <h3 id="gocodeinput-coupon-and-gift-codes"><code>GoCodeInput</code> — códigos de cupom e de presente</h3>
+  <figure class="shot"><img src="../img/widgets/gocodeinput.webp" width="382" height="71" alt="GoCodeInput — Códigos de cupom e presente em células; colar e a digitação por IME continuam funcionando." loading="lazy"><figcaption><code>GoCodeInput</code></figcaption></figure>
   <p>Um código é colado de uma mensagem muito mais vezes do que é digitado. Doze campos de verdade quebrariam a
     colagem na primeira célula e perderiam caracteres para um IME, então um único campo escondido recebe o texto e
     as células são desenhadas. <code>ABCD-EFGH-IJKL</code> perde os hifens na entrada.</p>
@@ -137,6 +142,7 @@ coupon.completed.connect(func(code: String) -> void: server.redeem(code))
 coupon.set_error("Já foi usado")</code></pre>
 
   <h3 id="gotable-sortable-headers-selectable-rows"><code>GoTable</code> — cabeçalhos ordenáveis, linhas selecionáveis</h3>
+  <figure class="shot"><img src="../img/widgets/gotable.webp" width="382" height="273" alt="GoTable — Cabeçalhos ordenáveis e linhas selecionáveis; números se ordenam como números." loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
   <pre><code>var board := GoTable.make(
     [{"text": "Posição", "width": 56}, {"text": "Nome"}, {"text": "Pontuação", "numeric": true}], rows)
 board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code></pre>
@@ -149,6 +155,7 @@ board.row_selected.connect(func(i: int) -&gt; void: open_profile(rows[i]))</code
     precisa acertar uma célula. O <code>GoStyle.table()</code> continua sendo a grade somente leitura.</p>
 
   <h3 id="gopagination-pages-or-a-more-row"><code>GoPagination</code> — páginas, ou uma linha Mais</h3>
+  <figure class="shot"><img src="../img/widgets/gopagination.webp" width="382" height="72" alt="GoPagination — Páginas numeradas que mantêm a atual no centro, ou uma única linha de Carregar mais." loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
   <pre><code>var pager := GoPagination.make(1, 12, func(page: int) -&gt; void: load_mail(page))
 var more := GoPagination.more(load_next)   # a variante amigável para celular</code></pre>
   <p>Números são interface de mouse; no celular a linha Mais se lê melhor. A página atual fica centralizada na
