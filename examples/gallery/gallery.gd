@@ -222,15 +222,22 @@ func _build_page() -> void:
 		for icon: String in names:
 			icons.add_child(set.node(StringName(icon), 22, GoUi.color(GoTheme.SECONDARY)))
 	group_picker.item_selected.connect(show_group)
-	# 🛑 A flow row, not a row — the picker and the button side by side need ~390dp and ran a 320dp phone's whole page
-	#    off the screen (`tests/gohud_layout_test.gd`, 2026-09-23).
-	var icon_bar := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP))
-	icon_bar.add_child(group_picker)
+	# 🛑 The picker gets a line of its own, as wide as the page, and a long group title ends in "…". A dropdown is as wide
+	#    as its longest item — "Navigation & structure (14)" is 287dp in Godot's own font, so on a 320dp phone it ran the
+	#    whole page 21dp off the screen, even alone in a flow row (`tests/gohud_layout_test.gd` in an empty project, CI
+	#    2026-10-03; laryen3d's theme hid it). Side by side with the button in a plain row it needed ~390dp (2026-09-23).
+	#    `clip_text` alone changes nothing while `fit_to_longest_item` is on — that still asks for the longest item (measured).
+	group_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	group_picker.fit_to_longest_item = false
+	group_picker.clip_text = true
+	group_picker.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	page.add_child(group_picker)
 	if not GoUi.config.extra_icons.has(GoIconLibrary.icon_set()):
+		var icon_bar := GoStyle.wrap_row(GoUi.metric(GoTheme.GAP))
 		icon_bar.add_child(GoStyle.button("Add 1,000 more icons", func() -> void:
 			GoUi.add_icons(GoIconLibrary.icon_set())
 			_rebuild(), GoStyle.Tone.COMPACT))
-	page.add_child(icon_bar)
+		page.add_child(icon_bar)
 	page.add_child(icons)
 	if not titles.is_empty():
 		group_picker.select(0)

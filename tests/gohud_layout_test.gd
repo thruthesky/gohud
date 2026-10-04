@@ -21,6 +21,15 @@ var failed: Array[String] = []
 
 
 func _initialize() -> void:
+	# 🛑 The default `--headless` window is 64×64, and `content_scale_size` only moves the screen while stretch is on.
+	#    laryen3d turns stretch on in its project.godot; an empty host project (CI) leaves it off, so every size these
+	#    checks asked for stayed 64×64 and the layout verdicts failed there only (CI, 2026-10-03). Turn it on here with
+	#    the phone portrait `gohud_test.gd` starts from — a host that already stretches keeps its own setting.
+	if root.content_scale_mode == Window.CONTENT_SCALE_MODE_DISABLED:
+		root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+		root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
+		root.content_scale_size = Vector2i(390, 844)
+		await frames(2)
 	GoUi.reset()
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	GoUi.config.reduce_motion = true
@@ -327,7 +336,12 @@ func _carousel_fits() -> void:
 # ── Pagination ─────────────────────────────────────────────────────────
 
 func _pagination_fits() -> void:
+	# 🛑 Each strip is laid out on a screen at least as wide as itself — a 700dp strip on a 390dp phone only showed the
+	#    audit that the strip runs off the screen (an empty project, CI 2026-10-03; laryen3d's wide stretch base hid it).
+	var aspect := root.content_scale_aspect
+	var stretch := root.content_scale_size
 	for width in [280.0, 350.0, 700.0]:
+		await _screen(maxf(width, 390.0))
 		var strip := GoStyle.column(0)
 		strip.size = Vector2(width, 100)
 		root.add_child(strip)
@@ -345,6 +359,9 @@ func _pagination_fits() -> void:
 				"pagination: too narrow for three numbers, it reads 5 / 12 (%s)" % str(numbers))
 		strip.queue_free()
 		await frames(1)
+	root.content_scale_aspect = aspect
+	root.content_scale_size = stretch
+	await frames(2)
 	section("pagination")
 
 

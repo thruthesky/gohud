@@ -44,6 +44,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **The checks pass in a fresh project, so CI is green again.** The layout, later-widget, jelly and template checks set
+  the screen size through `content_scale_size`, which only moves the screen while stretch is on — a project that turns
+  it on (laryen3d) passed, while CI's empty host project left the `--headless` window at 64×64 and 100 checks failed on
+  every push. Each now turns stretch on with a 390×844 phone portrait when the host has it off (a host that stretches
+  keeps its own setting), and the pagination check lays its 700dp strip on a screen that wide. That also brought out a
+  real fault: the gallery's icon-group dropdown was as wide as its longest group ("Navigation & structure (14)", 287dp
+  in Godot's own font) and ran the page 21dp off a 320dp phone in every look but Material. It now has a line of its own,
+  as wide as the page, and a long title ends in "…".
 - **Text no longer turns white under the mouse — in every look.** A colour a theme leaves out is not borrowed from a
   neighbouring state: the engine draws its own default theme's, made for a dark editor. No gohud theme had
   `font_hover_pressed_color`, so hovering a switched-on toggle, a ticked checkbox, a selected list row or a pressed
