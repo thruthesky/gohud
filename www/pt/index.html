@@ -95,6 +95,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Instalar</a>
+      <a class="btn" href="#comic">Ver o visual de quadrinhos</a>
       <a class="btn" href="#presets">Ver os presets</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -143,8 +144,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # ou &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # ou &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 em detalhe →</a> · <a href="theming-presets.html#kids">O visual infantil em detalhe →</a> ·
-    <a href="theming-presets.html#comic">O visual de quadrinhos em detalhe →</a> ·
+    <a href="#comic">Quadrinhos, widget por widget ↓</a> ·
     <a href="widgets-popups.html#popup-looks">O mesmo popup nos doze visuais →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Quadrinhos: tinta forte e uma sombra dura</h2>
+  <p class="sub">
+    O visual mais novo desenha cada face como um quadro de história em quadrinhos — a cor da superfície dentro de um <b>contorno grosso de tinta</b>,
+    com uma <b>sombra dura e sólida</b> projetada para baixo e para a direita. <code>comic_light</code> entinta em preto sobre uma página creme de papel
+    com um primário cobalto; <code>comic_dark</code> entinta em creme sobre uma página noturna com um primário amarelo. Cada imagem abaixo é
+    uma tela real do gohud — o mesmo código, uma linha de preset.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # ou &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="A galeria do gohud em comic_light — teclas, linhas e barras entintadas com sombras duras sobre uma página creme de papel" loading="lazy"><figcaption><code>comic_light</code> · a galeria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="A galeria do gohud em comic_dark — tinta creme e um primário amarelo sobre uma página noturna" loading="lazy"><figcaption><code>comic_dark</code> · a galeria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="Uma folha inferior em comic_light — um painel entintado subindo da borda inferior, com linhas entintadas" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="Um coach mark em comic_light — um balão entintado apontando para um botão" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="Uma gaveta lateral em comic_dark — um painel entintado de linhas de navegação sobre a tela escurecida" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="Um popover em comic_dark — um balão entintado ancorado ao botão que o abriu" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Todo widget, entintado</h3>
+  <p>Botões, interruptores, abas, controles deslizantes, cartões, formulários, tabelas, seletores e chips usam a tinta — você não precisa
+    estilizá-los um por um. Pressione uma tecla e a sombra dela some: a face afunda no lugar, como um carimbo.
+    Faces desativadas perdem a sombra e esmaecem, então o que pode ser pressionado se destaca do que não pode.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="Botões em comic_light — teclas primária, secundária, com contorno, de perigo, compacta, simples e desativada, cada uma com um contorno preto grosso e uma sombra dura" loading="lazy"><figcaption><code>GoStyle.button()</code> — todos os tipos</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="Interruptores e caixas de seleção em comic_light — um trilho e um botão entintados, caixas entintadas com um visto" loading="lazy"><figcaption>Interruptores e caixas de seleção</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="Botões de opção em comic_light — anéis entintados, o escolhido com um ponto preenchido" loading="lazy"><figcaption>Botões de opção</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="Abas em comic_light — a aba escolhida é um painel entintado, as outras ficam sobre um sublinhado de tinta" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="Um controle segmentado em comic_light — células entintadas, a escolhida preenchida" loading="lazy"><figcaption>Pílulas segmentadas</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="Um controle deslizante em comic_light — um sulco entintado, um preenchimento fino de destaque e uma alça entintada" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="Seletores suspensos em comic_light — teclas entintadas com uma setinha" loading="lazy"><figcaption>Seletores suspensos</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="Um cartão em comic_light — um painel branco com um contorno grosso e uma sombra dura" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="Um formulário em comic_light — um campo entintado com uma dica, um interruptor e uma tecla Salvar entintada" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="Linhas de lista em comic_light — cada linha é uma faixa entintada com um ícone, um subtítulo ou um rótulo de perigo" loading="lazy"><figcaption>Linhas de lista</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="Uma tabela em comic_light — um cabeçalho sobre um traço de tinta, e cada linha de pontuação é uma faixa entintada" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="Um seletor de data em comic_light — células de dia entintadas, o dia escolhido preenchido" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="Um seletor de hora em comic_light — caixas de hora e minuto entintadas, teclas AM e PM e um mostrador de relógio" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="Um stepper em comic_light — linhas de etapas entintadas, a etapa concluída marcada e a próxima esmaecida" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="Chips de filtro e de entrada em comic_light — pílulas entintadas, o filtro escolhido tingido e com um visto" loading="lazy"><figcaption>Chips de filtro</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="Uma barra de navegação em comic_light — um traço de tinta no topo, a aba atual em uma pílula entintada e um emblema em Alertas" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="Um grupo de entrada em comic_light — um campo e sua tecla Enviar soldados em uma única forma entintada" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="Um botão dividido em comic_light — uma ação e uma seta de menu como duas metades entintadas" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="Paginação em comic_light — a página atual é uma tecla entintada com uma sombra dura" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">À noite: <code>comic_dark</code></h3>
+  <p>Em uma página escura um contorno preto sumiria, então o <code>comic_dark</code> o desenha em creme e projeta uma sombra suave
+    tingida com a mesma tinta. As peças do HUD — slots rápidos, barras, o joystick e o calendário de recompensas — seguem as mesmas regras.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="Botões em comic_dark — contornos creme, um primário amarelo e sombras duras suaves sobre uma página noturna" loading="lazy"><figcaption><code>GoStyle.button()</code> à noite</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="Slots rápidos em comic_dark — blocos entintados com contagem de pilha e recarga, os slots acesos contornados de amarelo" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="Barras do HUD em comic_dark — HP, MP e XP em sulcos entintados de creme" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="Um joystick virtual em comic_dark — um anel creme e um botão que projeta uma sombra" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="Alertas em comic_dark — painéis de informação, sucesso, aviso e perigo em tinta creme" loading="lazy"><figcaption>Alertas</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="Uma grade de slots em comic_dark — um inventário de blocos entintados" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="Um calendário de recompensas em comic_dark — células de dia entintadas, os dias resgatados marcados e o de hoje contornado de amarelo" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="Chips de raridade em comic_dark — pílulas entintadas, cada uma tingida com sua própria cor" loading="lazy"><figcaption>Chips</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="Um controle deslizante de intervalo em comic_dark — duas alças entintadas sobre um sulco entintado" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="Uma barra de busca em comic_dark — uma barra entintada com ícones de busca e de filtro" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="Botões de ação flutuantes em comic_dark — teclas amarelas em tinta creme com sombras duras" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">Como o visual de quadrinhos funciona</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">Um StyleBox para cada face</h3>
+      <p>Cada face é um <code>GoStyleBoxComic</code>: um preenchimento, um contorno e uma sombra, desenhados dentro do próprio retângulo do controle. Ele lê os tamanhos do contorno e da sombra do <code>GoConfig</code> toda vez que desenha, então uma única configuração muda a tela inteira de uma vez.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Pressionado quer dizer plano</h3>
+      <p>Uma tecla pressionada perde a sombra e desce para o seu lugar. O hover mantém a sombra; o foco acrescenta um anel de tinta interno que nunca cobre o contorno; faces desativadas perdem a sombra e esmaecem.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">A skin entinta o resto</h3>
+      <p>O <code>GoSkinComic</code> entinta o que o código desenha: slots rápidos, chips, emblemas, avatares, avisos, a barra de navegação, o FAB, as células de data e o joystick, cujo botão projeta uma sombra.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">Janelas ganham uma legenda</h3>
+      <p>O título de uma janela fica sobre uma legenda amarela, como o recordatório de uma história em quadrinhos, ao lado de um botão de fechar redondo e entintado. Diálogos, folhas, gavetas e popovers são painéis entintados opacos.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Legível de dia e de noite</h3>
+      <p>As duas paletas passam nas mesmas verificações de contraste WCAG que todos os outros presets, incluindo teclas pressionadas e desativadas. Quando a cor de uma legenda ficaria próxima demais da página, o contorno dela passa a usar a cor da página.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">Nenhuma mudança de layout</h3>
+      <p>O contorno e a sombra cabem dentro de cada controle e o padding fica como o tema definiu, então uma tela montada em outro visual mantém o layout — e a fonte do seu projeto.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Três configurações e uma chamada</h3>
+  <p>Três configurações do <code>GoConfig</code> mudam todas as faces de quadrinhos de uma vez. Nada é reconstruído — a tela é redesenhada assim que você as altera.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # o contorno (dp) — 3 por padrão
+GoUi.config.comic_shadow_size = 6.0    # a sombra (dp) — 4 por padrão
+GoUi.config.comic_shadow = false       # nenhuma sombra em lugar nenhum</code></pre>
+  <p>Um widget pode seguir seu próprio caminho, não importa o que digam as configurações. Passe <code>true</code> como último argumento para incluir tudo o que está dentro dele.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # este botão fica plano
+GoStyle.comic_shadow(card, true, true)       # este cartão e tudo dentro dele mantêm a sombra
+GoStyle.comic_border(title, 5.0)             # um contorno mais grosso neste aqui</code></pre>
+  <div class="note">
+    <b>Crie seus próprios quadrinhos.</b> <code>tools/new_theme.py inked --from comic_light</code> copia a paleta; mude as cores
+    do papel, da tinta e do primário e rode <code>tools/make_theme.py inked</code>. A tinta, a sombra e a skin vêm junto.
+  </div>
+  <p><a href="theming-presets.html#comic">O visual de quadrinhos em detalhe →</a> · <a href="widgets-popups.html#popup-looks">O mesmo popup nos doze visuais →</a></p>
 </section>
 
 <section id="showcase">

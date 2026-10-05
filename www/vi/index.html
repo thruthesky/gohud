@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Cài đặt</a>
+      <a class="btn" href="#comic">Xem diện mạo truyện tranh</a>
       <a class="btn" href="#presets">Xem các preset</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -142,8 +143,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # hoặc &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 chi tiết →</a> · <a href="theming-presets.html#kids">Trẻ em chi tiết →</a> ·
-    <a href="theming-presets.html#comic">Truyện tranh chi tiết →</a> ·
+    <a href="#comic">Truyện tranh, từng widget một ↓</a> ·
     <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười hai diện mạo →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Truyện tranh: nét mực đậm và bóng đổ sắc nét</h2>
+  <p class="sub">
+    Diện mạo mới nhất vẽ mọi mặt như một khung trong truyện tranh — màu bề mặt nằm trong một <b>đường viền mực đậm</b>,
+    với một <b>bóng đổ đặc, sắc nét</b> lệch xuống dưới và sang phải. <code>comic_light</code> viền mực đen trên trang nền màu kem như giấy
+    với màu chính xanh coban; <code>comic_dark</code> viền mực màu kem trên trang nền đêm với màu chính vàng. Mọi ảnh bên dưới đều là
+    một màn hình gohud thật — cùng một đoạn code, chỉ một dòng preset.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # hoặc &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_light — phím, hàng và thanh viền mực với bóng đổ sắc nét trên trang nền màu kem như giấy" loading="lazy"><figcaption><code>comic_light</code> · gallery</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_dark — nét mực màu kem và màu chính vàng trên trang nền đêm" loading="lazy"><figcaption><code>comic_dark</code> · gallery</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="Một bảng trượt dưới ở comic_light — tấm nền viền mực trồi lên từ mép dưới với các hàng viền mực" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="Một coach mark ở comic_light — ô chú thích viền mực chỉ vào một nút" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="Một ngăn kéo bên ở comic_dark — tấm nền viền mực chứa các hàng điều hướng trên màn hình bị làm tối" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="Một popover ở comic_dark — bong bóng viền mực neo vào nút đã mở nó" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Mọi widget đều được viền mực</h3>
+  <p>Nút, công tắc, tab, thanh trượt, thẻ, biểu mẫu, bảng, bộ chọn và chip đều khoác nét mực — bạn không phải
+    tạo kiểu cho từng cái một. Nhấn một phím là bóng đổ của nó biến mất: mặt phím lún vào đúng chỗ, như một con dấu.
+    Mặt bị vô hiệu hóa mất bóng đổ và mờ đi, nên những gì nhấn được nổi bật hẳn so với những gì không nhấn được.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="Các nút ở comic_light — phím chính, phụ, có viền, nguy hiểm, gọn, trơn và bị vô hiệu hóa, mỗi phím có viền đen đậm và bóng đổ sắc nét" loading="lazy"><figcaption><code>GoStyle.button()</code> — đủ mọi loại</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="Công tắc và ô đánh dấu ở comic_light — rãnh và núm viền mực, các ô viền mực có dấu tích" loading="lazy"><figcaption>Công tắc và ô đánh dấu</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="Nút radio ở comic_light — các vòng viền mực, vòng được chọn có chấm tô đầy" loading="lazy"><figcaption>Nút radio</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="Tab ở comic_light — tab được chọn là một tấm nền viền mực, các tab còn lại nằm trên một đường gạch chân bằng mực" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="Một điều khiển phân đoạn ở comic_light — các ô viền mực, ô được chọn tô đầy" loading="lazy"><figcaption>Nút viên thuốc phân đoạn</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="Một thanh trượt ở comic_light — rãnh viền mực, phần tô màu nhấn mảnh và núm viền mực" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="Danh sách thả xuống ở comic_light — các phím viền mực có mũi tên chevron" loading="lazy"><figcaption>Danh sách thả xuống</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="Một thẻ ở comic_light — tấm nền trắng với viền đậm và bóng đổ sắc nét" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="Một biểu mẫu ở comic_light — ô nhập viền mực có gợi ý, một công tắc và phím Lưu viền mực" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="Hàng danh sách ở comic_light — mỗi hàng là một dải viền mực với biểu tượng, phụ đề hoặc nhãn nguy hiểm" loading="lazy"><figcaption>Hàng danh sách</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="Một bảng ở comic_light — hàng tiêu đề trên một đường kẻ mực, và mỗi hàng điểm số là một dải viền mực" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="Một bộ chọn ngày ở comic_light — các ô ngày viền mực, ngày được chọn tô đầy" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="Một bộ chọn giờ ở comic_light — ô giờ và phút viền mực, phím AM và PM và một mặt đồng hồ" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="Một stepper ở comic_light — các hàng bước viền mực, bước đã xong có dấu tích và bước sắp tới mờ đi" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="Chip lọc và chip nhập ở comic_light — các viên thuốc viền mực, bộ lọc được chọn tô màu kèm dấu tích" loading="lazy"><figcaption>Chip lọc</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="Một thanh điều hướng ở comic_light — đường kẻ mực ở trên, tab hiện tại trong một viên thuốc viền mực và một huy hiệu trên Alerts" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="Một nhóm nhập ở comic_light — ô nhập và phím Send hàn liền thành một hình viền mực" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="Một nút tách ở comic_light — một hành động và một mũi tên menu thành hai nửa viền mực" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="Phân trang ở comic_light — trang hiện tại là một phím viền mực với bóng đổ sắc nét" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">Về đêm: <code>comic_dark</code></h3>
+  <p>Trên trang nền tối, viền đen sẽ biến mất, nên <code>comic_dark</code> vẽ viền màu kem và đổ một bóng mờ nhạt
+    cùng sắc mực đó. Các mảnh HUD — ô nhanh, thanh, cần điều khiển và lịch phần thưởng — cũng theo cùng quy tắc.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="Các nút ở comic_dark — viền màu kem, màu chính vàng và bóng đổ sắc nét mờ nhạt trên trang nền đêm" loading="lazy"><figcaption><code>GoStyle.button()</code> về đêm</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="Ô nhanh ở comic_dark — các khối viền mực có số lượng chồng và thời gian hồi chiêu, các ô đang sáng viền vàng" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="Thanh HUD ở comic_dark — HP, MP và XP trong các rãnh viền mực màu kem" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="Một cần điều khiển ảo ở comic_dark — vòng màu kem và một núm đổ bóng" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="Cảnh báo ở comic_dark — các tấm nền thông tin, thành công, cảnh báo và nguy hiểm viền mực màu kem" loading="lazy"><figcaption>Cảnh báo</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="Một lưới ô ở comic_dark — kho đồ gồm các khối viền mực" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="Một lịch phần thưởng ở comic_dark — các ô ngày viền mực, ngày đã nhận có dấu tích và hôm nay viền vàng" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="Chip độ hiếm ở comic_dark — các viên thuốc viền mực, mỗi viên tô màu riêng" loading="lazy"><figcaption>Chip</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="Một thanh trượt khoảng ở comic_dark — hai núm viền mực trên một rãnh viền mực" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="Một thanh tìm kiếm ở comic_dark — thanh viền mực với biểu tượng tìm kiếm và bộ lọc" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="Nút hành động nổi ở comic_dark — các phím vàng viền mực màu kem với bóng đổ sắc nét" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">Diện mạo truyện tranh hoạt động thế nào</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">Một StyleBox cho mọi mặt</h3>
+      <p>Mọi mặt đều là một <code>GoStyleBoxComic</code>: một lớp tô, một đường viền và một bóng đổ, vẽ bên trong chính hình chữ nhật của điều khiển. Mỗi lần vẽ, nó đọc độ dày viền và cỡ bóng từ <code>GoConfig</code>, nên một thiết lập đổi cả màn hình cùng lúc.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Nhấn là phẳng</h3>
+      <p>Phím được nhấn bỏ bóng đổ và dịch vào đúng chỗ của nó. Khi di chuột qua, bóng vẫn còn; khi được focus, có thêm một vòng mực bên trong không bao giờ che đường viền; mặt bị vô hiệu hóa mất bóng và mờ đi.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">Skin viền mực phần còn lại</h3>
+      <p><code>GoSkinComic</code> viền mực những gì code vẽ: ô nhanh, chip, huy hiệu, avatar, notice, thanh điều hướng, FAB, các ô ngày và cần điều khiển, với núm đổ bóng.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">Cửa sổ có ô tiêu đề</h3>
+      <p>Tiêu đề cửa sổ nằm trên một ô màu vàng, như ô lời dẫn trong truyện tranh, cạnh một nút đóng tròn viền mực. Hộp thoại, bảng trượt, ngăn kéo và popover là những tấm nền viền mực đặc, không trong suốt.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Dễ đọc cả ngày lẫn đêm</h3>
+      <p>Cả hai bảng màu đều vượt qua cùng các bài kiểm tra độ tương phản WCAG như mọi preset khác, kể cả phím đang nhấn và phím bị vô hiệu hóa. Khi màu ô tiêu đề quá gần với màu trang nền, đường viền của nó chuyển về màu trang nền.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">Không đổi bố cục</h3>
+      <p>Đường viền và bóng đổ nằm gọn bên trong mỗi điều khiển và phần đệm giữ nguyên như theme đã đặt, nên một màn hình dàn trang bằng diện mạo khác vẫn giữ bố cục — và cả font của dự án bạn.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Ba thiết lập và một lệnh gọi</h3>
+  <p>Ba thiết lập trong <code>GoConfig</code> đổi mọi mặt truyện tranh cùng lúc. Không có gì phải dựng lại — màn hình vẽ lại ngay khi bạn đặt chúng.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # đường viền (dp) — mặc định là 3
+GoUi.config.comic_shadow_size = 6.0    # bóng đổ (dp) — mặc định là 4
+GoUi.config.comic_shadow = false       # không có bóng đổ ở bất cứ đâu</code></pre>
+  <p>Một widget có thể đi theo cách riêng của nó, bất kể thiết lập nói gì. Truyền <code>true</code> làm đối số cuối để áp dụng cho mọi thứ bên trong nó.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # nút này nằm phẳng
+GoStyle.comic_shadow(card, true, true)       # thẻ này và mọi thứ bên trong vẫn giữ bóng đổ
+GoStyle.comic_border(title, 5.0)             # viền dày hơn cho riêng cái này</code></pre>
+  <div class="note">
+    <b>Tự làm một diện mạo truyện tranh của riêng bạn.</b> <code>tools/new_theme.py inked --from comic_light</code> sao chép bảng màu; đổi màu
+    giấy, màu mực và màu chính rồi chạy <code>tools/make_theme.py inked</code>. Nét mực, bóng đổ và skin đều đi kèm.
+  </div>
+  <p><a href="theming-presets.html#comic">Truyện tranh chi tiết →</a> · <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười hai diện mạo →</a></p>
 </section>
 
 <section id="showcase">

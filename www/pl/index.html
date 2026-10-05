@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Instalacja</a>
+      <a class="btn" href="#comic">Zobacz wygląd komiksowy</a>
       <a class="btn" href="#presets">Zobacz presety</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -142,8 +143,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # albo &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # albo &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 szczegółowo →</a> · <a href="theming-presets.html#kids">Kids szczegółowo →</a> ·
-    <a href="theming-presets.html#comic">Comic szczegółowo →</a> ·
+    <a href="#comic">Comic, widżet po widżecie ↓</a> ·
     <a href="widgets-popups.html#popup-looks">To samo okno we wszystkich dwunastu wyglądach →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Komiks: gruby tusz i twardy cień</h2>
+  <p class="sub">
+    Najnowszy wygląd rysuje każdą powierzchnię jak kadr z komiksu — kolor powierzchni wewnątrz <b>grubego obrysu tuszem</b>,
+    z <b>twardym, pełnym cieniem</b> rzuconym w dół i w prawo. <code>comic_light</code> rysuje czarnym tuszem na stronie w kolorze kremowego papieru
+    z kobaltowym kolorem głównym; <code>comic_dark</code> rysuje kremowym tuszem na nocnej stronie z żółtym kolorem głównym. Każdy obrazek poniżej
+    to prawdziwy ekran gohud — ten sam kod, jedna linijka z presetem.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # albo &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeria gohud w comic_light — klawisze, wiersze i paski obrysowane tuszem, z twardymi cieniami na stronie w kolorze kremowego papieru" loading="lazy"><figcaption><code>comic_light</code> · galeria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeria gohud w comic_dark — kremowy tusz i żółty kolor główny na nocnej stronie" loading="lazy"><figcaption><code>comic_dark</code> · galeria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="Arkusz dolny w comic_light — panel obrysowany tuszem, wysuwający się od dolnej krawędzi, z obrysowanymi wierszami" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="Wskazówka instruktażowa w comic_light — obrysowany tuszem dymek wskazujący przycisk" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="Szuflada boczna w comic_dark — obrysowany tuszem panel z wierszami nawigacji nad przyciemnionym ekranem" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="Popover w comic_dark — obrysowany tuszem dymek zakotwiczony przy przycisku, który go otworzył" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Każdy widżet w tuszu</h3>
+  <p>Przyciski, przełączniki, karty zakładek, suwaki, karty, formularze, tabele, selektory i chipy — wszystkie noszą tusz; nie
+    stylizujesz ich po kolei. Naciśnij klawisz, a jego cień znika: powierzchnia zapada się na swoje miejsce jak pieczątka.
+    Wyłączone powierzchnie tracą cień i blakną, więc to, co da się nacisnąć, odróżnia się od tego, czego nie da się nacisnąć.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="Przyciski w comic_light — klawisze główny, drugorzędny, z obrysem, niebezpieczny, kompaktowy, goły i wyłączony, każdy w grubym czarnym obrysie z twardym cieniem" loading="lazy"><figcaption><code>GoStyle.button()</code> — każdy rodzaj</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="Przełączniki i pola wyboru w comic_light — obrysowany tor i gałka, obrysowane pola z ptaszkiem" loading="lazy"><figcaption>Przełączniki i pola wyboru</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="Przyciski opcji w comic_light — obrysowane tuszem kółka, wybrane z wypełnioną kropką" loading="lazy"><figcaption>Przyciski opcji</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="Karty zakładek w comic_light — wybrana karta to obrysowany panel, pozostałe stoją na linii tuszu" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="Kontrolka segmentowa w comic_light — obrysowane komórki, wybrana wypełniona" loading="lazy"><figcaption>Pigułki segmentowe</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="Suwak w comic_light — obrysowany rowek, cienkie wypełnienie akcentem i obrysowany uchwyt" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="Listy rozwijane w comic_light — obrysowane klawisze z szewronem" loading="lazy"><figcaption>Listy rozwijane</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="Karta w comic_light — biały panel w grubym obrysie z twardym cieniem" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="Formularz w comic_light — obrysowane pole z podpowiedzią, przełącznik i obrysowany klawisz Zapisz" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="Wiersze listy w comic_light — każdy wiersz to obrysowany pasek z ikoną, podtytułem albo etykietą niebezpieczeństwa" loading="lazy"><figcaption>Wiersze listy</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="Tabela w comic_light — nagłówek nad linią tuszu, a każdy wiersz wyników to obrysowany pasek" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="Wybór daty w comic_light — obrysowane komórki dni, wybrany dzień wypełniony" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="Wybór godziny w comic_light — obrysowane pola godzin i minut, klawisze AM i PM oraz tarcza zegara" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="Kroki w comic_light — obrysowane wiersze kroków, ukończony krok z ptaszkiem, nadchodzący wyblakły" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="Chipy filtrów i wprowadzania w comic_light — obrysowane pigułki, wybrany filtr podbarwiony i z ptaszkiem" loading="lazy"><figcaption>Chipy filtrów</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="Pasek nawigacji w comic_light — linia tuszu u góry, bieżąca karta w obrysowanej pigułce i plakietka na Alerts" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="Grupa pól w comic_light — pole i jego klawisz Wyślij zespawane w jeden obrysowany kształt" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="Przycisk dzielony w comic_light — akcja i strzałka menu jako dwie obrysowane połówki" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="Paginacja w comic_light — bieżąca strona to obrysowany klawisz z twardym cieniem" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">Nocą: <code>comic_dark</code></h3>
+  <p>Na ciemnej stronie czarny obrys by zniknął, więc <code>comic_dark</code> rysuje go na kremowo i rzuca delikatny cień
+    zabarwiony tym samym tuszem. Elementy HUD — szybkie sloty, paski, joystick i kalendarz nagród — idą za tymi samymi zasadami.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="Przyciski w comic_dark — kremowe obrysy, żółty kolor główny i delikatne twarde cienie na nocnej stronie" loading="lazy"><figcaption><code>GoStyle.button()</code> nocą</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="Szybkie sloty w comic_dark — obrysowane klocki z liczbą sztuk i czasem odnowienia, podświetlone sloty w żółtej obwódce" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="Paski HUD w comic_dark — HP, MP i XP w rowkach obrysowanych kremowym tuszem" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="Wirtualny joystick w comic_dark — kremowy pierścień i gałka rzucająca cień" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="Alerty w comic_dark — panele informacji, sukcesu, ostrzeżenia i niebezpieczeństwa w kremowym tuszu" loading="lazy"><figcaption>Alerty</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="Siatka slotów w comic_dark — ekwipunek z obrysowanych klocków" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="Kalendarz nagród w comic_dark — obrysowane komórki dni, odebrane dni z ptaszkiem, a dzisiejszy w żółtej obwódce" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="Chipy rzadkości w comic_dark — obrysowane pigułki, każda podbarwiona własnym kolorem" loading="lazy"><figcaption>Chipy</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="Suwak zakresu w comic_dark — dwa obrysowane uchwyty na obrysowanym rowku" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="Pasek wyszukiwania w comic_dark — obrysowany pasek z ikonami wyszukiwania i filtra" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="Pływające przyciski akcji w comic_dark — żółte klawisze w kremowym tuszu z twardymi cieniami" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">Jak działa wygląd komiksowy</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">Jeden StyleBox dla każdej powierzchni</h3>
+      <p>Każda powierzchnia to <code>GoStyleBoxComic</code>: wypełnienie, obrys i cień, rysowane wewnątrz własnego prostokąta kontrolki. Przy każdym rysowaniu odczytuje grubość obrysu i rozmiar cienia z <code>GoConfig</code>, więc jedno ustawienie zmienia cały ekran naraz.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Naciśnięty znaczy płaski</h3>
+      <p>Naciśnięty klawisz gubi cień i wsuwa się na swoje miejsce. Najechanie zostawia cień; fokus dodaje wewnętrzny pierścień tuszu, który nigdy nie zasłania obrysu; wyłączone powierzchnie tracą cień i blakną.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">Resztę obrysowuje skórka</h3>
+      <p><code>GoSkinComic</code> obrysowuje tuszem to, co rysuje kod: szybkie sloty, chipy, plakietki, awatary, powiadomienia, pasek nawigacji, FAB, komórki dat i joystick, którego gałka rzuca cień.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">Okna dostają pole tytułu</h3>
+      <p>Tytuł okna leży na żółtym polu, jak ramka narratora w komiksie, obok okrągłego obrysowanego przycisku zamknięcia. Okna dialogowe, arkusze, szuflady i popovery to nieprzezroczyste panele w tuszu.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Czytelny w dzień i w nocy</h3>
+      <p>Obie palety przechodzą te same testy kontrastu WCAG co każdy inny preset, łącznie z klawiszami naciśniętymi i wyłączonymi. Gdy kolor pola tytułu byłby zbyt bliski kolorowi strony, jego obrys przechodzi na kolor strony.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">Bez zmian w układzie</h3>
+      <p>Obrys i cień mieszczą się wewnątrz każdej kontrolki, a wypełnienie wewnętrzne zostaje takie, jakie dał motyw, więc ekran ułożony w innym wyglądzie zachowuje swój układ — i czcionkę twojego projektu.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Trzy ustawienia i jedno wywołanie</h3>
+  <p>Trzy ustawienia <code>GoConfig</code> zmieniają naraz każdą komiksową powierzchnię. Nic nie jest przebudowywane — ekran przerysowuje się, gdy je ustawiasz.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # obrys (dp) — domyślnie 3
+GoUi.config.comic_shadow_size = 6.0    # cień (dp) — domyślnie 4
+GoUi.config.comic_shadow = false       # nigdzie żadnych cieni</code></pre>
+  <p>Pojedynczy widżet może pójść własną drogą, niezależnie od ustawień. Przekaż <code>true</code> jako ostatni argument, aby objąć wszystko, co jest w nim.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # ten przycisk leży płasko
+GoStyle.comic_shadow(card, true, true)       # ta karta i wszystko w niej zachowują cień
+GoStyle.comic_border(title, 5.0)             # grubszy obrys na tym jednym</code></pre>
+  <div class="note">
+    <b>Zrób własny komiks.</b> <code>tools/new_theme.py inked --from comic_light</code> kopiuje paletę; zmień
+    kolory papieru, tuszu i główny, po czym uruchom <code>tools/make_theme.py inked</code>. Tusz, cień i skórka przychodzą razem z nią.
+  </div>
+  <p><a href="theming-presets.html#comic">Comic szczegółowo →</a> · <a href="widgets-popups.html#popup-looks">To samo okno we wszystkich dwunastu wyglądach →</a></p>
 </section>
 
 <section id="showcase">

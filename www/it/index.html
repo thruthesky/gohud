@@ -95,6 +95,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Installa</a>
+      <a class="btn" href="#comic">Guarda l'aspetto fumetto</a>
       <a class="btn" href="#presets">Guarda i preset</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -143,8 +144,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # oppure &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # oppure &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 nel dettaglio →</a> · <a href="theming-presets.html#kids">Bambini nel dettaglio →</a> ·
-    <a href="theming-presets.html#comic">Fumetto nel dettaglio →</a> ·
+    <a href="#comic">Il fumetto, widget per widget ↓</a> ·
     <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e dodici gli aspetti →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Fumetto: inchiostro deciso e un'ombra netta</h2>
+  <p class="sub">
+    L'aspetto più recente disegna ogni superficie come una vignetta a fumetti — il suo colore dentro un <b>contorno d'inchiostro spesso</b>,
+    con un'<b>ombra netta e piena</b> proiettata in basso a destra. <code>comic_light</code> inchiostra in nero su una pagina color crema carta
+    con un primario cobalto; <code>comic_dark</code> inchiostra in crema su una pagina notturna con un primario giallo. Ogni immagine qui sotto è
+    una vera schermata gohud — lo stesso codice, una riga di preset.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # oppure &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="La galleria gohud in comic_light — tasti, righe e barre inchiostrati con ombre nette su una pagina color crema carta" loading="lazy"><figcaption><code>comic_light</code> · la galleria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="La galleria gohud in comic_dark — inchiostro crema e un primario giallo su una pagina notturna" loading="lazy"><figcaption><code>comic_dark</code> · la galleria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="Un foglio inferiore in comic_light — un pannello inchiostrato che sale dal bordo inferiore, con righe inchiostrate" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="Un coach mark in comic_light — una nuvoletta inchiostrata che indica un pulsante" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="Un cassetto laterale in comic_dark — un pannello inchiostrato di righe di navigazione sopra lo schermo oscurato" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="Un popover in comic_dark — una nuvoletta inchiostrata ancorata al pulsante che l'ha aperta" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Ogni widget, inchiostrato</h3>
+  <p>Pulsanti, interruttori, tab, slider, schede, moduli, tabelle, selettori e chip indossano tutti l'inchiostro — non devi
+    stilizzarli uno per uno. Premi un tasto e la sua ombra sparisce: la superficie affonda al suo posto, come un timbro.
+    Le superfici disattivate perdono l'ombra e sbiadiscono, così ciò che si può premere si distingue da ciò che non si può.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="Pulsanti in comic_light — tasti primario, secondario, con contorno, di pericolo, compatto, spoglio e disattivato, ognuno in un contorno nero spesso con un'ombra netta" loading="lazy"><figcaption><code>GoStyle.button()</code> — ogni tipo</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="Interruttori e caselle di controllo in comic_light — una guida e una manopola inchiostrate, caselle inchiostrate con un segno di spunta" loading="lazy"><figcaption>Interruttori e caselle di controllo</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="Pulsanti di opzione in comic_light — anelli inchiostrati, quello scelto con un punto pieno" loading="lazy"><figcaption>Pulsanti di opzione</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="Tab in comic_light — la tab scelta è un pannello inchiostrato, le altre poggiano su una sottolineatura d'inchiostro" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="Un controllo segmentato in comic_light — celle inchiostrate, quella scelta piena" loading="lazy"><figcaption>Pillole segmentate</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="Uno slider in comic_light — una scanalatura inchiostrata, un sottile riempimento d'accento e una maniglia inchiostrata" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="Menu a tendina in comic_light — tasti inchiostrati con una freccetta" loading="lazy"><figcaption>Menu a tendina</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="Una scheda in comic_light — un pannello bianco in un contorno spesso con un'ombra netta" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="Un modulo in comic_light — un campo inchiostrato con un suggerimento, un interruttore e un tasto Salva inchiostrato" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="Righe di elenco in comic_light — ogni riga è una striscia inchiostrata con un'icona, un sottotitolo o un'etichetta di pericolo" loading="lazy"><figcaption>Righe di elenco</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="Una tabella in comic_light — un'intestazione sopra un filetto d'inchiostro, e ogni riga di punteggio è una striscia inchiostrata" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="Un selettore di data in comic_light — celle dei giorni inchiostrate, il giorno scelto pieno" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="Un selettore d'ora in comic_light — caselle di ore e minuti inchiostrate, tasti AM e PM e il quadrante di un orologio" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="Uno stepper in comic_light — righe dei passaggi inchiostrate, il passaggio completato spuntato e quello successivo sbiadito" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="Chip di filtro e di input in comic_light — pillole inchiostrate, il filtro scelto colorato e con una spunta" loading="lazy"><figcaption>Chip di filtro</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="Una barra di navigazione in comic_light — un filetto d'inchiostro in alto, la tab corrente in una pillola inchiostrata e un badge su Avvisi" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="Un gruppo di input in comic_light — un campo e il suo tasto Invia saldati in un'unica forma inchiostrata" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="Un pulsante diviso in comic_light — un'azione e una freccia di menu come due metà inchiostrate" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="La paginazione in comic_light — la pagina corrente è un tasto inchiostrato con un'ombra netta" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">Di notte: <code>comic_dark</code></h3>
+  <p>Su una pagina scura un contorno nero sparirebbe, così <code>comic_dark</code> lo disegna in crema e proietta un'ombra tenue
+    tinta dello stesso inchiostro. I pezzi dell'HUD — slot rapidi, barre, il joystick e il calendario delle ricompense — seguono le stesse regole.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="Pulsanti in comic_dark — contorni crema, un primario giallo e tenui ombre nette su una pagina notturna" loading="lazy"><figcaption><code>GoStyle.button()</code> di notte</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="Slot rapidi in comic_dark — blocchi inchiostrati con un contatore di pila e una ricarica, gli slot accesi bordati di giallo" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="Barre dell'HUD in comic_dark — HP, MP e XP in scanalature inchiostrate di crema" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="Un joystick virtuale in comic_dark — un anello crema e una manopola che proietta un'ombra" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="Avvisi in comic_dark — pannelli di informazione, successo, attenzione e pericolo in inchiostro crema" loading="lazy"><figcaption>Avvisi</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="Una griglia di slot in comic_dark — un inventario di blocchi inchiostrati" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="Un calendario delle ricompense in comic_dark — celle dei giorni inchiostrate, i giorni riscossi spuntati e oggi bordato di giallo" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="Chip di rarità in comic_dark — pillole inchiostrate, ognuna tinta del proprio colore" loading="lazy"><figcaption>Chip</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="Uno slider di intervallo in comic_dark — due maniglie inchiostrate su una scanalatura inchiostrata" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="Una barra di ricerca in comic_dark — una barra inchiostrata con le icone di ricerca e di filtro" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="Pulsanti d'azione flottanti in comic_dark — tasti gialli in inchiostro crema con ombre nette" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">Come funziona l'aspetto fumetto</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">Uno StyleBox per ogni superficie</h3>
+      <p>Ogni superficie è un <code>GoStyleBoxComic</code>: un riempimento, un contorno e un'ombra, disegnati dentro il rettangolo del controllo stesso. Legge le dimensioni del contorno e dell'ombra da <code>GoConfig</code> ogni volta che disegna, così una sola impostazione cambia tutta la schermata in un colpo.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Premuto vuol dire piatto</h3>
+      <p>Un tasto premuto perde l'ombra e scende al suo posto. L'hover mantiene l'ombra; il focus aggiunge un anello d'inchiostro interno che non copre mai il contorno; le superfici disattivate perdono l'ombra e sbiadiscono.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">La skin inchiostra il resto</h3>
+      <p><code>GoSkinComic</code> inchiostra ciò che disegna il codice: slot rapidi, chip, badge, avatar, notifiche, la barra di navigazione, il FAB, le celle delle date e il joystick, la cui manopola proietta un'ombra.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">Le finestre hanno una didascalia</h3>
+      <p>Il titolo di una finestra sta su una didascalia gialla, come il riquadro del narratore in un fumetto, accanto a un pulsante di chiusura tondo e inchiostrato. Dialoghi, fogli, cassetti e popover sono pannelli inchiostrati opachi.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Leggibile di giorno e di notte</h3>
+      <p>Entrambe le palette superano gli stessi controlli di contrasto WCAG di ogni altro preset, compresi i tasti premuti e disattivati. Quando il colore di una didascalia sarebbe troppo vicino a quello della pagina, il suo contorno ripiega sul colore della pagina.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">Nessun cambio di layout</h3>
+      <p>Il contorno e l'ombra stanno dentro ogni controllo e il padding resta quello dato dal tema, così una schermata impaginata con un altro aspetto conserva il suo layout — e il font del tuo progetto.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Tre impostazioni e una chiamata</h3>
+  <p>Tre impostazioni di <code>GoConfig</code> cambiano tutte le superfici a fumetto insieme. Non si ricostruisce nulla — la schermata si ridisegna appena le imposti.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # il contorno (dp) — 3 di default
+GoUi.config.comic_shadow_size = 6.0    # l'ombra (dp) — 4 di default
+GoUi.config.comic_shadow = false       # nessuna ombra da nessuna parte</code></pre>
+  <p>Un singolo widget può fare di testa sua, qualunque cosa dicano le impostazioni. Passa <code>true</code> come ultimo argomento per includere tutto ciò che contiene.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # questo pulsante resta piatto
+GoStyle.comic_shadow(card, true, true)       # questa scheda e tutto ciò che contiene mantengono l'ombra
+GoStyle.comic_border(title, 5.0)             # un contorno più spesso su questo</code></pre>
+  <div class="note">
+    <b>Crea un fumetto tutto tuo.</b> <code>tools/new_theme.py inked --from comic_light</code> copia la palette; cambia i colori
+    della carta, dell'inchiostro e del primario ed esegui <code>tools/make_theme.py inked</code>. L'inchiostro, l'ombra e la skin arrivano da sé.
+  </div>
+  <p><a href="theming-presets.html#comic">Fumetto nel dettaglio →</a> · <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e dodici gli aspetti →</a></p>
 </section>
 
 <section id="showcase">

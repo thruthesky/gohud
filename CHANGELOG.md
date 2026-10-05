@@ -52,6 +52,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   never stop the game, tours and the console, layers, Back and input, every look, the `GoConfig` fields, recipes and
   pitfalls. The overview and the presets page announce the Material 3 and kids looks with their own sections. All 17
   languages.
+- **The front page shows the comic look, widget by widget.** A new *Comic* section on `index.html` (linked from the hero)
+  puts 30 widget pictures in `comic_light` and `comic_dark` — keys of every kind, toggles, radios, tabs, sliders, selects,
+  forms, tables, pickers, chips, quick slots, HUD bars, the joystick — and four popups next to the two galleries, then
+  explains how the look is drawn (one `GoStyleBoxComic` per face, pressed means flat, what `GoSkinComic` inks, window
+  captions, contrast, no layout change), the three `GoConfig` settings, the per-widget calls and how to make a comic
+  palette of your own. Pictures in `www/img/comic/`. All 17 languages.
 - **The kids looks are jelly candies — `GoStyleBoxJelly`.** Every key, list row, folding title, text field, bar, slider
   and panel of `kids_light` / `kids_dark` is now drawn by a new StyleBox (`widgets/go_stylebox_jelly.gd`): the chunky
   outline and the lip under it as before, plus a body light on top and deeper below and a white shine at the top left.

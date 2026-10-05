@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">インストール</a>
+      <a class="btn" href="#comic">コミックの見た目を見る</a>
       <a class="btn" href="#presets">プリセットを見る</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -142,8 +143,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # または &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # または &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 の詳細 →</a> · <a href="theming-presets.html#kids">キッズの詳細 →</a> ·
-    <a href="theming-presets.html#comic">コミックの詳細 →</a> ·
+    <a href="#comic">コミックをウィジェットごとに ↓</a> ·
     <a href="widgets-popups.html#popup-looks">同じポップアップを12の見た目で →</a></p>
+</section>
+
+<section id="comic">
+  <h2>コミック：太いインクとくっきりした影</h2>
+  <p class="sub">
+    いちばん新しい見た目は、どの面もマンガのコマのように描く — <b>太いインクの輪郭</b>の中に表面の色を塗り、
+    右下へ<b>くっきりとしたベタの影</b>を落とす。<code>comic_light</code> は紙のようなクリーム色のページに黒のインクで描き、
+    プライマリはコバルト。<code>comic_dark</code> は夜のページにクリーム色のインクで描き、プライマリは黄色だ。下の画像はすべて
+    本物の gohud の画面だ — 同じコードで、違うのはプリセットの1行だけ。
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # または &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light の gohud ギャラリー — 紙のようなクリーム色のページに、くっきりした影を落とすインクのキー、行、バー" loading="lazy"><figcaption><code>comic_light</code> · ギャラリー</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark の gohud ギャラリー — 夜のページにクリーム色のインクと黄色のプライマリ" loading="lazy"><figcaption><code>comic_dark</code> · ギャラリー</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="comic_light のボトムシート — 下端からせり上がるインクのパネルと、インクで描いた行" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="comic_light のコーチマーク — ボタンを指すインクの吹き出し" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="comic_dark のサイドドロワー — 暗くした画面の上に、ナビゲーションの行を並べたインクのパネル" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="comic_dark のポップオーバー — 開いたボタンに寄り添うインクの吹き出し" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">どのウィジェットもインクで</h3>
+  <p>ボタン、トグル、タブ、スライダー、カード、フォーム、テーブル、ピッカー、チップがみなインクをまとう — 1つずつ
+    スタイルを付ける必要はない。キーを押すと影が消え、面がスタンプのようにその位置へ沈む。
+    無効な面は影を失って薄くなるので、押せるものと押せないものがひと目で分かる。</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="comic_light のボタン — primary、secondary、アウトライン、危険、コンパクト、枠なし、無効のキーが、それぞれ太い黒の輪郭とくっきりした影をまとう" loading="lazy"><figcaption><code>GoStyle.button()</code> — すべての種類</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="comic_light のトグルとチェックボックス — インクのトラックとつまみ、チェックの入ったインクの箱" loading="lazy"><figcaption>トグルとチェックボックス</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="comic_light のラジオボタン — インクの輪、選んだものには塗りつぶしの点" loading="lazy"><figcaption>ラジオボタン</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="comic_light のタブ — 選んだタブはインクのパネル、ほかはインクの下線の上に並ぶ" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="comic_light のセグメントコントロール — インクのセル、選んだセルは塗りつぶし" loading="lazy"><figcaption>セグメントのピル</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="comic_light のスライダー — インクの溝、細いアクセントの塗り、インクのつまみ" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="comic_light のドロップダウン選択 — シェブロン付きのインクのキー" loading="lazy"><figcaption>セレクト</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="comic_light のカード — 太い輪郭とくっきりした影をまとう白いパネル" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="comic_light のフォーム — ヒント付きのインクの入力欄、トグル、インクの保存キー" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="comic_light のリストの行 — どの行も、アイコン、サブタイトル、危険ラベルの付いたインクの帯" loading="lazy"><figcaption>リストの行</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="comic_light のテーブル — インクの罫線の上に見出し、スコアの行はどれもインクの帯" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="comic_light の日付選択 — インクの日付セル、選んだ日は塗りつぶし" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="comic_light の時刻選択 — インクの時と分の箱、AM・PM のキー、時計の文字盤" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="comic_light のステッパー — インクのステップ行、済んだステップにはチェック、これからのステップは薄く" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="comic_light のフィルターチップと入力チップ — インクのピル、選んだフィルターは色付きでチェック入り" loading="lazy"><figcaption>フィルターチップ</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="comic_light のナビゲーションバー — 上端にインクの罫線、現在のタブはインクのピル、Alerts にバッジ" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="comic_light の入力グループ — 入力欄と送信キーが1つのインクの形につながる" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="comic_light のスプリットボタン — アクションとメニューの矢印が、インクの2つの半分に" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="comic_light のページネーション — 現在のページは、くっきりした影を落とすインクのキー" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">夜は <code>comic_dark</code></h3>
+  <p>暗いページでは黒い輪郭が消えてしまうので、<code>comic_dark</code> は輪郭をクリーム色で描き、同じインクの色をおびた
+    淡い影を落とす。HUD の部品 — クイックスロット、バー、スティック、報酬カレンダー — も同じルールに従う。</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="comic_dark のボタン — 夜のページにクリーム色の輪郭、黄色の primary、淡くくっきりした影" loading="lazy"><figcaption>夜の <code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="comic_dark のクイックスロット — スタック数とクールダウンを表示したインクのブロック、光っているスロットは黄色の縁" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="comic_dark の HUD バー — クリーム色のインクの溝に HP、MP、XP" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="comic_dark のバーチャルスティック — クリーム色の輪と、影を落とすノブ" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="comic_dark のアラート — クリーム色のインクで描いた情報、成功、警告、危険のパネル" loading="lazy"><figcaption>アラート</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="comic_dark のスロットグリッド — インクのブロックが並ぶインベントリ" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="comic_dark の報酬カレンダー — インクの日付セル、受け取った日はチェック、今日は黄色の縁" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="comic_dark のレアリティチップ — それぞれ自分の色をおびたインクのピル" loading="lazy"><figcaption>チップ</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="comic_dark の範囲スライダー — インクの溝にインクのつまみが2つ" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="comic_dark の検索バー — 検索とフィルターのアイコンが付いたインクのバー" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="comic_dark のフローティングアクションボタン — クリーム色のインクとくっきりした影をまとう黄色のキー" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">コミックの見た目のしくみ</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">すべての面に1つの StyleBox</h3>
+      <p>どの面も <code>GoStyleBoxComic</code> だ：塗り、輪郭、影を、コントロール自身の矩形の内側に描く。描くたびに <code>GoConfig</code> から輪郭と影の大きさを読むので、設定1つで画面全体が一度に変わる。</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">押すと平らになる</h3>
+      <p>押したキーは影を落とすのをやめ、その位置へ移る。ホバーでは影が残り、フォーカスでは輪郭を決して覆わない内側のインクの輪が加わり、無効な面は影を失って薄くなる。</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">残りはスキンが描く</h3>
+      <p><code>GoSkinComic</code> は、コードが描くものにインクを入れる：クイックスロット、チップ、バッジ、アバター、通知、ナビゲーションバー、FAB、日付のセル、そしてノブが影を落とすスティック。</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">ウィンドウにはキャプション</h3>
+      <p>ウィンドウのタイトルは、マンガのナレーションの枠のような黄色のキャプションに載り、隣にはインクで描いた丸い閉じるボタンが付く。ダイアログ、シート、ドロワー、ポップオーバーは不透明なインクのパネルだ。</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">昼も夜も読みやすい</h3>
+      <p>どちらのパレットも、ほかのすべてのプリセットと同じ WCAG のコントラスト検査に通る。押したキーや無効なキーも含めてだ。キャプションの色がページに近すぎるときは、その輪郭がページの色に切り替わる。</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">レイアウトは変わらない</h3>
+      <p>輪郭と影は各コントロールの内側に収まり、内側余白はテーマが与えたままなので、別の見た目でレイアウトした画面はそのままのレイアウトを保つ — プロジェクトのフォントもだ。</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">設定3つと呼び出し1つ</h3>
+  <p><code>GoConfig</code> の3つの設定が、すべてのコミックの面を一度に変える。作り直すものは何もない — 値を入れたそばから画面が描き直される。</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # 輪郭 (dp) — 既定は 3
+GoUi.config.comic_shadow_size = 6.0    # 影 (dp) — 既定は 4
+GoUi.config.comic_shadow = false       # どこにも影を出さない</code></pre>
+  <p>ウィジェット1つだけなら、設定に関係なく独自の道を行ける。最後の引数に <code>true</code> を渡すと、その中のすべても対象になる。</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # このボタンは平らに
+GoStyle.comic_shadow(card, true, true)       # このカードとその中身すべては影を保つ
+GoStyle.comic_border(title, 5.0)             # これだけ輪郭を太く</code></pre>
+  <div class="note">
+    <b>自分だけのコミックを作る。</b> <code>tools/new_theme.py inked --from comic_light</code> がパレットをコピーする。紙、
+    インク、プライマリの色を変えて <code>tools/make_theme.py inked</code> を実行すればいい。インクも影もスキンも一緒についてくる。
+  </div>
+  <p><a href="theming-presets.html#comic">コミックの詳細 →</a> · <a href="widgets-popups.html#popup-looks">同じポップアップを12の見た目で →</a></p>
 </section>
 
 <section id="showcase">

@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">ติดตั้ง</a>
+      <a class="btn" href="#comic">ดูลุคการ์ตูน</a>
       <a class="btn" href="#presets">ดูพรีเซ็ตทั้งหมด</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -141,8 +142,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # หรือ &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # หรือ &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 โดยละเอียด →</a> · <a href="theming-presets.html#kids">ลุคสำหรับเด็กโดยละเอียด →</a> ·
-    <a href="theming-presets.html#comic">ลุคการ์ตูนโดยละเอียด →</a> ·
+    <a href="#comic">การ์ตูน ทีละวิดเจ็ต ↓</a> ·
     <a href="widgets-popups.html#popup-looks">ป๊อปอัปเดียวกันในทั้งสิบสองลุค →</a></p>
+</section>
+
+<section id="comic">
+  <h2>การ์ตูน: หมึกหนาเข้มและเงาคม</h2>
+  <p class="sub">
+    ลุคใหม่ล่าสุดวาดทุกหน้าให้เหมือนช่องในหนังสือการ์ตูน — สีพื้นผิวอยู่ภายใน<b>เส้นขอบหมึกหนา</b>
+    พร้อม<b>เงาคมทึบ</b>ที่ทอดลงด้านล่างขวา <code>comic_light</code> ตัดเส้นหมึกสีดำบนหน้าสีครีมแบบกระดาษ
+    พร้อมสีหลักสีน้ำเงินโคบอลต์ ส่วน <code>comic_dark</code> ตัดเส้นสีครีมบนหน้ายามค่ำคืนพร้อมสีหลักสีเหลือง ทุกภาพด้านล่าง
+    คือหน้าจอ gohud จริง — โค้ดเดียวกัน ต่างกันแค่บรรทัดพรีเซ็ตบรรทัดเดียว
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # หรือ &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="แกลเลอรีของ gohud ใน comic_light — ปุ่ม แถว และแถบที่ตัดเส้นหมึกพร้อมเงาคมบนหน้าสีครีมแบบกระดาษ" loading="lazy"><figcaption><code>comic_light</code> · แกลเลอรี</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="แกลเลอรีของ gohud ใน comic_dark — หมึกสีครีมและสีหลักสีเหลืองบนหน้ายามค่ำคืน" loading="lazy"><figcaption><code>comic_dark</code> · แกลเลอรี</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="บอตทอมชีตใน comic_light — พาเนลตัดเส้นหมึกที่เลื่อนขึ้นจากขอบล่างพร้อมแถวที่ตัดเส้นหมึก" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="โค้ชมาร์กใน comic_light — กล่องคำอธิบายตัดเส้นหมึกที่ชี้ไปยังปุ่ม" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="ลิ้นชักด้านข้างใน comic_dark — พาเนลตัดเส้นหมึกที่มีแถวนำทางวางเหนือหน้าจอที่หรี่ลง" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="ป๊อปโอเวอร์ใน comic_dark — กล่องคำพูดตัดเส้นหมึกที่ยึดอยู่กับปุ่มที่เปิดมันขึ้นมา" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">ทุกวิดเจ็ตตัดเส้นหมึก</h3>
+  <p>ปุ่ม สวิตช์ แท็บ สไลเดอร์ การ์ด ฟอร์ม ตาราง ตัวเลือก และชิป ล้วนสวมเส้นหมึกทั้งหมด — คุณไม่ต้อง
+    จัดสไตล์ทีละตัว กดปุ่มแล้วเงาของมันจะหายไป: หน้าปุ่มยุบลงไปอยู่ที่ตำแหน่งของมัน เหมือนตราประทับ
+    หน้าที่ปิดใช้งานจะไม่มีเงาและจางลง สิ่งที่กดได้จึงโดดเด่นออกมาจากสิ่งที่กดไม่ได้</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="ปุ่มใน comic_light — ปุ่มหลัก ปุ่มรอง ปุ่มแบบมีขอบ ปุ่มอันตราย ปุ่มกะทัดรัด ปุ่มเปล่า และปุ่มที่ปิดใช้งาน แต่ละปุ่มมีเส้นขอบสีดำหนาและเงาคม" loading="lazy"><figcaption><code>GoStyle.button()</code> — ครบทุกชนิด</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="สวิตช์และช่องทำเครื่องหมายใน comic_light — รางและปุ่มจับที่ตัดเส้นหมึก และกล่องตัดเส้นหมึกพร้อมเครื่องหมายถูก" loading="lazy"><figcaption>สวิตช์และช่องทำเครื่องหมาย</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="ปุ่มตัวเลือกใน comic_light — วงแหวนตัดเส้นหมึก ตัวที่เลือกมีจุดทึบ" loading="lazy"><figcaption>ปุ่มตัวเลือก (radio)</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="แท็บใน comic_light — แท็บที่เลือกเป็นพาเนลตัดเส้นหมึก แท็บอื่นวางอยู่บนเส้นใต้สีหมึก" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="ปุ่มแบ่งส่วนใน comic_light — ช่องตัดเส้นหมึก ช่องที่เลือกเติมสี" loading="lazy"><figcaption>ปุ่มแคปซูลแบ่งส่วน</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="สไลเดอร์ใน comic_light — รางตัดเส้นหมึก แถบเติมสีเน้นบาง ๆ และปุ่มจับตัดเส้นหมึก" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="ดรอปดาวน์ใน comic_light — ปุ่มตัดเส้นหมึกพร้อมลูกศรเชฟรอน" loading="lazy"><figcaption>ดรอปดาวน์</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="การ์ดใน comic_light — พาเนลสีขาวที่มีเส้นขอบหนาและเงาคม" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="ฟอร์มใน comic_light — ช่องกรอกตัดเส้นหมึกพร้อมคำใบ้ สวิตช์ และปุ่มบันทึกตัดเส้นหมึก" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="แถวรายการใน comic_light — แต่ละแถวเป็นแถบตัดเส้นหมึกพร้อมไอคอน คำบรรยายรอง หรือป้ายอันตราย" loading="lazy"><figcaption>แถวรายการ</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="ตารางใน comic_light — หัวตารางอยู่เหนือเส้นหมึก และทุกแถวคะแนนเป็นแถบตัดเส้นหมึก" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="ตัวเลือกวันที่ใน comic_light — ช่องวันตัดเส้นหมึก วันที่เลือกเติมสี" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="ตัวเลือกเวลาใน comic_light — กล่องชั่วโมงและนาทีตัดเส้นหมึก ปุ่ม AM และ PM และหน้าปัดนาฬิกา" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="สเต็ปเปอร์ใน comic_light — แถวขั้นตอนตัดเส้นหมึก ขั้นที่เสร็จแล้วมีเครื่องหมายถูกและขั้นถัดไปจางลง" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="ชิปตัวกรองและชิปอินพุตใน comic_light — แคปซูลตัดเส้นหมึก ตัวกรองที่เลือกแต้มสีพร้อมเครื่องหมายถูก" loading="lazy"><figcaption>ชิปตัวกรอง</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="แถบนำทางใน comic_light — เส้นหมึกด้านบน แท็บปัจจุบันอยู่ในแคปซูลตัดเส้นหมึก และมีป้ายบน Alerts" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="กลุ่มอินพุตใน comic_light — ช่องกรอกและปุ่ม Send เชื่อมเป็นรูปทรงตัดเส้นหมึกชิ้นเดียว" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="ปุ่มแยกใน comic_light — คำสั่งและลูกศรเมนูเป็นสองซีกตัดเส้นหมึก" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="การแบ่งหน้าใน comic_light — หน้าปัจจุบันเป็นปุ่มตัดเส้นหมึกพร้อมเงาคม" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">ยามค่ำคืน: <code>comic_dark</code></h3>
+  <p>บนหน้าสีมืด เส้นขอบสีดำจะหายไป <code>comic_dark</code> จึงวาดเส้นขอบเป็นสีครีมและทอดเงาจาง ๆ
+    ที่แต้มสีหมึกเดียวกัน ชิ้นส่วน HUD — ควิกสล็อต แถบ จอยสติ๊ก และปฏิทินรางวัล — ก็ทำตามกฎเดียวกัน</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="ปุ่มใน comic_dark — เส้นขอบสีครีม สีหลักสีเหลือง และเงาคมจาง ๆ บนหน้ายามค่ำคืน" loading="lazy"><figcaption><code>GoStyle.button()</code> ยามค่ำคืน</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="ควิกสล็อตใน comic_dark — บล็อกตัดเส้นหมึกพร้อมจำนวนซ้อนและคูลดาวน์ สล็อตที่สว่างมีขอบสีเหลือง" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="แถบ HUD ใน comic_dark — HP MP และ XP ในรางที่ตัดเส้นหมึกสีครีม" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="จอยสติ๊กเสมือนใน comic_dark — วงแหวนสีครีมและปุ่มจับที่ทอดเงา" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="การแจ้งเตือนใน comic_dark — พาเนลข้อมูล สำเร็จ คำเตือน และอันตราย ที่ตัดเส้นหมึกสีครีม" loading="lazy"><figcaption>การแจ้งเตือน</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="ตารางสล็อตใน comic_dark — อินเวนทอรีของบล็อกตัดเส้นหมึก" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="ปฏิทินรางวัลใน comic_dark — ช่องวันตัดเส้นหมึก วันที่รับแล้วมีเครื่องหมายถูกและวันนี้มีขอบสีเหลือง" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="ชิประดับความหายากใน comic_dark — แคปซูลตัดเส้นหมึก แต่ละอันแต้มสีของตัวเอง" loading="lazy"><figcaption>ชิป</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="สไลเดอร์ช่วงใน comic_dark — ปุ่มจับตัดเส้นหมึกสองอันบนรางตัดเส้นหมึก" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="แถบค้นหาใน comic_dark — แถบตัดเส้นหมึกพร้อมไอคอนค้นหาและตัวกรอง" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="ปุ่มลอยใน comic_dark — ปุ่มสีเหลืองตัดเส้นหมึกสีครีมพร้อมเงาคม" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">ลุคการ์ตูนทำงานอย่างไร</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">StyleBox เดียวสำหรับทุกหน้า</h3>
+      <p>ทุกหน้าคือ <code>GoStyleBoxComic</code>: สีเติม เส้นขอบ และเงา ที่วาดอยู่ภายในสี่เหลี่ยมของคอนโทรลเอง มันอ่านขนาดเส้นขอบและเงาจาก <code>GoConfig</code> ทุกครั้งที่วาด การตั้งค่าเดียวจึงเปลี่ยนทั้งหน้าจอได้ในคราวเดียว</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">กดแล้วแบนราบ</h3>
+      <p>ปุ่มที่ถูกกดจะไม่มีเงาและเลื่อนลงไปอยู่ที่ตำแหน่งของมัน ตอนโฮเวอร์เงายังอยู่ ตอนโฟกัสจะมีวงแหวนหมึกด้านในที่ไม่บังเส้นขอบเลย และหน้าที่ปิดใช้งานจะไม่มีเงาและจางลง</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">สกินตัดเส้นหมึกส่วนที่เหลือ</h3>
+      <p><code>GoSkinComic</code> ตัดเส้นหมึกให้สิ่งที่โค้ดวาด: ควิกสล็อต ชิป ป้าย อวาตาร์ ข้อความแจ้งเตือน แถบนำทาง FAB ช่องวันที่ และจอยสติ๊กที่ปุ่มจับทอดเงา</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">หน้าต่างได้ป้ายชื่อเรื่อง</h3>
+      <p>ชื่อหน้าต่างอยู่บนป้ายสีเหลือง เหมือนกล่องบรรยายในหนังสือการ์ตูน ข้าง ๆ ปุ่มปิดทรงกลมตัดเส้นหมึก ไดอะล็อก ชีต ลิ้นชัก และป๊อปโอเวอร์ เป็นพาเนลทึบตัดเส้นหมึก</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">อ่านง่ายทั้งกลางวันและกลางคืน</h3>
+      <p>จานสีทั้งสองผ่านการตรวจคอนทราสต์ตาม WCAG ชุดเดียวกับพรีเซ็ตอื่นทุกตัว รวมถึงปุ่มที่ถูกกดและปุ่มที่ปิดใช้งาน เมื่อสีของป้ายชื่อเรื่องใกล้เคียงกับสีหน้ามากเกินไป เส้นขอบของมันจะกลับไปใช้สีหน้าแทน</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">เลย์เอาต์ไม่เปลี่ยน</h3>
+      <p>เส้นขอบและเงาอยู่ภายในคอนโทรลแต่ละตัว และระยะขอบด้านในยังคงตามที่ธีมกำหนด หน้าจอที่จัดวางไว้ในลุคอื่นจึงคงเลย์เอาต์เดิม — และฟอนต์ของโปรเจกต์คุณ</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">สามค่าตั้งค่าและการเรียกหนึ่งครั้ง</h3>
+  <p>ค่าตั้งค่า <code>GoConfig</code> สามตัวเปลี่ยนทุกหน้าการ์ตูนได้ในคราวเดียว ไม่มีอะไรต้องสร้างใหม่ — หน้าจอวาดใหม่ทันทีที่คุณตั้งค่า</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # เส้นขอบ (dp) — ค่าเริ่มต้น 3
+GoUi.config.comic_shadow_size = 6.0    # เงา (dp) — ค่าเริ่มต้น 4
+GoUi.config.comic_shadow = false       # ไม่มีเงาที่ไหนเลย</code></pre>
+  <p>วิดเจ็ตตัวเดียวทำต่างออกไปได้ ไม่ว่าค่าตั้งค่าจะเป็นอย่างไร ส่ง <code>true</code> เป็นอาร์กิวเมนต์ตัวสุดท้ายเพื่อให้รวมทุกอย่างที่อยู่ข้างในด้วย</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # ปุ่มนี้แบนราบ
+GoStyle.comic_shadow(card, true, true)       # การ์ดนี้และทุกอย่างข้างในยังมีเงา
+GoStyle.comic_border(title, 5.0)             # เส้นขอบหนาขึ้นสำหรับตัวนี้</code></pre>
+  <div class="note">
+    <b>สร้างการ์ตูนของคุณเอง</b> <code>tools/new_theme.py inked --from comic_light</code> คัดลอกจานสีมาให้ เปลี่ยนสี
+    กระดาษ หมึก และสีหลัก แล้วรัน <code>tools/make_theme.py inked</code> หมึก เงา และสกินจะตามมาด้วย
+  </div>
+  <p><a href="theming-presets.html#comic">ลุคการ์ตูนโดยละเอียด →</a> · <a href="widgets-popups.html#popup-looks">ป๊อปอัปเดียวกันในทั้งสิบสองลุค →</a></p>
 </section>
 
 <section id="showcase">

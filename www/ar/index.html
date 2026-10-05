@@ -95,6 +95,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">التثبيت</a>
+      <a class="btn" href="#comic">شاهد مظهر القصص المصوّرة</a>
       <a class="btn" href="#presets">شاهد الأنماط الجاهزة</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -142,8 +143,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # أو &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # أو &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 بالتفصيل ←</a> · <a href="theming-presets.html#kids">مظهر الأطفال بالتفصيل ←</a> ·
-    <a href="theming-presets.html#comic">مظهر القصص المصوّرة بالتفصيل ←</a> ·
+    <a href="#comic">القصص المصوّرة، ودجةً ودجةً ↓</a> ·
     <a href="widgets-popups.html#popup-looks">النافذة المنبثقة نفسها بالمظاهر الاثني عشر ←</a></p>
+</section>
+
+<section id="comic">
+  <h2>القصص المصوّرة: حبر عريض وظلّ حادّ</h2>
+  <p class="sub">
+    أحدث المظاهر يرسم كل وجه كإطار في قصة مصوّرة — لون السطح داخل <b>حدّ حبري عريض</b>،
+    مع <b>ظلّ حادّ مصمت</b> يسقط نحو الأسفل واليمين. <code>comic_light</code> يحبّر بالأسود على صفحة بلون الورق الكريمي
+    بلون أساسي كوبالتي؛ و<code>comic_dark</code> يحبّر بالكريمي على صفحة ليلية بلون أساسي أصفر. كل صورة أدناه
+    شاشة gohud حقيقية — الكود نفسه، وسطر واحد للنمط الجاهز.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # أو &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="معرض gohud بنمط comic_light — مفاتيح وصفوف وأشرطة محبَّرة بظلال حادّة على صفحة بلون الورق الكريمي" loading="lazy"><figcaption><code>comic_light</code> · المعرض</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="معرض gohud بنمط comic_dark — حبر كريمي ولون أساسي أصفر على صفحة ليلية" loading="lazy"><figcaption><code>comic_dark</code> · المعرض</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="ورقة سفلية بنمط comic_light — لوحة محبَّرة ترتفع من الحافة السفلية وفيها صفوف محبَّرة" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="علامة إرشادية بنمط comic_light — فقاعة شرح محبَّرة تشير إلى زر" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="درج جانبي بنمط comic_dark — لوحة محبَّرة من صفوف التنقل فوق الشاشة المعتّمة" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="نافذة منبثقة صغيرة بنمط comic_dark — فقاعة محبَّرة مثبّتة على الزر الذي فتحها" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">كل ودجة محبَّرة</h3>
+  <p>الأزرار ومفاتيح التبديل والألسنة والمنزلقات والبطاقات والنماذج والجداول والمنتقيات والشرائح كلها ترتدي الحبر — فلا تحتاج
+    إلى تنسيقها واحدةً واحدة. اضغط مفتاحًا فيختفي ظلّه: ينغرس الوجه في مكانه كالختم.
+    والوجوه المعطّلة تفقد ظلّها وتبهت، فيبرز ما يمكن ضغطه عمّا لا يمكن.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="أزرار بنمط comic_light — مفاتيح أساسية وثانوية وبحدود وخطرة ومدمجة ومجرّدة ومعطّلة، كلٌّ منها بحدّ أسود عريض وظلّ حادّ" loading="lazy"><figcaption><code>GoStyle.button()</code> — كل الأنواع</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="مفاتيح تبديل ومربعات اختيار بنمط comic_light — مسار ومقبض محبَّران، ومربعات محبَّرة بعلامة صح" loading="lazy"><figcaption>مفاتيح التبديل ومربعات الاختيار</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="أزرار راديو بنمط comic_light — حلقات محبَّرة، والمختار منها بنقطة مملوءة" loading="lazy"><figcaption>أزرار الراديو</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="ألسنة بنمط comic_light — اللسان المختار لوحة محبَّرة، والبقية فوق خط حبري سفلي" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="عنصر تحكم مقسّم بنمط comic_light — خلايا محبَّرة، والمختارة منها مملوءة" loading="lazy"><figcaption>الأزرار المقسّمة</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="منزلق بنمط comic_light — مجرى محبَّر وتعبئة رفيعة بلون التمييز ومقبض محبَّر" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="قوائم منسدلة بنمط comic_light — مفاتيح محبَّرة بسهم صغير" loading="lazy"><figcaption>القوائم المنسدلة</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="بطاقة بنمط comic_light — لوحة بيضاء بحدّ عريض وظلّ حادّ" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="نموذج بنمط comic_light — حقل محبَّر بتلميح، ومفتاح تبديل، ومفتاح حفظ محبَّر" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="صفوف قائمة بنمط comic_light — كل صفّ شريط محبَّر بأيقونة أو عنوان فرعي أو تسمية خطر" loading="lazy"><figcaption>صفوف القوائم</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="جدول بنمط comic_light — ترويسة فوق خط حبري، وكل صفّ نتائج شريط محبَّر" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="منتقي تاريخ بنمط comic_light — خلايا أيام محبَّرة، واليوم المختار مملوء" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="منتقي وقت بنمط comic_light — مربعات محبَّرة للساعة والدقيقة، ومفتاحا AM وPM، وقرص ساعة" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="مؤشّر خطوات بنمط comic_light — صفوف خطوات محبَّرة، والخطوة المنجزة بعلامة صح والقادمة باهتة" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="شرائح تصفية وإدخال بنمط comic_light — حبّات محبَّرة، والتصفية المختارة ملوّنة بعلامة صح" loading="lazy"><figcaption>شرائح التصفية</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="شريط تنقل بنمط comic_light — خط حبري في الأعلى، واللسان الحالي في حبّة محبَّرة، وشارة على التنبيهات" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="مجموعة إدخال بنمط comic_light — حقل ومفتاح الإرسال ملحومان في شكل محبَّر واحد" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="زر مقسوم بنمط comic_light — إجراء وسهم قائمة في نصفين محبَّرين" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="ترقيم صفحات بنمط comic_light — الصفحة الحالية مفتاح محبَّر بظلّ حادّ" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">ليلًا: <code>comic_dark</code></h3>
+  <p>على صفحة داكنة يختفي الحدّ الأسود، لذلك يرسمه <code>comic_dark</code> بالكريمي ويُسقط ظلًّا خافتًا
+    ملوّنًا بالحبر نفسه. وقطع HUD — الخانات السريعة والأشرطة وعصا التوجيه وتقويم المكافآت — تتبع القواعد نفسها.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="أزرار بنمط comic_dark — حدود كريمية ولون أساسي أصفر وظلال حادّة خافتة على صفحة ليلية" loading="lazy"><figcaption><code>GoStyle.button()</code> ليلًا</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="خانات سريعة بنمط comic_dark — مكعّبات محبَّرة بعدد الرصّة وزمن التهدئة، والخانات المضيئة بإطار أصفر" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="أشرطة HUD بنمط comic_dark — HP وMP وXP في مجارٍ بحبر كريمي" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="عصا توجيه افتراضية بنمط comic_dark — حلقة كريمية ومقبض يلقي ظلًّا" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="تنبيهات بنمط comic_dark — لوحات معلومات ونجاح وتحذير وخطر بحبر كريمي" loading="lazy"><figcaption>التنبيهات</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="شبكة خانات بنمط comic_dark — مخزون من المكعّبات المحبَّرة" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="تقويم مكافآت بنمط comic_dark — خلايا أيام محبَّرة، والأيام المستلمة بعلامة صح واليوم الحالي بإطار أصفر" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="شرائح الندرة بنمط comic_dark — حبّات محبَّرة، لكلٍّ منها لونها الخاص" loading="lazy"><figcaption>الشرائح</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="منزلق نطاق بنمط comic_dark — مقبضان محبَّران على مجرى محبَّر" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="شريط بحث بنمط comic_dark — شريط محبَّر بأيقونتي البحث والتصفية" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="أزرار إجراء عائمة بنمط comic_dark — مفاتيح صفراء بحبر كريمي وظلال حادّة" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">كيف يعمل مظهر القصص المصوّرة</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">StyleBox واحد لكل وجه</h3>
+      <p>كل وجه هو <code>GoStyleBoxComic</code>: تعبئة وحدّ وظلّ، تُرسم داخل مستطيل عنصر التحكم نفسه. وهو يقرأ حجمَي الحدّ والظلّ من <code>GoConfig</code> في كل مرة يرسم فيها، فيغيّر إعداد واحد الشاشة كلها دفعة واحدة.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">المضغوط مسطّح</h3>
+      <p>المفتاح المضغوط يُسقط ظلّه وينتقل إلى مكانه. والتمرير فوقه يُبقي الظلّ؛ والتركيز يضيف حلقة حبرية داخلية لا تغطّي الحدّ أبدًا؛ والوجوه المعطّلة تفقد الظلّ وتبهت.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">المظهر يحبّر الباقي</h3>
+      <p><code>GoSkinComic</code> يحبّر ما يرسمه الكود: الخانات السريعة والشرائح والشارات والصور الرمزية والإشعارات وشريط التنقل وزر FAB وخلايا التاريخ وعصا التوجيه التي يلقي مقبضها ظلًّا.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">النوافذ تحصل على لافتة</h3>
+      <p>عنوان النافذة يقع على لافتة صفراء، كصندوق السرد في القصص المصوّرة، بجوار زر إغلاق مستدير محبَّر. ومربعات الحوار والأوراق والأدراج والنوافذ المنبثقة الصغيرة لوحات محبَّرة معتمة.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">مقروء نهارًا وليلًا</h3>
+      <p>تجتاز لوحتا الألوان فحوص التباين نفسها وفق WCAG التي يجتازها كل نمط جاهز آخر، بما في ذلك المفاتيح المضغوطة والمعطّلة. وحين يقترب لون اللافتة أكثر من اللازم من لون الصفحة، يعود حدّها إلى لون الصفحة.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">بلا تغيير في التخطيط</h3>
+      <p>الحدّ والظلّ يتّسعان داخل كل عنصر تحكم، والحشوة تبقى كما أعطتها السمة، فالشاشة المصمَّمة بمظهر آخر تحتفظ بتخطيطها — وبخط مشروعك.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">ثلاثة إعدادات واستدعاء واحد</h3>
+  <p>ثلاثة إعدادات في <code>GoConfig</code> تغيّر كل وجه قصص مصوّرة دفعة واحدة. لا يُعاد بناء شيء — تُعاد رسم الشاشة فور ضبطها.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # الحدّ (dp) — 3 افتراضيًا
+GoUi.config.comic_shadow_size = 6.0    # الظلّ (dp) — 4 افتراضيًا
+GoUi.config.comic_shadow = false       # بلا ظلال في أي مكان</code></pre>
+  <p>يمكن لودجة واحدة أن تسلك طريقها الخاص، أيًّا كانت الإعدادات. مرّر <code>true</code> وسيطًا أخيرًا ليشمل الأمر كل ما بداخلها.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # هذا الزر مسطّح
+GoStyle.comic_shadow(card, true, true)       # هذه البطاقة وكل ما فيها تحتفظ بظلّها
+GoStyle.comic_border(title, 5.0)             # حدّ أعرض لهذا وحده</code></pre>
+  <div class="note">
+    <b>اصنع قصصك المصوّرة الخاصة.</b> <code>tools/new_theme.py inked --from comic_light</code> ينسخ لوحة الألوان؛ غيّر ألوان
+    الورق والحبر واللون الأساسي ثم شغّل <code>tools/make_theme.py inked</code>. ويأتي الحبر والظلّ والمظهر معها.
+  </div>
+  <p><a href="theming-presets.html#comic">مظهر القصص المصوّرة بالتفصيل ←</a> · <a href="widgets-popups.html#popup-looks">النافذة المنبثقة نفسها بالمظاهر الاثني عشر ←</a></p>
 </section>
 
 <section id="showcase">

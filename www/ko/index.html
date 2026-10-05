@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">설치하기</a>
+      <a class="btn" href="#comic">코믹 생김새 보기</a>
       <a class="btn" href="#presets">프리셋 보기</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -142,8 +143,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # 또는 &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # 또는 &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 자세히 →</a> · <a href="theming-presets.html#kids">어린이 자세히 →</a> ·
-    <a href="theming-presets.html#comic">코믹 자세히 →</a> ·
+    <a href="#comic">코믹, 위젯 하나하나 ↓</a> ·
     <a href="widgets-popups.html#popup-looks">같은 팝업을 열두 가지 생김새로 →</a></p>
+</section>
+
+<section id="comic">
+  <h2>코믹: 굵은 잉크와 딱딱한 그림자</h2>
+  <p class="sub">
+    가장 새로운 생김새는 모든 면을 만화책의 칸처럼 그린다 — <b>굵은 잉크 테두리</b> 안에 표면 색을 채우고,
+    오른쪽 아래로 <b>딱딱하고 꽉 찬 그림자</b>를 드리운다. <code>comic_light</code> 는 종이 크림색 페이지 위에 검은 잉크로
+    그리고 주 색은 코발트색이다. <code>comic_dark</code> 는 밤 페이지 위에 크림색 잉크로 그리고 주 색은 노란색이다. 아래 그림은 모두
+    실제 gohud 화면이다 — 같은 코드에 프리셋 한 줄만 다르다.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # 또는 &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 의 gohud 갤러리 — 종이 크림색 페이지 위의, 딱딱한 그림자를 단 잉크 키·줄·막대" loading="lazy"><figcaption><code>comic_light</code> · 갤러리</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 의 gohud 갤러리 — 밤 페이지 위의 크림색 잉크와 노란 주 색" loading="lazy"><figcaption><code>comic_dark</code> · 갤러리</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="comic_light 의 바텀 시트 — 아래 가장자리에서 올라오는 잉크 패널과 잉크를 입은 줄들" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="comic_light 의 코치마크 — 버튼을 가리키는 잉크 말풍선" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="comic_dark 의 사이드 서랍 — 어둡게 가린 화면 위에 내비게이션 줄을 담은 잉크 패널" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="comic_dark 의 팝오버 — 자신을 연 버튼에 붙어 있는 잉크 말풍선" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">모든 위젯이 잉크를 입는다</h3>
+  <p>버튼, 토글, 탭, 슬라이더, 카드, 폼, 표, 선택기, 칩이 모두 잉크를 입는다 — 하나하나 스타일을 줄
+    필요가 없다. 키를 누르면 그림자가 사라지고 면이 도장처럼 제자리로 쏙 들어간다.
+    비활성 면은 그림자를 잃고 흐려지므로, 누를 수 있는 것과 없는 것이 한눈에 구별된다.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="comic_light 의 버튼 — primary, secondary, 외곽선, 위험, 작은, 테두리 없는, 비활성 키가 저마다 굵은 검은 테두리와 딱딱한 그림자를 단 모습" loading="lazy"><figcaption><code>GoStyle.button()</code> — 모든 종류</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="comic_light 의 토글과 체크 박스 — 잉크를 입은 트랙과 손잡이, 체크 표시가 든 잉크 상자" loading="lazy"><figcaption>토글과 체크 박스</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="comic_light 의 라디오 버튼 — 잉크 고리, 선택된 것에는 채운 점" loading="lazy"><figcaption>라디오 버튼</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="comic_light 의 탭 — 선택된 탭은 잉크 패널, 나머지는 잉크 밑줄 위에 놓인다" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="comic_light 의 분절 선택 — 잉크 칸, 선택된 칸은 채워짐" loading="lazy"><figcaption>분절 알약</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="comic_light 의 슬라이더 — 잉크 홈, 가는 강조색 채움, 잉크 손잡이" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="comic_light 의 드롭다운 선택 — 꺾쇠가 달린 잉크 키" loading="lazy"><figcaption>선택 상자</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="comic_light 의 카드 — 굵은 테두리와 딱딱한 그림자를 단 흰 패널" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="comic_light 의 폼 — 도움말이 달린 잉크 입력란, 토글, 잉크 저장 키" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="comic_light 의 목록 줄 — 줄마다 아이콘, 부제목 또는 위험 라벨이 달린 잉크 띠" loading="lazy"><figcaption>목록 줄</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="comic_light 의 표 — 잉크 선 위의 머리글, 점수 줄마다 잉크 띠" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="comic_light 의 날짜 선택기 — 잉크 날짜 칸, 선택된 날은 채워짐" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="comic_light 의 시간 선택기 — 잉크 시·분 상자, AM·PM 키, 시계 다이얼" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="comic_light 의 스테퍼 — 잉크 단계 줄, 끝난 단계는 체크 표시, 다가올 단계는 흐리게" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="comic_light 의 필터 칩과 입력 칩 — 잉크 알약, 선택된 필터는 색이 들고 체크 표시가 붙음" loading="lazy"><figcaption>필터 칩</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="comic_light 의 내비게이션 바 — 위쪽 잉크 선, 현재 탭은 잉크 알약, 알림 탭에 배지" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="comic_light 의 입력 그룹 — 입력란과 보내기 키가 하나의 잉크 모양으로 붙은 모습" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="comic_light 의 분할 버튼 — 동작과 메뉴 화살표가 잉크를 입은 두 쪽으로" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="comic_light 의 페이지 넘김 — 현재 페이지는 딱딱한 그림자를 단 잉크 키" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">밤에는: <code>comic_dark</code></h3>
+  <p>어두운 페이지에서는 검은 테두리가 보이지 않으므로, <code>comic_dark</code> 는 테두리를 크림색으로 그리고 같은 잉크 색을 띤
+    옅은 그림자를 드리운다. HUD 부품 — 퀵슬롯, 막대, 조이스틱, 보상 달력 — 도 같은 규칙을 따른다.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="comic_dark 의 버튼 — 밤 페이지 위의 크림색 테두리, 노란 primary, 옅은 딱딱한 그림자" loading="lazy"><figcaption>밤의 <code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="comic_dark 의 퀵슬롯 — 수량과 쿨다운이 표시된 잉크 블록, 빛나는 슬롯은 노란 테두리" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="comic_dark 의 HUD 막대 — 크림색 잉크 홈 안의 HP, MP, XP" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="comic_dark 의 가상 조이스틱 — 크림색 고리와 그림자를 드리우는 손잡이" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="comic_dark 의 알림 상자 — 크림색 잉크로 그린 정보, 성공, 경고, 위험 패널" loading="lazy"><figcaption>알림 상자</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="comic_dark 의 슬롯 격자 — 잉크 블록으로 된 인벤토리" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="comic_dark 의 보상 달력 — 잉크 날짜 칸, 받은 날은 체크 표시, 오늘은 노란 테두리" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="comic_dark 의 등급 칩 — 저마다 자기 색을 띤 잉크 알약" loading="lazy"><figcaption>칩</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="comic_dark 의 범위 슬라이더 — 잉크 홈 위의 잉크 손잡이 두 개" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="comic_dark 의 검색 바 — 검색과 필터 아이콘이 달린 잉크 바" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="comic_dark 의 플로팅 액션 버튼 — 크림색 잉크와 딱딱한 그림자를 단 노란 키" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">코믹 생김새가 동작하는 방식</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">모든 면에 StyleBox 하나</h3>
+      <p>모든 면은 <code>GoStyleBoxComic</code> 이다: 채움, 테두리, 그림자를 컨트롤 자신의 사각형 안에 그린다. 그릴 때마다 <code>GoConfig</code> 에서 테두리와 그림자 크기를 읽으므로, 설정 하나로 화면 전체가 한꺼번에 바뀐다.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">누르면 납작해진다</h3>
+      <p>누른 키는 그림자를 내려놓고 그 자리로 옮겨 간다. 호버 때는 그림자가 남고, 포커스는 테두리를 절대 덮지 않는 안쪽 잉크 고리를 더하며, 비활성 면은 그림자를 잃고 흐려진다.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">나머지는 스킨이 칠한다</h3>
+      <p><code>GoSkinComic</code> 은 코드가 그리는 것에 잉크를 입힌다: 퀵슬롯, 칩, 배지, 아바타, 알림, 내비게이션 바, FAB, 날짜 칸, 그리고 손잡이가 그림자를 드리우는 조이스틱.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">창에는 캡션이 붙는다</h3>
+      <p>창 제목은 만화의 내레이션 상자 같은 노란 캡션 위에 놓이고, 옆에 잉크를 입힌 둥근 닫기 버튼이 붙는다. 대화상자, 시트, 서랍, 팝오버는 불투명한 잉크 패널이다.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">낮에도 밤에도 잘 읽힌다</h3>
+      <p>두 팔레트 모두 다른 모든 프리셋과 똑같은 WCAG 대비 검사를 통과한다. 눌린 키와 비활성 키도 포함이다. 캡션 색이 페이지와 너무 가까워지면 그 테두리는 페이지 색으로 물러난다.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">배치는 바뀌지 않는다</h3>
+      <p>테두리와 그림자는 각 컨트롤 안에 들어가고 안쪽 여백은 테마가 준 그대로이므로, 다른 생김새로 배치한 화면은 그 배치를 그대로 지킨다 — 프로젝트 글꼴도 마찬가지다.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">설정 셋과 호출 하나</h3>
+  <p><code>GoConfig</code> 설정 셋이 모든 코믹 면을 한꺼번에 바꾼다. 다시 만드는 것은 없다 — 값을 넣는 대로 화면이 다시 그려진다.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # 테두리(dp) — 기본값 3
+GoUi.config.comic_shadow_size = 6.0    # 그림자(dp) — 기본값 4
+GoUi.config.comic_shadow = false       # 어디에도 그림자 없음</code></pre>
+  <p>위젯 하나는 설정과 상관없이 따로 갈 수 있다. 마지막 인수로 <code>true</code> 를 넘기면 그 안의 모든 것까지 포함한다.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # 이 버튼은 납작하게
+GoStyle.comic_shadow(card, true, true)       # 이 카드와 그 안의 모든 것은 그림자 유지
+GoStyle.comic_border(title, 5.0)             # 이것만 테두리를 더 굵게</code></pre>
+  <div class="note">
+    <b>나만의 코믹 만들기.</b> <code>tools/new_theme.py inked --from comic_light</code> 가 팔레트를 복사한다. 종이·잉크·주 색을
+    바꾸고 <code>tools/make_theme.py inked</code> 를 실행하면 된다. 잉크, 그림자, 스킨이 함께 따라온다.
+  </div>
+  <p><a href="theming-presets.html#comic">코믹 자세히 →</a> · <a href="widgets-popups.html#popup-looks">같은 팝업을 열두 가지 생김새로 →</a></p>
 </section>
 
 <section id="showcase">

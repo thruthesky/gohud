@@ -95,6 +95,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Установка</a>
+      <a class="btn" href="#comic">Посмотреть облик комикса</a>
       <a class="btn" href="#presets">Посмотреть пресеты</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -143,8 +144,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # или &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # или &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 подробно →</a> · <a href="theming-presets.html#kids">Детский облик подробно →</a> ·
-    <a href="theming-presets.html#comic">Комикс подробно →</a> ·
+    <a href="#comic">Комикс, виджет за виджетом ↓</a> ·
     <a href="widgets-popups.html#popup-looks">Одно и то же всплывающее окно во всех двенадцати обликах →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Комикс: жирные чернила и жёсткая тень</h2>
+  <p class="sub">
+    Самый новый облик рисует каждую лицевую панель как кадр комикса — цвет поверхности внутри <b>жирного чернильного контура</b>
+    и <b>жёсткая сплошная тень</b>, отброшенная вниз и вправо. <code>comic_light</code> рисует чёрными чернилами на странице цвета кремовой бумаги
+    с кобальтовым основным цветом; <code>comic_dark</code> — кремовыми чернилами на ночной странице с жёлтым основным цветом. Каждая картинка ниже —
+    настоящий экран gohud: тот же код, одна строка с пресетом.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # или &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Галерея gohud в comic_light — клавиши, строки и полосы в чернильном контуре с жёсткими тенями на странице цвета кремовой бумаги" loading="lazy"><figcaption><code>comic_light</code> · галерея</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Галерея gohud в comic_dark — кремовые чернила и жёлтый основной цвет на ночной странице" loading="lazy"><figcaption><code>comic_dark</code> · галерея</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="Нижний лист в comic_light — панель в чернильном контуре, выезжающая от нижнего края, со строками в контуре" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="Обучающая подсказка в comic_light — выноска в чернильном контуре, указывающая на кнопку" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="Боковая шторка в comic_dark — панель строк навигации в чернильном контуре поверх затемнённого экрана" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="Поповер в comic_dark — пузырь в чернильном контуре, привязанный к кнопке, которая его открыла" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Каждый виджет — в чернилах</h3>
+  <p>Кнопки, переключатели, вкладки, ползунки, карточки, формы, таблицы, выбор даты и времени и чипы — все носят чернила; вам не нужно
+    оформлять их по одному. Нажмите клавишу — и её тень исчезает: панель опускается на своё место, как штамп.
+    Отключённые панели теряют тень и бледнеют, так что то, что можно нажать, отличается от того, что нельзя.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="Кнопки в comic_light — основная, второстепенная, с контуром, опасная, компактная, голая и отключённая, каждая в жирном чёрном контуре с жёсткой тенью" loading="lazy"><figcaption><code>GoStyle.button()</code> — все виды</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="Переключатели и флажки в comic_light — дорожка и ручка в чернильном контуре, флажки в контуре с галочкой" loading="lazy"><figcaption>Переключатели и флажки</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="Радиокнопки в comic_light — кольца в чернильном контуре, у выбранной — закрашенная точка" loading="lazy"><figcaption>Радиокнопки</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="Вкладки в comic_light — выбранная вкладка — панель в контуре, остальные стоят на чернильной линии" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="Сегментированный переключатель в comic_light — ячейки в контуре, выбранная закрашена" loading="lazy"><figcaption>Сегменты-пилюли</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="Ползунок в comic_light — желобок в контуре, тонкая заливка акцентом и ручка в контуре" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="Выпадающие списки в comic_light — клавиши в контуре с шевроном" loading="lazy"><figcaption>Выпадающие списки</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="Карточка в comic_light — белая панель в жирном контуре с жёсткой тенью" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="Форма в comic_light — поле в контуре с подсказкой, переключатель и клавиша «Сохранить» в контуре" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="Строки списка в comic_light — каждая строка — полоса в контуре с иконкой, подзаголовком или меткой опасности" loading="lazy"><figcaption>Строки списка</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="Таблица в comic_light — заголовок над чернильной линией, а каждая строка счёта — полоса в контуре" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="Выбор даты в comic_light — ячейки дней в контуре, выбранный день закрашен" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="Выбор времени в comic_light — поля часов и минут в контуре, клавиши AM и PM и циферблат" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="Пошаговый индикатор в comic_light — строки шагов в контуре, выполненный шаг с галочкой, следующий бледнее" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="Чипы фильтров и ввода в comic_light — пилюли в контуре, выбранный фильтр подкрашен и отмечен галочкой" loading="lazy"><figcaption>Чипы фильтров</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="Панель навигации в comic_light — чернильная линия сверху, текущая вкладка в пилюле с контуром и значок на Alerts" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="Группа ввода в comic_light — поле и его клавиша «Отправить», сваренные в одну фигуру в контуре" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="Разделённая кнопка в comic_light — действие и стрелка меню как две половинки в контуре" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="Пагинация в comic_light — текущая страница — клавиша в контуре с жёсткой тенью" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">Ночью: <code>comic_dark</code></h3>
+  <p>На тёмной странице чёрный контур пропал бы, поэтому <code>comic_dark</code> рисует его кремовым и отбрасывает бледную тень,
+    подкрашенную теми же чернилами. Элементы HUD — быстрые слоты, полосы, стик и календарь наград — следуют тем же правилам.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="Кнопки в comic_dark — кремовые контуры, жёлтый основной цвет и бледные жёсткие тени на ночной странице" loading="lazy"><figcaption><code>GoStyle.button()</code> ночью</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="Быстрые слоты в comic_dark — кубики в контуре со счётчиком стопки и перезарядкой, активные слоты в жёлтой окантовке" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="Полосы HUD в comic_dark — HP, MP и XP в желобках с кремовым контуром" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="Виртуальный стик в comic_dark — кремовое кольцо и ручка, отбрасывающая тень" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="Оповещения в comic_dark — панели информации, успеха, предупреждения и опасности в кремовых чернилах" loading="lazy"><figcaption>Оповещения</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="Сетка слотов в comic_dark — инвентарь из кубиков в контуре" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="Календарь наград в comic_dark — ячейки дней в контуре, полученные дни с галочкой, сегодняшний в жёлтой окантовке" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="Чипы редкости в comic_dark — пилюли в контуре, каждая подкрашена своим цветом" loading="lazy"><figcaption>Чипы</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="Ползунок диапазона в comic_dark — две ручки в контуре на желобке в контуре" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="Строка поиска в comic_dark — полоса в контуре с иконками поиска и фильтра" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="Плавающие кнопки действия в comic_dark — жёлтые клавиши в кремовых чернилах с жёсткими тенями" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">Как устроен облик комикса</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">Один StyleBox на каждую панель</h3>
+      <p>Каждая лицевая панель — это <code>GoStyleBoxComic</code>: заливка, контур и тень, нарисованные внутри собственного прямоугольника элемента. Толщину контура и размер тени он читает из <code>GoConfig</code> при каждой отрисовке, поэтому одна настройка меняет весь экран сразу.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Нажата — значит плоская</h3>
+      <p>Нажатая клавиша теряет тень и опускается на своё место. При наведении тень остаётся; фокус добавляет внутреннее чернильное кольцо, которое никогда не закрывает контур; отключённые панели теряют тень и бледнеют.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">Остальное обводит скин</h3>
+      <p><code>GoSkinComic</code> обводит чернилами то, что рисует код: быстрые слоты, чипы, значки, аватары, уведомления, панель навигации, FAB, ячейки дат и стик, ручка которого отбрасывает тень.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">У окон — плашка заголовка</h3>
+      <p>Заголовок окна лежит на жёлтой плашке, как блок текста рассказчика в комиксе, рядом с круглой кнопкой закрытия в контуре. Диалоги, листы, шторки и поповеры — непрозрачные панели в чернильном контуре.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Читается днём и ночью</h3>
+      <p>Обе палитры проходят те же проверки контраста WCAG, что и любой другой пресет, включая нажатые и отключённые клавиши. Если цвет плашки оказался бы слишком близок к цвету страницы, её контур переходит на цвет страницы.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">Вёрстка не меняется</h3>
+      <p>Контур и тень помещаются внутри каждого элемента, а отступы остаются такими, какими их задала тема, поэтому экран, свёрстанный в другом облике, сохраняет свою раскладку — и шрифт вашего проекта.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Три настройки и один вызов</h3>
+  <p>Три настройки <code>GoConfig</code> меняют сразу все комиксовые панели. Ничего не пересобирается — экран перерисовывается, пока вы их задаёте.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # контур (dp) — по умолчанию 3
+GoUi.config.comic_shadow_size = 6.0    # тень (dp) — по умолчанию 4
+GoUi.config.comic_shadow = false       # нигде никаких теней</code></pre>
+  <p>Отдельный виджет может пойти своим путём, что бы ни говорили настройки. Передайте <code>true</code> последним аргументом, чтобы захватить всё, что внутри него.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # эта кнопка лежит плоско
+GoStyle.comic_shadow(card, true, true)       # эта карточка и всё в ней сохраняют тень
+GoStyle.comic_border(title, 5.0)             # у этого — контур потолще</code></pre>
+  <div class="note">
+    <b>Сделайте свой комикс.</b> <code>tools/new_theme.py inked --from comic_light</code> копирует палитру; измените
+    цвета бумаги, чернил и основной цвет и запустите <code>tools/make_theme.py inked</code>. Чернила, тень и скин идут в комплекте.
+  </div>
+  <p><a href="theming-presets.html#comic">Комикс подробно →</a> · <a href="widgets-popups.html#popup-looks">Одно и то же всплывающее окно во всех двенадцати обликах →</a></p>
 </section>
 
 <section id="showcase">

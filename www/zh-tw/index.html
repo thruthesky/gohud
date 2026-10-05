@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">安裝</a>
+      <a class="btn" href="#comic">看看漫畫外觀</a>
       <a class="btn" href="#presets">看看預設集</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -139,8 +140,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # 或 &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 詳解 →</a> · <a href="theming-presets.html#kids">兒童外觀詳解 →</a> ·
-    <a href="theming-presets.html#comic">漫畫外觀詳解 →</a> ·
+    <a href="#comic">漫畫外觀，逐一控制項看 ↓</a> ·
     <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十二種外觀下的樣子 →</a></p>
+</section>
+
+<section id="comic">
+  <h2>漫畫：粗墨線與硬陰影</h2>
+  <p class="sub">
+    這款最新的外觀把每個表面都畫成一格漫畫分鏡 — <b>粗墨線描邊</b>裡填著表面顏色，
+    往右下方投出一道<b>紮實的硬陰影</b>。<code>comic_light</code> 在紙張般的奶油色頁面上用黑墨描畫，主色是鈷藍；
+    <code>comic_dark</code> 在夜色頁面上用奶油色墨線描畫，主色是黃色。下面每一張圖都是
+    真實的 gohud 畫面 — 同樣的程式碼，只差一行預設集。
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # 或 &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 下的 gohud 藝廊 — 紙張般的奶油色頁面上，帶硬陰影的墨線按鍵、清單列與量條" loading="lazy"><figcaption><code>comic_light</code> · 藝廊</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 下的 gohud 藝廊 — 夜色頁面上的奶油色墨線與黃色主色" loading="lazy"><figcaption><code>comic_dark</code> · 藝廊</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="comic_light 下的底部面板 — 從底邊升起的墨線面板，裡面是描了墨線的清單列" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="comic_light 下的導覽標記 — 指向一顆按鈕的墨線對話框" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="comic_dark 下的側邊抽屜 — 調暗的畫面上，一塊放著導覽列的墨線面板" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="comic_dark 下的彈出泡泡 — 錨定在開啟它的那顆按鈕上的墨線泡泡" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">每個控制項都描上墨線</h3>
+  <p>按鈕、開關、分頁、滑桿、卡片、表單、表格、選擇器與方塊標籤全都描上了墨線 — 不必一個個
+    去設定樣式。按下一個按鍵，它的陰影就消失：表面像蓋章一樣沉進自己的位置。
+    停用的表面失去陰影並變淡，能按的與不能按的一眼就分得清。</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="comic_light 下的按鈕 — 主要、次要、外框、危險、精簡、無框與停用按鍵，每個都有粗黑描邊與硬陰影" loading="lazy"><figcaption><code>GoStyle.button()</code> — 所有種類</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="comic_light 下的開關與核取方塊 — 描了墨線的軌道與圓鈕，打了勾的墨線方框" loading="lazy"><figcaption>開關與核取方塊</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="comic_light 下的選項按鈕 — 墨線圓環，選中的那個帶實心圓點" loading="lazy"><figcaption>選項按鈕</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="comic_light 下的分頁 — 選中的分頁是一塊墨線面板，其餘的落在一條墨線底線上" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="comic_light 下的分段控制項 — 墨線格子，選中的那格被填滿" loading="lazy"><figcaption>分段膠囊</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="comic_light 下的滑桿 — 墨線滑槽、細細的強調色填色與墨線把手" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="comic_light 下的下拉選單 — 帶箭頭的墨線按鍵" loading="lazy"><figcaption>下拉選單</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="comic_light 下的卡片 — 帶粗描邊與硬陰影的白色面板" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="comic_light 下的表單 — 附提示的墨線輸入欄、一個開關與墨線的儲存按鍵" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="comic_light 下的清單列 — 每一列都是一條墨線長條，附圖示、副標題或危險標籤" loading="lazy"><figcaption>清單列</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="comic_light 下的表格 — 墨線分隔線上方是表頭，每一列分數都是一條墨線長條" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="comic_light 下的日期選擇器 — 墨線日期格子，選中的那天被填滿" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="comic_light 下的時間選擇器 — 墨線的時、分方框，AM 與 PM 按鍵和一個錶盤" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="comic_light 下的步驟條 — 墨線步驟列，完成的步驟打了勾，接下來的步驟變淡" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="comic_light 下的篩選與輸入方塊標籤 — 墨線膠囊，選中的篩選項著色並打勾" loading="lazy"><figcaption>篩選方塊標籤</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="comic_light 下的導覽列 — 頂端一條墨線，目前的分頁在墨線膠囊裡，Alerts 上有徽章" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="comic_light 下的輸入群組 — 輸入欄與它的傳送按鍵焊成一個墨線整體" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="comic_light 下的分割按鈕 — 動作與選單箭頭是兩個墨線半邊" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="comic_light 下的分頁導覽 — 目前頁面是一個帶硬陰影的墨線按鍵" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">夜裡：<code>comic_dark</code></h3>
+  <p>在深色頁面上黑色描邊會消失不見，所以 <code>comic_dark</code> 用奶油色畫描邊，並投下一道帶著同樣墨色的
+    淡淡陰影。HUD 元件 — 快捷格、量條、搖桿與獎勵日曆 — 遵循同樣的規則。</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="comic_dark 下的按鈕 — 夜色頁面上的奶油色描邊、黃色主要按鍵與淡淡的硬陰影" loading="lazy"><figcaption>夜裡的 <code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="comic_dark 下的快捷格 — 附堆疊數與冷卻的墨線方塊，亮起的格子鑲著黃邊" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="comic_dark 下的 HUD 量條 — 奶油色墨線槽裡的 HP、MP 與 XP" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="comic_dark 下的虛擬搖桿 — 奶油色圓環與一個投下陰影的握把" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="comic_dark 下的提示框 — 用奶油色墨線畫的資訊、成功、警告與危險面板" loading="lazy"><figcaption>提示框</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="comic_dark 下的格子網格 — 由墨線方塊組成的背包" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="comic_dark 下的獎勵日曆 — 墨線日期格子，已領取的日子打了勾，今天鑲著黃邊" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="comic_dark 下的稀有度方塊標籤 — 墨線膠囊，各自染上自己的顏色" loading="lazy"><figcaption>方塊標籤</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="comic_dark 下的範圍滑桿 — 墨線滑槽上的兩個墨線把手" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="comic_dark 下的搜尋列 — 附搜尋與篩選圖示的墨線長條" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="comic_dark 下的懸浮動作按鈕 — 奶油色墨線與硬陰影襯托的黃色按鍵" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">漫畫外觀是怎麼做到的</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">所有表面共用一個 StyleBox</h3>
+      <p>每個表面都是一個 <code>GoStyleBoxComic</code>：填色、描邊與陰影，都畫在控制項自己的矩形之內。它每次繪製時都從 <code>GoConfig</code> 讀取描邊與陰影的大小，所以改一個設定，整個畫面立刻一起變。</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">按下就是平的</h3>
+      <p>按下的按鍵收起陰影，挪進陰影的位置。滑鼠停留時陰影保留；取得焦點時加一圈內側墨線環，絕不會蓋住描邊；停用的表面失去陰影並變淡。</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">其餘交給外觀描線</h3>
+      <p><code>GoSkinComic</code> 替程式碼畫出的部分描上墨線：快捷格、方塊標籤、徽章、頭像、提示、導覽列、FAB、日期格子，還有握把會投下陰影的搖桿。</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">視窗有標題框</h3>
+      <p>視窗標題放在一個黃色標題框裡，就像漫畫裡的旁白框，旁邊是一顆描了墨線的圓形關閉按鈕。對話方塊、底部面板、抽屜與彈出泡泡都是不透明的墨線面板。</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">白天晚上都清楚好讀</h3>
+      <p>兩套調色盤都和其他所有預設集一樣通過 WCAG 對比檢查，按下與停用的按鍵也不例外。當標題框的顏色與頁面太接近時，它的描邊會退回頁面顏色。</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">版面不變</h3>
+      <p>描邊與陰影都收在每個控制項之內，內距維持佈景主題給的樣子，所以用別的外觀排好的畫面會維持原本的版面 — 你專案的字型也一樣。</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">三個設定與一次呼叫</h3>
+  <p>三個 <code>GoConfig</code> 設定會一次改變所有漫畫表面。不需要重建任何東西 — 設定的同時畫面就會重畫。</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # 描邊（dp）— 預設 3
+GoUi.config.comic_shadow_size = 6.0    # 陰影（dp）— 預設 4
+GoUi.config.comic_shadow = false       # 所有地方都不要陰影</code></pre>
+  <p>單一控制項可以不管設定，自行其是。把 <code>true</code> 當成最後一個引數傳入，就連它裡面的一切都包含在內。</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # 這顆按鈕平貼著
+GoStyle.comic_shadow(card, true, true)       # 這張卡片與其中的一切保留陰影
+GoStyle.comic_border(title, 5.0)             # 只給這一個加粗描邊</code></pre>
+  <div class="note">
+    <b>打造一個自己的漫畫外觀。</b><code>tools/new_theme.py inked --from comic_light</code> 會複製調色盤；改掉紙張、
+    墨線與主色，再執行 <code>tools/make_theme.py inked</code>。墨線、陰影與外觀都會一併帶上。
+  </div>
+  <p><a href="theming-presets.html#comic">漫畫外觀詳解 →</a> · <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十二種外觀下的樣子 →</a></p>
 </section>
 
 <section id="showcase">

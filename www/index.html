@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Install</a>
+      <a class="btn" href="#comic">See the comic look</a>
       <a class="btn" href="#presets">See the presets</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -142,8 +143,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # or &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # or &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 in detail →</a> · <a href="theming-presets.html#kids">Kids in detail →</a> ·
-    <a href="theming-presets.html#comic">Comic in detail →</a> ·
+    <a href="#comic">Comic, widget by widget ↓</a> ·
     <a href="widgets-popups.html#popup-looks">The same popup in all twelve looks →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Comic: bold ink and a hard shadow</h2>
+  <p class="sub">
+    The newest look draws every face like a panel in a comic book — the surface colour inside a <b>bold ink outline</b>,
+    with a <b>hard, solid shadow</b> dropped down and to the right. <code>comic_light</code> inks black on a paper-cream page
+    with a cobalt primary; <code>comic_dark</code> inks cream on a night page with a yellow primary. Every picture below is
+    a real gohud screen — the same code, one preset line.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # or &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/presets/gallery-comic_light.png" width="300" height="649" alt="The gohud gallery in comic_light — inked keys, rows and bars with hard shadows on a paper-cream page" loading="lazy"><figcaption><code>comic_light</code> · the gallery</figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-comic_dark.png" width="300" height="649" alt="The gohud gallery in comic_dark — cream ink and a yellow primary on a night page" loading="lazy"><figcaption><code>comic_dark</code> · the gallery</figcaption></figure>
+    <figure class="shot phone"><img src="img/comic/sheet-light.png" width="300" height="649" alt="A bottom sheet in comic_light — an inked panel rising from the bottom edge with inked rows" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/comic/coach-mark-light.png" width="300" height="649" alt="A coach mark in comic_light — an inked callout pointing at a button" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/comic/drawer-left-dark.png" width="300" height="649" alt="A side drawer in comic_dark — an inked panel of navigation rows over the dimmed screen" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/comic/popover-dark.png" width="300" height="649" alt="A popover in comic_dark — an inked bubble anchored to the button that opened it" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Every widget, inked</h3>
+  <p>Buttons, toggles, tabs, sliders, cards, forms, tables, pickers and chips all wear the ink — you do not
+    style them one by one. Press a key and its shadow goes: the face sinks into its place, like a stamp.
+    Disabled faces lose their shadow and fade, so what can be pressed stands out from what cannot.</p>
+  <div class="shots">
+    <figure class="shot"><img src="img/comic/gostyle-button-light.png" width="382" height="204" alt="Buttons in comic_light — primary, secondary, outlined, danger, compact, bare and disabled keys, each in a bold black outline with a hard shadow" loading="lazy"><figcaption><code>GoStyle.button()</code> — every kind</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-toggle-light.png" width="382" height="260" alt="Toggles and check boxes in comic_light — an inked track and knob, inked boxes with a tick" loading="lazy"><figcaption>Toggles and check boxes</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="Radio buttons in comic_light — inked rings, the chosen one with a filled dot" loading="lazy"><figcaption>Radio buttons</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-tabs-light.png" width="382" height="136" alt="Tabs in comic_light — the chosen tab is an inked panel, the others sit on an ink underline" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-segmented-light.png" width="240" height="72" alt="A segmented control in comic_light — inked cells, the chosen one filled" loading="lazy"><figcaption>Segmented pills</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-slider-light.png" width="382" height="107" alt="A slider in comic_light — an inked groove, a thin accent fill and an inked handle" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-select-light.png" width="382" height="76" alt="Drop-down selects in comic_light — inked keys with a chevron" loading="lazy"><figcaption>Selects</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-card-light.png" width="382" height="243" alt="A card in comic_light — a white panel in a bold outline with a hard shadow" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/goform-light.png" width="382" height="326" alt="A form in comic_light — an inked field with a hint, a toggle and an inked Save key" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-list_row-light.png" width="382" height="181" alt="List rows in comic_light — each row an inked strip with an icon, a subtitle or a danger label" loading="lazy"><figcaption>List rows</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gotable-light.png" width="382" height="273" alt="A table in comic_light — a header over an ink rule, and every score row an inked strip" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/godatepicker-light.png" width="382" height="392" alt="A date picker in comic_light — inked day cells, the chosen day filled" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gotimepicker-light.png" width="382" height="408" alt="A time picker in comic_light — inked hour and minute boxes, AM and PM keys and a clock dial" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostepper-light.png" width="382" height="315" alt="A stepper in comic_light — inked step rows, the done step ticked and the coming step faded" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="Filter and input chips in comic_light — inked pills, the chosen filter tinted with a tick" loading="lazy"><figcaption>Filter chips</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gonavbar-light.png" width="382" height="88" alt="A navigation bar in comic_light — an ink rule on top, the current tab in an inked pill and a badge on Alerts" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/goinputgroup-light.png" width="382" height="76" alt="An input group in comic_light — a field and its Send key welded into one inked shape" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gosplitbutton-light.png" width="151" height="76" alt="A split button in comic_light — an action and a menu arrow as two inked halves" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gopagination-light.png" width="382" height="72" alt="Pagination in comic_light — the current page is an inked key with a hard shadow" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">At night: <code>comic_dark</code></h3>
+  <p>On a dark page a black outline would vanish, so <code>comic_dark</code> draws it in cream and drops a faint shadow
+    tinted with the same ink. The HUD pieces — quick slots, bars, the joystick and the reward calendar — follow the same rules.</p>
+  <div class="shots">
+    <figure class="shot"><img src="img/comic/gostyle-button-dark.png" width="382" height="204" alt="Buttons in comic_dark — cream outlines, a yellow primary and faint hard shadows on a night page" loading="lazy"><figcaption><code>GoStyle.button()</code> at night</figcaption></figure>
+    <figure class="shot"><img src="img/comic/goslot-dark.png" width="382" height="72" alt="Quick slots in comic_dark — inked blocks with a stack count and a cooldown, the lit slots rimmed in yellow" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gobar-dark.png" width="382" height="135" alt="HUD bars in comic_dark — HP, MP and XP in cream-inked grooves" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gojoystick-dark.png" width="204" height="204" alt="A virtual joystick in comic_dark — a cream ring and a knob that casts a shadow" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-alert-dark.png" width="382" height="248" alt="Alerts in comic_dark — info, success, warning and danger panels in cream ink" loading="lazy"><figcaption>Alerts</figcaption></figure>
+    <figure class="shot"><img src="img/comic/goslotgrid-dark.png" width="382" height="208" alt="A slot grid in comic_dark — an inventory of inked blocks" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="A reward calendar in comic_dark — inked day cells, claimed days ticked and today rimmed in yellow" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gostyle-chip-dark.png" width="382" height="84" alt="Rarity chips in comic_dark — inked pills, each tinted with its own colour" loading="lazy"><figcaption>Chips</figcaption></figure>
+    <figure class="shot"><img src="img/comic/gorangeslider-dark.png" width="382" height="107" alt="A range slider in comic_dark — two inked handles on an inked groove" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gosearchbar-dark.png" width="382" height="80" alt="A search bar in comic_dark — an inked bar with search and filter icons" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="img/comic/gofab-dark.png" width="382" height="80" alt="Floating action buttons in comic_dark — yellow keys in cream ink with hard shadows" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">How the comic look works</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">One StyleBox for every face</h3>
+      <p>Every face is a <code>GoStyleBoxComic</code>: a fill, an outline and a shadow, drawn inside the control’s own rectangle. It reads the outline and shadow sizes from <code>GoConfig</code> each time it draws, so one setting changes the whole screen at once.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Pressed means flat</h3>
+      <p>A pressed key drops its shadow and moves into its place. Hover keeps the shadow; focus adds an inner ink ring that never covers the outline; disabled faces lose the shadow and fade.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">The skin inks the rest</h3>
+      <p><code>GoSkinComic</code> inks what code draws: quick slots, chips, badges, avatars, notices, the navigation bar, the FAB, the date cells and the joystick, whose knob casts a shadow.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">Windows get a caption</h3>
+      <p>A window’s title sits on a yellow caption, like the narration box of a comic, next to an inked round close button. Dialogs, sheets, drawers and popovers are opaque inked panels.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Readable day and night</h3>
+      <p>Both palettes pass the same WCAG contrast checks as every other preset, including pressed and disabled keys. When a caption colour would sit too close to the page, its outline falls back to the page colour.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">No layout changes</h3>
+      <p>The outline and shadow fit inside each control and the padding stays as the theme gave it, so a screen laid out in another look keeps its layout — and your project’s font.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Three settings and one call</h3>
+  <p>Three <code>GoConfig</code> settings change every comic face at once. Nothing is rebuilt — the screen redraws as you set them.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # the outline (dp) — 3 by default
+GoUi.config.comic_shadow_size = 6.0    # the shadow (dp) — 4 by default
+GoUi.config.comic_shadow = false       # no shadows anywhere</code></pre>
+  <p>One widget can go its own way, whatever the settings say. Pass <code>true</code> as the last argument to include everything inside it.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # this button sits flat
+GoStyle.comic_shadow(card, true, true)       # this card and everything in it keep their shadow
+GoStyle.comic_border(title, 5.0)             # a thicker outline on this one</code></pre>
+  <div class="note">
+    <b>Make a comic of your own.</b> <code>tools/new_theme.py inked --from comic_light</code> copies the palette; change the
+    paper, ink and primary colours and run <code>tools/make_theme.py inked</code>. The ink, the shadow and the skin come along.
+  </div>
+  <p><a href="theming-presets.html#comic">Comic in detail →</a> · <a href="widgets-popups.html#popup-looks">The same popup in all twelve looks →</a></p>
 </section>
 
 <section id="showcase">

@@ -94,6 +94,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Instalasi</a>
+      <a class="btn" href="#comic">Lihat tampilan komik</a>
       <a class="btn" href="#presets">Lihat presetnya</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -142,8 +143,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # atau &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # atau &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 secara rinci →</a> · <a href="theming-presets.html#kids">Anak-anak secara rinci →</a> ·
-    <a href="theming-presets.html#comic">Komik secara rinci →</a> ·
+    <a href="#comic">Komik, widget demi widget ↓</a> ·
     <a href="widgets-popups.html#popup-looks">Popup yang sama dalam kedua belas tampilan →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Komik: tinta tebal dan bayangan tegas</h2>
+  <p class="sub">
+    Tampilan terbaru menggambar setiap muka seperti panel di buku komik — warna permukaan di dalam <b>garis tepi tinta yang tebal</b>,
+    dengan <b>bayangan padat yang tegas</b> jatuh ke bawah dan ke kanan. <code>comic_light</code> bertinta hitam di halaman krem seperti kertas
+    dengan warna primer biru kobalt; <code>comic_dark</code> bertinta krem di halaman malam dengan warna primer kuning. Setiap gambar di bawah ini
+    adalah layar gohud sungguhan — kode yang sama, satu baris preset.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # atau &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeri gohud dalam comic_light — tombol, baris, dan bilah bertinta dengan bayangan tegas di halaman krem seperti kertas" loading="lazy"><figcaption><code>comic_light</code> · galeri</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeri gohud dalam comic_dark — tinta krem dan warna primer kuning di halaman malam" loading="lazy"><figcaption><code>comic_dark</code> · galeri</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="Lembar bawah dalam comic_light — panel bertinta yang naik dari tepi bawah dengan baris-baris bertinta" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="Coach mark dalam comic_light — keterangan bertinta yang menunjuk ke sebuah tombol" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="Laci samping dalam comic_dark — panel bertinta berisi baris navigasi di atas layar yang diredupkan" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="Popover dalam comic_dark — gelembung bertinta yang tertambat pada tombol yang membukanya" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Setiap widget bertinta</h3>
+  <p>Tombol, toggle, tab, slider, kartu, formulir, tabel, pemilih, dan chip semuanya memakai tinta — Anda tidak perlu
+    menata gayanya satu per satu. Tekan sebuah tombol dan bayangannya hilang: mukanya tenggelam ke tempatnya, seperti stempel.
+    Muka yang dinonaktifkan kehilangan bayangannya dan memudar, sehingga yang bisa ditekan tampak menonjol dari yang tidak.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="Tombol dalam comic_light — tombol primer, sekunder, bergaris tepi, bahaya, ringkas, polos, dan nonaktif, masing-masing dengan garis tepi hitam tebal dan bayangan tegas" loading="lazy"><figcaption><code>GoStyle.button()</code> — semua jenis</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="Toggle dan kotak centang dalam comic_light — trek dan kenop bertinta, kotak bertinta dengan tanda centang" loading="lazy"><figcaption>Toggle dan kotak centang</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="Tombol radio dalam comic_light — cincin bertinta, yang terpilih dengan titik terisi" loading="lazy"><figcaption>Tombol radio</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="Tab dalam comic_light — tab terpilih adalah panel bertinta, yang lain berada di atas garis bawah bertinta" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="Kontrol tersegmen dalam comic_light — sel bertinta, yang terpilih terisi" loading="lazy"><figcaption>Pil tersegmen</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="Slider dalam comic_light — alur bertinta, isian aksen tipis, dan pegangan bertinta" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="Pilihan tarik-turun dalam comic_light — tombol bertinta dengan panah chevron" loading="lazy"><figcaption>Pilihan tarik-turun</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="Kartu dalam comic_light — panel putih dengan garis tepi tebal dan bayangan tegas" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="Formulir dalam comic_light — kolom bertinta dengan petunjuk, sebuah toggle, dan tombol Simpan bertinta" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="Baris daftar dalam comic_light — setiap baris berupa strip bertinta dengan ikon, subjudul, atau label bahaya" loading="lazy"><figcaption>Baris daftar</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="Tabel dalam comic_light — kepala tabel di atas garis tinta, dan setiap baris skor berupa strip bertinta" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="Pemilih tanggal dalam comic_light — sel hari bertinta, hari terpilih terisi" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="Pemilih waktu dalam comic_light — kotak jam dan menit bertinta, tombol AM dan PM, serta piringan jam" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="Stepper dalam comic_light — baris langkah bertinta, langkah yang selesai dicentang dan langkah berikutnya memudar" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="Chip filter dan chip input dalam comic_light — pil bertinta, filter terpilih diwarnai dengan tanda centang" loading="lazy"><figcaption>Chip filter</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="Bilah navigasi dalam comic_light — garis tinta di atas, tab aktif dalam pil bertinta, dan lencana pada Alerts" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="Grup input dalam comic_light — kolom dan tombol Send-nya menyatu menjadi satu bentuk bertinta" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="Tombol terpisah dalam comic_light — sebuah aksi dan panah menu sebagai dua belahan bertinta" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="Paginasi dalam comic_light — halaman saat ini adalah tombol bertinta dengan bayangan tegas" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">Di malam hari: <code>comic_dark</code></h3>
+  <p>Di halaman gelap, garis tepi hitam akan lenyap, jadi <code>comic_dark</code> menggambarnya dengan warna krem dan menjatuhkan bayangan samar
+    yang diwarnai dengan tinta yang sama. Bagian HUD — slot cepat, bilah, joystick, dan kalender hadiah — mengikuti aturan yang sama.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="Tombol dalam comic_dark — garis tepi krem, warna primer kuning, dan bayangan tegas yang samar di halaman malam" loading="lazy"><figcaption><code>GoStyle.button()</code> di malam hari</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="Slot cepat dalam comic_dark — balok bertinta dengan jumlah tumpukan dan cooldown, slot yang menyala berbingkai kuning" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="Bilah HUD dalam comic_dark — HP, MP, dan XP dalam alur bertinta krem" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="Joystick virtual dalam comic_dark — cincin krem dan kenop yang memberi bayangan" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="Peringatan dalam comic_dark — panel info, sukses, peringatan, dan bahaya bertinta krem" loading="lazy"><figcaption>Peringatan</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="Kisi slot dalam comic_dark — inventaris berisi balok-balok bertinta" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="Kalender hadiah dalam comic_dark — sel hari bertinta, hari yang sudah diklaim dicentang dan hari ini berbingkai kuning" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="Chip kelangkaan dalam comic_dark — pil bertinta, masing-masing diwarnai dengan warnanya sendiri" loading="lazy"><figcaption>Chip</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="Slider rentang dalam comic_dark — dua pegangan bertinta di atas alur bertinta" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="Bilah pencarian dalam comic_dark — bilah bertinta dengan ikon pencarian dan filter" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="Tombol aksi mengambang dalam comic_dark — tombol kuning bertinta krem dengan bayangan tegas" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">Cara kerja tampilan komik</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">Satu StyleBox untuk setiap muka</h3>
+      <p>Setiap muka adalah <code>GoStyleBoxComic</code>: isian, garis tepi, dan bayangan, digambar di dalam persegi panjang milik kontrol itu sendiri. Ia membaca ukuran garis tepi dan bayangan dari <code>GoConfig</code> setiap kali menggambar, jadi satu setelan mengubah seluruh layar sekaligus.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Ditekan berarti datar</h3>
+      <p>Tombol yang ditekan melepas bayangannya dan bergeser ke tempatnya. Saat hover, bayangan tetap ada; fokus menambahkan cincin tinta di bagian dalam yang tidak pernah menutupi garis tepi; muka yang dinonaktifkan kehilangan bayangan dan memudar.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">Skin menintai sisanya</h3>
+      <p><code>GoSkinComic</code> menintai apa yang digambar oleh kode: slot cepat, chip, lencana, avatar, pemberitahuan, bilah navigasi, FAB, sel tanggal, dan joystick, yang kenopnya memberi bayangan.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">Jendela mendapat keterangan judul</h3>
+      <p>Judul jendela berada di atas keterangan kuning, seperti kotak narasi dalam komik, di samping tombol tutup bundar bertinta. Dialog, lembar, laci, dan popover adalah panel bertinta yang buram.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Terbaca siang dan malam</h3>
+      <p>Kedua palet lolos pemeriksaan kontras WCAG yang sama seperti setiap preset lain, termasuk tombol yang ditekan dan yang nonaktif. Bila warna keterangan judul terlalu dekat dengan warna halaman, garis tepinya beralih ke warna halaman.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">Tata letak tidak berubah</h3>
+      <p>Garis tepi dan bayangan muat di dalam setiap kontrol dan padding tetap seperti yang diberikan tema, sehingga layar yang ditata dengan tampilan lain tetap mempertahankan tata letaknya — dan font proyek Anda.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Tiga setelan dan satu panggilan</h3>
+  <p>Tiga setelan <code>GoConfig</code> mengubah setiap muka komik sekaligus. Tidak ada yang dibangun ulang — layar menggambar ulang begitu Anda mengaturnya.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # garis tepi (dp) — default 3
+GoUi.config.comic_shadow_size = 6.0    # bayangan (dp) — default 4
+GoUi.config.comic_shadow = false       # tanpa bayangan di mana pun</code></pre>
+  <p>Satu widget bisa menempuh jalannya sendiri, apa pun kata setelannya. Berikan <code>true</code> sebagai argumen terakhir untuk menyertakan semua yang ada di dalamnya.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # tombol ini datar
+GoStyle.comic_shadow(card, true, true)       # kartu ini dan semua isinya tetap berbayangan
+GoStyle.comic_border(title, 5.0)             # garis tepi lebih tebal untuk yang satu ini</code></pre>
+  <div class="note">
+    <b>Buat komik Anda sendiri.</b> <code>tools/new_theme.py inked --from comic_light</code> menyalin paletnya; ubah warna
+    kertas, tinta, dan primer, lalu jalankan <code>tools/make_theme.py inked</code>. Tinta, bayangan, dan skin-nya ikut serta.
+  </div>
+  <p><a href="theming-presets.html#comic">Komik secara rinci →</a> · <a href="widgets-popups.html#popup-looks">Popup yang sama dalam kedua belas tampilan →</a></p>
 </section>
 
 <section id="showcase">

@@ -95,6 +95,7 @@
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Kurulum</a>
+      <a class="btn" href="#comic">Çizgi roman görünümünü gör</a>
       <a class="btn" href="#presets">Ön ayarları gör</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
     </div>
@@ -143,8 +144,109 @@
 GoUi.use_preset(&amp;"kids_light")                   # ya da &amp;"kids_dark"
 GoUi.use_preset(&amp;"comic_light")                  # ya da &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 ayrıntılı olarak →</a> · <a href="theming-presets.html#kids">Kids ayrıntılı olarak →</a> ·
-    <a href="theming-presets.html#comic">Comic ayrıntılı olarak →</a> ·
+    <a href="#comic">Comic, her widget tek tek ↓</a> ·
     <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on iki görünümün hepsinde →</a></p>
+</section>
+
+<section id="comic">
+  <h2>Çizgi roman: kalın mürekkep ve sert bir gölge</h2>
+  <p class="sub">
+    En yeni görünüm her yüzü bir çizgi roman karesi gibi çizer — <b>kalın bir mürekkep çizgisinin</b> içinde yüzey rengi
+    ve aşağıya, sağa düşen <b>sert, dolgun bir gölge</b>. <code>comic_light</code> krem kâğıt renginde bir sayfaya siyah mürekkeple,
+    kobalt bir birincil renkle çizer; <code>comic_dark</code> ise gece renginde bir sayfaya krem mürekkeple, sarı bir birincil renkle çizer. Aşağıdaki her resim
+    gerçek bir gohud ekranıdır — aynı kod, tek bir ön ayar satırı.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")   # ya da &amp;"comic_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light ile gohud galerisi — krem kâğıt renginde bir sayfada mürekkeple çizilmiş, sert gölgeli tuşlar, satırlar ve çubuklar" loading="lazy"><figcaption><code>comic_light</code> · galeri</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark ile gohud galerisi — gece renginde bir sayfada krem mürekkep ve sarı bir birincil renk" loading="lazy"><figcaption><code>comic_dark</code> · galeri</figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/sheet-light.png" width="300" height="649" alt="comic_light ile bir alt sayfa — alt kenardan yükselen, mürekkeple çizilmiş satırları olan mürekkep çizgili bir panel" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/coach-mark-light.png" width="300" height="649" alt="comic_light ile bir rehber işareti — bir düğmeyi gösteren mürekkep çizgili bir konuşma balonu" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/drawer-left-dark.png" width="300" height="649" alt="comic_dark ile bir yan çekmece — karartılmış ekranın üstünde, gezinme satırlarından oluşan mürekkep çizgili bir panel" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/comic/popover-dark.png" width="300" height="649" alt="comic_dark ile bir açılır balon — onu açan düğmeye bağlı, mürekkep çizgili bir balon" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-widget-inked">Her widget mürekkepli</h3>
+  <p>Düğmeler, anahtarlar, sekmeler, kaydırıcılar, kartlar, formlar, tablolar, seçiciler ve chip'ler hep mürekkebi taşır — onları
+    tek tek biçimlendirmezsiniz. Bir tuşa basın, gölgesi kaybolur: yüz, bir mühür gibi yerine gömülür.
+    Devre dışı yüzler gölgelerini yitirip solar; böylece basılabilen, basılamayandan ayrışır.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-light.png" width="382" height="204" alt="comic_light ile düğmeler — birincil, ikincil, çerçeveli, tehlike, sıkışık, yalın ve devre dışı tuşlar; her biri kalın siyah bir çizgi ve sert bir gölgeyle" loading="lazy"><figcaption><code>GoStyle.button()</code> — her türü</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-toggle-light.png" width="382" height="260" alt="comic_light ile anahtarlar ve onay kutuları — mürekkep çizgili bir ray ve topuz, onay işaretli mürekkep çizgili kutular" loading="lazy"><figcaption>Anahtarlar ve onay kutuları</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-radio_group-light.png" width="382" height="176" alt="comic_light ile radyo düğmeleri — mürekkep çizgili halkalar, seçili olanda dolu bir nokta" loading="lazy"><figcaption>Radyo düğmeleri</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-tabs-light.png" width="382" height="136" alt="comic_light ile sekmeler — seçili sekme mürekkep çizgili bir panel, diğerleri bir mürekkep alt çizgisinin üstünde durur" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-segmented-light.png" width="240" height="72" alt="comic_light ile bölümlü bir denetim — mürekkep çizgili hücreler, seçili olan dolu" loading="lazy"><figcaption>Bölümlü haplar</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-slider-light.png" width="382" height="107" alt="comic_light ile bir kaydırıcı — mürekkep çizgili bir oluk, ince bir vurgu dolgusu ve mürekkep çizgili bir tutamak" loading="lazy"><figcaption><code>GoStyle.slider()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-select-light.png" width="382" height="76" alt="comic_light ile açılır seçim kutuları — köşeli ok işaretli mürekkep çizgili tuşlar" loading="lazy"><figcaption>Seçim kutuları</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-card-light.png" width="382" height="243" alt="comic_light ile bir kart — kalın bir çizgi ve sert bir gölgeyle beyaz bir panel" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goform-light.png" width="382" height="326" alt="comic_light ile bir form — ipucu olan mürekkep çizgili bir alan, bir anahtar ve mürekkep çizgili bir Kaydet tuşu" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-list_row-light.png" width="382" height="181" alt="comic_light ile liste satırları — her satır simgeli, alt başlıklı ya da tehlike etiketli mürekkep çizgili bir şerit" loading="lazy"><figcaption>Liste satırları</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotable-light.png" width="382" height="273" alt="comic_light ile bir tablo — bir mürekkep çizgisinin üstünde başlık, her skor satırı mürekkep çizgili bir şerit" loading="lazy"><figcaption><code>GoTable</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/godatepicker-light.png" width="382" height="392" alt="comic_light ile bir tarih seçici — mürekkep çizgili gün hücreleri, seçili gün dolu" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gotimepicker-light.png" width="382" height="408" alt="comic_light ile bir saat seçici — mürekkep çizgili saat ve dakika kutuları, AM ve PM tuşları ve bir saat kadranı" loading="lazy"><figcaption><code>GoTimePicker</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostepper-light.png" width="382" height="315" alt="comic_light ile bir adım göstergesi — mürekkep çizgili adım satırları, tamamlanan adım onaylı, sıradaki adım soluk" loading="lazy"><figcaption><code>GoStepper</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-filter_chip-light.png" width="382" height="132" alt="comic_light ile filtre ve giriş chip'leri — mürekkep çizgili haplar, seçili filtre renklendirilmiş ve onay işaretli" loading="lazy"><figcaption>Filtre chip'leri</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gonavbar-light.png" width="382" height="88" alt="comic_light ile bir gezinme çubuğu — üstte bir mürekkep çizgisi, mürekkep çizgili bir hapın içinde geçerli sekme ve Alerts üstünde bir rozet" loading="lazy"><figcaption><code>GoNavBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goinputgroup-light.png" width="382" height="76" alt="comic_light ile bir giriş grubu — bir alan ve onun Gönder tuşu, tek bir mürekkep çizgili biçime kaynaştırılmış" loading="lazy"><figcaption><code>GoInputGroup</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosplitbutton-light.png" width="151" height="76" alt="comic_light ile bir bölünmüş düğme — bir eylem ve bir menü oku, mürekkep çizgili iki yarım olarak" loading="lazy"><figcaption><code>GoSplitButton</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gopagination-light.png" width="382" height="72" alt="comic_light ile sayfalama — geçerli sayfa sert gölgeli, mürekkep çizgili bir tuştur" loading="lazy"><figcaption><code>GoPagination</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-comic-dark">Gece: <code>comic_dark</code></h3>
+  <p>Koyu bir sayfada siyah bir çizgi kaybolurdu; bu yüzden <code>comic_dark</code> onu krem renginde çizer ve aynı mürekkeple
+    renklendirilmiş soluk bir gölge düşürür. HUD parçaları — hızlı slotlar, çubuklar, joystick ve ödül takvimi — aynı kurallara uyar.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/comic/gostyle-button-dark.png" width="382" height="204" alt="comic_dark ile düğmeler — gece renginde bir sayfada krem çizgiler, sarı bir birincil renk ve soluk sert gölgeler" loading="lazy"><figcaption>Gece <code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslot-dark.png" width="382" height="72" alt="comic_dark ile hızlı slotlar — yığın sayısı ve bekleme süresi olan mürekkep çizgili bloklar, yanan slotlar sarı kenarlı" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gobar-dark.png" width="382" height="135" alt="comic_dark ile HUD çubukları — krem mürekkep çizgili oluklarda HP, MP ve XP" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gojoystick-dark.png" width="204" height="204" alt="comic_dark ile sanal bir joystick — krem bir halka ve gölge düşüren bir topuz" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-alert-dark.png" width="382" height="248" alt="comic_dark ile uyarılar — krem mürekkeple bilgi, başarı, uyarı ve tehlike panelleri" loading="lazy"><figcaption>Uyarılar</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/goslotgrid-dark.png" width="382" height="208" alt="comic_dark ile bir slot ızgarası — mürekkep çizgili bloklardan bir envanter" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorewardcalendar-dark.png" width="382" height="190" alt="comic_dark ile bir ödül takvimi — mürekkep çizgili gün hücreleri, alınan günler onaylı, bugün sarı kenarlı" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gostyle-chip-dark.png" width="382" height="84" alt="comic_dark ile nadirlik chip'leri — her biri kendi rengiyle renklendirilmiş mürekkep çizgili haplar" loading="lazy"><figcaption>Chip'ler</figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gorangeslider-dark.png" width="382" height="107" alt="comic_dark ile bir aralık kaydırıcısı — mürekkep çizgili bir oluk üstünde mürekkep çizgili iki tutamak" loading="lazy"><figcaption><code>GoRangeSlider</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gosearchbar-dark.png" width="382" height="80" alt="comic_dark ile bir arama çubuğu — arama ve filtre simgeli mürekkep çizgili bir çubuk" loading="lazy"><figcaption><code>GoSearchBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/comic/gofab-dark.png" width="382" height="80" alt="comic_dark ile kayan eylem düğmeleri — krem mürekkepli, sert gölgeli sarı tuşlar" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-comic-look-works">Çizgi roman görünümü nasıl çalışır</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="one-stylebox-for-every-face">Her yüz için tek bir StyleBox</h3>
+      <p>Her yüz bir <code>GoStyleBoxComic</code>'tir: denetimin kendi dikdörtgeninin içine çizilen bir dolgu, bir çizgi ve bir gölge. Çizgi ve gölge boyutlarını her çizişte <code>GoConfig</code>'ten okur; böylece tek bir ayar ekranın tamamını bir anda değiştirir.</p>
+    </div>
+    <div class="card">
+      <h3 id="pressed-means-flat">Basılı demek düz demek</h3>
+      <p>Basılan bir tuş gölgesini bırakır ve yerine oturur. Üzerine gelince gölge kalır; odak, çizgiyi asla örtmeyen içten bir mürekkep halkası ekler; devre dışı yüzler gölgelerini yitirip solar.</p>
+    </div>
+    <div class="card">
+      <h3 id="the-skin-inks-the-rest">Gerisini kaplama mürekkepler</h3>
+      <p><code>GoSkinComic</code>, kodun çizdiği her şeyi mürekkepler: hızlı slotlar, chip'ler, rozetler, avatarlar, bildirimler, gezinme çubuğu, FAB, tarih hücreleri ve topuzu gölge düşüren joystick.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows-get-a-caption">Pencereler bir başlık kutusu alır</h3>
+      <p>Bir pencerenin başlığı, çizgi romandaki anlatıcı kutusu gibi sarı bir başlık kutusunun üstünde, mürekkep çizgili yuvarlak bir kapatma düğmesinin yanında durur. İletişim kutuları, alt sayfalar, çekmeceler ve açılır balonlar opak, mürekkep çizgili panellerdir.</p>
+    </div>
+    <div class="card">
+      <h3 id="readable-day-and-night">Gece gündüz okunaklı</h3>
+      <p>Her iki palet de, basılı ve devre dışı tuşlar dahil, diğer her ön ayarla aynı WCAG kontrast denetimlerinden geçer. Bir başlık kutusunun rengi sayfaya fazla yakın kalacaksa, çizgisi sayfa rengine geçer.</p>
+    </div>
+    <div class="card">
+      <h3 id="no-layout-changes">Yerleşim değişmez</h3>
+      <p>Çizgi ve gölge her denetimin içine sığar, iç boşluk da temanın verdiği gibi kalır; böylece başka bir görünümde yerleştirilmiş bir ekran yerleşimini — ve projenizin yazı tipini — korur.</p>
+    </div>
+  </div>
+  <h3 id="three-settings-and-one-call">Üç ayar ve tek bir çağrı</h3>
+  <p>Üç <code>GoConfig</code> ayarı tüm çizgi roman yüzlerini bir anda değiştirir. Hiçbir şey yeniden kurulmaz — siz ayarladıkça ekran yeniden çizilir.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # çizgi (dp) — varsayılan 3
+GoUi.config.comic_shadow_size = 6.0    # gölge (dp) — varsayılan 4
+GoUi.config.comic_shadow = false       # hiçbir yerde gölge yok</code></pre>
+  <p>Ayarlar ne derse desin, tek bir widget kendi yolunu seçebilir. İçindeki her şeyi de kapsamak için son argüman olarak <code>true</code> verin.</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # bu düğme düz durur
+GoStyle.comic_shadow(card, true, true)       # bu kart ve içindeki her şey gölgesini korur
+GoStyle.comic_border(title, 5.0)             # bunda daha kalın bir çizgi</code></pre>
+  <div class="note">
+    <b>Kendi çizgi romanınızı yapın.</b> <code>tools/new_theme.py inked --from comic_light</code> paleti kopyalar; kâğıt,
+    mürekkep ve birincil renkleri değiştirip <code>tools/make_theme.py inked</code> komutunu çalıştırın. Mürekkep, gölge ve kaplama da beraberinde gelir.
+  </div>
+  <p><a href="theming-presets.html#comic">Comic ayrıntılı olarak →</a> · <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on iki görünümün hepsinde →</a></p>
 </section>
 
 <section id="showcase">
