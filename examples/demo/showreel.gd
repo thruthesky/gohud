@@ -2,7 +2,7 @@
 ##
 ## The guided tour (`sim.gd`) takes minutes and shows one look at a time. This screen is the trailer:
 ## in **20 seconds** it walks the same chapters at **one widget every half second**, and every step wears
-## a different theme — default, sci-fi, medieval, material, kids — so the movie says "the same widgets, every look"
+## a different theme — default, sci-fi, medieval, material, comic, kids — so the movie says "the same widgets, every look"
 ## without a single word. The bot drives each widget for the half second it is up (fast), so nothing
 ## on screen is a still: bars fill, slots cool down, menus open, the cursor really presses.
 ##

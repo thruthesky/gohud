@@ -108,7 +108,9 @@ signal chapter_finished(index: int)
 ##   godot -- --auto --turbo    at four times the speed
 ##   godot -- --auto --exit     closes itself once it has been through everything
 ##   godot -- --explore=hud     opens that widget straight into explore mode
+##   godot -- --auto --carousel every chapter wears the next theme family at any speed (for recordings)
 var _auto_exit := false
+var _carousel := false
 var _trace := false
 var _shot_dir := ""
 
@@ -122,6 +124,7 @@ func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
 	_auto_exit = args.has("--exit")
 	_trace = args.has("--trace")
+	_carousel = args.has("--carousel")
 	var explore_key := ""
 	for arg in args:
 		if arg.begins_with("--shots="): _shot_dir = arg.substr(8)
@@ -1190,10 +1193,11 @@ func _rebuild(preset: StringName) -> void:
 	_relayout()
 
 
-## 🎨 Is this a Fast tour — the one that puts every widget in the next theme? Not a single widget played from
-## explore mode: that one keeps the theme the person is looking at.
+## 🎨 Is this a Fast tour — the one that puts every widget in the next theme? `--carousel` turns it on at any speed,
+## so a recording can play at Normal. Not a single widget played from explore mode: that one keeps the theme the
+## person is looking at.
 func _rotating() -> bool:
-	return _running and _explore < 0 and is_instance_valid(_bot) and _bot.speed >= FAST - 0.01
+	return _running and _explore < 0 and is_instance_valid(_bot) and (_carousel or _bot.speed >= FAST - 0.01)
 
 
 ## The theme family scene [param index] wears on a Fast tour — the picked one on the scene the tour started from,

@@ -8,6 +8,7 @@
 # bash run.sh --languages                 Check all built-in languages render (headless)
 # bash run.sh --shot-languages /tmp/l.png Capture the language card
 # bash run.sh --record /tmp/demo.avi      Record the full tour at 1080p / 60 fps
+# DEMO_CAROUSEL=1 bash run.sh --record /tmp/themes.avi   The same, every chapter in the next theme family
 # bash run.sh -- --auto --cinema --exit   Preview the recording layout
 # bash run.sh --record-showreel /tmp/reel.avi   Record the 20-second showreel at 1080p / 60 fps
 # bash run.sh -- --open=showreel         Watch the showreel in a window (--showreel-seconds= --showreel-step= --showreel-order=random)
@@ -66,7 +67,7 @@ case "${1:-}" in
     mkdir -p "$(dirname "$MOVIE")"
     MOVIE="$(cd "$(dirname "$MOVIE")" && pwd)/$(basename "$MOVIE")"
     "$GODOT" --path "$HERE" --resolution 1920x1080 --fixed-fps "${DEMO_FPS:-60}" \
-      --write-movie "$MOVIE" "$@" -- --auto --cinema --exit
+      --write-movie "$MOVIE" "$@" -- --auto --cinema --exit ${DEMO_CAROUSEL:+--carousel}
     echo "Movie: $MOVIE"
     ;;
   --record-showreel)

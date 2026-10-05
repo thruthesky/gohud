@@ -93,6 +93,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   the whole screen rebuilt in it, while the picker keeps the person's choice and the tour ends back in it. The bot
   now rolls the wheel where no list, map, slider or wheel inside the stage would take it, so it can reach what sits
   below a nested list.
+- **The theme carousel at any speed — `--carousel`.** `godot -- --auto --cinema --carousel --exit` (or
+  `DEMO_CAROUSEL=1 bash examples/demo/run.sh --record <movie>`) puts every chapter of the tour in the next theme
+  family at Normal speed, so a recording shows each widget in a different look without Fast's hurry. The Comic family
+  joins the carousel and the showreel on its own — the demo reads its families from `themes/presets/`.
 
 ### Fixed
 

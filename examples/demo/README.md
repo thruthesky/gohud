@@ -66,7 +66,7 @@ The tour waits on its Start screen and offers two ways in:
 - **Start demo** plays a guided simulation of 31 chapters. The cursor uses real mouse and
   keyboard events to click buttons, type into fields, select menu items, drag sliders and
   joysticks, and scroll lists. Pick **Fast** first (3.2×) and every chapter wears the next theme
-  family — Default, Sci-fi, Medieval, Material, Kids, then round again — so one pass shows each
+  family — Default, Sci-fi, Medieval, Material, then Kids and Comic, then round again — so one pass shows each
   widget in a different look. The whole screen is rebuilt in that theme, side panels included,
   and a chip beside the theme picker names it; the picker keeps the theme you chose, and the
   tour ends back in it. Playing a single widget from explore mode keeps your theme.
@@ -78,7 +78,7 @@ The tour waits on its Start screen and offers two ways in:
   **Widgets** menu in the top bar.
 
 The **Theme** dropdown on the home screen and at the top of both `demo.tscn` and `sim.tscn` selects **Default theme**,
-**Sci-fi theme**, **Medieval theme**, **Material theme** or **Kids theme** (the dark preset of each family). It is also
+**Sci-fi theme**, **Medieval theme**, **Material theme**, **Comic theme** or **Kids theme** (the dark preset of each family). It is also
 available on the simulation's Start and completion screens. Colours, frames and icons change together;
 the Themes & icons example compares the selected family's dark and light variants.
 
@@ -154,6 +154,8 @@ To record a complete 1920×1080, 60 fps movie with Godot's Movie Maker:
 ```bash
 bash examples/demo/run.sh --record /tmp/gohud-demo.avi
 # OGV output is also supported. Override frame rate with DEMO_FPS=30.
+DEMO_CAROUSEL=1 bash examples/demo/run.sh --record /tmp/gohud-themes.avi
+# Every chapter wears the next theme family at Normal speed — the Fast carousel without the hurry.
 ```
 
 Recording explicitly enables automatic Start, Cinema mode, the countdown and exit after
@@ -165,6 +167,7 @@ For an on-screen recording preview or a still image:
 
 ```bash
 bash examples/demo/run.sh -- --auto --cinema --exit
+bash examples/demo/run.sh -- --auto --cinema --carousel --exit       # a new theme every chapter
 bash examples/demo/run.sh --shot /tmp/gohud-home.png                   # the home screen
 SHOT_SCENE=res://sim.tscn bash examples/demo/run.sh --shot /tmp/gohud-start.png
 bash examples/demo/run.sh --shot /tmp/gohud-hud.png -- --explore=hud   # one widget, explore mode
@@ -179,7 +182,7 @@ bash examples/demo/run.sh -- --explore=surfaces                          # open 
 
 The tour takes minutes and shows one look at a time. The **showreel** is the trailer: in
 **20 seconds** it walks the same chapters at **one widget every half second**, and every step
-wears a different theme — default, sci-fi, medieval, material, kids — so a short clip says "the same
+wears a different theme — default, sci-fi, medieval, material, comic, kids — so a short clip says "the same
 widgets, every look" without a word. The bot drives each widget for the half second it is up, so
 bars fill, slots cool down, menus open and the cursor really presses; the caption under the
 stage names the widget and shows the last callback it fired. It is the home screen's fifth
