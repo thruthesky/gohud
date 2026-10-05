@@ -19,6 +19,7 @@ import os
 
 import theme_material  # Material 3 Expressive — the `material` shape (tools/theme_material.py)
 import theme_kids  # the toy box — the `kids` shape (tools/theme_kids.py)
+import theme_comic  # the comic page — the `comic` shape (tools/theme_comic.py)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
@@ -241,6 +242,8 @@ CUT_SCRIPT = RES + "/widgets/go_stylebox_cut.gd"
 MEDIEVAL_SCRIPT = RES + "/widgets/go_stylebox_medieval.gd"
 # The toy box draws its keys, panels and fields as jelly candies (tools/theme_kids.py writes them).
 JELLY_SCRIPT = RES + "/widgets/go_stylebox_jelly.gd"
+# The comic page inks its parts with a bold outline and a hard shadow (tools/theme_comic.py writes them).
+COMIC_SCRIPT = RES + "/widgets/go_stylebox_comic.gd"
 BRACKET_SCRIPT = RES + "/widgets/go_stylebox_bracket.gd"
 
 # `corners=(tl, tr, br, bl)` → the bitmask GoStyleBoxCut expects
@@ -256,6 +259,8 @@ def control_svgs(pal, shape=SHAPE_DEFAULT):
         return theme_material.controls(pal)
     if shape.get("controls") == "kids":
         return theme_kids.controls(pal)
+    if shape.get("controls") == "comic":
+        return theme_comic.controls(pal)
     acc, on, mut, sec, hi = (svg_hex(pal[k]) for k in ("accent", "on_accent", "muted", "secondary", "surface_high"))
 
     def wrap(w, h, body, disabled=False):
@@ -706,10 +711,14 @@ def build(pal, shape, variant, out_path):
     box("btn_danger_solid", bg=pal["danger"], border=pal["danger"], bw=1, radius=R, margins=PAD)
     box("btn_danger_solid_hover", bg=danger_solid_hover_bg, border=pal["danger"], bw=1, radius=R, margins=PAD)
     box("btn_danger_solid_pressed", bg=danger_solid_press_bg, border=pal["danger"], bw=1, radius=R, margins=PAD)
+    # 🛑 The glow too, as on the raised primary — with only `flat_shadow` the cut shape (sci-fi) got no depth at all and
+    #    `GoStyle.glow()` changed nothing on a filled danger key there (found 2026-10-05 by the "raised stands above flat" check).
     box("btn_danger_solid_glow", bg=pal["danger"], border=pal["danger"], bw=1, radius=R, margins=PAD,
+        glow=(alpha(pal["danger"], 0.55), 7),
         flat_shadow=(alpha(pal["danger"], 0.34), 8, (0, 3)))
     box("btn_danger_solid_glow_hover", bg=danger_solid_hover_bg, border=pal["danger"], bw=1,
-        radius=R, margins=PAD, flat_shadow=(alpha(pal["danger"], 0.46), 11, (0, 4)))
+        radius=R, margins=PAD, glow=(alpha(pal["danger"], 0.75), 10),
+        flat_shadow=(alpha(pal["danger"], 0.46), 11, (0, 4)))
     box("btn_danger_solid_glow_pressed", bg=danger_solid_press_bg, border=pal["danger"],
         bw=1, radius=R, margins=PAD,
         flat_shadow=(alpha(pal["shadow"], pal["shadow"][3] * 0.25), 3, (0, 1)))
@@ -1163,8 +1172,11 @@ def build(pal, shape, variant, out_path):
         theme_material.restyle(pal, consts, boxes, T, flat, C, contrast)
     if shape["kind"] == "kids":
         theme_kids.restyle(pal, consts, boxes, T, flat, C, contrast)
+    if shape["kind"] == "comic":
+        theme_comic.restyle(pal, consts, boxes, T, flat, C, contrast)
     jelly = any(body[:1] == ['script = ExtResource("jelly")'] for _, body in boxes.values())
-    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + int(jelly) + len(fonts)
+    inked = any(body[:1] == ['script = ExtResource("comic")'] for _, body in boxes.values())
+    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + int(jelly) + int(inked) + len(fonts)
     lines = ['[gd_resource type="Theme" load_steps=%d format=3]' % steps, ""]
     if cutting:
         lines.append('[ext_resource type="Script" path="%s" id="cut"]' % CUT_SCRIPT)
@@ -1173,6 +1185,8 @@ def build(pal, shape, variant, out_path):
         lines.append('[ext_resource type="Script" path="%s" id="medieval"]' % MEDIEVAL_SCRIPT)
     if jelly:
         lines.append('[ext_resource type="Script" path="%s" id="jelly"]' % JELLY_SCRIPT)
+    if inked:
+        lines.append('[ext_resource type="Script" path="%s" id="comic"]' % COMIC_SCRIPT)
     for role, path in fonts.items():
         if not path.startswith(RES + "/") or not os.path.isfile(os.path.join(ADDON, path[len(RES) + 1:])):
             raise SystemExit("Font must exist inside the addon: %s" % path)
@@ -1217,7 +1231,9 @@ SHAPES = {"flat": SHAPE_DEFAULT, "cut": SHAPE_CUT,
                        "grain_alpha": 0.035, "bevel_strength": 0.18},
           "material": theme_material.SHAPE,
           # The toy box: the default family's sizes, its own shapes (tools/theme_kids.py).
-          "kids": dict(SHAPE_DEFAULT, **theme_kids.SHAPE)}
+          "kids": dict(SHAPE_DEFAULT, **theme_kids.SHAPE),
+          # The comic page: the default family's sizes, an inked outline and a hard shadow (tools/theme_comic.py).
+          "comic": dict(SHAPE_DEFAULT, **theme_comic.SHAPE)}
 PALETTES_DIR = os.path.join(ADDON, "themes", "palettes")
 # Keys a palette must carry — without them generation dies halfway with a KeyError. Say so up front.
 PALETTE_KEYS = ("background", "surface", "surface_soft", "surface_high", "border", "text", "secondary",
@@ -1284,6 +1300,7 @@ SKIN_SCRIPTS = {
     "medieval": ("GoSkinMedieval", RES + "/themes/skins/go_skin_medieval.gd"),
     "material": ("GoSkinMaterial", RES + "/themes/skins/go_skin_material.gd"),
     "kids": ("GoSkinKids", RES + "/themes/skins/go_skin_kids.gd"),
+    "comic": ("GoSkinComic", RES + "/themes/skins/go_skin_comic.gd"),
 }
 SKINS_DIR = os.path.join(ADDON, "themes", "skins")
 
@@ -1294,6 +1311,7 @@ SKIN_SOURCES = {
     "medieval": os.path.join(ADDON, "themes", "skins", "go_skin_medieval.gd"),
     "material": os.path.join(ADDON, "themes", "skins", "go_skin_material.gd"),
     "kids": os.path.join(ADDON, "themes", "skins", "go_skin_kids.gd"),
+    "comic": os.path.join(ADDON, "themes", "skins", "go_skin_comic.gd"),
 }
 DIALS_TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "skin_dials.json")
 

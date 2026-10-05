@@ -486,6 +486,52 @@ static func glow(node: Button, on := true) -> Button:
 	return node
 
 
+## 💬 Shows (or, with [param on] false, hides) the comic shadow of **this widget** whatever `GoConfig.comic_shadow`
+## says — every face it draws (`normal`, `hover`, `pressed`, a panel's `panel`…). With [param deep], every widget inside
+## it too. Returns the node, so it chains:
+##
+## ```gdscript
+## row.add_child(GoStyle.comic_shadow(GoStyle.button("Skip", _skip), false))   # this one sits flat
+## ```
+##
+## 🔑 Only comic faces (`GoStyleBoxComic`, the `comic_*` looks) have this shadow — under any other look it does nothing.
+## 🛑 It puts copies of the faces on the node. A widget that dresses itself again later (a theme change rebuilds the
+##    screen) takes the theme's faces back — call it again after rebuilding.
+static func comic_shadow(node: Control, on := true, deep := false) -> Control:
+	_comic_faces(node, deep, func(face: GoStyleBoxComic) -> void:
+		face.shadow = GoStyleBoxComic.Shadow.ON if on else GoStyleBoxComic.Shadow.OFF)
+	return node
+
+
+## 💬 Sets the ink outline of **this widget** to [param width] dp whatever `GoConfig.comic_border_width` says;
+## a negative width hands it back to the setting. With [param deep], every widget inside it too. The same contract as
+## `comic_shadow()`.
+static func comic_border(node: Control, width: float, deep := false) -> Control:
+	_comic_faces(node, deep, func(face: GoStyleBoxComic) -> void: face.outline = width)
+	return node
+
+
+## Puts a changed copy of every comic face [param node] draws on it (and on its descendants with [param deep]).
+static func _comic_faces(node: Control, deep: bool, change: Callable) -> void:
+	if node == null: return
+	var names: Array[StringName] = []
+	# The engine's own list for the class, and the theme's for its variation — a scripted widget reports its engine class.
+	for name in ThemeDB.get_default_theme().get_stylebox_list(node.get_class()): names.append(StringName(name))
+	var look := node.theme if node.theme != null else GoUi.theme()
+	if look != null and not node.theme_type_variation.is_empty():
+		for name in look.get_stylebox_list(node.theme_type_variation):
+			if not names.has(StringName(name)): names.append(StringName(name))
+	for name in names:
+		var face := node.get_theme_stylebox(name) as GoStyleBoxComic
+		if face == null: continue
+		var copy := face.duplicate() as GoStyleBoxComic
+		change.call(copy)
+		node.add_theme_stylebox_override(name, copy)
+	if deep:
+		for child in node.get_children():
+			if child is Control: _comic_faces(child as Control, true, change)
+
+
 ## 🔑 Sets wrapping so **button text is never split character by character**. Call it again after changing the text.
 ##
 ## 🛑 A button with wrapping on **drops the text width out of its minimum width** (it assumes it can fold).
@@ -1023,6 +1069,8 @@ static func box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha 
 ## and shadow** — only the shape is lost, the geometry is the same.
 ## 🛑 Return an empty flat face and its padding is 0, which glued the text of cards built by the old `box()` to their borders (2026-09-15, Laryen's look swap).
 static func _flat_like(source: StyleBox) -> StyleBoxFlat:
+	# A comic face knows its own sides, corners and crisp shadow (a blur would turn its block into a smudge).
+	if source is GoStyleBoxComic: return (source as GoStyleBoxComic).to_flat()
 	var flat := StyleBoxFlat.new()
 	flat.bg_color = GoUi.color(GoTheme.SURFACE)
 	if source == null: return flat

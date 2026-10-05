@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 の HUD・UI キット</title>
-<meta name="description" content="Godot 4.7+ 向けのカスタマイズできる HUD・UI キット。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、スナックバー、HUD バー、クイックスロット、バーチャルスティックを備え、デフォルト・SF・中世・Material 3・キッズの10プリセットで見た目を切り替える。">
+<meta name="description" content="Godot 4.7+ 向けのカスタマイズできる HUD・UI キット。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、スナックバー、HUD バー、クイックスロット、バーチャルスティックを備え、デフォルト・SF・中世・Material 3・キッズ・コミックの12プリセットで見た目を切り替える。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud は Godot 4.7 以降で使う HUD・UI キットだ。浮かぶウィンドウ、ボトムシート、ダイアログ、フォーム、
       スナックバー、コーチマーク、HUD バー、クイックスロット、バーチャルスティックが<b>テーマ1枚と
       差し替え可能なアイコンセット1枚</b>で動き、セーフエリア・仮想キーボード・RTL・タッチターゲットを自分で面倒みる。
-      <b>10のプリセット</b> — デフォルト・SF・中世・Material 3・キッズ、それぞれにダークとライト — が1行で色と形を同時に変える。
+      <b>12のプリセット</b> — デフォルト・SF・中世・Material 3・キッズ・コミック、それぞれにダークとライト — が1行で色と形を同時に変える。
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,8 +86,8 @@
       <span class="badge">純粋な GDScript</span>
       <span class="badge">オートロード不要</span>
       <span class="badge">MIT</span>
-      <span class="badge">プリセット10種</span>
-      <span class="badge new">新登場：Material 3 · キッズ</span>
+      <span class="badge">プリセット12種</span>
+      <span class="badge new">新登場：コミック · Material 3 · キッズ</span>
       <span class="badge">21言語</span>
       <span class="badge">アイコン<span data-n="icons">1,287</span>種同梱</span>
     </div>
@@ -103,9 +103,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>新登場：Material 3 とキッズ向けの見た目</h2>
+  <h2>新登場：コミック、Material 3、キッズ向けの見た目</h2>
   <p class="sub">
-    デフォルト・SF・中世に新しい系統が2つ加わった — <b>組み込みの見た目は10種類</b>になり、それぞれにダークとライトがある。
+    デフォルト・SF・中世に新しい系統が3つ加わった — <b>組み込みの見た目は12種類</b>になり、それぞれにダークとライトがある。
     どのウィジェット・ポップアップ・HUD 部品も、コードを一切変えずにそのまま受け取る：プリセットを切り替えれば、画面全体がついてくる。
   </p>
   <div class="phones">
@@ -113,6 +113,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark の gohud ギャラリー — 同じ Material 3 の形をダークのベースラインで" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light の gohud ギャラリー — 日だまりのように明るいページに、クレヨン色のぷっくりしたゼリーボタン" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark の gohud ギャラリー — 夜空色のページに同じおもちゃ箱" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light の gohud ギャラリー — 紙のようなクリーム色のページに、太いインクの輪郭とくっきりした影" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark の gohud ギャラリー — 夜のページにクリーム色の輪郭と黄色のプライマリ" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -129,11 +131,19 @@
         スティックは虹色だ。ウィンドウにはお日さま色のタイトルリボンと丸いキャンディの閉じるボタンが付き、押すとぷにっとつぶれる。
         サイズとプロジェクトのフォントはまったく変わらない。</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">コミック — 太いインク</h3>
+      <p>どの面もマンガのコマだ：太いインクの輪郭の中に表面の色を塗り、後ろにくっきりした影を落とし、
+        面を押すとその影が消える。設定1つですべての影をオン・オフし、さらに2つで輪郭の太さと影の大きさを決め、
+        呼び出し1つで同じことをウィジェット1つにだけ行える。ウィンドウには黄色のタイトルキャプションが付く。</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # または MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # または &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # または &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # または &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 の詳細 →</a> · <a href="theming-presets.html#kids">キッズの詳細 →</a> ·
-    <a href="widgets-popups.html#popup-looks">同じポップアップを10の見た目で →</a></p>
+    <a href="theming-presets.html#comic">コミックの詳細 →</a> ·
+    <a href="widgets-popups.html#popup-looks">同じポップアップを12の見た目で →</a></p>
 </section>
 
 <section id="showcase">
@@ -156,7 +166,7 @@ GoUi.use_preset(&amp;"kids_light")                   # または &amp;"kids_dark
       <figcaption><b>SF</b> — 角張ったパネルとタッチ操作</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">10のプリセットと切り替え方 →</a></p>
+  <p><a href="#presets">12のプリセットと切り替え方 →</a></p>
 </section>
 
 <section id="what">
@@ -192,8 +202,8 @@ GoUi.use_preset(&amp;"kids_light")                   # または &amp;"kids_dark
       <p>ウィジェットが知っているのは <code>GoIconSet.CLOSE</code> だけ。セットを差し替えればコードに触れずに絵が変わる。 <a href="icons.html">アイコン →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">10の見た目、1行</h3>
-      <p><code>GoUi.use_preset()</code> がテーマ・スキン・アイコンをまとめて入れ替える — 丸み、面取りの SF、鍛造した中世の枠、Material 3 のアプリ部品。</p>
+      <h3 id="six-looks-one-line">12の見た目、1行</h3>
+      <p><code>GoUi.use_preset()</code> がテーマ・スキン・アイコンをまとめて入れ替える — 丸み、面取りの SF、鍛造した中世の枠、Material 3 のアプリ部品、キッズのゼリーキャンディ、コミックのインク。</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">読めるかどうかは測る</h3>
@@ -242,6 +252,8 @@ GoUi.use_preset(&amp;"kids_light")                   # または &amp;"kids_dark
       <tr><td><code>material_dark</code> <span class="badge new">新登場</span></td><td>同じ Material 3 の形をダークのベースラインで</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">新登場</span></td><td>子ども向けのおもちゃ箱 — 太い縁取りと押すと沈む段を持つゼリーキャンディのキー、クレヨンの色、日だまりのように明るいページ</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">新登場</span></td><td>同じおもちゃ箱を夜空色のページで</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">新登場</span></td><td>マンガのコマ — どの面にも太いインクの輪郭とくっきりした影、紙のようなクリーム色のページに白いパネル。影、その大きさ、輪郭の太さは設定で変えられる</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">新登場</span></td><td>同じインクを夜のページで — クリーム色の輪郭と黄色のプライマリ</td></tr>
     </tbody>
   </table>
 
@@ -353,11 +365,13 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>中身を囲わず、四隅の印だけを引く</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>リベット・角の彫刻・ベベルのハイライト・素材の質感を持つ鍛造の枠</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>ゼリーキャンディ — 太い縁取り、押すと沈むしっかりした段、上が明るい本体と白いつや</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>マンガのコマ — 太いインクの輪郭とくっきりしたドロップシャドウ。どちらもゲーム実行中に <code>GoConfig</code> で大きさが決まる</td></tr>
     </tbody>
   </table>
-  <p>4つとも Theme リソースへそのまま保存できる — だからこそテーマが色だけでなく<b>形</b>まで変えられる。
-    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code> が同梱のサブクラスだ。</p>
+  <p>5つとも Theme リソースへそのまま保存できる — だからこそテーマが色だけでなく<b>形</b>まで変えられる。
+    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code>、<code>GoSkinComic</code> が同梱のサブクラスだ。</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="同梱の各スキンが描いたクイックスロット・スティック・チップ — デフォルト、キッズ、Material、中世、SF" loading="lazy"><figcaption>スキンが描くもの — デフォルト、キッズ、Material、中世、SF</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="コミックスキンが描いたクイックスロット・スティック・チップ — インクの輪郭とくっきりした影" loading="lazy"><figcaption>…そしてコミックスキン</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> は必ず <code>StyleBoxFlat</code> を返す。</b> 呼び出し側が受け取って
@@ -451,7 +465,7 @@ func slot_box(accent: Color, lit: bool) -&gt; StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    すべての色の組み合わせと、<b>ボタンの状態ごとのラベルとその下のパネル</b>を、10のテーマすべてで WCAG に
+    すべての色の組み合わせと、<b>ボタンの状態ごとのラベルとその下のパネル</b>を、12のテーマすべてで WCAG に
     照らして測る。半透明の色は実際の背景に合成してから測る — そのまま測ると、画面に出ている見え方より
     良い比率が出てしまう。
   </p>

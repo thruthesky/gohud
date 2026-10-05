@@ -10,7 +10,7 @@
 |---|---|---|
 | `widgets/<name>.png` cropped to one widget | `www/img/widgets/<name>.webp` | as shot (twice the UI units, sharp on a retina screen) |
 | a whole phone screen (780×1688) anywhere | the same folder | 600 px wide — shown at most ~300 px wide on the site |
-| `popups/look-*.png` | also `www/img/widgets/goui.webp`, the ten looks side by side | 5 × 2 grid |
+| `popups/look-*.png` | also `www/img/widgets/goui.webp`, every look side by side | 5 columns |
 | `widgets/skin-*.png` | also `www/img/widgets/goskin.webp`, the five skins stacked | as shot |
 | — | `www/img/shots.json` | `{"widgets/gobar.webp": [382, 135], …}` — the **display** size (half the pixels) |
 
@@ -92,7 +92,7 @@ def main():
             manifest[rel] = [image.width // 2, image.height // 2]
             written += 1
 
-    # The ten looks side by side, for GoUi · GoThemePresets.
+    # Every look side by side, for GoUi · GoThemePresets.
     looks = sorted(f for f in os.listdir(os.path.join(shots, "popups")) if f.startswith("look-")) \
         if os.path.isdir(os.path.join(shots, "popups")) else []
     if looks:

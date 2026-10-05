@@ -169,6 +169,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `material_dark` | The same Material 3 shapes on the dark baseline | `GoSkinMaterial` |
 | `kids_light` | For children — the toy box: every key, row, field, bar and panel a jelly candy (`GoStyleBoxJelly` — chunky outline, light top and deeper band, a white shine, a lip that sinks when pressed and a squish under the finger), a sunny ribbon behind window titles and a round candy close button, a crayon colour for each kind of control, candy slots, sticker badges, a rainbow joystick; cream and peach with a grape primary — the host font is kept so non-Latin scripts still draw | `GoSkinKids` |
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
+| `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
+| `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
 Explicit `theme`, `skin` and `icons` fields still win over the preset, so you can take a preset and

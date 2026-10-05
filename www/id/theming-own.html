@@ -195,10 +195,26 @@ GoUi.use_preset(&amp;"neon")                             # selesai — ia muncul
       <tr><td><code>segment_inner_radius</code></td><td data-label="Default">8</td><td>Radius sudut (dp) tempat dua sel grup tombol tersambung Material bertemu.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Skin anak-anak <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Default">2</td><td>Lebar garis tepi (dp) bagian mainan anak-anak — chip, slot, FAB, peringatan.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Default">4</td><td>Bibir padat (dp) di bawah bagian mainan anak-anak yang Anda tekan; menyusut saat bagian itu ditekan.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Default">0.28</td><td>Seberapa banyak warna krayon mengisi muka slot atau chip anak-anak (0–1); sisanya warna permukaan.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Skin komik <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Kenop</th><th>Default</th><th>Apa yang diaturnya</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Default">0.22</td><td>Seberapa banyak warnanya sendiri mengisi chip, slot cepat, atau pil terpilih komik (0–1); sisanya warna permukaan.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Turunkan kelas skin (opsional)</h3>
+  <h3 id="subclass-the-skin-optional">Turunkan kelas skin (opsional)</h3>
   <p>Hanya apa yang tak terjangkau tema dan bentuk — heksagon joystick, lencana slot, kurung penanda sasaran pada
     coach mark — yang tinggal di dalam sebuah skin. Turunkan <code>GoSkin</code>, timpa metode-metode itu saja, lalu arahkan
     kolom <code>skin</code> di JSON ke resource tersebut. Tema yang hanya mengubah warna melewatkan langkah ini.</p>

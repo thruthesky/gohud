@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
   <p>Menyetel <code>theme</code>, <code>skin</code>, atau <code>icons</code> secara eksplisit <b>mengalahkan</b> preset.</p>
 
-  <h3 id="the-six-built-in-presets">Sepuluh preset bawaan</h3>
+  <h3 id="the-six-built-in-presets">Dua belas preset bawaan</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panel</th><th>Skin · ikon</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Bingkai tempaan <code>GoStyleBoxMedieval</code> — besi dan kulit, atau perkamen — dengan paku keling dan ornamen sudut pada menu</td><td><code>GoSkinMedieval</code> · 16 ikon ukiran di atas ikon default</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Baru</span></td><td>Material 3 Expressive untuk layar aplikasi — tombol pil 40dp di dalam area sentuh 48dp, dialog 28dp, kartu terisi, kolom bergaris tepi, slider Expressive; komponen aplikasi (bilah navigasi, bilah aplikasi atas, FAB, bilah pencarian, chip, progres, pemilih tanggal) mengikuti token komponen M3</td><td><code>GoSkinMaterial</code> · ikon default</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Baru</span></td><td>Untuk anak-anak — kotak mainan: garis tepi tebal dan bibir padat di bawah setiap tombol, yang tenggelam saat ditekan; kolom teks cekung, tab gelembung, bilah jeli; setiap jenis kontrol dengan warna krayonnya sendiri, slot cepat seperti permen, lencana stiker, joystick pelangi, dan grafik berwarna. Ukuran dan font proyek tetap sama.</td><td><code>GoSkinKids</code> · ikon default</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Baru</span></td><td>Panel buku komik yang digambar oleh <code>GoStyleBoxComic</code>: garis tepi tinta tebal dan bayangan tegas di setiap muka, yang hilang saat muka itu ditekan; toggle, kotak centang, dan pegangan slider bertinta, keterangan judul kuning pada jendela. Lebar garis tepi, ukuran bayangan, dan apakah bayangan tampil sama sekali adalah setelan <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · ikon default</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Kesepuluhnya, berdampingan</h2>
+  <h2>Kedua belasnya, berdampingan</h2>
   <p class="sub">Layar galeri yang sama dengan hanya nama presetnya yang diganti — tak satu baris pun kode widget yang berbeda.
     Masing-masing adalah ponsel yang dipegang tegak, 390×844.</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Galeri widget gohud dengan preset kids_light" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeri widget gohud dengan preset comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeri widget gohud dengan preset comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -291,6 +294,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # Sunting themes/palettes/candy.json, lalu:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>Komik: tinta tebal <span class="badge new">Baru</span></h2>
+  <p><code>comic_light</code> (panel putih di halaman krem seperti kertas, warna primer biru kobalt) dan <code>comic_dark</code> (panel batu sabak di
+    halaman malam, garis tepi krem, warna primer kuning) menggambar setiap muka seperti panel buku komik — garis tepi tinta tebal dengan
+    bayangan tegas di belakangnya.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# Atau: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeri gohud dalam comic_light — tombol, baris, dan bilah bertinta dengan bayangan tegas" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeri gohud dalam comic_dark — tinta krem di halaman malam" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Dialog konfirmasi dalam comic_light — keterangan judul kuning dan tombol tutup bulat bertinta" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Dialog konfirmasi dalam comic_dark — keterangan kuning pada kartu batu sabak" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">Apa yang berubah</h3>
+  <table>
+    <thead><tr><th>Bagian</th><th>Dalam tampilan komik</th></tr></thead>
+    <tbody>
+      <tr><td>Setiap muka</td><td>Digambar oleh <code>GoStyleBoxComic</code>: warna permukaan di dalam garis tepi tebal berwarna tinta, dan bayangan tegas ke bawah dan ke kanan. Tombol, baris daftar, kolom, tab, bilah, slider, panel, dan popup semuanya memakainya.</td></tr>
+      <tr><td>Saat ditekan</td><td>Bayangannya hilang dan mukanya tenggelam ke tempatnya.</td></tr>
+      <tr><td>Kontrol</td><td>Toggle, kotak centang, tombol radio, dan pegangan slider juga bertinta, masing-masing dengan bayangan kecilnya sendiri.</td></tr>
+      <tr><td>Jendela</td><td>Keterangan kuning di balik judul jendela dan tombol tutup bulat bertinta.</td></tr>
+      <tr><td>Bagian skin</td><td><code>GoSkinComic</code>: slot cepat, chip, lencana, avatar, pemberitahuan, bilah navigasi, FAB, dan sel tanggal bertinta; kenop joystick memberi bayangan; grafik memakai warna primer yang tegas.</td></tr>
+      <tr><td>Opasitas</td><td>Panel, kartu, pemberitahuan, dan popup buram; kartu HUD 92% buram.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">Setelan tinta dan bayangan</h3>
+  <p>Tiga setelan <code>GoConfig</code> mengubah setiap muka komik sekaligus. Tidak ada yang dibangun ulang — layar menggambar ulang begitu Anda menyetelnya.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # garis tepi (dp) — default 3
+GoUi.config.comic_shadow_size = 6.0    # bayangan (dp) — default 4
+GoUi.config.comic_shadow = false       # tanpa bayangan di mana pun</code></pre>
+  <p>Satu widget bisa memilih jalannya sendiri, apa pun kata setelannya:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # tombol ini datar
+GoStyle.comic_shadow(card, true, true)       # kartu ini dan semua isinya tetap berbayangan
+GoStyle.comic_border(title, 5.0)             # garis tepi lebih tebal untuk yang satu ini</code></pre>
+  <div class="note">
+    <b>Tidak ada perubahan ukuran.</b> Garis tepi dan bayangannya digambar di dalam persegi panjang setiap kontrol dan setiap muka mempertahankan
+    padding yang diberikan tema, sehingga layar yang ditata dalam tampilan lain tetap mempertahankan tata letaknya. Font proyek Anda juga dipertahankan.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Slot cepat, joystick, dan chip yang digambar oleh skin komik" loading="lazy"><figcaption>Bagian-bagian yang digambar skin komik</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">Buat komik Anda sendiri</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# Sunting themes/palettes/inked.json, lalu:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

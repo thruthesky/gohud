@@ -145,7 +145,7 @@
   </div>
   <p>このページの画像はすべて同じ小さなゲームだ — 左上に体力とマナ、右上にコイン、下にスティックとクイックスロット3つ —
     を <code>default_dark</code> で表示し、その上にポップアップを1つ開いている。<a href="#popup-looks">同じ
-    ポップアップを10の見た目で →</a></p>
+    ポップアップを12の見た目で →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -681,6 +681,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="material_dark の確認" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">新登場</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="kids_light の確認 — お日さま色のタイトルリボン、キャンディの閉じるボタン、ゼリーのボタン" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">新登場</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark の確認 — 夜空色のカードにミントのリボン" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">新登場</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light の確認 — 黄色のタイトルキャプション、インクで描いた閉じるボタン、くっきりした影のインクのボタン" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">新登場</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark の確認 — スレート色のカードにクリーム色のインク" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">新登場</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">見た目ごとに変わるもの</h3>
@@ -692,6 +694,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>中世</td><td>鍛造の枠 — 鉄と革、あるいは羊皮紙 — にリベットと角飾り</td><td>Cinzel のタイトル</td></tr>
       <tr><td>Material 3</td><td>28dp の角、24dp の内側余白、完全に不透明</td><td>Roboto の 24sp 見出し。48dp のターゲットに 40dp の下地を収めたピル型ボタン</td></tr>
       <tr><td>キッズ</td><td>柔らかな影の付いたゼリーキャンディのカード、完全に不透明</td><td>お日さま色のタイトルリボン（夜はミント）、丸いキャンディの閉じるボタン、押すとぷにっとつぶれるボタン</td></tr>
+      <tr><td>コミック</td><td>太いインクの輪郭とくっきりした影、完全に不透明</td><td>黄色のタイトルキャプション、インクで描いた丸い閉じるボタン、押すと影が消えるボタン</td></tr>
     </tbody>
   </table>
 
@@ -702,7 +705,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>フック</th><th>装うもの</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>ウィンドウのタイトルの背後に敷く下地。タイトルはその中央に乗り、1行に収まるよう最小サイズ（15）まで縮む。</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>ウィンドウの × — キッズでは丸いキャンディになる。</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>ウィンドウの × — キッズでは丸いキャンディに、コミックではインクで描いた円盤になる。</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>gohud が作ったボタンに指が触れた瞬間に走る — キッズではぷにっとつぶれる。</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>プロンプトカードとコーチマークのカード、スナックバーと通知、ドロワー、バナー、コンソールの面。</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>ツアーのリングとポインター。</td></tr>
@@ -713,7 +716,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>ポップアップは種類ごとに自分の不透明度に従うので、HUD のカードは軽く、ダイアログはしっかりと保てる：ウィンドウ、シート、
     ダイアログ、ポップオーバー、コンボボックスは <code>panel_alpha</code>、ドロワーとコーチマークのカードは <code>card_alpha</code>、
     プロンプトカードとコンソールは <code>hud_alpha</code>、スナックバーと通知は <code>notice_alpha</code>、メニューは <code>popup_alpha</code> に従う。
-    Material とキッズはすべてを不透明にする。1種類だけ変えるなら <code>GoConfig.container_alpha_overrides</code>、全部なら
+    Material とキッズはすべてを不透明にする。コミックも同じだが、プロンプトカードとコンソールだけは 92% だ。1種類だけ変えるなら <code>GoConfig.container_alpha_overrides</code>、全部なら
     <code>container_alpha</code>（比率 — <code>0.95</code>）、ウィンドウ1つならその <code>alpha</code> で上書きする。薄くなるのは面だけで、
     文字が透けることは決してない。<a href="theming-opacity.html">不透明度の詳細 →</a></p>
 </section>

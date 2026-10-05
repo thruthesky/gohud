@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # ваши иконки, всё остальное — из пресета</code></pre>
   <p>Явно заданные <code>theme</code>, <code>skin</code> или <code>icons</code> <b>берут верх над</b> пресетом.</p>
 
-  <h3 id="the-six-built-in-presets">Десять встроенных пресетов</h3>
+  <h3 id="the-six-built-in-presets">Двенадцать встроенных пресетов</h3>
   <table>
     <thead><tr><th>Пресет</th><th>Панели</th><th>Скин · иконки</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # ваши иконки, всё остальн�
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Кованые рамки <code>GoStyleBoxMedieval</code> — железо и кожа либо пергамент — с заклёпками и угловыми орнаментами на меню</td><td><code>GoSkinMedieval</code> · 16 гравированных иконок поверх стандартных</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Новое</span></td><td>Material 3 Expressive для экранов приложений — кнопки-пилюли 40dp внутри области касания 48dp, диалоги 28dp, заливные карточки, поля с контуром, ползунок Expressive; компоненты приложений (панель навигации, верхняя панель, FAB, строка поиска, чипы, прогресс, выбор даты) следуют токенам компонентов M3</td><td><code>GoSkinMaterial</code> · стандартные иконки</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Новое</span></td><td>Для детей — коробка с игрушками: толстые контуры и плотный бортик под каждой клавишей, которая проседает при нажатии; утопленные поля ввода, вкладки-пузыри, желейные полосы; у каждого вида элементов свой цвет мелка, слоты-конфеты, значки-наклейки, радужный джойстик и разноцветные диаграммы. Размеры и шрифт проекта не меняются.</td><td><code>GoSkinKids</code> · стандартные иконки</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Новое</span></td><td>Кадры комикса, которые рисует <code>GoStyleBoxComic</code>: жирный чернильный контур и жёсткая тень на каждой панели, которая исчезает при нажатии; обведённые чернилами переключатели, флажки и ручки ползунков, жёлтая плашка заголовка у окон. Толщина контура, размер тени и то, видны ли тени вообще, — настройки <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · стандартные иконки</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Все десять рядом</h2>
+  <h2>Все двенадцать рядом</h2>
   <p class="sub">Один и тот же экран галереи, где поменялось только имя пресета, — код виджетов не отличается ни на строку.
     Каждый снимок — телефон в книжной ориентации, 390×844.</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # ваши иконки, всё остальн�
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Галерея виджетов gohud с пресетом material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Галерея виджетов gohud с пресетом kids_light" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Галерея виджетов gohud с пресетом kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Галерея виджетов gohud с пресетом comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Галерея виджетов gohud с пресетом comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -291,6 +294,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # Отредактируйте themes/palettes/candy.json, затем:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>Комикс: жирные чернила <span class="badge new">Новое</span></h2>
+  <p><code>comic_light</code> (белые панели на странице цвета кремовой бумаги, кобальтовый основной цвет) и <code>comic_dark</code> (сланцевые панели
+    на ночной странице, кремовые контуры, жёлтый основной цвет) рисуют каждую панель как кадр комикса — жирный чернильный контур
+    с жёсткой тенью позади.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# Или: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Галерея gohud в comic_light — обведённые чернилами клавиши, строки и полосы с жёсткими тенями" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Галерея gohud в comic_dark — кремовые чернила на ночной странице" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Диалог подтверждения в comic_light — жёлтая плашка заголовка и круглая кнопка закрытия, обведённая чернилами" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Диалог подтверждения в comic_dark — жёлтая плашка на сланцевой карточке" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">Что меняется</h3>
+  <table>
+    <thead><tr><th>Часть</th><th>В обликах комикса</th></tr></thead>
+    <tbody>
+      <tr><td>Каждая лицевая панель</td><td>Её рисует <code>GoStyleBoxComic</code>: цвет поверхности внутри жирного контура цвета чернил и жёсткая тень вниз и вправо. Её носят клавиши, строки списков, поля, вкладки, полосы, ползунки, панели и всплывающие окна.</td></tr>
+      <tr><td>Нажатие</td><td>Тень исчезает, и лицевая панель опускается на её место.</td></tr>
+      <tr><td>Элементы управления</td><td>Переключатели, флажки, радиокнопки и ручки ползунков тоже обведены чернилами, и у каждого своя маленькая тень.</td></tr>
+      <tr><td>Окна</td><td>Жёлтая плашка за заголовком окна и круглая кнопка закрытия, обведённая чернилами.</td></tr>
+      <tr><td>Части скина</td><td><code>GoSkinComic</code>: быстрые слоты, чипы, значки, аватары, уведомления, панель навигации, FAB и ячейки дат обведены чернилами; ручка стика отбрасывает тень; диаграммы раскрашены яркими основными цветами.</td></tr>
+      <tr><td>Непрозрачность</td><td>Панели, карточки, уведомления и всплывающие окна непрозрачны; карточки HUD непрозрачны на 92%.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">Настройки чернил и тени</h3>
+  <p>Три настройки <code>GoConfig</code> меняют все панели комикса разом. Ничего не перестраивается — экран перерисовывается, как только вы их задаёте.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # контур (dp) — по умолчанию 3
+GoUi.config.comic_shadow_size = 6.0    # тень (dp) — по умолчанию 4
+GoUi.config.comic_shadow = false       # нигде никаких теней</code></pre>
+  <p>Отдельный виджет может пойти своим путём, что бы ни говорила настройка:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # эта кнопка лежит плоско
+GoStyle.comic_shadow(card, true, true)       # эта карточка и всё в ней сохраняют тень
+GoStyle.comic_border(title, 5.0)             # у этого элемента контур толще</code></pre>
+  <div class="note">
+    <b>Размеры не меняются.</b> Контур и тень рисуются внутри прямоугольника каждого элемента, а каждая лицевая панель сохраняет
+    отступы, которые дала ей тема, поэтому экран, разложенный в другом облике, сохраняет свою раскладку. Шрифт вашего проекта тоже сохраняется.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Быстрые слоты, стик и чип в исполнении скина комикса" loading="lazy"><figcaption>Части, которые рисует скин комикса</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">Сделайте собственный комикс</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# Отредактируйте themes/palettes/inked.json, затем:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

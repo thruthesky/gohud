@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — bộ HUD &amp; UI cho Godot 4</title>
-<meta name="description" content="Bộ HUD và UI tùy biến được cho Godot 4.7+. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, thanh HUD, ô nhanh và cần điều khiển ảo, với mười preset — mặc định, sci-fi, trung cổ, Material 3 và trẻ em.">
+<meta name="description" content="Bộ HUD và UI tùy biến được cho Godot 4.7+. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, thanh HUD, ô nhanh và cần điều khiển ảo, với mười hai preset — mặc định, sci-fi, trung cổ, Material 3, trẻ em và truyện tranh.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud là bộ HUD và UI cho Godot 4.7 trở lên. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu,
       snackbar, coach mark, thanh HUD, ô nhanh và cần điều khiển ảo đều chạy từ <b>một theme và một bộ
       biểu tượng thay được</b>, đồng thời tự lo vùng an toàn, bàn phím ảo, RTL và vùng chạm cho bạn.
-      <b>Mười preset</b> — mặc định, sci-fi, trung cổ, Material 3 và trẻ em, mỗi loại có bản tối và sáng — đổi màu sắc lẫn hình dáng trong một dòng.
+      <b>Mười hai preset</b> — mặc định, sci-fi, trung cổ, Material 3, trẻ em và truyện tranh, mỗi loại có bản tối và sáng — đổi màu sắc lẫn hình dáng trong một dòng.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,8 +86,8 @@
       <span class="badge">GDScript thuần</span>
       <span class="badge">Không cần autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 preset</span>
-      <span class="badge new">Mới: Material 3 · Trẻ em</span>
+      <span class="badge">12 preset</span>
+      <span class="badge new">Mới: Truyện tranh · Material 3 · Trẻ em</span>
       <span class="badge">21 ngôn ngữ</span>
       <span class="badge">Kèm <span data-n="icons">1.287</span> biểu tượng</span>
     </div>
@@ -103,9 +103,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Mới: Material 3 và một diện mạo cho trẻ em</h2>
+  <h2>Mới: truyện tranh, Material 3 và một diện mạo cho trẻ em</h2>
   <p class="sub">
-    Hai họ mới gia nhập cùng mặc định, sci-fi và trung cổ — giờ đã có <b>mười diện mạo có sẵn</b>, mỗi cái đều có bản tối và sáng.
+    Ba họ mới gia nhập cùng mặc định, sci-fi và trung cổ — giờ đã có <b>mười hai diện mạo có sẵn</b>, mỗi cái đều có bản tối và sáng.
     Mọi widget, cửa sổ bật lên và mảnh HUD đều nhận chúng mà không phải đổi code của bạn: đổi preset là cả màn hình đổi theo.
   </p>
   <div class="phones">
@@ -113,6 +113,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Màn hình gallery của gohud ở material_dark — cùng các hình dạng Material 3 trên nền tối chuẩn" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Màn hình gallery của gohud ở kids_light — các nút kẹo thạch mập mạp màu bút sáp trên trang nền màu nắng" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Màn hình gallery của gohud ở kids_dark — cùng hộp đồ chơi đó trên trang nền xanh đêm" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_light — viền mực đậm và bóng đổ sắc nét trên trang nền màu kem như giấy" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_dark — viền màu kem và màu chính vàng trên trang nền đêm" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -129,11 +131,19 @@
         là cầu vồng, cửa sổ có dải băng tiêu đề màu nắng và nút đóng tròn hình viên kẹo, và mỗi lần nhấn thì bẹp xuống.
         Kích thước và font của dự án bạn vẫn giữ nguyên như cũ.</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">Truyện tranh — nét mực đậm</h3>
+      <p>Mọi mặt đều là một khung truyện tranh: màu bề mặt nằm trong một đường viền mực đậm, phía sau là một bóng đổ sắc nét
+        biến mất khi mặt được nhấn. Một thiết lập bật hoặc tắt mọi bóng đổ, hai thiết lập nữa đặt độ dày viền
+        và cỡ bóng, và một lệnh gọi làm điều tương tự cho riêng một widget. Cửa sổ có một ô tiêu đề màu vàng.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # hoặc MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # hoặc &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 chi tiết →</a> · <a href="theming-presets.html#kids">Trẻ em chi tiết →</a> ·
-    <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười diện mạo →</a></p>
+    <a href="theming-presets.html#comic">Truyện tranh chi tiết →</a> ·
+    <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười hai diện mạo →</a></p>
 </section>
 
 <section id="showcase">
@@ -156,7 +166,7 @@ GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"</
       <figcaption><b>Sci-fi</b> — tấm nền góc cạnh và điều khiển cảm ứng</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Cả mười preset và cách chuyển giữa chúng →</a></p>
+  <p><a href="#presets">Cả mười hai preset và cách chuyển giữa chúng →</a></p>
 </section>
 
 <section id="what">
@@ -192,8 +202,8 @@ GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"</
       <p>Widget chỉ biết <code>GoIconSet.CLOSE</code>. Đổi bộ biểu tượng là mọi hình vẽ đổi theo mà không phải sửa một dòng code nào. <a href="icons.html">Biểu tượng →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Mười diện mạo, một dòng</h3>
-      <p><code>GoUi.use_preset()</code> đổi cùng lúc theme, skin và biểu tượng — khung bo tròn, khung vát góc kiểu sci-fi, khung rèn kiểu trung cổ hay các thành phần ứng dụng của Material 3.</p>
+      <h3 id="six-looks-one-line">Mười hai diện mạo, một dòng</h3>
+      <p><code>GoUi.use_preset()</code> đổi cùng lúc theme, skin và biểu tượng — khung bo tròn, khung vát góc kiểu sci-fi, khung rèn kiểu trung cổ, các thành phần ứng dụng của Material 3, kẹo thạch cho trẻ em hay nét mực truyện tranh.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Dễ đọc là thứ đo được</h3>
@@ -243,6 +253,8 @@ GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"</
       <tr><td><code>material_dark</code> <span class="badge new">Mới</span></td><td>Cùng các hình dạng Material 3 trên nền tối chuẩn</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">Mới</span></td><td>Hộp đồ chơi cho trẻ em — phím kẹo thạch với viền dày và gờ lún xuống khi nhấn, màu bút sáp, trang nền màu nắng</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">Mới</span></td><td>Cùng hộp đồ chơi đó trên trang nền xanh đêm</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">Mới</span></td><td>Khung truyện tranh — viền mực đậm và bóng đổ sắc nét trên mọi mặt, tấm nền trắng trên trang nền màu kem như giấy; bóng đổ, cỡ bóng và độ dày viền đều là thiết lập</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">Mới</span></td><td>Cùng nét mực đó trên trang nền đêm — viền màu kem và màu chính vàng</td></tr>
     </tbody>
   </table>
 
@@ -355,11 +367,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>Chỉ dấu ở bốn góc, không bao kín nội dung</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Khung rèn với đinh tán, hoa văn khắc ở góc, vệt sáng vát cạnh và vân vật liệu</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Một viên kẹo thạch — viền dày, gờ đặc lún xuống khi nhấn, thân sáng hơn ở phía trên và một vệt bóng trắng</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>Một khung truyện tranh — viền mực đậm và bóng đổ sắc nét, cả hai đều do <code>GoConfig</code> định cỡ ngay khi game đang chạy</td></tr>
     </tbody>
   </table>
-  <p>Cả bốn đều tuần tự hóa được vào một tài nguyên Theme — chính điều đó cho phép một theme đổi <b>hình dáng</b>,
-    chứ không chỉ đổi màu. <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> và <code>GoSkinKids</code> là các lớp con có sẵn.</p>
+  <p>Cả năm đều tuần tự hóa được vào một tài nguyên Theme — chính điều đó cho phép một theme đổi <b>hình dáng</b>,
+    chứ không chỉ đổi màu. <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code> và <code>GoSkinComic</code> là các lớp con có sẵn.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Ô nhanh, cần điều khiển và chip do từng skin có sẵn vẽ — mặc định, trẻ em, Material, trung cổ và sci-fi" loading="lazy"><figcaption>Những gì một skin vẽ — mặc định, trẻ em, Material, trung cổ, sci-fi</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Ô nhanh, cần điều khiển và chip do skin truyện tranh vẽ — viền mực và bóng đổ sắc nét" loading="lazy"><figcaption>…và skin truyện tranh</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> luôn trả về một <code>StyleBoxFlat</code></b>, vì phía gọi nhận nó rồi
@@ -454,7 +468,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Mọi cặp màu và <b>nhãn của từng trạng thái nút trên chính tấm nền nó nằm lên</b> đều được đo theo
-    WCAG, trên cả mười theme. Màu bán trong suốt được ghép lên nền thật của nó trước — đo thẳng vào chúng
+    WCAG, trên cả mười hai theme. Màu bán trong suốt được ghép lên nền thật của nó trước — đo thẳng vào chúng
     sẽ cho tỉ số đẹp hơn những gì màn hình thật sự hiển thị.
   </p>
   <p>

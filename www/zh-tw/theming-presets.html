@@ -134,7 +134,7 @@
 GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的</code></pre>
   <p>明確設定 <code>theme</code>、<code>skin</code> 或 <code>icons</code> 會<b>蓋過</b>預設集。</p>
 
-  <h3 id="the-six-built-in-presets">內建的十種預設集</h3>
+  <h3 id="the-six-built-in-presets">內建的十二種預設集</h3>
   <table>
     <thead><tr><th>預設集</th><th>面板</th><th>外觀 · 圖示</th></tr></thead>
     <tbody>
@@ -143,12 +143,13 @@ GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>鍛造的 <code>GoStyleBoxMedieval</code> 框 — 鐵與皮革，或羊皮紙 — 選單上還有鉚釘與角落裝飾</td><td><code>GoSkinMedieval</code> · 16 個雕刻圖示疊在預設之上</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">新</span></td><td>給應用畫面的 Material 3 Expressive — 48dp 觸控區裡 40dp 的膠囊按鈕、28dp 對話方塊、填色卡片、外框輸入欄、Expressive 滑桿；應用元件（導覽列、頂端應用列、FAB、搜尋列、方塊標籤、進度、日期選擇器）依循 M3 元件權杖</td><td><code>GoSkinMaterial</code> · 預設圖示</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">新</span></td><td>給兒童——玩具箱：粗描邊，每個按鍵下都有一道實心底邊，按下時會陷進去；凹陷的輸入框、泡泡分頁、果凍進度條；每類控制項各有一種蠟筆顏色，糖果般的快捷格、貼紙徽章、彩虹搖桿和蠟筆色圖表。尺寸和專案字型保持不變。</td><td><code>GoSkinKids</code> · 預設圖示</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">新</span></td><td>由 <code>GoStyleBoxComic</code> 繪製的漫畫分鏡：每個表面都有粗墨線描邊與硬陰影，按下時陰影消失；描了墨線的開關、核取方塊與滑桿把手，視窗有黃色的標題框。描邊粗細、陰影大小以及是否顯示陰影，都是 <code>GoConfig</code> 設定。</td><td><code>GoSkinComic</code> · 預設圖示</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>十種並排比較</h2>
+  <h2>十二種並排比較</h2>
   <p class="sub">同一個藝廊畫面，只換了預設集的名稱 — 控制項的程式碼一行都沒變。
     每張都是直拿的手機，390×844。</p>
   <div class="phones">
@@ -162,6 +163,8 @@ GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="套用 material_dark 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="套用 kids_light 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="套用 kids_dark 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="套用 comic_light 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="套用 comic_dark 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -286,6 +289,51 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # 編輯 themes/palettes/candy.json，然後：
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>漫畫：粗墨線 <span class="badge new">新</span></h2>
+  <p><code>comic_light</code>（紙張般的奶油色頁面上放白色面板，主色是鈷藍）與 <code>comic_dark</code>（夜色頁面上的石板色面板、
+    奶油色描邊、黃色主色）把每個表面都畫成一格漫畫分鏡 — 粗墨線描邊，背後襯一道硬陰影。</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# 或：GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 下的 gohud 藝廊 — 帶硬陰影的墨線按鍵、清單列與量條" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 下的 gohud 藝廊 — 夜色頁面上的奶油色墨線" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light 下的確認對話方塊 — 黃色的標題框與描了墨線的圓形關閉按鈕" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark 下的確認對話方塊 — 石板色卡片上的黃色標題框" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">改了什麼</h3>
+  <table>
+    <thead><tr><th>部分</th><th>在漫畫外觀裡</th></tr></thead>
+    <tbody>
+      <tr><td>每個表面</td><td>由 <code>GoStyleBoxComic</code> 繪製：墨色的粗描邊裡填著表面顏色，往右下方投出一道硬陰影。按鍵、清單列、輸入欄、分頁、量條、滑桿、面板與彈出視窗全都用它。</td></tr>
+      <tr><td>按下</td><td>陰影消失，表面沉到陰影的位置。</td></tr>
+      <tr><td>控制項</td><td>開關、核取方塊、選項按鈕與滑桿把手也都描了墨線，各帶一道小陰影。</td></tr>
+      <tr><td>視窗</td><td>視窗標題後面一個黃色的標題框，以及一顆描了墨線的圓形關閉按鈕。</td></tr>
+      <tr><td>外觀部件</td><td><code>GoSkinComic</code>：快捷格、方塊標籤、徽章、頭像、提示、導覽列、FAB 與日期格子都描了墨線；搖桿的握把會投下陰影；圖表用醒目的原色。</td></tr>
+      <tr><td>不透明度</td><td>面板、卡片、提示與彈出視窗都不透明；HUD 卡片為 92% 不透明。</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">墨線與陰影設定</h3>
+  <p>三個 <code>GoConfig</code> 設定會一次改變所有漫畫表面。不需要重建任何東西 — 設定的同時畫面就會重畫。</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # 描邊（dp）— 預設 3
+GoUi.config.comic_shadow_size = 6.0    # 陰影（dp）— 預設 4
+GoUi.config.comic_shadow = false       # 所有地方都不要陰影</code></pre>
+  <p>單一控制項可以不管設定，自行其是：</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # 這顆按鈕平貼著
+GoStyle.comic_shadow(card, true, true)       # 這張卡片與其中的一切保留陰影
+GoStyle.comic_border(title, 5.0)             # 只給這一個加粗描邊</code></pre>
+  <div class="note">
+    <b>尺寸不變。</b>描邊與陰影都畫在每個控制項自己的矩形之內，每個表面也保留佈景主題給它的內距，所以在別的外觀下
+    排好的畫面會維持原本的版面。你專案的字型同樣保留。
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="漫畫外觀畫出的快捷格、搖桿與方塊標籤" loading="lazy"><figcaption>漫畫外觀畫出的部分</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">打造一個自己的漫畫外觀</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# 編輯 themes/palettes/inked.json，然後：
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

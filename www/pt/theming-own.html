@@ -196,10 +196,26 @@ GoUi.use_preset(&amp;"neon")                             # pronto — ele també
       <tr><td><code>segment_inner_radius</code></td><td data-label="Padrão">8</td><td>Raio do canto (dp) onde duas células de um grupo de botões conectados do Material se encontram.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Skin infantil <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Padrão</th><th>O que ele define</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Padrão">2</td><td>Largura do contorno (dp) de uma peça de brinquedo infantil — chips, slots, o FAB, alertas.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Padrão">4</td><td>A borda sólida (dp) sob uma peça de brinquedo infantil que se pressiona; ela encolhe quando a peça é pressionada.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Padrão">0.28</td><td>Quanto da cor de giz de cera preenche a face de um slot ou chip infantil (0–1); o resto é a cor da superfície.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Skin de quadrinhos <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Padrão</th><th>O que ele define</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Padrão">0.22</td><td>Quanto da própria cor preenche um chip, um slot rápido ou uma pílula escolhida de quadrinhos (0–1); o resto é a cor da superfície.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Crie uma subclasse da skin (opcional)</h3>
+  <h3 id="subclass-the-skin-optional">Crie uma subclasse da skin (opcional)</h3>
   <p>Só o que o tema e a forma não alcançam — o hexágono do joystick, os badges dos slots, o colchete de mira do
     coach mark — vive em uma skin. Crie uma subclasse de <code>GoSkin</code>, sobrescreva apenas esses métodos e
     aponte o <code>skin</code> do JSON para esse recurso. Um tema que só muda cores pula esta etapa.</p>

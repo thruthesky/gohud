@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 的 HUD 與 UI 套件</title>
-<meta name="description" content="給 Godot 4.7+ 使用、可自訂的 HUD 與 UI 套件。浮動面板、底部面板、對話方塊、表單、訊息條、HUD 量條、快捷格與虛擬搖桿，並附十種預設集 — 預設、科幻、中世紀、Material 3 與兒童。">
+<meta name="description" content="給 Godot 4.7+ 使用、可自訂的 HUD 與 UI 套件。浮動面板、底部面板、對話方塊、表單、訊息條、HUD 量條、快捷格與虛擬搖桿，並附十二種預設集 — 預設、科幻、中世紀、Material 3、兒童與漫畫。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud 是給 Godot 4.7 以上使用的 HUD 與 UI 套件。浮動視窗、底部面板、對話方塊、表單、
       訊息條、導覽標記、HUD 量條、快捷格與虛擬搖桿全都靠<b>一份佈景主題和一組可抽換的圖示組</b>驅動，
       並且替你處理好安全區域、虛擬鍵盤、RTL 與觸控目標。
-      <b>十種預設集</b> — 預設、科幻、中世紀、Material 3 與兒童，每種都有深色與淺色 — 一行程式碼就換掉顏色與形狀。
+      <b>十二種預設集</b> — 預設、科幻、中世紀、Material 3、兒童與漫畫，每種都有深色與淺色 — 一行程式碼就換掉顏色與形狀。
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,8 +86,8 @@
       <span class="badge">純 GDScript</span>
       <span class="badge">不需要自動載入</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 種預設集</span>
-      <span class="badge new">新增：Material 3 · 兒童</span>
+      <span class="badge">12 種預設集</span>
+      <span class="badge new">新增：漫畫 · Material 3 · 兒童</span>
       <span class="badge">21 種語言</span>
       <span class="badge">內含 <span data-n="icons">1,287</span> 個圖示</span>
     </div>
@@ -103,9 +103,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>新增：Material 3，以及給孩子的外觀</h2>
+  <h2>新增：漫畫、Material 3，以及給孩子的外觀</h2>
   <p class="sub">
-    兩個新系列加入了預設、科幻與中世紀的行列 — 現在共有<b>十種內建外觀</b>，每種都有深色與淺色。
+    三個新系列加入了預設、科幻與中世紀的行列 — 現在共有<b>十二種內建外觀</b>，每種都有深色與淺色。
     每個控制項、彈出視窗與 HUD 元件都能直接套用，程式碼一行都不用改：換掉預設集，整個畫面就跟著變。
   </p>
   <div class="phones">
@@ -113,6 +113,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark 下的 gohud 藝廊 — 同樣的 Material 3 形狀，換成深色基準配色" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light 下的 gohud 藝廊 — 陽光般明亮的頁面上，蠟筆色的厚實果凍按鈕" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 下的 gohud 藝廊 — 同一個玩具箱，放在夜藍色的頁面上" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 下的 gohud 藝廊 — 紙張般的奶油色頁面上，粗墨線描邊與硬陰影" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 下的 gohud 藝廊 — 夜色頁面上的奶油色描邊與黃色主色" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -127,11 +129,18 @@
         每類控制項各有自己的蠟筆顏色。快捷格是糖果方塊，徽章是貼紙，搖桿是一道彩虹，視窗有陽光色的標題緞帶與
         圓形的糖果關閉按鈕，按下去還會被壓扁。尺寸與你專案的字型都維持原樣。</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">漫畫 — 粗墨線</h3>
+      <p>每個表面都是一格漫畫分鏡：粗墨線描邊裡填著表面顏色，背後襯一道硬陰影，表面被按下時陰影隨之消失。
+        一個設定開關所有陰影，另外兩個設定決定描邊粗細與陰影大小，一次呼叫就能對單一控制項做同樣的事。視窗有黃色的標題框。</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # 或 MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # 或 &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 詳解 →</a> · <a href="theming-presets.html#kids">兒童外觀詳解 →</a> ·
-    <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十種外觀下的樣子 →</a></p>
+    <a href="theming-presets.html#comic">漫畫外觀詳解 →</a> ·
+    <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十二種外觀下的樣子 →</a></p>
 </section>
 
 <section id="showcase">
@@ -154,7 +163,7 @@ GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</cod
       <figcaption><b>科幻</b> — 稜角分明的面板與觸控操作</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">十種預設集與切換方式 →</a></p>
+  <p><a href="#presets">十二種預設集與切換方式 →</a></p>
 </section>
 
 <section id="what">
@@ -190,8 +199,8 @@ GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</cod
       <p>控制項只認得 <code>GoIconSet.CLOSE</code>。換掉整組圖示，所有圖案都跟著換，一行程式碼都不必動。 <a href="icons.html">圖示 →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">十種外觀，一行切換</h3>
-      <p><code>GoUi.use_preset()</code> 一次換掉佈景主題、外觀與圖示 — 圓角、切角的科幻、鍛造的中世紀框，或 Material 3 的應用元件。</p>
+      <h3 id="six-looks-one-line">十二種外觀，一行切換</h3>
+      <p><code>GoUi.use_preset()</code> 一次換掉佈景主題、外觀與圖示 — 圓角、切角的科幻、鍛造的中世紀框、Material 3 的應用元件、兒童的果凍糖，或漫畫的墨線。</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">清晰度是量出來的</h3>
@@ -240,6 +249,8 @@ GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</cod
       <tr><td><code>material_dark</code> <span class="badge new">新</span></td><td>同樣的 Material 3 形狀，換成深色基準配色</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">新</span></td><td>給孩子的玩具箱 — 帶粗描邊的果凍糖按鍵，下方一道底邊，按下時會陷進去；蠟筆色，陽光般明亮的頁面</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">新</span></td><td>同一個玩具箱，放在夜藍色的頁面上</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">新</span></td><td>漫畫分鏡 — 每個表面都有粗墨線描邊與硬陰影，紙張般的奶油色頁面上放著白色面板；陰影、陰影大小與描邊粗細都是設定項</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">新</span></td><td>同樣的墨線，放在夜色頁面上 — 奶油色描邊與黃色主色</td></tr>
     </tbody>
   </table>
 
@@ -351,11 +362,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>只有角落的記號，不把內容框起來</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>帶鉚釘、角落雕刻、斜角高光與材質紋理的鍛造框</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>果凍糖 — 粗描邊、按下時會陷進去的實心底邊、上淺下深的糖體，以及一道白色高光</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>漫畫分鏡 — 粗墨線描邊與硬投影，兩者的大小都在遊戲執行時由 <code>GoConfig</code> 決定</td></tr>
     </tbody>
   </table>
-  <p>這四種都能序列化進 Theme 資源 — 這正是佈景主題改得了<b>形狀</b>、而不只是顏色的原因。
-    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code> 與 <code>GoSkinKids</code> 是內附的子類別。</p>
+  <p>這五種都能序列化進 Theme 資源 — 這正是佈景主題改得了<b>形狀</b>、而不只是顏色的原因。
+    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code> 與 <code>GoSkinComic</code> 是內附的子類別。</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="每一種內附外觀畫出的快捷格、搖桿與方塊標籤 — 預設、兒童、Material、中世紀與科幻" loading="lazy"><figcaption>外觀畫出的部分 — 預設、兒童、Material、中世紀、科幻</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="漫畫外觀畫出的快捷格、搖桿與方塊標籤 — 墨線描邊與硬陰影" loading="lazy"><figcaption>……以及漫畫外觀</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> 一律回傳 <code>StyleBoxFlat</code></b>，因為呼叫端拿到它之後
@@ -449,7 +462,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    十種佈景主題中的每一組配色，以及<b>每個按鈕狀態下的標籤與它所在的面板</b>，都會對照 WCAG
+    十二種佈景主題中的每一組配色，以及<b>每個按鈕狀態下的標籤與它所在的面板</b>，都會對照 WCAG
     量過。半透明的顏色會先合成到它真正的背景上 — 直接量它們，得到的比值會比畫面上看到的更好看。
   </p>
   <p>

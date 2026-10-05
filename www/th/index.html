@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — ชุด HUD และ UI สำหรับ Godot 4</title>
-<meta name="description" content="ชุด HUD และ UI ที่ปรับแต่งได้สำหรับ Godot 4.7 ขึ้นไป มีหน้าต่างลอย บอททอมชีต ไดอะล็อก ฟอร์ม สแน็กบาร์ แถบ HUD ควิกสล็อต และจอยสติ๊กเสมือน พร้อมพรีเซ็ต 10 แบบ — ค่าเริ่มต้น ไซไฟ ยุคกลาง Material 3 และสำหรับเด็ก">
+<meta name="description" content="ชุด HUD และ UI ที่ปรับแต่งได้สำหรับ Godot 4.7 ขึ้นไป มีหน้าต่างลอย บอททอมชีต ไดอะล็อก ฟอร์ม สแน็กบาร์ แถบ HUD ควิกสล็อต และจอยสติ๊กเสมือน พร้อมพรีเซ็ต 12 แบบ — ค่าเริ่มต้น ไซไฟ ยุคกลาง Material 3 สำหรับเด็ก และการ์ตูน">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud คือชุด HUD และ UI สำหรับ Godot 4.7 ขึ้นไป หน้าต่างลอย บอททอมชีต ไดอะล็อก ฟอร์ม
       สแน็กบาร์ โค้ชมาร์ก แถบ HUD ควิกสล็อต และจอยสติ๊กเสมือน ทั้งหมดทำงานจาก<b>ธีมชุดเดียวและ
       ชุดไอคอนชุดเดียวที่สลับได้</b> พร้อมจัดการเซฟแอเรีย คีย์บอร์ดเสมือน RTL และขนาดพื้นที่กดสัมผัสให้เสร็จสรรพ
-      <b>พรีเซ็ต 10 แบบ</b> — ค่าเริ่มต้น ไซไฟ ยุคกลาง Material 3 และสำหรับเด็ก อย่างละโหมดมืดและโหมดสว่าง — เปลี่ยนสีและรูปทรงได้ในบรรทัดเดียว
+      <b>พรีเซ็ต 12 แบบ</b> — ค่าเริ่มต้น ไซไฟ ยุคกลาง Material 3 สำหรับเด็ก และการ์ตูน อย่างละโหมดมืดและโหมดสว่าง — เปลี่ยนสีและรูปทรงได้ในบรรทัดเดียว
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,8 +86,8 @@
       <span class="badge">GDScript ล้วน</span>
       <span class="badge">ไม่ต้องใช้ autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 พรีเซ็ต</span>
-      <span class="badge new">ใหม่: Material 3 · Kids</span>
+      <span class="badge">12 พรีเซ็ต</span>
+      <span class="badge new">ใหม่: Comic · Material 3 · Kids</span>
       <span class="badge">21 ภาษา</span>
       <span class="badge">แถมไอคอน <span data-n="icons">1,287</span> แบบ</span>
     </div>
@@ -103,9 +103,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>ใหม่: Material 3 และลุคสำหรับเด็ก</h2>
+  <h2>ใหม่: การ์ตูน Material 3 และลุคสำหรับเด็ก</h2>
   <p class="sub">
-    สองตระกูลใหม่มาสมทบกับค่าเริ่มต้น ไซไฟ และยุคกลาง — ตอนนี้มี<b>ลุคในตัวสิบแบบ</b> แต่ละแบบมีทั้งโหมดมืดและโหมดสว่าง
+    สามตระกูลใหม่มาสมทบกับค่าเริ่มต้น ไซไฟ และยุคกลาง — ตอนนี้มี<b>ลุคในตัวสิบสองแบบ</b> แต่ละแบบมีทั้งโหมดมืดและโหมดสว่าง
     วิดเจ็ต ป๊อปอัป และชิ้นส่วน HUD ทุกตัวรับลุคเหล่านี้ได้โดยไม่ต้องแก้โค้ดของคุณ: สลับพรีเซ็ตแล้วทั้งหน้าจอเปลี่ยนตาม
   </p>
   <div class="phones">
@@ -113,6 +113,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="แกลเลอรีของ gohud ใน material_dark — รูปทรง Material 3 แบบเดียวกันบนโทนมืดพื้นฐาน" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="แกลเลอรีของ gohud ใน kids_light — ปุ่มเยลลี่อวบ ๆ สีเทียนบนหน้าสีแดดสดใส" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="แกลเลอรีของ gohud ใน kids_dark — กล่องของเล่นเดียวกันบนหน้าสีน้ำเงินยามค่ำคืน" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="แกลเลอรีของ gohud ใน comic_light — เส้นขอบหมึกหนาและเงาคมบนหน้าสีครีมแบบกระดาษ" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="แกลเลอรีของ gohud ใน comic_dark — เส้นขอบสีครีมและสีหลักสีเหลืองบนหน้ายามค่ำคืน" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -128,11 +130,19 @@
         คอนโทรลแต่ละชนิดมีสีเทียนของตัวเอง ควิกสล็อตเป็นก้อนลูกอม ป้ายเป็นสติกเกอร์ จอยสติ๊กเป็นสีรุ้ง หน้าต่างได้ริบบิ้น
         ชื่อเรื่องสีแดดสดใสและปุ่มปิดลูกอมทรงกลม และการกดจะยุบนุ่ม ขนาดและฟอนต์ของโปรเจกต์คุณยังคงเหมือนเดิมทุกประการ</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">การ์ตูน — หมึกหนาเข้ม</h3>
+      <p>ทุกหน้าคือช่องหนังสือการ์ตูน: สีพื้นผิวอยู่ภายในเส้นขอบหมึกหนา มีเงาคมอยู่ด้านหลัง
+        ซึ่งหายไปเมื่อกด การตั้งค่าเดียวเปิดหรือปิดเงาทั้งหมด อีกสองค่ากำหนดความหนาของเส้นขอบ
+        และขนาดของเงา และการเรียกครั้งเดียวทำแบบเดียวกันกับวิดเจ็ตเพียงตัวเดียว หน้าต่างได้ป้ายชื่อเรื่องสีเหลือง</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # หรือ MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # หรือ &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # หรือ &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # หรือ &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 โดยละเอียด →</a> · <a href="theming-presets.html#kids">ลุคสำหรับเด็กโดยละเอียด →</a> ·
-    <a href="widgets-popups.html#popup-looks">ป๊อปอัปเดียวกันในทั้งสิบลุค →</a></p>
+    <a href="theming-presets.html#comic">ลุคการ์ตูนโดยละเอียด →</a> ·
+    <a href="widgets-popups.html#popup-looks">ป๊อปอัปเดียวกันในทั้งสิบสองลุค →</a></p>
 </section>
 
 <section id="showcase">
@@ -155,7 +165,7 @@ GoUi.use_preset(&amp;"kids_light")                   # หรือ &amp;"kids_d
       <figcaption><b>ไซไฟ</b> — พาเนลมุมเหลี่ยมและปุ่มควบคุมแบบสัมผัส</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">พรีเซ็ตทั้ง 10 แบบและวิธีสลับ →</a></p>
+  <p><a href="#presets">พรีเซ็ตทั้ง 12 แบบและวิธีสลับ →</a></p>
 </section>
 
 <section id="what">
@@ -191,8 +201,8 @@ GoUi.use_preset(&amp;"kids_light")                   # หรือ &amp;"kids_d
       <p>วิดเจ็ตรู้จักแค่ <code>GoIconSet.CLOSE</code> สลับชุดไอคอนแล้วภาพวาดทุกชิ้นเปลี่ยนตาม โดยไม่ต้องแตะโค้ดสักบรรทัด <a href="icons.html">ไอคอน →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">สิบลุค หนึ่งบรรทัด</h3>
-      <p><code>GoUi.use_preset()</code> สลับธีม สกิน และไอคอนพร้อมกัน — จะเป็นมุมมน มุมตัดเฉียงแบบไซไฟ กรอบตีเหล็กแบบยุคกลาง หรือคอมโพเนนต์แอปของ Material 3 ก็ได้</p>
+      <h3 id="six-looks-one-line">สิบสองลุค หนึ่งบรรทัด</h3>
+      <p><code>GoUi.use_preset()</code> สลับธีม สกิน และไอคอนพร้อมกัน — จะเป็นมุมมน มุมตัดเฉียงแบบไซไฟ กรอบตีเหล็กแบบยุคกลาง คอมโพเนนต์แอปของ Material 3 ลูกอมเยลลี่สำหรับเด็ก หรือหมึกแบบการ์ตูนก็ได้</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">อ่านออกโดยวัดผลจริง</h3>
@@ -242,6 +252,8 @@ GoUi.use_preset(&amp;"kids_light")                   # หรือ &amp;"kids_d
       <tr><td><code>material_dark</code> <span class="badge new">ใหม่</span></td><td>รูปทรง Material 3 แบบเดียวกันบนโทนมืดพื้นฐาน</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">ใหม่</span></td><td>กล่องของเล่นสำหรับเด็ก — ปุ่มลูกอมเยลลี่ที่มีขอบหนาอวบและฐานที่ยุบลงเมื่อกด สีเทียน หน้าสีแดดสดใส</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">ใหม่</span></td><td>กล่องของเล่นเดียวกันบนหน้าสีน้ำเงินยามค่ำคืน</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">ใหม่</span></td><td>ช่องหนังสือการ์ตูน — เส้นขอบหมึกหนาและเงาคมบนทุกหน้า พาเนลสีขาวบนหน้าสีครีมแบบกระดาษ เงา ขนาดเงา และความหนาของเส้นขอบเป็นค่าตั้งค่าทั้งหมด</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">ใหม่</span></td><td>หมึกเดียวกันบนหน้ายามค่ำคืน — เส้นขอบสีครีมและสีหลักสีเหลือง</td></tr>
     </tbody>
   </table>
 
@@ -353,11 +365,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>เครื่องหมายมุมอย่างเดียว โดยไม่ล้อมกรอบเนื้อหา</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>กรอบตีขึ้นรูปพร้อมหมุดย้ำ ลายสลักที่มุม แสงไฮไลต์ตามขอบลาด และลายเนื้อวัสดุ</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>ลูกอมเยลลี่ — ขอบหนาอวบ ฐานทึบที่ยุบลงเมื่อกด ตัวที่ด้านบนสว่างกว่าด้านล่าง และประกายสีขาว</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>ช่องหนังสือการ์ตูน — เส้นขอบหมึกหนาและเงาตกกระทบที่คม ทั้งสองอย่างกำหนดขนาดโดย <code>GoConfig</code> ขณะเกมทำงาน</td></tr>
     </tbody>
   </table>
-  <p>ทั้งสี่คลาสสามารถซีเรียลไลซ์ลงในรีซอร์ส Theme ได้ — นี่เองคือสิ่งที่ทำให้ธีมเปลี่ยน<b>รูปทรง</b>ได้ ไม่ใช่แค่สี
-    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> และ <code>GoSkinKids</code> คือซับคลาสที่แถมมาให้</p>
+  <p>ทั้งห้าคลาสสามารถซีเรียลไลซ์ลงในรีซอร์ส Theme ได้ — นี่เองคือสิ่งที่ทำให้ธีมเปลี่ยน<b>รูปทรง</b>ได้ ไม่ใช่แค่สี
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code> และ <code>GoSkinComic</code> คือซับคลาสที่แถมมาให้</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="ควิกสล็อต จอยสติ๊ก และชิป ที่วาดโดยสกินแต่ละตัวที่แถมมา — ค่าเริ่มต้น สำหรับเด็ก Material ยุคกลาง และไซไฟ" loading="lazy"><figcaption>สิ่งที่สกินวาด — ค่าเริ่มต้น สำหรับเด็ก Material ยุคกลาง ไซไฟ</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="ควิกสล็อต จอยสติ๊ก และชิป ที่วาดโดยสกินการ์ตูน — เส้นขอบหมึกและเงาคม" loading="lazy"><figcaption>…และสกินการ์ตูน</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> คืนค่าเป็น <code>StyleBoxFlat</code> เสมอ</b> เพราะโค้ดที่เรียกใช้จะรับมันไป
@@ -452,7 +466,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     ทุกคู่สี และ<b>ป้ายข้อความของปุ่มในทุกสถานะเทียบกับพาเนลที่มันวางอยู่</b> ถูกวัดกับ WCAG
-    ครบทั้ง 8 ธีม สีกึ่งโปร่งใสจะถูกนำไปซ้อนบนพื้นหลังจริงก่อนวัด — เพราะถ้าวัดตรง ๆ
+    ครบทั้ง 12 ธีม สีกึ่งโปร่งใสจะถูกนำไปซ้อนบนพื้นหลังจริงก่อนวัด — เพราะถ้าวัดตรง ๆ
     จะได้ค่าอัตราส่วนที่ดีเกินกว่าที่ปรากฏบนหน้าจอจริง
   </p>
   <p>

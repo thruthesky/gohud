@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # twoje ikony, cała reszta z presetu</code></pre>
   <p>Jawne ustawienie <code>theme</code>, <code>skin</code> lub <code>icons</code> <b>wygrywa z</b> presetem.</p>
 
-  <h3 id="the-six-built-in-presets">Dziesięć wbudowanych presetów</h3>
+  <h3 id="the-six-built-in-presets">Dwanaście wbudowanych presetów</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panele</th><th>Skórka · ikony</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # twoje ikony, cała reszta z presetu</code></p
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Kute ramy <code>GoStyleBoxMedieval</code> — żelazo i skóra albo pergamin — z nitami i ornamentami narożnymi w menu</td><td><code>GoSkinMedieval</code> · 16 grawerowanych ikon nałożonych na domyślne</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Nowość</span></td><td>Material 3 Expressive dla ekranów aplikacji — przyciski-pigułki 40dp w polu dotyku 48dp, okna dialogowe 28dp, wypełnione karty, pola z obrysem, suwak Expressive; komponenty aplikacji (pasek nawigacji, górny pasek aplikacji, FAB, pasek wyszukiwania, chipy, postęp, wybór daty) idą za tokenami komponentów M3</td><td><code>GoSkinMaterial</code> · domyślne ikony</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Nowość</span></td><td>Dla dzieci — pudełko z zabawkami: grube obrysy i solidna krawędź pod każdym klawiszem, który zapada się po naciśnięciu; wklęsłe pola tekstowe, zakładki-bąbelki, galaretkowe paski; każdy rodzaj kontrolki w swoim kolorze kredki, cukierkowe szybkie sloty, odznaki-naklejki, tęczowy joystick i kolorowe wykresy. Rozmiary i czcionka projektu pozostają bez zmian.</td><td><code>GoSkinKids</code> · domyślne ikony</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Nowość</span></td><td>Kadry z komiksu rysowane przez <code>GoStyleBoxComic</code>: gruby obrys tuszem i twardy cień na każdej powierzchni, który znika po naciśnięciu; obrysowane tuszem przełączniki, pola wyboru i uchwyty suwaków, żółte pole tytułu na oknach. Grubość obrysu, rozmiar cienia i to, czy cienie w ogóle są widoczne, to ustawienia <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · domyślne ikony</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Wszystkie dziesięć obok siebie</h2>
+  <h2>Wszystkie dwanaście obok siebie</h2>
   <p class="sub">Ten sam ekran galerii, w którym zmieniono tylko nazwę presetu — nie różni się ani jedna linijka kodu widżetów.
     Każdy to telefon trzymany pionowo, 390×844.</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # twoje ikony, cała reszta z presetu</code></p
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Galeria widżetów gohud w presecie material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Galeria widżetów gohud w presecie kids_light" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeria widżetów gohud w presecie kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeria widżetów gohud w presecie comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeria widżetów gohud w presecie comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -290,6 +293,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # Edytuj themes/palettes/candy.json, a potem:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>Comic: gruby tusz <span class="badge new">Nowość</span></h2>
+  <p><code>comic_light</code> (białe panele na stronie w kolorze kremowego papieru, kobaltowy kolor główny) i <code>comic_dark</code> (łupkowe panele
+    na nocnej stronie, kremowe obrysy, żółty kolor główny) rysują każdą powierzchnię jak kadr z komiksu — gruby obrys tuszem
+    z twardym cieniem za nim.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# Albo: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeria gohud w comic_light — obrysowane tuszem klawisze, wiersze i paski z twardymi cieniami" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeria gohud w comic_dark — kremowy tusz na nocnej stronie" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Okno potwierdzenia w comic_light — żółte pole tytułu i okrągły przycisk zamknięcia obrysowany tuszem" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Okno potwierdzenia w comic_dark — żółte pole tytułu na łupkowej karcie" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">Co się zmienia</h3>
+  <table>
+    <thead><tr><th>Część</th><th>W wyglądach Comic</th></tr></thead>
+    <tbody>
+      <tr><td>Każda powierzchnia</td><td>Rysowana przez <code>GoStyleBoxComic</code>: kolor powierzchni wewnątrz grubego obrysu w kolorze tuszu i twardy cień w dół i w prawo. Noszą ją klawisze, wiersze list, pola, zakładki, paski, suwaki, panele i okna wyskakujące.</td></tr>
+      <tr><td>Naciśnięcie</td><td>Cień znika, a powierzchnia zapada się na jego miejsce.</td></tr>
+      <tr><td>Kontrolki</td><td>Przełączniki, pola wyboru, przyciski opcji i uchwyty suwaków też są obrysowane tuszem, każdy z własnym małym cieniem.</td></tr>
+      <tr><td>Okna</td><td>Żółte pole za tytułem okna i okrągły przycisk zamknięcia obrysowany tuszem.</td></tr>
+      <tr><td>Części skórki</td><td><code>GoSkinComic</code>: szybkie sloty, chipy, plakietki, awatary, powiadomienia, pasek nawigacji, FAB i komórki dat są obrysowane tuszem; gałka joysticka rzuca cień; wykresy używają wyrazistych kolorów podstawowych.</td></tr>
+      <tr><td>Krycie</td><td>Panele, karty, powiadomienia i okna wyskakujące są nieprzezroczyste; karty HUD mają krycie 92%.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">Ustawienia tuszu i cienia</h3>
+  <p>Trzy ustawienia <code>GoConfig</code> zmieniają naraz każdą powierzchnię Comic. Nic nie jest przebudowywane — ekran przerysowuje się, gdy tylko je ustawisz.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # obrys (dp) — domyślnie 3
+GoUi.config.comic_shadow_size = 6.0    # cień (dp) — domyślnie 4
+GoUi.config.comic_shadow = false       # nigdzie żadnych cieni</code></pre>
+  <p>Pojedynczy widżet może pójść własną drogą, cokolwiek mówi ustawienie:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # ten przycisk leży płasko
+GoStyle.comic_shadow(card, true, true)       # ta karta i wszystko w niej zachowują cień
+GoStyle.comic_border(title, 5.0)             # grubszy obrys na tym elemencie</code></pre>
+  <div class="note">
+    <b>Żadnych zmian rozmiaru.</b> Obrys i cień są rysowane wewnątrz prostokąta każdej kontrolki, a każda powierzchnia zachowuje margines
+    nadany przez motyw, więc ekran rozłożony w innym wyglądzie zachowuje swój układ. Czcionka twojego projektu też zostaje.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Szybkie sloty, joystick i chip narysowane przez skórkę Comic" loading="lazy"><figcaption>Części, które rysuje skórka Comic</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">Zrób własny komiks</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# Edytuj themes/palettes/inked.json, a potem:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

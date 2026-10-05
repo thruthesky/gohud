@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프리셋 그대로</code></pre>
   <p><code>theme</code>·<code>skin</code>·<code>icons</code> 를 직접 채우면 그쪽이 프리셋보다 <b>우선한다</b>.</p>
 
-  <h3 id="the-six-built-in-presets">기본 제공 프리셋 열</h3>
+  <h3 id="the-six-built-in-presets">기본 제공 프리셋 열둘</h3>
   <table>
     <thead><tr><th>프리셋</th><th>패널</th><th>스킨 · 아이콘</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프�
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>철·가죽 또는 양피지 질감의 <code>GoStyleBoxMedieval</code> 단조 프레임, 메뉴에만 리벳과 모서리 장식</td><td><code>GoSkinMedieval</code> · 기본 위에 각인풍 16종</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">신규</span></td><td>앱 화면용 Material 3 Expressive — 48dp 터치 영역 안의 40dp 알약 버튼, 28dp 대화상자, 채운 카드, 외곽선 입력란, Expressive 슬라이더. 앱 컴포넌트(내비게이션 바·앱 바·FAB·검색 바·칩·진행 표시·날짜 선택기)는 M3 컴포넌트 토큰을 따른다</td><td><code>GoSkinMaterial</code> · 기본 아이콘</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">신규</span></td><td>어린이용 — 장난감 상자: 굵은 테두리와 누르면 쏙 들어가는 단단한 턱이 달린 키, 움푹한 입력칸, 방울 탭, 젤리 막대, 컨트롤마다 다른 크레파스 색, 사탕 같은 퀵슬롯, 스티커 배지, 무지개 조이스틱과 크레파스 차트. 치수와 프로젝트 글꼴은 그대로다.</td><td><code>GoSkinKids</code> · 기본 아이콘</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">신규</span></td><td><code>GoStyleBoxComic</code> 이 그리는 만화책의 칸: 모든 면에 굵은 잉크 테두리와 딱딱한 그림자가 있고, 면을 누르면 그림자가 사라진다. 잉크를 입힌 토글·체크 박스·슬라이더 손잡이, 창에는 노란 제목 캡션. 테두리 굵기, 그림자 크기, 그림자를 아예 보일지는 <code>GoConfig</code> 설정이다.</td><td><code>GoSkinComic</code> · 기본 아이콘</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>열 가지를 나란히</h2>
+  <h2>열두 가지를 나란히</h2>
   <p class="sub">프리셋 이름만 바꾼 같은 갤러리 화면이다 — 위젯 코드는 한 줄도 다르지 않다.
     모두 세워 쥔 폰, 390×844 다.</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프�
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -285,6 +288,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # themes/palettes/candy.json 수정 후:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>코믹: 굵은 잉크 <span class="badge new">신규</span></h2>
+  <p><code>comic_light</code>(종이 크림색 페이지 위의 흰 패널, 코발트색 주 색)와 <code>comic_dark</code>(밤 페이지 위의
+    슬레이트색 패널, 크림색 테두리, 노란 주 색)는 모든 면을 만화책의 칸처럼 그린다 — 굵은 잉크 테두리 뒤에 딱딱한
+    그림자가 깔린다.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# 또는: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 의 gohud 갤러리 — 딱딱한 그림자가 있는 잉크 키·줄·막대" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 의 gohud 갤러리 — 밤 페이지 위의 크림색 잉크" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light 의 확인 대화상자 — 노란 제목 캡션과 잉크를 입힌 둥근 닫기 버튼" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark 의 확인 대화상자 — 슬레이트색 카드 위의 노란 캡션" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">바뀌는 것</h3>
+  <table>
+    <thead><tr><th>부분</th><th>코믹 생김새에서는</th></tr></thead>
+    <tbody>
+      <tr><td>모든 면</td><td><code>GoStyleBoxComic</code> 이 그린다: 잉크 색의 굵은 테두리 안에 표면 색을 채우고, 오른쪽 아래로 딱딱한 그림자를 드리운다. 키, 목록 줄, 입력란, 탭, 막대, 슬라이더, 패널, 팝업이 모두 이 옷을 입는다.</td></tr>
+      <tr><td>누르기</td><td>그림자가 사라지고 면이 그 자리로 가라앉는다.</td></tr>
+      <tr><td>컨트롤</td><td>토글, 체크 박스, 라디오 버튼, 슬라이더 손잡이도 잉크를 입고, 저마다 작은 그림자를 단다.</td></tr>
+      <tr><td>창</td><td>창 제목 뒤에 노란 캡션이 깔리고, 잉크를 입힌 둥근 닫기 버튼이 붙는다.</td></tr>
+      <tr><td>스킨 부품</td><td><code>GoSkinComic</code>: 퀵슬롯, 칩, 배지, 아바타, 알림, 내비게이션 바, FAB, 날짜 칸이 잉크를 입는다. 조이스틱 손잡이는 그림자를 드리우고, 차트는 굵은 원색을 쓴다.</td></tr>
+      <tr><td>불투명도</td><td>패널, 카드, 알림, 팝업이 불투명하다. HUD 카드는 92% 불투명하다.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">잉크와 그림자 설정</h3>
+  <p><code>GoConfig</code> 설정 셋이 모든 코믹 면을 한꺼번에 바꾼다. 다시 만드는 것은 없다 — 값을 넣는 대로 화면이 다시 그려진다.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # 테두리(dp) — 기본값 3
+GoUi.config.comic_shadow_size = 6.0    # 그림자(dp) — 기본값 4
+GoUi.config.comic_shadow = false       # 어디에도 그림자 없음</code></pre>
+  <p>위젯 하나는 설정과 상관없이 따로 갈 수 있다:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # 이 버튼은 납작하게
+GoStyle.comic_shadow(card, true, true)       # 이 카드와 그 안의 모든 것은 그림자 유지
+GoStyle.comic_border(title, 5.0)             # 이것만 테두리를 더 굵게</code></pre>
+  <div class="note">
+    <b>치수는 바뀌지 않는다.</b> 테두리와 그림자는 각 컨트롤의 사각형 안에 그려지고 모든 면이 테마가 준 안쪽 여백을 그대로
+    지키므로, 다른 생김새로 배치한 화면은 배치가 그대로다. 프로젝트 글꼴도 유지된다.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="코믹 스킨이 그린 퀵슬롯·조이스틱·칩" loading="lazy"><figcaption>코믹 스킨이 그리는 부품</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">나만의 코믹 만들기</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# themes/palettes/inked.json 수정 후:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

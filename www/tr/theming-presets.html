@@ -136,7 +136,7 @@
 GoUi.config.icons = my_icons     # simgeler sizin, geri kalan her şey ön ayarın</code></pre>
   <p><code>theme</code>, <code>skin</code> veya <code>icons</code> alanını açıkça vermek ön ayarı <b>geçersiz kılar</b>.</p>
 
-  <h3 id="the-six-built-in-presets">Yerleşik on ön ayar</h3>
+  <h3 id="the-six-built-in-presets">Yerleşik on iki ön ayar</h3>
   <table>
     <thead><tr><th>Ön ayar</th><th>Paneller</th><th>Kaplama · simgeler</th></tr></thead>
     <tbody>
@@ -145,12 +145,13 @@ GoUi.config.icons = my_icons     # simgeler sizin, geri kalan her şey ön ayar�
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Dövme <code>GoStyleBoxMedieval</code> çerçeveleri — demir ve deri ya da parşömen — menülerde perçinler ve köşe süsleriyle</td><td><code>GoSkinMedieval</code> · varsayılanların üstüne 16 gravür simge</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Yeni</span></td><td>Uygulama ekranları için Material 3 Expressive — 48dp dokunma alanında 40dp hap düğmeler, 28dp iletişim kutuları, dolgulu kartlar, çerçeveli alanlar, Expressive kaydırıcı; uygulama bileşenleri (gezinme çubuğu, üst uygulama çubuğu, FAB, arama çubuğu, çipler, ilerleme, tarih seçici) M3 bileşen belirteçlerini izler</td><td><code>GoSkinMaterial</code> · varsayılan simgeler</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Yeni</span></td><td>Çocuklar için — oyuncak kutusu: kalın çerçeveler ve her tuşun altında basınca içeri gömülen sağlam bir kenar; çukur metin alanları, baloncuk sekmeler, jöle çubuklar; her denetim türü kendi pastel boya renginde, şeker gibi hızlı slotlar, çıkartma rozetler, gökkuşağı joystick ve renkli grafikler. Boyutlar ve projenin yazı tipi aynı kalır.</td><td><code>GoSkinKids</code> · varsayılan simgeler</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Yeni</span></td><td><code>GoStyleBoxComic</code>'in çizdiği çizgi roman kareleri: her yüzde kalın bir mürekkep çizgisi ve yüze basılınca kaybolan sert bir gölge; mürekkeple çizilmiş anahtarlar, onay kutuları ve kaydırıcı tutamaçları, pencerelerde sarı bir başlık kutusu. Çizgi kalınlığı, gölge boyutu ve gölgelerin hiç görünüp görünmeyeceği <code>GoConfig</code> ayarlarıdır.</td><td><code>GoSkinComic</code> · varsayılan simgeler</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>On görünümün hepsi, yan yana</h2>
+  <h2>On iki görünümün hepsi, yan yana</h2>
   <p class="sub">Yalnızca ön ayarın adı değiştirilmiş aynı galeri ekranı — widget kodunun tek bir satırı bile farklı değil.
     Her biri dik tutulan bir telefon, 390×844.</p>
   <div class="phones">
@@ -164,6 +165,8 @@ GoUi.config.icons = my_icons     # simgeler sizin, geri kalan her şey ön ayar�
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark ön ayarıyla gohud widget galerisi" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light ön ayarıyla gohud widget galerisi" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark ön ayarıyla gohud widget galerisi" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light ön ayarıyla gohud widget galerisi" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark ön ayarıyla gohud widget galerisi" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -292,6 +295,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # themes/palettes/candy.json dosyasını düzenleyin, sonra:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>Comic: kalın mürekkep <span class="badge new">Yeni</span></h2>
+  <p><code>comic_light</code> (krem kâğıt renginde bir sayfada beyaz paneller, kobalt mavisi birincil renk) ve <code>comic_dark</code> (gece renginde
+    bir sayfada arduvaz paneller, krem çizgiler, sarı birincil renk) her yüzü bir çizgi roman karesi gibi çizer — arkasında sert
+    bir gölge olan kalın bir mürekkep çizgisi.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# Ya da: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light ile gohud galerisi — sert gölgeli, mürekkeple çizilmiş tuşlar, satırlar ve çubuklar" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark ile gohud galerisi — gece renginde bir sayfada krem mürekkep" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light ile bir onay iletişim kutusu — sarı bir başlık kutusu ve mürekkeple çizilmiş yuvarlak bir kapatma düğmesi" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark ile bir onay iletişim kutusu — arduvaz bir kartın üstünde sarı bir başlık kutusu" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">Neler değişir</h3>
+  <table>
+    <thead><tr><th>Parça</th><th>Comic görünümlerinde</th></tr></thead>
+    <tbody>
+      <tr><td>Her yüz</td><td><code>GoStyleBoxComic</code> çizer: mürekkep renginde kalın bir dış çizginin içinde yüzey rengi ve sağ alta düşen sert bir gölge. Tuşlar, liste satırları, alanlar, sekmeler, çubuklar, kaydırıcılar, paneller ve açılır pencereler hep bunu giyer.</td></tr>
+      <tr><td>Basmak</td><td>Gölge kaybolur ve yüz onun yerine gömülür.</td></tr>
+      <tr><td>Denetimler</td><td>Anahtarlar, onay kutuları, radyo düğmeleri ve kaydırıcı tutamaçları da mürekkeple çizilir; her birinin kendi küçük gölgesi vardır.</td></tr>
+      <tr><td>Pencereler</td><td>Pencere başlığının arkasında sarı bir başlık kutusu ve mürekkeple çizilmiş yuvarlak bir kapatma düğmesi.</td></tr>
+      <tr><td>Kaplama parçaları</td><td><code>GoSkinComic</code>: hızlı slotlar, chip'ler, rozetler, avatarlar, bildirimler, gezinme çubuğu, FAB ve tarih hücreleri mürekkeple çizilir; joystick topuzu gölge düşürür; grafikler canlı ana renkler kullanır.</td></tr>
+      <tr><td>Opaklık</td><td>Paneller, kartlar, bildirimler ve açılır pencereler opaktır; HUD kartları %92 opaktır.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">Mürekkep ve gölge ayarları</h3>
+  <p>Üç <code>GoConfig</code> ayarı tüm Comic yüzlerini bir kerede değiştirir. Hiçbir şey yeniden kurulmaz — siz ayarladıkça ekran yeniden çizilir.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # dış çizgi (dp) — varsayılan 3
+GoUi.config.comic_shadow_size = 6.0    # gölge (dp) — varsayılan 4
+GoUi.config.comic_shadow = false       # hiçbir yerde gölge yok</code></pre>
+  <p>Tek bir widget, ayar ne derse desin kendi yolundan gidebilir:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # bu düğme düz durur
+GoStyle.comic_shadow(card, true, true)       # bu kart ve içindeki her şey gölgesini korur
+GoStyle.comic_border(title, 5.0)             # bunda daha kalın bir dış çizgi</code></pre>
+  <div class="note">
+    <b>Boyut değişmez.</b> Dış çizgi ve gölge her denetimin dikdörtgeninin içine çizilir ve her yüz temanın verdiği iç boşluğu
+    korur; böylece başka bir görünümde yerleştirilmiş bir ekran yerleşimini korur. Projenizin yazı tipi de korunur.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Comic kaplamasının çizdiği hızlı slotlar, joystick ve chip" loading="lazy"><figcaption>Comic kaplamasının çizdiği parçalar</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">Kendi çizgi romanınızı yapın</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# themes/palettes/inked.json dosyasını düzenleyin, sonra:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

@@ -196,10 +196,26 @@ GoUi.use_preset(&amp;"neon")                             # terminé — il appar
       <tr><td><code>segment_inner_radius</code></td><td data-label="Valeur par défaut">8</td><td>Rayon d'angle (dp) là où deux cellules d'un groupe de boutons connectés Material se rejoignent.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Skin enfants <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Molette</th><th>Valeur par défaut</th><th>Ce qu'elle règle</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Valeur par défaut">2</td><td>Épaisseur du contour (dp) d'une pièce jouet enfants — puces, emplacements, le FAB, alertes.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Valeur par défaut">4</td><td>Le rebord plein (dp) sous une pièce jouet enfants sur laquelle on appuie ; il rétrécit quand la pièce est enfoncée.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Valeur par défaut">0.28</td><td>Quelle part de couleur de crayon remplit la face d'un emplacement ou d'une puce enfants (0–1) ; le reste est la couleur de surface.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Skin bande dessinée <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Molette</th><th>Valeur par défaut</th><th>Ce qu'elle règle</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Valeur par défaut">0.22</td><td>Quelle part de sa propre couleur remplit une puce, un emplacement rapide ou une pilule choisie bande dessinée (0–1) ; le reste est la couleur de surface.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Dériver le skin (facultatif)</h3>
+  <h3 id="subclass-the-skin-optional">Dériver le skin (facultatif)</h3>
   <p>Seul ce que le thème et la forme n'atteignent pas — l'hexagone du joystick, les badges des emplacements,
     le crochet de visée du repère guidé — vit dans un skin. Dérivez <code>GoSkin</code>, ne redéfinissez que ces
     méthodes, et faites pointer la clé <code>skin</code> du JSON vers cette ressource. Un thème qui ne change

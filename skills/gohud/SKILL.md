@@ -5,7 +5,7 @@ description: >-
   HUDs (HP/MP bars, quick slots, joystick, summon columns) placed by corner anchors or edge bars (GoTopBar,
   GoBottomBar, side bars, GoGrid), dialogs, sheets, drawers, popovers, forms, snackbars, and app screens with
   Flutter's widgets (scaffold, navigation and app bars, FAB, swipe tabs, lazy lists, pull to refresh, swipe rows,
-  date/time pickers) in presets (default, sci-fi, medieval, Material 3 Expressive, kids), JSON themes, skins and
+  date/time pickers) in presets (default, sci-fi, medieval, Material 3 Expressive, kids, comic), JSON themes, skins and
   1,271 icons — touch-safe, safe-area aware, RTL and translation ready. Use whenever someone writes GDScript UI,
   HUD, menu or GUI code in a Godot project, ports a Flutter screen to Godot, mentions gohud or a Go* class (GoUi,
   GoStyle, GoSurface, GoSheet, GoDialogs, GoForm, GoHudAnchor, GoScaffold, GoChoiceColumn…), wants to install or
@@ -55,7 +55,10 @@ Reply in the language the user writes in; keep code identifiers as they are.
 2. **Pick the look first.** `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` (or the project setting) before any widget
    is built — `DEFAULT_*`, `SCIFI_*`, `MEDIEVAL_*` for games, `MATERIAL_LIGHT`/`MATERIAL_DARK` (Material 3 Expressive)
    for app screens, each `_DARK` and `_LIGHT`, and `&"kids_light"`/`&"kids_dark"` for children — the toy box: keys on a
-   lip that sink when pressed, crayon colours, candy slots, a rainbow joystick (a folder preset: pass the id).
+   lip that sink when pressed, crayon colours, candy slots, a rainbow joystick (a folder preset: pass the id), and
+   `&"comic_light"`/`&"comic_dark"` — a bold ink outline and a hard, faint shadow on every part, whose outline width,
+   shadow size and shadow on/off are `GoConfig.comic_border_width`/`comic_shadow_size`/`comic_shadow` (one line
+   restyles every part; `GoStyle.comic_shadow(node, on)` for one widget — theming.md §1).
    `GoThemePresets.names()` lists every preset this copy has, including any `themes/presets/<id>.tres` added later. Call it **once at boot** (the main scene or an autoload), not
    in each screen: the preset is global, so a screen that sets it restyles every other screen too. gohud's own widgets
    restyle themselves on a switch, but a node keeps the `theme` it was built with — switching later means rebuilding the

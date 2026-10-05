@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — un kit HUD e UI per Godot 4</title>
-<meta name="description" content="Un kit HUD e UI personalizzabile per Godot 4.7+. Superfici flottanti, fogli inferiori, finestre di dialogo, moduli, snackbar, barre HUD, slot rapidi e un joystick virtuale, con dieci preset — default, sci-fi, medievale, Material 3 e bambini.">
+<meta name="description" content="Un kit HUD e UI personalizzabile per Godot 4.7+. Superfici flottanti, fogli inferiori, finestre di dialogo, moduli, snackbar, barre HUD, slot rapidi e un joystick virtuale, con dodici preset — default, sci-fi, medievale, Material 3, bambini e fumetto.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud è un kit HUD e UI per Godot 4.7 e versioni successive. Finestre flottanti, fogli inferiori, finestre di
       dialogo, moduli, snackbar, coach mark, barre HUD, slot rapidi e un joystick virtuale funzionano con <b>un solo
       tema e un solo set di icone intercambiabile</b>, e si occupano al posto tuo dell'area sicura, della tastiera
-      virtuale, dell'RTL e delle aree di tocco. <b>Dieci preset</b> — default, sci-fi, medievale, Material 3 e bambini, ognuno scuro e chiaro —
+      virtuale, dell'RTL e delle aree di tocco. <b>Dodici preset</b> — default, sci-fi, medievale, Material 3, bambini e fumetto, ognuno scuro e chiaro —
       cambiano colori e forme in una riga.
     </p>
     <div class="badges">
@@ -87,8 +87,8 @@
       <span class="badge">GDScript puro</span>
       <span class="badge">Nessun autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 preset</span>
-      <span class="badge new">Novità: Material 3 · Bambini</span>
+      <span class="badge">12 preset</span>
+      <span class="badge new">Novità: Fumetto · Material 3 · Bambini</span>
       <span class="badge">21 lingue</span>
       <span class="badge"><span data-n="icons">1.287</span> icone incluse</span>
     </div>
@@ -104,9 +104,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Novità: Material 3 e un aspetto per i bambini</h2>
+  <h2>Novità: fumetto, Material 3 e un aspetto per i bambini</h2>
   <p class="sub">
-    Due nuove famiglie si aggiungono a default, sci-fi e medievale — ora sono <b>dieci aspetti inclusi</b>, ognuno scuro e chiaro.
+    Tre nuove famiglie si aggiungono a default, sci-fi e medievale — ora sono <b>dodici aspetti inclusi</b>, ognuno scuro e chiaro.
     Ogni widget, popup e pezzo dell'HUD li adotta senza cambiare il tuo codice: cambia il preset e tutta la schermata lo segue.
   </p>
   <div class="phones">
@@ -114,6 +114,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="La galleria gohud in material_dark — le stesse forme Material 3 sulla base scura" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="La galleria gohud in kids_light — grossi pulsanti di gelatina color pastello su una pagina solare" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="La galleria gohud in kids_dark — la stessa scatola dei giocattoli su una pagina blu notte" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="La galleria gohud in comic_light — contorni d'inchiostro spessi e ombre nette su una pagina color crema carta" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="La galleria gohud in comic_dark — contorni crema e un primario giallo su una pagina notturna" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -130,11 +132,19 @@
         sono adesivi, il joystick è un arcobaleno, le finestre hanno un nastro del titolo color sole e un pulsante di chiusura tondo a
         caramella, e ogni pressione schiaccia la gelatina. Le dimensioni e il font del tuo progetto restano esattamente come erano.</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">Fumetto — inchiostro deciso</h3>
+      <p>Ogni superficie è una vignetta a fumetti: il suo colore dentro un contorno d'inchiostro spesso, con un'ombra netta dietro
+        che sparisce quando la premi. Un'impostazione accende o spegne tutte le ombre, altre due fissano lo spessore del contorno
+        e la dimensione dell'ombra, e una sola chiamata fa lo stesso per un singolo widget. Le finestre hanno una didascalia del titolo gialla.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # oppure MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # oppure &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # oppure &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # oppure &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 nel dettaglio →</a> · <a href="theming-presets.html#kids">Bambini nel dettaglio →</a> ·
-    <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e dieci gli aspetti →</a></p>
+    <a href="theming-presets.html#comic">Fumetto nel dettaglio →</a> ·
+    <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e dodici gli aspetti →</a></p>
 </section>
 
 <section id="showcase">
@@ -157,7 +167,7 @@ GoUi.use_preset(&amp;"kids_light")                   # oppure &amp;"kids_dark"</
       <figcaption><b>Sci-fi</b> — pannelli spigolosi e comandi touch</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Tutti e dieci i preset e come cambiarli →</a></p>
+  <p><a href="#presets">Tutti e dodici i preset e come cambiarli →</a></p>
 </section>
 
 <section id="what">
@@ -193,8 +203,8 @@ GoUi.use_preset(&amp;"kids_light")                   # oppure &amp;"kids_dark"</
       <p>I widget conoscono solo <code>GoIconSet.CLOSE</code>. Cambia il set e ogni disegno cambia senza toccare una riga di codice. <a href="icons.html">Icone →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Dieci aspetti, una riga</h3>
-      <p><code>GoUi.use_preset()</code> cambia insieme tema, skin e icone — cornici arrotondate, smussate in stile sci-fi, forgiate in stile medievale o i componenti per app di Material 3.</p>
+      <h3 id="six-looks-one-line">Dodici aspetti, una riga</h3>
+      <p><code>GoUi.use_preset()</code> cambia insieme tema, skin e icone — cornici arrotondate, smussate in stile sci-fi, forgiate in stile medievale, i componenti per app di Material 3, le caramelle di gelatina dei bambini o l'inchiostro del fumetto.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Leggibile per misura</h3>
@@ -245,6 +255,8 @@ GoUi.use_preset(&amp;"kids_light")                   # oppure &amp;"kids_dark"</
       <tr><td><code>material_dark</code> <span class="badge new">Nuovo</span></td><td>Le stesse forme Material 3 sulla base scura</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">Nuovo</span></td><td>La scatola dei giocattoli per bambini — tasti di caramella gommosa con un contorno spesso e un bordo che affonda quando lo premi, colori pastello, una pagina solare</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">Nuovo</span></td><td>La stessa scatola dei giocattoli su una pagina blu notte</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">Nuovo</span></td><td>Vignette a fumetti — un contorno d'inchiostro spesso e un'ombra netta su ogni superficie, pannelli bianchi su una pagina color crema carta; l'ombra, la sua dimensione e lo spessore del contorno sono impostazioni</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">Nuovo</span></td><td>Lo stesso inchiostro su una pagina notturna — contorni crema e un primario giallo</td></tr>
     </tbody>
   </table>
 
@@ -357,11 +369,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>Solo segni agli angoli, senza racchiudere il contenuto</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Una cornice forgiata con rivetti, incisione agli angoli, una luce di bisello e la grana del materiale</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Una caramella di gelatina — un contorno spesso, un bordo pieno che affonda quando lo premi, un corpo più chiaro in alto e un riflesso bianco</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>Una vignetta a fumetti — un contorno d'inchiostro spesso e un'ombra proiettata netta, entrambi dimensionati da <code>GoConfig</code> mentre il gioco gira</td></tr>
     </tbody>
   </table>
-  <p>Tutte e quattro si serializzano dentro una risorsa Theme — ed è proprio questo che permette a un tema di cambiare <b>forma</b>, non solo colore.
-    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> e <code>GoSkinKids</code> sono le sottoclassi incluse.</p>
+  <p>Tutte e cinque si serializzano dentro una risorsa Theme — ed è proprio questo che permette a un tema di cambiare <b>forma</b>, non solo colore.
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code> e <code>GoSkinComic</code> sono le sottoclassi incluse.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Slot rapidi, un joystick e un chip disegnati da ogni skin inclusa — default, bambini, Material, medievale e sci-fi" loading="lazy"><figcaption>Che cosa disegna una skin — default, bambini, Material, medievale, sci-fi</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Slot rapidi, un joystick e un chip disegnati dalla skin fumetto — contorni inchiostrati e ombre nette" loading="lazy"><figcaption>…e la skin fumetto</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> restituisce sempre uno <code>StyleBoxFlat</code></b>, perché il codice chiamante
@@ -456,7 +470,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Ogni coppia di colori e <b>l'etichetta di ogni stato di ogni pulsante sopra il pannello su cui si trova</b> viene misurata rispetto alle
-    WCAG, in tutti e dieci i temi. I colori traslucidi vengono prima composti sopra il loro sfondo reale — misurarli
+    WCAG, in tutti e dodici i temi. I colori traslucidi vengono prima composti sopra il loro sfondo reale — misurarli
     direttamente riporterebbe un rapporto migliore di quello che si vede a schermo.
   </p>
   <p>

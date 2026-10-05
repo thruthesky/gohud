@@ -107,6 +107,36 @@ signal changed_settings
 ## 🛑 It is read when a button is styled — set it before building the screen. Buttons already on screen keep their look.
 @export var button_glow := false
 
+## 💬 **The comic looks' dials** (`comic_light`·`comic_dark`) — read by every `GoStyleBoxComic` each time it is drawn,
+## so one line restyles every part at once (buttons, fields, panels, chips, slots…). The other looks ignore them.
+##
+## ```gdscript
+## GoUi.use_preset(&"comic_light")
+## GoUi.config.comic_border_width = 2.0   # thinner ink
+## GoUi.config.comic_shadow_size = 6.0    # a deeper shadow
+## GoUi.config.comic_shadow = false       # …or none at all
+## ```
+## For one widget, `GoStyle.comic_shadow(node, on)` and `GoStyle.comic_border(node, width)`.
+## 🔑 Neither moves anything: the outline is drawn inside a part and the shadow outside it. Parts already on screen
+##    redraw on their own when one of these changes.
+@export_subgroup("Comic")
+## The ink outline of every comic part (dp). Small parts take a share of it (a list row or a chip ⅔).
+@export_range(0.0, 12.0, 0.5) var comic_border_width := 3.0:
+	set(value):
+		comic_border_width = value
+		_comic_changed()
+## Whether comic parts drop their shadow. Off, every part sits flat on the page.
+@export var comic_shadow := true:
+	set(value):
+		comic_shadow = value
+		_comic_changed()
+## How far the shadow sits down and to the right (dp). Panels take 1.5×, small parts ½.
+@export_range(0.0, 24.0, 0.5) var comic_shadow_size := 4.0:
+	set(value):
+		comic_shadow_size = value
+		_comic_changed()
+@export_subgroup("")
+
 
 # ── Responsive ─────────────────────────────────────────────────────────
 
@@ -367,6 +397,15 @@ func _init() -> void:
 
 func _on_changed() -> void:
 	changed_settings.emit()
+
+
+## A comic dial changed: the faces read it when they draw, so the parts on screen only have to draw again — nothing
+## moves (the outline is inside a part, the shadow outside), so nothing has to lay out again.
+func _comic_changed() -> void:
+	emit_changed()
+	if Engine.is_editor_hint(): return
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree != null and tree.root != null: tree.root.propagate_call(&"queue_redraw")
 
 
 ## A copy of this config — for when one screen alone should differ at runtime.

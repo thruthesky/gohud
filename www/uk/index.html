@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — набір HUD та UI для Godot 4</title>
-<meta name="description" content="Гнучкий набір HUD та UI для Godot 4.7+. Плаваючі поверхні, нижні аркуші, діалоги, форми, снекбари, смуги HUD, швидкі слоти та віртуальний стик, із десятьма пресетами — стандартним, сай-фай, середньовічним, Material 3 і дитячим.">
+<meta name="description" content="Гнучкий набір HUD та UI для Godot 4.7+. Плаваючі поверхні, нижні аркуші, діалоги, форми, снекбари, смуги HUD, швидкі слоти та віртуальний стик, із дванадцятьма пресетами — стандартним, сай-фай, середньовічним, Material 3, дитячим і коміксовим.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud — це набір HUD та UI для Godot 4.7 і новіших. Плаваючі вікна, нижні аркуші, діалоги, форми,
       снекбари, коуч-мітки, смуги HUD, швидкі слоти та віртуальний стик працюють від <b>однієї теми й одного
       змінного набору іконок</b> і самі дають раду безпечній зоні, віртуальній клавіатурі, RTL і областям дотику.
-      <b>Десять пресетів</b> — стандартний, сай-фай, середньовічний, Material 3 і дитячий, кожен у темному та світлому варіанті —
+      <b>Дванадцять пресетів</b> — стандартний, сай-фай, середньовічний, Material 3, дитячий і коміксовий, кожен у темному та світлому варіанті —
       міняють кольори й форми одним рядком.
     </p>
     <div class="badges">
@@ -87,8 +87,8 @@
       <span class="badge">Чистий GDScript</span>
       <span class="badge">Без автозавантаження</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 пресетів</span>
-      <span class="badge new">Нове: Material 3 · дитячий образ</span>
+      <span class="badge">12 пресетів</span>
+      <span class="badge new">Нове: комікс · Material 3 · дитячий образ</span>
       <span class="badge">21 мова</span>
       <span class="badge"><span data-n="icons">1 287</span> іконок у комплекті</span>
     </div>
@@ -104,9 +104,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Нове: Material 3 та образ для дітей</h2>
+  <h2>Нове: комікс, Material 3 та образ для дітей</h2>
   <p class="sub">
-    До стандартного, сай-фай і середньовічного долучилися дві нові родини — тепер <b>десять вбудованих образів</b>, кожен у темному та світлому варіанті.
+    До стандартного, сай-фай і середньовічного долучилися три нові родини — тепер <b>дванадцять вбудованих образів</b>, кожен у темному та світлому варіанті.
     Кожен віджет, спливне вікно й елемент HUD приймає їх без жодної зміни у вашому коді: змініть пресет — і весь екран піде за ним.
   </p>
   <div class="phones">
@@ -114,6 +114,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Галерея gohud у material_dark — ті самі форми Material 3 на темній базовій схемі" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Галерея gohud у kids_light — пухкі желейні кнопки кольорів олівців на сонячній сторінці" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Галерея gohud у kids_dark — та сама коробка з іграшками на нічно-синій сторінці" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Галерея gohud у comic_light — жирні чорнильні контури й жорсткі тіні на сторінці кольору кремового паперу" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Галерея gohud у comic_dark — кремові контури й жовтий основний колір на нічній сторінці" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -130,11 +132,19 @@
         стик — веселка, вікна мають сонячну стрічку заголовка й круглу кнопку закриття-цукерку, а натискання сплющує кнопку.
         Розміри й шрифт вашого проєкту лишаються точно такими, як були.</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">Комікс — жирне чорнило</h3>
+      <p>Кожна лицьова панель — кадр коміксу: колір поверхні всередині жирного чорнильного контуру, а за ним жорстка тінь,
+        яка зникає від натискання. Одне налаштування вмикає чи вимикає всі тіні, ще два задають товщину контуру й розмір тіні,
+        а один виклик робить те саме для окремого віджета. Вікна мають жовту плашку заголовка.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # або MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # або &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # або &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # або &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 докладно →</a> · <a href="theming-presets.html#kids">Дитячий образ докладно →</a> ·
-    <a href="widgets-popups.html#popup-looks">Те саме спливне вікно в усіх десяти образах →</a></p>
+    <a href="theming-presets.html#comic">Комікс докладно →</a> ·
+    <a href="widgets-popups.html#popup-looks">Те саме спливне вікно в усіх дванадцяти образах →</a></p>
 </section>
 
 <section id="showcase">
@@ -157,7 +167,7 @@ GoUi.use_preset(&amp;"kids_light")                   # або &amp;"kids_dark"</
       <figcaption><b>Сай-фай</b> — кутасті панелі й сенсорне керування</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Усі десять пресетів і як їх перемикати →</a></p>
+  <p><a href="#presets">Усі дванадцять пресетів і як їх перемикати →</a></p>
 </section>
 
 <section id="what">
@@ -193,8 +203,8 @@ GoUi.use_preset(&amp;"kids_light")                   # або &amp;"kids_dark"</
       <p>Віджети знають лише <code>GoIconSet.CLOSE</code>. Замініть набір — і всі малюнки зміняться, не чіпаючи жодного рядка коду. <a href="icons.html">Іконки →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Десять образів, один рядок</h3>
-      <p><code>GoUi.use_preset()</code> міняє тему, скін та іконки разом — заокруглені, зрізані сай-фай, ковані середньовічні рами чи компоненти застосунків Material 3.</p>
+      <h3 id="six-looks-one-line">Дванадцять образів, один рядок</h3>
+      <p><code>GoUi.use_preset()</code> міняє тему, скін та іконки разом — заокруглені, зрізані сай-фай, ковані середньовічні рами, компоненти застосунків Material 3, дитячі желейні цукерки чи чорнило коміксу.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Розбірливість — виміряна</h3>
@@ -244,6 +254,8 @@ GoUi.use_preset(&amp;"kids_light")                   # або &amp;"kids_dark"</
       <tr><td><code>material_dark</code> <span class="badge new">Нове</span></td><td>Ті самі форми Material 3 на темній базовій схемі</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">Нове</span></td><td>Коробка з іграшками для дітей — клавіші-желейні цукерки з товстим контуром і бортиком, що просідає від натискання, кольори олівців, сонячна сторінка</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">Нове</span></td><td>Та сама коробка з іграшками на нічно-синій сторінці</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">Нове</span></td><td>Кадри коміксу — жирний чорнильний контур і жорстка тінь на кожній панелі, білі панелі на сторінці кольору кремового паперу; тінь, її розмір і товщина контуру — це налаштування</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">Нове</span></td><td>Те саме чорнило на нічній сторінці — кремові контури й жовтий основний колір</td></tr>
     </tbody>
   </table>
 
@@ -357,11 +369,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>Лише кутові позначки, без обрамлення вмісту</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Кована рама із заклепками, кутовим гравіюванням, фаскою-відблиском і зернистістю матеріалу</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Желейна цукерка — товстий контур, щільний бортик, що просідає від натискання, тіло, світліше згори, і білий відблиск</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>Кадр коміксу — жирний чорнильний контур і жорстка відкинута тінь; розмір обох задає <code>GoConfig</code> просто під час гри</td></tr>
     </tbody>
   </table>
-  <p>Усі чотири серіалізуються в ресурс Theme — саме це й дозволяє темі міняти <b>форму</b>, а не лише колір.
-    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code> і <code>GoSkinKids</code> — вбудовані підкласи.</p>
+  <p>Усі п'ять серіалізуються в ресурс Theme — саме це й дозволяє темі міняти <b>форму</b>, а не лише колір.
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code> і <code>GoSkinComic</code> — вбудовані підкласи.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Швидкі слоти, стик і чип у виконанні кожного вбудованого скіна — стандартного, дитячого, Material, середньовічного та сай-фай" loading="lazy"><figcaption>Що малює скін — стандартний, дитячий, Material, середньовічний, сай-фай</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Швидкі слоти, стик і чип у виконанні скіна коміксу — чорнильні контури й жорсткі тіні" loading="lazy"><figcaption>…і скін коміксу</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> завжди повертає <code>StyleBoxFlat</code></b>, бо код, який його викликає,
@@ -456,7 +470,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Кожна пара кольорів і <b>напис кожного стану кнопки над панеллю, на якій він лежить</b>, вимірюються за
-    WCAG в усіх десяти темах. Напівпрозорі кольори спершу накладаються на своє справжнє тло — виміряні
+    WCAG в усіх дванадцяти темах. Напівпрозорі кольори спершу накладаються на своє справжнє тло — виміряні
     напряму, вони показують кращий коефіцієнт, ніж видно на екрані.
   </p>
   <p>

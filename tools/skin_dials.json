@@ -46,5 +46,8 @@
     "toy_edge": 2,
     "toy_lip": 4,
     "crayon_tint": 0.28
+  },
+  "comic": {
+    "comic_tint": 0.22
   }
 }

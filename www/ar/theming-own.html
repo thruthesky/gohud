@@ -194,10 +194,26 @@ GoUi.use_preset(&amp;"neon")                             # تمّ — ويظهر
       <tr><td><code>segment_inner_radius</code></td><td data-label="الافتراضي">8</td><td>نصف قطر الزاوية (dp) حيث تلتقي خليتان في مجموعة الأزرار المتصلة في Material.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">مظهر الأطفال <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="الافتراضي">2</td><td>عرض الحدّ (dp) لقطعة لعبة في مظهر الأطفال — الشرائح والخانات وزر FAB والتنبيهات.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="الافتراضي">4</td><td>الشفة الصلبة (dp) تحت قطعة لعبة تضغطها في مظهر الأطفال؛ تنكمش حين تُضغط القطعة.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="الافتراضي">0.28</td><td>مقدار اللون الطباشيري الذي يملأ وجه خانة أو شريحة في مظهر الأطفال (0–1)؛ والباقي لون السطح.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">مظهر القصص المصوّرة <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>المقبض</th><th>الافتراضي</th><th>ما الذي يضبطه</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="الافتراضي">0.22</td><td>مقدار لونها الخاص الذي يملأ شريحة أو خانة سريعة أو حبة مختارة في مظهر القصص المصوّرة (0–1)؛ والباقي لون السطح.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">اشتقّ المظهر (اختياري)</h3>
+  <h3 id="subclass-the-skin-optional">اشتقّ المظهر (اختياري)</h3>
   <p>لا يعيش في المظهر إلا ما لا تصله السمة ولا الشكل — سداسية عصا التوجيه، وشارات الخانات، وقوس التصويب
     في العلامة الإرشادية. اشتقّ من <code>GoSkin</code>، وتجاوز تلك الدوال وحدها، ثم وجّه مفتاح <code>skin</code>
     في ملف JSON إلى ذلك المورد. أما السمة التي تغيّر الألوان وحدها فتتخطى هذه الخطوة.</p>

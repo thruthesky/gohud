@@ -143,7 +143,7 @@
     <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="横跨屏幕顶部的开发者控制台，已输入一条命令" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
   </div>
   <p>本页的每张图都是同一个小游戏——左上角是生命和魔法，右上角是金币，底部是摇杆和三个快捷槽——用的是
-    <code>default_dark</code>，上面开着一个弹窗。<a href="#popup-looks">同一个弹窗在全部十种外观下的样子 →</a></p>
+    <code>default_dark</code>，上面开着一个弹窗。<a href="#popup-looks">同一个弹窗在全部十二种外观下的样子 →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -677,6 +677,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="material_dark 下的确认框" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">新</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="kids_light 下的确认框——阳光色的标题彩带、糖果关闭按钮和果冻按钮" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">新</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark 下的确认框——夜蓝色卡片上的薄荷色彩带" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">新</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light 下的确认框——黄色的标题框、描了墨线的关闭按钮，以及带硬阴影的墨线按钮" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">新</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark 下的确认框——石板色卡片上的奶油色墨线" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">新</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">每种外观改变了什么</h3>
@@ -688,6 +690,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>中世纪</td><td>锻造边框——铁与皮革，或羊皮纸——带铆钉和角落纹饰</td><td>标题用 Cinzel</td></tr>
       <tr><td>Material 3</td><td>28dp 圆角、24dp 内边距、完全不透明</td><td>Roboto 的 24sp 标题；48dp 触摸目标里带 40dp 底板的胶囊按钮</td></tr>
       <tr><td>儿童</td><td>带柔和阴影的果冻糖卡片，完全不透明</td><td>阳光色的标题彩带（夜间为薄荷色）、圆形的糖果关闭按钮、按下会被压扁的按钮</td></tr>
+      <tr><td>漫画</td><td>粗墨线描边和硬阴影，完全不透明</td><td>黄色的标题框、描了墨线的圆形关闭按钮、按下时阴影消失的按钮</td></tr>
     </tbody>
   </table>
 
@@ -698,7 +701,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>钩子</th><th>装扮什么</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>窗口标题背后的底板。标题在底板上居中，并会缩小（最小到 15）以保持在一行内。</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>窗口的 ×——儿童外观把它做成一颗圆糖果。</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>窗口的 ×——儿童外观把它做成一颗圆糖果，漫画外观则是一枚描了墨线的圆片。</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>手指落在 gohud 创建的按钮上的那一刻运行——儿童外观会把按钮压扁。</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>提示卡片和引导卡片、消息条和提示条、抽屉、横幅、控制台的表面。</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>引导的光圈和指针。</td></tr>
@@ -709,7 +712,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>每一类弹窗各自遵循自己的不透明度，所以 HUD 卡片可以保持通透，而对话框保持实心：窗口、底部面板、对话框、
     贴靠卡片和组合框遵循 <code>panel_alpha</code>；抽屉和引导卡片遵循 <code>card_alpha</code>；提示卡片和
     控制台遵循 <code>hud_alpha</code>；消息条和提示条遵循 <code>notice_alpha</code>；菜单遵循 <code>popup_alpha</code>。Material 和儿童外观
-    让它们全部不透明。用 <code>GoConfig.container_alpha_overrides</code> 覆盖某一类，用
+    让它们全部不透明；漫画外观也一样，只有提示卡片和控制台是 92%。用 <code>GoConfig.container_alpha_overrides</code> 覆盖某一类，用
     <code>container_alpha</code>（一个比例——<code>0.95</code>）覆盖全部，或用某个窗口自己的 <code>alpha</code> 覆盖单个窗口。只有表面会变淡；文字
     绝不会变得半透明。<a href="theming-opacity.html">不透明度详解 →</a></p>
 </section>

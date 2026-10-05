@@ -145,7 +145,7 @@
   </div>
   <p>Ogni immagine di questa pagina mostra lo stesso piccolo gioco — salute e mana in alto a sinistra, monete in alto a destra, un joystick e
     tre slot rapidi in basso — in <code>default_dark</code>, con un popup aperto sopra. <a href="#popup-looks">La stessa
-    conferma in tutti e dieci gli aspetti →</a></p>
+    conferma in tutti e dodici gli aspetti →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -681,6 +681,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="La conferma in material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Nuovo</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="La conferma in kids_light — un nastro del titolo color sole, un pulsante di chiusura a caramella e pulsanti di gelatina" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Nuovo</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="La conferma in kids_dark — un nastro color menta su una scheda blu notte" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Nuovo</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="La conferma in comic_light — una didascalia del titolo gialla, un pulsante di chiusura inchiostrato e pulsanti inchiostrati con ombre nette" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Nuovo</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="La conferma in comic_dark — inchiostro crema su una scheda ardesia" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Nuovo</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">Che cosa cambia ogni aspetto</h3>
@@ -692,6 +694,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Medievale</td><td>Una cornice forgiata — ferro e cuoio, oppure pergamena — con rivetti e ornamenti angolari</td><td>Titoli in Cinzel</td></tr>
       <tr><td>Material 3</td><td>Angoli da 28dp, margine interno da 24dp, completamente opaca</td><td>Un titolo da 24sp in Roboto; pulsanti a pillola con una piastra da 40dp in un'area da 48dp</td></tr>
       <tr><td>Bambini</td><td>Una scheda a caramella di gelatina con un'ombra morbida, completamente opaca</td><td>Un nastro del titolo color sole (menta di notte), un pulsante di chiusura tondo a caramella, pulsanti che si schiacciano quando li premi</td></tr>
+      <tr><td>Fumetto</td><td>Un contorno d'inchiostro spesso e un'ombra netta, completamente opaca</td><td>Una didascalia del titolo gialla, un pulsante di chiusura tondo inchiostrato, pulsanti la cui ombra sparisce quando li premi</td></tr>
     </tbody>
   </table>
 
@@ -702,7 +705,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Hook</th><th>Che cosa veste</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Una piastra dietro il titolo di una finestra. Il titolo ci si centra sopra e si rimpicciolisce, fino alla dimensione minima (15), per restare su una riga.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>La × della finestra — l'aspetto bambini la trasforma in una caramella tonda.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>La × della finestra — l'aspetto bambini la trasforma in una caramella tonda, l'aspetto fumetto in un disco inchiostrato.</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>Viene eseguito nell'istante in cui un dito tocca un pulsante creato da gohud — l'aspetto bambini lo schiaccia.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Le superfici delle prompt card e delle schede del coach mark, degli snackbar e degli avvisi, del pannello laterale, dei banner, della console.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>L'anello e il puntatore del tour.</td></tr>
@@ -713,7 +716,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Ogni tipo di popup segue la propria opacità, così una scheda dell'HUD può restare leggera mentre una finestra di dialogo resta piena: finestre,
     fogli, finestre di dialogo, schede ancorate e il combobox seguono <code>panel_alpha</code>; il pannello laterale e la scheda del coach mark
     <code>card_alpha</code>; le prompt card e la console <code>hud_alpha</code>; snackbar e avvisi <code>notice_alpha</code>; i menu
-    <code>popup_alpha</code>. Material e bambini li rendono tutti opachi. Sovrascrivi un tipo con <code>GoConfig.container_alpha_overrides</code>,
+    <code>popup_alpha</code>. Material e bambini li rendono tutti opachi; anche fumetto, tranne le prompt card e la console al 92%. Sovrascrivi un tipo con <code>GoConfig.container_alpha_overrides</code>,
     tutti con <code>container_alpha</code> (un rapporto — <code>0.95</code>), o una sola finestra con il suo <code>alpha</code>. Sbiadisce solo la
     superficie; il testo non è mai trasparente. <a href="theming-opacity.html">L'opacità nel dettaglio →</a></p>
 </section>

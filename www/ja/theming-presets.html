@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセットのまま</code></pre>
   <p><code>theme</code>・<code>skin</code>・<code>icons</code> を明示的に設定すると、プリセットより<b>優先される</b>。</p>
 
-  <h3 id="the-six-built-in-presets">組み込みの10プリセット</h3>
+  <h3 id="the-six-built-in-presets">組み込みの12プリセット</h3>
   <table>
     <thead><tr><th>プリセット</th><th>パネル</th><th>スキン · アイコン</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセ
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>鍛造した <code>GoStyleBoxMedieval</code> の枠 — 鉄と革、あるいは羊皮紙 — にリベットと角飾りをメニューだけへ</td><td><code>GoSkinMedieval</code> · デフォルトの上に彫刻風16種</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">新登場</span></td><td>アプリ画面向けの Material 3 Expressive — 48dp のタッチ領域に 40dp のピル型ボタン、28dp のダイアログ、塗りのカード、アウトラインの入力欄、Expressive のスライダー。アプリ部品(ナビゲーションバー・アプリバー・FAB・検索バー・チップ・進捗・日付選択)は M3 のコンポーネントトークンに従う</td><td><code>GoSkinMaterial</code> · デフォルトのアイコン</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">新登場</span></td><td>子ども向け — おもちゃ箱：太い縁取りと、押すと沈むしっかりした段のあるキー、くぼんだ入力欄、泡のタブ、ゼリーのバー、部品ごとに違うクレヨンの色、キャンディのクイックスロット、ステッカーのバッジ、虹色のジョイスティックとクレヨン色のチャート。サイズとプロジェクトのフォントはそのまま。</td><td><code>GoSkinKids</code> · デフォルトのアイコン</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">新登場</span></td><td><code>GoStyleBoxComic</code> が描くマンガのコマ：どの面にも太いインクの輪郭とくっきりした影があり、面を押すと影が消える。インクで描いたトグル、チェックボックス、スライダーのつまみ、ウィンドウには黄色のタイトルキャプション。輪郭の太さ、影の大きさ、影を出すかどうかは <code>GoConfig</code> の設定だ。</td><td><code>GoSkinComic</code> · デフォルトのアイコン</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>10種類を並べて</h2>
+  <h2>12種類を並べて</h2>
   <p class="sub">プリセット名だけを変えた同じギャラリー画面だ — ウィジェットのコードは1行も違わない。
     どれも縦に持ったスマホ、390×844 だ。</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセ
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -291,6 +294,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # themes/palettes/candy.json を編集してから:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>コミック — 太いインク <span class="badge new">新登場</span></h2>
+  <p><code>comic_light</code>（紙のようなクリーム色のページに白いパネル、コバルトのプライマリ）と <code>comic_dark</code>（夜のページに
+    スレート色のパネル、クリーム色の輪郭、黄色のプライマリ）は、どの面もマンガのコマのように描く — 太いインクの輪郭の後ろに
+    くっきりした影を落とす。</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# または: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light の gohud ギャラリー — くっきりした影を落とすインクのキー、行、バー" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark の gohud ギャラリー — 夜のページにクリーム色のインク" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light の確認ダイアログ — 黄色のタイトルキャプションとインクで描いた丸い閉じるボタン" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark の確認ダイアログ — スレート色のカードに黄色のキャプション" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">変わるもの</h3>
+  <table>
+    <thead><tr><th>部分</th><th>コミックの見た目では</th></tr></thead>
+    <tbody>
+      <tr><td>すべての面</td><td><code>GoStyleBoxComic</code> が描く：インク色の太い輪郭の中に表面の色を塗り、右下へくっきりした影を落とす。キー、リストの行、入力欄、タブ、バー、スライダー、パネル、ポップアップがみなこれをまとう。</td></tr>
+      <tr><td>押したとき</td><td>影が消えて、面がその位置へ沈む。</td></tr>
+      <tr><td>コントロール</td><td>トグル、チェックボックス、ラジオボタン、スライダーのつまみもインクで描かれ、それぞれに小さな影が付く。</td></tr>
+      <tr><td>ウィンドウ</td><td>ウィンドウのタイトルの後ろに黄色のキャプションと、インクで描いた丸い閉じるボタン。</td></tr>
+      <tr><td>スキンの部品</td><td><code>GoSkinComic</code>：クイックスロット、チップ、バッジ、アバター、通知、ナビゲーションバー、FAB、日付のセルがインクで描かれ、スティックのノブは影を落とし、チャートは太い原色を使う。</td></tr>
+      <tr><td>不透明度</td><td>パネル、カード、通知、ポップアップは不透明だ。HUD カードは 92% 不透明。</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">インクと影の設定</h3>
+  <p><code>GoConfig</code> の3つの設定が、すべてのコミックの面を一度に変える。作り直すものは何もない — 値を入れたそばから画面が描き直される。</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # 輪郭 (dp) — 既定は 3
+GoUi.config.comic_shadow_size = 6.0    # 影 (dp) — 既定は 4
+GoUi.config.comic_shadow = false       # どこにも影を出さない</code></pre>
+  <p>ウィジェット1つだけなら、設定に関係なく独自の道を行ける：</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # このボタンは平らに
+GoStyle.comic_shadow(card, true, true)       # このカードとその中身すべては影を保つ
+GoStyle.comic_border(title, 5.0)             # これだけ輪郭を太く</code></pre>
+  <div class="note">
+    <b>サイズは変わらない。</b> 輪郭と影は各コントロールの矩形の内側に描かれ、どの面もテーマが与えた内側余白を保つので、
+    別の見た目でレイアウトした画面はそのままのレイアウトを保つ。プロジェクトのフォントもそのままだ。
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="コミックスキンが描いたクイックスロット・スティック・チップ" loading="lazy"><figcaption>コミックスキンが描く部品</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">自分だけのコミックを作る</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# themes/palettes/inked.json を編集してから:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

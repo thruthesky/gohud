@@ -195,10 +195,26 @@ GoUi.use_preset(&amp;"neon")                             # เสร็จแล
       <tr><td><code>segment_inner_radius</code></td><td data-label="ค่าเริ่มต้น">8</td><td>รัศมีมุม (dp) ตรงที่สองช่องของกลุ่มปุ่มแบบเชื่อมต่อของ Material มาบรรจบกัน</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">สกินสำหรับเด็ก <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="ค่าเริ่มต้น">2</td><td>ความหนาของเส้นขอบ (dp) ของชิ้นส่วนของเล่นในลุคสำหรับเด็ก — ชิป สล็อต FAB กล่องแจ้งเตือน</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="ค่าเริ่มต้น">4</td><td>ฐานทึบ (dp) ใต้ชิ้นส่วนของเล่นสำหรับเด็กที่กดได้ ซึ่งหดลงเมื่อชิ้นส่วนนั้นถูกกด</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="ค่าเริ่มต้น">0.28</td><td>ปริมาณสีเทียนที่เติมหน้าสล็อตหรือชิปของลุคสำหรับเด็ก (0–1) ส่วนที่เหลือเป็นสีพื้นผิว</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">สกินการ์ตูน <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>ค่าปรับ</th><th>ค่าเริ่มต้น</th><th>กำหนดอะไร</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="ค่าเริ่มต้น">0.22</td><td>ปริมาณสีของตัวเองที่เติมชิป ควิกสล็อต หรือแคปซูลที่ถูกเลือกในลุคการ์ตูน (0–1) ส่วนที่เหลือเป็นสีพื้นผิว</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">สืบทอดสกิน (ไม่บังคับ)</h3>
+  <h3 id="subclass-the-skin-optional">สืบทอดสกิน (ไม่บังคับ)</h3>
   <p>สิ่งที่ธีมและรูปทรงเอื้อมไม่ถึงเท่านั้น — หกเหลี่ยมของจอยสติ๊ก แบดจ์บนสล็อต วงเล็บเล็งเป้าของ
     โค้ชมาร์ก — ที่อยู่ในสกิน สืบทอด <code>GoSkin</code> เขียนทับเฉพาะเมธอดเหล่านั้น แล้วชี้ช่อง
     <code>skin</code> ใน JSON ไปที่รีซอร์สนั้น ธีมที่เปลี่ยนแค่สีข้ามขั้นตอนนี้ไปได้เลย</p>

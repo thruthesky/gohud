@@ -387,6 +387,7 @@ DIALS_EN = {
     "toy_edge": "Outline width (dp) of a kids toy part — chips, slots, the FAB, alerts.",
     "toy_lip": "The solid lip (dp) under a kids toy part you press; it shrinks when the part is pressed.",
     "crayon_tint": "How much crayon colour fills a kids slot or chip face (0–1); the rest is the surface colour.",
+    "comic_tint": "How much of its own colour fills a comic chip, quick slot or chosen pill (0–1); the rest is the surface colour.",
 }
 
 SKIN_TITLES = {
@@ -395,6 +396,7 @@ SKIN_TITLES = {
     "scifi": {"ko": "sci-fi 스킨", "en": "Sci-fi skin"},
     "material": {"ko": "Material 스킨", "en": "Material skin"},
     "kids": {"ko": "어린이 스킨", "en": "Kids skin"},
+    "comic": {"ko": "코믹 스킨", "en": "Comic skin"},
 }
 
 

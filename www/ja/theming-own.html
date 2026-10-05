@@ -194,10 +194,26 @@ GoUi.use_preset(&amp;"neon")                             # 完了 — 選択リ�
       <tr><td><code>segment_inner_radius</code></td><td data-label="既定値">8</td><td>Material の連結ボタングループで、2つのセルが接する角の丸み(dp)。</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">キッズスキン <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="既定値">2</td><td>キッズのおもちゃ部品 — チップ、スロット、FAB、アラート — の縁取りの太さ(dp)。</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="既定値">4</td><td>キッズの押せるおもちゃ部品の下にあるしっかりした段(dp)。部品を押すと縮む。</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="既定値">0.28</td><td>キッズのスロットやチップの面をクレヨンの色でどれだけ塗るか(0–1)。残りは表面の色。</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">コミックスキン <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>ダイヤル</th><th>既定値</th><th>設定する内容</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="既定値">0.22</td><td>コミックのチップ、クイックスロット、選択中のピルの面を、それ自身の色でどれだけ塗るか(0–1)。残りは表面の色。</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">スキンを継承する（任意）</h3>
+  <h3 id="subclass-the-skin-optional">スキンを継承する（任意）</h3>
   <p>スキンにあるのは、テーマと形では届かないものだけだ — スティックの六角形、スロットのバッジ、
     コーチマークの照準ブラケット。<code>GoSkin</code> を継承してそれらのメソッドだけを上書きし、JSON の
     <code>skin</code> をそのリソースへ向ける。色だけのテーマなら、この手順はいらない。</p>

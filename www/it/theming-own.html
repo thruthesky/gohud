@@ -195,10 +195,26 @@ GoUi.use_preset(&amp;"neon")                             # fatto — compare anc
       <tr><td><code>segment_inner_radius</code></td><td data-label="Predefinito">8</td><td>Raggio dell'angolo (dp) dove due celle di un gruppo di pulsanti collegati Material si incontrano.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Skin bambini <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Manopola</th><th>Predefinito</th><th>Che cosa imposta</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Predefinito">2</td><td>Spessore del contorno (dp) di un pezzo giocattolo bambini — chip, slot, il FAB, avvisi.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Predefinito">4</td><td>Il bordo pieno (dp) sotto un pezzo giocattolo bambini che si preme; si riduce quando il pezzo viene premuto.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Predefinito">0.28</td><td>Quanto colore pastello riempie la superficie di uno slot o di un chip bambini (0–1); il resto è il colore della superficie.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Skin fumetto <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Manopola</th><th>Predefinito</th><th>Che cosa imposta</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Predefinito">0.22</td><td>Quanto del proprio colore riempie un chip, uno slot rapido o una pillola scelta fumetto (0–1); il resto è il colore della superficie.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Estendere la skin (facoltativo)</h3>
+  <h3 id="subclass-the-skin-optional">Estendere la skin (facoltativo)</h3>
   <p>Nella skin vive solo ciò a cui tema e forma non arrivano — l'esagono del joystick, i badge degli slot, la staffa
     di mira del coach mark. Estendi <code>GoSkin</code>, sovrascrivi solo quei metodi e fai puntare a quella risorsa la chiave
     <code>skin</code> del JSON. Un tema di soli colori salta questo passaggio.</p>

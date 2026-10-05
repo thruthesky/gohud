@@ -196,10 +196,26 @@ GoUi.use_preset(&amp;"neon")                             # gotowe — pokazuje s
       <tr><td><code>segment_inner_radius</code></td><td data-label="Domyślnie">8</td><td>Promień narożnika (dp) w miejscu, gdzie stykają się dwie komórki połączonej grupy przycisków Material.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Skórka Kids <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Pokrętło</th><th>Domyślnie</th><th>Co ustawia</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Domyślnie">2</td><td>Grubość obrysu (dp) zabawkowej części Kids — chipów, slotów, FAB, alertów.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Domyślnie">4</td><td>Solidna krawędź (dp) pod zabawkową częścią Kids, którą się naciska; zmniejsza się, gdy część jest naciśnięta.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Domyślnie">0.28</td><td>Ile koloru kredki wypełnia powierzchnię slotu lub chipa Kids (0–1); reszta to kolor powierzchni.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Skórka Comic <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Pokrętło</th><th>Domyślnie</th><th>Co ustawia</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Domyślnie">0.22</td><td>Ile własnego koloru wypełnia chip, szybki slot lub wybraną pigułkę Comic (0–1); reszta to kolor powierzchni.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Odziedzicz po skórce (opcjonalnie)</h3>
+  <h3 id="subclass-the-skin-optional">Odziedzicz po skórce (opcjonalnie)</h3>
   <p>W skórce mieszka tylko to, czego motyw i kształt nie sięgają — sześciokąt joysticka, plakietki slotów,
     ramka celownicza wskazówki instruktażowej. Odziedzicz po <code>GoSkin</code>, nadpisz wyłącznie te metody
     i wskaż <code>skin</code> w JSON-ie na ten zasób. Motyw zmieniający same kolory pomija ten krok.</p>

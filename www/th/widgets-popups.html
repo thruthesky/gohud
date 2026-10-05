@@ -145,7 +145,7 @@
   </div>
   <p>ทุกภาพในหน้านี้คือเกมเล็ก ๆ เกมเดียวกัน — พลังชีวิตและมานาที่มุมซ้ายบน เหรียญที่มุมขวาบน จอยสติ๊กและ
     ควิกสล็อตสามช่องที่ด้านล่าง — ในพรีเซ็ต <code>default_dark</code> โดยมีป๊อปอัปหนึ่งอันเปิดทับอยู่ <a href="#popup-looks">ป๊อปอัป
-    เดียวกันในทั้งสิบลุค →</a></p>
+    เดียวกันในทั้งสิบสองลุค →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -682,6 +682,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="กล่องยืนยันใน material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">ใหม่</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="กล่องยืนยันใน kids_light — ริบบิ้นชื่อเรื่องสีแดดสดใส ปุ่มปิดรูปลูกอม และปุ่มเยลลี่" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">ใหม่</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="กล่องยืนยันใน kids_dark — ริบบิ้นสีมินต์บนการ์ดสีน้ำเงินยามค่ำคืน" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">ใหม่</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="กล่องยืนยันใน comic_light — ป้ายชื่อเรื่องสีเหลือง ปุ่มปิดตัดเส้นหมึก และปุ่มตัดเส้นหมึกพร้อมเงาคม" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">ใหม่</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="กล่องยืนยันใน comic_dark — หมึกสีครีมบนการ์ดสีหินชนวน" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">ใหม่</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">แต่ละลุคเปลี่ยนอะไร</h3>
@@ -693,6 +695,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>ยุคกลาง</td><td>กรอบตีขึ้นรูป — เหล็กและหนัง หรือกระดาษหนัง — พร้อมหมุดย้ำและลวดลายมุม</td><td>ชื่อเรื่องด้วยฟอนต์ Cinzel</td></tr>
       <tr><td>Material 3</td><td>มุม 28dp ระยะขอบใน 24dp ทึบเต็มที่</td><td>หัวเรื่อง 24sp ด้วย Roboto ปุ่มแคปซูลที่มีแผ่นปุ่ม 40dp ในพื้นที่กด 48dp</td></tr>
       <tr><td>สำหรับเด็ก</td><td>การ์ดลูกอมเยลลี่พร้อมเงานุ่ม ทึบเต็มที่</td><td>ริบบิ้นชื่อเรื่องสีแดดสดใส (สีมินต์ตอนกลางคืน) ปุ่มปิดลูกอมทรงกลม และปุ่มที่ยุบนุ่มเมื่อกด</td></tr>
+      <tr><td>การ์ตูน</td><td>เส้นขอบหมึกหนาและเงาคม ทึบเต็มที่</td><td>ป้ายชื่อเรื่องสีเหลือง ปุ่มปิดทรงกลมตัดเส้นหมึก และปุ่มที่เงาหายไปเมื่อกด</td></tr>
     </tbody>
   </table>
 
@@ -703,7 +706,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>ฮุก</th><th>แต่งอะไร</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>แผ่นพื้นหลังชื่อเรื่องของหน้าต่าง ชื่อเรื่องจะจัดกึ่งกลางบนแผ่นนั้นและย่อลงได้จนถึงขนาดต่ำสุด (15) เพื่อให้อยู่ในบรรทัดเดียว</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>× ของหน้าต่าง — ลุคสำหรับเด็กทำให้มันเป็นลูกอมกลม</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>× ของหน้าต่าง — ลุคสำหรับเด็กทำให้มันเป็นลูกอมกลม ส่วนลุคการ์ตูนทำให้เป็นแผ่นกลมตัดเส้นหมึก</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>ทำงานทันทีที่นิ้วแตะลงบนปุ่มที่ gohud สร้าง — ลุคสำหรับเด็กทำให้ปุ่มยุบนุ่ม</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>หน้าของพรอมต์การ์ดและการ์ดโค้ช สแน็กบาร์และข้อความแจ้งเตือน ดรอว์เออร์ แบนเนอร์ และคอนโซล</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>วงแหวนและตัวชี้ของทัวร์</td></tr>
@@ -714,7 +717,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>ป๊อปอัปแต่ละชนิดใช้ค่าความทึบของตัวเอง การ์ด HUD จึงโปร่งเบาได้ขณะที่ไดอะล็อกยังทึบอยู่: หน้าต่าง ชีต ไดอะล็อก
     ป๊อปโอเวอร์ และคอมโบบ็อกซ์ใช้ <code>panel_alpha</code> ดรอว์เออร์และการ์ดโค้ชใช้ <code>card_alpha</code> พรอมต์การ์ดและ
     คอนโซลใช้ <code>hud_alpha</code> สแน็กบาร์และข้อความแจ้งเตือนใช้ <code>notice_alpha</code> เมนูใช้ <code>popup_alpha</code> ลุค Material
-    และสำหรับเด็กทำให้ทั้งหมดทึบ เขียนทับชนิดเดียวด้วย <code>GoConfig.container_alpha_overrides</code> ทั้งหมดด้วย
+    และสำหรับเด็กทำให้ทั้งหมดทึบ ลุคการ์ตูนก็เช่นกัน ยกเว้นพรอมต์การ์ดและคอนโซลที่ทึบ 92% เขียนทับชนิดเดียวด้วย <code>GoConfig.container_alpha_overrides</code> ทั้งหมดด้วย
     <code>container_alpha</code> (เป็นสัดส่วน — <code>0.95</code>) หรือหน้าต่างเดียวด้วย <code>alpha</code> ของมัน มีแค่หน้าการ์ดที่จาง
     ตัวอักษรไม่เคยโปร่ง <a href="theming-opacity.html">ความทึบโดยละเอียด →</a></p>
 </section>

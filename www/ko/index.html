@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 HUD·UI 키트</title>
-<meta name="description" content="Godot 4.7+ 용 커스터마이징 HUD·UI 키트. 떠 있는 창·바텀 시트·확인창·폼·스낵바·HUD 막대·퀵슬롯·가상 조이스틱을 테마 한 장으로 굴리고, 기본·sci-fi·중세·Material 3·어린이 프리셋 열로 생김새를 바꾼다.">
+<meta name="description" content="Godot 4.7+ 용 커스터마이징 HUD·UI 키트. 떠 있는 창·바텀 시트·확인창·폼·스낵바·HUD 막대·퀵슬롯·가상 조이스틱을 테마 한 장으로 굴리고, 기본·sci-fi·중세·Material 3·어린이·코믹 프리셋 열둘로 생김새를 바꾼다.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -77,7 +77,7 @@
     <p class="lead">
       gohud 는 Godot 4.7 이상에서 쓰는 HUD·UI 키트다. 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바,
       코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱을 <b>테마 한 장과 아이콘 세트 한 장</b>으로 굴리고,
-      안전영역·가상 키보드·RTL·터치 타깃을 스스로 챙긴다. <b>프리셋 열</b> — 기본·sci-fi·중세·Material 3·어린이, 각각 다크·라이트 두 가지 —
+      안전영역·가상 키보드·RTL·터치 타깃을 스스로 챙긴다. <b>프리셋 열둘</b> — 기본·sci-fi·중세·Material 3·어린이·코믹, 각각 다크·라이트 두 가지 —
       이 한 줄로 색과 모양을 함께 바꾼다.
     </p>
     <div class="badges">
@@ -86,8 +86,8 @@
       <span class="badge">순수 GDScript</span>
       <span class="badge">오토로드 불필요</span>
       <span class="badge">MIT</span>
-      <span class="badge">프리셋 10종</span>
-      <span class="badge new">신규: Material 3 · 어린이</span>
+      <span class="badge">프리셋 12종</span>
+      <span class="badge new">신규: 코믹 · Material 3 · 어린이</span>
       <span class="badge">21개 언어</span>
       <span class="badge">아이콘 <span data-n="icons">1,287</span>종 포함</span>
     </div>
@@ -103,9 +103,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>새로 추가: Material 3 와 어린이용 생김새</h2>
+  <h2>새로 추가: 코믹, Material 3, 어린이용 생김새</h2>
   <p class="sub">
-    기본·sci-fi·중세에 새 계열 둘이 더해졌다 — 이제 <b>기본 제공 생김새가 열</b>이고, 각각 다크와 라이트가 있다.
+    기본·sci-fi·중세에 새 계열 셋이 더해졌다 — 이제 <b>기본 제공 생김새가 열둘</b>이고, 각각 다크와 라이트가 있다.
     모든 위젯·팝업·HUD 부품이 코드를 한 줄도 고치지 않고 그대로 받는다: 프리셋을 바꾸면 화면 전체가 따라온다.
   </p>
   <div class="phones">
@@ -113,6 +113,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark 의 gohud 갤러리 — 같은 Material 3 모양을 어두운 기준 스킴으로" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light 의 gohud 갤러리 — 햇살 같은 페이지 위에 크레파스 색의 통통한 젤리 버튼" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 의 gohud 갤러리 — 밤하늘색 페이지 위의 같은 장난감 상자" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 의 gohud 갤러리 — 종이 크림색 페이지 위에 굵은 잉크 테두리와 딱딱한 그림자" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 의 gohud 갤러리 — 밤 페이지 위의 크림색 테두리와 노란 주 색" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -129,11 +131,19 @@
         창에는 햇살처럼 노란 제목 리본과 둥근 사탕 닫기 버튼이 붙고, 누르면 말랑하게 찌그러진다.
         치수와 프로젝트 글꼴은 조금도 바뀌지 않는다.</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">코믹 — 굵은 잉크</h3>
+      <p>모든 면이 만화책의 칸이다: 굵은 잉크 테두리 안에 표면 색을 채우고, 뒤에 딱딱한 그림자를 깔며,
+        면을 누르면 그 그림자가 사라진다. 설정 하나로 모든 그림자를 켜고 끄고, 두 개로 테두리 굵기와 그림자 크기를 정하며,
+        호출 하나로 위젯 하나에만 같은 일을 한다. 창에는 노란 제목 캡션이 붙는다.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # 또는 MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # 또는 &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # 또는 &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # 또는 &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 자세히 →</a> · <a href="theming-presets.html#kids">어린이 자세히 →</a> ·
-    <a href="widgets-popups.html#popup-looks">같은 팝업을 열 가지 생김새로 →</a></p>
+    <a href="theming-presets.html#comic">코믹 자세히 →</a> ·
+    <a href="widgets-popups.html#popup-looks">같은 팝업을 열두 가지 생김새로 →</a></p>
 </section>
 
 <section id="showcase">
@@ -156,7 +166,7 @@ GoUi.use_preset(&amp;"kids_light")                   # 또는 &amp;"kids_dark"</
       <figcaption><b>Sci-fi</b> — 각진 패널과 터치 조작</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">프리셋 열과 바꾸는 법 →</a></p>
+  <p><a href="#presets">프리셋 열둘과 바꾸는 법 →</a></p>
 </section>
 
 <section id="what">
@@ -192,8 +202,8 @@ GoUi.use_preset(&amp;"kids_light")                   # 또는 &amp;"kids_dark"</
       <p>위젯은 <code>GoIconSet.CLOSE</code> 처럼 이름만 안다. 세트를 갈아 끼우면 코드를 한 줄도 안 고치고 그림이 바뀐다. <a href="icons.html">아이콘 →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">생김새 열, 코드 한 줄</h3>
-      <p><code>GoUi.use_preset()</code> 이 테마·스킨·아이콘을 함께 바꾼다 — 둥근 패널, 모서리를 자른 sci-fi, 단조 프레임의 중세, Material 3 앱 컴포넌트.</p>
+      <h3 id="six-looks-one-line">생김새 열둘, 코드 한 줄</h3>
+      <p><code>GoUi.use_preset()</code> 이 테마·스킨·아이콘을 함께 바꾼다 — 둥근 패널, 모서리를 자른 sci-fi, 단조 프레임의 중세, Material 3 앱 컴포넌트, 어린이의 젤리 사탕, 코믹 잉크.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">읽히는지는 잰다</h3>
@@ -242,6 +252,8 @@ GoUi.use_preset(&amp;"kids_light")                   # 또는 &amp;"kids_dark"</
       <tr><td><code>material_dark</code> <span class="badge new">신규</span></td><td>같은 Material 3 모양을 어두운 기준 스킴으로</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">신규</span></td><td>어린이를 위한 장난감 상자 — 굵은 테두리에 누르면 쏙 들어가는 턱이 달린 젤리 사탕 키, 크레파스 색, 햇살 같은 페이지</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">신규</span></td><td>같은 장난감 상자를 밤하늘색 페이지에</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">신규</span></td><td>만화책의 칸 — 모든 면에 굵은 잉크 테두리와 딱딱한 그림자, 종이 크림색 페이지 위의 흰 패널. 그림자와 그 크기, 테두리 굵기는 설정으로 바꾼다</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">신규</span></td><td>같은 잉크를 밤 페이지에 — 크림색 테두리와 노란 주 색</td></tr>
     </tbody>
   </table>
 
@@ -358,11 +370,13 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
       <tr><td><code>GoStyleBoxBracket</code></td><td>테두리를 두르지 않고 네 모서리만 짧게 긋는 조준 표식</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>리벳·모서리 각인·베벨 반사·재질 질감이 있는 단조 프레임</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>젤리 사탕 — 굵은 테두리, 누르면 쏙 들어가는 단단한 턱, 위쪽이 더 밝은 몸통과 흰 광택</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>만화책의 칸 — 굵은 잉크 테두리와 딱딱한 드롭 섀도, 둘 다 게임이 도는 중에 <code>GoConfig</code> 로 크기를 정한다</td></tr>
     </tbody>
   </table>
-  <p>넷 모두 여느 StyleBox 처럼 Theme 리소스 안에 그대로 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.
-    <code>GoSkinSciFi</code>·<code>GoSkinMedieval</code>·<code>GoSkinMaterial</code>·<code>GoSkinKids</code> 가 함께 들어 있는 상속 예다.</p>
+  <p>다섯 모두 여느 StyleBox 처럼 Theme 리소스 안에 그대로 저장된다 — 즉 <b>테마가 모양을 바꿀 수 있다</b>.
+    <code>GoSkinSciFi</code>·<code>GoSkinMedieval</code>·<code>GoSkinMaterial</code>·<code>GoSkinKids</code>·<code>GoSkinComic</code> 이 함께 들어 있는 상속 예다.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="기본 제공 스킨마다 그린 퀵슬롯·조이스틱·칩 — 기본, 어린이, Material, 중세, sci-fi" loading="lazy"><figcaption>스킨이 그리는 것 — 기본, 어린이, Material, 중세, sci-fi</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="코믹 스킨이 그린 퀵슬롯·조이스틱·칩 — 잉크 테두리와 딱딱한 그림자" loading="lazy"><figcaption>…그리고 코믹 스킨</figcaption></figure>
 
   <div class="note warn">
     <b>GoStyle.box() 는 언제나 StyleBoxFlat 을 돌려준다.</b> 돌려받아 <code>bg_color</code> 나
@@ -456,7 +470,7 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2,
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    색 짝 전부와 <b>버튼 상태마다의 글자와 그 글자가 얹힌 패널</b>을 열 테마 모두에서 WCAG 로 잰다.
+    색 짝 전부와 <b>버튼 상태마다의 글자와 그 글자가 얹힌 패널</b>을 열두 테마 모두에서 WCAG 로 잰다.
     반투명 색은 실제 배경에 합성한 뒤에 잰다 — 그대로 재면 화면에 보이는 것보다 좋은 비율이 나온다.
   </p>
   <p>

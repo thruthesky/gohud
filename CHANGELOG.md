@@ -6,6 +6,33 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **Comic looks: `comic_light` and `comic_dark` — `GoStyleBoxComic`.** Every key, text field, list row, tab, folding
+  title, bar, slider and panel is inked like a comic panel: a bold outline in the palette's `border` colour around the
+  surface colour, and a hard, faint shadow dropped down and to the right of what stands off the page (keys, cards,
+  panels, chips, quick slots) — gone while a key is pressed (the face sinks a little), never under text fields, list
+  rows or tooltips. Newsprint with navy ink by day, chalk ink on navy with a sunny primary at night. `GoSkinComic`
+  inks the parts gohud draws in code: speech-bubble chips, quick slots pressed in while cooling down, sticker badges, a
+  yellow caption box behind window titles, an inked close disc, an inked joystick knob; dial `comic_tint`.
+  - **One setting for every part.** The outline width, the shadow size and whether shadows show at all are not baked
+    into the theme: every comic face reads `GoConfig.comic_border_width` (3), `comic_shadow_size` (4) and
+    `comic_shadow` (true) when it is drawn, so one line restyles every part — including parts already on screen, which
+    redraw on their own. Small parts take a share (rows, chips and bars ⅔ of the outline, chips ½ of the shadow,
+    panels 1.5× of it). Nothing moves: the outline is drawn inside a part and the shadow outside it.
+  - **One widget decides for itself:** `GoStyle.comic_shadow(node, on, deep := false)` keeps or drops one widget's
+    shadow whatever the setting says, `GoStyle.comic_border(node, width, deep := false)` sets its outline (negative
+    hands it back). A face's own `outline`, `drop` and `shadow` (`FOLLOW`/`ON`/`OFF`) do the same in code; the raised
+    twins (`GoConfig.button_glow`, `GoStyle.glow()`) keep their shadow with the setting off. A focus ring is drawn
+    just inside the ink (`inner`), so a focused key keeps its outline.
+  - `GoStyleBoxComic`'s fields match `StyleBoxFlat` (`bg_color`, `border_color`, `draw_center`, `shadow_*`,
+    `expand_margin_*`; `border_width` and `shadow_size` report what is drawn) and `GoStyleBoxMedieval` (`radius`), so
+    `fade_box`, `box_background`, `_edge_fill` and the layout audit read it; `GoStyle.box()` turns it into a flat face
+    with the same ink and a crisp shadow (`to_flat()`). `tools/theme_comic.py` writes the faces (shape kind `comic`,
+    skin base `comic` in a palette JSON).
+  - `tests/gohud_comic_test.gd` (114 checks, step ①-k of `check_all.sh`). The "filled buttons sit flat" check now
+    means level with a normal key — a look whose every key drops the same shadow does not single the filled one out.
+  - The website: a comic section on the presets page (the settings, the per-widget calls, the skin), the two looks in
+    the gallery, the popup looks and the front page, "twelve presets" throughout, and the kids and comic dial tables
+    in every language.
 - **The website shows every widget, and has a guide to popups.** `tests/site_widget_shots.gd` photographs the kit on
   the virtual monitor — each widget cropped to itself, the popups open over a small game with its HUD, one confirmation
   in all ten looks, the gallery in every look and the parts each skin draws — and `tools/site_images.py` turns the
@@ -54,6 +81,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **The sci-fi danger glow button glows.** `GoDangerSolidGlowButton` had the same faces as `GoDangerSolidButton` in
+  `scifi_dark` and `scifi_light` — the generator gave the primary twin its glow and forgot the danger one. It now glows
+  in the danger colour (7dp, 10dp under the mouse), and the button-glow check holds both raised twins above their flat
+  ones in every look.
 - **Windows cast their whole shadow.** `GoSurface` clipped its card (`clip_contents`), and a clip cuts the clipping
   item's own drawing too: the shadow vanished outside the card and showed as a dark square in the four corners the
   rounded face leaves open — on every dialog, sheet, popover and window in every look. The content is now clipped one

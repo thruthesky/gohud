@@ -145,7 +145,7 @@
   </div>
   <p>كل صورة في هذه الصفحة هي اللعبة الصغيرة نفسها — الصحة والمانا أعلى اليسار، والعملات أعلى اليمين، وعصا توجيه وثلاث
     خانات سريعة في الأسفل — بالنمط الجاهز <code>default_dark</code>، وفوقها نافذة منبثقة واحدة مفتوحة. <a href="#popup-looks">النافذة
-    المنبثقة نفسها بالمظاهر العشرة كلها ←</a></p>
+    المنبثقة نفسها بالمظاهر الاثني عشر كلها ←</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -680,6 +680,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="التأكيد بنمط material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">جديد</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="التأكيد بنمط kids_light — شريط عنوان مشمس، وزر إغلاق كالحلوى، وأزرار هلامية" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">جديد</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="التأكيد بنمط kids_dark — شريط بلون النعناع على بطاقة زرقاء ليلية" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">جديد</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="التأكيد بنمط comic_light — لافتة عنوان صفراء، وزر إغلاق محبَّر، وأزرار محبَّرة بظلال حادّة" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">جديد</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="التأكيد بنمط comic_dark — حبر كريمي على بطاقة أردوازية" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">جديد</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">ما الذي يغيّره كل مظهر</h3>
@@ -691,6 +693,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>العصور الوسطى</td><td>إطار مطروق — حديد وجلد، أو رقّ — بمسامير وزخارف أركان</td><td>عناوين بخط Cinzel</td></tr>
       <tr><td>Material 3</td><td>زوايا 28dp، وحشوة 24dp، ومعتمة تمامًا</td><td>عنوان رئيسي 24sp بخط Roboto؛ وأزرار حبة بلوح 40dp داخل مساحة لمس 48dp</td></tr>
       <tr><td>الأطفال</td><td>بطاقة حلوى هلامية بظلّ ناعم، معتمة تمامًا</td><td>شريط عنوان مشمس (بلون النعناع ليلًا)، وزر إغلاق مستدير كالحلوى، وأزرار تنضغط كالهلام عند الضغط</td></tr>
+      <tr><td>القصص المصوّرة</td><td>حدّ حبري عريض وظلّ حادّ، معتمة تمامًا</td><td>لافتة عنوان صفراء، وزر إغلاق مستدير محبَّر، وأزرار يختفي ظلّها عند الضغط</td></tr>
     </tbody>
   </table>
 
@@ -701,7 +704,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>الخطّاف</th><th>ما الذي يكسوه</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>لوح خلف عنوان النافذة. يتوسّطه العنوان ويصغر، حتى الحجم الأدنى (15)، ليبقى على سطر واحد.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>زر × في النافذة — مظهر الأطفال يجعله حلوى مستديرة.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>زر × في النافذة — مظهر الأطفال يجعله حلوى مستديرة، ومظهر القصص المصوّرة قرصًا محبَّرًا.</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>يعمل لحظة يحطّ إصبع على زر صنعه gohud — مظهر الأطفال يجعله ينضغط كالهلام.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>وجوه بطاقات السؤال وبطاقات الإرشاد، وأشرطة الإشعار والإشعارات، والدرج، واللافتات، ووحدة التحكّم.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>حلقة الجولة ومؤشّرها.</td></tr>
@@ -712,7 +715,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>كل نوع من النوافذ المنبثقة يتبع عتامته الخاصة، فتبقى بطاقة HUD خفيفة بينما يبقى مربع الحوار مصمتًا: النوافذ والأوراق
     ومربعات الحوار والبطاقات المنبثقة والمنتقي تتبع <code>panel_alpha</code>؛ والدرج وبطاقة الإرشاد <code>card_alpha</code>؛
     وبطاقات السؤال ووحدة التحكّم <code>hud_alpha</code>؛ وأشرطة الإشعار والإشعارات <code>notice_alpha</code>؛ والقوائم <code>popup_alpha</code>.
-    أما مظهرا Material والأطفال فيجعلانها كلها معتمة. تجاوز نوعًا واحدًا بـ <code>GoConfig.container_alpha_overrides</code>، أو كلها بـ
+    أما مظهرا Material والأطفال فيجعلانها كلها معتمة، وكذلك مظهر القصص المصوّرة باستثناء بطاقات السؤال ووحدة التحكّم بعتامة 92%. تجاوز نوعًا واحدًا بـ <code>GoConfig.container_alpha_overrides</code>، أو كلها بـ
     <code>container_alpha</code> (نسبة — <code>0.95</code>)، أو نافذة واحدة بخاصية <code>alpha</code> الخاصة بها. الوجه وحده يبهت؛
     والنص لا يشفّ أبدًا. <a href="theming-opacity.html">العتامة بالتفصيل ←</a></p>
 </section>

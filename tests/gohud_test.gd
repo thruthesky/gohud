@@ -1507,13 +1507,21 @@ func _button_glow() -> void:
 	for preset in presets:
 		GoUi.use_preset(preset)
 		var look := GoUi.theme()
+		# 🔑 "Flat" means level with its neighbours: a look whose every key drops the same shadow (the comic looks) does
+		#    not single the filled one out. On every other look a normal key is flat, so the filled one must be too.
+		var neighbour := 0.0
+		for state in states:
+			neighbour = maxf(neighbour, _depth(look.get_stylebox(state, &"Button")))
 		for pair in pairs:
 			var flat: StringName = pair[0]
 			var raised: StringName = pair[1]
 			var depth := 0.0
 			for state in states:
 				depth = maxf(depth, _depth(look.get_stylebox(state, flat)))
-			check(depth == 0.0, "%s · %s draws no shadow or glow (%.0f)" % [preset.id, flat, depth])
+			check(depth <= neighbour, "%s · %s draws no shadow or glow beyond a normal key's (%.0f > %.0f)"
+				% [preset.id, flat, depth, neighbour])
+			check(_depth(look.get_stylebox(&"normal", raised)) > _depth(look.get_stylebox(&"normal", flat)),
+				"%s · %s stands above %s" % [preset.id, raised, flat])
 			# 🛑 The raised variation hangs off the flat one, so text colours and the focus ring cannot drift apart.
 			check(look.get_type_variation_base(raised) == flat and look.has_stylebox(&"normal", raised)
 				and not look.has_stylebox(&"focus", raised) and not look.has_color(&"font_color", raised),

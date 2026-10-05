@@ -194,10 +194,26 @@ GoUi.use_preset(&amp;"neon")                             # 完成 — 選擇器�
       <tr><td><code>segment_inner_radius</code></td><td data-label="預設值">8</td><td>Material 連接按鈕群組中兩格相接處的圓角半徑(dp)。</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">兒童外觀 <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="預設值">2</td><td>兒童外觀玩具部件 — 標籤片、快捷格、FAB、警示 — 的描邊寬度(dp)。</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="預設值">4</td><td>兒童外觀中可按的玩具部件下方那道實心底邊(dp)；部件被按下時它會縮小。</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="預設值">0.28</td><td>兒童外觀的快捷格或標籤片表面填入多少蠟筆顏色(0–1)；其餘是表面顏色。</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">漫畫外觀 <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>旋鈕</th><th>預設值</th><th>設定什麼</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="預設值">0.22</td><td>漫畫外觀的標籤片、快捷格或選中膠囊的表面填入多少自身顏色(0–1)；其餘是表面顏色。</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">繼承外觀（選用）</h3>
+  <h3 id="subclass-the-skin-optional">繼承外觀（選用）</h3>
   <p>只有佈景主題與形狀碰不到的東西 — 搖桿的六邊形、快捷格徽章、導覽標記的
     瞄準框角 — 才住在外觀裡。繼承 <code>GoSkin</code>，只覆寫那幾個方法，再把 JSON 的
     <code>skin</code> 指向那份資源。只改顏色的佈景主題可以略過這一步。</p>

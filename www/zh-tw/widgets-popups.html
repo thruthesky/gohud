@@ -143,7 +143,7 @@
     <figure class="shot phone"><a href="#popup-guides"><img src="../img/popups/console.webp" width="300" height="649" alt="橫跨畫面頂端的開發者主控台，已經輸入一條指令" loading="lazy"></a><figcaption><code>GoConsole</code></figcaption></figure>
   </div>
   <p>本頁的每張圖都是同一個小遊戲 — 左上角是生命與魔力，右上角是金幣，底部是搖桿與三個快捷格 — 用的是
-    <code>default_dark</code>，上面開著一個彈出視窗。<a href="#popup-looks">同一個彈出視窗在全部十種外觀下的樣子 →</a></p>
+    <code>default_dark</code>，上面開著一個彈出視窗。<a href="#popup-looks">同一個彈出視窗在全部十二種外觀下的樣子 →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -677,6 +677,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="material_dark 下的確認對話方塊" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">新</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="kids_light 下的確認對話方塊 — 陽光色的標題緞帶、糖果關閉按鈕與果凍按鈕" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">新</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark 下的確認對話方塊 — 夜藍色卡片上的薄荷色緞帶" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">新</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light 下的確認對話方塊 — 黃色的標題框、描了墨線的關閉按鈕，以及帶硬陰影的墨線按鈕" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">新</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark 下的確認對話方塊 — 石板色卡片上的奶油色墨線" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">新</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">每種外觀改了什麼</h3>
@@ -688,6 +690,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>中世紀</td><td>鍛造框 — 鐵與皮革，或羊皮紙 — 附鉚釘與角落裝飾</td><td>標題用 Cinzel</td></tr>
       <tr><td>Material 3</td><td>28dp 圓角、24dp 內距、完全不透明</td><td>Roboto 的 24sp 標題；48dp 觸控目標裡附 40dp 底板的膠囊按鈕</td></tr>
       <tr><td>兒童</td><td>帶柔和陰影的果凍糖卡片，完全不透明</td><td>陽光色的標題緞帶（夜間是薄荷色）、圓形的糖果關閉按鈕、按下時會被壓扁的按鈕</td></tr>
+      <tr><td>漫畫</td><td>粗墨線描邊與硬陰影，完全不透明</td><td>黃色的標題框、描了墨線的圓形關閉按鈕、按下時陰影消失的按鈕</td></tr>
     </tbody>
   </table>
 
@@ -698,7 +701,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>掛鉤</th><th>打扮什麼</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>視窗標題後面的底板。標題在底板上置中，並會縮小（最小到 15）以保持在一行內。</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>視窗的 × — 兒童外觀把它做成一顆圓糖果。</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>視窗的 × — 兒童外觀把它做成一顆圓糖果，漫畫外觀則是一枚描了墨線的圓片。</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>手指落在 gohud 建立的按鈕上的那一刻執行 — 兒童外觀會把按鈕壓扁。</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>提示卡片與導覽卡片、訊息條與提示條、抽屜、橫幅、主控台的表面。</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>導覽的圈與指標。</td></tr>
@@ -709,7 +712,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>每一類彈出視窗各自依循自己的不透明度，所以 HUD 卡片可以保持通透，而對話方塊保持實心：視窗、底部面板、對話方塊、
     錨定卡片與組合方塊依循 <code>panel_alpha</code>；抽屜與導覽卡片依循 <code>card_alpha</code>；提示卡片與
     主控台依循 <code>hud_alpha</code>；訊息條與提示條依循 <code>notice_alpha</code>；選單依循 <code>popup_alpha</code>。Material 與兒童外觀
-    讓它們全部不透明。用 <code>GoConfig.container_alpha_overrides</code> 覆寫某一類，用
+    讓它們全部不透明；漫畫外觀也一樣，只有提示卡片與主控台是 92%。用 <code>GoConfig.container_alpha_overrides</code> 覆寫某一類，用
     <code>container_alpha</code>（一個比例 — <code>0.95</code>）覆寫全部，或用某個視窗自己的 <code>alpha</code> 覆寫單一視窗。只有表面會變淡；文字
     絕不會變成半透明。<a href="theming-opacity.html">不透明度詳解 →</a></p>
 </section>

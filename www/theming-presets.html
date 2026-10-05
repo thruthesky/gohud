@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # your icons, the preset's everything else</code></pre>
   <p>Setting <code>theme</code>, <code>skin</code> or <code>icons</code> explicitly <b>wins over</b> the preset.</p>
 
-  <h3 id="the-six-built-in-presets" data-anchor="the-six-built-in-presets">The ten built-in presets</h3>
+  <h3 id="the-six-built-in-presets" data-anchor="the-six-built-in-presets">The twelve built-in presets</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panels</th><th>Skin · icons</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # your icons, the preset's everything else</cod
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Forged <code>GoStyleBoxMedieval</code> frames — iron and leather, or parchment — with rivets and corner ornaments on menus</td><td><code>GoSkinMedieval</code> · 16 engraved icons over the defaults</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">New</span></td><td>Material 3 Expressive for app screens — pill buttons with a 40dp plate in the 48dp touch target, 28dp dialogs, filled cards, outlined fields, the Expressive slider; the app components (navigation bar, app bar, FAB, search bar, chips, progress, date picker) follow the M3 component tokens</td><td><code>GoSkinMaterial</code> · default icons</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">New</span></td><td>For children — the toy box: chunky outlines and a solid lip under every key, which sinks when pressed; sunken text fields, bubble tabs, jelly bars; each kind of control in its own crayon colour, candy quick slots, sticker badges, a rainbow joystick and crayon charts. Sizes and the project's font stay as they are.</td><td><code>GoSkinKids</code> · default icons</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">New</span></td><td>Comic-book panels drawn by <code>GoStyleBoxComic</code>: a bold ink outline and a hard shadow on every face, which goes when the face is pressed; inked toggles, check boxes and slider handles, a yellow title caption on windows. The outline width, the shadow size and whether shadows show at all are <code>GoConfig</code> settings.</td><td><code>GoSkinComic</code> · default icons</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>All ten, side by side</h2>
+  <h2>All twelve, side by side</h2>
   <p class="sub">The same gallery screen with only the preset name changed — not a line of widget code differs.
     Each one is a phone held upright, 390×844.</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # your icons, the preset's everything else</cod
     <figure class="shot phone"><img src="img/presets/gallery-material_dark.webp" width="300" height="649" alt="The gohud widget gallery in the material_dark preset" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="img/presets/gallery-kids_light.webp" width="300" height="649" alt="The gohud widget gallery in the kids_light preset" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="img/presets/gallery-kids_dark.webp" width="300" height="649" alt="The gohud widget gallery in the kids_dark preset" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-comic_light.png" width="300" height="649" alt="The gohud widget gallery in the comic_light preset" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-comic_dark.png" width="300" height="649" alt="The gohud widget gallery in the comic_dark preset" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -290,6 +293,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # Edit themes/palettes/candy.json, then:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>Comic: bold ink <span class="badge new">New</span></h2>
+  <p><code>comic_light</code> (white panels on a paper-cream page, a cobalt primary) and <code>comic_dark</code> (slate panels on a
+    night page, cream outlines, a yellow primary) draw every face like a comic-book panel — a bold ink outline with a hard
+    shadow behind it.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# Or: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/presets/gallery-comic_light.png" width="300" height="649" alt="The gohud gallery in comic_light — inked keys, rows and bars with hard shadows" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-comic_dark.png" width="300" height="649" alt="The gohud gallery in comic_dark — cream ink on a night page" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-comic_light.png" width="300" height="649" alt="A confirmation dialog in comic_light — a yellow title caption and an inked round close button" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-comic_dark.png" width="300" height="649" alt="A confirmation dialog in comic_dark — a yellow caption on a slate card" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">What changes</h3>
+  <table>
+    <thead><tr><th>Part</th><th>In the comic looks</th></tr></thead>
+    <tbody>
+      <tr><td>Every face</td><td>Drawn by <code>GoStyleBoxComic</code>: the surface colour inside a bold outline in the ink colour, and a hard shadow down and to the right. Keys, list rows, fields, tabs, bars, sliders, panels and popups all wear it.</td></tr>
+      <tr><td>Pressing</td><td>The shadow goes and the face sinks into its place.</td></tr>
+      <tr><td>Controls</td><td>Toggles, check boxes, radio buttons and slider handles are inked too, each with its own small shadow.</td></tr>
+      <tr><td>Windows</td><td>A yellow caption behind a window's title and an inked round close button.</td></tr>
+      <tr><td>Skin parts</td><td><code>GoSkinComic</code>: quick slots, chips, badges, avatars, notices, the navigation bar, the FAB and the date cells are inked; the joystick knob casts a shadow; charts use bold primaries.</td></tr>
+      <tr><td>Opacity</td><td>Panels, cards, notices and popups are opaque; HUD cards are 92% opaque.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">Ink and shadow settings</h3>
+  <p>Three <code>GoConfig</code> settings change every comic face at once. Nothing is rebuilt — the screen redraws as you set them.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # the outline (dp) — 3 by default
+GoUi.config.comic_shadow_size = 6.0    # the shadow (dp) — 4 by default
+GoUi.config.comic_shadow = false       # no shadows anywhere</code></pre>
+  <p>One widget can go its own way, whatever the setting says:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # this button sits flat
+GoStyle.comic_shadow(card, true, true)       # this card and everything in it keep their shadow
+GoStyle.comic_border(title, 5.0)             # a thicker outline on this one</code></pre>
+  <div class="note">
+    <b>No size changes.</b> The outline and the shadow are drawn inside each control's rectangle and every face keeps the
+    padding the theme gave it, so a screen laid out in another look keeps its layout. Your project's font is kept too.
+  </div>
+  <figure class="shot"><img src="img/widgets/skin-comic_dark.png" width="382" height="120" alt="Quick slots, a joystick and a chip drawn by the comic skin" loading="lazy"><figcaption>The parts the comic skin draws</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">Make a comic of your own</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# Edit themes/palettes/inked.json, then:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 的 HUD 与 UI 套件</title>
-<meta name="description" content="面向 Godot 4.7+ 的可定制 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、消息条、HUD 状态条、快捷槽和虚拟摇杆，配有默认、科幻、中世纪、Material 3、儿童共十套预设。">
+<meta name="description" content="面向 Godot 4.7+ 的可定制 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、消息条、HUD 状态条、快捷槽和虚拟摇杆，配有默认、科幻、中世纪、Material 3、儿童、漫画共十二套预设。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud 是面向 Godot 4.7 及以上版本的 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、
       消息条、引导标记、HUD 状态条、快捷槽和虚拟摇杆全都由<b>一份主题和一份可替换的图标集</b>驱动，
       安全区域、虚拟键盘、RTL 和触摸目标都替你处理好。
-      <b>十套预设</b> —— 默认、科幻、中世纪、Material 3 和儿童，每种各有深色与浅色 —— 一行代码就能换掉颜色和形状。
+      <b>十二套预设</b> —— 默认、科幻、中世纪、Material 3、儿童和漫画，每种各有深色与浅色 —— 一行代码就能换掉颜色和形状。
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,8 +86,8 @@
       <span class="badge">纯 GDScript</span>
       <span class="badge">无需自动加载</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 套预设</span>
-      <span class="badge new">新增：Material 3 · 儿童</span>
+      <span class="badge">12 套预设</span>
+      <span class="badge new">新增：漫画 · Material 3 · 儿童</span>
       <span class="badge">21 种语言</span>
       <span class="badge">内置 <span data-n="icons">1,287</span> 个图标</span>
     </div>
@@ -103,9 +103,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>新增：Material 3，以及给孩子们的外观</h2>
+  <h2>新增：漫画、Material 3，以及给孩子们的外观</h2>
   <p class="sub">
-    两个新系列加入了默认、科幻和中世纪的行列——现在共有<b>十种内置外观</b>，每种都有深色和浅色。
+    三个新系列加入了默认、科幻和中世纪的行列——现在共有<b>十二种内置外观</b>，每种都有深色和浅色。
     每个控件、弹窗和 HUD 部件都能直接用上它们，代码一行都不用改：换掉预设，整个画面就跟着变。
   </p>
   <div class="phones">
@@ -113,6 +113,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark 下的 gohud 画廊——同样的 Material 3 形状，用深色基准配色" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light 下的 gohud 画廊——阳光般明亮的页面上，蜡笔色的厚实果冻按钮" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 下的 gohud 画廊——同一个玩具箱，放在夜蓝色的页面上" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 下的 gohud 画廊——纸张般的奶油色页面上，粗墨线描边和硬阴影" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 下的 gohud 画廊——夜色页面上的奶油色描边和黄色主色" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -127,11 +129,18 @@
         每类控件各有自己的蜡笔颜色。快捷槽是糖果方块，徽章是贴纸，摇杆是一道彩虹，窗口带阳光色的标题彩带和
         圆形的糖果关闭按钮，按下去还会被压扁。尺寸和你项目的字体都保持原样。</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">漫画 —— 粗墨线</h3>
+      <p>每个表面都是一格漫画分镜：粗墨线描边里填着表面颜色，背后衬一道硬阴影，表面被按下时阴影随之消失。
+        一个设置开关所有阴影，另外两个设置决定描边粗细和阴影大小，一次调用就能对单个控件做同样的事。窗口带黄色的标题框。</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # 或 MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # 或 &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 详解 →</a> · <a href="theming-presets.html#kids">儿童外观详解 →</a> ·
-    <a href="widgets-popups.html#popup-looks">同一个弹窗在全部十种外观下的样子 →</a></p>
+    <a href="theming-presets.html#comic">漫画外观详解 →</a> ·
+    <a href="widgets-popups.html#popup-looks">同一个弹窗在全部十二种外观下的样子 →</a></p>
 </section>
 
 <section id="showcase">
@@ -154,7 +163,7 @@ GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</cod
       <figcaption><b>科幻</b> —— 棱角面板与触摸操控</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">全部十套预设以及切换方法 →</a></p>
+  <p><a href="#presets">全部十二套预设以及切换方法 →</a></p>
 </section>
 
 <section id="what">
@@ -190,8 +199,8 @@ GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</cod
       <p>控件只认识 <code>GoIconSet.CLOSE</code>。换掉图标集，所有画法随之改变，一行代码都不用动。 <a href="icons.html">图标 →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">十种外观，一行代码</h3>
-      <p><code>GoUi.use_preset()</code> 把主题、皮肤和图标一起换掉 —— 圆角、科幻切角、锻造的中世纪边框，或是 Material 3 的应用组件。</p>
+      <h3 id="six-looks-one-line">十二种外观，一行代码</h3>
+      <p><code>GoUi.use_preset()</code> 把主题、皮肤和图标一起换掉 —— 圆角、科幻切角、锻造的中世纪边框、Material 3 的应用组件、儿童的果冻糖，或是漫画的墨线。</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">可读性靠量出来</h3>
@@ -239,6 +248,8 @@ GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"</cod
       <tr><td><code>material_dark</code> <span class="badge new">新</span></td><td>同样的 Material 3 形状，用深色基准配色</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">新</span></td><td>给孩子们的玩具箱——带粗描边的果冻糖按键，下方一道底边，按下时会陷进去；蜡笔色，阳光般明亮的页面</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">新</span></td><td>同一个玩具箱，放在夜蓝色的页面上</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">新</span></td><td>漫画分镜——每个表面都有粗墨线描边和硬阴影，纸张般的奶油色页面上放着白色面板；阴影、阴影大小和描边粗细都是设置项</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">新</span></td><td>同样的墨线，放在夜色页面上——奶油色描边和黄色主色</td></tr>
     </tbody>
   </table>
 
@@ -350,11 +361,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>只画四角的标记，不把内容围起来</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>锻造边框，带铆钉、角落雕花、斜面高光和材质纹理</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>果冻糖——粗描边、按下时会陷进去的实心底边、上浅下深的糖体，以及一道白色高光</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>漫画分镜——粗墨线描边和硬投影，两者的大小都在游戏运行时由 <code>GoConfig</code> 决定</td></tr>
     </tbody>
   </table>
-  <p>四者都能序列化进 Theme 资源 —— 正是这一点让主题不只能换颜色，还能换<b>形状</b>。
-    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code> 和 <code>GoSkinKids</code> 是随包提供的子类。</p>
+  <p>五者都能序列化进 Theme 资源 —— 正是这一点让主题不只能换颜色，还能换<b>形状</b>。
+    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code> 和 <code>GoSkinComic</code> 是随包提供的子类。</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="每套随包皮肤画出的快捷槽、摇杆和纸片——默认、儿童、Material、中世纪和科幻" loading="lazy"><figcaption>皮肤画出的部分——默认、儿童、Material、中世纪、科幻</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="漫画皮肤画出的快捷槽、摇杆和纸片——墨线描边和硬阴影" loading="lazy"><figcaption>……以及漫画皮肤</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> 永远返回 <code>StyleBoxFlat</code></b>，因为调用方拿到它之后
@@ -448,7 +461,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    十套主题里的每一对颜色，以及<b>每个按钮状态下的文字与它所在的面板</b>，都会拿去对照 WCAG 测量。
+    十二套主题里的每一对颜色，以及<b>每个按钮状态下的文字与它所在的面板</b>，都会拿去对照 WCAG 测量。
     半透明颜色会先与真实背景合成再测 —— 直接测半透明色，得到的比值会比屏幕上实际看到的更好看。
   </p>
   <p>

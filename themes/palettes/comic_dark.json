@@ -1,0 +1,56 @@
+{
+ "_help": "A look drawn like a comic panel: a bold ink outline around every part on the surface colour and a hard, faint shadow dropped down and to the right. The outline is the palette's border colour, the shadow its shadow colour. Edit the colours, the corners and the skin dials here, then run python3 addons/gohud/tools/make_theme.py comic_dark. The outline width, the shadow size and whether shadows show at all are not here: they are GoConfig.comic_border_width, comic_shadow_size and comic_shadow, read when a part is drawn. The shapes are tools/theme_comic.py and themes/skins/go_skin_comic.gd. 🛑 Never set a font: a Latin-only font turns Korean, Japanese and Chinese into empty boxes.",
+ "id": "comic_dark",
+ "title": "Comic Night",
+ "dark": true,
+ "from": "dark",
+ "skin": {
+  "_help": "base: comic (GoSkinComic — the inked parts drawn in code). Dials are numbers you change without touching skin code; delete one and the skin's own value applies.",
+  "base": "comic",
+  "dials": {
+   "alert_tint": 0.12,
+   "badge_pad_x": 6,
+   "badge_pad_y": 2,
+   "joystick_base_alpha": 0.35,
+   "joystick_ring_alpha": 0.5,
+   "joystick_ring_width": 3.0,
+   "comic_tint": 0.22
+  }
+ },
+ "shape": {
+  "_help": "kind, corners and panel opacity only. 🛑 No sizes (gap, padding, button height or padding): a host that pins its own sizes would see its controls change size.",
+  "kind": "comic",
+  "radius": 12,
+  "radius_small": 8,
+  "radius_large": 20,
+  "panel_alpha": 100,
+  "card_alpha": 100,
+  "notice_alpha": 100,
+  "popup_alpha": 100,
+  "hud_alpha": 92
+ },
+ "palette": {
+  "background": "#16171E",
+  "surface": "#252733",
+  "surface_soft": "#2F3242",
+  "surface_high": "#3D4259",
+  "border": "#ECE8DF",
+  "text": "#F4F1EA",
+  "secondary": "#D0CCC3",
+  "muted": "#B4B1AA",
+  "accent": "#FFC83D",
+  "on_accent": "#1A1B22",
+  "danger": "#FF7070",
+  "info": "#86BCFF",
+  "success": "#6FD58D",
+  "warning": "#FFB34D",
+  "shadow": "#05060A@0.7",
+  "track": "#3D4259",
+  "scrim": "#000000@0.6",
+  "accent_vivid": "#FFD45C",
+  "danger_vivid": "#FF5A5F",
+  "info_vivid": "#4FA8FF",
+  "success_vivid": "#4ED17A",
+  "warning_vivid": "#FFB020"
+ }
+}

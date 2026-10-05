@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # biểu tượng của bạn, còn lại là của preset</code></pre>
   <p>Đặt thẳng <code>theme</code>, <code>skin</code> hay <code>icons</code> thì giá trị đó <b>thắng</b> preset.</p>
 
-  <h3 id="the-six-built-in-presets">Mười preset có sẵn</h3>
+  <h3 id="the-six-built-in-presets">Mười hai preset có sẵn</h3>
   <table>
     <thead><tr><th>Preset</th><th>Tấm nền</th><th>Skin · biểu tượng</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # biểu tượng của bạn, còn lại là c
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Khung rèn <code>GoStyleBoxMedieval</code> — sắt và da thuộc, hoặc giấy da — với đinh tán và hoa văn góc trên các menu</td><td><code>GoSkinMedieval</code> · 16 biểu tượng khắc chìm phủ lên bộ mặc định</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Mới</span></td><td>Material 3 Expressive cho màn hình ứng dụng — nút viên thuốc 40dp trong vùng chạm 48dp, hộp thoại 28dp, thẻ tô nền, ô nhập có viền, thanh trượt Expressive; các thành phần ứng dụng (thanh điều hướng, thanh ứng dụng trên cùng, FAB, thanh tìm kiếm, chip, tiến trình, bộ chọn ngày) theo token thành phần của M3</td><td><code>GoSkinMaterial</code> · biểu tượng mặc định</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Mới</span></td><td>Dành cho trẻ em — hộp đồ chơi: viền dày và một gờ đặc dưới mỗi phím, phím lún xuống khi nhấn; ô nhập lõm, tab bong bóng, thanh thạch; mỗi loại điều khiển một màu bút sáp riêng, ô nhanh như kẹo, huy hiệu dán, cần điều khiển cầu vồng và biểu đồ nhiều màu. Kích thước và phông chữ của dự án giữ nguyên.</td><td><code>GoSkinKids</code> · biểu tượng mặc định</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Mới</span></td><td>Khung truyện tranh do <code>GoStyleBoxComic</code> vẽ: viền mực đậm và bóng đổ sắc nét trên mọi mặt, bóng biến mất khi mặt được nhấn; công tắc, ô đánh dấu và núm thanh trượt đều được viền mực, cửa sổ có ô tiêu đề màu vàng. Độ dày viền, cỡ bóng và việc có hiện bóng hay không đều là thiết lập của <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · biểu tượng mặc định</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Cả mười, đặt cạnh nhau</h2>
+  <h2>Cả mười hai, đặt cạnh nhau</h2>
   <p class="sub">Cùng một màn hình gallery, chỉ đổi tên preset — không một dòng code widget nào khác đi.
     Mỗi ảnh là một chiếc điện thoại cầm dọc, 390×844.</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # biểu tượng của bạn, còn lại là c
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Màn hình gallery widget của gohud với preset material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Màn hình gallery widget của gohud với preset kids_light" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Màn hình gallery widget của gohud với preset kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Màn hình gallery widget của gohud với preset comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Màn hình gallery widget của gohud với preset comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -291,6 +294,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # Sửa themes/palettes/candy.json, rồi:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>Truyện tranh: nét mực đậm <span class="badge new">Mới</span></h2>
+  <p><code>comic_light</code> (tấm nền trắng trên trang nền màu kem như giấy, màu chính xanh coban) và <code>comic_dark</code> (tấm nền màu
+    đá phiến trên trang nền đêm, viền màu kem, màu chính vàng) vẽ mọi mặt như một khung truyện tranh — một đường viền mực đậm với
+    bóng đổ sắc nét phía sau.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# Hoặc: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_light — phím, hàng và thanh viền mực với bóng đổ sắc nét" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_dark — nét mực màu kem trên trang nền đêm" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Hộp thoại xác nhận ở comic_light — ô tiêu đề màu vàng và nút đóng tròn viền mực" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Hộp thoại xác nhận ở comic_dark — ô tiêu đề màu vàng trên tấm thẻ màu đá phiến" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">Những gì thay đổi</h3>
+  <table>
+    <thead><tr><th>Phần</th><th>Trong các diện mạo truyện tranh</th></tr></thead>
+    <tbody>
+      <tr><td>Mọi mặt</td><td>Do <code>GoStyleBoxComic</code> vẽ: màu bề mặt nằm trong một đường viền đậm màu mực, và một bóng đổ sắc nét lệch xuống dưới và sang phải. Phím, hàng danh sách, ô nhập, tab, thanh, thanh trượt, tấm nền và cửa sổ bật lên đều khoác nó.</td></tr>
+      <tr><td>Khi nhấn</td><td>Bóng đổ biến mất và mặt lún xuống đúng chỗ của nó.</td></tr>
+      <tr><td>Điều khiển</td><td>Công tắc, ô đánh dấu, nút chọn một và núm thanh trượt cũng được viền mực, mỗi cái có bóng đổ nhỏ của riêng mình.</td></tr>
+      <tr><td>Cửa sổ</td><td>Một ô tiêu đề màu vàng phía sau tiêu đề cửa sổ và một nút đóng tròn viền mực.</td></tr>
+      <tr><td>Phần của skin</td><td><code>GoSkinComic</code>: ô nhanh, chip, huy hiệu, avatar, notice, thanh điều hướng, FAB và các ô ngày đều được viền mực; núm cần điều khiển đổ bóng; biểu đồ dùng các màu cơ bản đậm.</td></tr>
+      <tr><td>Độ đục</td><td>Tấm nền, thẻ, notice và cửa sổ bật lên đều đục; thẻ HUD đục 92%.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">Thiết lập mực và bóng</h3>
+  <p>Ba thiết lập <code>GoConfig</code> đổi mọi mặt truyện tranh cùng lúc. Không có gì phải dựng lại — màn hình vẽ lại ngay khi bạn đặt chúng.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # đường viền (dp) — mặc định là 3
+GoUi.config.comic_shadow_size = 6.0    # bóng đổ (dp) — mặc định là 4
+GoUi.config.comic_shadow = false       # không có bóng đổ ở bất cứ đâu</code></pre>
+  <p>Một widget có thể đi theo cách riêng, bất kể thiết lập nói gì:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # nút này nằm phẳng
+GoStyle.comic_shadow(card, true, true)       # thẻ này và mọi thứ bên trong vẫn giữ bóng đổ
+GoStyle.comic_border(title, 5.0)             # viền dày hơn cho riêng cái này</code></pre>
+  <div class="note">
+    <b>Không đổi kích thước.</b> Đường viền và bóng đổ được vẽ bên trong hình chữ nhật của từng control và mọi mặt đều giữ phần
+    đệm mà theme đã cho nó, nên một màn hình dàn bố cục ở diện mạo khác vẫn giữ nguyên bố cục. Font của dự án bạn cũng được giữ.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Ô nhanh, cần điều khiển và chip do skin truyện tranh vẽ" loading="lazy"><figcaption>Những phần skin truyện tranh vẽ</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">Làm truyện tranh của riêng bạn</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# Sửa themes/palettes/inked.json, rồi:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

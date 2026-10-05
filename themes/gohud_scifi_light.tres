@@ -242,6 +242,8 @@ cut = 10.2
 cut_corners = 5
 border_width = 1
 border_color = Color(0.745098, 0.168627, 0.262745, 1)
+glow_color = Color(0.745098, 0.168627, 0.262745, 0.55)
+glow_size = 7
 
 [sub_resource type="StyleBox" id="btn_danger_solid_glow_hover"]
 script = ExtResource("cut")
@@ -254,6 +256,8 @@ cut = 10.2
 cut_corners = 5
 border_width = 1
 border_color = Color(0.745098, 0.168627, 0.262745, 1)
+glow_color = Color(0.745098, 0.168627, 0.262745, 0.75)
+glow_size = 10
 
 [sub_resource type="StyleBox" id="btn_danger_solid_glow_pressed"]
 script = ExtResource("cut")

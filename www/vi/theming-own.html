@@ -195,10 +195,26 @@ GoUi.use_preset(&amp;"neon")                             # xong — nó cũng hi
       <tr><td><code>segment_inner_radius</code></td><td data-label="Mặc định">8</td><td>Bán kính góc (dp) tại chỗ hai ô của nhóm nút liền khối Material gặp nhau.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Skin trẻ em <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Mặc định">2</td><td>Độ dày viền (dp) của một phần đồ chơi trẻ em — chip, ô nhanh, FAB, alert.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Mặc định">4</td><td>Gờ đặc (dp) dưới một phần đồ chơi trẻ em mà bạn bấm; nó co lại khi phần đó được nhấn.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Mặc định">0.28</td><td>Lượng màu bút sáp phủ lên mặt ô nhanh hoặc chip trẻ em (0–1); phần còn lại là màu bề mặt.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Skin truyện tranh <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Núm chỉnh</th><th>Mặc định</th><th>Đặt cái gì</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Mặc định">0.22</td><td>Lượng màu riêng phủ lên một chip, ô nhanh hoặc viên thuốc đang chọn kiểu truyện tranh (0–1); phần còn lại là màu bề mặt.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Kế thừa skin (tùy chọn)</h3>
+  <h3 id="subclass-the-skin-optional">Kế thừa skin (tùy chọn)</h3>
   <p>Chỉ những gì theme và hình dáng không với tới — hình lục giác của cần điều khiển, badge trên ô nhanh, khung ngắm
     góc của coach mark — mới nằm trong một skin. Hãy kế thừa <code>GoSkin</code>, chỉ ghi đè đúng các phương thức đó, rồi trỏ
     trường <code>skin</code> trong file JSON vào tài nguyên đó. Một theme chỉ đổi màu thì bỏ qua bước này.</p>

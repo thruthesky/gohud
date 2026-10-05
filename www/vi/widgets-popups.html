@@ -145,7 +145,7 @@
   </div>
   <p>Mọi ảnh trên trang này đều là cùng một game nhỏ — máu và mana ở góc trên bên trái, xu ở góc trên bên phải, cần điều khiển và ba
     ô nhanh ở dưới — trong <code>default_dark</code>, với một cửa sổ bật lên đang mở phía trên. <a href="#popup-looks">Cùng cửa sổ
-    bật lên đó trong cả mười diện mạo →</a></p>
+    bật lên đó trong cả mười hai diện mạo →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -681,6 +681,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="Hộp thoại xác nhận ở material_dark" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Mới</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="Hộp thoại xác nhận ở kids_light — dải băng tiêu đề màu nắng, nút đóng hình viên kẹo và các nút như thạch" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Mới</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Hộp thoại xác nhận ở kids_dark — dải băng màu bạc hà trên tấm thẻ xanh đêm" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Mới</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Hộp thoại xác nhận ở comic_light — ô tiêu đề màu vàng, nút đóng tròn viền mực và các nút viền mực có bóng đổ sắc nét" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Mới</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Hộp thoại xác nhận ở comic_dark — nét mực màu kem trên tấm thẻ màu đá phiến" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Mới</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">Mỗi diện mạo đổi những gì</h3>
@@ -692,6 +694,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Trung cổ</td><td>Khung rèn — sắt và da thuộc, hoặc giấy da — với đinh tán và hoa văn góc</td><td>Tiêu đề bằng Cinzel</td></tr>
       <tr><td>Material 3</td><td>Góc 28dp, đệm 24dp, đục hoàn toàn</td><td>Tiêu đề 24sp bằng Roboto; nút hình viên thuốc với tấm nền 40dp trong vùng chạm 48dp</td></tr>
       <tr><td>Trẻ em</td><td>Tấm thẻ như kẹo thạch với bóng mềm, đục hoàn toàn</td><td>Dải băng tiêu đề màu nắng (màu bạc hà vào ban đêm), nút đóng tròn hình viên kẹo, các nút bẹp xuống khi nhấn</td></tr>
+      <tr><td>Truyện tranh</td><td>Viền mực đậm và bóng đổ sắc nét, đục hoàn toàn</td><td>Ô tiêu đề màu vàng, nút đóng tròn viền mực, các nút mất bóng đổ khi nhấn</td></tr>
     </tbody>
   </table>
 
@@ -702,7 +705,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Hook</th><th>Nó khoác áo cho gì</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Tấm nền phía sau tiêu đề cửa sổ. Tiêu đề canh giữa trên đó và co lại, tới cỡ tối thiểu (15), để nằm gọn trên một dòng.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>Nút × của cửa sổ — kids biến nó thành một viên kẹo tròn.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>Nút × của cửa sổ — kids biến nó thành một viên kẹo tròn, comic thành một đĩa tròn viền mực.</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>Chạy ngay khoảnh khắc ngón tay chạm vào một nút do gohud tạo ra — kids làm nó bẹp xuống.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Mặt của prompt card và thẻ coach, snackbar và notice, ngăn kéo, banner, bảng điều khiển.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Vòng sáng và con trỏ của chuyến tham quan.</td></tr>
@@ -713,7 +716,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Mỗi loại cửa sổ bật lên theo độ đục riêng, nên một thẻ HUD có thể giữ nhẹ trong khi hộp thoại vẫn đặc: cửa sổ, bảng trượt, hộp thoại,
     popover và combobox theo <code>panel_alpha</code>; ngăn kéo và thẻ coach theo <code>card_alpha</code>; prompt card và
     bảng điều khiển theo <code>hud_alpha</code>; snackbar và notice theo <code>notice_alpha</code>; menu theo <code>popup_alpha</code>. Material và kids
-    làm tất cả đều đục. Ghi đè một loại bằng <code>GoConfig.container_alpha_overrides</code>, tất cả bằng
+    làm tất cả đều đục; comic cũng vậy, trừ prompt card và bảng điều khiển ở mức 92%. Ghi đè một loại bằng <code>GoConfig.container_alpha_overrides</code>, tất cả bằng
     <code>container_alpha</code> (một tỉ lệ — <code>0.95</code>), hoặc một cửa sổ bằng <code>alpha</code> của nó. Chỉ mặt nền mờ đi; chữ thì
     không bao giờ trong suốt. <a href="theming-opacity.html">Độ đục chi tiết →</a></p>
 </section>

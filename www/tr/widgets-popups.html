@@ -145,7 +145,7 @@
   </div>
   <p>Bu sayfadaki her görüntü aynı küçük oyundur — sol üstte can ve mana, sağ üstte altınlar, altta bir joystick ve üç
     hızlı slot — <code>default_dark</code> ile, üstünde tek bir açılır pencere açık. <a href="#popup-looks">Aynı açılır
-    pencere on görünümün hepsinde →</a></p>
+    pencere on iki görünümün hepsinde →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -687,6 +687,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-material_dark.webp" width="300" height="649" alt="material_dark ile onay" loading="lazy"><figcaption><code>material_dark</code> <span class="badge new">Yeni</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_light.webp" width="300" height="649" alt="kids_light ile onay — güneş sarısı bir başlık kurdelesi, şeker gibi bir kapatma düğmesi ve jöle düğmeler" loading="lazy"><figcaption><code>kids_light</code> <span class="badge new">Yeni</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark ile onay — gece mavisi bir kartın üstünde nane yeşili bir kurdele" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Yeni</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light ile onay — sarı bir başlık kutusu, mürekkeple çizilmiş bir kapatma düğmesi ve sert gölgeli, mürekkeple çizilmiş düğmeler" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Yeni</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark ile onay — arduvaz bir kartın üstünde krem mürekkep" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Yeni</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">Her görünüm neyi değiştirir</h3>
@@ -698,6 +700,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Ortaçağ</td><td>Dövme bir çerçeve — demir ve deri ya da parşömen — perçinler ve köşe süsleriyle</td><td>Cinzel başlıklar</td></tr>
       <tr><td>Material 3</td><td>28dp köşeler, 24dp iç boşluk, tamamen opak</td><td>Roboto ile 24sp bir başlık; 48dp hedef içinde 40dp plakalı hap biçimli düğmeler</td></tr>
       <tr><td>Kids</td><td>Yumuşak gölgeli bir jöle şeker kart, tamamen opak</td><td>Güneş sarısı bir başlık kurdelesi (gece nane yeşili), yuvarlak şeker bir kapatma düğmesi, basılınca ezilen düğmeler</td></tr>
+      <tr><td>Comic</td><td>Kalın bir mürekkep çizgisi ve sert bir gölge, tamamen opak</td><td>Sarı bir başlık kutusu, mürekkeple çizilmiş yuvarlak bir kapatma düğmesi, basılınca gölgesi kaybolan düğmeler</td></tr>
     </tbody>
   </table>
 
@@ -708,7 +711,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Kanca</th><th>Neyi giydirir</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Bir pencere başlığının arkasındaki plaka. Başlık onun üstünde ortalanır ve tek satırda kalmak için en küçük boyuta (15) kadar küçülür.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>Pencerenin × düğmesi — Kids onu yuvarlak bir şekere çevirir.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>Pencerenin × düğmesi — Kids onu yuvarlak bir şekere, Comic mürekkeple çizilmiş bir diske çevirir.</td></tr>
       <tr><td><code>press_feedback(control)</code></td><td>gohud'un yaptığı bir düğmeye parmak değdiği anda çalışır — Kids düğmeyi ezer.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Soru kartlarının ve rehber kartlarının, snackbar'ların ve bildirimlerin, çekmecenin, banner'ların ve konsolun yüzleri.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Turun halkası ve işaretçisi.</td></tr>
@@ -719,7 +722,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Her açılır pencere türü kendi opaklığını izler; böylece bir HUD kartı hafif kalırken bir iletişim kutusu katı kalabilir:
     pencereler, alt sayfalar, iletişim kutuları, popover'lar ve combobox <code>panel_alpha</code>'yı; çekmece ve rehber kartı
     <code>card_alpha</code>'yı; soru kartları ve konsol <code>hud_alpha</code>'yı; snackbar'lar ve bildirimler
-    <code>notice_alpha</code>'yı; menüler <code>popup_alpha</code>'yı izler. Material ve Kids hepsini opak yapar. Tek bir türü
+    <code>notice_alpha</code>'yı; menüler <code>popup_alpha</code>'yı izler. Material ve Kids hepsini opak yapar; Comic de öyle, yalnızca soru kartları ve konsol %92'dir. Tek bir türü
     <code>GoConfig.container_alpha_overrides</code> ile, hepsini <code>container_alpha</code> ile (bir oran — <code>0.95</code>), tek
     bir pencereyi de kendi <code>alpha</code> değeriyle geçersiz kılın. Yalnızca yüz solar; metin asla saydamlaşmaz.
     <a href="theming-opacity.html">Opaklık ayrıntılı olarak →</a></p>

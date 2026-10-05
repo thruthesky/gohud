@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GoSkinComic" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/themes/skins/go_skin_comic.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+skin_name = "comic_dark"
+alert_tint = 0.12
+badge_pad_x = 6
+badge_pad_y = 2
+comic_tint = 0.22
+joystick_base_alpha = 0.35
+joystick_ring_alpha = 0.5
+joystick_ring_width = 3.0

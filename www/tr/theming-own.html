@@ -196,10 +196,26 @@ GoUi.use_preset(&amp;"neon")                             # bitti — seçicide d
       <tr><td><code>segment_inner_radius</code></td><td data-label="Varsayılan">8</td><td>Material bağlı düğme grubunda iki hücrenin birleştiği köşenin yarıçapı (dp).</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Kids kaplaması <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Varsayılan">2</td><td>Bir Kids oyuncak parçasının — chip'lerin, slotların, FAB'ın, uyarıların — dış çizgi kalınlığı (dp).</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Varsayılan">4</td><td>Basılan bir Kids oyuncak parçasının altındaki sağlam alt kenar (dp); parçaya basılınca küçülür.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Varsayılan">0.28</td><td>Bir Kids slotunun ya da chip'inin yüzünü pastel boya renginin ne kadar doldurduğu (0–1); geri kalanı yüzey rengidir.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Comic kaplaması <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Ayar</th><th>Varsayılan</th><th>Neyi belirler</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Varsayılan">0.22</td><td>Bir Comic chip'ini, hızlı slotunu ya da seçili hapını kendi renginin ne kadar doldurduğu (0–1); geri kalanı yüzey rengidir.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Kaplamanın alt sınıfını türetin (isteğe bağlı)</h3>
+  <h3 id="subclass-the-skin-optional">Kaplamanın alt sınıfını türetin (isteğe bağlı)</h3>
   <p>Yalnızca temanın ve biçimin erişemediği şeyler — joystick'in altıgeni, slot rozetleri, rehber işaretinin
     hedefleme köşeliği — bir kaplamada yaşar. <code>GoSkin</code>'in alt sınıfını türetin, yalnızca o metotları
     ezin ve JSON'daki <code>skin</code> alanını o kaynağa yöneltin. Yalnızca renk değiştiren bir tema bu adımı

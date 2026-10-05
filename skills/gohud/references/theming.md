@@ -1,6 +1,6 @@
 # Theming — presets, tokens, overrides, JSON themes, skins, StyleBoxes
 
-Source: `core/go_ui.gd`, `core/go_theme.gd`, `core/go_theme_presets.gd`, `core/go_skin.gd`, `themes/skins/`,
+Source: `core/go_ui.gd`, `core/go_theme.gd`, `core/go_theme_presets.gd`, `core/go_skin.gd`, `core/go_config.gd`, `themes/skins/`,
 `widgets/go_stylebox_*.gd`, `tools/new_theme.py`, `tools/make_theme.py`.
 Web: https://thruthesky.github.io/gohud/theming.html
 
@@ -21,7 +21,7 @@ Web: https://thruthesky.github.io/gohud/theming.html
 | Layer | Decides | Class |
 |---|---|---|
 | Theme | Colours, sizes, text scale, engine-drawn controls (buttons, inputs, tabs, toggles) | Godot `Theme` with a `GoHud` type |
-| Skin | Code-drawn shapes: joystick, slot faces, badges, coach ring/pointer, chips, skeletons, alerts, segments, dividers, section headings | `GoSkin` (`GoSkinSciFi`, `GoSkinMedieval`, `GoSkinMaterial`, `GoSkinKids`) |
+| Skin | Code-drawn shapes: joystick, slot faces, badges, coach ring/pointer, chips, skeletons, alerts, segments, dividers, section headings | `GoSkin` (`GoSkinSciFi`, `GoSkinMedieval`, `GoSkinMaterial`, `GoSkinKids`, `GoSkinComic`) |
 | Icons | Drawings by name | `GoIconSet` |
 
 A **preset** (`GoThemePreset`: `id`, `title`, `dark`, `theme`, `skin`, `icons`, `label()`) bundles the three.
@@ -33,11 +33,37 @@ A **preset** (`GoThemePreset`: `id`, `title`, `dark`, `theme`, `skin`, `icons`, 
 | `MEDIEVAL_DARK` · `MEDIEVAL_LIGHT` | `GoStyleBoxMedieval` iron/leather or parchment frames, rivets, Cinzel headings | `GoSkinMedieval` · 16 engraved over default |
 | `MATERIAL_LIGHT` · `MATERIAL_DARK` | Material 3 baseline for app screens: pill buttons (40dp plate in the 48dp target), 28dp dialogs, filled cards, 16dp menus, outlined fields, M3 switch/checkbox/radio, Expressive slider, connected button group, opaque surfaces, 24dp icons, Roboto at the M3 sizes (body only while the project sets no font), every M3 colour role as an `md_*` token | `GoSkinMaterial` · default |
 | `kids_light` · `kids_dark` (folder presets) | For children — **the toy box**, every face a **jelly candy** (`GoStyleBoxJelly`): chunky outlines, a light top and a deeper band, a white shine and a solid lip under every key (it sinks when pressed, and the key squishes under the finger), sunken text fields, bubble tabs, jelly bars; a sunny ribbon behind window titles (mint at night) and a round candy close button; each family of controls in its own crayon (grape primary, sky normal, sunshine pills — mint at night — mint folding titles); candy quick slots, sticker badges, a rainbow joystick with a candy knob, crayon chart slices; round plates (18 · 12 · 34), solid panels (`card/panel/notice/popup_alpha` 100, HUD 88). Cream-and-peach day · blueberry night with a sunny primary. Sizes are the default family's — a lip sits inside the control. 🛑 No font override — a Latin-only face turns CJK into tofu | `GoSkinKids` · default |
+| `comic_light` · `comic_dark` (folder presets) | Drawn like a **comic panel** (`GoStyleBoxComic`): a bold ink outline (the palette's `border`) around every key, field, row, tab, bar and panel on the surface colour, and a hard, faint shadow dropped down and to the right of what stands off the page (keys, cards, panels, chips, quick slots) — gone while pressed, never under text fields, list rows or tooltips; a yellow caption box behind window titles, an inked close disc, an inked joystick knob. **The outline width, the shadow size and whether shadows show are settings, not theme values** (below). Corners 12 · 8 · 20, solid panels (HUD 92). Newsprint day (navy ink) · chalk-on-navy night (sunny primary). Sizes are the default family's. 🛑 No font override | `GoSkinComic` · default |
 
 ```gdscript
 GoUi.use_preset(GoThemePresets.SCIFI_DARK)   # String/StringName id or a GoThemePreset
 GoUi.config.icons = my_icons                 # AFTER use_preset: keep the preset, override one layer
 ```
+
+### The comic dials — one setting for every part
+
+Every comic face leaves its outline and shadow to three `GoConfig` fields, read **each time a face is drawn** — set
+them when picking the look (or later: parts on screen redraw on their own, and nothing moves, since the outline is
+inside a part and the shadow outside it). The other looks ignore them.
+
+```gdscript
+GoUi.use_preset(&"comic_light")
+GoUi.config.comic_border_width = 2.0   # dp, default 3 — small parts (rows, chips, bars) take 2/3, slider tracks 1/2
+GoUi.config.comic_shadow_size = 6.0    # dp down and right, default 4 — panels 1.5x, chips and close disc 1/2
+GoUi.config.comic_shadow = false       # default true — off, every part sits flat
+
+# One widget, whatever the setting says (copies of its faces go on the node; `deep` reaches its children):
+GoStyle.comic_shadow(skip_button, false)          # this key sits flat
+GoStyle.comic_shadow(hero_card, true, true)        # this card and everything in it keep their shadow
+GoStyle.comic_border(badge_row, 1.5)               # this widget's outline; -1 hands it back to the setting
+```
+
+A face decides for itself with its own fields: `outline` / `drop` (dp; negative = the setting × `outline_scale` /
+`drop_scale`) and `shadow` (`GoStyleBoxComic.Shadow.FOLLOW` · `ON` · `OFF`). The raised twins
+(`GoConfig.button_glow`, `GoStyle.glow()`) are `ON` — they keep a shadow with the setting off. `GoStyle.box()` turns a
+comic face into a `StyleBoxFlat` with the same ink and a crisp shadow **as set at that moment** (`to_flat()`); use
+`GoStyle.surface()` to keep the face following the settings. 🛑 The switch, check, radio and slider-handle drawings are
+SVGs drawn once at import — their outline stays 2.
 
 Resolution order: `GoUi.theme()` = `config.theme` → preset theme → `GoUi.DEFAULT_THEME`; same for `skin()` and
 `icons()`. The preset id = `config.preset`, or project setting `gohud/theme/preset` when that is empty.
@@ -210,11 +236,11 @@ GoUi.use_preset(&"kingdom")
 | `id` · `title` · `dark` | Lowercase id (`[a-z][a-z0-9_]*`), picker label, grouping |
 | `from` | Parent: `dark`, `light`, `scifi_dark`, `scifi_light`, `medieval_dark`, `medieval_light`, `material_light`, `material_dark` or another JSON id. Omitted keys inherit; cycles fail |
 | `palette` | `background` `surface` `surface_soft` `surface_high` `border` `text` `secondary` `muted` `accent` `on_accent` `success` `warning` `danger` `info` `scrim` `shadow` `track` + `*_vivid` fills. Format `"#RRGGBB"` or `"#RRGGBB@0.35"`. Text, borders and accent are pushed to readable contrast |
-| `shape.kind` | `flat` (rounded) · `cut` (chamfer) · `medieval` (forged) · `material` (Material 3 — `tools/theme_material.py`; not the medieval `shape.material`, which is that frame's material) · `kids` (the toy box — `tools/theme_kids.py`) |
+| `shape.kind` | `flat` (rounded) · `cut` (chamfer) · `medieval` (forged) · `material` (Material 3 — `tools/theme_material.py`; not the medieval `shape.material`, which is that frame's material) · `kids` (the toy box — `tools/theme_kids.py`) · `comic` (ink outline and hard shadow — `tools/theme_comic.py`; the outline is the palette's `border`, the shadow its `shadow`) |
 | `shape` sizes | `radius` `radius_small` `radius_large` `gap` `gap_small` `gap_large` `padding` `button_height` `button_padding[4]` (+ `compact_padding_x/y`) |
 | `shape` for `cut` | `cut_ratio` `cut_max` `corners` (`diagonal`/`all`) `glow` `edge` |
 | `shape` for `medieval` | `material` (0 iron · 1 leather · 2 parchment) `grain_alpha` `ornament_scale` `bevel_strength` `fonts` {`title`,`subtitle`,`caption`,`body`,`button`: addon-local `res://` font} |
-| `skin` | `base` (`default`/`scifi`/`medieval`/`material`/`kids`), `name`, `dials` {name: number} (table in §6) |
+| `skin` | `base` (`default`/`scifi`/`medieval`/`material`/`kids`/`comic`), `name`, `dials` {name: number} (table in §6) |
 | `icons` | `res://` path to a `GoIconSet` resource |
 
 ```json
@@ -259,8 +285,8 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 | `step_marker_box(state)` · `step_marker_ink(state)` · `time_selector_box(selected, state, period)` · `time_ink(selected, period)` · `dial_colors() -> Array[Color]` | Stepper markers (`&"done"`, `&"active"`, `&"todo"`, `&"error"`), the time picker's hour, minute and AM/PM boxes, its dial `[face, hand, numbers, number under the hand]` |
 | `reorder_lift_box()` · `reorder_grip_ink()` · `wheel_band_box()` · `wheel_ink(chosen)` | A row lifted in a reorder list, its grip, a wheel picker's band and items |
 | `variation_box(type, key)` | A copy of a theme box, following the type variation to its base (`GoButton` → `Button`) |
-| `title_plate_box() -> StyleBox` · `title_plate_ink() -> Color` · `title_plate_min_size() -> int` | A plate behind a `GoSurface` title (default `null` — none). With one, the title is centred on it and shrinks to stay on one line, not below the min size. `GoSkinKids`: a sunny jelly ribbon |
-| `dress_close_button(button: GoIconButton)` | Dresses a window's close button (default: nothing — the theme's icon button). The surface lifts the previous look's dressing first. `GoSkinKids`: a round candy in the danger crayon with a white cross |
+| `title_plate_box() -> StyleBox` · `title_plate_ink() -> Color` · `title_plate_min_size() -> int` | A plate behind a `GoSurface` title (default `null` — none). With one, the title is centred on it and shrinks to stay on one line, not below the min size. `GoSkinKids`: a sunny jelly ribbon · `GoSkinComic`: a yellow inked caption box |
+| `dress_close_button(button: GoIconButton)` | Dresses a window's close button (default: nothing — the theme's icon button). The surface lifts the previous look's dressing first. `GoSkinKids`: a round candy in the danger crayon with a white cross · `GoSkinComic`: an inked disc that drops a small shadow |
 | `press_feedback(control: Control)` | Runs the moment a press lands on a button gohud made (`style_button`, `list_row`, `GoSlot`, `GoIconButton`; `GoStyle.press_feel(button)` adds any other). Default: nothing. 🛑 Change only `scale`/`pivot_offset`. `GoSkinKids`: a jelly squish (skipped under `reduce_motion` and headless) |
 | static `luminance(c)` · `contrast_ratio(a, b)` · `blend(top, bottom)` · `readable_on(ink, back, need := 4.5)` · `box_background(box)` | Contrast helpers |
 
@@ -273,6 +299,7 @@ Dials (`@export`, set on a skin resource or JSON `skin.dials`):
 | `GoSkinMedieval` (+5) | `slot_radius` 4.0 · `leather_grain_alpha` 0.035 · `ornament_scale` 1.0 · `bevel_strength` 0.18 · `slot_rivets` 1 |
 | `GoSkinMaterial` (+2) | `segment_gap` 2.0 · `segment_inner_radius` 8 |
 | `GoSkinKids` (+3) | `toy_edge` 2 · `toy_lip` 4 · `crayon_tint` 0.28 |
+| `GoSkinComic` (+1) | `comic_tint` 0.22 — the outline and shadow are `GoConfig` settings (§1), not dials |
 
 ```gdscript
 class_name DiamondSkin extends GoSkin
@@ -302,6 +329,7 @@ for GDScript StyleBoxes (measured on 4.7), so leaving them empty puts content ag
 | `GoStyleBoxBracket` | `color` `arm` `thickness` `inset` `bg_color` `diagonal_only` — corner marks only (focus, targeting) |
 | `GoStyleBoxMedieval` | `bg_color` `border_color` `border_width` `draw_center` `radius` `material` (0 iron 1 leather 2 parchment) `ornament` (0 quiet 1 rivets 2 engraved) `ornament_scale` `grain_alpha` `bevel_strength` `shadow_color` `shadow_size` `shadow_offset` |
 | `GoStyleBoxJelly` | `bg_color` (the light top) `shade_color` (the deeper band; transparent = leans to the outline) `border_color` (outline + lip; transparent = a deep shade) `border_width` `lip` `radius` `band` `band_max` `shine` `sunken` (a text field's well) `pressed` `sink` `draw_center` `inner_line` `max_size` (a small candy centred in a bigger press area) `expand_margin_*` `shadow_color` `shadow_size` `shadow_offset` · `keep_margins(box)` copies another face's padding (sizes stay) · `pad(h, v)` lifts the label by half the lip. The kids looks' faces |
+| `GoStyleBoxComic` | `bg_color` `border_color` (the ink) `outline` (dp; negative = `GoConfig.comic_border_width` × `outline_scale`) `outline_scale` `radius` `corners` / `sides` (bit masks `TOP_LEFT` 1 `TOP_RIGHT` 2 `BOTTOM_RIGHT` 4 `BOTTOM_LEFT` 8 · `LEFT` 1 `TOP` 2 `RIGHT` 4 `BOTTOM` 8 — which corners round, which sides are inked) `draw_center` `shadow` (`Shadow.FOLLOW`/`ON`/`OFF`) `shadow_color` `drop` (dp; negative = `GoConfig.comic_shadow_size` × `drop_scale`) `drop_scale` `pressed` (the shadow goes, the face sinks ≤ 2dp) `inner` (drawn just inside the ink of the face under it — the focus rings, so a focused key keeps its outline) `expand_margin_*` · read-only-ish `border_width` / `shadow_size` / `shadow_offset` report what is drawn (writing them sets `outline` / `drop`; `shadow_size = 0` turns the shadow off) · `outline_width()` `drop_size()` `shows_shadow()` `keep_margins(box)` `to_flat()`. The comic looks' faces |
 
 ```gdscript
 var box := GoStyleBoxCut.new()

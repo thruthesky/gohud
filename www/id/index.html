@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — kit HUD &amp; UI untuk Godot 4</title>
-<meta name="description" content="Kit HUD dan UI yang bisa disesuaikan untuk Godot 4.7+. Permukaan mengambang, lembar bawah, dialog, formulir, snackbar, bar HUD, slot cepat, dan joystick virtual, dengan sepuluh preset — default, sci-fi, abad pertengahan, Material 3, dan anak-anak.">
+<meta name="description" content="Kit HUD dan UI yang bisa disesuaikan untuk Godot 4.7+. Permukaan mengambang, lembar bawah, dialog, formulir, snackbar, bar HUD, slot cepat, dan joystick virtual, dengan dua belas preset — default, sci-fi, abad pertengahan, Material 3, anak-anak, dan komik.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud adalah kit HUD dan UI untuk Godot 4.7 ke atas. Jendela mengambang, lembar bawah, dialog, formulir,
       snackbar, coach mark, bar HUD, slot cepat, dan joystick virtual semuanya berjalan dari <b>satu tema dan satu
       set ikon yang bisa ditukar</b>, sekaligus mengurus area aman, keyboard virtual, RTL, dan target sentuh untuk Anda.
-      <b>Sepuluh preset</b> — default, sci-fi, abad pertengahan, Material 3, dan anak-anak, masing-masing gelap dan terang — mengubah warna dan bentuk dalam satu baris.
+      <b>Dua belas preset</b> — default, sci-fi, abad pertengahan, Material 3, anak-anak, dan komik, masing-masing gelap dan terang — mengubah warna dan bentuk dalam satu baris.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,8 +86,8 @@
       <span class="badge">GDScript murni</span>
       <span class="badge">Tanpa autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 preset</span>
-      <span class="badge new">Baru: Material 3 · Anak-anak</span>
+      <span class="badge">12 preset</span>
+      <span class="badge new">Baru: Komik · Material 3 · Anak-anak</span>
       <span class="badge">21 bahasa</span>
       <span class="badge"><span data-n="icons">1.287</span> ikon disertakan</span>
     </div>
@@ -103,9 +103,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Baru: Material 3 dan tampilan untuk anak-anak</h2>
+  <h2>Baru: komik, Material 3, dan tampilan untuk anak-anak</h2>
   <p class="sub">
-    Dua keluarga baru bergabung dengan default, sci-fi, dan abad pertengahan — kini ada <b>sepuluh tampilan bawaan</b>, masing-masing gelap dan terang.
+    Tiga keluarga baru bergabung dengan default, sci-fi, dan abad pertengahan — kini ada <b>dua belas tampilan bawaan</b>, masing-masing gelap dan terang.
     Setiap widget, popup, dan bagian HUD langsung memakainya tanpa perubahan pada kode Anda: ganti presetnya dan seluruh layar ikut berubah.
   </p>
   <div class="phones">
@@ -113,6 +113,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="Galeri gohud dalam material_dark — bentuk Material 3 yang sama pada skema dasar gelap" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="Galeri gohud dalam kids_light — tombol jeli tebal berwarna krayon di halaman yang cerah" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeri gohud dalam kids_dark — kotak mainan yang sama di halaman biru malam" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeri gohud dalam comic_light — garis tepi tinta tebal dan bayangan tegas di halaman krem seperti kertas" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeri gohud dalam comic_dark — garis tepi krem dan warna primer kuning di halaman malam" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -129,11 +131,19 @@
         joystick-nya pelangi, jendela mendapat pita judul yang cerah dan tombol tutup permen yang bulat, dan setiap tekanan membuatnya memipih.
         Ukuran dan font proyek Anda tetap persis seperti semula.</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">Komik — tinta tebal</h3>
+      <p>Setiap muka adalah panel buku komik: warna permukaan di dalam garis tepi tinta yang tebal, dengan bayangan tegas di belakangnya
+        yang hilang saat muka itu ditekan. Satu setelan menyalakan atau mematikan semua bayangan, dua lagi mengatur lebar garis tepi
+        dan ukuran bayangan, dan satu panggilan melakukan hal yang sama untuk satu widget saja. Jendela mendapat keterangan judul kuning.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # atau MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # atau &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # atau &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # atau &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 secara rinci →</a> · <a href="theming-presets.html#kids">Anak-anak secara rinci →</a> ·
-    <a href="widgets-popups.html#popup-looks">Popup yang sama dalam kesepuluh tampilan →</a></p>
+    <a href="theming-presets.html#comic">Komik secara rinci →</a> ·
+    <a href="widgets-popups.html#popup-looks">Popup yang sama dalam kedua belas tampilan →</a></p>
 </section>
 
 <section id="showcase">
@@ -156,7 +166,7 @@ GoUi.use_preset(&amp;"kids_light")                   # atau &amp;"kids_dark"</co
       <figcaption><b>Sci-fi</b> — panel bersudut dan kontrol sentuh</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Kesepuluh preset dan cara menggantinya →</a></p>
+  <p><a href="#presets">Kedua belas preset dan cara menggantinya →</a></p>
 </section>
 
 <section id="what">
@@ -192,8 +202,8 @@ GoUi.use_preset(&amp;"kids_light")                   # atau &amp;"kids_dark"</co
       <p>Widget hanya tahu <code>GoIconSet.CLOSE</code>. Tukar setnya dan semua gambar berubah tanpa menyentuh satu baris kode. <a href="icons.html">Ikon →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Sepuluh tampilan, satu baris</h3>
-      <p><code>GoUi.use_preset()</code> menukar tema, skin, dan ikon sekaligus — bingkai membulat, sci-fi bersudut potong, tempaan abad pertengahan, atau komponen aplikasi Material 3.</p>
+      <h3 id="six-looks-one-line">Dua belas tampilan, satu baris</h3>
+      <p><code>GoUi.use_preset()</code> menukar tema, skin, dan ikon sekaligus — bingkai membulat, sci-fi bersudut potong, tempaan abad pertengahan, komponen aplikasi Material 3, permen jeli anak-anak, atau tinta komik.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Keterbacaan yang terukur</h3>
@@ -243,6 +253,8 @@ GoUi.use_preset(&amp;"kids_light")                   # atau &amp;"kids_dark"</co
       <tr><td><code>material_dark</code> <span class="badge new">Baru</span></td><td>Bentuk Material 3 yang sama pada skema dasar gelap</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">Baru</span></td><td>Kotak mainan untuk anak-anak — tombol permen jeli dengan garis tepi tebal dan bibir yang tenggelam saat ditekan, warna krayon, halaman yang cerah</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">Baru</span></td><td>Kotak mainan yang sama di halaman biru malam</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">Baru</span></td><td>Panel buku komik — garis tepi tinta tebal dan bayangan tegas di setiap muka, panel putih di halaman krem seperti kertas; bayangan, ukurannya, dan lebar garis tepi adalah setelan</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">Baru</span></td><td>Tinta yang sama di halaman malam — garis tepi krem dan warna primer kuning</td></tr>
     </tbody>
   </table>
 
@@ -355,11 +367,13 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>Hanya penanda sudut, tanpa mengurung kontennya</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Bingkai tempaan dengan paku keling, ukiran sudut, sorotan bevel, dan serat material</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Permen jeli — garis tepi tebal, bibir padat yang tenggelam saat ditekan, badan yang lebih terang di bagian atas, dan kilau putih</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>Panel buku komik — garis tepi tinta tebal dan bayangan jatuh yang tegas, keduanya diukur oleh <code>GoConfig</code> selagi game berjalan</td></tr>
     </tbody>
   </table>
-  <p>Keempatnya tersimpan ke dalam resource Theme — dan itulah yang membuat sebuah tema bisa mengubah <b>bentuk</b>, bukan hanya warna.
-    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, dan <code>GoSkinKids</code> adalah subkelas bawaan.</p>
+  <p>Kelimanya tersimpan ke dalam resource Theme — dan itulah yang membuat sebuah tema bisa mengubah <b>bentuk</b>, bukan hanya warna.
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code>, dan <code>GoSkinComic</code> adalah subkelas bawaan.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Slot cepat, joystick, dan chip yang digambar oleh setiap skin bawaan — default, anak-anak, Material, abad pertengahan, dan sci-fi" loading="lazy"><figcaption>Apa yang digambar sebuah skin — default, anak-anak, Material, abad pertengahan, sci-fi</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Slot cepat, joystick, dan chip yang digambar oleh skin komik — garis tepi tinta dan bayangan tegas" loading="lazy"><figcaption>…dan skin komik</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> selalu mengembalikan <code>StyleBoxFlat</code></b>, karena kode pemanggilnya
@@ -454,7 +468,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Setiap pasangan warna dan <b>setiap label keadaan tombol di atas panel tempatnya berada</b> diukur terhadap
-    WCAG, pada kesepuluh tema. Warna tembus pandang lebih dulu dikomposit di atas latar sesungguhnya — mengukurnya
+    WCAG, pada kedua belas tema. Warna tembus pandang lebih dulu dikomposit di atas latar sesungguhnya — mengukurnya
     secara langsung akan melaporkan rasio yang lebih baik daripada yang tampak di layar.
   </p>
   <p>

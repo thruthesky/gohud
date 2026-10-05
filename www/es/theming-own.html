@@ -195,10 +195,26 @@ GoUi.use_preset(&amp;"neon")                             # listo — también ap
       <tr><td><code>segment_inner_radius</code></td><td data-label="Predeterminado">8</td><td>Radio de esquina (dp) donde se tocan dos celdas de un grupo de botones conectados de Material.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Skin infantil <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Predeterminado</th><th>Qué define</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="Predeterminado">2</td><td>Grosor del contorno (dp) de una pieza de juguete infantil — chips, ranuras, el FAB, alertas.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="Predeterminado">4</td><td>El labio sólido (dp) bajo una pieza de juguete infantil que se pulsa; se encoge cuando se pulsa la pieza.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="Predeterminado">0.28</td><td>Cuánto color de crayón llena la cara de una ranura o un chip infantil (0–1); el resto es el color de la superficie.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Skin de cómic <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Dial</th><th>Predeterminado</th><th>Qué define</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="Predeterminado">0.22</td><td>Cuánto de su propio color llena un chip, una ranura rápida o una píldora elegida de cómic (0–1); el resto es el color de la superficie.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Crear una subclase del skin (opcional)</h3>
+  <h3 id="subclass-the-skin-optional">Crear una subclase del skin (opcional)</h3>
   <p>En un skin vive únicamente lo que el tema y la forma no alcanzan — el hexágono del joystick, las insignias de las ranuras, el corchete de
     puntería de la marca guía. Crea una subclase de <code>GoSkin</code>, sobrescribe solo esos métodos y apunta el
     campo <code>skin</code> del JSON a ese recurso. Un tema que solo cambia colores se salta este paso.</p>

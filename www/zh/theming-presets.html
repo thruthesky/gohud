@@ -134,7 +134,7 @@
 GoUi.config.icons = my_icons     # 图标用自己的，其余全部用预设的</code></pre>
   <p>显式设置 <code>theme</code>、<code>skin</code> 或 <code>icons</code> 会<b>压过</b>预设。</p>
 
-  <h3 id="the-six-built-in-presets">十套内置预设</h3>
+  <h3 id="the-six-built-in-presets">十二套内置预设</h3>
   <table>
     <thead><tr><th>预设</th><th>面板</th><th>皮肤 · 图标</th></tr></thead>
     <tbody>
@@ -143,12 +143,13 @@ GoUi.config.icons = my_icons     # 图标用自己的，其余全部用预设的
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>锻造的 <code>GoStyleBoxMedieval</code> 边框 —— 铁与皮革，或羊皮纸 —— 菜单上带铆钉和角落纹饰</td><td><code>GoSkinMedieval</code> · 覆盖默认集的 16 个雕刻图标</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">新</span></td><td>面向应用界面的 Material 3 Expressive —— 48dp 触控区里 40dp 的胶囊按钮、28dp 对话框、填充卡片、描边输入框、Expressive 滑块；应用组件（导航栏、顶部应用栏、FAB、搜索栏、纸片、进度、日期选择器）遵循 M3 组件令牌</td><td><code>GoSkinMaterial</code> · 默认图标</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">新</span></td><td>面向儿童——玩具箱：粗描边，每个按键下都有一道实心底边，按下时会陷进去；凹陷的输入框、气泡标签、果冻进度条；每类控件各有一种蜡笔颜色，糖果般的快捷槽、贴纸徽章、彩虹摇杆和蜡笔色图表。尺寸和项目字体保持不变。</td><td><code>GoSkinKids</code> · 默认图标</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">新</span></td><td>由 <code>GoStyleBoxComic</code> 绘制的漫画分镜：每个表面都有粗墨线描边和硬阴影，按下时阴影消失；描了墨线的开关、复选框和滑块手柄，窗口带黄色的标题框。描边粗细、阴影大小以及是否显示阴影，都是 <code>GoConfig</code> 设置。</td><td><code>GoSkinComic</code> · 默认图标</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>十套并排对比</h2>
+  <h2>十二套并排对比</h2>
   <p class="sub">同一个画廊界面，只换了预设名字——控件代码一行都没变。
     每张都是竖着拿的手机，390×844。</p>
   <div class="phones">
@@ -162,6 +163,8 @@ GoUi.config.icons = my_icons     # 图标用自己的，其余全部用预设的
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="使用 material_dark 预设的 gohud 控件画廊" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="使用 kids_light 预设的 gohud 控件画廊" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="使用 kids_dark 预设的 gohud 控件画廊" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="使用 comic_light 预设的 gohud 控件画廊" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="使用 comic_dark 预设的 gohud 控件画廊" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -288,6 +291,51 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # 编辑 themes/palettes/candy.json，然后：
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>漫画：粗墨线 <span class="badge new">新</span></h2>
+  <p><code>comic_light</code>（纸张般的奶油色页面上放白色面板，主色为钴蓝）和 <code>comic_dark</code>（夜色页面上的石板色面板、
+    奶油色描边、黄色主色）把每个表面都画成一格漫画分镜——粗墨线描边，背后衬一道硬阴影。</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# 或者：GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 下的 gohud 画廊——带硬阴影的墨线按键、列表行和进度条" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 下的 gohud 画廊——夜色页面上的奶油色墨线" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light 下的确认对话框——黄色的标题框和描了墨线的圆形关闭按钮" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark 下的确认对话框——石板色卡片上的黄色标题框" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">有哪些变化</h3>
+  <table>
+    <thead><tr><th>部分</th><th>在漫画外观中</th></tr></thead>
+    <tbody>
+      <tr><td>每个表面</td><td>由 <code>GoStyleBoxComic</code> 绘制：墨色的粗描边里填着表面颜色，向右下方投出一道硬阴影。按键、列表行、输入框、标签页、进度条、滑块、面板和弹窗都用它。</td></tr>
+      <tr><td>按下</td><td>阴影消失，表面沉到阴影的位置。</td></tr>
+      <tr><td>控件</td><td>开关、复选框、单选按钮和滑块手柄也都描了墨线，各带一道小阴影。</td></tr>
+      <tr><td>窗口</td><td>窗口标题背后一个黄色的标题框，以及一个描了墨线的圆形关闭按钮。</td></tr>
+      <tr><td>皮肤部件</td><td><code>GoSkinComic</code>：快捷槽、纸片、徽章、头像、提示、导航栏、FAB 和日期格子都描了墨线；摇杆的摇头会投下阴影；图表用醒目的原色。</td></tr>
+      <tr><td>不透明度</td><td>面板、卡片、提示和弹窗都不透明；HUD 卡片为 92% 不透明。</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">墨线与阴影设置</h3>
+  <p>三个 <code>GoConfig</code> 设置会一次改变所有漫画表面。不需要重建任何东西——设置的同时画面就会重绘。</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # 描边（dp）——默认 3
+GoUi.config.comic_shadow_size = 6.0    # 阴影（dp）——默认 4
+GoUi.config.comic_shadow = false       # 所有地方都不要阴影</code></pre>
+  <p>单个控件可以不理会设置，自行其是：</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # 这个按钮平贴着
+GoStyle.comic_shadow(card, true, true)       # 这张卡片及其中的一切保留阴影
+GoStyle.comic_border(title, 5.0)             # 只给这一个加粗描边</code></pre>
+  <div class="note">
+    <b>尺寸不变。</b>描边和阴影都画在每个控件自己的矩形之内，每个表面也保留主题给它的内边距，所以在别的外观下
+    排好的界面会保持原有布局。你项目的字体同样保留。
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="漫画皮肤画出的快捷槽、摇杆和纸片" loading="lazy"><figcaption>漫画皮肤画出的部分</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">造一个自己的漫画外观</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# 编辑 themes/palettes/inked.json，然后：
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

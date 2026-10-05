@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 için HUD ve UI kiti</title>
-<meta name="description" content="Godot 4.7+ için özelleştirilebilir bir HUD ve UI kiti. Yüzen pencereler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, HUD çubukları, hızlı slotlar ve sanal joystick; on ön ayarla — varsayılan, bilimkurgu, ortaçağ, Material 3 ve çocuk.">
+<meta name="description" content="Godot 4.7+ için özelleştirilebilir bir HUD ve UI kiti. Yüzen pencereler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, HUD çubukları, hızlı slotlar ve sanal joystick; on iki ön ayarla — varsayılan, bilimkurgu, ortaçağ, Material 3, çocuk ve çizgi roman.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud, Godot 4.7 ve sonrası için bir HUD ve UI kitidir. Yüzen pencereler, alt sayfalar, iletişim kutuları,
       formlar, snackbar'lar, rehber işaretleri, HUD çubukları, hızlı slotlar ve sanal joystick <b>tek bir temayla ve
       değiştirilebilir tek bir simge setiyle</b> çalışır; güvenli alanı, sanal klavyeyi, RTL'i ve dokunma hedeflerini
-      sizin yerinize halleder. <b>On ön ayar</b> — varsayılan, bilimkurgu, ortaçağ, Material 3 ve çocuk, her biri koyu ve açık —
+      sizin yerinize halleder. <b>On iki ön ayar</b> — varsayılan, bilimkurgu, ortaçağ, Material 3, çocuk ve çizgi roman, her biri koyu ve açık —
       rengi ve biçimi tek satırda değiştirir.
     </p>
     <div class="badges">
@@ -87,8 +87,8 @@
       <span class="badge">Saf GDScript</span>
       <span class="badge">Autoload gerekmez</span>
       <span class="badge">MIT</span>
-      <span class="badge">10 ön ayar</span>
-      <span class="badge new">Yeni: Material 3 · Kids</span>
+      <span class="badge">12 ön ayar</span>
+      <span class="badge new">Yeni: Comic · Material 3 · Kids</span>
       <span class="badge">21 dil</span>
       <span class="badge"><span data-n="icons">1.287</span> simge dahil</span>
     </div>
@@ -104,9 +104,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Yeni: Material 3 ve çocuklar için bir görünüm</h2>
+  <h2>Yeni: çizgi roman, Material 3 ve çocuklar için bir görünüm</h2>
   <p class="sub">
-    Varsayılan, bilimkurgu ve ortaçağ ailelerine iki yeni aile katıldı — artık her biri koyu ve açık olmak üzere <b>on yerleşik görünüm</b> var.
+    Varsayılan, bilimkurgu ve ortaçağ ailelerine üç yeni aile katıldı — artık her biri koyu ve açık olmak üzere <b>on iki yerleşik görünüm</b> var.
     Her widget, açılır pencere ve HUD parçası bunları kodunuzda hiçbir değişiklik yapmadan kullanır: ön ayarı değiştirin, ekranın tamamı onu izlesin.
   </p>
   <div class="phones">
@@ -114,6 +114,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="material_dark ile gohud galerisi — aynı Material 3 biçimleri koyu temel şemada" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="kids_light ile gohud galerisi — güneşli bir sayfada pastel boya renklerinde tombul jöle düğmeler" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark ile gohud galerisi — aynı oyuncak kutusu gece mavisi bir sayfada" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light ile gohud galerisi — krem kâğıt renginde bir sayfada kalın mürekkep çizgileri ve sert gölgeler" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark ile gohud galerisi — gece renginde bir sayfada krem çizgiler ve sarı bir birincil renk" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -130,11 +132,19 @@
         joystick bir gökkuşağıdır; pencereler güneş sarısı bir başlık kurdelesi ve yuvarlak, şeker gibi bir kapatma düğmesi alır;
         basılan düğme de jöle gibi ezilir. Boyutlar ve projenizin yazı tipi olduğu gibi kalır.</p>
     </div>
+    <div class="card">
+      <h3 id="comic-bold-ink">Comic — kalın mürekkep</h3>
+      <p>Her yüz bir çizgi roman karesidir: kalın bir mürekkep çizgisinin içinde yüzey rengi ve arkasında, yüze basılınca
+        kaybolan sert bir gölge. Tek bir ayar tüm gölgeleri açar ya da kapatır, iki ayar daha çizgi kalınlığını ve gölge boyutunu
+        belirler; tek bir çağrı da aynısını tek bir widget için yapar. Pencereler sarı bir başlık kutusu alır.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # ya da MATERIAL_DARK
-GoUi.use_preset(&amp;"kids_light")                   # ya da &amp;"kids_dark"</code></pre>
+GoUi.use_preset(&amp;"kids_light")                   # ya da &amp;"kids_dark"
+GoUi.use_preset(&amp;"comic_light")                  # ya da &amp;"comic_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 ayrıntılı olarak →</a> · <a href="theming-presets.html#kids">Kids ayrıntılı olarak →</a> ·
-    <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on görünümün hepsinde →</a></p>
+    <a href="theming-presets.html#comic">Comic ayrıntılı olarak →</a> ·
+    <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on iki görünümün hepsinde →</a></p>
 </section>
 
 <section id="showcase">
@@ -157,7 +167,7 @@ GoUi.use_preset(&amp;"kids_light")                   # ya da &amp;"kids_dark"</c
       <figcaption><b>Bilimkurgu</b> — köşeli paneller ve dokunmatik denetimler</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">On ön ayarın tamamı ve nasıl değiştirilecekleri →</a></p>
+  <p><a href="#presets">On iki ön ayarın tamamı ve nasıl değiştirilecekleri →</a></p>
 </section>
 
 <section id="what">
@@ -193,8 +203,8 @@ GoUi.use_preset(&amp;"kids_light")                   # ya da &amp;"kids_dark"</c
       <p>Widget'lar yalnızca <code>GoIconSet.CLOSE</code> bilir. Seti değiştirin, tek satır koda dokunmadan bütün çizimler değişsin. <a href="icons.html">Simgeler →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">On görünüm, tek satır</h3>
-      <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu, dövme ortaçağ çerçeveleri veya Material 3 uygulama bileşenleri.</p>
+      <h3 id="six-looks-one-line">On iki görünüm, tek satır</h3>
+      <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu, dövme ortaçağ çerçeveleri, Material 3 uygulama bileşenleri, Kids jöle şekerleri veya çizgi roman mürekkebi.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Okunaklılık ölçülerek</h3>
@@ -245,6 +255,8 @@ GoUi.use_preset(&amp;"kids_light")                   # ya da &amp;"kids_dark"</c
       <tr><td><code>material_dark</code> <span class="badge new">Yeni</span></td><td>Aynı Material 3 biçimleri koyu temel şemada</td></tr>
       <tr><td><code>kids_light</code> <span class="badge new">Yeni</span></td><td>Çocuklar için oyuncak kutusu — kalın dış çizgili, basılınca içeri gömülen bir alt kenarı olan jöle şeker tuşlar, pastel boya renkleri, güneşli bir sayfa</td></tr>
       <tr><td><code>kids_dark</code> <span class="badge new">Yeni</span></td><td>Aynı oyuncak kutusu gece mavisi bir sayfada</td></tr>
+      <tr><td><code>comic_light</code> <span class="badge new">Yeni</span></td><td>Çizgi roman kareleri — her yüzde kalın bir mürekkep çizgisi ve sert bir gölge, krem kâğıt renginde bir sayfada beyaz paneller; gölge, gölgenin boyutu ve çizgi kalınlığı birer ayardır</td></tr>
+      <tr><td><code>comic_dark</code> <span class="badge new">Yeni</span></td><td>Aynı mürekkep gece renginde bir sayfada — krem çizgiler ve sarı bir birincil renk</td></tr>
     </tbody>
   </table>
 
@@ -359,12 +371,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxBracket</code></td><td>İçeriği kuşatmadan yalnızca köşe işaretleri</td></tr>
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Perçinli, köşesi gravürlü, eğim ışıltılı ve malzeme dokulu dövme bir çerçeve</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Bir jöle şeker — kalın bir dış çizgi, basılınca içeri gömülen sağlam bir alt kenar, üstü daha açık bir gövde ve beyaz bir parıltı</td></tr>
+      <tr><td><code>GoStyleBoxComic</code></td><td>Bir çizgi roman karesi — kalın bir mürekkep çizgisi ve sert bir düşen gölge; ikisinin de boyutunu oyun çalışırken <code>GoConfig</code> belirler</td></tr>
     </tbody>
   </table>
-  <p>Dördü de bir Theme kaynağına serileştirilir — bir temanın yalnızca rengi değil <b>biçimi</b> de
+  <p>Beşi de bir Theme kaynağına serileştirilir — bir temanın yalnızca rengi değil <b>biçimi</b> de
     değiştirebilmesini sağlayan şey budur. Pakete dahil alt sınıflar <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>,
-    <code>GoSkinMaterial</code> ve <code>GoSkinKids</code>'dir.</p>
+    <code>GoSkinMaterial</code>, <code>GoSkinKids</code> ve <code>GoSkinComic</code>'tir.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Pakete dahil her kaplamanın çizdiği hızlı slotlar, joystick ve chip — varsayılan, Kids, Material, ortaçağ ve bilimkurgu" loading="lazy"><figcaption>Bir kaplamanın çizdikleri — varsayılan, Kids, Material, ortaçağ, bilimkurgu</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Comic kaplamasının çizdiği hızlı slotlar, joystick ve chip — mürekkep çizgileri ve sert gölgeler" loading="lazy"><figcaption>…ve Comic kaplaması</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> her zaman bir <code>StyleBoxFlat</code> döndürür</b>, çünkü çağıran kod onu
@@ -458,7 +472,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    Her renk çifti ve <b>her düğme durumunun etiketi, üstünde durduğu panele karşı</b> on temanın hepsinde
+    Her renk çifti ve <b>her düğme durumunun etiketi, üstünde durduğu panele karşı</b> on iki temanın hepsinde
     WCAG'a göre ölçülür. Yarı saydam renkler önce gerçek arka planlarıyla birleştirilir — doğrudan ölçmek
     ekranda görünenden daha iyi bir oran bildirir.
   </p>

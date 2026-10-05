@@ -136,7 +136,7 @@
 GoUi.config.icons = my_icons     # vos icônes, tout le reste vient du préréglage</code></pre>
   <p>Renseigner explicitement <code>theme</code>, <code>skin</code> ou <code>icons</code> <b>l'emporte sur</b> le préréglage.</p>
 
-  <h3 id="the-six-built-in-presets">Les dix préréglages intégrés</h3>
+  <h3 id="the-six-built-in-presets">Les douze préréglages intégrés</h3>
   <table>
     <thead><tr><th>Préréglage</th><th>Panneaux</th><th>Skin · icônes</th></tr></thead>
     <tbody>
@@ -145,12 +145,13 @@ GoUi.config.icons = my_icons     # vos icônes, tout le reste vient du prérégl
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Cadres <code>GoStyleBoxMedieval</code> forgés — fer et cuir, ou parchemin — avec rivets et ornements d'angle sur les menus</td><td><code>GoSkinMedieval</code> · 16 icônes gravées par-dessus celles par défaut</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Nouveau</span></td><td>Material 3 Expressive pour les écrans d'application — boutons en pilule de 40dp dans une zone tactile de 48dp, dialogues de 28dp, cartes pleines, champs à contour, le curseur Expressive ; les composants d'application (barre de navigation, barre d'app supérieure, FAB, barre de recherche, chips, progression, sélecteur de date) suivent les jetons de composant M3</td><td><code>GoSkinMaterial</code> · icônes par défaut</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Nouveau</span></td><td>Pour les enfants — le coffre à jouets : contours épais et rebord plein sous chaque touche, qui s'enfonce quand on appuie ; champs de texte creusés, onglets en bulle, barres en gelée ; chaque type de contrôle dans sa propre couleur de crayon, emplacements rapides en bonbon, badges autocollants, joystick arc-en-ciel et graphiques colorés. Les tailles et la police du projet restent les mêmes.</td><td><code>GoSkinKids</code> · icônes par défaut</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Nouveau</span></td><td>Des cases de bande dessinée tracées par <code>GoStyleBoxComic</code> : un épais contour d'encre et une ombre franche sur chaque face, qui disparaît à l'appui ; interrupteurs, cases à cocher et poignées de curseur encrés, un cartouche de titre jaune sur les fenêtres. L'épaisseur du contour, la taille de l'ombre et l'affichage ou non des ombres sont des réglages de <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · icônes par défaut</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Les dix, côte à côte</h2>
+  <h2>Les douze, côte à côte</h2>
   <p class="sub">Le même écran de galerie où seul le nom du préréglage change — pas une ligne de code des widgets ne diffère.
     Chaque capture est un téléphone tenu à la verticale, 390×844.</p>
   <div class="phones">
@@ -164,6 +165,8 @@ GoUi.config.icons = my_icons     # vos icônes, tout le reste vient du prérégl
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="La galerie de widgets gohud avec le préréglage material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="La galerie de widgets gohud avec le préréglage kids_light" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="La galerie de widgets gohud avec le préréglage kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="La galerie de widgets gohud avec le préréglage comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="La galerie de widgets gohud avec le préréglage comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -295,6 +298,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # Modifiez themes/palettes/candy.json, puis :
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>Bande dessinée : encre épaisse <span class="badge new">Nouveau</span></h2>
+  <p><code>comic_light</code> (panneaux blancs sur une page crème papier, un primaire cobalt) et <code>comic_dark</code> (panneaux ardoise sur une
+    page de nuit, contours crème, un primaire jaune) dessinent chaque face comme une case de bande dessinée — un épais contour d'encre avec une
+    ombre franche derrière.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# Ou : GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="La galerie gohud en comic_light — touches, rangées et barres encrées avec des ombres franches" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="La galerie gohud en comic_dark — encre crème sur une page de nuit" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Une boîte de dialogue de confirmation en comic_light — un cartouche de titre jaune et un bouton de fermeture rond encré" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Une boîte de dialogue de confirmation en comic_dark — un cartouche jaune sur une carte ardoise" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">Ce qui change</h3>
+  <table>
+    <thead><tr><th>Partie</th><th>Dans les apparences bande dessinée</th></tr></thead>
+    <tbody>
+      <tr><td>Chaque face</td><td>Dessinée par <code>GoStyleBoxComic</code> : la couleur de surface dans un épais contour couleur d'encre, et une ombre franche vers le bas et la droite. Les touches, les rangées de liste, les champs, les onglets, les barres, les curseurs, les panneaux et les pop-ups la portent tous.</td></tr>
+      <tr><td>Appui</td><td>L'ombre disparaît et la face s'enfonce à sa place.</td></tr>
+      <tr><td>Commandes</td><td>Les interrupteurs, les cases à cocher, les boutons radio et les poignées de curseur sont encrés eux aussi, chacun avec sa propre petite ombre.</td></tr>
+      <tr><td>Fenêtres</td><td>Un cartouche jaune derrière le titre d'une fenêtre et un bouton de fermeture rond encré.</td></tr>
+      <tr><td>Parties du skin</td><td><code>GoSkinComic</code> : les emplacements rapides, les puces, les badges, les avatars, les avis, la barre de navigation, le FAB et les cases de date sont encrés ; le bouton du joystick projette une ombre ; les graphiques utilisent des primaires franches.</td></tr>
+      <tr><td>Opacité</td><td>Les panneaux, les cartes, les avis et les pop-ups sont opaques ; les cartes du HUD sont opaques à 92 %.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">Réglages d'encre et d'ombre</h3>
+  <p>Trois réglages de <code>GoConfig</code> changent d'un coup toutes les faces bande dessinée. Rien n'est reconstruit — l'écran se redessine dès que vous les modifiez.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # le contour (dp) — 3 par défaut
+GoUi.config.comic_shadow_size = 6.0    # l'ombre (dp) — 4 par défaut
+GoUi.config.comic_shadow = false       # aucune ombre nulle part</code></pre>
+  <p>Un widget peut faire bande à part, quel que soit le réglage :</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # ce bouton reste à plat
+GoStyle.comic_shadow(card, true, true)       # cette carte et tout ce qu'elle contient gardent leur ombre
+GoStyle.comic_border(title, 5.0)             # un contour plus épais sur celui-ci</code></pre>
+  <div class="note">
+    <b>Aucun changement de taille.</b> Le contour et l'ombre sont dessinés à l'intérieur du rectangle de chaque commande, et chaque face garde
+    la marge intérieure que le thème lui a donnée : un écran disposé dans une autre apparence garde sa mise en page. La police de votre projet est conservée elle aussi.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Des emplacements rapides, un joystick et une puce dessinés par le skin bande dessinée" loading="lazy"><figcaption>Les parties que dessine le skin bande dessinée</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">Créez votre propre bande dessinée</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# Modifiez themes/palettes/inked.json, puis :
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # أيقوناتك أنت، وكل ما عداها من النمط الجاهز</code></pre>
   <p>ضبط <code>theme</code> أو <code>skin</code> أو <code>icons</code> صراحةً <b>يغلب</b> النمط الجاهز.</p>
 
-  <h3 id="the-six-built-in-presets">الأنماط الجاهزة العشرة المدمجة</h3>
+  <h3 id="the-six-built-in-presets">الأنماط الجاهزة المدمجة الاثنا عشر</h3>
   <table>
     <thead><tr><th>النمط الجاهز</th><th>اللوحات</th><th>المظهر · الأيقونات</th></tr></thead>
     <tbody>
@@ -144,12 +144,13 @@ GoUi.config.icons = my_icons     # أيقوناتك أنت، وكل ما عدا�
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>إطارات <code>GoStyleBoxMedieval</code> مطروقة — حديد وجلد، أو رقّ — بمسامير وزخارف أركان على القوائم</td><td><code>GoSkinMedieval</code> · 16 أيقونة محفورة فوق الافتراضية</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">جديد</span></td><td>Material 3 Expressive لشاشات التطبيقات — أزرار حبة بارتفاع 40dp داخل مساحة لمس 48dp، ومربعات حوار 28dp، وبطاقات مملوءة، وحقول بحدود، ومنزلق Expressive؛ أما مكوّنات التطبيق (شريط التنقل، والشريط العلوي، وزر FAB، وشريط البحث، والرقائق، والتقدّم، ومنتقي التاريخ) فتتبع رموز مكوّنات M3</td><td><code>GoSkinMaterial</code> · الأيقونات الافتراضية</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">جديد</span></td><td>للأطفال — صندوق الألعاب: حواف سميكة وحافة صلبة تحت كل زر تنخفض عند الضغط عليه، وحقول نص غائرة، وألسنة على شكل فقاعات، وأشرطة كالهلام، ولكل نوع من عناصر التحكم لون طباشيري خاص به، وخانات سريعة كالحلوى، وشارات كالملصقات، وعصا تحكم بألوان قوس قزح، ومخططات ملونة. تبقى الأحجام وخط المشروع كما هي.</td><td><code>GoSkinKids</code> · الأيقونات الافتراضية</td></tr>
+      <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">جديد</span></td><td>إطارات قصص مصوّرة يرسمها <code>GoStyleBoxComic</code>: حدّ حبري عريض وظلّ حادّ على كل وجه، يختفي حين يُضغط الوجه؛ ومفاتيح التبديل ومربعات الاختيار ومقابض المنزلقات محبَّرة، ولافتة عنوان صفراء على النوافذ. وعرض الحدّ وحجم الظلّ وظهور الظلال من عدمه كلها إعدادات في <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · الأيقونات الافتراضية</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>العشرة كلها، جنبًا إلى جنب</h2>
+  <h2>الاثنا عشر كلها، جنبًا إلى جنب</h2>
   <p class="sub">شاشة المعرض نفسها ولم يتغيّر سوى اسم النمط الجاهز — لا يختلف سطر واحد من كود الودجات.
     وكل صورة لهاتف يُمسك قائمًا، بمقاس 390×844.</p>
   <div class="phones">
@@ -163,6 +164,8 @@ GoUi.config.icons = my_icons     # أيقوناتك أنت، وكل ما عدا�
     <figure class="shot phone"><img src="../img/presets/gallery-material_dark.webp" width="300" height="649" alt="معرض ودجات gohud بالنمط الجاهز material_dark" loading="lazy"><figcaption><code>material_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_light.webp" width="300" height="649" alt="معرض ودجات gohud بالنمط الجاهز kids_light" loading="lazy"><figcaption><code>kids_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="معرض ودجات gohud بالنمط الجاهز kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="معرض ودجات gohud بالنمط الجاهز comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="معرض ودجات gohud بالنمط الجاهز comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -290,6 +293,52 @@ GoUi.use_preset(&amp;"kingdom")</code></pre>
 # عدّل themes/palettes/candy.json، ثم:
 python3 addons/gohud/tools/make_theme.py candy
 GoUi.use_preset(&amp;"candy")</code></pre>
+</section>
+
+<section id="comic">
+  <h2>القصص المصوّرة: حبر عريض <span class="badge new">جديد</span></h2>
+  <p><code>comic_light</code> (لوحات بيضاء على صفحة بلون الورق الكريمي، ولون أساسي أزرق كوبالتي) و<code>comic_dark</code> (لوحات أردوازية على
+    صفحة ليلية، وحدود كريمية، ولون أساسي أصفر) يرسمان كل وجه كإطار من قصة مصوّرة — حدّ حبري عريض وخلفه ظلّ
+    حادّ.</p>
+  <pre><code>GoUi.use_preset(&amp;"comic_light")
+# أو: GoUi.use_preset(&amp;"comic_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="معرض gohud بنمط comic_light — مفاتيح وصفوف وأشرطة محبَّرة بظلال حادّة" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="معرض gohud بنمط comic_dark — حبر كريمي على صفحة ليلية" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="مربع حوار تأكيد بنمط comic_light — لافتة عنوان صفراء وزر إغلاق مستدير محبَّر" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="مربع حوار تأكيد بنمط comic_dark — لافتة صفراء على بطاقة أردوازية" loading="lazy"><figcaption><code>GoDialogs</code> · <code>comic_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-3">ما الذي يتغيّر</h3>
+  <table>
+    <thead><tr><th>الجزء</th><th>في مظهري القصص المصوّرة</th></tr></thead>
+    <tbody>
+      <tr><td>كل وجه</td><td>يرسمه <code>GoStyleBoxComic</code>: لون السطح داخل حدّ عريض بلون الحبر، وظلّ حادّ نحو الأسفل واليمين. والمفاتيح وصفوف القوائم والحقول والألسنة والأشرطة والمنزلقات واللوحات والنوافذ المنبثقة كلها ترتديه.</td></tr>
+      <tr><td>الضغط</td><td>يختفي الظلّ ويغوص الوجه في مكانه.</td></tr>
+      <tr><td>عناصر التحكم</td><td>مفاتيح التبديل ومربعات الاختيار وأزرار الاختيار الأحادي ومقابض المنزلقات محبَّرة كذلك، لكلٍّ منها ظلّه الصغير الخاص.</td></tr>
+      <tr><td>النوافذ</td><td>لافتة صفراء خلف عنوان النافذة وزر إغلاق مستدير محبَّر.</td></tr>
+      <tr><td>أجزاء المظهر</td><td><code>GoSkinComic</code>: الخانات السريعة والشرائح والشارات والصور الرمزية والإشعارات وشريط التنقل وزر FAB وخلايا التاريخ محبَّرة؛ ومقبض عصا التوجيه يلقي ظلًّا؛ والمخططات بألوان أساسية جريئة.</td></tr>
+      <tr><td>العتامة</td><td>اللوحات والبطاقات والإشعارات والنوافذ المنبثقة معتمة؛ وبطاقات HUD معتمة بنسبة 92%.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="ink-and-shadow-settings">إعدادات الحبر والظلّ</h3>
+  <p>ثلاثة إعدادات في <code>GoConfig</code> تغيّر كل وجه من وجوه القصص المصوّرة دفعة واحدة. لا يُعاد بناء شيء — تُعاد رسم الشاشة لحظة ضبطها.</p>
+  <pre><code>GoUi.config.comic_border_width = 2.0   # الحدّ (dp) — 3 افتراضيًا
+GoUi.config.comic_shadow_size = 6.0    # الظلّ (dp) — 4 افتراضيًا
+GoUi.config.comic_shadow = false       # بلا ظلال في أي مكان</code></pre>
+  <p>ويمكن لودجة واحدة أن تسلك طريقها الخاص، أيًّا كان الإعداد:</p>
+  <pre><code>GoStyle.comic_shadow(skip_button, false)     # هذا الزر مسطّح
+GoStyle.comic_shadow(card, true, true)       # هذه البطاقة وكل ما فيها تحتفظ بظلّها
+GoStyle.comic_border(title, 5.0)             # حدّ أعرض لهذا وحده</code></pre>
+  <div class="note">
+    <b>لا تتغيّر المقاسات.</b> الحدّ والظلّ يُرسمان داخل مستطيل كل عنصر تحكم، وكل وجه يحتفظ بالحشوة التي منحته إياها
+    السمة، فتحتفظ الشاشة المصمَّمة بمظهر آخر بتخطيطها. وخط مشروعك يبقى كذلك.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="خانات سريعة وعصا توجيه وشريحة كما يرسمها مظهر القصص المصوّرة" loading="lazy"><figcaption>الأجزاء التي يرسمها مظهر القصص المصوّرة</figcaption></figure>
+  <h3 id="make-a-comic-of-your-own">اصنع قصتك المصوّرة أنت</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py inked --from comic_light
+# عدّل themes/palettes/inked.json، ثم:
+python3 addons/gohud/tools/make_theme.py inked
+GoUi.use_preset(&amp;"inked")</code></pre>
 </section>
 
 </main>

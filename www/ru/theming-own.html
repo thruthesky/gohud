@@ -195,10 +195,26 @@ GoUi.use_preset(&amp;"neon")                             # готово — он
       <tr><td><code>segment_inner_radius</code></td><td data-label="По умолчанию">8</td><td>Радиус скругления (dp) там, где сходятся две ячейки связанной группы кнопок Material.</td></tr>
     </tbody>
   </table>
+  <h4 id="kids-skin-goskinkids-3">Детский скин <code>GoSkinKids</code> — 3</h4>
+  <table>
+    <thead><tr><th>Регулятор</th><th>По умолчанию</th><th>Что задаёт</th></tr></thead>
+    <tbody>
+      <tr><td><code>toy_edge</code></td><td data-label="По умолчанию">2</td><td>Толщина контура (dp) детской игрушечной части — чипов, слотов, FAB, оповещений.</td></tr>
+      <tr><td><code>toy_lip</code></td><td data-label="По умолчанию">4</td><td>Плотный бортик (dp) под детской игрушечной частью, которую нажимают; при нажатии он уменьшается.</td></tr>
+      <tr><td><code>crayon_tint</code></td><td data-label="По умолчанию">0.28</td><td>Насколько цвет мелка заполняет лицевую сторону детского слота или чипа (0–1); остальное — цвет поверхности.</td></tr>
+    </tbody>
+  </table>
+  <h4 id="comic-skin-goskincomic-1">Скин комикса <code>GoSkinComic</code> — 1</h4>
+  <table>
+    <thead><tr><th>Регулятор</th><th>По умолчанию</th><th>Что задаёт</th></tr></thead>
+    <tbody>
+      <tr><td><code>comic_tint</code></td><td data-label="По умолчанию">0.22</td><td>Насколько собственный цвет заполняет чип, быстрый слот или выбранную пилюлю комикса (0–1); остальное — цвет поверхности.</td></tr>
+    </tbody>
+  </table>
   </div>
   <!-- dials:end -->
 
-  <h3 id="kids-skin-goskinkids-3">Наследовать скин (по желанию)</h3>
+  <h3 id="subclass-the-skin-optional">Наследовать скин (по желанию)</h3>
   <p>В скине живёт только то, до чего не дотягиваются тема и форма, — шестиугольник стика, значки слотов,
     прицельная скобка обучающей подсказки. Наследуйте <code>GoSkin</code>, переопределите лишь эти методы и укажите
     в JSON на этот ресурс через <code>skin</code>. Теме, меняющей только цвет, этот шаг не нужен.</p>
