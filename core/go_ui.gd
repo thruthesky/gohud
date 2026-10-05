@@ -96,6 +96,10 @@ static var config: GoConfig:
 		if _config == null: _config = GoConfig.new()
 		_apply_config(_config)
 		_notify()
+		# A face that reads the config when it draws (`GoStyleBoxComic`) on a control nobody re-dresses (a plain Button)
+		# would keep the old config's look until something else redrew it.
+		var tree := Engine.get_main_loop() as SceneTree
+		if not Engine.is_editor_hint() and tree != null and tree.root != null: tree.root.propagate_call(&"queue_redraw")
 
 
 static func _apply_config(value: GoConfig) -> void:

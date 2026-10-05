@@ -112,6 +112,10 @@ func _restyle() -> void:
 		for state in [&"normal", &"hover", &"pressed", &"disabled", &"focus", &"panel", &"read_only"]:
 			if not node.has_theme_stylebox(state): continue
 			var face := node.get_theme_stylebox(state).duplicate()
+			if face is GoStyleBoxComic:
+				_join_comic(face as GoStyleBoxComic, round_left, round_right, index > 0)
+				node.add_theme_stylebox_override(state, face)
+				continue
 			if not (&"corner_radius_top_left" in face): continue
 			face.set(&"corner_radius_top_left", radius if round_left else 0.0)
 			face.set(&"corner_radius_bottom_left", radius if round_left else 0.0)
@@ -123,6 +127,20 @@ func _restyle() -> void:
 			for side in [&"expand_margin_top", &"expand_margin_bottom"]:
 				if side in face and float(face.get(side)) < 0.0: face.set(side, 0.0)
 			node.add_theme_stylebox_override(state, face)
+
+
+## A comic piece of the group: round only at the group's ends, one ink line at each seam (the piece after it drops
+## its left side) and no shadow — a shadow under one piece fell into the next and stopped at the seam.
+static func _join_comic(face: GoStyleBoxComic, round_left: bool, round_right: bool, after_seam: bool) -> void:
+	if face.inner: return
+	var corners := 0
+	if round_left: corners |= GoStyleBoxComic.TOP_LEFT | GoStyleBoxComic.BOTTOM_LEFT
+	if round_right: corners |= GoStyleBoxComic.TOP_RIGHT | GoStyleBoxComic.BOTTOM_RIGHT
+	face.corners = corners
+	if after_seam: face.sides = face.sides & ~GoStyleBoxComic.LEFT
+	face.shadow = GoStyleBoxComic.Shadow.OFF
+	for side in [&"expand_margin_top", &"expand_margin_bottom"]:
+		if float(face.get(side)) < 0.0: face.set(side, 0.0)
 
 
 func _on_ui_changed() -> void:

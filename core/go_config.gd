@@ -401,11 +401,18 @@ func _on_changed() -> void:
 
 ## A comic dial changed: the faces read it when they draw, so the parts on screen only have to draw again — nothing
 ## moves (the outline is inside a part, the shadow outside), so nothing has to lay out again.
+## 🛑 **No `emit_changed()`** at run time: that re-dresses every watching widget (`GoUi.refresh`), which threw away the
+##    faces `GoStyle.comic_shadow()` and `comic_border()` had put on one widget — the per-widget choice has to outlive a
+##    change of the project's setting. The inspector still hears it in the editor.
+## 🛑 A config read on a loading thread runs these setters there; the tree is only touched from the main thread.
 func _comic_changed() -> void:
-	emit_changed()
-	if Engine.is_editor_hint(): return
+	if Engine.is_editor_hint():
+		emit_changed()
+		return
 	var tree := Engine.get_main_loop() as SceneTree
-	if tree != null and tree.root != null: tree.root.propagate_call(&"queue_redraw")
+	if tree == null or tree.root == null: return
+	if Thread.is_main_thread(): tree.root.propagate_call(&"queue_redraw")
+	else: tree.root.propagate_call.call_deferred(&"queue_redraw")
 
 
 ## A copy of this config — for when one screen alone should differ at runtime.

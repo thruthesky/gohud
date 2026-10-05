@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=79 format=3]
+[gd_resource type="Theme" load_steps=83 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_comic.gd" id="comic"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/comic_light/toggle_on.svg" id="toggle_on"]
@@ -143,7 +143,7 @@ border_color = Color(0.121569, 0.133333, 0.2, 1)
 radius = 12
 shadow = 1
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
-drop_scale = 1.25
+drop_scale = 1.75
 
 [sub_resource type="StyleBox" id="btn_primary_glow_hover"]
 script = ExtResource("comic")
@@ -156,7 +156,7 @@ border_color = Color(0.121569, 0.133333, 0.2, 1)
 radius = 12
 shadow = 1
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
-drop_scale = 1.25
+drop_scale = 1.75
 
 [sub_resource type="StyleBox" id="btn_primary_glow_pressed"]
 script = ExtResource("comic")
@@ -169,7 +169,7 @@ border_color = Color(0.121569, 0.133333, 0.2, 1)
 radius = 12
 shadow = 1
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
-drop_scale = 1.25
+drop_scale = 1.75
 pressed = true
 
 [sub_resource type="StyleBox" id="btn_danger"]
@@ -239,7 +239,7 @@ border_color = Color(0.121569, 0.133333, 0.2, 1)
 radius = 12
 shadow = 1
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
-drop_scale = 1.25
+drop_scale = 1.75
 
 [sub_resource type="StyleBox" id="btn_danger_solid_glow_hover"]
 script = ExtResource("comic")
@@ -252,7 +252,7 @@ border_color = Color(0.121569, 0.133333, 0.2, 1)
 radius = 12
 shadow = 1
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
-drop_scale = 1.25
+drop_scale = 1.75
 
 [sub_resource type="StyleBox" id="btn_danger_solid_glow_pressed"]
 script = ExtResource("comic")
@@ -265,7 +265,7 @@ border_color = Color(0.121569, 0.133333, 0.2, 1)
 radius = 12
 shadow = 1
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
-drop_scale = 1.25
+drop_scale = 1.75
 pressed = true
 
 [sub_resource type="StyleBox" id="compact_normal"]
@@ -330,12 +330,17 @@ shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
 
 [sub_resource type="StyleBox" id="focus_soft"]
 script = ExtResource("comic")
+content_margin_left = 1
+content_margin_top = 1
+content_margin_right = 1
+content_margin_bottom = 1
 border_color = Color(0.145098, 0.313725, 0.721569, 1)
 outline_scale = 0.67
 radius = 8
 draw_center = false
 shadow = 2
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
+inner = true
 
 [sub_resource type="StyleBox" id="panel"]
 script = ExtResource("comic")
@@ -380,8 +385,8 @@ content_margin_bottom = 12
 bg_color = Color(0.977451, 0.970588, 0.954902, 1)
 border_color = Color(0.121569, 0.133333, 0.2, 1)
 radius = 12
+shadow = 2
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
-drop_scale = 1.5
 
 [sub_resource type="StyleBoxFlat" id="menu_hover"]
 content_margin_left = 12
@@ -494,7 +499,7 @@ content_margin_right = 0
 content_margin_bottom = 3
 bg_color = Color(0.866667, 0.835294, 0.764706, 0.9)
 border_color = Color(0.121569, 0.133333, 0.2, 1)
-outline_scale = 0.5
+outline_scale = 0.34
 radius = 3
 shadow = 2
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
@@ -505,9 +510,9 @@ content_margin_left = 0
 content_margin_top = 3
 content_margin_right = 0
 content_margin_bottom = 3
-bg_color = Color(0.145098, 0.313725, 0.721569, 0.55)
+bg_color = Color(0.145098, 0.313725, 0.721569, 1)
 border_color = Color(0.121569, 0.133333, 0.2, 1)
-outline_scale = 0.5
+outline_scale = 0.34
 radius = 3
 shadow = 2
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
@@ -520,13 +525,17 @@ content_margin_right = 0
 content_margin_bottom = 3
 bg_color = Color(0.145098, 0.313725, 0.721569, 1)
 border_color = Color(0.121569, 0.133333, 0.2, 1)
-outline_scale = 0.5
+outline_scale = 0.34
 radius = 3
 shadow = 2
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
 
 [sub_resource type="StyleBox" id="bar_bg"]
 script = ExtResource("comic")
+content_margin_left = 1
+content_margin_top = 1
+content_margin_right = 1
+content_margin_bottom = 1
 bg_color = Color(0.866667, 0.835294, 0.764706, 0.85)
 border_color = Color(0.121569, 0.133333, 0.2, 1)
 outline_scale = 0.67
@@ -536,6 +545,10 @@ shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
 
 [sub_resource type="StyleBox" id="bar_fill"]
 script = ExtResource("comic")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
 bg_color = Color(0.145098, 0.313725, 0.721569, 1)
 border_color = Color(0.121569, 0.133333, 0.2, 1)
 outline_scale = 0.67
@@ -643,26 +656,84 @@ sides = 7
 shadow = 2
 shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
 
-[sub_resource type="StyleBoxFlat" id="tab_unselected"]
+[sub_resource type="StyleBox" id="tab_unselected"]
+script = ExtResource("comic")
 content_margin_left = 20
 content_margin_top = 8
 content_margin_right = 20
 content_margin_bottom = 8
-draw_center = false
-border_width_bottom = 1
 border_color = Color(0.121569, 0.133333, 0.2, 1)
+radius = 0
+sides = 8
+draw_center = false
+shadow = 2
+shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
 
-[sub_resource type="StyleBoxFlat" id="tab_hovered"]
+[sub_resource type="StyleBox" id="tab_hovered"]
+script = ExtResource("comic")
 content_margin_left = 20
 content_margin_top = 8
 content_margin_right = 20
 content_margin_bottom = 8
 bg_color = Color(0.960784, 0.941176, 0.894118, 1)
-border_width_bottom = 1
 border_color = Color(0.121569, 0.133333, 0.2, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_detail = 8
+radius = 8
+corners = 3
+sides = 8
+shadow = 2
+shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
+
+[sub_resource type="StyleBox" id="btn_danger_pressed"]
+script = ExtResource("comic")
+content_margin_left = 16
+content_margin_top = 10
+content_margin_right = 16
+content_margin_bottom = 10
+bg_color = Color(0.572549, 0.109804, 0.109804, 0.2)
+border_color = Color(0.121569, 0.133333, 0.2, 1)
+radius = 12
+shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
+pressed = true
+
+[sub_resource type="StyleBox" id="compact_pressed"]
+script = ExtResource("comic")
+content_margin_left = 10
+content_margin_top = 5
+content_margin_right = 10
+content_margin_bottom = 5
+bg_color = Color(0.912157, 0.913333, 0.92, 1)
+border_color = Color(0.121569, 0.133333, 0.2, 1)
+outline_scale = 0.67
+radius = 8
+shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
+drop_scale = 0.5
+pressed = true
+
+[sub_resource type="StyleBox" id="compact_disabled"]
+script = ExtResource("comic")
+content_margin_left = 10
+content_margin_top = 5
+content_margin_right = 10
+content_margin_bottom = 5
+bg_color = Color(0.960784, 0.941176, 0.894118, 0.85)
+border_color = Color(0.121569, 0.133333, 0.2, 0.4)
+outline_scale = 0.67
+radius = 8
+shadow = 2
+shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
+
+[sub_resource type="StyleBox" id="list_disabled"]
+script = ExtResource("comic")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.960784, 0.941176, 0.894118, 0.55)
+border_color = Color(0.121569, 0.133333, 0.2, 0.4)
+outline_scale = 0.67
+radius = 6
+shadow = 2
+shadow_color = Color(0.121569, 0.133333, 0.2, 0.22)
 
 [resource]
 BoxContainer/constants/separation = 12
@@ -752,12 +823,12 @@ GoCard/base_type = &"PanelContainer"
 GoCard/styles/panel = SubResource("card")
 GoCompactButton/base_type = &"Button"
 GoCompactButton/font_sizes/font_size = 13
-GoCompactButton/styles/disabled = SubResource("compact_normal")
+GoCompactButton/styles/disabled = SubResource("compact_disabled")
 GoCompactButton/styles/focus = SubResource("focus_soft")
 GoCompactButton/styles/hover = SubResource("compact_hover")
-GoCompactButton/styles/hover_pressed = SubResource("compact_hover")
+GoCompactButton/styles/hover_pressed = SubResource("compact_pressed")
 GoCompactButton/styles/normal = SubResource("compact_normal")
-GoCompactButton/styles/pressed = SubResource("compact_hover")
+GoCompactButton/styles/pressed = SubResource("compact_pressed")
 GoCompactLabel/base_type = &"Label"
 GoCompactLabel/font_sizes/font_size = 12
 GoDangerButton/base_type = &"Button"
@@ -766,9 +837,9 @@ GoDangerButton/colors/font_hover_color = Color(0.572549, 0.109804, 0.109804, 1)
 GoDangerButton/colors/font_hover_pressed_color = Color(0.572549, 0.109804, 0.109804, 1)
 GoDangerButton/colors/font_pressed_color = Color(0.572549, 0.109804, 0.109804, 1)
 GoDangerButton/styles/hover = SubResource("btn_danger_hover")
-GoDangerButton/styles/hover_pressed = SubResource("btn_danger_hover")
+GoDangerButton/styles/hover_pressed = SubResource("btn_danger_pressed")
 GoDangerButton/styles/normal = SubResource("btn_danger")
-GoDangerButton/styles/pressed = SubResource("btn_danger_hover")
+GoDangerButton/styles/pressed = SubResource("btn_danger_pressed")
 GoDangerSolidButton/base_type = &"Button"
 GoDangerSolidButton/colors/font_color = Color(1, 1, 1, 1)
 GoDangerSolidButton/colors/font_focus_color = Color(1, 1, 1, 1)
@@ -866,7 +937,7 @@ GoIconButton/styles/pressed = SubResource("icon_hover")
 GoListButton/base_type = &"Button"
 GoListButton/colors/font_hover_pressed_color = Color(0.145098, 0.313725, 0.721569, 1)
 GoListButton/colors/font_pressed_color = Color(0.145098, 0.313725, 0.721569, 1)
-GoListButton/styles/disabled = SubResource("list_normal")
+GoListButton/styles/disabled = SubResource("list_disabled")
 GoListButton/styles/focus = SubResource("focus_soft")
 GoListButton/styles/hover = SubResource("list_hover")
 GoListButton/styles/hover_pressed = SubResource("list_hover")

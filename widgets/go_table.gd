@@ -272,8 +272,12 @@ func _make_row(source: int, position: int) -> Control:
 	# Zebra striping — so the eye does not lose the row in a table with many columns.
 	# 🔑 Instead of cutting the brightness, **one more panel is laid underneath** — `modulate` would dim the text along with it and cost contrast.
 	if position % 2 == 1:
-		var stripe := StyleBoxFlat.new()
-		stripe.bg_color = Color(GoUi.color(GoTheme.SURFACE_SOFT), 0.5)
+		var stripe: StyleBox = StyleBoxFlat.new()
+		# 🛑 From the theme itself: off the tree the button does not see its variation yet and answers the engine's face.
+		var row_face := button.theme.get_stylebox(&"normal", GoTheme.VAR_LIST_BUTTON)
+		# A comic row keeps its ink — a plain stripe made every other row lose its outline and read as the chosen one.
+		if row_face is GoStyleBoxComic: stripe = row_face.duplicate()
+		stripe.set(&"bg_color", Color(GoUi.color(GoTheme.SURFACE_SOFT), 0.5))
 		button.add_theme_stylebox_override(&"normal", stripe)
 	button.pressed.connect(func() -> void:
 		_selected = source

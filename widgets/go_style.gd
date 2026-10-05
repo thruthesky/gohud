@@ -495,24 +495,34 @@ static func glow(node: Button, on := true) -> Button:
 ## ```
 ##
 ## 🔑 Only comic faces (`GoStyleBoxComic`, the `comic_*` looks) have this shadow — under any other look it does nothing.
-## 🛑 It puts copies of the faces on the node. A widget that dresses itself again later (a theme change rebuilds the
-##    screen) takes the theme's faces back — call it again after rebuilding.
+## 🔑 A focus ring never takes a shadow, nor a `disabled` face (a disabled key sits flat). With [param deep], a child
+##    face drawn flat on purpose — a text field, a list row, a folding title — stays flat: only [param node]'s own faces
+##    are forced on.
+## 🛑 It puts copies of the faces on the node. Changing the `GoConfig` dials keeps them; a widget that dresses itself
+##    again later (a theme change rebuilds the screen) takes the theme's faces back — call it again after rebuilding.
 static func comic_shadow(node: Control, on := true, deep := false) -> Control:
-	_comic_faces(node, deep, func(face: GoStyleBoxComic) -> void:
-		face.shadow = GoStyleBoxComic.Shadow.ON if on else GoStyleBoxComic.Shadow.OFF)
+	_comic_faces(node, deep, func(face: GoStyleBoxComic, state: StringName, own: bool) -> void:
+		if face.inner: return
+		if not on:
+			face.shadow = GoStyleBoxComic.Shadow.OFF
+		elif state != &"disabled" and (own or face.shadow != GoStyleBoxComic.Shadow.OFF):
+			face.shadow = GoStyleBoxComic.Shadow.ON)
 	return node
 
 
 ## 💬 Sets the ink outline of **this widget** to [param width] dp whatever `GoConfig.comic_border_width` says;
 ## a negative width hands it back to the setting. With [param deep], every widget inside it too. The same contract as
-## `comic_shadow()`.
+## `comic_shadow()`. Its focus ring keeps its thickness and moves to sit just inside the new ink.
 static func comic_border(node: Control, width: float, deep := false) -> Control:
-	_comic_faces(node, deep, func(face: GoStyleBoxComic) -> void: face.outline = width)
+	_comic_faces(node, deep, func(face: GoStyleBoxComic, _state: StringName, _own: bool) -> void:
+		if face.inner: face.inset = width + 1.0 if width >= 0.0 else -1.0
+		else: face.outline = width)
 	return node
 
 
 ## Puts a changed copy of every comic face [param node] draws on it (and on its descendants with [param deep]).
-static func _comic_faces(node: Control, deep: bool, change: Callable) -> void:
+## [param change] takes the face, its state name and whether it is [param node]'s own (not a descendant's).
+static func _comic_faces(node: Control, deep: bool, change: Callable, own := true) -> void:
 	if node == null: return
 	var names: Array[StringName] = []
 	# The engine's own list for the class, and the theme's for its variation — a scripted widget reports its engine class.
@@ -522,14 +532,30 @@ static func _comic_faces(node: Control, deep: bool, change: Callable) -> void:
 		for name in look.get_stylebox_list(node.theme_type_variation):
 			if not names.has(StringName(name)): names.append(StringName(name))
 	for name in names:
-		var face := node.get_theme_stylebox(name) as GoStyleBoxComic
+		var face := _face_of(node, name, look) as GoStyleBoxComic
 		if face == null: continue
 		var copy := face.duplicate() as GoStyleBoxComic
-		change.call(copy)
+		change.call(copy, name, own)
 		node.add_theme_stylebox_override(name, copy)
 	if deep:
 		for child in node.get_children():
-			if child is Control: _comic_faces(child as Control, true, change)
+			if child is Control: _comic_faces(child as Control, true, change, false)
+
+
+## The face [param node] draws for [param name] — its own override, else [param look]'s for its variation or class.
+## 🛑 Not `get_theme_stylebox()` alone: a control not in the tree yet (`row.add_child(GoStyle.comic_shadow(button, …))`)
+##    does not see its variation and answers the engine's plain face, so the comic face was never found.
+static func _face_of(node: Control, name: StringName, look: Theme) -> StyleBox:
+	if node.has_theme_stylebox_override(name) or look == null: return node.get_theme_stylebox(name)
+	var types: Array[StringName] = []
+	if not node.theme_type_variation.is_empty(): types.append(node.theme_type_variation)
+	var type := StringName(node.get_class())
+	while not type.is_empty():
+		types.append(type)
+		type = ClassDB.get_parent_class(type)
+	for each in types:
+		if look.has_stylebox(name, each): return look.get_stylebox(name, each)
+	return node.get_theme_stylebox(name)
 
 
 ## 🔑 Sets wrapping so **button text is never split character by character**. Call it again after changing the text.
@@ -1095,7 +1121,10 @@ static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 ## shows through and the text cannot be read", is what that argument means.
 static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, opaque := false, pad := -1.0,
 		alpha := -1.0) -> StyleBoxFlat:
-	var style := GoUi.skin().floating_box(variant, accent, alpha) as StyleBoxFlat
+	var shaped := GoUi.skin().floating_box(variant, accent, alpha)
+	var style := shaped as StyleBoxFlat
+	# A comic panel keeps its ink and its hard shadow — the fallback below put a soft blur under it.
+	if shaped is GoStyleBoxComic: style = (shaped as GoStyleBoxComic).to_flat()
 	if style == null:
 		style = box(variant, accent, alpha)
 		style.shadow_color = Color(GoUi.color(GoTheme.SHADOW), 0.35)
@@ -1108,7 +1137,10 @@ static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, op
 
 ## A round badge or avatar border — a faint accent fill with a ring of the same color. The same contract as `box()` above.
 static func disc(diameter: float, accent: Color, fill_alpha := 0.14, edge_alpha := 0.38) -> StyleBoxFlat:
-	var style := GoUi.skin().disc_box(diameter, accent, fill_alpha, edge_alpha) as StyleBoxFlat
+	var shaped := GoUi.skin().disc_box(diameter, accent, fill_alpha, edge_alpha)
+	var style := shaped as StyleBoxFlat
+	# A comic disc keeps its ink and fill as a flat face — the fallback below turned it into a faint accent ring.
+	if shaped is GoStyleBoxComic: style = (shaped as GoStyleBoxComic).to_flat()
 	if style == null:
 		style = box(GoTheme.BOX_HUD, accent)
 		style.bg_color = Color(accent, fill_alpha)
@@ -1188,6 +1220,7 @@ static func plate(variant := GoTheme.BOX_HUD, fill := Color.TRANSPARENT, edge :=
 		if face is StyleBoxFlat: (face as StyleBoxFlat).set_corner_radius_all(roundi(radius))
 		elif &"radius" in face: face.set(&"radius", radius)
 	if face is StyleBoxFlat: (face as StyleBoxFlat).shadow_size = 0
+	elif face is GoStyleBoxComic: (face as GoStyleBoxComic).shadow = GoStyleBoxComic.Shadow.OFF
 	face.set_content_margin_all(0)
 	# 🛑 **A face given [param fill] keeps that exact color** — multiply the face opacity again onto a color
 	#    whose alpha was written out, like `Color(ink, 0.14)`, and the caller's intent is cut twice
@@ -1634,6 +1667,8 @@ static func _choice_face(accent: Color) -> StyleBox:
 		face.set(&"bg_color", back.lerp(Color(accent, back.a), 0.16))
 	if &"border_color" in face: face.set(&"border_color", Color(accent, 0.9))
 	if face is StyleBoxFlat: (face as StyleBoxFlat).set_border_width_all(2)
+	# A comic card's ink is already 3dp — the chosen one takes more of it (and still follows the setting).
+	elif face is GoStyleBoxComic: (face as GoStyleBoxComic).outline_scale *= 1.34
 	elif &"border_width" in face: face.set(&"border_width", 2.0)
 	return face
 

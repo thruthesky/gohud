@@ -30,6 +30,9 @@ func _initialize() -> void:
 	await _sizes()
 	await _comic_parts()
 	await _window_head()
+	await _states_and_sizes()
+	await _one_widget_holds()
+	await _joined_parts()
 	await _screen()
 	print("gohud comic tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -271,7 +274,9 @@ func _comic_parts() -> void:
 	var idle := skin.slot_box(GoUi.color(GoTheme.INFO), false) as GoStyleBoxComic
 	var lit := skin.slot_box(GoUi.color(GoTheme.INFO), true) as GoStyleBoxComic
 	check(idle != null and not idle.pressed and idle.shadow_size > 0, "parts: a quick slot is an inked panel with a shadow")
-	check(lit != null and lit.pressed and lit.shadow_size == 0, "parts: a cooling slot is pushed in")
+	# 🛑 Not pushed in — the same face marks a code input's current cell and today on a calendar, which stood out of line.
+	check(lit != null and not lit.pressed and lit.shadow_size > 0 and not lit.border_color.is_equal_approx(idle.border_color),
+		"parts: a lit slot keeps its place and lights its ink")
 	var chip := skin.chip_box(GoUi.color(GoTheme.SUCCESS)) as GoStyleBoxComic
 	check(chip != null and chip.outline_scale < 1.0 and chip.radius <= 13.0, "parts: a chip is a bubble the cell audit can hold")
 	check(GoSkin.contrast_ratio(skin.chip_ink(GoUi.color(GoTheme.SUCCESS)), chip.bg_color) >= 4.5,
@@ -280,10 +285,45 @@ func _comic_parts() -> void:
 	check(badge != null and badge.shadow_size == 0, "parts: a badge is a flat sticker")
 	var ring := skin.coach_ring_box(GoUi.color(GoTheme.ACCENT)) as GoStyleBoxComic
 	check(ring != null and ring.border_color.is_equal_approx(GoUi.color(GoTheme.ACCENT)), "parts: the coach ring stays in its colour")
-	var first := skin.segment_box(0, 3, &"normal") as StyleBoxFlat
-	var middle := skin.segment_box(1, 3, &"normal") as StyleBoxFlat
-	check(first != null and middle != null and first.corner_radius_top_left > 0 and middle.corner_radius_top_left == 0
-		and middle.border_width_left == 0, "parts: a segmented row is one inked block, round at its ends")
+	var first := skin.segment_box(0, 3, &"normal") as GoStyleBoxComic
+	var middle := skin.segment_box(1, 3, &"normal") as GoStyleBoxComic
+	var chosen := skin.segment_box(1, 3, &"pressed") as GoStyleBoxComic
+	check(first != null and middle != null and first.corners & GoStyleBoxComic.TOP_LEFT and middle.corners == 0
+		and not (middle.sides & GoStyleBoxComic.LEFT), "parts: a segmented row is one inked block, round at its ends")
+	check(first != null and first.shadow_size > 0 and chosen != null and not chosen.pressed and chosen.shadow_size > 0,
+		"parts: the row drops one shadow — the chosen cell is not pushed out of it")
+	# The strips (a heading's line, the bars) follow the setting as they are drawn, not as they were built.
+	var heading := skin.section_box() as GoStyleBoxComic
+	var bar := skin.app_bar_box(false) as GoStyleBoxComic
+	GoUi.config.comic_border_width = 6.0
+	check(heading != null and bar != null and heading.border_width > 3.0 and is_equal_approx(bar.border_width, 6.0),
+		"parts: a heading's line and the app bar's follow comic_border_width live")
+	_defaults()
+	for id: StringName in [&"comic_light", &"comic_dark"]:
+		GoUi.use_preset(id)
+		# 🛑 At night the accent and the warning are both yellow — a chart's first slices must not be the two.
+		var colours := GoUi.skin().chart_colors()
+		var apart := true
+		for i in 4:
+			for j in range(i + 1, 4):
+				var a := Vector3(colours[i].r, colours[i].g, colours[i].b)
+				if a.distance_to(Vector3(colours[j].r, colours[j].g, colours[j].b)) < 0.25: apart = false
+		check(apart, "parts: %s's first four chart colours are told apart" % id)
+	GoUi.use_preset(&"comic_light")
+	skin = GoUi.skin()
+	for id: StringName in [&"comic_light", &"comic_dark"]:
+		GoUi.use_preset(id)
+		var plate := GoUi.skin().title_plate_box() as GoStyleBoxComic
+		check(plate != null and GoSkin.contrast_ratio(plate.border_color, plate.bg_color) >= 3.0,
+			"parts: %s's caption box shows its line (%.1f:1)" % [id, GoSkin.contrast_ratio(plate.border_color, plate.bg_color) if plate else 0.0])
+	GoUi.use_preset(&"comic_light")
+	skin = GoUi.skin()
+	check(skin.refresh_disc_box() is GoStyleBoxComic and skin.wheel_band_box() is GoStyleBoxComic
+		and skin.time_selector_box(true, &"normal") is GoStyleBoxComic, "parts: the refresh disc, the wheel band and the time boxes are inked")
+	var disc := GoStyle.disc(40, GoUi.color(GoTheme.ACCENT))
+	check(disc.border_width_left >= 2 and disc.border_color.is_equal_approx(skin.ink()), "parts: GoStyle.disc() keeps the ink")
+	var floating_flat := GoStyle.floating()
+	check(floating_flat.shadow_size == 1 and floating_flat.shadow_offset.x > 0.0, "parts: GoStyle.floating() keeps a hard shadow, not a blur")
 	var floating := skin.floating_box(GoTheme.BOX_HUD) as GoStyleBoxComic
 	check(floating != null and floating.shadow_size == 6, "parts: a floating panel drops a deeper shadow (%d)" % (floating.shadow_size if floating else -1))
 	var fill := skin.progress_fill_box(GoUi.color(GoTheme.WARNING_FILL)) as GoStyleBoxComic
@@ -348,4 +388,139 @@ func _screen() -> void:
 			check(column.get_child_count() == 10 and column.is_inside_tree(), "%s: a screen builds (shadows %s)" % [id, shadows])
 			column.queue_free()
 	_defaults()
+	await frames(1)
+
+
+## Every state the comic look tells apart, and every face keeps the padding the default look gives it.
+func _states_and_sizes() -> void:
+	_defaults()
+	for pair: Array in [[&"comic_light", &"default_light"], [&"comic_dark", &"default_dark"]]:
+		GoUi.use_preset(pair[1])
+		var plain := GoUi.theme()
+		GoUi.use_preset(pair[0])
+		var theme := GoUi.theme()
+		var id: StringName = pair[0]
+		# 🛑 Sizes: a face's padding decides its control's minimum size — a 1dp track padded 0 shrank a ProgressBar.
+		var moved: Array[String] = []
+		for type in plain.get_stylebox_type_list():
+			for name in plain.get_stylebox_list(type):
+				if not theme.has_stylebox(name, type): continue
+				var a := plain.get_stylebox(name, type)
+				var b := theme.get_stylebox(name, type)
+				for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+					if not is_equal_approx(a.get_margin(side), b.get_margin(side)):
+						moved.append("%s/%s" % [type, name])
+						break
+		check(moved.is_empty(), "%s: every face keeps the default look's padding %s" % [id, str(moved)])
+		var pushed := theme.get_stylebox(&"pressed", &"GoDangerButton") as GoStyleBoxComic
+		check(pushed != null and pushed.pressed, "%s: a danger key is pushed in when pressed" % id)
+		var small := theme.get_stylebox(&"pressed", &"GoCompactButton") as GoStyleBoxComic
+		check(small != null and small.pressed, "%s: a compact key is pushed in when pressed" % id)
+		for type: StringName in [&"GoCompactButton", &"GoListButton", &"Button"]:
+			var off := theme.get_stylebox(&"disabled", type) as GoStyleBoxComic
+			var on := theme.get_stylebox(&"normal", type) as GoStyleBoxComic
+			check(off != null and on != null and off.shadow == GoStyleBoxComic.Shadow.OFF and off.border_color.a < on.border_color.a,
+				"%s: a disabled %s sits flat with faint ink" % [id, type])
+		for type: StringName in [&"GoCompactButton", &"GoListButton", &"CheckBox", &"TabBar"]:
+			var name := &"tab_focus" if type == &"TabBar" else &"focus"
+			var ring := theme.get_stylebox(name, type) as GoStyleBoxComic
+			check(ring != null and ring.inner and not ring.draw_center, "%s: %s's focus ring sits inside the ink" % [id, type])
+		var menu := theme.get_stylebox(&"panel", &"PopupMenu") as GoStyleBoxComic
+		check(menu != null and menu.shadow == GoStyleBoxComic.Shadow.OFF, "%s: a popup menu (its own window) drops no shadow to be cut" % id)
+		var raised := theme.get_stylebox(&"normal", &"GoPrimaryGlowButton") as GoStyleBoxComic
+		var key := theme.get_stylebox(&"normal", &"GoPrimaryButton") as GoStyleBoxComic
+		check(raised != null and key != null and raised.shadow_size >= key.shadow_size + 2, "%s: the raised twin clearly stands higher" % id)
+		var fill := theme.get_stylebox(&"grabber_area", &"HSlider") as GoStyleBoxComic
+		check(fill != null and fill.bg_color.a >= 0.999 and fill.border_width < 1.5, "%s: a slider's fill is solid with a thin line" % id)
+		# 🛑 A shadow has to show on the page: a black block on the night page measured 1.1:1.
+		var page := GoUi.color(GoTheme.BACKGROUND)
+		var shaded := page.blend(key.shadow_color) if key != null else page
+		check(GoSkin.contrast_ratio(shaded, page) >= 1.2, "%s: a key's shadow shows on the page (%.2f:1)" % [id, GoSkin.contrast_ratio(shaded, page)])
+		var skin_face := GoUi.skin().slot_box(GoUi.color(GoTheme.INFO), false) as GoStyleBoxComic
+		check(skin_face != null and key != null and skin_face.shadow_color.is_equal_approx(key.shadow_color),
+			"%s: the skin's parts drop the theme's shadow colour" % id)
+		var tab := theme.get_stylebox(&"tab_unselected", &"TabBar") as GoStyleBoxComic
+		check(tab != null and tab.sides == GoStyleBoxComic.BOTTOM, "%s: the other tabs stand on an ink line" % id)
+	await frames(1)
+
+
+## A widget's own choice outlives a change of the project's dials, and never reaches what is flat on purpose.
+func _one_widget_holds() -> void:
+	_defaults()
+	GoUi.use_preset(&"comic_light")
+	# 🛑 Called before the key is in the tree (the documented chain) — it used to find no comic face there.
+	var early := GoStyle.comic_shadow(GoStyle.button("Skip"), false) as Button
+	check(early.has_theme_stylebox_override(&"normal") and (early.get_theme_stylebox(&"normal") as GoStyleBoxComic).shadow_size == 0,
+		"hold: comic_shadow works on a key not yet in the tree")
+	var key := GoStyle.button("Go")
+	root.add_child(key)
+	root.add_child(early)
+	await frames(1)
+	GoStyle.comic_shadow(key, true)
+	var ring := key.get_theme_stylebox(&"focus") as GoStyleBoxComic
+	var off := key.get_theme_stylebox(&"disabled") as GoStyleBoxComic
+	check(ring != null and ring.shadow_size == 0 and off != null and off.shadow_size == 0,
+		"hold: switching a key's shadow on leaves its focus ring and disabled face flat")
+	GoStyle.comic_border(key, 8.0)
+	ring = key.get_theme_stylebox(&"focus") as GoStyleBoxComic
+	check(ring != null and is_equal_approx(ring.inset, 9.0) and ring.border_width < 8.0,
+		"hold: a wider ink moves the focus ring in, and the ring keeps its own line")
+	GoStyle.comic_border(key, 0.0)
+	ring = key.get_theme_stylebox(&"focus") as GoStyleBoxComic
+	check(ring != null and ring.border_width > 0.0, "hold: no ink on a key still leaves its focus ring")
+	var card := GoStyle.card()
+	var field := GoStyle.line_edit("name")
+	card.add_child(field)
+	root.add_child(card)
+	await frames(1)
+	GoStyle.comic_shadow(card, true, true)
+	check((field.get_theme_stylebox(&"normal") as GoStyleBoxComic).shadow_size == 0,
+		"hold: deep leaves a text field inside flat")
+	# A watching widget (a window) keeps the choice when the project's dials change.
+	var layer := CanvasLayer.new()
+	root.add_child(layer)
+	var surface := GoSurface.new()
+	surface.max_width = 300
+	surface.set_title("Quiet")
+	layer.add_child(surface)
+	await frames(2)
+	GoStyle.comic_shadow(surface, false, true)
+	var refreshed := [false]
+	var spy := func() -> void: refreshed[0] = true
+	GoUi.watch(spy)
+	GoUi.config.comic_shadow = true
+	GoUi.config.comic_shadow_size = 9.0
+	GoUi.config.comic_border_width = 2.0
+	await frames(2)
+	GoUi.unwatch(spy)
+	check(not refreshed[0], "hold: a comic dial only redraws — it does not re-dress every widget")
+	var close_face := surface.close_button.get_theme_stylebox(&"normal") as GoStyleBoxComic
+	check(close_face != null and close_face.shadow_size == 0, "hold: a window's own choice outlives the dials changing")
+	_defaults()
+	for node: Node in [key, early, card, layer]: node.queue_free()
+	await frames(1)
+
+
+## Parts that join into one (an input group) or stripe (a table) keep the comic ink.
+func _joined_parts() -> void:
+	_defaults()
+	GoUi.use_preset(&"comic_light")
+	var send := GoStyle.button("Send", Callable(), GoStyle.Tone.PRIMARY)
+	var group := GoInputGroup.make(GoStyle.line_edit("Message"), {"suffix": send})
+	root.add_child(group)
+	await frames(2)
+	var left := group.control.get_theme_stylebox(&"normal") as GoStyleBoxComic
+	var right := send.get_theme_stylebox(&"normal") as GoStyleBoxComic
+	check(left != null and right != null and not (left.corners & GoStyleBoxComic.TOP_RIGHT)
+		and not (right.sides & GoStyleBoxComic.LEFT) and right.corners & GoStyleBoxComic.TOP_RIGHT,
+		"joined: an input group is one inked block with one line at the seam")
+	var table := GoTable.make([{"text": "Name"}, {"text": "Score", "numeric": true}], [["Aria", 3], ["Brin", 2], ["Cade", 1]])
+	root.add_child(table)
+	await frames(2)
+	var striped := 0
+	for row in table.rows_box.get_children():
+		var face := (row as Control).get_theme_stylebox(&"normal") if row is Button else null
+		if face is GoStyleBoxComic: striped += 1
+	check(striped == table.rows_box.get_child_count(), "joined: every table row keeps its ink, striped or not (%d)" % striped)
+	for node: Node in [group, table]: node.queue_free()
 	await frames(1)

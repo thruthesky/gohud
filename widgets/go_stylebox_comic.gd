@@ -111,11 +111,17 @@ const ALL := 15
 	set(value):
 		drop_scale = value
 		emit_changed()
-## A ring drawn **just inside the ink** of the face under it — the project's outline width plus 1dp in — so a focus
-## ring keeps the key's outline instead of covering it. Draw it hollow (`draw_center` off).
+## A ring drawn **just inside the ink** of the face under it — `inset` in — so a focus ring keeps the key's outline
+## instead of covering it. Draw it hollow (`draw_center` off).
 @export var inner := false:
 	set(value):
 		inner = value
+		emit_changed()
+## How far in an `inner` ring sits (dp). Negative: the project's outline (`comic_border_width`) plus 1 — the ink of the
+## key under it. `GoStyle.comic_border()` sets it on a widget whose own ink is wider or thinner.
+@export var inset := -1.0:
+	set(value):
+		inset = value
 		emit_changed()
 ## Pressed: the shadow goes and the face sinks a little towards where it was (never more than `PRESS_SINK`).
 @export var pressed := false:
@@ -147,12 +153,16 @@ const PRESS_SINK := 2.0
 var border_width: float:
 	get: return outline_width()
 	set(value): outline = maxf(0.0, value)
-## The shadow actually drawn (dp, 0 = none). Writing 0 turns this face's shadow off; more sets its own `drop`.
+## The shadow actually drawn (dp, 0 = none). Writing 0 turns this face's shadow off; more sets its own `drop` and
+## lets a face that was off follow the setting again (as `StyleBoxFlat`, a size asked for is a shadow asked for).
 var shadow_size: int:
 	get: return roundi(drop_size())
 	set(value):
-		if value <= 0: shadow = Shadow.OFF
-		else: drop = value
+		if value <= 0:
+			shadow = Shadow.OFF
+		else:
+			drop = value
+			if shadow == Shadow.OFF: shadow = Shadow.FOLLOW
 ## Where the shadow sits — always down and to the right, `drop_size()` each way.
 var shadow_offset: Vector2:
 	get:
@@ -238,7 +248,7 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 	rect = rect.grow_individual(expand_margin_left, expand_margin_top, expand_margin_right, expand_margin_bottom)
 	var radius_drawn := radius
 	if inner:
-		var gap := float(GoUi.config.comic_border_width) + 1.0
+		var gap := inset if inset >= 0.0 else float(GoUi.config.comic_border_width) + 1.0
 		rect = rect.grow(-gap)
 		radius_drawn = maxf(0.0, radius - gap)
 	if rect.size.x <= 1.0 or rect.size.y <= 1.0: return

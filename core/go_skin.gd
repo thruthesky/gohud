@@ -467,6 +467,9 @@ func _edge_fill(box: StyleBox, ink: Color) -> void:
 		var flat := box as StyleBoxFlat
 		flat.set_border_width_all(1)
 		flat.draw_center = true
+	elif box is GoStyleBoxComic:
+		# A comic fill already carries the ink outline the setting asks for — pinning a width here froze it.
+		pass
 	elif &"border_width" in box:
 		box.set(&"border_width", maxf(1.0, float(box.get(&"border_width"))))
 

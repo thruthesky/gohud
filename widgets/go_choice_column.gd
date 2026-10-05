@@ -398,6 +398,7 @@ func _band(plate: StyleBox, top: bool, band: float, under: Color) -> void:
 	var flat := plate as StyleBoxFlat
 	var cut := plate as GoStyleBoxCut
 	var forged := plate as GoStyleBoxMedieval
+	var inked := plate as GoStyleBoxComic
 	if flat != null:
 		inner = inner.grow_individual(-flat.border_width_left, -flat.border_width_top, -flat.border_width_right,
 			-flat.border_width_bottom)
@@ -411,6 +412,15 @@ func _band(plate: StyleBox, top: bool, band: float, under: Color) -> void:
 		var chamfer := minf(cut.cut, minf(size.x, size.y) * 0.5)
 		left = chamfer if cut.cut_corners & (GoStyleBoxCut.TOP_LEFT if top else GoStyleBoxCut.BOTTOM_LEFT) else 0.0
 		right = chamfer if cut.cut_corners & (GoStyleBoxCut.TOP_RIGHT if top else GoStyleBoxCut.BOTTOM_RIGHT) else 0.0
+	elif inked != null:
+		# The comic panel: a rounded face whose ink width is read from the setting as it is drawn.
+		var ink := inked.outline_width()
+		inner = inner.grow(-ink)
+		var corner := minf(inked.radius, minf(size.x, size.y) * 0.5) - ink
+		var top_bit := GoStyleBoxComic.TOP_LEFT if top else GoStyleBoxComic.BOTTOM_LEFT
+		var right_bit := GoStyleBoxComic.TOP_RIGHT if top else GoStyleBoxComic.BOTTOM_RIGHT
+		left = corner if inked.corners & top_bit else 0.0
+		right = corner if inked.corners & right_bit else 0.0
 	elif forged != null:
 		# The forged frame: a rounded face with a border, and rivets set in from each corner — the cut leaves them
 		# uncovered (`GoStyleBoxMedieval._draw`: inset 6 × ornament_scale).
