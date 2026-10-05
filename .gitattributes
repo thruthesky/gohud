@@ -14,5 +14,6 @@ builds/        export-ignore
 .dist/         export-ignore
 tests/         export-ignore
 tools/         export-ignore
+/examples/youtube/ export-ignore
 .gitignore     export-ignore
 .gitattributes export-ignore

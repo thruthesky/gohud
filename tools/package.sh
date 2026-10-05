@@ -74,9 +74,10 @@ done
 # `res://addons/gohud` as a plain string and would false-alarm — and neither ships in the release.
 # `examples/demo/` is a separate project with its own project.godot, so its `res://` points at the demo root.
 # `examples/usage/` is a project that installs and uses a copy of the addon, and is excluded from the release.
+# `examples/youtube/` is the YouTube reel — a separate project for making the channel's movie, excluded from the release.
 # `skills/` is the AI agent skill (a Claude Code plugin) — its templates use the host project's `res://ui/…` as an example. It does not ship either.
 LEAKS="$(grep -rnE 'res://' "$ADDON" --include='*.gd' --include='*.tscn' --include='*.tres' --include='*.cfg' \
-  | grep -vE '/(tests|tools|skills)/|/examples/(demo|usage)/' \
+  | grep -vE '/(tests|tools|skills)/|/examples/(demo|usage|youtube)/' \
   | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' \
   | grep -oE '^[^:]+:[0-9]+:|res://[A-Za-z0-9_./%-]+' \
   | awk 'index($0, "res://") == 1 { if (index($0, "res://addons/gohud") != 1) print prev $0; next } { prev = $0 }' || true)"
@@ -129,6 +130,7 @@ set -- \
   --exclude='*.py[co]' \
   --exclude='__pycache__' \
   --exclude='/examples/usage/' \
+  --exclude='/examples/youtube/' \
   --exclude='examples/demo/addons'
 # 🛑 `docs/` is **the website** — it is published to GitHub Pages, not shipped with the asset.
 #    Including it ① adds hundreds of KB of screenshots to the asset size and ② makes its command

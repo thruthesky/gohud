@@ -265,6 +265,9 @@ class PackageTests(unittest.TestCase):
         with zipfile.ZipFile(archive) as package:
             self.assertFalse(any(name.startswith('addons/gohud/examples/usage/')
                                  for name in package.namelist()))
+            # The YouTube reel is for making the channel's movie, not for anyone installing the add-on.
+            self.assertFalse(any(name.startswith('addons/gohud/examples/youtube/')
+                                 for name in package.namelist()))
             for name in ('themes/presets/medieval_dark.tres', 'themes/presets/medieval_light.tres',
                          'themes/skins/go_skin_medieval.gd', 'widgets/go_stylebox_medieval.gd',
                          'icons/gohud_icons_medieval.tres', 'assets/fonts/cinzel/Cinzel.ttf',

@@ -1,0 +1,12 @@
+# What the virtual monitor (`xvfb_run.sh`) leaves out when it moves this project into the container — rsync patterns.
+#
+# 🛑 `addons/gohud` is a symlink to the whole repository, and the repository holds `examples/` again — moved as is,
+#    `addons/gohud/examples/youtube/addons/gohud/…` goes on forever. The reel needs only the code, icons and themes.
+addons/gohud/examples/
+www/
+builds/
+.git/
+.godot/
+.cowork/
+skills/gohud/references/
+docs/

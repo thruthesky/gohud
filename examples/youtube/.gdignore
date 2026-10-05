@@ -1,0 +1,2 @@
+# This folder is a separate project with its own project.godot — the parent project (the game the add-on is installed in) does not scan it.
+# The demo itself is the root, so this file has no effect on it (measured 2026-09-12).

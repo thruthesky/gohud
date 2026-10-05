@@ -97,6 +97,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `DEMO_CAROUSEL=1 bash examples/demo/run.sh --record <movie>`) puts every chapter of the tour in the next theme
   family at Normal speed, so a recording shows each widget in a different look without Fast's hurry. The Comic family
   joins the carousel and the showreel on its own — the demo reads its families from `themes/presets/`.
+- **`examples/youtube/` — the YouTube reel.** A separate project that runs at 1920×1080 and shows every preset for
+  nine seconds: the theme's name across the top, then three pages of three widgets, three seconds a page — twelve
+  presets, 112.5 seconds. Dark presets show one set of nine widgets and light presets another, so each family shows
+  eighteen. `bash examples/youtube/run.sh --record <movie>` records it at 60 fps; the release ZIP leaves it out.
 
 ### Fixed
 
