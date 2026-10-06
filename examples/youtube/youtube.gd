@@ -1,13 +1,14 @@
-## 🎬 **The YouTube reel** — every gohud theme, nine widgets each, cut for a 1920×1080 movie.
+## 🎬 **The YouTube reel** — every gohud theme, fifteen widgets each, cut for a 1920×1080 movie.
 ##
-## Each theme gets nine seconds: its name across the top, then three pages of three widgets, three seconds a page.
+## Each theme gets five seconds: its name across the top, then five pages of three widgets, one second a page.
 ## Every preset in `themes/presets/` is shown — the built-in families first, then the rest in alphabetical order,
 ## dark before light — so a theme `tools/new_theme.py` adds joins the reel with no code change. Dark presets show one
-## set of nine widgets and light presets another, so a family shows eighteen.
+## set of fifteen widgets and light presets another, so a family shows thirty.
 ##
 ## ```
 ## bash run.sh                          # watch it in a 1920×1080 window (loops)
 ## bash run.sh --record /tmp/reel.avi   # record it at 1920×1080 · 60 fps, then quit
+## bash run.sh -- --themes=kids_light,arcade_dark   # only these presets (a quick look while tuning a theme)
 ## ```
 ##
 ## The canvas is 1280×720 logical, so a 1920×1080 window or movie is a clean 1.5×. Nothing here is input-driven:
@@ -15,8 +16,11 @@
 extends Control
 
 const INTRO_SECONDS := 2.0
-const PAGE_SECONDS := 3.0
-const PAGES := 3
+const PAGE_SECONDS := 1.0
+const PAGES := 5
+## The widgets' own timings (a bar takes damage at 0.6 s, a name is typed letter by letter) are written for a
+## three-second page; this scales them to the page, so a faster reel still shows each move before the cut.
+const TEMPO := PAGE_SECONDS / 3.0
 const OUTRO_SECONDS := 2.5
 const MARGIN := 44
 ## Families whose name `capitalize()` would spell wrong.
@@ -40,6 +44,10 @@ func _ready() -> void:
 	TranslationServer.set_locale("en")
 	_auto_exit = OS.get_cmdline_user_args().has("--exit")
 	_presets = presets()
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--themes="):
+			var wanted := arg.substr(9).split(",", false)
+			_presets = _presets.filter(func(id: StringName) -> bool: return wanted.has(String(id)))
 	var settings := GoConfig.new()
 	settings.base_font_size = 18
 	GoUi.config = settings
@@ -272,14 +280,15 @@ func _enter(node: Control, delay: float) -> void:
 	node.scale = Vector2(0.96, 0.96)
 	node.resized.connect(func() -> void: node.pivot_offset = node.size * 0.5)
 	var tween := node.create_tween().set_parallel(true).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	tween.tween_property(node, "modulate:a", 1.0, 0.25).set_delay(delay)
-	tween.tween_property(node, "scale", Vector2.ONE, 0.3).set_delay(delay)
+	tween.tween_property(node, "modulate:a", 1.0, 0.25 * TEMPO).set_delay(delay * TEMPO)
+	tween.tween_property(node, "scale", Vector2.ONE, 0.3 * TEMPO).set_delay(delay * TEMPO)
 
 
-## Runs [param action] [param seconds] into this page, unless the page has gone by then.
+## Runs [param action] [param seconds] into this page (on the three-second clock — see `TEMPO`), unless the page has
+## gone by then.
 func _later(seconds: float, action: Callable) -> void:
 	var serial := _serial
-	get_tree().create_timer(seconds, false).timeout.connect(func() -> void:
+	get_tree().create_timer(seconds * TEMPO, false).timeout.connect(func() -> void:
 		if serial == _serial and not _done: action.call())
 
 
@@ -297,6 +306,12 @@ func _set_a() -> Array:
 		["Stat radar", "GoRadar", _radar],
 		["Text fields", "GoField · GoSearchBar", _fields],
 		["Chips & avatars", "chip · filter_chip · GoBadge", _chips],
+		["Joystick", "GoJoystick", _joystick],
+		["Wheel picker", "GoWheelPicker", _wheel],
+		["Split, combo & group", "GoSplitButton · GoCombobox · GoInputGroup", _split],
+		["Waiting & empty", "GoSpinner · GoNotice · empty_state", _waiting],
+		["Folding sections", "GoStyle.foldable · section", _folding],
+		["Key hints", "GoKbd", _keys],
 	]
 
 
@@ -311,6 +326,12 @@ func _set_b() -> Array:
 		["Leaderboard", "GoTable", _table],
 		["Ranges & codes", "GoRangeSlider · GoCodeInput", _ranges],
 		["Daily rewards", "GoRewardCalendar", _calendar],
+		["App bar", "GoAppBar", _app_bar],
+		["Stepper", "GoStepper", _stepper],
+		["Tab view", "GoTabView", _tab_view],
+		["Rows you drag", "GoReorderList · GoSwipeRow", _drag_rows],
+		["Swatches & choices", "choice_grid · GoChoiceColumn", _swatches],
+		["Date picker", "GoDatePicker", _date],
 	]
 
 
@@ -398,7 +419,7 @@ func _settings() -> Control:
 	(box.get_child(box.get_child_count() - 1) as OptionButton).select(2)
 	_later(0.7, func() -> void: vibration.button_pressed = true)
 	_later(1.0, func() -> void:
-		volume.create_tween().tween_property(volume, "value", 0.85, 1.2).set_trans(Tween.TRANS_SINE))
+		volume.create_tween().tween_property(volume, "value", 0.85, 1.2 * TEMPO).set_trans(Tween.TRANS_SINE))
 	return box
 
 
@@ -527,10 +548,10 @@ func _progress_page() -> Control:
 	box.add_child(GoStyle.skeleton(0, 14))
 	box.add_child(GoStyle.skeleton(180, 14))
 	var tween := line.create_tween().set_trans(Tween.TRANS_SINE)
-	tween.tween_property(line, "value", 0.95, 2.6)
+	tween.tween_property(line, "value", 0.95, 2.6 * TEMPO)
 	tween.parallel().tween_method(func(value: float) -> void:
-		caption.text = "Downloading %d%%" % int(round(value * 100.0)), 0.1, 0.95, 2.6)
-	ring.create_tween().tween_property(ring, "value", 1.0, 2.4)
+		caption.text = "Downloading %d%%" % int(round(value * 100.0)), 0.1, 0.95, 2.6 * TEMPO)
+	ring.create_tween().tween_property(ring, "value", 1.0, 2.4 * TEMPO)
 	return box
 
 
@@ -617,3 +638,168 @@ func _calendar() -> Control:
 	calendar.columns = 4
 	_later(1.3, func() -> void: calendar.set_claimed_until(2))
 	return calendar
+
+
+func _joystick() -> Control:
+	var box := GoStyle.column(12)
+	var pad := GoJoystick.new()
+	pad.mode = GoJoystick.Mode.FIXED
+	pad.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(pad)
+	var readout := GoStyle.label("Direction 0.0, 0.0", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+	readout.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(readout)
+	pad.moved.connect(func(direction: Vector2) -> void:
+		readout.text = "Direction %.1f, %.1f" % [direction.x, direction.y])
+	# The stick takes the mouse as well as a finger — press it and walk the knob round its ring.
+	_later(0.3, func() -> void:
+		var press := InputEventMouseButton.new()
+		press.button_index = MOUSE_BUTTON_LEFT
+		press.pressed = true
+		press.position = pad.size * 0.5
+		pad._gui_input(press)
+		pad.create_tween().tween_method(func(angle: float) -> void:
+			var motion := InputEventMouseMotion.new()
+			motion.position = pad.size * 0.5 + Vector2.from_angle(angle) * pad.radius * 0.85
+			pad._gui_input(motion), -PI / 2.0, PI * 1.5, 2.4 * TEMPO))
+	return box
+
+
+func _wheel() -> Control:
+	var box := GoStyle.column(12)
+	box.add_child(GoStyle.label("Buy how many?", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	var wheel := GoWheelPicker.make(["×1", "×5", "×10", "×50", "×100", "×500"], 1)
+	wheel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(wheel)
+	_later(0.6, func() -> void: wheel.select(3))
+	_later(1.8, func() -> void: wheel.select(4))
+	return box
+
+
+func _split() -> Control:
+	var box := GoStyle.column(16)
+	var send := GoSplitButton.make("Send", Callable(), ["Send later", "Save as draft"])
+	send.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	box.add_child(send)
+	box.add_child(GoCombobox.make(["Ann", "Ben", "Cleo", "Dan", "Eve"], 2, "Find a friend"))
+	box.add_child(GoInputGroup.make(GoStyle.line_edit("Message"),
+		{"suffix": GoStyle.button("Send", Callable(), GoStyle.Tone.PRIMARY)}))
+	return box
+
+
+func _waiting() -> Control:
+	var box := GoStyle.column(14)
+	var buy := GoStyle.button("Buy 500 gems", Callable(), GoStyle.Tone.PRIMARY)
+	box.add_child(buy)
+	var notice := GoNotice.new()
+	box.add_child(notice)
+	box.add_child(GoStyle.empty_state(GoIconSet.BOX, "Your mailbox is empty", false))
+	_later(0.3, func() -> void: GoSpinner.busy(buy, true))
+	_later(0.6, func() -> void: notice.show_text("Purchase complete", GoTheme.SUCCESS, 30.0))
+	_later(2.0, func() -> void: GoSpinner.busy(buy, false))
+	return box
+
+
+func _folding() -> Control:
+	var box := GoStyle.column(10)
+	box.add_child(GoStyle.section("Settings", false))
+	var graphics := GoStyle.foldable("Graphics", true, null, false)
+	var inside := GoStyle.column(8)
+	inside.add_child(GoStyle.toggle("Shadows", false))
+	inside.add_child(GoStyle.toggle("Bloom", false))
+	graphics.add_child(inside)
+	box.add_child(graphics)
+	var audio := GoStyle.foldable("Audio", true, null, false)
+	audio.add_child(GoStyle.slider())
+	box.add_child(audio)
+	var controls := GoStyle.foldable("Controls", true, null, false)
+	controls.add_child(GoStyle.checkbox("Invert the camera", false))
+	box.add_child(controls)
+	_later(0.5, func() -> void: graphics.folded = false)
+	_later(1.6, func() -> void:
+		graphics.folded = true
+		audio.folded = false)
+	return box
+
+
+func _keys() -> Control:
+	var box := GoStyle.column(10)
+	for spec in [["Save", "Ctrl", "S"], ["Interact", "E", ""], ["Previous tab", "Shift", "Tab"], ["Jump", "Space", ""],
+			["Menu", "Esc", ""]]:
+		var line := GoStyle.row(8)
+		var words := GoStyle.label(spec[0])
+		words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		line.add_child(words)
+		line.add_child(GoKbd.make(spec[1], spec[2]))
+		box.add_child(line)
+	return box
+
+
+func _app_bar() -> Control:
+	var box := GoStyle.column(6)
+	var bar := GoAppBar.make("Inbox", GoIconSet.MENU)
+	bar.add_action(GoIconSet.SEARCH, &"Search")
+	bar.add_action(GoIconSet.MORE, &"More")
+	box.add_child(bar)
+	box.add_child(GoStyle.list_button(GoIconSet.USER, "Ann", Callable(), Color.TRANSPARENT, "Raid at eight?", false))
+	box.add_child(GoStyle.list_button(GoIconSet.GIFT, "Daily gift", Callable(), Color.TRANSPARENT, "Claim 100 coins", false))
+	box.add_child(GoStyle.list_button(GoIconSet.CROWN, "Season 3", Callable(), Color.TRANSPARENT, "New ranks are in", false))
+	return box
+
+
+func _stepper() -> Control:
+	var steps: Array = []
+	for spec in [["Cart", "Two items · 1,200 coins"], ["Address", "Ruins of Erel, gate 3"], ["Pay", "Coins or gems"]]:
+		steps.append({"title": spec[0], "content": GoStyle.label(spec[1], GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))})
+	var stepper := GoStepper.make(steps)
+	_later(0.8, func() -> void: stepper.set_step(1))
+	_later(1.8, func() -> void: stepper.set_step(2))
+	return stepper
+
+
+func _tab_view() -> Control:
+	var pages: Array = []
+	for spec in [["Ann reached level 42.", GoTheme.INFO], ["3 new screenshots.", GoTheme.SUCCESS],
+			["Nothing saved yet.", GoTheme.WARNING]]:
+		var page := GoStyle.column(10)
+		page.add_child(GoStyle.alert(spec[0], spec[1]))
+		page.add_child(GoStyle.skeleton(0, 14))
+		page.add_child(GoStyle.skeleton(160, 14))
+		pages.append(page)
+	var tabs := GoTabView.make(["Posts", "Photos", "Saved"], pages)
+	tabs.custom_minimum_size.y = 240
+	_later(0.7, func() -> void: tabs.set_tab(1))
+	_later(1.7, func() -> void: tabs.set_tab(2))
+	return tabs
+
+
+func _drag_rows() -> Control:
+	var box := GoStyle.column(10)
+	var rows: Array = []
+	for title in ["Intro theme", "Forest", "Boss battle"]:
+		rows.append(GoStyle.list_button(GoIconSet.PLAY, title, Callable(), Color.TRANSPARENT, "", false))
+	box.add_child(GoReorderList.make(rows))
+	box.add_child(GoStyle.divider())
+	box.add_child(GoSwipeRow.wrap(GoStyle.list_button(GoIconSet.CHAT, "Swipe me aside", Callable(), Color.TRANSPARENT,
+		"Delete or archive", false), {"icon": GoIconSet.TRASH, "text": "Delete", "tone": GoTheme.DANGER, "action": Callable()}))
+	return box
+
+
+func _swatches() -> Control:
+	var box := GoStyle.column(14)
+	box.add_child(GoStyle.label("Skin tone", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	box.add_child(GoStyle.choice_grid([{"color": "f6cfae", "tooltip": "Peach"}, {"color": "e0ac7e", "tooltip": "Sand"},
+		{"color": "c68642", "tooltip": "Honey"}, {"color": "8d5a36", "tooltip": "Cocoa"},
+		{"color": "5a3825", "tooltip": "Coffee"}], 1))
+	box.add_child(GoStyle.label("Summon", GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)))
+	var animals := GoChoiceColumn.make(["Hen", "Cat", "Dog", "Pig", "Cow"], 5)
+	animals.set_selected(1, true)
+	box.add_child(animals)
+	_later(0.8, func() -> void: animals.set_selected(3, true))
+	return box
+
+
+func _date() -> Control:
+	var picker := GoDatePicker.make({"year": 2026, "month": 10, "day": 6})
+	_later(0.9, func() -> void: picker.set_date({"year": 2026, "month": 10, "day": 17}))
+	return picker

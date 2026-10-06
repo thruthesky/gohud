@@ -43,10 +43,10 @@
   "hud_alpha": 88
  },
  "palette": {
-  "background": "#FFEDC9",
+  "background": "#F7E1B9",
   "surface": "#FFFFFF",
-  "surface_soft": "#FFD79B",
-  "surface_high": "#9FD4FF",
+  "surface_soft": "#FFD08C",
+  "surface_high": "#9AD0FF",
   "border": "#6B5BD2@0.55",
   "text": "#1E1B3A",
   "secondary": "#443C68",

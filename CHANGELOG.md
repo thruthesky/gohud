@@ -120,9 +120,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   family at Normal speed, so a recording shows each widget in a different look without Fast's hurry. The Comic family
   joins the carousel and the showreel on its own — the demo reads its families from `themes/presets/`.
 - **`examples/youtube/` — the YouTube reel.** A separate project that runs at 1920×1080 and shows every preset for
-  nine seconds: the theme's name across the top, then three pages of three widgets, three seconds a page — twelve
-  presets, 112.5 seconds. Dark presets show one set of nine widgets and light presets another, so each family shows
-  eighteen. `bash examples/youtube/run.sh --record <movie>` records it at 60 fps; the release ZIP leaves it out.
+  five seconds: the theme's name across the top, then five pages of three widgets, one second a page — fourteen
+  presets with Arcade, 74.5 seconds. Dark presets show one set of fifteen widgets and light presets another, so each
+  family shows thirty. `bash examples/youtube/run.sh --record <movie>` records it at 60 fps, `-- --themes=a,b` shows
+  only those presets; the release ZIP leaves it out.
 
 ### Fixed
 
@@ -262,6 +263,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Changed
 
+- **`kids_light` sits on darker sand.** The backdrop is `#F7E1B9` (was `#FFEDC9`), so the white cards stand off it.
+  The darker page needed two neighbours to move with it to keep every contrast check passing: the card plate is
+  `#FFD08C` (was `#FFD79B`) and the raised cell `#9AD0FF` (was `#9FD4FF`); the generator darkened the muted text and
+  the status and border colours a little to keep them readable.
 - **`tools/check_contrast.py` measures tab labels and checkbox and switch labels.** A tab names its faces and colours
   differently (`tab_selected` with `font_selected_color` …) and a checkbox draws no plate (`StyleBoxEmpty`), so neither
   produced a single row before. Tabs now pair each face with its own colour, and a face that draws nothing is measured
