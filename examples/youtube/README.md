@@ -27,3 +27,34 @@ ffmpeg -i /tmp/reel.avi -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststa
 
 `run.sh` links `addons/gohud` to the repository root (the link is not committed) and imports before it runs.
 The canvas is 1280×720 logical, so 1920×1080 is a clean 1.5×.
+
+## Title and description for YouTube
+
+Title (under 100 characters):
+
+```text
+gohud — 14 game UI themes for Godot 4, 30 widgets each
+```
+
+Description (the chapter times match the reel as it is today: 2 s intro, 5 s a preset, dark then light, 10 s a family —
+move them if the reel changes):
+
+```text
+gohud is a free, MIT-licensed game UI kit for Godot 4: one set of widgets that you can dress in any theme.
+This reel shows all 14 built-in themes — Default, Sci-fi, Medieval, Material, Arcade, Comic and Kids, each in dark
+and light — with fifteen widgets each: bars, buttons, quick slots, inventory, joystick, wheel and date pickers,
+tabs, steppers, leaderboards, daily rewards and more.
+
+Code, docs and every widget: https://github.com/thruthesky/gohud
+Website: https://thruthesky.github.io/gohud/
+
+0:00 Default
+0:12 Sci-fi
+0:22 Medieval
+0:32 Material
+0:42 Arcade
+0:52 Comic
+1:02 Kids
+
+#godot #godotengine #gamedev #gameui #indiedev
+```
