@@ -107,8 +107,9 @@ func _box() -> void:
 	var copy := board.duplicate() as GoStyleBoxArcade
 	check(copy != null and copy.frame == board.frame and copy.frame_color == board.frame_color, "box: duplicate() keeps the face")
 	check(GoSkin.box_background(key).a > 0.0, "box: box_background reads an arcade face")
-	# The frame never covers the content: a board padded too little for it draws it thinner; one with no padding at all
-	# (a window's card pads its content itself) keeps it whole.
+	# The frame never covers the content: a board padded too little for it draws it thinner, one with no room for a
+	# frame of MIN_FRAME is drawn as a key cap; one with no padding at all (a window's card pads its content itself)
+	# keeps it whole.
 	check(board.frame_drawn() == 6.0, "box: a board with no padding draws its whole frame")
 	var tight := board.duplicate() as GoStyleBoxArcade
 	tight.border_width = 3.0
@@ -118,7 +119,10 @@ func _box() -> void:
 		"box: padded 12, the frame gives way to the ink, the lip and the well — 12 − 3 lip − 3 ink − 3 well (%.1f)"
 		% tight.frame_drawn())
 	tight.content_margin_bottom = 1.0
-	check(tight.frame_drawn() == 1.5, "box: padded to nothing, the frame is a line, never gone (%.1f)" % tight.frame_drawn())
+	check(tight.frame_drawn() == 0.0, "box: padded to nothing, no frame — not a hairline (%.1f)" % tight.frame_drawn())
+	check(tight.top() == tight.bg_color, "box: a board with no room for its frame is drawn as a key cap in the well's colour")
+	tight.set_content_margin_all(12.5)
+	check(tight.frame_drawn() >= GoStyleBoxArcade.MIN_FRAME, "box: a frame is drawn at MIN_FRAME or not at all")
 	tight.set_content_margin_all(20.0)
 	check(tight.frame_drawn() == 6.0, "box: padded enough, the whole frame")
 	# As a flat face (`GoStyle.box()`, `GoStyle.floating()` promise one): a board keeps its frame as the border.
@@ -364,7 +368,43 @@ func _own_ink() -> void:
 	check(blurred == 0, "ink: no date cell or time box outlines its own ink (%d do)" % blurred)
 	GoStyle.style_button(outlined, GoStyle.Tone.NORMAL)
 	check(outlined.get_theme_constant(&"outline_size") > 0, "ink: styled as a normal key again, the label outline comes back")
-	for part: Control in [outlined, chip, dates, clock]: part.queue_free()
+	# A dark colour asked for on a painted key keeps the white label (a blot otherwise); a placeholder is a faded white.
+	var muted := GoUi.color(GoTheme.MUTED)
+	var key := GoStyle.button("Key")
+	check(GoStyle.label_ink(key, muted).get_luminance() > 0.9, "ink: label_ink keeps a painted key's label white")
+	check(is_equal_approx(GoStyle.label_ink(key, muted, true).a, 0.75), "ink: label_ink fades a quiet label")
+	check(not key.has_theme_constant_override(&"outline_size"), "ink: on a painted key the outline stays")
+	# On a face that is not painted the colour is kept and the outline goes; another call undoes it.
+	var plain := GoStyle.button("Plain")
+	plain.add_theme_stylebox_override(&"normal", StyleBoxEmpty.new())
+	check(GoStyle.label_ink(plain, muted) == muted and plain.get_theme_constant(&"outline_size") == 0,
+		"ink: label_ink on an unpainted face keeps the colour and drops the outline")
+	GoStyle.label_ink(plain, Color.TRANSPARENT)
+	check(not plain.has_theme_constant_override(&"outline_size"), "ink: label_ink undoes its last call")
+	check(GoStyle.label_ink(key, Color.WHITE) == Color.WHITE, "ink: a light colour needs nothing")
+	var bare := GoStyle.button("Skip", Callable(), GoStyle.Tone.BARE)
+	check(GoStyle.label_ink(bare, muted) == muted and not bare.has_theme_constant_override(&"outline_size"),
+		"ink: a bare key has no outline to fight — left alone")
+	# The segmented control's chosen cell, the coach mark's Skip, the combobox's placeholder.
+	var day := GoStyle.segmented(["Day", "Week"], 0)
+	var cell := day.get_child(0) as Button
+	check(cell.get_theme_color(&"font_pressed_color").get_luminance() > 0.9,
+		"ink: the chosen segment's label is white on its painted key")
+	var coach := GoCoachMark.new()
+	root.add_child(coach)
+	await frames(1)
+	check(coach.skip_button.theme_type_variation == GoTheme.VAR_BARE_BUTTON, "ink: the coach mark's Skip stays a bare key")
+	var combo := GoCombobox.new()
+	combo.placeholder = "Find a friend"
+	combo.set_items(["Aria", "Brin"])
+	root.add_child(combo)
+	await frames(1)
+	var hint := combo.get_theme_color(&"font_color")
+	check(hint.get_luminance() > 0.9 and hint.a < 1.0, "ink: the combobox's placeholder is a faded white on its key")
+	# A disabled label by day is a pale grey — a mid grey closed up inside its ink outline.
+	check(GoUi.theme_color(&"font_disabled_color", &"Button").get_luminance() > 0.75,
+		"ink: by day a disabled key's label is a pale grey")
+	for part: Control in [outlined, chip, dates, clock, key, plain, bare, day, coach, combo]: part.queue_free()
 	await frames(1)
 
 

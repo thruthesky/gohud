@@ -66,7 +66,7 @@ The tour waits on its Start screen and offers two ways in:
 - **Start demo** plays a guided simulation of 31 chapters. The cursor uses real mouse and
   keyboard events to click buttons, type into fields, select menu items, drag sliders and
   joysticks, and scroll lists. Pick **Fast** first (3.2×) and every chapter wears the next theme
-  family — Default, Sci-fi, Medieval, Material, then Kids and Comic, then round again — so one pass shows each
+  family — Default, Sci-fi, Medieval, Material, then Arcade, Comic and Kids, then round again — so one pass shows each
   widget in a different look. The whole screen is rebuilt in that theme, side panels included,
   and a chip beside the theme picker names it; the picker keeps the theme you chose, and the
   tour ends back in it. Playing a single widget from explore mode keeps your theme.
@@ -78,7 +78,7 @@ The tour waits on its Start screen and offers two ways in:
   **Widgets** menu in the top bar.
 
 The **Theme** dropdown on the home screen and at the top of both `demo.tscn` and `sim.tscn` selects **Default theme**,
-**Sci-fi theme**, **Medieval theme**, **Material theme**, **Comic theme** or **Kids theme** (the dark preset of each family). It is also
+**Sci-fi theme**, **Medieval theme**, **Material theme**, **Arcade theme**, **Comic theme** or **Kids theme** (the dark preset of each family). It is also
 available on the simulation's Start and completion screens. Colours, frames and icons change together;
 the Themes & icons example compares the selected family's dark and light variants.
 
@@ -182,7 +182,7 @@ bash examples/demo/run.sh -- --explore=surfaces                          # open 
 
 The tour takes minutes and shows one look at a time. The **showreel** is the trailer: in
 **20 seconds** it walks the same chapters at **one widget every half second**, and every step
-wears a different theme — default, sci-fi, medieval, material, comic, kids — so a short clip says "the same
+wears a different theme — default, sci-fi, medieval, material, arcade, comic, kids — so a short clip says "the same
 widgets, every look" without a word. The bot drives each widget for the half second it is up, so
 bars fill, slots cool down, menus open and the cursor really presses; the caption under the
 stage names the widget and shows the last callback it fired. It is the home screen's fifth
@@ -198,7 +198,7 @@ bash examples/demo/run.sh --record-showreel /tmp/reel.avi --showreel-seconds=28.
 |---|---|---|
 | `--showreel-seconds=` | `20` | How long the whole reel runs |
 | `--showreel-step=` | `0.5` | How long each widget stays up — the bot's speed follows it (6× at 0.5 s) |
-| `--showreel-order=` | `cycle` | `cycle` walks the 31 chapters in order and rotates the five themes each step — no chapter–theme pair repeats before 155 steps, so 77.5 s shows every widget in every look (keep the chapter count off multiples of the theme count, or each chapter wears one look only); `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
+| `--showreel-order=` | `cycle` | `cycle` walks the 31 chapters in order and rotates the seven theme families each step — no chapter–theme pair repeats before 217 steps, so 108.5 s shows every widget in every look (keep the chapter count off multiples of the theme count, or each chapter wears one look only); `random` shuffles the chapters (each one once per round) and picks a theme that differs from the one before |
 | `--showreel-seed=` | `0` | Fixes the random order; `0` draws a fresh one each run |
 | `--exit` | off | Quit when the reel ends — `--record-showreel` passes it; without it a Replay card is shown |
 

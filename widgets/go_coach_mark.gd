@@ -122,8 +122,9 @@ func _build() -> void:
 	skip_button = GoStyle.button_key(GoUi.text_key(&"skip"), finish.bind(false), GoStyle.Tone.BARE)
 	skip_button.name = "Skip"
 	skip_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	skip_button.custom_minimum_size.x = 72
-	GoStyle.typography(skip_button, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+	skip_button.custom_minimum_size = Vector2(72, GoUi.config.min_touch_size)
+	# `font_role`, not `typography`: the latter swaps the variation and the quiet bare key became a full one.
+	GoStyle.font_role(skip_button, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 	actions.add_child(skip_button)
 	actions.add_child(GoStyle.spacer())
 	next_button = GoStyle.button_key(GoUi.text_key(&"next"), advance, GoStyle.Tone.PRIMARY)

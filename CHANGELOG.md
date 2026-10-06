@@ -27,7 +27,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
     the other looks it does nothing.
   - **`GoSkin.dress_title(label)`** — a new hook that dresses a window's title label (the arcade look outlines it in
     ink). `GoSurface` lifts the previous look's outline before calling it, so the other looks get the plain title back.
-  - `tests/gohud_arcade_test.gd` (222 checks, `check_all` step ①-m).
+  - **`GoStyle.label_ink(button, colour, quiet := false)`** — the colour a button's label can take. A dark colour
+    asked for on a look that outlines its labels in ink would blur into the outline; on a painted key the label stays
+    white (faded when `quiet`, a placeholder), on any other face the colour is kept and the outline dropped.
+    `GoStyle.typography()` on a button, the chosen segment and `GoCombobox`'s placeholder go through it.
+  - A board padded too little for a 3dp frame (`GoStyleBoxArcade.MIN_FRAME`) is drawn as a key cap — no hairline
+    frame. By day a disabled label is a pale grey (a mid grey closed up inside its outline), a slider's fill is an
+    outlined tube, a quick slot's gloss is softer under its number and the title banner leaves room at its ends.
+  - `tests/gohud_arcade_test.gd` (235 checks, `check_all` step ①-m).
 - **Comic looks: `comic_light` and `comic_dark` — `GoStyleBoxComic`.** Every key, text field, list row, tab, folding
   title, bar, slider and panel is inked like a comic panel: a bold outline in the palette's `border` colour around the
   surface colour, and a hard, faint shadow dropped down and to the right of what stands off the page (keys, cards,
@@ -127,6 +134,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **The coach mark's Skip is a quiet key again.** It was styled with `GoStyle.typography()`, which swaps the theme
+  variation — the bare Skip key became a full button in every look. It now takes `GoStyle.font_role()` (size and
+  colour only) and keeps the touch height.
 - **The sci-fi danger glow button glows.** `GoDangerSolidGlowButton` had the same faces as `GoDangerSolidButton` in
   `scifi_dark` and `scifi_light` — the generator gave the primary twin its glow and forgot the danger one. It now glows
   in the danger colour (7dp, 10dp under the mouse), and the button-glow check holds both raised twins above their flat

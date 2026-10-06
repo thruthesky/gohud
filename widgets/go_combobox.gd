@@ -120,8 +120,9 @@ func _sync_text() -> void:
 	var spoken := placeholder if not placeholder.is_empty() else GoUi.text(&"search")
 	accessibility_name = GoUi.spoken([spoken, selected_text()])
 	if _selected < 0 and not placeholder.is_empty():
-		add_theme_color_override(&"font_color", GoUi.color(GoTheme.MUTED))
+		add_theme_color_override(&"font_color", GoStyle.label_ink(self, GoUi.color(GoTheme.MUTED), true))
 	else:
+		GoStyle.label_ink(self, Color.TRANSPARENT)
 		remove_theme_color_override(&"font_color")
 
 

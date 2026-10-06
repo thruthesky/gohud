@@ -93,14 +93,20 @@ func key(colour: Color, corner: float, lip := -1, edge := -1, gloss := -1.0) -> 
 	return face
 
 
-## A pale key cap — what plain dark text sits on (a slot, a cell, a row) — tinted [param tint] of [param colour].
+## A key cap — what plain text sits on (a slot, a cell, a row) — tinted [param tint] of [param colour]. Pale by day
+## (dark text on it); 🛑 at night the raised surface, not a pale one — a pale cap under the night look's light text and
+## icons read grey and washed out (`tools/theme_arcade.py` `cap`, the theme's rows, is the same rule).
 func cap(corner: float, colour := Color.TRANSPARENT, tint := 0.0, lip := -1, edge := 2) -> GoStyleBoxArcade:
-	var surface := GoUi.color(GoTheme.SURFACE)
-	var top := surface.lerp(Color.WHITE, 0.5)
-	if colour.a > 0.0: top = top.lerp(Color(colour, 1.0), tint)
+	var surface := Color(GoUi.color(GoTheme.SURFACE), 1.0)
+	var high := Color(GoUi.color(GoTheme.SURFACE_HIGH), 1.0)
+	var top := high.lerp(Color.WHITE, 0.06) if _night() else surface.lerp(Color.WHITE, 0.5)
+	var bottom := surface.lerp(high, 0.5) if _night() else surface.lerp(high, 0.55)
+	if colour.a > 0.0:
+		top = top.lerp(Color(colour, 1.0), tint)
+		bottom = bottom.lerp(Color(colour, 1.0), tint * 0.8)
 	var face := key(top, corner, lip, edge, arcade_gloss * 0.7)
 	face.bg_color = top
-	face.bottom_color = top.lerp(GoUi.color(GoTheme.SURFACE_HIGH), 0.5)
+	face.bottom_color = bottom
 	face.shade_color = Color(face.bottom_color.lerp(ink(), 0.3), 1.0)
 	return face
 
@@ -139,6 +145,8 @@ func filter_chip_box(selected: bool, state: StringName) -> StyleBox:
 ##    stood out of line with its row.
 func slot_box(accent: Color, lit: bool) -> StyleBox:
 	var face := cap(GoUi.metric(GoTheme.RADIUS_SMALL), accent, 0.2 if lit else 0.12, 3)
+	# A softer gloss: the slot's number sits in its top-left corner, right where the stroke runs.
+	face.shine = 0.35
 	if lit:
 		face.frame = 3.0
 		face.frame_color = gold().lerp(Color.WHITE, 0.15)
@@ -420,7 +428,8 @@ func wheel_band_box() -> StyleBox:
 ## A window's title sits on a gold banner — a painted key with its lip and gloss.
 func title_plate_box() -> StyleBox:
 	var face := key(gold(), 14.0, 3, arcade_edge)
-	return face.pad(14.0, 4.0)
+	# Room at the ends for the round corners and the gloss — the title stays clear of both.
+	return face.pad(20.0, 6.0)
 
 
 ## The title on the banner is white — `dress_title` gives it the ink outline it reads through.

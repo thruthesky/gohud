@@ -528,8 +528,9 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         if g is None or "bg_color" not in g:
             continue
         colour = _parse_color(g["bg_color"]) if bid == "bar_fill" else paint["blue"]
-        # A bar's fill is a tube with its own ink line, so where it ends reads at a glance whatever its colour.
-        key(bid, (colour, None, None), lip=0, edge=EDGE_SMALL if bid == "bar_fill" else 0,
+        # A bar's or a slider's fill is a tube with its own ink line, so where it ends reads at a glance whatever its
+        # colour — and the slider's fill lies in its groove instead of over it.
+        key(bid, (colour, None, None), lip=0, edge=EDGE_SMALL,
             radius=RS if bid == "bar_fill" else 4, centre=False, shine=0.75)
     for bid in ("scroll_grab", "scroll_grab_hover"):
         if field(bid) is not None:
@@ -544,8 +545,9 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         if name.startswith("Button/colors/"):
             before[name[len("Button/colors/"):]] = value
     white = C(WHITE)
-    # A disabled label is grey, still outlined — it reads, and it reads as off.
-    dim = C(_mix(_solid(pal["muted"]), WHITE, 0.45) if not dark else _mix(_solid(pal["text"]), BLACK, 0.22))
+    # A disabled label is a pale grey, still outlined — it reads, and it reads as off. 🛑 By day not a mid grey: inside
+    #    its ink outline on the grey key it closed up into a blot ("Busy", the disabled keys).
+    dim = C(_mix(_solid(pal["muted"]), WHITE, 0.78) if not dark else _mix(_solid(pal["text"]), BLACK, 0.22))
     hex_ink = C(line)
     states = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
     icons = ("icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color",

@@ -64,26 +64,33 @@ extends GoStyleBoxJelly
 const WELL_ROOM := 3.0
 
 
+## The thinnest frame worth drawing (dp). Under it a board is drawn as a key cap: the well's colours inside the ink.
+const MIN_FRAME := 3.0
+
+
 ## The frame as drawn: never over the content. A board's padding holds the ink, the frame, `WELL_ROOM` and (at the
-## bottom) the lip — padded less (`GoStyle.hud_panel(…, pad_x, pad_y)`, a narrow screen), the frame gives way, down to a
-## line. A board with no padding at all (a window's card, which pads its content itself) keeps its whole frame.
+## bottom) the lip — padded less (`GoStyle.hud_panel(…, pad_x, pad_y)`, a card padded by hand), the frame gives way; with
+## no room for `MIN_FRAME` it goes (0), and the board is a key cap in the well's colours. 🛑 A sliver of frame was worse:
+## the well's ink line then ran right along the text. A board with no padding at all (a window's card, which pads its
+## content itself) keeps its whole frame.
 func frame_drawn() -> float:
-	if frame <= 0.0: return 0.0
+	if frame <= 0.0 or frame_color.a <= 0.0: return 0.0
 	var sides := [content_margin_left, content_margin_top, content_margin_right, content_margin_bottom]
 	if sides.max() <= 0.0: return frame
 	var room := minf(minf(content_margin_left, content_margin_right),
 		minf(content_margin_top, content_margin_bottom - maxf(0.0, lip)))
-	return clampf(room - maxf(0.0, border_width) - WELL_ROOM, 1.5, frame)
+	var rim := minf(room - maxf(0.0, border_width) - WELL_ROOM, frame)
+	return rim if rim >= MIN_FRAME else 0.0
 
 
 ## The body's top colour — on a board, the frame's.
 func top() -> Color:
-	return frame_color if frame > 0.0 and frame_color.a > 0.0 else bg_color
+	return frame_color if frame_drawn() > 0.0 else bg_color
 
 
 ## The colour the body's gradient ends on — on a board, the frame's.
 func bottom() -> Color:
-	if frame > 0.0 and frame_color.a > 0.0:
+	if frame_drawn() > 0.0:
 		return frame_bottom if frame_bottom.a > 0.0 else _deeper(frame_color, 0.14)
 	return bottom_color if bottom_color.a > 0.0 else _deeper(bg_color, 0.14)
 
@@ -95,7 +102,9 @@ func well_bottom() -> Color:
 
 ## The lip under the body. 🛑 Towards the ink, not black: a green key's lip stays green, only deeper.
 func shade() -> Color:
-	return shade_color if shade_color.a > 0.0 else Color(bottom().lerp(edge(), 0.3), 1.0)
+	# A board drawn as a cap (no room for its frame) takes a lip of its well, not the frame's.
+	if shade_color.a > 0.0 and not (frame > 0.0 and frame_drawn() <= 0.0): return shade_color
+	return Color(bottom().lerp(edge(), 0.3), 1.0)
 
 
 ## [param colour] a little towards black, keeping its alpha.
@@ -162,7 +171,7 @@ func to_flat() -> StyleBoxFlat:
 	var flat := StyleBoxFlat.new()
 	flat.bg_color = bg_color
 	flat.draw_center = draw_center
-	if frame > 0.0 and frame_color.a > 0.0:
+	if frame_drawn() > 0.0:
 		flat.border_color = Color(top().lerp(bottom(), 0.5), 1.0)
 		flat.set_border_width_all(roundi(frame_drawn() + border_width))
 	else:
@@ -225,9 +234,9 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 		var cut := inner.end.y - base
 		_gradient(canvas, inner, inner_corner, cut, Color(top(), alpha), Color(bottom(), alpha), reach)
 		# 3 · A board's well inside its frame, with an ink line round it.
-		if frame > 0.0 and frame_color.a > 0.0:
+		var rim := frame_drawn()
+		if rim > 0.0:
 			var body := Rect2(inner.position, Vector2(inner.size.x, cut - inner.position.y))
-			var rim := frame_drawn()
 			var well := body.grow(-rim)
 			if well.size.x > 2.0 and well.size.y > 2.0:
 				var well_corner := maxf(0.0, inner_corner - rim)
@@ -240,8 +249,8 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 		# 4 · The gloss round the top-left corner — on a board, inside its frame, never over the text in the well.
 		if shine > 0.0:
 			var lit := Rect2(inner.position, Vector2(inner.size.x, cut - inner.position.y))
-			if frame <= 0.0: _gloss(canvas, lit, inner_corner, alpha)
-			elif frame_drawn() >= 4.0: _gloss_frame(canvas, lit, inner_corner, alpha)
+			if rim <= 0.0: _gloss(canvas, lit, inner_corner, alpha)
+			elif rim >= 4.0: _gloss_frame(canvas, lit, inner_corner, alpha)
 	# 5 · The ink ring last, its smooth inner edge over the edges of everything under it.
 	if outline > 0.0: _box(canvas, outer, Color.TRANSPARENT, corner, ink, outline)
 

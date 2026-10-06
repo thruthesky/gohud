@@ -283,7 +283,50 @@ static func typography(node: Control, role := GoTheme.ROLE_BODY, ink := Color.TR
 		node.add_theme_font_size_override(&"font_size", GoUi.config.base_font_size)
 	else:
 		node.remove_theme_font_size_override(&"font_size")
-	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
+	if ink.a > 0: node.add_theme_color_override(&"font_color", label_ink(node, ink) if node is Button else ink)
+
+
+## 🔑 The colour a button's label can take: [param ink] as asked — unless the look outlines its labels in a dark ink
+## (the arcade keys: a white label in a navy outline) and [param ink] is dark too, when the letters would blur into
+## their own outline. Then, on a painted key, the label stays the theme's (white) — a little faded when [param quiet]
+## (a placeholder); on any other face [param ink] is kept and the outline taken off. Call it again when the colour
+## changes — it undoes its last call.
+##
+## ```gdscript
+## button.add_theme_color_override(&"font_color", GoStyle.label_ink(button, GoUi.color(GoTheme.MUTED)))
+## ```
+static func label_ink(node: Button, ink: Color, quiet := false) -> Color:
+	if node == null: return ink
+	if node.has_meta(&"go_label_unlined"):
+		node.remove_meta(&"go_label_unlined")
+		node.remove_theme_constant_override(&"outline_size")
+	if ink.a <= 0.0: return ink
+	var theme: Theme = node.theme if node.theme != null else GoUi.theme()
+	if theme == null: return ink
+	var type := node.theme_type_variation if not node.theme_type_variation.is_empty() else StringName(node.get_class())
+	if _constant_in_chain(theme, &"outline_size", type) <= 0: return ink
+	var outline := GoTheme.color_in_chain(theme, &"font_outline_color", type)
+	if outline.a <= 0.0 or GoSkin.contrast_ratio(Color(ink, 1.0), Color(outline, 1.0)) >= 3.0: return ink
+	var own := node.get_theme_stylebox(&"normal") if node.has_theme_stylebox_override(&"normal") else null
+	var face := (own if own != null else _theme_face(node, &"normal")) as GoStyleBoxArcade
+	if face != null and face.draw_center and face.frame_drawn() <= 0.0 and face.top().a > 0.0:
+		var white := GoTheme.color_in_chain(theme, &"font_color", type, Color.WHITE)
+		return Color(white, white.a * ink.a * (0.75 if quiet else 1.0))
+	node.set_meta(&"go_label_unlined", true)
+	node.add_theme_constant_override(&"outline_size", 0)
+	return ink
+
+
+## The constant [param name] on [param type] or the first type up its variation base or class chain that has it; 0 if none.
+static func _constant_in_chain(theme: Theme, name: StringName, type: StringName) -> int:
+	var current := type
+	for _depth in 12:
+		if current.is_empty(): break
+		if theme.has_constant(name, current): return theme.get_constant(name, current)
+		var base := theme.get_type_variation_base(current)
+		if base.is_empty() and ClassDB.class_exists(current): base = ClassDB.get_parent_class(current)
+		current = base
+	return 0
 
 
 ## 🔑 Sets **the font size (and color) only** from a role token — `theme_type_variation` is left alone.
@@ -2511,8 +2554,9 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 			var face := GoUi.skin().segment_box(index, count, state)
 			if compact: face = _compact_segment(face, state)
 			item.add_theme_stylebox_override(state, face)
-		item.add_theme_color_override(&"font_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
-		item.add_theme_color_override(&"font_hover_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
+		var on_accent := label_ink(item, GoUi.color(GoTheme.ON_ACCENT))
+		item.add_theme_color_override(&"font_pressed_color", on_accent)
+		item.add_theme_color_override(&"font_hover_pressed_color", on_accent)
 		var mark := StringName(str(spec.get("icon", "")))
 		if not mark.is_empty():
 			_segment_icon(item, mark)
@@ -2532,7 +2576,7 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 ##    base `Button`.
 static func _segment_icon(item: Button, mark: StringName) -> void:
 	var kind := item.theme_type_variation
-	var chosen := GoUi.color(GoTheme.ON_ACCENT)
+	var chosen := GoUi.theme_color_of(item, &"font_pressed_color", GoUi.color(GoTheme.ON_ACCENT))
 	var rest := GoUi.theme_color(&"font_color", kind, GoUi.color(GoTheme.TEXT))
 	var tones := {
 		&"icon_normal_color": rest,
