@@ -313,6 +313,9 @@ func _day_cell(date: Dictionary, kind: StringName, skin: GoSkin) -> Button:
 	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
 		button.add_theme_color_override(key, ink)
 	button.add_theme_color_override(&"font_disabled_color", Color(ink, ink.a * 0.38))
+	# Its own ink on its own face, so plain letters: a look's label outline (the arcade keys' ink round a white label)
+	# would blur dark letters into a blot.
+	button.add_theme_constant_override(&"outline_size", 0)
 	var allowed := (min_date.is_empty() or _order(date, _clean(min_date)) >= 0) \
 		and (max_date.is_empty() or _order(date, _clean(max_date)) <= 0)
 	button.disabled = not allowed

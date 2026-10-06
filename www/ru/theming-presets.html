@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # ваши иконки, всё остальное — из пресета</code></pre>
   <p>Явно заданные <code>theme</code>, <code>skin</code> или <code>icons</code> <b>берут верх над</b> пресетом.</p>
 
-  <h3 id="the-six-built-in-presets">Двенадцать встроенных пресетов</h3>
+  <h3 id="the-six-built-in-presets">Четырнадцать встроенных пресетов</h3>
   <table>
     <thead><tr><th>Пресет</th><th>Панели</th><th>Скин · иконки</th></tr></thead>
     <tbody>
@@ -144,13 +144,14 @@ GoUi.config.icons = my_icons     # ваши иконки, всё остальн�
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Кованые рамки <code>GoStyleBoxMedieval</code> — железо и кожа либо пергамент — с заклёпками и угловыми орнаментами на меню</td><td><code>GoSkinMedieval</code> · 16 гравированных иконок поверх стандартных</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Новое</span></td><td>Material 3 Expressive для экранов приложений — кнопки-пилюли 40dp внутри области касания 48dp, диалоги 28dp, заливные карточки, поля с контуром, ползунок Expressive; компоненты приложений (панель навигации, верхняя панель, FAB, строка поиска, чипы, прогресс, выбор даты) следуют токенам компонентов M3</td><td><code>GoSkinMaterial</code> · стандартные иконки</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Новое</span></td><td>Для детей — коробка с игрушками: толстые контуры и плотный бортик под каждой клавишей, которая проседает при нажатии; утопленные поля ввода, вкладки-пузыри, желейные полосы; у каждого вида элементов свой цвет мелка, слоты-конфеты, значки-наклейки, радужный джойстик и разноцветные диаграммы. Размеры и шрифт проекта не меняются.</td><td><code>GoSkinKids</code> · стандартные иконки</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">Новое</span></td><td>Игровой автомат, нарисованный <code>GoStyleBoxArcade</code>: каждая клавиша раскрашена градиентом сверху вниз, белым бликом и бортиком, который проседает при нажатии, всё в тёмно-синем чернильном контуре, а подпись белая с чернильным контуром — зелёный основной цвет, синие клавиши, красная опасность, лавандовые маленькие клавиши. Толстые панели с цветной рамкой вокруг светлой середины; золотая лента заголовка и круглая красная клавиша закрытия у окон.</td><td><code>GoSkinArcade</code> · стандартные иконки</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Новое</span></td><td>Кадры комикса, которые рисует <code>GoStyleBoxComic</code>: жирный чернильный контур и жёсткая тень на каждой панели, которая исчезает при нажатии; обведённые чернилами переключатели, флажки и ручки ползунков, жёлтая плашка заголовка у окон. Толщина контура, размер тени и то, видны ли тени вообще, — настройки <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · стандартные иконки</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Все двенадцать рядом</h2>
+  <h2>Все четырнадцать рядом</h2>
   <p class="sub">Один и тот же экран галереи, где поменялось только имя пресета, — код виджетов не отличается ни на строку.
     Каждый снимок — телефон в книжной ориентации, 390×844.</p>
   <div class="phones">
@@ -166,6 +167,8 @@ GoUi.config.icons = my_icons     # ваши иконки, всё остальн�
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Галерея виджетов gohud с пресетом kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Галерея виджетов gohud с пресетом comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Галерея виджетов gohud с пресетом comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Галерея виджетов gohud с пресетом arcade_light" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Галерея виджетов gohud с пресетом arcade_dark" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -340,6 +343,57 @@ GoStyle.comic_border(title, 5.0)             # у этого элемента к
 # Отредактируйте themes/palettes/inked.json, затем:
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>Аркада: раскрашенные клавиши и толстые панели <span class="badge new">Новое</span></h2>
+  <p><code>arcade_light</code> (белые панели на небесно-голубой странице) и <code>arcade_dark</code> (тёмно-синие панели на ночной странице)
+    одевают каждый экран как игровой автомат: <b>каждая клавиша раскрашена</b> — градиент от светлого верха к более насыщенному низу,
+    белый штрих блика и бортик, который проседает при нажатии, внутри тёмно-синего чернильного контура, — а <b>каждая панель толстая</b>:
+    цветная рамка вокруг светлой середины.</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# Или: GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Галерея gohud в arcade_light — зелёные, синие, красные и лавандовые раскрашенные клавиши и панель HUD в синей рамке на небесно-голубой странице" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Галерея gohud в arcade_dark — те же яркие клавиши на ночной странице" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Диалог подтверждения в arcade_light — золотая лента заголовка, круглая красная клавиша закрытия и синие и зелёные раскрашенные клавиши на панели в рамке" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="Диалог подтверждения в arcade_dark — золотая лента на тёмно-синей панели" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">Что меняется</h3>
+  <table>
+    <thead><tr><th>Часть</th><th>В аркадных обликах</th></tr></thead>
+    <tbody>
+      <tr><td>Клавиши</td><td>Их рисует <code>GoStyleBoxArcade</code>: тело с градиентом, белый блик у левого верхнего угла, более тёмный бортик и тёмно-синий чернильный контур. Основная клавиша зелёная, обычные клавиши и выбранная вкладка синие, опасные — коралловые и красные, маленькие клавиши и остальные вкладки лавандовые.</td></tr>
+      <tr><td>Подписи</td><td>Белые с чернильным контуром на каждой раскрашенной клавише. Каждая краска сдвигается, пока эта подпись не станет читаемой на любой высоте её градиента — 4,6:1 или больше, причём контур, как и в WCAG, считается частью буквы.</td></tr>
+      <tr><td>Нажатие</td><td>Бортик исчезает, клавиша опускается на своё место и выпрыгивает обратно.</td></tr>
+      <tr><td>Панели</td><td>Панели, карточки, карточки HUD и всплывающие окна толстые: цветная рамка (6dp вокруг окна, 4 вокруг карточки или карточки HUD, 3 вокруг меню или уведомления) с собственным бликом и бортиком вокруг светлой середины с чернильной линией. Их отступы немного растут, чтобы её вместить, так что текст никогда не касается рамки.</td></tr>
+      <tr><td>Поля и полосы</td><td>Поля ввода и желобки полос — утопленные углубления; заливка полосы — глянцевая раскрашенная трубка яркого оттенка её цвета.</td></tr>
+      <tr><td>Окна</td><td>Золотая лента с белым заголовком в чернильном контуре и круглая красная клавиша закрытия с белым крестиком.</td></tr>
+      <tr><td>Части скина</td><td><code>GoSkinArcade</code>: быстрые слоты и чипы — колпачки клавиш, слот на перезарядке загорается золотой окантовкой, значки — светлые плашки, оповещения обрамлены своим цветом, выбранная карточка загорается золотой окантовкой, FAB — золотая клавиша, а стик — глянцевая площадка с четырьмя стрелками.</td></tr>
+      <tr><td>Непрозрачность</td><td>Панели, карточки, уведомления и всплывающие окна непрозрачны; карточки HUD непрозрачны на 94%.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">Раскрасьте отдельную клавишу своим цветом</h3>
+  <p>Тема раскрашивает клавиши по их виду. Меню, где каждой клавише нужен свой цвет, раскрашивает их по одной — при наведении
+    лицевая сторона становится чуть светлее, при нажатии чуть темнее, а отключённая остаётся приглушённой:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # рамка панели и все клавиши внутри неё</code></pre>
+  <div class="note">
+    <b>Подпись всегда читается.</b> Краску, на которой белая подпись не читалась бы, осветляют или затемняют, пока она не станет читаемой, так что
+    переданный вами цвет — лишь отправная точка. В других обликах <code>arcade_paint()</code> ничего не делает.
+  </div>
+  <div class="note">
+    <b>Клавиши сохраняют размер.</b> Бортик и блик рисуются внутри прямоугольника каждой клавиши, поэтому экран, разложенный в
+    другом облике, сохраняет свою раскладку. Панели дают содержимому чуть больше отступа (12dp у карточки и карточки HUD, 15 снизу),
+    чтобы текст никогда не касался рамки. Шрифт вашего проекта тоже сохраняется.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Быстрые слоты, стик и чип в исполнении аркадного скина — глянцевые колпачки клавиш и площадка с четырьмя стрелками" loading="lazy"><figcaption>Части, которые рисует аркадный скин</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">Сделайте собственную аркаду</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# Отредактируйте themes/palettes/cabinet.json — цвета *_vivid и есть краски, — затем:
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

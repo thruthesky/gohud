@@ -145,7 +145,7 @@
   </div>
   <p>Every picture on this page is the same little game — health and mana top left, coins top right, a joystick and three
     quick slots at the bottom — in <code>default_dark</code>, with one popup open over it. <a href="#popup-looks">The same
-    popup in all twelve looks →</a></p>
+    popup in all fourteen looks →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -683,6 +683,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="img/popups/look-kids_dark.webp" width="300" height="649" alt="The confirmation in kids_dark — a mint ribbon on a night-blue card" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">New</span></figcaption></figure>
     <figure class="shot phone"><img src="img/popups/look-comic_light.png" width="300" height="649" alt="The confirmation in comic_light — a yellow title caption, an inked close button and inked buttons with hard shadows" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">New</span></figcaption></figure>
     <figure class="shot phone"><img src="img/popups/look-comic_dark.png" width="300" height="649" alt="The confirmation in comic_dark — cream ink on a slate card" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">New</span></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-arcade_light.png" width="300" height="649" alt="The confirmation in arcade_light — a gold title banner, a round red close key and painted keys on a thick blue-framed board" loading="lazy"><figcaption><code>arcade_light</code> <span class="badge new">New</span></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-arcade_dark.png" width="300" height="649" alt="The confirmation in arcade_dark — a gold banner on a navy board" loading="lazy"><figcaption><code>arcade_dark</code> <span class="badge new">New</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">What each look changes</h3>
@@ -695,6 +697,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Material 3</td><td>28dp corners, 24dp padding, fully opaque</td><td>A 24sp headline in Roboto; pill buttons with a 40dp plate in a 48dp target</td></tr>
       <tr><td>Kids</td><td>A jelly-candy card with a soft shadow, fully opaque</td><td>A sunny title ribbon (mint at night), a round candy close button, buttons that squish when pressed</td></tr>
       <tr><td>Comic</td><td>A bold ink outline and a hard shadow, fully opaque</td><td>A yellow title caption, an inked round close button, buttons whose shadow goes when pressed</td></tr>
+      <tr><td>Arcade</td><td>A thick board — a coloured frame round a pale well — fully opaque</td><td>A gold title banner with a white, ink-outlined title, a round red close key, painted keys that pop when pressed</td></tr>
     </tbody>
   </table>
 
@@ -705,8 +708,9 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Hook</th><th>What it dresses</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>A plate behind a window's title. The title centres on it and shrinks, down to the minimum size (15), to stay on one line.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>The window's × — kids makes it a round candy, comic an inked disc.</td></tr>
-      <tr><td><code>press_feedback(control)</code></td><td>Runs the moment a finger lands on a button gohud made — kids squishes it.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>The window's × — kids makes it a round candy, comic an inked disc, arcade a round red key.</td></tr>
+      <tr><td><code>dress_title(label)</code></td><td>The window's title label — arcade outlines its white title in ink.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Runs the moment a finger lands on a button gohud made — kids squishes it, arcade pops it.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>The faces of prompt cards and coach cards, snackbars and notices, the drawer, banners, the console.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>The tour's ring and pointer.</td></tr>
     </tbody>
@@ -716,7 +720,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Each kind of popup follows its own opacity, so a HUD card can stay light while a dialog stays solid: windows, sheets, dialogs,
     popovers and the combobox follow <code>panel_alpha</code>; the drawer and coach card <code>card_alpha</code>; prompt cards and the
     console <code>hud_alpha</code>; snackbars and notices <code>notice_alpha</code>; menus <code>popup_alpha</code>. Material and kids
-    make them all opaque; comic too, except prompt cards and the console at 92%. Override one kind with <code>GoConfig.container_alpha_overrides</code>, all of them with
+    make them all opaque; comic too, except prompt cards and the console at 92%, and arcade, except those two at 94%. Override one kind with <code>GoConfig.container_alpha_overrides</code>, all of them with
     <code>container_alpha</code> (a ratio — <code>0.95</code>), or one window with its <code>alpha</code>. Only the face fades; text is
     never see-through. <a href="theming-opacity.html">Opacity in detail →</a></p>
 </section>

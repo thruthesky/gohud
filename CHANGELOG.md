@@ -6,6 +6,28 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **Arcade looks: `arcade_light` and `arcade_dark` — `GoStyleBoxArcade`.** An arcade cabinet: **every key is
+  painted** — a top-to-bottom gradient, a white gloss stroke round its top-left corner, a deeper lip under it that
+  sinks when the key is pressed, and a navy ink outline. The primary key is green, the normal keys and the chosen tab
+  blue, the danger keys coral and red, the small keys and the other tabs lavender; every label on a paint is white with
+  an ink outline. **Boards are thick**: a coloured frame (6dp round a window, 4 round a card or a HUD card, 3 round a menu) with its
+  own gloss and lip, round a pale well with an ink line. Text fields and bar grooves are sunken wells, bar fills glossy
+  painted tubes, slots, chips and rows pale key caps. Sky blue by day, navy by night.
+  `GoSkinArcade` paints the parts gohud draws in code: a gold banner with a white ink-outlined title behind window
+  titles, a round red close key with a white cross, key-cap quick slots that light a gold rim, light badge plates,
+  alerts framed in their colour, a chosen choice card with a gold rim, a gold FAB, painted segments, vivid bar fills, a
+  glossy joystick with four arrows, a quick pop on every press; dials `arcade_edge`, `arcade_lip`, `arcade_gloss`.
+  - **Every label reads on its paint.** WCAG's note on 1.4.3 counts a letter's outline as part of the letter, so a
+    white label with an ink outline reads on whichever of the two stands off the paint more. Every paint — the theme's,
+    the hover and pressed faces', a paint you choose — is moved until that label clears 4.6:1 at five heights of its
+    gradient (`GoStyleBoxArcade.fit()`); `tools/check_contrast.py` now measures outlined labels that way, at every
+    height of a gradient face.
+  - **`GoStyle.arcade_paint(node, colour, deep := false)`** paints one key (or a board's frame) its own colour — an
+    orange shop key in a pause menu — with a lighter hover and a deeper press; the disabled face stays dim, and under
+    the other looks it does nothing.
+  - **`GoSkin.dress_title(label)`** — a new hook that dresses a window's title label (the arcade look outlines it in
+    ink). `GoSurface` lifts the previous look's outline before calling it, so the other looks get the plain title back.
+  - `tests/gohud_arcade_test.gd` (222 checks, `check_all` step ①-m).
 - **Comic looks: `comic_light` and `comic_dark` — `GoStyleBoxComic`.** Every key, text field, list row, tab, folding
   title, bar, slider and panel is inked like a comic panel: a bold outline in the palette's `border` colour around the
   surface colour, and a hard, faint shadow dropped down and to the right of what stands off the page (keys, cards,

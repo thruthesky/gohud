@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — набор HUD и UI для Godot 4</title>
-<meta name="description" content="Настраиваемый набор HUD и UI для Godot 4.7+. Плавающие окна, нижние листы, диалоги, формы, снекбары, полосы HUD, быстрые слоты и виртуальный стик, а также двенадцать пресетов — обычный, sci-fi, средневековый, Material 3, детский и комиксовый.">
+<meta name="description" content="Настраиваемый набор HUD и UI для Godot 4.7+. Плавающие окна, нижние листы, диалоги, формы, снекбары, полосы HUD, быстрые слоты и виртуальный стик, а также четырнадцать пресетов — обычный, sci-fi, средневековый, Material 3, детский, комиксовый и аркадный.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud — набор HUD и UI для Godot 4.7 и новее. Плавающие окна, нижние листы, диалоги, формы,
       снекбары, обучающие подсказки, полосы HUD, быстрые слоты и виртуальный стик работают от <b>одной темы и
       одного сменного набора иконок</b>, а безопасную область, виртуальную клавиатуру, RTL и области нажатия
-      берут на себя. <b>Двенадцать пресетов</b> — обычный, sci-fi, средневековый, Material 3, детский и комиксовый, каждый в тёмном и светлом
+      берут на себя. <b>Четырнадцать пресетов</b> — обычный, sci-fi, средневековый, Material 3, детский, комиксовый и аркадный, каждый в тёмном и светлом
       варианте, — меняют цвета и формы одной строкой.
     </p>
     <div class="badges">
@@ -87,14 +87,15 @@
       <span class="badge">Чистый GDScript</span>
       <span class="badge">Автозагрузка не нужна</span>
       <span class="badge">MIT</span>
-      <span class="badge">12 пресетов</span>
-      <span class="badge new">Новое: комикс · Material 3 · детский облик</span>
+      <span class="badge">14 пресетов</span>
+      <span class="badge new">Новое: аркада · комикс · Material 3 · детский облик</span>
       <span class="badge">21 язык</span>
       <span class="badge"><span data-n="icons">1 287</span> иконок в комплекте</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Установка</a>
+      <a class="btn" href="#arcade">Посмотреть аркадный облик</a>
       <a class="btn" href="#comic">Посмотреть облик комикса</a>
       <a class="btn" href="#presets">Посмотреть пресеты</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
@@ -105,9 +106,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Новое: комикс, Material 3 и облик для детей</h2>
+  <h2>Новое: аркада, комикс, Material 3 и облик для детей</h2>
   <p class="sub">
-    К обычному, sci-fi и средневековому добавились три новых семейства — теперь <b>двенадцать встроенных обликов</b>, каждый в тёмном и светлом варианте.
+    К обычному, sci-fi и средневековому добавились четыре новых семейства — теперь <b>четырнадцать встроенных обликов</b>, каждый в тёмном и светлом варианте.
     Каждый виджет, всплывающее окно и элемент HUD принимает их без единого изменения в вашем коде: смените пресет — и весь экран последует за ним.
   </p>
   <div class="phones">
@@ -117,6 +118,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Галерея gohud в kids_dark — та же коробка с игрушками на ночно-синей странице" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Галерея gohud в comic_light — жирные чернильные контуры и жёсткие тени на странице цвета кремовой бумаги" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Галерея gohud в comic_dark — кремовые контуры и жёлтый основной цвет на ночной странице" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Галерея gohud в arcade_light — раскрашенные клавиши с градиентом и бликом и толстая панель HUD в синей рамке на небесно-голубой странице" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Галерея gohud в arcade_dark — те же яркие клавиши на ночной странице" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -139,19 +142,93 @@
         которая исчезает при нажатии. Одна настройка включает или выключает все тени, ещё две задают толщину контура и размер тени,
         а один вызов делает то же самое для отдельного виджета. У окон — жёлтая плашка заголовка.</p>
     </div>
+    <div class="card">
+      <h3 id="arcade-painted-keys">Аркада — раскрашенные клавиши</h3>
+      <p>Каждая клавиша раскрашена — градиент, белый блик и бортик, который проседает при нажатии, всё в тёмно-синем чернильном контуре, — а
+        подпись на ней белая с чернильным контуром: зелёная — играть, синяя — всё остальное, красная — удалить. Панели толстые: цветная
+        рамка вокруг светлой середины, а у окон золотая лента заголовка и круглая красная клавиша закрытия.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # или MATERIAL_DARK
 GoUi.use_preset(&amp;"kids_light")                   # или &amp;"kids_dark"
-GoUi.use_preset(&amp;"comic_light")                  # или &amp;"comic_dark"</code></pre>
+GoUi.use_preset(&amp;"comic_light")                  # или &amp;"comic_dark"
+GoUi.use_preset(&amp;"arcade_light")                 # или &amp;"arcade_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 подробно →</a> · <a href="theming-presets.html#kids">Детский облик подробно →</a> ·
-    <a href="#comic">Комикс, виджет за виджетом ↓</a> ·
-    <a href="widgets-popups.html#popup-looks">Одно и то же всплывающее окно во всех двенадцати обликах →</a></p>
+    <a href="#arcade">Аркада, виджет за виджетом ↓</a> · <a href="#comic">Комикс, виджет за виджетом ↓</a> ·
+    <a href="widgets-popups.html#popup-looks">Одно и то же всплывающее окно во всех четырнадцати обликах →</a></p>
+</section>
+
+<section id="arcade">
+  <h2>Аркада: раскрашенные клавиши и толстые панели</h2>
+  <p class="sub">
+    Самый новый облик одевает каждый экран как игровой автомат. <b>Каждая клавиша раскрашена</b> — градиент от светлого верха
+    к более насыщенному низу, белый штрих блика и бортик, который проседает при нажатии, всё внутри тёмно-синего чернильного контура, — а подпись на ней
+    белая с чернильным контуром. <b>Каждая панель толстая</b>: цветная рамка с собственным бликом вокруг светлой середины.
+    <code>arcade_light</code> ставит белые панели на небесно-голубую страницу; <code>arcade_dark</code> — тёмно-синие панели на ночную страницу.
+    Каждая картинка ниже — настоящий экран gohud: тот же код, одна строка с пресетом.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")   # или &amp;"arcade_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Галерея gohud в arcade_light — зелёные, синие, красные и лавандовые раскрашенные клавиши и панель HUD в синей рамке на небесно-голубой странице" loading="lazy"><figcaption><code>arcade_light</code> · галерея</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Галерея gohud в arcade_dark — те же яркие клавиши на ночной странице" loading="lazy"><figcaption><code>arcade_dark</code> · галерея</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Диалог подтверждения в arcade_light — золотая лента заголовка, круглая красная клавиша закрытия и синие и зелёные раскрашенные клавиши на панели в рамке" loading="lazy"><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/sheet-light.png" width="300" height="649" alt="Нижний лист в arcade_light — толстая панель в рамке, поднимающаяся от нижнего края, с рядами клавиш" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/coach-mark-light.png" width="300" height="649" alt="Обучающая подсказка в arcade_light — выноска в рамке, указывающая на клавишу" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/drawer-left-dark.png" width="300" height="649" alt="Боковая шторка в arcade_dark — тёмно-синяя панель со строками навигации поверх затемнённого экрана" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/popover-dark.png" width="300" height="649" alt="Поповер в arcade_dark — пузырь в рамке, привязанный к клавише, которая его открыла" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-key-painted">Каждая клавиша раскрашена</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-light.png" width="382" height="204" alt="Кнопки в arcade_light — зелёная «Играть», синяя «Подробнее», белая клавиша с контуром, коралловая «Удалить», красная «Удалить навсегда», лавандовая компактная клавиша и серая отключённая, каждая раскрашена градиентом, бликом и бортиком в тёмно-синем контуре" loading="lazy"><figcaption><code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-tabs-light.png" width="382" height="136" alt="Вкладки в arcade_light — выбранная вкладка синяя раскрашенная клавиша, остальные — лавандовые клавиши" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-segmented-light.png" width="240" height="72" alt="Сегментированный переключатель в arcade_light — отдельные раскрашенные клавиши, выбранная синяя и вдавленная" loading="lazy"><figcaption>Сегментированные клавиши</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-toggle-light.png" width="382" height="260" alt="Переключатели и флажки в arcade_light — зелёная глянцевая дорожка во включённом состоянии, лавандовая в выключенном, и зелёный флажок с галочкой" loading="lazy"><figcaption>Переключатели и флажки</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-card-light.png" width="382" height="249" alt="Карточки в arcade_light — светлые середины в толстых синих рамках с бликом и бортиком" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goform-light.png" width="382" height="328" alt="Форма в arcade_light — утопленное белое поле, переключатель и зелёная клавиша «Сохранить»" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-choice_grid-light.png" width="382" height="81" alt="Сетка выбора в arcade_light — колпачки клавиш, выбранный в золотой окантовке на зелёном оттенке" loading="lazy"><figcaption><code>GoStyle.choice_grid()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslotgrid-light.png" width="382" height="208" alt="Сетка слотов в arcade_light — инвентарь из глянцевых колпачков клавиш со счётчиками стопок" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-list_row-light.png" width="382" height="181" alt="Строки списка в arcade_light — каждая строка светлый колпачок клавиши с иконкой" loading="lazy"><figcaption>Строки списка</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/godatepicker-light.png" width="382" height="392" alt="Выбор даты в arcade_light — дни-колпачки клавиш, выбранный день — раскрашенная клавиша" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-arcade-dark">Ночью: <code>arcade_dark</code></h3>
+  <p>На тёмной странице чернила становятся самой страницей, только гораздо глубже, а краски остаются такими же яркими.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-dark.png" width="382" height="204" alt="Кнопки в arcade_dark — те же яркие краски на ночной странице" loading="lazy"><figcaption><code>GoStyle.button()</code> ночью</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gobar-dark.png" width="382" height="135" alt="Полосы HUD в arcade_dark — красная трубка HP, синяя MP и зелёная XP в утопленных желобках" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-hud_panel-dark.png" width="382" height="162" alt="Карточки HUD в arcade_dark — тёмно-синяя середина в толстой синей рамке поверх игры" loading="lazy"><figcaption><code>GoStyle.hud_panel()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslot-dark.png" width="382" height="72" alt="Быстрые слоты в arcade_dark — колпачки клавиш со счётчиком стопки и слот на перезарядке в золотой окантовке" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gojoystick-dark.png" width="204" height="204" alt="Виртуальный стик в arcade_dark — глянцевая площадка в чернильном кольце с четырьмя стрелками и ручкой-колпачком клавиши" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-alert-dark.png" width="382" height="260" alt="Оповещения в arcade_dark — небольшие панели в жёлтой, зелёной, красной и синей рамке" loading="lazy"><figcaption>Оповещения</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gofab-dark.png" width="382" height="80" alt="Плавающие кнопки действия в arcade_dark — золотые раскрашенные клавиши с бликом" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gorewardcalendar-dark.png" width="382" height="190" alt="Календарь наград в arcade_dark — дни-колпачки клавиш, сегодняшний в золотой окантовке" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-arcade-look-works">Как устроен аркадный облик</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="the-face">Лицевая сторона</h3>
+      <p>Каждая клавиша и панель — это <code>GoStyleBoxArcade</code>: чернильный контур, тело с градиентом, бортик и блик, нарисованные
+        внутри собственного прямоугольника элемента, — клавиша сохраняет размер во всех состояниях, а нажатие лишь вдавливает её.</p>
+    </div>
+    <div class="card">
+      <h3 id="labels-that-read">Подписи, которые читаются</h3>
+      <p>Белая подпись с чернильным контуром читается на любой краске, от которой её отделяет контур, — WCAG считает контур частью
+        буквы. Каждая краска сдвигается, пока её подпись не превысит 4,6:1 на любой высоте градиента.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows">Окна</h3>
+      <p>Заголовок окна лежит на золотой ленте белыми буквами в чернильном контуре, рядом с круглой красной клавишей закрытия. Диалоги,
+        листы, шторки и поповеры — толстые панели в рамке.</p>
+    </div>
+  </div>
+  <p>Отдельная клавиша может получить свой цвет — например, оранжевая клавиша магазина в меню паузы:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))</code></pre>
+  <p><a href="theming-presets.html#arcade">Аркада подробно →</a> · <a href="widgets-popups.html#popup-looks">Одно и то же всплывающее окно во всех четырнадцати обликах →</a></p>
 </section>
 
 <section id="comic">
   <h2>Комикс: жирные чернила и жёсткая тень</h2>
   <p class="sub">
-    Самый новый облик рисует каждую лицевую панель как кадр комикса — цвет поверхности внутри <b>жирного чернильного контура</b>
+    Облик комикса рисует каждую лицевую панель как кадр комикса — цвет поверхности внутри <b>жирного чернильного контура</b>
     и <b>жёсткая сплошная тень</b>, отброшенная вниз и вправо. <code>comic_light</code> рисует чёрными чернилами на странице цвета кремовой бумаги
     с кобальтовым основным цветом; <code>comic_dark</code> — кремовыми чернилами на ночной странице с жёлтым основным цветом. Каждая картинка ниже —
     настоящий экран gohud: тот же код, одна строка с пресетом.
@@ -246,7 +323,7 @@ GoStyle.comic_border(title, 5.0)             # у этого — контур п
     <b>Сделайте свой комикс.</b> <code>tools/new_theme.py inked --from comic_light</code> копирует палитру; измените
     цвета бумаги, чернил и основной цвет и запустите <code>tools/make_theme.py inked</code>. Чернила, тень и скин идут в комплекте.
   </div>
-  <p><a href="theming-presets.html#comic">Комикс подробно →</a> · <a href="widgets-popups.html#popup-looks">Одно и то же всплывающее окно во всех двенадцати обликах →</a></p>
+  <p><a href="theming-presets.html#comic">Комикс подробно →</a> · <a href="widgets-popups.html#popup-looks">Одно и то же всплывающее окно во всех четырнадцати обликах →</a></p>
 </section>
 
 <section id="showcase">
@@ -269,7 +346,7 @@ GoStyle.comic_border(title, 5.0)             # у этого — контур п
       <figcaption><b>Sci-fi</b> — угловатые панели и сенсорное управление</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Все двенадцать пресетов и как их переключать →</a></p>
+  <p><a href="#presets">Все четырнадцать пресетов и как их переключать →</a></p>
 </section>
 
 <section id="what">
@@ -305,8 +382,8 @@ GoStyle.comic_border(title, 5.0)             # у этого — контур п
       <p>Виджеты знают только <code>GoIconSet.CLOSE</code>. Смените набор — и все рисунки поменяются, не тронув ни строки кода. <a href="icons.html">Иконки →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Двенадцать образов, одна строка</h3>
-      <p><code>GoUi.use_preset()</code> меняет тему, скин и иконки разом — скруглённые, срезанные sci-fi, кованые средневековые рамки, компоненты приложений Material 3, детские желейные конфеты или чернила комикса.</p>
+      <h3 id="six-looks-one-line">Четырнадцать образов, одна строка</h3>
+      <p><code>GoUi.use_preset()</code> меняет тему, скин и иконки разом — скруглённые, срезанные sci-fi, кованые средневековые рамки, компоненты приложений Material 3, детские желейные конфеты, чернила комикса или аркадные краски.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Читаемость — по измерению</h3>
@@ -358,6 +435,8 @@ GoStyle.comic_border(title, 5.0)             # у этого — контур п
       <tr><td><code>kids_dark</code> <span class="badge new">Новое</span></td><td>Та же коробка с игрушками на ночно-синей странице</td></tr>
       <tr><td><code>comic_light</code> <span class="badge new">Новое</span></td><td>Кадры комикса — жирный чернильный контур и жёсткая тень на каждой панели, белые панели на странице цвета кремовой бумаги; тень, её размер и толщина контура — настройки</td></tr>
       <tr><td><code>comic_dark</code> <span class="badge new">Новое</span></td><td>Те же чернила на ночной странице — кремовые контуры и жёлтый основной цвет</td></tr>
+      <tr><td><code>arcade_light</code> <span class="badge new">Новое</span></td><td>Игровой автомат — каждая клавиша раскрашена градиентом, бликом и бортиком, подпись белая с чернильным контуром; толстые панели в рамке на небесно-голубой странице, золотая лента заголовка у окон</td></tr>
+      <tr><td><code>arcade_dark</code> <span class="badge new">Новое</span></td><td>Те же яркие клавиши на тёмно-синих панелях и ночной странице</td></tr>
     </tbody>
   </table>
 
@@ -471,12 +550,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Кованая рамка с заклёпками, угловой гравировкой, фасочным бликом и фактурой материала</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Желейная конфета — толстый контур, плотный бортик, который проседает при нажатии, тело светлее сверху и белый блик</td></tr>
       <tr><td><code>GoStyleBoxComic</code></td><td>Кадр комикса — жирный чернильный контур и жёсткая отбрасываемая тень; размер обоих задаёт <code>GoConfig</code> прямо во время игры</td></tr>
+      <tr><td><code>GoStyleBoxArcade</code></td><td>Аркадная клавиша или панель — тело с градиентом, белый блик, бортик, который проседает при нажатии, и чернильный контур; у панели вдобавок толстая цветная рамка вокруг светлой середины</td></tr>
     </tbody>
   </table>
-  <p>Все пять сериализуются в ресурс Theme — именно это и позволяет теме менять <b>форму</b>, а не только цвет.
-    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code> и <code>GoSkinComic</code> — подклассы, идущие в комплекте.</p>
+  <p>Все шесть сериализуются в ресурс Theme — именно это и позволяет теме менять <b>форму</b>, а не только цвет.
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code>, <code>GoSkinComic</code> и <code>GoSkinArcade</code> — подклассы, идущие в комплекте.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Быстрые слоты, стик и чип в исполнении каждого скина из комплекта — обычного, детского, Material, средневекового и sci-fi" loading="lazy"><figcaption>Что рисует скин — обычный, детский, Material, средневековый, sci-fi</figcaption></figure>
   <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Быстрые слоты, стик и чип в исполнении скина комикса — чернильные контуры и жёсткие тени" loading="lazy"><figcaption>…и скин комикса</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Быстрые слоты, стик и чип в исполнении аркадного скина — глянцевые колпачки клавиш и площадка с четырьмя стрелками" loading="lazy"><figcaption>…и аркадный скин</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> всегда возвращает <code>StyleBoxFlat</code></b>, потому что вызывающий код
@@ -571,7 +652,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Каждая пара цветов и <b>подпись каждого состояния кнопки поверх панели, на которой она лежит</b>, измеряется по
-    WCAG во всех двенадцати темах. Полупрозрачные цвета сначала накладываются на настоящий фон — если измерять их напрямую,
+    WCAG во всех четырнадцати темах. Полупрозрачные цвета сначала накладываются на настоящий фон — если измерять их напрямую,
     коэффициент получается лучше, чем на экране.
   </p>
   <p>

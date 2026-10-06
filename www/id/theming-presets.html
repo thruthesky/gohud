@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
   <p>Menyetel <code>theme</code>, <code>skin</code>, atau <code>icons</code> secara eksplisit <b>mengalahkan</b> preset.</p>
 
-  <h3 id="the-six-built-in-presets">Dua belas preset bawaan</h3>
+  <h3 id="the-six-built-in-presets">Empat belas preset bawaan</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panel</th><th>Skin · ikon</th></tr></thead>
     <tbody>
@@ -144,13 +144,14 @@ GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Bingkai tempaan <code>GoStyleBoxMedieval</code> — besi dan kulit, atau perkamen — dengan paku keling dan ornamen sudut pada menu</td><td><code>GoSkinMedieval</code> · 16 ikon ukiran di atas ikon default</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Baru</span></td><td>Material 3 Expressive untuk layar aplikasi — tombol pil 40dp di dalam area sentuh 48dp, dialog 28dp, kartu terisi, kolom bergaris tepi, slider Expressive; komponen aplikasi (bilah navigasi, bilah aplikasi atas, FAB, bilah pencarian, chip, progres, pemilih tanggal) mengikuti token komponen M3</td><td><code>GoSkinMaterial</code> · ikon default</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Baru</span></td><td>Untuk anak-anak — kotak mainan: garis tepi tebal dan bibir padat di bawah setiap tombol, yang tenggelam saat ditekan; kolom teks cekung, tab gelembung, bilah jeli; setiap jenis kontrol dengan warna krayonnya sendiri, slot cepat seperti permen, lencana stiker, joystick pelangi, dan grafik berwarna. Ukuran dan font proyek tetap sama.</td><td><code>GoSkinKids</code> · ikon default</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">Baru</span></td><td>Mesin arcade yang digambar oleh <code>GoStyleBoxArcade</code>: setiap tombol dicat dengan gradasi dari atas ke bawah, kilau putih, dan bibir yang tenggelam saat ditekan, di dalam garis tepi tinta biru tua, labelnya putih dengan garis tepi tinta — primer hijau, tombol biru, bahaya merah, tombol kecil lavender. Papan tebal dengan bingkai berwarna di sekeliling ceruk pucat; spanduk judul emas dan tombol tutup merah yang bundar pada jendela.</td><td><code>GoSkinArcade</code> · ikon default</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Baru</span></td><td>Panel buku komik yang digambar oleh <code>GoStyleBoxComic</code>: garis tepi tinta tebal dan bayangan tegas di setiap muka, yang hilang saat muka itu ditekan; toggle, kotak centang, dan pegangan slider bertinta, keterangan judul kuning pada jendela. Lebar garis tepi, ukuran bayangan, dan apakah bayangan tampil sama sekali adalah setelan <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · ikon default</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Kedua belasnya, berdampingan</h2>
+  <h2>Keempat belasnya, berdampingan</h2>
   <p class="sub">Layar galeri yang sama dengan hanya nama presetnya yang diganti — tak satu baris pun kode widget yang berbeda.
     Masing-masing adalah ponsel yang dipegang tegak, 390×844.</p>
   <div class="phones">
@@ -166,6 +167,8 @@ GoUi.config.icons = my_icons     # ikon Anda, sisanya dari preset</code></pre>
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeri widget gohud dengan preset kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeri widget gohud dengan preset comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeri widget gohud dengan preset comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Galeri widget gohud dengan preset arcade_light" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Galeri widget gohud dengan preset arcade_dark" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -340,6 +343,57 @@ GoStyle.comic_border(title, 5.0)             # garis tepi lebih tebal untuk yang
 # Sunting themes/palettes/inked.json, lalu:
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>Arcade: tombol bercat dan papan tebal <span class="badge new">Baru</span></h2>
+  <p><code>arcade_light</code> (papan putih di halaman biru langit) dan <code>arcade_dark</code> (papan biru tua di halaman malam)
+    mendandani setiap layar seperti mesin arcade: <b>setiap tombol dicat</b> — gradasi dari atas yang terang ke bawah yang lebih pekat,
+    goresan kilau putih, dan bibir yang tenggelam saat ditekan, di dalam garis tepi tinta biru tua — dan <b>setiap papan tebal</b>, berupa
+    bingkai berwarna di sekeliling ceruk pucat.</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# Atau: GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Galeri gohud dalam arcade_light — tombol bercat hijau, biru, merah, dan lavender serta papan HUD berbingkai biru di halaman biru langit" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Galeri gohud dalam arcade_dark — tombol-tombol cerah yang sama di halaman malam" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Dialog konfirmasi dalam arcade_light — spanduk judul emas, tombol tutup merah yang bundar, serta tombol bercat biru dan hijau di papan berbingkai" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="Dialog konfirmasi dalam arcade_dark — spanduk emas di papan biru tua" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">Apa yang berubah</h3>
+  <table>
+    <thead><tr><th>Bagian</th><th>Dalam tampilan arcade</th></tr></thead>
+    <tbody>
+      <tr><td>Tombol</td><td>Digambar oleh <code>GoStyleBoxArcade</code>: badan bergradasi, kilau putih di sekitar sudut kiri atas, bibir yang lebih pekat, dan garis tepi tinta biru tua. Tombol primer berwarna hijau, tombol biasa dan tab terpilih biru, tombol bahaya koral dan merah, tombol kecil dan tab lainnya lavender.</td></tr>
+      <tr><td>Label</td><td>Putih dengan garis tepi tinta di setiap tombol bercat. Setiap cat digeser sampai label itu terbaca di setiap ketinggian gradasinya — 4.6:1 atau lebih, dengan garis tepi dihitung sebagai bagian dari huruf, seperti yang dilakukan WCAG.</td></tr>
+      <tr><td>Saat ditekan</td><td>Bibirnya hilang, tombol tenggelam ke tempatnya lalu melompat kembali.</td></tr>
+      <tr><td>Papan</td><td>Panel, kartu, kartu HUD, dan popup itu tebal: bingkai berwarna (6dp di sekeliling jendela, 4 di sekeliling kartu atau kartu HUD, 3 di sekeliling menu atau pemberitahuan) dengan kilau dan bibirnya sendiri, mengelilingi ceruk pucat bergaris tinta. Padding-nya sedikit bertambah untuk menampungnya, sehingga teks tidak pernah menyentuh bingkai.</td></tr>
+      <tr><td>Kolom dan bilah</td><td>Kolom teks dan alur bilah adalah ceruk yang cekung; isian bilah berupa tabung bercat mengilap dengan warna isian cerah dari warnanya.</td></tr>
+      <tr><td>Jendela</td><td>Spanduk emas dengan judul putih bergaris tepi tinta, dan tombol tutup merah yang bundar dengan tanda silang putih.</td></tr>
+      <tr><td>Bagian skin</td><td><code>GoSkinArcade</code>: slot cepat dan chip berupa tutup tombol, slot yang sedang cooldown menyalakan bingkai emas, lencana berupa pelat terang, peringatan dibingkai dengan warnanya, kartu terpilih menyalakan bingkai emas, FAB berupa tombol emas, dan joystick berupa bantalan mengilap dengan empat panah.</td></tr>
+      <tr><td>Opasitas</td><td>Panel, kartu, pemberitahuan, dan popup buram; kartu HUD 94% buram.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">Cat satu tombol dengan warnanya sendiri</h3>
+  <p>Tema mengecat tombol menurut jenisnya. Menu yang setiap tombolnya menginginkan warna sendiri mengecatnya satu per satu — muka saat hover
+    sedikit lebih terang, muka saat ditekan sedikit lebih pekat, dan muka nonaktif tetap redup:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # bingkai papan, dan setiap tombol di dalamnya</code></pre>
+  <div class="note">
+    <b>Labelnya selalu terbaca.</b> Cat yang membuat label putih tidak terbaca digeser lebih terang atau lebih pekat sampai terbaca, jadi
+    warna yang Anda berikan hanyalah titik awal. Di bawah tampilan lain, <code>arcade_paint()</code> tidak melakukan apa-apa.
+  </div>
+  <div class="note">
+    <b>Ukuran tombol tetap.</b> Bibir dan kilaunya digambar di dalam persegi panjang setiap tombol, sehingga layar yang ditata dalam
+    tampilan lain tetap mempertahankan tata letaknya. Papan memberi padding sedikit lebih besar pada isinya (kartu dan kartu HUD 12dp, 15 di bagian bawah)
+    agar teks tidak pernah menyentuh bingkai. Font proyek Anda juga dipertahankan.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Slot cepat, joystick, dan chip yang digambar oleh skin arcade — tutup tombol mengilap dan bantalan dengan empat panah" loading="lazy"><figcaption>Bagian-bagian yang digambar skin arcade</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">Buat arcade Anda sendiri</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# Sunting themes/palettes/cabinet.json — warna *_vivid adalah catnya — lalu:
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

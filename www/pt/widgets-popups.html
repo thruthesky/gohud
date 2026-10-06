@@ -145,7 +145,7 @@
   </div>
   <p>Todas as imagens desta página são o mesmo joguinho — vida e mana no canto superior esquerdo, moedas no superior direito, um joystick e três
     slots rápidos embaixo — em <code>default_dark</code>, com um popup aberto por cima. <a href="#popup-looks">O mesmo
-    diálogo nos doze visuais →</a></p>
+    diálogo nos catorze visuais →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -683,6 +683,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="A confirmação em kids_dark — uma faixa menta sobre um cartão azul-noite" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Novo</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="A confirmação em comic_light — uma legenda de título amarela, um botão de fechar com contorno de tinta e botões com contorno de tinta e sombras duras" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Novo</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="A confirmação em comic_dark — tinta creme sobre um cartão ardósia" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Novo</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="A confirmação em arcade_light — uma faixa de título dourada, uma tecla de fechar vermelha e redonda e teclas pintadas sobre um painel grosso com moldura azul" loading="lazy"><figcaption><code>arcade_light</code> <span class="badge new">Novo</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="A confirmação em arcade_dark — uma faixa dourada sobre um painel azul-marinho" loading="lazy"><figcaption><code>arcade_dark</code> <span class="badge new">Novo</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">O que cada visual muda</h3>
@@ -695,6 +697,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Material 3</td><td>Cantos de 28dp, respiro de 24dp, totalmente opaca</td><td>Um título de 24sp em Roboto; botões em pílula de 40dp dentro de uma área de toque de 48dp</td></tr>
       <tr><td>Infantil</td><td>Um cartão de bala de gelatina com uma sombra suave, totalmente opaco</td><td>Uma faixa de título ensolarada (menta à noite), um botão de fechar redondo de bala, botões que se amassam ao serem tocados</td></tr>
       <tr><td>Quadrinhos</td><td>Um contorno grosso de tinta e uma sombra dura, totalmente opaca</td><td>Uma legenda de título amarela, um botão de fechar redondo com contorno de tinta, botões cuja sombra some ao serem tocados</td></tr>
+      <tr><td>Arcade</td><td>Um painel grosso — uma moldura colorida em volta de um fundo claro —, totalmente opaco</td><td>Uma faixa de título dourada com um título branco contornado de tinta, uma tecla de fechar vermelha e redonda, teclas pintadas que saltam ao serem tocadas</td></tr>
     </tbody>
   </table>
 
@@ -705,8 +708,9 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Método</th><th>O que ele veste</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Uma placa atrás do título de uma janela. O título se centraliza nela e encolhe, até o tamanho mínimo (15), para caber em uma linha.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>O × da janela — o visual infantil o transforma em uma bala redonda; o de quadrinhos, em um disco com contorno de tinta.</td></tr>
-      <tr><td><code>press_feedback(control)</code></td><td>Roda no instante em que um dedo pousa em um botão criado pelo gohud — o visual infantil o amassa.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>O × da janela — o visual infantil o transforma em uma bala redonda; o de quadrinhos, em um disco com contorno de tinta; o arcade, em uma tecla vermelha e redonda.</td></tr>
+      <tr><td><code>dress_title(label)</code></td><td>O rótulo do título da janela — o visual arcade contorna de tinta o seu título branco.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Roda no instante em que um dedo pousa em um botão criado pelo gohud — o visual infantil o amassa; o arcade o faz saltar.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>As faces dos cartões de pergunta e dos cartões do tour, dos snackbars e avisos, do painel lateral, dos banners e do console.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>O anel e o ponteiro do tour.</td></tr>
     </tbody>
@@ -716,7 +720,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Cada tipo de popup segue a própria opacidade, então um cartão de HUD pode ficar leve enquanto um diálogo continua sólido: janelas, folhas, diálogos,
     popovers e o combobox seguem <code>panel_alpha</code>; o painel lateral e o cartão do tour, <code>card_alpha</code>; cartões de pergunta e o
     console, <code>hud_alpha</code>; snackbars e avisos, <code>notice_alpha</code>; menus, <code>popup_alpha</code>. Material e infantil
-    deixam todos opacos; quadrinhos também, exceto os cartões de pergunta e o console, a 92%. Sobrescreva um tipo com <code>GoConfig.container_alpha_overrides</code>, todos com
+    deixam todos opacos; quadrinhos também, exceto os cartões de pergunta e o console, a 92%, e arcade também, exceto esses dois, a 94%. Sobrescreva um tipo com <code>GoConfig.container_alpha_overrides</code>, todos com
     <code>container_alpha</code> (uma proporção — <code>0.95</code>), ou uma janela com o <code>alpha</code> dela. Só a face esmaece; o texto
     nunca fica transparente. <a href="theming-opacity.html">Opacidade em detalhe →</a></p>
 </section>

@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프리셋 그대로</code></pre>
   <p><code>theme</code>·<code>skin</code>·<code>icons</code> 를 직접 채우면 그쪽이 프리셋보다 <b>우선한다</b>.</p>
 
-  <h3 id="the-six-built-in-presets">기본 제공 프리셋 열둘</h3>
+  <h3 id="the-six-built-in-presets">기본 제공 프리셋 열넷</h3>
   <table>
     <thead><tr><th>프리셋</th><th>패널</th><th>스킨 · 아이콘</th></tr></thead>
     <tbody>
@@ -144,13 +144,14 @@ GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프�
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>철·가죽 또는 양피지 질감의 <code>GoStyleBoxMedieval</code> 단조 프레임, 메뉴에만 리벳과 모서리 장식</td><td><code>GoSkinMedieval</code> · 기본 위에 각인풍 16종</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">신규</span></td><td>앱 화면용 Material 3 Expressive — 48dp 터치 영역 안의 40dp 알약 버튼, 28dp 대화상자, 채운 카드, 외곽선 입력란, Expressive 슬라이더. 앱 컴포넌트(내비게이션 바·앱 바·FAB·검색 바·칩·진행 표시·날짜 선택기)는 M3 컴포넌트 토큰을 따른다</td><td><code>GoSkinMaterial</code> · 기본 아이콘</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">신규</span></td><td>어린이용 — 장난감 상자: 굵은 테두리와 누르면 쏙 들어가는 단단한 턱이 달린 키, 움푹한 입력칸, 방울 탭, 젤리 막대, 컨트롤마다 다른 크레파스 색, 사탕 같은 퀵슬롯, 스티커 배지, 무지개 조이스틱과 크레파스 차트. 치수와 프로젝트 글꼴은 그대로다.</td><td><code>GoSkinKids</code> · 기본 아이콘</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">신규</span></td><td><code>GoStyleBoxArcade</code> 가 그리는 오락실 게임기: 모든 키를 위에서 아래로 짙어지는 그라데이션, 흰 광택, 누르면 쏙 들어가는 턱으로 칠해 남색 잉크 테두리 안에 담고, 라벨은 잉크 테두리를 두른 흰 글자다 — 주 키는 초록, 일반 키는 파랑, 위험은 빨강, 작은 키는 라벤더색. 판은 옅은 안쪽 면을 색 테로 두른 두꺼운 판이고, 창에는 금색 제목 배너와 둥근 빨간 닫기 키가 붙는다.</td><td><code>GoSkinArcade</code> · 기본 아이콘</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">신규</span></td><td><code>GoStyleBoxComic</code> 이 그리는 만화책의 칸: 모든 면에 굵은 잉크 테두리와 딱딱한 그림자가 있고, 면을 누르면 그림자가 사라진다. 잉크를 입힌 토글·체크 박스·슬라이더 손잡이, 창에는 노란 제목 캡션. 테두리 굵기, 그림자 크기, 그림자를 아예 보일지는 <code>GoConfig</code> 설정이다.</td><td><code>GoSkinComic</code> · 기본 아이콘</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>열두 가지를 나란히</h2>
+  <h2>열네 가지를 나란히</h2>
   <p class="sub">프리셋 이름만 바꾼 같은 갤러리 화면이다 — 위젯 코드는 한 줄도 다르지 않다.
     모두 세워 쥔 폰, 390×844 다.</p>
   <div class="phones">
@@ -166,6 +167,8 @@ GoUi.config.icons = my_icons     # 아이콘만 내 세트로, 나머지는 프�
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark 프리셋을 적용한 gohud 위젯 갤러리" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -334,6 +337,57 @@ GoStyle.comic_border(title, 5.0)             # 이것만 테두리를 더 굵게
 # themes/palettes/inked.json 수정 후:
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>아케이드: 칠한 키와 두꺼운 판 <span class="badge new">신규</span></h2>
+  <p><code>arcade_light</code>(하늘색 페이지 위의 흰 판)와 <code>arcade_dark</code>(밤 페이지 위의 남색 판)는
+    모든 화면을 오락실 게임기처럼 꾸민다: <b>모든 키를 칠한다</b> — 위는 밝고 아래로 갈수록 짙어지는 그라데이션,
+    흰 광택 한 줄, 누르면 쏙 들어가는 턱을 남색 잉크 테두리 안에 담는다 — 그리고 <b>모든 판은 두껍다</b>, 옅은 안쪽 면을
+    색 테가 둘러싼다.</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# 또는: GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light 의 gohud 갤러리 — 하늘색 페이지 위의 초록·파랑·빨강·라벤더색으로 칠한 키와 파란 테를 두른 HUD 판" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark 의 gohud 갤러리 — 밤 페이지 위의 같은 선명한 키" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="arcade_light 의 확인 대화상자 — 테를 두른 판 위에 금색 제목 배너, 둥근 빨간 닫기 키, 파랑·초록으로 칠한 키" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="arcade_dark 의 확인 대화상자 — 남색 판 위의 금색 배너" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">바뀌는 것</h3>
+  <table>
+    <thead><tr><th>부분</th><th>아케이드 생김새에서는</th></tr></thead>
+    <tbody>
+      <tr><td>키</td><td><code>GoStyleBoxArcade</code> 가 그린다: 그라데이션 몸통, 왼쪽 위 모서리를 감는 흰 광택, 더 짙은 턱, 남색 잉크 테두리. 주 키는 초록, 일반 키와 선택된 탭은 파랑, 위험 키는 산호색과 빨강, 작은 키와 나머지 탭은 라벤더색이다.</td></tr>
+      <tr><td>라벨</td><td>칠한 키마다 잉크 테두리를 두른 흰 글자. 모든 칠한 색은 그라데이션의 어느 높이에서든 그 라벨이 읽힐 때까지 옮겨진다 — WCAG 처럼 테두리를 글자의 일부로 쳐서 4.6:1 이상.</td></tr>
+      <tr><td>누르기</td><td>턱이 사라지고 키가 제자리로 쏙 들어갔다가 다시 튀어나온다.</td></tr>
+      <tr><td>판</td><td>패널, 카드, HUD 카드, 팝업은 두껍다: 자기 광택과 턱을 지닌 색 테(창은 6dp, 카드와 HUD 카드는 4, 메뉴와 알림은 3)가 잉크 선을 두른 옅은 안쪽 면을 둘러싼다. 이를 담으려고 안쪽 여백이 조금 늘어나므로 글자가 테에 닿지 않는다.</td></tr>
+      <tr><td>입력란과 막대</td><td>입력란과 막대의 홈은 움푹 팬 안쪽 면이다. 막대의 채움은 자기 색의 밝은 채움색으로 칠한 광택 튜브다.</td></tr>
+      <tr><td>창</td><td>잉크 테두리를 두른 흰 제목이 얹힌 금색 배너, 흰 X 가 그려진 둥근 빨간 닫기 키.</td></tr>
+      <tr><td>스킨 부품</td><td><code>GoSkinArcade</code>: 퀵슬롯과 칩은 키캡이고, 쿨다운 중인 슬롯은 금색 테가 켜지며, 배지는 밝은 판, 알림은 자기 색 테를 두르고, 선택된 카드는 금색 테가 켜진다. FAB 는 금색 키, 조이스틱은 화살표 넷이 달린 광택 패드다.</td></tr>
+      <tr><td>불투명도</td><td>패널, 카드, 알림, 팝업이 불투명하다. HUD 카드는 94% 불투명하다.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">키 하나에 자기 색 칠하기</h3>
+  <p>테마는 키를 종류별로 칠한다. 키마다 제 색을 원하는 메뉴는 하나씩 칠하면 된다 — 호버 면은 조금 더 밝게,
+    눌린 면은 조금 더 짙게 나오고, 비활성 면은 흐린 채로 남는다:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # 판의 테와 그 안의 모든 키</code></pre>
+  <div class="note">
+    <b>라벨은 언제나 읽힌다.</b> 흰 라벨이 읽히지 않을 색은 읽힐 때까지 더 밝게 또는 더 짙게 옮겨지므로, 넘긴 색은
+    출발점일 뿐이다. 다른 생김새에서는 <code>arcade_paint()</code> 가 아무 일도 하지 않는다.
+  </div>
+  <div class="note">
+    <b>키의 크기는 그대로다.</b> 턱과 광택은 각 키의 사각형 안에 그려지므로, 다른 생김새로 배치한 화면은 배치가
+    그대로다. 판은 글자가 테에 닿지 않도록 내용에 여백을 조금 더 준다(카드와 HUD 카드는 12dp, 아래쪽은 15).
+    프로젝트 글꼴도 유지된다.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="아케이드 스킨이 그린 퀵슬롯·조이스틱·칩 — 광택 나는 키캡과 화살표 넷이 달린 패드" loading="lazy"><figcaption>아케이드 스킨이 그리는 부품</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">나만의 아케이드 만들기</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# themes/palettes/cabinet.json 수정 — *_vivid 색이 칠하는 색이다 — 후:
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

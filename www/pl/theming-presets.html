@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # twoje ikony, cała reszta z presetu</code></pre>
   <p>Jawne ustawienie <code>theme</code>, <code>skin</code> lub <code>icons</code> <b>wygrywa z</b> presetem.</p>
 
-  <h3 id="the-six-built-in-presets">Dwanaście wbudowanych presetów</h3>
+  <h3 id="the-six-built-in-presets">Czternaście wbudowanych presetów</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panele</th><th>Skórka · ikony</th></tr></thead>
     <tbody>
@@ -144,13 +144,14 @@ GoUi.config.icons = my_icons     # twoje ikony, cała reszta z presetu</code></p
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Kute ramy <code>GoStyleBoxMedieval</code> — żelazo i skóra albo pergamin — z nitami i ornamentami narożnymi w menu</td><td><code>GoSkinMedieval</code> · 16 grawerowanych ikon nałożonych na domyślne</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">Nowość</span></td><td>Material 3 Expressive dla ekranów aplikacji — przyciski-pigułki 40dp w polu dotyku 48dp, okna dialogowe 28dp, wypełnione karty, pola z obrysem, suwak Expressive; komponenty aplikacji (pasek nawigacji, górny pasek aplikacji, FAB, pasek wyszukiwania, chipy, postęp, wybór daty) idą za tokenami komponentów M3</td><td><code>GoSkinMaterial</code> · domyślne ikony</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">Nowość</span></td><td>Dla dzieci — pudełko z zabawkami: grube obrysy i solidna krawędź pod każdym klawiszem, który zapada się po naciśnięciu; wklęsłe pola tekstowe, zakładki-bąbelki, galaretkowe paski; każdy rodzaj kontrolki w swoim kolorze kredki, cukierkowe szybkie sloty, odznaki-naklejki, tęczowy joystick i kolorowe wykresy. Rozmiary i czcionka projektu pozostają bez zmian.</td><td><code>GoSkinKids</code> · domyślne ikony</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">Nowość</span></td><td>Automat do gier rysowany przez <code>GoStyleBoxArcade</code>: każdy klawisz pomalowany gradientem z góry na dół, białym połyskiem i krawędzią, która zapada się po naciśnięciu, w granatowym obrysie tuszem, a jego etykieta jest biała z obrysem tuszem — zielony kolor główny, niebieskie klawisze, czerwone niebezpieczeństwo, lawendowe małe klawisze. Grube plansze z kolorową ramą wokół jasnego wnętrza; złota wstęga tytułu i okrągły czerwony klawisz zamknięcia na oknach.</td><td><code>GoSkinArcade</code> · domyślne ikony</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">Nowość</span></td><td>Kadry z komiksu rysowane przez <code>GoStyleBoxComic</code>: gruby obrys tuszem i twardy cień na każdej powierzchni, który znika po naciśnięciu; obrysowane tuszem przełączniki, pola wyboru i uchwyty suwaków, żółte pole tytułu na oknach. Grubość obrysu, rozmiar cienia i to, czy cienie w ogóle są widoczne, to ustawienia <code>GoConfig</code>.</td><td><code>GoSkinComic</code> · domyślne ikony</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>Wszystkie dwanaście obok siebie</h2>
+  <h2>Wszystkie czternaście obok siebie</h2>
   <p class="sub">Ten sam ekran galerii, w którym zmieniono tylko nazwę presetu — nie różni się ani jedna linijka kodu widżetów.
     Każdy to telefon trzymany pionowo, 390×844.</p>
   <div class="phones">
@@ -166,6 +167,8 @@ GoUi.config.icons = my_icons     # twoje ikony, cała reszta z presetu</code></p
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Galeria widżetów gohud w presecie kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Galeria widżetów gohud w presecie comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Galeria widżetów gohud w presecie comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Galeria widżetów gohud w presecie arcade_light" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Galeria widżetów gohud w presecie arcade_dark" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -339,6 +342,57 @@ GoStyle.comic_border(title, 5.0)             # grubszy obrys na tym elemencie</c
 # Edytuj themes/palettes/inked.json, a potem:
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>Arcade: malowane klawisze i grube plansze <span class="badge new">Nowość</span></h2>
+  <p><code>arcade_light</code> (białe plansze na błękitnej stronie) i <code>arcade_dark</code> (granatowe plansze na nocnej stronie)
+    ubierają każdy ekran jak automat do gier: <b>każdy klawisz jest malowany</b> — gradient od jasnej góry do głębszego dołu,
+    biała smuga połysku i krawędź, która zapada się po naciśnięciu, w granatowym obrysie tuszem — a <b>każda plansza jest gruba</b>,
+    to kolorowa rama wokół jasnego wnętrza.</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# Albo: GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Galeria gohud w arcade_light — zielone, niebieskie, czerwone i lawendowe malowane klawisze oraz plansza HUD w niebieskiej ramie na błękitnej stronie" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Galeria gohud w arcade_dark — te same jaskrawe klawisze na nocnej stronie" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Okno potwierdzenia w arcade_light — złota wstęga tytułu, okrągły czerwony klawisz zamknięcia oraz niebieskie i zielone malowane klawisze na planszy w ramie" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="Okno potwierdzenia w arcade_dark — złota wstęga na granatowej planszy" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">Co się zmienia</h3>
+  <table>
+    <thead><tr><th>Część</th><th>W wyglądach Arcade</th></tr></thead>
+    <tbody>
+      <tr><td>Klawisze</td><td>Rysowane przez <code>GoStyleBoxArcade</code>: korpus z gradientem, biały połysk wokół lewego górnego rogu, głębsza krawędź i granatowy obrys tuszem. Klawisz główny jest zielony, zwykłe klawisze i wybrana zakładka niebieskie, klawisze niebezpieczne koralowe i czerwone, małe klawisze i pozostałe zakładki lawendowe.</td></tr>
+      <tr><td>Etykiety</td><td>Białe z obrysem tuszem na każdym malowanym klawiszu. Każda farba jest przesuwana, aż ta etykieta będzie czytelna na każdej wysokości gradientu — 4,6:1 lub więcej, z obrysem liczonym jako część litery, tak jak robi to WCAG.</td></tr>
+      <tr><td>Naciśnięcie</td><td>Krawędź znika, klawisz wsuwa się na swoje miejsce i wyskakuje z powrotem.</td></tr>
+      <tr><td>Plansze</td><td>Panele, karty, karty HUD i okna wyskakujące są grube: kolorowa rama (6dp wokół okna, 4 wokół karty lub karty HUD, 3 wokół menu lub powiadomienia) z własnym połyskiem i krawędzią, wokół jasnego wnętrza z linią tuszu. Ich margines trochę rośnie, by ją pomieścić, więc tekst nigdy nie dotyka ramy.</td></tr>
+      <tr><td>Pola i paski</td><td>Pola tekstowe i rowki pasków to wklęsłe wnętrza; wypełnienie paska to błyszcząca malowana rurka w jaskrawym odcieniu jego koloru.</td></tr>
+      <tr><td>Okna</td><td>Złota wstęga z białym tytułem obrysowanym tuszem i okrągły czerwony klawisz zamknięcia z białym krzyżykiem.</td></tr>
+      <tr><td>Części skórki</td><td><code>GoSkinArcade</code>: szybkie sloty i chipy to nasadki klawiszy, odnawiający się slot zapala złotą obwódkę, plakietki to jasne płytki, alerty mają ramę w swoim kolorze, wybrana karta zapala złotą obwódkę, FAB to złoty klawisz, a joystick to błyszczący pad z czterema strzałkami.</td></tr>
+      <tr><td>Krycie</td><td>Panele, karty, powiadomienia i okna wyskakujące są nieprzezroczyste; karty HUD mają krycie 94%.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">Pomaluj jeden klawisz na własny kolor</h3>
+  <p>Motyw maluje klawisze według ich rodzaju. Menu, w którym każdy klawisz chce mieć własny kolor, maluje je po kolei — powierzchnia
+    po najechaniu wychodzi trochę jaśniejsza, naciśnięta trochę głębsza, a wyłączona pozostaje przygaszona:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # rama planszy i każdy klawisz w niej</code></pre>
+  <div class="note">
+    <b>Etykieta zawsze jest czytelna.</b> Farba, na której biała etykieta nie byłaby czytelna, jest przesuwana w stronę jaśniejszej lub głębszej,
+    aż będzie, więc kolor, który podajesz, to punkt wyjścia. W pozostałych wyglądach <code>arcade_paint()</code> nic nie robi.
+  </div>
+  <div class="note">
+    <b>Klawisze zachowują rozmiar.</b> Krawędź i połysk są rysowane wewnątrz prostokąta każdego klawisza, więc ekran rozłożony w innym
+    wyglądzie zachowuje swój układ. Plansze dają treści trochę większy margines (karta i karta HUD 12dp, 15 na dole), żeby tekst
+    nigdy nie dotykał ramy. Czcionka twojego projektu też zostaje.
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Szybkie sloty, joystick i chip narysowane przez skórkę Arcade — błyszczące nasadki klawiszy i pad z czterema strzałkami" loading="lazy"><figcaption>Części, które rysuje skórka Arcade</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">Zrób własny automat</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# Edytuj themes/palettes/cabinet.json — kolory *_vivid to farby — a potem:
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

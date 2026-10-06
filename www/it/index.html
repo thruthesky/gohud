@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — un kit HUD e UI per Godot 4</title>
-<meta name="description" content="Un kit HUD e UI personalizzabile per Godot 4.7+. Superfici flottanti, fogli inferiori, finestre di dialogo, moduli, snackbar, barre HUD, slot rapidi e un joystick virtuale, con dodici preset — default, sci-fi, medievale, Material 3, bambini e fumetto.">
+<meta name="description" content="Un kit HUD e UI personalizzabile per Godot 4.7+. Superfici flottanti, fogli inferiori, finestre di dialogo, moduli, snackbar, barre HUD, slot rapidi e un joystick virtuale, con quattordici preset — default, sci-fi, medievale, Material 3, bambini, fumetto e arcade.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud è un kit HUD e UI per Godot 4.7 e versioni successive. Finestre flottanti, fogli inferiori, finestre di
       dialogo, moduli, snackbar, coach mark, barre HUD, slot rapidi e un joystick virtuale funzionano con <b>un solo
       tema e un solo set di icone intercambiabile</b>, e si occupano al posto tuo dell'area sicura, della tastiera
-      virtuale, dell'RTL e delle aree di tocco. <b>Dodici preset</b> — default, sci-fi, medievale, Material 3, bambini e fumetto, ognuno scuro e chiaro —
+      virtuale, dell'RTL e delle aree di tocco. <b>Quattordici preset</b> — default, sci-fi, medievale, Material 3, bambini, fumetto e arcade, ognuno scuro e chiaro —
       cambiano colori e forme in una riga.
     </p>
     <div class="badges">
@@ -87,14 +87,15 @@
       <span class="badge">GDScript puro</span>
       <span class="badge">Nessun autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">12 preset</span>
-      <span class="badge new">Novità: Fumetto · Material 3 · Bambini</span>
+      <span class="badge">14 preset</span>
+      <span class="badge new">Novità: Arcade · Fumetto · Material 3 · Bambini</span>
       <span class="badge">21 lingue</span>
       <span class="badge"><span data-n="icons">1.287</span> icone incluse</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Installa</a>
+      <a class="btn" href="#arcade">Guarda l'aspetto arcade</a>
       <a class="btn" href="#comic">Guarda l'aspetto fumetto</a>
       <a class="btn" href="#presets">Guarda i preset</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
@@ -105,9 +106,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Novità: fumetto, Material 3 e un aspetto per i bambini</h2>
+  <h2>Novità: arcade, fumetto, Material 3 e un aspetto per i bambini</h2>
   <p class="sub">
-    Tre nuove famiglie si aggiungono a default, sci-fi e medievale — ora sono <b>dodici aspetti inclusi</b>, ognuno scuro e chiaro.
+    Quattro nuove famiglie si aggiungono a default, sci-fi e medievale — ora sono <b>quattordici aspetti inclusi</b>, ognuno scuro e chiaro.
     Ogni widget, popup e pezzo dell'HUD li adotta senza cambiare il tuo codice: cambia il preset e tutta la schermata lo segue.
   </p>
   <div class="phones">
@@ -117,6 +118,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="La galleria gohud in kids_dark — la stessa scatola dei giocattoli su una pagina blu notte" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="La galleria gohud in comic_light — contorni d'inchiostro spessi e ombre nette su una pagina color crema carta" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="La galleria gohud in comic_dark — contorni crema e un primario giallo su una pagina notturna" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="La galleria gohud in arcade_light — tasti dipinti con una sfumatura e un riflesso lucido, una spessa plancia HUD con cornice blu su una pagina azzurro cielo" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="La galleria gohud in arcade_dark — gli stessi tasti vivaci su una pagina notturna" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -139,19 +142,93 @@
         che sparisce quando la premi. Un'impostazione accende o spegne tutte le ombre, altre due fissano lo spessore del contorno
         e la dimensione dell'ombra, e una sola chiamata fa lo stesso per un singolo widget. Le finestre hanno una didascalia del titolo gialla.</p>
     </div>
+    <div class="card">
+      <h3 id="arcade-painted-keys">Arcade — tasti dipinti</h3>
+      <p>Ogni tasto è dipinto — una sfumatura, un riflesso bianco e un bordo che affonda quando lo premi, dentro un contorno d'inchiostro
+        blu notte — ed etichettato in bianco con un contorno d'inchiostro: verde per giocare, blu per tutto il resto, rosso per eliminare.
+        Le plance sono spesse, una cornice colorata attorno a un fondo chiaro, e le finestre hanno una fascia del titolo dorata e un tasto di chiusura tondo e rosso.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # oppure MATERIAL_DARK
 GoUi.use_preset(&amp;"kids_light")                   # oppure &amp;"kids_dark"
-GoUi.use_preset(&amp;"comic_light")                  # oppure &amp;"comic_dark"</code></pre>
+GoUi.use_preset(&amp;"comic_light")                  # oppure &amp;"comic_dark"
+GoUi.use_preset(&amp;"arcade_light")                 # oppure &amp;"arcade_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 nel dettaglio →</a> · <a href="theming-presets.html#kids">Bambini nel dettaglio →</a> ·
-    <a href="#comic">Il fumetto, widget per widget ↓</a> ·
-    <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e dodici gli aspetti →</a></p>
+    <a href="#arcade">L'arcade, widget per widget ↓</a> · <a href="#comic">Il fumetto, widget per widget ↓</a> ·
+    <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e quattordici gli aspetti →</a></p>
+</section>
+
+<section id="arcade">
+  <h2>Arcade: tasti dipinti e plance spesse</h2>
+  <p class="sub">
+    L'aspetto più recente veste ogni schermata come un cabinato da sala giochi. <b>Ogni tasto è dipinto</b> — una sfumatura da una cima
+    chiara a un fondo più profondo, una pennellata di riflesso bianca e un bordo che affonda quando lo premi, il tutto dentro un contorno
+    d'inchiostro blu notte — e la sua etichetta è bianca con un contorno d'inchiostro. <b>Ogni plancia è spessa</b>: una cornice colorata,
+    con il suo riflesso, attorno a un fondo chiaro. <code>arcade_light</code> mette plance bianche su una pagina azzurro cielo; <code>arcade_dark</code>
+    mette plance blu notte su una pagina notturna. Ogni immagine qui sotto è una vera schermata gohud — lo stesso codice, una riga di preset.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")   # oppure &amp;"arcade_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="La galleria gohud in arcade_light — tasti dipinti verdi, blu, rossi e lavanda e una plancia HUD con cornice blu su una pagina azzurro cielo" loading="lazy"><figcaption><code>arcade_light</code> · la galleria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="La galleria gohud in arcade_dark — gli stessi tasti vivaci su una pagina notturna" loading="lazy"><figcaption><code>arcade_dark</code> · la galleria</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Una finestra di conferma in arcade_light — una fascia del titolo dorata, un tasto di chiusura tondo e rosso e tasti dipinti blu e verdi su una plancia incorniciata" loading="lazy"><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/sheet-light.png" width="300" height="649" alt="Un foglio inferiore in arcade_light — una spessa plancia incorniciata che sale dal bordo inferiore, con righe a forma di copritasto" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/coach-mark-light.png" width="300" height="649" alt="Un coach mark in arcade_light — un fumetto incorniciato che indica un tasto" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/drawer-left-dark.png" width="300" height="649" alt="Un cassetto laterale in arcade_dark — una plancia blu notte di righe di navigazione sopra lo schermo oscurato" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/popover-dark.png" width="300" height="649" alt="Un popover in arcade_dark — una nuvoletta incorniciata ancorata al tasto che l'ha aperta" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-key-painted">Ogni tasto dipinto</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-light.png" width="382" height="204" alt="Pulsanti in arcade_light — Gioca verde, Dettagli blu, un tasto bianco con contorno, Elimina corallo, Elimina per sempre rosso, un tasto compatto lavanda e un tasto disattivato grigio, ognuno dipinto con una sfumatura, un riflesso e un bordo in un contorno blu notte" loading="lazy"><figcaption><code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-tabs-light.png" width="382" height="136" alt="Tab in arcade_light — la tab scelta è un tasto dipinto blu, le altre sono tasti lavanda" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-segmented-light.png" width="240" height="72" alt="Un controllo segmentato in arcade_light — tasti dipinti separati, quello scelto blu e premuto" loading="lazy"><figcaption>Tasti segmentati</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-toggle-light.png" width="382" height="260" alt="Interruttori e caselle di spunta in arcade_light — una guida verde lucida quando è attivo, lavanda quando è spento, una casella verde con la spunta" loading="lazy"><figcaption>Interruttori e caselle di spunta</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-card-light.png" width="382" height="249" alt="Schede in arcade_light — fondi chiari dentro spesse cornici blu con un riflesso e un bordo" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goform-light.png" width="382" height="328" alt="Un modulo in arcade_light — un campo bianco incassato, un interruttore e un tasto verde Salva" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-choice_grid-light.png" width="382" height="81" alt="Una griglia di scelte in arcade_light — copritasti, quello scelto bordato d'oro su una tinta verde" loading="lazy"><figcaption><code>GoStyle.choice_grid()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslotgrid-light.png" width="382" height="208" alt="Una griglia di slot in arcade_light — un inventario di copritasti lucidi con il numero di pezzi" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-list_row-light.png" width="382" height="181" alt="Righe di elenco in arcade_light — ogni riga è un copritasto chiaro con un'icona" loading="lazy"><figcaption>Righe di elenco</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/godatepicker-light.png" width="382" height="392" alt="Un selettore di data in arcade_light — giorni a forma di copritasto, il giorno scelto è un tasto dipinto" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-arcade-dark">Di notte: <code>arcade_dark</code></h3>
+  <p>Su una pagina scura l'inchiostro diventa la pagina stessa, molto più profondo, e le vernici restano altrettanto vivaci.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-dark.png" width="382" height="204" alt="Pulsanti in arcade_dark — le stesse vernici vivaci su una pagina notturna" loading="lazy"><figcaption><code>GoStyle.button()</code> di notte</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gobar-dark.png" width="382" height="135" alt="Barre HUD in arcade_dark — tubi rosso per HP, blu per MP e verde per XP in scanalature incassate" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-hud_panel-dark.png" width="382" height="162" alt="Schede HUD in arcade_dark — un fondo blu notte in una spessa cornice blu sopra il gioco" loading="lazy"><figcaption><code>GoStyle.hud_panel()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslot-dark.png" width="382" height="72" alt="Slot rapidi in arcade_dark — copritasti con il numero di pezzi, uno slot in ricarica bordato d'oro" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gojoystick-dark.png" width="204" height="204" alt="Un joystick virtuale in arcade_dark — un pad lucido in un anello d'inchiostro con quattro frecce e una manopola a forma di copritasto" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-alert-dark.png" width="382" height="260" alt="Avvisi in arcade_dark — piccole plance incorniciate di giallo, verde, rosso e blu" loading="lazy"><figcaption>Avvisi</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gofab-dark.png" width="382" height="80" alt="Pulsanti di azione flottanti in arcade_dark — tasti dipinti d'oro con un riflesso" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gorewardcalendar-dark.png" width="382" height="190" alt="Un calendario delle ricompense in arcade_dark — giorni a forma di copritasto, oggi bordato d'oro" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-arcade-look-works">Come funziona l'aspetto arcade</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="the-face">La superficie</h3>
+      <p>Ogni tasto e ogni plancia è un <code>GoStyleBoxArcade</code>: un contorno d'inchiostro, un corpo sfumato, un bordo e un riflesso,
+        disegnati dentro il rettangolo del controllo stesso — un tasto mantiene la sua dimensione da uno stato all'altro, e la pressione lo fa solo affondare.</p>
+    </div>
+    <div class="card">
+      <h3 id="labels-that-read">Etichette che si leggono</h3>
+      <p>Un'etichetta bianca con un contorno d'inchiostro si legge su qualsiasi vernice da cui il contorno la stacca — le WCAG contano il
+        contorno come parte della lettera. Ogni vernice viene spostata finché la sua etichetta non supera 4,6:1 a ogni altezza della sfumatura.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows">Finestre</h3>
+      <p>Il titolo di una finestra sta su una fascia dorata, in lettere bianche con il contorno d'inchiostro, accanto a un tasto di chiusura
+        tondo e rosso. Finestre di dialogo, fogli, cassetti e popover sono plance spesse e incorniciate.</p>
+    </div>
+  </div>
+  <p>Un singolo tasto può avere il suo colore — un tasto arancione del negozio in un menu di pausa:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))</code></pre>
+  <p><a href="theming-presets.html#arcade">Arcade nel dettaglio →</a> · <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e quattordici gli aspetti →</a></p>
 </section>
 
 <section id="comic">
   <h2>Fumetto: inchiostro deciso e un'ombra netta</h2>
   <p class="sub">
-    L'aspetto più recente disegna ogni superficie come una vignetta a fumetti — il suo colore dentro un <b>contorno d'inchiostro spesso</b>,
+    L'aspetto fumetto disegna ogni superficie come una vignetta a fumetti — il suo colore dentro un <b>contorno d'inchiostro spesso</b>,
     con un'<b>ombra netta e piena</b> proiettata in basso a destra. <code>comic_light</code> inchiostra in nero su una pagina color crema carta
     con un primario cobalto; <code>comic_dark</code> inchiostra in crema su una pagina notturna con un primario giallo. Ogni immagine qui sotto è
     una vera schermata gohud — lo stesso codice, una riga di preset.
@@ -246,7 +323,7 @@ GoStyle.comic_border(title, 5.0)             # un contorno più spesso su questo
     <b>Crea un fumetto tutto tuo.</b> <code>tools/new_theme.py inked --from comic_light</code> copia la palette; cambia i colori
     della carta, dell'inchiostro e del primario ed esegui <code>tools/make_theme.py inked</code>. L'inchiostro, l'ombra e la skin arrivano da sé.
   </div>
-  <p><a href="theming-presets.html#comic">Fumetto nel dettaglio →</a> · <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e dodici gli aspetti →</a></p>
+  <p><a href="theming-presets.html#comic">Fumetto nel dettaglio →</a> · <a href="widgets-popups.html#popup-looks">Lo stesso popup in tutti e quattordici gli aspetti →</a></p>
 </section>
 
 <section id="showcase">
@@ -269,7 +346,7 @@ GoStyle.comic_border(title, 5.0)             # un contorno più spesso su questo
       <figcaption><b>Sci-fi</b> — pannelli spigolosi e comandi touch</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Tutti e dodici i preset e come cambiarli →</a></p>
+  <p><a href="#presets">Tutti e quattordici i preset e come cambiarli →</a></p>
 </section>
 
 <section id="what">
@@ -305,8 +382,8 @@ GoStyle.comic_border(title, 5.0)             # un contorno più spesso su questo
       <p>I widget conoscono solo <code>GoIconSet.CLOSE</code>. Cambia il set e ogni disegno cambia senza toccare una riga di codice. <a href="icons.html">Icone →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Dodici aspetti, una riga</h3>
-      <p><code>GoUi.use_preset()</code> cambia insieme tema, skin e icone — cornici arrotondate, smussate in stile sci-fi, forgiate in stile medievale, i componenti per app di Material 3, le caramelle di gelatina dei bambini o l'inchiostro del fumetto.</p>
+      <h3 id="six-looks-one-line">Quattordici aspetti, una riga</h3>
+      <p><code>GoUi.use_preset()</code> cambia insieme tema, skin e icone — cornici arrotondate, smussate in stile sci-fi, forgiate in stile medievale, i componenti per app di Material 3, le caramelle di gelatina dei bambini, l'inchiostro del fumetto o la vernice dell'arcade.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Leggibile per misura</h3>
@@ -359,6 +436,8 @@ GoStyle.comic_border(title, 5.0)             # un contorno più spesso su questo
       <tr><td><code>kids_dark</code> <span class="badge new">Nuovo</span></td><td>La stessa scatola dei giocattoli su una pagina blu notte</td></tr>
       <tr><td><code>comic_light</code> <span class="badge new">Nuovo</span></td><td>Vignette a fumetti — un contorno d'inchiostro spesso e un'ombra netta su ogni superficie, pannelli bianchi su una pagina color crema carta; l'ombra, la sua dimensione e lo spessore del contorno sono impostazioni</td></tr>
       <tr><td><code>comic_dark</code> <span class="badge new">Nuovo</span></td><td>Lo stesso inchiostro su una pagina notturna — contorni crema e un primario giallo</td></tr>
+      <tr><td><code>arcade_light</code> <span class="badge new">Nuovo</span></td><td>Un cabinato da sala giochi — ogni tasto dipinto con una sfumatura, un riflesso e un bordo, etichettato in bianco con un contorno d'inchiostro; spesse plance incorniciate su una pagina azzurro cielo, una fascia del titolo dorata sulle finestre</td></tr>
+      <tr><td><code>arcade_dark</code> <span class="badge new">Nuovo</span></td><td>Gli stessi tasti vivaci su plance blu notte e una pagina notturna</td></tr>
     </tbody>
   </table>
 
@@ -472,12 +551,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Una cornice forgiata con rivetti, incisione agli angoli, una luce di bisello e la grana del materiale</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Una caramella di gelatina — un contorno spesso, un bordo pieno che affonda quando lo premi, un corpo più chiaro in alto e un riflesso bianco</td></tr>
       <tr><td><code>GoStyleBoxComic</code></td><td>Una vignetta a fumetti — un contorno d'inchiostro spesso e un'ombra proiettata netta, entrambi dimensionati da <code>GoConfig</code> mentre il gioco gira</td></tr>
+      <tr><td><code>GoStyleBoxArcade</code></td><td>Un tasto o una plancia da sala giochi — un corpo sfumato, un riflesso bianco, un bordo che affonda quando lo premi e un contorno d'inchiostro; una plancia aggiunge una spessa cornice colorata attorno a un fondo chiaro</td></tr>
     </tbody>
   </table>
-  <p>Tutte e cinque si serializzano dentro una risorsa Theme — ed è proprio questo che permette a un tema di cambiare <b>forma</b>, non solo colore.
-    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code> e <code>GoSkinComic</code> sono le sottoclassi incluse.</p>
+  <p>Tutte e sei si serializzano dentro una risorsa Theme — ed è proprio questo che permette a un tema di cambiare <b>forma</b>, non solo colore.
+    <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code>, <code>GoSkinComic</code> e <code>GoSkinArcade</code> sono le sottoclassi incluse.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Slot rapidi, un joystick e un chip disegnati da ogni skin inclusa — default, bambini, Material, medievale e sci-fi" loading="lazy"><figcaption>Che cosa disegna una skin — default, bambini, Material, medievale, sci-fi</figcaption></figure>
   <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Slot rapidi, un joystick e un chip disegnati dalla skin fumetto — contorni inchiostrati e ombre nette" loading="lazy"><figcaption>…e la skin fumetto</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Slot rapidi, un joystick e un chip disegnati dalla skin arcade — copritasti lucidi e un pad con quattro frecce" loading="lazy"><figcaption>…e la skin arcade</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> restituisce sempre uno <code>StyleBoxFlat</code></b>, perché il codice chiamante
@@ -572,7 +653,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Ogni coppia di colori e <b>l'etichetta di ogni stato di ogni pulsante sopra il pannello su cui si trova</b> viene misurata rispetto alle
-    WCAG, in tutti e dodici i temi. I colori traslucidi vengono prima composti sopra il loro sfondo reale — misurarli
+    WCAG, in tutti e quattordici i temi. I colori traslucidi vengono prima composti sopra il loro sfondo reale — misurarli
     direttamente riporterebbe un rapporto migliore di quello che si vede a schermo.
   </p>
   <p>

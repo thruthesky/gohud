@@ -145,7 +145,7 @@
   </div>
   <p>Każdy obrazek na tej stronie to ta sama mała gra — zdrowie i mana w lewym górnym rogu, monety w prawym górnym, joystick i trzy
     szybkie sloty na dole — w <code>default_dark</code>, z jednym otwartym oknem na wierzchu. <a href="#popup-looks">To samo okno
-    we wszystkich dwunastu wyglądach →</a></p>
+    we wszystkich czternastu wyglądach →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -686,6 +686,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Potwierdzenie w kids_dark — miętowa wstęga na nocnoniebieskiej karcie" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Nowość</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Potwierdzenie w comic_light — żółte pole tytułu, obrysowany tuszem przycisk zamknięcia i obrysowane przyciski z twardymi cieniami" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Nowość</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Potwierdzenie w comic_dark — kremowy tusz na łupkowej karcie" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Nowość</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Potwierdzenie w arcade_light — złota wstęga tytułu, okrągły czerwony klawisz zamknięcia i malowane klawisze na grubej planszy w niebieskiej ramie" loading="lazy"><figcaption><code>arcade_light</code> <span class="badge new">Nowość</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="Potwierdzenie w arcade_dark — złota wstęga na granatowej planszy" loading="lazy"><figcaption><code>arcade_dark</code> <span class="badge new">Nowość</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">Co zmienia każdy wygląd</h3>
@@ -698,6 +700,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Material 3</td><td>Narożniki 28dp, margines 24dp, w pełni nieprzezroczyste</td><td>Nagłówek 24sp w Roboto; przyciski-pigułki z płytką 40dp w obszarze dotyku 48dp</td></tr>
       <tr><td>Kids</td><td>Galaretkowo-cukierkowa karta z miękkim cieniem, w pełni nieprzezroczysta</td><td>Słoneczna wstęga tytułu (nocą miętowa), okrągły cukierkowy przycisk zamknięcia, przyciski, które zgniatają się po naciśnięciu</td></tr>
       <tr><td>Comic</td><td>Gruby obrys tuszem i twardy cień, w pełni nieprzezroczyste</td><td>Żółte pole tytułu, okrągły przycisk zamknięcia obrysowany tuszem, przyciski, których cień znika po naciśnięciu</td></tr>
+      <tr><td>Arcade</td><td>Gruba plansza — kolorowa rama wokół jasnego wnętrza — w pełni nieprzezroczysta</td><td>Złota wstęga tytułu z białym tytułem obrysowanym tuszem, okrągły czerwony klawisz zamknięcia, malowane klawisze, które wyskakują po naciśnięciu</td></tr>
     </tbody>
   </table>
 
@@ -708,8 +711,9 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Hak</th><th>Co ubiera</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Płytka za tytułem okna. Tytuł centruje się na niej i zmniejsza, aż do minimalnego rozmiaru (15), żeby zmieścić się w jednej linii.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>× okna — Kids robi z niego okrągły cukierek, Comic — krążek obrysowany tuszem.</td></tr>
-      <tr><td><code>press_feedback(control)</code></td><td>Uruchamia się w chwili, gdy palec dotknie przycisku zrobionego przez gohud — Kids go zgniata.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>× okna — Kids robi z niego okrągły cukierek, Comic — krążek obrysowany tuszem, Arcade — okrągły czerwony klawisz.</td></tr>
+      <tr><td><code>dress_title(label)</code></td><td>Etykieta tytułu okna — Arcade obrysowuje jej biały tytuł tuszem.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Uruchamia się w chwili, gdy palec dotknie przycisku zrobionego przez gohud — Kids go zgniata, Arcade sprawia, że wyskakuje.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Powierzchnie kart pytań i kart przewodnika, snackbarów i powiadomień, panelu bocznego, banerów i konsoli.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Pierścień i wskaźnik przewodnika.</td></tr>
     </tbody>
@@ -719,7 +723,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Każdy rodzaj okna ma własne krycie, więc karta HUD może zostać lekka, a okno dialogowe pełne: okna, arkusze, okna dialogowe, popovery
     i combobox idą za <code>panel_alpha</code>; panel boczny i karta przewodnika za <code>card_alpha</code>; karty pytań i konsola za
     <code>hud_alpha</code>; snackbary i powiadomienia za <code>notice_alpha</code>; menu za <code>popup_alpha</code>. Material i Kids robią
-    je wszystkie nieprzezroczystymi; Comic też, poza kartami pytań i konsolą, które mają 92%. Nadpisz jeden rodzaj przez <code>GoConfig.container_alpha_overrides</code>, wszystkie przez
+    je wszystkie nieprzezroczystymi; Comic też, poza kartami pytań i konsolą, które mają 92%, a Arcade też, poza tymi dwoma, które mają 94%. Nadpisz jeden rodzaj przez <code>GoConfig.container_alpha_overrides</code>, wszystkie przez
     <code>container_alpha</code> (proporcja — <code>0.95</code>), a jedno okno przez jego <code>alpha</code>. Blednie tylko powierzchnia;
     tekst nigdy nie prześwituje. <a href="theming-opacity.html">Krycie szczegółowo →</a></p>
 </section>

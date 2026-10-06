@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # ไอคอนของคุณ ที่เหลือใช้ของพรีเซ็ต</code></pre>
   <p>การกำหนด <code>theme</code>, <code>skin</code> หรือ <code>icons</code> ไว้ตรง ๆ จะ<b>ชนะ</b>พรีเซ็ต</p>
 
-  <h3 id="the-six-built-in-presets">พรีเซ็ตที่มีมาให้ทั้ง 12 แบบ</h3>
+  <h3 id="the-six-built-in-presets">พรีเซ็ตที่มีมาให้ทั้ง 14 แบบ</h3>
   <table>
     <thead><tr><th>พรีเซ็ต</th><th>พาเนล</th><th>สกิน · ไอคอน</th></tr></thead>
     <tbody>
@@ -144,13 +144,14 @@ GoUi.config.icons = my_icons     # ไอคอนของคุณ ที่�
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>กรอบตีขึ้นรูป <code>GoStyleBoxMedieval</code> — เหล็กและหนัง หรือกระดาษหนัง พร้อมหมุดย้ำและลวดลายมุมบนเมนู</td><td><code>GoSkinMedieval</code> · ไอคอนสลัก 16 ชิ้นทับบนชุดค่าเริ่มต้น</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">ใหม่</span></td><td>Material 3 Expressive สำหรับหน้าจอแอป — ปุ่มแคปซูล 40dp ในพื้นที่แตะ 48dp ไดอะล็อก 28dp การ์ดแบบเติมสี ช่องกรอกแบบมีขอบ สไลเดอร์ Expressive ส่วนคอมโพเนนต์แอป (แถบนำทาง แถบแอปด้านบน FAB แถบค้นหา ชิป ความคืบหน้า ตัวเลือกวันที่) เป็นไปตามโทเคนคอมโพเนนต์ของ M3</td><td><code>GoSkinMaterial</code> · ไอคอนค่าเริ่มต้น</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">ใหม่</span></td><td>สำหรับเด็ก — กล่องของเล่น: ขอบหนาและฐานทึบใต้ทุกปุ่ม ซึ่งยุบลงเมื่อกด ช่องกรอกข้อความแบบเว้าลง แท็บรูปฟองสบู่ แถบแบบเยลลี่ ตัวควบคุมแต่ละแบบมีสีเทียนของตัวเอง ช่องลัดแบบลูกอม ป้ายแบบสติกเกอร์ จอยสติกสีรุ้ง และแผนภูมิหลากสี ขนาดและฟอนต์ของโปรเจกต์ยังคงเดิม</td><td><code>GoSkinKids</code> · ไอคอนค่าเริ่มต้น</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">ใหม่</span></td><td>ตู้เกมอาร์เคดที่วาดโดย <code>GoStyleBoxArcade</code>: ทุกปุ่มลงสีไล่เฉดจากบนลงล่าง มีเงาสะท้อนสีขาว และฐานที่ยุบลงเมื่อกด ภายในเส้นขอบหมึกสีกรมท่า ป้ายข้อความเป็นสีขาวตัดเส้นหมึก — สีหลักสีเขียว ปุ่มสีน้ำเงิน อันตรายสีแดง ปุ่มเล็กสีลาเวนเดอร์ บอร์ดหนาที่มีกรอบสีล้อมรอบแอ่งสีอ่อน และหน้าต่างมีแถบชื่อเรื่องสีทองกับปุ่มปิดทรงกลมสีแดง</td><td><code>GoSkinArcade</code> · ไอคอนค่าเริ่มต้น</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">ใหม่</span></td><td>ช่องหนังสือการ์ตูนที่วาดโดย <code>GoStyleBoxComic</code>: เส้นขอบหมึกหนาและเงาคมบนทุกหน้า ซึ่งหายไปเมื่อกด สวิตช์ ช่องทำเครื่องหมาย และปุ่มจับสไลเดอร์ตัดเส้นหมึกด้วย และหน้าต่างมีป้ายชื่อเรื่องสีเหลือง ความหนาของเส้นขอบ ขนาดของเงา และจะแสดงเงาหรือไม่ เป็นค่าตั้งค่าของ <code>GoConfig</code></td><td><code>GoSkinComic</code> · ไอคอนค่าเริ่มต้น</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>ทั้งสิบสองแบบ วางเทียบกัน</h2>
+  <h2>ทั้งสิบสี่แบบ วางเทียบกัน</h2>
   <p class="sub">หน้าจอแกลเลอรีเดียวกัน เปลี่ยนแค่ชื่อพรีเซ็ต — โค้ดวิดเจ็ตไม่ต่างกันสักบรรทัด
     ทุกภาพคือมือถือที่ถือแนวตั้ง ขนาด 390×844</p>
   <div class="phones">
@@ -166,6 +167,8 @@ GoUi.config.icons = my_icons     # ไอคอนของคุณ ที่�
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="แกลเลอรีวิดเจ็ตของ gohud ในพรีเซ็ต kids_dark" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="แกลเลอรีวิดเจ็ตของ gohud ในพรีเซ็ต comic_light" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="แกลเลอรีวิดเจ็ตของ gohud ในพรีเซ็ต comic_dark" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="แกลเลอรีวิดเจ็ตของ gohud ในพรีเซ็ต arcade_light" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="แกลเลอรีวิดเจ็ตของ gohud ในพรีเซ็ต arcade_dark" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -339,6 +342,57 @@ GoStyle.comic_border(title, 5.0)             # เส้นขอบหนาข
 # แก้ไข themes/palettes/inked.json แล้วสั่ง:
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>อาร์เคด: ปุ่มลงสีและบอร์ดหนา <span class="badge new">ใหม่</span></h2>
+  <p><code>arcade_light</code> (บอร์ดสีขาวบนหน้าสีฟ้าท้องฟ้า) และ <code>arcade_dark</code> (บอร์ดสีกรมท่าบนหน้ายามค่ำคืน)
+    แต่งทุกหน้าจอให้เหมือนตู้เกมอาร์เคด: <b>ทุกปุ่มถูกลงสี</b> — ไล่เฉดจากด้านบนที่สว่างไปยังด้านล่างที่เข้มกว่า
+    มีเส้นเงาสะท้อนสีขาว และฐานที่ยุบลงเมื่อกด ภายในเส้นขอบหมึกสีกรมท่า — และ<b>ทุกบอร์ดมีความหนา</b> เป็น
+    กรอบสีล้อมรอบแอ่งสีอ่อน</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# หรือ: GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="แกลเลอรีของ gohud ใน arcade_light — ปุ่มลงสีเขียว น้ำเงิน แดง และลาเวนเดอร์ กับบอร์ด HUD กรอบสีน้ำเงินบนหน้าสีฟ้าท้องฟ้า" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="แกลเลอรีของ gohud ใน arcade_dark — ปุ่มสีสดชุดเดียวกันบนหน้ายามค่ำคืน" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="ไดอะล็อกยืนยันใน arcade_light — แถบชื่อเรื่องสีทอง ปุ่มปิดทรงกลมสีแดง และปุ่มลงสีน้ำเงินกับเขียวบนบอร์ดที่มีกรอบ" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="ไดอะล็อกยืนยันใน arcade_dark — แถบสีทองบนบอร์ดสีกรมท่า" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">อะไรเปลี่ยนไปบ้าง</h3>
+  <table>
+    <thead><tr><th>ส่วนประกอบ</th><th>ในลุคอาร์เคด</th></tr></thead>
+    <tbody>
+      <tr><td>ปุ่ม</td><td>วาดโดย <code>GoStyleBoxArcade</code>: ตัวไล่เฉดสี เงาสะท้อนสีขาวรอบมุมบนซ้าย ฐานที่เข้มกว่า และเส้นขอบหมึกสีกรมท่า ปุ่มหลักเป็นสีเขียว ปุ่มทั่วไปและแท็บที่เลือกเป็นสีน้ำเงิน ปุ่มอันตรายเป็นสีปะการังและสีแดง ปุ่มเล็กและแท็บอื่น ๆ เป็นสีลาเวนเดอร์</td></tr>
+      <tr><td>ป้ายข้อความ</td><td>สีขาวตัดเส้นหมึกบนทุกปุ่มที่ลงสี ทุกสีจะถูกปรับจนป้ายข้อความนั้นอ่านออกที่ทุกระดับความสูงของการไล่เฉด — 4.6:1 ขึ้นไป โดยนับเส้นขอบเป็นส่วนหนึ่งของตัวอักษรตามแบบของ WCAG</td></tr>
+      <tr><td>การกด</td><td>ฐานหายไป ปุ่มยุบลงแทนที่แล้วเด้งกลับขึ้นมา</td></tr>
+      <tr><td>บอร์ด</td><td>พาเนล การ์ด การ์ด HUD และป๊อปอัป มีความหนา: กรอบสี (6dp รอบหน้าต่าง 4 รอบการ์ดหรือการ์ด HUD 3 รอบเมนูหรือข้อความแจ้งเตือน) ที่มีเงาสะท้อนและฐานของตัวเอง ล้อมรอบแอ่งสีอ่อนที่มีเส้นหมึก ระยะขอบในจึงเพิ่มขึ้นเล็กน้อยเพื่อรองรับ ข้อความจึงไม่แตะกรอบเลย</td></tr>
+      <tr><td>ช่องกรอกและแถบ</td><td>ช่องกรอกข้อความและร่องของแถบเป็นแอ่งเว้าลึก ส่วนที่เติมของแถบเป็นหลอดลงสีเงาวาวในสีเติมสดของสีนั้น</td></tr>
+      <tr><td>หน้าต่าง</td><td>แถบสีทองพร้อมชื่อเรื่องสีขาวตัดเส้นหมึก และปุ่มปิดทรงกลมสีแดงที่มีกากบาทสีขาว</td></tr>
+      <tr><td>ส่วนของสกิน</td><td><code>GoSkinArcade</code>: ควิกสล็อตและชิปเป็นหัวปุ่ม สล็อตที่กำลังคูลดาวน์จะมีขอบสีทองสว่างขึ้น ป้ายเป็นแผ่นสีอ่อน กล่องแจ้งเตือนมีกรอบตามสีของมัน การ์ดที่เลือกจะมีขอบสีทองสว่างขึ้น FAB เป็นปุ่มสีทอง และจอยสติ๊กเป็นแผ่นรองเงาวาวที่มีลูกศรสี่ทิศ</td></tr>
+      <tr><td>ความทึบ</td><td>พาเนล การ์ด ข้อความแจ้งเตือน และป๊อปอัป ทึบทั้งหมด การ์ด HUD ทึบ 94%</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">ลงสีปุ่มเดียวด้วยสีของมันเอง</h3>
+  <p>ธีมลงสีปุ่มตามชนิดของมัน เมนูที่อยากให้แต่ละปุ่มมีสีของตัวเองจะลงสีทีละปุ่ม — หน้าปุ่มตอนโฮเวอร์
+    จะสว่างขึ้นเล็กน้อย ตอนกดจะเข้มขึ้นเล็กน้อย และหน้าปุ่มที่ปิดใช้งานยังคงหม่น:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # กรอบของบอร์ด และทุกปุ่มที่อยู่ข้างใน</code></pre>
+  <div class="note">
+    <b>ป้ายข้อความอ่านออกเสมอ</b> สีที่ทำให้ป้ายข้อความสีขาวอ่านไม่ออกจะถูกปรับให้สว่างขึ้นหรือเข้มขึ้นจนอ่านออก
+    สีที่คุณส่งเข้าไปจึงเป็นเพียงจุดเริ่มต้น ภายใต้ลุคอื่น <code>arcade_paint()</code> จะไม่ทำอะไรเลย
+  </div>
+  <div class="note">
+    <b>ปุ่มคงขนาดเดิม</b> ฐานและเงาสะท้อนถูกวาดภายในสี่เหลี่ยมของแต่ละปุ่ม หน้าจอที่จัดวางไว้ใน
+    ลุคอื่นจึงคงเลย์เอาต์เดิม บอร์ดเพิ่มระยะขอบในให้เนื้อหามากขึ้นเล็กน้อย (การ์ดและการ์ด HUD 12dp ด้านล่าง 15)
+    เพื่อไม่ให้ข้อความแตะกรอบ ฟอนต์ของโปรเจกต์คุณก็ถูกเก็บไว้เช่นกัน
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="ควิกสล็อต จอยสติ๊ก และชิป ที่วาดโดยสกินอาร์เคด — หัวปุ่มเงาวาวและแผ่นรองที่มีลูกศรสี่ทิศ" loading="lazy"><figcaption>ส่วนที่สกินอาร์เคดวาด</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">สร้างอาร์เคดของคุณเอง</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# แก้ไข themes/palettes/cabinet.json — สี *_vivid คือสีที่ใช้ลงปุ่ม — แล้วสั่ง:
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

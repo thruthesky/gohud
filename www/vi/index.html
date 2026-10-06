@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — bộ HUD &amp; UI cho Godot 4</title>
-<meta name="description" content="Bộ HUD và UI tùy biến được cho Godot 4.7+. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, thanh HUD, ô nhanh và cần điều khiển ảo, với mười hai preset — mặc định, sci-fi, trung cổ, Material 3, trẻ em và truyện tranh.">
+<meta name="description" content="Bộ HUD và UI tùy biến được cho Godot 4.7+. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu, snackbar, thanh HUD, ô nhanh và cần điều khiển ảo, với mười bốn preset — mặc định, sci-fi, trung cổ, Material 3, trẻ em, truyện tranh và arcade.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud là bộ HUD và UI cho Godot 4.7 trở lên. Cửa sổ nổi, bảng trượt dưới, hộp thoại, biểu mẫu,
       snackbar, coach mark, thanh HUD, ô nhanh và cần điều khiển ảo đều chạy từ <b>một theme và một bộ
       biểu tượng thay được</b>, đồng thời tự lo vùng an toàn, bàn phím ảo, RTL và vùng chạm cho bạn.
-      <b>Mười hai preset</b> — mặc định, sci-fi, trung cổ, Material 3, trẻ em và truyện tranh, mỗi loại có bản tối và sáng — đổi màu sắc lẫn hình dáng trong một dòng.
+      <b>Mười bốn preset</b> — mặc định, sci-fi, trung cổ, Material 3, trẻ em, truyện tranh và arcade, mỗi loại có bản tối và sáng — đổi màu sắc lẫn hình dáng trong một dòng.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,14 +86,15 @@
       <span class="badge">GDScript thuần</span>
       <span class="badge">Không cần autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">12 preset</span>
-      <span class="badge new">Mới: Truyện tranh · Material 3 · Trẻ em</span>
+      <span class="badge">14 preset</span>
+      <span class="badge new">Mới: Arcade · Truyện tranh · Material 3 · Trẻ em</span>
       <span class="badge">21 ngôn ngữ</span>
       <span class="badge">Kèm <span data-n="icons">1.287</span> biểu tượng</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Cài đặt</a>
+      <a class="btn" href="#arcade">Xem diện mạo arcade</a>
       <a class="btn" href="#comic">Xem diện mạo truyện tranh</a>
       <a class="btn" href="#presets">Xem các preset</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
@@ -104,9 +105,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Mới: truyện tranh, Material 3 và một diện mạo cho trẻ em</h2>
+  <h2>Mới: arcade, truyện tranh, Material 3 và một diện mạo cho trẻ em</h2>
   <p class="sub">
-    Ba họ mới gia nhập cùng mặc định, sci-fi và trung cổ — giờ đã có <b>mười hai diện mạo có sẵn</b>, mỗi cái đều có bản tối và sáng.
+    Bốn họ mới gia nhập cùng mặc định, sci-fi và trung cổ — giờ đã có <b>mười bốn diện mạo có sẵn</b>, mỗi cái đều có bản tối và sáng.
     Mọi widget, cửa sổ bật lên và mảnh HUD đều nhận chúng mà không phải đổi code của bạn: đổi preset là cả màn hình đổi theo.
   </p>
   <div class="phones">
@@ -116,6 +117,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="Màn hình gallery của gohud ở kids_dark — cùng hộp đồ chơi đó trên trang nền xanh đêm" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_light — viền mực đậm và bóng đổ sắc nét trên trang nền màu kem như giấy" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="Màn hình gallery của gohud ở comic_dark — viền màu kem và màu chính vàng trên trang nền đêm" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Màn hình gallery của gohud ở arcade_light — các phím sơn màu với dải chuyển màu và vệt bóng, một bảng HUD dày viền khung xanh lam trên trang nền xanh da trời" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Màn hình gallery của gohud ở arcade_dark — vẫn những phím rực rỡ ấy trên trang nền đêm" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -138,19 +141,93 @@
         biến mất khi mặt được nhấn. Một thiết lập bật hoặc tắt mọi bóng đổ, hai thiết lập nữa đặt độ dày viền
         và cỡ bóng, và một lệnh gọi làm điều tương tự cho riêng một widget. Cửa sổ có một ô tiêu đề màu vàng.</p>
     </div>
+    <div class="card">
+      <h3 id="arcade-painted-keys">Arcade — phím sơn màu</h3>
+      <p>Mọi phím đều được sơn — một dải chuyển màu, một vệt bóng trắng và một gờ lún xuống khi nhấn, nằm trong viền mực xanh navy —
+        và mang nhãn chữ trắng viền mực: xanh lá để chơi, xanh lam cho mọi thứ khác, đỏ để xóa. Các bảng đều dày, là một khung màu
+        bao quanh lòng bảng sáng màu, còn cửa sổ có dải băng tiêu đề vàng kim và một phím đóng tròn màu đỏ.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # hoặc MATERIAL_DARK
 GoUi.use_preset(&amp;"kids_light")                   # hoặc &amp;"kids_dark"
-GoUi.use_preset(&amp;"comic_light")                  # hoặc &amp;"comic_dark"</code></pre>
+GoUi.use_preset(&amp;"comic_light")                  # hoặc &amp;"comic_dark"
+GoUi.use_preset(&amp;"arcade_light")                 # hoặc &amp;"arcade_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 chi tiết →</a> · <a href="theming-presets.html#kids">Trẻ em chi tiết →</a> ·
-    <a href="#comic">Truyện tranh, từng widget một ↓</a> ·
-    <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười hai diện mạo →</a></p>
+    <a href="#arcade">Arcade, từng widget một ↓</a> · <a href="#comic">Truyện tranh, từng widget một ↓</a> ·
+    <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười bốn diện mạo →</a></p>
+</section>
+
+<section id="arcade">
+  <h2>Arcade: phím sơn màu và bảng dày</h2>
+  <p class="sub">
+    Diện mạo mới nhất khoác cho mọi màn hình dáng vẻ của một máy game thùng. <b>Mọi phím đều được sơn</b> — một dải chuyển màu từ đỉnh sáng
+    xuống đáy đậm hơn, một nét vệt bóng trắng và một gờ lún xuống khi nhấn, tất cả nằm trong viền mực xanh navy — và nhãn của nó là chữ
+    trắng viền mực. <b>Mọi bảng đều dày</b>: một khung màu có vệt bóng riêng, bao quanh lòng bảng sáng màu.
+    <code>arcade_light</code> đặt bảng trắng trên trang nền xanh da trời; <code>arcade_dark</code> đặt bảng xanh navy trên trang nền đêm.
+    Mọi ảnh bên dưới đều là một màn hình gohud thật — cùng một đoạn code, chỉ một dòng preset.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")   # hoặc &amp;"arcade_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="Màn hình gallery của gohud ở arcade_light — các phím sơn xanh lá, xanh lam, đỏ và tím oải hương cùng một bảng HUD khung xanh lam trên trang nền xanh da trời" loading="lazy"><figcaption><code>arcade_light</code> · gallery</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="Màn hình gallery của gohud ở arcade_dark — vẫn những phím rực rỡ ấy trên trang nền đêm" loading="lazy"><figcaption><code>arcade_dark</code> · gallery</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Một hộp thoại xác nhận ở arcade_light — dải băng tiêu đề vàng kim, phím đóng tròn màu đỏ và các phím sơn xanh lam, xanh lá trên một bảng có khung" loading="lazy"><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/sheet-light.png" width="300" height="649" alt="Một bảng trượt dưới ở arcade_light — một bảng dày có khung trồi lên từ mép dưới, với các hàng hình nắp phím" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/coach-mark-light.png" width="300" height="649" alt="Một coach mark ở arcade_light — một khung chú thích có khung chỉ vào một phím" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/drawer-left-dark.png" width="300" height="649" alt="Một ngăn kéo bên ở arcade_dark — một bảng xanh navy gồm các hàng điều hướng phủ trên màn hình bị làm tối" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/popover-dark.png" width="300" height="649" alt="Một popover ở arcade_dark — một bong bóng có khung neo vào phím đã mở nó" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-key-painted">Mọi phím đều được sơn</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-light.png" width="382" height="204" alt="Các nút ở arcade_light — Chơi xanh lá, Chi tiết xanh lam, một phím trắng có viền, Xóa màu san hô, Xóa vĩnh viễn màu đỏ, một phím gọn màu tím oải hương và một phím xám bị vô hiệu hóa, mỗi phím được sơn dải chuyển màu, vệt bóng và gờ trong viền xanh navy" loading="lazy"><figcaption><code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-tabs-light.png" width="382" height="136" alt="Tab ở arcade_light — tab được chọn là một phím sơn xanh lam, các tab còn lại là phím tím oải hương" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-segmented-light.png" width="240" height="72" alt="Một điều khiển phân đoạn ở arcade_light — các phím sơn tách rời, phím được chọn màu xanh lam và lún xuống" loading="lazy"><figcaption>Phím phân đoạn</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-toggle-light.png" width="382" height="260" alt="Công tắc và ô đánh dấu ở arcade_light — rãnh bóng màu xanh lá khi bật, tím oải hương khi tắt, một ô có dấu tích xanh lá" loading="lazy"><figcaption>Công tắc và ô đánh dấu</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-card-light.png" width="382" height="249" alt="Các thẻ ở arcade_light — lòng bảng sáng màu bên trong khung xanh lam dày có vệt bóng và gờ" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goform-light.png" width="382" height="328" alt="Một biểu mẫu ở arcade_light — một ô nhập trắng lõm xuống, một công tắc và một phím Lưu xanh lá" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-choice_grid-light.png" width="382" height="81" alt="Một lưới lựa chọn ở arcade_light — các nắp phím, ô được chọn viền vàng kim trên nền phớt xanh lá" loading="lazy"><figcaption><code>GoStyle.choice_grid()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslotgrid-light.png" width="382" height="208" alt="Một lưới ô ở arcade_light — kho đồ gồm các nắp phím bóng loáng kèm số lượng" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-list_row-light.png" width="382" height="181" alt="Các hàng danh sách ở arcade_light — mỗi hàng là một nắp phím sáng màu có biểu tượng" loading="lazy"><figcaption>Hàng danh sách</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/godatepicker-light.png" width="382" height="392" alt="Một bộ chọn ngày ở arcade_light — các ngày hình nắp phím, ngày được chọn là một phím sơn màu" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-arcade-dark">Về đêm: <code>arcade_dark</code></h3>
+  <p>Trên trang nền tối, mực trở thành chính trang nền, đậm hơn nhiều, còn các màu sơn vẫn rực rỡ như cũ.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-dark.png" width="382" height="204" alt="Các nút ở arcade_dark — vẫn những màu sơn rực rỡ ấy trên trang nền đêm" loading="lazy"><figcaption><code>GoStyle.button()</code> về đêm</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gobar-dark.png" width="382" height="135" alt="Thanh HUD ở arcade_dark — các ống HP đỏ, MP xanh lam và XP xanh lá trong rãnh lõm" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-hud_panel-dark.png" width="382" height="162" alt="Thẻ HUD ở arcade_dark — lòng bảng xanh navy trong khung xanh lam dày phủ trên game" loading="lazy"><figcaption><code>GoStyle.hud_panel()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslot-dark.png" width="382" height="72" alt="Ô nhanh ở arcade_dark — các nắp phím kèm số lượng, một ô đang hồi chiêu viền vàng kim" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gojoystick-dark.png" width="204" height="204" alt="Một cần điều khiển ảo ở arcade_dark — một đế bóng loáng trong vòng mực với bốn mũi tên và núm hình nắp phím" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-alert-dark.png" width="382" height="260" alt="Cảnh báo ở arcade_dark — các bảng nhỏ khung vàng, xanh lá, đỏ và xanh lam" loading="lazy"><figcaption>Cảnh báo</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gofab-dark.png" width="382" height="80" alt="Nút hành động nổi ở arcade_dark — các phím sơn vàng kim có vệt bóng" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gorewardcalendar-dark.png" width="382" height="190" alt="Lịch phần thưởng ở arcade_dark — các ngày hình nắp phím, hôm nay viền vàng kim" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-arcade-look-works">Diện mạo arcade hoạt động thế nào</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="the-face">Bề mặt</h3>
+      <p>Mỗi phím và mỗi bảng là một <code>GoStyleBoxArcade</code>: một viền mực, một thân chuyển màu, một gờ và một vệt bóng, được vẽ
+        bên trong chính hình chữ nhật của điều khiển — phím giữ nguyên kích thước qua mọi trạng thái, và khi nhấn chỉ lún xuống mà thôi.</p>
+    </div>
+    <div class="card">
+      <h3 id="labels-that-read">Nhãn luôn đọc được</h3>
+      <p>Nhãn trắng có viền mực đọc được trên mọi màu sơn mà đường viền tách nó ra — WCAG tính đường viền là một phần của chữ.
+        Mỗi màu sơn được dịch đi cho đến khi nhãn của nó vượt 4.6:1 ở mọi độ cao của dải chuyển màu.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows">Cửa sổ</h3>
+      <p>Tiêu đề cửa sổ nằm trên một dải băng vàng kim, chữ trắng viền mực, cạnh một phím đóng tròn màu đỏ. Hộp thoại,
+        bảng trượt, ngăn kéo và popover đều là những bảng dày có khung.</p>
+    </div>
+  </div>
+  <p>Một phím có thể mang màu riêng — một phím cửa hàng màu cam trong menu tạm dừng:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))</code></pre>
+  <p><a href="theming-presets.html#arcade">Arcade chi tiết →</a> · <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười bốn diện mạo →</a></p>
 </section>
 
 <section id="comic">
   <h2>Truyện tranh: nét mực đậm và bóng đổ sắc nét</h2>
   <p class="sub">
-    Diện mạo mới nhất vẽ mọi mặt như một khung trong truyện tranh — màu bề mặt nằm trong một <b>đường viền mực đậm</b>,
+    Diện mạo truyện tranh vẽ mọi mặt như một khung trong truyện tranh — màu bề mặt nằm trong một <b>đường viền mực đậm</b>,
     với một <b>bóng đổ đặc, sắc nét</b> lệch xuống dưới và sang phải. <code>comic_light</code> viền mực đen trên trang nền màu kem như giấy
     với màu chính xanh coban; <code>comic_dark</code> viền mực màu kem trên trang nền đêm với màu chính vàng. Mọi ảnh bên dưới đều là
     một màn hình gohud thật — cùng một đoạn code, chỉ một dòng preset.
@@ -245,7 +322,7 @@ GoStyle.comic_border(title, 5.0)             # viền dày hơn cho riêng cái 
     <b>Tự làm một diện mạo truyện tranh của riêng bạn.</b> <code>tools/new_theme.py inked --from comic_light</code> sao chép bảng màu; đổi màu
     giấy, màu mực và màu chính rồi chạy <code>tools/make_theme.py inked</code>. Nét mực, bóng đổ và skin đều đi kèm.
   </div>
-  <p><a href="theming-presets.html#comic">Truyện tranh chi tiết →</a> · <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười hai diện mạo →</a></p>
+  <p><a href="theming-presets.html#comic">Truyện tranh chi tiết →</a> · <a href="widgets-popups.html#popup-looks">Cùng một cửa sổ bật lên trong cả mười bốn diện mạo →</a></p>
 </section>
 
 <section id="showcase">
@@ -268,7 +345,7 @@ GoStyle.comic_border(title, 5.0)             # viền dày hơn cho riêng cái 
       <figcaption><b>Sci-fi</b> — tấm nền góc cạnh và điều khiển cảm ứng</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">Cả mười hai preset và cách chuyển giữa chúng →</a></p>
+  <p><a href="#presets">Cả mười bốn preset và cách chuyển giữa chúng →</a></p>
 </section>
 
 <section id="what">
@@ -304,8 +381,8 @@ GoStyle.comic_border(title, 5.0)             # viền dày hơn cho riêng cái 
       <p>Widget chỉ biết <code>GoIconSet.CLOSE</code>. Đổi bộ biểu tượng là mọi hình vẽ đổi theo mà không phải sửa một dòng code nào. <a href="icons.html">Biểu tượng →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">Mười hai diện mạo, một dòng</h3>
-      <p><code>GoUi.use_preset()</code> đổi cùng lúc theme, skin và biểu tượng — khung bo tròn, khung vát góc kiểu sci-fi, khung rèn kiểu trung cổ, các thành phần ứng dụng của Material 3, kẹo thạch cho trẻ em hay nét mực truyện tranh.</p>
+      <h3 id="six-looks-one-line">Mười bốn diện mạo, một dòng</h3>
+      <p><code>GoUi.use_preset()</code> đổi cùng lúc theme, skin và biểu tượng — khung bo tròn, khung vát góc kiểu sci-fi, khung rèn kiểu trung cổ, các thành phần ứng dụng của Material 3, kẹo thạch cho trẻ em, nét mực truyện tranh hay lớp sơn arcade.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Dễ đọc là thứ đo được</h3>
@@ -357,6 +434,8 @@ GoStyle.comic_border(title, 5.0)             # viền dày hơn cho riêng cái 
       <tr><td><code>kids_dark</code> <span class="badge new">Mới</span></td><td>Cùng hộp đồ chơi đó trên trang nền xanh đêm</td></tr>
       <tr><td><code>comic_light</code> <span class="badge new">Mới</span></td><td>Khung truyện tranh — viền mực đậm và bóng đổ sắc nét trên mọi mặt, tấm nền trắng trên trang nền màu kem như giấy; bóng đổ, cỡ bóng và độ dày viền đều là thiết lập</td></tr>
       <tr><td><code>comic_dark</code> <span class="badge new">Mới</span></td><td>Cùng nét mực đó trên trang nền đêm — viền màu kem và màu chính vàng</td></tr>
+      <tr><td><code>arcade_light</code> <span class="badge new">Mới</span></td><td>Một máy game thùng — mọi phím được sơn dải chuyển màu, vệt bóng và gờ, mang nhãn chữ trắng viền mực; các bảng dày có khung trên trang nền xanh da trời, dải băng tiêu đề vàng kim trên cửa sổ</td></tr>
+      <tr><td><code>arcade_dark</code> <span class="badge new">Mới</span></td><td>Vẫn những phím rực rỡ ấy trên bảng xanh navy và trang nền đêm</td></tr>
     </tbody>
   </table>
 
@@ -470,12 +549,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Khung rèn với đinh tán, hoa văn khắc ở góc, vệt sáng vát cạnh và vân vật liệu</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Một viên kẹo thạch — viền dày, gờ đặc lún xuống khi nhấn, thân sáng hơn ở phía trên và một vệt bóng trắng</td></tr>
       <tr><td><code>GoStyleBoxComic</code></td><td>Một khung truyện tranh — viền mực đậm và bóng đổ sắc nét, cả hai đều do <code>GoConfig</code> định cỡ ngay khi game đang chạy</td></tr>
+      <tr><td><code>GoStyleBoxArcade</code></td><td>Một phím hoặc một bảng kiểu arcade — thân chuyển màu, vệt bóng trắng, gờ lún xuống khi nhấn và viền mực; một bảng thêm khung màu dày bao quanh lòng bảng sáng màu</td></tr>
     </tbody>
   </table>
-  <p>Cả năm đều tuần tự hóa được vào một tài nguyên Theme — chính điều đó cho phép một theme đổi <b>hình dáng</b>,
-    chứ không chỉ đổi màu. <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code> và <code>GoSkinComic</code> là các lớp con có sẵn.</p>
+  <p>Cả sáu đều tuần tự hóa được vào một tài nguyên Theme — chính điều đó cho phép một theme đổi <b>hình dáng</b>,
+    chứ không chỉ đổi màu. <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>, <code>GoSkinMaterial</code>, <code>GoSkinKids</code>, <code>GoSkinComic</code> và <code>GoSkinArcade</code> là các lớp con có sẵn.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Ô nhanh, cần điều khiển và chip do từng skin có sẵn vẽ — mặc định, trẻ em, Material, trung cổ và sci-fi" loading="lazy"><figcaption>Những gì một skin vẽ — mặc định, trẻ em, Material, trung cổ, sci-fi</figcaption></figure>
   <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Ô nhanh, cần điều khiển và chip do skin truyện tranh vẽ — viền mực và bóng đổ sắc nét" loading="lazy"><figcaption>…và skin truyện tranh</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Ô nhanh, cần điều khiển và chip do skin arcade vẽ — nắp phím bóng loáng và một đế có bốn mũi tên" loading="lazy"><figcaption>…và skin arcade</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> luôn trả về một <code>StyleBoxFlat</code></b>, vì phía gọi nhận nó rồi
@@ -570,7 +651,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     Mọi cặp màu và <b>nhãn của từng trạng thái nút trên chính tấm nền nó nằm lên</b> đều được đo theo
-    WCAG, trên cả mười hai theme. Màu bán trong suốt được ghép lên nền thật của nó trước — đo thẳng vào chúng
+    WCAG, trên cả mười bốn theme. Màu bán trong suốt được ghép lên nền thật của nó trước — đo thẳng vào chúng
     sẽ cho tỉ số đẹp hơn những gì màn hình thật sự hiển thị.
   </p>
   <p>

@@ -1,0 +1,58 @@
+{
+ "_help": "An arcade game's menus: every button painted in its own colour with a gradient (light on top, deeper below), a thick dark ink outline, a deeper lip that sinks when pressed and a white gloss stroke; panels are thick boards — a coloured frame round a pale well; labels on painted keys are white with an ink outline. The paints come from this palette: the primary key is the success fill (green), the normal key the accent fill (blue), the small keys and the tabs not chosen the secondary colour lightened (lavender), the danger keys the danger fill (coral and red), window titles and tooltips the warning fill (gold). Edit the colours, the corners and the skin dials here, then run python3 addons/gohud/tools/make_theme.py arcade_dark. The shapes are tools/theme_arcade.py and themes/skins/go_skin_arcade.gd. 🛑 Never set a font: a Latin-only font turns Korean, Japanese and Chinese into empty boxes.",
+ "id": "arcade_dark",
+ "title": "Arcade Night",
+ "dark": true,
+ "from": "dark",
+ "skin": {
+  "_help": "base: arcade (GoSkinArcade — the painted parts drawn in code). Dials are numbers you change without touching skin code; delete one and the skin's own value applies.",
+  "base": "arcade",
+  "dials": {
+   "alert_tint": 0.14,
+   "badge_pad_x": 7,
+   "badge_pad_y": 2,
+   "joystick_base_alpha": 0.5,
+   "joystick_ring_alpha": 0.6,
+   "joystick_ring_width": 3.0,
+   "arcade_lip": 4,
+   "arcade_edge": 3,
+   "arcade_gloss": 0.85
+  }
+ },
+ "shape": {
+  "_help": "kind, corners and panel opacity only. 🛑 No sizes (gap, padding, button height or padding): a host that pins its own sizes would see its controls change size.",
+  "kind": "arcade",
+  "radius": 16,
+  "radius_small": 10,
+  "radius_large": 24,
+  "panel_alpha": 100,
+  "card_alpha": 100,
+  "notice_alpha": 100,
+  "popup_alpha": 100,
+  "hud_alpha": 94
+ },
+ "palette": {
+  "background": "#111733",
+  "surface": "#1F2A5C",
+  "surface_soft": "#26336C",
+  "surface_high": "#33438A",
+  "border": "#7C8CD6",
+  "text": "#F2F5FF",
+  "secondary": "#C3C8F0",
+  "muted": "#A9B0DA",
+  "accent": "#5B8CFF",
+  "on_accent": "#0B1030",
+  "danger": "#FF6B72",
+  "info": "#6FB4FF",
+  "success": "#5EE07A",
+  "warning": "#FFC845",
+  "shadow": "#000000@0.45",
+  "track": "#0E1430",
+  "scrim": "#05081A@0.6",
+  "accent_vivid": "#3570EA",
+  "danger_vivid": "#E3343D",
+  "info_vivid": "#38A2FF",
+  "success_vivid": "#4ACB3E",
+  "warning_vivid": "#FFB21E"
+ }
+}

@@ -41,6 +41,10 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_jelly_test.gd" \
 step "①-k unit tests — the comic look (GoStyleBoxComic, the comic looks, the outline and shadow dials)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_comic_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
+step "①-m unit tests — the arcade look (GoStyleBoxArcade, the arcade looks, the title outline and the per-widget paint)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-t unit tests — the seven templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,
 #    yet until 2026-09-16 no check opened any of those five (the docs said "headless-tested").

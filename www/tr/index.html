@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 için HUD ve UI kiti</title>
-<meta name="description" content="Godot 4.7+ için özelleştirilebilir bir HUD ve UI kiti. Yüzen pencereler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, HUD çubukları, hızlı slotlar ve sanal joystick; on iki ön ayarla — varsayılan, bilimkurgu, ortaçağ, Material 3, çocuk ve çizgi roman.">
+<meta name="description" content="Godot 4.7+ için özelleştirilebilir bir HUD ve UI kiti. Yüzen pencereler, alt sayfalar, iletişim kutuları, formlar, snackbar'lar, HUD çubukları, hızlı slotlar ve sanal joystick; on dört ön ayarla — varsayılan, bilimkurgu, ortaçağ, Material 3, çocuk, çizgi roman ve arcade.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud, Godot 4.7 ve sonrası için bir HUD ve UI kitidir. Yüzen pencereler, alt sayfalar, iletişim kutuları,
       formlar, snackbar'lar, rehber işaretleri, HUD çubukları, hızlı slotlar ve sanal joystick <b>tek bir temayla ve
       değiştirilebilir tek bir simge setiyle</b> çalışır; güvenli alanı, sanal klavyeyi, RTL'i ve dokunma hedeflerini
-      sizin yerinize halleder. <b>On iki ön ayar</b> — varsayılan, bilimkurgu, ortaçağ, Material 3, çocuk ve çizgi roman, her biri koyu ve açık —
+      sizin yerinize halleder. <b>On dört ön ayar</b> — varsayılan, bilimkurgu, ortaçağ, Material 3, çocuk, çizgi roman ve arcade, her biri koyu ve açık —
       rengi ve biçimi tek satırda değiştirir.
     </p>
     <div class="badges">
@@ -87,14 +87,15 @@
       <span class="badge">Saf GDScript</span>
       <span class="badge">Autoload gerekmez</span>
       <span class="badge">MIT</span>
-      <span class="badge">12 ön ayar</span>
-      <span class="badge new">Yeni: Comic · Material 3 · Kids</span>
+      <span class="badge">14 ön ayar</span>
+      <span class="badge new">Yeni: Arcade · Comic · Material 3 · Kids</span>
       <span class="badge">21 dil</span>
       <span class="badge"><span data-n="icons">1.287</span> simge dahil</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">Kurulum</a>
+      <a class="btn" href="#arcade">Arcade görünümünü gör</a>
       <a class="btn" href="#comic">Çizgi roman görünümünü gör</a>
       <a class="btn" href="#presets">Ön ayarları gör</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
@@ -105,9 +106,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>Yeni: çizgi roman, Material 3 ve çocuklar için bir görünüm</h2>
+  <h2>Yeni: arcade, çizgi roman, Material 3 ve çocuklar için bir görünüm</h2>
   <p class="sub">
-    Varsayılan, bilimkurgu ve ortaçağ ailelerine üç yeni aile katıldı — artık her biri koyu ve açık olmak üzere <b>on iki yerleşik görünüm</b> var.
+    Varsayılan, bilimkurgu ve ortaçağ ailelerine dört yeni aile katıldı — artık her biri koyu ve açık olmak üzere <b>on dört yerleşik görünüm</b> var.
     Her widget, açılır pencere ve HUD parçası bunları kodunuzda hiçbir değişiklik yapmadan kullanır: ön ayarı değiştirin, ekranın tamamı onu izlesin.
   </p>
   <div class="phones">
@@ -117,6 +118,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark ile gohud galerisi — aynı oyuncak kutusu gece mavisi bir sayfada" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light ile gohud galerisi — krem kâğıt renginde bir sayfada kalın mürekkep çizgileri ve sert gölgeler" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark ile gohud galerisi — gece renginde bir sayfada krem çizgiler ve sarı bir birincil renk" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light ile gohud galerisi — gök mavisi bir sayfada renk geçişli ve parıltılı boyalı tuşlar, kalın mavi çerçeveli bir HUD panosu" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark ile gohud galerisi — gece renginde bir sayfada aynı parlak tuşlar" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -139,19 +142,93 @@
         kaybolan sert bir gölge. Tek bir ayar tüm gölgeleri açar ya da kapatır, iki ayar daha çizgi kalınlığını ve gölge boyutunu
         belirler; tek bir çağrı da aynısını tek bir widget için yapar. Pencereler sarı bir başlık kutusu alır.</p>
     </div>
+    <div class="card">
+      <h3 id="arcade-painted-keys">Arcade — boyalı tuşlar</h3>
+      <p>Her tuş boyalıdır — lacivert bir mürekkep çizgisinin içinde bir renk geçişi, beyaz bir parıltı ve basılınca içeri gömülen
+        bir alt kenar — ve mürekkep çizgili beyaz yazıyla etiketlenir: oynamak için yeşil, geri kalanı için mavi, silmek için kırmızı.
+        Panolar kalındır, soluk bir iç zeminin çevresinde renkli bir çerçeve; pencereler altın sarısı bir başlık şeridi ve yuvarlak kırmızı bir kapatma tuşu alır.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # ya da MATERIAL_DARK
 GoUi.use_preset(&amp;"kids_light")                   # ya da &amp;"kids_dark"
-GoUi.use_preset(&amp;"comic_light")                  # ya da &amp;"comic_dark"</code></pre>
+GoUi.use_preset(&amp;"comic_light")                  # ya da &amp;"comic_dark"
+GoUi.use_preset(&amp;"arcade_light")                 # ya da &amp;"arcade_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 ayrıntılı olarak →</a> · <a href="theming-presets.html#kids">Kids ayrıntılı olarak →</a> ·
-    <a href="#comic">Comic, her widget tek tek ↓</a> ·
-    <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on iki görünümün hepsinde →</a></p>
+    <a href="#arcade">Arcade, her widget tek tek ↓</a> · <a href="#comic">Comic, her widget tek tek ↓</a> ·
+    <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on dört görünümün hepsinde →</a></p>
+</section>
+
+<section id="arcade">
+  <h2>Arcade: boyalı tuşlar ve kalın panolar</h2>
+  <p class="sub">
+    En yeni görünüm her ekranı bir atari makinesi gibi giydirir. <b>Her tuş boyalıdır</b> — açık bir üstten daha koyu bir alta inen
+    bir renk geçişi, beyaz bir parıltı darbesi ve basılınca içeri gömülen bir alt kenar, hepsi lacivert bir mürekkep çizgisinin içinde — ve
+    etiketi mürekkep çizgili beyaz yazıdır. <b>Her pano kalındır</b>: soluk bir iç zeminin çevresinde, kendi parıltısı olan renkli bir çerçeve.
+    <code>arcade_light</code> gök mavisi bir sayfaya beyaz panolar koyar; <code>arcade_dark</code> gece renginde bir sayfaya lacivert panolar koyar.
+    Aşağıdaki her resim gerçek bir gohud ekranıdır — aynı kod, tek bir ön ayar satırı.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")   # ya da &amp;"arcade_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light ile gohud galerisi — gök mavisi bir sayfada yeşil, mavi, kırmızı ve lavanta rengi boyalı tuşlar ve mavi çerçeveli bir HUD panosu" loading="lazy"><figcaption><code>arcade_light</code> · galeri</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark ile gohud galerisi — gece renginde bir sayfada aynı parlak tuşlar" loading="lazy"><figcaption><code>arcade_dark</code> · galeri</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="arcade_light ile bir onay iletişim kutusu — altın sarısı bir başlık şeridi, yuvarlak kırmızı bir kapatma tuşu ve çerçeveli bir pano üstünde mavi ve yeşil boyalı tuşlar" loading="lazy"><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/sheet-light.png" width="300" height="649" alt="arcade_light ile bir alt sayfa — alt kenardan yükselen, tuş kapağı biçiminde satırları olan kalın çerçeveli bir pano" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/coach-mark-light.png" width="300" height="649" alt="arcade_light ile bir rehber işareti — bir tuşu gösteren çerçeveli bir açıklama balonu" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/drawer-left-dark.png" width="300" height="649" alt="arcade_dark ile bir yan çekmece — karartılmış ekranın üstünde, gezinme satırlarından oluşan lacivert bir pano" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/popover-dark.png" width="300" height="649" alt="arcade_dark ile bir açılır balon — onu açan tuşa bağlı, çerçeveli bir balon" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-key-painted">Her tuş boyalı</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-light.png" width="382" height="204" alt="arcade_light ile düğmeler — yeşil Oyna, mavi Ayrıntılar, beyaz çerçeveli bir tuş, mercan rengi Sil, kırmızı Kalıcı olarak sil, lavanta rengi sıkışık bir tuş ve gri devre dışı bir tuş; her biri lacivert bir çizginin içinde renk geçişi, parıltı ve alt kenarla boyanmış" loading="lazy"><figcaption><code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-tabs-light.png" width="382" height="136" alt="arcade_light ile sekmeler — seçili sekme mavi boyalı bir tuş, diğerleri lavanta rengi tuşlar" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-segmented-light.png" width="240" height="72" alt="arcade_light ile bölümlü bir denetim — ayrı boyalı tuşlar, seçili olan mavi ve içeri basılmış" loading="lazy"><figcaption>Bölümlü tuşlar</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-toggle-light.png" width="382" height="260" alt="arcade_light ile anahtarlar ve onay kutuları — açıkken yeşil parlak bir ray, kapalıyken lavanta rengi, yeşil onaylı bir kutu" loading="lazy"><figcaption>Anahtarlar ve onay kutuları</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-card-light.png" width="382" height="249" alt="arcade_light ile kartlar — parıltısı ve alt kenarı olan kalın mavi çerçevelerin içinde soluk iç zeminler" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goform-light.png" width="382" height="328" alt="arcade_light ile bir form — içe gömük beyaz bir alan, bir anahtar ve yeşil bir Kaydet tuşu" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-choice_grid-light.png" width="382" height="81" alt="arcade_light ile bir seçim ızgarası — tuş kapakları, seçili olan yeşil bir tonun üstünde altın sarısı kenarlı" loading="lazy"><figcaption><code>GoStyle.choice_grid()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslotgrid-light.png" width="382" height="208" alt="arcade_light ile bir slot ızgarası — yığın sayılı parlak tuş kapaklarından bir envanter" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-list_row-light.png" width="382" height="181" alt="arcade_light ile liste satırları — her satır simgeli, soluk bir tuş kapağı" loading="lazy"><figcaption>Liste satırları</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/godatepicker-light.png" width="382" height="392" alt="arcade_light ile bir tarih seçici — tuş kapağı biçiminde günler, seçili gün boyalı bir tuş" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-arcade-dark">Gece: <code>arcade_dark</code></h3>
+  <p>Koyu bir sayfada mürekkep, çok daha koyu hâliyle sayfanın kendisi olur; boyalar ise aynı parlaklıkta kalır.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-dark.png" width="382" height="204" alt="arcade_dark ile düğmeler — gece renginde bir sayfada aynı parlak boyalar" loading="lazy"><figcaption>Gece <code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gobar-dark.png" width="382" height="135" alt="arcade_dark ile HUD çubukları — içe gömük oluklarda kırmızı HP, mavi MP ve yeşil XP tüpleri" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-hud_panel-dark.png" width="382" height="162" alt="arcade_dark ile HUD kartları — oyunun üstünde, kalın mavi bir çerçeve içinde lacivert bir iç zemin" loading="lazy"><figcaption><code>GoStyle.hud_panel()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslot-dark.png" width="382" height="72" alt="arcade_dark ile hızlı slotlar — yığın sayılı tuş kapakları, bekleme süresindeki slot altın sarısı kenarlı" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gojoystick-dark.png" width="204" height="204" alt="arcade_dark ile sanal bir joystick — mürekkep bir halkanın içinde dört oklu parlak bir ped ve tuş kapağı biçiminde bir topuz" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-alert-dark.png" width="382" height="260" alt="arcade_dark ile uyarılar — sarı, yeşil, kırmızı ve mavi çerçeveli küçük panolar" loading="lazy"><figcaption>Uyarılar</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gofab-dark.png" width="382" height="80" alt="arcade_dark ile kayan eylem düğmeleri — parıltılı, altın sarısı boyalı tuşlar" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gorewardcalendar-dark.png" width="382" height="190" alt="arcade_dark ile bir ödül takvimi — tuş kapağı biçiminde günler, bugün altın sarısı kenarlı" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-arcade-look-works">Arcade görünümü nasıl çalışır</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="the-face">Yüz</h3>
+      <p>Her tuş ve pano bir <code>GoStyleBoxArcade</code>'dir: denetimin kendi dikdörtgeninin içine çizilen bir mürekkep çizgisi,
+        renk geçişli bir gövde, bir alt kenar ve bir parıltı — bir tuş durumdan duruma boyutunu korur, basmak onu yalnızca içeri gömer.</p>
+    </div>
+    <div class="card">
+      <h3 id="labels-that-read">Okunan etiketler</h3>
+      <p>Mürekkep çizgili beyaz bir etiket, çizginin ayırdığı her boyanın üstünde okunur — WCAG çizgiyi harfin bir parçası sayar.
+        Her boya, etiketi renk geçişinin her yüksekliğinde 4.6:1'i geçene kadar kaydırılır.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows">Pencereler</h3>
+      <p>Bir pencerenin başlığı, yuvarlak kırmızı bir kapatma tuşunun yanında, altın sarısı bir şeridin üstünde mürekkep çizgili beyaz
+        harflerle durur. İletişim kutuları, alt sayfalar, çekmeceler ve açılır balonlar kalın çerçeveli panolardır.</p>
+    </div>
+  </div>
+  <p>Tek bir tuş kendi rengini alabilir — bir duraklatma menüsünde turuncu bir mağaza tuşu:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))</code></pre>
+  <p><a href="theming-presets.html#arcade">Arcade ayrıntılı olarak →</a> · <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on dört görünümün hepsinde →</a></p>
 </section>
 
 <section id="comic">
   <h2>Çizgi roman: kalın mürekkep ve sert bir gölge</h2>
   <p class="sub">
-    En yeni görünüm her yüzü bir çizgi roman karesi gibi çizer — <b>kalın bir mürekkep çizgisinin</b> içinde yüzey rengi
+    Çizgi roman görünümü her yüzü bir çizgi roman karesi gibi çizer — <b>kalın bir mürekkep çizgisinin</b> içinde yüzey rengi
     ve aşağıya, sağa düşen <b>sert, dolgun bir gölge</b>. <code>comic_light</code> krem kâğıt renginde bir sayfaya siyah mürekkeple,
     kobalt bir birincil renkle çizer; <code>comic_dark</code> ise gece renginde bir sayfaya krem mürekkeple, sarı bir birincil renkle çizer. Aşağıdaki her resim
     gerçek bir gohud ekranıdır — aynı kod, tek bir ön ayar satırı.
@@ -246,7 +323,7 @@ GoStyle.comic_border(title, 5.0)             # bunda daha kalın bir çizgi</cod
     <b>Kendi çizgi romanınızı yapın.</b> <code>tools/new_theme.py inked --from comic_light</code> paleti kopyalar; kâğıt,
     mürekkep ve birincil renkleri değiştirip <code>tools/make_theme.py inked</code> komutunu çalıştırın. Mürekkep, gölge ve kaplama da beraberinde gelir.
   </div>
-  <p><a href="theming-presets.html#comic">Comic ayrıntılı olarak →</a> · <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on iki görünümün hepsinde →</a></p>
+  <p><a href="theming-presets.html#comic">Comic ayrıntılı olarak →</a> · <a href="widgets-popups.html#popup-looks">Aynı açılır pencere on dört görünümün hepsinde →</a></p>
 </section>
 
 <section id="showcase">
@@ -269,7 +346,7 @@ GoStyle.comic_border(title, 5.0)             # bunda daha kalın bir çizgi</cod
       <figcaption><b>Bilimkurgu</b> — köşeli paneller ve dokunmatik denetimler</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">On iki ön ayarın tamamı ve nasıl değiştirilecekleri →</a></p>
+  <p><a href="#presets">On dört ön ayarın tamamı ve nasıl değiştirilecekleri →</a></p>
 </section>
 
 <section id="what">
@@ -305,8 +382,8 @@ GoStyle.comic_border(title, 5.0)             # bunda daha kalın bir çizgi</cod
       <p>Widget'lar yalnızca <code>GoIconSet.CLOSE</code> bilir. Seti değiştirin, tek satır koda dokunmadan bütün çizimler değişsin. <a href="icons.html">Simgeler →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">On iki görünüm, tek satır</h3>
-      <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu, dövme ortaçağ çerçeveleri, Material 3 uygulama bileşenleri, Kids jöle şekerleri veya çizgi roman mürekkebi.</p>
+      <h3 id="six-looks-one-line">On dört görünüm, tek satır</h3>
+      <p><code>GoUi.use_preset()</code> temayı, kaplamayı ve simgeleri birlikte değiştirir — yuvarlak, pahlı bilimkurgu, dövme ortaçağ çerçeveleri, Material 3 uygulama bileşenleri, Kids jöle şekerleri, çizgi roman mürekkebi veya arcade boyası.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">Okunaklılık ölçülerek</h3>
@@ -359,6 +436,8 @@ GoStyle.comic_border(title, 5.0)             # bunda daha kalın bir çizgi</cod
       <tr><td><code>kids_dark</code> <span class="badge new">Yeni</span></td><td>Aynı oyuncak kutusu gece mavisi bir sayfada</td></tr>
       <tr><td><code>comic_light</code> <span class="badge new">Yeni</span></td><td>Çizgi roman kareleri — her yüzde kalın bir mürekkep çizgisi ve sert bir gölge, krem kâğıt renginde bir sayfada beyaz paneller; gölge, gölgenin boyutu ve çizgi kalınlığı birer ayardır</td></tr>
       <tr><td><code>comic_dark</code> <span class="badge new">Yeni</span></td><td>Aynı mürekkep gece renginde bir sayfada — krem çizgiler ve sarı bir birincil renk</td></tr>
+      <tr><td><code>arcade_light</code> <span class="badge new">Yeni</span></td><td>Bir atari makinesi — her tuş renk geçişi, parıltı ve alt kenarla boyanmış, mürekkep çizgili beyaz yazıyla etiketlenmiş; gök mavisi bir sayfada kalın çerçeveli panolar, pencerelerde altın sarısı bir başlık şeridi</td></tr>
+      <tr><td><code>arcade_dark</code> <span class="badge new">Yeni</span></td><td>Aynı parlak tuşlar lacivert panolarda ve gece renginde bir sayfada</td></tr>
     </tbody>
   </table>
 
@@ -474,13 +553,15 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxMedieval</code></td><td>Perçinli, köşesi gravürlü, eğim ışıltılı ve malzeme dokulu dövme bir çerçeve</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>Bir jöle şeker — kalın bir dış çizgi, basılınca içeri gömülen sağlam bir alt kenar, üstü daha açık bir gövde ve beyaz bir parıltı</td></tr>
       <tr><td><code>GoStyleBoxComic</code></td><td>Bir çizgi roman karesi — kalın bir mürekkep çizgisi ve sert bir düşen gölge; ikisinin de boyutunu oyun çalışırken <code>GoConfig</code> belirler</td></tr>
+      <tr><td><code>GoStyleBoxArcade</code></td><td>Bir arcade tuşu ya da panosu — renk geçişli bir gövde, beyaz bir parıltı, basılınca içeri gömülen bir alt kenar ve bir mürekkep çizgisi; bir pano buna soluk bir iç zeminin çevresinde kalın, renkli bir çerçeve ekler</td></tr>
     </tbody>
   </table>
-  <p>Beşi de bir Theme kaynağına serileştirilir — bir temanın yalnızca rengi değil <b>biçimi</b> de
+  <p>Altısı da bir Theme kaynağına serileştirilir — bir temanın yalnızca rengi değil <b>biçimi</b> de
     değiştirebilmesini sağlayan şey budur. Pakete dahil alt sınıflar <code>GoSkinSciFi</code>, <code>GoSkinMedieval</code>,
-    <code>GoSkinMaterial</code>, <code>GoSkinKids</code> ve <code>GoSkinComic</code>'tir.</p>
+    <code>GoSkinMaterial</code>, <code>GoSkinKids</code>, <code>GoSkinComic</code> ve <code>GoSkinArcade</code>'dir.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="Pakete dahil her kaplamanın çizdiği hızlı slotlar, joystick ve chip — varsayılan, Kids, Material, ortaçağ ve bilimkurgu" loading="lazy"><figcaption>Bir kaplamanın çizdikleri — varsayılan, Kids, Material, ortaçağ, bilimkurgu</figcaption></figure>
   <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="Comic kaplamasının çizdiği hızlı slotlar, joystick ve chip — mürekkep çizgileri ve sert gölgeler" loading="lazy"><figcaption>…ve Comic kaplaması</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Arcade kaplamasının çizdiği hızlı slotlar, joystick ve chip — parlak tuş kapakları ve dört oklu bir ped" loading="lazy"><figcaption>…ve Arcade kaplaması</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> her zaman bir <code>StyleBoxFlat</code> döndürür</b>, çünkü çağıran kod onu
@@ -574,7 +655,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    Her renk çifti ve <b>her düğme durumunun etiketi, üstünde durduğu panele karşı</b> on iki temanın hepsinde
+    Her renk çifti ve <b>her düğme durumunun etiketi, üstünde durduğu panele karşı</b> on dört temanın hepsinde
     WCAG'a göre ölçülür. Yarı saydam renkler önce gerçek arka planlarıyla birleştirilir — doğrudan ölçmek
     ekranda görünenden daha iyi bir oran bildirir.
   </p>

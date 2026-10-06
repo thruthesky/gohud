@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 的 HUD 与 UI 套件</title>
-<meta name="description" content="面向 Godot 4.7+ 的可定制 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、消息条、HUD 状态条、快捷槽和虚拟摇杆，配有默认、科幻、中世纪、Material 3、儿童、漫画共十二套预设。">
+<meta name="description" content="面向 Godot 4.7+ 的可定制 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、消息条、HUD 状态条、快捷槽和虚拟摇杆，配有默认、科幻、中世纪、Material 3、儿童、漫画、街机共十四套预设。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud 是面向 Godot 4.7 及以上版本的 HUD 与 UI 套件。浮动窗口、底部面板、对话框、表单、
       消息条、引导标记、HUD 状态条、快捷槽和虚拟摇杆全都由<b>一份主题和一份可替换的图标集</b>驱动，
       安全区域、虚拟键盘、RTL 和触摸目标都替你处理好。
-      <b>十二套预设</b> —— 默认、科幻、中世纪、Material 3、儿童和漫画，每种各有深色与浅色 —— 一行代码就能换掉颜色和形状。
+      <b>十四套预设</b> —— 默认、科幻、中世纪、Material 3、儿童、漫画和街机，每种各有深色与浅色 —— 一行代码就能换掉颜色和形状。
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,14 +86,15 @@
       <span class="badge">纯 GDScript</span>
       <span class="badge">无需自动加载</span>
       <span class="badge">MIT</span>
-      <span class="badge">12 套预设</span>
-      <span class="badge new">新增：漫画 · Material 3 · 儿童</span>
+      <span class="badge">14 套预设</span>
+      <span class="badge new">新增：街机 · 漫画 · Material 3 · 儿童</span>
       <span class="badge">21 种语言</span>
       <span class="badge">内置 <span data-n="icons">1,287</span> 个图标</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">安装</a>
+      <a class="btn" href="#arcade">看看街机外观</a>
       <a class="btn" href="#comic">看看漫画外观</a>
       <a class="btn" href="#presets">看看预设</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
@@ -104,9 +105,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>新增：漫画、Material 3，以及给孩子们的外观</h2>
+  <h2>新增：街机、漫画、Material 3，以及给孩子们的外观</h2>
   <p class="sub">
-    三个新系列加入了默认、科幻和中世纪的行列——现在共有<b>十二种内置外观</b>，每种都有深色和浅色。
+    四个新系列加入了默认、科幻和中世纪的行列——现在共有<b>十四种内置外观</b>，每种都有深色和浅色。
     每个控件、弹窗和 HUD 部件都能直接用上它们，代码一行都不用改：换掉预设，整个画面就跟着变。
   </p>
   <div class="phones">
@@ -116,6 +117,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 下的 gohud 画廊——同一个玩具箱，放在夜蓝色的页面上" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 下的 gohud 画廊——纸张般的奶油色页面上，粗墨线描边和硬阴影" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 下的 gohud 画廊——夜色页面上的奶油色描边和黄色主色" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light 下的 gohud 画廊——天蓝色页面上，带渐变和高光的上色按键，以及蓝色边框的厚实 HUD 面板" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark 下的 gohud 画廊——同样鲜亮的按键，放在夜色页面上" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -135,19 +138,93 @@
       <p>每个表面都是一格漫画分镜：粗墨线描边里填着表面颜色，背后衬一道硬阴影，表面被按下时阴影随之消失。
         一个设置开关所有阴影，另外两个设置决定描边粗细和阴影大小，一次调用就能对单个控件做同样的事。窗口带黄色的标题框。</p>
     </div>
+    <div class="card">
+      <h3 id="arcade-painted-keys">街机 —— 上色的按键</h3>
+      <p>每个按键都上了色——渐变、一道白色高光和按下时会陷进去的底边，全都装在藏青色的墨线描边里——
+        标签是带墨线描边的白字：开始用绿色，其余用蓝色，删除用红色。面板很厚，一圈彩色边框围着浅色内芯；
+        窗口带金色的标题横幅和一个圆形的红色关闭键。</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # 或 MATERIAL_DARK
 GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"
-GoUi.use_preset(&amp;"comic_light")                  # 或 &amp;"comic_dark"</code></pre>
+GoUi.use_preset(&amp;"comic_light")                  # 或 &amp;"comic_dark"
+GoUi.use_preset(&amp;"arcade_light")                 # 或 &amp;"arcade_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 详解 →</a> · <a href="theming-presets.html#kids">儿童外观详解 →</a> ·
-    <a href="#comic">漫画外观，逐个控件看 ↓</a> ·
-    <a href="widgets-popups.html#popup-looks">同一个弹窗在全部十二种外观下的样子 →</a></p>
+    <a href="#arcade">街机外观，逐个控件看 ↓</a> · <a href="#comic">漫画外观，逐个控件看 ↓</a> ·
+    <a href="widgets-popups.html#popup-looks">同一个弹窗在全部十四种外观下的样子 →</a></p>
+</section>
+
+<section id="arcade">
+  <h2>街机：上色的按键与厚实的面板</h2>
+  <p class="sub">
+    这款最新的外观把每个画面都打扮成一台街机。<b>每个按键都上了色</b>——从浅色顶部过渡到深色底部的渐变、
+    一道白色高光和按下时会陷进去的底边，全都装在藏青色的墨线描边里——标签是带墨线描边的白字。
+    <b>每块面板都很厚</b>：一圈自带高光的彩色边框围着浅色内芯。
+    <code>arcade_light</code> 在天蓝色页面上放白色面板；<code>arcade_dark</code> 在夜色页面上放藏青色面板。
+    下面每一张图都是真实的 gohud 画面——同样的代码，只差一行预设。
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")   # 或 &amp;"arcade_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light 下的 gohud 画廊——天蓝色页面上，绿、蓝、红、淡紫色的上色按键和蓝色边框的 HUD 面板" loading="lazy"><figcaption><code>arcade_light</code> · 画廊</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark 下的 gohud 画廊——同样鲜亮的按键，放在夜色页面上" loading="lazy"><figcaption><code>arcade_dark</code> · 画廊</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="arcade_light 下的确认对话框——带边框的面板上，金色标题横幅、圆形红色关闭键，以及蓝色和绿色的上色按键" loading="lazy"><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/sheet-light.png" width="300" height="649" alt="arcade_light 下的底部面板——从底边升起的厚实边框面板，里面是一排排键帽" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/coach-mark-light.png" width="300" height="649" alt="arcade_light 下的引导标记——指向一个按键的带边框气泡" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/drawer-left-dark.png" width="300" height="649" alt="arcade_dark 下的侧边抽屉——压暗的画面上，一块放着导航行的藏青色面板" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/popover-dark.png" width="300" height="649" alt="arcade_dark 下的弹出气泡——锚定在打开它的按键上的带边框气泡" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-key-painted">每个按键都上了色</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-light.png" width="382" height="204" alt="arcade_light 下的按钮——绿色的开始、蓝色的详情、白色描边按键、珊瑚色的删除、红色的永久删除、淡紫色的紧凑按键和灰色的禁用按键，每个都在藏青色描边里用渐变、高光和底边上色" loading="lazy"><figcaption><code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-tabs-light.png" width="382" height="136" alt="arcade_light 下的标签页——选中的标签是蓝色上色按键，其余是淡紫色按键" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-segmented-light.png" width="240" height="72" alt="arcade_light 下的分段控件——各自独立的上色按键，选中的那个是蓝色并被按下" loading="lazy"><figcaption>分段按键</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-toggle-light.png" width="382" height="260" alt="arcade_light 下的开关和复选框——打开时是带高光的绿色轨道，关闭时是淡紫色，复选框是绿色" loading="lazy"><figcaption>开关和复选框</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-card-light.png" width="382" height="249" alt="arcade_light 下的卡片——带高光和底边的厚蓝边框里的浅色内芯" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goform-light.png" width="382" height="328" alt="arcade_light 下的表单——凹陷的白色输入框、一个开关和绿色的保存键" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-choice_grid-light.png" width="382" height="81" alt="arcade_light 下的选择网格——键帽，选中的那个在绿色底色上镶着金边" loading="lazy"><figcaption><code>GoStyle.choice_grid()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslotgrid-light.png" width="382" height="208" alt="arcade_light 下的槽位网格——由带高光的键帽组成、标着堆叠数量的物品栏" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-list_row-light.png" width="382" height="181" alt="arcade_light 下的列表行——每一行都是带图标的浅色键帽" loading="lazy"><figcaption>列表行</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/godatepicker-light.png" width="382" height="392" alt="arcade_light 下的日期选择器——键帽日期格，选中的日子是上色按键" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-arcade-dark">夜里：<code>arcade_dark</code></h3>
+  <p>在深色页面上，墨色变得深得多，成了页面本身，而按键的颜色依旧鲜亮。</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-dark.png" width="382" height="204" alt="arcade_dark 下的按钮——同样鲜亮的颜色，放在夜色页面上" loading="lazy"><figcaption>夜里的 <code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gobar-dark.png" width="382" height="135" alt="arcade_dark 下的 HUD 状态条——凹槽里的红色 HP、蓝色 MP 和绿色 XP 管" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-hud_panel-dark.png" width="382" height="162" alt="arcade_dark 下的 HUD 卡片——游戏画面上，厚蓝边框里的藏青色内芯" loading="lazy"><figcaption><code>GoStyle.hud_panel()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslot-dark.png" width="382" height="72" alt="arcade_dark 下的快捷槽——标着堆叠数量的键帽，冷却中的槽位镶着金边" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gojoystick-dark.png" width="204" height="204" alt="arcade_dark 下的虚拟摇杆——墨线圆环里带高光的底盘、四个箭头和一个键帽摇头" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-alert-dark.png" width="382" height="260" alt="arcade_dark 下的提示框——用黄、绿、红、蓝边框围起的小面板" loading="lazy"><figcaption>提示框</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gofab-dark.png" width="382" height="80" alt="arcade_dark 下的悬浮操作按钮——带高光的金色上色按键" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gorewardcalendar-dark.png" width="382" height="190" alt="arcade_dark 下的奖励日历——键帽日期格，今天镶着金边" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-arcade-look-works">街机外观是怎么做到的</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="the-face">表面</h3>
+      <p>每个按键和面板都是一个 <code>GoStyleBoxArcade</code>：墨线描边、渐变主体、底边和高光，全都画在控件自己的矩形里——
+        按键在各种状态下大小不变，按下只是让它陷进去。</p>
+    </div>
+    <div class="card">
+      <h3 id="labels-that-read">看得清的标签</h3>
+      <p>带墨线描边的白色标签，在描边能隔开的任何颜色上都看得清——WCAG 把描边算作字母的一部分。
+        每种颜色都会被调整，直到它的标签在渐变的每个高度上都超过 4.6:1。</p>
+    </div>
+    <div class="card">
+      <h3 id="windows">窗口</h3>
+      <p>窗口标题以带墨线描边的白字放在金色横幅上，旁边是一个圆形的红色关闭键。对话框、底部面板、抽屉和弹出气泡都是
+        带厚边框的面板。</p>
+    </div>
+  </div>
+  <p>单个按键可以有自己的颜色——比如暂停菜单里一个橙色的商店键：</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))</code></pre>
+  <p><a href="theming-presets.html#arcade">街机外观详解 →</a> · <a href="widgets-popups.html#popup-looks">同一个弹窗在全部十四种外观下的样子 →</a></p>
 </section>
 
 <section id="comic">
   <h2>漫画：粗墨线与硬阴影</h2>
   <p class="sub">
-    这款最新的外观把每个表面都画成一格漫画分镜——<b>粗墨线描边</b>里填着表面颜色，
+    漫画外观把每个表面都画成一格漫画分镜——<b>粗墨线描边</b>里填着表面颜色，
     向右下方投出一道<b>坚实的硬阴影</b>。<code>comic_light</code> 在纸张般的奶油色页面上用黑墨描画，主色为钴蓝；
     <code>comic_dark</code> 在夜色页面上用奶油色墨线描画，主色为黄色。下面每一张图都是
     真实的 gohud 画面——同样的代码，只差一行预设。
@@ -242,7 +319,7 @@ GoStyle.comic_border(title, 5.0)             # 只给这一个加粗描边</code
     <b>造一个自己的漫画外观。</b><code>tools/new_theme.py inked --from comic_light</code> 会复制调色板；改掉纸张、
     墨线和主色，再运行 <code>tools/make_theme.py inked</code>。墨线、阴影和皮肤都会一并带上。
   </div>
-  <p><a href="theming-presets.html#comic">漫画外观详解 →</a> · <a href="widgets-popups.html#popup-looks">同一个弹窗在全部十二种外观下的样子 →</a></p>
+  <p><a href="theming-presets.html#comic">漫画外观详解 →</a> · <a href="widgets-popups.html#popup-looks">同一个弹窗在全部十四种外观下的样子 →</a></p>
 </section>
 
 <section id="showcase">
@@ -265,7 +342,7 @@ GoStyle.comic_border(title, 5.0)             # 只给这一个加粗描边</code
       <figcaption><b>科幻</b> —— 棱角面板与触摸操控</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">全部十二套预设以及切换方法 →</a></p>
+  <p><a href="#presets">全部十四套预设以及切换方法 →</a></p>
 </section>
 
 <section id="what">
@@ -301,8 +378,8 @@ GoStyle.comic_border(title, 5.0)             # 只给这一个加粗描边</code
       <p>控件只认识 <code>GoIconSet.CLOSE</code>。换掉图标集，所有画法随之改变，一行代码都不用动。 <a href="icons.html">图标 →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">十二种外观，一行代码</h3>
-      <p><code>GoUi.use_preset()</code> 把主题、皮肤和图标一起换掉 —— 圆角、科幻切角、锻造的中世纪边框、Material 3 的应用组件、儿童的果冻糖，或是漫画的墨线。</p>
+      <h3 id="six-looks-one-line">十四种外观，一行代码</h3>
+      <p><code>GoUi.use_preset()</code> 把主题、皮肤和图标一起换掉 —— 圆角、科幻切角、锻造的中世纪边框、Material 3 的应用组件、儿童的果冻糖、漫画的墨线，或是街机的彩漆。</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">可读性靠量出来</h3>
@@ -352,6 +429,8 @@ GoStyle.comic_border(title, 5.0)             # 只给这一个加粗描边</code
       <tr><td><code>kids_dark</code> <span class="badge new">新</span></td><td>同一个玩具箱，放在夜蓝色的页面上</td></tr>
       <tr><td><code>comic_light</code> <span class="badge new">新</span></td><td>漫画分镜——每个表面都有粗墨线描边和硬阴影，纸张般的奶油色页面上放着白色面板；阴影、阴影大小和描边粗细都是设置项</td></tr>
       <tr><td><code>comic_dark</code> <span class="badge new">新</span></td><td>同样的墨线，放在夜色页面上——奶油色描边和黄色主色</td></tr>
+      <tr><td><code>arcade_light</code> <span class="badge new">新</span></td><td>一台街机——每个按键都用渐变、高光和底边上色，标签是带墨线描边的白字；天蓝色页面上的厚边框面板，窗口带金色标题横幅</td></tr>
+      <tr><td><code>arcade_dark</code> <span class="badge new">新</span></td><td>同样鲜亮的按键，放在藏青色面板和夜色页面上</td></tr>
     </tbody>
   </table>
 
@@ -464,12 +543,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxMedieval</code></td><td>锻造边框，带铆钉、角落雕花、斜面高光和材质纹理</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>果冻糖——粗描边、按下时会陷进去的实心底边、上浅下深的糖体，以及一道白色高光</td></tr>
       <tr><td><code>GoStyleBoxComic</code></td><td>漫画分镜——粗墨线描边和硬投影，两者的大小都在游戏运行时由 <code>GoConfig</code> 决定</td></tr>
+      <tr><td><code>GoStyleBoxArcade</code></td><td>街机的按键或面板——渐变主体、白色高光、按下时会陷进去的底边和墨线描边；面板再加一圈厚厚的彩色边框围着浅色内芯</td></tr>
     </tbody>
   </table>
-  <p>五者都能序列化进 Theme 资源 —— 正是这一点让主题不只能换颜色，还能换<b>形状</b>。
-    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code> 和 <code>GoSkinComic</code> 是随包提供的子类。</p>
+  <p>六者都能序列化进 Theme 资源 —— 正是这一点让主题不只能换颜色，还能换<b>形状</b>。
+    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code>、<code>GoSkinComic</code> 和 <code>GoSkinArcade</code> 是随包提供的子类。</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="每套随包皮肤画出的快捷槽、摇杆和纸片——默认、儿童、Material、中世纪和科幻" loading="lazy"><figcaption>皮肤画出的部分——默认、儿童、Material、中世纪、科幻</figcaption></figure>
   <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="漫画皮肤画出的快捷槽、摇杆和纸片——墨线描边和硬阴影" loading="lazy"><figcaption>……以及漫画皮肤</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="街机皮肤画出的快捷槽、摇杆和纸片——带高光的键帽和一个带四个箭头的底盘" loading="lazy"><figcaption>……以及街机皮肤</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> 永远返回 <code>StyleBoxFlat</code></b>，因为调用方拿到它之后
@@ -563,7 +644,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    十二套主题里的每一对颜色，以及<b>每个按钮状态下的文字与它所在的面板</b>，都会拿去对照 WCAG 测量。
+    十四套主题里的每一对颜色，以及<b>每个按钮状态下的文字与它所在的面板</b>，都会拿去对照 WCAG 测量。
     半透明颜色会先与真实背景合成再测 —— 直接测半透明色，得到的比值会比屏幕上实际看到的更好看。
   </p>
   <p>

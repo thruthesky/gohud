@@ -134,7 +134,7 @@
 GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的</code></pre>
   <p>明確設定 <code>theme</code>、<code>skin</code> 或 <code>icons</code> 會<b>蓋過</b>預設集。</p>
 
-  <h3 id="the-six-built-in-presets">內建的十二種預設集</h3>
+  <h3 id="the-six-built-in-presets">內建的十四種預設集</h3>
   <table>
     <thead><tr><th>預設集</th><th>面板</th><th>外觀 · 圖示</th></tr></thead>
     <tbody>
@@ -143,13 +143,14 @@ GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>鍛造的 <code>GoStyleBoxMedieval</code> 框 — 鐵與皮革，或羊皮紙 — 選單上還有鉚釘與角落裝飾</td><td><code>GoSkinMedieval</code> · 16 個雕刻圖示疊在預設之上</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">新</span></td><td>給應用畫面的 Material 3 Expressive — 48dp 觸控區裡 40dp 的膠囊按鈕、28dp 對話方塊、填色卡片、外框輸入欄、Expressive 滑桿；應用元件（導覽列、頂端應用列、FAB、搜尋列、方塊標籤、進度、日期選擇器）依循 M3 元件權杖</td><td><code>GoSkinMaterial</code> · 預設圖示</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">新</span></td><td>給兒童——玩具箱：粗描邊，每個按鍵下都有一道實心底邊，按下時會陷進去；凹陷的輸入框、泡泡分頁、果凍進度條；每類控制項各有一種蠟筆顏色，糖果般的快捷格、貼紙徽章、彩虹搖桿和蠟筆色圖表。尺寸和專案字型保持不變。</td><td><code>GoSkinKids</code> · 預設圖示</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">新</span></td><td>由 <code>GoStyleBoxArcade</code> 繪製的街機：每個按鍵都以由上到下的漸層、一道白色高光與按下時會陷進去的底邊上色，裝在藏青色的墨線描邊裡，標籤是帶墨線描邊的白字 — 主色綠色，按鍵藍色，危險紅色，小按鍵淡紫色。厚實的面板是一圈彩色外框圍著淺色內芯；視窗有金色標題橫幅與圓形的紅色關閉鍵。</td><td><code>GoSkinArcade</code> · 預設圖示</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">新</span></td><td>由 <code>GoStyleBoxComic</code> 繪製的漫畫分鏡：每個表面都有粗墨線描邊與硬陰影，按下時陰影消失；描了墨線的開關、核取方塊與滑桿把手，視窗有黃色的標題框。描邊粗細、陰影大小以及是否顯示陰影，都是 <code>GoConfig</code> 設定。</td><td><code>GoSkinComic</code> · 預設圖示</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>十二種並排比較</h2>
+  <h2>十四種並排比較</h2>
   <p class="sub">同一個藝廊畫面，只換了預設集的名稱 — 控制項的程式碼一行都沒變。
     每張都是直拿的手機，390×844。</p>
   <div class="phones">
@@ -165,6 +166,8 @@ GoUi.config.icons = my_icons     # 圖示用你的，其餘全部用預設集的
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="套用 kids_dark 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="套用 comic_light 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="套用 comic_dark 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="套用 arcade_light 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="套用 arcade_dark 預設集的 gohud 控制項藝廊" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -334,6 +337,55 @@ GoStyle.comic_border(title, 5.0)             # 只給這一個加粗描邊</code
 # 編輯 themes/palettes/inked.json，然後：
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>街機：上色的按鍵與厚實的面板 <span class="badge new">新</span></h2>
+  <p><code>arcade_light</code>（天藍色頁面上的白色面板）與 <code>arcade_dark</code>（夜色頁面上的藏青色面板）
+    把每個畫面都打扮成一台街機：<b>每個按鍵都上了色</b> — 從淺色頂端過渡到深色底部的漸層、一道白色高光與按下時會陷進去的底邊，
+    裝在藏青色的墨線描邊裡 — 而且<b>每塊面板都很厚</b>，一圈彩色外框圍著淺色內芯。</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# 或：GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light 下的 gohud 藝廊 — 天藍色頁面上，綠、藍、紅、淡紫色的上色按鍵與藍色外框的 HUD 面板" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark 下的 gohud 藝廊 — 同樣鮮亮的按鍵，放在夜色頁面上" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="arcade_light 下的確認對話方塊 — 帶外框的面板上，金色標題橫幅、圓形紅色關閉鍵，以及藍色與綠色的上色按鍵" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="arcade_dark 下的確認對話方塊 — 藏青色面板上的金色橫幅" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">改了什麼</h3>
+  <table>
+    <thead><tr><th>部分</th><th>在街機外觀裡</th></tr></thead>
+    <tbody>
+      <tr><td>按鍵</td><td>由 <code>GoStyleBoxArcade</code> 繪製：漸層主體、繞著左上角的一道白色高光、顏色更深的底邊與藏青色墨線描邊。主要按鍵是綠色，一般按鍵與選中的分頁是藍色，危險按鍵是珊瑚色與紅色，小按鍵與其餘分頁是淡紫色。</td></tr>
+      <tr><td>標籤</td><td>每個上色按鍵上都是帶墨線描邊的白字。每種顏色都會被調整，直到標籤在漸層的每個高度上都看得清 — 像 WCAG 一樣把描邊算作字母的一部分，達到 4.6:1 或更高。</td></tr>
+      <tr><td>按下</td><td>底邊消失，按鍵陷進原位，再彈回來。</td></tr>
+      <tr><td>面板</td><td>面板、卡片、HUD 卡片與彈出視窗都很厚：一圈自帶高光與底邊的彩色外框（視窗 6dp，卡片與 HUD 卡片 4，選單與提示 3），圍著一個帶墨線的淺色內芯。為了容納外框，內距會稍微加大，文字永遠不會碰到外框。</td></tr>
+      <tr><td>輸入欄與量條</td><td>輸入欄與量條的凹槽是凹陷的內芯；量條的填色是一根帶高光的上色管，用的是它那種顏色的明亮填色。</td></tr>
+      <tr><td>視窗</td><td>一條金色橫幅，上面是帶墨線描邊的白色標題，以及一顆畫著白色叉號的圓形紅色關閉鍵。</td></tr>
+      <tr><td>外觀部件</td><td><code>GoSkinArcade</code>：快捷格與方塊標籤是鍵帽，冷卻中的格子亮起金邊，徽章是淺色牌子，提示框圍著各自顏色的外框，選中的卡片亮起金邊，FAB 是金色按鍵，搖桿是有四個箭頭的高光底盤。</td></tr>
+      <tr><td>不透明度</td><td>面板、卡片、提示與彈出視窗都不透明；HUD 卡片為 94% 不透明。</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">替單一按鍵上自己的顏色</h3>
+  <p>佈景主題依種類替按鍵上色。如果選單裡每個按鍵都想要自己的顏色，就一個一個上色 — 懸停時的表面會稍亮一點，
+    按下時稍深一點，停用時維持暗淡：</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # 面板的外框，以及其中的每個按鍵</code></pre>
+  <div class="note">
+    <b>標籤總是看得清。</b>如果白色標籤在某種顏色上看不清，這種顏色就會被調亮或調深，直到看得清為止，所以你傳入的顏色
+    只是一個起點。在其他外觀下，<code>arcade_paint()</code> 什麼也不做。
+  </div>
+  <div class="note">
+    <b>按鍵大小不變。</b>底邊與高光都畫在每個按鍵自己的矩形之內，所以在別的外觀下排好的畫面會維持原本的版面。
+    面板會給內容多留一點內距（卡片與 HUD 卡片 12dp，底部 15），讓文字不碰到外框。你專案的字型同樣保留。
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="街機外觀畫出的快捷格、搖桿與方塊標籤 — 帶高光的鍵帽與一個有四個箭頭的底盤" loading="lazy"><figcaption>街機外觀畫出的部分</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">打造一個自己的街機外觀</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# 編輯 themes/palettes/cabinet.json — *_vivid 顏色就是上色用的顏色 — 然後：
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

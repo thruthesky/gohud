@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセットのまま</code></pre>
   <p><code>theme</code>・<code>skin</code>・<code>icons</code> を明示的に設定すると、プリセットより<b>優先される</b>。</p>
 
-  <h3 id="the-six-built-in-presets">組み込みの12プリセット</h3>
+  <h3 id="the-six-built-in-presets">組み込みの14プリセット</h3>
   <table>
     <thead><tr><th>プリセット</th><th>パネル</th><th>スキン · アイコン</th></tr></thead>
     <tbody>
@@ -144,13 +144,14 @@ GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセ
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>鍛造した <code>GoStyleBoxMedieval</code> の枠 — 鉄と革、あるいは羊皮紙 — にリベットと角飾りをメニューだけへ</td><td><code>GoSkinMedieval</code> · デフォルトの上に彫刻風16種</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">新登場</span></td><td>アプリ画面向けの Material 3 Expressive — 48dp のタッチ領域に 40dp のピル型ボタン、28dp のダイアログ、塗りのカード、アウトラインの入力欄、Expressive のスライダー。アプリ部品(ナビゲーションバー・アプリバー・FAB・検索バー・チップ・進捗・日付選択)は M3 のコンポーネントトークンに従う</td><td><code>GoSkinMaterial</code> · デフォルトのアイコン</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">新登場</span></td><td>子ども向け — おもちゃ箱：太い縁取りと、押すと沈むしっかりした段のあるキー、くぼんだ入力欄、泡のタブ、ゼリーのバー、部品ごとに違うクレヨンの色、キャンディのクイックスロット、ステッカーのバッジ、虹色のジョイスティックとクレヨン色のチャート。サイズとプロジェクトのフォントはそのまま。</td><td><code>GoSkinKids</code> · デフォルトのアイコン</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">新登場</span></td><td><code>GoStyleBoxArcade</code> が描くアーケード筐体：どのキーも上から下へのグラデーション、白い光沢、押すと沈む段で塗られて紺色のインクの輪郭に収まり、ラベルはインクで縁取った白い文字 — プライマリは緑、キーは青、危険は赤、小さなキーはラベンダー色。ボードは淡い内側を色の枠で囲んだ厚いもので、ウィンドウには金色のタイトルバナーと丸い赤の閉じるキー。</td><td><code>GoSkinArcade</code> · デフォルトのアイコン</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">新登場</span></td><td><code>GoStyleBoxComic</code> が描くマンガのコマ：どの面にも太いインクの輪郭とくっきりした影があり、面を押すと影が消える。インクで描いたトグル、チェックボックス、スライダーのつまみ、ウィンドウには黄色のタイトルキャプション。輪郭の太さ、影の大きさ、影を出すかどうかは <code>GoConfig</code> の設定だ。</td><td><code>GoSkinComic</code> · デフォルトのアイコン</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>12種類を並べて</h2>
+  <h2>14種類を並べて</h2>
   <p class="sub">プリセット名だけを変えた同じギャラリー画面だ — ウィジェットのコードは1行も違わない。
     どれも縦に持ったスマホ、390×844 だ。</p>
   <div class="phones">
@@ -166,6 +167,8 @@ GoUi.config.icons = my_icons     # アイコンだけ自前、ほかはプリセ
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark プリセットの gohud ウィジェットギャラリー" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -340,6 +343,57 @@ GoStyle.comic_border(title, 5.0)             # これだけ輪郭を太く</code
 # themes/palettes/inked.json を編集してから:
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>アーケード：塗られたキーと厚いボード <span class="badge new">新登場</span></h2>
+  <p><code>arcade_light</code>（空色のページに白いボード）と <code>arcade_dark</code>（夜のページに紺色のボード）は、
+    どの画面もアーケード筐体のように仕立てる：<b>どのキーも塗られている</b> — 上が明るく下へいくほど深くなるグラデーション、
+    白い光沢のひと筋、押すと沈む段を紺色のインクの輪郭に収める — そして<b>どのボードも厚い</b>。淡い内側を
+    色の枠が囲む。</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# または: GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light の gohud ギャラリー — 空色のページに、緑・青・赤・ラベンダー色で塗ったキーと青い枠の HUD ボード" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark の gohud ギャラリー — 夜のページに同じ鮮やかなキー" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="arcade_light の確認ダイアログ — 枠付きのボードに、金色のタイトルバナー、丸い赤の閉じるキー、青と緑に塗ったキー" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="arcade_dark の確認ダイアログ — 紺色のボードに金色のバナー" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">変わるもの</h3>
+  <table>
+    <thead><tr><th>部分</th><th>アーケードの見た目では</th></tr></thead>
+    <tbody>
+      <tr><td>キー</td><td><code>GoStyleBoxArcade</code> が描く：グラデーションの本体、左上の角を回り込む白い光沢、より深い色の段、紺色のインクの輪郭。プライマリキーは緑、普通のキーと選ばれたタブは青、危険なキーはコーラル色と赤、小さなキーとほかのタブはラベンダー色だ。</td></tr>
+      <tr><td>ラベル</td><td>塗られたキーにはどれも、インクで縁取った白い文字。どの塗りも、そのラベルがグラデーションのどの高さでも読めるまで調整される — WCAG と同じく縁取りを文字の一部として数え、4.6:1 以上。</td></tr>
+      <tr><td>押したとき</td><td>段が消え、キーがその位置へ沈んで、また跳ね返る。</td></tr>
+      <tr><td>ボード</td><td>パネル、カード、HUD カード、ポップアップは厚い：自分の光沢と段を持つ色の枠（ウィンドウは 6dp、カードと HUD カードは 4、メニューと通知は 3）が、インクの線で縁取った淡い内側を囲む。これを収めるために内側余白が少し広がるので、文字が枠に触れることはない。</td></tr>
+      <tr><td>入力欄とバー</td><td>入力欄とバーの溝はくぼんだ内側だ。バーの塗りは、その色の明るい塗り色で塗った光沢のあるチューブ。</td></tr>
+      <tr><td>ウィンドウ</td><td>インクで縁取った白いタイトルを載せた金色のバナーと、白い×の入った丸い赤の閉じるキー。</td></tr>
+      <tr><td>スキンの部品</td><td><code>GoSkinArcade</code>：クイックスロットとチップはキーキャップで、クールダウン中のスロットには金の縁が灯り、バッジは明るいプレート、アラートは自分の色の枠で囲まれ、選ばれたカードには金の縁が灯る。FAB は金色のキー、スティックは4つの矢印の付いた光沢のあるパッドだ。</td></tr>
+      <tr><td>不透明度</td><td>パネル、カード、通知、ポップアップは不透明だ。HUD カードは 94% 不透明。</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">キー1つを自分の色で塗る</h3>
+  <p>テーマはキーを種類ごとに塗る。キーごとに自分の色を持たせたいメニューは、1つずつ塗ればいい — ホバーの面は少し明るく、
+    押した面は少し深くなり、無効の面はくすんだままだ：</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # ボードの枠と、その中のすべてのキー</code></pre>
+  <div class="note">
+    <b>ラベルはいつでも読める。</b> 白いラベルが読めない塗りは、読めるようになるまで明るく、または深く調整されるので、
+    渡した色は出発点にすぎない。ほかの見た目では <code>arcade_paint()</code> は何もしない。
+  </div>
+  <div class="note">
+    <b>キーの大きさは変わらない。</b> 段と光沢は各キーの矩形の内側に描かれるので、別の見た目でレイアウトした画面は
+    そのままのレイアウトを保つ。ボードは文字が枠に触れないよう、中身に少しだけ多く余白をとる（カードと HUD カードは 12dp、
+    下は 15）。プロジェクトのフォントもそのままだ。
+  </div>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="アーケードスキンが描いたクイックスロット・スティック・チップ — 光沢のあるキーキャップと4つの矢印のパッド" loading="lazy"><figcaption>アーケードスキンが描く部品</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">自分だけのアーケードを作る</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# themes/palettes/cabinet.json を編集 — *_vivid の色が塗りの色だ — してから:
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

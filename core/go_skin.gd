@@ -1042,9 +1042,10 @@ func coach_ring_box(accent: Color) -> StyleBox:
 
 # ── Window chrome and the feel of a press ──────────────────────────────
 #
-# 🔑 Three hooks a look uses to change **how a window's head and a press look and feel**, not only its colours. The
-#    defaults do nothing, so every look that does not override them stays exactly as it was. `GoSkinKids` is the one
-#    that does: a ribbon behind a window title, a round candy close button, a jelly squish on press.
+# 🔑 The hooks a look uses to change **how a window's head and a press look and feel**, not only its colours. The
+#    defaults do nothing, so every look that does not override them stays exactly as it was. `GoSkinKids` uses them
+#    for a ribbon behind a window title, a round candy close button and a jelly squish on press; `GoSkinArcade` for a
+#    gold banner with an outlined white title (`dress_title`), a round red key and a pop.
 
 ## The plate behind a window's title (`GoSurface`). `null`: the title sits on the window face, as it always has.
 ## A look that returns one gets the title centred on it, shrunk (down to `title_plate_min_size`) to stay on one line.
@@ -1060,6 +1061,13 @@ func title_plate_ink() -> Color:
 ## The smallest a title on a plate shrinks to before it may fold to a second line (dp).
 func title_plate_min_size() -> int:
 	return 15
+
+
+## Dresses a window's title label (`GoSurface`) — an outline round the letters, say. Called whenever the window takes
+## the look, after the window has lifted the label's `font_outline_color` and `outline_size` overrides, so a look that
+## leaves this empty gets the plain title back. `GoSkinArcade` outlines its white title in ink.
+func dress_title(_label: Label) -> void:
+	pass
 
 
 ## Dresses a window's close button (`GoSurface`) — called whenever the window takes the look. The window lifts its

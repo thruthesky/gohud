@@ -135,7 +135,7 @@
 GoUi.config.icons = my_icons     # your icons, the preset's everything else</code></pre>
   <p>Setting <code>theme</code>, <code>skin</code> or <code>icons</code> explicitly <b>wins over</b> the preset.</p>
 
-  <h3 id="the-six-built-in-presets" data-anchor="the-six-built-in-presets">The twelve built-in presets</h3>
+  <h3 id="the-six-built-in-presets" data-anchor="the-six-built-in-presets">The fourteen built-in presets</h3>
   <table>
     <thead><tr><th>Preset</th><th>Panels</th><th>Skin · icons</th></tr></thead>
     <tbody>
@@ -144,13 +144,14 @@ GoUi.config.icons = my_icons     # your icons, the preset's everything else</cod
       <tr><td><code>medieval_dark</code> · <code>medieval_light</code></td><td>Forged <code>GoStyleBoxMedieval</code> frames — iron and leather, or parchment — with rivets and corner ornaments on menus</td><td><code>GoSkinMedieval</code> · 16 engraved icons over the defaults</td></tr>
       <tr><td><code>material_light</code> · <code>material_dark</code> <span class="badge new">New</span></td><td>Material 3 Expressive for app screens — pill buttons with a 40dp plate in the 48dp touch target, 28dp dialogs, filled cards, outlined fields, the Expressive slider; the app components (navigation bar, app bar, FAB, search bar, chips, progress, date picker) follow the M3 component tokens</td><td><code>GoSkinMaterial</code> · default icons</td></tr>
       <tr><td><code>kids_light</code> · <code>kids_dark</code> <span class="badge new">New</span></td><td>For children — the toy box: chunky outlines and a solid lip under every key, which sinks when pressed; sunken text fields, bubble tabs, jelly bars; each kind of control in its own crayon colour, candy quick slots, sticker badges, a rainbow joystick and crayon charts. Sizes and the project's font stay as they are.</td><td><code>GoSkinKids</code> · default icons</td></tr>
+      <tr><td><code>arcade_light</code> · <code>arcade_dark</code> <span class="badge new">New</span></td><td>An arcade cabinet drawn by <code>GoStyleBoxArcade</code>: every key painted with a top-to-bottom gradient, a white gloss and a lip that sinks when pressed, in a navy ink outline, its label white with an ink outline — green primary, blue keys, red danger, lavender small keys. Thick boards with a coloured frame round a pale well; a gold title banner and a round red close key on windows.</td><td><code>GoSkinArcade</code> · default icons</td></tr>
       <tr><td><code>comic_light</code> · <code>comic_dark</code> <span class="badge new">New</span></td><td>Comic-book panels drawn by <code>GoStyleBoxComic</code>: a bold ink outline and a hard shadow on every face, which goes when the face is pressed; inked toggles, check boxes and slider handles, a yellow title caption on windows. The outline width, the shadow size and whether shadows show at all are <code>GoConfig</code> settings.</td><td><code>GoSkinComic</code> · default icons</td></tr>
     </tbody>
   </table>
 </section>
 
 <section id="all-looks">
-  <h2>All twelve, side by side</h2>
+  <h2>All fourteen, side by side</h2>
   <p class="sub">The same gallery screen with only the preset name changed — not a line of widget code differs.
     Each one is a phone held upright, 390×844.</p>
   <div class="phones">
@@ -166,6 +167,8 @@ GoUi.config.icons = my_icons     # your icons, the preset's everything else</cod
     <figure class="shot phone"><img src="img/presets/gallery-kids_dark.webp" width="300" height="649" alt="The gohud widget gallery in the kids_dark preset" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="img/presets/gallery-comic_light.png" width="300" height="649" alt="The gohud widget gallery in the comic_light preset" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="img/presets/gallery-comic_dark.png" width="300" height="649" alt="The gohud widget gallery in the comic_dark preset" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-arcade_light.png" width="300" height="649" alt="The gohud widget gallery in the arcade_light preset" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-arcade_dark.png" width="300" height="649" alt="The gohud widget gallery in the arcade_dark preset" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
 </section>
 
@@ -339,6 +342,57 @@ GoStyle.comic_border(title, 5.0)             # a thicker outline on this one</co
 # Edit themes/palettes/inked.json, then:
 python3 addons/gohud/tools/make_theme.py inked
 GoUi.use_preset(&amp;"inked")</code></pre>
+</section>
+
+<section id="arcade">
+  <h2>Arcade: painted keys and thick boards <span class="badge new">New</span></h2>
+  <p><code>arcade_light</code> (white boards on a sky-blue page) and <code>arcade_dark</code> (navy boards on a night page)
+    dress every screen like an arcade cabinet: <b>every key is painted</b> — a gradient from a light top to a deeper bottom,
+    a white gloss stroke and a lip that sinks when pressed, inside a navy ink outline — and <b>every board is thick</b>, a
+    coloured frame round a pale well.</p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")
+# Or: GoUi.use_preset(&amp;"arcade_dark")</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="img/presets/gallery-arcade_light.png" width="300" height="649" alt="The gohud gallery in arcade_light — green, blue, red and lavender painted keys and a blue-framed HUD board on a sky-blue page" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/presets/gallery-arcade_dark.png" width="300" height="649" alt="The gohud gallery in arcade_dark — the same bright keys on a night page" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-arcade_light.png" width="300" height="649" alt="A confirmation dialog in arcade_light — a gold title banner, a round red close key and blue and green painted keys on a framed board" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="img/popups/look-arcade_dark.png" width="300" height="649" alt="A confirmation dialog in arcade_dark — a gold banner on a navy board" loading="lazy"><figcaption><code>GoDialogs</code> · <code>arcade_dark</code></figcaption></figure>
+  </div>
+  <h3 id="what-changes-4">What changes</h3>
+  <table>
+    <thead><tr><th>Part</th><th>In the arcade looks</th></tr></thead>
+    <tbody>
+      <tr><td>Keys</td><td>Drawn by <code>GoStyleBoxArcade</code>: a gradient body, a white gloss round the top-left corner, a deeper lip and a navy ink outline. The primary key is green, normal keys and the chosen tab blue, danger keys coral and red, small keys and the other tabs lavender.</td></tr>
+      <tr><td>Labels</td><td>White with an ink outline on every painted key. Every paint is moved until that label reads at every height of its gradient — 4.6:1 or more, outline counted as part of the letter, as WCAG does.</td></tr>
+      <tr><td>Pressing</td><td>The lip goes, the key sinks into its place and pops back.</td></tr>
+      <tr><td>Boards</td><td>Panels, cards, HUD cards and popups are thick: a coloured frame (6dp round a window, 4 round a card or a HUD card, 3 round a menu or a notice) with its own gloss and lip, round a pale well with an ink line. Their padding grows a little to hold it, so text never touches the frame.</td></tr>
+      <tr><td>Fields and bars</td><td>Text fields and bar grooves are sunken wells; a bar's fill is a glossy painted tube in the bright fill of its colour.</td></tr>
+      <tr><td>Windows</td><td>A gold banner with a white, ink-outlined title, and a round red close key with a white cross.</td></tr>
+      <tr><td>Skin parts</td><td><code>GoSkinArcade</code>: quick slots and chips are key caps, a cooling slot lights a gold rim, badges are light plates, alerts are framed in their colour, the chosen card lights a gold rim, the FAB is a gold key and the joystick a glossy pad with four arrows.</td></tr>
+      <tr><td>Opacity</td><td>Panels, cards, notices and popups are opaque; HUD cards are 94% opaque.</td></tr>
+    </tbody>
+  </table>
+  <h3 id="paint-one-key-its-own-colour">Paint one key its own colour</h3>
+  <p>The theme paints keys by kind. A menu whose keys each want their own colour paints them one by one — the hover face
+    comes a little lighter, the pressed one a little deeper, and the disabled face stays dim:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))
+GoStyle.arcade_paint(stage_card, Color("#E3343D"), true)   # a board's frame, and every key inside it</code></pre>
+  <div class="note">
+    <b>The label always reads.</b> A paint the white label would not read on is moved lighter or deeper until it does, so
+    the colour you pass is a starting point. Under the other looks <code>arcade_paint()</code> does nothing.
+  </div>
+  <div class="note">
+    <b>Keys keep their size.</b> The lip and the gloss are drawn inside each key's rectangle, so a screen laid out in
+    another look keeps its layout. Boards pad their content a little more (a card and a HUD card 12dp, 15 at the bottom)
+    so the text never touches the frame. Your project's font is kept too.
+  </div>
+  <figure class="shot"><img src="img/widgets/skin-arcade_dark.png" width="382" height="120" alt="Quick slots, a joystick and a chip drawn by the arcade skin — glossy key caps and a pad with four arrows" loading="lazy"><figcaption>The parts the arcade skin draws</figcaption></figure>
+  <h3 id="make-an-arcade-of-your-own">Make an arcade of your own</h3>
+  <pre><code>python3 addons/gohud/tools/new_theme.py cabinet --from arcade_light
+# Edit themes/palettes/cabinet.json — the *_vivid colours are the paints — then:
+python3 addons/gohud/tools/make_theme.py cabinet
+GoUi.use_preset(&amp;"cabinet")</code></pre>
 </section>
 
 </main>

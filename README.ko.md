@@ -163,6 +163,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `kids_dark` | 같은 젤리 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼과 민트 제목 리본 | `GoSkinKids` |
 | `comic_light` | 만화 컷 — 키·입력칸·목록 줄·판마다 굵은 잉크 테두리(`GoStyleBoxComic`)와 오른쪽 아래로 떨어지는 연하고 단단한 그림자(누르면 사라짐), 창 제목 뒤의 노란 말풍선 상자, 신문지 바탕에 남색 잉크. 테두리 두께·그림자 크기·그림자 표시 여부는 설정 한 줄씩(`GoUi.config.comic_border_width`·`comic_shadow_size`·`comic_shadow`)이고, 위젯 하나는 `GoStyle.comic_shadow(node, on)` 으로 따로 정한다 | `GoSkinComic` |
 | `comic_dark` | 같은 만화 컷의 밤 — 남색 바탕에 분필 잉크, 햇살 노랑 기본 버튼 | `GoSkinComic` |
+| `arcade_light` | 오락실 게임기 — 키마다 색을 칠하고(`GoStyleBoxArcade` — 위에서 아래로 흐르는 그라디언트, 하얀 광택, 누르면 쏙 들어가는 진한 턱, 남색 잉크 테두리) 글자는 잉크 외곽선을 두른 흰 글씨 — 초록 기본 버튼, 파란 키, 빨간 위험 버튼, 라벤더 작은 키 · 옅은 안쪽을 색 프레임이 두르는 두꺼운 보드 · 창 제목 뒤의 금색 배너와 동그란 빨간 닫기 키 · 하늘색 바탕. `GoStyle.arcade_paint(node, colour)` 로 키 하나를 원하는 색으로 칠한다 | `GoSkinArcade` |
+| `arcade_dark` | 같은 오락실의 밤 — 남색 보드와 바탕, 같은 밝은 물감 | `GoSkinArcade` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
 🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 프리셋보다 **우선한다** — 프리셋을 고른 뒤 한 칸만

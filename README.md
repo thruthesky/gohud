@@ -171,6 +171,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
 | `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
 | `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
+| `arcade_light` | An arcade cabinet: every key painted (`GoStyleBoxArcade` — a top-to-bottom gradient, a white gloss, a deeper lip that sinks when pressed, a navy ink outline) and labelled in white with an ink outline — green primary, blue keys, red danger, lavender small keys; thick boards with a coloured frame round a pale well; a gold title banner and a round red close key on windows; sky-blue page. `GoStyle.arcade_paint(node, colour)` paints one key its own colour | `GoSkinArcade` |
+| `arcade_dark` | The same arcade cabinet at night: navy boards and page, the same bright paints | `GoSkinArcade` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
 Explicit `theme`, `skin` and `icons` fields still win over the preset, so you can take a preset and

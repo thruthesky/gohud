@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — Godot 4 的 HUD 與 UI 套件</title>
-<meta name="description" content="給 Godot 4.7+ 使用、可自訂的 HUD 與 UI 套件。浮動面板、底部面板、對話方塊、表單、訊息條、HUD 量條、快捷格與虛擬搖桿，並附十二種預設集 — 預設、科幻、中世紀、Material 3、兒童與漫畫。">
+<meta name="description" content="給 Godot 4.7+ 使用、可自訂的 HUD 與 UI 套件。浮動面板、底部面板、對話方塊、表單、訊息條、HUD 量條、快捷格與虛擬搖桿，並附十四種預設集 — 預設、科幻、中世紀、Material 3、兒童、漫畫與街機。">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
       gohud 是給 Godot 4.7 以上使用的 HUD 與 UI 套件。浮動視窗、底部面板、對話方塊、表單、
       訊息條、導覽標記、HUD 量條、快捷格與虛擬搖桿全都靠<b>一份佈景主題和一組可抽換的圖示組</b>驅動，
       並且替你處理好安全區域、虛擬鍵盤、RTL 與觸控目標。
-      <b>十二種預設集</b> — 預設、科幻、中世紀、Material 3、兒童與漫畫，每種都有深色與淺色 — 一行程式碼就換掉顏色與形狀。
+      <b>十四種預設集</b> — 預設、科幻、中世紀、Material 3、兒童、漫畫與街機，每種都有深色與淺色 — 一行程式碼就換掉顏色與形狀。
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -86,14 +86,15 @@
       <span class="badge">純 GDScript</span>
       <span class="badge">不需要自動載入</span>
       <span class="badge">MIT</span>
-      <span class="badge">12 種預設集</span>
-      <span class="badge new">新增：漫畫 · Material 3 · 兒童</span>
+      <span class="badge">14 種預設集</span>
+      <span class="badge new">新增：街機 · 漫畫 · Material 3 · 兒童</span>
       <span class="badge">21 種語言</span>
       <span class="badge">內含 <span data-n="icons">1,287</span> 個圖示</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">安裝</a>
+      <a class="btn" href="#arcade">看看街機外觀</a>
       <a class="btn" href="#comic">看看漫畫外觀</a>
       <a class="btn" href="#presets">看看預設集</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
@@ -104,9 +105,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>新增：漫畫、Material 3，以及給孩子的外觀</h2>
+  <h2>新增：街機、漫畫、Material 3，以及給孩子的外觀</h2>
   <p class="sub">
-    三個新系列加入了預設、科幻與中世紀的行列 — 現在共有<b>十二種內建外觀</b>，每種都有深色與淺色。
+    四個新系列加入了預設、科幻與中世紀的行列 — 現在共有<b>十四種內建外觀</b>，每種都有深色與淺色。
     每個控制項、彈出視窗與 HUD 元件都能直接套用，程式碼一行都不用改：換掉預設集，整個畫面就跟著變。
   </p>
   <div class="phones">
@@ -116,6 +117,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="kids_dark 下的 gohud 藝廊 — 同一個玩具箱，放在夜藍色的頁面上" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="comic_light 下的 gohud 藝廊 — 紙張般的奶油色頁面上，粗墨線描邊與硬陰影" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="comic_dark 下的 gohud 藝廊 — 夜色頁面上的奶油色描邊與黃色主色" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light 下的 gohud 藝廊 — 天藍色頁面上，帶漸層與高光的上色按鍵，以及藍色外框的厚實 HUD 面板" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark 下的 gohud 藝廊 — 同樣鮮亮的按鍵，放在夜色頁面上" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -135,19 +138,93 @@
       <p>每個表面都是一格漫畫分鏡：粗墨線描邊裡填著表面顏色，背後襯一道硬陰影，表面被按下時陰影隨之消失。
         一個設定開關所有陰影，另外兩個設定決定描邊粗細與陰影大小，一次呼叫就能對單一控制項做同樣的事。視窗有黃色的標題框。</p>
     </div>
+    <div class="card">
+      <h3 id="arcade-painted-keys">街機 — 上色的按鍵</h3>
+      <p>每個按鍵都上了色 — 漸層、一道白色高光與按下時會陷進去的底邊，全都裝在藏青色的墨線描邊裡 —
+        標籤是帶墨線描邊的白字：開始用綠色，其餘用藍色，刪除用紅色。面板很厚，一圈彩色外框圍著淺色內芯；
+        視窗有金色的標題橫幅與一個圓形的紅色關閉鍵。</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # 或 MATERIAL_DARK
 GoUi.use_preset(&amp;"kids_light")                   # 或 &amp;"kids_dark"
-GoUi.use_preset(&amp;"comic_light")                  # 或 &amp;"comic_dark"</code></pre>
+GoUi.use_preset(&amp;"comic_light")                  # 或 &amp;"comic_dark"
+GoUi.use_preset(&amp;"arcade_light")                 # 或 &amp;"arcade_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 詳解 →</a> · <a href="theming-presets.html#kids">兒童外觀詳解 →</a> ·
-    <a href="#comic">漫畫外觀，逐一控制項看 ↓</a> ·
-    <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十二種外觀下的樣子 →</a></p>
+    <a href="#arcade">街機外觀，逐一控制項看 ↓</a> · <a href="#comic">漫畫外觀，逐一控制項看 ↓</a> ·
+    <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十四種外觀下的樣子 →</a></p>
+</section>
+
+<section id="arcade">
+  <h2>街機：上色的按鍵與厚實的面板</h2>
+  <p class="sub">
+    這款最新的外觀把每個畫面都打扮成一台街機。<b>每個按鍵都上了色</b> — 從淺色頂端過渡到深色底部的漸層、
+    一道白色高光與按下時會陷進去的底邊，全都裝在藏青色的墨線描邊裡 — 標籤是帶墨線描邊的白字。
+    <b>每塊面板都很厚</b>：一圈自帶高光的彩色外框圍著淺色內芯。
+    <code>arcade_light</code> 在天藍色頁面上放白色面板；<code>arcade_dark</code> 在夜色頁面上放藏青色面板。
+    下面每一張圖都是真實的 gohud 畫面 — 同樣的程式碼，只差一行預設集。
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")   # 或 &amp;"arcade_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="arcade_light 下的 gohud 藝廊 — 天藍色頁面上，綠、藍、紅、淡紫色的上色按鍵與藍色外框的 HUD 面板" loading="lazy"><figcaption><code>arcade_light</code> · 藝廊</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="arcade_dark 下的 gohud 藝廊 — 同樣鮮亮的按鍵，放在夜色頁面上" loading="lazy"><figcaption><code>arcade_dark</code> · 藝廊</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="arcade_light 下的確認對話方塊 — 帶外框的面板上，金色標題橫幅、圓形紅色關閉鍵，以及藍色與綠色的上色按鍵" loading="lazy"><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/sheet-light.png" width="300" height="649" alt="arcade_light 下的底部面板 — 從底邊升起的厚實外框面板，裡面是一排排鍵帽" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/coach-mark-light.png" width="300" height="649" alt="arcade_light 下的導覽標記 — 指向一個按鍵的帶外框泡泡" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/drawer-left-dark.png" width="300" height="649" alt="arcade_dark 下的側邊抽屜 — 調暗的畫面上，一塊放著導覽列項目的藏青色面板" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/popover-dark.png" width="300" height="649" alt="arcade_dark 下的彈出泡泡 — 錨定在開啟它的按鍵上的帶外框泡泡" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-key-painted">每個按鍵都上了色</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-light.png" width="382" height="204" alt="arcade_light 下的按鈕 — 綠色的開始、藍色的詳情、白色外框按鍵、珊瑚色的刪除、紅色的永久刪除、淡紫色的精簡按鍵與灰色的停用按鍵，每個都在藏青色描邊裡以漸層、高光與底邊上色" loading="lazy"><figcaption><code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-tabs-light.png" width="382" height="136" alt="arcade_light 下的分頁 — 選中的分頁是藍色上色按鍵，其餘是淡紫色按鍵" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-segmented-light.png" width="240" height="72" alt="arcade_light 下的分段控制項 — 各自獨立的上色按鍵，選中的那個是藍色並被按下" loading="lazy"><figcaption>分段按鍵</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-toggle-light.png" width="382" height="260" alt="arcade_light 下的開關與核取方塊 — 開啟時是帶高光的綠色軌道，關閉時是淡紫色，核取方塊是綠色" loading="lazy"><figcaption>開關與核取方塊</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-card-light.png" width="382" height="249" alt="arcade_light 下的卡片 — 帶高光與底邊的厚藍外框裡的淺色內芯" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goform-light.png" width="382" height="328" alt="arcade_light 下的表單 — 凹陷的白色輸入欄、一個開關與綠色的儲存鍵" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-choice_grid-light.png" width="382" height="81" alt="arcade_light 下的選擇網格 — 鍵帽，選中的那個在綠色底色上鑲著金邊" loading="lazy"><figcaption><code>GoStyle.choice_grid()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslotgrid-light.png" width="382" height="208" alt="arcade_light 下的格位網格 — 由帶高光的鍵帽組成、標著堆疊數量的物品欄" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-list_row-light.png" width="382" height="181" alt="arcade_light 下的清單列 — 每一列都是帶圖示的淺色鍵帽" loading="lazy"><figcaption>清單列</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/godatepicker-light.png" width="382" height="392" alt="arcade_light 下的日期選擇器 — 鍵帽日期格，選中的日子是上色按鍵" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-arcade-dark">夜裡：<code>arcade_dark</code></h3>
+  <p>在深色頁面上，墨色變得深得多，成了頁面本身，而按鍵的顏色依舊鮮亮。</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-dark.png" width="382" height="204" alt="arcade_dark 下的按鈕 — 同樣鮮亮的顏色，放在夜色頁面上" loading="lazy"><figcaption>夜裡的 <code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gobar-dark.png" width="382" height="135" alt="arcade_dark 下的 HUD 量條 — 凹槽裡的紅色 HP、藍色 MP 與綠色 XP 管" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-hud_panel-dark.png" width="382" height="162" alt="arcade_dark 下的 HUD 卡片 — 遊戲畫面上，厚藍外框裡的藏青色內芯" loading="lazy"><figcaption><code>GoStyle.hud_panel()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslot-dark.png" width="382" height="72" alt="arcade_dark 下的快捷格 — 標著堆疊數量的鍵帽，冷卻中的格子鑲著金邊" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gojoystick-dark.png" width="204" height="204" alt="arcade_dark 下的虛擬搖桿 — 墨線圓環裡帶高光的底盤、四個箭頭與一個鍵帽握把" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-alert-dark.png" width="382" height="260" alt="arcade_dark 下的提示框 — 以黃、綠、紅、藍外框圍起的小面板" loading="lazy"><figcaption>提示框</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gofab-dark.png" width="382" height="80" alt="arcade_dark 下的懸浮動作按鈕 — 帶高光的金色上色按鍵" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gorewardcalendar-dark.png" width="382" height="190" alt="arcade_dark 下的獎勵日曆 — 鍵帽日期格，今天鑲著金邊" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-arcade-look-works">街機外觀是怎麼做到的</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="the-face">表面</h3>
+      <p>每個按鍵與面板都是一個 <code>GoStyleBoxArcade</code>：墨線描邊、漸層主體、底邊與高光，全都畫在控制項自己的矩形裡 —
+        按鍵在各種狀態下大小不變，按下只是讓它陷進去。</p>
+    </div>
+    <div class="card">
+      <h3 id="labels-that-read">看得清的標籤</h3>
+      <p>帶墨線描邊的白色標籤，在描邊能隔開的任何顏色上都看得清 — WCAG 把描邊算作字母的一部分。
+        每種顏色都會被調整，直到它的標籤在漸層的每個高度上都超過 4.6:1。</p>
+    </div>
+    <div class="card">
+      <h3 id="windows">視窗</h3>
+      <p>視窗標題以帶墨線描邊的白字放在金色橫幅上，旁邊是一個圓形的紅色關閉鍵。對話方塊、底部面板、抽屜與彈出泡泡都是
+        帶厚外框的面板。</p>
+    </div>
+  </div>
+  <p>單一按鍵可以有自己的顏色 — 例如暫停選單裡一個橘色的商店鍵：</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))</code></pre>
+  <p><a href="theming-presets.html#arcade">街機外觀詳解 →</a> · <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十四種外觀下的樣子 →</a></p>
 </section>
 
 <section id="comic">
   <h2>漫畫：粗墨線與硬陰影</h2>
   <p class="sub">
-    這款最新的外觀把每個表面都畫成一格漫畫分鏡 — <b>粗墨線描邊</b>裡填著表面顏色，
+    漫畫外觀把每個表面都畫成一格漫畫分鏡 — <b>粗墨線描邊</b>裡填著表面顏色，
     往右下方投出一道<b>紮實的硬陰影</b>。<code>comic_light</code> 在紙張般的奶油色頁面上用黑墨描畫，主色是鈷藍；
     <code>comic_dark</code> 在夜色頁面上用奶油色墨線描畫，主色是黃色。下面每一張圖都是
     真實的 gohud 畫面 — 同樣的程式碼，只差一行預設集。
@@ -242,7 +319,7 @@ GoStyle.comic_border(title, 5.0)             # 只給這一個加粗描邊</code
     <b>打造一個自己的漫畫外觀。</b><code>tools/new_theme.py inked --from comic_light</code> 會複製調色盤；改掉紙張、
     墨線與主色，再執行 <code>tools/make_theme.py inked</code>。墨線、陰影與外觀都會一併帶上。
   </div>
-  <p><a href="theming-presets.html#comic">漫畫外觀詳解 →</a> · <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十二種外觀下的樣子 →</a></p>
+  <p><a href="theming-presets.html#comic">漫畫外觀詳解 →</a> · <a href="widgets-popups.html#popup-looks">同一個彈出視窗在全部十四種外觀下的樣子 →</a></p>
 </section>
 
 <section id="showcase">
@@ -265,7 +342,7 @@ GoStyle.comic_border(title, 5.0)             # 只給這一個加粗描邊</code
       <figcaption><b>科幻</b> — 稜角分明的面板與觸控操作</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">十二種預設集與切換方式 →</a></p>
+  <p><a href="#presets">十四種預設集與切換方式 →</a></p>
 </section>
 
 <section id="what">
@@ -301,8 +378,8 @@ GoStyle.comic_border(title, 5.0)             # 只給這一個加粗描邊</code
       <p>控制項只認得 <code>GoIconSet.CLOSE</code>。換掉整組圖示，所有圖案都跟著換，一行程式碼都不必動。 <a href="icons.html">圖示 →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">十二種外觀，一行切換</h3>
-      <p><code>GoUi.use_preset()</code> 一次換掉佈景主題、外觀與圖示 — 圓角、切角的科幻、鍛造的中世紀框、Material 3 的應用元件、兒童的果凍糖，或漫畫的墨線。</p>
+      <h3 id="six-looks-one-line">十四種外觀，一行切換</h3>
+      <p><code>GoUi.use_preset()</code> 一次換掉佈景主題、外觀與圖示 — 圓角、切角的科幻、鍛造的中世紀框、Material 3 的應用元件、兒童的果凍糖、漫畫的墨線，或街機的彩漆。</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">清晰度是量出來的</h3>
@@ -353,6 +430,8 @@ GoStyle.comic_border(title, 5.0)             # 只給這一個加粗描邊</code
       <tr><td><code>kids_dark</code> <span class="badge new">新</span></td><td>同一個玩具箱，放在夜藍色的頁面上</td></tr>
       <tr><td><code>comic_light</code> <span class="badge new">新</span></td><td>漫畫分鏡 — 每個表面都有粗墨線描邊與硬陰影，紙張般的奶油色頁面上放著白色面板；陰影、陰影大小與描邊粗細都是設定項</td></tr>
       <tr><td><code>comic_dark</code> <span class="badge new">新</span></td><td>同樣的墨線，放在夜色頁面上 — 奶油色描邊與黃色主色</td></tr>
+      <tr><td><code>arcade_light</code> <span class="badge new">新</span></td><td>一台街機 — 每個按鍵都以漸層、高光與底邊上色，標籤是帶墨線描邊的白字；天藍色頁面上的厚外框面板，視窗有金色標題橫幅</td></tr>
+      <tr><td><code>arcade_dark</code> <span class="badge new">新</span></td><td>同樣鮮亮的按鍵，放在藏青色面板與夜色頁面上</td></tr>
     </tbody>
   </table>
 
@@ -465,12 +544,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxMedieval</code></td><td>帶鉚釘、角落雕刻、斜角高光與材質紋理的鍛造框</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>果凍糖 — 粗描邊、按下時會陷進去的實心底邊、上淺下深的糖體，以及一道白色高光</td></tr>
       <tr><td><code>GoStyleBoxComic</code></td><td>漫畫分鏡 — 粗墨線描邊與硬投影，兩者的大小都在遊戲執行時由 <code>GoConfig</code> 決定</td></tr>
+      <tr><td><code>GoStyleBoxArcade</code></td><td>街機的按鍵或面板 — 漸層主體、白色高光、按下時會陷進去的底邊與墨線描邊；面板再加一圈厚厚的彩色外框圍著淺色內芯</td></tr>
     </tbody>
   </table>
-  <p>這五種都能序列化進 Theme 資源 — 這正是佈景主題改得了<b>形狀</b>、而不只是顏色的原因。
-    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code> 與 <code>GoSkinComic</code> 是內附的子類別。</p>
+  <p>這六種都能序列化進 Theme 資源 — 這正是佈景主題改得了<b>形狀</b>、而不只是顏色的原因。
+    <code>GoSkinSciFi</code>、<code>GoSkinMedieval</code>、<code>GoSkinMaterial</code>、<code>GoSkinKids</code>、<code>GoSkinComic</code> 與 <code>GoSkinArcade</code> 是內附的子類別。</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="每一種內附外觀畫出的快捷格、搖桿與方塊標籤 — 預設、兒童、Material、中世紀與科幻" loading="lazy"><figcaption>外觀畫出的部分 — 預設、兒童、Material、中世紀、科幻</figcaption></figure>
   <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="漫畫外觀畫出的快捷格、搖桿與方塊標籤 — 墨線描邊與硬陰影" loading="lazy"><figcaption>……以及漫畫外觀</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="街機外觀畫出的快捷格、搖桿與方塊標籤 — 帶高光的鍵帽與一個有四個箭頭的底盤" loading="lazy"><figcaption>……以及街機外觀</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> 一律回傳 <code>StyleBoxFlat</code></b>，因為呼叫端拿到它之後
@@ -564,7 +645,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   </p>
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
-    十二種佈景主題中的每一組配色，以及<b>每個按鈕狀態下的標籤與它所在的面板</b>，都會對照 WCAG
+    十四種佈景主題中的每一組配色，以及<b>每個按鈕狀態下的標籤與它所在的面板</b>，都會對照 WCAG
     量過。半透明的顏色會先合成到它真正的背景上 — 直接量它們，得到的比值會比畫面上看到的更好看。
   </p>
   <p>

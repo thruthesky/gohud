@@ -20,6 +20,7 @@ import os
 import theme_material  # Material 3 Expressive — the `material` shape (tools/theme_material.py)
 import theme_kids  # the toy box — the `kids` shape (tools/theme_kids.py)
 import theme_comic  # the comic page — the `comic` shape (tools/theme_comic.py)
+import theme_arcade  # the arcade cabinet — the `arcade` shape (tools/theme_arcade.py)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
@@ -244,6 +245,8 @@ MEDIEVAL_SCRIPT = RES + "/widgets/go_stylebox_medieval.gd"
 JELLY_SCRIPT = RES + "/widgets/go_stylebox_jelly.gd"
 # The comic page inks its parts with a bold outline and a hard shadow (tools/theme_comic.py writes them).
 COMIC_SCRIPT = RES + "/widgets/go_stylebox_comic.gd"
+# The arcade cabinet paints its keys and boards with a gradient, a lip and a gloss (tools/theme_arcade.py writes them).
+ARCADE_SCRIPT = RES + "/widgets/go_stylebox_arcade.gd"
 BRACKET_SCRIPT = RES + "/widgets/go_stylebox_bracket.gd"
 
 # `corners=(tl, tr, br, bl)` → the bitmask GoStyleBoxCut expects
@@ -261,6 +264,8 @@ def control_svgs(pal, shape=SHAPE_DEFAULT):
         return theme_kids.controls(pal)
     if shape.get("controls") == "comic":
         return theme_comic.controls(pal)
+    if shape.get("controls") == "arcade":
+        return theme_arcade.controls(pal)
     acc, on, mut, sec, hi = (svg_hex(pal[k]) for k in ("accent", "on_accent", "muted", "secondary", "surface_high"))
 
     def wrap(w, h, body, disabled=False):
@@ -1174,9 +1179,12 @@ def build(pal, shape, variant, out_path):
         theme_kids.restyle(pal, consts, boxes, T, flat, C, contrast)
     if shape["kind"] == "comic":
         theme_comic.restyle(pal, consts, boxes, T, flat, C, contrast)
+    if shape["kind"] == "arcade":
+        theme_arcade.restyle(pal, consts, boxes, T, flat, C, contrast)
     jelly = any(body[:1] == ['script = ExtResource("jelly")'] for _, body in boxes.values())
     inked = any(body[:1] == ['script = ExtResource("comic")'] for _, body in boxes.values())
-    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + int(jelly) + int(inked) + len(fonts)
+    painted = any(body[:1] == ['script = ExtResource("arcade")'] for _, body in boxes.values())
+    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + int(jelly) + int(inked) + int(painted) + len(fonts)
     lines = ['[gd_resource type="Theme" load_steps=%d format=3]' % steps, ""]
     if cutting:
         lines.append('[ext_resource type="Script" path="%s" id="cut"]' % CUT_SCRIPT)
@@ -1187,6 +1195,8 @@ def build(pal, shape, variant, out_path):
         lines.append('[ext_resource type="Script" path="%s" id="jelly"]' % JELLY_SCRIPT)
     if inked:
         lines.append('[ext_resource type="Script" path="%s" id="comic"]' % COMIC_SCRIPT)
+    if painted:
+        lines.append('[ext_resource type="Script" path="%s" id="arcade"]' % ARCADE_SCRIPT)
     for role, path in fonts.items():
         if not path.startswith(RES + "/") or not os.path.isfile(os.path.join(ADDON, path[len(RES) + 1:])):
             raise SystemExit("Font must exist inside the addon: %s" % path)
@@ -1233,7 +1243,9 @@ SHAPES = {"flat": SHAPE_DEFAULT, "cut": SHAPE_CUT,
           # The toy box: the default family's sizes, its own shapes (tools/theme_kids.py).
           "kids": dict(SHAPE_DEFAULT, **theme_kids.SHAPE),
           # The comic page: the default family's sizes, an inked outline and a hard shadow (tools/theme_comic.py).
-          "comic": dict(SHAPE_DEFAULT, **theme_comic.SHAPE)}
+          "comic": dict(SHAPE_DEFAULT, **theme_comic.SHAPE),
+          # The arcade cabinet: the default family's sizes, painted keys and thick boards (tools/theme_arcade.py).
+          "arcade": dict(SHAPE_DEFAULT, **theme_arcade.SHAPE)}
 PALETTES_DIR = os.path.join(ADDON, "themes", "palettes")
 # Keys a palette must carry — without them generation dies halfway with a KeyError. Say so up front.
 PALETTE_KEYS = ("background", "surface", "surface_soft", "surface_high", "border", "text", "secondary",
@@ -1301,6 +1313,7 @@ SKIN_SCRIPTS = {
     "material": ("GoSkinMaterial", RES + "/themes/skins/go_skin_material.gd"),
     "kids": ("GoSkinKids", RES + "/themes/skins/go_skin_kids.gd"),
     "comic": ("GoSkinComic", RES + "/themes/skins/go_skin_comic.gd"),
+    "arcade": ("GoSkinArcade", RES + "/themes/skins/go_skin_arcade.gd"),
 }
 SKINS_DIR = os.path.join(ADDON, "themes", "skins")
 
@@ -1312,6 +1325,7 @@ SKIN_SOURCES = {
     "material": os.path.join(ADDON, "themes", "skins", "go_skin_material.gd"),
     "kids": os.path.join(ADDON, "themes", "skins", "go_skin_kids.gd"),
     "comic": os.path.join(ADDON, "themes", "skins", "go_skin_comic.gd"),
+    "arcade": os.path.join(ADDON, "themes", "skins", "go_skin_arcade.gd"),
 }
 DIALS_TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "skin_dials.json")
 

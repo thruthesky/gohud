@@ -452,6 +452,7 @@ static func _outline(node: Button, on: bool) -> void:
 		for state in states: node.remove_theme_stylebox_override(state)
 		for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
 			node.remove_theme_color_override(key)
+		node.remove_theme_constant_override(&"outline_size")
 		return
 	node.set_meta(&"go_outlined", true)
 	var skin := GoUi.skin()
@@ -461,6 +462,9 @@ static func _outline(node: Button, on: bool) -> void:
 	var ink: Color = skin.outlined_button_ink()
 	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
 		node.add_theme_color_override(key, ink)
+	# Its own ink on its own face, so plain letters: a look's label outline (the arcade keys' ink round a white label)
+	# would blur dark letters into a blot.
+	node.add_theme_constant_override(&"outline_size", 0)
 
 
 ## ✨ Raise a **filled** button (`Tone.PRIMARY`, `Tone.DANGER_SOLID`) with a glow — a soft shadow in its own colour
@@ -518,6 +522,55 @@ static func comic_border(node: Control, width: float, deep := false) -> Control:
 		if face.inner: face.inset = width + 1.0 if width >= 0.0 else -1.0
 		else: face.outline = width)
 	return node
+
+
+## 🎨 Paints **this widget** [param colour] under the arcade looks — every face it draws (`normal`, `hover`, `pressed`…)
+## takes the colour's gradient and lip, the hovered face a little lighter and the pressed one a little deeper; a board
+## (a panel, a card) takes it on its frame. With [param deep], every widget inside it too. Returns the node, so it
+## chains — a pause menu whose every key has its own colour:
+##
+## ```gdscript
+## menu.add_child(GoStyle.arcade_paint(GoStyle.button("Resume", _resume, GoStyle.Tone.PRIMARY), Color("#4ACB3E")))
+## menu.add_child(GoStyle.arcade_paint(GoStyle.button("How to play", _help), Color("#3570EA")))
+## menu.add_child(GoStyle.arcade_paint(GoStyle.button("Settings", _settings), Color("#9A97CF")))
+## menu.add_child(GoStyle.arcade_paint(GoStyle.button("Quit", _quit, GoStyle.Tone.DANGER_SOLID), Color("#E3343D")))
+## ```
+##
+## 🔑 Only arcade faces (`GoStyleBoxArcade`, the `arcade_*` looks) are painted — under any other look it does nothing.
+## 🔑 The label stays white with its ink outline, so the colour is moved, if it has to be, until that label reads at
+##    every height of the key (`GoStyleBoxArcade.fit`). A disabled face and a focus ring keep their own colours.
+## 🛑 The same contract as `comic_shadow()`: it puts copies of the faces on the node, and a widget that dresses itself
+##    again later (a theme change rebuilds the screen) takes the theme's faces back — call it again after rebuilding.
+static func arcade_paint(node: Control, colour: Color, deep := false) -> Control:
+	_arcade_faces(node, deep, func(face: GoStyleBoxArcade, state: StringName) -> void:
+		if not face.draw_center or state == &"disabled": return
+		var paint := colour
+		if state == &"hover": paint = colour.lerp(Color.WHITE, 0.1)
+		elif state == &"pressed" or state == &"hover_pressed": paint = colour.lerp(Color.BLACK, 0.06)
+		# A key's label sits on the paint; a board's text sits on its well, not on the frame being painted.
+		face.paint(GoStyleBoxArcade.fit(paint, face.edge()) if face.frame <= 0.0 else paint))
+	return node
+
+
+## Puts a changed copy of every arcade face [param node] draws on it (and on its descendants with [param deep]).
+## [param change] takes the face and its state name.
+static func _arcade_faces(node: Control, deep: bool, change: Callable) -> void:
+	if node == null: return
+	var names: Array[StringName] = []
+	for name in ThemeDB.get_default_theme().get_stylebox_list(node.get_class()): names.append(StringName(name))
+	var look := node.theme if node.theme != null else GoUi.theme()
+	if look != null and not node.theme_type_variation.is_empty():
+		for name in look.get_stylebox_list(node.theme_type_variation):
+			if not names.has(StringName(name)): names.append(StringName(name))
+	for name in names:
+		var face := _face_of(node, name, look) as GoStyleBoxArcade
+		if face == null: continue
+		var copy := face.duplicate() as GoStyleBoxArcade
+		change.call(copy, name)
+		node.add_theme_stylebox_override(name, copy)
+	if deep:
+		for child in node.get_children():
+			if child is Control: _arcade_faces(child as Control, true, change)
 
 
 ## Puts a changed copy of every comic face [param node] draws on it (and on its descendants with [param deep]).
@@ -1097,6 +1150,8 @@ static func box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha 
 static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 	# A comic face knows its own sides, corners and crisp shadow (a blur would turn its block into a smudge).
 	if source is GoStyleBoxComic: return (source as GoStyleBoxComic).to_flat()
+	# An arcade board's frame is what makes it a board — it becomes the border.
+	if source is GoStyleBoxArcade: return (source as GoStyleBoxArcade).to_flat()
 	var flat := StyleBoxFlat.new()
 	flat.bg_color = GoUi.color(GoTheme.SURFACE)
 	if source == null: return flat
@@ -1125,6 +1180,8 @@ static func floating(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, op
 	var style := shaped as StyleBoxFlat
 	# A comic panel keeps its ink and its hard shadow — the fallback below put a soft blur under it.
 	if shaped is GoStyleBoxComic: style = (shaped as GoStyleBoxComic).to_flat()
+	# An arcade board keeps its thick frame (as the border) and its soft shadow.
+	if shaped is GoStyleBoxArcade: style = (shaped as GoStyleBoxArcade).to_flat()
 	if style == null:
 		style = box(variant, accent, alpha)
 		style.shadow_color = Color(GoUi.color(GoTheme.SHADOW), 0.35)
@@ -1989,6 +2046,9 @@ static func restyle_filter_chip(node: Button) -> void:
 		node.add_theme_color_override(key, on_ink)
 	node.add_theme_color_override(&"font_focus_color", on_ink if on else off_ink)
 	node.add_theme_color_override(&"icon_focus_color", on_ink if on else off_ink)
+	# Its own ink on its own face, so plain letters: a look's label outline (the arcade keys' ink round a white label)
+	# would blur dark letters into a blot.
+	node.add_theme_constant_override(&"outline_size", 0)
 	# The mark: a check while on, the chip's own icon (if any) while off.
 	var old := node.get_node_or_null(^"IconGlyph")
 	if old != null:

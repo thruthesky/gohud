@@ -166,6 +166,63 @@ def parse_boxes(path):
     return boxes
 
 
+def parse_bottoms(path):
+    """`bottom_color` of every face that has one — a gradient face (`GoStyleBoxArcade`) runs from its `bg_color` at the
+    top to this at the bottom, and its label has to read at every height in between, not only on the top."""
+    found = {}
+    current = None
+    for line in open(path, encoding="utf-8"):
+        line = line.strip()
+        head = re.match(r'^\[sub_resource type="[^"]+" id="([^"]+)"\]', line)
+        if head:
+            current = head.group(1)
+            continue
+        if line.startswith("["):
+            current = None
+            continue
+        match = re.match(r"^bottom_color\s*=\s*Color\(([^)]+)\)", line) if current else None
+        if match:
+            parts = [float(v) for v in match.group(1).split(",")]
+            while len(parts) < 4:
+                parts.append(1.0)
+            found[current] = tuple(parts[:4])
+    return found
+
+
+def parse_outlines(path):
+    """`Type/constants/outline_size` — how thick the outline round a type's label is (0: none)."""
+    found = {}
+    for line in open(path, encoding="utf-8"):
+        match = re.match(r"^([A-Za-z0-9_]+)/constants/outline_size\s*=\s*(\d+)", line.strip())
+        if match:
+            found[match.group(1)] = int(match.group(2))
+    return found
+
+
+# 🔑 **An outline round the letters is part of the letter.** WCAG's Understanding note on 1.4.3: "If there is a border
+#    around the letter, the border can add contrast and would be used in calculating the contrast between the letter and
+#    its background." A white label with a dark outline on a light key (the arcade looks) reads through its outline —
+#    measured as the better of the fill and the outline against the plate, at every height of a gradient plate.
+#    An outline thinner than this (the engine's `outline_size`) does not count: it is a hairline, not a border.
+OUTLINE_COUNTS = 4
+
+
+def outline_for(outlines, fonts, bases, type_name):
+    """The outline colour round a type's label when it is thick enough to count (`OUTLINE_COUNTS`), else None —
+    looked up the way the engine does, up `base_type` and the parent class."""
+    size, colour, seen, current = None, None, 0, type_name
+    while current and seen < 8:
+        if size is None and current in outlines:
+            size = outlines[current]
+        if colour is None and "font_outline_color" in fonts.get(current, {}):
+            colour = fonts[current]["font_outline_color"]
+        current = bases.get(current) or NATIVE_PARENTS.get(current)
+        seen += 1
+    if size is None or size < OUTLINE_COUNTS or colour is None or colour[3] < 1.0:
+        return None
+    return colour
+
+
 def parse_theme_map(path):
     """`Type/styles/state = SubResource("id")`, `Type/colors/name = Color(...)`, and `base_type`."""
     styles, fonts, bases = {}, {}, {}
@@ -421,6 +478,8 @@ def plate_of(box_id, boxes, kinds):
 def surface_rows(path, colors):
     """**Text over StyleBox backgrounds** — measure the combinations the eye actually sees."""
     boxes = parse_boxes(path)
+    bottoms = parse_bottoms(path)
+    outlines = parse_outlines(path)
     kinds = box_types(path)
     styles, fonts, bases = parse_theme_map(path)
     under_names = ["background", "surface_soft"]      # buttons sit on the backdrop and inside cards
@@ -442,23 +501,32 @@ def surface_rows(path, colors):
             ink = font_for(fonts, bases, type_name, keys)
             if ink is None:
                 continue
+            line = outline_for(outlines, fonts, bases, type_name) if state != "placeholder" else None
+            # A gradient plate is read at five heights from its top to its bottom; a flat one at its one colour.
+            plates = [box_bg]
+            if box_bg is not None and box_id in bottoms:
+                low = bottoms[box_id][:3] + (box_bg[3],)
+                plates = [tuple(box_bg[i] + (low[i] - box_bg[i]) * step / 4.0 for i in range(4)) for step in range(5)]
             worst, worst_under = None, ""
-            for under in under_names:
-                base = solid(colors, under)
-                if base is None:
-                    continue
-                back = base if box_bg is None else (over(box_bg, base) if box_bg[3] < 1.0 else box_bg)
-                front = over(ink, back) if ink[3] < 1.0 else ink
-                value = ratio(front, back)
-                if worst is None or value < worst:
-                    worst, worst_under = value, under
-                if box_bg is not None and box_bg[3] >= 1.0:
-                    break        # an opaque plate looks the same whatever is under it
+            for plate in plates:
+                for under in under_names:
+                    base = solid(colors, under)
+                    if base is None:
+                        continue
+                    back = base if plate is None else (over(plate, base) if plate[3] < 1.0 else plate)
+                    front = over(ink, back) if ink[3] < 1.0 else ink
+                    value = ratio(front, back)
+                    if line is not None:
+                        value = max(value, ratio(line, back))
+                    if worst is None or value < worst:
+                        worst, worst_under = value, under
+                    if plate is not None and plate[3] >= 1.0:
+                        break        # an opaque plate looks the same whatever is under it
             if worst is None:
                 continue
             rows.append({
                 "front": "%s.%s" % (type_name, state), "back": "on the plate (%s)" % worst_under,
-                "need": BODY, "ratio": worst, "note": note,
+                "need": BODY, "ratio": worst, "note": note + (" (outlined)" if line is not None else ""),
             })
     return rows
 

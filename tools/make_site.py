@@ -388,6 +388,9 @@ DIALS_EN = {
     "toy_lip": "The solid lip (dp) under a kids toy part you press; it shrinks when the part is pressed.",
     "crayon_tint": "How much crayon colour fills a kids slot or chip face (0–1); the rest is the surface colour.",
     "comic_tint": "How much of its own colour fills a comic chip, quick slot or chosen pill (0–1); the rest is the surface colour.",
+    "arcade_edge": "Ink outline width (dp) of a part the arcade skin paints — slots, chips, badges, the title banner, the FAB.",
+    "arcade_lip": "The lip (dp) under an arcade part you press — keys, chips, slots, the FAB; it goes when the part is pressed.",
+    "arcade_gloss": "Strength of the white gloss stroke on a painted arcade part (0–1).",
 }
 
 SKIN_TITLES = {
@@ -397,6 +400,7 @@ SKIN_TITLES = {
     "material": {"ko": "Material 스킨", "en": "Material skin"},
     "kids": {"ko": "어린이 스킨", "en": "Kids skin"},
     "comic": {"ko": "코믹 스킨", "en": "Comic skin"},
+    "arcade": {"ko": "아케이드 스킨", "en": "Arcade skin"},
 }
 
 

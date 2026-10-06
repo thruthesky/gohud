@@ -25,7 +25,7 @@
 <!-- hreflang:end -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>gohud — طقم HUD وواجهات لـ Godot 4</title>
-<meta name="description" content="طقم HUD وواجهات قابل للتخصيص لـ Godot 4.7+. أسطح عائمة، وأوراق سفلية، ومربعات حوار، ونماذج، وأشرطة إشعار، وأشرطة HUD، وخانات سريعة، وعصا توجيه افتراضية، مع اثني عشر نمطًا جاهزًا — الافتراضي والخيال العلمي والعصور الوسطى وMaterial 3 والأطفال والقصص المصوّرة.">
+<meta name="description" content="طقم HUD وواجهات قابل للتخصيص لـ Godot 4.7+. أسطح عائمة، وأوراق سفلية، ومربعات حوار، ونماذج، وأشرطة إشعار، وأشرطة HUD، وخانات سريعة، وعصا توجيه افتراضية، مع أربعة عشر نمطًا جاهزًا — الافتراضي والخيال العلمي والعصور الوسطى وMaterial 3 والأطفال والقصص المصوّرة والأركيد.">
 <link rel="stylesheet" href="../site/style.css">
 </head>
 <body>
@@ -79,7 +79,7 @@
       وأشرطة الإشعار والعلامات الإرشادية وأشرطة HUD والخانات السريعة وعصا التوجيه الافتراضية كلها تعمل بـ
       <b>سمة واحدة ومجموعة أيقونات واحدة قابلة للاستبدال</b>، وتتكفّل نيابة عنك بالمنطقة الآمنة ولوحة المفاتيح
       الافتراضية واتجاه RTL ومساحات اللمس.
-      <b>اثنا عشر نمطًا جاهزًا</b> — الافتراضي والخيال العلمي والعصور الوسطى وMaterial 3 والأطفال والقصص المصوّرة، لكلٍّ منها داكن وفاتح — تغيّر الألوان والأشكال بسطر واحد.
+      <b>أربعة عشر نمطًا جاهزًا</b> — الافتراضي والخيال العلمي والعصور الوسطى وMaterial 3 والأطفال والقصص المصوّرة والأركيد، لكلٍّ منها داكن وفاتح — تغيّر الألوان والأشكال بسطر واحد.
     </p>
     <div class="badges">
       <span class="badge on">Godot 4.7+</span>
@@ -87,14 +87,15 @@
       <span class="badge">GDScript خالص</span>
       <span class="badge">لا حاجة إلى autoload</span>
       <span class="badge">MIT</span>
-      <span class="badge">12 نمطًا جاهزًا</span>
-      <span class="badge new">جديد: Comic · Material 3 · Kids</span>
+      <span class="badge">14 نمطًا جاهزًا</span>
+      <span class="badge new">جديد: Arcade · Comic · Material 3 · Kids</span>
       <span class="badge">21 لغة</span>
       <span class="badge"><span data-n="icons">1,287</span> أيقونة مضمّنة</span>
     </div>
     <div class="cta">
       <a class="btn primary" href="ai.html">Go HUD Skill</a>
       <a class="btn accent" href="install.html">التثبيت</a>
+      <a class="btn" href="#arcade">شاهد مظهر الأركيد</a>
       <a class="btn" href="#comic">شاهد مظهر القصص المصوّرة</a>
       <a class="btn" href="#presets">شاهد الأنماط الجاهزة</a>
       <a class="btn" href="https://github.com/thruthesky/gohud">GitHub</a>
@@ -105,9 +106,9 @@
 <main class="wrap">
 
 <section id="new">
-  <h2>جديد: القصص المصوّرة وMaterial 3 ومظهر للأطفال</h2>
+  <h2>جديد: الأركيد والقصص المصوّرة وMaterial 3 ومظهر للأطفال</h2>
   <p class="sub">
-    ثلاث عائلات جديدة تنضمّ إلى الافتراضي والخيال العلمي والعصور الوسطى — فصار لديك الآن <b>اثنا عشر مظهرًا مدمجًا</b>، لكلٍّ منها نسخة داكنة وأخرى فاتحة.
+    أربع عائلات جديدة تنضمّ إلى الافتراضي والخيال العلمي والعصور الوسطى — فصار لديك الآن <b>أربعة عشر مظهرًا مدمجًا</b>، لكلٍّ منها نسخة داكنة وأخرى فاتحة.
     وكل ودجة ونافذة منبثقة وقطعة HUD تتبنّاها دون أي تغيير في كودك: بدّل النمط الجاهز فتتبعه الشاشة كلها.
   </p>
   <div class="phones">
@@ -117,6 +118,8 @@
     <figure class="shot phone"><img src="../img/presets/gallery-kids_dark.webp" width="300" height="649" alt="معرض gohud بنمط kids_dark — صندوق الألعاب نفسه على صفحة زرقاء ليلية" loading="lazy"><figcaption><code>kids_dark</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_light.png" width="300" height="649" alt="معرض gohud بنمط comic_light — حدود حبرية عريضة وظلال حادّة على صفحة بلون الورق الكريمي" loading="lazy"><figcaption><code>comic_light</code></figcaption></figure>
     <figure class="shot phone"><img src="../img/presets/gallery-comic_dark.png" width="300" height="649" alt="معرض gohud بنمط comic_dark — حدود كريمية ولون أساسي أصفر على صفحة ليلية" loading="lazy"><figcaption><code>comic_dark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="معرض gohud بنمط arcade_light — مفاتيح ملوّنة بتدرّج ولمعة، ولوح HUD سميك بإطار أزرق على صفحة بلون السماء" loading="lazy"><figcaption><code>arcade_light</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="معرض gohud بنمط arcade_dark — المفاتيح الزاهية نفسها على صفحة ليلية" loading="lazy"><figcaption><code>arcade_dark</code></figcaption></figure>
   </div>
   <div class="grid">
     <div class="card">
@@ -138,19 +141,93 @@
         إعداد واحد يشغّل الظلال كلها أو يطفئها، وإعدادان آخران يضبطان عرض الحدّ وحجم الظلّ، واستدعاء واحد
         يفعل الشيء نفسه لودجة واحدة. والنوافذ تحصل على لافتة عنوان صفراء.</p>
     </div>
+    <div class="card">
+      <h3 id="arcade-painted-keys">الأركيد — مفاتيح ملوّنة</h3>
+      <p>كل مفتاح ملوّن — تدرّج ولمعة بيضاء وشفة تنخفض حين يُضغط، داخل حدّ حبري كحلي — وعليه
+        تسمية بيضاء بحدّ حبري: الأخضر للّعب، والأزرق لما سواه، والأحمر للحذف. والألواح سميكة: إطار
+        ملوّن حول تجويف فاتح، والنوافذ تحصل على لافتة عنوان ذهبية ومفتاح إغلاق أحمر مستدير.</p>
+    </div>
   </div>
   <pre><code>GoUi.use_preset(GoThemePresets.MATERIAL_LIGHT)   # أو MATERIAL_DARK
 GoUi.use_preset(&amp;"kids_light")                   # أو &amp;"kids_dark"
-GoUi.use_preset(&amp;"comic_light")                  # أو &amp;"comic_dark"</code></pre>
+GoUi.use_preset(&amp;"comic_light")                  # أو &amp;"comic_dark"
+GoUi.use_preset(&amp;"arcade_light")                 # أو &amp;"arcade_dark"</code></pre>
   <p><a href="theming-presets.html#material">Material 3 بالتفصيل ←</a> · <a href="theming-presets.html#kids">مظهر الأطفال بالتفصيل ←</a> ·
-    <a href="#comic">القصص المصوّرة، ودجةً ودجةً ↓</a> ·
-    <a href="widgets-popups.html#popup-looks">النافذة المنبثقة نفسها بالمظاهر الاثني عشر ←</a></p>
+    <a href="#arcade">الأركيد، ودجةً ودجةً ↓</a> · <a href="#comic">القصص المصوّرة، ودجةً ودجةً ↓</a> ·
+    <a href="widgets-popups.html#popup-looks">النافذة المنبثقة نفسها بالمظاهر الأربعة عشر ←</a></p>
+</section>
+
+<section id="arcade">
+  <h2>الأركيد: مفاتيح ملوّنة وألواح سميكة</h2>
+  <p class="sub">
+    أحدث المظاهر يُلبس كل شاشة حُلّة آلة ألعاب الأركيد. <b>كل مفتاح ملوّن</b> — تدرّج من أعلى فاتح إلى
+    أسفل أعمق، وخطّ لمعة أبيض، وشفة تنخفض حين يُضغط، وكل ذلك داخل حدّ حبري كحلي — وتسميته
+    بيضاء بحدّ حبري. <b>وكل لوح سميك</b>: إطار ملوّن بلمعته الخاصة حول تجويف فاتح.
+    <code>arcade_light</code> يضع ألواحًا بيضاء على صفحة بلون السماء؛ و<code>arcade_dark</code> يضع ألواحًا كحلية على صفحة ليلية.
+    كل صورة أدناه شاشة gohud حقيقية — الكود نفسه، وسطر واحد للنمط الجاهز.
+  </p>
+  <pre><code>GoUi.use_preset(&amp;"arcade_light")   # أو &amp;"arcade_dark"</code></pre>
+  <div class="phones">
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_light.png" width="300" height="649" alt="معرض gohud بنمط arcade_light — مفاتيح ملوّنة بالأخضر والأزرق والأحمر والخزامي، ولوح HUD بإطار أزرق على صفحة بلون السماء" loading="lazy"><figcaption><code>arcade_light</code> · المعرض</figcaption></figure>
+    <figure class="shot phone"><img src="../img/presets/gallery-arcade_dark.png" width="300" height="649" alt="معرض gohud بنمط arcade_dark — المفاتيح الزاهية نفسها على صفحة ليلية" loading="lazy"><figcaption><code>arcade_dark</code> · المعرض</figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="مربع حوار تأكيد بنمط arcade_light — لافتة عنوان ذهبية، ومفتاح إغلاق أحمر مستدير، ومفاتيح ملوّنة بالأزرق والأخضر على لوح مؤطَّر" loading="lazy"><figcaption><code>GoDialogs</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/sheet-light.png" width="300" height="649" alt="ورقة سفلية بنمط arcade_light — لوح سميك مؤطَّر يرتفع من الحافة السفلية وفيه صفوف على هيئة أغطية مفاتيح" loading="lazy"><figcaption><code>GoSheet</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/coach-mark-light.png" width="300" height="649" alt="علامة إرشادية بنمط arcade_light — فقاعة شرح مؤطَّرة تشير إلى مفتاح" loading="lazy"><figcaption><code>GoCoachMark</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/drawer-left-dark.png" width="300" height="649" alt="درج جانبي بنمط arcade_dark — لوح كحلي من صفوف التنقل فوق الشاشة المعتّمة" loading="lazy"><figcaption><code>GoDrawer</code></figcaption></figure>
+    <figure class="shot phone"><img src="../img/arcade/popover-dark.png" width="300" height="649" alt="نافذة منبثقة صغيرة بنمط arcade_dark — فقاعة مؤطَّرة مثبّتة على المفتاح الذي فتحها" loading="lazy"><figcaption><code>GoPopover</code></figcaption></figure>
+  </div>
+  <h3 id="every-key-painted">كل مفتاح ملوّن</h3>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-light.png" width="382" height="204" alt="أزرار بنمط arcade_light — Play أخضر، وDetails أزرق، ومفتاح أبيض بحدّ، وDelete مرجاني، وDelete forever أحمر، ومفتاح مدمج خزامي، ومفتاح رمادي معطّل، وكلٌّ منها ملوّن بتدرّج ولمعة وشفة داخل حدّ كحلي" loading="lazy"><figcaption><code>GoStyle.button()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-tabs-light.png" width="382" height="136" alt="ألسنة بنمط arcade_light — اللسان المختار مفتاح ملوّن بالأزرق، والبقية مفاتيح خزامية" loading="lazy"><figcaption><code>GoStyle.tabs()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-segmented-light.png" width="240" height="72" alt="عنصر تحكم مقسّم بنمط arcade_light — مفاتيح ملوّنة منفصلة، والمختار منها أزرق ومضغوط إلى الداخل" loading="lazy"><figcaption>مفاتيح مقسّمة</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-toggle-light.png" width="382" height="260" alt="مفاتيح تبديل ومربعات اختيار بنمط arcade_light — مسار أخضر لامع عند التشغيل، وخزامي عند الإيقاف، ومربع اختيار أخضر" loading="lazy"><figcaption>مفاتيح التبديل ومربعات الاختيار</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-card-light.png" width="382" height="249" alt="بطاقات بنمط arcade_light — تجاويف فاتحة داخل أطر زرقاء سميكة بلمعة وشفة" loading="lazy"><figcaption><code>GoStyle.card()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goform-light.png" width="382" height="328" alt="نموذج بنمط arcade_light — حقل أبيض غائر، ومفتاح تبديل، ومفتاح Save أخضر" loading="lazy"><figcaption><code>GoForm</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-choice_grid-light.png" width="382" height="81" alt="شبكة اختيارات بنمط arcade_light — أغطية مفاتيح، والمختار منها محاط بالذهبي فوق مسحة خضراء" loading="lazy"><figcaption><code>GoStyle.choice_grid()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslotgrid-light.png" width="382" height="208" alt="شبكة خانات بنمط arcade_light — مخزون من أغطية مفاتيح لامعة مع أعداد الرزم" loading="lazy"><figcaption><code>GoSlotGrid</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-list_row-light.png" width="382" height="181" alt="صفوف قائمة بنمط arcade_light — كل صف غطاء مفتاح فاتح مع أيقونة" loading="lazy"><figcaption>صفوف القائمة</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/godatepicker-light.png" width="382" height="392" alt="منتقي تاريخ بنمط arcade_light — أيام على هيئة أغطية مفاتيح، واليوم المختار مفتاح ملوّن" loading="lazy"><figcaption><code>GoDatePicker</code></figcaption></figure>
+  </div>
+  <h3 id="at-night-arcade-dark">ليلًا: <code>arcade_dark</code></h3>
+  <p>على صفحة داكنة يصير الحبر هو الصفحة نفسها، أعمق بكثير، وتبقى الألوان زاهية كما هي.</p>
+  <div class="shots">
+    <figure class="shot"><img src="../img/arcade/gostyle-button-dark.png" width="382" height="204" alt="أزرار بنمط arcade_dark — الألوان الزاهية نفسها على صفحة ليلية" loading="lazy"><figcaption><code>GoStyle.button()</code> ليلًا</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gobar-dark.png" width="382" height="135" alt="أشرطة HUD بنمط arcade_dark — أنابيب HP حمراء وMP زرقاء وXP خضراء في أخاديد غائرة" loading="lazy"><figcaption><code>GoBar</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-hud_panel-dark.png" width="382" height="162" alt="بطاقات HUD بنمط arcade_dark — تجويف كحلي داخل إطار أزرق سميك فوق اللعبة" loading="lazy"><figcaption><code>GoStyle.hud_panel()</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/goslot-dark.png" width="382" height="72" alt="خانات سريعة بنمط arcade_dark — أغطية مفاتيح مع عدد الرزمة، وخانة في فترة التهدئة محاطة بالذهبي" loading="lazy"><figcaption><code>GoSlot</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gojoystick-dark.png" width="204" height="204" alt="عصا توجيه افتراضية بنمط arcade_dark — قاعدة لامعة داخل حلقة حبرية بأربعة أسهم ومقبض على هيئة غطاء مفتاح" loading="lazy"><figcaption><code>GoJoystick</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gostyle-alert-dark.png" width="382" height="260" alt="تنبيهات بنمط arcade_dark — ألواح صغيرة بأطر صفراء وخضراء وحمراء وزرقاء" loading="lazy"><figcaption>التنبيهات</figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gofab-dark.png" width="382" height="80" alt="أزرار إجراء عائمة بنمط arcade_dark — مفاتيح ملوّنة بالذهبي بلمعة" loading="lazy"><figcaption><code>GoFab</code></figcaption></figure>
+    <figure class="shot"><img src="../img/arcade/gorewardcalendar-dark.png" width="382" height="190" alt="تقويم مكافآت بنمط arcade_dark — أيام على هيئة أغطية مفاتيح، واليوم الحالي محاط بالذهبي" loading="lazy"><figcaption><code>GoRewardCalendar</code></figcaption></figure>
+  </div>
+  <h3 id="how-the-arcade-look-works">كيف يعمل مظهر الأركيد</h3>
+  <div class="grid">
+    <div class="card">
+      <h3 id="the-face">الوجه</h3>
+      <p>كل مفتاح ولوح هو <code>GoStyleBoxArcade</code>: حدّ حبري وجسم متدرّج وشفة ولمعة، تُرسم
+        داخل مستطيل عنصر التحكم نفسه — فيحافظ المفتاح على حجمه من حالة إلى أخرى، ولا يفعل الضغط سوى أن يُغرسه.</p>
+    </div>
+    <div class="card">
+      <h3 id="labels-that-read">تسميات مقروءة</h3>
+      <p>التسمية البيضاء ذات الحدّ الحبري تُقرأ على أي لون يفصلها عنه الحدّ — فمعيار WCAG يعدّ الحدّ جزءًا من
+        الحرف. ويُزاح كل لون حتى تتجاوز تسميته 4.6:1 عند كل ارتفاع من التدرّج.</p>
+    </div>
+    <div class="card">
+      <h3 id="windows">النوافذ</h3>
+      <p>عنوان النافذة يقع على لافتة ذهبية بحروف بيضاء محدّدة بالحبر، بجوار مفتاح إغلاق أحمر مستدير. ومربعات الحوار
+        والأوراق والأدراج والنوافذ المنبثقة الصغيرة ألواح سميكة مؤطَّرة.</p>
+    </div>
+  </div>
+  <p>يمكن لمفتاح واحد أن يأخذ لونه الخاص — مفتاح متجر برتقالي في قائمة الإيقاف المؤقت:</p>
+  <pre><code>menu.add_child(GoStyle.arcade_paint(GoStyle.button("Shop", _shop), Color("#FF8A1E")))</code></pre>
+  <p><a href="theming-presets.html#arcade">مظهر الأركيد بالتفصيل ←</a> · <a href="widgets-popups.html#popup-looks">النافذة المنبثقة نفسها بالمظاهر الأربعة عشر ←</a></p>
 </section>
 
 <section id="comic">
   <h2>القصص المصوّرة: حبر عريض وظلّ حادّ</h2>
   <p class="sub">
-    أحدث المظاهر يرسم كل وجه كإطار في قصة مصوّرة — لون السطح داخل <b>حدّ حبري عريض</b>،
+    مظهر القصص المصوّرة يرسم كل وجه كإطار في قصة مصوّرة — لون السطح داخل <b>حدّ حبري عريض</b>،
     مع <b>ظلّ حادّ مصمت</b> يسقط نحو الأسفل واليمين. <code>comic_light</code> يحبّر بالأسود على صفحة بلون الورق الكريمي
     بلون أساسي كوبالتي؛ و<code>comic_dark</code> يحبّر بالكريمي على صفحة ليلية بلون أساسي أصفر. كل صورة أدناه
     شاشة gohud حقيقية — الكود نفسه، وسطر واحد للنمط الجاهز.
@@ -245,7 +322,7 @@ GoStyle.comic_border(title, 5.0)             # حدّ أعرض لهذا وحده
     <b>اصنع قصصك المصوّرة الخاصة.</b> <code>tools/new_theme.py inked --from comic_light</code> ينسخ لوحة الألوان؛ غيّر ألوان
     الورق والحبر واللون الأساسي ثم شغّل <code>tools/make_theme.py inked</code>. ويأتي الحبر والظلّ والمظهر معها.
   </div>
-  <p><a href="theming-presets.html#comic">مظهر القصص المصوّرة بالتفصيل ←</a> · <a href="widgets-popups.html#popup-looks">النافذة المنبثقة نفسها بالمظاهر الاثني عشر ←</a></p>
+  <p><a href="theming-presets.html#comic">مظهر القصص المصوّرة بالتفصيل ←</a> · <a href="widgets-popups.html#popup-looks">النافذة المنبثقة نفسها بالمظاهر الأربعة عشر ←</a></p>
 </section>
 
 <section id="showcase">
@@ -268,7 +345,7 @@ GoStyle.comic_border(title, 5.0)             # حدّ أعرض لهذا وحده
       <figcaption><b>الخيال العلمي</b> — لوحات حادة الزوايا وتحكّم باللمس</figcaption>
     </figure>
   </div>
-  <p><a href="#presets">الأنماط الجاهزة الاثنا عشر وكيف تبدّل بينها ←</a></p>
+  <p><a href="#presets">الأنماط الجاهزة الأربعة عشر وكيف تبدّل بينها ←</a></p>
 </section>
 
 <section id="what">
@@ -304,8 +381,8 @@ GoStyle.comic_border(title, 5.0)             # حدّ أعرض لهذا وحده
       <p>الودجات لا تعرف سوى <code>GoIconSet.CLOSE</code>. بدّل المجموعة فتتغير كل الرسوم دون لمس سطر واحد من الكود. <a href="icons.html">الأيقونات →</a></p>
     </div>
     <div class="card">
-      <h3 id="six-looks-one-line">اثنا عشر مظهرًا بسطر واحد</h3>
-      <p><code>GoUi.use_preset()</code> يبدّل السمة والمظهر والأيقونات معًا — إطارات مدوّرة أو مشطوفة بطراز الخيال العلمي أو مطروقة بطراز العصور الوسطى، أو مكوّنات تطبيقات Material 3، أو حلوى الأطفال الهلامية، أو حبر القصص المصوّرة.</p>
+      <h3 id="six-looks-one-line">أربعة عشر مظهرًا بسطر واحد</h3>
+      <p><code>GoUi.use_preset()</code> يبدّل السمة والمظهر والأيقونات معًا — إطارات مدوّرة أو مشطوفة بطراز الخيال العلمي أو مطروقة بطراز العصور الوسطى، أو مكوّنات تطبيقات Material 3، أو حلوى الأطفال الهلامية، أو حبر القصص المصوّرة، أو ألوان الأركيد.</p>
     </div>
     <div class="card">
       <h3 id="legible-by-measurement">وضوح مقيس لا مُقدَّر</h3>
@@ -356,6 +433,8 @@ GoStyle.comic_border(title, 5.0)             # حدّ أعرض لهذا وحده
       <tr><td><code>kids_dark</code> <span class="badge new">جديد</span></td><td>صندوق الألعاب نفسه على صفحة زرقاء ليلية</td></tr>
       <tr><td><code>comic_light</code> <span class="badge new">جديد</span></td><td>إطارات القصص المصوّرة — حدّ حبري عريض وظلّ حادّ على كل وجه، ولوحات بيضاء على صفحة بلون الورق الكريمي؛ والظلّ وحجمه وعرض الحدّ كلها إعدادات</td></tr>
       <tr><td><code>comic_dark</code> <span class="badge new">جديد</span></td><td>الحبر نفسه على صفحة ليلية — حدود كريمية ولون أساسي أصفر</td></tr>
+      <tr><td><code>arcade_light</code> <span class="badge new">جديد</span></td><td>آلة ألعاب أركيد — كل مفتاح ملوّن بتدرّج ولمعة وشفة، وتسميته بيضاء بحدّ حبري؛ ألواح سميكة مؤطَّرة على صفحة بلون السماء، ولافتة عنوان ذهبية على النوافذ</td></tr>
+      <tr><td><code>arcade_dark</code> <span class="badge new">جديد</span></td><td>المفاتيح الزاهية نفسها على ألواح كحلية وصفحة ليلية</td></tr>
     </tbody>
   </table>
 
@@ -468,12 +547,14 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
       <tr><td><code>GoStyleBoxMedieval</code></td><td>إطار مطروق بمسامير ونقش في الأركان وإبراز مشطوف وحبيبات مادة</td></tr>
       <tr><td><code>GoStyleBoxJelly</code></td><td>حلوى هلامية — حافة ممتلئة، وشفة صلبة تنخفض عند الضغط، وجسم أفتح في أعلاه، ولمعة بيضاء</td></tr>
       <tr><td><code>GoStyleBoxComic</code></td><td>إطار قصة مصوّرة — حدّ حبري عريض وظلّ ساقط حادّ، وكلاهما يضبط <code>GoConfig</code> حجمه أثناء تشغيل اللعبة</td></tr>
+      <tr><td><code>GoStyleBoxArcade</code></td><td>مفتاح أو لوح أركيد — جسم متدرّج ولمعة بيضاء وشفة تنخفض حين يُضغط وحدّ حبري؛ ويضيف اللوح إطارًا ملوّنًا سميكًا حول تجويف فاتح</td></tr>
     </tbody>
   </table>
-  <p>الخمسة كلها تُسلسَل داخل مورد سمة — وهذا بالضبط ما يتيح للسمة أن تغيّر <b>الشكل</b> لا اللون وحده.
-    و<code>GoSkinSciFi</code> و<code>GoSkinMedieval</code> و<code>GoSkinMaterial</code> و<code>GoSkinKids</code> و<code>GoSkinComic</code> هي الأصناف المشتقّة المرفقة.</p>
+  <p>الستة كلها تُسلسَل داخل مورد سمة — وهذا بالضبط ما يتيح للسمة أن تغيّر <b>الشكل</b> لا اللون وحده.
+    و<code>GoSkinSciFi</code> و<code>GoSkinMedieval</code> و<code>GoSkinMaterial</code> و<code>GoSkinKids</code> و<code>GoSkinComic</code> و<code>GoSkinArcade</code> هي الأصناف المشتقّة المرفقة.</p>
   <figure class="shot"><img src="../img/widgets/goskin.webp" width="382" height="600" alt="خانات سريعة وعصا توجيه وشريحة كما يرسمها كل مظهر مرفق — الافتراضي والأطفال وMaterial والعصور الوسطى والخيال العلمي" loading="lazy"><figcaption>ما يرسمه المظهر — الافتراضي، الأطفال، Material، العصور الوسطى، الخيال العلمي</figcaption></figure>
   <figure class="shot"><img src="../img/widgets/skin-comic_dark.png" width="382" height="120" alt="خانات سريعة وعصا توجيه وشريحة كما يرسمها مظهر القصص المصوّرة — حدود حبرية وظلال حادّة" loading="lazy"><figcaption>…ومظهر القصص المصوّرة</figcaption></figure>
+  <figure class="shot"><img src="../img/widgets/skin-arcade_dark.png" width="382" height="120" alt="خانات سريعة وعصا توجيه وشريحة كما يرسمها مظهر الأركيد — أغطية مفاتيح لامعة وقاعدة بأربعة أسهم" loading="lazy"><figcaption>…ومظهر الأركيد</figcaption></figure>
 
   <div class="note warn">
     <b><code>GoStyle.box()</code> يعيد دائمًا <code>StyleBoxFlat</code></b>، لأن الكود المستدعي
@@ -568,7 +649,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
   <pre><code>python3 addons/gohud/tools/check_contrast.py</code></pre>
   <p>
     كل زوج ألوان، و<b>نصّ كل حالة من حالات الزر فوق اللوحة التي يجلس عليها</b>، يُقاس وفق معايير
-    WCAG في السمات الاثنتي عشرة جميعها. والألوان الشفافة تُركَّب أولًا فوق خلفيتها الحقيقية — فقياسها مباشرةً
+    WCAG في السمات الأربع عشرة جميعها. والألوان الشفافة تُركَّب أولًا فوق خلفيتها الحقيقية — فقياسها مباشرةً
     يعطي نسبة أفضل مما تُظهره الشاشة فعلًا.
   </p>
   <p>

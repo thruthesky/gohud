@@ -376,6 +376,9 @@ func _dress_chrome() -> void:
 		title_label.remove_theme_color_override(&"font_color")
 		title_label.horizontal_alignment = title_label.get_meta(&"go_plate_align")
 		title_label.remove_meta(&"go_plate_align")
+	title_label.remove_theme_color_override(&"font_outline_color")
+	title_label.remove_theme_constant_override(&"outline_size")
+	skin.dress_title(title_label)
 	_fit_title()
 	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
 		close_button.remove_theme_stylebox_override(state)

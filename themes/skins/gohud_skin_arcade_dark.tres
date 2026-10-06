@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GoSkinArcade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/themes/skins/go_skin_arcade.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+skin_name = "arcade_dark"
+alert_tint = 0.14
+arcade_edge = 3
+arcade_gloss = 0.85
+arcade_lip = 4
+badge_pad_x = 7
+badge_pad_y = 2
+joystick_base_alpha = 0.5
+joystick_ring_alpha = 0.6
+joystick_ring_width = 3.0

@@ -145,7 +145,7 @@
   </div>
   <p>Chaque image de cette page montre le même petit jeu — vie et mana en haut à gauche, pièces en haut à droite, un joystick et
     trois emplacements rapides en bas — en <code>default_dark</code>, avec un pop-up ouvert par-dessus. <a href="#popup-looks">Le même
-    pop-up dans les douze apparences →</a></p>
+    pop-up dans les quatorze apparences →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -685,6 +685,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="La confirmation en kids_dark — un ruban menthe sur une carte bleu nuit" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Nouveau</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="La confirmation en comic_light — un cartouche de titre jaune, un bouton de fermeture encré et des boutons encrés aux ombres franches" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Nouveau</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="La confirmation en comic_dark — de l'encre crème sur une carte ardoise" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Nouveau</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="La confirmation en arcade_light — un bandeau de titre doré, une touche de fermeture ronde et rouge et des touches peintes sur un épais panneau encadré de bleu" loading="lazy"><figcaption><code>arcade_light</code> <span class="badge new">Nouveau</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="La confirmation en arcade_dark — un bandeau doré sur un panneau bleu marine" loading="lazy"><figcaption><code>arcade_dark</code> <span class="badge new">Nouveau</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">Ce que change chaque apparence</h3>
@@ -697,6 +699,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Material 3</td><td>Coins de 28dp, marge intérieure de 24dp, entièrement opaque</td><td>Un titre de 24sp en Roboto ; boutons en pilule avec une plaque de 40dp dans une cible de 48dp</td></tr>
       <tr><td>Enfants</td><td>Une carte en bonbon gélifié avec une ombre douce, entièrement opaque</td><td>Un ruban de titre ensoleillé (menthe la nuit), un bouton de fermeture rond en bonbon, des boutons qui s'écrasent à l'appui</td></tr>
       <tr><td>Bande dessinée</td><td>Un épais contour d'encre et une ombre franche, entièrement opaque</td><td>Un cartouche de titre jaune, un bouton de fermeture rond encré, des boutons dont l'ombre disparaît à l'appui</td></tr>
+      <tr><td>Arcade</td><td>Un épais panneau — un cadre coloré autour d'un fond pâle —, entièrement opaque</td><td>Un bandeau de titre doré portant un titre blanc cerné d'encre, une touche de fermeture ronde et rouge, des touches peintes qui rebondissent à l'appui</td></tr>
     </tbody>
   </table>
 
@@ -707,8 +710,9 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Hook</th><th>Ce qu'il habille</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Une plaque derrière le titre d'une fenêtre. Le titre s'y centre et rétrécit, jusqu'à la taille minimale (15), pour tenir sur une ligne.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>Le × de la fenêtre — l'apparence enfants en fait un bonbon rond, l'apparence bande dessinée un disque encré.</td></tr>
-      <tr><td><code>press_feedback(control)</code></td><td>S'exécute dès qu'un doigt se pose sur un bouton créé par gohud — l'apparence enfants l'écrase comme une gelée.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>Le × de la fenêtre — l'apparence enfants en fait un bonbon rond, l'apparence bande dessinée un disque encré, l'apparence arcade une touche ronde et rouge.</td></tr>
+      <tr><td><code>dress_title(label)</code></td><td>Le libellé du titre de la fenêtre — l'apparence arcade cerne d'encre son titre blanc.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>S'exécute dès qu'un doigt se pose sur un bouton créé par gohud — l'apparence enfants l'écrase comme une gelée, l'apparence arcade le fait rebondir.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Les faces des cartes d'invite et des cartes de visite guidée, des snackbars et des avis, du tiroir, des bannières, de la console.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>L'anneau et le pointeur de la visite guidée.</td></tr>
     </tbody>
@@ -718,7 +722,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Chaque type de pop-up suit sa propre opacité, si bien qu'une carte du HUD peut rester légère pendant qu'une boîte de dialogue reste pleine :
     les fenêtres, les feuilles, les boîtes de dialogue, les cartes épinglées et le combobox suivent <code>panel_alpha</code> ; le tiroir et la
     carte de visite guidée <code>card_alpha</code> ; les cartes d'invite et la console <code>hud_alpha</code> ; les snackbars et les avis
-    <code>notice_alpha</code> ; les menus <code>popup_alpha</code>. Material et enfants les rendent tous opaques ; la bande dessinée aussi, sauf les cartes d'invite et la console, à 92 %. Redéfinissez un type avec
+    <code>notice_alpha</code> ; les menus <code>popup_alpha</code>. Material et enfants les rendent tous opaques ; la bande dessinée aussi, sauf les cartes d'invite et la console, à 92 %, et l'arcade aussi, sauf ces deux-là, à 94 %. Redéfinissez un type avec
     <code>GoConfig.container_alpha_overrides</code>, tous avec <code>container_alpha</code> (un ratio — <code>0.95</code>), ou une seule fenêtre
     avec son <code>alpha</code>. Seule la face s'estompe ; le texte n'est jamais transparent. <a href="theming-opacity.html">L'opacité en détail →</a></p>
 </section>

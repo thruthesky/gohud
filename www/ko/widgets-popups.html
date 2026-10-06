@@ -145,7 +145,7 @@
   </div>
   <p>이 페이지의 그림은 모두 같은 작은 게임이다 — 왼쪽 위에 체력과 마나, 오른쪽 위에 코인, 아래에 조이스틱과 퀵슬롯
     세 개 — 를 <code>default_dark</code> 로 띄우고 그 위에 팝업 하나를 연 것이다. <a href="#popup-looks">같은
-    팝업을 열두 가지 룩으로 →</a></p>
+    팝업을 열네 가지 룩으로 →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -683,6 +683,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="kids_dark 의 확인창 — 밤하늘색 카드 위의 민트색 리본" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">신규</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="comic_light 의 확인창 — 노란 제목 캡션, 잉크를 입힌 닫기 버튼, 딱딱한 그림자가 있는 잉크 버튼" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">신규</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="comic_dark 의 확인창 — 슬레이트색 카드 위의 크림색 잉크" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">신규</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="arcade_light 의 확인창 — 파란 테를 두른 두꺼운 판 위에 금색 제목 배너, 둥근 빨간 닫기 키, 칠한 키" loading="lazy"><figcaption><code>arcade_light</code> <span class="badge new">신규</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="arcade_dark 의 확인창 — 남색 판 위의 금색 배너" loading="lazy"><figcaption><code>arcade_dark</code> <span class="badge new">신규</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">룩마다 바뀌는 것</h3>
@@ -695,6 +697,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Material 3</td><td>28dp 모서리, 24dp 안쪽 여백, 완전 불투명</td><td>Roboto 24sp 헤드라인. 48dp 타깃 안에 40dp 판을 둔 알약 버튼</td></tr>
       <tr><td>어린이</td><td>부드러운 그림자가 있는 젤리 사탕 카드, 완전 불투명</td><td>햇살처럼 노란 제목 리본(밤에는 민트색), 둥근 사탕 닫기 버튼, 누르면 말랑하게 찌그러지는 버튼</td></tr>
       <tr><td>코믹</td><td>굵은 잉크 테두리와 딱딱한 그림자, 완전 불투명</td><td>노란 제목 캡션, 잉크를 입힌 둥근 닫기 버튼, 누르면 그림자가 사라지는 버튼</td></tr>
+      <tr><td>아케이드</td><td>두꺼운 판 — 옅은 안쪽 면을 색 테가 둘러싼다 — 완전 불투명</td><td>잉크 테두리를 두른 흰 제목이 얹힌 금색 제목 배너, 둥근 빨간 닫기 키, 누르면 쏙 들어갔다 튀어나오는 칠한 키</td></tr>
     </tbody>
   </table>
 
@@ -705,8 +708,9 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>훅</th><th>꾸미는 것</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>창 제목 뒤의 판. 제목은 그 위 가운데에 놓이고, 한 줄에 머물도록 최소 크기(15)까지 줄어든다.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>창의 × — 어린이 룩은 둥근 사탕으로, 코믹 룩은 잉크를 입힌 원반으로 만든다.</td></tr>
-      <tr><td><code>press_feedback(control)</code></td><td>gohud 가 만든 버튼에 손가락이 닿는 순간 실행된다 — 어린이 룩은 버튼을 말랑하게 찌그러뜨린다.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>창의 × — 어린이 룩은 둥근 사탕으로, 코믹 룩은 잉크를 입힌 원반으로, 아케이드 룩은 둥근 빨간 키로 만든다.</td></tr>
+      <tr><td><code>dress_title(label)</code></td><td>창의 제목 라벨 — 아케이드 룩은 흰 제목에 잉크 테두리를 두른다.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>gohud 가 만든 버튼에 손가락이 닿는 순간 실행된다 — 어린이 룩은 버튼을 말랑하게 찌그러뜨리고, 아케이드 룩은 톡 튀게 한다.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>프롬프트 카드와 코치마크 카드, 스낵바와 알림, 서랍, 배너, 콘솔의 면.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>투어의 링과 포인터.</td></tr>
     </tbody>
@@ -716,7 +720,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>팝업마다 자기 불투명도를 따르므로, HUD 카드는 가볍게 두고 대화상자는 단단하게 둘 수 있다: 창, 시트, 대화상자,
     팝오버, 콤보박스는 <code>panel_alpha</code>, 서랍과 코치마크 카드는 <code>card_alpha</code>, 프롬프트 카드와
     콘솔은 <code>hud_alpha</code>, 스낵바와 알림은 <code>notice_alpha</code>, 메뉴는 <code>popup_alpha</code> 를 따른다. Material 과 어린이 룩은
-    모두 불투명하게 만든다. 코믹 룩도 그렇지만, 프롬프트 카드와 콘솔만은 92% 다. 한 종류만 바꾸려면 <code>GoConfig.container_alpha_overrides</code>, 전부는
+    모두 불투명하게 만든다. 코믹 룩도 그렇지만, 프롬프트 카드와 콘솔만은 92% 다. 아케이드 룩도 마찬가지로, 그 둘만 94% 다. 한 종류만 바꾸려면 <code>GoConfig.container_alpha_overrides</code>, 전부는
     <code>container_alpha</code>(비율 — <code>0.95</code>), 창 하나는 그 창의 <code>alpha</code> 로 덮어쓴다. 옅어지는 것은 면뿐이고, 글자는
     절대 비쳐 보이지 않는다. <a href="theming-opacity.html">불투명도 자세히 →</a></p>
 </section>

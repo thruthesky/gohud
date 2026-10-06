@@ -49,5 +49,10 @@
   },
   "comic": {
     "comic_tint": 0.22
+  },
+  "arcade": {
+    "arcade_edge": 3,
+    "arcade_lip": 4,
+    "arcade_gloss": 0.85
   }
 }

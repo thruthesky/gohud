@@ -251,6 +251,9 @@ func _dress(box: Button, selected: bool, period: bool) -> void:
 	var ink := skin.time_ink(selected, period)
 	for key in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color", &"font_focus_color"]:
 		box.add_theme_color_override(key, ink)
+	# Its own ink on its own face, so plain letters: a look's label outline (the arcade keys' ink round a white label)
+	# would blur dark letters into a blot.
+	box.add_theme_constant_override(&"outline_size", 0)
 
 
 func _set_hour(value: int) -> void:

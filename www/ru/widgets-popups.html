@@ -145,7 +145,7 @@
   </div>
   <p>Каждый снимок на этой странице — одна и та же маленькая игра: здоровье и мана слева вверху, монеты справа вверху, стик и три
     быстрых слота внизу — в пресете <code>default_dark</code>, с одним открытым поверх неё всплывающим окном. <a href="#popup-looks">То же
-    окно во всех двенадцати обликах →</a></p>
+    окно во всех четырнадцати обликах →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -683,6 +683,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Подтверждение в kids_dark — мятная лента на ночно-синей карточке" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Новое</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Подтверждение в comic_light — жёлтая плашка заголовка, обведённая чернилами кнопка закрытия и обведённые кнопки с жёсткими тенями" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Новое</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Подтверждение в comic_dark — кремовые чернила на сланцевой карточке" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Новое</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Подтверждение в arcade_light — золотая лента заголовка, круглая красная клавиша закрытия и раскрашенные клавиши на толстой панели в синей рамке" loading="lazy"><figcaption><code>arcade_light</code> <span class="badge new">Новое</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="Подтверждение в arcade_dark — золотая лента на тёмно-синей панели" loading="lazy"><figcaption><code>arcade_dark</code> <span class="badge new">Новое</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">Что меняет каждый облик</h3>
@@ -695,6 +697,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Material 3</td><td>Углы 28dp, отступы 24dp, полная непрозрачность</td><td>Заголовок 24sp шрифтом Roboto; кнопки-пилюли с плашкой 40dp внутри области касания 48dp</td></tr>
       <tr><td>Детский</td><td>Карточка — желейная конфета с мягкой тенью, полная непрозрачность</td><td>Солнечная лента заголовка (ночью мятная), круглая кнопка закрытия-конфета, кнопки, которые сплющиваются при нажатии</td></tr>
       <tr><td>Комикс</td><td>Жирный чернильный контур и жёсткая тень, полная непрозрачность</td><td>Жёлтая плашка заголовка, круглая кнопка закрытия, обведённая чернилами, кнопки, тень которых исчезает при нажатии</td></tr>
+      <tr><td>Аркада</td><td>Толстая панель — цветная рамка вокруг светлой середины, — полная непрозрачность</td><td>Золотая лента заголовка с белым заголовком в чернильном контуре, круглая красная клавиша закрытия, раскрашенные клавиши, которые подпрыгивают при нажатии</td></tr>
     </tbody>
   </table>
 
@@ -705,8 +708,9 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Хук</th><th>Что оформляет</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Плашку за заголовком окна. Заголовок центрируется на ней и уменьшается — вплоть до минимального размера (15), — чтобы остаться в одну строку.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>× окна — детский облик делает её круглой конфетой, комикс — кружком, обведённым чернилами.</td></tr>
-      <tr><td><code>press_feedback(control)</code></td><td>Срабатывает в момент, когда палец касается кнопки, созданной gohud, — детский облик её сплющивает.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>× окна — детский облик делает её круглой конфетой, комикс — кружком, обведённым чернилами, аркада — круглой красной клавишей.</td></tr>
+      <tr><td><code>dress_title(label)</code></td><td>Подпись заголовка окна — аркада обводит её белый заголовок чернилами.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Срабатывает в момент, когда палец касается кнопки, созданной gohud, — детский облик её сплющивает, аркада заставляет подпрыгнуть.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Лицевые панели карточек с вопросом и карточек тура, снекбаров и уведомлений, боковой панели, баннеров, консоли.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Кольцо и указатель тура.</td></tr>
     </tbody>
@@ -716,7 +720,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Каждый вид всплывающих окон следует своей непрозрачности, поэтому карточка HUD может оставаться лёгкой, а диалог — плотным: окна,
     листы, диалоги, карточки с привязкой и комбобокс следуют <code>panel_alpha</code>; боковая панель и карточка тура — <code>card_alpha</code>;
     карточки с вопросом и консоль — <code>hud_alpha</code>; снекбары и уведомления — <code>notice_alpha</code>; меню — <code>popup_alpha</code>.
-    Material и детский облик делают их все непрозрачными; комикс тоже, кроме карточек с вопросом и консоли — у них 92%. Переопределите один вид через <code>GoConfig.container_alpha_overrides</code>,
+    Material и детский облик делают их все непрозрачными; комикс тоже, кроме карточек с вопросом и консоли — у них 92%, и аркада тоже, кроме этих двух — у них 94%. Переопределите один вид через <code>GoConfig.container_alpha_overrides</code>,
     все сразу — через <code>container_alpha</code> (доля — <code>0.95</code>), а одно окно — через его <code>alpha</code>. Прозрачнеет
     только лицевая панель; текст никогда не просвечивает. <a href="theming-opacity.html">Непрозрачность подробно →</a></p>
 </section>

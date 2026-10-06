@@ -145,7 +145,7 @@
   </div>
   <p>Setiap gambar di halaman ini adalah game kecil yang sama — darah dan mana di kiri atas, koin di kanan atas, joystick dan tiga
     slot cepat di bawah — dalam <code>default_dark</code>, dengan satu popup terbuka di atasnya. <a href="#popup-looks">Popup yang sama
-    dalam kedua belas tampilan →</a></p>
+    dalam keempat belas tampilan →</a></p>
 </section>
 
 <section id="popup-anatomy">
@@ -683,6 +683,8 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <figure class="shot phone"><img src="../img/popups/look-kids_dark.webp" width="300" height="649" alt="Konfirmasi dalam kids_dark — pita mint pada kartu biru malam" loading="lazy"><figcaption><code>kids_dark</code> <span class="badge new">Baru</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_light.png" width="300" height="649" alt="Konfirmasi dalam comic_light — keterangan judul kuning, tombol tutup bertinta, dan tombol bertinta dengan bayangan tegas" loading="lazy"><figcaption><code>comic_light</code> <span class="badge new">Baru</span></figcaption></figure>
     <figure class="shot phone"><img src="../img/popups/look-comic_dark.png" width="300" height="649" alt="Konfirmasi dalam comic_dark — tinta krem pada kartu batu sabak" loading="lazy"><figcaption><code>comic_dark</code> <span class="badge new">Baru</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_light.png" width="300" height="649" alt="Konfirmasi dalam arcade_light — spanduk judul emas, tombol tutup merah yang bundar, dan tombol bercat di papan tebal berbingkai biru" loading="lazy"><figcaption><code>arcade_light</code> <span class="badge new">Baru</span></figcaption></figure>
+    <figure class="shot phone"><img src="../img/popups/look-arcade_dark.png" width="300" height="649" alt="Konfirmasi dalam arcade_dark — spanduk emas di papan biru tua" loading="lazy"><figcaption><code>arcade_dark</code> <span class="badge new">Baru</span></figcaption></figure>
   </div>
 
   <h3 id="what-each-look-changes">Apa yang diubah setiap tampilan</h3>
@@ -695,6 +697,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
       <tr><td>Material 3</td><td>Sudut 28dp, padding 24dp, buram sepenuhnya</td><td>Judul 24sp dalam Roboto; tombol pil dengan pelat 40dp di dalam target 48dp</td></tr>
       <tr><td>Anak-anak</td><td>Kartu permen jeli dengan bayangan lembut, buram sepenuhnya</td><td>Pita judul cerah (mint di malam hari), tombol tutup permen bulat, tombol yang memipih saat ditekan</td></tr>
       <tr><td>Komik</td><td>Garis tepi tinta tebal dan bayangan tegas, buram sepenuhnya</td><td>Keterangan judul kuning, tombol tutup bulat bertinta, tombol yang bayangannya hilang saat ditekan</td></tr>
+      <tr><td>Arcade</td><td>Papan tebal — bingkai berwarna di sekeliling ceruk pucat — buram sepenuhnya</td><td>Spanduk judul emas dengan judul putih bergaris tepi tinta, tombol tutup merah yang bundar, tombol bercat yang melompat saat ditekan</td></tr>
     </tbody>
   </table>
 
@@ -705,8 +708,9 @@ func _unhandled_input(event: InputEvent) -&gt; void:
     <thead><tr><th>Hook</th><th>Yang didandaninya</th></tr></thead>
     <tbody>
       <tr><td><code>title_plate_box()</code> · <code>title_plate_ink()</code> · <code>title_plate_min_size()</code></td><td>Pelat di balik judul jendela. Judulnya memusat di atasnya dan mengecil, sampai ukuran minimum (15), agar tetap satu baris.</td></tr>
-      <tr><td><code>dress_close_button(button)</code></td><td>Tombol × jendela — kids menjadikannya permen bulat, comic cakram bertinta.</td></tr>
-      <tr><td><code>press_feedback(control)</code></td><td>Berjalan begitu jari menyentuh tombol buatan gohud — kids membuatnya memipih.</td></tr>
+      <tr><td><code>dress_close_button(button)</code></td><td>Tombol × jendela — kids menjadikannya permen bulat, comic cakram bertinta, arcade tombol merah yang bundar.</td></tr>
+      <tr><td><code>dress_title(label)</code></td><td>Label judul jendela — arcade memberi judul putihnya garis tepi tinta.</td></tr>
+      <tr><td><code>press_feedback(control)</code></td><td>Berjalan begitu jari menyentuh tombol buatan gohud — kids membuatnya memipih, arcade membuatnya melompat.</td></tr>
       <tr><td><code>floating_box()</code> · <code>notice_box()</code> · <code>drawer_box()</code> · <code>banner_box()</code> · <code>overlay_box()</code></td><td>Muka kartu ajakan dan kartu coach, snackbar dan pemberitahuan, laci, banner, konsol.</td></tr>
       <tr><td><code>coach_ring_box()</code> · <code>draw_coach_pointer()</code></td><td>Cincin dan penunjuk tur.</td></tr>
     </tbody>
@@ -716,7 +720,7 @@ func _unhandled_input(event: InputEvent) -&gt; void:
   <p>Setiap jenis popup mengikuti opasitasnya sendiri, sehingga kartu HUD bisa tetap ringan sementara dialog tetap pejal: jendela, lembar, dialog,
     popover, dan combobox mengikuti <code>panel_alpha</code>; laci dan kartu coach <code>card_alpha</code>; kartu ajakan dan
     konsol <code>hud_alpha</code>; snackbar dan pemberitahuan <code>notice_alpha</code>; menu <code>popup_alpha</code>. Material dan kids
-    membuat semuanya buram; comic juga, kecuali kartu ajakan dan konsol yang 92%. Timpa satu jenis dengan <code>GoConfig.container_alpha_overrides</code>, semuanya dengan
+    membuat semuanya buram; comic juga, kecuali kartu ajakan dan konsol yang 92%, dan arcade, kecuali keduanya yang 94%. Timpa satu jenis dengan <code>GoConfig.container_alpha_overrides</code>, semuanya dengan
     <code>container_alpha</code> (sebuah rasio — <code>0.95</code>), atau satu jendela dengan <code>alpha</code>-nya. Hanya mukanya yang memudar; teks
     tidak pernah tembus pandang. <a href="theming-opacity.html">Opasitas secara rinci →</a></p>
 </section>
