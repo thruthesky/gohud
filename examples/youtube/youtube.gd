@@ -32,7 +32,6 @@ var _serial := 0        ## Bumped on every page — a timer from an older page s
 var _auto_exit := false
 var _done := false
 var _progress: GoProgress
-var _page_label: Label
 var _cards: HBoxContainer
 
 
@@ -128,7 +127,7 @@ func _show(step: int) -> void:
 	_serial += 1
 	if step == 0:
 		_wear(GoThemePresets.DEFAULT_DARK)
-		_card_screen("gohud", "Every theme · nine widgets each", true)
+		_card_screen("gohud", "One UI kit · every theme", true)
 		return
 	if step > _presets.size() * PAGES:
 		_wear(GoThemePresets.DEFAULT_DARK)
@@ -151,7 +150,6 @@ func _wear(preset: StringName) -> void:
 		remove_child(child)
 		child.queue_free()
 	_progress = null
-	_page_label = null
 	_cards = null
 	GoUi.use_preset(preset)
 	theme = GoUi.theme()
@@ -224,11 +222,6 @@ func _theme_screen(index: int, preset: StringName) -> void:
 	GoStyle.natural_width(id)
 	id.size_flags_horizontal = Control.SIZE_SHRINK_END
 	right.add_child(id)
-	_page_label = GoStyle.label("Widgets 1–3 of 9", GoTheme.ROLE_SUBTITLE)
-	_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	GoStyle.natural_width(_page_label)
-	_page_label.size_flags_horizontal = Control.SIZE_SHRINK_END
-	right.add_child(_page_label)
 
 	_progress = GoProgress.linear()
 	_progress.wavy = false
@@ -256,7 +249,6 @@ func _fill(preset: StringName, part: int) -> void:
 		child.queue_free()
 	var light := String(preset).ends_with("_light")
 	var specs := _set_b() if light else _set_a()
-	_page_label.text = "Widgets %d–%d of %d" % [part * 3 + 1, part * 3 + 3, specs.size()]
 	for slot in 3:
 		var spec: Array = specs[part * 3 + slot]
 		var card := GoStyle.card()
