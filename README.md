@@ -12,8 +12,8 @@
 **A customizable HUD & UI kit for Godot 4.7+.** Floating surfaces, bottom sheets, dialogs, forms,
 snackbars, prompt cards, coach marks, HUD bars, quick slots and a virtual joystick — driven by one
 theme and one swappable icon set, and aware of safe areas, virtual keyboards, RTL languages and touch.
-Eight built-in presets change colours **and** shapes in one line: default, sci-fi, medieval and Material 3,
-each in dark and light.
+Fourteen built-in presets change colours **and** shapes in one line: default, sci-fi, medieval, Material 3,
+arcade, comic and kids, each in dark and light.
 
 <p>
   <img src="https://thruthesky.github.io/gohud/img/preset-default-dark.png" alt="The gohud gallery with the default_dark preset" width="250">
@@ -22,16 +22,18 @@ each in dark and light.
 
 > Drop it in and it works. Enabling the editor plugin only adds conveniences.
 
-**Version 1.2.1.** A maintenance release: a headless run that loads gohud no longer ends with
-`ERROR: 1 resources still in use at exit`, the demo's widget gallery no longer opens blank after an
-update, and Godot 4.7 is the engine gohud is tested on and officially supports — the
+**Version 1.3.0.** Six new looks — arcade, comic and kids, each dark and light, for fourteen presets in all —
+the Material 3 Expressive presets with app-screen widgets, the widgets a Flutter app reaches for (a scaffold, lazy
+lists, pull to refresh, swipe rows, tab pages, reordering, pinch and zoom, date, time and wheel pickers), edge and
+side bars with `GoGrid`, `GoChoiceColumn` for a HUD side bar, and a demo app whose 31-chapter tour plays itself — the
 [changelog](CHANGELOG.md) lists them. Work done since is
 collected under *Unreleased* there: raise the version in `package.json` and the next `tools/package.sh`
 run releases it.
 
-- **Eight presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and
+- **Fourteen presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and
   icons together — rounded default panels, chamfered sci-fi panels with neon glow, forged medieval
-  frames with engraved icons, or Material 3 pills and surfaces for app screens.
+  frames with engraved icons, Material 3 pills and surfaces for app screens, painted arcade keys, inked
+  comic panels, or jelly-candy keys for children.
 - **1,287 icons, called by name.** Widgets ask for icons by name (`GoIconSet.CLOSE`); 84 are always there, and
   `GoUi.add_icons(GoIconLibrary.icon_set())` adds the 187-icon game set and a 1,000-icon library under any preset.
   Search them in code (`GoUi.icons().search("rain")`) or on the website. Point `GoConfig.icons` at your own SVG set,
@@ -580,6 +582,9 @@ Three custom `StyleBox` classes cover shapes `StyleBoxFlat` cannot make. All of 
 | `GoStyleBoxCut` | Chamfered corners, one thickened accent edge, an outer glow |
 | `GoStyleBoxBracket` | Corner marks only, leaving the content unenclosed |
 | `GoStyleBoxMedieval` | A forged frame with rivets, corner engraving, a bevel highlight and material grain |
+| `GoStyleBoxJelly` | A jelly candy: a chunky outline, a lighter top and deeper band, a white shine and a lip that sinks when pressed |
+| `GoStyleBoxComic` | A comic panel: a bold ink outline and a hard shadow down and to the right, sized by `GoConfig` |
+| `GoStyleBoxArcade` | A painted arcade key: a top-to-bottom gradient, a gloss stroke, a deeper lip and an ink outline; or a thick framed board |
 
 `GoStyle.surface()` returns whatever shape the skin produced. `GoStyle.box()`, `floating()` and
 `disc()` keep their promise of returning a `StyleBoxFlat`, so existing calling code that tweaks
@@ -612,8 +617,8 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |
 | `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips (and `filter_chip`, `input_chip`), floating toolbars, the bottom app bar, outlined buttons (`Tone.OUTLINED`), cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
-| `GoThemePresets` | static | The eight built-in presets, presets found in `themes/presets/`, and `register()` for your own |
-| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | The shapes code draws, with numeric dials |
+| `GoThemePresets` | static | The fourteen built-in presets, presets found in `themes/presets/`, and `register()` for your own |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` | Resource | The shapes code draws, with numeric dials |
 | `GoSafeArea` | Control / static | Usable rectangle excluding notches, rounded corners and the keyboard |
 | `GoScale` | static | Breakpoint and dp math |
 | `GoFeedback` | static | Sound and haptic routing |
@@ -897,20 +902,22 @@ sound files without touching code. Vibration runs only on Android and iOS, in th
 | `check_site.py` | Website links, anchors, page language, glossary and generated dial tables |
 | `check_mutations.sh` (opt-in) | Whether the suite notices when a rule is deliberately broken |
 
-Latest recorded run — **2026-09-13**, Godot 4.7.2 (macOS, Apple Silicon, Compatibility renderer), on
-the add-on files of this revision copied into empty projects:
+Latest recorded run — **2026-10-06**, release 1.3.0, Godot 4.7.2 (macOS, Apple Silicon, Compatibility renderer),
+through `tools/release.sh --export` on the add-on files of this revision copied into an empty project:
 
 | Check | Result |
 |---|---|
-| Headless suite in an empty project at 390×844, 844×390, 768×1024 and 1280×800 | 438/438 at each size |
-| The same suite with the `GoRuntime` autoload enabled | 438/438 |
-| Web export of that empty project | pass (`index.pck` 728 KB) |
-| `check_contrast.py` across the eight themes | 0 failures |
-| `check_generated.py` | 149 generated files match their sources |
+| Headless suite in an empty project at 390×844, 844×390, 768×1024 and 1280×800 | 2,080/2,080 at each size |
+| The other suites — later widgets, choice column, jelly, comic, arcade, templates, layout, exit | 1,131 · 76 · 71 · 164 · 235 · 77 · 214 · 5, all passing |
+| The release ZIP installed into an empty project with the `GoRuntime` autoload enabled | 2,080/2,080 |
+| Web export of that project | pass (`index.pck` 3.3 MB) |
+| `check_contrast.py` across the fourteen themes | 0 failures |
+| `check_generated.py` | 355 generated files match their sources |
 | `check_scaffold.sh`, including a medieval parent | pass |
-| `check_package.py` | 13 tests pass |
+| `check_package.py` | 17 tests pass |
+| `check_demo.sh` — the demo's home screen, tour and showreel at three sizes | 10/10 |
 
-**Not part of this run:** the release ZIP itself (`--zip`), physical Android or iOS devices, and the
+**Not part of this run:** physical Android or iOS devices, and the
 Forward+ and Mobile renderers. The safe-area and haptics code paths only
 activate on handheld platforms, so they are exercised by the suite but not on real hardware.
 

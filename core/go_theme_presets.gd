@@ -14,7 +14,7 @@
 class_name GoThemePresets
 extends RefCounted
 
-## The eight gohud packs and ships.
+## The fourteen gohud packs and ships.
 const DEFAULT_DARK := &"default_dark"
 const DEFAULT_LIGHT := &"default_light"
 const SCIFI_DARK := &"scifi_dark"
@@ -24,6 +24,15 @@ const MEDIEVAL_LIGHT := &"medieval_light"
 ## Material 3 — the M3 baseline colours, shapes and type for app screens (`tools/theme_material.py`).
 const MATERIAL_LIGHT := &"material_light"
 const MATERIAL_DARK := &"material_dark"
+## Arcade — painted gradient keys and thick framed boards (`tools/theme_arcade.py`, `GoSkinArcade`).
+const ARCADE_DARK := &"arcade_dark"
+const ARCADE_LIGHT := &"arcade_light"
+## Comic — bold ink outlines and a hard shadow (`tools/theme_comic.py`, `GoSkinComic`).
+const COMIC_DARK := &"comic_dark"
+const COMIC_LIGHT := &"comic_light"
+## Kids — jelly-candy keys and panels for children (`tools/theme_kids.py`, `GoSkinKids`).
+const KIDS_DARK := &"kids_dark"
+const KIDS_LIGHT := &"kids_light"
 
 const FOLDER := "res://addons/gohud/themes/presets/"
 
@@ -37,6 +46,12 @@ const BUILTIN := {
 	MEDIEVAL_LIGHT: FOLDER + "medieval_light.tres",
 	MATERIAL_LIGHT: FOLDER + "material_light.tres",
 	MATERIAL_DARK: FOLDER + "material_dark.tres",
+	ARCADE_DARK: FOLDER + "arcade_dark.tres",
+	ARCADE_LIGHT: FOLDER + "arcade_light.tres",
+	COMIC_DARK: FOLDER + "comic_dark.tres",
+	COMIC_LIGHT: FOLDER + "comic_light.tres",
+	KIDS_DARK: FOLDER + "kids_dark.tres",
+	KIDS_LIGHT: FOLDER + "kids_light.tres",
 }
 
 static var _loaded: Dictionary[StringName, GoThemePreset] = {}
@@ -75,7 +90,7 @@ static func names() -> Array[StringName]:
 
 
 ## Find one by name. `null` if it does not exist or has not been imported yet.
-## Even outside the built-in eight, `themes/presets/<id>.tres` is read if it is there.
+## Even outside the built-in fourteen, `themes/presets/<id>.tres` is read if it is there.
 static func find(id: StringName) -> GoThemePreset:
 	if id.is_empty(): return null
 	if _extra.has(id): return _extra[id]
@@ -100,7 +115,7 @@ static func unregister(id: StringName) -> void:
 	_extra.erase(id)
 
 
-## Every name you can pick (the built-in eight + whatever was registered). Only the ones that actually read are counted.
+## Every name you can pick (the built-in fourteen + whatever was registered). Only the ones that actually read are counted.
 static func ids() -> Array[StringName]:
 	var out: Array[StringName] = []
 	for id in names():

@@ -4,6 +4,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-06
+
 ### Added
 
 - **Arcade looks: `arcade_light` and `arcade_dark` — `GoStyleBoxArcade`.** An arcade cabinet: **every key is
@@ -65,15 +67,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
     with the same ink and a crisp shadow (`to_flat()`), and so do `GoStyle.disc()` and `GoStyle.floating()`; the
     choice column's fade, an input group's joined pieces and a table's striped rows read it too.
     `tools/theme_comic.py` writes the faces (shape kind `comic`, skin base `comic` in a palette JSON).
-  - `tests/gohud_comic_test.gd` (160 checks, step ①-k of `check_all.sh`) — among them, every comic face against the
+  - `tests/gohud_comic_test.gd` (164 checks, step ①-k of `check_all.sh`) — among them, every comic face against the
     default look's padding, every state above, and the per-widget calls before the tree and across a dial change. The "filled buttons sit flat" check now
     means level with a normal key — a look whose every key drops the same shadow does not single the filled one out.
   - The website: a comic section on the presets page (the settings, the per-widget calls, the skin), the two looks in
-    the gallery, the popup looks and the front page, "twelve presets" throughout, and the kids and comic dial tables
+    the gallery, the popup looks and the front page, "fourteen presets" throughout, and the kids and comic dial tables
     in every language.
 - **The website shows every widget, and has a guide to popups.** `tests/site_widget_shots.gd` photographs the kit on
   the virtual monitor — each widget cropped to itself, the popups open over a small game with its HUD, one confirmation
-  in all ten looks, the gallery in every look and the parts each skin draws — and `tools/site_images.py` turns the
+  in every look, the gallery in every look and the parts each skin draws — and `tools/site_images.py` turns the
   shots into WebP files under `www/img/` (1.8 MB for 142 pictures) with `shots.json` holding their display sizes. The
   All widgets page now shows a picture on 93 of its 97 cards, the topic pages show one under each widget heading, and
   a new page, *Popups and dialogs* (`widgets-popups.html`), covers every overlay: which to pick, the parts of a window,
@@ -118,8 +120,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `GoStepper`), *Dates & times* (`GoDatePicker`, `GoTimePicker`, `GoWheelPicker`), *Long lists* (`GoListView`,
   `GoRefresh`, `GoSwipeRow`, `GoReorderList`), *Progress & ranges* (`GoProgress`, `GoLoadingIndicator`,
   `GoRangeSlider`) and *Pinch & zoom* (`GoZoomView`) — each driven by the bot with real input and checked.
-  **Fast** now plays at 3.2× (twice the old 1.6×) and is the theme carousel: every chapter wears the next family,
-  the whole screen rebuilt in it, while the picker keeps the person's choice and the tour ends back in it. The bot
+  **Fast** now plays at 4.0× (up from 1.6×) and is the theme carousel: every chapter wears the next family, the whole
+  screen rebuilt in it, and the Theme dropdown at the top names it as it changes — a theme picked there mid-tour
+  dresses the current chapter and the carousel goes on from it; the tour ends back in the person's choice. The bot
   now rolls the wheel where no list, map, slider or wheel inside the stage would take it, so it can reach what sits
   below a nested list.
 - **The theme carousel at any speed — `--carousel`.** `godot -- --auto --cinema --carousel --exit` (or
@@ -131,178 +134,6 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   presets with Arcade, 74.5 seconds. Dark presets show one set of fifteen widgets and light presets another, so each
   family shows thirty. `bash examples/youtube/run.sh --record <movie>` records it at 60 fps, `-- --themes=a,b` shows
   only those presets; the release ZIP leaves it out.
-
-### Fixed
-
-- **The coach mark's Skip is a quiet key again.** It was styled with `GoStyle.typography()`, which swaps the theme
-  variation — the bare Skip key became a full button in every look. It now takes `GoStyle.font_role()` (size and
-  colour only) and keeps the touch height.
-- **The sci-fi danger glow button glows.** `GoDangerSolidGlowButton` had the same faces as `GoDangerSolidButton` in
-  `scifi_dark` and `scifi_light` — the generator gave the primary twin its glow and forgot the danger one. It now glows
-  in the danger colour (7dp, 10dp under the mouse), and the button-glow check holds both raised twins above their flat
-  ones in every look.
-- **Windows cast their whole shadow.** `GoSurface` clipped its card (`clip_contents`), and a clip cuts the clipping
-  item's own drawing too: the shadow vanished outside the card and showed as a dark square in the four corners the
-  rounded face leaves open — on every dialog, sheet, popover and window in every look. The content is now clipped one
-  level in, by the padding that fills the card, so it is clipped where it always was.
-- **A carousel page with a wrapping title fits its strip.** A page is first laid out 1dp wide, where its title stacks a
-  letter per line; the page kept that tall size after the real width arrived (1215dp for a 120dp strip), so a centred
-  title sat far below the visible strip and the banner showed blank. `GoCarousel` sizes its pages again whenever their
-  minimum size changes.
-- **The checks pass in a fresh project, so CI is green again.** The layout, later-widget, jelly and template checks set
-  the screen size through `content_scale_size`, which only moves the screen while stretch is on — a project that turns
-  it on (laryen3d) passed, while CI's empty host project left the `--headless` window at 64×64 and 100 checks failed on
-  every push. Each now turns stretch on with a 390×844 phone portrait when the host has it off (a host that stretches
-  keeps its own setting), and the pagination check lays its 700dp strip on a screen that wide. That also brought out a
-  real fault: the gallery's icon-group dropdown was as wide as its longest group ("Navigation & structure (14)", 287dp
-  in Godot's own font) and ran the page 21dp off a 320dp phone in every look but Material. It now has a line of its own,
-  as wide as the page, and a long title ends in "…".
-- **Text no longer turns white under the mouse — in every look.** A colour a theme leaves out is not borrowed from a
-  neighbouring state: the engine draws its own default theme's, made for a dark editor. No gohud theme had
-  `font_hover_pressed_color`, so hovering a switched-on toggle, a ticked checkbox, a selected list row or a pressed
-  toggle button turned its label white — gone on every light page, and white on the bright plate of a pressed
-  primary or filled danger button on every dark one. Every look now gives the hovered pressed face the pressed ink,
-  and also fills the other engine leaks behind the same kind of fault: icon tints for focus and hovered-pressed
-  (gohud icons are white artwork), the textarea's placeholder, caret and selection, a field's selected and read-only
-  text and clear button, `TabContainer`'s hovered and disabled tabs and tab icons, `LinkButton`'s text, the dropdown's
-  right-to-left faces (`*_mirrored` were the engine's dark plates) and the read-only textarea face. The pressed ink
-  itself must now read on the bare backdrop and cards too, since a checkbox, a switch and a text button lay it there
-  with no plate (medieval light was 3.85:1). `tools/check_contrast.py` looks a colour up the way the engine does —
-  the variation, the parent class, then the engine default — and measures the hovered-pressed face and the inputs'
-  placeholder; before, it fell back to `font_color` and stayed green. `gohud_test.gd` checks that every text and icon
-  colour of the controls gohud builds comes from the theme, on every preset.
-
-- **The kids looks pass the layout test again.** Chips and the navigation pill used a 999 radius, which the cell audit
-  reads as "the label needs 300dp of room" (24 faults on every width, both looks); list rows used a 12dp corner that a
-  table row's 4dp padding cannot hold. Chips and the pill take half their height (13 · 16), list rows a 6dp corner.
-
-- **A fit-content `GoSurface` no longer jitters between two sizes every frame.** `relayout()` chose the dense/normal
-  step from `_desired_height()` measured *before* the layout was sorted at the new width and padding, so a wrapping row
-  (reward cards in an `HFlowContainer`) read two-per-line, then one-per-line, then two again — title size, column
-  count, scrollbar and card height all flipped each frame. The step is now decided by measuring both candidates at
-  their own sorted layout (`_sort_now`) and keeping normal density only if it fits `room`; the `RELAX` slack
-  constant is gone (it could not stop a dense ≤ 0.85·room / normal > room cycle). Laryen repro:
-  `tests/crate_dialog_jitter_headless.gd` (36 width × height cases, 59 changes in 60 frames before, 0 after).
-
-- **The demo app shows every theme.** Its theme picker listed families from a hand-kept list, so the showreel never
-  rotated into Material and Kids appeared nowhere. `examples/demo/theme_picker.gd` now reads the families from
-  `themes/presets/` (each `<family>_dark`, paired with `<family>_light` for the Themes & icons chapter), and the
-  showreel rotates through the same list — Default, Sci-fi, Medieval, Material and Kids today, and any theme
-  `tools/new_theme.py` adds later with no change to the demo.
-
-- **The safe area under the project's own stretch.** `GoSafeArea.usable_rect()` divided the screen-pixel safe area by
-  `content_scale_factor` alone, which is right only while the stretch ratio is 1 (`GoScale` on). Under the plain
-  `canvas_items` stretch the setup guide recommends, a Galaxy A12 (720×1600 on a 390×844 base) took its 45 px camera
-  cutout as 45 units instead of 24 — the top bar sat 39 px lower than it needed — and lost the bottom and right insets
-  outright: in reverse landscape the right side bar sat on the cutout and the ends of the top and bottom bars ran past
-  the safe area. The safe area and the keyboard height now come into UI units through the window's final transform
-  (`GoSafeArea.clip_to_safe`, `GoSafeArea.px_to_units`), so every widget that measures against it — the edge and side
-  bars, `GoNavBar`, `GoAppBar`, `GoFab`, `GoDrawer`, surfaces, `GoForm`, the snackbar — holds under any stretch.
-  Measured on the phone before and after, in portrait and reverse landscape, with and without `GoScale`.
-
-- **The AI skill's references, checked against the code** — what an agent copied from them now runs as written:
-  `container_alpha_overrides` takes a ratio (`0.95`, not `95`, which was clamped to opaque); `GoStyle.floating(…,
-  opaque = true)` was a named argument GDScript does not have; the context-menu recipe's code block swallowed the
-  prose after it; the tutorial recipe typed the HUD as `CanvasLayer` and failed to parse; the skin hook signatures
-  lacked the `alpha` parameter an override must carry; `GoRefresh.attach()` was shown on a list with no parent;
-  `alert()` queues (it was said to return at once); a snackbar catches taps by default; `toggle(key, false)` only
-  inherits the translation mode; Material's containers are opaque; the reward calendar reads `amount`/`label`;
-  stale counts and section links in `features.md`; `hud.md` had two §9.
-
-- **The Flutter widgets after a design review on every preset (2026-10-03):**
-  - `GoTabView` and `GoStyle.tabs(..., fill = true)` spread the tabs over the whole row, and every tab row draws its
-    line the full width — it used to stop after the last tab. The pages keep a gap from the tab line. Four tabs fit a
-    phone: the padding gives way (to 8 dp a side) before the row scrolls.
-  - `GoWheelPicker` keeps its band 6 dp in from the sides and no longer clips, so a theme's band edge and the focus
-    ring show whole; the ring is for keyboard focus only (a press hides it).
-  - `GoTimePicker`: AM and PM stand 8 dp apart instead of sharing one edge; Up / Down on a focused hour or minute box
-    turn it (the dial alone needed a pointer).
-  - `GoStepper`'s horizontal layout put the titles over the joints and pushed the last step off the screen — a step
-    head is sized to its marker and title now, the marker over the title, and the joints run level with the markers.
-  - `GoListView` keeps every row one extent tall: a `list_row` measured at zero width when it arrived wrapped its words
-    tall (213 dp) and the rows covered each other.
-  - `GoRangeSlider` lifts its track where the theme's is the page's own colour (medieval, the dark presets).
-  - The outlined button drops the fill of a skin's own face too (sci-fi's cut face, medieval's forged one) — it looked
-    like the normal button there.
-  - `GoZoomView` draws its focus ring inside its rect, which it clips.
-
-- **An up-and-down swipe that starts on a tab row, a list row, a progress bar, a field, a slider or a dropdown scrolls
-  the list.** Inside a `GoScroll` the swipe used to stop dead on a field, a horizontal slider, a dropdown or a tab row
-  (they keep their press), and a swipe that started on a tab switched the tab. The scroll now holds such a press until
-  the finger shows its way: up or down goes to the list, sideways or a lift goes to the control, so a slider still
-  drags and a tap still focuses, opens or switches (`GoScroll.yields_vertical`). In the engine's plain
-  `ScrollContainer` the gohud parts do it themselves: tab rows, progress bars, cards, panels, chips, alerts and
-  `GoIconButton` pass the swipe through while they sit in a scroll (`GoScroll.scroll_through`), and `GoStyle` fields,
-  sliders and dropdowns carry the same arbiter (`GoScroll.yield_vertical`). Spin boxes, vertical sliders, a
-  `TextEdit` that scrolls and anything marked `OWNS_GESTURE` keep the whole gesture. Measured with real touch on a
-  Galaxy A17 and A12.
-- **A tooltip's text takes the theme's tooltip colour** (`TooltipLabel/colors/font_color`, the colour paired with the
-  `TooltipPanel` plate and the one `tools/check_contrast.py` measures) instead of the body `TEXT` token. The six
-  earlier themes give both the same colour, so nothing changes there; a theme with a dark tooltip on a light page no
-  longer draws dark text on it.
-- **`GoInputGroup` drops a negative expand margin from the pieces it joins.** A button that draws its plate shorter
-  than its control (the Material presets draw a 40dp plate in the 48dp touch target) sat as a step beside the field.
-
-- **A finger swipe on a `GoScroll` scrolls it wherever it starts — not only on a button.** On phones, a swipe that
-  started on a card, a panel or a text body did nothing; only holding the thin scrollbar moved the list. Godot's
-  `ScrollContainer` starts a drag-to-scroll in its own `gui_input`, so it only sees what its children pass up, and
-  `MOUSE_FILTER_STOP` — the engine default for `PanelContainer`, `Panel`, `ColorRect` and `RichTextLabel` — stopped
-  the drag on the way. `GoScroll` used to turn only `Button`s to PASS. Its touch policy now turns every STOP
-  descendant to PASS, when it enters the scroll and once more a frame later (a caller that sets STOP right after
-  `add_child`, or a `_ready` that does, no longer wins). Controls whose own drag means something keep STOP:
-  `LineEdit`, `TextEdit`, a `RichTextLabel` with `selection_enabled`, `Range` controls other than progress bars,
-  `OptionButton`, `ItemList`, `Tree`, `GraphEdit`. Nothing changes outside a scroll, so a HUD control over the game
-  keeps STOP. Taps still land, a swipe that starts on a button still does not press it, a swipe that ends on a link
-  does not open it, and a carousel inside a sheet still turns its pages sideways while an up-and-down swipe scrolls
-  the sheet.
-- **A horizontal `GoScroll` standing alone no longer lets a press through to the game.** `GoScroll.horizontal()` was
-  always PASS, so a strip placed straight over the world (in a HUD, not in a window) handed every press nothing took —
-  on a card, in the gap between two chips, even on a button, which does not accept the press — on to
-  `_unhandled_input`, where the game read it as a tap on the world. A horizontal row is now PASS only while another
-  scroll holds it (an up-and-down swipe on it still scrolls the sheet), and STOP standing alone. It decides each time
-  it enters the tree, and a `mouse_filter` the caller sets after `horizontal()` is left alone.
-- **A row freed in the frame it entered no longer stops `GoScroll`'s second touch pass.** The queued row was assigned
-  to a typed loop variable, a script error that ended the pass and left every row queued after it STOP — seen in a
-  list rebuilt in place.
-- **A list rebuilt while the finger drags takes the mouse again.** The rows muted for a drag were walked with a typed
-  loop variable too; a freed one raised a script error that skipped the restore and kept a stale entry, so every later
-  drag left the new rows ignoring the mouse.
-- **A `GoSurface` subclass that replaces `relayout()` without calling `super()` is not laid out every frame.** The
-  dirty flags are cleared before the call as well as inside it; such a subclass laid out every frame, and after one
-  handle drag kept doing so for good.
-
-### Changed
-
-- **`kids_light` sits on darker sand.** The backdrop is `#F7E1B9` (was `#FFEDC9`), so the white cards stand off it.
-  The darker page needed two neighbours to move with it to keep every contrast check passing: the card plate is
-  `#FFD08C` (was `#FFD79B`) and the raised cell `#9AD0FF` (was `#9FD4FF`); the generator darkened the muted text and
-  the status and border colours a little to keep them readable.
-- **`tools/check_contrast.py` measures tab labels and checkbox and switch labels.** A tab names its faces and colours
-  differently (`tab_selected` with `font_selected_color` …) and a checkbox draws no plate (`StyleBoxEmpty`), so neither
-  produced a single row before. Tabs now pair each face with its own colour, and a face that draws nothing is measured
-  over the backdrop and the card. All eight themes pass.
-- **`GoIconButton` takes its glyph size from the skin** (`GoSkin.icon_button_glyph`, 58% of `visual_size` as before;
-  24dp on the 36dp button under Material), and chips their icon size, label role and height (`chip_glyph_size`,
-  `chip_text_role`, `chip_height`) — unchanged on the existing presets.
-- **Filled buttons sit flat by default.** The primary button (`Tone.PRIMARY`) drew a soft accent shadow under its
-  plate — a glow on the sci-fi shape — and the filled danger button (`Tone.DANGER_SOLID`) a red one, the only depth
-  in a row of flat buttons. Every built-in theme now draws both flat in every state. The old look is one option
-  away: `GoConfig.button_glow = true` for every filled button, `GoStyle.glow(button)` for one. A theme generated
-  with `tools/make_theme.py` or `tools/new_theme.py` before this change keeps its shadow until it is generated again.
-- **`GoSurface` lays out when something changes, not every frame.** A `fit_content` surface used to run `relayout()`
-  every frame for as long as it was open, and once per drag event while its handle was dragged — 70–95 µs a frame on a
-  desktop CPU for an idle 23-row sheet, paid continuously on a phone. The layout fields (`placement`, `max_width`,
-  `max_height`, `height_ratio`, `max_height_ratio`, `fit_content`, `compact`, `anchor_*`) are setters that mark the
-  layout dirty when the value really changes, each section (`header`, `toolbar`, `body`, `status`, `footer`) reports
-  a new minimum size or visibility, and a handle drag is applied once per frame. Assigning a field without calling
-  `relayout()` still takes effect on the next frame. An `ANCHOR` popover still follows its anchor every frame.
-- **`GoSurface.height_changed` goes out once per frame, after the card has that height** — it used to fire once per
-  drag event, before the resize was applied.
-- `GoStyle.style_choice_card`'s `filter` argument is only for a card **outside** a scroll now; inside a `GoScroll`
-  the touch policy handles it.
-
-### Added
-
 - **Two themes for children — `kids_light` and `kids_dark`: the toy box.** Chunky outlines and a solid lip under every
   key, which sinks when pressed; sunken text fields, bubble tabs, jelly bars with a shine; each family of controls in its
   own crayon — grape primary, sky normal, sunshine pills (mint at night), mint folding titles, a sunshine line under
@@ -442,6 +273,201 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - The tests now drive the engine's own drag (touch emulation gives the headless run a touchscreen) instead of raising
   `scroll_started` by hand, across buttons, cards, panels, `ColorRect`, text bodies, art, chips, item cards, alerts,
   nested plates and a horizontal row inside a vertical sheet.
+- **`GoThemePresets.ARCADE_DARK`, `ARCADE_LIGHT`, `COMIC_DARK`, `COMIC_LIGHT`, `KIDS_DARK` and `KIDS_LIGHT`** — the six
+  new looks are built-in presets by name, next to `MATERIAL_*` (`GoUi.use_preset(GoThemePresets.ARCADE_DARK)`). The
+  order the pickers show is unchanged.
+- **`GoUi.project_has_font() -> bool`** — whether the project chose its own font (a custom theme or a custom font in
+  Project Settings → GUI → Theme). A preset that brings a body font (Material's Roboto) leaves such a project's font as
+  it is.
+- **`GoScroll.control_at(node, point) -> Control`** — the control a press at a viewport point reaches under a node,
+  found the way the GUI finds it (a clipping control hides what lies outside it); `null` when nothing there takes it.
+
+### Fixed
+
+- **The coach mark's Skip is a quiet key again.** It was styled with `GoStyle.typography()`, which swaps the theme
+  variation — the bare Skip key became a full button in every look. It now takes `GoStyle.font_role()` (size and
+  colour only) and keeps the touch height.
+- **A busy button's spinner shows.** `GoSpinner.busy()` drew the spinner in the button's text colour but disabled the
+  button, and a disabled face is pale on purpose — on every filled button (primary, solid danger) in all fourteen looks
+  the spinner sank into it (1.06–1.69:1; the kids theme's white spinner on a pale-pink face at 1.14:1). A busy button
+  now keeps its own face, the spinner reads the text colour as it draws (made busy before it was in the tree, it drew
+  in the engine's grey) and its track is that colour, faint. The button's own disabled face comes back afterwards. A button
+  that lays its own disabled face — `GoFab` does when it joins the tree and when it folds — keeps the normal face while
+  busy too, and gets its own face back afterwards.
+- **Loading shapes stand off every face.** `GoLoadingIndicator` and a free-standing `GoSpinner` push their colour
+  until it clears 3:1 against the background and every surface (`GoSkin.readable_on_faces()`) — the contained shape of
+  the default and sci-fi light looks sat at 2.9:1 on a card. Every loading mark in every look now measures 3.9:1 or more. The push is
+  worked out once per look, not every frame, and a spinner or loading indicator taken out of the tree and put back
+  follows the look again.
+- **The sci-fi danger glow button glows.** `GoDangerSolidGlowButton` had the same faces as `GoDangerSolidButton` in
+  `scifi_dark` and `scifi_light` — the generator gave the primary twin its glow and forgot the danger one. It now glows
+  in the danger colour (7dp, 10dp under the mouse), and the button-glow check holds both raised twins above their flat
+  ones in every look.
+- **Windows cast their whole shadow.** `GoSurface` clipped its card (`clip_contents`), and a clip cuts the clipping
+  item's own drawing too: the shadow vanished outside the card and showed as a dark square in the four corners the
+  rounded face leaves open — on every dialog, sheet, popover and window in every look. The content is now clipped one
+  level in, by the padding that fills the card, so it is clipped where it always was.
+- **A carousel page with a wrapping title fits its strip.** A page is first laid out 1dp wide, where its title stacks a
+  letter per line; the page kept that tall size after the real width arrived (1215dp for a 120dp strip), so a centred
+  title sat far below the visible strip and the banner showed blank. `GoCarousel` sizes its pages again whenever their
+  minimum size changes.
+- **The checks pass in a fresh project, so CI is green again.** The layout, later-widget, jelly and template checks set
+  the screen size through `content_scale_size`, which only moves the screen while stretch is on — a project that turns
+  it on (laryen3d) passed, while CI's empty host project left the `--headless` window at 64×64 and 100 checks failed on
+  every push. Each now turns stretch on with a 390×844 phone portrait when the host has it off (a host that stretches
+  keeps its own setting), and the pagination check lays its 700dp strip on a screen that wide. That also brought out a
+  real fault: the gallery's icon-group dropdown was as wide as its longest group ("Navigation & structure (14)", 287dp
+  in Godot's own font) and ran the page 21dp off a 320dp phone in every look but Material. It now has a line of its own,
+  as wide as the page, and a long title ends in "…".
+- **Text no longer turns white under the mouse — in every look.** A colour a theme leaves out is not borrowed from a
+  neighbouring state: the engine draws its own default theme's, made for a dark editor. No gohud theme had
+  `font_hover_pressed_color`, so hovering a switched-on toggle, a ticked checkbox, a selected list row or a pressed
+  toggle button turned its label white — gone on every light page, and white on the bright plate of a pressed
+  primary or filled danger button on every dark one. Every look now gives the hovered pressed face the pressed ink,
+  and also fills the other engine leaks behind the same kind of fault: icon tints for focus and hovered-pressed
+  (gohud icons are white artwork), the textarea's placeholder, caret and selection, a field's selected and read-only
+  text and clear button, `TabContainer`'s hovered and disabled tabs and tab icons, `LinkButton`'s text, the dropdown's
+  right-to-left faces (`*_mirrored` were the engine's dark plates) and the read-only textarea face. The pressed ink
+  itself must now read on the bare backdrop and cards too, since a checkbox, a switch and a text button lay it there
+  with no plate (medieval light was 3.85:1). `tools/check_contrast.py` looks a colour up the way the engine does —
+  the variation, the parent class, then the engine default — and measures the hovered-pressed face and the inputs'
+  placeholder; before, it fell back to `font_color` and stayed green. `gohud_test.gd` checks that every text and icon
+  colour of the controls gohud builds comes from the theme, on every preset.
+
+- **The kids looks pass the layout test again.** Chips and the navigation pill used a 999 radius, which the cell audit
+  reads as "the label needs 300dp of room" (24 faults on every width, both looks); list rows used a 12dp corner that a
+  table row's 4dp padding cannot hold. Chips and the pill take half their height (13 · 16), list rows a 6dp corner.
+
+- **A fit-content `GoSurface` no longer jitters between two sizes every frame.** `relayout()` chose the dense/normal
+  step from `_desired_height()` measured *before* the layout was sorted at the new width and padding, so a wrapping row
+  (reward cards in an `HFlowContainer`) read two-per-line, then one-per-line, then two again — title size, column
+  count, scrollbar and card height all flipped each frame. The step is now decided by measuring both candidates at
+  their own sorted layout (`_sort_now`) and keeping normal density only if it fits `room`; the `RELAX` slack
+  constant is gone (it could not stop a dense ≤ 0.85·room / normal > room cycle). Laryen repro:
+  `tests/crate_dialog_jitter_headless.gd` (36 width × height cases, 59 changes in 60 frames before, 0 after).
+
+- **The demo app shows every theme.** Its theme picker listed families from a hand-kept list, so the showreel never
+  rotated into Material and Kids appeared nowhere. `examples/demo/theme_picker.gd` now reads the families from
+  `themes/presets/` (each `<family>_dark`, paired with `<family>_light` for the Themes & icons chapter), and the
+  showreel rotates through the same list — Default, Sci-fi, Medieval, Material, Arcade, Comic and Kids today, and any theme
+  `tools/new_theme.py` adds later with no change to the demo.
+
+- **The safe area under the project's own stretch.** `GoSafeArea.usable_rect()` divided the screen-pixel safe area by
+  `content_scale_factor` alone, which is right only while the stretch ratio is 1 (`GoScale` on). Under the plain
+  `canvas_items` stretch the setup guide recommends, a Galaxy A12 (720×1600 on a 390×844 base) took its 45 px camera
+  cutout as 45 units instead of 24 — the top bar sat 39 px lower than it needed — and lost the bottom and right insets
+  outright: in reverse landscape the right side bar sat on the cutout and the ends of the top and bottom bars ran past
+  the safe area. The safe area and the keyboard height now come into UI units through the window's final transform
+  (`GoSafeArea.clip_to_safe`, `GoSafeArea.px_to_units`), so every widget that measures against it — the edge and side
+  bars, `GoNavBar`, `GoAppBar`, `GoFab`, `GoDrawer`, surfaces, `GoForm`, the snackbar — holds under any stretch.
+  Measured on the phone before and after, in portrait and reverse landscape, with and without `GoScale`.
+
+- **The AI skill's references, checked against the code** — what an agent copied from them now runs as written:
+  `container_alpha_overrides` takes a ratio (`0.95`, not `95`, which was clamped to opaque); `GoStyle.floating(…,
+  opaque = true)` was a named argument GDScript does not have; the context-menu recipe's code block swallowed the
+  prose after it; the tutorial recipe typed the HUD as `CanvasLayer` and failed to parse; the skin hook signatures
+  lacked the `alpha` parameter an override must carry; `GoRefresh.attach()` was shown on a list with no parent;
+  `alert()` queues (it was said to return at once); a snackbar catches taps by default; `toggle(key, false)` only
+  inherits the translation mode; Material's containers are opaque; the reward calendar reads `amount`/`label`;
+  stale counts and section links in `features.md`; `hud.md` had two §9.
+
+- **The Flutter widgets after a design review on every preset (2026-10-03):**
+  - `GoTabView` and `GoStyle.tabs(..., fill = true)` spread the tabs over the whole row, and every tab row draws its
+    line the full width — it used to stop after the last tab. The pages keep a gap from the tab line. Four tabs fit a
+    phone: the padding gives way (to 8 dp a side) before the row scrolls.
+  - `GoWheelPicker` keeps its band 6 dp in from the sides and no longer clips, so a theme's band edge and the focus
+    ring show whole; the ring is for keyboard focus only (a press hides it).
+  - `GoTimePicker`: AM and PM stand 8 dp apart instead of sharing one edge; Up / Down on a focused hour or minute box
+    turn it (the dial alone needed a pointer).
+  - `GoStepper`'s horizontal layout put the titles over the joints and pushed the last step off the screen — a step
+    head is sized to its marker and title now, the marker over the title, and the joints run level with the markers.
+  - `GoListView` keeps every row one extent tall: a `list_row` measured at zero width when it arrived wrapped its words
+    tall (213 dp) and the rows covered each other.
+  - `GoRangeSlider` lifts its track where the theme's is the page's own colour (medieval, the dark presets).
+  - The outlined button drops the fill of a skin's own face too (sci-fi's cut face, medieval's forged one) — it looked
+    like the normal button there.
+  - `GoZoomView` draws its focus ring inside its rect, which it clips.
+
+- **An up-and-down swipe that starts on a tab row, a list row, a progress bar, a field, a slider or a dropdown scrolls
+  the list.** Inside a `GoScroll` the swipe used to stop dead on a field, a horizontal slider, a dropdown or a tab row
+  (they keep their press), and a swipe that started on a tab switched the tab. The scroll now holds such a press until
+  the finger shows its way: up or down goes to the list, sideways or a lift goes to the control, so a slider still
+  drags and a tap still focuses, opens or switches (`GoScroll.yields_vertical`). In the engine's plain
+  `ScrollContainer` the gohud parts do it themselves: tab rows, progress bars, cards, panels, chips, alerts and
+  `GoIconButton` pass the swipe through while they sit in a scroll (`GoScroll.scroll_through`), and `GoStyle` fields,
+  sliders and dropdowns carry the same arbiter (`GoScroll.yield_vertical`). Spin boxes, vertical sliders, a
+  `TextEdit` that scrolls and anything marked `OWNS_GESTURE` keep the whole gesture. Measured with real touch on a
+  Galaxy A17 and A12.
+- **A tooltip's text takes the theme's tooltip colour** (`TooltipLabel/colors/font_color`, the colour paired with the
+  `TooltipPanel` plate and the one `tools/check_contrast.py` measures) instead of the body `TEXT` token. The six
+  earlier themes give both the same colour, so nothing changes there; a theme with a dark tooltip on a light page no
+  longer draws dark text on it.
+- **`GoInputGroup` drops a negative expand margin from the pieces it joins.** A button that draws its plate shorter
+  than its control (the Material presets draw a 40dp plate in the 48dp touch target) sat as a step beside the field.
+
+- **A finger swipe on a `GoScroll` scrolls it wherever it starts — not only on a button.** On phones, a swipe that
+  started on a card, a panel or a text body did nothing; only holding the thin scrollbar moved the list. Godot's
+  `ScrollContainer` starts a drag-to-scroll in its own `gui_input`, so it only sees what its children pass up, and
+  `MOUSE_FILTER_STOP` — the engine default for `PanelContainer`, `Panel`, `ColorRect` and `RichTextLabel` — stopped
+  the drag on the way. `GoScroll` used to turn only `Button`s to PASS. Its touch policy now turns every STOP
+  descendant to PASS, when it enters the scroll and once more a frame later (a caller that sets STOP right after
+  `add_child`, or a `_ready` that does, no longer wins). Controls whose own drag means something keep STOP:
+  `LineEdit`, `TextEdit`, a `RichTextLabel` with `selection_enabled`, `Range` controls other than progress bars,
+  `OptionButton`, `ItemList`, `Tree`, `GraphEdit`. Nothing changes outside a scroll, so a HUD control over the game
+  keeps STOP. Taps still land, a swipe that starts on a button still does not press it, a swipe that ends on a link
+  does not open it, and a carousel inside a sheet still turns its pages sideways while an up-and-down swipe scrolls
+  the sheet.
+- **A horizontal `GoScroll` standing alone no longer lets a press through to the game.** `GoScroll.horizontal()` was
+  always PASS, so a strip placed straight over the world (in a HUD, not in a window) handed every press nothing took —
+  on a card, in the gap between two chips, even on a button, which does not accept the press — on to
+  `_unhandled_input`, where the game read it as a tap on the world. A horizontal row is now PASS only while another
+  scroll holds it (an up-and-down swipe on it still scrolls the sheet), and STOP standing alone. It decides each time
+  it enters the tree, and a `mouse_filter` the caller sets after `horizontal()` is left alone.
+- **A row freed in the frame it entered no longer stops `GoScroll`'s second touch pass.** The queued row was assigned
+  to a typed loop variable, a script error that ended the pass and left every row queued after it STOP — seen in a
+  list rebuilt in place.
+- **A list rebuilt while the finger drags takes the mouse again.** The rows muted for a drag were walked with a typed
+  loop variable too; a freed one raised a script error that skipped the restore and kept a stale entry, so every later
+  drag left the new rows ignoring the mouse.
+- **A `GoSurface` subclass that replaces `relayout()` without calling `super()` is not laid out every frame.** The
+  dirty flags are cleared before the call as well as inside it; such a subclass laid out every frame, and after one
+  handle drag kept doing so for good.
+- **The arcade loading shape stands off its gold disc.** `GoSkinArcade.loading_colors(true)` drew the sky-blue accent
+  on a gold disc under 3:1; the accent is pushed until it clears 3:1 on the disc over the page.
+- **The `standalone` check skips the YouTube reel and never follows a symlink.** It scanned `examples/youtube/` — a
+  separate project left out of the release — and failed on its `res://youtube.gd`, so CI's Tests had been red since the
+  reel arrived. In a checkout it also followed the demo's and the reel's `addons/gohud` links back into the add-on, two
+  loops, and `tests/gohud_test.gd` was killed at 240s with no error.
+
+### Changed
+
+- **`kids_light` sits on darker sand.** The backdrop is `#F7E1B9` (was `#FFEDC9`), so the white cards stand off it.
+  The darker page needed two neighbours to move with it to keep every contrast check passing: the card plate is
+  `#FFD08C` (was `#FFD79B`) and the raised cell `#9AD0FF` (was `#9FD4FF`); the generator darkened the muted text and
+  the status and border colours a little to keep them readable.
+- **`tools/check_contrast.py` measures tab labels and checkbox and switch labels.** A tab names its faces and colours
+  differently (`tab_selected` with `font_selected_color` …) and a checkbox draws no plate (`StyleBoxEmpty`), so neither
+  produced a single row before. Tabs now pair each face with its own colour, and a face that draws nothing is measured
+  over the backdrop and the card. Every theme passes.
+- **`GoIconButton` takes its glyph size from the skin** (`GoSkin.icon_button_glyph`, 58% of `visual_size` as before;
+  24dp on the 36dp button under Material), and chips their icon size, label role and height (`chip_glyph_size`,
+  `chip_text_role`, `chip_height`) — unchanged on the existing presets.
+- **Filled buttons sit flat by default.** The primary button (`Tone.PRIMARY`) drew a soft accent shadow under its
+  plate — a glow on the sci-fi shape — and the filled danger button (`Tone.DANGER_SOLID`) a red one, the only depth
+  in a row of flat buttons. Every built-in theme now draws both flat in every state. The old look is one option
+  away: `GoConfig.button_glow = true` for every filled button, `GoStyle.glow(button)` for one. A theme generated
+  with `tools/make_theme.py` or `tools/new_theme.py` before this change keeps its shadow until it is generated again.
+- **`GoSurface` lays out when something changes, not every frame.** A `fit_content` surface used to run `relayout()`
+  every frame for as long as it was open, and once per drag event while its handle was dragged — 70–95 µs a frame on a
+  desktop CPU for an idle 23-row sheet, paid continuously on a phone. The layout fields (`placement`, `max_width`,
+  `max_height`, `height_ratio`, `max_height_ratio`, `fit_content`, `compact`, `anchor_*`) are setters that mark the
+  layout dirty when the value really changes, each section (`header`, `toolbar`, `body`, `status`, `footer`) reports
+  a new minimum size or visibility, and a handle drag is applied once per frame. Assigning a field without calling
+  `relayout()` still takes effect on the next frame. An `ANCHOR` popover still follows its anchor every frame.
+- **`GoSurface.height_changed` goes out once per frame, after the card has that height** — it used to fire once per
+  drag event, before the resize was applied.
+- `GoStyle.style_choice_card`'s `filter` argument is only for a card **outside** a scroll now; inside a `GoScroll`
+  the touch policy handles it.
 
 ## [1.2.1] - 2026-09-28
 

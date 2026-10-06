@@ -24,7 +24,6 @@ func _run() -> void:
 	if dimensions.size() == 2: root.size = Vector2i(int(dimensions[0]), int(dimensions[1]))
 	sim = load("res://sim.tscn").instantiate()
 	root.add_child(sim)
-	sim._set_speed(4.0)
 	sim._bot.verify = true
 	sim._trace = true
 	sim._bot.logged.connect(func(message: String) -> void: activity.append(message))
@@ -33,9 +32,9 @@ func _run() -> void:
 	check(TranslationServer.get_locale() == "en", "Demo forces the English locale")
 	var start := sim._cover.find_child("Start", true, false) as Button
 	check(root.get_visible_rect().encloses(start.get_global_rect()), "Start button fits the viewport")
-	# Fast is twice the old 1.6x, and it is the theme carousel: every chapter wears the next family.
+	# Fast is four times Normal, and it is the theme carousel: every chapter wears the next family.
 	await click(find_button(sim._cover, "Fast"))
-	check(is_equal_approx(sim._bot.speed, sim.FAST) and is_equal_approx(sim.FAST, 3.2), "Fast plays at 3.2x")
+	check(is_equal_approx(sim._bot.speed, sim.FAST) and is_equal_approx(sim.FAST, 4.0), "Fast plays at 4.0x")
 	var picked: StringName = ThemePicker.active_preset
 	var families := ThemePicker.darks()
 	await click(start)
@@ -47,16 +46,16 @@ func _run() -> void:
 		# Every frame, so the last word for a chapter is from while it ran (full-screen chapters leave the body empty).
 		if sim._running and sim._index < SimActs.list().size():
 			worn[sim._index] = GoUi.config.preset
-			# 🛑 One palette per screen — the bars around the stage are built again with it, so their chip names it.
-			var chip: Array = sim._wearing.find_children("*", "Label", true, false)
-			if not sim._wearing.visible or chip.is_empty() or (chip[0] as Label).text != ThemePicker.title(GoUi.config.preset):
-				stale.count += 1
+			# 🛑 One palette per screen — the bars around the stage are built again with it, and the Theme dropdown
+			#    at the top names it.
+			var shown := theme_picker(sim)
+			if shown == null or shown.text != ThemePicker.title(GoUi.config.preset): stale.count += 1
 		await process_frame
 	var off: Array[String] = []
 	for index in SimActs.list().size():
 		if worn.get(index, &"") != families[index % families.size()]: off.append("%d:%s" % [index + 1, worn.get(index, &"")])
 	check(off.is_empty(), "Fast puts chapter N in family N (off: %s)" % ", ".join(off))
-	check(stale.count == 0, "The bars around the stage are rebuilt in each chapter's theme (%d stale frames)" % stale.count)
+	check(stale.count == 0, "The bars and the Theme dropdown follow each chapter's theme (%d stale frames)" % stale.count)
 	check(GoUi.config.preset == picked and ThemePicker.active_preset == picked,
 		"A Fast tour ends in the theme the person picked")
 	check(sim._counter.get_line_count() == 1, "Chapter counter stays on one line")
@@ -346,6 +345,20 @@ func _theme_switching() -> void:
 	await choose_theme(sim, 1)
 	check(sim._running and not sim._bot.paused and sim._explore == -1 and sim._index == chapter,
 		"Switching a running tour resumes the current chapter")
+	sim._stop()
+	await create_timer(0.2).timeout
+	# Mid-carousel the dropdown names the chapter's family, so the person's own theme is a real pick there: the
+	# chapter goes into it and the carousel goes on from it.
+	sim._set_speed(sim.FAST)
+	sim._start()
+	while sim._running and GoUi.config.preset == ThemePicker.active_preset: await process_frame
+	var own: StringName = ThemePicker.active_preset
+	check(sim._running and theme_picker(sim).text == ThemePicker.title(GoUi.config.preset)
+		and GoUi.config.preset != own, "The Theme dropdown names the family a Fast tour is wearing")
+	chapter = sim._index
+	await choose_theme(sim, ThemePicker.darks().find(own))
+	check(sim._running and sim._index == chapter and GoUi.config.preset == own and ThemePicker.active_preset == own,
+		"Picking your own theme mid-carousel puts the current chapter in it")
 	sim._stop()
 	await create_timer(0.2).timeout
 	await choose_theme(sim._cover, 0)

@@ -43,23 +43,23 @@ Reply in the language the user writes in; keep code identifiers as they are.
 1. **Check the project.** `test -f project.godot`, `test -f addons/gohud/plugin.cfg`, `godot --version` (needs 4.7+).
    Note the gohud version (`version=` in `plugin.cfg`) — rules 4, 5 and 7 differ for 1.0.3 and older.
    Missing add-on → install it (`references/setup.md` §1), then `godot --headless --path . --import`.
-   🛑 Newer than the 1.2.1 release (on `main`, `CHANGELOG.md` → Unreleased): the edge bars and `GoGrid`, the app-screen
+   🛑 New in the 1.3.0 release (`CHANGELOG.md` → [1.3.0]): the edge bars and `GoGrid`, the app-screen
    parts (`GoNavBar`, `GoAppBar`, `GoFab`, `GoSearchBar`, `GoSplitButton`, `GoProgress`, `GoLoadingIndicator`,
    `GoDatePicker`), the Flutter widgets (`GoScaffold`, `GoListView`, `GoRefresh`, `GoSwipeRow`, `GoTabView`,
    `GoReorderList`, `GoZoomView`, `GoRangeSlider`, `GoTimePicker`, `GoWheelPicker`, `GoStepper`, `GoBanner`),
-   `GoChoiceColumn`, the Material presets, and these members: `GoDialogs.choose()`, `GoStyle.filter_chip()` /
+   `GoChoiceColumn`, the Material, kids, comic and arcade presets, and these members: `GoDialogs.choose()`, `GoStyle.filter_chip()` /
    `input_chip()` / `restyle_filter_chip()` / `toolbar()` / `bottom_app_bar()` / `glow()`, `GoStyle.Tone.OUTLINED`,
-   `GoConfig.button_glow`, `GoScroll.SIDEWAYS`. A project on 1.2.1 or older gets `Identifier "…" not declared` for a
-   class and `… not found in base …` for a member — update gohud (`/gohud update`, a git checkout of `main`) or build
+   `GoConfig.button_glow`, `GoScroll.SIDEWAYS`, `GoThemePresets.KIDS_*`/`COMIC_*`/`ARCADE_*`. A project on 1.2.1 or older gets `Identifier "…" not declared` for a
+   class and `… not found in base …` for a member — update gohud (`/gohud update`, the 1.3.0 release or `main`) or build
    with what it has.
 2. **Pick the look first.** `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` (or the project setting) before any widget
    is built — `DEFAULT_*`, `SCIFI_*`, `MEDIEVAL_*` for games, `MATERIAL_LIGHT`/`MATERIAL_DARK` (Material 3 Expressive)
-   for app screens, each `_DARK` and `_LIGHT`, and `&"kids_light"`/`&"kids_dark"` for children — the toy box: keys on a
-   lip that sink when pressed, crayon colours, candy slots, a rainbow joystick (a folder preset: pass the id), and
-   `&"comic_light"`/`&"comic_dark"` — a bold ink outline and a hard, faint shadow on every part, whose outline width,
+   for app screens, each `_DARK` and `_LIGHT`, and `KIDS_LIGHT`/`KIDS_DARK` for children — the toy box: keys on a
+   lip that sink when pressed, crayon colours, candy slots, a rainbow joystick, and
+   `COMIC_LIGHT`/`COMIC_DARK` — a bold ink outline and a hard, faint shadow on every part, whose outline width,
    shadow size and shadow on/off are `GoConfig.comic_border_width`/`comic_shadow_size`/`comic_shadow` (one line
    restyles every part; `GoStyle.comic_shadow(node, on)` for one widget — theming.md §1), and
-   `&"arcade_light"`/`&"arcade_dark"` — an arcade cabinet: every key painted with a gradient, a gloss and a lip, white
+   `ARCADE_LIGHT`/`ARCADE_DARK` — an arcade cabinet: every key painted with a gradient, a gloss and a lip, white
    ink-outlined labels, thick framed boards, a gold title banner (`GoStyle.arcade_paint(node, colour)` paints one key
    its own colour — theming.md §1).
    `GoThemePresets.names()` lists every preset this copy has, including any `themes/presets/<id>.tres` added later. Call it **once at boot** (the main scene or an autoload), not
@@ -292,7 +292,7 @@ use `--check`.
 | `references/surfaces.md` | `GoSurface` (placements, anchored menus, sub-pages, status line), `GoSheet`, `GoDialogs` (layouts, destructive, args, `choose`, queueing), `GoForm`, `GoScroll`, subclass hooks, which widget to use, `GoSnackbar`, `GoDrawer`, `GoPopover` |
 | `references/hud.md` | `GoHudAnchor` spots and avoidance, `GoBar`, `GoSlot`/`GoSlotGrid`, `GoJoystick`, `GoIconButton`, `GoNotice`, `GoPromptCard`, `GoCoachMark`, `GoContextMenu`, `GoConsole`, `GoSpinner`, `GoBadge`, `GoRewardCalendar`, `GoRadar`/`GoDonut`, `GoCarousel`, the app-screen parts (§16: `GoNavBar`, `GoAppBar`, `GoFab`, `GoSearchBar`, `GoSplitButton`, `GoProgress`, `GoLoadingIndicator`, `GoDatePicker`), `GoChoiceColumn` (§18), composing a HUD with anchors or edge bars (§19) |
 | `references/style.md` | Every `GoStyle` factory signature: structure and the **layout classes** (`GoTopBar`, `GoBottomBar`, `GoLeftSideBar`, `GoRightSideBar`, `GoGrid`), text, buttons and tones, inputs, select/dropdown/segmented/tabs, cards, chips, tables, styleboxes, helpers, the form and list classes (`GoField`, `GoInputGroup`, `GoCombobox`, `GoCodeInput`, `GoTable`, `GoPagination`) and the lower-level functions |
-| `references/theming.md` | The presets (default, sci-fi, medieval, Material 3 Expressive — each dark and light — and how a new one is found) and resolution order, all tokens, **container opacity (§4)**, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins, their hooks and dials, custom StyleBoxes, project-local presets, contrast |
+| `references/theming.md` | The fourteen presets (default, sci-fi, medieval, Material 3 Expressive, kids, comic, arcade — each dark and light — and how a new one is found) and resolution order, all tokens, **container opacity (§4)**, overrides, JSON themes (`new_theme.py`/`make_theme.py`), skins, their hooks and dials, custom StyleBoxes, project-local presets, contrast |
 | `references/platform.md` | Icons — the 84 default names, the game set (187) and the icon library (1,000) with `GoUi.add_icons()`, search and groups, custom icon sets/fonts/folders, localization and RTL, sound and haptics, accessibility, safe area, breakpoints, dp scale, Android Back |
 | `references/recipes.md` | Full screens and wiring: game scene with HUD + pause + inventory, login, shop, quest log, a quest list that scans (§16), character sheet, context menu, tutorial, loading/empty/error states, controls over a map, theme switcher, attendance, developer console, per-field errors, a side panel |
 | `references/pitfalls.md` | Symptoms → cause → fix for layout, text, input, theme and lifecycle traps |

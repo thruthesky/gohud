@@ -30,7 +30,6 @@ var _theme_state: Dictionary = {}
 var _theme_popup_open := false
 var _theme_paused_before := false
 var _rotation_from := 0           ## The scene a Fast tour started its theme carousel on — it wears the picked theme
-var _wearing: Control             ## The chip that names the theme a Fast tour is wearing right now
 
 const ACCENT := Color("#71d9e9")
 const VIOLET := Color("#8b7cf6")
@@ -43,11 +42,12 @@ const LOG_LINES := 9
 const SIDE_WIDTH := 236.0
 const PANEL_WIDTH := 256.0
 ## Playback speeds the Start screen names. 🔑 **Fast is also the theme carousel** — a tour at Fast dresses the whole
-## screen in the next theme family before every scene (`_rotating`). The person's pick stays `ThemePicker.active_preset`;
-## only `GoUi.config.preset` changes, so a screen that compares the two (home) knows to rebuild.
+## screen in the next theme family before every scene (`_rotating`), and the Theme dropdown names what it is wearing.
+## The person's pick stays `ThemePicker.active_preset`; only `GoUi.config.preset` changes, so a screen that compares
+## the two (home) knows to rebuild.
 const SLOW := 0.7
 const NORMAL := 1.0
-const FAST := 3.2
+const FAST := 4.0
 
 var _acts := SimActs.new()
 var _entries: Array[Dictionary] = []
@@ -560,7 +560,7 @@ func _cover_screen() -> VBoxContainer:
 	var toolbar := GoStyle.padding(18)
 	toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	_cover.add_child(toolbar)
-	toolbar.add_child(_theme_bar(false))
+	toolbar.add_child(_theme_bar())
 	var card := GoStyle.card(_accent)
 	card.custom_minimum_size.x = minf(580.0, size.x - 36.0)
 	_cover_card = card
@@ -1091,15 +1091,16 @@ func _refresh_palette() -> void:
 	_subtitle_ink = SUBTITLE_INK if GoUi.config.preset == GoThemePresets.DEFAULT_DARK else GoUi.color(GoTheme.SECONDARY)
 
 
-## The theme picker row. [param naming] adds the chip that names what a Fast tour is wearing — on the screen itself,
-## not on the Start and finish cards, which come and go (a chip there would leave `_wearing` pointing at a freed node).
-func _theme_bar(naming := true) -> HBoxContainer:
+## The theme picker row. 🎨 The dropdown names what the screen is wearing — on a Fast tour that is the scene's family,
+## not the person's pick, and every scene's rebuild builds the row again, so it follows the carousel.
+func _theme_bar() -> HBoxContainer:
 	var row := GoStyle.row(12)
 	var label := GoStyle.label("Theme", GoTheme.ROLE_CAPTION)
 	GoStyle.natural_width(label)
 	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	row.add_child(label)
 	var picker := ThemePicker.new()
+	picker.select(maxi(0, ThemePicker.darks().find(GoUi.config.preset)))
 	picker.theme_selected.connect(_request_theme)
 	picker.get_popup().about_to_popup.connect(func() -> void:
 		_theme_paused_before = _bot.paused
@@ -1110,19 +1111,13 @@ func _theme_bar(naming := true) -> HBoxContainer:
 		_theme_popup_open = false
 		if _theme_pending.is_empty(): _bot.paused = _theme_paused_before)
 	row.add_child(picker)
-	if not naming: return row
-	# 🎨 What a Fast tour is wearing right now — the picker keeps saying what the person chose.
-	_wearing = GoStyle.chip(ThemePicker.title(GoUi.config.preset), _accent, false, GoIconSet.SUN)
-	_wearing.name = "Wearing"
-	_wearing.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_wearing.tooltip_text = "A Fast tour puts every widget in the next theme"
-	_wearing.visible = _rotating()
-	row.add_child(_wearing)
 	return row
 
 
 func _request_theme(preset: StringName) -> void:
-	if preset == ThemePicker.active_preset or not _theme_pending.is_empty(): return
+	# Against what the screen wears, not the pick: mid-carousel the person's own theme is a real change, and the
+	# dropdown would otherwise name it while the scene stays in the carousel's.
+	if preset == GoUi.config.preset or not _theme_pending.is_empty(): return
 	_theme_pending = preset
 	_theme_state = {"running": _running, "explore": _explore, "index": _index,
 		"first": _first, "last": _last, "cover": is_instance_valid(_cover),
@@ -1211,8 +1206,6 @@ func _chapter_preset(index: int) -> StringName:
 
 ## Dresses the screen in [param preset] unless it is wearing it already. Returns whether it rebuilt.
 func _wear(preset: StringName) -> bool:
-	if preset == GoUi.config.preset:
-		if is_instance_valid(_wearing): _wearing.visible = _rotating()
-		return false
+	if preset == GoUi.config.preset: return false
 	_rebuild(preset)
 	return true

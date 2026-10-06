@@ -65,11 +65,12 @@ The tour waits on its Start screen and offers two ways in:
 
 - **Start demo** plays a guided simulation of 31 chapters. The cursor uses real mouse and
   keyboard events to click buttons, type into fields, select menu items, drag sliders and
-  joysticks, and scroll lists. Pick **Fast** first (3.2×) and every chapter wears the next theme
+  joysticks, and scroll lists. Pick **Fast** first (4.0×) and every chapter wears the next theme
   family — Default, Sci-fi, Medieval, Material, then Arcade, Comic and Kids, then round again — so one pass shows each
   widget in a different look. The whole screen is rebuilt in that theme, side panels included,
-  and a chip beside the theme picker names it; the picker keeps the theme you chose, and the
-  tour ends back in it. Playing a single widget from explore mode keeps your theme.
+  and the **Theme** dropdown at the top names it as it changes. Picking a theme there mid-tour
+  puts the current chapter in it and the carousel goes on from it; the tour ends back in the
+  theme you chose. Playing a single widget from explore mode keeps your theme.
 - **Explore widgets** (or any row in the left sidebar) builds a single chapter and hands it
   to you. Nothing moves on its own: press, drag and type yourself. The right panel describes
   the widget and its **Play this widget** button lets the bot demonstrate just that chapter,
@@ -145,7 +146,7 @@ controls together. Narrow windows show a responsive single-column stage.
   current widget — on narrow windows, where the right panel is hidden, the top-bar button is the way.
 - **Left / Right**: previous or next chapter, or previous or next widget while exploring.
 - **Escape**: stop and return to the Start screen.
-- The speed button cycles Normal (1.0×), Fast (3.2×) and Slow (0.7×); the Start screen offers the same three.
+- The speed button cycles Normal (1.0×), Fast (4.0×) and Slow (0.7×); the Start screen offers the same three.
   Fast also turns on the theme carousel (one theme family per chapter).
 - While a text field has focus in explore mode, Space and the arrows go to the field.
 

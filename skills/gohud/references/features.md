@@ -3,7 +3,7 @@
 Read this for `/gohud features` or "what can gohud do?". Present it grouped, with one line of code per
 feature, and link the matching reference for depth.
 
-**Version described: gohud 1.2.1 + Unreleased (`main`).** This file is the complete list — 81 classes and
+**Version described: gohud 1.3.0.** This file is the complete list — 86 classes and
 120 `GoStyle` factories (every class by name, with an example, is in `catalog.md`). When you add a class or a factory, add it here in the same turn; a feature nobody
 can find is a feature nobody uses.
 
@@ -115,7 +115,7 @@ Every control made one consistent way, sized from tokens, touch-safe, wrap-safe.
 | Cells | `cell_body` `cell_inset` `center_in` `face_clearance` `audit_cell_layout` — content inside a `Button`: padded, sized to fit, marks centered, and an audit that finds the ones that are not |
 
 **Layout classes** — they draw nothing and only place what they hold (style.md §1 "Layout classes"):
-`GoTopBar` / `GoBottomBar` line items up along an edge in 1, 2 or 3 slots — the centre slot on the bar's centre, a
+`GoTopBar` / `GoBottomBar` (both `GoEdgeBar`) line items up along an edge in 1, 2 or 3 slots — the centre slot on the bar's centre, a
 one-slot bar spreading its items with equal gaps (`GoBottomBar.make(1, GoBottomBar.Justify.SPACE_BETWEEN)`);
 `GoLeftSideBar` / `GoRightSideBar` (both `GoSideBar`) do the same down a side in 1 to 3 tiers — top, middle, bottom —
 holding buttons or panels, between the top and bottom bars with `clear_of` (`GoLeftSideBar.make(3)`);
@@ -127,7 +127,7 @@ actions along the bottom — is the template `assets/templates/edge_bar_hud.gd`.
 
 | Feature | One line | Reference |
 |---|---|---|
-| Fourteen presets swap theme + skin + icons together: `default_dark/light`, `scifi_dark/light`, `medieval_dark/light`, `material_light/dark` (Material 3 Expressive for app screens), `kids_light/dark` (for children — the toy box: jelly-candy keys, rows, fields and panels on a lip that sink when pressed and squish under the finger, a ribbon behind window titles, a candy close button, crayon colours, candy slots, a rainbow joystick), `comic_light/dark` (a comic panel: a bold ink outline and a hard, faint shadow on every part, a yellow caption box behind window titles), `arcade_light/dark` (an arcade cabinet: every key painted with a gradient, a white gloss and a lip, white ink-outlined labels, thick boards with a coloured frame, a gold title banner and a round red close key) | `GoUi.use_preset(&"kids_light")` | theming.md §1 |
+| Fourteen presets swap theme + skin + icons together: `default_dark/light`, `scifi_dark/light`, `medieval_dark/light`, `material_light/dark` (Material 3 Expressive for app screens), `kids_light/dark` (for children — the toy box: jelly-candy keys, rows, fields and panels on a lip that sink when pressed and squish under the finger, a ribbon behind window titles, a candy close button, crayon colours, candy slots, a rainbow joystick), `comic_light/dark` (a comic panel: a bold ink outline and a hard, faint shadow on every part, a yellow caption box behind window titles), `arcade_light/dark` (an arcade cabinet: every key painted with a gradient, a white gloss and a lip, white ink-outlined labels, thick boards with a coloured frame, a gold title banner and a round red close key) | `GoUi.use_preset(GoThemePresets.KIDS_LIGHT)` — a preset is a `GoThemePreset` resource | theming.md §1 |
 | **Comic outline and shadow in one setting** — every comic part reads its outline width, shadow size and shadow on/off when drawn, so one line restyles every part already on screen (nothing moves); one widget can keep or drop its shadow whatever the setting | `GoUi.config.comic_shadow = false` · `GoStyle.comic_shadow(button, false)` | theming.md §1 |
 | **Arcade paint for one key** — paint a key or a board's frame any colour; the paint is moved until the white, ink-outlined label reads at every height of the gradient | `GoStyle.arcade_paint(button, Color("#FF8A1E"))` | theming.md §1 |
 | **Switching a preset reaches widgets that are already on screen** — bars, slots, joysticks, badges and the rest re-read colours and icons in place | `GoUi.use_preset(GoThemePresets.SCIFI_DARK)` | theming.md §1 |
@@ -135,8 +135,8 @@ actions along the bottom — is the template `assets/templates/edge_bar_hud.gd`.
 | Per-project overrides without a new theme | `GoUi.config.color_overrides[GoTheme.ACCENT] = Color("#ff7a00")` | theming.md §3 |
 | **Containers are 80% opaque so the game stays visible behind a dialog** (100% — opaque — under the Material presets) — face only; text, buttons, borders and shadows stay sharp. Set it per project, per panel kind, or per window | `surface.alpha = 0.6` · `GoUi.config.container_alpha = 1.0` | theming.md §4 |
 | A new theme is one JSON file inheriting a built-in one; builder enforces WCAG contrast | `python3 addons/gohud/tools/new_theme.py kingdom --from medieval_dark` | theming.md §5 |
-| Skins own code-drawn shapes (joystick, slots, coach ring, chips, alerts, app-screen parts, chart colours); 37 numeric dials | `class_name MySkin extends GoSkin` | theming.md §6 |
-| Custom StyleBoxes: `GoStyleBoxCut` (chamfer, edge, glow), `GoStyleBoxBracket` (corner marks), `GoStyleBoxMedieval` (forged frame), `GoStyleBoxJelly` (jelly candy: outline, two tones, shine, a lip that sinks when pressed) | `var box := GoStyleBoxCut.new()` | theming.md §7 |
+| Skins own code-drawn shapes (joystick, slots, coach ring, chips, alerts, app-screen parts, chart colours); 37 numeric dials — `GoSkinSciFi`, `GoSkinMedieval`, `GoSkinMaterial`, `GoSkinKids`, `GoSkinComic`, `GoSkinArcade` | `class_name MySkin extends GoSkin` | theming.md §6 |
+| Custom StyleBoxes: `GoStyleBoxCut` (chamfer, edge, glow), `GoStyleBoxBracket` (corner marks), `GoStyleBoxMedieval` (forged frame), `GoStyleBoxJelly` (jelly candy: outline, two tones, shine, a lip that sinks when pressed), `GoStyleBoxComic` (ink outline and hard shadow), `GoStyleBoxArcade` (painted gradient key, gloss, lip; a thick framed board) | `var box := GoStyleBoxCut.new()` | theming.md §7 |
 | Icons by name: 84 default + 16 engraved medieval (MIT, `DPITexture`); swap to your SVGs or an icon font, or override a few | `GoUi.icons().node(&"settings", 20)` | platform.md §1 |
 | **Game icon set** — 187 icons for inventories, shops, equipment, food, resources, creatures, tech & space, places and rewards (MIT; 171 from Tabler Icons, 16 drawn for gohud), falls back to the default set | `GoUi.add_icons(GoGameIcons.icon_set())` | platform.md §1 |
 | **Icon library** — 1,000 Tabler icons in 32 groups, searchable by words; adding it makes 1,271 names drawable | `GoUi.add_icons(GoIconLibrary.icon_set())` · `GoIconLibrary.icon_set().search("arrow left")` | platform.md §1 |

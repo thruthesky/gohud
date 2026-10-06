@@ -13,8 +13,8 @@
 
 떠 있는 창, 바텀 시트, 확인창, 폼, 스낵바, 안내 카드, 코치마크, HUD 막대, 퀵슬롯, 가상 조이스틱을
 **테마 한 장과 교체 가능한 아이콘 세트 한 장**으로 굴린다. 안전영역·가상 키보드·RTL 언어·터치를
-스스로 챙긴다. 기본 제공 프리셋 여덟 — 기본·sci-fi·중세·Material 3, 각각 어둡고 밝은 판 — 이 코드 한 줄로
-색과 **모양**을 함께 바꾼다.
+스스로 챙긴다. 기본 제공 프리셋 열넷 — 기본·sci-fi·중세·Material 3·아케이드·코믹·키즈, 각각 어둡고 밝은 판 —
+이 코드 한 줄로 색과 **모양**을 함께 바꾼다.
 
 <p>
   <img src="https://thruthesky.github.io/gohud/img/preset-default-dark.png" alt="default_dark 프리셋의 gohud 갤러리" width="250">
@@ -23,14 +23,15 @@
 
 > 넣으면 그냥 동작한다. 에디터 플러그인을 켜는 것은 편의 기능일 뿐이다.
 
-**버전 1.2.1.** 유지보수 릴리스다. gohud 를 불러온 헤드리스 실행이 더는
-`ERROR: 1 resources still in use at exit` 로 끝나지 않고, 업데이트 뒤 데모의 위젯 갤러리가 빈 화면으로
-열리지 않으며, Godot 4.7 을 검사하고 공식 지원하는 엔진으로 삼는다 — 목록은 [변경 기록](CHANGELOG.md)에 있다. 그 뒤의 작업은 거기 *Unreleased* 에 모인다 — `package.json` 의
+**버전 1.3.0.** 새 룩 여섯 — 아케이드·코믹·키즈, 각각 어둡고 밝은 판으로 프리셋이 모두 열넷이 됐다 —
+앱 화면 위젯을 갖춘 Material 3 Expressive 프리셋, Flutter 앱이 찾는 위젯(스캐폴드·지연 목록·당겨서 새로고침·
+밀어서 지우는 줄·탭 페이지·순서 바꾸기·핀치 줌·날짜·시각·휠 선택기), 가장자리·옆 막대와 `GoGrid`, HUD 옆 막대용
+`GoChoiceColumn`, 31장짜리 투어가 스스로 재생되는 데모 앱 — 목록은 [변경 기록](CHANGELOG.md)에 있다. 그 뒤의 작업은 거기 *Unreleased* 에 모인다 — `package.json` 의
 버전을 올리고 `tools/package.sh` 를 실행하면 배포에 들어간다.
 
-- **프리셋 여덟, 코드 한 줄.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` 가 테마·스킨·아이콘을
+- **프리셋 열넷, 코드 한 줄.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` 가 테마·스킨·아이콘을
   함께 바꾼다 — 둥근 기본 판, 네온이 번지는 사선 모서리의 sci-fi, 각인 아이콘과 단조 프레임의 중세,
-  앱 화면을 위한 Material 3 의 알약 버튼과 표면.
+  앱 화면을 위한 Material 3 의 알약 버튼과 표면, 칠한 아케이드 키, 잉크로 그린 코믹 칸, 아이들을 위한 젤리 사탕 키.
 - **아이콘을 갈아 끼워도 코드는 그대로.** 위젯은 아이콘을 이름으로 부른다(`GoIconSet.CLOSE`).
   `GoConfig.icons` 를 내 SVG 세트나 아이콘 폰트로 바꾸면 모든 위젯이 따라온다 — 몇 개만 바꿔도 된다.
 - **테마는 데이터다.** `new_theme.py` 가 내장 테마를 물려받는 JSON 파일 하나를 만든다. 생성기가 테마·컨트롤
@@ -548,6 +549,9 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoStyleBoxCut` | 모서리를 자른 판 · 한 변만 굵은 강조 변 · 바깥 발광 |
 | `GoStyleBoxBracket` | 변을 두르지 않는 네 모서리 표식 |
 | `GoStyleBoxMedieval` | 리벳·모서리 각인·베벨 반사·재질 질감이 있는 단조 프레임 |
+| `GoStyleBoxJelly` | 젤리 사탕 — 굵은 외곽선, 밝은 윗면과 짙은 띠, 흰 광택, 누르면 꺼지는 턱 |
+| `GoStyleBoxComic` | 코믹 칸 — 굵은 잉크 외곽선과 오른쪽 아래로 떨어지는 단단한 그림자, 크기는 `GoConfig` 가 정한다 |
+| `GoStyleBoxArcade` | 칠한 아케이드 키 — 위아래 그러데이션·광택 선·짙은 턱·잉크 외곽선, 또는 두꺼운 테를 두른 판 |
 
 🛑 `GoStyle.surface()` 는 스킨이 만든 모양을 **그대로** 넘긴다. `box()`·`floating()`·`disc()` 는
 돌려받아 `bg_color` 를 고치는 옛 호출부와의 약속 때문에 **언제나 `StyleBoxFlat`** 이다 —
@@ -579,8 +583,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
 | `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·아래 앱 바·외곽선 버튼(`Tone.OUTLINED`)·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
-| `GoThemePresets` | 정적 | 기본 프리셋 여덟, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
-| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
+| `GoThemePresets` | 정적 | 기본 프리셋 열넷, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
 | `GoSafeArea` | Control / 정적 | 노치·둥근 모서리·키보드를 뺀 쓸 수 있는 사각형 |
 | `GoScale` | 정적 | 브레이크포인트와 dp 계산 |
 | `GoFeedback` | 정적 | 소리·햅틱 연결 |
@@ -853,20 +857,22 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 | `check_site.py` | 사이트 링크·절 앵커·문서 언어·용어 사전·생성된 다이얼 표 |
 | `check_mutations.sh`(선택) | 규칙을 일부러 깨뜨렸을 때 검사가 알아채는가 |
 
-최근 기록 — **2026-09-13**, Godot 4.7.2 (macOS, Apple Silicon, Compatibility 렌더러). 이 리비전의 애드온
-파일을 빈 프로젝트에 복사해 돌렸다:
+최근 기록 — **2026-10-06**, 1.3.0 릴리스, Godot 4.7.2 (macOS, Apple Silicon, Compatibility 렌더러).
+이 리비전의 애드온 파일을 빈 프로젝트에 복사해 `tools/release.sh --export` 로 돌렸다:
 
 | 항목 | 결과 |
 |---|---|
-| 빈 프로젝트 헤드리스 검사 — 390×844·844×390·768×1024·1280×800 | 크기마다 438/438 |
-| 같은 검사 — `GoRuntime` 오토로드를 켠 상태 | 438/438 |
-| 그 빈 프로젝트의 Web 내보내기 | 성공(`index.pck` 728 KB) |
-| `check_contrast.py` — 여덟 테마 | 미달 0 |
-| `check_generated.py` | 생성물 149개가 소스와 일치 |
+| 빈 프로젝트 헤드리스 검사 — 390×844·844×390·768×1024·1280×800 | 크기마다 2,080/2,080 |
+| 나머지 검사 — 후발 위젯·선택 열·젤리·코믹·아케이드·템플릿·레이아웃·종료 | 1,131 · 76 · 71 · 164 · 235 · 77 · 214 · 5, 모두 통과 |
+| 배포 ZIP 을 빈 프로젝트에 설치하고 `GoRuntime` 오토로드를 켠 상태 | 2,080/2,080 |
+| 그 프로젝트의 Web 내보내기 | 성공(`index.pck` 3.3 MB) |
+| `check_contrast.py` — 열네 테마 | 미달 0 |
+| `check_generated.py` | 생성물 355개가 소스와 일치 |
 | `check_scaffold.sh` — 중세 부모 포함 | 통과 |
-| `check_package.py` | 테스트 13개 통과 |
+| `check_package.py` | 테스트 17개 통과 |
+| `check_demo.sh` — 데모 홈·투어·쇼릴을 세 크기로 | 10/10 |
 
-**이번 실행에 포함되지 않은 것**: 배포 ZIP 자체(`--zip`), Android·iOS 실기기,
+**이번 실행에 포함되지 않은 것**: Android·iOS 실기기,
 Forward+/Mobile 렌더러. 안전영역·햅틱 코드는 휴대 기기에서만 켜지므로 검사로는 지나가지만 실기기에서는 확인하지 않았다.
 
 ## 예제

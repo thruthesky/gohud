@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://q3dqhsvd1l14"
+path="res://.godot/imported/check_on.svg-c4f725cbbcab61477c8fa336f034cb20.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_dark/check_on.svg"
+dest_files=["res://.godot/imported/check_on.svg-c4f725cbbcab61477c8fa336f034cb20.dpitex"]
 
 [params]
 

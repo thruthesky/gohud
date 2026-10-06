@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://hndwli5653vi"
+path="res://.godot/imported/toggle_on_mirrored.svg-d582490546abb33ba53aa9ad0a219a5c.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_light/toggle_on_mirrored.svg"
+dest_files=["res://.godot/imported/toggle_on_mirrored.svg-d582490546abb33ba53aa9ad0a219a5c.dpitex"]
 
 [params]
 

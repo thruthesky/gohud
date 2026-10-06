@@ -291,6 +291,86 @@ func _spinner() -> void:
 	check(not GoSpinner.is_busy(button) and not button.disabled, "spinner: clearing busy brings the button back")
 	# 🛑 **Erase** the hidden font colour — leave it and a genuinely disabled button later looks like an empty panel.
 	check(not button.has_theme_color_override(&"font_disabled_color"), "spinner: it restores the hidden font colour")
+	check(not button.has_theme_stylebox_override(&"disabled"), "spinner: it hands back the disabled face")
+	var own_face := StyleBoxFlat.new()
+	button.add_theme_stylebox_override(&"disabled", own_face)
+	GoSpinner.busy(button, true)
+	await frames(1)
+	GoSpinner.busy(button, false)
+	check(button.get_theme_stylebox(&"disabled") == own_face, "spinner: a disabled face of the caller's own comes back")
+	button.remove_theme_stylebox_override(&"disabled")
+
+	# 🛑 **A busy button keeps its own face, and the spinner draws in that face's text colour.** A disabled face is pale
+	#    on purpose — a filled button's white spinner vanished into it in every look (2026-10-06: 1.06–1.69:1, the kids
+	#    theme's Play button 1.14:1). Made busy **before** it joins the tree too, as a screen built busy does — then the
+	#    button only knows the engine's grey.
+	for look in GoThemePresets.ids():
+		GoUi.use_preset(look)
+		for tone in [GoStyle.Tone.PRIMARY, GoStyle.Tone.DANGER_SOLID, GoStyle.Tone.NORMAL]:
+			var pay := GoStyle.button("Pay", Callable(), tone)
+			GoSpinner.busy(pay, true)
+			root.add_child(pay)
+			await frames(1)
+			var turning := pay.get_node_or_null(^"BusySpinner") as GoSpinner
+			check(pay.get_theme_stylebox(&"disabled") == pay.get_theme_stylebox(&"normal"),
+				"spinner: %s tone %d busy keeps its normal face" % [look, tone])
+			if turning != null:
+				var ink: Color = turning.call(&"_ink")
+				check(ink == pay.get_theme_color(&"font_color"), "spinner: %s tone %d draws in the button's text colour" % [look, tone])
+				var flat := pay.get_theme_stylebox(&"normal") as StyleBoxFlat
+				if flat != null:
+					var face := GoSkin.blend(flat.bg_color, GoUi.color(GoTheme.SURFACE))
+					var ratio := GoSkin.contrast_ratio(ink, face)
+					check(ratio >= 3.0, "spinner: %s tone %d stands off its face (%.2f:1)" % [look, tone, ratio])
+			pay.queue_free()
+		# The loading shape clears every face of the page, on its disc or not (default·sci-fi light sat at 2.9:1 on a card).
+		for boxed in [false, true]:
+			var shape := GoLoadingIndicator.new()
+			shape.contained = boxed
+			var colors: Array[Color] = shape.call(&"_colors")
+			var worst := 99.0
+			for token in [GoTheme.BACKGROUND, GoTheme.SURFACE, GoTheme.SURFACE_SOFT, GoTheme.SURFACE_HIGH]:
+				var back := GoSkin.blend(colors[1], GoUi.color(token)) if boxed else GoUi.color(token)
+				worst = minf(worst, GoSkin.contrast_ratio(GoSkin.blend(colors[0], back), back))
+			check(worst >= 2.99, "loading: %s %s stands off every face (%.2f:1)" % [look, "contained" if boxed else "bare", worst])
+			shape.free()
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+
+	# 🛑 **A button that lays its own disabled face.** `GoFab` lays every face when it joins the tree — after its
+	#    children's `_ready` — and again when it folds. The spinner takes that face as the button's (for `busy(false)`)
+	#    and puts the normal face back; under another look it is the new look's face that comes back.
+	var fab := GoFab.make(GoIconSet.PLUS, "Add to cart")
+	GoSpinner.busy(fab, true)
+	root.add_child(fab)
+	await frames(2)
+	check(fab.get_theme_stylebox(&"disabled") == fab.get_theme_stylebox(&"normal"), "spinner: a busy FAB keeps its normal face as it joins")
+	fab.expanded = false
+	await frames(2)
+	check(fab.get_theme_stylebox(&"disabled") == fab.get_theme_stylebox(&"normal"), "spinner: a busy FAB keeps its normal face as it folds")
+	GoUi.use_preset(GoThemePresets.SCIFI_LIGHT)
+	await frames(2)
+	check(fab.get_theme_stylebox(&"disabled") == fab.get_theme_stylebox(&"normal"), "spinner: a busy FAB keeps its normal face under a new look")
+	GoSpinner.busy(fab, false)
+	await frames(1)
+	var fab_face := fab.get_theme_stylebox(&"disabled")
+	check(fab.has_theme_stylebox_override(&"disabled") and fab_face != fab.get_theme_stylebox(&"normal"),
+		"spinner: the FAB gets its own disabled face back")
+	fab.disabled = true
+	fab.expanded = true   # the FAB lays its faces for the look it wears now
+	check(fab.get_theme_stylebox(&"disabled") != fab.get_theme_stylebox(&"normal"), "spinner: a FAB disabled later is pale again")
+	fab.queue_free()
+	# A free-standing spinner taken out of the tree and put back still follows the look.
+	var loose := GoSpinner.new()
+	root.add_child(loose)
+	await frames(1)
+	root.remove_child(loose)
+	GoUi.use_preset(GoThemePresets.DEFAULT_LIGHT)
+	root.add_child(loose)
+	await frames(1)
+	var loose_ink: Color = loose.call(&"_ink")
+	check(loose_ink == GoSkin.readable_on_faces(GoUi.color(GoTheme.ACCENT)), "spinner: put back in the tree, it draws in the new look's accent")
+	loose.queue_free()
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	spinner.queue_free(); button.queue_free()
 	await frames(1)
 	section("spinner")

@@ -140,6 +140,16 @@ static func readable_on(ink: Color, back: Color, need := 4.5) -> Color:
 	return out
 
 
+## A graphic (a spinner, a loading shape) pushed until it stands off **every face of the page** — `BACKGROUND` and the
+## three `SURFACE`s, each with [param under] (a disc the graphic sits on) laid over it. 3:1 is the WCAG floor for a graphic.
+## 🔑 Every face, not just one — a card is see-through (80% by default), so what is really behind is somewhere between
+##    (measured 2026-10-06: the default and sci-fi light loading shapes sat on a card at 2.9:1).
+static func readable_on_faces(ink: Color, under := Color.TRANSPARENT, need := 3.0) -> Color:
+	for token in [GoTheme.BACKGROUND, GoTheme.SURFACE, GoTheme.SURFACE_SOFT, GoTheme.SURFACE_HIGH]:
+		ink = readable_on(ink, blend(under, GoUi.color(token)), need)
+	return ink
+
+
 ## 🪟 Lower **only the panel background's opacity** — borders, shadows, glow and texture are untouched.
 ##
 ## ## Why only the background

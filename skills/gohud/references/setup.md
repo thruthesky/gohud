@@ -20,7 +20,7 @@
 | Way | Command |
 |---|---|
 | Release ZIP / Asset Store | Extract into the project root so `addons/gohud/plugin.cfg` exists. The ZIP's top folder is `addons/`. |
-| Git submodule (develop gohud with the game) | `git submodule add https://github.com/thruthesky/gohud.git addons/gohud && git submodule update --init` · pin a release: `git -C addons/gohud checkout v1.2.1` (`git -C addons/gohud tag` lists them) |
+| Git submodule (develop gohud with the game) | `git submodule add https://github.com/thruthesky/gohud.git addons/gohud && git submodule update --init` · pin a release: `git -C addons/gohud checkout v1.3.0` (`git -C addons/gohud tag` lists them) |
 | Plain copy (no git history) | `git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud && mkdir -p addons && cp -R /tmp/gohud addons/gohud && rm -rf addons/gohud/.git` |
 
 After installing, import once so `class_name` globals register: `godot --headless --path . --import`.

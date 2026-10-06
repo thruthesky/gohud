@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://bgq3jpc607cb7"
+path="res://.godot/imported/toggle_off_disabled_mirrored.svg-168a7cba667bab85182d91922385c6e4.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_dark/toggle_off_disabled_mirrored.svg"
+dest_files=["res://.godot/imported/toggle_off_disabled_mirrored.svg-168a7cba667bab85182d91922385c6e4.dpitex"]
 
 [params]
 

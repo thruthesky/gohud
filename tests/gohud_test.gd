@@ -3682,8 +3682,10 @@ func _flutter_widgets() -> void:
 		check(outline_face == null or (outline_face.bg_color.a < 0.01 and outline_face.border_width_top >= 1),
 			"%s: an outlined button has an edge and no fill" % preset)
 		# 🛑 A skin's own face (cut, medieval) too — left whole it looked like the normal button (2026-10-03 review).
+		#    The arcade looks paint every key, and draw the outlined one as a pale key cap on purpose — unlike their
+		#    painted keys; `gohud_arcade_test.gd` checks that cap and its label.
 		var any_face := outlined.get_theme_stylebox(&"normal")
-		check(not (&"bg_color" in any_face) or (any_face.get(&"bg_color") as Color).a < 0.01,
+		check(skin is GoSkinArcade or not (&"bg_color" in any_face) or (any_face.get(&"bg_color") as Color).a < 0.01,
 			"%s: the outlined button's face draws no fill (%s)" % [preset, any_face.get_class()])
 		# 🛑 The range slider's track shows on the page — medieval draws it the page's colour (2026-10-03 review).
 		var groove := span._seen(span.get_theme_stylebox(&"slider", &"HSlider"))
@@ -4699,15 +4701,22 @@ func _own_symbols() -> Dictionary:
 ##      · `examples/usage/` — **a separate project** that installs the add-on to try it (it has its own `project.godot`).
 ##        A `res://` inside it points at that root, and its copy of the add-on lags behind, so
 ##        `_own_symbols()` **grants "our own" status even to names already deleted**, blunting the check.
-const SKIP_DIRS := ["builds", "examples/usage"]
+##      · `examples/youtube/` — the YouTube reel, **a separate project** left out of the release; its `res://youtube.gd`
+##        points at its own root (CI's `standalone` failed on it from 8cd1775 on).
+const SKIP_DIRS := ["builds", "examples/usage", "examples/youtube"]
 
 
 func _files(dir: String, extensions: Array) -> PackedStringArray:
 	var found := PackedStringArray()
 	for file_name in DirAccess.get_files_at(dir):
 		if file_name.get_extension() in extensions: found.append(dir.path_join(file_name))
+	var here := DirAccess.open(dir)
 	for sub in DirAccess.get_directories_at(dir):
 		if sub.begins_with("."): continue
+		# 🛑 A symlink is never followed. `examples/demo/addons/gohud` and `examples/youtube/addons/gohud` both point
+		#    back at the add-on root (`run.sh --setup` makes them), and `get_directories_at` lists them — two loops made
+		#    the walk branch without end, and the whole file was killed at 240s with no error (2026-10-06).
+		if here != null and here.is_link(sub): continue
 		var path := dir.path_join(sub)
 		# Read as a path relative to the add-on root — a subfolder with the same name is never filtered out by mistake.
 		if SKIP_DIRS.has(path.trim_prefix(ADDON + "/")): continue

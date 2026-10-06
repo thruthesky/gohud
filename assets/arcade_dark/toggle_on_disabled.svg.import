@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://c3s7s2pbcfun6"
+path="res://.godot/imported/toggle_on_disabled.svg-5d43d87618812467cc73db57c3099053.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_dark/toggle_on_disabled.svg"
+dest_files=["res://.godot/imported/toggle_on_disabled.svg-5d43d87618812467cc73db57c3099053.dpitex"]
 
 [params]
 

@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://e38130meu6yq"
+path="res://.godot/imported/radio_on.svg-a35606b807f7c1ab10137477aaaec30a.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_light/radio_on.svg"
+dest_files=["res://.godot/imported/radio_on.svg-a35606b807f7c1ab10137477aaaec30a.dpitex"]
 
 [params]
 

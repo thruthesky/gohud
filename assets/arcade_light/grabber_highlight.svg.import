@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://dwh3xcr4mww0o"
+path="res://.godot/imported/grabber_highlight.svg-e58e53d9c8e8fbfe4219898107c70917.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_light/grabber_highlight.svg"
+dest_files=["res://.godot/imported/grabber_highlight.svg-e58e53d9c8e8fbfe4219898107c70917.dpitex"]
 
 [params]
 

@@ -37,7 +37,7 @@ extends Control
 		thickness = value
 		queue_redraw()
 
-## The spinning color. Leave it empty for the theme accent.
+## The spinning color. Leave it empty for the theme accent — or, inside a busy button, that button's text color.
 @export var ink := Color.TRANSPARENT:
 	set(value):
 		ink = value
@@ -50,6 +50,12 @@ extends Control
 		queue_redraw()
 
 var _phase := 0.0
+## The button this spinner stands in for (`busy()`), or null for a free-standing spinner.
+var _host: Button
+## The face this spinner laid on as the button's `disabled` face — any other face found there was laid by the button.
+var _held: StyleBox
+## The accent pushed clear of every face (`_ink`), worked out once per look rather than every frame.
+var _accent := Color.TRANSPARENT
 
 
 func _init() -> void:
@@ -66,10 +72,17 @@ func _ready() -> void:
 	accessibility_name = GoUi.text(&"loading")
 	GoUi.watch(_on_ui_changed)
 	set_process(is_visible_in_tree())
+	if is_instance_valid(_host) and not _host.theme_changed.is_connected(_on_host_restyled):
+		_host.theme_changed.connect(_on_host_restyled)
+	_hold_face()
 
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
+	# Out of the tree it hears no look change — whatever it worked out may be stale when it comes back.
+	_accent = Color.TRANSPARENT
+	if is_instance_valid(_host) and _host.theme_changed.is_connected(_on_host_restyled):
+		_host.theme_changed.disconnect(_on_host_restyled)
 
 
 func _process(delta: float) -> void:
@@ -84,20 +97,61 @@ func _draw() -> void:
 	var center := size * 0.5
 	var radius := box * 0.5 - line * 0.5
 	if radius <= 0.0: return
-	var color := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
+	var color := _ink()
 
 	if GoUi.config.reduce_motion:
 		_draw_dots(center, box, color)
 		return
 
 	if show_track:
-		draw_arc(center, radius, 0.0, TAU, 40, GoUi.color(GoTheme.TRACK), line, true)
+		# 🔑 In a button the track is its own ink, faint — the theme track is made for the page, and on a filled
+		#    face it is either a grey smudge or nothing.
+		var track := Color(color, color.a * 0.3) if is_instance_valid(_host) else GoUi.color(GoTheme.TRACK)
+		draw_arc(center, radius, 0.0, TAU, 40, track, line, true)
 	# 🔑 The arc length is swung along with it — at a fixed length it does not read as spinning but as "a picture merely rotating".
 	#    It is what Material's determinate spinner does, and it really does feel far more like "work is happening".
 	var swing := (sin(_phase * TAU) * 0.5 + 0.5)
 	var sweep := lerpf(PI * 0.25, PI * 1.35, swing)
 	var start := _phase * TAU * 1.6
 	draw_arc(center, radius, start, start + sweep, 48, color, line, true)
+
+
+## The color it draws in. 🔑 A busy button's text color is read **now**, not when `busy()` was called — called
+## before the button is in the tree, the button only knows the engine's grey, and a theme switch changes it later.
+func _ink() -> Color:
+	if ink.a > 0: return ink
+	if is_instance_valid(_host) and _host.is_inside_tree(): return _host.get_theme_color(&"font_color")
+	# A thin line in the accent of a light look sat at 3.4:1 on a card — pushed a little, it stands clear of every face.
+	if _accent.a <= 0.0: _accent = GoSkin.readable_on_faces(GoUi.color(GoTheme.ACCENT))
+	return _accent
+
+
+## 🛑 A busy button keeps **its own face**. `busy()` disables it, and a disabled face is pale on purpose — the
+##    button's text color drawn on it disappeared in every theme (measured 2026-10-06: a white spinner on the
+##    kids theme's pale-pink disabled Play button, 1.14:1; 1.06–1.69:1 for every filled button in all fourteen
+##    looks). The text color is made to read on the normal face, so the spinner shows the normal face.
+## 🛑 A button that lays **its own** disabled face (`GoFab` does, when it joins the tree and when it folds) would
+##    cover the normal face again — so that face is taken as the button's, kept for `busy(false)` to put back, and the
+##    normal face goes back on.
+func _hold_face() -> void:
+	if not is_instance_valid(_host) or not _host.is_inside_tree(): return
+	var normal := _host.get_theme_stylebox(&"normal")
+	if _host.has_theme_stylebox_override(&"disabled"):
+		var found := _host.get_theme_stylebox(&"disabled")
+		if found == _held and found == normal: return
+		if found != _held and _host.has_meta(_BUSY_META):
+			var carried: Dictionary = _host.get_meta(_BUSY_META)
+			carried["had_face"] = true
+			carried["face"] = found
+	_host.remove_theme_stylebox_override(&"disabled")
+	_held = _host.get_theme_stylebox(&"normal")
+	_host.add_theme_stylebox_override(&"disabled", _held)
+
+
+## The button changed one of its faces (or took a new look). Deferred, so a widget that lays several faces in a row
+## is looked at once it is done.
+func _on_host_restyled() -> void:
+	_hold_face.call_deferred()
 
 
 ## ♿ For those who turned rotation off — three dots brighten in turn. The same "in progress", with nothing spinning.
@@ -119,11 +173,17 @@ func _notification(what: int) -> void:
 		set_process(is_visible_in_tree())
 	elif what == NOTIFICATION_TRANSLATION_CHANGED:
 		accessibility_name = GoUi.text(&"loading")
+	elif what == NOTIFICATION_ENTER_TREE and is_node_ready():
+		# 🔑 `_ready` runs once — a spinner taken out and put back would otherwise stop following the look.
+		GoUi.watch(_on_ui_changed)
 
 
 func _on_ui_changed() -> void:
 	accessibility_name = GoUi.text(&"loading")
 	set_process(is_visible_in_tree())
+	_accent = Color.TRANSPARENT
+	# Deferred: the button takes the new look in its own handler, which may run after this one.
+	_hold_face.call_deferred()
 	queue_redraw()
 
 
@@ -154,7 +214,12 @@ static func busy(button: Button, waiting: bool) -> void:
 	if not waiting:
 		if carried.is_empty(): return
 		var spinner: GoSpinner = carried.get("spinner")
-		if is_instance_valid(spinner): spinner.queue_free()
+		if is_instance_valid(spinner):
+			# Let go first — a theme change in this frame would otherwise lay the normal face back on after the restore below.
+			if button.theme_changed.is_connected(spinner._on_host_restyled):
+				button.theme_changed.disconnect(spinner._on_host_restyled)
+			spinner._host = null
+			spinner.queue_free()
 		button.disabled = bool(carried.get("disabled", false))
 		# 🛑 The hidden label color is **put back** — leave it and that button shows as an empty panel, its label
 		#    transparent, even later on when it really is disabled.
@@ -166,6 +231,10 @@ static func busy(button: Button, waiting: bool) -> void:
 			button.add_theme_color_override(&"icon_disabled_color", carried["icon"])
 		else:
 			button.remove_theme_color_override(&"icon_disabled_color")
+		if bool(carried.get("had_face", false)):
+			button.add_theme_stylebox_override(&"disabled", carried["face"])
+		else:
+			button.remove_theme_stylebox_override(&"disabled")
 		button.remove_meta(_BUSY_META)
 		return
 
@@ -182,8 +251,8 @@ static func busy(button: Button, waiting: bool) -> void:
 	spinner.set_anchors_preset(Control.PRESET_CENTER)
 	spinner.position = -Vector2(px, px) * 0.5
 	# 🔑 The color is **that button's text color** — on an accent button (a filled panel) an accent-colored spinner sinks in.
-	if button.has_theme_color(&"font_color"): spinner.ink = button.get_theme_color(&"font_color")
-	button.add_child(spinner)
+	#    It is read while drawing (`_ink`), and the button keeps its normal face to draw it on (`_hold_face`).
+	spinner._host = button
 	# For restoring later, **the overrides that were already there** are recorded too — removing something that was
 	# never there is not the same as putting back something that was.
 	button.set_meta(_BUSY_META, {
@@ -194,7 +263,12 @@ static func busy(button: Button, waiting: bool) -> void:
 		"font": button.get_theme_color(&"font_disabled_color") if button.has_theme_color_override(&"font_disabled_color") else GoUi.color(GoTheme.MUTED),
 		"had_icon": button.has_theme_color_override(&"icon_disabled_color"),
 		"icon": button.get_theme_color(&"icon_disabled_color") if button.has_theme_color_override(&"icon_disabled_color") else GoUi.color(GoTheme.MUTED),
+		"had_face": button.has_theme_stylebox_override(&"disabled"),
+		"face": button.get_theme_stylebox(&"disabled") if button.has_theme_stylebox_override(&"disabled") else null,
 	})
+	# 🛑 Added **after** the record: in the tree, the spinner lays the normal face on as it joins — recorded after
+	#    that, the button's own disabled face would be lost and the spinner's put back in its place.
+	button.add_child(spinner)
 	button.disabled = true
 	# Only the label goes transparent — the button panel and its size stay as they are.
 	button.add_theme_color_override(&"font_disabled_color", Color(0, 0, 0, 0))

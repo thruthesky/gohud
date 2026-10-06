@@ -315,10 +315,13 @@ func outlined_button_ink() -> Color:
 
 
 ## The loading shape in the accent on a gold disc.
+## 🛑 The accent is pushed until it stands off the disc over the page — the sky-blue accent on gold sat under 3:1
+##    (found 2026-10-06, once the arcade looks joined `GoThemePresets.BUILTIN` and every per-preset check).
 func loading_colors(contained: bool) -> Array[Color]:
 	var accent := GoUi.color(GoTheme.ACCENT)
 	if not contained: return [accent, Color.TRANSPARENT]
-	return [accent, Color(gold(), 0.35)]
+	var disc := Color(gold(), 0.35)
+	return [readable_on(accent, blend(disc, GoUi.color(GoTheme.BACKGROUND)), 3.0), disc]
 
 
 # ── App parts ─────────────────────────────────────────────────────────

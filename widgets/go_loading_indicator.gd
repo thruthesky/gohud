@@ -24,6 +24,7 @@ extends Control
 @export var contained := false:
 	set(value):
 		contained = value
+		_colors_now.clear()
 		queue_redraw()
 
 ## Side of the indicator (dp) and of the shape inside it — `_md-comp-loading-indicator.scss`.
@@ -38,6 +39,8 @@ const POINTS := 96
 static var _shapes: Array[PackedFloat32Array] = []
 
 var _time := 0.0
+## `_colors()` for the current look — worked out once per look, not every frame (it walks every face of the page).
+var _colors_now: Array[Color] = []
 
 
 func _init() -> void:
@@ -53,11 +56,22 @@ func _ready() -> void:
 	accessibility_name = GoUi.text(&"loading")
 	visibility_changed.connect(_sync_process)
 	_sync_process()
-	GoUi.watch(queue_redraw)
+	GoUi.watch(_on_ui_changed)
 
 
 func _exit_tree() -> void:
-	GoUi.unwatch(queue_redraw)
+	GoUi.unwatch(_on_ui_changed)
+	_colors_now.clear()
+
+
+func _enter_tree() -> void:
+	# 🔑 `_ready` runs once — an indicator taken out and put back would otherwise stop following the look.
+	if is_node_ready(): GoUi.watch(_on_ui_changed)
+
+
+func _on_ui_changed() -> void:
+	_colors_now.clear()
+	queue_redraw()
 
 
 func _sync_process() -> void:
@@ -69,8 +83,19 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 
+## The skin's `[shape, container]`, with the shape pushed until it clearly stands off what it sits on.
+## 🛑 A shape on a disc tinted from its own colour fades into it — the default and sci-fi light looks drew their
+##    contained shape at 2.9:1 on a card (measured 2026-10-06).
+func _colors() -> Array[Color]:
+	if _colors_now.is_empty():
+		var colors := GoUi.skin().loading_colors(contained)
+		colors[0] = GoSkin.readable_on_faces(colors[0], colors[1] if contained else Color.TRANSPARENT)
+		_colors_now = colors
+	return _colors_now.duplicate()
+
+
 func _draw() -> void:
-	var colors := GoUi.skin().loading_colors(contained)
+	var colors := _colors()
 	var scale := minf(size.x, size.y) / EXTENT
 	var center := size * 0.5
 	if contained and colors[1].a > 0.0:

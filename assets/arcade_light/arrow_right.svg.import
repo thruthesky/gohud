@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://iyylxv3v8ts"
+path="res://.godot/imported/arrow_right.svg-6e04eebe87936694644128e6745e9f9e.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_light/arrow_right.svg"
+dest_files=["res://.godot/imported/arrow_right.svg-6e04eebe87936694644128e6745e9f9e.dpitex"]
 
 [params]
 

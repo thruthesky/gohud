@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://bcocmoxgap11"
+path="res://.godot/imported/check_off.svg-088aa974576143d23127a6a7e0139149.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_dark/check_off.svg"
+dest_files=["res://.godot/imported/check_off.svg-088aa974576143d23127a6a7e0139149.dpitex"]
 
 [params]
 

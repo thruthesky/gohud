@@ -2,10 +2,13 @@
 
 importer="svg"
 type="DPITexture"
+uid="uid://bp4elv3qwdw6c"
+path="res://.godot/imported/radio_off_disabled.svg-9f02449564c346cc4e6bf38ec9a04f51.dpitex"
 
 [deps]
 
 source_file="res://addons/gohud/assets/arcade_dark/radio_off_disabled.svg"
+dest_files=["res://.godot/imported/radio_off_disabled.svg-9f02449564c346cc4e6bf38ec9a04f51.dpitex"]
 
 [params]
 

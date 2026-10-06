@@ -334,12 +334,15 @@ var ok := await server.purchase(item)
 GoSpinner.busy(buy_button, false)
 ```
 
-`seconds_per_turn` 1.1 · `thickness` (−1 = diameter/9) · `ink` (empty = accent) · `show_track`.
+`seconds_per_turn` 1.1 · `thickness` (−1 = diameter/9) · `ink` (empty = accent, pushed to 3:1 on every face) · `show_track`.
 
 - **`busy()` keeps the button's size** — the label is made transparent rather than removed, so the row does
   not jump. It also sets `disabled`, which is the point: a purchase must not fire twice while you `await`.
   `is_busy(button)` asks. Calling it twice adds one spinner, not two, and turning it off restores the exact
   theme overrides it found.
+- 🔑 **A busy button keeps its normal face**, not the pale disabled one, and the spinner draws in the button's text
+  colour (read as it draws, so calling `busy()` before the button is in the tree is fine). On the disabled face a
+  primary button's white spinner disappeared in every look.
 - ♿ With `reduce_motion` on it does not spin — three dots pulse instead. It also stops while hidden.
 - 🔑 Progress you can measure is a `GoBar`. A spinner promises nothing about when it ends.
 

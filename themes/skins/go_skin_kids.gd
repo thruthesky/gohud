@@ -397,7 +397,8 @@ func dress_close_button(button: GoIconButton) -> void:
 func press_feedback(control: Control) -> void:
 	if GoUi.config.reduce_motion or DisplayServer.get_name() == "headless": return
 	if not is_instance_valid(control) or not control.is_inside_tree(): return
-	var running: Variant = control.get_meta(&"go_squish", null)
+	# 🛑 Not `get_meta(key, null)`: a null default counts as none, and the first press of every part printed an error.
+	var running: Variant = control.get_meta(&"go_squish") if control.has_meta(&"go_squish") else null
 	if running is Tween and (running as Tween).is_valid(): (running as Tween).kill()
 	control.pivot_offset = control.size * 0.5
 	var tween := control.create_tween()
