@@ -5,6 +5,7 @@
 ## hp.label_text = "HP"
 ## hp.ink = GoUi.color(GoTheme.DANGER)
 ## hp.set_values(320, 500)      # "320 / 500"
+## hp.segments = 6              # six chunks — the segmented gauge of an arcade HUD (-1, the default, asks the look)
 ## ```
 ##
 ## ## 🔑 Choose how the number reads

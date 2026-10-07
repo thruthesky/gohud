@@ -27,6 +27,7 @@ func _initialize() -> void:
 	await _other_looks()
 	await _arcade_parts()
 	await _window_head()
+	await _bar_segments()
 	await _one_widget()
 	await _own_ink()
 	await _screen()
@@ -133,6 +134,19 @@ func _box() -> void:
 		and flat_board.bg_color == board.bg_color, "box: to_flat() turns a board's frame into its border round the well")
 	var flat_key := key.to_flat()
 	check(flat_key.border_color == ink and flat_key.bg_color == key.bg_color, "box: to_flat() keeps a key's ink round its top")
+	# 🍬 The candy gloss is the default; the old single stroke stays one field away.
+	check(GoStyleBoxArcade.new().gloss == GoStyleBoxArcade.Gloss.CANDY, "box: a key wears the candy gloss by default")
+	# 🎀 A ribbon: the tails are drawn inside the face, cut back on a narrow one, and never add to its size.
+	var ribbon := GoStyleBoxArcade.new()
+	check(ribbon.ribbon_tails(Rect2(0, 0, 200, 40)) == 0.0, "box: no tails by default — a plain key")
+	ribbon.tails = 12.0
+	ribbon.pad(32.0, 6.0)
+	check(ribbon.ribbon_tails(Rect2(0, 0, 200, 40)) == 12.0, "box: a ribbon folds its tails")
+	check(ribbon.ribbon_tails(Rect2(0, 0, 40, 40)) == 10.0, "box: on a narrow face the tails give way — the body keeps half")
+	check(ribbon.ribbon_tails(Rect2(0, 0, 200, 8)) == 0.0, "box: a face too thin to fold has no tails")
+	check(ribbon.get_minimum_size() == Vector2(64, 12), "box: the tails add nothing to the minimum size — the padding is it")
+	ribbon.sunken = true
+	check(ribbon.ribbon_tails(Rect2(0, 0, 200, 40)) == 0.0, "box: a field turned in is never a ribbon")
 
 
 ## The arcade themes: every key painted, with a gradient and a white ink-outlined label; boards with a frame.
@@ -167,6 +181,20 @@ func _arcade_theme() -> void:
 			"%s: the plain, primary and danger keys are different paints" % id)
 		var down := theme.get_stylebox(&"pressed", &"GoPrimaryButton") as GoStyleBoxArcade
 		check(down != null and down.pressed, "%s: a pressed key sinks" % id)
+		# 💊 The keys are pills; the tabs stand apart; the slider's groove is chunky but inside its knob.
+		var pill := theme.get_stylebox(&"normal", &"Button") as GoStyleBoxArcade
+		check(pill != null and pill.radius >= 20.0, "%s: a key is round as a pill (%.0f)" % [id, pill.radius if pill else 0.0])
+		var focus := theme.get_stylebox(&"focus", &"Button") as GoStyleBoxArcade
+		check(focus != null and pill != null and is_equal_approx(focus.radius, pill.radius - pill.border_width),
+			"%s: the focus ring follows the key's round corner" % id)
+		var apart := theme.get_stylebox(&"tab_unselected", &"TabBar") as GoStyleBoxArcade
+		check(apart != null and apart.expand_margin_left < 0.0 and apart.expand_margin_right < 0.0,
+			"%s: the tabs stand apart in their row" % id)
+		var groove := theme.get_stylebox(&"slider", &"HSlider")
+		var knob := theme.get_icon(&"grabber", &"HSlider")
+		check(groove.get_minimum_size().y >= 10.0 and knob != null and groove.get_minimum_size().y <= knob.get_size().y,
+			"%s: a chunky slider groove that still sits inside its knob (%.0f in %.0f)"
+			% [id, groove.get_minimum_size().y, knob.get_size().y if knob else 0.0])
 		var well := theme.get_stylebox(&"normal", &"LineEdit") as GoStyleBoxArcade
 		check(well != null and well.sunken, "%s: a text field is a well" % id)
 		for spot: Array in [[&"GoPanel", &"panel"], [&"GoCard", &"panel"], [&"GoHud", &"hud"]]:
@@ -202,6 +230,10 @@ func _other_looks() -> void:
 		check(not (GoUi.theme().get_stylebox(&"normal", &"Button") is GoStyleBoxArcade), "%s: keys are not arcade" % id)
 		check(GoUi.theme().get_constant(&"outline_size", &"Button") == 0, "%s: a key's label has no outline" % id)
 		check(not (GoUi.skin() is GoSkinArcade), "%s: the skin is not the arcade one" % id)
+		check(GoUi.skin().bar_ticks() == 0, "%s: a bar is one smooth bar" % id)
+		check(GoUi.skin().kbd_ink() == GoUi.color(GoTheme.SECONDARY)
+			and GoUi.skin().kbd_box().get_class() == GoUi.skin().chip_box(GoUi.color(GoTheme.BORDER)).get_class(),
+			"%s: a key hint is the chip it always was" % id)
 	await frames(1)
 
 
@@ -255,6 +287,54 @@ func _arcade_parts() -> void:
 		var plate := skin.title_plate_box() as GoStyleBoxArcade
 		check(plate != null and plate.bg_color.r > plate.bg_color.b and plate.lip > 0.0, "%s: a window title gets a gold banner" % id)
 		check(skin.title_plate_ink() == Color.WHITE, "%s: in white" % id)
+		# 🎀 The banner is a ribbon: its tails fit in its padding, and its height stays the plain banner's (6 + 6).
+		check(plate != null and plate.tails == float(skin.arcade_ribbon) and plate.tails > 0.0
+			and plate.content_margin_left >= plate.tails + 16.0 and plate.content_margin_right >= plate.tails + 16.0,
+			"%s: the banner folds swallow tails, padded clear of the title" % id)
+		check(plate != null and is_equal_approx(plate.content_margin_top + plate.content_margin_bottom, 12.0)
+			and plate.content_margin_top >= 0.0, "%s: the tails cost the banner no height" % id)
+		skin.arcade_ribbon = 0.0
+		var plain := skin.title_plate_box() as GoStyleBoxArcade
+		check(plain != null and plain.tails == 0.0, "%s: arcade_ribbon 0 draws a plain gold key" % id)
+		skin.arcade_ribbon = 12.0
+		# 💊 Keys in a row stand apart — drawn in from their cells, no size changing.
+		check(chosen != null and chosen.expand_margin_left < 0.0 and chosen.expand_margin_right < 0.0
+			and chosen.radius == GoSkinArcade.KEY_RADIUS_SMALL, "%s: a segment is a round key standing apart" % id)
+		# ⌨ A key hint is a keycap on a lip, the word in a colour that reads on it, the chip's padding kept.
+		var kbd := skin.kbd_box() as GoStyleBoxArcade
+		var chip_pad := skin.chip_box(GoUi.color(GoTheme.BORDER)).get_minimum_size()
+		check(kbd != null and kbd.lip > 0.0 and kbd.get_minimum_size() == chip_pad,
+			"%s: a GoKbd cap is a keycap, sized like the chip it replaces" % id)
+		var engraved := GoSkin.contrast_ratio(skin.kbd_ink(), kbd.bg_color.lerp(kbd.bottom(), 0.5)) if kbd != null else 0.0
+		check(engraved >= 4.5, "%s: the key's word reads on the cap (%.1f:1)" % [id, engraved])
+		# 🧱 Bars are split into chunks by the look.
+		check(skin.bar_ticks() == 6, "%s: a bar is split into six chunks" % id)
+	await frames(1)
+
+
+## 🧱 A bar left to the look is split into chunks under the arcade looks and stays smooth under the others; a bar that
+## asks for a count gets it everywhere. The ticks are decoration: the bar keeps its size.
+func _bar_segments() -> void:
+	GoUi.use_preset(&"default_light")
+	var bar := GoBar.new()
+	bar.label_text = "HP"
+	bar.custom_minimum_size.x = 240
+	root.add_child(bar)
+	bar.set_values(320, 500, false)
+	await frames(2)
+	var smooth := bar.get_combined_minimum_size()
+	check(bar.segment_count() == 0, "bar: under the plain look a bar is smooth")
+	GoUi.use_preset(&"arcade_light")
+	await frames(2)
+	check(bar.segment_count() == 6, "bar: under the arcade look it is split in six")
+	check(bar.get_combined_minimum_size() == smooth, "bar: the ticks change no size")
+	bar.segments = 0
+	check(bar.segment_count() == 0, "bar: segments 0 keeps it smooth under any look")
+	bar.segments = 4
+	GoUi.use_preset(&"default_light")
+	await frames(1)
+	check(bar.segment_count() == 4, "bar: a count asked for holds under any look")
+	bar.queue_free()
 	await frames(1)
 
 

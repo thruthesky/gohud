@@ -1,9 +1,10 @@
 ## Arcade skin — the arcade cabinet. Every part is painted like the menus of a bright arcade game (`GoStyleBoxArcade`):
 ## a thick dark ink outline, a body that runs from light on top to deeper below, a deeper lip that sinks when pressed and
-## a white gloss stroke round the top-left corner; panels are thick boards, a coloured frame round a pale well. A
-## window's title sits on a gold banner in white letters with an ink outline, its close button is a round red key,
-## quick slots are key caps that light a gold rim while they cool down, the badge is a gold plate and the joystick a
-## glossy pad with four arrows.
+## a candy gloss (a sheen over the upper half, a glint round both top corners); panels are thick boards, a coloured
+## frame round a pale well. A window's title sits on a gold ribbon with swallow tails, in white letters with an ink
+## outline, its close button is a round red key, quick slots are key caps that light a gold rim while they cool down,
+## the badge is a gold plate, a key hint (`GoKbd`) a keycap on a deep lip, a bar is split into chunks by ink ticks and
+## the joystick is a glossy pad with four arrows.
 ##
 ## The engine-drawn controls (buttons, fields, tabs, sliders, panels) get their paint from the theme
 ## (`tools/theme_arcade.py`); this skin draws the parts gohud draws in code, and the window chrome.

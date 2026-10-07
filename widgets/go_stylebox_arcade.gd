@@ -1,7 +1,8 @@
 ## 🕹 **An arcade key** — the buttons, boards and fields of the `arcade_*` looks.
 ##
 ## A thick dark ink outline; a body whose colour runs from light at the top to deeper below (a vertical gradient); a
-## deeper lip under the body inside the outline; and a white gloss stroke round the top-left corner. Pressed, the lip
+## deeper lip under the body inside the outline; and a candy gloss — a white sheen over the upper half, a glint round
+## both top corners and a dash between them (`gloss`; `STROKE` is one stroke round the top-left corner). Pressed, the lip
 ## goes and the body sinks into its place. A panel is a **board**: the body is a thick coloured frame (`frame`) round
 ## a pale well — the well is `bg_color` → `bottom_color`, so text measured on the face is measured on the well — with
 ## a thin ink line round it (`inner_line`). A text field is the same face turned in (`sunken`): a shadow inside along

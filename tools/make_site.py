@@ -390,7 +390,9 @@ DIALS_EN = {
     "comic_tint": "How much of its own colour fills a comic chip, quick slot or chosen pill (0–1); the rest is the surface colour.",
     "arcade_edge": "Ink outline width (dp) of a part the arcade skin paints — slots, chips, badges, the title banner, the FAB.",
     "arcade_lip": "The lip (dp) under an arcade part you press — keys, chips, slots, the FAB; it goes when the part is pressed.",
-    "arcade_gloss": "Strength of the white gloss stroke on a painted arcade part (0–1).",
+    "arcade_gloss": "Strength of the white candy gloss (sheen, corner glints, dash) on a painted arcade part (0–1).",
+    "arcade_ribbon": "The swallow-tailed ends (dp) of an arcade window's gold title ribbon — 0 draws a plain gold key.",
+    "arcade_bar_ticks": "How many chunks the arcade looks split a GoBar into when it leaves that to the look (segments = -1) — 0 keeps bars smooth.",
 }
 
 SKIN_TITLES = {

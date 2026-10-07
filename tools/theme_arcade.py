@@ -5,7 +5,7 @@
 
 The palettes (`themes/palettes/arcade_*.json`) carry the colours; this file carries the **shapes** of a look made like
 a bright arcade game's menus: every button painted in its own colour with a gradient (light on top, deeper below), a
-thick dark ink outline, a deeper lip under the body and a white gloss stroke round the top-left corner; panels are
+thick dark ink outline, a deeper lip under the body and a candy gloss (`GoStyleBoxArcade.gloss`); panels are
 thick **boards** — a coloured frame round a pale well; labels on a painted key are white with an ink outline. The
 code-drawn parts (slots, chips, badges, the joystick, the window's title banner) are `themes/skins/go_skin_arcade.gd`.
 
@@ -37,7 +37,7 @@ LIP = 4
 LIP_SMALL = 3
 PANEL_LIP = 4
 PUSH = 3
-# The white gloss stroke round the top-left corner.
+# The strength of the white gloss (`GoStyleBoxArcade.shine` — the candy gloss's sheen, glints and dash).
 GLOSS = 0.85
 # A window board's frame (dp); a card's, a HUD card's and a menu's are thinner (the board table in `restyle`).
 FRAME = 6

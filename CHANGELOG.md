@@ -4,6 +4,32 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Changed
+
+- **The arcade looks, closer to a real arcade party game's menus.** Taken from a shipping game's painted UI (Magnet
+  Mayhem): every key is now a **pill** (corner 24; the small keys and the tabs 16) wearing a **candy gloss** — a soft
+  white sheen over the upper half, a glint round **both** top corners and a short dash between them — and a board's
+  frame catches a glint on both shoulders. Tabs and segmented cells **stand apart** in their row (each drawn 2dp in
+  from its cell, so no size changes). The slider groove is a chunky 10dp tube (still inside the 20dp knob, so the
+  slider keeps its height) under a **white knob in a thick blue ring**; the switch track glints at both ends. A
+  window's title sits on a **gold ribbon with swallow tails** (dial `arcade_ribbon`, 0 = the plain banner; the title
+  keeps its height). A `GoBar` is **split into six chunks** by ink ticks (dial `arcade_bar_ticks`) and a `GoKbd`
+  hint is a **keycap** on a deep lip. Sizes are unchanged everywhere; every label still clears its contrast bar.
+
+### Added
+
+- **`GoStyleBoxArcade.gloss`** (`enum Gloss { CANDY, STROKE }` — `STROKE` keeps 1.3.0's single stroke for one face),
+  **`tails`** / **`tail_drop`** / **`ribbon_tails(rect)`** (a ribbon: swallow-tailed ends folded behind a body that
+  stands in from them, drawn inside the face).
+- **`GoBar.segments`** (`-1` the look's choice, `0` smooth, `2`–`24` chunks) and `segment_count()`. Decoration only —
+  the fill still glides and the bar keeps its size.
+- **Skin hooks** `GoSkin.bar_ticks()` · `draw_bar_ticks(canvas, rect, count)` (the chunks of a bar; the default is a
+  smooth bar) and `kbd_box()` · `kbd_ink()` (a `GoKbd` cap; the default is the chip it always was). Dials
+  `GoSkinArcade.arcade_ribbon` (12) and `arcade_bar_ticks` (6), in the arcade palettes' `skin.dials` too.
+- `tests/gohud_arcade_test.gd` checks the pills, the tabs standing apart, the slider groove inside its knob, the
+  ribbon's padding and height, the keycap's size and contrast, the bar's chunks and that the other looks keep their
+  smooth bars and chip key hints (279 checks).
+
 ## [1.3.0] - 2026-10-06
 
 ### Added
