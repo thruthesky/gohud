@@ -29,6 +29,7 @@ func _initialize() -> void:
 	await _window_head()
 	await _title_fit()
 	await _press()
+	await _scroll_under_frame()
 	print("gohud jelly tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
 	quit(0 if failed.is_empty() else 1)
@@ -232,4 +233,56 @@ func _press() -> void:
 	slot.free()
 	icon.free()
 	key.queue_free()
+	await frames(1)
+
+
+## 🪟 A scrolled list slides **under** the window's frame, never over it (2026-10-07, the farm menu). A jelly window
+## with a thick outline, an inner line and a lip and **no content margin** (the card pads its content itself): the
+## scroll that borrows the padding for glows must stop at the frame's inner side — on every side, compact or not.
+func _scroll_under_frame() -> void:
+	GoUi.use_preset(&"kids_light")
+	var plate := GoStyleBoxJelly.new()
+	plate.bg_color = Color("#FFFCF3")
+	plate.border_width = 4.0
+	plate.lip = 6.0
+	plate.radius = 28.0
+	plate.inner_line = Color("#FFD99A")
+	check(is_equal_approx(GoSkin.frame_margin(plate, SIDE_TOP), 10.0)
+		and is_equal_approx(GoSkin.frame_margin(plate, SIDE_BOTTOM), 16.0),
+		"frame: a jelly reports outline + inner line, and the lip at the bottom (%.0f / %.0f)" % [
+			GoSkin.frame_margin(plate, SIDE_TOP), GoSkin.frame_margin(plate, SIDE_BOTTOM)])
+	var flat := StyleBoxFlat.new()
+	flat.set_border_width_all(3)
+	check(is_equal_approx(GoSkin.frame_margin(flat, SIDE_LEFT), 3.0), "frame: a StyleBoxFlat reports its border")
+	var look := GoUi.theme().duplicate(true) as Theme
+	look.set_stylebox(&"panel", GoTheme.VAR_PANEL, plate)
+	GoUi.config.theme = look
+	var layer := CanvasLayer.new()
+	root.add_child(layer)
+	var anchor := Button.new()
+	anchor.position = Vector2(20, 20)
+	anchor.size = Vector2(48, 48)
+	layer.add_child(anchor)
+	for compact: bool in [true, false]:
+		var tag := "compact" if compact else "regular"
+		var list := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
+		for i in 24: list.add_child(GoStyle.list_button(GoIconSet.STAR, "Row %d" % i, func() -> void: pass))
+		var surface := GoPopover.open(anchor, list, {"width": 280, "max_height": 400, "compact": compact, "alpha": 1.0})
+		await frames(4)
+		var card := surface.card.get_global_rect()
+		var clip := surface.scroll.get_global_rect()
+		check(surface.scroll.get_v_scroll_bar().visible, "frame [%s]: the list scrolls" % tag)
+		var inside := clip.position.x >= card.position.x + 10.0 - 0.5 and clip.position.y >= card.position.y + 10.0 - 0.5 \
+			and clip.end.x <= card.end.x - 10.0 + 0.5 and clip.end.y <= card.end.y - 16.0 + 0.5
+		check(inside, "frame [%s]: the scroll clips inside the frame (card %s · scroll %s)" % [tag, card, clip])
+		# The rows keep their place: the glow room is still given back inside, so content starts at the padding.
+		var row := list.get_child(0) as Control
+		var padding := GoUi.metric(GoTheme.PADDING_COMPACT if surface._dense else GoTheme.PADDING)
+		check(absf(row.get_global_rect().position.x - (card.position.x + padding)) <= 0.5,
+			"frame [%s]: the rows still start at the card padding (%.1f)" % [tag, row.get_global_rect().position.x - card.position.x])
+		GoPopover.close()
+		await frames(2)
+	layer.queue_free()
+	GoUi.config.theme = null
+	GoUi.use_preset(&"default_light")
 	await frames(1)

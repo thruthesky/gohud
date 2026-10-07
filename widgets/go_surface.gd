@@ -354,7 +354,20 @@ func _ready() -> void:
 func _restyle() -> void:
 	if card == null or not is_inside_tree(): return
 	GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
+	_fit_scroll_frame()
 	_dress_chrome()
+
+
+## Tells the body scroll how far the card's frame reaches into the padding, so scrolled rows pass **under** the frame.
+## The panel's own content margin already keeps the padding off the frame by that much.
+func _fit_scroll_frame() -> void:
+	if scroll == null or card == null: return
+	var box := card.get_theme_stylebox(&"panel")
+	var frame := Vector4.ZERO
+	if box != null:
+		for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			frame[side] = maxf(0.0, GoSkin.frame_margin(box, side) - box.get_margin(side))
+	scroll.set_panel_frame(frame)
 
 
 ## 🎀 The window's head in the look in force — a plate behind the title and the close button as the look dresses them

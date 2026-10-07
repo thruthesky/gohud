@@ -21,6 +21,10 @@ var _content_inset: MarginContainer
 var _edge_gutter := 0
 ## How far the scroll bounds are pushed outward so a glow has room to spread (dp).
 var _bleed := 0
+## The parent card's padding (dp) — the room the edge insets borrow.
+var _panel_padding := 0
+## How far the parent card's frame reaches into that padding, per side (left, top, right, bottom, dp).
+var _panel_frame := Vector4.ZERO
 ## Bring a descendant into view when **keyboard or gamepad** focus lands on it. Use this instead of the
 ## engine's `follow_focus`, which stays off here (see `_init`).
 @export var follow_keyboard_focus := true
@@ -148,7 +152,7 @@ static func containing(node: Node) -> GoScroll:
 ## `parent_padding` is the padding the parent card uses (dp).
 func use_panel_edge(parent_padding: int) -> void:
 	if _edge_frame != null: return
-	_edge_gutter = maxi(0, parent_padding - GoUi.metric(GoTheme.SCROLL_EDGE))
+	_panel_padding = parent_padding
 	var parent := get_parent()
 	if parent == null: return
 	var index := get_index()
@@ -162,11 +166,7 @@ func use_panel_edge(parent_padding: int) -> void:
 	#    no exceptions — a full-width accent button had its left glow sheared off in a straight vertical line
 	#    (measured 2026-09-13; the right side survived thanks to the rail gutter, so the two sides looked
 	#    different). Borrow the parent padding to push the bounds outward, then give the same amount back on
-	#    the inside so **the content does not move** — the same trick as the right-hand rail.
-	_bleed = mini(GoUi.metric(GoTheme.GAP), parent_padding)
-	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
-		_edge_frame.add_theme_constant_override(side, -_bleed)
-	_edge_frame.add_theme_constant_override(&"margin_right", -_edge_gutter)
+	#    the inside so **the content does not move** — the same trick as the right-hand rail (`_apply_edge`).
 	parent.add_child(_edge_frame)
 	parent.move_child(_edge_frame, index)
 	_reparent_keeping_owners(self, _edge_frame)
@@ -176,14 +176,12 @@ func use_panel_edge(parent_padding: int) -> void:
 	_content_inset.layout_direction = Control.LAYOUT_DIRECTION_LTR
 	_content_inset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_inset.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
-		_content_inset.add_theme_constant_override(side, _bleed)
 	add_child(_content_inset)
 	for child in content: _reparent_keeping_owners(child, _content_inset)
 	var bar := get_v_scroll_bar()
 	bar.visibility_changed.connect(_sync_edge_inset)
 	bar.resized.connect(_sync_edge_inset)
-	_sync_edge_inset()
+	_apply_edge()
 
 
 ## Move with `reparent()` while preserving the descendants' owners.
@@ -206,12 +204,36 @@ static func _reparent_keeping_owners(node: Node, new_parent: Node) -> void:
 ## For when the card narrowed and the padding changed — fixes only the insets, without rebuilding the scroll and content ownership.
 func set_panel_padding(padding: int) -> void:
 	if _edge_frame == null: return
-	_edge_gutter = maxi(0, padding - GoUi.metric(GoTheme.SCROLL_EDGE))
+	_panel_padding = padding
+	_apply_edge()
+
+
+## 🔑 **Keep what scrolls under the card's frame.** [param frame] is how far the parent card draws its frame into the
+## padding on each side (left, top, right, bottom, dp — `GoSkin.frame_margin` minus the card's own content margin).
+## The edge insets borrow the padding only up to that frame, so a row scrolled past the edge is clipped at the frame's
+## inner side and slides **under** the outline, inner line and lip instead of over them.
+## 🛑 Found on the kids window (2026-10-07): a card with no content margin, a 12dp compact padding fully borrowed for
+##    glows, and the clip landed on the card's outer edge — the menu rows crossed the jelly frame while scrolling.
+## A frame thicker than the padding pulls the scroll inside it; the content moves in by the difference.
+func set_panel_frame(frame: Vector4) -> void:
+	_panel_frame = Vector4(maxf(0.0, frame.x), maxf(0.0, frame.y), maxf(0.0, frame.z), maxf(0.0, frame.w))
+	_apply_edge()
+
+
+## The edge insets from the padding and the frame. Left, top and bottom are pushed out by up to `gap` for glows (and
+## the same given back inside); the right side holds the scrollbar `scroll_edge` from the card edge. Neither ever
+## reaches into the frame — where the frame is thicker than the padding, the inset turns inward.
+func _apply_edge() -> void:
+	if _edge_frame == null: return
+	var room := [_panel_padding - ceili(_panel_frame.x), _panel_padding - ceili(_panel_frame.y),
+		_panel_padding - ceili(_panel_frame.z), _panel_padding - ceili(_panel_frame.w)]
+	_edge_gutter = mini(maxi(0, _panel_padding - GoUi.metric(GoTheme.SCROLL_EDGE)), room[2])
 	_edge_frame.add_theme_constant_override(&"margin_right", -_edge_gutter)
-	_bleed = mini(GoUi.metric(GoTheme.GAP), padding)
-	for side in [&"margin_left", &"margin_top", &"margin_bottom"]:
-		_edge_frame.add_theme_constant_override(side, -_bleed)
-		_content_inset.add_theme_constant_override(side, _bleed)
+	_bleed = mini(GoUi.metric(GoTheme.GAP), _panel_padding)
+	for pair: Array in [[&"margin_left", room[0]], [&"margin_top", room[1]], [&"margin_bottom", room[3]]]:
+		var bleed := mini(_bleed, int(pair[1]))
+		_edge_frame.add_theme_constant_override(pair[0], -bleed)
+		_content_inset.add_theme_constant_override(pair[0], maxi(0, bleed))
 	_sync_edge_inset()
 
 

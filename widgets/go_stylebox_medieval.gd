@@ -63,6 +63,11 @@ extends StyleBox
 var _face := StyleBoxFlat.new()
 
 
+## How far in the frame is drawn (dp): the border and the bevel line just inside it (`GoSkin.frame_margin`).
+func frame_margin(_side: Side) -> float:
+	return maxf(2.0, border_width + 1.0) + 1.0 if draw_center else maxf(0.0, border_width)
+
+
 func _draw(canvas: RID, rect: Rect2) -> void:
 	if rect.size.x <= 0.0 or rect.size.y <= 0.0: return
 	_face.bg_color = bg_color

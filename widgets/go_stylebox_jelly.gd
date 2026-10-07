@@ -136,6 +136,10 @@ extends StyleBox
 		shadow_offset = value
 		emit_changed()
 
+## How far inside the body the inner line sits, and how wide it is (dp).
+const INNER_LINE_GAP := 4.0
+const INNER_LINE_WIDTH := 2.0
+
 var _flat := StyleBoxFlat.new()
 
 
@@ -169,6 +173,24 @@ func keep_margins(source: StyleBox) -> GoStyleBoxJelly:
 		for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
 			set_content_margin(side, source.get_margin(side))
 	return self
+
+
+## How far in from [param side] the frame is drawn (dp): the outline, the inner line inside it and, at the bottom,
+## the lip. A window's scroll clips its rows there so they slide **under** the frame (`GoSkin.frame_margin`).
+func frame_margin(side: Side) -> float:
+	var reach := maxf(0.0, border_width)
+	if inner_line.a > 0.0 and draw_center: reach += INNER_LINE_GAP + INNER_LINE_WIDTH
+	if side == SIDE_BOTTOM and not sunken: reach += maxf(0.0, lip)
+	return maxf(0.0, reach - _expand(side))
+
+
+## How far the drawn face grows past [param side] (`expand_margin_*`).
+func _expand(side: Side) -> float:
+	match side:
+		SIDE_LEFT: return expand_margin_left
+		SIDE_TOP: return expand_margin_top
+		SIDE_RIGHT: return expand_margin_right
+	return expand_margin_bottom
 
 
 ## Sets the padding, lifting the label by half the lip so it sits in the middle of the body (the sum is kept).
@@ -249,7 +271,8 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 					if dot.end.x < face.end.x - inner * 0.5:
 						_box(canvas, dot, Color(1, 1, 1, shine * 0.6 * alpha), tall * 0.5)
 	if inner_line.a > 0.0 and face.size.x > 40.0 and face.size.y > 40.0:
-		_box(canvas, face.grow(-4.0), Color.TRANSPARENT, maxf(0.0, inner - 4.0), Color(inner_line, inner_line.a * alpha), 2.0)
+		_box(canvas, face.grow(-INNER_LINE_GAP), Color.TRANSPARENT, maxf(0.0, inner - INNER_LINE_GAP),
+			Color(inner_line, inner_line.a * alpha), INNER_LINE_WIDTH)
 
 
 ## One rounded box: [param fill], an outline of [param width] in [param ink] with [param bottom] more under it.

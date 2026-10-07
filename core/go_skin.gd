@@ -183,6 +183,28 @@ static func box_background(box: StyleBox) -> Color:
 	return value if value is Color else Color.TRANSPARENT
 
 
+## How far in from [param side] the StyleBox draws its **frame** (dp) — the outline, a lip, an inner line. What scrolls
+## inside a window is clipped there, so rows pass **under** the frame instead of over it (`GoScroll.set_panel_frame`).
+## Custom StyleBoxes answer with their own `frame_margin(side)`; otherwise a `StyleBoxFlat`'s border, a
+## `StyleBoxTexture`'s nine-slice margin, or a `border_width` field.
+## 🛑 Written for the kids window (2026-10-07): its outline, inner line and lip are drawn inside a card with no
+##    content margin, and the scroll that borrows the card padding for glows reached the card's very edge — the
+##    menu rows slid **over** the frame while scrolling.
+static func frame_margin(box: StyleBox, side: Side) -> float:
+	if box == null: return 0.0
+	if box.has_method(&"frame_margin"): return maxf(0.0, float(box.call(&"frame_margin", side)))
+	if box is StyleBoxFlat:
+		var flat := box as StyleBoxFlat
+		return maxf(0.0, flat.get_border_width(side) - flat.get_expand_margin(side))
+	if box is StyleBoxTexture:
+		var nine := box as StyleBoxTexture
+		return maxf(0.0, nine.get_texture_margin(side) - nine.get_expand_margin(side))
+	if &"border_width" in box:
+		var width = box.get(&"border_width")
+		if width is float or width is int: return maxf(0.0, float(width))
+	return 0.0
+
+
 # ── Surfaces ───────────────────────────────────────────────────────────
 
 ## StyleBox for cards and panels. If `accent` is set, the border takes that color.

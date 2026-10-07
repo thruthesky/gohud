@@ -83,6 +83,18 @@ func frame_drawn() -> float:
 	return rim if rim >= MIN_FRAME else 0.0
 
 
+## How far in from [param side] the frame is drawn (dp): the outline, a board's frame and half the well's ink line
+## over it, and at the bottom the lip — the well inside is where a window's scroll clips its rows (`GoSkin.frame_margin`).
+func frame_margin(side: Side) -> float:
+	var reach := maxf(0.0, border_width)
+	var rim := frame_drawn() if draw_center and not sunken else 0.0
+	if rim > 0.0:
+		reach += rim
+		if inner_line.a > 0.0 and line_width > 0.0: reach += line_width * 0.5
+	if side == SIDE_BOTTOM and not sunken: reach += maxf(0.0, lip)
+	return maxf(0.0, reach - _expand(side))
+
+
 ## The body's top colour — on a board, the frame's.
 func top() -> Color:
 	return frame_color if frame_drawn() > 0.0 else bg_color

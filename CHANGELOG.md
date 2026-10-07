@@ -4,6 +4,20 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Fixed
+
+- **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
+  glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
+  with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and
+  rows scrolled **over** the outline (a popover menu in a kids-look game, 2026-10-07). The scroll now stops at the
+  frame's inner side on every side; where the frame is thicker than the padding it moves inside it. Content keeps its
+  place. Found and fixed in one place:
+  - `GoSkin.frame_margin(box, side)` — how far in a StyleBox draws its frame: a custom face's own `frame_margin(side)`
+    (`GoStyleBoxJelly` outline + inner line + lip, `GoStyleBoxArcade` outline + board frame + half the well line + lip,
+    `GoStyleBoxMedieval` border + bevel line), a `StyleBoxFlat`'s border, a `StyleBoxTexture`'s nine-slice margin, or
+    a `border_width` field.
+  - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
+
 ## [1.3.0] - 2026-10-06
 
 ### Added
