@@ -4,6 +4,8 @@
 ##     -s res://addons/gohud/tests/site_widget_shots.gd
 ##   … -e SHOT_SET=widgets       only one set: widgets · popups · looks · presets · skins
 ##   … -e SHOT_ONLY=gobar,goslot only the shots whose name contains one of these words
+##   … -e SHOT_LOOK=arcade_light the look of the widgets and popups sets (default `default_dark`) — the pictures under
+##                               `www/img/arcade/` are these sets shot in `arcade_light` / `arcade_dark`, saved as they are
 ##
 ## Then `python3 addons/gohud/tools/site_images.py <folder>` turns the PNGs into the WebP files under `www/img/`.
 ##
@@ -32,6 +34,8 @@ const CROP_MARGIN := 12.0
 
 var _dir := ""
 var _set := ""
+## The look of the widgets and popups sets — `WIDGET_LOOK` unless `SHOT_LOOK` names another.
+var _look: StringName = WIDGET_LOOK
 var _only: PackedStringArray = []
 var _shots := 0
 var _failed := 0
@@ -43,6 +47,7 @@ func _initialize() -> void:
 	_dir = OS.get_environment("SHOT_DIR")
 	if _dir.is_empty(): _dir = "/out"
 	_set = OS.get_environment("SHOT_SET")
+	if not OS.get_environment("SHOT_LOOK").is_empty(): _look = StringName(OS.get_environment("SHOT_LOOK"))
 	var only := OS.get_environment("SHOT_ONLY")
 	if not only.is_empty(): _only = only.split(",", false)
 	for folder in ["widgets", "popups", "presets"]:
@@ -282,7 +287,7 @@ func _widget_list() -> Array:
 
 
 func _widgets() -> void:
-	_use(WIDGET_LOOK)
+	_use(_look)
 	for entry in _widget_list():
 		var name: String = entry[0]
 		if not _wants(name): continue
@@ -1296,7 +1301,7 @@ func _fill(color: Color, radius := 8) -> StyleBoxFlat:
 # ── Popups, over the game ─────────────────────────────────────────────
 
 func _popups() -> void:
-	_use(WIDGET_LOOK)
+	_use(_look)
 	var list := [
 		["dialog-confirm", func() -> void: await _confirm(false)],
 		["dialog-destructive", func() -> void: await _confirm(true)],
@@ -1668,7 +1673,7 @@ func _looks() -> void:
 		_use(look)
 		await _confirm(false)
 		await _save("popups/" + name, null, CROP_MARGIN, 14)
-	_use(WIDGET_LOOK)
+	_use(_look)
 
 
 # ── The gallery on a phone, in every look ─────────────────────────────
@@ -1683,7 +1688,7 @@ func _presets() -> void:
 		var gallery := scene.instantiate()
 		_keep(gallery)
 		await _save("presets/" + name, null, CROP_MARGIN, 24)
-	_use(WIDGET_LOOK)
+	_use(_look)
 
 
 # ── What a skin draws, family by family ───────────────────────────────
@@ -1712,7 +1717,7 @@ func _skins() -> void:
 		column.add_child(GoStyle.chip("Sci-fi" if family == "scifi" else family.capitalize(), GoUi.color(GoTheme.ACCENT)))
 		line.add_child(column)
 		await _save("widgets/" + name, line)
-	_use(WIDGET_LOOK)
+	_use(_look)
 
 
 # ── Drawn parts ───────────────────────────────────────────────────────

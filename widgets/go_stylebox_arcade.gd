@@ -1,7 +1,8 @@
 ## 🕹 **An arcade key** — the buttons, boards and fields of the `arcade_*` looks.
 ##
 ## A thick dark ink outline; a body whose colour runs from light at the top to deeper below (a vertical gradient); a
-## deeper lip under the body inside the outline; and a white gloss stroke round the top-left corner. Pressed, the lip
+## deeper lip under the body inside the outline; and a candy gloss — a white sheen over the upper half, a glint round
+## both top corners and a dash between them (`gloss`; `STROKE` is one stroke round the top-left corner). Pressed, the lip
 ## goes and the body sinks into its place. A panel is a **board**: the body is a thick coloured frame (`frame`) round
 ## a pale well — the well is `bg_color` → `bottom_color`, so text measured on the face is measured on the well — with
 ## a thin ink line round it (`inner_line`). A text field is the same face turned in (`sunken`): a shadow inside along
@@ -59,9 +60,40 @@ extends GoStyleBoxJelly
 		line_width = value
 		emit_changed()
 
+## How the gloss is laid on a key.
+enum Gloss {
+	## A candy key: a soft white sheen over the upper half of the body, a glint round **both** top corners and a short
+	## dash at the top's middle — the glossy pill of an arcade menu. Symmetric, so it reads the same right to left.
+	CANDY,
+	## One white stroke round the top-left corner, fading along the top (gohud 1.3.0's arcade key).
+	STROKE,
+}
+## The gloss a key wears (`shine` sets how strong). A board's frame always takes a glint at each top corner.
+@export var gloss := Gloss.CANDY:
+	set(value):
+		gloss = value
+		emit_changed()
+## 🎀 A ribbon: this much at each end (dp) is a swallow-tailed fold behind a body that stands in from the ends — the
+## banner over an arcade window (`GoSkinArcade.title_plate_box`). 0: a plain key. The body keeps the text: pad the
+## face at least `tails` more at each end (`GoSkinArcade` does).
+@export var tails := 0.0:
+	set(value):
+		tails = value
+		emit_changed()
+## How far a ribbon's body stands above its tails' lower edge (dp) — the tails hang that much below it. Pad the face
+## so the text sits in the body: half of it off the bottom, onto the top (the sum, the size, stays).
+@export var tail_drop := 4.0:
+	set(value):
+		tail_drop = value
+		emit_changed()
+
 
 ## The pale well a board's content keeps round it, inside the frame (dp) — `tools/theme_arcade.py` `WELL_ROOM`.
 const WELL_ROOM := 3.0
+
+
+## The least body height (dp) that carries the candy gloss's dash — on a lower key it would touch the label's top.
+const DASH_HEIGHT := 40.0
 
 
 ## The thinnest frame worth drawing (dp). Under it a board is drawn as a key cap: the well's colours inside the ink.
@@ -208,6 +240,13 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 		rect = Rect2(rect.position.x + (rect.size.x - max_size.x) * 0.5, rect.position.y, max_size.x, rect.size.y)
 	if max_size.y > 0.0 and rect.size.y > max_size.y:
 		rect = Rect2(rect.position.x, rect.position.y + (rect.size.y - max_size.y) * 0.5, rect.size.x, max_size.y)
+	# A ribbon: the folded tails first, behind; the body is then a key standing in from the ends.
+	var tail := ribbon_tails(rect)
+	if tail > 0.0 and draw_center:
+		var drop := minf(maxf(0.0, tail_drop), rect.size.y * 0.25)
+		var body_rect := Rect2(rect.position.x + tail, rect.position.y, rect.size.x - tail * 2.0, rect.size.y - drop)
+		_tails(canvas, rect, body_rect)
+		rect = body_rect
 	var outline := maxf(0.0, border_width)
 	var base := maxf(0.0, lip) if not sunken else 0.0
 	var outer := rect
@@ -261,7 +300,9 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 		# 4 · The gloss round the top-left corner — on a board, inside its frame, never over the text in the well.
 		if shine > 0.0:
 			var lit := Rect2(inner.position, Vector2(inner.size.x, cut - inner.position.y))
-			if rim <= 0.0: _gloss(canvas, lit, inner_corner, alpha)
+			if rim <= 0.0:
+				if gloss == Gloss.CANDY: _candy(canvas, lit, inner_corner, alpha)
+				else: _gloss(canvas, lit, inner_corner, alpha)
 			elif rim >= 4.0: _gloss_frame(canvas, lit, inner_corner, alpha)
 	# 5 · The ink ring last, its smooth inner edge over the edges of everything under it.
 	if outline > 0.0: _box(canvas, outer, Color.TRANSPARENT, corner, ink, outline)
@@ -308,23 +349,130 @@ static func _round_rect(at: Rect2, corner: float) -> PackedVector2Array:
 	return points
 
 
-## A board's gloss: a thin stroke along the middle of its frame, round the top-left corner.
+## A board's gloss: a thin stroke along the middle of its frame round the top-left corner, and a short glint round the
+## top-right one — the light falls on both shoulders of a glossy window.
 func _gloss_frame(canvas: RID, body: Rect2, corner: float, alpha: float) -> void:
 	var rim := frame_drawn()
 	var bend := maxf(corner - rim * 0.5, rim)
-	var centre := body.position + Vector2(rim * 0.5 + bend, rim * 0.5 + bend)
 	var white := Color(1, 1, 1, clampf(shine, 0.0, 1.0) * 0.85 * alpha)
+	var width := maxf(1.2, rim * 0.4)
+	for right: bool in [false, true]:
+		var points := PackedVector2Array()
+		var colours := PackedColorArray()
+		var run := minf(body.size.x * (0.1 if right else 0.25), 40.0 if right else 96.0)
+		var drop := minf(body.size.y * (0.12 if right else 0.25), bend)
+		var centre := body.position + Vector2(rim * 0.5 + bend, rim * 0.5 + bend)
+		points.append(centre + Vector2(-bend, drop))
+		colours.append(Color(white, 0.0))
+		for step in 7:
+			var angle := PI + PI * 0.5 * float(step) / 6.0
+			points.append(centre + Vector2(cos(angle), sin(angle)) * bend)
+			colours.append(white if not right else Color(white, white.a * 0.8))
+		points.append(Vector2(centre.x + run, centre.y - bend))
+		colours.append(Color(white, 0.0))
+		if right: points = _mirrored(points, body)
+		RenderingServer.canvas_item_add_polyline(canvas, points, colours, width, true)
+
+
+## [param points] reflected across the vertical middle of [param body].
+static func _mirrored(points: PackedVector2Array, body: Rect2) -> PackedVector2Array:
+	var axis := body.position.x * 2.0 + body.size.x
+	var out := PackedVector2Array()
+	for point: Vector2 in points: out.append(Vector2(axis - point.x, point.y))
+	return out
+
+
+## The candy gloss: a sheen over the upper half of the body (white, fading out towards the middle), a glint round each
+## top corner and a short dash between them — a pill of an arcade menu. Kept off a key too small to carry it.
+func _candy(canvas: RID, body: Rect2, corner: float, alpha: float) -> void:
+	if body.size.y < 10.0 or body.size.x < 16.0: return
+	var strength := clampf(shine, 0.0, 1.0) * alpha
+	# The sheen: inside the body, as round as it, over its upper part; it melts away before the label's middle.
+	var inset := clampf(body.size.y * 0.07, 1.5, 4.0)
+	var sheen := Rect2(body.position + Vector2(inset, inset), Vector2(body.size.x - inset * 2.0, body.size.y * 0.52 - inset))
+	if sheen.size.x > 4.0 and sheen.size.y > 3.0:
+		_gradient(canvas, sheen, maxf(0.0, corner - inset), sheen.end.y, Color(1, 1, 1, 0.34 * strength),
+			Color(1, 1, 1, 0.04 * strength))
+	# The glints: a stroke up each side, round each top corner and a little way along the top.
+	var width := clampf(body.size.y * 0.085, 1.6, 4.0)
+	var edge := clampf(body.size.y * 0.17, 3.0, 9.0)
+	var bend := clampf(corner - edge, width, body.size.y * 0.5)
+	var white := Color(1, 1, 1, 0.92 * strength)
+	var rise := minf(body.size.y * 0.1, bend * 0.5)
+	var run := minf(body.size.x * 0.1, 28.0)
+	var centre := body.position + Vector2(edge + bend, edge + bend)
 	var points := PackedVector2Array()
 	var colours := PackedColorArray()
-	points.append(centre + Vector2(-bend, minf(body.size.y * 0.25, bend)))
+	points.append(centre + Vector2(-bend, rise))
 	colours.append(Color(white, 0.0))
 	for step in 7:
-		var angle := PI + PI * 0.5 * float(step) / 6.0
+		var angle := PI * 1.02 + PI * 0.48 * float(step) / 6.0
 		points.append(centre + Vector2(cos(angle), sin(angle)) * bend)
 		colours.append(white)
-	points.append(Vector2(centre.x + minf(body.size.x * 0.25, 96.0), centre.y - bend))
+	points.append(Vector2(centre.x + run, centre.y - bend))
 	colours.append(Color(white, 0.0))
-	RenderingServer.canvas_item_add_polyline(canvas, points, colours, maxf(1.2, rim * 0.4), true)
+	RenderingServer.canvas_item_add_polyline(canvas, points, colours, width, true)
+	RenderingServer.canvas_item_add_polyline(canvas, _mirrored(points, body), colours, width, true)
+	# The dash: a short capsule in the middle of the top, on the glints' line — only where the glints leave it room, and
+	# only on a key tall enough to keep it off its label (`DASH_HEIGHT`); a ribbon's title rides too high for one.
+	var room := body.size.x - (edge + bend + run) * 2.0
+	var dash := minf(clampf(body.size.x * 0.11, 8.0, 34.0), room - width * 4.0)
+	if dash >= width * 2.5 and body.size.y >= DASH_HEIGHT and tails <= 0.0:
+		var y := centre.y - bend
+		var pill := Rect2(Vector2(body.position.x + (body.size.x - dash) * 0.5, y), Vector2(dash, width))
+		RenderingServer.canvas_item_add_polygon(canvas, _round_rect(pill, width * 0.5),
+			PackedColorArray([Color(white, white.a * 0.95)]))
+
+
+## How wide each end of a ribbon is drawn in [param rect] (dp) — `tails`, cut back so the body keeps at least half
+## the face, and 0 on a face too small to fold.
+func ribbon_tails(rect: Rect2) -> float:
+	if tails <= 0.0 or sunken or rect.size.y < 12.0: return 0.0
+	return minf(tails, rect.size.x * 0.25)
+
+
+## A ribbon's two folded tails behind its [param body]: each a band that hangs a little lower than the body, cut into a
+## swallow's notch at its outer end, and a darker fold where it tucks under the body. Ink-outlined like the body.
+func _tails(canvas: RID, rect: Rect2, body: Rect2) -> void:
+	var tail := body.position.x - rect.position.x
+	var outline := maxf(0.0, border_width)
+	var alpha := bg_color.a
+	var ink := edge()
+	var top_y := rect.position.y + rect.size.y * 0.3
+	var notch := tail * 0.5
+	var face_top := Color(top().lerp(bottom(), 0.6), alpha)
+	var face_bottom := Color(bottom().lerp(shade(), 0.55), alpha)
+	var fold := Color(shade().lerp(ink, 0.2), alpha)
+	var tuck := minf(radius, body.size.y * 0.5) + outline
+	for right: bool in [false, true]:
+		# The band, from the outer notch to under the body.
+		var band := PackedVector2Array([
+			Vector2(rect.position.x, top_y),
+			Vector2(body.position.x + tuck, top_y),
+			Vector2(body.position.x + tuck, rect.end.y),
+			Vector2(rect.position.x, rect.end.y),
+			Vector2(rect.position.x + notch, (top_y + rect.end.y) * 0.5),
+		])
+		# The fold: where the band turns under the body's lower corner.
+		var crease := PackedVector2Array([
+			Vector2(body.position.x, body.end.y - outline),
+			Vector2(body.position.x + tuck, rect.end.y),
+			Vector2(body.position.x, rect.end.y),
+		])
+		if right:
+			band = _mirrored(band, rect)
+			crease = _mirrored(crease, rect)
+		var shades := PackedColorArray()
+		var span := maxf(1.0, rect.end.y - top_y)
+		for point: Vector2 in band: shades.append(face_top.lerp(face_bottom, clampf((point.y - top_y) / span, 0.0, 1.0)))
+		RenderingServer.canvas_item_add_polygon(canvas, band, shades)
+		RenderingServer.canvas_item_add_polygon(canvas, crease, PackedColorArray([fold]))
+		if outline > 0.0:
+			for shape: PackedVector2Array in [band, crease]:
+				var loop := shape.duplicate()
+				loop.append(shape[0])
+				RenderingServer.canvas_item_add_polyline(canvas, loop, PackedColorArray([Color(ink, ink.a * maxf(alpha, 0.0))]),
+					outline, true)
 
 
 ## The white gloss: a stroke that comes up the left side, round the top-left corner and fades along the top.

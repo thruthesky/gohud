@@ -117,8 +117,9 @@ func _cap(word: String) -> Control:
 	var box := PanelContainer.new()
 	box.name = "Cap"
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_stylebox_override(&"panel", GoUi.skin().chip_box(GoUi.color(GoTheme.BORDER)))
-	var text := GoStyle.label(word, GoTheme.ROLE_MICRO, GoUi.color(GoTheme.SECONDARY))
+	# The look's key cap (`GoSkin.kbd_box` — the border-coloured chip by default, a keycap on a lip in the arcade looks).
+	box.add_theme_stylebox_override(&"panel", GoUi.skin().kbd_box())
+	var text := GoStyle.label(word, GoTheme.ROLE_MICRO, GoUi.skin().kbd_ink())
 	# 🛑 Key names are **never translated** — they can only be found if they read exactly as engraved on the keyboard.
 	text.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	text.text_direction = Control.TEXT_DIRECTION_LTR

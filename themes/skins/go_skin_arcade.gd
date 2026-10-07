@@ -1,9 +1,10 @@
 ## Arcade skin — the arcade cabinet. Every part is painted like the menus of a bright arcade game (`GoStyleBoxArcade`):
 ## a thick dark ink outline, a body that runs from light on top to deeper below, a deeper lip that sinks when pressed and
-## a white gloss stroke round the top-left corner; panels are thick boards, a coloured frame round a pale well. A
-## window's title sits on a gold banner in white letters with an ink outline, its close button is a round red key,
-## quick slots are key caps that light a gold rim while they cool down, the badge is a gold plate and the joystick a
-## glossy pad with four arrows.
+## a candy gloss (a sheen over the upper half, a glint round both top corners); panels are thick boards, a coloured
+## frame round a pale well. A window's title sits on a gold ribbon with swallow tails, in white letters with an ink
+## outline, its close button is a round red key, quick slots are key caps that light a gold rim while they cool down,
+## the badge is a gold plate, a key hint (`GoKbd`) a keycap on a deep lip, a bar is split into chunks by ink ticks and
+## the joystick is a glossy pad with four arrows.
 ##
 ## The engine-drawn controls (buttons, fields, tabs, sliders, panels) get their paint from the theme
 ## (`tools/theme_arcade.py`); this skin draws the parts gohud draws in code, and the window chrome.
@@ -26,6 +27,10 @@ extends GoSkin
 @export var arcade_lip := 4
 ## The white gloss stroke on a painted part (0–1).
 @export var arcade_gloss := 0.85
+## The swallow-tailed ends of a window's title banner (dp) — 0 draws a plain gold key.
+@export var arcade_ribbon := 12.0
+## How many chunks a bar is split into when it leaves that to the look (`GoBar.segments = -1`) — 0 for smooth bars.
+@export var arcade_bar_ticks := 6
 @export_group("")
 
 ## A press: how far the part shrinks and how long it takes to shrink and to spring back (s).
@@ -38,6 +43,13 @@ const TITLE_OUTLINE := 6
 const NIGHT_INK := 0.55
 ## The least saturation of the small keys' lavender (`tools/theme_arcade.py` `LAVENDER_SATURATION`).
 const LAVENDER_SATURATION := 0.5
+## The corner of a small key standing in a row — a segment, a tab (`tools/theme_arcade.py` `KEY_RADIUS_SMALL`).
+const KEY_RADIUS_SMALL := 16.0
+## The room between two keys standing in a row (dp): each is drawn this much in from its cell, so the row reads as
+## separate keys without any size changing (`tools/theme_arcade.py` `ROW_GAP`).
+const ROW_GAP := 4.0
+## How far a ribbon's body stands above its tails (dp).
+const RIBBON_DROP := 4.0
 
 
 ## Is this the night look?
@@ -273,10 +285,17 @@ func segment_box(index: int, count: int, state: StringName) -> StyleBox:
 	var base := super(index, count, state)
 	if state == &"focus": return base
 	var chosen := state == &"pressed" or state == &"hover_pressed"
-	var face := key(blue() if chosen else lavender(), GoUi.metric(GoTheme.RADIUS_SMALL), 3, 2)
+	var face := key(blue() if chosen else lavender(), KEY_RADIUS_SMALL, 3, 2)
 	if state == &"hover": face.paint(lavender().lerp(Color.WHITE, 0.15))
 	face.pressed = chosen
+	_stand_apart(face)
 	return face.keep_margins(base)
+
+
+## Draws [param face] `ROW_GAP` / 2 in from each side of its cell — keys in a row stand apart, no size changes.
+static func _stand_apart(face: StyleBox) -> void:
+	face.expand_margin_left = -ROW_GAP * 0.5
+	face.expand_margin_right = -ROW_GAP * 0.5
 
 
 # ── Bars ──────────────────────────────────────────────────────────────
@@ -426,13 +445,53 @@ func wheel_band_box() -> StyleBox:
 	return face.keep_margins(base)
 
 
+## A `GoKbd` key is a keycap — a pale key on a deep lip, outlined in ink, the word in ink on it.
+func kbd_box() -> StyleBox:
+	var base := super()
+	var face := cap(6.0, Color.TRANSPARENT, 0.0, 3, 2)
+	face.keep_margins(base)
+	# The word sits on the key's face, above its lip (the sum, the size, stays).
+	var rise := minf(1.5, face.content_margin_top)
+	face.content_margin_top -= rise
+	face.content_margin_bottom += rise
+	return face
+
+
+## The word on the keycap — the text colour, which reads on the cap by day and by night.
+func kbd_ink() -> Color:
+	return readable_on(GoUi.color(GoTheme.TEXT), box_background(kbd_box()))
+
+
+func bar_ticks() -> int:
+	return maxi(0, arcade_bar_ticks)
+
+
+## A bar's chunks are cut by thick ink ticks across the groove and the fill — the segmented gauge of an arcade HUD.
+func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
+	if count < 2 or rect.size.x < float(count) * 6.0: return
+	var line := Color(ink(), 0.9)
+	var width := clampf(rect.size.y * 0.24, 1.5, 3.0)
+	for index in range(1, count):
+		var x := roundf(rect.position.x + rect.size.x * float(index) / float(count))
+		canvas.draw_line(Vector2(x, rect.position.y + 1.0), Vector2(x, rect.end.y - 1.0), line, width, true)
+
+
 # ── Window chrome and the feel of a press ─────────────────────────────
 
-## A window's title sits on a gold banner — a painted key with its lip and gloss.
+## A window's title sits on a gold banner — a painted key with its lip and gloss, its ends folded back into swallow
+## tails (`arcade_ribbon`), like the banner over an arcade game's menu.
 func title_plate_box() -> StyleBox:
-	var face := key(gold(), 14.0, 3, arcade_edge)
-	# Room at the ends for the round corners and the gloss — the title stays clear of both.
-	return face.pad(20.0, 6.0)
+	var face := key(gold(), 18.0, 3, arcade_edge)
+	var tail := maxf(0.0, float(arcade_ribbon))
+	face.tails = tail
+	face.tail_drop = RIBBON_DROP if tail > 0.0 else 0.0
+	# Room at the ends for the tails, the round corners and the gloss — the title stays clear of all three.
+	face.pad(20.0 + tail, 6.0)
+	# The body stands `tail_drop` above the tails: the text moves up with it (the sum, the size, stays).
+	var rise := minf(face.tail_drop * 0.5, face.content_margin_top)
+	face.content_margin_top -= rise
+	face.content_margin_bottom += rise
+	return face
 
 
 ## The title on the banner is white — `dress_title` gives it the ink outline it reads through.

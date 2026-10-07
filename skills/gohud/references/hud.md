@@ -75,6 +75,7 @@ Full rules: `theming.md` §4.
 | `ink` | transparent → `accent` | Use fill tokens: `GoUi.color(GoTheme.DANGER_FILL)` (`SUCCESS_FILL`, `WARNING_FILL`, `INFO_FILL`, `ACCENT_FILL`) |
 | `enum Readout { NONE, VALUE, FRACTION, PERCENT }` · `readout` | `FRACTION` | `320` · `320 / 500` · `64%` (formats are translatable) |
 | `thickness` | `8` | dp |
+| `segments` · `segment_count()` | `-1` → the look | Ticks that split the bar into chunks — decoration only, the fill still moves smoothly. `-1` asks the look (`GoSkin.bar_ticks()`: smooth by default, six chunks under the arcade looks), `0` is always smooth, `2`–`24` that many everywhere. The size never changes |
 | `ease_seconds` | `0.18` | 0 = instant; `reduce_motion` also makes it instant |
 | `set_values(value, maximum, animate := true)` · `set_ratio(ratio, animate := true)` · `value()` · `maximum()` | | Pass `animate = false` for the first fill |
 | `static format_amount(amount) -> String` · `static abbreviate(amount)` | | `12.3k`, `4.5m`, or `GoConfig.number_formatter` |

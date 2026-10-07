@@ -6,9 +6,11 @@
 script = ExtResource("script")
 skin_name = "arcade_light"
 alert_tint = 0.14
+arcade_bar_ticks = 6
 arcade_edge = 3
 arcade_gloss = 0.85
 arcade_lip = 4
+arcade_ribbon = 12.0
 badge_pad_x = 7
 badge_pad_y = 2
 joystick_base_alpha = 0.5

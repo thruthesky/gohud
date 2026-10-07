@@ -173,7 +173,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
 | `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
 | `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
-| `arcade_light` | An arcade cabinet: every key painted (`GoStyleBoxArcade` — a top-to-bottom gradient, a white gloss, a deeper lip that sinks when pressed, a navy ink outline) and labelled in white with an ink outline — green primary, blue keys, red danger, lavender small keys; thick boards with a coloured frame round a pale well; a gold title banner and a round red close key on windows; sky-blue page. `GoStyle.arcade_paint(node, colour)` paints one key its own colour | `GoSkinArcade` |
+| `arcade_light` | An arcade cabinet: every key a painted pill (`GoStyleBoxArcade` — a top-to-bottom gradient, a candy gloss, a deeper lip that sinks when pressed, a navy ink outline) and labelled in white with an ink outline — green primary, blue keys, red danger, lavender small keys, tabs standing apart; thick boards with a coloured frame round a pale well; gauges split into chunks (`GoBar.segments`), keycap key hints (`GoKbd`); a gold ribbon with swallow tails and a round red close key on windows; sky-blue page. `GoStyle.arcade_paint(node, colour)` paints one key its own colour | `GoSkinArcade` |
 | `arcade_dark` | The same arcade cabinet at night: navy boards and page, the same bright paints | `GoSkinArcade` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
@@ -584,7 +584,7 @@ Three custom `StyleBox` classes cover shapes `StyleBoxFlat` cannot make. All of 
 | `GoStyleBoxMedieval` | A forged frame with rivets, corner engraving, a bevel highlight and material grain |
 | `GoStyleBoxJelly` | A jelly candy: a chunky outline, a lighter top and deeper band, a white shine and a lip that sinks when pressed |
 | `GoStyleBoxComic` | A comic panel: a bold ink outline and a hard shadow down and to the right, sized by `GoConfig` |
-| `GoStyleBoxArcade` | A painted arcade key: a top-to-bottom gradient, a gloss stroke, a deeper lip and an ink outline; or a thick framed board |
+| `GoStyleBoxArcade` | A painted arcade pill: a top-to-bottom gradient, a candy gloss, a deeper lip and an ink outline; a thick framed board; or a ribbon with swallow tails |
 
 `GoStyle.surface()` returns whatever shape the skin produced. `GoStyle.box()`, `floating()` and
 `disc()` keep their promise of returning a `StyleBoxFlat`, so existing calling code that tweaks

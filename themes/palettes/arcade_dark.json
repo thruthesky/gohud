@@ -1,5 +1,5 @@
 {
- "_help": "An arcade game's menus: every button painted in its own colour with a gradient (light on top, deeper below), a thick dark ink outline, a deeper lip that sinks when pressed and a white gloss stroke; panels are thick boards — a coloured frame round a pale well; labels on painted keys are white with an ink outline. The paints come from this palette: the primary key is the success fill (green), the normal key the accent fill (blue), the small keys and the tabs not chosen the secondary colour lightened (lavender), the danger keys the danger fill (coral and red), window titles and tooltips the warning fill (gold). Edit the colours, the corners and the skin dials here, then run python3 addons/gohud/tools/make_theme.py arcade_dark. The shapes are tools/theme_arcade.py and themes/skins/go_skin_arcade.gd. 🛑 Never set a font: a Latin-only font turns Korean, Japanese and Chinese into empty boxes.",
+ "_help": "An arcade game's menus: every button painted in its own colour with a gradient (light on top, deeper below), a thick dark ink outline, a deeper lip that sinks when pressed and a candy gloss (a sheen, a glint round both top corners); every key a pill, the tabs standing apart, bars split into chunks (dial arcade_bar_ticks), the window title on a gold ribbon with swallow tails (dial arcade_ribbon); panels are thick boards — a coloured frame round a pale well; labels on painted keys are white with an ink outline. The paints come from this palette: the primary key is the success fill (green), the normal key the accent fill (blue), the small keys and the tabs not chosen the secondary colour lightened (lavender), the danger keys the danger fill (coral and red), window titles and tooltips the warning fill (gold). Edit the colours, the corners and the skin dials here, then run python3 addons/gohud/tools/make_theme.py arcade_dark. The shapes are tools/theme_arcade.py and themes/skins/go_skin_arcade.gd. 🛑 Never set a font: a Latin-only font turns Korean, Japanese and Chinese into empty boxes.",
  "id": "arcade_dark",
  "title": "Arcade Night",
  "dark": true,
@@ -16,7 +16,9 @@
    "joystick_ring_width": 3.0,
    "arcade_lip": 4,
    "arcade_edge": 3,
-   "arcade_gloss": 0.85
+   "arcade_gloss": 0.85,
+   "arcade_ribbon": 12.0,
+   "arcade_bar_ticks": 6
   }
  },
  "shape": {
