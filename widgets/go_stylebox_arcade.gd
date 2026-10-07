@@ -92,6 +92,10 @@ enum Gloss {
 const WELL_ROOM := 3.0
 
 
+## The least body height (dp) that carries the candy gloss's dash — on a lower key it would touch the label's top.
+const DASH_HEIGHT := 40.0
+
+
 ## The thinnest frame worth drawing (dp). Under it a board is drawn as a key cap: the well's colours inside the ink.
 const MIN_FRAME := 3.0
 
@@ -397,10 +401,11 @@ func _candy(canvas: RID, body: Rect2, corner: float, alpha: float) -> void:
 	colours.append(Color(white, 0.0))
 	RenderingServer.canvas_item_add_polyline(canvas, points, colours, width, true)
 	RenderingServer.canvas_item_add_polyline(canvas, _mirrored(points, body), colours, width, true)
-	# The dash: a short capsule in the middle of the top, on the glints' line — only where the glints leave it room.
+	# The dash: a short capsule in the middle of the top, on the glints' line — only where the glints leave it room, and
+	# only on a key tall enough to keep it off its label (`DASH_HEIGHT`); a ribbon's title rides too high for one.
 	var room := body.size.x - (edge + bend + run) * 2.0
 	var dash := minf(clampf(body.size.x * 0.11, 8.0, 34.0), room - width * 4.0)
-	if dash >= width * 2.5:
+	if dash >= width * 2.5 and body.size.y >= DASH_HEIGHT and tails <= 0.0:
 		var y := centre.y - bend
 		var pill := Rect2(Vector2(body.position.x + (body.size.x - dash) * 0.5, y), Vector2(dash, width))
 		RenderingServer.canvas_item_add_polygon(canvas, _round_rect(pill, width * 0.5),

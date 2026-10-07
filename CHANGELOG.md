@@ -8,7 +8,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 - **The arcade looks, closer to a real arcade party game's menus.** Taken from a shipping game's painted UI (Magnet
   Mayhem): every key is now a **pill** (corner 24; the small keys and the tabs 16) wearing a **candy gloss** — a soft
-  white sheen over the upper half, a glint round **both** top corners and a short dash between them — and a board's
+  white sheen over the upper half, a glint round **both** top corners and a short dash between them (on a key at least
+  40dp tall, never on the ribbon, so it stays off the label) — and a board's
   frame catches a glint on both shoulders. Tabs and segmented cells **stand apart** in their row (each drawn 2dp in
   from its cell, so no size changes). The slider groove is a chunky 10dp tube (still inside the 20dp knob, so the
   slider keeps its height) under a **white knob in a thick blue ring**; the switch track glints at both ends. A
@@ -29,6 +30,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - `tests/gohud_arcade_test.gd` checks the pills, the tabs standing apart, the slider groove inside its knob, the
   ribbon's padding and height, the keycap's size and contrast, the bar's chunks and that the other looks keep their
   smooth bars and chip key hints (279 checks).
+- `tests/site_widget_shots.gd` takes **`SHOT_LOOK`** (the look of the widgets and popups sets) — the 43 pictures under
+  `www/img/arcade/` are those sets shot in `arcade_light` / `arcade_dark`. The website's arcade pictures, gallery, popup
+  and skin shots are re-shot in the new look; the English and Korean front pages describe it.
 
 ## [1.3.0] - 2026-10-06
 
