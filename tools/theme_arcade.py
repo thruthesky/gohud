@@ -53,6 +53,17 @@ LIST_RADIUS = 6
 WELL_ROOM = 3
 # The least saturation of the small keys' lavender — any less and the key reads grey, and every key is painted.
 LAVENDER_SATURATION = 0.5
+# 💊 The corner of a key — round enough that a key of a normal height reads as the pill of an arcade menu; and of a
+# small key standing in a row (the compact keys, the tabs) — `GoSkinArcade.KEY_RADIUS_SMALL`. Under half a key's
+# height, never a full 999: the cell audit reads a 999 corner as "the text needs 300dp of room".
+KEY_RADIUS = 24
+KEY_RADIUS_SMALL = 16
+# The room between two keys standing in a row (dp): each is drawn half of it in from its cell — the tabs read as
+# separate keys and no size changes (`GoSkinArcade.ROW_GAP`).
+ROW_GAP = 4
+# 🎚 A slider's groove and fill: this much padding above and below — a chunky track (10dp) that still sits inside the
+# 20dp knob, so the slider's height is the knob's, as before.
+SLIDER_PAD = 5
 
 SHAPE = dict(
     kind="arcade",
@@ -208,8 +219,11 @@ def controls(pal):
         paint = go if state_on else off_track
         top, bottom, _ = tones(paint)
         defs = grad("t", top, bottom) + grad("k", cap_top, cap_bottom)
+        # A glint round each end of the track (the knob covers the one on its side) — the candy gloss of the keys.
         body = ('<rect x="1.5" y="2.5" width="37" height="19" rx="9.5" fill="url(#t)" stroke="%s" stroke-width="2.4"/>'
                 '<path d="M6 7.4 Q7.5 5.2 11 5.2" fill="none" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1.6"'
+                ' stroke-linecap="round"/>'
+                '<path d="M34 7.4 Q32.5 5.2 29 5.2" fill="none" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1.6"'
                 ' stroke-linecap="round"/>'
                 '<circle cx="%d" cy="12" r="7.2" fill="url(#k)" stroke="%s" stroke-width="2.2"/>'
                 '<path d="M%g 9.6 Q%g 8.2 %g 8.2" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>'
@@ -241,15 +255,18 @@ def controls(pal):
             body += '<circle cx="10" cy="10" r="4" fill="url(#d)" stroke="%s" stroke-width="1.4"/>' % line
         return wrap(20, 20, defs, body, disabled)
 
-    def grabber(r, faded=False, halo=False):
-        defs = grad("g", cap_top, cap_bottom)
-        body = ""
-        if halo:
-            body += '<circle cx="10" cy="10" r="10" fill="%s" fill-opacity=".28"/>' % _svg(blue)
-        body += ('<circle cx="10" cy="10" r="%g" fill="url(#g)" stroke="%s" stroke-width="2.2"/>'
-                 '<path d="M%g %g Q%g %g %g %g" fill="none" stroke="#FFFFFF" stroke-width="1.4" '
-                 'stroke-linecap="round"/>') % (r, line, 10 - r * 0.55, 10 - r * 0.05, 10 - r * 0.5, 10 - r * 0.5,
-                                                10 - r * 0.05, 10 - r * 0.62)
+    def grabber(r, faded=False, lit=False):
+        """The knob of an arcade slider: a white cap in a thick painted ring, outlined in ink, a glint on the ring —
+        the handle of an arcade game's settings. Held or hovered (`lit`) the ring is a little larger and lighter."""
+        ring_top, ring_bottom, _ = tones(_mix(blue, WHITE, 0.15) if lit else blue)
+        defs = grad("g", cap_top, cap_bottom) + grad("b", ring_top, ring_bottom)
+        inner = r * 0.56
+        body = ('<circle cx="10" cy="10" r="%g" fill="url(#b)" stroke="%s" stroke-width="1.8"/>'
+                '<circle cx="10" cy="10" r="%g" fill="url(#g)" stroke="%s" stroke-opacity=".55" stroke-width="1"/>'
+                '<path d="M%g %g A%g %g 0 0 1 %g %g" fill="none" stroke="#FFFFFF" stroke-opacity=".85" '
+                'stroke-width="1.3" stroke-linecap="round"/>'
+                ) % (r, line, inner, _svg(ring_bottom), 10 - r * 0.72, 10 - r * 0.2, r * 0.76, r * 0.76,
+                     10 - r * 0.2, 10 - r * 0.72)
         return wrap(20, 20, defs, body, faded)
 
     def arrow(path):
@@ -267,9 +284,9 @@ def controls(pal):
         for disabled in (False, True):
             out["check_%s%s" % ("on" if state_on else "off", "_disabled" if disabled else "")] = check(state_on, disabled)
             out["radio_%s%s" % ("on" if state_on else "off", "_disabled" if disabled else "")] = radio(state_on, disabled)
-    out["grabber"] = grabber(7.5)
-    out["grabber_highlight"] = grabber(7.5, halo=True)
-    out["grabber_disabled"] = grabber(6.5, faded=True)
+    out["grabber"] = grabber(8.6)
+    out["grabber_highlight"] = grabber(9.2, lit=True)
+    out["grabber_disabled"] = grabber(7.5, faded=True)
     out["arrow_down"] = arrow("M4 6l4 4 4-4")
     out["arrow_right"] = arrow("M6 4l4 4-4 4")
     out["arrow_left"] = arrow("M10 4 6 8l4 4")
@@ -305,13 +322,14 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
 
     def key(bid, colours=None, lip=LIP, edge=EDGE, radius=None, pressed=False, sunken=False, shine=GLOSS,
             centre=True, edge_colour=None, glow=None, frame=0, frame_colours=None, well=None, ring=None, solid=False,
-            pad=None):
+            pad=None, apart=False):
         """Reshape box `bid` into an arcade face. `colours` is (top, bottom, lip) — a painted key; `well` (top, bottom)
         is the pale inside of a board whose frame is `frame` wide in `frame_colours`; `sunken` turns it in (a field);
         `ring` makes it an outline only (a focus ring) of that colour, sitting just inside the ink; `glow` a halo of
         that colour round a raised key. `centre` moves the label up by half the lip so it sits in the middle. `solid`
         fills a face `build()` left hollow (a tab not chosen is a painted key here). `pad` (left, top, right, bottom) raises
-        each side's padding to at least that much (room for a thick frame)."""
+        each side's padding to at least that much (room for a thick frame). `apart` draws the face `ROW_GAP` / 2 in from
+        each side of its cell — a key standing in a row with others (a tab)."""
         f = field(bid)
         if f is None:
             return
@@ -336,7 +354,9 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             for side in ("left", "top", "right", "bottom"):
                 lines.append("content_margin_%s = %s" % (side, f.get("border_width_%s" % side, "0")))
         for side in ("left", "top", "right", "bottom"):
-            if "expand_margin_%s" % side in f:
+            if apart and side in ("left", "right"):
+                lines.append("expand_margin_%s = %g" % (side, -ROW_GAP / 2.0))
+            elif "expand_margin_%s" % side in f:
                 lines.append("expand_margin_%s = %s" % (side, f["expand_margin_%s" % side]))
         if ring is not None:
             # A ring just inside the ink of the face under it, so the key keeps its outline.
@@ -435,15 +455,15 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     families = [("btn", "blue"), ("btn_primary", "go"), ("btn_danger", "coral"), ("btn_danger_solid", "red")]
     for prefix, name in families:
         normal = "btn_normal" if prefix == "btn" else prefix
-        key(normal, fitted[name])
-        key(prefix + "_hover", fitted[name + "_hover"])
-        key(prefix + "_pressed", fitted[name + "_down"], pressed=True)
+        key(normal, fitted[name], radius=KEY_RADIUS)
+        key(prefix + "_hover", fitted[name + "_hover"], radius=KEY_RADIUS)
+        key(prefix + "_pressed", fitted[name + "_down"], pressed=True, radius=KEY_RADIUS)
     # The raised twins (`GoConfig.button_glow`, `GoStyle.glow()`) wear a gold halo — the chosen stage of a level map.
     for prefix, name in (("btn_primary_glow", "go"), ("btn_danger_solid_glow", "red")):
-        key(prefix, fitted[name], glow=gold)
-        key(prefix + "_hover", fitted[name + "_hover"], glow=gold)
-        key(prefix + "_pressed", fitted[name + "_down"], pressed=True, glow=gold)
-    key("btn_disabled", disabled, lip=LIP_SMALL, shine=0, edge_colour=faint)
+        key(prefix, fitted[name], glow=gold, radius=KEY_RADIUS)
+        key(prefix + "_hover", fitted[name + "_hover"], glow=gold, radius=KEY_RADIUS)
+        key(prefix + "_pressed", fitted[name + "_down"], pressed=True, glow=gold, radius=KEY_RADIUS)
+    key("btn_disabled", disabled, lip=LIP_SMALL, shine=0, edge_colour=faint, radius=KEY_RADIUS)
     # The focus rings — just inside the ink, white on a deep paint and ink on a light one, so the ring stands off
     # the key it is on (3:1). Each painted family gets its own.
     def ring_on(name):
@@ -454,17 +474,18 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         if bid != "btn_focus":
             twin("btn_focus", bid)
     for bid, name in rings:
-        key(bid, ring=ring_on(name))
+        key(bid, ring=ring_on(name), radius=KEY_RADIUS)
     put("GoPrimaryButton/styles/focus", "focus_go")
     put("GoDangerSolidButton/styles/focus", "focus_red")
     put("GoDangerButton/styles/focus", "focus_coral")
-    key("btn_focus_on_fill", ring=ring_on("go"))
+    key("btn_focus_on_fill", ring=ring_on("go"), radius=KEY_RADIUS)
     key("focus_soft", ring=gold if not dark else WHITE, edge=EDGE_SMALL)
     # The small keys — lavender, a smaller lip.
-    key("compact_normal", fitted["lavender"], lip=LIP_SMALL, edge=EDGE_SMALL, radius=RS)
-    key("compact_hover", fitted["lavender_hover"], lip=LIP_SMALL, edge=EDGE_SMALL, radius=RS)
-    key("compact_pressed", fitted["lavender_down"], lip=LIP_SMALL, edge=EDGE_SMALL, radius=RS, pressed=True)
-    key("compact_disabled", disabled, lip=LIP_SMALL, edge=EDGE_SMALL, radius=RS, shine=0, edge_colour=faint)
+    KS = KEY_RADIUS_SMALL
+    key("compact_normal", fitted["lavender"], lip=LIP_SMALL, edge=EDGE_SMALL, radius=KS)
+    key("compact_hover", fitted["lavender_hover"], lip=LIP_SMALL, edge=EDGE_SMALL, radius=KS)
+    key("compact_pressed", fitted["lavender_down"], lip=LIP_SMALL, edge=EDGE_SMALL, radius=KS, pressed=True)
+    key("compact_disabled", disabled, lip=LIP_SMALL, edge=EDGE_SMALL, radius=KS, shine=0, edge_colour=faint)
     # List rows — key caps stacked in a column.
     key("list_normal", cap, lip=LIP_SMALL, edge=EDGE_SMALL, radius=LIST_RADIUS, shine=0.6)
     key("list_hover", cap_hover, lip=LIP_SMALL, edge=EDGE_SMALL, radius=LIST_RADIUS, shine=0.6)
@@ -503,10 +524,11 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     key("edit_focus", (surface, _mix(surface, soft, 0.6), _mix(surface, paint["blue"], 0.3)), sunken=True, radius=RS,
         edge=EDGE, edge_colour=_solid(pal["accent"]))
 
-    # ── Tabs — separate painted keys: the chosen one blue, the others lavender. ──
-    key("tab_selected", fitted["blue"], lip=LIP_SMALL, edge=EDGE_SMALL + 0.5, radius=RS)
-    key("tab_unselected", fitted["lavender"], lip=LIP_SMALL, edge=EDGE_SMALL + 0.5, radius=RS, solid=True)
-    key("tab_hovered", fitted["lavender_hover"], lip=LIP_SMALL, edge=EDGE_SMALL + 0.5, radius=RS, solid=True)
+    # ── Tabs — separate painted keys standing apart in their row: the chosen one blue, the others lavender. ──
+    key("tab_selected", fitted["blue"], lip=LIP_SMALL, edge=EDGE_SMALL + 0.5, radius=KS, apart=True)
+    key("tab_unselected", fitted["lavender"], lip=LIP_SMALL, edge=EDGE_SMALL + 0.5, radius=KS, solid=True, apart=True)
+    key("tab_hovered", fitted["lavender_hover"], lip=LIP_SMALL, edge=EDGE_SMALL + 0.5, radius=KS, solid=True,
+        apart=True)
 
     # ── Folding sections — the title is a key cap; its body stays the generator's soft panel. ──
     for bid in ("fold_title", "fold_title_collapsed"):
@@ -522,7 +544,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             continue
         groove = _parse_color(g["bg_color"])
         key(bid, (groove, _mix(_solid(groove), line, 0.08), _mix(_solid(groove), line, 0.25)), sunken=True,
-            edge=EDGE_SMALL, radius=RS if bid == "bar_bg" else 4, centre=False)
+            edge=EDGE_SMALL, radius=RS if bid == "bar_bg" else SLIDER_PAD, centre=False,
+            pad=None if bid == "bar_bg" else [0, SLIDER_PAD, 0, SLIDER_PAD])
     for bid in ("bar_fill", "slider_grab", "slider_grab_hover"):
         g = field(bid)
         if g is None or "bg_color" not in g:
@@ -531,7 +554,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         # A bar's or a slider's fill is a tube with its own ink line, so where it ends reads at a glance whatever its
         # colour — and the slider's fill lies in its groove instead of over it.
         key(bid, (colour, None, None), lip=0, edge=EDGE_SMALL,
-            radius=RS if bid == "bar_fill" else 4, centre=False, shine=0.75)
+            radius=RS if bid == "bar_fill" else SLIDER_PAD, centre=False, shine=0.75,
+            pad=None if bid == "bar_fill" else [0, SLIDER_PAD, 0, SLIDER_PAD])
     for bid in ("scroll_grab", "scroll_grab_hover"):
         if field(bid) is not None:
             key(bid, (fitted["lavender"][0], fitted["lavender"][1], fitted["lavender"][2]), lip=0, edge=EDGE_SMALL - 0.5,

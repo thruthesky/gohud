@@ -292,6 +292,18 @@ func chip_ink(color: Color) -> Color:
 	return readable_on(color, back)
 
 
+## A key cap of `GoKbd` — the key a hint names ("Esc", "Shift"). The default is the chip in the border colour, as
+## before; a look with a key of its own (the arcade keycap) overrides it. 🛑 Keep the padding (`keep_margins`) — the cap
+## is measured to fit its word.
+func kbd_box() -> StyleBox:
+	return chip_box(GoUi.color(GoTheme.BORDER))
+
+
+## The word engraved on a `GoKbd` cap. The default is the secondary text colour, as before.
+func kbd_ink() -> Color:
+	return GoUi.color(GoTheme.SECONDARY)
+
+
 ## Text color laid over the quick-slot panel (remaining time and the like).
 func slot_ink(accent: Color, lit: bool) -> Color:
 	var back := blend(box_background(slot_box(accent, lit)), GoUi.color(GoTheme.SURFACE_SOFT))
@@ -1102,6 +1114,22 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: f
 	canvas.draw_circle(center, radius, Color(base, joystick_base_alpha))
 	canvas.draw_circle(knob, knob_radius, Color(ink, 0.85 if active else 0.55))
 	canvas.draw_arc(center, radius, 0, TAU, 48, Color(ink, joystick_ring_alpha), joystick_ring_width, true)
+
+
+## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
+## smooth bar — the default; the arcade looks split a bar into chunky segments.
+func bar_ticks() -> int:
+	return 0
+
+
+## The ticks that split a bar into [param count] chunks, over the whole of [param rect] (the groove and the fill) —
+## decoration only, the fill still moves smoothly. The default cuts thin notches in the surface colour.
+func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
+	if count < 2 or rect.size.x < float(count) * 4.0: return
+	var notch := Color(GoUi.color(GoTheme.SURFACE), 0.85)
+	for index in range(1, count):
+		var x := roundf(rect.position.x + rect.size.x * float(index) / float(count))
+		canvas.draw_line(Vector2(x, rect.position.y), Vector2(x, rect.end.y), notch, 1.0)
 
 
 ## The arrow reaching from the coach-mark card to its target.

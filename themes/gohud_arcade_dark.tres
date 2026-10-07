@@ -38,7 +38,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_hover"]
 script = ExtResource("arcade")
@@ -54,7 +54,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_pressed"]
 script = ExtResource("arcade")
@@ -72,7 +72,7 @@ shine = 0.85
 lip = 4
 pressed = true
 sink = 3
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_disabled"]
 script = ExtResource("arcade")
@@ -88,7 +88,7 @@ border_width = 3
 band = 0
 shine = 0
 lip = 3
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_focus"]
 script = ExtResource("arcade")
@@ -102,7 +102,7 @@ border_color = Color(1, 1, 1, 1)
 border_width = 3
 lip = 0
 shine = 0
-radius = 13
+radius = 21
 expand_margin_left = -3
 expand_margin_top = -3
 expand_margin_right = -3
@@ -120,7 +120,7 @@ border_color = Color(0.0300001, 0.0405882, 0.09, 1)
 border_width = 3
 lip = 0
 shine = 0
-radius = 13
+radius = 21
 expand_margin_left = -3
 expand_margin_top = -3
 expand_margin_right = -3
@@ -140,7 +140,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_primary_hover"]
 script = ExtResource("arcade")
@@ -156,7 +156,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_primary_pressed"]
 script = ExtResource("arcade")
@@ -174,7 +174,7 @@ shine = 0.85
 lip = 4
 pressed = true
 sink = 3
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_primary_glow"]
 script = ExtResource("arcade")
@@ -190,7 +190,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 shadow_color = Color(1, 0.698039, 0.117647, 1)
 shadow_size = 4
 shadow_offset = Vector2(0, 0)
@@ -209,7 +209,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 shadow_color = Color(1, 0.698039, 0.117647, 1)
 shadow_size = 4
 shadow_offset = Vector2(0, 0)
@@ -230,7 +230,7 @@ shine = 0.85
 lip = 4
 pressed = true
 sink = 3
-radius = 16
+radius = 24
 shadow_color = Color(1, 0.698039, 0.117647, 1)
 shadow_size = 4
 shadow_offset = Vector2(0, 0)
@@ -249,7 +249,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_danger_hover"]
 script = ExtResource("arcade")
@@ -265,7 +265,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_danger_solid"]
 script = ExtResource("arcade")
@@ -281,7 +281,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_danger_solid_hover"]
 script = ExtResource("arcade")
@@ -297,7 +297,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_danger_solid_pressed"]
 script = ExtResource("arcade")
@@ -315,7 +315,7 @@ shine = 0.85
 lip = 4
 pressed = true
 sink = 3
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="btn_danger_solid_glow"]
 script = ExtResource("arcade")
@@ -331,7 +331,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 shadow_color = Color(1, 0.698039, 0.117647, 1)
 shadow_size = 4
 shadow_offset = Vector2(0, 0)
@@ -350,7 +350,7 @@ border_width = 3
 band = 0
 shine = 0.85
 lip = 4
-radius = 16
+radius = 24
 shadow_color = Color(1, 0.698039, 0.117647, 1)
 shadow_size = 4
 shadow_offset = Vector2(0, 0)
@@ -371,7 +371,7 @@ shine = 0.85
 lip = 4
 pressed = true
 sink = 3
-radius = 16
+radius = 24
 shadow_color = Color(1, 0.698039, 0.117647, 1)
 shadow_size = 4
 shadow_offset = Vector2(0, 0)
@@ -390,7 +390,7 @@ border_width = 2
 band = 0
 shine = 0.85
 lip = 3
-radius = 10
+radius = 16
 
 [sub_resource type="StyleBox" id="compact_hover"]
 script = ExtResource("arcade")
@@ -406,7 +406,7 @@ border_width = 2
 band = 0
 shine = 0.85
 lip = 3
-radius = 10
+radius = 16
 
 [sub_resource type="StyleBoxFlat" id="icon_hover"]
 bg_color = Color(0.94902, 0.960784, 1, 0.1)
@@ -710,9 +710,9 @@ radius = 3
 [sub_resource type="StyleBox" id="slider_track"]
 script = ExtResource("arcade")
 content_margin_left = 0
-content_margin_top = 3
+content_margin_top = 5
 content_margin_right = 0
-content_margin_bottom = 3
+content_margin_bottom = 5
 bg_color = Color(0.054902, 0.078431, 0.188235, 0.9)
 bottom_color = Color(0.0529099, 0.0754036, 0.180376, 1)
 shade_color = Color(0.0486765, 0.0689703, 0.163676, 1)
@@ -722,35 +722,35 @@ band = 0
 shine = 0
 lip = 0
 sunken = true
-radius = 4
+radius = 5
 
 [sub_resource type="StyleBox" id="slider_grab"]
 script = ExtResource("arcade")
 content_margin_left = 0
-content_margin_top = 3
+content_margin_top = 5
 content_margin_right = 0
-content_margin_bottom = 3
+content_margin_bottom = 5
 bg_color = Color(0.154863, 0.420775, 0.970627, 1)
 border_color = Color(0.0300001, 0.0405882, 0.09, 1)
 border_width = 2
 band = 0
 shine = 0.75
 lip = 0
-radius = 4
+radius = 5
 
 [sub_resource type="StyleBox" id="slider_grab_hover"]
 script = ExtResource("arcade")
 content_margin_left = 0
-content_margin_top = 3
+content_margin_top = 5
 content_margin_right = 0
-content_margin_bottom = 3
+content_margin_bottom = 5
 bg_color = Color(0.154863, 0.420775, 0.970627, 1)
 border_color = Color(0.0300001, 0.0405882, 0.09, 1)
 border_width = 2
 band = 0
 shine = 0.75
 lip = 0
-radius = 4
+radius = 5
 
 [sub_resource type="StyleBox" id="bar_bg"]
 script = ExtResource("arcade")
@@ -890,6 +890,8 @@ content_margin_left = 20
 content_margin_top = 6.5
 content_margin_right = 20
 content_margin_bottom = 9.5
+expand_margin_left = -2
+expand_margin_right = -2
 bg_color = Color(0.306988, 0.525035, 0.975914, 1)
 bottom_color = Color(0.145571, 0.395529, 0.912389, 1)
 shade_color = Color(0.108404, 0.294543, 0.679439, 1)
@@ -898,7 +900,7 @@ border_width = 2.5
 band = 0
 shine = 0.85
 lip = 3
-radius = 10
+radius = 16
 
 [sub_resource type="StyleBox" id="tab_unselected"]
 script = ExtResource("arcade")
@@ -906,6 +908,8 @@ content_margin_left = 20
 content_margin_top = 6.5
 content_margin_right = 20
 content_margin_bottom = 9.5
+expand_margin_left = -2
+expand_margin_right = -2
 bg_color = Color(0.46285, 0.499371, 0.750199, 1)
 bottom_color = Color(0.329401, 0.371267, 0.658801, 1)
 shade_color = Color(0.248443, 0.28002, 0.496887, 1)
@@ -914,7 +918,7 @@ border_width = 2.5
 band = 0
 shine = 0.85
 lip = 3
-radius = 10
+radius = 16
 
 [sub_resource type="StyleBox" id="tab_hovered"]
 script = ExtResource("arcade")
@@ -922,6 +926,8 @@ content_margin_left = 20
 content_margin_top = 6.5
 content_margin_right = 20
 content_margin_bottom = 9.5
+expand_margin_left = -2
+expand_margin_right = -2
 bg_color = Color(0.527246, 0.560958, 0.792492, 1)
 bottom_color = Color(0.398062, 0.436708, 0.702124, 1)
 shade_color = Color(0.296429, 0.325208, 0.522859, 1)
@@ -930,7 +936,7 @@ border_width = 2.5
 band = 0
 shine = 0.85
 lip = 3
-radius = 10
+radius = 16
 
 [sub_resource type="StyleBox" id="btn_danger_pressed"]
 script = ExtResource("arcade")
@@ -948,7 +954,7 @@ shine = 0.85
 lip = 4
 pressed = true
 sink = 3
-radius = 16
+radius = 24
 
 [sub_resource type="StyleBox" id="compact_pressed"]
 script = ExtResource("arcade")
@@ -966,7 +972,7 @@ shine = 0.85
 lip = 3
 pressed = true
 sink = 3
-radius = 10
+radius = 16
 
 [sub_resource type="StyleBox" id="compact_disabled"]
 script = ExtResource("arcade")
@@ -982,7 +988,7 @@ border_width = 2
 band = 0
 shine = 0
 lip = 3
-radius = 10
+radius = 16
 
 [sub_resource type="StyleBox" id="list_disabled"]
 script = ExtResource("arcade")
@@ -1012,7 +1018,7 @@ border_color = Color(0.0300001, 0.0405882, 0.09, 1)
 border_width = 3
 lip = 0
 shine = 0
-radius = 13
+radius = 21
 expand_margin_left = -3
 expand_margin_top = -3
 expand_margin_right = -3
@@ -1030,7 +1036,7 @@ border_color = Color(1, 1, 1, 1)
 border_width = 3
 lip = 0
 shine = 0
-radius = 13
+radius = 21
 expand_margin_left = -3
 expand_margin_top = -3
 expand_margin_right = -3
@@ -1048,7 +1054,7 @@ border_color = Color(0.0300001, 0.0405882, 0.09, 1)
 border_width = 3
 lip = 0
 shine = 0
-radius = 13
+radius = 21
 expand_margin_left = -3
 expand_margin_top = -3
 expand_margin_right = -3

@@ -57,9 +57,18 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 ## Seconds to glide over when the value changes. 0 means instant.
 @export_range(0.0, 1.0, 0.01) var ease_seconds := 0.18
 
+## 🧱 Ticks that split the bar into this many chunks — the segmented gauge of an arcade HUD. Decoration only: the fill
+## still moves smoothly. -1 leaves it to the look (`GoSkin.bar_ticks()` — one smooth bar by default, six chunks in the
+## arcade looks); 0 is always one smooth bar.
+@export_range(-1, 24) var segments := -1:
+	set(value):
+		segments = value
+		if is_instance_valid(_ticks): _ticks.queue_redraw()
+
 var _name_label: Label
 var _value_label: Label
 var _bar: ProgressBar
+var _ticks: Control
 var _value := 0.0
 var _maximum := 1.0
 var _tween: Tween
@@ -100,6 +109,12 @@ func _init() -> void:
 	_bar.max_value = 1.0
 	_bar.step = 0.0001
 	column.add_child(_bar)
+	_ticks = Control.new()
+	_ticks.name = "Ticks"
+	_ticks.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ticks.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_ticks.draw.connect(_draw_ticks)
+	_bar.add_child(_ticks)
 	# 🛑 A `Control` does **not inherit** the minimum height of its child container — left alone, one bar is measured
 	#    as taking only its own thickness (8dp), so in a vertical stack the name row and the bar below draw on top
 	#    of each other (measured on a 2026-09-12 screenshot: the HP/MP/XP rows overlapped).
@@ -155,6 +170,17 @@ func maximum() -> float:
 func _restyle() -> void:
 	if not is_instance_valid(_bar): return
 	GoStyle.tint_progress(_bar, ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT))
+	if is_instance_valid(_ticks): _ticks.queue_redraw()
+
+
+## How many chunks the bar shows now — `segments`, or the look's choice when that is -1.
+func segment_count() -> int:
+	return segments if segments >= 0 else GoUi.skin().bar_ticks()
+
+
+func _draw_ticks() -> void:
+	var count := segment_count()
+	if count >= 2: GoUi.skin().draw_bar_ticks(_ticks, Rect2(Vector2.ZERO, _ticks.size), count)
 
 
 ## 🛑 The readout now goes through a **translation key** — the format has to change with the language

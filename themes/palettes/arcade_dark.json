@@ -16,7 +16,9 @@
    "joystick_ring_width": 3.0,
    "arcade_lip": 4,
    "arcade_edge": 3,
-   "arcade_gloss": 0.85
+   "arcade_gloss": 0.85,
+   "arcade_ribbon": 12.0,
+   "arcade_bar_ticks": 6
   }
  },
  "shape": {
