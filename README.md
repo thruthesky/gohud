@@ -1,75 +1,246 @@
-# gohud
+<h1 align="center">gohud</h1>
 
-**Homepage:** [https://thruthesky.github.io/gohud/](https://thruthesky.github.io/gohud/)
-
-[Theming guide](https://thruthesky.github.io/gohud/theming.html) ·
-[Widget reference](https://thruthesky.github.io/gohud/widgets.html) ·
-[한국어 사이트](https://thruthesky.github.io/gohud/ko/) ·
-[한국어 README](README.ko.md) ·
-[Changelog](CHANGELOG.md) ·
-[GitHub](https://github.com/thruthesky/gohud)
-
-**A customizable HUD & UI kit for Godot 4.7+.** Floating surfaces, bottom sheets, dialogs, forms,
-snackbars, prompt cards, coach marks, HUD bars, quick slots and a virtual joystick — driven by one
-theme and one swappable icon set, and aware of safe areas, virtual keyboards, RTL languages and touch.
-Fourteen built-in presets change colours **and** shapes in one line: default, sci-fi, medieval, Material 3,
-arcade, comic and kids, each in dark and light.
-
-<p>
-  <img src="https://thruthesky.github.io/gohud/img/preset-default-dark.png" alt="The gohud gallery with the default_dark preset" width="250">
-  <img src="https://thruthesky.github.io/gohud/img/preset-scifi-dark.png" alt="The same gallery with the scifi_dark preset" width="250">
+<p align="center">
+  <b>Game UI for Godot 4.7+ — HUDs, menus, dialogs, sheets, forms and app screens in fourteen looks.</b><br>
+  Pure GDScript · MIT · touch, safe-area, keyboard and RTL aware · built for AI coding
 </p>
 
-> Drop it in and it works. Enabling the editor plugin only adds conveniences.
+<p align="center">
+  <a href="https://thruthesky.github.io/gohud/">Homepage</a> ·
+  <a href="https://thruthesky.github.io/gohud/widgets-catalog.html">All widgets</a> ·
+  <a href="https://thruthesky.github.io/gohud/theming.html">Theming guide</a> ·
+  <a href="https://thruthesky.github.io/gohud/ai.html">AI setup</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="https://thruthesky.github.io/gohud/ko/">한국어 사이트</a>
+</p>
 
-**Version 1.3.0.** Six new looks — arcade, comic and kids, each dark and light, for fourteen presets in all —
-the Material 3 Expressive presets with app-screen widgets, the widgets a Flutter app reaches for (a scaffold, lazy
-lists, pull to refresh, swipe rows, tab pages, reordering, pinch and zoom, date, time and wheel pickers), edge and
-side bars with `GoGrid`, `GoChoiceColumn` for a HUD side bar, and a demo app whose 31-chapter tour plays itself — the
-[changelog](CHANGELOG.md) lists them. Work done since is
-collected under *Unreleased* there: raise the version in `package.json` and the next `tools/package.sh`
-run releases it.
+<p align="center">
+  <img src="https://thruthesky.github.io/gohud/img/showcase-medieval-quests.webp" alt="A character sheet, a satchel of quick slots and a quest journal in the medieval_dark preset" width="860">
+</p>
 
-- **Fourteen presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and
-  icons together — rounded default panels, chamfered sci-fi panels with neon glow, forged medieval
-  frames with engraved icons, Material 3 pills and surfaces for app screens, painted arcade keys, inked
-  comic panels, or jelly-candy keys for children.
+> **Drop it in and it works.** Copy the folder to `res://addons/gohud/` — no autoload, no GDExtension, no project
+> setup. Enabling the editor plugin only adds conveniences.
+
+**Version 1.3.0.** Six new looks — arcade, comic and kids, each dark and light, for fourteen presets in all — the
+Material 3 Expressive presets with app-screen widgets, the widgets a Flutter app reaches for (a scaffold, lazy lists,
+pull to refresh, swipe rows, tab pages, reordering, pinch and zoom, date, time and wheel pickers), edge and side bars
+with `GoGrid`, `GoChoiceColumn` for a HUD side bar, and a demo app whose 31-chapter tour plays itself.
+Since then (*Unreleased* in the [changelog](CHANGELOG.md)): the arcade looks were repainted closer to a real arcade
+party game — pill keys with a candy gloss, tabs that stand apart, a gold title ribbon with swallow tails, status bars
+split into chunks (`GoBar.segments`) and key hints drawn as keycaps — and a scrolled list now stops at a window's
+frame instead of sliding over it. Raise the version in `package.json` and the next `tools/package.sh` run releases it.
+
+## Contents
+
+- [Why gohud](#why-gohud)
+- [Fourteen looks, one line](#fourteen-looks-one-line)
+- [Install](#install) — [with your AI agent](#let-your-ai-coding-agent-install-it) · [Asset Store or ZIP](#from-the-asset-store-or-a-release-zip) · [git submodule](#as-a-git-submodule)
+- [Quick start](#quick-start)
+- [A tour in pictures](#a-tour-in-pictures)
+- Reference: [Presets](#presets--colours-and-shape) · [Configuration](#configuration) · [Icons](#icons) ·
+  [Theming](#theming) · [Widgets](#widget-reference) · [Plugin](#plugin) · [Responsive](#responsive-behaviour) ·
+  [Localization](#localization) · [Sound and haptics](#sound-and-haptics) · [Accessibility](#accessibility)
+- [Verified](#verified) · [Examples](#examples) · [Website](#documentation-website) · [Development](#development) · [License](#license)
+
+## Why gohud
+
+- **Fourteen presets, one line.** `GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)` swaps theme, skin and icons
+  together — rounded default panels, chamfered sci-fi panels with neon glow, forged medieval frames with engraved
+  icons, Material 3 pills and surfaces for app screens, painted arcade keys, inked comic panels, or jelly-candy keys
+  for children. Colours **and** shapes change.
+- **86 classes of widgets and services.** Floating windows, bottom sheets, `await`-able dialogs, forms, snackbars, prompt cards, coach
+  marks, HUD bars, quick slots, inventories, a virtual joystick, charts, pickers, app bars, navigation bars, lazy
+  lists and more — see the [tour](#a-tour-in-pictures) or the [All widgets](https://thruthesky.github.io/gohud/widgets-catalog.html) page.
 - **1,287 icons, called by name.** Widgets ask for icons by name (`GoIconSet.CLOSE`); 84 are always there, and
   `GoUi.add_icons(GoIconLibrary.icon_set())` adds the 187-icon game set and a 1,000-icon library under any preset.
-  Search them in code (`GoUi.icons().search("rain")`) or on the website. Point `GoConfig.icons` at your own SVG set,
-  folder or icon font and every widget follows — or override just a few.
-- **Themes are data.** `new_theme.py` writes one JSON file that inherits a built-in theme. The builder
-  generates the theme, its control artwork and skin dials, and pushes text, borders and the accent until
-  they pass WCAG contrast checks.
-- **One settings resource.** Preset, theme, icons, sizes, breakpoints, surface behaviour, haptics, sound
-  cues and strings live in a single `GoConfig` resource that survives add-on updates.
-- **Mobile first, desktop ready.** 48 dp touch targets behind smaller visuals, safe-area and keyboard
-  avoidance, portrait/landscape sizing, Android Back handling, focus rings only for keyboard users.
-- **Uses current Godot features.** `DPITexture` icons stay sharp at any UI scale, `FoldableContainer`
-  sections, `accessibility_name` for screen readers, `mouse_behavior_recursive` for input-transparent
-  notices, `last_wrap_alignment` for flowing rows.
-- **Pure GDScript.** No autoload required, no engine module, no GDExtension.
-- **MIT** code and artwork, including 84 default icons, 16 engraved medieval icons, a **187-icon game set**
-  for inventories, shops and items and a **1,000-icon library** (1,171 of those from Tabler Icons, MIT). The medieval headings use the bundled
-  Cinzel font and the Material headings and labels the bundled Roboto, both under the SIL Open Font License 1.1.
+  Search them in code (`GoUi.icons().search("rain")`) or on the [Icons page](https://thruthesky.github.io/gohud/icons.html).
+  Point `GoConfig.icons` at your own SVG set, folder or icon font and every widget follows — or override just a few.
+- **Themes are data.** `new_theme.py` writes one JSON file that inherits a built-in theme. The builder generates the
+  theme, its control artwork and skin dials, and pushes text, borders and the accent until they pass WCAG contrast checks.
+- **One settings resource.** Preset, theme, icons, sizes, breakpoints, surface behaviour, haptics, sound cues and
+  strings live in a single `GoConfig` resource that survives add-on updates.
+- **Mobile first, desktop ready.** 48 dp touch targets behind smaller visuals, safe-area and keyboard avoidance,
+  portrait/landscape sizing, Android Back handling, focus rings only for keyboard users, strings in 21 languages
+  and right-to-left layouts.
+- **Uses current Godot features.** `DPITexture` icons stay sharp at any UI scale, `FoldableContainer` sections,
+  `accessibility_name` for screen readers, `mouse_behavior_recursive` for input-transparent notices,
+  `last_wrap_alignment` for flowing rows.
+- **Built for AI coding.** The gohud skill teaches Claude Code, Codex and other agents the whole API, with templates
+  and recipes — paste [one prompt](#let-your-ai-coding-agent-install-it) and the agent installs everything.
+- **Pure GDScript, MIT.** No autoload required, no engine module, no GDExtension. Code, icons and artwork are MIT;
+  1,171 icons use path data from Tabler Icons (MIT); the bundled Cinzel and Roboto fonts are under the SIL OFL 1.1.
 
-## Requirements
+## Fourteen looks, one line
 
-Tested on Godot 4.7; Godot **4.7 and newer** are officially supported. 4.7 is the supported floor and is
-recorded in `GoUi.MIN_ENGINE`; `tools/check_all.sh` and CI run the suite on 4.7. gohud relies on APIs
-introduced in 4.5 (`DPITexture`, `FoldableContainer`, accessibility properties), so engines before 4.5
-fail while parsing.
+```gdscript
+GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, skin and icons together
+```
 
-## Installation
+Every picture below is the same code — only the preset changes. Each look shows a different page of widgets.
+
+<table>
+  <tr>
+    <th width="50%">Dark</th>
+    <th width="50%">Light</th>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/default_dark.webp" alt="default_dark: settings, choices and alerts"><br><b>Default</b> — <code>default_dark</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/default_light.webp" alt="default_light: inventory, prompts and navigation"><br><b>Default</b> — <code>default_light</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/scifi_dark.webp" alt="scifi_dark: status bars, buttons and quick slots"><br><b>Sci-fi</b> — <code>scifi_dark</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/scifi_light.webp" alt="scifi_light: leaderboard, range slider, gift code and daily rewards"><br><b>Sci-fi</b> — <code>scifi_light</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/medieval_dark.webp" alt="medieval_dark: stat radar, text fields and chips"><br><b>Medieval</b> — <code>medieval_dark</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/medieval_light.webp" alt="medieval_light: donut chart, list rows and progress"><br><b>Medieval</b> — <code>medieval_light</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/material_dark.webp" alt="material_dark: joystick, wheel picker and split button"><br><b>Material 3</b> — <code>material_dark</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/material_light.webp" alt="material_light: app bar, stepper and tab view"><br><b>Material 3</b> — <code>material_light</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/arcade_dark.webp" alt="arcade_dark: chunked status bars, painted keys and quick slots"><br><b>Arcade</b> — <code>arcade_dark</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/arcade_light.webp" alt="arcade_light: inventory, prompts and navigation"><br><b>Arcade</b> — <code>arcade_light</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/comic_dark.webp" alt="comic_dark: settings, choices and alerts"><br><b>Comic</b> — <code>comic_dark</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/comic_light.webp" alt="comic_light: reorder list, swatches and date picker"><br><b>Comic</b> — <code>comic_light</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/kids_dark.webp" alt="kids_dark: status bars, jelly keys and quick slots"><br><b>Kids</b> — <code>kids_dark</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/themes/kids_light.webp" alt="kids_light: donut chart, list rows and progress"><br><b>Kids</b> — <code>kids_light</code></td>
+  </tr>
+</table>
+
+### One dialog, fourteen looks
+
+The same confirmation, opened over the same little game with its HUD, joystick and quick slots:
+
+<p>
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-default_dark.webp" alt="default_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-scifi_dark.webp" alt="scifi_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-medieval_dark.webp" alt="medieval_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-material_dark.webp" alt="material_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-arcade_dark.png" alt="arcade_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-comic_dark.png" alt="comic_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-kids_dark.webp" alt="kids_dark" width="108">
+</p>
+<p>
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-default_light.webp" alt="default_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-scifi_light.webp" alt="scifi_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-medieval_light.webp" alt="medieval_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-material_light.webp" alt="material_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-arcade_light.png" alt="arcade_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-comic_light.png" alt="comic_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/popups/look-kids_light.webp" alt="kids_light" width="108">
+</p>
+
+### The widget gallery on a phone
+
+`examples/gallery/gallery.tscn` at 390×844, in every preset:
+
+<p>
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-default_dark.webp" alt="Gallery in default_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-scifi_dark.webp" alt="Gallery in scifi_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-medieval_dark.webp" alt="Gallery in medieval_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-material_dark.webp" alt="Gallery in material_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-arcade_dark.png" alt="Gallery in arcade_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-comic_dark.png" alt="Gallery in comic_dark" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-kids_dark.webp" alt="Gallery in kids_dark" width="108">
+</p>
+<p>
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-default_light.webp" alt="Gallery in default_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-scifi_light.webp" alt="Gallery in scifi_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-medieval_light.webp" alt="Gallery in medieval_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-material_light.webp" alt="Gallery in material_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-arcade_light.png" alt="Gallery in arcade_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-comic_light.png" alt="Gallery in comic_light" width="108">
+  <img src="https://thruthesky.github.io/gohud/img/presets/gallery-kids_light.webp" alt="Gallery in kids_light" width="108">
+</p>
+
+| Preset | In one line |
+|---|---|
+| `default_dark` · `default_light` | The original gohud: rounded corners, a soft blue accent, graded shadows |
+| `scifi_dark` · `scifi_light` | Chamfered corners, cyan neon edges and glow, a hexagonal joystick, targeting-bracket focus |
+| `medieval_dark` · `medieval_light` | Iron and leather or parchment, antique-gold frames, rivets, engraved icons, Cinzel headings |
+| `material_dark` · `material_light` | Material 3 for app screens: pill buttons, 28 dp dialogs, filled cards, M3 switches, Roboto |
+| `arcade_dark` · `arcade_light` | An arcade cabinet: painted pill keys with a candy gloss, thick framed boards, a gold title ribbon, chunked bars |
+| `comic_dark` · `comic_light` | A comic panel: a bold ink outline and a hard shadow, a yellow caption box behind titles |
+| `kids_dark` · `kids_light` | A toy box: jelly-candy keys and panels that squish under the finger, a rainbow joystick |
+
+The full description of every preset, Material 3's token mapping and how to make your own theme are in the
+[Presets reference](#presets--colours-and-shape) below.
+
+## Install
+
+Requires **Godot 4.7 or newer**. 4.7 is the supported floor and is recorded in `GoUi.MIN_ENGINE`;
+`tools/check_all.sh` and CI run the suite on 4.7. gohud relies on APIs introduced in 4.5 (`DPITexture`,
+`FoldableContainer`, accessibility properties), so engines before 4.5 fail while parsing.
+
+### Let your AI coding agent install it
+
+Paste this into Claude Code or Codex (or any coding agent that can run shell commands) inside your Godot project. It
+installs the **gohud skill** — the full API, templates and recipes — and the add-on itself, then writes your menus,
+HUDs and dialogs the gohud way.
+
+```text
+Install gohud for this Godot 4.7+ project, then use it for all game UI
+(menus, HUD bars, quick slots, dialogs, bottom sheets, forms, themes).
+
+1. Install the gohud AI skill.
+   Claude Code - run these two commands in a shell:
+     claude plugin marketplace add thruthesky/gohud
+     claude plugin install gohud@gohud
+   Any other agent (Codex, Cursor, Gemini CLI, ...):
+     git clone --depth 1 https://github.com/thruthesky/gohud.git /tmp/gohud
+     Copy /tmp/gohud/skills/gohud into whichever of these folders this agent reads:
+     ~/.claude/skills/gohud, .claude/skills/gohud, .agents/skills/gohud.
+
+2. Install the add-on itself, unless addons/gohud/plugin.cfg already exists here.
+   In a git repository:
+     git submodule add https://github.com/thruthesky/gohud.git addons/gohud
+   Otherwise copy the clone to addons/gohud without its .git folder.
+   Then run: godot --headless --path . --import
+   (If godot is not on PATH, ask me where Godot 4.7+ is.)
+
+3. Check the result: addons/gohud/plugin.cfg exists and the import printed
+   no "SCRIPT ERROR" or "Parse Error" lines.
+
+4. A new skill loads when the agent starts. Tell me if I have to restart you,
+   then tell me what gohud can do and how to preview it.
+
+Docs: https://thruthesky.github.io/gohud/
+```
+
+After a restart the agent knows gohud, and these commands open it in its own Godot window — no editor, no scene to find:
+
+| Command | What it does |
+|---|---|
+| **`/gohud:preview`** | The **widget gallery** — every widget, a picker for all fourteen presets and the full icon set. Inside your project it uses your `addons/gohud`; without one, the copy bundled with the plugin |
+| **`/gohud:preview demo`** | The **demo app** — a home screen, the 31-chapter guided tour that plays itself with real input, and *Explore widgets* to try one by hand |
+| `/gohud:preview medieval` | Character sheet, satchel and quest journal in the medieval presets |
+| `/gohud:preview icons` | Buttons made from the 1,000-icon library, with a live search |
+| `/gohud:preview gallery --preset arcade_dark --phone` | One preset in a 390×844 phone window; `--size 1920x1080` for any size |
+| `/gohud:preview res://ui/main_menu.tscn` | A scene of your own project, run inside that project |
+| `/gohud:preview list` | Every target, preset id and demo chapter |
+| `/gohud:features` · `/gohud:features hud` | Every feature, grouped, one line of code each — or one area in depth |
+| `/gohud:update` | Updates the add-on and the skill together, then checks that they agree (`check` only reports) |
+
+Installed as a plain skill in `~/.claude/skills/gohud`, write them with a space: `/gohud preview demo`. Previews need
+Godot 4.7+ on your `PATH` (or `--godot /path/to/godot`). Or just ask: *"Build a pause menu with gohud"* or *"Add HP
+bars and quick slots to my HUD in the sci-fi preset."* More on the [AI setup page](https://thruthesky.github.io/gohud/ai.html).
 
 ### From the Asset Store or a release ZIP
 
 Extract into your project root so that you get `res://addons/gohud/`. That is all you need.
 Optionally enable **Project → Project Settings → Plugins → gohud** (see [Plugin](#plugin)).
 
-### As a git submodule (to develop gohud alongside your game)
+### As a git submodule
 
-The repository root **is** the add-on folder, so it lands exactly where Godot expects it:
+The repository root **is** the add-on folder, so it lands exactly where Godot expects it — handy when you develop
+gohud alongside your game:
 
 ```bash
 git submodule add https://github.com/thruthesky/gohud.git addons/gohud
@@ -81,6 +252,8 @@ pointer in your game. For reproducible builds, pin a tag or commit
 (`git -C addons/gohud checkout v1.0.0`).
 
 ## Quick start
+
+A confirmation you can `await`:
 
 ```gdscript
 extends Node
@@ -147,6 +320,187 @@ The nine spots divide the screen but do not guarantee the pieces miss each other
 notice_anchor.avoid_peers = true      # settles below the fixed HUD, keeping its horizontal alignment
 notice_anchor.reserve_space = false   # and does not push the page around while it is up
 ```
+
+## A tour in pictures
+
+Every picture is the real widget, photographed by `tests/site_widget_shots.gd` in `default_dark` unless noted.
+Each widget has its own page with code on the [All widgets](https://thruthesky.github.io/gohud/widgets-catalog.html)
+site, in seventeen languages.
+
+### Popups over a game
+
+Windows open over the game, not instead of it: panels are 80 % opaque by default so the player stays oriented, the
+scrim dims the world, and Escape or Android Back closes only the topmost one.
+
+<table>
+  <tr>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/dialog-confirm.webp" alt="A confirm dialog over a game" width="190"><br><code>GoDialogs.confirm()</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/sheet.webp" alt="An inventory bottom sheet with a search field" width="190"><br><code>GoSheet</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/coach-mark.webp" alt="A coach mark pointing at a real control" width="190"><br><code>GoCoachMark</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/drawer-left.webp" alt="A drawer sliding in from the left" width="190"><br><code>GoDrawer</code></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/popover.webp" alt="An item popover beside a quick slot" width="190"><br><code>GoPopover</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/prompt-card.webp" alt="A non-blocking prompt card" width="190"><br><code>GoPromptCard</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/snackbar.webp" alt="A snackbar with an action" width="190"><br><code>GoSnackbar</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/context-menu.webp" alt="A long-press context menu" width="190"><br><code>GoContextMenu</code></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/dialog-choose.webp" alt="Choose one of a few options" width="190"><br><code>GoDialogs.choose()</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/combobox.webp" alt="A combobox that searches inside names" width="190"><br><code>GoCombobox</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/surface-date.webp" alt="A date picker in a floating surface" width="190"><br><code>GoSurface</code> + <code>GoDatePicker</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/console.webp" alt="The developer console" width="190"><br><code>GoConsole</code></td>
+  </tr>
+</table>
+
+The [popups guide](https://thruthesky.github.io/gohud/widgets-popups.html) shows every popup in every look.
+
+### HUD
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/gobar.webp" alt="HP, MP and XP bars"><br><b><code>GoBar</code></b> — HP/MP/XP bars with value, fraction or percent readouts and eased changes</td>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/goslot.webp" alt="Quick slots with counts, key hints and cooldowns"><br><b><code>GoSlot</code></b> — quick slots: icon, quantity, cooldown and shortcut on one face</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/goslotgrid.webp" alt="An inventory grid"><br><b><code>GoSlotGrid</code></b> — an inventory of slot cells</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-hud_panel.webp" alt="A HUD panel"><br><b><code>GoStyle.hud_panel()</code></b> — the quiet panel a HUD sits on</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/widgets/gojoystick.webp" alt="A virtual joystick" width="220"><br><b><code>GoJoystick</code></b> — fixed, follow or relative, with a dead zone</td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/widgets/goradar.webp" alt="A stat radar with a dashed comparison" width="260"><br><b><code>GoRadar</code></b> — the stat pentagon, dashed for the gear you are about to equip</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/godonut.webp" alt="A donut chart with a legend"><br><b><code>GoDonut</code></b> — damage share or currency splits, said in words as well as colour</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gorewardcalendar.webp" alt="A daily reward calendar"><br><b><code>GoRewardCalendar</code></b> — daily attendance: claimed, today, still to come</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gokbd.webp" alt="Key hints read from the InputMap"><br><b><code>GoKbd</code></b> — key caps that read the real binding from the InputMap</td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/widgets/gochoicecolumn.webp" alt="A choice column for a HUD side bar" width="200"><br><b><code>GoChoiceColumn</code></b> — a summon list on a HUD side bar, one tap acts</td>
+  </tr>
+</table>
+
+### Buttons, choices and settings
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-button.webp" alt="Primary, normal, outlined and danger buttons"><br><b><code>GoStyle.button()</code></b> — tones: primary, normal, outlined, bare, compact, danger</td>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-toggle.webp" alt="Toggles and checkboxes"><br><b><code>GoStyle.toggle()</code></b> · <code>checkbox()</code> — settings rows</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-tabs.webp" alt="Tabs"><br><b><code>GoStyle.tabs()</code></b></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-segmented.webp" alt="A segmented control"><br><b><code>GoStyle.segmented()</code></b> — exactly one of a few</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-slider.webp" alt="A slider"><br><b><code>GoStyle.slider()</code></b></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-chip.webp" alt="Chips"><br><b><code>GoStyle.chip()</code></b> · <code>filter_chip()</code> · <code>input_chip()</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-alert.webp" alt="Success, info, warning and danger alerts"><br><b><code>GoStyle.alert()</code></b></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-list_row.webp" alt="List rows with icons and descriptions"><br><b><code>GoStyle.list_button()</code></b> — rows with an icon and a description</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-foldable.webp" alt="Foldable sections"><br><b><code>GoStyle.foldable()</code></b> — sections on <code>FoldableContainer</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostyle-card.webp" alt="Cards"><br><b><code>GoStyle.card()</code></b></td>
+  </tr>
+</table>
+
+### Forms and input
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/gofield.webp" alt="A field with a label, hint and error"><br><b><code>GoField</code></b> — label, control, hint and per-field errors</td>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/goform.webp" alt="A form that caps its width"><br><b><code>GoForm</code></b> — caps its width, avoids the keyboard and the HUD</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/goinputgroup.webp" alt="An input group with a button"><br><b><code>GoInputGroup</code></b> — an input and its buttons welded into one shape</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gocodeinput.webp" alt="A gift code input"><br><b><code>GoCodeInput</code></b> — coupon and gift codes; paste, autofill and IME still work</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gocombobox.webp" alt="A combobox"><br><b><code>GoCombobox</code></b> — searches inside names, not just from their start</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gorangeslider.webp" alt="A range slider"><br><b><code>GoRangeSlider</code></b> — two handles that never cross</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/godatepicker.webp" alt="A date picker"><br><b><code>GoDatePicker</code></b> — a month to tap, or a range</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gotimepicker.webp" alt="A time picker dial"><br><b><code>GoTimePicker</code></b> — the clock dial, AM/PM or 24-hour</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gowheelpicker.webp" alt="A wheel picker"><br><b><code>GoWheelPicker</code></b> — a wheel that settles one item on its band</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gosplitbutton.webp" alt="A split button" width="200"><br><b><code>GoSplitButton</code></b> — "Send ▾"</td>
+  </tr>
+</table>
+
+### App screens, lists and data
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/goappbar.webp" alt="A top app bar"><br><b><code>GoAppBar</code></b> — lifts once the page under it scrolls</td>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/gonavbar.webp" alt="A navigation bar with a badge"><br><b><code>GoNavBar</code></b> — three to five destinations, or a rail</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gosearchbar.webp" alt="A search bar"><br><b><code>GoSearchBar</code></b></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gofab.webp" alt="Floating action buttons"><br><b><code>GoFab</code></b> — 40 to 96 dp, or extended with a label</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gotable.webp" alt="A sortable table"><br><b><code>GoTable</code></b> — numbers sort as numbers</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/golistview.webp" alt="A lazy list view"><br><b><code>GoListView</code></b> — builds only the rows in view</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/goswiperow.webp" alt="Swipe rows"><br><b><code>GoSwipeRow</code></b> — swipe a row aside to delete or archive</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/goreorderlist.webp" alt="A reorderable list"><br><b><code>GoReorderList</code></b> — drag rows into order</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gostepper.webp" alt="A stepper"><br><b><code>GoStepper</code></b> — numbered steps with a gate per step</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gotabview.webp" alt="A tab view"><br><b><code>GoTabView</code></b> — tabs over pages that swipe</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/goprogress.webp" alt="Wavy and flat progress"><br><b><code>GoProgress</code></b> · <code>GoLoadingIndicator</code> — Material 3 Expressive waits</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gobanner.webp" alt="A banner"><br><b><code>GoBanner</code></b> — a message that stays until dealt with</td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gocarousel.webp" alt="A carousel"><br><b><code>GoCarousel</code></b> — never moves on its own</td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/gopagination.webp" alt="Pagination"><br><b><code>GoPagination</code></b> — numbered pages or <i>Load more</i></td>
+  </tr>
+</table>
+
+### Screen layouts
+
+<table>
+  <tr>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/widgets/goscaffold.webp" alt="An app screen scaffold" width="190"><br><code>GoScaffold</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/widgets/gohudanchor.webp" alt="HUD anchors in safe-area spots" width="190"><br><code>GoHudAnchor</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/widgets/goleftsidebar.webp" alt="A left side bar" width="190"><br><code>GoLeftSideBar</code></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/widgets/gosurface.webp" alt="A floating surface" width="190"><br><code>GoSurface</code></td>
+  </tr>
+</table>
+
+### Painted by the skin
+
+A `Theme` cannot change the joystick, quick slots or coach mark — code draws them — so each preset brings a
+**skin** that draws them in its own shape. The same row of widgets under seven skins:
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/skin-default_dark.webp" alt="GoSkin"><br><code>GoSkin</code> — default</td>
+    <td width="50%"><img src="https://thruthesky.github.io/gohud/img/widgets/skin-scifi_dark.webp" alt="GoSkinSciFi"><br><code>GoSkinSciFi</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/skin-medieval_dark.webp" alt="GoSkinMedieval"><br><code>GoSkinMedieval</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/skin-material_dark.webp" alt="GoSkinMaterial"><br><code>GoSkinMaterial</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/skin-arcade_dark.png" alt="GoSkinArcade"><br><code>GoSkinArcade</code></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/skin-comic_dark.png" alt="GoSkinComic"><br><code>GoSkinComic</code></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/skin-kids_dark.webp" alt="GoSkinKids"><br><code>GoSkinKids</code></td>
+    <td></td>
+  </tr>
+</table>
+
+---
+
+# Reference
 
 ## Presets — colours *and* shape
 
@@ -239,6 +593,41 @@ button's focus ring sits inside the plate in its on-colour, and the time picker'
 80dp into two 40dp halves, too small for a finger) with the hour and minute boxes as tall. A theme cannot hold spring motion, a button's shape
 morphing, ripples or dynamic colour. Material is Google's public design system; these are unofficial presets built
 from its tokens (material-web `tokens/versions/latest`, Material 3 v34.0.21).
+
+### Arcade, comic and kids
+
+Three looks for games that want to feel painted, inked or made of candy. Each brings its own `StyleBox` class, so
+the shape reaches every key, field, row and panel — not only the parts a skin draws.
+
+<table>
+  <tr>
+    <th width="34%">Arcade — <code>GoStyleBoxArcade</code></th>
+    <th width="33%">Comic — <code>GoStyleBoxComic</code></th>
+    <th width="33%">Kids — <code>GoStyleBoxJelly</code></th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/arcade/sheet-light.png" alt="An arcade_light bottom sheet" width="200"></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/comic/sheet-light.png" alt="A comic_light bottom sheet" width="200"></td>
+    <td align="center"><img src="https://thruthesky.github.io/gohud/img/popups/look-kids_dark.webp" alt="A kids_dark dialog" width="200"></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/arcade/gostyle-button-light.png" alt="Painted arcade keys"></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/comic/gostyle-button-light.png" alt="Inked comic buttons"></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/widgets/skin-kids_dark.webp" alt="Jelly kids widgets"></td>
+  </tr>
+  <tr>
+    <td><img src="https://thruthesky.github.io/gohud/img/arcade/gobar-dark.png" alt="Arcade status bars split into chunks"></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/comic/gobar-dark.png" alt="Comic status bars"></td>
+    <td><img src="https://thruthesky.github.io/gohud/img/presets/gallery-kids_light.webp" alt="The gallery in kids_light" width="120"></td>
+  </tr>
+</table>
+
+```gdscript
+GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+GoStyle.arcade_paint(shop_button, Color("#ff8a00"))   # one key in its own paint; does nothing under other looks
+hp.segments = 6                                        # a chunked gauge (-1 asks the look, 0 is smooth)
+GoUi.config.comic_shadow = false                       # every comic face drops its shadow at once
+```
 
 ### Your own theme in one file
 
@@ -598,7 +987,7 @@ large text, accent borders, icons and focus rings 3:1, decorative borders 2:1, a
 composited over pure white and pure black first, since a HUD can land on any scene. Colours a skin
 mixes while running (chips, slots) are measured inside Godot by the suite's `skin contrast` section.
 
-## Widgets
+## Widget reference
 
 | Class | Base | Purpose |
 |---|---|---|

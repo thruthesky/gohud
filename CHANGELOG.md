@@ -19,6 +19,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **The README is a tour in pictures.** It opens with what gohud is, a contents list, the fourteen looks side by side
+  (`www/img/themes/` — one 1920×1080 page of the YouTube reel per preset, each showing different widgets), the same
+  dialog in every look, the gallery on a phone in every preset, the AI-agent install prompt and the `/gohud:*`
+  commands, then a picture of each widget grouped by job (popups, HUD, buttons, forms, app screens, layouts, skins)
+  and an arcade, comic and kids section. The reference sections that follow are unchanged apart from
+  *Widgets* becoming *Widget reference*.
 - **The arcade looks, closer to a real arcade party game's menus.** Taken from a shipping game's painted UI (Magnet
   Mayhem): every key is now a **pill** (corner 24; the small keys and the tabs 16) wearing a **candy gloss** — a soft
   white sheen over the upper half, a glint round **both** top corners and a short dash between them (on a key at least
