@@ -54,6 +54,13 @@ extends GoStyleBoxJelly
 	set(value):
 		frame_bottom = value
 		emit_changed()
+## 🌈 A key whose paint changes **across** it: the body runs from its own paint at the left end to this one at the right
+## (each end keeps its light top and deeper bottom) — a gauge that warms from orange to yellow as it fills
+## (`GoBar.ink_end`). Transparent: one paint. Keys only — a board's frame and a field keep theirs.
+@export var end_color := Color(0, 0, 0, 0):
+	set(value):
+		end_color = value
+		emit_changed()
 ## The ink line round a board's well (dp) — drawn in `inner_line` when that is not transparent.
 @export var line_width := 2.0:
 	set(value):
@@ -283,7 +290,12 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 		# 2 · The lip: the inner shape in the lip's tone; the body is laid over all of it but the bottom `base`.
 		if base > 0.0: _box(canvas, inner.grow(reach), Color(shade(), alpha), inner_corner + reach)
 		var cut := inner.end.y - base
-		_gradient(canvas, inner, inner_corner, cut, Color(top(), alpha), Color(bottom(), alpha), reach)
+		if end_color.a > 0.0 and frame <= 0.0:
+			var far := tones(end_color)
+			_gradient(canvas, inner, inner_corner, cut, Color(top(), alpha), Color(bottom(), alpha), reach,
+				Color(far[0], alpha), Color(far[1], alpha))
+		else:
+			_gradient(canvas, inner, inner_corner, cut, Color(top(), alpha), Color(bottom(), alpha), reach)
 		# 3 · A board's well inside its frame, with an ink line round it.
 		var rim := frame_drawn()
 		if rim > 0.0:
@@ -309,8 +321,10 @@ func _draw(canvas: RID, rect: Rect2) -> void:
 
 
 ## A rounded box [param at] filled with a vertical gradient from [param from] (its top) to [param to] (at
-## [param cut_y]), cut off flat at [param cut_y]. [param reach] grows it under a line drawn over its edge.
-func _gradient(canvas: RID, at: Rect2, corner: float, cut_y: float, from: Color, to: Color, reach := 0.0) -> void:
+## [param cut_y]), cut off flat at [param cut_y]. [param reach] grows it under a line drawn over its edge. With
+## [param far_from] set, the right end runs from it to [param far_to] instead, and the colours blend across.
+func _gradient(canvas: RID, at: Rect2, corner: float, cut_y: float, from: Color, to: Color, reach := 0.0,
+		far_from := Color(0, 0, 0, 0), far_to := Color(0, 0, 0, 0)) -> void:
 	if at.size.x <= 1.0 or at.size.y <= 1.0 or cut_y <= at.position.y + 0.5: return
 	var shape := _round_rect(at.grow(reach), corner + reach)
 	var parts: Array[PackedVector2Array] = [shape]
@@ -323,8 +337,14 @@ func _gradient(canvas: RID, at: Rect2, corner: float, cut_y: float, from: Color,
 		if points.size() < 3: continue
 		var colours := PackedColorArray()
 		colours.resize(points.size())
+		var across := far_from.a > 0.0
+		var width := maxf(1.0, at.size.x)
 		for index in points.size():
-			colours[index] = from.lerp(to, clampf((points[index].y - at.position.y) / span, 0.0, 1.0))
+			var down := clampf((points[index].y - at.position.y) / span, 0.0, 1.0)
+			colours[index] = from.lerp(to, down)
+			if across:
+				var along := clampf((points[index].x - at.position.x) / width, 0.0, 1.0)
+				colours[index] = colours[index].lerp(far_from.lerp(far_to, down), along)
 		RenderingServer.canvas_item_add_polygon(canvas, points, colours)
 
 

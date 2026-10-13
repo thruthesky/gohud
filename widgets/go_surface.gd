@@ -94,6 +94,17 @@ var compact := false:
 var dismiss_on_scrim := false
 ## Make the scrim transparent — for a dropdown over the game screen, where what is behind must stay visible.
 var scrim_transparent := false
+## 🎨 Paints the plate behind the title its own colour — the red ribbon of a GAME OVER window, the gold one of a win.
+## Transparent: the look's plate as it is. Under the arcade looks (a `GoStyleBoxArcade` plate) the paint is moved until
+## the white, ink-outlined title reads on it (`GoStyleBoxArcade.fit`); a look without a painted plate ignores it.
+##
+## ```gdscript
+## surface.title_paint = GoUi.color(GoTheme.DANGER_FILL)   # a red ribbon: you were knocked out
+## ```
+var title_paint := Color.TRANSPARENT:
+	set(value):
+		title_paint = value
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
 ## 🪟 **Opacity of the card background** (0.0~1.0) — for this one window only. Negative means the value the theme
 ## and config decide (`GoUi.surface_alpha(GoTheme.BOX_PANEL)` · 80% in the default theme).
 ##
@@ -318,7 +329,7 @@ func _make_scroll() -> GoScroll:
 
 func _ready() -> void:
 	# Options that may have changed **between** `new()` and `add_child()` are applied here.
-	_scrim.color = Color(0, 0, 0, 0) if scrim_transparent else GoUi.color(GoTheme.SCRIM)
+	_dress_scrim()
 	header.visible = show_header
 	if resizable: attach_resize_handle(title_label)
 	if scroll_body and scroll == null:
@@ -376,6 +387,9 @@ func _fit_scroll_frame() -> void:
 func _dress_chrome() -> void:
 	var skin := GoUi.skin()
 	var plate := skin.title_plate_box()
+	if plate is GoStyleBoxArcade and title_paint.a > 0.0:
+		var painted := plate as GoStyleBoxArcade
+		painted.paint(GoStyleBoxArcade.fit(Color(title_paint, 1.0), painted.edge()))
 	if plate != null:
 		title_label.add_theme_stylebox_override(&"normal", plate)
 		if not title_label.has_meta(&"go_plate_align"):
@@ -431,7 +445,16 @@ func _fit_title() -> void:
 func _on_ui_changed() -> void:
 	GoStyle.forget_face(card)
 	_restyle()
+	_dress_scrim()
 	relayout()
+
+
+## The veil behind: the scrim colour (clear for `scrim_transparent`) and whatever the look lays over it — a frosted
+## blur under the arcade looks with `arcade_scrim_blur` on (`GoSkin.scrim_material`). A clear scrim stays plain.
+func _dress_scrim() -> void:
+	if not is_instance_valid(_scrim): return
+	_scrim.color = Color(0, 0, 0, 0) if scrim_transparent else GoUi.color(GoTheme.SCRIM)
+	_scrim.material = null if scrim_transparent else GoUi.skin().scrim_material()
 
 
 # ── Title ──────────────────────────────────────────────────────────────

@@ -6,6 +6,7 @@
 ## hp.ink = GoUi.color(GoTheme.DANGER)
 ## hp.set_values(320, 500)      # "320 / 500"
 ## hp.segments = 6              # six chunks — the segmented gauge of an arcade HUD (-1, the default, asks the look)
+## hp.ink_end = GoUi.color(GoTheme.WARNING_FILL)   # under the arcade looks the fill warms across to this paint
 ## ```
 ##
 ## ## 🔑 Choose how the number reads
@@ -41,6 +42,14 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 @export var ink := Color.TRANSPARENT:
 	set(value):
 		ink = value
+		_restyle()
+
+## 🌈 A second paint the fill runs **across** to, left to right — a power gauge going from orange to yellow. Under the
+## looks that paint their fills (the arcade looks: `GoStyleBoxArcade.end_color`) the tube changes colour along its
+## length; the other looks keep the single `ink`. Transparent: one paint.
+@export var ink_end := Color.TRANSPARENT:
+	set(value):
+		ink_end = value
 		_restyle()
 
 ## How the number is displayed.
@@ -171,6 +180,11 @@ func maximum() -> float:
 func _restyle() -> void:
 	if not is_instance_valid(_bar): return
 	GoStyle.tint_progress(_bar, ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT))
+	if ink_end.a > 0.0:
+		var tube := _bar.get_theme_stylebox(&"fill") as GoStyleBoxArcade
+		if tube != null:
+			var skin := GoUi.skin() as GoSkinArcade
+			tube.end_color = Color(skin.vivid(ink_end) if skin != null else ink_end, 1.0)
 	if is_instance_valid(_ticks): _ticks.queue_redraw()
 
 

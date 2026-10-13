@@ -1042,6 +1042,32 @@ func badge_box(ink: Color) -> StyleBox:
 	return style
 
 
+## 🏷 Face of a **sticker** — a badge painted solid in [param ink] (`GoBadge.solid`): the "PLAY!" tag slapped on the
+## stage you play next, the check on a cleared one. Unlike `badge_box` (a faint plate that whispers a count) it is the
+## loudest thing on its card, so it is filled with its colour. Round enough that one glyph or icon reads as a disc.
+func sticker_box(ink: Color) -> StyleBox:
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = Color(ink, 1.0)
+	flat.border_color = Color(GoUi.color(GoTheme.SURFACE), 0.9)
+	flat.set_border_width_all(2)
+	flat.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_SMALL) + 4)
+	flat.corner_detail = 8
+	flat.content_margin_left = badge_pad_x + 3
+	flat.content_margin_right = badge_pad_x + 3
+	flat.content_margin_top = badge_pad_y + 2
+	flat.content_margin_bottom = badge_pad_y + 2
+	return flat
+
+
+## Dresses the words (or tints the icon colour, read back from `font_color`) on a sticker painted [param ink] — the
+## colour that reads on the fill, pushed until it clears the contrast bar. A look may outline it (`GoSkinArcade`).
+func dress_sticker(label: Label, ink: Color) -> void:
+	var on := GoUi.color(GoTheme.ON_ACCENT)
+	label.add_theme_color_override(&"font_color", readable_on(on, Color(ink, 1.0)))
+	label.remove_theme_color_override(&"font_outline_color")
+	label.remove_theme_constant_override(&"outline_size")
+
+
 ## Panel for one quick slot. `lit` means a cooldown·remaining time is running.
 func slot_box(accent: Color, lit: bool) -> StyleBox:
 	# 🛑 It does not follow the panel opacity — a quick slot is **a cell you press** and speaks its state through the cooldown tint.
@@ -1100,6 +1126,55 @@ func title_plate_box() -> StyleBox:
 ## The title's colour on `title_plate_box()` (transparent: the theme's title colour).
 func title_plate_ink() -> Color:
 	return Color.TRANSPARENT
+
+
+## 🌫 What a window's scrim wears over its colour (`GoSurface`, `GoDrawer`, `GoStyle.scrim()`). `null`: a plain veil in
+## the scrim colour, as it always was — the default. A look may frost the game behind (`GoSkinArcade.arcade_scrim_blur`,
+## built with `blur_material()`). 🛑 A transparent scrim (a dropdown, a popover) never wears it: what is behind must
+## stay sharp there.
+func scrim_material() -> Material:
+	return null
+
+
+## The blurred shader a frosted scrim uses: what is on screen behind it, blurred by [param strength] (1–4, the mip level
+## read; the taps spread with it), then veiled with the scrim's own colour. The scrim's alpha also fades the blur in and
+## out, so a drawer's scrim that animates its colour from clear to the veil frosts the game as it comes in.
+## 🛑 It reads the screen (`hint_screen_texture`) — one copy of the screen per frame while a scrim is up. Off by default.
+static func blur_material(strength: float) -> ShaderMaterial:
+	if _blur_shader == null:
+		_blur_shader = Shader.new()
+		_blur_shader.code = BLUR_SHADER
+	var material := ShaderMaterial.new()
+	material.shader = _blur_shader
+	var level := clampf(strength, 0.0, 4.0)
+	material.set_shader_parameter(&"lod", level)
+	material.set_shader_parameter(&"spread", 1.5 + level * 1.5)
+	return material
+
+
+static var _blur_shader: Shader = null
+## The scrim blur: nine taps of the screen behind, at a mip level, veiled with the node colour. `cover` fades the whole
+## layer in with the veil's alpha (×4, so a 25% veil already frosts fully).
+const BLUR_SHADER := """shader_type canvas_item;
+render_mode unshaded;
+uniform sampler2D behind : hint_screen_texture, filter_linear_mipmap;
+uniform float lod = 2.0;
+uniform float spread = 4.5;
+void fragment() {
+	vec2 step = SCREEN_PIXEL_SIZE * spread;
+	vec3 sum = vec3(0.0);
+	float weight = 0.0;
+	for (int x = -1; x <= 1; x++) {
+		for (int y = -1; y <= 1; y++) {
+			float w = (x == 0 && y == 0) ? 4.0 : ((x == 0 || y == 0) ? 2.0 : 1.0);
+			sum += textureLod(behind, SCREEN_UV + vec2(float(x), float(y)) * step, lod).rgb * w;
+			weight += w;
+		}
+	}
+	vec4 veil = COLOR;
+	COLOR = vec4(mix(sum / weight, veil.rgb, veil.a), clamp(veil.a * 4.0, 0.0, 1.0));
+}
+"""
 
 
 ## The smallest a title on a plate shrinks to before it may fold to a second line (dp).

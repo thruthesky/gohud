@@ -46,9 +46,23 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **Skin hooks** `GoSkin.bar_ticks()` · `draw_bar_ticks(canvas, rect, count)` (the chunks of a bar; the default is a
   smooth bar) and `kbd_box()` · `kbd_ink()` (a `GoKbd` cap; the default is the chip it always was). Dials
   `GoSkinArcade.arcade_ribbon` (12) and `arcade_bar_ticks` (6), in the arcade palettes' `skin.dials` too.
+- **The parts a party game's painted menus needed** (taken from Magnet Mayhem's own UI, so it can drop its hand-made
+  one):
+  - **A frosted scrim.** `GoSkinArcade.arcade_scrim_blur` (0–4, default 0 — the plain veil) blurs the game behind a
+    modal window, a drawer and `GoStyle.scrim()`; the veil colour still tints it. Any skin can do the same through the
+    hook `GoSkin.scrim_material() -> Material` (default `null`) and the static `GoSkin.blur_material(strength)` (a
+    screen-texture blur, nine taps of a mip level). A `scrim_transparent` window never blurs.
+  - **Stickers.** `GoBadge.solid` (a filled, outlined badge — under the arcade looks a glossy key with a white
+    ink-outlined word), `icon` (a `GoIconSet` name drawn instead of the words — a round check mark), `tilt` (−45–45°,
+    turned round its centre) and `text_role`; `GoBadge.stick(host, words, color, degrees, icon)` pins one on a corner
+    (a tilted `PLAY!` on a stage card). Skin hooks `GoSkin.sticker_box(ink)` · `dress_sticker(label, ink)`.
+  - **A title in another paint.** `GoSurface.title_paint` — a red `GAME OVER` ribbon instead of the gold one (the paint
+    is moved until the white title still reads; transparent keeps the look's own).
+  - **A gauge that changes colour.** `GoBar.ink_end` and `GoStyleBoxArcade.end_color` — the fill runs from `ink` across
+    to this paint, left to right (an orange-to-yellow power gauge). The other looks keep one paint.
 - `tests/gohud_arcade_test.gd` checks the pills, the tabs standing apart, the slider groove inside its knob, the
   ribbon's padding and height, the keycap's size and contrast, the bar's chunks and that the other looks keep their
-  smooth bars and chip key hints (279 checks).
+  smooth bars and chip key hints, the frosted scrim, the painted title, the gauge across and the stickers (313 checks).
 - `tests/site_widget_shots.gd` takes **`SHOT_LOOK`** (the look of the widgets and popups sets) — the 43 pictures under
   `www/img/arcade/` are those sets shot in `arcade_light` / `arcade_dark`. The website's arcade pictures, gallery, popup
   and skin shots are re-shot in the new look; the English and Korean front pages describe it.

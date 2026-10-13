@@ -31,6 +31,9 @@ extends GoSkin
 @export var arcade_ribbon := 12.0
 ## How many chunks a bar is split into when it leaves that to the look (`GoBar.segments = -1`) — 0 for smooth bars.
 @export var arcade_bar_ticks := 6
+## How strongly a window's scrim frosts the game behind it (1–4) — the blurred glass behind an arcade game's pause menu.
+## 0 keeps the plain veil. 🛑 It reads the screen every frame a scrim is up: weigh it on low-end phones.
+@export var arcade_scrim_blur := 0.0
 @export_group("")
 
 ## A press: how far the part shrinks and how long it takes to shrink and to spring back (s).
@@ -177,6 +180,21 @@ func badge_box(ink_color: Color) -> StyleBox:
 	face.content_margin_top = badge_pad_y
 	face.content_margin_bottom = badge_pad_y
 	return face
+
+
+## A sticker (`GoBadge.solid`) is a small painted key in its colour — the tilted "PLAY!" tag, the round check on a
+## cleared stage — with a lip and a gloss, so it reads as a thing stuck on the card.
+func sticker_box(ink_color: Color) -> StyleBox:
+	var base := super(ink_color)
+	var face := key(GoStyleBoxArcade.fit(vivid(Color(ink_color, 1.0)), ink()), KEY_RADIUS_SMALL, 3, arcade_edge, 0.75)
+	return face.keep_margins(base)
+
+
+## The words on a sticker are white with an ink outline — the painted keys' label.
+func dress_sticker(label: Label, _ink_color: Color) -> void:
+	label.add_theme_color_override(&"font_color", Color.WHITE)
+	label.add_theme_color_override(&"font_outline_color", ink())
+	label.add_theme_constant_override(&"outline_size", 4)
 
 
 ## An avatar or icon disc: a round key cap faintly tinted with its colour. A ring asked for in full colour (the coach
@@ -492,6 +510,12 @@ func title_plate_box() -> StyleBox:
 	face.content_margin_top -= rise
 	face.content_margin_bottom += rise
 	return face
+
+
+## A scrim frosts the game behind it when `arcade_scrim_blur` is above 0.
+func scrim_material() -> Material:
+	if arcade_scrim_blur <= 0.0: return super()
+	return blur_material(arcade_scrim_blur)
 
 
 ## The title on the banner is white — `dress_title` gives it the ink outline it reads through.

@@ -66,7 +66,7 @@ editor plugin only adds conveniences. Every widget is built with `.new()` + `add
 | **`GoSnackbar`** places itself at the bottom (or top), above safe area and keyboard, **queues**, merges repeats, and can carry buttons — `await` returns which one was pressed | `if await snack.post({"text": "Item dropped", "actions": ["Undo"]}) == 0: restore()` | surfaces.md §8 |
 | `GoNotice` inline notice that **never takes input or focus** — the screen that owns it decides where it goes | `notice.show_text("Saved", GoTheme.SUCCESS)` | hud.md §6 |
 | **`GoSpinner`** indeterminate wait; `busy()` turns a button into a spinner **in place**, keeps its size, and blocks the double press that duplicates a purchase | `GoSpinner.busy(buy_button, true)` | hud.md §11 |
-| **`GoBadge`** unread dot, `NEW` tag, `99+`; `attach()` hangs it on a corner and hides itself at zero | `GoBadge.attach(mail_button, unread)` | hud.md §12 |
+| **`GoBadge`** unread dot, `NEW` tag, `99+`; `attach()` hangs it on a corner and hides itself at zero; `stick()` puts a solid, tilted sticker (`PLAY!`, a check icon) there | `GoBadge.attach(mail_button, unread)` | hud.md §12 |
 
 🔑 Which one: a button to press → `GoSnackbar`. A fixed notice panel the HUD owns → `GoNotice`.
 A question that must be answered → `GoDialogs`. An optional question → `GoPromptCard`.

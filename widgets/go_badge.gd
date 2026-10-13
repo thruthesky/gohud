@@ -8,7 +8,16 @@
 ##
 ## # A badge placed directly in a row
 ## row.add_child(GoBadge.make(12))
+##
+## # A sticker: painted solid, bigger, tilted — the "PLAY!" tag on the stage you play next, the check on a cleared one
+## GoBadge.stick(stage_card, "PLAY!", GoUi.color(GoTheme.SUCCESS_FILL), -9.0)
+## GoBadge.stick(cleared_card, "", GoUi.color(GoTheme.SUCCESS_FILL), 0.0, GoIconSet.CHECK)
 ## ```
+##
+## ## 🏷 Badge or sticker
+## A **badge** whispers a count on a faint plate (`badge_box`). A **sticker** (`solid`) is painted in its colour and
+## is the loudest thing on its card (`GoSkin.sticker_box` — a small painted key with a lip and a gloss under the arcade
+## looks, its words white with an ink outline). Use a sticker for one state the player should act on, not for counts.
 ##
 ## ## 🔑 Count or dot
 ## **If the count changes behaviour** it is a number (3 letters and 30 letters get handled differently).
@@ -50,6 +59,33 @@ extends PanelContainer
 		ink = value
 		_refresh()
 
+## An icon name (`GoIconSet.CHECK`, a lock, a star) shown instead of the count or the words — drawn from the icon set
+## in force, as tall as the text role's line, in the colour the words would take. Empty: none.
+@export var icon := &"":
+	set(value):
+		icon = value
+		_refresh()
+
+## 🏷 Painted solid in `ink`, the words in the colour that reads on it — a sticker (`GoSkin.sticker_box`).
+@export var solid := false:
+	set(value):
+		solid = value
+		_refresh()
+
+## Turned this many degrees round its centre — a sticker slapped on (−9 leans it left). Drawing only: the badge keeps
+## its box, so nothing around it moves.
+@export_range(-45.0, 45.0, 0.5) var tilt := 0.0:
+	set(value):
+		tilt = value
+		_place_tilt()
+
+## The size of the words or icon — a text role (`GoTheme.ROLE_MICRO` for a count; `ROLE_BODY` or larger for a sticker
+## that has to read across a card).
+@export var text_role := GoTheme.ROLE_MICRO:
+	set(value):
+		text_role = value
+		_refresh()
+
 ## Whether it hides itself at 0. 🛑 Leave it off and a badge reading `0` stays on screen.
 @export var hide_when_zero := true:
 	set(value):
@@ -58,6 +94,9 @@ extends PanelContainer
 
 var _count := 0
 var _label: Label
+## The icon drawn now (`GoUi.icons().node()` — a texture or a glyph), rebuilt when the name, size or colour changes.
+var _icon_node: Control
+var _icon_key := ""
 
 
 func _init() -> void:
@@ -77,6 +116,7 @@ func _init() -> void:
 	#    by letter, and the badge copied that height into its width — a 65×65 block instead of 33×16 (measured 2026-09-23).
 	GoStyle.one_line(_label)
 	add_child(_label)
+	resized.connect(_place_tilt)
 
 
 func _ready() -> void:
@@ -102,27 +142,45 @@ func count() -> int:
 func _refresh() -> void:
 	if not is_instance_valid(_label): return
 	var color := ink if ink.a > 0 else GoUi.color(GoTheme.DANGER)
+	var pictured := not icon.is_empty() and not dot
 	var words := label_text
-	if words.is_empty() and not dot:
+	if words.is_empty() and not dot and not pictured:
 		words = "%d+" % cap if cap > 0 and _count > cap else str(_count)
 
-	visible = not (hide_when_zero and _count <= 0 and label_text.is_empty())
-	_label.visible = not dot
-	_label.text = "" if dot else words
-	GoStyle.typography(_label, GoTheme.ROLE_MICRO, GoUi.color(GoTheme.ON_ACCENT))
+	visible = not (hide_when_zero and _count <= 0 and label_text.is_empty() and icon.is_empty())
+	_label.visible = not dot and not pictured
+	_label.text = "" if dot or pictured else words
+	GoStyle.typography(_label, text_role, GoUi.color(GoTheme.ON_ACCENT))
 	# A dot is a solid circle of a set diameter — there is no text, so give it a minimum size ourselves.
 	var px := maxf(6.0, float(GoUi.metric(GoTheme.GAP_SMALL)))
-	var face := GoUi.skin().dot_box(color, px) if dot else GoUi.skin().badge_box(color)
+	var face: StyleBox
+	if dot: face = GoUi.skin().dot_box(color, px)
+	elif solid: face = GoUi.skin().sticker_box(color)
+	else: face = GoUi.skin().badge_box(color)
+	if pictured:
+		# One icon is a disc, not a pill: the sides pad as much as the top and bottom together share.
+		face = face.duplicate()
+		var even := (face.get_margin(SIDE_TOP) + face.get_margin(SIDE_BOTTOM)) * 0.5
+		face.content_margin_left = even
+		face.content_margin_right = even
 	add_theme_stylebox_override(&"panel", face)
-	_label.add_theme_color_override(&"font_color", _on_badge(face, color))
+	if solid and not dot:
+		GoUi.skin().dress_sticker(_label, color)
+	else:
+		_label.remove_theme_color_override(&"font_outline_color")
+		_label.remove_theme_constant_override(&"outline_size")
+		_label.add_theme_color_override(&"font_color", _on_badge(face, color))
+	_show_icon(pictured)
 
 	if dot:
 		custom_minimum_size = Vector2(px, px)
 	else:
-		# Keep a single digit round too — narrower than it is tall and it reads as a squashed pill.
-		var box := _label.get_combined_minimum_size()
+		# Keep a single digit (or an icon) round too — narrower than it is tall and it reads as a squashed pill.
+		var box := _icon_node.get_combined_minimum_size() if pictured else _label.get_combined_minimum_size()
 		var side := maxf(box.y, box.x)
 		custom_minimum_size = Vector2(side, box.y)
+		if pictured: _round(face, box.y + face.get_margin(SIDE_TOP) + face.get_margin(SIDE_BOTTOM))
+	_place_tilt()
 
 	# ♿ Colour and position alone cannot be read — say in words how many of what there are.
 	# 🛑 Using `empty` in dot mode reads as **the exact opposite** — a mark saying "there is something new"
@@ -161,6 +219,51 @@ static func make(count := 0, words := "", as_dot := false, color := Color.TRANSP
 	node.ink = color
 	node.set_count(count)
 	return node
+
+
+## 🏷 A **sticker** on the corner of [param host]: a solid badge (`solid`) in [param color] with [param words] or
+## [param picture], tilted [param degrees], at body size — one per host, like `attach()` (calling it again restyles the
+## same one). An empty [param color] uses the theme's success fill.
+static func stick(host: Control, words := "", color := Color.TRANSPARENT, degrees := 0.0,
+		picture := &"") -> GoBadge:
+	var node := attach(host, 0, words, false, color if color.a > 0.0 else GoUi.color(GoTheme.SUCCESS_FILL))
+	if node == null: return null
+	node.solid = true
+	node.text_role = GoTheme.ROLE_BODY
+	node.icon = picture
+	node.tilt = degrees
+	return node
+
+
+## An icon badge is a disc: its corners round to half its height (a key face's `radius`, a flat face's corners).
+## 🛑 Half the height, not 999 — the layout audit reads a 999 corner as text that needs 300dp of room.
+static func _round(face: StyleBox, height: float) -> void:
+	var half := ceilf(height * 0.5)
+	if face is StyleBoxFlat: (face as StyleBoxFlat).set_corner_radius_all(int(half))
+	elif &"radius" in face: face.set(&"radius", half)
+
+
+## The icon in the words' colour, as tall as the role's line — rebuilt only when that changes (a count ticking up
+## never rebuilds it).
+func _show_icon(pictured: bool) -> void:
+	var colour := _label.get_theme_color(&"font_color")
+	var side := roundi(float(GoUi.font_size(text_role)) * 1.25)
+	var key := "%s|%d|%s|%s" % [icon, side, colour.to_html(), GoUi.icons().resource_path] if pictured else ""
+	if key == _icon_key and (is_instance_valid(_icon_node) or not pictured): return
+	_icon_key = key
+	if is_instance_valid(_icon_node):
+		remove_child(_icon_node)
+		_icon_node.queue_free()
+	_icon_node = null
+	if not pictured: return
+	_icon_node = GoUi.icons().node(icon, side, colour)
+	add_child(_icon_node)
+
+
+## Turns it round its own centre (`tilt`). The pivot follows the size, so a badge that grows keeps turning in place.
+func _place_tilt() -> void:
+	pivot_offset = size * 0.5
+	rotation = deg_to_rad(tilt)
 
 
 ## The badge attached to a host is found under this meta name — so two never stack on the same button.

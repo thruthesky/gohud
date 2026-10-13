@@ -74,6 +74,7 @@ Full rules: `theming.md` §4.
 | `label_text` | `""` | Name on the left; empty hides |
 | `ink` | transparent → `accent` | Use fill tokens: `GoUi.color(GoTheme.DANGER_FILL)` (`SUCCESS_FILL`, `WARNING_FILL`, `INFO_FILL`, `ACCENT_FILL`) |
 | `enum Readout { NONE, VALUE, FRACTION, PERCENT }` · `readout` | `FRACTION` | `320` · `320 / 500` · `64%` (formats are translatable) |
+| `ink_end` | transparent | A second paint the fill runs across to, left to right (an orange-to-yellow gauge). Arcade looks only (`GoStyleBoxArcade.end_color`); the others keep `ink` |
 | `thickness` | `8` | dp |
 | `segments` · `segment_count()` | `-1` → the look | Ticks that split the bar into chunks — decoration only, the fill still moves smoothly. `-1` asks the look (`GoSkin.bar_ticks()`: smooth by default, six chunks under the arcade looks), `0` is always smooth, `2`–`24` that many everywhere. The size never changes |
 | `ease_seconds` | `0.18` | 0 = instant; `reduce_motion` also makes it instant |
@@ -355,11 +356,16 @@ GoBadge.attach(shop_button, 0, "NEW")          # a word instead of a number
 GoBadge.attach(friend_button, 3, "", true)     # a dot — "something is there"
 row.add_child(GoBadge.make(12))                # standalone, inside a row
 GoBadge.detach(mail_button)
+GoBadge.stick(stage_card, "PLAY!", GoUi.color(GoTheme.SUCCESS_FILL), -8.0)   # a sticker: solid, tilted
+GoBadge.stick(stage_card, "", Color.TRANSPARENT, 0.0, &"check")               # a round sticker with an icon
 ```
 
 `cap` 99 (`99+` beyond it) · `label_text` · `dot` · `ink` (empty = danger) · `hide_when_zero` ·
 `set_count(value)` / `count()` (change a badge you hold — `attach()` again does the same for an attached one) ·
-`GoBadge.make(count, words, as_dot, color)`.
+`GoBadge.make(count, words, as_dot, color)` · `solid` (a sticker — `GoSkin.sticker_box()`, a glossy key under the
+arcade looks) · `icon` (a `GoIconSet` name drawn instead of the words; the badge turns round) · `tilt` (−45–45°,
+round its centre — layout keeps the upright size) · `text_role` (`ROLE_MICRO`) ·
+`GoBadge.stick(host, words, color, degrees, icon)` (attach + solid + `ROLE_BODY`; colour defaults to `SUCCESS_FILL`).
 
 - `attach()` pins it to the **top-right corner of the host**, half outside, with anchors — so it follows a
   host whose size is decided later. Attaching twice returns the same badge.

@@ -31,6 +31,10 @@ func _initialize() -> void:
 	await _one_widget()
 	await _own_ink()
 	await _screen()
+	await _frosted_scrim()
+	await _painted_title()
+	await _gauge_across()
+	await _stickers()
 	print("gohud arcade tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
 	quit(0 if failed.is_empty() else 1)
@@ -523,4 +527,152 @@ func _screen() -> void:
 	check(stick.is_inside_tree(), "screen: the joystick draws in the arcade look")
 	stick.queue_free()
 	GoUi.use_preset(&"default_light")
+	await frames(1)
+
+
+## The scrim frosts the game behind it when the arcade look's `arcade_scrim_blur` is on — and only then: off by
+## default, never on a clear scrim, never under another look.
+func _frosted_scrim() -> void:
+	GoUi.use_preset(&"arcade_light")
+	var skin := GoUi.skin() as GoSkinArcade
+	check(skin.arcade_scrim_blur == 0.0 and skin.scrim_material() == null, "scrim: plain by default")
+	var surface := _surface("Paused")
+	await frames(2)
+	var veil := surface.get_node(^"Scrim") as ColorRect
+	check(veil != null and veil.material == null, "scrim: a window's veil is plain while the dial is 0")
+	skin.arcade_scrim_blur = 3.0
+	GoUi.refresh()
+	await frames(2)
+	var frosted := veil.material as ShaderMaterial
+	check(frosted != null and frosted.shader != null, "scrim: with the dial on, the window's veil is frosted")
+	check(frosted != null and is_equal_approx(float(frosted.get_shader_parameter(&"lod")), 3.0), "scrim: as strongly as the dial")
+	check(GoStyle.scrim().material is ShaderMaterial, "scrim: GoStyle.scrim() frosts too")
+	check(GoStyle.scrim(0.0).material == null, "scrim: a clear GoStyle.scrim stays plain")
+	var menu := GoSurface.new()
+	menu.scrim_transparent = true
+	surface.get_parent().add_child(menu)
+	await frames(2)
+	check((menu.get_node(^"Scrim") as ColorRect).material == null, "scrim: a transparent scrim never frosts")
+	var drawer := GoDrawer.new()
+	root.add_child(drawer)
+	await frames(2)
+	check((drawer.find_child("Scrim", true, false) as ColorRect).material is ShaderMaterial, "scrim: a drawer's veil frosts too")
+	drawer.queue_free()
+	GoUi.use_preset(&"default_light")
+	await frames(2)
+	check(veil.material == null, "scrim: another look takes the frost off")
+	skin.arcade_scrim_blur = 0.0
+	surface.get_parent().queue_free()
+	await frames(1)
+
+
+## A window's title plate painted its own colour — the red ribbon of a GAME OVER — and back to gold without it.
+func _painted_title() -> void:
+	GoUi.use_preset(&"arcade_light")
+	var surface := _surface("Game over")
+	await frames(2)
+	var gold := surface.title_label.get_theme_stylebox(&"normal") as GoStyleBoxArcade
+	check(gold != null and gold.bg_color.r > gold.bg_color.b and gold.bg_color.g > gold.bg_color.b, "title: gold by default")
+	surface.title_paint = GoUi.color(GoTheme.DANGER_FILL)
+	await frames(1)
+	var red := surface.title_label.get_theme_stylebox(&"normal") as GoStyleBoxArcade
+	check(red != null and red.bg_color.r > red.bg_color.g * 1.4, "title: title_paint paints the ribbon")
+	check(red != null and red.tails > 0.0, "title: still a ribbon with tails")
+	var fitted := GoStyleBoxArcade.fit(GoUi.color(GoTheme.DANGER_FILL), red.edge()) if red != null else Color.BLACK
+	check(red != null and red.bg_color == GoStyleBoxArcade.tones(fitted)[0]
+		and GoStyleBoxArcade.worst_label(fitted, red.edge()) >= GoStyleBoxArcade.LABEL_NEED,
+		"title: painted with the paint fitted so its white outlined title reads")
+	GoUi.refresh()
+	await frames(2)
+	var kept := surface.title_label.get_theme_stylebox(&"normal") as GoStyleBoxArcade
+	check(kept != null and kept.bg_color.r > kept.bg_color.g * 1.4, "title: the paint survives a refresh")
+	surface.title_paint = Color.TRANSPARENT
+	await frames(1)
+	var back := surface.title_label.get_theme_stylebox(&"normal") as GoStyleBoxArcade
+	check(back != null and back.bg_color.g > back.bg_color.b, "title: transparent gives the look's gold back")
+	surface.title_paint = GoUi.color(GoTheme.DANGER_FILL)
+	GoUi.use_preset(&"default_light")
+	await frames(2)
+	check(not surface.title_label.has_theme_stylebox_override(&"normal"), "title: a look without a plate ignores the paint")
+	surface.get_parent().queue_free()
+	await frames(1)
+
+
+## A gauge whose fill runs across two paints under the arcade looks; the other looks keep one.
+func _gauge_across() -> void:
+	GoUi.use_preset(&"arcade_light")
+	var bar := GoBar.new()
+	bar.custom_minimum_size.x = 240
+	bar.ink = Color("#FF7A3D")
+	root.add_child(bar)
+	bar.set_values(60, 100, false)
+	await frames(2)
+	var single := bar.get_combined_minimum_size()
+	var fill := bar.find_child("Fill", true, false) as ProgressBar
+	var tube := fill.get_theme_stylebox(&"fill") as GoStyleBoxArcade
+	check(tube != null and tube.end_color.a == 0.0, "gauge: one paint by default")
+	bar.ink_end = Color("#FFD23F")
+	tube = fill.get_theme_stylebox(&"fill") as GoStyleBoxArcade
+	check(tube != null and tube.end_color.a > 0.0 and tube.end_color.g > tube.bg_color.g, "gauge: ink_end paints the far end")
+	check(bar.get_combined_minimum_size() == single, "gauge: no size changes")
+	GoUi.use_preset(&"arcade_dark")
+	await frames(1)
+	tube = fill.get_theme_stylebox(&"fill") as GoStyleBoxArcade
+	check(tube != null and tube.end_color.a > 0.0, "gauge: a look change keeps the second paint")
+	GoUi.use_preset(&"default_light")
+	await frames(1)
+	check(not (fill.get_theme_stylebox(&"fill") is GoStyleBoxArcade), "gauge: another look paints one colour")
+	var key := GoStyleBoxArcade.new()
+	key.paint(Color("#FF7A3D"))
+	key.end_color = Color("#FFD23F")
+	var canvas := Control.new()
+	canvas.size = Vector2(200, 30)
+	canvas.draw.connect(func() -> void: canvas.draw_style_box(key, Rect2(Vector2.ZERO, canvas.size)))
+	root.add_child(canvas)
+	await frames(2)
+	check(canvas.is_inside_tree(), "gauge: a key with an end colour draws")
+	canvas.queue_free()
+	bar.queue_free()
+	await frames(1)
+
+
+## Stickers: a solid badge painted in its colour, white outlined words or an icon, tilted — and the plain badge as it was.
+func _stickers() -> void:
+	GoUi.use_preset(&"arcade_light")
+	var card := Button.new()
+	card.custom_minimum_size = Vector2(240, 90)
+	var cleared := Button.new()
+	cleared.custom_minimum_size = Vector2(240, 90)
+	var mail := Button.new()
+	mail.custom_minimum_size = Vector2(60, 60)
+	for host: Control in [card, cleared, mail]: root.add_child(host)
+	var tag := GoBadge.stick(card, "PLAY!", GoUi.color(GoTheme.SUCCESS_FILL), -9.0)
+	var check_mark := GoBadge.stick(cleared, "", Color.TRANSPARENT, 0.0, GoIconSet.CHECK)
+	var count := GoBadge.attach(mail, 3)
+	await frames(2)
+	check(tag.visible and tag.solid, "sticker: shows with no count")
+	var face := tag.get_theme_stylebox(&"panel") as GoStyleBoxArcade
+	check(face != null and face.lip > 0.0 and face.bg_color.g > face.bg_color.r, "sticker: a painted green key with a lip")
+	var words := tag.find_child("Count", true, false) as Label
+	check(words.get_theme_color(&"font_color") == Color.WHITE and words.get_theme_constant(&"outline_size") > 0,
+		"sticker: white words with an ink outline")
+	check(is_equal_approx(tag.rotation_degrees, -9.0) and tag.pivot_offset.is_equal_approx(tag.size * 0.5),
+		"sticker: tilted round its centre")
+	check(words.get_theme_font_size(&"font_size") == GoUi.font_size(GoTheme.ROLE_BODY), "sticker: words at body size")
+	check(check_mark.visible and check_mark.find_child("Icon", true, false) != null
+		and not (check_mark.find_child("Count", true, false) as Label).visible, "sticker: an icon sticker shows its icon, no count")
+	var icon_size := check_mark.get_combined_minimum_size()
+	check(absf(icon_size.x - icon_size.y) <= 2.0, "sticker: one icon makes a round sticker")
+	check(not (count.get_theme_stylebox(&"panel") is GoStyleBoxArcade and (count.get_theme_stylebox(&"panel") as GoStyleBoxArcade).bg_color.s > 0.6),
+		"sticker: a plain count badge keeps its pale plate")
+	check(is_zero_approx(count.rotation), "sticker: a plain badge is not tilted")
+	check(GoBadge.stick(card, "GO!") == tag, "sticker: one per host — sticking again restyles it")
+	GoUi.use_preset(&"default_light")
+	await frames(2)
+	var flat := tag.get_theme_stylebox(&"panel") as StyleBoxFlat
+	var on := tag.find_child("Count", true, false) as Label
+	check(flat != null and GoSkin.contrast_ratio(on.get_theme_color(&"font_color"), flat.bg_color) >= 4.5,
+		"sticker: under the plain look a solid plate whose words read")
+	check(on.get_theme_constant(&"outline_size") == 0, "sticker: the plain look takes the outline off")
+	for host: Control in [card, cleared, mail]: host.queue_free()
 	await frames(1)

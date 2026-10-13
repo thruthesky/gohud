@@ -393,6 +393,7 @@ DIALS_EN = {
     "arcade_gloss": "Strength of the white candy gloss (sheen, corner glints, dash) on a painted arcade part (0–1).",
     "arcade_ribbon": "The swallow-tailed ends (dp) of an arcade window's gold title ribbon — 0 draws a plain gold key.",
     "arcade_bar_ticks": "How many chunks the arcade looks split a GoBar into when it leaves that to the look (segments = -1) — 0 keeps bars smooth.",
+    "arcade_scrim_blur": "How strongly the arcade looks blur the game behind a modal scrim (0–4, a mip level) — 0 keeps the plain veil.",
 }
 
 SKIN_TITLES = {

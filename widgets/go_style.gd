@@ -2881,6 +2881,7 @@ static func style_art(node: TextureRect, texture: Texture2D = null, fit := Fit.C
 
 ## 🔑 **A scrim.** One layer that veils what is behind so the eye goes to the card or sheet in front.
 ##    Without `alpha` it uses the scrim color the skin set as it is; with one it lays the background color at that depth.
+##    A look that frosts its scrims (`GoSkinArcade.arcade_scrim_blur`) blurs the game behind this one too.
 static func scrim(alpha := -1.0, ink := Color.TRANSPARENT) -> ColorRect:
 	var node := ColorRect.new()
 	node.name = "Scrim"
@@ -2892,6 +2893,9 @@ static func scrim(alpha := -1.0, ink := Color.TRANSPARENT) -> ColorRect:
 ## Resets the depth of a scrim already in place (a login background that veils only once the art has loaded).
 static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT) -> void:
 	if node == null: return
+	# 🌫 The look may frost what is behind (`GoSkin.scrim_material` — `GoSkinArcade.arcade_scrim_blur`); a clear veil
+	#    (alpha 0) stays plain.
+	node.material = GoUi.skin().scrim_material() if alpha != 0.0 else null
 	if alpha < 0.0 and ink.a <= 0.0:
 		node.color = GoUi.color(GoTheme.SCRIM)
 		return
