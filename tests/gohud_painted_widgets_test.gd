@@ -344,6 +344,19 @@ func _surface(look: StringName) -> void:
 			var words := surface.title_label.get_character_bounds(0)
 			check(absf(words.position.x - (mark.position.x + before) - GoSurface.TITLE_GLYPH_GAP) <= 1.5,
 				"%s surface: a shrunk title keeps one gap after the glyph" % look)
+		surface.set_title("SETTINGS")
+		# Right to left: the glyph goes on the start side (the right), one gap after the words' end.
+		surface.layout_direction = Control.LAYOUT_DIRECTION_RTL
+		await frames(3)
+		var last := surface.title_label.get_character_bounds(surface.title_label.text.length() - 1)
+		check(absf(mark.position.x - last.end.x - GoSurface.TITLE_GLYPH_GAP) <= 1.5,
+			"%s surface: in RTL the glyph sits one gap after the words, on the right (glyph %.1f, words end %.1f)"
+			% [look, mark.position.x, last.end.x])
+		surface.layout_direction = Control.LAYOUT_DIRECTION_INHERITED
+		await frames(3)
+		var first := surface.title_label.get_character_bounds(0)
+		check(absf(first.position.x - (mark.position.x + mark.size.x) - GoSurface.TITLE_GLYPH_GAP) <= 1.5,
+			"%s surface: back to left to right the glyph is before the words again" % look)
 	surface.title_glyph = null
 	await frames(1)
 	check(surface.title_label.get_children(true).filter(func(n): return n is TextureRect and not n.is_queued_for_deletion()).is_empty(),

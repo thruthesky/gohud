@@ -637,33 +637,45 @@ func _title_words_width() -> float:
 			title_label.get_theme_font_size(&"font_size")).x
 
 
-## Puts the glyph just left of the title's words — centred with them on a plate, at the start otherwise.
+## Puts the glyph just before the title's words, on the start side (the right in a right-to-left layout) — centred
+## with them on a plate, at the start otherwise. 🔑 A Label's LEFT alignment lays the words from the right edge in RTL,
+## and a stylebox's margins do not mirror, so the room for the glyph is moved to the start side here.
 func _place_title_glyph() -> void:
 	if not is_instance_valid(_title_glyph_rect) or title_label == null: return
 	var side := title_glyph_side()
+	var rtl := title_label.is_inside_tree() and title_label.is_layout_rtl()
 	var face := title_label.get_theme_stylebox(&"normal")
+	if title_label.has_meta(&"go_glyph_room") and face is StyleBoxEmpty:
+		var room := face as StyleBoxEmpty
+		var reserve := side + TITLE_GLYPH_GAP
+		room.content_margin_left = 0.0 if rtl else reserve
+		room.content_margin_right = reserve if rtl else 0.0
 	var left := face.get_margin(SIDE_LEFT) if face != null else 0.0
 	var right := face.get_margin(SIDE_RIGHT) if face != null else 0.0
 	var top := face.get_margin(SIDE_TOP) if face != null else 0.0
 	var bottom := face.get_margin(SIDE_BOTTOM) if face != null else 0.0
-	var x := left - TITLE_GLYPH_GAP - side
+	var width := title_label.size.x
+	var x := (width - right + TITLE_GLYPH_GAP) if rtl else (left - TITLE_GLYPH_GAP - side)
 	if face is OverhangPlate and title_label.has_meta(&"go_plate_align"):
 		# 🛑 A centred Label centres its words over its whole width and ignores the face's side margins, so the room
 		#    made for the glyph would not move them and the glyph would sit on the first letter. On a plate the words
-		#    are laid from the left instead, where glyph + gap + words sit centred together (the game's ribbon row).
+		#    are laid from the start side instead, where glyph + gap + words sit centred together (the game's ribbon row).
 		var plate := face as OverhangPlate
 		var base_left := plate.base.get_margin(SIDE_LEFT) if plate.base != null else 0.0
 		var base_right := plate.base.get_margin(SIDE_RIGHT) if plate.base != null else 0.0
 		var group := side + TITLE_GLYPH_GAP + _title_words_width()
-		var start := base_left + maxf(0.0, (title_label.size.x - base_left - base_right - group) * 0.5) \
-				+ side + TITLE_GLYPH_GAP
-		start = roundf(start)
-		if not is_equal_approx(plate.content_margin_left, start): plate.content_margin_left = start
+		var start := roundf((base_right if rtl else base_left) \
+				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP)
+		var want_left := base_left if rtl else start
+		var want_right := start if rtl else base_right
+		if not is_equal_approx(plate.content_margin_left, want_left): plate.content_margin_left = want_left
+		if not is_equal_approx(plate.content_margin_right, want_right): plate.content_margin_right = want_right
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		x = start - TITLE_GLYPH_GAP - side
+		x = (width - start + TITLE_GLYPH_GAP) if rtl else (start - TITLE_GLYPH_GAP - side)
 	elif title_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
-		var wide := minf(_title_words_width(), maxf(0.0, title_label.size.x - left - right))
-		x = (left + title_label.size.x - right) * 0.5 - wide * 0.5 - TITLE_GLYPH_GAP - side
+		var wide := minf(_title_words_width(), maxf(0.0, width - left - right))
+		var middle := (left + width - right) * 0.5
+		x = (middle + wide * 0.5 + TITLE_GLYPH_GAP) if rtl else (middle - wide * 0.5 - TITLE_GLYPH_GAP - side)
 	var y := top + (title_label.size.y - top - bottom - side) * 0.5
 	_title_glyph_rect.position = Vector2(roundf(x), roundf(y))
 	_title_glyph_rect.size = Vector2(side, side)
@@ -1136,7 +1148,8 @@ func _track_device(event: InputEvent) -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_TRANSLATION_CHANGED and title_label != null:
+	if (what == NOTIFICATION_TRANSLATION_CHANGED or what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED) \
+			and title_label != null:
 		_fit_title.call_deferred()
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and is_top():
 		# Deferred so that one OS notification does not close several stacked windows.
