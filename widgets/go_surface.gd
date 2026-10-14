@@ -105,6 +105,25 @@ var title_paint := Color.TRANSPARENT:
 	set(value):
 		title_paint = value
 		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## 🏷 A glyph left of the title (a trophy, the pause bars) — glyph and title stand centred together on the plate.
+## Drawn in the title's colour (white glyphs read as drawn on the arcade ribbon). Null: the title alone.
+var title_glyph: Texture2D:
+	set(value):
+		title_glyph = value
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## The glyph's side (dp). 0: in step with the title — 26/34 of its font size, as on the game's ribbon.
+var title_glyph_size := 0:
+	set(value):
+		title_glyph_size = value
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## The space between the glyph and the title (dp).
+const TITLE_GLYPH_GAP := 10.0
+## 🌤 An **opaque** window: a solid colour (`GoSkin.opaque_backdrop_color` — the game's sky in arcade_light) under it
+## instead of the see-through veil — for a window opened where the world behind is not drawn (a menu at boot).
+var opaque := false:
+	set(value):
+		opaque = value
+		_dress_scrim()
 ## 🪟 **Opacity of the card background** (0.0~1.0) — for this one window only. Negative means the value the theme
 ## and config decide (`GoUi.surface_alpha(GoTheme.BOX_PANEL)` · 80% in the default theme).
 ##
@@ -176,6 +195,9 @@ var status: VBoxContainer
 var status_label: Label
 
 var _scrim: ColorRect
+var _title_glyph_rect: TextureRect
+## How far the title plate rises above the card now (0: it sits inside the card) — `GoSkin.title_plate_overhang`.
+var _overhang := Vector2.ZERO
 var _column: VBoxContainer
 var _margin: MarginContainer
 var _content_padding := 0
@@ -406,6 +428,7 @@ func _dress_chrome() -> void:
 	title_label.remove_theme_color_override(&"font_outline_color")
 	title_label.remove_theme_constant_override(&"outline_size")
 	skin.dress_title(title_label)
+	_dress_title_extras(plate)
 	_fit_title()
 	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
 		close_button.remove_theme_stylebox_override(state)
@@ -417,6 +440,11 @@ func _dress_chrome() -> void:
 ## `GoSkin.title_plate_min_size()`, and only then folds. Without a plate the title keeps the size its role gives it.
 func _fit_title() -> void:
 	if title_label == null: return
+	_fit_title_size()
+	_place_title_glyph()
+
+
+func _fit_title_size() -> void:
 	var plate := title_label.get_theme_stylebox(&"normal") if title_label.has_meta(&"go_plate_align") else null
 	if plate == null or title_label.size.x <= 0.0 or title_label.text.is_empty():
 		if title_label.has_meta(&"go_title_fit"):
@@ -453,8 +481,126 @@ func _on_ui_changed() -> void:
 ## blur under the arcade looks with `arcade_scrim_blur` on (`GoSkin.scrim_material`). A clear scrim stays plain.
 func _dress_scrim() -> void:
 	if not is_instance_valid(_scrim): return
+	if opaque:
+		# 🛑 Opaque wins over a blur: there is nothing behind worth frosting.
+		_scrim.color = GoUi.skin().opaque_backdrop_color()
+		_scrim.material = null
+		return
 	_scrim.color = Color(0, 0, 0, 0) if scrim_transparent else GoUi.color(GoTheme.SCRIM)
 	_scrim.material = null if scrim_transparent else GoUi.skin().scrim_material()
+
+
+# ── Title glyph and the overhanging plate ─────────────────────────────
+
+## A plate that draws its base grown sideways by `bleed` — the ribbon reaching past the card's sides.
+class OverhangPlate:
+	extends StyleBox
+
+	var base: StyleBox
+	var bleed := 0.0
+
+	func _init(from: StyleBox = null, side := 0.0, extra_left := 0.0) -> void:
+		base = from
+		bleed = side
+		if from == null: return
+		content_margin_left = from.get_margin(SIDE_LEFT) + extra_left
+		content_margin_right = from.get_margin(SIDE_RIGHT)
+		content_margin_top = from.get_margin(SIDE_TOP)
+		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
+
+	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
+		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed, 0.0, bleed, 0.0))
+
+
+## The side of the title glyph now (dp).
+func title_glyph_side() -> float:
+	if title_glyph_size > 0: return float(title_glyph_size)
+	return roundf(float(title_label.get_theme_font_size(&"font_size")) * 26.0 / 34.0)
+
+
+## Room for the glyph on the title's face, and the plate hanging over the card's top edge when the look says so.
+## 🔑 Only what this surface put on is taken off again — a look without either gets the plain head back.
+func _dress_title_extras(plate: StyleBox) -> void:
+	var on_plate := plate != null and title_label.has_meta(&"go_plate_align")
+	_overhang = GoUi.skin().title_plate_overhang() if on_plate and show_header else Vector2.ZERO
+	var extra := title_glyph_side() + TITLE_GLYPH_GAP if title_glyph != null else 0.0
+	if on_plate and (extra > 0.0 or _overhang.x > 0.0):
+		title_label.add_theme_stylebox_override(&"normal", OverhangPlate.new(plate, _overhang.x, extra))
+	elif not on_plate:
+		if extra > 0.0:
+			var room := StyleBoxEmpty.new()
+			room.content_margin_left = extra
+			title_label.add_theme_stylebox_override(&"normal", room)
+			title_label.set_meta(&"go_glyph_room", true)
+		elif title_label.has_meta(&"go_glyph_room"):
+			title_label.remove_theme_stylebox_override(&"normal")
+			title_label.remove_meta(&"go_glyph_room")
+	if title_glyph == null:
+		if is_instance_valid(_title_glyph_rect): _title_glyph_rect.queue_free()
+		_title_glyph_rect = null
+	else:
+		if not is_instance_valid(_title_glyph_rect):
+			_title_glyph_rect = TextureRect.new()
+			_title_glyph_rect.name = "TitleGlyph"
+			_title_glyph_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			_title_glyph_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			_title_glyph_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			title_label.add_child(_title_glyph_rect, false, Node.INTERNAL_MODE_FRONT)
+		_title_glyph_rect.texture = title_glyph
+	_apply_overhang()
+
+
+## Lifts the head so the plate rises `_overhang.y` above the card's top edge (the padding's top margin goes negative)
+## and lets it show past the padding's clip. 🛑 The body keeps its own clip (`GoScroll`); only the head reaches out.
+func _apply_overhang() -> void:
+	if _margin == null: return
+	if _overhang.y > 0.0:
+		_margin.clip_contents = false
+		_margin.add_theme_constant_override(&"margin_top", -roundi(_card_top() + _overhang.y))
+		_margin.set_meta(&"go_overhang", true)
+	elif _margin.has_meta(&"go_overhang"):
+		_margin.remove_meta(&"go_overhang")
+		_margin.clip_contents = true
+		_margin.add_theme_constant_override(&"margin_top", _content_padding)
+	else:
+		return
+	_mark_layout_dirty()
+
+
+## The card face's top padding (dp) — where the head would start without an overhang.
+func _card_top() -> float:
+	var face := card.get_theme_stylebox(&"panel") if card != null else null
+	return face.get_margin(SIDE_TOP) if face != null else 0.0
+
+
+## How far the title plate rises above the card's top edge now (0 when it sits inside).
+func title_overhang() -> float:
+	return _overhang.y
+
+
+## Puts the glyph just left of the title's words — centred with them on a plate, at the start otherwise.
+func _place_title_glyph() -> void:
+	if not is_instance_valid(_title_glyph_rect) or title_label == null: return
+	var side := title_glyph_side()
+	var face := title_label.get_theme_stylebox(&"normal")
+	var left := face.get_margin(SIDE_LEFT) if face != null else 0.0
+	var right := face.get_margin(SIDE_RIGHT) if face != null else 0.0
+	var top := face.get_margin(SIDE_TOP) if face != null else 0.0
+	var bottom := face.get_margin(SIDE_BOTTOM) if face != null else 0.0
+	var x := left - TITLE_GLYPH_GAP - side
+	if title_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
+		var font := title_label.get_theme_font(&"font")
+		var words := title_label.atr(title_label.text)
+		var wide := font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1,
+				title_label.get_theme_font_size(&"font_size")).x if font != null else 0.0
+		wide = minf(wide, maxf(0.0, title_label.size.x - left - right))
+		x = (left + title_label.size.x - right) * 0.5 - wide * 0.5 - TITLE_GLYPH_GAP - side
+	var y := top + (title_label.size.y - top - bottom - side) * 0.5
+	_title_glyph_rect.position = Vector2(roundf(x), roundf(y))
+	_title_glyph_rect.size = Vector2(side, side)
+	var ink := title_label.get_theme_color(&"font_color") if title_label.is_inside_tree() \
+			else GoUi.skin().title_plate_ink()
+	_title_glyph_rect.self_modulate = ink if ink.a > 0.0 else Color.WHITE
 
 
 # ── Title ──────────────────────────────────────────────────────────────
@@ -661,6 +807,8 @@ func relayout() -> void:
 	# Keeps at least this much off the screen edge — on very narrow screens it shrinks proportionally.
 	var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN))
 	area = area.grow(-minf(edge, minf(area.size.x, area.size.y) * 0.1))
+	# A plate hanging over the card's top edge must stay on screen too.
+	if _overhang.y > 0.0: area = area.grow_individual(0.0, -_overhang.y, 0.0, 0.0)
 	var landscape := area.size.x > area.size.y
 	var width_ratio := settings.surface_width_ratio_landscape if landscape else settings.surface_width_ratio_portrait
 	var cap_width := max_width if max_width > 0.0 else settings.surface_max_width
@@ -718,6 +866,7 @@ func _apply_density(small: bool, width: float) -> void:
 	if _content_padding != next:
 		_content_padding = next
 		GoStyle.insets(_margin, next)
+		if _overhang.y > 0.0: _apply_overhang()
 		GoStyle.gap(_column, GoTheme.GAP_SMALL if small else GoTheme.GAP)
 		if scroll != null: scroll.set_panel_padding(next)
 	var role := GoTheme.ROLE_BODY if small else GoTheme.ROLE_SUBTITLE
@@ -758,6 +907,8 @@ func section_gap() -> int:
 ##    at every section on narrow screens (where the gap is `gap_small`), opening a hole between body and buttons in short confirmations.
 func _desired_height() -> float:
 	var desired := float(_content_padding * 2)
+	# The head starts above the card's top edge: the padding's top margin is negative by the card's top and the rise.
+	if _overhang.y > 0.0: desired -= float(_content_padding) + _card_top() + _overhang.y
 	var gap := float(section_gap())
 	if header.visible: desired += header.get_combined_minimum_size().y + gap
 	if toolbar.visible: desired += toolbar.get_combined_minimum_size().y + gap
