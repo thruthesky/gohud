@@ -161,6 +161,11 @@ func _level_card(look: StringName) -> void:
 		"%s card: the check sits over the top-right corner" % look)
 	check(card.summary() == "STAGE 1\nOPPONENTS: 1", "%s card: the summary" % look)
 	check(not card.disabled, "%s card: a cleared card takes presses" % look)
+	check(card.focus_mode == Control.FOCUS_ALL, "%s card: keyboard and gamepad can reach it" % look)
+	card.grab_focus()
+	check(card.has_focus() and card.get_theme_stylebox(&"focus") == card.selection_ring.get_theme_stylebox(&"panel"),
+		"%s card: the focused card wears the selection ring" % look)
+	card.release_focus()
 	var has_vars := GoUi.theme().get_type_list().has(GoLevelCard.VAR_CARD)
 	check(card.theme_type_variation == (GoLevelCard.VAR_CARD if has_vars else GoTheme.VAR_BUTTON),
 		"%s card: the variation, or GoButton without one (got %s)" % [look, card.theme_type_variation])

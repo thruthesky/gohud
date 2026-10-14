@@ -16,6 +16,8 @@
 ##
 ## 🛑 The texts come from the caller (they depend on the language); `locked_text` and `play_text` too. Every text is
 ##    shrunk to fit (`GoStyle.fit_font_size`), so a long translation never runs under the lock.
+## 🔑 Keyboard and gamepad reach it (`FOCUS_ALL`, unlike the game's mouse-and-touch cards): the focused tile wears the
+##    same gold ring as the selected one (`GoSkin.selection_ring_box`).
 ## 🛑 The setters batch their work: the tile is rebuilt once, at the end of the frame (or at once by `refresh()`).
 ## 🛑 A locked tile is `disabled` — it takes no press. The card only takes back the `disabled` it set itself: a tile
 ##    the caller disabled stays disabled when it unlocks. `tooltip_text` is the caller's too.
@@ -234,7 +236,7 @@ var _lock_disabled := false
 
 func _init() -> void:
 	name = "LevelCard"
-	focus_mode = Control.FOCUS_NONE
+	focus_mode = Control.FOCUS_ALL
 	alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_build()
 	_built = true
@@ -558,7 +560,9 @@ func _refresh() -> void:
 	pointer.offset_bottom = pointer_side * 0.3
 
 	selection_ring.visible = selected
-	selection_ring.add_theme_stylebox_override(&"panel", GoUi.skin().selection_ring_box())
+	var ring := GoUi.skin().selection_ring_box()
+	selection_ring.add_theme_stylebox_override(&"panel", ring)
+	add_theme_stylebox_override(&"focus", ring)
 	_fit_texts()
 
 
