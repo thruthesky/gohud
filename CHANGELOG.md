@@ -21,7 +21,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 - **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
   exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
-  `GoLevelCardLocked` (StageCard / StageCardNext / StageCardLocked), `GoWell` (the map-preview well), `GoHudPanel`
+  `GoLevelCardLocked` (StageCard / StageCardNext / StageCardLocked), `GoSliderGreen` / `GoSliderCyan` (the slider with a green or cyan fill), `GoWell` (the map-preview well), `GoHudPanel`
   (ArcadePanel), `GoBannerGold` (HudBanner), `GoNoticeGold` (NotifPlayer), `GoChipDark` (LangChip) and `GoIconOnly`
   (PauseRound). Sizes the game takes from `Cfg` are written at their desktop value (`tools/arcade_painted_map.json`
   `_cfg_sizes`). The game’s stage-select art is in `assets/arcade_light/stage/` (window, ribbon, three level cards,
@@ -58,6 +58,41 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   hint is a **keycap** on a deep lip. Sizes are unchanged everywhere; every label still clears its contrast bar.
 
 ### Added
+
+- **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
+  - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
+    `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.
+  - **`GoTextureSprite`** — a draw-only `Texture2D` for theme icons: it reports `draw_size` and draws the art, made at 3×,
+    scaled into it, so a slider handle or a switch pill is crisp at any canvas scale. It has no RID, so it is not for
+    `StyleBoxTexture`, `NinePatchRect` or shaders.
+  - **`GoSkinArcadePainted`** — the skin of `arcade_light`; `tools/theme_arcade_painted.py` writes its theme from
+    `tools/arcade_painted_map.json`.
+  - **A painted slider and switch** (`HSlider`, `CheckButton`) and the game's flat **`LineEdit` / `TextEdit` field**;
+    the `OptionButton` dropdown wears the painted box in RTL too. Tabs and the `VSlider` keep the arcade shapes.
+  - **`GoSliderGreen` / `GoSliderCyan`** — the slider with a green or cyan fill. `GoRangeSlider` now reads its own
+    `theme_type_variation` (falling back to `HSlider`), so it can wear them.
+  - **`GoLevelCard`** (`Button`) — the stage-select tile: `title`, `subtitle`, `state` (`OPEN`, `CLEARED`, `CURRENT`,
+    `LOCKED`), `selected`, `thumbnail` / `thumbnail_focus`, `locked_text`, `play_text` and art overrides; `GoLevelCard.make()`.
+  - **`GoKeyCluster`** (`Control`) — four keys in an inverted T (`WASD`, `ARROWS`), `picked` signal, `make()`,
+    `key_rects()`, `arrow_direction()`.
+  - **`GoCoverImage`** (`Control`) — a picture that covers its box (`object-fit: cover`) with a `focus` point;
+    `make()`, `cover_rect()`.
+  - **`GoGlyphButton`** (`Button`) — a glyph beside the label (`glyph` / `glyph_icon`), `make()`, `glyph_rect()`,
+    `glyph_allowance()`.
+  - **`GoKbd.done`** — a key already pressed: the caps turn green (`GoSkin.kbd_done_box()` · `kbd_done_ink()`).
+  - **`GoSurface.title_glyph`** / **`title_glyph_size`** (a glyph left of the title), **`opaque`** (a solid sky under the
+    window instead of the veil, for a menu opened before the world is drawn) and an **overhanging title plate**
+    (`title_overhang()`, `title_glyph_side()`).
+  - **`GoStyle.fit_font_size(texts, base, room)`** · `fit_floor(base)` · `row_width(font, texts, size)` — shrink text to
+    fit fixed art, never below `GoConfig.fit_min_scale` (0.7). `GoStyle.face_clearance(control, sideways)` can read
+    only the left and right of a frame.
+  - **Skin hooks** `GoSkin.widget_art(name)` (`check`, `lock`, `person`, `play_tag`, `pointer`) · `selection_ring_box()` ·
+    `key_cluster_box()` · `kbd_done_box()` · `kbd_done_ink()` · `title_plate_overhang()` · `opaque_backdrop_color()`.
+    `GoSkin.box_background()` answers a sprite's `face_color`.
+  - The new type variations are listed under *Changed* above (`GoSliderGreen`, `GoSliderCyan`, `GoWindowBlue`,
+    `GoRibbonWide`, `GoLevelCard*`, `GoWell`, `GoHudPanel`, `GoBannerGold`, `GoNoticeGold`, `GoChipDark`, `GoIconOnly`).
+  - Tests `gohud_stylebox_sprite_test`, `gohud_arcade_painted_assets_test`, `gohud_arcade_painted_theme_test`,
+    `gohud_arcade_painted_skin_test` and `gohud_painted_widgets_test`, all in `check_all`.
 
 - **`GoStyleBoxArcade.gloss`** (`enum Gloss { CANDY, STROKE }` — `STROKE` keeps 1.3.0's single stroke for one face),
   **`tails`** / **`tail_drop`** / **`ribbon_tails(rect)`** (a ribbon: swallow-tailed ends folded behind a body that

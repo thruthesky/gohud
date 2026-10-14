@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) and GoChoiceColumn.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage and GoGlyphButton.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -26,6 +26,10 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 17. [From Flutter](#17-from-flutter)
 18. [GoChoiceColumn — a column of choices you tap once](#18-gochoicecolumn--a-column-of-choices-you-tap-once)
 19. [Composing a full HUD — anchors or edge bars](#19-composing-a-full-hud--anchors-or-edge-bars)
+20. [GoLevelCard — a stage-select tile](#20-golevelcard--a-stage-select-tile)
+21. [GoKeyCluster — WASD or arrows in a T](#21-gokeycluster--wasd-or-arrows-in-a-t)
+22. [GoCoverImage — a picture that covers its box](#22-gocoverimage--a-picture-that-covers-its-box)
+23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
 
 ## 1. GoHudAnchor
 
@@ -603,3 +607,78 @@ left.clear_of([top, bottom])                      # its items stay between the t
 
 The complete, runnable version (status, stage, coins, menu, summon column, quick slots, actions) is
 `assets/templates/edge_bar_hud.gd`.
+
+## 20. GoLevelCard — a stage-select tile
+
+`class_name GoLevelCard extends Button`. The thumbnail on the left, the title and a subtitle row ("OPPONENTS: 3" with a
+person icon) beside it, and on the right the state: a check on a cleared level, a padlock and LOCKED on a locked one,
+a tilted PLAY! tag on the level to play next. A gold ring marks the selected tile.
+
+```gdscript
+var card := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
+card.thumbnail = preload("res://levels/3.png")      # or put your own node in card.thumbnail_slot
+card.selected = true
+card.pressed.connect(_play.bind(3))
+```
+
+| Member | Notes |
+|---|---|
+| `make(text, sub := "", level_state := State.OPEN)` · `enum State { OPEN, CLEARED, CURRENT, LOCKED }` · `state` | A `LOCKED` tile is `disabled` and takes no press |
+| `title` · `subtitle` · `locked_text` ("LOCKED") · `play_text` ("PLAY!") | The texts come from the caller (language); each shrinks to fit with `GoStyle.fit_font_size`. An empty `subtitle` hides the row |
+| `thumbnail` · `thumbnail_focus` · `thumbnail_slot` | The picture is drawn through `GoCoverImage`; leave it empty to put your own node in the slot |
+| `selected` | The gold ring (`GoSkin.selection_ring_box()`) |
+| `check_texture` · `lock_texture` · `person_texture` · `play_tag_texture` · `pointer_texture` | Art overrides. Empty: the skin (`GoSkin.widget_art`), else the icon set, else a drawn plate — a look with no art still works |
+| `scale_factor` · `card_size` (300×98) | Sizes are multiplied by `scale_factor` |
+
+- 🔑 The face comes from the type variation for the state — `GoLevelCard` (open and cleared), `GoLevelCardCurrent`,
+  `GoLevelCardLocked`; a theme without them falls back to `GoButton` (`GoPrimaryButton` for the current level).
+
+## 21. GoKeyCluster — WASD or arrows in a T
+
+`class_name GoKeyCluster extends Control`. Four movement keys in an inverted T, as a controls page of a game shows them.
+Each key is the look's keycap (`GoSkin.key_cluster_box()`); an arrow label is drawn as a triangle, any other word is
+engraved and shrunk to fit the cap.
+
+```gdscript
+var wasd := GoKeyCluster.make(["W", "A", "S", "D"])
+var arrows := GoKeyCluster.make(GoKeyCluster.ARROWS)
+arrows.picked.connect(func(): settings.hand = RIGHT)      # a click picks this layout
+```
+
+`labels` (up, left, down, right — the order of the T, not the keyboard row) · `key_size` (34) · `gap` (4) · `label_size`
+· `face_lift` · `arrow_half` · `key_rects()` · `label_at(i)` · `arrow_direction(word)` · `word_size(word)` · signal `picked`.
+
+- 🛑 Key names are never translated: they must read as engraved on the keyboard.
+
+## 22. GoCoverImage — a picture that covers its box
+
+`class_name GoCoverImage extends Control`. CSS `object-fit: cover`: the texture is scaled until it covers the whole rect,
+keeping its proportions, and the overflow is cut off.
+
+```gdscript
+var shot := GoCoverImage.make(preload("res://art/level_3.png"), Vector2(0.5, 0.3))   # keep the upper middle
+shot.custom_minimum_size = Vector2(74, 74)
+```
+
+`texture` · `focus` (0..1 on each axis — which part stays in view) · `make(picture, keep)` · static `cover_rect(area,
+tex_size, keep) -> Rect2`.
+
+- 🔑 Only the visible part of the texture is sampled, so it needs no `clip_contents` on the parent. It ignores the
+  mouse, so a card or button under it still takes the press.
+
+## 23. GoGlyphButton — a glyph beside the label
+
+`class_name GoGlyphButton extends Button`. The glossy pill of an arcade menu: the glyph is `GLYPH_SHARE` (0.62) of the
+button's height, and glyph, gap and label stand centred together.
+
+```gdscript
+var play := GoGlyphButton.make("Play", GoIconSet.PLAY, GoTheme.VAR_PRIMARY_BUTTON)
+var own := GoGlyphButton.make("Shop", &"", GoTheme.VAR_BUTTON, preload("res://ui/cart.png"))
+```
+
+`glyph` (a texture) · `glyph_icon` (an icon-set name used when `glyph` is empty) · `glyph_texture()` · `glyph_allowance()` ·
+`glyph_rect()`.
+
+- 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The label
+  stays a plain `text`, so translation and tests work as on any button.
+- 🛑 `glyph_icon` needs a texture icon set — a font icon has no texture, and the button then shows its label alone.

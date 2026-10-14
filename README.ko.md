@@ -51,6 +51,8 @@
 
 `arcade_light`는 Magnet Mayhem에서 만든 PNG와 흰 글리프를 쓴다. `GoStyleBoxSprite`와
 `GoSkinArcadePainted`가 버튼·카드·리본·키캡·배지를 그리며, 모달 뒤에는 게임의 블러 스크림을 쓴다.
+입력칸(`LineEdit`·`TextEdit`)은 게임의 평평한 입력칸이고, 가로 슬라이더(`GoSliderGreen`·`GoSliderCyan` 포함)와 스위치도
+페인티드 스프라이트다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
 `arcade_dark`는 기존의 `GoStyleBoxArcade`와 `GoSkinArcade`를 그대로 쓴다. 그림의 출처와 MIT 사용 조건은
 [서드파티 고지](THIRD_PARTY_NOTICES.md)에 있다.
 
@@ -171,7 +173,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `kids_dark` | 같은 젤리 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼과 민트 제목 리본 | `GoSkinKids` |
 | `comic_light` | 만화 컷 — 키·입력칸·목록 줄·판마다 굵은 잉크 테두리(`GoStyleBoxComic`)와 오른쪽 아래로 떨어지는 연하고 단단한 그림자(누르면 사라짐), 창 제목 뒤의 노란 말풍선 상자, 신문지 바탕에 남색 잉크. 테두리 두께·그림자 크기·그림자 표시 여부는 설정 한 줄씩(`GoUi.config.comic_border_width`·`comic_shadow_size`·`comic_shadow`)이고, 위젯 하나는 `GoStyle.comic_shadow(node, on)` 으로 따로 정한다 | `GoSkinComic` |
 | `comic_dark` | 같은 만화 컷의 밤 — 남색 바탕에 분필 잉크, 햇살 노랑 기본 버튼 | `GoSkinComic` |
-| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 파란 기본 버튼, 초록 성공 버튼(`GoSuccessButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 그림이 없는 필드와 탭 등은 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
+| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 파란 기본 버튼, 초록 성공 버튼(`GoSuccessButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 입력칸·가로 슬라이더·스위치도 페인티드이고, 탭과 세로 슬라이더는 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
 | `arcade_dark` | 코드로 그린 오락실의 밤 — 남색 보드와 바탕, 광택이 있는 알약 키, 금색 리본과 여러 칸 게이지 | `GoSkinArcade` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
@@ -414,6 +416,12 @@ icons.canonical(&"gear")             # &"settings"
 `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`,
 `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
+`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoSliderGreen` · `GoSliderCyan`
+(초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide`(스테이지 선택 창과 넓은 리본), `GoLevelCard` ·
+`GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
+판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만
+있는 동그란 버튼). 이 변형이 없는 테마는 기본 타입으로 돌아간다.
+
 채운 버튼은 기본으로 평평하다. `*GlowButton` 두 변형은 버튼 자기 색의 부드러운 그림자(sci-fi 모양은 글로우)로 띄운다 —
 채운 버튼 전부는 `GoConfig.button_glow` 를 켜고, 버튼 하나만은 `GoStyle.glow(button)` 을 부른다.
 
@@ -559,6 +567,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoStyleBoxJelly` | 젤리 사탕 — 굵은 외곽선, 밝은 윗면과 짙은 띠, 흰 광택, 누르면 꺼지는 턱 |
 | `GoStyleBoxComic` | 코믹 칸 — 굵은 잉크 외곽선과 오른쪽 아래로 떨어지는 단단한 그림자, 크기는 `GoConfig` 가 정한다 |
 | `GoStyleBoxSprite` | PNG를 9슬라이스로 그리는 페인티드 박스 — 텍스처 픽셀 단위의 가장자리와 pixels-per-unit 배율, `arcade_light`에서 사용 |
+| `GoTextureSprite` | 테마 아이콘(슬라이더 손잡이, 스위치 알약)용 그리기 전용 `Texture2D` — 논리 크기 `draw_size` 를 알리고 더 큰 그림을 그 안에 줄여 그려, 엔진이 3배 스프라이트를 게임 크기로 배치하고 그린다. RID 가 없어 `StyleBoxTexture`·`NinePatchRect`·셰이더에는 쓸 수 없다 |
 | `GoStyleBoxArcade` | 코드로 그린 아케이드 알약 키 — 위아래 그러데이션·캔디 광택·짙은 턱·잉크 외곽선, 두꺼운 테를 두른 판, 또는 제비꼬리 리본 |
 
 🛑 `GoStyle.surface()` 는 스킨이 만든 모양을 **그대로** 넘긴다. `box()`·`floating()`·`disc()` 는
@@ -625,7 +634,11 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoRadar` | Control | 능력치 오각형 — 힘·민첩·지능·체력·행운을 한 모양으로. `set_compare()` 가 바꿔 낄 장비를 **점선**으로 겹친다(점선이라 색각 이상인 사람도 두 줄로 본다) |
 | `GoDonut` | Control | 피해량 분포·재화 비율·파티 기여도. `collapse_to` 를 넘는 조각은 하나로 묶고, 가운데에 합계를 두며, `legend()` 가 조각마다 이름과 비율을 **글자로** 말한다 |
 | `GoCarousel` | VBoxContainer | 이벤트 배너와 캐릭터 선택. **저절로 넘어가지 않는다** — 자동으로 넘어가는 배너는 사람이 누르려던 것을 가로챈다. 점은 눌리고, 몇 번째인지 소리로 읽힌다 |
-| `GoKbd` | HBoxContainer | 키 안내. `GoKbd.for_action(&"interact")` 가 InputMap 에서 **실제 배치**를 읽으므로 키를 바꾸면 안내도 바뀐다. `hide_on_handheld` 가 폰에서는 감춘다 |
+| `GoKbd` | HBoxContainer | 키 안내. `GoKbd.for_action(&"interact")` 가 InputMap 에서 **실제 배치**를 읽으므로 키를 바꾸면 안내도 바뀐다. `hide_on_handheld` 가 폰에서는 감춘다. `done` 은 플레이어가 끝낸 단계의 키캡을 초록으로 바꾼다 |
+| `GoKeyCluster` | Control | 역 T 모양의 이동 키 네 개 — W 위에 A S D, 또는 방향키 — 조작 안내 화면처럼 보여 준다. 키마다 룩의 키캡(`GoSkin.key_cluster_box`)이고 방향 글자는 삼각형으로 그리며, 플레이어가 배치를 누르면 `picked` 가 나온다. 키 이름은 번역하지 않는다 |
+| `GoLevelCard` | Button | 스테이지 선택 카드 — 썸네일, 제목, 부제 줄(사람 아이콘과 "OPPONENTS: 3"), 오른쪽에 깬 레벨은 체크, 잠긴 레벨은 자물쇠(카드는 `disabled`), 다음 레벨은 비스듬한 PLAY! 태그. `selected` 는 금색 링을 그린다. 얼굴은 `GoLevelCard` · `GoLevelCardCurrent` · `GoLevelCardLocked` 에서 오고, 글자는 칸에 맞게 줄어든다(`GoStyle.fit_font_size`) |
+| `GoCoverImage` | Control | 상자를 가득 채우는 그림 — CSS `object-fit: cover`: 빈틈이 없을 때까지 키우고 넘친 부분은 자르며, `focus` 가 남길 부분을 고른다. `clip_contents` 가 필요 없고 마우스는 통과시킨다 |
+| `GoGlyphButton` | Button | 라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약. 글리프·간격·라벨이 함께 가운데에 선다. `Button.icon` 으로는 안 된다. 라벨은 평범한 `text` 라 번역과 테스트가 다른 버튼과 같다 |
 | `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
 
 ### 화면 위에
