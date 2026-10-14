@@ -462,20 +462,26 @@ func _switch(theme: Theme) -> void:
 
 
 ## ✏ The game's field: a white box with a 2 px SECONDARY rim, a 3 px CONTROL_BLUE ring while typing, DIFF_BG read-only.
+##    TextEdit wears the same boxes (the game has no multi-line field).
 func _field(theme: Theme) -> void:
 	var want := {&"normal": [Color.WHITE, 2, SECONDARY], &"focus": [Color(0, 0, 0, 0), 3, CONTROL_BLUE],
 		&"read_only": [DIFF_BG, 2, SECONDARY]}
-	for state: StringName in want:
-		var box := theme.get_stylebox(state, &"LineEdit") as StyleBoxFlat
-		check(box != null, "LineEdit/%s is a StyleBoxFlat" % state)
-		if box == null: continue
-		check(box.bg_color.is_equal_approx(want[state][0]) and box.border_width_left == want[state][1]
-			and box.border_width_bottom == want[state][1] and box.border_color.is_equal_approx(want[state][2])
-			and box.corner_radius_top_left == 10 and box.corner_radius_bottom_right == 10,
-			"LineEdit/%s: the game's UiTheme.box(%s, 10, %d, …)" % [state, (want[state][0] as Color).to_html(), want[state][1]])
-		check(_margins(box) == [14.0, 8.0, 14.0, 8.0], "LineEdit/%s: box()'s 14 / 8 padding (got %s)" % [state, _margins(box)])
-	check(theme.get_color(&"font_color", &"LineEdit").is_equal_approx(INK) and theme.get_color(&"caret_color", &"LineEdit").is_equal_approx(INK),
-		"LineEdit: ink text and caret")
+	for type: StringName in [&"LineEdit", &"TextEdit"]:
+		for state: StringName in want:
+			var box := theme.get_stylebox(state, type) as StyleBoxFlat
+			check(box != null, "%s/%s is a StyleBoxFlat" % [type, state])
+			if box == null: continue
+			check(box.bg_color.is_equal_approx(want[state][0]) and box.border_width_left == want[state][1]
+				and box.border_width_bottom == want[state][1] and box.border_color.is_equal_approx(want[state][2])
+				and box.corner_radius_top_left == 10 and box.corner_radius_bottom_right == 10,
+				"%s/%s: the game's UiTheme.box(%s, 10, %d, …)" % [type, state, (want[state][0] as Color).to_html(),
+				want[state][1]])
+			check(_margins(box) == [14.0, 8.0, 14.0, 8.0], "%s/%s: box()'s 14 / 8 padding (got %s)" % [type, state,
+				_margins(box)])
+			if type == &"TextEdit":
+				check(box == theme.get_stylebox(state, &"LineEdit"), "TextEdit/%s: the very box LineEdit wears" % state)
+		check(theme.get_color(&"font_color", type).is_equal_approx(INK)
+			and theme.get_color(&"caret_color", type).is_equal_approx(INK), "%s: ink text and caret" % type)
 
 
 ## 🧹 Every `[ext_resource]` the file declares is pointed at: the painted parts replace arcade drawings (the switch's

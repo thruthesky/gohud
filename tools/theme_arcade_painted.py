@@ -358,12 +358,17 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("PopupMenu/constants/v_separation", 10)
 
     # ── ✏ The text field (`join_lobby.gd`, `create_room.gd`, `secret_prompt.gd`): a white box with a grey rim, a blue
-    #    ring over it while typing, the pale blue when it cannot be typed in; ink text and caret. ──
-    put("LineEdit/styles/normal", box("painted_field", WHITE, 10, 2, SECONDARY, margin_v=(8.0, 8.0)))
-    put("LineEdit/styles/focus", box("painted_field_focus", CLEAR, 10, 3, CONTROL_BLUE, margin_v=(8.0, 8.0)))
-    put("LineEdit/styles/read_only", box("painted_field_read_only", DIFF_BG, 10, 2, SECONDARY, margin_v=(8.0, 8.0)))
-    setT("LineEdit/colors/font_color", C(INK))
-    setT("LineEdit/colors/caret_color", C(INK))
+    #    ring over it while typing, the pale blue when it cannot be typed in; ink text and caret. The game has no
+    #    multi-line field; TextEdit wears the same three boxes so the two never look like two themes. ──
+    field = box("painted_field", WHITE, 10, 2, SECONDARY, margin_v=(8.0, 8.0))
+    typing = box("painted_field_focus", CLEAR, 10, 3, CONTROL_BLUE, margin_v=(8.0, 8.0))
+    fixed = box("painted_field_read_only", DIFF_BG, 10, 2, SECONDARY, margin_v=(8.0, 8.0))
+    for type_name in ("LineEdit", "TextEdit"):
+        put("%s/styles/normal" % type_name, field)
+        put("%s/styles/focus" % type_name, typing)
+        put("%s/styles/read_only" % type_name, fixed)
+        setT("%s/colors/font_color" % type_name, C(INK))
+        setT("%s/colors/caret_color" % type_name, C(INK))
 
     # ── 🎚 The slider (`PaintedSlider`): the grey pill track, the coloured fill up to the handle, the round handle. ──
     #    The track's 8 + 8 padding is the bar's height: the engine draws the track and the fill as tall as the
