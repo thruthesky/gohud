@@ -266,6 +266,22 @@ func _glyph_button(look: StringName) -> void:
 	var base := (face as GoGlyphButton.ShiftedBox).base
 	var middle := (base.get_margin(SIDE_LEFT) + button.size.x - base.get_margin(SIDE_RIGHT)) * 0.5
 	check(absf((group_left + group_right) * 0.5 - middle) < 1.5, "%s glyph: glyph + label are centred together (%.1f..%.1f, mid %.1f)" % [look, group_left, group_right, middle])
+	check(GoUi._watchers.has(Callable(button, &"_on_ui_changed")), "%s glyph: an icon-set swap measures the shift again" % look)
+	var normal_tint := button.glyph_tint()
+	button.disabled = true
+	check(is_equal_approx(button.glyph_tint().a, normal_tint.a * 0.6), "%s glyph: a disabled glyph is 0.6 opaque" % look)
+	button.disabled = false
+	button.layout_direction = Control.LAYOUT_DIRECTION_RTL
+	await frames(1)
+	var flipped := button.glyph_rect()
+	var shifted := button.get_theme_stylebox(&"normal")
+	check(shifted is GoGlyphButton.ShiftedBox and shifted.get_margin(SIDE_RIGHT) > shifted.get_margin(SIDE_LEFT) - 0.01
+		and flipped.position.x > button.size.x * 0.5, "%s glyph: right to left, the glyph stands at the label's right" % look)
+	var rtl_left := flipped.position.x - GoGlyphButton.GAP - text_w
+	var rtl_mid := (base.get_margin(SIDE_LEFT) + button.size.x - base.get_margin(SIDE_RIGHT)) * 0.5
+	check(absf((rtl_left + flipped.end.x) * 0.5 - rtl_mid) < 1.5, "%s glyph: right to left, still centred together" % look)
+	button.layout_direction = Control.LAYOUT_DIRECTION_INHERITED
+	await frames(1)
 	button.glyph = null
 	check(not (button.get_theme_stylebox(&"normal") is GoGlyphButton.ShiftedBox), "%s glyph: no glyph, no shift" % look)
 	button.glyph_icon = GoIconSet.PLAY
