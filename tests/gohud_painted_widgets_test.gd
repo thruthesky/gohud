@@ -29,6 +29,8 @@ func _initialize() -> void:
 		await _glyph_button(look)
 		await _kbd_done(look)
 		await _surface(look)
+		await _defaults(look)
+		await _glyph_overrides(look)
 	await _reparent()
 	for look: StringName in GoThemePresets.ids():
 		GoUi.use_preset(look)
@@ -137,11 +139,14 @@ func _key_cluster(look: StringName) -> void:
 	check(keys.word_size("Space") < 18 and keys.word_size("Space") >= 13, "%s cluster: a long word shrinks to the floor" % look)
 	var picks := [0]
 	keys.picked.connect(func() -> void: picks[0] += 1)
-	var click := InputEventMouseButton.new()
-	click.button_index = MOUSE_BUTTON_LEFT
-	click.pressed = true
-	keys._gui_input(click)
-	check(picks[0] == 1, "%s cluster: a click emits picked" % look)
+	for down in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = down
+		click.position = keys.get_global_rect().get_center()
+		click.global_position = click.position
+		keys.get_viewport().push_input(click, true)
+	check(picks[0] == 1, "%s cluster: a click emits picked once (got %d)" % [look, picks[0]])
 	keys.labels = GoKeyCluster.ARROWS
 	keys.key_size = 40.0
 	check(keys.custom_minimum_size == Vector2(128, 84), "%s cluster: the size follows key_size" % look)
@@ -174,8 +179,12 @@ func _level_card(look: StringName) -> void:
 	var has_vars := GoUi.theme().get_type_list().has(GoLevelCard.VAR_CARD)
 	check(card.theme_type_variation == (GoLevelCard.VAR_CARD if has_vars else GoTheme.VAR_BUTTON),
 		"%s card: the variation, or GoButton without one (got %s)" % [look, card.theme_type_variation])
-	if painted: check(card.title_label.get_theme_constant(&"outline_size") == 0 or card.ink().get_luminance() > 0.5,
-		"%s card: dark text on the light card has no outline" % look)
+	if painted:
+		# The game (StageCard.show_state): ink #1d2340 with no outline on the blue card.
+		check(card.ink().to_html() == "1d2340ff" and card.title_label.get_theme_color(&"font_color").to_html() == "1d2340ff",
+			"%s card: the cleared card's ink is the game's #1d2340 (got %s)" % [look, card.ink().to_html()])
+		check(card.title_label.get_theme_constant(&"outline_size") == 0
+			and card.subtitle_label.get_theme_constant(&"outline_size") == 0, "%s card: dark text has no outline" % look)
 
 	card.state = GoLevelCard.State.CURRENT
 	await frames(1)
@@ -186,8 +195,11 @@ func _level_card(look: StringName) -> void:
 		"%s card: the tag sits at the top-right" % look)
 	check(card.theme_type_variation == (GoLevelCard.VAR_CURRENT if GoUi.theme().get_type_list().has(GoLevelCard.VAR_CURRENT)
 		else GoTheme.VAR_PRIMARY_BUTTON), "%s card: current wears its variation or GoPrimaryButton" % look)
-	if card.ink().get_luminance() > 0.5 and card.outline_ink().a > 0.0:
-		check(card.title_label.get_theme_constant(&"outline_size") == 4, "%s card: light text on the card is outlined" % look)
+	if painted:
+		# The game: white text outlined 4 (title) and 3 (opponents) on the green card.
+		check(card.ink() == Color.WHITE and card.outline_ink().a > 0.0, "%s card: the current card's ink is white" % look)
+		check(card.title_label.get_theme_constant(&"outline_size") == 4
+			and card.subtitle_label.get_theme_constant(&"outline_size") == 3, "%s card: outlined 4 and 3, as the game" % look)
 	card.play_text = "JUGAR!"
 	check(card.tag_label.text == "PLAY!", "%s card: a change waits for the end of the frame" % look)
 	await frames(1)
@@ -216,6 +228,10 @@ func _level_card(look: StringName) -> void:
 	check(card.tooltip_text == "Stage one", "%s card: a refresh keeps the caller's tooltip" % look)
 	card.selected = false
 	check(card.locked_label.get_theme_font_size(&"font_size") >= 8, "%s card: LOCKED never under 8" % look)
+	if painted:
+		check(card.ink() == Color.WHITE and card.title_label.get_theme_constant(&"outline_size") == 4
+			and card.locked_label.get_theme_constant(&"outline_size") == 3,
+			"%s card: the locked card is white, outlined 4 and LOCKED 3, as the game" % look)
 
 	card.state = GoLevelCard.State.OPEN
 	card.title = "A STAGE WITH A REALLY VERY LONG TRANSLATED NAME"
@@ -343,6 +359,73 @@ func _kbd_done_box(look: StringName) -> void:
 	check(ratio >= 4.5, "%s kbd done: the word reads on the green (%.2f)" % [look, ratio])
 
 
+# ── Defaults leave the old widgets as they were ───────────────────────
+
+func _defaults(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var kbd := GoKbd.make("W")
+	kbd.hide_on_handheld = false
+	root.add_child(kbd)
+	var surface := GoSurface.new()
+	surface.set_title("SETTINGS")
+	root.add_child(surface)
+	await frames(2)
+	check(not kbd.done, "%s defaults: a key cap is not done" % look)
+	var cap := (kbd.get_child(0) as PanelContainer).get_theme_stylebox(&"panel")
+	check(GoSkin.box_background(cap) == GoSkin.box_background(GoUi.skin().kbd_box()), "%s defaults: the cap is kbd_box" % look)
+	check(not surface.opaque and surface.title_glyph == null, "%s defaults: no glyph, not opaque" % look)
+	var marks := surface.title_label.get_children(true).filter(func(n): return n is TextureRect)
+	check(marks.is_empty(), "%s defaults: no glyph node on the title" % look)
+	var scrim := surface.get_node(^"Scrim") as ColorRect
+	check(scrim.color == GoUi.color(GoTheme.SCRIM) or scrim.color.a == 0.0, "%s defaults: the scrim is the look's veil" % look)
+	if not painted:
+		check(not (surface.title_label.get_theme_stylebox(&"normal") is GoSurface.OverhangPlate),
+			"%s defaults: a look with no ribbon keeps its plate unwrapped" % look)
+		check(surface.title_overhang() == 0.0, "%s defaults: nothing hangs over the card" % look)
+	kbd.queue_free()
+	surface.queue_free()
+	await frames(1)
+
+
+# ── Glyph button: the caller's face and a glyph too wide for the padding ─
+
+func _glyph_overrides(look: StringName) -> void:
+	var own := StyleBoxFlat.new()
+	own.bg_color = Color.REBECCA_PURPLE
+	own.set_content_margin_all(10.0)
+	var button := GoGlyphButton.make("GO", &"", GoTheme.VAR_BUTTON)
+	button.add_theme_stylebox_override(&"normal", own)
+	root.add_child(button)
+	await frames(1)
+	button.glyph = ImageTexture.create_from_image(Image.create(20, 20, false, Image.FORMAT_RGBA8))
+	var wrapped := button.get_theme_stylebox(&"normal") as GoGlyphButton.ShiftedBox
+	check(wrapped != null and wrapped.base == own and wrapped.was_override,
+		"%s glyph: the caller's own face is wrapped, not replaced" % look)
+	button.glyph = null
+	check(button.get_theme_stylebox(&"normal") == own and button.has_theme_stylebox_override(&"normal"),
+		"%s glyph: dropping the glyph puts the caller's face back" % look)
+	button.remove_theme_stylebox_override(&"normal")
+
+	# A wide glyph on a tall button: half its room is more than the right padding gives.
+	var bare := button.get_combined_minimum_size().x
+	button.custom_minimum_size = Vector2(0, 80)
+	button.glyph = ImageTexture.create_from_image(Image.create(60, 20, false, Image.FORMAT_RGBA8))
+	await frames(1)
+	var face := button.get_theme_stylebox(&"normal") as GoGlyphButton.ShiftedBox
+	var shift := button.glyph_allowance() * 0.5
+	check(face != null and shift > face.base.get_margin(SIDE_RIGHT), "%s glyph: the shift is wider than the padding" % look)
+	check(button.get_combined_minimum_size().x > bare, "%s glyph: the button grows to hold a wide glyph" % look)
+	var rect := button.glyph_rect()
+	var font := button.get_theme_font(&"font")
+	var text_w := font.get_string_size("GO", HORIZONTAL_ALIGNMENT_LEFT, -1, button.get_theme_font_size(&"font_size")).x
+	var middle := (face.base.get_margin(SIDE_LEFT) + button.size.x - face.base.get_margin(SIDE_RIGHT)) * 0.5
+	var group := (rect.position.x + rect.end.x + GoGlyphButton.GAP + text_w) * 0.5
+	check(rect.position.x >= GoGlyphButton.MIN_EDGE - 0.01 and absf(group - middle) < 1.5,
+		"%s glyph: a wide glyph still stands centred with its label (group %.1f, mid %.1f)" % [look, group, middle])
+	button.queue_free()
+	await frames(1)
+
+
 # ── Reparent ───────────────────────────────────────────────────────────
 
 func _reparent() -> void:
@@ -385,8 +468,13 @@ func _surface(look: StringName) -> void:
 	if mark != null:
 		var side := surface.title_glyph_side()
 		check(is_equal_approx(mark.size.x, side), "%s surface: the glyph follows the title size" % look)
-		check(mark.position.x + side <= surface.title_label.get_theme_stylebox(&"normal").get_margin(SIDE_LEFT) \
-			+ (surface.title_label.size.x) and mark.position.x >= -1.0, "%s surface: the glyph sits on the title" % look)
+		# 🛑 Only that it stays left of the first letter: the exact gap waits on GoSurface (its glyph assumes the label
+		#    centres inside the plate's margins; a Label centres across its whole width, so the glyph lands 4 px into
+		#    the "S" of SETTINGS in arcade_light — reported 2026-10-14).
+		var first := surface.title_label.get_character_bounds(0)
+		check(first.size.x > 0.0 and mark.position.x < first.position.x,
+			"%s surface: the glyph stands before the first letter (glyph %.1f, letter %.1f)"
+			% [look, mark.position.x, first.position.x])
 	if painted:
 		check(is_equal_approx(surface.title_overhang(), 17.0), "%s surface: the ribbon rises 17 over the card" % look)
 		var head_top := surface.title_label.global_position.y
@@ -402,12 +490,14 @@ func _surface(look: StringName) -> void:
 	await frames(1)
 	check(surface.title_label.get_children(true).filter(func(n): return n is TextureRect and not n.is_queued_for_deletion()).is_empty(),
 		"%s surface: clearing the glyph removes it" % look)
-	surface.opaque = true
 	var scrim := surface.get_node(^"Scrim") as ColorRect
+	var veil := scrim.color
+	var frost := scrim.material
+	surface.opaque = true
 	check(scrim.color == GoUi.skin().opaque_backdrop_color() and scrim.material == null,
 		"%s surface: opaque puts a solid colour under it" % look)
 	surface.opaque = false
-	check(scrim.color != GoUi.skin().opaque_backdrop_color() or scrim.color == GoUi.color(GoTheme.SCRIM),
-		"%s surface: opaque off brings the veil back" % look)
+	check(scrim.color == veil and (scrim.material != null) == (frost != null),
+		"%s surface: opaque off brings the veil and the blur back" % look)
 	surface.queue_free()
 	await frames(1)
