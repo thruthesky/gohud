@@ -228,6 +228,10 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("OptionButton/constants/outline_size", 0)
     put("OptionButton/styles/disabled", drop_box)
     setT("OptionButton/colors/font_disabled_color", C(pal["muted"]))
+    # 🛑 A right-to-left layout draws the `*_mirrored` faces, which `make_theme.py` points at the arcade's blue keys —
+    #    each takes the painted box of its left-to-right state (the boxes are symmetric).
+    for state, bid in (("normal", drop_box), ("hover", drop_box), ("pressed", down), ("disabled", drop_box)):
+        put("OptionButton/styles/%s_mirrored" % state, bid)
     put("PopupMenu/styles/panel", box("painted_list", WHITE, 12, 3, INK, shadow=True, margin_h=6.0, margin_v=(6.0, 6.0)))
     put("PopupMenu/styles/hover", box("painted_list_hover", DIFF_SELECTED, 8, 0, INK, margin_h=6.0,
                                       margin_v=(4.0, 4.0)))
