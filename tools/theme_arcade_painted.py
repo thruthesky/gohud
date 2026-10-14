@@ -4,7 +4,7 @@ The arcade cabinet (`tools/theme_arcade.py`) draws every part first, in this pal
 the game's painted sprites (`assets/arcade_light/painted/*.png`, drawn by `GoStyleBoxSprite`) and its flat pieces over
 the variations the game uses, **with exactly the items and values of `UiTheme._build()`** in Magnet Mayhem
 (`src/ui/ui_theme.gd`): the same edges (texture px), pixels per unit, tints, padding, colours, outlines and
-constants. Parts with no painted art (rows, fields, tabs, bars …) keep the arcade's code-drawn keys.
+constants. Parts with no painted art (rows, tabs, bars …) keep the arcade's code-drawn keys.
 
 🔑 **The game builds its theme as `duplicate(arcade_light)` plus aliases** from `tools/arcade_painted_map.json`
    (written here): each mapped variation must carry the game variation's item set and nothing else — so every item
@@ -18,6 +18,7 @@ import os
 
 RES = "res://addons/gohud"
 SPRITE_SCRIPT = RES + "/widgets/go_stylebox_sprite.gd"
+ICON_SCRIPT = RES + "/widgets/go_texture_sprite.gd"
 PAINTED = RES + "/assets/arcade_light/painted/"
 # The stage-select art (the game's `assets/ui/stage`): a sprite named "stage/<file>" is drawn from here.
 STAGE = RES + "/assets/arcade_light/stage/"
@@ -37,6 +38,8 @@ CHIP_RIM = (0.435294, 0.584314, 1.0, 1.0)                # #6f95ff
 ICON_PRESSED = (0.78, 0.78, 0.86, 1.0)                   # `PauseRound`'s pressed icon
 DIFF_BG = (0.933333, 0.945098, 0.984314, 1.0)            # #eef1fb
 DIFF_SELECTED = (0.498039, 0.894118, 1.0, 1.0)           # #7fe4ff
+SECONDARY = (0.541176, 0.560784, 0.701961, 1.0)          # #8a8fb3
+CLEAR = (0.0, 0.0, 0.0, 0.0)
 PANEL = (1.0, 1.0, 1.0, 0.9)
 PRESSED_TINT = (0.8, 0.8, 0.86, 1.0)
 DISABLED_TINT = (0.6, 0.6, 0.66, 0.85)
@@ -66,6 +69,15 @@ DROPDOWN_FONT_SIZE = 17
 HUD_PANEL_PADDING = 8.0
 HUD_BANNER_PADDING = 4.0
 CHIP_FONT_SIZE = 15
+# The slider (`PaintedSlider`): an 80 px tall pill drawn 16 units tall, a 108 px handle drawn 36 units wide.
+BAR_EDGE = (48, 38, 48, 38)
+BAR_PPU = 5.0
+BAR_HEIGHT = 16.0
+HANDLE_SIZE = (36, 36)
+# The switch (`PaintedSwitch` `SWITCH_SIZE`): the 186 × 71 pills drawn 76 × 29 units.
+SWITCH_SIZE = (76, 29)
+# The fills `PaintedSlider.use_fill()` offers: blue is HSlider itself, the others a variation each.
+SLIDER_FILLS = {"HSlider": "slider_blue.png", "GoSliderGreen": "slider_green.png", "GoSliderCyan": "slider_cyan.png"}
 
 # 🔑 The colour each sprite shows under its label — sampled at the middle of the PNG. `face_color` is never drawn;
 #    it is what `check_contrast.py` measures text against (tinted like the face it belongs to).
@@ -85,6 +97,10 @@ FACES = {
     "stage/card_current.png": (0.384314, 0.945098, 0.454902, 1.0),  # #62f174
     "stage/card_locked.png": (0.698039, 0.717647, 0.811765, 1.0),   # #b2b7cf
     "stage/well.png": (0.086275, 0.137255, 0.27451, 1.0),           # #162346
+    "slider_track.png": (0.752941, 0.760784, 0.866667, 1.0),  # #c0c2dd
+    "slider_blue.png": (0.086275, 0.509804, 0.996078, 1.0),   # #1682fe
+    "slider_green.png": (0.129412, 0.862745, 0.466667, 1.0),  # #21dc77
+    "slider_cyan.png": (0.156863, 0.831373, 0.968627, 1.0),   # #28d4f7
 }
 
 # Game variation → its gohud name. The values are what the game aliases; `GAME_ONLY` stays in the game.
@@ -162,6 +178,15 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             lines.append("tint = %s" % C(tint))
         lines.append("face_color = %s" % C(_times(FACES[file], tint)))
         boxes[bid] = ("StyleBox", lines)
+        return bid
+
+    def icon(bid, file, size, tint=WHITE):
+        """The art squeezed into `size` canvas units (`draw_texture_rect` in the game) as a `GoTextureSprite`."""
+        lines = ['script = ExtResource("sprite_icon")', 'texture = ExtResource("%s")' % texture_id(file),
+                 "draw_size = Vector2(%g, %g)" % size]
+        if tint != WHITE:
+            lines.append("tint = %s" % C(tint))
+        boxes[bid] = ("Texture2D", lines)
         return bid
 
     def box(bid, bg, radius, border, border_color=INK, shadow=False, margin_h=14.0, margin_v=8.0, bottom=None,
@@ -311,6 +336,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         put("OptionButton/styles/%s" % state, drop_box)
     put("OptionButton/styles/pressed", down)
     put("OptionButton/styles/hover_pressed", down)
+    put("OptionButton/styles/hover_pressed_mirrored", down)
     for slot in FONT_STATES:
         setT("OptionButton/colors/%s" % slot, C(INK))
     setT("OptionButton/font_sizes/font_size", DROPDOWN_FONT_SIZE)
@@ -330,6 +356,47 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("PopupMenu/colors/font_hover_color", C(INK))
     setT("PopupMenu/font_sizes/font_size", DROPDOWN_FONT_SIZE)
     setT("PopupMenu/constants/v_separation", 10)
+
+    # ── ✏ The text field (`join_lobby.gd`, `create_room.gd`, `secret_prompt.gd`): a white box with a grey rim, a blue
+    #    ring over it while typing, the pale blue when it cannot be typed in; ink text and caret. ──
+    put("LineEdit/styles/normal", box("painted_field", WHITE, 10, 2, SECONDARY, margin_v=(8.0, 8.0)))
+    put("LineEdit/styles/focus", box("painted_field_focus", CLEAR, 10, 3, CONTROL_BLUE, margin_v=(8.0, 8.0)))
+    put("LineEdit/styles/read_only", box("painted_field_read_only", DIFF_BG, 10, 2, SECONDARY, margin_v=(8.0, 8.0)))
+    setT("LineEdit/colors/font_color", C(INK))
+    setT("LineEdit/colors/caret_color", C(INK))
+
+    # ── 🎚 The slider (`PaintedSlider`): the grey pill track, the coloured fill up to the handle, the round handle. ──
+    #    The track's 8 + 8 padding is the bar's height: the engine draws the track and the fill as tall as the
+    #    track's minimum size, centred, and the fill ends at the handle's centre (the game's ends 2 units past it,
+    #    under the handle). The handle is 36 units wide, so the value maps where it is drawn, as in the game.
+    half = BAR_HEIGHT / 2.0
+    put("HSlider/styles/slider", sprite("painted_slider_track", "slider_track.png", BAR_EDGE, BAR_PPU, 0.0, half, half))
+    for type_name, file in SLIDER_FILLS.items():
+        if type_name != "HSlider":
+            drop(type_name)
+            setT(type_name + "/base_type", '&"HSlider"')
+        fill = sprite("painted_%s_fill" % type_name, file, BAR_EDGE, BAR_PPU, 0.0, 0.0, 0.0)
+        put("%s/styles/grabber_area" % type_name, fill)
+        put("%s/styles/grabber_area_highlight" % type_name, fill)
+    handle = icon("painted_slider_handle", "slider_handle.png", HANDLE_SIZE)
+    put("HSlider/icons/grabber", handle)
+    put("HSlider/icons/grabber_highlight", handle)
+    # The game has no disabled slider; the handle fades like every painted part that is off.
+    put("HSlider/icons/grabber_disabled", icon("painted_slider_handle_disabled", "slider_handle.png", HANDLE_SIZE,
+                                               DISABLED_TINT))
+
+    # ── 🔘 The switch (`PaintedSwitch`): the grey pill with the knob left, the green one with the knob right, at the
+    #    game's size in every direction (the game draws them unflipped right to left too); off, they fade. The game's
+    #    switch draws no focus ring. ──
+    put("CheckButton/styles/focus", "painted_empty")
+    for on, file in ((True, "toggle_on.png"), (False, "toggle_off.png")):
+        key = "checked" if on else "unchecked"
+        stem = "painted_" + file[:-len(".png")]
+        lit = icon(stem, file, SWITCH_SIZE)
+        off = icon(stem + "_disabled", file, SWITCH_SIZE, DISABLED_TINT)
+        for suffix in ("", "_mirrored"):
+            put("CheckButton/icons/%s%s" % (key, suffix), lit)
+            put("CheckButton/icons/%s_disabled%s" % (key, suffix), off)
 
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()
@@ -361,11 +428,16 @@ def texture_path(rid):
 
 def ext_resources(boxes):
     """The `[ext_resource]` lines the sprite boxes need — the script, then each texture once, in name order."""
-    if not any(body[:1] == ['script = ExtResource("sprite")'] for _, body in boxes.values()):
+    heads = {body[0] for _, body in boxes.values() if body}
+    lines = []
+    if 'script = ExtResource("sprite")' in heads:
+        lines.append('[ext_resource type="Script" path="%s" id="sprite"]' % SPRITE_SCRIPT)
+    if 'script = ExtResource("sprite_icon")' in heads:
+        lines.append('[ext_resource type="Script" path="%s" id="sprite_icon"]' % ICON_SCRIPT)
+    if not lines:
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
                     if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_"))})
-    lines = ['[ext_resource type="Script" path="%s" id="sprite"]' % SPRITE_SCRIPT]
     for rid in files:
         lines.append('[ext_resource type="Texture2D" path="%s" id="%s"]' % (texture_path(rid), rid))
     return lines

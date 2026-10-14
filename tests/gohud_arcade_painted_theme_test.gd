@@ -42,6 +42,11 @@ const STAGE_WELL_PPU := 3.0
 const HUD_PANEL_PADDING := 8.0
 const HUD_BANNER_PADDING := 4.0
 const CHIP_FONT := 15
+const SECONDARY := Color("#8a8fb3")
+# The slider and the switch (`PaintedSlider`, `PaintedSwitch`).
+const BAR_EDGE := Vector4(48, 38, 48, 38)
+const HANDLE_SIZE := Vector2(36, 36)
+const SWITCH_SIZE := Vector2(76, 29)
 
 var passed := 0
 var failed: Array[String] = []
@@ -59,6 +64,10 @@ func _initialize() -> void:
 		_inks(light)
 		_tokens(light)
 		_item_sets(light)
+		await _slider(light)
+		await _range_slider(light)
+		_switch(light)
+		_field(light)
 	if dark != null:
 		_dark_stays(dark)
 	print("gohud arcade painted theme tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -149,7 +158,7 @@ func _buttons(theme: Theme) -> void:
 	var down := theme.get_stylebox(&"pressed", &"OptionButton") as StyleBoxFlat
 	check(down != null and down.bg_color.is_equal_approx(DIFF_BG), "OptionButton: pressed, the pale blue")
 	# A right-to-left layout draws the mirrored faces: each is the painted box of its left-to-right state.
-	for state: String in ["normal", "hover", "pressed", "disabled"]:
+	for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 		var ltr := theme.get_stylebox(StringName(state), &"OptionButton")
 		var rtl := theme.get_stylebox(StringName(state + "_mirrored"), &"OptionButton")
 		check(rtl != null and rtl == ltr, "OptionButton/%s_mirrored: the same painted box as %s (got %s)"
@@ -348,6 +357,112 @@ func _item_sets(theme: Theme) -> void:
 				str(got[kind])])
 		check(theme.get_font_list(type).is_empty() and theme.get_icon_list(type).is_empty(),
 			"%s: no font and no icon (the game adds its own fonts)" % type)
+
+
+## The icon is a `GoTextureSprite` of [param file] drawn at [param size] canvas units, multiplied by [param tint].
+func _icon(theme: Theme, name: StringName, type: StringName, file: String, size: Vector2, tint: Color) -> void:
+	var label := "%s/icons/%s" % [type, name]
+	var icon := theme.get_icon(name, type) if theme.has_icon(name, type) else null
+	var ok := icon != null and icon.get_script() != null and (icon.get_script() as Script).get_global_name() == &"GoTextureSprite"
+	check(ok, "%s is a GoTextureSprite (got %s)" % [label, icon])
+	if not ok: return
+	var art := icon.get(&"texture") as Texture2D
+	check(art != null and art.resource_path == PAINTED + file, "%s draws %s (got %s)" % [label, file,
+		art.resource_path if art else "nothing"])
+	check(icon.get_size() == size, "%s is %s units, the game's size (got %s)" % [label, size, icon.get_size()])
+	check((icon.get(&"tint") as Color).is_equal_approx(tint), "%s tint %s (got %s)" % [label, tint, icon.get(&"tint")])
+
+
+## 🎚 `PaintedSlider`: the pill track 16 units tall, the fill in its colour, the 36-unit round handle.
+func _slider(theme: Theme) -> void:
+	_sprite(theme, &"slider", &"HSlider", "slider_track.png", BAR_EDGE, 5.0, Color.WHITE, [0.0, 8.0, 0.0, 8.0])
+	check(theme.get_stylebox(&"slider", &"HSlider").get_minimum_size().y == 16.0,
+		"HSlider: the bar is 16 units tall (BAR_HEIGHT; the engine draws track and fill at its minimum height)")
+	for pair: Array in [[&"HSlider", "slider_blue.png"], [&"GoSliderGreen", "slider_green.png"],
+			[&"GoSliderCyan", "slider_cyan.png"]]:
+		for state: StringName in [&"grabber_area", &"grabber_area_highlight"]:
+			_sprite(theme, state, pair[0], pair[1], BAR_EDGE, 5.0, Color.WHITE, [0.0, 0.0, 0.0, 0.0])
+		if pair[0] != &"HSlider":
+			check(theme.get_type_variation_base(pair[0]) == &"HSlider", "%s is a variation of HSlider" % pair[0])
+			check(theme.get_stylebox_list(pair[0]).size() == 2 and theme.get_icon_list(pair[0]).is_empty(),
+				"%s sets only its fill; the track and the handle are HSlider's" % pair[0])
+	_icon(theme, &"grabber", &"HSlider", "slider_handle.png", HANDLE_SIZE, Color.WHITE)
+	_icon(theme, &"grabber_highlight", &"HSlider", "slider_handle.png", HANDLE_SIZE, Color.WHITE)
+	_icon(theme, &"grabber_disabled", &"HSlider", "slider_handle.png", HANDLE_SIZE, DISABLED_TINT)
+	# A stock HSlider in this theme: as tall as the handle, and the touch floor through GoStyle.slider (GoConfig's
+	# min_touch_size is the game's Cfg.Touch.MIN_TARGET).
+	var slider := HSlider.new()
+	slider.theme = theme
+	root.add_child(slider)
+	await process_frame
+	slider.update_minimum_size()
+	check(slider.get_combined_minimum_size().y == HANDLE_SIZE.y, "HSlider: as tall as the handle (got %s)"
+		% slider.get_combined_minimum_size())
+	slider.free()
+	var styled := GoStyle.slider()
+	check(styled.custom_minimum_size.y == float(GoUi.config.min_touch_size),
+		"GoStyle.slider: the touch floor is GoConfig.min_touch_size (got %s)" % styled.custom_minimum_size.y)
+	styled.free()
+
+
+## GoRangeSlider wears the same parts, and a variation's fill when it is given one.
+func _range_slider(theme: Theme) -> void:
+	var range_slider := GoRangeSlider.make(0.0, 100.0, 20.0, 80.0)
+	root.add_child(range_slider)
+	await process_frame
+	range_slider.theme = theme
+	var grab := range_slider._grabber()
+	check(grab != null and grab.get_size() == HANDLE_SIZE, "GoRangeSlider: the painted 36-unit handle (got %s)"
+		% (grab.get_size() if grab else "none"))
+	check(range_slider.get_combined_minimum_size().y >= HANDLE_SIZE.y, "GoRangeSlider: room for the handle")
+	range_slider.theme_type_variation = &"GoSliderGreen"
+	var fill := range_slider.get_theme_stylebox(&"grabber_area", range_slider._type())
+	var art: Variant = fill.get(&"texture") if fill != null else null
+	check(art is Texture2D and (art as Texture2D).resource_path == PAINTED + "slider_green.png",
+		"GoRangeSlider: theme_type_variation GoSliderGreen paints the green fill")
+	check(range_slider._grabber() != null and range_slider._grabber().get_size() == HANDLE_SIZE,
+		"GoRangeSlider: a fill variation keeps HSlider's handle")
+	var track := range_slider.get_theme_stylebox(&"slider", range_slider._type())
+	check(track != null and track.get(&"texture") is Texture2D
+		and (track.get(&"texture") as Texture2D).resource_path == PAINTED + "slider_track.png",
+		"GoRangeSlider: a fill variation keeps HSlider's track")
+	range_slider.free()
+
+
+## 🔘 `PaintedSwitch`: the green pill (knob right) on, the grey one (knob left) off, 76 × 29 units in every direction;
+##    the disabled ones fade.
+func _switch(theme: Theme) -> void:
+	for suffix: String in ["", "_mirrored"]:
+		_icon(theme, StringName("checked" + suffix), &"CheckButton", "toggle_on.png", SWITCH_SIZE, Color.WHITE)
+		_icon(theme, StringName("unchecked" + suffix), &"CheckButton", "toggle_off.png", SWITCH_SIZE, Color.WHITE)
+		_icon(theme, StringName("checked_disabled" + suffix), &"CheckButton", "toggle_on.png", SWITCH_SIZE, DISABLED_TINT)
+		_icon(theme, StringName("unchecked_disabled" + suffix), &"CheckButton", "toggle_off.png", SWITCH_SIZE,
+			DISABLED_TINT)
+	check(theme.get_stylebox(&"focus", &"CheckButton") is StyleBoxEmpty,
+		"CheckButton/focus: empty, the game's switch draws no focus ring (got %s)" % theme.get_stylebox(&"focus", &"CheckButton"))
+	var switch := CheckButton.new()
+	switch.theme = theme
+	root.add_child(switch)
+	check(switch.get_combined_minimum_size().x >= SWITCH_SIZE.x and switch.get_combined_minimum_size().y >= SWITCH_SIZE.y,
+		"CheckButton: room for the 76 × 29 switch (got %s)" % switch.get_combined_minimum_size())
+	switch.free()
+
+
+## ✏ The game's field: a white box with a 2 px SECONDARY rim, a 3 px CONTROL_BLUE ring while typing, DIFF_BG read-only.
+func _field(theme: Theme) -> void:
+	var want := {&"normal": [Color.WHITE, 2, SECONDARY], &"focus": [Color(0, 0, 0, 0), 3, CONTROL_BLUE],
+		&"read_only": [DIFF_BG, 2, SECONDARY]}
+	for state: StringName in want:
+		var box := theme.get_stylebox(state, &"LineEdit") as StyleBoxFlat
+		check(box != null, "LineEdit/%s is a StyleBoxFlat" % state)
+		if box == null: continue
+		check(box.bg_color.is_equal_approx(want[state][0]) and box.border_width_left == want[state][1]
+			and box.border_width_bottom == want[state][1] and box.border_color.is_equal_approx(want[state][2])
+			and box.corner_radius_top_left == 10 and box.corner_radius_bottom_right == 10,
+			"LineEdit/%s: the game's UiTheme.box(%s, 10, %d, …)" % [state, (want[state][0] as Color).to_html(), want[state][1]])
+		check(_margins(box) == [14.0, 8.0, 14.0, 8.0], "LineEdit/%s: box()'s 14 / 8 padding (got %s)" % [state, _margins(box)])
+	check(theme.get_color(&"font_color", &"LineEdit").is_equal_approx(INK) and theme.get_color(&"caret_color", &"LineEdit").is_equal_approx(INK),
+		"LineEdit: ink text and caret")
 
 
 func _sorted(names: PackedStringArray) -> Array:

@@ -42,10 +42,16 @@ const CARD_FACE := Color(0.952941, 0.972549, 0.992157, 1.0)
 const RIBBON_EDGE := Vector4(100.0, 80.0, 100.0, 80.0)
 const RIBBON_PPU := 3.4
 const RIBBON_PAD := Vector3(22.0, 6.0, 12.0)
+## The colour the ribbon shows under the title — the centre pixel of `ribbon_gold.png` (#febc24), the generator's
+## `FACES["ribbon_gold.png"]`. 🛑 Not `GOLD` (#ffc928): that is the paint's name, not what the art shows.
+const RIBBON_FACE := Color(0.996078, 0.737255, 0.141176, 1.0)
 ## The keycap (`UiTheme.keycap_box()` / `KeycapPanel`).
 const KEYCAP_EDGE := Vector4(70.0, 70.0, 70.0, 80.0)
 const KEYCAP_PPU := 5.5
 const KEYCAP_PAD := Vector3(9.0, 1.0, 5.0)
+## The colour the keycap shows under its word — the centre pixel of `keycap.png` (#eff0f8), the generator's
+## `FACES["keycap.png"]`, not plain white.
+const KEYCAP_FACE := Color(0.937255, 0.941176, 0.972549, 1.0)
 ## The round badges (240 px; the game draws them whole, as the 3-2-1 / GO! discs): a 40 px strip is left in the middle
 ## so a wide count stretches the plate into a pill instead of tearing the disc.
 const BADGE_EDGE := Vector4(100.0, 100.0, 100.0, 100.0)
@@ -255,7 +261,7 @@ func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 ## A `GoKbd` key is the painted keycap.
 func kbd_box() -> StyleBox:
 	var face := _sprite("keycap.png", KEYCAP_EDGE, KEYCAP_PPU)
-	face.face_color = Color.WHITE
+	face.face_color = KEYCAP_FACE
 	return _pad(face, KEYCAP_PAD)
 
 
@@ -269,7 +275,7 @@ func kbd_ink() -> Color:
 ## A window's title sits on the gold ribbon.
 func title_plate_box() -> StyleBox:
 	var face := _sprite("ribbon_gold.png", RIBBON_EDGE, RIBBON_PPU)
-	face.face_color = GOLD
+	face.face_color = RIBBON_FACE
 	return _pad(face, RIBBON_PAD)
 
 

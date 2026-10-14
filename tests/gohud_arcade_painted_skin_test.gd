@@ -209,6 +209,17 @@ func _faces(skin: GoSkinArcadePainted) -> void:
 		var got := GoSkin.box_background(skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, alpha))
 		check(_same(got, want), "faces: box_background(surface_box alpha %s) is the card centre at that alpha (%s, got %s)"
 			% [alpha, want, got])
+	# The keycap and the gold ribbon name their art's centre too, not the paint (white, GOLD #ffc928).
+	var keycap := _centre("keycap.png")
+	var kbd := skin.kbd_box() as GoStyleBoxSprite
+	check(_same(keycap, Color8(239, 240, 248, 255)), "faces: keycap.png's centre is #eff0f8 (got %s)" % keycap.to_html())
+	check(kbd != null and _same(kbd.face_color, keycap), "faces: kbd_box face_color is keycap.png's centre (got %s)"
+		% (kbd.face_color.to_html() if kbd else "none"))
+	var ribbon := _centre("ribbon_gold.png")
+	var plate := skin.title_plate_box() as GoStyleBoxSprite
+	check(_same(ribbon, Color8(254, 188, 36, 255)), "faces: ribbon_gold.png's centre is #febc24 (got %s)" % ribbon.to_html())
+	check(plate != null and _same(plate.face_color, ribbon), "faces: title_plate_box face_color is ribbon_gold.png's centre (got %s)"
+		% (plate.face_color.to_html() if plate else "none"))
 	var accent := Color("#e8332f")
 	var tinted := skin.surface_box(GoTheme.BOX_CARD, accent, 1.0) as GoStyleBoxSprite
 	check(tinted != null and _same(tinted.face_color, card * tinted.tint),
