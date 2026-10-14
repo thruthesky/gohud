@@ -311,6 +311,28 @@ func _surface(look: StringName) -> void:
 		check(surface.card.global_position.y >= 17.0, "%s surface: the ribbon stays on screen" % look)
 	else:
 		check(surface.title_overhang() == 0.0, "%s surface: no overhang without a look that asks" % look)
+	if painted:
+		# Only the plate rises: the close and back buttons stay on the card's padding, and the plate bleeds sideways
+		# only where no button sits beside it.
+		var inset := surface.card.global_position.y + float(surface.content_inset())
+		check(absf(surface.close_button.global_position.y - inset) < 1.5,
+			"%s surface: the close button stays on the card's padding (close %.1f, padding %.1f)"
+			% [look, surface.close_button.global_position.y, inset])
+		var ribbon := surface.title_label.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+		check(ribbon.bleed_right == 0.0 and ribbon.bleed_left == ribbon.bleed and ribbon.bleed > 0.0,
+			"%s surface: the plate bleeds only on the side without a button" % look)
+		surface.set_back(func() -> void: pass)
+		await frames(2)
+		inset = surface.card.global_position.y + float(surface.content_inset())
+		check(absf(surface.back_button.global_position.y - inset) < 1.5,
+			"%s surface: the back button stays on the card's padding (back %.1f, padding %.1f)"
+			% [look, surface.back_button.global_position.y, inset])
+		check(ribbon.bleed_left == 0.0, "%s surface: no bleed under the back button" % look)
+		check(surface.title_label.global_position.y < surface.card.global_position.y - 15.0,
+			"%s surface: with buttons the plate still rises over the card" % look)
+		surface.set_back(Callable())
+		await frames(2)
+		check(ribbon.bleed_left == ribbon.bleed, "%s surface: the bleed comes back without the back button" % look)
 	surface.title_glyph = null
 	await frames(1)
 	check(surface.title_label.get_children(true).filter(func(n): return n is TextureRect and not n.is_queued_for_deletion()).is_empty(),

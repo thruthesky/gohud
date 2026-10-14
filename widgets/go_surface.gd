@@ -274,6 +274,7 @@ func _build() -> void:
 
 	header = GoStyle.row()
 	header.name = "Header"
+	header.sort_children.connect(_seat_head_buttons)
 	_column.add_child(header)
 
 	back_button = GoStyle.button_key(GoUi.text_key(&"back"), func() -> void: back_requested.emit(), GoStyle.Tone.COMPACT)
@@ -503,12 +504,17 @@ class OverhangPlate:
 
 	var base: StyleBox
 	var bleed := 0.0
+	## The bleed drawn on each side now — 0 where a back or close button sits beside the plate.
+	var bleed_left := 0.0
+	var bleed_right := 0.0
 	## The room kept for the title glyph and its gap (dp).
 	var glyph_room := 0.0
 
 	func _init(from: StyleBox = null, side := 0.0, extra_left := 0.0) -> void:
 		base = from
 		bleed = side
+		bleed_left = side
+		bleed_right = side
 		glyph_room = extra_left
 		if from == null: return
 		content_margin_left = from.get_margin(SIDE_LEFT) + extra_left
@@ -517,7 +523,7 @@ class OverhangPlate:
 		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
 
 	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
-		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed, 0.0, bleed, 0.0))
+		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed_left, 0.0, bleed_right, 0.0))
 
 
 ## The side of the title glyph now (dp).
@@ -555,6 +561,8 @@ func _dress_title_extras(plate: StyleBox) -> void:
 			_title_glyph_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			title_label.add_child(_title_glyph_rect, false, Node.INTERNAL_MODE_FRONT)
 		_title_glyph_rect.texture = title_glyph
+	# A new plate bleeds on both sides; the row's next pass trims it beside the buttons (`_seat_head_buttons`).
+	header.queue_sort()
 	_apply_overhang()
 
 
@@ -573,6 +581,38 @@ func _apply_overhang() -> void:
 	else:
 		return
 	_mark_layout_dirty()
+
+
+## Under an overhanging plate only the plate rises (the game's ribbon): the head row is lifted, so after it lays its
+## children out the back and close buttons are put back where the card's padding starts, and the plate bleeds sideways
+## only where no button sits beside it. 🔑 `sort_children` is emitted after the row placed its children.
+func _seat_head_buttons() -> void:
+	var lift := float(_content_padding) + _card_top() + _overhang.y if _overhang.y > 0.0 else 0.0
+	var need := 0.0
+	var beside_left := false
+	var beside_right := false
+	for button: Control in [back_button, close_button]:
+		if not button.visible: continue
+		if button.position.x + button.size.x * 0.5 < title_label.position.x + title_label.size.x * 0.5:
+			beside_left = true
+		else:
+			beside_right = true
+		if lift <= 0.0: continue
+		var tall := button.get_combined_minimum_size().y
+		button.position.y = lift
+		button.size.y = tall
+		need = maxf(need, lift + tall)
+	if not is_equal_approx(header.custom_minimum_size.y, need): header.custom_minimum_size.y = need
+	# A button taller than the plate below the lift makes the row taller: the plate stays at its top, rising as far.
+	if lift > 0.0: title_label.position.y = 0.0
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	if plate == null: return
+	var left := 0.0 if beside_left else plate.bleed
+	var right := 0.0 if beside_right else plate.bleed
+	if not is_equal_approx(plate.bleed_left, left) or not is_equal_approx(plate.bleed_right, right):
+		plate.bleed_left = left
+		plate.bleed_right = right
+		title_label.queue_redraw()
 
 
 ## The card face's top padding (dp) — where the head would start without an overhang.
@@ -913,6 +953,8 @@ func _sort_now(width: float) -> void:
 
 func _sort_subtree(node: Node) -> void:
 	if node is Container: node.notification(Container.NOTIFICATION_SORT_CHILDREN)
+	# 🛑 A direct sort emits no `sort_children`, so the head's buttons are seated here too.
+	if node == header: _seat_head_buttons()
 	for child in node.get_children():
 		if child is Control and child.visible: _sort_subtree(child)
 
