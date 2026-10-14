@@ -35,6 +35,9 @@ const NOTIF_OWN := Color("#fff3cf")
 const CARD_EDGE := Vector4(100.0, 100.0, 100.0, 140.0)
 const PAINT_PPU := 3.0
 const CARD_PAD := Vector3(24.0, 20.0, 22.0)
+## The colour the card shows under its text — the centre pixel of `card.png` (243, 248, 253), the generator's
+## `FACES["card.png"]`. A board's `face_color` is this times its tint, alpha included, as the generator writes it.
+const CARD_FACE := Color(0.952941, 0.972549, 0.992157, 1.0)
 ## The gold ribbon (`UiTheme` `RibbonTitle`).
 const RIBBON_EDGE := Vector4(100.0, 80.0, 100.0, 80.0)
 const RIBBON_PPU := 3.4
@@ -103,7 +106,7 @@ func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha
 	if accent.a > 0.0: tint = tint.lerp(Color(accent, 1.0), CARD_ACCENT_TINT)
 	tint.a = clampf(alpha if alpha >= 0.0 else GoUi.surface_alpha(variant), 0.0, 1.0)
 	var face := _sprite("card.png", CARD_EDGE, PAINT_PPU, tint)
-	face.face_color = Color(tint, 1.0)
+	face.face_color = CARD_FACE * tint
 	return _pad(face, CARD_PAD)
 
 

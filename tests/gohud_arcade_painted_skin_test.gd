@@ -12,6 +12,7 @@ extends SceneTree
 const SKIN_PATH := "res://addons/gohud/themes/skins/gohud_skin_arcade_light.tres"
 const SHADER_PATH := "res://addons/gohud/themes/skins/arcade_painted_blur.gdshader"
 const INK := Color("#1d2340")
+const PAINTED := "res://addons/gohud/assets/arcade_light/painted/"
 
 var passed := 0
 var failed: Array[String] = []
@@ -32,6 +33,7 @@ func _initialize() -> void:
 		check(skin.skin_name == "arcade_light", "resource: skin_name is arcade_light")
 		check(is_equal_approx(skin.arcade_scrim_blur, 3.0), "resource: the game's blur (arcade_scrim_blur 3)")
 		_sprites(skin)
+		_faces(skin)
 		_notice(skin)
 		_inks(skin)
 		_scrim(skin)
@@ -109,6 +111,43 @@ func _sprites(skin: GoSkinArcadePainted) -> void:
 	var badge := skin.badge_box(Color("#3d6bff"))
 	check(badge.content_margin_left == skin.badge_pad_x and badge.content_margin_top == skin.badge_pad_y,
 		"badge_box: the badge padding dials")
+
+
+## The centre pixel of the painted PNG [param file] — what the art shows under a label. Read from the PNG itself,
+## not the imported texture, so the check stands on the art.
+func _centre(file: String) -> Color:
+	var image := Image.load_from_file(ProjectSettings.globalize_path(PAINTED + file))
+	if image == null or image.is_empty(): return Color.TRANSPARENT
+	return image.get_pixel(image.get_width() / 2, image.get_height() / 2)
+
+
+## Two colours equal to one 8-bit step in every channel.
+func _same(a: Color, b: Color) -> bool:
+	return absf(a.r - b.r) <= 1.0 / 255.0 and absf(a.g - b.g) <= 1.0 / 255.0 and absf(a.b - b.b) <= 1.0 / 255.0 \
+		and absf(a.a - b.a) <= 1.0 / 255.0
+
+
+## 🔑 `face_color` is what the contrast checks measure text against, so it must be the art's own colour under the
+##    label: a badge's is its PNG's centre pixel, a board's is the card's centre pixel times the tint (alpha too).
+func _faces(skin: GoSkinArcadePainted) -> void:
+	for pair: Array in [[Color("#3ecf5a"), "badge_green.png"], [Color("#3d6bff"), "badge_blue.png"]]:
+		var centre := _centre(pair[1])
+		check(centre.a > 0.0, "faces: %s loads and has a centre pixel" % pair[1])
+		var badge := skin.badge_box(pair[0]) as GoStyleBoxSprite
+		check(badge != null and _same(badge.face_color, centre), "faces: badge_box(%s) face_color is the centre of %s (%s, got %s)"
+			% [pair[0].to_html(false), pair[1], centre.to_html(), badge.face_color.to_html() if badge else "none"])
+	var card := _centre("card.png")
+	check(_same(card, Color8(243, 248, 253, 255)), "faces: card.png's centre is (243, 248, 253) (got %s)" % card.to_html())
+	check(_same(GoSkinArcadePainted.CARD_FACE, card), "faces: CARD_FACE is card.png's centre pixel")
+	for alpha: float in [0.0, 0.5, 1.0]:
+		var want := card * Color(1, 1, 1, alpha)
+		var got := GoSkin.box_background(skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, alpha))
+		check(_same(got, want), "faces: box_background(surface_box alpha %s) is the card centre at that alpha (%s, got %s)"
+			% [alpha, want, got])
+	var accent := Color("#e8332f")
+	var tinted := skin.surface_box(GoTheme.BOX_CARD, accent, 1.0) as GoStyleBoxSprite
+	check(tinted != null and _same(tinted.face_color, card * tinted.tint),
+		"faces: an accented board's face_color is the card centre times its tint, once")
 
 
 ## The game's notification pill (`UiTheme` "Notif"): a white pill with a blue rim and a deeper bottom edge.
