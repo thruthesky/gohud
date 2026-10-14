@@ -275,7 +275,7 @@ row.add_child(GoKbd.make("Ctrl", "S"))
 hint.add_child(GoKbd.for_action(&"interact"))     # reads the real binding
 ```
 
-`hide_on_handheld` (default on) · `set_keys(array)` `keys()` · `GoKbd.action_keys(action)`.
+`hide_on_handheld` (default on) · `done` (a key already pressed: the caps turn green) · `set_keys(array)` `keys()` · `GoKbd.action_keys(action)`.
 
 - 🔑 **`for_action()` reads `InputMap`.** A hard-coded "Press F" keeps saying F after the player rebinds —
   the most common lie in a PC UI. If the action does not exist or is bound to a pad, it returns **empty** and

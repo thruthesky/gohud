@@ -546,7 +546,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
 </section>
 
 <section id="buttons" class="catalog">
-  <h2>Tombol, chip, dan pilihan <small>(9)</small></h2>
+  <h2>Tombol, chip, dan pilihan <small>(10)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
@@ -572,6 +572,12 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>CLOSE,<wbr> close,<wbr> -1,<wbr> &amp;"close"))
 var bell := GoIconButton.<wbr>new(<wbr>)
 bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goglyphbutton"><code>GoGlyphButton</code></h3>
+      <p>Tombol dengan glif tepat di samping labelnya — pil mengilap menu arcade.</p>
+      <p class="catalog-base">turunan <code>Button</code></p>
+      <pre><code>row.<wbr>add_child(<wbr>GoGlyphButton.<wbr>make(<wbr>"Play",<wbr> GoIconSet.<wbr>PLAY,<wbr> GoTheme.<wbr>VAR_PRIMARY_BUTTON))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
@@ -793,7 +799,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD dan bentuk game <small>(11)</small></h2>
+  <h2>HUD dan bentuk game <small>(14)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -848,6 +854,27 @@ animals.<wbr>set_selected(<wbr>2,<wbr> true)
 side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
+      <h3 id="golevelcard"><code>GoLevelCard</code></h3>
+      <p>Kartu pilih tahap: gambar mini, judul, subjudul, dan sesuai status berupa centang, gembok, atau label PLAY!.</p>
+      <p class="catalog-base">turunan <code>Button</code></p>
+      <pre><code>var card := GoLevelCard.<wbr>make(<wbr>"STAGE 3",<wbr> "OPPONENTS: 3",<wbr> GoLevelCard.<wbr>State.<wbr>CURRENT)
+card.<wbr>pressed.<wbr>connect(<wbr>play_stage)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gokeycluster"><code>GoKeyCluster</code></h3>
+      <p>Empat tombol gerak berbentuk T terbalik (WASD atau panah), seperti di layar kontrol.</p>
+      <p class="catalog-base">turunan <code>Control</code></p>
+      <pre><code>var wasd := GoKeyCluster.<wbr>make(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"])
+var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocoverimage"><code>GoCoverImage</code></h3>
+      <p>Gambar yang memenuhi kotaknya dan memotong kelebihannya, seperti object-fit: cover di CSS.</p>
+      <p class="catalog-base">turunan <code>Control</code></p>
+      <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
+shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>
       <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Hadiah kehadiran harian; hanya hari ini yang bisa ditekan." loading="lazy"></figure>
       <p>Hadiah kehadiran harian; hanya hari ini yang bisa ditekan.</p>
@@ -892,7 +919,7 @@ var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
 </section>
 
 <section id="look" class="catalog">
-  <h2>Tampilan dan sistem <small>(8)</small></h2>
+  <h2>Tampilan dan sistem <small>(9)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="goui-gothemepresets"><code>GoUi · GoThemePresets</code></h3>
@@ -938,6 +965,15 @@ var gear := GoUi.<wbr>icons(<wbr>).<wbr>node(<wbr>GoIconSet.<wbr>SETTINGS,<wbr> 
       <pre><code>var face := GoStyleBoxCut.<wbr>new(<wbr>)
 face.<wbr>cut = 8
 panel.<wbr>add_theme_stylebox_override(<wbr>&amp;"panel",<wbr> face)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gostyleboxsprite-gotexturesprite"><code>GoStyleBoxSprite · GoTextureSprite</code></h3>
+      <p>PNG bercat yang digambar dalam sembilan potongan, dan kembaran ikonnya untuk gagang slider atau sakelar.</p>
+      <p class="catalog-base">turunan <code>StyleBox</code></p>
+      <pre><code>var plate := GoStyleBoxSprite.<wbr>new(<wbr>)
+plate.<wbr>texture = preload(<wbr>"res://ui/painted/gloss_green.<wbr>png")
+plate.<wbr>pixels_per_unit = 3.0
+button.<wbr>add_theme_stylebox_override(<wbr>&amp;"normal",<wbr> plate)</code></pre>
     </div>
     <div class="card">
       <h3 id="gosafearea-goscale"><code>GoSafeArea · GoScale</code></h3>

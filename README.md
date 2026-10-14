@@ -528,7 +528,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
 | `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
 | `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
-| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), blue primary and green success buttons, red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. Parts without sprite art retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
+| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), blue primary and green success buttons, red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. Fields, the horizontal slider and the switch are painted too; tabs and the vertical slider retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
 | `arcade_dark` | A code-drawn arcade cabinet at night: navy boards and page, glossy pill keys in bright paints, a gold ribbon and chunked gauges | `GoSkinArcade` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
@@ -600,7 +600,9 @@ from its tokens (material-web `tokens/versions/latest`, Material 3 v34.0.21).
 Three looks for games that want to feel painted, inked or made of candy. `arcade_light` uses Magnet Mayhem’s
 painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: blue primary keys, green success keys, grey
 neutral keys, red danger keys, cards, ribbons, keycaps and badges. Its white glyphs fall back to gohud’s default
-icons when a name is absent. Fields, tabs and other parts without sprite art keep the arcade’s code-drawn shapes.
+icons when a name is absent. Text fields (`LineEdit`, `TextEdit`) wear the game’s flat field, and the horizontal
+slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites. Tabs and the vertical slider
+are the known exception: they keep the arcade’s code-drawn shapes.
 `arcade_dark` keeps `GoStyleBoxArcade`; comic and kids use their own `StyleBox` classes.
 
 <table>
@@ -824,6 +826,13 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 `GoDangerSolidButton`, `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`,
 `GoIconButton`, `GoListButton`, `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
+`arcade_light` adds the rest of Magnet Mayhem’s painted variations: `GoSuccessButton`; `GoSliderGreen` and
+`GoSliderCyan` (a slider with a green or cyan fill); `GoWindowBlue` and `GoRibbonWide` (the stage-select window and
+its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (the level tile in its three states);
+`GoWell` (the map-preview well); `GoHudPanel` (the floating HUD panel); `GoBannerGold` and `GoNoticeGold` (a gold HUD
+banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). A theme
+without them falls back to the base type.
+
 Filled buttons sit flat. The two `*GlowButton` variations raise them with a soft shadow in the button's own colour
 (a glow on the sci-fi shape): set `GoConfig.button_glow` for every filled button, or call
 `GoStyle.glow(button)` for one.
@@ -967,8 +976,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
     return box
 ```
 
-Three custom `StyleBox` classes cover shapes `StyleBoxFlat` cannot make. All of them serialise into a
-`Theme` resource like any other StyleBox.
+Seven custom `StyleBox` classes cover shapes `StyleBoxFlat` cannot make, and `GoTextureSprite` is the icon twin of
+the painted one. All of them serialise into a `Theme` resource like any other StyleBox or icon.
 
 | Class | Draws |
 |---|---|
@@ -978,6 +987,7 @@ Three custom `StyleBox` classes cover shapes `StyleBoxFlat` cannot make. All of 
 | `GoStyleBoxJelly` | A jelly candy: a chunky outline, a lighter top and deeper band, a white shine and a lip that sinks when pressed |
 | `GoStyleBoxComic` | A comic panel: a bold ink outline and a hard shadow down and to the right, sized by `GoConfig` |
 | `GoStyleBoxSprite` | A painted PNG drawn in nine slices, with texture-pixel edges and a pixels-per-unit scale; used by `arcade_light` |
+| `GoTextureSprite` | A draw-only `Texture2D` for theme icons (a slider handle, a switch pill): it reports a logical `draw_size` and draws larger art scaled into it, so the engine lays out and draws a 3× sprite at the game’s size. It has no RID, so it is not for `StyleBoxTexture`, `NinePatchRect` or shaders |
 | `GoStyleBoxArcade` | A code-drawn arcade pill: a top-to-bottom gradient, a candy gloss, a deeper lip and an ink outline; a thick framed board; or a ribbon with swallow tails |
 
 `GoStyle.surface()` returns whatever shape the skin produced. `GoStyle.box()`, `floating()` and
@@ -1045,7 +1055,11 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoRadar` | Control | The stat pentagon — strength, agility, intellect, vitality, luck in one shape. `set_compare()` overlays a **dashed** second line for the gear you are about to equip (dashed, so colour-blind players still see two lines) |
 | `GoDonut` | Control | Damage share, currency splits, party contribution. Beyond `collapse_to` slices the rest is merged into one, the centre carries the total, and `legend()` says every slice in words as well as in colour |
 | `GoCarousel` | VBoxContainer | Event banners and character select. It **never moves on its own** — an auto-advancing banner steals the tap the player was aiming at; dots are pressable and the page is announced |
-| `GoKbd` | HBoxContainer | Key caps for hints. `GoKbd.for_action(&"interact")` reads the real binding from the InputMap, so remapping a key changes the hint too, and `hide_on_handheld` keeps it off phones |
+| `GoKbd` | HBoxContainer | Key caps for hints. `GoKbd.for_action(&"interact")` reads the real binding from the InputMap, so remapping a key changes the hint too, and `hide_on_handheld` keeps it off phones. `done` turns the caps green for a step the player has done |
+| `GoKeyCluster` | Control | Four movement keys in an inverted T — W above A S D, or the arrow keys — as a controls page shows them. Each key is the look’s keycap (`GoSkin.key_cluster_box`); an arrow label is drawn as a triangle; `picked` fires when the player clicks a layout. Key names are never translated |
+| `GoLevelCard` | Button | A stage-select tile: a thumbnail, the title, a subtitle row (a person icon and "OPPONENTS: 3"), and on the right a check on a cleared level, a padlock on a locked one (the tile is `disabled`), a tilted PLAY! tag on the current one. `selected` draws a gold ring. Faces come from `GoLevelCard` / `GoLevelCardCurrent` / `GoLevelCardLocked`; the texts shrink to fit (`GoStyle.fit_font_size`) |
+| `GoCoverImage` | Control | A picture that fills its box — CSS `object-fit: cover`: scaled until it covers the rect, the overflow cut off, `focus` picks which part stays. Needs no `clip_contents` and ignores the mouse |
+| `GoGlyphButton` | Button | A button with a glyph right beside its label, the glossy pill of an arcade menu — glyph, gap and label stand centred together. `Button.icon` cannot do this. The label stays a plain `text`, so translation and tests work as on any button |
 | `GoChoiceColumn` | Control | A short column of choices tapped once — the summon list on a HUD side bar. A few rows at a time, scrolled up and down; **one tap on any row acts** (no wheel to settle first); the game marks any number of rows as chosen (`set_selected`) or greys them (`set_dimmed`), and rows can draw their own picture (`item_drawer`). Keyboard focus is off over gameplay, so the arrow keys stay with the player |
 
 ### Over the screen
