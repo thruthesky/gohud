@@ -64,6 +64,7 @@ func _initialize() -> void:
 		_inks(light)
 		_tokens(light)
 		_item_sets(light)
+		_no_orphans()
 		await _slider(light)
 		await _range_slider(light)
 		_switch(light)
@@ -475,6 +476,17 @@ func _field(theme: Theme) -> void:
 		check(_margins(box) == [14.0, 8.0, 14.0, 8.0], "LineEdit/%s: box()'s 14 / 8 padding (got %s)" % [state, _margins(box)])
 	check(theme.get_color(&"font_color", &"LineEdit").is_equal_approx(INK) and theme.get_color(&"caret_color", &"LineEdit").is_equal_approx(INK),
 		"LineEdit: ink text and caret")
+
+
+## 🧹 Every `[ext_resource]` the file declares is pointed at: the painted parts replace arcade drawings (the switch's
+##    SVGs), and a drawing nothing uses must not load.
+func _no_orphans() -> void:
+	var text := FileAccess.get_file_as_string(LIGHT)
+	var ids := RegEx.create_from_string('\\[ext_resource [^\\n]* id="([^"]+)"\\]')
+	var orphans: Array[String] = []
+	for found: RegExMatch in ids.search_all(text):
+		if text.find('ExtResource("%s")' % found.get_string(1)) < 0: orphans.append(found.get_string(1))
+	check(not ids.search_all(text).is_empty() and orphans.is_empty(), "arcade_light: no ext_resource nothing points at (%s)" % [orphans])
 
 
 func _sorted(names: PackedStringArray) -> Array:

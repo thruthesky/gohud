@@ -426,6 +426,12 @@ def texture_path(rid):
     return PAINTED + rid[len("painted_"):] + ".png"
 
 
+def used_assets(assets, boxes, T):
+    """The arcade drawings (`ExtResource("<name>")`) the theme still points at, in their order."""
+    text = "\n".join(list(T) + [line for _, body in boxes.values() for line in body])
+    return [name for name in assets if 'ExtResource("%s")' % name in text]
+
+
 def ext_resources(boxes):
     """The `[ext_resource]` lines the sprite boxes need — the script, then each texture once, in name order."""
     heads = {body[0] for _, body in boxes.values() if body}

@@ -1187,6 +1187,8 @@ def build(pal, shape, variant, out_path):
     if shape["kind"] == "arcade_painted":
         theme_arcade_painted.restyle(pal, consts, boxes, T, flat, C, contrast)
         sprites = theme_arcade_painted.ext_resources(boxes)
+        # 🧹 The painted parts replace some arcade drawings (the switch's SVGs); only the ones still pointed at load.
+        assets = theme_arcade_painted.used_assets(assets, boxes, T)
     jelly = any(body[:1] == ['script = ExtResource("jelly")'] for _, body in boxes.values())
     inked = any(body[:1] == ['script = ExtResource("comic")'] for _, body in boxes.values())
     painted = any(body[:1] == ['script = ExtResource("arcade")'] for _, body in boxes.values())
