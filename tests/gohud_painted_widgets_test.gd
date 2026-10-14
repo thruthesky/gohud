@@ -212,6 +212,17 @@ func _level_card(look: StringName) -> void:
 	var title_px := card.title_label.get_theme_font_size(&"font_size")
 	check(title_px < 22 and title_px >= 16, "%s card: a long title shrinks to fit (got %d)" % [look, title_px])
 	check(not card.check.visible and not card.lock.visible and not card.play_tag.visible, "%s card: open shows no state" % look)
+	var words := Translation.new()
+	words.locale = TranslationServer.get_locale()
+	words.add_message("LVL_KEY", "A STAGE WITH A REALLY VERY LONG TRANSLATED NAME")
+	TranslationServer.add_translation(words)
+	card.title = "LVL_KEY"
+	await frames(1)
+	var key_px := card.title_label.get_theme_font_size(&"font_size")
+	check(key_px < 22, "%s card: the translation is fitted, not the short key (got %d)" % [look, key_px])
+	TranslationServer.remove_translation(words)
+	card.title = "A STAGE WITH A REALLY VERY LONG TRANSLATED NAME"
+	await frames(1)
 
 	card.selected = true
 	await frames(1)

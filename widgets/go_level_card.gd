@@ -590,32 +590,36 @@ func _dress_tag(tag: Vector2) -> void:
 		GoUi.skin().dress_sticker(tag_label, plate)
 	var font := tag_label.get_theme_font(&"font") if tag_label.is_inside_tree() else null
 	tag_label.add_theme_font_size_override(&"font_size",
-			GoStyle.fit_font_size(PackedStringArray([play_text]), tag_px, tag.x * 0.8, font))
+			GoStyle.fit_font_size(PackedStringArray([atr(play_text)]), tag_px, tag.x * 0.8, font))
 
 
 ## Shrinks the texts so the longest translation fits beside the thumbnail (and the lock column when locked). The lock
 ## column is at least `right_slot` wide and grows to hold its caption, so a long LOCKED is never clipped.
 func _fit_texts() -> void:
 	var k := scale_factor
+	# The labels show the translations, so those are what must fit (the keys may be far shorter).
+	var shown_title := atr(title)
+	var shown_subtitle := atr(subtitle)
+	var shown_locked := atr(locked_text)
 	var font := title_label.get_theme_font(&"font") if title_label.is_inside_tree() else _label_font()
 	var slot := 0.0
 	var gaps := row_gap
 	if state == State.LOCKED:
 		var lock_base := maxi(min_font_size, roundi(locked_font_size * k))
-		var lock_px := maxi(min_font_size, GoStyle.fit_font_size(PackedStringArray([locked_text]), lock_base,
+		var lock_px := maxi(min_font_size, GoStyle.fit_font_size(PackedStringArray([shown_locked]), lock_base,
 				right_slot * k, font))
 		locked_label.add_theme_font_size_override(&"font_size", lock_px)
-		slot = maxf(right_slot * k, GoStyle.row_width(font, PackedStringArray([locked_text]), lock_px))
+		slot = maxf(right_slot * k, GoStyle.row_width(font, PackedStringArray([shown_locked]), lock_px))
 		_lock_box.custom_minimum_size = Vector2(slot, 0.0)
 		gaps *= 2.0
 	var room := (card_size.x - thumbnail_inset - card_padding - thumbnail_size - gaps) * k - slot - fit_slack
 	var title_base := maxi(9, roundi(title_font_size * k))
 	title_label.add_theme_font_size_override(&"font_size",
-			GoStyle.fit_font_size(PackedStringArray([title]), title_base, room, font))
+			GoStyle.fit_font_size(PackedStringArray([shown_title]), title_base, room, font))
 	var sub_base := maxi(min_font_size, roundi(subtitle_font_size * k))
 	var icon_room := room - (person_size + text_gap) * k
 	subtitle_label.add_theme_font_size_override(&"font_size",
-			GoStyle.fit_font_size(PackedStringArray([subtitle]), sub_base, icon_room, font))
+			GoStyle.fit_font_size(PackedStringArray([shown_subtitle]), sub_base, icon_room, font))
 
 
 func _label_font() -> Font:
