@@ -1286,16 +1286,25 @@ func kbd_done_box() -> StyleBox:
 		var named: Color = face.get(&"face_color")
 		face.set(&"face_color", named * KBD_DONE if named.a > 0.0 else KBD_DONE)
 		return face
+	var filled := false
 	for key in [&"bg_color", &"bottom_color", &"end_color"]:
 		if key in face:
 			var was: Color = face.get(key)
-			if was.a > 0.0: face.set(key, Color(KBD_DONE, maxf(was.a, 0.9)))
+			if was.a > 0.0:
+				face.set(key, Color(KBD_DONE, maxf(was.a, 0.9)))
+				filled = true
+	if &"draw_center" in face and not bool(face.get(&"draw_center")): filled = false
+	# 🛑 A cap drawn as an outline alone (material_light: a clear fill) would recolour nothing — it gets a green fill.
+	if not filled and &"bg_color" in face:
+		face.set(&"bg_color", KBD_DONE)
+		if &"draw_center" in face: face.set(&"draw_center", true)
 	return face
 
 
-## The word on a done cap — the cap's ink, pushed until it reads on the green.
+## The word on a done cap — the cap's ink, pushed until it reads on the green as seen (the cap laid over the page).
 func kbd_done_ink() -> Color:
-	return readable_on(kbd_ink(), box_background(kbd_done_box()))
+	var seen := blend(box_background(kbd_done_box()), Color(GoUi.color(GoTheme.BACKGROUND), 1.0))
+	return readable_on(kbd_ink(), seen)
 
 
 ## How far a window's title plate reaches past the card: x past each side, y above the top edge. `Vector2.ZERO`: the

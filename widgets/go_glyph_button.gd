@@ -9,7 +9,9 @@
 ## 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The
 ##    label stays a plain `text`, so translation and tests work as on any button. The label moves right by half the
 ##    glyph's room (the faces are wrapped to move that much content margin from the right side to the left), so the
-##    button's minimum size does not change unless the shift is wider than the right padding.
+##    button's minimum size does not change unless the shift is wider than the right padding, or the glyph would come
+##    closer than [constant MIN_EDGE] to the edge — then the button grows instead.
+## 🔑 Right to left, the whole layout is mirrored: the glyph stands at the label's right, where the reading starts.
 @tool
 class_name GoGlyphButton
 extends Button
@@ -22,6 +24,8 @@ const GAP := 8.0
 const MIN_EDGE := 12.0
 ## How far the glyph drops while pressed (the face's press travel).
 const PRESS_DROP := 2.0
+## The glyph's opacity on a disabled button (the game's GlossButton), over the normal icon colour.
+const DISABLED_ALPHA := 0.6
 ## The faces that place the label (focus is drawn over them and places nothing).
 const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]
 
@@ -42,9 +46,12 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 
 var _shift := 0.0
 var _shifting := false
+## A resize or theme change came while the faces were being re-wrapped (that re-wrap may have caused it).
+var _missed := false
 
 
-## A face drawn as [param from] with [param shift] of content margin moved from its right side to its left.
+## A face drawn as [param from] with [param shift] of content margin moved from its right side to its left (from its
+## left side to its right when [param mirrored], for a right-to-left button).
 class ShiftedBox:
 	extends StyleBox
 
@@ -52,14 +59,20 @@ class ShiftedBox:
 	## The face it wraps was the button's own override (put back when the wrapper comes off).
 	var was_override := false
 
-	func _init(from: StyleBox = null, shift := 0.0) -> void:
+	func _init(from: StyleBox = null, shift := 0.0, mirrored := false, edge := 0.0) -> void:
 		base = from
 		if from == null: return
-		# The label's centre moves right by `shift`. A negative margin would read as "unset", so what the right padding
-		# cannot give goes on the left twice over: the label still lands centred with its glyph, and the button grows.
-		var taken := minf(shift, from.get_margin(SIDE_RIGHT))
-		content_margin_left = from.get_margin(SIDE_LEFT) + 2.0 * shift - taken
-		content_margin_right = from.get_margin(SIDE_RIGHT) - taken
+		# The label's centre moves away from the glyph by `shift`. Up to `shift` of the far padding is given up (the
+		# group is then centred with thinner padding on both sides), never so much that the glyph — `2 × shift` before
+		# the label at the smallest size — comes closer than `edge` to its side. A negative margin would read as
+		# "unset", so past that the button grows.
+		var lead := SIDE_RIGHT if mirrored else SIDE_LEFT
+		var trail := SIDE_LEFT if mirrored else SIDE_RIGHT
+		var near := from.get_margin(lead)
+		var far := from.get_margin(trail)
+		var outside := maxf(near - minf(shift, far), edge)
+		set_content_margin(lead, outside + 2.0 * shift)
+		set_content_margin(trail, outside - near + far)
 		content_margin_top = from.get_margin(SIDE_TOP)
 		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
 
@@ -113,18 +126,35 @@ func glyph_rect() -> Rect2:
 	var face := get_theme_stylebox(_state_name())
 	var left := face.get_margin(SIDE_LEFT) if face != null else 0.0
 	var right := face.get_margin(SIDE_RIGHT) if face != null else 0.0
-	var x := (left + size.x - right) * 0.5 - text_width * 0.5 - GAP - drawn.x
+	var middle := (left + size.x - right) * 0.5
+	var x := middle - text_width * 0.5 - GAP - drawn.x
+	if is_layout_rtl(): x = middle + text_width * 0.5 + GAP
 	if text.is_empty(): x = (size.x - drawn.x) * 0.5
-	x = maxf(x, MIN_EDGE)
+	x = clampf(x, MIN_EDGE, maxf(MIN_EDGE, size.x - MIN_EDGE - drawn.x))
 	var pressed := get_draw_mode() == DRAW_PRESSED or get_draw_mode() == DRAW_HOVER_PRESSED
 	return Rect2(Vector2(x, (size.y - drawn.y) * 0.5 - 1.0 + (PRESS_DROP if pressed else 0.0)), drawn)
+
+
+func _enter_tree() -> void:
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
+
+
+func _exit_tree() -> void:
+	GoUi.unwatch(_on_ui_changed)
+
+
+## The look or the icon set changed: the glyph may be another size, so the shift is measured again.
+func _on_ui_changed() -> void:
+	_update_shift()
+	queue_redraw()
 
 
 func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_RESIZED:
 			if not is_equal_approx(_shift, glyph_allowance() * 0.5): _update_shift()
-		NOTIFICATION_THEME_CHANGED:
+		NOTIFICATION_THEME_CHANGED, NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
 			if not _shifting: _update_shift()
 		NOTIFICATION_DRAW:
 			_draw_glyph()
@@ -132,7 +162,10 @@ func _notification(what: int) -> void:
 
 ## Re-wraps the theme's faces with the current shift (or drops the wrappers when there is no glyph).
 func _update_shift() -> void:
-	if _shifting: return
+	if _shifting:
+		_missed = true
+		return
+	_missed = false
 	_shifting = true
 	_shift = glyph_allowance() * 0.5
 	begin_bulk_theme_override()
@@ -145,28 +178,34 @@ func _update_shift() -> void:
 		for state in TEXT_STATES:
 			var face := get_theme_stylebox(state)
 			if face == null: continue
-			var wrapper := ShiftedBox.new(face, _shift)
+			var wrapper := ShiftedBox.new(face, _shift, is_layout_rtl(), MIN_EDGE)
 			wrapper.was_override = has_theme_stylebox_override(state)
 			add_theme_stylebox_override(state, wrapper)
 	end_bulk_theme_override()
 	_shifting = false
+	# 🛑 Swapping the faces can resize the button at once (a taller minimum size, say): the height the shift was
+	#    measured on is then stale. The glyph's room depends on the height alone, so one more pass settles it.
+	if _missed and not is_equal_approx(_shift, glyph_allowance() * 0.5): _update_shift()
+	_missed = false
 
 
 func _draw_glyph() -> void:
 	var art := glyph_texture()
 	if art == null: return
-	draw_texture_rect(art, glyph_rect(), false, _glyph_tint())
+	draw_texture_rect(art, glyph_rect(), false, glyph_tint())
 
 
-## The glyph's colour: the theme's icon colour for the state (white glyphs read as drawn on the arcade pills).
-func _glyph_tint() -> Color:
+## The glyph's colour: the theme's icon colour for the state (white glyphs read as drawn on the arcade pills). A
+## disabled glyph is the normal colour at [constant DISABLED_ALPHA], as the game draws it.
+func glyph_tint() -> Color:
 	var key := &"icon_normal_color"
 	match get_draw_mode():
 		DRAW_PRESSED: key = &"icon_pressed_color"
 		DRAW_HOVER: key = &"icon_hover_color"
 		DRAW_HOVER_PRESSED: key = &"icon_hover_pressed_color"
-		DRAW_DISABLED: key = &"icon_disabled_color"
-	return get_theme_color(key) if has_theme_color(key) else Color.WHITE
+	var tint := get_theme_color(key) if has_theme_color(key) else Color.WHITE
+	if get_draw_mode() == DRAW_DISABLED: tint.a *= DISABLED_ALPHA
+	return tint
 
 
 func _state_name() -> StringName:
