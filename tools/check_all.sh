@@ -54,6 +54,10 @@ step "①-s unit tests — the painted 9-slice box (GoStyleBoxSprite: the slices
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_stylebox_sprite_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-u unit tests — the painted icon (GoTextureSprite: the drawn size, regions, tiles, tint, pixels, get_image, a .tres round trip)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_texture_sprite_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-p unit tests — the painted arcade skin (GoSkinArcadePainted: the sprites, the notice pill, the scrim, the ticks)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_skin_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
