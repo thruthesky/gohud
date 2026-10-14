@@ -178,6 +178,8 @@ func _level_card(look: StringName) -> void:
 	if card.ink().get_luminance() > 0.5 and card.outline_ink().a > 0.0:
 		check(card.title_label.get_theme_constant(&"outline_size") == 4, "%s card: light text on the card is outlined" % look)
 	card.play_text = "JUGAR!"
+	check(card.tag_label.text == "PLAY!", "%s card: a change waits for the end of the frame" % look)
+	await frames(1)
 	check(card.tag_label.text == "JUGAR!", "%s card: the tag text is a parameter" % look)
 
 	card.state = GoLevelCard.State.LOCKED
@@ -225,6 +227,7 @@ func _level_card(look: StringName) -> void:
 	var own := ImageTexture.create_from_image(Image.create(4, 4, false, Image.FORMAT_RGBA8))
 	card.state = GoLevelCard.State.CLEARED
 	card.check_texture = own
+	card.refresh()
 	var art := card.check.get_child(0) as TextureRect
 	check(art != null and art.texture == own, "%s card: an exported texture wins over the skin's art" % look)
 	holder.queue_free()

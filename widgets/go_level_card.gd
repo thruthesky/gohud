@@ -16,6 +16,7 @@
 ##
 ## 🛑 The texts come from the caller (they depend on the language); `locked_text` and `play_text` too. Every text is
 ##    shrunk to fit (`GoStyle.fit_font_size`), so a long translation never runs under the lock.
+## 🛑 The setters batch their work: the tile is rebuilt once, at the end of the frame (or at once by `refresh()`).
 ## 🛑 A locked tile is `disabled` — it takes no press. The card only takes back the `disabled` it set itself: a tile
 ##    the caller disabled stays disabled when it unlocks. `tooltip_text` is the caller's too.
 @tool
@@ -36,168 +37,168 @@ const VAR_WELL := &"GoWell"
 @export var title := "":
 	set(value):
 		title = value
-		_refresh()
+		_queue_refresh()
 
 ## The line under it ("OPPONENTS: 3"), with the person icon. Empty hides the row.
 @export var subtitle := "":
 	set(value):
 		subtitle = value
-		_refresh()
+		_queue_refresh()
 
 @export var state := State.OPEN:
 	set(value):
 		state = value
-		_refresh()
+		_queue_refresh()
 
 ## The gold ring round the tile.
 @export var selected := false:
 	set(value):
 		selected = value
-		_refresh()
+		_queue_refresh()
 
 ## The caption under the padlock.
 @export var locked_text := "LOCKED":
 	set(value):
 		locked_text = value
-		_refresh()
+		_queue_refresh()
 
 ## The word on the tilted tag of the current level.
 @export var play_text := "PLAY!":
 	set(value):
 		play_text = value
-		_refresh()
+		_queue_refresh()
 
 ## The thumbnail, drawn to cover its slot (`GoCoverImage`). Leave it empty to put your own node in `thumbnail_slot`.
 @export var thumbnail: Texture2D:
 	set(value):
 		thumbnail = value
-		_refresh()
+		_queue_refresh()
 
 ## Which part of the thumbnail stays in view.
 @export var thumbnail_focus := Vector2(0.5, 0.5):
 	set(value):
 		thumbnail_focus = value
-		_refresh()
+		_queue_refresh()
 
 @export_group("Art")
 ## The check on a cleared tile. Empty: the skin's `check` art, else the icon set's check on a sticker.
 @export var check_texture: Texture2D:
 	set(value):
 		check_texture = value
-		_refresh()
+		_queue_refresh()
 ## The padlock on a locked tile. Empty: the skin's `lock` art, else the icon set's lock.
 @export var lock_texture: Texture2D:
 	set(value):
 		lock_texture = value
-		_refresh()
+		_queue_refresh()
 ## The icon before the subtitle. Empty: the skin's `person` art, else the icon set's user.
 @export var person_texture: Texture2D:
 	set(value):
 		person_texture = value
-		_refresh()
+		_queue_refresh()
 ## The tag behind `play_text`. Empty: the skin's `play_tag` art, else a sticker plate.
 @export var play_tag_texture: Texture2D:
 	set(value):
 		play_tag_texture = value
-		_refresh()
+		_queue_refresh()
 ## A pointer at the current tile's bottom-right corner (the game's magnet). Empty: the skin's `pointer` art, else none.
 @export var pointer_texture: Texture2D:
 	set(value):
 		pointer_texture = value
-		_refresh()
+		_queue_refresh()
 
 @export_group("Size")
 ## Every size below is multiplied by this (1 = the design size).
 @export var scale_factor := 1.0:
 	set(value):
 		scale_factor = maxf(0.1, value)
-		_refresh()
+		_queue_refresh()
 @export var card_size := Vector2(300, 98):
 	set(value):
 		card_size = value
-		_refresh()
+		_queue_refresh()
 @export var thumbnail_size := 74.0:
 	set(value):
 		thumbnail_size = value
-		_refresh()
+		_queue_refresh()
 ## The space left of the thumbnail.
 @export var thumbnail_inset := 12.0:
 	set(value):
 		thumbnail_inset = value
-		_refresh()
+		_queue_refresh()
 ## The inner padding on the other three sides.
 @export var card_padding := 12.0:
 	set(value):
 		card_padding = value
-		_refresh()
+		_queue_refresh()
 ## The padding inside the thumbnail's well.
 @export var well_padding := 12.0:
 	set(value):
 		well_padding = value
-		_refresh()
+		_queue_refresh()
 @export var row_gap := 8.0:
 	set(value):
 		row_gap = value
-		_refresh()
+		_queue_refresh()
 @export var text_gap := 6.0:
 	set(value):
 		text_gap = value
-		_refresh()
+		_queue_refresh()
 ## The least width of the lock column; it grows to hold its caption.
 @export var right_slot := 56.0:
 	set(value):
 		right_slot = value
-		_refresh()
+		_queue_refresh()
 ## Room kept back when the texts are fitted.
 @export var fit_slack := 4.0:
 	set(value):
 		fit_slack = value
-		_refresh()
+		_queue_refresh()
 @export var title_font_size := 22:
 	set(value):
 		title_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var subtitle_font_size := 15:
 	set(value):
 		subtitle_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var locked_font_size := 13:
 	set(value):
 		locked_font_size = value
-		_refresh()
+		_queue_refresh()
 ## The LOCKED caption never shrinks under this.
 @export var min_font_size := 8:
 	set(value):
 		min_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var tag_font_size := 21:
 	set(value):
 		tag_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var person_size := 18.0:
 	set(value):
 		person_size = value
-		_refresh()
+		_queue_refresh()
 @export var check_size := 46.0:
 	set(value):
 		check_size = value
-		_refresh()
+		_queue_refresh()
 @export var lock_size := 34.0:
 	set(value):
 		lock_size = value
-		_refresh()
+		_queue_refresh()
 @export var tag_size := Vector2(104, 44):
 	set(value):
 		tag_size = value
-		_refresh()
+		_queue_refresh()
 @export var tag_tilt_degrees := -9.0:
 	set(value):
 		tag_tilt_degrees = value
-		_refresh()
+		_queue_refresh()
 @export var pointer_size := 50.0:
 	set(value):
 		pointer_size = value
-		_refresh()
+		_queue_refresh()
 @export_group("")
 
 ## Put your own thumbnail here (a live map preview, say); it fills the slot.
@@ -224,6 +225,7 @@ var _lock_box: VBoxContainer
 var _lock_art: Control
 var _tag_art: Control
 var _built := false
+var _queued := false
 ## The card set `disabled` because the tile is locked (it was not disabled already).
 var _lock_disabled := false
 
@@ -244,6 +246,11 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
+
+
+## Applies the pending changes now instead of at the end of the frame.
+func refresh() -> void:
+	_refresh()
 
 
 static func make(text: String, sub := "", level_state := State.OPEN) -> GoLevelCard:
@@ -443,8 +450,20 @@ func _art(given: Texture2D, part: StringName) -> Texture2D:
 	return given if given != null else GoUi.skin().widget_art(part)
 
 
+## Asks for one rebuild at the end of the frame, however many properties change before it.
+func _queue_refresh() -> void:
+	if not _built or _queued: return
+	_queued = true
+	_flush.call_deferred()
+
+
+func _flush() -> void:
+	if _queued: _refresh()
+
+
 func _refresh() -> void:
 	if not _built: return
+	_queued = false
 	var k := scale_factor
 	var locked := state == State.LOCKED
 	var current := state == State.CURRENT
@@ -612,4 +631,4 @@ func _notification(what: int) -> void:
 
 
 func _on_ui_changed() -> void:
-	_refresh()
+	_queue_refresh()
