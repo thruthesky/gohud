@@ -4206,6 +4206,18 @@ func _flutter_pickers() -> void:
 	check(dates.get_range().is_empty() and ranges.size() == 1, "date range: a third tap starts a new range")
 	dates.queue_free()
 
+	# Date cell width — a parent that nudges the width a few pixels each rebuild (a fit-content surface) must not
+	# flip the cell between n and n + 1 forever; it shrinks at once and grows only with room to spare.
+	var sizing := GoDatePicker.make({"year": 2026, "month": 10, "day": 2})
+	root.add_child(sizing)
+	var cells: Array = []
+	for wide in [297.0, 293.0, 297.0, 293.0, 297.0, 350.0]:
+		sizing.size = Vector2(wide, sizing.size.y)
+		sizing.notification(Container.NOTIFICATION_SORT_CHILDREN)
+		cells.append(sizing._cell)
+	check(cells == [42.0, 41.0, 41.0, 41.0, 41.0, 48.0], "date picker: the cell settles instead of flipping (%s)" % str(cells))
+	sizing.queue_free()
+
 	# Wheel — select, keys and a drag settle on an item; `changed` once per new item.
 	var settled: Array = []
 	var digits: Array = []
