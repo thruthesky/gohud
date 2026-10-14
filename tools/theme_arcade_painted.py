@@ -51,6 +51,8 @@ BAR_EDGE = (48, 38, 48, 38)
 BAR_PPU = 5.0
 BAR_HEIGHT = 16.0
 HANDLE_SIZE = (36, 36)
+# The switch (`PaintedSwitch` `SWITCH_SIZE`): the 186 × 71 pills drawn 76 × 29 units.
+SWITCH_SIZE = (76, 29)
 # The fills `PaintedSlider.use_fill()` offers: blue is HSlider itself, the others a variation each.
 SLIDER_FILLS = {"HSlider": "slider_blue.png", "GoSliderGreen": "slider_green.png", "GoSliderCyan": "slider_cyan.png"}
 
@@ -280,6 +282,19 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # The game has no disabled slider; the handle fades like every painted part that is off.
     put("HSlider/icons/grabber_disabled", icon("painted_slider_handle_disabled", "slider_handle.png", HANDLE_SIZE,
                                                DISABLED_TINT))
+
+    # ── 🔘 The switch (`PaintedSwitch`): the grey pill with the knob left, the green one with the knob right, at the
+    #    game's size in every direction (the game draws them unflipped right to left too); off, they fade. The game's
+    #    switch draws no focus ring. ──
+    put("CheckButton/styles/focus", "painted_empty")
+    for on, file in ((True, "toggle_on.png"), (False, "toggle_off.png")):
+        key = "checked" if on else "unchecked"
+        stem = "painted_" + file[:-len(".png")]
+        lit = icon(stem, file, SWITCH_SIZE)
+        off = icon(stem + "_disabled", file, SWITCH_SIZE, DISABLED_TINT)
+        for suffix in ("", "_mirrored"):
+            put("CheckButton/icons/%s%s" % (key, suffix), lit)
+            put("CheckButton/icons/%s_disabled%s" % (key, suffix), off)
 
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()

@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=126 format=3]
+[gd_resource type="Theme" load_steps=132 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -17,6 +17,8 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_green.png" id="painted_slider_green"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_handle.png" id="painted_slider_handle"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_track.png" id="painted_slider_track"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_off.png" id="painted_toggle_off"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_on.png" id="painted_toggle_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/toggle_on.svg" id="toggle_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/toggle_on_mirrored.svg" id="toggle_on_mirrored"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/toggle_on_disabled.svg" id="toggle_on_disabled"]
@@ -1301,6 +1303,28 @@ texture = ExtResource("painted_slider_handle")
 draw_size = Vector2(36, 36)
 tint = Color(0.6, 0.6, 0.66, 0.85)
 
+[sub_resource type="Texture2D" id="painted_toggle_on"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("painted_toggle_on")
+draw_size = Vector2(76, 29)
+
+[sub_resource type="Texture2D" id="painted_toggle_on_disabled"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("painted_toggle_on")
+draw_size = Vector2(76, 29)
+tint = Color(0.6, 0.6, 0.66, 0.85)
+
+[sub_resource type="Texture2D" id="painted_toggle_off"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("painted_toggle_off")
+draw_size = Vector2(76, 29)
+
+[sub_resource type="Texture2D" id="painted_toggle_off_disabled"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("painted_toggle_off")
+draw_size = Vector2(76, 29)
+tint = Color(0.6, 0.6, 0.66, 0.85)
+
 [resource]
 BoxContainer/constants/separation = 12
 Button/colors/font_color = Color(1, 1, 1, 1)
@@ -1369,16 +1393,16 @@ CheckButton/colors/icon_pressed_color = Color(0.103552, 0.264971, 0.639586, 1)
 CheckButton/constants/h_separation = 12
 CheckButton/constants/outline_size = 0
 CheckButton/font_sizes/font_size = 16
-CheckButton/icons/checked = ExtResource("toggle_on")
-CheckButton/icons/checked_disabled = ExtResource("toggle_on_disabled")
-CheckButton/icons/checked_disabled_mirrored = ExtResource("toggle_on_disabled_mirrored")
-CheckButton/icons/checked_mirrored = ExtResource("toggle_on_mirrored")
-CheckButton/icons/unchecked = ExtResource("toggle_off")
-CheckButton/icons/unchecked_disabled = ExtResource("toggle_off_disabled")
-CheckButton/icons/unchecked_disabled_mirrored = ExtResource("toggle_off_disabled_mirrored")
-CheckButton/icons/unchecked_mirrored = ExtResource("toggle_off_mirrored")
+CheckButton/icons/checked = SubResource("painted_toggle_on")
+CheckButton/icons/checked_disabled = SubResource("painted_toggle_on_disabled")
+CheckButton/icons/checked_disabled_mirrored = SubResource("painted_toggle_on_disabled")
+CheckButton/icons/checked_mirrored = SubResource("painted_toggle_on")
+CheckButton/icons/unchecked = SubResource("painted_toggle_off")
+CheckButton/icons/unchecked_disabled = SubResource("painted_toggle_off_disabled")
+CheckButton/icons/unchecked_disabled_mirrored = SubResource("painted_toggle_off_disabled")
+CheckButton/icons/unchecked_mirrored = SubResource("painted_toggle_off")
 CheckButton/styles/disabled = SubResource("empty")
-CheckButton/styles/focus = SubResource("focus_soft")
+CheckButton/styles/focus = SubResource("painted_empty")
 CheckButton/styles/hover = SubResource("empty")
 CheckButton/styles/hover_pressed = SubResource("empty")
 CheckButton/styles/normal = SubResource("empty")

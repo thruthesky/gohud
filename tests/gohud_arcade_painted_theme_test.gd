@@ -29,9 +29,10 @@ const DISABLED_TINT := Color(0.6, 0.6, 0.66, 0.85)
 const GLOSS_EDGE := Vector4(100, 65, 100, 66)
 const KEY_EDGE := Vector4(70, 70, 70, 80)
 const RIBBON_EDGE := Vector4(100, 80, 100, 80)
-# The slider (`PaintedSlider`).
+# The slider and the switch (`PaintedSlider`, `PaintedSwitch`).
 const BAR_EDGE := Vector4(48, 38, 48, 38)
 const HANDLE_SIZE := Vector2(36, 36)
+const SWITCH_SIZE := Vector2(76, 29)
 
 var passed := 0
 var failed: Array[String] = []
@@ -50,6 +51,7 @@ func _initialize() -> void:
 		_item_sets(light)
 		await _slider(light)
 		await _range_slider(light)
+		_switch(light)
 	if dark != null:
 		_dark_stays(dark)
 	print("gohud arcade painted theme tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -322,6 +324,25 @@ func _range_slider(theme: Theme) -> void:
 		and (track.get(&"texture") as Texture2D).resource_path == PAINTED + "slider_track.png",
 		"GoRangeSlider: a fill variation keeps HSlider's track")
 	range_slider.free()
+
+
+## 🔘 `PaintedSwitch`: the green pill (knob right) on, the grey one (knob left) off, 76 × 29 units in every direction;
+##    the disabled ones fade.
+func _switch(theme: Theme) -> void:
+	for suffix: String in ["", "_mirrored"]:
+		_icon(theme, StringName("checked" + suffix), &"CheckButton", "toggle_on.png", SWITCH_SIZE, Color.WHITE)
+		_icon(theme, StringName("unchecked" + suffix), &"CheckButton", "toggle_off.png", SWITCH_SIZE, Color.WHITE)
+		_icon(theme, StringName("checked_disabled" + suffix), &"CheckButton", "toggle_on.png", SWITCH_SIZE, DISABLED_TINT)
+		_icon(theme, StringName("unchecked_disabled" + suffix), &"CheckButton", "toggle_off.png", SWITCH_SIZE,
+			DISABLED_TINT)
+	check(theme.get_stylebox(&"focus", &"CheckButton") is StyleBoxEmpty,
+		"CheckButton/focus: empty, the game's switch draws no focus ring (got %s)" % theme.get_stylebox(&"focus", &"CheckButton"))
+	var switch := CheckButton.new()
+	switch.theme = theme
+	root.add_child(switch)
+	check(switch.get_combined_minimum_size().x >= SWITCH_SIZE.x and switch.get_combined_minimum_size().y >= SWITCH_SIZE.y,
+		"CheckButton: room for the 76 × 29 switch (got %s)" % switch.get_combined_minimum_size())
+	switch.free()
 
 
 func _sorted(names: PackedStringArray) -> Array:
