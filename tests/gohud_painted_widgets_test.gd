@@ -156,6 +156,9 @@ func _level_card(look: StringName) -> void:
 	check(card.custom_minimum_size == Vector2(300, 98), "%s card: the game's 300 × 98" % look)
 	check(card.check.visible and not card.play_tag.visible and not card.lock.visible, "%s card: cleared shows the check" % look)
 	check(card.check.get_child_count() > 0, "%s card: the check has art or a fallback" % look)
+	var check_art := card.check.get_child(0) as Control if card.check.get_child_count() > 0 else null
+	check(check_art != null and check_art.size.is_equal_approx(card.check.size),
+		"%s card: the check's art fills its box (got %s)" % [look, check_art.size if check_art != null else Vector2.ZERO])
 	check(is_equal_approx(card.check.offset_right, 46 * 0.28) and is_equal_approx(card.check.offset_top, -46 * 0.28),
 		"%s card: the check sits over the top-right corner" % look)
 	check(card.summary() == "STAGE 1\nOPPONENTS: 1", "%s card: the summary" % look)

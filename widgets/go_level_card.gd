@@ -307,13 +307,13 @@ func _build() -> void:
 	_margin.name = "Margin"
 	_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_margin, false, Node.INTERNAL_MODE_FRONT)
-	_margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	# The ring sits under the badges (check, tag, pointer), which are added after it.
 	selection_ring = Panel.new()
 	selection_ring.name = "SelectionRing"
 	selection_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(selection_ring, false, Node.INTERNAL_MODE_FRONT)
-	selection_ring.set_anchors_preset(Control.PRESET_FULL_RECT)
+	selection_ring.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_row = HBoxContainer.new()
 	_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_margin.add_child(_row)
@@ -326,10 +326,10 @@ func _build() -> void:
 	_well = Panel.new()
 	_well.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	thumbnail_slot.add_child(_well, false, Node.INTERNAL_MODE_FRONT)
-	_well.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_well.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_cover = GoCoverImage.new()
 	thumbnail_slot.add_child(_cover, false, Node.INTERNAL_MODE_FRONT)
-	_cover.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	_text_box = VBoxContainer.new()
 	_text_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -384,7 +384,7 @@ func _build() -> void:
 	_tag_art = Control.new()
 	_tag_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	play_tag.add_child(_tag_art)
-	_tag_art.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_tag_art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	tag_label = _text("Tag")
 	tag_label.clip_text = false
 	tag_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -392,7 +392,7 @@ func _build() -> void:
 	# The title look's negative line spacing would clip a lone line.
 	tag_label.add_theme_constant_override(&"line_spacing", 0)
 	play_tag.add_child(tag_label)
-	tag_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	tag_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func _text(part: String) -> Label:
@@ -415,7 +415,7 @@ func _fill(holder: Control, art: Texture2D, icon: StringName, side: float, plate
 		picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		holder.add_child(picture)
-		picture.set_anchors_preset(Control.PRESET_FULL_RECT)
+		picture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		return
 	if icon.is_empty() or not GoUi.icons().has_icon(icon): return
 	var ink_color := icon_ink
@@ -424,7 +424,7 @@ func _fill(holder: Control, art: Texture2D, icon: StringName, side: float, plate
 		face.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		face.add_theme_stylebox_override(&"panel", GoUi.skin().sticker_box(plate))
 		holder.add_child(face)
-		face.set_anchors_preset(Control.PRESET_FULL_RECT)
+		face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		ink_color = GoSkin.readable_on(GoUi.color(GoTheme.ON_ACCENT), Color(plate, 1.0))
 	var px := maxi(1, roundi(side * (0.6 if plate.a > 0.0 else 1.0)))
 	var glyph := GoUi.icons().node(icon, px, ink_color)
@@ -549,7 +549,7 @@ func _dress_tag(tag: Vector2) -> void:
 		picture.stretch_mode = TextureRect.STRETCH_SCALE
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_tag_art.add_child(picture)
-		picture.set_anchors_preset(Control.PRESET_FULL_RECT)
+		picture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		var edge := outline_ink()
 		tag_label.add_theme_color_override(&"font_color", Color.WHITE)
 		tag_label.add_theme_color_override(&"font_outline_color", edge)
@@ -560,7 +560,7 @@ func _dress_tag(tag: Vector2) -> void:
 		face.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		face.add_theme_stylebox_override(&"panel", GoUi.skin().sticker_box(plate))
 		_tag_art.add_child(face)
-		face.set_anchors_preset(Control.PRESET_FULL_RECT)
+		face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		GoUi.skin().dress_sticker(tag_label, plate)
 	var font := tag_label.get_theme_font(&"font") if tag_label.is_inside_tree() else null
 	tag_label.add_theme_font_size_override(&"font_size",
