@@ -72,9 +72,15 @@ func _init() -> void:
 	_sync_name()
 
 
+## 🔑 Watched on every entry, not once in `_ready` — `reparent()` takes the node out and back, and a watch set only in
+##    `_ready` was dropped by the first `_exit_tree` for good. Back in the tree, it catches up with the look.
+func _enter_tree() -> void:
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
+
+
 func _ready() -> void:
 	_dress()
-	GoUi.watch(_on_ui_changed)
 
 
 func _exit_tree() -> void:

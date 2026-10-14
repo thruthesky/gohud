@@ -29,6 +29,7 @@ func _initialize() -> void:
 		await _glyph_button(look)
 		await _kbd_done(look)
 		await _surface(look)
+	await _reparent()
 	GoUi.reset()
 	print("gohud painted widgets tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -291,6 +292,28 @@ func _kbd_done(look: StringName) -> void:
 		check(green is GoStyleBoxSprite and (green as GoStyleBoxSprite).tint == Color("#8ff0a4"),
 			"%s kbd: the painted keycap tinted #8ff0a4" % look)
 	kbd.queue_free()
+	await frames(1)
+
+
+# ── Reparent ───────────────────────────────────────────────────────────
+
+func _reparent() -> void:
+	var first := Control.new()
+	var second := Control.new()
+	root.add_child(first)
+	root.add_child(second)
+	var kbd := GoKbd.make("W")
+	var widgets: Array[Node] = [GoLevelCard.make("STAGE 1"), GoKeyCluster.make(), kbd]
+	for node in widgets: first.add_child(node)
+	await frames(1)
+	for node in widgets:
+		node.reparent(second)
+	await frames(1)
+	for node in widgets:
+		check(GoUi._watchers.has(Callable(node, &"_on_ui_changed")),
+			"%s still follows the look after reparent()" % node.name)
+	first.queue_free()
+	second.queue_free()
 	await frames(1)
 
 
