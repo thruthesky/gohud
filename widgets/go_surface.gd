@@ -526,10 +526,13 @@ class OverhangPlate:
 		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed_left, 0.0, bleed_right, 0.0))
 
 
-## The side of the title glyph now (dp).
+## The side of the title glyph (dp): `title_glyph_size`, or the game's 26 dp beside a 34 dp title scaled to the title's
+## role size. 🛑 Taken from the role size, never the size now — a long title shrinks to fit (`_fit_title_size`) after
+##    the room for the glyph was reserved, and a glyph read from the shrunk size left too wide a gap beside it.
 func title_glyph_side() -> float:
 	if title_glyph_size > 0: return float(title_glyph_size)
-	return roundf(float(title_label.get_theme_font_size(&"font_size")) * 26.0 / 34.0)
+	var natural := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	return roundf(float(natural) * 26.0 / 34.0)
 
 
 ## Room for the glyph on the title's face, and the plate hanging over the card's top edge when the look says so.

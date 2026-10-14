@@ -333,6 +333,17 @@ func _surface(look: StringName) -> void:
 		surface.set_back(Callable())
 		await frames(2)
 		check(ribbon.bleed_left == ribbon.bleed, "%s surface: the bleed comes back without the back button" % look)
+	if mark != null:
+		# A long title shrinks to fit, but the glyph keeps the side its room was reserved for.
+		var before := surface.title_glyph_side()
+		surface.set_title("A VERY LONG TRANSLATED WINDOW TITLE THAT HAS TO SHRINK")
+		await frames(3)
+		check(is_equal_approx(surface.title_glyph_side(), before) and is_equal_approx(mark.size.x, before),
+			"%s surface: a shrunk title keeps the glyph side" % look)
+		if painted:
+			var words := surface.title_label.get_character_bounds(0)
+			check(absf(words.position.x - (mark.position.x + before) - GoSurface.TITLE_GLYPH_GAP) <= 1.5,
+				"%s surface: a shrunk title keeps one gap after the glyph" % look)
 	surface.title_glyph = null
 	await frames(1)
 	check(surface.title_label.get_children(true).filter(func(n): return n is TextureRect and not n.is_queued_for_deletion()).is_empty(),
