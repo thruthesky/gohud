@@ -12,6 +12,8 @@ extends SceneTree
 const LIGHT := "res://addons/gohud/themes/gohud_arcade_light.tres"
 const DARK := "res://addons/gohud/themes/gohud_arcade_dark.tres"
 const PAINTED := "res://addons/gohud/assets/arcade_light/painted/"
+## A file named "stage/…" is the stage-select art, next to `painted/`.
+const ART := "res://addons/gohud/assets/arcade_light/"
 
 # The game's constants (Magnet Mayhem `src/ui/ui_theme.gd`) — the values the painted look must carry.
 const INK := Color("#1d2340")
@@ -29,6 +31,17 @@ const DISABLED_TINT := Color(0.6, 0.6, 0.66, 0.85)
 const GLOSS_EDGE := Vector4(100, 65, 100, 66)
 const KEY_EDGE := Vector4(70, 70, 70, 80)
 const RIBBON_EDGE := Vector4(100, 80, 100, 80)
+const PANEL := Color(1.0, 1.0, 1.0, 0.9)
+## The stage-select art (`UiTheme` `STAGE_*`).
+const STAGE_CARD_EDGE := Vector4(60, 60, 60, 60)
+const STAGE_CARD_PPU := 2.2
+const STAGE_RIBBON_PPU := 2.4
+const STAGE_WELL_EDGE := Vector4(60, 60, 60, 60)
+const STAGE_WELL_PPU := 3.0
+## `Cfg.Hud.PANEL_PADDING` / `BANNER_PADDING` and `Cfg.Menu.CHIP_FONT` at their desktop value.
+const HUD_PANEL_PADDING := 8.0
+const HUD_BANNER_PADDING := 4.0
+const CHIP_FONT := 15
 
 var passed := 0
 var failed: Array[String] = []
@@ -41,6 +54,7 @@ func _initialize() -> void:
 	if light != null:
 		_buttons(light)
 		_panels(light)
+		_game_parts(light)
 		_variations(light)
 		_inks(light)
 		_tokens(light)
@@ -78,7 +92,8 @@ func _sprite(theme: Theme, state: StringName, type: StringName, file: String, ed
 	check(_is_sprite(box), "%s is a GoStyleBoxSprite (got %s)" % [label, box.get_class() if box else "null"])
 	if not _is_sprite(box): return
 	var texture := box.get(&"texture") as Texture2D
-	check(texture != null and texture.resource_path == PAINTED + file,
+	var want_path := (ART + file) if file.contains("/") else (PAINTED + file)
+	check(texture != null and texture.resource_path == want_path,
 		"%s draws %s (got %s)" % [label, file, texture.resource_path if texture else "nothing"])
 	check(box.get(&"edge") == edge, "%s edge %s (got %s)" % [label, str(edge), str(box.get(&"edge"))])
 	check(is_equal_approx(float(box.get(&"pixels_per_unit")), ppu), "%s pixels_per_unit %.1f (got %s)" % [label, ppu,
@@ -170,6 +185,69 @@ func _panels(theme: Theme) -> void:
 			"GoNotice: the thin navy edge under it")
 
 
+## [param box] is `UiTheme.chunky_box(bg, radius, margin_h, margin_v, outline, bottom_edge, rim, outer)` exactly.
+func _chunky(theme: Theme, state: StringName, type: StringName, bg: Color, radius: int, margin_h: float, margin_v: float,
+		outline: int, bottom_edge: int, rim: Color, outer: bool) -> void:
+	var label := "%s/%s" % [type, state]
+	var flat := theme.get_stylebox(state, type) as StyleBoxFlat if theme.has_stylebox(state, type) else null
+	check(flat != null, "%s is a StyleBoxFlat" % label)
+	if flat == null: return
+	check(flat.bg_color.is_equal_approx(bg), "%s bg %s (got %s)" % [label, bg.to_html(), flat.bg_color.to_html()])
+	check(flat.border_color.is_equal_approx(rim), "%s rim %s (got %s)" % [label, rim.to_html(), flat.border_color.to_html()])
+	check(flat.border_width_left == outline and flat.border_width_top == outline and flat.border_width_right == outline
+		and flat.border_width_bottom == bottom_edge, "%s border %d, bottom %d (got %d %d %d %d)" % [label, outline, bottom_edge,
+		flat.border_width_left, flat.border_width_top, flat.border_width_right, flat.border_width_bottom])
+	for corner: Corner in [CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOTTOM_RIGHT, CORNER_BOTTOM_LEFT]:
+		check(flat.get_corner_radius(corner) == radius, "%s corner %d radius %d" % [label, corner, radius])
+	var margins: Array[float] = [margin_h, margin_v + outline, margin_h, margin_v + bottom_edge]
+	check(_margins(flat) == margins, "%s padding %s (got %s)" % [label, str(margins), str(_margins(flat))])
+	if outer:
+		check(flat.shadow_color.is_equal_approx(INK) and flat.shadow_size == 3 and flat.shadow_offset == Vector2(0, 2),
+			"%s: the thin navy edge (shadow INK 3 px, offset 0,2)" % label)
+	else:
+		check(flat.shadow_size == 0, "%s: no shadow (got %d)" % [label, flat.shadow_size])
+	check(flat.draw_center and flat.anti_aliasing and flat.expand_margin_top == 0.0, "%s: drawn filled, anti-aliased" % label)
+
+
+## 🗺 The game's stage-select art, HUD boxes, chip and frameless key (`UiTheme._build()`), value for value.
+func _game_parts(theme: Theme) -> void:
+	_sprite(theme, &"panel", &"GoWindowBlue", "stage/window.png", Vector4(70, 70, 70, 70), 3.0, Color.WHITE,
+		[24.0, 20.0, 24.0, 22.0])
+	_sprite(theme, &"panel", &"GoRibbonWide", "stage/ribbon_title.png", Vector4(200, 50, 200, 50), STAGE_RIBBON_PPU,
+		Color.WHITE, [70.0, 6.0, 70.0, 12.0])
+	_sprite(theme, &"panel", &"GoWell", "stage/well.png", STAGE_WELL_EDGE, STAGE_WELL_PPU, Color.WHITE, [0.0, 0.0, 0.0, 0.0])
+	for pair: Array in [[&"GoLevelCard", "stage/card_cleared.png"], [&"GoLevelCardCurrent", "stage/card_current.png"],
+			[&"GoLevelCardLocked", "stage/card_locked.png"]]:
+		var zero: Array[float] = [0.0, 0.0, 0.0, 0.0]
+		for state: StringName in [&"normal", &"hover", &"disabled"]:
+			_sprite(theme, state, pair[0], pair[1], STAGE_CARD_EDGE, STAGE_CARD_PPU, Color.WHITE, zero)
+		for state: StringName in [&"pressed", &"hover_pressed"]:
+			_sprite(theme, state, pair[0], pair[1], STAGE_CARD_EDGE, STAGE_CARD_PPU, PRESSED_TINT, zero)
+		check(theme.get_stylebox(&"focus", pair[0]) is StyleBoxEmpty, "%s/focus draws nothing" % pair[0])
+		check(theme.get_stylebox(&"normal", pair[0]) == theme.get_stylebox(&"disabled", pair[0]),
+			"%s: disabled is the normal face (the game's)" % pair[0])
+	# The HUD's boxes, the player's own notice, the language chip.
+	_chunky(theme, &"panel", &"GoHudPanel", PANEL, 18, HUD_PANEL_PADDING + 5.0, HUD_PANEL_PADDING, 5, 8, CONTROL_BLUE, true)
+	_chunky(theme, &"panel", &"GoBannerGold", GOLD, 12, HUD_BANNER_PADDING + 3.0, HUD_BANNER_PADDING, 3, 5, INK, false)
+	_chunky(theme, &"panel", &"GoNoticeGold", Color("#fff3cf"), 16, 12.0, 2.0, 3, 5, GOLD, true)
+	_chunky(theme, &"panel", &"GoNotice", PANEL, 16, 12.0, 2.0, 3, 5, CONTROL_BLUE, true)
+	for state: StringName in [&"normal", &"hover"]:
+		_chunky(theme, state, &"GoChipDark", Color("#232b57"), 22, 16.0, 0.0, 3, 4, Color("#6f95ff"), true)
+	for state: StringName in [&"pressed", &"hover_pressed"]:
+		_chunky(theme, state, &"GoChipDark", Color("#171d42"), 22, 16.0, 0.0, 3, 4, Color("#6f95ff"), true)
+	check(theme.get_stylebox(&"focus", &"GoChipDark") is StyleBoxEmpty, "GoChipDark/focus draws nothing")
+	for slot: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(slot, &"GoChipDark") == Color.WHITE, "GoChipDark/%s is white" % slot)
+	check(theme.get_font_size(&"font_size", &"GoChipDark") == CHIP_FONT, "GoChipDark: Cfg.Menu.CHIP_FONT (15)")
+	check(theme.get_constant(&"h_separation", &"GoChipDark") == 8, "GoChipDark: 8 px between glyph and word")
+	# The frameless key: nothing in any state, the icon darker while pressed.
+	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		check(theme.get_stylebox(state, &"GoIconOnly") is StyleBoxEmpty, "GoIconOnly/%s draws nothing" % state)
+	for slot: StringName in [&"icon_pressed_color", &"icon_hover_pressed_color"]:
+		check(theme.get_color(slot, &"GoIconOnly").is_equal_approx(Color(0.78, 0.78, 0.86)), "GoIconOnly/%s is the game's" % slot)
+
+
 func _variations(theme: Theme) -> void:
 	var bases := {
 		&"GoButton": &"Button", &"GoPrimaryButton": &"Button", &"GoDangerButton": &"Button",
@@ -177,6 +255,10 @@ func _variations(theme: Theme) -> void:
 		&"GoCard": &"PanelContainer", &"GoInsetPanel": &"PanelContainer", &"GoKeycapPanel": &"PanelContainer",
 		&"GoRibbon": &"PanelContainer", &"GoRibbonRed": &"PanelContainer", &"GoNotice": &"PanelContainer",
 		&"GoTitle": &"Label", &"GoOutlineLabel": &"Label",
+		&"GoWindowBlue": &"PanelContainer", &"GoRibbonWide": &"PanelContainer", &"GoWell": &"PanelContainer",
+		&"GoLevelCard": &"Button", &"GoLevelCardCurrent": &"Button", &"GoLevelCardLocked": &"Button",
+		&"GoHudPanel": &"PanelContainer", &"GoBannerGold": &"PanelContainer", &"GoNoticeGold": &"PanelContainer",
+		&"GoChipDark": &"Button", &"GoIconOnly": &"Button",
 	}
 	for type: StringName in bases:
 		check(theme.is_type_variation(type, bases[type]), "%s is a variation of %s (got %s)" % [type, bases[type],
@@ -191,7 +273,13 @@ func _variations(theme: Theme) -> void:
 	for game: String in map:
 		if game == "game_only" or game.begins_with("_"): continue
 		check(theme.get_type_variation_base(StringName(map[game])) != &"", "map: %s → %s is in the theme" % [game, map[game]])
-	check(map.get("game_only", []) is Array and (map["game_only"] as Array).has("StageWindow"), "map: the stage art stays in the game")
+	var moved := {"StageWindow": "GoWindowBlue", "StageRibbon": "GoRibbonWide", "StageCard": "GoLevelCard",
+		"StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked", "MapWell": "GoWell",
+		"ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
+		"PauseRound": "GoIconOnly"}
+	for game: String in moved:
+		check(map.get(game, "") == moved[game], "map: %s → %s (got %s)" % [game, moved[game], map.get(game, "nothing")])
+	check(map.get("game_only", []) is Array and (map["game_only"] as Array).has("HudPanel"), "map: the old flat look stays in the game")
 	for kept: String in map.get("game_only", []):
 		check(not map.has(kept), "map: %s is either moved or kept, not both" % kept)
 
@@ -227,6 +315,8 @@ func _item_sets(theme: Theme) -> void:
 	var gloss := {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"], "colors": gloss_colors,
 		"constants": ["h_separation", "outline_size"], "font_sizes": ["font_size"]}
 	var panel := {"styles": ["panel"], "colors": [], "constants": [], "font_sizes": []}
+	var card := {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"], "colors": [],
+		"constants": [], "font_sizes": []}
 	var want := {
 		&"GoButton": gloss, &"GoPrimaryButton": gloss, &"GoDangerButton": gloss, &"GoSuccessButton": gloss,
 		&"GoToggleButton": gloss,
@@ -238,6 +328,13 @@ func _item_sets(theme: Theme) -> void:
 		&"GoTitle": {"styles": [], "colors": ["font_color"], "constants": ["line_spacing", "outline_size"],
 			"font_sizes": ["font_size"]},
 		&"GoOutlineLabel": {"styles": [], "colors": ["font_color"], "constants": ["outline_size"], "font_sizes": []},
+		&"GoWindowBlue": panel, &"GoRibbonWide": panel, &"GoWell": panel, &"GoHudPanel": panel, &"GoBannerGold": panel,
+		&"GoNoticeGold": panel, &"GoLevelCard": card, &"GoLevelCardCurrent": card, &"GoLevelCardLocked": card,
+		&"GoChipDark": {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],
+			"colors": ["font_color", "font_focus_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color"],
+			"constants": ["h_separation"], "font_sizes": ["font_size"]},
+		&"GoIconOnly": {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"],
+			"colors": ["icon_hover_pressed_color", "icon_pressed_color"], "constants": [], "font_sizes": []},
 	}
 	for type: StringName in want:
 		var got := {"styles": _sorted(theme.get_stylebox_list(type)), "colors": _sorted(theme.get_color_list(type)),

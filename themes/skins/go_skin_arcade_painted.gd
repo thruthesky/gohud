@@ -9,7 +9,7 @@
 ## outlined button) stays `GoSkinArcade`'s code-drawn key, in the theme's colours — so the painted palette paints them.
 ##
 ## 🎨 The values are the game's own (`src/ui/ui_theme.gd`: `PaintedCard`, `RibbonTitle`, `KeycapPanel`, `Notif`,
-##    `NotifPlayer`, `INK`; `src/ui/ribbon_header.gd` for the title's outline; `src/ui/blur_backdrop.gd` for the
+##    `NotifPlayer`, `ArcadePanel`, `INK`; `src/ui/ribbon_header.gd` for the title's outline; `src/ui/blur_backdrop.gd` for the
 ##    shader; `src/ui/bar_segments.gd` for the ticks). A value that drifts from the game is a bug, not a taste.
 ## 🛑 The sprites are made at 3× (5.5× the keycap) and drawn at 1 / `pixels_per_unit` of their size: an edge here is in
 ##    texture pixels, never dp. The art lives in `assets/arcade_light/painted/`.
@@ -62,6 +62,12 @@ const NOTIF_RADIUS := 16
 const NOTIF_OUTLINE := 3
 const NOTIF_BOTTOM := 5
 const NOTIF_PAD := Vector2(12.0, 2.0)
+## The HUD panel (`UiTheme.arcade_panel_box(Cfg.Hud.PANEL_PADDING)`: `chunky_box(PANEL, 18, pad + 5, pad, 5, 8,
+## CONTROL_BLUE, true)`), at the desktop padding (8; the game's touch screens use 4).
+const HUD_RADIUS := 18
+const HUD_OUTLINE := 5
+const HUD_BOTTOM := 8
+const HUD_PAD := 8.0
 ## The ribbon title's outline (`RibbonHeader` sets `outline_size` 5 over the `Title` label's 6).
 const RIBBON_TITLE_OUTLINE := 5
 ## The game's backdrop at full strength: `arcade_scrim_blur` 3 is the game's blur — the mip level read, and the taps
@@ -110,9 +116,34 @@ func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha
 	return _pad(face, CARD_PAD)
 
 
-## A floating board is the same card — its painted halo is the shadow.
+## A floating board is the same card — its painted halo is the shadow. A HUD board floating over the game is the
+## game's HUD panel instead (`hud_panel_box`), as `GoStyle.floating()` draws a status panel.
+## 🛑 `GoStyle.floating()` takes only a `StyleBoxFlat`: the card sprite here fell back to the plain flat white
+##    rectangle in the gallery's HP / MP / XP panel (2026-10-14).
 func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
+	if variant == GoTheme.BOX_HUD: return hud_panel_box(accent, alpha)
 	return surface_box(variant, accent, alpha)
+
+
+## The game's HUD panel (`UiTheme` `ArcadePanel`, the theme's `GoHudPanel`): white at 90 %, a 5 px blue rim with an
+## 8 px bottom edge, a thin ink line round it, `HUD_PAD` clear inside the border. An accent paints the rim; the
+## opacity multiplies the white's own 0.9 (`fade_box`).
+func hud_panel_box(accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBoxFlat:
+	var face := StyleBoxFlat.new()
+	face.bg_color = PANEL
+	face.set_corner_radius_all(HUD_RADIUS)
+	face.set_border_width_all(HUD_OUTLINE)
+	face.border_width_bottom = HUD_BOTTOM
+	face.border_color = CONTROL_BLUE if accent.a <= 0.0 else Color(accent, 1.0)
+	face.anti_aliasing = true
+	face.shadow_color = INK
+	face.shadow_size = 3
+	face.shadow_offset = Vector2(0.0, 2.0)
+	face.content_margin_left = HUD_PAD + HUD_OUTLINE
+	face.content_margin_right = HUD_PAD + HUD_OUTLINE
+	face.content_margin_top = HUD_PAD + HUD_OUTLINE
+	face.content_margin_bottom = HUD_PAD + HUD_BOTTOM
+	return fade_box(face, alpha) as StyleBoxFlat
 
 
 ## A notice is the game's notification pill: white, a blue rim and a deeper bottom edge, a thin ink line round it. An

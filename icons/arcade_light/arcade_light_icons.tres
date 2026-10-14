@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GoIconSet" load_steps=17 format=3]
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
 [ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
@@ -8,10 +8,12 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/gear.png" id="gear"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/globe.png" id="globe"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/help.png" id="help"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/magnet.png" id="magnet"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/pause.png" id="pause"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/play.png" id="play"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/retry.png" id="retry"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/skip.png" id="skip"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/skull.png" id="skull"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_low.png" id="sound_low"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_off.png" id="sound_off"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_on.png" id="sound_on"]
@@ -29,10 +31,12 @@ textures = {
 &"gear": ExtResource("gear"),
 &"globe": ExtResource("globe"),
 &"help": ExtResource("help"),
+&"magnet": ExtResource("magnet"),
 &"pause": ExtResource("pause"),
 &"play": ExtResource("play"),
 &"retry": ExtResource("retry"),
 &"skip": ExtResource("skip"),
+&"skull": ExtResource("skull"),
 &"sound_low": ExtResource("sound_low"),
 &"sound_off": ExtResource("sound_off"),
 &"sound_on": ExtResource("sound_on"),

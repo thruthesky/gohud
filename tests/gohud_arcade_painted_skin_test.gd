@@ -54,6 +54,37 @@ func frames(count: int) -> void:
 
 
 ## [param box] is a `GoStyleBoxSprite` of [param file] with [param edge] and [param ppu].
+## 🎮 A HUD board floating over the game is the game's HUD panel (`UiTheme.arcade_panel_box(Cfg.Hud.PANEL_PADDING)`),
+##    a StyleBoxFlat so `GoStyle.floating()` keeps it — the card sprite fell back to a plain white rectangle there.
+func _hud_panel(skin: GoSkinArcadePainted) -> void:
+	GoUi.use_preset(load("res://addons/gohud/themes/presets/arcade_light.tres") as GoThemePreset)
+	var styled := GoStyle.floating(GoTheme.BOX_HUD)
+	GoUi.reset()
+	GoUi.config.reduce_motion = true
+	for face: StyleBox in [skin.floating_box(), skin.floating_box(GoTheme.BOX_HUD), styled]:
+		var flat := face as StyleBoxFlat
+		check(flat != null, "floating_box(hud): the game's flat HUD panel (got %s)" % face)
+		if flat == null: continue
+		check(flat.bg_color.is_equal_approx(Color(1, 1, 1, 0.9)) and flat.border_color.is_equal_approx(Color("#3d6bff")),
+			"floating_box(hud): white at 90%, the blue rim")
+		check(flat.border_width_left == 5 and flat.border_width_top == 5 and flat.border_width_right == 5
+			and flat.border_width_bottom == 8 and flat.corner_radius_top_left == 18 and flat.corner_radius_bottom_right == 18,
+			"floating_box(hud): a 5 px rim, 8 at the bottom, 18 px corners")
+		check(_margins(flat) == Vector4(13, 13, 13, 16), "floating_box(hud): 8 clear inside the rim (got %s)" % _margins(flat))
+		check(flat.shadow_color.is_equal_approx(INK) and flat.shadow_size == 3 and flat.shadow_offset == Vector2(0, 2),
+			"floating_box(hud): the thin ink line round it")
+	var theme := load("res://addons/gohud/themes/gohud_arcade_light.tres") as Theme
+	var want := theme.get_stylebox(&"panel", &"GoHudPanel") as StyleBoxFlat if theme else null
+	var got := skin.floating_box() as StyleBoxFlat
+	check(want != null and got != null and got.bg_color.is_equal_approx(want.bg_color) and got.border_color.is_equal_approx(want.border_color)
+		and _margins(got) == _margins(want) and got.border_width_bottom == want.border_width_bottom
+		and got.corner_radius_top_left == want.corner_radius_top_left, "floating_box(hud) is the theme's GoHudPanel")
+	var accented := skin.floating_box(GoTheme.BOX_HUD, Color("#e8332f")) as StyleBoxFlat
+	check(accented != null and accented.border_color.is_equal_approx(Color("#e8332f")), "floating_box(hud): an accent paints the rim")
+	var faded := skin.floating_box(GoTheme.BOX_HUD, Color.TRANSPARENT, 0.5) as StyleBoxFlat
+	check(faded != null and is_equal_approx(faded.bg_color.a, 0.45), "floating_box(hud): alpha multiplies the 0.9 white")
+
+
 func _is_sprite(box: StyleBox, file: String, edge: Vector4, ppu: float, label: String) -> void:
 	var sprite := box as GoStyleBoxSprite
 	check(sprite != null, "%s: a GoStyleBoxSprite (got %s)" % [label, box])
@@ -77,7 +108,8 @@ func _sprites(skin: GoSkinArcadePainted) -> void:
 		var card := skin.surface_box(variant)
 		_is_sprite(card, "card.png", card_edge, 3.0, "surface_box(%s)" % variant)
 		check(_margins(card) == Vector4(24, 20, 24, 22), "surface_box(%s): PaintedCard's margins" % variant)
-	_is_sprite(skin.floating_box(), "card.png", card_edge, 3.0, "floating_box")
+	_is_sprite(skin.floating_box(GoTheme.BOX_CARD), "card.png", card_edge, 3.0, "floating_box(card)")
+	_hud_panel(skin)
 	var faded := skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 0.5) as GoStyleBoxSprite
 	check(faded != null and is_equal_approx(faded.tint.a, 0.5), "surface_box: alpha goes on the tint")
 	var solid := skin.surface_box(GoTheme.BOX_CARD, Color.TRANSPARENT, 1.0) as GoStyleBoxSprite

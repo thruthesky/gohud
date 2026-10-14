@@ -1,6 +1,6 @@
-## 🧪 **Checks for the arcade_light painted art** — the painted sprites in `assets/arcade_light/painted/` and the white
-## glyphs in `icons/arcade_light/`, brought over from Magnet Mayhem, and the icon set the `arcade_light` preset draws
-## them with (`icons/arcade_light/arcade_light_icons.tres`). Its own file, so it never clashes with the other checks.
+## 🧪 **Checks for the arcade_light painted art** — the painted sprites in `assets/arcade_light/painted/`, the
+## stage-select art in `assets/arcade_light/stage/` and the white glyphs in `icons/arcade_light/`, brought over from
+## Magnet Mayhem, and the icon set the `arcade_light` preset draws them with (`icons/arcade_light/arcade_light_icons.tres`). Its own file, so it never clashes with the other checks.
 ##
 ##   GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_assets_test.gd" bash addons/gohud/tools/run_tests.sh
 ##
@@ -10,6 +10,7 @@
 extends SceneTree
 
 const PAINTED := "res://addons/gohud/assets/arcade_light/painted"
+const STAGE := "res://addons/gohud/assets/arcade_light/stage"
 const GLYPHS := "res://addons/gohud/icons/arcade_light"
 const LIGHT := "res://addons/gohud/themes/presets/arcade_light.tres"
 const DARK := "res://addons/gohud/themes/presets/arcade_dark.tres"
@@ -22,10 +23,18 @@ const SPRITES := {
 	"toggle_on": true,
 }
 
-## Every glyph → its mipmap choice, as above. magnet and skull stay in the game.
+## Every stage-select sprite (the game's `assets/ui/stage`) → its mipmap choice: the window, ribbon, cards and well the
+## theme draws, and the marks a level card lays on its plate (check, lock, person, play tag). None has mipmaps.
+const STAGE_SPRITES := {
+	"card_cleared": false, "card_current": false, "card_locked": false, "check": false, "lock": false, "person": false,
+	"play_tag": false, "ribbon_title": false, "well": false, "window": false,
+}
+
+## Every glyph → its mipmap choice, as above.
 const GLYPH_FILES := {
-	"back": true, "check": true, "exit": true, "gear": true, "globe": true, "help": true, "pause": true, "play": true,
-	"retry": false, "skip": false, "sound_low": true, "sound_off": true, "sound_on": true, "trophy": false,
+	"back": true, "check": true, "exit": true, "gear": true, "globe": true, "help": true, "magnet": true, "pause": true,
+	"play": true, "retry": false, "skip": false, "skull": false, "sound_low": true, "sound_off": true, "sound_on": true,
+	"trophy": false,
 }
 
 var passed := 0
@@ -35,6 +44,7 @@ var failed: Array[String] = []
 func _initialize() -> void:
 	GoUi.reset()
 	_painted_sprites()
+	_stage_sprites()
 	_glyph_files()
 	_light_icons()
 	_dark_icons()
@@ -87,11 +97,17 @@ func _painted_sprites() -> void:
 		_imports_like_the_game("%s/%s.png" % [PAINTED, name], SPRITES[name])
 
 
+func _stage_sprites() -> void:
+	for name: String in STAGE_SPRITES:
+		_imports_like_the_game("%s/%s.png" % [STAGE, name], STAGE_SPRITES[name])
+	# The stage-select strip, ticks and magnet are game art no theme part or widget draws.
+	for name: String in ["strip", "ticks", "magnet"]:
+		check(not ResourceLoader.exists("%s/%s.png" % [STAGE, name]), "stage/%s.png stays in the game" % name)
+
+
 func _glyph_files() -> void:
 	for name: String in GLYPH_FILES:
 		_imports_like_the_game("%s/%s.png" % [GLYPHS, name], GLYPH_FILES[name])
-	check(not ResourceLoader.exists(GLYPHS + "/magnet.png"), "the magnet glyph stays in the game")
-	check(not ResourceLoader.exists(GLYPHS + "/skull.png"), "the skull glyph stays in the game")
 
 
 func _glyph(file: String) -> Texture2D:
@@ -109,6 +125,7 @@ func _light_icons() -> void:
 		&"volume_high": "sound_on", &"volume_low": "sound_low", &"volume_off": "sound_off",
 		&"exit": "exit", &"retry": "retry", &"gear": "gear", &"skip": "skip", &"trophy": "trophy",
 		&"sound_on": "sound_on", &"sound_low": "sound_low", &"sound_off": "sound_off",
+		&"skull": "skull", &"magnet": "magnet",
 	}
 	for name: StringName in expect:
 		var want := _glyph(expect[name])

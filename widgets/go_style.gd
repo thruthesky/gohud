@@ -3107,7 +3107,9 @@ static func center_in(node: Control) -> Control:
 ## The room (dp) a box's own face needs before content may start — its border, a skin's edge line, and what a rounded
 ## or cut corner takes off. Read from the face the skin really painted, so a host skin with a thicker frame gets more.
 ## Works on a `Button` (every state face) and on anything that draws a `panel` face. 0 when there is no face.
-static func face_clearance(control: Control) -> int:
+## [param sideways] reads only the left and right borders — what text beside the frame needs; a deeper bottom lip (the
+## game HUD panel's 8 px under a 5 px rim) does not push the words in from the sides.
+static func face_clearance(control: Control, sideways := false) -> int:
 	if control == null: return 0
 	var faces: Array[StyleBox] = []
 	if control is BaseButton:
@@ -3116,17 +3118,18 @@ static func face_clearance(control: Control) -> int:
 	elif control.has_theme_stylebox(&"panel"):
 		faces.append(control.get_theme_stylebox(&"panel"))
 	var room := 0.0
-	for face in faces: room = maxf(room, _face_room(face))
+	for face in faces: room = maxf(room, _face_room(face, sideways))
 	return ceili(room)
 
 
-static func _face_room(face: StyleBox) -> float:
+static func _face_room(face: StyleBox, sideways := false) -> float:
 	if face == null or face is StyleBoxEmpty: return 0.0
 	var border := 0.0
 	var corner := 0.0
 	var flat := face as StyleBoxFlat
 	if flat != null:
-		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: border = maxf(border, flat.get_border_width(side))
+		var sides := [SIDE_LEFT, SIDE_RIGHT] if sideways else [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]
+		for side in sides: border = maxf(border, flat.get_border_width(side))
 		for index in 4: corner = maxf(corner, flat.get_corner_radius(index))
 	else:
 		# A skin's own face (angular, medieval) — read by name, the way the skins are read everywhere else.
@@ -3317,7 +3320,7 @@ static func _audit_words(label: Label, where: String, problems: Array[String]) -
 static func _audit_text_edge(label: Label, where: String, problems: Array[String]) -> void:
 	var face := _face_behind(label)
 	if face == null: return
-	var need := float(maxi(1, face_clearance(face)))
+	var need := float(maxi(1, face_clearance(face, true)))
 	var box := face.get_global_rect()
 	var ink := label.get_global_rect()
 	if label.autowrap_mode == TextServer.AUTOWRAP_OFF and not label.clip_text \

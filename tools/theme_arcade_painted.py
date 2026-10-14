@@ -8,8 +8,9 @@ constants. Parts with no painted art (rows, fields, tabs, bars …) keep the arc
 
 🔑 **The game builds its theme as `duplicate(arcade_light)` plus aliases** from `tools/arcade_painted_map.json`
    (written here): each mapped variation must carry the game variation's item set and nothing else — so every item
-   `build()` or the arcade gave it is dropped first. The game adds its fonts and its `Cfg` sizes on top; the font
-   sizes written here are the game's literal ones (none of the mapped variations takes a `Cfg` size).
+   `build()` or the arcade gave it is dropped first. The game adds its fonts on top; the sizes written here are the
+   game's literal ones, or a `Cfg` size at its desktop value (`CFG_SIZES`: the HUD panel's and banner's padding, the
+   language chip's font) — the game swaps in its touch value itself.
 🛑 Change a value here only together with the game's `UiTheme` — the two must draw the same pixels.
 """
 import json
@@ -18,6 +19,8 @@ import os
 RES = "res://addons/gohud"
 SPRITE_SCRIPT = RES + "/widgets/go_stylebox_sprite.gd"
 PAINTED = RES + "/assets/arcade_light/painted/"
+# The stage-select art (the game's `assets/ui/stage`): a sprite named "stage/<file>" is drawn from here.
+STAGE = RES + "/assets/arcade_light/stage/"
 MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arcade_painted_map.json")
 
 SHAPE = dict(kind="arcade_painted")
@@ -26,6 +29,12 @@ SHAPE = dict(kind="arcade_painted")
 WHITE = (1.0, 1.0, 1.0, 1.0)
 INK = (0.113725, 0.137255, 0.25098, 1.0)                 # #1d2340
 CONTROL_BLUE = (0.239216, 0.419608, 1.0, 1.0)            # #3d6bff
+GOLD = (1.0, 0.788235, 0.156863, 1.0)                    # #ffc928
+NOTIF_OWN = (1.0, 0.952941, 0.811765, 1.0)               # #fff3cf (`NotifPlayer`'s cream)
+CHIP = (0.137255, 0.168627, 0.341176, 1.0)               # #232b57 (`LangChip`)
+CHIP_PRESSED = (0.090196, 0.113725, 0.258824, 1.0)       # #171d42
+CHIP_RIM = (0.435294, 0.584314, 1.0, 1.0)                # #6f95ff
+ICON_PRESSED = (0.78, 0.78, 0.86, 1.0)                   # `PauseRound`'s pressed icon
 DIFF_BG = (0.933333, 0.945098, 0.984314, 1.0)            # #eef1fb
 DIFF_SELECTED = (0.498039, 0.894118, 1.0, 1.0)           # #7fe4ff
 PANEL = (1.0, 1.0, 1.0, 0.9)
@@ -41,10 +50,22 @@ KEY_EDGE = (70, 70, 70, 80)
 RIBBON_EDGE = (100, 80, 100, 80)
 CARD_EDGE = (100, 100, 100, 140)
 INSET_EDGE = (60, 60, 60, 60)
+STAGE_RIBBON_PPU = 2.4
+STAGE_WELL_PPU = 3.0
+STAGE_CARD_PPU = 2.2
+WINDOW_EDGE = (70, 70, 70, 70)
+STAGE_RIBBON_EDGE = (200, 50, 200, 50)
+STAGE_WELL_EDGE = (60, 60, 60, 60)
+STAGE_CARD_EDGE = (60, 60, 60, 60)
 GLOSS_FONT_SIZE = 22
 TITLE_FONT_SIZE = 54
 KEYCAP_FONT_SIZE = 16
 DROPDOWN_FONT_SIZE = 17
+# 🔑 The game's `Cfg` sizes, at their desktop value (`src/client_config.gd`): the HUD panel's and the name banner's
+#    clear space (`Cfg.Hud.PANEL_PADDING` / `BANNER_PADDING`; a touch screen uses 4 / 2) and the language chip's font.
+HUD_PANEL_PADDING = 8.0
+HUD_BANNER_PADDING = 4.0
+CHIP_FONT_SIZE = 15
 
 # 🔑 The colour each sprite shows under its label — sampled at the middle of the PNG. `face_color` is never drawn;
 #    it is what `check_contrast.py` measures text against (tinted like the face it belongs to).
@@ -58,6 +79,12 @@ FACES = {
     "keycap.png": (0.937255, 0.941176, 0.972549, 1.0),       # #eff0f8
     "ribbon_gold.png": (0.996078, 0.737255, 0.141176, 1.0),  # #febc24
     "ribbon_red.png": (0.917647, 0.184314, 0.172549, 1.0),   # #ea2f2c
+    "stage/window.png": (0.815686, 0.909804, 0.988235, 1.0),        # #d0e8fc
+    "stage/ribbon_title.png": (0.992157, 0.741176, 0.086275, 1.0),  # #fdbd16
+    "stage/card_cleared.png": (0.862745, 0.92549, 0.984314, 1.0),   # #dcecfb
+    "stage/card_current.png": (0.384314, 0.945098, 0.454902, 1.0),  # #62f174
+    "stage/card_locked.png": (0.698039, 0.717647, 0.811765, 1.0),   # #b2b7cf
+    "stage/well.png": (0.086275, 0.137255, 0.27451, 1.0),           # #162346
 }
 
 # Game variation → its gohud name. The values are what the game aliases; `GAME_ONLY` stays in the game.
@@ -67,18 +94,22 @@ MAP = {
     "PaintedCard": "GoCard", "InsetPanel": "GoInsetPanel", "KeycapPanel": "GoKeycapPanel", "Keycap": "GoKeycap",
     "RibbonTitle": "GoRibbon", "RibbonRed": "GoRibbonRed", "Notif": "GoNotice",
     "Title": "GoTitle", "OutlineLabel": "GoOutlineLabel",
+    "StageWindow": "GoWindowBlue", "StageRibbon": "GoRibbonWide", "StageCard": "GoLevelCard",
+    "StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked", "MapWell": "GoWell",
+    "ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
+    "PauseRound": "GoIconOnly",
+}
+# 🔑 `MapWell` is no variation in the game: `MapPreview.set_well()` builds the well's SpriteBox in code. The game can
+#    alias it all the same (`theme.get_stylebox(&"panel", &"GoWell")`).
+# The `Cfg` sizes written at their desktop value (the game swaps the touch value in itself).
+CFG_SIZES = {
+    "GoHudPanel": "content margins from Cfg.Hud.PANEL_PADDING = %g (touch: Cfg.Hud.PANEL_PADDING_TOUCH)"
+                  % HUD_PANEL_PADDING,
+    "GoBannerGold": "content margins from Cfg.Hud.BANNER_PADDING = %g (touch: Cfg.Hud.BANNER_PADDING_TOUCH)"
+                    % HUD_BANNER_PADDING,
+    "GoChipDark": "font_size is Cfg.Menu.CHIP_FONT = %d" % CHIP_FONT_SIZE,
 }
 GAME_ONLY = {
-    "StageWindow": "stage-select art (assets/ui/stage)",
-    "StageRibbon": "stage-select art (assets/ui/stage)",
-    "StageCard": "stage-select art (assets/ui/stage)",
-    "StageCardNext": "stage-select art (assets/ui/stage)",
-    "StageCardLocked": "stage-select art (assets/ui/stage)",
-    "HudBanner": "the HUD's name banner; its padding is a Cfg size",
-    "ArcadePanel": "the HUD panel; its padding is a Cfg size",
-    "LangChip": "the main menu's language chip; its font size is a Cfg size",
-    "PauseRound": "the HUD's round pause key (its icon is the button)",
-    "NotifPlayer": "the player's own elimination notice (game content)",
     "HudPanel": "the old flat look, not part of the painted set",
     "Card": "the old flat look, not part of the painted set",
     "Diff": "the old flat look, not part of the painted set",
@@ -93,6 +124,10 @@ BASES = {
     "GoCard": "PanelContainer", "GoInsetPanel": "PanelContainer", "GoKeycapPanel": "PanelContainer",
     "GoRibbon": "PanelContainer", "GoRibbonRed": "PanelContainer", "GoNotice": "PanelContainer",
     "GoTitle": "Label", "GoOutlineLabel": "Label",
+    "GoWindowBlue": "PanelContainer", "GoRibbonWide": "PanelContainer", "GoWell": "PanelContainer",
+    "GoLevelCard": "Button", "GoLevelCardCurrent": "Button", "GoLevelCardLocked": "Button",
+    "GoHudPanel": "PanelContainer", "GoBannerGold": "PanelContainer", "GoNoticeGold": "PanelContainer",
+    "GoChipDark": "Button", "GoIconOnly": "Button",
 }
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
@@ -202,6 +237,61 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     put("GoNotice/styles/panel", box("painted_GoNotice", PANEL, 16, 3, CONTROL_BLUE, margin_h=12.0,
                                      margin_v=(2.0 + 3, 2.0 + 5), bottom=5, outer=(INK, 3, (0, 2))))
 
+    # 🔔 The player's own notice (`NotifPlayer`): the same pill, cream inside a gold rim.
+    put("GoNoticeGold/styles/panel", box("painted_GoNoticeGold", NOTIF_OWN, 16, 3, GOLD, margin_h=12.0,
+                                         margin_v=(2.0 + 3, 2.0 + 5), bottom=5, outer=(INK, 3, (0, 2))))
+    # 🎮 The HUD's blue-rimmed panel (`arcade_panel_box(pad)`: `chunky_box(PANEL, 18, pad + 5, pad, 5, 8, CONTROL_BLUE,
+    #    true)`) and its gold name banner (`hud_banner_box(pad)`: `chunky_box(GOLD, 12, pad + 3, pad, 3, 5)`).
+    pad = HUD_PANEL_PADDING
+    put("GoHudPanel/styles/panel", box("painted_GoHudPanel", PANEL, 18, 5, CONTROL_BLUE, margin_h=pad + 5.0,
+                                       margin_v=(pad + 5, pad + 8), bottom=8, outer=(INK, 3, (0, 2))))
+    pad = HUD_BANNER_PADDING
+    put("GoBannerGold/styles/panel", box("painted_GoBannerGold", GOLD, 12, 3, INK, margin_h=pad + 3.0,
+                                         margin_v=(pad + 3, pad + 5), bottom=5))
+
+    # ── 🗺 The stage select: the light-blue window, its swallow-tail ribbon (the 200 px tails stay, the plate between
+    #    them stretches), the map preview's dark well (`MapPreview.set_well()`). ──
+    put("GoWindowBlue/styles/panel", sprite("painted_GoWindowBlue", "stage/window.png", WINDOW_EDGE, PAINT_PPU, 24.0,
+                                            20.0, 22.0))
+    put("GoRibbonWide/styles/panel", sprite("painted_GoRibbonWide", "stage/ribbon_title.png", STAGE_RIBBON_EDGE,
+                                            STAGE_RIBBON_PPU, 70.0, 6.0, 12.0))
+    put("GoWell/styles/panel", sprite("painted_GoWell", "stage/well.png", STAGE_WELL_EDGE, STAGE_WELL_PPU, 0.0, 0.0,
+                                      0.0))
+
+    # 🃏 A level card (`_stage_card_button`): one sprite in every state (pressed darker), no padding and no label colours
+    #    of its own — the card widget lays out its own text.
+    def level_card(type_name, file):
+        stem = "painted_%s" % type_name
+        normal = sprite(stem + "_normal", file, STAGE_CARD_EDGE, STAGE_CARD_PPU, 0.0, 0.0, 0.0)
+        pressed = sprite(stem + "_pressed", file, STAGE_CARD_EDGE, STAGE_CARD_PPU, 0.0, 0.0, 0.0, PRESSED_TINT)
+        for state, bid in (("normal", normal), ("hover", normal), ("pressed", pressed), ("hover_pressed", pressed),
+                           ("disabled", normal), ("focus", "painted_empty")):
+            put("%s/styles/%s" % (type_name, state), bid)
+
+    level_card("GoLevelCard", "stage/card_cleared.png")
+    level_card("GoLevelCardCurrent", "stage/card_current.png")
+    level_card("GoLevelCardLocked", "stage/card_locked.png")
+
+    # 🌐 The language chip (`_lang_chip`): a dark navy pill with a light-blue rim, `chunky_box(bg, 22, 16, 0, 3, 4, rim,
+    #    true)`; no disabled face, as in the game.
+    chip = box("painted_GoChipDark", CHIP, 22, 3, CHIP_RIM, margin_h=16.0, margin_v=(0.0 + 3, 0.0 + 4), bottom=4,
+               outer=(INK, 3, (0, 2)))
+    chip_down = box("painted_GoChipDark_pressed", CHIP_PRESSED, 22, 3, CHIP_RIM, margin_h=16.0,
+                    margin_v=(0.0 + 3, 0.0 + 4), bottom=4, outer=(INK, 3, (0, 2)))
+    for state, bid in (("normal", chip), ("hover", chip), ("pressed", chip_down), ("hover_pressed", chip_down),
+                       ("focus", "painted_empty")):
+        put("GoChipDark/styles/%s" % state, bid)
+    for slot in FONT_STATES:
+        setT("GoChipDark/colors/%s" % slot, C(WHITE))
+    setT("GoChipDark/font_sizes/font_size", CHIP_FONT_SIZE)
+    setT("GoChipDark/constants/h_separation", 8)
+
+    # ⏸ A frameless key whose icon is the button (`PauseRound`): nothing drawn in any state, the icon darker pressed.
+    for state in ("normal", "hover", "pressed", "hover_pressed", "focus", "disabled"):
+        put("GoIconOnly/styles/%s" % state, "painted_empty")
+    setT("GoIconOnly/colors/icon_pressed_color", C(ICON_PRESSED))
+    setT("GoIconOnly/colors/icon_hover_pressed_color", C(ICON_PRESSED))
+
     # ── 🔤 Labels: ink by default; the title and the outlined label white with a 6 px ink outline. ──
     setT("Label/colors/font_color", C(INK))
     setT("Label/colors/font_outline_color", C(INK))
@@ -256,7 +346,16 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
 
 
 def texture_id(file):
+    """"btn_blue.png" → `painted_btn_blue`; "stage/window.png" → `stage_window`."""
+    if file.startswith("stage/"):
+        return "stage_" + file[len("stage/"):-len(".png")]
     return "painted_" + file[:-len(".png")]
+
+
+def texture_path(rid):
+    if rid.startswith("stage_"):
+        return STAGE + rid[len("stage_"):] + ".png"
+    return PAINTED + rid[len("painted_"):] + ".png"
 
 
 def ext_resources(boxes):
@@ -264,10 +363,10 @@ def ext_resources(boxes):
     if not any(body[:1] == ['script = ExtResource("sprite")'] for _, body in boxes.values()):
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
-                    if line.startswith("texture = ExtResource(\"painted_")})
+                    if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_"))})
     lines = ['[ext_resource type="Script" path="%s" id="sprite"]' % SPRITE_SCRIPT]
     for rid in files:
-        lines.append('[ext_resource type="Texture2D" path="%s%s.png" id="%s"]' % (PAINTED, rid[len("painted_"):], rid))
+        lines.append('[ext_resource type="Texture2D" path="%s" id="%s"]' % (texture_path(rid), rid))
     return lines
 
 
@@ -275,14 +374,17 @@ def write_map():
     """`tools/arcade_painted_map.json` — the game's names for the variations above (generated, do not edit)."""
     sizes = {"GoButton": GLOSS_FONT_SIZE, "GoPrimaryButton": GLOSS_FONT_SIZE, "GoDangerButton": GLOSS_FONT_SIZE,
              "GoSuccessButton": GLOSS_FONT_SIZE, "GoToggleButton": GLOSS_FONT_SIZE, "GoKeycap": KEYCAP_FONT_SIZE,
-             "GoTitle": TITLE_FONT_SIZE, "OptionButton": DROPDOWN_FONT_SIZE, "PopupMenu": DROPDOWN_FONT_SIZE}
+             "GoTitle": TITLE_FONT_SIZE, "OptionButton": DROPDOWN_FONT_SIZE, "PopupMenu": DROPDOWN_FONT_SIZE,
+             "GoChipDark": CHIP_FONT_SIZE}
     body = {"_help": "Generated by tools/theme_arcade_painted.py — do not edit by hand. Magnet Mayhem's UiTheme "
                      "variation name → the gohud_arcade_light variation that carries exactly its items and values. "
                      "The game builds its theme as duplicate(arcade_light) plus these names as aliases. game_only "
                      "lists the game's variations that stay in the game (why in _game_only_why).",
-            "_font_sizes": {"_help": "No font is written. The font sizes written are the game's literal ones (no Cfg "
-                                     "size); a Cfg-driven size is left to the game.",
+            "_font_sizes": {"_help": "No font is written. The font sizes written are the game's literal ones or a Cfg "
+                                     "size's desktop value (named in _cfg_sizes).",
                             "written": sizes, "left_to_game": []},
+            "_cfg_sizes": {"_help": "Values that are a Cfg size in the game, written at their desktop value; the game "
+                                    "swaps in the touch value itself.", **CFG_SIZES},
             "_base_types": {"_help": "Base types this shape styles as the game does (the game pins base types itself).",
                             "types": ["Label", "OptionButton", "PopupMenu"]}}
     body.update(MAP)
