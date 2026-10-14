@@ -237,6 +237,13 @@ func _level_card(look: StringName) -> void:
 	var picture := ImageTexture.create_from_image(Image.create(8, 4, false, Image.FORMAT_RGBA8))
 	card.thumbnail = picture
 	check(card.thumbnail_slot.custom_minimum_size == Vector2(74, 74), "%s card: the thumbnail slot is 74" % look)
+	var preview := Control.new()
+	card.thumbnail_slot.add_child(preview)
+	await frames(1)
+	var pad := 12.0 if GoUi.theme().get_type_list().has(GoLevelCard.VAR_WELL) else 0.0
+	check(preview.anchor_right == 1.0 and preview.anchor_bottom == 1.0 and is_equal_approx(preview.offset_left, pad)
+		and is_equal_approx(preview.offset_bottom, -pad), "%s card: a node put in the slot fills it inside the well (pad %s)" % [look, pad])
+	preview.free()
 	card.scale_factor = 0.5
 	await frames(1)
 	check(card.custom_minimum_size.x == 150.0, "%s card: every size follows scale_factor" % look)

@@ -205,7 +205,8 @@ const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 		_queue_refresh()
 @export_group("")
 
-## Put your own thumbnail here (a live map preview, say); it fills the slot.
+## Put your own thumbnail here (a live map preview, say): a Control added to it is anchored to fill the slot inside
+## the well's padding, where `thumbnail` would be drawn.
 var thumbnail_slot: Control
 var title_label: Label
 var subtitle_label: Label
@@ -230,6 +231,7 @@ var _lock_art: Control
 var _tag_art: Control
 var _built := false
 var _queued := false
+var _thumb_inset := 0.0
 ## The card set `disabled` because the tile is locked (it was not disabled already).
 var _lock_disabled := false
 
@@ -333,6 +335,7 @@ func _build() -> void:
 	thumbnail_slot.name = "Thumbnail"
 	thumbnail_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	thumbnail_slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	thumbnail_slot.child_entered_tree.connect(_inset_thumbnail)
 	_row.add_child(thumbnail_slot)
 	_well = Panel.new()
 	_well.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -447,6 +450,17 @@ func _fill(holder: Control, art: Texture2D, icon: StringName, side: float, plate
 	glyph.offset_bottom = px * 0.5
 
 
+## Fills the thumbnail slot with [param node], inside the well's padding.
+func _inset_thumbnail(node: Node) -> void:
+	var part := node as Control
+	if part == null or part == _well: return
+	part.set_anchors_preset(Control.PRESET_FULL_RECT)
+	part.offset_left = _thumb_inset
+	part.offset_top = _thumb_inset
+	part.offset_right = -_thumb_inset
+	part.offset_bottom = -_thumb_inset
+
+
 func _art(given: Texture2D, part: StringName) -> Texture2D:
 	return given if given != null else GoUi.skin().widget_art(part)
 
@@ -477,6 +491,8 @@ func _refresh() -> void:
 	theme_type_variation = card_variation()
 	text = ""
 	accessibility_name = summary().replace("\n", ", ")
+	# 🛑 Never under a touch target — the game's card has no such floor, so at a small `scale_factor` this tile is
+	#    taller than the game's (on purpose: it stays easy to press).
 	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, float(GoUi.config.min_touch_size)))
 
 	_margin.add_theme_constant_override(&"margin_left", roundi(thumbnail_inset * k))
@@ -493,11 +509,9 @@ func _refresh() -> void:
 	if _theme_has(VAR_WELL): well = GoUi.theme().get_stylebox(&"panel", VAR_WELL)
 	_well.visible = well != null
 	if well != null: _well.add_theme_stylebox_override(&"panel", well)
-	var inset := well_padding * k if well != null else 0.0
-	_cover.offset_left = inset
-	_cover.offset_top = inset
-	_cover.offset_right = -inset
-	_cover.offset_bottom = -inset
+	_thumb_inset = well_padding * k if well != null else 0.0
+	_inset_thumbnail(_cover)
+	for child in thumbnail_slot.get_children(): _inset_thumbnail(child)
 	_cover.texture = thumbnail
 	_cover.focus = thumbnail_focus
 	_cover.visible = thumbnail != null
