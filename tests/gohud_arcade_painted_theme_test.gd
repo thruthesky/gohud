@@ -133,6 +133,12 @@ func _buttons(theme: Theme) -> void:
 		"OptionButton: the game's white dropdown box")
 	var down := theme.get_stylebox(&"pressed", &"OptionButton") as StyleBoxFlat
 	check(down != null and down.bg_color.is_equal_approx(DIFF_BG), "OptionButton: pressed, the pale blue")
+	# A right-to-left layout draws the mirrored faces: each is the painted box of its left-to-right state.
+	for state: String in ["normal", "hover", "pressed", "disabled"]:
+		var ltr := theme.get_stylebox(StringName(state), &"OptionButton")
+		var rtl := theme.get_stylebox(StringName(state + "_mirrored"), &"OptionButton")
+		check(rtl != null and rtl == ltr, "OptionButton/%s_mirrored: the same painted box as %s (got %s)"
+			% [state, state, rtl.resource_path if rtl else "none"])
 	check(theme.get_color(&"font_color", &"OptionButton").is_equal_approx(INK) and theme.get_constant(&"outline_size", &"OptionButton") == 0,
 		"OptionButton: ink text, no outline")
 	check(theme.get_font_size(&"font_size", &"OptionButton") == 17 and theme.get_font_size(&"font_size", &"PopupMenu") == 17,
