@@ -1241,3 +1241,69 @@ func draw_coach_pointer(canvas: CanvasItem, start: Vector2, tip: Vector2,
 	var wing := direction.orthogonal() * 4.0
 	canvas.draw_colored_polygon(PackedVector2Array([
 		tip, tip - direction * 8.0 + wing, tip - direction * 8.0 - wing]), ink)
+
+
+# ── Painted widgets: level cards, key clusters, window extras ─────────
+#
+# 🔑 Hooks the level-select card (`GoLevelCard`), the key cluster (`GoKeyCluster`) and a window's extras (`GoSurface`'s
+#    title glyph, overhanging ribbon and opaque backdrop) read. Every default keeps a plain look working with no art.
+
+## The colour a finished keycap (`GoKbd.done`) is tinted — the game's training-chip green.
+const KBD_DONE := Color("#8ff0a4")
+
+
+## A picture a widget may wear, by [param name] (`check`, `lock`, `person`, `play_tag`, `pointer`…). `null`: the
+## widget falls back to an icon from the icon set or a drawn plate. A look with painted art returns its own.
+func widget_art(_name: StringName) -> Texture2D:
+	return null
+
+
+## The ring round a selected tile (`GoLevelCard.selected`) — drawn over the tile, its centre left open.
+func selection_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.border_color = Color(GoUi.color(GoTheme.WARNING), 1.0)
+	ring.set_border_width_all(3)
+	ring.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_LARGE))
+	ring.corner_detail = 8
+	ring.anti_aliasing = true
+	return ring
+
+
+## One key of a `GoKeyCluster` (the WASD / arrow diagram). The default is the `GoKbd` cap; its padding is not used,
+## the key is drawn at the cluster's own size.
+func key_cluster_box() -> StyleBox:
+	return kbd_box()
+
+
+## A `GoKbd` cap once its key has been pressed (`done`) — the same cap tinted green. A painted cap takes the tint, a
+## drawn one has its fill pulled to [constant KBD_DONE].
+func kbd_done_box() -> StyleBox:
+	var face := kbd_box()
+	# A painted face (`tint` and `face_color`, no fill): tint the art, and name the tinted colour for the ink.
+	if &"tint" in face and &"face_color" in face and not (&"bg_color" in face):
+		face.set(&"tint", KBD_DONE)
+		var named: Color = face.get(&"face_color")
+		face.set(&"face_color", named * KBD_DONE if named.a > 0.0 else KBD_DONE)
+		return face
+	for key in [&"bg_color", &"bottom_color", &"end_color"]:
+		if key in face:
+			var was: Color = face.get(key)
+			if was.a > 0.0: face.set(key, Color(KBD_DONE, maxf(was.a, 0.9)))
+	return face
+
+
+## The word on a done cap — the cap's ink, pushed until it reads on the green.
+func kbd_done_ink() -> Color:
+	return readable_on(kbd_ink(), box_background(kbd_done_box()))
+
+
+## How far a window's title plate reaches past the card: x past each side, y above the top edge. `Vector2.ZERO`: the
+## title sits inside the card, as it always has. A look with a ribbon that hangs over the edge returns its reach.
+func title_plate_overhang() -> Vector2:
+	return Vector2.ZERO
+
+
+## The solid colour under an opaque window (`GoSurface.opaque`) — shown when the world behind is not drawn.
+func opaque_backdrop_color() -> Color:
+	return Color(GoUi.color(GoTheme.BACKGROUND), 1.0)

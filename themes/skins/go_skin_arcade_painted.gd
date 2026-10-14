@@ -250,3 +250,60 @@ func scrim_material() -> Material:
 	material.set_shader_parameter(&"spread", level * SCRIM_SPREAD_PER_LOD)
 	material.set_shader_parameter(&"wash", SCRIM_WASH)
 	return material
+
+
+# ── Painted widgets ───────────────────────────────────────────────────
+
+## The look's art folder.
+const ART_ROOT := "res://addons/gohud/assets/arcade_light/"
+## The stage-select art: check, lock, person, play_tag, pointer. 🛑 A file that is not there reads as no art, and the
+## widget falls back to the icon set.
+const STAGE_ART := ART_ROOT + "stage/"
+## The sky behind an opaque window, the game's `STAGE_SKY`.
+const STAGE_SKY := Color(0.36, 0.62, 0.92, 1.0)
+## A selected stage card's gold ring.
+const SELECTED_RING := Color("#ffd23f")
+const SELECTED_RING_WIDTH := 4
+const SELECTED_RING_RADIUS := 26
+## The key diagram's keycap scale (the game's `KeyDiagram`).
+const KEY_CLUSTER_PPU := 4.2
+## The ribbon header: how far it reaches past the card's sides and above its top edge.
+const RIBBON_OVERHANG := Vector2(14.0, 17.0)
+
+
+## The painted stage art, when the theme ships it (`assets/arcade_light/stage/<name>.png`).
+func widget_art(name: StringName) -> Texture2D:
+	var path := STAGE_ART + String(name) + ".png"
+	if not _textures.has(path):
+		_textures[path] = load(path) if ResourceLoader.exists(path) else null
+	return _textures[path]
+
+
+## The game's gold ring round the selected stage card.
+func selection_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.border_color = SELECTED_RING
+	ring.set_border_width_all(SELECTED_RING_WIDTH)
+	ring.set_corner_radius_all(SELECTED_RING_RADIUS)
+	ring.corner_detail = 8
+	ring.anti_aliasing = true
+	return ring
+
+
+## The key diagram's keycap: the painted cap at the diagram's scale, with no padding.
+func key_cluster_box() -> StyleBox:
+	var face := _sprite("keycap.png", KEYCAP_EDGE, KEY_CLUSTER_PPU)
+	var cap := kbd_box()
+	face.face_color = (cap as GoStyleBoxSprite).face_color if cap is GoStyleBoxSprite else Color.WHITE
+	return _pad(face, Vector3.ZERO)
+
+
+## The ribbon hangs over the card's top edge and past its sides.
+func title_plate_overhang() -> Vector2:
+	return RIBBON_OVERHANG
+
+
+## The game's sky under an opaque dialog.
+func opaque_backdrop_color() -> Color:
+	return STAGE_SKY
