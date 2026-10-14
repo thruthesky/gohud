@@ -452,6 +452,11 @@ func _fit_title_size() -> void:
 			title_label.remove_theme_font_size_override(&"font_size")
 		return
 	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
+	if plate is OverhangPlate and (plate as OverhangPlate).base != null:
+		# Its left margin follows the words (see `_place_title_glyph`); the room is the base plate's less the glyph's.
+		var base := (plate as OverhangPlate).base
+		room = title_label.size.x - base.get_margin(SIDE_LEFT) - base.get_margin(SIDE_RIGHT) \
+				- (plate as OverhangPlate).glyph_room - 2.0
 	var font := title_label.get_theme_font(&"font")
 	var natural := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
 	var words := title_label.atr(title_label.text)
@@ -498,10 +503,13 @@ class OverhangPlate:
 
 	var base: StyleBox
 	var bleed := 0.0
+	## The room kept for the title glyph and its gap (dp).
+	var glyph_room := 0.0
 
 	func _init(from: StyleBox = null, side := 0.0, extra_left := 0.0) -> void:
 		base = from
 		bleed = side
+		glyph_room = extra_left
 		if from == null: return
 		content_margin_left = from.get_margin(SIDE_LEFT) + extra_left
 		content_margin_right = from.get_margin(SIDE_RIGHT)
@@ -578,6 +586,14 @@ func title_overhang() -> float:
 	return _overhang.y
 
 
+## The title's words at their size now (dp).
+func _title_words_width() -> float:
+	var font := title_label.get_theme_font(&"font")
+	if font == null: return 0.0
+	return font.get_string_size(title_label.atr(title_label.text), HORIZONTAL_ALIGNMENT_LEFT, -1,
+			title_label.get_theme_font_size(&"font_size")).x
+
+
 ## Puts the glyph just left of the title's words — centred with them on a plate, at the start otherwise.
 func _place_title_glyph() -> void:
 	if not is_instance_valid(_title_glyph_rect) or title_label == null: return
@@ -588,12 +604,22 @@ func _place_title_glyph() -> void:
 	var top := face.get_margin(SIDE_TOP) if face != null else 0.0
 	var bottom := face.get_margin(SIDE_BOTTOM) if face != null else 0.0
 	var x := left - TITLE_GLYPH_GAP - side
-	if title_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
-		var font := title_label.get_theme_font(&"font")
-		var words := title_label.atr(title_label.text)
-		var wide := font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1,
-				title_label.get_theme_font_size(&"font_size")).x if font != null else 0.0
-		wide = minf(wide, maxf(0.0, title_label.size.x - left - right))
+	if face is OverhangPlate and title_label.has_meta(&"go_plate_align"):
+		# 🛑 A centred Label centres its words over its whole width and ignores the face's side margins, so the room
+		#    made for the glyph would not move them and the glyph would sit on the first letter. On a plate the words
+		#    are laid from the left instead, where glyph + gap + words sit centred together (the game's ribbon row).
+		var plate := face as OverhangPlate
+		var base_left := plate.base.get_margin(SIDE_LEFT) if plate.base != null else 0.0
+		var base_right := plate.base.get_margin(SIDE_RIGHT) if plate.base != null else 0.0
+		var group := side + TITLE_GLYPH_GAP + _title_words_width()
+		var start := base_left + maxf(0.0, (title_label.size.x - base_left - base_right - group) * 0.5) \
+				+ side + TITLE_GLYPH_GAP
+		start = roundf(start)
+		if not is_equal_approx(plate.content_margin_left, start): plate.content_margin_left = start
+		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		x = start - TITLE_GLYPH_GAP - side
+	elif title_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
+		var wide := minf(_title_words_width(), maxf(0.0, title_label.size.x - left - right))
 		x = (left + title_label.size.x - right) * 0.5 - wide * 0.5 - TITLE_GLYPH_GAP - side
 	var y := top + (title_label.size.y - top - bottom - side) * 0.5
 	_title_glyph_rect.position = Vector2(roundf(x), roundf(y))

@@ -289,6 +289,17 @@ func _surface(look: StringName) -> void:
 		check(is_equal_approx(mark.size.x, side), "%s surface: the glyph follows the title size" % look)
 		check(mark.position.x + side <= surface.title_label.get_theme_stylebox(&"normal").get_margin(SIDE_LEFT) \
 			+ (surface.title_label.size.x) and mark.position.x >= -1.0, "%s surface: the glyph sits on the title" % look)
+		if painted:
+			# The words start one gap after the glyph, and glyph + gap + words sit centred on the plate.
+			var words := surface.title_label.get_character_bounds(0)
+			var gap := words.position.x - (mark.position.x + side)
+			check(absf(gap - GoSurface.TITLE_GLYPH_GAP) <= 1.5,
+				"%s surface: one gap between the glyph and the words (got %.1f)" % [look, gap])
+			var last := surface.title_label.get_character_bounds(surface.title_label.text.length() - 1)
+			var plate := (surface.title_label.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate).base
+			var middle := (plate.get_margin(SIDE_LEFT) + surface.title_label.size.x - plate.get_margin(SIDE_RIGHT)) * 0.5
+			check(absf((mark.position.x + last.end.x) * 0.5 - middle) <= 3.0,
+				"%s surface: glyph and words are centred together" % look)
 	if painted:
 		check(is_equal_approx(surface.title_overhang(), 17.0), "%s surface: the ribbon rises 17 over the card" % look)
 		var head_top := surface.title_label.global_position.y
