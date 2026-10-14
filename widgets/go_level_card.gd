@@ -16,7 +16,11 @@
 ##
 ## 🛑 The texts come from the caller (they depend on the language); `locked_text` and `play_text` too. Every text is
 ##    shrunk to fit (`GoStyle.fit_font_size`), so a long translation never runs under the lock.
-## 🛑 A locked tile is `disabled` — it takes no press.
+## 🔑 Keyboard and gamepad reach it (`FOCUS_ALL`, unlike the game's mouse-and-touch cards): the focused tile wears the
+##    same gold ring as the selected one (`GoSkin.selection_ring_box`).
+## 🛑 The setters batch their work: the tile is rebuilt once, at the end of the frame (or at once by `refresh()`).
+## 🛑 A locked tile is `disabled` — it takes no press. The card only takes back the `disabled` it set itself: a tile
+##    the caller disabled stays disabled when it unlocks. `tooltip_text` is the caller's too.
 @tool
 class_name GoLevelCard
 extends Button
@@ -30,176 +34,179 @@ const VAR_LOCKED := &"GoLevelCardLocked"
 const VAR_TITLE := &"GoTitle"
 ## The thumbnail's well when the theme has it.
 const VAR_WELL := &"GoWell"
+## The thumbnail of a locked level is greyed with this (the game greys its map preview).
+const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 
 ## The level's name ("STAGE 3").
 @export var title := "":
 	set(value):
 		title = value
-		_refresh()
+		_queue_refresh()
 
 ## The line under it ("OPPONENTS: 3"), with the person icon. Empty hides the row.
 @export var subtitle := "":
 	set(value):
 		subtitle = value
-		_refresh()
+		_queue_refresh()
 
 @export var state := State.OPEN:
 	set(value):
 		state = value
-		_refresh()
+		_queue_refresh()
 
 ## The gold ring round the tile.
 @export var selected := false:
 	set(value):
 		selected = value
-		_refresh()
+		_queue_refresh()
 
 ## The caption under the padlock.
 @export var locked_text := "LOCKED":
 	set(value):
 		locked_text = value
-		_refresh()
+		_queue_refresh()
 
 ## The word on the tilted tag of the current level.
 @export var play_text := "PLAY!":
 	set(value):
 		play_text = value
-		_refresh()
+		_queue_refresh()
 
 ## The thumbnail, drawn to cover its slot (`GoCoverImage`). Leave it empty to put your own node in `thumbnail_slot`.
 @export var thumbnail: Texture2D:
 	set(value):
 		thumbnail = value
-		_refresh()
+		_queue_refresh()
 
 ## Which part of the thumbnail stays in view.
 @export var thumbnail_focus := Vector2(0.5, 0.5):
 	set(value):
 		thumbnail_focus = value
-		_refresh()
+		_queue_refresh()
 
 @export_group("Art")
 ## The check on a cleared tile. Empty: the skin's `check` art, else the icon set's check on a sticker.
 @export var check_texture: Texture2D:
 	set(value):
 		check_texture = value
-		_refresh()
+		_queue_refresh()
 ## The padlock on a locked tile. Empty: the skin's `lock` art, else the icon set's lock.
 @export var lock_texture: Texture2D:
 	set(value):
 		lock_texture = value
-		_refresh()
+		_queue_refresh()
 ## The icon before the subtitle. Empty: the skin's `person` art, else the icon set's user.
 @export var person_texture: Texture2D:
 	set(value):
 		person_texture = value
-		_refresh()
+		_queue_refresh()
 ## The tag behind `play_text`. Empty: the skin's `play_tag` art, else a sticker plate.
 @export var play_tag_texture: Texture2D:
 	set(value):
 		play_tag_texture = value
-		_refresh()
+		_queue_refresh()
 ## A pointer at the current tile's bottom-right corner (the game's magnet). Empty: the skin's `pointer` art, else none.
 @export var pointer_texture: Texture2D:
 	set(value):
 		pointer_texture = value
-		_refresh()
+		_queue_refresh()
 
 @export_group("Size")
 ## Every size below is multiplied by this (1 = the design size).
 @export var scale_factor := 1.0:
 	set(value):
 		scale_factor = maxf(0.1, value)
-		_refresh()
+		_queue_refresh()
 @export var card_size := Vector2(300, 98):
 	set(value):
 		card_size = value
-		_refresh()
+		_queue_refresh()
 @export var thumbnail_size := 74.0:
 	set(value):
 		thumbnail_size = value
-		_refresh()
+		_queue_refresh()
 ## The space left of the thumbnail.
 @export var thumbnail_inset := 12.0:
 	set(value):
 		thumbnail_inset = value
-		_refresh()
+		_queue_refresh()
 ## The inner padding on the other three sides.
 @export var card_padding := 12.0:
 	set(value):
 		card_padding = value
-		_refresh()
+		_queue_refresh()
 ## The padding inside the thumbnail's well.
 @export var well_padding := 12.0:
 	set(value):
 		well_padding = value
-		_refresh()
+		_queue_refresh()
 @export var row_gap := 8.0:
 	set(value):
 		row_gap = value
-		_refresh()
+		_queue_refresh()
 @export var text_gap := 6.0:
 	set(value):
 		text_gap = value
-		_refresh()
+		_queue_refresh()
 ## The least width of the lock column; it grows to hold its caption.
 @export var right_slot := 56.0:
 	set(value):
 		right_slot = value
-		_refresh()
+		_queue_refresh()
 ## Room kept back when the texts are fitted.
 @export var fit_slack := 4.0:
 	set(value):
 		fit_slack = value
-		_refresh()
+		_queue_refresh()
 @export var title_font_size := 22:
 	set(value):
 		title_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var subtitle_font_size := 15:
 	set(value):
 		subtitle_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var locked_font_size := 13:
 	set(value):
 		locked_font_size = value
-		_refresh()
+		_queue_refresh()
 ## The LOCKED caption never shrinks under this.
 @export var min_font_size := 8:
 	set(value):
 		min_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var tag_font_size := 21:
 	set(value):
 		tag_font_size = value
-		_refresh()
+		_queue_refresh()
 @export var person_size := 18.0:
 	set(value):
 		person_size = value
-		_refresh()
+		_queue_refresh()
 @export var check_size := 46.0:
 	set(value):
 		check_size = value
-		_refresh()
+		_queue_refresh()
 @export var lock_size := 34.0:
 	set(value):
 		lock_size = value
-		_refresh()
+		_queue_refresh()
 @export var tag_size := Vector2(104, 44):
 	set(value):
 		tag_size = value
-		_refresh()
+		_queue_refresh()
 @export var tag_tilt_degrees := -9.0:
 	set(value):
 		tag_tilt_degrees = value
-		_refresh()
+		_queue_refresh()
 @export var pointer_size := 50.0:
 	set(value):
 		pointer_size = value
-		_refresh()
+		_queue_refresh()
 @export_group("")
 
-## Put your own thumbnail here (a live map preview, say); it fills the slot.
+## Put your own thumbnail here (a live map preview, say): a Control added to it is anchored to fill the slot inside
+## the well's padding, where `thumbnail` would be drawn.
 var thumbnail_slot: Control
 var title_label: Label
 var subtitle_label: Label
@@ -223,24 +230,39 @@ var _lock_box: VBoxContainer
 var _lock_art: Control
 var _tag_art: Control
 var _built := false
+var _queued := false
+var _thumb_inset := 0.0
+## The card set `disabled` because the tile is locked (it was not disabled already).
+var _lock_disabled := false
 
 
 func _init() -> void:
 	name = "LevelCard"
-	focus_mode = Control.FOCUS_NONE
+	focus_mode = Control.FOCUS_ALL
 	alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_build()
 	_built = true
 	_refresh()
 
 
+## 🔑 Watched on every entry, not once in `_ready` — `reparent()` takes the node out and back, and a watch set only in
+##    `_ready` was dropped by the first `_exit_tree` for good. Back in the tree, it catches up with the look.
+func _enter_tree() -> void:
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
+
+
 func _ready() -> void:
 	_refresh()
-	GoUi.watch(_on_ui_changed)
 
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
+
+
+## Applies the pending changes now instead of at the end of the frame.
+func refresh() -> void:
+	_refresh()
 
 
 static func make(text: String, sub := "", level_state := State.OPEN) -> GoLevelCard:
@@ -268,11 +290,6 @@ func card_variation() -> StringName:
 
 ## The text colour on the tile's face.
 func ink() -> Color:
-	var variation := card_variation()
-	var look := GoUi.theme()
-	var key := &"font_disabled_color" if state == State.LOCKED else &"font_color"
-	if look != null and variation == _wanted_variation() and look.has_color(key, variation):
-		return look.get_color(key, variation)
 	match state:
 		State.CURRENT: return GoUi.theme_color(&"font_color", GoTheme.VAR_PRIMARY_BUTTON, Color.WHITE)
 		State.LOCKED:
@@ -290,10 +307,6 @@ func outline_ink() -> Color:
 			var found := GoTheme.color_in_chain(look, &"font_outline_color", type)
 			if found.a > 0.0: return found
 	return Color.TRANSPARENT
-
-
-func _wanted_variation() -> StringName:
-	return VAR_LOCKED if state == State.LOCKED else (VAR_CURRENT if state == State.CURRENT else VAR_CARD)
 
 
 static func _theme_has(type: StringName) -> bool:
@@ -322,6 +335,7 @@ func _build() -> void:
 	thumbnail_slot.name = "Thumbnail"
 	thumbnail_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	thumbnail_slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	thumbnail_slot.child_entered_tree.connect(_inset_thumbnail)
 	_row.add_child(thumbnail_slot)
 	_well = Panel.new()
 	_well.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -436,20 +450,49 @@ func _fill(holder: Control, art: Texture2D, icon: StringName, side: float, plate
 	glyph.offset_bottom = px * 0.5
 
 
+## Fills the thumbnail slot with [param node], inside the well's padding.
+func _inset_thumbnail(node: Node) -> void:
+	var part := node as Control
+	if part == null or part == _well: return
+	part.set_anchors_preset(Control.PRESET_FULL_RECT)
+	part.offset_left = _thumb_inset
+	part.offset_top = _thumb_inset
+	part.offset_right = -_thumb_inset
+	part.offset_bottom = -_thumb_inset
+
+
 func _art(given: Texture2D, part: StringName) -> Texture2D:
 	return given if given != null else GoUi.skin().widget_art(part)
 
 
+## Asks for one rebuild at the end of the frame, however many properties change before it.
+func _queue_refresh() -> void:
+	if not _built or _queued: return
+	_queued = true
+	_flush.call_deferred()
+
+
+func _flush() -> void:
+	if _queued: _refresh()
+
+
 func _refresh() -> void:
 	if not _built: return
+	_queued = false
 	var k := scale_factor
 	var locked := state == State.LOCKED
 	var current := state == State.CURRENT
-	disabled = locked
+	if locked and not disabled:
+		disabled = true
+		_lock_disabled = true
+	elif not locked and _lock_disabled:
+		disabled = false
+		_lock_disabled = false
 	theme_type_variation = card_variation()
 	text = ""
-	tooltip_text = ""
 	accessibility_name = summary().replace("\n", ", ")
+	# 🛑 Never under a touch target — the game's card has no such floor, so at a small `scale_factor` this tile is
+	#    taller than the game's (on purpose: it stays easy to press).
 	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, float(GoUi.config.min_touch_size)))
 
 	_margin.add_theme_constant_override(&"margin_left", roundi(thumbnail_inset * k))
@@ -466,21 +509,18 @@ func _refresh() -> void:
 	if _theme_has(VAR_WELL): well = GoUi.theme().get_stylebox(&"panel", VAR_WELL)
 	_well.visible = well != null
 	if well != null: _well.add_theme_stylebox_override(&"panel", well)
-	var inset := well_padding * k if well != null else 0.0
-	_cover.offset_left = inset
-	_cover.offset_top = inset
-	_cover.offset_right = -inset
-	_cover.offset_bottom = -inset
+	_thumb_inset = well_padding * k if well != null else 0.0
+	_inset_thumbnail(_cover)
+	for child in thumbnail_slot.get_children(): _inset_thumbnail(child)
 	_cover.texture = thumbnail
 	_cover.focus = thumbnail_focus
 	_cover.visible = thumbnail != null
-	_cover.modulate = Color(0.62, 0.64, 0.7) if locked else Color.WHITE
+	_cover.modulate = LOCKED_TINT if locked else Color.WHITE
 
 	# Texts: the title look when the theme has it.
 	var label_look := VAR_TITLE if _theme_has(VAR_TITLE) else &""
 	for label in [title_label, subtitle_label, locked_label, tag_label]:
 		label.theme_type_variation = label_look
-		label.auto_translate_mode = auto_translate_mode
 	title_label.text = title
 	subtitle_label.text = subtitle
 	locked_label.text = locked_text
@@ -534,7 +574,9 @@ func _refresh() -> void:
 	pointer.offset_bottom = pointer_side * 0.3
 
 	selection_ring.visible = selected
-	selection_ring.add_theme_stylebox_override(&"panel", GoUi.skin().selection_ring_box())
+	var ring := GoUi.skin().selection_ring_box()
+	selection_ring.add_theme_stylebox_override(&"panel", ring)
+	add_theme_stylebox_override(&"focus", ring)
 	_fit_texts()
 
 
@@ -564,32 +606,36 @@ func _dress_tag(tag: Vector2) -> void:
 		GoUi.skin().dress_sticker(tag_label, plate)
 	var font := tag_label.get_theme_font(&"font") if tag_label.is_inside_tree() else null
 	tag_label.add_theme_font_size_override(&"font_size",
-			GoStyle.fit_font_size(PackedStringArray([play_text]), tag_px, tag.x * 0.8, font))
+			GoStyle.fit_font_size(PackedStringArray([atr(play_text)]), tag_px, tag.x * 0.8, font))
 
 
 ## Shrinks the texts so the longest translation fits beside the thumbnail (and the lock column when locked). The lock
 ## column is at least `right_slot` wide and grows to hold its caption, so a long LOCKED is never clipped.
 func _fit_texts() -> void:
 	var k := scale_factor
+	# The labels show the translations, so those are what must fit (the keys may be far shorter).
+	var shown_title := atr(title)
+	var shown_subtitle := atr(subtitle)
+	var shown_locked := atr(locked_text)
 	var font := title_label.get_theme_font(&"font") if title_label.is_inside_tree() else _label_font()
 	var slot := 0.0
 	var gaps := row_gap
 	if state == State.LOCKED:
 		var lock_base := maxi(min_font_size, roundi(locked_font_size * k))
-		var lock_px := maxi(min_font_size, GoStyle.fit_font_size(PackedStringArray([locked_text]), lock_base,
+		var lock_px := maxi(min_font_size, GoStyle.fit_font_size(PackedStringArray([shown_locked]), lock_base,
 				right_slot * k, font))
 		locked_label.add_theme_font_size_override(&"font_size", lock_px)
-		slot = maxf(right_slot * k, GoStyle.row_width(font, PackedStringArray([locked_text]), lock_px))
+		slot = maxf(right_slot * k, GoStyle.row_width(font, PackedStringArray([shown_locked]), lock_px))
 		_lock_box.custom_minimum_size = Vector2(slot, 0.0)
 		gaps *= 2.0
 	var room := (card_size.x - thumbnail_inset - card_padding - thumbnail_size - gaps) * k - slot - fit_slack
 	var title_base := maxi(9, roundi(title_font_size * k))
 	title_label.add_theme_font_size_override(&"font_size",
-			GoStyle.fit_font_size(PackedStringArray([title]), title_base, room, font))
+			GoStyle.fit_font_size(PackedStringArray([shown_title]), title_base, room, font))
 	var sub_base := maxi(min_font_size, roundi(subtitle_font_size * k))
 	var icon_room := room - (person_size + text_gap) * k
 	subtitle_label.add_theme_font_size_override(&"font_size",
-			GoStyle.fit_font_size(PackedStringArray([subtitle]), sub_base, icon_room, font))
+			GoStyle.fit_font_size(PackedStringArray([shown_subtitle]), sub_base, icon_room, font))
 
 
 func _label_font() -> Font:
@@ -605,4 +651,4 @@ func _notification(what: int) -> void:
 
 
 func _on_ui_changed() -> void:
-	_refresh()
+	_queue_refresh()

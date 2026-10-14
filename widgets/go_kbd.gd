@@ -46,10 +46,16 @@ func _init() -> void:
 	size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 
 
+## 🔑 Watched on every entry, not once in `_ready` — `reparent()` takes the node out and back, and a watch set only in
+##    `_ready` was dropped by the first `_exit_tree` for good. Back in the tree, it catches up with the look.
+func _enter_tree() -> void:
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
+
+
 func _ready() -> void:
 	_rebuild()
 	_sync_visible()
-	GoUi.watch(_on_ui_changed)
 
 
 func _exit_tree() -> void:

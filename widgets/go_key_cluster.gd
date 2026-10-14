@@ -47,13 +47,13 @@ const WASD: PackedStringArray = ["W", "A", "S", "D"]
 		queue_redraw()
 
 ## How far the word sits above the key's centre — the cap's top face stands over its thick bottom edge.
-@export var face_lift := 2.0:
+var face_lift := 2.0:
 	set(value):
 		face_lift = value
 		queue_redraw()
 
 ## Half the length of an arrow triangle (dp).
-@export var arrow_half := 7.0:
+var arrow_half := 7.0:
 	set(value):
 		arrow_half = maxf(1.0, value)
 		queue_redraw()
@@ -72,9 +72,15 @@ func _init() -> void:
 	_sync_name()
 
 
+## 🔑 Watched on every entry, not once in `_ready` — `reparent()` takes the node out and back, and a watch set only in
+##    `_ready` was dropped by the first `_exit_tree` for good. Back in the tree, it catches up with the look.
+func _enter_tree() -> void:
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
+
+
 func _ready() -> void:
 	_dress()
-	GoUi.watch(_on_ui_changed)
 
 
 func _exit_tree() -> void:
@@ -122,8 +128,9 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 
 
+## 🛑 Never dresses here: `_dress` queues a redraw, so a look with no cap would redraw every frame. The caps are
+##    dressed on entering the tree and whenever the look changes.
 func _draw() -> void:
-	if _cap == null: _dress()
 	var font := _font()
 	var rects := key_rects()
 	for index in rects.size():
