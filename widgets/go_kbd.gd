@@ -26,6 +26,13 @@ extends HBoxContainer
 		hide_on_handheld = value
 		_sync_visible()
 
+## The key has been pressed — a training step the player has done. The caps turn green (`GoSkin.kbd_done_box`).
+@export var done := false:
+	set(value):
+		if done == value: return
+		done = value
+		_rebuild()
+
 var _keys: PackedStringArray = []
 
 
@@ -118,8 +125,10 @@ func _cap(word: String) -> Control:
 	box.name = "Cap"
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# The look's key cap (`GoSkin.kbd_box` — the border-coloured chip by default, a keycap on a lip in the arcade looks).
-	box.add_theme_stylebox_override(&"panel", GoUi.skin().kbd_box())
-	var text := GoStyle.label(word, GoTheme.ROLE_MICRO, GoUi.skin().kbd_ink())
+	# A done key wears the same cap tinted green (`GoSkin.kbd_done_box`).
+	var skin := GoUi.skin()
+	box.add_theme_stylebox_override(&"panel", skin.kbd_done_box() if done else skin.kbd_box())
+	var text := GoStyle.label(word, GoTheme.ROLE_MICRO, skin.kbd_done_ink() if done else skin.kbd_ink())
 	# 🛑 Key names are **never translated** — they can only be found if they read exactly as engraved on the keyboard.
 	text.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	text.text_direction = Control.TEXT_DIRECTION_LTR
