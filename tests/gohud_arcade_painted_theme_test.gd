@@ -141,7 +141,7 @@ func _buttons(theme: Theme) -> void:
 	var down := theme.get_stylebox(&"pressed", &"OptionButton") as StyleBoxFlat
 	check(down != null and down.bg_color.is_equal_approx(DIFF_BG), "OptionButton: pressed, the pale blue")
 	# A right-to-left layout draws the mirrored faces: each is the painted box of its left-to-right state.
-	for state: String in ["normal", "hover", "pressed", "disabled"]:
+	for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 		var ltr := theme.get_stylebox(StringName(state), &"OptionButton")
 		var rtl := theme.get_stylebox(StringName(state + "_mirrored"), &"OptionButton")
 		check(rtl != null and rtl == ltr, "OptionButton/%s_mirrored: the same painted box as %s (got %s)"

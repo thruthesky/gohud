@@ -243,6 +243,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         put("OptionButton/styles/%s" % state, drop_box)
     put("OptionButton/styles/pressed", down)
     put("OptionButton/styles/hover_pressed", down)
+    put("OptionButton/styles/hover_pressed_mirrored", down)
     for slot in FONT_STATES:
         setT("OptionButton/colors/%s" % slot, C(INK))
     setT("OptionButton/font_sizes/font_size", DROPDOWN_FONT_SIZE)
