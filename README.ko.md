@@ -47,6 +47,13 @@
 - **MIT** — 코드와 그림 전부, 기본 아이콘 84종·중세 각인 아이콘 16종·게임 아이콘 187종·아이콘 라이브러리 1,000종 포함. 중세 제목에 쓰는
   Cinzel 글꼴과 Material 제목·라벨에 쓰는 Roboto 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
 
+### 아케이드 페인티드 룩
+
+`arcade_light`는 Magnet Mayhem에서 만든 PNG와 흰 글리프를 쓴다. `GoStyleBoxSprite`와
+`GoSkinArcadePainted`가 버튼·카드·리본·키캡·배지를 그리며, 모달 뒤에는 게임의 블러 스크림을 쓴다.
+`arcade_dark`는 기존의 `GoStyleBoxArcade`와 `GoSkinArcade`를 그대로 쓴다. 그림의 출처와 MIT 사용 조건은
+[서드파티 고지](THIRD_PARTY_NOTICES.md)에 있다.
+
 ## 요구 사항
 
 Godot 4.7 에서 테스트했고, Godot **4.7 이상**을 공식 지원한다. 지원 하한 4.7 은 `GoUi.MIN_ENGINE` 에 적혀 있고,
@@ -164,8 +171,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `kids_dark` | 같은 젤리 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼과 민트 제목 리본 | `GoSkinKids` |
 | `comic_light` | 만화 컷 — 키·입력칸·목록 줄·판마다 굵은 잉크 테두리(`GoStyleBoxComic`)와 오른쪽 아래로 떨어지는 연하고 단단한 그림자(누르면 사라짐), 창 제목 뒤의 노란 말풍선 상자, 신문지 바탕에 남색 잉크. 테두리 두께·그림자 크기·그림자 표시 여부는 설정 한 줄씩(`GoUi.config.comic_border_width`·`comic_shadow_size`·`comic_shadow`)이고, 위젯 하나는 `GoStyle.comic_shadow(node, on)` 으로 따로 정한다 | `GoSkinComic` |
 | `comic_dark` | 같은 만화 컷의 밤 — 남색 바탕에 분필 잉크, 햇살 노랑 기본 버튼 | `GoSkinComic` |
-| `arcade_light` | 오락실 게임기 — 키마다 색을 칠한 알약 모양(`GoStyleBoxArcade` — 위에서 아래로 흐르는 그라디언트, 캔디 광택(위쪽 윤기·양쪽 모서리 반짝임), 누르면 쏙 들어가는 진한 턱, 남색 잉크 테두리) 글자는 잉크 외곽선을 두른 흰 글씨 — 초록 기본 버튼, 파란 키, 빨간 위험 버튼, 라벤더 작은 키 · 옅은 안쪽을 색 프레임이 두르는 두꺼운 보드 · 서로 떨어진 탭 · 잉크 눈금으로 여러 칸으로 나뉜 게이지(`GoBar.segments`) · 키캡 모양의 키 힌트(`GoKbd`) · 창 제목 뒤의 제비꼬리 금색 리본과 동그란 빨간 닫기 키 · 하늘색 바탕. `GoStyle.arcade_paint(node, colour)` 로 키 하나를 원하는 색으로 칠한다 | `GoSkinArcade` |
-| `arcade_dark` | 같은 오락실의 밤 — 남색 보드와 바탕, 같은 밝은 물감 | `GoSkinArcade` |
+| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 파란 기본 버튼, 초록 성공 버튼(`GoSuccessButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 그림이 없는 필드와 탭 등은 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
+| `arcade_dark` | 코드로 그린 오락실의 밤 — 남색 보드와 바탕, 광택이 있는 알약 키, 금색 리본과 여러 칸 게이지 | `GoSkinArcade` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
 🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 프리셋보다 **우선한다** — 프리셋을 고른 뒤 한 칸만
@@ -551,7 +558,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoStyleBoxMedieval` | 리벳·모서리 각인·베벨 반사·재질 질감이 있는 단조 프레임 |
 | `GoStyleBoxJelly` | 젤리 사탕 — 굵은 외곽선, 밝은 윗면과 짙은 띠, 흰 광택, 누르면 꺼지는 턱 |
 | `GoStyleBoxComic` | 코믹 칸 — 굵은 잉크 외곽선과 오른쪽 아래로 떨어지는 단단한 그림자, 크기는 `GoConfig` 가 정한다 |
-| `GoStyleBoxArcade` | 칠한 아케이드 알약 키 — 위아래 그러데이션·캔디 광택·짙은 턱·잉크 외곽선, 두꺼운 테를 두른 판, 또는 제비꼬리 리본 |
+| `GoStyleBoxSprite` | PNG를 9슬라이스로 그리는 페인티드 박스 — 텍스처 픽셀 단위의 가장자리와 pixels-per-unit 배율, `arcade_light`에서 사용 |
+| `GoStyleBoxArcade` | 코드로 그린 아케이드 알약 키 — 위아래 그러데이션·캔디 광택·짙은 턱·잉크 외곽선, 두꺼운 테를 두른 판, 또는 제비꼬리 리본 |
 
 🛑 `GoStyle.surface()` 는 스킨이 만든 모양을 **그대로** 넘긴다. `box()`·`floating()`·`disc()` 는
 돌려받아 `bg_color` 를 고치는 옛 호출부와의 약속 때문에 **언제나 `StyleBoxFlat`** 이다 —
@@ -584,7 +592,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·아래 앱 바·외곽선 버튼(`Tone.OUTLINED`)·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 열넷, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
-| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` · `GoSkinArcadePainted` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
 | `GoSafeArea` | Control / 정적 | 노치·둥근 모서리·키보드를 뺀 쓸 수 있는 사각형 |
 | `GoScale` | 정적 | 브레이크포인트와 dp 계산 |
 | `GoFeedback` | 정적 | 소리·햅틱 연결 |

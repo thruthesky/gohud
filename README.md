@@ -26,10 +26,10 @@
 Material 3 Expressive presets with app-screen widgets, the widgets a Flutter app reaches for (a scaffold, lazy lists,
 pull to refresh, swipe rows, tab pages, reordering, pinch and zoom, date, time and wheel pickers), edge and side bars
 with `GoGrid`, `GoChoiceColumn` for a HUD side bar, and a demo app whose 31-chapter tour plays itself.
-Since then (*Unreleased* in the [changelog](CHANGELOG.md)): the arcade looks were repainted closer to a real arcade
-party game — pill keys with a candy gloss, tabs that stand apart, a gold title ribbon with swallow tails, status bars
-split into chunks (`GoBar.segments`) and key hints drawn as keycaps — and a scrolled list now stops at a window's
-frame instead of sliding over it. Raise the version in `package.json` and the next `tools/package.sh` run releases it.
+Since then (*Unreleased* in the [changelog](CHANGELOG.md)): `arcade_light` now uses Magnet Mayhem’s painted
+sprites and white glyphs, with cards, ribbons, keycaps and round badges. `arcade_dark` keeps its code-drawn look.
+A scrolled list now stops at a window’s frame instead of sliding over it. Raise the version in `package.json` and
+the next `tools/package.sh` run releases it.
 
 ## Contents
 
@@ -166,7 +166,8 @@ The same confirmation, opened over the same little game with its HUD, joystick a
 | `scifi_dark` · `scifi_light` | Chamfered corners, cyan neon edges and glow, a hexagonal joystick, targeting-bracket focus |
 | `medieval_dark` · `medieval_light` | Iron and leather or parchment, antique-gold frames, rivets, engraved icons, Cinzel headings |
 | `material_dark` · `material_light` | Material 3 for app screens: pill buttons, 28 dp dialogs, filled cards, M3 switches, Roboto |
-| `arcade_dark` · `arcade_light` | An arcade cabinet: painted pill keys with a candy gloss, thick framed boards, a gold title ribbon, chunked bars |
+| `arcade_light` | Magnet Mayhem’s painted sprites: blue primary keys, green success keys, cards, ribbons, keycaps and glyphs |
+| `arcade_dark` | A code-drawn arcade cabinet: glossy pill keys, thick framed boards, a gold title ribbon, chunked bars |
 | `comic_dark` · `comic_light` | A comic panel: a bold ink outline and a hard shadow, a yellow caption box behind titles |
 | `kids_dark` · `kids_light` | A toy box: jelly-candy keys and panels that squish under the finger, a rainbow joystick |
 
@@ -527,8 +528,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
 | `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
 | `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
-| `arcade_light` | An arcade cabinet: every key a painted pill (`GoStyleBoxArcade` — a top-to-bottom gradient, a candy gloss, a deeper lip that sinks when pressed, a navy ink outline) and labelled in white with an ink outline — green primary, blue keys, red danger, lavender small keys, tabs standing apart; thick boards with a coloured frame round a pale well; gauges split into chunks (`GoBar.segments`), keycap key hints (`GoKbd`); a gold ribbon with swallow tails and a round red close key on windows; sky-blue page. `GoStyle.arcade_paint(node, colour)` paints one key its own colour | `GoSkinArcade` |
-| `arcade_dark` | The same arcade cabinet at night: navy boards and page, the same bright paints | `GoSkinArcade` |
+| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), blue primary and green success buttons, red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. Parts without sprite art retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
+| `arcade_dark` | A code-drawn arcade cabinet at night: navy boards and page, glossy pill keys in bright paints, a gold ribbon and chunked gauges | `GoSkinArcade` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
 Explicit `theme`, `skin` and `icons` fields still win over the preset, so you can take a preset and
@@ -596,12 +597,15 @@ from its tokens (material-web `tokens/versions/latest`, Material 3 v34.0.21).
 
 ### Arcade, comic and kids
 
-Three looks for games that want to feel painted, inked or made of candy. Each brings its own `StyleBox` class, so
-the shape reaches every key, field, row and panel — not only the parts a skin draws.
+Three looks for games that want to feel painted, inked or made of candy. `arcade_light` uses Magnet Mayhem’s
+painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: blue primary keys, green success keys, grey
+neutral keys, red danger keys, cards, ribbons, keycaps and badges. Its white glyphs fall back to gohud’s default
+icons when a name is absent. Fields, tabs and other parts without sprite art keep the arcade’s code-drawn shapes.
+`arcade_dark` keeps `GoStyleBoxArcade`; comic and kids use their own `StyleBox` classes.
 
 <table>
   <tr>
-    <th width="34%">Arcade — <code>GoStyleBoxArcade</code></th>
+    <th width="34%">Arcade light — <code>GoStyleBoxSprite</code></th>
     <th width="33%">Comic — <code>GoStyleBoxComic</code></th>
     <th width="33%">Kids — <code>GoStyleBoxJelly</code></th>
   </tr>
@@ -624,7 +628,7 @@ the shape reaches every key, field, row and panel — not only the parts a skin 
 
 ```gdscript
 GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
-GoStyle.arcade_paint(shop_button, Color("#ff8a00"))   # one key in its own paint; does nothing under other looks
+shop_button.theme_type_variation = &"GoSuccessButton" # green painted key (arcade_light)
 hp.segments = 6                                        # a chunked gauge (-1 asks the look, 0 is smooth)
 GoUi.config.comic_shadow = false                       # every comic face drops its shadow at once
 ```
@@ -973,7 +977,8 @@ Three custom `StyleBox` classes cover shapes `StyleBoxFlat` cannot make. All of 
 | `GoStyleBoxMedieval` | A forged frame with rivets, corner engraving, a bevel highlight and material grain |
 | `GoStyleBoxJelly` | A jelly candy: a chunky outline, a lighter top and deeper band, a white shine and a lip that sinks when pressed |
 | `GoStyleBoxComic` | A comic panel: a bold ink outline and a hard shadow down and to the right, sized by `GoConfig` |
-| `GoStyleBoxArcade` | A painted arcade pill: a top-to-bottom gradient, a candy gloss, a deeper lip and an ink outline; a thick framed board; or a ribbon with swallow tails |
+| `GoStyleBoxSprite` | A painted PNG drawn in nine slices, with texture-pixel edges and a pixels-per-unit scale; used by `arcade_light` |
+| `GoStyleBoxArcade` | A code-drawn arcade pill: a top-to-bottom gradient, a candy gloss, a deeper lip and an ink outline; a thick framed board; or a ribbon with swallow tails |
 
 `GoStyle.surface()` returns whatever shape the skin produced. `GoStyle.box()`, `floating()` and
 `disc()` keep their promise of returning a `StyleBoxFlat`, so existing calling code that tweaks
@@ -1007,7 +1012,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips (and `filter_chip`, `input_chip`), floating toolbars, the bottom app bar, outlined buttons (`Tone.OUTLINED`), cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
 | `GoThemePresets` | static | The fourteen built-in presets, presets found in `themes/presets/`, and `register()` for your own |
-| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` | Resource | The shapes code draws, with numeric dials |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` · `GoSkinArcadePainted` | Resource | The shapes code draws, with numeric dials |
 | `GoSafeArea` | Control / static | Usable rectangle excluding notches, rounded corners and the keyboard |
 | `GoScale` | static | Breakpoint and dp math |
 | `GoFeedback` | static | Sound and haptic routing |

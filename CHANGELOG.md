@@ -19,6 +19,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light` now uses Magnet Mayhem’s painted artwork.** Its keys, cards, insets, ribbons, keycaps and badges
+  use nine-slice PNGs (`GoStyleBoxSprite`, `GoSkinArcadePainted`), with blue primary, green success, grey neutral and
+  red danger keys. The preset includes the game’s white glyphs with default-icon fallback, a frosted modal scrim
+  and six-chunk gauges; other controls retain arcade shapes. Existing `arcade_light` users will see the new look.
+  `arcade_dark` and all other presets are unchanged. The artwork is distributed under this package’s MIT license.
+
 - **The README is a tour in pictures.** It opens with what gohud is, a contents list, the fourteen looks side by side
   (`www/img/themes/` — one 1920×1080 page of the YouTube reel per preset, each showing different widgets), the same
   dialog in every look, the gallery on a phone in every preset, the AI-agent install prompt and the `/gohud:*`
