@@ -4,7 +4,7 @@ The arcade cabinet (`tools/theme_arcade.py`) draws every part first, in this pal
 the game's painted sprites (`assets/arcade_light/painted/*.png`, drawn by `GoStyleBoxSprite`) and its flat pieces over
 the variations the game uses, **with exactly the items and values of `UiTheme._build()`** in Magnet Mayhem
 (`src/ui/ui_theme.gd`): the same edges (texture px), pixels per unit, tints, padding, colours, outlines and
-constants. Parts with no painted art (rows, fields, tabs, bars …) keep the arcade's code-drawn keys.
+constants. Parts with no painted art (rows, tabs, bars …) keep the arcade's code-drawn keys.
 
 🔑 **The game builds its theme as `duplicate(arcade_light)` plus aliases** from `tools/arcade_painted_map.json`
    (written here): each mapped variation must carry the game variation's item set and nothing else — so every item
@@ -29,6 +29,8 @@ INK = (0.113725, 0.137255, 0.25098, 1.0)                 # #1d2340
 CONTROL_BLUE = (0.239216, 0.419608, 1.0, 1.0)            # #3d6bff
 DIFF_BG = (0.933333, 0.945098, 0.984314, 1.0)            # #eef1fb
 DIFF_SELECTED = (0.498039, 0.894118, 1.0, 1.0)           # #7fe4ff
+SECONDARY = (0.541176, 0.560784, 0.701961, 1.0)          # #8a8fb3
+CLEAR = (0.0, 0.0, 0.0, 0.0)
 PANEL = (1.0, 1.0, 1.0, 0.9)
 PRESSED_TINT = (0.8, 0.8, 0.86, 1.0)
 DISABLED_TINT = (0.6, 0.6, 0.66, 0.85)
@@ -263,6 +265,14 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("PopupMenu/colors/font_hover_color", C(INK))
     setT("PopupMenu/font_sizes/font_size", DROPDOWN_FONT_SIZE)
     setT("PopupMenu/constants/v_separation", 10)
+
+    # ── ✏ The text field (`join_lobby.gd`, `create_room.gd`, `secret_prompt.gd`): a white box with a grey rim, a blue
+    #    ring over it while typing, the pale blue when it cannot be typed in; ink text and caret. ──
+    put("LineEdit/styles/normal", box("painted_field", WHITE, 10, 2, SECONDARY, margin_v=(8.0, 8.0)))
+    put("LineEdit/styles/focus", box("painted_field_focus", CLEAR, 10, 3, CONTROL_BLUE, margin_v=(8.0, 8.0)))
+    put("LineEdit/styles/read_only", box("painted_field_read_only", DIFF_BG, 10, 2, SECONDARY, margin_v=(8.0, 8.0)))
+    setT("LineEdit/colors/font_color", C(INK))
+    setT("LineEdit/colors/caret_color", C(INK))
 
     # ── 🎚 The slider (`PaintedSlider`): the grey pill track, the coloured fill up to the handle, the round handle. ──
     #    The track's 8 + 8 padding is the bar's height: the engine draws the track and the fill as tall as the

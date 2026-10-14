@@ -29,6 +29,7 @@ const DISABLED_TINT := Color(0.6, 0.6, 0.66, 0.85)
 const GLOSS_EDGE := Vector4(100, 65, 100, 66)
 const KEY_EDGE := Vector4(70, 70, 70, 80)
 const RIBBON_EDGE := Vector4(100, 80, 100, 80)
+const SECONDARY := Color("#8a8fb3")
 # The slider and the switch (`PaintedSlider`, `PaintedSwitch`).
 const BAR_EDGE := Vector4(48, 38, 48, 38)
 const HANDLE_SIZE := Vector2(36, 36)
@@ -52,6 +53,7 @@ func _initialize() -> void:
 		await _slider(light)
 		await _range_slider(light)
 		_switch(light)
+		_field(light)
 	if dark != null:
 		_dark_stays(dark)
 	print("gohud arcade painted theme tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -343,6 +345,23 @@ func _switch(theme: Theme) -> void:
 	check(switch.get_combined_minimum_size().x >= SWITCH_SIZE.x and switch.get_combined_minimum_size().y >= SWITCH_SIZE.y,
 		"CheckButton: room for the 76 × 29 switch (got %s)" % switch.get_combined_minimum_size())
 	switch.free()
+
+
+## ✏ The game's field: a white box with a 2 px SECONDARY rim, a 3 px CONTROL_BLUE ring while typing, DIFF_BG read-only.
+func _field(theme: Theme) -> void:
+	var want := {&"normal": [Color.WHITE, 2, SECONDARY], &"focus": [Color(0, 0, 0, 0), 3, CONTROL_BLUE],
+		&"read_only": [DIFF_BG, 2, SECONDARY]}
+	for state: StringName in want:
+		var box := theme.get_stylebox(state, &"LineEdit") as StyleBoxFlat
+		check(box != null, "LineEdit/%s is a StyleBoxFlat" % state)
+		if box == null: continue
+		check(box.bg_color.is_equal_approx(want[state][0]) and box.border_width_left == want[state][1]
+			and box.border_width_bottom == want[state][1] and box.border_color.is_equal_approx(want[state][2])
+			and box.corner_radius_top_left == 10 and box.corner_radius_bottom_right == 10,
+			"LineEdit/%s: the game's UiTheme.box(%s, 10, %d, …)" % [state, (want[state][0] as Color).to_html(), want[state][1]])
+		check(_margins(box) == [14.0, 8.0, 14.0, 8.0], "LineEdit/%s: box()'s 14 / 8 padding (got %s)" % [state, _margins(box)])
+	check(theme.get_color(&"font_color", &"LineEdit").is_equal_approx(INK) and theme.get_color(&"caret_color", &"LineEdit").is_equal_approx(INK),
+		"LineEdit: ink text and caret")
 
 
 func _sorted(names: PackedStringArray) -> Array:

@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=132 format=3]
+[gd_resource type="Theme" load_steps=135 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -1248,6 +1248,54 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="painted_field"]
+content_margin_left = 14
+content_margin_top = 8
+content_margin_right = 14
+content_margin_bottom = 8
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.541176, 0.560784, 0.701961, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="painted_field_focus"]
+content_margin_left = 14
+content_margin_top = 8
+content_margin_right = 14
+content_margin_bottom = 8
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.239216, 0.419608, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="painted_field_read_only"]
+content_margin_left = 14
+content_margin_top = 8
+content_margin_right = 14
+content_margin_bottom = 8
+bg_color = Color(0.933333, 0.945098, 0.984314, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.541176, 0.560784, 0.701961, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="StyleBox" id="painted_slider_track"]
 script = ExtResource("sprite")
 content_margin_left = 0
@@ -1751,7 +1799,7 @@ Label/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 Label/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
 Label/constants/outline_size = 0
 Label/font_sizes/font_size = 16
-LineEdit/colors/caret_color = Color(0.103552, 0.264971, 0.639586, 1)
+LineEdit/colors/caret_color = Color(0.113725, 0.137255, 0.25098, 1)
 LineEdit/colors/clear_button_color = Color(0.182429, 0.172568, 0.335275, 1)
 LineEdit/colors/clear_button_color_pressed = Color(0.103552, 0.264971, 0.639586, 1)
 LineEdit/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
@@ -1760,9 +1808,9 @@ LineEdit/colors/font_selected_color = Color(0.113725, 0.137255, 0.25098, 1)
 LineEdit/colors/font_uneditable_color = Color(0.171943, 0.187373, 0.264527, 1)
 LineEdit/colors/selection_color = Color(0.103552, 0.264971, 0.639586, 0.35)
 LineEdit/font_sizes/font_size = 16
-LineEdit/styles/focus = SubResource("edit_focus")
-LineEdit/styles/normal = SubResource("edit_normal")
-LineEdit/styles/read_only = SubResource("btn_disabled")
+LineEdit/styles/focus = SubResource("painted_field_focus")
+LineEdit/styles/normal = SubResource("painted_field")
+LineEdit/styles/read_only = SubResource("painted_field_read_only")
 LinkButton/colors/font_color = Color(0.070109, 0.179397, 0.433029, 1)
 LinkButton/colors/font_focus_color = Color(0.070109, 0.179397, 0.433029, 1)
 LinkButton/colors/font_hover_color = Color(0.070109, 0.179397, 0.433029, 1)
