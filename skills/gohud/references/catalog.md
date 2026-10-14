@@ -15,11 +15,11 @@ against the code (`tools/check_docs_api.py`).
 2. [Windows and overlays](#windows-and-overlays) (9)
 3. [Messages and waiting](#messages-and-waiting) (12)
 4. [App navigation](#app-navigation) (13)
-5. [Buttons, chips and choices](#buttons-chips-and-choices) (9)
+5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (11)
-9. [Looks and system](#looks-and-system) (8)
+8. [HUD and game shapes](#hud-and-game-shapes) (14)
+9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
 
@@ -537,6 +537,14 @@ var bell := GoIconButton.new()
 bell.icon_name = GoIconSet.BELL
 ```
 
+### `GoGlyphButton`
+
+Extends `Button`. A button with a glyph right beside its label — the glossy pill of an arcade menu. Details: `hud.md` §23 (GoGlyphButton).
+
+```gdscript
+row.add_child(GoGlyphButton.make("Play", GoIconSet.PLAY, GoTheme.VAR_PRIMARY_BUTTON))
+```
+
 ### `GoStyle.chip`
 
 A function of `GoStyle`. A status or tag pill whose text always reads. Details: `style.md` §6 (Display).
@@ -834,6 +842,33 @@ animals.set_selected(2, true)
 side_bar.add_center(animals)
 ```
 
+### `GoLevelCard`
+
+Extends `Button`. A stage-select tile: thumbnail, title, subtitle, and a check, a padlock or a PLAY! tag by state. Details: `hud.md` §20 (GoLevelCard).
+
+```gdscript
+var card := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
+card.pressed.connect(play_stage)
+```
+
+### `GoKeyCluster`
+
+Extends `Control`. Four movement keys in an inverted T — WASD or the arrow keys — as a controls page shows them. Details: `hud.md` §21 (GoKeyCluster).
+
+```gdscript
+var wasd := GoKeyCluster.make(["W", "A", "S", "D"])
+var arrows := GoKeyCluster.make(GoKeyCluster.ARROWS)
+```
+
+### `GoCoverImage`
+
+Extends `Control`. A picture that fills its box, cropping the overflow like CSS object-fit: cover. Details: `hud.md` §22 (GoCoverImage).
+
+```gdscript
+var shot := GoCoverImage.make(preload("res://art/level_3.png"), Vector2(0.5, 0.3))
+shot.custom_minimum_size = Vector2(74, 74)
+```
+
 ### `GoRewardCalendar`
 
 Extends `VBoxContainer`. Daily attendance rewards; only today can be pressed. Details: `hud.md` §13 (GoRewardCalendar).
@@ -932,6 +967,17 @@ Extends `StyleBox`. Chamfered, bracketed and forged faces for your own panels. D
 var face := GoStyleBoxCut.new()
 face.cut = 8
 panel.add_theme_stylebox_override(&"panel", face)
+```
+
+### `GoStyleBoxSprite · GoTextureSprite`
+
+Extends `StyleBox`. A painted PNG drawn in nine slices, and its icon twin for a slider handle or a switch. Details: `theming.md` §7 (Custom StyleBoxes).
+
+```gdscript
+var plate := GoStyleBoxSprite.new()
+plate.texture = preload("res://ui/painted/gloss_green.png")
+plate.pixels_per_unit = 3.0
+button.add_theme_stylebox_override(&"normal", plate)
 ```
 
 ### `GoSafeArea · GoScale`
