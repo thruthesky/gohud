@@ -47,13 +47,13 @@ const WASD: PackedStringArray = ["W", "A", "S", "D"]
 		queue_redraw()
 
 ## How far the word sits above the key's centre — the cap's top face stands over its thick bottom edge.
-@export var face_lift := 2.0:
+var face_lift := 2.0:
 	set(value):
 		face_lift = value
 		queue_redraw()
 
 ## Half the length of an arrow triangle (dp).
-@export var arrow_half := 7.0:
+var arrow_half := 7.0:
 	set(value):
 		arrow_half = maxf(1.0, value)
 		queue_redraw()

@@ -32,6 +32,8 @@ const VAR_LOCKED := &"GoLevelCardLocked"
 const VAR_TITLE := &"GoTitle"
 ## The thumbnail's well when the theme has it.
 const VAR_WELL := &"GoWell"
+## The thumbnail of a locked level is greyed with this (the game greys its map preview).
+const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 
 ## The level's name ("STAGE 3").
 @export var title := "":
@@ -284,11 +286,6 @@ func card_variation() -> StringName:
 
 ## The text colour on the tile's face.
 func ink() -> Color:
-	var variation := card_variation()
-	var look := GoUi.theme()
-	var key := &"font_disabled_color" if state == State.LOCKED else &"font_color"
-	if look != null and variation == _wanted_variation() and look.has_color(key, variation):
-		return look.get_color(key, variation)
 	match state:
 		State.CURRENT: return GoUi.theme_color(&"font_color", GoTheme.VAR_PRIMARY_BUTTON, Color.WHITE)
 		State.LOCKED:
@@ -306,10 +303,6 @@ func outline_ink() -> Color:
 			var found := GoTheme.color_in_chain(look, &"font_outline_color", type)
 			if found.a > 0.0: return found
 	return Color.TRANSPARENT
-
-
-func _wanted_variation() -> StringName:
-	return VAR_LOCKED if state == State.LOCKED else (VAR_CURRENT if state == State.CURRENT else VAR_CARD)
 
 
 static func _theme_has(type: StringName) -> bool:
@@ -506,13 +499,12 @@ func _refresh() -> void:
 	_cover.texture = thumbnail
 	_cover.focus = thumbnail_focus
 	_cover.visible = thumbnail != null
-	_cover.modulate = Color(0.62, 0.64, 0.7) if locked else Color.WHITE
+	_cover.modulate = LOCKED_TINT if locked else Color.WHITE
 
 	# Texts: the title look when the theme has it.
 	var label_look := VAR_TITLE if _theme_has(VAR_TITLE) else &""
 	for label in [title_label, subtitle_label, locked_label, tag_label]:
 		label.theme_type_variation = label_look
-		label.auto_translate_mode = auto_translate_mode
 	title_label.text = title
 	subtitle_label.text = subtitle
 	locked_label.text = locked_text
