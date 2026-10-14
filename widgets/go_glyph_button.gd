@@ -9,7 +9,8 @@
 ## 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The
 ##    label stays a plain `text`, so translation and tests work as on any button. The label moves right by half the
 ##    glyph's room (the faces are wrapped to move that much content margin from the right side to the left), so the
-##    button's minimum size does not change unless the shift is wider than the right padding.
+##    button's minimum size does not change unless the shift is wider than the right padding, or the glyph would come
+##    closer than [constant MIN_EDGE] to the edge — then the button grows instead.
 ## 🔑 Right to left, the whole layout is mirrored: the glyph stands at the label's right, where the reading starts.
 @tool
 class_name GoGlyphButton
@@ -45,6 +46,8 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 
 var _shift := 0.0
 var _shifting := false
+## A resize or theme change came while the faces were being re-wrapped (that re-wrap may have caused it).
+var _missed := false
 
 
 ## A face drawn as [param from] with [param shift] of content margin moved from its right side to its left (from its
@@ -56,17 +59,20 @@ class ShiftedBox:
 	## The face it wraps was the button's own override (put back when the wrapper comes off).
 	var was_override := false
 
-	func _init(from: StyleBox = null, shift := 0.0, mirrored := false) -> void:
+	func _init(from: StyleBox = null, shift := 0.0, mirrored := false, edge := 0.0) -> void:
 		base = from
 		if from == null: return
-		# The label's centre moves away from the glyph by `shift`. A negative margin would read as "unset", so what the
-		# far padding cannot give goes on the glyph's side twice over: the label still lands centred with its glyph, and
-		# the button grows.
+		# The label's centre moves away from the glyph by `shift`. Up to `shift` of the far padding is given up (the
+		# group is then centred with thinner padding on both sides), never so much that the glyph — `2 × shift` before
+		# the label at the smallest size — comes closer than `edge` to its side. A negative margin would read as
+		# "unset", so past that the button grows.
 		var lead := SIDE_RIGHT if mirrored else SIDE_LEFT
 		var trail := SIDE_LEFT if mirrored else SIDE_RIGHT
-		var taken := minf(shift, from.get_margin(trail))
-		set_content_margin(lead, from.get_margin(lead) + 2.0 * shift - taken)
-		set_content_margin(trail, from.get_margin(trail) - taken)
+		var near := from.get_margin(lead)
+		var far := from.get_margin(trail)
+		var outside := maxf(near - minf(shift, far), edge)
+		set_content_margin(lead, outside + 2.0 * shift)
+		set_content_margin(trail, outside - near + far)
 		content_margin_top = from.get_margin(SIDE_TOP)
 		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
 
@@ -156,7 +162,10 @@ func _notification(what: int) -> void:
 
 ## Re-wraps the theme's faces with the current shift (or drops the wrappers when there is no glyph).
 func _update_shift() -> void:
-	if _shifting: return
+	if _shifting:
+		_missed = true
+		return
+	_missed = false
 	_shifting = true
 	_shift = glyph_allowance() * 0.5
 	begin_bulk_theme_override()
@@ -169,11 +178,15 @@ func _update_shift() -> void:
 		for state in TEXT_STATES:
 			var face := get_theme_stylebox(state)
 			if face == null: continue
-			var wrapper := ShiftedBox.new(face, _shift, is_layout_rtl())
+			var wrapper := ShiftedBox.new(face, _shift, is_layout_rtl(), MIN_EDGE)
 			wrapper.was_override = has_theme_stylebox_override(state)
 			add_theme_stylebox_override(state, wrapper)
 	end_bulk_theme_override()
 	_shifting = false
+	# 🛑 Swapping the faces can resize the button at once (a taller minimum size, say): the height the shift was
+	#    measured on is then stale. The glyph's room depends on the height alone, so one more pass settles it.
+	if _missed and not is_equal_approx(_shift, glyph_allowance() * 0.5): _update_shift()
+	_missed = false
 
 
 func _draw_glyph() -> void:
