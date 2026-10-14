@@ -387,6 +387,10 @@ signal changed_settings
 ## Wrap long text. 🛑 Turned off, a line stretches out and the minimum width can run past the screen.
 @export var autowrap_text := true
 
+## The smallest share of its base size [method GoStyle.fit_font_size] shrinks a label to (0.7 = 70%).
+## 🛑 A label on fixed art that still does not fit at this floor runs over — raise the art, not this floor.
+@export_range(0.3, 1.0, 0.01) var fit_min_scale := 0.7
+
 
 func _init() -> void:
 	# Catch every path that calls `emit_changed()` (the theme·icon setters and so on) in one place.

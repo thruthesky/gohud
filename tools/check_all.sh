@@ -61,6 +61,9 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_skin_test.gd" \
 step "①-r unit tests — the painted arcade_light theme (the game's variations, sprites, item sets, tokens; the map)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_theme_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-w unit tests — the painted widgets (fit_font_size, GoCoverImage, GoKeyCluster, GoLevelCard, GoGlyphButton, GoKbd done, GoSurface extras)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_widgets_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-t unit tests — the seven templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,
 #    yet until 2026-09-16 no check opened any of those five (the docs said "headless-tested").
