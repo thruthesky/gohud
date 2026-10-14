@@ -416,16 +416,28 @@ func _range_slider(theme: Theme) -> void:
 		% (grab.get_size() if grab else "none"))
 	check(range_slider.get_combined_minimum_size().y >= HANDLE_SIZE.y, "GoRangeSlider: room for the handle")
 	range_slider.theme_type_variation = &"GoSliderGreen"
-	var fill := range_slider.get_theme_stylebox(&"grabber_area", range_slider._type())
+	var fill := range_slider._box(&"grabber_area")
 	var art: Variant = fill.get(&"texture") if fill != null else null
 	check(art is Texture2D and (art as Texture2D).resource_path == PAINTED + "slider_green.png",
 		"GoRangeSlider: theme_type_variation GoSliderGreen paints the green fill")
 	check(range_slider._grabber() != null and range_slider._grabber().get_size() == HANDLE_SIZE,
 		"GoRangeSlider: a fill variation keeps HSlider's handle")
-	var track := range_slider.get_theme_stylebox(&"slider", range_slider._type())
+	var track := range_slider._box(&"slider")
 	check(track != null and track.get(&"texture") is Texture2D
 		and (track.get(&"texture") as Texture2D).resource_path == PAINTED + "slider_track.png",
 		"GoRangeSlider: a fill variation keeps HSlider's track")
+	# On a preset with no slider variations, any variation — a fill named for arcade_light, or one that is no
+	# slider at all — still draws HSlider's track, fill and handle (a Control never falls back to HSlider by itself).
+	var plain := load("res://addons/gohud/themes/gohud_dark.tres") as Theme
+	range_slider.theme = plain
+	for variation: StringName in [&"GoSliderGreen", &"GoCard"]:
+		range_slider.theme_type_variation = variation
+		for item: StringName in [&"slider", &"grabber_area", &"grabber_area_highlight"]:
+			check(range_slider._box(item) == plain.get_stylebox(item, &"HSlider"),
+				"GoRangeSlider on gohud_dark with %s: HSlider's %s (got %s)" % [variation, item, range_slider._box(item)])
+		for item: StringName in [&"grabber", &"grabber_highlight"]:
+			check(range_slider._grabber(item) == plain.get_icon(item, &"HSlider"),
+				"GoRangeSlider on gohud_dark with %s: HSlider's %s icon" % [variation, item])
 	range_slider.free()
 
 
