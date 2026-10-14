@@ -19,6 +19,21 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
+  exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
+  `GoLevelCardLocked` (StageCard / StageCardNext / StageCardLocked), `GoWell` (the map-preview well), `GoHudPanel`
+  (ArcadePanel), `GoBannerGold` (HudBanner), `GoNoticeGold` (NotifPlayer), `GoChipDark` (LangChip) and `GoIconOnly`
+  (PauseRound). Sizes the game takes from `Cfg` are written at their desktop value (`tools/arcade_painted_map.json`
+  `_cfg_sizes`). The game’s stage-select art is in `assets/arcade_light/stage/` (window, ribbon, three level cards,
+  well, and the check / lock / person / play-tag marks for a level card), and the skull and magnet glyphs join
+  `icons/arcade_light`. The artwork is distributed under this package’s MIT license.
+
+- **Under `arcade_light` a floating HUD board is the game’s HUD panel.** `floating_box(BOX_HUD)` — so
+  `GoStyle.floating()`, `GoStyle.hud_panel()` and `GoPromptCard` — draws white at 90 % with a blue rim and an 8 px
+  bottom edge instead of the painted card (which `GoStyle.floating()` could not use and replaced with a plain white
+  rectangle). `GoConfig.container_alpha` and `container_alpha_overrides` multiply that white, as they do the notice
+  pill.
+
 - **`arcade_light` now uses Magnet Mayhem’s painted artwork.** Its keys, cards, insets, ribbons, keycaps and badges
   use nine-slice PNGs (`GoStyleBoxSprite`, `GoSkinArcadePainted`), with blue primary, green success, grey neutral and
   red danger keys. The preset includes the game’s white glyphs with default-icon fallback, a frosted modal scrim

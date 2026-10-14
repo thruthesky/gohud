@@ -95,19 +95,20 @@ MAP = {
     "RibbonTitle": "GoRibbon", "RibbonRed": "GoRibbonRed", "Notif": "GoNotice",
     "Title": "GoTitle", "OutlineLabel": "GoOutlineLabel",
     "StageWindow": "GoWindowBlue", "StageRibbon": "GoRibbonWide", "StageCard": "GoLevelCard",
-    "StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked", "MapWell": "GoWell",
+    "StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
     "ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
     "PauseRound": "GoIconOnly",
 }
-# 🔑 `MapWell` is no variation in the game: `MapPreview.set_well()` builds the well's SpriteBox in code. The game can
-#    alias it all the same (`theme.get_stylebox(&"panel", &"GoWell")`).
+# Variations the game draws in code, not as a UiTheme variation — kept out of MAP (whose keys are all UiTheme names):
+# gohud variation → where the game builds it. The game can use the gohud one directly.
+CODE_BUILT = {"GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)"}
 # The `Cfg` sizes written at their desktop value (the game swaps the touch value in itself).
 CFG_SIZES = {
     "GoHudPanel": "content margins from Cfg.Hud.PANEL_PADDING = %g (touch: Cfg.Hud.PANEL_PADDING_TOUCH)"
                   % HUD_PANEL_PADDING,
     "GoBannerGold": "content margins from Cfg.Hud.BANNER_PADDING = %g (touch: Cfg.Hud.BANNER_PADDING_TOUCH)"
                     % HUD_BANNER_PADDING,
-    "GoChipDark": "font_size is Cfg.Menu.CHIP_FONT = %d" % CHIP_FONT_SIZE,
+    "GoChipDark": "font_size is Cfg.Menu.CHIP_FONT = %d (no touch value)" % CHIP_FONT_SIZE,
 }
 GAME_ONLY = {
     "HudPanel": "the old flat look, not part of the painted set",
@@ -383,8 +384,10 @@ def write_map():
             "_font_sizes": {"_help": "No font is written. The font sizes written are the game's literal ones or a Cfg "
                                      "size's desktop value (named in _cfg_sizes).",
                             "written": sizes, "left_to_game": []},
-            "_cfg_sizes": {"_help": "Values that are a Cfg size in the game, written at their desktop value; the game "
-                                    "swaps in the touch value itself.", **CFG_SIZES},
+            "_cfg_sizes": {"_help": "Values that are a Cfg size in the game, written at their desktop value; where "
+                                    "Cfg has a touch value (named per entry) the game swaps it in itself.", **CFG_SIZES},
+            "_code_built": {"_help": "gohud variations the game builds in code rather than as a UiTheme variation: "
+                                     "gohud variation → where the game builds it.", **CODE_BUILT},
             "_base_types": {"_help": "Base types this shape styles as the game does (the game pins base types itself).",
                             "types": ["Label", "OptionButton", "PopupMenu"]}}
     body.update(MAP)

@@ -1,6 +1,7 @@
 ## 🧪 **Checks for the arcade_light painted art** — the painted sprites in `assets/arcade_light/painted/`, the
 ## stage-select art in `assets/arcade_light/stage/` and the white glyphs in `icons/arcade_light/`, brought over from
-## Magnet Mayhem, and the icon set the `arcade_light` preset draws them with (`icons/arcade_light/arcade_light_icons.tres`). Its own file, so it never clashes with the other checks.
+## Magnet Mayhem, and the icon set the `arcade_light` preset draws them with
+## (`icons/arcade_light/arcade_light_icons.tres`). Its own file, so it never clashes with the other checks.
 ##
 ##   GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_assets_test.gd" bash addons/gohud/tools/run_tests.sh
 ##
@@ -24,7 +25,8 @@ const SPRITES := {
 }
 
 ## Every stage-select sprite (the game's `assets/ui/stage`) → its mipmap choice: the window, ribbon, cards and well the
-## theme draws, and the marks a level card lays on its plate (check, lock, person, play tag). None has mipmaps.
+## theme draws, and the marks the GoLevelCard widget lays on its plate (check, lock, person, play tag). None has
+## mipmaps.
 const STAGE_SPRITES := {
 	"card_cleared": false, "card_current": false, "card_locked": false, "check": false, "lock": false, "person": false,
 	"play_tag": false, "ribbon_title": false, "well": false, "window": false,

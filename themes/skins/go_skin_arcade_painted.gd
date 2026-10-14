@@ -118,6 +118,8 @@ func surface_box(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, alpha
 
 ## A floating board is the same card — its painted halo is the shadow. A HUD board floating over the game is the
 ## game's HUD panel instead (`hud_panel_box`), as `GoStyle.floating()` draws a status panel.
+## 🎮 Intended: under arcade_light **every** `floating_box(BOX_HUD)` — `GoPromptCard`, every `GoStyle.hud_panel()` /
+##    `GoStyle.floating()` user, not only the gallery panel — is the game's `ArcadePanel`, not the painted card.
 ## 🛑 `GoStyle.floating()` takes only a `StyleBoxFlat`: the card sprite here fell back to the plain flat white
 ##    rectangle in the gallery's HP / MP / XP panel (2026-10-14).
 func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBox:
@@ -127,7 +129,8 @@ func floating_box(variant := GoTheme.BOX_HUD, accent := Color.TRANSPARENT, alpha
 
 ## The game's HUD panel (`UiTheme` `ArcadePanel`, the theme's `GoHudPanel`): white at 90 %, a 5 px blue rim with an
 ## 8 px bottom edge, a thin ink line round it, `HUD_PAD` clear inside the border. An accent paints the rim; the
-## opacity multiplies the white's own 0.9 (`fade_box`).
+## opacity multiplies the white's own 0.9 (`fade_box`): [param alpha] when given, else what the project's `GoConfig`
+## chose (`_config_alpha`).
 func hud_panel_box(accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBoxFlat:
 	var face := StyleBoxFlat.new()
 	face.bg_color = PANEL
@@ -143,7 +146,20 @@ func hud_panel_box(accent := Color.TRANSPARENT, alpha := -1.0) -> StyleBoxFlat:
 	face.content_margin_right = HUD_PAD + HUD_OUTLINE
 	face.content_margin_top = HUD_PAD + HUD_OUTLINE
 	face.content_margin_bottom = HUD_PAD + HUD_BOTTOM
-	return fade_box(face, alpha) as StyleBoxFlat
+	return fade_box(face, alpha if alpha >= 0.0 else _config_alpha(GoTheme.BOX_HUD)) as StyleBoxFlat
+
+
+## The opacity the project's `GoConfig` chose for [param variant] — `container_alpha_overrides`, a `metric_overrides`
+## alpha token or `container_alpha`, in `GoUi.surface_alpha`'s order — or -1 when it chose none.
+## 🛑 Not the theme's `<variant>_alpha`: the game's HUD panel and notification pill carry their own white at 0.9,
+##    and the theme constant (`hud_alpha` 94) would thin that a second time.
+static func _config_alpha(variant: StringName) -> float:
+	var settings := GoUi.config
+	if settings == null: return -1.0
+	if settings.container_alpha_overrides.get(variant, -1.0) >= 0.0 \
+			or settings.metric_overrides.has(GoTheme.alpha_token(variant)) or settings.container_alpha >= 0.0:
+		return GoUi.surface_alpha(variant)
+	return -1.0
 
 
 ## A notice is the game's notification pill: white, a blue rim and a deeper bottom edge, a thin ink line round it. An
@@ -165,7 +181,7 @@ func notice_box(accent: Color, _compact: bool, alpha := -1.0) -> StyleBox:
 	face.content_margin_top = NOTIF_PAD.y + NOTIF_OUTLINE
 	face.content_margin_bottom = NOTIF_PAD.y + NOTIF_BOTTOM
 	tint_notice(face, accent)
-	return fade_box(face, alpha)
+	return fade_box(face, alpha if alpha >= 0.0 else _config_alpha(GoTheme.BOX_NOTICE))
 
 
 ## The accent paints the rim (gold lays it on cream); no accent leaves the pill as it is.

@@ -274,11 +274,15 @@ func _variations(theme: Theme) -> void:
 		if game == "game_only" or game.begins_with("_"): continue
 		check(theme.get_type_variation_base(StringName(map[game])) != &"", "map: %s → %s is in the theme" % [game, map[game]])
 	var moved := {"StageWindow": "GoWindowBlue", "StageRibbon": "GoRibbonWide", "StageCard": "GoLevelCard",
-		"StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked", "MapWell": "GoWell",
+		"StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
 		"ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
 		"PauseRound": "GoIconOnly"}
 	for game: String in moved:
 		check(map.get(game, "") == moved[game], "map: %s → %s (got %s)" % [game, moved[game], map.get(game, "nothing")])
+	check(not map.has("MapWell"), "map: MapWell is no UiTheme variation, so it is not a map key")
+	var code_built: Variant = map.get("_code_built", {})
+	check(code_built is Dictionary and str((code_built as Dictionary).get("GoWell", "")).begins_with("MapPreview.set_well()")
+		and theme.get_type_variation_base(&"GoWell") != &"", "map: GoWell is listed as code-built (MapPreview.set_well())")
 	check(map.get("game_only", []) is Array and (map["game_only"] as Array).has("HudPanel"), "map: the old flat look stays in the game")
 	for kept: String in map.get("game_only", []):
 		check(not map.has(kept), "map: %s is either moved or kept, not both" % kept)

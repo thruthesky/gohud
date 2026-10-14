@@ -17,10 +17,14 @@
     "left_to_game": []
   },
   "_cfg_sizes": {
-    "_help": "Values that are a Cfg size in the game, written at their desktop value; the game swaps in the touch value itself.",
+    "_help": "Values that are a Cfg size in the game, written at their desktop value; where Cfg has a touch value (named per entry) the game swaps it in itself.",
     "GoHudPanel": "content margins from Cfg.Hud.PANEL_PADDING = 8 (touch: Cfg.Hud.PANEL_PADDING_TOUCH)",
     "GoBannerGold": "content margins from Cfg.Hud.BANNER_PADDING = 4 (touch: Cfg.Hud.BANNER_PADDING_TOUCH)",
-    "GoChipDark": "font_size is Cfg.Menu.CHIP_FONT = 15"
+    "GoChipDark": "font_size is Cfg.Menu.CHIP_FONT = 15 (no touch value)"
+  },
+  "_code_built": {
+    "_help": "gohud variations the game builds in code rather than as a UiTheme variation: gohud variation → where the game builds it.",
+    "GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)"
   },
   "_base_types": {
     "_help": "Base types this shape styles as the game does (the game pins base types itself).",
@@ -49,7 +53,6 @@
   "StageCard": "GoLevelCard",
   "StageCardNext": "GoLevelCardCurrent",
   "StageCardLocked": "GoLevelCardLocked",
-  "MapWell": "GoWell",
   "ArcadePanel": "GoHudPanel",
   "HudBanner": "GoBannerGold",
   "NotifPlayer": "GoNoticeGold",

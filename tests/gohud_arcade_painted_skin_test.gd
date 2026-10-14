@@ -53,7 +53,6 @@ func frames(count: int) -> void:
 	for i in count: await process_frame
 
 
-## [param box] is a `GoStyleBoxSprite` of [param file] with [param edge] and [param ppu].
 ## 🎮 A HUD board floating over the game is the game's HUD panel (`UiTheme.arcade_panel_box(Cfg.Hud.PANEL_PADDING)`),
 ##    a StyleBoxFlat so `GoStyle.floating()` keeps it — the card sprite fell back to a plain white rectangle there.
 func _hud_panel(skin: GoSkinArcadePainted) -> void:
@@ -61,7 +60,7 @@ func _hud_panel(skin: GoSkinArcadePainted) -> void:
 	var styled := GoStyle.floating(GoTheme.BOX_HUD)
 	GoUi.reset()
 	GoUi.config.reduce_motion = true
-	for face: StyleBox in [skin.floating_box(), skin.floating_box(GoTheme.BOX_HUD), styled]:
+	for face: StyleBox in [skin.floating_box(), styled]:
 		var flat := face as StyleBoxFlat
 		check(flat != null, "floating_box(hud): the game's flat HUD panel (got %s)" % face)
 		if flat == null: continue
@@ -77,14 +76,48 @@ func _hud_panel(skin: GoSkinArcadePainted) -> void:
 	var want := theme.get_stylebox(&"panel", &"GoHudPanel") as StyleBoxFlat if theme else null
 	var got := skin.floating_box() as StyleBoxFlat
 	check(want != null and got != null and got.bg_color.is_equal_approx(want.bg_color) and got.border_color.is_equal_approx(want.border_color)
-		and _margins(got) == _margins(want) and got.border_width_bottom == want.border_width_bottom
-		and got.corner_radius_top_left == want.corner_radius_top_left, "floating_box(hud) is the theme's GoHudPanel")
+		and _margins(got) == _margins(want) and _borders(got) == _borders(want)
+		and got.corner_radius_top_left == want.corner_radius_top_left and got.shadow_color.is_equal_approx(want.shadow_color)
+		and got.shadow_size == want.shadow_size and got.shadow_offset == want.shadow_offset,
+		"floating_box(hud) is the theme's GoHudPanel")
 	var accented := skin.floating_box(GoTheme.BOX_HUD, Color("#e8332f")) as StyleBoxFlat
 	check(accented != null and accented.border_color.is_equal_approx(Color("#e8332f")), "floating_box(hud): an accent paints the rim")
 	var faded := skin.floating_box(GoTheme.BOX_HUD, Color.TRANSPARENT, 0.5) as StyleBoxFlat
 	check(faded != null and is_equal_approx(faded.bg_color.a, 0.45), "floating_box(hud): alpha multiplies the 0.9 white")
+	_config_alpha(skin)
 
 
+## The project's `GoConfig` opacity reaches the HUD panel and the notice pill under arcade_light: `container_alpha`
+## and a per-variant override multiply the game's own white; with neither, the theme's `hud_alpha` does not thin it.
+func _config_alpha(skin: GoSkinArcadePainted) -> void:
+	GoUi.use_preset(load("res://addons/gohud/themes/presets/arcade_light.tres") as GoThemePreset)
+	var plain := skin.floating_box() as StyleBoxFlat
+	check(plain != null and is_equal_approx(plain.bg_color.a, 0.9), "hud panel: no config opacity keeps the game's 0.9")
+	GoUi.config.container_alpha = 0.5
+	var all := skin.floating_box() as StyleBoxFlat
+	check(all != null and is_equal_approx(all.bg_color.a, 0.45), "hud panel: container_alpha 0.5 → 0.45 (got %s)"
+		% (all.bg_color.a if all else -1.0))
+	var notice := skin.notice_box(Color.TRANSPARENT, false) as StyleBoxFlat
+	check(notice != null and is_equal_approx(notice.bg_color.a, 0.45), "notice: container_alpha 0.5 → 0.45 (got %s)"
+		% (notice.bg_color.a if notice else -1.0))
+	GoUi.config.container_alpha_overrides = {GoTheme.BOX_HUD: 0.3}
+	var one := skin.floating_box() as StyleBoxFlat
+	check(one != null and is_equal_approx(one.bg_color.a, 0.27), "hud panel: the BOX_HUD override 0.3 wins → 0.27 (got %s)"
+		% (one.bg_color.a if one else -1.0))
+	var styled := GoStyle.floating(GoTheme.BOX_HUD)
+	check(styled != null and is_equal_approx(styled.bg_color.a, 0.27), "GoStyle.floating(hud): the override reaches it")
+	var given := skin.floating_box(GoTheme.BOX_HUD, Color.TRANSPARENT, 0.5) as StyleBoxFlat
+	check(given != null and is_equal_approx(given.bg_color.a, 0.45), "hud panel: an explicit alpha beats the config")
+	GoUi.reset()
+	GoUi.config.reduce_motion = true
+
+
+## The four border widths of [param box] (left, top, right, bottom).
+func _borders(box: StyleBoxFlat) -> Vector4i:
+	return Vector4i(box.border_width_left, box.border_width_top, box.border_width_right, box.border_width_bottom)
+
+
+## [param box] is a `GoStyleBoxSprite` of [param file] with [param edge] and [param ppu].
 func _is_sprite(box: StyleBox, file: String, edge: Vector4, ppu: float, label: String) -> void:
 	var sprite := box as GoStyleBoxSprite
 	check(sprite != null, "%s: a GoStyleBoxSprite (got %s)" % [label, box])
