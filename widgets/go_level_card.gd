@@ -16,7 +16,8 @@
 ##
 ## 🛑 The texts come from the caller (they depend on the language); `locked_text` and `play_text` too. Every text is
 ##    shrunk to fit (`GoStyle.fit_font_size`), so a long translation never runs under the lock.
-## 🛑 A locked tile is `disabled` — it takes no press.
+## 🛑 A locked tile is `disabled` — it takes no press. The card only takes back the `disabled` it set itself: a tile
+##    the caller disabled stays disabled when it unlocks. `tooltip_text` is the caller's too.
 @tool
 class_name GoLevelCard
 extends Button
@@ -223,6 +224,8 @@ var _lock_box: VBoxContainer
 var _lock_art: Control
 var _tag_art: Control
 var _built := false
+## The card set `disabled` because the tile is locked (it was not disabled already).
+var _lock_disabled := false
 
 
 func _init() -> void:
@@ -445,10 +448,14 @@ func _refresh() -> void:
 	var k := scale_factor
 	var locked := state == State.LOCKED
 	var current := state == State.CURRENT
-	disabled = locked
+	if locked and not disabled:
+		disabled = true
+		_lock_disabled = true
+	elif not locked and _lock_disabled:
+		disabled = false
+		_lock_disabled = false
 	theme_type_variation = card_variation()
 	text = ""
-	tooltip_text = ""
 	accessibility_name = summary().replace("\n", ", ")
 	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, float(GoUi.config.min_touch_size)))
 

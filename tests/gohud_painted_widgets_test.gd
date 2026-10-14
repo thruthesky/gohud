@@ -186,6 +186,22 @@ func _level_card(look: StringName) -> void:
 	check(card.disabled and card.lock.visible and card.locked_label.visible, "%s card: locked shows the padlock" % look)
 	check(card.summary().ends_with("\nVERROUILLÉ"), "%s card: the locked caption is a parameter" % look)
 	check(card.lock.custom_minimum_size.x >= 56.0, "%s card: the lock column is at least 56 wide" % look)
+	card.state = GoLevelCard.State.OPEN
+	await frames(1)
+	check(not card.disabled, "%s card: unlocking takes back the disabled the lock set" % look)
+	card.disabled = true
+	card.state = GoLevelCard.State.LOCKED
+	await frames(1)
+	card.state = GoLevelCard.State.OPEN
+	await frames(1)
+	check(card.disabled, "%s card: a card the caller disabled stays disabled after a lock and unlock" % look)
+	card.disabled = false
+	card.tooltip_text = "Stage one"
+	card.state = GoLevelCard.State.LOCKED
+	card.selected = true
+	await frames(1)
+	check(card.tooltip_text == "Stage one", "%s card: a refresh keeps the caller's tooltip" % look)
+	card.selected = false
 	check(card.locked_label.get_theme_font_size(&"font_size") >= 8, "%s card: LOCKED never under 8" % look)
 
 	card.state = GoLevelCard.State.OPEN
