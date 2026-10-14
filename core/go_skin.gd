@@ -175,9 +175,14 @@ static func fade_box(box: StyleBox, alpha: float) -> StyleBox:
 	return box
 
 
-## The StyleBox background color (transparent if it has none). Custom StyleBoxes use the `bg_color` field too.
+## The StyleBox background color (transparent if it has none). Custom StyleBoxes use the `bg_color` field too; a painted
+## sprite (`GoStyleBoxSprite`) answers with its `face_color`.
 static func box_background(box: StyleBox) -> Color:
 	if box == null: return Color.TRANSPARENT
+	# A painted sprite face (`GoStyleBoxSprite`) has no `bg_color`: its `face_color` names the colour of its art.
+	if &"face_color" in box and not (&"bg_color" in box):
+		var face = box.get(&"face_color")
+		return face if face is Color else Color.TRANSPARENT
 	if not (&"bg_color" in box): return Color.TRANSPARENT
 	var value = box.get(&"bg_color")
 	return value if value is Color else Color.TRANSPARENT

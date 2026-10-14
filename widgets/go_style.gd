@@ -308,8 +308,12 @@ static func label_ink(node: Button, ink: Color, quiet := false) -> Color:
 	var outline := GoTheme.color_in_chain(theme, &"font_outline_color", type)
 	if outline.a <= 0.0 or GoSkin.contrast_ratio(Color(ink, 1.0), Color(outline, 1.0)) >= 3.0: return ink
 	var own := node.get_theme_stylebox(&"normal") if node.has_theme_stylebox_override(&"normal") else null
-	var face := (own if own != null else _theme_face(node, &"normal")) as GoStyleBoxArcade
-	if face != null and face.draw_center and face.frame_drawn() <= 0.0 and face.top().a > 0.0:
+	var shown := own if own != null else _theme_face(node, &"normal")
+	var face := shown as GoStyleBoxArcade
+	var art := shown as GoStyleBoxSprite
+	# A painted sprite face (arcade_light) is a painted key too: its white outlined label stays.
+	if (face != null and face.draw_center and face.frame_drawn() <= 0.0 and face.top().a > 0.0) \
+			or (art != null and art.draw_center and art.texture != null):
 		var white := GoTheme.color_in_chain(theme, &"font_color", type, Color.WHITE)
 		return Color(white, white.a * ink.a * (0.75 if quiet else 1.0))
 	node.set_meta(&"go_label_unlined", true)

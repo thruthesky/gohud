@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="GoThemePreset" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="GoThemePreset" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/core/go_theme_preset.gd" id="script"]
 [ext_resource type="Theme" path="res://addons/gohud/themes/gohud_arcade_light.tres" id="theme"]
 [ext_resource type="Resource" path="res://addons/gohud/themes/skins/gohud_skin_arcade_light.tres" id="skin"]
+[ext_resource type="Resource" path="res://addons/gohud/icons/arcade_light/arcade_light_icons.tres" id="icons"]
 
 [resource]
 script = ExtResource("script")
@@ -11,3 +12,4 @@ title = "Arcade"
 dark = false
 theme = ExtResource("theme")
 skin = ExtResource("skin")
+icons = ExtResource("icons")

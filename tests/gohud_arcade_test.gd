@@ -155,7 +155,8 @@ func _box() -> void:
 
 ## The arcade themes: every key painted, with a gradient and a white ink-outlined label; boards with a frame.
 func _arcade_theme() -> void:
-	for id: StringName in [&"arcade_light", &"arcade_dark"]:
+	# arcade_light is the painted look (GoStyleBoxSprite, GoSkinArcadePainted — gohud_arcade_painted_*_test.gd); these code-drawn checks are arcade_dark's.
+	for id: StringName in [&"arcade_dark"]:
 		GoUi.use_preset(id)
 		var theme := GoUi.theme()
 		check(GoUi.skin() is GoSkinArcade, "%s: the skin is the arcade skin" % id)
@@ -243,7 +244,8 @@ func _other_looks() -> void:
 
 ## The parts the arcade skin draws in code.
 func _arcade_parts() -> void:
-	for id: StringName in [&"arcade_light", &"arcade_dark"]:
+	# arcade_light is the painted look (GoStyleBoxSprite, GoSkinArcadePainted — gohud_arcade_painted_*_test.gd); these code-drawn checks are arcade_dark's.
+	for id: StringName in [&"arcade_dark"]:
 		GoUi.use_preset(id)
 		var skin := GoUi.skin() as GoSkinArcade
 		var page := GoUi.color(GoTheme.BACKGROUND)
@@ -355,7 +357,8 @@ func _surface(title: String) -> GoSurface:
 ## A window's head in the arcade look: a gold banner with an ink-outlined title and a round red close key — and back
 ## to plain when the look changes.
 func _window_head() -> void:
-	GoUi.use_preset(&"arcade_light")
+	# arcade_light is the painted look (GoStyleBoxSprite, GoSkinArcadePainted — gohud_arcade_painted_*_test.gd); these code-drawn checks are arcade_dark's.
+	GoUi.use_preset(&"arcade_dark")
 	var surface := _surface("Paused")
 	await frames(3)
 	var title := surface.title_label
@@ -386,7 +389,8 @@ func _window_head() -> void:
 
 ## One widget painted its own colour: every face but the disabled one, the label still reads, a copy on the widget.
 func _one_widget() -> void:
-	GoUi.use_preset(&"arcade_light")
+	# arcade_light is the painted look (GoStyleBoxSprite, GoSkinArcadePainted — gohud_arcade_painted_*_test.gd); these code-drawn checks are arcade_dark's.
+	GoUi.use_preset(&"arcade_dark")
 	var ink := (GoUi.skin() as GoSkinArcade).ink()
 	var orange := Color("#FF8A1E")
 	var early := GoStyle.arcade_paint(GoStyle.button("Shop"), orange) as Button
@@ -533,7 +537,8 @@ func _screen() -> void:
 ## The scrim frosts the game behind it when the arcade look's `arcade_scrim_blur` is on — and only then: off by
 ## default, never on a clear scrim, never under another look.
 func _frosted_scrim() -> void:
-	GoUi.use_preset(&"arcade_light")
+	# arcade_light is the painted look (GoStyleBoxSprite, GoSkinArcadePainted — gohud_arcade_painted_*_test.gd); these code-drawn checks are arcade_dark's.
+	GoUi.use_preset(&"arcade_dark")
 	var skin := GoUi.skin() as GoSkinArcade
 	check(skin.arcade_scrim_blur == 0.0 and skin.scrim_material() == null, "scrim: plain by default")
 	var surface := _surface("Paused")
@@ -568,7 +573,8 @@ func _frosted_scrim() -> void:
 
 ## A window's title plate painted its own colour — the red ribbon of a GAME OVER — and back to gold without it.
 func _painted_title() -> void:
-	GoUi.use_preset(&"arcade_light")
+	# arcade_light is the painted look (GoStyleBoxSprite, GoSkinArcadePainted — gohud_arcade_painted_*_test.gd); these code-drawn checks are arcade_dark's.
+	GoUi.use_preset(&"arcade_dark")
 	var surface := _surface("Game over")
 	await frames(2)
 	var gold := surface.title_label.get_theme_stylebox(&"normal") as GoStyleBoxArcade

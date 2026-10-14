@@ -21,6 +21,7 @@ import theme_material  # Material 3 Expressive — the `material` shape (tools/t
 import theme_kids  # the toy box — the `kids` shape (tools/theme_kids.py)
 import theme_comic  # the comic page — the `comic` shape (tools/theme_comic.py)
 import theme_arcade  # the arcade cabinet — the `arcade` shape (tools/theme_arcade.py)
+import theme_arcade_painted  # the painted arcade — the `arcade_painted` shape (tools/theme_arcade_painted.py)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ADDON = os.path.normpath(os.path.join(HERE, ".."))
@@ -1179,12 +1180,17 @@ def build(pal, shape, variant, out_path):
         theme_kids.restyle(pal, consts, boxes, T, flat, C, contrast)
     if shape["kind"] == "comic":
         theme_comic.restyle(pal, consts, boxes, T, flat, C, contrast)
-    if shape["kind"] == "arcade":
+    if shape["kind"] in ("arcade", "arcade_painted"):
         theme_arcade.restyle(pal, consts, boxes, T, flat, C, contrast)
+    # The painted arcade: the arcade first, then Magnet Mayhem's painted variations over it.
+    sprites = []
+    if shape["kind"] == "arcade_painted":
+        theme_arcade_painted.restyle(pal, consts, boxes, T, flat, C, contrast)
+        sprites = theme_arcade_painted.ext_resources(boxes)
     jelly = any(body[:1] == ['script = ExtResource("jelly")'] for _, body in boxes.values())
     inked = any(body[:1] == ['script = ExtResource("comic")'] for _, body in boxes.values())
     painted = any(body[:1] == ['script = ExtResource("arcade")'] for _, body in boxes.values())
-    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + int(jelly) + int(inked) + int(painted) + len(fonts)
+    steps = len(boxes) + len(assets) + 1 + (2 if cutting else 0) + int(forging) + int(jelly) + int(inked) + int(painted) + len(fonts) + len(sprites)
     lines = ['[gd_resource type="Theme" load_steps=%d format=3]' % steps, ""]
     if cutting:
         lines.append('[ext_resource type="Script" path="%s" id="cut"]' % CUT_SCRIPT)
@@ -1197,6 +1203,7 @@ def build(pal, shape, variant, out_path):
         lines.append('[ext_resource type="Script" path="%s" id="comic"]' % COMIC_SCRIPT)
     if painted:
         lines.append('[ext_resource type="Script" path="%s" id="arcade"]' % ARCADE_SCRIPT)
+    lines += sprites
     for role, path in fonts.items():
         if not path.startswith(RES + "/") or not os.path.isfile(os.path.join(ADDON, path[len(RES) + 1:])):
             raise SystemExit("Font must exist inside the addon: %s" % path)
@@ -1245,7 +1252,10 @@ SHAPES = {"flat": SHAPE_DEFAULT, "cut": SHAPE_CUT,
           # The comic page: the default family's sizes, an inked outline and a hard shadow (tools/theme_comic.py).
           "comic": dict(SHAPE_DEFAULT, **theme_comic.SHAPE),
           # The arcade cabinet: the default family's sizes, painted keys and thick boards (tools/theme_arcade.py).
-          "arcade": dict(SHAPE_DEFAULT, **theme_arcade.SHAPE)}
+          "arcade": dict(SHAPE_DEFAULT, **theme_arcade.SHAPE),
+          # The painted arcade: the arcade, with Magnet Mayhem's painted sprites on the parts it names
+          # (tools/theme_arcade_painted.py).
+          "arcade_painted": dict(SHAPE_DEFAULT, **dict(theme_arcade.SHAPE, **theme_arcade_painted.SHAPE))}
 PALETTES_DIR = os.path.join(ADDON, "themes", "palettes")
 # Keys a palette must carry — without them generation dies halfway with a KeyError. Say so up front.
 PALETTE_KEYS = ("background", "surface", "surface_soft", "surface_high", "border", "text", "secondary",
@@ -1314,8 +1324,11 @@ SKIN_SCRIPTS = {
     "kids": ("GoSkinKids", RES + "/themes/skins/go_skin_kids.gd"),
     "comic": ("GoSkinComic", RES + "/themes/skins/go_skin_comic.gd"),
     "arcade": ("GoSkinArcade", RES + "/themes/skins/go_skin_arcade.gd"),
+    "arcade_painted": ("GoSkinArcadePainted", RES + "/themes/skins/go_skin_arcade_painted.gd"),
 }
 SKINS_DIR = os.path.join(ADDON, "themes", "skins")
+# The skin scripts that extend another skin script (not `GoSkin`) — their dials include the parent's.
+SKIN_PARENTS = {"arcade_painted": "arcade"}
 
 
 SKIN_SOURCES = {
@@ -1326,6 +1339,7 @@ SKIN_SOURCES = {
     "kids": os.path.join(ADDON, "themes", "skins", "go_skin_kids.gd"),
     "comic": os.path.join(ADDON, "themes", "skins", "go_skin_comic.gd"),
     "arcade": os.path.join(ADDON, "themes", "skins", "go_skin_arcade.gd"),
+    "arcade_painted": os.path.join(ADDON, "themes", "skins", "go_skin_arcade_painted.gd"),
 }
 DIALS_TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "skin_dials.json")
 
@@ -1376,6 +1390,9 @@ def write_skin_resource(tid, skin_spec):
         raise SystemExit("🛑 skin.base must be one of %s (got %r)" % (sorted(SKIN_SCRIPTS), base))
     script_class, script_path = SKIN_SCRIPTS[base]
     known = dict(skin_dials()["default"])
+    # A skin that extends another (the painted arcade extends the arcade) takes its parent's dials too.
+    if base in SKIN_PARENTS:
+        known.update(skin_dials()[SKIN_PARENTS[base]])
     known.update(skin_dials()[base])
     dials = {k: v for k, v in skin_spec.get("dials", {}).items() if not k.startswith("_")}
     unknown = sorted(set(dials) - set(known))

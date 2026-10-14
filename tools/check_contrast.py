@@ -462,9 +462,34 @@ def box_types(path):
 FLAT_DEFAULT_BG = (0.6, 0.6, 0.6, 1.0)
 
 
-def plate_of(box_id, boxes, kinds):
+def parse_faces(path):
+    """`face_color` of every painted sprite face (`GoStyleBoxSprite`, `script = ExtResource(...)` + a texture): the
+    colour of the art under its label, tint included — a texture has no `bg_color` to read."""
+    faces = {}
+    current = None
+    for line in open(path, encoding="utf-8"):
+        line = line.strip()
+        head = re.match(r'^\[sub_resource type="[^"]+" id="([^"]+)"\]', line)
+        if head:
+            current = head.group(1)
+            continue
+        if line.startswith("["):
+            current = None
+            continue
+        match = re.match(r"^face_color\s*=\s*Color\(([^)]+)\)", line) if current else None
+        if match:
+            parts = [float(v) for v in match.group(1).split(",")]
+            while len(parts) < 4:
+                parts.append(1.0)
+            faces[current] = tuple(parts[:4])
+    return faces
+
+
+def plate_of(box_id, boxes, kinds, faces=None):
     """The face's background as `surface_rows` uses it: a colour, `None` (draws nothing — what is under shows through),
-    or `False` (a face this check cannot read — skipped)."""
+    or `False` (a face this check cannot read — skipped). A painted sprite face is measured by its `face_color`."""
+    if faces and box_id in faces and faces[box_id][3] > 0.0:
+        return faces[box_id]
     if box_id in boxes:
         return boxes[box_id]
     kind = kinds.get(box_id)
@@ -481,6 +506,7 @@ def surface_rows(path, colors):
     bottoms = parse_bottoms(path)
     outlines = parse_outlines(path)
     kinds = box_types(path)
+    art = parse_faces(path)
     styles, fonts, bases = parse_theme_map(path)
     under_names = ["background", "surface_soft"]      # buttons sit on the backdrop and inside cards
     rows = []
@@ -495,7 +521,7 @@ def surface_rows(path, colors):
             box_id = table.get("normal" if state == "placeholder" else state)
             if box_id is None:
                 continue
-            box_bg = plate_of(box_id, boxes, kinds)
+            box_bg = plate_of(box_id, boxes, kinds, art)
             if box_bg is False:
                 continue
             ink = font_for(fonts, bases, type_name, keys)
@@ -524,10 +550,17 @@ def surface_rows(path, colors):
                         break        # an opaque plate looks the same whatever is under it
             if worst is None:
                 continue
-            rows.append({
+            row = {
                 "front": "%s.%s" % (type_name, state), "back": "on the plate (%s)" % worst_under,
                 "need": BODY, "ratio": worst, "note": note + (" (outlined)" if line is not None else ""),
-            })
+            }
+            # 🎨 A painted sprite face is fixed art (the host game's own pixels) — the generator cannot fit its paint
+            #    the way it fits a code-drawn key's. An outlined label on it is measured and shown, but a miss is a
+            #    reported art row, not a failure (`--strict` counts it).
+            if box_id in art and line is not None:
+                row["art"] = True
+                row["note"] += " — painted art"
+            rows.append(row)
     return rows
 
 
@@ -558,7 +591,7 @@ def measure(path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--strict", action="store_true", help="count near misses (under 1.1x the bar) as failures too")
+    parser.add_argument("--strict", action="store_true", help="count near misses (under 1.1x the bar) and painted-art rows below it as failures too")
     parser.add_argument("--quiet", action="store_true", help="hide the rows that pass")
     args = parser.parse_args()
 
@@ -569,19 +602,21 @@ def main():
         colors, rows = measure(path)
         if not rows:
             continue
-        bad = [row for row in rows if row["ratio"] < row["need"]]
+        bad = [row for row in rows if row["ratio"] < row["need"] and not row.get("art")]
+        art = [row for row in rows if row["ratio"] < row["need"] and row.get("art")]
         thin = [row for row in rows if row["need"] <= row["ratio"] < row["need"] * 1.1]
-        mark = "🛑" if bad else ("⚠️ " if thin else "✅")
-        print("\n%s %s — %d pairs · %d below the bar · %d near miss" % (mark, name, len(rows), len(bad), len(thin)))
+        mark = "🛑" if bad else ("⚠️ " if thin or art else "✅")
+        print("\n%s %s — %d pairs · %d below the bar · %d near miss%s" % (mark, name, len(rows), len(bad), len(thin),
+              " · %d painted-art rows below the bar" % len(art) if art else ""))
         for row in sorted(rows, key=lambda r: r["ratio"]):
             failed = row["ratio"] < row["need"]
             close = not failed and row["ratio"] < row["need"] * 1.1
             if args.quiet and not failed and not close:
                 continue
-            flag = "🛑" if failed else ("⚠️ " if close else "  ")
+            flag = ("🎨" if row.get("art") else "🛑") if failed else ("⚠️ " if close else "  ")
             print("   %s %-24s on %-20s %5.2f:1  (need %.1f)  %s"
                   % (flag, row["front"], row["back"], row["ratio"], row["need"], row["note"]))
-        failures += len(bad) + (len(thin) if args.strict else 0)
+        failures += len(bad) + (len(thin) + len(art) if args.strict else 0)
 
     print("\n%s %d below the bar in total" % ("🛑" if failures else "✅", failures))
     return 1 if failures else 0

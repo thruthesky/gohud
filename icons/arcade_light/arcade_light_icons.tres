@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
+[ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/back.png" id="back"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/check.png" id="check"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/exit.png" id="exit"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/gear.png" id="gear"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/globe.png" id="globe"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/help.png" id="help"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/pause.png" id="pause"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/play.png" id="play"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/retry.png" id="retry"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/skip.png" id="skip"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_low.png" id="sound_low"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_off.png" id="sound_off"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_on.png" id="sound_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/trophy.png" id="trophy"]
+
+[resource]
+script = ExtResource("script")
+set_name = "Arcade painted glyphs"
+attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game. gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
+fallback = ExtResource("fallback")
+textures = {
+&"back": ExtResource("back"),
+&"check": ExtResource("check"),
+&"exit": ExtResource("exit"),
+&"gear": ExtResource("gear"),
+&"globe": ExtResource("globe"),
+&"help": ExtResource("help"),
+&"pause": ExtResource("pause"),
+&"play": ExtResource("play"),
+&"retry": ExtResource("retry"),
+&"skip": ExtResource("skip"),
+&"sound_low": ExtResource("sound_low"),
+&"sound_off": ExtResource("sound_off"),
+&"sound_on": ExtResource("sound_on"),
+&"trophy": ExtResource("trophy"),
+&"home": ExtResource("exit"),
+&"refresh": ExtResource("retry"),
+&"forward": ExtResource("skip"),
+&"crown": ExtResource("trophy"),
+&"settings": ExtResource("gear"),
+&"volume_high": ExtResource("sound_on"),
+&"volume_low": ExtResource("sound_low"),
+&"volume_off": ExtResource("sound_off")
+}
