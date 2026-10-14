@@ -30,6 +30,11 @@ func _initialize() -> void:
 		await _kbd_done(look)
 		await _surface(look)
 	await _reparent()
+	for look: StringName in GoThemePresets.ids():
+		GoUi.use_preset(look)
+		await frames(1)
+		_kbd_done_box(look)
+	GoUi.reset()
 	GoUi.reset()
 	print("gohud painted widgets tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -321,6 +326,21 @@ func _kbd_done(look: StringName) -> void:
 			"%s kbd: the painted keycap tinted #8ff0a4" % look)
 	kbd.queue_free()
 	await frames(1)
+
+
+## Every bundled look: the done cap shows green where the plain cap is, and its word reads on it.
+func _kbd_done_box(look: StringName) -> void:
+	var skin := GoUi.skin()
+	var page := Color(GoUi.color(GoTheme.BACKGROUND), 1.0)
+	var plain := GoSkin.blend(GoSkin.box_background(skin.kbd_box()), page)
+	var green_box := skin.kbd_done_box()
+	var green := GoSkin.blend(GoSkin.box_background(green_box), page)
+	check(GoSkin.box_background(green_box).a > 0.0 and not green.is_equal_approx(plain),
+		"%s kbd done: the cap shows a fill of its own (plain %s, done %s)" % [look, plain.to_html(), green.to_html()])
+	check(green.g > green.r and green.g > green.b, "%s kbd done: the cap reads green (%s)" % [look, green.to_html()])
+	var ink := skin.kbd_done_ink()
+	var ratio := GoSkin.contrast_ratio(GoSkin.blend(ink, green), green)
+	check(ratio >= 4.5, "%s kbd done: the word reads on the green (%.2f)" % [look, ratio])
 
 
 # ── Reparent ───────────────────────────────────────────────────────────
