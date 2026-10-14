@@ -3389,3 +3389,46 @@ static func _reach_out(rect: Rect2, clipper: Control) -> float:
 	if not scroll_x: worst = maxf(worst, maxf(room.position.x - rect.position.x, rect.end.x - room.end.x))
 	if not scroll_y: worst = maxf(worst, maxf(room.position.y - rect.position.y, rect.end.y - room.end.y))
 	return worst
+
+
+# ── Shrink to fit ─────────────────────────────────────────────────────
+
+## 🔤 The smallest size [method fit_font_size] goes down to — [param base] × [param min_scale], rounded up.
+## A negative [param min_scale] takes `GoUi.config.fit_min_scale` (0.7 by default).
+static func fit_floor(base: int, min_scale := -1.0) -> int:
+	var share := min_scale if min_scale > 0.0 else GoUi.config.fit_min_scale
+	return maxi(1, ceili(float(base) * share))
+
+
+## 🔤 **Shrink-to-fit for text on fixed art** — the biggest size from [param base] down to [method fit_floor]
+## at which [param texts], set side by side on one row, are no wider than [param room].
+## Pass every text that shares the row (a label and its value, say) so they shrink together; a text with line
+## breaks counts its widest line. [param font] null takes the theme's default font.
+## 🛑 It never goes under the floor — text that still does not fit there runs over, so the art must grow instead.
+##    Call it again when the language or the room changes: the size is measured, not followed.
+static func fit_font_size(texts: PackedStringArray, base: int, room: float, font: Font = null,
+		min_scale := -1.0) -> int:
+	var face := font if font != null else _fit_font()
+	var floor_size := fit_floor(base, min_scale)
+	var size := base
+	while size > floor_size and row_width(face, texts, size) > room:
+		size -= 1
+	return size
+
+
+## 🔤 How wide [param texts] stand side by side at [param size] — each text's widest line, summed.
+static func row_width(font: Font, texts: PackedStringArray, size: int) -> float:
+	var face := font if font != null else _fit_font()
+	var total := 0.0
+	for text in texts:
+		var widest := 0.0
+		for line in text.split("\n"):
+			widest = maxf(widest, face.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+		total += widest
+	return total
+
+
+static func _fit_font() -> Font:
+	var look := GoUi.theme()
+	if look != null and look.default_font != null: return look.default_font
+	return ThemeDB.fallback_font
