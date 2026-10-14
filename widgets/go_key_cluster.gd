@@ -128,8 +128,9 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 
 
+## 🛑 Never dresses here: `_dress` queues a redraw, so a look with no cap would redraw every frame. The caps are
+##    dressed on entering the tree and whenever the look changes.
 func _draw() -> void:
-	if _cap == null: _dress()
 	var font := _font()
 	var rects := key_rects()
 	for index in rects.size():
