@@ -17,6 +17,7 @@ import os
 
 RES = "res://addons/gohud"
 SPRITE_SCRIPT = RES + "/widgets/go_stylebox_sprite.gd"
+ICON_SCRIPT = RES + "/widgets/go_texture_sprite.gd"
 PAINTED = RES + "/assets/arcade_light/painted/"
 MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arcade_painted_map.json")
 
@@ -45,6 +46,13 @@ GLOSS_FONT_SIZE = 22
 TITLE_FONT_SIZE = 54
 KEYCAP_FONT_SIZE = 16
 DROPDOWN_FONT_SIZE = 17
+# The slider (`PaintedSlider`): an 80 px tall pill drawn 16 units tall, a 108 px handle drawn 36 units wide.
+BAR_EDGE = (48, 38, 48, 38)
+BAR_PPU = 5.0
+BAR_HEIGHT = 16.0
+HANDLE_SIZE = (36, 36)
+# The fills `PaintedSlider.use_fill()` offers: blue is HSlider itself, the others a variation each.
+SLIDER_FILLS = {"HSlider": "slider_blue.png", "GoSliderGreen": "slider_green.png", "GoSliderCyan": "slider_cyan.png"}
 
 # 🔑 The colour each sprite shows under its label — sampled at the middle of the PNG. `face_color` is never drawn;
 #    it is what `check_contrast.py` measures text against (tinted like the face it belongs to).
@@ -58,6 +66,10 @@ FACES = {
     "keycap.png": (0.937255, 0.941176, 0.972549, 1.0),       # #eff0f8
     "ribbon_gold.png": (0.996078, 0.737255, 0.141176, 1.0),  # #febc24
     "ribbon_red.png": (0.917647, 0.184314, 0.172549, 1.0),   # #ea2f2c
+    "slider_track.png": (0.752941, 0.760784, 0.866667, 1.0),  # #c0c2dd
+    "slider_blue.png": (0.086275, 0.509804, 0.996078, 1.0),   # #1682fe
+    "slider_green.png": (0.129412, 0.862745, 0.466667, 1.0),  # #21dc77
+    "slider_cyan.png": (0.156863, 0.831373, 0.968627, 1.0),   # #28d4f7
 }
 
 # Game variation → its gohud name. The values are what the game aliases; `GAME_ONLY` stays in the game.
@@ -126,6 +138,15 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             lines.append("tint = %s" % C(tint))
         lines.append("face_color = %s" % C(_times(FACES[file], tint)))
         boxes[bid] = ("StyleBox", lines)
+        return bid
+
+    def icon(bid, file, size, tint=WHITE):
+        """The art squeezed into `size` canvas units (`draw_texture_rect` in the game) as a `GoTextureSprite`."""
+        lines = ['script = ExtResource("sprite_icon")', 'texture = ExtResource("%s")' % texture_id(file),
+                 "draw_size = Vector2(%g, %g)" % size]
+        if tint != WHITE:
+            lines.append("tint = %s" % C(tint))
+        boxes[bid] = ("Texture2D", lines)
         return bid
 
     def box(bid, bg, radius, border, border_color=INK, shadow=False, margin_h=14.0, margin_v=8.0, bottom=None,
@@ -240,6 +261,26 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("PopupMenu/font_sizes/font_size", DROPDOWN_FONT_SIZE)
     setT("PopupMenu/constants/v_separation", 10)
 
+    # ── 🎚 The slider (`PaintedSlider`): the grey pill track, the coloured fill up to the handle, the round handle. ──
+    #    The track's 8 + 8 padding is the bar's height: the engine draws the track and the fill as tall as the
+    #    track's minimum size, centred, and the fill ends at the handle's centre (the game's ends 2 units past it,
+    #    under the handle). The handle is 36 units wide, so the value maps where it is drawn, as in the game.
+    half = BAR_HEIGHT / 2.0
+    put("HSlider/styles/slider", sprite("painted_slider_track", "slider_track.png", BAR_EDGE, BAR_PPU, 0.0, half, half))
+    for type_name, file in SLIDER_FILLS.items():
+        if type_name != "HSlider":
+            drop(type_name)
+            setT(type_name + "/base_type", '&"HSlider"')
+        fill = sprite("painted_%s_fill" % type_name, file, BAR_EDGE, BAR_PPU, 0.0, 0.0, 0.0)
+        put("%s/styles/grabber_area" % type_name, fill)
+        put("%s/styles/grabber_area_highlight" % type_name, fill)
+    handle = icon("painted_slider_handle", "slider_handle.png", HANDLE_SIZE)
+    put("HSlider/icons/grabber", handle)
+    put("HSlider/icons/grabber_highlight", handle)
+    # The game has no disabled slider; the handle fades like every painted part that is off.
+    put("HSlider/icons/grabber_disabled", icon("painted_slider_handle_disabled", "slider_handle.png", HANDLE_SIZE,
+                                               DISABLED_TINT))
+
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()
     for entry in T:
@@ -261,11 +302,16 @@ def texture_id(file):
 
 def ext_resources(boxes):
     """The `[ext_resource]` lines the sprite boxes need — the script, then each texture once, in name order."""
-    if not any(body[:1] == ['script = ExtResource("sprite")'] for _, body in boxes.values()):
+    heads = {body[0] for _, body in boxes.values() if body}
+    lines = []
+    if 'script = ExtResource("sprite")' in heads:
+        lines.append('[ext_resource type="Script" path="%s" id="sprite"]' % SPRITE_SCRIPT)
+    if 'script = ExtResource("sprite_icon")' in heads:
+        lines.append('[ext_resource type="Script" path="%s" id="sprite_icon"]' % ICON_SCRIPT)
+    if not lines:
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
                     if line.startswith("texture = ExtResource(\"painted_")})
-    lines = ['[ext_resource type="Script" path="%s" id="sprite"]' % SPRITE_SCRIPT]
     for rid in files:
         lines.append('[ext_resource type="Texture2D" path="%s%s.png" id="%s"]' % (PAINTED, rid[len("painted_"):], rid))
     return lines

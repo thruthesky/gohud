@@ -29,6 +29,9 @@ const DISABLED_TINT := Color(0.6, 0.6, 0.66, 0.85)
 const GLOSS_EDGE := Vector4(100, 65, 100, 66)
 const KEY_EDGE := Vector4(70, 70, 70, 80)
 const RIBBON_EDGE := Vector4(100, 80, 100, 80)
+# The slider (`PaintedSlider`).
+const BAR_EDGE := Vector4(48, 38, 48, 38)
+const HANDLE_SIZE := Vector2(36, 36)
 
 var passed := 0
 var failed: Array[String] = []
@@ -45,6 +48,8 @@ func _initialize() -> void:
 		_inks(light)
 		_tokens(light)
 		_item_sets(light)
+		await _slider(light)
+		await _range_slider(light)
 	if dark != null:
 		_dark_stays(dark)
 	print("gohud arcade painted theme tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -247,6 +252,76 @@ func _item_sets(theme: Theme) -> void:
 				str(got[kind])])
 		check(theme.get_font_list(type).is_empty() and theme.get_icon_list(type).is_empty(),
 			"%s: no font and no icon (the game adds its own fonts)" % type)
+
+
+## The icon is a `GoTextureSprite` of [param file] drawn at [param size] canvas units, multiplied by [param tint].
+func _icon(theme: Theme, name: StringName, type: StringName, file: String, size: Vector2, tint: Color) -> void:
+	var label := "%s/icons/%s" % [type, name]
+	var icon := theme.get_icon(name, type) if theme.has_icon(name, type) else null
+	var ok := icon != null and icon.get_script() != null and (icon.get_script() as Script).get_global_name() == &"GoTextureSprite"
+	check(ok, "%s is a GoTextureSprite (got %s)" % [label, icon])
+	if not ok: return
+	var art := icon.get(&"texture") as Texture2D
+	check(art != null and art.resource_path == PAINTED + file, "%s draws %s (got %s)" % [label, file,
+		art.resource_path if art else "nothing"])
+	check(icon.get_size() == size, "%s is %s units, the game's size (got %s)" % [label, size, icon.get_size()])
+	check((icon.get(&"tint") as Color).is_equal_approx(tint), "%s tint %s (got %s)" % [label, tint, icon.get(&"tint")])
+
+
+## 🎚 `PaintedSlider`: the pill track 16 units tall, the fill in its colour, the 36-unit round handle.
+func _slider(theme: Theme) -> void:
+	_sprite(theme, &"slider", &"HSlider", "slider_track.png", BAR_EDGE, 5.0, Color.WHITE, [0.0, 8.0, 0.0, 8.0])
+	check(theme.get_stylebox(&"slider", &"HSlider").get_minimum_size().y == 16.0,
+		"HSlider: the bar is 16 units tall (BAR_HEIGHT; the engine draws track and fill at its minimum height)")
+	for pair: Array in [[&"HSlider", "slider_blue.png"], [&"GoSliderGreen", "slider_green.png"],
+			[&"GoSliderCyan", "slider_cyan.png"]]:
+		for state: StringName in [&"grabber_area", &"grabber_area_highlight"]:
+			_sprite(theme, state, pair[0], pair[1], BAR_EDGE, 5.0, Color.WHITE, [0.0, 0.0, 0.0, 0.0])
+		if pair[0] != &"HSlider":
+			check(theme.get_type_variation_base(pair[0]) == &"HSlider", "%s is a variation of HSlider" % pair[0])
+			check(theme.get_stylebox_list(pair[0]).size() == 2 and theme.get_icon_list(pair[0]).is_empty(),
+				"%s sets only its fill; the track and the handle are HSlider's" % pair[0])
+	_icon(theme, &"grabber", &"HSlider", "slider_handle.png", HANDLE_SIZE, Color.WHITE)
+	_icon(theme, &"grabber_highlight", &"HSlider", "slider_handle.png", HANDLE_SIZE, Color.WHITE)
+	_icon(theme, &"grabber_disabled", &"HSlider", "slider_handle.png", HANDLE_SIZE, DISABLED_TINT)
+	# A stock HSlider in this theme: as tall as the handle, and the touch floor through GoStyle.slider (GoConfig's
+	# min_touch_size is the game's Cfg.Touch.MIN_TARGET).
+	var slider := HSlider.new()
+	slider.theme = theme
+	root.add_child(slider)
+	await process_frame
+	slider.update_minimum_size()
+	check(slider.get_combined_minimum_size().y == HANDLE_SIZE.y, "HSlider: as tall as the handle (got %s)"
+		% slider.get_combined_minimum_size())
+	slider.free()
+	var styled := GoStyle.slider()
+	check(styled.custom_minimum_size.y == float(GoUi.config.min_touch_size),
+		"GoStyle.slider: the touch floor is GoConfig.min_touch_size (got %s)" % styled.custom_minimum_size.y)
+	styled.free()
+
+
+## GoRangeSlider wears the same parts, and a variation's fill when it is given one.
+func _range_slider(theme: Theme) -> void:
+	var range_slider := GoRangeSlider.make(0.0, 100.0, 20.0, 80.0)
+	root.add_child(range_slider)
+	await process_frame
+	range_slider.theme = theme
+	var grab := range_slider._grabber()
+	check(grab != null and grab.get_size() == HANDLE_SIZE, "GoRangeSlider: the painted 36-unit handle (got %s)"
+		% (grab.get_size() if grab else "none"))
+	check(range_slider.get_combined_minimum_size().y >= HANDLE_SIZE.y, "GoRangeSlider: room for the handle")
+	range_slider.theme_type_variation = &"GoSliderGreen"
+	var fill := range_slider.get_theme_stylebox(&"grabber_area", range_slider._type())
+	var art: Variant = fill.get(&"texture") if fill != null else null
+	check(art is Texture2D and (art as Texture2D).resource_path == PAINTED + "slider_green.png",
+		"GoRangeSlider: theme_type_variation GoSliderGreen paints the green fill")
+	check(range_slider._grabber() != null and range_slider._grabber().get_size() == HANDLE_SIZE,
+		"GoRangeSlider: a fill variation keeps HSlider's handle")
+	var track := range_slider.get_theme_stylebox(&"slider", range_slider._type())
+	check(track != null and track.get(&"texture") is Texture2D
+		and (track.get(&"texture") as Texture2D).resource_path == PAINTED + "slider_track.png",
+		"GoRangeSlider: a fill variation keeps HSlider's track")
+	range_slider.free()
 
 
 func _sorted(names: PackedStringArray) -> Array:

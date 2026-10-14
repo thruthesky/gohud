@@ -1,7 +1,8 @@
-[gd_resource type="Theme" load_steps=114 format=3]
+[gd_resource type="Theme" load_steps=126 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
+[ext_resource type="Script" path="res://addons/gohud/widgets/go_texture_sprite.gd" id="sprite_icon"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_blue.png" id="painted_btn_blue"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_green.png" id="painted_btn_green"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_grey.png" id="painted_btn_grey"]
@@ -11,6 +12,11 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/keycap.png" id="painted_keycap"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/ribbon_gold.png" id="painted_ribbon_gold"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/ribbon_red.png" id="painted_ribbon_red"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_blue.png" id="painted_slider_blue"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_cyan.png" id="painted_slider_cyan"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_green.png" id="painted_slider_green"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_handle.png" id="painted_slider_handle"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_track.png" id="painted_slider_track"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/toggle_on.svg" id="toggle_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/toggle_on_mirrored.svg" id="toggle_on_mirrored"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/toggle_on_disabled.svg" id="toggle_on_disabled"]
@@ -1240,6 +1246,61 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBox" id="painted_slider_track"]
+script = ExtResource("sprite")
+content_margin_left = 0
+content_margin_top = 8
+content_margin_right = 0
+content_margin_bottom = 8
+texture = ExtResource("painted_slider_track")
+edge = Vector4(48, 38, 48, 38)
+pixels_per_unit = 5.0
+face_color = Color(0.752941, 0.760784, 0.866667, 1)
+
+[sub_resource type="StyleBox" id="painted_HSlider_fill"]
+script = ExtResource("sprite")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+texture = ExtResource("painted_slider_blue")
+edge = Vector4(48, 38, 48, 38)
+pixels_per_unit = 5.0
+face_color = Color(0.086275, 0.509804, 0.996078, 1)
+
+[sub_resource type="StyleBox" id="painted_GoSliderGreen_fill"]
+script = ExtResource("sprite")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+texture = ExtResource("painted_slider_green")
+edge = Vector4(48, 38, 48, 38)
+pixels_per_unit = 5.0
+face_color = Color(0.129412, 0.862745, 0.466667, 1)
+
+[sub_resource type="StyleBox" id="painted_GoSliderCyan_fill"]
+script = ExtResource("sprite")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+texture = ExtResource("painted_slider_cyan")
+edge = Vector4(48, 38, 48, 38)
+pixels_per_unit = 5.0
+face_color = Color(0.156863, 0.831373, 0.968627, 1)
+
+[sub_resource type="Texture2D" id="painted_slider_handle"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("painted_slider_handle")
+draw_size = Vector2(36, 36)
+
+[sub_resource type="Texture2D" id="painted_slider_handle_disabled"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("painted_slider_handle")
+draw_size = Vector2(36, 36)
+tint = Color(0.6, 0.6, 0.66, 0.85)
+
 [resource]
 BoxContainer/constants/separation = 12
 Button/colors/font_color = Color(1, 1, 1, 1)
@@ -1597,6 +1658,12 @@ GoRibbon/base_type = &"PanelContainer"
 GoRibbon/styles/panel = SubResource("painted_GoRibbon")
 GoRibbonRed/base_type = &"PanelContainer"
 GoRibbonRed/styles/panel = SubResource("painted_GoRibbonRed")
+GoSliderCyan/base_type = &"HSlider"
+GoSliderCyan/styles/grabber_area = SubResource("painted_GoSliderCyan_fill")
+GoSliderCyan/styles/grabber_area_highlight = SubResource("painted_GoSliderCyan_fill")
+GoSliderGreen/base_type = &"HSlider"
+GoSliderGreen/styles/grabber_area = SubResource("painted_GoSliderGreen_fill")
+GoSliderGreen/styles/grabber_area_highlight = SubResource("painted_GoSliderGreen_fill")
 GoSubtitleLabel/base_type = &"Label"
 GoSubtitleLabel/font_sizes/font_size = 22
 GoSuccessButton/base_type = &"Button"
@@ -1650,12 +1717,12 @@ HScrollBar/styles/grabber_pressed = SubResource("scroll_grab_hover")
 HScrollBar/styles/scroll = SubResource("scroll_track")
 HScrollBar/styles/scroll_focus = SubResource("scroll_track")
 HSeparator/styles/separator = SubResource("separator")
-HSlider/icons/grabber = ExtResource("grabber")
-HSlider/icons/grabber_disabled = ExtResource("grabber_disabled")
-HSlider/icons/grabber_highlight = ExtResource("grabber_highlight")
-HSlider/styles/grabber_area = SubResource("slider_grab")
-HSlider/styles/grabber_area_highlight = SubResource("slider_grab_hover")
-HSlider/styles/slider = SubResource("slider_track")
+HSlider/icons/grabber = SubResource("painted_slider_handle")
+HSlider/icons/grabber_disabled = SubResource("painted_slider_handle_disabled")
+HSlider/icons/grabber_highlight = SubResource("painted_slider_handle")
+HSlider/styles/grabber_area = SubResource("painted_HSlider_fill")
+HSlider/styles/grabber_area_highlight = SubResource("painted_HSlider_fill")
+HSlider/styles/slider = SubResource("painted_slider_track")
 Label/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 Label/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
 Label/constants/outline_size = 0

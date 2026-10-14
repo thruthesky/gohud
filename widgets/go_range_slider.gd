@@ -102,7 +102,13 @@ func _get_minimum_size() -> Vector2:
 
 
 func _grabber(state := &"grabber") -> Texture2D:
-	return get_theme_icon(state, &"HSlider") if has_theme_icon(state, &"HSlider") else null
+	return get_theme_icon(state, _type()) if has_theme_icon(state, _type()) else null
+
+
+## The slider look it wears: `theme_type_variation` when one is set (a `GoSliderGreen` fill on arcade_light, say —
+## the variation falls back to HSlider for what it does not set), HSlider otherwise.
+func _type() -> StringName:
+	return theme_type_variation if theme_type_variation != &"" else &"HSlider"
 
 
 func _snap(value: float) -> float:
@@ -148,8 +154,8 @@ func _value_at(x: float) -> float:
 
 
 func _draw() -> void:
-	var track := get_theme_stylebox(&"slider", &"HSlider")
-	var fill := get_theme_stylebox(&"grabber_area_highlight" if has_focus() else &"grabber_area", &"HSlider")
+	var track := get_theme_stylebox(&"slider", _type())
+	var fill := get_theme_stylebox(&"grabber_area_highlight" if has_focus() else &"grabber_area", _type())
 	var mid := size.y * 0.5
 	var height := track.get_minimum_size().y if track != null else 4.0
 	height = maxf(height, 2.0)
