@@ -102,10 +102,10 @@ func _skin_hooks(look: StringName) -> void:
 			"%s: the key cluster's keycap is ppu 4.2 with no padding" % look)
 		var done := skin.kbd_done_box() as GoStyleBoxSprite
 		check(done != null and done.tint == Color("#8ff0a4"), "%s: the done keycap is tinted #8ff0a4" % look)
-		for part: StringName in [&"check", &"lock", &"person", &"play_tag"]:
-			var art := skin.widget_art(part)
-			var exists := ResourceLoader.exists(GoSkinArcadePainted.STAGE_ART + String(part) + ".png")
-			check((art != null) == exists, "%s: widget_art(%s) follows the shipped art" % [look, part])
+		for part: StringName in [&"check", &"lock", &"person", &"play_tag", &"pointer"]:
+			var path := GoSkinArcadePainted.STAGE_ART + String(part) + ".png"
+			check(ResourceLoader.exists(path), "%s: %s ships" % [look, path])
+			check(skin.widget_art(part) != null, "%s: widget_art(%s) is the shipped art" % [look, part])
 	else:
 		check(skin.title_plate_overhang() == Vector2.ZERO, "%s: no overhang by default" % look)
 		check(skin.widget_art(&"check") == null, "%s: no art by default" % look)

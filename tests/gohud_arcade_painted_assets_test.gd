@@ -25,11 +25,11 @@ const SPRITES := {
 }
 
 ## Every stage-select sprite (the game's `assets/ui/stage`) → its mipmap choice: the window, ribbon, cards and well the
-## theme draws, and the marks the GoLevelCard widget lays on its plate (check, lock, person, play tag). None has
-## mipmaps.
+## theme draws, and the marks the GoLevelCard widget lays on its plate (check, lock, person, play tag, and the pointer
+## — the game's `magnet.png` — beside the current card). None has mipmaps.
 const STAGE_SPRITES := {
 	"card_cleared": false, "card_current": false, "card_locked": false, "check": false, "lock": false, "person": false,
-	"play_tag": false, "ribbon_title": false, "well": false, "window": false,
+	"play_tag": false, "pointer": false, "ribbon_title": false, "well": false, "window": false,
 }
 
 ## Every glyph → its mipmap choice, as above.
@@ -102,7 +102,7 @@ func _painted_sprites() -> void:
 func _stage_sprites() -> void:
 	for name: String in STAGE_SPRITES:
 		_imports_like_the_game("%s/%s.png" % [STAGE, name], STAGE_SPRITES[name])
-	# The stage-select strip, ticks and magnet are game art no theme part or widget draws.
+	# The stage-select strip and ticks are game art no theme part or widget draws (the magnet ships as pointer.png).
 	for name: String in ["strip", "ticks", "magnet"]:
 		check(not ResourceLoader.exists("%s/%s.png" % [STAGE, name]), "stage/%s.png stays in the game" % name)
 
