@@ -26,6 +26,7 @@ func _initialize() -> void:
 		await _helpers(look)
 		await _header(look)
 		await _sub_viewport(look)
+		await _narrow(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -460,5 +461,35 @@ func _sub_viewport(look: StringName) -> void:
 	var card := surface.card.get_rect()
 	check(absf(card.get_center().x - 450.0) < 1.0 and card.end.x <= 900.0 and card.end.y <= 500.0,
 		"%s viewport: the card is centred in the 900 x 500 viewport (card %s)" % [look, card])
+	view.queue_free()
+	await frames(1)
+
+
+## A phone in portrait (407 x 880 units, the game's phone): the painted window keeps the game's 400 width with no
+## screen margin, centred like a CenterContainer; other looks keep their margin off the edge.
+func _narrow(look: StringName) -> void:
+	var view := SubViewport.new()
+	view.size = Vector2i(407, 880)
+	root.add_child(view)
+	var surface := GoSurface.new()
+	surface.set_title("ROOM")
+	var block := Control.new()
+	block.custom_minimum_size = Vector2(10, 100)
+	surface.body.add_child(block)
+	view.add_child(surface)
+	await frames(3)
+	var card := surface.card.get_rect()
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(card.size.x == 400.0 and card.position.x == 3.0,
+			"%s narrow: the game's 400-wide card, no screen margin, at x 3 (card %s)" % [look, card])
+		view.size = Vector2i(360, 700)
+		await frames(3)
+		card = surface.card.get_rect()
+		check(card.size.x == 360.0 and card.position.x == 0.0,
+			"%s narrow: a screen under 400 wide narrows it to the screen (card %s)" % [look, card])
+	else:
+		var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN))
+		check(card.position.x >= edge - 0.5 and card.end.x <= 407.0 - edge + 0.5,
+			"%s narrow: the card keeps the screen margin (card %s)" % [look, card])
 	view.queue_free()
 	await frames(1)

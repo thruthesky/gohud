@@ -1380,6 +1380,13 @@ func window_width() -> float:
 	return 0.0
 
 
+## How far a centred window keeps off the screen's edge (dp). Negative: the theme's `SCREEN_MARGIN` (shrinking on very
+## narrow screens). A look with a fixed `window_width()` and 0 here sizes its window the way a `CenterContainer` does:
+## that width whenever the screen has it, the whole screen when it does not — no width ratio either.
+func window_screen_margin() -> float:
+	return -1.0
+
+
 ## The variation of an inset a window's body holds (`GoSurface.add_inset`). `GoTheme.VAR_CARD`: the theme's card.
 func window_inset_variation() -> StringName:
 	return GoTheme.VAR_CARD

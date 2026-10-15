@@ -1075,11 +1075,14 @@ func relayout() -> void:
 		_relayout_anchor(area)
 		return
 	# Keeps at least this much off the screen edge — on very narrow screens it shrinks proportionally.
-	var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN))
+	var look_width := GoUi.skin().window_width() if placement == Placement.CENTER else 0.0
+	var look_margin := GoUi.skin().window_screen_margin() if placement == Placement.CENTER else -1.0
+	var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN)) if look_margin < 0.0 else look_margin
 	area = area.grow(-minf(edge, minf(area.size.x, area.size.y) * 0.1))
 	var landscape := area.size.x > area.size.y
 	var width_ratio := settings.surface_width_ratio_landscape if landscape else settings.surface_width_ratio_portrait
-	var look_width := GoUi.skin().window_width() if placement == Placement.CENTER else 0.0
+	# A look's fixed width with no screen margin is the game's CenterContainer: the width, or the whole screen.
+	if look_margin >= 0.0 and look_width > 0.0 and max_width <= 0.0: width_ratio = 1.0
 	var cap_width := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else settings.surface_max_width)
 	var cap_height := max_height if max_height > 0.0 else settings.surface_max_height
 	var ratio := height_ratio if height_ratio > 0.0 else settings.surface_height_ratio

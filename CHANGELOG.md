@@ -6,6 +6,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A painted window on a phone is the game's 400 wide.** `GoSurface` kept `SCREEN_MARGIN` and the portrait width
+  ratio off a centred window, so on the game's phone (407 units) the `arcade_light` card came out 353 wide where
+  `PaintedDialog` is 400. New `GoSkin.window_screen_margin()` (-1: the theme's margin, as before); `arcade_light`
+  returns 0, and a look's fixed `window_width()` with no margin is sized like a `CenterContainer`: that width, or the
+  whole screen when narrower.
+
 - **A window inside a `SubViewport` fits that viewport.** `GoSurface` measured its room with
   `GoSafeArea.usable_rect(get_window())`, which inside a `SubViewport` (a preview, a render-to-texture, a parity
   harness) is the main window — so the card was sized and centred for the wrong screen. `usable_rect`,

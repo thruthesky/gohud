@@ -407,6 +407,11 @@ func window_width() -> float:
 	return WINDOW_WIDTH
 
 
+## …centred like the game's `CenterContainer`: no margin off the screen's edge, so a phone (407 wide) still gets 400.
+func window_screen_margin() -> float:
+	return 0.0
+
+
 ## The game's parts inside a dialog: the pale `InsetPanel`, glossy buttons 46 dp high (`PaintedDialog.BUTTON_HEIGHT`)
 ## and 10 dp apart in a row.
 const WINDOW_BUTTON_HEIGHT := 46.0
