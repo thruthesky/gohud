@@ -99,7 +99,7 @@ func _init() -> void:
 	title_label = GoStyle.label("", GoTheme.ROLE_SUBTITLE)
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	# One line: the title shrinks to fit instead of wrapping.
-	title_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	GoStyle.one_line(title_label)
 	title_label.size_flags_horizontal = Control.SIZE_FILL
 	title_label.text = title
 	_row.add_child(title_label)
