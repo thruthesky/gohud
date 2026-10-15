@@ -35,11 +35,6 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   returns 0, and a look's fixed `window_width()` with no margin is sized like a `CenterContainer`: that width, or the
   whole screen when narrower.
 
-- **A window inside a `SubViewport` fits that viewport.** `GoSurface` measured its room with
-  `GoSafeArea.usable_rect(get_window())`, which inside a `SubViewport` (a preview, a render-to-texture, a parity
-  harness) is the main window — so the card was sized and centred for the wrong screen. `usable_rect`,
-  `usable_rect_with_keyboard` and `px_to_units` now take any `Viewport` (a `Window` still works): a `SubViewport` is
-  its own whole rect with no safe area, and `GoSurface` and `GoSafeArea` pass `get_viewport()`.
 - **Shrink-to-fit under `arcade_light` is pinned to the game's measure.** A test now holds that
   `GoStyle.fit_font_size()` with no font measures with the look's FontVariation and its four CJK fallbacks (KR, JP, SC,
   TC), not a plain Nunito `FontFile`. Before a preset is applied the fit font is `ThemeDB.fallback_font`, which has no
@@ -53,12 +48,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `GoConfig.min_touch_size`, so a look with its own `touch` metric (or a `metric_overrides` entry) sizes slots like
   every other control; a floor the project sets still wins.
 
-- **Every widget that fits the safe area reads the viewport it is drawn in.** `GoAppBar`, `GoCoachMark`, `GoConsole`,
-  `GoDrawer`, `GoEdgeBar`, `GoForm`, `GoFab`, `GoHudAnchor`, `GoNavBar` and `GoStyle`'s bottom bar passed
-  `get_window()` to `GoSafeArea.usable_rect`, so inside a `SubViewport` (a preview, a render-to-texture) they laid out
-  for the main window round it — a console 390 wide in a 600 viewport, a drawer 844 tall in a 400 one. They now pass
-  `get_viewport()`, and so does `GoSurface`: `GoSafeArea.usable_rect` (and `usable_rect_with_keyboard`,
-  `px_to_units`) take a `Viewport`, and a `SubViewport` is its own whole rect with no safe area.
+- **A window, and every widget that fits the safe area, reads the viewport it is drawn in.** `GoSurface` measured its
+  room with `GoSafeArea.usable_rect(get_window())`, and `GoAppBar`, `GoCoachMark`, `GoConsole`, `GoDrawer`,
+  `GoEdgeBar`, `GoForm`, `GoFab`, `GoHudAnchor`, `GoNavBar` and `GoStyle`'s bottom bar passed `get_window()` too — which
+  inside a `SubViewport` (a preview, a render-to-texture, a parity harness) is the main window, so the card was sized
+  and centred for the wrong screen and the others laid out for the main window round it (a console 390 wide in a 600
+  viewport, a drawer 844 tall in a 400 one). `GoSafeArea.usable_rect`, `usable_rect_with_keyboard` and `px_to_units`
+  now take any `Viewport` (a `Window` still works): a `SubViewport` is its own whole rect with no safe area. `GoSurface`
+  and all of those widgets pass `get_viewport()`.
 
 - **`GoLevelCard` lays out its locked state and thumbnail as Magnet Mayhem's `StageCard`.** The padlock and LOCKED
   sat 4 px apart only under the engine's default theme; under a gohud theme the column took its VBox gap (12) and both
@@ -85,6 +82,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   glyph's cell is its side wide and as tall as the title's line, the art kept to its aspect — the game's `RibbonHeader`
   row — so a tall glyph such as a lock fills the line instead of a side × side square; the glyph and words start on the
   whole pixel an `HBoxContainer` picks (rounded down).
+
 ### Changed
 
 - **Under `arcade_light` a window's title is the game's ribbon title: 34 dp on a 57 dp ribbon.** It shrinks to fit
