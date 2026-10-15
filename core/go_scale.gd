@@ -119,7 +119,8 @@ static func per_inch_factor(window_px: Vector2, dpi: float, base: Vector2, units
 		min_height := 440.0, handheld := true) -> float:
 	if not handheld or window_px.x <= 0.0 or window_px.y <= 0.0 or dpi <= 0.0: return 1.0
 	var tall := base.y * maxf(1.0, (base.x / base.y) / (window_px.x / window_px.y))
-	return tall / clampf(window_px.y / dpi * units_per_inch, min_height, tall)
+	# A base shorter than min_height would make the clamp's bounds cross and return min_height: cap the floor at tall.
+	return tall / clampf(window_px.y / dpi * units_per_inch, minf(min_height, tall), tall)
 
 
 ## `PER_INCH`: the canvas size (units) a [param window_px] window shows at [param factor] over [param base].

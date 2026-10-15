@@ -820,6 +820,8 @@ func _per_inch_scale() -> void:
 		"scale: a small phone is held at min_height")
 	check(is_equal_approx(GoScale.per_inch_factor(Vector2(1920, 1080), 300.0, base), 1.25), "scale: 160 units per inch")
 	check(GoScale.per_inch_factor(Vector2(2360, 1640), 264.0, base) == 1.0, "scale: a tablet is never shrunk below 1")
+	check(GoScale.per_inch_factor(Vector2(2400, 1080), 400.0, Vector2(640, 360)) == 1.0, "scale: a base shorter than min_height is not shrunk below 1")
+	check(GoScale.per_inch_factor(Vector2(1920, 1080), 200.0, Vector2(640, 360)) >= 1.0, "scale: a short base never gives a factor below 1")
 	check(is_equal_approx(GoScale.per_inch_factor(Vector2(2266, 1488), 326.0, base), (1280.0 * 1488.0 / 2266.0) / (1488.0 / 326.0 * 160.0)),
 		"scale: a 4:3-ish tablet's base height grows with its aspect")
 	check(GoScale.per_inch_canvas(Vector2(1920, 1080), base, 1.25).is_equal_approx(Vector2(1024, 576)), "scale: the canvas size")
