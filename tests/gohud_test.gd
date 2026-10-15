@@ -3281,6 +3281,20 @@ func _scroll_yields() -> void:
 		list = await _yield_list(field, plain)
 		await _tap(field.get_global_rect().get_center())
 		check(field.has_focus(), "%s: a tap on the field focuses it" % where)
+		# 🛑 A real finger: the engine makes the mouse event from the touch and sends it **first** (input.cpp 4.7.2) —
+		#    the order a phone delivers. The tap's release must reach the field that already has focus: `LineEdit`
+		#    brings the phone keyboard back on that release (2026-10-15 — after Back closed it, tapping the field again
+		#    did nothing, because the release was dropped behind the replayed press).
+		var releases := [0]
+		field.gui_input.connect(func(e: InputEvent) -> void:
+			if e is InputEventMouseButton and not (e as InputEventMouseButton).pressed: releases[0] += 1)
+		var from_touch := Input.emulate_mouse_from_touch
+		Input.emulate_mouse_from_touch = true
+		for tap in 2:
+			await _finger_tap(field.get_global_rect().get_center())
+		Input.emulate_mouse_from_touch = from_touch
+		check(field.has_focus() and field.is_editing() and releases[0] == 2,
+			"%s: each finger tap on a focused field reaches it with its release (%d of 2)" % [where, releases[0]])
 		list.queue_free()
 		await frames(1)
 		var opened := [0]
@@ -3357,6 +3371,18 @@ func _tap(point: Vector2) -> void:
 	await frames(1)
 	_finger_button(point, false)
 	await frames(2)
+
+
+## A tap the way a phone sends it — a screen touch, which the engine turns into the mouse event it sends ahead of it.
+func _finger_tap(point: Vector2) -> void:
+	for held in [true, false]:
+		var touch := InputEventScreenTouch.new()
+		touch.index = 0
+		touch.pressed = held
+		touch.position = point
+		Input.parse_input_event(touch.xformed_by(root.get_final_transform()))
+		Input.flush_buffered_events()
+		await frames(1 if held else 2)
 
 
 func _finger_button(point: Vector2, held: bool) -> void:

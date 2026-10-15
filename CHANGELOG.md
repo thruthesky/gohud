@@ -6,6 +6,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A tap on a text field inside a scroll reaches it with its release.** `GoScroll` holds the press on a control that
+  yields vertical drags (a `LineEdit`, a slider, a tab bar…) until the finger lifts or picks a direction, then replays
+  it. The replayed press left the viewport's "handled" flag up, so the engine dropped the event being dispatched right
+  then — the tap's release, or the first motion of a sideways drag. A field that already had focus never saw the
+  release, and `LineEdit` raises the phone keyboard on that release: after Back closed the keyboard, tapping the field
+  again did nothing (a character-name form on Android, 2026-10-15). `GoScroll._resolve` now replays the held events
+  and then the settling one in order, and marks the original handled. Test: "each finger tap on a focused field
+  reaches it with its release" (real screen touches, emulated mouse first as on a phone).
 - **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
   glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
   with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and
