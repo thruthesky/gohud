@@ -59,6 +59,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoHudCard` — a match HUD's top-row board.** An icon, then a gold `GoBannerGold` name banner over HUD bars
+  (`add_bar`), a title beside a count (`Layout.INLINE`), a caption over a clock (`set_clock(seconds, warn)`,
+  `format_clock`), or a gauge (`gauge`, `set_lit`) whose rim lights when an ability is ready, dims while it cools and
+  pops when it lights. `padding` / `banner_padding` pack it tighter on a phone. New skin hooks `hud_gauge_box(lit)` and
+  `hud_alert_ink()`; under `arcade_light` the player card, opponents count, clock and repulse gauge match Magnet
+  Mayhem's HUD pixel for pixel. Display only — every value comes from the caller.
 - **`GoBar` draws the painted HUD's bar under `arcade_light`.** A new skin hook, `GoSkin.bar_frame_box()` (null by
   default; `arcade_light`: Magnet Mayhem's `#d9deef` groove, corner 9, 3dp ink rim), turns the bar into a rounded frame
   whose `ink` → `ink_end` gradient is clipped to it, with the six ink ticks over both — pixel-identical to the game's

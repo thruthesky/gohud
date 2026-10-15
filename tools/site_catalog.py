@@ -1867,6 +1867,26 @@ shot.custom_minimum_size = Vector2(74, 74)""", T(
 		"Картинка, що заповнює свій блок і обрізає зайве, як object-fit: cover у CSS.",
 		"รูปที่เต็มกรอบและตัดส่วนที่เกินออก เหมือน object-fit: cover ของ CSS",
 		"صورة تملأ صندوقها وتقصّ الزائد منها مثل object-fit: cover في CSS.")),
+	("hud", "GoHudCard", "PanelContainer", """var clock := GoHudCard.make(GoUi.skin().widget_art(&"stopwatch"))
+clock.title = "MATCH TIME"
+clock.set_clock(83.0)""", T(
+		"One board of a match HUD's top row: an icon with a banner and bars, a count, a clock or a ready gauge.",
+		"경기 HUD 윗줄의 판 하나 — 아이콘과 배너·막대, 숫자, 시계, 또는 준비 게이지.",
+		"試合 HUD の上段のボード 1 枚。アイコンとバナー・バー、数、時計、または準備ゲージ。",
+		"比赛 HUD 顶栏的一块面板：图标加横幅和血条、计数、时钟或就绪量表。",
+		"比賽 HUD 頂列的一塊面板：圖示加橫幅和條、計數、時鐘或就緒量表。",
+		"Un panel de la fila superior del HUD de partida: icono con cinta y barras, un contador, un reloj o un indicador de listo.",
+		"Um painel da linha superior do HUD da partida: ícone com faixa e barras, uma contagem, um relógio ou um medidor de pronto.",
+		"Одна плашка верхнего ряда HUD матча: значок с лентой и полосами, счётчик, часы или индикатор готовности.",
+		"Un panneau de la rangée du haut du HUD de match : icône avec bandeau et barres, un compteur, une horloge ou une jauge prête.",
+		"Maç HUD'unun üst sırasındaki bir pano: şeritli ve çubuklu simge, sayaç, saat ya da hazır göstergesi.",
+		"Jedna plansza górnego rzędu HUD meczu: ikona z banerem i paskami, licznik, zegar lub wskaźnik gotowości.",
+		"Un pannello della fila in alto dell'HUD di partita: icona con nastro e barre, un conteggio, un orologio o un indicatore di pronto.",
+		"Một bảng ở hàng trên của HUD trận đấu: biểu tượng kèm băng rôn và thanh, bộ đếm, đồng hồ hoặc thước sẵn sàng.",
+		"Satu papan di baris atas HUD pertandingan: ikon dengan pita dan bilah, hitungan, jam, atau pengukur siap.",
+		"Одна плашка верхнього ряду HUD матчу: значок зі стрічкою та смугами, лічильник, годинник або індикатор готовності.",
+		"แผงหนึ่งแผ่นของแถวบน HUD ระหว่างแข่ง: ไอคอนกับแถบชื่อและหลอด ตัวนับ นาฬิกา หรือมาตรวัดพร้อม",
+		"لوحة واحدة من الصف العلوي لواجهة المباراة: أيقونة مع شريط وأشرطة، أو عدّاد، أو ساعة، أو مقياس جاهزية.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

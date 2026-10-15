@@ -86,6 +86,11 @@ const TICK_WIDTH := 3.0
 const BAR_BG := Color("#d9deef")
 const BAR_RADIUS := 9
 const BAR_OUTLINE := 3
+## The HUD's alert red (`UiTheme.READY_RED`) and the repulse gauge's board (`HUD._repulse_box`).
+const READY_RED := Color("#e8332f")
+const GAUGE_RADIUS := 14
+const GAUGE_OUTLINE := 3
+const GAUGE_PAD := Vector2(14.0, 8.0)
 
 static var _textures := {}
 static var _painted_blur: Shader = null
@@ -263,6 +268,30 @@ func bar_frame_box() -> StyleBox:
 	groove.set_content_margin_all(0.0)
 	groove.anti_aliasing = true
 	return groove
+
+
+## The game's repulse panel (`HUD._repulse_box`: `UiTheme.box(PANEL, 14, 3, rim, shadow, 14, 8)`) — a READY_RED rim
+## when lit, an ink one while cooling.
+func hud_gauge_box(lit: bool) -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.bg_color = PANEL
+	face.set_corner_radius_all(GAUGE_RADIUS)
+	face.set_border_width_all(GAUGE_OUTLINE)
+	face.border_color = READY_RED if lit else INK
+	face.shadow_color = Color(0.0, 0.0, 0.0, 0.25)
+	face.shadow_size = 1
+	face.shadow_offset = Vector2(0.0, 4.0)
+	face.content_margin_left = GAUGE_PAD.x
+	face.content_margin_right = GAUGE_PAD.x
+	face.content_margin_top = GAUGE_PAD.y
+	face.content_margin_bottom = GAUGE_PAD.y
+	face.anti_aliasing = true
+	return face
+
+
+## The game's READY_RED: the clock's last seconds and a lit gauge's rim.
+func hud_alert_ink() -> Color:
+	return READY_RED
 
 
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.

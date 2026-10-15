@@ -1230,6 +1230,17 @@ func bar_frame_box() -> StyleBox:
 	return null
 
 
+## 🎮 A `GoHudCard` gauge's board (a cooldown readout): [param lit] when the ability is ready. The default is the HUD
+## board with a `danger`-rimmed accent when lit.
+func hud_gauge_box(lit: bool) -> StyleBox:
+	return floating_box(GoTheme.BOX_HUD, GoUi.color(GoTheme.DANGER) if lit else Color.TRANSPARENT)
+
+
+## 🎮 The colour a HUD warns in — a `GoHudCard` clock running out. The default is the theme's `danger`.
+func hud_alert_ink() -> Color:
+	return GoUi.color(GoTheme.DANGER)
+
+
 ## The ticks that split a bar into [param count] chunks, over the whole of [param rect] (the groove and the fill) —
 ## decoration only, the fill still moves smoothly. The default cuts thin notches in the surface colour.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:

@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage and GoGlyphButton.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage and GoGlyphButton, GoHudCard.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -30,6 +30,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 21. [GoKeyCluster — WASD or arrows in a T](#21-gokeycluster--wasd-or-arrows-in-a-t)
 22. [GoCoverImage — a picture that covers its box](#22-gocoverimage--a-picture-that-covers-its-box)
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
+24. [GoHudCard — a match HUD's top-row board](#24-gohudcard--a-match-huds-top-row-board)
 
 ## 1. GoHudAnchor
 
@@ -702,3 +703,45 @@ var own := GoGlyphButton.make("Shop", &"", GoTheme.VAR_BUTTON, preload("res://ui
 - 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The label
   stays a plain `text`, so translation and tests work as on any button.
 - 🛑 `glyph_icon` needs a texture icon set — a font icon has no texture, and the button then shows its label alone.
+
+## 24. GoHudCard — a match HUD's top-row board
+
+`class_name GoHudCard extends PanelContainer` · input-transparent. Under `arcade_light` it draws Magnet Mayhem's HUD
+cards pixel for pixel (the player card, the opponents count, the match clock, the repulse gauge).
+
+```gdscript
+var player := GoHudCard.make(GoUi.skin().widget_art(&"avatar_head"), 56.0)
+player.gap = 10
+player.banner_text = "PLAYER"
+player.add_bar("STABILITY", Color("#ff7a3d"), Color("#ffd23f")).set_values(80, 100, false)
+var foes := GoHudCard.make(GoUi.skin().widget_art(&"opponents_badge"))
+foes.layout = GoHudCard.Layout.INLINE
+foes.title = "OPPONENTS LEFT:"
+foes.value = "7"
+var clock := GoHudCard.make(GoUi.skin().widget_art(&"stopwatch"))
+clock.title = "MATCH TIME"
+clock.set_clock(12.0, true)        # the caller decides the warning
+var repulse := GoHudCard.new()
+repulse.gauge = true
+repulse.title = "REPULSE"
+repulse.value = "2.4s"
+repulse.set_lit(false)             # dimmed, ink rim; set_lit(true) pops it
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `icon` · `icon_size` · `icon_snap` | `null` · `36` · `true` | The picture at the start of the row. `icon_snap` false lets it fill the row's height (centred on a half pixel when the row is odd — the game's clock and badge) |
+| `gap` | `8` | Room between the icon and what follows |
+| `banner_text` · `banner_size` · `banner_padding` | `""` · `16` · `-1` | A gold banner (`GoBannerGold`) at the top of the column |
+| `title` · `value` · `layout` (`STACKED`, `INLINE`) | | Stacked: the caption (label ink at 75 %) over the value, centred; inline: both in the row |
+| `title_size` · `value_size` · `value_ink` | `-1` · `-1` · transparent | -1: 12 / 24 stacked, 19 / 19 inline |
+| `padding` | `-1` | Clear space inside the board's rim on every side (`-1`: the theme's). The margins become padding + border width |
+| `add_bar(label, ink, ink_end, icon) -> GoBar` · `bars()` | | A `GoBar` laid out as a HUD's (14 dp, 11 dp name, no readout, 2 dp lead) |
+| `set_clock(seconds, warn := false)` · `static format_clock(seconds)` · `is_warning()` · `warn_ink` | | `MM:SS`; `warn` paints it in `warn_ink` (transparent: `GoSkin.hud_alert_ink()`) |
+| `gauge` · `set_lit(lit, animate := true)` · `is_lit()` | `false` | The board becomes `GoSkin.hud_gauge_box(lit)`; unlit dims to `DIM_ALPHA` 0.55; lighting pops to 1.15 and back (none under `reduce_motion`) |
+
+- 🛑 Display only: the server's clock, the count and the ready state come from the caller — the card decides nothing.
+- 🔑 Skin hooks: `hud_gauge_box(lit)` (default: the HUD board with a `danger` accent when lit; arcade_light: the
+  game's repulse panel, READY_RED or ink rim) and `hud_alert_ink()` (default `danger`; arcade_light READY_RED).
+- 🔎 The game sizes its top-row panels once with the desktop padding and never shrinks them, so its touch-mode player
+  card keeps the desktop height; a `GoHudCard` fits its content. Set `custom_minimum_size.y` to keep a fixed height.

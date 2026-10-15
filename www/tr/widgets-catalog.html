@@ -799,7 +799,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD ve oyun biçimleri <small>(14)</small></h2>
+  <h2>HUD ve oyun biçimleri <small>(15)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -873,6 +873,14 @@ var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
       <p class="catalog-base">türetildiği <code>Control</code></p>
       <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
 shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>Maç HUD'unun üst sırasındaki bir pano: şeritli ve çubuklu simge, sayaç, saat ya da hazır göstergesi.</p>
+      <p class="catalog-base">türetildiği <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

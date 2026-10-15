@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (14)
+8. [HUD and game shapes](#hud-and-game-shapes) (15)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -867,6 +867,16 @@ Extends `Control`. A picture that fills its box, cropping the overflow like CSS 
 ```gdscript
 var shot := GoCoverImage.make(preload("res://art/level_3.png"), Vector2(0.5, 0.3))
 shot.custom_minimum_size = Vector2(74, 74)
+```
+
+### `GoHudCard`
+
+Extends `PanelContainer`. One board of a match HUD's top row: an icon with a banner and bars, a count, a clock or a ready gauge. Details: `hud.md` §24 (GoHudCard).
+
+```gdscript
+var clock := GoHudCard.make(GoUi.skin().widget_art(&"stopwatch"))
+clock.title = "MATCH TIME"
+clock.set_clock(83.0)
 ```
 
 ### `GoRewardCalendar`
