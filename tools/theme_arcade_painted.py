@@ -495,6 +495,12 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     #    would paint buttons the game draws flat, and leak its outline, gap and disabled face into every Button
     #    variation that leaves those items unset (the chip's label outlined, the keycap's 4 gap at 10).
     drop("Button")
+    # 💬 The rest the game's theme leaves to the engine and still draws: its tooltips (dark, light text), the 4 px gap
+    #    of every box and grid it does not override, and the scroll bars of the controls card and the room list.
+    for type_name in ("TooltipPanel", "TooltipLabel", "BoxContainer", "HBoxContainer", "VBoxContainer",
+                      "GridContainer", "HFlowContainer", "VFlowContainer", "ScrollContainer", "HScrollBar",
+                      "VScrollBar"):
+        drop(type_name)
 
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()

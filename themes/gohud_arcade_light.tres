@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=161 format=3]
+[gd_resource type="Theme" load_steps=157 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -468,50 +468,6 @@ shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxEmpty" id="empty"]
 
-[sub_resource type="StyleBoxFlat" id="scroll_track"]
-content_margin_left = 3
-content_margin_top = 3
-content_margin_right = 3
-content_margin_bottom = 3
-bg_color = Color(0.171943, 0.187373, 0.264527, 0.14)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-corner_detail = 8
-
-[sub_resource type="StyleBox" id="scroll_grab"]
-script = ExtResource("arcade")
-content_margin_left = 3
-content_margin_top = 3
-content_margin_right = 3
-content_margin_bottom = 3
-bg_color = Color(0.436017, 0.42113, 0.66676, 1)
-bottom_color = Color(0.298641, 0.281576, 0.563152, 1)
-shade_color = Color(0.225244, 0.212373, 0.424745, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 1.5
-band = 0
-shine = 0
-lip = 0
-radius = 3
-
-[sub_resource type="StyleBox" id="scroll_grab_hover"]
-script = ExtResource("arcade")
-content_margin_left = 3
-content_margin_top = 3
-content_margin_right = 3
-content_margin_bottom = 3
-bg_color = Color(0.436017, 0.42113, 0.66676, 1)
-bottom_color = Color(0.298641, 0.281576, 0.563152, 1)
-shade_color = Color(0.225244, 0.212373, 0.424745, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 1.5
-band = 0
-shine = 0
-lip = 0
-radius = 3
-
 [sub_resource type="StyleBox" id="slider_track"]
 script = ExtResource("arcade")
 content_margin_left = 0
@@ -594,22 +550,6 @@ content_margin_top = 0.5
 content_margin_right = 0
 content_margin_bottom = 0.5
 bg_color = Color(0.113725, 0.137255, 0.25098, 0.8)
-
-[sub_resource type="StyleBox" id="tooltip"]
-script = ExtResource("arcade")
-content_margin_left = 10
-content_margin_top = 6
-content_margin_right = 10
-content_margin_bottom = 6
-bg_color = Color(1, 0.904706, 0.620588, 1)
-bottom_color = Color(1, 0.862353, 0.451961, 1)
-shade_color = Color(0.734117, 0.592941, 0.185098, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 2
-band = 0
-shine = 0
-lip = 0
-radius = 10
 
 [sub_resource type="StyleBox" id="fold_title"]
 script = ExtResource("arcade")
@@ -1694,7 +1634,6 @@ draw_size = Vector2(76, 29)
 tint = Color(0.6, 0.6, 0.66, 0.85)
 
 [resource]
-BoxContainer/constants/separation = 12
 CheckBox/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 CheckBox/colors/font_disabled_color = Color(0.171943, 0.187373, 0.264527, 1)
 CheckBox/colors/font_focus_color = Color(0.113725, 0.137255, 0.25098, 1)
@@ -2200,15 +2139,6 @@ GoWell/base_type = &"PanelContainer"
 GoWell/styles/panel = SubResource("painted_GoWell")
 GoWindowBlue/base_type = &"PanelContainer"
 GoWindowBlue/styles/panel = SubResource("painted_GoWindowBlue")
-GridContainer/constants/h_separation = 12
-GridContainer/constants/v_separation = 12
-HBoxContainer/constants/separation = 12
-HFlowContainer/constants/separation = 12
-HScrollBar/styles/grabber = SubResource("scroll_grab")
-HScrollBar/styles/grabber_highlight = SubResource("scroll_grab_hover")
-HScrollBar/styles/grabber_pressed = SubResource("scroll_grab_hover")
-HScrollBar/styles/scroll = SubResource("scroll_track")
-HScrollBar/styles/scroll_focus = SubResource("scroll_track")
 HSeparator/styles/separator = SubResource("separator")
 HSlider/icons/grabber = SubResource("painted_slider_handle")
 HSlider/icons/grabber_disabled = SubResource("painted_slider_handle_disabled")
@@ -2280,8 +2210,6 @@ ProgressBar/styles/background = SubResource("bar_bg")
 ProgressBar/styles/fill = SubResource("bar_fill")
 RichTextLabel/colors/default_color = Color(0.113725, 0.137255, 0.25098, 1)
 RichTextLabel/font_sizes/normal_font_size = 16
-ScrollContainer/constants/scrollbar_h_separation = 8
-ScrollContainer/constants/scrollbar_v_separation = 8
 TabBar/colors/font_disabled_color = Color(0.817827, 0.821222, 0.838196, 1)
 TabBar/colors/font_hovered_color = Color(1, 1, 1, 1)
 TabBar/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
@@ -2325,16 +2253,6 @@ TextEdit/colors/selection_color = Color(0.103552, 0.264971, 0.639586, 0.35)
 TextEdit/styles/focus = SubResource("painted_field_focus")
 TextEdit/styles/normal = SubResource("painted_field")
 TextEdit/styles/read_only = SubResource("painted_field_read_only")
-TooltipLabel/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
-TooltipLabel/font_sizes/font_size = 13
-TooltipPanel/styles/panel = SubResource("tooltip")
-VBoxContainer/constants/separation = 12
-VFlowContainer/constants/separation = 12
-VScrollBar/styles/grabber = SubResource("scroll_grab")
-VScrollBar/styles/grabber_highlight = SubResource("scroll_grab_hover")
-VScrollBar/styles/grabber_pressed = SubResource("scroll_grab_hover")
-VScrollBar/styles/scroll = SubResource("scroll_track")
-VScrollBar/styles/scroll_focus = SubResource("scroll_track")
 VSeparator/styles/separator = SubResource("separator")
 VSlider/icons/grabber = ExtResource("grabber")
 VSlider/icons/grabber_disabled = ExtResource("grabber_disabled")

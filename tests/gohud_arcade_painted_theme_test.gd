@@ -461,7 +461,11 @@ func _item_sets(theme: Theme) -> void:
 ##    Button variation leaves unset, is the engine's. A base item here would leak into the variations (an outline on
 ##    the chip's label, a 4 → 10 gap) and paint plain buttons the game draws flat, so arcade_light sets none either.
 func _engine_bases(theme: Theme) -> void:
-	for type: StringName in [&"Button"]:
+	# The game's theme sets none of these, and it draws them all: its tooltips (8 `tooltip_text`), the boxes and grids
+	# that keep the engine's 4 px gap, and the scroll bars of the controls card and the room list.
+	for type: StringName in [&"Button", &"TooltipPanel", &"TooltipLabel", &"BoxContainer", &"HBoxContainer",
+			&"VBoxContainer", &"GridContainer", &"HFlowContainer", &"VFlowContainer", &"ScrollContainer",
+			&"HScrollBar", &"VScrollBar"]:
 		var items: Array[String] = []
 		for kind: int in Theme.DATA_TYPE_MAX:
 			for item: StringName in theme.get_theme_item_list(kind, type): items.append(str(item))

@@ -19,6 +19,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light` leaves tooltips, container gaps and scroll bars to the engine, as Magnet Mayhem does.** The game's
+  theme sets none of them and draws them all: its tooltips are the engine's dark box with light text, every box,
+  grid and flow container it does not override keeps the engine's 4 px gap (arcade_light had 12), and the controls
+  card and room list show the engine's scroll bar with no gap beside it. `TooltipPanel`, `TooltipLabel`, the six
+  container types, `ScrollContainer` and both scroll bars carry no item now.
+
 - **`arcade_light`'s dropdown keeps the engine's arrow, and its list the engine's radio marks and row padding, as
   Magnet Mayhem's do.** The game paints only the dropdown's box, ink and 17 px label and the list's panel, hover row,
   ink, size and 10 px rows; an `OptionButton`'s items are radio items, so the marks are drawn. The arcade's 16 px
