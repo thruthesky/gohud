@@ -16,7 +16,7 @@ against the code (`tools/check_docs_api.py`).
 3. [Messages and waiting](#messages-and-waiting) (12)
 4. [App navigation](#app-navigation) (13)
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
-6. [Inputs and pickers](#inputs-and-pickers) (12)
+6. [Inputs and pickers](#inputs-and-pickers) (13)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
 8. [HUD and game shapes](#hud-and-game-shapes) (14)
 9. [Looks and system](#looks-and-system) (9)
@@ -668,6 +668,15 @@ Extends `Control`. Two handles that never cross — a price or a level range. De
 ```gdscript
 var price := GoRangeSlider.make(0.0, 500.0, 40.0, 220.0, 10.0)
 price.change_ended.connect(func(low: float, high: float) -> void: refilter(low, high))
+```
+
+### `GoSlider`
+
+Extends `HSlider`. A slider drawn the painted way: the fill runs past the handle, a held handle grows. Details: `hud.md` §24 (GoSlider).
+
+```gdscript
+var music := GoSlider.make(0.0, 1.0, 0.01)
+music.theme_type_variation = &"GoSliderGreen"
 ```
 
 ### `GoDatePicker`

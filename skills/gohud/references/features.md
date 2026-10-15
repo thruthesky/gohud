@@ -98,7 +98,7 @@ Shapes that web UI kits have, reshaped for what games actually need.
 | **`GoCarousel`** store banners and character select; does **not** advance on its own by default, and never when `reduce_motion` is on | `carousel.set_pages([a, b, c])` | hud.md §15 |
 | **`GoChoiceColumn`** a short column of choices tapped once — a HUD summon list: a few rows at a time, scrolls up and down, **one tap on any row acts**, the game marks any number of rows chosen or greyed, rows can draw their own picture | `GoChoiceColumn.make(animals, 4, summon).set_selected(2, true)` | hud.md §18 |
 | **`GoKbd`** key caps for PC/Steam builds; `for_action()` reads the **real binding** from `InputMap`, so rebinding does not make the hint lie; hides itself on handhelds | `GoKbd.for_action(&"interact")` | platform.md §7 |
-| **`GoLevelCard`** a stage-select tile: thumbnail, title, subtitle, a check, a padlock or a PLAY! tag by state; `GoKeyCluster` WASD or arrows in a T; `GoCoverImage` a picture that covers its box; `GoGlyphButton` a glyph beside the label | `GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)` | hud.md §20–§23 |
+| **`GoLevelCard`** a stage-select tile: thumbnail, title, subtitle, a check, a padlock or a PLAY! tag by state; `GoKeyCluster` WASD or arrows in a T; `GoCoverImage` a picture that covers its box; `GoGlyphButton` a glyph beside the label; `GoSlider` a slider whose fill runs past the handle and whose handle grows while held | `GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)` | hud.md §20–§24 |
 
 ## 7. GoStyle — the control factory
 

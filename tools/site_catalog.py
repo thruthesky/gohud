@@ -1462,6 +1462,25 @@ price.change_ended.connect(func(low: float, high: float) -> void: refilter(low, 
 		"Два повзунки, що ніколи не перетинаються, — діапазон ціни чи рівня.",
 		"สองที่จับที่ไม่ข้ามกัน — ช่วงราคาหรือเลเวล",
 		"مقبضان لا يتقاطعان أبدًا — نطاق سعر أو مستوى.")),
+	("inputs", "GoSlider", "HSlider", """var music := GoSlider.make(0.0, 1.0, 0.01)
+music.theme_type_variation = &"GoSliderGreen\"""", T(
+		"A slider drawn the painted way: the fill runs past the handle, a held handle grows.",
+		"칠한 모양의 슬라이더 — 채움이 손잡이보다 조금 더 나가고, 누른 손잡이는 커진다.",
+		"ペイント風に描くスライダー。塗りはつまみの先まで伸び、押している間つまみが大きくなる。",
+		"手绘风格的滑块：填充越过滑钮一点，按住时滑钮变大。",
+		"手繪風格的滑桿：填色越過滑鈕一點，按住時滑鈕變大。",
+		"Un deslizador con estilo pintado: el relleno pasa un poco el tirador y este crece al sostenerlo.",
+		"Um controle deslizante pintado: o preenchimento passa um pouco da alça, que cresce ao ser segurada.",
+		"Ползунок в рисованном стиле: заливка чуть заходит за ручку, а зажатая ручка увеличивается.",
+		"Un curseur au style peint : le remplissage dépasse un peu la poignée, qui grossit quand on la tient.",
+		"Boyalı görünümlü kaydırıcı: dolgu tutamacın biraz ötesine geçer, basılı tutulan tutamaç büyür.",
+		"Suwak w malowanym stylu: wypełnienie sięga trochę za uchwyt, a przytrzymany uchwyt rośnie.",
+		"Un cursore dallo stile dipinto: il riempimento supera un po' la maniglia, che cresce quando è tenuta.",
+		"Thanh trượt kiểu vẽ tay: phần tô vượt quá núm một chút, núm phóng to khi đang giữ.",
+		"Penggeser bergaya lukis: isian melewati pegangan sedikit, pegangan membesar saat ditahan.",
+		"Повзунок у мальованому стилі: заливка трохи заходить за ручку, а затиснута ручка більшає.",
+		"สไลเดอร์แบบลายวาด: ส่วนเติมเลยที่จับไปเล็กน้อย และที่จับขยายขึ้นขณะกดค้าง",
+		"منزلق بالمظهر المرسوم: يتجاوز الملء المقبض قليلًا، ويكبر المقبض أثناء الضغط عليه.")),
 	("inputs", "GoDatePicker", "Container", """var stay := GoDatePicker.make()
 stay.range_mode = true
 stay.range_picked.connect(func(start: Dictionary, end: Dictionary) -> void: book(start, end))""", T(

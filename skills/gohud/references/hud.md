@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage and GoGlyphButton.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton and GoSlider.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -30,6 +30,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 21. [GoKeyCluster — WASD or arrows in a T](#21-gokeycluster--wasd-or-arrows-in-a-t)
 22. [GoCoverImage — a picture that covers its box](#22-gocoverimage--a-picture-that-covers-its-box)
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
+24. [GoSlider — a slider drawn the painted way](#24-goslider--a-slider-drawn-the-painted-way)
 
 ## 1. GoHudAnchor
 
@@ -686,3 +687,24 @@ var own := GoGlyphButton.make("Shop", &"", GoTheme.VAR_BUTTON, preload("res://ui
   painted pills) that much padding goes from the far side to the near one, exactly as Magnet Mayhem's `GlossButton` —
   the button grows only past the far padding, so a 56 × 56 glyph-only pill stays 56 wide. A thinner face keeps the
   group centred and the glyph `MIN_EDGE` off its side.
+
+## 24. GoSlider — a slider drawn the painted way
+
+`class_name GoSlider extends HSlider`. The settings slider of Magnet Mayhem, drawn exactly as the game draws it: the
+fill runs `FILL_PAST` (2) past the handle's centre and is never shorter than the track is tall, and a held handle is
+drawn `HELD_SCALE` (1.12) larger. Values, steps, signals, keys and touch are the stock HSlider's.
+
+```gdscript
+var music := GoSlider.make(0.0, 1.0, 0.01)
+music.theme_type_variation = &"GoSliderGreen"      # GoSliderCyan, or none for the blue fill
+```
+
+`make(minimum, maximum, snap)` · `part(item)` (the theme part it draws) · `handle_size()` · `handle_center_x()` ·
+`bar_rect()` · `fill_rect()` · `handle_rect()`. The least size is 120 wide by `GoTheme.TOUCH` tall.
+
+- 🔑 The parts are the theme's own HSlider parts (`slider`, `grabber_area`, `grabber_area_highlight`, `grabber`,
+  `grabber_highlight`, `grabber_disabled`), read again when the theme or the variation changes — every preset draws its
+  own look, and a variation gives only the parts it changes.
+- 🔑 The engine's drawing is blanked with overrides: a see-through grabber as wide as the handle, so a press still maps
+  to the value under the finger. Do not add your own `grabber` or `slider` overrides — put a variation in the theme.
+- `GoStyle.slider()` stays a plain HSlider; reach for `GoSlider` where a screen must look like the painted game.

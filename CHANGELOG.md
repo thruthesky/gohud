@@ -64,6 +64,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoSlider`** (`HSlider`) — a slider drawn as Magnet Mayhem's `PaintedSlider`: the fill runs `FILL_PAST` past the
+  handle's centre (at least a track's height long) and a held handle is drawn `HELD_SCALE` larger. It draws the theme's
+  own HSlider parts, so `GoSliderGreen` / `GoSliderCyan` pick the fill. `make()`, `part()`, `handle_size()`,
+  `handle_center_x()`, `bar_rect()`, `fill_rect()`, `handle_rect()`. Test `gohud_painted_controls_test`, in `check_all`.
+
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
     `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.

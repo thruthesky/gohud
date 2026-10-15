@@ -628,7 +628,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
 </section>
 
 <section id="inputs" class="catalog">
-  <h2>Inputs and pickers <small>(12)</small></h2>
+  <h2>Inputs and pickers <small>(13)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
@@ -692,6 +692,13 @@ volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
       <p class="catalog-base">extends <code>Control</code></p>
       <pre><code>var price := GoRangeSlider.<wbr>make(<wbr>0.0,<wbr> 500.0,<wbr> 40.0,<wbr> 220.0,<wbr> 10.0)
 price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float) -&gt; void: refilter(<wbr>low,<wbr> high))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goslider"><code>GoSlider</code></h3>
+      <p>A slider drawn the painted way: the fill runs past the handle, a held handle grows.</p>
+      <p class="catalog-base">extends <code>HSlider</code></p>
+      <pre><code>var music := GoSlider.<wbr>make(<wbr>0.0,<wbr> 1.0,<wbr> 0.01)
+music.<wbr>theme_type_variation = &amp;"GoSliderGreen"</code></pre>
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>
