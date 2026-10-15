@@ -63,16 +63,21 @@ extends Button
 ## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** Left unset, it follows the look
 ## (`GoStyle.skin_focus`): on for most looks — a close button in a dialog or a settings header has to be reachable
 ## without a mouse — and off under arcade_light, whose controls stay out of the focus order like the game's.
-## Setting it (in the inspector or from code) pins that choice through every later look change.
+## Setting it (in the inspector or from code) pins that choice through every later look change. Read back, it is what
+## the button is — `focus_mode == FOCUS_ALL`: the look's mode until the project chose (false under arcade_light), then
+## the choice. Only a choice is saved in a scene, so a button saved under arcade_light still follows a later look.
 ## 🛑 Turn it **off** for a button over gameplay (a HUD bag or map button): a clicked button keeps focus, and the
 ##    engine's accept action (Space / Enter) then presses **it** again instead of reaching the game — a jump that
 ##    reopens the bag. `GoSlot.keyboard_focus` is the same switch, off by default there. For a whole HUD corner at
 ##    once, `GoHudAnchor.keyboard_focus = false`.
 @export var keyboard_focus := true:
+	get:
+		return focus_mode == Control.FOCUS_ALL   # the effective mode, not the unset default
 	set(value):
 		keyboard_focus = value
 		focus_mode = Control.FOCUS_ALL if value else Control.FOCUS_NONE
 		set_meta(GoStyle.SKIN_FOCUS_META, -1)   # the project chose: the look's focus mode never overrides it
+		notify_property_list_changed()   # now saved in the scene (`_validate_property`)
 
 ## The sibling icon buttons placed alongside. Where the widened hit areas overlap, **whichever centre is nearer** takes the press.
 var touch_peers: Array[Control] = []
@@ -90,6 +95,13 @@ func _init() -> void:
 	clip_text = false
 	GoStyle.press_feel(self)
 	GoStyle.skin_focus(self)
+
+
+## 🛑 `keyboard_focus` is saved only once the project set it: unset, it reads the look's mode, and a scene saved under
+##    arcade_light would otherwise store `false` and load pinned out of the focus order in every look.
+func _validate_property(property: Dictionary) -> void:
+	if property.name == "keyboard_focus" and get_meta(GoStyle.SKIN_FOCUS_META, 0) != -1:
+		property.usage &= ~PROPERTY_USAGE_STORAGE
 
 
 func _ready() -> void:

@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoIconButton.keyboard_focus` reads what the button is.** Left unset, the button takes the look's focus mode
+  (`FOCUS_NONE` under `arcade_light`), but the property still read its default `true`. It now reads
+  `focus_mode == FOCUS_ALL`: the look's mode until the project sets it, then that choice, which still pins the mode
+  through every look change. An unset value is no longer saved in a scene, so a button saved under `arcade_light` does
+  not load pinned out of the focus order.
 - **A window with nothing focusable no longer leaves focus on its opener.** Under `arcade_light` a sheet's close
   button is `FOCUS_NONE`, yet `GoSurface` still called `grab_focus()` on it: the engine warned "This control can't grab
   focus" and the early return skipped the search inside the window, so focus stayed on the control behind it and Enter

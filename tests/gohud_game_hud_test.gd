@@ -404,16 +404,31 @@ func _icon_focus(look: StringName) -> void:
 	await frames(1)
 	check(chosen.focus_mode == Control.FOCUS_ALL, "icon focus: keyboard_focus = true set by the project stays (%s)" % look)
 	check(off.focus_mode == Control.FOCUS_NONE, "icon focus: keyboard_focus = false stays (%s)" % look)
+	# Read back, keyboard_focus is what the button is — the look's mode until the project chose — not the unset default.
+	check(plain.keyboard_focus == (not arcade), "icon focus: keyboard_focus reads the look's mode (%s)" % look)
+	check(chosen.keyboard_focus and not off.keyboard_focus, "icon focus: keyboard_focus reads the project's choice (%s)" % look)
+	# Only a choice is saved in a scene: an unset button saved under arcade_light must not come back pinned off.
+	check(not _stores(plain, &"keyboard_focus") and _stores(chosen, &"keyboard_focus") and _stores(off, &"keyboard_focus"),
+		"icon focus: keyboard_focus is stored only once the project set it (%s)" % look)
 	var other := GoThemePresets.DEFAULT_DARK if arcade else GoThemePresets.ARCADE_LIGHT
 	GoUi.use_preset(other)
 	await frames(1)
 	check(plain.focus_mode == (Control.FOCUS_ALL if arcade else Control.FOCUS_NONE), "icon focus: follows a look change")
+	check(plain.keyboard_focus == arcade, "icon focus: keyboard_focus reads the new look's mode")
 	check(chosen.focus_mode == Control.FOCUS_ALL and off.focus_mode == Control.FOCUS_NONE,
 		"icon focus: the project's choice survives a look change")
+	check(chosen.keyboard_focus and not off.keyboard_focus, "icon focus: keyboard_focus still reads the project's choice")
 	GoUi.use_preset(look)
 	await frames(1)
 	holder.queue_free()
 	await frames(1)
+
+
+## Whether [param node] saves [param property] in a scene.
+func _stores(node: Object, property: StringName) -> bool:
+	for entry in node.get_property_list():
+		if entry.name == property: return entry.usage & PROPERTY_USAGE_STORAGE != 0
+	return false
 
 
 # ── A HUD picture button with a key hint (GoHudButton) ─────────────────
