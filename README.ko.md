@@ -600,7 +600,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간. `arcade_light`에서는 게임 HUD의 페인트 막대(둥근 홈 안의 그라데이션, 이름 앞 아이콘) |
 | `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
 | `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
-| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
+| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 포커스는 룩을 따른다(arcade_light에서는 꺼짐). 게임 화면 위에서는 `keyboard_focus = false` |
 | `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·아래 앱 바·외곽선 버튼(`Tone.OUTLINED`)·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 열넷, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |

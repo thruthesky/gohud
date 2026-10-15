@@ -60,8 +60,10 @@ extends Button
 		tooltip_text_name = value
 		_refresh_tooltip()
 
-## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** On by default — a close button in a
-## dialog or a settings header has to be reachable without a mouse.
+## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** Left unset, it follows the look
+## (`GoStyle.skin_focus`): on for most looks — a close button in a dialog or a settings header has to be reachable
+## without a mouse — and off under arcade_light, whose controls stay out of the focus order like the game's.
+## Setting it (in the inspector or from code) pins that choice through every later look change.
 ## 🛑 Turn it **off** for a button over gameplay (a HUD bag or map button): a clicked button keeps focus, and the
 ##    engine's accept action (Space / Enter) then presses **it** again instead of reaching the game — a jump that
 ##    reopens the bag. `GoSlot.keyboard_focus` is the same switch, off by default there. For a whole HUD corner at
@@ -70,6 +72,7 @@ extends Button
 	set(value):
 		keyboard_focus = value
 		focus_mode = Control.FOCUS_ALL if value else Control.FOCUS_NONE
+		set_meta(GoStyle.SKIN_FOCUS_META, -1)   # the project chose: the look's focus mode never overrides it
 
 ## The sibling icon buttons placed alongside. Where the widened hit areas overlap, **whichever centre is nearer** takes the press.
 var touch_peers: Array[Control] = []
@@ -86,6 +89,7 @@ func _init() -> void:
 	auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	clip_text = false
 	GoStyle.press_feel(self)
+	GoStyle.skin_focus(self)
 
 
 func _ready() -> void:
@@ -104,6 +108,7 @@ func _exit_tree() -> void:
 ## 🔑 The icon **set** can change entirely — the same name becomes a different picture and a different mechanism (texture ↔ font).
 func _on_ui_changed() -> void:
 	theme = GoUi.theme()
+	GoStyle.skin_focus(self)
 	_refresh_icon()
 	_refresh_tooltip()
 

@@ -40,6 +40,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **GoIconButton takes the look's focus mode.** It calls `GoStyle.skin_focus()` on creation and on a look change, so
+  under arcade_light an icon button stays out of the focus order (`FOCUS_NONE`) like the game's; other looks keep
+  `FOCUS_ALL`. Setting `keyboard_focus` in the project pins that choice through every look change.
+
 - **arcade_light's controls stay out of the focus order, as Magnet Mayhem's do.** A new skin hook,
   `GoSkin.control_focus_mode()`, sets the focus mode of `GoGlyphButton`, `GoSlider`, `GoSwitch`, `GoLevelCard` and
   `GoStyle.button` / `toggle` / `checkbox` / `slider` / `picker` (through `GoStyle.skin_focus()`, again on a look change).

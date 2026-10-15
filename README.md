@@ -1021,7 +1021,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoBar` | Control | HP/MP/XP bars with value, fraction or percent readouts and eased changes; under `arcade_light` the painted HUD bar (a gradient in a rounded groove, an icon before the name) |
 | `GoSlot` | Button | Quick slot with icon, quantity, cooldown and shortcut on a single face; shared hit areas in tight rows; `keyboard_focus` opts into Tab order |
 | `GoJoystick` | Control | Virtual joystick in fixed, follow or relative mode, with dead zone |
-| `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |
+| `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; focus follows the look (off under arcade_light); `keyboard_focus = false` over gameplay |
 | `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips (and `filter_chip`, `input_chip`), floating toolbars, the bottom app bar, outlined buttons (`Tone.OUTLINED`), cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
 | `GoThemePresets` | static | The fourteen built-in presets, presets found in `themes/presets/`, and `register()` for your own |

@@ -37,6 +37,7 @@ func _initialize() -> void:
 		await _spotlight(look)
 		await _perf_readout(look)
 		await _slot_touch(look)
+		await _icon_focus(look)
 	_per_inch_scale()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -349,6 +350,34 @@ func _slot_touch(look: StringName) -> void:
 	check(slot.custom_minimum_size == Vector2(60, 60), "slot: a floor the project chose wins (%s)" % look)
 	GoUi.config.follow_look_touch_size()
 	GoUi.refresh()
+	holder.queue_free()
+	await frames(1)
+
+
+func _icon_focus(look: StringName) -> void:
+	var arcade := look == GoThemePresets.ARCADE_LIGHT
+	var plain := GoIconButton.new()
+	var holder := _host(plain)
+	await frames(1)
+	check(plain.focus_mode == (Control.FOCUS_NONE if arcade else Control.FOCUS_ALL),
+		"icon focus: the look's focus mode (%s)" % look)
+	var chosen := GoIconButton.new()
+	chosen.keyboard_focus = true
+	holder.add_child(chosen)
+	var off := GoIconButton.new()
+	off.keyboard_focus = false
+	holder.add_child(off)
+	await frames(1)
+	check(chosen.focus_mode == Control.FOCUS_ALL, "icon focus: keyboard_focus = true set by the project stays (%s)" % look)
+	check(off.focus_mode == Control.FOCUS_NONE, "icon focus: keyboard_focus = false stays (%s)" % look)
+	var other := GoThemePresets.DEFAULT_DARK if arcade else GoThemePresets.ARCADE_LIGHT
+	GoUi.use_preset(other)
+	await frames(1)
+	check(plain.focus_mode == (Control.FOCUS_ALL if arcade else Control.FOCUS_NONE), "icon focus: follows a look change")
+	check(chosen.focus_mode == Control.FOCUS_ALL and off.focus_mode == Control.FOCUS_NONE,
+		"icon focus: the project's choice survives a look change")
+	GoUi.use_preset(look)
+	await frames(1)
 	holder.queue_free()
 	await frames(1)
 
