@@ -353,6 +353,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **`GoGlyphButton.fit_label`.** The label shrinks (`GoStyle.fit_font_size()`, never under the fit floor) to the
   button's width less its normal face and `glyph_allowance()`, on every resize, text, glyph and look change — the sum
   Magnet Mayhem's screens each did by hand. `fit_base_size` (0: the look's size), `fitted_font_size()`, `fit_now()`.
+- **`GoSpotlight.hold_dim`.** Keeps the dim at full for as long as it is on — a lesson about an area (where to look)
+  that must stay marked to the end, without stopping the clock with `auto_advance = false`.
 
 - **`GoRibbonHeader` — a screen's title ribbon.** The game's `RibbonHeader` for a screen built on a card (pause,
   settings): put first in the card's column, it hangs the look's title plate over the card's top edge with a glyph and

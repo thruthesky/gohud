@@ -1038,6 +1038,7 @@ spot.clear()
 | `pad` · `dim_seconds` · `fade_seconds` | `8` · `2` · `0.4` | The hole's margin round a followed control; how long the dim stays, then fades |
 | `hole` · `dim_rects()` · `dim_alpha()` | | The lit rect; the four dims (top, bottom, left, right); the dim's strength now, 1 → 0 |
 | `auto_advance` · `advance(delta)` | `true` | Runs the clock in `_process`, or drive it yourself |
+| `hold_dim` | `false` | Keeps the dim at full for as long as it is on — a lesson about an area (where to look, where to drag) that stays marked until the step is done. Off again, the dim is where its clock says |
 
 - 🛑 Display only: it lights what it is told to.
 - Skin hooks: `spotlight_dim()` (the dim colour) and `spotlight_ring_box()` (the ring, drawn over the hole).

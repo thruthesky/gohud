@@ -25,6 +25,13 @@ extends Control
 ## How long the dim then takes to fade out (s). The ring stays.
 @export_range(0.0, 10.0) var fade_seconds := 0.4
 
+## 🔑 Keeps the dim at full for as long as it is on — a lesson about an area (where to look, where to drag) rather than
+## a control, which must stay marked until the step is done. Off again, the dim goes on fading by its clock.
+@export var hold_dim := false:
+	set(value):
+		hold_dim = value
+		queue_redraw()
+
 ## Runs the clock in `_process`. Turn it off to drive it with `advance(delta)`.
 @export var auto_advance := true:
 	set(value):
@@ -81,8 +88,9 @@ func clear() -> void:
 	_set_hole(Rect2())
 
 
-## How strong the dim is now: 1 for `dim_seconds`, then down to 0 over `fade_seconds`.
+## How strong the dim is now: 1 for `dim_seconds`, then down to 0 over `fade_seconds` (always 1 with `hold_dim`).
 func dim_alpha() -> float:
+	if hold_dim: return 1.0
 	if fade_seconds <= 0.0: return 1.0 if _age <= dim_seconds else 0.0
 	return 1.0 - clampf((_age - dim_seconds) / fade_seconds, 0.0, 1.0)
 

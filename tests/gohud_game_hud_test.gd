@@ -1014,6 +1014,15 @@ func _spotlight(look: StringName) -> void:
 	check(spot.dim_alpha() == 0.0, "spotlight: moving the hole keeps the age")
 	spot.light(Rect2(10, 10, 20, 20), true)
 	check(spot.dim_alpha() == 1.0, "spotlight: a fresh light dims again")
+	spot.hold_dim = true
+	spot.advance(30.0)
+	check(spot.dim_alpha() == 1.0 and spot.hold_dim, "spotlight: hold_dim keeps the dim at full past the fade")
+	spot.hold_dim = false
+	check(spot.dim_alpha() == 0.0, "spotlight: off again, the dim is where its clock says")
+	spot.light(Rect2(10, 10, 20, 20), true)
+	var plain := GoSpotlight.new()
+	check(not plain.hold_dim, "spotlight: hold_dim is off by default")
+	plain.free()
 	var target := Control.new()
 	holder.add_child(target)
 	target.position = Vector2(40, 50)
