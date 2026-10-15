@@ -261,7 +261,7 @@ func _layout_title() -> void:
 func _pad_safe_area() -> void:
 	if _pad == null or not is_inside_tree(): return
 	var inset := 0
-	var window := get_window()
+	var window := get_viewport()
 	if safe_area and window != null and not Engine.is_editor_hint():
 		inset = roundi(maxf(0.0, GoSafeArea.usable_rect(window).position.y - window.get_visible_rect().position.y))
 	_pad.add_theme_constant_override(&"margin_top", inset)

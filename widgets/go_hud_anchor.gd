@@ -146,7 +146,7 @@ func active_spot() -> Spot:
 
 func _relayout() -> void:
 	if _laying_out or not is_inside_tree(): return
-	var window := get_window()
+	var window := get_viewport()
 	if window == null: return
 	_laying_out = true
 	var area := GoSafeArea.usable_rect(window) if use_safe_area else window.get_visible_rect()

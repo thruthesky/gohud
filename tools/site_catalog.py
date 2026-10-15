@@ -2146,7 +2146,7 @@ button.add_theme_stylebox_override(&"normal", plate)""", T(
 		"Намальований PNG у дев'яти частинах і його двійник-іконка для повзунка або перемикача.",
 		"PNG ที่ระบายสีวาดแบบเก้าส่วน และไอคอนคู่กันสำหรับที่จับสไลเดอร์หรือสวิตช์",
 		"صورة PNG مرسومة بتسع شرائح، ونظيرها الأيقوني لمقبض شريط التمرير أو المفتاح.")),
-	("look", "GoSafeArea · GoScale", "Control · RefCounted", """var usable := GoSafeArea.usable_rect(get_window())
+	("look", "GoSafeArea · GoScale", "Control · RefCounted", """var usable := GoSafeArea.usable_rect(get_viewport())
 var size_class := GoScale.breakpoint_for_dp(minf(usable.size.x, usable.size.y))   # by the short side""", T(
 		"Notches, the gesture bar and the keyboard; breakpoints in dp.",
 		"노치·제스처 바·키보드를 피한 영역, 그리고 dp 기준 구간.",

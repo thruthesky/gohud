@@ -1015,7 +1015,7 @@ button.add_theme_stylebox_override(&"normal", plate)
 Extends `Control · RefCounted`. Notches, the gesture bar and the keyboard; breakpoints in dp. Details: `platform.md` §5 (Safe area, keyboard, breakpoints, dp scale).
 
 ```gdscript
-var usable := GoSafeArea.usable_rect(get_window())
+var usable := GoSafeArea.usable_rect(get_viewport())
 var size_class := GoScale.breakpoint_for_dp(minf(usable.size.x, usable.size.y))   # by the short side
 ```
 

@@ -6,6 +6,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Every widget that fits the safe area reads the viewport it is drawn in.** `GoAppBar`, `GoCoachMark`, `GoConsole`,
+  `GoDrawer`, `GoEdgeBar`, `GoForm`, `GoFab`, `GoHudAnchor`, `GoNavBar` and `GoStyle`'s bottom bar passed
+  `get_window()` to `GoSafeArea.usable_rect`, so inside a `SubViewport` (a preview, a render-to-texture) they laid out
+  for the main window round it — a console 390 wide in a 600 viewport, a drawer 844 tall in a 400 one. They now pass
+  `get_viewport()`, and so does `GoSurface`: `GoSafeArea.usable_rect` (and `usable_rect_with_keyboard`,
+  `px_to_units`) take a `Viewport`, and a `SubViewport` is its own whole rect with no safe area.
+
 - **`GoLevelCard` lays out its locked state and thumbnail as Magnet Mayhem's `StageCard`.** The padlock and LOCKED
   sat 4 px apart only under the engine's default theme; under a gohud theme the column took its VBox gap (12) and both
   sat lower. The gap is now the card's own (`lock_gap`, 4). The thumbnail slot clips, as the game's map preview does,

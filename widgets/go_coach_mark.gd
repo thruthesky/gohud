@@ -263,7 +263,7 @@ func _to_local(rect: Rect2) -> Rect2:
 
 func _layout() -> void:
 	if not is_instance_valid(_target): return
-	var area := GoSafeArea.usable_rect(get_window()).grow(-GoUi.metric(GoTheme.GAP_SMALL))
+	var area := GoSafeArea.usable_rect(get_viewport()).grow(-GoUi.metric(GoTheme.GAP_SMALL))
 	var landscape := area.size.x > area.size.y
 	var width := minf(card_max_width, area.size.x * (0.44 if landscape else 0.82))
 	card.size.x = width

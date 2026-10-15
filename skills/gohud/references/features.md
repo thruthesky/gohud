@@ -147,7 +147,7 @@ actions along the bottom — is the template `assets/templates/edge_bar_hud.gd`.
 | Feature | One line | Reference |
 |---|---|---|
 | 48 dp touch targets behind smaller visuals; overlapping targets go to the nearer centre (`touch_peers`) | `slot.touch_peers = peers` | platform.md §4 |
-| Safe area (notch, gesture bar) and virtual keyboard avoidance | `GoSafeArea.usable_rect(get_window())` | platform.md §5 |
+| Safe area (notch, gesture bar) and virtual keyboard avoidance | `GoSafeArea.usable_rect(get_viewport())` | platform.md §5 |
 | Breakpoints by short side in dp (mobile ≤ 576, tablet ≤ 991); optional 1 unit = 1 dp scaling | `GoScale.breakpoint_for_dp(dp)` | platform.md §5 |
 | Android Back / Escape ownership shared across windows | `GoBackPolicy.acquire(get_tree())` | platform.md §6 |
 | Focus rings only for keyboard/gamepad, focus trapped in windows and restored on close | `GoConfig.suppress_pointer_focus_ring` | platform.md §4 |

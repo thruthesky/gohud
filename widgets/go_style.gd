@@ -2266,7 +2266,7 @@ static func bottom_app_bar(items: Array, fab: GoFab = null) -> PanelContainer:
 	#    layout check rebuilds the gallery per look, 2026-10-02).
 	var inset := func() -> void:
 		if not is_instance_valid(node) or not node.is_inside_tree() or Engine.is_editor_hint(): return
-		var window := node.get_window()
+		var window := node.get_viewport()
 		if window == null: return
 		pad.add_theme_constant_override(&"margin_bottom",
 			roundi(maxf(0.0, window.get_visible_rect().end.y - GoSafeArea.usable_rect(window).end.y)))
