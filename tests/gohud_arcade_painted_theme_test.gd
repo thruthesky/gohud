@@ -461,6 +461,19 @@ func _switch(theme: Theme) -> void:
 			DISABLED_TINT)
 	check(theme.get_stylebox(&"focus", &"CheckButton") is StyleBoxEmpty,
 		"CheckButton/focus: empty, the game's switch draws no focus ring (got %s)" % theme.get_stylebox(&"focus", &"CheckButton"))
+	# The label beside the switch is ink in every state, as the game's labels are: the switch itself says on or off,
+	# so the words must not turn blue with it (Button's pressed colours would leak through without these).
+	for state: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(state, &"CheckButton").is_equal_approx(INK),
+			"CheckButton/%s: ink, on or off (got %s)" % [state, theme.get_color(state, &"CheckButton")])
+	# The sprites keep their own colours (the game's engine default, white), on and off.
+	for state: StringName in [&"icon_normal_color", &"icon_hover_color", &"icon_pressed_color", &"icon_hover_pressed_color",
+			&"icon_focus_color"]:
+		check(theme.get_color(state, &"CheckButton").is_equal_approx(Color.WHITE),
+			"CheckButton/%s: white, the painted pill untinted (got %s)" % [state, theme.get_color(state, &"CheckButton")])
+	check(theme.get_constant(&"h_separation", &"CheckButton") == 4,
+		"CheckButton/h_separation: the game's 4 between label and switch (got %d)" % theme.get_constant(&"h_separation", &"CheckButton"))
 	var switch := CheckButton.new()
 	switch.theme = theme
 	root.add_child(switch)

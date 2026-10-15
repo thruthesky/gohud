@@ -601,7 +601,8 @@ Three looks for games that want to feel painted, inked or made of candy. `arcade
 painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: green primary and success keys, blue info keys, grey
 neutral keys, red danger keys, cards, ribbons, keycaps and badges. Its white glyphs fall back to gohud’s default
 icons when a name is absent. Text fields (`LineEdit`, `TextEdit`) wear the game’s flat field, and the horizontal
-slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites. Tabs and the vertical slider
+slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites; the switch's label stays ink
+when it is on, 4 dp from the pill. Tabs and the vertical slider
 are the known exception: they keep the arcade’s code-drawn shapes.
 `arcade_dark` keeps `GoStyleBoxArcade`; comic and kids use their own `StyleBox` classes.
 

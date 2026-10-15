@@ -19,6 +19,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light`’s switch label stays ink when it is on.** `CheckButton` no longer takes `Button`’s blue pressed
+  colours: its label is the ink in every state, its painted pill is untinted (white icon colours, the engine default
+  the game leaves) and it sits 4 dp from its label, as Magnet Mayhem’s does.
+
 - **`arcade_light`’s primary key is the green pill.** Magnet Mayhem’s main actions (PLAY, CONFIRM, SAVE) are green
   (`GlossGreen`), so `GoPrimaryButton` — and every `GoStyle` primary button — now draws `btn_green.png`; the blue pill
   (`GlossBlue`) moves to the new `GoInfoButton`. The map (`tools/arcade_painted_map.json`) names `GlossGreen →

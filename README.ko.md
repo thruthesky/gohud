@@ -52,7 +52,7 @@
 `arcade_light`는 Magnet Mayhem에서 만든 PNG와 흰 글리프를 쓴다. `GoStyleBoxSprite`와
 `GoSkinArcadePainted`가 버튼·카드·리본·키캡·배지를 그리며, 모달 뒤에는 게임의 블러 스크림을 쓴다.
 입력칸(`LineEdit`·`TextEdit`)은 게임의 평평한 입력칸이고, 가로 슬라이더(`GoSliderGreen`·`GoSliderCyan` 포함)와 스위치도
-페인티드 스프라이트다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
+페인티드 스프라이트다. 스위치의 글자는 켜져도 잉크색 그대로이고 알약에서 4 dp 떨어진다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
 `arcade_dark`는 기존의 `GoStyleBoxArcade`와 `GoSkinArcade`를 그대로 쓴다. 그림의 출처와 MIT 사용 조건은
 [서드파티 고지](THIRD_PARTY_NOTICES.md)에 있다.
 

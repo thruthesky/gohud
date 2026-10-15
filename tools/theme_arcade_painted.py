@@ -414,6 +414,15 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     #    game's size in every direction (the game draws them unflipped right to left too); off, they fade. The game's
     #    switch draws no focus ring. ──
     put("CheckButton/styles/focus", "painted_empty")
+    # The label beside it is ink in every state, as the game's labels are: the pill says on or off, so the words must
+    # not turn blue with it (Button's pressed colours would leak through otherwise). The pill keeps its own colours
+    # (white, the engine default the game leaves), and it sits the engine's 4 from its label, as the game's does.
+    for slot in ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"):
+        setT("CheckButton/colors/%s" % slot, C(INK))
+    for slot in ("icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color",
+                 "icon_focus_color"):
+        setT("CheckButton/colors/%s" % slot, C(WHITE))
+    setT("CheckButton/constants/h_separation", "4")
     for on, file in ((True, "toggle_on.png"), (False, "toggle_off.png")):
         key = "checked" if on else "unchecked"
         stem = "painted_" + file[:-len(".png")]
