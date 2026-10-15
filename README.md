@@ -69,7 +69,7 @@ the next `tools/package.sh` run releases it.
 - **Built for AI coding.** The gohud skill teaches Claude Code, Codex and other agents the whole API, with templates
   and recipes — paste [one prompt](#let-your-ai-coding-agent-install-it) and the agent installs everything.
 - **Pure GDScript, MIT.** No autoload required, no engine module, no GDExtension. Code, icons and artwork are MIT;
-  1,171 icons use path data from Tabler Icons (MIT); the bundled Cinzel and Roboto fonts are under the SIL OFL 1.1.
+  1,171 icons use path data from Tabler Icons (MIT); the bundled Cinzel, Roboto, Nunito and Noto Sans CJK fonts are under the SIL OFL 1.1.
 
 ## Fourteen looks, one line
 
@@ -1267,8 +1267,10 @@ GoUi.config.number_formatter = func(amount: float) -> String:
 ```
 
 > **Bring a font for your languages.** The bundled fonts are Cinzel, which only the medieval presets assign
-> (to titles and subtitles), and Roboto, which only the Material presets assign (to titles, captions and
-> button labels — and to body text while the project sets no font of its own). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
+> (to titles and subtitles), Roboto, which only the Material presets assign (to titles, captions and
+> button labels — and to body text while the project sets no font of its own), and Magnet Mayhem's Nunito with
+> Noto Sans CJK fallbacks, which `arcade_light` uses for all its text while the project sets no font of its own (its
+> CJK files hold only the game's characters; the rest come from the system's fonts). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
 > your own theme font; a Latin-only font draws them as empty boxes and raises no error. Traditional
 > Chinese needs its own coverage too: a Simplified subset does not contain those forms.
 
@@ -1434,5 +1436,7 @@ and the generated control artwork) were made for gohud and are MIT as well. The 
 1,000-icon library are MIT too: 171 game icons and every library icon use path data from Tabler Icons (MIT,
 Copyright (c) 2020-2026 Paweł Kuna), 16 game icons were drawn for gohud. The Cinzel and Roboto fonts are
 distributed unmodified under the SIL Open Font License 1.1 (`assets/fonts/cinzel/OFL.txt`,
-`assets/fonts/roboto/OFL.txt`); see
+`assets/fonts/roboto/OFL.txt`); Nunito Bold and the Noto Sans KR / JP / SC / TC Bold subsets (`arcade_light`'s font,
+Magnet Mayhem's own files) are under the same licence (`assets/fonts/nunito/OFL.txt`,
+`assets/fonts/noto_sans_cjk/OFL.txt`); see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

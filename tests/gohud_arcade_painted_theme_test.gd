@@ -69,6 +69,7 @@ func _initialize() -> void:
 		await _range_slider(light)
 		_switch(light)
 		_field(light)
+		_font(light)
 	if dark != null:
 		_dark_stays(dark)
 	print("gohud arcade painted theme tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -482,6 +483,45 @@ func _field(theme: Theme) -> void:
 				check(box == theme.get_stylebox(state, &"LineEdit"), "TextEdit/%s: the very box LineEdit wears" % state)
 		check(theme.get_color(&"font_color", type).is_equal_approx(INK)
 			and theme.get_color(&"caret_color", type).is_equal_approx(INK), "%s: ink text and caret" % type)
+
+
+## 🔤 The game's font (`UiTheme.get_font()`): a FontVariation of Nunito Bold with the four Noto Sans CJK Bold fonts as
+##    fallbacks, Korean, Japanese, Simplified then Traditional Chinese (`fallback_order("")`), at 16 px.
+func _font(theme: Theme) -> void:
+	const FONTS := "res://addons/gohud/assets/fonts/"
+	check(theme.has_default_font() and theme.default_font is FontVariation,
+		"arcade_light: the default font is the game's FontVariation (got %s)" % theme.default_font)
+	check(theme.default_font_size == 16, "arcade_light: the game's 16 px default size (got %d)" % theme.default_font_size)
+	if not (theme.default_font is FontVariation): return
+	var font := theme.default_font as FontVariation
+	check(font.base_font is FontFile and font.base_font.resource_path == FONTS + "nunito/Nunito-Bold.ttf",
+		"the base font is Nunito Bold (got %s)" % (font.base_font.resource_path if font.base_font else "none"))
+	var want := ["NotoSansKR-Bold.ttf", "NotoSansJP-Bold.ttf", "NotoSansSC-Bold.ttf", "NotoSansTC-Bold.ttf"]
+	var got: Array = []
+	for f: Font in font.fallbacks: got.append(f.resource_path.get_file() if f is FontFile else str(f))
+	check(got == want, "the fallbacks are the game's Noto Sans CJK, KR JP SC TC (got %s)" % [got])
+	for f: Font in font.fallbacks:
+		check(f.resource_path.begins_with(FONTS + "noto_sans_cjk/"), "%s ships in assets/fonts/noto_sans_cjk" % f.resource_path)
+	# 🔑 Every glyph the game draws: Latin from Nunito, Hangul, kana and Han from the fallbacks.
+	for text: String in ["Magnet Mayhem", "한국어", "日本語", "简体中文", "繁體中文"]:
+		check(font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x > 0.0 and _covered(font, text),
+			"the font draws %s" % text)
+	check(theme.get_meta(&"go_body_font_baked", null) == font, "the baked font is named (go_body_font_baked)")
+	# Through GoUi the project's own font wins, as with every preset's body font.
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	check(GoUi.theme().default_font == (null if GoUi.project_has_font() else font),
+		"GoUi.theme(): the game's font only while the project chose none (project font: %s)" % GoUi.project_has_font())
+	GoUi.config.preset = &""
+	for path: String in [FONTS + "nunito/OFL.txt", FONTS + "noto_sans_cjk/OFL.txt"]:
+		check(FileAccess.file_exists(path), "%s ships with the font files" % path)
+
+
+func _covered(font: Font, text: String) -> bool:
+	for i in text.length():
+		var found := font.has_char(text.unicode_at(i))
+		for f: Font in font.fallbacks: found = found or f.has_char(text.unicode_at(i))
+		if not found: return false
+	return true
 
 
 ## 🧹 Every `[ext_resource]` the file declares is pointed at: the painted parts replace arcade drawings (the switch's

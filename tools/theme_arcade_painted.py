@@ -22,6 +22,14 @@ ICON_SCRIPT = RES + "/widgets/go_texture_sprite.gd"
 PAINTED = RES + "/assets/arcade_light/painted/"
 # The stage-select art (the game's `assets/ui/stage`): a sprite named "stage/<file>" is drawn from here.
 STAGE = RES + "/assets/arcade_light/stage/"
+# 🔤 The game's font (`UiTheme.get_font()`): Nunito Bold, then the four Noto Sans CJK Bold subsets in the game's
+#    `fallback_order("")` — Korean, Japanese, Simplified, Traditional Chinese. The files are the game's own (subset to
+#    its strings, with its vertical metrics: `tools/fonts/build_fonts.py` there), so a label is set exactly as in the
+#    game. Glyphs outside the subsets come from the system (the files import with `allow_system_fallback`).
+FONTS = RES + "/assets/fonts/"
+FONT_BASE = ("font_nunito", FONTS + "nunito/Nunito-Bold.ttf")
+FONT_FALLBACKS = [("font_noto_%s" % code.lower(), FONTS + "noto_sans_cjk/NotoSans%s-Bold.ttf" % code)
+                  for code in ("KR", "JP", "SC", "TC")]
 MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arcade_painted_map.json")
 
 SHAPE = dict(kind="arcade_painted")
@@ -210,6 +218,15 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         return bid
 
     boxes["painted_empty"] = ("StyleBoxEmpty", [])
+    # 🔤 One font for every part, as in the game: the theme's default font (every type without a font of its own
+    #    falls back to it before the engine's).
+    boxes["painted_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_BASE[0],
+                                               "fallbacks = Array[Font]([%s])" % ", ".join(
+                                                   'ExtResource("%s")' % rid for rid, _ in FONT_FALLBACKS)])
+    setT("default_font", 'SubResource("painted_font")')
+    # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
+    #    lifts it when the project chose a font of its own (gohud never replaces a project's font).
+    setT("metadata/go_body_font_baked", 'SubResource("painted_font")')
     for type_name, base in BASES.items():
         drop(type_name)
         setT(type_name + "/base_type", '&"%s"' % base)
@@ -445,6 +462,9 @@ def ext_resources(boxes):
         lines.append('[ext_resource type="Script" path="%s" id="sprite"]' % SPRITE_SCRIPT)
     if 'script = ExtResource("sprite_icon")' in heads:
         lines.append('[ext_resource type="Script" path="%s" id="sprite_icon"]' % ICON_SCRIPT)
+    if any(body[:1] == ['base_font = ExtResource("%s")' % FONT_BASE[0]] for _, body in boxes.values()):
+        for rid, path in [FONT_BASE] + FONT_FALLBACKS:
+            lines.append('[ext_resource type="FontFile" path="%s" id="%s"]' % (path, rid))
     if not lines:
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
@@ -464,7 +484,10 @@ def write_map():
                      "variation name → the gohud_arcade_light variation that carries exactly its items and values. "
                      "The game builds its theme as duplicate(arcade_light) plus these names as aliases. game_only "
                      "lists the game's variations that stay in the game (why in _game_only_why).",
-            "_font_sizes": {"_help": "No font is written. The font sizes written are the game's literal ones or a Cfg "
+            "_font": {"_help": "The theme's default_font is the game's UiTheme.get_font(): a FontVariation of base "
+                               "font + fallbacks (the game reorders the fallbacks per language itself).",
+                      "base_font": FONT_BASE[1], "fallbacks": [path for _, path in FONT_FALLBACKS]},
+            "_font_sizes": {"_help": "Only the default font is written; no variation has a font of its own. The font sizes written are the game's literal ones or a Cfg "
                                      "size's desktop value (named in _cfg_sizes).",
                             "written": sizes, "left_to_game": []},
             "_cfg_sizes": {"_help": "Values that are a Cfg size in the game, written at their desktop value; where "

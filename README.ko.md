@@ -45,7 +45,7 @@
   알림이 입력을 먹지 않게 하는 `mouse_behavior_recursive`, 흐르는 줄의 `last_wrap_alignment`.
 - **순수 GDScript.** 오토로드 불필요, 엔진 모듈·GDExtension 없음.
 - **MIT** — 코드와 그림 전부, 기본 아이콘 84종·중세 각인 아이콘 16종·게임 아이콘 187종·아이콘 라이브러리 1,000종 포함. 중세 제목에 쓰는
-  Cinzel 글꼴과 Material 제목·라벨에 쓰는 Roboto 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
+  Cinzel 글꼴, Material 제목·라벨에 쓰는 Roboto 글꼴, `arcade_light` 의 Nunito·Noto Sans CJK 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
 
 ### 아케이드 페인티드 룩
 
@@ -836,8 +836,10 @@ GoUi.config.number_formatter = func(amount: float) -> String:
     return str(roundi(amount))
 ```
 
-> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제)과 Roboto(Material
-> 프리셋의 제목·캡션·버튼 글자 — 프로젝트에 글꼴 설정이 없으면 본문까지) 둘이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
+> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제), Roboto(Material
+> 프리셋의 제목·캡션·버튼 글자 — 프로젝트에 글꼴 설정이 없으면 본문까지), 그리고 Magnet Mayhem 의 Nunito 와 Noto Sans
+> CJK 폴백(프로젝트에 글꼴 설정이 없으면 `arcade_light` 의 모든 글자 — CJK 파일에는 게임에 쓰는 글자만 들어 있어 나머지는
+> 시스템 글꼴이 그린다)이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
 > 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용
 > 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**. 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
 
@@ -999,5 +1001,6 @@ MIT — [LICENSE](LICENSE). 코드와 함께 든 그림(기본 아이콘 84종, 
 gohud 를 위해 만든 것이라 역시 MIT 다. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
 게임 아이콘 세트 187종과 아이콘 라이브러리 1,000종도 MIT 다 — 게임 171종과 라이브러리 전부는 Tabler Icons(MIT, Copyright (c) 2020-2026 Paweł Kuna)의 경로 데이터를 쓰고, 게임 16종은 gohud 를 위해 그렸다.
 Cinzel·Roboto 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`,
-`assets/fonts/roboto/OFL.txt`).
+`assets/fonts/roboto/OFL.txt`). `arcade_light` 의 Nunito Bold 와 Noto Sans KR·JP·SC·TC Bold 서브셋(Magnet Mayhem 의 파일)도
+같은 라이선스다(`assets/fonts/nunito/OFL.txt`, `assets/fonts/noto_sans_cjk/OFL.txt`).
 자세한 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

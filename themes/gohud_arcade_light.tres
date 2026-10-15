@@ -1,8 +1,13 @@
-[gd_resource type="Theme" load_steps=145 format=3]
+[gd_resource type="Theme" load_steps=151 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_texture_sprite.gd" id="sprite_icon"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/nunito/Nunito-Bold.ttf" id="font_nunito"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansKR-Bold.ttf" id="font_noto_kr"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansJP-Bold.ttf" id="font_noto_jp"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansSC-Bold.ttf" id="font_noto_sc"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansTC-Bold.ttf" id="font_noto_tc"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_blue.png" id="painted_btn_blue"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_green.png" id="painted_btn_green"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_grey.png" id="painted_btn_grey"]
@@ -873,6 +878,10 @@ expand_margin_right = -3
 expand_margin_bottom = -3
 
 [sub_resource type="StyleBoxEmpty" id="painted_empty"]
+
+[sub_resource type="FontVariation" id="painted_font"]
+base_font = ExtResource("font_nunito")
+fallbacks = Array[Font]([ExtResource("font_noto_kr"), ExtResource("font_noto_jp"), ExtResource("font_noto_sc"), ExtResource("font_noto_tc")])
 
 [sub_resource type="StyleBox" id="painted_GoButton_normal"]
 script = ExtResource("sprite")
@@ -2148,4 +2157,6 @@ VSlider/icons/grabber_highlight = ExtResource("grabber_highlight")
 VSlider/styles/grabber_area = SubResource("slider_grab")
 VSlider/styles/grabber_area_highlight = SubResource("slider_grab_hover")
 VSlider/styles/slider = SubResource("slider_track")
+default_font = SubResource("painted_font")
 default_font_size = 16
+metadata/go_body_font_baked = SubResource("painted_font")

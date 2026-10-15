@@ -19,6 +19,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light` sets its text in Magnet Mayhem’s font.** Its `default_font` is the game’s `UiTheme.get_font()`: a
+  `FontVariation` of Nunito Bold with Noto Sans KR, JP, SC and TC Bold as fallbacks, in that order — the game’s own
+  files, now in `assets/fonts/nunito/` and `assets/fonts/noto_sans_cjk/` (SIL OFL 1.1, see `THIRD_PARTY_NOTICES.md`).
+  Labels set exactly as in the game. Through `GoUi.theme()` the font gives way to the project’s own when the project
+  sets one (`go_body_font_baked` metadata), as every preset’s body font does.
+
 - **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
   exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
   `GoLevelCardLocked` (StageCard / StageCardNext / StageCardLocked), `GoSliderGreen` / `GoSliderCyan` (the slider with a green or cyan fill), `GoWell` (the map-preview well), `GoHudPanel`

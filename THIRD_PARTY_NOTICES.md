@@ -1,7 +1,7 @@
 # Third-party notices
 
-gohud code and original artwork are covered by [`LICENSE`](LICENSE). The bundled Cinzel and Roboto
-fonts are separately licensed under the SIL Open Font License 1.1; their notices are listed below.
+gohud code and original artwork are covered by [`LICENSE`](LICENSE). The bundled Cinzel, Roboto, Nunito
+and Noto Sans CJK fonts are separately licensed under the SIL Open Font License 1.1; their notices are listed below.
 
 | Asset | Origin | License |
 |---|---|---|
@@ -15,11 +15,17 @@ fonts are separately licensed under the SIL Open Font License 1.1; their notices
 | `icons/library/*.svg` (1,000 icons), listed in `tools/icon_library_data.py` | Path data from [Tabler Icons](https://tabler.io/icons) 3.46.0, every row (the Tabler name is the second column of that table); unchanged apart from whitespace, a white stroke, and `currentColor` fills turned white. | Tabler Icons: [MIT](#tabler-icons--mit-license), Copyright (c) 2020-2026 Paweł Kuna |
 | `assets/fonts/cinzel/Cinzel.ttf` | Copyright 2020 The Cinzel Project Authors; unmodified variable font from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/cinzel) | [SIL Open Font License 1.1](assets/fonts/cinzel/OFL.txt) |
 | `assets/fonts/roboto/Roboto.ttf` | Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic); unmodified variable font (`wght`, `wdth`) from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/roboto) | [SIL Open Font License 1.1](assets/fonts/roboto/OFL.txt) |
+| `assets/fonts/nunito/Nunito-Bold.ttf` | Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito); copied from Magnet Mayhem’s `assets/fonts`, which builds it from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/nunito): the variable font pinned to Bold (wght 700), subset to Latin, Latin Extended and Cyrillic, with the game’s vertical metrics | [SIL Open Font License 1.1](assets/fonts/nunito/OFL.txt) |
+| `assets/fonts/noto_sans_cjk/NotoSans{KR,JP,SC,TC}-Bold.ttf` | Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'; copied from Magnet Mayhem’s `assets/fonts`, which builds them from [Google Fonts](https://github.com/google/fonts/tree/main/ofl) Noto Sans KR / JP / SC / TC: pinned to Bold, subset to the characters of the game’s strings, with the game’s vertical metrics | [SIL Open Font License 1.1](assets/fonts/noto_sans_cjk/OFL.txt) |
 
 Cinzel is assigned only to medieval titles and subtitles. Other text retains the host/default font.
 Roboto is assigned only to the Material presets' titles, subtitles, captions and button labels; other text
 retains the host/default font there too.
-Keep `assets/fonts/cinzel/OFL.txt` and `assets/fonts/roboto/OFL.txt` with redistributed font files.
+Nunito with the four Noto Sans CJK fonts as fallbacks is `arcade_light`’s font (its `default_font`, the font Magnet
+Mayhem draws with), which gives way to the project’s own font when the project sets one. The Noto files are modified
+(subset and re-metricked) and keep their font names; none uses the Reserved Font Name.
+Keep `assets/fonts/cinzel/OFL.txt`, `assets/fonts/roboto/OFL.txt`, `assets/fonts/nunito/OFL.txt` and
+`assets/fonts/noto_sans_cjk/OFL.txt` with redistributed font files.
 
 ## Tabler Icons — MIT License
 

@@ -192,9 +192,15 @@ static func theme() -> Theme:
 ## 🔤 A preset theme may name a **body font** of its own (`go_body_font` metadata — the Material presets' Roboto). It
 ## becomes the theme's `default_font` only when the project chose no font (Project Settings → GUI → Theme → Custom or
 ## Custom Font): a project's own font — a Korean, Japanese or Chinese one above all — is never replaced.
+## A preset may also **bake** its font in (`go_body_font_baked` metadata — `arcade_light` carries Magnet Mayhem's own
+## font, so its labels set exactly as the game's): that one stands down the same way when the project chose a font.
 ## 🛑 Not in the editor: the theme there is the resource on disk, and a font set on it could be saved into the file.
 static func _with_body_font(look: Theme) -> Theme:
-	if look.default_font != null or not look.has_meta(&"go_body_font") or Engine.is_editor_hint(): return look
+	if Engine.is_editor_hint(): return look
+	if look.has_meta(&"go_body_font_baked"):
+		if project_has_font() and look.default_font == look.get_meta(&"go_body_font_baked"): look.default_font = null
+		return look
+	if look.default_font != null or not look.has_meta(&"go_body_font"): return look
 	if project_has_font(): return look
 	look.default_font = look.get_meta(&"go_body_font") as Font
 	return look
