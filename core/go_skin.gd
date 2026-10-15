@@ -1265,6 +1265,22 @@ func touch_cooldown_ink() -> Color:
 	return GoUi.color(GoTheme.DANGER)
 
 
+## 🎯 The dim a `GoSpotlight` lays round its hole. The default is black at 55 %.
+func spotlight_dim() -> Color:
+	return Color(0.0, 0.0, 0.0, 0.55)
+
+
+## 🎯 The ring a `GoSpotlight` draws on the edge of its hole (it stays after the dim fades). The default is a 4 dp
+## `accent` outline, 12 dp round.
+func spotlight_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.set_border_width_all(4)
+	ring.border_color = GoUi.color(GoTheme.ACCENT)
+	ring.set_corner_radius_all(12)
+	return ring
+
+
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
 ## smooth bar — the default; the arcade looks split a bar into chunky segments.
 func bar_ticks() -> int:

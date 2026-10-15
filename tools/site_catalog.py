@@ -1986,6 +1986,26 @@ skill.cooldown = 0.4""", T(
 		"Кругла кнопка під великий палець для сенсорних екранів: кільце перезарядки, імпульс готовності та приціл перетягуванням.",
 		"ปุ่มกลมสำหรับนิ้วโป้งบนจอสัมผัส มีวงคูลดาวน์ จังหวะเด้งเมื่อพร้อม และลากเพื่อเล็งได้",
 		"زر دائري للإبهام على الشاشات اللمسية، مع حلقة انتظار ونبضة عند الجاهزية وتصويب بالسحب.")),
+	("hud", "GoSpotlight", "Control", """var spot := GoSpotlight.new()
+hud.add_child(spot)
+spot.follow(jump_button, true)""", T(
+		"Dims the screen round one control and rings it; the dim fades, the ring stays.",
+		"컨트롤 하나 둘레의 화면을 어둡게 하고 테두리를 두른다. 어둠은 사라지고 테두리는 남는다.",
+		"一つのコントロールの周りを暗くして枠で囲む。暗さは消え、枠は残る。",
+		"将某个控件周围的屏幕调暗并加上描边；暗幕会淡出，描边保留。",
+		"將某個控制項周圍的畫面調暗並加上外框；暗幕會淡出，外框保留。",
+		"Oscurece la pantalla alrededor de un control y lo enmarca; la sombra se desvanece y el marco queda.",
+		"Escurece a tela em volta de um controle e o contorna; a sombra some e o contorno fica.",
+		"Затемняет экран вокруг одного элемента и обводит его; затемнение гаснет, рамка остаётся.",
+		"Assombrit l'écran autour d'un contrôle et l'entoure ; l'ombre s'efface, le cadre reste.",
+		"Bir denetimin çevresindeki ekranı karartır ve onu çerçeveler; karartma solar, çerçeve kalır.",
+		"Przyciemnia ekran wokół jednej kontrolki i ją obrysowuje; przyciemnienie znika, obrys zostaje.",
+		"Scurisce lo schermo attorno a un controllo e lo incornicia; l'ombra svanisce, la cornice resta.",
+		"Làm tối màn hình quanh một điều khiển và viền nó lại; lớp tối mờ dần, viền vẫn còn.",
+		"Menggelapkan layar di sekitar satu kontrol dan memberinya bingkai; gelapnya memudar, bingkainya tetap.",
+		"Затемнює екран навколо одного елемента й обводить його; затемнення згасає, рамка лишається.",
+		"หรี่หน้าจอรอบตัวควบคุมหนึ่งตัวและวาดกรอบรอบมัน ความมืดจะจางไป กรอบยังอยู่",
+		"يعتّم الشاشة حول عنصر واحد ويحيطه بإطار؛ يتلاشى التعتيم ويبقى الإطار.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

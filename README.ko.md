@@ -643,6 +643,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoCoverImage` | Control | 상자를 가득 채우는 그림 — CSS `object-fit: cover`: 빈틈이 없을 때까지 키우고 넘친 부분은 자르며, `focus` 가 남길 부분을 고른다. `clip_contents` 가 필요 없고 마우스는 통과시킨다 |
 | `GoGlyphButton` | Button | 라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약. 글리프·간격·라벨이 함께 가운데에 선다. `Button.icon` 으로는 안 된다. 라벨은 평범한 `text` 라 번역과 테스트가 다른 버튼과 같다 |
 | `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
+| `GoSpotlight` | Control | 한 가지(사각형, 또는 따라가는 컨트롤) 둘레의 화면을 어둡게 하고 테두리를 둘러 "바로 이것"을 가리킨다. 어둠은 `dim_seconds` 뒤 사라지고 테두리는 남는다. 카드도 버튼도 없다 — `GoTaskCard` 와 함께 쓴다. 입력을 받지 않는다 |
 | `GoTouchButton` | Control | 모바일 액션 게임의 둥근 엄지 버튼 — 둥근 그림(`GoSkin.widget_art`)과 아이콘 아래 이름(맞게 줄어든다), 쿨다운 고리(`cooling`, `cooldown` 0~1)와 준비되면 한 번 튀는 효과. 누르면 작아지고 어두워진다. `drag_aim` 이면 작은 스틱도 된다 — 누른 채 끌어 조준, `aimed(pull)`. 표시와 입력만 한다 |
 | `GoNoticeFeed` | VBoxContainer | 알림 피드(킬 피드) — 한 줄 알림이 새 것이 아래로 쌓이고, 서서히 나타났다가 `seconds` 뒤 저절로 사라진다. `push(text, own)` — 플레이어 자신의 줄은 눈에 띈다. 줄은 `max_items` 개를 미리 만들어 재사용하므로 알림이 몰려도 아무것도 만들지 않는다. 줄은 테마의 `GoNotice` / `GoNoticeGold` 패널, 없으면 `GoSkin.notice_box()`. 표시만 한다 |
 | `GoNameplate` | PanelContainer | 3D 세계의 캐릭터 위에 뜨는 이름표 — 캐릭터 색의 작은 둥근 태그(자기 것은 `GoSkin.nameplate_own_fill()`), 폭은 `base_width` 에서 이름 전체가 들어가도록 `max_width` 까지 넓어진다. `follow(camera, point)` 가 투영한 점에 가운데를 맞추고 카메라 뒤에서는 숨긴다. 표시만 한다 |

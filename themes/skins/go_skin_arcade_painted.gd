@@ -388,6 +388,20 @@ func touch_cooldown_ink() -> Color:
 	return Color("#ff7a74")
 
 
+## The training spotlight: a navy dim and a 4 px gold ring, 12 round.
+func spotlight_dim() -> Color:
+	return Color(0.04, 0.06, 0.14, 0.55)
+
+
+func spotlight_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.set_border_width_all(4)
+	ring.border_color = GOLD
+	ring.set_corner_radius_all(12)
+	return ring
+
+
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 	for index in range(1, count):

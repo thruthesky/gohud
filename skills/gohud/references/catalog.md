@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (20)
+8. [HUD and game shapes](#hud-and-game-shapes) (21)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -926,6 +926,16 @@ jump.pressed_down.connect(send_jump)
 var skill := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
 skill.cooling = true
 skill.cooldown = 0.4
+```
+
+### `GoSpotlight`
+
+Extends `Control`. Dims the screen round one control and rings it; the dim fades, the ring stays. Details: `hud.md` §30 (GoSpotlight).
+
+```gdscript
+var spot := GoSpotlight.new()
+hud.add_child(spot)
+spot.follow(jump_button, true)
 ```
 
 ### `GoRewardCalendar`

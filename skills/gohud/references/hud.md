@@ -36,6 +36,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 27. [GoNameplate — a name plate over a character](#27-gonameplate--a-name-plate-over-a-character)
 28. [GoNoticeFeed — a feed of one-line notices](#28-gonoticefeed--a-feed-of-one-line-notices)
 29. [GoTouchButton — a round thumb button (and the painted stick)](#29-gotouchbutton--a-round-thumb-button-and-the-painted-stick)
+30. [GoSpotlight — dim round one thing and ring it](#30-gospotlight--dim-round-one-thing-and-ring-it)
 
 ## 1. GoHudAnchor
 
@@ -894,3 +895,29 @@ aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
 - Skin hooks: `draw_touch_sprite()`, `touch_shadow_ink()`, `touch_outline_ink()`, `touch_cooldown_ink()`; and for
   `GoJoystick`, `joystick_art(knob)` with `joystick_idle_alpha` / `joystick_active_alpha` — a skin with the art draws
   the painted dish and knob instead of circles (`draw_joystick_art()`).
+
+## 30. GoSpotlight — dim round one thing and ring it
+
+`class_name GoSpotlight extends Control` · a tutorial played through the game points at one thing — the stick, a button,
+a gauge — by dimming everything round it and ringing it. The dim fades after a moment so the game stays fully visible
+while the player acts; the ring stays. Unlike `GoCoachMark` (a tour with a card and Next / Skip) it has no card and no
+buttons and never takes input: the game is played through it. Under `arcade_light` it draws Magnet Mayhem's training
+spotlight pixel for pixel.
+
+```gdscript
+var spot := GoSpotlight.new()
+hud.add_child(spot)                   # covers its parent
+spot.follow(jump_button, true)        # a new lesson: dim again round the jump button
+spot.light(Rect2(40, 300, 120, 120))  # or a fixed rect, in the spotlight's own coordinates
+spot.clear()
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `light(rect, fresh)` · `follow(control, fresh)` · `clear()` | | A fixed rect (as given), or a control grown by `pad` and followed as it moves (hidden: nothing lit); `fresh` dims again |
+| `pad` · `dim_seconds` · `fade_seconds` | `8` · `2` · `0.4` | The hole's margin round a followed control; how long the dim stays, then fades |
+| `hole` · `dim_rects()` · `dim_alpha()` | | The lit rect; the four dims (top, bottom, left, right); the dim's strength now, 1 → 0 |
+| `auto_advance` · `advance(delta)` | `true` | Runs the clock in `_process`, or drive it yourself |
+
+- 🛑 Display only: it lights what it is told to.
+- Skin hooks: `spotlight_dim()` (the dim colour) and `spotlight_ring_box()` (the ring, drawn over the hole).

@@ -59,6 +59,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoSpotlight` — dim round one thing and ring it.** `light(rect)` or `follow(control)` (grown by `pad`), four dims
+  round the hole that fade after `dim_seconds`, and a ring that stays (`GoSkin.spotlight_dim`, `spotlight_ring_box`).
+  No card, no buttons, never takes input. Under `arcade_light` Magnet Mayhem's training spotlight matches pixel for pixel.
 - **`GoTouchButton` — a round thumb button.** A picture from the skin's art with its name under the icon (shrunk to
   fit), a cooldown ring (`cooling`, `cooldown`), a pulse when ready, a press that shrinks and darkens, and `drag_aim`:
   hold and drag to aim (`aimed(pull)`). `GoJoystick` draws the skin's painted dish and knob when it has them
