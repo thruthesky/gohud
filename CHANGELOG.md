@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A bar's `ink` and `ink_end` setters no longer rebuild the bar.** Each one ran the whole restyle: a new `Gradient`
+  and `GradientTexture2D` on every call plus the label typography and the gap, so a HUD tinting HP each frame
+  allocated a texture and relaid the bar out every frame. A setter now returns when the value is the same, and
+  otherwise only repaints the fill: the gradient and its texture are built once and just get new colours. The labels
+  and the gap are left to a look change. The pixels are the same.
 - **`GoPerfReadout` stops restyling its label every sample.** `_rewrite` set the `font_color` override on each reading
   even when the level was the same, and every override sends a theme change (reshape, minimum size, parent relayout)
   four times a second. The ink is now set only when the level or the look changes (the text already was written only

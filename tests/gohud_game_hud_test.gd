@@ -25,6 +25,7 @@ func _initialize() -> void:
 		GoUi.use_preset(look)
 		await frames(1)
 		await _bar_frame(look)
+		await _bar_ink(look)
 		await _hud_card(look)
 		await _countdown(look)
 		await _art_button(look)
@@ -872,4 +873,31 @@ func _per_inch_scale() -> void:
 	check(GoScale.web_dpi(192.0) == 320.0, "scale: a phone browser's dpi from devicePixelRatio")
 	check(GoScale.cap_sides(Vector4(48, 20, 30, 10), 12.0) == Vector4(12, 20, 12, 10), "scale: cap_sides caps left and right")
 	check(GoUi.config.scale_profile == GoScale.Profile.DP, "scale: the dp profile is the default")
+
+
+# ── A bar's ink does not rebuild its paint ─────────────────────────────
+
+func _bar_ink(look: StringName) -> void:
+	var bar := GoBar.new()
+	bar.ink = Color("#1fb5f0")
+	bar.ink_end = Color("#6ff0ff")
+	var holder := _host(bar, 200.0)
+	await frames(2)
+	var gradient := bar.find_child("Gradient", true, false) as TextureRect
+	var texture := gradient.texture
+	var before := (texture as GradientTexture2D).gradient.colors
+	bar.ink = Color("#1fb5f0")
+	bar.ink_end = Color("#6ff0ff")
+	check(gradient.texture == texture, "bar ink (%s): the same ink keeps the same texture" % look)
+	bar.ink = Color("#f05030")
+	check(gradient.texture == texture, "bar ink (%s): a new ink reuses the texture" % look)
+	var after := (gradient.texture as GradientTexture2D).gradient.colors
+	check(after[0].is_equal_approx(Color("#f05030")) and after[1].is_equal_approx(Color("#6ff0ff")) and after != before,
+		"bar ink (%s): a new ink updates the gradient colours" % look)
+	bar.ink_end = Color.TRANSPARENT
+	after = (gradient.texture as GradientTexture2D).gradient.colors
+	check(after[0].is_equal_approx(Color("#f05030")) and after[1].is_equal_approx(Color("#f05030")),
+		"bar ink (%s): no end ink paints one colour" % look)
+	holder.queue_free()
+	await frames(1)
 
