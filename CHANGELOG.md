@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **GoSlot follows the look's touch floor.** Its box, fit and widened hit area read `GoUi.touch_size()` instead of
+  `GoConfig.min_touch_size`, so a look with its own `touch` metric (or a `metric_overrides` entry) sizes slots like
+  every other control; a floor the project sets still wins.
+
 - **Every widget that fits the safe area reads the viewport it is drawn in.** `GoAppBar`, `GoCoachMark`, `GoConsole`,
   `GoDrawer`, `GoEdgeBar`, `GoForm`, `GoFab`, `GoHudAnchor`, `GoNavBar` and `GoStyle`'s bottom bar passed
   `get_window()` to `GoSafeArea.usable_rect`, so inside a `SubViewport` (a preview, a render-to-texture) they laid out

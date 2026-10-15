@@ -36,6 +36,7 @@ func _initialize() -> void:
 		await _task_card(look)
 		await _spotlight(look)
 		await _perf_readout(look)
+		await _slot_touch(look)
 	_per_inch_scale()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -322,6 +323,32 @@ func _art_button(look: StringName) -> void:
 		check(GoUi.skin().picture_press_tint() == Color(0.78, 0.78, 0.86), "art: arcade_light's press tint is the game's")
 	button.art = null
 	check(button.icon == null and not button.has_theme_stylebox_override(&"normal"), "art: clearing it restores the frame")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── The look's touch floor and focus order ────────────────────────────
+
+func _slot_touch(look: StringName) -> void:
+	var slot := GoSlot.new()
+	slot.visual_size = 30
+	var holder := _host(slot)
+	await frames(1)
+	var floor := GoUi.touch_size()
+	check(slot.custom_minimum_size == Vector2(floor, floor), "slot: the box is the look's touch floor (%s)" % look)
+	# A look with its own floor below the config's default: the slot keeps to the look's, not to min_touch_size.
+	GoUi.config.metric_overrides[GoTheme.TOUCH] = 40
+	GoUi.refresh()
+	await frames(1)
+	check(slot.custom_minimum_size == Vector2(40, 40), "slot: follows GoUi.touch_size(), not min_touch_size (%s)" % look)
+	check(slot.touch_hit(Vector2(-1, 20)) == false and slot.touch_hit(Vector2(1, 20)), "slot: no reach past its 40 box")
+	GoUi.config.metric_overrides.erase(GoTheme.TOUCH)
+	GoUi.config.min_touch_size = 60
+	GoUi.refresh()
+	await frames(1)
+	check(slot.custom_minimum_size == Vector2(60, 60), "slot: a floor the project chose wins (%s)" % look)
+	GoUi.config.follow_look_touch_size()
+	GoUi.refresh()
 	holder.queue_free()
 	await frames(1)
 
