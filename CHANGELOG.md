@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Changing `scale_profile` at run time applies at once.** The property had no setter, so switching between `DP` and
+  `PER_INCH` did nothing until the window was next resized. It now re-applies through the `GoRuntime` autoload
+  (`GoRuntime.reapply()`, which anyone can also call after changing `scale_enabled`), and a value that is the same does
+  nothing.
 - **A bar's `ink` and `ink_end` setters no longer rebuild the bar.** Each one ran the whole restyle: a new `Gradient`
   and `GradientTexture2D` on every call plus the label typography and the gap, so a HUD tinting HP each frame
   allocated a texture and relaid the bar out every frame. A setter now returns when the value is the same, and

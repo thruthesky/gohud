@@ -40,6 +40,7 @@ func _initialize() -> void:
 		await _slot_touch(look)
 		await _icon_focus(look)
 	_per_inch_scale()
+	await _profile_applies()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -901,3 +902,26 @@ func _bar_ink(look: StringName) -> void:
 	holder.queue_free()
 	await frames(1)
 
+
+# ── scale_profile applies at once ──────────────────────────────────────
+
+func _profile_applies() -> void:
+	var runtime := Node.new()
+	runtime.set_script(load("res://addons/gohud/core/go_runtime.gd"))
+	runtime.name = "GoRuntime"
+	root.add_child(runtime)
+	await frames(1)
+	var base := Vector2i(
+		int(ProjectSettings.get_setting("display/window/size/viewport_width", 1152)),
+		int(ProjectSettings.get_setting("display/window/size/viewport_height", 648)))
+	var was_enabled := GoUi.config.scale_enabled
+	GoUi.config.scale_enabled = true
+	GoUi.config.scale_profile = GoScale.Profile.DP
+	await frames(1)
+	root.content_scale_size = base + Vector2i(7, 7)
+	GoUi.config.scale_profile = GoScale.Profile.PER_INCH
+	check(root.content_scale_size == base, "scale: switching to per-inch applies at once (%s)" % root.content_scale_size)
+	GoUi.config.scale_enabled = was_enabled
+	GoUi.config.scale_profile = GoScale.Profile.DP
+	runtime.queue_free()
+	await frames(1)

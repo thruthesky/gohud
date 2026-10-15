@@ -66,6 +66,13 @@ func keyboard_height() -> int:
 	return _keyboard
 
 
+## Applies the scale settings again now (after `GoConfig.scale_profile` or `scale_enabled` changed), instead of at the
+## next resize.
+func reapply() -> void:
+	if Engine.is_editor_hint() or not is_inside_tree(): return
+	_apply(true)
+
+
 func _on_size_changed() -> void:
 	if _applying: return
 	_apply(false)
