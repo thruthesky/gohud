@@ -628,7 +628,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
 </section>
 
 <section id="inputs" class="catalog">
-  <h2>Entradas e seletores <small>(13)</small></h2>
+  <h2>Entradas e seletores <small>(14)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
@@ -699,6 +699,13 @@ price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float
       <p class="catalog-base">estende <code>HSlider</code></p>
       <pre><code>var music := GoSlider.<wbr>make(<wbr>0.0,<wbr> 1.0,<wbr> 0.01)
 music.<wbr>theme_type_variation = &amp;"GoSliderGreen"</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goswitch"><code>GoSwitch</code></h3>
+      <p>Um interruptor pintado, com ON / OFF ao lado do botão.</p>
+      <p class="catalog-base">estende <code>CheckButton</code></p>
+      <pre><code>var vibration := GoSwitch.<wbr>make(<wbr>true)
+vibration.<wbr>set_texts(<wbr>tr(<wbr>"ON"),<wbr> tr(<wbr>"OFF"))</code></pre>
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>

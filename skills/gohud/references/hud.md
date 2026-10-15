@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton and GoSlider.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider and GoSwitch.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -31,6 +31,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 22. [GoCoverImage — a picture that covers its box](#22-gocoverimage--a-picture-that-covers-its-box)
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
 24. [GoSlider — a slider drawn the painted way](#24-goslider--a-slider-drawn-the-painted-way)
+25. [GoSwitch — an on/off switch with a caption](#25-goswitch--an-onoff-switch-with-a-caption)
 
 ## 1. GoHudAnchor
 
@@ -708,3 +709,26 @@ music.theme_type_variation = &"GoSliderGreen"      # GoSliderCyan, or none for t
 - 🔑 The engine's drawing is blanked with overrides: a see-through grabber as wide as the handle, so a press still maps
   to the value under the finger. Do not add your own `grabber` or `slider` overrides — put a variation in the theme.
 - `GoStyle.slider()` stays a plain HSlider; reach for `GoSlider` where a screen must look like the painted game.
+
+## 25. GoSwitch — an on/off switch with a caption
+
+`class_name GoSwitch extends CheckButton`. The settings switch of Magnet Mayhem, drawn exactly as the game draws it:
+with no `text` the pill stands centred in its box on whole pixels, and a caption ("ON" / "OFF") sits in the part of
+the pill the knob is not on. Toggling, `toggled` and the touch target are the stock CheckButton's.
+
+```gdscript
+var vibration := GoSwitch.make(true)
+vibration.set_texts(tr("ON"), tr("OFF"))      # both shrink together so the longer one fits
+```
+
+`make(on)` · `on_text` · `off_text` · `set_texts(on, off)` · `part(item)` · `pill_texture()` · `pill_size()` ·
+`switch_rect()` · `caption()` · `caption_room()` · `caption_font_size()` · `caption_width()` · `caption_position()`.
+Constants `TEXT_SIZE` (12), `KNOB_SHARE` (0.86), `TEXT_EDGE` (9), `TEXT_OUTLINE` (3).
+
+- 🔑 The pills are the theme's CheckButton icons (`checked`, `unchecked`, their `_disabled` and `_mirrored` forms).
+  The caption is white with a `TEXT_OUTLINE` rim in the CheckButton's `font_color` (the ink on arcade_light); on a
+  look whose text is light, the text colour fills it and the page colour rims it.
+- 🔑 With a `text` the label is the engine's and the pill stands where the engine puts the check icon (the far end).
+- 🔑 Its least size is its `custom_minimum_size`: `GoTheme.TOUCH` tall from the start, and at least the pill plus
+  `SIDE_ROOM` wide once the look is read. A screen that sets its own height wins.
+- `GoStyle.toggle()` stays a plain CheckButton; reach for `GoSwitch` where a screen must look like the painted game.

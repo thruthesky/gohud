@@ -1481,6 +1481,25 @@ music.theme_type_variation = &"GoSliderGreen\"""", T(
 		"Повзунок у мальованому стилі: заливка трохи заходить за ручку, а затиснута ручка більшає.",
 		"สไลเดอร์แบบลายวาด: ส่วนเติมเลยที่จับไปเล็กน้อย และที่จับขยายขึ้นขณะกดค้าง",
 		"منزلق بالمظهر المرسوم: يتجاوز الملء المقبض قليلًا، ويكبر المقبض أثناء الضغط عليه.")),
+	("inputs", "GoSwitch", "CheckButton", """var vibration := GoSwitch.make(true)
+vibration.set_texts(tr("ON"), tr("OFF"))""", T(
+		"An on/off switch drawn the painted way, with ON / OFF beside the knob.",
+		"칠한 모양의 켜기/끄기 스위치 — 손잡이 옆에 ON / OFF 글자가 들어간다.",
+		"ペイント風のオン/オフスイッチ。つまみの横に ON / OFF が入る。",
+		"手绘风格的开关，滑钮旁显示 ON / OFF。",
+		"手繪風格的開關，滑鈕旁顯示 ON / OFF。",
+		"Un interruptor con estilo pintado, con ON / OFF junto a la perilla.",
+		"Um interruptor pintado, com ON / OFF ao lado do botão.",
+		"Переключатель в рисованном стиле с надписью ON / OFF рядом с ручкой.",
+		"Un interrupteur au style peint, avec ON / OFF à côté du bouton.",
+		"Boyalı görünümlü aç/kapa anahtarı; topuzun yanında ON / OFF yazar.",
+		"Przełącznik w malowanym stylu z napisem ON / OFF obok gałki.",
+		"Un interruttore dallo stile dipinto, con ON / OFF accanto alla manopola.",
+		"Công tắc bật/tắt kiểu vẽ tay, có chữ ON / OFF cạnh núm.",
+		"Sakelar nyala/mati bergaya lukis, dengan ON / OFF di samping kenopnya.",
+		"Перемикач у мальованому стилі з написом ON / OFF біля ручки.",
+		"สวิตช์เปิด/ปิดแบบลายวาด มีคำว่า ON / OFF ข้างปุ่ม",
+		"مفتاح تشغيل/إيقاف بالمظهر المرسوم، مع ON / OFF بجانب المقبض.")),
 	("inputs", "GoDatePicker", "Container", """var stay := GoDatePicker.make()
 stay.range_mode = true
 stay.range_picked.connect(func(start: Dictionary, end: Dictionary) -> void: book(start, end))""", T(

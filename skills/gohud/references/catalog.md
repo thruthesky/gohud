@@ -16,7 +16,7 @@ against the code (`tools/check_docs_api.py`).
 3. [Messages and waiting](#messages-and-waiting) (12)
 4. [App navigation](#app-navigation) (13)
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
-6. [Inputs and pickers](#inputs-and-pickers) (13)
+6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
 8. [HUD and game shapes](#hud-and-game-shapes) (14)
 9. [Looks and system](#looks-and-system) (9)
@@ -677,6 +677,15 @@ Extends `HSlider`. A slider drawn the painted way: the fill runs past the handle
 ```gdscript
 var music := GoSlider.make(0.0, 1.0, 0.01)
 music.theme_type_variation = &"GoSliderGreen"
+```
+
+### `GoSwitch`
+
+Extends `CheckButton`. An on/off switch drawn the painted way, with ON / OFF beside the knob. Details: `hud.md` §25 (GoSwitch).
+
+```gdscript
+var vibration := GoSwitch.make(true)
+vibration.set_texts(tr("ON"), tr("OFF"))
 ```
 
 ### `GoDatePicker`

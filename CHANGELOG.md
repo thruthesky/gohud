@@ -68,6 +68,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   handle's centre (at least a track's height long) and a held handle is drawn `HELD_SCALE` larger. It draws the theme's
   own HSlider parts, so `GoSliderGreen` / `GoSliderCyan` pick the fill. `make()`, `part()`, `handle_size()`,
   `handle_center_x()`, `bar_rect()`, `fill_rect()`, `handle_rect()`. Test `gohud_painted_controls_test`, in `check_all`.
+- **`GoSwitch`** (`CheckButton`) — an on/off switch drawn as Magnet Mayhem's `PaintedSwitch`: the theme's pill centred
+  in its box and an ON / OFF caption beside the knob (`on_text`, `off_text`, `set_texts()`, shrunk with
+  `GoStyle.fit_font_size`). `make()`, `part()`, `pill_texture()`, `switch_rect()`, `caption_position()`.
 
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,

@@ -17,6 +17,7 @@ func _initialize() -> void:
 		GoUi.use_preset(look)
 		await frames(1)
 		await _slider(look)
+		await _switch(look)
 	GoUi.reset()
 	print("gohud painted controls tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -101,6 +102,67 @@ func _slider(look: StringName) -> void:
 	holder.theme = GoUi.theme()
 	await frames(1)
 	check(slider.part(&"slider") != before, "%s slider: a new look's track is read again" % look)
+	GoUi.use_preset(look)
+	holder.queue_free()
+	await frames(1)
+
+
+# ── Switch ─────────────────────────────────────────────────────────────
+
+func _switch(look: StringName) -> void:
+	var holder := _holder()
+	var flip := GoSwitch.make(false)
+	holder.add_child(flip)
+	flip.size = Vector2(200, 44)
+	await frames(2)
+	var pill := flip.pill_size()
+	check(pill.x > 0.0 and pill.y > 0.0, "%s switch: the pill has a size (%s)" % [look, pill])
+	check(flip.switch_rect().position == ((flip.size - pill) * 0.5).floor(),
+		"%s switch: with no label the pill stands centred, on whole pixels (%s)" % [look, flip.switch_rect()])
+	check(flip.get_combined_minimum_size().x >= pill.x + 8.0 and flip.get_combined_minimum_size().y >= float(GoUi.metric(GoTheme.TOUCH)),
+		"%s switch: the least size is the pill and a touch target (%s)" % [look, flip.get_combined_minimum_size()])
+	check(flip.get_theme_stylebox(&"normal") is StyleBoxEmpty and flip.get_theme_icon(&"checked").get_height() == 1,
+		"%s switch: the engine's own drawing is blanked" % look)
+	check(flip.part(&"checked") != null and flip.part(&"unchecked") != null and flip.part(&"checked") != flip.get_theme_icon(&"checked"),
+		"%s switch: the theme's pills are kept to draw" % look)
+	check(flip.pill_texture() == flip.part(&"unchecked"), "%s switch: off draws the unchecked pill" % look)
+	flip.button_pressed = true
+	check(flip.pill_texture() == flip.part(&"checked"), "%s switch: on draws the checked pill" % look)
+	flip.disabled = true
+	check(flip.pill_texture() == flip.part(&"checked_disabled") or flip.part(&"checked_disabled") == null,
+		"%s switch: disabled draws the disabled pill" % look)
+	flip.disabled = false
+	# Captions: centred in the half the knob is not on, shrunk so the longer one fits.
+	flip.set_texts("ON", "OFF")
+	check(flip.caption() == "ON", "%s switch: on reads the on caption" % look)
+	var room := flip.caption_room()
+	check(is_equal_approx(room, pill.x - pill.y * GoSwitch.KNOB_SHARE - 2.0 * GoSwitch.TEXT_EDGE),
+		"%s switch: the caption's room is the pill less the knob and two edges (%.1f)" % [look, room])
+	check(flip.caption_font_size() == GoSwitch.TEXT_SIZE or room < 30.0, "%s switch: a short caption keeps its size" % look)
+	var at := flip.caption_position()
+	var width := flip.caption_width()
+	var on_left := flip.switch_rect().position.x + GoSwitch.TEXT_EDGE
+	check(is_equal_approx(at.x, on_left + (room - width) * 0.5),
+		"%s switch: on, the caption is centred left of the knob (%.1f)" % [look, at.x])
+	flip.button_pressed = false
+	var off_left := flip.switch_rect().position.x + pill.y * GoSwitch.KNOB_SHARE + GoSwitch.TEXT_EDGE
+	check(is_equal_approx(flip.caption_position().x, off_left + (room - flip.caption_width()) * 0.5),
+		"%s switch: off, the caption is centred right of the knob" % look)
+	flip.set_texts("EINGESCHALTET", "AUS")
+	var fitted := flip.caption_font_size()
+	check(fitted < GoSwitch.TEXT_SIZE and fitted >= GoStyle.fit_floor(GoSwitch.TEXT_SIZE),
+		"%s switch: a long caption shrinks, never under the floor (%d)" % [look, fitted])
+	# With a label the pill stands where the engine puts the check icon: at the far end.
+	flip.text = "Music"
+	await frames(1)
+	check(is_equal_approx(flip.switch_rect().end.x, flip.size.x), "%s switch: with a label the pill sits at the end" % look)
+	flip.text = ""
+	# A new look: the pills are read again.
+	var before := flip.part(&"checked")
+	GoUi.use_preset(GoThemePresets.DEFAULT_LIGHT)
+	holder.theme = GoUi.theme()
+	await frames(1)
+	check(flip.part(&"checked") != before, "%s switch: a new look's pills are read again" % look)
 	GoUi.use_preset(look)
 	holder.queue_free()
 	await frames(1)
