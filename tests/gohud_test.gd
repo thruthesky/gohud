@@ -172,6 +172,31 @@ func _tokens() -> void:
 	settings.theme = null
 	check(GoUi.metric(GoTheme.TOUCH) == 48, "every other look keeps 48")
 
+	# duplicate() and a saved file keep whether the project chose the floor, exactly as it is.
+	var fresh := GoConfig.new()
+	check(not fresh.duplicate().touch_size_chosen(), "duplicate(): an unchosen config stays unchosen")
+	fresh.min_touch_size = 56
+	var dup56 := fresh.duplicate() as GoConfig
+	check(dup56.touch_size_chosen() and dup56.min_touch_size == 56, "duplicate(): a chosen 56 stays chosen at 56")
+	fresh.min_touch_size = 48
+	var dup48 := fresh.duplicate() as GoConfig
+	check(dup48.touch_size_chosen() and dup48.min_touch_size == 48, "duplicate(): an explicit 48 stays chosen")
+	dup48.follow_look_touch_size()
+	check(not dup48.touch_size_chosen() and not dup48.duplicate().touch_size_chosen(), "follow_look_touch_size still hands the floor back, also through duplicate()")
+	var tres := "user://gohud_touch_roundtrip.tres"
+	var saved := GoConfig.new()
+	check(ResourceSaver.save(saved, tres) == OK, "save an unchosen config")
+	check(not (load(tres) as GoConfig).touch_size_chosen(), "save/load: an unchosen config stays unchosen")
+	saved.min_touch_size = 56
+	ResourceSaver.save(saved, tres)
+	var loaded := ResourceLoader.load(tres, "", ResourceLoader.CACHE_MODE_IGNORE) as GoConfig
+	check(loaded.touch_size_chosen() and loaded.min_touch_size == 56, "save/load: a chosen 56 stays chosen at 56")
+	saved.min_touch_size = 48
+	ResourceSaver.save(saved, tres)
+	loaded = ResourceLoader.load(tres, "", ResourceLoader.CACHE_MODE_IGNORE) as GoConfig
+	check(loaded.touch_size_chosen() and loaded.min_touch_size == 48, "save/load: an explicit 48 stays chosen")
+	DirAccess.remove_absolute(tres)
+
 	# A plain Theme with no tokens does not break anything.
 	settings.theme = Theme.new()
 	check(GoUi.color(GoTheme.SURFACE) == GoTheme.color_of(GoUi.DEFAULT_THEME, GoTheme.SURFACE), "a token-less Theme is filled in from the default tokens")

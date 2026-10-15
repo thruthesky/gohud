@@ -407,7 +407,9 @@ signal changed_settings
 		min_touch_size = value
 		_touch_chosen = true
 
-var _touch_chosen := false
+## Stored, declared after [member min_touch_size]: `duplicate()` and a saved file apply properties in this order, so
+## the stored flag is set after the setter above has run and the choice survives exactly as it was.
+@export_storage var _touch_chosen := false
 
 
 ## Did the project choose [member min_touch_size]? False: the look's `touch` token is the floor.
