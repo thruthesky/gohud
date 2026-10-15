@@ -216,6 +216,7 @@ func _physics_process(delta: float) -> void:
 | `icon_name` · `set_icon_name(name)` | | |
 | `icon_tint` | transparent → theme colour | |
 | `native_texture_size` | `false` | Draw a texture icon at its own pixel size |
+| `art` | `null` | A picture that is the whole button (a painted round pause button): it fills `visual_size`, no frame in any state, drawn in its own colours, multiplied by `GoSkin.picture_press_tint()` while pressed. Replaces `icon_name`; null brings the icon and frame back |
 | `tooltip_text_name` | `&""` | Passed through `GoUi.text()` — a built-in name (`close`, `back`…) through `text_keys`, anything else (your translation key or plain words) through the translation server. Also sets `accessibility_name` |
 | `keyboard_focus` | `true` | **Off** over gameplay — a clicked button would keep focus and Space would press it again |
 | `touch_peers` | `[]` | Required when icon buttons sit side by side |

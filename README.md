@@ -1202,7 +1202,8 @@ subclasses *inside* the widgets without copying code:
 
 `GoIconButton.native_texture_size = true` draws a texture icon at its own pixel size instead of
 scaling it to the skin's glyph size (`GoSkin.icon_button_glyph`: 58 % of `visual_size`, 24 dp on the 36 dp button under
-Material).
+Material). `GoIconButton.art = texture` makes a picture the whole button (a painted round pause button): it fills
+`visual_size` with no frame and darkens to `GoSkin.picture_press_tint()` while pressed.
 
 ## Plugin
 

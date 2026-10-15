@@ -1241,6 +1241,11 @@ func hud_alert_ink() -> Color:
 	return GoUi.color(GoTheme.DANGER)
 
 
+## 🖼️ How a picture button (`GoIconButton.art`) darkens while pressed — a multiply over its own colours.
+func picture_press_tint() -> Color:
+	return Color(0.8, 0.8, 0.8)
+
+
 ## ⏱️ The disc a `GoCountdown` step sits on — [param final] for the last ("GO!"). null — the default — draws a round
 ## `accent` / `success` disc instead.
 func countdown_disc(final: bool) -> Texture2D:

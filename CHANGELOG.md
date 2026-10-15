@@ -59,6 +59,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoIconButton.art` — a picture that is the whole button.** It fills `visual_size`, draws no frame in any state,
+  shows the picture in its own colours and darkens it to the new skin hook `GoSkin.picture_press_tint()` while pressed
+  (arcade_light: the game's `PauseRound` tint). Under `arcade_light` the match HUD's painted pause button matches
+  Magnet Mayhem's pixel for pixel, at rest and pressed.
 - **`GoCountdown` — the match-start count.** 3 · 2 · 1 · GO! big on a disc (`show_step(text, final)`,
   `hide_step()`), each step popping in (1.6× at 60 % settling over 0.35 s; none under `reduce_motion`). New skin hooks
   `countdown_disc(final)` and `countdown_ink()`; under `arcade_light` it matches Magnet Mayhem's countdown pixel for

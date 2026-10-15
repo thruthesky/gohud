@@ -327,6 +327,7 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 | `progress_fill_box(ink)` · `notice_box(accent, compact, alpha := -1.0)` · `tint_notice(box, accent)` | Bar fills (outlined when < 3:1), snackbars |
 | `coach_ring_box(accent)` · `draw_coach_pointer(canvas, start, tip, direction, ink)` | Coach mark ring and arrow |
 | `draw_joystick(canvas, center, knob, radius, knob_radius, ink, base, active)` | Joystick |
+| `picture_press_tint() -> Color` | How a picture button (`GoIconButton.art`) darkens while pressed, multiplied over its colours (default `(0.8, 0.8, 0.8)`; `GoSkinArcadePainted`: the game's `PauseRound` `(0.78, 0.78, 0.86)`) |
 | `countdown_disc(final) -> Texture2D` · `countdown_ink() -> Color` | The disc a `GoCountdown` step sits on, [final] for the last (default null: a round `accent` / `success` disc; `GoSkinArcadePainted`: the game's `badge_blue.png` / `badge_green.png`) · the step's colour (default `warning`; painted: GOLD `#ffc928`) |
 | `hud_gauge_box(lit) -> StyleBox` · `hud_alert_ink() -> Color` | A `GoHudCard` gauge's board, lit when the ability is ready (default: the HUD board with a `danger` accent when lit; `GoSkinArcadePainted`: the game's repulse panel, a READY_RED or ink rim) · the colour a HUD clock warns in (default `danger`; painted: READY_RED `#e8332f`) |
 | `bar_frame_box() -> StyleBox` | A frame a `GoBar` draws instead of its `ProgressBar` — a rounded groove clipping a gradient fill (default null: the `ProgressBar`; `GoSkinArcadePainted`: the game's `#d9deef` groove, corner 9, 3dp ink rim) |

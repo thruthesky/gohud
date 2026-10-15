@@ -27,6 +27,7 @@ func _initialize() -> void:
 		await _bar_frame(look)
 		await _hud_card(look)
 		await _countdown(look)
+		await _art_button(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -287,5 +288,30 @@ func _countdown(look: StringName) -> void:
 	check(count.get_theme_color(&"font_color") == Color.RED, "countdown: ink overrides the skin's")
 	count.hide_step()
 	check(not count.visible and count.scale == Vector2.ONE, "countdown: hide_step takes it off")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── A picture that is the whole button (GoIconButton.art) ──────────────
+
+func _art_button(look: StringName) -> void:
+	var picture := GoUi.skin().widget_art(&"pause_button")
+	if picture == null: picture = PlaceholderTexture2D.new()
+	var button := GoIconButton.new()
+	button.visual_size = 52
+	button.art = picture
+	var holder := _host(button)
+	await frames(1)
+	check(button.icon == picture and button.expand_icon, "art: the picture is the icon, filling the button")
+	check(button.size == Vector2(52, 52), "art: the button is visual_size")
+	check(not button.has_theme_constant_override(&"icon_max_width"), "art: no glyph-size cap")
+	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		check(button.get_theme_stylebox(state) is StyleBoxEmpty, "art: no frame when %s (%s)" % [state, look])
+	check(button.get_theme_color(&"icon_normal_color") == Color.WHITE, "art: the picture shows as drawn")
+	check(button.get_theme_color(&"icon_pressed_color") == GoUi.skin().picture_press_tint(), "art: pressed darkens it")
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(GoUi.skin().picture_press_tint() == Color(0.78, 0.78, 0.86), "art: arcade_light's press tint is the game's")
+	button.art = null
+	check(button.icon == null and not button.has_theme_stylebox_override(&"normal"), "art: clearing it restores the frame")
 	holder.queue_free()
 	await frames(1)

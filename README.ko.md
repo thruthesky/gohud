@@ -775,7 +775,8 @@ var sort: int = await dialogs.choose("정렬", ["최신순", "안 읽은 것 먼
 | `GoScroll.as_horizontal(node)` | 정적 | `horizontal()` 의 설정 단계 — `static func horizontal() -> MyScroll` 을 자식이 다시 만들 때 |
 
 `GoIconButton.native_texture_size = true` 는 텍스처 아이콘을 스킨의 그림 크기(`GoSkin.icon_button_glyph` — `visual_size` 의
-58%, Material 에서는 36dp 버튼에 24dp)로 늘리지 않고 원래 픽셀 크기로 그린다.
+58%, Material 에서는 36dp 버튼에 24dp)로 늘리지 않고 원래 픽셀 크기로 그린다. `GoIconButton.art = texture` 는 그림 하나가 버튼 전체가 된다(칠한 둥근 일시정지 버튼) —
+`visual_size` 를 틀 없이 채우고, 눌린 동안 `GoSkin.picture_press_tint()` 로 어두워진다.
 
 ## 플러그인
 

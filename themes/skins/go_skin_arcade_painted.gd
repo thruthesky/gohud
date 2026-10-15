@@ -294,6 +294,11 @@ func hud_alert_ink() -> Color:
 	return READY_RED
 
 
+## The game's `PauseRound` press tint.
+func picture_press_tint() -> Color:
+	return Color(0.78, 0.78, 0.86)
+
+
 ## The game's countdown badges (`Screens._countdown_badge`): blue under a digit, green under GO.
 func countdown_disc(final: bool) -> Texture2D:
 	var file := "badge_green.png" if final else "badge_blue.png"
