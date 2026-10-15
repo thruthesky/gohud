@@ -31,6 +31,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 22. [GoCoverImage — a picture that covers its box](#22-gocoverimage--a-picture-that-covers-its-box)
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
 24. [GoHudCard — a match HUD's top-row board](#24-gohudcard--a-match-huds-top-row-board)
+25. [GoCountdown — the match-start count](#25-gocountdown--the-match-start-count)
 
 ## 1. GoHudAnchor
 
@@ -745,3 +746,31 @@ repulse.set_lit(false)             # dimmed, ink rim; set_lit(true) pops it
   game's repulse panel, READY_RED or ink rim) and `hud_alert_ink()` (default `danger`; arcade_light READY_RED).
 - 🔎 The game sizes its top-row panels once with the desktop padding and never shrinks them, so its touch-mode player
   card keeps the desktop height; a `GoHudCard` fits its content. Set `custom_minimum_size.y` to keep a fixed height.
+
+## 25. GoCountdown — the match-start count
+
+`class_name GoCountdown extends Label` · input-transparent, hidden until a step shows. Under `arcade_light` it draws
+Magnet Mayhem's countdown pixel for pixel (the gold digit on the blue badge, GO! on the green one).
+
+```gdscript
+var count := GoCountdown.new()
+screen.add_child(count)
+count.set_anchors_preset(Control.PRESET_CENTER_TOP)
+count.anchor_top = 0.24
+count.anchor_bottom = 0.24
+count.show_step("3")                       # the server's clock says 3
+count.show_step(tr("COUNTDOWN_GO"), true)  # the last step
+count.hide_step()
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `show_step(text, final := false, animate := true)` · `hide_step()` · `is_final()` | | Shows a step and pops it in; an empty text hides it |
+| `disc_size` | `200` | The disc behind the text (a centred child drawn behind it, so it pops and fades with it) |
+| `step_size` · `final_size` | `110` · `80` | The font size of a step and of the last one |
+| `ink` · `outline` | transparent · `14` | Transparent: `GoSkin.countdown_ink()`. The outline is the label's outline ink; the shadow is black at 35 %, 8 dp down |
+| `pop_scale` · `pop_alpha` · `pop_seconds` | `1.6` · `0.6` · `0.35` | The pop a step makes (none under `reduce_motion`) |
+
+- 🛑 Display only: the caller (the server's clock online) picks the step and the moment — nothing here counts.
+- 🔑 Skin hooks: `countdown_disc(final)` (default null: a round `accent` / `success` disc; arcade_light: the painted
+  blue and green badges) and `countdown_ink()` (default `warning`; arcade_light GOLD `#ffc928`).

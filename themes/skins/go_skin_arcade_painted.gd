@@ -294,6 +294,18 @@ func hud_alert_ink() -> Color:
 	return READY_RED
 
 
+## The game's countdown badges (`Screens._countdown_badge`): blue under a digit, green under GO.
+func countdown_disc(final: bool) -> Texture2D:
+	var file := "badge_green.png" if final else "badge_blue.png"
+	if not _textures.has(file): _textures[file] = load(PAINTED + file)
+	return _textures[file]
+
+
+## The game's countdown digits: GOLD.
+func countdown_ink() -> Color:
+	return GOLD
+
+
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 	for index in range(1, count):

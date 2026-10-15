@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (15)
+8. [HUD and game shapes](#hud-and-game-shapes) (16)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -877,6 +877,15 @@ Extends `PanelContainer`. One board of a match HUD's top row: an icon with a ban
 var clock := GoHudCard.make(GoUi.skin().widget_art(&"stopwatch"))
 clock.title = "MATCH TIME"
 clock.set_clock(83.0)
+```
+
+### `GoCountdown`
+
+Extends `Label`. The match-start count: 3, 2, 1, GO! big on a disc, each step popping in. Details: `hud.md` §25 (GoCountdown).
+
+```gdscript
+var count := GoCountdown.new()
+count.show_step("3")
 ```
 
 ### `GoRewardCalendar`

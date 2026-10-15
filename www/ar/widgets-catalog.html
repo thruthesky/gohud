@@ -799,7 +799,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>واجهة HUD وأشكال الألعاب <small>(15)</small></h2>
+  <h2>واجهة HUD وأشكال الألعاب <small>(16)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -881,6 +881,13 @@ shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
       <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
 clock.<wbr>title = "MATCH TIME"
 clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>العدّ التنازلي لبدء المباراة: 3، 2، 1، GO! كبيرة على قرص، وكل خطوة تقفز للظهور.</p>
+      <p class="catalog-base">يرث <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

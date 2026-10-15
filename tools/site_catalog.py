@@ -1887,6 +1887,25 @@ clock.set_clock(83.0)""", T(
 		"Одна плашка верхнього ряду HUD матчу: значок зі стрічкою та смугами, лічильник, годинник або індикатор готовності.",
 		"แผงหนึ่งแผ่นของแถวบน HUD ระหว่างแข่ง: ไอคอนกับแถบชื่อและหลอด ตัวนับ นาฬิกา หรือมาตรวัดพร้อม",
 		"لوحة واحدة من الصف العلوي لواجهة المباراة: أيقونة مع شريط وأشرطة، أو عدّاد، أو ساعة، أو مقياس جاهزية.")),
+	("hud", "GoCountdown", "Label", """var count := GoCountdown.new()
+count.show_step("3")""", T(
+		"The match-start count: 3, 2, 1, GO! big on a disc, each step popping in.",
+		"경기 시작 카운트 — 3, 2, 1, GO! 를 원판 위에 크게, 단계마다 톡 튀어 나온다.",
+		"試合開始のカウント。3、2、1、GO! を円盤の上に大きく、段ごとにポンと出る。",
+		"比赛开始倒数：3、2、1、GO! 大字显示在圆盘上，每一步弹出。",
+		"比賽開始倒數：3、2、1、GO! 大字顯示在圓盤上，每一步彈出。",
+		"La cuenta de inicio: 3, 2, 1, ¡GO! grande sobre un disco, cada paso aparece de golpe.",
+		"A contagem de início: 3, 2, 1, GO! grande sobre um disco, cada passo surge com um salto.",
+		"Отсчёт перед матчем: 3, 2, 1, GO! крупно на диске, каждый шаг выскакивает.",
+		"Le compte à rebours : 3, 2, 1, GO! en grand sur un disque, chaque étape surgit.",
+		"Maç başı geri sayımı: 3, 2, 1, GO! bir disk üstünde büyük, her adım fırlayarak gelir.",
+		"Odliczanie przed meczem: 3, 2, 1, GO! duże na krążku, każdy krok wyskakuje.",
+		"Il conto alla rovescia: 3, 2, 1, GO! grande su un disco, ogni passo compare con un balzo.",
+		"Đếm ngược đầu trận: 3, 2, 1, GO! thật to trên một đĩa, mỗi bước bật ra.",
+		"Hitung mundur awal laga: 3, 2, 1, GO! besar di atas cakram, tiap langkah muncul meletup.",
+		"Відлік перед матчем: 3, 2, 1, GO! великим на диску, кожен крок вискакує.",
+		"นับถอยหลังเริ่มแข่ง: 3, 2, 1, GO! ตัวใหญ่บนแผ่นกลม แต่ละขั้นเด้งขึ้นมา",
+		"العدّ التنازلي لبدء المباراة: 3، 2، 1، GO! كبيرة على قرص، وكل خطوة تقفز للظهور.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

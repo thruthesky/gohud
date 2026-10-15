@@ -59,6 +59,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoCountdown` — the match-start count.** 3 · 2 · 1 · GO! big on a disc (`show_step(text, final)`,
+  `hide_step()`), each step popping in (1.6× at 60 % settling over 0.35 s; none under `reduce_motion`). New skin hooks
+  `countdown_disc(final)` and `countdown_ink()`; under `arcade_light` it matches Magnet Mayhem's countdown pixel for
+  pixel (the gold digit on the blue badge, GO! on the green). Display only — the caller picks the step.
 - **`GoHudCard` — a match HUD's top-row board.** An icon, then a gold `GoBannerGold` name banner over HUD bars
   (`add_bar`), a title beside a count (`Layout.INLINE`), a caption over a clock (`set_clock(seconds, warn)`,
   `format_clock`), or a gauge (`gauge`, `set_lit`) whose rim lights when an ability is ready, dims while it cools and

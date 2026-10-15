@@ -1241,6 +1241,17 @@ func hud_alert_ink() -> Color:
 	return GoUi.color(GoTheme.DANGER)
 
 
+## ⏱️ The disc a `GoCountdown` step sits on — [param final] for the last ("GO!"). null — the default — draws a round
+## `accent` / `success` disc instead.
+func countdown_disc(final: bool) -> Texture2D:
+	return null
+
+
+## ⏱️ The colour of a `GoCountdown` step. The default is the theme's `warning`.
+func countdown_ink() -> Color:
+	return GoUi.color(GoTheme.WARNING)
+
+
 ## The ticks that split a bar into [param count] chunks, over the whole of [param rect] (the groove and the fill) —
 ## decoration only, the fill still moves smoothly. The default cuts thin notches in the surface colour.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:

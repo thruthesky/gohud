@@ -26,6 +26,7 @@ func _initialize() -> void:
 		await frames(1)
 		await _bar_frame(look)
 		await _hud_card(look)
+		await _countdown(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -239,5 +240,52 @@ func _hud_card(look: StringName) -> void:
 	GoUi.config.reduce_motion = true
 	gauge.set_lit(true)
 	check(gauge.scale == Vector2.ONE, "card: set_lit settles the scale")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── The countdown ──────────────────────────────────────────────────────
+
+func _countdown(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var count := GoCountdown.new()
+	var holder := _host(count, 390.0)
+	await frames(1)
+	check(not count.visible, "countdown: hidden until a step shows")
+	check(count.mouse_filter == Control.MOUSE_FILTER_IGNORE, "countdown: input-transparent")
+	count.show_step("3")
+	await frames(1)
+	check(count.visible and count.text == "3" and not count.is_final(), "countdown: show_step shows the step")
+	check(count.get_theme_font_size(&"font_size") == 110, "countdown: a step reads at 110")
+	check(count.get_theme_constant(&"outline_size") == 14, "countdown: a 14 dp outline")
+	check(count.get_theme_constant(&"shadow_offset_y") == 8, "countdown: the shadow drops 8 dp")
+	check(count.custom_minimum_size == Vector2(300, 200), "countdown: 300 x 200 at least")
+	check(count.get_theme_color(&"font_color") == GoUi.skin().countdown_ink(), "countdown: the ink is the skin's")
+	var disc := count.find_child("Disc", true, false) as TextureRect
+	var round_disc := count.find_child("Round", true, false) as Panel
+	check(disc != null and round_disc != null and disc.show_behind_parent, "countdown: the disc sits behind the text")
+	check(disc != null and disc.size == Vector2(200, 200), "countdown: the disc is disc_size")
+	if painted:
+		check(GoUi.skin().countdown_ink() == Color("#ffc928"), "countdown: arcade_light paints it GOLD")
+		check(disc.visible and disc.texture != null and disc.texture.resource_path.ends_with("badge_blue.png"),
+			"countdown: a step sits on the blue badge")
+	else:
+		check(round_disc.visible and not disc.visible, "countdown: no art draws a round disc (%s)" % look)
+	count.show_step("GO!", true)
+	await frames(1)
+	check(count.is_final() and count.get_theme_font_size(&"font_size") == 80, "countdown: the last step reads at 80")
+	if painted:
+		check(disc.texture.resource_path.ends_with("badge_green.png"), "countdown: the last step sits on the green badge")
+	check(count.scale == Vector2.ONE and count.modulate.a == 1.0, "countdown: no pop under reduce_motion")
+	GoUi.config.reduce_motion = false
+	count.show_step("2")
+	check(count.scale == Vector2.ONE * 1.6 and is_equal_approx(count.modulate.a, 0.6), "countdown: a step pops in")
+	await create_timer(0.5).timeout
+	check(count.scale.is_equal_approx(Vector2.ONE) and is_equal_approx(count.modulate.a, 1.0), "countdown: the pop settles")
+	GoUi.config.reduce_motion = true
+	count.ink = Color.RED
+	check(count.get_theme_color(&"font_color") == Color.RED, "countdown: ink overrides the skin's")
+	count.hide_step()
+	check(not count.visible and count.scale == Vector2.ONE, "countdown: hide_step takes it off")
 	holder.queue_free()
 	await frames(1)
