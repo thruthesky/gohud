@@ -689,7 +689,7 @@ Leave a field empty or at its default to keep gohud's behaviour. Nothing needs t
 | Group | Fields |
 |---|---|
 | Appearance | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow` (**off by default**) |
-| Responsive | `scale_enabled` (1 unit = 1 dp, **off by default**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
+| Responsive | `scale_enabled` (1 unit = 1 dp, **off by default**), `scale_profile` (`DP` or `PER_INCH`: the base size kept, a handheld shrunk to `per_inch_units` per inch, at least `per_inch_min_height` tall), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
 | Surface | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
 | Feedback | `haptics_enabled`, `haptic_tap/light/medium_ms` and amplitudes, `sound_cues` |
 | Localization | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
@@ -1027,7 +1027,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoThemePresets` | static | The fourteen built-in presets, presets found in `themes/presets/`, and `register()` for your own |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` · `GoSkinArcadePainted` | Resource | The shapes code draws, with numeric dials |
 | `GoSafeArea` | Control / static | Usable rectangle excluding notches, rounded corners and the keyboard |
-| `GoScale` | static | Breakpoint and dp math |
+| `GoScale` | static | Breakpoint and dp math; the per-inch profile (`per_inch_factor`, `per_inch_canvas`, `web_dpi`, `cap_sides`) |
 | `GoFeedback` | static | Sound and haptic routing |
 | `GoBackPolicy` | static | Shared ownership of Android Back |
 

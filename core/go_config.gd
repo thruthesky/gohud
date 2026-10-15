@@ -148,6 +148,16 @@ signal changed_settings
 ##    coordinate space of the whole project — never switch it on silently in someone else's project. The one turning it on decides.
 @export var scale_enabled := false
 
+## How `scale_enabled` sizes the UI: `DP` (1 unit = 1 dp, the default) or `PER_INCH` (the project's base size kept,
+## a handheld shrunk to `per_inch_units` units per inch — see `GoScale.Profile`).
+@export var scale_profile := GoScale.Profile.DP
+
+## `PER_INCH`: canvas units per physical inch on a handheld (160 ≈ one iOS point).
+@export_range(60, 400) var per_inch_units := 160.0
+
+## `PER_INCH`: the shortest the canvas gets (units), so a small phone still fits the layout.
+@export_range(200, 2000) var per_inch_min_height := 440.0
+
 ## A short side at or below this many dp is the mobile breakpoint.
 @export_range(240, 1200) var mobile_max_dp := 576.0
 

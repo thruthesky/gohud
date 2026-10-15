@@ -59,6 +59,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoScale.Profile.PER_INCH` — a per-inch device profile.** With `GoConfig.scale_enabled` and
+  `scale_profile = PER_INCH`, `GoRuntime` keeps the project's base size and shrinks a handheld to about
+  `per_inch_units` (160) units per physical inch, never below `per_inch_min_height` (440) units tall and never below
+  factor 1 — a fixed-layout game HUD the same size in the hand on every phone. Pure helpers `per_inch_factor`,
+  `per_inch_canvas`, `web_dpi` and `cap_sides`. Matches Magnet Mayhem's `UiScale` figure for figure.
 - **`GoPerfReadout` — a performance band.** fps, frame time and the worst frame, triangles, draw calls, nodes, RAM
   and VRAM in a small dark band; the ink turns from `GoSkin.perf_ink(0)` to `(1)` and `(2)` as fps drops. It samples
   the engine itself (no allocation per frame, writes only when the text changed) or shows `show_stats()`; `one_line`

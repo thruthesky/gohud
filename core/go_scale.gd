@@ -24,6 +24,12 @@ extends RefCounted
 
 enum Bp { MOBILE, TABLET, DESKTOP }
 
+## How `GoConfig.scale_enabled` sizes the UI. `DP`: 1 unit = 1 dp (with the readability gain), the coordinate space
+## follows the window. `PER_INCH`: the project's base size stays (`canvas_items` stretch) and a handheld shrinks it to
+## about `GoConfig.per_inch_units` units per physical inch, never below `GoConfig.per_inch_min_height` units tall —
+## a fixed-layout game HUD that must look the same size in the hand on every phone.
+enum Profile { DP, PER_INCH }
+
 ## Anything smaller than this diagonal in inches counts as **a handheld device**, because the base dpi of a logical pixel differs.
 const HANDHELD_MAX_INCHES := 13.0
 
@@ -103,3 +109,30 @@ static func logical_size_for(window_px: Vector2i, display_scale_value: float, ga
 ## The breakpoint name — for logs and check output.
 static func breakpoint_name(bp: Bp) -> String:
 	return ["MOBILE", "TABLET", "DESKTOP"][int(bp)]
+
+
+## `PER_INCH`: the `content_scale_factor` for a [param window_px] window at [param dpi] over a project base size of
+## [param base] (`canvas_items` stretch, `expand` aspect). The canvas is about [param units_per_inch] units per inch
+## (160 ≈ one iOS point), clamped to [[param min_height], the canvas height at factor 1]; never below 1. Off a
+## [param handheld] it is 1.
+static func per_inch_factor(window_px: Vector2, dpi: float, base: Vector2, units_per_inch := 160.0,
+		min_height := 440.0, handheld := true) -> float:
+	if not handheld or window_px.x <= 0.0 or window_px.y <= 0.0 or dpi <= 0.0: return 1.0
+	var tall := base.y * maxf(1.0, (base.x / base.y) / (window_px.x / window_px.y))
+	return tall / clampf(window_px.y / dpi * units_per_inch, min_height, tall)
+
+
+## `PER_INCH`: the canvas size (units) a [param window_px] window shows at [param factor] over [param base].
+static func per_inch_canvas(window_px: Vector2, base: Vector2, factor: float) -> Vector2:
+	return window_px / (minf(window_px.x / base.x, window_px.y / base.y) * factor)
+
+
+## A phone browser's physical dpi from Godot's web dpi (devicePixelRatio × 96, CSS's 96 px per inch).
+static func web_dpi(reported: float, css_px_per_inch := 160.0) -> float:
+	return reported * css_px_per_inch / 96.0
+
+
+## Safe-area margins (left, top, right, bottom) with the sides capped at [param side_max] — for a HUD that hugs the
+## edges, where a landscape notch's whole inset would push it too far in.
+static func cap_sides(margins: Vector4, side_max: float) -> Vector4:
+	return Vector4(minf(margins.x, side_max), margins.y, minf(margins.z, side_max), margins.w)

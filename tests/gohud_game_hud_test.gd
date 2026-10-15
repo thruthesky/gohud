@@ -36,6 +36,7 @@ func _initialize() -> void:
 		await _task_card(look)
 		await _spotlight(look)
 		await _perf_readout(look)
+	_per_inch_scale()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -739,3 +740,19 @@ func _perf_readout(look: StringName) -> void:
 	holder.queue_free()
 	await frames(1)
 
+
+# ── The per-inch scale profile (GoScale) ───────────────────────────────
+
+func _per_inch_scale() -> void:
+	var base := Vector2(1280, 720)
+	check(is_equal_approx(GoScale.per_inch_factor(Vector2(2556, 1179), 460.0, base), 720.0 / 440.0),
+		"scale: a small phone is held at min_height")
+	check(is_equal_approx(GoScale.per_inch_factor(Vector2(1920, 1080), 300.0, base), 1.25), "scale: 160 units per inch")
+	check(GoScale.per_inch_factor(Vector2(2360, 1640), 264.0, base) == 1.0, "scale: a tablet is never shrunk below 1")
+	check(is_equal_approx(GoScale.per_inch_factor(Vector2(2266, 1488), 326.0, base), (1280.0 * 1488.0 / 2266.0) / (1488.0 / 326.0 * 160.0)),
+		"scale: a 4:3-ish tablet's base height grows with its aspect")
+	check(GoScale.per_inch_canvas(Vector2(1920, 1080), base, 1.25).is_equal_approx(Vector2(1024, 576)), "scale: the canvas size")
+	check(GoScale.per_inch_factor(Vector2(1920, 1080), 300.0, base, 160.0, 440.0, false) == 1.0, "scale: off a handheld, 1")
+	check(GoScale.web_dpi(192.0) == 320.0, "scale: a phone browser's dpi from devicePixelRatio")
+	check(GoScale.cap_sides(Vector4(48, 20, 30, 10), 12.0) == Vector4(12, 20, 12, 10), "scale: cap_sides caps left and right")
+	check(GoUi.config.scale_profile == GoScale.Profile.DP, "scale: the dp profile is the default")
