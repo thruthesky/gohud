@@ -810,6 +810,15 @@ func _perf_readout(look: StringName) -> void:
 	perf.show_stats(_perf_stats(60.0))
 	check(perf.write_count == 1, "perf: the same text is not written again")
 	check(perf.label.get_theme_color(&"font_color") == skin.perf_ink(0), "perf: 60 fps in the good ink")
+	var themed := [0]
+	perf.label.theme_changed.connect(func() -> void: themed[0] += 1)
+	for i in 4: perf.show_stats(_perf_stats(60.0))
+	check(themed[0] == 0, "perf: identical samples restyle the label never (%d theme changes)" % themed[0])
+	perf.show_stats(_perf_stats(40.0))
+	themed[0] = 0
+	perf.show_stats(_perf_stats(40.0))
+	check(themed[0] == 0, "perf: a repeated level is not restyled")
+	perf.show_stats(_perf_stats(20.0))
 	perf.show_stats(_perf_stats(40.0))
 	check(perf.label.get_theme_color(&"font_color") == skin.perf_ink(1), "perf: 40 fps in the warning ink")
 	perf.show_stats(_perf_stats(20.0))
@@ -863,3 +872,4 @@ func _per_inch_scale() -> void:
 	check(GoScale.web_dpi(192.0) == 320.0, "scale: a phone browser's dpi from devicePixelRatio")
 	check(GoScale.cap_sides(Vector4(48, 20, 30, 10), 12.0) == Vector4(12, 20, 12, 10), "scale: cap_sides caps left and right")
 	check(GoUi.config.scale_profile == GoScale.Profile.DP, "scale: the dp profile is the default")
+
