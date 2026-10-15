@@ -198,6 +198,28 @@ func _tokens() -> void:
 	check(loaded.touch_size_chosen() and loaded.min_touch_size == 48, "save/load: an explicit 48 stays chosen")
 	DirAccess.remove_absolute(tres)
 
+	# 🎨 The role colours: every built-in look carries them, and one that names none carries the colour the role was
+	#    drawn in before (heading = accent, alert = danger, muted_fill = muted) — so nothing it draws changed.
+	for file: String in DirAccess.get_files_at("res://addons/gohud/themes"):
+		if not file.ends_with(".tres"): continue
+		var look := load("res://addons/gohud/themes/" + file) as Theme
+		for key: StringName in GoTheme.STAND_INS:
+			check(look.has_color(key, GoTheme.TYPE), "%s carries the %s token" % [file, key])
+			if file != "gohud_arcade_light.tres":
+				check(look.get_color(key, GoTheme.TYPE) == look.get_color(GoTheme.STAND_INS[key], GoTheme.TYPE),
+					"%s: %s is its %s" % [file, key, GoTheme.STAND_INS[key]])
+	check(GoUi.skin().task_title_ink() == GoUi.color(GoTheme.ACCENT) and GoUi.skin().task_hint_ink() == GoUi.color(GoTheme.DANGER)
+		and GoUi.skin().hud_alert_ink() == GoUi.color(GoTheme.DANGER), "the default skin's inks are still accent and danger")
+	# A theme that never heard of them answers the stand-in, not magenta.
+	var older := GoUi.DEFAULT_THEME.duplicate() as Theme
+	for key: StringName in GoTheme.STAND_INS: older.clear_color(key, GoTheme.TYPE)
+	settings.theme = older
+	settings.token_fallback = false
+	for key: StringName in GoTheme.STAND_INS:
+		check(GoUi.color(key) == GoUi.color(GoTheme.STAND_INS[key]), "a theme without %s: GoUi.color gives its %s" % [key, GoTheme.STAND_INS[key]])
+	settings.token_fallback = true
+	settings.theme = null
+
 	# A plain Theme with no tokens does not break anything.
 	settings.theme = Theme.new()
 	check(GoUi.color(GoTheme.SURFACE) == GoTheme.color_of(GoUi.DEFAULT_THEME, GoTheme.SURFACE), "a token-less Theme is filled in from the default tokens")

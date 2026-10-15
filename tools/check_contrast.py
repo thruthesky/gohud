@@ -98,6 +98,11 @@ def pairs(colors):
         out.append((tone, "background", BODY, "%s status text (on the backdrop)" % tone))
     out.append(("accent", "surface", UI, "accent borders and icons"))
     out.append(("accent", "background", UI, "accent borders and icons (on the backdrop)"))
+    # The role colours (optional — a look that names none carries the accent, danger and muted inks): a heading and an
+    # alert are titles and HUD warnings, held to the large-text bar; muted_fill is a fill, held to the component bar.
+    out.append(("heading", "surface", LARGE, "section titles (large text)"))
+    out.append(("alert", "surface", LARGE, "HUD warnings (large or bold text)"))
+    out.append(("muted_fill", "surface", UI, "a quiet fill or rim against the panel"))
     out.append(("border", "surface", DECOR, "card border (decoration — not a WCAG 3:1 target)"))
     out.append(("border", "background", DECOR, "card border (on the backdrop)"))
     return out

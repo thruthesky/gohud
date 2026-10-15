@@ -587,6 +587,14 @@ def build(pal, shape, variant, out_path):
         pal["on_accent"] = max(_options, key=lambda c: contrast(c, _accent_solid))
     if pal["on_accent"][:3] != _before_on[:3]:
         moved.append(("on_accent", _before_on, pal["on_accent"], "accent button text"))
+    # 🔑 **Three optional roles** a palette may name (`arcade_light` names Magnet Mayhem's): `heading` (a section
+    #    title's ink — the game's gold HUD_NAME), `alert` (the colour a HUD warns in — READY_RED) and `muted_fill` (a
+    #    quiet grey face or rim — SECONDARY). A palette that leaves one out gets what that role was drawn in before it
+    #    had a name — the accent, the danger ink, the muted ink, each already pushed to read — so every look carries
+    #    all three and nothing it draws changes. A value the palette writes is the look's own and is not pushed.
+    for key, stand_in in ROLE_STAND_INS.items():
+        if key not in pal:
+            pal[key] = pal[stand_in]
 
     # 🔑 **The shape dict has the first word on the numbers.** Radii, button padding and gaps can be
     #    overridden by the shape, so "sharper corners" and "flatter buttons" happen without touching skin
@@ -1262,6 +1270,8 @@ PALETTES_DIR = os.path.join(ADDON, "themes", "palettes")
 # Keys a palette must carry — without them generation dies halfway with a KeyError. Say so up front.
 PALETTE_KEYS = ("background", "surface", "surface_soft", "surface_high", "border", "text", "secondary",
                 "muted", "accent", "on_accent", "success", "warning", "danger", "info", "scrim", "shadow", "track")
+# The optional roles (`GoTheme.HEADING`, `ALERT`, `MUTED_FILL`) → the token each one falls back to (`build()`).
+ROLE_STAND_INS = {"heading": "accent", "alert": "danger", "muted_fill": "muted"}
 
 
 def parse_color(text):

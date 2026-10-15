@@ -411,6 +411,7 @@ icons.canonical(&"gear")             # &"settings"
 |---|---|
 | 색 | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
 | 채움 색 | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — 막대처럼 넓은 면적용. 테마에 없으면 `_fill` 을 뗀 이름으로 떨어진다 |
+| 역할 색 | `heading`(제목 글자색), `alert`(HUD 경고색), `muted_fill`(조용한 회색 채움) — 룩이 따로 정하지 않으면 `accent` · `danger` · `muted` (`arcade_light` 는 Magnet Mayhem 의 금색 · 빨강 · 라벤더 회색). 테마에 없으면 그 색으로 떨어진다 |
 | 치수(dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `compact_padding_x`, `compact_padding_y`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
 | 판 불투명도(%) | `panel_alpha`, `card_alpha`, `hud_alpha`, `notice_alpha`, `popup_alpha` — 컨테이너 바탕이 얼마나 꽉 찬 색인가. 기본 80(팝업 메뉴만 100). 테마에 없으면 100 으로 떨어진다 |
 | StyleBox | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |

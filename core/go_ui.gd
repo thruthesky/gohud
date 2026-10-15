@@ -347,6 +347,8 @@ static func color(key: StringName) -> Color:
 	var name := String(key)
 	if name.ends_with("_fill") and not _has_color(key):
 		return color(StringName(name.trim_suffix("_fill")))
+	# A role color (`GoTheme.HEADING`, `ALERT`) a theme never heard of is the token the role was drawn in before.
+	if GoTheme.STAND_INS.has(key) and not _has_color(key): return color(GoTheme.STAND_INS[key])
 	return GoTheme.color_of(theme(), key, _fallback_theme())
 
 

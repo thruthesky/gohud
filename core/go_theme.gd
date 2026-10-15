@@ -33,6 +33,23 @@ const SCRIM := &"scrim"
 const SHADOW := &"shadow"
 const TRACK := &"track"
 
+# ── Role colors (optional) ─────────────────────────────────────────────
+# 🔑 Inks a look may give a role of its own. Every built-in theme carries them — a look that names none gets the
+#    colour the role was drawn in before it had a name (`STAND_INS`) — so they are safe in any widget.
+
+## A section or card title's ink (`GoTaskCard`'s title). `arcade_light`: the game's gold `#B8860B`; others the accent.
+## 🛑 Held to the large-text bar (3:1): use it for titles, not body text.
+const HEADING := &"heading"
+## The colour a HUD warns in — a clock running out, a hint, a lit gauge. `arcade_light`: READY_RED `#E8332F`; others
+## the danger ink. 🛑 Held to the large-text bar (3:1): big or bold warnings, not body text.
+const ALERT := &"alert"
+## A quiet grey **fill** — a secondary key's face, a field's rim, a muted caption laid big. `arcade_light`: the game's
+## lavender grey `#8A8FB3`; others the muted ink. A fill (3:1 against the panel), so it follows the `*_fill` rule: a
+## theme without it falls back to `muted`.
+const MUTED_FILL := &"muted_fill"
+## A role color → the token it falls back to when a theme lacks it (`GoUi.color`).
+const STAND_INS := {HEADING: ACCENT, ALERT: DANGER, MUTED_FILL: MUTED}
+
 # ── Fill-only colors ───────────────────────────────────────────────────
 ## 🔑 **The same meaning, the opposite use.** `WARNING` is used as text, so it has to be dark to read on a light
 ## background; used as the **fill of a health or experience bar** it has to be bright to stand out.

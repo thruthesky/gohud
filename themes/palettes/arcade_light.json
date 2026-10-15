@@ -35,7 +35,7 @@
   "hud_alpha": 94
  },
  "palette": {
-  "_help": "The game's UiTheme constants where the role is the same: text and border INK #1D2340, surface white, surface_soft DIFF_BG, surface_high and track BAR_BG, background the stage sky (0.36, 0.62, 0.92), scrim OVERLAY, the *_vivid fills CONTROL_BLUE, GREEN, RED, GOLD and DIFF_SELECTED. accent, success, warning, danger and info are text: the game's colours fail 4.5:1 on white (CONTROL_BLUE 4.4, RED 3.3, GREEN 2.0, GOLD 1.5), so they keep readable values.",
+  "_help": "The game's UiTheme constants where the role is the same: text and border INK #1D2340, surface white, surface_soft DIFF_BG, surface_high and track BAR_BG, background the stage sky (0.36, 0.62, 0.92), scrim OVERLAY, the *_vivid fills CONTROL_BLUE, GREEN, RED, GOLD and DIFF_SELECTED. accent, success, warning, danger and info are text: the game's colours fail 4.5:1 on white (CONTROL_BLUE 4.4, RED 3.3, GREEN 2.0, GOLD 1.5), so they keep readable values. heading, alert and muted_fill are the game's HUD_NAME #B8860B (the gold section titles), READY_RED #E8332F (the clock's warning, a training hint) and SECONDARY #8A8FB3 (the muted lavender of a room's subtitle and the grey big key): large or bold text and a fill, so they keep the game's values (heading 3.3 and alert 4.3 on white, held to the 3:1 large-text bar; muted_fill 3.2, a fill).",
   "background": "#5C9EEB",
   "surface": "#FFFFFF",
   "surface_soft": "#EEF1FB",
@@ -57,6 +57,9 @@
   "danger_vivid": "#FF4D4D",
   "info_vivid": "#7FE4FF",
   "success_vivid": "#3ECF5A",
-  "warning_vivid": "#FFC928"
+  "warning_vivid": "#FFC928",
+  "heading": "#B8860B",
+  "alert": "#E8332F",
+  "muted_fill": "#8A8FB3"
  }
 }

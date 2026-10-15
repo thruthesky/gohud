@@ -88,7 +88,8 @@ const TICK_WIDTH := 3.0
 const BAR_BG := Color("#d9deef")
 const BAR_RADIUS := 9
 const BAR_OUTLINE := 3
-## The HUD's alert red (`UiTheme.READY_RED`) and the repulse gauge's board (`HUD._repulse_box`).
+## The HUD's alert red (`UiTheme.READY_RED`, the look's `alert` token too) and the repulse gauge's board
+## (`HUD._repulse_box`).
 const READY_RED := Color("#e8332f")
 const GAUGE_RADIUS := 14
 const GAUGE_OUTLINE := 3
@@ -292,11 +293,6 @@ func hud_gauge_box(lit: bool) -> StyleBox:
 	return face
 
 
-## The game's READY_RED: the clock's last seconds and a lit gauge's rim.
-func hud_alert_ink() -> Color:
-	return READY_RED
-
-
 ## The game's "Esc" cap beside the pause button (`HUD.pause_hint`: `UiTheme.chunky_box(#6c7aa8, 8, 6, 1, 3, 5)`).
 func hud_key_hint_box() -> StyleBox:
 	var cap := StyleBoxFlat.new()
@@ -403,14 +399,9 @@ func spotlight_ring_box() -> StyleBox:
 	return ring
 
 
-## The training card's title gold and hint red.
-func task_title_ink() -> Color:
-	return Color("#b8860b")
-
-
-func task_hint_ink() -> Color:
-	return Color("#e8332f")
-
+# 🎨 The training card's title gold (HUD_NAME) and hint red, and the clock's last seconds (READY_RED), are the
+#    look's `heading` and `alert` tokens (`themes/palettes/arcade_light.json`): `GoSkin.task_title_ink()`,
+#    `task_hint_ink()` and `hud_alert_ink()` read them.
 
 
 ## The game's fps colours: GREEN, GOLD and RED.

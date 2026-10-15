@@ -446,6 +446,8 @@ func _tokens(theme: Theme) -> void:
 		&"track": BAR_BG, &"background": STAGE_SKY, &"scrim": OVERLAY, &"on_accent": Color.WHITE,
 		&"accent_vivid": CONTROL_BLUE, &"success_vivid": GREEN, &"danger_vivid": RED, &"warning_vivid": GOLD,
 		&"info_vivid": DIFF_SELECTED,
+		# The role colours: HUD_NAME (gold titles), READY_RED (the clock's warning), SECONDARY (a muted lavender fill).
+		&"heading": Color("#b8860b"), &"alert": Color("#e8332f"), &"muted_fill": SECONDARY,
 	}
 	for key: StringName in want:
 		var got := theme.get_color(key, &"GoHud")
@@ -456,6 +458,13 @@ func _tokens(theme: Theme) -> void:
 		"token touch is the game's Cfg.Touch.MIN_TARGET 44 (got %d)" % theme.get_constant(GoTheme.TOUCH, GoTheme.TYPE))
 	GoUi.config.follow_look_touch_size()
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	# 🎨 The skin hooks that drew these colours read the tokens now, so they still return the game's.
+	var skin := GoUi.skin()
+	check(skin.task_title_ink().is_equal_approx(Color("#b8860b")) and skin.task_hint_ink().is_equal_approx(Color("#e8332f"))
+		and skin.hud_alert_ink().is_equal_approx(Color("#e8332f")),
+		"arcade_light: task_title_ink, task_hint_ink and hud_alert_ink are HUD_NAME and READY_RED (via heading / alert)")
+	check(GoUi.color(GoTheme.MUTED_FILL).is_equal_approx(SECONDARY) and GoUi.color(GoTheme.HEADING).is_equal_approx(Color("#b8860b"))
+		and GoUi.color(GoTheme.ALERT).is_equal_approx(Color("#e8332f")), "arcade_light: GoUi.color reads the three role tokens")
 	check(GoUi.touch_size() == 44.0, "GoUi.touch_size() under arcade_light is 44 (got %s)" % GoUi.touch_size())
 	GoUi.config.preset = &""
 

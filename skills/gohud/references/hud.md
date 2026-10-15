@@ -836,7 +836,7 @@ repulse.set_lit(false)             # dimmed, ink rim; set_lit(true) pops it
 
 - 🛑 Display only: the server's clock, the count and the ready state come from the caller — the card decides nothing.
 - 🔑 Skin hooks: `hud_gauge_box(lit)` (default: the HUD board with a `danger` accent when lit; arcade_light: the
-  game's repulse panel, READY_RED or ink rim) and `hud_alert_ink()` (default `danger`; arcade_light READY_RED).
+  game's repulse panel, READY_RED or ink rim) and `hud_alert_ink()` (default the `alert` token: danger, arcade_light READY_RED).
 - 🔎 The game sizes its top-row panels once with the desktop padding and never shrinks them, so its touch-mode player
   card keeps the desktop height; a `GoHudCard` fits its content. Set `custom_minimum_size.y` to keep a fixed height.
 

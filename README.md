@@ -822,6 +822,7 @@ All tokens live in the **`GoHud`** theme type.
 |---|---|
 | Colors | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
 | Fill colors | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — for bars and other large areas; a theme without them falls back to the base name |
+| Role colors | `heading` (a title's ink), `alert` (the colour a HUD warns in), `muted_fill` (a quiet grey fill) — `accent`, `danger` and `muted` unless a look names its own (`arcade_light`: Magnet Mayhem's gold, red and lavender grey); a theme without them falls back to those |
 | Constants (dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `compact_padding_x`, `compact_padding_y`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
 | Panel opacity (%) | `panel_alpha`, `card_alpha`, `hud_alpha`, `notice_alpha`, `popup_alpha` — how solid a container's face is. 80 by default (100 for popup menus); a theme without them falls back to 100 |
 | Styles | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |

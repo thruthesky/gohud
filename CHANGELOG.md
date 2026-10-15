@@ -289,6 +289,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `pass_anchor_taps` (a tap on the anchor reaches it, so its second tap closes the card) and `tap_through` (more
   controls taps reach). `GoPopover.open()` takes them as `width` 0, `min_width`, `align`, `gap`, `edge`, `fit`,
   `pass_anchor_taps`, `tap_through`. Every default keeps today's card.
+- **Three role colours: `GoTheme.HEADING`, `ALERT` and `MUTED_FILL`.** Magnet Mayhem draws three colours gohud had
+  no token for — its gold section titles (HUD_NAME `#B8860B`), its warning red (READY_RED `#E8332F`: the clock's last
+  seconds, a training hint) and its muted lavender grey (SECONDARY `#8A8FB3`: a room's subtitle, the grey big key).
+  `arcade_light` names them in its palette (`heading`, `alert`, `muted_fill`), so `GoUi.color(GoTheme.HEADING)` gives the
+  game's value. Every other look carries the colour each role was drawn in before — the accent, the danger ink, the
+  muted ink — written by `make_theme.py` when a palette leaves the key out, and a theme without them answers the same
+  through `GoUi.color` (`GoTheme.STAND_INS`), so nothing changes colour. `GoSkin.task_title_ink()`, `task_hint_ink()`
+  and `hud_alert_ink()` now read `heading`, `alert` and `alert` (the painted skin's own overrides went; it returns the
+  game's colours through the tokens). `check_contrast.py` holds `heading` and `alert` to the large-text bar and
+  `muted_fill` to the component bar (3:1).
+
 - **`arcade_light`: the `person` glyph.** Magnet Mayhem's white person glyph (its main menu's name key, the name
   dialog's ribbon) joins `icons/arcade_light` as `&"person"`, imported as the other glyphs are (lossless, mipmaps), and
   gohud's own `&"user"` points at it. Before, both names fell back to the default set's line icon.

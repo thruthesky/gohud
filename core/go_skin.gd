@@ -1298,14 +1298,15 @@ func spotlight_ring_box() -> StyleBox:
 	return ring
 
 
-## 📋 A `GoTaskCard`'s title. The default is `accent`.
+## 📋 A `GoTaskCard`'s title. The default is the `heading` token (the accent where a look names no heading).
 func task_title_ink() -> Color:
-	return GoUi.color(GoTheme.ACCENT)
+	return GoUi.color(GoTheme.HEADING)
 
 
-## 📋 A `GoTaskCard`'s hint line (what to try when stuck). The default is `danger`.
+## 📋 A `GoTaskCard`'s hint line (what to try when stuck). The default is the `alert` token (the danger ink where a
+## look names no alert).
 func task_hint_ink() -> Color:
-	return GoUi.color(GoTheme.DANGER)
+	return GoUi.color(GoTheme.ALERT)
 
 
 ## 📈 The band behind a `GoPerfReadout`: dark and see-through so the readout reads over any scene. The default is
@@ -1353,9 +1354,10 @@ func hud_gauge_box(lit: bool) -> StyleBox:
 	return floating_box(GoTheme.BOX_HUD, GoUi.color(GoTheme.DANGER) if lit else Color.TRANSPARENT)
 
 
-## 🎮 The colour a HUD warns in — a `GoHudCard` clock running out. The default is the theme's `danger`.
+## 🎮 The colour a HUD warns in — a `GoHudCard` clock running out. The default is the `alert` token (the danger ink
+## where a look names no alert).
 func hud_alert_ink() -> Color:
-	return GoUi.color(GoTheme.DANGER)
+	return GoUi.color(GoTheme.ALERT)
 
 
 ## ⌨️ The cap a `GoHudButton` shows its key on ("Esc" beside the pause button). The default is `kbd_box()`.

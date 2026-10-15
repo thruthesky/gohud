@@ -878,7 +878,7 @@ func _task_card(look: StringName) -> void:
 	check(card.chips().size() == 1 and card.chip_text(0) == "JUMP", "task card: set_parts rebuilds the chips")
 	if look == GoThemePresets.ARCADE_LIGHT:
 		check(card.get_theme_stylebox(&"panel").content_margin_left == 25.0, "task card: arcade_light: padding 20 inside the 5 dp rim")
-		check(skin.task_title_ink() == Color("#b8860b") and skin.task_hint_ink() == Color("#e8332f"),
+		check(skin.task_title_ink().is_equal_approx(Color("#b8860b")) and skin.task_hint_ink().is_equal_approx(Color("#e8332f")),
 			"task card: arcade_light: the game's title gold and hint red")
 	holder.queue_free()
 	await frames(1)
