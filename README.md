@@ -1018,7 +1018,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoPromptCard` | PanelContainer | Non-blocking question card; keeps pressed buttons alive across refreshes |
 | `GoCoachMark` | Control | Guided tour that points at real controls; pressing the target advances; the card steps around HUD anchors and `keep_clear` controls |
 | `GoHudAnchor` | Control | Pins HUD pieces to one of nine safe-area spots, with an optional landscape spot, `reserve_space` and `avoid_peers`; `keyboard_focus = false` keeps every button in the corner from swallowing Space / Enter |
-| `GoBar` | Control | HP/MP/XP bars with value, fraction or percent readouts and eased changes |
+| `GoBar` | Control | HP/MP/XP bars with value, fraction or percent readouts and eased changes; under `arcade_light` the painted HUD bar (a gradient in a rounded groove, an icon before the name) |
 | `GoSlot` | Button | Quick slot with icon, quantity, cooldown and shortcut on a single face; shared hit areas in tight rows; `keyboard_focus` opts into Tab order |
 | `GoJoystick` | Control | Virtual joystick in fixed, follow or relative mode, with dead zone |
 | `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |

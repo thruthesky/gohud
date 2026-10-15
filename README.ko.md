@@ -597,7 +597,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoPromptCard` | PanelContainer | 화면을 막지 않는 질문 카드. 새로 그려도 눌린 버튼이 살아 있다 |
 | `GoCoachMark` | Control | 실제 컨트롤을 가리키는 안내 투어. 대상을 누르면 다음으로, 카드는 HUD 앵커와 `keep_clear` 를 피한다 |
 | `GoHudAnchor` | Control | HUD 를 안전영역 아홉 자리 중 하나에 붙인다. 가로 자리·`reserve_space`·`avoid_peers`. `keyboard_focus = false` 면 그 모서리의 버튼이 스페이스·엔터를 가로채지 않는다 |
-| `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간 |
+| `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간. `arcade_light`에서는 게임 HUD의 페인트 막대(둥근 홈 안의 그라데이션, 이름 앞 아이콘) |
 | `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
 | `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
 | `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |

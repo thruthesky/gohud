@@ -327,6 +327,7 @@ Override only what you need; everything else keeps the parent's drawing. Assign 
 | `progress_fill_box(ink)` · `notice_box(accent, compact, alpha := -1.0)` · `tint_notice(box, accent)` | Bar fills (outlined when < 3:1), snackbars |
 | `coach_ring_box(accent)` · `draw_coach_pointer(canvas, start, tip, direction, ink)` | Coach mark ring and arrow |
 | `draw_joystick(canvas, center, knob, radius, knob_radius, ink, base, active)` | Joystick |
+| `bar_frame_box() -> StyleBox` | A frame a `GoBar` draws instead of its `ProgressBar` — a rounded groove clipping a gradient fill (default null: the `ProgressBar`; `GoSkinArcadePainted`: the game's `#d9deef` groove, corner 9, 3dp ink rim) |
 | `bar_ticks() -> int` · `draw_bar_ticks(canvas, rect, count)` | How many chunks a `GoBar` left to the look is split into (default 0 — smooth; `GoSkinArcade`: `arcade_bar_ticks`), and the ticks that split it, over the groove and the fill (default: thin notches in the surface colour; `GoSkinArcade`: thick ink ticks) |
 | `chart_colors() -> Array[Color]` | The colours a chart cycles through for slices given none (`GoDonut`). Default: accent, success, warning, info, danger; `GoSkinKids` gives brighter crayons |
 | `divider_color()` · `divider_thickness()` · `section_box()` · `section_rhythm(face)` | Dividers, section headings. A skin's own `section_box()` ends with `return section_rhythm(face)` — it puts more room above a heading than below, so the heading belongs to the group it opens |

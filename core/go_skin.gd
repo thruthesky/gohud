@@ -1224,6 +1224,12 @@ func bar_ticks() -> int:
 	return 0
 
 
+## 📊 A frame a `GoBar` draws instead of its `ProgressBar`: a rounded groove whose fill is a gradient clipped to its
+## shape (the painted HUD's power and stability bars). null — the default — keeps the theme's `ProgressBar`.
+func bar_frame_box() -> StyleBox:
+	return null
+
+
 ## The ticks that split a bar into [param count] chunks, over the whole of [param rect] (the groove and the fill) —
 ## decoration only, the fill still moves smoothly. The default cuts thin notches in the surface colour.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:

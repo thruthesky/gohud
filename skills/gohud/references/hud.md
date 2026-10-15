@@ -82,10 +82,30 @@ Full rules: `theming.md` §4.
 | `thickness` | `8` | dp |
 | `segments` · `segment_count()` | `-1` → the look | Ticks that split the bar into chunks — decoration only, the fill still moves smoothly. `-1` asks the look (`GoSkin.bar_ticks()`: smooth by default, six chunks under the arcade looks), `0` is always smooth, `2`–`24` that many everywhere. The size never changes |
 | `ease_seconds` | `0.18` | 0 = instant; `reduce_motion` also makes it instant |
+| `icon` · `icon_size` · `icon_gap` | `null` · `16` · `3` | An icon before the name (a HUD's bolt) |
+| `label_size` · `label_ink` | `-1` · transparent | The name's and readout's size (-1: the compact role's) and colour (transparent: `secondary`) |
+| `label_gap` · `lead` | `-1` · `0` | The room between the name row and the bar (-1: `gap_tiny`) · room left above the name |
+| `frame_mode()` | | True when the look draws a painted frame (`GoSkin.bar_frame_box()`; `arcade_light`): a rounded groove clipping an `ink` → `ink_end` gradient (`Frame` › `Gradient`, `Ticks`) instead of the `ProgressBar` |
 | `set_values(value, maximum, animate := true)` · `set_ratio(ratio, animate := true)` · `value()` · `maximum()` | | Pass `animate = false` for the first fill |
 | `static format_amount(amount) -> String` · `static abbreviate(amount)` | | `12.3k`, `4.5m`, or `GoConfig.number_formatter` |
 
 Give it a width: `bar.custom_minimum_size.x = 180` (or put it in an expanding container).
+
+A match HUD's bar (Magnet Mayhem's power gauge, pixel-identical under `arcade_light`):
+
+```gdscript
+var power := GoBar.new()
+power.label_text = "POWER"
+power.readout = GoBar.Readout.NONE
+power.icon = GoUi.skin().widget_art(&"bolt")
+power.ink = Color("#1fb5f0")
+power.ink_end = Color("#6ff0ff")
+power.thickness = 14
+power.label_size = 11
+power.label_gap = 0
+power.lead = 2
+power.set_values(30, 100, false)
+```
 
 ## 3. GoSlot
 

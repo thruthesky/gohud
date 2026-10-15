@@ -49,7 +49,7 @@ editor plugin only adds conveniences. Every widget is built with `.new()` + `add
 | Feature | One line | Reference |
 |---|---|---|
 | `GoHudAnchor` pins pieces to 9 safe-area spots, optional landscape spot, `reserve_space`, `avoid_peers` | `corner.spot = GoHudAnchor.Spot.TOP_LEFT` | hud.md §1 |
-| `GoBar` HP/MP/XP bar, eased, value / fraction / percent readout, number abbreviation | `hp.set_values(320, 500)` | hud.md §2 |
+| `GoBar` HP/MP/XP bar, eased, value / fraction / percent readout, number abbreviation; the painted HUD bar under `arcade_light` (gradient in a groove, icon, label size) | `hp.set_values(320, 500)` | hud.md §2 |
 | `GoSlot` quick slot: icon, quantity badge, cooldown, shortcut, shared touch areas | `slot.start_cooldown(5.0)` | hud.md §3 |
 | **`GoSlotGrid`** inventory grid: *N* wrapping cells, vacant cells drawn faint, one picked cell, drag-to-move for mouse play | `grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12})` | hud.md §3 |
 | `GoJoystick` virtual stick, `FIXED` / `FOLLOW` / `RELATIVE`, dead zone, normalized vector | `pad.moved.connect(func(v): player.direction = v)` | hud.md §4 |

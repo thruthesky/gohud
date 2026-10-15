@@ -59,6 +59,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoBar` draws the painted HUD's bar under `arcade_light`.** A new skin hook, `GoSkin.bar_frame_box()` (null by
+  default; `arcade_light`: Magnet Mayhem's `#d9deef` groove, corner 9, 3dp ink rim), turns the bar into a rounded frame
+  whose `ink` → `ink_end` gradient is clipped to it, with the six ink ticks over both — pixel-identical to the game's
+  stability and power bars. Other looks keep the `ProgressBar`. New members to lay a bar out like a HUD's:
+  `icon` / `icon_size` / `icon_gap` (an icon before the name), `label_size`, `label_ink`, `label_gap` (the room between
+  the name and the bar) and `lead` (room above the name); `frame_mode()` tells which way it draws.
 - **The match HUD's and the touch controls' painted art in `arcade_light`.** Magnet Mayhem's `assets/ui/hud` (the
   player's head, the power bolt, the opponents badge, the stopwatch, the round pause key) is in
   `assets/arcade_light/hud/`, and its `assets/ui/touch` (the ATTRACT, REPULSE and JUMP keys, the stick's base and knob)

@@ -82,6 +82,10 @@ const SCRIM_SPREAD_PER_LOD := 2.0
 const SCRIM_WASH := Color(0.12, 0.28, 0.6, 0.22)
 ## The bar's chunk lines (`BarSegments`: 3 px INK).
 const TICK_WIDTH := 3.0
+## The HUD bar's groove (`UiTheme.BAR_BG`), its corner and its rim.
+const BAR_BG := Color("#d9deef")
+const BAR_RADIUS := 9
+const BAR_OUTLINE := 3
 
 static var _textures := {}
 static var _painted_blur: Shader = null
@@ -247,6 +251,18 @@ func outlined_button_box(face: StyleBox, state: StringName) -> StyleBox:
 		key_cap.shine = 0.0
 	key_cap.pressed = state == &"pressed" or state == &"hover_pressed"
 	return key_cap
+
+
+## The game's HUD bar groove (`UiTheme.box(BAR_BG, 9, 3, INK)`, no padding): the gradient fill is clipped to it.
+func bar_frame_box() -> StyleBox:
+	var groove := StyleBoxFlat.new()
+	groove.bg_color = BAR_BG
+	groove.set_corner_radius_all(BAR_RADIUS)
+	groove.set_border_width_all(BAR_OUTLINE)
+	groove.border_color = INK
+	groove.set_content_margin_all(0.0)
+	groove.anti_aliasing = true
+	return groove
 
 
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
