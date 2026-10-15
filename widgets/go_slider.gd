@@ -44,7 +44,9 @@ var _reading := false
 
 func _init() -> void:
 	focus_mode = Control.FOCUS_NONE
-	size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# The engine's Slider measures its own least size from the blanks (1 px tall), so the floor is the custom minimum —
+	# set here, as the game's PaintedSlider does, so a screen that sets its own still wins.
+	custom_minimum_size = Vector2(MIN_WIDTH, float(GoUi.metric(GoTheme.TOUCH)))
 
 
 ## A slider from [param minimum] to [param maximum] snapping to [param snap].
@@ -124,8 +126,6 @@ func _read_parts() -> void:
 	for item in _BOXES: add_theme_stylebox_override(item, StyleBoxEmpty.new())
 	end_bulk_theme_override()
 	_reading = false
-	# The engine's Slider computes its own least size (from the blanks it would be 1 px tall), so the floor is set here.
-	custom_minimum_size = Vector2(maxf(MIN_WIDTH, side.x * 3.0), maxf(float(GoUi.metric(GoTheme.TOUCH)), side.y))
 	queue_redraw()
 
 
