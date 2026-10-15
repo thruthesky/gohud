@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A done `GoTaskCard` chip's ✓ draws in the look's symbol font.** New skin hook `GoSkin.symbol_font()` (default
+  null: the theme's font alone); a chip's word gets the theme's text font with it as the first fallback. Under
+  `arcade_light` it is Noto Sans KR Bold (`assets/arcade_light/fonts/`, the game's own file, OFL), as Magnet Mayhem's
+  Nunito falls back to it — before, the ✓ came from whatever system font had it, and the chips after it shifted.
+
 - **GoSlot follows the look's touch floor.** Its box, fit and widened hit area read `GoUi.touch_size()` instead of
   `GoConfig.min_touch_size`, so a look with its own `touch` metric (or a `metric_overrides` entry) sizes slots like
   every other control; a floor the project sets still wins.

@@ -655,6 +655,21 @@ func _task_card(look: StringName) -> void:
 	check(card.body_label.text.begins_with("Knock"), "task card: body")
 	check(card.chips().size() == 4, "task card: one chip per part")
 	check(card.chip_text(0) == "✓ W" and card.chip_text(1) == "A", "task card: a done part reads ✓")
+	# The ✓ is not in most text fonts: a look that names a symbol font draws it from there, as the game's
+	# Nunito falls back to Noto Sans KR; a look that names none leaves the theme's font alone.
+	var word := card.chips()[0].get_child(0) as Label
+	var symbols: Font = skin.symbol_font()
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(symbols != null and symbols.has_char(0x2713), "task card: arcade_light names a symbol font that has ✓")
+		var drawn: Font = word.get_theme_font(&"font")
+		check(drawn is FontVariation and (drawn as FontVariation).fallbacks.has(symbols),
+			"task card: a chip's word falls back to the symbol font")
+		check((drawn as FontVariation).base_font == card.get_theme_font(&"font", &"Label"),
+			"task card: over the theme's own text font")
+		check(drawn.has_char(0x2713) and drawn.has_char(0x57), "task card: the chip font draws ✓ and W")
+	else:
+		check(symbols == null, "task card: a plain look names no symbol font (%s)" % look)
+		check(not word.has_theme_font_override(&"font"), "task card: no font override without a symbol font (%s)" % look)
 	check(card.chips()[0].get_theme_stylebox(&"panel") != card.chips()[1].get_theme_stylebox(&"panel"),
 		"task card: a done chip looks different (%s)" % look)
 	check(not card.hint_label.visible, "task card: no hint, no hint row")

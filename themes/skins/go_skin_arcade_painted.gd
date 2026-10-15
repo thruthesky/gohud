@@ -95,6 +95,7 @@ const GAUGE_OUTLINE := 3
 const GAUGE_PAD := Vector2(14.0, 8.0)
 
 static var _textures := {}
+static var _symbol_font: Font
 static var _painted_blur: Shader = null
 
 
@@ -420,6 +421,12 @@ func perf_ink(level: int) -> Color:
 ## The game draws its readout in the engine's own font (it sits on a layer with no theme).
 func perf_font() -> Font:
 	return ThemeDB.fallback_font
+
+## The game's text font is Nunito with Noto Sans KR first among its fallbacks, so a mark Nunito lacks (the ✓ on a
+## done chip) draws in Noto Sans KR Bold — the same file, shipped beside the art.
+func symbol_font() -> Font:
+	if _symbol_font == null: _symbol_font = load(ART_ROOT + "fonts/NotoSansKR-Bold.ttf")
+	return _symbol_font
 
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:

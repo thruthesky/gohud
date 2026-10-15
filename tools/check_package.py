@@ -273,7 +273,9 @@ class PackageTests(unittest.TestCase):
                          'icons/gohud_icons_medieval.tres', 'assets/fonts/cinzel/Cinzel.ttf',
                          'assets/fonts/cinzel/OFL.txt', 'examples/medieval/medieval.tscn',
                          'themes/presets/material_light.tres', 'themes/presets/material_dark.tres',
-                         'assets/fonts/roboto/Roboto.ttf', 'assets/fonts/roboto/OFL.txt'):
+                         'assets/fonts/roboto/Roboto.ttf', 'assets/fonts/roboto/OFL.txt',
+                         'assets/arcade_light/fonts/NotoSansKR-Bold.ttf',
+                         'assets/arcade_light/fonts/OFL-NotoSansKR.txt'):
                 self.assertIn('addons/gohud/' + name, package.namelist())
 
 

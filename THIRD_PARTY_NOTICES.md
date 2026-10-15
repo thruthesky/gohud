@@ -1,6 +1,6 @@
 # Third-party notices
 
-gohud code and original artwork are covered by [`LICENSE`](LICENSE). The bundled Cinzel and Roboto
+gohud code and original artwork are covered by [`LICENSE`](LICENSE). The bundled Cinzel, Roboto and Noto Sans KR
 fonts are separately licensed under the SIL Open Font License 1.1; their notices are listed below.
 
 | Asset | Origin | License |
@@ -15,11 +15,13 @@ fonts are separately licensed under the SIL Open Font License 1.1; their notices
 | `icons/library/*.svg` (1,000 icons), listed in `tools/icon_library_data.py` | Path data from [Tabler Icons](https://tabler.io/icons) 3.46.0, every row (the Tabler name is the second column of that table); unchanged apart from whitespace, a white stroke, and `currentColor` fills turned white. | Tabler Icons: [MIT](#tabler-icons--mit-license), Copyright (c) 2020-2026 Paweł Kuna |
 | `assets/fonts/cinzel/Cinzel.ttf` | Copyright 2020 The Cinzel Project Authors; unmodified variable font from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/cinzel) | [SIL Open Font License 1.1](assets/fonts/cinzel/OFL.txt) |
 | `assets/fonts/roboto/Roboto.ttf` | Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic); unmodified variable font (`wght`, `wdth`) from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/roboto) | [SIL Open Font License 1.1](assets/fonts/roboto/OFL.txt) |
+| `assets/arcade_light/fonts/NotoSansKR-Bold.ttf` | Copyright 2014-2021 Adobe, with Reserved Font Name 'Source'; Noto Sans KR Bold from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/notosanskr), copied unmodified from Magnet Mayhem's `assets/fonts/` (the game's subset) | [SIL Open Font License 1.1](assets/arcade_light/fonts/OFL-NotoSansKR.txt) |
 
 Cinzel is assigned only to medieval titles and subtitles. Other text retains the host/default font.
 Roboto is assigned only to the Material presets' titles, subtitles, captions and button labels; other text
 retains the host/default font there too.
-Keep `assets/fonts/cinzel/OFL.txt` and `assets/fonts/roboto/OFL.txt` with redistributed font files.
+Noto Sans KR is used only by `arcade_light` as the fallback for marks its text font lacks (a done task chip's ✓).
+Keep `assets/fonts/cinzel/OFL.txt`, `assets/fonts/roboto/OFL.txt` and `assets/arcade_light/fonts/OFL-NotoSansKR.txt` with redistributed font files.
 
 ## Tabler Icons — MIT License
 

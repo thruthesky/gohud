@@ -1312,6 +1312,11 @@ func perf_ink(level: int) -> Color:
 func perf_font() -> Font:
 	return null
 
+## The font a look draws marks such as a `GoTaskCard` chip's ✓ in when its text font lacks them; widgets add it
+## as a fallback under the theme's font. null (the default) keeps the theme's font alone.
+func symbol_font() -> Font:
+	return null
+
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
 ## smooth bar — the default; the arcade looks split a bar into chunky segments.
 func bar_ticks() -> int:

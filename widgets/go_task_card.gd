@@ -129,6 +129,7 @@ var chip_row: HBoxContainer
 var _box: VBoxContainer
 var _chip_flow: HFlowContainer
 var _chips: Array[PanelContainer] = []
+var _word_font: FontVariation
 var _words: PackedStringArray = []
 var _done: Array[bool] = []
 var _fit_for := ""
@@ -273,8 +274,25 @@ func _sync() -> void:
 		if skin != null:
 			_chips[index].add_theme_stylebox_override(&"panel", skin.kbd_done_box() if _done[index] else skin.kbd_box())
 			word.add_theme_color_override(&"font_color", skin.kbd_done_ink() if _done[index] else skin.kbd_ink())
+		var font := _chip_word_font(skin)
+		if font != null: word.add_theme_font_override(&"font", font)
+		else: word.remove_theme_font_override(&"font")
 	_fit_for = ""
 	_fit_title()
+
+
+## The theme's text font with the look's symbol font under it (so the ✓ draws), or null when the look names none.
+func _chip_word_font(skin: GoSkin) -> Font:
+	var symbols: Font = skin.symbol_font() if skin != null else null
+	if symbols == null: return null
+	var base := get_theme_font(&"font", &"Label")
+	if _word_font == null or _word_font.base_font != base or not _word_font.fallbacks.has(symbols):
+		_word_font = FontVariation.new()
+		_word_font.base_font = base
+		var fallbacks: Array[Font] = [symbols]
+		if base != null: fallbacks.append_array(base.fallbacks)
+		_word_font.fallbacks = fallbacks
+	return _word_font
 
 
 func _restyle() -> void:

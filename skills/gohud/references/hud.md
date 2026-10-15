@@ -1040,7 +1040,9 @@ card.hint = tr("HINT_RING_OUT")         # "" hides it
 
 - 🛑 Display only: what is done comes from the caller.
 - The board is the theme's `GoHudPanel`; chips are `GoSkin.kbd_box()` / `kbd_done_box()`. Skin hooks:
-  `task_title_ink()` (the title and the compact row) and `task_hint_ink()` (the hint). Pair it with `GoSpotlight`.
+  `task_title_ink()` (the title and the compact row) and `task_hint_ink()` (the hint). A chip's word falls back to
+  `GoSkin.symbol_font()` under the theme's font, so the ✓ draws even when the text font lacks it (`arcade_light`:
+  Noto Sans KR Bold, as the game's Nunito falls back to it). Pair it with `GoSpotlight`.
 
 ## 35. GoPerfReadout — a performance band
 
