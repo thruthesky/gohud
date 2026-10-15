@@ -387,6 +387,11 @@ func _ready() -> void:
 ##    costs more than a layout pass, and only needs doing on change — a config change, an `alpha` assignment, opening.
 func _restyle() -> void:
 	if card == null or not is_inside_tree(): return
+	# The card the look frames a window with (`GoSkin.window_card_variation`: the painted card under arcade_light).
+	var wear := GoUi.skin().window_card_variation()
+	if card.theme_type_variation != wear:
+		GoStyle.forget_face(card)
+		card.theme_type_variation = wear
 	GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
 	_fit_scroll_frame()
 	_dress_chrome()
@@ -398,7 +403,10 @@ func _fit_scroll_frame() -> void:
 	if scroll == null or card == null: return
 	var box := card.get_theme_stylebox(&"panel")
 	var frame := Vector4.ZERO
-	if box != null:
+	# 🔑 A look that pads the window with its card face (`GoSkin.window_padding` ≥ 0, the painted card) puts the content
+	#    where the face's padding ends, as the game does — a painted 9-slice's edge is the slice, not the drawn rim, and
+	#    clipping there pushed the body 14 dp down off the game's row.
+	if box != null and GoUi.skin().window_padding() < 0:
 		for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
 			frame[side] = maxf(0.0, GoSkin.frame_margin(box, side) - box.get_margin(side))
 	scroll.set_panel_frame(frame)
@@ -888,11 +896,10 @@ func relayout() -> void:
 	# Keeps at least this much off the screen edge — on very narrow screens it shrinks proportionally.
 	var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN))
 	area = area.grow(-minf(edge, minf(area.size.x, area.size.y) * 0.1))
-	# A plate hanging over the card's top edge must stay on screen too.
-	if _overhang.y > 0.0: area = area.grow_individual(0.0, -_overhang.y, 0.0, 0.0)
 	var landscape := area.size.x > area.size.y
 	var width_ratio := settings.surface_width_ratio_landscape if landscape else settings.surface_width_ratio_portrait
-	var cap_width := max_width if max_width > 0.0 else settings.surface_max_width
+	var look_width := GoUi.skin().window_width() if placement == Placement.CENTER else 0.0
+	var cap_width := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else settings.surface_max_width)
 	var cap_height := max_height if max_height > 0.0 else settings.surface_max_height
 	var ratio := height_ratio if height_ratio > 0.0 else settings.surface_height_ratio
 	var ratio_cap := height_ratio_cap()
@@ -916,8 +923,11 @@ func relayout() -> void:
 	#    sizes to integers, and the body came out 1px short — a scrollbar appeared beside the one-line body of the first
 	#    confirmation (measured 2026-09-15 on a Laryen phone in portrait · does not reproduce at headless logical sizes).
 	card.size = Vector2(width, height).round()
+	# Centred the way a `CenterContainer` centres (rounded down), so a window sits on the pixel the game's dialog does.
 	var y := area.position.y + (area.size.y - card.size.y) * (1.0 if placement == Placement.BOTTOM else 0.5)
-	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y).round()
+	# A plate hanging over the card's top edge must stay on screen too: the card comes down only when it would not.
+	if _overhang.y > 0.0: y = maxf(y, area.position.y + _overhang.y)
+	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y).floor()
 
 
 ## Drops padding and title size one step when space runs short — making room for content on small screens.
@@ -942,14 +952,29 @@ func _update_density(room := 0.0, width := 0.0) -> void:
 
 func _apply_density(small: bool, width: float) -> void:
 	_dense = small
-	var token := GoTheme.PADDING_COMPACT if small else GoTheme.PADDING
-	var next := GoUi.metric(token)
-	if _content_padding != next:
+	# The look may frame the window itself (`GoSkin.window_padding` / `window_gap`): the game's card pads with its
+	# own face and keeps its rows 8 apart on every screen.
+	var skin := GoUi.skin()
+	var next := skin.window_padding()
+	if next < 0: next = GoUi.metric(GoTheme.PADDING_COMPACT if small else GoTheme.PADDING)
+	var rows := skin.window_gap()
+	var spacing := rows if rows >= 0 else GoUi.metric(GoTheme.GAP_SMALL if small else GoTheme.GAP)
+	# 🛑 Compared with what is applied, not remembered — a look that pads 0 would match the first value and never dress.
+	if _content_padding != next or _margin.get_theme_constant(&"margin_left") != next:
 		_content_padding = next
 		GoStyle.insets(_margin, next)
 		if _overhang.y > 0.0: _apply_overhang()
-		GoStyle.gap(_column, GoTheme.GAP_SMALL if small else GoTheme.GAP)
 		if scroll != null: scroll.set_panel_padding(next)
+	if _column.get_theme_constant(&"separation") != spacing:
+		_column.add_theme_constant_override(&"separation", spacing)
+	# The body's rows take the look's gap too — and only what this surface set is put back: a host's own gap stays.
+	if rows >= 0:
+		if not body.has_meta(&"go_look_gap") or body.get_theme_constant(&"separation") != rows:
+			body.set_meta(&"go_look_gap", true)
+			body.add_theme_constant_override(&"separation", rows)
+	elif body.has_meta(&"go_look_gap"):
+		body.remove_meta(&"go_look_gap")
+		body.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP))
 	var role := GoTheme.ROLE_BODY if small else GoTheme.ROLE_SUBTITLE
 	if title_label.get_meta(&"go_text_role", &"") != role:
 		GoStyle.typography(title_label, role)
@@ -989,7 +1014,10 @@ func section_gap() -> int:
 ## 🛑 Section gaps are counted from the **value actually applied** — hard-coding the `gap` token grew the card by that difference
 ##    at every section on narrow screens (where the gap is `gap_small`), opening a hole between body and buttons in short confirmations.
 func _desired_height() -> float:
+	# The card face's own padding (a painted card pads with its face) and the padding inside it.
+	var face := card.get_theme_stylebox(&"panel")
 	var desired := float(_content_padding * 2)
+	if face != null: desired += face.get_margin(SIDE_TOP) + face.get_margin(SIDE_BOTTOM)
 	# The head starts above the card's top edge: the padding's top margin is negative by the card's top and the rise.
 	if _overhang.y > 0.0: desired -= float(_content_padding) + _card_top() + _overhang.y
 	var gap := float(section_gap())

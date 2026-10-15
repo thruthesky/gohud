@@ -53,6 +53,7 @@
 `GoSkinArcadePainted`가 버튼·카드·리본·키캡·배지를 그리며, 모달 뒤에는 게임의 블러 스크림을 쓴다.
 입력칸(`LineEdit`·`TextEdit`)은 게임의 평평한 입력칸이고, 가로 슬라이더(`GoSliderGreen`·`GoSliderCyan` 포함)와 스위치도
 페인티드 스프라이트다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
+가운데 뜨는 `GoSurface`는 게임의 `PaintedDialog`와 같다 — 페인티드 카드, 폭 400 dp, 줄 간격 8 dp(`GoSkin.window_*`).
 `arcade_dark`는 기존의 `GoStyleBoxArcade`와 `GoSkinArcade`를 그대로 쓴다. 그림의 출처와 MIT 사용 조건은
 [서드파티 고지](THIRD_PARTY_NOTICES.md)에 있다.
 

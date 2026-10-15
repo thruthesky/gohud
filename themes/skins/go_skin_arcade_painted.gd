@@ -360,3 +360,30 @@ func title_plate_overhang() -> Vector2:
 ## The game's sky under an opaque dialog.
 func opaque_backdrop_color() -> Color:
 	return STAGE_SKY
+
+
+# ── The window frame: the game's PaintedDialog ────────────────────────
+
+## The game's dialog card: 400 dp wide, its rows 8 apart (`PaintedDialog.CARD_WIDTH`, the column's separation).
+const WINDOW_WIDTH := 400.0
+const WINDOW_GAP := 8
+
+
+## A window wears the painted card…
+func window_card_variation() -> StringName:
+	return &"GoCard"
+
+
+## …whose face carries the padding (24 / 20 / 22), so nothing is added inside it…
+func window_padding() -> int:
+	return 0
+
+
+## …with the game's 8 dp between rows…
+func window_gap() -> int:
+	return WINDOW_GAP
+
+
+## …and the game's 400 dp width.
+func window_width() -> float:
+	return WINDOW_WIDTH

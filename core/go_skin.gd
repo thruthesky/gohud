@@ -1316,3 +1316,31 @@ func title_plate_overhang() -> Vector2:
 ## The solid colour under an opaque window (`GoSurface.opaque`) — shown when the world behind is not drawn.
 func opaque_backdrop_color() -> Color:
 	return Color(GoUi.color(GoTheme.BACKGROUND), 1.0)
+
+
+# ── The window frame ──────────────────────────────────────────────────
+#
+# 🔑 How a centred `GoSurface` is framed: which card it wears, the padding inside it, the gap between its rows and its
+#    width. Every default keeps the window gohud always drew; arcade_light returns the game's `PaintedDialog`.
+
+## The theme type variation a window's card wears. `GoTheme.VAR_PANEL`: the theme's panel.
+func window_card_variation() -> StringName:
+	return GoTheme.VAR_PANEL
+
+
+## The padding inside a window's card on top of the card face's own (dp). -1: the theme's `padding` token
+## (`padding_compact` on a small screen). A look whose card face carries its padding returns 0.
+func window_padding() -> int:
+	return -1
+
+
+## The gap between a window's rows — its head, its body's rows, its footer (dp). -1: the theme's `gap` token
+## (`gap_small` on a small screen) between the sections, the body's own gap inside it.
+func window_gap() -> int:
+	return -1
+
+
+## A centred window's width (dp). 0: `GoConfig.surface_max_width`. A surface's own `max_width` always wins, and a
+## narrow screen still narrows it.
+func window_width() -> float:
+	return 0.0

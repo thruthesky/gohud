@@ -602,7 +602,8 @@ painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: blue primary 
 neutral keys, red danger keys, cards, ribbons, keycaps and badges. Its white glyphs fall back to gohud’s default
 icons when a name is absent. Text fields (`LineEdit`, `TextEdit`) wear the game’s flat field, and the horizontal
 slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites. Tabs and the vertical slider
-are the known exception: they keep the arcade’s code-drawn shapes.
+are the known exception: they keep the arcade’s code-drawn shapes. A centred `GoSurface` is the game’s
+`PaintedDialog`: the painted card, 400 dp wide, its rows 8 dp apart (`GoSkin.window_*`).
 `arcade_dark` keeps `GoStyleBoxArcade`; comic and kids use their own `StyleBox` classes.
 
 <table>

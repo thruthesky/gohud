@@ -499,7 +499,9 @@ func _surface(look: StringName) -> void:
 	if painted:
 		# Only the plate rises: the close and back buttons stay on the card's padding, and the plate bleeds sideways
 		# only where no button sits beside it.
-		var inset := surface.card.global_position.y + float(surface.content_inset())
+		# Where the card's padding ends: its face's own padding (the painted card pads with its face) and the inset.
+		var face_top := surface.card.get_theme_stylebox(&"panel").get_margin(SIDE_TOP)
+		var inset := surface.card.global_position.y + face_top + float(surface.content_inset())
 		check(absf(surface.close_button.global_position.y - inset) < 1.5,
 			"%s surface: the close button stays on the card's padding (close %.1f, padding %.1f)"
 			% [look, surface.close_button.global_position.y, inset])
@@ -508,7 +510,7 @@ func _surface(look: StringName) -> void:
 			"%s surface: the plate bleeds only on the side without a button" % look)
 		surface.set_back(func() -> void: pass)
 		await frames(2)
-		inset = surface.card.global_position.y + float(surface.content_inset())
+		inset = surface.card.global_position.y + face_top + float(surface.content_inset())
 		check(absf(surface.back_button.global_position.y - inset) < 1.5,
 			"%s surface: the back button stays on the card's padding (back %.1f, padding %.1f)"
 			% [look, surface.back_button.global_position.y, inset])

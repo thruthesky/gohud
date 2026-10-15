@@ -19,6 +19,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **Under `arcade_light` a centred window is framed like Magnet Mayhem’s `PaintedDialog`.** A `GoSurface` wears the
+  painted card (`GoCard`, padded by its own face 24 / 20 / 22 with nothing added inside), is 400 dp wide and keeps its
+  head, its body’s rows and its footer 8 dp apart on every screen; it is centred the way a `CenterContainer` centres
+  (rounded down), so it lands on the game dialog’s pixel, and a ribbon over its top edge no longer pushes it down unless
+  the screen is too short. Other looks keep the window they had. New `GoSkin` hooks decide it:
+  `window_card_variation()`, `window_padding()`, `window_gap()` and `window_width()`. A window’s fitted height now also
+  counts the card face’s own padding, and a card padded by its face no longer pushes the body in by its 9-slice edge.
+
 - **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
   exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
   `GoLevelCardLocked` (StageCard / StageCardNext / StageCardLocked), `GoSliderGreen` / `GoSliderCyan` (the slider with a green or cyan fill), `GoWell` (the map-preview well), `GoHudPanel`
