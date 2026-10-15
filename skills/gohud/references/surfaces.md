@@ -16,6 +16,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 9. [GoDrawer — the side panel](#9-godrawer--the-side-panel)
 10. [GoPopover — the anchored card](#10-gopopover--the-anchored-card)
 11. [Dialogs that queue](#11-dialogs-that-queue)
+12. [GoRibbonHeader — a screen's title ribbon](#12-goribbonheader--a-screens-title-ribbon)
 
 ## 1. GoSurface
 
@@ -402,3 +403,32 @@ often matters; the scrim is already transparent for the same reason.
 
 `pending()` counts what is waiting; `clear_pending()` answers them all with `false` — call it when leaving a
 screen, or code parked on `await` never resumes.
+
+## 12. GoRibbonHeader — a screen's title ribbon
+
+`class_name GoRibbonHeader extends Control`. The title plate of a screen built on a card (a pause or settings card)
+rather than a `GoSurface`: the look's plate with a glyph and the title on it, hanging over the card's top edge, and the
+look's art in one corner — Magnet Mayhem's `RibbonHeader`. Put it first in the card's column.
+
+```gdscript
+var header := GoRibbonHeader.make("PAUSED", GoIconSet.PAUSE)   # make(text, icon = &"", on_left = true)
+card_column.add_child(header)
+header.ribbon_variation = &"GoRibbonRed"                       # the red ribbon (arcade_light)
+```
+
+| Member | |
+|---|---|
+| `title` | One line (a line break is dropped); shrinks to fit the ribbon less its ends and the glyph, no lower than `GoStyle.fit_floor` |
+| `glyph: Texture2D` · `glyph_icon: StringName` | Left of the words, 10 dp apart, centred together; the texture wins; neither: the words alone |
+| `ribbon_variation` | A theme variation for the plate (`GoRibbonRed`); empty: `GoSkin.title_plate_box()` |
+| `corner` (true) · `corner_on_left` (true) · `corner_art` | The corner art: `corner_art`, else `GoSkin.window_corner_art()` when `window_corner()` is `&"art"`; placed by `window_corner_rect()` from the plate's top-left, mirrored on the right |
+| `ribbon` · `title_label` · `glyph_rect` · `corner_rect` | The parts, to read |
+| `refresh()` | Dress and lay out now (the setters batch to the end of the frame) |
+
+- 🔑 The look sets the shape with the `GoSurface` title hooks: `title_plate_height()`, `title_plate_font_size()`,
+  `title_plate_overhang()`, `title_plate_ink()`, `dress_title()`. `arcade_light`: 57 dp high, 34 dp words, 17 dp above
+  the card and 14 past each side, the red magnet 58 × 56 at 30 out and 24 up — pixel for pixel the game's.
+- 🔑 It holds only the part of the ribbon inside the card in its column (height − overhang − the card's top margin);
+  the rest draws upward. The card is the nearest `PanelContainer` above it.
+- A look with no plate and no overhang gets a plain title row in the column.
+

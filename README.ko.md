@@ -496,7 +496,7 @@ GoUi.refresh()
 
 | 따른다 — 컨테이너 | 따르지 않는다 — 누르는 것·표식 |
 |---|---|
-| `GoSurface`(다이얼로그·시트·드롭다운의 근원) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` | 버튼 전부 · `GoSlot`(퀵슬롯) · `GoBadge`(배지) · 분절 선택 · 고르는 칸 · 칩 · 원판·아바타 |
+| `GoSurface`(다이얼로그·시트·드롭다운의 근원) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` · `GoRibbonHeader` | 버튼 전부 · `GoSlot`(퀵슬롯) · `GoBadge`(배지) · 분절 선택 · 고르는 칸 · 칩 · 원판·아바타 |
 | `GoStyle.card()` · `hud_panel()` · `overlay_panel()` · `alert()` · `plate()` · `edge_card_panel()` · `style_notice_panel()` · `floating()` · `box()` · `surface()` | 글자·아이콘 일체 |
 
 - **팝업 메뉴(`PopupMenu`)는 기본이 꽉 찬 색**이다(`popup_alpha` 100). 엔진이 그것을 **창**으로 띄울 수 있고,
@@ -652,6 +652,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoDrawer` | CanvasLayer | 양옆에서 밀려 나오는 판 — 폰보다 넓은 화면을 위한 것. 안전영역을 지키고, 뒤로 가기와 막에서 닫히며, RTL 에서 좌우가 뒤집힌다 |
 | `GoPopover` | RefCounted | 누른 것 **옆에** 붙는 설명 카드 — 아이템 툴팁, "이 능력치가 뭐지" 카드. 한 번에 하나만 뜨고, 화면 밖으로 나갈 자리면 반대쪽으로 넘어가며, 창 크기가 바뀌면 따라간다 |
 | `GoContextMenu` | RefCounted | 어떤 컨트롤에든 길게 누르기(0.5초)·오른쪽 클릭. 손가락이 12dp 넘게 움직이면 **취소한다** — 그래야 긴 목록이 그대로 스크롤된다 |
+| `GoRibbonHeader` | Control | 카드 열의 첫 줄에 두는 화면 제목 리본 — 룩의 판(다른 판은 `ribbon_variation`) 위에 글리프와 제목(칸에 맞게 줄어든다), 카드 위쪽 가장자리에 걸치고 모서리에 룩의 그림(`corner`, `corner_on_left`). `arcade_light`에서는 Magnet Mayhem의 `RibbonHeader`와 같다 |
 | `GoConsole` | CanvasLayer | 개발자 콘솔 — 등록한 명령, 인자, 기록, 자동완성. `debug_only` 가 기본 `true` 라 **배포 빌드에서는 열리지 않는다** |
 
 ### 앱 화면

@@ -24,6 +24,7 @@ func _initialize() -> void:
 		await _ribbon(look)
 		await _backdrop(look)
 		await _helpers(look)
+		await _header(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -340,4 +341,99 @@ func _helpers(look: StringName) -> void:
 		check(skin.window_button_height() == 0.0 and back.custom_minimum_size.y == 0.0,
 			"%s parts: a plain look keeps its button's height" % look)
 	surface.queue_free()
+	await frames(1)
+
+
+# ── GoRibbonHeader: a screen's title ribbon (the game's RibbonHeader) ─
+
+## A card like the pause screen's: the header first in its column, a button under it.
+func _screen_card(header: GoRibbonHeader) -> PanelContainer:
+	var card := PanelContainer.new()
+	card.theme_type_variation = GoUi.skin().window_card_variation()
+	card.position = Vector2(400, 200)
+	card.custom_minimum_size = Vector2(440, 0)
+	var column := VBoxContainer.new()
+	card.add_child(column)
+	column.add_child(header)
+	var button := Button.new()
+	button.text = "RESUME"
+	column.add_child(button)
+	root.add_child(card)
+	return card
+
+
+func _header(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var skin := GoUi.skin()
+	var header := GoRibbonHeader.make("PAUSED", GoIconSet.PAUSE)
+	var card := _screen_card(header)
+	await frames(3)
+	var column := header.get_parent() as Control
+	var ribbon := header.ribbon
+	var face := card.get_theme_stylebox(&"panel")
+	var card_top := face.get_margin(SIDE_TOP)
+	check(header.title_label.text == "PAUSED", "%s header: the title" % look)
+	if not painted:
+		check(is_equal_approx(ribbon.global_position.y, header.global_position.y)
+				and is_equal_approx(ribbon.size.x, header.size.x) and is_equal_approx(header.size.y, ribbon.size.y),
+			"%s header: a plain look's title sits in the column (ribbon %s header %s)"
+			% [look, ribbon.get_global_rect(), header.get_global_rect()])
+		check(header.corner_rect == null or not header.corner_rect.visible, "%s header: no corner art" % look)
+		card.queue_free()
+		await frames(1)
+		return
+	# The game's RibbonHeader: 57 high, rising 17 over the card, 14 past the column on each side, holding only the
+	# part of it inside the card in the column.
+	# A title taller than the ribbon's room grows it down (a PanelContainer never draws under its minimum), as the game's.
+	check(absf(ribbon.global_position.y - (card.global_position.y - 17.0)) < 1.0
+			and is_equal_approx(ribbon.size.y, maxf(57.0, ribbon.get_combined_minimum_size().y)),
+		"%s header: the ribbon is 57 high and rises 17 over the card (ribbon %s card %s)"
+		% [look, ribbon.get_global_rect(), card.get_global_rect()])
+	check(absf(ribbon.global_position.x - (column.global_position.x - 14.0)) < 1.0
+			and absf(ribbon.size.x - (column.size.x + 28.0)) < 1.0, "%s header: 14 past the column each side" % look)
+	check(absf(header.size.y - (57.0 - 17.0 - card_top)) < 1.0,
+		"%s header: it holds 57 - 17 - the card's top in the column (got %.1f)" % [look, header.size.y])
+	var label := header.title_label
+	check(label.get_theme_font_size(&"font_size") == 34, "%s header: the title is 34 dp" % look)
+	check(label.get_theme_color(&"font_color").is_equal_approx(skin.title_plate_ink()), "%s header: in the plate's ink" % look)
+	check(header.glyph_rect != null and header.glyph_rect.visible and is_equal_approx(header.glyph_rect.size.x, 26.0)
+			and header.glyph_rect.size.y >= 26.0, "%s header: the 26 dp glyph" % look)
+	check(absf(header.glyph_rect.get_global_rect().end.x + 10.0 - label.global_position.x) < 1.0,
+		"%s header: 10 between the glyph and the words" % look)
+	check(absf(label.size.x - label.get_combined_minimum_size().x) < 1.0, "%s header: the words keep their own width" % look)
+	var middle := (header.glyph_rect.global_position.x + label.get_global_rect().end.x) * 0.5
+	check(absf(middle - ribbon.get_global_rect().get_center().x) < 1.5, "%s header: glyph and words centred on the ribbon" % look)
+	# The magnet: 58 x 56, 30 past the ribbon's end and 24 above it, on the left by default.
+	var magnet := header.corner_rect
+	check(magnet != null and magnet.visible and magnet.texture != null and is_equal_approx(magnet.size.x, 58.0)
+			and is_equal_approx(magnet.size.y, 56.0), "%s header: the magnet in the corner" % look)
+	check(absf(magnet.global_position.x - (ribbon.global_position.x - 30.0)) < 1.0
+			and absf(magnet.global_position.y - (ribbon.global_position.y - 24.0)) < 1.0 and not magnet.flip_h,
+		"%s header: 30 out and 24 up on the left (magnet %s ribbon %s)" % [look, magnet.get_global_rect(), ribbon.get_global_rect()])
+	header.corner_on_left = false
+	await frames(2)
+	check(absf(magnet.get_global_rect().end.x - (ribbon.get_global_rect().end.x + 30.0)) < 1.0 and magnet.flip_h,
+		"%s header: mirrored on the right" % look)
+	# The red ribbon (the game's RibbonRed) and no glyph.
+	header.ribbon_variation = &"GoRibbonRed"
+	header.glyph_icon = &""
+	await frames(2)
+	check(ribbon.theme_type_variation == &"GoRibbonRed" and not ribbon.has_theme_stylebox_override(&"panel"),
+		"%s header: the red ribbon" % look)
+	check(not header.glyph_rect.visible, "%s header: no glyph" % look)
+	check(absf(label.get_global_rect().get_center().x - ribbon.get_global_rect().get_center().x) < 1.5,
+		"%s header: the words alone centred" % look)
+	# A long title shrinks to the ribbon's room, no lower than 24.
+	header.glyph_icon = GoIconSet.PAUSE
+	header.title = "A VERY LONG TRANSLATED PAUSE TITLE"
+	await frames(3)
+	var size := label.get_theme_font_size(&"font_size")
+	var room := ribbon.size.x - ribbon.get_theme_stylebox(&"panel").get_minimum_size().x - 36.0
+	var font := label.get_theme_font(&"font")
+	check(size < 34 and size >= 24 and (size == 24 or font.get_string_size(header.title, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x <= room),
+		"%s header: a long title shrinks to the ribbon (got %d, room %.1f)" % [look, size, room])
+	header.corner = false
+	await frames(1)
+	check(not magnet.visible, "%s header: corner = false hides the magnet" % look)
+	card.queue_free()
 	await frames(1)

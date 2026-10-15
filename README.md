@@ -910,7 +910,7 @@ GoUi.refresh()
 
 | Follows it — containers | Does not — things you press, and markers |
 |---|---|
-| `GoSurface` (the one shell behind dialogs, sheets and dropdowns) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` | every button · `GoSlot` (quick slots) · `GoBadge` · segmented controls · choice cells · chips · discs and avatars |
+| `GoSurface` (the one shell behind dialogs, sheets and dropdowns) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` · `GoRibbonHeader` | every button · `GoSlot` (quick slots) · `GoBadge` · segmented controls · choice cells · chips · discs and avatars |
 | `GoStyle.card()` · `hud_panel()` · `overlay_panel()` · `alert()` · `plate()` · `edge_card_panel()` · `style_notice_panel()` · `floating()` · `box()` · `surface()` | all text and icons |
 
 - **Popup menus (`PopupMenu`) stay solid by default** (`popup_alpha` 100). The engine may put one in its own
@@ -1073,6 +1073,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoDrawer` | CanvasLayer | A panel that slides in from either side, for screens wider than a phone. It respects the safe area, closes on Back and on the scrim, and mirrors itself in RTL |
 | `GoPopover` | RefCounted | An info card beside the thing you pressed — the item tooltip, the "what is this stat" card. One at a time, flips to the other side when it would go off-screen, and follows its anchor on resize |
 | `GoContextMenu` | RefCounted | Long-press (0.5 s) or right-click on any control. A finger that moves more than 12 dp cancels it, so a long list still scrolls |
+| `GoRibbonHeader` | Control | A screen's title ribbon, first in a card's column: the look's plate (`ribbon_variation` for another) with a glyph and the title, shrunk to fit, hanging over the card's top edge, and the look's corner art (`corner`, `corner_on_left`). Magnet Mayhem's `RibbonHeader` in `arcade_light` |
 | `GoConsole` | CanvasLayer | The developer console: registered commands, arguments, history and completion. `debug_only` defaults to `true`, so it cannot open in a shipped build |
 
 ### App screens

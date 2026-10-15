@@ -636,6 +636,25 @@ console.register("give", "Grant an item", give_item)""", T(
 		"Консоль розробника з командами та історією; у релізних збірках вимкнена.",
 		"คอนโซลนักพัฒนาที่มีคำสั่งและประวัติ ปิดในบิลด์ที่เผยแพร่",
 		"وحدة تحكم للمطورين بأوامر وسجل؛ معطلة في إصدارات النشر.")),
+	("windows", "GoRibbonHeader", "Control", """var header := GoRibbonHeader.make("PAUSED", GoIconSet.PAUSE)
+card_column.add_child(header)""", T(
+		"A screen's title ribbon hanging over the top of its card, with a glyph and the look's corner art.",
+		"카드 위쪽 가장자리에 걸치는 화면 제목 리본 — 글리프와 룩의 모서리 그림이 함께한다.",
+		"カードの上端にかかる画面タイトルのリボン。グリフとルックの角の絵つき。",
+		"悬在卡片上缘的屏幕标题飘带，带图标字形与外观的角落图案。",
+		"懸在卡片上緣的畫面標題緞帶，附圖示字形與外觀的角落圖案。",
+		"La cinta de título de una pantalla, colgada sobre el borde superior de su tarjeta, con un glifo y el dibujo de esquina del estilo.",
+		"A fita de título de uma tela, pendurada sobre a borda superior do cartão, com um glifo e o desenho de canto do visual.",
+		"Лента заголовка экрана, свисающая над верхним краем карточки, с глифом и угловым рисунком оформления.",
+		"Le ruban de titre d'un écran, posé sur le bord supérieur de sa carte, avec un glyphe et le dessin d'angle du style.",
+		"Kartının üst kenarına sarkan ekran başlığı şeridi; bir glif ve görünümün köşe resmiyle.",
+		"Wstęga tytułu ekranu zwisająca nad górną krawędzią karty, z glifem i rysunkiem narożnika stylu.",
+		"Il nastro del titolo di una schermata, appeso sul bordo superiore della scheda, con un glifo e il disegno d'angolo dello stile.",
+		"Dải ruy băng tiêu đề màn hình vắt qua mép trên thẻ, kèm ký hiệu và hình góc của giao diện.",
+		"Pita judul layar yang menggantung di tepi atas kartunya, dengan glif dan gambar sudut tampilan.",
+		"Стрічка заголовка екрана, що звисає над верхнім краєм картки, з гліфом і кутовим малюнком оформлення.",
+		"ริบบิ้นชื่อหน้าจอที่พาดขอบบนของการ์ด พร้อมกลิฟและภาพมุมของธีม",
+		"شريط عنوان الشاشة المعلّق فوق الحافة العليا لبطاقتها، مع رمز ورسم الزاوية الخاص بالمظهر.")),
 	# ── Messages and waiting
 	("messages", "GoSnackbar", "Node", """var snack := GoSnackbar.new()
 add_child(snack)
@@ -2280,6 +2299,7 @@ DETAILS = {
 	"GoSafeArea · GoScale": ("platform.md", "5. Safe area, keyboard, breakpoints, dp scale"),
 	"GoNavBar.drawer_list": ("hud.md", "16. App screens — navigation bar, app bar, FAB, search, split button, progress, loading, dates"),
 	"GoBackPolicy": ("platform.md", "6. Back button and modality"),
+	"GoRibbonHeader": ("surfaces.md", "12. GoRibbonHeader — a screen's title ribbon"),
 }
 
 # The reference files searched, in the order a mention counts.

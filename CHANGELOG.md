@@ -78,6 +78,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoRibbonHeader` — a screen's title ribbon.** The game's `RibbonHeader` for a screen built on a card (pause,
+  settings): put first in the card's column, it hangs the look's title plate over the card's top edge with a glyph and
+  the title (shrunk to fit) and the look's corner art. `make(text, icon, on_left)`, `title`, `glyph` / `glyph_icon`,
+  `ribbon_variation` (`GoRibbonRed`), `corner`, `corner_on_left`, `corner_art`. Under `arcade_light` it renders the
+  game's PAUSED and SETTINGS headers pixel for pixel.
+
 - **A window's parts, as the game's `PaintedDialog` builds them.** `GoSurface.add_inset()` (a pale inset holding a
   column 4 dp apart), `add_line(text, font_size, parent, wrap)` (a centred, SMART-wrapping line; a stat passes
   `wrap = false`), `add_row()` (buttons side by side) and `add_gloss(variation, icon, text)` (a `GoGlyphButton`), into

@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>視窗與浮層 <small>(9)</small></h2>
+  <h2>視窗與浮層 <small>(10)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -320,6 +320,13 @@ tour.<wbr>start(<wbr>[<wbr>{<wbr>"target": bag_button,<wbr> "title": "Bag",<wbr>
       <pre><code>var console := GoConsole.<wbr>new(<wbr>)
 add_child(<wbr>console)
 console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goribbonheader"><code>GoRibbonHeader</code></h3>
+      <p>懸在卡片上緣的畫面標題緞帶，附圖示字形與外觀的角落圖案。</p>
+      <p class="catalog-base">繼承 <code>Control</code></p>
+      <pre><code>var header := GoRibbonHeader.<wbr>make(<wbr>"PAUSED",<wbr> GoIconSet.<wbr>PAUSE)
+card_column.<wbr>add_child(<wbr>header)</code></pre>
     </div>
   </div>
 </section>

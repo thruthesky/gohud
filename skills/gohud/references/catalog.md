@@ -12,7 +12,7 @@ against the code (`tools/check_docs_api.py`).
 ## Contents
 
 1. [Layout](#layout) (15)
-2. [Windows and overlays](#windows-and-overlays) (9)
+2. [Windows and overlays](#windows-and-overlays) (10)
 3. [Messages and waiting](#messages-and-waiting) (12)
 4. [App navigation](#app-navigation) (13)
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
@@ -264,6 +264,15 @@ Extends `CanvasLayer`. A developer console with commands and history; off in rel
 var console := GoConsole.new()
 add_child(console)
 console.register("give", "Grant an item", give_item)
+```
+
+### `GoRibbonHeader`
+
+Extends `Control`. A screen's title ribbon hanging over the top of its card, with a glyph and the look's corner art. Details: `surfaces.md` §12 (GoRibbonHeader).
+
+```gdscript
+var header := GoRibbonHeader.make("PAUSED", GoIconSet.PAUSE)
+card_column.add_child(header)
 ```
 
 
