@@ -336,6 +336,29 @@ func _flat_parts(theme: Theme) -> void:
 	check(theme.get_font_size(&"font_size", &"GoSmallLabel") == 12
 		and theme.get_color(&"font_color", &"GoSmallLabel").is_equal_approx(Color(INK, 0.75)), "GoSmallLabel: 12 px, ink at 75%")
 	check(theme.get_font_size(&"font_size", &"GoBarLabel") == 11, "GoBarLabel: 11 px")
+	# 🗺️ The map thumbnail's box (`MapPreview._init()`: UiTheme.box(Cfg.StagePreview.BACKGROUND, 6, 1, BORDER, false,
+	#    0, 0)) — in the theme, so GoMapPreview reads it instead of building its own.
+	var map_box := theme.get_stylebox(&"panel", &"GoMapPreview") as StyleBoxFlat if theme.has_stylebox(&"panel", &"GoMapPreview") else null
+	check(map_box != null, "GoMapPreview/panel is a StyleBoxFlat")
+	if map_box != null:
+		check(map_box.bg_color.is_equal_approx(Color("#18213a")) and map_box.border_color.is_equal_approx(Color("#58627b"))
+			and map_box.border_width_left == 1 and map_box.border_width_bottom == 1 and map_box.corner_radius_top_left == 6
+			and map_box.corner_radius_bottom_right == 6 and _margins(map_box) == [0.0, 0.0, 0.0, 0.0]
+			and map_box.shadow_size == 0 and map_box.anti_aliasing,
+			"GoMapPreview/panel: the game's #18213a box, 6 px corners, a 1 px #58627b rim, no padding (got %s %s)"
+			% [map_box.bg_color.to_html(), _margins(map_box)])
+		# The widget lands with the map-preview work; until then only the look's box is checked.
+		var preview_script: Script = null
+		for entry: Dictionary in ProjectSettings.get_global_class_list():
+			if entry.get("class", &"") == &"GoMapPreview":
+				preview_script = load(str(entry.get("path", ""))) as Script
+		if preview_script != null:
+			var preview := preview_script.new() as Control
+			if preview != null and preview.has_method(&"background_box"):
+				preview.theme = theme
+				root.add_child(preview)
+				check(preview.call(&"background_box") == map_box, "GoMapPreview draws the theme's box")
+			if preview != null: preview.free()
 
 
 func _variations(theme: Theme) -> void:
@@ -351,6 +374,7 @@ func _variations(theme: Theme) -> void:
 		&"GoChipDark": &"Button", &"GoIconOnly": &"Button",
 		&"GoPanelFlat": &"PanelContainer", &"GoCardFlat": &"PanelContainer", &"GoChoiceButton": &"Button",
 		&"GoBigButton": &"Button", &"GoBigSecondaryButton": &"Button", &"GoSmallLabel": &"Label", &"GoBarLabel": &"Label",
+		&"GoMapPreview": &"Panel",
 	}
 	for type: StringName in bases:
 		check(theme.is_type_variation(type, bases[type]), "%s is a variation of %s (got %s)" % [type, bases[type],
@@ -380,6 +404,8 @@ func _variations(theme: Theme) -> void:
 	var code_built: Variant = map.get("_code_built", {})
 	check(code_built is Dictionary and str((code_built as Dictionary).get("GoWell", "")).begins_with("MapPreview.set_well()")
 		and theme.get_type_variation_base(&"GoWell") != &"", "map: GoWell is listed as code-built (MapPreview.set_well())")
+	check(code_built is Dictionary and str((code_built as Dictionary).get("GoMapPreview", "")).begins_with("MapPreview._init()"),
+		"map: GoMapPreview is listed as code-built (MapPreview._init())")
 	# Every variation the game builds is in gohud now, the old flat look too: nothing stays game-only.
 	check(map.get("game_only", []) is Array and (map["game_only"] as Array).is_empty(),
 		"map: no variation stays in the game (got %s)" % str(map.get("game_only", [])))

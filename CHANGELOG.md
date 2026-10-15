@@ -100,6 +100,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`arcade_light` carries the map thumbnail's box.** A `GoMapPreview` variation (base `Panel`) whose `panel` is
+  Magnet Mayhem's `MapPreview` box — `#18213a`, 6 px corners, a 1 px `#58627b` rim, no padding — so the look owns the
+  frame and a map-preview widget reads it from the theme. `arcade_painted_map.json` lists it under `_code_built`
+  (`MapPreview._init()`).
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
     `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.

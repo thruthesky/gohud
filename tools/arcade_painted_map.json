@@ -40,7 +40,8 @@
   },
   "_code_built": {
     "_help": "gohud variations the game builds in code rather than as a UiTheme variation: gohud variation → where the game builds it.",
-    "GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)"
+    "GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)",
+    "GoMapPreview": "MapPreview._init() (UiTheme.box(Cfg.StagePreview.BACKGROUND, 6, 1, BORDER, false, 0, 0))"
   },
   "_base_types": {
     "_help": "Base types this shape styles as the game does (the game pins base types itself).",

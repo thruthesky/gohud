@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=157 format=3]
+[gd_resource type="Theme" load_steps=158 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -1441,6 +1441,22 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="painted_GoMapPreview"]
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.094118, 0.129412, 0.227451, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.345098, 0.384314, 0.482353, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="StyleBoxFlat" id="painted_dropdown"]
 content_margin_left = 12
 content_margin_top = 6
@@ -2041,6 +2057,8 @@ GoListButton/styles/hover = SubResource("list_hover")
 GoListButton/styles/hover_pressed = SubResource("list_hover")
 GoListButton/styles/normal = SubResource("list_normal")
 GoListButton/styles/pressed = SubResource("list_hover")
+GoMapPreview/base_type = &"Panel"
+GoMapPreview/styles/panel = SubResource("painted_GoMapPreview")
 GoMicroLabel/base_type = &"Label"
 GoMicroLabel/colors/font_color = Color(0.171943, 0.187373, 0.264527, 1)
 GoMicroLabel/font_sizes/font_size = 10

@@ -62,6 +62,8 @@ FADED_WHITE = (1.0, 1.0, 1.0, 0.6)
 FLAT_SHADOW = (0.0, 0.0, 0.0, 0.25)                      # `UiTheme.box(shadow = true)`
 PAINT_PPU = 3.0
 TOUCH_TARGET = 44                                        # `Cfg.Touch.MIN_TARGET` (Apple's 44 pt)
+MAP_PREVIEW_BG = (0.094118, 0.129412, 0.227451, 1.0)    # `Cfg.StagePreview.BACKGROUND` #18213a
+MAP_PREVIEW_RIM = (0.345098, 0.384314, 0.482353, 1.0)   # `MapPreview.BORDER` #58627b
 RIBBON_PPU = 3.4
 KEYCAP_PPU = 5.5
 GLOSS_EDGE = (100, 65, 100, 66)
@@ -143,7 +145,8 @@ MAP = {
 }
 # Variations the game draws in code, not as a UiTheme variation — kept out of MAP (whose keys are all UiTheme names):
 # gohud variation → where the game builds it. The game can use the gohud one directly.
-CODE_BUILT = {"GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)"}
+CODE_BUILT = {"GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)",
+              "GoMapPreview": "MapPreview._init() (UiTheme.box(Cfg.StagePreview.BACKGROUND, 6, 1, BORDER, false, 0, 0))"}
 # The `Cfg` sizes written at their desktop value (the game swaps the touch value in itself).
 CFG_SIZES = {
     "GoHudPanel": "content margins from Cfg.Hud.PANEL_PADDING = %g (touch: Cfg.Hud.PANEL_PADDING_TOUCH)"
@@ -166,6 +169,7 @@ BASES = {
     "GoChipDark": "Button", "GoIconOnly": "Button",
     "GoPanelFlat": "PanelContainer", "GoCardFlat": "PanelContainer", "GoChoiceButton": "Button",
     "GoBigButton": "Button", "GoBigSecondaryButton": "Button", "GoSmallLabel": "Label", "GoBarLabel": "Label",
+    "GoMapPreview": "Panel",
 }
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
@@ -400,6 +404,10 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoSmallLabel/font_sizes/font_size", SMALL_FONT_SIZE)
     setT("GoSmallLabel/colors/font_color", C(SMALL_INK))
     setT("GoBarLabel/font_sizes/font_size", BAR_FONT_SIZE)
+    # 🗺️ The map thumbnail's dark box (`MapPreview._init()`). GoMapPreview reads `panel` off this type before its own
+    #    `_flat_box()`, so the look owns it — a skin that wants another frame changes it here, not in the widget.
+    put("GoMapPreview/styles/panel", box("painted_GoMapPreview", MAP_PREVIEW_BG, 6, 1, MAP_PREVIEW_RIM,
+                                         margin_h=0.0, margin_v=(0.0, 0.0)))
 
     # ── 🔽 The dropdown (`_dropdown`): a white, ink-rimmed box and a matching list. ──
     drop_box = box("painted_dropdown", WHITE, 10, 3, INK, margin_h=12.0, margin_v=(6.0, 6.0), bottom=5)
