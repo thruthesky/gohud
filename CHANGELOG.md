@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoLevelCard` lays out its locked state and thumbnail as Magnet Mayhem's `StageCard`.** The padlock and LOCKED
+  sat 4 px apart only under the engine's default theme; under a gohud theme the column took its VBox gap (12) and both
+  sat lower. The gap is now the card's own (`lock_gap`, 4). The thumbnail slot clips, as the game's map preview does,
+  so on a scaled canvas (iPad, desktop) the well's last half row no longer shows under it.
+
 - **`GoGlyphButton` sizes and places its label exactly as Magnet Mayhem's `GlossButton`.** On the painted pills the
   label's shift now moves padding from the far side to the near one (the far side never under 0), so a glyph-only
   56 × 56 pill stays 56 wide (it grew to 67) and a pill at its minimum width is as wide as the game's. Only the

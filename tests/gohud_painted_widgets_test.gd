@@ -160,6 +160,7 @@ func _key_cluster(look: StringName) -> void:
 func _level_card(look: StringName) -> void:
 	var painted := look == GoThemePresets.ARCADE_LIGHT
 	var holder := VBoxContainer.new()
+	holder.theme = GoUi.theme() # as a screen is: the theme's own VBox gap must not reach the card's lock column
 	root.add_child(holder)
 	var card := GoLevelCard.make("STAGE 1", "OPPONENTS: 1", GoLevelCard.State.CLEARED)
 	holder.add_child(card)
@@ -214,6 +215,10 @@ func _level_card(look: StringName) -> void:
 	check(card.disabled and card.lock.visible and card.locked_label.visible, "%s card: locked shows the padlock" % look)
 	check(card.summary().ends_with("\nVERROUILLÉ"), "%s card: the locked caption is a parameter" % look)
 	check(card.lock.custom_minimum_size.x >= 56.0, "%s card: the lock column is at least 56 wide" % look)
+	check(card.thumbnail_slot.clip_contents,
+			"%s card: the thumbnail slot clips (the game's MapPreview does), so no half row of the well shows when scaled" % look)
+	check(card.lock.get_theme_constant(&"separation") == 4,
+			"%s card: the padlock sits 4 px over LOCKED, as the game (not the theme's VBox gap)" % look)
 	card.state = GoLevelCard.State.OPEN
 	await frames(1)
 	check(not card.disabled, "%s card: unlocking takes back the disabled the lock set" % look)

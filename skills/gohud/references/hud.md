@@ -631,9 +631,12 @@ card.pressed.connect(_play.bind(3))
 | `selected` | The gold ring (`GoSkin.selection_ring_box()`) |
 | `check_texture` · `lock_texture` · `person_texture` · `play_tag_texture` · `pointer_texture` | Art overrides. Empty: the skin (`GoSkin.widget_art`), else the icon set, else a drawn plate — a look with no art still works |
 | `scale_factor` · `card_size` (300×98) | Sizes are multiplied by `scale_factor` |
+| `lock_gap` (4) | Pixels between the padlock and LOCKED — set on the column, so a theme's own VBox gap never reaches it |
 
 - 🔑 The face comes from the type variation for the state — `GoLevelCard` (open and cleared), `GoLevelCardCurrent`,
   `GoLevelCardLocked`; a theme without them falls back to `GoButton` (`GoPrimaryButton` for the current level).
+- The thumbnail slot clips its contents, as the game's map preview does: on a scaled canvas no half row of the well
+  or the picture shows past the slot.
 
 ## 21. GoKeyCluster — WASD or arrows in a T
 
