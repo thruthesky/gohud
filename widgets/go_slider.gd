@@ -40,13 +40,16 @@ var _parts: Dictionary[StringName, Resource] = {}
 var _held := false
 var _hovered := false
 var _reading := false
+## The least size the widget last set itself; a different custom minimum is the caller's own and stays.
+var _floor := Vector2.ZERO
 
 
 func _init() -> void:
 	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's; other looks: reachable
 	# The engine's Slider measures its own least size from the blanks (1 px tall), so the floor is the custom minimum —
 	# set here, as the game's PaintedSlider does, so a screen that sets its own still wins.
-	custom_minimum_size = Vector2(MIN_WIDTH, float(GoUi.metric(GoTheme.TOUCH)))
+	_floor = Vector2(MIN_WIDTH, float(GoUi.metric(GoTheme.TOUCH)))
+	custom_minimum_size = _floor
 
 
 ## A slider from [param minimum] to [param maximum] snapping to [param snap].
@@ -163,6 +166,17 @@ func _draw() -> void:
 	else: draw_circle(at.get_center(), at.size.x * 0.5, GoUi.color(GoTheme.ACCENT), true, -1.0, true)
 
 
+## Keeps the height floor on the look's touch size, unless the caller set a size of their own.
+func _follow_floor() -> void:
+	var next := Vector2(MIN_WIDTH, float(GoUi.metric(GoTheme.TOUCH)))
+	var now := custom_minimum_size
+	if is_equal_approx(now.x, _floor.x): now.x = next.x
+	if is_equal_approx(now.y, _floor.y): now.y = next.y
+	_floor = next
+	custom_minimum_size = now
+
+
 func _on_ui_changed() -> void:
+	_follow_floor()
 	_read_parts()
 	GoStyle.skin_focus(self)

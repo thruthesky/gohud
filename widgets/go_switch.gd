@@ -54,13 +54,16 @@ const _BOXES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pres
 ## The theme's pills, read before the blanks went on.
 var _parts: Dictionary[StringName, Texture2D] = {}
 var _reading := false
+## The least size the widget last set itself; a different custom minimum is the caller's own and stays.
+var _floor := Vector2.ZERO
 
 
 func _init() -> void:
 	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's; other looks: reachable
 	# The engine's CheckButton measures its least size from the blanks (1 px tall), so the floor is the custom minimum —
 	# set here, as the game's PaintedSwitch does, so a screen that sets its own still wins.
-	custom_minimum_size = Vector2(0.0, float(GoUi.metric(GoTheme.TOUCH)))
+	_floor = Vector2(0.0, float(GoUi.metric(GoTheme.TOUCH)))
+	custom_minimum_size = _floor
 
 
 ## A switch, on or off.
@@ -193,9 +196,19 @@ func _read_parts() -> void:
 	for item in _BOXES: add_theme_stylebox_override(item, StyleBoxEmpty.new())
 	end_bulk_theme_override()
 	_reading = false
-	# Room for the pill and a little round it (the height floor is set once, in _init).
-	custom_minimum_size.x = maxf(custom_minimum_size.x, pill_size().x + SIDE_ROOM)
+	_follow_floor()
 	queue_redraw()
+
+
+## Keeps the least size on the pill (and a little round it) and the look's touch size, unless the caller set a size
+## of their own.
+func _follow_floor() -> void:
+	var next := Vector2(pill_size().x + SIDE_ROOM, float(GoUi.metric(GoTheme.TOUCH)))
+	var now := custom_minimum_size
+	if is_equal_approx(now.x, _floor.x): now.x = next.x
+	if is_equal_approx(now.y, _floor.y): now.y = next.y
+	_floor = next
+	custom_minimum_size = now
 
 
 func _notification(what: int) -> void:

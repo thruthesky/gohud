@@ -6,6 +6,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoSlider` and `GoSwitch` follow the look's touch size.** Their height floor was set once, in `_init`, so after
+  a look change (`arcade_light`'s 44 against 48) they kept the old one, and a switch's width floor only ever grew.
+  The floor is now re-applied when the look changes, unless the caller set a `custom_minimum_size` of their own.
 - **`GoSwitch` puts its caption on the free side of a mirrored pill in RTL.** The side came from `button_pressed`
   alone, but in RTL `pill_texture()` picks the `*_mirrored` pill, whose knob is on the other side, so the caption
   landed under the knob (`arcade_dark`, the engine's default theme). `pill_is_mirrored()` tells a pill with real
