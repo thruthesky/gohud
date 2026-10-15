@@ -420,7 +420,10 @@ icons.canonical(&"gear")             # &"settings"
 (초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide`(스테이지 선택 창과 넓은 리본), `GoLevelCard` ·
 `GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
 판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만
-있는 동그란 버튼). 이 변형이 없는 테마는 기본 타입으로 돌아간다.
+있는 동그란 버튼). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
+플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
+REPULSE · JUMP 키, 스틱 바탕과 손잡이)도 싣는다. 위젯은 `GoUi.skin().widget_art(&"stopwatch")` 처럼 이름으로 꺼내고, 다른
+룩은 모두 `null` 을 돌려준다.
 
 채운 버튼은 기본으로 평평하다. `*GlowButton` 두 변형은 버튼 자기 색의 부드러운 그림자(sci-fi 모양은 글로우)로 띄운다 —
 채운 버튼 전부는 `GoConfig.button_glow` 를 켜고, 버튼 하나만은 `GoStyle.glow(button)` 을 부른다.

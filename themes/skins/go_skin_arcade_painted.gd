@@ -312,6 +312,12 @@ const ART_ROOT := "res://addons/gohud/assets/arcade_light/"
 ## The stage-select art: check, lock, person, play_tag, pointer. 🛑 A file that is not there reads as no art, and the
 ## widget falls back to the icon set.
 const STAGE_ART := ART_ROOT + "stage/"
+## The match HUD's art (avatar_head, bolt, opponents_badge, stopwatch, pause_button) and the touch controls' art
+## (btn_attract, btn_repulse, btn_jump, stick_base, stick_knob) — the game's `assets/ui/hud` and `assets/ui/touch`.
+const HUD_ART := ART_ROOT + "hud/"
+const TOUCH_ART := ART_ROOT + "touch/"
+## The folders `widget_art` looks in, in order.
+const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART]
 ## The sky behind an opaque window, the game's `STAGE_SKY`.
 const STAGE_SKY := Color(0.36, 0.62, 0.92, 1.0)
 ## A selected stage card's gold ring.
@@ -324,12 +330,14 @@ const KEY_CLUSTER_PPU := 4.2
 const RIBBON_OVERHANG := Vector2(14.0, 17.0)
 
 
-## The painted stage art, when the theme ships it (`assets/arcade_light/stage/<name>.png`).
+## The painted art, when the theme ships it: `assets/arcade_light/stage/<name>.png`, then `hud/`, then `touch/`.
 func widget_art(name: StringName) -> Texture2D:
-	var path := STAGE_ART + String(name) + ".png"
-	if not _textures.has(path):
-		_textures[path] = load(path) if ResourceLoader.exists(path) else null
-	return _textures[path]
+	for folder in ART_FOLDERS:
+		var path := folder + String(name) + ".png"
+		if not _textures.has(path):
+			_textures[path] = load(path) if ResourceLoader.exists(path) else null
+		if _textures[path] != null: return _textures[path]
+	return null
 
 
 ## The game's gold ring round the selected stage card.

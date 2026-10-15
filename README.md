@@ -831,7 +831,10 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (the level tile in its three states);
 `GoWell` (the map-preview well); `GoHudPanel` (the floating HUD panel); `GoBannerGold` and `GoNoticeGold` (a gold HUD
 banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). A theme
-without them falls back to the base type.
+without them falls back to the base type. It also ships the game's painted HUD art (`assets/arcade_light/hud/`: the
+player's head, the power bolt, the opponents badge, the stopwatch, the round pause key) and touch art
+(`assets/arcade_light/touch/`: the ATTRACT, REPULSE and JUMP keys, the stick's base and knob); a widget asks for one by
+name with `GoUi.skin().widget_art(&"stopwatch")`, and every other look answers `null`.
 
 Filled buttons sit flat. The two `*GlowButton` variations raise them with a soft shadow in the button's own colour
 (a glow on the sci-fi shape): set `GoConfig.button_glow` for every filled button, or call

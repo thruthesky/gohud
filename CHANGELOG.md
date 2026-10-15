@@ -59,6 +59,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **The match HUD's and the touch controls' painted art in `arcade_light`.** Magnet Mayhem's `assets/ui/hud` (the
+  player's head, the power bolt, the opponents badge, the stopwatch, the round pause key) is in
+  `assets/arcade_light/hud/`, and its `assets/ui/touch` (the ATTRACT, REPULSE and JUMP keys, the stick's base and knob)
+  in `assets/arcade_light/touch/`, imported as the game imports them (lossless, no mipmaps). `GoSkin.widget_art(name)`
+  answers them by their bare names (`stopwatch`, `btn_jump`, …) after the stage art; other looks still answer `null`.
+  The artwork is distributed under this package’s MIT license (`THIRD_PARTY_NOTICES.md`).
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
     `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.
