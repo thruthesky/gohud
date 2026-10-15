@@ -6,6 +6,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A window inside a `SubViewport` fits that viewport.** `GoSurface` measured its room with
+  `GoSafeArea.usable_rect(get_window())`, which inside a `SubViewport` (a preview, a render-to-texture, a parity
+  harness) is the main window — so the card was sized and centred for the wrong screen. `usable_rect`,
+  `usable_rect_with_keyboard` and `px_to_units` now take any `Viewport` (a `Window` still works): a `SubViewport` is
+  its own whole rect with no safe area, and `GoSurface` and `GoSafeArea` pass `get_viewport()`.
+
 - **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
   glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
   with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and

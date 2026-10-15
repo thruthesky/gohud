@@ -1069,7 +1069,7 @@ func relayout() -> void:
 	_resize_pending = false
 	if card == null or not is_inside_tree(): return
 	var settings := GoUi.config
-	var area := GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px)
+	var area := GoSafeArea.usable_rect_with_keyboard(get_viewport(), _keyboard_px)
 	if placement == Placement.ANCHOR and is_instance_valid(anchor_control) and anchor_control.is_inside_tree():
 		_update_density()
 		_relayout_anchor(area)
@@ -1334,7 +1334,7 @@ func _input(event: InputEvent) -> void:
 		_dragging = false
 		_touch_index = -1
 	if not is_zero_approx(dy):
-		var area := GoSafeArea.usable_rect(get_window())
+		var area := GoSafeArea.usable_rect(get_viewport())
 		var current := height_ratio if height_ratio > 0.0 else GoUi.config.surface_height_ratio
 		# 🛑 The same ceiling the layout uses — clamped to 0.95 here while the layout stopped at 0.72, a drag past the
 		#    ceiling moved nothing, `height_changed` reported a height that was never drawn, and dragging back down did

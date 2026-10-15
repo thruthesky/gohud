@@ -25,6 +25,7 @@ func _initialize() -> void:
 		await _backdrop(look)
 		await _helpers(look)
 		await _header(look)
+		await _sub_viewport(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -436,4 +437,28 @@ func _header(look: StringName) -> void:
 	await frames(1)
 	check(not magnet.visible, "%s header: corner = false hides the magnet" % look)
 	card.queue_free()
+	await frames(1)
+
+
+# ── In a SubViewport: the window lays out in the viewport it is in ─────
+
+## A window inside a SubViewport (a preview, a render-to-texture, the parity harness) fits and centres in that
+## viewport — not in the main window, which is bigger and would push the card off the viewport's middle.
+func _sub_viewport(look: StringName) -> void:
+	var view := SubViewport.new()
+	view.size = Vector2i(900, 500)
+	root.add_child(view)
+	var surface := GoSurface.new()
+	surface.set_title("ROOM")
+	var block := Control.new()
+	block.custom_minimum_size = Vector2(10, 100)
+	surface.body.add_child(block)
+	view.add_child(surface)
+	await frames(3)
+	check(GoSafeArea.usable_rect(view) == Rect2(0, 0, 900, 500),
+		"%s viewport: the usable rect is the SubViewport's (got %s)" % [look, GoSafeArea.usable_rect(view)])
+	var card := surface.card.get_rect()
+	check(absf(card.get_center().x - 450.0) < 1.0 and card.end.x <= 900.0 and card.end.y <= 500.0,
+		"%s viewport: the card is centred in the 900 x 500 viewport (card %s)" % [look, card])
+	view.queue_free()
 	await frames(1)
