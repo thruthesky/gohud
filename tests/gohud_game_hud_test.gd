@@ -39,6 +39,7 @@ func _initialize() -> void:
 		await _perf_readout(look)
 		await _slot_touch(look)
 		await _icon_focus(look)
+	await _touch_label_cache()
 	_per_inch_scale()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -751,6 +752,23 @@ func _touch_lifecycle(look: StringName) -> void:
 		stick.free()
 		holder.queue_free()
 		await frames(1)
+
+
+func _touch_label_cache() -> void:
+	var button := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+	var holder := _host(button)
+	await frames(1)
+	for i in 100:
+		button.text = "%.1f" % (i * 0.1)
+		button.label_font_size()
+	check(button._fits.size() <= 1, "touch fit: a changing label keeps one cached size (%d)" % button._fits.size())
+	button.text = "UNE TRES LONGUE ETIQUETTE"
+	var shrunk := button.label_font_size()
+	check(shrunk == 10 and button.label_font_size() == shrunk, "touch fit: the cached size is still right (%d)" % shrunk)
+	button.text = "REPULSE"
+	check(button.label_font_size() == 14, "touch fit: and follows the text back")
+	holder.queue_free()
+	await frames(1)
 
 
 # ── A task card (GoTaskCard) and a spotlight (GoSpotlight) ─────────────

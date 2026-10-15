@@ -6,6 +6,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A touch button's label-size cache holds one entry.** `label_font_size()` cached a size per text and only cleared
+  on a theme, language or size change, so `skill.text = "%.1f" % seconds_left` every frame added an entry each time.
+  It now keeps only the last text and its size.
 - **A touch button or stick that is hidden or removed under a finger lets go.** `GoTouchButton` kept `_held` and never
   emitted `released` when it was hidden (or a parent was, as a pause menu hides the touch HUD) or left the tree with
   a finger down, so the game saw ATTRACT held for ever. It now runs `cancel()` then: `released(true)` once, the

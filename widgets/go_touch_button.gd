@@ -239,6 +239,7 @@ func label_font_size() -> int:
 	var room := diameter - label_pad * 2.0
 	while font != null and fs > min_font_size and font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > room:
 		fs -= 1
+	_fits.clear()   # only the last text is kept: a label that counts down must not grow this every frame
 	_fits[text] = fs
 	return fs
 
