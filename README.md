@@ -1317,7 +1317,9 @@ sound files without touching code. Vibration runs only on Android and iOS, in th
 - `reduce_motion` turns off fades and pulsing highlights.
 - Focus rings appear for keyboard and gamepad users, not after a tap or click. Filled buttons get a
   ring that contrasts with their own panel, and the contrast checker measures it there.
-- Focus moves into a window when it opens, stays inside it, and returns where it was when it closes.
+- Focus moves into a window when it opens, stays inside it, and returns where it was when it closes. When nothing
+  inside can take it (arcade_light's controls are out of the focus order), the screen behind lets go of it instead, so
+  Enter never presses the button that opened the window.
 - Quick slots stay out of the Tab order by default; `GoSlot.keyboard_focus` opts them in when keyboard
   or gamepad is the only input.
 - `GoStyle.Tone.DANGER_SOLID` (and `GoDialogs.confirm(..., destructive = true)`) keeps irreversible

@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A window with nothing focusable no longer leaves focus on its opener.** Under `arcade_light` a sheet's close
+  button is `FOCUS_NONE`, yet `GoSurface` still called `grab_focus()` on it: the engine warned "This control can't grab
+  focus" and the early return skipped the search inside the window, so focus stayed on the control behind it and Enter
+  pressed the opener again. The close button is grabbed only when it can take focus; otherwise the first focusable
+  control inside takes it, and when there is none the focus owner outside the window is released.
 - **`GoStyle`'s plain controls follow a look change.** `GoStyle.skin_focus()` set the look's focus mode once, when
   `button` / `style_button` / `toggle` / `checkbox` / `slider` / `picker` styled the control, and only the gohud widgets
   re-applied it from a watcher of their own. A form built under `arcade_light` kept `FOCUS_NONE` after
