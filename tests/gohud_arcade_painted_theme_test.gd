@@ -347,18 +347,11 @@ func _flat_parts(theme: Theme) -> void:
 			and map_box.shadow_size == 0 and map_box.anti_aliasing,
 			"GoMapPreview/panel: the game's #18213a box, 6 px corners, a 1 px #58627b rim, no padding (got %s %s)"
 			% [map_box.bg_color.to_html(), _margins(map_box)])
-		# The widget lands with the map-preview work; until then only the look's box is checked.
-		var preview_script: Script = null
-		for entry: Dictionary in ProjectSettings.get_global_class_list():
-			if entry.get("class", &"") == &"GoMapPreview":
-				preview_script = load(str(entry.get("path", ""))) as Script
-		if preview_script != null:
-			var preview := preview_script.new() as Control
-			if preview != null and preview.has_method(&"background_box"):
-				preview.theme = theme
-				root.add_child(preview)
-				check(preview.call(&"background_box") == map_box, "GoMapPreview draws the theme's box")
-			if preview != null: preview.free()
+		var preview := GoMapPreview.new()
+		preview.theme = theme
+		root.add_child(preview)
+		check(preview.background_box() == map_box, "GoMapPreview draws the theme's box")
+		preview.free()
 
 
 func _variations(theme: Theme) -> void:
@@ -435,6 +428,10 @@ func _tokens(theme: Theme) -> void:
 	# 👆 The look's touch floor is the game's Cfg.Touch.MIN_TARGET (44).
 	check(theme.get_constant(GoTheme.TOUCH, GoTheme.TYPE) == 44,
 		"token touch is the game's Cfg.Touch.MIN_TARGET 44 (got %d)" % theme.get_constant(GoTheme.TOUCH, GoTheme.TYPE))
+	GoUi.config.follow_look_touch_size()
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	check(GoUi.touch_size() == 44.0, "GoUi.touch_size() under arcade_light is 44 (got %s)" % GoUi.touch_size())
+	GoUi.config.preset = &""
 
 
 ## 🔑 Each painted variation carries exactly the items the game's variation has (`UiTheme._build()`), no more: the
