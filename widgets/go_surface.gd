@@ -369,6 +369,15 @@ func _make_scroll() -> GoScroll:
 	return GoScroll.new()
 
 
+## Clips the body's scroll only while its content overflows it (a scrollbar shows, or would with the bars hidden).
+func _sync_body_clip() -> void:
+	if scroll == null: return
+	var need := body.get_combined_minimum_size()
+	var clip := need.y > scroll.size.y + 0.5 or need.x > scroll.size.x + 0.5 \
+			or scroll.get_v_scroll_bar().visible or scroll.get_h_scroll_bar().visible
+	if scroll.clip_contents != clip: scroll.clip_contents = clip
+
+
 func _ready() -> void:
 	# Options that may have changed **between** `new()` and `add_child()` are applied here.
 	_dress_scrim()
@@ -383,6 +392,10 @@ func _ready() -> void:
 		_column.move_child(scroll, slot)
 		body.reparent(scroll)
 		scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+		# 🔑 The body clips only while it scrolls. A body that fits has nothing to clip, and the clip would cut a
+		#    part's antialiased rim on a half pixel (the painted inset's top edge at 1.5x) the game's column never cuts.
+		scroll.sort_children.connect(_sync_body_clip)
+		_sync_body_clip()
 	elif not scroll_body:
 		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 

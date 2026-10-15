@@ -27,6 +27,7 @@ func _initialize() -> void:
 		await _header(look)
 		await _sub_viewport(look)
 		await _narrow(look)
+		await _clip(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -495,4 +496,23 @@ func _narrow(look: StringName) -> void:
 		check(card.position.x >= edge - 0.5 and card.end.x <= 407.0 - edge + 0.5,
 			"%s narrow: the card keeps the screen margin (card %s)" % [look, card])
 	view.queue_free()
+	await frames(1)
+
+
+## A body that fits draws unclipped, so a part's antialiased rim on a half pixel (the inset's top at 1.5x) is not cut
+## off at the scroll's edge, as the game's plain column never cuts it; a body that overflows clips and scrolls.
+func _clip(look: StringName) -> void:
+	var surface := _dialog()
+	await frames(3)
+	check(surface.scroll != null and not surface.scroll.clip_contents,
+		"%s clip: a body that fits is not clipped" % look)
+	var tall := Control.new()
+	tall.custom_minimum_size = Vector2(10, 3000)
+	surface.body.add_child(tall)
+	await frames(4)
+	check(surface.scroll.clip_contents, "%s clip: a body that overflows is clipped" % look)
+	tall.queue_free()
+	await frames(4)
+	check(not surface.scroll.clip_contents, "%s clip: …and unclipped again once it fits" % look)
+	surface.queue_free()
 	await frames(1)
