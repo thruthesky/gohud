@@ -89,6 +89,19 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
+	_drop()
+
+
+func _notification(what: int) -> void:
+	# 🛑 Hidden or removed under a finger, the lift will never reach it: end the drag now, so the game gets
+	# `released` and a zero vector instead of a stick held for ever.
+	if what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree():
+		_drop()
+
+
+## Ends a drag in progress as a lift would (`released`, then a zero `moved`); idle, it does nothing.
+func _drop() -> void:
+	if _active: _end()
 
 
 ## 🎨 The whole look changed — `GoUi.use_preset()` and `GoUi.refresh()` call this.

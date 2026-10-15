@@ -13,6 +13,18 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   alone, but in RTL `pill_texture()` picks the `*_mirrored` pill, whose knob is on the other side, so the caption
   landed under the knob (`arcade_dark`, the engine's default theme). `pill_is_mirrored()` tells a pill with real
   mirrored art from one that shares the plain art (`arcade_light`), which draws as before.
+- **A touch button follows `GoUi.use_preset(...)`.** It set `theme` only in `_ready` and its look watcher never
+  re-assigned it, so after a look switch it kept the old theme (the label font and size). The watcher now takes
+  `GoUi.theme()` first, and the watch starts in `_enter_tree` (as `GoRibbonHeader`'s), so a button that was out of
+  the tree during a switch, or re-added after leaving, is on the current look and watching.
+- **A touch button's label-size cache holds one entry.** `label_font_size()` cached a size per text and only cleared
+  on a theme, language or size change, so `skill.text = "%.1f" % seconds_left` every frame added an entry each time.
+  It now keeps only the last text and its size.
+- **A touch button or stick that is hidden or removed under a finger lets go.** `GoTouchButton` kept `_held` and never
+  emitted `released` when it was hidden (or a parent was, as a pause menu hides the touch HUD) or left the tree with
+  a finger down, so the game saw ATTRACT held for ever. It now runs `cancel()` then: `released(true)` once, the
+  finger id cleared. `GoJoystick` had the same gap and now ends the drag the same way (`released`, then a zero
+  `moved`), so the character stops.
 - **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
   crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
   400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.

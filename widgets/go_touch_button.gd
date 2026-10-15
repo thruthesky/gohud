@@ -167,14 +167,20 @@ func _init() -> void:
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 
 
-func _ready() -> void:
-	theme = GoUi.theme()
-	size = custom_minimum_size
+func _enter_tree() -> void:
+	# On every entry, so a button that was out of the tree during a look switch comes back on the current look.
 	GoUi.watch(_restyle)
+	theme = GoUi.theme()
+
+
+func _ready() -> void:
+	size = custom_minimum_size
 
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_restyle)
+	# 🛑 A finger still down on a button that leaves the tree will never lift on it: let go now.
+	cancel()
 
 
 func _notification(what: int) -> void:
@@ -182,6 +188,10 @@ func _notification(what: int) -> void:
 		_fits.clear()
 		_caption_sizes = [0, 0]
 		queue_redraw()
+	elif what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree():
+		# 🛑 Hidden under a finger (a pause menu hides the touch HUD): the lift will not reach it, so let go now —
+		# `released(true)`, as `cancel()` says — rather than leave the game seeing it held for ever.
+		cancel()
 
 
 ## The picture it draws (null: a plain disc).
@@ -233,6 +243,7 @@ func label_font_size() -> int:
 	var room := diameter - label_pad * 2.0
 	while font != null and fs > min_font_size and font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > room:
 		fs -= 1
+	_fits.clear()   # only the last text is kept: a label that counts down must not grow this every frame
 	_fits[text] = fs
 	return fs
 
@@ -317,6 +328,7 @@ func _set_pulse(value: float) -> void:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	_fits.clear()
 	_caption_sizes = [0, 0]
 	queue_redraw()
