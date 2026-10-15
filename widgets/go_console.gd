@@ -270,7 +270,7 @@ func _input(event: InputEvent) -> void:
 
 func _relayout() -> void:
 	if _panel == null or not is_inside_tree(): return
-	var window := get_window()
+	var window := get_viewport()
 	if window == null: return
 	var area := GoSafeArea.usable_rect(window)
 	_panel.position = area.position.round()

@@ -231,7 +231,7 @@ own button handlers for a consistent feel.
 
 | API | Notes |
 |---|---|
-| `GoSafeArea.usable_rect(window) -> Rect2` | Excludes notch/gesture bar on Android/iOS; full rect on desktop or when `respect_safe_area` is off. The OS reports the safe area in screen pixels; it comes into UI units through the window's final transform, so it holds under any stretch (the project's own `canvas_items` base, `GoScale`, letterboxing) |
+| `GoSafeArea.usable_rect(view: Viewport) -> Rect2` | Pass `get_viewport()`. Excludes notch/gesture bar on Android/iOS; full rect on desktop, when `respect_safe_area` is off, or for a `SubViewport` (its own rect — a window inside a preview or render-to-texture fits that viewport, not the main window). The OS reports the safe area in screen pixels; it comes into UI units through the window's final transform, so it holds under any stretch (the project's own `canvas_items` base, `GoScale`, letterboxing) |
 | `GoSafeArea.usable_rect_with_keyboard(window, keyboard_px)` | Also removes the virtual keyboard |
 | `GoSafeArea.clip_to_safe(area, safe_px, to_screen) -> Rect2` · `GoSafeArea.px_to_units(window, px) -> float` | The two conversions above as pure functions — feed a phone's figures to test a layout on the desktop |
 | `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch |

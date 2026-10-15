@@ -158,6 +158,19 @@ func _tokens() -> void:
 	settings.min_touch_size = 44
 	check(GoUi.metric(GoTheme.TOUCH) == 44, "min_touch_size becomes the touch token")
 	settings.min_touch_size = 48
+	# A look carries its own floor in its `touch` token (arcade_light: the game's 44); a size the project chose wins.
+	settings.follow_look_touch_size()
+	check(not settings.touch_size_chosen() and settings.min_touch_size == 48, "follow_look_touch_size: nothing chosen, the field reads its default")
+	var finger := GoUi.DEFAULT_THEME.duplicate() as Theme
+	finger.set_constant(GoTheme.TOUCH, GoTheme.TYPE, 44)
+	settings.theme = finger
+	check(GoUi.metric(GoTheme.TOUCH) == 44, "nothing chosen: the look's own touch token is the floor")
+	check(GoUi.touch_size() == 44.0, "GoUi.touch_size() reads the same floor")
+	settings.min_touch_size = 56
+	check(settings.touch_size_chosen() and GoUi.metric(GoTheme.TOUCH) == 56, "a min_touch_size the project chose wins over the look")
+	settings.follow_look_touch_size()
+	settings.theme = null
+	check(GoUi.metric(GoTheme.TOUCH) == 48, "every other look keeps 48")
 
 	# A plain Theme with no tokens does not break anything.
 	settings.theme = Theme.new()
@@ -3552,7 +3565,7 @@ func _app_components() -> void:
 		var first_tool := tools.get_child(0).get_child(0) as GoIconButton
 		first_tool.pressed.emit()
 		var second_tool := tools.get_child(0).get_child(1) as GoIconButton
-		var reach := (float(GoUi.config.min_touch_size) - first_tool.size.y) * 0.5
+		var reach := (GoUi.touch_size() - first_tool.size.y) * 0.5
 		check(used[0] == 1 and first_tool._has_point(Vector2(-reach + 1.0, first_tool.size.y * 0.5))
 			and first_tool.touch_peers.size() == 2
 			and second_tool.position.x - first_tool.position.x - first_tool.size.x >= reach * 2.0 - 0.5,

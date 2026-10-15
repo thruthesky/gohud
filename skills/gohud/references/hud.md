@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage and GoGlyphButton, GoHudCard.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard and GoPerfReadout.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -30,15 +30,18 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 21. [GoKeyCluster — WASD or arrows in a T](#21-gokeycluster--wasd-or-arrows-in-a-t)
 22. [GoCoverImage — a picture that covers its box](#22-gocoverimage--a-picture-that-covers-its-box)
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
-24. [GoHudCard — a match HUD's top-row board](#24-gohudcard--a-match-huds-top-row-board)
-25. [GoCountdown — the match-start count](#25-gocountdown--the-match-start-count)
-26. [GoHudButton — a HUD corner button with its key](#26-gohudbutton--a-hud-corner-button-with-its-key)
-27. [GoNameplate — a name plate over a character](#27-gonameplate--a-name-plate-over-a-character)
-28. [GoNoticeFeed — a feed of one-line notices](#28-gonoticefeed--a-feed-of-one-line-notices)
-29. [GoTouchButton — a round thumb button (and the painted stick)](#29-gotouchbutton--a-round-thumb-button-and-the-painted-stick)
-30. [GoSpotlight — dim round one thing and ring it](#30-gospotlight--dim-round-one-thing-and-ring-it)
-31. [GoTaskCard — a lesson's card](#31-gotaskcard--a-lessons-card)
-32. [GoPerfReadout — a performance band](#32-goperfreadout--a-performance-band)
+24. [GoSlider — a slider drawn the painted way](#24-goslider--a-slider-drawn-the-painted-way)
+25. [GoSwitch — an on/off switch with a caption](#25-goswitch--an-onoff-switch-with-a-caption)
+26. [GoMapPreview — a small map of a level](#26-gomappreview--a-small-map-of-a-level)
+27. [GoHudCard — a match HUD's top-row board](#27-gohudcard--a-match-huds-top-row-board)
+28. [GoCountdown — the match-start count](#28-gocountdown--the-match-start-count)
+29. [GoHudButton — a HUD corner button with its key](#29-gohudbutton--a-hud-corner-button-with-its-key)
+30. [GoNameplate — a name plate over a character](#30-gonameplate--a-name-plate-over-a-character)
+31. [GoNoticeFeed — a feed of one-line notices](#31-gonoticefeed--a-feed-of-one-line-notices)
+32. [GoTouchButton — a round thumb button (and the painted stick)](#32-gotouchbutton--a-round-thumb-button-and-the-painted-stick)
+33. [GoSpotlight — dim round one thing and ring it](#33-gospotlight--dim-round-one-thing-and-ring-it)
+34. [GoTaskCard — a lesson's card](#34-gotaskcard--a-lessons-card)
+35. [GoPerfReadout — a performance band](#35-goperfreadout--a-performance-band)
 
 ## 1. GoHudAnchor
 
@@ -659,9 +662,12 @@ card.pressed.connect(_play.bind(3))
 | `selected` | The gold ring (`GoSkin.selection_ring_box()`) |
 | `check_texture` · `lock_texture` · `person_texture` · `play_tag_texture` · `pointer_texture` | Art overrides. Empty: the skin (`GoSkin.widget_art`), else the icon set, else a drawn plate — a look with no art still works |
 | `scale_factor` · `card_size` (300×98) | Sizes are multiplied by `scale_factor` |
+| `lock_gap` (4) | Pixels between the padlock and LOCKED — set on the column, so a theme's own VBox gap never reaches it |
 
 - 🔑 The face comes from the type variation for the state — `GoLevelCard` (open and cleared), `GoLevelCardCurrent`,
   `GoLevelCardLocked`; a theme without them falls back to `GoButton` (`GoPrimaryButton` for the current level).
+- The thumbnail slot clips its contents, as the game's map preview does: on a scaled canvas no half row of the well
+  or the picture shows past the slot.
 
 ## 21. GoKeyCluster — WASD or arrows in a T
 
@@ -712,8 +718,87 @@ var own := GoGlyphButton.make("Shop", &"", GoTheme.VAR_BUTTON, preload("res://ui
 - 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The label
   stays a plain `text`, so translation and tests work as on any button.
 - 🛑 `glyph_icon` needs a texture icon set — a font icon has no texture, and the button then shows its label alone.
+- 🔑 The label moves by half the glyph's room: on a face with real padding (at least `MIN_EDGE` on the far side, as the
+  painted pills) that much padding goes from the far side to the near one, exactly as Magnet Mayhem's `GlossButton` —
+  the button grows only past the far padding, so a 56 × 56 glyph-only pill stays 56 wide. A thinner face keeps the
+  group centred and the glyph `MIN_EDGE` off its side.
 
-## 24. GoHudCard — a match HUD's top-row board
+## 24. GoSlider — a slider drawn the painted way
+
+`class_name GoSlider extends HSlider`. The settings slider of Magnet Mayhem, drawn exactly as the game draws it: the
+fill runs `FILL_PAST` (2) past the handle's centre and is never shorter than the track is tall, and a held handle is
+drawn `HELD_SCALE` (1.12) larger. Values, steps, signals, keys and touch are the stock HSlider's.
+
+```gdscript
+var music := GoSlider.make(0.0, 1.0, 0.01)
+music.theme_type_variation = &"GoSliderGreen"      # GoSliderCyan, or none for the blue fill
+```
+
+`make(minimum, maximum, snap)` · `part(item)` (the theme part it draws) · `handle_size()` · `handle_center_x()` ·
+`bar_rect()` · `fill_rect()` · `handle_rect()`. Its least size is its `custom_minimum_size`, set when it is made (120 wide, `GoTheme.TOUCH` tall) — the engine's Slider would measure the blanks; a screen that sets its own wins.
+
+- 🔑 The parts are the theme's own HSlider parts (`slider`, `grabber_area`, `grabber_area_highlight`, `grabber`,
+  `grabber_highlight`, `grabber_disabled`), read again when the theme or the variation changes — every preset draws its
+  own look, and a variation gives only the parts it changes.
+- 🔑 The engine's drawing is blanked with overrides: a see-through grabber as wide as the handle, so a press still maps
+  to the value under the finger. Do not add your own `grabber` or `slider` overrides — put a variation in the theme.
+- `GoStyle.slider()` stays a plain HSlider; reach for `GoSlider` where a screen must look like the painted game.
+
+## 25. GoSwitch — an on/off switch with a caption
+
+`class_name GoSwitch extends CheckButton`. The settings switch of Magnet Mayhem, drawn exactly as the game draws it:
+with no `text` the pill stands centred in its box on whole pixels, and a caption ("ON" / "OFF") sits in the part of
+the pill the knob is not on. Toggling, `toggled` and the touch target are the stock CheckButton's.
+
+```gdscript
+var vibration := GoSwitch.make(true)
+vibration.set_texts(tr("ON"), tr("OFF"))      # both shrink together so the longer one fits
+```
+
+`make(on)` · `on_text` · `off_text` · `set_texts(on, off)` · `part(item)` · `pill_texture()` · `pill_size()` ·
+`switch_rect()` · `caption()` · `caption_room()` · `caption_font_size()` · `caption_width()` · `caption_position()`.
+Constants `TEXT_SIZE` (12), `KNOB_SHARE` (0.86), `TEXT_EDGE` (9), `TEXT_OUTLINE` (3).
+
+- 🔑 The pills are the theme's CheckButton icons (`checked`, `unchecked`, their `_disabled` and `_mirrored` forms).
+  The caption is white with a `TEXT_OUTLINE` rim in the CheckButton's `font_color` (the ink on arcade_light); on a
+  look whose text is light, the text colour fills it and the page colour rims it.
+- 🔑 With a `text` the label is the engine's and the pill stands where the engine puts the check icon (the far end).
+- 🔑 Its least size is its `custom_minimum_size`: `GoTheme.TOUCH` tall from the start, and at least the pill plus
+  `SIDE_ROOM` wide once the look is read. A screen that sets its own height wins.
+- `GoStyle.toggle()` stays a plain CheckButton; reach for `GoSwitch` where a screen must look like the painted game.
+
+## 26. GoMapPreview — a small map of a level
+
+`class_name GoMapPreview extends Control`. Magnet Mayhem's MapPreview, drawn exactly as the game draws it: areas
+(rectangles, circles, free polygons) filled and outlined, the links between them, white start dots, all fitted and
+centred in a dark box or the theme's well. Locked, it is a grey silhouette with no starts. The game hands in data only.
+
+```gdscript
+var map := GoMapPreview.new()
+map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))        # centre, half size, fill
+map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))
+map.add_link(Vector2(0, 0), Vector2(18, 0), 2.0, Color("#c9a26b"))    # centre to centre, under the areas
+map.set_starts(PackedVector2Array([Vector2(-3, 0), Vector2(20, 0)]))
+map.set_well()                                                        # the painted well, padding 12
+map.locked = not unlocked
+```
+
+`clear()` · `add_rect(center, half, color)` · `add_circle(center, radius, color)` · `add_polygon(points, color)` ·
+`add_link(from, to, width, color)` · `set_starts(points)` · `set_well()` · `locked` · `padding` · `show_background` ·
+`background` · `to_canvas(point)` · `map_scale()` · `background_box()` · `area_count()` · `link_count()` ·
+`start_count()` · `area_color(i)` · `link_color(i)` · `starts_shown()`. Constants `PADDING` (4), `WELL_PADDING` (12),
+`EDGE` / `EDGE_WIDTH` (0.6), `DOT` / `DOT_RADIUS` (0.8), `LOCKED_AREA`, `LOCKED_LINK`, `CIRCLE_SEGMENTS` (32).
+
+- 🔑 World units, +X right and +Y down. The areas' bounds (not the links) are scaled to fit the box less `padding`
+  and centred, so an off-centre map stays centred. Links are drawn first, so a bar from centre to centre is covered
+  by the areas at its ends.
+- 🔑 The background is `background` if set; else the theme's `GoWell` after `set_well()`; else the theme's
+  `GoMapPreview` panel; else the game's flat box (`#18213a`, a 1 px `#58627b` rim, corner 6). `show_background =
+  false` draws none, for a card that draws its own well round the thumbnail.
+- 🛑 It clips to its box (`clip_contents`), as the game's MapPreview does: on a scaled canvas the background's last
+  fractional row would otherwise show. It ignores the mouse.
+
+## 27. GoHudCard — a match HUD's top-row board
 
 `class_name GoHudCard extends PanelContainer` · input-transparent. Under `arcade_light` it draws Magnet Mayhem's HUD
 cards pixel for pixel (the player card, the opponents count, the match clock, the repulse gauge).
@@ -755,7 +840,7 @@ repulse.set_lit(false)             # dimmed, ink rim; set_lit(true) pops it
 - 🔎 The game sizes its top-row panels once with the desktop padding and never shrinks them, so its touch-mode player
   card keeps the desktop height; a `GoHudCard` fits its content. Set `custom_minimum_size.y` to keep a fixed height.
 
-## 25. GoCountdown — the match-start count
+## 28. GoCountdown — the match-start count
 
 `class_name GoCountdown extends Label` · input-transparent, hidden until a step shows. Under `arcade_light` it draws
 Magnet Mayhem's countdown pixel for pixel (the gold digit on the blue badge, GO! on the green one).
@@ -783,7 +868,7 @@ count.hide_step()
 - 🔑 Skin hooks: `countdown_disc(final)` (default null: a round `accent` / `success` disc; arcade_light: the painted
   blue and green badges) and `countdown_ink()` (default `warning`; arcade_light GOLD `#ffc928`).
 
-## 26. GoHudButton — a HUD corner button with its key
+## 29. GoHudButton — a HUD corner button with its key
 
 `class_name GoHudButton extends HBoxContainer` · the cap first, then the button. Under `arcade_light` it draws Magnet
 Mayhem's pause corner pixel for pixel (the slate "Esc" cap and the painted round pause button).
@@ -808,7 +893,7 @@ corner.add_child(pause)
 - 🔑 Skin hooks: `hud_key_hint_box()` (default `kbd_box()`; arcade_light: the game's slate `#6c7aa8` cap with an ink
   rim and a 5 dp lip) and `hud_key_hint_ink()` (default `kbd_ink()`; arcade_light white).
 
-## 27. GoNameplate — a name plate over a character
+## 30. GoNameplate — a name plate over a character
 
 `class_name GoNameplate extends PanelContainer` · a small rounded tag with a name that floats over a character, the
 same size on screen at any distance. Under `arcade_light` it draws Magnet Mayhem's name plates pixel for pixel (gold
@@ -837,7 +922,7 @@ plate.follow(camera, character.name_anchor.global_position)
   `nameplate_own_fill()` (default `warning`; arcade_light gold), `nameplate_ink(own)` (default black / white;
   arcade_light ink / white), `nameplate_outline(own)` (0 / 3) and `nameplate_outline_ink()` (black; arcade_light ink).
 
-## 28. GoNoticeFeed — a feed of one-line notices
+## 31. GoNoticeFeed — a feed of one-line notices
 
 `class_name GoNoticeFeed extends VBoxContainer` · a match's kill feed, pickups or joins: one-line rows with an icon,
 newest at the bottom, each fading in and leaving on its own. Under `arcade_light` it draws Magnet Mayhem's elimination
@@ -862,7 +947,7 @@ feed.push(tr("KO_BY") % ["YOU", target], true)   # the player's own line
 - Rows are `PanelContainer`s on the theme's `GoNotice` / `GoNoticeGold` (own) variations when the theme has them, else
   `GoSkin.notice_box(accent, true)` with a `warning` accent on the own row. Text is shown as given (not translated).
 
-## 29. GoTouchButton — a round thumb button (and the painted stick)
+## 32. GoTouchButton — a round thumb button (and the painted stick)
 
 `class_name GoTouchButton extends Control` · the big thumb buttons of a mobile action game: a round picture with its
 name under the icon, a cooldown ring while it recharges, a pulse when it is ready, and with `drag_aim` a button that is
@@ -898,7 +983,7 @@ aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
   `GoJoystick`, `joystick_art(knob)` with `joystick_idle_alpha` / `joystick_active_alpha` — a skin with the art draws
   the painted dish and knob instead of circles (`draw_joystick_art()`).
 
-## 30. GoSpotlight — dim round one thing and ring it
+## 33. GoSpotlight — dim round one thing and ring it
 
 `class_name GoSpotlight extends Control` · a tutorial played through the game points at one thing — the stick, a button,
 a gauge — by dimming everything round it and ringing it. The dim fades after a moment so the game stays fully visible
@@ -924,7 +1009,7 @@ spot.clear()
 - 🛑 Display only: it lights what it is told to.
 - Skin hooks: `spotlight_dim()` (the dim colour) and `spotlight_ring_box()` (the ring, drawn over the hole).
 
-## 31. GoTaskCard — a lesson's card
+## 34. GoTaskCard — a lesson's card
 
 `class_name GoTaskCard extends PanelContainer` · the card of a tutorial played through the game: which step this is,
 the lesson's name, what to do, one chip per part that ticks off as it is done, a hint when the player is stuck and a short
@@ -957,7 +1042,7 @@ card.hint = tr("HINT_RING_OUT")         # "" hides it
 - The board is the theme's `GoHudPanel`; chips are `GoSkin.kbd_box()` / `kbd_done_box()`. Skin hooks:
   `task_title_ink()` (the title and the compact row) and `task_hint_ink()` (the hint). Pair it with `GoSpotlight`.
 
-## 32. GoPerfReadout — a performance band
+## 35. GoPerfReadout — a performance band
 
 `class_name GoPerfReadout extends PanelContainer` · a small always-on band of numbers for tuning a game on a weak
 phone: frames per second, the frame time and the worst frame, triangles, draw calls, nodes, RAM and VRAM. Under

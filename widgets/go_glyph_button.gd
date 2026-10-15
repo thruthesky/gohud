@@ -9,8 +9,9 @@
 ## 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The
 ##    label stays a plain `text`, so translation and tests work as on any button. The label moves right by half the
 ##    glyph's room (the faces are wrapped to move that much content margin from the right side to the left), so the
-##    button's minimum size does not change unless the shift is wider than the right padding, or the glyph would come
-##    closer than [constant MIN_EDGE] to the edge — then the button grows instead.
+##    button's minimum size does not change unless the shift is wider than the right padding — then the button grows
+##    instead, exactly as Magnet Mayhem's GlossButton. A face thinner than [constant MIN_EDGE] keeps the group centred
+##    and the glyph that far from the edge.
 ## 🔑 Right to left, the whole layout is mirrored: the glyph stands at the label's right, where the reading starts.
 @tool
 class_name GoGlyphButton
@@ -62,17 +63,21 @@ class ShiftedBox:
 	func _init(from: StyleBox = null, shift := 0.0, mirrored := false, edge := 0.0) -> void:
 		base = from
 		if from == null: return
-		# The label's centre moves away from the glyph by `shift`. Up to `shift` of the far padding is given up (the
-		# group is then centred with thinner padding on both sides), never so much that the glyph — `2 × shift` before
-		# the label at the smallest size — comes closer than `edge` to its side. A negative margin would read as
-		# "unset", so past that the button grows.
+		# The label's centre moves away from the glyph by `shift`. On a face with real padding (the far side at least
+		# `edge`, as on the painted pills) that much padding goes from the far side to the near one, exactly as the
+		# game's GlossButton does; past the far padding the button grows (a negative margin would read as "unset").
+		# A thin face (a flat look's few pixels) instead keeps the group centred and the glyph `edge` off its side.
 		var lead := SIDE_RIGHT if mirrored else SIDE_LEFT
 		var trail := SIDE_LEFT if mirrored else SIDE_RIGHT
 		var near := from.get_margin(lead)
 		var far := from.get_margin(trail)
-		var outside := maxf(near - minf(shift, far), edge)
-		set_content_margin(lead, outside + 2.0 * shift)
-		set_content_margin(trail, outside - near + far)
+		if far >= edge:
+			set_content_margin(lead, near + shift)
+			set_content_margin(trail, maxf(far - shift, 0.0))
+		else:
+			var outside := maxf(near - minf(shift, far), edge)
+			set_content_margin(lead, outside + 2.0 * shift)
+			set_content_margin(trail, outside - near + far)
 		content_margin_top = from.get_margin(SIDE_TOP)
 		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
 
@@ -85,6 +90,7 @@ class ShiftedBox:
 
 func _init() -> void:
 	theme_type_variation = GoTheme.VAR_BUTTON
+	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's GlossButton
 
 
 static func make(label: String, icon: StringName = &"", variation: StringName = GoTheme.VAR_BUTTON,
@@ -130,7 +136,8 @@ func glyph_rect() -> Rect2:
 	var x := middle - text_width * 0.5 - GAP - drawn.x
 	if is_layout_rtl(): x = middle + text_width * 0.5 + GAP
 	if text.is_empty(): x = (size.x - drawn.x) * 0.5
-	x = clampf(x, MIN_EDGE, maxf(MIN_EDGE, size.x - MIN_EDGE - drawn.x))
+	# Only the glyph's own side is clamped (the game's maxf): a cramped button lets the glyph meet the label.
+	x = minf(x, size.x - MIN_EDGE - drawn.x) if is_layout_rtl() else maxf(x, MIN_EDGE)
 	var pressed := get_draw_mode() == DRAW_PRESSED or get_draw_mode() == DRAW_HOVER_PRESSED
 	return Rect2(Vector2(x, (size.y - drawn.y) * 0.5 - 1.0 + (PRESS_DROP if pressed else 0.0)), drawn)
 
@@ -147,6 +154,7 @@ func _exit_tree() -> void:
 ## The look or the icon set changed: the glyph may be another size, so the shift is measured again.
 func _on_ui_changed() -> void:
 	_update_shift()
+	GoStyle.skin_focus(self)
 	queue_redraw()
 
 

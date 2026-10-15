@@ -68,6 +68,9 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_theme_test.gd" 
 step "①-w unit tests — the painted widgets (fit_font_size, GoCoverImage, GoKeyCluster, GoLevelCard, GoGlyphButton, GoKbd done, GoSurface extras)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_widgets_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-c unit tests — the painted controls (GoSlider, GoSwitch, GoMapPreview: drawn as Magnet Mayhem draws them)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_controls_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-h unit tests — the match-HUD widgets (GoBar's painted frame, …)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_game_hud_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1

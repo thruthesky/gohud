@@ -6,7 +6,7 @@
 ## the whole screen and only the content stays inside this rectangle.**
 ##
 ## ```gdscript
-## var area := GoSafeArea.usable_rect(get_window())
+## var area := GoSafeArea.usable_rect(get_viewport())
 ## card.position = area.position + ...
 ## ```
 ##
@@ -29,10 +29,15 @@ func _ready() -> void:
 	_layout()
 
 
-## The rectangle actually usable in this window (units = the UI coordinate space).
-static func usable_rect(window: Window) -> Rect2:
-	if window == null: return Rect2()
-	var area := window.get_visible_rect()
+## The rectangle actually usable in this window (units = the UI coordinate space). [param view] is the viewport the
+## node is drawn in (`get_viewport()`): a `SubViewport` — a preview, a render-to-texture — is its own whole rect, with
+## no safe area (the notch is the screen's, not the texture's). 🛑 Passing `get_window()` from inside a SubViewport
+## gave the main window's rect, so a window there sized and centred itself for the wrong screen.
+static func usable_rect(view: Viewport) -> Rect2:
+	if view == null: return Rect2()
+	var area := view.get_visible_rect()
+	var window := view as Window
+	if window == null: return area
 	if not GoUi.config.respect_safe_area: return area
 	if not GoUi.is_handheld_platform(): return area
 	return clip_to_safe(area, Rect2(DisplayServer.get_display_safe_area()), window.get_final_transform())
@@ -53,7 +58,7 @@ static func clip_to_safe(area: Rect2, safe_px: Rect2, to_screen: Transform2D) ->
 
 
 ## The rectangle with the height covered by the virtual keyboard taken off. With no keyboard it is the same as above.
-static func usable_rect_with_keyboard(window: Window, keyboard_px: int) -> Rect2:
+static func usable_rect_with_keyboard(window: Viewport, keyboard_px: int) -> Rect2:
 	var area := usable_rect(window)
 	if keyboard_px <= 0 or window == null: return area
 	var keyboard := px_to_units(window, keyboard_px)
@@ -64,13 +69,13 @@ static func usable_rect_with_keyboard(window: Window, keyboard_px: int) -> Rect2
 
 ## A height in screen pixels (the virtual keyboard's) in this window's UI units — by the same final transform as above.
 ## Never larger than the pixels: a window drawn below 1:1 (a headless run) keeps the figure as it is.
-static func px_to_units(window: Window, px: float) -> float:
+static func px_to_units(window: Viewport, px: float) -> float:
 	if window == null: return px
 	return px / maxf(1.0, absf(window.get_final_transform().get_scale().y))
 
 
 func _layout() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
-	var area := usable_rect(get_window())
+	var area := usable_rect(get_viewport())
 	position = area.position
 	size = area.size

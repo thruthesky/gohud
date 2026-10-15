@@ -98,16 +98,16 @@ Shapes that web UI kits have, reshaped for what games actually need.
 | **`GoCarousel`** store banners and character select; does **not** advance on its own by default, and never when `reduce_motion` is on | `carousel.set_pages([a, b, c])` | hud.md §15 |
 | **`GoChoiceColumn`** a short column of choices tapped once — a HUD summon list: a few rows at a time, scrolls up and down, **one tap on any row acts**, the game marks any number of rows chosen or greyed, rows can draw their own picture | `GoChoiceColumn.make(animals, 4, summon).set_selected(2, true)` | hud.md §18 |
 | **`GoKbd`** key caps for PC/Steam builds; `for_action()` reads the **real binding** from `InputMap`, so rebinding does not make the hint lie; hides itself on handhelds | `GoKbd.for_action(&"interact")` | platform.md §7 |
-| **`GoLevelCard`** a stage-select tile: thumbnail, title, subtitle, a check, a padlock or a PLAY! tag by state; `GoKeyCluster` WASD or arrows in a T; `GoCoverImage` a picture that covers its box; `GoGlyphButton` a glyph beside the label | `GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)` | hud.md §20–§23 |
-| **`GoPerfReadout`** always-on fps / frame time / triangles / draws / memory band that turns red as fps drops | `overlay.add_child(GoPerfReadout.new())` | hud.md §32 |
-| **`GoTaskCard`** a lesson's card: step, title, what to do, ticking part chips, hint; folds to one row | `card.set_parts(["W", "A", "S", "D"])` | hud.md §31 |
-| **`GoSpotlight`** dims round one thing and rings it; the dim fades, the ring stays | `spot.follow(jump_button, true)` | hud.md §30 |
-| **`GoTouchButton`** a round thumb button: art, a fitted name, a cooldown ring, a ready pulse, drag-to-aim; `GoJoystick` draws painted art | `GoTouchButton.make(&"btn_jump", "JUMP", 86)` | hud.md §29 |
-| **`GoNoticeFeed`** a feed of one-line notices (a kill feed) that fade in, stack and go on their own | `feed.push(text, own)` | hud.md §28 |
-| **`GoNameplate`** a name plate over a character in 3D, the same size at any distance | `GoNameplate.make(name, color, own)` + `follow(camera, point)` | hud.md §27 |
-| **`GoHudButton`** a HUD corner button: a picture button with its key on a cap beside it (the pause button and "Esc") | `GoHudButton.make(art, 52.0, "Esc")` | hud.md §26 |
-| **`GoCountdown`** the match-start count: 3 · 2 · 1 · GO! big on a disc, each step popping in | `count.show_step("3")` | hud.md §25 |
-| **`GoHudCard`** a match HUD's top-row board: icon, gold banner over HUD bars, a caption over a clock, a count, a gauge that lights when ready | `GoHudCard.make(GoUi.skin().widget_art(&"stopwatch")).set_clock(83)` | hud.md §24 |
+| **`GoLevelCard`** a stage-select tile: thumbnail, title, subtitle, a check, a padlock or a PLAY! tag by state; `GoKeyCluster` WASD or arrows in a T; `GoCoverImage` a picture that covers its box; `GoGlyphButton` a glyph beside the label; `GoSlider` a slider whose fill runs past the handle and whose handle grows while held; `GoSwitch` an on/off pill with ON / OFF captions; `GoMapPreview` a small map of a level (areas, links, starts; a grey silhouette when locked) | `GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)` | hud.md §20–§26 |
+| **`GoPerfReadout`** always-on fps / frame time / triangles / draws / memory band that turns red as fps drops | `overlay.add_child(GoPerfReadout.new())` | hud.md §35 |
+| **`GoTaskCard`** a lesson's card: step, title, what to do, ticking part chips, hint; folds to one row | `card.set_parts(["W", "A", "S", "D"])` | hud.md §34 |
+| **`GoSpotlight`** dims round one thing and rings it; the dim fades, the ring stays | `spot.follow(jump_button, true)` | hud.md §33 |
+| **`GoTouchButton`** a round thumb button: art, a fitted name, a cooldown ring, a ready pulse, drag-to-aim; `GoJoystick` draws painted art | `GoTouchButton.make(&"btn_jump", "JUMP", 86)` | hud.md §32 |
+| **`GoNoticeFeed`** a feed of one-line notices (a kill feed) that fade in, stack and go on their own | `feed.push(text, own)` | hud.md §31 |
+| **`GoNameplate`** a name plate over a character in 3D, the same size at any distance | `GoNameplate.make(name, color, own)` + `follow(camera, point)` | hud.md §30 |
+| **`GoHudButton`** a HUD corner button: a picture button with its key on a cap beside it (the pause button and "Esc") | `GoHudButton.make(art, 52.0, "Esc")` | hud.md §29 |
+| **`GoCountdown`** the match-start count: 3 · 2 · 1 · GO! big on a disc, each step popping in | `count.show_step("3")` | hud.md §28 |
+| **`GoHudCard`** a match HUD's top-row board: icon, gold banner over HUD bars, a caption over a clock, a count, a gauge that lights when ready | `GoHudCard.make(GoUi.skin().widget_art(&"stopwatch")).set_clock(83)` | hud.md §27 |
 
 ## 7. GoStyle — the control factory
 
@@ -156,7 +156,7 @@ actions along the bottom — is the template `assets/templates/edge_bar_hud.gd`.
 | Feature | One line | Reference |
 |---|---|---|
 | 48 dp touch targets behind smaller visuals; overlapping targets go to the nearer centre (`touch_peers`) | `slot.touch_peers = peers` | platform.md §4 |
-| Safe area (notch, gesture bar) and virtual keyboard avoidance | `GoSafeArea.usable_rect(get_window())` | platform.md §5 |
+| Safe area (notch, gesture bar) and virtual keyboard avoidance | `GoSafeArea.usable_rect(get_viewport())` | platform.md §5 |
 | Breakpoints by short side in dp (mobile ≤ 576, tablet ≤ 991); optional 1 unit = 1 dp scaling | `GoScale.breakpoint_for_dp(dp)` | platform.md §5 |
 | Android Back / Escape ownership shared across windows | `GoBackPolicy.acquire(get_tree())` | platform.md §6 |
 | Focus rings only for keyboard/gamepad, focus trapped in windows and restored on close | `GoConfig.suppress_pointer_focus_ring` | platform.md §4 |

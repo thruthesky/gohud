@@ -106,11 +106,11 @@ func _relayout() -> void:
 	if not is_inside_tree(): return
 	var view := get_viewport_rect().size
 	if view.x <= 0.0: return
-	var area := GoSafeArea.usable_rect(get_window())
+	var area := GoSafeArea.usable_rect(get_viewport())
 	var side := float(_side_margin())
 	var cap := _max_width()
 	if cap > 0 and area.size.x > float(cap): side = maxf(side, (area.size.x - float(cap)) * 0.5)
-	var keyboard := GoSafeArea.px_to_units(get_window(), _keyboard_px)
+	var keyboard := GoSafeArea.px_to_units(get_viewport(), _keyboard_px)
 	# 🛑 **Overlap is judged where the form will actually sit.** Measured against the whole safe area, a form that is
 	#    already pulled to the center on a wide screen by the width cap — nowhere near the HUD — gets **pushed aside**
 	#    again and its centering breaks (the body drifted 214dp to the left on a 1280 screen — measured 2026-09-13 on desktop).
@@ -189,7 +189,7 @@ func _process(_delta: float) -> void:
 	# 🛑 HUD sizes settle **later** (children's minimum sizes are measured deferred). Computing once means trusting
 	#    the 0×0 of the first frame — so it is laid out again only when the value has changed.
 	if avoid_hud and is_inside_tree():
-		var area := GoSafeArea.usable_rect(get_window())
+		var area := GoSafeArea.usable_rect(get_viewport())
 		var side := float(_side_margin())
 		var cap := _max_width()
 		if cap > 0 and area.size.x > float(cap): side = maxf(side, (area.size.x - float(cap)) * 0.5)

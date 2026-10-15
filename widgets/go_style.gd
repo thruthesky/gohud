@@ -450,6 +450,7 @@ enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID, OUTLINED }
 static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	node.theme = GoUi.theme()
 	press_feel(node)
+	skin_focus(node)
 	match tone:
 		Tone.PRIMARY: node.theme_type_variation = GoTheme.VAR_PRIMARY_BUTTON
 		Tone.DANGER: node.theme_type_variation = GoTheme.VAR_DANGER_BUTTON
@@ -1116,6 +1117,7 @@ static func toggle(key := "", translate := true) -> CheckButton:
 	# Uses the button height so it lines up with inputs and buttons in a form (taller than the touch floor).
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	skin_focus(node)
 	if GoUi.config.autowrap_text: fit_words(node)   # the same word rule as buttons
 	return node
 
@@ -1128,6 +1130,7 @@ static func checkbox(key := "", translate := true) -> CheckBox:
 		else Node.AUTO_TRANSLATE_MODE_DISABLED
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	skin_focus(node)
 	return node
 
 
@@ -1139,7 +1142,22 @@ static func slider(minimum := 0.0, maximum := 1.0, step := 0.01) -> HSlider:
 	node.max_value = maximum
 	node.step = step
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
+	skin_focus(node)
 	return node
+
+
+## The meta holding the focus mode [method skin_focus] last set.
+const SKIN_FOCUS_META := &"_go_skin_focus"
+
+## Gives [param node] the look's focus mode ([method GoSkin.control_focus_mode]) — arcade_light's controls stay out of
+## the focus order like the game's, every other look keeps [param default_mode]. Call it again after a look change.
+## 🛑 Only a mode gohud set is changed: once the project sets its own `focus_mode`, it is left alone for good.
+static func skin_focus(node: Control, default_mode := Control.FOCUS_ALL) -> void:
+	var applied: int = node.get_meta(SKIN_FOCUS_META, default_mode)
+	if node.focus_mode != applied: return
+	var mode := GoUi.skin().control_focus_mode(default_mode)
+	node.focus_mode = mode
+	node.set_meta(SKIN_FOCUS_META, mode)
 
 
 static func picker() -> OptionButton:
@@ -1147,6 +1165,7 @@ static func picker() -> OptionButton:
 	node.theme = GoUi.theme()
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	GoScroll.yield_vertical(node)   # an up-and-down swipe that starts on the dropdown scrolls the list that holds it
+	skin_focus(node)
 	return node
 
 
@@ -2185,7 +2204,7 @@ static func toolbar(items: Array, vertical := false) -> PanelContainer:
 		button.icon_name = StringName(spec.get("icon", &""))
 		button.tooltip_text_name = StringName(spec.get("tooltip", &""))
 		# 🔑 Spaced so each button's 48dp touch area meets its neighbour's instead of overlapping it.
-		line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - button.visual_size))
+		line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.metric(GoTheme.TOUCH) - button.visual_size))
 		var action: Callable = spec.get("action", Callable())
 		if action.is_valid(): button.pressed.connect(action)
 		line.add_child(button)
@@ -2221,7 +2240,7 @@ static func bottom_app_bar(items: Array, fab: GoFab = null) -> PanelContainer:
 	var line := HBoxContainer.new()
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	line.custom_minimum_size.y = 80.0
-	line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - 36))
+	line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.metric(GoTheme.TOUCH) - 36))
 	pad.add_child(line)
 	var peers: Array[Control] = []
 	for spec: Dictionary in items:
@@ -2247,7 +2266,7 @@ static func bottom_app_bar(items: Array, fab: GoFab = null) -> PanelContainer:
 	#    layout check rebuilds the gallery per look, 2026-10-02).
 	var inset := func() -> void:
 		if not is_instance_valid(node) or not node.is_inside_tree() or Engine.is_editor_hint(): return
-		var window := node.get_window()
+		var window := node.get_viewport()
 		if window == null: return
 		pad.add_theme_constant_override(&"margin_bottom",
 			roundi(maxf(0.0, window.get_visible_rect().end.y - GoSafeArea.usable_rect(window).end.y)))
@@ -3290,7 +3309,7 @@ static func _audit_box(control: Control, problems: Array[String]) -> void:
 		var touch := float(GoUi.metric(GoTheme.TOUCH))
 		var reach := rect.size
 		# A `GoIconButton` or a small `GoFab` draws small and presses big — its hit test reaches out to the touch size.
-		if control is GoIconButton or control is GoFab: reach = reach.max(Vector2.ONE * float(GoUi.config.min_touch_size))
+		if control is GoIconButton or control is GoFab: reach = reach.max(Vector2.ONE * GoUi.touch_size())
 		# A day in a calendar may be narrower — seven columns have to fit a 320dp phone. It carries `go_touch_floor`, the
 		# narrowest it is meant to get, and stays full height (`GoDatePicker`).
 		var floor_x := touch

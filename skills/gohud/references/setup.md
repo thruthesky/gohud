@@ -90,7 +90,7 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | Feedback | `haptics_enabled` (true) · `haptic_tap_ms` (10) · `haptic_light_ms` (20) · `haptic_medium_ms` (40) · `haptic_tap_amplitude` (0.35) · `haptic_light_amplitude` (0.5) · `haptic_medium_amplitude` (0.8) | Vibration on handhelds only; amplitude 0–1 where the device supports it |
 | | `sound_cues` | `opened→ui_open`, `closed→ui_close`, `tapped→ui_click`, `confirmed→ui_confirm`, `canceled→ui_cancel`, `failed→ui_error`, `fanfare→ui_fanfare` |
 | Localization | `text_keys` · `text_overrides` · `number_formatter` (Callable) · `load_builtin_translations` (true) | See platform.md §2 |
-| Accessibility | `min_touch_size` (48) · `reduce_motion` (false) · `autowrap_text` (true) | Touch floor, fades/pulses off, label wrapping |
+| Accessibility | `min_touch_size` (the look's: 48, `arcade_light` 44) · `reduce_motion` (false) · `autowrap_text` (true) | Touch floor, fades/pulses off, label wrapping |
 
 `cfg.copy()` deep-copies the dictionaries — use it instead of `duplicate()` for a per-screen variant.
 

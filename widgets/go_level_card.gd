@@ -191,6 +191,12 @@ const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 	set(value):
 		lock_size = value
 		_queue_refresh()
+## The gap between the padlock and its caption, in pixels (not scaled — the game's card keeps the engine's 4 there).
+## Set here so a theme's own VBoxContainer gap never pushes the lock column apart.
+@export var lock_gap := 4:
+	set(value):
+		lock_gap = value
+		_queue_refresh()
 @export var tag_size := Vector2(104, 44):
 	set(value):
 		tag_size = value
@@ -239,6 +245,7 @@ var _lock_disabled := false
 func _init() -> void:
 	name = "LevelCard"
 	focus_mode = Control.FOCUS_ALL
+	GoStyle.skin_focus(self)   # arcade_light: FOCUS_NONE like the game's StageCard
 	alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_build()
 	_built = true
@@ -335,6 +342,8 @@ func _build() -> void:
 	thumbnail_slot.name = "Thumbnail"
 	thumbnail_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	thumbnail_slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# Clipped like the game's MapPreview: on a scaled canvas the well's last half row would otherwise show.
+	thumbnail_slot.clip_contents = true
 	thumbnail_slot.child_entered_tree.connect(_inset_thumbnail)
 	_row.add_child(thumbnail_slot)
 	_well = Panel.new()
@@ -493,13 +502,14 @@ func _refresh() -> void:
 	accessibility_name = summary().replace("\n", ", ")
 	# 🛑 Never under a touch target — the game's card has no such floor, so at a small `scale_factor` this tile is
 	#    taller than the game's (on purpose: it stays easy to press).
-	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, float(GoUi.config.min_touch_size)))
+	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, GoUi.touch_size()))
 
 	_margin.add_theme_constant_override(&"margin_left", roundi(thumbnail_inset * k))
 	for side in [&"margin_right", &"margin_top", &"margin_bottom"]:
 		_margin.add_theme_constant_override(side, roundi(card_padding * k))
 	_row.add_theme_constant_override(&"separation", roundi(row_gap * k))
 	_text_box.add_theme_constant_override(&"separation", roundi(4.0 * k))
+	_lock_box.add_theme_constant_override(&"separation", lock_gap)
 	_subtitle_row.add_theme_constant_override(&"separation", roundi(text_gap * k))
 
 	# The thumbnail, in the theme's well when it has one.
@@ -651,4 +661,5 @@ func _notification(what: int) -> void:
 
 
 func _on_ui_changed() -> void:
+	GoStyle.skin_focus(self)
 	_queue_refresh()

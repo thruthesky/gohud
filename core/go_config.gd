@@ -389,7 +389,26 @@ signal changed_settings
 ## Minimum side of a touch target (dp). Material 48 · Apple HIG 44 are the basis.
 ## 🛑 It is the floor for **hit testing**, not for visual size — a widget may look smaller than this,
 ##    but the area you can press keeps to this value.
-@export_range(24, 96) var min_touch_size := 48
+## 🔑 Left alone, the floor is **the look's own** — its `touch` token (48 in every look, 44 in `arcade_light`, the
+##    Magnet Mayhem floor). A size set here (in code or saved in the inspector) is the project's choice and wins over
+##    every look; [method follow_look_touch_size] hands it back. Read the floor in force with `GoUi.touch_size()`.
+@export_range(24, 96) var min_touch_size := 48:
+	set(value):
+		min_touch_size = value
+		_touch_chosen = true
+
+var _touch_chosen := false
+
+
+## Did the project choose [member min_touch_size]? False: the look's `touch` token is the floor.
+func touch_size_chosen() -> bool:
+	return _touch_chosen
+
+
+## Gives the touch floor back to the look (its `touch` token); [member min_touch_size] reads its default again.
+func follow_look_touch_size() -> void:
+	min_touch_size = 48
+	_touch_chosen = false
 
 ## Reduce motion — turns off fades and the coach-mark pulse.
 @export var reduce_motion := false

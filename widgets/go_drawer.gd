@@ -225,7 +225,7 @@ func effective_side() -> GoDrawer.Side:
 
 func _relayout() -> void:
 	if panel == null or not is_inside_tree(): return
-	var window := get_window()
+	var window := get_viewport()
 	if window == null: return
 	# 🛑 The background (the panel) runs **all the way** to the screen edge while the content stays inside the
 	#    safe area — pull the panel inward and a band of page colour appears at the edge, making the drawer look like it floats.
@@ -259,7 +259,7 @@ func _relayout() -> void:
 
 func _animate(shown: bool) -> void:
 	if is_instance_valid(_tween) and _tween.is_valid(): _tween.kill()
-	var window := get_window()
+	var window := get_viewport()
 	var full := window.get_visible_rect() if window != null else Rect2()
 	var at_left := effective_side() == Side.LEFT
 	var rest := 0.0 if at_left else full.size.x - panel.size.x

@@ -73,6 +73,7 @@ func _initialize() -> void:
 	await _grid_contract()
 	await _side_bars()
 	_safe_area_units()
+	await _safe_area_viewport()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -2659,3 +2660,45 @@ func _safe_area_units() -> void:
 		"safe area: a collapsed transform (before the first layout) → the whole screen")
 	check(GoSafeArea.px_to_units(null, 300) == 300.0, "keyboard: with no window the pixels stand")
 	section("safe area units")
+
+
+# ── In a SubViewport: the safe area is the viewport's ─────────────────
+
+## The widgets that lay out in the safe area read the viewport they are drawn in, as `GoSurface` does: inside a
+## SubViewport (a preview, a render-to-texture) they fit that viewport, not the main window round it.
+const VIEWPORT_SCRIPTS := ["go_app_bar", "go_coach_mark", "go_console", "go_drawer", "go_edge_bar", "go_form", "go_fab",
+	"go_hud_anchor", "go_nav_bar", "go_style"]
+
+func _safe_area_viewport() -> void:
+	for script_name: String in VIEWPORT_SCRIPTS:
+		var source := FileAccess.get_file_as_string("res://addons/gohud/widgets/%s.gd" % script_name)
+		check(not source.is_empty() and not source.contains("get_window()"),
+			"safe area: %s reads get_viewport(), not get_window()" % script_name)
+	var view := SubViewport.new()
+	view.size = Vector2i(600, 400)
+	root.add_child(view)
+	var console := GoConsole.new()
+	view.add_child(console)
+	var drawer := GoDrawer.new()
+	drawer.motion_seconds = 0.0
+	drawer.side = GoDrawer.Side.RIGHT
+	view.add_child(drawer)
+	var corner := GoHudAnchor.new()
+	corner.spot = GoHudAnchor.Spot.BOTTOM_RIGHT
+	var block := Control.new()
+	block.custom_minimum_size = Vector2(40, 30)
+	corner.add_child(block)
+	view.add_child(corner)
+	await frames(2)
+	console.open()
+	drawer.open("Bag")
+	await frames(3)
+	var panel: Control = console._panel
+	check(is_equal_approx(panel.size.x, 600.0), "safe area: a console in a SubViewport is the viewport's width (got %s)" % panel.size)
+	check(is_equal_approx(drawer.panel.size.y, 400.0) and absf(drawer.panel.get_rect().end.x - 600.0) < 1.0,
+		"safe area: a drawer in a SubViewport runs its height on its right edge (got %s)" % drawer.panel.get_rect())
+	var spot := corner.get_rect()
+	check(spot.end.x <= 600.0 and spot.end.y <= 400.0 and spot.end.x > 500.0 and spot.end.y > 300.0,
+		"safe area: a bottom-right anchor in a SubViewport sits in its corner (got %s)" % spot)
+	view.queue_free()
+	await frames(1)
