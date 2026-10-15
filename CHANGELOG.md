@@ -17,6 +17,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
     `GoStyleBoxMedieval` border + bevel line), a `StyleBoxFlat`'s border, a `StyleBoxTexture`'s nine-slice margin, or
     a `border_width` field.
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
+- **A title glyph on a ribbon is drawn as large as the game's.** On a plate (the painted ribbon in `arcade_light`) the
+  glyph's cell is its side wide and as tall as the title's line, the art kept to its aspect — the game's `RibbonHeader`
+  row — so a tall glyph such as a lock fills the line instead of a side × side square; the glyph and words start on the
+  whole pixel an `HBoxContainer` picks (rounded down).
 ### Changed
 
 - **Under `arcade_light` a window's title is the game's ribbon title: 34 dp on a 57 dp ribbon.** It shrinks to fit

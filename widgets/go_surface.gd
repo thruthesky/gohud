@@ -736,7 +736,7 @@ func _place_title_glyph() -> void:
 		var base_left := _plate_end(plate, SIDE_LEFT)
 		var base_right := _plate_end(plate, SIDE_RIGHT)
 		var group := side + TITLE_GLYPH_GAP + _title_words_width()
-		var start := roundf((base_right if rtl else base_left) \
+		var start := floorf((base_right if rtl else base_left) \
 				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP)
 		var want_left := base_left if rtl else start
 		var want_right := start if rtl else base_right
@@ -748,9 +748,17 @@ func _place_title_glyph() -> void:
 		var wide := minf(_title_words_width(), maxf(0.0, width - left - right))
 		var middle := (left + width - right) * 0.5
 		x = (middle + wide * 0.5 + TITLE_GLYPH_GAP) if rtl else (middle - wide * 0.5 - TITLE_GLYPH_GAP - side)
-	var y := top + (title_label.size.y - top - bottom - side) * 0.5
+	# On a plate the glyph's cell is `side` wide and as tall as the title's line, the art kept to its aspect — the
+	# game's ribbon row, where a tall glyph (the lock) fills the line rather than a side x side square.
+	var row := title_label.size.y - top - bottom
+	var high := side
+	if face is OverhangPlate:
+		var font := title_label.get_theme_font(&"font")
+		if font != null:
+			high = maxf(side, minf(row, font.get_height(title_label.get_theme_font_size(&"font_size"))))
+	var y := top + (row - high) * 0.5
 	_title_glyph_rect.position = Vector2(roundf(x), roundf(y))
-	_title_glyph_rect.size = Vector2(side, side)
+	_title_glyph_rect.size = Vector2(side, high)
 	var ink := title_label.get_theme_color(&"font_color") if title_label.is_inside_tree() \
 			else GoUi.skin().title_plate_ink()
 	_title_glyph_rect.self_modulate = ink if ink.a > 0.0 else Color.WHITE

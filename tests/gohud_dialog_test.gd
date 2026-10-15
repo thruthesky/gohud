@@ -199,6 +199,16 @@ func _ribbon(look: StringName) -> void:
 		"%s ribbon: the game's 34 dp title, 57 dp ribbon, shrinking no lower than 24" % look)
 	check(size == 34, "%s ribbon: the title is 34 dp (got %d)" % [look, size])
 	check(is_equal_approx(surface.title_glyph_side(), 26.0), "%s ribbon: the glyph is 26 dp (got %.1f)" % [look, surface.title_glyph_side()])
+	# The game's glyph sits in a 26-wide cell as tall as the title's line, kept to its aspect and centred with the
+	# words — so a tall glyph (the lock) is drawn as large as the line lets it, not squeezed into a 26 x 26 square.
+	var face := title.get_theme_stylebox(&"normal")
+	var row := title.size.y - face.get_margin(SIDE_TOP) - face.get_margin(SIDE_BOTTOM)
+	var line := title.get_theme_font(&"font").get_height(size)
+	var glyph := title.get_node_or_null(^"TitleGlyph") as TextureRect
+	check(glyph != null and is_equal_approx(glyph.size.x, 26.0) and absf(glyph.size.y - minf(line, row)) < 1.0
+			and absf(glyph.position.y + glyph.size.y * 0.5 - (face.get_margin(SIDE_TOP) + row * 0.5)) < 1.0,
+		"%s ribbon: the glyph's cell is 26 wide, the line's height, centred on the row (line %.1f row %.1f, got %s)"
+		% [look, line, row, str(glyph.get_rect()) if glyph != null else "none"])
 	check(is_equal_approx(title.size.y, 57.0) and is_equal_approx(surface.header.size.y, 57.0),
 		"%s ribbon: the head is 57 high (title %.1f head %.1f)" % [look, title.size.y, surface.header.size.y])
 	var card := surface.card
