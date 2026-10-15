@@ -216,6 +216,40 @@ func _hud_card(look: StringName) -> void:
 	value = clock.find_child("Value", true, false) as Label
 	check(value.text == "02:05" and not clock.is_warning(), "card: set_clock writes the time")
 	check(not value.has_theme_color_override(&"font_color"), "card: a calm clock keeps the label ink")
+	# 🔁 A clock set every frame rebuilds nothing until its text or its warning changes.
+	clock.padding = 6.0
+	var clock_box := clock.get_theme_stylebox(&"panel")
+	var rebuilds := [0]
+	var count_rebuild := func() -> void: rebuilds[0] += 1
+	clock.theme_changed.connect(count_rebuild)
+	clock.set_clock(125.4)
+	check(clock.get_theme_stylebox(&"panel") == clock_box and rebuilds[0] == 0,
+		"card: a clock whose text did not change rebuilds nothing")
+	clock.value = "02:05"
+	clock.title = "TIME"
+	check(clock.get_theme_stylebox(&"panel") == clock_box and rebuilds[0] == 0,
+		"card: setting the same value or title rebuilds nothing")
+	clock.set_clock(125.4, true)
+	check(clock.is_warning() and value.get_theme_color(&"font_color").is_equal_approx(skin.hud_alert_ink()),
+		"card: a warning with the same text still repaints")
+	clock.set_clock(124.0, true)
+	check(value.text == "02:04" and clock.get_theme_stylebox(&"panel") == clock_box,
+		"card: a new time keeps the same padded board")
+	clock.theme_changed.disconnect(count_rebuild)
+	var other_look := Theme.new()
+	var other_board := StyleBoxFlat.new()
+	other_board.bg_color = Color("#123456")
+	other_board.set_border_width_all(2)
+	other_look.set_type_variation(GoHudCard.VAR_PANEL, &"PanelContainer")
+	other_look.set_stylebox(&"panel", GoHudCard.VAR_PANEL, other_board)
+	clock.theme = other_look
+	clock.set_clock(123.0, true)
+	var repadded := clock.get_theme_stylebox(&"panel") as StyleBoxFlat
+	check(repadded != null and repadded != clock_box and repadded.bg_color == other_board.bg_color
+		and repadded.content_margin_left == 8.0, "card: a theme change pads the new theme's board")
+	clock.theme = GoUi.theme()
+	clock.padding = -1.0
+	clock.set_clock(125.0)
 	clock.set_clock(12.0, true)
 	check(value.get_theme_color(&"font_color").is_equal_approx(skin.hud_alert_ink()), "card: a warning clock reads in hud_alert_ink")
 	if painted: check(skin.hud_alert_ink().is_equal_approx(Color("#e8332f")), "card: arcade_light warns in READY_RED")

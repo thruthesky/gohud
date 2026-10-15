@@ -13,6 +13,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   size as chosen and `Resource.duplicate()` runs every stored property through its setter, so a duplicated, untouched
   `GoConfig` lost the look's touch floor (`arcade_light`'s 44 became 48). The flag is now a stored property declared
   after `min_touch_size`, so an unchosen config stays unchosen and a chosen one (even an explicit 48) stays chosen.
+- **A HUD card that changes nothing rebuilds nothing.** Every `GoHudCard` setter re-applied the card even for the
+  value it already had, and `set_clock` set its text every call, so a match clock driven from `_process` copied up to
+  two padded StyleBoxes, swapped the panel override and relaid the card out every frame. Setters now return when the
+  value is the same, `set_clock` repaints only when the `MM:SS` text or the warning changes, and the padded boards
+  are reused while their theme box and pad are the same (remade after a theme change), so the card draws as before.
 - **`arcade_light`'s fonts are Magnet Mayhem's current ones.** Nunito Bold and the four Noto Sans CJK Bold subsets
   were copied again from the game (its fonts commit of 2026-10-15), so a label measures what the game measures.
 - **A window's body clips only while it scrolls.** The body's `ScrollContainer` always clipped, which cut a part's
