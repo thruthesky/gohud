@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (19)
+8. [HUD and game shapes](#hud-and-game-shapes) (20)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -914,6 +914,18 @@ Extends `VBoxContainer`. A feed of one-line notices, such as a kill feed, that s
 var feed := GoNoticeFeed.new()
 feed.push("RED knocked out BLUE")
 feed.push("YOU knocked out GREEN", true)
+```
+
+### `GoTouchButton`
+
+Extends `Control`. A round thumb button for touch screens, with a cooldown ring, a ready pulse and optional drag-to-aim. Details: `hud.md` §29 (GoTouchButton).
+
+```gdscript
+var jump := GoTouchButton.make(&"btn_jump", "JUMP", 86.0)
+jump.pressed_down.connect(send_jump)
+var skill := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+skill.cooling = true
+skill.cooldown = 0.4
 ```
 
 ### `GoRewardCalendar`

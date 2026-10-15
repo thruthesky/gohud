@@ -31,6 +31,8 @@ func _initialize() -> void:
 		await _hud_button(look)
 		await _nameplate(look)
 		await _notice_feed(look)
+		await _touch_button(look)
+		await _joystick_art(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -472,5 +474,103 @@ func _notice_feed(look: StringName) -> void:
 		feed.push("H", true)
 		check(feed.rows()[0].theme_type_variation == &"GoNotice" and feed.rows()[1].theme_type_variation == &"GoNoticeGold",
 			"feed: arcade_light rows use GoNotice / GoNoticeGold")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── A touch button (GoTouchButton) and the painted stick ───────────────
+
+func _press(button: Control, at: Vector2, down: bool) -> void:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = down
+	event.position = at
+	button._gui_input(event)
+
+
+func _move(button: Control, at: Vector2) -> void:
+	var event := InputEventMouseMotion.new()
+	event.position = at
+	button._gui_input(event)
+
+
+func _touch_button(look: StringName) -> void:
+	var skin := GoUi.skin()
+	var repulse := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+	var holder := _host(repulse)
+	await frames(1)
+	check(repulse.size == Vector2(92, 92) and repulse.custom_minimum_size == Vector2(92, 92), "touch: diameter square")
+	check(repulse.picture() == skin.widget_art(&"btn_repulse"), "touch: the picture is the skin's art (%s)" % look)
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(repulse.picture() != null, "touch: arcade_light ships the button art")
+		check(skin.touch_shadow_ink() == INK and skin.touch_outline_ink() == INK, "touch: arcade_light's ink shadow and edge")
+		check(skin.touch_cooldown_ink() == Color("#ff7a74"), "touch: arcade_light's cooldown arc")
+	else:
+		check(repulse.picture() == null, "touch: no art, a plain disc")
+	check(repulse.label_font_size() == 14, "touch: the label reads at 14")
+	repulse.text = "UNE TRES LONGUE ETIQUETTE"
+	check(repulse.label_font_size() == 10, "touch: a long label shrinks, never under 10 (%d)" % repulse.label_font_size())
+	repulse.text = "REPULSE"
+	var events: Array[String] = []
+	repulse.pressed_down.connect(func() -> void: events.append("down"))
+	repulse.released.connect(func(canceled: bool) -> void: events.append("up%s" % canceled))
+	check(repulse._has_point(Vector2(46, 46 - 46 - 7)) and not repulse._has_point(Vector2(46, -20)),
+		"touch: the press reaches hit_slop past the rim")
+	_press(repulse, Vector2(46, 46), true)
+	check(repulse.is_held() and events == ["down"], "touch: a press holds it and says so")
+	check(repulse.radius() == 46.0 * 0.93, "touch: a held button shrinks to 0.93")
+	_press(repulse, Vector2(46, 46), false)
+	check(not repulse.is_held() and events == ["down", "upfalse"], "touch: lifting releases it")
+	repulse.cooling = true
+	repulse.cooldown = 0.5
+	check(repulse.cooldown == 0.5 and repulse.tint() == Color(0.72, 0.72, 0.8), "touch: cooling dims it")
+	repulse.cooldown = 3.0
+	check(repulse.cooldown == 1.0, "touch: the cooldown share stays within 0..1")
+	repulse.cooling = false
+	check(repulse.cooldown == 0.0 and repulse.tint() == Color.WHITE, "touch: ready clears the ring")
+	check(repulse.pulse() == 1.0, "touch: reduce_motion keeps it still when ready")
+	holder.queue_free()
+	var attract := GoTouchButton.make(&"btn_attract", "ATTRACT", 120.0)
+	attract.drag_aim = true
+	attract.font_size = 16
+	attract.label_rise = 0.62
+	attract.caption = "HOLD + DRAG"
+	attract.held_caption = "DRAG TO AIM"
+	holder = _host(attract)
+	await frames(1)
+	check(attract.caption_font_size(false) == 11 and attract.caption_font_size(true) == 12, "touch: captions at 11 / 12")
+	var aims: Array[Vector2] = []
+	attract.aimed.connect(func(v: Vector2) -> void: aims.append(v))
+	_press(attract, Vector2(60, 60), true)
+	_move(attract, Vector2(160, 60))
+	check(attract.aim() == Vector2(1, 0) and attract.knob() == Vector2(110, 60), "touch: drag-to-aim stops at aim_radius")
+	check(aims.size() == 1 and aims[0] == Vector2(1, 0), "touch: aimed reports the pull")
+	_move(attract, Vector2(60, 85))
+	check(attract.aim().is_equal_approx(Vector2(0, 0.5)), "touch: a half pull is half")
+	_press(attract, Vector2(60, 85), false)
+	check(attract.aim() == Vector2.ZERO and not attract.is_held(), "touch: lifting clears the aim")
+	attract.cancel()
+	check(not attract.is_held(), "touch: cancel lets go")
+	holder.queue_free()
+	await frames(1)
+
+
+func _joystick_art(look: StringName) -> void:
+	var skin := GoUi.skin()
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(skin.joystick_art(false) == skin.widget_art(&"stick_base") and skin.joystick_art(false) != null,
+			"stick: arcade_light's painted dish")
+		check(skin.joystick_art(true) == skin.widget_art(&"stick_knob") and skin.joystick_art(true) != null,
+			"stick: arcade_light's painted knob")
+	else:
+		check(skin.joystick_art(false) == null and skin.joystick_art(true) == null, "stick: a plain look draws circles")
+	check(skin.joystick_idle_alpha == 0.55 and skin.joystick_active_alpha == 0.9, "stick: idle and active alpha")
+	var stick := GoJoystick.new()
+	stick.mode = GoJoystick.Mode.FIXED
+	stick.radius = 70
+	stick.knob_radius = 32
+	var holder := _host(stick)
+	await frames(2)
+	check(stick.size == Vector2(140, 140), "stick: sized by its radius")
 	holder.queue_free()
 	await frames(1)

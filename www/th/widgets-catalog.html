@@ -799,7 +799,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD และรูปแบบในเกม <small>(19)</small></h2>
+  <h2>HUD และรูปแบบในเกม <small>(20)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -910,6 +910,16 @@ plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
       <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
 feed.<wbr>push(<wbr>"RED knocked out BLUE")
 feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>ปุ่มกลมสำหรับนิ้วโป้งบนจอสัมผัส มีวงคูลดาวน์ จังหวะเด้งเมื่อพร้อม และลากเพื่อเล็งได้</p>
+      <p class="catalog-base">สืบทอดจาก <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

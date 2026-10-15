@@ -82,6 +82,10 @@ extends Resource
 @export var joystick_ring_alpha := 0.45
 ## Width of the joystick ring (dp).
 @export var joystick_ring_width := 2.0
+## Opacity of a painted joystick (`joystick_art`) while no finger is on it.
+@export var joystick_idle_alpha := 0.55
+## Opacity of a painted joystick (`joystick_art`) while a finger drives it.
+@export var joystick_active_alpha := 0.9
 @export_group("")
 
 
@@ -1213,9 +1217,52 @@ func press_feedback(_control: Control) -> void:
 ## 🛑 Draw shapes of the same kind together — the canvas breaks the draw call every time the command type changes.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	canvas.draw_circle(center, radius, Color(base, joystick_base_alpha))
 	canvas.draw_circle(knob, knob_radius, Color(ink, 0.85 if active else 0.55))
 	canvas.draw_arc(center, radius, 0, TAU, 48, Color(ink, joystick_ring_alpha), joystick_ring_width, true)
+
+
+## 🕹️ Draws the joystick from `joystick_art()` when the skin has it (and says so) — the dish, then the knob over a soft
+## drop shadow, see-through at rest so it does not hide the view. A skin that overrides `draw_joystick` calls it first.
+func draw_joystick_art(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float, knob_radius: float,
+		active: bool) -> bool:
+	var dish := joystick_art(false)
+	var cap := joystick_art(true)
+	if dish == null or cap == null: return false
+	var tint := Color(1.0, 1.0, 1.0, joystick_active_alpha if active else joystick_idle_alpha)
+	draw_touch_sprite(canvas, dish, center, radius, tint, false)
+	draw_touch_sprite(canvas, cap, knob, knob_radius, tint, true)
+	return true
+
+
+## 🕹️ The painted joystick — [param knob] true for the knob, false for the dish. null — the default — draws circles.
+func joystick_art(_knob: bool) -> Texture2D:
+	return null
+
+
+## 🕹️ A round touch sprite [param picture] centred on [param center], [param radius] to its rim, tinted [param tint] —
+## over a disc of `touch_shadow_ink()` dropped 4 dp when [param shadow]. `GoJoystick` and `GoTouchButton` draw with it.
+func draw_touch_sprite(canvas: CanvasItem, picture: Texture2D, center: Vector2, radius: float, tint: Color,
+		shadow: bool) -> void:
+	if shadow:
+		canvas.draw_circle(center + Vector2(0.0, 4.0), radius, Color(touch_shadow_ink(), 0.35 * tint.a))
+	canvas.draw_texture_rect(picture, Rect2(center - Vector2(radius, radius), Vector2(radius, radius) * 2.0), false, tint)
+
+
+## 🕹️ The soft shadow under a touch button or stick knob (drawn at 35% of the button's own opacity).
+func touch_shadow_ink() -> Color:
+	return Color.BLACK
+
+
+## 🕹️ The edge round a touch button's label and caption (white text, 5 dp edge).
+func touch_outline_ink() -> Color:
+	return Color.BLACK
+
+
+## 🕹️ The arc of a `GoTouchButton`'s cooldown ring: the share of the wait still to run. The default is `danger`.
+func touch_cooldown_ink() -> Color:
+	return GoUi.color(GoTheme.DANGER)
 
 
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one

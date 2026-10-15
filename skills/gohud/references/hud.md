@@ -35,6 +35,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 26. [GoHudButton — a HUD corner button with its key](#26-gohudbutton--a-hud-corner-button-with-its-key)
 27. [GoNameplate — a name plate over a character](#27-gonameplate--a-name-plate-over-a-character)
 28. [GoNoticeFeed — a feed of one-line notices](#28-gonoticefeed--a-feed-of-one-line-notices)
+29. [GoTouchButton — a round thumb button (and the painted stick)](#29-gotouchbutton--a-round-thumb-button-and-the-painted-stick)
 
 ## 1. GoHudAnchor
 
@@ -857,3 +858,39 @@ feed.push(tr("KO_BY") % ["YOU", target], true)   # the player's own line
 - 🛑 Display only: it shows the lines it is given, in the order given — the server decides who knocked out whom.
 - Rows are `PanelContainer`s on the theme's `GoNotice` / `GoNoticeGold` (own) variations when the theme has them, else
   `GoSkin.notice_box(accent, true)` with a `warning` accent on the own row. Text is shown as given (not translated).
+
+## 29. GoTouchButton — a round thumb button (and the painted stick)
+
+`class_name GoTouchButton extends Control` · the big thumb buttons of a mobile action game: a round picture with its
+name under the icon, a cooldown ring while it recharges, a pulse when it is ready, and with `drag_aim` a button that is
+also a small stick. Under `arcade_light` it and `GoJoystick` draw Magnet Mayhem's touch controls pixel for pixel
+(ATTRACT with "HOLD + DRAG", REPULSE cooling, JUMP, and the painted stick).
+
+```gdscript
+var jump := GoTouchButton.make(&"btn_jump", tr("JUMP"), 86.0)
+jump.pressed_down.connect(func() -> void: input.send_jump())   # the game sends the input; the server decides
+var skill := GoTouchButton.make(&"btn_repulse", tr("REPULSE"), 92.0)
+skill.cooling = true                    # the server said it is recharging
+skill.cooldown = seconds_left / total   # the share still to run
+var aim := GoTouchButton.make(&"btn_attract", tr("ATTRACT"), 120.0)
+aim.drag_aim = true
+aim.caption = tr("HOLD + DRAG")
+aim.held_caption = tr("DRAG TO AIM")
+aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `make(picture_name, label, size)` | | A button on the skin's art `picture_name`, `size` across |
+| `art_name` · `art` · `diameter` | · · `92` | The picture (`GoSkin.widget_art`, or a texture; none: an `accent` disc) and its size |
+| `text` · `font_size` · `min_font_size` · `label_pad` · `label_rise` | · `14` · `10` · `6` · `0.8` | The name, shrunk to fit the button, its baseline `label_rise` × radius below the centre |
+| `caption` · `held_caption` · `caption_size` · `held_caption_size` · `caption_drop` | · · `11` · `12` · `28` | A hint under the button at rest / while held (`GoStyle.fit_font_size`) |
+| `cooling` · `cooldown` · `pulse_scale` | `false` · `0` · `1.15` | Dims it and rings the share still to run; ready again it pulses once (not under `reduce_motion`) |
+| `drag_aim` · `aim_radius` · `aim_knob_radius` | `false` · `50` · `24` | Hold and drag: a ring and knob under the thumb; `aim()` and `aimed(pull)` give the pull, 0~1 |
+| `press_scale` · `press_tint` · `cooling_tint` · `hit_slop` | `0.93` · · · `8` | A held button shrinks and darkens; the press reaches `hit_slop` past the rim |
+| `pressed_down` · `released(canceled)` · `cancel()` · `is_held()` | | The press, the lift, and letting go without a lift (focus lost) |
+
+- 🛑 Display and input only: it reports presses and the aim and shows the cooldown it is given.
+- Skin hooks: `draw_touch_sprite()`, `touch_shadow_ink()`, `touch_outline_ink()`, `touch_cooldown_ink()`; and for
+  `GoJoystick`, `joystick_art(knob)` with `joystick_idle_alpha` / `joystick_active_alpha` — a skin with the art draws
+  the painted dish and knob instead of circles (`draw_joystick_art()`).

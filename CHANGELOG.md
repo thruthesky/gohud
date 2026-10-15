@@ -59,6 +59,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoTouchButton` — a round thumb button.** A picture from the skin's art with its name under the icon (shrunk to
+  fit), a cooldown ring (`cooling`, `cooldown`), a pulse when ready, a press that shrinks and darkens, and `drag_aim`:
+  hold and drag to aim (`aimed(pull)`). `GoJoystick` draws the skin's painted dish and knob when it has them
+  (`GoSkin.joystick_art`, `draw_joystick_art`). Under `arcade_light` Magnet Mayhem's touch controls match pixel for pixel.
 - **`GoNoticeFeed` — a feed of one-line notices.** A kill feed: rows with an icon stack newest at the bottom, fade in
   and go on their own; `push(text, own)` marks the player's own line. `max_items` rows are built up front and reused, so
   a burst builds no controls. Rows use the theme's `GoNotice` / `GoNoticeGold` panels (else `GoSkin.notice_box()`);

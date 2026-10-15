@@ -369,6 +369,25 @@ func nameplate_outline_ink() -> Color:
 	return INK
 
 
+## The game's touch stick (`TouchControls._draw_stick`): the painted dish and knob.
+func joystick_art(knob: bool) -> Texture2D:
+	return widget_art(&"stick_knob" if knob else &"stick_base")
+
+
+## The game's touch shadow and label edge: INK.
+func touch_shadow_ink() -> Color:
+	return INK
+
+
+func touch_outline_ink() -> Color:
+	return INK
+
+
+## The game's REPULSE cooldown arc.
+func touch_cooldown_ink() -> Color:
+	return Color("#ff7a74")
+
+
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 	for index in range(1, count):

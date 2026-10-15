@@ -1964,6 +1964,28 @@ feed.push("YOU knocked out GREEN", true)""", T(
 		"Стрічка однорядкових сповіщень (наприклад, про вибування), що складаються, проявляються й зникають самі.",
 		"ฟีดข้อความแจ้งบรรทัดเดียว เช่นฟีดการกำจัด ที่ซ้อนกัน ค่อย ๆ ปรากฏ และหายไปเอง",
 		"شريط إشعارات من سطر واحد، مثل شريط الإقصاءات، تتراكم وتظهر تدريجيًا وتختفي وحدها.")),
+	("hud", "GoTouchButton", "Control", """var jump := GoTouchButton.make(&"btn_jump", "JUMP", 86.0)
+jump.pressed_down.connect(send_jump)
+var skill := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+skill.cooling = true
+skill.cooldown = 0.4""", T(
+		"A round thumb button for touch screens, with a cooldown ring, a ready pulse and optional drag-to-aim.",
+		"쿨다운 고리, 준비 효과, 끌어서 조준을 갖춘 터치 화면용 둥근 엄지 버튼.",
+		"クールダウンリング、準備完了の弾み、ドラッグ照準を備えたタッチ画面用の丸い親指ボタン。",
+		"触屏用的圆形拇指按钮，带冷却圈、就绪脉冲和可选的拖动瞄准。",
+		"觸控螢幕用的圓形拇指按鈕，附冷卻圈、就緒脈衝與可選的拖曳瞄準。",
+		"Un botón redondo para el pulgar en pantallas táctiles, con anillo de recarga, pulso al estar listo y apuntado arrastrando.",
+		"Um botão redondo para o polegar em telas de toque, com anel de recarga, pulso ao ficar pronto e mira por arrasto.",
+		"Круглая кнопка под большой палец для сенсорных экранов: кольцо перезарядки, импульс готовности и прицел перетаскиванием.",
+		"Un bouton rond pour le pouce sur écran tactile, avec anneau de recharge, pulsation quand il est prêt et visée par glisser.",
+		"Dokunmatik ekranlar için bekleme halkası, hazır titreşimi ve isteğe bağlı sürükleyerek nişan alan yuvarlak başparmak düğmesi.",
+		"Okrągły przycisk pod kciuk na ekrany dotykowe, z pierścieniem odnowienia, pulsem gotowości i celowaniem przeciąganiem.",
+		"Un pulsante rotondo per il pollice su touch screen, con anello di ricarica, impulso quando è pronto e mira trascinando.",
+		"Nút tròn cho ngón cái trên màn hình cảm ứng, có vòng hồi chiêu, nhịp sẵn sàng và kéo để ngắm.",
+		"Tombol jempol bundar untuk layar sentuh, dengan cincin jeda, denyut saat siap, dan bidik dengan menyeret.",
+		"Кругла кнопка під великий палець для сенсорних екранів: кільце перезарядки, імпульс готовності та приціл перетягуванням.",
+		"ปุ่มกลมสำหรับนิ้วโป้งบนจอสัมผัส มีวงคูลดาวน์ จังหวะเด้งเมื่อพร้อม และลากเพื่อเล็งได้",
+		"زر دائري للإبهام على الشاشات اللمسية، مع حلقة انتظار ونبضة عند الجاهزية وتصويب بالسحب.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

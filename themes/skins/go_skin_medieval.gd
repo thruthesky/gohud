@@ -71,6 +71,7 @@ func section_box() -> StyleBox:
 
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	# A simple compass ring keeps the always-visible HUD quiet.
 	super(canvas, center, knob, radius, knob_radius, ink, base, active)
 	canvas.draw_arc(center, radius - 4.0, 0, TAU, 48, Color(ink, joystick_ring_alpha * 0.45), 1.0, true)
