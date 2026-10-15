@@ -19,6 +19,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light`'s touch floor is the game's 44.** Its `touch` token was gohud's 48; it is now Magnet Mayhem's
+  `Cfg.Touch.MIN_TARGET` (44), the floor a look declares for its hit areas. Every other look keeps 48;
+  `GoConfig.min_touch_size` still sets the project's floor.
+
 - **`arcade_light` leaves tooltips, container gaps and scroll bars to the engine, as Magnet Mayhem does.** The game's
   theme sets none of them and draws them all: its tooltips are the engine's dark box with light text, every box,
   grid and flow container it does not override keeps the engine's 4 px gap (arcade_light had 12), and the controls

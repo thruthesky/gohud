@@ -406,6 +406,9 @@ func _tokens(theme: Theme) -> void:
 		var got := theme.get_color(key, &"GoHud")
 		check(got.is_equal_approx(want[key]) or got.to_html() == (want[key] as Color).to_html(),
 			"token %s is the game's %s (got %s)" % [key, (want[key] as Color).to_html(), got.to_html()])
+	# 👆 The look's touch floor is the game's Cfg.Touch.MIN_TARGET (44).
+	check(theme.get_constant(GoTheme.TOUCH, GoTheme.TYPE) == 44,
+		"token touch is the game's Cfg.Touch.MIN_TARGET 44 (got %d)" % theme.get_constant(GoTheme.TOUCH, GoTheme.TYPE))
 
 
 ## 🔑 Each painted variation carries exactly the items the game's variation has (`UiTheme._build()`), no more: the

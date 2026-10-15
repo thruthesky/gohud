@@ -858,7 +858,8 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 
 ## 접근성
 
-- 보이는 컨트롤이 작아도 터치 영역은 `min_touch_size`(48dp) 아래로 내려가지 않는다.
+- 보이는 컨트롤이 작아도 터치 영역은 `min_touch_size`(48dp) 아래로 내려가지 않는다. 룩마다
+  `touch` 토큰도 둔다. 모두 48이고 `arcade_light`만 Magnet Mayhem의 44다.
 - 아이콘만 있는 버튼은 툴팁 문구를 `accessibility_name` 으로 내보낸다.
 - `reduce_motion` 을 켜면 페이드와 깜빡이는 강조가 꺼진다.
 - 포커스 링은 키보드·게임패드 사용자에게만 보이고, 누르거나 클릭한 뒤에는 뜨지 않는다. 채워진 버튼에는

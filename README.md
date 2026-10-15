@@ -1290,7 +1290,8 @@ sound files without touching code. Vibration runs only on Android and iOS, in th
 
 ## Accessibility
 
-- Hit areas never drop below `min_touch_size` (48 dp), even when the visible control is smaller.
+- Hit areas never drop below `min_touch_size` (48 dp), even when the visible control is smaller. Each look also
+  declares its own `touch` token: 48 everywhere, 44 (Magnet Mayhem's) in `arcade_light`.
 - Icon-only buttons expose their tooltip text through `accessibility_name`.
 - `reduce_motion` turns off fades and pulsing highlights.
 - Focus rings appear for keyboard and gamepad users, not after a tap or click. Filled buttons get a

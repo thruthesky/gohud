@@ -61,6 +61,7 @@ DISABLED_TINT = (0.6, 0.6, 0.66, 0.85)
 FADED_WHITE = (1.0, 1.0, 1.0, 0.6)
 FLAT_SHADOW = (0.0, 0.0, 0.0, 0.25)                      # `UiTheme.box(shadow = true)`
 PAINT_PPU = 3.0
+TOUCH_TARGET = 44                                        # `Cfg.Touch.MIN_TARGET` (Apple's 44 pt)
 RIBBON_PPU = 3.4
 KEYCAP_PPU = 5.5
 GLOSS_EDGE = (100, 65, 100, 66)
@@ -241,6 +242,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
     #    lifts it when the project chose a font of its own (gohud never replaces a project's font).
     setT("metadata/go_body_font_baked", 'SubResource("painted_font")')
+    # 👆 The look's touch floor is the game's `Cfg.Touch.MIN_TARGET` (44), not the 48 every other look declares.
+    setT("GoHud/constants/touch", str(TOUCH_TARGET))
     for type_name, base in BASES.items():
         drop(type_name)
         setT(type_name + "/base_type", '&"%s"' % base)
