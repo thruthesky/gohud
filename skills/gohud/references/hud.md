@@ -700,7 +700,7 @@ music.theme_type_variation = &"GoSliderGreen"      # GoSliderCyan, or none for t
 ```
 
 `make(minimum, maximum, snap)` · `part(item)` (the theme part it draws) · `handle_size()` · `handle_center_x()` ·
-`bar_rect()` · `fill_rect()` · `handle_rect()`. The least size is 120 wide by `GoTheme.TOUCH` tall.
+`bar_rect()` · `fill_rect()` · `handle_rect()`. It sets its own `custom_minimum_size` (120 wide, `GoTheme.TOUCH` tall) whenever the look changes — the engine's Slider would measure the blanks.
 
 - 🔑 The parts are the theme's own HSlider parts (`slider`, `grabber_area`, `grabber_area_highlight`, `grabber`,
   `grabber_highlight`, `grabber_disabled`), read again when the theme or the variation changes — every preset draws its

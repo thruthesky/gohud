@@ -103,11 +103,6 @@ func handle_rect() -> Rect2:
 	return Rect2(Vector2(handle_center_x(), size.y * 0.5) - side * 0.5, side)
 
 
-func _get_minimum_size() -> Vector2:
-	var side := handle_size()
-	return Vector2(maxf(MIN_WIDTH, side.x * 3.0), maxf(float(GoUi.metric(GoTheme.TOUCH)), side.y))
-
-
 ## Reads the theme's parts with the blanks off, then puts the blanks back on (the engine draws nothing itself).
 func _read_parts() -> void:
 	if _reading: return
@@ -129,7 +124,8 @@ func _read_parts() -> void:
 	for item in _BOXES: add_theme_stylebox_override(item, StyleBoxEmpty.new())
 	end_bulk_theme_override()
 	_reading = false
-	update_minimum_size()
+	# The engine's Slider computes its own least size (from the blanks it would be 1 px tall), so the floor is set here.
+	custom_minimum_size = Vector2(maxf(MIN_WIDTH, side.x * 3.0), maxf(float(GoUi.metric(GoTheme.TOUCH)), side.y))
 	queue_redraw()
 
 

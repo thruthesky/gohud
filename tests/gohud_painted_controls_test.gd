@@ -54,8 +54,11 @@ func _slider(look: StringName) -> void:
 	check(handle.x > 0.0 and handle.y > 0.0, "%s slider: the handle has a size (%s)" % [look, handle])
 	check(is_equal_approx(slider.handle_center_x(), handle.x * 0.5 + 0.5 * (260.0 - handle.x)),
 		"%s slider: the handle's edge touches each end (centre %.1f)" % [look, slider.handle_center_x()])
+	var least := slider.get_combined_minimum_size()
+	check(least.x >= GoSlider.MIN_WIDTH and least.y >= maxf(float(GoUi.metric(GoTheme.TOUCH)), handle.y),
+		"%s slider: the least size is room to travel and a touch target (%s)" % [look, least])
 	var bar := slider.bar_rect()
-	check(is_equal_approx(bar.size.x, 260.0) and is_equal_approx(bar.get_center().y, 22.0),
+	check(is_equal_approx(bar.size.x, 260.0) and is_equal_approx(bar.get_center().y, slider.size.y * 0.5),
 		"%s slider: the track spans the width, centred (%s)" % [look, bar])
 	var fill := slider.fill_rect()
 	check(is_equal_approx(fill.size.x, slider.handle_center_x() + GoSlider.FILL_PAST),
@@ -75,7 +78,7 @@ func _slider(look: StringName) -> void:
 	var press := InputEventMouseButton.new()
 	press.button_index = MOUSE_BUTTON_LEFT
 	press.pressed = true
-	press.position = Vector2(slider.handle_center_x(), 22.0)
+	press.position = Vector2(slider.handle_center_x(), slider.size.y * 0.5)
 	slider._gui_input(press)
 	var held := slider.handle_rect()
 	check(is_equal_approx(held.size.x, resting.size.x * GoSlider.HELD_SCALE) and held.get_center().is_equal_approx(resting.get_center()),
