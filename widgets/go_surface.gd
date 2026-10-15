@@ -476,31 +476,61 @@ func _fit_title() -> void:
 
 func _fit_title_size() -> void:
 	var plate := title_label.get_theme_stylebox(&"normal") if title_label.has_meta(&"go_plate_align") else null
+	var role_size := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
 	if plate == null or title_label.size.x <= 0.0 or title_label.text.is_empty():
 		if title_label.has_meta(&"go_title_fit"):
 			title_label.remove_meta(&"go_title_fit")
 			title_label.remove_theme_font_size_override(&"font_size")
 		return
 	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
-	if plate is OverhangPlate and (plate as OverhangPlate).base != null:
-		# Its left margin follows the words (see `_place_title_glyph`); the room is the base plate's less the glyph's.
-		var base := (plate as OverhangPlate).base
-		room = title_label.size.x - base.get_margin(SIDE_LEFT) - base.get_margin(SIDE_RIGHT) \
-				- (plate as OverhangPlate).glyph_room - 2.0
+	var over := plate as OverhangPlate
+	if over != null and over.base != null:
+		# Its left margin follows the words (see `_place_title_glyph`); the room is the plate's as drawn — past the
+		# card's sides by its bleed — less its ends and the glyph's room, the game's ribbon row.
+		room = title_label.size.x - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - over.glyph_room
 	var font := title_label.get_theme_font(&"font")
-	var natural := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var natural := _title_natural_size()
 	var words := title_label.atr(title_label.text)
 	var fitted := natural
 	while fitted > GoUi.skin().title_plate_min_size() \
 			and font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x > room:
 		fitted -= 1
-	if fitted == natural:
+	if fitted == role_size:
 		if title_label.has_meta(&"go_title_fit"):
 			title_label.remove_meta(&"go_title_fit")
 			title_label.remove_theme_font_size_override(&"font_size")
-	elif title_label.get_theme_font_size(&"font_size") != fitted:
+	elif not title_label.has_meta(&"go_title_fit") or title_label.get_theme_font_size(&"font_size") != fitted:
 		title_label.set_meta(&"go_title_fit", true)
 		title_label.add_theme_font_size_override(&"font_size", fitted)
+	if over != null: _sink_plate(over, font, fitted)
+
+
+## The title's size before it shrinks: the look's plate size (`GoSkin.title_plate_font_size`) on a plate, else its role's.
+func _title_natural_size() -> int:
+	var on_plate := title_label.has_meta(&"go_plate_align")
+	var look := GoUi.skin().title_plate_font_size() if on_plate else 0
+	return look if look > 0 else GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+
+
+## How far in from the label's [param side] the plate's end ends: its base margin, less the bleed drawn on that side.
+func _plate_end(plate: OverhangPlate, side: Side) -> float:
+	var margin := plate.base.get_margin(side) if plate.base != null else 0.0
+	var bleed := plate.bleed_left if side == SIDE_LEFT else plate.bleed_right
+	return maxf(0.0, margin - bleed)
+
+
+## A plate of a fixed height (`GoSkin.title_plate_height`) holds a taller title by growing down over the gap below:
+## the words keep the plate's top margin and the plate is drawn down to fit them, while the head keeps its height.
+func _sink_plate(plate: OverhangPlate, font: Font, size: int) -> void:
+	var tall := GoUi.skin().title_plate_height()
+	var sink := 0.0
+	if tall > 0.0 and plate.base != null and font != null:
+		sink = maxf(0.0, plate.base.get_margin(SIDE_TOP) + plate.base.get_margin(SIDE_BOTTOM) + font.get_height(size) - tall)
+	if not is_equal_approx(plate.sink, sink):
+		plate.sink = sink
+		plate.content_margin_bottom = (plate.base.get_margin(SIDE_BOTTOM) if plate.base != null else 0.0) - sink
+		title_label.update_minimum_size()
+		title_label.queue_redraw()
 
 
 ## Config or theme changed. 🛑 **Forget** the remembered "original panel" and take it again — swapping the look
@@ -538,6 +568,8 @@ class OverhangPlate:
 	var bleed_right := 0.0
 	## The room kept for the title glyph and its gap (dp).
 	var glyph_room := 0.0
+	## How far the plate is drawn below the label (dp) — a title taller than a fixed-height plate.
+	var sink := 0.0
 
 	func _init(from: StyleBox = null, side := 0.0, extra_left := 0.0) -> void:
 		base = from
@@ -552,7 +584,7 @@ class OverhangPlate:
 		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
 
 	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
-		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed_left, 0.0, bleed_right, 0.0))
+		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed_left, 0.0, bleed_right, sink))
 
 
 ## The side of the title glyph (dp): `title_glyph_size`, or the game's 26 dp beside a 34 dp title scaled to the title's
@@ -560,8 +592,7 @@ class OverhangPlate:
 ##    the room for the glyph was reserved, and a glyph read from the shrunk size left too wide a gap beside it.
 func title_glyph_side() -> float:
 	if title_glyph_size > 0: return float(title_glyph_size)
-	var natural := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
-	return roundf(float(natural) * 26.0 / 34.0)
+	return roundf(float(_title_natural_size()) * 26.0 / 34.0)
 
 
 ## Room for the glyph on the title's face, and the plate hanging over the card's top edge when the look says so.
@@ -570,7 +601,15 @@ func _dress_title_extras(plate: StyleBox) -> void:
 	var on_plate := plate != null and title_label.has_meta(&"go_plate_align")
 	_overhang = GoUi.skin().title_plate_overhang() if on_plate and show_header else Vector2.ZERO
 	var extra := title_glyph_side() + TITLE_GLYPH_GAP if title_glyph != null else 0.0
-	if on_plate and (extra > 0.0 or _overhang.x > 0.0):
+	# The plate's height the look fixes (`GoSkin.title_plate_height`, the game's 57 dp ribbon) — the head's height.
+	var tall := GoUi.skin().title_plate_height() if on_plate else 0.0
+	if tall > 0.0:
+		title_label.custom_minimum_size.y = tall
+		title_label.set_meta(&"go_plate_height", true)
+	elif title_label.has_meta(&"go_plate_height"):
+		title_label.remove_meta(&"go_plate_height")
+		title_label.custom_minimum_size.y = 0.0
+	if on_plate and (extra > 0.0 or _overhang.x > 0.0 or tall > 0.0):
 		title_label.add_theme_stylebox_override(&"normal", OverhangPlate.new(plate, _overhang.x, extra))
 	elif not on_plate:
 		if extra > 0.0:
@@ -646,6 +685,8 @@ func _seat_head_buttons() -> void:
 		plate.bleed_left = left
 		plate.bleed_right = right
 		title_label.queue_redraw()
+		# The plate's ends moved: the words' room and their centre with them.
+		_fit_title.call_deferred()
 
 
 ## The card face's top padding (dp) — where the head would start without an overhang.
@@ -691,8 +732,9 @@ func _place_title_glyph() -> void:
 		#    made for the glyph would not move them and the glyph would sit on the first letter. On a plate the words
 		#    are laid from the start side instead, where glyph + gap + words sit centred together (the game's ribbon row).
 		var plate := face as OverhangPlate
-		var base_left := plate.base.get_margin(SIDE_LEFT) if plate.base != null else 0.0
-		var base_right := plate.base.get_margin(SIDE_RIGHT) if plate.base != null else 0.0
+		# The plate's ends as drawn — past the card's sides by the bleed — so the row centres on the plate one sees.
+		var base_left := _plate_end(plate, SIDE_LEFT)
+		var base_right := _plate_end(plate, SIDE_RIGHT)
 		var group := side + TITLE_GLYPH_GAP + _title_words_width()
 		var start := roundf((base_right if rtl else base_left) \
 				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP)

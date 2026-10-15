@@ -284,6 +284,24 @@ func title_plate_ink() -> Color:
 	return Color.WHITE
 
 
+## The ribbon header's 34 dp title on its 57 dp ribbon (`RibbonHeader.FONT_SIZE`, `RIBBON_HEIGHT`)…
+const RIBBON_TITLE_SIZE := 34
+const RIBBON_HEIGHT := 57.0
+
+
+func title_plate_font_size() -> int:
+	return RIBBON_TITLE_SIZE
+
+
+func title_plate_height() -> float:
+	return RIBBON_HEIGHT
+
+
+## …shrinking as the game's `fit_font_size` does: no lower than `fit_min_scale` of it (24).
+func title_plate_min_size() -> int:
+	return GoStyle.fit_floor(RIBBON_TITLE_SIZE)
+
+
 ## …with the ribbon header's ink outline.
 func dress_title(label: Label) -> void:
 	label.add_theme_color_override(&"font_outline_color", INK)

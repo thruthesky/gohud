@@ -52,6 +52,16 @@ func frames(count: int) -> void:
 	for i in count: await process_frame
 
 
+func surface_plate_bleed_left(surface: GoSurface) -> float:
+	var plate := surface.title_label.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+	return plate.bleed_left if plate != null else 0.0
+
+
+func surface_plate_bleed_right(surface: GoSurface) -> float:
+	var plate := surface.title_label.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+	return plate.bleed_right if plate != null else 0.0
+
+
 # ── Shrink to fit ──────────────────────────────────────────────────────
 
 func _fit() -> void:
@@ -485,8 +495,8 @@ func _surface(look: StringName) -> void:
 		if painted:
 			# Glyph + gap + words sit centred together on the plate.
 			var last := surface.title_label.get_character_bounds(surface.title_label.text.length() - 1)
-			var plate := (surface.title_label.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate).base
-			var middle := (plate.get_margin(SIDE_LEFT) + surface.title_label.size.x - plate.get_margin(SIDE_RIGHT)) * 0.5
+			# On the plate as drawn: past the card's sides by its bleed (none beside the close button).
+			var middle := (surface.title_label.size.x + surface_plate_bleed_right(surface) - surface_plate_bleed_left(surface)) * 0.5
 			check(absf((mark.position.x + last.end.x) * 0.5 - middle) <= 3.0,
 				"%s surface: glyph and words are centred together" % look)
 	if painted:

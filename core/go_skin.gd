@@ -1187,6 +1187,17 @@ func title_plate_min_size() -> int:
 	return 15
 
 
+## The size of a window's title on its plate before it shrinks to fit (dp). 0: the title's role size.
+func title_plate_font_size() -> int:
+	return 0
+
+
+## How much of the head a window's title plate takes (dp). 0: as tall as its title. A taller title grows the plate
+## down over the gap below (drawn, not laid out), as the game's ribbon does.
+func title_plate_height() -> float:
+	return 0.0
+
+
 ## Dresses a window's title label (`GoSurface`) — an outline round the letters, say. Called whenever the window takes
 ## the look, after the window has lifted the label's `font_outline_color` and `outline_size` overrides, so a look that
 ## leaves this empty gets the plain title back. `GoSkinArcade` outlines its white title in ink.

@@ -21,6 +21,7 @@ func _initialize() -> void:
 		await frames(1)
 		await _window(look)
 		await _corner(look)
+		await _ribbon(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -174,4 +175,62 @@ func _corner(look: StringName) -> void:
 	await frames(3)
 	check(sheet.close_button.visible, "%s corner: a bottom sheet keeps its close button" % look)
 	sheet.queue_free()
+	await frames(1)
+
+
+# ── The ribbon: the game's 34 dp title on a 57 dp ribbon ──────────────
+
+func _ribbon(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var skin := GoUi.skin()
+	var surface := _dialog()
+	surface.title_glyph = ImageTexture.create_from_image(Image.create(16, 16, false, Image.FORMAT_RGBA8))
+	await frames(3)
+	var title := surface.title_label
+	var size := title.get_theme_font_size(&"font_size")
+	if not painted:
+		check(skin.title_plate_font_size() == 0 and skin.title_plate_height() == 0.0,
+			"%s ribbon: the title keeps its role's size and height" % look)
+		check(size == GoUi.font_size(GoTheme.ROLE_SUBTITLE), "%s ribbon: the subtitle size (got %d)" % [look, size])
+		surface.queue_free()
+		await frames(1)
+		return
+	check(skin.title_plate_font_size() == 34 and skin.title_plate_height() == 57.0 and skin.title_plate_min_size() == 24,
+		"%s ribbon: the game's 34 dp title, 57 dp ribbon, shrinking no lower than 24" % look)
+	check(size == 34, "%s ribbon: the title is 34 dp (got %d)" % [look, size])
+	check(is_equal_approx(surface.title_glyph_side(), 26.0), "%s ribbon: the glyph is 26 dp (got %.1f)" % [look, surface.title_glyph_side()])
+	check(is_equal_approx(title.size.y, 57.0) and is_equal_approx(surface.header.size.y, 57.0),
+		"%s ribbon: the head is 57 high (title %.1f head %.1f)" % [look, title.size.y, surface.header.size.y])
+	var card := surface.card
+	var top := card.get_theme_stylebox(&"panel").get_margin(SIDE_TOP)
+	var bottom := card.get_theme_stylebox(&"panel").get_margin(SIDE_BOTTOM)
+	check(absf(title.global_position.y - (card.global_position.y - 17.0)) < 1.0,
+		"%s ribbon: it rises 17 over the card" % look)
+	check(absf(surface.body.global_position.y - (card.global_position.y + top + 28.0)) < 1.0,
+		"%s ribbon: the body starts 48 under the card's top, as the game's inset does (body %.1f card %.1f)"
+		% [look, surface.body.global_position.y, card.global_position.y])
+	check(absf(card.size.y - (top + 20.0 + 8.0 + 100.0 + bottom)) < 1.0,
+		"%s ribbon: the card is the game's height (got %.1f)" % [look, card.size.y])
+	# The ribbon grows down to its words when they are taller than 57 — drawn over the gap, never pushing the rows.
+	var plate := title.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+	var base := plate.base
+	var font := title.get_theme_font(&"font")
+	var want_sink := maxf(0.0, base.get_margin(SIDE_TOP) + base.get_margin(SIDE_BOTTOM) + font.get_height(34) - 57.0)
+	check(is_equal_approx(plate.sink, want_sink), "%s ribbon: it sinks %.1f below the head (got %.1f)" % [look, want_sink, plate.sink])
+	# A long title shrinks to the ribbon's whole room, past the card's sides: the ribbon less its ends and the glyph.
+	surface.set_title("JOIN THE PRIVATE ROOM")
+	await frames(3)
+	size = title.get_theme_font_size(&"font_size")
+	var room := title.size.x + plate.bleed_left + plate.bleed_right - base.get_margin(SIDE_LEFT) - base.get_margin(SIDE_RIGHT) \
+			- (surface.title_glyph_side() + GoSurface.TITLE_GLYPH_GAP)
+	var words := title.text
+	check(size < 34 and size >= 24, "%s ribbon: a long title shrinks (got %d)" % [look, size])
+	check(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x <= room
+			and font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, size + 1).x > room,
+		"%s ribbon: to the largest size that fits the ribbon's room (%d in %.1f)" % [look, size, room])
+	check(is_equal_approx(surface.title_glyph_side(), 26.0), "%s ribbon: the glyph keeps 26" % look)
+	surface.set_title("AN EVEN LONGER TRANSLATED TITLE THAT CAN NEVER FIT ON THE RIBBON")
+	await frames(3)
+	check(title.get_theme_font_size(&"font_size") == 24, "%s ribbon: no smaller than 24" % look)
+	surface.queue_free()
 	await frames(1)

@@ -19,6 +19,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **Under `arcade_light` a window's title is the game's ribbon title: 34 dp on a 57 dp ribbon.** It shrinks to fit
+  the ribbon as drawn — past the card's sides, less its ends and the glyph, the game's `RibbonHeader` room — down to
+  24 dp (`fit_min_scale` of 34), and its glyph is 26 dp. The head is 57 dp whatever the font: a taller title grows the
+  ribbon down over the gap below (`OverhangPlate.sink`) instead of pushing the rows, as the game's ribbon does. The
+  glyph and the words centre on the ribbon as drawn. New `GoSkin` hooks: `title_plate_font_size()` (0: the role
+  size) and `title_plate_height()` (0: as tall as the title); `GoSkinArcadePainted.title_plate_min_size()` is 24.
+
 - **Under `arcade_light` a centred window is framed like Magnet Mayhem’s `PaintedDialog`.** A `GoSurface` wears the
   painted card (`GoCard`, padded by its own face 24 / 20 / 22 with nothing added inside), is 400 dp wide and keeps its
   head, its body’s rows and its footer 8 dp apart on every screen; it is centred the way a `CenterContainer` centres
