@@ -23,6 +23,17 @@
 ## button shrinks to `press_scale` and darkens by `press_tint`. Labels are white over a `GoSkin.touch_outline_ink()`
 ## edge and shrink to fit the button (never under `min_font_size`). 🛑 Display and input only: it reports presses and
 ## the aim, and shows the cooldown it is given.
+##
+## ## 🔑 Driven from outside
+## A game that routes every finger itself (one `_input` that binds each finger to a role when it lands, and leaves the
+## events unconsumed for the rest of the game) turns `driven` on: the button then takes no input at all and the owner
+## sets what it shows — `hits()` to hit-test a finger, `drive_press()` / `drive_drag()` / `drive_release()` for the
+## held look and the aim. Every point is in the coordinates an `_input` event carries (the canvas).
+##
+## ```gdscript
+## jump.driven = true
+## if jump.hits(touch.position): jump.drive_press(touch.position)    # in the owner's _input; the event goes on
+## ```
 @tool
 class_name GoTouchButton
 extends Control
@@ -111,6 +122,16 @@ signal aimed(pull: Vector2)
 ## The press reaches this far past the rim (dp).
 @export_range(0, 64) var hit_slop := 8.0
 
+## 🔑 The owner routes the fingers: the button ignores input (`mouse_filter` IGNORE) and draws what `drive_press()`,
+## `drive_drag()` and `drive_release()` tell it. Hiding it keeps the held state — the owner still sees the lift.
+## Turning it on or off lets go of a press in progress (`released(true)`).
+@export var driven := false:
+	set(value):
+		if driven == value: return
+		cancel()
+		driven = value
+		mouse_filter = Control.MOUSE_FILTER_IGNORE if value else Control.MOUSE_FILTER_STOP
+
 ## A held button shrinks to this share.
 @export_range(0.5, 1.0, 0.01) var press_scale := 0.93
 ## A held button is multiplied by this.
@@ -188,7 +209,7 @@ func _notification(what: int) -> void:
 		_fits.clear()
 		_caption_sizes = [0, 0]
 		queue_redraw()
-	elif what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree():
+	elif what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree() and not driven:
 		# 🛑 Hidden under a finger (a pause menu hides the touch HUD): the lift will not reach it, so let go now —
 		# `released(true)`, as `cancel()` says — rather than leave the game seeing it held for ever.
 		cancel()
@@ -235,6 +256,46 @@ func cancel() -> void:
 	if _held: _release(true)
 
 
+## With `driven`: a finger came down at [param at] (canvas coordinates, as an `_input` event gives it; left out, the
+## centre). It holds the button — the press look, and with `drag_aim` the ring and knob from there — and says
+## `pressed_down`. Already held, it does nothing (one finger at a time, as a press of its own).
+func drive_press(at := Vector2.INF) -> void:
+	if _held: return
+	_finger = -3
+	_press(size / 2.0 if at == Vector2.INF else _local(at))
+
+
+## With `driven`: the finger holding it moved to [param at] (canvas coordinates). With `drag_aim` the knob follows,
+## held within `aim_radius`, and `aimed` reports the pull.
+func drive_drag(at: Vector2) -> void:
+	_drag(_local(at))
+
+
+## With `driven`: the finger holding it lifted — `released(canceled)`. Not held, it does nothing.
+func drive_release(canceled := false) -> void:
+	if _held: _release(canceled)
+
+
+## Whether a finger at [param at] (canvas coordinates) lands on it — within `diameter` / 2 + `hit_slop` of its centre,
+## as its own press would.
+func hits(at: Vector2) -> bool:
+	return _has_point(_local(at))
+
+
+## Its centre in canvas coordinates (where an `_input` event's position is measured).
+func button_center() -> Vector2:
+	return get_global_transform_with_canvas() * (size / 2.0)
+
+
+## How far from `button_center()` a finger still lands on it, in canvas units: the rim plus `hit_slop`.
+func hit_radius() -> float:
+	return (diameter / 2.0 + hit_slop) * get_global_transform_with_canvas().get_scale().x
+
+
+func _local(at: Vector2) -> Vector2:
+	return get_global_transform_with_canvas().affine_inverse() * at
+
+
 ## The name's size: `font_size`, shrunk until it fits the button less `label_pad` each side, never under `min_font_size`.
 func label_font_size() -> int:
 	if _fits.has(text): return _fits[text]
@@ -263,6 +324,7 @@ func _has_point(point: Vector2) -> bool:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if driven: return
 	if event is InputEventScreenTouch:
 		if event.pressed and _finger < 0:
 			_finger = event.index

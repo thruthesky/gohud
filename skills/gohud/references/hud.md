@@ -200,6 +200,8 @@ grid.slot_moved.connect(func(from: int, to: int) -> void: swap_items(from, to))
 | `dead_zone` | `0.12` | Below it `moved` sends `Vector2.ZERO` |
 | `ink` · `hide_when_idle` | transparent · `false` | `hide_when_idle` suits FOLLOW/RELATIVE |
 | `vector()` · `is_active()` | | Poll instead of the signal if you prefer |
+| `center()` · `knob()` | | Where the dish and the knob are drawn now (local) |
+| `driven` | `false` | The owner routes the fingers: input ignored (`mouse_filter` IGNORE), and `drive_begin(at)` · `drive_drag(at)` · `drive_end()` move it as a finger of its own would (signals and `vector()` included). `hits(at)` hit-tests its rect. Points are canvas coordinates, as an `_input` event carries them. Hidden, it keeps the drag |
 
 The hit area is the control's rect. For "thumb anywhere on the left half", size the joystick to that area
 instead of putting it in an anchor:
@@ -977,6 +979,27 @@ aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
 | `drag_aim` · `aim_radius` · `aim_knob_radius` | `false` · `50` · `24` | Hold and drag: a ring and knob under the thumb; `aim()` and `aimed(pull)` give the pull, 0~1 |
 | `press_scale` · `press_tint` · `cooling_tint` · `hit_slop` | `0.93` · · · `8` | A held button shrinks and darkens; the press reaches `hit_slop` past the rim |
 | `pressed_down` · `released(canceled)` · `cancel()` · `is_held()` | | The press, the lift, and letting go without a lift (focus lost) |
+| `driven` · `drive_press(at)` · `drive_drag(at)` · `drive_release(canceled)` | `false` | The owner routes the fingers (below) |
+| `hits(at)` · `button_center()` · `hit_radius()` | | For the owner's hit test: a finger within `diameter` / 2 + `hit_slop` of the centre, in canvas coordinates |
+
+🔑 **Driven from outside.** A game that routes every finger itself — one `_input` that binds each finger to a role
+(stick, a button, look) when it lands, keys fingers by the event's index as given (a browser's touch id), leaves the
+events unconsumed for the rest of the game, and counts the first touch while the controls are still hidden — turns
+`driven` on for each button and the stick. They then take no input (`mouse_filter` IGNORE) and show what they are told;
+every point is in canvas coordinates, as the `_input` event carries it. Hiding a driven widget keeps its state.
+
+```gdscript
+func _input(event: InputEvent) -> void:            # the owner's router; nothing is consumed
+	if event is InputEventScreenTouch and event.pressed and jump.hits(event.position):
+		_roles[event.index] = JUMP
+		jump.drive_press(event.position)            # the press look, as a press of its own
+	elif event is InputEventScreenTouch and not event.pressed and _roles.get(event.index) == JUMP:
+		jump.drive_release(event.canceled)
+```
+
+`drive_press()` with no point holds it at the centre; while held a second `drive_press()` does nothing.
+`drive_drag(at)` moves the aim knob of a `drag_aim` button (`aimed` follows). `GoJoystick` has the same with
+`drive_begin(at)` / `drive_drag(at)` / `drive_end()` (§4). Turning `driven` on or off lets go of a press in progress.
 
 - 🛑 Display and input only: it reports presses and the aim and shows the cooldown it is given.
 - Skin hooks: `draw_touch_sprite()`, `touch_shadow_ink()`, `touch_outline_ink()`, `touch_cooldown_ink()`; and for

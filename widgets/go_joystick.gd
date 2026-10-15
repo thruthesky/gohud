@@ -18,6 +18,16 @@
 ## shift with screen size or DPI — because it is divided by the radius.
 ##
 ## 🛑 Inside `dead_zone` it emits `Vector2.ZERO`. That stops the character from drifting when a finger merely rests on it.
+##
+## ## 🔑 Driven from outside
+## A game that routes every finger itself turns `driven` on: the stick then takes no input and the owner tells it what
+## to show — `drive_begin(at)` where the finger landed, `drive_drag(at)` as it moves, `drive_end()` when it lifts (the
+## signals and `vector()` follow as for a finger of its own). Points are in the coordinates an `_input` event carries.
+##
+## ```gdscript
+## stick.driven = true
+## if stick.hits(touch.position): stick.drive_begin(touch.position)   # in the owner's _input; the event goes on
+## ```
 @tool
 class_name GoJoystick
 extends Control
@@ -54,6 +64,16 @@ enum Mode { FIXED, FOLLOW, RELATIVE }
 	set(value):
 		ink = value
 		queue_redraw()
+
+## 🔑 The owner routes the fingers: the stick ignores input (`mouse_filter` IGNORE) and draws what `drive_begin()`,
+## `drive_drag()` and `drive_end()` tell it. Hiding it keeps the drag — the owner still sees the lift. Turning it on
+## or off ends a drag in progress.
+@export var driven := false:
+	set(value):
+		if driven == value: return
+		_drop()
+		driven = value
+		mouse_filter = Control.MOUSE_FILTER_IGNORE if value else Control.MOUSE_FILTER_STOP
 
 ## Hide once the finger lifts (natural with `FOLLOW` and `RELATIVE`).
 @export var hide_when_idle := false:
@@ -101,7 +121,7 @@ func _exit_tree() -> void:
 func _notification(what: int) -> void:
 	# 🛑 Hidden or removed under a finger, the lift will never reach it: end the drag now, so the game gets
 	# `released` and a zero vector instead of a stick held for ever.
-	if what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree():
+	if what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree() and not driven:
 		_drop()
 
 
@@ -128,7 +148,46 @@ func is_active() -> bool:
 	return _active
 
 
+## Where the dish is drawn now (local): the press point while active (`FIXED`: the middle), the middle at rest.
+func center() -> Vector2:
+	return _center
+
+
+## Where the knob is drawn now (local), within `radius` of `center()`.
+func knob() -> Vector2:
+	return _knob
+
+
+## With `driven`: a finger landed at [param at] (canvas coordinates, as an `_input` event gives it). The dish settles
+## there (`FIXED`: in the middle) and `pressed_down` is said. Already active, it does nothing.
+func drive_begin(at: Vector2) -> void:
+	if _active: return
+	_touch_index = -3
+	_begin(_local(at))
+
+
+## With `driven`: the finger moved to [param at] (canvas coordinates). The knob follows within `radius` and `moved`
+## reports the vector, as a drag of its own.
+func drive_drag(at: Vector2) -> void:
+	_drag(_local(at))
+
+
+## With `driven`: the finger lifted — `released`, then a zero `moved`. Idle, it does nothing.
+func drive_end() -> void:
+	_drop()
+
+
+## Whether a finger at [param at] (canvas coordinates) lands in it — its rect, as its own press would.
+func hits(at: Vector2) -> bool:
+	return _has_point(_local(at))
+
+
+func _local(at: Vector2) -> Vector2:
+	return get_global_transform_with_canvas().affine_inverse() * at
+
+
 func _gui_input(event: InputEvent) -> void:
+	if driven: return
 	if event is InputEventScreenTouch:
 		if event.pressed and _touch_index < 0:
 			_touch_index = event.index

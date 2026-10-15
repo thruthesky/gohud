@@ -323,6 +323,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   amber; `Panel`). `tools/arcade_painted_map.json` maps `ScoreRow`, `ScoreRowWin`, `ScoreHead`, `LoadTile` and
   `LoadTileLit` to them. Every other look leaves them out (a node asking for one draws its base type), so nothing
   else changes.
+- **Touch buttons and the stick can be driven from outside.** A game that routes every finger in one `_input` (a role
+  bound to each finger as it lands, events left unconsumed, the first touch counted while the controls are hidden —
+  Magnet Mayhem's `TouchControls`) turns `driven` on: `GoTouchButton` and `GoJoystick` then ignore input
+  (`mouse_filter` IGNORE) and the owner sets what they show — `drive_press(at)` / `drive_drag(at)` /
+  `drive_release(canceled)` and `drive_begin(at)` / `drive_drag(at)` / `drive_end()`, with `hits(at)`,
+  `button_center()`, `hit_radius()`, `center()` and `knob()` to hit-test and read back, all in the coordinates an
+  `_input` event carries. Hiding a driven widget keeps its state (the owner still sees the lift). What is drawn — the
+  art, the labels, the press look, the cooldown ring, the pulse, the aim ring — is the same code as before; `driven`
+  is off by default.
 
 - **`GoRibbonHeader` — a screen's title ribbon.** The game's `RibbonHeader` for a screen built on a card (pause,
   settings): put first in the card's column, it hangs the look's title plate over the card's top edge with a glyph and

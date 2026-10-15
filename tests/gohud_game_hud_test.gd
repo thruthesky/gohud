@@ -35,6 +35,8 @@ func _initialize() -> void:
 		await _touch_button(look)
 		await _joystick_art(look)
 		await _touch_lifecycle(look)
+		await _touch_driven(look)
+		await _joystick_driven(look)
 		await _task_card(look)
 		await _spotlight(look)
 		await _perf_readout(look)
@@ -771,6 +773,108 @@ func _touch_lifecycle(look: StringName) -> void:
 		stick.free()
 		holder.queue_free()
 		await frames(1)
+
+
+## Driven from outside: the owner's `_input` routes the fingers (canvas coordinates) and the widgets only show it.
+func _touch_driven(look: StringName) -> void:
+	var button := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+	check(not button.driven and button.mouse_filter == Control.MOUSE_FILTER_STOP, "touch driven: off by default, takes input")
+	var holder := _host(button)
+	holder.position = Vector2(30, 40)
+	await frames(1)
+	button.driven = true
+	check(button.mouse_filter == Control.MOUSE_FILTER_IGNORE, "touch driven: input ignored (%s)" % look)
+	var events: Array[String] = []
+	button.pressed_down.connect(func() -> void: events.append("down"))
+	button.released.connect(func(canceled: bool) -> void: events.append("up%s" % canceled))
+	_press(button, Vector2(46, 46), true)
+	_touch_down(button, 0, Vector2(46, 46), true)
+	check(not button.is_held() and events.is_empty(), "touch driven: its own presses do nothing (%s)" % look)
+	var centre := button.button_center()
+	check(centre.is_equal_approx(Vector2(30 + 46, 40 + 46)), "touch driven: button_center in canvas coordinates (%s)" % centre)
+	check(is_equal_approx(button.hit_radius(), 46.0 + 8.0), "touch driven: hit_radius is the rim plus hit_slop")
+	check(button.hits(centre + Vector2(53, 0)) and not button.hits(centre + Vector2(55, 0)), "touch driven: hits() as its own press")
+	button.drive_press(centre + Vector2(10, 0))
+	check(button.is_held() and events == ["down"], "touch driven: drive_press holds it and says so (%s)" % look)
+	check(button.radius() == 46.0 * 0.93, "touch driven: the press look, as a press of its own")
+	button.drive_press(centre)
+	check(events == ["down"], "touch driven: a second press while held does nothing")
+	button.hide()
+	check(button.is_held() and events == ["down"], "touch driven: hiding keeps the hold — the owner sees the lift")
+	button.show()
+	button.drive_release()
+	check(not button.is_held() and events == ["down", "upfalse"], "touch driven: drive_release lifts it")
+	button.drive_release()
+	check(events.size() == 2, "touch driven: a release when not held says nothing")
+	button.cooling = true
+	button.cooldown = 0.4
+	check(button.tint() == Color(0.72, 0.72, 0.8) and button.cooldown == 0.4, "touch driven: the cooldown ring as before")
+	button.cooling = false
+	button.drive_press()
+	check(button.is_held(), "touch driven: drive_press() with no point holds it at the centre")
+	button.driven = false
+	check(not button.is_held() and events.back() == "uptrue" and button.mouse_filter == Control.MOUSE_FILTER_STOP,
+		"touch driven: turning it off lets go and takes input again (%s)" % [events])
+	holder.queue_free()
+	var attract := GoTouchButton.make(&"btn_attract", "ATTRACT", 120.0)
+	attract.drag_aim = true
+	attract.driven = true
+	holder = _host(attract)
+	holder.position = Vector2(100, 200)
+	await frames(1)
+	var aims: Array[Vector2] = []
+	attract.aimed.connect(func(v: Vector2) -> void: aims.append(v))
+	var at := attract.button_center()
+	attract.drive_press(at)
+	attract.drive_drag(at + Vector2(100, 0))
+	check(attract.aim() == Vector2(1, 0) and attract.knob() == Vector2(110, 60), "touch driven: the aim knob stops at aim_radius (%s)" % attract.knob())
+	check(aims.size() == 1 and aims[0] == Vector2(1, 0), "touch driven: aimed reports the pull")
+	attract.drive_drag(at + Vector2(0, 25))
+	check(attract.aim().is_equal_approx(Vector2(0, 0.5)), "touch driven: a half pull is half")
+	attract.drive_release(true)
+	check(not attract.is_held() and attract.aim() == Vector2.ZERO, "touch driven: released, no aim")
+	holder.queue_free()
+	await frames(1)
+
+
+func _joystick_driven(look: StringName) -> void:
+	var stick := GoJoystick.new()
+	stick.mode = GoJoystick.Mode.FOLLOW
+	stick.radius = 70
+	check(not stick.driven and stick.mouse_filter == Control.MOUSE_FILTER_STOP, "stick driven: off by default")
+	stick.driven = true
+	check(stick.mouse_filter == Control.MOUSE_FILTER_IGNORE, "stick driven: input ignored")
+	var holder := _host(stick)
+	holder.position = Vector2(20, 300)
+	await frames(2)
+	var log: Array[String] = []
+	stick.pressed_down.connect(func() -> void: log.append("down"))
+	stick.released.connect(func() -> void: log.append("released"))
+	stick.moved.connect(func(v: Vector2) -> void: log.append("moved%s" % v))
+	_touch_down(stick, 0, Vector2(70, 70), true)
+	check(not stick.is_active() and log.is_empty(), "stick driven: its own touches do nothing (%s)" % look)
+	var land := Vector2(20 + 50, 300 + 60)
+	check(stick.hits(land) and not stick.hits(Vector2(10, 300)), "stick driven: hits() is its rect, in canvas coordinates")
+	stick.drive_begin(land)
+	check(stick.is_active() and log == ["down"] and stick.center() == Vector2(50, 60) and stick.knob() == Vector2(50, 60),
+		"stick driven: drive_begin settles the dish where the finger landed (%s)" % stick.center())
+	stick.drive_drag(land + Vector2(140, 0))
+	check(stick.knob() == Vector2(120, 60) and stick.vector() == Vector2(1, 0), "stick driven: the knob stops at radius")
+	stick.drive_drag(land + Vector2(0, 35))
+	check(stick.vector().is_equal_approx(Vector2(0, 0.5)), "stick driven: a half drag is half")
+	stick.hide()
+	check(stick.is_active(), "stick driven: hiding keeps the drag — the owner sees the lift")
+	stick.show()
+	log.clear()
+	stick.drive_end()
+	check(not stick.is_active() and log == ["released", "moved(0.0, 0.0)"], "stick driven: drive_end lifts it (%s)" % [log])
+	stick.drive_end()
+	check(log.size() == 2, "stick driven: idle, drive_end says nothing")
+	stick.drive_begin(land)
+	stick.driven = false
+	check(not stick.is_active() and stick.mouse_filter == Control.MOUSE_FILTER_STOP, "stick driven: turning it off ends the drag")
+	holder.queue_free()
+	await frames(1)
 
 
 func _touch_label_cache() -> void:
