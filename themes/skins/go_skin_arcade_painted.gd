@@ -407,6 +407,24 @@ func window_width() -> float:
 	return WINDOW_WIDTH
 
 
+## The game's parts inside a dialog: the pale `InsetPanel`, glossy buttons 46 dp high (`PaintedDialog.BUTTON_HEIGHT`)
+## and 10 dp apart in a row.
+const WINDOW_BUTTON_HEIGHT := 46.0
+const WINDOW_BUTTON_GAP := 10
+
+
+func window_inset_variation() -> StringName:
+	return &"GoInsetPanel"
+
+
+func window_button_height() -> float:
+	return WINDOW_BUTTON_HEIGHT
+
+
+func window_button_gap() -> int:
+	return WINDOW_BUTTON_GAP
+
+
 ## The red magnet in the ribbon's corner (`RibbonHeader`: 58 × 56, 30 dp out past the ribbon's end and 24 above it)
 ## stands where a close button would — the game's dialogs have none.
 const CORNER_ART := "res://addons/gohud/icons/arcade_light/magnet.png"

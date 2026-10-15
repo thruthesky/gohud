@@ -23,6 +23,7 @@ func _initialize() -> void:
 		await _corner(look)
 		await _ribbon(look)
 		await _backdrop(look)
+		await _helpers(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -288,5 +289,55 @@ func _backdrop(look: StringName) -> void:
 	made.free()
 	dim.free()
 	drawer.queue_free()
+	surface.queue_free()
+	await frames(1)
+
+
+# ── The parts: add_inset, add_line, add_row, add_gloss (PaintedDialog's) ─
+
+func _helpers(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var skin := GoUi.skin()
+	var surface := GoSurface.new()
+	surface.set_title("SECRET CODE")
+	root.add_child(surface)
+	var inset := surface.add_inset()
+	var panel := inset.get_parent() as PanelContainer
+	check(panel != null and panel.get_parent() == surface.body, "%s parts: an inset goes in the body" % look)
+	check(panel.theme_type_variation == skin.window_inset_variation(), "%s parts: the inset wears the look's inset" % look)
+	if painted:
+		check(skin.window_inset_variation() == &"GoInsetPanel", "%s parts: the game's InsetPanel" % look)
+	check(inset.get_theme_constant(&"separation") == 4, "%s parts: the inset's rows are 4 apart" % look)
+	var line := surface.add_line("E2E Room has a secret code. Ask its host.", 16, inset)
+	check(line.get_parent() == inset and line.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER
+			and line.autowrap_mode == TextServer.AUTOWRAP_WORD_SMART and line.get_theme_font_size(&"font_size") == 16,
+		"%s parts: a line is centred, wraps (SMART) and takes its size" % look)
+	var stat := surface.add_line("12 / 20", 20, null, false)
+	check(stat.get_parent() == surface.body and stat.autowrap_mode == TextServer.AUTOWRAP_OFF,
+		"%s parts: a stat line does not wrap and goes in the body" % look)
+	var plain := surface.add_line("x")
+	check(not plain.has_theme_font_size_override(&"font_size"), "%s parts: size 0 keeps the theme's" % look)
+	var row := surface.add_row()
+	var want_gap := skin.window_button_gap() if skin.window_button_gap() >= 0 else GoUi.metric(GoTheme.GAP)
+	check(row.get_parent() == surface.body and row.get_theme_constant(&"separation") == want_gap,
+		"%s parts: a button row is %d apart (got %d)" % [look, want_gap, row.get_theme_constant(&"separation")])
+	if painted:
+		check(skin.window_button_gap() == 10, "%s parts: the game's buttons are 10 apart" % look)
+	var back := surface.add_gloss(GoTheme.VAR_BUTTON, GoIconSet.BACK, "BACK", row)
+	var join := surface.add_gloss(GoTheme.VAR_PRIMARY_BUTTON, GoIconSet.PLAY, "JOIN", row)
+	check(back is GoGlyphButton and back.get_parent() == row and back.text == "BACK" and back.glyph_icon == GoIconSet.BACK
+			and back.theme_type_variation == GoTheme.VAR_BUTTON, "%s parts: a glyph button in the row" % look)
+	check(back.size_flags_horizontal & Control.SIZE_EXPAND != 0 and join.size_flags_horizontal & Control.SIZE_EXPAND != 0,
+		"%s parts: the row's buttons share it" % look)
+	var bottom := surface.add_gloss(GoTheme.VAR_PRIMARY_BUTTON, GoIconSet.PLAY, "NEXT")
+	check(bottom.get_parent() == surface.body, "%s parts: a button goes in the body" % look)
+	await frames(3)
+	if painted:
+		check(skin.window_button_height() == 46.0, "%s parts: the game's dialog buttons are 46 high" % look)
+		check(is_equal_approx(back.size.y, 46.0) and is_equal_approx(bottom.size.y, 46.0),
+			"%s parts: the buttons are 46 high (got %.1f)" % [look, back.size.y])
+	else:
+		check(skin.window_button_height() == 0.0 and back.custom_minimum_size.y == 0.0,
+			"%s parts: a plain look keeps its button's height" % look)
 	surface.queue_free()
 	await frames(1)

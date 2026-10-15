@@ -78,6 +78,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **A window's parts, as the game's `PaintedDialog` builds them.** `GoSurface.add_inset()` (a pale inset holding a
+  column 4 dp apart), `add_line(text, font_size, parent, wrap)` (a centred, SMART-wrapping line; a stat passes
+  `wrap = false`), `add_row()` (buttons side by side) and `add_gloss(variation, icon, text)` (a `GoGlyphButton`), into
+  the body or a given parent. New `GoSkin` hooks size them: `window_inset_variation()`, `window_button_height()` and
+  `window_button_gap()` — `GoInsetPanel`, 46 dp and 10 dp under `arcade_light`.
+
 - **`GoConfig.scrim_blur` (true): the low quality tier's dim.** Off, a look that frosts its scrims (`arcade_light`'s
   blur) draws the flat scrim colour instead — on every window, drawer and `GoStyle.scrim()` already open and every one
   made after — as Magnet Mayhem's `UiTheme.set_blur(false)` does; under `arcade_light` that colour is the game's

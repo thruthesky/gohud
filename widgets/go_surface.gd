@@ -555,6 +555,55 @@ func _dress_scrim() -> void:
 	_scrim.material = null if scrim_transparent else GoUi.skin().scrim_material_now()
 
 
+# ── The parts a window is built of (Magnet Mayhem's PaintedDialog) ─────
+
+## A pale inset with a column inside, its rows 4 dp apart; returns the column. It goes in the body, or in [param parent].
+## The look picks its face (`GoSkin.window_inset_variation()`: the game's `GoInsetPanel` in `arcade_light`).
+func add_inset(parent: Control = null) -> VBoxContainer:
+	var panel := PanelContainer.new()
+	panel.theme_type_variation = GoUi.skin().window_inset_variation()
+	(parent if parent != null else body).add_child(panel)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override(&"separation", 4)
+	panel.add_child(column)
+	return column
+
+
+## A centred line of [param text] at [param font_size] (0: the theme's). [param wrap] is for sentences (SMART, so
+## ja/zh wrap in an export too); a short one-line stat must not wrap — a wrapping label keeps the tall minimum of its
+## first, narrow layout.
+func add_line(text := "", font_size := 0, parent: Control = null, wrap := true) -> Label:
+	var line := Label.new()
+	line.text = text
+	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if wrap: line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if font_size > 0: line.add_theme_font_size_override(&"font_size", font_size)
+	(parent if parent != null else body).add_child(line)
+	return line
+
+
+## A row for buttons side by side, their gap the look's (`GoSkin.window_button_gap()`: 10 in `arcade_light`).
+func add_row(parent: Control = null) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	var gap := GoUi.skin().window_button_gap()
+	row.add_theme_constant_override(&"separation", gap if gap >= 0 else GoUi.metric(GoTheme.GAP))
+	(parent if parent != null else body).add_child(row)
+	return row
+
+
+## A glyph button — [param variation], the icon set's [param icon], [param text] — at the look's window button height
+## (`GoSkin.window_button_height()`: 46 in `arcade_light`). In a row it shares the row's width.
+func add_gloss(variation: StringName, icon: StringName, text := "", parent: Control = null,
+		texture: Texture2D = null) -> GoGlyphButton:
+	var button := GoGlyphButton.make(text, icon, variation, texture)
+	var high := GoUi.skin().window_button_height()
+	if high > 0.0: button.custom_minimum_size.y = high
+	var to := parent if parent != null else body
+	if to is HBoxContainer: button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	to.add_child(button)
+	return button
+
+
 # ── Title glyph and the overhanging plate ─────────────────────────────
 
 ## A plate that draws its base grown sideways by `bleed` — the ribbon reaching past the card's sides.

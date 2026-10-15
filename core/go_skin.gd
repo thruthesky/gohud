@@ -1378,3 +1378,18 @@ func window_corner_rect() -> Rect2:
 ## narrow screen still narrows it.
 func window_width() -> float:
 	return 0.0
+
+
+## The variation of an inset a window's body holds (`GoSurface.add_inset`). `GoTheme.VAR_CARD`: the theme's card.
+func window_inset_variation() -> StringName:
+	return GoTheme.VAR_CARD
+
+
+## The height of a window's glyph buttons (`GoSurface.add_gloss`, dp). 0: the button's own.
+func window_button_height() -> float:
+	return 0.0
+
+
+## The gap between the buttons of a window's row (`GoSurface.add_row`, dp). -1: the theme's `gap` token.
+func window_button_gap() -> int:
+	return -1
