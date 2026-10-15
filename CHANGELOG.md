@@ -39,6 +39,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   four times a second. The ink is now set only when the level or the look changes (the text already was written only
   when it changed). The readout also takes `GoUi.theme()` at the start of its restyle, so a look switch reaches it, and
   watches `GoUi` from `_enter_tree` rather than `_ready`, so a readout moved in the tree keeps listening.
+- **The HUD widgets keep following the look after a reparent.** `GoTaskCard`, `GoCountdown`, `GoHudButton`,
+  `GoNameplate`, `GoNoticeFeed` and `GoSpotlight` watched `GoUi` in `_ready` and stopped in `_exit_tree`, so a node
+  moved with `remove_child` + `add_child` (no second `_ready`) no longer followed look changes. They now watch in
+  `_enter_tree`, like `GoRibbonHeader`, and restyle on re-entry in case the look changed while they were out of the tree.
+- **The HUD widgets take the new look's theme when the look changes.** `GoTaskCard`, `GoCountdown`, `GoHudButton`,
+  `GoNameplate`, `GoNoticeFeed` and `GoSpotlight` set `theme = GoUi.theme()` only in `_ready`, so after
+  `GoUi.use_preset(...)` a live widget repainted its skin parts but kept the old theme's boxes, font and inks. Their
+  `_restyle` now re-assigns the theme first, as `GoHudCard`, `GoIconButton`, `GoNotice` and `GoAppBar` do. A fixed look
+  draws as before.
 - **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
   crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
   400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.

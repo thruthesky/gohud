@@ -170,8 +170,12 @@ func _init() -> void:
 
 func _ready() -> void:
 	theme = GoUi.theme()
-	GoUi.watch(_restyle)
 	_restyle()
+
+
+func _enter_tree() -> void:
+	GoUi.watch(_restyle)
+	if is_node_ready(): _restyle()
 
 
 func _exit_tree() -> void:
@@ -296,6 +300,7 @@ func _chip_word_font(skin: GoSkin) -> Font:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	if not is_instance_valid(_box) or not is_inside_tree(): return
 	var skin := GoUi.skin()
 	remove_theme_stylebox_override(&"panel")

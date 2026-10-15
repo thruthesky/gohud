@@ -66,7 +66,11 @@ func _ready() -> void:
 	if _pool.is_empty(): _build_pool()
 	else: _restyle()
 	set_process(auto_advance)
+
+
+func _enter_tree() -> void:
 	GoUi.watch(_restyle)
+	if is_node_ready(): _restyle()
 
 
 func _exit_tree() -> void:
@@ -186,4 +190,5 @@ func _style_row(entry: Dictionary) -> void:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	for entry: Dictionary in _pool: _style_row(entry)
