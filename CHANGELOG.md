@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`duplicate()` and a saved config keep whether the project chose `min_touch_size`.** The setter always marked the
+  size as chosen and `Resource.duplicate()` runs every stored property through its setter, so a duplicated, untouched
+  `GoConfig` lost the look's touch floor (`arcade_light`'s 44 became 48). The flag is now a stored property declared
+  after `min_touch_size`, so an unchosen config stays unchosen and a chosen one (even an explicit 48) stays chosen.
 - **`arcade_light`'s fonts are Magnet Mayhem's current ones.** Nunito Bold and the four Noto Sans CJK Bold subsets
   were copied again from the game (its fonts commit of 2026-10-15), so a label measures what the game measures.
 - **A window's body clips only while it scrolls.** The body's `ScrollContainer` always clipped, which cut a part's
