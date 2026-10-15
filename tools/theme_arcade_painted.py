@@ -30,6 +30,9 @@ FONTS = RES + "/assets/fonts/"
 FONT_BASE = ("font_nunito", FONTS + "nunito/Nunito-Bold.ttf")
 FONT_FALLBACKS = [("font_noto_%s" % code.lower(), FONTS + "noto_sans_cjk/NotoSans%s-Bold.ttf" % code)
                   for code in ("KR", "JP", "SC", "TC")]
+# 🔤 The language each fallback leads for (`UiTheme.CJK_FONTS`): `GoUi.set_locale(code)` moves that language's font to
+#    the front, so a Han character shared by Chinese, Japanese and Korean takes the shape the reader expects.
+LOCALE_FONTS = {"ko": "font_noto_kr", "ja": "font_noto_jp", "zh_CN": "font_noto_sc", "zh_TW": "font_noto_tc"}
 MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arcade_painted_map.json")
 
 SHAPE = dict(kind="arcade_painted")
@@ -255,6 +258,9 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
     #    lifts it when the project chose a font of its own (gohud never replaces a project's font).
     setT("metadata/go_body_font_baked", 'SubResource("painted_font")')
+    # 🔤 Which fallback leads for which language — read by `GoUi.set_font_locale()` (the game's `set_locale_font()`).
+    setT("metadata/go_locale_fonts", "{%s}" % ", ".join('"%s": ExtResource("%s")' % (code, rid)
+                                                         for code, rid in LOCALE_FONTS.items()))
     # 👆 The look's touch floor is the game's `Cfg.Touch.MIN_TARGET` (44), not the 48 every other look declares.
     setT("GoHud/constants/touch", str(TOUCH_TARGET))
     for type_name, base in BASES.items():
@@ -604,8 +610,10 @@ def write_map():
                      "The game builds its theme as duplicate(arcade_light) plus these names as aliases. game_only "
                      "lists the game's variations that stay in the game (why in _game_only_why).",
             "_font": {"_help": "The theme's default_font is the game's UiTheme.get_font(): a FontVariation of base "
-                               "font + fallbacks (the game reorders the fallbacks per language itself).",
-                      "base_font": FONT_BASE[1], "fallbacks": [path for _, path in FONT_FALLBACKS]},
+                               "font + fallbacks. GoUi.set_locale(code) (or set_font_locale) puts the language's "
+                               "own CJK font first, as UiTheme.set_locale_font() does (locale_fonts).",
+                      "base_font": FONT_BASE[1], "fallbacks": [path for _, path in FONT_FALLBACKS],
+                      "locale_fonts": {code: dict(FONT_FALLBACKS)[rid] for code, rid in LOCALE_FONTS.items()}},
             "_font_sizes": {"_help": "Only the default font is written; no variation has a font of its own. The font sizes written are the game's literal ones or a Cfg "
                                      "size's desktop value (named in _cfg_sizes).",
                             "written": sizes, "left_to_game": []},

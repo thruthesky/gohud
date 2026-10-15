@@ -2359,3 +2359,4 @@ VSlider/styles/slider = SubResource("slider_track")
 default_font = SubResource("painted_font")
 default_font_size = 16
 metadata/go_body_font_baked = SubResource("painted_font")
+metadata/go_locale_fonts = {"ko": ExtResource("font_noto_kr"), "ja": ExtResource("font_noto_jp"), "zh_CN": ExtResource("font_noto_sc"), "zh_TW": ExtResource("font_noto_tc")}

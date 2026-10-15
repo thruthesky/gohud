@@ -86,7 +86,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   value is the same, `set_clock` repaints only when the `MM:SS` text or the warning changes, and the padded boards
   are reused while their theme box and pad are the same (remade after a theme change), so the card draws as before.
 - **`arcade_light`'s fonts are Magnet Mayhem's current ones.** Nunito Bold and the four Noto Sans CJK Bold subsets
-  were copied again from the game (its fonts commit of 2026-10-15), so a label measures what the game measures.
+  were copied again from the game, after its last re-subset of 2026-10-15 (the copy before predated four of them, so
+  the newest translated characters drew as empty boxes); the files are byte for byte the game's, so a label measures
+  what the game measures.
 - **A window's body clips only while it scrolls.** The body's `ScrollContainer` always clipped, which cut a part's
   antialiased rim on a half pixel — the painted inset's top edge at 1.5x — where the game's plain column draws it.
   `GoSurface` now clips the body only while its content overflows.
@@ -287,6 +289,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `pass_anchor_taps` (a tap on the anchor reaches it, so its second tap closes the card) and `tap_through` (more
   controls taps reach). `GoPopover.open()` takes them as `width` 0, `min_width`, `align`, `gap`, `edge`, `fit`,
   `pass_anchor_taps`, `tap_through`. Every default keeps today's card.
+- **The current language's CJK font leads: `GoUi.set_locale(code)` and `GoUi.set_font_locale(code)`.** A Han
+  character shared by Chinese, Japanese and Korean takes the shape its reader expects only when that language's font
+  comes first among the fallbacks. `set_font_locale(code)` puts it first in the look's body font (`FontVariation`) and
+  the rest after it in the written order, and returns whether the order changed — it assigns `fallbacks` only then,
+  since every assignment re-shapes all the text on screen. `set_locale(code)` does that, then
+  `TranslationServer.set_locale(code)` when it differs, so the re-render finds the new order in place (Magnet Mayhem's
+  `Locale.apply`). `use_preset()` runs it for the current locale. The fonts come from the theme's `go_locale_fonts`
+  metadata (`GoUi.LOCALE_FONTS_META`); `arcade_light` writes the game's: `ko` → Noto Sans KR, `ja` → JP, `zh_CN` → SC,
+  `zh_TW` → TC (also `ko_KR`, `zh_HK`, `zh_Hant` …), any other language KR, JP, SC, TC — `UiTheme.set_locale_font()`
+  exactly. The painted skin's `symbol_font()` is the leading one. Looks without the metadata are untouched.
+
 - **`arcade_light`: the scoreboard rows and the loading tiles.** Five more of Magnet Mayhem's variations, value for
   value from its `UiTheme`, so the game drops its last own boxes: `GoScoreRow` (a round scoreboard row, white at 90 %
   in a 3 px blue rim, 5 at the bottom, 14 px corners), `GoScoreRowGold` (the winner's: cream in gold), `GoScoreHead`

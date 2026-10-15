@@ -422,9 +422,14 @@ func perf_ink(level: int) -> Color:
 func perf_font() -> Font:
 	return ThemeDB.fallback_font
 
-## The game's text font is Nunito with Noto Sans KR first among its fallbacks, so a mark Nunito lacks (the ✓ on a
-## done chip) draws in Noto Sans KR Bold — the same file, shipped beside the art.
+## The game's text font is Nunito with the Noto Sans CJK fonts as fallbacks, so a mark Nunito lacks (the ✓ on a
+## done chip) draws in the first of them — Noto Sans KR Bold, or the current language's own once `GoUi.set_locale()`
+## put it first (the same files, shipped beside the art).
 func symbol_font() -> Font:
+	var look := GoUi.theme()
+	var baked: Variant = look.get_meta(&"go_body_font_baked", null) if look != null else null
+	if baked is FontVariation and not (baked as FontVariation).fallbacks.is_empty():
+		return (baked as FontVariation).fallbacks[0]
 	if _symbol_font == null: _symbol_font = load("res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansKR-Bold.ttf")
 	return _symbol_font
 

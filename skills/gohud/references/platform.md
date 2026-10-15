@@ -176,6 +176,7 @@ GoUi.config.number_formatter = func(amount: float) -> String:        # CJK group
 	if absf(amount) >= 10_000.0: return "%.1f만" % (amount / 10_000.0)
 	return str(roundi(amount))
 TranslationServer.set_locale("ko")                                  # widgets re-translate themselves
+GoUi.set_locale("ja")              # the same, after putting the look's Japanese font first (arcade_light's CJK fallbacks)
 ```
 
 - `GoUi.text(name)` returns translated text (override → `text_keys` key → **the name itself through the translation server**, so a tooltip can take your own key without registering it); `GoUi.text_key(name)` returns the key.
@@ -188,6 +189,16 @@ TranslationServer.set_locale("ko")                                  # widgets re
 - 🛑 Fonts: two ship — Cinzel (Latin, medieval headings) and Roboto (the Material presets' text, used only when the
   project sets no font of its own). CJK, Thai, Arabic, Hebrew, Devanagari need a font with those glyphs in your
   Theme — missing glyphs draw as empty boxes without any error.
+- 🔤 **The current language's CJK font first.** Chinese, Japanese and Korean share Han characters but draw them
+  differently, so the reader's own font must lead the fallbacks. `GoUi.set_locale(code)` reorders the look's body-font
+  fallbacks (`set_font_locale(code)` → `true` when the order changed; it reassigns only then, because a reassignment
+  re-shapes all text), then calls `TranslationServer.set_locale(code)` if the locale differs — call it instead of the
+  bare `TranslationServer.set_locale`. The table is the theme's `go_locale_fonts` metadata (`GoUi.LOCALE_FONTS_META`,
+  `{"ko": Font, "ja": Font, "zh_CN": Font, "zh_TW": Font}`); `arcade_light` carries Magnet Mayhem's Noto Sans KR / JP / SC /
+  TC. A code matches exactly, then by language (`ko_KR` → `ko`); Chinese by script or region (`Hans` → `zh_CN`;
+  `Hant`, `TW`, `HK`, `MO` → `zh_TW`); any other language keeps the written order (KR, JP, SC, TC).
+  `GoUi.use_preset()` applies the current locale. 🛑 A locale set with `TranslationServer.set_locale()` alone does not
+  reorder anything.
 
 ## 3. Sound and haptics
 

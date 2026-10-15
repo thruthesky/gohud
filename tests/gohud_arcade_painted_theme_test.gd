@@ -76,6 +76,7 @@ func _initialize() -> void:
 		_switch(light)
 		_field(light)
 		_font(light)
+		_locale_lead()
 	if dark != null:
 		_dark_stays(dark)
 	print("gohud arcade painted theme tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -707,6 +708,60 @@ func _font(theme: Theme) -> void:
 	GoUi.config.preset = &""
 	for path: String in [FONTS + "nunito/OFL.txt", FONTS + "noto_sans_cjk/OFL.txt"]:
 		check(FileAccess.file_exists(path), "%s ships with the font files" % path)
+
+
+## 🔤 The game's `UiTheme.set_locale_font()`: the current language's CJK font leads the fallbacks (`fallback_order`),
+##    the others after it in the written order; a language with none keeps KR JP SC TC. Reassigned only on a change.
+func _locale_lead() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	var look := GoUi.theme()
+	var font := look.get_meta(&"go_body_font_baked") as FontVariation
+	var fonts: Variant = look.get_meta(GoUi.LOCALE_FONTS_META, null)
+	check(fonts is Dictionary and (fonts as Dictionary).size() == 4, "arcade_light names a font per CJK language (got %s)" % [fonts])
+	if font == null or not (fonts is Dictionary): return
+	var files := {"ko": "KR", "ja": "JP", "zh_CN": "SC", "zh_TW": "TC"}
+	for code: String in files:
+		var named: Font = (fonts as Dictionary).get(code)
+		check(named != null and named.resource_path.ends_with("NotoSans%s-Bold.ttf" % files[code]),
+			"go_locale_fonts: %s is Noto Sans %s" % [code, files[code]])
+	var changes := [0]
+	var count := func() -> void: changes[0] += 1
+	font.changed.connect(count)
+	var want := {
+		"ko": ["KR", "JP", "SC", "TC"], "ja": ["JP", "KR", "SC", "TC"], "zh_CN": ["SC", "KR", "JP", "TC"],
+		"zh_TW": ["TC", "KR", "JP", "SC"], "en": ["KR", "JP", "SC", "TC"], "ko_KR": ["KR", "JP", "SC", "TC"],
+		"ja_JP": ["JP", "KR", "SC", "TC"], "zh": ["SC", "KR", "JP", "TC"], "zh_HK": ["TC", "KR", "JP", "SC"],
+		"zh_Hant": ["TC", "KR", "JP", "SC"], "zh_Hans_HK": ["SC", "KR", "JP", "TC"], "fr": ["KR", "JP", "SC", "TC"],
+	}
+	for code: String in want:
+		GoUi.set_font_locale(code)
+		var got: Array = []
+		for f: Font in font.fallbacks: got.append(f.resource_path.get_file().trim_prefix("NotoSans").trim_suffix("-Bold.ttf"))
+		check(got == want[code], "set_font_locale(%s): fallbacks %s (got %s)" % [code, want[code], got])
+	# Only a real change reassigns (every reassignment re-shapes all the text on screen).
+	GoUi.set_font_locale("ja")
+	changes[0] = 0
+	check(not GoUi.set_font_locale("ja") and not GoUi.set_font_locale("ja_JP") and changes[0] == 0,
+		"set_font_locale: the same order again changes nothing (changed %d times)" % changes[0])
+	check(GoUi.set_font_locale("ko") and changes[0] >= 1, "set_font_locale: a new order is assigned and says so")
+	changes[0] = 0
+	check(not GoUi.set_font_locale("en") and changes[0] == 0, "set_font_locale: en keeps the written order Korean already has")
+	font.changed.disconnect(count)
+	# set_locale: the font order, then the translation locale; the symbol font follows the lead.
+	GoUi.set_locale("zh_TW")
+	check(TranslationServer.get_locale() == "zh_TW" and font.fallbacks[0].resource_path.ends_with("NotoSansTC-Bold.ttf"),
+		"set_locale(zh_TW): the locale and Traditional Chinese first")
+	check(GoUi.skin().symbol_font() == font.fallbacks[0], "arcade_light's symbol font is the leading CJK font")
+	# A look chosen later follows the language already set.
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	check(not GoUi.set_font_locale("ja"), "a look without go_locale_fonts has no lead to change")
+	TranslationServer.set_locale("ja")
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	check(font.fallbacks[0].resource_path.ends_with("NotoSansJP-Bold.ttf"), "use_preset: arcade_light picks up the current locale (ja)")
+	GoUi.set_locale("en")
+	check(TranslationServer.get_locale() == "en" and font.fallbacks[0].resource_path.ends_with("NotoSansKR-Bold.ttf"),
+		"set_locale(en): back to KR JP SC TC")
+	GoUi.config.preset = &""
 
 
 func _covered(font: Font, text: String) -> bool:

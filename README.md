@@ -1297,7 +1297,8 @@ GoUi.config.number_formatter = func(amount: float) -> String:
 > (to titles and subtitles), Roboto, which only the Material presets assign (to titles, captions and
 > button labels — and to body text while the project sets no font of its own), and Magnet Mayhem's Nunito with
 > Noto Sans CJK fallbacks, which `arcade_light` uses for all its text while the project sets no font of its own (its
-> CJK files hold only the game's characters; the rest come from the system's fonts). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
+> CJK files hold only the game's characters; the rest come from the system's fonts; `GoUi.set_locale(code)` switches the
+> language with that language's CJK font leading the fallbacks). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
 > your own theme font; a Latin-only font draws them as empty boxes and raises no error. Traditional
 > Chinese needs its own coverage too: a Simplified subset does not contain those forms.
 
