@@ -87,8 +87,12 @@ func _init() -> void:
 
 func _ready() -> void:
 	theme = GoUi.theme()
-	GoUi.watch(_restyle)
 	_restyle()
+
+
+func _enter_tree() -> void:
+	GoUi.watch(_restyle)
+	if is_node_ready(): _restyle()
 
 
 func _exit_tree() -> void:

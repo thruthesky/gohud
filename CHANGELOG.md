@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **The HUD widgets keep following the look after a reparent.** `GoTaskCard`, `GoCountdown`, `GoHudButton`,
+  `GoNameplate`, `GoNoticeFeed` and `GoSpotlight` watched `GoUi` in `_ready` and stopped in `_exit_tree`, so a node
+  moved with `remove_child` + `add_child` (no second `_ready`) no longer followed look changes. They now watch in
+  `_enter_tree`, like `GoRibbonHeader`, and restyle on re-entry in case the look changed while they were out of the tree.
 - **The HUD widgets take the new look's theme when the look changes.** `GoTaskCard`, `GoCountdown`, `GoHudButton`,
   `GoNameplate`, `GoNoticeFeed` and `GoSpotlight` set `theme = GoUi.theme()` only in `_ready`, so after
   `GoUi.use_preset(...)` a live widget repainted its skin parts but kept the old theme's boxes, font and inks. Their
