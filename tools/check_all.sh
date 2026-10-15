@@ -71,6 +71,9 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_widgets_test.gd" \
 step "①-d unit tests — the game's dialog (GoSurface under arcade_light measures PaintedDialog and RibbonHeader)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_dialog_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-c unit tests — the painted controls (GoSlider, GoSwitch, GoMapPreview: drawn as Magnet Mayhem draws them)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_controls_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-t unit tests — the seven templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,
 #    yet until 2026-09-16 no check opened any of those five (the docs said "headless-tested").

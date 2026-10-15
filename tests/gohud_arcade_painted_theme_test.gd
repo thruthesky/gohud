@@ -550,8 +550,8 @@ func _slider(theme: Theme) -> void:
 		% slider.get_combined_minimum_size())
 	slider.free()
 	var styled := GoStyle.slider()
-	check(styled.custom_minimum_size.y == float(GoUi.config.min_touch_size),
-		"GoStyle.slider: the touch floor is GoConfig.min_touch_size (got %s)" % styled.custom_minimum_size.y)
+	check(styled.custom_minimum_size.y == GoUi.touch_size(),
+		"GoStyle.slider: the touch floor is the touch token (got %s)" % styled.custom_minimum_size.y)
 	styled.free()
 
 

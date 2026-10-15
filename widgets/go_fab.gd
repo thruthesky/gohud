@@ -126,7 +126,7 @@ func float_in(host: Control, above := 0.0) -> void:
 	grow_horizontal = Control.GROW_DIRECTION_END if rtl else Control.GROW_DIRECTION_BEGIN
 	grow_vertical = Control.GROW_DIRECTION_BEGIN
 	var margin := float(GoUi.metric(GoTheme.GAP))
-	var window := get_window() if is_inside_tree() else null
+	var window := get_viewport() if is_inside_tree() else null
 	var insets := Vector4.ZERO   # left, top, right, bottom
 	if window != null and not Engine.is_editor_hint():
 		var full := window.get_visible_rect()
@@ -211,7 +211,7 @@ func _refresh() -> void:
 
 ## Take presses in the slack beyond a small FAB — the touch target is `min_touch_size` whatever the visible size.
 func _has_point(point: Vector2) -> bool:
-	var reach := maxf(0.0, (float(GoUi.config.min_touch_size) - minf(size.x, size.y)) * 0.5)
+	var reach := maxf(0.0, (GoUi.touch_size() - minf(size.x, size.y)) * 0.5)
 	return Rect2(Vector2.ZERO, size).grow(reach).has_point(point)
 
 

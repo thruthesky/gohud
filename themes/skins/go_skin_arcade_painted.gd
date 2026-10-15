@@ -453,3 +453,9 @@ func window_corner_art() -> Texture2D:
 
 func window_corner_rect() -> Rect2:
 	return CORNER_RECT
+
+
+## The controls stay out of the focus order, as the game's are (`GlossButton`, `PaintedSlider`, `PaintedSwitch`,
+## `StageCard` and its pickers all set `FOCUS_NONE`): a touch game shows no focus ring after a tap.
+func control_focus_mode(_default_mode := Control.FOCUS_ALL) -> Control.FocusMode:
+	return Control.FOCUS_NONE

@@ -170,6 +170,7 @@ func _key_cluster(look: StringName) -> void:
 func _level_card(look: StringName) -> void:
 	var painted := look == GoThemePresets.ARCADE_LIGHT
 	var holder := VBoxContainer.new()
+	holder.theme = GoUi.theme() # as a screen is: the theme's own VBox gap must not reach the card's lock column
 	root.add_child(holder)
 	var card := GoLevelCard.make("STAGE 1", "OPPONENTS: 1", GoLevelCard.State.CLEARED)
 	holder.add_child(card)
@@ -184,7 +185,11 @@ func _level_card(look: StringName) -> void:
 		"%s card: the check sits over the top-right corner" % look)
 	check(card.summary() == "STAGE 1\nOPPONENTS: 1", "%s card: the summary" % look)
 	check(not card.disabled, "%s card: a cleared card takes presses" % look)
-	check(card.focus_mode == Control.FOCUS_ALL, "%s card: keyboard and gamepad can reach it" % look)
+	if painted:
+		check(card.focus_mode == Control.FOCUS_NONE, "%s card: out of the focus order, as the game's StageCard" % look)
+		card.focus_mode = Control.FOCUS_ALL   # a project that wants it back still gets the ring
+	else:
+		check(card.focus_mode == Control.FOCUS_ALL, "%s card: keyboard and gamepad can reach it" % look)
 	card.grab_focus()
 	check(card.has_focus() and card.get_theme_stylebox(&"focus") == card.selection_ring.get_theme_stylebox(&"panel"),
 		"%s card: the focused card wears the selection ring" % look)
@@ -224,6 +229,10 @@ func _level_card(look: StringName) -> void:
 	check(card.disabled and card.lock.visible and card.locked_label.visible, "%s card: locked shows the padlock" % look)
 	check(card.summary().ends_with("\nVERROUILLÉ"), "%s card: the locked caption is a parameter" % look)
 	check(card.lock.custom_minimum_size.x >= 56.0, "%s card: the lock column is at least 56 wide" % look)
+	check(card.thumbnail_slot.clip_contents,
+			"%s card: the thumbnail slot clips (the game's MapPreview does), so no half row of the well shows when scaled" % look)
+	check(card.lock.get_theme_constant(&"separation") == 4,
+			"%s card: the padlock sits 4 px over LOCKED, as the game (not the theme's VBox gap)" % look)
 	card.state = GoLevelCard.State.OPEN
 	await frames(1)
 	check(not card.disabled, "%s card: unlocking takes back the disabled the lock set" % look)
@@ -281,7 +290,7 @@ func _level_card(look: StringName) -> void:
 	card.scale_factor = 0.5
 	await frames(1)
 	check(card.custom_minimum_size.x == 150.0, "%s card: every size follows scale_factor" % look)
-	check(card.custom_minimum_size.y >= float(GoUi.config.min_touch_size), "%s card: never under a touch target" % look)
+	check(card.custom_minimum_size.y >= GoUi.touch_size(), "%s card: never under a touch target" % look)
 	var own := ImageTexture.create_from_image(Image.create(4, 4, false, Image.FORMAT_RGBA8))
 	card.state = GoLevelCard.State.CLEARED
 	card.check_texture = own
@@ -313,6 +322,7 @@ func _glyph_button(look: StringName) -> void:
 	var middle := (base.get_margin(SIDE_LEFT) + button.size.x - base.get_margin(SIDE_RIGHT)) * 0.5
 	check(absf((group_left + group_right) * 0.5 - middle) < 1.5, "%s glyph: glyph + label are centred together (%.1f..%.1f, mid %.1f)" % [look, group_left, group_right, middle])
 	check(GoUi._watchers.has(Callable(button, &"_on_ui_changed")), "%s glyph: an icon-set swap measures the shift again" % look)
+	if look == GoThemePresets.ARCADE_LIGHT: await _glyph_button_game_margins(glyph)
 	var normal_tint := button.glyph_tint()
 	button.disabled = true
 	check(is_equal_approx(button.glyph_tint().a, normal_tint.a * 0.6), "%s glyph: a disabled glyph is 0.6 opaque" % look)
@@ -334,6 +344,32 @@ func _glyph_button(look: StringName) -> void:
 	check((button.glyph_texture() != null) == (GoUi.icons().texture(GoIconSet.PLAY) != null),
 		"%s glyph: an icon-set name resolves" % look)
 	button.queue_free()
+	await frames(1)
+
+
+## The painted pills place the label as Magnet Mayhem's GlossButton: the shift moves from the right padding to the
+## left, the right never under 0 — so a glyph-only square keeps the size it was given.
+func _glyph_button_game_margins(glyph: Texture2D) -> void:
+	var holder := Control.new()
+	holder.theme = GoUi.theme()
+	root.add_child(holder)
+	var wide := GoGlyphButton.make("PLAY", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	wide.custom_minimum_size = Vector2(0, 62)
+	var square := GoGlyphButton.make("", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	square.custom_minimum_size = Vector2(56, 56)
+	holder.add_child(wide)
+	holder.add_child(square)
+	await frames(2)
+	for button: GoGlyphButton in [wide, square]:
+		var face := button.get_theme_stylebox(&"normal") as GoGlyphButton.ShiftedBox
+		var shift := button.glyph_allowance() * 0.5
+		var base := face.base
+		check(is_equal_approx(face.get_margin(SIDE_LEFT), base.get_margin(SIDE_LEFT) + shift)
+			and is_equal_approx(face.get_margin(SIDE_RIGHT), maxf(base.get_margin(SIDE_RIGHT) - shift, 0.0)),
+			"glyph: the label's padding moves by the shift, as the game's (%.1f/%.1f over %.1f/%.1f)" % [
+				face.get_margin(SIDE_LEFT), face.get_margin(SIDE_RIGHT), base.get_margin(SIDE_LEFT), base.get_margin(SIDE_RIGHT)])
+	check(is_equal_approx(square.size.x, 56.0), "glyph: a glyph-only square keeps its 56 px, as the game's (%.1f)" % square.size.x)
+	holder.queue_free()
 	await frames(1)
 
 

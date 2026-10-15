@@ -373,7 +373,7 @@ func _paint(button: Button) -> void:
 func _pad_safe_area() -> void:
 	if _pad == null or not is_inside_tree(): return
 	var inset := 0
-	var window := get_window()
+	var window := get_viewport()
 	if safe_area and not vertical and window != null and not Engine.is_editor_hint():
 		var full := window.get_visible_rect()
 		inset = roundi(maxf(0.0, full.end.y - GoSafeArea.usable_rect(window).end.y))

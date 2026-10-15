@@ -30,6 +30,23 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `GoStyle.fit_font_size()` with no font measures with the look's FontVariation and its four CJK fallbacks (KR, JP, SC,
   TC), not a plain Nunito `FontFile`. Before a preset is applied the fit font is `ThemeDB.fallback_font`, which has no
   fallbacks, so CJK widths measured then differ; under the preset nothing was lost.
+- **Every widget that fits the safe area reads the viewport it is drawn in.** `GoAppBar`, `GoCoachMark`, `GoConsole`,
+  `GoDrawer`, `GoEdgeBar`, `GoForm`, `GoFab`, `GoHudAnchor`, `GoNavBar` and `GoStyle`'s bottom bar passed
+  `get_window()` to `GoSafeArea.usable_rect`, so inside a `SubViewport` (a preview, a render-to-texture) they laid out
+  for the main window round it — a console 390 wide in a 600 viewport, a drawer 844 tall in a 400 one. They now pass
+  `get_viewport()`, and so does `GoSurface`: `GoSafeArea.usable_rect` (and `usable_rect_with_keyboard`,
+  `px_to_units`) take a `Viewport`, and a `SubViewport` is its own whole rect with no safe area.
+
+- **`GoLevelCard` lays out its locked state and thumbnail as Magnet Mayhem's `StageCard`.** The padlock and LOCKED
+  sat 4 px apart only under the engine's default theme; under a gohud theme the column took its VBox gap (12) and both
+  sat lower. The gap is now the card's own (`lock_gap`, 4). The thumbnail slot clips, as the game's map preview does,
+  so on a scaled canvas (iPad, desktop) the well's last half row no longer shows under it.
+
+- **`GoGlyphButton` sizes and places its label exactly as Magnet Mayhem's `GlossButton`.** On the painted pills the
+  label's shift now moves padding from the far side to the near one (the far side never under 0), so a glyph-only
+  56 × 56 pill stays 56 wide (it grew to 67) and a pill at its minimum width is as wide as the game's. Only the
+  glyph's own side is clamped to `MIN_EDGE`. A face thinner than `MIN_EDGE` keeps the old centred layout.
+
 - **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
   glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
   with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and
@@ -101,6 +118,19 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   files, now in `assets/fonts/nunito/` and `assets/fonts/noto_sans_cjk/` (SIL OFL 1.1, see `THIRD_PARTY_NOTICES.md`).
   Labels set exactly as in the game. Through `GoUi.theme()` the font gives way to the project’s own when the project
   sets one (`go_body_font_baked` metadata), as every preset’s body font does.
+- **arcade_light's controls stay out of the focus order, as Magnet Mayhem's do.** A new skin hook,
+  `GoSkin.control_focus_mode()`, sets the focus mode of `GoGlyphButton`, `GoSlider`, `GoSwitch`, `GoLevelCard` and
+  `GoStyle.button` / `toggle` / `checkbox` / `slider` / `picker` (through `GoStyle.skin_focus()`, again on a look change).
+  `GoSkinArcadePainted` answers `FOCUS_NONE`, like the game's `GlossButton`, `PaintedSlider`, `PaintedSwitch` and
+  `StageCard`. Every other look keeps `FOCUS_ALL`: `GoSlider` and `GoSwitch` were `FOCUS_NONE` in every look and the
+  keyboard and a gamepad reach them again. A `focus_mode` the project sets itself is left alone.
+
+- **The touch floor is the look's own until the project chooses one.** `GoUi.metric(GoTheme.TOUCH)` returned
+  `GoConfig.min_touch_size` (48) in every look and ignored each theme's `touch` token. Left unset, the floor is now that
+  token, so `arcade_light` can keep Magnet Mayhem's 44 while every other look stays at 48; a `min_touch_size` the
+  project sets still wins. New `GoUi.touch_size()`, `GoConfig.touch_size_chosen()` and
+  `GoConfig.follow_look_touch_size()`. The widgets that read `min_touch_size` directly (icon button, FAB, app bar,
+  coach mark, prompt card, level card, `GoStyle`) now read the token.
 
 - **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
   exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
@@ -170,6 +200,18 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   Magnet Mayhem's `MapPreview` box — `#18213a`, 6 px corners, a 1 px `#58627b` rim, no padding — so the look owns the
   frame and a map-preview widget reads it from the theme. `arcade_painted_map.json` lists it under `_code_built`
   (`MapPreview._init()`).
+- **`GoSlider`** (`HSlider`) — a slider drawn as Magnet Mayhem's `PaintedSlider`: the fill runs `FILL_PAST` past the
+  handle's centre (at least a track's height long) and a held handle is drawn `HELD_SCALE` larger. It draws the theme's
+  own HSlider parts, so `GoSliderGreen` / `GoSliderCyan` pick the fill. `make()`, `part()`, `handle_size()`,
+  `handle_center_x()`, `bar_rect()`, `fill_rect()`, `handle_rect()`. Test `gohud_painted_controls_test`, in `check_all`.
+- **`GoSwitch`** (`CheckButton`) — an on/off switch drawn as Magnet Mayhem's `PaintedSwitch`: the theme's pill centred
+  in its box and an ON / OFF caption beside the knob (`on_text`, `off_text`, `set_texts()`, shrunk with
+  `GoStyle.fit_font_size`). `make()`, `part()`, `pill_texture()`, `switch_rect()`, `caption_position()`.
+- **`GoMapPreview`** (`Control`) — a small map of a level drawn as Magnet Mayhem's `MapPreview`: areas (`add_rect`,
+  `add_circle`, `add_polygon`) filled and outlined, links (`add_link`) under them, start dots (`set_starts`), fitted and
+  centred in the flat dark box or the theme's well (`set_well()`); `locked` turns it a grey silhouette with no starts.
+  It clips to its box. The game passes only data.
+
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
     `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.

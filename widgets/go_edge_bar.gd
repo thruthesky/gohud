@@ -548,7 +548,7 @@ func _place_run(run: Array, from: float, inner: Rect2, step: float, extra := {})
 func _refresh_insets() -> void:
 	var next := Vector4.ZERO
 	if safe_area and is_inside_tree() and not Engine.is_editor_hint() and (_pinned or not _in_scroll()):
-		var window := get_window()
+		var window := get_viewport()
 		var at := _resolved_edge()
 		var usable := GoSafeArea.usable_rect(window)
 		if avoid_keyboard and at == Edge.BOTTOM: usable = GoSafeArea.usable_rect_with_keyboard(window, _keyboard_px)

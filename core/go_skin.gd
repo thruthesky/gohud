@@ -1406,3 +1406,9 @@ func window_button_height() -> float:
 ## The gap between the buttons of a window's row (`GoSurface.add_row`, dp). -1: the theme's `gap` token.
 func window_button_gap() -> int:
 	return -1
+
+
+## The focus mode of the controls gohud builds (buttons, sliders, switches, level cards, pickers), given the one
+## the control would take ([param default_mode]). Default: that one, so the keyboard and a gamepad reach them.
+func control_focus_mode(default_mode := Control.FOCUS_ALL) -> Control.FocusMode:
+	return default_mode

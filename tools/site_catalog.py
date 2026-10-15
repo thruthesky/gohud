@@ -1481,6 +1481,44 @@ price.change_ended.connect(func(low: float, high: float) -> void: refilter(low, 
 		"Два повзунки, що ніколи не перетинаються, — діапазон ціни чи рівня.",
 		"สองที่จับที่ไม่ข้ามกัน — ช่วงราคาหรือเลเวล",
 		"مقبضان لا يتقاطعان أبدًا — نطاق سعر أو مستوى.")),
+	("inputs", "GoSlider", "HSlider", """var music := GoSlider.make(0.0, 1.0, 0.01)
+music.theme_type_variation = &"GoSliderGreen\"""", T(
+		"A slider drawn the painted way: the fill runs past the handle, a held handle grows.",
+		"칠한 모양의 슬라이더 — 채움이 손잡이보다 조금 더 나가고, 누른 손잡이는 커진다.",
+		"ペイント風に描くスライダー。塗りはつまみの先まで伸び、押している間つまみが大きくなる。",
+		"手绘风格的滑块：填充越过滑钮一点，按住时滑钮变大。",
+		"手繪風格的滑桿：填色越過滑鈕一點，按住時滑鈕變大。",
+		"Un deslizador con estilo pintado: el relleno pasa un poco el tirador y este crece al sostenerlo.",
+		"Um controle deslizante pintado: o preenchimento passa um pouco da alça, que cresce ao ser segurada.",
+		"Ползунок в рисованном стиле: заливка чуть заходит за ручку, а зажатая ручка увеличивается.",
+		"Un curseur au style peint : le remplissage dépasse un peu la poignée, qui grossit quand on la tient.",
+		"Boyalı görünümlü kaydırıcı: dolgu tutamacın biraz ötesine geçer, basılı tutulan tutamaç büyür.",
+		"Suwak w malowanym stylu: wypełnienie sięga trochę za uchwyt, a przytrzymany uchwyt rośnie.",
+		"Un cursore dallo stile dipinto: il riempimento supera un po' la maniglia, che cresce quando è tenuta.",
+		"Thanh trượt kiểu vẽ tay: phần tô vượt quá núm một chút, núm phóng to khi đang giữ.",
+		"Penggeser bergaya lukis: isian melewati pegangan sedikit, pegangan membesar saat ditahan.",
+		"Повзунок у мальованому стилі: заливка трохи заходить за ручку, а затиснута ручка більшає.",
+		"สไลเดอร์แบบลายวาด: ส่วนเติมเลยที่จับไปเล็กน้อย และที่จับขยายขึ้นขณะกดค้าง",
+		"منزلق بالمظهر المرسوم: يتجاوز الملء المقبض قليلًا، ويكبر المقبض أثناء الضغط عليه.")),
+	("inputs", "GoSwitch", "CheckButton", """var vibration := GoSwitch.make(true)
+vibration.set_texts(tr("ON"), tr("OFF"))""", T(
+		"An on/off switch drawn the painted way, with ON / OFF beside the knob.",
+		"칠한 모양의 켜기/끄기 스위치 — 손잡이 옆에 ON / OFF 글자가 들어간다.",
+		"ペイント風のオン/オフスイッチ。つまみの横に ON / OFF が入る。",
+		"手绘风格的开关，滑钮旁显示 ON / OFF。",
+		"手繪風格的開關，滑鈕旁顯示 ON / OFF。",
+		"Un interruptor con estilo pintado, con ON / OFF junto a la perilla.",
+		"Um interruptor pintado, com ON / OFF ao lado do botão.",
+		"Переключатель в рисованном стиле с надписью ON / OFF рядом с ручкой.",
+		"Un interrupteur au style peint, avec ON / OFF à côté du bouton.",
+		"Boyalı görünümlü aç/kapa anahtarı; topuzun yanında ON / OFF yazar.",
+		"Przełącznik w malowanym stylu z napisem ON / OFF obok gałki.",
+		"Un interruttore dallo stile dipinto, con ON / OFF accanto alla manopola.",
+		"Công tắc bật/tắt kiểu vẽ tay, có chữ ON / OFF cạnh núm.",
+		"Sakelar nyala/mati bergaya lukis, dengan ON / OFF di samping kenopnya.",
+		"Перемикач у мальованому стилі з написом ON / OFF біля ручки.",
+		"สวิตช์เปิด/ปิดแบบลายวาด มีคำว่า ON / OFF ข้างปุ่ม",
+		"مفتاح تشغيل/إيقاف بالمظهر المرسوم، مع ON / OFF بجانب المقبض.")),
 	("inputs", "GoDatePicker", "Container", """var stay := GoDatePicker.make()
 stay.range_mode = true
 stay.range_picked.connect(func(start: Dictionary, end: Dictionary) -> void: book(start, end))""", T(
@@ -1886,6 +1924,28 @@ shot.custom_minimum_size = Vector2(74, 74)""", T(
 		"Картинка, що заповнює свій блок і обрізає зайве, як object-fit: cover у CSS.",
 		"รูปที่เต็มกรอบและตัดส่วนที่เกินออก เหมือน object-fit: cover ของ CSS",
 		"صورة تملأ صندوقها وتقصّ الزائد منها مثل object-fit: cover في CSS.")),
+	("hud", "GoMapPreview", "Control", """var map := GoMapPreview.new()
+map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))
+map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))
+map.add_link(Vector2(0, 0), Vector2(18, 0), 2.0, Color("#c9a26b"))
+map.set_starts(PackedVector2Array([Vector2(-3, 0), Vector2(20, 0)]))""", T(
+		"A small map of a level: areas, links and start dots; a grey silhouette when locked.",
+		"레벨의 작은 지도 — 구역·다리·시작 점을 그리고, 잠기면 회색 실루엣이 된다.",
+		"レベルの小さな地図。エリア・通路・開始点を描き、ロック中は灰色のシルエットになる。",
+		"关卡的小地图：区域、连接和起点；锁定时显示为灰色剪影。",
+		"關卡的小地圖：區域、連接和起點；鎖定時顯示為灰色剪影。",
+		"Un pequeño mapa del nivel: zonas, enlaces y puntos de inicio; una silueta gris si está bloqueado.",
+		"Um pequeno mapa do nível: áreas, ligações e pontos de início; uma silhueta cinza quando bloqueado.",
+		"Маленькая карта уровня: зоны, переходы и точки старта; серый силуэт, если уровень закрыт.",
+		"Une petite carte du niveau : zones, liaisons et points de départ ; une silhouette grise s'il est verrouillé.",
+		"Bölümün küçük haritası: alanlar, bağlantılar ve başlangıç noktaları; kilitliyken gri bir siluet.",
+		"Mała mapa poziomu: obszary, połączenia i punkty startu; szara sylwetka, gdy jest zablokowany.",
+		"Una piccola mappa del livello: aree, collegamenti e punti di partenza; una sagoma grigia se è bloccato.",
+		"Bản đồ nhỏ của màn chơi: khu vực, lối nối và điểm xuất phát; một hình bóng xám khi bị khóa.",
+		"Peta kecil sebuah level: area, penghubung, dan titik mulai; siluet abu-abu saat terkunci.",
+		"Маленька мапа рівня: зони, переходи й точки старту; сірий силует, якщо рівень закритий.",
+		"แผนที่เล็กของด่าน: พื้นที่ ทางเชื่อม และจุดเริ่ม เป็นเงาสีเทาเมื่อยังล็อกอยู่",
+		"خريطة صغيرة للمرحلة: مناطق وروابط ونقاط بداية، وظلّ رمادي عندما تكون مقفلة.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

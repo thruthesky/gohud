@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage and GoGlyphButton.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider and GoSwitch.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -30,6 +30,8 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 21. [GoKeyCluster — WASD or arrows in a T](#21-gokeycluster--wasd-or-arrows-in-a-t)
 22. [GoCoverImage — a picture that covers its box](#22-gocoverimage--a-picture-that-covers-its-box)
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
+24. [GoSlider — a slider drawn the painted way](#24-goslider--a-slider-drawn-the-painted-way)
+25. [GoSwitch — an on/off switch with a caption](#25-goswitch--an-onoff-switch-with-a-caption)
 
 ## 1. GoHudAnchor
 
@@ -629,9 +631,12 @@ card.pressed.connect(_play.bind(3))
 | `selected` | The gold ring (`GoSkin.selection_ring_box()`) |
 | `check_texture` · `lock_texture` · `person_texture` · `play_tag_texture` · `pointer_texture` | Art overrides. Empty: the skin (`GoSkin.widget_art`), else the icon set, else a drawn plate — a look with no art still works |
 | `scale_factor` · `card_size` (300×98) | Sizes are multiplied by `scale_factor` |
+| `lock_gap` (4) | Pixels between the padlock and LOCKED — set on the column, so a theme's own VBox gap never reaches it |
 
 - 🔑 The face comes from the type variation for the state — `GoLevelCard` (open and cleared), `GoLevelCardCurrent`,
   `GoLevelCardLocked`; a theme without them falls back to `GoButton` (`GoPrimaryButton` for the current level).
+- The thumbnail slot clips its contents, as the game's map preview does: on a scaled canvas no half row of the well
+  or the picture shows past the slot.
 
 ## 21. GoKeyCluster — WASD or arrows in a T
 
@@ -682,3 +687,82 @@ var own := GoGlyphButton.make("Shop", &"", GoTheme.VAR_BUTTON, preload("res://ui
 - 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The label
   stays a plain `text`, so translation and tests work as on any button.
 - 🛑 `glyph_icon` needs a texture icon set — a font icon has no texture, and the button then shows its label alone.
+- 🔑 The label moves by half the glyph's room: on a face with real padding (at least `MIN_EDGE` on the far side, as the
+  painted pills) that much padding goes from the far side to the near one, exactly as Magnet Mayhem's `GlossButton` —
+  the button grows only past the far padding, so a 56 × 56 glyph-only pill stays 56 wide. A thinner face keeps the
+  group centred and the glyph `MIN_EDGE` off its side.
+
+## 24. GoSlider — a slider drawn the painted way
+
+`class_name GoSlider extends HSlider`. The settings slider of Magnet Mayhem, drawn exactly as the game draws it: the
+fill runs `FILL_PAST` (2) past the handle's centre and is never shorter than the track is tall, and a held handle is
+drawn `HELD_SCALE` (1.12) larger. Values, steps, signals, keys and touch are the stock HSlider's.
+
+```gdscript
+var music := GoSlider.make(0.0, 1.0, 0.01)
+music.theme_type_variation = &"GoSliderGreen"      # GoSliderCyan, or none for the blue fill
+```
+
+`make(minimum, maximum, snap)` · `part(item)` (the theme part it draws) · `handle_size()` · `handle_center_x()` ·
+`bar_rect()` · `fill_rect()` · `handle_rect()`. Its least size is its `custom_minimum_size`, set when it is made (120 wide, `GoTheme.TOUCH` tall) — the engine's Slider would measure the blanks; a screen that sets its own wins.
+
+- 🔑 The parts are the theme's own HSlider parts (`slider`, `grabber_area`, `grabber_area_highlight`, `grabber`,
+  `grabber_highlight`, `grabber_disabled`), read again when the theme or the variation changes — every preset draws its
+  own look, and a variation gives only the parts it changes.
+- 🔑 The engine's drawing is blanked with overrides: a see-through grabber as wide as the handle, so a press still maps
+  to the value under the finger. Do not add your own `grabber` or `slider` overrides — put a variation in the theme.
+- `GoStyle.slider()` stays a plain HSlider; reach for `GoSlider` where a screen must look like the painted game.
+
+## 25. GoSwitch — an on/off switch with a caption
+
+`class_name GoSwitch extends CheckButton`. The settings switch of Magnet Mayhem, drawn exactly as the game draws it:
+with no `text` the pill stands centred in its box on whole pixels, and a caption ("ON" / "OFF") sits in the part of
+the pill the knob is not on. Toggling, `toggled` and the touch target are the stock CheckButton's.
+
+```gdscript
+var vibration := GoSwitch.make(true)
+vibration.set_texts(tr("ON"), tr("OFF"))      # both shrink together so the longer one fits
+```
+
+`make(on)` · `on_text` · `off_text` · `set_texts(on, off)` · `part(item)` · `pill_texture()` · `pill_size()` ·
+`switch_rect()` · `caption()` · `caption_room()` · `caption_font_size()` · `caption_width()` · `caption_position()`.
+Constants `TEXT_SIZE` (12), `KNOB_SHARE` (0.86), `TEXT_EDGE` (9), `TEXT_OUTLINE` (3).
+
+- 🔑 The pills are the theme's CheckButton icons (`checked`, `unchecked`, their `_disabled` and `_mirrored` forms).
+  The caption is white with a `TEXT_OUTLINE` rim in the CheckButton's `font_color` (the ink on arcade_light); on a
+  look whose text is light, the text colour fills it and the page colour rims it.
+- 🔑 With a `text` the label is the engine's and the pill stands where the engine puts the check icon (the far end).
+- 🔑 Its least size is its `custom_minimum_size`: `GoTheme.TOUCH` tall from the start, and at least the pill plus
+  `SIDE_ROOM` wide once the look is read. A screen that sets its own height wins.
+- `GoStyle.toggle()` stays a plain CheckButton; reach for `GoSwitch` where a screen must look like the painted game.
+
+## 26. GoMapPreview — a small map of a level
+
+`class_name GoMapPreview extends Control`. Magnet Mayhem's MapPreview, drawn exactly as the game draws it: areas
+(rectangles, circles, free polygons) filled and outlined, the links between them, white start dots, all fitted and
+centred in a dark box or the theme's well. Locked, it is a grey silhouette with no starts. The game hands in data only.
+
+```gdscript
+var map := GoMapPreview.new()
+map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))        # centre, half size, fill
+map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))
+map.add_link(Vector2(0, 0), Vector2(18, 0), 2.0, Color("#c9a26b"))    # centre to centre, under the areas
+map.set_starts(PackedVector2Array([Vector2(-3, 0), Vector2(20, 0)]))
+map.set_well()                                                        # the painted well, padding 12
+map.locked = not unlocked
+```
+
+`clear()` · `add_rect(center, half, color)` · `add_circle(center, radius, color)` · `add_polygon(points, color)` ·
+`add_link(from, to, width, color)` · `set_starts(points)` · `set_well()` · `locked` · `padding` · `show_background` ·
+`background` · `to_canvas(point)` · `map_scale()` · `background_box()` · `area_count()` · `link_count()` ·
+`start_count()` · `area_color(i)` · `link_color(i)` · `starts_shown()`. Constants `PADDING` (4), `WELL_PADDING` (12),
+`EDGE` / `EDGE_WIDTH` (0.6), `DOT` / `DOT_RADIUS` (0.8), `LOCKED_AREA`, `LOCKED_LINK`, `CIRCLE_SEGMENTS` (32).
+
+- 🔑 World units, +X right and +Y down. The areas' bounds (not the links) are scaled to fit the box less `padding`
+  and centred, so an off-centre map stays centred. Links are drawn first, so a bar from centre to centre is covered
+  by the areas at its ends.
+- 🔑 The background is `background` if set; else the theme's `GoWell` after `set_well()`; else the theme's
+  `GoMapPreview` panel; else the game's flat box (`#18213a`, a 1 px `#58627b` rim, corner 6). `show_background =
+  false` draws none, for a card that draws its own well round the thumbnail.
+- 🛑 It clips to its box (`clip_contents`), as the game's MapPreview does: on a scaled canvas the background's last
+  fractional row would otherwise show. It ignores the mouse.

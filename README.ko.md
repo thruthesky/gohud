@@ -645,6 +645,9 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoLevelCard` | Button | 스테이지 선택 카드 — 썸네일, 제목, 부제 줄(사람 아이콘과 "OPPONENTS: 3"), 오른쪽에 깬 레벨은 체크, 잠긴 레벨은 자물쇠(카드는 `disabled`), 다음 레벨은 비스듬한 PLAY! 태그. `selected` 는 금색 링을 그린다. 얼굴은 `GoLevelCard` · `GoLevelCardCurrent` · `GoLevelCardLocked` 에서 오고, 글자는 칸에 맞게 줄어든다(`GoStyle.fit_font_size` — 테마의 글꼴로 잰다. `arcade_light` 에서는 게임처럼 Nunito 와 CJK 대체 글꼴 넷) |
 | `GoCoverImage` | Control | 상자를 가득 채우는 그림 — CSS `object-fit: cover`: 빈틈이 없을 때까지 키우고 넘친 부분은 자르며, `focus` 가 남길 부분을 고른다. `clip_contents` 가 필요 없고 마우스는 통과시킨다 |
 | `GoGlyphButton` | Button | 라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약. 글리프·간격·라벨이 함께 가운데에 선다. `Button.icon` 으로는 안 된다. 라벨은 평범한 `text` 라 번역과 테스트가 다른 버튼과 같다 |
+| `GoSlider` | HSlider | 칠한 모양으로 그리는 설정 슬라이더 — 채움이 손잡이 가운데보다 조금 더 나가고(최솟값에서도 가는 줄이 되지 않는다) 누르고 있는 손잡이는 커진다. 테마의 HSlider 부품을 그대로 그리므로 `GoSliderGreen` · `GoSliderCyan` 이 채움 색을 고른다. 값·시그널·터치는 기본 HSlider 그대로다 |
+| `GoMapPreview` | Control | 레벨의 작은 지도 — 사각형·원·다각형 구역과 테두리, 구역을 잇는 다리, 시작 점을 어두운 상자나 테마의 우물 안에 맞춰 가운데에 그린다. 잠기면 시작 점 없는 회색 실루엣이 된다. 게임은 데이터만 넘긴다 |
+| `GoSwitch` | CheckButton | 칠한 모양으로 그리는 켜기/끄기 스위치 — 테마의 알약이 칸 가운데에 서고, 손잡이 옆에 글자(`set_texts("ON", "OFF")`)가 들어가며 어느 언어든 맞게 줄어든다. 켜고 끄기와 터치는 기본 CheckButton 그대로다 |
 | `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
 
 ### 화면 위에

@@ -158,6 +158,19 @@ func _tokens() -> void:
 	settings.min_touch_size = 44
 	check(GoUi.metric(GoTheme.TOUCH) == 44, "min_touch_size becomes the touch token")
 	settings.min_touch_size = 48
+	# A look carries its own floor in its `touch` token (arcade_light: the game's 44); a size the project chose wins.
+	settings.follow_look_touch_size()
+	check(not settings.touch_size_chosen() and settings.min_touch_size == 48, "follow_look_touch_size: nothing chosen, the field reads its default")
+	var finger := GoUi.DEFAULT_THEME.duplicate() as Theme
+	finger.set_constant(GoTheme.TOUCH, GoTheme.TYPE, 44)
+	settings.theme = finger
+	check(GoUi.metric(GoTheme.TOUCH) == 44, "nothing chosen: the look's own touch token is the floor")
+	check(GoUi.touch_size() == 44.0, "GoUi.touch_size() reads the same floor")
+	settings.min_touch_size = 56
+	check(settings.touch_size_chosen() and GoUi.metric(GoTheme.TOUCH) == 56, "a min_touch_size the project chose wins over the look")
+	settings.follow_look_touch_size()
+	settings.theme = null
+	check(GoUi.metric(GoTheme.TOUCH) == 48, "every other look keeps 48")
 
 	# A plain Theme with no tokens does not break anything.
 	settings.theme = Theme.new()
@@ -3496,7 +3509,9 @@ func _app_components() -> void:
 		await frames(2)
 		check(near(fab.size.x, 56.0) and near(fab.size.y, 56.0), "%s: a FAB is a 56dp square (%s)" % [preset, fab.size])
 		check(near(wide.size.y, 56.0) and wide.size.x > 100.0, "%s: an extended FAB is 56dp tall and holds its label" % preset)
-		check(tiny._has_point(Vector2(-3.0, 20.0)), "%s: a 40dp FAB takes presses 48dp wide" % preset)
+		# 🔑 The reach is the look's touch floor (48; arcade_light's is the game's 44), half of the extra on each side.
+		var fab_reach := (GoUi.touch_size() - 40.0) * 0.5
+		check(tiny._has_point(Vector2(1.0 - fab_reach, 20.0)), "%s: a 40dp FAB takes presses %sdp wide" % [preset, GoUi.touch_size()])
 		var fab_back := GoSkin.blend(GoSkin.box_background(skin.fab_box(56.0, &"normal")), page)
 		check(GoSkin.contrast_ratio(skin.fab_ink(), fab_back) >= 4.5,
 			"%s: the FAB's label reads on its face (%.2f)" % [preset, GoSkin.contrast_ratio(skin.fab_ink(), fab_back)])
@@ -3557,7 +3572,7 @@ func _app_components() -> void:
 		var first_tool := tools.get_child(0).get_child(0) as GoIconButton
 		first_tool.pressed.emit()
 		var second_tool := tools.get_child(0).get_child(1) as GoIconButton
-		var reach := (float(GoUi.config.min_touch_size) - first_tool.size.y) * 0.5
+		var reach := (GoUi.touch_size() - first_tool.size.y) * 0.5
 		check(used[0] == 1 and first_tool._has_point(Vector2(-reach + 1.0, first_tool.size.y * 0.5))
 			and first_tool.touch_peers.size() == 2
 			and second_tool.position.x - first_tool.position.x - first_tool.size.x >= reach * 2.0 - 0.5,
