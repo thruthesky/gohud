@@ -6,6 +6,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoStyle`'s plain controls follow a look change.** `GoStyle.skin_focus()` set the look's focus mode once, when
+  `button` / `style_button` / `toggle` / `checkbox` / `slider` / `picker` styled the control, and only the gohud widgets
+  re-applied it from a watcher of their own. A form built under `arcade_light` kept `FOCUS_NONE` after
+  `GoUi.use_preset()` to another look, so the keyboard and a gamepad reached none of its buttons, and the reverse kept
+  `FOCUS_ALL` and its focus rings in `arcade_light`. A styled control now joins a group that one `GoUi` watcher walks on
+  every change, and catches up when it enters the tree again; styling it twice hooks it once, and a freed one simply
+  leaves the group. A focus mode the project set itself is still left alone, and a fixed look is unchanged.
 - **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
   crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
   400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.
