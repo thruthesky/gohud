@@ -105,6 +105,19 @@ func pill_texture() -> Texture2D:
 	return null
 
 
+## Is the pill drawn now a mirrored one, with its knob on the other side? False in LTR and when the look's mirrored
+## pill is the plain one's art (arcade_light's).
+func pill_is_mirrored() -> bool:
+	if not is_layout_rtl(): return false
+	var drawn := pill_texture()
+	var plain := part(&"checked" if button_pressed else &"unchecked")
+	if drawn == null or plain == null or drawn == plain: return false
+	var drawn_image := drawn.get_image()
+	var plain_image := plain.get_image()
+	if drawn_image == null or plain_image == null: return false
+	return drawn_image.get_data() != plain_image.get_data() or drawn_image.get_size() != plain_image.get_size()
+
+
 ## The pill's size, from the theme's `unchecked` icon.
 func pill_size() -> Vector2:
 	var pill := part(&"unchecked")
@@ -153,7 +166,8 @@ func caption_position() -> Vector2:
 	var at := switch_rect()
 	var size_now := caption_font_size()
 	var left := at.position.x + TEXT_EDGE
-	if not button_pressed: left += at.size.y * KNOB_SHARE
+	# The knob is on the right when on, left when off; a mirrored pill has it on the other side.
+	if button_pressed == pill_is_mirrored(): left += at.size.y * KNOB_SHARE
 	return Vector2(left + (caption_room() - caption_width()) * 0.5, at.position.y + at.size.y * 0.5 + size_now * 0.36)
 
 

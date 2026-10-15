@@ -21,6 +21,7 @@ func _initialize() -> void:
 		await _map_preview(look)
 		await _focus(look)
 	await _focus_follows_look()
+	await _rtl_caption()
 	GoUi.reset()
 	print("gohud painted controls tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -274,3 +275,35 @@ func _focus_follows_look() -> void:
 	check(chosen.focus_mode == Control.FOCUS_CLICK, "focus: the project's choice still stands")
 	holder.queue_free()
 	await frames(1)
+
+
+# ── RTL caption side, touch floor following the look ───────────────────
+
+## In RTL the caption sits in the half the drawn pill's knob is not on: a mirrored pill has its knob on the other side.
+func _rtl_caption() -> void:
+	for look: StringName in [GoThemePresets.ARCADE_DARK, GoThemePresets.DEFAULT_DARK, GoThemePresets.ARCADE_LIGHT]:
+		GoUi.use_preset(look)
+		await frames(1)
+		var holder := _holder()
+		var flip := GoSwitch.make(false)
+		flip.set_texts("ON", "OFF")
+		holder.add_child(flip)
+		flip.size = Vector2(200, 44)
+		flip.layout_direction = Control.LAYOUT_DIRECTION_RTL
+		await frames(2)
+		var plain := flip.part(&"unchecked")
+		var mirrored := flip.part(&"unchecked_mirrored")
+		var real_mirror := mirrored != null and mirrored != plain and flip.pill_texture() == mirrored \
+			and mirrored.get_image().get_data() != plain.get_image().get_data()
+		var at := flip.switch_rect()
+		var knob_edge := at.size.y * GoSwitch.KNOB_SHARE
+		var mid := flip.caption_position().x + flip.caption_width() * 0.5
+		var free_mid_ltr := at.position.x + GoSwitch.TEXT_EDGE + knob_edge + flip.caption_room() * 0.5   # off, knob left
+		var free_mid_flipped := at.position.x + GoSwitch.TEXT_EDGE + flip.caption_room() * 0.5
+		if real_mirror:
+			check(absf(mid - free_mid_flipped) < 0.01, "%s rtl switch: a mirrored off pill puts the caption on the other side (%.1f)" % [look, mid])
+		else:
+			check(absf(mid - free_mid_ltr) < 0.01, "%s rtl switch: an unmirrored pill keeps the caption side (%.1f)" % [look, mid])
+		holder.queue_free()
+		await frames(1)
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)

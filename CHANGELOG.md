@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoSwitch` puts its caption on the free side of a mirrored pill in RTL.** The side came from `button_pressed`
+  alone, but in RTL `pill_texture()` picks the `*_mirrored` pill, whose knob is on the other side, so the caption
+  landed under the knob (`arcade_dark`, the engine's default theme). `pill_is_mirrored()` tells a pill with real
+  mirrored art from one that shares the plain art (`arcade_light`), which draws as before.
 - **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
   crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
   400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.
