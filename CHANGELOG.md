@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Shrink-to-fit under `arcade_light` is pinned to the game's measure.** A test now holds that
+  `GoStyle.fit_font_size()` with no font measures with the look's FontVariation and its four CJK fallbacks (KR, JP, SC,
+  TC), not a plain Nunito `FontFile`. Before a preset is applied the fit font is `ThemeDB.fallback_font`, which has no
+  fallbacks, so CJK widths measured then differ; under the preset nothing was lost.
 - **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
   glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
   with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and

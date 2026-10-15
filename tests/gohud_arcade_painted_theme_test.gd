@@ -672,6 +672,15 @@ func _font(theme: Theme) -> void:
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
 	check(GoUi.theme().default_font == (null if GoUi.project_has_font() else font),
 		"GoUi.theme(): the game's font only while the project chose none (project font: %s)" % GoUi.project_has_font())
+	# 🔤 Shrink-to-fit with no font measures with that font, CJK fallbacks and all — the game's fit_font_size()
+	#    measures with them, so a plain Nunito here would fit Korean, Japanese and Chinese labels differently.
+	if not GoUi.project_has_font():
+		var cjk := PackedStringArray(["설정 저장하기", "設定を保存", "保存设置"])
+		var measured := GoStyle.row_width(null, cjk, 22)
+		check(measured > 0.0 and is_equal_approx(measured, GoStyle.row_width(font, cjk, 22)),
+			"GoStyle.fit_font_size() under arcade_light measures CJK with the game's font and its fallbacks (%s)" % measured)
+		check(GoStyle._fit_font() is FontVariation and (GoStyle._fit_font() as FontVariation).fallbacks.size() == 4,
+			"GoStyle's fit font under arcade_light keeps the four CJK fallbacks (got %s)" % GoStyle._fit_font())
 	GoUi.config.preset = &""
 	for path: String in [FONTS + "nunito/OFL.txt", FONTS + "noto_sans_cjk/OFL.txt"]:
 		check(FileAccess.file_exists(path), "%s ships with the font files" % path)
