@@ -26,6 +26,8 @@ const BLUR_SHADER_PATH := "res://addons/gohud/themes/skins/arcade_painted_blur.g
 const INK := Color("#1d2340")
 const PANEL := Color(1.0, 1.0, 1.0, 0.9)
 const GOLD := Color("#ffc928")
+## The slate of the HUD's key-hint caps (`HUD.pause_hint`).
+const KEY_HINT_FILL := Color("#6c7aa8")
 const GREEN := Color("#3ecf5a")
 const CONTROL_BLUE := Color("#3d6bff")
 ## The player's own notification is a gold rim on this cream (`UiTheme` `NotifPlayer`).
@@ -292,6 +294,27 @@ func hud_gauge_box(lit: bool) -> StyleBox:
 ## The game's READY_RED: the clock's last seconds and a lit gauge's rim.
 func hud_alert_ink() -> Color:
 	return READY_RED
+
+
+## The game's "Esc" cap beside the pause button (`HUD.pause_hint`: `UiTheme.chunky_box(#6c7aa8, 8, 6, 1, 3, 5)`).
+func hud_key_hint_box() -> StyleBox:
+	var cap := StyleBoxFlat.new()
+	cap.bg_color = KEY_HINT_FILL
+	cap.set_corner_radius_all(8)
+	cap.set_border_width_all(3)
+	cap.border_width_bottom = 5
+	cap.border_color = INK
+	cap.content_margin_left = 6.0
+	cap.content_margin_right = 6.0
+	cap.content_margin_top = 4.0
+	cap.content_margin_bottom = 6.0
+	cap.anti_aliasing = true
+	return cap
+
+
+## White on the slate cap.
+func hud_key_hint_ink() -> Color:
+	return Color.WHITE
 
 
 ## The game's `PauseRound` press tint.

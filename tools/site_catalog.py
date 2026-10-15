@@ -1906,6 +1906,25 @@ count.show_step("3")""", T(
 		"Відлік перед матчем: 3, 2, 1, GO! великим на диску, кожен крок вискакує.",
 		"นับถอยหลังเริ่มแข่ง: 3, 2, 1, GO! ตัวใหญ่บนแผ่นกลม แต่ละขั้นเด้งขึ้นมา",
 		"العدّ التنازلي لبدء المباراة: 3، 2، 1، GO! كبيرة على قرص، وكل خطوة تقفز للظهور.")),
+	("hud", "GoHudButton", "HBoxContainer", """var pause := GoHudButton.make(GoUi.skin().widget_art(&"pause_button"), 52.0, "Esc")
+pause.pressed.connect(func() -> void: print("pause"))""", T(
+		"A HUD corner button: a picture button with its keyboard key on a cap beside it.",
+		"HUD 모서리 버튼 — 그림 버튼 옆에 같은 일을 하는 키를 키캡으로 보인다.",
+		"HUD の隅のボタン。絵のボタンの横に、同じ働きのキーをキーキャップで示す。",
+		"HUD 角落按钮：图片按钮旁用键帽显示对应的键盘按键。",
+		"HUD 角落按鈕：圖片按鈕旁用鍵帽顯示對應的鍵盤按鍵。",
+		"Un botón de esquina del HUD: un botón de imagen con su tecla en una tecla dibujada al lado.",
+		"Um botão de canto do HUD: um botão de imagem com a sua tecla numa tampa de tecla ao lado.",
+		"Угловая кнопка HUD: кнопка-картинка с клавишей на колпачке рядом.",
+		"Un bouton de coin du HUD : un bouton image avec sa touche de clavier sur un capuchon à côté.",
+		"Bir HUD köşe düğmesi: yanında klavye tuşu kapakta gösterilen resimli düğme.",
+		"Przycisk w rogu HUD: przycisk-obrazek z klawiszem na nakładce obok.",
+		"Un pulsante d'angolo dell'HUD: un pulsante immagine con il suo tasto su un copritasto accanto.",
+		"Nút góc HUD: một nút hình kèm phím bàn phím trên nắp phím bên cạnh.",
+		"Tombol sudut HUD: tombol gambar dengan tombol keyboard-nya pada tutup tombol di sampingnya.",
+		"Кутова кнопка HUD: кнопка-картинка з клавішею на ковпачку поруч.",
+		"ปุ่มมุม HUD: ปุ่มรูปภาพพร้อมปุ่มคีย์บอร์ดบนฝาปุ่มข้าง ๆ",
+		"زر ركن في الواجهة: زر صورة بجانبه مفتاح لوحة المفاتيح على غطاء مفتاح.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

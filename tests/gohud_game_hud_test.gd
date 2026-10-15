@@ -28,6 +28,7 @@ func _initialize() -> void:
 		await _hud_card(look)
 		await _countdown(look)
 		await _art_button(look)
+		await _hud_button(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -313,5 +314,43 @@ func _art_button(look: StringName) -> void:
 		check(GoUi.skin().picture_press_tint() == Color(0.78, 0.78, 0.86), "art: arcade_light's press tint is the game's")
 	button.art = null
 	check(button.icon == null and not button.has_theme_stylebox_override(&"normal"), "art: clearing it restores the frame")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── A HUD picture button with a key hint (GoHudButton) ─────────────────
+
+func _hud_button(look: StringName) -> void:
+	var skin := GoUi.skin()
+	var corner := GoHudButton.make(skin.widget_art(&"pause_button"), 52.0, "Esc")
+	var holder := _host(corner)
+	var hits := [0]
+	corner.pressed.connect(func() -> void: hits[0] += 1)
+	await frames(1)
+	check(corner.button is GoIconButton and corner.button.art == skin.widget_art(&"pause_button"),
+		"hud button: the button is a GoIconButton picture")
+	check(corner.button.visual_size == 52 and corner.button.focus_mode == Control.FOCUS_NONE,
+		"hud button: 52 dp and never keeps focus over gameplay")
+	check(corner.get_theme_constant(&"separation") == 8, "hud button: 8 dp between the hint and the button")
+	var hint := corner.find_child("Hint", true, false) as Label
+	check(hint != null and hint.visible and hint.text == "Esc" and hint.get_index() == 0, "hud button: the hint comes first")
+	check(hint.get_theme_font_size(&"font_size") == 14, "hud button: the hint reads at 14")
+	check(hint.get_theme_color(&"font_color") == skin.hud_key_hint_ink(), "hud button: the hint ink is the skin's")
+	check(hint.get_theme_stylebox(&"normal") != null, "hud button: the hint sits on a key cap (%s)" % look)
+	check(hint.auto_translate_mode == Node.AUTO_TRANSLATE_MODE_DISABLED, "hud button: a key name is never translated")
+	if look == GoThemePresets.ARCADE_LIGHT:
+		var cap := hint.get_theme_stylebox(&"normal") as StyleBoxFlat
+		check(cap != null and cap.bg_color == Color("#6c7aa8") and cap.border_width_bottom == 5
+			and cap.border_width_left == 3 and cap.corner_radius_top_left == 8, "hud button: arcade_light's key cap")
+		check(cap.content_margin_left == 6 and cap.content_margin_top == 4 and cap.content_margin_bottom == 6,
+			"hud button: the cap's margins are the game's")
+		check(skin.hud_key_hint_ink() == Color.WHITE, "hud button: arcade_light's hint is white")
+	corner.show_hint = false
+	check(not hint.visible, "hud button: show_hint false hides the hint (touch)")
+	corner.hint_text = ""
+	corner.show_hint = true
+	check(not hint.visible, "hud button: no text, no hint")
+	corner.button.pressed.emit()
+	check(hits[0] == 1, "hud button: pressed passes the press on (the caller decides what it does)")
 	holder.queue_free()
 	await frames(1)

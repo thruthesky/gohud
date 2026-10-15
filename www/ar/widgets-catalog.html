@@ -799,7 +799,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>واجهة HUD وأشكال الألعاب <small>(16)</small></h2>
+  <h2>واجهة HUD وأشكال الألعاب <small>(17)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -888,6 +888,13 @@ clock.<wbr>set_clock(<wbr>83.0)</code></pre>
       <p class="catalog-base">يرث <code>Label</code></p>
       <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
 count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>زر ركن في الواجهة: زر صورة بجانبه مفتاح لوحة المفاتيح على غطاء مفتاح.</p>
+      <p class="catalog-base">يرث <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

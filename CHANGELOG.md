@@ -59,6 +59,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoHudButton` — a HUD corner button with its key.** A picture button (`GoIconButton.art`, never keeps focus) with
+  the key that does the same on a cap beside it; `show_hint = false` on a touch screen, `pressed` passes the press on.
+  New skin hooks `hud_key_hint_box()` and `hud_key_hint_ink()`; under `arcade_light` Magnet Mayhem's pause corner (the
+  slate "Esc" cap and the painted round pause button) matches pixel for pixel.
 - **`GoIconButton.art` — a picture that is the whole button.** It fills `visual_size`, draws no frame in any state,
   shows the picture in its own colours and darkens it to the new skin hook `GoSkin.picture_press_tint()` while pressed
   (arcade_light: the game's `PauseRound` tint). Under `arcade_light` the match HUD's painted pause button matches

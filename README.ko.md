@@ -643,6 +643,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoCoverImage` | Control | 상자를 가득 채우는 그림 — CSS `object-fit: cover`: 빈틈이 없을 때까지 키우고 넘친 부분은 자르며, `focus` 가 남길 부분을 고른다. `clip_contents` 가 필요 없고 마우스는 통과시킨다 |
 | `GoGlyphButton` | Button | 라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약. 글리프·간격·라벨이 함께 가운데에 선다. `Button.icon` 으로는 안 된다. 라벨은 평범한 `text` 라 번역과 테스트가 다른 버튼과 같다 |
 | `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
+| `GoHudButton` | HBoxContainer | HUD 모서리 버튼 — 그림 버튼(`GoIconButton.art`, 포커스를 잡지 않음) 옆에 같은 일을 하는 키를 키캡에 보인다(일시정지 버튼 옆 "Esc"). 터치 화면에서는 `show_hint = false`. 키캡은 `GoSkin.hud_key_hint_box()`. 표시만 한다 — `pressed` 를 알릴 뿐 무엇을 할지는 게임이 정한다 |
 | `GoCountdown` | Label | 경기 시작 카운트 — 3 · 2 · 1 · GO! 를 원판 위에 크게(`show_step(text, final)`, `hide_step()`), 단계마다 톡 튀어 나온다(커졌다 흐려진 채 0.35초에 걸쳐 자리 잡음, `reduce_motion` 이면 없음). 원판은 `GoSkin.countdown_disc(final)`, 글자는 `GoSkin.countdown_ink()` 에 두꺼운 외곽선과 그림자. 표시만 한다 — 어떤 단계를 보일지는 호출자가 정한다 |
 | `GoHudCard` | PanelContainer | 경기 HUD 윗줄의 판 하나 — 아이콘 뒤에 금색 이름 배너와 HUD 막대(플레이어 카드), 제목 옆의 숫자, 시계 위의 캡션(`set_clock`, 호출자가 경고하면 빨강), 또는 능력이 준비되면 테두리가 켜지는 게이지(`set_lit`: 쿨다운 동안 흐리고, 켜질 때 톡 튄다). 판은 `GoHudPanel`, 배너는 `GoBannerGold`이고 `padding` 으로 폰에서 더 촘촘하게 한다. 표시만 한다 — 값은 모두 호출자가 준다 |
 

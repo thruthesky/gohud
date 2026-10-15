@@ -32,6 +32,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
 24. [GoHudCard — a match HUD's top-row board](#24-gohudcard--a-match-huds-top-row-board)
 25. [GoCountdown — the match-start count](#25-gocountdown--the-match-start-count)
+26. [GoHudButton — a HUD corner button with its key](#26-gohudbutton--a-hud-corner-button-with-its-key)
 
 ## 1. GoHudAnchor
 
@@ -775,3 +776,28 @@ count.hide_step()
 - 🛑 Display only: the caller (the server's clock online) picks the step and the moment — nothing here counts.
 - 🔑 Skin hooks: `countdown_disc(final)` (default null: a round `accent` / `success` disc; arcade_light: the painted
   blue and green badges) and `countdown_ink()` (default `warning`; arcade_light GOLD `#ffc928`).
+
+## 26. GoHudButton — a HUD corner button with its key
+
+`class_name GoHudButton extends HBoxContainer` · the cap first, then the button. Under `arcade_light` it draws Magnet
+Mayhem's pause corner pixel for pixel (the slate "Esc" cap and the painted round pause button).
+
+```gdscript
+var pause := GoHudButton.make(GoUi.skin().widget_art(&"pause_button"), 52.0, tr("HUD_PAUSE_KEY"))
+pause.pressed.connect(open_pause_menu)   # the game decides what a press does
+pause.show_hint = not touch_mode
+corner.add_child(pause)
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `static make(picture, side := 52.0, key := "")` | | |
+| `button` | | The `GoIconButton` (`art`, `keyboard_focus` off — Space still reaches the game) |
+| `art` · `button_size` | `null` · `52` | The picture and its side |
+| `hint_text` · `show_hint` · `hint_size` | `""` · `true` · `14` | The key on the cap (never translated; empty hides it) |
+| `gap` | `8` | Room between the cap and the button |
+| `signal pressed` | | The button was pressed |
+
+- 🛑 Display only: it reports the press; it pauses nothing.
+- 🔑 Skin hooks: `hud_key_hint_box()` (default `kbd_box()`; arcade_light: the game's slate `#6c7aa8` cap with an ink
+  rim and a 5 dp lip) and `hud_key_hint_ink()` (default `kbd_ink()`; arcade_light white).

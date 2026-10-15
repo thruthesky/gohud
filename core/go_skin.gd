@@ -1241,6 +1241,16 @@ func hud_alert_ink() -> Color:
 	return GoUi.color(GoTheme.DANGER)
 
 
+## ⌨️ The cap a `GoHudButton` shows its key on ("Esc" beside the pause button). The default is `kbd_box()`.
+func hud_key_hint_box() -> StyleBox:
+	return kbd_box()
+
+
+## ⌨️ The key's colour on a `GoHudButton` cap. The default is `kbd_ink()`.
+func hud_key_hint_ink() -> Color:
+	return kbd_ink()
+
+
 ## 🖼️ How a picture button (`GoIconButton.art`) darkens while pressed — a multiply over its own colours.
 func picture_press_tint() -> Color:
 	return Color(0.8, 0.8, 0.8)
