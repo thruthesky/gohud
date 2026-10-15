@@ -49,12 +49,14 @@ const POP_DOWN := 0.21
 ## The picture at the start of the row. null hides it.
 @export var icon: Texture2D:
 	set(value):
+		if icon == value: return
 		icon = value
 		_apply()
 
 ## The icon's square size (dp).
 @export_range(8.0, 160.0, 1.0) var icon_size := 36.0:
 	set(value):
+		if icon_size == value: return
 		icon_size = value
 		_apply()
 
@@ -62,83 +64,97 @@ const POP_DOWN := 0.21
 ## draws itself centred in it — on a half pixel when the row is an odd number taller (the game's clock and badge).
 @export var icon_snap := true:
 	set(next):
+		if icon_snap == next: return
 		icon_snap = next
 		_apply()
 
 ## The room between the icon and what follows (dp).
 @export_range(0, 48) var gap := 8:
 	set(value):
+		if gap == value: return
 		gap = value
 		_apply()
 
 ## A gold name banner at the top of the column. Empty hides it.
 @export var banner_text := "":
 	set(value):
+		if banner_text == value: return
 		banner_text = value
 		_apply()
 
 ## The banner's font size.
 @export_range(8, 64) var banner_size := 16:
 	set(value):
+		if banner_size == value: return
 		banner_size = value
 		_apply()
 
 ## The caption ("TIME", "OPPONENTS"). Empty hides it.
 @export var title := "":
 	set(value):
+		if title == value: return
 		title = value
 		_apply()
 
 ## The big value ("01:23", "7", "READY"). Empty hides it.
 @export var value := "":
 	set(next):
+		if value == next: return
 		value = next
 		_apply()
 
 @export var layout := Layout.STACKED:
 	set(next):
+		if layout == next: return
 		layout = next
 		_apply()
 
 ## The caption's size. -1: 12 stacked, 19 inline.
 @export_range(-1, 64) var title_size := -1:
 	set(next):
+		if title_size == next: return
 		title_size = next
 		_apply()
 
 ## The value's size. -1: 24 stacked, 19 inline.
 @export_range(-1, 96) var value_size := -1:
 	set(next):
+		if value_size == next: return
 		value_size = next
 		_apply()
 
 ## The value's colour. Transparent: the theme's label ink.
 @export var value_ink := Color.TRANSPARENT:
 	set(next):
+		if value_ink == next: return
 		value_ink = next
 		_apply()
 
 ## The clear space inside the board's rim (dp) — a phone HUD packs tighter. -1: the theme's.
 @export var padding := -1.0:
 	set(next):
+		if padding == next: return
 		padding = next
 		_apply()
 
 ## The clear space inside the banner's rim (dp). -1: the theme's.
 @export var banner_padding := -1.0:
 	set(next):
+		if banner_padding == next: return
 		banner_padding = next
 		_apply()
 
 ## A gauge: the board is `GoSkin.hud_gauge_box(lit)` and dims while not lit (`set_lit`).
 @export var gauge := false:
 	set(next):
+		if gauge == next: return
 		gauge = next
 		_apply()
 
 ## The warning colour `set_clock` paints a clock in. Transparent: `GoSkin.hud_alert_ink()`.
 @export var warn_ink := Color.TRANSPARENT:
 	set(next):
+		if warn_ink == next: return
 		warn_ink = next
 		_apply()
 
@@ -153,6 +169,11 @@ var _bars: VBoxContainer
 var _title_label: Label
 var _value_label: Label
 var _pop: Tween
+## The padded copies `_apply` made: slot -> [source box, pad, copy]. A copy is reused only while its source and pad
+## are the same and the theme has not changed since, so it is what a fresh `_padded` would make.
+var _padded_cache := {}
+## true while `_apply` swaps the card's own panel override (its theme-changed notice is not a theme change).
+var _setting_panel := false
 
 
 func _init() -> void:
@@ -208,8 +229,13 @@ func _exit_tree() -> void:
 
 
 func _on_ui_changed() -> void:
+	_padded_cache.clear()
 	theme = GoUi.theme()
 	_apply()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_THEME_CHANGED and not _setting_panel: _padded_cache.clear()
 
 
 ## A card with [param picture] at [param picture_size] dp.
@@ -248,10 +274,13 @@ func bars() -> Array[GoBar]:
 
 
 ## Shows [param seconds] as `MM:SS`; [param warn] paints it in `warn_ink` (the caller decides when — the last 30 s
-## of a countdown, say).
+## of a countdown, say). Call it every frame if you like: the card repaints only when the text or the warning changes.
 func set_clock(seconds: float, warn := false) -> void:
+	var text := format_clock(seconds)
+	var warn_changed := warn != _warn
 	_warn = warn
-	value = format_clock(seconds)
+	if text != value: value = text
+	elif warn_changed: _apply()
 
 
 ## `MM:SS` — whole seconds, never below zero.
@@ -305,6 +334,37 @@ static func _padded(box: StyleBox, pad: float) -> StyleBox:
 	return copy
 
 
+## [param node]'s theme panel for [param type] padded to [param pad] (-1: the theme's own, no override). The copy
+## made last time is reused while it is still on the panel, the theme has not changed and the pad is the same — then
+## its source is still the theme's box. Otherwise the override comes off (a lookup for the card's own type returns
+## the override) and the theme's box is padded afresh.
+func _padded_panel(slot: StringName, node: Control, type: StringName, pad: float) -> StyleBox:
+	if pad < 0.0: return null
+	var made: Array = _padded_cache.get(slot, [])
+	var current: StyleBox = node.get_theme_stylebox(&"panel") if node.has_theme_stylebox_override(&"panel") else null
+	if not made.is_empty() and current != null and current == made[2]:
+		if made[1] == pad: return made[2]
+		return _remember(slot, made[0], pad)
+	_set_panel(node, null)
+	return _remember(slot, node.get_theme_stylebox(&"panel", type), pad)
+
+
+func _remember(slot: StringName, box: StyleBox, pad: float) -> StyleBox:
+	if box == null: return null
+	_padded_cache[slot] = [box, pad, _padded(box, pad)]
+	return _padded_cache[slot][2]
+
+
+## Puts [param box] on [param node]'s panel (null: no override) — untouched when it is already there.
+func _set_panel(node: Control, box: StyleBox) -> void:
+	var on := node.has_theme_stylebox_override(&"panel")
+	if (box == null and not on) or (box != null and on and node.get_theme_stylebox(&"panel") == box): return
+	_setting_panel = node == self
+	if box == null: node.remove_theme_stylebox_override(&"panel")
+	else: node.add_theme_stylebox_override(&"panel", box)
+	_setting_panel = false
+
+
 func _apply() -> void:
 	if not is_instance_valid(_row): return
 	var skin := GoUi.skin()
@@ -314,17 +374,13 @@ func _apply() -> void:
 	_icon.custom_minimum_size = Vector2(icon_size, icon_size)
 	_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER if icon_snap else Control.SIZE_FILL
 
-	remove_theme_stylebox_override(&"panel")
 	if gauge:
-		add_theme_stylebox_override(&"panel", _padded(skin.hud_gauge_box(_lit), padding))
+		_set_panel(self, _padded(skin.hud_gauge_box(_lit), padding))
 		modulate.a = 1.0 if _lit else DIM_ALPHA
 	else:
 		modulate.a = 1.0
-		if padding >= 0.0:
-			add_theme_stylebox_override(&"panel", _padded(get_theme_stylebox(&"panel", VAR_PANEL), padding))
-	_banner.remove_theme_stylebox_override(&"panel")
-	if banner_padding >= 0.0:
-		_banner.add_theme_stylebox_override(&"panel", _padded(_banner.get_theme_stylebox(&"panel", VAR_BANNER), banner_padding))
+		_set_panel(self, _padded_panel(&"panel", self, VAR_PANEL, padding))
+	_set_panel(_banner, _padded_panel(&"banner", _banner, VAR_BANNER, banner_padding))
 
 	_banner.visible = not banner_text.is_empty()
 	_banner_label.text = banner_text
