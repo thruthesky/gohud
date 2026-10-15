@@ -78,6 +78,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoConfig.scrim_blur` (true): the low quality tier's dim.** Off, a look that frosts its scrims (`arcade_light`'s
+  blur) draws the flat scrim colour instead — on every window, drawer and `GoStyle.scrim()` already open and every one
+  made after — as Magnet Mayhem's `UiTheme.set_blur(false)` does; under `arcade_light` that colour is the game's
+  OVERLAY. Widgets ask `GoSkin.scrim_material_now()`, which is `scrim_material()` while the switch is on.
+
 - **`GoSurface.corner` — the magnet in the corner instead of a close button.** `HeadCorner.LOOK` (the default) lets
   the look decide (`GoSkin.window_corner()`), `CLOSE` shows the close button, `ART` a picture (`corner_art`, or the
   look's `window_corner_art()`) placed by `window_corner_rect()` from the drawn plate's corner, and `NONE` nothing;

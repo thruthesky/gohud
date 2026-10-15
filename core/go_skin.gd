@@ -1141,6 +1141,12 @@ func scrim_material() -> Material:
 	return null
 
 
+## The material a scrim wears now: `scrim_material()` while `GoConfig.scrim_blur` is on, else `null` (the flat dim).
+## 🔑 Widgets call this, never `scrim_material()` directly, so the quality switch reaches every scrim.
+func scrim_material_now() -> Material:
+	return scrim_material() if GoUi.config.scrim_blur else null
+
+
 ## The blurred shader a frosted scrim uses: what is on screen behind it, blurred by [param strength] (1–4, the mip level
 ## read; the taps spread with it), then veiled with the scrim's own colour. The scrim's alpha also fades the blur in and
 ## out, so a drawer's scrim that animates its colour from clear to the veil frosts the game as it comes in.

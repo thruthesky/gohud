@@ -552,7 +552,7 @@ func _dress_scrim() -> void:
 		_scrim.material = null
 		return
 	_scrim.color = Color(0, 0, 0, 0) if scrim_transparent else GoUi.color(GoTheme.SCRIM)
-	_scrim.material = null if scrim_transparent else GoUi.skin().scrim_material()
+	_scrim.material = null if scrim_transparent else GoUi.skin().scrim_material_now()
 
 
 # ── Title glyph and the overhanging plate ─────────────────────────────

@@ -22,6 +22,7 @@ func _initialize() -> void:
 		await _window(look)
 		await _corner(look)
 		await _ribbon(look)
+		await _backdrop(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -242,5 +243,50 @@ func _ribbon(look: StringName) -> void:
 	surface.set_title("AN EVEN LONGER TRANSLATED TITLE THAT CAN NEVER FIT ON THE RIBBON")
 	await frames(3)
 	check(title.get_theme_font_size(&"font_size") == 24, "%s ribbon: no smaller than 24" % look)
+	surface.queue_free()
+	await frames(1)
+
+
+# ── The backdrop: blur, the low tier's dim, the opaque sky ─────────────
+
+func _backdrop(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var skin := GoUi.skin()
+	check(GoUi.config.scrim_blur, "%s backdrop: the blur is on by default" % look)
+	var surface := _dialog()
+	var drawer := GoDrawer.new()
+	root.add_child(drawer)
+	await frames(2)
+	var scrim: ColorRect = surface._scrim
+	var drawer_scrim: ColorRect = drawer._scrim
+	var made := GoStyle.scrim()
+	if painted:
+		check(scrim.material != null and drawer_scrim.material != null and made.material != null,
+			"%s backdrop: the game's blur behind a window, a drawer and a made scrim" % look)
+	else:
+		check(scrim.material == null, "%s backdrop: a plain look keeps its plain veil" % look)
+	# A quality tier that cannot afford the blur (the game's `UiTheme.set_blur(false)`) leaves the flat dim — the scrim
+	# colour, which under arcade_light is the game's OVERLAY — on every window already open and every one made after.
+	GoUi.config.scrim_blur = false
+	await frames(1)
+	var dim := GoStyle.scrim()
+	check(scrim.material == null and drawer_scrim.material == null and dim.material == null,
+		"%s backdrop: scrim_blur off dims instead of blurring, open windows too" % look)
+	check(scrim.color == GoUi.color(GoTheme.SCRIM), "%s backdrop: the dim is the scrim colour" % look)
+	if painted:
+		check(GoUi.color(GoTheme.SCRIM).is_equal_approx(Color(20.0 / 255.0, 40.0 / 255.0, 80.0 / 255.0, 0.25)),
+			"%s backdrop: the scrim colour is the game's OVERLAY (got %s)" % [look, GoUi.color(GoTheme.SCRIM)])
+	GoUi.config.scrim_blur = true
+	await frames(1)
+	check((scrim.material != null) == painted, "%s backdrop: scrim_blur on brings the blur back" % look)
+	# `opaque`: a solid sky where the world behind is not drawn (the game's `set_opaque`), over the blur and the dim.
+	surface.opaque = true
+	await frames(1)
+	check(scrim.material == null and is_equal_approx(scrim.color.a, 1.0), "%s backdrop: opaque is a solid colour" % look)
+	if painted:
+		check(scrim.color.is_equal_approx(skin.opaque_backdrop_color()), "%s backdrop: the game's sky" % look)
+	made.free()
+	dim.free()
+	drawer.queue_free()
 	surface.queue_free()
 	await frames(1)

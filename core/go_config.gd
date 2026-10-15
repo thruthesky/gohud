@@ -238,6 +238,16 @@ signal changed_settings
 ## Default for whether pressing the background (scrim) closes it. Each surface can decide for itself.
 @export var dismiss_on_scrim := false
 
+## 🌫 Whether a look that frosts its scrims (`GoSkin.scrim_material`, `arcade_light`'s blur) may do so. Off — a quality
+## tier that cannot afford the screen copy — every scrim is the flat scrim colour instead, open ones included. Like
+## Magnet Mayhem's `UiTheme.set_blur(false)`.
+@export var scrim_blur := true:
+	set(value):
+		if scrim_blur == value: return
+		scrim_blur = value
+		emit_changed()
+		changed_settings.emit()
+
 ## Whether to fade the card in when a surface opens.
 @export var surface_fade_in := false
 

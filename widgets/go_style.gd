@@ -2899,7 +2899,7 @@ static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT
 	if node == null: return
 	# 🌫 The look may frost what is behind (`GoSkin.scrim_material` — `GoSkinArcade.arcade_scrim_blur`); a clear veil
 	#    (alpha 0) stays plain.
-	node.material = GoUi.skin().scrim_material() if alpha != 0.0 else null
+	node.material = GoUi.skin().scrim_material_now() if alpha != 0.0 else null
 	if alpha < 0.0 and ink.a <= 0.0:
 		node.color = GoUi.color(GoTheme.SCRIM)
 		return

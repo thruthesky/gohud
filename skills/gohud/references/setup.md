@@ -84,7 +84,7 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | | `surface_width_ratio_portrait` (0.94) · `surface_width_ratio_landscape` (0.72) | Share of width |
 | | `container_alpha` (**-1.0**) | Face opacity of **every** panel, as a **ratio** 0.0–1.0 (negative = theme value: 80%, popups and the Material presets 100%) |
 | | `container_alpha_overrides` `Dictionary[StringName, float]` | Per-kind opacity, same ratio; key = `GoTheme.BOX_PANEL`/`BOX_CARD`/`BOX_HUD`/`BOX_NOTICE`/`BOX_POPUP`. Beats `container_alpha`; negative = not set. theming.md §4 |
-| | `dismiss_on_scrim` (false) · `surface_fade_in` (false) · `fade_seconds` (0.14) | Defaults for new surfaces |
+| | `dismiss_on_scrim` (false) · `scrim_blur` (true; off, every scrim — open ones too — is the flat scrim colour instead of the look's blur: a low quality tier) · `surface_fade_in` (false) · `fade_seconds` (0.14) | Defaults for new surfaces |
 | | `close_button_visual` (36) · `suppress_pointer_focus_ring` (true) · `close_on_back` (true) | Header close button, focus ring policy, Escape/Back |
 | Feedback | `haptics_enabled` (true) · `haptic_tap_ms` (10) · `haptic_light_ms` (20) · `haptic_medium_ms` (40) · `haptic_tap_amplitude` (0.35) · `haptic_light_amplitude` (0.5) · `haptic_medium_amplitude` (0.8) | Vibration on handhelds only; amplitude 0–1 where the device supports it |
 | | `sound_cues` | `opened→ui_open`, `closed→ui_close`, `tapped→ui_click`, `confirmed→ui_confirm`, `canceled→ui_cancel`, `failed→ui_error`, `fanfare→ui_fanfare` |

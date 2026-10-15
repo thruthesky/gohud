@@ -304,7 +304,7 @@ func _restyle() -> void:
 	panel.add_theme_stylebox_override(&"panel", GoUi.skin().drawer_box(_styled_left, alpha))
 	_scrim.color = _scrim_color(_open)
 	# A look may frost the game behind (`GoSkin.scrim_material`); the blur fades in with the scrim's colour.
-	_scrim.material = GoUi.skin().scrim_material()
+	_scrim.material = GoUi.skin().scrim_material_now()
 
 
 func _on_ui_changed() -> void:
