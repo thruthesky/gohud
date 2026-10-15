@@ -102,6 +102,7 @@ func _initialize() -> void:
 	await _section("app components", _app_components)
 	await _section("flutter widgets", _flutter_widgets)
 	await _section("rtl", _rtl)
+	await _section("reparent keeps the look", _rewatch)
 	await _section("standalone", _standalone)
 	# 🛑 Leaving a lambda in a static variable can crash during shutdown — clear them before finishing.
 	GoFeedback.sound_handler = Callable()
@@ -4813,3 +4814,64 @@ func _files(dir: String, extensions: Array) -> PackedStringArray:
 		if SKIP_DIRS.has(path.trim_prefix(ADDON + "/")): continue
 		found.append_array(_files(path, extensions))
 	return found
+
+
+# ── Reparent keeps the look ──────────────────────────────────────────
+
+## 🛑 A widget that watched the look only in `_ready` lost it for good on its first `_exit_tree`: `remove_child` +
+##    `add_child` runs no second `_ready`, so after a reparent it never followed `GoUi.use_preset()` again.
+func _rewatch() -> void:
+	# [class, the callback it registers with GoUi.watch]
+	var specs := [
+		[GoAppBar, &"_on_ui_changed"], [GoBanner, &"_restyle"], [GoBadge, &"_on_ui_changed"],
+		[GoBar, &"_on_ui_changed"], [GoCarousel, &"_on_ui_changed"], [GoCodeInput, &"_on_ui_changed"],
+		[GoCoachMark, &"_on_ui_changed"], [GoChoiceColumn, &"_on_ui_changed"], [GoCombobox, &"_on_ui_changed"],
+		[GoConsole, &"_on_ui_changed"], [GoDrawer, &"_on_ui_changed"], [GoDonut, &"_on_ui_changed"],
+		[GoDatePicker, &"_rebuild"], [GoFab, &"_on_ui_changed"], [GoForm, &"_relayout"],
+		[GoField, &"_on_ui_changed"], [GoHudAnchor, &"_relayout"], [GoIconButton, &"_on_ui_changed"],
+		[GoHudCard, &"_on_ui_changed"], [GoInputGroup, &"_on_ui_changed"], [GoJoystick, &"_on_ui_changed"],
+		[GoNotice, &"_on_ui_changed"], [GoNavBar, &"_on_ui_changed"], [GoPagination, &"_on_ui_changed"],
+		[GoRadar, &"_on_ui_changed"], [GoPromptCard, &"_on_ui_changed"], [GoProgress, &"queue_redraw"],
+		[GoRangeSlider, &"_on_ui_changed"], [GoRewardCalendar, &"_on_ui_changed"], [GoReorderList, &"_on_ui_changed"],
+		[GoScaffold, &"_restyle"], [GoRefresh, &"_restyle"], [GoSlider, &"_on_ui_changed"],
+		[GoSearchBar, &"_on_ui_changed"], [GoSplitButton, &"_on_ui_changed"], [GoSlotGrid, &"_restyle"],
+		[GoStepper, &"_rebuild"], [GoSlot, &"_on_ui_changed"], [GoTimePicker, &"_rebuild"],
+		[GoSurface, &"_on_ui_changed"], [GoTable, &"_on_ui_changed"], [GoSwitch, &"_on_ui_changed"],
+		[GoWheelPicker, &"_on_ui_changed"],
+	]
+	# These two set `theme` once in `_init` and restyle their parts instead — only the watch is checked for them.
+	var own_theme_fixed := [GoCoachMark, GoSurface]
+	# Three different looks, so no check passes because a widget kept the look it was built with.
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	var first := Control.new()
+	var second := Control.new()
+	root.add_child(first)
+	root.add_child(second)
+	var nodes: Array[Node] = []
+	for spec in specs:
+		var node: Node = spec[0].new()
+		first.add_child(node)
+		nodes.append(node)
+	await frames(2)
+	for node in nodes: first.remove_child(node)
+	# The look changes while they are out of the tree — they have to catch up when they come back.
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	for node in nodes: second.add_child(node)
+	await frames(2)
+	for i in nodes.size():
+		var node := nodes[i]
+		var follows_theme: bool = node is Control and (node as Control).theme != null and not own_theme_fixed.has(specs[i][0])
+		var label := "%s (%s)" % [node.get_class() if node.get_script() == null else node.get_script().get_global_name(), specs[i][1]]
+		check(GoUi._watchers.has(Callable(node, specs[i][1])), "reparent: %s still watches the look" % label)
+		if follows_theme:
+			check((node as Control).theme == GoUi.theme(), "reparent: %s caught up with a look changed while it was out" % label)
+	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+	await frames(2)
+	for i in nodes.size():
+		var node := nodes[i]
+		if node is Control and (node as Control).theme != null and not own_theme_fixed.has(specs[i][0]):
+			check((node as Control).theme == GoUi.theme(), "reparent: %s follows a look switch after the reparent" % node.get_script().get_global_name())
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	first.queue_free()
+	second.queue_free()
+	await frames(2)

@@ -74,7 +74,6 @@ func _ready() -> void:
 		if _runtime.has_signal(&"keyboard_changed"):
 			_runtime.keyboard_changed.connect(_on_keyboard)
 	get_viewport().size_changed.connect(_relayout)
-	GoUi.watch(_relayout)
 	if not Engine.is_editor_hint():
 		scroll = get_node_or_null(^"Scroll") as GoScroll
 		if scroll != null: scroll.use_panel_edge(_side_margin())
@@ -236,6 +235,13 @@ func _notification(what: int) -> void:
 		DisplayServer.virtual_keyboard_hide()
 	elif is_instance_valid(_back_button) and not _back_button.disabled:
 		_back_button.pressed.emit.call_deferred()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
+	GoUi.watch(_relayout)
+	if is_node_ready(): _relayout()
 
 
 func _exit_tree() -> void:

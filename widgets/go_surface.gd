@@ -406,9 +406,6 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(relayout)
 	get_viewport().gui_focus_changed.connect(_focus_changed)
 	visibility_changed.connect(_sync_active)
-	# 🛑 Register `_on_ui_changed`, not the layout pass — when the config changes, **the panel opacity** has to be
-	#    reapplied too. Relaying out alone leaves a window whose theme was swapped still wearing the old panel.
-	GoUi.watch(_on_ui_changed)
 	_restyle()
 	relayout()
 	_sync_active()
@@ -1062,6 +1059,15 @@ func _restore_focus() -> void:
 	_previous_focus = null
 	if is_instance_valid(previous) and previous.is_inside_tree() and previous.is_visible_in_tree():
 		previous.grab_focus.call_deferred()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
+	# 🛑 Register `_on_ui_changed`, not the layout pass — when the config changes, **the panel opacity** has to be
+	#    reapplied too. Relaying out alone leaves a window whose theme was swapped still wearing the old panel.
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:

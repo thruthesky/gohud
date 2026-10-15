@@ -139,9 +139,6 @@ func _build() -> void:
 func _ready() -> void:
 	# `ink` may have been changed after `new()` — re-apply the colour.
 	_apply_accent()
-	# 🎨 When the whole look changes (`GoUi.use_preset()`), re-tint the ring, the panel and the progress text.
-	# 🛑 The ring is a cache `_draw()` reads (`_ring`) — rebuild it or the old skin's shape stays on screen.
-	GoUi.watch(_on_ui_changed)
 
 
 func _apply_accent() -> void:
@@ -221,6 +218,15 @@ func _release_back() -> void:
 	if not _holds_back: return
 	_holds_back = false
 	GoBackPolicy.release(get_tree())
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
+	# 🎨 When the whole look changes (`GoUi.use_preset()`), re-tint the ring, the panel and the progress text.
+	# 🛑 The ring is a cache `_draw()` reads (`_ring`) — rebuild it or the old skin's shape stays on screen.
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:

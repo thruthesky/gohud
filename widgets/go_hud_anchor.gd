@@ -118,7 +118,13 @@ func _ready() -> void:
 	child_entered_tree.connect(_watch_child)
 	for child in get_children(): _watch_child(child)
 	_relayout.call_deferred()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_relayout)
+	if is_node_ready(): _relayout()
 
 
 func _exit_tree() -> void:

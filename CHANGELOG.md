@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Widgets keep following the look after a reparent.** 43 widgets (`GoAppBar`, `GoBar`, `GoSurface`, `GoSlider`,
+  `GoSwitch`, `GoIconButton`, `GoJoystick`, …) called `GoUi.watch` only in `_ready` but `GoUi.unwatch` in
+  `_exit_tree`, so a widget taken out and put back (`remove_child` + `add_child`, no second `_ready`) never followed
+  `GoUi.use_preset()` again. They now watch in `_enter_tree` and, on a re-entry, restyle at once to catch a look that
+  changed while they were out. The first restyle still runs where it did, so nothing draws differently.
 - **`GoSlider` and `GoSwitch` follow the look's touch size.** Their height floor was set once, in `_init`, so after
   a look change (`arcade_light`'s 44 against 48) they kept the old one, and a switch's width floor only ever grew.
   The floor is now re-applied when the look changes, unless the caller set a `custom_minimum_size` of their own.
