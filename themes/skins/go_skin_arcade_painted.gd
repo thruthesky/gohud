@@ -412,6 +412,11 @@ func window_screen_margin() -> float:
 	return 0.0
 
 
+## …and mipmapped like the game's `PaintedDialog`, so the 3x-sized sprites stay smooth where a unit is about a pixel.
+func window_texture_filter() -> CanvasItem.TextureFilter:
+	return CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+
+
 ## The game's parts inside a dialog: the pale `InsetPanel`, glossy buttons 46 dp high (`PaintedDialog.BUTTON_HEIGHT`)
 ## and 10 dp apart in a row.
 const WINDOW_BUTTON_HEIGHT := 46.0

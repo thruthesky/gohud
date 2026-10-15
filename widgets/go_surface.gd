@@ -408,6 +408,8 @@ func _restyle() -> void:
 	if card == null or not is_inside_tree(): return
 	# The card the look frames a window with (`GoSkin.window_card_variation`: the painted card under arcade_light).
 	var wear := GoUi.skin().window_card_variation()
+	# How the look's sprites are sampled across the whole window (mipmapped under arcade_light, like the game's dialog).
+	texture_filter = GoUi.skin().window_texture_filter()
 	if card.theme_type_variation != wear:
 		GoStyle.forget_face(card)
 		card.theme_type_variation = wear

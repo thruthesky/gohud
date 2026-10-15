@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A painted window samples its sprites like the game's dialog.** `PaintedDialog` draws with
+  `TEXTURE_FILTER_LINEAR_WITH_MIPMAPS`, so its 3x sprites stay smooth at about one unit per pixel; `GoSurface` used its
+  parent's filter, and every rim and button edge came out a shade sharper. New `GoSkin.window_texture_filter()`
+  (default `TEXTURE_FILTER_PARENT_NODE`, as before); `arcade_light` returns `LINEAR_WITH_MIPMAPS`.
+
 - **A painted window on a phone is the game's 400 wide.** `GoSurface` kept `SCREEN_MARGIN` and the portrait width
   ratio off a centred window, so on the game's phone (407 units) the `arcade_light` card came out 353 wide where
   `PaintedDialog` is 400. New `GoSkin.window_screen_margin()` (-1: the theme's margin, as before); `arcade_light`

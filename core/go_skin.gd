@@ -1387,6 +1387,12 @@ func window_screen_margin() -> float:
 	return -1.0
 
 
+## How a window samples its textures (`CanvasItem.texture_filter`, set on the whole `GoSurface`).
+## `TEXTURE_FILTER_PARENT_NODE`: whatever the scene around it uses.
+func window_texture_filter() -> CanvasItem.TextureFilter:
+	return CanvasItem.TEXTURE_FILTER_PARENT_NODE
+
+
 ## The variation of an inset a window's body holds (`GoSurface.add_inset`). `GoTheme.VAR_CARD`: the theme's card.
 func window_inset_variation() -> StringName:
 	return GoTheme.VAR_CARD

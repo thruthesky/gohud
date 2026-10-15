@@ -72,6 +72,8 @@ func _window(look: StringName) -> void:
 		var top := face.get_margin(SIDE_TOP)
 		var bottom := face.get_margin(SIDE_BOTTOM)
 		check(top == 20.0 and bottom == 22.0, "%s window: the card's face pads 20 / 22" % look)
+		check(surface.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS,
+			"%s window: mipmapped like the game's dialog, so the 3x sprites stay smooth at 1 unit per pixel" % look)
 		var head_end := surface.header.global_position.y + surface.header.size.y
 		var head_room := head_end - (card.global_position.y + top)
 		var body_top := surface.body.global_position.y
@@ -88,6 +90,7 @@ func _window(look: StringName) -> void:
 			"%s window: the card stays the theme's panel" % look)
 		check(surface.content_inset() == GoUi.metric(GoTheme.PADDING), "%s window: the theme's padding" % look)
 		check(surface.section_gap() == GoUi.metric(GoTheme.GAP), "%s window: the theme's gap" % look)
+		check(surface.texture_filter == CanvasItem.TEXTURE_FILTER_PARENT_NODE, "%s window: the parent's texture filter" % look)
 		check(is_equal_approx(card.size.x, GoUi.config.surface_max_width),
 			"%s window: the config's width (got %.1f)" % [look, card.size.x])
 	surface.queue_free()
