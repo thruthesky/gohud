@@ -175,6 +175,8 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_restyle)
+	# 🛑 A finger still down on a button that leaves the tree will never lift on it: let go now.
+	cancel()
 
 
 func _notification(what: int) -> void:
@@ -182,6 +184,10 @@ func _notification(what: int) -> void:
 		_fits.clear()
 		_caption_sizes = [0, 0]
 		queue_redraw()
+	elif what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree():
+		# 🛑 Hidden under a finger (a pause menu hides the touch HUD): the lift will not reach it, so let go now —
+		# `released(true)`, as `cancel()` says — rather than leave the game seeing it held for ever.
+		cancel()
 
 
 ## The picture it draws (null: a plain disc).

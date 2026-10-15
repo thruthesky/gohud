@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A touch button or stick that is hidden or removed under a finger lets go.** `GoTouchButton` kept `_held` and never
+  emitted `released` when it was hidden (or a parent was, as a pause menu hides the touch HUD) or left the tree with
+  a finger down, so the game saw ATTRACT held for ever. It now runs `cancel()` then: `released(true)` once, the
+  finger id cleared. `GoJoystick` had the same gap and now ends the drag the same way (`released`, then a zero
+  `moved`), so the character stops.
 - **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
   crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
   400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.

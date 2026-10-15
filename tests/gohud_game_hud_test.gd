@@ -33,6 +33,7 @@ func _initialize() -> void:
 		await _notice_feed(look)
 		await _touch_button(look)
 		await _joystick_art(look)
+		await _touch_lifecycle(look)
 		await _task_card(look)
 		await _spotlight(look)
 		await _perf_readout(look)
@@ -668,6 +669,88 @@ func _joystick_art(look: StringName) -> void:
 	check(stick.size == Vector2(140, 140), "stick: sized by its radius")
 	holder.queue_free()
 	await frames(1)
+
+func _touch_down(control: Control, index: int, at: Vector2, down: bool) -> void:
+	var event := InputEventScreenTouch.new()
+	event.index = index
+	event.pressed = down
+	event.position = at
+	control._gui_input(event)
+
+
+func _touch_drag(control: Control, index: int, at: Vector2) -> void:
+	var event := InputEventScreenDrag.new()
+	event.index = index
+	event.position = at
+	control._gui_input(event)
+
+
+## A finger down while the button or stick is hidden or removed is let go (a button: `released(true)`), once.
+func _touch_lifecycle(look: StringName) -> void:
+	# hidden itself
+	var button := GoTouchButton.make(&"btn_attract", "ATTRACT", 120.0)
+	var holder := _host(button)
+	await frames(1)
+	var events: Array[String] = []
+	button.released.connect(func(canceled: bool) -> void: events.append("up%s" % canceled))
+	_touch_down(button, 0, Vector2(60, 60), true)
+	check(button.is_held(), "touch hide: a finger holds it (%s)" % look)
+	button.hide()
+	check(not button.is_held() and events == ["uptrue"], "touch hide: hiding lets go with released(true) once (%s) %s" % [look, events])
+	button.show()
+	_touch_down(button, 0, Vector2(60, 60), false)
+	check(events == ["uptrue"], "touch hide: the old finger lifting later says nothing more (%s)" % look)
+	_touch_down(button, 1, Vector2(60, 60), true)
+	check(button.is_held(), "touch hide: it takes a new finger after (%s)" % look)
+	# a hidden parent
+	holder.hide()
+	check(not button.is_held() and events == ["uptrue", "uptrue"], "touch hide: a hidden parent lets go too (%s) %s" % [look, events])
+	holder.show()
+	# a mouse press
+	_press(button, Vector2(60, 60), true)
+	check(button.is_held(), "touch hide: a mouse press holds it (%s)" % look)
+	button.visible = false
+	check(not button.is_held() and events.size() == 3, "touch hide: the mouse press is let go as well (%s)" % look)
+	button.visible = true
+	# not held: hiding says nothing
+	button.hide()
+	button.show()
+	check(events.size() == 3, "touch hide: hiding an idle button says nothing (%s)" % look)
+	# removed from the tree
+	_touch_down(button, 0, Vector2(60, 60), true)
+	holder.remove_child(button)
+	check(not button.is_held() and events.size() == 4 and events[3] == "uptrue", "touch exit: leaving the tree lets go (%s)" % look)
+	button.free()
+	holder.queue_free()
+	await frames(1)
+	# the joystick
+	for stick_mode: int in [GoJoystick.Mode.FIXED, GoJoystick.Mode.FOLLOW]:
+		var stick := GoJoystick.new()
+		stick.mode = stick_mode
+		stick.radius = 70
+		holder = _host(stick)
+		await frames(2)
+		var log: Array[String] = []
+		stick.released.connect(func() -> void: log.append("released"))
+		stick.moved.connect(func(v: Vector2) -> void: log.append("moved%s" % v))
+		_touch_down(stick, 0, Vector2(70, 70), true)
+		_touch_drag(stick, 0, Vector2(130, 70))
+		check(stick.is_active() and stick.vector().length() > 0.5, "stick hide: a drag moves it (%s)" % look)
+		log.clear()
+		stick.hide()
+		check(not stick.is_active() and stick.vector() == Vector2.ZERO, "stick hide: hiding drops the drag (%s)" % look)
+		check(log == ["released", "moved(0.0, 0.0)"], "stick hide: it says released and a zero vector once (%s) %s" % [look, log])
+		stick.show()
+		_touch_down(stick, 0, Vector2(70, 70), false)
+		check(log.size() == 2, "stick hide: the old finger lifting later says nothing more (%s)" % look)
+		_touch_down(stick, 1, Vector2(70, 70), true)
+		check(stick.is_active(), "stick hide: it takes a new finger after (%s)" % look)
+		log.clear()
+		holder.remove_child(stick)
+		check(not stick.is_active() and log == ["released", "moved(0.0, 0.0)"], "stick exit: leaving the tree drops the drag (%s) %s" % [look, log])
+		stick.free()
+		holder.queue_free()
+		await frames(1)
 
 
 # ── A task card (GoTaskCard) and a spotlight (GoSpotlight) ─────────────
