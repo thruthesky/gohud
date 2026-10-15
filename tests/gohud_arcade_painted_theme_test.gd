@@ -60,6 +60,7 @@ func _initialize() -> void:
 		_buttons(light)
 		_panels(light)
 		_game_parts(light)
+		_flat_parts(light)
 		_variations(light)
 		_inks(light)
 		_tokens(light)
@@ -262,6 +263,70 @@ func _game_parts(theme: Theme) -> void:
 		check(theme.get_color(slot, &"GoIconOnly").is_equal_approx(Color(0.78, 0.78, 0.86)), "GoIconOnly/%s is the game's" % slot)
 
 
+## [param flat] is `UiTheme.box(bg, radius, border, INK, shadow, ...)` with [param margins] and a [param bottom] edge.
+func _flat(theme: Theme, state: StringName, type: StringName, bg: Color, radius: int, border: int, bottom: int,
+		margins: Array[float], shadow: bool, expand_top := 0.0) -> void:
+	var label := "%s/%s" % [type, state]
+	var flat := theme.get_stylebox(state, type) as StyleBoxFlat if theme.has_stylebox(state, type) else null
+	check(flat != null, "%s is a StyleBoxFlat" % label)
+	if flat == null: return
+	check(flat.bg_color.is_equal_approx(bg), "%s bg %s (got %s)" % [label, bg.to_html(), flat.bg_color.to_html()])
+	check(flat.border_color.is_equal_approx(INK), "%s: an ink rim" % label)
+	check(flat.border_width_left == border and flat.border_width_top == border and flat.border_width_right == border
+		and flat.border_width_bottom == bottom, "%s border %d, bottom %d (got %d %d %d %d)" % [label, border, bottom,
+		flat.border_width_left, flat.border_width_top, flat.border_width_right, flat.border_width_bottom])
+	for corner: Corner in [CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOTTOM_RIGHT, CORNER_BOTTOM_LEFT]:
+		check(flat.get_corner_radius(corner) == radius, "%s corner %d radius %d" % [label, corner, radius])
+	check(_margins(flat) == margins, "%s padding %s (got %s)" % [label, str(margins), str(_margins(flat))])
+	if shadow:
+		check(flat.shadow_color.is_equal_approx(Color(0, 0, 0, 0.25)) and flat.shadow_size == 1
+			and flat.shadow_offset == Vector2(0, 4), "%s: the soft drop shadow (black 25%%, 1 px, offset 0,4)" % label)
+	else:
+		check(flat.shadow_size == 0, "%s: no shadow (got %d)" % [label, flat.shadow_size])
+	check(flat.expand_margin_top == expand_top, "%s expand_margin_top %s (got %s)" % [label, expand_top, flat.expand_margin_top])
+	check(flat.draw_center and flat.anti_aliasing, "%s: drawn filled, anti-aliased" % label)
+
+
+## `UiTheme._button_boxes(variation, bg, hover, pressed_bg, margin_h, margin_v, font_color, font_size, outline)`.
+func _flat_button(theme: Theme, type: StringName, bg: Color, hover: Color, pressed: Color, margin_h: float, margin_v: float,
+		ink: Color, size: int, outline: int) -> void:
+	_flat(theme, &"normal", type, bg, 12, 3, 7, [margin_h, margin_v, margin_h, margin_v], false)
+	_flat(theme, &"hover", type, hover, 12, 3, 7, [margin_h, margin_v, margin_h, margin_v], false)
+	for state: StringName in [&"pressed", &"hover_pressed"]:
+		_flat(theme, state, type, pressed, 12, 3, 4, [margin_h, margin_v + 3.0, margin_h, margin_v], false, -3.0)
+	check(theme.get_stylebox(&"focus", type) is StyleBoxEmpty, "%s/focus draws nothing" % type)
+	for slot: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(slot, type).is_equal_approx(ink), "%s/%s is %s" % [type, slot, ink.to_html()])
+	check(theme.get_color(&"font_outline_color", type).is_equal_approx(INK), "%s: an ink outline" % type)
+	check(theme.get_font_size(&"font_size", type) == size, "%s: %d px (got %d)" % [type, size, theme.get_font_size(&"font_size", type)])
+	check(theme.get_constant(&"outline_size", type) == outline, "%s: a %d px outline" % [type, outline])
+
+
+## 🧱 The game's flat parts (`UiTheme._build()`), value for value: the white panel and card, the choice key, the big
+##    green and grey keys, the small and bar labels.
+func _flat_parts(theme: Theme) -> void:
+	_flat(theme, &"panel", &"GoPanelFlat", PANEL, 14, 3, 3, [14.0, 8.0, 14.0, 8.0], true)
+	_flat(theme, &"panel", &"GoCardFlat", Color.WHITE, 24, 4, 4, [36.0, 26.0, 36.0, 26.0], true)
+	_flat_button(theme, &"GoBigButton", GREEN, Color("#55dc70"), Color("#34b84e"), 34.0, 6.0, Color.WHITE, 24, 3)
+	_flat_button(theme, &"GoBigSecondaryButton", SECONDARY, Color("#9a9fc0"), Color("#7a7fa3"), 34.0, 6.0, Color.WHITE, 24, 3)
+	# The choice key's normal and hover are `_button_boxes`'; its pressed face is the selected one (`.diff.selected`):
+	# cyan, a 4 px bottom edge, 9 px over the word, and no step down.
+	_flat(theme, &"normal", &"GoChoiceButton", DIFF_BG, 12, 3, 7, [14.0, 6.0, 14.0, 6.0], false)
+	_flat(theme, &"hover", &"GoChoiceButton", Color("#f6f8ff"), 12, 3, 7, [14.0, 6.0, 14.0, 6.0], false)
+	for state: StringName in [&"pressed", &"hover_pressed"]:
+		_flat(theme, state, &"GoChoiceButton", DIFF_SELECTED, 12, 3, 4, [14.0, 9.0, 14.0, 6.0], false)
+	check(theme.get_stylebox(&"focus", &"GoChoiceButton") is StyleBoxEmpty, "GoChoiceButton/focus draws nothing")
+	for slot: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(slot, &"GoChoiceButton").is_equal_approx(INK), "GoChoiceButton/%s is the ink" % slot)
+	check(theme.get_font_size(&"font_size", &"GoChoiceButton") == 15 and theme.get_constant(&"outline_size", &"GoChoiceButton") == 0,
+		"GoChoiceButton: 15 px, no outline")
+	check(theme.get_font_size(&"font_size", &"GoSmallLabel") == 12
+		and theme.get_color(&"font_color", &"GoSmallLabel").is_equal_approx(Color(INK, 0.75)), "GoSmallLabel: 12 px, ink at 75%")
+	check(theme.get_font_size(&"font_size", &"GoBarLabel") == 11, "GoBarLabel: 11 px")
+
+
 func _variations(theme: Theme) -> void:
 	var bases := {
 		&"GoButton": &"Button", &"GoPrimaryButton": &"Button", &"GoDangerButton": &"Button",
@@ -273,6 +338,8 @@ func _variations(theme: Theme) -> void:
 		&"GoLevelCard": &"Button", &"GoLevelCardCurrent": &"Button", &"GoLevelCardLocked": &"Button",
 		&"GoHudPanel": &"PanelContainer", &"GoBannerGold": &"PanelContainer", &"GoNoticeGold": &"PanelContainer",
 		&"GoChipDark": &"Button", &"GoIconOnly": &"Button",
+		&"GoPanelFlat": &"PanelContainer", &"GoCardFlat": &"PanelContainer", &"GoChoiceButton": &"Button",
+		&"GoBigButton": &"Button", &"GoBigSecondaryButton": &"Button", &"GoSmallLabel": &"Label", &"GoBarLabel": &"Label",
 	}
 	for type: StringName in bases:
 		check(theme.is_type_variation(type, bases[type]), "%s is a variation of %s (got %s)" % [type, bases[type],
@@ -290,7 +357,9 @@ func _variations(theme: Theme) -> void:
 	var moved := {"StageWindow": "GoWindowBlue", "StageRibbon": "GoRibbonWide", "StageCard": "GoLevelCard",
 		"StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
 		"ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
-		"PauseRound": "GoIconOnly"}
+		"PauseRound": "GoIconOnly",
+		"HudPanel": "GoPanelFlat", "Card": "GoCardFlat", "Diff": "GoChoiceButton", "Big": "GoBigButton",
+		"BigSecondary": "GoBigSecondaryButton", "SmallLabel": "GoSmallLabel", "BarLabel": "GoBarLabel"}
 	check(map.get("GlossGreen", "") == "GoPrimaryButton" and map.get("GlossBlue", "") == "GoInfoButton",
 		"map: the game's green main action is the primary key, its blue pill the info key (got %s, %s)"
 		% [map.get("GlossGreen", "nothing"), map.get("GlossBlue", "nothing")])
@@ -300,9 +369,9 @@ func _variations(theme: Theme) -> void:
 	var code_built: Variant = map.get("_code_built", {})
 	check(code_built is Dictionary and str((code_built as Dictionary).get("GoWell", "")).begins_with("MapPreview.set_well()")
 		and theme.get_type_variation_base(&"GoWell") != &"", "map: GoWell is listed as code-built (MapPreview.set_well())")
-	check(map.get("game_only", []) is Array and (map["game_only"] as Array).has("HudPanel"), "map: the old flat look stays in the game")
-	for kept: String in map.get("game_only", []):
-		check(not map.has(kept), "map: %s is either moved or kept, not both" % kept)
+	# Every variation the game builds is in gohud now, the old flat look too: nothing stays game-only.
+	check(map.get("game_only", []) is Array and (map["game_only"] as Array).is_empty(),
+		"map: no variation stays in the game (got %s)" % str(map.get("game_only", [])))
 
 
 func _inks(theme: Theme) -> void:
@@ -338,6 +407,10 @@ func _item_sets(theme: Theme) -> void:
 	var panel := {"styles": ["panel"], "colors": [], "constants": [], "font_sizes": []}
 	var card := {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"], "colors": [],
 		"constants": [], "font_sizes": []}
+	# `UiTheme._button_boxes()`: four faces and no focus ring, one label colour, its size and outline.
+	var flat_button := {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],
+		"colors": ["font_color", "font_focus_color", "font_hover_color", "font_hover_pressed_color", "font_outline_color",
+			"font_pressed_color"], "constants": ["outline_size"], "font_sizes": ["font_size"]}
 	var want := {
 		&"GoButton": gloss, &"GoPrimaryButton": gloss, &"GoDangerButton": gloss, &"GoSuccessButton": gloss,
 		&"GoInfoButton": gloss,
@@ -357,6 +430,10 @@ func _item_sets(theme: Theme) -> void:
 			"constants": ["h_separation"], "font_sizes": ["font_size"]},
 		&"GoIconOnly": {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"],
 			"colors": ["icon_hover_pressed_color", "icon_pressed_color"], "constants": [], "font_sizes": []},
+		&"GoPanelFlat": panel, &"GoCardFlat": panel,
+		&"GoChoiceButton": flat_button, &"GoBigButton": flat_button, &"GoBigSecondaryButton": flat_button,
+		&"GoSmallLabel": {"styles": [], "colors": ["font_color"], "constants": [], "font_sizes": ["font_size"]},
+		&"GoBarLabel": {"styles": [], "colors": [], "constants": [], "font_sizes": ["font_size"]},
 	}
 	for type: StringName in want:
 		var got := {"styles": _sorted(theme.get_stylebox_list(type)), "colors": _sorted(theme.get_color_list(type)),

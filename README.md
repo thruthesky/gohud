@@ -831,8 +831,10 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 `GoSliderCyan` (a slider with a green or cyan fill); `GoWindowBlue` and `GoRibbonWide` (the stage-select window and
 its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (the level tile in its three states);
 `GoWell` (the map-preview well); `GoHudPanel` (the floating HUD panel); `GoBannerGold` and `GoNoticeGold` (a gold HUD
-banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). A theme
-without them falls back to the base type.
+banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). Its flat parts are there too:
+`GoPanelFlat` and `GoCardFlat` (a translucent panel and a white card, ink-rimmed); `GoChoiceButton` (a light choice
+key that stays cyan while chosen); `GoBigButton` and `GoBigSecondaryButton` (big green and grey keys with a hard
+bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px). A theme without them falls back to the base type.
 
 Filled buttons sit flat. The two `*GlowButton` variations raise them with a soft shadow in the button's own colour
 (a glow on the sci-fi shape): set `GoConfig.button_glow` for every filled button, or call

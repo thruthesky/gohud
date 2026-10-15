@@ -420,7 +420,9 @@ icons.canonical(&"gear")             # &"settings"
 (초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide`(스테이지 선택 창과 넓은 리본), `GoLevelCard` ·
 `GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
 판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만
-있는 동그란 버튼). 이 변형이 없는 테마는 기본 타입으로 돌아간다.
+있는 동그란 버튼). 평평한 부품도 있다: `GoPanelFlat` · `GoCardFlat`(잉크 테두리의 반투명 판과 흰 카드),
+`GoChoiceButton`(고르면 청록으로 남는 밝은 선택 키), `GoBigButton` · `GoBigSecondaryButton`(아래 테두리가 두꺼운 큰
+초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px). 이 변형이 없는 테마는 기본 타입으로 돌아간다.
 
 채운 버튼은 기본으로 평평하다. `*GlowButton` 두 변형은 버튼 자기 색의 부드러운 그림자(sci-fi 모양은 글로우)로 띄운다 —
 채운 버튼 전부는 `GoConfig.button_glow` 를 켜고, 버튼 하나만은 `GoStyle.glow(button)` 을 부른다.

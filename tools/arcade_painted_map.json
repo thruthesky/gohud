@@ -23,7 +23,12 @@
       "GoTitle": 54,
       "OptionButton": 17,
       "PopupMenu": 17,
-      "GoChipDark": 15
+      "GoChipDark": 15,
+      "GoBigButton": 24,
+      "GoBigSecondaryButton": 24,
+      "GoChoiceButton": 15,
+      "GoSmallLabel": 12,
+      "GoBarLabel": 11
     },
     "left_to_game": []
   },
@@ -69,22 +74,13 @@
   "NotifPlayer": "GoNoticeGold",
   "LangChip": "GoChipDark",
   "PauseRound": "GoIconOnly",
-  "game_only": [
-    "BarLabel",
-    "Big",
-    "BigSecondary",
-    "Card",
-    "Diff",
-    "HudPanel",
-    "SmallLabel"
-  ],
-  "_game_only_why": {
-    "BarLabel": "a size-only label (the game's sizes)",
-    "Big": "the old flat look, not part of the painted set",
-    "BigSecondary": "the old flat look, not part of the painted set",
-    "Card": "the old flat look, not part of the painted set",
-    "Diff": "the old flat look, not part of the painted set",
-    "HudPanel": "the old flat look, not part of the painted set",
-    "SmallLabel": "a size-only label (the game's sizes)"
-  }
+  "HudPanel": "GoPanelFlat",
+  "Card": "GoCardFlat",
+  "Diff": "GoChoiceButton",
+  "Big": "GoBigButton",
+  "BigSecondary": "GoBigSecondaryButton",
+  "SmallLabel": "GoSmallLabel",
+  "BarLabel": "GoBarLabel",
+  "game_only": [],
+  "_game_only_why": {}
 }
