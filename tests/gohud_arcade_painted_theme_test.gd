@@ -136,7 +136,10 @@ func _gloss(theme: Theme, type: StringName, file: String) -> void:
 
 func _buttons(theme: Theme) -> void:
 	_gloss(theme, &"GoButton", "btn_grey.png")
-	_gloss(theme, &"GoPrimaryButton", "btn_blue.png")
+	# 🔑 The game's main actions (PLAY, CONFIRM — `GlossGreen`) are green, so the primary key is the green pill; the
+	#    blue pill (`GlossBlue`) is the info key.
+	_gloss(theme, &"GoPrimaryButton", "btn_green.png")
+	_gloss(theme, &"GoInfoButton", "btn_blue.png")
 	_gloss(theme, &"GoDangerButton", "btn_red.png")
 	_gloss(theme, &"GoSuccessButton", "btn_green.png")
 	# The toggle: the grey pill, blue while it is on.
@@ -262,7 +265,7 @@ func _game_parts(theme: Theme) -> void:
 func _variations(theme: Theme) -> void:
 	var bases := {
 		&"GoButton": &"Button", &"GoPrimaryButton": &"Button", &"GoDangerButton": &"Button",
-		&"GoSuccessButton": &"Button", &"GoToggleButton": &"Button", &"GoKeycap": &"Button",
+		&"GoSuccessButton": &"Button", &"GoToggleButton": &"Button", &"GoKeycap": &"Button", &"GoInfoButton": &"Button",
 		&"GoCard": &"PanelContainer", &"GoInsetPanel": &"PanelContainer", &"GoKeycapPanel": &"PanelContainer",
 		&"GoRibbon": &"PanelContainer", &"GoRibbonRed": &"PanelContainer", &"GoNotice": &"PanelContainer",
 		&"GoTitle": &"Label", &"GoOutlineLabel": &"Label",
@@ -288,6 +291,9 @@ func _variations(theme: Theme) -> void:
 		"StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
 		"ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
 		"PauseRound": "GoIconOnly"}
+	check(map.get("GlossGreen", "") == "GoPrimaryButton" and map.get("GlossBlue", "") == "GoInfoButton",
+		"map: the game's green main action is the primary key, its blue pill the info key (got %s, %s)"
+		% [map.get("GlossGreen", "nothing"), map.get("GlossBlue", "nothing")])
 	for game: String in moved:
 		check(map.get(game, "") == moved[game], "map: %s → %s (got %s)" % [game, moved[game], map.get(game, "nothing")])
 	check(not map.has("MapWell"), "map: MapWell is no UiTheme variation, so it is not a map key")
@@ -334,6 +340,7 @@ func _item_sets(theme: Theme) -> void:
 		"constants": [], "font_sizes": []}
 	var want := {
 		&"GoButton": gloss, &"GoPrimaryButton": gloss, &"GoDangerButton": gloss, &"GoSuccessButton": gloss,
+		&"GoInfoButton": gloss,
 		&"GoToggleButton": gloss,
 		&"GoKeycap": {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],
 			"colors": ["font_color", "font_focus_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color"],

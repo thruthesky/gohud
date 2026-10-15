@@ -173,7 +173,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `kids_dark` | 같은 젤리 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼과 민트 제목 리본 | `GoSkinKids` |
 | `comic_light` | 만화 컷 — 키·입력칸·목록 줄·판마다 굵은 잉크 테두리(`GoStyleBoxComic`)와 오른쪽 아래로 떨어지는 연하고 단단한 그림자(누르면 사라짐), 창 제목 뒤의 노란 말풍선 상자, 신문지 바탕에 남색 잉크. 테두리 두께·그림자 크기·그림자 표시 여부는 설정 한 줄씩(`GoUi.config.comic_border_width`·`comic_shadow_size`·`comic_shadow`)이고, 위젯 하나는 `GoStyle.comic_shadow(node, on)` 으로 따로 정한다 | `GoSkinComic` |
 | `comic_dark` | 같은 만화 컷의 밤 — 남색 바탕에 분필 잉크, 햇살 노랑 기본 버튼 | `GoSkinComic` |
-| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 파란 기본 버튼, 초록 성공 버튼(`GoSuccessButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 입력칸·가로 슬라이더·스위치도 페인티드이고, 탭과 세로 슬라이더는 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
+| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 초록 기본 버튼과 초록 성공 버튼(`GoSuccessButton`), 파란 정보 버튼(`GoInfoButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 입력칸·가로 슬라이더·스위치도 페인티드이고, 탭과 세로 슬라이더는 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
 | `arcade_dark` | 코드로 그린 오락실의 밤 — 남색 보드와 바탕, 광택이 있는 알약 키, 금색 리본과 여러 칸 게이지 | `GoSkinArcade` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
@@ -416,7 +416,7 @@ icons.canonical(&"gear")             # &"settings"
 `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`,
 `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
-`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoSliderGreen` · `GoSliderCyan`
+`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoInfoButton`(파란 알약), `GoSliderGreen` · `GoSliderCyan`
 (초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide`(스테이지 선택 창과 넓은 리본), `GoLevelCard` ·
 `GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
 판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만

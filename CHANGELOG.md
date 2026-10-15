@@ -19,6 +19,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light`’s primary key is the green pill.** Magnet Mayhem’s main actions (PLAY, CONFIRM, SAVE) are green
+  (`GlossGreen`), so `GoPrimaryButton` — and every `GoStyle` primary button — now draws `btn_green.png`; the blue pill
+  (`GlossBlue`) moves to the new `GoInfoButton`. The map (`tools/arcade_painted_map.json`) names `GlossGreen →
+  GoPrimaryButton` and `GlossBlue → GoInfoButton`. `GoSuccessButton` stays green.
+
 - **`arcade_light` sets its text in Magnet Mayhem’s font.** Its `default_font` is the game’s `UiTheme.get_font()`: a
   `FontVariation` of Nunito Bold with Noto Sans KR, JP, SC and TC Bold as fallbacks, in that order — the game’s own
   files, now in `assets/fonts/nunito/` and `assets/fonts/noto_sans_cjk/` (SIL OFL 1.1, see `THIRD_PARTY_NOTICES.md`).

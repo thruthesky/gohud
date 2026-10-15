@@ -112,9 +112,11 @@ FACES = {
 }
 
 # Game variation → its gohud name. The values are what the game aliases; `GAME_ONLY` stays in the game.
+# 🔑 The game's main actions (PLAY, CONFIRM, SAVE) are `GlossGreen`, so the green pill is gohud's primary key; the blue
+#    pill (`GlossBlue`, the game's secondary actions) is `GoInfoButton`. `GoSuccessButton` is the green pill as well.
 MAP = {
-    "GlossGrey": "GoButton", "GlossBlue": "GoPrimaryButton", "GlossRed": "GoDangerButton",
-    "GlossGreen": "GoSuccessButton", "GlossToggle": "GoToggleButton",
+    "GlossGrey": "GoButton", "GlossBlue": "GoInfoButton", "GlossRed": "GoDangerButton",
+    "GlossGreen": "GoPrimaryButton", "GlossToggle": "GoToggleButton",
     "PaintedCard": "GoCard", "InsetPanel": "GoInsetPanel", "KeycapPanel": "GoKeycapPanel", "Keycap": "GoKeycap",
     "RibbonTitle": "GoRibbon", "RibbonRed": "GoRibbonRed", "Notif": "GoNotice",
     "Title": "GoTitle", "OutlineLabel": "GoOutlineLabel",
@@ -145,7 +147,7 @@ GAME_ONLY = {
 }
 BASES = {
     "GoButton": "Button", "GoPrimaryButton": "Button", "GoDangerButton": "Button", "GoSuccessButton": "Button",
-    "GoToggleButton": "Button", "GoKeycap": "Button",
+    "GoInfoButton": "Button", "GoToggleButton": "Button", "GoKeycap": "Button",
     "GoCard": "PanelContainer", "GoInsetPanel": "PanelContainer", "GoKeycapPanel": "PanelContainer",
     "GoRibbon": "PanelContainer", "GoRibbonRed": "PanelContainer", "GoNotice": "PanelContainer",
     "GoTitle": "Label", "GoOutlineLabel": "Label",
@@ -249,7 +251,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         setT("%s/constants/h_separation" % type_name, 10)
 
     gloss("GoButton", "btn_grey.png")
-    gloss("GoPrimaryButton", "btn_blue.png")
+    gloss("GoPrimaryButton", "btn_green.png")
+    gloss("GoInfoButton", "btn_blue.png")
     gloss("GoDangerButton", "btn_red.png")
     gloss("GoSuccessButton", "btn_green.png")
     # The toggle (`_gloss_toggle`): the grey pill, blue while it is on.
@@ -476,7 +479,8 @@ def ext_resources(boxes):
 
 def write_map():
     """`tools/arcade_painted_map.json` — the game's names for the variations above (generated, do not edit)."""
-    sizes = {"GoButton": GLOSS_FONT_SIZE, "GoPrimaryButton": GLOSS_FONT_SIZE, "GoDangerButton": GLOSS_FONT_SIZE,
+    sizes = {"GoButton": GLOSS_FONT_SIZE, "GoPrimaryButton": GLOSS_FONT_SIZE, "GoInfoButton": GLOSS_FONT_SIZE,
+             "GoDangerButton": GLOSS_FONT_SIZE,
              "GoSuccessButton": GLOSS_FONT_SIZE, "GoToggleButton": GLOSS_FONT_SIZE, "GoKeycap": KEYCAP_FONT_SIZE,
              "GoTitle": TITLE_FONT_SIZE, "OptionButton": DROPDOWN_FONT_SIZE, "PopupMenu": DROPDOWN_FONT_SIZE,
              "GoChipDark": CHIP_FONT_SIZE}

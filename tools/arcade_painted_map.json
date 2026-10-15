@@ -15,6 +15,7 @@
     "written": {
       "GoButton": 22,
       "GoPrimaryButton": 22,
+      "GoInfoButton": 22,
       "GoDangerButton": 22,
       "GoSuccessButton": 22,
       "GoToggleButton": 22,
@@ -45,9 +46,9 @@
     ]
   },
   "GlossGrey": "GoButton",
-  "GlossBlue": "GoPrimaryButton",
+  "GlossBlue": "GoInfoButton",
   "GlossRed": "GoDangerButton",
-  "GlossGreen": "GoSuccessButton",
+  "GlossGreen": "GoPrimaryButton",
   "GlossToggle": "GoToggleButton",
   "PaintedCard": "GoCard",
   "InsetPanel": "GoInsetPanel",

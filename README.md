@@ -166,7 +166,7 @@ The same confirmation, opened over the same little game with its HUD, joystick a
 | `scifi_dark` · `scifi_light` | Chamfered corners, cyan neon edges and glow, a hexagonal joystick, targeting-bracket focus |
 | `medieval_dark` · `medieval_light` | Iron and leather or parchment, antique-gold frames, rivets, engraved icons, Cinzel headings |
 | `material_dark` · `material_light` | Material 3 for app screens: pill buttons, 28 dp dialogs, filled cards, M3 switches, Roboto |
-| `arcade_light` | Magnet Mayhem’s painted sprites: blue primary keys, green success keys, cards, ribbons, keycaps and glyphs |
+| `arcade_light` | Magnet Mayhem’s painted sprites: green primary keys, blue info keys, cards, ribbons, keycaps and glyphs |
 | `arcade_dark` | A code-drawn arcade cabinet: glossy pill keys, thick framed boards, a gold title ribbon, chunked bars |
 | `comic_dark` · `comic_light` | A comic panel: a bold ink outline and a hard shadow, a yellow caption box behind titles |
 | `kids_dark` · `kids_light` | A toy box: jelly-candy keys and panels that squish under the finger, a rainbow joystick |
@@ -528,7 +528,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
 | `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
 | `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
-| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), blue primary and green success buttons, red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. Fields, the horizontal slider and the switch are painted too; tabs and the vertical slider retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
+| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), green primary and success buttons, a blue info button (`GoInfoButton`), red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. Fields, the horizontal slider and the switch are painted too; tabs and the vertical slider retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
 | `arcade_dark` | A code-drawn arcade cabinet at night: navy boards and page, glossy pill keys in bright paints, a gold ribbon and chunked gauges | `GoSkinArcade` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
@@ -598,7 +598,7 @@ from its tokens (material-web `tokens/versions/latest`, Material 3 v34.0.21).
 ### Arcade, comic and kids
 
 Three looks for games that want to feel painted, inked or made of candy. `arcade_light` uses Magnet Mayhem’s
-painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: blue primary keys, green success keys, grey
+painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: green primary and success keys, blue info keys, grey
 neutral keys, red danger keys, cards, ribbons, keycaps and badges. Its white glyphs fall back to gohud’s default
 icons when a name is absent. Text fields (`LineEdit`, `TextEdit`) wear the game’s flat field, and the horizontal
 slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites. Tabs and the vertical slider
@@ -826,7 +826,7 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 `GoDangerSolidButton`, `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`,
 `GoIconButton`, `GoListButton`, `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
-`arcade_light` adds the rest of Magnet Mayhem’s painted variations: `GoSuccessButton`; `GoSliderGreen` and
+`arcade_light` adds the rest of Magnet Mayhem’s painted variations: `GoSuccessButton`; `GoInfoButton` (the blue pill); `GoSliderGreen` and
 `GoSliderCyan` (a slider with a green or cyan fill); `GoWindowBlue` and `GoRibbonWide` (the stage-select window and
 its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (the level tile in its three states);
 `GoWell` (the map-preview well); `GoHudPanel` (the floating HUD panel); `GoBannerGold` and `GoNoticeGold` (a gold HUD
