@@ -40,6 +40,7 @@ func _initialize() -> void:
 		await _slot_touch(look)
 		await _icon_focus(look)
 	await _touch_label_cache()
+	await _touch_follows_look()
 	_per_inch_scale()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -767,6 +768,32 @@ func _touch_label_cache() -> void:
 	check(shrunk == 10 and button.label_font_size() == shrunk, "touch fit: the cached size is still right (%d)" % shrunk)
 	button.text = "REPULSE"
 	check(button.label_font_size() == 14, "touch fit: and follows the text back")
+	holder.queue_free()
+	await frames(1)
+
+
+func _touch_follows_look() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	var button := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+	var holder := _host(button)
+	await frames(1)
+	check(button.theme == GoUi.theme(), "touch look: built on the current look")
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(1)
+	check(button.theme == GoUi.theme(), "touch look: follows a look switch")
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	check(button.theme == GoUi.theme(), "touch look: and back")
+	# out of the tree during a look switch: back in, it is on the new look
+	holder.remove_child(button)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(1)
+	holder.add_child(button)
+	check(button.theme == GoUi.theme(), "touch look: back in the tree it takes the look that is current")
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	check(button.theme == GoUi.theme(), "touch look: and is watching again")
 	holder.queue_free()
 	await frames(1)
 

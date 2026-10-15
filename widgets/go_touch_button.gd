@@ -167,10 +167,14 @@ func _init() -> void:
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 
 
-func _ready() -> void:
-	theme = GoUi.theme()
-	size = custom_minimum_size
+func _enter_tree() -> void:
+	# On every entry, so a button that was out of the tree during a look switch comes back on the current look.
 	GoUi.watch(_restyle)
+	theme = GoUi.theme()
+
+
+func _ready() -> void:
+	size = custom_minimum_size
 
 
 func _exit_tree() -> void:
@@ -324,6 +328,7 @@ func _set_pulse(value: float) -> void:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	_fits.clear()
 	_caption_sizes = [0, 0]
 	queue_redraw()

@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A touch button follows `GoUi.use_preset(...)`.** It set `theme` only in `_ready` and its look watcher never
+  re-assigned it, so after a look switch it kept the old theme (the label font and size). The watcher now takes
+  `GoUi.theme()` first, and the watch starts in `_enter_tree` (as `GoRibbonHeader`'s), so a button that was out of
+  the tree during a switch, or re-added after leaving, is on the current look and watching.
 - **A touch button's label-size cache holds one entry.** `label_font_size()` cached a size per text and only cleared
   on a theme, language or size change, so `skill.text = "%.1f" % seconds_left` every frame added an entry each time.
   It now keeps only the last text and its size.
