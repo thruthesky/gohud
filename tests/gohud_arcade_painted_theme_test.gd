@@ -382,7 +382,7 @@ func _variations(theme: Theme) -> void:
 		&"GoSuccessButton": &"Button", &"GoToggleButton": &"Button", &"GoKeycap": &"Button", &"GoInfoButton": &"Button",
 		&"GoCard": &"PanelContainer", &"GoInsetPanel": &"PanelContainer", &"GoKeycapPanel": &"PanelContainer",
 		&"GoRibbon": &"PanelContainer", &"GoRibbonRed": &"PanelContainer", &"GoNotice": &"PanelContainer",
-		&"GoTitle": &"Label", &"GoOutlineLabel": &"Label",
+		&"GoTitle": &"Label", &"GoOutlineLabel": &"Label", &"GoRibbonWideTitle": &"Label",
 		&"GoWindowBlue": &"PanelContainer", &"GoRibbonWide": &"PanelContainer", &"GoWell": &"PanelContainer",
 		&"GoLevelCard": &"Button", &"GoLevelCardCurrent": &"Button", &"GoLevelCardLocked": &"Button",
 		&"GoHudPanel": &"PanelContainer", &"GoBannerGold": &"PanelContainer", &"GoNoticeGold": &"PanelContainer",
@@ -438,6 +438,17 @@ func _inks(theme: Theme) -> void:
 		and theme.get_constant(&"line_spacing", &"GoTitle") == -6, "GoTitle: white, a 6 px outline, lines drawn together")
 	check(theme.get_color(&"font_color", &"GoOutlineLabel") == Color.WHITE and theme.get_constant(&"outline_size", &"GoOutlineLabel") == 6,
 		"GoOutlineLabel: white with a 6 px outline")
+	check(theme.get_color(&"font_color", &"GoRibbonWideTitle") == Color.WHITE
+			and theme.get_constant(&"outline_size", &"GoRibbonWideTitle") == 8
+			and theme.get_font_size(&"font_size", &"GoRibbonWideTitle") == theme.get_font_size(&"font_size", &"GoTitle"),
+		"GoRibbonWideTitle: the title on a wide ribbon, with the stage ribbons' 8 px outline")
+	# A field's hint is a grey that reads, never the typed text's ink; its shut text the engine's pale grey.
+	for type_name: StringName in [&"LineEdit", &"TextEdit"]:
+		check(theme.get_color(&"font_placeholder_color", type_name).is_equal_approx(Color(0.4, 0.42, 0.53)),
+			"%s: a grey hint, not the ink" % type_name)
+	check(theme.get_color(&"font_uneditable_color", &"LineEdit").is_equal_approx(Color(0.875, 0.875, 0.875, 0.5))
+			and theme.get_color(&"font_readonly_color", &"TextEdit").is_equal_approx(Color(0.875, 0.875, 0.875, 0.5)),
+		"a shut field's text: the engine's pale grey, as the game's")
 
 
 func _tokens(theme: Theme) -> void:
@@ -495,6 +506,8 @@ func _item_sets(theme: Theme) -> void:
 		&"GoTitle": {"styles": [], "colors": ["font_color"], "constants": ["line_spacing", "outline_size"],
 			"font_sizes": ["font_size"]},
 		&"GoOutlineLabel": {"styles": [], "colors": ["font_color"], "constants": ["outline_size"], "font_sizes": []},
+		&"GoRibbonWideTitle": {"styles": [], "colors": ["font_color"], "constants": ["line_spacing", "outline_size"],
+			"font_sizes": ["font_size"]},
 		&"GoWindowBlue": panel, &"GoRibbonWide": panel, &"GoWell": panel, &"GoHudPanel": panel, &"GoBannerGold": panel,
 		&"GoNoticeGold": panel, &"GoLevelCard": card, &"GoLevelCardCurrent": card, &"GoLevelCardLocked": card,
 		&"GoChipDark": {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],

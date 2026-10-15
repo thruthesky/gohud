@@ -63,6 +63,8 @@ GREEN_PRESSED = (0.203922, 0.721569, 0.305882, 1.0)      # #34b84e
 DIFF_HOVER = (0.964706, 0.972549, 1.0, 1.0)              # #f6f8ff (`Diff`)
 SMALL_INK = (0.113725, 0.137255, 0.25098, 0.75)          # `SmallLabel`: Color(INK, 0.75)
 CLEAR = (0.0, 0.0, 0.0, 0.0)
+FIELD_HINT = (0.4, 0.42, 0.53, 1.0)                       # #666b87: a hint grey that still reads (5.2:1 on white)
+FIELD_SHUT = (0.875, 0.875, 0.875, 0.5)                   # the engine's read-only text grey
 PANEL = (1.0, 1.0, 1.0, 0.9)
 PRESSED_TINT = (0.8, 0.8, 0.86, 1.0)
 DISABLED_TINT = (0.6, 0.6, 0.66, 0.85)
@@ -156,6 +158,7 @@ MAP = {
 # Variations the game draws in code, not as a UiTheme variation — kept out of MAP (whose keys are all UiTheme names):
 # gohud variation → where the game builds it. The game can use the gohud one directly.
 CODE_BUILT = {"GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)",
+              "GoRibbonWideTitle": "StageSelect._add_header() / RoomList (a Title label with outline_size 8)",
               "GoMapPreview": "MapPreview._init() (UiTheme.box(Cfg.StagePreview.BACKGROUND, 6, 1, BORDER, false, 0, 0))"}
 # The `Cfg` sizes written at their desktop value (the game swaps the touch value in itself).
 CFG_SIZES = {
@@ -172,7 +175,7 @@ BASES = {
     "GoInfoButton": "Button", "GoToggleButton": "Button", "GoKeycap": "Button",
     "GoCard": "PanelContainer", "GoInsetPanel": "PanelContainer", "GoKeycapPanel": "PanelContainer",
     "GoRibbon": "PanelContainer", "GoRibbonRed": "PanelContainer", "GoNotice": "PanelContainer",
-    "GoTitle": "Label", "GoOutlineLabel": "Label",
+    "GoTitle": "Label", "GoOutlineLabel": "Label", "GoRibbonWideTitle": "Label",
     "GoWindowBlue": "PanelContainer", "GoRibbonWide": "PanelContainer", "GoWell": "PanelContainer",
     "GoLevelCard": "Button", "GoLevelCardCurrent": "Button", "GoLevelCardLocked": "Button",
     "GoHudPanel": "PanelContainer", "GoBannerGold": "PanelContainer", "GoNoticeGold": "PanelContainer",
@@ -430,6 +433,11 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoTitle/constants/line_spacing", -6)
     setT("GoOutlineLabel/colors/font_color", C(WHITE))
     setT("GoOutlineLabel/constants/outline_size", 6)
+    # The title on a wide ribbon (`GoRibbonWide`): the title's, with the stage ribbons' wider 8 px outline.
+    setT("GoRibbonWideTitle/font_sizes/font_size", TITLE_FONT_SIZE)
+    setT("GoRibbonWideTitle/colors/font_color", C(WHITE))
+    setT("GoRibbonWideTitle/constants/outline_size", 8)
+    setT("GoRibbonWideTitle/constants/line_spacing", -6)
     # The small print (12 px, ink at 75%) and a gauge's caption (11 px, the ink it inherits).
     setT("GoSmallLabel/font_sizes/font_size", SMALL_FONT_SIZE)
     setT("GoSmallLabel/colors/font_color", C(SMALL_INK))
@@ -489,6 +497,13 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         put("%s/styles/read_only" % type_name, fixed)
         setT("%s/colors/font_color" % type_name, C(INK))
         setT("%s/colors/caret_color" % type_name, C(INK))
+    # The hint is a grey, never the ink of typed text — the game's fields left it at the engine's pale grey (1.2:1 on
+    # the white box, below the contrast bar), so it is the darkest grey that still reads as a hint. The text while
+    # the field is shut keeps the engine's pale grey and fades into the pale blue (`join_lobby.gd` while it joins).
+    for key in ("LineEdit/colors/font_placeholder_color", "TextEdit/colors/font_placeholder_color"):
+        setT(key, C(FIELD_HINT))
+    for key in ("LineEdit/colors/font_uneditable_color", "TextEdit/colors/font_readonly_color"):
+        setT(key, C(FIELD_SHUT))
 
     # ── 🎚 The slider (`PaintedSlider`): the grey pill track, the coloured fill up to the handle, the round handle. ──
     #    The track's 8 + 8 padding is the bar's height: the engine draws the track and the fill as tall as the

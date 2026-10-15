@@ -248,6 +248,7 @@ var fit_mode := FitMode.SCROLL:
 		if fit_mode == value: return
 		fit_mode = value
 		_layout_dirty = true
+		if title_label != null: _fit_title.call_deferred()
 ## `SCALE`: the list that scrolls rather than shrink the card below the fit floor — a ScrollContainer in the body
 ## (`GoFitBox.new_flex()`), its one child the content. Null: the body's own scroll, so the whole body scrolls.
 var fit_flex: ScrollContainer:
@@ -563,7 +564,9 @@ func _variation_plate() -> StyleBox:
 
 
 ## On a title plate the title stays on one line: past the plate's room it shrinks, down to
-## `GoSkin.title_plate_min_size()`, and only then folds. Without a plate the title keeps the size its role gives it.
+## `GoSkin.title_plate_min_size()`, and only then folds — or, under a `SCALE` fit, widens the card instead (the game's
+## ribbon title never wraps: the card grows and the fit shrinks the whole window). Without a plate the title keeps the
+## size its role gives it.
 func _fit_title() -> void:
 	if title_label == null: return
 	_fit_title_size()
@@ -578,6 +581,7 @@ func _fit_title_size() -> void:
 		if title_label.has_meta(&"go_title_fit"):
 			title_label.remove_meta(&"go_title_fit")
 			title_label.remove_theme_font_size_override(&"font_size")
+		_widen_title(0.0)
 		return
 	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
 	var over := plate as OverhangPlate
@@ -600,6 +604,19 @@ func _fit_title_size() -> void:
 		title_label.set_meta(&"go_title_fit", true)
 		title_label.add_theme_font_size_override(&"font_size", fitted)
 	if over != null: _sink_plate(over, font, fitted)
+	var wide := 0.0
+	if fit_mode == FitMode.SCALE:
+		wide = ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + title_label.size.x - room)
+	_widen_title(wide)
+
+
+## The title's least width under a `SCALE` fit: its words at the size they shrank to, plus the plate's ends — the card
+## grows to it (0: no floor). 🔑 At or under the label's width while the words fit, so it only ever widens a card whose
+##    title is still too long at the smallest size.
+func _widen_title(wide: float) -> void:
+	if is_equal_approx(title_label.custom_minimum_size.x, wide): return
+	title_label.custom_minimum_size.x = wide
+	_mark_layout_dirty()
 
 
 ## The title's size before it shrinks: the look's plate size (`GoSkin.title_plate_font_size`) on a plate, else its role's.

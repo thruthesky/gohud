@@ -422,7 +422,7 @@ icons.canonical(&"gear")             # &"settings"
 `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
 `arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoInfoButton`(파란 알약), `GoSliderGreen` · `GoSliderCyan`
-(초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide`(스테이지 선택 창과 넓은 리본), `GoLevelCard` ·
+(초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide` · `GoRibbonWideTitle`(스테이지 선택 창, 넓은 리본과 그 제목), `GoLevelCard` ·
 `GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
 판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만
 있는 동그란 버튼). 평평한 부품도 있다: `GoPanelFlat` · `GoCardFlat`(잉크 테두리의 반투명 판과 흰 카드),

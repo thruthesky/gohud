@@ -4,7 +4,20 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- **`GoRibbonWideTitle`** (`arcade_light`): the title on a `GoRibbonWide` ribbon — `GoTitle` with the stage ribbons'
+  8 px outline (Magnet Mayhem's stage select and room list set it on the label by hand).
+
 ### Fixed
+
+- **A long title on a `SCALE` window's ribbon widens the card instead of folding.** The game's ribbon title never
+  wraps: past its smallest size (`GoSkin.title_plate_min_size()`) the card grows to the words and the fit shrinks the
+  whole window. `GoSurface` folded it to two lines inside the 400 dp card ("ENTRENAMIENTO COMPLETADO"). Under
+  `FitMode.SCROLL` the title still folds as before.
+- **`arcade_light`'s text fields tell a hint from typed text.** The hint (`font_placeholder_color`) was the ink of
+  typed text; it is now a grey (#666b87, 5.2:1 on the white field — the game's own engine grey reads at 1.2:1). A shut
+  field's text (`font_uneditable_color` / `font_readonly_color`) is the engine's pale grey, as the game's.
 
 - **The docs no longer say `title_paint` turns `arcade_light`'s ribbon red.** It only paints a code-drawn plate
   (`arcade`, `arcade_dark`); `arcade_light`'s ribbon is a painted sprite. `theming.md` and `surfaces.md` now point at

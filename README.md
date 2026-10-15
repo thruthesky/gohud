@@ -833,8 +833,8 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 `GoIconButton`, `GoListButton`, `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
 `arcade_light` adds the rest of Magnet Mayhem’s painted variations: `GoSuccessButton`; `GoInfoButton` (the blue pill); `GoSliderGreen` and
-`GoSliderCyan` (a slider with a green or cyan fill); `GoWindowBlue` and `GoRibbonWide` (the stage-select window and
-its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (the level tile in its three states);
+`GoSliderCyan` (a slider with a green or cyan fill); `GoWindowBlue`, `GoRibbonWide` and `GoRibbonWideTitle` (the stage-select window,
+its wide ribbon and that ribbon's title); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (the level tile in its three states);
 `GoWell` (the map-preview well); `GoHudPanel` (the floating HUD panel); `GoBannerGold` and `GoNoticeGold` (a gold HUD
 banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). Its flat parts are there too:
 `GoPanelFlat` and `GoCardFlat` (a translucent panel and a white card, ink-rimmed); `GoChoiceButton` (a light choice

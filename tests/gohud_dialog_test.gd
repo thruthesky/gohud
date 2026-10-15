@@ -864,13 +864,34 @@ func _fit_surface(look: StringName) -> void:
 		check(absf(standings.custom_minimum_size.y - 40.0) < 0.01 and is_equal_approx(surface.card.scale.x, 1.0),
 			"%s scale fit: a short list refits the card (list %.1f scale %.3f)"
 			% [look, standings.custom_minimum_size.y, surface.card.scale.x])
+	# A title too long for the ribbon even at its smallest size widens the card instead of folding (the game's ribbon
+	# title never wraps), and a short one gives the width back.
+	if painted:
+		var long := "ENTRENAMIENTO COMPLETADO DEL TODO"
+		surface.set_title(long)
+		await frames(4)
+		var title := surface.title_label
+		var font := title.get_theme_font(&"font")
+		var at := title.get_theme_font_size(&"font_size")
+		var plate := title.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+		var room := title.size.x - maxf(0.0, plate.base.get_margin(SIDE_LEFT) - plate.bleed_left) \
+				- maxf(0.0, plate.base.get_margin(SIDE_RIGHT) - plate.bleed_right) - plate.glyph_room
+		var words := font.get_string_size(long, HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+		check(at == GoUi.skin().title_plate_min_size() and words <= room + 0.5 and surface.card.size.x > 400.0,
+			"%s scale fit: a long title stays on one line at %d and widens the card (words %.0f room %.0f card %.0f)"
+			% [look, at, words, room, surface.card.size.x])
+		surface.set_title("RESULT")
+		await frames(4)
+		check(is_equal_approx(surface.card.size.x, 400.0) and title.custom_minimum_size.x <= title.size.x,
+			"%s scale fit: a short title gives the width back (card %.0f)" % [look, surface.card.size.x])
 	# Back to SCROLL: the card loses its scale.
 	rows.custom_minimum_size.y = 2000.0
 	await frames(3)
 	surface.fit_mode = GoSurface.FitMode.SCROLL
 	await frames(3)
-	check(surface.card.scale == Vector2.ONE and is_equal_approx(surface.fit_scale, 1.0) and standings.custom_minimum_size.y == 0.0,
-		"%s scale fit: SCROLL takes the scale off again" % look)
+	check(surface.card.scale == Vector2.ONE and is_equal_approx(surface.fit_scale, 1.0) and standings.custom_minimum_size.y == 0.0
+			and surface.title_label.custom_minimum_size.x == 0.0,
+		"%s scale fit: SCROLL takes the scale (and the title's width) off again" % look)
 	view.queue_free()
 	await frames(1)
 	# The default stays SCROLL: no scale on a window that does not ask.
