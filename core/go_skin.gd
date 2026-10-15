@@ -1308,7 +1308,6 @@ func task_hint_ink() -> Color:
 	return GoUi.color(GoTheme.DANGER)
 
 
-
 ## 📈 The band behind a `GoPerfReadout`: dark and see-through so the readout reads over any scene. The default is
 ## black at 55 %, 4 dp round, 6 dp padding.
 func perf_box() -> StyleBox:
@@ -1329,10 +1328,12 @@ func perf_ink(level: int) -> Color:
 func perf_font() -> Font:
 	return null
 
+
 ## The font a look draws marks such as a `GoTaskCard` chip's ✓ in when its text font lacks them; widgets add it
 ## as a fallback under the theme's font. null (the default) keeps the theme's font alone.
 func symbol_font() -> Font:
 	return null
+
 
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
 ## smooth bar — the default; the arcade looks split a bar into chunky segments.
@@ -1402,7 +1403,8 @@ func nameplate_own_fill() -> Color:
 	return GoUi.color(GoTheme.WARNING)
 
 
-## 🏷️ A `GoNameplate`'s name colour — [param own] on the player's own plate. The default is white.
+## 🏷️ A `GoNameplate`'s name colour — [param own] on the player's own plate.
+## The default is black on the player's own plate, white on the others.
 func nameplate_ink(own: bool) -> Color:
 	return Color.BLACK if own else Color.WHITE
 
