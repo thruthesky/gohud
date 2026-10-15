@@ -13,6 +13,9 @@
 ##    instead, exactly as Magnet Mayhem's GlossButton. A face thinner than [constant MIN_EDGE] keeps the group centred
 ##    and the glyph that far from the edge.
 ## 🔑 Right to left, the whole layout is mirrored: the glyph stands at the label's right, where the reading starts.
+## 🔑 `fit_label` shrinks a long label (a translation) until it fits beside the glyph — as each of Magnet Mayhem's
+##    screens did by hand for its GlossButtons — on every resize, text, glyph and look change. Give the button its width
+##    (`custom_minimum_size` or a container's share): the room is measured from it.
 @tool
 class_name GoGlyphButton
 extends Button
@@ -45,8 +48,29 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		_update_shift()
 		queue_redraw()
 
+## 🔤 Shrink the label to fit: from [member fit_base_size] (0: the look's size for this variation) down to
+## `GoStyle.fit_floor()` at most, until it fits the button's width less its normal face's padding and the glyph's
+## room (`glyph_allowance()`). Off, the label keeps its size (what the button does today).
+@export var fit_label := false:
+	set(value):
+		if fit_label == value: return
+		fit_label = value
+		if not value: _drop_fit()
+		_queue_fit()
+
+## The size [member fit_label] shrinks from. 0 takes the look's `font_size` for this button's variation.
+@export_range(0, 128) var fit_base_size := 0:
+	set(value):
+		fit_base_size = value
+		_queue_fit()
+
 var _shift := 0.0
 var _shifting := false
+## The `font_size` override [member fit_label] put on (0: none of ours).
+var _fitted := 0
+var _fit_queued := false
+## The fit is peeking under its own override (the theme notices that brings are its own, not a change).
+var _peeking := false
 ## A resize or theme change came while the faces were being re-wrapped (that re-wrap may have caused it).
 var _missed := false
 
@@ -91,6 +115,8 @@ class ShiftedBox:
 func _init() -> void:
 	theme_type_variation = GoTheme.VAR_BUTTON
 	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's GlossButton
+	# A new text changes the minimum size — the one notice a `Button.text` change gives.
+	minimum_size_changed.connect(_queue_fit)
 
 
 static func make(label: String, icon: StringName = &"", variation: StringName = GoTheme.VAR_BUTTON,
@@ -155,6 +181,7 @@ func _exit_tree() -> void:
 func _on_ui_changed() -> void:
 	_update_shift()
 	GoStyle.skin_focus(self)
+	_queue_fit()
 	queue_redraw()
 
 
@@ -162,10 +189,66 @@ func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_RESIZED:
 			if not is_equal_approx(_shift, glyph_allowance() * 0.5): _update_shift()
+			_queue_fit()
 		NOTIFICATION_THEME_CHANGED, NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
+			if _peeking: return
 			if not _shifting: _update_shift()
+			_queue_fit()
+		NOTIFICATION_TRANSLATION_CHANGED:
+			_queue_fit()
 		NOTIFICATION_DRAW:
 			_draw_glyph()
+
+
+## With [member fit_label]: the label's size for the button as it is now — the room is its width less the normal face's
+## minimum width and `glyph_allowance()`, as Magnet Mayhem's screens measured it. Off: the size it is drawn at.
+func fitted_font_size() -> int:
+	if not fit_label: return get_theme_font_size(&"font_size")
+	var room := size.x - _face_width() - glyph_allowance()
+	return GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), room, get_theme_font(&"font"))
+
+
+## Fits the label now instead of on the next frame (a test, or a screen measuring itself right after a change).
+func fit_now() -> void:
+	_fit_queued = false
+	if not fit_label or not is_inside_tree() or size.x <= 0.0: return
+	var wanted := fitted_font_size()
+	if wanted == _fitted and has_theme_font_size_override(&"font_size"): return
+	_fitted = wanted
+	add_theme_font_size_override(&"font_size", wanted)
+
+
+func _queue_fit() -> void:
+	if not fit_label or _fit_queued or _peeking: return
+	_fit_queued = true
+	fit_now.call_deferred()
+
+
+## The size the fit starts from: [member fit_base_size], else the look's — read under the override the fit put on.
+func _fit_base() -> int:
+	if fit_base_size > 0: return fit_base_size
+	if _fitted == 0 or not has_theme_font_size_override(&"font_size"): return get_theme_font_size(&"font_size")
+	# 🔑 The override goes off and back on inside one bulk change: the one theme notice that closes it is ignored
+	#    (`_peeking`), and the minimum size is the same after, so nothing relayouts and no fit is queued again.
+	_peeking = true
+	begin_bulk_theme_override()
+	remove_theme_font_size_override(&"font_size")
+	var base := get_theme_font_size(&"font_size")
+	add_theme_font_size_override(&"font_size", _fitted)
+	end_bulk_theme_override()
+	_peeking = false
+	return base
+
+
+## The normal face's minimum width, the padding the label never takes.
+func _face_width() -> float:
+	var face := get_theme_stylebox(&"normal")
+	return face.get_minimum_size().x if face != null else 0.0
+
+
+func _drop_fit() -> void:
+	if _fitted != 0 and has_theme_font_size_override(&"font_size"): remove_theme_font_size_override(&"font_size")
+	_fitted = 0
 
 
 ## Re-wraps the theme's faces with the current shift (or drops the wrappers when there is no glyph).

@@ -31,6 +31,7 @@ func _initialize() -> void:
 		await _surface(look)
 		await _defaults(look)
 		await _glyph_overrides(look)
+		await _glyph_fit(look)
 	await _reparent()
 	for look: StringName in GoThemePresets.ids():
 		GoUi.use_preset(look)
@@ -344,6 +345,61 @@ func _glyph_button(look: StringName) -> void:
 	check((button.glyph_texture() != null) == (GoUi.icons().texture(GoIconSet.PLAY) != null),
 		"%s glyph: an icon-set name resolves" % look)
 	button.queue_free()
+	await frames(1)
+
+
+## `fit_label`: the label shrinks to the button's width less the normal face and the glyph's room — the sum each of
+## Magnet Mayhem's screens did by hand (`name_dialog._fit_buttons`) — and follows the text, the width and the look.
+func _glyph_fit(look: StringName) -> void:
+	var glyph := ImageTexture.create_from_image(Image.create(20, 20, false, Image.FORMAT_RGBA8))
+	var holder := Control.new()
+	holder.theme = GoUi.theme()   # as a screen is
+	root.add_child(holder)
+	var plain := GoGlyphButton.make("SAVE", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	plain.custom_minimum_size = Vector2(150, 46)
+	holder.add_child(plain)
+	var button := GoGlyphButton.make("SAVE", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	button.custom_minimum_size = Vector2(150, 46)
+	check(not button.fit_label and button.fit_base_size == 0, "%s glyph fit: off by default" % look)
+	holder.add_child(button)
+	await frames(2)
+	var base := plain.get_theme_font_size(&"font_size")
+	if look == GoThemePresets.ARCADE_LIGHT: check(base == 22, "glyph fit: arcade_light's pill reads at the game's 22 (%d)" % base)
+	button.text = "SPEICHERN UND WEITERMACHEN"
+	await frames(2)
+	check(not button.has_theme_font_size_override(&"font_size"), "%s glyph fit: off, a long label keeps its size" % look)
+	button.fit_label = true
+	await frames(2)
+	var font := button.get_theme_font(&"font")
+	var room := button.size.x - button.get_theme_stylebox(&"normal").get_minimum_size().x - button.glyph_allowance(46.0)
+	var want := GoStyle.fit_font_size(PackedStringArray([button.text]), base, room, font)
+	var got := button.get_theme_font_size(&"font_size")
+	check(got == want and got < base and got >= GoStyle.fit_floor(base),
+		"%s glyph fit: a long label shrinks as the game's sum says (%d, want %d, base %d)" % [look, got, want, base])
+	check(button.fitted_font_size() == got, "%s glyph fit: fitted_font_size() reads it" % look)
+	button.text = "OK"
+	await frames(2)
+	check(button.get_theme_font_size(&"font_size") == base, "%s glyph fit: a short text goes back to the look's size" % look)
+	button.text = "SPEICHERN UND WEITERMACHEN"
+	await frames(2)
+	var narrow := button.get_theme_font_size(&"font_size")
+	button.custom_minimum_size.x = 600.0
+	await frames(2)
+	check(button.get_theme_font_size(&"font_size") > narrow, "%s glyph fit: a wider button gives the label more room" % look)
+	button.custom_minimum_size.x = 150.0
+	await frames(2)
+	check(button.get_theme_font_size(&"font_size") == narrow, "%s glyph fit: and narrower again, the same size" % look)
+	await frames(3)
+	check(not button._fit_queued, "%s glyph fit: settled — no fit queued frame after frame" % look)
+	button.fit_base_size = 14
+	await frames(2)
+	check(button.get_theme_font_size(&"font_size") <= 14, "%s glyph fit: fit_base_size sets where it shrinks from" % look)
+	button.fit_base_size = 0
+	button.fit_label = false
+	await frames(1)
+	check(not button.has_theme_font_size_override(&"font_size") and button.get_theme_font_size(&"font_size") == base,
+		"%s glyph fit: off again, the look's size" % look)
+	holder.queue_free()
 	await frames(1)
 
 
