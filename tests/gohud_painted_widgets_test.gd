@@ -377,7 +377,8 @@ func _defaults(look: StringName) -> void:
 	var cap := (kbd.get_child(0) as PanelContainer).get_theme_stylebox(&"panel")
 	check(GoSkin.box_background(cap) == GoSkin.box_background(GoUi.skin().kbd_box()), "%s defaults: the cap is kbd_box" % look)
 	check(not surface.opaque and surface.title_glyph == null, "%s defaults: no glyph, not opaque" % look)
-	var marks := surface.title_label.get_children(true).filter(func(n): return n is TextureRect)
+	# The corner art (the look's magnet) is not a title glyph.
+	var marks := surface.title_label.get_children(true).filter(func(n): return n is TextureRect and n.name != &"CornerArt")
 	check(marks.is_empty(), "%s defaults: no glyph node on the title" % look)
 	var scrim := surface.get_node(^"Scrim") as ColorRect
 	check(scrim.color == GoUi.color(GoTheme.SCRIM) or scrim.color.a == 0.0, "%s defaults: the scrim is the look's veil" % look)
@@ -456,6 +457,9 @@ func _reparent() -> void:
 func _surface(look: StringName) -> void:
 	var painted := look == GoThemePresets.ARCADE_LIGHT
 	var surface := GoSurface.new()
+	# The close button, not the look's magnet: the checks below seat it beside the ribbon (the magnet's own checks are
+	# in gohud_dialog_test).
+	surface.corner = GoSurface.HeadCorner.CLOSE
 	surface.set_title("SETTINGS")
 	surface.body.add_child(GoStyle.label("Body", GoTheme.ROLE_BODY))
 	root.add_child(surface)
@@ -546,7 +550,7 @@ func _surface(look: StringName) -> void:
 			"%s surface: back to left to right the glyph is before the words again" % look)
 	surface.title_glyph = null
 	await frames(1)
-	check(surface.title_label.get_children(true).filter(func(n): return n is TextureRect and not n.is_queued_for_deletion()).is_empty(),
+	check(surface.title_label.get_children(true).filter(func(n): return n is TextureRect and n.name != &"CornerArt" and not n.is_queued_for_deletion()).is_empty(),
 		"%s surface: clearing the glyph removes it" % look)
 	var scrim := surface.get_node(^"Scrim") as ColorRect
 	var veil := scrim.color

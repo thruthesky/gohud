@@ -31,6 +31,10 @@ signal back_requested
 signal height_changed(ratio: float)
 
 enum Placement { CENTER, BOTTOM, ANCHOR }
+## What the head's corner holds: what the look says (`GoSkin.window_corner()` — the close button, or under arcade_light
+## the game's magnet), the close button, a picture (`corner_art`, or the look's), or nothing. Without a close button
+## Escape and Back still close the window.
+enum HeadCorner { LOOK, CLOSE, ART, NONE }
 
 ## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
@@ -112,6 +116,20 @@ var title_glyph: Texture2D:
 		title_glyph = value
 		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
 ## The glyph's side (dp). 0: in step with the title — 26/34 of its font size, as on the game's ribbon.
+var corner := HeadCorner.LOOK:
+	set(value):
+		corner = value
+		if is_inside_tree(): _dress_corner()
+## The picture an `ART` corner shows — null: the look's (`GoSkin.window_corner_art()`).
+var corner_art: Texture2D:
+	set(value):
+		corner_art = value
+		if is_inside_tree(): _dress_corner()
+## Which end of the head the corner art sits on — mirrored on the right, like the game's `RibbonHeader`.
+var corner_on_left := true:
+	set(value):
+		corner_on_left = value
+		if is_inside_tree(): _place_corner()
 var title_glyph_size := 0:
 	set(value):
 		title_glyph_size = value
@@ -196,6 +214,7 @@ var status_label: Label
 
 var _scrim: ColorRect
 var _title_glyph_rect: TextureRect
+var _corner_rect: TextureRect
 ## How far the title plate rises above the card now (0: it sits inside the card) — `GoSkin.title_plate_overhang`.
 var _overhang := Vector2.ZERO
 var _column: VBoxContainer
@@ -438,6 +457,7 @@ func _dress_chrome() -> void:
 	title_label.remove_theme_constant_override(&"outline_size")
 	skin.dress_title(title_label)
 	_dress_title_extras(plate)
+	_dress_corner()
 	_fit_title()
 	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
 		close_button.remove_theme_stylebox_override(state)
@@ -451,6 +471,7 @@ func _fit_title() -> void:
 	if title_label == null: return
 	_fit_title_size()
 	_place_title_glyph()
+	_place_corner()
 
 
 func _fit_title_size() -> void:
@@ -618,6 +639,7 @@ func _seat_head_buttons() -> void:
 	if lift > 0.0: title_label.position.y = 0.0
 	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
 	if plate == null: return
+	_place_corner.call_deferred()
 	var left := 0.0 if beside_left else plate.bleed
 	var right := 0.0 if beside_right else plate.bleed
 	if not is_equal_approx(plate.bleed_left, left) or not is_equal_approx(plate.bleed_right, right):
@@ -690,6 +712,66 @@ func _place_title_glyph() -> void:
 	var ink := title_label.get_theme_color(&"font_color") if title_label.is_inside_tree() \
 			else GoUi.skin().title_plate_ink()
 	_title_glyph_rect.self_modulate = ink if ink.a > 0.0 else Color.WHITE
+
+
+# ── The corner ─────────────────────────────────────────────────────────
+
+## What the corner holds now — `corner`, or for `LOOK` the look's choice on a centred window (a sheet or a popover
+## keeps its close button).
+func corner_now() -> HeadCorner:
+	if corner != HeadCorner.LOOK: return corner
+	if placement != Placement.CENTER: return HeadCorner.CLOSE
+	match GoUi.skin().window_corner():
+		&"art": return HeadCorner.ART if _corner_texture() != null else HeadCorner.CLOSE
+		&"none": return HeadCorner.NONE
+	return HeadCorner.CLOSE
+
+
+func _corner_texture() -> Texture2D:
+	return corner_art if corner_art != null else GoUi.skin().window_corner_art()
+
+
+## Shows the close button or the corner art. 🔑 Only a close button this surface hid is shown again — one the host
+## hid itself stays hidden.
+func _dress_corner() -> void:
+	if close_button == null: return
+	var now := corner_now()
+	if now == HeadCorner.CLOSE:
+		if close_button.has_meta(&"go_corner_hid"):
+			close_button.remove_meta(&"go_corner_hid")
+			close_button.visible = true
+	elif close_button.visible:
+		close_button.set_meta(&"go_corner_hid", true)
+		close_button.visible = false
+	var art := _corner_texture() if now == HeadCorner.ART and show_header else null
+	if art == null:
+		if is_instance_valid(_corner_rect): _corner_rect.visible = false
+		return
+	if not is_instance_valid(_corner_rect):
+		_corner_rect = TextureRect.new()
+		_corner_rect.name = "CornerArt"
+		_corner_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_corner_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		_corner_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		title_label.add_child(_corner_rect, false, Node.INTERNAL_MODE_BACK)
+	_corner_rect.texture = art
+	_corner_rect.visible = true
+	_place_corner()
+
+
+## Puts the corner art on the plate's corner as drawn (past its bleed), mirrored on the right.
+func _place_corner() -> void:
+	if not is_instance_valid(_corner_rect) or not _corner_rect.visible: return
+	var spot := GoUi.skin().window_corner_rect()
+	if spot.size == Vector2.ZERO and _corner_rect.texture != null: spot.size = _corner_rect.texture.get_size()
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	var left := plate.bleed_left if plate != null else 0.0
+	var right := plate.bleed_right if plate != null else 0.0
+	var x := -left + spot.position.x if corner_on_left \
+			else title_label.size.x + right - spot.position.x - spot.size.x
+	_corner_rect.flip_h = not corner_on_left
+	_corner_rect.position = Vector2(x, spot.position.y)
+	_corner_rect.size = spot.size
 
 
 # ── Title ──────────────────────────────────────────────────────────────

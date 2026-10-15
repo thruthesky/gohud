@@ -603,7 +603,8 @@ neutral keys, red danger keys, cards, ribbons, keycaps and badges. Its white gly
 icons when a name is absent. Text fields (`LineEdit`, `TextEdit`) wear the game’s flat field, and the horizontal
 slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites. Tabs and the vertical slider
 are the known exception: they keep the arcade’s code-drawn shapes. A centred `GoSurface` is the game’s
-`PaintedDialog`: the painted card, 400 dp wide, its rows 8 dp apart (`GoSkin.window_*`).
+`PaintedDialog`: the painted card, 400 dp wide, its rows 8 dp apart (`GoSkin.window_*`), the red magnet in the
+ribbon's corner instead of a close button (`GoSurface.corner`; Escape and Back still close it).
 `arcade_dark` keeps `GoStyleBoxArcade`; comic and kids use their own `StyleBox` classes.
 
 <table>

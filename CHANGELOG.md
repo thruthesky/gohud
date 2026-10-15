@@ -67,6 +67,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoSurface.corner` — the magnet in the corner instead of a close button.** `HeadCorner.LOOK` (the default) lets
+  the look decide (`GoSkin.window_corner()`), `CLOSE` shows the close button, `ART` a picture (`corner_art`, or the
+  look's `window_corner_art()`) placed by `window_corner_rect()` from the drawn plate's corner, and `NONE` nothing;
+  `corner_on_left` puts the art on either end, mirrored on the right. Without a close button Escape and Back still
+  ask to close. Under `arcade_light` a centred window carries the game's red magnet (58 × 56, 30 dp past the
+  ribbon's end and 24 above it) and no close button, as `RibbonHeader` does; sheets and popovers keep their close
+  button, and a close button the host hid stays hidden. `corner_now()` says what the corner holds.
+
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
     `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.

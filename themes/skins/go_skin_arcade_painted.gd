@@ -387,3 +387,23 @@ func window_gap() -> int:
 ## …and the game's 400 dp width.
 func window_width() -> float:
 	return WINDOW_WIDTH
+
+
+## The red magnet in the ribbon's corner (`RibbonHeader`: 58 × 56, 30 dp out past the ribbon's end and 24 above it)
+## stands where a close button would — the game's dialogs have none.
+const CORNER_ART := "res://addons/gohud/icons/arcade_light/magnet.png"
+const CORNER_RECT := Rect2(-30.0, -24.0, 58.0, 56.0)
+
+
+func window_corner() -> StringName:
+	return &"art"
+
+
+func window_corner_art() -> Texture2D:
+	if not _textures.has(CORNER_ART):
+		_textures[CORNER_ART] = load(CORNER_ART) if ResourceLoader.exists(CORNER_ART) else null
+	return _textures[CORNER_ART]
+
+
+func window_corner_rect() -> Rect2:
+	return CORNER_RECT

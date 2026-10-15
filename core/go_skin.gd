@@ -1340,6 +1340,23 @@ func window_gap() -> int:
 	return -1
 
 
+## What a centred window has in its head's corner: `&"close"` (the close button — the default), `&"art"` (a picture,
+## `window_corner_art()`, with no close button: Escape and Back still close it) or `&"none"`.
+func window_corner() -> StringName:
+	return &"close"
+
+
+## The picture in a window's corner when `window_corner()` is `&"art"`.
+func window_corner_art() -> Texture2D:
+	return null
+
+
+## Where the corner art sits and how big it is (dp), from the top-left corner of the title plate as drawn (past its
+## bleed); on the right it is mirrored. `Rect2()`: the art's own size, on the corner.
+func window_corner_rect() -> Rect2:
+	return Rect2()
+
+
 ## A centred window's width (dp). 0: `GoConfig.surface_max_width`. A surface's own `max_width` always wins, and a
 ## narrow screen still narrows it.
 func window_width() -> float:
