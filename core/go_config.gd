@@ -186,6 +186,22 @@ signal changed_settings
 ## Whether to keep clear of the device safe area (notch·rounded corners). It only takes real effect on mobile.
 @export var respect_safe_area := true
 
+## `PER_INCH`: phone and tablet browsers (the `web_android` / `web_ios` features) are sized as handhelds too, as
+## Magnet Mayhem's web build is. Off, only the Android and iOS apps are. A browser still has no safe area.
+@export var handheld_browsers := false
+
+## `PER_INCH`: the dpi used when the screen reports none (0 or less). 0 leaves such a screen unshrunk (factor 1);
+## Magnet Mayhem uses 160.
+@export_range(0.0, 1000.0) var fallback_dpi := 0.0
+
+## On a phone, how often (s) `GoRuntime` reads the safe area again — a 180° turn keeps the window size, so no resize
+## tells anyone the notch moved to the other side. 0 never polls.
+@export_range(0.0, 10.0, 0.05) var safe_area_poll_seconds := 0.5
+
+## 🔑 The most a landscape notch may push a `GoHudAnchor` in from the left or right (units); the top and bottom insets
+## stay whole. Negative: no cap (the whole inset). Magnet Mayhem's in-match HUD uses 12.
+@export_range(-1.0, 200.0) var hud_side_inset_max := -1.0
+
 
 # ── Surfaces (popups·sheets·dialogs) ───────────────────────────────────
 

@@ -246,12 +246,16 @@ own button handlers for a consistent feel.
 | `GoSafeArea.usable_rect(view: Viewport) -> Rect2` | Pass `get_viewport()`. Excludes notch/gesture bar on Android/iOS; full rect on desktop, when `respect_safe_area` is off, or for a `SubViewport` (its own rect — a window inside a preview or render-to-texture fits that viewport, not the main window). The OS reports the safe area in screen pixels; it comes into UI units through the window's final transform, so it holds under any stretch (the project's own `canvas_items` base, `GoScale`, letterboxing) |
 | `GoSafeArea.usable_rect_with_keyboard(window, keyboard_px)` | Also removes the virtual keyboard |
 | `GoSafeArea.clip_to_safe(area, safe_px, to_screen) -> Rect2` · `GoSafeArea.px_to_units(window, px) -> float` | The two conversions above as pure functions — feed a phone's figures to test a layout on the desktop |
-| `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch |
+| `GoSafeArea.margins(view) -> Vector4` · `GoSafeArea.hud_rect(view, side_max = -1) -> Rect2` | The safe margins (left, top, right, bottom, UI units); the usable rect with the left and right insets capped at the second argument (negative: `GoConfig.hud_side_inset_max`; that negative too, no cap) — what `GoHudAnchor` keeps to |
+| `GoSafeArea.inset_rect(area, insets_px, window_px) -> Rect2` | `area` less insets given in window pixels, each scaled by the window's units per pixel — the safe area a simulated device gives, Magnet Mayhem's `UiScale` numbers (`inset × canvas / pixels`) |
+| `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch; it moves on a resize and on `GoRuntime.safe_area_changed` |
 | `enum GoScale.Bp { MOBILE, TABLET, DESKTOP }` | Short side in dp: ≤ `mobile_max_dp` (576) mobile, ≤ `tablet_max_dp` (991) tablet |
 | `GoScale.breakpoint_for_dp(dp)` · `form_width_for(bp)` · `gain_for(bp, handheld, portrait)` · `display_scale(raw_scale, dpi, screen_px)` · `breakpoint_name(bp)` | Pure functions |
 | `enum GoScale.Profile { DP, PER_INCH }` · `GoScale.per_inch_factor(window_px, dpi, base, units_per_inch, min_height, handheld)` · `per_inch_canvas(window_px, base, factor)` · `web_dpi(reported)` · `cap_sides(margins, side_max)` | The per-inch profile as pure functions: the `content_scale_factor` that keeps a `canvas_items` base size about 160 units per physical inch on a handheld (never below the minimum height, never below 1), the canvas it gives, a phone browser's real dpi, and safe margins with the sides capped for an edge-hugging HUD |
-| `GoRuntime` (plugin autoload) | `breakpoint_changed(bp)` · `viewport_resized(size)` · `keyboard_changed(px)` · `current_bp()` · `is_mobile()` · `short_dp()` |
-| `GoUi.is_handheld_platform()` | Android or iOS (not "narrow window") |
+| `GoScale.is_handheld_screen()` · `handheld_from(has_feature, browsers)` · `screen_dpi()` · `dpi_from(reported, web, fallback)` | What `PER_INCH` and the safe area take as the device: a simulated one, else Android or iOS (with `GoConfig.handheld_browsers` also a phone or tablet browser), and the screen's dpi (a browser's rescaled by `web_dpi()`, `GoConfig.fallback_dpi` when it reports none) — the rules as pure functions over a stand-in `has_feature` and a reported dpi |
+| `GoRuntime` (plugin autoload) | `breakpoint_changed(bp)` · `viewport_resized(size)` · `keyboard_changed(px)` · `safe_area_changed(margins)` · `current_bp()` · `is_mobile()` · `short_dp()` · `safe_margins()` |
+| `GoRuntime.simulate(device)` · `clear_simulation()` · `simulation()` · `GoScale.simulate(device)` · `GoScale.simulated()` | 🧪 A device stood in for tests and screenshots (below) |
+| `GoUi.is_handheld_platform()` | Android or iOS (not "narrow window") — haptics, the virtual keyboard and the real safe area |
 
 `scale_enabled = true` makes 1 UI unit = 1 dp by setting `Window.content_scale_factor` — it changes the whole
 project's 2D coordinates, so only turn it on in a project designed for it. With `scale_profile = GoScale.Profile.PER_INCH`
@@ -263,6 +267,33 @@ var runtime := GoUi.runtime()
 # 🛑 `GoUi.runtime()` is typed `Node`, so `runtime.breakpoint_changed` does not parse — connect by name.
 if runtime:
 	runtime.connect(&"breakpoint_changed", func(bp: GoScale.Bp) -> void: rebuild_for(bp))
+	runtime.connect(&"safe_area_changed", func(margins: Vector4) -> void: hud.set_margins(margins))
+```
+
+**Magnet Mayhem's profile, set up once at boot** — the canvas about 160 units per inch on a phone and in a phone
+browser, never under 440 tall, an unknown dpi read as 160, the in-match HUD pushed in by a landscape notch 12 at most:
+
+```gdscript
+GoUi.config.scale_enabled = true
+GoUi.config.scale_profile = GoScale.Profile.PER_INCH
+GoUi.config.handheld_browsers = true      # web_android / web_ios: the phone profile too (no safe area there)
+GoUi.config.fallback_dpi = 160.0          # a screen that reports no dpi
+GoUi.config.hud_side_inset_max = 12.0     # GoHudAnchor: the side insets capped, top and bottom whole
+```
+
+🛑 **A 180° turn keeps the window size** — in landscape the notch moves to the other side with no resize. On a phone
+`GoRuntime` reads the safe area again every `GoConfig.safe_area_poll_seconds` (0.5 s; 0 never) and says
+`safe_area_changed(margins)`; `GoHudAnchor` and the `GoSafeArea` node follow it. A browser has no safe area: margins
+stay 0 there.
+
+🧪 **A device stood in** — `GoRuntime.simulate({dpi, insets, handheld, size})` (insets: the safe area's left, top,
+right and bottom in window pixels; `mobile` reads as `handheld`, so Magnet Mayhem's `DEVICE_PROFILES` pass as they
+are). The `PER_INCH` scale, the breakpoint and `GoSafeArea` read it; the window takes `size` (a headless run cannot
+resize — the scale is still worked out for it); a key left out reads the real device (no `insets`: none).
+
+```gdscript
+GoRuntime.simulate({"size": Vector2i(2532, 1170), "dpi": 460.0, "insets": Vector4(141, 0, 141, 63), "handheld": true})
+GoRuntime.clear_simulation()              # the real device and the window's own size again
 ```
 
 ## 6. Back button and modality

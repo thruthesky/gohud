@@ -575,5 +575,6 @@ static func reset() -> void:
 	_stacked = null
 	_stacked_main = null
 	_stacked_extra = []
+	GoScale.simulate({})
 	GoThemePresets.reset()
 	_watchers.clear()

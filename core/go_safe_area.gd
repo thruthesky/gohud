@@ -12,6 +12,7 @@
 ##
 ## 🛑 On desktop it hands the whole screen straight back — there is no such thing as a safe area there.
 ## 🛑 Turn `GoConfig.respect_safe_area` off and it is the whole screen everywhere.
+## 🧪 Under `GoRuntime.simulate()` it is the simulated device's insets instead (a handheld's only).
 class_name GoSafeArea
 extends Control
 
@@ -26,6 +27,9 @@ func _ready() -> void:
 	#    The left-right direction of the content is each child's own decision.
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 	get_viewport().size_changed.connect(_layout)
+	# A 180° turn or a simulated device moves the safe area with no resize.
+	var runtime := GoUi.runtime()
+	if runtime != null and runtime.has_signal(&"safe_area_changed"): runtime.connect(&"safe_area_changed", _on_safe_area)
 	_layout()
 
 
@@ -39,8 +43,48 @@ static func usable_rect(view: Viewport) -> Rect2:
 	var window := view as Window
 	if window == null: return area
 	if not GoUi.config.respect_safe_area: return area
+	var device := GoScale.simulated()
+	if not device.is_empty():
+		if not GoScale.is_handheld_screen(): return area
+		var px := Vector2(window.size)
+		if device.has("size"): px = Vector2(device["size"])
+		var insets: Vector4 = device.get("insets", Vector4.ZERO)
+		return inset_rect(area, insets, px)
 	if not GoUi.is_handheld_platform(): return area
 	return clip_to_safe(area, Rect2(DisplayServer.get_display_safe_area()), window.get_final_transform())
+
+
+## The safe margins of [param view] — left, top, right, bottom in UI units, what `usable_rect()` keeps off each edge.
+static func margins(view: Viewport) -> Vector4:
+	if view == null: return Vector4.ZERO
+	var area := view.get_visible_rect()
+	var safe := usable_rect(view)
+	return Vector4(safe.position.x - area.position.x, safe.position.y - area.position.y,
+		area.end.x - safe.end.x, area.end.y - safe.end.y)
+
+
+## `usable_rect()` with the left and right insets capped at [param side_max] units (negative:
+## `GoConfig.hud_side_inset_max`; that negative too, no cap) — the rect an edge-hugging HUD keeps to, which
+## `GoHudAnchor` uses. The top and bottom insets stay whole.
+static func hud_rect(view: Viewport, side_max := -1.0) -> Rect2:
+	var cap := side_max if side_max >= 0.0 else GoUi.config.hud_side_inset_max
+	var safe := usable_rect(view)
+	if cap < 0.0 or view == null: return safe
+	var area := view.get_visible_rect()
+	var edges := GoScale.cap_sides(margins(view), cap)
+	return Rect2(area.position + Vector2(edges.x, edges.y), area.size - Vector2(edges.x + edges.z, edges.y + edges.w))
+
+
+## `area` (UI units, the whole window) less [param insets_px] — left, top, right, bottom in pixels of a window
+## [param window_px] big, each scaled by the window's units per pixel. The safe area a simulated device gives; the
+## same numbers as Magnet Mayhem's `UiScale` (`inset × canvas / pixels`).
+static func inset_rect(area: Rect2, insets_px: Vector4, window_px: Vector2) -> Rect2:
+	if window_px.x <= 0.0 or window_px.y <= 0.0: return area
+	var k := area.size / window_px
+	var lead := Vector2(maxf(0.0, insets_px.x) * k.x, maxf(0.0, insets_px.y) * k.y)
+	var trail := Vector2(maxf(0.0, insets_px.z) * k.x, maxf(0.0, insets_px.w) * k.y)
+	var result := Rect2(area.position + lead, area.size - lead - trail)
+	return result if result.size.x > 1.0 and result.size.y > 1.0 else area
 
 
 ## `area` (UI units) cut down to the safe area `safe_px` (**screen pixels**). `to_screen` is the window's final
@@ -72,6 +116,10 @@ static func usable_rect_with_keyboard(window: Viewport, keyboard_px: int) -> Rec
 static func px_to_units(window: Viewport, px: float) -> float:
 	if window == null: return px
 	return px / maxf(1.0, absf(window.get_final_transform().get_scale().y))
+
+
+func _on_safe_area(_margins: Vector4) -> void:
+	_layout()
 
 
 func _layout() -> void:

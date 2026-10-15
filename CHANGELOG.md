@@ -9,6 +9,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **The docs no longer say `title_paint` turns `arcade_light`'s ribbon red.** It only paints a code-drawn plate
   (`arcade`, `arcade_dark`); `arcade_light`'s ribbon is a painted sprite. `theming.md` and `surfaces.md` now point at
   `title_variation`.
+- **A 180° turn moves the safe area.** In landscape a phone turned round keeps its window size, so no resize arrived
+  and `GoHudAnchor` and the `GoSafeArea` node stayed clear of a notch that was now on the other side. `GoRuntime` now
+  reads the safe area again every `GoConfig.safe_area_poll_seconds` (0.5 s, on a phone only; 0 never) and says
+  `safe_area_changed`. A run with no window also stops re-applying the scale every frame (the fallback size it
+  compared with was never the one it had stored).
+
 - **Widgets keep following the look after a reparent.** 43 widgets (`GoAppBar`, `GoBar`, `GoSurface`, `GoSlider`,
   `GoSwitch`, `GoIconButton`, `GoJoystick`, …) called `GoUi.watch` only in `_ready` but `GoUi.unwatch` in
   `_exit_tree`, so a widget taken out and put back (`remove_child` + `add_child`, no second `_ready`) never followed
@@ -332,6 +338,18 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `_input` event carries. Hiding a driven widget keeps its state (the owner still sees the lift). What is drawn — the
   art, the labels, the press look, the cooldown ring, the pulse, the aim ring — is the same code as before; `driven`
   is off by default.
+- **`GoRuntime.simulate(device)` — a device stood in for tests and screenshots.** `{dpi, insets, handheld, size}`
+  (Magnet Mayhem's `DebugHooks.DEVICE_PROFILES` entries pass as they are: `mobile` reads as `handheld`): the
+  `PER_INCH` scale, the breakpoint and `GoSafeArea` read it, the window takes its `size` (not headless), and
+  `clear_simulation()` puts the real device back. `GoScale.simulate()` / `simulated()` hold it; `GoUi.reset()` clears it.
+- **The safe area as margins, and a signal when it moves.** `GoRuntime.safe_area_changed(margins: Vector4)` and
+  `safe_margins()`; `GoSafeArea.margins(view)`, `hud_rect(view, side_max)` and `inset_rect(area, insets_px,
+  window_px)`. `GoHudAnchor` and the `GoSafeArea` node relayout on the signal.
+- **`GoConfig.handheld_browsers`, `fallback_dpi` and `hud_side_inset_max`** (all off by default). Phone and tablet
+  browsers (`web_android`, `web_ios`) take the `PER_INCH` handheld profile (`GoScale.is_handheld_screen()`,
+  `handheld_from()`); a screen that reports no dpi uses `fallback_dpi` (`GoScale.screen_dpi()`, `dpi_from()`); and a
+  `GoHudAnchor`'s left and right safe insets are capped (Magnet Mayhem: 160 and 12). The numbers are checked against
+  Magnet Mayhem's `UiScale` on all 19 of its device profiles: the factor, the canvas, the safe and the HUD margins.
 
 - **`GoRibbonHeader` — a screen's title ribbon.** The game's `RibbonHeader` for a screen built on a card (pause,
   settings): put first in the card's column, it hangs the look's title plate over the card's top edge with a glyph and

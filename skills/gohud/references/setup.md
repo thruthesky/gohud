@@ -79,6 +79,9 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | | `read_gain_mobile` (1.10) · `read_gain_tablet` (1.05) · `read_gain_desktop` (1.0) · `desktop_ui_gain` (1.0) | Scale gains when `scale_enabled` |
 | | `form_max_width_mobile` (0) · `_tablet` (440) · `_desktop` (480) | `GoForm` content width cap; 0 = none |
 | | `respect_safe_area` (true) | Avoid notches on Android/iOS |
+| | `handheld_browsers` (false) · `fallback_dpi` (0) | `PER_INCH`: phone and tablet browsers (`web_android`/`web_ios`) sized as handhelds; the dpi for a screen that reports none (0: unshrunk). Magnet Mayhem: on, 160 |
+| | `safe_area_poll_seconds` (0.5) | How often a phone re-reads the safe area — a 180° turn keeps the size, so no resize says the notch moved (`GoRuntime.safe_area_changed`); 0 never |
+| | `hud_side_inset_max` (-1) | The most a landscape notch pushes a `GoHudAnchor` in from the side (units); negative: the whole inset. Magnet Mayhem: 12 |
 | Surface | `surface_max_width` (480) · `surface_max_height` (700) | Card caps in dp |
 | | `surface_height_ratio` (0.68) · `surface_max_height_ratio` (0.72) | Share of usable height; the cap keeps windows reading as floating |
 | | `surface_fit_max_height_ratio` (0.94) | How tall a centred `fit_content` card may grow for long content |

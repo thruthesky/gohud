@@ -38,6 +38,53 @@ const HANDHELD_MAX_INCHES := 13.0
 const HANDHELD_BASE_DPI := 160.0
 const DESKTOP_BASE_DPI := 96.0
 
+## The device `GoRuntime.simulate()` stands in (empty: the real one).
+static var _device: Dictionary = {}
+
+
+# ── The device — real, or simulated for tests and screenshots ──
+
+## 🧪 Stands [param device] in for the real one: `dpi` (float), `insets` (Vector4 — the safe area's left, top, right
+## and bottom insets in window pixels), `handheld` (bool; the game's `mobile` is read too) and `size` (Vector2i, the
+## window in pixels). A key left out reads the real device (no `insets`: none). Empty: the real device again.
+## 🛑 This only stores it — `GoRuntime.simulate()` also resizes the window and re-applies the scale.
+static func simulate(device: Dictionary) -> void:
+	_device = device.duplicate()
+
+
+## The simulated device (empty when it is the real one).
+static func simulated() -> Dictionary:
+	return _device
+
+
+## Whether the screen is sized as a handheld's (`PER_INCH`) and keeps a safe area: a simulated device's `handheld`,
+## else the Android or iOS app — and with `GoConfig.handheld_browsers` a phone or tablet browser.
+static func is_handheld_screen() -> bool:
+	if _device.has("handheld"): return bool(_device["handheld"])
+	if _device.has("mobile"): return bool(_device["mobile"])
+	return handheld_from(Callable(OS, &"has_feature"), GoUi.config.handheld_browsers)
+
+
+## The rule of `is_handheld_screen()` over [param has_feature] (`(String) -> bool`, `OS.has_feature` or a stand-in):
+## Android or iOS, and with [param browsers] `web_android` or `web_ios`.
+static func handheld_from(has_feature: Callable, browsers := false) -> bool:
+	if bool(has_feature.call("android")) or bool(has_feature.call("ios")): return true
+	return browsers and (bool(has_feature.call("web_android")) or bool(has_feature.call("web_ios")))
+
+
+## The screen's physical dpi for `PER_INCH`: a simulated device's `dpi`, else the screen's (a browser's rescaled by
+## `web_dpi()`), and `GoConfig.fallback_dpi` when the screen reports none.
+static func screen_dpi() -> float:
+	if _device.has("dpi"): return float(_device["dpi"])
+	return dpi_from(float(DisplayServer.screen_get_dpi()), OS.has_feature("web"), GoUi.config.fallback_dpi)
+
+
+## The rule of `screen_dpi()` over a [param reported] dpi: [param fallback] when it is 0 or less, else on the
+## [param web] rescaled by `web_dpi()`.
+static func dpi_from(reported: float, web: bool, fallback := 0.0) -> float:
+	if reported <= 0.0: return fallback
+	return web_dpi(reported) if web else reported
+
 
 ## Short side in dp → breakpoint.
 static func breakpoint_for_dp(dp: float) -> Bp:

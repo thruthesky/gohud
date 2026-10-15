@@ -46,7 +46,9 @@ func _initialize() -> void:
 	await _touch_follows_look()
 	await _look_follows()
 	_per_inch_scale()
+	_device_rules()
 	await _profile_applies()
+	await _device_simulation()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -1267,4 +1269,168 @@ func _profile_applies() -> void:
 	GoUi.config.scale_enabled = was_enabled
 	GoUi.config.scale_profile = GoScale.Profile.DP
 	runtime.queue_free()
+	await frames(1)
+
+
+# ── The device: phone browsers, a missing dpi, a simulated device (GoRuntime.simulate) ─────
+
+## Magnet Mayhem's `DebugHooks.DEVICE_PROFILES`: window pixels, dpi, safe-area insets in window px (L, T, R, B), mobile.
+const DEVICES := {
+	"phone": {"size": Vector2i(2532, 1170), "dpi": 460.0, "insets": Vector4(141.0, 0.0, 141.0, 63.0), "mobile": true},
+	"phone16x9": {"size": Vector2i(1334, 750), "dpi": 326.0, "insets": Vector4.ZERO, "mobile": true},
+	"ipad": {"size": Vector2i(2388, 1668), "dpi": 264.0, "insets": Vector4(0.0, 0.0, 0.0, 40.0), "mobile": true},
+	"deck": {"size": Vector2i(1280, 800), "dpi": 205.0, "insets": Vector4.ZERO, "mobile": false},
+	"desktop": {"size": Vector2i(1280, 720), "dpi": 96.0, "insets": Vector4.ZERO, "mobile": false},
+	"desktop4k": {"size": Vector2i(3840, 2160), "dpi": 163.0, "insets": Vector4.ZERO, "mobile": false},
+	"store_phone": {"size": Vector2i(1920, 1080), "dpi": 400.0, "insets": Vector4.ZERO, "mobile": true},
+	"phone_mini": {"size": Vector2i(2340, 1080), "dpi": 476.0, "insets": Vector4(150.0, 0.0, 150.0, 63.0), "mobile": true},
+	"phone_pro": {"size": Vector2i(2622, 1206), "dpi": 460.0, "insets": Vector4(186.0, 60.0, 186.0, 60.0), "mobile": true},
+	"phone_air": {"size": Vector2i(2736, 1260), "dpi": 460.0, "insets": Vector4(204.0, 60.0, 204.0, 87.0), "mobile": true},
+	"ipad_mini": {"size": Vector2i(2266, 1488), "dpi": 326.0, "insets": Vector4(0.0, 48.0, 0.0, 40.0), "mobile": true},
+	"android_720p": {"size": Vector2i(1600, 720), "dpi": 262.0, "insets": Vector4(48.0, 0.0, 0.0, 0.0), "mobile": true},
+	"android_punch": {"size": Vector2i(2424, 1080), "dpi": 420.0, "insets": Vector4(118.0, 0.0, 0.0, 0.0), "mobile": true},
+	"android_3button": {"size": Vector2i(2340, 1080), "dpi": 480.0, "insets": Vector4(105.0, 0.0, 144.0, 0.0), "mobile": true},
+	"android_21x9": {"size": Vector2i(2520, 1080), "dpi": 449.0, "insets": Vector4.ZERO, "mobile": true},
+	"fold_inner": {"size": Vector2i(2160, 1856), "dpi": 374.0, "insets": Vector4.ZERO, "mobile": true},
+	"fold_flex": {"size": Vector2i(2160, 928), "dpi": 374.0, "insets": Vector4.ZERO, "mobile": true},
+	"fold_cover": {"size": Vector2i(2376, 968), "dpi": 410.0, "insets": Vector4(100.0, 0.0, 0.0, 0.0), "mobile": true},
+	"android_tablet": {"size": Vector2i(2560, 1600), "dpi": 274.0, "insets": Vector4.ZERO, "mobile": true},
+}
+const GAME_BASE := Vector2(1280, 720)
+
+
+## Magnet Mayhem's `UiScale.scale_factor` (Cfg.Ui: 160 units per inch, never under 440 tall), line for line.
+func _game_factor(px: Vector2, dpi: float, mobile: bool) -> float:
+	if not mobile: return 1.0
+	var h1 := GAME_BASE.y * maxf(1.0, (GAME_BASE.x / GAME_BASE.y) / (px.x / px.y))
+	return h1 / clampf(px.y / dpi * 160.0, 440.0, h1)
+
+
+## Magnet Mayhem's `UiScale` canvas and `safe_margins` (insets × canvas height / pixel height).
+func _game_canvas(px: Vector2, f: float) -> Vector2:
+	return px / (minf(px.x / GAME_BASE.x, px.y / GAME_BASE.y) * f)
+
+
+func _device_rules() -> void:
+	var features := func(names: Array) -> Callable: return func(name: String) -> bool: return names.has(name)
+	check(GoScale.handheld_from(features.call(["android"])) and GoScale.handheld_from(features.call(["ios"])),
+		"device: the Android and iOS apps are handheld")
+	check(not GoScale.handheld_from(features.call(["web", "web_android"])), "device: a phone browser is not, by default")
+	check(GoScale.handheld_from(features.call(["web", "web_android"]), true)
+		and GoScale.handheld_from(features.call(["web", "web_ios"]), true), "device: with handheld_browsers it is")
+	check(not GoScale.handheld_from(features.call(["web", "web_macos"]), true), "device: a desktop browser never is")
+	check(not GoUi.config.handheld_browsers and GoUi.config.fallback_dpi == 0.0, "device: both off by default")
+	check(GoScale.dpi_from(0.0, false) == 0.0, "device: no dpi and no fallback stays 0 (factor 1, as before)")
+	check(GoScale.dpi_from(-1.0, true, 160.0) == 160.0 and GoScale.dpi_from(0.0, false, 160.0) == 160.0,
+		"device: no dpi takes fallback_dpi, not rescaled (UiScale's FALLBACK_DPI)")
+	check(GoScale.dpi_from(192.0, true, 160.0) == 320.0 and GoScale.dpi_from(326.0, false, 160.0) == 326.0,
+		"device: a browser's dpi is rescaled, an app's kept")
+	check(GoUi.config.safe_area_poll_seconds == 0.5 and GoUi.config.hud_side_inset_max < 0.0,
+		"device: the safe area is polled every 0.5 s; no side cap by default")
+	for name: String in DEVICES:
+		var device: Dictionary = DEVICES[name]
+		var px := Vector2(device["size"])
+		var mobile: bool = device["mobile"]
+		var f := _game_factor(px, device["dpi"], mobile)
+		var ours := GoScale.per_inch_factor(px, device["dpi"], GAME_BASE, 160.0, 440.0, mobile)
+		check(is_equal_approx(ours, f), "device %s: the per-inch factor is the game's (%f vs %f)" % [name, ours, f])
+		var canvas := _game_canvas(px, f)
+		check(GoScale.per_inch_canvas(px, GAME_BASE, ours).is_equal_approx(canvas), "device %s: the canvas is the game's" % name)
+		var insets: Vector4 = device["insets"] if mobile else Vector4.ZERO
+		var k := canvas.y / px.y
+		var game_margins := insets * k
+		var safe := GoSafeArea.inset_rect(Rect2(Vector2.ZERO, canvas), insets, px)
+		var margins := Vector4(safe.position.x, safe.position.y, canvas.x - safe.end.x, canvas.y - safe.end.y)
+		check(margins.is_equal_approx(game_margins), "device %s: the safe margins are the game's (%s vs %s)" % [name, margins, game_margins])
+		var hud := GoScale.cap_sides(margins, 12.0)
+		check(hud.is_equal_approx(Vector4(minf(game_margins.x, 12.0), game_margins.y, minf(game_margins.z, 12.0), game_margins.w)),
+			"device %s: the HUD margins are the game's" % name)
+	check(is_equal_approx(_game_factor(Vector2(2532, 1170), 460.0, true), 720.0 / 440.0), "device: the phone clamps to 440 tall")
+	check(is_equal_approx(_game_factor(Vector2(2388, 1668), 264.0, true), 1.0), "device: the 11\" iPad is factor 1")
+
+
+## `GoRuntime.simulate()` with every game device: the PER_INCH scale, the safe area, a 180° turn, the HUD side cap.
+func _device_simulation() -> void:
+	var runtime := Node.new()
+	runtime.set_script(load("res://addons/gohud/core/go_runtime.gd"))
+	runtime.name = "GoRuntime"
+	root.add_child(runtime)
+	await frames(1)
+	var kept_size := root.content_scale_size
+	var kept_factor := root.content_scale_factor
+	var kept_aspect := root.content_scale_aspect
+	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+	GoUi.config.scale_enabled = true
+	GoUi.config.scale_profile = GoScale.Profile.PER_INCH
+	var heard: Array[Vector4] = []
+	runtime.connect(&"safe_area_changed", func(margins: Vector4) -> void: heard.append(margins))
+	var corner := GoHudAnchor.new()
+	corner.edge_margin = 0
+	var piece := Control.new()
+	piece.custom_minimum_size = Vector2(40, 20)
+	corner.add_child(piece)
+	root.add_child(corner)
+	await frames(2)
+	var base := Vector2(ProjectSettings.get_setting("display/window/size/viewport_width", 1152),
+		ProjectSettings.get_setting("display/window/size/viewport_height", 648))
+	for name: String in DEVICES:
+		var device: Dictionary = DEVICES[name]
+		runtime.call(&"simulate", device)
+		var px := Vector2(device["size"])
+		var mobile: bool = device["mobile"]
+		var f := GoScale.per_inch_factor(px, device["dpi"], base, 160.0, 440.0, mobile)
+		check(is_equal_approx(root.content_scale_factor, f), "simulate %s: the window takes the per-inch factor (%f vs %f)" % [name, root.content_scale_factor, f])
+		if base == GAME_BASE:
+			check(is_equal_approx(root.content_scale_factor, _game_factor(px, device["dpi"], mobile)), "simulate %s: the game's factor" % name)
+		var view := root.get_visible_rect()
+		var want := GoSafeArea.inset_rect(view, device["insets"], px) if mobile else view
+		check(GoSafeArea.usable_rect(root).is_equal_approx(want), "simulate %s: usable_rect is the simulated safe area" % name)
+		var margins := GoSafeArea.margins(root)
+		check((runtime.call(&"safe_margins") as Vector4).is_equal_approx(margins), "simulate %s: safe_margins() follows" % name)
+		check(GoScale.is_handheld_screen() == mobile, "simulate %s: handheld as simulated" % name)
+	check(not (runtime.call(&"simulation") as Dictionary).is_empty(), "simulate: simulation() reads it back")
+	# A 180° turn: the notch moves to the other side and the window size does not change.
+	var punch: Dictionary = (DEVICES["android_punch"] as Dictionary).duplicate()
+	runtime.call(&"simulate", punch)
+	await frames(1)
+	var left := GoSafeArea.margins(root)
+	check(left.x > 12.0 and left.z == 0.0, "simulate turn: the notch on the left (%s)" % left)
+	check(corner.position.is_equal_approx(GoSafeArea.usable_rect(root).position), "simulate turn: the HUD keeps clear of it")
+	heard.clear()
+	punch["insets"] = Vector4(0.0, 0.0, 118.0, 0.0)
+	runtime.call(&"simulate", punch)
+	check(heard.size() == 1 and is_equal_approx(heard[0].z, left.x) and heard[0].x == 0.0,
+		"simulate turn: safe_area_changed says the notch moved right (%s)" % [heard])
+	check(corner.position.x == root.get_visible_rect().position.x, "simulate turn: the HUD moved back to the edge with no resize")
+	runtime.call(&"simulate", punch)
+	check(heard.size() == 1, "simulate turn: the same safe area says nothing")
+	# The HUD's side cap (Magnet Mayhem's HUD_SIDE_INSET_MAX).
+	runtime.call(&"simulate", DEVICES["phone"])
+	await frames(1)
+	var whole := GoSafeArea.margins(root)
+	check(GoSafeArea.hud_rect(root).is_equal_approx(GoSafeArea.usable_rect(root)), "hud cap: none by default")
+	GoUi.config.hud_side_inset_max = 12.0
+	GoUi.refresh()
+	await frames(1)
+	var hud := GoSafeArea.hud_rect(root)
+	var view := root.get_visible_rect()
+	check(is_equal_approx(hud.position.x - view.position.x, 12.0) and is_equal_approx(view.end.x - hud.end.x, 12.0)
+		and is_equal_approx(hud.position.y - view.position.y, whole.y) and is_equal_approx(view.end.y - hud.end.y, whole.w),
+		"hud cap: the sides capped at 12, top and bottom whole (%s of %s)" % [hud, whole])
+	check(corner.position.is_equal_approx(hud.position), "hud cap: GoHudAnchor keeps to it (%s)" % corner.position)
+	check(GoSafeArea.hud_rect(root, 0.0).position.x == view.position.x, "hud cap: a cap given as an argument wins")
+	GoUi.config.hud_side_inset_max = -1.0
+	# Back to the real device: a headless run is a desktop, factor 1 and no safe area.
+	runtime.call(&"clear_simulation")
+	check((runtime.call(&"simulation") as Dictionary).is_empty() and GoScale.simulated().is_empty(), "simulate: cleared")
+	check(root.content_scale_factor == 1.0 and GoSafeArea.margins(root) == Vector4.ZERO, "simulate: the real desktop again")
+	GoScale.simulate({"handheld": true, "insets": Vector4(10, 0, 0, 0), "size": Vector2i(100, 100)})
+	GoUi.reset()
+	check(GoScale.simulated().is_empty(), "simulate: GoUi.reset() clears it")
+	GoUi.config.reduce_motion = true
+	corner.queue_free()
+	runtime.queue_free()
+	root.content_scale_size = kept_size
+	root.content_scale_factor = kept_factor
+	root.content_scale_aspect = kept_aspect
 	await frames(1)

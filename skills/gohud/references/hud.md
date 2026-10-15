@@ -57,7 +57,7 @@ its own rect — give it **one** child (a container or a panel).
 | `edge_margin` | `-1` | dp from the safe-area edge; -1 → `screen_margin` token |
 | `reserve_space` | `true` | `GoForm.avoid_hud` keeps content clear of it. Turn **off** for pieces that only appear sometimes (joystick, toasts, prompts) |
 | `avoid_peers` | `false` | Steps vertically out of the way of fixed anchors (`reserve_space` true). For transient toasts at `TOP_CENTER` |
-| `use_safe_area` | `true` | Off only for full-bleed backgrounds |
+| `use_safe_area` | `true` | Off only for full-bleed backgrounds. Keeps to `GoSafeArea.hud_rect()`: with `GoConfig.hud_side_inset_max` set (Magnet Mayhem: 12) a landscape notch pushes it in from the left or right by that much at most; the top and bottom insets stay whole. It relayouts on `GoRuntime.safe_area_changed` (a 180° turn, a simulated device) as well as on a resize |
 | `keyboard_focus` | `true` | **Off** for a corner of buttons over gameplay: nothing under the anchor takes focus (`focus_behavior_recursive`), later children included, so Space / Enter reach the game. 🛑 Text inputs are blocked too — keep a chat line in its own anchor |
 | `active_spot()` | | The spot in effect now |
 
