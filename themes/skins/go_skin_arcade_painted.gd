@@ -411,6 +411,16 @@ func task_hint_ink() -> Color:
 	return Color("#e8332f")
 
 
+
+## The game's fps colours: GREEN, GOLD and RED.
+func perf_ink(level: int) -> Color:
+	return [GREEN, GOLD, Color("#ff4d4d")][clampi(level, 0, 2)]
+
+
+## The game draws its readout in the engine's own font (it sits on a layer with no theme).
+func perf_font() -> Font:
+	return ThemeDB.fallback_font
+
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 	for index in range(1, count):

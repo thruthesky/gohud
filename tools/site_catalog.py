@@ -2028,6 +2028,26 @@ card.set_parts(["W", "A", "S", "D"], [true])""", T(
 		"Картка уроку навчання: крок, заголовок, що робити, позначувані частини й підказка; згортається в один рядок.",
 		"การ์ดบทเรียนของบทแนะนำ: ขั้น ชื่อ สิ่งที่ต้องทำ ชิปที่ถูกติ๊กเมื่อเสร็จ และคำใบ้ พับเป็นแถวเดียวได้",
 		"بطاقة درس في الشرح التعليمي: الخطوة والعنوان وما يجب فعله وشارات أجزاء تُعلَّم وتلميح؛ تُطوى في صف واحد.")),
+	("hud", "GoPerfReadout", "PanelContainer", """var perf := GoPerfReadout.new()
+perf.tier_text = "LOW (auto)"
+overlay_layer.add_child(perf)""", T(
+		"An always-on performance band: fps, frame time, triangles, draw calls, nodes and memory; turns red as fps drops.",
+		"항상 켜 두는 성능 띠 — fps, 프레임 시간, 삼각형, 드로 콜, 노드, 메모리. fps가 떨어지면 빨개진다.",
+		"常時表示のパフォーマンス帯。fps、フレーム時間、三角形、ドローコール、ノード、メモリ。fpsが落ちると赤くなる。",
+		"常驻性能条：fps、帧时间、三角形、绘制调用、节点和内存；fps 下降时变红。",
+		"常駐效能條：fps、影格時間、三角形、繪製呼叫、節點與記憶體；fps 下降時變紅。",
+		"Una banda de rendimiento siempre visible: fps, tiempo de fotograma, triángulos, llamadas de dibujo, nodos y memoria; se pone roja al bajar los fps.",
+		"Uma faixa de desempenho sempre visível: fps, tempo de quadro, triângulos, chamadas de desenho, nós e memória; fica vermelha quando o fps cai.",
+		"Постоянная полоса производительности: fps, время кадра, треугольники, вызовы отрисовки, узлы и память; краснеет при падении fps.",
+		"Un bandeau de performance toujours affiché : fps, temps d'image, triangles, appels de dessin, nœuds et mémoire ; rougit quand les fps chutent.",
+		"Her zaman açık bir performans şeridi: fps, kare süresi, üçgenler, çizim çağrıları, düğümler ve bellek; fps düşünce kızarır.",
+		"Stale widoczny pasek wydajności: fps, czas klatki, trójkąty, wywołania rysowania, węzły i pamięć; czerwienieje, gdy fps spada.",
+		"Una banda delle prestazioni sempre visibile: fps, tempo di frame, triangoli, chiamate di disegno, nodi e memoria; diventa rossa quando gli fps calano.",
+		"Dải hiệu năng luôn hiển thị: fps, thời gian khung hình, tam giác, lệnh vẽ, nút và bộ nhớ; chuyển đỏ khi fps giảm.",
+		"Pita performa yang selalu tampil: fps, waktu frame, segitiga, panggilan gambar, node, dan memori; memerah saat fps turun.",
+		"Постійна смуга продуктивності: fps, час кадру, трикутники, виклики малювання, вузли й пам'ять; червоніє, коли fps падає.",
+		"แถบประสิทธิภาพที่แสดงตลอด: fps เวลาเฟรม สามเหลี่ยม draw call โหนด และหน่วยความจำ เปลี่ยนเป็นสีแดงเมื่อ fps ตก",
+		"شريط أداء ظاهر دائمًا: الإطارات في الثانية وزمن الإطار والمثلثات واستدعاءات الرسم والعُقد والذاكرة؛ يحمرّ عند هبوط الإطارات.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

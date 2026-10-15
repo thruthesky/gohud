@@ -38,6 +38,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 29. [GoTouchButton — a round thumb button (and the painted stick)](#29-gotouchbutton--a-round-thumb-button-and-the-painted-stick)
 30. [GoSpotlight — dim round one thing and ring it](#30-gospotlight--dim-round-one-thing-and-ring-it)
 31. [GoTaskCard — a lesson's card](#31-gotaskcard--a-lessons-card)
+32. [GoPerfReadout — a performance band](#32-goperfreadout--a-performance-band)
 
 ## 1. GoHudAnchor
 
@@ -955,3 +956,30 @@ card.hint = tr("HINT_RING_OUT")         # "" hides it
 - 🛑 Display only: what is done comes from the caller.
 - The board is the theme's `GoHudPanel`; chips are `GoSkin.kbd_box()` / `kbd_done_box()`. Skin hooks:
   `task_title_ink()` (the title and the compact row) and `task_hint_ink()` (the hint). Pair it with `GoSpotlight`.
+
+## 32. GoPerfReadout — a performance band
+
+`class_name GoPerfReadout extends PanelContainer` · a small always-on band of numbers for tuning a game on a weak
+phone: frames per second, the frame time and the worst frame, triangles, draw calls, nodes, RAM and VRAM. Under
+`arcade_light` it draws Magnet Mayhem's perf overlay pixel for pixel.
+
+```gdscript
+var perf := GoPerfReadout.new()
+overlay_layer.add_child(perf)                           # a CanvasLayer above every screen
+perf.position = Vector2(14, 146) + safe_area.position    # a corner clear of the HUD
+perf.tier_text = "LOW (auto)"                           # "  Q LOW (auto)" ends the last line
+perf.one_line = true                                    # one slim line where room is short
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `sampling` · `interval` | `true` · `0.25` | Reads the engine each frame (two adds, no allocation) and writes every `interval` s, only when the text changed. Off: shows what `show_stats()` gets |
+| `show_stats(stats)` · `stats()` · `advance(delta)` · `restart()` | | Keys `fps` `ms` `worst_ms` `triangles` `draws` `nodes` `ram` `vram` (bytes) · the last reading · count a frame by hand · forget the frames so far |
+| `good_fps` · `warn_fps` · `fps_level(fps)` | `55` · `30` | 0 good, 1 warning, 2 bad — the ink is `GoSkin.perf_ink(level)` |
+| `one_line` · `compact_pad_y` | `false` · `2` | The lines joined into one slim band |
+| `tier_text` · `font_size` · `outline_size` | `""` · `14` · `2` | |
+| `format_count(n)` · `format_megabytes(bytes)` | static | 84321 → "84.3k", 1234567 → "1.23M" · "512 MB" |
+| `write_count` | | Label writes so far: an unchanged reading never adds one |
+
+- Skin hooks: `perf_box()` (the band), `perf_ink(level)` and `perf_font()` (null keeps the theme's).
+- Triangles and draw calls come from the RenderingServer, shadow passes included; a headless run reads 0 there.

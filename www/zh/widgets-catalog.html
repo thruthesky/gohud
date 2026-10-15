@@ -799,7 +799,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 与游戏组件 <small>(22)</small></h2>
+  <h2>HUD 与游戏组件 <small>(23)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -938,6 +938,14 @@ card.<wbr>caption = "TRAINING · STEP 1/12"
 card.<wbr>title = "MOVE"
 card.<wbr>body = "Move with W A S D."
 card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>常驻性能条：fps、帧时间、三角形、绘制调用、节点和内存；fps 下降时变红。</p>
+      <p class="catalog-base">继承 <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

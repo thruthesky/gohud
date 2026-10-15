@@ -59,6 +59,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoPerfReadout` — a performance band.** fps, frame time and the worst frame, triangles, draw calls, nodes, RAM
+  and VRAM in a small dark band; the ink turns from `GoSkin.perf_ink(0)` to `(1)` and `(2)` as fps drops. It samples
+  the engine itself (no allocation per frame, writes only when the text changed) or shows `show_stats()`; `one_line`
+  folds it to one slim line. Skin hooks `perf_box()`, `perf_ink(level)`, `perf_font()`. Under `arcade_light`
+  Magnet Mayhem's perf overlay matches pixel for pixel.
 - **`GoTaskCard` — a lesson's card.** A step line, a title shrunk to one line, what to do, one keycap chip per part that
   ticks off (`set_parts`, `mark_part`; a done chip is `GoSkin.kbd_done_box` and reads "✓ word"), a hint when stuck
   (`GoSkin.task_hint_ink`) and a footer; `compact` folds it to one row (`short_caption`, title, chips). Never takes

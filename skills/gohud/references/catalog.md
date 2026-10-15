@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (22)
+8. [HUD and game shapes](#hud-and-game-shapes) (23)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -948,6 +948,16 @@ card.caption = "TRAINING · STEP 1/12"
 card.title = "MOVE"
 card.body = "Move with W A S D."
 card.set_parts(["W", "A", "S", "D"], [true])
+```
+
+### `GoPerfReadout`
+
+Extends `PanelContainer`. An always-on performance band: fps, frame time, triangles, draw calls, nodes and memory; turns red as fps drops. Details: `hud.md` §32 (GoPerfReadout).
+
+```gdscript
+var perf := GoPerfReadout.new()
+perf.tier_text = "LOW (auto)"
+overlay_layer.add_child(perf)
 ```
 
 ### `GoRewardCalendar`

@@ -35,6 +35,7 @@ func _initialize() -> void:
 		await _joystick_art(look)
 		await _task_card(look)
 		await _spotlight(look)
+		await _perf_readout(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -675,3 +676,66 @@ func _spotlight(look: StringName) -> void:
 		check(skin.spotlight_dim() == Color(0.04, 0.06, 0.14, 0.55), "spotlight: arcade_light: the game's navy dim")
 	holder.queue_free()
 	await frames(1)
+
+
+# ── A performance readout (GoPerfReadout) ──────────────────────────────
+
+func _perf_stats(fps: float) -> Dictionary:
+	return {&"fps": fps, &"ms": 1000.0 / fps, &"worst_ms": 31.25, &"triangles": 84321, &"draws": 212,
+		&"nodes": 1234567, &"ram": 512 * 1048576, &"vram": 300 * 1048576}
+
+
+func _perf_readout(look: StringName) -> void:
+	var skin := GoUi.skin()
+	var perf := GoPerfReadout.new()
+	perf.sampling = false
+	var holder := _host(perf, 600.0)
+	await frames(1)
+	check(perf.mouse_filter == Control.MOUSE_FILTER_IGNORE and perf.label.mouse_filter == Control.MOUSE_FILTER_IGNORE,
+		"perf: never takes input")
+	check(perf.label.text == "FPS --\nTRI --  DRAW --  NODES --\nRAM --  VRAM --", "perf: placeholder before a reading")
+	check(GoPerfReadout.format_count(999) == "999" and GoPerfReadout.format_count(84321) == "84.3k"
+		and GoPerfReadout.format_count(1234567) == "1.23M", "perf: counts read 999 / 84.3k / 1.23M")
+	check(GoPerfReadout.format_megabytes(512 * 1048576) == "512 MB", "perf: bytes read as MB")
+	perf.show_stats(_perf_stats(60.0))
+	check(perf.label.text == "FPS 60  16.7 ms  (worst 31.2)\nTRI 84.3k  DRAW 212  NODES 1.23M\nRAM 512 MB  VRAM 300 MB",
+		"perf: three lines (%s)" % perf.label.text.c_escape())
+	check(perf.write_count == 1, "perf: one write")
+	perf.show_stats(_perf_stats(60.0))
+	check(perf.write_count == 1, "perf: the same text is not written again")
+	check(perf.label.get_theme_color(&"font_color") == skin.perf_ink(0), "perf: 60 fps in the good ink")
+	perf.show_stats(_perf_stats(40.0))
+	check(perf.label.get_theme_color(&"font_color") == skin.perf_ink(1), "perf: 40 fps in the warning ink")
+	perf.show_stats(_perf_stats(20.0))
+	check(perf.label.get_theme_color(&"font_color") == skin.perf_ink(2), "perf: 20 fps in the bad ink")
+	check(perf.fps_level(55.0) == 0 and perf.fps_level(30.0) == 1 and perf.fps_level(29.9) == 2, "perf: levels at 55 / 30")
+	perf.tier_text = "LOW (auto)"
+	check(perf.label.text.ends_with("VRAM 300 MB  Q LOW (auto)"), "perf: the tier ends the last line")
+	perf.one_line = true
+	check(perf.label.text.count("\n") == 0 and perf.label.text.begins_with("FPS 20  50.0 ms"), "perf: one_line joins the lines")
+	var box := perf.get_theme_stylebox(&"panel")
+	check(box != null and box.content_margin_top == 2.0 and box.content_margin_left == 6.0, "perf: one_line is a slim band")
+	perf.one_line = false
+	box = perf.get_theme_stylebox(&"panel")
+	check(box.content_margin_top == 6.0, "perf: full padding back")
+	perf.sampling = true
+	perf.restart()
+	perf.advance(0.1)
+	check(is_equal_approx(perf.stats()[&"fps"], 10.0), "perf: a restart reads at the next frame")
+	perf.advance(0.1)
+	perf.advance(0.2)
+	check(is_equal_approx(perf.stats()[&"fps"], 1.0 / 0.15), "perf: then every interval, averaging the frames (%s)" % perf.stats().get(&"fps"))
+	check(is_equal_approx(perf.stats()[&"worst_ms"], 200.0), "perf: and keeps the worst")
+	perf.sampling = false
+	check(not perf.is_processing(), "perf: sampling off stops the clock")
+	check(perf.label.get_theme_constant(&"outline_size") == 2, "perf: a 2 dp outline")
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(skin.perf_ink(0) == Color("#3ecf5a") and skin.perf_ink(1) == Color("#ffc928") and skin.perf_ink(2) == Color("#ff4d4d"),
+			"perf: arcade_light: the game's green / gold / red")
+		check(perf.label.get_theme_font(&"font") == ThemeDB.fallback_font, "perf: arcade_light: the engine's font, as the game")
+		var flat := skin.perf_box() as StyleBoxFlat
+		check(flat != null and flat.bg_color == Color(0, 0, 0, 0.55) and flat.corner_radius_top_left == 4,
+			"perf: arcade_light: the game's dark band")
+	holder.queue_free()
+	await frames(1)
+

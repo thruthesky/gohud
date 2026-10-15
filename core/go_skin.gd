@@ -1291,6 +1291,27 @@ func task_hint_ink() -> Color:
 	return GoUi.color(GoTheme.DANGER)
 
 
+
+## 📈 The band behind a `GoPerfReadout`: dark and see-through so the readout reads over any scene. The default is
+## black at 55 %, 4 dp round, 6 dp padding.
+func perf_box() -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(0.0, 0.0, 0.0, 0.55)
+	box.set_corner_radius_all(4)
+	box.set_content_margin_all(6)
+	return box
+
+
+## 📈 A `GoPerfReadout`'s ink by how well the frame rate is doing — 0 good, 1 warning, 2 bad. The defaults are
+## `success`, `warning` and `danger`.
+func perf_ink(level: int) -> Color:
+	return GoUi.color([GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER][clampi(level, 0, 2)])
+
+
+## 📈 A `GoPerfReadout`'s font. null (the default) keeps the theme's.
+func perf_font() -> Font:
+	return null
+
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
 ## smooth bar — the default; the arcade looks split a bar into chunky segments.
 func bar_ticks() -> int:
