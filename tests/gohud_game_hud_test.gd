@@ -30,6 +30,7 @@ func _initialize() -> void:
 		await _art_button(look)
 		await _hud_button(look)
 		await _nameplate(look)
+		await _notice_feed(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -410,5 +411,66 @@ func _nameplate(look: StringName) -> void:
 		check(label.get_theme_color(&"font_color") == Color.WHITE and label.get_theme_constant(&"outline_size") == 3
 			and label.get_theme_color(&"font_outline_color") == INK, "nameplate: other names are white with an ink outline")
 		check(label.get_theme_font_size(&"font_size") == 14, "nameplate: 14 dp text")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── The notice feed ────────────────────────────────────────────────────
+
+func _notice_feed(look: StringName) -> void:
+	var feed := GoNoticeFeed.new()
+	feed.auto_advance = false
+	var holder := _host(feed)
+	await frames(1)
+	check(feed.mouse_filter == Control.MOUSE_FILTER_IGNORE, "feed: never catches the mouse")
+	check(feed.get_theme_constant(&"separation") == 6, "feed: 6 dp between rows")
+	check(feed.count == 0 and feed.get_child_count() == 4, "feed: max_items rows pooled up front, all hidden")
+	feed.push("RED knocked out BLUE")
+	feed.push("YOU knocked out GREEN", true)
+	check(feed.count == 2, "feed: two rows showing")
+	var rows := feed.rows()
+	check(rows.size() == 2 and rows[0].visible and rows[1].visible, "feed: rows() lists the showing rows, oldest first")
+	var first := rows[0] as PanelContainer
+	var label := first.find_child("Text", true, false) as Label
+	var icon := first.find_child("Icon", true, false) as TextureRect
+	check(label != null and label.text == "RED knocked out BLUE", "feed: the row shows the text")
+	check(label.auto_translate_mode == Node.AUTO_TRANSLATE_MODE_DISABLED, "feed: the text is shown as given")
+	check(icon != null and icon.texture != null and icon.custom_minimum_size == Vector2(22, 22), "feed: a 22 dp skull")
+	check((first.get_child(0) as HBoxContainer).get_theme_constant(&"separation") == 8, "feed: 8 dp between icon and text")
+	check(first.size_flags_horizontal == Control.SIZE_SHRINK_CENTER, "feed: rows shrink to their text, centred")
+	check(rows[1].get_index() > rows[0].get_index(), "feed: newest at the bottom")
+	check(first.get_theme_stylebox(&"panel") != rows[1].get_theme_stylebox(&"panel"), "feed: the own row looks different (%s)" % look)
+	check(first.modulate.a == 1.0, "feed: reduce_motion shows a row at once")
+	GoUi.config.reduce_motion = false
+	feed.push("C")
+	check(feed.rows()[2].modulate.a == 0.0, "feed: a new row starts clear")
+	feed.advance(0.1)
+	check(is_equal_approx(feed.rows()[2].modulate.a, 0.5), "feed: and fades in over fade_in")
+	GoUi.config.reduce_motion = true
+	feed.push("D")
+	feed.push("E")
+	check(feed.count == 4 and (feed.rows()[3].find_child("Text", true, false) as Label).text == "E",
+		"feed: a fifth push reuses the oldest row")
+	check((feed.rows()[0].find_child("Text", true, false) as Label).text == "YOU knocked out GREEN", "feed: the oldest went")
+	feed.advance(1.95)
+	check(feed.count == 2, "feed: rows go after seconds (%d left)" % feed.count)
+	feed.advance(0.2)
+	check(feed.count == 0, "feed: all gone")
+	feed.push("F")
+	feed.clear()
+	check(feed.count == 0 and feed.get_child_count() == 4, "feed: clear hides every row, keeps the pool")
+	var early := GoNoticeFeed.new()
+	GoUi.config.reduce_motion = false
+	early.push("before the tree")
+	GoUi.config.reduce_motion = true
+	holder.add_child(early)
+	await frames(1)
+	check(early.count == 1 and early.rows()[0].visible and early.rows()[0].modulate.a == 1.0,
+		"feed: a row pushed before the feed is in the tree survives and shows")
+	if look == GoThemePresets.ARCADE_LIGHT:
+		feed.push("G")
+		feed.push("H", true)
+		check(feed.rows()[0].theme_type_variation == &"GoNotice" and feed.rows()[1].theme_type_variation == &"GoNoticeGold",
+			"feed: arcade_light rows use GoNotice / GoNoticeGold")
 	holder.queue_free()
 	await frames(1)

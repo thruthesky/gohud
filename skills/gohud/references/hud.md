@@ -34,6 +34,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 25. [GoCountdown — the match-start count](#25-gocountdown--the-match-start-count)
 26. [GoHudButton — a HUD corner button with its key](#26-gohudbutton--a-hud-corner-button-with-its-key)
 27. [GoNameplate — a name plate over a character](#27-gonameplate--a-name-plate-over-a-character)
+28. [GoNoticeFeed — a feed of one-line notices](#28-gonoticefeed--a-feed-of-one-line-notices)
 
 ## 1. GoHudAnchor
 
@@ -831,3 +832,28 @@ plate.follow(camera, character.name_anchor.global_position)
 - 🔑 Skin hooks: `nameplate_box(fill)` (a 92% fill, radius 8, 2 dp rim; arcade_light's rim is ink),
   `nameplate_own_fill()` (default `warning`; arcade_light gold), `nameplate_ink(own)` (default black / white;
   arcade_light ink / white), `nameplate_outline(own)` (0 / 3) and `nameplate_outline_ink()` (black; arcade_light ink).
+
+## 28. GoNoticeFeed — a feed of one-line notices
+
+`class_name GoNoticeFeed extends VBoxContainer` · a match's kill feed, pickups or joins: one-line rows with an icon,
+newest at the bottom, each fading in and leaving on its own. Under `arcade_light` it draws Magnet Mayhem's elimination
+feed pixel for pixel (blue-rimmed rows, the player's own gold-rimmed, a skull glyph).
+
+```gdscript
+var feed := GoNoticeFeed.new()
+hud.add_child(feed)                              # top centre is usual
+feed.push(tr("KO_BY") % [hitter, target])        # the server said who knocked out whom
+feed.push(tr("KO_BY") % ["YOU", target], true)   # the player's own line
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `push(text, own := false, picture := null)` | | Shows a row at the bottom; when all rows show, the oldest is reused |
+| `advance(delta)` · `auto_advance` | · `true` | The clock: `_process` runs it, or turn it off and call `advance` |
+| `clear()` · `count` · `rows()` | | Hide all (kept built) · how many show · the showing rows, oldest first |
+| `max_items` · `seconds` · `fade_in` | `4` · `2.0` · `0.2` | Rows built up front · how long a row stays · its fade (none under `reduce_motion`) |
+| `icon_name` · `icon_size` · `icon_gap` · `gap` | `&"skull"` · `22` · `8` · `6` | The icon from the icon set (empty: none) and the spacing |
+
+- 🛑 Display only: it shows the lines it is given, in the order given — the server decides who knocked out whom.
+- Rows are `PanelContainer`s on the theme's `GoNotice` / `GoNoticeGold` (own) variations when the theme has them, else
+  `GoSkin.notice_box(accent, true)` with a `warning` accent on the own row. Text is shown as given (not translated).

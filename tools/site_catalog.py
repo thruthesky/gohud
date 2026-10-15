@@ -1944,6 +1944,26 @@ plate.follow(camera, anchor.global_position)""", T(
 		"Табличка з ім'ям над персонажем у 3D-світі, однакового розміру на будь-якій відстані.",
 		"ป้ายชื่อที่ลอยเหนือตัวละครในโลก 3D ขนาดเท่าเดิมไม่ว่าจะไกลแค่ไหน",
 		"لافتة اسم تطفو فوق شخصية في عالم ثلاثي الأبعاد، بالحجم نفسه على أي مسافة.")),
+	("hud", "GoNoticeFeed", "VBoxContainer", """var feed := GoNoticeFeed.new()
+feed.push("RED knocked out BLUE")
+feed.push("YOU knocked out GREEN", true)""", T(
+		"A feed of one-line notices, such as a kill feed, that stack, fade in and leave on their own.",
+		"킬 피드처럼 한 줄 알림이 쌓이고, 서서히 나타났다가 저절로 사라지는 피드.",
+		"キルフィードのように、一行の通知が積み重なり、フェードインして自動で消えるフィード。",
+		"单行通知（如击杀播报）依次堆叠、淡入并自动消失的信息流。",
+		"單行通知（如擊殺播報）依序堆疊、淡入並自動消失的訊息流。",
+		"Un feed de avisos de una línea, como un feed de eliminaciones, que se apilan, aparecen y se van solos.",
+		"Um feed de avisos de uma linha, como um feed de eliminações, que se empilham, aparecem e saem sozinhos.",
+		"Лента однострочных уведомлений (например, о выбываниях), которые складываются, проявляются и исчезают сами.",
+		"Un fil d'avis d'une ligne, comme un fil d'éliminations, qui s'empilent, apparaissent en fondu et partent seuls.",
+		"Öldürme akışı gibi, tek satırlık bildirimlerin üst üste dizilip belirdiği ve kendiliğinden kaybolduğu akış.",
+		"Strumień jednowierszowych powiadomień, np. o eliminacjach, które się układają, pojawiają i znikają same.",
+		"Un feed di avvisi di una riga, come un feed delle eliminazioni, che si impilano, compaiono e spariscono da soli.",
+		"Dòng thông báo một dòng, như bảng hạ gục, xếp chồng, hiện dần và tự biến mất.",
+		"Umpan pemberitahuan satu baris, seperti umpan eliminasi, yang bertumpuk, muncul perlahan, dan hilang sendiri.",
+		"Стрічка однорядкових сповіщень (наприклад, про вибування), що складаються, проявляються й зникають самі.",
+		"ฟีดข้อความแจ้งบรรทัดเดียว เช่นฟีดการกำจัด ที่ซ้อนกัน ค่อย ๆ ปรากฏ และหายไปเอง",
+		"شريط إشعارات من سطر واحد، مثل شريط الإقصاءات، تتراكم وتظهر تدريجيًا وتختفي وحدها.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

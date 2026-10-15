@@ -59,6 +59,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoNoticeFeed` — a feed of one-line notices.** A kill feed: rows with an icon stack newest at the bottom, fade in
+  and go on their own; `push(text, own)` marks the player's own line. `max_items` rows are built up front and reused, so
+  a burst builds no controls. Rows use the theme's `GoNotice` / `GoNoticeGold` panels (else `GoSkin.notice_box()`);
+  under `arcade_light` Magnet Mayhem's elimination feed matches pixel for pixel.
 - **`GoNameplate` — a name plate over a character.** A small rounded tag in the character's colour (the player's own
   in its own fill and ink) that widens to the whole name between `base_width` and `max_width`; `follow(camera, point)`
   centres it on the projected point and hides it behind the camera. New skin hooks `nameplate_box(fill)`,
