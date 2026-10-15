@@ -19,6 +19,8 @@ func _initialize() -> void:
 		await _slider(look)
 		await _switch(look)
 		await _map_preview(look)
+		await _focus(look)
+	await _focus_follows_look()
 	GoUi.reset()
 	print("gohud painted controls tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -219,5 +221,56 @@ func _map_preview(look: StringName) -> void:
 	await frames(1)
 	check(map.area_count() == 0 and map.link_count() == 0 and map.start_count() == 0 and map.map_scale() == 0.0,
 		"%s map: clear() empties it" % look)
+	holder.queue_free()
+	await frames(1)
+
+
+# ── Focus ──────────────────────────────────────────────────────────────
+
+## The controls a look builds. arcade_light's are FOCUS_NONE like the game's (GlossButton, PaintedSlider, PaintedSwitch,
+## StageCard, OptionButton); every other look keeps them in the keyboard and gamepad order.
+func _focused_controls() -> Array[Control]:
+	return [GoGlyphButton.make("Play", &"play"), GoSlider.make(), GoSwitch.make(), GoLevelCard.make("STAGE 1", "", GoLevelCard.State.OPEN),
+		GoStyle.button("Play"), GoStyle.toggle("Sound"), GoStyle.checkbox("Sound"), GoStyle.slider(), GoStyle.picker()]
+
+
+func _focus(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var want := Control.FOCUS_NONE if painted else Control.FOCUS_ALL
+	check(GoUi.skin().control_focus_mode() == want, "%s focus: the skin's focus mode" % look)
+	var holder := _holder()
+	for node: Control in _focused_controls():
+		holder.add_child(node)
+	await frames(1)
+	for node: Control in holder.get_children():
+		check(node.focus_mode == want, "%s focus: %s is %s (got %d)" % [look, node.get_class(), "FOCUS_NONE" if painted else "FOCUS_ALL", node.focus_mode])
+		if not painted:
+			node.grab_focus()
+			check(node.has_focus(), "%s focus: the keyboard reaches %s" % [look, node.get_class()])
+	holder.queue_free()
+	await frames(1)
+
+
+## A widget that is in the tree follows a look change; a focus mode the project set itself is left alone.
+func _focus_follows_look() -> void:
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	var holder := _holder()
+	var plain := GoGlyphButton.make("Play")
+	var chosen := GoSlider.make()
+	var card := GoLevelCard.make("STAGE 1", "", GoLevelCard.State.OPEN)
+	var flip := GoSwitch.make()
+	for node: Control in [plain, chosen, card, flip]: holder.add_child(node)
+	chosen.focus_mode = Control.FOCUS_CLICK
+	await frames(1)
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(2)
+	check(plain.focus_mode == Control.FOCUS_NONE and card.focus_mode == Control.FOCUS_NONE and flip.focus_mode == Control.FOCUS_NONE,
+		"focus: the widgets follow a change to arcade_light")
+	check(chosen.focus_mode == Control.FOCUS_CLICK, "focus: a focus mode the project chose survives the look change")
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(2)
+	check(plain.focus_mode == Control.FOCUS_ALL and card.focus_mode == Control.FOCUS_ALL and flip.focus_mode == Control.FOCUS_ALL,
+		"focus: and back to the keyboard order in another look")
+	check(chosen.focus_mode == Control.FOCUS_CLICK, "focus: the project's choice still stands")
 	holder.queue_free()
 	await frames(1)

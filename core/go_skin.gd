@@ -1316,3 +1316,9 @@ func title_plate_overhang() -> Vector2:
 ## The solid colour under an opaque window (`GoSurface.opaque`) — shown when the world behind is not drawn.
 func opaque_backdrop_color() -> Color:
 	return Color(GoUi.color(GoTheme.BACKGROUND), 1.0)
+
+
+## The focus mode of the controls gohud builds (buttons, sliders, switches, level cards, pickers), given the one
+## the control would take ([param default_mode]). Default: that one, so the keyboard and a gamepad reach them.
+func control_focus_mode(default_mode := Control.FOCUS_ALL) -> Control.FocusMode:
+	return default_mode

@@ -450,6 +450,7 @@ enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID, OUTLINED }
 static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	node.theme = GoUi.theme()
 	press_feel(node)
+	skin_focus(node)
 	match tone:
 		Tone.PRIMARY: node.theme_type_variation = GoTheme.VAR_PRIMARY_BUTTON
 		Tone.DANGER: node.theme_type_variation = GoTheme.VAR_DANGER_BUTTON
@@ -1116,6 +1117,7 @@ static func toggle(key := "", translate := true) -> CheckButton:
 	# Uses the button height so it lines up with inputs and buttons in a form (taller than the touch floor).
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	skin_focus(node)
 	if GoUi.config.autowrap_text: fit_words(node)   # the same word rule as buttons
 	return node
 
@@ -1128,6 +1130,7 @@ static func checkbox(key := "", translate := true) -> CheckBox:
 		else Node.AUTO_TRANSLATE_MODE_DISABLED
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	skin_focus(node)
 	return node
 
 
@@ -1139,7 +1142,22 @@ static func slider(minimum := 0.0, maximum := 1.0, step := 0.01) -> HSlider:
 	node.max_value = maximum
 	node.step = step
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
+	skin_focus(node)
 	return node
+
+
+## The meta holding the focus mode [method skin_focus] last set.
+const SKIN_FOCUS_META := &"_go_skin_focus"
+
+## Gives [param node] the look's focus mode ([method GoSkin.control_focus_mode]) — arcade_light's controls stay out of
+## the focus order like the game's, every other look keeps [param default_mode]. Call it again after a look change.
+## 🛑 Only a mode gohud set is changed: once the project sets its own `focus_mode`, it is left alone for good.
+static func skin_focus(node: Control, default_mode := Control.FOCUS_ALL) -> void:
+	var applied: int = node.get_meta(SKIN_FOCUS_META, default_mode)
+	if node.focus_mode != applied: return
+	var mode := GoUi.skin().control_focus_mode(default_mode)
+	node.focus_mode = mode
+	node.set_meta(SKIN_FOCUS_META, mode)
 
 
 static func picker() -> OptionButton:
@@ -1147,6 +1165,7 @@ static func picker() -> OptionButton:
 	node.theme = GoUi.theme()
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	GoScroll.yield_vertical(node)   # an up-and-down swipe that starts on the dropdown scrolls the list that holds it
+	skin_focus(node)
 	return node
 
 

@@ -90,6 +90,7 @@ class ShiftedBox:
 
 func _init() -> void:
 	theme_type_variation = GoTheme.VAR_BUTTON
+	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's GlossButton
 
 
 static func make(label: String, icon: StringName = &"", variation: StringName = GoTheme.VAR_BUTTON,
@@ -153,6 +154,7 @@ func _exit_tree() -> void:
 ## The look or the icon set changed: the glyph may be another size, so the shift is measured again.
 func _on_ui_changed() -> void:
 	_update_shift()
+	GoStyle.skin_focus(self)
 	queue_redraw()
 
 

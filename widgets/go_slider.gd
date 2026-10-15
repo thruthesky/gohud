@@ -43,7 +43,7 @@ var _reading := false
 
 
 func _init() -> void:
-	focus_mode = Control.FOCUS_NONE
+	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's; other looks: reachable
 	# The engine's Slider measures its own least size from the blanks (1 px tall), so the floor is the custom minimum —
 	# set here, as the game's PaintedSlider does, so a screen that sets its own still wins.
 	custom_minimum_size = Vector2(MIN_WIDTH, float(GoUi.metric(GoTheme.TOUCH)))
@@ -60,6 +60,7 @@ static func make(minimum := 0.0, maximum := 1.0, snap := 0.01) -> GoSlider:
 
 func _ready() -> void:
 	_read_parts()
+	GoStyle.skin_focus(self)
 	GoUi.watch(_on_ui_changed)
 
 
@@ -164,3 +165,4 @@ func _draw() -> void:
 
 func _on_ui_changed() -> void:
 	_read_parts()
+	GoStyle.skin_focus(self)

@@ -175,7 +175,11 @@ func _level_card(look: StringName) -> void:
 		"%s card: the check sits over the top-right corner" % look)
 	check(card.summary() == "STAGE 1\nOPPONENTS: 1", "%s card: the summary" % look)
 	check(not card.disabled, "%s card: a cleared card takes presses" % look)
-	check(card.focus_mode == Control.FOCUS_ALL, "%s card: keyboard and gamepad can reach it" % look)
+	if painted:
+		check(card.focus_mode == Control.FOCUS_NONE, "%s card: out of the focus order, as the game's StageCard" % look)
+		card.focus_mode = Control.FOCUS_ALL   # a project that wants it back still gets the ring
+	else:
+		check(card.focus_mode == Control.FOCUS_ALL, "%s card: keyboard and gamepad can reach it" % look)
 	card.grab_focus()
 	check(card.has_focus() and card.get_theme_stylebox(&"focus") == card.selection_ring.get_theme_stylebox(&"panel"),
 		"%s card: the focused card wears the selection ring" % look)

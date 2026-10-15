@@ -360,3 +360,9 @@ func title_plate_overhang() -> Vector2:
 ## The game's sky under an opaque dialog.
 func opaque_backdrop_color() -> Color:
 	return STAGE_SKY
+
+
+## The controls stay out of the focus order, as the game's are (`GlossButton`, `PaintedSlider`, `PaintedSwitch`,
+## `StageCard` and its pickers all set `FOCUS_NONE`): a touch game shows no focus ring after a tap.
+func control_focus_mode(_default_mode := Control.FOCUS_ALL) -> Control.FocusMode:
+	return Control.FOCUS_NONE

@@ -245,6 +245,7 @@ var _lock_disabled := false
 func _init() -> void:
 	name = "LevelCard"
 	focus_mode = Control.FOCUS_ALL
+	GoStyle.skin_focus(self)   # arcade_light: FOCUS_NONE like the game's StageCard
 	alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_build()
 	_built = true
@@ -660,4 +661,5 @@ func _notification(what: int) -> void:
 
 
 func _on_ui_changed() -> void:
+	GoStyle.skin_focus(self)
 	_queue_refresh()
