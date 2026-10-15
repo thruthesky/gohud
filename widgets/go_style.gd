@@ -1148,16 +1148,42 @@ static func slider(minimum := 0.0, maximum := 1.0, step := 0.01) -> HSlider:
 
 ## The meta holding the focus mode [method skin_focus] last set.
 const SKIN_FOCUS_META := &"_go_skin_focus"
+## The meta holding the [code]default_mode[/code] a control was given, when it is not [constant Control.FOCUS_ALL].
+const SKIN_FOCUS_DEFAULT_META := &"_go_skin_focus_default"
+## The group of the controls [method skin_focus] styled — the ones a look change walks.
+const SKIN_FOCUS_GROUP := &"_go_skin_focus"
 
 ## Gives [param node] the look's focus mode ([method GoSkin.control_focus_mode]) — arcade_light's controls stay out of
-## the focus order like the game's, every other look keeps [param default_mode]. Call it again after a look change.
+## the focus order like the game's, every other look keeps [param default_mode]. It **follows a look change** by
+## itself: the node joins a group that one `GoUi` watcher walks, and catches up when it enters the tree again — so a
+## plain `Button` styled here (it has no watcher of its own) is reachable after `GoUi.use_preset()` either way.
 ## 🛑 Only a mode gohud set is changed: once the project sets its own `focus_mode`, it is left alone for good.
+## 🛑 The hook is a (non-persistent) group plus one `tree_entered` connection, made only the first time: styling a node
+##    twice hooks it once, and a freed node leaves the group with nothing to unhook — no watcher per control.
 static func skin_focus(node: Control, default_mode := Control.FOCUS_ALL) -> void:
+	if not node.is_in_group(SKIN_FOCUS_GROUP):
+		node.add_to_group(SKIN_FOCUS_GROUP)
+		node.tree_entered.connect(_refocus.bind(node))
+	if default_mode != Control.FOCUS_ALL: node.set_meta(SKIN_FOCUS_DEFAULT_META, default_mode)
+	GoUi.watch(_refocus_all)   # one watcher for every styled control (a no-op once it is in; again after GoUi.reset())
 	var applied: int = node.get_meta(SKIN_FOCUS_META, default_mode)
 	if node.focus_mode != applied: return
 	var mode := GoUi.skin().control_focus_mode(default_mode)
 	node.focus_mode = mode
 	node.set_meta(SKIN_FOCUS_META, mode)
+
+
+## Re-applies [method skin_focus] to one styled control with the default mode it was given.
+static func _refocus(node: Control) -> void:
+	skin_focus(node, node.get_meta(SKIN_FOCUS_DEFAULT_META, Control.FOCUS_ALL))
+
+
+## The look changed: every styled control in the tree takes the new look's focus mode.
+static func _refocus_all() -> void:
+	var scene := GoUi.tree()
+	if scene == null: return
+	for node in scene.get_nodes_in_group(SKIN_FOCUS_GROUP):
+		if node is Control: _refocus(node)
 
 
 static func picker() -> OptionButton:

@@ -221,7 +221,8 @@ own button handlers for a consistent feel.
 - Icon-only buttons: pass a tooltip (`GoStyle.icon_button(icon, action, -1, &"Inventory")`) — it becomes
   `accessibility_name` for screen readers.
 - Focus rings show for keyboard/gamepad users only (`suppress_pointer_focus_ring`). Surfaces trap focus while
-  open and restore it on close; set `surface.initial_focus` for controller-first screens.
+  open and restore it on close; set `surface.initial_focus` for controller-first screens. With nothing focusable
+  inside (arcade_light: `FOCUS_NONE` controls, the close button too) the screen behind drops focus instead.
 - Quick slots skip Tab by default; `slot.keyboard_focus = true` when a gamepad is the only input.
 - `reduce_motion` stops fades, bar easing and coach-mark pulses; `autowrap_text` keeps long strings on screen.
 - Irreversible actions: `GoStyle.Tone.DANGER_SOLID` / `dialogs.confirm(..., destructive = true)`.

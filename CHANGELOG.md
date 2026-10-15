@@ -48,6 +48,23 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `GoUi.use_preset(...)` a live widget repainted its skin parts but kept the old theme's boxes, font and inks. Their
   `_restyle` now re-assigns the theme first, as `GoHudCard`, `GoIconButton`, `GoNotice` and `GoAppBar` do. A fixed look
   draws as before.
+- **`GoIconButton.keyboard_focus` reads what the button is.** Left unset, the button takes the look's focus mode
+  (`FOCUS_NONE` under `arcade_light`), but the property still read its default `true`. It now reads
+  `focus_mode == FOCUS_ALL`: the look's mode until the project sets it, then that choice, which still pins the mode
+  through every look change. An unset value is no longer saved in a scene, so a button saved under `arcade_light` does
+  not load pinned out of the focus order.
+- **A window with nothing focusable no longer leaves focus on its opener.** Under `arcade_light` a sheet's close
+  button is `FOCUS_NONE`, yet `GoSurface` still called `grab_focus()` on it: the engine warned "This control can't grab
+  focus" and the early return skipped the search inside the window, so focus stayed on the control behind it and Enter
+  pressed the opener again. The close button is grabbed only when it can take focus; otherwise the first focusable
+  control inside takes it, and when there is none the focus owner outside the window is released.
+- **`GoStyle`'s plain controls follow a look change.** `GoStyle.skin_focus()` set the look's focus mode once, when
+  `button` / `style_button` / `toggle` / `checkbox` / `slider` / `picker` styled the control, and only the gohud widgets
+  re-applied it from a watcher of their own. A form built under `arcade_light` kept `FOCUS_NONE` after
+  `GoUi.use_preset()` to another look, so the keyboard and a gamepad reached none of its buttons, and the reverse kept
+  `FOCUS_ALL` and its focus rings in `arcade_light`. A styled control now joins a group that one `GoUi` watcher walks on
+  every change, and catches up when it enters the tree again; styling it twice hooks it once, and a freed one simply
+  leaves the group. A focus mode the project set itself is still left alone, and a fixed look is unchanged.
 - **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
   crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
   400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.

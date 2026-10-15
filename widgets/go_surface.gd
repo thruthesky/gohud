@@ -1033,11 +1033,18 @@ func _focus_default() -> void:
 		var outside := get_viewport().gui_get_focus_owner()
 		if outside != null and not is_ancestor_of(outside): outside.release_focus()
 		return
-	if close_button.visible and not close_button.disabled:
+	# 🔑 Under arcade_light the close button is out of the focus order (`GoSkin.control_focus_mode`): grabbing it would
+	#    only fail with an engine warning and leave focus where it was.
+	if close_button.visible and not close_button.disabled and close_button.focus_mode != Control.FOCUS_NONE:
 		close_button.grab_focus()
 		return
 	var target := find_next_valid_focus()
-	if target != null and is_ancestor_of(target): target.grab_focus()
+	if target != null and is_ancestor_of(target):
+		target.grab_focus()
+		return
+	# Nothing inside can take focus — the screen behind lets go of it, or Enter presses the opener again behind the window.
+	var outside := get_viewport().gui_get_focus_owner()
+	if outside != null and not is_ancestor_of(outside): get_viewport().gui_release_focus()
 
 
 func _focus_changed(target: Control) -> void:

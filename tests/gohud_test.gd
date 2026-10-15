@@ -2245,6 +2245,40 @@ func _anchor() -> void:
 	outside.queue_free()
 	await frames(2)
 
+	# 🛑 **Under arcade_light the close button is out of the focus order** (FOCUS_NONE, as the game's). Grabbing it anyway
+	#    failed with an engine error and returned before anything else was tried — focus stayed on the opener behind the
+	#    window, and Enter pressed it again. Nothing focusable inside: the opener lets go. Something inside: it takes it.
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	var pointer_was := GoSurface._pointer_navigation
+	GoSurface._pointer_navigation = false   # opened from the keyboard: the window looks for something to focus
+	var opener := Button.new()   # the project's own button: FOCUS_ALL whatever the look
+	opener.text = "opener"
+	root.add_child(opener)
+	await frames(1)
+	opener.grab_focus()
+	await frames(1)
+	var bare := GoSurface.new()
+	bare.corner = GoSurface.HeadCorner.CLOSE   # the close button shows (a centred arcade_light window wears art instead)
+	root.add_child(bare)
+	await frames(3)
+	check(bare.close_button.is_visible_in_tree() and bare.close_button.focus_mode == Control.FOCUS_NONE,
+		"arcade_light: the close button shows, out of the focus order")
+	check(root.gui_get_focus_owner() == null, "arcade_light: a window with nothing focusable leaves no focus behind it (%s)"
+		% (root.gui_get_focus_owner().name if root.gui_get_focus_owner() != null else "none"))
+	var reachable := Button.new()
+	reachable.text = "inside"
+	bare.body.add_child(reachable)
+	opener.grab_focus()   # focus leaking out is brought back inside
+	await frames(3)
+	check(root.gui_get_focus_owner() == reachable, "arcade_light: a focusable control inside takes focus (%s)"
+		% (root.gui_get_focus_owner().name if root.gui_get_focus_owner() != null else "none"))
+	bare.queue_free()
+	opener.queue_free()
+	GoSurface._pointer_navigation = pointer_was
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(2)
+
 	# ── Tooltip ─────────────────────────────────────────────────────────
 	# 🛑 **For an icon button the tooltip is the only description there is.** The engine's default tooltip leaves wrapping on
 	#    and computes a maximum width of 1dp, which split `settings` **one character per line** (measured 2026-09-13: width 1 · height 186).

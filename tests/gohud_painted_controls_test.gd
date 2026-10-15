@@ -23,6 +23,7 @@ func _initialize() -> void:
 	await _focus_follows_look()
 	await _rtl_caption()
 	await _touch_follows_look()
+	await _plain_focus_follows_look()
 	GoUi.reset()
 	print("gohud painted controls tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -334,5 +335,56 @@ func _touch_follows_look() -> void:
 	check(own_slider.custom_minimum_size == Vector2(150.0, 70.0), "touch: a slider's own size stays (%s)" % own_slider.custom_minimum_size)
 	check(own_flip.custom_minimum_size == Vector2(90.0, 70.0), "touch: a switch's own size stays (%s)" % own_flip.custom_minimum_size)
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+## The plain controls `GoStyle` styles (button, toggle, checkbox, slider, picker) follow a look change both ways, as the
+## gohud widgets do: a form built under arcade_light becomes reachable by keyboard and gamepad in another look, and the
+## other way round loses its focus rings. One parked off the tree catches up when it is added back.
+func _plain_focus_follows_look() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	var watchers := GoUi._watchers.size()
+	var holder := _holder()
+	var plain: Array[Control] = [GoStyle.button("Play"), GoStyle.toggle("Sound"), GoStyle.checkbox("Sound"),
+		GoStyle.slider(), GoStyle.picker()]
+	for node: Control in plain: holder.add_child(node)
+	var twice := GoStyle.button("Again")
+	GoStyle.style_button(twice, GoStyle.Tone.PRIMARY)   # styled a second time: still one hook
+	holder.add_child(twice)
+	var chosen := GoStyle.button("Mine")
+	chosen.focus_mode = Control.FOCUS_CLICK
+	holder.add_child(chosen)
+	var parked := GoStyle.button("Parked")   # built, not added yet
+	var gone := GoStyle.button("Gone")
+	holder.add_child(gone)
+	await frames(1)
+	gone.queue_free()
+	await frames(1)
+	check(GoUi._watchers.size() <= watchers + 1, "plain focus: styling controls adds no watcher per control (%d → %d)"
+		% [watchers, GoUi._watchers.size()])
+	check(twice.tree_entered.get_connections().size() == plain[0].tree_entered.get_connections().size(),
+		"plain focus: a control styled twice is hooked once")
+	for node: Control in plain:
+		check(node.focus_mode == Control.FOCUS_NONE, "plain focus: %s starts FOCUS_NONE in arcade_light" % node.get_class())
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(1)
+	for node: Control in plain + [twice]:
+		check(node.focus_mode == Control.FOCUS_ALL, "plain focus: %s follows the change to another look (got %d)"
+			% [node.get_class(), node.focus_mode])
+	plain[0].grab_focus()
+	check(plain[0].has_focus(), "plain focus: the keyboard reaches a button built under arcade_light")
+	check(chosen.focus_mode == Control.FOCUS_CLICK, "plain focus: a focus mode the project chose survives the change")
+	holder.add_child(parked)
+	await frames(1)
+	check(parked.focus_mode == Control.FOCUS_ALL, "plain focus: a control added after the change takes the new look's mode")
+	holder.remove_child(parked)
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	for node: Control in plain + [twice]:
+		check(node.focus_mode == Control.FOCUS_NONE, "plain focus: %s follows the change back to arcade_light (got %d)"
+			% [node.get_class(), node.focus_mode])
+	check(not plain[0].has_focus(), "plain focus: no control keeps focus (and its ring) in arcade_light")
+	check(chosen.focus_mode == Control.FOCUS_CLICK, "plain focus: the project's choice still stands")
+	holder.add_child(parked)
+	await frames(1)
+	check(parked.focus_mode == Control.FOCUS_NONE, "plain focus: a control parked off the tree catches up when added back")
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	holder.queue_free()
 	await frames(1)
