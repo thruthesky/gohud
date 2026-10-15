@@ -29,6 +29,7 @@ func _initialize() -> void:
 		await _countdown(look)
 		await _art_button(look)
 		await _hud_button(look)
+		await _nameplate(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -352,5 +353,62 @@ func _hud_button(look: StringName) -> void:
 	check(not hint.visible, "hud button: no text, no hint")
 	corner.button.pressed.emit()
 	check(hits[0] == 1, "hud button: pressed passes the press on (the caller decides what it does)")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── The name plate ─────────────────────────────────────────────────────
+
+func _nameplate(look: StringName) -> void:
+	var skin := GoUi.skin()
+	var red := Color(0.86, 0.24, 0.24)
+	var bot := GoNameplate.make("BOT RED", red)
+	var own := GoNameplate.make("KIM HANA", Color.TRANSPARENT, true)
+	own.base_width = 86
+	var holder := _host(bot)
+	holder.add_child(own)
+	await frames(1)
+	var label := bot.find_child("Name", true, false) as Label
+	check(label != null and label.text == "BOT RED", "nameplate: the label shows the text")
+	check(label.clip_text and label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER, "nameplate: centred, clipped")
+	check(bot.mouse_filter == Control.MOUSE_FILTER_IGNORE and label.mouse_filter == Control.MOUSE_FILTER_IGNORE,
+		"nameplate: never catches the mouse")
+	check(bot.size.y == 24 and bot.custom_minimum_size.y == 24, "nameplate: 24 dp tall")
+	check(bot.size.x >= 64 and bot.size.x <= 100, "nameplate: width between base and max (%s)" % bot.size.x)
+	check(own.size.x >= 86, "nameplate: base_width widens the own plate")
+	var box := bot.get_theme_stylebox(&"panel")
+	check(box != null, "nameplate: a box from the skin (%s)" % look)
+	check(label.get_theme_color(&"font_color") == skin.nameplate_ink(false), "nameplate: other's ink is the skin's")
+	var own_label := own.find_child("Name", true, false) as Label
+	check(own_label.get_theme_color(&"font_color") == skin.nameplate_ink(true), "nameplate: own ink is the skin's")
+	bot.text = "A VERY LONG NAME INDEED FOR A PLATE"
+	await frames(1)
+	check(bot.size.x == 100, "nameplate: a long name stops at max_width (%s)" % bot.size.x)
+	bot.text = "AI"
+	await frames(1)
+	check(bot.size.x == 64, "nameplate: a short name keeps base_width (%s)" % bot.size.x)
+	bot.place_at(Vector2(200, 100))
+	check(bot.position == Vector2(200, 100) - bot.size / 2.0, "nameplate: place_at centres on the point")
+	var camera := Camera3D.new()
+	root.add_child(camera)
+	await frames(1)
+	check(bot.follow(camera, Vector3(0, 0, -5)) and bot.visible, "nameplate: follow shows a point in front of the camera")
+	check(bot.position.is_equal_approx(camera.unproject_position(Vector3(0, 0, -5)) - bot.size / 2.0),
+		"nameplate: follow centres on the projected point")
+	check(not bot.follow(camera, Vector3(0, 0, 5)) and not bot.visible, "nameplate: follow hides a point behind the camera")
+	check(not bot.follow(null, Vector3.ZERO) and not bot.visible, "nameplate: no camera, no plate")
+	camera.queue_free()
+	if look == GoThemePresets.ARCADE_LIGHT:
+		var flat := box as StyleBoxFlat
+		check(flat != null and flat.bg_color == Color(red, 0.92) and flat.corner_radius_top_left == 8
+			and flat.border_width_left == 2 and flat.border_color == INK, "nameplate: arcade_light's plate")
+		check(flat.content_margin_left == 2 and flat.content_margin_top == 0, "nameplate: the plate's margins are the game's")
+		var own_box := own.get_theme_stylebox(&"panel") as StyleBoxFlat
+		check(own_box.bg_color == Color(Color("#ffc928"), 0.92), "nameplate: own plate is gold")
+		check(own_label.get_theme_color(&"font_color") == INK and own_label.get_theme_constant(&"outline_size") == 0,
+			"nameplate: own name is ink, no outline")
+		check(label.get_theme_color(&"font_color") == Color.WHITE and label.get_theme_constant(&"outline_size") == 3
+			and label.get_theme_color(&"font_outline_color") == INK, "nameplate: other names are white with an ink outline")
+		check(label.get_theme_font_size(&"font_size") == 14, "nameplate: 14 dp text")
 	holder.queue_free()
 	await frames(1)

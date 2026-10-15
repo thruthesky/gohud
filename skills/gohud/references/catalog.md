@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (17)
+8. [HUD and game shapes](#hud-and-game-shapes) (18)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -895,6 +895,15 @@ Extends `HBoxContainer`. A HUD corner button: a picture button with its keyboard
 ```gdscript
 var pause := GoHudButton.make(GoUi.skin().widget_art(&"pause_button"), 52.0, "Esc")
 pause.pressed.connect(func() -> void: print("pause"))
+```
+
+### `GoNameplate`
+
+Extends `PanelContainer`. A name plate floating over a character in a 3D world, the same size at any distance. Details: `hud.md` §27 (GoNameplate).
+
+```gdscript
+var plate := GoNameplate.make("BOT RED", Color(0.86, 0.24, 0.24))
+plate.follow(camera, anchor.global_position)
 ```
 
 ### `GoRewardCalendar`

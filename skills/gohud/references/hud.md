@@ -33,6 +33,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 24. [GoHudCard — a match HUD's top-row board](#24-gohudcard--a-match-huds-top-row-board)
 25. [GoCountdown — the match-start count](#25-gocountdown--the-match-start-count)
 26. [GoHudButton — a HUD corner button with its key](#26-gohudbutton--a-hud-corner-button-with-its-key)
+27. [GoNameplate — a name plate over a character](#27-gonameplate--a-name-plate-over-a-character)
 
 ## 1. GoHudAnchor
 
@@ -801,3 +802,32 @@ corner.add_child(pause)
 - 🛑 Display only: it reports the press; it pauses nothing.
 - 🔑 Skin hooks: `hud_key_hint_box()` (default `kbd_box()`; arcade_light: the game's slate `#6c7aa8` cap with an ink
   rim and a 5 dp lip) and `hud_key_hint_ink()` (default `kbd_ink()`; arcade_light white).
+
+## 27. GoNameplate — a name plate over a character
+
+`class_name GoNameplate extends PanelContainer` · a small rounded tag with a name that floats over a character, the
+same size on screen at any distance. Under `arcade_light` it draws Magnet Mayhem's name plates pixel for pixel (gold
+for the player with ink text, the character's colour with white outlined text for the others).
+
+```gdscript
+var plate := GoNameplate.make(character.shown_name(), character.color, character.is_player)
+plate.base_width = 86 if character.is_player else 64
+overlay.add_child(plate)
+# each frame, after the camera has moved:
+plate.follow(camera, character.name_anchor.global_position)
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `static make(name_text, color := TRANSPARENT, is_own := false)` | | |
+| `text` | `""` | The name, shown as given (never translated) |
+| `tint` · `own` | transparent · `false` | The plate's colour (transparent: `accent`); `own` uses `nameplate_own_fill()` |
+| `base_width` · `max_width` · `plate_height` | `64` · `100` · `24` | Widens to the whole name between the two; longer names clip |
+| `font_size` | `14` | |
+| `place_at(point)` | | Centres the plate on a point in its parent |
+| `follow(camera, world_point) -> bool` | | Centres it on the projected point; hidden (false) behind the camera or with no camera |
+
+- 🛑 Display only: it shows the name and the place it is given.
+- 🔑 Skin hooks: `nameplate_box(fill)` (a 92% fill, radius 8, 2 dp rim; arcade_light's rim is ink),
+  `nameplate_own_fill()` (default `warning`; arcade_light gold), `nameplate_ink(own)` (default black / white;
+  arcade_light ink / white), `nameplate_outline(own)` (0 / 3) and `nameplate_outline_ink()` (black; arcade_light ink).

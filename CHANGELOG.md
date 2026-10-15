@@ -59,6 +59,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoNameplate` — a name plate over a character.** A small rounded tag in the character's colour (the player's own
+  in its own fill and ink) that widens to the whole name between `base_width` and `max_width`; `follow(camera, point)`
+  centres it on the projected point and hides it behind the camera. New skin hooks `nameplate_box(fill)`,
+  `nameplate_own_fill()`, `nameplate_ink(own)`, `nameplate_outline(own)` and `nameplate_outline_ink()`; under
+  `arcade_light` Magnet Mayhem's name plates match pixel for pixel.
 - **`GoHudButton` — a HUD corner button with its key.** A picture button (`GoIconButton.art`, never keeps focus) with
   the key that does the same on a cap beside it; `show_hint = false` on a touch screen, `pressed` passes the press on.
   New skin hooks `hud_key_hint_box()` and `hud_key_hint_ink()`; under `arcade_light` Magnet Mayhem's pause corner (the

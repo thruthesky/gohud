@@ -1267,6 +1267,41 @@ func countdown_ink() -> Color:
 	return GoUi.color(GoTheme.WARNING)
 
 
+## 🏷️ A `GoNameplate`'s box in [param fill] (a character's colour, or `nameplate_own_fill()`). The default is a
+## rounded tag with a thin dark rim, a little see-through.
+func nameplate_box(fill: Color) -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(fill, 0.92)
+	box.set_corner_radius_all(8)
+	box.set_border_width_all(2)
+	box.border_color = GoUi.color(GoTheme.BACKGROUND)
+	box.content_margin_left = 2.0
+	box.content_margin_right = 2.0
+	box.anti_aliasing = true
+	return box
+
+
+## 🏷️ The fill of the player's own `GoNameplate`. The default is the theme's `warning`.
+func nameplate_own_fill() -> Color:
+	return GoUi.color(GoTheme.WARNING)
+
+
+## 🏷️ A `GoNameplate`'s name colour — [param own] on the player's own plate. The default is white.
+func nameplate_ink(own: bool) -> Color:
+	return Color.BLACK if own else Color.WHITE
+
+
+## 🏷️ The edge round a `GoNameplate`'s name (px) — [param own] on the player's own plate. The default is 3, none on
+## the own plate.
+func nameplate_outline(own: bool) -> int:
+	return 0 if own else 3
+
+
+## 🏷️ The colour of the edge round a `GoNameplate`'s name. The default is black.
+func nameplate_outline_ink() -> Color:
+	return Color.BLACK
+
+
 ## The ticks that split a bar into [param count] chunks, over the whole of [param rect] (the groove and the fill) —
 ## decoration only, the fill still moves smoothly. The default cuts thin notches in the surface colour.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:

@@ -334,6 +334,41 @@ func countdown_ink() -> Color:
 	return GOLD
 
 
+## The game's name plates (`Nameplates.add`): a 92% fill, radius 8, a 2 px INK rim, 2 px side margins.
+func nameplate_box(fill: Color) -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(fill, 0.92)
+	box.set_corner_radius_all(8)
+	box.set_border_width_all(2)
+	box.border_color = INK
+	box.content_margin_left = 2.0
+	box.content_margin_right = 2.0
+	box.content_margin_top = 0.0
+	box.content_margin_bottom = 0.0
+	box.anti_aliasing = true
+	return box
+
+
+## The game's own plate: GOLD.
+func nameplate_own_fill() -> Color:
+	return GOLD
+
+
+## The game's plate names: INK on the own plate, white on the others.
+func nameplate_ink(own: bool) -> Color:
+	return INK if own else Color.WHITE
+
+
+## The game's plate names: no edge on the own plate, 3 px on the others.
+func nameplate_outline(own: bool) -> int:
+	return 0 if own else 3
+
+
+## The game's plate name edge: INK.
+func nameplate_outline_ink() -> Color:
+	return INK
+
+
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 	for index in range(1, count):

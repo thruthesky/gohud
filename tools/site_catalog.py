@@ -1925,6 +1925,25 @@ pause.pressed.connect(func() -> void: print("pause"))""", T(
 		"Кутова кнопка HUD: кнопка-картинка з клавішею на ковпачку поруч.",
 		"ปุ่มมุม HUD: ปุ่มรูปภาพพร้อมปุ่มคีย์บอร์ดบนฝาปุ่มข้าง ๆ",
 		"زر ركن في الواجهة: زر صورة بجانبه مفتاح لوحة المفاتيح على غطاء مفتاح.")),
+	("hud", "GoNameplate", "PanelContainer", """var plate := GoNameplate.make("BOT RED", Color(0.86, 0.24, 0.24))
+plate.follow(camera, anchor.global_position)""", T(
+		"A name plate floating over a character in a 3D world, the same size at any distance.",
+		"3D 세계의 캐릭터 위에 뜨는 이름표 — 거리와 상관없이 화면에서 같은 크기다.",
+		"3D 世界のキャラクターの上に浮かぶ名札。距離に関係なく画面上で同じ大きさ。",
+		"悬浮在 3D 世界角色上方的名牌，无论远近在屏幕上大小不变。",
+		"懸浮在 3D 世界角色上方的名牌，無論遠近在螢幕上大小不變。",
+		"Una placa con el nombre sobre un personaje en un mundo 3D, del mismo tamaño a cualquier distancia.",
+		"Uma placa com o nome sobre uma personagem num mundo 3D, do mesmo tamanho a qualquer distância.",
+		"Табличка с именем над персонажем в 3D-мире, одного размера на любом расстоянии.",
+		"Une plaque de nom au-dessus d'un personnage dans un monde 3D, de même taille à toute distance.",
+		"3B dünyada bir karakterin üstünde süzülen, her mesafede aynı boyda kalan isim etiketi.",
+		"Tabliczka z imieniem nad postacią w świecie 3D, tej samej wielkości z każdej odległości.",
+		"Una targhetta col nome sopra un personaggio in un mondo 3D, della stessa misura a ogni distanza.",
+		"Bảng tên nổi trên nhân vật trong thế giới 3D, cùng kích thước ở mọi khoảng cách.",
+		"Papan nama yang melayang di atas karakter di dunia 3D, ukurannya sama di jarak mana pun.",
+		"Табличка з ім'ям над персонажем у 3D-світі, однакового розміру на будь-якій відстані.",
+		"ป้ายชื่อที่ลอยเหนือตัวละครในโลก 3D ขนาดเท่าเดิมไม่ว่าจะไกลแค่ไหน",
+		"لافتة اسم تطفو فوق شخصية في عالم ثلاثي الأبعاد، بالحجم نفسه على أي مسافة.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",
