@@ -25,6 +25,7 @@ func _initialize() -> void:
 		GoUi.use_preset(look)
 		await frames(1)
 		await _bar_frame(look)
+		await _bar_ink(look)
 		await _hud_card(look)
 		await _countdown(look)
 		await _art_button(look)
@@ -42,6 +43,7 @@ func _initialize() -> void:
 	await _touch_label_cache()
 	await _touch_follows_look()
 	_per_inch_scale()
+	await _profile_applies()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -938,6 +940,15 @@ func _perf_readout(look: StringName) -> void:
 	perf.show_stats(_perf_stats(60.0))
 	check(perf.write_count == 1, "perf: the same text is not written again")
 	check(perf.label.get_theme_color(&"font_color") == skin.perf_ink(0), "perf: 60 fps in the good ink")
+	var themed := [0]
+	perf.label.theme_changed.connect(func() -> void: themed[0] += 1)
+	for i in 4: perf.show_stats(_perf_stats(60.0))
+	check(themed[0] == 0, "perf: identical samples restyle the label never (%d theme changes)" % themed[0])
+	perf.show_stats(_perf_stats(40.0))
+	themed[0] = 0
+	perf.show_stats(_perf_stats(40.0))
+	check(themed[0] == 0, "perf: a repeated level is not restyled")
+	perf.show_stats(_perf_stats(20.0))
 	perf.show_stats(_perf_stats(40.0))
 	check(perf.label.get_theme_color(&"font_color") == skin.perf_ink(1), "perf: 40 fps in the warning ink")
 	perf.show_stats(_perf_stats(20.0))
@@ -991,3 +1002,54 @@ func _per_inch_scale() -> void:
 	check(GoScale.web_dpi(192.0) == 320.0, "scale: a phone browser's dpi from devicePixelRatio")
 	check(GoScale.cap_sides(Vector4(48, 20, 30, 10), 12.0) == Vector4(12, 20, 12, 10), "scale: cap_sides caps left and right")
 	check(GoUi.config.scale_profile == GoScale.Profile.DP, "scale: the dp profile is the default")
+
+
+# ── A bar's ink does not rebuild its paint ─────────────────────────────
+
+func _bar_ink(look: StringName) -> void:
+	var bar := GoBar.new()
+	bar.ink = Color("#1fb5f0")
+	bar.ink_end = Color("#6ff0ff")
+	var holder := _host(bar, 200.0)
+	await frames(2)
+	var gradient := bar.find_child("Gradient", true, false) as TextureRect
+	var texture := gradient.texture
+	var before := (texture as GradientTexture2D).gradient.colors
+	bar.ink = Color("#1fb5f0")
+	bar.ink_end = Color("#6ff0ff")
+	check(gradient.texture == texture, "bar ink (%s): the same ink keeps the same texture" % look)
+	bar.ink = Color("#f05030")
+	check(gradient.texture == texture, "bar ink (%s): a new ink reuses the texture" % look)
+	var after := (gradient.texture as GradientTexture2D).gradient.colors
+	check(after[0].is_equal_approx(Color("#f05030")) and after[1].is_equal_approx(Color("#6ff0ff")) and after != before,
+		"bar ink (%s): a new ink updates the gradient colours" % look)
+	bar.ink_end = Color.TRANSPARENT
+	after = (gradient.texture as GradientTexture2D).gradient.colors
+	check(after[0].is_equal_approx(Color("#f05030")) and after[1].is_equal_approx(Color("#f05030")),
+		"bar ink (%s): no end ink paints one colour" % look)
+	holder.queue_free()
+	await frames(1)
+
+
+# ── scale_profile applies at once ──────────────────────────────────────
+
+func _profile_applies() -> void:
+	var runtime := Node.new()
+	runtime.set_script(load("res://addons/gohud/core/go_runtime.gd"))
+	runtime.name = "GoRuntime"
+	root.add_child(runtime)
+	await frames(1)
+	var base := Vector2i(
+		int(ProjectSettings.get_setting("display/window/size/viewport_width", 1152)),
+		int(ProjectSettings.get_setting("display/window/size/viewport_height", 648)))
+	var was_enabled := GoUi.config.scale_enabled
+	GoUi.config.scale_enabled = true
+	GoUi.config.scale_profile = GoScale.Profile.DP
+	await frames(1)
+	root.content_scale_size = base + Vector2i(7, 7)
+	GoUi.config.scale_profile = GoScale.Profile.PER_INCH
+	check(root.content_scale_size == base, "scale: switching to per-inch applies at once (%s)" % root.content_scale_size)
+	GoUi.config.scale_enabled = was_enabled
+	GoUi.config.scale_profile = GoScale.Profile.DP
+	runtime.queue_free()
+	await frames(1)

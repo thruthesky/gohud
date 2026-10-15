@@ -150,7 +150,13 @@ signal changed_settings
 
 ## How `scale_enabled` sizes the UI: `DP` (1 unit = 1 dp, the default) or `PER_INCH` (the project's base size kept,
 ## a handheld shrunk to `per_inch_units` units per inch — see `GoScale.Profile`).
-@export var scale_profile := GoScale.Profile.DP
+##
+## Changing it at run time re-applies the scale at once (through the `GoRuntime` autoload, when it is on).
+@export var scale_profile := GoScale.Profile.DP:
+	set(value):
+		if scale_profile == value: return
+		scale_profile = value
+		_rescale()
 
 ## `PER_INCH`: canvas units per physical inch on a handheld (160 ≈ one iOS point).
 @export_range(60, 400) var per_inch_units := 160.0
@@ -458,6 +464,15 @@ func _comic_changed() -> void:
 	if tree == null or tree.root == null: return
 	if Thread.is_main_thread(): tree.root.propagate_call(&"queue_redraw")
 	else: tree.root.propagate_call.call_deferred(&"queue_redraw")
+
+
+## The scale profile changed: the running `GoRuntime` applies it now rather than at the next resize.
+## 🛑 A config read on a loading thread runs this setter there; the tree is only touched from the main thread.
+func _rescale() -> void:
+	if Engine.is_editor_hint() or not Thread.is_main_thread(): return
+	if GoUi.config != self: return
+	var runtime := GoUi.runtime()
+	if runtime != null and runtime.has_method(&"reapply"): runtime.call(&"reapply")
 
 
 ## A copy of this config — for when one screen alone should differ at runtime.

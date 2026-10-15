@@ -55,16 +55,18 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 ##    back to the base color of the same name automatically, so it is safe to use either way.
 @export var ink := Color.TRANSPARENT:
 	set(value):
+		if ink == value: return
 		ink = value
-		_restyle()
+		_paint()
 
 ## 🌈 A second paint the fill runs **across** to, left to right — a power gauge going from orange to yellow. Under the
 ## looks that paint their fills (the arcade looks: `GoStyleBoxArcade.end_color`) the tube changes colour along its
 ## length; the other looks keep the single `ink`. Transparent: one paint.
 @export var ink_end := Color.TRANSPARENT:
 	set(value):
+		if ink_end == value: return
 		ink_end = value
-		_restyle()
+		_paint()
 
 ## How the number is displayed.
 @export var readout := Readout.FRACTION:
@@ -143,6 +145,7 @@ var _title: HBoxContainer
 var _icon: TextureRect
 var _frame: Panel
 var _gradient: TextureRect
+var _paint_gradient: Gradient
 var _frame_ticks: Control
 var _name_label: Label
 var _value_label: Label
@@ -307,20 +310,29 @@ func _restyle() -> void:
 	_frame.visible = groove != null
 	_bar.visible = groove == null
 	if groove != null: _frame.add_theme_stylebox_override(&"panel", groove)
-	var start := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
-	var gradient := Gradient.new()
-	gradient.offsets = PackedFloat32Array([0.0, 1.0])
-	gradient.colors = PackedColorArray([start, ink_end if ink_end.a > 0.0 else start])
-	var paint := GradientTexture2D.new()
-	paint.gradient = gradient
-	paint.fill_from = Vector2.ZERO
-	paint.fill_to = Vector2(1.0, 0.0)
-	paint.width = 128
-	paint.height = 4
-	_gradient.texture = paint
-	if is_instance_valid(_frame_ticks): _frame_ticks.queue_redraw()
+	_paint()
 	_apply_label_style()
 	_apply_gap()
+
+
+## The fill's paint — the ink and `ink_end`. The gradient and its texture are built once and only get new colours, so a
+## HUD tinting a bar every frame allocates nothing and leaves the labels and the gap alone.
+func _paint() -> void:
+	if not is_instance_valid(_bar): return
+	var start := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
+	var colors := PackedColorArray([start, ink_end if ink_end.a > 0.0 else start])
+	if _paint_gradient == null:
+		_paint_gradient = Gradient.new()
+		_paint_gradient.offsets = PackedFloat32Array([0.0, 1.0])
+		var paint := GradientTexture2D.new()
+		paint.gradient = _paint_gradient
+		paint.fill_from = Vector2.ZERO
+		paint.fill_to = Vector2(1.0, 0.0)
+		paint.width = 128
+		paint.height = 4
+		_gradient.texture = paint
+	if _paint_gradient.colors != colors: _paint_gradient.colors = colors
+	if is_instance_valid(_frame_ticks): _frame_ticks.queue_redraw()
 	GoStyle.tint_progress(_bar, ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT))
 	if ink_end.a > 0.0:
 		var tube := _bar.get_theme_stylebox(&"fill") as GoStyleBoxArcade

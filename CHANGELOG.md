@@ -25,6 +25,20 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   a finger down, so the game saw ATTRACT held for ever. It now runs `cancel()` then: `released(true)` once, the
   finger id cleared. `GoJoystick` had the same gap and now ends the drag the same way (`released`, then a zero
   `moved`), so the character stops.
+- **Changing `scale_profile` at run time applies at once.** The property had no setter, so switching between `DP` and
+  `PER_INCH` did nothing until the window was next resized. It now re-applies through the `GoRuntime` autoload
+  (`GoRuntime.reapply()`, which anyone can also call after changing `scale_enabled`), and a value that is the same does
+  nothing.
+- **A bar's `ink` and `ink_end` setters no longer rebuild the bar.** Each one ran the whole restyle: a new `Gradient`
+  and `GradientTexture2D` on every call plus the label typography and the gap, so a HUD tinting HP each frame
+  allocated a texture and relaid the bar out every frame. A setter now returns when the value is the same, and
+  otherwise only repaints the fill: the gradient and its texture are built once and just get new colours. The labels
+  and the gap are left to a look change. The pixels are the same.
+- **`GoPerfReadout` stops restyling its label every sample.** `_rewrite` set the `font_color` override on each reading
+  even when the level was the same, and every override sends a theme change (reshape, minimum size, parent relayout)
+  four times a second. The ink is now set only when the level or the look changes (the text already was written only
+  when it changed). The readout also takes `GoUi.theme()` at the start of its restyle, so a look switch reaches it, and
+  watches `GoUi` from `_enter_tree` rather than `_ready`, so a readout moved in the tree keeps listening.
 - **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
   crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
   400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.
