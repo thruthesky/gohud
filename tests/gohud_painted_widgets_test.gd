@@ -276,7 +276,7 @@ func _level_card(look: StringName) -> void:
 	card.scale_factor = 0.5
 	await frames(1)
 	check(card.custom_minimum_size.x == 150.0, "%s card: every size follows scale_factor" % look)
-	check(card.custom_minimum_size.y >= float(GoUi.config.min_touch_size), "%s card: never under a touch target" % look)
+	check(card.custom_minimum_size.y >= GoUi.touch_size(), "%s card: never under a touch target" % look)
 	var own := ImageTexture.create_from_image(Image.create(4, 4, false, Image.FORMAT_RGBA8))
 	card.state = GoLevelCard.State.CLEARED
 	card.check_texture = own

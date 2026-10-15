@@ -240,7 +240,7 @@ func _restyle() -> void:
 ##    their touch areas meet instead of overlapping.
 func _layout_title() -> void:
 	if title_label == null: return
-	var slack := roundi(maxf(0.0, float(GoUi.config.min_touch_size) - 36.0) * 0.5)
+	var slack := roundi(maxf(0.0, GoUi.touch_size() - 36.0) * 0.5)
 	var edge := GoUi.metric(GoTheme.GAP_TINY) + slack
 	var lead := is_instance_valid(leading_button) and not leading_button.is_queued_for_deletion()
 	_pad.add_theme_constant_override(&"margin_left", edge if lead else GoUi.metric(GoTheme.GAP))

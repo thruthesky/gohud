@@ -2185,7 +2185,7 @@ static func toolbar(items: Array, vertical := false) -> PanelContainer:
 		button.icon_name = StringName(spec.get("icon", &""))
 		button.tooltip_text_name = StringName(spec.get("tooltip", &""))
 		# 🔑 Spaced so each button's 48dp touch area meets its neighbour's instead of overlapping it.
-		line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - button.visual_size))
+		line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.metric(GoTheme.TOUCH) - button.visual_size))
 		var action: Callable = spec.get("action", Callable())
 		if action.is_valid(): button.pressed.connect(action)
 		line.add_child(button)
@@ -2221,7 +2221,7 @@ static func bottom_app_bar(items: Array, fab: GoFab = null) -> PanelContainer:
 	var line := HBoxContainer.new()
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	line.custom_minimum_size.y = 80.0
-	line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - 36))
+	line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.metric(GoTheme.TOUCH) - 36))
 	pad.add_child(line)
 	var peers: Array[Control] = []
 	for spec: Dictionary in items:
@@ -3290,7 +3290,7 @@ static func _audit_box(control: Control, problems: Array[String]) -> void:
 		var touch := float(GoUi.metric(GoTheme.TOUCH))
 		var reach := rect.size
 		# A `GoIconButton` or a small `GoFab` draws small and presses big — its hit test reaches out to the touch size.
-		if control is GoIconButton or control is GoFab: reach = reach.max(Vector2.ONE * float(GoUi.config.min_touch_size))
+		if control is GoIconButton or control is GoFab: reach = reach.max(Vector2.ONE * GoUi.touch_size())
 		# A day in a calendar may be narrower — seven columns have to fit a 320dp phone. It carries `go_touch_floor`, the
 		# narrowest it is meant to get, and stays full height (`GoDatePicker`).
 		var floor_x := touch

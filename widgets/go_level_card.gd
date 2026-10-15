@@ -501,7 +501,7 @@ func _refresh() -> void:
 	accessibility_name = summary().replace("\n", ", ")
 	# 🛑 Never under a touch target — the game's card has no such floor, so at a small `scale_factor` this tile is
 	#    taller than the game's (on purpose: it stays easy to press).
-	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, float(GoUi.config.min_touch_size)))
+	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, GoUi.touch_size()))
 
 	_margin.add_theme_constant_override(&"margin_left", roundi(thumbnail_inset * k))
 	for side in [&"margin_right", &"margin_top", &"margin_bottom"]:

@@ -143,7 +143,7 @@ All tokens live in the Theme under type **`GoHud`**. Read them through `GoUi` (o
 | Text roles (7) | `ROLE_MICRO` `ROLE_COMPACT` `ROLE_CAPTION` `ROLE_BODY` `ROLE_BUTTON` `ROLE_SUBTITLE` `ROLE_TITLE` — names of sizes, not purposes |
 | Type variations (17, plus the painted ones) | `GoPanel` `GoCard` `GoButton` `GoPrimaryButton` `GoDangerButton` `GoDangerSolidButton` `GoPrimaryGlowButton` `GoDangerSolidGlowButton` `GoBareButton` `GoCompactButton` `GoIconButton` `GoListButton` `GoTitleLabel` `GoSubtitleLabel` `GoCaptionLabel` `GoCompactLabel` `GoMicroLabel` (constants `VAR_*`). `arcade_light` also defines `GoSuccessButton`, `GoSliderGreen`, `GoSliderCyan`, `GoWindowBlue`, `GoRibbonWide`, `GoLevelCard`, `GoLevelCardCurrent`, `GoLevelCardLocked`, `GoWell`, `GoHudPanel`, `GoBannerGold`, `GoNoticeGold`, `GoChipDark` and `GoIconOnly`; a theme without them falls back to the base type. The two `*Glow*` ones hang off the flat filled buttons and differ only in their faces — a soft shadow (a glow on sci-fi); reached with `GoConfig.button_glow` or `GoStyle.glow()` |
 
-`TOUCH` always returns `GoConfig.min_touch_size`. Text colour meaning: `TEXT` body, `SECONDARY` supporting,
+`TOUCH` (also `GoUi.touch_size()`) is a `GoConfig.min_touch_size` the project set, else the look's own `touch` token (48; `arcade_light` 44, the Magnet Mayhem floor). Text colour meaning: `TEXT` body, `SECONDARY` supporting,
 `MUTED` dimmed; `ON_ACCENT` is the label colour on an accent fill. Custom controls stay consistent by using tokens:
 
 ```gdscript

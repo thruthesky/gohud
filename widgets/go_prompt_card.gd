@@ -184,7 +184,7 @@ func set_icon(icon: StringName, ink := Color.TRANSPARENT, boxed := false) -> voi
 	icon_slot.visible = not icon.is_empty()
 	_boxed_icon = boxed
 	if icon.is_empty(): return
-	var diameter := float(GoUi.config.min_touch_size) - 4.0
+	var diameter := GoUi.touch_size() - 4.0
 	var glyph_size := roundi(diameter * 0.5) if boxed else GoUi.font_size(GoTheme.ROLE_TITLE)
 	var glyph := GoUi.icons().node(icon, glyph_size, ink)
 	icon_slot.add_child(glyph)
@@ -198,7 +198,7 @@ func set_icon(icon: StringName, ink := Color.TRANSPARENT, boxed := false) -> voi
 
 func _restyle_icon() -> void:
 	var accent := _accent if _accent.a > 0 else GoUi.color(GoTheme.ACCENT)
-	var diameter := float(GoUi.config.min_touch_size) - 4.0
+	var diameter := GoUi.touch_size() - 4.0
 	var panel := icon_slot.get_node_or_null(^"Disc") as Panel
 	if panel == null:
 		panel = Panel.new()
@@ -240,7 +240,7 @@ func set_actions(list: Array) -> void:
 		var node: Button
 		if item.has("key"): node = GoStyle.button_key(str(item.key), Callable(), tone)
 		else: node = GoStyle.button(str(item.get("text", "")), Callable(), tone)
-		node.custom_minimum_size.y = GoUi.config.min_touch_size
+		node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 		node.clip_text = true
 		node.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		node.disabled = bool(item.get("disabled", false))
@@ -276,7 +276,7 @@ func _predict_height(node: Label, width: float) -> void:
 	var available := width - panel.get_margin(SIDE_LEFT) - panel.get_margin(SIDE_RIGHT)
 	var gap := float(GoUi.metric(GoTheme.GAP_SMALL))
 	if icon_slot.visible: available -= maxf(icon_slot.custom_minimum_size.x, icon_slot.size.x) + gap
-	if close_button.visible: available -= float(GoUi.config.min_touch_size) + gap
+	if close_button.visible: available -= GoUi.touch_size() + gap
 	var font := node.get_theme_font(&"font")
 	var natural := 0.0
 	if font != null:

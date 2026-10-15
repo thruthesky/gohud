@@ -211,7 +211,7 @@ func _refresh() -> void:
 
 ## Take presses in the slack beyond a small FAB — the touch target is `min_touch_size` whatever the visible size.
 func _has_point(point: Vector2) -> bool:
-	var reach := maxf(0.0, (float(GoUi.config.min_touch_size) - minf(size.x, size.y)) * 0.5)
+	var reach := maxf(0.0, (GoUi.touch_size() - minf(size.x, size.y)) * 0.5)
 	return Rect2(Vector2.ZERO, size).grow(reach).has_point(point)
 
 

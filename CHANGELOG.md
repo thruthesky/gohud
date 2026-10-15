@@ -29,6 +29,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **The touch floor is the look's own until the project chooses one.** `GoUi.metric(GoTheme.TOUCH)` returned
+  `GoConfig.min_touch_size` (48) in every look and ignored each theme's `touch` token. Left unset, the floor is now that
+  token, so `arcade_light` can keep Magnet Mayhem's 44 while every other look stays at 48; a `min_touch_size` the
+  project sets still wins. New `GoUi.touch_size()`, `GoConfig.touch_size_chosen()` and
+  `GoConfig.follow_look_touch_size()`. The widgets that read `min_touch_size` directly (icon button, FAB, app bar,
+  coach mark, prompt card, level card, `GoStyle`) now read the token.
+
 - **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
   exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
   `GoLevelCardLocked` (StageCard / StageCardNext / StageCardLocked), `GoSliderGreen` / `GoSliderCyan` (the slider with a green or cyan fill), `GoWell` (the map-preview well), `GoHudPanel`

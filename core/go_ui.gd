@@ -317,11 +317,19 @@ static func _has_color(key: StringName) -> bool:
 
 
 ## A single metric (dp). `GoConfig.metric_overrides` takes precedence over the theme.
+## The `touch` token: a `GoConfig.min_touch_size` the project chose, else the look's own (48; `arcade_light` 44).
 static func metric(key: StringName) -> int:
 	var overrides := config.metric_overrides
 	if overrides.has(key): return overrides[key]
-	if key == GoTheme.TOUCH: return config.min_touch_size
+	if key == GoTheme.TOUCH:
+		if config.touch_size_chosen(): return config.min_touch_size
+		return GoTheme.metric_of(theme(), key, _fallback_theme(), config.min_touch_size)
 	return GoTheme.metric_of(theme(), key, _fallback_theme())
+
+
+## 👆 The touch floor in force (dp) — what every widget's hit area keeps to. See `GoConfig.min_touch_size`.
+static func touch_size() -> float:
+	return float(metric(GoTheme.TOUCH))
 
 
 ## A **copy** of one surface StyleBox. 🛑 Without the copy, a color change on one card bleeds into every card.
