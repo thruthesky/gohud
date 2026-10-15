@@ -437,8 +437,8 @@ static func _arbitrate(event: InputEvent, state: Dictionary, find: Callable, dea
 			(state["presses"] as Array).append(event.duplicate())
 			viewport.set_input_as_handled()
 		elif not state.is_empty():
-			# A tap: the control gets its presses now, and this release right after them.
-			if state["way"] == &"": _replay_all(viewport, state["presses"])
+			# A tap: the control gets its presses now, and this release right after them — through the same replay.
+			if state["way"] == &"": _resolve(viewport, state["presses"], event)
 			state.clear()
 		return
 	var drag := event as InputEventScreenDrag
@@ -466,14 +466,28 @@ static func _arbitrate(event: InputEvent, state: Dictionary, find: Callable, dea
 		control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_replay_all(viewport, state["presses"])
 		control.mouse_filter = filter
-		# Catch the list up with the distance already travelled; this motion then carries on as usual.
+		# Catch the list up with the distance already travelled; this motion then follows it (`_resolve`).
 		var catch_up := event.duplicate()
 		catch_up.set(&"relative", travelled - step)
 		catch_up.set(&"position", at - step)
-		_replay(viewport, catch_up)
+		_resolve(viewport, [catch_up], event)
 	else:
 		state["way"] = &"sideways"
-		_replay_all(viewport, state["presses"])
+		_resolve(viewport, state["presses"], event)
+
+
+## Hands the held [param events] on, then the [param event] that settled them — and ends that event's own trip.
+## 🛑 **The settling event must not carry on by itself** (a release that never arrived, 2026-10-15). `push_input` resets
+##    and then sets the viewport's "handled" flag for each replayed event; the GUI accepts the replayed press, so the flag
+##    is still up when the engine resumes the event being dispatched now (`SceneTree::_call_input_pause` stops at a
+##    handled one). That event — the tap's release, or the first motion that chose a direction — was dropped before the
+##    GUI: a field that already had focus never saw its release, so a tap on it never brought the phone keyboard back
+##    (`LineEdit` shows it on the release when it is already editing, line_edit.cpp 4.7.2), and the press stayed open.
+##    So it is replayed after them, in order, and its original is marked handled.
+static func _resolve(viewport: Viewport, events: Array, event: InputEvent) -> void:
+	_replay_all(viewport, events)
+	_replay(viewport, event)
+	viewport.set_input_as_handled()
 
 
 static func _replay_all(viewport: Viewport, events: Array) -> void:

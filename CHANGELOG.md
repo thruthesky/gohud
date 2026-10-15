@@ -34,6 +34,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A tap on a text field inside a scroll reaches it with its release.** `GoScroll` holds the press on a control that
+  yields vertical drags (a `LineEdit`, a slider, a tab bar…) until the finger lifts or picks a direction, then replays
+  it. The replayed press left the viewport's "handled" flag up, so the engine dropped the event being dispatched right
+  then — the tap's release, or the first motion of a sideways drag. A field that already had focus never saw the
+  release, and `LineEdit` raises the phone keyboard on that release: after Back closed the keyboard, tapping the field
+  again did nothing (a character-name form on Android, 2026-10-15). `GoScroll._resolve` now replays the held events
+  and then the settling one in order, and marks the original handled. Test: "each finger tap on a focused field
+  reaches it with its release" (real screen touches, emulated mouse first as on a phone).
 - **A long title on a `SCALE` window's ribbon widens the card instead of folding.** The game's ribbon title never
   wraps: past its smallest size (`GoSkin.title_plate_min_size()`) the card grows to the words and the fit shrinks the
   whole window. `GoSurface` folded it to two lines inside the 400 dp card ("ENTRENAMIENTO COMPLETADO"). Under
