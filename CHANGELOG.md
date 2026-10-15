@@ -6,6 +6,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`arcade_light`'s fonts are Magnet Mayhem's current ones.** Nunito Bold and the four Noto Sans CJK Bold subsets
+  were copied again from the game (its fonts commit of 2026-10-15), so a label measures what the game measures.
 - **A window's body clips only while it scrolls.** The body's `ScrollContainer` always clipped, which cut a part's
   antialiased rim on a half pixel — the painted inset's top edge at 1.5x — where the game's plain column draws it.
   `GoSurface` now clips the body only while its content overflows.
