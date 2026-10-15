@@ -289,6 +289,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `pass_anchor_taps` (a tap on the anchor reaches it, so its second tap closes the card) and `tap_through` (more
   controls taps reach). `GoPopover.open()` takes them as `width` 0, `min_width`, `align`, `gap`, `edge`, `fit`,
   `pass_anchor_taps`, `tap_through`. Every default keeps today's card.
+- **`arcade_light`: the `person` glyph.** Magnet Mayhem's white person glyph (its main menu's name key, the name
+  dialog's ribbon) joins `icons/arcade_light` as `&"person"`, imported as the other glyphs are (lossless, mipmaps), and
+  gohud's own `&"user"` points at it. Before, both names fell back to the default set's line icon.
+
 - **The current language's CJK font leads: `GoUi.set_locale(code)` and `GoUi.set_font_locale(code)`.** A Han
   character shared by Chinese, Japanese and Korean takes the shape its reader expects only when that language's font
   comes first among the fallbacks. `set_font_locale(code)` puts it first in the look's body font (`FontVariation`) and

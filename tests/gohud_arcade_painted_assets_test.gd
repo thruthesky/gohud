@@ -49,7 +49,7 @@ const TOUCH_SPRITES := {
 ## Every glyph → its mipmap choice, as above.
 const GLYPH_FILES := {
 	"back": true, "check": true, "exit": true, "gear": true, "globe": true, "help": true, "magnet": true, "pause": true,
-	"play": true, "retry": false, "skip": false, "skull": false, "sound_low": true, "sound_off": true, "sound_on": true,
+	"person": true, "play": true, "retry": false, "skip": false, "skull": false, "sound_low": true, "sound_off": true, "sound_on": true,
 	"trophy": false,
 }
 
@@ -162,6 +162,8 @@ func _light_icons() -> void:
 		&"exit": "exit", &"retry": "retry", &"gear": "gear", &"skip": "skip", &"trophy": "trophy",
 		&"sound_on": "sound_on", &"sound_low": "sound_low", &"sound_off": "sound_off",
 		&"skull": "skull", &"magnet": "magnet",
+		# The player's name key and the name dialog's ribbon glyph (the game's `glyphs/person.png`); gohud's `user` too.
+		&"person": "person", &"user": "person",
 	}
 	for name: StringName in expect:
 		var want := _glyph(expect[name])

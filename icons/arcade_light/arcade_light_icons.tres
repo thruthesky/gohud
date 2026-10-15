@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GoIconSet" load_steps=19 format=3]
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
 [ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/magnet.png" id="magnet"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/pause.png" id="pause"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/play.png" id="play"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/person.png" id="person"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/retry.png" id="retry"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/skip.png" id="skip"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/skull.png" id="skull"]
@@ -33,6 +34,7 @@ textures = {
 &"help": ExtResource("help"),
 &"magnet": ExtResource("magnet"),
 &"pause": ExtResource("pause"),
+&"person": ExtResource("person"),
 &"play": ExtResource("play"),
 &"retry": ExtResource("retry"),
 &"skip": ExtResource("skip"),
@@ -46,6 +48,7 @@ textures = {
 &"forward": ExtResource("skip"),
 &"crown": ExtResource("trophy"),
 &"settings": ExtResource("gear"),
+&"user": ExtResource("person"),
 &"volume_high": ExtResource("sound_on"),
 &"volume_low": ExtResource("sound_low"),
 &"volume_off": ExtResource("sound_off")
