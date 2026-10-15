@@ -186,4 +186,5 @@ func _style_row(entry: Dictionary) -> void:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	for entry: Dictionary in _pool: _style_row(entry)

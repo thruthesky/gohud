@@ -296,6 +296,7 @@ func _chip_word_font(skin: GoSkin) -> Font:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	if not is_instance_valid(_box) or not is_inside_tree(): return
 	var skin := GoUi.skin()
 	remove_theme_stylebox_override(&"panel")

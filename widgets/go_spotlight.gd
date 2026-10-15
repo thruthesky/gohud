@@ -122,6 +122,7 @@ func _set_hole(rect: Rect2) -> void:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	_ring = GoUi.skin().spotlight_ring_box()
 	queue_redraw()
 

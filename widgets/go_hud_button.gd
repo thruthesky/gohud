@@ -107,6 +107,7 @@ func _sync_hint() -> void:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	if not is_instance_valid(_hint): return
 	var skin := GoUi.skin()
 	_hint.add_theme_stylebox_override(&"normal", skin.hud_key_hint_box())

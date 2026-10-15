@@ -128,6 +128,7 @@ func _layout_disc() -> void:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	if not is_instance_valid(_disc): return
 	var skin := GoUi.skin()
 	var art := skin.countdown_disc(_final)

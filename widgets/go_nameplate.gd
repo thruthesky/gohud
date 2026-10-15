@@ -112,6 +112,7 @@ func follow(camera: Camera3D, world_point: Vector3) -> bool:
 
 
 func _restyle() -> void:
+	theme = GoUi.theme()
 	if not is_instance_valid(_label) or not is_inside_tree(): return
 	var skin := GoUi.skin()
 	var fill := skin.nameplate_own_fill() if own else (tint if tint.a > 0.0 else GoUi.color(GoTheme.ACCENT))

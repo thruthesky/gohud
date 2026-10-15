@@ -38,6 +38,7 @@ func _initialize() -> void:
 		await _perf_readout(look)
 		await _slot_touch(look)
 		await _icon_focus(look)
+	await _look_follows()
 	_per_inch_scale()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -844,6 +845,89 @@ func _perf_readout(look: StringName) -> void:
 			"perf: arcade_light: the game's dark band")
 	holder.queue_free()
 	await frames(1)
+
+
+# ── The HUD widgets follow a look change and a reparent ───────────────
+
+## What a widget shows that comes from the look: its theme's panel box, its text font, the skin's inks. The widgets
+## build in arcade_light, then the look switches to `to` (and back after a reparent) - each must take the new
+## theme and repaint, as the established widgets do.
+func _look_follows() -> void:
+	var from := GoThemePresets.ARCADE_LIGHT
+	var to := GoThemePresets.DEFAULT_DARK
+	var makers: Dictionary = {
+		"task card": func() -> Control:
+			var card := GoTaskCard.new()
+			card.title = "MOVE"
+			card.set_parts(PackedStringArray(["W", "A"]), [true, false])
+			return card,
+		"countdown": func() -> Control:
+			var count := GoCountdown.new()
+			count.show_step("3")
+			return count,
+		"hud button": func() -> Control:
+			return GoHudButton.make(GoUi.skin().widget_art(&"pause_button"), 52.0, "Esc"),
+		"nameplate": func() -> Control: return GoNameplate.make("BOT RED", Color(0.86, 0.24, 0.24)),
+		"notice feed": func() -> Control:
+			var feed := GoNoticeFeed.new()
+			feed.auto_advance = false
+			feed.push("RED knocked out BLUE")
+			return feed,
+		"spotlight": func() -> Control:
+			var spot := GoSpotlight.new()
+			spot.auto_advance = false
+			spot.light(Rect2(50, 50, 80, 60))
+			return spot,
+	}
+	for key: String in makers:
+		GoUi.use_preset(from)
+		await frames(1)
+		var widget := (makers[key] as Callable).call() as Control
+		var holder := _host(widget, 400.0)
+		widget.size = Vector2(400, 300)
+		await frames(2)
+		check(widget.theme == GoUi.theme(), "%s: built with the look's theme" % key)
+		var before := _look_sig(key, widget)
+		GoUi.use_preset(to)
+		await frames(2)
+		check(widget.theme == GoUi.theme(), "%s: takes the new look's theme when the look changes" % key)
+		var after := _look_sig(key, widget)
+		check(after != before, "%s: repaints in the new look (%s)" % [key, after])
+		GoUi.use_preset(from)
+		await frames(2)
+		check(_look_sig(key, widget) == before, "%s: and back again (%s)" % [key, _look_sig(key, widget)])
+		holder.queue_free()
+		await frames(1)
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+
+
+## A widget's look-driven values as one string, so two looks compare unequal when it repainted.
+func _look_sig(key: String, widget: Control) -> String:
+	match key:
+		"task card":
+			var box := widget.get_theme_stylebox(&"panel")
+			return "%s|%s|%s" % [box.get_class(), (widget as GoTaskCard).title_label.get_theme_color(&"font_color"),
+				(widget as GoTaskCard).title_label.get_theme_font(&"font").resource_path]
+		"countdown":
+			var disc := widget.find_child("Disc", true, false) as TextureRect
+			return "%s|%s|%s" % [disc.visible, widget.get_theme_color(&"font_color"), widget.get_theme_font(&"font").resource_path]
+		"hud button":
+			var hint := widget.find_child("Hint", true, false) as Label
+			return "%s|%s" % [hint.get_theme_color(&"font_color"), hint.get_theme_font(&"font").resource_path]
+		"nameplate":
+			var label := widget.find_child("Name", true, false) as Label
+			return "%s|%s|%s" % [label.get_theme_color(&"font_color"), label.get_theme_font(&"font").resource_path,
+				label.get_theme_constant(&"outline_size")]
+		"notice feed":
+			var row := (widget as GoNoticeFeed).rows()[0] as PanelContainer
+			var text := row.find_child("Text", true, false) as Label
+			var box := row.get_theme_stylebox(&"panel")
+			return "%s|%s|%s" % [box.get_class(), text.get_theme_color(&"font_color"), text.get_theme_font(&"font").resource_path]
+		"spotlight":
+			var ring := widget.get(&"_ring") as StyleBoxFlat
+			return "%s" % (ring.border_color if ring != null else "none")
+	return ""
 
 
 # ── The per-inch scale profile (GoScale) ───────────────────────────────
