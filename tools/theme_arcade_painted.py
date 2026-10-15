@@ -22,6 +22,14 @@ ICON_SCRIPT = RES + "/widgets/go_texture_sprite.gd"
 PAINTED = RES + "/assets/arcade_light/painted/"
 # The stage-select art (the game's `assets/ui/stage`): a sprite named "stage/<file>" is drawn from here.
 STAGE = RES + "/assets/arcade_light/stage/"
+# 🔤 The game's font (`UiTheme.get_font()`): Nunito Bold, then the four Noto Sans CJK Bold subsets in the game's
+#    `fallback_order("")` — Korean, Japanese, Simplified, Traditional Chinese. The files are the game's own (subset to
+#    its strings, with its vertical metrics: `tools/fonts/build_fonts.py` there), so a label is set exactly as in the
+#    game. Glyphs outside the subsets come from the system (the files import with `allow_system_fallback`).
+FONTS = RES + "/assets/fonts/"
+FONT_BASE = ("font_nunito", FONTS + "nunito/Nunito-Bold.ttf")
+FONT_FALLBACKS = [("font_noto_%s" % code.lower(), FONTS + "noto_sans_cjk/NotoSans%s-Bold.ttf" % code)
+                  for code in ("KR", "JP", "SC", "TC")]
 MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arcade_painted_map.json")
 
 SHAPE = dict(kind="arcade_painted")
@@ -39,6 +47,13 @@ ICON_PRESSED = (0.78, 0.78, 0.86, 1.0)                   # `PauseRound`'s presse
 DIFF_BG = (0.933333, 0.945098, 0.984314, 1.0)            # #eef1fb
 DIFF_SELECTED = (0.498039, 0.894118, 1.0, 1.0)           # #7fe4ff
 SECONDARY = (0.541176, 0.560784, 0.701961, 1.0)          # #8a8fb3
+SECONDARY_HOVER = (0.603922, 0.623529, 0.752941, 1.0)    # #9a9fc0 (`BigSecondary`)
+SECONDARY_PRESSED = (0.478431, 0.498039, 0.639216, 1.0)  # #7a7fa3
+GREEN = (0.243137, 0.811765, 0.352941, 1.0)              # #3ecf5a (`Big`)
+GREEN_HOVER = (0.333333, 0.862745, 0.439216, 1.0)        # #55dc70
+GREEN_PRESSED = (0.203922, 0.721569, 0.305882, 1.0)      # #34b84e
+DIFF_HOVER = (0.964706, 0.972549, 1.0, 1.0)              # #f6f8ff (`Diff`)
+SMALL_INK = (0.113725, 0.137255, 0.25098, 0.75)          # `SmallLabel`: Color(INK, 0.75)
 CLEAR = (0.0, 0.0, 0.0, 0.0)
 PANEL = (1.0, 1.0, 1.0, 0.9)
 PRESSED_TINT = (0.8, 0.8, 0.86, 1.0)
@@ -46,6 +61,9 @@ DISABLED_TINT = (0.6, 0.6, 0.66, 0.85)
 FADED_WHITE = (1.0, 1.0, 1.0, 0.6)
 FLAT_SHADOW = (0.0, 0.0, 0.0, 0.25)                      # `UiTheme.box(shadow = true)`
 PAINT_PPU = 3.0
+TOUCH_TARGET = 44                                        # `Cfg.Touch.MIN_TARGET` (Apple's 44 pt)
+MAP_PREVIEW_BG = (0.094118, 0.129412, 0.227451, 1.0)    # `Cfg.StagePreview.BACKGROUND` #18213a
+MAP_PREVIEW_RIM = (0.345098, 0.384314, 0.482353, 1.0)   # `MapPreview.BORDER` #58627b
 RIBBON_PPU = 3.4
 KEYCAP_PPU = 5.5
 GLOSS_EDGE = (100, 65, 100, 66)
@@ -62,6 +80,10 @@ STAGE_WELL_EDGE = (60, 60, 60, 60)
 STAGE_CARD_EDGE = (60, 60, 60, 60)
 GLOSS_FONT_SIZE = 22
 TITLE_FONT_SIZE = 54
+BIG_FONT_SIZE = 24
+DIFF_FONT_SIZE = 15
+SMALL_FONT_SIZE = 12
+BAR_FONT_SIZE = 11
 KEYCAP_FONT_SIZE = 16
 DROPDOWN_FONT_SIZE = 17
 # 🔑 The game's `Cfg` sizes, at their desktop value (`src/client_config.gd`): the HUD panel's and the name banner's
@@ -104,9 +126,11 @@ FACES = {
 }
 
 # Game variation → its gohud name. The values are what the game aliases; `GAME_ONLY` stays in the game.
+# 🔑 The game's main actions (PLAY, CONFIRM, SAVE) are `GlossGreen`, so the green pill is gohud's primary key; the blue
+#    pill (`GlossBlue`, the game's secondary actions) is `GoInfoButton`. `GoSuccessButton` is the green pill as well.
 MAP = {
-    "GlossGrey": "GoButton", "GlossBlue": "GoPrimaryButton", "GlossRed": "GoDangerButton",
-    "GlossGreen": "GoSuccessButton", "GlossToggle": "GoToggleButton",
+    "GlossGrey": "GoButton", "GlossBlue": "GoInfoButton", "GlossRed": "GoDangerButton",
+    "GlossGreen": "GoPrimaryButton", "GlossToggle": "GoToggleButton",
     "PaintedCard": "GoCard", "InsetPanel": "GoInsetPanel", "KeycapPanel": "GoKeycapPanel", "Keycap": "GoKeycap",
     "RibbonTitle": "GoRibbon", "RibbonRed": "GoRibbonRed", "Notif": "GoNotice",
     "Title": "GoTitle", "OutlineLabel": "GoOutlineLabel",
@@ -114,10 +138,15 @@ MAP = {
     "StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
     "ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
     "PauseRound": "GoIconOnly",
+    # The game's flat parts (`UiTheme.box()` / `_button_boxes()`), older than the painted set but still drawn — the
+    # difficulty choice, the big result keys, the small labels — so the game can alias every variation it builds.
+    "HudPanel": "GoPanelFlat", "Card": "GoCardFlat", "Diff": "GoChoiceButton", "Big": "GoBigButton",
+    "BigSecondary": "GoBigSecondaryButton", "SmallLabel": "GoSmallLabel", "BarLabel": "GoBarLabel",
 }
 # Variations the game draws in code, not as a UiTheme variation — kept out of MAP (whose keys are all UiTheme names):
 # gohud variation → where the game builds it. The game can use the gohud one directly.
-CODE_BUILT = {"GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)"}
+CODE_BUILT = {"GoWell": "MapPreview.set_well() (a SpriteBox of stage/well.png)",
+              "GoMapPreview": "MapPreview._init() (UiTheme.box(Cfg.StagePreview.BACKGROUND, 6, 1, BORDER, false, 0, 0))"}
 # The `Cfg` sizes written at their desktop value (the game swaps the touch value in itself).
 CFG_SIZES = {
     "GoHudPanel": "content margins from Cfg.Hud.PANEL_PADDING = %g (touch: Cfg.Hud.PANEL_PADDING_TOUCH)"
@@ -126,18 +155,11 @@ CFG_SIZES = {
                     % HUD_BANNER_PADDING,
     "GoChipDark": "font_size is Cfg.Menu.CHIP_FONT = %d (no touch value)" % CHIP_FONT_SIZE,
 }
-GAME_ONLY = {
-    "HudPanel": "the old flat look, not part of the painted set",
-    "Card": "the old flat look, not part of the painted set",
-    "Diff": "the old flat look, not part of the painted set",
-    "Big": "the old flat look, not part of the painted set",
-    "BigSecondary": "the old flat look, not part of the painted set",
-    "SmallLabel": "a size-only label (the game's sizes)",
-    "BarLabel": "a size-only label (the game's sizes)",
-}
+# Every variation the game builds has a gohud name now; none stays in the game.
+GAME_ONLY = {}
 BASES = {
     "GoButton": "Button", "GoPrimaryButton": "Button", "GoDangerButton": "Button", "GoSuccessButton": "Button",
-    "GoToggleButton": "Button", "GoKeycap": "Button",
+    "GoInfoButton": "Button", "GoToggleButton": "Button", "GoKeycap": "Button",
     "GoCard": "PanelContainer", "GoInsetPanel": "PanelContainer", "GoKeycapPanel": "PanelContainer",
     "GoRibbon": "PanelContainer", "GoRibbonRed": "PanelContainer", "GoNotice": "PanelContainer",
     "GoTitle": "Label", "GoOutlineLabel": "Label",
@@ -145,6 +167,9 @@ BASES = {
     "GoLevelCard": "Button", "GoLevelCardCurrent": "Button", "GoLevelCardLocked": "Button",
     "GoHudPanel": "PanelContainer", "GoBannerGold": "PanelContainer", "GoNoticeGold": "PanelContainer",
     "GoChipDark": "Button", "GoIconOnly": "Button",
+    "GoPanelFlat": "PanelContainer", "GoCardFlat": "PanelContainer", "GoChoiceButton": "Button",
+    "GoBigButton": "Button", "GoBigSecondaryButton": "Button", "GoSmallLabel": "Label", "GoBarLabel": "Label",
+    "GoMapPreview": "Panel",
 }
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
@@ -190,7 +215,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         return bid
 
     def box(bid, bg, radius, border, border_color=INK, shadow=False, margin_h=14.0, margin_v=8.0, bottom=None,
-            outer=None):
+            outer=None, expand_top=0.0):
         """`UiTheme.box()` (and `chunky_box()` through `bottom` / `outer`) as a StyleBoxFlat sub-resource."""
         lines = ["content_margin_left = %g" % margin_h, "content_margin_top = %g" % margin_v[0],
                  "content_margin_right = %g" % margin_h, "content_margin_bottom = %g" % margin_v[1],
@@ -206,10 +231,23 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                       "shadow_offset = Vector2(%g, %g)" % outer[2]]
         elif shadow:
             lines += ["shadow_color = %s" % C(FLAT_SHADOW), "shadow_size = 1", "shadow_offset = Vector2(0, 4)"]
+        if expand_top:
+            lines.append("expand_margin_top = %g" % expand_top)
         boxes[bid] = ("StyleBoxFlat", lines)
         return bid
 
     boxes["painted_empty"] = ("StyleBoxEmpty", [])
+    # 🔤 One font for every part, as in the game: the theme's default font (every type without a font of its own
+    #    falls back to it before the engine's).
+    boxes["painted_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_BASE[0],
+                                               "fallbacks = Array[Font]([%s])" % ", ".join(
+                                                   'ExtResource("%s")' % rid for rid, _ in FONT_FALLBACKS)])
+    setT("default_font", 'SubResource("painted_font")')
+    # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
+    #    lifts it when the project chose a font of its own (gohud never replaces a project's font).
+    setT("metadata/go_body_font_baked", 'SubResource("painted_font")')
+    # 👆 The look's touch floor is the game's `Cfg.Touch.MIN_TARGET` (44), not the 48 every other look declares.
+    setT("GoHud/constants/touch", str(TOUCH_TARGET))
     for type_name, base in BASES.items():
         drop(type_name)
         setT(type_name + "/base_type", '&"%s"' % base)
@@ -232,7 +270,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         setT("%s/constants/h_separation" % type_name, 10)
 
     gloss("GoButton", "btn_grey.png")
-    gloss("GoPrimaryButton", "btn_blue.png")
+    gloss("GoPrimaryButton", "btn_green.png")
+    gloss("GoInfoButton", "btn_blue.png")
     gloss("GoDangerButton", "btn_red.png")
     gloss("GoSuccessButton", "btn_green.png")
     # The toggle (`_gloss_toggle`): the grey pill, blue while it is on.
@@ -318,6 +357,39 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoIconOnly/colors/icon_pressed_color", C(ICON_PRESSED))
     setT("GoIconOnly/colors/icon_hover_pressed_color", C(ICON_PRESSED))
 
+    # ── 🧱 The game's flat parts: the translucent panel and the white card (`box(..., shadow = true)`). ──
+    put("GoPanelFlat/styles/panel", box("painted_GoPanelFlat", PANEL, 14, 3, INK, shadow=True, margin_h=14.0,
+                                        margin_v=(8.0, 8.0)))
+    put("GoCardFlat/styles/panel", box("painted_GoCardFlat", WHITE, 24, 4, INK, shadow=True, margin_h=36.0,
+                                       margin_v=(26.0, 26.0)))
+
+    # 🔘 `_button_boxes()`: a flat key with a 7 px bottom edge (the hard shadow); pressed, the edge is 4 px and the key
+    #    steps down 3 px (`expand_margin_top = -3`, the word 3 px lower) — the CSS `:active` the game copies.
+    def flat_button(type_name, bg, hover, pressed_bg, margin_h, margin_v, ink, size, outline):
+        stem = "painted_%s" % type_name
+        normal = box(stem + "_normal", bg, 12, 3, INK, margin_h=margin_h, margin_v=(margin_v, margin_v), bottom=7)
+        hov = box(stem + "_hover", hover, 12, 3, INK, margin_h=margin_h, margin_v=(margin_v, margin_v), bottom=7)
+        down = box(stem + "_pressed", pressed_bg, 12, 3, INK, margin_h=margin_h, margin_v=(margin_v + 3.0, margin_v),
+                   bottom=4, expand_top=-3.0)
+        for state, bid in (("normal", normal), ("hover", hov), ("pressed", down), ("hover_pressed", down),
+                           ("focus", "painted_empty")):
+            put("%s/styles/%s" % (type_name, state), bid)
+        for slot in FONT_STATES:
+            setT("%s/colors/%s" % (type_name, slot), C(ink))
+        setT("%s/font_sizes/font_size" % type_name, size)
+        setT("%s/constants/outline_size" % type_name, outline)
+        setT("%s/colors/font_outline_color" % type_name, C(INK))
+
+    flat_button("GoBigButton", GREEN, GREEN_HOVER, GREEN_PRESSED, 34.0, 6.0, WHITE, BIG_FONT_SIZE, 3)
+    flat_button("GoBigSecondaryButton", SECONDARY, SECONDARY_HOVER, SECONDARY_PRESSED, 34.0, 6.0, WHITE, BIG_FONT_SIZE, 3)
+    flat_button("GoChoiceButton", DIFF_BG, DIFF_HOVER, DIFF_SELECTED, 14.0, 6.0, INK, DIFF_FONT_SIZE, 0)
+    # The chosen one (`.diff.selected`) is not a key going down but a key staying lit: cyan, a 4 px edge, the word 3 px
+    # lower, no step — so it replaces `_button_boxes`' pressed face, as the game does.
+    selected = box("painted_GoChoiceButton_pressed", DIFF_SELECTED, 12, 3, INK, margin_h=14.0, margin_v=(9.0, 6.0),
+                   bottom=4)
+    put("GoChoiceButton/styles/pressed", selected)
+    put("GoChoiceButton/styles/hover_pressed", selected)
+
     # ── 🔤 Labels: ink by default; the title and the outlined label white with a 6 px ink outline. ──
     setT("Label/colors/font_color", C(INK))
     setT("Label/colors/font_outline_color", C(INK))
@@ -328,6 +400,14 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoTitle/constants/line_spacing", -6)
     setT("GoOutlineLabel/colors/font_color", C(WHITE))
     setT("GoOutlineLabel/constants/outline_size", 6)
+    # The small print (12 px, ink at 75%) and a gauge's caption (11 px, the ink it inherits).
+    setT("GoSmallLabel/font_sizes/font_size", SMALL_FONT_SIZE)
+    setT("GoSmallLabel/colors/font_color", C(SMALL_INK))
+    setT("GoBarLabel/font_sizes/font_size", BAR_FONT_SIZE)
+    # 🗺️ The map thumbnail's dark box (`MapPreview._init()`). GoMapPreview reads `panel` off this type before its own
+    #    `_flat_box()`, so the look owns it — a skin that wants another frame changes it here, not in the widget.
+    put("GoMapPreview/styles/panel", box("painted_GoMapPreview", MAP_PREVIEW_BG, 6, 1, MAP_PREVIEW_RIM,
+                                         margin_h=0.0, margin_v=(0.0, 0.0)))
 
     # ── 🔽 The dropdown (`_dropdown`): a white, ink-rimmed box and a matching list. ──
     drop_box = box("painted_dropdown", WHITE, 10, 3, INK, margin_h=12.0, margin_v=(6.0, 6.0), bottom=5)
@@ -356,6 +436,16 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("PopupMenu/colors/font_hover_color", C(INK))
     setT("PopupMenu/font_sizes/font_size", DROPDOWN_FONT_SIZE)
     setT("PopupMenu/constants/v_separation", 10)
+    # The game's settings dropdowns keep the engine's arrow (12 px, 4 from the edge), and their lists the engine's
+    # radio marks and row padding: an OptionButton's items are radio items, so the marks are drawn. `make_theme.py`
+    # gives both the arcade's own; they go, so the dropdown and its list draw as the game's do.
+    # (Its disabled tint stays: the game never disables a dropdown, and gohud gives every key's icon a colour.)
+    unset = ["OptionButton/icons/arrow", "OptionButton/constants/arrow_margin"]
+    unset += ["PopupMenu/icons/%s" % mark for mark in ("checked", "unchecked", "radio_checked", "radio_unchecked")]
+    unset += ["PopupMenu/icons/%s_disabled" % mark for mark in ("checked", "unchecked", "radio_checked", "radio_unchecked")]
+    unset += ["PopupMenu/constants/%s" % c for c in ("h_separation", "icon_max_width", "item_start_padding",
+                                                      "item_end_padding")]
+    T[:] = [entry for entry in T if entry.split(" = ")[0] not in unset]
 
     # ── ✏ The text field (`join_lobby.gd`, `create_room.gd`, `secret_prompt.gd`): a white box with a grey rim, a blue
     #    ring over it while typing, the pale blue when it cannot be typed in; ink text and caret. The game has no
@@ -394,6 +484,15 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     #    game's size in every direction (the game draws them unflipped right to left too); off, they fade. The game's
     #    switch draws no focus ring. ──
     put("CheckButton/styles/focus", "painted_empty")
+    # The label beside it is ink in every state, as the game's labels are: the pill says on or off, so the words must
+    # not turn blue with it (Button's pressed colours would leak through otherwise). The pill keeps its own colours
+    # (white, the engine default the game leaves), and it sits the engine's 4 from its label, as the game's does.
+    for slot in ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"):
+        setT("CheckButton/colors/%s" % slot, C(INK))
+    for slot in ("icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color",
+                 "icon_focus_color"):
+        setT("CheckButton/colors/%s" % slot, C(WHITE))
+    setT("CheckButton/constants/h_separation", "4")
     for on, file in ((True, "toggle_on.png"), (False, "toggle_off.png")):
         key = "checked" if on else "unchecked"
         stem = "painted_" + file[:-len(".png")]
@@ -402,6 +501,17 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         for suffix in ("", "_mirrored"):
             put("CheckButton/icons/%s%s" % (key, suffix), lit)
             put("CheckButton/icons/%s_disabled%s" % (key, suffix), off)
+
+    # 🔘 A plain Button is the engine's, as in the game (whose theme sets no Button item): the arcade's blue pill there
+    #    would paint buttons the game draws flat, and leak its outline, gap and disabled face into every Button
+    #    variation that leaves those items unset (the chip's label outlined, the keycap's 4 gap at 10).
+    drop("Button")
+    # 💬 The rest the game's theme leaves to the engine and still draws: its tooltips (dark, light text), the 4 px gap
+    #    of every box and grid it does not override, and the scroll bars of the controls card and the room list.
+    for type_name in ("TooltipPanel", "TooltipLabel", "BoxContainer", "HBoxContainer", "VBoxContainer",
+                      "GridContainer", "HFlowContainer", "VFlowContainer", "ScrollContainer", "HScrollBar",
+                      "VScrollBar"):
+        drop(type_name)
 
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()
@@ -445,6 +555,9 @@ def ext_resources(boxes):
         lines.append('[ext_resource type="Script" path="%s" id="sprite"]' % SPRITE_SCRIPT)
     if 'script = ExtResource("sprite_icon")' in heads:
         lines.append('[ext_resource type="Script" path="%s" id="sprite_icon"]' % ICON_SCRIPT)
+    if any(body[:1] == ['base_font = ExtResource("%s")' % FONT_BASE[0]] for _, body in boxes.values()):
+        for rid, path in [FONT_BASE] + FONT_FALLBACKS:
+            lines.append('[ext_resource type="FontFile" path="%s" id="%s"]' % (path, rid))
     if not lines:
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
@@ -456,15 +569,20 @@ def ext_resources(boxes):
 
 def write_map():
     """`tools/arcade_painted_map.json` — the game's names for the variations above (generated, do not edit)."""
-    sizes = {"GoButton": GLOSS_FONT_SIZE, "GoPrimaryButton": GLOSS_FONT_SIZE, "GoDangerButton": GLOSS_FONT_SIZE,
+    sizes = {"GoButton": GLOSS_FONT_SIZE, "GoPrimaryButton": GLOSS_FONT_SIZE, "GoInfoButton": GLOSS_FONT_SIZE,
+             "GoDangerButton": GLOSS_FONT_SIZE,
              "GoSuccessButton": GLOSS_FONT_SIZE, "GoToggleButton": GLOSS_FONT_SIZE, "GoKeycap": KEYCAP_FONT_SIZE,
              "GoTitle": TITLE_FONT_SIZE, "OptionButton": DROPDOWN_FONT_SIZE, "PopupMenu": DROPDOWN_FONT_SIZE,
-             "GoChipDark": CHIP_FONT_SIZE}
+             "GoChipDark": CHIP_FONT_SIZE, "GoBigButton": BIG_FONT_SIZE, "GoBigSecondaryButton": BIG_FONT_SIZE,
+             "GoChoiceButton": DIFF_FONT_SIZE, "GoSmallLabel": SMALL_FONT_SIZE, "GoBarLabel": BAR_FONT_SIZE}
     body = {"_help": "Generated by tools/theme_arcade_painted.py — do not edit by hand. Magnet Mayhem's UiTheme "
                      "variation name → the gohud_arcade_light variation that carries exactly its items and values. "
                      "The game builds its theme as duplicate(arcade_light) plus these names as aliases. game_only "
                      "lists the game's variations that stay in the game (why in _game_only_why).",
-            "_font_sizes": {"_help": "No font is written. The font sizes written are the game's literal ones or a Cfg "
+            "_font": {"_help": "The theme's default_font is the game's UiTheme.get_font(): a FontVariation of base "
+                               "font + fallbacks (the game reorders the fallbacks per language itself).",
+                      "base_font": FONT_BASE[1], "fallbacks": [path for _, path in FONT_FALLBACKS]},
+            "_font_sizes": {"_help": "Only the default font is written; no variation has a font of its own. The font sizes written are the game's literal ones or a Cfg "
                                      "size's desktop value (named in _cfg_sizes).",
                             "written": sizes, "left_to_game": []},
             "_cfg_sizes": {"_help": "Values that are a Cfg size in the game, written at their desktop value; where "

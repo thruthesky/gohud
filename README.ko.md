@@ -45,14 +45,14 @@
   알림이 입력을 먹지 않게 하는 `mouse_behavior_recursive`, 흐르는 줄의 `last_wrap_alignment`.
 - **순수 GDScript.** 오토로드 불필요, 엔진 모듈·GDExtension 없음.
 - **MIT** — 코드와 그림 전부, 기본 아이콘 84종·중세 각인 아이콘 16종·게임 아이콘 187종·아이콘 라이브러리 1,000종 포함. 중세 제목에 쓰는
-  Cinzel 글꼴과 Material 제목·라벨에 쓰는 Roboto 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
+  Cinzel 글꼴, Material 제목·라벨에 쓰는 Roboto 글꼴, `arcade_light` 의 Nunito·Noto Sans CJK 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
 
 ### 아케이드 페인티드 룩
 
 `arcade_light`는 Magnet Mayhem에서 만든 PNG와 흰 글리프를 쓴다. `GoStyleBoxSprite`와
 `GoSkinArcadePainted`가 버튼·카드·리본·키캡·배지를 그리며, 모달 뒤에는 게임의 블러 스크림을 쓴다.
 입력칸(`LineEdit`·`TextEdit`)은 게임의 평평한 입력칸이고, 가로 슬라이더(`GoSliderGreen`·`GoSliderCyan` 포함)와 스위치도
-페인티드 스프라이트다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
+페인티드 스프라이트다. 스위치의 글자는 켜져도 잉크색 그대로이고 알약에서 4 dp 떨어진다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
 가운데 뜨는 `GoSurface`는 게임의 `PaintedDialog`와 같다 — 페인티드 카드, 폭 400 dp, 줄 간격 8 dp(`GoSkin.window_width()`, `GoSkin.window_gap()`),
 닫기 버튼 대신 리본 모서리의 빨간 자석(`GoSurface.corner`; Escape·뒤로 가기로는 여전히 닫힌다), 57 dp 리본 위의
 34 dp 제목(넘치면 24 dp까지 줄어든다). 안의 부품도 게임과 같다 — `add_inset()`·`add_line()`·`add_row()`·`add_gloss()`
@@ -177,7 +177,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `kids_dark` | 같은 젤리 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼과 민트 제목 리본 | `GoSkinKids` |
 | `comic_light` | 만화 컷 — 키·입력칸·목록 줄·판마다 굵은 잉크 테두리(`GoStyleBoxComic`)와 오른쪽 아래로 떨어지는 연하고 단단한 그림자(누르면 사라짐), 창 제목 뒤의 노란 말풍선 상자, 신문지 바탕에 남색 잉크. 테두리 두께·그림자 크기·그림자 표시 여부는 설정 한 줄씩(`GoUi.config.comic_border_width`·`comic_shadow_size`·`comic_shadow`)이고, 위젯 하나는 `GoStyle.comic_shadow(node, on)` 으로 따로 정한다 | `GoSkinComic` |
 | `comic_dark` | 같은 만화 컷의 밤 — 남색 바탕에 분필 잉크, 햇살 노랑 기본 버튼 | `GoSkinComic` |
-| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 파란 기본 버튼, 초록 성공 버튼(`GoSuccessButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 입력칸·가로 슬라이더·스위치도 페인티드이고, 탭과 세로 슬라이더는 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
+| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 초록 기본 버튼과 초록 성공 버튼(`GoSuccessButton`), 파란 정보 버튼(`GoInfoButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 변형이 없는 `Button`은 게임처럼 엔진 기본값이다(페인티드 키는 모두 변형). 드롭다운의 화살표와 목록의 라디오 표시도 게임처럼 엔진 것이다. 툴팁·컨테이너 간격·스크롤바도 게임처럼 엔진 것이다. 입력칸·가로 슬라이더·스위치도 페인티드이고, 탭과 세로 슬라이더는 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
 | `arcade_dark` | 코드로 그린 오락실의 밤 — 남색 보드와 바탕, 광택이 있는 알약 키, 금색 리본과 여러 칸 게이지 | `GoSkinArcade` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
@@ -420,11 +420,13 @@ icons.canonical(&"gear")             # &"settings"
 `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`,
 `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
-`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoSliderGreen` · `GoSliderCyan`
+`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoInfoButton`(파란 알약), `GoSliderGreen` · `GoSliderCyan`
 (초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide`(스테이지 선택 창과 넓은 리본), `GoLevelCard` ·
 `GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
 판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만
-있는 동그란 버튼). 이 변형이 없는 테마는 기본 타입으로 돌아간다.
+있는 동그란 버튼). 평평한 부품도 있다: `GoPanelFlat` · `GoCardFlat`(잉크 테두리의 반투명 판과 흰 카드),
+`GoChoiceButton`(고르면 청록으로 남는 밝은 선택 키), `GoBigButton` · `GoBigSecondaryButton`(아래 테두리가 두꺼운 큰
+초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px). 이 변형이 없는 테마는 기본 타입으로 돌아간다.
 
 채운 버튼은 기본으로 평평하다. `*GlowButton` 두 변형은 버튼 자기 색의 부드러운 그림자(sci-fi 모양은 글로우)로 띄운다 —
 채운 버튼 전부는 `GoConfig.button_glow` 를 켜고, 버튼 하나만은 `GoStyle.glow(button)` 을 부른다.
@@ -640,7 +642,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoCarousel` | VBoxContainer | 이벤트 배너와 캐릭터 선택. **저절로 넘어가지 않는다** — 자동으로 넘어가는 배너는 사람이 누르려던 것을 가로챈다. 점은 눌리고, 몇 번째인지 소리로 읽힌다 |
 | `GoKbd` | HBoxContainer | 키 안내. `GoKbd.for_action(&"interact")` 가 InputMap 에서 **실제 배치**를 읽으므로 키를 바꾸면 안내도 바뀐다. `hide_on_handheld` 가 폰에서는 감춘다. `done` 은 플레이어가 끝낸 단계의 키캡을 초록으로 바꾼다 |
 | `GoKeyCluster` | Control | 역 T 모양의 이동 키 네 개 — W 위에 A S D, 또는 방향키 — 조작 안내 화면처럼 보여 준다. 키마다 룩의 키캡(`GoSkin.key_cluster_box`)이고 방향 글자는 삼각형으로 그리며, 플레이어가 배치를 누르면 `picked` 가 나온다. 키 이름은 번역하지 않는다 |
-| `GoLevelCard` | Button | 스테이지 선택 카드 — 썸네일, 제목, 부제 줄(사람 아이콘과 "OPPONENTS: 3"), 오른쪽에 깬 레벨은 체크, 잠긴 레벨은 자물쇠(카드는 `disabled`), 다음 레벨은 비스듬한 PLAY! 태그. `selected` 는 금색 링을 그린다. 얼굴은 `GoLevelCard` · `GoLevelCardCurrent` · `GoLevelCardLocked` 에서 오고, 글자는 칸에 맞게 줄어든다(`GoStyle.fit_font_size`) |
+| `GoLevelCard` | Button | 스테이지 선택 카드 — 썸네일, 제목, 부제 줄(사람 아이콘과 "OPPONENTS: 3"), 오른쪽에 깬 레벨은 체크, 잠긴 레벨은 자물쇠(카드는 `disabled`), 다음 레벨은 비스듬한 PLAY! 태그. `selected` 는 금색 링을 그린다. 얼굴은 `GoLevelCard` · `GoLevelCardCurrent` · `GoLevelCardLocked` 에서 오고, 글자는 칸에 맞게 줄어든다(`GoStyle.fit_font_size` — 테마의 글꼴로 잰다. `arcade_light` 에서는 게임처럼 Nunito 와 CJK 대체 글꼴 넷) |
 | `GoCoverImage` | Control | 상자를 가득 채우는 그림 — CSS `object-fit: cover`: 빈틈이 없을 때까지 키우고 넘친 부분은 자르며, `focus` 가 남길 부분을 고른다. `clip_contents` 가 필요 없고 마우스는 통과시킨다 |
 | `GoGlyphButton` | Button | 라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약. 글리프·간격·라벨이 함께 가운데에 선다. `Button.icon` 으로는 안 된다. 라벨은 평범한 `text` 라 번역과 테스트가 다른 버튼과 같다 |
 | `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
@@ -841,8 +843,10 @@ GoUi.config.number_formatter = func(amount: float) -> String:
     return str(roundi(amount))
 ```
 
-> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제)과 Roboto(Material
-> 프리셋의 제목·캡션·버튼 글자 — 프로젝트에 글꼴 설정이 없으면 본문까지) 둘이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
+> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제), Roboto(Material
+> 프리셋의 제목·캡션·버튼 글자 — 프로젝트에 글꼴 설정이 없으면 본문까지), 그리고 Magnet Mayhem 의 Nunito 와 Noto Sans
+> CJK 폴백(프로젝트에 글꼴 설정이 없으면 `arcade_light` 의 모든 글자 — CJK 파일에는 게임에 쓰는 글자만 들어 있어 나머지는
+> 시스템 글꼴이 그린다)이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
 > 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용
 > 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**. 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
 
@@ -859,7 +863,8 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 
 ## 접근성
 
-- 보이는 컨트롤이 작아도 터치 영역은 `min_touch_size`(48dp) 아래로 내려가지 않는다.
+- 보이는 컨트롤이 작아도 터치 영역은 `min_touch_size`(48dp) 아래로 내려가지 않는다. 룩마다
+  `touch` 토큰도 둔다. 모두 48이고 `arcade_light`만 Magnet Mayhem의 44다.
 - 아이콘만 있는 버튼은 툴팁 문구를 `accessibility_name` 으로 내보낸다.
 - `reduce_motion` 을 켜면 페이드와 깜빡이는 강조가 꺼진다.
 - 포커스 링은 키보드·게임패드 사용자에게만 보이고, 누르거나 클릭한 뒤에는 뜨지 않는다. 채워진 버튼에는
@@ -1004,5 +1009,6 @@ MIT — [LICENSE](LICENSE). 코드와 함께 든 그림(기본 아이콘 84종, 
 gohud 를 위해 만든 것이라 역시 MIT 다. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
 게임 아이콘 세트 187종과 아이콘 라이브러리 1,000종도 MIT 다 — 게임 171종과 라이브러리 전부는 Tabler Icons(MIT, Copyright (c) 2020-2026 Paweł Kuna)의 경로 데이터를 쓰고, 게임 16종은 gohud 를 위해 그렸다.
 Cinzel·Roboto 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`,
-`assets/fonts/roboto/OFL.txt`).
+`assets/fonts/roboto/OFL.txt`). `arcade_light` 의 Nunito Bold 와 Noto Sans KR·JP·SC·TC Bold 서브셋(Magnet Mayhem 의 파일)도
+같은 라이선스다(`assets/fonts/nunito/OFL.txt`, `assets/fonts/noto_sans_cjk/OFL.txt`).
 자세한 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

@@ -1,8 +1,13 @@
-[gd_resource type="Theme" load_steps=145 format=3]
+[gd_resource type="Theme" load_steps=158 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_texture_sprite.gd" id="sprite_icon"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/nunito/Nunito-Bold.ttf" id="font_nunito"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansKR-Bold.ttf" id="font_noto_kr"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansJP-Bold.ttf" id="font_noto_jp"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansSC-Bold.ttf" id="font_noto_sc"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansTC-Bold.ttf" id="font_noto_tc"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_blue.png" id="painted_btn_blue"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_green.png" id="painted_btn_green"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_grey.png" id="painted_btn_grey"]
@@ -39,72 +44,6 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/arrow_down.svg" id="arrow_down"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/arrow_right.svg" id="arrow_right"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/arrow_left.svg" id="arrow_left"]
-
-[sub_resource type="StyleBox" id="btn_normal"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 12
-bg_color = Color(0.31033, 0.432365, 0.825, 1)
-bottom_color = Color(0.185512, 0.325406, 0.7755, 1)
-shade_color = Color(0.152799, 0.268025, 0.63875, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 3
-band = 0
-shine = 0.85
-lip = 4
-radius = 24
-
-[sub_resource type="StyleBox" id="btn_hover"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 12
-bg_color = Color(0.52276, 0.63592, 1, 1)
-bottom_color = Color(0.40192, 0.53164, 0.949, 1)
-shade_color = Color(0.279153, 0.384277, 0.7225, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 3
-band = 0
-shine = 0.85
-lip = 4
-radius = 24
-
-[sub_resource type="StyleBox" id="btn_pressed"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 11
-content_margin_right = 16
-content_margin_bottom = 9
-bg_color = Color(0.30973, 0.427919, 0.80818, 1)
-bottom_color = Color(0.179666, 0.315151, 0.75106, 1)
-shade_color = Color(0.145599, 0.255394, 0.60865, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 3
-band = 0
-shine = 0.85
-lip = 4
-pressed = true
-sink = 3
-radius = 24
-
-[sub_resource type="StyleBox" id="btn_disabled"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 8.5
-content_margin_right = 16
-content_margin_bottom = 11.5
-bg_color = Color(0.795967, 0.799769, 0.818779, 1)
-bottom_color = Color(0.768144, 0.772464, 0.794068, 1)
-shade_color = Color(0.63726, 0.645423, 0.68545, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 0.45)
-border_width = 3
-band = 0
-shine = 0
-lip = 3
-radius = 24
 
 [sub_resource type="StyleBox" id="btn_focus"]
 script = ExtResource("arcade")
@@ -529,50 +468,6 @@ shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxEmpty" id="empty"]
 
-[sub_resource type="StyleBoxFlat" id="scroll_track"]
-content_margin_left = 3
-content_margin_top = 3
-content_margin_right = 3
-content_margin_bottom = 3
-bg_color = Color(0.171943, 0.187373, 0.264527, 0.14)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-corner_detail = 8
-
-[sub_resource type="StyleBox" id="scroll_grab"]
-script = ExtResource("arcade")
-content_margin_left = 3
-content_margin_top = 3
-content_margin_right = 3
-content_margin_bottom = 3
-bg_color = Color(0.436017, 0.42113, 0.66676, 1)
-bottom_color = Color(0.298641, 0.281576, 0.563152, 1)
-shade_color = Color(0.225244, 0.212373, 0.424745, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 1.5
-band = 0
-shine = 0
-lip = 0
-radius = 3
-
-[sub_resource type="StyleBox" id="scroll_grab_hover"]
-script = ExtResource("arcade")
-content_margin_left = 3
-content_margin_top = 3
-content_margin_right = 3
-content_margin_bottom = 3
-bg_color = Color(0.436017, 0.42113, 0.66676, 1)
-bottom_color = Color(0.298641, 0.281576, 0.563152, 1)
-shade_color = Color(0.225244, 0.212373, 0.424745, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 1.5
-band = 0
-shine = 0
-lip = 0
-radius = 3
-
 [sub_resource type="StyleBox" id="slider_track"]
 script = ExtResource("arcade")
 content_margin_left = 0
@@ -655,22 +550,6 @@ content_margin_top = 0.5
 content_margin_right = 0
 content_margin_bottom = 0.5
 bg_color = Color(0.113725, 0.137255, 0.25098, 0.8)
-
-[sub_resource type="StyleBox" id="tooltip"]
-script = ExtResource("arcade")
-content_margin_left = 10
-content_margin_top = 6
-content_margin_right = 10
-content_margin_bottom = 6
-bg_color = Color(1, 0.904706, 0.620588, 1)
-bottom_color = Color(1, 0.862353, 0.451961, 1)
-shade_color = Color(0.734117, 0.592941, 0.185098, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 2
-band = 0
-shine = 0
-lip = 0
-radius = 10
 
 [sub_resource type="StyleBox" id="fold_title"]
 script = ExtResource("arcade")
@@ -874,6 +753,10 @@ expand_margin_bottom = -3
 
 [sub_resource type="StyleBoxEmpty" id="painted_empty"]
 
+[sub_resource type="FontVariation" id="painted_font"]
+base_font = ExtResource("font_nunito")
+fallbacks = Array[Font]([ExtResource("font_noto_kr"), ExtResource("font_noto_jp"), ExtResource("font_noto_sc"), ExtResource("font_noto_tc")])
+
 [sub_resource type="StyleBox" id="painted_GoButton_normal"]
 script = ExtResource("sprite")
 content_margin_left = 22
@@ -915,12 +798,47 @@ content_margin_left = 22
 content_margin_top = 3
 content_margin_right = 22
 content_margin_bottom = 6
+texture = ExtResource("painted_btn_green")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+face_color = Color(0.262745, 0.843137, 0.356863, 1)
+
+[sub_resource type="StyleBox" id="painted_GoPrimaryButton_pressed"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 5
+content_margin_right = 22
+content_margin_bottom = 4
+texture = ExtResource("painted_btn_green")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+tint = Color(0.8, 0.8, 0.86, 1)
+face_color = Color(0.210196, 0.67451, 0.306902, 1)
+
+[sub_resource type="StyleBox" id="painted_GoPrimaryButton_disabled"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+texture = ExtResource("painted_btn_green")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+tint = Color(0.6, 0.6, 0.66, 0.85)
+face_color = Color(0.157647, 0.505882, 0.23553, 0.85)
+
+[sub_resource type="StyleBox" id="painted_GoInfoButton_normal"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
 texture = ExtResource("painted_btn_blue")
 edge = Vector4(100, 65, 100, 66)
 pixels_per_unit = 3.0
 face_color = Color(0.227451, 0.47451, 0.988235, 1)
 
-[sub_resource type="StyleBox" id="painted_GoPrimaryButton_pressed"]
+[sub_resource type="StyleBox" id="painted_GoInfoButton_pressed"]
 script = ExtResource("sprite")
 content_margin_left = 22
 content_margin_top = 5
@@ -932,7 +850,7 @@ pixels_per_unit = 3.0
 tint = Color(0.8, 0.8, 0.86, 1)
 face_color = Color(0.181961, 0.379608, 0.849882, 1)
 
-[sub_resource type="StyleBox" id="painted_GoPrimaryButton_disabled"]
+[sub_resource type="StyleBox" id="painted_GoInfoButton_disabled"]
 script = ExtResource("sprite")
 content_margin_left = 22
 content_margin_top = 3
@@ -1339,6 +1257,206 @@ shadow_color = Color(0.113725, 0.137255, 0.25098, 1)
 shadow_size = 3
 shadow_offset = Vector2(0, 2)
 
+[sub_resource type="StyleBoxFlat" id="painted_GoPanelFlat"]
+content_margin_left = 14
+content_margin_top = 8
+content_margin_right = 14
+content_margin_bottom = 8
+bg_color = Color(1, 1, 1, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 1
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="painted_GoCardFlat"]
+content_margin_left = 36
+content_margin_top = 26
+content_margin_right = 36
+content_margin_bottom = 26
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 1
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="painted_GoBigButton_normal"]
+content_margin_left = 34
+content_margin_top = 6
+content_margin_right = 34
+content_margin_bottom = 6
+bg_color = Color(0.243137, 0.811765, 0.352941, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 7
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoBigButton_hover"]
+content_margin_left = 34
+content_margin_top = 6
+content_margin_right = 34
+content_margin_bottom = 6
+bg_color = Color(0.333333, 0.862745, 0.439216, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 7
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoBigButton_pressed"]
+content_margin_left = 34
+content_margin_top = 9
+content_margin_right = 34
+content_margin_bottom = 6
+bg_color = Color(0.203922, 0.721569, 0.305882, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 4
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+expand_margin_top = -3
+
+[sub_resource type="StyleBoxFlat" id="painted_GoBigSecondaryButton_normal"]
+content_margin_left = 34
+content_margin_top = 6
+content_margin_right = 34
+content_margin_bottom = 6
+bg_color = Color(0.541176, 0.560784, 0.701961, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 7
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoBigSecondaryButton_hover"]
+content_margin_left = 34
+content_margin_top = 6
+content_margin_right = 34
+content_margin_bottom = 6
+bg_color = Color(0.603922, 0.623529, 0.752941, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 7
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoBigSecondaryButton_pressed"]
+content_margin_left = 34
+content_margin_top = 9
+content_margin_right = 34
+content_margin_bottom = 6
+bg_color = Color(0.478431, 0.498039, 0.639216, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 4
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+expand_margin_top = -3
+
+[sub_resource type="StyleBoxFlat" id="painted_GoChoiceButton_normal"]
+content_margin_left = 14
+content_margin_top = 6
+content_margin_right = 14
+content_margin_bottom = 6
+bg_color = Color(0.933333, 0.945098, 0.984314, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 7
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoChoiceButton_hover"]
+content_margin_left = 14
+content_margin_top = 6
+content_margin_right = 14
+content_margin_bottom = 6
+bg_color = Color(0.964706, 0.972549, 1, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 7
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoChoiceButton_pressed"]
+content_margin_left = 14
+content_margin_top = 9
+content_margin_right = 14
+content_margin_bottom = 6
+bg_color = Color(0.498039, 0.894118, 1, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 4
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoMapPreview"]
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+bg_color = Color(0.094118, 0.129412, 0.227451, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.345098, 0.384314, 0.482353, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="StyleBoxFlat" id="painted_dropdown"]
 content_margin_left = 12
 content_margin_top = 6
@@ -1532,29 +1650,6 @@ draw_size = Vector2(76, 29)
 tint = Color(0.6, 0.6, 0.66, 0.85)
 
 [resource]
-BoxContainer/constants/separation = 12
-Button/colors/font_color = Color(1, 1, 1, 1)
-Button/colors/font_disabled_color = Color(0.817827, 0.821222, 0.838196, 1)
-Button/colors/font_focus_color = Color(1, 1, 1, 1)
-Button/colors/font_hover_color = Color(1, 1, 1, 1)
-Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
-Button/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
-Button/colors/font_pressed_color = Color(1, 1, 1, 1)
-Button/colors/icon_disabled_color = Color(1, 1, 1, 0.8)
-Button/colors/icon_focus_color = Color(1, 1, 1, 1)
-Button/colors/icon_hover_color = Color(1, 1, 1, 1)
-Button/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
-Button/colors/icon_normal_color = Color(1, 1, 1, 1)
-Button/colors/icon_pressed_color = Color(1, 1, 1, 1)
-Button/constants/h_separation = 8
-Button/constants/outline_size = 6
-Button/font_sizes/font_size = 16
-Button/styles/disabled = SubResource("btn_disabled")
-Button/styles/focus = SubResource("btn_focus")
-Button/styles/hover = SubResource("btn_hover")
-Button/styles/hover_pressed = SubResource("btn_pressed")
-Button/styles/normal = SubResource("btn_normal")
-Button/styles/pressed = SubResource("btn_pressed")
 CheckBox/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 CheckBox/colors/font_disabled_color = Color(0.171943, 0.187373, 0.264527, 1)
 CheckBox/colors/font_focus_color = Color(0.113725, 0.137255, 0.25098, 1)
@@ -1588,15 +1683,15 @@ CheckButton/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 CheckButton/colors/font_disabled_color = Color(0.171943, 0.187373, 0.264527, 1)
 CheckButton/colors/font_focus_color = Color(0.113725, 0.137255, 0.25098, 1)
 CheckButton/colors/font_hover_color = Color(0.113725, 0.137255, 0.25098, 1)
-CheckButton/colors/font_hover_pressed_color = Color(0.067322, 0.172266, 0.415816, 1)
-CheckButton/colors/font_pressed_color = Color(0.067322, 0.172266, 0.415816, 1)
+CheckButton/colors/font_hover_pressed_color = Color(0.113725, 0.137255, 0.25098, 1)
+CheckButton/colors/font_pressed_color = Color(0.113725, 0.137255, 0.25098, 1)
 CheckButton/colors/icon_disabled_color = Color(0.171943, 0.187373, 0.264527, 0.5)
-CheckButton/colors/icon_focus_color = Color(0.182429, 0.172568, 0.335275, 1)
-CheckButton/colors/icon_hover_color = Color(0.113725, 0.137255, 0.25098, 1)
-CheckButton/colors/icon_hover_pressed_color = Color(0.103552, 0.264971, 0.639586, 1)
-CheckButton/colors/icon_normal_color = Color(0.182429, 0.172568, 0.335275, 1)
-CheckButton/colors/icon_pressed_color = Color(0.103552, 0.264971, 0.639586, 1)
-CheckButton/constants/h_separation = 12
+CheckButton/colors/icon_focus_color = Color(1, 1, 1, 1)
+CheckButton/colors/icon_hover_color = Color(1, 1, 1, 1)
+CheckButton/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+CheckButton/colors/icon_normal_color = Color(1, 1, 1, 1)
+CheckButton/colors/icon_pressed_color = Color(1, 1, 1, 1)
+CheckButton/constants/h_separation = 4
 CheckButton/constants/outline_size = 0
 CheckButton/font_sizes/font_size = 16
 CheckButton/icons/checked = SubResource("painted_toggle_on")
@@ -1630,6 +1725,8 @@ FoldableContainer/styles/title_hover_panel = SubResource("fold_title_hover")
 FoldableContainer/styles/title_panel = SubResource("fold_title")
 GoBannerGold/base_type = &"PanelContainer"
 GoBannerGold/styles/panel = SubResource("painted_GoBannerGold")
+GoBarLabel/base_type = &"Label"
+GoBarLabel/font_sizes/font_size = 11
 GoBareButton/base_type = &"Button"
 GoBareButton/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 GoBareButton/colors/font_disabled_color = Color(0.171943, 0.187373, 0.264527, 1)
@@ -1650,6 +1747,34 @@ GoBareButton/styles/hover = SubResource("empty")
 GoBareButton/styles/hover_pressed = SubResource("empty")
 GoBareButton/styles/normal = SubResource("empty")
 GoBareButton/styles/pressed = SubResource("empty")
+GoBigButton/base_type = &"Button"
+GoBigButton/colors/font_color = Color(1, 1, 1, 1)
+GoBigButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoBigButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoBigButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoBigButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoBigButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoBigButton/constants/outline_size = 3
+GoBigButton/font_sizes/font_size = 24
+GoBigButton/styles/focus = SubResource("painted_empty")
+GoBigButton/styles/hover = SubResource("painted_GoBigButton_hover")
+GoBigButton/styles/hover_pressed = SubResource("painted_GoBigButton_pressed")
+GoBigButton/styles/normal = SubResource("painted_GoBigButton_normal")
+GoBigButton/styles/pressed = SubResource("painted_GoBigButton_pressed")
+GoBigSecondaryButton/base_type = &"Button"
+GoBigSecondaryButton/colors/font_color = Color(1, 1, 1, 1)
+GoBigSecondaryButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoBigSecondaryButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoBigSecondaryButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoBigSecondaryButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoBigSecondaryButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoBigSecondaryButton/constants/outline_size = 3
+GoBigSecondaryButton/font_sizes/font_size = 24
+GoBigSecondaryButton/styles/focus = SubResource("painted_empty")
+GoBigSecondaryButton/styles/hover = SubResource("painted_GoBigSecondaryButton_hover")
+GoBigSecondaryButton/styles/hover_pressed = SubResource("painted_GoBigSecondaryButton_pressed")
+GoBigSecondaryButton/styles/normal = SubResource("painted_GoBigSecondaryButton_normal")
+GoBigSecondaryButton/styles/pressed = SubResource("painted_GoBigSecondaryButton_pressed")
 GoButton/base_type = &"Button"
 GoButton/colors/font_color = Color(1, 1, 1, 1)
 GoButton/colors/font_disabled_color = Color(1, 1, 1, 0.6)
@@ -1672,6 +1797,8 @@ GoCaptionLabel/colors/font_color = Color(0.182429, 0.172568, 0.335275, 1)
 GoCaptionLabel/font_sizes/font_size = 13
 GoCard/base_type = &"PanelContainer"
 GoCard/styles/panel = SubResource("painted_GoCard")
+GoCardFlat/base_type = &"PanelContainer"
+GoCardFlat/styles/panel = SubResource("painted_GoCardFlat")
 GoChipDark/base_type = &"Button"
 GoChipDark/colors/font_color = Color(1, 1, 1, 1)
 GoChipDark/colors/font_focus_color = Color(1, 1, 1, 1)
@@ -1685,6 +1812,20 @@ GoChipDark/styles/hover = SubResource("painted_GoChipDark")
 GoChipDark/styles/hover_pressed = SubResource("painted_GoChipDark_pressed")
 GoChipDark/styles/normal = SubResource("painted_GoChipDark")
 GoChipDark/styles/pressed = SubResource("painted_GoChipDark_pressed")
+GoChoiceButton/base_type = &"Button"
+GoChoiceButton/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoChoiceButton/colors/font_focus_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoChoiceButton/colors/font_hover_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoChoiceButton/colors/font_hover_pressed_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoChoiceButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoChoiceButton/colors/font_pressed_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoChoiceButton/constants/outline_size = 0
+GoChoiceButton/font_sizes/font_size = 15
+GoChoiceButton/styles/focus = SubResource("painted_empty")
+GoChoiceButton/styles/hover = SubResource("painted_GoChoiceButton_hover")
+GoChoiceButton/styles/hover_pressed = SubResource("painted_GoChoiceButton_pressed")
+GoChoiceButton/styles/normal = SubResource("painted_GoChoiceButton_normal")
+GoChoiceButton/styles/pressed = SubResource("painted_GoChoiceButton_pressed")
 GoCompactButton/base_type = &"Button"
 GoCompactButton/colors/font_color = Color(1, 1, 1, 1)
 GoCompactButton/colors/font_disabled_color = Color(0.817827, 0.821222, 0.838196, 1)
@@ -1802,7 +1943,7 @@ GoHud/constants/screen_margin = 16
 GoHud/constants/scroll_deadzone = 18
 GoHud/constants/scroll_edge = 4
 GoHud/constants/scrollbar_width = 6
-GoHud/constants/touch = 48
+GoHud/constants/touch = 44
 GoHud/styles/card = SubResource("card")
 GoHud/styles/empty = SubResource("empty")
 GoHud/styles/focus = SubResource("btn_focus")
@@ -1842,6 +1983,23 @@ GoIconOnly/styles/hover = SubResource("painted_empty")
 GoIconOnly/styles/hover_pressed = SubResource("painted_empty")
 GoIconOnly/styles/normal = SubResource("painted_empty")
 GoIconOnly/styles/pressed = SubResource("painted_empty")
+GoInfoButton/base_type = &"Button"
+GoInfoButton/colors/font_color = Color(1, 1, 1, 1)
+GoInfoButton/colors/font_disabled_color = Color(1, 1, 1, 0.6)
+GoInfoButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoInfoButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoInfoButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoInfoButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoInfoButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoInfoButton/constants/h_separation = 10
+GoInfoButton/constants/outline_size = 4
+GoInfoButton/font_sizes/font_size = 22
+GoInfoButton/styles/disabled = SubResource("painted_GoInfoButton_disabled")
+GoInfoButton/styles/focus = SubResource("painted_empty")
+GoInfoButton/styles/hover = SubResource("painted_GoInfoButton_normal")
+GoInfoButton/styles/hover_pressed = SubResource("painted_GoInfoButton_pressed")
+GoInfoButton/styles/normal = SubResource("painted_GoInfoButton_normal")
+GoInfoButton/styles/pressed = SubResource("painted_GoInfoButton_pressed")
 GoInsetPanel/base_type = &"PanelContainer"
 GoInsetPanel/styles/panel = SubResource("painted_GoInsetPanel")
 GoKeycap/base_type = &"Button"
@@ -1899,6 +2057,8 @@ GoListButton/styles/hover = SubResource("list_hover")
 GoListButton/styles/hover_pressed = SubResource("list_hover")
 GoListButton/styles/normal = SubResource("list_normal")
 GoListButton/styles/pressed = SubResource("list_hover")
+GoMapPreview/base_type = &"Panel"
+GoMapPreview/styles/panel = SubResource("painted_GoMapPreview")
 GoMicroLabel/base_type = &"Label"
 GoMicroLabel/colors/font_color = Color(0.171943, 0.187373, 0.264527, 1)
 GoMicroLabel/font_sizes/font_size = 10
@@ -1911,6 +2071,8 @@ GoOutlineLabel/colors/font_color = Color(1, 1, 1, 1)
 GoOutlineLabel/constants/outline_size = 6
 GoPanel/base_type = &"PanelContainer"
 GoPanel/styles/panel = SubResource("panel")
+GoPanelFlat/base_type = &"PanelContainer"
+GoPanelFlat/styles/panel = SubResource("painted_GoPanelFlat")
 GoPrimaryButton/base_type = &"Button"
 GoPrimaryButton/colors/font_color = Color(1, 1, 1, 1)
 GoPrimaryButton/colors/font_disabled_color = Color(1, 1, 1, 0.6)
@@ -1945,6 +2107,9 @@ GoSliderCyan/styles/grabber_area_highlight = SubResource("painted_GoSliderCyan_f
 GoSliderGreen/base_type = &"HSlider"
 GoSliderGreen/styles/grabber_area = SubResource("painted_GoSliderGreen_fill")
 GoSliderGreen/styles/grabber_area_highlight = SubResource("painted_GoSliderGreen_fill")
+GoSmallLabel/base_type = &"Label"
+GoSmallLabel/colors/font_color = Color(0.113725, 0.137255, 0.25098, 0.75)
+GoSmallLabel/font_sizes/font_size = 12
 GoSubtitleLabel/base_type = &"Label"
 GoSubtitleLabel/font_sizes/font_size = 22
 GoSuccessButton/base_type = &"Button"
@@ -1992,15 +2157,6 @@ GoWell/base_type = &"PanelContainer"
 GoWell/styles/panel = SubResource("painted_GoWell")
 GoWindowBlue/base_type = &"PanelContainer"
 GoWindowBlue/styles/panel = SubResource("painted_GoWindowBlue")
-GridContainer/constants/h_separation = 12
-GridContainer/constants/v_separation = 12
-HBoxContainer/constants/separation = 12
-HFlowContainer/constants/separation = 12
-HScrollBar/styles/grabber = SubResource("scroll_grab")
-HScrollBar/styles/grabber_highlight = SubResource("scroll_grab_hover")
-HScrollBar/styles/grabber_pressed = SubResource("scroll_grab_hover")
-HScrollBar/styles/scroll = SubResource("scroll_track")
-HScrollBar/styles/scroll_focus = SubResource("scroll_track")
 HSeparator/styles/separator = SubResource("separator")
 HSlider/icons/grabber = SubResource("painted_slider_handle")
 HSlider/icons/grabber_disabled = SubResource("painted_slider_handle_disabled")
@@ -2041,10 +2197,8 @@ OptionButton/colors/icon_hover_color = Color(1, 1, 1, 1)
 OptionButton/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
 OptionButton/colors/icon_normal_color = Color(1, 1, 1, 1)
 OptionButton/colors/icon_pressed_color = Color(1, 1, 1, 1)
-OptionButton/constants/arrow_margin = 16
 OptionButton/constants/outline_size = 0
 OptionButton/font_sizes/font_size = 17
-OptionButton/icons/arrow = ExtResource("arrow_down")
 OptionButton/styles/disabled = SubResource("painted_dropdown")
 OptionButton/styles/disabled_mirrored = SubResource("painted_dropdown")
 OptionButton/styles/focus = SubResource("painted_dropdown")
@@ -2063,20 +2217,8 @@ PopupMenu/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 PopupMenu/colors/font_disabled_color = Color(0.171943, 0.187373, 0.264527, 1)
 PopupMenu/colors/font_hover_color = Color(0.113725, 0.137255, 0.25098, 1)
 PopupMenu/colors/font_separator_color = Color(0.182429, 0.172568, 0.335275, 1)
-PopupMenu/constants/h_separation = 12
-PopupMenu/constants/icon_max_width = 20
-PopupMenu/constants/item_end_padding = 8
-PopupMenu/constants/item_start_padding = 8
 PopupMenu/constants/v_separation = 10
 PopupMenu/font_sizes/font_size = 17
-PopupMenu/icons/checked = ExtResource("check_on")
-PopupMenu/icons/checked_disabled = ExtResource("check_on_disabled")
-PopupMenu/icons/radio_checked = ExtResource("radio_on")
-PopupMenu/icons/radio_checked_disabled = ExtResource("radio_on_disabled")
-PopupMenu/icons/radio_unchecked = ExtResource("radio_off")
-PopupMenu/icons/radio_unchecked_disabled = ExtResource("radio_off_disabled")
-PopupMenu/icons/unchecked = ExtResource("check_off")
-PopupMenu/icons/unchecked_disabled = ExtResource("check_off_disabled")
 PopupMenu/styles/hover = SubResource("painted_list_hover")
 PopupMenu/styles/panel = SubResource("painted_list")
 PopupMenu/styles/separator = SubResource("menu_separator")
@@ -2086,8 +2228,6 @@ ProgressBar/styles/background = SubResource("bar_bg")
 ProgressBar/styles/fill = SubResource("bar_fill")
 RichTextLabel/colors/default_color = Color(0.113725, 0.137255, 0.25098, 1)
 RichTextLabel/font_sizes/normal_font_size = 16
-ScrollContainer/constants/scrollbar_h_separation = 8
-ScrollContainer/constants/scrollbar_v_separation = 8
 TabBar/colors/font_disabled_color = Color(0.817827, 0.821222, 0.838196, 1)
 TabBar/colors/font_hovered_color = Color(1, 1, 1, 1)
 TabBar/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
@@ -2131,16 +2271,6 @@ TextEdit/colors/selection_color = Color(0.103552, 0.264971, 0.639586, 0.35)
 TextEdit/styles/focus = SubResource("painted_field_focus")
 TextEdit/styles/normal = SubResource("painted_field")
 TextEdit/styles/read_only = SubResource("painted_field_read_only")
-TooltipLabel/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
-TooltipLabel/font_sizes/font_size = 13
-TooltipPanel/styles/panel = SubResource("tooltip")
-VBoxContainer/constants/separation = 12
-VFlowContainer/constants/separation = 12
-VScrollBar/styles/grabber = SubResource("scroll_grab")
-VScrollBar/styles/grabber_highlight = SubResource("scroll_grab_hover")
-VScrollBar/styles/grabber_pressed = SubResource("scroll_grab_hover")
-VScrollBar/styles/scroll = SubResource("scroll_track")
-VScrollBar/styles/scroll_focus = SubResource("scroll_track")
 VSeparator/styles/separator = SubResource("separator")
 VSlider/icons/grabber = ExtResource("grabber")
 VSlider/icons/grabber_disabled = ExtResource("grabber_disabled")
@@ -2148,4 +2278,6 @@ VSlider/icons/grabber_highlight = ExtResource("grabber_highlight")
 VSlider/styles/grabber_area = SubResource("slider_grab")
 VSlider/styles/grabber_area_highlight = SubResource("slider_grab_hover")
 VSlider/styles/slider = SubResource("slider_track")
+default_font = SubResource("painted_font")
 default_font_size = 16
+metadata/go_body_font_baked = SubResource("painted_font")

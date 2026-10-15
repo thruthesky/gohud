@@ -489,8 +489,8 @@ func _own_ink() -> void:
 	await frames(1)
 	var hint := combo.get_theme_color(&"font_color")
 	check(hint.get_luminance() > 0.9 and hint.a < 1.0, "ink: the combobox's placeholder is a faded white on its key")
-	# A disabled label by day is a pale grey — a mid grey closed up inside its ink outline.
-	check(GoUi.theme_color(&"font_disabled_color", &"Button").get_luminance() > 0.75,
+	# A disabled label by day is pale — on the painted key (a plain Button is the engine's, as in the game).
+	check(GoUi.theme_color(&"font_disabled_color", GoTheme.VAR_BUTTON).get_luminance() > 0.75,
 		"ink: by day a disabled key's label is a pale grey")
 	for part: Control in [outlined, chip, dates, clock, key, plain, bare, day, coach, combo]: part.queue_free()
 	await frames(1)

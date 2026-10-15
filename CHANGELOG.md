@@ -26,7 +26,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   harness) is the main window — so the card was sized and centred for the wrong screen. `usable_rect`,
   `usable_rect_with_keyboard` and `px_to_units` now take any `Viewport` (a `Window` still works): a `SubViewport` is
   its own whole rect with no safe area, and `GoSurface` and `GoSafeArea` pass `get_viewport()`.
-
+- **Shrink-to-fit under `arcade_light` is pinned to the game's measure.** A test now holds that
+  `GoStyle.fit_font_size()` with no font measures with the look's FontVariation and its four CJK fallbacks (KR, JP, SC,
+  TC), not a plain Nunito `FontFile`. Before a preset is applied the fit font is `ThemeDB.fallback_font`, which has no
+  fallbacks, so CJK widths measured then differ; under the preset nothing was lost.
 - **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
   glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
   with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and
@@ -58,6 +61,46 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   the screen is too short. Other looks keep the window they had. New `GoSkin` hooks decide it:
   `window_card_variation()`, `window_padding()`, `window_gap()` and `window_width()`. A window’s fitted height now also
   counts the card face’s own padding, and a card padded by its face no longer pushes the body in by its 9-slice edge.
+- **`arcade_light`'s touch floor is the game's 44.** Its `touch` token was gohud's 48; it is now Magnet Mayhem's
+  `Cfg.Touch.MIN_TARGET` (44), the floor a look declares for its hit areas. Every other look keeps 48;
+  `GoConfig.min_touch_size` still sets the project's floor.
+
+- **`arcade_light` leaves tooltips, container gaps and scroll bars to the engine, as Magnet Mayhem does.** The game's
+  theme sets none of them and draws them all: its tooltips are the engine's dark box with light text, every box,
+  grid and flow container it does not override keeps the engine's 4 px gap (arcade_light had 12), and the controls
+  card and room list show the engine's scroll bar with no gap beside it. `TooltipPanel`, `TooltipLabel`, the six
+  container types, `ScrollContainer` and both scroll bars carry no item now.
+
+- **`arcade_light`'s dropdown keeps the engine's arrow, and its list the engine's radio marks and row padding, as
+  Magnet Mayhem's do.** The game paints only the dropdown's box, ink and 17 px label and the list's panel, hover row,
+  ink, size and 10 px rows; an `OptionButton`'s items are radio items, so the marks are drawn. The arcade's 16 px
+  arrow (16 from the edge), check and radio icons and 8 px row padding are gone. The disabled and right-to-left
+  faces stay painted: the game never draws them, and the engine's would be a dark box on a light theme.
+
+- **`arcade_light` leaves a plain `Button` to the engine, as Magnet Mayhem does.** The game's theme sets no `Button`
+  item; arcade_light's blue pill there painted plain buttons the game draws flat and leaked its outline (the chip's
+  label outlined in navy), its 10 dp gap and its disabled face into every `Button` variation that leaves those items
+  unset. Every painted key is a variation (`GoButton`, `GoPrimaryButton`, …) and keeps its look.
+
+- **`arcade_light` carries Magnet Mayhem’s flat parts too, so no game variation stays game-only.** `GoPanelFlat`
+  (`HudPanel`), `GoCardFlat` (`Card`), `GoChoiceButton` (`Diff`), `GoBigButton` (`Big`), `GoBigSecondaryButton`
+  (`BigSecondary`), `GoSmallLabel` (`SmallLabel`) and `GoBarLabel` (`BarLabel`) hold the game’s `UiTheme.box()` and
+  `_button_boxes()` values item for item; `tools/arcade_painted_map.json` maps them and its `game_only` list is empty.
+
+- **`arcade_light`’s switch label stays ink when it is on.** `CheckButton` no longer takes `Button`’s blue pressed
+  colours: its label is the ink in every state, its painted pill is untinted (white icon colours, the engine default
+  the game leaves) and it sits 4 dp from its label, as Magnet Mayhem’s does.
+
+- **`arcade_light`’s primary key is the green pill.** Magnet Mayhem’s main actions (PLAY, CONFIRM, SAVE) are green
+  (`GlossGreen`), so `GoPrimaryButton` — and every `GoStyle` primary button — now draws `btn_green.png`; the blue pill
+  (`GlossBlue`) moves to the new `GoInfoButton`. The map (`tools/arcade_painted_map.json`) names `GlossGreen →
+  GoPrimaryButton` and `GlossBlue → GoInfoButton`. `GoSuccessButton` stays green.
+
+- **`arcade_light` sets its text in Magnet Mayhem’s font.** Its `default_font` is the game’s `UiTheme.get_font()`: a
+  `FontVariation` of Nunito Bold with Noto Sans KR, JP, SC and TC Bold as fallbacks, in that order — the game’s own
+  files, now in `assets/fonts/nunito/` and `assets/fonts/noto_sans_cjk/` (SIL OFL 1.1, see `THIRD_PARTY_NOTICES.md`).
+  Labels set exactly as in the game. Through `GoUi.theme()` the font gives way to the project’s own when the project
+  sets one (`go_body_font_baked` metadata), as every preset’s body font does.
 
 - **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
   exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
@@ -123,7 +166,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   ask to close. Under `arcade_light` a centred window carries the game's red magnet (58 × 56, 30 dp past the
   ribbon's end and 24 above it) and no close button, as `RibbonHeader` does; sheets and popovers keep their close
   button, and a close button the host hid stays hidden. `corner_now()` says what the corner holds.
-
+- **`arcade_light` carries the map thumbnail's box.** A `GoMapPreview` variation (base `Panel`) whose `panel` is
+  Magnet Mayhem's `MapPreview` box — `#18213a`, 6 px corners, a 1 px `#58627b` rim, no padding — so the look owns the
+  frame and a map-preview widget reads it from the theme. `arcade_painted_map.json` lists it under `_code_built`
+  (`MapPreview._init()`).
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
     `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.

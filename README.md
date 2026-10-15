@@ -69,7 +69,7 @@ the next `tools/package.sh` run releases it.
 - **Built for AI coding.** The gohud skill teaches Claude Code, Codex and other agents the whole API, with templates
   and recipes — paste [one prompt](#let-your-ai-coding-agent-install-it) and the agent installs everything.
 - **Pure GDScript, MIT.** No autoload required, no engine module, no GDExtension. Code, icons and artwork are MIT;
-  1,171 icons use path data from Tabler Icons (MIT); the bundled Cinzel and Roboto fonts are under the SIL OFL 1.1.
+  1,171 icons use path data from Tabler Icons (MIT); the bundled Cinzel, Roboto, Nunito and Noto Sans CJK fonts are under the SIL OFL 1.1.
 
 ## Fourteen looks, one line
 
@@ -166,7 +166,7 @@ The same confirmation, opened over the same little game with its HUD, joystick a
 | `scifi_dark` · `scifi_light` | Chamfered corners, cyan neon edges and glow, a hexagonal joystick, targeting-bracket focus |
 | `medieval_dark` · `medieval_light` | Iron and leather or parchment, antique-gold frames, rivets, engraved icons, Cinzel headings |
 | `material_dark` · `material_light` | Material 3 for app screens: pill buttons, 28 dp dialogs, filled cards, M3 switches, Roboto |
-| `arcade_light` | Magnet Mayhem’s painted sprites: blue primary keys, green success keys, cards, ribbons, keycaps and glyphs |
+| `arcade_light` | Magnet Mayhem’s painted sprites: green primary keys, blue info keys, cards, ribbons, keycaps and glyphs |
 | `arcade_dark` | A code-drawn arcade cabinet: glossy pill keys, thick framed boards, a gold title ribbon, chunked bars |
 | `comic_dark` · `comic_light` | A comic panel: a bold ink outline and a hard shadow, a yellow caption box behind titles |
 | `kids_dark` · `kids_light` | A toy box: jelly-candy keys and panels that squish under the finger, a rainbow joystick |
@@ -528,7 +528,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
 | `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
 | `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
-| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), blue primary and green success buttons, red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. Fields, the horizontal slider and the switch are painted too; tabs and the vertical slider retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
+| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), green primary and success buttons, a blue info button (`GoInfoButton`), red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. A plain `Button` is the engine's, as in the game (every painted key is a variation). The dropdown keeps the engine's arrow and its list the engine's radio marks, as in the game. Tooltips, container gaps and scroll bars are the engine's too, as in the game. Fields, the horizontal slider and the switch are painted too; tabs and the vertical slider retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
 | `arcade_dark` | A code-drawn arcade cabinet at night: navy boards and page, glossy pill keys in bright paints, a gold ribbon and chunked gauges | `GoSkinArcade` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
@@ -598,10 +598,11 @@ from its tokens (material-web `tokens/versions/latest`, Material 3 v34.0.21).
 ### Arcade, comic and kids
 
 Three looks for games that want to feel painted, inked or made of candy. `arcade_light` uses Magnet Mayhem’s
-painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: blue primary keys, green success keys, grey
+painted PNGs through `GoStyleBoxSprite` and `GoSkinArcadePainted`: green primary and success keys, blue info keys, grey
 neutral keys, red danger keys, cards, ribbons, keycaps and badges. Its white glyphs fall back to gohud’s default
 icons when a name is absent. Text fields (`LineEdit`, `TextEdit`) wear the game’s flat field, and the horizontal
-slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites. Tabs and the vertical slider
+slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted sprites; the switch's label stays ink
+when it is on, 4 dp from the pill. Tabs and the vertical slider
 are the known exception: they keep the arcade’s code-drawn shapes. A centred `GoSurface` is the game’s
 `PaintedDialog`: the painted card, 400 dp wide, its rows 8 dp apart (`GoSkin.window_width()`, `GoSkin.window_gap()`), the red magnet in the
 ribbon's corner instead of a close button (`GoSurface.corner`; Escape and Back still close it), and a 34 dp title
@@ -830,12 +831,14 @@ Type variations: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerBu
 `GoDangerSolidButton`, `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`,
 `GoIconButton`, `GoListButton`, `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
-`arcade_light` adds the rest of Magnet Mayhem’s painted variations: `GoSuccessButton`; `GoSliderGreen` and
+`arcade_light` adds the rest of Magnet Mayhem’s painted variations: `GoSuccessButton`; `GoInfoButton` (the blue pill); `GoSliderGreen` and
 `GoSliderCyan` (a slider with a green or cyan fill); `GoWindowBlue` and `GoRibbonWide` (the stage-select window and
 its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (the level tile in its three states);
 `GoWell` (the map-preview well); `GoHudPanel` (the floating HUD panel); `GoBannerGold` and `GoNoticeGold` (a gold HUD
-banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). A theme
-without them falls back to the base type.
+banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). Its flat parts are there too:
+`GoPanelFlat` and `GoCardFlat` (a translucent panel and a white card, ink-rimmed); `GoChoiceButton` (a light choice
+key that stays cyan while chosen); `GoBigButton` and `GoBigSecondaryButton` (big green and grey keys with a hard
+bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px). A theme without them falls back to the base type.
 
 Filled buttons sit flat. The two `*GlowButton` variations raise them with a soft shadow in the button's own colour
 (a glow on the sci-fi shape): set `GoConfig.button_glow` for every filled button, or call
@@ -1061,7 +1064,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoCarousel` | VBoxContainer | Event banners and character select. It **never moves on its own** — an auto-advancing banner steals the tap the player was aiming at; dots are pressable and the page is announced |
 | `GoKbd` | HBoxContainer | Key caps for hints. `GoKbd.for_action(&"interact")` reads the real binding from the InputMap, so remapping a key changes the hint too, and `hide_on_handheld` keeps it off phones. `done` turns the caps green for a step the player has done |
 | `GoKeyCluster` | Control | Four movement keys in an inverted T — W above A S D, or the arrow keys — as a controls page shows them. Each key is the look’s keycap (`GoSkin.key_cluster_box`); an arrow label is drawn as a triangle; `picked` fires when the player clicks a layout. Key names are never translated |
-| `GoLevelCard` | Button | A stage-select tile: a thumbnail, the title, a subtitle row (a person icon and "OPPONENTS: 3"), and on the right a check on a cleared level, a padlock on a locked one (the tile is `disabled`), a tilted PLAY! tag on the current one. `selected` draws a gold ring. Faces come from `GoLevelCard` / `GoLevelCardCurrent` / `GoLevelCardLocked`; the texts shrink to fit (`GoStyle.fit_font_size`) |
+| `GoLevelCard` | Button | A stage-select tile: a thumbnail, the title, a subtitle row (a person icon and "OPPONENTS: 3"), and on the right a check on a cleared level, a padlock on a locked one (the tile is `disabled`), a tilted PLAY! tag on the current one. `selected` draws a gold ring. Faces come from `GoLevelCard` / `GoLevelCardCurrent` / `GoLevelCardLocked`; the texts shrink to fit (`GoStyle.fit_font_size`, which measures with the theme's font — in `arcade_light`, Nunito with its four CJK fallbacks, as the game measures) |
 | `GoCoverImage` | Control | A picture that fills its box — CSS `object-fit: cover`: scaled until it covers the rect, the overflow cut off, `focus` picks which part stays. Needs no `clip_contents` and ignores the mouse |
 | `GoGlyphButton` | Button | A button with a glyph right beside its label, the glossy pill of an arcade menu — glyph, gap and label stand centred together. `Button.icon` cannot do this. The label stays a plain `text`, so translation and tests work as on any button |
 | `GoChoiceColumn` | Control | A short column of choices tapped once — the summon list on a HUD side bar. A few rows at a time, scrolled up and down; **one tap on any row acts** (no wheel to settle first); the game marks any number of rows as chosen (`set_selected`) or greys them (`set_dimmed`), and rows can draw their own picture (`item_drawer`). Keyboard focus is off over gameplay, so the arrow keys stay with the player |
@@ -1272,8 +1275,10 @@ GoUi.config.number_formatter = func(amount: float) -> String:
 ```
 
 > **Bring a font for your languages.** The bundled fonts are Cinzel, which only the medieval presets assign
-> (to titles and subtitles), and Roboto, which only the Material presets assign (to titles, captions and
-> button labels — and to body text while the project sets no font of its own). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
+> (to titles and subtitles), Roboto, which only the Material presets assign (to titles, captions and
+> button labels — and to body text while the project sets no font of its own), and Magnet Mayhem's Nunito with
+> Noto Sans CJK fallbacks, which `arcade_light` uses for all its text while the project sets no font of its own (its
+> CJK files hold only the game's characters; the rest come from the system's fonts). Thai, Arabic, Hebrew, Hindi and CJK need glyph coverage from
 > your own theme font; a Latin-only font draws them as empty boxes and raises no error. Traditional
 > Chinese needs its own coverage too: a Simplified subset does not contain those forms.
 
@@ -1290,7 +1295,8 @@ sound files without touching code. Vibration runs only on Android and iOS, in th
 
 ## Accessibility
 
-- Hit areas never drop below `min_touch_size` (48 dp), even when the visible control is smaller.
+- Hit areas never drop below `min_touch_size` (48 dp), even when the visible control is smaller. Each look also
+  declares its own `touch` token: 48 everywhere, 44 (Magnet Mayhem's) in `arcade_light`.
 - Icon-only buttons expose their tooltip text through `accessibility_name`.
 - `reduce_motion` turns off fades and pulsing highlights.
 - Focus rings appear for keyboard and gamepad users, not after a tap or click. Filled buttons get a
@@ -1439,5 +1445,7 @@ and the generated control artwork) were made for gohud and are MIT as well. The 
 1,000-icon library are MIT too: 171 game icons and every library icon use path data from Tabler Icons (MIT,
 Copyright (c) 2020-2026 Paweł Kuna), 16 game icons were drawn for gohud. The Cinzel and Roboto fonts are
 distributed unmodified under the SIL Open Font License 1.1 (`assets/fonts/cinzel/OFL.txt`,
-`assets/fonts/roboto/OFL.txt`); see
+`assets/fonts/roboto/OFL.txt`); Nunito Bold and the Noto Sans KR / JP / SC / TC Bold subsets (`arcade_light`'s font,
+Magnet Mayhem's own files) are under the same licence (`assets/fonts/nunito/OFL.txt`,
+`assets/fonts/noto_sans_cjk/OFL.txt`); see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

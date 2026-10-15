@@ -60,15 +60,18 @@ func _initialize() -> void:
 		_buttons(light)
 		_panels(light)
 		_game_parts(light)
+		_flat_parts(light)
 		_variations(light)
 		_inks(light)
 		_tokens(light)
 		_item_sets(light)
+		_engine_bases(light)
 		_no_orphans()
 		await _slider(light)
 		await _range_slider(light)
 		_switch(light)
 		_field(light)
+		_font(light)
 	if dark != null:
 		_dark_stays(dark)
 	print("gohud arcade painted theme tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -135,7 +138,10 @@ func _gloss(theme: Theme, type: StringName, file: String) -> void:
 
 func _buttons(theme: Theme) -> void:
 	_gloss(theme, &"GoButton", "btn_grey.png")
-	_gloss(theme, &"GoPrimaryButton", "btn_blue.png")
+	# 🔑 The game's main actions (PLAY, CONFIRM — `GlossGreen`) are green, so the primary key is the green pill; the
+	#    blue pill (`GlossBlue`) is the info key.
+	_gloss(theme, &"GoPrimaryButton", "btn_green.png")
+	_gloss(theme, &"GoInfoButton", "btn_blue.png")
 	_gloss(theme, &"GoDangerButton", "btn_red.png")
 	_gloss(theme, &"GoSuccessButton", "btn_green.png")
 	# The toggle: the grey pill, blue while it is on.
@@ -174,6 +180,16 @@ func _buttons(theme: Theme) -> void:
 	var lit := theme.get_stylebox(&"hover", &"PopupMenu") as StyleBoxFlat
 	check(lit != null and lit.bg_color.is_equal_approx(DIFF_SELECTED), "PopupMenu: a hovered row is the light cyan")
 	check(theme.get_constant(&"v_separation", &"PopupMenu") == 10, "PopupMenu: finger-sized rows (10)")
+	# The game's dropdown keeps the engine's arrow and the list the engine's radio marks and row padding (its
+	# OptionButton items are radio items, so the marks are drawn): gohud sets none of them.
+	for item: StringName in [&"arrow", &"arrow_margin"]:
+		check(not (theme.has_icon(item, &"OptionButton") or theme.has_constant(item, &"OptionButton")),
+			"OptionButton/%s is the engine's, as in the game" % item)
+	for item: StringName in [&"radio_checked", &"radio_unchecked", &"checked", &"unchecked", &"radio_checked_disabled",
+			&"radio_unchecked_disabled", &"checked_disabled", &"unchecked_disabled"]:
+		check(not theme.has_icon(item, &"PopupMenu"), "PopupMenu/%s is the engine's, as in the game" % item)
+	for item: StringName in [&"h_separation", &"icon_max_width", &"item_start_padding", &"item_end_padding"]:
+		check(not theme.has_constant(item, &"PopupMenu"), "PopupMenu/%s is the engine's, as in the game" % item)
 
 
 func _panels(theme: Theme) -> void:
@@ -258,10 +274,97 @@ func _game_parts(theme: Theme) -> void:
 		check(theme.get_color(slot, &"GoIconOnly").is_equal_approx(Color(0.78, 0.78, 0.86)), "GoIconOnly/%s is the game's" % slot)
 
 
+## [param flat] is `UiTheme.box(bg, radius, border, INK, shadow, ...)` with [param margins] and a [param bottom] edge.
+func _flat(theme: Theme, state: StringName, type: StringName, bg: Color, radius: int, border: int, bottom: int,
+		margins: Array[float], shadow: bool, expand_top := 0.0) -> void:
+	var label := "%s/%s" % [type, state]
+	var flat := theme.get_stylebox(state, type) as StyleBoxFlat if theme.has_stylebox(state, type) else null
+	check(flat != null, "%s is a StyleBoxFlat" % label)
+	if flat == null: return
+	check(flat.bg_color.is_equal_approx(bg), "%s bg %s (got %s)" % [label, bg.to_html(), flat.bg_color.to_html()])
+	check(flat.border_color.is_equal_approx(INK), "%s: an ink rim" % label)
+	check(flat.border_width_left == border and flat.border_width_top == border and flat.border_width_right == border
+		and flat.border_width_bottom == bottom, "%s border %d, bottom %d (got %d %d %d %d)" % [label, border, bottom,
+		flat.border_width_left, flat.border_width_top, flat.border_width_right, flat.border_width_bottom])
+	for corner: Corner in [CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOTTOM_RIGHT, CORNER_BOTTOM_LEFT]:
+		check(flat.get_corner_radius(corner) == radius, "%s corner %d radius %d" % [label, corner, radius])
+	check(_margins(flat) == margins, "%s padding %s (got %s)" % [label, str(margins), str(_margins(flat))])
+	if shadow:
+		check(flat.shadow_color.is_equal_approx(Color(0, 0, 0, 0.25)) and flat.shadow_size == 1
+			and flat.shadow_offset == Vector2(0, 4), "%s: the soft drop shadow (black 25%%, 1 px, offset 0,4)" % label)
+	else:
+		check(flat.shadow_size == 0, "%s: no shadow (got %d)" % [label, flat.shadow_size])
+	check(flat.expand_margin_top == expand_top, "%s expand_margin_top %s (got %s)" % [label, expand_top, flat.expand_margin_top])
+	check(flat.draw_center and flat.anti_aliasing, "%s: drawn filled, anti-aliased" % label)
+
+
+## `UiTheme._button_boxes(variation, bg, hover, pressed_bg, margin_h, margin_v, font_color, font_size, outline)`.
+func _flat_button(theme: Theme, type: StringName, bg: Color, hover: Color, pressed: Color, margin_h: float, margin_v: float,
+		ink: Color, size: int, outline: int) -> void:
+	_flat(theme, &"normal", type, bg, 12, 3, 7, [margin_h, margin_v, margin_h, margin_v], false)
+	_flat(theme, &"hover", type, hover, 12, 3, 7, [margin_h, margin_v, margin_h, margin_v], false)
+	for state: StringName in [&"pressed", &"hover_pressed"]:
+		_flat(theme, state, type, pressed, 12, 3, 4, [margin_h, margin_v + 3.0, margin_h, margin_v], false, -3.0)
+	check(theme.get_stylebox(&"focus", type) is StyleBoxEmpty, "%s/focus draws nothing" % type)
+	for slot: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(slot, type).is_equal_approx(ink), "%s/%s is %s" % [type, slot, ink.to_html()])
+	check(theme.get_color(&"font_outline_color", type).is_equal_approx(INK), "%s: an ink outline" % type)
+	check(theme.get_font_size(&"font_size", type) == size, "%s: %d px (got %d)" % [type, size, theme.get_font_size(&"font_size", type)])
+	check(theme.get_constant(&"outline_size", type) == outline, "%s: a %d px outline" % [type, outline])
+
+
+## 🧱 The game's flat parts (`UiTheme._build()`), value for value: the white panel and card, the choice key, the big
+##    green and grey keys, the small and bar labels.
+func _flat_parts(theme: Theme) -> void:
+	_flat(theme, &"panel", &"GoPanelFlat", PANEL, 14, 3, 3, [14.0, 8.0, 14.0, 8.0], true)
+	_flat(theme, &"panel", &"GoCardFlat", Color.WHITE, 24, 4, 4, [36.0, 26.0, 36.0, 26.0], true)
+	_flat_button(theme, &"GoBigButton", GREEN, Color("#55dc70"), Color("#34b84e"), 34.0, 6.0, Color.WHITE, 24, 3)
+	_flat_button(theme, &"GoBigSecondaryButton", SECONDARY, Color("#9a9fc0"), Color("#7a7fa3"), 34.0, 6.0, Color.WHITE, 24, 3)
+	# The choice key's normal and hover are `_button_boxes`'; its pressed face is the selected one (`.diff.selected`):
+	# cyan, a 4 px bottom edge, 9 px over the word, and no step down.
+	_flat(theme, &"normal", &"GoChoiceButton", DIFF_BG, 12, 3, 7, [14.0, 6.0, 14.0, 6.0], false)
+	_flat(theme, &"hover", &"GoChoiceButton", Color("#f6f8ff"), 12, 3, 7, [14.0, 6.0, 14.0, 6.0], false)
+	for state: StringName in [&"pressed", &"hover_pressed"]:
+		_flat(theme, state, &"GoChoiceButton", DIFF_SELECTED, 12, 3, 4, [14.0, 9.0, 14.0, 6.0], false)
+	check(theme.get_stylebox(&"focus", &"GoChoiceButton") is StyleBoxEmpty, "GoChoiceButton/focus draws nothing")
+	for slot: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(slot, &"GoChoiceButton").is_equal_approx(INK), "GoChoiceButton/%s is the ink" % slot)
+	check(theme.get_font_size(&"font_size", &"GoChoiceButton") == 15 and theme.get_constant(&"outline_size", &"GoChoiceButton") == 0,
+		"GoChoiceButton: 15 px, no outline")
+	check(theme.get_font_size(&"font_size", &"GoSmallLabel") == 12
+		and theme.get_color(&"font_color", &"GoSmallLabel").is_equal_approx(Color(INK, 0.75)), "GoSmallLabel: 12 px, ink at 75%")
+	check(theme.get_font_size(&"font_size", &"GoBarLabel") == 11, "GoBarLabel: 11 px")
+	# 🗺️ The map thumbnail's box (`MapPreview._init()`: UiTheme.box(Cfg.StagePreview.BACKGROUND, 6, 1, BORDER, false,
+	#    0, 0)) — in the theme, so GoMapPreview reads it instead of building its own.
+	var map_box := theme.get_stylebox(&"panel", &"GoMapPreview") as StyleBoxFlat if theme.has_stylebox(&"panel", &"GoMapPreview") else null
+	check(map_box != null, "GoMapPreview/panel is a StyleBoxFlat")
+	if map_box != null:
+		check(map_box.bg_color.is_equal_approx(Color("#18213a")) and map_box.border_color.is_equal_approx(Color("#58627b"))
+			and map_box.border_width_left == 1 and map_box.border_width_bottom == 1 and map_box.corner_radius_top_left == 6
+			and map_box.corner_radius_bottom_right == 6 and _margins(map_box) == [0.0, 0.0, 0.0, 0.0]
+			and map_box.shadow_size == 0 and map_box.anti_aliasing,
+			"GoMapPreview/panel: the game's #18213a box, 6 px corners, a 1 px #58627b rim, no padding (got %s %s)"
+			% [map_box.bg_color.to_html(), _margins(map_box)])
+		# The widget lands with the map-preview work; until then only the look's box is checked.
+		var preview_script: Script = null
+		for entry: Dictionary in ProjectSettings.get_global_class_list():
+			if entry.get("class", &"") == &"GoMapPreview":
+				preview_script = load(str(entry.get("path", ""))) as Script
+		if preview_script != null:
+			var preview := preview_script.new() as Control
+			if preview != null and preview.has_method(&"background_box"):
+				preview.theme = theme
+				root.add_child(preview)
+				check(preview.call(&"background_box") == map_box, "GoMapPreview draws the theme's box")
+			if preview != null: preview.free()
+
+
 func _variations(theme: Theme) -> void:
 	var bases := {
 		&"GoButton": &"Button", &"GoPrimaryButton": &"Button", &"GoDangerButton": &"Button",
-		&"GoSuccessButton": &"Button", &"GoToggleButton": &"Button", &"GoKeycap": &"Button",
+		&"GoSuccessButton": &"Button", &"GoToggleButton": &"Button", &"GoKeycap": &"Button", &"GoInfoButton": &"Button",
 		&"GoCard": &"PanelContainer", &"GoInsetPanel": &"PanelContainer", &"GoKeycapPanel": &"PanelContainer",
 		&"GoRibbon": &"PanelContainer", &"GoRibbonRed": &"PanelContainer", &"GoNotice": &"PanelContainer",
 		&"GoTitle": &"Label", &"GoOutlineLabel": &"Label",
@@ -269,6 +372,9 @@ func _variations(theme: Theme) -> void:
 		&"GoLevelCard": &"Button", &"GoLevelCardCurrent": &"Button", &"GoLevelCardLocked": &"Button",
 		&"GoHudPanel": &"PanelContainer", &"GoBannerGold": &"PanelContainer", &"GoNoticeGold": &"PanelContainer",
 		&"GoChipDark": &"Button", &"GoIconOnly": &"Button",
+		&"GoPanelFlat": &"PanelContainer", &"GoCardFlat": &"PanelContainer", &"GoChoiceButton": &"Button",
+		&"GoBigButton": &"Button", &"GoBigSecondaryButton": &"Button", &"GoSmallLabel": &"Label", &"GoBarLabel": &"Label",
+		&"GoMapPreview": &"Panel",
 	}
 	for type: StringName in bases:
 		check(theme.is_type_variation(type, bases[type]), "%s is a variation of %s (got %s)" % [type, bases[type],
@@ -286,16 +392,23 @@ func _variations(theme: Theme) -> void:
 	var moved := {"StageWindow": "GoWindowBlue", "StageRibbon": "GoRibbonWide", "StageCard": "GoLevelCard",
 		"StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
 		"ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
-		"PauseRound": "GoIconOnly"}
+		"PauseRound": "GoIconOnly",
+		"HudPanel": "GoPanelFlat", "Card": "GoCardFlat", "Diff": "GoChoiceButton", "Big": "GoBigButton",
+		"BigSecondary": "GoBigSecondaryButton", "SmallLabel": "GoSmallLabel", "BarLabel": "GoBarLabel"}
+	check(map.get("GlossGreen", "") == "GoPrimaryButton" and map.get("GlossBlue", "") == "GoInfoButton",
+		"map: the game's green main action is the primary key, its blue pill the info key (got %s, %s)"
+		% [map.get("GlossGreen", "nothing"), map.get("GlossBlue", "nothing")])
 	for game: String in moved:
 		check(map.get(game, "") == moved[game], "map: %s → %s (got %s)" % [game, moved[game], map.get(game, "nothing")])
 	check(not map.has("MapWell"), "map: MapWell is no UiTheme variation, so it is not a map key")
 	var code_built: Variant = map.get("_code_built", {})
 	check(code_built is Dictionary and str((code_built as Dictionary).get("GoWell", "")).begins_with("MapPreview.set_well()")
 		and theme.get_type_variation_base(&"GoWell") != &"", "map: GoWell is listed as code-built (MapPreview.set_well())")
-	check(map.get("game_only", []) is Array and (map["game_only"] as Array).has("HudPanel"), "map: the old flat look stays in the game")
-	for kept: String in map.get("game_only", []):
-		check(not map.has(kept), "map: %s is either moved or kept, not both" % kept)
+	check(code_built is Dictionary and str((code_built as Dictionary).get("GoMapPreview", "")).begins_with("MapPreview._init()"),
+		"map: GoMapPreview is listed as code-built (MapPreview._init())")
+	# Every variation the game builds is in gohud now, the old flat look too: nothing stays game-only.
+	check(map.get("game_only", []) is Array and (map["game_only"] as Array).is_empty(),
+		"map: no variation stays in the game (got %s)" % str(map.get("game_only", [])))
 
 
 func _inks(theme: Theme) -> void:
@@ -319,6 +432,9 @@ func _tokens(theme: Theme) -> void:
 		var got := theme.get_color(key, &"GoHud")
 		check(got.is_equal_approx(want[key]) or got.to_html() == (want[key] as Color).to_html(),
 			"token %s is the game's %s (got %s)" % [key, (want[key] as Color).to_html(), got.to_html()])
+	# 👆 The look's touch floor is the game's Cfg.Touch.MIN_TARGET (44).
+	check(theme.get_constant(GoTheme.TOUCH, GoTheme.TYPE) == 44,
+		"token touch is the game's Cfg.Touch.MIN_TARGET 44 (got %d)" % theme.get_constant(GoTheme.TOUCH, GoTheme.TYPE))
 
 
 ## 🔑 Each painted variation carries exactly the items the game's variation has (`UiTheme._build()`), no more: the
@@ -331,8 +447,13 @@ func _item_sets(theme: Theme) -> void:
 	var panel := {"styles": ["panel"], "colors": [], "constants": [], "font_sizes": []}
 	var card := {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"], "colors": [],
 		"constants": [], "font_sizes": []}
+	# `UiTheme._button_boxes()`: four faces and no focus ring, one label colour, its size and outline.
+	var flat_button := {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],
+		"colors": ["font_color", "font_focus_color", "font_hover_color", "font_hover_pressed_color", "font_outline_color",
+			"font_pressed_color"], "constants": ["outline_size"], "font_sizes": ["font_size"]}
 	var want := {
 		&"GoButton": gloss, &"GoPrimaryButton": gloss, &"GoDangerButton": gloss, &"GoSuccessButton": gloss,
+		&"GoInfoButton": gloss,
 		&"GoToggleButton": gloss,
 		&"GoKeycap": {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],
 			"colors": ["font_color", "font_focus_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color"],
@@ -349,6 +470,10 @@ func _item_sets(theme: Theme) -> void:
 			"constants": ["h_separation"], "font_sizes": ["font_size"]},
 		&"GoIconOnly": {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"],
 			"colors": ["icon_hover_pressed_color", "icon_pressed_color"], "constants": [], "font_sizes": []},
+		&"GoPanelFlat": panel, &"GoCardFlat": panel,
+		&"GoChoiceButton": flat_button, &"GoBigButton": flat_button, &"GoBigSecondaryButton": flat_button,
+		&"GoSmallLabel": {"styles": [], "colors": ["font_color"], "constants": [], "font_sizes": ["font_size"]},
+		&"GoBarLabel": {"styles": [], "colors": [], "constants": [], "font_sizes": ["font_size"]},
 	}
 	for type: StringName in want:
 		var got := {"styles": _sorted(theme.get_stylebox_list(type)), "colors": _sorted(theme.get_color_list(type)),
@@ -361,6 +486,30 @@ func _item_sets(theme: Theme) -> void:
 
 
 ## The icon is a `GoTextureSprite` of [param file] drawn at [param size] canvas units, multiplied by [param tint].
+## 🔑 The game's theme sets no base type but `Label`, `OptionButton` and `PopupMenu` — a plain `Button`, and every item a
+##    Button variation leaves unset, is the engine's. A base item here would leak into the variations (an outline on
+##    the chip's label, a 4 → 10 gap) and paint plain buttons the game draws flat, so arcade_light sets none either.
+func _engine_bases(theme: Theme) -> void:
+	# The game's theme sets none of these, and it draws them all: its tooltips (8 `tooltip_text`), the boxes and grids
+	# that keep the engine's 4 px gap, and the scroll bars of the controls card and the room list.
+	for type: StringName in [&"Button", &"TooltipPanel", &"TooltipLabel", &"BoxContainer", &"HBoxContainer",
+			&"VBoxContainer", &"GridContainer", &"HFlowContainer", &"VFlowContainer", &"ScrollContainer",
+			&"HScrollBar", &"VScrollBar"]:
+		var items: Array[String] = []
+		for kind: int in Theme.DATA_TYPE_MAX:
+			for item: StringName in theme.get_theme_item_list(kind, type): items.append(str(item))
+		check(items.is_empty(), "%s is left to the engine, as in the game (sets %s)" % [type, items])
+	var engine := ThemeDB.get_default_theme()
+	var chip := Button.new()
+	chip.theme = theme
+	chip.theme_type_variation = &"GoChipDark"
+	check(chip.get_theme_color(&"font_outline_color") == engine.get_color(&"font_outline_color", &"Button")
+		and chip.get_theme_constant(&"outline_size") == 0,
+		"GoChipDark's outline falls through to the engine's (none), as the game's LangChip does")
+	chip.free()
+	check(not theme.has_constant(&"outline_size", &"Button"), "no base outline under the chip's label")
+
+
 func _icon(theme: Theme, name: StringName, type: StringName, file: String, size: Vector2, tint: Color) -> void:
 	var label := "%s/icons/%s" % [type, name]
 	var icon := theme.get_icon(name, type) if theme.has_icon(name, type) else null
@@ -453,6 +602,19 @@ func _switch(theme: Theme) -> void:
 			DISABLED_TINT)
 	check(theme.get_stylebox(&"focus", &"CheckButton") is StyleBoxEmpty,
 		"CheckButton/focus: empty, the game's switch draws no focus ring (got %s)" % theme.get_stylebox(&"focus", &"CheckButton"))
+	# The label beside the switch is ink in every state, as the game's labels are: the switch itself says on or off,
+	# so the words must not turn blue with it (Button's pressed colours would leak through without these).
+	for state: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(state, &"CheckButton").is_equal_approx(INK),
+			"CheckButton/%s: ink, on or off (got %s)" % [state, theme.get_color(state, &"CheckButton")])
+	# The sprites keep their own colours (the game's engine default, white), on and off.
+	for state: StringName in [&"icon_normal_color", &"icon_hover_color", &"icon_pressed_color", &"icon_hover_pressed_color",
+			&"icon_focus_color"]:
+		check(theme.get_color(state, &"CheckButton").is_equal_approx(Color.WHITE),
+			"CheckButton/%s: white, the painted pill untinted (got %s)" % [state, theme.get_color(state, &"CheckButton")])
+	check(theme.get_constant(&"h_separation", &"CheckButton") == 4,
+		"CheckButton/h_separation: the game's 4 between label and switch (got %d)" % theme.get_constant(&"h_separation", &"CheckButton"))
 	var switch := CheckButton.new()
 	switch.theme = theme
 	root.add_child(switch)
@@ -482,6 +644,54 @@ func _field(theme: Theme) -> void:
 				check(box == theme.get_stylebox(state, &"LineEdit"), "TextEdit/%s: the very box LineEdit wears" % state)
 		check(theme.get_color(&"font_color", type).is_equal_approx(INK)
 			and theme.get_color(&"caret_color", type).is_equal_approx(INK), "%s: ink text and caret" % type)
+
+
+## 🔤 The game's font (`UiTheme.get_font()`): a FontVariation of Nunito Bold with the four Noto Sans CJK Bold fonts as
+##    fallbacks, Korean, Japanese, Simplified then Traditional Chinese (`fallback_order("")`), at 16 px.
+func _font(theme: Theme) -> void:
+	const FONTS := "res://addons/gohud/assets/fonts/"
+	check(theme.has_default_font() and theme.default_font is FontVariation,
+		"arcade_light: the default font is the game's FontVariation (got %s)" % theme.default_font)
+	check(theme.default_font_size == 16, "arcade_light: the game's 16 px default size (got %d)" % theme.default_font_size)
+	if not (theme.default_font is FontVariation): return
+	var font := theme.default_font as FontVariation
+	check(font.base_font is FontFile and font.base_font.resource_path == FONTS + "nunito/Nunito-Bold.ttf",
+		"the base font is Nunito Bold (got %s)" % (font.base_font.resource_path if font.base_font else "none"))
+	var want := ["NotoSansKR-Bold.ttf", "NotoSansJP-Bold.ttf", "NotoSansSC-Bold.ttf", "NotoSansTC-Bold.ttf"]
+	var got: Array = []
+	for f: Font in font.fallbacks: got.append(f.resource_path.get_file() if f is FontFile else str(f))
+	check(got == want, "the fallbacks are the game's Noto Sans CJK, KR JP SC TC (got %s)" % [got])
+	for f: Font in font.fallbacks:
+		check(f.resource_path.begins_with(FONTS + "noto_sans_cjk/"), "%s ships in assets/fonts/noto_sans_cjk" % f.resource_path)
+	# 🔑 Every glyph the game draws: Latin from Nunito, Hangul, kana and Han from the fallbacks.
+	for text: String in ["Magnet Mayhem", "한국어", "日本語", "简体中文", "繁體中文"]:
+		check(font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x > 0.0 and _covered(font, text),
+			"the font draws %s" % text)
+	check(theme.get_meta(&"go_body_font_baked", null) == font, "the baked font is named (go_body_font_baked)")
+	# Through GoUi the project's own font wins, as with every preset's body font.
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	check(GoUi.theme().default_font == (null if GoUi.project_has_font() else font),
+		"GoUi.theme(): the game's font only while the project chose none (project font: %s)" % GoUi.project_has_font())
+	# 🔤 Shrink-to-fit with no font measures with that font, CJK fallbacks and all — the game's fit_font_size()
+	#    measures with them, so a plain Nunito here would fit Korean, Japanese and Chinese labels differently.
+	if not GoUi.project_has_font():
+		var cjk := PackedStringArray(["설정 저장하기", "設定を保存", "保存设置"])
+		var measured := GoStyle.row_width(null, cjk, 22)
+		check(measured > 0.0 and is_equal_approx(measured, GoStyle.row_width(font, cjk, 22)),
+			"GoStyle.fit_font_size() under arcade_light measures CJK with the game's font and its fallbacks (%s)" % measured)
+		check(GoStyle._fit_font() is FontVariation and (GoStyle._fit_font() as FontVariation).fallbacks.size() == 4,
+			"GoStyle's fit font under arcade_light keeps the four CJK fallbacks (got %s)" % GoStyle._fit_font())
+	GoUi.config.preset = &""
+	for path: String in [FONTS + "nunito/OFL.txt", FONTS + "noto_sans_cjk/OFL.txt"]:
+		check(FileAccess.file_exists(path), "%s ships with the font files" % path)
+
+
+func _covered(font: Font, text: String) -> bool:
+	for i in text.length():
+		var found := font.has_char(text.unicode_at(i))
+		for f: Font in font.fallbacks: found = found or f.has_char(text.unicode_at(i))
+		if not found: return false
+	return true
 
 
 ## 🧹 Every `[ext_resource]` the file declares is pointed at: the painted parts replace arcade drawings (the switch's
