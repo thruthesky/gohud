@@ -682,3 +682,7 @@ var own := GoGlyphButton.make("Shop", &"", GoTheme.VAR_BUTTON, preload("res://ui
 - 🛑 `Button.icon` cannot do this: LEFT pins the glyph to the button's edge and CENTER draws it over the text. The label
   stays a plain `text`, so translation and tests work as on any button.
 - 🛑 `glyph_icon` needs a texture icon set — a font icon has no texture, and the button then shows its label alone.
+- 🔑 The label moves by half the glyph's room: on a face with real padding (at least `MIN_EDGE` on the far side, as the
+  painted pills) that much padding goes from the far side to the near one, exactly as Magnet Mayhem's `GlossButton` —
+  the button grows only past the far padding, so a 56 × 56 glyph-only pill stays 56 wide. A thinner face keeps the
+  group centred and the glyph `MIN_EDGE` off its side.

@@ -303,6 +303,7 @@ func _glyph_button(look: StringName) -> void:
 	var middle := (base.get_margin(SIDE_LEFT) + button.size.x - base.get_margin(SIDE_RIGHT)) * 0.5
 	check(absf((group_left + group_right) * 0.5 - middle) < 1.5, "%s glyph: glyph + label are centred together (%.1f..%.1f, mid %.1f)" % [look, group_left, group_right, middle])
 	check(GoUi._watchers.has(Callable(button, &"_on_ui_changed")), "%s glyph: an icon-set swap measures the shift again" % look)
+	if look == GoThemePresets.ARCADE_LIGHT: await _glyph_button_game_margins(glyph)
 	var normal_tint := button.glyph_tint()
 	button.disabled = true
 	check(is_equal_approx(button.glyph_tint().a, normal_tint.a * 0.6), "%s glyph: a disabled glyph is 0.6 opaque" % look)
@@ -324,6 +325,32 @@ func _glyph_button(look: StringName) -> void:
 	check((button.glyph_texture() != null) == (GoUi.icons().texture(GoIconSet.PLAY) != null),
 		"%s glyph: an icon-set name resolves" % look)
 	button.queue_free()
+	await frames(1)
+
+
+## The painted pills place the label as Magnet Mayhem's GlossButton: the shift moves from the right padding to the
+## left, the right never under 0 — so a glyph-only square keeps the size it was given.
+func _glyph_button_game_margins(glyph: Texture2D) -> void:
+	var holder := Control.new()
+	holder.theme = GoUi.theme()
+	root.add_child(holder)
+	var wide := GoGlyphButton.make("PLAY", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	wide.custom_minimum_size = Vector2(0, 62)
+	var square := GoGlyphButton.make("", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	square.custom_minimum_size = Vector2(56, 56)
+	holder.add_child(wide)
+	holder.add_child(square)
+	await frames(2)
+	for button: GoGlyphButton in [wide, square]:
+		var face := button.get_theme_stylebox(&"normal") as GoGlyphButton.ShiftedBox
+		var shift := button.glyph_allowance() * 0.5
+		var base := face.base
+		check(is_equal_approx(face.get_margin(SIDE_LEFT), base.get_margin(SIDE_LEFT) + shift)
+			and is_equal_approx(face.get_margin(SIDE_RIGHT), maxf(base.get_margin(SIDE_RIGHT) - shift, 0.0)),
+			"glyph: the label's padding moves by the shift, as the game's (%.1f/%.1f over %.1f/%.1f)" % [
+				face.get_margin(SIDE_LEFT), face.get_margin(SIDE_RIGHT), base.get_margin(SIDE_LEFT), base.get_margin(SIDE_RIGHT)])
+	check(is_equal_approx(square.size.x, 56.0), "glyph: a glyph-only square keeps its 56 px, as the game's (%.1f)" % square.size.x)
+	holder.queue_free()
 	await frames(1)
 
 

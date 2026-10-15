@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoGlyphButton` sizes and places its label exactly as Magnet Mayhem's `GlossButton`.** On the painted pills the
+  label's shift now moves padding from the far side to the near one (the far side never under 0), so a glyph-only
+  56 × 56 pill stays 56 wide (it grew to 67) and a pill at its minimum width is as wide as the game's. Only the
+  glyph's own side is clamped to `MIN_EDGE`. A face thinner than `MIN_EDGE` keeps the old centred layout.
+
 - **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
   glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
   with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and
