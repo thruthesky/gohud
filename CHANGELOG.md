@@ -287,6 +287,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `pass_anchor_taps` (a tap on the anchor reaches it, so its second tap closes the card) and `tap_through` (more
   controls taps reach). `GoPopover.open()` takes them as `width` 0, `min_width`, `align`, `gap`, `edge`, `fit`,
   `pass_anchor_taps`, `tap_through`. Every default keeps today's card.
+- **`arcade_light`: the scoreboard rows and the loading tiles.** Five more of Magnet Mayhem's variations, value for
+  value from its `UiTheme`, so the game drops its last own boxes: `GoScoreRow` (a round scoreboard row, white at 90 %
+  in a 3 px blue rim, 5 at the bottom, 14 px corners), `GoScoreRowGold` (the winner's: cream in gold), `GoScoreHead`
+  (the head row: draws nothing, keeps the rows' 12 px side margins so its labels sit over the columns) — all
+  `PanelContainer` — and `GoTile` / `GoTileLit` (the loading screen's floor block, navy in a dark rim, lit gold in
+  amber; `Panel`). `tools/arcade_painted_map.json` maps `ScoreRow`, `ScoreRowWin`, `ScoreHead`, `LoadTile` and
+  `LoadTileLit` to them. Every other look leaves them out (a node asking for one draws its base type), so nothing
+  else changes.
 
 - **`GoRibbonHeader` — a screen's title ribbon.** The game's `RibbonHeader` for a screen built on a card (pause,
   settings): put first in the card's column, it hangs the look's title plate over the card's top edge with a glyph and

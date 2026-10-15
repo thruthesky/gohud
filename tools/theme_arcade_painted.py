@@ -40,6 +40,11 @@ INK = (0.113725, 0.137255, 0.25098, 1.0)                 # #1d2340
 CONTROL_BLUE = (0.239216, 0.419608, 1.0, 1.0)            # #3d6bff
 GOLD = (1.0, 0.788235, 0.156863, 1.0)                    # #ffc928
 NOTIF_OWN = (1.0, 0.952941, 0.811765, 1.0)               # #fff3cf (`NotifPlayer`'s cream)
+# The loading screen's unlit block and its rim, and a lit (gold) block's rim (`LOAD_TILE`, `LOAD_TILE_RIM`,
+# `LOAD_TILE_LIT_RIM`).
+LOAD_TILE = (0.180392, 0.215686, 0.4, 1.0)               # #2e3766
+LOAD_TILE_RIM = (0.082353, 0.101961, 0.219608, 1.0)      # #151a38
+LOAD_TILE_LIT_RIM = (0.788235, 0.541176, 0.0, 1.0)       # #c98a00
 CHIP = (0.137255, 0.168627, 0.341176, 1.0)               # #232b57 (`LangChip`)
 CHIP_PRESSED = (0.090196, 0.113725, 0.258824, 1.0)       # #171d42
 CHIP_RIM = (0.435294, 0.584314, 1.0, 1.0)                # #6f95ff
@@ -138,6 +143,8 @@ MAP = {
     "StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
     "ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
     "PauseRound": "GoIconOnly",
+    "ScoreRow": "GoScoreRow", "ScoreRowWin": "GoScoreRowGold", "ScoreHead": "GoScoreHead",
+    "LoadTile": "GoTile", "LoadTileLit": "GoTileLit",
     # The game's flat parts (`UiTheme.box()` / `_button_boxes()`), older than the painted set but still drawn — the
     # difficulty choice, the big result keys, the small labels — so the game can alias every variation it builds.
     "HudPanel": "GoPanelFlat", "Card": "GoCardFlat", "Diff": "GoChoiceButton", "Big": "GoBigButton",
@@ -167,6 +174,8 @@ BASES = {
     "GoLevelCard": "Button", "GoLevelCardCurrent": "Button", "GoLevelCardLocked": "Button",
     "GoHudPanel": "PanelContainer", "GoBannerGold": "PanelContainer", "GoNoticeGold": "PanelContainer",
     "GoChipDark": "Button", "GoIconOnly": "Button",
+    "GoScoreRow": "PanelContainer", "GoScoreRowGold": "PanelContainer", "GoScoreHead": "PanelContainer",
+    "GoTile": "Panel", "GoTileLit": "Panel",
     "GoPanelFlat": "PanelContainer", "GoCardFlat": "PanelContainer", "GoChoiceButton": "Button",
     "GoBigButton": "Button", "GoBigSecondaryButton": "Button", "GoSmallLabel": "Label", "GoBarLabel": "Label",
     "GoMapPreview": "Panel",
@@ -305,6 +314,21 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # 🔔 The player's own notice (`NotifPlayer`): the same pill, cream inside a gold rim.
     put("GoNoticeGold/styles/panel", box("painted_GoNoticeGold", NOTIF_OWN, 16, 3, GOLD, margin_h=12.0,
                                          margin_v=(2.0 + 3, 2.0 + 5), bottom=5, outer=(INK, 3, (0, 2))))
+    # 🏁 The round scoreboard's rows (`ScoreRow`: `chunky_box(PANEL, 14, 12, 1, 3, 5, CONTROL_BLUE)`; the winner's
+    #    `ScoreRowWin`, the same in cream inside a gold rim) — the notice pill a little flatter, with no navy edge — and
+    #    its head row (`ScoreHead`): no box, only the rows' side margins, so its labels sit over their columns.
+    put("GoScoreRow/styles/panel", box("painted_GoScoreRow", PANEL, 14, 3, CONTROL_BLUE, margin_h=12.0,
+                                       margin_v=(1.0 + 3, 1.0 + 5), bottom=5))
+    put("GoScoreRowGold/styles/panel", box("painted_GoScoreRowGold", NOTIF_OWN, 14, 3, GOLD, margin_h=12.0,
+                                           margin_v=(1.0 + 3, 1.0 + 5), bottom=5))
+    boxes["painted_GoScoreHead"] = ("StyleBoxEmpty", ["content_margin_left = 12", "content_margin_right = 12"])
+    put("GoScoreHead/styles/panel", "painted_GoScoreHead")
+    # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
+    #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
+    put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,
+                                   margin_v=(0.0 + 3, 0.0 + 8), bottom=8))
+    put("GoTileLit/styles/panel", box("painted_GoTileLit", GOLD, 9, 3, LOAD_TILE_LIT_RIM, margin_h=0.0,
+                                      margin_v=(0.0 + 3, 0.0 + 8), bottom=8))
     # 🎮 The HUD's blue-rimmed panel (`arcade_panel_box(pad)`: `chunky_box(PANEL, 18, pad + 5, pad, 5, 8, CONTROL_BLUE,
     #    true)`) and its gold name banner (`hud_banner_box(pad)`: `chunky_box(GOLD, 12, pad + 3, pad, 3, 5)`).
     pad = HUD_PANEL_PADDING

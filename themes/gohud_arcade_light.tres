@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=158 format=3]
+[gd_resource type="Theme" load_steps=163 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -1082,6 +1082,74 @@ shadow_color = Color(0.113725, 0.137255, 0.25098, 1)
 shadow_size = 3
 shadow_offset = Vector2(0, 2)
 
+[sub_resource type="StyleBoxFlat" id="painted_GoScoreRow"]
+content_margin_left = 12
+content_margin_top = 4
+content_margin_right = 12
+content_margin_bottom = 6
+bg_color = Color(1, 1, 1, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.239216, 0.419608, 1, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="painted_GoScoreRowGold"]
+content_margin_left = 12
+content_margin_top = 4
+content_margin_right = 12
+content_margin_bottom = 6
+bg_color = Color(1, 0.952941, 0.811765, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(1, 0.788235, 0.156863, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxEmpty" id="painted_GoScoreHead"]
+content_margin_left = 12
+content_margin_right = 12
+
+[sub_resource type="StyleBoxFlat" id="painted_GoTile"]
+content_margin_left = 0
+content_margin_top = 3
+content_margin_right = 0
+content_margin_bottom = 8
+bg_color = Color(0.180392, 0.215686, 0.4, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 8
+border_color = Color(0.082353, 0.101961, 0.219608, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="painted_GoTileLit"]
+content_margin_left = 0
+content_margin_top = 3
+content_margin_right = 0
+content_margin_bottom = 8
+bg_color = Color(1, 0.788235, 0.156863, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 8
+border_color = Color(0.788235, 0.541176, 0, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
 [sub_resource type="StyleBoxFlat" id="painted_GoHudPanel"]
 content_margin_left = 13
 content_margin_top = 13
@@ -2101,6 +2169,12 @@ GoRibbonRed/base_type = &"PanelContainer"
 GoRibbonRed/styles/panel = SubResource("painted_GoRibbonRed")
 GoRibbonWide/base_type = &"PanelContainer"
 GoRibbonWide/styles/panel = SubResource("painted_GoRibbonWide")
+GoScoreHead/base_type = &"PanelContainer"
+GoScoreHead/styles/panel = SubResource("painted_GoScoreHead")
+GoScoreRow/base_type = &"PanelContainer"
+GoScoreRow/styles/panel = SubResource("painted_GoScoreRow")
+GoScoreRowGold/base_type = &"PanelContainer"
+GoScoreRowGold/styles/panel = SubResource("painted_GoScoreRowGold")
 GoSliderCyan/base_type = &"HSlider"
 GoSliderCyan/styles/grabber_area = SubResource("painted_GoSliderCyan_fill")
 GoSliderCyan/styles/grabber_area_highlight = SubResource("painted_GoSliderCyan_fill")
@@ -2129,6 +2203,10 @@ GoSuccessButton/styles/hover = SubResource("painted_GoSuccessButton_normal")
 GoSuccessButton/styles/hover_pressed = SubResource("painted_GoSuccessButton_pressed")
 GoSuccessButton/styles/normal = SubResource("painted_GoSuccessButton_normal")
 GoSuccessButton/styles/pressed = SubResource("painted_GoSuccessButton_pressed")
+GoTile/base_type = &"Panel"
+GoTile/styles/panel = SubResource("painted_GoTile")
+GoTileLit/base_type = &"Panel"
+GoTileLit/styles/panel = SubResource("painted_GoTileLit")
 GoTitle/base_type = &"Label"
 GoTitle/colors/font_color = Color(1, 1, 1, 1)
 GoTitle/constants/line_spacing = -6

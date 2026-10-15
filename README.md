@@ -838,7 +838,9 @@ its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (t
 banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). Its flat parts are there too:
 `GoPanelFlat` and `GoCardFlat` (a translucent panel and a white card, ink-rimmed); `GoChoiceButton` (a light choice
 key that stays cyan while chosen); `GoBigButton` and `GoBigSecondaryButton` (big green and grey keys with a hard
-bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px). A theme without them falls back to the base type. It also ships the game's painted HUD art (`assets/arcade_light/hud/`: the
+bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoScoreRow`, `GoScoreRowGold` and
+`GoScoreHead` (a scoreboard row, the winner's gold one, its head row); `GoTile` and `GoTileLit` (a loading block, unlit
+and lit). A theme without them falls back to the base type. It also ships the game's painted HUD art (`assets/arcade_light/hud/`: the
 player's head, the power bolt, the opponents badge, the stopwatch, the round pause key) and touch art
 (`assets/arcade_light/touch/`: the ATTRACT, REPULSE and JUMP keys, the stick's base and knob); a widget asks for one by
 name with `GoUi.skin().widget_art(&"stopwatch")`, and every other look answers `null`.

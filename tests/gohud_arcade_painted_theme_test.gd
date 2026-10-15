@@ -43,6 +43,10 @@ const HUD_PANEL_PADDING := 8.0
 const HUD_BANNER_PADDING := 4.0
 const CHIP_FONT := 15
 const SECONDARY := Color("#8a8fb3")
+## The loading screen's blocks (`UiTheme` `LOAD_TILE`, `LOAD_TILE_RIM`, `LOAD_TILE_LIT_RIM`).
+const LOAD_TILE := Color("#2e3766")
+const LOAD_TILE_RIM := Color("#151a38")
+const LOAD_TILE_LIT_RIM := Color("#c98a00")
 # The slider and the switch (`PaintedSlider`, `PaintedSwitch`).
 const BAR_EDGE := Vector4(48, 38, 48, 38)
 const HANDLE_SIZE := Vector2(36, 36)
@@ -267,6 +271,23 @@ func _game_parts(theme: Theme) -> void:
 		check(theme.get_color(slot, &"GoChipDark") == Color.WHITE, "GoChipDark/%s is white" % slot)
 	check(theme.get_font_size(&"font_size", &"GoChipDark") == CHIP_FONT, "GoChipDark: Cfg.Menu.CHIP_FONT (15)")
 	check(theme.get_constant(&"h_separation", &"GoChipDark") == 8, "GoChipDark: 8 px between glyph and word")
+	# 🏁 The round scoreboard (`ScoreRow`, `ScoreRowWin`, `ScoreHead`): flatter notice pills with no navy edge, the
+	#    winner's cream in gold, and a head row that draws nothing but keeps the rows' side margins.
+	_chunky(theme, &"panel", &"GoScoreRow", PANEL, 14, 12.0, 1.0, 3, 5, CONTROL_BLUE, false)
+	_chunky(theme, &"panel", &"GoScoreRowGold", Color("#fff3cf"), 14, 12.0, 1.0, 3, 5, GOLD, false)
+	var head := theme.get_stylebox(&"panel", &"GoScoreHead") if theme.has_stylebox(&"panel", &"GoScoreHead") else null
+	check(head is StyleBoxEmpty, "GoScoreHead/panel draws nothing (got %s)" % head)
+	if head != null:
+		check(head.content_margin_left == 12.0 and head.content_margin_right == 12.0,
+			"GoScoreHead: the rows' 12 px side margins (got %s, %s)" % [head.content_margin_left, head.content_margin_right])
+		check(head.content_margin_top < 0.0 and head.content_margin_bottom < 0.0,
+			"GoScoreHead: no top or bottom margin of its own, as in the game")
+		var row := theme.get_stylebox(&"panel", &"GoScoreRow")
+		check(row != null and head.get_margin(SIDE_LEFT) == row.get_margin(SIDE_LEFT)
+			and head.get_margin(SIDE_RIGHT) == row.get_margin(SIDE_RIGHT), "GoScoreHead: its labels sit over the rows' columns")
+	# 🧱 The loading screen's blocks (`LoadTile`, `LoadTileLit`): navy in a dark rim until lit, then gold in amber.
+	_chunky(theme, &"panel", &"GoTile", LOAD_TILE, 9, 0.0, 0.0, 3, 8, LOAD_TILE_RIM, false)
+	_chunky(theme, &"panel", &"GoTileLit", GOLD, 9, 0.0, 0.0, 3, 8, LOAD_TILE_LIT_RIM, false)
 	# The frameless key: nothing in any state, the icon darker while pressed.
 	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
 		check(theme.get_stylebox(state, &"GoIconOnly") is StyleBoxEmpty, "GoIconOnly/%s draws nothing" % state)
@@ -365,6 +386,8 @@ func _variations(theme: Theme) -> void:
 		&"GoLevelCard": &"Button", &"GoLevelCardCurrent": &"Button", &"GoLevelCardLocked": &"Button",
 		&"GoHudPanel": &"PanelContainer", &"GoBannerGold": &"PanelContainer", &"GoNoticeGold": &"PanelContainer",
 		&"GoChipDark": &"Button", &"GoIconOnly": &"Button",
+		&"GoScoreRow": &"PanelContainer", &"GoScoreRowGold": &"PanelContainer", &"GoScoreHead": &"PanelContainer",
+		&"GoTile": &"Panel", &"GoTileLit": &"Panel",
 		&"GoPanelFlat": &"PanelContainer", &"GoCardFlat": &"PanelContainer", &"GoChoiceButton": &"Button",
 		&"GoBigButton": &"Button", &"GoBigSecondaryButton": &"Button", &"GoSmallLabel": &"Label", &"GoBarLabel": &"Label",
 		&"GoMapPreview": &"Panel",
@@ -386,6 +409,8 @@ func _variations(theme: Theme) -> void:
 		"StageCardNext": "GoLevelCardCurrent", "StageCardLocked": "GoLevelCardLocked",
 		"ArcadePanel": "GoHudPanel", "HudBanner": "GoBannerGold", "NotifPlayer": "GoNoticeGold", "LangChip": "GoChipDark",
 		"PauseRound": "GoIconOnly",
+		"ScoreRow": "GoScoreRow", "ScoreRowWin": "GoScoreRowGold", "ScoreHead": "GoScoreHead",
+		"LoadTile": "GoTile", "LoadTileLit": "GoTileLit",
 		"HudPanel": "GoPanelFlat", "Card": "GoCardFlat", "Diff": "GoChoiceButton", "Big": "GoBigButton",
 		"BigSecondary": "GoBigSecondaryButton", "SmallLabel": "GoSmallLabel", "BarLabel": "GoBarLabel"}
 	check(map.get("GlossGreen", "") == "GoPrimaryButton" and map.get("GlossBlue", "") == "GoInfoButton",
@@ -468,6 +493,7 @@ func _item_sets(theme: Theme) -> void:
 		&"GoIconOnly": {"styles": ["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"],
 			"colors": ["icon_hover_pressed_color", "icon_pressed_color"], "constants": [], "font_sizes": []},
 		&"GoPanelFlat": panel, &"GoCardFlat": panel,
+		&"GoScoreRow": panel, &"GoScoreRowGold": panel, &"GoScoreHead": panel, &"GoTile": panel, &"GoTileLit": panel,
 		&"GoChoiceButton": flat_button, &"GoBigButton": flat_button, &"GoBigSecondaryButton": flat_button,
 		&"GoSmallLabel": {"styles": [], "colors": ["font_color"], "constants": [], "font_sizes": ["font_size"]},
 		&"GoBarLabel": {"styles": [], "colors": [], "constants": [], "font_sizes": ["font_size"]},
@@ -710,6 +736,8 @@ func _sorted(names: PackedStringArray) -> Array:
 
 ## 🌙 arcade_dark keeps its code-drawn keys and boards.
 func _dark_stays(theme: Theme) -> void:
+	for type: StringName in [&"GoScoreRow", &"GoScoreRowGold", &"GoScoreHead", &"GoTile", &"GoTileLit"]:
+		check(theme.get_type_variation_base(type) == &"", "arcade_dark: %s is painted-only, it stays out" % type)
 	for spot: Array in [[&"normal", &"Button"], [&"normal", &"GoPrimaryButton"], [&"panel", &"GoCard"]]:
 		var box := theme.get_stylebox(spot[0], spot[1])
 		check(box is GoStyleBoxArcade, "arcade_dark: %s/%s is still a GoStyleBoxArcade" % [spot[1], spot[0]])
