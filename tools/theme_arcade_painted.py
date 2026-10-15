@@ -481,6 +481,11 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             put("CheckButton/icons/%s%s" % (key, suffix), lit)
             put("CheckButton/icons/%s_disabled%s" % (key, suffix), off)
 
+    # 🔘 A plain Button is the engine's, as in the game (whose theme sets no Button item): the arcade's blue pill there
+    #    would paint buttons the game draws flat, and leak its outline, gap and disabled face into every Button
+    #    variation that leaves those items unset (the chip's label outlined, the keycap's 4 gap at 10).
+    drop("Button")
+
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()
     for entry in T:

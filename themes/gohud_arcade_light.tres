@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=165 format=3]
+[gd_resource type="Theme" load_steps=161 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -44,72 +44,6 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/arrow_down.svg" id="arrow_down"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/arrow_right.svg" id="arrow_right"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/arrow_left.svg" id="arrow_left"]
-
-[sub_resource type="StyleBox" id="btn_normal"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 12
-bg_color = Color(0.31033, 0.432365, 0.825, 1)
-bottom_color = Color(0.185512, 0.325406, 0.7755, 1)
-shade_color = Color(0.152799, 0.268025, 0.63875, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 3
-band = 0
-shine = 0.85
-lip = 4
-radius = 24
-
-[sub_resource type="StyleBox" id="btn_hover"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 12
-bg_color = Color(0.52276, 0.63592, 1, 1)
-bottom_color = Color(0.40192, 0.53164, 0.949, 1)
-shade_color = Color(0.279153, 0.384277, 0.7225, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 3
-band = 0
-shine = 0.85
-lip = 4
-radius = 24
-
-[sub_resource type="StyleBox" id="btn_pressed"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 11
-content_margin_right = 16
-content_margin_bottom = 9
-bg_color = Color(0.30973, 0.427919, 0.80818, 1)
-bottom_color = Color(0.179666, 0.315151, 0.75106, 1)
-shade_color = Color(0.145599, 0.255394, 0.60865, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 1)
-border_width = 3
-band = 0
-shine = 0.85
-lip = 4
-pressed = true
-sink = 3
-radius = 24
-
-[sub_resource type="StyleBox" id="btn_disabled"]
-script = ExtResource("arcade")
-content_margin_left = 16
-content_margin_top = 8.5
-content_margin_right = 16
-content_margin_bottom = 11.5
-bg_color = Color(0.795967, 0.799769, 0.818779, 1)
-bottom_color = Color(0.768144, 0.772464, 0.794068, 1)
-shade_color = Color(0.63726, 0.645423, 0.68545, 1)
-border_color = Color(0.113725, 0.137255, 0.25098, 0.45)
-border_width = 3
-band = 0
-shine = 0
-lip = 3
-radius = 24
 
 [sub_resource type="StyleBox" id="btn_focus"]
 script = ExtResource("arcade")
@@ -1761,28 +1695,6 @@ tint = Color(0.6, 0.6, 0.66, 0.85)
 
 [resource]
 BoxContainer/constants/separation = 12
-Button/colors/font_color = Color(1, 1, 1, 1)
-Button/colors/font_disabled_color = Color(0.817827, 0.821222, 0.838196, 1)
-Button/colors/font_focus_color = Color(1, 1, 1, 1)
-Button/colors/font_hover_color = Color(1, 1, 1, 1)
-Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
-Button/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
-Button/colors/font_pressed_color = Color(1, 1, 1, 1)
-Button/colors/icon_disabled_color = Color(1, 1, 1, 0.8)
-Button/colors/icon_focus_color = Color(1, 1, 1, 1)
-Button/colors/icon_hover_color = Color(1, 1, 1, 1)
-Button/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
-Button/colors/icon_normal_color = Color(1, 1, 1, 1)
-Button/colors/icon_pressed_color = Color(1, 1, 1, 1)
-Button/constants/h_separation = 8
-Button/constants/outline_size = 6
-Button/font_sizes/font_size = 16
-Button/styles/disabled = SubResource("btn_disabled")
-Button/styles/focus = SubResource("btn_focus")
-Button/styles/hover = SubResource("btn_hover")
-Button/styles/hover_pressed = SubResource("btn_pressed")
-Button/styles/normal = SubResource("btn_normal")
-Button/styles/pressed = SubResource("btn_pressed")
 CheckBox/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 CheckBox/colors/font_disabled_color = Color(0.171943, 0.187373, 0.264527, 1)
 CheckBox/colors/font_focus_color = Color(0.113725, 0.137255, 0.25098, 1)

@@ -707,6 +707,11 @@ func _theme_fallbacks() -> void:
 			var chain := _theme_chain(theme, type)
 			if chain.is_empty() or not natives.has(chain[chain.size() - 1]): continue
 			var native: StringName = chain[chain.size() - 1]
+			# arcade_light is Magnet Mayhem's theme item for item, and the game leaves every Button colour it does not
+			# paint to the engine: a plain Button (and MenuButton) is the engine's flat dark key with light ink, and
+			# the painted keys keep the engine's white icons. Copying those values in would only hide that parity, which
+			# gohud_arcade_painted_theme_test checks; the light-theme white-on-white bug cannot happen on those faces.
+			if preset.id == &"arcade_light" and (native == &"Button" or native == &"MenuButton"): continue
 			var names := {}
 			var engine_chain: Array[StringName] = [native]
 			if native != &"Button" and ClassDB.is_parent_class(native, &"Button"): engine_chain.append(&"Button")

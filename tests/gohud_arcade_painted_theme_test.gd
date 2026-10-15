@@ -65,6 +65,7 @@ func _initialize() -> void:
 		_inks(light)
 		_tokens(light)
 		_item_sets(light)
+		_engine_bases(light)
 		_no_orphans()
 		await _slider(light)
 		await _range_slider(light)
@@ -446,6 +447,26 @@ func _item_sets(theme: Theme) -> void:
 
 
 ## The icon is a `GoTextureSprite` of [param file] drawn at [param size] canvas units, multiplied by [param tint].
+## 🔑 The game's theme sets no base type but `Label`, `OptionButton` and `PopupMenu` — a plain `Button`, and every item a
+##    Button variation leaves unset, is the engine's. A base item here would leak into the variations (an outline on
+##    the chip's label, a 4 → 10 gap) and paint plain buttons the game draws flat, so arcade_light sets none either.
+func _engine_bases(theme: Theme) -> void:
+	for type: StringName in [&"Button"]:
+		var items: Array[String] = []
+		for kind: int in Theme.DATA_TYPE_MAX:
+			for item: StringName in theme.get_theme_item_list(kind, type): items.append(str(item))
+		check(items.is_empty(), "%s is left to the engine, as in the game (sets %s)" % [type, items])
+	var engine := ThemeDB.get_default_theme()
+	var chip := Button.new()
+	chip.theme = theme
+	chip.theme_type_variation = &"GoChipDark"
+	check(chip.get_theme_color(&"font_outline_color") == engine.get_color(&"font_outline_color", &"Button")
+		and chip.get_theme_constant(&"outline_size") == 0,
+		"GoChipDark's outline falls through to the engine's (none), as the game's LangChip does")
+	chip.free()
+	check(not theme.has_constant(&"outline_size", &"Button"), "no base outline under the chip's label")
+
+
 func _icon(theme: Theme, name: StringName, type: StringName, file: String, size: Vector2, tint: Color) -> void:
 	var label := "%s/icons/%s" % [type, name]
 	var icon := theme.get_icon(name, type) if theme.has_icon(name, type) else null

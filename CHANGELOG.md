@@ -19,6 +19,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light` leaves a plain `Button` to the engine, as Magnet Mayhem does.** The game's theme sets no `Button`
+  item; arcade_light's blue pill there painted plain buttons the game draws flat and leaked its outline (the chip's
+  label outlined in navy), its 10 dp gap and its disabled face into every `Button` variation that leaves those items
+  unset. Every painted key is a variation (`GoButton`, `GoPrimaryButton`, …) and keeps its look.
+
 - **`arcade_light` carries Magnet Mayhem’s flat parts too, so no game variation stays game-only.** `GoPanelFlat`
   (`HudPanel`), `GoCardFlat` (`Card`), `GoChoiceButton` (`Diff`), `GoBigButton` (`Big`), `GoBigSecondaryButton`
   (`BigSecondary`), `GoSmallLabel` (`SmallLabel`) and `GoBarLabel` (`BarLabel`) hold the game’s `UiTheme.box()` and
