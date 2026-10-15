@@ -413,6 +413,7 @@ func press_feedback(control: Control) -> void:
 ## The joystick: a rainbow rim (one crayon per arc) and a candy knob on its lip with a shine.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	canvas.draw_circle(center, radius, Color(base, joystick_base_alpha))
 	var colours := crayons()
 	var parts := colours.size() * 2

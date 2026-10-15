@@ -372,6 +372,8 @@ DIALS_EN = {
     "joystick_base_alpha": "Opacity of the joystick's base disc.",
     "joystick_ring_alpha": "Opacity of the joystick's ring.",
     "joystick_ring_width": "Width (dp) of the joystick's ring.",
+    "joystick_idle_alpha": "Opacity of a painted joystick while no finger is on it.",
+    "joystick_active_alpha": "Opacity of a painted joystick while a finger drives it.",
     "cut_chip": "Chamfer size (dp) of a chip's panel.",
     "cut_skeleton": "Chamfer size (dp) of a skeleton panel.",
     "cut_alert": "Chamfer size (dp) of an alert box.",

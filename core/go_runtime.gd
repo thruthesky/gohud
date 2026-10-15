@@ -105,7 +105,19 @@ func _apply(force: bool) -> void:
 	_bp = bp
 	GoUi.set_mobile_type(bp == GoScale.Bp.MOBILE)
 
-	if GoUi.config.scale_enabled:
+	if GoUi.config.scale_enabled and GoUi.config.scale_profile == GoScale.Profile.PER_INCH:
+		var base := Vector2(ProjectSettings.get_setting("display/window/size/viewport_width", 1152),
+			ProjectSettings.get_setting("display/window/size/viewport_height", 648))
+		var dpi := float(DisplayServer.screen_get_dpi())
+		if OS.has_feature("web"): dpi = GoScale.web_dpi(dpi)
+		var per_inch := GoScale.per_inch_factor(Vector2(px), dpi, base, GoUi.config.per_inch_units,
+			GoUi.config.per_inch_min_height, GoUi.is_handheld_platform())
+		if force or not is_equal_approx(window.content_scale_factor, per_inch) or window.content_scale_size != Vector2i(base):
+			_applying = true
+			window.content_scale_size = Vector2i(base)
+			window.content_scale_factor = per_inch
+			_applying = false
+	elif GoUi.config.scale_enabled:
 		var gain := GoScale.gain_for(bp, GoUi.is_handheld_platform(), px.x < px.y)
 		var factor := GoScale.scale_factor_for(scale, gain)
 			# No boundary crossed and the window size unchanged: leave it alone — the font atlas gets re-baked every time.

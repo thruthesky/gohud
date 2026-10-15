@@ -26,6 +26,8 @@ const BLUR_SHADER_PATH := "res://addons/gohud/themes/skins/arcade_painted_blur.g
 const INK := Color("#1d2340")
 const PANEL := Color(1.0, 1.0, 1.0, 0.9)
 const GOLD := Color("#ffc928")
+## The slate of the HUD's key-hint caps (`HUD.pause_hint`).
+const KEY_HINT_FILL := Color("#6c7aa8")
 const GREEN := Color("#3ecf5a")
 const CONTROL_BLUE := Color("#3d6bff")
 ## The player's own notification is a gold rim on this cream (`UiTheme` `NotifPlayer`).
@@ -82,8 +84,18 @@ const SCRIM_SPREAD_PER_LOD := 2.0
 const SCRIM_WASH := Color(0.12, 0.28, 0.6, 0.22)
 ## The bar's chunk lines (`BarSegments`: 3 px INK).
 const TICK_WIDTH := 3.0
+## The HUD bar's groove (`UiTheme.BAR_BG`), its corner and its rim.
+const BAR_BG := Color("#d9deef")
+const BAR_RADIUS := 9
+const BAR_OUTLINE := 3
+## The HUD's alert red (`UiTheme.READY_RED`) and the repulse gauge's board (`HUD._repulse_box`).
+const READY_RED := Color("#e8332f")
+const GAUGE_RADIUS := 14
+const GAUGE_OUTLINE := 3
+const GAUGE_PAD := Vector2(14.0, 8.0)
 
 static var _textures := {}
+static var _symbol_font: Font
 static var _painted_blur: Shader = null
 
 
@@ -249,6 +261,173 @@ func outlined_button_box(face: StyleBox, state: StringName) -> StyleBox:
 	return key_cap
 
 
+## The game's HUD bar groove (`UiTheme.box(BAR_BG, 9, 3, INK)`, no padding): the gradient fill is clipped to it.
+func bar_frame_box() -> StyleBox:
+	var groove := StyleBoxFlat.new()
+	groove.bg_color = BAR_BG
+	groove.set_corner_radius_all(BAR_RADIUS)
+	groove.set_border_width_all(BAR_OUTLINE)
+	groove.border_color = INK
+	groove.set_content_margin_all(0.0)
+	groove.anti_aliasing = true
+	return groove
+
+
+## The game's repulse panel (`HUD._repulse_box`: `UiTheme.box(PANEL, 14, 3, rim, shadow, 14, 8)`) — a READY_RED rim
+## when lit, an ink one while cooling.
+func hud_gauge_box(lit: bool) -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.bg_color = PANEL
+	face.set_corner_radius_all(GAUGE_RADIUS)
+	face.set_border_width_all(GAUGE_OUTLINE)
+	face.border_color = READY_RED if lit else INK
+	face.shadow_color = Color(0.0, 0.0, 0.0, 0.25)
+	face.shadow_size = 1
+	face.shadow_offset = Vector2(0.0, 4.0)
+	face.content_margin_left = GAUGE_PAD.x
+	face.content_margin_right = GAUGE_PAD.x
+	face.content_margin_top = GAUGE_PAD.y
+	face.content_margin_bottom = GAUGE_PAD.y
+	face.anti_aliasing = true
+	return face
+
+
+## The game's READY_RED: the clock's last seconds and a lit gauge's rim.
+func hud_alert_ink() -> Color:
+	return READY_RED
+
+
+## The game's "Esc" cap beside the pause button (`HUD.pause_hint`: `UiTheme.chunky_box(#6c7aa8, 8, 6, 1, 3, 5)`).
+func hud_key_hint_box() -> StyleBox:
+	var cap := StyleBoxFlat.new()
+	cap.bg_color = KEY_HINT_FILL
+	cap.set_corner_radius_all(8)
+	cap.set_border_width_all(3)
+	cap.border_width_bottom = 5
+	cap.border_color = INK
+	cap.content_margin_left = 6.0
+	cap.content_margin_right = 6.0
+	cap.content_margin_top = 4.0
+	cap.content_margin_bottom = 6.0
+	cap.anti_aliasing = true
+	return cap
+
+
+## White on the slate cap.
+func hud_key_hint_ink() -> Color:
+	return Color.WHITE
+
+
+## The game's `PauseRound` press tint.
+func picture_press_tint() -> Color:
+	return Color(0.78, 0.78, 0.86)
+
+
+## The game's countdown badges (`Screens._countdown_badge`): blue under a digit, green under GO.
+func countdown_disc(final: bool) -> Texture2D:
+	var file := "badge_green.png" if final else "badge_blue.png"
+	if not _textures.has(file): _textures[file] = load(PAINTED + file)
+	return _textures[file]
+
+
+## The game's countdown digits: GOLD.
+func countdown_ink() -> Color:
+	return GOLD
+
+
+## The game's name plates (`Nameplates.add`): a 92% fill, radius 8, a 2 px INK rim, 2 px side margins.
+func nameplate_box(fill: Color) -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(fill, 0.92)
+	box.set_corner_radius_all(8)
+	box.set_border_width_all(2)
+	box.border_color = INK
+	box.content_margin_left = 2.0
+	box.content_margin_right = 2.0
+	box.content_margin_top = 0.0
+	box.content_margin_bottom = 0.0
+	box.anti_aliasing = true
+	return box
+
+
+## The game's own plate: GOLD.
+func nameplate_own_fill() -> Color:
+	return GOLD
+
+
+## The game's plate names: INK on the own plate, white on the others.
+func nameplate_ink(own: bool) -> Color:
+	return INK if own else Color.WHITE
+
+
+## The game's plate names: no edge on the own plate, 3 px on the others.
+func nameplate_outline(own: bool) -> int:
+	return 0 if own else 3
+
+
+## The game's plate name edge: INK.
+func nameplate_outline_ink() -> Color:
+	return INK
+
+
+## The game's touch stick (`TouchControls._draw_stick`): the painted dish and knob.
+func joystick_art(knob: bool) -> Texture2D:
+	return widget_art(&"stick_knob" if knob else &"stick_base")
+
+
+## The game's touch shadow and label edge: INK.
+func touch_shadow_ink() -> Color:
+	return INK
+
+
+func touch_outline_ink() -> Color:
+	return INK
+
+
+## The game's REPULSE cooldown arc.
+func touch_cooldown_ink() -> Color:
+	return Color("#ff7a74")
+
+
+## The training spotlight: a navy dim and a 4 px gold ring, 12 round.
+func spotlight_dim() -> Color:
+	return Color(0.04, 0.06, 0.14, 0.55)
+
+
+func spotlight_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.set_border_width_all(4)
+	ring.border_color = GOLD
+	ring.set_corner_radius_all(12)
+	return ring
+
+
+## The training card's title gold and hint red.
+func task_title_ink() -> Color:
+	return Color("#b8860b")
+
+
+func task_hint_ink() -> Color:
+	return Color("#e8332f")
+
+
+
+## The game's fps colours: GREEN, GOLD and RED.
+func perf_ink(level: int) -> Color:
+	return [GREEN, GOLD, Color("#ff4d4d")][clampi(level, 0, 2)]
+
+
+## The game draws its readout in the engine's own font (it sits on a layer with no theme).
+func perf_font() -> Font:
+	return ThemeDB.fallback_font
+
+## The game's text font is Nunito with Noto Sans KR first among its fallbacks, so a mark Nunito lacks (the ✓ on a
+## done chip) draws in Noto Sans KR Bold — the same file, shipped beside the art.
+func symbol_font() -> Font:
+	if _symbol_font == null: _symbol_font = load("res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansKR-Bold.ttf")
+	return _symbol_font
+
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 	for index in range(1, count):
@@ -330,6 +509,12 @@ const ART_ROOT := "res://addons/gohud/assets/arcade_light/"
 ## The stage-select art: check, lock, person, play_tag, pointer. 🛑 A file that is not there reads as no art, and the
 ## widget falls back to the icon set.
 const STAGE_ART := ART_ROOT + "stage/"
+## The match HUD's art (avatar_head, bolt, opponents_badge, stopwatch, pause_button) and the touch controls' art
+## (btn_attract, btn_repulse, btn_jump, stick_base, stick_knob) — the game's `assets/ui/hud` and `assets/ui/touch`.
+const HUD_ART := ART_ROOT + "hud/"
+const TOUCH_ART := ART_ROOT + "touch/"
+## The folders `widget_art` looks in, in order.
+const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART]
 ## The sky behind an opaque window, the game's `STAGE_SKY`.
 const STAGE_SKY := Color(0.36, 0.62, 0.92, 1.0)
 ## A selected stage card's gold ring.
@@ -342,12 +527,14 @@ const KEY_CLUSTER_PPU := 4.2
 const RIBBON_OVERHANG := Vector2(14.0, 17.0)
 
 
-## The painted stage art, when the theme ships it (`assets/arcade_light/stage/<name>.png`).
+## The painted art, when the theme ships it: `assets/arcade_light/stage/<name>.png`, then `hud/`, then `touch/`.
 func widget_art(name: StringName) -> Texture2D:
-	var path := STAGE_ART + String(name) + ".png"
-	if not _textures.has(path):
-		_textures[path] = load(path) if ResourceLoader.exists(path) else null
-	return _textures[path]
+	for folder in ART_FOLDERS:
+		var path := folder + String(name) + ".png"
+		if not _textures.has(path):
+			_textures[path] = load(path) if ResourceLoader.exists(path) else null
+		if _textures[path] != null: return _textures[path]
+	return null
 
 
 ## The game's gold ring round the selected stage card.

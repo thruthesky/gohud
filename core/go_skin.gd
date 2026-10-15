@@ -82,6 +82,10 @@ extends Resource
 @export var joystick_ring_alpha := 0.45
 ## Width of the joystick ring (dp).
 @export var joystick_ring_width := 2.0
+## Opacity of a painted joystick (`joystick_art`) while no finger is on it.
+@export var joystick_idle_alpha := 0.55
+## Opacity of a painted joystick (`joystick_art`) while a finger drives it.
+@export var joystick_active_alpha := 0.9
 @export_group("")
 
 
@@ -1230,15 +1234,188 @@ func press_feedback(_control: Control) -> void:
 ## 🛑 Draw shapes of the same kind together — the canvas breaks the draw call every time the command type changes.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	canvas.draw_circle(center, radius, Color(base, joystick_base_alpha))
 	canvas.draw_circle(knob, knob_radius, Color(ink, 0.85 if active else 0.55))
 	canvas.draw_arc(center, radius, 0, TAU, 48, Color(ink, joystick_ring_alpha), joystick_ring_width, true)
 
 
+## 🕹️ Draws the joystick from `joystick_art()` when the skin has it (and says so) — the dish, then the knob over a soft
+## drop shadow, see-through at rest so it does not hide the view. A skin that overrides `draw_joystick` calls it first.
+func draw_joystick_art(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float, knob_radius: float,
+		active: bool) -> bool:
+	var dish := joystick_art(false)
+	var cap := joystick_art(true)
+	if dish == null or cap == null: return false
+	var tint := Color(1.0, 1.0, 1.0, joystick_active_alpha if active else joystick_idle_alpha)
+	draw_touch_sprite(canvas, dish, center, radius, tint, false)
+	draw_touch_sprite(canvas, cap, knob, knob_radius, tint, true)
+	return true
+
+
+## 🕹️ The painted joystick — [param knob] true for the knob, false for the dish. null — the default — draws circles.
+func joystick_art(_knob: bool) -> Texture2D:
+	return null
+
+
+## 🕹️ A round touch sprite [param picture] centred on [param center], [param radius] to its rim, tinted [param tint] —
+## over a disc of `touch_shadow_ink()` dropped 4 dp when [param shadow]. `GoJoystick` and `GoTouchButton` draw with it.
+func draw_touch_sprite(canvas: CanvasItem, picture: Texture2D, center: Vector2, radius: float, tint: Color,
+		shadow: bool) -> void:
+	if shadow:
+		canvas.draw_circle(center + Vector2(0.0, 4.0), radius, Color(touch_shadow_ink(), 0.35 * tint.a))
+	canvas.draw_texture_rect(picture, Rect2(center - Vector2(radius, radius), Vector2(radius, radius) * 2.0), false, tint)
+
+
+## 🕹️ The soft shadow under a touch button or stick knob (drawn at 35% of the button's own opacity).
+func touch_shadow_ink() -> Color:
+	return Color.BLACK
+
+
+## 🕹️ The edge round a touch button's label and caption (white text, 5 dp edge).
+func touch_outline_ink() -> Color:
+	return Color.BLACK
+
+
+## 🕹️ The arc of a `GoTouchButton`'s cooldown ring: the share of the wait still to run. The default is `danger`.
+func touch_cooldown_ink() -> Color:
+	return GoUi.color(GoTheme.DANGER)
+
+
+## 🎯 The dim a `GoSpotlight` lays round its hole. The default is black at 55 %.
+func spotlight_dim() -> Color:
+	return Color(0.0, 0.0, 0.0, 0.55)
+
+
+## 🎯 The ring a `GoSpotlight` draws on the edge of its hole (it stays after the dim fades). The default is a 4 dp
+## `accent` outline, 12 dp round.
+func spotlight_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.set_border_width_all(4)
+	ring.border_color = GoUi.color(GoTheme.ACCENT)
+	ring.set_corner_radius_all(12)
+	return ring
+
+
+## 📋 A `GoTaskCard`'s title. The default is `accent`.
+func task_title_ink() -> Color:
+	return GoUi.color(GoTheme.ACCENT)
+
+
+## 📋 A `GoTaskCard`'s hint line (what to try when stuck). The default is `danger`.
+func task_hint_ink() -> Color:
+	return GoUi.color(GoTheme.DANGER)
+
+
+
+## 📈 The band behind a `GoPerfReadout`: dark and see-through so the readout reads over any scene. The default is
+## black at 55 %, 4 dp round, 6 dp padding.
+func perf_box() -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(0.0, 0.0, 0.0, 0.55)
+	box.set_corner_radius_all(4)
+	box.set_content_margin_all(6)
+	return box
+
+
+## 📈 A `GoPerfReadout`'s ink by how well the frame rate is doing — 0 good, 1 warning, 2 bad. The defaults are
+## `success`, `warning` and `danger`.
+func perf_ink(level: int) -> Color:
+	return GoUi.color([GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER][clampi(level, 0, 2)])
+
+
+## 📈 A `GoPerfReadout`'s font. null (the default) keeps the theme's.
+func perf_font() -> Font:
+	return null
+
+## The font a look draws marks such as a `GoTaskCard` chip's ✓ in when its text font lacks them; widgets add it
+## as a fallback under the theme's font. null (the default) keeps the theme's font alone.
+func symbol_font() -> Font:
+	return null
+
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
 ## smooth bar — the default; the arcade looks split a bar into chunky segments.
 func bar_ticks() -> int:
 	return 0
+
+
+## 📊 A frame a `GoBar` draws instead of its `ProgressBar`: a rounded groove whose fill is a gradient clipped to its
+## shape (the painted HUD's power and stability bars). null — the default — keeps the theme's `ProgressBar`.
+func bar_frame_box() -> StyleBox:
+	return null
+
+
+## 🎮 A `GoHudCard` gauge's board (a cooldown readout): [param lit] when the ability is ready. The default is the HUD
+## board with a `danger`-rimmed accent when lit.
+func hud_gauge_box(lit: bool) -> StyleBox:
+	return floating_box(GoTheme.BOX_HUD, GoUi.color(GoTheme.DANGER) if lit else Color.TRANSPARENT)
+
+
+## 🎮 The colour a HUD warns in — a `GoHudCard` clock running out. The default is the theme's `danger`.
+func hud_alert_ink() -> Color:
+	return GoUi.color(GoTheme.DANGER)
+
+
+## ⌨️ The cap a `GoHudButton` shows its key on ("Esc" beside the pause button). The default is `kbd_box()`.
+func hud_key_hint_box() -> StyleBox:
+	return kbd_box()
+
+
+## ⌨️ The key's colour on a `GoHudButton` cap. The default is `kbd_ink()`.
+func hud_key_hint_ink() -> Color:
+	return kbd_ink()
+
+
+## 🖼️ How a picture button (`GoIconButton.art`) darkens while pressed — a multiply over its own colours.
+func picture_press_tint() -> Color:
+	return Color(0.8, 0.8, 0.8)
+
+
+## ⏱️ The disc a `GoCountdown` step sits on — [param final] for the last ("GO!"). null — the default — draws a round
+## `accent` / `success` disc instead.
+func countdown_disc(final: bool) -> Texture2D:
+	return null
+
+
+## ⏱️ The colour of a `GoCountdown` step. The default is the theme's `warning`.
+func countdown_ink() -> Color:
+	return GoUi.color(GoTheme.WARNING)
+
+
+## 🏷️ A `GoNameplate`'s box in [param fill] (a character's colour, or `nameplate_own_fill()`). The default is a
+## rounded tag with a thin dark rim, a little see-through.
+func nameplate_box(fill: Color) -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(fill, 0.92)
+	box.set_corner_radius_all(8)
+	box.set_border_width_all(2)
+	box.border_color = GoUi.color(GoTheme.BACKGROUND)
+	box.content_margin_left = 2.0
+	box.content_margin_right = 2.0
+	box.anti_aliasing = true
+	return box
+
+
+## 🏷️ The fill of the player's own `GoNameplate`. The default is the theme's `warning`.
+func nameplate_own_fill() -> Color:
+	return GoUi.color(GoTheme.WARNING)
+
+
+## 🏷️ A `GoNameplate`'s name colour — [param own] on the player's own plate. The default is white.
+func nameplate_ink(own: bool) -> Color:
+	return Color.BLACK if own else Color.WHITE
+
+
+## 🏷️ The edge round a `GoNameplate`'s name (px) — [param own] on the player's own plate. The default is 3, none on
+## the own plate.
+func nameplate_outline(own: bool) -> int:
+	return 0 if own else 3
+
+
+## 🏷️ The colour of the edge round a `GoNameplate`'s name. The default is black.
+func nameplate_outline_ink() -> Color:
+	return Color.BLACK
 
 
 ## The ticks that split a bar into [param count] chunks, over the whole of [param rect] (the groove and the fill) —
@@ -1269,8 +1446,10 @@ func draw_coach_pointer(canvas: CanvasItem, start: Vector2, tip: Vector2,
 const KBD_DONE := Color("#8ff0a4")
 
 
-## A picture a widget may wear, by [param name] (`check`, `lock`, `person`, `play_tag`, `pointer`…). `null`: the
-## widget falls back to an icon from the icon set or a drawn plate. A look with painted art returns its own.
+## A picture a widget may wear, by [param name] (`check`, `lock`, `person`, `play_tag`, `pointer`; the HUD's `avatar_head`,
+## `bolt`, `opponents_badge`, `stopwatch`, `pause_button`; the touch keys' `btn_attract`, `btn_repulse`, `btn_jump`,
+## `stick_base`, `stick_knob`…). `null`: the widget falls back to an icon from the icon set or a drawn plate. A look
+## with painted art returns its own.
 func widget_art(_name: StringName) -> Texture2D:
 	return null
 

@@ -820,7 +820,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD et formes de jeu <small>(15)</small></h2>
+  <h2>HUD et formes de jeu <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -894,6 +894,79 @@ var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
       <p class="catalog-base">étend <code>Control</code></p>
       <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
 shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>Un panneau de la rangée du haut du HUD de match : icône avec bandeau et barres, un compteur, une horloge ou une jauge prête.</p>
+      <p class="catalog-base">étend <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>Le compte à rebours : 3, 2, 1, GO! en grand sur un disque, chaque étape surgit.</p>
+      <p class="catalog-base">étend <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>Un bouton de coin du HUD : un bouton image avec sa touche de clavier sur un capuchon à côté.</p>
+      <p class="catalog-base">étend <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>Une plaque de nom au-dessus d'un personnage dans un monde 3D, de même taille à toute distance.</p>
+      <p class="catalog-base">étend <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>Un fil d'avis d'une ligne, comme un fil d'éliminations, qui s'empilent, apparaissent en fondu et partent seuls.</p>
+      <p class="catalog-base">étend <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>Un bouton rond pour le pouce sur écran tactile, avec anneau de recharge, pulsation quand il est prêt et visée par glisser.</p>
+      <p class="catalog-base">étend <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>Assombrit l'écran autour d'un contrôle et l'entoure ; l'ombre s'efface, le cadre reste.</p>
+      <p class="catalog-base">étend <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>La carte d'une leçon du tutoriel : étape, titre, quoi faire, puces cochées et indice ; se replie en une ligne.</p>
+      <p class="catalog-base">étend <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>Un bandeau de performance toujours affiché : fps, temps d'image, triangles, appels de dessin, nœuds et mémoire ; rougit quand les fps chutent.</p>
+      <p class="catalog-base">étend <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>

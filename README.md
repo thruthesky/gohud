@@ -694,7 +694,7 @@ Leave a field empty or at its default to keep gohud's behaviour. Nothing needs t
 | Group | Fields |
 |---|---|
 | Appearance | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow` (**off by default**) |
-| Responsive | `scale_enabled` (1 unit = 1 dp, **off by default**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
+| Responsive | `scale_enabled` (1 unit = 1 dp, **off by default**), `scale_profile` (`DP` or `PER_INCH`: the base size kept, a handheld shrunk to `per_inch_units` per inch, at least `per_inch_min_height` tall), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
 | Surface | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, **`scrim_blur`** (off: the flat dim instead of the look's blur, for a low quality tier), `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
 | Feedback | `haptics_enabled`, `haptic_tap/light/medium_ms` and amplitudes, `sound_cues` |
 | Localization | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
@@ -838,7 +838,10 @@ its wide ribbon); `GoLevelCard`, `GoLevelCardCurrent` and `GoLevelCardLocked` (t
 banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a round icon-only button). Its flat parts are there too:
 `GoPanelFlat` and `GoCardFlat` (a translucent panel and a white card, ink-rimmed); `GoChoiceButton` (a light choice
 key that stays cyan while chosen); `GoBigButton` and `GoBigSecondaryButton` (big green and grey keys with a hard
-bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px). A theme without them falls back to the base type.
+bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px). A theme without them falls back to the base type. It also ships the game's painted HUD art (`assets/arcade_light/hud/`: the
+player's head, the power bolt, the opponents badge, the stopwatch, the round pause key) and touch art
+(`assets/arcade_light/touch/`: the ATTRACT, REPULSE and JUMP keys, the stick's base and knob); a widget asks for one by
+name with `GoUi.skin().widget_art(&"stopwatch")`, and every other look answers `null`.
 
 Filled buttons sit flat. The two `*GlowButton` variations raise them with a soft shadow in the button's own colour
 (a glow on the sci-fi shape): set `GoConfig.button_glow` for every filled button, or call
@@ -1022,16 +1025,16 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoPromptCard` | PanelContainer | Non-blocking question card; keeps pressed buttons alive across refreshes |
 | `GoCoachMark` | Control | Guided tour that points at real controls; pressing the target advances; the card steps around HUD anchors and `keep_clear` controls |
 | `GoHudAnchor` | Control | Pins HUD pieces to one of nine safe-area spots, with an optional landscape spot, `reserve_space` and `avoid_peers`; `keyboard_focus = false` keeps every button in the corner from swallowing Space / Enter |
-| `GoBar` | Control | HP/MP/XP bars with value, fraction or percent readouts and eased changes |
+| `GoBar` | Control | HP/MP/XP bars with value, fraction or percent readouts and eased changes; under `arcade_light` the painted HUD bar (a gradient in a rounded groove, an icon before the name) |
 | `GoSlot` | Button | Quick slot with icon, quantity, cooldown and shortcut on a single face; shared hit areas in tight rows; `keyboard_focus` opts into Tab order |
 | `GoJoystick` | Control | Virtual joystick in fixed, follow or relative mode, with dead zone |
-| `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; `keyboard_focus = false` over gameplay |
+| `GoIconButton` | Button | Icon-only button: small visual, full-size hit area, accessible name; the tooltip takes your own translation key; focus follows the look (off under arcade_light); `keyboard_focus = false` over gameplay |
 | `GoStyle` | factory | Buttons, labels, list rows (and `restyle_list_row` for the chosen one), inputs, selects, dropdowns, segments with icons, chips (and `filter_chip`, `input_chip`), floating toolbars, the bottom app bar, outlined buttons (`Tone.OUTLINED`), cards, the item detail card (`item_card`), tables, tabs, wrap rows, responsive grids, foldable sections, empty states |
 | `GoUi` | static | Current config, preset, theme, skin, icons, colors, metrics and strings |
 | `GoThemePresets` | static | The fourteen built-in presets, presets found in `themes/presets/`, and `register()` for your own |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` · `GoSkinArcadePainted` | Resource | The shapes code draws, with numeric dials |
 | `GoSafeArea` | Control / static | Usable rectangle excluding notches, rounded corners and the keyboard |
-| `GoScale` | static | Breakpoint and dp math |
+| `GoScale` | static | Breakpoint and dp math; the per-inch profile (`per_inch_factor`, `per_inch_canvas`, `web_dpi`, `cap_sides`) |
 | `GoFeedback` | static | Sound and haptic routing |
 | `GoBackPolicy` | static | Shared ownership of Android Back |
 
@@ -1071,6 +1074,15 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoSwitch` | CheckButton | An on/off switch drawn the painted way: the theme's pill stands centred in its box and a caption (`set_texts("ON", "OFF")`) sits beside the knob, shrunk so every language fits. Toggling and touch are the stock CheckButton's |
 | `GoMapPreview` | Control | A small map of a level: rectangles, circles and polygons with an outline, the links between them and the start dots, fitted and centred in a dark box or the theme's well; locked, a grey silhouette with no starts. The game passes only data |
 | `GoChoiceColumn` | Control | A short column of choices tapped once — the summon list on a HUD side bar. A few rows at a time, scrolled up and down; **one tap on any row acts** (no wheel to settle first); the game marks any number of rows as chosen (`set_selected`) or greys them (`set_dimmed`), and rows can draw their own picture (`item_drawer`). Keyboard focus is off over gameplay, so the arrow keys stay with the player |
+| `GoPerfReadout` | PanelContainer | An always-on performance band: fps, frame time and the worst frame, triangles, draw calls, nodes, RAM and VRAM; the fps ink turns from good to warning to bad. Samples the engine itself (no allocation per frame, writes only on change) or shows `show_stats()`; `one_line` for tight corners. Never takes input |
+| `GoTaskCard` | PanelContainer | A lesson's card in a tutorial played through the game: a step line, a title (shrunk to one line), what to do, one keycap chip per part that ticks off (`✓`), a hint when stuck and a footer; `compact` folds it to one row (step, title, chips). No buttons, never takes input |
+| `GoSpotlight` | Control | Dims the screen round one thing (a rect, or a control it follows) and rings it, to say "this one"; the dim fades after `dim_seconds`, the ring stays. No card and no buttons — pair it with a `GoTaskCard`. Never takes input |
+| `GoTouchButton` | Control | A round thumb button for a mobile action game: a round picture (`GoSkin.widget_art`) with its name under the icon (shrinks to fit), a cooldown ring (`cooling`, `cooldown` 0~1) and a pulse when ready; held it shrinks and darkens. `drag_aim` makes it a small stick too: hold and drag to aim, `aimed(pull)`. Display and input only |
+| `GoNoticeFeed` | VBoxContainer | A notice feed (a kill feed): one-line rows that stack newest at the bottom, fade in and go on their own after `seconds`; `push(text, own)` — the player's own line stands out. `max_items` rows are built up front and reused, so a burst builds nothing. Rows use the theme's `GoNotice` / `GoNoticeGold` panels, else `GoSkin.notice_box()`. Display only |
+| `GoNameplate` | PanelContainer | A name plate over a character in a 3D world: a small rounded tag in the character's colour (the player's own in `GoSkin.nameplate_own_fill()`), `base_width` widening to the whole name up to `max_width`; `follow(camera, point)` centres it on the projected point and hides it behind the camera. Display only |
+| `GoHudButton` | HBoxContainer | A HUD corner button: a picture button (`GoIconButton.art`, never keeps focus) with the key that does the same on a cap beside it ("Esc" by the pause button); `show_hint = false` on a touch screen. The cap is `GoSkin.hud_key_hint_box()`. Display only — it reports `pressed`, the game decides |
+| `GoCountdown` | Label | The match-start count: 3 · 2 · 1 · GO! big on a disc (`show_step(text, final)`, `hide_step()`), each step popping in (scaled and faded, settling over 0.35 s; none under `reduce_motion`). The disc is `GoSkin.countdown_disc(final)`, the text `GoSkin.countdown_ink()` with a thick outline and a drop shadow. Display only — the caller says which step shows |
+| `GoHudCard` | PanelContainer | One board of a match HUD's top row: an icon, then a gold name banner over HUD bars (the player card), a title beside a count, a caption over a clock (`set_clock`, red when the caller warns), or a gauge whose rim lights when an ability is ready (`set_lit`: dimmed while cooling, a pop when it lights). The board is `GoHudPanel`, the banner `GoBannerGold`; `padding` packs it tighter on a phone. Display only — the caller supplies every value |
 
 ### Over the screen
 
@@ -1208,7 +1220,8 @@ subclasses *inside* the widgets without copying code:
 
 `GoIconButton.native_texture_size = true` draws a texture icon at its own pixel size instead of
 scaling it to the skin's glyph size (`GoSkin.icon_button_glyph`: 58 % of `visual_size`, 24 dp on the 36 dp button under
-Material).
+Material). `GoIconButton.art = texture` makes a picture the whole button (a painted round pause button): it fills
+`visual_size` with no frame and darkens to `GoSkin.picture_press_tint()` while pressed.
 
 ## Plugin
 

@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (15)
+8. [HUD and game shapes](#hud-and-game-shapes) (24)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -894,6 +894,97 @@ Extends `Control`. A picture that fills its box, cropping the overflow like CSS 
 ```gdscript
 var shot := GoCoverImage.make(preload("res://art/level_3.png"), Vector2(0.5, 0.3))
 shot.custom_minimum_size = Vector2(74, 74)
+```
+
+### `GoHudCard`
+
+Extends `PanelContainer`. One board of a match HUD's top row: an icon with a banner and bars, a count, a clock or a ready gauge. Details: `hud.md` §27 (GoHudCard).
+
+```gdscript
+var clock := GoHudCard.make(GoUi.skin().widget_art(&"stopwatch"))
+clock.title = "MATCH TIME"
+clock.set_clock(83.0)
+```
+
+### `GoCountdown`
+
+Extends `Label`. The match-start count: 3, 2, 1, GO! big on a disc, each step popping in. Details: `hud.md` §28 (GoCountdown).
+
+```gdscript
+var count := GoCountdown.new()
+count.show_step("3")
+```
+
+### `GoHudButton`
+
+Extends `HBoxContainer`. A HUD corner button: a picture button with its keyboard key on a cap beside it. Details: `hud.md` §29 (GoHudButton).
+
+```gdscript
+var pause := GoHudButton.make(GoUi.skin().widget_art(&"pause_button"), 52.0, "Esc")
+pause.pressed.connect(func() -> void: print("pause"))
+```
+
+### `GoNameplate`
+
+Extends `PanelContainer`. A name plate floating over a character in a 3D world, the same size at any distance. Details: `hud.md` §30 (GoNameplate).
+
+```gdscript
+var plate := GoNameplate.make("BOT RED", Color(0.86, 0.24, 0.24))
+plate.follow(camera, anchor.global_position)
+```
+
+### `GoNoticeFeed`
+
+Extends `VBoxContainer`. A feed of one-line notices, such as a kill feed, that stack, fade in and leave on their own. Details: `hud.md` §31 (GoNoticeFeed).
+
+```gdscript
+var feed := GoNoticeFeed.new()
+feed.push("RED knocked out BLUE")
+feed.push("YOU knocked out GREEN", true)
+```
+
+### `GoTouchButton`
+
+Extends `Control`. A round thumb button for touch screens, with a cooldown ring, a ready pulse and optional drag-to-aim. Details: `hud.md` §32 (GoTouchButton).
+
+```gdscript
+var jump := GoTouchButton.make(&"btn_jump", "JUMP", 86.0)
+jump.pressed_down.connect(send_jump)
+var skill := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+skill.cooling = true
+skill.cooldown = 0.4
+```
+
+### `GoSpotlight`
+
+Extends `Control`. Dims the screen round one control and rings it; the dim fades, the ring stays. Details: `hud.md` §33 (GoSpotlight).
+
+```gdscript
+var spot := GoSpotlight.new()
+hud.add_child(spot)
+spot.follow(jump_button, true)
+```
+
+### `GoTaskCard`
+
+Extends `PanelContainer`. A tutorial lesson's card: step, title, what to do, part chips that tick off and a hint; folds to one row. Details: `hud.md` §34 (GoTaskCard).
+
+```gdscript
+var card := GoTaskCard.new()
+card.caption = "TRAINING · STEP 1/12"
+card.title = "MOVE"
+card.body = "Move with W A S D."
+card.set_parts(["W", "A", "S", "D"], [true])
+```
+
+### `GoPerfReadout`
+
+Extends `PanelContainer`. An always-on performance band: fps, frame time, triangles, draw calls, nodes and memory; turns red as fps drops. Details: `hud.md` §35 (GoPerfReadout).
+
+```gdscript
+var perf := GoPerfReadout.new()
+perf.tier_text = "LOW (auto)"
+overlay_layer.add_child(perf)
 ```
 
 ### `GoMapPreview`

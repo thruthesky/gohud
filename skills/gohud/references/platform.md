@@ -237,11 +237,14 @@ own button handlers for a consistent feel.
 | `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch |
 | `enum GoScale.Bp { MOBILE, TABLET, DESKTOP }` | Short side in dp: ≤ `mobile_max_dp` (576) mobile, ≤ `tablet_max_dp` (991) tablet |
 | `GoScale.breakpoint_for_dp(dp)` · `form_width_for(bp)` · `gain_for(bp, handheld, portrait)` · `display_scale(raw_scale, dpi, screen_px)` · `breakpoint_name(bp)` | Pure functions |
+| `enum GoScale.Profile { DP, PER_INCH }` · `GoScale.per_inch_factor(window_px, dpi, base, units_per_inch, min_height, handheld)` · `per_inch_canvas(window_px, base, factor)` · `web_dpi(reported)` · `cap_sides(margins, side_max)` | The per-inch profile as pure functions: the `content_scale_factor` that keeps a `canvas_items` base size about 160 units per physical inch on a handheld (never below the minimum height, never below 1), the canvas it gives, a phone browser's real dpi, and safe margins with the sides capped for an edge-hugging HUD |
 | `GoRuntime` (plugin autoload) | `breakpoint_changed(bp)` · `viewport_resized(size)` · `keyboard_changed(px)` · `current_bp()` · `is_mobile()` · `short_dp()` |
 | `GoUi.is_handheld_platform()` | Android or iOS (not "narrow window") |
 
 `scale_enabled = true` makes 1 UI unit = 1 dp by setting `Window.content_scale_factor` — it changes the whole
-project's 2D coordinates, so only turn it on in a project designed for it.
+project's 2D coordinates, so only turn it on in a project designed for it. With `scale_profile = GoScale.Profile.PER_INCH`
+it instead keeps the project's base size (`canvas_items` stretch) and shrinks a handheld so the UI is the same size in
+the hand on every phone — Magnet Mayhem's device profile.
 
 ```gdscript
 var runtime := GoUi.runtime()

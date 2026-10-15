@@ -328,14 +328,16 @@ func _bar_segments() -> void:
 	root.add_child(bar)
 	bar.set_values(320, 500, false)
 	await frames(2)
-	var smooth := bar.get_combined_minimum_size()
 	check(bar.segment_count() == 0, "bar: under the plain look a bar is smooth")
 	GoUi.use_preset(&"arcade_light")
 	await frames(2)
 	check(bar.segment_count() == 6, "bar: under the arcade look it is split in six")
-	check(bar.get_combined_minimum_size() == smooth, "bar: the ticks change no size")
+	# Compared under the same look: arcade_light's own font makes the name row a pixel shorter than the plain look's.
+	var ticked := bar.get_combined_minimum_size()
 	bar.segments = 0
+	await frames(1)
 	check(bar.segment_count() == 0, "bar: segments 0 keeps it smooth under any look")
+	check(bar.get_combined_minimum_size() == ticked, "bar: the ticks change no size")
 	bar.segments = 4
 	GoUi.use_preset(&"default_light")
 	await frames(1)

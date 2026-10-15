@@ -820,7 +820,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 와 게임 모양 <small>(15)</small></h2>
+  <h2>HUD 와 게임 모양 <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -894,6 +894,79 @@ var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
 shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>경기 HUD 윗줄의 판 하나 — 아이콘과 배너·막대, 숫자, 시계, 또는 준비 게이지.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>경기 시작 카운트 — 3, 2, 1, GO! 를 원판 위에 크게, 단계마다 톡 튀어 나온다.</p>
+      <p class="catalog-base">바탕 <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>HUD 모서리 버튼 — 그림 버튼 옆에 같은 일을 하는 키를 키캡으로 보인다.</p>
+      <p class="catalog-base">바탕 <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>3D 세계의 캐릭터 위에 뜨는 이름표 — 거리와 상관없이 화면에서 같은 크기다.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>킬 피드처럼 한 줄 알림이 쌓이고, 서서히 나타났다가 저절로 사라지는 피드.</p>
+      <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>쿨다운 고리, 준비 효과, 끌어서 조준을 갖춘 터치 화면용 둥근 엄지 버튼.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>컨트롤 하나 둘레의 화면을 어둡게 하고 테두리를 두른다. 어둠은 사라지고 테두리는 남는다.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>튜토리얼 과제 카드 — 단계, 제목, 할 일, 끝나면 체크되는 칩과 힌트. 한 줄로 접힌다.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>항상 켜 두는 성능 띠 — fps, 프레임 시간, 삼각형, 드로 콜, 노드, 메모리. fps가 떨어지면 빨개진다.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>

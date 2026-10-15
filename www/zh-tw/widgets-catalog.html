@@ -820,7 +820,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 與遊戲元件 <small>(15)</small></h2>
+  <h2>HUD 與遊戲元件 <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -894,6 +894,79 @@ var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
       <p class="catalog-base">繼承 <code>Control</code></p>
       <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
 shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>比賽 HUD 頂列的一塊面板：圖示加橫幅和條、計數、時鐘或就緒量表。</p>
+      <p class="catalog-base">繼承 <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>比賽開始倒數：3、2、1、GO! 大字顯示在圓盤上，每一步彈出。</p>
+      <p class="catalog-base">繼承 <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>HUD 角落按鈕：圖片按鈕旁用鍵帽顯示對應的鍵盤按鍵。</p>
+      <p class="catalog-base">繼承 <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>懸浮在 3D 世界角色上方的名牌，無論遠近在螢幕上大小不變。</p>
+      <p class="catalog-base">繼承 <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>單行通知（如擊殺播報）依序堆疊、淡入並自動消失的訊息流。</p>
+      <p class="catalog-base">繼承 <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>觸控螢幕用的圓形拇指按鈕，附冷卻圈、就緒脈衝與可選的拖曳瞄準。</p>
+      <p class="catalog-base">繼承 <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>將某個控制項周圍的畫面調暗並加上外框；暗幕會淡出，外框保留。</p>
+      <p class="catalog-base">繼承 <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>教學關卡卡片：步驟、標題、要做的事、完成即打勾的分項標籤與提示；可折疊成一列。</p>
+      <p class="catalog-base">繼承 <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>常駐效能條：fps、影格時間、三角形、繪製呼叫、節點與記憶體；fps 下降時變紅。</p>
+      <p class="catalog-base">繼承 <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>

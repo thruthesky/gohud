@@ -298,7 +298,7 @@ GoUi.config = settings
 | 묶음 | 칸 |
 |---|---|
 | 겉모습 | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow`(**기본 꺼짐**) |
-| 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
+| 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `scale_profile`(`DP` 또는 `PER_INCH`: 기준 크기를 그대로 두고 휴대 기기에선 인치당 `per_inch_units` 로 줄이되 높이는 `per_inch_min_height` 이상), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
 | 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, **`scrim_blur`** (끄면 룩의 블러 대신 평평한 어둡게 — 낮은 품질 단계용), `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
 | 피드백 | `haptics_enabled`, `haptic_tap/light/medium_ms` 와 세기, `sound_cues` |
 | 번역 | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
@@ -426,7 +426,10 @@ icons.canonical(&"gear")             # &"settings"
 판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만
 있는 동그란 버튼). 평평한 부품도 있다: `GoPanelFlat` · `GoCardFlat`(잉크 테두리의 반투명 판과 흰 카드),
 `GoChoiceButton`(고르면 청록으로 남는 밝은 선택 키), `GoBigButton` · `GoBigSecondaryButton`(아래 테두리가 두꺼운 큰
-초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px). 이 변형이 없는 테마는 기본 타입으로 돌아간다.
+초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
+플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
+REPULSE · JUMP 키, 스틱 바탕과 손잡이)도 싣는다. 위젯은 `GoUi.skin().widget_art(&"stopwatch")` 처럼 이름으로 꺼내고, 다른
+룩은 모두 `null` 을 돌려준다.
 
 채운 버튼은 기본으로 평평하다. `*GlowButton` 두 변형은 버튼 자기 색의 부드러운 그림자(sci-fi 모양은 글로우)로 띄운다 —
 채운 버튼 전부는 `GoConfig.button_glow` 를 켜고, 버튼 하나만은 `GoStyle.glow(button)` 을 부른다.
@@ -600,16 +603,16 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoPromptCard` | PanelContainer | 화면을 막지 않는 질문 카드. 새로 그려도 눌린 버튼이 살아 있다 |
 | `GoCoachMark` | Control | 실제 컨트롤을 가리키는 안내 투어. 대상을 누르면 다음으로, 카드는 HUD 앵커와 `keep_clear` 를 피한다 |
 | `GoHudAnchor` | Control | HUD 를 안전영역 아홉 자리 중 하나에 붙인다. 가로 자리·`reserve_space`·`avoid_peers`. `keyboard_focus = false` 면 그 모서리의 버튼이 스페이스·엔터를 가로채지 않는다 |
-| `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간 |
+| `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간. `arcade_light`에서는 게임 HUD의 페인트 막대(둥근 홈 안의 그라데이션, 이름 앞 아이콘) |
 | `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
 | `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
-| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
+| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 포커스는 룩을 따른다(arcade_light에서는 꺼짐). 게임 화면 위에서는 `keyboard_focus = false` |
 | `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·아래 앱 바·외곽선 버튼(`Tone.OUTLINED`)·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 열넷, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
 | `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` · `GoSkinArcadePainted` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
 | `GoSafeArea` | Control / 정적 | 노치·둥근 모서리·키보드를 뺀 쓸 수 있는 사각형 |
-| `GoScale` | 정적 | 브레이크포인트와 dp 계산 |
+| `GoScale` | 정적 | 브레이크포인트와 dp 계산, 인치 기준 프로필(`per_inch_factor`, `per_inch_canvas`, `web_dpi`, `cap_sides`) |
 | `GoFeedback` | 정적 | 소리·햅틱 연결 |
 | `GoBackPolicy` | 정적 | Android 뒤로 가기의 소유권 |
 
@@ -649,6 +652,15 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoMapPreview` | Control | 레벨의 작은 지도 — 사각형·원·다각형 구역과 테두리, 구역을 잇는 다리, 시작 점을 어두운 상자나 테마의 우물 안에 맞춰 가운데에 그린다. 잠기면 시작 점 없는 회색 실루엣이 된다. 게임은 데이터만 넘긴다 |
 | `GoSwitch` | CheckButton | 칠한 모양으로 그리는 켜기/끄기 스위치 — 테마의 알약이 칸 가운데에 서고, 손잡이 옆에 글자(`set_texts("ON", "OFF")`)가 들어가며 어느 언어든 맞게 줄어든다. 켜고 끄기와 터치는 기본 CheckButton 그대로다 |
 | `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
+| `GoPerfReadout` | PanelContainer | 항상 켜 두는 성능 띠 — fps, 프레임 시간과 가장 느린 프레임, 삼각형, 드로 콜, 노드, RAM, VRAM. fps 글자색이 좋음 → 경고 → 나쁨으로 바뀐다. 엔진을 직접 샘플링하거나(프레임마다 할당 없음, 바뀔 때만 씀) `show_stats()` 로 받은 값을 보인다. 좁은 곳엔 `one_line`. 입력을 받지 않는다 |
+| `GoTaskCard` | PanelContainer | 게임을 하며 배우는 튜토리얼의 과제 카드 — 단계 줄, 제목(한 줄에 맞게 줄어든다), 할 일, 부분마다 하나씩 끝나면 `✓` 가 붙는 키캡 칩, 막혔을 때의 힌트와 꼬리말. `compact` 면 한 줄(단계, 제목, 칩)로 접힌다. 버튼이 없고 입력을 받지 않는다 |
+| `GoSpotlight` | Control | 한 가지(사각형, 또는 따라가는 컨트롤) 둘레의 화면을 어둡게 하고 테두리를 둘러 "바로 이것"을 가리킨다. 어둠은 `dim_seconds` 뒤 사라지고 테두리는 남는다. 카드도 버튼도 없다 — `GoTaskCard` 와 함께 쓴다. 입력을 받지 않는다 |
+| `GoTouchButton` | Control | 모바일 액션 게임의 둥근 엄지 버튼 — 둥근 그림(`GoSkin.widget_art`)과 아이콘 아래 이름(맞게 줄어든다), 쿨다운 고리(`cooling`, `cooldown` 0~1)와 준비되면 한 번 튀는 효과. 누르면 작아지고 어두워진다. `drag_aim` 이면 작은 스틱도 된다 — 누른 채 끌어 조준, `aimed(pull)`. 표시와 입력만 한다 |
+| `GoNoticeFeed` | VBoxContainer | 알림 피드(킬 피드) — 한 줄 알림이 새 것이 아래로 쌓이고, 서서히 나타났다가 `seconds` 뒤 저절로 사라진다. `push(text, own)` — 플레이어 자신의 줄은 눈에 띈다. 줄은 `max_items` 개를 미리 만들어 재사용하므로 알림이 몰려도 아무것도 만들지 않는다. 줄은 테마의 `GoNotice` / `GoNoticeGold` 패널, 없으면 `GoSkin.notice_box()`. 표시만 한다 |
+| `GoNameplate` | PanelContainer | 3D 세계의 캐릭터 위에 뜨는 이름표 — 캐릭터 색의 작은 둥근 태그(자기 것은 `GoSkin.nameplate_own_fill()`), 폭은 `base_width` 에서 이름 전체가 들어가도록 `max_width` 까지 넓어진다. `follow(camera, point)` 가 투영한 점에 가운데를 맞추고 카메라 뒤에서는 숨긴다. 표시만 한다 |
+| `GoHudButton` | HBoxContainer | HUD 모서리 버튼 — 그림 버튼(`GoIconButton.art`, 포커스를 잡지 않음) 옆에 같은 일을 하는 키를 키캡에 보인다(일시정지 버튼 옆 "Esc"). 터치 화면에서는 `show_hint = false`. 키캡은 `GoSkin.hud_key_hint_box()`. 표시만 한다 — `pressed` 를 알릴 뿐 무엇을 할지는 게임이 정한다 |
+| `GoCountdown` | Label | 경기 시작 카운트 — 3 · 2 · 1 · GO! 를 원판 위에 크게(`show_step(text, final)`, `hide_step()`), 단계마다 톡 튀어 나온다(커졌다 흐려진 채 0.35초에 걸쳐 자리 잡음, `reduce_motion` 이면 없음). 원판은 `GoSkin.countdown_disc(final)`, 글자는 `GoSkin.countdown_ink()` 에 두꺼운 외곽선과 그림자. 표시만 한다 — 어떤 단계를 보일지는 호출자가 정한다 |
+| `GoHudCard` | PanelContainer | 경기 HUD 윗줄의 판 하나 — 아이콘 뒤에 금색 이름 배너와 HUD 막대(플레이어 카드), 제목 옆의 숫자, 시계 위의 캡션(`set_clock`, 호출자가 경고하면 빨강), 또는 능력이 준비되면 테두리가 켜지는 게이지(`set_lit`: 쿨다운 동안 흐리고, 켜질 때 톡 튄다). 판은 `GoHudPanel`, 배너는 `GoBannerGold`이고 `padding` 으로 폰에서 더 촘촘하게 한다. 표시만 한다 — 값은 모두 호출자가 준다 |
 
 ### 화면 위에
 
@@ -780,7 +792,8 @@ var sort: int = await dialogs.choose("정렬", ["최신순", "안 읽은 것 먼
 | `GoScroll.as_horizontal(node)` | 정적 | `horizontal()` 의 설정 단계 — `static func horizontal() -> MyScroll` 을 자식이 다시 만들 때 |
 
 `GoIconButton.native_texture_size = true` 는 텍스처 아이콘을 스킨의 그림 크기(`GoSkin.icon_button_glyph` — `visual_size` 의
-58%, Material 에서는 36dp 버튼에 24dp)로 늘리지 않고 원래 픽셀 크기로 그린다.
+58%, Material 에서는 36dp 버튼에 24dp)로 늘리지 않고 원래 픽셀 크기로 그린다. `GoIconButton.art = texture` 는 그림 하나가 버튼 전체가 된다(칠한 둥근 일시정지 버튼) —
+`visual_size` 를 틀 없이 채우고, 눌린 동안 `GoSkin.picture_press_tint()` 로 어두워진다.
 
 ## 플러그인
 

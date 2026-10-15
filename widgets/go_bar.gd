@@ -17,6 +17,20 @@
 ## | `FRACTION` | `320 / 500` |
 ## | `PERCENT` | `64%` |
 ##
+## ## 🎮 A match HUD's bar
+## Under a look with a bar frame (`GoSkin.bar_frame_box()` — arcade_light's is the painted HUD's groove) the bar is a
+## rounded frame whose `ink` → `ink_end` gradient is clipped to it. Name it like a HUD does:
+## ```gdscript
+## var power := GoBar.new()
+## power.label_text = "POWER"
+## power.readout = GoBar.Readout.NONE
+## power.icon = GoUi.skin().widget_art(&"bolt")   # a 16 dp icon before the name
+## power.thickness = 14
+## power.label_size = 11
+## power.label_gap = 0
+## power.lead = 2
+## ```
+##
 ## ## 🛑 Values move smoothly — but it has to be switchable off
 ## When HP jumps in steps you cannot read how hard you were hit, so it interpolates over 0.18s by default.
 ## Under `GoConfig.reduce_motion` it changes instantly.
@@ -63,6 +77,7 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 	set(value):
 		thickness = value
 		if is_instance_valid(_bar): _bar.custom_minimum_size.y = value
+		if is_instance_valid(_frame): _frame.custom_minimum_size.y = value
 
 ## Seconds to glide over when the value changes. 0 means instant.
 @export_range(0.0, 1.0, 0.01) var ease_seconds := 0.18
@@ -74,7 +89,61 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 	set(value):
 		segments = value
 		if is_instance_valid(_ticks): _ticks.queue_redraw()
+		if is_instance_valid(_frame_ticks): _frame_ticks.queue_redraw()
 
+## 🖼 An icon before the name (a HUD's bolt). null hides it.
+@export var icon: Texture2D:
+	set(value):
+		icon = value
+		if is_instance_valid(_icon):
+			_icon.texture = value
+			_icon.visible = value != null
+
+## The icon's square size (dp).
+@export_range(4.0, 64.0, 1.0) var icon_size := 16.0:
+	set(value):
+		icon_size = value
+		if is_instance_valid(_icon): _icon.custom_minimum_size = Vector2(value, value)
+
+## The room between the icon and the name (dp).
+@export_range(0, 32) var icon_gap := 3:
+	set(value):
+		icon_gap = value
+		if is_instance_valid(_title): _title.add_theme_constant_override(&"separation", value)
+
+## The name's and the readout's font size. -1: the compact text role's.
+@export_range(-1, 64) var label_size := -1:
+	set(value):
+		label_size = value
+		_apply_label_style()
+
+## The name's and the readout's colour. Transparent: the theme's `secondary`.
+@export var label_ink := Color.TRANSPARENT:
+	set(value):
+		label_ink = value
+		_apply_label_style()
+
+## The room between the name row and the bar (dp). -1: the theme's `gap_tiny`.
+@export_range(-1, 32) var label_gap := -1:
+	set(value):
+		label_gap = value
+		_apply_gap()
+
+## Room left above the name (dp) — bars stacked under a banner keep apart with it. 0: none.
+@export_range(0.0, 32.0, 1.0) var lead := 0.0:
+	set(value):
+		lead = value
+		if is_instance_valid(_lead):
+			_lead.custom_minimum_size.y = value
+			_lead.visible = value > 0.0
+
+var _column: VBoxContainer
+var _lead: Control
+var _title: HBoxContainer
+var _icon: TextureRect
+var _frame: Panel
+var _gradient: TextureRect
+var _frame_ticks: Control
 var _name_label: Label
 var _value_label: Label
 var _bar: ProgressBar
@@ -92,17 +161,41 @@ func _init() -> void:
 	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(column)
+	_column = column
+
+	_lead = Control.new()
+	_lead.name = "Lead"
+	_lead.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_lead.custom_minimum_size.y = lead
+	_lead.visible = lead > 0.0
+	column.add_child(_lead)
 
 	var head := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
 	head.name = "Head"
 	head.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(head)
 
+	_title = HBoxContainer.new()
+	_title.name = "Title"
+	_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_title.add_theme_constant_override(&"separation", icon_gap)
+	head.add_child(_title)
+	_icon = TextureRect.new()
+	_icon.name = "Icon"
+	_icon.texture = icon
+	_icon.visible = icon != null
+	_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_icon.custom_minimum_size = Vector2(icon_size, icon_size)
+	_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_title.add_child(_icon)
+
 	_name_label = GoStyle.label(label_text, GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.SECONDARY))
 	_name_label.name = "Name"
 	GoStyle.one_line(_name_label)
 	_name_label.visible = not label_text.is_empty()
-	head.add_child(_name_label)
+	_title.add_child(_name_label)
 
 	_value_label = GoStyle.label("", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.SECONDARY))
 	_value_label.name = "Value"
@@ -125,6 +218,29 @@ func _init() -> void:
 	_ticks.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_ticks.draw.connect(_draw_ticks)
 	_bar.add_child(_ticks)
+
+	# The painted frame: a rounded groove (the skin's `bar_frame_box`) clipping a gradient fill and the chunk lines.
+	_frame = Panel.new()
+	_frame.name = "Frame"
+	_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_frame.custom_minimum_size.y = thickness
+	_frame.clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW
+	_frame.visible = false
+	column.add_child(_frame)
+	_gradient = TextureRect.new()
+	_gradient.name = "Gradient"
+	_gradient.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_gradient.stretch_mode = TextureRect.STRETCH_SCALE
+	_gradient.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_frame.add_child(_gradient)
+	_gradient.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_gradient.anchor_right = 0.0
+	_frame_ticks = Control.new()
+	_frame_ticks.name = "Ticks"
+	_frame_ticks.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_frame_ticks.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_frame_ticks.draw.connect(_draw_frame_ticks)
+	_frame.add_child(_frame_ticks)
 	# 🛑 A `Control` does **not inherit** the minimum height of its child container — left alone, one bar is measured
 	#    as taking only its own thickness (8dp), so in a vertical stack the name row and the bar below draw on top
 	#    of each other (measured on a 2026-09-12 screenshot: the HP/MP/XP rows overlapped).
@@ -159,9 +275,12 @@ func set_values(value: float, maximum: float, animate := true) -> void:
 	if is_instance_valid(_tween) and _tween.is_valid(): _tween.kill()
 	if not animate or GoUi.config.reduce_motion or ease_seconds <= 0.0 or not is_inside_tree():
 		_bar.value = ratio
+		_gradient.anchor_right = ratio
 		return
-	_tween = create_tween()
+	_tween = create_tween().set_parallel()
 	_tween.tween_property(_bar, "value", ratio, ease_seconds).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	_tween.tween_property(_gradient, "anchor_right", ratio, ease_seconds).set_ease(Tween.EASE_OUT) \
+		.set_trans(Tween.TRANS_QUAD)
 
 
 ## For setting just the 0~1 ratio (when the maximum is unknown).
@@ -177,8 +296,31 @@ func maximum() -> float:
 	return _maximum
 
 
+## Whether the bar is drawn as the look's painted frame (`GoSkin.bar_frame_box()`) rather than a `ProgressBar`.
+func frame_mode() -> bool:
+	return GoUi.skin().bar_frame_box() != null
+
+
 func _restyle() -> void:
 	if not is_instance_valid(_bar): return
+	var groove := GoUi.skin().bar_frame_box()
+	_frame.visible = groove != null
+	_bar.visible = groove == null
+	if groove != null: _frame.add_theme_stylebox_override(&"panel", groove)
+	var start := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
+	var gradient := Gradient.new()
+	gradient.offsets = PackedFloat32Array([0.0, 1.0])
+	gradient.colors = PackedColorArray([start, ink_end if ink_end.a > 0.0 else start])
+	var paint := GradientTexture2D.new()
+	paint.gradient = gradient
+	paint.fill_from = Vector2.ZERO
+	paint.fill_to = Vector2(1.0, 0.0)
+	paint.width = 128
+	paint.height = 4
+	_gradient.texture = paint
+	if is_instance_valid(_frame_ticks): _frame_ticks.queue_redraw()
+	_apply_label_style()
+	_apply_gap()
 	GoStyle.tint_progress(_bar, ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT))
 	if ink_end.a > 0.0:
 		var tube := _bar.get_theme_stylebox(&"fill") as GoStyleBoxArcade
@@ -196,6 +338,27 @@ func segment_count() -> int:
 func _draw_ticks() -> void:
 	var count := segment_count()
 	if count >= 2: GoUi.skin().draw_bar_ticks(_ticks, Rect2(Vector2.ZERO, _ticks.size), count)
+
+
+func _draw_frame_ticks() -> void:
+	var count := segment_count()
+	if count >= 2: GoUi.skin().draw_bar_ticks(_frame_ticks, Rect2(Vector2.ZERO, _frame_ticks.size), count)
+
+
+func _apply_label_style() -> void:
+	if not is_instance_valid(_name_label): return
+	var colour := label_ink if label_ink.a > 0.0 else GoUi.color(GoTheme.SECONDARY)
+	for label: Label in [_name_label, _value_label]:
+		label.remove_theme_font_size_override(&"font_size")
+		GoStyle.typography(label, GoTheme.ROLE_COMPACT, colour)
+		label.add_theme_color_override(&"font_color", colour)
+		if label_size > 0: label.add_theme_font_size_override(&"font_size", label_size)
+
+
+func _apply_gap() -> void:
+	if is_instance_valid(_column):
+		_column.add_theme_constant_override(&"separation",
+			label_gap if label_gap >= 0 else GoUi.metric(GoTheme.GAP_TINY))
 
 
 ## 🛑 The readout now goes through a **translation key** — the format has to change with the language

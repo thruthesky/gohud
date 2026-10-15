@@ -562,6 +562,7 @@ func press_feedback(control: Control) -> void:
 ## The joystick: a glossy pad in an ink ring with four arrows, and a knob that is a round key cap with a gloss.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink_color: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	var line := ink()
 	var strength := 1.0 if active else 0.85
 	var pad := Color(ink_color, 1.0).lerp(Color.WHITE, 0.55)

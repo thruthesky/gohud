@@ -49,7 +49,7 @@ editor plugin only adds conveniences. Every widget is built with `.new()` + `add
 | Feature | One line | Reference |
 |---|---|---|
 | `GoHudAnchor` pins pieces to 9 safe-area spots, optional landscape spot, `reserve_space`, `avoid_peers` | `corner.spot = GoHudAnchor.Spot.TOP_LEFT` | hud.md §1 |
-| `GoBar` HP/MP/XP bar, eased, value / fraction / percent readout, number abbreviation | `hp.set_values(320, 500)` | hud.md §2 |
+| `GoBar` HP/MP/XP bar, eased, value / fraction / percent readout, number abbreviation; the painted HUD bar under `arcade_light` (gradient in a groove, icon, label size) | `hp.set_values(320, 500)` | hud.md §2 |
 | `GoSlot` quick slot: icon, quantity badge, cooldown, shortcut, shared touch areas | `slot.start_cooldown(5.0)` | hud.md §3 |
 | **`GoSlotGrid`** inventory grid: *N* wrapping cells, vacant cells drawn faint, one picked cell, drag-to-move for mouse play | `grid.set_cell(0, {"icon": GoGameIcons.APPLE, "quantity": 12})` | hud.md §3 |
 | `GoJoystick` virtual stick, `FIXED` / `FOLLOW` / `RELATIVE`, dead zone, normalized vector | `pad.moved.connect(func(v): player.direction = v)` | hud.md §4 |
@@ -99,6 +99,15 @@ Shapes that web UI kits have, reshaped for what games actually need.
 | **`GoChoiceColumn`** a short column of choices tapped once — a HUD summon list: a few rows at a time, scrolls up and down, **one tap on any row acts**, the game marks any number of rows chosen or greyed, rows can draw their own picture | `GoChoiceColumn.make(animals, 4, summon).set_selected(2, true)` | hud.md §18 |
 | **`GoKbd`** key caps for PC/Steam builds; `for_action()` reads the **real binding** from `InputMap`, so rebinding does not make the hint lie; hides itself on handhelds | `GoKbd.for_action(&"interact")` | platform.md §7 |
 | **`GoLevelCard`** a stage-select tile: thumbnail, title, subtitle, a check, a padlock or a PLAY! tag by state; `GoKeyCluster` WASD or arrows in a T; `GoCoverImage` a picture that covers its box; `GoGlyphButton` a glyph beside the label; `GoSlider` a slider whose fill runs past the handle and whose handle grows while held; `GoSwitch` an on/off pill with ON / OFF captions; `GoMapPreview` a small map of a level (areas, links, starts; a grey silhouette when locked) | `GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)` | hud.md §20–§26 |
+| **`GoPerfReadout`** always-on fps / frame time / triangles / draws / memory band that turns red as fps drops | `overlay.add_child(GoPerfReadout.new())` | hud.md §35 |
+| **`GoTaskCard`** a lesson's card: step, title, what to do, ticking part chips, hint; folds to one row | `card.set_parts(["W", "A", "S", "D"])` | hud.md §34 |
+| **`GoSpotlight`** dims round one thing and rings it; the dim fades, the ring stays | `spot.follow(jump_button, true)` | hud.md §33 |
+| **`GoTouchButton`** a round thumb button: art, a fitted name, a cooldown ring, a ready pulse, drag-to-aim; `GoJoystick` draws painted art | `GoTouchButton.make(&"btn_jump", "JUMP", 86)` | hud.md §32 |
+| **`GoNoticeFeed`** a feed of one-line notices (a kill feed) that fade in, stack and go on their own | `feed.push(text, own)` | hud.md §31 |
+| **`GoNameplate`** a name plate over a character in 3D, the same size at any distance | `GoNameplate.make(name, color, own)` + `follow(camera, point)` | hud.md §30 |
+| **`GoHudButton`** a HUD corner button: a picture button with its key on a cap beside it (the pause button and "Esc") | `GoHudButton.make(art, 52.0, "Esc")` | hud.md §29 |
+| **`GoCountdown`** the match-start count: 3 · 2 · 1 · GO! big on a disc, each step popping in | `count.show_step("3")` | hud.md §28 |
+| **`GoHudCard`** a match HUD's top-row board: icon, gold banner over HUD bars, a caption over a clock, a count, a gauge that lights when ready | `GoHudCard.make(GoUi.skin().widget_art(&"stopwatch")).set_clock(83)` | hud.md §27 |
 
 ## 7. GoStyle — the control factory
 

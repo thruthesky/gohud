@@ -12,6 +12,8 @@ extends SceneTree
 
 const PAINTED := "res://addons/gohud/assets/arcade_light/painted"
 const STAGE := "res://addons/gohud/assets/arcade_light/stage"
+const HUD := "res://addons/gohud/assets/arcade_light/hud"
+const TOUCH := "res://addons/gohud/assets/arcade_light/touch"
 const GLYPHS := "res://addons/gohud/icons/arcade_light"
 const LIGHT := "res://addons/gohud/themes/presets/arcade_light.tres"
 const DARK := "res://addons/gohud/themes/presets/arcade_dark.tres"
@@ -32,6 +34,18 @@ const STAGE_SPRITES := {
 	"play_tag": false, "pointer": false, "ribbon_title": false, "well": false, "window": false,
 }
 
+## The match HUD's painted sprites (the game's `assets/ui/hud`): the player's head, the power bolt, the opponents
+## badge, the stopwatch and the round pause key. None has mipmaps.
+const HUD_SPRITES := {
+	"avatar_head": false, "bolt": false, "opponents_badge": false, "pause_button": false, "stopwatch": false,
+}
+
+## The touch controls' painted sprites (the game's `assets/ui/touch`): the three round action keys and the stick's
+## base and knob. None has mipmaps.
+const TOUCH_SPRITES := {
+	"btn_attract": false, "btn_jump": false, "btn_repulse": false, "stick_base": false, "stick_knob": false,
+}
+
 ## Every glyph → its mipmap choice, as above.
 const GLYPH_FILES := {
 	"back": true, "check": true, "exit": true, "gear": true, "globe": true, "help": true, "magnet": true, "pause": true,
@@ -47,6 +61,7 @@ func _initialize() -> void:
 	GoUi.reset()
 	_painted_sprites()
 	_stage_sprites()
+	_hud_sprites()
 	_glyph_files()
 	_light_icons()
 	_dark_icons()
@@ -105,6 +120,25 @@ func _stage_sprites() -> void:
 	# The stage-select strip and ticks are game art no theme part or widget draws (the magnet ships as pointer.png).
 	for name: String in ["strip", "ticks", "magnet"]:
 		check(not ResourceLoader.exists("%s/%s.png" % [STAGE, name]), "stage/%s.png stays in the game" % name)
+
+
+func _hud_sprites() -> void:
+	for name: String in HUD_SPRITES:
+		_imports_like_the_game("%s/%s.png" % [HUD, name], HUD_SPRITES[name])
+	for name: String in TOUCH_SPRITES:
+		_imports_like_the_game("%s/%s.png" % [TOUCH, name], TOUCH_SPRITES[name])
+	# The painted skin hands every one of them to a widget by its bare name (`GoSkin.widget_art`).
+	GoUi.use_preset(load(LIGHT) as GoThemePreset)
+	for name: String in HUD_SPRITES:
+		check(GoUi.skin().widget_art(StringName(name)) == load("%s/%s.png" % [HUD, name]),
+			"arcade_light's widget_art('%s') is the HUD sprite" % name)
+	for name: String in TOUCH_SPRITES:
+		check(GoUi.skin().widget_art(StringName(name)) == load("%s/%s.png" % [TOUCH, name]),
+			"arcade_light's widget_art('%s') is the touch sprite" % name)
+	check(GoUi.skin().widget_art(&"check") == load("%s/check.png" % STAGE), "widget_art still answers the stage art")
+	check(GoUi.skin().widget_art(&"no_such_art") == null, "widget_art answers null for art the theme does not ship")
+	GoUi.reset()
+	check(GoUi.skin().widget_art(&"stopwatch") == null, "the default look ships no HUD art")
 
 
 func _glyph_files() -> void:

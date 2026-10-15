@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider and GoSwitch.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard and GoPerfReadout.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -32,6 +32,16 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 23. [GoGlyphButton — a glyph beside the label](#23-goglyphbutton--a-glyph-beside-the-label)
 24. [GoSlider — a slider drawn the painted way](#24-goslider--a-slider-drawn-the-painted-way)
 25. [GoSwitch — an on/off switch with a caption](#25-goswitch--an-onoff-switch-with-a-caption)
+26. [GoMapPreview — a small map of a level](#26-gomappreview--a-small-map-of-a-level)
+27. [GoHudCard — a match HUD's top-row board](#27-gohudcard--a-match-huds-top-row-board)
+28. [GoCountdown — the match-start count](#28-gocountdown--the-match-start-count)
+29. [GoHudButton — a HUD corner button with its key](#29-gohudbutton--a-hud-corner-button-with-its-key)
+30. [GoNameplate — a name plate over a character](#30-gonameplate--a-name-plate-over-a-character)
+31. [GoNoticeFeed — a feed of one-line notices](#31-gonoticefeed--a-feed-of-one-line-notices)
+32. [GoTouchButton — a round thumb button (and the painted stick)](#32-gotouchbutton--a-round-thumb-button-and-the-painted-stick)
+33. [GoSpotlight — dim round one thing and ring it](#33-gospotlight--dim-round-one-thing-and-ring-it)
+34. [GoTaskCard — a lesson's card](#34-gotaskcard--a-lessons-card)
+35. [GoPerfReadout — a performance band](#35-goperfreadout--a-performance-band)
 
 ## 1. GoHudAnchor
 
@@ -84,10 +94,30 @@ Full rules: `theming.md` §4.
 | `thickness` | `8` | dp |
 | `segments` · `segment_count()` | `-1` → the look | Ticks that split the bar into chunks — decoration only, the fill still moves smoothly. `-1` asks the look (`GoSkin.bar_ticks()`: smooth by default, six chunks under the arcade looks), `0` is always smooth, `2`–`24` that many everywhere. The size never changes |
 | `ease_seconds` | `0.18` | 0 = instant; `reduce_motion` also makes it instant |
+| `icon` · `icon_size` · `icon_gap` | `null` · `16` · `3` | An icon before the name (a HUD's bolt) |
+| `label_size` · `label_ink` | `-1` · transparent | The name's and readout's size (-1: the compact role's) and colour (transparent: `secondary`) |
+| `label_gap` · `lead` | `-1` · `0` | The room between the name row and the bar (-1: `gap_tiny`) · room left above the name |
+| `frame_mode()` | | True when the look draws a painted frame (`GoSkin.bar_frame_box()`; `arcade_light`): a rounded groove clipping an `ink` → `ink_end` gradient (`Frame` › `Gradient`, `Ticks`) instead of the `ProgressBar` |
 | `set_values(value, maximum, animate := true)` · `set_ratio(ratio, animate := true)` · `value()` · `maximum()` | | Pass `animate = false` for the first fill |
 | `static format_amount(amount) -> String` · `static abbreviate(amount)` | | `12.3k`, `4.5m`, or `GoConfig.number_formatter` |
 
 Give it a width: `bar.custom_minimum_size.x = 180` (or put it in an expanding container).
+
+A match HUD's bar (Magnet Mayhem's power gauge, pixel-identical under `arcade_light`):
+
+```gdscript
+var power := GoBar.new()
+power.label_text = "POWER"
+power.readout = GoBar.Readout.NONE
+power.icon = GoUi.skin().widget_art(&"bolt")
+power.ink = Color("#1fb5f0")
+power.ink_end = Color("#6ff0ff")
+power.thickness = 14
+power.label_size = 11
+power.label_gap = 0
+power.lead = 2
+power.set_values(30, 100, false)
+```
 
 ## 3. GoSlot
 
@@ -196,6 +226,7 @@ func _physics_process(delta: float) -> void:
 | `icon_name` · `set_icon_name(name)` | | |
 | `icon_tint` | transparent → theme colour | |
 | `native_texture_size` | `false` | Draw a texture icon at its own pixel size |
+| `art` | `null` | A picture that is the whole button (a painted round pause button): it fills `visual_size`, no frame in any state, drawn in its own colours, multiplied by `GoSkin.picture_press_tint()` while pressed. Replaces `icon_name`; null brings the icon and frame back |
 | `tooltip_text_name` | `&""` | Passed through `GoUi.text()` — a built-in name (`close`, `back`…) through `text_keys`, anything else (your translation key or plain words) through the translation server. Also sets `accessibility_name` |
 | `keyboard_focus` | `true` | **Off** over gameplay — a clicked button would keep focus and Space would press it again |
 | `touch_peers` | `[]` | Required when icon buttons sit side by side |
@@ -766,3 +797,276 @@ map.locked = not unlocked
   false` draws none, for a card that draws its own well round the thumbnail.
 - 🛑 It clips to its box (`clip_contents`), as the game's MapPreview does: on a scaled canvas the background's last
   fractional row would otherwise show. It ignores the mouse.
+
+## 27. GoHudCard — a match HUD's top-row board
+
+`class_name GoHudCard extends PanelContainer` · input-transparent. Under `arcade_light` it draws Magnet Mayhem's HUD
+cards pixel for pixel (the player card, the opponents count, the match clock, the repulse gauge).
+
+```gdscript
+var player := GoHudCard.make(GoUi.skin().widget_art(&"avatar_head"), 56.0)
+player.gap = 10
+player.banner_text = "PLAYER"
+player.add_bar("STABILITY", Color("#ff7a3d"), Color("#ffd23f")).set_values(80, 100, false)
+var foes := GoHudCard.make(GoUi.skin().widget_art(&"opponents_badge"))
+foes.layout = GoHudCard.Layout.INLINE
+foes.title = "OPPONENTS LEFT:"
+foes.value = "7"
+var clock := GoHudCard.make(GoUi.skin().widget_art(&"stopwatch"))
+clock.title = "MATCH TIME"
+clock.set_clock(12.0, true)        # the caller decides the warning
+var repulse := GoHudCard.new()
+repulse.gauge = true
+repulse.title = "REPULSE"
+repulse.value = "2.4s"
+repulse.set_lit(false)             # dimmed, ink rim; set_lit(true) pops it
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `icon` · `icon_size` · `icon_snap` | `null` · `36` · `true` | The picture at the start of the row. `icon_snap` false lets it fill the row's height (centred on a half pixel when the row is odd — the game's clock and badge) |
+| `gap` | `8` | Room between the icon and what follows |
+| `banner_text` · `banner_size` · `banner_padding` | `""` · `16` · `-1` | A gold banner (`GoBannerGold`) at the top of the column |
+| `title` · `value` · `layout` (`STACKED`, `INLINE`) | | Stacked: the caption (label ink at 75 %) over the value, centred; inline: both in the row |
+| `title_size` · `value_size` · `value_ink` | `-1` · `-1` · transparent | -1: 12 / 24 stacked, 19 / 19 inline |
+| `padding` | `-1` | Clear space inside the board's rim on every side (`-1`: the theme's). The margins become padding + border width |
+| `add_bar(label, ink, ink_end, icon) -> GoBar` · `bars()` | | A `GoBar` laid out as a HUD's (14 dp, 11 dp name, no readout, 2 dp lead) |
+| `set_clock(seconds, warn := false)` · `static format_clock(seconds)` · `is_warning()` · `warn_ink` | | `MM:SS`; `warn` paints it in `warn_ink` (transparent: `GoSkin.hud_alert_ink()`) |
+| `gauge` · `set_lit(lit, animate := true)` · `is_lit()` | `false` | The board becomes `GoSkin.hud_gauge_box(lit)`; unlit dims to `DIM_ALPHA` 0.55; lighting pops to 1.15 and back (none under `reduce_motion`) |
+
+- 🛑 Display only: the server's clock, the count and the ready state come from the caller — the card decides nothing.
+- 🔑 Skin hooks: `hud_gauge_box(lit)` (default: the HUD board with a `danger` accent when lit; arcade_light: the
+  game's repulse panel, READY_RED or ink rim) and `hud_alert_ink()` (default `danger`; arcade_light READY_RED).
+- 🔎 The game sizes its top-row panels once with the desktop padding and never shrinks them, so its touch-mode player
+  card keeps the desktop height; a `GoHudCard` fits its content. Set `custom_minimum_size.y` to keep a fixed height.
+
+## 28. GoCountdown — the match-start count
+
+`class_name GoCountdown extends Label` · input-transparent, hidden until a step shows. Under `arcade_light` it draws
+Magnet Mayhem's countdown pixel for pixel (the gold digit on the blue badge, GO! on the green one).
+
+```gdscript
+var count := GoCountdown.new()
+screen.add_child(count)
+count.set_anchors_preset(Control.PRESET_CENTER_TOP)
+count.anchor_top = 0.24
+count.anchor_bottom = 0.24
+count.show_step("3")                       # the server's clock says 3
+count.show_step(tr("COUNTDOWN_GO"), true)  # the last step
+count.hide_step()
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `show_step(text, final := false, animate := true)` · `hide_step()` · `is_final()` | | Shows a step and pops it in; an empty text hides it |
+| `disc_size` | `200` | The disc behind the text (a centred child drawn behind it, so it pops and fades with it) |
+| `step_size` · `final_size` | `110` · `80` | The font size of a step and of the last one |
+| `ink` · `outline` | transparent · `14` | Transparent: `GoSkin.countdown_ink()`. The outline is the label's outline ink; the shadow is black at 35 %, 8 dp down |
+| `pop_scale` · `pop_alpha` · `pop_seconds` | `1.6` · `0.6` · `0.35` | The pop a step makes (none under `reduce_motion`) |
+
+- 🛑 Display only: the caller (the server's clock online) picks the step and the moment — nothing here counts.
+- 🔑 Skin hooks: `countdown_disc(final)` (default null: a round `accent` / `success` disc; arcade_light: the painted
+  blue and green badges) and `countdown_ink()` (default `warning`; arcade_light GOLD `#ffc928`).
+
+## 29. GoHudButton — a HUD corner button with its key
+
+`class_name GoHudButton extends HBoxContainer` · the cap first, then the button. Under `arcade_light` it draws Magnet
+Mayhem's pause corner pixel for pixel (the slate "Esc" cap and the painted round pause button).
+
+```gdscript
+var pause := GoHudButton.make(GoUi.skin().widget_art(&"pause_button"), 52.0, tr("HUD_PAUSE_KEY"))
+pause.pressed.connect(open_pause_menu)   # the game decides what a press does
+pause.show_hint = not touch_mode
+corner.add_child(pause)
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `static make(picture, side := 52.0, key := "")` | | |
+| `button` | | The `GoIconButton` (`art`, `keyboard_focus` off — Space still reaches the game) |
+| `art` · `button_size` | `null` · `52` | The picture and its side |
+| `hint_text` · `show_hint` · `hint_size` | `""` · `true` · `14` | The key on the cap (never translated; empty hides it) |
+| `gap` | `8` | Room between the cap and the button |
+| `signal pressed` | | The button was pressed |
+
+- 🛑 Display only: it reports the press; it pauses nothing.
+- 🔑 Skin hooks: `hud_key_hint_box()` (default `kbd_box()`; arcade_light: the game's slate `#6c7aa8` cap with an ink
+  rim and a 5 dp lip) and `hud_key_hint_ink()` (default `kbd_ink()`; arcade_light white).
+
+## 30. GoNameplate — a name plate over a character
+
+`class_name GoNameplate extends PanelContainer` · a small rounded tag with a name that floats over a character, the
+same size on screen at any distance. Under `arcade_light` it draws Magnet Mayhem's name plates pixel for pixel (gold
+for the player with ink text, the character's colour with white outlined text for the others).
+
+```gdscript
+var plate := GoNameplate.make(character.shown_name(), character.color, character.is_player)
+plate.base_width = 86 if character.is_player else 64
+overlay.add_child(plate)
+# each frame, after the camera has moved:
+plate.follow(camera, character.name_anchor.global_position)
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `static make(name_text, color := TRANSPARENT, is_own := false)` | | |
+| `text` | `""` | The name, shown as given (never translated) |
+| `tint` · `own` | transparent · `false` | The plate's colour (transparent: `accent`); `own` uses `nameplate_own_fill()` |
+| `base_width` · `max_width` · `plate_height` | `64` · `100` · `24` | Widens to the whole name between the two; longer names clip |
+| `font_size` | `14` | |
+| `place_at(point)` | | Centres the plate on a point in its parent |
+| `follow(camera, world_point) -> bool` | | Centres it on the projected point; hidden (false) behind the camera or with no camera |
+
+- 🛑 Display only: it shows the name and the place it is given.
+- 🔑 Skin hooks: `nameplate_box(fill)` (a 92% fill, radius 8, 2 dp rim; arcade_light's rim is ink),
+  `nameplate_own_fill()` (default `warning`; arcade_light gold), `nameplate_ink(own)` (default black / white;
+  arcade_light ink / white), `nameplate_outline(own)` (0 / 3) and `nameplate_outline_ink()` (black; arcade_light ink).
+
+## 31. GoNoticeFeed — a feed of one-line notices
+
+`class_name GoNoticeFeed extends VBoxContainer` · a match's kill feed, pickups or joins: one-line rows with an icon,
+newest at the bottom, each fading in and leaving on its own. Under `arcade_light` it draws Magnet Mayhem's elimination
+feed pixel for pixel (blue-rimmed rows, the player's own gold-rimmed, a skull glyph).
+
+```gdscript
+var feed := GoNoticeFeed.new()
+hud.add_child(feed)                              # top centre is usual
+feed.push(tr("KO_BY") % [hitter, target])        # the server said who knocked out whom
+feed.push(tr("KO_BY") % ["YOU", target], true)   # the player's own line
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `push(text, own := false, picture := null)` | | Shows a row at the bottom; when all rows show, the oldest is reused |
+| `advance(delta)` · `auto_advance` | · `true` | The clock: `_process` runs it, or turn it off and call `advance` |
+| `clear()` · `count` · `rows()` | | Hide all (kept built) · how many show · the showing rows, oldest first |
+| `max_items` · `seconds` · `fade_in` | `4` · `2.0` · `0.2` | Rows built up front · how long a row stays · its fade (none under `reduce_motion`) |
+| `icon_name` · `icon_size` · `icon_gap` · `gap` | `&"skull"` · `22` · `8` · `6` | The icon from the icon set (empty: none) and the spacing |
+
+- 🛑 Display only: it shows the lines it is given, in the order given — the server decides who knocked out whom.
+- Rows are `PanelContainer`s on the theme's `GoNotice` / `GoNoticeGold` (own) variations when the theme has them, else
+  `GoSkin.notice_box(accent, true)` with a `warning` accent on the own row. Text is shown as given (not translated).
+
+## 32. GoTouchButton — a round thumb button (and the painted stick)
+
+`class_name GoTouchButton extends Control` · the big thumb buttons of a mobile action game: a round picture with its
+name under the icon, a cooldown ring while it recharges, a pulse when it is ready, and with `drag_aim` a button that is
+also a small stick. Under `arcade_light` it and `GoJoystick` draw Magnet Mayhem's touch controls pixel for pixel
+(ATTRACT with "HOLD + DRAG", REPULSE cooling, JUMP, and the painted stick).
+
+```gdscript
+var jump := GoTouchButton.make(&"btn_jump", tr("JUMP"), 86.0)
+jump.pressed_down.connect(func() -> void: input.send_jump())   # the game sends the input; the server decides
+var skill := GoTouchButton.make(&"btn_repulse", tr("REPULSE"), 92.0)
+skill.cooling = true                    # the server said it is recharging
+skill.cooldown = seconds_left / total   # the share still to run
+var aim := GoTouchButton.make(&"btn_attract", tr("ATTRACT"), 120.0)
+aim.drag_aim = true
+aim.caption = tr("HOLD + DRAG")
+aim.held_caption = tr("DRAG TO AIM")
+aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `make(picture_name, label, size)` | | A button on the skin's art `picture_name`, `size` across |
+| `art_name` · `art` · `diameter` | · · `92` | The picture (`GoSkin.widget_art`, or a texture; none: an `accent` disc) and its size |
+| `text` · `font_size` · `min_font_size` · `label_pad` · `label_rise` | · `14` · `10` · `6` · `0.8` | The name, shrunk to fit the button, its baseline `label_rise` × radius below the centre |
+| `caption` · `held_caption` · `caption_size` · `held_caption_size` · `caption_drop` | · · `11` · `12` · `28` | A hint under the button at rest / while held (`GoStyle.fit_font_size`) |
+| `cooling` · `cooldown` · `pulse_scale` | `false` · `0` · `1.15` | Dims it and rings the share still to run; ready again it pulses once (not under `reduce_motion`) |
+| `drag_aim` · `aim_radius` · `aim_knob_radius` | `false` · `50` · `24` | Hold and drag: a ring and knob under the thumb; `aim()` and `aimed(pull)` give the pull, 0~1 |
+| `press_scale` · `press_tint` · `cooling_tint` · `hit_slop` | `0.93` · · · `8` | A held button shrinks and darkens; the press reaches `hit_slop` past the rim |
+| `pressed_down` · `released(canceled)` · `cancel()` · `is_held()` | | The press, the lift, and letting go without a lift (focus lost) |
+
+- 🛑 Display and input only: it reports presses and the aim and shows the cooldown it is given.
+- Skin hooks: `draw_touch_sprite()`, `touch_shadow_ink()`, `touch_outline_ink()`, `touch_cooldown_ink()`; and for
+  `GoJoystick`, `joystick_art(knob)` with `joystick_idle_alpha` / `joystick_active_alpha` — a skin with the art draws
+  the painted dish and knob instead of circles (`draw_joystick_art()`).
+
+## 33. GoSpotlight — dim round one thing and ring it
+
+`class_name GoSpotlight extends Control` · a tutorial played through the game points at one thing — the stick, a button,
+a gauge — by dimming everything round it and ringing it. The dim fades after a moment so the game stays fully visible
+while the player acts; the ring stays. Unlike `GoCoachMark` (a tour with a card and Next / Skip) it has no card and no
+buttons and never takes input: the game is played through it. Under `arcade_light` it draws Magnet Mayhem's training
+spotlight pixel for pixel.
+
+```gdscript
+var spot := GoSpotlight.new()
+hud.add_child(spot)                   # covers its parent
+spot.follow(jump_button, true)        # a new lesson: dim again round the jump button
+spot.light(Rect2(40, 300, 120, 120))  # or a fixed rect, in the spotlight's own coordinates
+spot.clear()
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `light(rect, fresh)` · `follow(control, fresh)` · `clear()` | | A fixed rect (as given), or a control grown by `pad` and followed as it moves (hidden: nothing lit); `fresh` dims again |
+| `pad` · `dim_seconds` · `fade_seconds` | `8` · `2` · `0.4` | The hole's margin round a followed control; how long the dim stays, then fades |
+| `hole` · `dim_rects()` · `dim_alpha()` | | The lit rect; the four dims (top, bottom, left, right); the dim's strength now, 1 → 0 |
+| `auto_advance` · `advance(delta)` | `true` | Runs the clock in `_process`, or drive it yourself |
+
+- 🛑 Display only: it lights what it is told to.
+- Skin hooks: `spotlight_dim()` (the dim colour) and `spotlight_ring_box()` (the ring, drawn over the hole).
+
+## 34. GoTaskCard — a lesson's card
+
+`class_name GoTaskCard extends PanelContainer` · the card of a tutorial played through the game: which step this is,
+the lesson's name, what to do, one chip per part that ticks off as it is done, a hint when the player is stuck and a short
+footer. It has no buttons and never takes input. On a phone it folds to one `compact` row once it has been read. Under
+`arcade_light` it draws Magnet Mayhem's training card (and its phone strip) pixel for pixel.
+
+```gdscript
+var card := GoTaskCard.new()
+hud.add_child(card)
+card.custom_minimum_size.x = 440
+card.caption = tr("STEP_LABEL").format({"n": 1, "total": 12})   # "TRAINING · STEP 1/12"
+card.short_caption = "1/12"
+card.title = tr("TITLE_MOVE")
+card.body = tr("BODY_MOVE")
+card.footer = tr("FOOTER_PAUSE")
+card.set_parts(["W", "A", "S", "D"])
+card.mark_part(0, true)                 # the game said the part is done
+card.hint = tr("HINT_RING_OUT")         # "" hides it
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `caption` · `title` · `body` · `hint` · `footer` | | The step line, the name (one line, shrunk to fit), what to do, a hint ("" hides it), a footer |
+| `set_parts(words, done)` · `mark_part(i, done)` · `part_done(i)` · `chips()` · `chip_text(i)` | | One keycap chip per part; a done one is tinted and reads "✓ word" |
+| `compact` · `short_caption` | `false` · | One row: `short_caption`, the title and the chips |
+| `padding` · `row_gap` | `20` · `4` | Room inside the board's rim and between the rows |
+| `title_size` · `body_size` · `hint_size` · `caption_size` · `chip_size` · `strip_size` | `22` · `15` · `14` · `12` · `16` · `13` | Font sizes; the caption and footer are the label ink at 0.75 |
+
+- 🛑 Display only: what is done comes from the caller.
+- The board is the theme's `GoHudPanel`; chips are `GoSkin.kbd_box()` / `kbd_done_box()`. Skin hooks:
+  `task_title_ink()` (the title and the compact row) and `task_hint_ink()` (the hint). A chip's word falls back to
+  `GoSkin.symbol_font()` under the theme's font, so the ✓ draws even when the text font lacks it (`arcade_light`:
+  Noto Sans KR Bold, as the game's Nunito falls back to it). Pair it with `GoSpotlight`.
+
+## 35. GoPerfReadout — a performance band
+
+`class_name GoPerfReadout extends PanelContainer` · a small always-on band of numbers for tuning a game on a weak
+phone: frames per second, the frame time and the worst frame, triangles, draw calls, nodes, RAM and VRAM. Under
+`arcade_light` it draws Magnet Mayhem's perf overlay pixel for pixel.
+
+```gdscript
+var perf := GoPerfReadout.new()
+overlay_layer.add_child(perf)                           # a CanvasLayer above every screen
+perf.position = Vector2(14, 146) + safe_area.position    # a corner clear of the HUD
+perf.tier_text = "LOW (auto)"                           # "  Q LOW (auto)" ends the last line
+perf.one_line = true                                    # one slim line where room is short
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `sampling` · `interval` | `true` · `0.25` | Reads the engine each frame (two adds, no allocation) and writes every `interval` s, only when the text changed. Off: shows what `show_stats()` gets |
+| `show_stats(stats)` · `stats()` · `advance(delta)` · `restart()` | | Keys `fps` `ms` `worst_ms` `triangles` `draws` `nodes` `ram` `vram` (bytes) · the last reading · count a frame by hand · forget the frames so far |
+| `good_fps` · `warn_fps` · `fps_level(fps)` | `55` · `30` | 0 good, 1 warning, 2 bad — the ink is `GoSkin.perf_ink(level)` |
+| `one_line` · `compact_pad_y` | `false` · `2` | The lines joined into one slim band |
+| `tier_text` · `font_size` · `outline_size` | `""` · `14` · `2` | |
+| `format_count(n)` · `format_megabytes(bytes)` | static | 84321 → "84.3k", 1234567 → "1.23M" · "512 MB" |
+| `write_count` | | Label writes so far: an unchanged reading never adds one |
+
+- Skin hooks: `perf_box()` (the band), `perf_ink(level)` and `perf_font()` (null keeps the theme's).
+- Triangles and draw calls come from the RenderingServer, shadow passes included; a headless run reads 0 there.

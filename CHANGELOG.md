@@ -30,6 +30,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `GoStyle.fit_font_size()` with no font measures with the look's FontVariation and its four CJK fallbacks (KR, JP, SC,
   TC), not a plain Nunito `FontFile`. Before a preset is applied the fit font is `ThemeDB.fallback_font`, which has no
   fallbacks, so CJK widths measured then differ; under the preset nothing was lost.
+- **A done `GoTaskCard` chip's ✓ draws in the look's symbol font.** New skin hook `GoSkin.symbol_font()` (default
+  null: the theme's font alone); a chip's word gets the theme's text font with it as the first fallback. Under
+  `arcade_light` it is Noto Sans KR Bold (`assets/fonts/noto_sans_cjk/`, the file the theme's font falls back to), as Magnet Mayhem's
+  Nunito falls back to it — before, the ✓ came from whatever system font had it, and the chips after it shifted.
+
+- **GoSlot follows the look's touch floor.** Its box, fit and widened hit area read `GoUi.touch_size()` instead of
+  `GoConfig.min_touch_size`, so a look with its own `touch` metric (or a `metric_overrides` entry) sizes slots like
+  every other control; a floor the project sets still wins.
+
 - **Every widget that fits the safe area reads the viewport it is drawn in.** `GoAppBar`, `GoCoachMark`, `GoConsole`,
   `GoDrawer`, `GoEdgeBar`, `GoForm`, `GoFab`, `GoHudAnchor`, `GoNavBar` and `GoStyle`'s bottom bar passed
   `get_window()` to `GoSafeArea.usable_rect`, so inside a `SubViewport` (a preview, a render-to-texture) they laid out
@@ -118,6 +127,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   files, now in `assets/fonts/nunito/` and `assets/fonts/noto_sans_cjk/` (SIL OFL 1.1, see `THIRD_PARTY_NOTICES.md`).
   Labels set exactly as in the game. Through `GoUi.theme()` the font gives way to the project’s own when the project
   sets one (`go_body_font_baked` metadata), as every preset’s body font does.
+- **GoIconButton takes the look's focus mode.** It calls `GoStyle.skin_focus()` on creation and on a look change, so
+  under arcade_light an icon button stays out of the focus order (`FOCUS_NONE`) like the game's; other looks keep
+  `FOCUS_ALL`. Setting `keyboard_focus` in the project pins that choice through every look change.
+
 - **arcade_light's controls stay out of the focus order, as Magnet Mayhem's do.** A new skin hook,
   `GoSkin.control_focus_mode()`, sets the focus mode of `GoGlyphButton`, `GoSlider`, `GoSwitch`, `GoLevelCard` and
   `GoStyle.button` / `toggle` / `checkbox` / `slider` / `picker` (through `GoStyle.skin_focus()`, again on a look change).
@@ -200,6 +213,66 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   Magnet Mayhem's `MapPreview` box — `#18213a`, 6 px corners, a 1 px `#58627b` rim, no padding — so the look owns the
   frame and a map-preview widget reads it from the theme. `arcade_painted_map.json` lists it under `_code_built`
   (`MapPreview._init()`).
+- **`GoScale.Profile.PER_INCH` — a per-inch device profile.** With `GoConfig.scale_enabled` and
+  `scale_profile = PER_INCH`, `GoRuntime` keeps the project's base size and shrinks a handheld to about
+  `per_inch_units` (160) units per physical inch, never below `per_inch_min_height` (440) units tall and never below
+  factor 1 — a fixed-layout game HUD the same size in the hand on every phone. Pure helpers `per_inch_factor`,
+  `per_inch_canvas`, `web_dpi` and `cap_sides`. Matches Magnet Mayhem's `UiScale` figure for figure.
+- **`GoPerfReadout` — a performance band.** fps, frame time and the worst frame, triangles, draw calls, nodes, RAM
+  and VRAM in a small dark band; the ink turns from `GoSkin.perf_ink(0)` to `(1)` and `(2)` as fps drops. It samples
+  the engine itself (no allocation per frame, writes only when the text changed) or shows `show_stats()`; `one_line`
+  folds it to one slim line. Skin hooks `perf_box()`, `perf_ink(level)`, `perf_font()`. Under `arcade_light`
+  Magnet Mayhem's perf overlay matches pixel for pixel.
+- **`GoTaskCard` — a lesson's card.** A step line, a title shrunk to one line, what to do, one keycap chip per part that
+  ticks off (`set_parts`, `mark_part`; a done chip is `GoSkin.kbd_done_box` and reads "✓ word"), a hint when stuck
+  (`GoSkin.task_hint_ink`) and a footer; `compact` folds it to one row (`short_caption`, title, chips). Never takes
+  input. Under `arcade_light` Magnet Mayhem's training card and its phone strip match pixel for pixel.
+- **`GoSpotlight` — dim round one thing and ring it.** `light(rect)` or `follow(control)` (grown by `pad`), four dims
+  round the hole that fade after `dim_seconds`, and a ring that stays (`GoSkin.spotlight_dim`, `spotlight_ring_box`).
+  No card, no buttons, never takes input. Under `arcade_light` Magnet Mayhem's training spotlight matches pixel for pixel.
+- **`GoTouchButton` — a round thumb button.** A picture from the skin's art with its name under the icon (shrunk to
+  fit), a cooldown ring (`cooling`, `cooldown`), a pulse when ready, a press that shrinks and darkens, and `drag_aim`:
+  hold and drag to aim (`aimed(pull)`). `GoJoystick` draws the skin's painted dish and knob when it has them
+  (`GoSkin.joystick_art`, `draw_joystick_art`). Under `arcade_light` Magnet Mayhem's touch controls match pixel for pixel.
+- **`GoNoticeFeed` — a feed of one-line notices.** A kill feed: rows with an icon stack newest at the bottom, fade in
+  and go on their own; `push(text, own)` marks the player's own line. `max_items` rows are built up front and reused, so
+  a burst builds no controls. Rows use the theme's `GoNotice` / `GoNoticeGold` panels (else `GoSkin.notice_box()`);
+  under `arcade_light` Magnet Mayhem's elimination feed matches pixel for pixel.
+- **`GoNameplate` — a name plate over a character.** A small rounded tag in the character's colour (the player's own
+  in its own fill and ink) that widens to the whole name between `base_width` and `max_width`; `follow(camera, point)`
+  centres it on the projected point and hides it behind the camera. New skin hooks `nameplate_box(fill)`,
+  `nameplate_own_fill()`, `nameplate_ink(own)`, `nameplate_outline(own)` and `nameplate_outline_ink()`; under
+  `arcade_light` Magnet Mayhem's name plates match pixel for pixel.
+- **`GoHudButton` — a HUD corner button with its key.** A picture button (`GoIconButton.art`, never keeps focus) with
+  the key that does the same on a cap beside it; `show_hint = false` on a touch screen, `pressed` passes the press on.
+  New skin hooks `hud_key_hint_box()` and `hud_key_hint_ink()`; under `arcade_light` Magnet Mayhem's pause corner (the
+  slate "Esc" cap and the painted round pause button) matches pixel for pixel.
+- **`GoIconButton.art` — a picture that is the whole button.** It fills `visual_size`, draws no frame in any state,
+  shows the picture in its own colours and darkens it to the new skin hook `GoSkin.picture_press_tint()` while pressed
+  (arcade_light: the game's `PauseRound` tint). Under `arcade_light` the match HUD's painted pause button matches
+  Magnet Mayhem's pixel for pixel, at rest and pressed.
+- **`GoCountdown` — the match-start count.** 3 · 2 · 1 · GO! big on a disc (`show_step(text, final)`,
+  `hide_step()`), each step popping in (1.6× at 60 % settling over 0.35 s; none under `reduce_motion`). New skin hooks
+  `countdown_disc(final)` and `countdown_ink()`; under `arcade_light` it matches Magnet Mayhem's countdown pixel for
+  pixel (the gold digit on the blue badge, GO! on the green). Display only — the caller picks the step.
+- **`GoHudCard` — a match HUD's top-row board.** An icon, then a gold `GoBannerGold` name banner over HUD bars
+  (`add_bar`), a title beside a count (`Layout.INLINE`), a caption over a clock (`set_clock(seconds, warn)`,
+  `format_clock`), or a gauge (`gauge`, `set_lit`) whose rim lights when an ability is ready, dims while it cools and
+  pops when it lights. `padding` / `banner_padding` pack it tighter on a phone. New skin hooks `hud_gauge_box(lit)` and
+  `hud_alert_ink()`; under `arcade_light` the player card, opponents count, clock and repulse gauge match Magnet
+  Mayhem's HUD pixel for pixel. Display only — every value comes from the caller.
+- **`GoBar` draws the painted HUD's bar under `arcade_light`.** A new skin hook, `GoSkin.bar_frame_box()` (null by
+  default; `arcade_light`: Magnet Mayhem's `#d9deef` groove, corner 9, 3dp ink rim), turns the bar into a rounded frame
+  whose `ink` → `ink_end` gradient is clipped to it, with the six ink ticks over both — pixel-identical to the game's
+  stability and power bars. Other looks keep the `ProgressBar`. New members to lay a bar out like a HUD's:
+  `icon` / `icon_size` / `icon_gap` (an icon before the name), `label_size`, `label_ink`, `label_gap` (the room between
+  the name and the bar) and `lead` (room above the name); `frame_mode()` tells which way it draws.
+- **The match HUD's and the touch controls' painted art in `arcade_light`.** Magnet Mayhem's `assets/ui/hud` (the
+  player's head, the power bolt, the opponents badge, the stopwatch, the round pause key) is in
+  `assets/arcade_light/hud/`, and its `assets/ui/touch` (the ATTRACT, REPULSE and JUMP keys, the stick's base and knob)
+  in `assets/arcade_light/touch/`, imported as the game imports them (lossless, no mipmaps). `GoSkin.widget_art(name)`
+  answers them by their bare names (`stopwatch`, `btn_jump`, …) after the stage art; other looks still answer `null`.
+  The artwork is distributed under this package’s MIT license (`THIRD_PARTY_NOTICES.md`).
 - **`GoSlider`** (`HSlider`) — a slider drawn as Magnet Mayhem's `PaintedSlider`: the fill runs `FILL_PAST` past the
   handle's centre (at least a track's height long) and a held handle is drawn `HELD_SCALE` larger. It draws the theme's
   own HSlider parts, so `GoSliderGreen` / `GoSliderCyan` pick the fill. `make()`, `part()`, `handle_size()`,

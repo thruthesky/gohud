@@ -820,7 +820,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD i elementy gier <small>(15)</small></h2>
+  <h2>HUD i elementy gier <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -894,6 +894,79 @@ var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
       <p class="catalog-base">rozszerza <code>Control</code></p>
       <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
 shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>Jedna plansza górnego rzędu HUD meczu: ikona z banerem i paskami, licznik, zegar lub wskaźnik gotowości.</p>
+      <p class="catalog-base">rozszerza <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>Odliczanie przed meczem: 3, 2, 1, GO! duże na krążku, każdy krok wyskakuje.</p>
+      <p class="catalog-base">rozszerza <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>Przycisk w rogu HUD: przycisk-obrazek z klawiszem na nakładce obok.</p>
+      <p class="catalog-base">rozszerza <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>Tabliczka z imieniem nad postacią w świecie 3D, tej samej wielkości z każdej odległości.</p>
+      <p class="catalog-base">rozszerza <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>Strumień jednowierszowych powiadomień, np. o eliminacjach, które się układają, pojawiają i znikają same.</p>
+      <p class="catalog-base">rozszerza <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>Okrągły przycisk pod kciuk na ekrany dotykowe, z pierścieniem odnowienia, pulsem gotowości i celowaniem przeciąganiem.</p>
+      <p class="catalog-base">rozszerza <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>Przyciemnia ekran wokół jednej kontrolki i ją obrysowuje; przyciemnienie znika, obrys zostaje.</p>
+      <p class="catalog-base">rozszerza <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>Karta lekcji samouczka: krok, tytuł, co zrobić, odhaczane części i podpowiedź; składa się do jednego wiersza.</p>
+      <p class="catalog-base">rozszerza <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>Stale widoczny pasek wydajności: fps, czas klatki, trójkąty, wywołania rysowania, węzły i pamięć; czerwienieje, gdy fps spada.</p>
+      <p class="catalog-base">rozszerza <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>

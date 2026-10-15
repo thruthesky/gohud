@@ -37,6 +37,14 @@ extends Button
 		icon_tint = value
 		_refresh_icon()
 
+## 🖼️ A picture that **is** the whole button — a painted round pause button, a HUD badge. It fills `visual_size`, the
+## frame goes (every state draws nothing behind it), the picture shows in its own colours and darkens to
+## `GoSkin.picture_press_tint()` while pressed. It replaces `icon_name`; null goes back to the icon and the frame.
+@export var art: Texture2D = null:
+	set(value):
+		art = value
+		_refresh_icon()
+
 ## Draw a texture icon at **its native pixel size** — the default scales it to the skin's glyph size for `visual_size`
 ## (`GoSkin.icon_button_glyph`: 58% — the size of a font glyph — or 24dp on the 36dp button under Material).
 ## Turn it on where the host wants its own SVG size kept: scaling up and down differs by 1px (measured by pixel comparison).
@@ -52,8 +60,10 @@ extends Button
 		tooltip_text_name = value
 		_refresh_tooltip()
 
-## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** On by default — a close button in a
-## dialog or a settings header has to be reachable without a mouse.
+## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** Left unset, it follows the look
+## (`GoStyle.skin_focus`): on for most looks — a close button in a dialog or a settings header has to be reachable
+## without a mouse — and off under arcade_light, whose controls stay out of the focus order like the game's.
+## Setting it (in the inspector or from code) pins that choice through every later look change.
 ## 🛑 Turn it **off** for a button over gameplay (a HUD bag or map button): a clicked button keeps focus, and the
 ##    engine's accept action (Space / Enter) then presses **it** again instead of reaching the game — a jump that
 ##    reopens the bag. `GoSlot.keyboard_focus` is the same switch, off by default there. For a whole HUD corner at
@@ -62,6 +72,7 @@ extends Button
 	set(value):
 		keyboard_focus = value
 		focus_mode = Control.FOCUS_ALL if value else Control.FOCUS_NONE
+		set_meta(GoStyle.SKIN_FOCUS_META, -1)   # the project chose: the look's focus mode never overrides it
 
 ## The sibling icon buttons placed alongside. Where the widened hit areas overlap, **whichever centre is nearer** takes the press.
 var touch_peers: Array[Control] = []
@@ -78,6 +89,7 @@ func _init() -> void:
 	auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	clip_text = false
 	GoStyle.press_feel(self)
+	GoStyle.skin_focus(self)
 
 
 func _ready() -> void:
@@ -96,6 +108,7 @@ func _exit_tree() -> void:
 ## 🔑 The icon **set** can change entirely — the same name becomes a different picture and a different mechanism (texture ↔ font).
 func _on_ui_changed() -> void:
 	theme = GoUi.theme()
+	GoStyle.skin_focus(self)
 	_refresh_icon()
 	_refresh_tooltip()
 
@@ -111,6 +124,15 @@ func _refresh_icon() -> void:
 		_glyph.queue_free()
 		_glyph = null
 	icon = null
+	_frame_art(art != null)
+	if art != null:
+		icon = art
+		expand_icon = true
+		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+		remove_theme_constant_override(&"icon_max_width")
+		custom_minimum_size = Vector2.ONE * visual_size
+		return
 	if icon_name.is_empty(): return
 	var glyph_size := GoUi.skin().icon_button_glyph(visual_size)
 	var icon_set := GoUi.icons()
@@ -144,6 +166,27 @@ func _refresh_icon() -> void:
 	_glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_glyph)
+
+
+const _ART_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]
+const _ART_INKS: Array[StringName] = [&"icon_normal_color", &"icon_hover_color", &"icon_focus_color",
+	&"icon_pressed_color", &"icon_hover_pressed_color"]
+
+
+## `art` drops the frame and draws the picture as it is (darker while pressed); without it the theme's frame is back.
+func _frame_art(on: bool) -> void:
+	if not on:
+		if not has_meta(&"go_art_frame"): return
+		remove_meta(&"go_art_frame")
+		for state in _ART_STATES: remove_theme_stylebox_override(state)
+		for ink in _ART_INKS: remove_theme_color_override(ink)
+		return
+	set_meta(&"go_art_frame", true)
+	var nothing := StyleBoxEmpty.new()
+	for state in _ART_STATES: add_theme_stylebox_override(state, nothing)
+	var press := GoUi.skin().picture_press_tint()
+	for ink in _ART_INKS:
+		add_theme_color_override(ink, press if ink.contains("pressed") else Color.WHITE)
 
 
 ## 🛑 When its width calculation goes wrong, the engine's default tooltip breaks the text into **one character

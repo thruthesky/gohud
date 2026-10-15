@@ -820,7 +820,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD และรูปแบบในเกม <small>(15)</small></h2>
+  <h2>HUD และรูปแบบในเกม <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -894,6 +894,79 @@ var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
       <p class="catalog-base">สืบทอดจาก <code>Control</code></p>
       <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
 shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>แผงหนึ่งแผ่นของแถวบน HUD ระหว่างแข่ง: ไอคอนกับแถบชื่อและหลอด ตัวนับ นาฬิกา หรือมาตรวัดพร้อม</p>
+      <p class="catalog-base">สืบทอดจาก <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>นับถอยหลังเริ่มแข่ง: 3, 2, 1, GO! ตัวใหญ่บนแผ่นกลม แต่ละขั้นเด้งขึ้นมา</p>
+      <p class="catalog-base">สืบทอดจาก <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>ปุ่มมุม HUD: ปุ่มรูปภาพพร้อมปุ่มคีย์บอร์ดบนฝาปุ่มข้าง ๆ</p>
+      <p class="catalog-base">สืบทอดจาก <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>ป้ายชื่อที่ลอยเหนือตัวละครในโลก 3D ขนาดเท่าเดิมไม่ว่าจะไกลแค่ไหน</p>
+      <p class="catalog-base">สืบทอดจาก <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>ฟีดข้อความแจ้งบรรทัดเดียว เช่นฟีดการกำจัด ที่ซ้อนกัน ค่อย ๆ ปรากฏ และหายไปเอง</p>
+      <p class="catalog-base">สืบทอดจาก <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>ปุ่มกลมสำหรับนิ้วโป้งบนจอสัมผัส มีวงคูลดาวน์ จังหวะเด้งเมื่อพร้อม และลากเพื่อเล็งได้</p>
+      <p class="catalog-base">สืบทอดจาก <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>หรี่หน้าจอรอบตัวควบคุมหนึ่งตัวและวาดกรอบรอบมัน ความมืดจะจางไป กรอบยังอยู่</p>
+      <p class="catalog-base">สืบทอดจาก <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>การ์ดบทเรียนของบทแนะนำ: ขั้น ชื่อ สิ่งที่ต้องทำ ชิปที่ถูกติ๊กเมื่อเสร็จ และคำใบ้ พับเป็นแถวเดียวได้</p>
+      <p class="catalog-base">สืบทอดจาก <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>แถบประสิทธิภาพที่แสดงตลอด: fps เวลาเฟรม สามเหลี่ยม draw call โหนด และหน่วยความจำ เปลี่ยนเป็นสีแดงเมื่อ fps ตก</p>
+      <p class="catalog-base">สืบทอดจาก <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>
