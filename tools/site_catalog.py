@@ -1905,6 +1905,28 @@ shot.custom_minimum_size = Vector2(74, 74)""", T(
 		"Картинка, що заповнює свій блок і обрізає зайве, як object-fit: cover у CSS.",
 		"รูปที่เต็มกรอบและตัดส่วนที่เกินออก เหมือน object-fit: cover ของ CSS",
 		"صورة تملأ صندوقها وتقصّ الزائد منها مثل object-fit: cover في CSS.")),
+	("hud", "GoMapPreview", "Control", """var map := GoMapPreview.new()
+map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))
+map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))
+map.add_link(Vector2(0, 0), Vector2(18, 0), 2.0, Color("#c9a26b"))
+map.set_starts(PackedVector2Array([Vector2(-3, 0), Vector2(20, 0)]))""", T(
+		"A small map of a level: areas, links and start dots; a grey silhouette when locked.",
+		"레벨의 작은 지도 — 구역·다리·시작 점을 그리고, 잠기면 회색 실루엣이 된다.",
+		"レベルの小さな地図。エリア・通路・開始点を描き、ロック中は灰色のシルエットになる。",
+		"关卡的小地图：区域、连接和起点；锁定时显示为灰色剪影。",
+		"關卡的小地圖：區域、連接和起點；鎖定時顯示為灰色剪影。",
+		"Un pequeño mapa del nivel: zonas, enlaces y puntos de inicio; una silueta gris si está bloqueado.",
+		"Um pequeno mapa do nível: áreas, ligações e pontos de início; uma silhueta cinza quando bloqueado.",
+		"Маленькая карта уровня: зоны, переходы и точки старта; серый силуэт, если уровень закрыт.",
+		"Une petite carte du niveau : zones, liaisons et points de départ ; une silhouette grise s'il est verrouillé.",
+		"Bölümün küçük haritası: alanlar, bağlantılar ve başlangıç noktaları; kilitliyken gri bir siluet.",
+		"Mała mapa poziomu: obszary, połączenia i punkty startu; szara sylwetka, gdy jest zablokowany.",
+		"Una piccola mappa del livello: aree, collegamenti e punti di partenza; una sagoma grigia se è bloccato.",
+		"Bản đồ nhỏ của màn chơi: khu vực, lối nối và điểm xuất phát; một hình bóng xám khi bị khóa.",
+		"Peta kecil sebuah level: area, penghubung, dan titik mulai; siluet abu-abu saat terkunci.",
+		"Маленька мапа рівня: зони, переходи й точки старту; сірий силует, якщо рівень закритий.",
+		"แผนที่เล็กของด่าน: พื้นที่ ทางเชื่อม และจุดเริ่ม เป็นเงาสีเทาเมื่อยังล็อกอยู่",
+		"خريطة صغيرة للمرحلة: مناطق وروابط ونقاط بداية، وظلّ رمادي عندما تكون مقفلة.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

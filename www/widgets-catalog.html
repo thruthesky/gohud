@@ -813,7 +813,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD and game shapes <small>(14)</small></h2>
+  <h2>HUD and game shapes <small>(15)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -887,6 +887,16 @@ var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
       <p class="catalog-base">extends <code>Control</code></p>
       <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
 shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gomappreview"><code>GoMapPreview</code></h3>
+      <p>A small map of a level: areas, links and start dots; a grey silhouette when locked.</p>
+      <p class="catalog-base">extends <code>Control</code></p>
+      <pre><code>var map := GoMapPreview.<wbr>new(<wbr>)
+map.<wbr>add_rect(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>6,<wbr> 4),<wbr> Color(<wbr>"#f2b84b"))
+map.<wbr>add_circle(<wbr>Vector2(<wbr>18,<wbr> 0),<wbr> 5.0,<wbr> Color(<wbr>"#6fc3ff"))
+map.<wbr>add_link(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>18,<wbr> 0),<wbr> 2.0,<wbr> Color(<wbr>"#c9a26b"))
+map.<wbr>set_starts(<wbr>PackedVector2Array(<wbr>[<wbr>Vector2(<wbr>-3,<wbr> 0),<wbr> Vector2(<wbr>20,<wbr> 0)]))</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

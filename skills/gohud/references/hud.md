@@ -735,3 +735,34 @@ Constants `TEXT_SIZE` (12), `KNOB_SHARE` (0.86), `TEXT_EDGE` (9), `TEXT_OUTLINE`
 - 🔑 Its least size is its `custom_minimum_size`: `GoTheme.TOUCH` tall from the start, and at least the pill plus
   `SIDE_ROOM` wide once the look is read. A screen that sets its own height wins.
 - `GoStyle.toggle()` stays a plain CheckButton; reach for `GoSwitch` where a screen must look like the painted game.
+
+## 26. GoMapPreview — a small map of a level
+
+`class_name GoMapPreview extends Control`. Magnet Mayhem's MapPreview, drawn exactly as the game draws it: areas
+(rectangles, circles, free polygons) filled and outlined, the links between them, white start dots, all fitted and
+centred in a dark box or the theme's well. Locked, it is a grey silhouette with no starts. The game hands in data only.
+
+```gdscript
+var map := GoMapPreview.new()
+map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))        # centre, half size, fill
+map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))
+map.add_link(Vector2(0, 0), Vector2(18, 0), 2.0, Color("#c9a26b"))    # centre to centre, under the areas
+map.set_starts(PackedVector2Array([Vector2(-3, 0), Vector2(20, 0)]))
+map.set_well()                                                        # the painted well, padding 12
+map.locked = not unlocked
+```
+
+`clear()` · `add_rect(center, half, color)` · `add_circle(center, radius, color)` · `add_polygon(points, color)` ·
+`add_link(from, to, width, color)` · `set_starts(points)` · `set_well()` · `locked` · `padding` · `show_background` ·
+`background` · `to_canvas(point)` · `map_scale()` · `background_box()` · `area_count()` · `link_count()` ·
+`start_count()` · `area_color(i)` · `link_color(i)` · `starts_shown()`. Constants `PADDING` (4), `WELL_PADDING` (12),
+`EDGE` / `EDGE_WIDTH` (0.6), `DOT` / `DOT_RADIUS` (0.8), `LOCKED_AREA`, `LOCKED_LINK`, `CIRCLE_SEGMENTS` (32).
+
+- 🔑 World units, +X right and +Y down. The areas' bounds (not the links) are scaled to fit the box less `padding`
+  and centred, so an off-centre map stays centred. Links are drawn first, so a bar from centre to centre is covered
+  by the areas at its ends.
+- 🔑 The background is `background` if set; else the theme's `GoWell` after `set_well()`; else the theme's
+  `GoMapPreview` panel; else the game's flat box (`#18213a`, a 1 px `#58627b` rim, corner 6). `show_background =
+  false` draws none, for a card that draws its own well round the thumbnail.
+- 🛑 It clips to its box (`clip_contents`), as the game's MapPreview does: on a scaled canvas the background's last
+  fractional row would otherwise show. It ignores the mouse.

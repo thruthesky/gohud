@@ -76,6 +76,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **`GoSwitch`** (`CheckButton`) — an on/off switch drawn as Magnet Mayhem's `PaintedSwitch`: the theme's pill centred
   in its box and an ON / OFF caption beside the knob (`on_text`, `off_text`, `set_texts()`, shrunk with
   `GoStyle.fit_font_size`). `make()`, `part()`, `pill_texture()`, `switch_rect()`, `caption_position()`.
+- **`GoMapPreview`** (`Control`) — a small map of a level drawn as Magnet Mayhem's `MapPreview`: areas (`add_rect`,
+  `add_circle`, `add_polygon`) filled and outlined, links (`add_link`) under them, start dots (`set_starts`), fitted and
+  centred in the flat dark box or the theme's well (`set_well()`); `locked` turns it a grey silhouette with no starts.
+  It clips to its box. The game passes only data.
 
 - **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
   - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,

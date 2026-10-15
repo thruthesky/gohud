@@ -18,6 +18,7 @@ func _initialize() -> void:
 		await frames(1)
 		await _slider(look)
 		await _switch(look)
+		await _map_preview(look)
 	GoUi.reset()
 	print("gohud painted controls tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -164,5 +165,59 @@ func _switch(look: StringName) -> void:
 	await frames(1)
 	check(flip.part(&"checked") != before, "%s switch: a new look's pills are read again" % look)
 	GoUi.use_preset(look)
+	holder.queue_free()
+	await frames(1)
+
+
+# ── Map preview ────────────────────────────────────────────────────────
+
+func _map_preview(look: StringName) -> void:
+	var holder := _holder()
+	var map := GoMapPreview.new()
+	holder.add_child(map)
+	map.size = Vector2(100, 60)
+	await frames(1)
+	check(map.clip_contents, "%s map: clips to its box, as the game's MapPreview" % look)
+	check(map.mouse_filter == Control.MOUSE_FILTER_IGNORE, "%s map: the press goes to the card under it" % look)
+	check(map.map_scale() == 0.0, "%s map: with no areas nothing is fitted" % look)
+	check(map.background_box() is StyleBoxFlat, "%s map: the flat dark box is the default background" % look)
+	# Two areas 25 x 10 world units overall (-5..20 by -5..5): fitted into the box less the padding, centred.
+	map.add_rect(Vector2(0, 0), Vector2(5, 5), Color.RED)
+	map.add_circle(Vector2(15, 0), 5.0, Color.BLUE)
+	map.add_link(Vector2(0, 0), Vector2(15, 0), 2.0, Color.GREEN)
+	map.set_starts(PackedVector2Array([Vector2(0, 0), Vector2(15, 0)]))
+	await frames(1)
+	var room := map.size - Vector2.ONE * GoMapPreview.PADDING * 2.0
+	check(is_equal_approx(map.map_scale(), minf(room.x / 25.0, room.y / 10.0)),
+		"%s map: the areas' bounds fill the room inside the padding (%.2f)" % [look, map.map_scale()])
+	check(map.to_canvas(Vector2(7.5, 0)).is_equal_approx(map.size * 0.5),
+		"%s map: the bounds' centre lands on the box's centre (%s)" % [look, map.to_canvas(Vector2(7.5, 0))])
+	check(map.area_count() == 2 and map.link_count() == 1 and map.start_count() == 2,
+		"%s map: the areas, links and starts are kept" % look)
+	check(map.area_color(0) == Color.RED and map.link_color(0) == Color.GREEN, "%s map: unlocked, each part has its colour" % look)
+	map.locked = true
+	check(map.area_color(0) == GoMapPreview.LOCKED_AREA and map.link_color(0) == GoMapPreview.LOCKED_LINK,
+		"%s map: locked, the parts turn the grey silhouette" % look)
+	check(not map.starts_shown(), "%s map: locked, the starts are hidden" % look)
+	map.locked = false
+	check(map.starts_shown(), "%s map: unlocked, the starts show" % look)
+	# A free polygon counts in the bounds too.
+	map.add_polygon(PackedVector2Array([Vector2(0, 20), Vector2(10, 20), Vector2(5, 25)]), Color.WHITE)
+	await frames(1)
+	check(is_equal_approx(map.map_scale(), minf(room.x / 25.0, room.y / 30.0)),
+		"%s map: a polygon widens the bounds (%.2f)" % [look, map.map_scale()])
+	# The well: the theme's GoWell where it has one, with the well's wider padding.
+	map.set_well()
+	await frames(1)
+	var has_well := GoUi.theme().has_stylebox(&"panel", &"GoWell")
+	check(map.padding == GoMapPreview.WELL_PADDING, "%s map: the well keeps more room round the map" % look)
+	check(not has_well or map.background_box() == GoUi.theme().get_stylebox(&"panel", &"GoWell"),
+		"%s map: the well is the theme's GoWell" % look)
+	map.show_background = false
+	check(map.background_box() == null, "%s map: with no background nothing is drawn behind" % look)
+	map.clear()
+	await frames(1)
+	check(map.area_count() == 0 and map.link_count() == 0 and map.start_count() == 0 and map.map_scale() == 0.0,
+		"%s map: clear() empties it" % look)
 	holder.queue_free()
 	await frames(1)

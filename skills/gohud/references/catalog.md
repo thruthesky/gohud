@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (14)
+8. [HUD and game shapes](#hud-and-game-shapes) (15)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -885,6 +885,18 @@ Extends `Control`. A picture that fills its box, cropping the overflow like CSS 
 ```gdscript
 var shot := GoCoverImage.make(preload("res://art/level_3.png"), Vector2(0.5, 0.3))
 shot.custom_minimum_size = Vector2(74, 74)
+```
+
+### `GoMapPreview`
+
+Extends `Control`. A small map of a level: areas, links and start dots; a grey silhouette when locked. Details: `hud.md` §26 (GoMapPreview).
+
+```gdscript
+var map := GoMapPreview.new()
+map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))
+map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))
+map.add_link(Vector2(0, 0), Vector2(18, 0), 2.0, Color("#c9a26b"))
+map.set_starts(PackedVector2Array([Vector2(-3, 0), Vector2(20, 0)]))
 ```
 
 ### `GoRewardCalendar`
