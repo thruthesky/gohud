@@ -180,6 +180,16 @@ func _buttons(theme: Theme) -> void:
 	var lit := theme.get_stylebox(&"hover", &"PopupMenu") as StyleBoxFlat
 	check(lit != null and lit.bg_color.is_equal_approx(DIFF_SELECTED), "PopupMenu: a hovered row is the light cyan")
 	check(theme.get_constant(&"v_separation", &"PopupMenu") == 10, "PopupMenu: finger-sized rows (10)")
+	# The game's dropdown keeps the engine's arrow and the list the engine's radio marks and row padding (its
+	# OptionButton items are radio items, so the marks are drawn): gohud sets none of them.
+	for item: StringName in [&"arrow", &"arrow_margin"]:
+		check(not (theme.has_icon(item, &"OptionButton") or theme.has_constant(item, &"OptionButton")),
+			"OptionButton/%s is the engine's, as in the game" % item)
+	for item: StringName in [&"radio_checked", &"radio_unchecked", &"checked", &"unchecked", &"radio_checked_disabled",
+			&"radio_unchecked_disabled", &"checked_disabled", &"unchecked_disabled"]:
+		check(not theme.has_icon(item, &"PopupMenu"), "PopupMenu/%s is the engine's, as in the game" % item)
+	for item: StringName in [&"h_separation", &"icon_max_width", &"item_start_padding", &"item_end_padding"]:
+		check(not theme.has_constant(item, &"PopupMenu"), "PopupMenu/%s is the engine's, as in the game" % item)
 
 
 func _panels(theme: Theme) -> void:

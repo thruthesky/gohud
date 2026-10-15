@@ -19,6 +19,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
 ### Changed
 
+- **`arcade_light`'s dropdown keeps the engine's arrow, and its list the engine's radio marks and row padding, as
+  Magnet Mayhem's do.** The game paints only the dropdown's box, ink and 17 px label and the list's panel, hover row,
+  ink, size and 10 px rows; an `OptionButton`'s items are radio items, so the marks are drawn. The arcade's 16 px
+  arrow (16 from the edge), check and radio icons and 8 px row padding are gone. The disabled and right-to-left
+  faces stay painted: the game never draws them, and the engine's would be a dark box on a light theme.
+
 - **`arcade_light` leaves a plain `Button` to the engine, as Magnet Mayhem does.** The game's theme sets no `Button`
   item; arcade_light's blue pill there painted plain buttons the game draws flat and leaked its outline (the chip's
   label outlined in navy), its 10 dp gap and its disabled face into every `Button` variation that leaves those items

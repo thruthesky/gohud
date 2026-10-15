@@ -425,6 +425,16 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("PopupMenu/colors/font_hover_color", C(INK))
     setT("PopupMenu/font_sizes/font_size", DROPDOWN_FONT_SIZE)
     setT("PopupMenu/constants/v_separation", 10)
+    # The game's settings dropdowns keep the engine's arrow (12 px, 4 from the edge), and their lists the engine's
+    # radio marks and row padding: an OptionButton's items are radio items, so the marks are drawn. `make_theme.py`
+    # gives both the arcade's own; they go, so the dropdown and its list draw as the game's do.
+    # (Its disabled tint stays: the game never disables a dropdown, and gohud gives every key's icon a colour.)
+    unset = ["OptionButton/icons/arrow", "OptionButton/constants/arrow_margin"]
+    unset += ["PopupMenu/icons/%s" % mark for mark in ("checked", "unchecked", "radio_checked", "radio_unchecked")]
+    unset += ["PopupMenu/icons/%s_disabled" % mark for mark in ("checked", "unchecked", "radio_checked", "radio_unchecked")]
+    unset += ["PopupMenu/constants/%s" % c for c in ("h_separation", "icon_max_width", "item_start_padding",
+                                                      "item_end_padding")]
+    T[:] = [entry for entry in T if entry.split(" = ")[0] not in unset]
 
     # ── ✏ The text field (`join_lobby.gd`, `create_room.gd`, `secret_prompt.gd`): a white box with a grey rim, a blue
     #    ring over it while typing, the pale blue when it cannot be typed in; ink text and caret. The game has no
