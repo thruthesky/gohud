@@ -197,8 +197,9 @@ GoUi.set_locale("ja")              # the same, after putting the look's Japanese
   `{"ko": Font, "ja": Font, "zh_CN": Font, "zh_TW": Font}`); `arcade_light` carries Magnet Mayhem's Noto Sans KR / JP / SC /
   TC. A code matches exactly, then by language (`ko_KR` → `ko`); Chinese by script or region (`Hans` → `zh_CN`;
   `Hant`, `TW`, `HK`, `MO` → `zh_TW`); any other language keeps the written order (KR, JP, SC, TC).
-  `GoUi.use_preset()` applies the current locale. 🛑 A locale set with `TranslationServer.set_locale()` alone does not
-  reorder anything.
+  `GoUi.use_preset()` applies the current locale. With the `GoRuntime` autoload a bare `TranslationServer.set_locale()`
+  is followed too (it reorders on `NOTIFICATION_TRANSLATION_CHANGED`, one frame of text in the old order); without it,
+  only `GoUi.set_locale()` reorders.
 
 ## 3. Sound and haptics
 

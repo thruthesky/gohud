@@ -49,6 +49,14 @@ func _ready() -> void:
 	get_tree().root.size_changed.connect(_on_size_changed)
 
 
+## 🔤 A `TranslationServer.set_locale()` from anywhere puts the new language's CJK font first (`GoUi.set_font_locale`,
+## which does nothing when the order is already right) — the engine has no locale signal, but every node in the tree
+## hears this notification.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and not Engine.is_editor_hint():
+		GoUi.set_font_locale(TranslationServer.get_locale())
+
+
 ## The current breakpoint.
 func current_bp() -> GoScale.Bp:
 	return _bp

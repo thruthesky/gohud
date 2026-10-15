@@ -767,6 +767,13 @@ func _locale_lead() -> void:
 	TranslationServer.set_locale("ja")
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
 	check(font.fallbacks[0].resource_path.ends_with("NotoSansJP-Bold.ttf"), "use_preset: arcade_light picks up the current locale (ja)")
+	# The GoRuntime autoload follows a bare TranslationServer.set_locale() (the notification every node hears).
+	var runtime: Node = load("res://addons/gohud/core/go_runtime.gd").new()
+	TranslationServer.set_locale("zh_CN")
+	runtime.notification(Node.NOTIFICATION_TRANSLATION_CHANGED)
+	check(font.fallbacks[0].resource_path.ends_with("NotoSansSC-Bold.ttf"),
+		"GoRuntime: a bare set_locale(zh_CN) puts Simplified Chinese first")
+	runtime.free()
 	GoUi.set_locale("en")
 	check(TranslationServer.get_locale() == "en" and font.fallbacks[0].resource_path.ends_with("NotoSansKR-Bold.ttf"),
 		"set_locale(en): back to KR JP SC TC")

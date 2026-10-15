@@ -319,7 +319,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `Locale.apply`). `use_preset()` runs it for the current locale. The fonts come from the theme's `go_locale_fonts`
   metadata (`GoUi.LOCALE_FONTS_META`); `arcade_light` writes the game's: `ko` → Noto Sans KR, `ja` → JP, `zh_CN` → SC,
   `zh_TW` → TC (also `ko_KR`, `zh_HK`, `zh_Hant` …), any other language KR, JP, SC, TC — `UiTheme.set_locale_font()`
-  exactly. The painted skin's `symbol_font()` is the leading one. Looks without the metadata are untouched.
+  exactly. The painted skin's `symbol_font()` is the leading one. Looks without the metadata are untouched. The
+  `GoRuntime` autoload also follows a bare `TranslationServer.set_locale()` (`NOTIFICATION_TRANSLATION_CHANGED`).
 
 - **`arcade_light`: the scoreboard rows and the loading tiles.** Five more of Magnet Mayhem's variations, value for
   value from its `UiTheme`, so the game drops its last own boxes: `GoScoreRow` (a round scoreboard row, white at 90 %
