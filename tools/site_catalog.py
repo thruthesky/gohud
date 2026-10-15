@@ -655,6 +655,25 @@ card_column.add_child(header)""", T(
 		"Стрічка заголовка екрана, що звисає над верхнім краєм картки, з гліфом і кутовим малюнком оформлення.",
 		"ริบบิ้นชื่อหน้าจอที่พาดขอบบนของการ์ด พร้อมกลิฟและภาพมุมของธีม",
 		"شريط عنوان الشاشة المعلّق فوق الحافة العليا لبطاقتها، مع رمز ورسم الزاوية الخاص بالمظهر.")),
+	("windows", "GoFitBox", "Container", """var fit := GoFitBox.new()
+fit.add_child(card)""", T(
+		"Keeps a whole card on the screen, shrinking it with its ribbon when too big; a long list scrolls instead.",
+		"카드를 통째로 화면 안에 둔다 — 너무 크면 리본까지 함께 줄이고, 긴 목록은 대신 스크롤된다.",
+		"カードをまるごと画面内に収める。大きすぎればリボンごと縮め、長いリストは代わりにスクロールする。",
+		"让整张卡片留在屏幕内：太大时连同飘带一起缩小，长列表则改为滚动。",
+		"讓整張卡片留在畫面內：太大時連同緞帶一起縮小，長清單則改為捲動。",
+		"Mantiene una tarjeta entera en pantalla y la encoge con su cinta si es demasiado grande; una lista larga se desplaza.",
+		"Mantém um cartão inteiro na tela, encolhendo-o com a fita quando é grande demais; uma lista longa rola.",
+		"Держит карточку на экране целиком: слишком большую уменьшает вместе с лентой, а длинный список прокручивается.",
+		"Garde une carte entière à l'écran et la réduit avec son ruban si elle est trop grande ; une longue liste défile.",
+		"Bir kartı bütünüyle ekranda tutar; fazla büyükse şeridiyle birlikte küçültür, uzun liste kaydırılır.",
+		"Trzyma całą kartę na ekranie, zmniejszając ją razem ze wstęgą, gdy jest za duża; długa lista się przewija.",
+		"Tiene un'intera scheda sullo schermo, rimpicciolendola con il nastro se è troppo grande; una lista lunga scorre.",
+		"Giữ trọn thẻ trong màn hình, thu nhỏ cả thẻ lẫn ruy băng khi quá lớn; danh sách dài sẽ cuộn.",
+		"Menjaga seluruh kartu tetap di layar, mengecilkannya beserta pitanya bila terlalu besar; daftar panjang digulir.",
+		"Тримає картку на екрані цілком: завелику зменшує разом зі стрічкою, а довгий список прокручується.",
+		"เก็บการ์ดทั้งใบไว้ในจอ ถ้าใหญ่เกินจะย่อพร้อมริบบิ้น ส่วนรายการยาวจะเลื่อนแทน",
+		"يُبقي البطاقة كاملة على الشاشة، ويصغّرها مع شريطها إذا كانت كبيرة جدًا؛ والقائمة الطويلة تُمرَّر بدلًا من ذلك.")),
 	# ── Messages and waiting
 	("messages", "GoSnackbar", "Node", """var snack := GoSnackbar.new()
 add_child(snack)
@@ -2541,6 +2560,7 @@ DETAILS = {
 	"GoNavBar.drawer_list": ("hud.md", "16. App screens — navigation bar, app bar, FAB, search, split button, progress, loading, dates"),
 	"GoBackPolicy": ("platform.md", "6. Back button and modality"),
 	"GoRibbonHeader": ("surfaces.md", "12. GoRibbonHeader — a screen's title ribbon"),
+	"GoFitBox": ("surfaces.md", "13. GoFitBox — the whole card on the screen"),
 }
 
 # The reference files searched, in the order a mention counts.

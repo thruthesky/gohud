@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>視窗與浮層 <small>(10)</small></h2>
+  <h2>視窗與浮層 <small>(11)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -327,6 +327,13 @@ console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code><
       <p class="catalog-base">繼承 <code>Control</code></p>
       <pre><code>var header := GoRibbonHeader.<wbr>make(<wbr>"PAUSED",<wbr> GoIconSet.<wbr>PAUSE)
 card_column.<wbr>add_child(<wbr>header)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofitbox"><code>GoFitBox</code></h3>
+      <p>讓整張卡片留在畫面內：太大時連同緞帶一起縮小，長清單則改為捲動。</p>
+      <p class="catalog-base">繼承 <code>Container</code></p>
+      <pre><code>var fit := GoFitBox.<wbr>new(<wbr>)
+fit.<wbr>add_child(<wbr>card)</code></pre>
     </div>
   </div>
 </section>

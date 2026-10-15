@@ -670,6 +670,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoPopover` | RefCounted | 누른 것 **옆에** 붙는 설명 카드 — 아이템 툴팁, "이 능력치가 뭐지" 카드. 한 번에 하나만 뜨고, 화면 밖으로 나갈 자리면 반대쪽으로 넘어가며, 창 크기가 바뀌면 따라간다 |
 | `GoContextMenu` | RefCounted | 어떤 컨트롤에든 길게 누르기(0.5초)·오른쪽 클릭. 손가락이 12dp 넘게 움직이면 **취소한다** — 그래야 긴 목록이 그대로 스크롤된다 |
 | `GoRibbonHeader` | Control | 카드 열의 첫 줄에 두는 화면 제목 리본 — 룩의 판(다른 판은 `ribbon_variation`) 위에 글리프와 제목(칸에 맞게 줄어든다), 카드 위쪽 가장자리에 걸치고 모서리에 룩의 그림(`corner`, `corner_on_left`). `arcade_light`에서는 Magnet Mayhem의 `RibbonHeader`와 같다 |
+| `GoFitBox` | Container | 카드를 통째로 화면 안에 둔다 — 안전영역 가운데에 놓고, 너무 크면 가장자리에 걸친 것(`GoRibbonHeader` 의 리본과 모서리 그림)까지 한 덩어리로 줄인다. 맞춤 하한보다 더 줄어야 하면 `flex` 목록이 먼저 스크롤된다. `arcade_light`에서는 Magnet Mayhem의 `FitBox`와 같다. `GoSurface` 는 `fit_mode = SCALE` 로 같은 일을 한다 |
 | `GoConsole` | CanvasLayer | 개발자 콘솔 — 등록한 명령, 인자, 기록, 자동완성. `debug_only` 가 기본 `true` 라 **배포 빌드에서는 열리지 않는다** |
 
 ### 앱 화면

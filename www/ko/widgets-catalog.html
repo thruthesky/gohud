@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>창과 오버레이 <small>(10)</small></h2>
+  <h2>창과 오버레이 <small>(11)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -327,6 +327,13 @@ console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code><
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var header := GoRibbonHeader.<wbr>make(<wbr>"PAUSED",<wbr> GoIconSet.<wbr>PAUSE)
 card_column.<wbr>add_child(<wbr>header)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofitbox"><code>GoFitBox</code></h3>
+      <p>카드를 통째로 화면 안에 둔다 — 너무 크면 리본까지 함께 줄이고, 긴 목록은 대신 스크롤된다.</p>
+      <p class="catalog-base">바탕 <code>Container</code></p>
+      <pre><code>var fit := GoFitBox.<wbr>new(<wbr>)
+fit.<wbr>add_child(<wbr>card)</code></pre>
     </div>
   </div>
 </section>

@@ -164,6 +164,32 @@ func refresh() -> void:
 	_layout()
 
 
+## 📐 How far a card headed by the look's ribbon draws past its own rect — left, top, right, bottom (dp, at scale 1):
+## the plate past the card's sides and over its top edge (`GoSkin.title_plate_overhang()`), and the corner art past the
+## plate (`window_corner_rect()`) when [param corner] is on and the look has corner art. Either corner may carry the
+## art, so both sides reserve it and the card stays centred — the game's `RibbonHeader.card_overhang()`: 20 each side
+## and 41 above the painted card in `arcade_light`. [param card] gives the face's margins (null: the look's window
+## card, `window_card_variation()`). A look with no overhang returns `Vector4.ZERO`. `GoFitBox` reserves this.
+static func card_overhang(card: Control = null, corner := true) -> Vector4:
+	var skin := GoUi.skin()
+	var reach := skin.title_plate_overhang()
+	var face: StyleBox = null
+	if card != null:
+		face = card.get_theme_stylebox(&"panel")
+	else:
+		var look := GoUi.theme()
+		var wear := skin.window_card_variation()
+		if look != null and look.has_stylebox(&"panel", wear): face = look.get_stylebox(&"panel", wear)
+	var card_top := face.get_margin(SIDE_TOP) if face != null else 0.0
+	var side_margin := minf(face.get_margin(SIDE_LEFT), face.get_margin(SIDE_RIGHT)) if face != null else 0.0
+	# The plate's top-left from the card's: over the edge when the look hangs it, else inside the face's padding.
+	var plate := Vector2(side_margin - reach.x, -reach.y if reach.y > 0.0 else card_top)
+	var spot := skin.window_corner_rect() if corner and skin.window_corner() == &"art" else Rect2()
+	var side := maxf(0.0, maxf(-plate.x, -(plate.x + spot.position.x)))
+	var top := maxf(0.0, maxf(-plate.y, -(plate.y + spot.position.y)))
+	return Vector4(side, top, side, 0.0)
+
+
 ## The title's size before it shrinks: the look's plate size, else the subtitle role's.
 func _natural_size() -> int:
 	var look := GoUi.skin().title_plate_font_size()

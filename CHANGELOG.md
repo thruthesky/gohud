@@ -6,6 +6,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **The docs no longer say `title_paint` turns `arcade_light`'s ribbon red.** It only paints a code-drawn plate
+  (`arcade`, `arcade_dark`); `arcade_light`'s ribbon is a painted sprite. `theming.md` and `surfaces.md` now point at
+  `title_variation`.
 - **Widgets keep following the look after a reparent.** 43 widgets (`GoAppBar`, `GoBar`, `GoSurface`, `GoSlider`,
   `GoSwitch`, `GoIconButton`, `GoJoystick`, …) called `GoUi.watch` only in `_ready` but `GoUi.unwatch` in
   `_exit_tree`, so a widget taken out and put back (`remove_child` + `add_child`, no second `_ready`) never followed
@@ -260,6 +263,30 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   hint is a **keycap** on a deep lip. Sizes are unchanged everywhere; every label still clears its contrast bar.
 
 ### Added
+
+- **`GoSurface.title_variation` — another plate for a window's title.** The theme variation the title plate wears
+  instead of the look's; `&"GoRibbonRed"` under `arcade_light` is the game's red GAME OVER ribbon (`RibbonRed`, with the
+  gold one's height, rise, bleed and magnet), so `set_ribbon(&"RibbonRed", skull)` is
+  `title_variation = &"GoRibbonRed"` + `title_glyph`. Empty, or a variation the theme lacks: the look's plate.
+- **`GoFitBox` — the whole card on the screen.** Magnet Mayhem's `FitBox`: a card centred in the safe area and, when it
+  is too big, shrunk as one piece (`scale`, never above 1) with what it draws past its edges (`overhang`, by default the
+  look's for the `GoRibbonHeader` it holds); below `GoConfig.fit_min_scale` its `flex` list (`new_flex()`) gives up
+  height first, so a long list scrolls on a landscape phone. `pad`, `safe_area`, `fit_scale`, and the fit itself as
+  `place()` / `flex_height()`.
+- **`GoSurface.fit_mode = SCALE`.** A window fits the same way (default `SCROLL`, as before): the look's width, its
+  content's height, the whole card shrunk with its ribbon and magnet (`fit_overhang()`); `fit_flex` names the list that
+  scrolls (else the body's scroll). Under `arcade_light` it places a card where the game's `PaintedDialog` in its
+  `FitBox` sits, at the game's scale.
+- **`GoRibbonHeader.card_overhang(card, corner)`.** How far a card headed by the look's ribbon draws past its rect, from
+  `title_plate_overhang()` and `window_corner_rect()` — `(20, 41, 20, 0)` on `arcade_light`'s painted card, the game's.
+- **Skin hooks `window_fit_pad()` and `window_flex_min_height()`.** The fit's free room off the safe area (-1: the
+  `SCREEN_MARGIN` token) and its list's floor (96); `arcade_light` gives the game's 8 and 96.
+- **Anchored cards like the main menu's top-bar cards.** `GoSurface.anchor_width = 0` (its content's width, no narrower
+  than `anchor_min_width`), `anchor_align` (`AUTO` as before, `START`, `END`), `anchor_gap` (7), `anchor_edge` (8),
+  `fit_mode = SCALE` (shrunk to the safe area, no lower than the fit floor, moved up instead of opening upward),
+  `pass_anchor_taps` (a tap on the anchor reaches it, so its second tap closes the card) and `tap_through` (more
+  controls taps reach). `GoPopover.open()` takes them as `width` 0, `min_width`, `align`, `gap`, `edge`, `fit`,
+  `pass_anchor_taps`, `tap_through`. Every default keeps today's card.
 
 - **`GoRibbonHeader` — a screen's title ribbon.** The game's `RibbonHeader` for a screen built on a card (pause,
   settings): put first in the card's column, it hangs the look's title plate over the card's top edge with a glyph and

@@ -1589,6 +1589,18 @@ func window_button_gap() -> int:
 	return -1
 
 
+## The free room a card fitted to the screen keeps off the safe area's edge, its overhang included (dp) —
+## `GoFitBox` and a `GoSurface` with `fit_mode` `SCALE`. Negative: the theme's `SCREEN_MARGIN`.
+func window_fit_pad() -> float:
+	return -1.0
+
+
+## How short a fitted card's scrolling list may get (dp) before the card shrinks instead — about two rows, so a
+## list that has to scroll still shows that it holds more.
+func window_flex_min_height() -> float:
+	return 96.0
+
+
 ## The focus mode of the controls gohud builds (buttons, sliders, switches, level cards, pickers), given the one
 ## the control would take ([param default_mode]). Default: that one, so the keyboard and a gamepad reach them.
 func control_focus_mode(default_mode := Control.FOCUS_ALL) -> Control.FocusMode:

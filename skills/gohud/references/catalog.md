@@ -12,7 +12,7 @@ against the code (`tools/check_docs_api.py`).
 ## Contents
 
 1. [Layout](#layout) (15)
-2. [Windows and overlays](#windows-and-overlays) (10)
+2. [Windows and overlays](#windows-and-overlays) (11)
 3. [Messages and waiting](#messages-and-waiting) (12)
 4. [App navigation](#app-navigation) (13)
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
@@ -273,6 +273,15 @@ Extends `Control`. A screen's title ribbon hanging over the top of its card, wit
 ```gdscript
 var header := GoRibbonHeader.make("PAUSED", GoIconSet.PAUSE)
 card_column.add_child(header)
+```
+
+### `GoFitBox`
+
+Extends `Container`. Keeps a whole card on the screen, shrinking it with its ribbon when too big; a long list scrolls instead. Details: `surfaces.md` §13 (GoFitBox).
+
+```gdscript
+var fit := GoFitBox.new()
+fit.add_child(card)
 ```
 
 

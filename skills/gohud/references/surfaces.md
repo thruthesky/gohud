@@ -17,6 +17,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 10. [GoPopover — the anchored card](#10-gopopover--the-anchored-card)
 11. [Dialogs that queue](#11-dialogs-that-queue)
 12. [GoRibbonHeader — a screen's title ribbon](#12-goribbonheader--a-screens-title-ribbon)
+13. [GoFitBox — the whole card on the screen](#13-gofitbox--the-whole-card-on-the-screen)
 
 ## 1. GoSurface
 
@@ -32,11 +33,13 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 | ceiling | 🛑 `height_ratio` above `max_height_ratio` (default `GoConfig.surface_max_height_ratio`, 0.72) is cut — raise `max_height_ratio` on the one surface that needs it; a debug build warns once. A centered `fit_content` card still grows to `surface_fit_max_height_ratio` (0.94) for long content. Drag-resize stops at the same ceiling |
 | behaviour | `dismiss_on_scrim` (config default) · `scrim_transparent` (also drops the look's frosted blur, `GoSkin.scrim_material()`) · `fade_in` · `resizable` (drag the title) · `show_header` (true) · `scroll_body` (true) · `close_enabled` (true) · `initial_focus: Control` |
 | opacity | `alpha` — the **card face's** opacity, ratio 0.0–1.0, negative = theme/config value (**80%** by default). Text, buttons and the border stay sharp; the scrim behind is separate (`scrim_transparent`, `GoTheme.SCRIM`). `theming.md` §4 |
-| anchor | `anchor_control` · `anchor_width` (320) · `anchor_min_width` (210) · `anchor_max_height` (520) — opens below, or above when there is more room |
+| anchor | `anchor_control` · `anchor_width` (320; **0** = its content's width, no narrower than `anchor_min_width` — `anchor_width_now()`) · `anchor_min_width` (210) · `anchor_max_height` (520) · `anchor_align: AnchorAlign` (`AUTO` — beside it on the roomier side; `START` / `END` — that edge on the anchor's, mirrored in RTL) · `anchor_gap` (7) · `anchor_edge` (8, off the safe area) — opens below, or above when there is more room |
+| taps through | `pass_anchor_taps` (false) — a tap on the anchor goes through the outside-tap layer to it, so the key that opened the card closes it (the anchor keeps the focus the tap gives it) · `tap_through: Array[Control]` — more controls whose taps go through (the rest of a top bar). Off: the layer covers everything and any tap outside the card closes it |
+| fit | `fit_mode: FitMode` — `SCROLL` (default: the card is cut to the screen, the body scrolls) · `SCALE`: Magnet Mayhem's `FitBox` — a centred window keeps the look's width and its content's height and shrinks **as a whole** (`scale`, never above 1) until it and its overhang (`fit_overhang()`, `GoRibbonHeader.card_overhang()`: the ribbon and the magnet) fit the safe area less `GoSkin.window_fit_pad()`; below `GoConfig.fit_min_scale` the list gives up height first (`fit_flex: ScrollContainer` — a `GoFitBox.new_flex()` in the body — or, null, the body's own scroll), down to `window_flex_min_height()`. An `ANCHOR` card under `SCALE` is the game's top-bar card: natural size, shrunk to the safe area (never below the fit floor), never opening upward — moved up. `fit_scale` — the scale it got. A `BOTTOM` sheet ignores it |
 | frame | The look frames a centred window (`GoSkin.window_card_variation()` / `window_padding()` / `window_gap()` / `window_width()`): `arcade_light` puts it on the painted card (`GoCard`), 400 dp wide with no screen margin (`window_screen_margin()` 0, so a 407-wide phone still gets 400), mipmapped (`window_texture_filter()`), padded by the card face alone, its head, body rows and footer 8 dp apart — the game's `PaintedDialog`. Centred rounded down, like a `CenterContainer` |
 | parts | `add_inset(parent = null) -> VBoxContainer` (an inset in the look's face, `GoSkin.window_inset_variation()`, rows 4 apart) · `add_line(text, font_size = 0, parent = null, wrap = true) -> Label` (centred; SMART wrap; a one-line stat passes `wrap = false`) · `add_row(parent = null) -> HBoxContainer` (`window_button_gap()`) · `add_gloss(variation, icon, text, parent = null, texture = null) -> GoGlyphButton` (`window_button_height()`; shares a row's width). `parent` defaults to the body. `arcade_light`: the game's `PaintedDialog.add_inset` / `add_line` / `add_gloss` — `GoInsetPanel`, buttons 46 high and 10 apart |
 | corner | `corner: HeadCorner` — `LOOK` (default: `GoSkin.window_corner()`; a centred window only, sheets and popovers keep the close button) · `CLOSE` · `ART` (`corner_art`, or `GoSkin.window_corner_art()`, placed by `window_corner_rect()` from the drawn plate's top-left) · `NONE` · `corner_on_left` (true; mirrored on the right) · `corner_now()`. Without the close button Escape / Back still emit `close_requested`. `arcade_light`: the game's red magnet, no close button. A close button the host hid itself stays hidden |
-| title | `title_paint` — the title plate's paint for this window (arcade: a red ribbon instead of the gold one, moved until the white title reads; transparent = the look's own; looks without a painted plate ignore it) |
+| title | `title_variation: StringName` — the theme variation the title plate wears instead of the look's (`&"GoRibbonRed"`: `arcade_light`'s red GAME OVER ribbon, the game's `RibbonRed`, with the gold one's height, rise, bleed and magnet; empty or undefined = the look's plate) · `title_paint` — a paint for a **code-drawn** plate (`arcade`, `arcade_dark`: a red ribbon moved until the white title reads; transparent = the look's own). 🛑 `arcade_light`'s ribbon is a painted sprite: `title_paint` does nothing there — use `title_variation` |
 | title extras | `title_glyph: Texture2D` · `title_glyph_size` (0 = in step with the title) — a glyph left of the title, in its colour · `title_overhang()` · `title_glyph_side()` — a look whose plate hangs over the card's top edge (`GoSkin.title_plate_overhang()`, the painted ribbon in `arcade_light`) lifts the head; the body keeps its own clip, and clips only while its content overflows (a fitting body draws its parts' rims whole). The look may fix the title's size and the plate's height (`GoSkin.title_plate_font_size()` / `title_plate_height()`: 34 on 57 in `arcade_light`); a long title shrinks to the plate's room as drawn, past the card's sides, down to `title_plate_min_size()`. On a plate the glyph's cell is its side wide and the title's line tall, kept to its aspect |
 | opaque | `opaque` — a solid colour (`GoSkin.opaque_backdrop_color()`, the game's sky in `arcade_light`) under the window instead of the see-through veil, for a window opened where the world behind is not drawn (a menu at boot) |
 | parts | `card` PanelContainer · `header` HBox · `title_label` · `close_button` GoIconButton · `back_button` · `scroll` GoScroll (**created in `_ready`**) · `body` VBox · `toolbar` VBox (hidden) · `footer` VBox (hidden) |
@@ -295,6 +298,7 @@ strip.add_child(row)
 | Optional question while playing (invite, trade) | `GoPromptCard` (hud.md §7) |
 | List / management page over the game | `GoSheet` |
 | Settings / details window | `GoSurface` CENTER |
+| A card that must stay whole on a small screen (a pause or settings card, a result card) | `GoFitBox` (§13), or a `GoSurface` with `fit_mode = SCALE` |
 | Dropdown or context menu next to a control | `GoSurface` ANCHOR (or `GoStyle.dropdown`) · long press / right click → `GoContextMenu` (hud.md §9) |
 | A card about the thing under the finger (an item's stats next to its slot) | `GoPopover` (§10) |
 | A message with an optional button (Undo, Retry) that goes away by itself | `GoSnackbar` (§8) |
@@ -376,7 +380,9 @@ await GoPopover.open(slot, body).close_requested
 GoPopover.close()
 ```
 
-Options: `title` · `translate` · `width` 320 · `max_height` 520 · `dismissable` · `compact` · `layer` 95 · `alpha`.
+Options: `title` · `translate` · `width` 320 (0: its content's) · `min_width` 210 · `max_height` 520 · `dismissable` · `compact` · `layer` 95 ·
+`alpha` · `align` (`&"auto"`, `&"start"`, `&"end"`) · `gap` 7 · `edge` 8 · `fit` (false — shrink to the safe area instead of cutting) ·
+`pass_anchor_taps` (false) · `tap_through` (`Array`) — the matching `GoSurface` fields (§1).
 `GoPopover.is_open()` · `GoPopover.close()`. 🛑 `open()` returns `null` when the anchor is not in the tree — check it
 before `await GoPopover.open(...).close_requested`.
 
@@ -387,6 +393,16 @@ before `await GoPopover.open(...).close_requested`.
 - The scrim is **transparent**: a card you opened to compare gear must not darken the gear.
 - 🛑 It is not a hover tooltip — touch has no hover, so put nothing here that only a mouse could reveal.
 - When the anchor leaves the tree (the item was dropped) the card goes with it.
+- 🎮 **A top-bar card** (Magnet Mayhem's language list and volume card): its content's width, its right edge on the
+  key's, 10 under it, shrunk to the safe area, and a second tap on the key closes it. Under `arcade_light` the card is
+  the game's painted card (`GoCard`):
+
+```gdscript
+func toggle_volume() -> void:
+	if GoPopover.is_open(): return GoPopover.close()                 # the key's second tap reaches the key
+	GoPopover.open(sound_key, volume_column, {"width": 0, "min_width": 300, "align": &"end", "gap": 10, "edge": 0,
+		"fit": true, "pass_anchor_taps": true, "tap_through": [top_bar]})
+```
 
 
 **Opacity.** `{"alpha": 0.9}` in the options. These cards exist to **compare** things, so the value behind them
@@ -431,4 +447,44 @@ header.ribbon_variation = &"GoRibbonRed"                       # the red ribbon 
 - 🔑 It holds only the part of the ribbon inside the card in its column (height − overhang − the card's top margin);
   the rest draws upward. The card is the nearest `PanelContainer` above it.
 - A look with no plate and no overhang gets a plain title row in the column.
+- 📐 `GoRibbonHeader.card_overhang(card = null, corner = true) -> Vector4` (static) — how far a card headed by the
+  look's ribbon draws past its rect (left, top, right, bottom): the plate's bleed and rise, and the corner art past the
+  plate when `corner` is on and the look has art. Both sides reserve the art. `arcade_light`: `(20, 41, 20, 0)` on the
+  painted card — the game's `RibbonHeader.card_overhang()`. `card` null: the look's window card. What `GoFitBox`
+  reserves.
+
+## 13. GoFitBox — the whole card on the screen
+
+`class_name GoFitBox extends Container`. Magnet Mayhem's `FitBox` for a card screen that is not a `GoSurface` window
+(the pause and settings cards): it centres its card in the safe area and, when the card is too big, shrinks it **as a
+whole** — the ribbon and the magnet over its edges included — so nothing is cut and nothing scrolls off.
+
+```gdscript
+var fit := GoFitBox.new()                         # wears GoUi.theme(); its own minimum size is zero
+layer.add_child(fit)
+fit.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+fit.add_child(card)                               # a PanelContainer card, a GoRibbonHeader first in its column
+var pages := GoFitBox.new_flex()                  # a long list in the card…
+pages.add_child(page_column)
+column.add_child(pages)
+fit.flex = pages                                  # …scrolls rather than shrink the card below the fit floor
+```
+
+| Member | |
+|---|---|
+| `overhang: Vector4` · `auto_overhang` (true) | How far the card draws past its rect (left, top, right, bottom). Auto: `GoRibbonHeader.card_overhang(card)` for a card holding a `GoRibbonHeader` (its corner counted while on), zero for one without; setting `overhang` turns auto off. `overhang_of(card)` reads the one in force |
+| `flex: ScrollContainer` | The list that gives up height before the card goes below `GoConfig.fit_min_scale`, down to `GoSkin.window_flex_min_height()` (whole dp). Set it once its one child (the content) is in: the content's own growth refits |
+| `pad` (-1) · `pad_now()` · `look_pad()` (static) | Room kept off the edge (dp). -1: the look's `window_fit_pad()` (8 in `arcade_light`), else `SCREEN_MARGIN` |
+| `safe_area` (true) · `room_rect()` | Fit inside the safe area (and above the keyboard) as well as its own rect. Off: the rect alone (inside a `GoSafeArea`) |
+| `fit_scale` | The scale the card got (1 = its own size) |
+| `new_flex() -> ScrollContainer` (static) | Up and down only, no bar, a deadzone of a quarter of the touch target (11 at 44) — the game's |
+| `place(card, area, need, reach, margin) -> float` · `flex_height(full, others, most) -> float` (static) | The fit itself, shared with `GoSurface`'s `SCALE` fit |
+
+- 🔑 The fit, as the game's: room = safe area − 2 × pad; `scale = min(1, room / (card + overhang))`; centred on the
+  card's own rect (rounded down) and nudged only when tight, so the overhang stays inside too. A card that would go
+  below the fit floor first shortens `flex` to `most − the rest`, where `most = room.y / fit_min_scale − overhang`, so a
+  settings card with a long list on a landscape phone stays readable and its list scrolls.
+- 🛑 Children are placed by hand — `Container.fit_child_in_rect` would reset their scale. Each visible child is one
+  card; its minimum size is what it needs.
+- A `GoSurface` window does the same with `fit_mode = GoSurface.FitMode.SCALE` (§1).
 

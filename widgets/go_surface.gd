@@ -35,6 +35,10 @@ enum Placement { CENTER, BOTTOM, ANCHOR }
 ## the game's magnet), the close button, a picture (`corner_art`, or the look's), or nothing. Without a close button
 ## Escape and Back still close the window.
 enum HeadCorner { LOOK, CLOSE, ART, NONE }
+## Which edge of its anchor an `ANCHOR` card lines up with (`anchor_align`).
+enum AnchorAlign { AUTO, START, END }
+## How a card too big for the screen stays on it (`fit_mode`): its body scrolls, or the whole card shrinks.
+enum FitMode { SCROLL, SCALE }
 
 ## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
@@ -99,15 +103,30 @@ var dismiss_on_scrim := false
 ## Make the scrim transparent — for a dropdown over the game screen, where what is behind must stay visible.
 var scrim_transparent := false
 ## 🎨 Paints the plate behind the title its own colour — the red ribbon of a GAME OVER window, the gold one of a win.
-## Transparent: the look's plate as it is. Under the arcade looks (a `GoStyleBoxArcade` plate) the paint is moved until
-## the white, ink-outlined title reads on it (`GoStyleBoxArcade.fit`); a look without a painted plate ignores it.
+## Transparent: the look's plate as it is. Only a code-drawn plate takes a paint — arcade and arcade_dark's
+## `GoStyleBoxArcade`, moved until the white, ink-outlined title reads on it (`GoStyleBoxArcade.fit`). 🛑 arcade_light's
+## ribbon is a painted sprite and ignores it, as does a look without a plate: there, pick the plate with
+## `title_variation`.
 ##
 ## ```gdscript
-## surface.title_paint = GoUi.color(GoTheme.DANGER_FILL)   # a red ribbon: you were knocked out
+## surface.title_paint = GoUi.color(GoTheme.DANGER_FILL)   # a red ribbon: you were knocked out (arcade, arcade_dark)
 ## ```
 var title_paint := Color.TRANSPARENT:
 	set(value):
 		title_paint = value
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## 🎀 The theme variation the title plate wears instead of the look's (`GoSkin.title_plate_box()`) — arcade_light's
+## `&"GoRibbonRed"`, the game's red GAME OVER ribbon (`RibbonRed`), with the gold one's height, rise, bleed and
+## corner art. Empty, or a variation the theme does not define: the look's plate.
+##
+## ```gdscript
+## surface.title_variation = &"GoRibbonRed"                 # arcade_light: the game's red ribbon…
+## surface.title_glyph = GoUi.icons().texture(GoIconSet.SKULL)   # …with the skull on it
+## ```
+var title_variation: StringName = &"":
+	set(value):
+		if title_variation == value: return
+		title_variation = value
 		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
 ## 🏷 A glyph left of the title (a trophy, the pause bars) — glyph and title stand centred together on the plate.
 ## Drawn in the title's colour (white glyphs read as drawn on the arcade ribbon). Null: the title alone.
@@ -188,6 +207,58 @@ var anchor_max_height := 520.0:
 		if anchor_max_height == value: return
 		anchor_max_height = value
 		_layout_dirty = true
+## Which edge of the anchor the card lines up with: `AUTO` (today's: its start edge when the card fits beside it,
+## else the roomier side), `START` (start edges together) or `END` (end edges together — the game's top-bar cards,
+## their right edge on the key's). Mirrored in a right-to-left layout. Under `SCALE`, `AUTO` takes the end on the side
+## of the screen the anchor is on.
+var anchor_align := AnchorAlign.AUTO:
+	set(value):
+		if anchor_align == value: return
+		anchor_align = value
+		_layout_dirty = true
+## Between the anchor and the card (dp) — the game's top-bar cards hang 10 under their key (`Cfg.Menu.GAP`).
+var anchor_gap := 7.0:
+	set(value):
+		if anchor_gap == value: return
+		anchor_gap = value
+		_layout_dirty = true
+## How far an anchored card keeps off the safe area's edge (dp) — the game's cards keep none.
+var anchor_edge := 8.0:
+	set(value):
+		if anchor_edge == value: return
+		anchor_edge = value
+		_layout_dirty = true
+## 👆 Taps on the anchor go **through** the outside-tap layer to the anchor, so the key that opened the card closes it
+## when pressed again (the game's top bar: its card's layer sits under the bar). Off: the layer covers the anchor too,
+## and a tap there closes the card as any outside tap does.
+var pass_anchor_taps := false
+## More controls whose taps go through the outside-tap layer (the rest of a top bar: the next key opens its own card).
+var tap_through: Array[Control] = []
+
+## How a card too big for the screen is kept on it. `SCROLL` (the default): the card is cut to the screen and its body
+## scrolls. `SCALE`: Magnet Mayhem's `FitBox` — the whole card shrinks by `scale` (never above 1) until it and what it
+## draws past its edges (the ribbon, the corner art: `GoRibbonHeader.card_overhang()`) fit the safe area less
+## `GoSkin.window_fit_pad()`; below the fit floor (`GoConfig.fit_min_scale`) the body's scroll (or `fit_flex`) gives up
+## height first, down to `GoSkin.window_flex_min_height()`. A centred window keeps the look's width (`max_width`)
+## whatever the screen. An `ANCHOR` card under `SCALE` is the game's top-bar card: its natural size, shrunk to the
+## safe area but no lower than the fit floor, never opening upward — moved up when it would run past the bottom.
+## 🛑 A `BOTTOM` sheet ignores it.
+var fit_mode := FitMode.SCROLL:
+	set(value):
+		if fit_mode == value: return
+		fit_mode = value
+		_layout_dirty = true
+## `SCALE`: the list that scrolls rather than shrink the card below the fit floor — a ScrollContainer in the body
+## (`GoFitBox.new_flex()`), its one child the content. Null: the body's own scroll, so the whole body scrolls.
+var fit_flex: ScrollContainer:
+	set(value):
+		if fit_flex == value: return
+		_watch_flex(false)
+		fit_flex = value
+		_watch_flex(true)
+		_layout_dirty = true
+## The scale the card got from a `SCALE` fit (1: its own size).
+var fit_scale := 1.0
 
 # ── Children ───────────────────────────────────────────────────────────
 
@@ -213,6 +284,10 @@ var status: VBoxContainer
 var status_label: Label
 
 var _scrim: ColorRect
+## A `SCALE` fit put a scale on the card — taken off again when the fit stops.
+var _scaled := false
+## The `fit_flex` content whose minimum size asks for a new fit.
+var _flex_watched: Control
 var _title_glyph_rect: TextureRect
 var _corner_rect: TextureRect
 ## How far the title plate rises above the card now (0: it sits inside the card) — `GoSkin.title_plate_overhang`.
@@ -269,7 +344,9 @@ func _build() -> void:
 	mouse_force_pass_scroll_events = false
 	add_to_group(&"go_surfaces")
 
-	_scrim = ColorRect.new()
+	var veil := Scrim.new()
+	veil.surface = self
+	_scrim = veil
 	_scrim.name = "Scrim"
 	_scrim.color = GoUi.color(GoTheme.SCRIM)
 	_scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -448,7 +525,8 @@ func _fit_scroll_frame() -> void:
 ## has neither gets the plain head back. Only what this surface put on is taken off: a host's own title alignment stays.
 func _dress_chrome() -> void:
 	var skin := GoUi.skin()
-	var plate := skin.title_plate_box()
+	var plate := _variation_plate()
+	if plate == null: plate = skin.title_plate_box()
 	if plate is GoStyleBoxArcade and title_paint.a > 0.0:
 		var painted := plate as GoStyleBoxArcade
 		painted.paint(GoStyleBoxArcade.fit(Color(title_paint, 1.0), painted.edge()))
@@ -475,6 +553,13 @@ func _dress_chrome() -> void:
 		close_button.remove_theme_stylebox_override(state)
 	close_button.icon_tint = Color.TRANSPARENT
 	skin.dress_close_button(close_button)
+
+
+## The plate `title_variation` names, a copy of the theme's (a paint may go on it) — null when unset or undefined.
+func _variation_plate() -> StyleBox:
+	if title_variation.is_empty() or not has_theme_stylebox(&"panel", title_variation): return null
+	var face := get_theme_stylebox(&"panel", title_variation)
+	return face.duplicate() as StyleBox if face != null else null
 
 
 ## On a title plate the title stays on one line: past the plate's room it shrinks, down to
@@ -1046,6 +1131,9 @@ func _focus_default() -> void:
 
 func _focus_changed(target: Control) -> void:
 	if not (_active and is_top() and target != null and not is_ancestor_of(target)): return
+	# 🛑 A control a tap goes through to keeps the focus that tap gave it — taken away mid-press, a Button drops the
+	#    press and the key that opened the card never closes it.
+	if _taps_through(target): return
 	# Never leave focus outside the window — Enter must not press a button on the screen behind.
 	if GoUi.config.suppress_pointer_focus_ring and _pointer_navigation and not is_instance_valid(initial_focus):
 		target.release_focus.call_deferred()
@@ -1102,6 +1190,10 @@ func relayout() -> void:
 		_update_density()
 		_relayout_anchor(area)
 		return
+	if fit_mode == FitMode.SCALE and placement == Placement.CENTER:
+		_relayout_scale(area)
+		return
+	_unscale()
 	# Keeps at least this much off the screen edge — on very narrow screens it shrinks proportionally.
 	var look_width := GoUi.skin().window_width() if placement == Placement.CENTER else 0.0
 	var look_margin := GoUi.skin().window_screen_margin() if placement == Placement.CENTER else -1.0
@@ -1242,22 +1334,31 @@ func _desired_height() -> float:
 
 
 ## Attaches beside the given control — to the right if the minimum width fits there, otherwise to the wider side, and if
-## neither fits, pulled inside the screen. Opens upward when there is less room below than above.
+## neither fits, pulled inside the screen (`anchor_align` `AUTO`; `START` / `END` line an edge up with the anchor's).
+## Opens upward when there is less room below than above.
 func _relayout_anchor(area: Rect2) -> void:
 	var anchor := anchor_control.get_global_rect()
-	var edge := 8.0
-	var gap := 7.0
+	if fit_mode == FitMode.SCALE:
+		_relayout_anchor_scale(area, anchor)
+		return
+	_unscale()
+	var edge := anchor_edge
+	var gap := anchor_gap
 	var space_right := area.end.x - anchor.position.x - edge
 	var space_left := anchor.end.x - area.position.x - edge
-	var width := anchor_width
+	var wide := anchor_width_now()
+	var width := wide
 	var x := anchor.position.x
-	if space_right < anchor_min_width and space_left < anchor_min_width:
-		width = clampf(area.size.x - edge * 2, 1, anchor_width)
+	if anchor_align != AnchorAlign.AUTO:
+		width = clampf(wide, 1.0, maxf(1.0, area.size.x - edge * 2.0))
+		if _aligns_end(anchor, area): x = anchor.end.x - width
+	elif space_right < anchor_min_width and space_left < anchor_min_width:
+		width = clampf(area.size.x - edge * 2, 1, wide)
 		x = area.position.x + edge
 	elif space_right >= anchor_min_width or space_right >= space_left:
-		width = clampf(space_right, anchor_min_width, anchor_width)
+		width = clampf(space_right, anchor_min_width, wide)
 	else:
-		width = clampf(space_left, anchor_min_width, anchor_width)
+		width = clampf(space_left, anchor_min_width, wide)
 		x = anchor.end.x - width
 	var below := area.end.y - anchor.end.y - gap - edge
 	var above := anchor.position.y - area.position.y - gap - edge
@@ -1272,6 +1373,156 @@ func _relayout_anchor(area: Rect2) -> void:
 	x = clampf(x, area.position.x + edge, maxf(area.position.x + edge, area.end.x - edge - card.size.x))
 	# 🛑 Integers — a fractional position makes the size 183.99997 and the body loses 1px (see the `relayout` comment).
 	card.position = Vector2(x, y).round()
+
+
+## The width an anchored card asks for (dp): `anchor_width`, or at 0 its content's — the card's minimum width, no
+## narrower than `anchor_min_width` (the game's top-bar cards).
+func anchor_width_now() -> float:
+	if anchor_width > 0.0: return anchor_width
+	return maxf(anchor_min_width, card.get_combined_minimum_size().x)
+
+
+## Does the card line up with the anchor's right edge? `END` (the left one in a right-to-left layout), `START` the
+## other; `AUTO` (under `SCALE`) the end whose side of the screen the anchor is on.
+func _aligns_end(anchor: Rect2, area: Rect2) -> bool:
+	if anchor_align == AnchorAlign.AUTO: return anchor.get_center().x > area.get_center().x
+	var rtl := is_inside_tree() and is_layout_rtl()
+	return (anchor_align == AnchorAlign.END) != rtl
+
+
+## 🔑 The game's top-bar card (`MainMenu._place_card`): its natural size — `anchor_width_now()` wide, its content tall —
+## shrunk to the safe area less `anchor_edge` (never above 1, never below the fit floor), an edge lined up with the
+## anchor's (`anchor_align`), `anchor_gap` under it, moved up when it would run past the bottom. It never opens upward
+## and keeps no height cap: it shrinks instead.
+func _relayout_anchor_scale(area: Rect2, anchor: Rect2) -> void:
+	var safe := area.grow(-anchor_edge)
+	var wide := anchor_width_now()
+	_update_density(0.0, wide)
+	var least := card.get_combined_minimum_size()
+	var natural := Vector2(maxf(wide, least.x), maxf(_desired_height(), least.y))
+	var factor := clampf(minf(safe.size.x / natural.x, safe.size.y / natural.y), GoUi.config.fit_min_scale, 1.0)
+	var drawn := natural * factor
+	var x := anchor.end.x - drawn.x if _aligns_end(anchor, safe) else anchor.position.x
+	x = clampf(x, safe.position.x, safe.end.x - drawn.x)
+	var y := maxf(safe.position.y, minf(anchor.end.y + anchor_gap, safe.end.y - drawn.y))
+	# Scaled from the top-left, so `position` is where the scaled card starts.
+	card.pivot_offset = Vector2.ZERO
+	card.scale = Vector2(factor, factor)
+	card.size = natural
+	card.position = Vector2(x, y)
+	fit_scale = factor
+	_scaled = true
+
+
+## 📐 Magnet Mayhem's `FitBox` for a centred window: the look's width, its content's height, the whole card shrunk
+## with its overhang into the safe area less the look's pad (`GoFitBox.place`). A card that would go below the fit
+## floor first lets its list (`fit_flex`, or the body's scroll) give up height.
+func _relayout_scale(area: Rect2) -> void:
+	var look_width := GoUi.skin().window_width()
+	var width := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else GoUi.config.surface_max_width)
+	var margin := GoFitBox.look_pad()
+	var room := area.size - Vector2(margin, margin) * 2.0
+	if room.x <= 0.0 or room.y <= 0.0: return # not laid out yet
+	_update_density(0.0, width)
+	var reach := fit_overhang()
+	var height := _fit_height(room.y / GoUi.config.fit_min_scale - (reach.y + reach.w))
+	var least := card.get_combined_minimum_size()
+	# 🔑 Not rounded: the game's card takes its list's fractional height as it is, and a fit is measured on it.
+	var need := Vector2(maxf(width, least.x), maxf(height, least.y))
+	fit_scale = GoFitBox.place(card, area, need, reach, margin)
+	# 🛑 On whole dp, as every card here: at a fractional place the padding's column came out a unit short and the
+	#    body scrolled by one (see `relayout`).
+	card.position = card.position.round()
+	_scaled = true
+
+
+## The card's height under a `SCALE` fit: its content's, less what its list gives up so the card stays under
+## [param most] (`GoFitBox.flex_height`).
+func _fit_height(most: float) -> float:
+	if is_instance_valid(fit_flex) and fit_flex.is_visible_in_tree() and fit_flex.get_child_count() > 0:
+		var content := fit_flex.get_child(0) as Control
+		if content != null:
+			var others := _desired_height() - fit_flex.get_combined_minimum_size().y
+			# 🔑 Whole dp: the card's padding (a MarginContainer) lays its column out on whole units, so a fractional list
+			#    left the body a fraction short of its rows and it clipped. Within a unit of the game's.
+			var tall := floorf(GoFitBox.flex_height(content.get_combined_minimum_size().y, others, most))
+			if not is_equal_approx(fit_flex.custom_minimum_size.y, tall): fit_flex.custom_minimum_size.y = tall
+		return _desired_height()
+	var desired := _desired_height()
+	if scroll == null: return desired
+	var full := body.get_combined_minimum_size().y
+	return desired - full + GoFitBox.flex_height(full, desired - full, most)
+
+
+## How far the window draws past its card under a `SCALE` fit (left, top, right, bottom, dp at scale 1): the title
+## plate hanging over the card and the corner art on it (`GoRibbonHeader.card_overhang`), nothing when the title sits
+## inside the card.
+func fit_overhang() -> Vector4:
+	if _overhang.y <= 0.0 and _overhang.x <= 0.0: return Vector4.ZERO
+	return GoRibbonHeader.card_overhang(card, show_header and corner_now() == HeadCorner.ART)
+
+
+## Takes a `SCALE` fit's scale off the card (and the height it gave `fit_flex`) once the fit stops.
+func _unscale() -> void:
+	if not _scaled: return
+	_scaled = false
+	fit_scale = 1.0
+	card.scale = Vector2.ONE
+	if is_instance_valid(fit_flex): fit_flex.custom_minimum_size.y = 0.0
+
+
+## 🛑 Under a `SCALE` fit the flex's height is fixed by the fit, so its content's own growth would go unseen: the
+##    content's minimum size marks the layout dirty instead.
+func _watch_flex(on: bool) -> void:
+	if not on:
+		if is_instance_valid(_flex_watched) and _flex_watched.minimum_size_changed.is_connected(_mark_layout_dirty):
+			_flex_watched.minimum_size_changed.disconnect(_mark_layout_dirty)
+		_flex_watched = null
+		return
+	if fit_flex == null or fit_flex.get_child_count() == 0: return
+	_flex_watched = fit_flex.get_child(0) as Control
+	if _flex_watched != null: _flex_watched.minimum_size_changed.connect(_mark_layout_dirty)
+
+
+# ── Taps through the outside-tap layer ───────────────────────────────
+
+## The veil behind the card. 🔑 Where `pass_anchor_taps` / `tap_through` say, it is not there for a tap (`_has_point`),
+## so the tap reaches what is under it — on a lower CanvasLayer too.
+class Scrim:
+	extends ColorRect
+
+	var surface: GoSurface
+
+	func _has_point(point: Vector2) -> bool:
+		if surface != null and surface.passes_tap(get_global_transform() * point): return false
+		return Rect2(Vector2.ZERO, size).has_point(point)
+
+
+## Does a tap at [param at] (canvas coordinates) go through to the anchor or a `tap_through` control?
+func passes_tap(at: Vector2) -> bool:
+	if pass_anchor_taps and is_instance_valid(anchor_control) and anchor_control.is_visible_in_tree() \
+			and anchor_control.get_global_rect().has_point(at):
+		return true
+	for control in tap_through:
+		if is_instance_valid(control) and control.is_visible_in_tree() and control.get_global_rect().has_point(at):
+			return true
+	return false
+
+
+## Is [param target] a control taps go through to (`pass_anchor_taps`' anchor, `tap_through`), or inside one?
+func _taps_through(target: Control) -> bool:
+	if pass_anchor_taps and is_instance_valid(anchor_control) \
+			and (target == anchor_control or anchor_control.is_ancestor_of(target)):
+		return true
+	for control in tap_through:
+		if is_instance_valid(control) and (target == control or control.is_ancestor_of(target)): return true
+	return false
+
+
+## The window takes no tap where its veil lets one through (it would stop it behind the veil otherwise).
+func _has_point(point: Vector2) -> bool:
+	if (pass_anchor_taps or not tap_through.is_empty()) and passes_tap(get_global_transform() * point): return false
+	return Rect2(Vector2.ZERO, size).has_point(point)
 
 
 func _process(_delta: float) -> void:

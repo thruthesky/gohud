@@ -622,6 +622,21 @@ func window_button_gap() -> int:
 	return WINDOW_BUTTON_GAP
 
 
+## The game's `FitBox`: a card fitted to the screen keeps 8 dp off the safe area, ribbon and magnet included
+## (`Cfg.Ui.WINDOW_FIT_PAD`), and its list keeps 96 dp before the card shrinks below the fit floor
+## (`Cfg.Ui.FLEX_MIN_HEIGHT`).
+const WINDOW_FIT_PAD := 8.0
+const WINDOW_FLEX_MIN_HEIGHT := 96.0
+
+
+func window_fit_pad() -> float:
+	return WINDOW_FIT_PAD
+
+
+func window_flex_min_height() -> float:
+	return WINDOW_FLEX_MIN_HEIGHT
+
+
 ## The red magnet in the ribbon's corner (`RibbonHeader`: 58 × 56, 30 dp out past the ribbon's end and 24 above it)
 ## stands where a close button would — the game's dialogs have none.
 const CORNER_ART := "res://addons/gohud/icons/arcade_light/magnet.png"

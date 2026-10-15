@@ -1092,6 +1092,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 | `GoPopover` | RefCounted | An info card beside the thing you pressed — the item tooltip, the "what is this stat" card. One at a time, flips to the other side when it would go off-screen, and follows its anchor on resize |
 | `GoContextMenu` | RefCounted | Long-press (0.5 s) or right-click on any control. A finger that moves more than 12 dp cancels it, so a long list still scrolls |
 | `GoRibbonHeader` | Control | A screen's title ribbon, first in a card's column: the look's plate (`ribbon_variation` for another) with a glyph and the title, shrunk to fit, hanging over the card's top edge, and the look's corner art (`corner`, `corner_on_left`). Magnet Mayhem's `RibbonHeader` in `arcade_light` |
+| `GoFitBox` | Container | Keeps a whole card on the screen: centred in the safe area and, when too big, shrunk as one piece with what hangs over its edges (a `GoRibbonHeader`'s ribbon and corner art); a `flex` list scrolls before it shrinks past the fit floor. Magnet Mayhem's `FitBox` in `arcade_light`. A `GoSurface` does the same with `fit_mode = SCALE` |
 | `GoConsole` | CanvasLayer | The developer console: registered commands, arguments, history and completion. `debug_only` defaults to `true`, so it cannot open in a shipped build |
 
 ### App screens
