@@ -37,6 +37,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 28. [GoNoticeFeed — a feed of one-line notices](#28-gonoticefeed--a-feed-of-one-line-notices)
 29. [GoTouchButton — a round thumb button (and the painted stick)](#29-gotouchbutton--a-round-thumb-button-and-the-painted-stick)
 30. [GoSpotlight — dim round one thing and ring it](#30-gospotlight--dim-round-one-thing-and-ring-it)
+31. [GoTaskCard — a lesson's card](#31-gotaskcard--a-lessons-card)
 
 ## 1. GoHudAnchor
 
@@ -921,3 +922,36 @@ spot.clear()
 
 - 🛑 Display only: it lights what it is told to.
 - Skin hooks: `spotlight_dim()` (the dim colour) and `spotlight_ring_box()` (the ring, drawn over the hole).
+
+## 31. GoTaskCard — a lesson's card
+
+`class_name GoTaskCard extends PanelContainer` · the card of a tutorial played through the game: which step this is,
+the lesson's name, what to do, one chip per part that ticks off as it is done, a hint when the player is stuck and a short
+footer. It has no buttons and never takes input. On a phone it folds to one `compact` row once it has been read. Under
+`arcade_light` it draws Magnet Mayhem's training card (and its phone strip) pixel for pixel.
+
+```gdscript
+var card := GoTaskCard.new()
+hud.add_child(card)
+card.custom_minimum_size.x = 440
+card.caption = tr("STEP_LABEL").format({"n": 1, "total": 12})   # "TRAINING · STEP 1/12"
+card.short_caption = "1/12"
+card.title = tr("TITLE_MOVE")
+card.body = tr("BODY_MOVE")
+card.footer = tr("FOOTER_PAUSE")
+card.set_parts(["W", "A", "S", "D"])
+card.mark_part(0, true)                 # the game said the part is done
+card.hint = tr("HINT_RING_OUT")         # "" hides it
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `caption` · `title` · `body` · `hint` · `footer` | | The step line, the name (one line, shrunk to fit), what to do, a hint ("" hides it), a footer |
+| `set_parts(words, done)` · `mark_part(i, done)` · `part_done(i)` · `chips()` · `chip_text(i)` | | One keycap chip per part; a done one is tinted and reads "✓ word" |
+| `compact` · `short_caption` | `false` · | One row: `short_caption`, the title and the chips |
+| `padding` · `row_gap` | `20` · `4` | Room inside the board's rim and between the rows |
+| `title_size` · `body_size` · `hint_size` · `caption_size` · `chip_size` · `strip_size` | `22` · `15` · `14` · `12` · `16` · `13` | Font sizes; the caption and footer are the label ink at 0.75 |
+
+- 🛑 Display only: what is done comes from the caller.
+- The board is the theme's `GoHudPanel`; chips are `GoSkin.kbd_box()` / `kbd_done_box()`. Skin hooks:
+  `task_title_ink()` (the title and the compact row) and `task_hint_ink()` (the hint). Pair it with `GoSpotlight`.

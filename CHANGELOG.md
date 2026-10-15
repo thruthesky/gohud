@@ -59,6 +59,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoTaskCard` — a lesson's card.** A step line, a title shrunk to one line, what to do, one keycap chip per part that
+  ticks off (`set_parts`, `mark_part`; a done chip is `GoSkin.kbd_done_box` and reads "✓ word"), a hint when stuck
+  (`GoSkin.task_hint_ink`) and a footer; `compact` folds it to one row (`short_caption`, title, chips). Never takes
+  input. Under `arcade_light` Magnet Mayhem's training card and its phone strip match pixel for pixel.
 - **`GoSpotlight` — dim round one thing and ring it.** `light(rect)` or `follow(control)` (grown by `pad`), four dims
   round the hole that fade after `dim_seconds`, and a ring that stays (`GoSkin.spotlight_dim`, `spotlight_ring_box`).
   No card, no buttons, never takes input. Under `arcade_light` Magnet Mayhem's training spotlight matches pixel for pixel.

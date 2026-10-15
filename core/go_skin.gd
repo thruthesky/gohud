@@ -1281,6 +1281,16 @@ func spotlight_ring_box() -> StyleBox:
 	return ring
 
 
+## 📋 A `GoTaskCard`'s title. The default is `accent`.
+func task_title_ink() -> Color:
+	return GoUi.color(GoTheme.ACCENT)
+
+
+## 📋 A `GoTaskCard`'s hint line (what to try when stuck). The default is `danger`.
+func task_hint_ink() -> Color:
+	return GoUi.color(GoTheme.DANGER)
+
+
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
 ## smooth bar — the default; the arcade looks split a bar into chunky segments.
 func bar_ticks() -> int:

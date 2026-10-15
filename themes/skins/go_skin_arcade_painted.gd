@@ -402,6 +402,15 @@ func spotlight_ring_box() -> StyleBox:
 	return ring
 
 
+## The training card's title gold and hint red.
+func task_title_ink() -> Color:
+	return Color("#b8860b")
+
+
+func task_hint_ink() -> Color:
+	return Color("#e8332f")
+
+
 ## The game's chunk lines: 3 px INK at `BarSegments`' positions, the full height of the bar.
 func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 	for index in range(1, count):

@@ -799,7 +799,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD e formas de jogo <small>(21)</small></h2>
+  <h2>HUD e formas de jogo <small>(22)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -928,6 +928,16 @@ skill.<wbr>cooldown = 0.4</code></pre>
       <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
 hud.<wbr>add_child(<wbr>spot)
 spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>O cartão de uma lição do tutorial: etapa, título, o que fazer, fichas que se marcam e uma dica; dobra-se em uma linha.</p>
+      <p class="catalog-base">estende <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
     </div>
     <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>

@@ -2006,6 +2006,28 @@ spot.follow(jump_button, true)""", T(
 		"Затемнює екран навколо одного елемента й обводить його; затемнення згасає, рамка лишається.",
 		"หรี่หน้าจอรอบตัวควบคุมหนึ่งตัวและวาดกรอบรอบมัน ความมืดจะจางไป กรอบยังอยู่",
 		"يعتّم الشاشة حول عنصر واحد ويحيطه بإطار؛ يتلاشى التعتيم ويبقى الإطار.")),
+	("hud", "GoTaskCard", "PanelContainer", """var card := GoTaskCard.new()
+card.caption = "TRAINING · STEP 1/12"
+card.title = "MOVE"
+card.body = "Move with W A S D."
+card.set_parts(["W", "A", "S", "D"], [true])""", T(
+		"A tutorial lesson's card: step, title, what to do, part chips that tick off and a hint; folds to one row.",
+		"튜토리얼 과제 카드 — 단계, 제목, 할 일, 끝나면 체크되는 칩과 힌트. 한 줄로 접힌다.",
+		"チュートリアルの課題カード。ステップ、タイトル、やること、完了でチェックされるチップとヒント。一行にたためる。",
+		"教程关卡卡片：步骤、标题、要做的事、完成即打勾的分项标签和提示；可折叠成一行。",
+		"教學關卡卡片：步驟、標題、要做的事、完成即打勾的分項標籤與提示；可折疊成一列。",
+		"La tarjeta de una lección del tutorial: paso, título, qué hacer, fichas que se marcan y una pista; se pliega en una fila.",
+		"O cartão de uma lição do tutorial: etapa, título, o que fazer, fichas que se marcam e uma dica; dobra-se em uma linha.",
+		"Карточка урока обучения: шаг, заголовок, что делать, отмечаемые части и подсказка; сворачивается в одну строку.",
+		"La carte d'une leçon du tutoriel : étape, titre, quoi faire, puces cochées et indice ; se replie en une ligne.",
+		"Öğretici dersinin kartı: adım, başlık, yapılacak iş, işaretlenen parça çipleri ve ipucu; tek satıra katlanır.",
+		"Karta lekcji samouczka: krok, tytuł, co zrobić, odhaczane części i podpowiedź; składa się do jednego wiersza.",
+		"La scheda di una lezione del tutorial: passo, titolo, cosa fare, chip che si spuntano e un suggerimento; si piega in una riga.",
+		"Thẻ bài học hướng dẫn: bước, tiêu đề, việc cần làm, các chip được đánh dấu và gợi ý; gập thành một dòng.",
+		"Kartu pelajaran tutorial: langkah, judul, yang harus dilakukan, chip bagian yang dicentang, dan petunjuk; bisa dilipat jadi satu baris.",
+		"Картка уроку навчання: крок, заголовок, що робити, позначувані частини й підказка; згортається в один рядок.",
+		"การ์ดบทเรียนของบทแนะนำ: ขั้น ชื่อ สิ่งที่ต้องทำ ชิปที่ถูกติ๊กเมื่อเสร็จ และคำใบ้ พับเป็นแถวเดียวได้",
+		"بطاقة درس في الشرح التعليمي: الخطوة والعنوان وما يجب فعله وشارات أجزاء تُعلَّم وتلميح؛ تُطوى في صف واحد.")),
 	("hud", "GoRewardCalendar", "VBoxContainer", """var attendance := GoRewardCalendar.make(days, claimed_until)
 attendance.claimed.connect(func(day: int) -> void: server.claim_day(day))""", T(
 		"Daily attendance rewards; only today can be pressed.",

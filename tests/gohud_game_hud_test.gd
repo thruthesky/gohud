@@ -33,6 +33,7 @@ func _initialize() -> void:
 		await _notice_feed(look)
 		await _touch_button(look)
 		await _joystick_art(look)
+		await _task_card(look)
 		await _spotlight(look)
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
@@ -577,7 +578,58 @@ func _joystick_art(look: StringName) -> void:
 	await frames(1)
 
 
-# ── A spotlight (GoSpotlight) ─────────────
+# ── A task card (GoTaskCard) and a spotlight (GoSpotlight) ─────────────
+
+func _task_card(look: StringName) -> void:
+	var skin := GoUi.skin()
+	var card := GoTaskCard.new()
+	card.caption = "TRAINING · STEP 1/12"
+	card.title = "MOVE"
+	card.short_caption = "1/12"
+	card.body = "Knock both dummies out.\nMove with W A S D."
+	card.footer = "Esc · pause"
+	card.set_parts(PackedStringArray(["W", "A", "S", "D"]), [true, false, false, false])
+	var holder := _host(card, 600.0)
+	card.custom_minimum_size.x = 440.0
+	await frames(2)
+	check(card.mouse_filter == Control.MOUSE_FILTER_IGNORE, "task card: never takes input")
+	check(card.caption_label.text == "TRAINING · STEP 1/12" and card.title_label.text == "MOVE", "task card: caption and title")
+	check(card.body_label.text.begins_with("Knock"), "task card: body")
+	check(card.chips().size() == 4, "task card: one chip per part")
+	check(card.chip_text(0) == "✓ W" and card.chip_text(1) == "A", "task card: a done part reads ✓")
+	check(card.chips()[0].get_theme_stylebox(&"panel") != card.chips()[1].get_theme_stylebox(&"panel"),
+		"task card: a done chip looks different (%s)" % look)
+	check(not card.hint_label.visible, "task card: no hint, no hint row")
+	card.hint = "Push them out!"
+	check(card.hint_label.visible and card.hint_label.text == "Push them out!", "task card: a hint shows")
+	check(card.hint_label.get_theme_color(&"font_color") == skin.task_hint_ink(), "task card: hint in task_hint_ink")
+	check(card.title_label.get_theme_color(&"font_color") == skin.task_title_ink(), "task card: title in task_title_ink")
+	check(card.title_label.get_theme_font_size(&"font_size") == 22, "task card: a short title at title_size")
+	card.title = "A VERY LONG TITLE THAT NEVER FITS ON ONE LINE OF THIS CARD AT ALL"
+	await frames(1)
+	var fitted := card.title_label.get_theme_font_size(&"font_size")
+	check(fitted < 22 and fitted >= GoStyle.fit_floor(22), "task card: a long title shrinks to fit (%d)" % fitted)
+	card.mark_part(1, true)
+	check(card.chip_text(1) == "✓ A", "task card: mark_part ticks a part")
+	check(card.part_done(1) and not card.part_done(2), "task card: part_done reads it back")
+	card.compact = true
+	await frames(1)
+	check(not card.title_label.visible and not card.body_label.visible and card.strip_label.visible,
+		"task card: compact shows the strip only")
+	check(card.strip_label.text == card.short_caption + "  " + card.title, "task card: the strip reads short caption + title")
+	check(card.chips()[0].get_parent().get_parent() == card.strip_row, "task card: the chips move into the strip")
+	card.compact = false
+	await frames(1)
+	check(card.title_label.visible and card.chips()[0].get_parent().get_parent() == card.chip_row, "task card: back to full")
+	card.set_parts(PackedStringArray(["JUMP"]), [false])
+	check(card.chips().size() == 1 and card.chip_text(0) == "JUMP", "task card: set_parts rebuilds the chips")
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(card.get_theme_stylebox(&"panel").content_margin_left == 25.0, "task card: arcade_light: padding 20 inside the 5 dp rim")
+		check(skin.task_title_ink() == Color("#b8860b") and skin.task_hint_ink() == Color("#e8332f"),
+			"task card: arcade_light: the game's title gold and hint red")
+	holder.queue_free()
+	await frames(1)
+
 
 func _spotlight(look: StringName) -> void:
 	var skin := GoUi.skin()

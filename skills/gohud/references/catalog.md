@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (12)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (21)
+8. [HUD and game shapes](#hud-and-game-shapes) (22)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -936,6 +936,18 @@ Extends `Control`. Dims the screen round one control and rings it; the dim fades
 var spot := GoSpotlight.new()
 hud.add_child(spot)
 spot.follow(jump_button, true)
+```
+
+### `GoTaskCard`
+
+Extends `PanelContainer`. A tutorial lesson's card: step, title, what to do, part chips that tick off and a hint; folds to one row. Details: `hud.md` §31 (GoTaskCard).
+
+```gdscript
+var card := GoTaskCard.new()
+card.caption = "TRAINING · STEP 1/12"
+card.title = "MOVE"
+card.body = "Move with W A S D."
+card.set_parts(["W", "A", "S", "D"], [true])
 ```
 
 ### `GoRewardCalendar`
