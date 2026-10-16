@@ -51,6 +51,8 @@ const GLYPH_FILES := {
 	"back": true, "check": true, "exit": true, "gear": true, "globe": true, "help": true, "magnet": true, "pause": true,
 	"person": true, "play": true, "retry": false, "skip": false, "skull": false, "sound_low": true, "sound_off": true, "sound_on": true,
 	"trophy": false,
+	# Painted for gohud in the same style (tools/paint_arcade_glyphs.gd): the - and + steppers and the close key.
+	"plus": true, "minus": true, "close": true,
 }
 
 var passed := 0
@@ -164,12 +166,14 @@ func _light_icons() -> void:
 		&"skull": "skull", &"magnet": "magnet",
 		# The player's name key and the name dialog's ribbon glyph (the game's `glyphs/person.png`); gohud's `user` too.
 		&"person": "person", &"user": "person",
+		# The - and + steppers and the window's close key, painted in the same style.
+		&"plus": "plus", &"minus": "minus", &"close": "close",
 	}
 	for name: StringName in expect:
 		var want := _glyph(expect[name])
 		check(want != null and icons.texture(name) == want, "arcade_light draws '%s' with the %s glyph" % [name, expect[name]])
 	# Not a glyph here — the default set still draws it.
-	for name: StringName in [&"close", &"trash", &"star"]:
+	for name: StringName in [&"trash", &"star", &"lock"]:
 		var drawn := icons.texture(name)
 		check(drawn != null and drawn == GoUi.DEFAULT_ICONS.texture(name),
 			"arcade_light falls back to the default set for '%s'" % name)
@@ -177,7 +181,8 @@ func _light_icons() -> void:
 	# What a widget actually asks for once the preset is chosen.
 	GoUi.use_preset(preset)
 	check(GoUi.icons().texture(&"home") == _glyph("exit"), "with arcade_light chosen, GoUi.icons() draws home with the exit glyph")
-	check(GoUi.icons().texture(&"close") == GoUi.DEFAULT_ICONS.texture(&"close"), "with arcade_light chosen, close is gohud's")
+	check(GoUi.icons().texture(&"close") == _glyph("close"), "with arcade_light chosen, close is the painted one")
+	check(GoUi.icons().texture(&"trash") == GoUi.DEFAULT_ICONS.texture(&"trash"), "with arcade_light chosen, trash is gohud's")
 	GoUi.reset()
 
 

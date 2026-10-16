@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GoIconSet" load_steps=20 format=3]
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
 [ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
@@ -19,11 +19,14 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_off.png" id="sound_off"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/sound_on.png" id="sound_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/trophy.png" id="trophy"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/plus.png" id="plus"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/minus.png" id="minus"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/close.png" id="close"]
 
 [resource]
 script = ExtResource("script")
 set_name = "Arcade painted glyphs"
-attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game. gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
+attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game; plus, minus and close painted for gohud in the same style (tools/paint_arcade_glyphs.gd). gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
 fallback = ExtResource("fallback")
 textures = {
 &"back": ExtResource("back"),
@@ -43,6 +46,9 @@ textures = {
 &"sound_off": ExtResource("sound_off"),
 &"sound_on": ExtResource("sound_on"),
 &"trophy": ExtResource("trophy"),
+&"plus": ExtResource("plus"),
+&"minus": ExtResource("minus"),
+&"close": ExtResource("close"),
 &"home": ExtResource("exit"),
 &"refresh": ExtResource("retry"),
 &"forward": ExtResource("skip"),

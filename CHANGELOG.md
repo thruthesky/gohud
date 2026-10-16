@@ -6,6 +6,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`arcade_light` paints `plus`, `minus` and `close`.** The glyph set had none of the three, so a - / + stepper or a
+  close key drew the default set's thin line icon on a painted pill. They are painted in the set's own style — a
+  white face, a navy outline and a pale lip under every lower edge — by `tools/paint_arcade_glyphs.gd`.
 - **`GoRibbonWideTitle`** (`arcade_light`): the title on a `GoRibbonWide` ribbon — `GoTitle` with the stage ribbons'
   8 px outline (Magnet Mayhem's stage select and room list set it on the label by hand).
 - **`GoConfig.close_on_os_back`** (on): off leaves the Android back gesture to the game while Escape / `ui_cancel`
