@@ -28,6 +28,7 @@ func _initialize() -> void:
 	await _open_close()
 	await _tabs()
 	await _orientation_and_preview()
+	await _long_tab_labels()
 	await _back_and_stacking()
 	await _ownership_after_free()
 	await _rtl()
@@ -167,6 +168,42 @@ func _tabs() -> void:
 	page.queue_free()
 	await frames(2)
 	section("tabs · select_tab · current_tab · tab_changed · badges")
+
+
+# ── Long tab labels: no overlap along the top, no spill down the rail ──
+
+func _long_tab_labels() -> void:
+	var page := GoPage.new()
+	root.add_child(page)
+	page.open("Long")
+	var tabs: Array[Dictionary] = []
+	for i in 6:
+		tabs.append({id = StringName("t%d" % i), label = "Category name %d long" % i, icon = &""})
+	page.set_tabs(tabs)
+	await _size(390, 844)
+	await frames(3)
+	var overlap := 0
+	var spill := 0
+	for i in 6:
+		var button := page.tab_button(StringName("t%d" % i))
+		var words: Label = button.find_children("*", "Label", true, false)[0]
+		if not button.get_global_rect().grow(0.5).encloses(words.get_global_rect()) \
+				or words.get_minimum_size().x > words.size.x + 0.5: spill += 1
+		if i > 0 and page.tab_button(StringName("t%d" % (i - 1))).get_global_rect().end.x > button.get_global_rect().position.x + 0.5:
+			overlap += 1
+	check(overlap == 0 and spill == 0, "portrait: long one-line tabs never overlap and keep their words inside (%d overlaps · %d spills)" % [overlap, spill])
+	check(page._rail.size.x > page._rail_scroll.size.x, "portrait: tabs wider than the screen make the strip scroll sideways (%.0f > %.0f)"
+		% [page._rail.size.x, page._rail_scroll.size.x])
+	await _size(844, 390)
+	await frames(3)
+	spill = 0
+	for i in 6:
+		var button := page.tab_button(StringName("t%d" % i))
+		var words: Label = button.find_children("*", "Label", true, false)[0]
+		if not button.get_global_rect().grow(0.5).encloses(words.get_global_rect()): spill += 1
+	check(spill == 0, "landscape: a wrapped rail label stays inside its tab (%d spills)" % spill)
+	page.queue_free()
+	await frames(2)
 
 
 # ── Rail in landscape, top tabs in portrait; the preview ───────────────

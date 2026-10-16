@@ -339,6 +339,22 @@ func _fit_tab(button: Control) -> void:
 	for words in button.find_children("*", "Label", true, false):
 		if words.get_parent() is GoBadge: continue   # a count keeps its own one-line shape
 		(words as Label).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if _landscape else TextServer.AUTOWRAP_OFF
+	var inset := button.get_child(0) as Control if button.get_child_count() > 0 else null
+	if inset != null and not inset.has_meta(&"go_page_hug"):
+		inset.set_meta(&"go_page_hug", true)
+		inset.minimum_size_changed.connect(_hug_tab.bind(button), CONNECT_DEFERRED)
+	_hug_tab(button)
+
+
+## 🛑 A `Button` does not lay out its children — the list row's label sits in a full-rect inset, so the button's own
+##    minimum ignores the words (measured: six one-line tabs squeezed to 75 dp each, "Graphics" drawn over "Sound").
+##    The tab takes its inset's minimum: its words' width along the top (the strip then scrolls), and the wrapped
+##    height down the rail (a two-line label never spills out of a 48 dp row).
+func _hug_tab(button: Control) -> void:
+	if not is_instance_valid(button) or button.get_child_count() == 0: return
+	var need := (button.get_child(0) as Control).get_combined_minimum_size()
+	button.custom_minimum_size = Vector2(0.0 if _landscape else ceilf(need.x),
+		maxf(float(GoUi.metric(GoTheme.TOUCH)), ceilf(need.y)))
 
 
 func _size_parts(area: Vector2) -> void:
