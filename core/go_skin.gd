@@ -1557,6 +1557,13 @@ func window_corner_rect() -> Rect2:
 	return Rect2()
 
 
+## Where a window's close key sits (`GoSurface.show_close_key`) and how big it is (dp), measured like
+## `window_corner_rect()` but from the plate's **other** end — so it mirrors the corner art: on the right while the art
+## is on the left. `Rect2()`: a `GoConfig.close_button_visual` key on the corner.
+func window_close_key_rect() -> Rect2:
+	return Rect2()
+
+
 ## A centred window's width (dp). 0: `GoConfig.surface_max_width`. A surface's own `max_width` always wins, and a
 ## narrow screen still narrows it.
 func window_width() -> float:

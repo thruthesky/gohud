@@ -23,6 +23,8 @@ func _initialize() -> void:
 		await frames(1)
 		await _window(look)
 		await _corner(look)
+		await _close_key(look)
+		await _close_key_fit(look)
 		await _ribbon(look)
 		await _backdrop(look)
 		await _helpers(look)
@@ -224,6 +226,143 @@ func _corner(look: StringName) -> void:
 	check(sheet.close_button.visible, "%s corner: a bottom sheet keeps its close button" % look)
 	sheet.queue_free()
 	await frames(1)
+
+
+# ── The close key: a close button in the head's other corner, the art kept ──
+
+## The key's rectangle on the canvas of its viewport (scale included).
+func _key_rect(key: Control) -> Rect2:
+	var xform := key.get_global_transform()
+	return Rect2(xform * Vector2.ZERO, xform.basis_xform(key.size))
+
+
+## The card's rectangle on the canvas of its viewport (scale included).
+func _card_rect(card: Control) -> Rect2:
+	var xform := card.get_global_transform()
+	return Rect2(xform * Vector2.ZERO, xform.basis_xform(card.size))
+
+
+func _close_key(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var skin := GoUi.skin()
+	var surface := _dialog()
+	var closed := [0]
+	surface.close_requested.connect(func() -> void: closed[0] += 1)
+	if not painted:
+		# A look without corner art: the close button is the corner already, so the key stays away…
+		surface.show_close_key = true
+		await frames(3)
+		check(surface.close_button.visible and (surface.close_key == null or not surface.close_key.visible),
+			"%s close key: the look's corner is the close button, no second key" % look)
+		surface.show_close_key = false
+		# …until an explicit art corner takes the close button's place.
+		surface.corner_art = ImageTexture.create_from_image(Image.create(8, 8, false, Image.FORMAT_RGBA8))
+		surface.corner = GoSurface.HeadCorner.ART
+	await frames(3)
+	# Off (the default): the window is what it always was — no key is even built.
+	check(not surface.show_close_key and surface.close_key == null, "%s close key: off by default, nothing built" % look)
+	check(not surface.close_button.visible, "%s close key: off, the art's corner has no close button" % look)
+	surface.show_close_key = true
+	await frames(3)
+	var key := surface.close_key
+	var art := _corner_art(surface)
+	check(key != null and key.visible and key.is_visible_in_tree(), "%s close key: on, the key shows" % look)
+	check(art != null and art.visible, "%s close key: …and the corner art stays" % look)
+	check(not surface.close_button.visible, "%s close key: the header's close button stays hidden" % look)
+	if key == null or art == null:
+		surface.queue_free()
+		await frames(1)
+		return
+	var title := surface.title_label
+	var plate := title.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+	var spot := skin.window_close_key_rect()
+	if spot.size == Vector2.ZERO: spot.size = Vector2.ONE * GoUi.config.close_button_visual
+	var right := plate.bleed_right if plate != null else 0.0
+	var left := plate.bleed_left if plate != null else 0.0
+	check(key.get_parent() == title and key.size == spot.size
+			and key.position.distance_to(Vector2(title.size.x + right - spot.position.x - spot.size.x, spot.position.y)) < 0.5,
+		"%s close key: on the plate's right end, mirroring the art (at %s size %s, want %s)"
+			% [look, key.position, key.size, spot])
+	check(key.get_global_rect().get_center().x > art.get_global_rect().get_center().x,
+		"%s close key: opposite the art" % look)
+	if painted:
+		var card := _card_rect(surface.card)
+		var box := _key_rect(key)
+		check(box.end.x > card.end.x and box.position.y < card.position.y,
+			"%s close key: it hangs past the card's top-right corner (key %s card %s)" % [look, box, card])
+		check(is_equal_approx(spot.size.x, spot.size.y) and spot.size.x >= 40.0,
+			"%s close key: a round key in the order of the magnet (%s)" % [look, spot.size])
+		var face := key.get_theme_stylebox(&"normal") as GoStyleBoxSprite
+		check(face != null and face.texture != null and face.texture.resource_path.ends_with("btn_red.png"),
+			"%s close key: the painted red gloss" % look)
+		check(key.icon_tint == Color.WHITE and key.icon_name == GoIconSet.CLOSE, "%s close key: a white cross" % look)
+		# The ribbon and the layout do not move for it: the plate still bleeds past both sides.
+		check(plate != null and plate.bleed_right == plate.bleed and plate.bleed_left == plate.bleed,
+			"%s close key: the ribbon keeps its bleed on both sides" % look)
+		check(surface.fit_overhang() == _game_overhang(surface.card.get_theme_stylebox(&"panel")),
+			"%s close key: inside the magnet's reach, the fit overhang is unchanged (%s)" % [look, surface.fit_overhang()])
+	# A press asks to close.
+	await _click(key.get_global_rect().get_center())
+	check(closed[0] == 1, "%s close key: a tap on it asks to close (got %d)" % [look, closed[0]])
+	surface.close_enabled = false
+	await frames(2)
+	check(key.disabled, "%s close key: close_enabled off disables it" % look)
+	surface.close_enabled = true
+	await frames(2)
+	# The art on the right: the key moves to the left.
+	surface.corner_on_left = false
+	await frames(3)
+	check(key.position.distance_to(Vector2(-left + spot.position.x, spot.position.y)) < 0.5,
+		"%s close key: with the art on the right it sits on the left end (at %s)" % [look, key.position])
+	check(key.get_global_rect().get_center().x < art.get_global_rect().get_center().x,
+		"%s close key: still opposite the art" % look)
+	if painted:
+		check(_key_rect(key).position.x < _card_rect(surface.card).position.x,
+			"%s close key: past the card's top-left corner" % look)
+	surface.corner_on_left = true
+	await frames(2)
+	# The close button in the corner: no key beside it.
+	surface.corner = GoSurface.HeadCorner.CLOSE
+	await frames(2)
+	check(surface.close_button.visible and not key.visible, "%s close key: a CLOSE corner needs no key" % look)
+	surface.corner = GoSurface.HeadCorner.ART if not painted else GoSurface.HeadCorner.LOOK
+	await frames(2)
+	check(key.visible, "%s close key: the art's corner brings it back" % look)
+	surface.show_close_key = false
+	await frames(2)
+	check(not key.visible and art.visible and not surface.close_button.visible,
+		"%s close key: off again, the key goes and the art stays" % look)
+	surface.queue_free()
+	await frames(1)
+
+
+## Under a `SCALE` fit the key scales with the card and stays on the screen with the ribbon and the magnet.
+func _close_key_fit(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	for view_size: Vector2i in [Vector2i(390, 844), Vector2i(844, 390), Vector2i(1280, 720)]:
+		var view := SubViewport.new()
+		view.size = view_size
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.show_close_key = true
+		surface.set_title("SETTINGS")
+		var block := Control.new()
+		block.custom_minimum_size = Vector2(10, 900)
+		surface.body.add_child(block)
+		view.add_child(surface)
+		await frames(4)
+		var tag := "%s close key fit %dx%d" % [look, view_size.x, view_size.y]
+		var key := surface.close_key
+		check(key != null and key.visible, "%s: the key shows" % tag)
+		if key != null:
+			var box := _key_rect(key)
+			check(Rect2(Vector2.ZERO, Vector2(view_size)).encloses(box), "%s: the key stays on the screen (%s)" % [tag, box])
+			check(absf(key.get_global_transform().get_scale().x - surface.card.scale.x) < 0.001,
+				"%s: it scales with the card (%.3f)" % [tag, surface.card.scale.x])
+			check(box.end.x > _card_rect(surface.card).end.x, "%s: past the card's right edge" % tag)
+		view.queue_free()
+		await frames(1)
 
 
 # ── The ribbon: the game's 34 dp title on a 57 dp ribbon ──────────────

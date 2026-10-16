@@ -149,6 +149,22 @@ var corner_on_left := true:
 	set(value):
 		corner_on_left = value
 		if is_inside_tree(): _place_corner()
+## ✖ **A close key beside the corner art** (off by default: a window is what it always was). On, a round close key
+## stands in the head's **other** corner while the art stays — on the right while `corner_on_left` (the default), on
+## the left when the art is on the right; like the art, it does not mirror for a right-to-left language. It hangs past
+## the card's corner the way the art does (`GoSkin.window_close_key_rect()`), drawn with the plate, so the title and
+## the layout do not move for it, and it scales with the card under a `SCALE` fit (`fit_overhang()` keeps it on the
+## screen). A press calls `request_close()` (`close_requested`); `close_enabled` off disables it. It shows only while
+## the corner holds art (`corner_now()` is `ART`) — a `CLOSE` corner has its close button already, `NONE` nothing.
+## The look dresses it as it dresses `close_button` (`GoSkin.dress_close_button`: a red key in arcade_light).
+## ```gdscript
+## dialog.show_close_key = true   # the magnet on the left, a close key on the right
+## ```
+var show_close_key := false:
+	set(value):
+		if show_close_key == value: return
+		show_close_key = value
+		if is_inside_tree(): _dress_corner()
 var title_glyph_size := 0:
 	set(value):
 		title_glyph_size = value
@@ -267,6 +283,8 @@ var card: PanelContainer
 var header: HBoxContainer
 var title_label: Label
 var close_button: GoIconButton
+## The close key `show_close_key` shows — null until it is first shown. Built by `_make_close_button()` too.
+var close_key: GoIconButton
 var back_button: Button
 var scroll: GoScroll
 ## The scrolling body. Most content goes in here.
@@ -552,10 +570,20 @@ func _dress_chrome() -> void:
 	_dress_title_extras(plate)
 	_dress_corner()
 	_fit_title()
-	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
-		close_button.remove_theme_stylebox_override(state)
-	close_button.icon_tint = Color.TRANSPARENT
+	_undress_close(close_button)
 	skin.dress_close_button(close_button)
+	_dress_close_key()
+
+
+## Lifts what a look's `dress_close_button` put on a close button — its faces, and the glyph's inks a look marked as
+## its own (`go_dressed_inks`), so a host's own inks stay.
+static func _undress_close(button: GoIconButton) -> void:
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		button.remove_theme_stylebox_override(state)
+	for ink: StringName in button.get_meta(&"go_dressed_inks", []):
+		button.remove_theme_color_override(ink)
+	button.remove_meta(&"go_dressed_inks")
+	button.icon_tint = Color.TRANSPARENT
 
 
 ## The plate `title_variation` names, a copy of the theme's (a paint may go on it) — null when unset or undefined.
@@ -959,6 +987,7 @@ func _dress_corner() -> void:
 		close_button.set_meta(&"go_corner_hid", true)
 		close_button.visible = false
 	var art := _corner_texture() if now == HeadCorner.ART and show_header else null
+	_show_close_key(show_close_key and art != null)
 	if art == null:
 		if is_instance_valid(_corner_rect): _corner_rect.visible = false
 		return
@@ -976,6 +1005,7 @@ func _dress_corner() -> void:
 
 ## Puts the corner art on the plate's corner as drawn (past its bleed), mirrored on the right.
 func _place_corner() -> void:
+	_place_close_key()
 	if not is_instance_valid(_corner_rect) or not _corner_rect.visible: return
 	var spot := GoUi.skin().window_corner_rect()
 	if spot.size == Vector2.ZERO and _corner_rect.texture != null: spot.size = _corner_rect.texture.get_size()
@@ -987,6 +1017,55 @@ func _place_corner() -> void:
 	_corner_rect.flip_h = not corner_on_left
 	_corner_rect.position = Vector2(x, spot.position.y)
 	_corner_rect.size = spot.size
+
+
+## Shows or hides the close key — built (and dressed) the first time it shows.
+func _show_close_key(on: bool) -> void:
+	if not on:
+		if is_instance_valid(close_key): close_key.visible = false
+		return
+	if not is_instance_valid(close_key):
+		close_key = _make_close_button()
+		close_key.name = "CloseKey"
+		close_key.icon_name = GoIconSet.CLOSE
+		close_key.tooltip_text_name = &"close"
+		close_key.pressed.connect(request_close)
+		# On the plate, as the art is: drawn and scaled with the head, outside the head row's layout.
+		title_label.add_child(close_key, false, Node.INTERNAL_MODE_FRONT)
+		_dress_close_key()
+	close_key.disabled = not close_enabled
+	close_key.visible = true
+	_place_close_key()
+
+
+## The look's dress on the close key — the close button's (`GoSkin.dress_close_button`), at the key's size.
+func _dress_close_key() -> void:
+	if not is_instance_valid(close_key): return
+	_undress_close(close_key)
+	close_key.visual_size = roundi(_close_key_spot().size.x)
+	GoUi.skin().dress_close_button(close_key)
+	_place_close_key()
+
+
+## The close key's spot from the plate's other end (`GoSkin.window_close_key_rect()`); an empty one is a
+## `close_button_visual` key on the corner.
+func _close_key_spot() -> Rect2:
+	var spot := GoUi.skin().window_close_key_rect()
+	if spot.size == Vector2.ZERO: spot.size = Vector2.ONE * GoUi.config.close_button_visual
+	return spot
+
+
+## Puts the close key on the plate's end opposite the art (past its bleed), as `_place_corner` puts the art.
+func _place_close_key() -> void:
+	if not is_instance_valid(close_key) or not close_key.visible: return
+	var spot := _close_key_spot()
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	var left := plate.bleed_left if plate != null else 0.0
+	var right := plate.bleed_right if plate != null else 0.0
+	var x := title_label.size.x + right - spot.position.x - spot.size.x if corner_on_left \
+			else -left + spot.position.x
+	close_key.position = Vector2(x, spot.position.y)
+	close_key.size = spot.size
 
 
 # ── Title ──────────────────────────────────────────────────────────────
@@ -1138,6 +1217,10 @@ func _focus_default() -> void:
 	#    only fail with an engine warning and leave focus where it was.
 	if close_button.visible and not close_button.disabled and close_button.focus_mode != Control.FOCUS_NONE:
 		close_button.grab_focus()
+		return
+	if is_instance_valid(close_key) and close_key.visible and not close_key.disabled \
+			and close_key.focus_mode != Control.FOCUS_NONE:
+		close_key.grab_focus()
 		return
 	var target := find_next_valid_focus()
 	if target != null and is_ancestor_of(target):
@@ -1478,7 +1561,8 @@ func _fit_height(most: float) -> float:
 ## inside the card.
 func fit_overhang() -> Vector4:
 	if _overhang.y <= 0.0 and _overhang.x <= 0.0: return Vector4.ZERO
-	return GoRibbonHeader.card_overhang(card, show_header and corner_now() == HeadCorner.ART)
+	var art := show_header and corner_now() == HeadCorner.ART
+	return GoRibbonHeader.card_overhang(card, art, art and show_close_key)
 
 
 ## Takes a `SCALE` fit's scale off the card (and the height it gave `fit_flex`) once the fit stops.
@@ -1549,6 +1633,7 @@ func _process(_delta: float) -> void:
 	_sync_active()
 	if not _active: return
 	close_button.disabled = not close_enabled
+	if is_instance_valid(close_key): close_key.disabled = not close_enabled
 	# Without the autoload the keyboard is polled here (with it, it arrives as a signal).
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())

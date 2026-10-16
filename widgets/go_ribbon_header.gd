@@ -170,7 +170,9 @@ func refresh() -> void:
 ## art, so both sides reserve it and the card stays centred — the game's `RibbonHeader.card_overhang()`: 20 each side
 ## and 41 above the painted card in `arcade_light`. [param card] gives the face's margins (null: the look's window
 ## card, `window_card_variation()`). A look with no overhang returns `Vector4.ZERO`. `GoFitBox` reserves this.
-static func card_overhang(card: Control = null, corner := true) -> Vector4:
+## [param close_key]: a close key sits in the other corner (`GoSurface.show_close_key`) — its reach
+## (`GoSkin.window_close_key_rect()`) is reserved too, on both sides.
+static func card_overhang(card: Control = null, corner := true, close_key := false) -> Vector4:
 	var skin := GoUi.skin()
 	var reach := skin.title_plate_overhang()
 	var face: StyleBox = null
@@ -187,6 +189,10 @@ static func card_overhang(card: Control = null, corner := true) -> Vector4:
 	var spot := skin.window_corner_rect() if corner and skin.window_corner() == &"art" else Rect2()
 	var side := maxf(0.0, maxf(-plate.x, -(plate.x + spot.position.x)))
 	var top := maxf(0.0, maxf(-plate.y, -(plate.y + spot.position.y)))
+	if close_key:
+		var key := skin.window_close_key_rect()
+		side = maxf(side, -(plate.x + key.position.x))
+		top = maxf(top, -(plate.y + key.position.y))
 	return Vector4(side, top, side, 0.0)
 
 

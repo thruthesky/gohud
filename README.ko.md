@@ -54,7 +54,8 @@
 입력칸(`LineEdit`·`TextEdit`)은 게임의 평평한 입력칸이고, 가로 슬라이더(`GoSliderGreen`·`GoSliderCyan` 포함)와 스위치도
 페인티드 스프라이트다. 스위치의 글자는 켜져도 잉크색 그대로이고 알약에서 4 dp 떨어진다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
 가운데 뜨는 `GoSurface`는 게임의 `PaintedDialog`와 같다 — 페인티드 카드, 폭 400 dp, 줄 간격 8 dp(`GoSkin.window_width()`, `GoSkin.window_gap()`),
-닫기 버튼 대신 리본 모서리의 빨간 자석(`GoSurface.corner`; Escape·뒤로 가기로는 여전히 닫힌다), 57 dp 리본 위의
+닫기 버튼 대신 리본 모서리의 빨간 자석(`GoSurface.corner`; Escape·뒤로 가기로는 여전히 닫힌다 — `show_close_key = true`면
+반대쪽 모서리에 둥근 빨간 닫기 키가 함께 선다), 57 dp 리본 위의
 34 dp 제목(넘치면 24 dp까지 줄어든다). 안의 부품도 게임과 같다 — `add_inset()`·`add_line()`·`add_row()`·`add_gloss()`
 (옅은 인셋, 10 dp 간격의 46 dp 글리프 버튼).
 `arcade_dark`는 기존의 `GoStyleBoxArcade`와 `GoSkinArcade`를 그대로 쓴다. 그림의 출처와 MIT 사용 조건은
@@ -596,7 +597,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 | 클래스 | 바탕 | 하는 일 |
 |---|---|---|
-| `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절 |
+| `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절, 머리 모서리의 그림 또는 닫기 버튼(`corner`, `corner_on_left`), `show_close_key`면 그림 반대쪽 모서리에 닫기 키 |
 | `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터. `max_height_ratio` 로 그 시트만 전역 상한 0.72 를 넘겨 키운다(비율이 깎이면 디버그 빌드에서 경고) |
 | `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼, `action_layout` 으로 버튼 세로·한 줄·자동. `await choose()` 는 몇 가지 중 고른 것의 번호 |
 | `GoForm` | MarginContainer | 브레이크포인트마다 폭을 제한하고 가상 키보드를(`avoid_hud` 면 HUD 까지) 피하며 라벨 줄바꿈을 보장하는 폼 |

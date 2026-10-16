@@ -653,6 +653,45 @@ func window_corner_rect() -> Rect2:
 	return CORNER_RECT
 
 
+## The close key (`GoSurface.show_close_key`) mirrors the magnet: a 48 dp round key (a touch target at the window's
+## own size) centred where the magnet's centre is, on the ribbon's other end — 25 dp out past it and 20 above.
+const CLOSE_KEY_RECT := Rect2(-25.0, -20.0, 48.0, 48.0)
+## The red gloss (`btn_red.png`, 206 x 138) as a disc: its four 69 px corners and no middle — a key up to 69 dp square
+## at this scale draws only the corners, so it is round. The danger button's paint, tints and face.
+const CLOSE_KEY_EDGE := Vector4(69.0, 69.0, 69.0, 69.0)
+const CLOSE_KEY_PPU := 2.0
+## The colour the red gloss shows under the cross — the danger button's `face_color` (the centre of `btn_red.png`).
+const CLOSE_KEY_FACE := Color(0.964706, 0.231373, 0.219608, 1.0)
+## The painted buttons' pressed and disabled tints (`tools/theme_arcade_painted.py`).
+const PRESSED_TINT := Color(0.8, 0.8, 0.86, 1.0)
+const DISABLED_TINT := Color(0.6, 0.6, 0.66, 0.85)
+
+
+func window_close_key_rect() -> Rect2:
+	return CLOSE_KEY_RECT
+
+
+## A window's close key is the painted red gloss, round, with the white cross — pressed it darkens like the danger
+## button (and pops, `press_feedback`); disabled it greys.
+func dress_close_button(button: GoIconButton) -> void:
+	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		var tint := Color.WHITE
+		if state == &"pressed" or state == &"hover_pressed": tint = PRESSED_TINT
+		elif state == &"disabled": tint = DISABLED_TINT
+		var face := _sprite("btn_red.png", CLOSE_KEY_EDGE, CLOSE_KEY_PPU, tint)
+		face.face_color = CLOSE_KEY_FACE * tint
+		face.set_content_margin_all(0)
+		button.add_theme_stylebox_override(state, face)
+	# The theme's icon buttons ink their glyph navy when hovered or pressed: the cross stays white on the red.
+	button.icon_tint = Color.WHITE
+	var inks: Array[StringName] = [&"icon_hover_color", &"icon_pressed_color", &"icon_hover_pressed_color",
+		&"icon_focus_color", &"icon_disabled_color"]
+	for ink in inks:
+		button.add_theme_color_override(ink, Color.WHITE)
+	# The surface lifts these again when the look changes (`GoSurface._undress_close`).
+	button.set_meta(&"go_dressed_inks", inks)
+
+
 ## The controls stay out of the focus order, as the game's are (`GlossButton`, `PaintedSlider`, `PaintedSwitch`,
 ## `StageCard` and its pickers all set `FOCUS_NONE`): a touch game shows no focus ring after a tap.
 func control_focus_mode(_default_mode := Control.FOCUS_ALL) -> Control.FocusMode:

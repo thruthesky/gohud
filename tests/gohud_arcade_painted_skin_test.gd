@@ -39,6 +39,7 @@ func _initialize() -> void:
 		_scrim(skin)
 		await _ticks(skin)
 		_no_plain_fallback(skin)
+		_close_key(skin)
 	print("gohud arcade painted tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
 	quit(0 if failed.is_empty() else 1)
@@ -299,3 +300,37 @@ func _no_plain_fallback(skin: GoSkinArcadePainted) -> void:
 	for state: StringName in [&"normal", &"hover", &"pressed", &"disabled"]:
 		check(skin.outlined_button_box(face.duplicate(), state) is GoStyleBoxArcade,
 			"outlined_button_box(%s): an arcade key cap, not the plain wash" % state)
+
+
+## ✖ The close key (`GoSurface.show_close_key`) and a window's close button are the painted red gloss, drawn round, with
+##    a white cross in every state — the theme's icon buttons ink their glyph navy when pressed.
+func _close_key(skin: GoSkinArcadePainted) -> void:
+	var spot := skin.window_close_key_rect()
+	check(spot.size.x == spot.size.y and spot.size.x >= 44.0, "close key: a round key, a touch target (%s)" % spot.size)
+	var magnet := skin.window_corner_rect()
+	check(spot.get_center().distance_to(magnet.get_center()) < 1.0 and magnet.encloses(spot),
+		"close key: where the magnet is on the other end, within its reach (%s vs %s)" % [spot, magnet])
+	var button := GoIconButton.new()
+	skin.dress_close_button(button)
+	var face := button.get_theme_stylebox(&"normal") as GoStyleBoxSprite
+	check(face != null and face.texture != null and face.texture.resource_path == PAINTED + "btn_red.png",
+		"close key: the red gloss (btn_red.png)")
+	if face != null:
+		# A disc: the edges reach past half the key, so only the four rounded corners are drawn.
+		var half := spot.size.x * 0.5
+		check(face.edge.x == face.edge.z and face.edge.y == face.edge.w
+				and face.edge.x / face.pixels_per_unit >= half and face.edge.y / face.pixels_per_unit >= half,
+			"close key: drawn round (edge %s at %.1f px/dp)" % [face.edge, face.pixels_per_unit])
+		check(face.tint == Color.WHITE and face.face_color.r > 0.9 and face.face_color.g < 0.3,
+			"close key: red under the cross (%s)" % face.face_color)
+		check(face.get_content_margin(SIDE_LEFT) == 0.0 and face.get_content_margin(SIDE_TOP) == 0.0,
+			"close key: no padding — the cross is centred")
+	var down := button.get_theme_stylebox(&"pressed") as GoStyleBoxSprite
+	check(down != null and down.texture == face.texture and down.tint.v < 1.0, "close key: pressed it darkens")
+	var off := button.get_theme_stylebox(&"disabled") as GoStyleBoxSprite
+	check(off != null and off.tint.a < 1.0, "close key: disabled it greys")
+	check(button.icon_tint == Color.WHITE, "close key: a white cross")
+	for ink: StringName in [&"icon_hover_color", &"icon_pressed_color", &"icon_hover_pressed_color"]:
+		check(button.has_theme_color_override(ink) and button.get_theme_color(ink) == Color.WHITE,
+			"close key: %s stays white" % ink)
+	button.free()

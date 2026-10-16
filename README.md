@@ -605,7 +605,8 @@ slider (with `GoSliderGreen` and `GoSliderCyan`) and the switch are painted spri
 when it is on, 4 dp from the pill. Tabs and the vertical slider
 are the known exception: they keep the arcade’s code-drawn shapes. A centred `GoSurface` is the game’s
 `PaintedDialog`: the painted card, 400 dp wide, its rows 8 dp apart (`GoSkin.window_width()`, `GoSkin.window_gap()`), the red magnet in the
-ribbon's corner instead of a close button (`GoSurface.corner`; Escape and Back still close it), and a 34 dp title
+ribbon's corner instead of a close button (`GoSurface.corner`; Escape and Back still close it — or
+`show_close_key = true` puts a round red close key in the other corner beside it), and a 34 dp title
 on a 57 dp ribbon that shrinks to fit, no lower than 24 dp. Its parts are the game's too: `add_inset()`,
 `add_line()`, `add_row()` and `add_gloss()` (the pale inset, 10 dp between 46 dp glyph buttons).
 `arcade_dark` keeps `GoStyleBoxArcade`; comic and kids use their own `StyleBox` classes.
@@ -1019,7 +1020,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 
 | Class | Base | Purpose |
 |---|---|---|
-| `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize |
+| `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize; corner art or a close button in the head's corner (`corner`, `corner_on_left`), and with `show_close_key` a close key in the other corner beside the art |
 | `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer; `max_height_ratio` lets one sheet grow past the global 0.72 ceiling (a debug build warns when a ratio is cut) |
 | `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically; `await choose()` returns the index of one of a few options |
 | `GoForm` | MarginContainer | Forms that cap their width per breakpoint, avoid the virtual keyboard (and, with `avoid_hud`, floating HUD pieces) and guarantee label wrapping |
