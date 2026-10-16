@@ -36,6 +36,7 @@ func _initialize() -> void:
 		await _overhang(look)
 		await _fit_box(look)
 		await _fit_surface(look)
+		await _fit_share(look)
 		await _popover_card(look)
 		await _os_back(look)
 	GoUi.reset()
@@ -951,6 +952,43 @@ func _fit_box(look: StringName) -> void:
 
 ## A centred window under `fit_mode` `SCALE` is the game's `PaintedDialog` in its `FitBox`: 400 wide, its content's
 ## height (the ribbon holds 20 in the column: 20 + 20 + 8 + content + 22), shrunk with the ribbon and magnet.
+## `fit_screen_share`: a `SCALE` card grows past its own size until it (with its overhang) covers the share of the
+## screen across or down, whichever it reaches first, as far as the screen holds it; 0 never grows it.
+func _fit_share(look: StringName) -> void:
+	for view_size: Vector2i in [Vector2i(1600, 900), Vector2i(1280, 720), Vector2i(1600, 420)]:
+		var view := SubViewport.new()
+		view.size = view_size
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 500.0
+		surface.fit_screen_share = 0.7
+		surface.set_title("LOBBY")
+		var block := Control.new()
+		block.custom_minimum_size = Vector2(10, 160)
+		surface.body.add_child(block)
+		view.add_child(surface)
+		await frames(4)
+		var box := Vector2(view_size)
+		var card := surface.card
+		var s := card.scale.x
+		var ov := surface.fit_overhang()
+		var drawn := (card.size + Vector2(ov.x + ov.z, ov.y + ov.w)) * s
+		var tag := "%s share %dx%d" % [look, view_size.x, view_size.y]
+		var top := card.position - Vector2(ov.x, ov.y) * s
+		check(s > 1.0 and top.x >= -0.5 and top.y >= -0.5 and top.x + drawn.x <= box.x + 0.5
+				and top.y + drawn.y <= box.y + 0.5, "%s: the card grows and stays on the screen (scale %.3f)" % [tag, s])
+		var share := maxf(drawn.x / box.x, drawn.y / box.y)
+		var held := drawn.y >= box.y - 2.0 * GoFitBox.look_pad() - 0.5
+		check(absf(share - 0.7) < 0.002 or (share < 0.7 and held),
+				"%s: it covers 0.7 across or down, or all the screen holds (%.3f)" % [tag, share])
+		surface.fit_screen_share = 0.0
+		await frames(3)
+		check(is_equal_approx(card.scale.x, 1.0), "%s: share 0 never grows it (scale %.3f)" % [tag, card.scale.x])
+		view.queue_free()
+		await frames(1)
+
+
 func _fit_surface(look: StringName) -> void:
 	var painted := look == GoThemePresets.ARCADE_LIGHT
 	for view_size: Vector2i in FIT_VIEWS:

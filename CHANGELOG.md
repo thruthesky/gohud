@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoSurface.fit_screen_share`** (0): under a centred `FitMode.SCALE` fit, the least share of the safe area (0–1)
+  the window covers. A smaller card grows past its own size (a scale above 1) until it and its overhang reach the
+  share across or down, whichever comes first, as far as the screen holds it — a room window that takes 70% of a
+  big screen. `GoFitBox.place()` takes the same `share`.
 - **`GoSkin.dress_search_clear(button)`**: a look dresses `GoSearchBar`'s clear button whenever the bar takes it.
   The arcade looks make it their round red close key with the white cross (it was a pale tile with a navy cross);
   every other look keeps its plain icon button. `GoSkin.undress_close_button(button)` (it was `GoSurface`'s own)

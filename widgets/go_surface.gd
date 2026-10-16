@@ -274,6 +274,17 @@ var fit_flex: ScrollContainer:
 		fit_flex = value
 		_watch_flex(true)
 		_layout_dirty = true
+## 📏 `SCALE`, centred: the least share of the safe area (0–1) the window covers. Smaller, the whole card grows past its
+## own size (a scale above 1) until it and its overhang reach the share across or down, whichever comes first, as far
+## as the screen holds it. 0: it never grows (the game's `FitBox`).
+## ```gdscript
+## lobby.fit_screen_share = 0.7   # the room window takes at least 70% of the screen
+## ```
+var fit_screen_share := 0.0:
+	set(value):
+		if is_equal_approx(fit_screen_share, value): return
+		fit_screen_share = value
+		_layout_dirty = true
 ## The scale the card got from a `SCALE` fit (1: its own size).
 var fit_scale := 1.0
 
@@ -1520,7 +1531,7 @@ func _relayout_scale(area: Rect2) -> void:
 	var least := card.get_combined_minimum_size()
 	# 🔑 Not rounded: the game's card takes its list's fractional height as it is, and a fit is measured on it.
 	var need := Vector2(maxf(width, least.x), maxf(height, least.y))
-	fit_scale = GoFitBox.place(card, area, need, reach, margin)
+	fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
 	# 🛑 On whole dp, as every card here: at a fractional place the padding's column came out a unit short and the
 	#    body scrolled by one (see `relayout`).
 	card.position = card.position.round()
