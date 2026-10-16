@@ -145,6 +145,8 @@ func _init() -> void:
 	body.name = "Body"
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_scroll.add_child(body)
+	# 🔑 The panel is as tall as the screen, re-applied whenever its minimum size changes — see `_on_panel_minimum`.
+	panel.minimum_size_changed.connect(_on_panel_minimum)
 
 
 func _ready() -> void:
@@ -259,6 +261,18 @@ func _relayout() -> void:
 	if not _open: return
 	if is_instance_valid(_tween) and _tween.is_valid(): return
 	panel.position.x = 0.0 if at_left else full.size.x - width
+
+
+## 🛑 A drawer is built hidden, and containers do not lay out while hidden: at the instant `open()` shows it, the header has
+##    never been sorted, its title label (which wraps — `GoStyle.label`) is 0 wide and asks for one character per line,
+##    and the panel grows to that height. A Control never shrinks back by itself once its minimum drops after the sort, so
+##    the panel stayed taller than the screen and the body's last rows sat below the edge, unscrollable — a 13-tile menu
+##    on a 327dp-tall landscape phone lost its last group (2026-10-16). The panel's height is the screen's: whenever its
+##    minimum changes, lay it out again (next frame — after the containers have sorted).
+func _on_panel_minimum() -> void:
+	if not _open or not is_inside_tree(): return
+	var window := get_window()
+	if window != null and not is_equal_approx(panel.size.y, window.get_visible_rect().size.y): _relayout.call_deferred()
 
 
 func _animate(shown: bool) -> void:

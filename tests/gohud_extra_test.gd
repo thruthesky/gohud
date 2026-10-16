@@ -670,6 +670,21 @@ func _drawer() -> void:
 		"drawer: it sticks to the right (%.0f)" % (drawer.panel.position.x + drawer.panel.size.x))
 	# 🛑 The background runs edge to edge while the content stays inside the safe area — nothing clipped at a corner.
 	check(is_equal_approx(drawer.panel.size.y, full.size.y), "drawer: the panel runs to the screen edge")
+	# 🛑 First open of a drawer built hidden, with a title that wraps: the unsorted header asked for one character per line
+	#    and the panel stayed taller than the screen (2026-10-16).
+	var tall := GoDrawer.new()
+	tall.motion_seconds = 0.0
+	tall.set_title("A drawer title long enough to wrap onto many lines when it is measured at zero width")
+	for i in 30: tall.body.add_child(GoStyle.label("Row %d" % i))
+	root.add_child(tall)
+	await frames(2)
+	tall.open()
+	await frames(4)
+	check(is_equal_approx(tall.panel.size.y, full.size.y),
+		"drawer: a wrapping title on first open keeps the panel the screen's height (%.0f vs %.0f)" % [tall.panel.size.y, full.size.y])
+	tall.close()
+	tall.queue_free()
+	await frames(2)
 	# 🪟 Container alpha — an `@export`, so it is a **percent**, and it reaches the panel as a **ratio**.
 	# 🛑 There is no `near()` in this file — its only helper is `check`, so the difference is measured directly.
 	var drawer_themed := GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a
