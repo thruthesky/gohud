@@ -366,6 +366,19 @@ func _art_button(look: StringName) -> void:
 	check(button.get_theme_color(&"icon_pressed_color") == GoUi.skin().picture_press_tint(), "art: pressed darkens it")
 	if look == GoThemePresets.ARCADE_LIGHT:
 		check(GoUi.skin().picture_press_tint() == Color(0.78, 0.78, 0.86), "art: arcade_light's press tint is the game's")
+	# mirror: the same picture flipped left to right (a PLAY picture as a "previous" key), made once and shared.
+	var arrow := Image.create(4, 2, false, Image.FORMAT_RGBA8)
+	arrow.set_pixel(0, 0, Color.RED)
+	var arrow_texture := ImageTexture.create_from_image(arrow)
+	button.art = arrow_texture
+	button.mirror = true
+	var flipped := button.icon.get_image()
+	check(button.icon != arrow_texture and flipped.get_pixel(3, 0) == Color.RED and flipped.get_pixel(0, 0).a == 0.0,
+		"art mirror: the picture is flipped left to right")
+	check(GoIconButton.mirrored(arrow_texture) == button.icon, "art mirror: one flipped copy per picture")
+	check(button.get_theme_stylebox(&"normal") is StyleBoxEmpty, "art mirror: still no frame")
+	button.mirror = false
+	check(button.icon == arrow_texture, "art mirror: off draws the picture as it is")
 	button.art = null
 	check(button.icon == null and not button.has_theme_stylebox_override(&"normal"), "art: clearing it restores the frame")
 	holder.queue_free()

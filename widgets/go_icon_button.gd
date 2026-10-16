@@ -45,6 +45,13 @@ extends Button
 		art = value
 		_refresh_icon()
 
+## ↔️ Draw the picture (`art`) or the icon mirrored left to right — one PLAY picture is both a "next" and a
+## "previous" key. A font-set glyph is mirrored too.
+@export var mirror := false:
+	set(value):
+		mirror = value
+		_refresh_icon()
+
 ## Draw a texture icon at **its native pixel size** — the default scales it to the skin's glyph size for `visual_size`
 ## (`GoSkin.icon_button_glyph`: 58% — the size of a font glyph — or 24dp on the 36dp button under Material).
 ## Turn it on where the host wants its own SVG size kept: scaling up and down differs by 1px (measured by pixel comparison).
@@ -144,7 +151,7 @@ func _refresh_icon() -> void:
 	icon = null
 	_frame_art(art != null)
 	if art != null:
-		icon = art
+		icon = mirrored(art) if mirror else art
 		expand_icon = true
 		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -157,7 +164,7 @@ func _refresh_icon() -> void:
 	var found := icon_set.texture(icon_name)
 	if found != null:
 		# A texture set — the engine's `Button.icon` path handles colour and state through the theme.
-		icon = found
+		icon = mirrored(found) if mirror else found
 		# 🛑 An icon-only button centres — `Button` aligns left by default, so without expanding, the icon sticks
 		#    to the left (measured by pixel comparison 2026-09-12: a native-size texture was pushed sideways).
 		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -183,7 +190,35 @@ func _refresh_icon() -> void:
 	_glyph = icon_set.node(icon_name, glyph_size, glyph_ink)
 	_glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if mirror:
+		var glyph := _glyph
+		glyph.scale.x = -1.0
+		# Flipped around its own centre, or it would land a whole width to the left.
+		glyph.resized.connect(func() -> void: glyph.pivot_offset = glyph.size * 0.5)
 	add_child(_glyph)
+
+
+static var _mirrors := {}
+
+
+## `texture` flipped left to right, made once per texture and kept: every mirrored button shares it.
+## 🛑 A texture whose pixels cannot be read (a placeholder) comes back as it is, unflipped, with an error.
+static func mirrored(texture: Texture2D) -> Texture2D:
+	var key := texture.get_instance_id()
+	var made: Texture2D = _mirrors.get(key)
+	if made != null: return made
+	var image := texture.get_image()
+	if image == null:
+		push_error("GoIconButton.mirror: %s has no pixels to flip" % texture)
+		return texture
+	if image.is_compressed() and image.decompress() != OK:
+		push_error("GoIconButton.mirror: %s could not be decompressed" % texture)
+		return texture
+	image.flip_x()
+	if image.has_mipmaps(): image.generate_mipmaps()
+	made = ImageTexture.create_from_image(image)
+	_mirrors[key] = made
+	return made
 
 
 const _ART_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]

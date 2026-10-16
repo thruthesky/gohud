@@ -6,6 +6,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoIconButton.mirror`** (off): draws the picture (`art`) or the icon flipped left to right, so one PLAY picture
+  is both a "next" and a "previous" key. `GoIconButton.mirrored(texture)` makes the flipped copy once and shares it.
 - **`GoSurface.show_close_key`** (off): a close key in the head's other corner while the corner art stays — on the
   right beside `arcade_light`'s magnet, on the left when `corner_on_left` is off (it mirrors the art, not the
   language). It hangs past the card's corner as the art does (`GoSkin.window_close_key_rect()`), so the title and the
