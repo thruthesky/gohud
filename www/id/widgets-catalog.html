@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>Jendela dan lapisan <small>(9)</small></h2>
+  <h2>Jendela dan lapisan <small>(10)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -260,6 +260,15 @@ layer.<wbr>add_child(<wbr>window)</code></pre>
 add_child(<wbr>sheet)
 sheet.<wbr>open(<wbr>"Inventory")
 sheet.<wbr>body.<wbr>add_child(<wbr>bag_list)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gopage"><code>GoPage</code></h3>
+      <p>Halaman layar penuh dengan rel kategori (kiri saat lanskap, tab di atas saat potret), pratinjau, dan kembali.</p>
+      <p class="catalog-base">turunan <code>CanvasLayer</code></p>
+      <pre><code>var page := GoPage.<wbr>new(<wbr>)
+add_child(<wbr>page)
+page.<wbr>open(<wbr>"Settings")
+page.<wbr>set_tabs(<wbr>[<wbr>{<wbr>id = &amp;"sound",<wbr> label = "Sound",<wbr> icon = GoIconSet.<wbr>VOLUME_HIGH,<wbr> badge = ""}])</code></pre>
     </div>
     <div class="card">
       <h3 id="godialogs"><code>GoDialogs</code></h3>

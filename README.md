@@ -993,6 +993,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 |---|---|---|
 | `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize |
 | `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer; `max_height_ratio` lets one sheet grow past the global 0.72 ceiling (a debug build warns when a ratio is cut) |
+| `GoPage` | CanvasLayer | A full-screen page: title with back and close, a category rail (left in landscape, tabs on top in portrait) built from `{id, label, icon, badge}` data, an optional preview beside the content, opaque ground; Escape/Back closes only the topmost page |
 | `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically; `await choose()` returns the index of one of a few options |
 | `GoForm` | MarginContainer | Forms that cap their width per breakpoint, avoid the virtual keyboard (and, with `avoid_hud`, floating HUD pieces) and guarantee label wrapping |
 | `GoScroll` | ScrollContainer | Touch-friendly scrolling — a finger swipe that starts on any card, panel or text inside scrolls it; the scrollbar tucks into the card padding; RTL-aware |

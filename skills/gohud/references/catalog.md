@@ -12,7 +12,7 @@ against the code (`tools/check_docs_api.py`).
 ## Contents
 
 1. [Layout](#layout) (15)
-2. [Windows and overlays](#windows-and-overlays) (9)
+2. [Windows and overlays](#windows-and-overlays) (10)
 3. [Messages and waiting](#messages-and-waiting) (12)
 4. [App navigation](#app-navigation) (13)
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (9)
@@ -197,6 +197,17 @@ var sheet := GoSheet.new()
 add_child(sheet)
 sheet.open("Inventory")
 sheet.body.add_child(bag_list)
+```
+
+### `GoPage`
+
+Extends `CanvasLayer`. A full-screen page with a category rail (left in landscape, tabs on top in portrait), a preview and back. Details: `surfaces.md` §12 (GoPage).
+
+```gdscript
+var page := GoPage.new()
+add_child(page)
+page.open("Settings")
+page.set_tabs([{id = &"sound", label = "Sound", icon = GoIconSet.VOLUME_HIGH, badge = ""}])
 ```
 
 ### `GoDialogs`

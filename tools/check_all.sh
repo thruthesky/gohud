@@ -34,6 +34,11 @@ step "①-b unit tests — GoChoiceColumn"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_choice_column_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-p unit tests — GoPage (the full-screen page: tabs, rail vs top tabs, preview, back on stacked pages)"
+# Its own file for the same reason as GoChoiceColumn — and called here, or it would never run at all.
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_page_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-j unit tests — the jelly look (GoStyleBoxJelly, the kids looks, the window-head and press hooks)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_jelly_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1

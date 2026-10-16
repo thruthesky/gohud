@@ -1,7 +1,7 @@
-# Surfaces — GoSurface, GoSheet, GoDialogs, GoForm, GoScroll, GoSnackbar, GoDrawer, GoPopover
+# Surfaces — GoSurface, GoSheet, GoDialogs, GoForm, GoScroll, GoSnackbar, GoDrawer, GoPopover, GoPage
 
 Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`, `widgets/go_form.gd`,
-`widgets/go_scroll.gd`, `services/go_snackbar.gd`, `widgets/go_drawer.gd`, `widgets/go_popover.gd`. Web: https://thruthesky.github.io/gohud/widgets-surfaces.html#surfaces
+`widgets/go_scroll.gd`, `services/go_snackbar.gd`, `widgets/go_drawer.gd`, `widgets/go_popover.gd`, `widgets/go_page.gd`. Web: https://thruthesky.github.io/gohud/widgets-surfaces.html#surfaces
 
 ## Contents
 
@@ -16,6 +16,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 9. [GoDrawer — the side panel](#9-godrawer--the-side-panel)
 10. [GoPopover — the anchored card](#10-gopopover--the-anchored-card)
 11. [Dialogs that queue](#11-dialogs-that-queue)
+12. [GoPage — the full-screen page](#12-gopage--the-full-screen-page)
 
 ## 1. GoSurface
 
@@ -288,6 +289,7 @@ strip.add_child(row)
 | Tell something, no button, game keeps going | `GoNotice` (hud.md §6) |
 | Optional question while playing (invite, trade) | `GoPromptCard` (hud.md §7) |
 | List / management page over the game | `GoSheet` |
+| A menu that owns the whole screen (settings, bag, character, mail) with a category rail | `GoPage` (§12) |
 | Settings / details window | `GoSurface` CENTER |
 | Dropdown or context menu next to a control | `GoSurface` ANCHOR (or `GoStyle.dropdown`) · long press / right click → `GoContextMenu` (hud.md §9) |
 | A card about the thing under the finger (an item's stats next to its slot) | `GoPopover` (§10) |
@@ -397,3 +399,43 @@ often matters; the scrim is already transparent for the same reason.
 
 `pending()` counts what is waiting; `clear_pending()` answers them all with `false` — call it when leaving a
 screen, or code parked on `await` never resumes.
+
+## 12. GoPage — the full-screen page
+
+`class_name GoPage extends CanvasLayer` — a sibling of `GoSheet` for menus that own the whole screen: a title with
+back and close, a category rail (**left in landscape, tabs along the top in portrait**), an optional preview beside
+the content (left in landscape, a band above it in portrait), and the content area. Its layer becomes 10 when left
+at 1. The chrome is a `GoSurface` whose card fills `GoSafeArea.usable_rect` while the ground fills the whole screen,
+so back-gesture ownership (`GoBackPolicy`), Escape / Android back closing **only the topmost** window, and focus
+restore all come from `GoSurface`.
+
+| Member | Notes |
+|---|---|
+| signals | `closed` · `tab_changed(id: StringName)` |
+| vars | `body` (the content column; scrolls unless `set_scrolls(false)`) · `surface` · `opaque` (true: opaque panel and ground — a host may stop drawing what is behind) · `rail_ratio` / `rail_min_width` / `rail_max_width` · `preview_ratio_landscape` / `preview_ratio_portrait` |
+| `open(title)` / `open_key(key)` | Shows the page, resets the back button. **Keeps** tabs, preview and `body` (call `clear()` for a fresh tab) |
+| `set_tabs(tabs: Array[Dictionary], selected := &"")` | `{id, label, icon, badge}` (+ `alert = true` for a dot); `label` is translated text or a key; fires `tab_changed` for the shown tab; an empty list hides the rail |
+| `select_tab(id)` · `current_tab()` · `tab_button(id)` | `select_tab` fires `tab_changed` only for a different, known tab |
+| `set_preview(node)` | `null` hides it. The page never frees a preview it was handed — replacing it only detaches it |
+| `set_back(callable)` · `set_title(text)` · `clear()` · `close()` · `is_open()` | As `GoSheet` |
+| `toolbar()` / `footer()` | The pinned rows under the header / at the bottom (the surface's own) |
+| `set_scrolls(on)` · `is_landscape()` | Turn the content scroll off for content with its own scroll (a grid, a list view) |
+
+```gdscript
+var page := GoPage.new()
+add_child(page)
+page.tab_changed.connect(func(id: StringName) -> void:
+	page.clear()
+	if id == &"sound": page.body.add_child(GoStyle.toggle("Music", false)))
+page.open("Settings")
+page.set_tabs([
+	{id = &"sound", label = "Sound", icon = GoIconSet.VOLUME_HIGH, badge = ""},
+	{id = &"bag", label = "Bag", icon = GoIconSet.BAG, badge = "12"},
+])
+page.set_preview(character_view)   # a SubViewportContainer, say
+```
+
+🔑 Build each tab on `tab_changed`, or build them all up front into `body` and toggle their visibility there — the
+page never builds content itself. 🛑 Nested vertical scrolls fight over the finger: a tab whose content scrolls by
+itself (a slot grid in its own `GoScroll`) calls `set_scrolls(false)` first.
+

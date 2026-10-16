@@ -4,6 +4,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- **`GoPage` — a full-screen page** for menus that own the whole screen (settings, a bag, a character screen, mail):
+  a title with back and close, a category rail that sits on the left in landscape and becomes tabs along the top in
+  portrait (`set_tabs()` takes `{id, label, icon, badge}` data, `tab_changed(id)` fires per tab), an optional preview
+  beside the content (`set_preview()`), and the content area (`body`, scrolling unless `set_scrolls(false)`). The
+  chrome is a `GoSurface` filling the safe area, so back-gesture ownership, Escape / Android back closing only the
+  topmost window and focus restore are the surface's own; the ground behind is opaque by default (`opaque`), so a host
+  can stop drawing what a page covers. Tests: `tests/gohud_page_test.gd` (in `tools/check_all.sh`).
+
 ### Fixed
 
 - **A tap on a text field inside a scroll reaches it with its release.** `GoScroll` holds the press on a control that

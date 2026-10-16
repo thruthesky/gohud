@@ -499,6 +499,27 @@ sheet.body.add_child(bag_list)""", T(
 		"Нижня панель зі сторінками, переходом назад і закріпленим низом.",
 		"แผ่นล่างที่มีหลายหน้า ปุ่มย้อนกลับ และส่วนท้ายที่ตรึงไว้",
 		"لوحة سفلية بصفحات وتنقل للخلف وتذييل ثابت.")),
+	("windows", "GoPage", "CanvasLayer", """var page := GoPage.new()
+add_child(page)
+page.open("Settings")
+page.set_tabs([{id = &"sound", label = "Sound", icon = GoIconSet.VOLUME_HIGH, badge = ""}])""", T(
+		"A full-screen page with a category rail (left in landscape, tabs on top in portrait), a preview and back.",
+		"카테고리 레일(가로는 왼쪽, 세로는 위쪽 탭)·미리보기·뒤로 가기가 있는 전체 화면 페이지.",
+		"カテゴリレール（横向きは左、縦向きは上のタブ）、プレビュー、戻るを備えた全画面ページ。",
+		"带分类栏（横屏在左、竖屏为顶部标签）、预览与返回的全屏页面。",
+		"帶分類欄（橫向在左、直向為頂部分頁）、預覽與返回的全螢幕頁面。",
+		"Una página a pantalla completa con un riel de categorías (a la izquierda en horizontal, pestañas arriba en vertical), vista previa y atrás.",
+		"Uma página em tela cheia com trilho de categorias (à esquerda na horizontal, abas no topo na vertical), prévia e voltar.",
+		"Полноэкранная страница с рейкой категорий (слева в альбомной, вкладки сверху в портретной), превью и кнопкой назад.",
+		"Une page plein écran avec un rail de catégories (à gauche en paysage, onglets en haut en portrait), un aperçu et le retour.",
+		"Kategori rayı (yatayda solda, dikeyde üstte sekmeler), önizleme ve geri içeren tam ekran bir sayfa.",
+		"Pełnoekranowa strona z szyną kategorii (w poziomie po lewej, w pionie karty u góry), podglądem i cofaniem.",
+		"Una pagina a schermo intero con una barra di categorie (a sinistra in orizzontale, schede in alto in verticale), anteprima e indietro.",
+		"Trang toàn màn hình với thanh danh mục (bên trái khi ngang, tab phía trên khi dọc), xem trước và quay lại.",
+		"Halaman layar penuh dengan rel kategori (kiri saat lanskap, tab di atas saat potret), pratinjau, dan kembali.",
+		"Повноекранна сторінка з рейкою категорій (ліворуч в альбомній, вкладки згори в портретній), попереднім переглядом і кнопкою назад.",
+		"หน้าเต็มจอที่มีแถบหมวด (ซ้ายเมื่อแนวนอน แท็บด้านบนเมื่อแนวตั้ง) ตัวอย่าง และปุ่มย้อนกลับ",
+		"صفحة بملء الشاشة مع شريط فئات (يسارًا في الوضع الأفقي، وألسنة في الأعلى في الوضع الرأسي) ومعاينة ورجوع.")),
 	("windows", "GoDialogs", "Node", """var dialogs := GoDialogs.new()
 add_child(dialogs)
 if await dialogs.confirm("Delete save", "This cannot be undone.", "", "", "", {}, true):
