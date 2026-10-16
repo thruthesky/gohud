@@ -42,8 +42,9 @@ enum FitMode { SCROLL, SCALE }
 
 ## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
-## Was the last input from a keyboard or gamepad? 🛑 A window opened with a pointer gets **no focus ring** —
-##    when a menu was merely opened by touch and only the close button glows, it reads as "press here".
+## Is nobody steering the menus by keyboard or gamepad right now (last input a pointer, or a game key — `_track_device`)?
+## 🛑 A window opened then gets **no focus ring** — when a menu was merely opened by touch and only the close button
+##    glows, it reads as "press here".
 static var _pointer_navigation := true
 
 ## Is any surface open at all?
@@ -1203,10 +1204,14 @@ func _release_back() -> void:
 
 func _focus_default() -> void:
 	if not is_top(): return
+	var quiet := GoUi.config.suppress_pointer_focus_ring and _pointer_navigation
 	if is_instance_valid(initial_focus) and initial_focus.is_visible_in_tree():
-		initial_focus.grab_focus()
+		# 🔑 The default control still takes focus (Enter answers it, Tab moves on from it) — opened with a pointer it does
+		#    so **without its ring**, the same rule as below. 🛑 Before, `initial_focus` skipped that rule, so every
+		#    dialog (`GoDialogs` names its confirm button) opened by a click wore the ring on its confirm button.
+		initial_focus.grab_focus(quiet)
 		return
-	if GoUi.config.suppress_pointer_focus_ring and _pointer_navigation:
+	if quiet:
 		# Opened with a pointer — no ring. Focus arrives the moment Tab is pressed.
 		# 🛑 Make the screen behind drop its focus — left alone, Enter presses a button back there while the
 		#    window is up. `_restore_focus` puts it back where it was on close.
@@ -1735,11 +1740,34 @@ func _input(event: InputEvent) -> void:
 
 ## Records which device is in use. Events arrive while the window is in the tree even when it is hidden, so
 ## **the input right before the window opened** (a button tap or the Tab key) is what counts.
+## 🛑 Keys are sorted by what they say about the menu. A key that **moves focus** (`FOCUS_ACTIONS`: Tab, Shift+Tab,
+##    the arrows) means "I steer by keyboard" — ring on. A key that **answers** the focused control (`ANSWER_ACTIONS`:
+##    Enter, Space, Escape) says nothing new, so the mode stays. Any other key is the game's: in a game the keyboard is
+##    also the controller, and walking with WASD says nothing about a menu — ring off, as after a click. Before, every
+##    key counted as keyboard navigation, so a window opened right after play (a quit confirm from the window's close
+##    button) wore the ring on its default button. A focused control without its ring still answers Enter, and the
+##    first Tab or arrow shows the ring.
 func _track_device(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventScreenTouch or event is InputEventScreenDrag:
 		_pointer_navigation = true
-	elif event is InputEventJoypadButton or (event is InputEventKey and event.pressed and not event.is_echo()):
+	elif event is InputEventJoypadButton:
 		_pointer_navigation = false
+	elif event is InputEventKey and event.pressed and not event.is_echo():
+		if _is_any(event, FOCUS_ACTIONS): _pointer_navigation = false
+		elif not _is_any(event, ANSWER_ACTIONS): _pointer_navigation = true
+
+
+## The actions that move focus between controls.
+const FOCUS_ACTIONS: Array[StringName] = [&"ui_focus_next", &"ui_focus_prev", &"ui_up", &"ui_down", &"ui_left",
+	&"ui_right"]
+## The actions that answer the focused control without moving focus.
+const ANSWER_ACTIONS: Array[StringName] = [&"ui_accept", &"ui_select", &"ui_cancel"]
+
+
+static func _is_any(event: InputEvent, actions: Array[StringName]) -> bool:
+	for action in actions:
+		if InputMap.has_action(action) and event.is_action(action, true): return true
+	return false
 
 
 func _notification(what: int) -> void:

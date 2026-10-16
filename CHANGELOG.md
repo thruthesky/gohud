@@ -34,6 +34,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A window opened by pointer no longer rings its default button.** `GoSurface.initial_focus` (a dialog's confirm
+  button) took focus with its ring even when `suppress_pointer_focus_ring` was on, so every confirm opened by a click
+  wore the ring — on a filled button in the sci-fi look, dark corner brackets cut over its face (a quit confirm,
+  2026-10-16). The default control still takes focus, so Enter answers it; it just takes it without the ring
+  (`grab_focus(hide_focus)`), and the first Tab or arrow shows it. The device rule behind it now sorts keys: a key that
+  moves focus (`ui_focus_next/prev`, the `ui_` arrows) turns keyboard navigation on, an answer key (`ui_accept`,
+  `ui_select`, `ui_cancel`) keeps the mode, and any other key is the game's (walking with WASD) and counts like a
+  pointer. Tests: "after a click / a game key (W) / Tab / Tab then Enter / a click then Enter …" in `tests/gohud_test.gd` (next to the keyboard-only window checks).
 - **A tap on a text field inside a scroll reaches it with its release.** `GoScroll` holds the press on a control that
   yields vertical drags (a `LineEdit`, a slider, a tab bar…) until the finger lifts or picks a direction, then replays
   it. The replayed press left the viewport's "handled" flag up, so the engine dropped the event being dispatched right
