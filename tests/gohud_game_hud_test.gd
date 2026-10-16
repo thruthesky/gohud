@@ -1360,11 +1360,16 @@ func _device_rules() -> void:
 
 ## `GoRuntime.simulate()` with every game device: the PER_INCH scale, the safe area, a 180° turn, the HUD side cap.
 func _device_simulation() -> void:
-	var runtime := Node.new()
-	runtime.set_script(load("res://addons/gohud/core/go_runtime.gd"))
-	runtime.name = "GoRuntime"
-	root.add_child(runtime)
-	await frames(1)
+	# 🛑 A host with the GoRuntime autoload (Magnet Mayhem) already has one: a second one is renamed, and the anchor
+	#    would listen to the autoload while the test simulates on its own.
+	var runtime := GoUi.runtime()
+	var own_runtime := runtime == null
+	if own_runtime:
+		runtime = Node.new()
+		runtime.set_script(load("res://addons/gohud/core/go_runtime.gd"))
+		runtime.name = "GoRuntime"
+		root.add_child(runtime)
+		await frames(1)
 	var kept_size := root.content_scale_size
 	var kept_factor := root.content_scale_factor
 	var kept_aspect := root.content_scale_aspect
@@ -1438,7 +1443,7 @@ func _device_simulation() -> void:
 	check(GoScale.simulated().is_empty(), "simulate: GoUi.reset() clears it")
 	GoUi.config.reduce_motion = true
 	corner.queue_free()
-	runtime.queue_free()
+	if own_runtime: runtime.queue_free()
 	root.content_scale_size = kept_size
 	root.content_scale_factor = kept_factor
 	root.content_scale_aspect = kept_aspect
