@@ -542,6 +542,11 @@ func dress_close_button(button: GoIconButton) -> void:
 	button.icon_tint = Color.WHITE
 
 
+## A search bar's clear button is the close key as well: one red ✕ means "away with it" everywhere in the look.
+func dress_search_clear(button: GoIconButton) -> void:
+	dress_close_button(button)
+
+
 ## A press pops the key in for a moment and springs it back. Only `scale` changes (round the centre), so the layout and
 ## the press area stay put; `reduce_motion` and headless runs skip it (a test that measures a part right after tapping
 ## it should read its real rectangle).

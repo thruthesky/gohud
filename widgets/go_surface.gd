@@ -570,20 +570,9 @@ func _dress_chrome() -> void:
 	_dress_title_extras(plate)
 	_dress_corner()
 	_fit_title()
-	_undress_close(close_button)
+	GoSkin.undress_close_button(close_button)
 	skin.dress_close_button(close_button)
 	_dress_close_key()
-
-
-## Lifts what a look's `dress_close_button` put on a close button — its faces, and the glyph's inks a look marked as
-## its own (`go_dressed_inks`), so a host's own inks stay.
-static func _undress_close(button: GoIconButton) -> void:
-	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
-		button.remove_theme_stylebox_override(state)
-	for ink: StringName in button.get_meta(&"go_dressed_inks", []):
-		button.remove_theme_color_override(ink)
-	button.remove_meta(&"go_dressed_inks")
-	button.icon_tint = Color.TRANSPARENT
 
 
 ## The plate `title_variation` names, a copy of the theme's (a paint may go on it) — null when unset or undefined.
@@ -1041,7 +1030,7 @@ func _show_close_key(on: bool) -> void:
 ## The look's dress on the close key — the close button's (`GoSkin.dress_close_button`), at the key's size.
 func _dress_close_key() -> void:
 	if not is_instance_valid(close_key): return
-	_undress_close(close_key)
+	GoSkin.undress_close_button(close_key)
 	close_key.visual_size = roundi(_close_key_spot().size.x)
 	GoUi.skin().dress_close_button(close_key)
 	_place_close_key()

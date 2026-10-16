@@ -6,6 +6,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoSkin.dress_search_clear(button)`**: a look dresses `GoSearchBar`'s clear button whenever the bar takes it.
+  The arcade looks make it their round red close key with the white cross (it was a pale tile with a navy cross);
+  every other look keeps its plain icon button. `GoSkin.undress_close_button(button)` (it was `GoSurface`'s own)
+  lifts a dressed close key off again.
 - **`GoIconButton.mirror`** (off): draws the picture (`art`) or the icon flipped left to right, so one PLAY picture
   is both a "next" and a "previous" key. `GoIconButton.mirrored(texture)` makes the flipped copy once and shares it.
 - **`GoSurface.show_close_key`** (off): a close key in the head's other corner while the corner art stays — on the

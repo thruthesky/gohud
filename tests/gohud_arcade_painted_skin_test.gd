@@ -40,6 +40,7 @@ func _initialize() -> void:
 		await _ticks(skin)
 		_no_plain_fallback(skin)
 		_close_key(skin)
+		await _search_clear()
 	print("gohud arcade painted tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
 	quit(0 if failed.is_empty() else 1)
@@ -345,3 +346,24 @@ func _close_key(skin: GoSkinArcadePainted) -> void:
 		check(button.has_theme_color_override(ink) and button.get_theme_color(ink) == Color.WHITE,
 			"close key: %s stays white" % ink)
 	button.free()
+
+
+## ✖ A search bar's clear button is the close key too — the red disc with the white cross, not a pale tile with a
+##    navy cross (Magnet Mayhem's room search, 2026-10-16); a look that dresses no clear button takes it off again.
+func _search_clear() -> void:
+	GoUi.use_preset(load("res://addons/gohud/themes/presets/arcade_light.tres") as GoThemePreset)
+	var bar := GoSearchBar.make()
+	root.add_child(bar)
+	await frames(1)
+	var face := bar._clear.get_theme_stylebox(&"normal") as GoStyleBoxSprite
+	check(face != null and face.texture != null and face.texture.resource_path == PAINTED + "close_key.png",
+		"search bar: the clear button is the red close key")
+	check(bar._clear.icon_tint == Color.WHITE and bar._clear.get_theme_color(&"icon_pressed_color") == Color.WHITE,
+		"search bar: the clear button's cross is white")
+	GoUi.use_preset(load("res://addons/gohud/themes/presets/default_light.tres") as GoThemePreset)
+	await frames(1)
+	check(not bar._clear.has_theme_stylebox_override(&"normal") and bar._clear.icon_tint.a == 0.0
+			and not bar._clear.has_theme_color_override(&"icon_pressed_color"),
+		"search bar: another look takes the red key off")
+	bar.free()
+	GoUi.use_preset(load("res://addons/gohud/themes/presets/arcade_light.tres") as GoThemePreset)

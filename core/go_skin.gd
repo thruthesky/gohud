@@ -1221,6 +1221,24 @@ func dress_close_button(_button: GoIconButton) -> void:
 	pass
 
 
+## Dresses a search bar's clear button (`GoSearchBar`) — called whenever the bar takes the look. The bar lifts its
+## own overrides off the button first (`undress_close_button`), so a look that leaves this empty keeps the theme's
+## plain icon button.
+func dress_search_clear(_button: GoIconButton) -> void:
+	pass
+
+
+## Lifts what a look's `dress_close_button` put on a button — its faces, and the glyph's inks a look marked as its own
+## (`go_dressed_inks`), so a host's own inks stay.
+static func undress_close_button(button: GoIconButton) -> void:
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		button.remove_theme_stylebox_override(state)
+	for ink: StringName in button.get_meta(&"go_dressed_inks", []):
+		button.remove_theme_color_override(ink)
+	button.remove_meta(&"go_dressed_inks")
+	button.icon_tint = Color.TRANSPARENT
+
+
 ## What a press feels like: called with the control the moment a finger or the mouse goes down on a button gohud
 ## made (`GoStyle.style_button`, `list_row`, `GoSlot`, `GoIconButton`). The default does nothing.
 ## 🛑 Change only `scale`/`pivot_offset` (or draw over it) — never its size or position, which the layout owns.

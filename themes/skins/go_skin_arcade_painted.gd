@@ -689,7 +689,7 @@ func dress_close_button(button: GoIconButton) -> void:
 		&"icon_focus_color", &"icon_disabled_color"]
 	for ink in inks:
 		button.add_theme_color_override(ink, Color.WHITE)
-	# The surface lifts these again when the look changes (`GoSurface._undress_close`).
+	# The surface lifts these again when the look changes (`GoSkin.undress_close_button`).
 	button.set_meta(&"go_dressed_inks", inks)
 
 
