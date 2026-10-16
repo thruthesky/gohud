@@ -6,6 +6,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **A `GoDrawer` keeps the screen's height after its first open.** A drawer is built hidden, and containers do not
+  lay out while hidden: when `open()` showed it, the header had never been sorted, its wrapping title was 0 wide and
+  asked for one character per line, and the panel grew to that height and never shrank back — the body's last rows
+  sat below the screen edge where no scroll reached them (a 13-tile menu on a 327dp-tall landscape phone, 2026-10-16).
+  The drawer lays the panel out again, a frame later, whenever its minimum size changes. Test: extra "drawer: a
+  wrapping title on first open keeps the panel the screen's height" (2971 vs 1670 before the fix).
 - **Escape closes an open `GoDrawer`, and an open drawer counts as an open window.** The drawer claimed Android back
   but not Escape, so on a desktop Esc fell through to the game behind it (a pause menu opened over the drawer). And
   `GoSurface.is_any_open()` counted only surfaces: with a drawer open a game's WASD still moved the hero and a
