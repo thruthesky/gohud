@@ -11,8 +11,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   language). It hangs past the card's corner as the art does (`GoSkin.window_close_key_rect()`), so the title and the
   layout do not move, scales with the card under `FitMode.SCALE` (`fit_overhang()` reserves it) and calls
   `request_close()`; `close_enabled` off disables it. `arcade_light` paints it (and a window's close button) as the
-  red gloss of `btn_red.png`, round and 48 dp, with the white cross; `GoRibbonHeader.card_overhang()` takes a
-  `close_key` flag.
+  red disc `close_key.png` (btn_red's red and lip with no white glare, `tools/paint_arcade_close_key.gd`), round and
+  48 dp, with the white cross; `GoRibbonHeader.card_overhang()` takes a `close_key` flag.
 - **`arcade_light` paints `plus`, `minus` and `close`.** The glyph set had none of the three, so a - / + stepper or a
   close key drew the default set's thin line icon on a painted pill. They are painted in the set's own style — a
   white face, a navy outline and a pale lip under every lower edge — by `tools/paint_arcade_glyphs.gd`.

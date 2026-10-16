@@ -656,11 +656,12 @@ func window_corner_rect() -> Rect2:
 ## The close key (`GoSurface.show_close_key`) mirrors the magnet: a 48 dp round key (a touch target at the window's
 ## own size) centred where the magnet's centre is, on the ribbon's other end — 25 dp out past it and 20 above.
 const CLOSE_KEY_RECT := Rect2(-25.0, -20.0, 48.0, 48.0)
-## The red gloss (`btn_red.png`, 206 x 138) as a disc: its four 69 px corners and no middle — a key up to 69 dp square
-## at this scale draws only the corners, so it is round. The danger button's paint, tints and face.
+## The red disc (`close_key.png`, 138 x 138: btn_red's red and lip with no white glare, `tools/paint_arcade_close_key.gd`):
+## its four 69 px corners and no middle — a key up to 69 dp square at this scale draws only the corners, so it is
+## round. The danger button's tints and face.
 const CLOSE_KEY_EDGE := Vector4(69.0, 69.0, 69.0, 69.0)
 const CLOSE_KEY_PPU := 2.0
-## The colour the red gloss shows under the cross — the danger button's `face_color` (the centre of `btn_red.png`).
+## The colour the red disc shows under the cross — the danger button's `face_color` (the centre of `btn_red.png`).
 const CLOSE_KEY_FACE := Color(0.964706, 0.231373, 0.219608, 1.0)
 ## The painted buttons' pressed and disabled tints (`tools/theme_arcade_painted.py`).
 const PRESSED_TINT := Color(0.8, 0.8, 0.86, 1.0)
@@ -671,14 +672,14 @@ func window_close_key_rect() -> Rect2:
 	return CLOSE_KEY_RECT
 
 
-## A window's close key is the painted red gloss, round, with the white cross — pressed it darkens like the danger
+## A window's close key is the painted red disc (no glare), with the white cross — pressed it darkens like the danger
 ## button (and pops, `press_feedback`); disabled it greys.
 func dress_close_button(button: GoIconButton) -> void:
 	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
 		var tint := Color.WHITE
 		if state == &"pressed" or state == &"hover_pressed": tint = PRESSED_TINT
 		elif state == &"disabled": tint = DISABLED_TINT
-		var face := _sprite("btn_red.png", CLOSE_KEY_EDGE, CLOSE_KEY_PPU, tint)
+		var face := _sprite("close_key.png", CLOSE_KEY_EDGE, CLOSE_KEY_PPU, tint)
 		face.face_color = CLOSE_KEY_FACE * tint
 		face.set_content_margin_all(0)
 		button.add_theme_stylebox_override(state, face)

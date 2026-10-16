@@ -302,8 +302,9 @@ func _no_plain_fallback(skin: GoSkinArcadePainted) -> void:
 			"outlined_button_box(%s): an arcade key cap, not the plain wash" % state)
 
 
-## ✖ The close key (`GoSurface.show_close_key`) and a window's close button are the painted red gloss, drawn round, with
-##    a white cross in every state — the theme's icon buttons ink their glyph navy when pressed.
+## ✖ The close key (`GoSurface.show_close_key`) and a window's close button are the painted red disc (`close_key.png`:
+##    btn_red's red and lip, no white glare), drawn round, with a white cross in every state — the theme's icon buttons
+##    ink their glyph navy when pressed.
 func _close_key(skin: GoSkinArcadePainted) -> void:
 	var spot := skin.window_close_key_rect()
 	check(spot.size.x == spot.size.y and spot.size.x >= 44.0, "close key: a round key, a touch target (%s)" % spot.size)
@@ -313,8 +314,18 @@ func _close_key(skin: GoSkinArcadePainted) -> void:
 	var button := GoIconButton.new()
 	skin.dress_close_button(button)
 	var face := button.get_theme_stylebox(&"normal") as GoStyleBoxSprite
-	check(face != null and face.texture != null and face.texture.resource_path == PAINTED + "btn_red.png",
-		"close key: the red gloss (btn_red.png)")
+	check(face != null and face.texture != null and face.texture.resource_path == PAINTED + "close_key.png",
+		"close key: the red disc (close_key.png)")
+	if face != null and face.texture != null:
+		# No glare: every opaque pixel is the navy rim or a red, none the gloss's near-white streaks.
+		var img := face.texture.get_image()
+		if img.is_compressed(): img.decompress()
+		var pale := 0
+		for y in img.get_height():
+			for x in img.get_width():
+				var p := img.get_pixel(x, y)
+				if p.a > 0.5 and p.v > 0.6 and p.s < 0.5: pale += 1
+		check(pale == 0, "close key: no white glare on the red (%d pale pixels)" % pale)
 	if face != null:
 		# A disc: the edges reach past half the key, so only the four rounded corners are drawn.
 		var half := spot.size.x * 0.5

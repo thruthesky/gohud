@@ -293,8 +293,8 @@ func _close_key(look: StringName) -> void:
 		check(is_equal_approx(spot.size.x, spot.size.y) and spot.size.x >= 40.0,
 			"%s close key: a round key in the order of the magnet (%s)" % [look, spot.size])
 		var face := key.get_theme_stylebox(&"normal") as GoStyleBoxSprite
-		check(face != null and face.texture != null and face.texture.resource_path.ends_with("btn_red.png"),
-			"%s close key: the painted red gloss" % look)
+		check(face != null and face.texture != null and face.texture.resource_path.ends_with("close_key.png"),
+			"%s close key: the painted red disc (no glare)" % look)
 		check(key.icon_tint == Color.WHITE and key.icon_name == GoIconSet.CLOSE, "%s close key: a white cross" % look)
 		# The ribbon and the layout do not move for it: the plate still bleeds past both sides.
 		check(plate != null and plate.bleed_right == plate.bleed and plate.bleed_left == plate.bleed,
