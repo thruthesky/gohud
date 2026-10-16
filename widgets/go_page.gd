@@ -249,6 +249,8 @@ func select_tab(id: StringName) -> void:
 	for key in _tab_buttons:
 		GoStyle.restyle_list_row(_tab_buttons[key], key == id)
 	_content_scroll.scroll_vertical = 0
+	# The chosen tab scrolls into the strip (a portrait strip wider than the screen cut it at the edge — measured).
+	if is_inside_tree(): _rail_scroll.ensure_control_visible.call_deferred(_tab_buttons[id])
 	tab_changed.emit(id)
 
 

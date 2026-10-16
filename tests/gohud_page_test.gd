@@ -194,6 +194,11 @@ func _long_tab_labels() -> void:
 	check(overlap == 0 and spill == 0, "portrait: long one-line tabs never overlap and keep their words inside (%d overlaps · %d spills)" % [overlap, spill])
 	check(page._rail.size.x > page._rail_scroll.size.x, "portrait: tabs wider than the screen make the strip scroll sideways (%.0f > %.0f)"
 		% [page._rail.size.x, page._rail_scroll.size.x])
+	page.select_tab(&"t5")
+	await frames(3)
+	check(page._rail_scroll.get_global_rect().grow(0.5).encloses(page.tab_button(&"t5").get_global_rect()),
+		"portrait: choosing a tab past the edge scrolls it into the strip (%s in %s)"
+		% [page.tab_button(&"t5").get_global_rect(), page._rail_scroll.get_global_rect()])
 	await _size(844, 390)
 	await frames(3)
 	spill = 0
