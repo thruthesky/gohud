@@ -8,6 +8,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 - **`GoRibbonWideTitle`** (`arcade_light`): the title on a `GoRibbonWide` ribbon — `GoTitle` with the stage ribbons'
   8 px outline (Magnet Mayhem's stage select and room list set it on the label by hand).
+- **`GoConfig.close_on_os_back`** (on): off leaves the Android back gesture to the game while Escape / `ui_cancel`
+  still close the top window. A game with its own Back handler closed two windows with one Back — its own and the
+  one under it, which the deferred `request_close()` then found on top.
 
 ### Fixed
 
@@ -22,6 +25,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **The docs no longer say `title_paint` turns `arcade_light`'s ribbon red.** It only paints a code-drawn plate
   (`arcade`, `arcade_dark`); `arcade_light`'s ribbon is a painted sprite. `theming.md` and `surfaces.md` now point at
   `title_variation`.
+- **A `GoBar` takes no input.** Its fill (a `ProgressBar`, `MOUSE_FILTER_STOP` by default) swallowed a touch or a
+  click meant for what is under the HUD; every other part of the bar already ignored it.
+- **An open window re-centres when the safe area moves without a resize** (a phone turned 180° in landscape):
+  `GoSurface` now relayouts on `GoRuntime.safe_area_changed`, as `GoHudAnchor` and `GoSafeArea` did.
 - **A 180° turn moves the safe area.** In landscape a phone turned round keeps its window size, so no resize arrived
   and `GoHudAnchor` and the `GoSafeArea` node stayed clear of a notch that was now on the other side. `GoRuntime` now
   reads the safe area again every `GoConfig.safe_area_poll_seconds` (0.5 s, on a phone only; 0 never) and says

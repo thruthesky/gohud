@@ -481,6 +481,8 @@ func _ready() -> void:
 	if _runtime != null:
 		if _runtime.has_signal(&"keyboard_changed"): _runtime.keyboard_changed.connect(_on_keyboard)
 		if _runtime.has_signal(&"breakpoint_changed"): _runtime.breakpoint_changed.connect(func(_bp) -> void: relayout())
+		# A 180° turn moves the safe area with no resize; the window re-centres in what is usable now.
+		if _runtime.has_signal(&"safe_area_changed"): _runtime.safe_area_changed.connect(func(_m) -> void: relayout())
 	get_viewport().size_changed.connect(relayout)
 	get_viewport().gui_focus_changed.connect(_focus_changed)
 	visibility_changed.connect(_sync_active)
@@ -1659,6 +1661,7 @@ func _notification(what: int) -> void:
 	if (what == NOTIFICATION_TRANSLATION_CHANGED or what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED) \
 			and title_label != null:
 		_fit_title.call_deferred()
-	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and is_top():
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and GoUi.config.close_on_os_back \
+			and is_top():
 		# Deferred so that one OS notification does not close several stacked windows.
 		request_close.call_deferred()

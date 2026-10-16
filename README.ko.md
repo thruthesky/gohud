@@ -299,7 +299,7 @@ GoUi.config = settings
 |---|---|
 | 겉모습 | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow`(**기본 꺼짐**) |
 | 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `scale_profile`(`DP` 또는 `PER_INCH`: 기준 크기를 그대로 두고 휴대 기기에선 인치당 `per_inch_units` 로 줄이되 높이는 `per_inch_min_height` 이상), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
-| 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, **`scrim_blur`** (끄면 룩의 블러 대신 평평한 어둡게 — 낮은 품질 단계용), `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
+| 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, **`scrim_blur`** (끄면 룩의 블러 대신 평평한 어둡게 — 낮은 품질 단계용), `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back`, `close_on_os_back` (끄면 Android 뒤로가기는 게임이 처리) |
 | 피드백 | `haptics_enabled`, `haptic_tap/light/medium_ms` 와 세기, `sound_cues` |
 | 번역 | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
 | 접근성 | `min_touch_size`, `reduce_motion`, `autowrap_text` |

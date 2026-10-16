@@ -296,6 +296,12 @@ signal changed_settings
 ## Close the topmost surface on Escape / the Android back gesture.
 @export var close_on_back := true
 
+## Also close it on the Android back gesture (`NOTIFICATION_WM_GO_BACK_REQUEST`), not only on Escape / `ui_cancel`.
+## 🛑 Turn this off when the game routes Back itself (one handler that closes the top overlay, then goes back a
+##    screen). The OS sends the notification to every node, the game's first, so with both on one Back closes the
+##    window the game closed and then the one that is now on top.
+@export var close_on_os_back := true
+
 
 # ── Feedback (sound·haptics) ───────────────────────────────────────────
 

@@ -210,6 +210,8 @@ func _init() -> void:
 
 	_bar = GoStyle.progress()
 	_bar.name = "Fill"
+	# A HUD bar shows, it takes nothing: left on STOP, it swallowed the touches meant for the stick under it.
+	_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_bar.custom_minimum_size.y = thickness
 	_bar.min_value = 0.0
 	_bar.max_value = 1.0

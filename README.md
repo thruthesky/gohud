@@ -695,7 +695,7 @@ Leave a field empty or at its default to keep gohud's behaviour. Nothing needs t
 |---|---|
 | Appearance | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow` (**off by default**) |
 | Responsive | `scale_enabled` (1 unit = 1 dp, **off by default**), `scale_profile` (`DP` or `PER_INCH`: the base size kept, a handheld shrunk to `per_inch_units` per inch, at least `per_inch_min_height` tall), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
-| Surface | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, **`scrim_blur`** (off: the flat dim instead of the look's blur, for a low quality tier), `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
+| Surface | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, **`scrim_blur`** (off: the flat dim instead of the look's blur, for a low quality tier), `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back`, `close_on_os_back` (off: Android Back is left to the game) |
 | Feedback | `haptics_enabled`, `haptic_tap/light/medium_ms` and amplitudes, `sound_cues` |
 | Localization | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
 | Accessibility | `min_touch_size`, `reduce_motion`, `autowrap_text` |

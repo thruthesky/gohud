@@ -35,6 +35,7 @@ func _initialize() -> void:
 		await _fit_box(look)
 		await _fit_surface(look)
 		await _popover_card(look)
+		await _os_back(look)
 	GoUi.reset()
 	print("gohud dialog tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -59,6 +60,37 @@ func _dialog(tall := 100.0) -> GoSurface:
 	surface.body.add_child(block)
 	root.add_child(surface)
 	return surface
+
+
+# ── Android Back ───────────────────────────────────────────────────────
+
+## The OS back gesture closes the top window, unless the game routes Back itself (`close_on_os_back` off) — then the
+## gesture is the game's alone and Escape still closes the window.
+func _os_back(look: StringName) -> void:
+	var surface := _dialog()
+	await frames(2)
+	var closes := [0]
+	surface.close_requested.connect(func() -> void: closes[0] += 1)
+	surface.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await frames(1)
+	check(closes[0] == 1, "%s: Android Back closes the top window" % look)
+	GoUi.config.close_on_os_back = false
+	surface.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await frames(1)
+	check(closes[0] == 1, "%s: close_on_os_back off leaves Android Back to the game" % look)
+	var esc := InputEventAction.new()
+	esc.action = &"ui_cancel"
+	esc.pressed = true
+	surface._input(esc)
+	check(closes[0] == 2, "%s: Escape still closes it with close_on_os_back off" % look)
+	GoUi.config.close_on_os_back = true
+	var runtime := GoUi.runtime()
+	if runtime != null:
+		check(runtime.safe_area_changed.get_connections().any(
+				func(c: Dictionary) -> bool: return (c.callable as Callable).get_object() == surface),
+				"%s: a window follows the safe area through a turn" % look)
+	surface.queue_free()
+	await frames(1)
 
 
 # ── The window: card, padding, rows, width, centring ───────────────────
