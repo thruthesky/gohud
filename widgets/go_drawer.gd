@@ -162,6 +162,7 @@ func _exit_tree() -> void:
 	#    eats another window's claim (after which that window no longer closes on back).
 	if _open:
 		GoBackPolicy.release(get_tree())
+		GoSurface.hold_open(false)
 		_open = false
 		visible = false
 
@@ -175,6 +176,8 @@ func open(title := "") -> void:
 	_relayout()
 	_animate(true)
 	GoBackPolicy.acquire(get_tree())
+	# 🔑 An open drawer is a window like a surface: the game's input pauses and a coach mark waits (`GoSurface.is_any_open`).
+	GoSurface.hold_open(true)
 	GoFeedback.opened()
 	opened.emit()
 
@@ -184,6 +187,7 @@ func close() -> void:
 	_open = false
 	_animate(false)
 	GoBackPolicy.release(get_tree())
+	GoSurface.hold_open(false)
 	GoFeedback.closed()
 	closed.emit()
 
@@ -314,5 +318,17 @@ func _on_ui_changed() -> void:
 
 func _notification(what: int) -> void:
 	# Back (Android) and Escape close it — a drawer is a screen that "has to be leavable".
-	if what == NOTIFICATION_WM_GO_BACK_REQUEST and _open and not GoSurface.is_any_open():
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST and _open and not GoSurface.is_any_surface_open():
 		close.call_deferred()
+
+
+## ⌨️ Escape (`ui_cancel`) closes an open drawer, as back does on Android — `GoSurface`'s rule (`close_on_back`).
+## 🛑 Until 2026-10-16 only the Android back request was handled while this file's notes promised Escape too: on a desktop
+##    Esc fell through to the game behind (a game that opens its pause menu on Esc opened it over the drawer). Handled in
+##    `_input`, so it is consumed before any `_unhandled_input` handler sees it; a surface opened over the drawer closes
+##    first (it is the top window).
+func _input(event: InputEvent) -> void:
+	if not _open or GoSurface.is_any_surface_open() or not GoUi.config.close_on_back: return
+	if event.is_action_pressed(&"ui_cancel") and not event.is_echo():
+		get_viewport().set_input_as_handled()
+		close()

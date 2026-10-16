@@ -37,7 +37,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 | methods | `set_title(text)` · `set_title_key(key)` · `set_back(callable)` (empty Callable hides) · `clear()` · `request_close()` · `is_top()` · `relayout()` · `content_inset()` · `section_gap()` · `attach_resize_handle(control)` |
 | status line | `set_status_text(text, tone := StringName())` · `set_status_key(key, tone)` · `clear_status()` — one pinned line between the body and the footer ("Passwords do not match"), in a colour token's tone. 🛑 Not in the body: an error that lands below a long form's fold looks as if nothing happened. `status` (VBox) · `status_label` (created on first use) |
 | layout pass | Runs **when something changes**, not every frame: a size field above set to a new value, a section's minimum size or visibility, the window, the keyboard, the config. Assign a field and it applies next frame — no `relayout()` call needed. An `ANCHOR` popover follows its anchor every frame. A subclass may replace `relayout()` outright (no `super()`) and still gets these calls |
-| static | `GoSurface.is_any_open() -> bool` — pause gameplay input while true |
+| static | `GoSurface.is_any_open() -> bool` — pause gameplay input while true (counts an open `GoDrawer` too) · `is_any_surface_open()` (surfaces only) · `hold_open(on)` (a non-surface window takes / gives back its place in `is_any_open`) |
 
 🛑 It never frees itself. The owner reacts to `close_requested` (hide, `queue_free`, save first…).
 🛑 Put it inside a `CanvasLayer` so it draws above the game and HUD. Escape / Android Back closes only the
@@ -357,7 +357,11 @@ makes the app bar's menu button open it.
   (a menu drawer), and it flips in RTL.
 - The panel reaches the screen edge but the **content stays inside the safe area** — otherwise a rounded
   corner clips the first list row.
-- It takes the Back/Escape ownership while open and releases it on close, including in `_exit_tree`.
+- It takes the Back/Escape ownership while open and releases it on close, including in `_exit_tree`. Escape
+  (`ui_cancel`) closes it in `_input`, so a game's own `_unhandled_input` Esc (a pause menu) never fires under it; a
+  surface opened over the drawer closes first.
+- While open it counts in `GoSurface.is_any_open()` (`hold_open`): gameplay input pauses and a `GoCoachMark` waits.
+- An "all menus" drawer: `GoStyle.section()` headers, each over a `GoGrid` of `GoStyle.menu_tile()` tiles.
 
 
 **Opacity.** `drawer.alpha = 0.7` — a ratio (negative = theme/config value).

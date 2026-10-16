@@ -38,9 +38,27 @@ static var _open_count := 0
 ##    when a menu was merely opened by touch and only the close button glows, it reads as "press here".
 static var _pointer_navigation := true
 
-## Is any surface open at all?
+## Windows that are not surfaces but take the screen the same way while they are open — a `GoDrawer` and its scrim —
+## counted apart (`hold_open`), so `is_any_open()` sees them too.
+static var _held_count := 0
+
+## Is any window open at all — a surface or a held window (a drawer)? The question "pause the game's input, let a coach
+## mark wait" asks this.
+## 🛑 Until 2026-10-16 only surfaces counted: with a drawer open, a game's WASD still walked the hero behind it, a coach
+##    mark kept pointing over it, and its Escape ended the tour instead of closing the drawer.
 static func is_any_open() -> bool:
+	return _open_count > 0 or _held_count > 0
+
+
+## Is a SURFACE open (drawers left out)? A drawer asks this before it takes Escape / back — a surface over it goes first.
+static func is_any_surface_open() -> bool:
 	return _open_count > 0
+
+
+## A window that is not a surface takes (`on`) or gives back (`not on`) its place in `is_any_open()` — call it once on open
+## and once on close, from `_exit_tree` too (the back-gesture rule, `GoBackPolicy`).
+static func hold_open(on: bool) -> void:
+	_held_count = maxi(0, _held_count + (1 if on else -1))
 
 
 # ── Placement ──────────────────────────────────────────────────────────

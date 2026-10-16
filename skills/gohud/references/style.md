@@ -168,6 +168,9 @@ one, `GoConfig.button_glow = true` for all.
 | `apply_icon(button, icon, size := -1, ink := Color.TRANSPARENT, inset := -1.0)` | void | Texture sets use `Button.icon`; font sets add a child label, moved in by `inset` (the text padding widens to match) |
 | `list_button(icon, key, action := Callable(), ink := Color.TRANSPARENT, sub_key := "", translate := true, trailing: StringName = &"")` | `Button` | Menu/settings row: icon, title, optional description line, optional trailing icon (e.g. `CHEVRON_RIGHT`). Whole row is the tap target |
 | `list_row(button, icon, key, …same…)` | `Button` | Same, on an existing Button |
+| `menu_tile(icon, key, action := Callable(), translate := true, glyph: Control = null)` | `Button` | An "all menus" tile: icon (or your own `glyph` control) over its name, for a `GoGrid`. At least `touch` × `touch`; the name wraps instead of trimming; the label is the accessible name and tooltip |
+| `set_tile_badge(tile, words, as_dot := false, color := Color.TRANSPARENT)` | `GoBadge` | A count / words / dot on the tile's **icon** (danger red unless `color`); `""` without `as_dot` removes it |
+| `set_tile_keys(tile, keys)` | `GoKbd` | The key chip at the tile's top start corner (mirrored in RTL); hides on handheld devices by itself; `""` removes it |
 | `restyle_list_row(button, selected: bool, accent := Color.TRANSPARENT)` | void | Marks a list row as **the chosen one** (tint + 2 dp border, like a chosen `style_choice_card`) or clears it. Face only — call it again when the pick moves; never call `list_row` twice on one button |
 
 🛑 `list_button(..., translate := true)` treats `key` as a translation key. For literal text pass

@@ -45,6 +45,7 @@ func _initialize() -> void:
 	await _table()
 	await _pagination()
 	await _drawer()
+	await _menu_tile()
 	await _combobox()
 	await _reward_calendar()
 	await _cell_contract()
@@ -685,6 +686,18 @@ func _drawer() -> void:
 	drawer.close()
 	await frames(2)
 	check(not drawer.is_open(), "drawer: it closes")
+	# ⌨️ Escape closes it as back does, and the game behind never sees that Escape; an open drawer is a window (the game's
+	#    input pauses, a coach mark waits) but not a surface (a surface over it would take Escape first).
+	drawer.open("Esc")
+	await frames(2)
+	check(GoSurface.is_any_open() and not GoSurface.is_any_surface_open(), "drawer: open, it counts as a window, not a surface")
+	var esc := InputEventAction.new()
+	esc.action = &"ui_cancel"
+	esc.pressed = true
+	root.push_input(esc)
+	await frames(2)
+	check(not drawer.is_open(), "drawer: Escape (ui_cancel) closes it")
+	check(not GoSurface.is_any_open(), "drawer: closed, it gives the window count back")
 	# 🛑 Leaving the tree **puts the state down too** — otherwise re-adding and closing releases the back-button
 	#    claim one more time and eats another window's claim with it.
 	drawer.open("다시")
@@ -699,6 +712,39 @@ func _drawer() -> void:
 	drawer.queue_free()
 	await frames(1)
 	section("drawer")
+
+
+# ── Menu tile ─────────────────────────────────────────────────────────
+
+func _menu_tile() -> void:
+	var grid := GoGrid.make(1, 72.0)
+	grid.size = Vector2(320, 400)
+	root.add_child(grid)
+	var pressed := [0]
+	var tile := GoStyle.menu_tile(GoIconSet.SETTINGS, "Settings", func() -> void: pressed[0] += 1, false)
+	var long := GoStyle.menu_tile(GoIconSet.SETTINGS, "Show and hide the battle controls", Callable(), false)
+	grid.add_child(tile)
+	grid.add_child(long)
+	await frames(3)
+	var touch := float(GoUi.metric(GoTheme.TOUCH))
+	check(tile.size.x >= touch and tile.size.y >= touch, "menu tile: never under the touch floor (%s)" % tile.size)
+	check(tile.accessibility_name == "Settings" and tile.tooltip_text == "Settings", "menu tile: its name is its label")
+	var words := long.get_meta(&"go_tile_label") as Label
+	check(words.get_line_count() > 1 and words.get_visible_line_count() == words.get_line_count(), "menu tile: a long name wraps, nothing trimmed")
+	check(long.size.y >= words.get_minimum_size().y, "menu tile: the tile grows with its name (%.0f)" % long.size.y)
+	tile.pressed.emit()
+	check(pressed[0] == 1, "menu tile: a press runs its action")
+	var badge := GoStyle.set_tile_badge(tile, "3")
+	check(badge != null and badge.get_parent() == tile.get_meta(&"go_tile_icon"), "menu tile: the badge hangs on the icon")
+	check(GoStyle.set_tile_badge(tile, "") == null and not (tile.get_meta(&"go_tile_icon") as Control).has_meta(&"gohud_badge"), "menu tile: an empty badge goes away")
+	var dot := GoStyle.set_tile_badge(tile, "", true)
+	check(dot != null and dot.dot, "menu tile: a dot")
+	var chip := GoStyle.set_tile_keys(tile, "Esc")
+	check(chip != null and chip.keys() == PackedStringArray(["Esc"]) and chip.hide_on_handheld, "menu tile: key chip, hidden on handhelds")
+	check(GoStyle.set_tile_keys(tile, "") == null and tile.get_node_or_null(^"Keys") == null, "menu tile: no keys, no chip")
+	grid.queue_free()
+	await frames(1)
+	section("menu tile")
 
 
 # ── Search-and-pick field ─────────────────────────────────────────────

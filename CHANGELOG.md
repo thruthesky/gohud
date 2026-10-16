@@ -6,6 +6,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Escape closes an open `GoDrawer`, and an open drawer counts as an open window.** The drawer claimed Android back
+  but not Escape, so on a desktop Esc fell through to the game behind it (a pause menu opened over the drawer). And
+  `GoSurface.is_any_open()` counted only surfaces: with a drawer open a game's WASD still moved the hero and a
+  `GoCoachMark` kept pointing over it, then ate the Esc meant for the drawer (an "all menus" drawer in a HUD,
+  2026-10-16). `GoDrawer._input` now consumes `ui_cancel` (`close_on_back`; a surface over it goes first), and the
+  drawer holds a place in `is_any_open()` while open (`GoSurface.hold_open(on)`; surfaces alone:
+  `GoSurface.is_any_surface_open()`). Tests: extra "drawer" (Esc consumed and closes, window count).
 - **A tap on a text field inside a scroll reaches it with its release.** `GoScroll` holds the press on a control that
   yields vertical drags (a `LineEdit`, a slider, a tab bar…) until the finger lifts or picks a direction, then replays
   it. The replayed press left the viewport's "handled" flag up, so the engine dropped the event being dispatched right
@@ -46,6 +53,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoStyle.menu_tile(icon, key, action, translate, glyph)`** — an icon-over-name tile for an "all menus" grid
+  (MMO "all menus" panels): at least touch × touch, the name wraps instead of trimming, the label is its accessible
+  name. **`GoStyle.set_tile_badge(tile, words, as_dot, color)`** hangs a `GoBadge` on its icon;
+  **`GoStyle.set_tile_keys(tile, keys)`** adds a `GoKbd` at the start corner (mirrored in RTL, hidden on handhelds).
+  Test: extra "menu tile".
 - **`GoStyleBoxArcade.gloss`** (`enum Gloss { CANDY, STROKE }` — `STROKE` keeps 1.3.0's single stroke for one face),
   **`tails`** / **`tail_drop`** / **`ribbon_tails(rect)`** (a ribbon: swallow-tailed ends folded behind a body that
   stands in from them, drawn inside the face).

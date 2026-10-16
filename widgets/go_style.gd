@@ -1055,6 +1055,116 @@ static func restyle_list_row(node: Button, selected: bool, accent := Color.TRANS
 	for state: StringName in states: node.add_theme_stylebox_override(state, face)
 
 
+## ▦ **A menu tile** — an icon over its name, for the "all menus" grid a game opens from ☰ (put tiles in a `GoGrid`,
+## under `section()` headers, inside a `GoDrawer` or `GoPage`).
+##
+## ```gdscript
+## var grid := GoGrid.make(1, 84.0)       # as many 84dp columns as fit
+## grid.add_child(GoStyle.menu_tile(GoIconSet.SETTINGS, "Settings", open_settings))
+## var bag := GoStyle.menu_tile(&"", "invTitle", open_bag, true, my_glyph)   # your own glyph control instead of an icon
+## GoStyle.set_tile_badge(bag, "3")                                         # a count, or ("", true) for a dot
+## GoStyle.set_tile_keys(bag, "I")                                          # the key chip on a keyboard device
+## ```
+##
+## 🔑 Never under the touch floor: the tile is at least `touch` × `touch` (48dp) — the label grows it downwards. The
+##    name wraps onto more lines rather than trimming (a grid row is as tall as its tallest tile), so no locale loses
+##    a word to an ellipsis.
+## ♿ The tile's screen-reader name and tooltip are its label (a key is translated when read — `accessibility_name`
+##    goes through `tr`); the badge says its count in words (`GoBadge`), and a dot is ringed, never colour alone.
+## ⌨️ The key chip is a `GoKbd`, so it hides itself on a phone or tablet (`hide_on_handheld`) — never a keycap on touch.
+## 🛑 The badge hangs on the **icon**, not the tile's corner — on a wide tile the corner is far from the picture it counts.
+static func menu_tile(icon: StringName, key: String, action := Callable(), translate := true,
+		glyph: Control = null) -> Button:
+	var node := Button.new()
+	node.name = "Tile"
+	node.theme = GoUi.theme()
+	node.theme_type_variation = GoTheme.VAR_LIST_BUTTON
+	press_feel(node)
+	var touch := float(GoUi.metric(GoTheme.TOUCH))
+	node.custom_minimum_size = Vector2(touch, touch)
+	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	node.text = ""
+	node.clip_text = false
+	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	node.accessibility_name = key
+	node.tooltip_text = node.tr(key) if translate else key
+	GoScroll.scroll_through(node)
+	var inset := padding(GoUi.metric(GoTheme.GAP_TINY), GoUi.metric(GoTheme.GAP_SMALL))
+	inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	node.add_child(inset)
+	var stack := column(GoUi.metric(GoTheme.GAP_TINY))
+	stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stack.alignment = BoxContainer.ALIGNMENT_CENTER
+	inset.add_child(stack)
+	# The icon sits in a fixed square, so tiles with and without a badge line up and the badge has a corner to hang on.
+	var side := float(GoUi.metric(GoTheme.ICON_SIZE))
+	var holder := Control.new()
+	holder.name = "Icon"
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.custom_minimum_size = Vector2(side, side)
+	holder.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	stack.add_child(holder)
+	var picture := glyph
+	if picture == null and not icon.is_empty():
+		picture = GoUi.icons().node(icon, int(side), GoUi.color(GoTheme.SECONDARY))
+	if picture != null:
+		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		picture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		holder.add_child(picture)
+	var title := label_key(key, GoTheme.ROLE_COMPACT) if translate else label(key, GoTheme.ROLE_COMPACT)
+	title.name = "Label"
+	# 🛑 Auto-translate is off on the button (this label draws the text) — pin it on the child, or raw keys show.
+	title.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.size_flags_horizontal = Control.SIZE_FILL
+	stack.add_child(title)
+	node.set_meta(&"go_tile_icon", holder)
+	node.set_meta(&"go_tile_label", title)
+	fit_content_height(node, inset)
+	if action.is_valid(): node.pressed.connect(action)
+	return node
+
+
+## The tile's badge (`menu_tile`): `words` ("3", "+20%", "NEW") or, with `as_dot`, a dot; `""` and no dot removes it.
+## `color` transparent = the theme's danger red (the "act on this" colour) — pass a quieter one for an informational badge.
+static func set_tile_badge(tile: Button, words: String, as_dot := false, color := Color.TRANSPARENT) -> GoBadge:
+	var holder := tile.get_meta(&"go_tile_icon") as Control if tile != null and tile.has_meta(&"go_tile_icon") else null
+	if holder == null: return null
+	if words.is_empty() and not as_dot:
+		GoBadge.detach(holder)
+		return null
+	return GoBadge.attach(holder, 0, words, as_dot, color)
+
+
+## The tile's key chip (`menu_tile`) at its top start corner: `keys` like "I" or "Esc"; `""` removes it. A `GoKbd`, so it
+## hides on handheld devices by itself.
+static func set_tile_keys(tile: Button, keys: String) -> GoKbd:
+	if tile == null: return null
+	var old := tile.get_node_or_null(^"Keys") as GoKbd
+	if old != null:
+		tile.remove_child(old)
+		old.queue_free()
+	if keys.is_empty(): return null
+	var chip := GoKbd.make(keys)
+	chip.name = "Keys"
+	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	chip.set_meta(&"go_overlay", true)
+	var gap := float(GoUi.metric(GoTheme.GAP_TINY))
+	# The start corner follows the text direction (top right in Arabic or Urdu); the caps inside stay left-to-right.
+	var rtl := tile.is_layout_rtl()
+	chip.anchor_left = 1.0 if rtl else 0.0
+	chip.anchor_right = chip.anchor_left
+	chip.grow_horizontal = Control.GROW_DIRECTION_BEGIN if rtl else Control.GROW_DIRECTION_END
+	chip.offset_left = -gap if rtl else gap
+	chip.offset_right = chip.offset_left
+	chip.offset_top = gap
+	tile.add_child(chip)
+	return chip
+
+
 # ── Inputs ─────────────────────────────────────────────────────────────
 
 ## 🔑 **A label + its input as one group.** Builds one row (a field) of a form.
