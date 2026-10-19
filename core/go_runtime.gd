@@ -51,9 +51,12 @@ func _ready() -> void:
 
 ## 🔤 A `TranslationServer.set_locale()` from anywhere puts the new language's CJK font first (`GoUi.set_font_locale`,
 ## which does nothing when the order is already right) — the engine has no locale signal, but every node in the tree
-## hears this notification.
+## hears this notification. It also registers the new language's built-in translation (`GoUi.add_locale_translations`:
+## only the current language's is loaded) — this autoload sits above the game's screens, so it is in before they
+## re-translate.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and not Engine.is_editor_hint():
+		GoUi.add_locale_translations(TranslationServer.get_locale())
 		GoUi.set_font_locale(TranslationServer.get_locale())
 
 

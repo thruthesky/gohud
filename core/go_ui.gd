@@ -49,9 +49,36 @@ const CONFIG_SETTING := "gohud/config/resource"
 ## Project setting key holding the look bundle name. The plugin creates that field.
 const PRESET_SETTING := "gohud/theme/preset"
 
-const DEFAULT_THEME: Theme = preload("res://addons/gohud/themes/gohud_dark.tres")
-const LIGHT_THEME: Theme = preload("res://addons/gohud/themes/gohud_light.tres")
-const DEFAULT_ICONS: GoIconSet = preload("res://addons/gohud/icons/gohud_icons.tres")
+const DEFAULT_THEME_PATH := "res://addons/gohud/themes/gohud_dark.tres"
+const LIGHT_THEME_PATH := "res://addons/gohud/themes/gohud_light.tres"
+const DEFAULT_ICONS_PATH := "res://addons/gohud/icons/gohud_icons.tres"
+
+## gohud's default (dark) theme — the look with no preset, and the backup theme that fills in tokens.
+## 🛑 Loaded on first use, never preloaded: a game on another look (`arcade_light`) never reads it, and a `const`
+##    preload read it — its textures included — the moment anything named `GoUi`, before the game's first frame.
+static var DEFAULT_THEME: Theme:
+	get:
+		if _default_theme == null:
+			_default_theme = load(DEFAULT_THEME_PATH) as Theme
+			# A narrow screen seen before any look was chosen shrinks the type now (`set_mobile_type`).
+			if _mobile_pending:
+				_mobile_pending = false
+				set_mobile_type(true)
+		return _default_theme
+## gohud's light theme. Loaded on first use (see `DEFAULT_THEME`).
+static var LIGHT_THEME: Theme:
+	get:
+		if _light_theme == null: _light_theme = load(LIGHT_THEME_PATH) as Theme
+		return _light_theme
+## gohud's default icon set — the set with no preset, and the fallback of every preset's set. Loaded on first use
+## (see `DEFAULT_THEME`); its drawings are `paths`, so each icon is read only when a widget first draws it.
+static var DEFAULT_ICONS: GoIconSet:
+	get:
+		if _default_icons == null: _default_icons = load(DEFAULT_ICONS_PATH) as GoIconSet
+		return _default_icons
+static var _default_theme: Theme
+static var _light_theme: Theme
+static var _default_icons: GoIconSet
 const BUILTIN_TRANSLATIONS := "res://addons/gohud/i18n/gohud.csv"
 
 ## The languages the built-in translations carry. 🛑 If you added a column to the CSV, **add it here too** —
@@ -67,7 +94,13 @@ static var _watchers: Array[Callable] = []
 static var _config: GoConfig
 static var _resolved := false
 static var _translations_loaded := false
+## The `LOCALES` pieces already looked at (registered, or missing on disk) — each is read at most once.
+static var _translation_pieces := {}
+## The locale `text()` last made sure of — a `TranslationServer.set_locale()` that bypassed `set_locale()` is caught there.
+static var _text_locale := ""
 static var _mobile_type := false
+## A narrow screen reported while no look was chosen and the default theme was not read yet — applied when it is.
+static var _mobile_pending := false
 static var _base_font_sizes := {}
 ## Whether the project set a font of its own — read once (`project_has_font`). -1 means not read yet.
 static var _project_font := -1
@@ -177,6 +210,7 @@ static func use_preset(value: Variant) -> void:
 	# 🛑 Throw the font size baseline away — once the theme changes there is no putting the old theme's sizes back.
 	_base_font_sizes.clear()
 	_mobile_type = false
+	_mobile_pending = false
 	# 🔤 The new look's per-language font lead follows the language already chosen.
 	set_font_locale(TranslationServer.get_locale())
 	_notify()
@@ -230,6 +264,7 @@ const LOCALE_FONTS_META := &"go_locale_fonts"
 ## GoUi.set_locale("ja")   # Japanese glyph shapes for the Han characters it shares with Chinese and Korean
 ## ```
 static func set_locale(code: String) -> void:
+	add_locale_translations(code)
 	set_font_locale(code)
 	if TranslationServer.get_locale() != code: TranslationServer.set_locale(code)
 
@@ -244,6 +279,11 @@ static func set_locale(code: String) -> void:
 ##    screen, and a settings screen may call this on every change. Not in the editor (the theme there is the file).
 static func set_font_locale(code: String) -> bool:
 	if Engine.is_editor_hint(): return false
+	# 🔑 gohud's default theme writes no per-language fonts: before a look is chosen (the `GoRuntime` autoload hears
+	#    the first locale change at start-up) there is nothing to reorder, and reading `theme()` would load it.
+	if config.theme == null:
+		var chosen := preset()
+		if chosen == null or chosen.theme == null: return false
 	var look := theme()
 	if look == null or not look.has_meta(LOCALE_FONTS_META): return false
 	var font := look.get_meta(&"go_body_font_baked", look.default_font) as FontVariation
@@ -280,8 +320,16 @@ static func _locale_font_key(code: String, fonts: Dictionary) -> String:
 
 
 ## The backup theme that fills tokens in. `null` when `token_fallback` is off.
+## 🛑 Callers ask for it only after the current theme lacked the token (`_backup_unless`): reading it loads gohud's
+##    default theme, which a look that defines every token never needs.
 static func _fallback_theme() -> Theme:
 	return DEFAULT_THEME if config.token_fallback else null
+
+
+## The backup theme, or `null` when the current theme [param found] the token already — so the backup is only
+## loaded for a token the current theme really lacks.
+static func _backup_unless(found: bool) -> Theme:
+	return null if found else _fallback_theme()
 
 
 ## The **skin** in use — the look of the spots the code draws itself (joystick·quick slot·coach mark·chip).
@@ -349,7 +397,8 @@ static func color(key: StringName) -> Color:
 		return color(StringName(name.trim_suffix("_fill")))
 	# A role color (`GoTheme.HEADING`, `ALERT`) a theme never heard of is the token the role was drawn in before.
 	if GoTheme.STAND_INS.has(key) and not _has_color(key): return color(GoTheme.STAND_INS[key])
-	return GoTheme.color_of(theme(), key, _fallback_theme())
+	var look := theme()
+	return GoTheme.color_of(look, key, _backup_unless(look != null and look.has_color(key, GoTheme.TYPE)))
 
 
 ## 🔑 **A control color from the theme, safe before the node is in the tree** — `name` on a theme type
@@ -364,8 +413,10 @@ static func color(key: StringName) -> Color:
 ## 🛑 `node.get_theme_color()` on a node not added yet returns the engine default instead of gohud's color — see
 ##    `GoTheme.color_in_chain`. For a node you already hold, `theme_color_of(node, name)` picks the right road.
 static func theme_color(name: StringName, type: StringName, missing := Color.TRANSPARENT) -> Color:
-	for look: Theme in [theme(), _fallback_theme()]:
-		if GoTheme.has_color_in_chain(look, name, type): return GoTheme.color_in_chain(look, name, type)
+	var current := theme()
+	if GoTheme.has_color_in_chain(current, name, type): return GoTheme.color_in_chain(current, name, type)
+	var backup := _fallback_theme()
+	if GoTheme.has_color_in_chain(backup, name, type): return GoTheme.color_in_chain(backup, name, type)
 	if missing.a > 0: return missing
 	return GoTheme.color_in_chain(ThemeDB.get_default_theme(), name, type, Color.WHITE)
 
@@ -389,6 +440,12 @@ static func _has_color(key: StringName) -> bool:
 	return backup != null and backup.has_color(key, GoTheme.TYPE)
 
 
+## Does the current theme define this metric itself (so the backup theme need not be loaded).
+static func _has_metric(key: StringName) -> bool:
+	var current := theme()
+	return current != null and current.has_constant(key, GoTheme.TYPE)
+
+
 ## A single metric (dp). `GoConfig.metric_overrides` takes precedence over the theme.
 ## The `touch` token: a `GoConfig.min_touch_size` the project chose, else the look's own (48; `arcade_light` 44).
 static func metric(key: StringName) -> int:
@@ -396,8 +453,8 @@ static func metric(key: StringName) -> int:
 	if overrides.has(key): return overrides[key]
 	if key == GoTheme.TOUCH:
 		if config.touch_size_chosen(): return config.min_touch_size
-		return GoTheme.metric_of(theme(), key, _fallback_theme(), config.min_touch_size)
-	return GoTheme.metric_of(theme(), key, _fallback_theme())
+		return GoTheme.metric_of(theme(), key, _backup_unless(_has_metric(key)), config.min_touch_size)
+	return GoTheme.metric_of(theme(), key, _backup_unless(_has_metric(key)))
 
 
 ## 👆 The touch floor in force (dp) — what every widget's hit area keeps to. See `GoConfig.min_touch_size`.
@@ -407,7 +464,8 @@ static func touch_size() -> float:
 
 ## A **copy** of one surface StyleBox. 🛑 Without the copy, a color change on one card bleeds into every card.
 static func box(key: StringName) -> StyleBox:
-	return GoTheme.box_of(theme(), key, _fallback_theme()).duplicate()
+	var look := theme()
+	return GoTheme.box_of(look, key, _backup_unless(look != null and look.has_stylebox(key, GoTheme.TYPE))).duplicate()
 
 
 ## 🪟 The **opacity (0.0~1.0)** of one panel variant. 1.0 is a solid color; at 0.8, 20% of what is behind bleeds through.
@@ -445,7 +503,7 @@ static func surface_alpha(variant := GoTheme.BOX_CARD) -> float:
 		return _alpha_ratio(settings.metric_overrides[token])
 	if settings.container_alpha >= 0.0: return clampf(settings.container_alpha, 0.0, 1.0)
 	# 🛑 With nothing there it falls back to **100** — taking `metric_of`'s default of 0 as is would make the panel vanish entirely.
-	return _alpha_ratio(GoTheme.metric_of(theme(), token, _fallback_theme(), 100))
+	return _alpha_ratio(GoTheme.metric_of(theme(), token, _backup_unless(_has_metric(token)), 100))
 
 
 ## Theme constant percentage (0~100) → ratio (0.0~1.0). Values out of range are clamped — one typo in a theme
@@ -457,7 +515,9 @@ static func _alpha_ratio(percent: int) -> float:
 ## The font size of a role (dp). With mobile shrinking on, it is already reflected in the value.
 static func font_size(role: StringName = GoTheme.ROLE_BODY) -> int:
 	if config.base_font_size > 0 and role == GoTheme.ROLE_BODY: return config.base_font_size
-	return GoTheme.font_size_of(theme(), role, _fallback_theme())
+	var look := theme()
+	var own := GoTheme._font_size_in_chain(look, GoTheme.ROLE_TYPES.get(role, &"Label")) if look != null else 0
+	return own if own > 0 else GoTheme.font_size_of(look, role, _fallback_theme())
 
 
 # ── Strings ────────────────────────────────────────────────────────────
@@ -471,6 +531,11 @@ static func font_size(role: StringName = GoTheme.ROLE_BODY) -> int:
 ##    on screen means the translations are not attached, not that the code is wrong.
 static func text(name: StringName) -> String:
 	var overrides := config.text_overrides
+	if _translations_loaded:
+		var locale := TranslationServer.get_locale()
+		if locale != _text_locale:
+			_text_locale = locale
+			add_locale_translations(locale)
 	if overrides.has(name): return overrides[name]
 	var key: String = config.text_keys.get(name, "")
 	if key.is_empty(): return TranslationServer.translate(String(name))
@@ -501,19 +566,39 @@ static func text_key(name: StringName) -> String:
 	return config.text_keys.get(name, String(name))
 
 
+## 🌐 Registers the built-in translations — **only the current locale's** (and the fallback locale's), not all 21.
+## Another language's piece is read when the game switches to it: `set_locale()`, the `GoRuntime` autoload on any
+## `TranslationServer.set_locale()`, and `text()` on the next string it hands out.
 static func _load_translations() -> void:
 	if _translations_loaded: return
 	_translations_loaded = true
-	if not ResourceLoader.exists(BUILTIN_TRANSLATIONS): return
-	# 🛑 On import the CSV is split into **one `.translation` per language** — what you register is those
-	#    pieces, not the original CSV. If the pieces are not there yet (a copy where the editor has never
-	#    been run once) it passes quietly: the strings come out as their keys and the widgets work all the same.
+	add_locale_translations(TranslationServer.get_locale())
+	add_locale_translations(str(ProjectSettings.get_setting("internationalization/locale/fallback", "en")))
+
+
+## 🌐 Registers the built-in translation pieces [param code] reads in: every piece of the same language
+## (`pt_BR` → `pt`, `zh_TW` → `zh_TW` and `zh`, `ko_KR` → `ko`). Each piece is read once. Returns whether one was added.
+## Call it before reading another language's strings without switching to it (a language picker drawing each
+## language's own words). Does nothing while the built-in translations are off (`GoConfig.load_builtin_translations`).
+## In the editor every piece is registered at once.
+static func add_locale_translations(code: String) -> bool:
+	if not _translations_loaded or code.is_empty(): return false
 	var base := BUILTIN_TRANSLATIONS.get_basename()
-	for suffix in LOCALES:
+	var added := false
+	for suffix: String in LOCALES:
+		if _translation_pieces.has(suffix): continue
+		if not Engine.is_editor_hint() and TranslationServer.compare_locales(code, suffix) <= 0: continue
+		_translation_pieces[suffix] = true
+		# 🛑 On import the CSV is split into **one `.translation` per language** — what you register is those
+		#    pieces, not the original CSV. If a piece is not there yet (a copy where the editor has never been run
+		#    once) it passes quietly: the strings come out as their keys and the widgets work all the same.
 		var path := "%s.%s.translation" % [base, suffix]
 		if not ResourceLoader.exists(path): continue
 		var loaded := ResourceLoader.load(path) as Translation
-		if loaded != null: TranslationServer.add_translation(loaded)
+		if loaded == null: continue
+		TranslationServer.add_translation(loaded)
+		added = true
+	return added
 
 
 # ── Tree access (without an autoload) ──────────────────────────────────
@@ -543,6 +628,13 @@ static func is_handheld_platform() -> bool:
 ## then the theme values come out as they are (which is correct behavior too).
 static func set_mobile_type(enabled: bool) -> void:
 	if not config.shrink_type_on_mobile or _mobile_type == enabled: return
+	# 🛑 No look chosen yet (the autoload runs before the game picks its preset): gohud's default theme is not read
+	#    for this — the wish is kept and applied the moment that theme is first used.
+	if config.theme == null and _default_theme == null:
+		var chosen := preset()
+		if chosen == null or chosen.theme == null:
+			_mobile_pending = enabled
+			return
 	var current := theme()
 	if _base_font_sizes.is_empty():
 		for type in current.get_font_size_type_list():
@@ -570,6 +662,7 @@ static func reset() -> void:
 	_config = null
 	_resolved = false
 	_mobile_type = false
+	_mobile_pending = false
 	_base_font_sizes.clear()
 	_default_skin = null
 	_stacked = null

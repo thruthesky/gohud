@@ -161,10 +161,11 @@ const RUN := &"run"
 ##    release's `THIRD_PARTY_NOTICES.md` is written from this field.
 @export_multiline var attribution := ""
 
-## Name → `Texture2D`. The approach gohud's default set uses.
+## Name → `Texture2D`. Every drawing is read the moment the set opens — fine for a handful (a preset's own set).
 @export var textures: Dictionary[StringName, Texture2D] = {}
 
 ## Name → the `res://` path of a texture, **loaded the first time that name is drawn** and kept from then on.
+## gohud's own sets (default, game, library) all list their drawings here, so a game reads only the icons it draws.
 ## A big set lists its drawings here instead of in `textures`: a `.tres` holding 1,000 textures reads all 1,000
 ## the moment it opens (≈90 ms on a desktop), a table of paths ≈5 ms, and each icon ≈0.2 ms when first asked
 ## for (measured 2026-09-23, Godot 4.7 headless).

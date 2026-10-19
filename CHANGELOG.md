@@ -41,6 +41,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   still close the top window. A game with its own Back handler closed two windows with one Back — its own and the
   one under it, which the deferred `request_close()` then found on top.
 
+### Changed
+
+- **gohud loads only what the game uses** (a faster first frame). `GoUi.DEFAULT_THEME`, `LIGHT_THEME` and
+  `DEFAULT_ICONS` are read on first use, not preloaded the moment anything names `GoUi`; the backup theme is read only
+  when the current one lacks a token; `set_mobile_type()` and `set_font_locale()` no longer read the default theme
+  before a look is chosen. The default icon set lists its drawings as `paths`, so each SVG is read when first drawn.
+  Only the current locale's (and the fallback locale's) built-in translation is registered; another is read when the
+  game switches to it (`GoUi.set_locale()`, the `GoRuntime` autoload, `GoUi.text()`). New
+  `GoUi.add_locale_translations(code)` registers a language's piece without switching to it (a language picker).
+
 ### Fixed
 
 - **A window opened by pointer no longer rings its default button.** `GoSurface.initial_focus` (a dialog's confirm

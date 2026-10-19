@@ -152,6 +152,8 @@ func _language_card() -> Control:
 	#    Each cell is `auto_translate_mode = DISABLED`, so it keeps its own language even when the app's changes later.
 	var before := TranslationServer.get_locale()
 	for locale: String in GoUi.LOCALES:
+		# Only the current language's built-in piece is registered; this card reads them all.
+		GoUi.add_locale_translations(locale)
 		TranslationServer.set_locale(locale)
 		grid.add_child(_language_cell(locale))
 	TranslationServer.set_locale(before)
