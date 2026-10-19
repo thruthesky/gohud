@@ -51,6 +51,10 @@ const _BOXES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pres
 		off_text = value
 		queue_redraw()
 
+## 🔔 What the player's flip says through `GoFeedback` (`GoFeedback.TAPPED` by default). Empty: silent. A flip from
+## code (`button_pressed =`, `set_pressed_no_signal`) says nothing.
+@export var feedback: StringName = GoFeedback.TAPPED
+
 ## The theme's pills, read before the blanks went on.
 var _parts: Dictionary[StringName, Texture2D] = {}
 var _reading := false
@@ -60,10 +64,15 @@ var _floor := Vector2.ZERO
 
 func _init() -> void:
 	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's; other looks: reachable
+	pressed.connect(_on_feedback_pressed)   # `pressed` is the player's own flip; `toggled` also fires for code
 	# The engine's CheckButton measures its least size from the blanks (1 px tall), so the floor is the custom minimum —
 	# set here, as the game's PaintedSwitch does, so a screen that sets its own still wins.
 	_floor = Vector2(0.0, float(GoUi.metric(GoTheme.TOUCH)))
 	custom_minimum_size = _floor
+
+
+func _on_feedback_pressed() -> void:
+	if not Engine.is_editor_hint(): GoFeedback.play(feedback)
 
 
 ## A switch, on or off.

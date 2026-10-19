@@ -85,6 +85,7 @@ func _init() -> void:
 	surface.fit_content = true
 	surface.resizable = true
 	surface.close_requested.connect(close)
+	surface.close_feedback = false   # close() says closed itself
 	add_child(surface)
 	body = surface.body
 

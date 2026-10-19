@@ -25,6 +25,16 @@
 ## | light | confirm·open | 20ms · 0.5 |
 ## | medium | error·not allowed | 40ms · 0.8 |
 ##
+## A notice popping into a feed (`noticed`) and a slider moving a step (`stepped`) only make a sound — no buzz; they come
+## often, and a buzz on every slider step or kill-feed line tires the hand.
+##
+## ## Which widgets speak by themselves
+## Every widget that has a `feedback` property plays it (a `StringName` of the list below; empty = silent):
+## `GoGlyphButton`, `GoLevelCard` and `GoSwitch` say `tapped` when the player presses them, `GoIconButton` says nothing
+## unless asked (`GoSurface` makes its close buttons say `closed`), `GoSlider` says `stepped` when the player moves it,
+## `GoNoticeFeed` says `noticed` on every `push`, and a `GoSurface` with `open_feedback` says `opened` when it shows.
+## A value set from code (`value =`, `button_pressed =`) is silent: only the player's own touch makes a sound.
+##
 ## 🛑 **It only buzzes on a handheld device.** A desktop has no vibration hardware. `amplitude` is honored by Android
 ##    alone and ignored by iOS (engine behavior) — what makes the real difference is the duration.
 class_name GoFeedback
@@ -45,6 +55,8 @@ const CONFIRMED := &"confirmed"
 const CANCELED := &"canceled"
 const FAILED := &"failed"
 const FANFARE := &"fanfare"
+const NOTICED := &"noticed"
+const STEPPED := &"stepped"
 
 
 ## A screen·menu·sheet·dialog **comes up**.
@@ -87,7 +99,18 @@ static func fanfare() -> void:
 	_emit(FANFARE, GoUi.config.haptic_light_ms, GoUi.config.haptic_light_amplitude)
 
 
-## Call one of the seven above by name.
+## A notice popped into a feed (`GoNoticeFeed.push`). Sound only — no buzz.
+static func noticed() -> void:
+	_emit(NOTICED, 0, 0.0)
+
+
+## A slider moved a step under the player's hand. Sound only — no buzz. The project rate-limits it (a drag moves many
+## steps a second).
+static func stepped() -> void:
+	_emit(STEPPED, 0, 0.0)
+
+
+## Call one of the events above by name (`OPENED`, `TAPPED`, …). An empty or unknown name does nothing.
 static func play(signal_name: StringName) -> void:
 	match signal_name:
 		OPENED: opened()
@@ -97,6 +120,8 @@ static func play(signal_name: StringName) -> void:
 		CANCELED: canceled()
 		FAILED: failed()
 		FANFARE: fanfare()
+		NOTICED: noticed()
+		STEPPED: stepped()
 
 
 static func _emit(signal_name: StringName, duration_ms: int, amplitude: float) -> void:

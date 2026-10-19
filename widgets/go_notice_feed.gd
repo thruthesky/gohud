@@ -42,6 +42,9 @@ extends VBoxContainer
 ## Room between the icon and the text (dp).
 @export_range(0, 64) var icon_gap := 8
 
+## 🔔 What a new row says through `GoFeedback` (`GoFeedback.NOTICED`: a small pop, no buzz). Empty: silent.
+@export var feedback: StringName = GoFeedback.NOTICED
+
 ## Runs the clock in `_process`. Turn it off to drive it with `advance(delta)`.
 @export var auto_advance := true:
 	set(value):
@@ -113,6 +116,7 @@ func push(text: String, own := false, picture: Texture2D = null) -> void:
 	move_child(row, get_child_count() - 1)
 	row.visible = true
 	_showing.append(entry)
+	if not Engine.is_editor_hint(): GoFeedback.play(feedback)
 
 
 ## Moves the clock on [param delta] seconds: fades rows in and hides the ones whose time is up.

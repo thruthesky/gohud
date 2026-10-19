@@ -329,6 +329,8 @@ signal changed_settings
 	&"canceled": "ui_cancel",
 	&"failed": "ui_error",
 	&"fanfare": "ui_fanfare",
+	&"noticed": "notice_pop",
+	&"stepped": "slider_tick",
 }
 
 
