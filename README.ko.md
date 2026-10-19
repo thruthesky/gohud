@@ -45,7 +45,21 @@
   알림이 입력을 먹지 않게 하는 `mouse_behavior_recursive`, 흐르는 줄의 `last_wrap_alignment`.
 - **순수 GDScript.** 오토로드 불필요, 엔진 모듈·GDExtension 없음.
 - **MIT** — 코드와 그림 전부, 기본 아이콘 84종·중세 각인 아이콘 16종·게임 아이콘 187종·아이콘 라이브러리 1,000종 포함. 중세 제목에 쓰는
-  Cinzel 글꼴과 Material 제목·라벨에 쓰는 Roboto 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
+  Cinzel 글꼴, Material 제목·라벨에 쓰는 Roboto 글꼴, `arcade_light` 의 Nunito·Noto Sans CJK 글꼴은 SIL Open Font License 1.1 로 함께 들어 있다.
+
+### 아케이드 페인티드 룩
+
+`arcade_light`는 Magnet Mayhem에서 만든 PNG와 흰 글리프를 쓴다. `GoStyleBoxSprite`와
+`GoSkinArcadePainted`가 버튼·카드·리본·키캡·배지를 그리며, 모달 뒤에는 게임의 블러 스크림을 쓴다.
+입력칸(`LineEdit`·`TextEdit`)은 게임의 평평한 입력칸이고, 가로 슬라이더(`GoSliderGreen`·`GoSliderCyan` 포함)와 스위치도
+페인티드 스프라이트다. 스위치의 글자는 켜져도 잉크색 그대로이고 알약에서 4 dp 떨어진다. 탭과 세로 슬라이더만 예외로 코드로 그린 아케이드 모양을 유지한다.
+가운데 뜨는 `GoSurface`는 게임의 `PaintedDialog`와 같다 — 페인티드 카드, 폭 400 dp, 줄 간격 8 dp(`GoSkin.window_width()`, `GoSkin.window_gap()`),
+닫기 버튼 대신 리본 모서리의 빨간 자석(`GoSurface.corner`; Escape·뒤로 가기로는 여전히 닫힌다 — `show_close_key = true`면
+반대쪽 모서리에 둥근 빨간 닫기 키가 함께 선다), 57 dp 리본 위의
+34 dp 제목(넘치면 24 dp까지 줄어든다). 안의 부품도 게임과 같다 — `add_inset()`·`add_line()`·`add_row()`·`add_gloss()`
+(옅은 인셋, 10 dp 간격의 46 dp 글리프 버튼).
+`arcade_dark`는 기존의 `GoStyleBoxArcade`와 `GoSkinArcade`를 그대로 쓴다. 그림의 출처와 MIT 사용 조건은
+[서드파티 고지](THIRD_PARTY_NOTICES.md)에 있다.
 
 ## 요구 사항
 
@@ -164,8 +178,8 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # UI 를 만들기 전에 — �
 | `kids_dark` | 같은 젤리 장난감 상자의 밤 — 블루베리 바탕, 햇살 노랑 기본 버튼, 민트 알약 버튼과 민트 제목 리본 | `GoSkinKids` |
 | `comic_light` | 만화 컷 — 키·입력칸·목록 줄·판마다 굵은 잉크 테두리(`GoStyleBoxComic`)와 오른쪽 아래로 떨어지는 연하고 단단한 그림자(누르면 사라짐), 창 제목 뒤의 노란 말풍선 상자, 신문지 바탕에 남색 잉크. 테두리 두께·그림자 크기·그림자 표시 여부는 설정 한 줄씩(`GoUi.config.comic_border_width`·`comic_shadow_size`·`comic_shadow`)이고, 위젯 하나는 `GoStyle.comic_shadow(node, on)` 으로 따로 정한다 | `GoSkinComic` |
 | `comic_dark` | 같은 만화 컷의 밤 — 남색 바탕에 분필 잉크, 햇살 노랑 기본 버튼 | `GoSkinComic` |
-| `arcade_light` | 오락실 게임기 — 키마다 색을 칠한 알약 모양(`GoStyleBoxArcade` — 위에서 아래로 흐르는 그라디언트, 캔디 광택(위쪽 윤기·양쪽 모서리 반짝임), 누르면 쏙 들어가는 진한 턱, 남색 잉크 테두리) 글자는 잉크 외곽선을 두른 흰 글씨 — 초록 기본 버튼, 파란 키, 빨간 위험 버튼, 라벤더 작은 키 · 옅은 안쪽을 색 프레임이 두르는 두꺼운 보드 · 서로 떨어진 탭 · 잉크 눈금으로 여러 칸으로 나뉜 게이지(`GoBar.segments`) · 키캡 모양의 키 힌트(`GoKbd`) · 창 제목 뒤의 제비꼬리 금색 리본과 동그란 빨간 닫기 키 · 하늘색 바탕. `GoStyle.arcade_paint(node, colour)` 로 키 하나를 원하는 색으로 칠한다 | `GoSkinArcade` |
-| `arcade_dark` | 같은 오락실의 밤 — 남색 보드와 바탕, 같은 밝은 물감 | `GoSkinArcade` |
+| `arcade_light` | Magnet Mayhem의 페인티드 룩 — `GoStyleBoxSprite`로 PNG를 9슬라이스로 그린다. 초록 기본 버튼과 초록 성공 버튼(`GoSuccessButton`), 파란 정보 버튼(`GoInfoButton`), 빨간 위험 버튼과 회색 일반 버튼, 카드·인셋·키캡·금색/빨간 리본·동그란 배지, 기본 아이콘으로 폴백하는 흰 글리프, 흐린 모달 스크림과 여섯 칸 게이지. 변형이 없는 `Button`은 게임처럼 엔진 기본값이다(페인티드 키는 모두 변형). 드롭다운의 화살표와 목록의 라디오 표시도 게임처럼 엔진 것이다. 툴팁·컨테이너 간격·스크롤바도 게임처럼 엔진 것이다. 입력칸·가로 슬라이더·스위치도 페인티드이고, 탭과 세로 슬라이더는 코드로 그린 아케이드 모양을 유지한다 | `GoSkinArcadePainted` |
+| `arcade_dark` | 코드로 그린 오락실의 밤 — 남색 보드와 바탕, 광택이 있는 알약 키, 금색 리본과 여러 칸 게이지 | `GoSkinArcade` |
 
 에디터에서 고르려면 **프로젝트 설정 → gohud → Theme → Preset**, 설정 리소스에서는 `preset` 칸.
 🔑 `theme`·`skin`·`icons` 를 직접 채우면 그쪽이 프리셋보다 **우선한다** — 프리셋을 고른 뒤 한 칸만
@@ -285,8 +299,8 @@ GoUi.config = settings
 | 묶음 | 칸 |
 |---|---|
 | 겉모습 | `preset`, `theme`, `token_fallback`, `skin`, `icons`, `color_overrides`, `metric_overrides`, `base_font_size`, `shrink_type_on_mobile`, `button_glow`(**기본 꺼짐**) |
-| 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
-| 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back` |
+| 반응형 | `scale_enabled`(1 unit = 1 dp, **기본 꺼짐**), `scale_profile`(`DP` 또는 `PER_INCH`: 기준 크기를 그대로 두고 휴대 기기에선 인치당 `per_inch_units` 로 줄이되 높이는 `per_inch_min_height` 이상), `mobile_max_dp`, `tablet_max_dp`, `read_gain_*`, `desktop_ui_gain`, `form_max_width_*`, `respect_safe_area` |
+| 표면 | `surface_max_width`, `surface_max_height`, `surface_height_ratio`, `surface_max_height_ratio`, `surface_width_ratio_portrait/landscape`, **`container_alpha`**, **`container_alpha_overrides`**, `dismiss_on_scrim`, **`scrim_blur`** (끄면 룩의 블러 대신 평평한 어둡게 — 낮은 품질 단계용), `surface_fade_in`, `fade_seconds`, `close_button_visual`, `suppress_pointer_focus_ring`, `close_on_back`, `close_on_os_back` (끄면 Android 뒤로가기는 게임이 처리) |
 | 피드백 | `haptics_enabled`, `haptic_tap/light/medium_ms` 와 세기, `sound_cues` |
 | 번역 | `text_keys`, `text_overrides`, `number_formatter`, `load_builtin_translations` |
 | 접근성 | `min_touch_size`, `reduce_motion`, `autowrap_text` |
@@ -398,6 +412,7 @@ icons.canonical(&"gear")             # &"settings"
 |---|---|
 | 색 | `background`, `surface`, `surface_soft`, `surface_high`, `border`, `text`, `secondary`, `muted`, `accent`, `on_accent`, `success`, `warning`, `danger`, `info`, `scrim`, `shadow`, `track` |
 | 채움 색 | `success_fill`, `warning_fill`, `danger_fill`, `info_fill`, `accent_fill` — 막대처럼 넓은 면적용. 테마에 없으면 `_fill` 을 뗀 이름으로 떨어진다 |
+| 역할 색 | `heading`(제목 글자색), `alert`(HUD 경고색), `muted_fill`(조용한 회색 채움) — 룩이 따로 정하지 않으면 `accent` · `danger` · `muted` (`arcade_light` 는 Magnet Mayhem 의 금색 · 빨강 · 라벤더 회색). 테마에 없으면 그 색으로 떨어진다 |
 | 치수(dp) | `touch`, `button_height`, `gap_tiny`, `gap_small`, `gap`, `gap_large`, `padding`, `padding_compact`, `compact_padding_x`, `compact_padding_y`, `radius_small`, `radius`, `radius_large`, `screen_margin`, `scroll_deadzone`, `scroll_edge`, `scrollbar_width`, `list_glyph`, `icon_size`, `notice_duration_ms` |
 | 판 불투명도(%) | `panel_alpha`, `card_alpha`, `hud_alpha`, `notice_alpha`, `popup_alpha` — 컨테이너 바탕이 얼마나 꽉 찬 색인가. 기본 80(팝업 메뉴만 100). 테마에 없으면 100 으로 떨어진다 |
 | StyleBox | `panel`, `card`, `hud`, `notice`, `popup`, `empty`, `focus`, `focus_soft` |
@@ -406,6 +421,18 @@ icons.canonical(&"gear")             # &"settings"
 타입 변형: `GoPanel`, `GoCard`, `GoButton`, `GoPrimaryButton`, `GoDangerButton`, `GoDangerSolidButton`,
 `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`,
 `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
+
+`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoInfoButton`(파란 알약), `GoSliderGreen` · `GoSliderCyan`
+(초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide` · `GoRibbonWideTitle`(스테이지 선택 창, 넓은 리본과 그 제목), `GoLevelCard` ·
+`GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
+판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만
+있는 동그란 버튼). 평평한 부품도 있다: `GoPanelFlat` · `GoCardFlat`(잉크 테두리의 반투명 판과 흰 카드),
+`GoChoiceButton`(고르면 청록으로 남는 밝은 선택 키), `GoBigButton` · `GoBigSecondaryButton`(아래 테두리가 두꺼운 큰
+초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px), `GoScoreRow` · `GoScoreRowGold` · `GoScoreHead`(점수판 줄,
+우승자의 금색 줄, 머리줄), `GoTile` · `GoTileLit`(로딩 블록, 꺼진 것과 켜진 것). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
+플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
+REPULSE · JUMP 키, 스틱 바탕과 손잡이)도 싣는다. 위젯은 `GoUi.skin().widget_art(&"stopwatch")` 처럼 이름으로 꺼내고, 다른
+룩은 모두 `null` 을 돌려준다.
 
 채운 버튼은 기본으로 평평하다. `*GlowButton` 두 변형은 버튼 자기 색의 부드러운 그림자(sci-fi 모양은 글로우)로 띄운다 —
 채운 버튼 전부는 `GoConfig.button_glow` 를 켜고, 버튼 하나만은 `GoStyle.glow(button)` 을 부른다.
@@ -477,7 +504,7 @@ GoUi.refresh()
 
 | 따른다 — 컨테이너 | 따르지 않는다 — 누르는 것·표식 |
 |---|---|
-| `GoSurface`(다이얼로그·시트·드롭다운의 근원) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` | 버튼 전부 · `GoSlot`(퀵슬롯) · `GoBadge`(배지) · 분절 선택 · 고르는 칸 · 칩 · 원판·아바타 |
+| `GoSurface`(다이얼로그·시트·드롭다운의 근원) · `GoSheet` · `GoDialogs` · `GoDrawer` · `GoPopover` · `GoNotice` · `GoSnackbar` · `GoPromptCard` · `GoCoachMark` · `GoConsole` · `GoRibbonHeader` | 버튼 전부 · `GoSlot`(퀵슬롯) · `GoBadge`(배지) · 분절 선택 · 고르는 칸 · 칩 · 원판·아바타 |
 | `GoStyle.card()` · `hud_panel()` · `overlay_panel()` · `alert()` · `plate()` · `edge_card_panel()` · `style_notice_panel()` · `floating()` · `box()` · `surface()` | 글자·아이콘 일체 |
 
 - **팝업 메뉴(`PopupMenu`)는 기본이 꽉 찬 색**이다(`popup_alpha` 100). 엔진이 그것을 **창**으로 띄울 수 있고,
@@ -551,7 +578,9 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoStyleBoxMedieval` | 리벳·모서리 각인·베벨 반사·재질 질감이 있는 단조 프레임 |
 | `GoStyleBoxJelly` | 젤리 사탕 — 굵은 외곽선, 밝은 윗면과 짙은 띠, 흰 광택, 누르면 꺼지는 턱 |
 | `GoStyleBoxComic` | 코믹 칸 — 굵은 잉크 외곽선과 오른쪽 아래로 떨어지는 단단한 그림자, 크기는 `GoConfig` 가 정한다 |
-| `GoStyleBoxArcade` | 칠한 아케이드 알약 키 — 위아래 그러데이션·캔디 광택·짙은 턱·잉크 외곽선, 두꺼운 테를 두른 판, 또는 제비꼬리 리본 |
+| `GoStyleBoxSprite` | PNG를 9슬라이스로 그리는 페인티드 박스 — 텍스처 픽셀 단위의 가장자리와 pixels-per-unit 배율, `arcade_light`에서 사용 |
+| `GoTextureSprite` | 테마 아이콘(슬라이더 손잡이, 스위치 알약)용 그리기 전용 `Texture2D` — 논리 크기 `draw_size` 를 알리고 더 큰 그림을 그 안에 줄여 그려, 엔진이 3배 스프라이트를 게임 크기로 배치하고 그린다. RID 가 없어 `StyleBoxTexture`·`NinePatchRect`·셰이더에는 쓸 수 없다 |
+| `GoStyleBoxArcade` | 코드로 그린 아케이드 알약 키 — 위아래 그러데이션·캔디 광택·짙은 턱·잉크 외곽선, 두꺼운 테를 두른 판, 또는 제비꼬리 리본 |
 
 🛑 `GoStyle.surface()` 는 스킨이 만든 모양을 **그대로** 넘긴다. `box()`·`floating()`·`disc()` 는
 돌려받아 `bg_color` 를 고치는 옛 호출부와의 약속 때문에 **언제나 `StyleBoxFlat`** 이다 —
@@ -568,7 +597,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 | 클래스 | 바탕 | 하는 일 |
 |---|---|---|
-| `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절 |
+| `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절, 머리 모서리의 그림 또는 닫기 버튼(`corner`, `corner_on_left`), `show_close_key`면 그림 반대쪽 모서리에 닫기 키 |
 | `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터. `max_height_ratio` 로 그 시트만 전역 상한 0.72 를 넘겨 키운다(비율이 깎이면 디버그 빌드에서 경고) |
 | `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼, `action_layout` 으로 버튼 세로·한 줄·자동. `await choose()` 는 몇 가지 중 고른 것의 번호 |
 | `GoForm` | MarginContainer | 브레이크포인트마다 폭을 제한하고 가상 키보드를(`avoid_hud` 면 HUD 까지) 피하며 라벨 줄바꿈을 보장하는 폼 |
@@ -577,16 +606,16 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoPromptCard` | PanelContainer | 화면을 막지 않는 질문 카드. 새로 그려도 눌린 버튼이 살아 있다 |
 | `GoCoachMark` | Control | 실제 컨트롤을 가리키는 안내 투어. 대상을 누르면 다음으로, 카드는 HUD 앵커와 `keep_clear` 를 피한다 |
 | `GoHudAnchor` | Control | HUD 를 안전영역 아홉 자리 중 하나에 붙인다. 가로 자리·`reserve_space`·`avoid_peers`. `keyboard_focus = false` 면 그 모서리의 버튼이 스페이스·엔터를 가로채지 않는다 |
-| `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간 |
+| `GoBar` | Control | 체력·마나·경험치 막대. 값·분수·퍼센트 표시와 부드러운 보간. `arcade_light`에서는 게임 HUD의 페인트 막대(둥근 홈 안의 그라데이션, 이름 앞 아이콘) |
 | `GoSlot` | Button | 아이콘·수량·쿨다운·단축키를 판 한 장에 담은 퀵슬롯. 촘촘한 줄에서 터치 영역 공유, `keyboard_focus` 로 Tab 순회 포함 |
 | `GoJoystick` | Control | 고정·따라오기·상대 모드의 가상 조이스틱, 데드존 |
-| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 게임 화면 위에서는 `keyboard_focus = false` |
+| `GoIconButton` | Button | 작게 보이고 크게 눌리는 아이콘 버튼, 접근성 이름. 툴팁에 직접 만든 번역 키를 그대로 쓴다. 포커스는 룩을 따른다(arcade_light에서는 꺼짐). 게임 화면 위에서는 `keyboard_focus = false` |
 | `GoStyle` | 팩토리 | 버튼·라벨·목록 줄(고른 줄 표시는 `restyle_list_row`)·입력·선택·드롭다운·아이콘 분절 선택·칩(그리고 `filter_chip`·`input_chip`)·떠 있는 툴바·아래 앱 바·외곽선 버튼(`Tone.OUTLINED`)·카드·항목 상세 카드(`item_card`)·표·탭·흐르는 줄·반응형 격자·접이식 섹션·빈 상태 |
 | `GoUi` | 정적 | 현재 설정·프리셋·테마·스킨·아이콘·색·치수·문구 |
 | `GoThemePresets` | 정적 | 기본 프리셋 열넷, `themes/presets/` 에서 찾은 프리셋, 내 것을 더하는 `register()` |
-| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
+| `GoSkin` · `GoSkinSciFi` · `GoSkinMedieval` · `GoSkinMaterial` · `GoSkinKids` · `GoSkinComic` · `GoSkinArcade` · `GoSkinArcadePainted` | Resource | 코드가 그리는 모양과 숫자 다이얼 |
 | `GoSafeArea` | Control / 정적 | 노치·둥근 모서리·키보드를 뺀 쓸 수 있는 사각형 |
-| `GoScale` | 정적 | 브레이크포인트와 dp 계산 |
+| `GoScale` | 정적 | 브레이크포인트와 dp 계산, 인치 기준 프로필(`per_inch_factor`, `per_inch_canvas`, `web_dpi`, `cap_sides`) |
 | `GoFeedback` | 정적 | 소리·햅틱 연결 |
 | `GoBackPolicy` | 정적 | Android 뒤로 가기의 소유권 |
 
@@ -617,8 +646,24 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoRadar` | Control | 능력치 오각형 — 힘·민첩·지능·체력·행운을 한 모양으로. `set_compare()` 가 바꿔 낄 장비를 **점선**으로 겹친다(점선이라 색각 이상인 사람도 두 줄로 본다) |
 | `GoDonut` | Control | 피해량 분포·재화 비율·파티 기여도. `collapse_to` 를 넘는 조각은 하나로 묶고, 가운데에 합계를 두며, `legend()` 가 조각마다 이름과 비율을 **글자로** 말한다 |
 | `GoCarousel` | VBoxContainer | 이벤트 배너와 캐릭터 선택. **저절로 넘어가지 않는다** — 자동으로 넘어가는 배너는 사람이 누르려던 것을 가로챈다. 점은 눌리고, 몇 번째인지 소리로 읽힌다 |
-| `GoKbd` | HBoxContainer | 키 안내. `GoKbd.for_action(&"interact")` 가 InputMap 에서 **실제 배치**를 읽으므로 키를 바꾸면 안내도 바뀐다. `hide_on_handheld` 가 폰에서는 감춘다 |
+| `GoKbd` | HBoxContainer | 키 안내. `GoKbd.for_action(&"interact")` 가 InputMap 에서 **실제 배치**를 읽으므로 키를 바꾸면 안내도 바뀐다. `hide_on_handheld` 가 폰에서는 감춘다. `done` 은 플레이어가 끝낸 단계의 키캡을 초록으로 바꾼다 |
+| `GoKeyCluster` | Control | 역 T 모양의 이동 키 네 개 — W 위에 A S D, 또는 방향키 — 조작 안내 화면처럼 보여 준다. 키마다 룩의 키캡(`GoSkin.key_cluster_box`)이고 방향 글자는 삼각형으로 그리며, 플레이어가 배치를 누르면 `picked` 가 나온다. 키 이름은 번역하지 않는다 |
+| `GoLevelCard` | Button | 스테이지 선택 카드 — 썸네일, 제목, 부제 줄(사람 아이콘과 "OPPONENTS: 3"), 오른쪽에 깬 레벨은 체크, 잠긴 레벨은 자물쇠(카드는 `disabled`), 다음 레벨은 비스듬한 PLAY! 태그. `selected` 는 금색 링을 그린다. 얼굴은 `GoLevelCard` · `GoLevelCardCurrent` · `GoLevelCardLocked` 에서 오고, 글자는 칸에 맞게 줄어든다(`GoStyle.fit_font_size` — 테마의 글꼴로 잰다. `arcade_light` 에서는 게임처럼 Nunito 와 CJK 대체 글꼴 넷) |
+| `GoCoverImage` | Control | 상자를 가득 채우는 그림 — CSS `object-fit: cover`: 빈틈이 없을 때까지 키우고 넘친 부분은 자르며, `focus` 가 남길 부분을 고른다. `clip_contents` 가 필요 없고 마우스는 통과시킨다 |
+| `GoGlyphButton` | Button | 라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약. 글리프·간격·라벨이 함께 가운데에 선다. `Button.icon` 으로는 안 된다. 라벨은 평범한 `text` 라 번역과 테스트가 다른 버튼과 같다 |
+| `GoSlider` | HSlider | 칠한 모양으로 그리는 설정 슬라이더 — 채움이 손잡이 가운데보다 조금 더 나가고(최솟값에서도 가는 줄이 되지 않는다) 누르고 있는 손잡이는 커진다. 테마의 HSlider 부품을 그대로 그리므로 `GoSliderGreen` · `GoSliderCyan` 이 채움 색을 고른다. 값·시그널·터치는 기본 HSlider 그대로다 |
+| `GoMapPreview` | Control | 레벨의 작은 지도 — 사각형·원·다각형 구역과 테두리, 구역을 잇는 다리, 시작 점을 어두운 상자나 테마의 우물 안에 맞춰 가운데에 그린다. 잠기면 시작 점 없는 회색 실루엣이 된다. 게임은 데이터만 넘긴다 |
+| `GoSwitch` | CheckButton | 칠한 모양으로 그리는 켜기/끄기 스위치 — 테마의 알약이 칸 가운데에 서고, 손잡이 옆에 글자(`set_texts("ON", "OFF")`)가 들어가며 어느 언어든 맞게 줄어든다. 켜고 끄기와 터치는 기본 CheckButton 그대로다 |
 | `GoChoiceColumn` | Control | 한 번 눌러 고르는 짧은 세로 목록 — HUD 옆 바의 소환 목록 같은 것. 몇 칸씩 보이고 위아래로 넘기며, **아무 칸이나 한 번 누르면 바로 동작**한다(휠처럼 가운데로 돌릴 필요가 없다). 고른 칸 표시(`set_selected`)·흐리게(`set_dimmed`)는 게임이 여러 칸에 걸 수 있고, 칸이 제 그림을 그릴 수도 있다(`item_drawer`). 게임 위에서는 키보드 초점이 꺼져 있어 방향키가 플레이어에게 남는다 |
+| `GoPerfReadout` | PanelContainer | 항상 켜 두는 성능 띠 — fps, 프레임 시간과 가장 느린 프레임, 삼각형, 드로 콜, 노드, RAM, VRAM. fps 글자색이 좋음 → 경고 → 나쁨으로 바뀐다. 엔진을 직접 샘플링하거나(프레임마다 할당 없음, 바뀔 때만 씀) `show_stats()` 로 받은 값을 보인다. 좁은 곳엔 `one_line`. 입력을 받지 않는다 |
+| `GoTaskCard` | PanelContainer | 게임을 하며 배우는 튜토리얼의 과제 카드 — 단계 줄, 제목(한 줄에 맞게 줄어든다), 할 일, 부분마다 하나씩 끝나면 `✓` 가 붙는 키캡 칩, 막혔을 때의 힌트와 꼬리말. `compact` 면 한 줄(단계, 제목, 칩)로 접힌다. 버튼이 없고 입력을 받지 않는다 |
+| `GoSpotlight` | Control | 한 가지(사각형, 또는 따라가는 컨트롤) 둘레의 화면을 어둡게 하고 테두리를 둘러 "바로 이것"을 가리킨다. 어둠은 `dim_seconds` 뒤 사라지고 테두리는 남는다. 카드도 버튼도 없다 — `GoTaskCard` 와 함께 쓴다. 입력을 받지 않는다 |
+| `GoTouchButton` | Control | 모바일 액션 게임의 둥근 엄지 버튼 — 둥근 그림(`GoSkin.widget_art`)과 아이콘 아래 이름(맞게 줄어든다), 쿨다운 고리(`cooling`, `cooldown` 0~1)와 준비되면 한 번 튀는 효과. 누르면 작아지고 어두워진다. `drag_aim` 이면 작은 스틱도 된다 — 누른 채 끌어 조준, `aimed(pull)`. 표시와 입력만 한다 |
+| `GoNoticeFeed` | VBoxContainer | 알림 피드(킬 피드) — 한 줄 알림이 새 것이 아래로 쌓이고, 서서히 나타났다가 `seconds` 뒤 저절로 사라진다. `push(text, own)` — 플레이어 자신의 줄은 눈에 띈다. 줄은 `max_items` 개를 미리 만들어 재사용하므로 알림이 몰려도 아무것도 만들지 않는다. 줄은 테마의 `GoNotice` / `GoNoticeGold` 패널, 없으면 `GoSkin.notice_box()`. 표시만 한다 |
+| `GoNameplate` | PanelContainer | 3D 세계의 캐릭터 위에 뜨는 이름표 — 캐릭터 색의 작은 둥근 태그(자기 것은 `GoSkin.nameplate_own_fill()`), 폭은 `base_width` 에서 이름 전체가 들어가도록 `max_width` 까지 넓어진다. `follow(camera, point)` 가 투영한 점에 가운데를 맞추고 카메라 뒤에서는 숨긴다. 표시만 한다 |
+| `GoHudButton` | HBoxContainer | HUD 모서리 버튼 — 그림 버튼(`GoIconButton.art`, 포커스를 잡지 않음) 옆에 같은 일을 하는 키를 키캡에 보인다(일시정지 버튼 옆 "Esc"). 터치 화면에서는 `show_hint = false`. 키캡은 `GoSkin.hud_key_hint_box()`. 표시만 한다 — `pressed` 를 알릴 뿐 무엇을 할지는 게임이 정한다 |
+| `GoCountdown` | Label | 경기 시작 카운트 — 3 · 2 · 1 · GO! 를 원판 위에 크게(`show_step(text, final)`, `hide_step()`), 단계마다 톡 튀어 나온다(커졌다 흐려진 채 0.35초에 걸쳐 자리 잡음, `reduce_motion` 이면 없음). 원판은 `GoSkin.countdown_disc(final)`, 글자는 `GoSkin.countdown_ink()` 에 두꺼운 외곽선과 그림자. 표시만 한다 — 어떤 단계를 보일지는 호출자가 정한다 |
+| `GoHudCard` | PanelContainer | 경기 HUD 윗줄의 판 하나 — 아이콘 뒤에 금색 이름 배너와 HUD 막대(플레이어 카드), 제목 옆의 숫자, 시계 위의 캡션(`set_clock`, 호출자가 경고하면 빨강), 또는 능력이 준비되면 테두리가 켜지는 게이지(`set_lit`: 쿨다운 동안 흐리고, 켜질 때 톡 튄다). 판은 `GoHudPanel`, 배너는 `GoBannerGold`이고 `padding` 으로 폰에서 더 촘촘하게 한다. 표시만 한다 — 값은 모두 호출자가 준다 |
 
 ### 화면 위에
 
@@ -627,6 +672,8 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoDrawer` | CanvasLayer | 양옆에서 밀려 나오는 판 — 폰보다 넓은 화면을 위한 것. 안전영역을 지키고, 뒤로 가기와 막에서 닫히며, RTL 에서 좌우가 뒤집힌다 |
 | `GoPopover` | RefCounted | 누른 것 **옆에** 붙는 설명 카드 — 아이템 툴팁, "이 능력치가 뭐지" 카드. 한 번에 하나만 뜨고, 화면 밖으로 나갈 자리면 반대쪽으로 넘어가며, 창 크기가 바뀌면 따라간다 |
 | `GoContextMenu` | RefCounted | 어떤 컨트롤에든 길게 누르기(0.5초)·오른쪽 클릭. 손가락이 12dp 넘게 움직이면 **취소한다** — 그래야 긴 목록이 그대로 스크롤된다 |
+| `GoRibbonHeader` | Control | 카드 열의 첫 줄에 두는 화면 제목 리본 — 룩의 판(다른 판은 `ribbon_variation`) 위에 글리프와 제목(칸에 맞게 줄어든다), 카드 위쪽 가장자리에 걸치고 모서리에 룩의 그림(`corner`, `corner_on_left`). `arcade_light`에서는 Magnet Mayhem의 `RibbonHeader`와 같다 |
+| `GoFitBox` | Container | 카드를 통째로 화면 안에 둔다 — 안전영역 가운데에 놓고, 너무 크면 가장자리에 걸친 것(`GoRibbonHeader` 의 리본과 모서리 그림)까지 한 덩어리로 줄인다. 맞춤 하한보다 더 줄어야 하면 `flex` 목록이 먼저 스크롤된다. `arcade_light`에서는 Magnet Mayhem의 `FitBox`와 같다. `GoSurface` 는 `fit_mode = SCALE` 로 같은 일을 한다 |
 | `GoConsole` | CanvasLayer | 개발자 콘솔 — 등록한 명령, 인자, 기록, 자동완성. `debug_only` 가 기본 `true` 라 **배포 빌드에서는 열리지 않는다** |
 
 ### 앱 화면
@@ -749,7 +796,8 @@ var sort: int = await dialogs.choose("정렬", ["최신순", "안 읽은 것 먼
 | `GoScroll.as_horizontal(node)` | 정적 | `horizontal()` 의 설정 단계 — `static func horizontal() -> MyScroll` 을 자식이 다시 만들 때 |
 
 `GoIconButton.native_texture_size = true` 는 텍스처 아이콘을 스킨의 그림 크기(`GoSkin.icon_button_glyph` — `visual_size` 의
-58%, Material 에서는 36dp 버튼에 24dp)로 늘리지 않고 원래 픽셀 크기로 그린다.
+58%, Material 에서는 36dp 버튼에 24dp)로 늘리지 않고 원래 픽셀 크기로 그린다. `GoIconButton.art = texture` 는 그림 하나가 버튼 전체가 된다(칠한 둥근 일시정지 버튼) —
+`visual_size` 를 틀 없이 채우고, 눌린 동안 `GoSkin.picture_press_tint()` 로 어두워진다.
 
 ## 플러그인
 
@@ -815,8 +863,11 @@ GoUi.config.number_formatter = func(amount: float) -> String:
     return str(roundi(amount))
 ```
 
-> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제)과 Roboto(Material
-> 프리셋의 제목·캡션·버튼 글자 — 프로젝트에 글꼴 설정이 없으면 본문까지) 둘이고, 그 밖의 글자는 호스트 글꼴을 쓴다.
+> 🛑 **언어에 맞는 글꼴은 호스트가 준다.** 함께 든 글꼴은 Cinzel(중세 프리셋의 제목·부제), Roboto(Material
+> 프리셋의 제목·캡션·버튼 글자 — 프로젝트에 글꼴 설정이 없으면 본문까지), 그리고 Magnet Mayhem 의 Nunito 와 Noto Sans
+> CJK 폴백(프로젝트에 글꼴 설정이 없으면 `arcade_light` 의 모든 글자 — CJK 파일에는 게임에 쓰는 글자만 들어 있어 나머지는
+> 시스템 글꼴이 그린다. `GoUi.set_locale(code)` 로 언어를 바꾸면 그 언어의 CJK 글꼴이 폴백 맨 앞에 선다)이고, 그 밖의
+> 글자는 호스트 글꼴을 쓴다.
 > 태국어·아랍어·히브리어·힌디어·CJK 는 호스트 프로젝트의 테마 폰트가 글리프를 덮어야 한다 — 라틴 전용
 > 폰트면 두부(□)로 그려지고 **오류는 나지 않는다**. 번체도 마찬가지다: 간체 서브셋에는 번체 자형이 없다.
 
@@ -833,12 +884,14 @@ GoFeedback.sound_handler = func(cue: String) -> void: MyAudio.play(cue)
 
 ## 접근성
 
-- 보이는 컨트롤이 작아도 터치 영역은 `min_touch_size`(48dp) 아래로 내려가지 않는다.
+- 보이는 컨트롤이 작아도 터치 영역은 `min_touch_size`(48dp) 아래로 내려가지 않는다. 룩마다
+  `touch` 토큰도 둔다. 모두 48이고 `arcade_light`만 Magnet Mayhem의 44다.
 - 아이콘만 있는 버튼은 툴팁 문구를 `accessibility_name` 으로 내보낸다.
 - `reduce_motion` 을 켜면 페이드와 깜빡이는 강조가 꺼진다.
 - 포커스 링은 키보드·게임패드 사용자에게만 보이고, 누르거나 클릭한 뒤에는 뜨지 않는다. 채워진 버튼에는
   그 판과 대비되는 링이 붙고, 대비 검사가 그 자리에서 잰다.
-- 창이 열리면 포커스가 창 안으로 들어가고, 밖으로 새지 않으며, 닫히면 원래 자리로 돌아간다.
+- 창이 열리면 포커스가 창 안으로 들어가고, 밖으로 새지 않으며, 닫히면 원래 자리로 돌아간다. 창 안에 포커스를
+  받을 것이 없으면(arcade_light 의 컨트롤은 포커스 순서에서 빠진다) 뒤 화면이 포커스를 놓아, 엔터가 창을 연 버튼을 다시 누르지 않는다.
 - 퀵슬롯은 기본으로 Tab 순회에서 빠진다. 키보드·게임패드가 유일한 입력이면 `GoSlot.keyboard_focus` 로 넣는다.
 - `GoStyle.Tone.DANGER_SOLID`(와 `GoDialogs.confirm(..., destructive = true)`)는 밝은 테마에서도 되돌릴 수 없는
   동작을 위험으로 읽히게 한다 — 옅게 물든 위험 버튼의 글자는 검은 글자처럼 보이기 때문이다.
@@ -978,5 +1031,6 @@ MIT — [LICENSE](LICENSE). 코드와 함께 든 그림(기본 아이콘 84종, 
 gohud 를 위해 만든 것이라 역시 MIT 다. 상업 게임에 쓰고, 고치고, 재배포해도 된다.
 게임 아이콘 세트 187종과 아이콘 라이브러리 1,000종도 MIT 다 — 게임 171종과 라이브러리 전부는 Tabler Icons(MIT, Copyright (c) 2020-2026 Paweł Kuna)의 경로 데이터를 쓰고, 게임 16종은 gohud 를 위해 그렸다.
 Cinzel·Roboto 글꼴은 수정하지 않은 채 SIL Open Font License 1.1 로 함께 배포한다(`assets/fonts/cinzel/OFL.txt`,
-`assets/fonts/roboto/OFL.txt`).
+`assets/fonts/roboto/OFL.txt`). `arcade_light` 의 Nunito Bold 와 Noto Sans KR·JP·SC·TC Bold 서브셋(Magnet Mayhem 의 파일)도
+같은 라이선스다(`assets/fonts/nunito/OFL.txt`, `assets/fonts/noto_sans_cjk/OFL.txt`).
 자세한 고지는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

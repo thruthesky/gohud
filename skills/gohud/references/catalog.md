@@ -12,14 +12,14 @@ against the code (`tools/check_docs_api.py`).
 ## Contents
 
 1. [Layout](#layout) (15)
-2. [Windows and overlays](#windows-and-overlays) (9)
+2. [Windows and overlays](#windows-and-overlays) (12)
 3. [Messages and waiting](#messages-and-waiting) (12)
 4. [App navigation](#app-navigation) (13)
-5. [Buttons, chips and choices](#buttons-chips-and-choices) (9)
-6. [Inputs and pickers](#inputs-and-pickers) (12)
+5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
+6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (11)
-9. [Looks and system](#looks-and-system) (8)
+8. [HUD and game shapes](#hud-and-game-shapes) (24)
+9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
 
@@ -199,6 +199,17 @@ sheet.open("Inventory")
 sheet.body.add_child(bag_list)
 ```
 
+### `GoPage`
+
+Extends `CanvasLayer`. A full-screen page with a category rail (left in landscape, tabs on top in portrait), a preview and back. Details: `surfaces.md` §14 (GoPage).
+
+```gdscript
+var page := GoPage.new()
+add_child(page)
+page.open("Settings")
+page.set_tabs([{id = &"sound", label = "Sound", icon = GoIconSet.VOLUME_HIGH, badge = ""}])
+```
+
 ### `GoDialogs`
 
 Extends `Node`. Confirm and alert windows you await; alerts wait their turn. Details: `surfaces.md` §3 (GoDialogs).
@@ -264,6 +275,24 @@ Extends `CanvasLayer`. A developer console with commands and history; off in rel
 var console := GoConsole.new()
 add_child(console)
 console.register("give", "Grant an item", give_item)
+```
+
+### `GoRibbonHeader`
+
+Extends `Control`. A screen's title ribbon hanging over the top of its card, with a glyph and the look's corner art. Details: `surfaces.md` §12 (GoRibbonHeader).
+
+```gdscript
+var header := GoRibbonHeader.make("PAUSED", GoIconSet.PAUSE)
+card_column.add_child(header)
+```
+
+### `GoFitBox`
+
+Extends `Container`. Keeps a whole card on the screen, shrinking it with its ribbon when too big; a long list scrolls instead. Details: `surfaces.md` §13 (GoFitBox).
+
+```gdscript
+var fit := GoFitBox.new()
+fit.add_child(card)
 ```
 
 
@@ -537,6 +566,14 @@ var bell := GoIconButton.new()
 bell.icon_name = GoIconSet.BELL
 ```
 
+### `GoGlyphButton`
+
+Extends `Button`. A button with a glyph right beside its label — the glossy pill of an arcade menu. Details: `hud.md` §23 (GoGlyphButton).
+
+```gdscript
+row.add_child(GoGlyphButton.make("Play", GoIconSet.PLAY, GoTheme.VAR_PRIMARY_BUTTON))
+```
+
 ### `GoStyle.chip`
 
 A function of `GoStyle`. A status or tag pill whose text always reads. Details: `style.md` §6 (Display).
@@ -660,6 +697,24 @@ Extends `Control`. Two handles that never cross — a price or a level range. De
 ```gdscript
 var price := GoRangeSlider.make(0.0, 500.0, 40.0, 220.0, 10.0)
 price.change_ended.connect(func(low: float, high: float) -> void: refilter(low, high))
+```
+
+### `GoSlider`
+
+Extends `HSlider`. A slider drawn the painted way: the fill runs past the handle, a held handle grows. Details: `hud.md` §24 (GoSlider).
+
+```gdscript
+var music := GoSlider.make(0.0, 1.0, 0.01)
+music.theme_type_variation = &"GoSliderGreen"
+```
+
+### `GoSwitch`
+
+Extends `CheckButton`. An on/off switch drawn the painted way, with ON / OFF beside the knob. Details: `hud.md` §25 (GoSwitch).
+
+```gdscript
+var vibration := GoSwitch.make(true)
+vibration.set_texts(tr("ON"), tr("OFF"))
 ```
 
 ### `GoDatePicker`
@@ -834,6 +889,136 @@ animals.set_selected(2, true)
 side_bar.add_center(animals)
 ```
 
+### `GoLevelCard`
+
+Extends `Button`. A stage-select tile: thumbnail, title, subtitle, and a check, a padlock or a PLAY! tag by state. Details: `hud.md` §20 (GoLevelCard).
+
+```gdscript
+var card := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
+card.pressed.connect(play_stage)
+```
+
+### `GoKeyCluster`
+
+Extends `Control`. Four movement keys in an inverted T — WASD or the arrow keys — as a controls page shows them. Details: `hud.md` §21 (GoKeyCluster).
+
+```gdscript
+var wasd := GoKeyCluster.make(["W", "A", "S", "D"])
+var arrows := GoKeyCluster.make(GoKeyCluster.ARROWS)
+```
+
+### `GoCoverImage`
+
+Extends `Control`. A picture that fills its box, cropping the overflow like CSS object-fit: cover. Details: `hud.md` §22 (GoCoverImage).
+
+```gdscript
+var shot := GoCoverImage.make(preload("res://art/level_3.png"), Vector2(0.5, 0.3))
+shot.custom_minimum_size = Vector2(74, 74)
+```
+
+### `GoHudCard`
+
+Extends `PanelContainer`. One board of a match HUD's top row: an icon with a banner and bars, a count, a clock or a ready gauge. Details: `hud.md` §27 (GoHudCard).
+
+```gdscript
+var clock := GoHudCard.make(GoUi.skin().widget_art(&"stopwatch"))
+clock.title = "MATCH TIME"
+clock.set_clock(83.0)
+```
+
+### `GoCountdown`
+
+Extends `Label`. The match-start count: 3, 2, 1, GO! big on a disc, each step popping in. Details: `hud.md` §28 (GoCountdown).
+
+```gdscript
+var count := GoCountdown.new()
+count.show_step("3")
+```
+
+### `GoHudButton`
+
+Extends `HBoxContainer`. A HUD corner button: a picture button with its keyboard key on a cap beside it. Details: `hud.md` §29 (GoHudButton).
+
+```gdscript
+var pause := GoHudButton.make(GoUi.skin().widget_art(&"pause_button"), 52.0, "Esc")
+pause.pressed.connect(func() -> void: print("pause"))
+```
+
+### `GoNameplate`
+
+Extends `PanelContainer`. A name plate floating over a character in a 3D world, the same size at any distance. Details: `hud.md` §30 (GoNameplate).
+
+```gdscript
+var plate := GoNameplate.make("BOT RED", Color(0.86, 0.24, 0.24))
+plate.follow(camera, anchor.global_position)
+```
+
+### `GoNoticeFeed`
+
+Extends `VBoxContainer`. A feed of one-line notices, such as a kill feed, that stack, fade in and leave on their own. Details: `hud.md` §31 (GoNoticeFeed).
+
+```gdscript
+var feed := GoNoticeFeed.new()
+feed.push("RED knocked out BLUE")
+feed.push("YOU knocked out GREEN", true)
+```
+
+### `GoTouchButton`
+
+Extends `Control`. A round thumb button for touch screens, with a cooldown ring, a ready pulse and optional drag-to-aim. Details: `hud.md` §32 (GoTouchButton).
+
+```gdscript
+var jump := GoTouchButton.make(&"btn_jump", "JUMP", 86.0)
+jump.pressed_down.connect(send_jump)
+var skill := GoTouchButton.make(&"btn_repulse", "REPULSE", 92.0)
+skill.cooling = true
+skill.cooldown = 0.4
+```
+
+### `GoSpotlight`
+
+Extends `Control`. Dims the screen round one control and rings it; the dim fades, the ring stays. Details: `hud.md` §33 (GoSpotlight).
+
+```gdscript
+var spot := GoSpotlight.new()
+hud.add_child(spot)
+spot.follow(jump_button, true)
+```
+
+### `GoTaskCard`
+
+Extends `PanelContainer`. A tutorial lesson's card: step, title, what to do, part chips that tick off and a hint; folds to one row. Details: `hud.md` §34 (GoTaskCard).
+
+```gdscript
+var card := GoTaskCard.new()
+card.caption = "TRAINING · STEP 1/12"
+card.title = "MOVE"
+card.body = "Move with W A S D."
+card.set_parts(["W", "A", "S", "D"], [true])
+```
+
+### `GoPerfReadout`
+
+Extends `PanelContainer`. An always-on performance band: fps, frame time, triangles, draw calls, nodes and memory; turns red as fps drops. Details: `hud.md` §35 (GoPerfReadout).
+
+```gdscript
+var perf := GoPerfReadout.new()
+perf.tier_text = "LOW (auto)"
+overlay_layer.add_child(perf)
+```
+
+### `GoMapPreview`
+
+Extends `Control`. A small map of a level: areas, links and start dots; a grey silhouette when locked. Details: `hud.md` §26 (GoMapPreview).
+
+```gdscript
+var map := GoMapPreview.new()
+map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))
+map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))
+map.add_link(Vector2(0, 0), Vector2(18, 0), 2.0, Color("#c9a26b"))
+map.set_starts(PackedVector2Array([Vector2(-3, 0), Vector2(20, 0)]))
+```
+
 ### `GoRewardCalendar`
 
 Extends `VBoxContainer`. Daily attendance rewards; only today can be pressed. Details: `hud.md` §13 (GoRewardCalendar).
@@ -934,12 +1119,23 @@ face.cut = 8
 panel.add_theme_stylebox_override(&"panel", face)
 ```
 
+### `GoStyleBoxSprite · GoTextureSprite`
+
+Extends `StyleBox`. A painted PNG drawn in nine slices, and its icon twin for a slider handle or a switch. Details: `theming.md` §7 (Custom StyleBoxes).
+
+```gdscript
+var plate := GoStyleBoxSprite.new()
+plate.texture = preload("res://ui/painted/gloss_green.png")
+plate.pixels_per_unit = 3.0
+button.add_theme_stylebox_override(&"normal", plate)
+```
+
 ### `GoSafeArea · GoScale`
 
 Extends `Control · RefCounted`. Notches, the gesture bar and the keyboard; breakpoints in dp. Details: `platform.md` §5 (Safe area, keyboard, breakpoints, dp scale).
 
 ```gdscript
-var usable := GoSafeArea.usable_rect(get_window())
+var usable := GoSafeArea.usable_rect(get_viewport())
 var size_class := GoScale.breakpoint_for_dp(minf(usable.size.x, usable.size.y))   # by the short side
 ```
 

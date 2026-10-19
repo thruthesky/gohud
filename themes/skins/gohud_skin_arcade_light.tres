@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="GoSkinArcade" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="GoSkinArcadePainted" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/gohud/themes/skins/go_skin_arcade.gd" id="script"]
+[ext_resource type="Script" path="res://addons/gohud/themes/skins/go_skin_arcade_painted.gd" id="script"]
 
 [resource]
 script = ExtResource("script")
@@ -11,6 +11,7 @@ arcade_edge = 3
 arcade_gloss = 0.85
 arcade_lip = 4
 arcade_ribbon = 12.0
+arcade_scrim_blur = 3.0
 badge_pad_x = 7
 badge_pad_y = 2
 joystick_base_alpha = 0.5

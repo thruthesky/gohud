@@ -372,6 +372,8 @@ DIALS_EN = {
     "joystick_base_alpha": "Opacity of the joystick's base disc.",
     "joystick_ring_alpha": "Opacity of the joystick's ring.",
     "joystick_ring_width": "Width (dp) of the joystick's ring.",
+    "joystick_idle_alpha": "Opacity of a painted joystick while no finger is on it.",
+    "joystick_active_alpha": "Opacity of a painted joystick while a finger drives it.",
     "cut_chip": "Chamfer size (dp) of a chip's panel.",
     "cut_skeleton": "Chamfer size (dp) of a skeleton panel.",
     "cut_alert": "Chamfer size (dp) of an alert box.",
@@ -404,6 +406,7 @@ SKIN_TITLES = {
     "kids": {"ko": "어린이 스킨", "en": "Kids skin"},
     "comic": {"ko": "코믹 스킨", "en": "Comic skin"},
     "arcade": {"ko": "아케이드 스킨", "en": "Arcade skin"},
+    "arcade_painted": {"ko": "아케이드 페인티드 스킨", "en": "Arcade painted skin"},
 }
 
 
@@ -453,7 +456,10 @@ def scan_dials():
                 continue
             if not line.startswith("@export"):
                 pending = []
-        out[skin] = groups
+        # 🔑 A skin with no dials of its own (`arcade_painted` only lays sprites over the arcade's dials) gets no
+        #    table — an empty "— 0" heading would also be one h4 more than the translated pages carry.
+        if groups:
+            out[skin] = groups
     return out
 
 

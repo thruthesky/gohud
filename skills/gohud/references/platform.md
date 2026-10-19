@@ -176,6 +176,7 @@ GoUi.config.number_formatter = func(amount: float) -> String:        # CJK group
 	if absf(amount) >= 10_000.0: return "%.1f만" % (amount / 10_000.0)
 	return str(roundi(amount))
 TranslationServer.set_locale("ko")                                  # widgets re-translate themselves
+GoUi.set_locale("ja")              # the same, after putting the look's Japanese font first (arcade_light's CJK fallbacks)
 ```
 
 - `GoUi.text(name)` returns translated text (override → `text_keys` key → **the name itself through the translation server**, so a tooltip can take your own key without registering it); `GoUi.text_key(name)` returns the key.
@@ -188,6 +189,17 @@ TranslationServer.set_locale("ko")                                  # widgets re
 - 🛑 Fonts: two ship — Cinzel (Latin, medieval headings) and Roboto (the Material presets' text, used only when the
   project sets no font of its own). CJK, Thai, Arabic, Hebrew, Devanagari need a font with those glyphs in your
   Theme — missing glyphs draw as empty boxes without any error.
+- 🔤 **The current language's CJK font first.** Chinese, Japanese and Korean share Han characters but draw them
+  differently, so the reader's own font must lead the fallbacks. `GoUi.set_locale(code)` reorders the look's body-font
+  fallbacks (`set_font_locale(code)` → `true` when the order changed; it reassigns only then, because a reassignment
+  re-shapes all text), then calls `TranslationServer.set_locale(code)` if the locale differs — call it instead of the
+  bare `TranslationServer.set_locale`. The table is the theme's `go_locale_fonts` metadata (`GoUi.LOCALE_FONTS_META`,
+  `{"ko": Font, "ja": Font, "zh_CN": Font, "zh_TW": Font}`); `arcade_light` carries Magnet Mayhem's Noto Sans KR / JP / SC /
+  TC. A code matches exactly, then by language (`ko_KR` → `ko`); Chinese by script or region (`Hans` → `zh_CN`;
+  `Hant`, `TW`, `HK`, `MO` → `zh_TW`); any other language keeps the written order (KR, JP, SC, TC).
+  `GoUi.use_preset()` applies the current locale. With the `GoRuntime` autoload a bare `TranslationServer.set_locale()`
+  is followed too (it reorders on `NOTIFICATION_TRANSLATION_CHANGED`, one frame of text in the old order); without it,
+  only `GoUi.set_locale()` reorders.
 
 ## 3. Sound and haptics
 
@@ -221,7 +233,8 @@ own button handlers for a consistent feel.
 - Icon-only buttons: pass a tooltip (`GoStyle.icon_button(icon, action, -1, &"Inventory")`) — it becomes
   `accessibility_name` for screen readers.
 - Focus rings show for keyboard/gamepad users only (`suppress_pointer_focus_ring`). Surfaces trap focus while
-  open and restore it on close; set `surface.initial_focus` for controller-first screens.
+  open and restore it on close; set `surface.initial_focus` for controller-first screens. With nothing focusable
+  inside (arcade_light: `FOCUS_NONE` controls, the close button too) the screen behind drops focus instead.
 - Quick slots skip Tab by default; `slot.keyboard_focus = true` when a gamepad is the only input.
 - `reduce_motion` stops fades, bar easing and coach-mark pulses; `autowrap_text` keeps long strings on screen.
 - Irreversible actions: `GoStyle.Tone.DANGER_SOLID` / `dialogs.confirm(..., destructive = true)`.
@@ -231,23 +244,57 @@ own button handlers for a consistent feel.
 
 | API | Notes |
 |---|---|
-| `GoSafeArea.usable_rect(window) -> Rect2` | Excludes notch/gesture bar on Android/iOS; full rect on desktop or when `respect_safe_area` is off. The OS reports the safe area in screen pixels; it comes into UI units through the window's final transform, so it holds under any stretch (the project's own `canvas_items` base, `GoScale`, letterboxing) |
+| `GoSafeArea.usable_rect(view: Viewport) -> Rect2` | Pass `get_viewport()`. Excludes notch/gesture bar on Android/iOS; full rect on desktop, when `respect_safe_area` is off, or for a `SubViewport` (its own rect — a window inside a preview or render-to-texture fits that viewport, not the main window). The OS reports the safe area in screen pixels; it comes into UI units through the window's final transform, so it holds under any stretch (the project's own `canvas_items` base, `GoScale`, letterboxing) |
 | `GoSafeArea.usable_rect_with_keyboard(window, keyboard_px)` | Also removes the virtual keyboard |
 | `GoSafeArea.clip_to_safe(area, safe_px, to_screen) -> Rect2` · `GoSafeArea.px_to_units(window, px) -> float` | The two conversions above as pure functions — feed a phone's figures to test a layout on the desktop |
-| `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch |
+| `GoSafeArea.margins(view) -> Vector4` · `GoSafeArea.hud_rect(view, side_max = -1) -> Rect2` | The safe margins (left, top, right, bottom, UI units); the usable rect with the left and right insets capped at the second argument (negative: `GoConfig.hud_side_inset_max`; that negative too, no cap) — what `GoHudAnchor` keeps to |
+| `GoSafeArea.inset_rect(area, insets_px, window_px) -> Rect2` | `area` less insets given in window pixels, each scaled by the window's units per pixel — the safe area a simulated device gives, Magnet Mayhem's `UiScale` numbers (`inset × canvas / pixels`) |
+| `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch; it moves on a resize and on `GoRuntime.safe_area_changed` |
 | `enum GoScale.Bp { MOBILE, TABLET, DESKTOP }` | Short side in dp: ≤ `mobile_max_dp` (576) mobile, ≤ `tablet_max_dp` (991) tablet |
 | `GoScale.breakpoint_for_dp(dp)` · `form_width_for(bp)` · `gain_for(bp, handheld, portrait)` · `display_scale(raw_scale, dpi, screen_px)` · `breakpoint_name(bp)` | Pure functions |
-| `GoRuntime` (plugin autoload) | `breakpoint_changed(bp)` · `viewport_resized(size)` · `keyboard_changed(px)` · `current_bp()` · `is_mobile()` · `short_dp()` |
-| `GoUi.is_handheld_platform()` | Android or iOS (not "narrow window") |
+| `enum GoScale.Profile { DP, PER_INCH }` · `GoScale.per_inch_factor(window_px, dpi, base, units_per_inch, min_height, handheld)` · `per_inch_canvas(window_px, base, factor)` · `web_dpi(reported)` · `cap_sides(margins, side_max)` | The per-inch profile as pure functions: the `content_scale_factor` that keeps a `canvas_items` base size about 160 units per physical inch on a handheld (never below the minimum height, never below 1), the canvas it gives, a phone browser's real dpi, and safe margins with the sides capped for an edge-hugging HUD |
+| `GoScale.is_handheld_screen()` · `handheld_from(has_feature, browsers)` · `screen_dpi()` · `dpi_from(reported, web, fallback)` | What `PER_INCH` and the safe area take as the device: a simulated one, else Android or iOS (with `GoConfig.handheld_browsers` also a phone or tablet browser), and the screen's dpi (a browser's rescaled by `web_dpi()`, `GoConfig.fallback_dpi` when it reports none) — the rules as pure functions over a stand-in `has_feature` and a reported dpi |
+| `GoRuntime` (plugin autoload) | `breakpoint_changed(bp)` · `viewport_resized(size)` · `keyboard_changed(px)` · `safe_area_changed(margins)` · `current_bp()` · `is_mobile()` · `short_dp()` · `safe_margins()` |
+| `GoRuntime.simulate(device)` · `clear_simulation()` · `simulation()` · `GoScale.simulate(device)` · `GoScale.simulated()` | 🧪 A device stood in for tests and screenshots (below) |
+| `GoUi.is_handheld_platform()` | Android or iOS (not "narrow window") — haptics, the virtual keyboard and the real safe area |
 
 `scale_enabled = true` makes 1 UI unit = 1 dp by setting `Window.content_scale_factor` — it changes the whole
-project's 2D coordinates, so only turn it on in a project designed for it.
+project's 2D coordinates, so only turn it on in a project designed for it. With `scale_profile = GoScale.Profile.PER_INCH`
+it instead keeps the project's base size (`canvas_items` stretch) and shrinks a handheld so the UI is the same size in
+the hand on every phone — Magnet Mayhem's device profile.
 
 ```gdscript
 var runtime := GoUi.runtime()
 # 🛑 `GoUi.runtime()` is typed `Node`, so `runtime.breakpoint_changed` does not parse — connect by name.
 if runtime:
 	runtime.connect(&"breakpoint_changed", func(bp: GoScale.Bp) -> void: rebuild_for(bp))
+	runtime.connect(&"safe_area_changed", func(margins: Vector4) -> void: hud.set_margins(margins))
+```
+
+**Magnet Mayhem's profile, set up once at boot** — the canvas about 160 units per inch on a phone and in a phone
+browser, never under 440 tall, an unknown dpi read as 160, the in-match HUD pushed in by a landscape notch 12 at most:
+
+```gdscript
+GoUi.config.scale_enabled = true
+GoUi.config.scale_profile = GoScale.Profile.PER_INCH
+GoUi.config.handheld_browsers = true      # web_android / web_ios: the phone profile too (no safe area there)
+GoUi.config.fallback_dpi = 160.0          # a screen that reports no dpi
+GoUi.config.hud_side_inset_max = 12.0     # GoHudAnchor: the side insets capped, top and bottom whole
+```
+
+🛑 **A 180° turn keeps the window size** — in landscape the notch moves to the other side with no resize. On a phone
+`GoRuntime` reads the safe area again every `GoConfig.safe_area_poll_seconds` (0.5 s; 0 never) and says
+`safe_area_changed(margins)`; `GoHudAnchor` and the `GoSafeArea` node follow it. A browser has no safe area: margins
+stay 0 there.
+
+🧪 **A device stood in** — `GoRuntime.simulate({dpi, insets, handheld, size})` (insets: the safe area's left, top,
+right and bottom in window pixels; `mobile` reads as `handheld`, so Magnet Mayhem's `DEVICE_PROFILES` pass as they
+are). The `PER_INCH` scale, the breakpoint and `GoSafeArea` read it; the window takes `size` (a headless run cannot
+resize — the scale is still worked out for it); a key left out reads the real device (no `insets`: none).
+
+```gdscript
+GoRuntime.simulate({"size": Vector2i(2532, 1170), "dpi": 460.0, "insets": Vector4(141, 0, 141, 63), "handheld": true})
+GoRuntime.clear_simulation()              # the real device and the window's own size again
 ```
 
 ## 6. Back button and modality
@@ -275,7 +322,7 @@ row.add_child(GoKbd.make("Ctrl", "S"))
 hint.add_child(GoKbd.for_action(&"interact"))     # reads the real binding
 ```
 
-`hide_on_handheld` (default on) · `set_keys(array)` `keys()` · `GoKbd.action_keys(action)`.
+`hide_on_handheld` (default on) · `done` (a key already pressed: the caps turn green) · `set_keys(array)` `keys()` · `GoKbd.action_keys(action)`.
 
 - 🔑 **`for_action()` reads `InputMap`.** A hard-coded "Press F" keeps saying F after the player rebinds —
   the most common lie in a PC UI. If the action does not exist or is bound to a pad, it returns **empty** and

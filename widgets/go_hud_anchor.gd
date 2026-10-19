@@ -91,6 +91,8 @@ const GROUP := &"gohud_hud_anchor"
 		focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED if value else Control.FOCUS_BEHAVIOR_DISABLED
 
 ## Whether to respect the safe area. Turn it off only for things that must fill the screen, like a backdrop.
+## 🔑 The left and right insets are capped at `GoConfig.hud_side_inset_max` when it is set (`GoSafeArea.hud_rect`) — a
+##    landscape notch then pushes the HUD in by that much at most, as Magnet Mayhem's in-match HUD (12).
 @export var use_safe_area := true:
 	set(value):
 		use_safe_area = value
@@ -115,10 +117,19 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	_runtime = GoUi.runtime()
 	get_viewport().size_changed.connect(_relayout)
+	# A 180° turn or a simulated device moves the safe area with no resize.
+	if _runtime != null and _runtime.has_signal(&"safe_area_changed"):
+		_runtime.connect(&"safe_area_changed", _on_safe_area)
 	child_entered_tree.connect(_watch_child)
 	for child in get_children(): _watch_child(child)
 	_relayout.call_deferred()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_relayout)
+	if is_node_ready(): _relayout()
 
 
 func _exit_tree() -> void:
@@ -137,6 +148,10 @@ func _watch_child(node: Node) -> void:
 	_relayout.call_deferred()
 
 
+func _on_safe_area(_margins: Vector4) -> void:
+	_relayout()
+
+
 ## The spot in force right now (with the orientation applied).
 func active_spot() -> Spot:
 	var view := get_viewport_rect().size
@@ -146,10 +161,10 @@ func active_spot() -> Spot:
 
 func _relayout() -> void:
 	if _laying_out or not is_inside_tree(): return
-	var window := get_window()
+	var window := get_viewport()
 	if window == null: return
 	_laying_out = true
-	var area := GoSafeArea.usable_rect(window) if use_safe_area else window.get_visible_rect()
+	var area := GoSafeArea.hud_rect(window) if use_safe_area else window.get_visible_rect()
 	var margin := float(GoUi.metric(GoTheme.SCREEN_MARGIN) if edge_margin < 0 else edge_margin)
 	area = area.grow(-margin)
 	if area.size.x <= 0.0 or area.size.y <= 0.0:

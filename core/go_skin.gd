@@ -82,6 +82,10 @@ extends Resource
 @export var joystick_ring_alpha := 0.45
 ## Width of the joystick ring (dp).
 @export var joystick_ring_width := 2.0
+## Opacity of a painted joystick (`joystick_art`) while no finger is on it.
+@export var joystick_idle_alpha := 0.55
+## Opacity of a painted joystick (`joystick_art`) while a finger drives it.
+@export var joystick_active_alpha := 0.9
 @export_group("")
 
 
@@ -175,9 +179,14 @@ static func fade_box(box: StyleBox, alpha: float) -> StyleBox:
 	return box
 
 
-## The StyleBox background color (transparent if it has none). Custom StyleBoxes use the `bg_color` field too.
+## The StyleBox background color (transparent if it has none). Custom StyleBoxes use the `bg_color` field too; a painted
+## sprite (`GoStyleBoxSprite`) answers with its `face_color`.
 static func box_background(box: StyleBox) -> Color:
 	if box == null: return Color.TRANSPARENT
+	# A painted sprite face (`GoStyleBoxSprite`) has no `bg_color`: its `face_color` names the colour of its art.
+	if &"face_color" in box and not (&"bg_color" in box):
+		var face = box.get(&"face_color")
+		return face if face is Color else Color.TRANSPARENT
 	if not (&"bg_color" in box): return Color.TRANSPARENT
 	var value = box.get(&"bg_color")
 	return value if value is Color else Color.TRANSPARENT
@@ -1136,6 +1145,12 @@ func scrim_material() -> Material:
 	return null
 
 
+## The material a scrim wears now: `scrim_material()` while `GoConfig.scrim_blur` is on, else `null` (the flat dim).
+## 🔑 Widgets call this, never `scrim_material()` directly, so the quality switch reaches every scrim.
+func scrim_material_now() -> Material:
+	return scrim_material() if GoUi.config.scrim_blur else null
+
+
 ## The blurred shader a frosted scrim uses: what is on screen behind it, blurred by [param strength] (1–4, the mip level
 ## read; the taps spread with it), then veiled with the scrim's own colour. The scrim's alpha also fades the blur in and
 ## out, so a drawer's scrim that animates its colour from clear to the veil frosts the game as it comes in.
@@ -1182,6 +1197,17 @@ func title_plate_min_size() -> int:
 	return 15
 
 
+## The size of a window's title on its plate before it shrinks to fit (dp). 0: the title's role size.
+func title_plate_font_size() -> int:
+	return 0
+
+
+## How much of the head a window's title plate takes (dp). 0: as tall as its title. A taller title grows the plate
+## down over the gap below (drawn, not laid out), as the game's ribbon does.
+func title_plate_height() -> float:
+	return 0.0
+
+
 ## Dresses a window's title label (`GoSurface`) — an outline round the letters, say. Called whenever the window takes
 ## the look, after the window has lifted the label's `font_outline_color` and `outline_size` overrides, so a look that
 ## leaves this empty gets the plain title back. `GoSkinArcade` outlines its white title in ink.
@@ -1193,6 +1219,24 @@ func dress_title(_label: Label) -> void:
 ## own overrides off the button first, so a look that leaves this empty gets the theme's plain icon button back.
 func dress_close_button(_button: GoIconButton) -> void:
 	pass
+
+
+## Dresses a search bar's clear button (`GoSearchBar`) — called whenever the bar takes the look. The bar lifts its
+## own overrides off the button first (`undress_close_button`), so a look that leaves this empty keeps the theme's
+## plain icon button.
+func dress_search_clear(_button: GoIconButton) -> void:
+	pass
+
+
+## Lifts what a look's `dress_close_button` put on a button — its faces, and the glyph's inks a look marked as its own
+## (`go_dressed_inks`), so a host's own inks stay.
+static func undress_close_button(button: GoIconButton) -> void:
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		button.remove_theme_stylebox_override(state)
+	for ink: StringName in button.get_meta(&"go_dressed_inks", []):
+		button.remove_theme_color_override(ink)
+	button.remove_meta(&"go_dressed_inks")
+	button.icon_tint = Color.TRANSPARENT
 
 
 ## What a press feels like: called with the control the moment a finger or the mouse goes down on a button gohud
@@ -1208,15 +1252,192 @@ func press_feedback(_control: Control) -> void:
 ## 🛑 Draw shapes of the same kind together — the canvas breaks the draw call every time the command type changes.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	canvas.draw_circle(center, radius, Color(base, joystick_base_alpha))
 	canvas.draw_circle(knob, knob_radius, Color(ink, 0.85 if active else 0.55))
 	canvas.draw_arc(center, radius, 0, TAU, 48, Color(ink, joystick_ring_alpha), joystick_ring_width, true)
+
+
+## 🕹️ Draws the joystick from `joystick_art()` when the skin has it (and says so) — the dish, then the knob over a soft
+## drop shadow, see-through at rest so it does not hide the view. A skin that overrides `draw_joystick` calls it first.
+func draw_joystick_art(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float, knob_radius: float,
+		active: bool) -> bool:
+	var dish := joystick_art(false)
+	var cap := joystick_art(true)
+	if dish == null or cap == null: return false
+	var tint := Color(1.0, 1.0, 1.0, joystick_active_alpha if active else joystick_idle_alpha)
+	draw_touch_sprite(canvas, dish, center, radius, tint, false)
+	draw_touch_sprite(canvas, cap, knob, knob_radius, tint, true)
+	return true
+
+
+## 🕹️ The painted joystick — [param knob] true for the knob, false for the dish. null — the default — draws circles.
+func joystick_art(_knob: bool) -> Texture2D:
+	return null
+
+
+## 🕹️ A round touch sprite [param picture] centred on [param center], [param radius] to its rim, tinted [param tint] —
+## over a disc of `touch_shadow_ink()` dropped 4 dp when [param shadow]. `GoJoystick` and `GoTouchButton` draw with it.
+func draw_touch_sprite(canvas: CanvasItem, picture: Texture2D, center: Vector2, radius: float, tint: Color,
+		shadow: bool) -> void:
+	if shadow:
+		canvas.draw_circle(center + Vector2(0.0, 4.0), radius, Color(touch_shadow_ink(), 0.35 * tint.a))
+	canvas.draw_texture_rect(picture, Rect2(center - Vector2(radius, radius), Vector2(radius, radius) * 2.0), false, tint)
+
+
+## 🕹️ The soft shadow under a touch button or stick knob (drawn at 35% of the button's own opacity).
+func touch_shadow_ink() -> Color:
+	return Color.BLACK
+
+
+## 🕹️ The edge round a touch button's label and caption (white text, 5 dp edge).
+func touch_outline_ink() -> Color:
+	return Color.BLACK
+
+
+## 🕹️ The arc of a `GoTouchButton`'s cooldown ring: the share of the wait still to run. The default is `danger`.
+func touch_cooldown_ink() -> Color:
+	return GoUi.color(GoTheme.DANGER)
+
+
+## 🎯 The dim a `GoSpotlight` lays round its hole. The default is black at 55 %.
+func spotlight_dim() -> Color:
+	return Color(0.0, 0.0, 0.0, 0.55)
+
+
+## 🎯 The ring a `GoSpotlight` draws on the edge of its hole (it stays after the dim fades). The default is a 4 dp
+## `accent` outline, 12 dp round.
+func spotlight_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.set_border_width_all(4)
+	ring.border_color = GoUi.color(GoTheme.ACCENT)
+	ring.set_corner_radius_all(12)
+	return ring
+
+
+## 📋 A `GoTaskCard`'s title. The default is the `heading` token (the accent where a look names no heading).
+func task_title_ink() -> Color:
+	return GoUi.color(GoTheme.HEADING)
+
+
+## 📋 A `GoTaskCard`'s hint line (what to try when stuck). The default is the `alert` token (the danger ink where a
+## look names no alert).
+func task_hint_ink() -> Color:
+	return GoUi.color(GoTheme.ALERT)
+
+
+## 📈 The band behind a `GoPerfReadout`: dark and see-through so the readout reads over any scene. The default is
+## black at 55 %, 4 dp round, 6 dp padding.
+func perf_box() -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(0.0, 0.0, 0.0, 0.55)
+	box.set_corner_radius_all(4)
+	box.set_content_margin_all(6)
+	return box
+
+
+## 📈 A `GoPerfReadout`'s ink by how well the frame rate is doing — 0 good, 1 warning, 2 bad. The defaults are
+## `success`, `warning` and `danger`.
+func perf_ink(level: int) -> Color:
+	return GoUi.color([GoTheme.SUCCESS, GoTheme.WARNING, GoTheme.DANGER][clampi(level, 0, 2)])
+
+
+## 📈 A `GoPerfReadout`'s font. null (the default) keeps the theme's.
+func perf_font() -> Font:
+	return null
+
+
+## The font a look draws marks such as a `GoTaskCard` chip's ✓ in when its text font lacks them; widgets add it
+## as a fallback under the theme's font. null (the default) keeps the theme's font alone.
+func symbol_font() -> Font:
+	return null
 
 
 ## How many chunks a `GoBar` is split into when it leaves the choice to the look (`GoBar.segments = -1`). 0: one
 ## smooth bar — the default; the arcade looks split a bar into chunky segments.
 func bar_ticks() -> int:
 	return 0
+
+
+## 📊 A frame a `GoBar` draws instead of its `ProgressBar`: a rounded groove whose fill is a gradient clipped to its
+## shape (the painted HUD's power and stability bars). null — the default — keeps the theme's `ProgressBar`.
+func bar_frame_box() -> StyleBox:
+	return null
+
+
+## 🎮 A `GoHudCard` gauge's board (a cooldown readout): [param lit] when the ability is ready. The default is the HUD
+## board with a `danger`-rimmed accent when lit.
+func hud_gauge_box(lit: bool) -> StyleBox:
+	return floating_box(GoTheme.BOX_HUD, GoUi.color(GoTheme.DANGER) if lit else Color.TRANSPARENT)
+
+
+## 🎮 The colour a HUD warns in — a `GoHudCard` clock running out. The default is the `alert` token (the danger ink
+## where a look names no alert).
+func hud_alert_ink() -> Color:
+	return GoUi.color(GoTheme.ALERT)
+
+
+## ⌨️ The cap a `GoHudButton` shows its key on ("Esc" beside the pause button). The default is `kbd_box()`.
+func hud_key_hint_box() -> StyleBox:
+	return kbd_box()
+
+
+## ⌨️ The key's colour on a `GoHudButton` cap. The default is `kbd_ink()`.
+func hud_key_hint_ink() -> Color:
+	return kbd_ink()
+
+
+## 🖼️ How a picture button (`GoIconButton.art`) darkens while pressed — a multiply over its own colours.
+func picture_press_tint() -> Color:
+	return Color(0.8, 0.8, 0.8)
+
+
+## ⏱️ The disc a `GoCountdown` step sits on — [param final] for the last ("GO!"). null — the default — draws a round
+## `accent` / `success` disc instead.
+func countdown_disc(final: bool) -> Texture2D:
+	return null
+
+
+## ⏱️ The colour of a `GoCountdown` step. The default is the theme's `warning`.
+func countdown_ink() -> Color:
+	return GoUi.color(GoTheme.WARNING)
+
+
+## 🏷️ A `GoNameplate`'s box in [param fill] (a character's colour, or `nameplate_own_fill()`). The default is a
+## rounded tag with a thin dark rim, a little see-through.
+func nameplate_box(fill: Color) -> StyleBox:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(fill, 0.92)
+	box.set_corner_radius_all(8)
+	box.set_border_width_all(2)
+	box.border_color = GoUi.color(GoTheme.BACKGROUND)
+	box.content_margin_left = 2.0
+	box.content_margin_right = 2.0
+	box.anti_aliasing = true
+	return box
+
+
+## 🏷️ The fill of the player's own `GoNameplate`. The default is the theme's `warning`.
+func nameplate_own_fill() -> Color:
+	return GoUi.color(GoTheme.WARNING)
+
+
+## 🏷️ A `GoNameplate`'s name colour — [param own] on the player's own plate.
+## The default is black on the player's own plate, white on the others.
+func nameplate_ink(own: bool) -> Color:
+	return Color.BLACK if own else Color.WHITE
+
+
+## 🏷️ The edge round a `GoNameplate`'s name (px) — [param own] on the player's own plate. The default is 3, none on
+## the own plate.
+func nameplate_outline(own: bool) -> int:
+	return 0 if own else 3
+
+
+## 🏷️ The colour of the edge round a `GoNameplate`'s name. The default is black.
+func nameplate_outline_ink() -> Color:
+	return Color.BLACK
 
 
 ## The ticks that split a bar into [param count] chunks, over the whole of [param rect] (the groove and the fill) —
@@ -1236,3 +1457,178 @@ func draw_coach_pointer(canvas: CanvasItem, start: Vector2, tip: Vector2,
 	var wing := direction.orthogonal() * 4.0
 	canvas.draw_colored_polygon(PackedVector2Array([
 		tip, tip - direction * 8.0 + wing, tip - direction * 8.0 - wing]), ink)
+
+
+# ── Painted widgets: level cards, key clusters, window extras ─────────
+#
+# 🔑 Hooks the level-select card (`GoLevelCard`), the key cluster (`GoKeyCluster`) and a window's extras (`GoSurface`'s
+#    title glyph, overhanging ribbon and opaque backdrop) read. Every default keeps a plain look working with no art.
+
+## The colour a finished keycap (`GoKbd.done`) is tinted — the game's training-chip green.
+const KBD_DONE := Color("#8ff0a4")
+
+
+## A picture a widget may wear, by [param name] (`check`, `lock`, `person`, `play_tag`, `pointer`; the HUD's `avatar_head`,
+## `bolt`, `opponents_badge`, `stopwatch`, `pause_button`; the touch keys' `btn_attract`, `btn_repulse`, `btn_jump`,
+## `stick_base`, `stick_knob`…). `null`: the widget falls back to an icon from the icon set or a drawn plate. A look
+## with painted art returns its own.
+func widget_art(_name: StringName) -> Texture2D:
+	return null
+
+
+## The ring round a selected tile (`GoLevelCard.selected`) — drawn over the tile, its centre left open.
+func selection_ring_box() -> StyleBox:
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.border_color = Color(GoUi.color(GoTheme.WARNING), 1.0)
+	ring.set_border_width_all(3)
+	ring.set_corner_radius_all(GoUi.metric(GoTheme.RADIUS_LARGE))
+	ring.corner_detail = 8
+	ring.anti_aliasing = true
+	return ring
+
+
+## One key of a `GoKeyCluster` (the WASD / arrow diagram). The default is the `GoKbd` cap; its padding is not used,
+## the key is drawn at the cluster's own size.
+func key_cluster_box() -> StyleBox:
+	return kbd_box()
+
+
+## A `GoKbd` cap once its key has been pressed (`done`) — the same cap tinted green. A painted cap takes the tint, a
+## drawn one has its fill pulled to [constant KBD_DONE].
+func kbd_done_box() -> StyleBox:
+	var face := kbd_box()
+	# A painted face (`tint` and `face_color`, no fill): tint the art, and name the tinted colour for the ink.
+	if &"tint" in face and &"face_color" in face and not (&"bg_color" in face):
+		face.set(&"tint", KBD_DONE)
+		var named: Color = face.get(&"face_color")
+		face.set(&"face_color", named * KBD_DONE if named.a > 0.0 else KBD_DONE)
+		return face
+	var filled := false
+	for key in [&"bg_color", &"bottom_color", &"end_color"]:
+		if key in face:
+			var was: Color = face.get(key)
+			if was.a > 0.0:
+				face.set(key, Color(KBD_DONE, maxf(was.a, 0.9)))
+				filled = true
+	if &"draw_center" in face and not bool(face.get(&"draw_center")): filled = false
+	# 🛑 A cap drawn as an outline alone (material_light: a clear fill) would recolour nothing — it gets a green fill.
+	if not filled and &"bg_color" in face:
+		face.set(&"bg_color", KBD_DONE)
+		if &"draw_center" in face: face.set(&"draw_center", true)
+	return face
+
+
+## The word on a done cap — the cap's ink, pushed until it reads on the green as seen (the cap laid over the page).
+func kbd_done_ink() -> Color:
+	var seen := blend(box_background(kbd_done_box()), Color(GoUi.color(GoTheme.BACKGROUND), 1.0))
+	return readable_on(kbd_ink(), seen)
+
+
+## How far a window's title plate reaches past the card: x past each side, y above the top edge. `Vector2.ZERO`: the
+## title sits inside the card, as it always has. A look with a ribbon that hangs over the edge returns its reach.
+func title_plate_overhang() -> Vector2:
+	return Vector2.ZERO
+
+
+## The solid colour under an opaque window (`GoSurface.opaque`) — shown when the world behind is not drawn.
+func opaque_backdrop_color() -> Color:
+	return Color(GoUi.color(GoTheme.BACKGROUND), 1.0)
+
+
+# ── The window frame ──────────────────────────────────────────────────
+#
+# 🔑 How a centred `GoSurface` is framed: which card it wears, the padding inside it, the gap between its rows and its
+#    width. Every default keeps the window gohud always drew; arcade_light returns the game's `PaintedDialog`.
+
+## The theme type variation a window's card wears. `GoTheme.VAR_PANEL`: the theme's panel.
+func window_card_variation() -> StringName:
+	return GoTheme.VAR_PANEL
+
+
+## The padding inside a window's card on top of the card face's own (dp). -1: the theme's `padding` token
+## (`padding_compact` on a small screen). A look whose card face carries its padding returns 0.
+func window_padding() -> int:
+	return -1
+
+
+## The gap between a window's rows — its head, its body's rows, its footer (dp). -1: the theme's `gap` token
+## (`gap_small` on a small screen) between the sections, the body's own gap inside it.
+func window_gap() -> int:
+	return -1
+
+
+## What a centred window has in its head's corner: `&"close"` (the close button — the default), `&"art"` (a picture,
+## `window_corner_art()`, with no close button: Escape and Back still close it) or `&"none"`.
+func window_corner() -> StringName:
+	return &"close"
+
+
+## The picture in a window's corner when `window_corner()` is `&"art"`.
+func window_corner_art() -> Texture2D:
+	return null
+
+
+## Where the corner art sits and how big it is (dp), from the top-left corner of the title plate as drawn (past its
+## bleed); on the right it is mirrored. `Rect2()`: the art's own size, on the corner.
+func window_corner_rect() -> Rect2:
+	return Rect2()
+
+
+## Where a window's close key sits (`GoSurface.show_close_key`) and how big it is (dp), measured like
+## `window_corner_rect()` but from the plate's **other** end — so it mirrors the corner art: on the right while the art
+## is on the left. `Rect2()`: a `GoConfig.close_button_visual` key on the corner.
+func window_close_key_rect() -> Rect2:
+	return Rect2()
+
+
+## A centred window's width (dp). 0: `GoConfig.surface_max_width`. A surface's own `max_width` always wins, and a
+## narrow screen still narrows it.
+func window_width() -> float:
+	return 0.0
+
+
+## How far a centred window keeps off the screen's edge (dp). Negative: the theme's `SCREEN_MARGIN` (shrinking on very
+## narrow screens). A look with a fixed `window_width()` and 0 here sizes its window the way a `CenterContainer` does:
+## that width whenever the screen has it, the whole screen when it does not — no width ratio either.
+func window_screen_margin() -> float:
+	return -1.0
+
+
+## How a window samples its textures (`CanvasItem.texture_filter`, set on the whole `GoSurface`).
+## `TEXTURE_FILTER_PARENT_NODE`: whatever the scene around it uses.
+func window_texture_filter() -> CanvasItem.TextureFilter:
+	return CanvasItem.TEXTURE_FILTER_PARENT_NODE
+
+
+## The variation of an inset a window's body holds (`GoSurface.add_inset`). `GoTheme.VAR_CARD`: the theme's card.
+func window_inset_variation() -> StringName:
+	return GoTheme.VAR_CARD
+
+
+## The height of a window's glyph buttons (`GoSurface.add_gloss`, dp). 0: the button's own.
+func window_button_height() -> float:
+	return 0.0
+
+
+## The gap between the buttons of a window's row (`GoSurface.add_row`, dp). -1: the theme's `gap` token.
+func window_button_gap() -> int:
+	return -1
+
+
+## The free room a card fitted to the screen keeps off the safe area's edge, its overhang included (dp) —
+## `GoFitBox` and a `GoSurface` with `fit_mode` `SCALE`. Negative: the theme's `SCREEN_MARGIN`.
+func window_fit_pad() -> float:
+	return -1.0
+
+
+## How short a fitted card's scrolling list may get (dp) before the card shrinks instead — about two rows, so a
+## list that has to scroll still shows that it holds more.
+func window_flex_min_height() -> float:
+	return 96.0
+
+
+## The focus mode of the controls gohud builds (buttons, sliders, switches, level cards, pickers), given the one
+## the control would take ([param default_mode]). Default: that one, so the keyboard and a gamepad reach them.
+func control_focus_mode(default_mode := Control.FOCUS_ALL) -> Control.FocusMode:
+	return default_mode

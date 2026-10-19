@@ -308,8 +308,12 @@ static func label_ink(node: Button, ink: Color, quiet := false) -> Color:
 	var outline := GoTheme.color_in_chain(theme, &"font_outline_color", type)
 	if outline.a <= 0.0 or GoSkin.contrast_ratio(Color(ink, 1.0), Color(outline, 1.0)) >= 3.0: return ink
 	var own := node.get_theme_stylebox(&"normal") if node.has_theme_stylebox_override(&"normal") else null
-	var face := (own if own != null else _theme_face(node, &"normal")) as GoStyleBoxArcade
-	if face != null and face.draw_center and face.frame_drawn() <= 0.0 and face.top().a > 0.0:
+	var shown := own if own != null else _theme_face(node, &"normal")
+	var face := shown as GoStyleBoxArcade
+	var art := shown as GoStyleBoxSprite
+	# A painted sprite face (arcade_light) is a painted key too: its white outlined label stays.
+	if (face != null and face.draw_center and face.frame_drawn() <= 0.0 and face.top().a > 0.0) \
+			or (art != null and art.draw_center and art.texture != null):
 		var white := GoTheme.color_in_chain(theme, &"font_color", type, Color.WHITE)
 		return Color(white, white.a * ink.a * (0.75 if quiet else 1.0))
 	node.set_meta(&"go_label_unlined", true)
@@ -446,6 +450,7 @@ enum Tone { NORMAL, PRIMARY, DANGER, BARE, COMPACT, DANGER_SOLID, OUTLINED }
 static func style_button(node: Button, tone := Tone.NORMAL) -> void:
 	node.theme = GoUi.theme()
 	press_feel(node)
+	skin_focus(node)
 	match tone:
 		Tone.PRIMARY: node.theme_type_variation = GoTheme.VAR_PRIMARY_BUTTON
 		Tone.DANGER: node.theme_type_variation = GoTheme.VAR_DANGER_BUTTON
@@ -1222,6 +1227,7 @@ static func toggle(key := "", translate := true) -> CheckButton:
 	# Uses the button height so it lines up with inputs and buttons in a form (taller than the touch floor).
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.BUTTON_HEIGHT)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	skin_focus(node)
 	if GoUi.config.autowrap_text: fit_words(node)   # the same word rule as buttons
 	return node
 
@@ -1234,6 +1240,7 @@ static func checkbox(key := "", translate := true) -> CheckBox:
 		else Node.AUTO_TRANSLATE_MODE_DISABLED
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	node.mouse_filter = Control.MOUSE_FILTER_PASS
+	skin_focus(node)
 	return node
 
 
@@ -1245,7 +1252,48 @@ static func slider(minimum := 0.0, maximum := 1.0, step := 0.01) -> HSlider:
 	node.max_value = maximum
 	node.step = step
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
+	skin_focus(node)
 	return node
+
+
+## The meta holding the focus mode [method skin_focus] last set.
+const SKIN_FOCUS_META := &"_go_skin_focus"
+## The meta holding the [code]default_mode[/code] a control was given, when it is not [constant Control.FOCUS_ALL].
+const SKIN_FOCUS_DEFAULT_META := &"_go_skin_focus_default"
+## The group of the controls [method skin_focus] styled — the ones a look change walks.
+const SKIN_FOCUS_GROUP := &"_go_skin_focus"
+
+## Gives [param node] the look's focus mode ([method GoSkin.control_focus_mode]) — arcade_light's controls stay out of
+## the focus order like the game's, every other look keeps [param default_mode]. It **follows a look change** by
+## itself: the node joins a group that one `GoUi` watcher walks, and catches up when it enters the tree again — so a
+## plain `Button` styled here (it has no watcher of its own) is reachable after `GoUi.use_preset()` either way.
+## 🛑 Only a mode gohud set is changed: once the project sets its own `focus_mode`, it is left alone for good.
+## 🛑 The hook is a (non-persistent) group plus one `tree_entered` connection, made only the first time: styling a node
+##    twice hooks it once, and a freed node leaves the group with nothing to unhook — no watcher per control.
+static func skin_focus(node: Control, default_mode := Control.FOCUS_ALL) -> void:
+	if not node.is_in_group(SKIN_FOCUS_GROUP):
+		node.add_to_group(SKIN_FOCUS_GROUP)
+		node.tree_entered.connect(_refocus.bind(node))
+	if default_mode != Control.FOCUS_ALL: node.set_meta(SKIN_FOCUS_DEFAULT_META, default_mode)
+	GoUi.watch(_refocus_all)   # one watcher for every styled control (a no-op once it is in; again after GoUi.reset())
+	var applied: int = node.get_meta(SKIN_FOCUS_META, default_mode)
+	if node.focus_mode != applied: return
+	var mode := GoUi.skin().control_focus_mode(default_mode)
+	node.focus_mode = mode
+	node.set_meta(SKIN_FOCUS_META, mode)
+
+
+## Re-applies [method skin_focus] to one styled control with the default mode it was given.
+static func _refocus(node: Control) -> void:
+	skin_focus(node, node.get_meta(SKIN_FOCUS_DEFAULT_META, Control.FOCUS_ALL))
+
+
+## The look changed: every styled control in the tree takes the new look's focus mode.
+static func _refocus_all() -> void:
+	var scene := GoUi.tree()
+	if scene == null: return
+	for node in scene.get_nodes_in_group(SKIN_FOCUS_GROUP):
+		if node is Control: _refocus(node)
 
 
 static func picker() -> OptionButton:
@@ -1253,6 +1301,7 @@ static func picker() -> OptionButton:
 	node.theme = GoUi.theme()
 	node.custom_minimum_size.y = GoUi.metric(GoTheme.TOUCH)
 	GoScroll.yield_vertical(node)   # an up-and-down swipe that starts on the dropdown scrolls the list that holds it
+	skin_focus(node)
 	return node
 
 
@@ -2291,7 +2340,7 @@ static func toolbar(items: Array, vertical := false) -> PanelContainer:
 		button.icon_name = StringName(spec.get("icon", &""))
 		button.tooltip_text_name = StringName(spec.get("tooltip", &""))
 		# 🔑 Spaced so each button's 48dp touch area meets its neighbour's instead of overlapping it.
-		line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - button.visual_size))
+		line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.metric(GoTheme.TOUCH) - button.visual_size))
 		var action: Callable = spec.get("action", Callable())
 		if action.is_valid(): button.pressed.connect(action)
 		line.add_child(button)
@@ -2327,7 +2376,7 @@ static func bottom_app_bar(items: Array, fab: GoFab = null) -> PanelContainer:
 	var line := HBoxContainer.new()
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	line.custom_minimum_size.y = 80.0
-	line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.config.min_touch_size - 36))
+	line.add_theme_constant_override(&"separation", maxi(GoUi.metric(GoTheme.GAP_TINY), GoUi.metric(GoTheme.TOUCH) - 36))
 	pad.add_child(line)
 	var peers: Array[Control] = []
 	for spec: Dictionary in items:
@@ -2353,7 +2402,7 @@ static func bottom_app_bar(items: Array, fab: GoFab = null) -> PanelContainer:
 	#    layout check rebuilds the gallery per look, 2026-10-02).
 	var inset := func() -> void:
 		if not is_instance_valid(node) or not node.is_inside_tree() or Engine.is_editor_hint(): return
-		var window := node.get_window()
+		var window := node.get_viewport()
 		if window == null: return
 		pad.add_theme_constant_override(&"margin_bottom",
 			roundi(maxf(0.0, window.get_visible_rect().end.y - GoSafeArea.usable_rect(window).end.y)))
@@ -3005,7 +3054,7 @@ static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT
 	if node == null: return
 	# 🌫 The look may frost what is behind (`GoSkin.scrim_material` — `GoSkinArcade.arcade_scrim_blur`); a clear veil
 	#    (alpha 0) stays plain.
-	node.material = GoUi.skin().scrim_material() if alpha != 0.0 else null
+	node.material = GoUi.skin().scrim_material_now() if alpha != 0.0 else null
 	if alpha < 0.0 and ink.a <= 0.0:
 		node.color = GoUi.color(GoTheme.SCRIM)
 		return
@@ -3213,7 +3262,9 @@ static func center_in(node: Control) -> Control:
 ## The room (dp) a box's own face needs before content may start — its border, a skin's edge line, and what a rounded
 ## or cut corner takes off. Read from the face the skin really painted, so a host skin with a thicker frame gets more.
 ## Works on a `Button` (every state face) and on anything that draws a `panel` face. 0 when there is no face.
-static func face_clearance(control: Control) -> int:
+## [param sideways] reads only the left and right borders — what text beside the frame needs; a deeper bottom lip (the
+## game HUD panel's 8 px under a 5 px rim) does not push the words in from the sides.
+static func face_clearance(control: Control, sideways := false) -> int:
 	if control == null: return 0
 	var faces: Array[StyleBox] = []
 	if control is BaseButton:
@@ -3222,17 +3273,18 @@ static func face_clearance(control: Control) -> int:
 	elif control.has_theme_stylebox(&"panel"):
 		faces.append(control.get_theme_stylebox(&"panel"))
 	var room := 0.0
-	for face in faces: room = maxf(room, _face_room(face))
+	for face in faces: room = maxf(room, _face_room(face, sideways))
 	return ceili(room)
 
 
-static func _face_room(face: StyleBox) -> float:
+static func _face_room(face: StyleBox, sideways := false) -> float:
 	if face == null or face is StyleBoxEmpty: return 0.0
 	var border := 0.0
 	var corner := 0.0
 	var flat := face as StyleBoxFlat
 	if flat != null:
-		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: border = maxf(border, flat.get_border_width(side))
+		var sides := [SIDE_LEFT, SIDE_RIGHT] if sideways else [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]
+		for side in sides: border = maxf(border, flat.get_border_width(side))
 		for index in 4: corner = maxf(corner, flat.get_corner_radius(index))
 	else:
 		# A skin's own face (angular, medieval) — read by name, the way the skins are read everywhere else.
@@ -3393,7 +3445,7 @@ static func _audit_box(control: Control, problems: Array[String]) -> void:
 		var touch := float(GoUi.metric(GoTheme.TOUCH))
 		var reach := rect.size
 		# A `GoIconButton` or a small `GoFab` draws small and presses big — its hit test reaches out to the touch size.
-		if control is GoIconButton or control is GoFab: reach = reach.max(Vector2.ONE * float(GoUi.config.min_touch_size))
+		if control is GoIconButton or control is GoFab: reach = reach.max(Vector2.ONE * GoUi.touch_size())
 		# A day in a calendar may be narrower — seven columns have to fit a 320dp phone. It carries `go_touch_floor`, the
 		# narrowest it is meant to get, and stays full height (`GoDatePicker`).
 		var floor_x := touch
@@ -3423,7 +3475,7 @@ static func _audit_words(label: Label, where: String, problems: Array[String]) -
 static func _audit_text_edge(label: Label, where: String, problems: Array[String]) -> void:
 	var face := _face_behind(label)
 	if face == null: return
-	var need := float(maxi(1, face_clearance(face)))
+	var need := float(maxi(1, face_clearance(face, true)))
 	var box := face.get_global_rect()
 	var ink := label.get_global_rect()
 	if label.autowrap_mode == TextServer.AUTOWRAP_OFF and not label.clip_text \
@@ -3495,3 +3547,46 @@ static func _reach_out(rect: Rect2, clipper: Control) -> float:
 	if not scroll_x: worst = maxf(worst, maxf(room.position.x - rect.position.x, rect.end.x - room.end.x))
 	if not scroll_y: worst = maxf(worst, maxf(room.position.y - rect.position.y, rect.end.y - room.end.y))
 	return worst
+
+
+# ── Shrink to fit ─────────────────────────────────────────────────────
+
+## 🔤 The smallest size [method fit_font_size] goes down to — [param base] × [param min_scale], rounded up.
+## A negative [param min_scale] takes `GoUi.config.fit_min_scale` (0.7 by default).
+static func fit_floor(base: int, min_scale := -1.0) -> int:
+	var share := min_scale if min_scale > 0.0 else GoUi.config.fit_min_scale
+	return maxi(1, ceili(float(base) * share))
+
+
+## 🔤 **Shrink-to-fit for text on fixed art** — the biggest size from [param base] down to [method fit_floor]
+## at which [param texts], set side by side on one row, are no wider than [param room].
+## Pass every text that shares the row (a label and its value, say) so they shrink together; a text with line
+## breaks counts its widest line. [param font] null takes the theme's default font.
+## 🛑 It never goes under the floor — text that still does not fit there runs over, so the art must grow instead.
+##    Call it again when the language or the room changes: the size is measured, not followed.
+static func fit_font_size(texts: PackedStringArray, base: int, room: float, font: Font = null,
+		min_scale := -1.0) -> int:
+	var face := font if font != null else _fit_font()
+	var floor_size := fit_floor(base, min_scale)
+	var size := base
+	while size > floor_size and row_width(face, texts, size) > room:
+		size -= 1
+	return size
+
+
+## 🔤 How wide [param texts] stand side by side at [param size] — each text's widest line, summed.
+static func row_width(font: Font, texts: PackedStringArray, size: int) -> float:
+	var face := font if font != null else _fit_font()
+	var total := 0.0
+	for text in texts:
+		var widest := 0.0
+		for line in text.split("\n"):
+			widest = maxf(widest, face.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+		total += widest
+	return total
+
+
+static func _fit_font() -> Font:
+	var look := GoUi.theme()
+	if look != null and look.default_font != null: return look.default_font
+	return ThemeDB.fallback_font

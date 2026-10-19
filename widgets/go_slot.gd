@@ -67,7 +67,7 @@ const LARGE_CELL := 56
 		shortcut_label = value
 		refresh()
 
-## One side of the visible panel (dp). Touch grows out to `GoConfig.min_touch_size`.
+## One side of the visible panel (dp). Touch grows out to the touch floor, `GoUi.touch_size()`.
 ## 🔑 A panel **larger** than the touch minimum (an inventory cell at 56–64dp) grows the slot's own box with it —
 ##    otherwise the face is clamped back to the touch size and every cell of a bag looks like a quick slot.
 @export_range(16, 128) var visual_size := 44:
@@ -160,7 +160,13 @@ func _ready() -> void:
 	_fit.call_deferred()
 	refresh.call_deferred()
 	resized.connect(_fit)
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
@@ -175,7 +181,7 @@ func _adopt_theme() -> void:
 
 ## The slot's own box: the touch minimum, or the visible panel when that is larger.
 func _fit_box() -> void:
-	var side := maxi(GoUi.config.min_touch_size, visual_size)
+	var side := maxi(int(GoUi.touch_size()), visual_size)
 	custom_minimum_size = Vector2(side, side)
 
 
@@ -234,7 +240,7 @@ func _rebuild_icon() -> void:
 ##    with font and scale multiplied in, is taller than the font size and differs per device. Hard-code it and the quantity spills outside the panel.
 func _fit() -> void:
 	if not is_instance_valid(_face): return
-	var touch := float(GoUi.config.min_touch_size)
+	var touch := GoUi.touch_size()
 	var box := maxf(size.x, touch)
 	var box_y := maxf(size.y, touch)
 	var visual := minf(float(visual_size), minf(box, box_y))
@@ -359,7 +365,7 @@ func _notification(what: int) -> void:
 
 
 func touch_hit(point: Vector2) -> bool:
-	var reach := maxf(0.0, (float(GoUi.config.min_touch_size) - minf(size.x, size.y)) * 0.5)
+	var reach := maxf(0.0, (GoUi.touch_size() - minf(size.x, size.y)) * 0.5)
 	return Rect2(Vector2.ZERO, size).grow(reach).has_point(point)
 
 

@@ -153,7 +153,13 @@ func _ready() -> void:
 	_restyle()
 	if not Engine.is_editor_hint():
 		get_viewport().size_changed.connect(_relayout)
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
@@ -231,7 +237,7 @@ func effective_side() -> GoDrawer.Side:
 
 func _relayout() -> void:
 	if panel == null or not is_inside_tree(): return
-	var window := get_window()
+	var window := get_viewport()
 	if window == null: return
 	# 🛑 The background (the panel) runs **all the way** to the screen edge while the content stays inside the
 	#    safe area — pull the panel inward and a band of page colour appears at the edge, making the drawer look like it floats.
@@ -277,7 +283,7 @@ func _on_panel_minimum() -> void:
 
 func _animate(shown: bool) -> void:
 	if is_instance_valid(_tween) and _tween.is_valid(): _tween.kill()
-	var window := get_window()
+	var window := get_viewport()
 	var full := window.get_visible_rect() if window != null else Rect2()
 	var at_left := effective_side() == Side.LEFT
 	var rest := 0.0 if at_left else full.size.x - panel.size.x
@@ -322,7 +328,7 @@ func _restyle() -> void:
 	panel.add_theme_stylebox_override(&"panel", GoUi.skin().drawer_box(_styled_left, alpha))
 	_scrim.color = _scrim_color(_open)
 	# A look may frost the game behind (`GoSkin.scrim_material`); the blur fades in with the scrim's colour.
-	_scrim.material = GoUi.skin().scrim_material()
+	_scrim.material = GoUi.skin().scrim_material_now()
 
 
 func _on_ui_changed() -> void:

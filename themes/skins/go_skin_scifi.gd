@@ -171,6 +171,7 @@ func coach_ring_box(accent: Color) -> StyleBox:
 ## Joystick — a hexagonal ring, eight-way ticks, a diamond knob and a centre cross.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	var ring := _hexagon(center, radius)
 	canvas.draw_colored_polygon(ring, Color(base, 0.40))
 	var loop := ring.duplicate()

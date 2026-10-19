@@ -37,6 +37,21 @@ extends Button
 		icon_tint = value
 		_refresh_icon()
 
+## 🖼️ A picture that **is** the whole button — a painted round pause button, a HUD badge. It fills `visual_size`, the
+## frame goes (every state draws nothing behind it), the picture shows in its own colours and darkens to
+## `GoSkin.picture_press_tint()` while pressed. It replaces `icon_name`; null goes back to the icon and the frame.
+@export var art: Texture2D = null:
+	set(value):
+		art = value
+		_refresh_icon()
+
+## ↔️ Draw the picture (`art`) or the icon mirrored left to right — one PLAY picture is both a "next" and a
+## "previous" key. A font-set glyph is mirrored too.
+@export var mirror := false:
+	set(value):
+		mirror = value
+		_refresh_icon()
+
 ## Draw a texture icon at **its native pixel size** — the default scales it to the skin's glyph size for `visual_size`
 ## (`GoSkin.icon_button_glyph`: 58% — the size of a font glyph — or 24dp on the 36dp button under Material).
 ## Turn it on where the host wants its own SVG size kept: scaling up and down differs by 1px (measured by pixel comparison).
@@ -52,16 +67,24 @@ extends Button
 		tooltip_text_name = value
 		_refresh_tooltip()
 
-## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** On by default — a close button in a
-## dialog or a settings header has to be reachable without a mouse.
+## 🔑 **Reachable by Tab and gamepad, and does a click keep keyboard focus?** Left unset, it follows the look
+## (`GoStyle.skin_focus`): on for most looks — a close button in a dialog or a settings header has to be reachable
+## without a mouse — and off under arcade_light, whose controls stay out of the focus order like the game's.
+## Setting it (in the inspector or from code) pins that choice through every later look change. Read back, it is what
+## the button is — `focus_mode == FOCUS_ALL`: the look's mode until the project chose (false under arcade_light), then
+## the choice. Only a choice is saved in a scene, so a button saved under arcade_light still follows a later look.
 ## 🛑 Turn it **off** for a button over gameplay (a HUD bag or map button): a clicked button keeps focus, and the
 ##    engine's accept action (Space / Enter) then presses **it** again instead of reaching the game — a jump that
 ##    reopens the bag. `GoSlot.keyboard_focus` is the same switch, off by default there. For a whole HUD corner at
 ##    once, `GoHudAnchor.keyboard_focus = false`.
 @export var keyboard_focus := true:
+	get:
+		return focus_mode == Control.FOCUS_ALL   # the effective mode, not the unset default
 	set(value):
 		keyboard_focus = value
 		focus_mode = Control.FOCUS_ALL if value else Control.FOCUS_NONE
+		set_meta(GoStyle.SKIN_FOCUS_META, -1)   # the project chose: the look's focus mode never overrides it
+		notify_property_list_changed()   # now saved in the scene (`_validate_property`)
 
 ## The sibling icon buttons placed alongside. Where the widened hit areas overlap, **whichever centre is nearer** takes the press.
 var touch_peers: Array[Control] = []
@@ -78,13 +101,27 @@ func _init() -> void:
 	auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	clip_text = false
 	GoStyle.press_feel(self)
+	GoStyle.skin_focus(self)
+
+
+## 🛑 `keyboard_focus` is saved only once the project set it: unset, it reads the look's mode, and a scene saved under
+##    arcade_light would otherwise store `false` and load pinned out of the focus order in every look.
+func _validate_property(property: Dictionary) -> void:
+	if property.name == "keyboard_focus" and get_meta(GoStyle.SKIN_FOCUS_META, 0) != -1:
+		property.usage &= ~PROPERTY_USAGE_STORAGE
 
 
 func _ready() -> void:
 	theme = GoUi.theme()
 	_refresh_icon()
 	_refresh_tooltip()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
@@ -96,6 +133,7 @@ func _exit_tree() -> void:
 ## 🔑 The icon **set** can change entirely — the same name becomes a different picture and a different mechanism (texture ↔ font).
 func _on_ui_changed() -> void:
 	theme = GoUi.theme()
+	GoStyle.skin_focus(self)
 	_refresh_icon()
 	_refresh_tooltip()
 
@@ -111,13 +149,22 @@ func _refresh_icon() -> void:
 		_glyph.queue_free()
 		_glyph = null
 	icon = null
+	_frame_art(art != null)
+	if art != null:
+		icon = mirrored(art) if mirror else art
+		expand_icon = true
+		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+		remove_theme_constant_override(&"icon_max_width")
+		custom_minimum_size = Vector2.ONE * visual_size
+		return
 	if icon_name.is_empty(): return
 	var glyph_size := GoUi.skin().icon_button_glyph(visual_size)
 	var icon_set := GoUi.icons()
 	var found := icon_set.texture(icon_name)
 	if found != null:
 		# A texture set — the engine's `Button.icon` path handles colour and state through the theme.
-		icon = found
+		icon = mirrored(found) if mirror else found
 		# 🛑 An icon-only button centres — `Button` aligns left by default, so without expanding, the icon sticks
 		#    to the left (measured by pixel comparison 2026-09-12: a native-size texture was pushed sideways).
 		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -143,7 +190,56 @@ func _refresh_icon() -> void:
 	_glyph = icon_set.node(icon_name, glyph_size, glyph_ink)
 	_glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if mirror:
+		var glyph := _glyph
+		glyph.scale.x = -1.0
+		# Flipped around its own centre, or it would land a whole width to the left.
+		glyph.resized.connect(func() -> void: glyph.pivot_offset = glyph.size * 0.5)
 	add_child(_glyph)
+
+
+static var _mirrors := {}
+
+
+## `texture` flipped left to right, made once per texture and kept: every mirrored button shares it.
+## 🛑 A texture whose pixels cannot be read (a placeholder) comes back as it is, unflipped, with an error.
+static func mirrored(texture: Texture2D) -> Texture2D:
+	var key := texture.get_instance_id()
+	var made: Texture2D = _mirrors.get(key)
+	if made != null: return made
+	var image := texture.get_image()
+	if image == null:
+		push_error("GoIconButton.mirror: %s has no pixels to flip" % texture)
+		return texture
+	if image.is_compressed() and image.decompress() != OK:
+		push_error("GoIconButton.mirror: %s could not be decompressed" % texture)
+		return texture
+	image.flip_x()
+	if image.has_mipmaps(): image.generate_mipmaps()
+	made = ImageTexture.create_from_image(image)
+	_mirrors[key] = made
+	return made
+
+
+const _ART_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]
+const _ART_INKS: Array[StringName] = [&"icon_normal_color", &"icon_hover_color", &"icon_focus_color",
+	&"icon_pressed_color", &"icon_hover_pressed_color"]
+
+
+## `art` drops the frame and draws the picture as it is (darker while pressed); without it the theme's frame is back.
+func _frame_art(on: bool) -> void:
+	if not on:
+		if not has_meta(&"go_art_frame"): return
+		remove_meta(&"go_art_frame")
+		for state in _ART_STATES: remove_theme_stylebox_override(state)
+		for ink in _ART_INKS: remove_theme_color_override(ink)
+		return
+	set_meta(&"go_art_frame", true)
+	var nothing := StyleBoxEmpty.new()
+	for state in _ART_STATES: add_theme_stylebox_override(state, nothing)
+	var press := GoUi.skin().picture_press_tint()
+	for ink in _ART_INKS:
+		add_theme_color_override(ink, press if ink.contains("pressed") else Color.WHITE)
 
 
 ## 🛑 When its width calculation goes wrong, the engine's default tooltip breaks the text into **one character
@@ -162,7 +258,7 @@ func _refresh_tooltip() -> void:
 
 ## Take presses in the slack beyond the node — whatever the visible size, the real touch target is `min_touch_size`.
 func _has_point(point: Vector2) -> bool:
-	var reach := maxf(0.0, (float(GoUi.config.min_touch_size) - minf(size.x, size.y)) * 0.5)
+	var reach := maxf(0.0, (GoUi.touch_size() - minf(size.x, size.y)) * 0.5)
 	if not Rect2(Vector2.ZERO, size).grow(reach).has_point(point): return false
 	if touch_peers.is_empty(): return true
 	# The widened areas overlap — whichever centre is nearer takes it. That keeps one point from pressing two buttons.

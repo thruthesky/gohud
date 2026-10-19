@@ -27,6 +27,8 @@ source comments). Check here first when a gohud screen looks or behaves wrong.
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| On a landscape phone a window or a pause card is cut, or its ribbon and corner art run off the top | The card is bigger than the safe area; a `GoSurface` cuts it to the screen and scrolls its body, and a plain card in a full-screen container is not fitted at all | `GoSurface.fit_mode = GoSurface.FitMode.SCALE`, or put the card in a `GoFitBox` — the whole card shrinks with its overhang, a `flex` list scrolls below the fit floor (surfaces.md §13) |
+| `title_paint` leaves an `arcade_light` window's ribbon gold | The ribbon is a painted sprite; only a code-drawn plate (`arcade`, `arcade_dark`) takes a paint | `surface.title_variation = &"GoRibbonRed"` — the red ribbon art (surfaces.md §1) |
 | Button text split one letter per line (`Pri m ary`) | Wrapping on + a container that sizes cells by minimum width | Make buttons with `GoStyle.button*` and flows with `wrap_row` (natural width); after changing text call `GoStyle.fit_words(button)` |
 | Grid cards collapse to ~25 px with vertical letters | `GridContainer` children default to `SIZE_FILL` | `GoStyle.responsive_grid(min_cell)` (forces expand, recomputes columns) |
 | Screen clipped left and right on a phone | One long unwrapped label or a fixed `custom_minimum_size.x` | Put screens in `GoForm` (wraps every descendant label, caps width per breakpoint); never hard-code widths |

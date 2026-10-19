@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>Windows and overlays <small>(9)</small></h2>
+  <h2>Windows and overlays <small>(12)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -260,6 +260,15 @@ layer.<wbr>add_child(<wbr>window)</code></pre>
 add_child(<wbr>sheet)
 sheet.<wbr>open(<wbr>"Inventory")
 sheet.<wbr>body.<wbr>add_child(<wbr>bag_list)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gopage"><code>GoPage</code></h3>
+      <p>A full-screen page with a category rail (left in landscape, tabs on top in portrait), a preview and back.</p>
+      <p class="catalog-base">extends <code>CanvasLayer</code></p>
+      <pre><code>var page := GoPage.<wbr>new(<wbr>)
+add_child(<wbr>page)
+page.<wbr>open(<wbr>"Settings")
+page.<wbr>set_tabs(<wbr>[<wbr>{<wbr>id = &amp;"sound",<wbr> label = "Sound",<wbr> icon = GoIconSet.<wbr>VOLUME_HIGH,<wbr> badge = ""}])</code></pre>
     </div>
     <div class="card">
       <h3 id="godialogs"><code>GoDialogs</code></h3>
@@ -320,6 +329,20 @@ tour.<wbr>start(<wbr>[<wbr>{<wbr>"target": bag_button,<wbr> "title": "Bag",<wbr>
       <pre><code>var console := GoConsole.<wbr>new(<wbr>)
 add_child(<wbr>console)
 console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goribbonheader"><code>GoRibbonHeader</code></h3>
+      <p>A screen's title ribbon hanging over the top of its card, with a glyph and the look's corner art.</p>
+      <p class="catalog-base">extends <code>Control</code></p>
+      <pre><code>var header := GoRibbonHeader.<wbr>make(<wbr>"PAUSED",<wbr> GoIconSet.<wbr>PAUSE)
+card_column.<wbr>add_child(<wbr>header)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofitbox"><code>GoFitBox</code></h3>
+      <p>Keeps a whole card on the screen, shrinking it with its ribbon when too big; a long list scrolls instead.</p>
+      <p class="catalog-base">extends <code>Container</code></p>
+      <pre><code>var fit := GoFitBox.<wbr>new(<wbr>)
+fit.<wbr>add_child(<wbr>card)</code></pre>
     </div>
   </div>
 </section>
@@ -546,7 +569,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
 </section>
 
 <section id="buttons" class="catalog">
-  <h2>Buttons, chips and choices <small>(9)</small></h2>
+  <h2>Buttons, chips and choices <small>(10)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
@@ -572,6 +595,12 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>CLOSE,<wbr> close,<wbr> -1,<wbr> &amp;"close"))
 var bell := GoIconButton.<wbr>new(<wbr>)
 bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goglyphbutton"><code>GoGlyphButton</code></h3>
+      <p>A button with a glyph right beside its label — the glossy pill of an arcade menu.</p>
+      <p class="catalog-base">extends <code>Button</code></p>
+      <pre><code>row.<wbr>add_child(<wbr>GoGlyphButton.<wbr>make(<wbr>"Play",<wbr> GoIconSet.<wbr>PLAY,<wbr> GoTheme.<wbr>VAR_PRIMARY_BUTTON))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
@@ -622,7 +651,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
 </section>
 
 <section id="inputs" class="catalog">
-  <h2>Inputs and pickers <small>(12)</small></h2>
+  <h2>Inputs and pickers <small>(14)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
@@ -686,6 +715,20 @@ volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
       <p class="catalog-base">extends <code>Control</code></p>
       <pre><code>var price := GoRangeSlider.<wbr>make(<wbr>0.0,<wbr> 500.0,<wbr> 40.0,<wbr> 220.0,<wbr> 10.0)
 price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float) -&gt; void: refilter(<wbr>low,<wbr> high))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goslider"><code>GoSlider</code></h3>
+      <p>A slider drawn the painted way: the fill runs past the handle, a held handle grows.</p>
+      <p class="catalog-base">extends <code>HSlider</code></p>
+      <pre><code>var music := GoSlider.<wbr>make(<wbr>0.0,<wbr> 1.0,<wbr> 0.01)
+music.<wbr>theme_type_variation = &amp;"GoSliderGreen"</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goswitch"><code>GoSwitch</code></h3>
+      <p>An on/off switch drawn the painted way, with ON / OFF beside the knob.</p>
+      <p class="catalog-base">extends <code>CheckButton</code></p>
+      <pre><code>var vibration := GoSwitch.<wbr>make(<wbr>true)
+vibration.<wbr>set_texts(<wbr>tr(<wbr>"ON"),<wbr> tr(<wbr>"OFF"))</code></pre>
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>
@@ -793,7 +836,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD and game shapes <small>(11)</small></h2>
+  <h2>HUD and game shapes <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -848,6 +891,110 @@ animals.<wbr>set_selected(<wbr>2,<wbr> true)
 side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
+      <h3 id="golevelcard"><code>GoLevelCard</code></h3>
+      <p>A stage-select tile: thumbnail, title, subtitle, and a check, a padlock or a PLAY! tag by state.</p>
+      <p class="catalog-base">extends <code>Button</code></p>
+      <pre><code>var card := GoLevelCard.<wbr>make(<wbr>"STAGE 3",<wbr> "OPPONENTS: 3",<wbr> GoLevelCard.<wbr>State.<wbr>CURRENT)
+card.<wbr>pressed.<wbr>connect(<wbr>play_stage)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gokeycluster"><code>GoKeyCluster</code></h3>
+      <p>Four movement keys in an inverted T — WASD or the arrow keys — as a controls page shows them.</p>
+      <p class="catalog-base">extends <code>Control</code></p>
+      <pre><code>var wasd := GoKeyCluster.<wbr>make(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"])
+var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocoverimage"><code>GoCoverImage</code></h3>
+      <p>A picture that fills its box, cropping the overflow like CSS object-fit: cover.</p>
+      <p class="catalog-base">extends <code>Control</code></p>
+      <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
+shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>One board of a match HUD's top row: an icon with a banner and bars, a count, a clock or a ready gauge.</p>
+      <p class="catalog-base">extends <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>The match-start count: 3, 2, 1, GO! big on a disc, each step popping in.</p>
+      <p class="catalog-base">extends <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>A HUD corner button: a picture button with its keyboard key on a cap beside it.</p>
+      <p class="catalog-base">extends <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>A name plate floating over a character in a 3D world, the same size at any distance.</p>
+      <p class="catalog-base">extends <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>A feed of one-line notices, such as a kill feed, that stack, fade in and leave on their own.</p>
+      <p class="catalog-base">extends <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>A round thumb button for touch screens, with a cooldown ring, a ready pulse and optional drag-to-aim.</p>
+      <p class="catalog-base">extends <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>Dims the screen round one control and rings it; the dim fades, the ring stays.</p>
+      <p class="catalog-base">extends <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>A tutorial lesson's card: step, title, what to do, part chips that tick off and a hint; folds to one row.</p>
+      <p class="catalog-base">extends <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>An always-on performance band: fps, frame time, triangles, draw calls, nodes and memory; turns red as fps drops.</p>
+      <p class="catalog-base">extends <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gomappreview"><code>GoMapPreview</code></h3>
+      <p>A small map of a level: areas, links and start dots; a grey silhouette when locked.</p>
+      <p class="catalog-base">extends <code>Control</code></p>
+      <pre><code>var map := GoMapPreview.<wbr>new(<wbr>)
+map.<wbr>add_rect(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>6,<wbr> 4),<wbr> Color(<wbr>"#f2b84b"))
+map.<wbr>add_circle(<wbr>Vector2(<wbr>18,<wbr> 0),<wbr> 5.0,<wbr> Color(<wbr>"#6fc3ff"))
+map.<wbr>add_link(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>18,<wbr> 0),<wbr> 2.0,<wbr> Color(<wbr>"#c9a26b"))
+map.<wbr>set_starts(<wbr>PackedVector2Array(<wbr>[<wbr>Vector2(<wbr>-3,<wbr> 0),<wbr> Vector2(<wbr>20,<wbr> 0)]))</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>
       <figure class="shot"><img src="img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Daily attendance rewards; only today can be pressed." loading="lazy"></figure>
       <p>Daily attendance rewards; only today can be pressed.</p>
@@ -892,11 +1039,11 @@ var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
 </section>
 
 <section id="look" class="catalog">
-  <h2>Looks and system <small>(8)</small></h2>
+  <h2>Looks and system <small>(9)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="goui-gothemepresets"><code>GoUi · GoThemePresets</code></h3>
-      <figure class="shot"><img src="img/widgets/goui.webp" width="682" height="571" alt="GoUi · GoThemePresets — Pick a preset — default, sci-fi, medieval, Material, kids, comic or arcade; read colours and sizes from the tokens." loading="lazy"></figure>
+      <figure class="shot"><img src="img/widgets/goui.webp" width="958" height="571" alt="GoUi · GoThemePresets — Pick a preset — default, sci-fi, medieval, Material, kids, comic or arcade; read colours and sizes from the tokens." loading="lazy"></figure>
       <p>Pick a preset — default, sci-fi, medieval, Material, kids, comic or arcade; read colours and sizes from the tokens.</p>
       <p class="catalog-base">extends <code>RefCounted</code></p>
       <pre><code>GoUi.<wbr>use_preset(<wbr>GoThemePresets.<wbr>MATERIAL_LIGHT)
@@ -940,10 +1087,19 @@ face.<wbr>cut = 8
 panel.<wbr>add_theme_stylebox_override(<wbr>&amp;"panel",<wbr> face)</code></pre>
     </div>
     <div class="card">
+      <h3 id="gostyleboxsprite-gotexturesprite"><code>GoStyleBoxSprite · GoTextureSprite</code></h3>
+      <p>A painted PNG drawn in nine slices, and its icon twin for a slider handle or a switch.</p>
+      <p class="catalog-base">extends <code>StyleBox</code></p>
+      <pre><code>var plate := GoStyleBoxSprite.<wbr>new(<wbr>)
+plate.<wbr>texture = preload(<wbr>"res://ui/painted/gloss_green.<wbr>png")
+plate.<wbr>pixels_per_unit = 3.0
+button.<wbr>add_theme_stylebox_override(<wbr>&amp;"normal",<wbr> plate)</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gosafearea-goscale"><code>GoSafeArea · GoScale</code></h3>
       <p>Notches, the gesture bar and the keyboard; breakpoints in dp.</p>
       <p class="catalog-base">extends <code>Control · RefCounted</code></p>
-      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_window(<wbr>))
+      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_viewport(<wbr>))
 var size_class := GoScale.<wbr>breakpoint_for_dp(<wbr>minf(<wbr>usable.<wbr>size.<wbr>x,<wbr> usable.<wbr>size.<wbr>y))   # by the short side</code></pre>
     </div>
     <div class="card">

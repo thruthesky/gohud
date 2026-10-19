@@ -177,6 +177,8 @@ static func use_preset(value: Variant) -> void:
 	# 🛑 Throw the font size baseline away — once the theme changes there is no putting the old theme's sizes back.
 	_base_font_sizes.clear()
 	_mobile_type = false
+	# 🔤 The new look's per-language font lead follows the language already chosen.
+	set_font_locale(TranslationServer.get_locale())
 	_notify()
 
 
@@ -192,9 +194,15 @@ static func theme() -> Theme:
 ## 🔤 A preset theme may name a **body font** of its own (`go_body_font` metadata — the Material presets' Roboto). It
 ## becomes the theme's `default_font` only when the project chose no font (Project Settings → GUI → Theme → Custom or
 ## Custom Font): a project's own font — a Korean, Japanese or Chinese one above all — is never replaced.
+## A preset may also **bake** its font in (`go_body_font_baked` metadata — `arcade_light` carries Magnet Mayhem's own
+## font, so its labels set exactly as the game's): that one stands down the same way when the project chose a font.
 ## 🛑 Not in the editor: the theme there is the resource on disk, and a font set on it could be saved into the file.
 static func _with_body_font(look: Theme) -> Theme:
-	if look.default_font != null or not look.has_meta(&"go_body_font") or Engine.is_editor_hint(): return look
+	if Engine.is_editor_hint(): return look
+	if look.has_meta(&"go_body_font_baked"):
+		if project_has_font() and look.default_font == look.get_meta(&"go_body_font_baked"): look.default_font = null
+		return look
+	if look.default_font != null or not look.has_meta(&"go_body_font"): return look
 	if project_has_font(): return look
 	look.default_font = look.get_meta(&"go_body_font") as Font
 	return look
@@ -206,6 +214,69 @@ static func project_has_font() -> bool:
 		var chosen := str(ProjectSettings.get_setting("gui/theme/custom_font", "")) + str(ProjectSettings.get_setting("gui/theme/custom", ""))
 		_project_font = 0 if chosen.strip_edges().is_empty() else 1
 	return _project_font == 1
+
+
+# ── Per-language font lead ─────────────────────────────────────────────
+
+## Theme metadata naming a body-font fallback per language: `{"ko": Font, "ja": Font, "zh_CN": Font, "zh_TW": Font}`
+## (`arcade_light` writes Magnet Mayhem's four Noto Sans CJK fonts). A look without it has no lead to change.
+const LOCALE_FONTS_META := &"go_locale_fonts"
+
+
+## 🔤 Switch the UI language: the look's **font order first**, then `TranslationServer.set_locale(code)` (only when it
+## differs). The translation change re-renders every text, and the fonts are already in their new order by then.
+##
+## ```gdscript
+## GoUi.set_locale("ja")   # Japanese glyph shapes for the Han characters it shares with Chinese and Korean
+## ```
+static func set_locale(code: String) -> void:
+	set_font_locale(code)
+	if TranslationServer.get_locale() != code: TranslationServer.set_locale(code)
+
+
+## 🔤 Put [param code]'s own font first among the fallbacks of the look's body font (a `FontVariation`), the others
+## after it in the order the theme wrote them — a Han character shared by Chinese, Japanese and Korean then takes the
+## shape that language's readers expect. The language's font comes from the theme's `go_locale_fonts` metadata: the
+## code itself (`zh_TW`), else its language (`ko_KR` → `ko`); Chinese by script or region (Hans → `zh_CN`; Hant, TW,
+## HK, MO → `zh_TW`; any other → `zh_CN`). A code with no font of its own (`en`) restores the written order.
+## Returns whether the order changed. `use_preset()` runs it for the current locale.
+## 🛑 It assigns `fallbacks` **only when the order really changes**: every assignment re-shapes all the text on
+##    screen, and a settings screen may call this on every change. Not in the editor (the theme there is the file).
+static func set_font_locale(code: String) -> bool:
+	if Engine.is_editor_hint(): return false
+	var look := theme()
+	if look == null or not look.has_meta(LOCALE_FONTS_META): return false
+	var font := look.get_meta(&"go_body_font_baked", look.default_font) as FontVariation
+	var fonts: Variant = look.get_meta(LOCALE_FONTS_META)
+	if font == null or not (fonts is Dictionary): return false
+	if not font.has_meta(&"go_fallbacks_written"): font.set_meta(&"go_fallbacks_written", font.fallbacks.duplicate())
+	var lead: Font = (fonts as Dictionary).get(_locale_font_key(code, fonts), null)
+	var order: Array[Font] = []
+	if lead != null: order.append(lead)
+	for written: Font in font.get_meta(&"go_fallbacks_written"):
+		if written != lead: order.append(written)
+	var now := font.fallbacks
+	var same := now.size() == order.size()
+	for i in order.size():
+		if not same: break
+		same = now[i] == order[i]
+	if same: return false
+	font.fallbacks = order
+	return true
+
+
+## The key of [param fonts] that [param code] reads in, or `""` — see `set_font_locale`.
+static func _locale_font_key(code: String, fonts: Dictionary) -> String:
+	if fonts.has(code): return code
+	var parts := code.replace("-", "_").split("_")
+	var language := parts[0].to_lower()
+	if language == "zh":
+		var key := "zh_CN"
+		if not parts.has("Hans"):
+			for tag: String in ["Hant", "TW", "HK", "MO"]:
+				if parts.has(tag): key = "zh_TW"
+		return key if fonts.has(key) else ""
+	return language if fonts.has(language) else ""
 
 
 ## The backup theme that fills tokens in. `null` when `token_fallback` is off.
@@ -276,6 +347,8 @@ static func color(key: StringName) -> Color:
 	var name := String(key)
 	if name.ends_with("_fill") and not _has_color(key):
 		return color(StringName(name.trim_suffix("_fill")))
+	# A role color (`GoTheme.HEADING`, `ALERT`) a theme never heard of is the token the role was drawn in before.
+	if GoTheme.STAND_INS.has(key) and not _has_color(key): return color(GoTheme.STAND_INS[key])
 	return GoTheme.color_of(theme(), key, _fallback_theme())
 
 
@@ -317,11 +390,19 @@ static func _has_color(key: StringName) -> bool:
 
 
 ## A single metric (dp). `GoConfig.metric_overrides` takes precedence over the theme.
+## The `touch` token: a `GoConfig.min_touch_size` the project chose, else the look's own (48; `arcade_light` 44).
 static func metric(key: StringName) -> int:
 	var overrides := config.metric_overrides
 	if overrides.has(key): return overrides[key]
-	if key == GoTheme.TOUCH: return config.min_touch_size
+	if key == GoTheme.TOUCH:
+		if config.touch_size_chosen(): return config.min_touch_size
+		return GoTheme.metric_of(theme(), key, _fallback_theme(), config.min_touch_size)
 	return GoTheme.metric_of(theme(), key, _fallback_theme())
+
+
+## 👆 The touch floor in force (dp) — what every widget's hit area keeps to. See `GoConfig.min_touch_size`.
+static func touch_size() -> float:
+	return float(metric(GoTheme.TOUCH))
 
 
 ## A **copy** of one surface StyleBox. 🛑 Without the copy, a color change on one card bleeds into every card.
@@ -494,5 +575,6 @@ static func reset() -> void:
 	_stacked = null
 	_stacked_main = null
 	_stacked_extra = []
+	GoScale.simulate({})
 	GoThemePresets.reset()
 	_watchers.clear()

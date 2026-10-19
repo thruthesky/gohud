@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>ウィンドウとオーバーレイ <small>(9)</small></h2>
+  <h2>ウィンドウとオーバーレイ <small>(12)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -260,6 +260,15 @@ layer.<wbr>add_child(<wbr>window)</code></pre>
 add_child(<wbr>sheet)
 sheet.<wbr>open(<wbr>"Inventory")
 sheet.<wbr>body.<wbr>add_child(<wbr>bag_list)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gopage"><code>GoPage</code></h3>
+      <p>カテゴリレール（横向きは左、縦向きは上のタブ）、プレビュー、戻るを備えた全画面ページ。</p>
+      <p class="catalog-base">継承 <code>CanvasLayer</code></p>
+      <pre><code>var page := GoPage.<wbr>new(<wbr>)
+add_child(<wbr>page)
+page.<wbr>open(<wbr>"Settings")
+page.<wbr>set_tabs(<wbr>[<wbr>{<wbr>id = &amp;"sound",<wbr> label = "Sound",<wbr> icon = GoIconSet.<wbr>VOLUME_HIGH,<wbr> badge = ""}])</code></pre>
     </div>
     <div class="card">
       <h3 id="godialogs"><code>GoDialogs</code></h3>
@@ -320,6 +329,20 @@ tour.<wbr>start(<wbr>[<wbr>{<wbr>"target": bag_button,<wbr> "title": "Bag",<wbr>
       <pre><code>var console := GoConsole.<wbr>new(<wbr>)
 add_child(<wbr>console)
 console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goribbonheader"><code>GoRibbonHeader</code></h3>
+      <p>カードの上端にかかる画面タイトルのリボン。グリフとルックの角の絵つき。</p>
+      <p class="catalog-base">継承 <code>Control</code></p>
+      <pre><code>var header := GoRibbonHeader.<wbr>make(<wbr>"PAUSED",<wbr> GoIconSet.<wbr>PAUSE)
+card_column.<wbr>add_child(<wbr>header)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofitbox"><code>GoFitBox</code></h3>
+      <p>カードをまるごと画面内に収める。大きすぎればリボンごと縮め、長いリストは代わりにスクロールする。</p>
+      <p class="catalog-base">継承 <code>Container</code></p>
+      <pre><code>var fit := GoFitBox.<wbr>new(<wbr>)
+fit.<wbr>add_child(<wbr>card)</code></pre>
     </div>
   </div>
 </section>
@@ -546,7 +569,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
 </section>
 
 <section id="buttons" class="catalog">
-  <h2>ボタン・チップ・選択 <small>(9)</small></h2>
+  <h2>ボタン・チップ・選択 <small>(10)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
@@ -572,6 +595,12 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>CLOSE,<wbr> close,<wbr> -1,<wbr> &amp;"close"))
 var bell := GoIconButton.<wbr>new(<wbr>)
 bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goglyphbutton"><code>GoGlyphButton</code></h3>
+      <p>ラベルのすぐ横にグリフが付くボタン。アーケードメニューのつややかなピル型。</p>
+      <p class="catalog-base">継承 <code>Button</code></p>
+      <pre><code>row.<wbr>add_child(<wbr>GoGlyphButton.<wbr>make(<wbr>"Play",<wbr> GoIconSet.<wbr>PLAY,<wbr> GoTheme.<wbr>VAR_PRIMARY_BUTTON))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
@@ -622,7 +651,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
 </section>
 
 <section id="inputs" class="catalog">
-  <h2>入力とピッカー <small>(12)</small></h2>
+  <h2>入力とピッカー <small>(14)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
@@ -686,6 +715,20 @@ volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
       <p class="catalog-base">継承 <code>Control</code></p>
       <pre><code>var price := GoRangeSlider.<wbr>make(<wbr>0.0,<wbr> 500.0,<wbr> 40.0,<wbr> 220.0,<wbr> 10.0)
 price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float) -&gt; void: refilter(<wbr>low,<wbr> high))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goslider"><code>GoSlider</code></h3>
+      <p>ペイント風に描くスライダー。塗りはつまみの先まで伸び、押している間つまみが大きくなる。</p>
+      <p class="catalog-base">継承 <code>HSlider</code></p>
+      <pre><code>var music := GoSlider.<wbr>make(<wbr>0.0,<wbr> 1.0,<wbr> 0.01)
+music.<wbr>theme_type_variation = &amp;"GoSliderGreen"</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goswitch"><code>GoSwitch</code></h3>
+      <p>ペイント風のオン/オフスイッチ。つまみの横に ON / OFF が入る。</p>
+      <p class="catalog-base">継承 <code>CheckButton</code></p>
+      <pre><code>var vibration := GoSwitch.<wbr>make(<wbr>true)
+vibration.<wbr>set_texts(<wbr>tr(<wbr>"ON"),<wbr> tr(<wbr>"OFF"))</code></pre>
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>
@@ -793,7 +836,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD とゲームの形 <small>(11)</small></h2>
+  <h2>HUD とゲームの形 <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -848,6 +891,110 @@ animals.<wbr>set_selected(<wbr>2,<wbr> true)
 side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
+      <h3 id="golevelcard"><code>GoLevelCard</code></h3>
+      <p>ステージ選択のタイル。サムネイル・タイトル・サブタイトルと、状態に応じたチェック・南京錠・PLAY! タグ。</p>
+      <p class="catalog-base">継承 <code>Button</code></p>
+      <pre><code>var card := GoLevelCard.<wbr>make(<wbr>"STAGE 3",<wbr> "OPPONENTS: 3",<wbr> GoLevelCard.<wbr>State.<wbr>CURRENT)
+card.<wbr>pressed.<wbr>connect(<wbr>play_stage)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gokeycluster"><code>GoKeyCluster</code></h3>
+      <p>逆T字に並ぶ移動キー4つ（WASD または矢印キー）。操作説明の画面そのまま。</p>
+      <p class="catalog-base">継承 <code>Control</code></p>
+      <pre><code>var wasd := GoKeyCluster.<wbr>make(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"])
+var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocoverimage"><code>GoCoverImage</code></h3>
+      <p>ボックスいっぱいに広がり、はみ出しを切り取る画像（CSS の object-fit: cover）。</p>
+      <p class="catalog-base">継承 <code>Control</code></p>
+      <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
+shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>試合 HUD の上段のボード 1 枚。アイコンとバナー・バー、数、時計、または準備ゲージ。</p>
+      <p class="catalog-base">継承 <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>試合開始のカウント。3、2、1、GO! を円盤の上に大きく、段ごとにポンと出る。</p>
+      <p class="catalog-base">継承 <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>HUD の隅のボタン。絵のボタンの横に、同じ働きのキーをキーキャップで示す。</p>
+      <p class="catalog-base">継承 <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>3D 世界のキャラクターの上に浮かぶ名札。距離に関係なく画面上で同じ大きさ。</p>
+      <p class="catalog-base">継承 <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>キルフィードのように、一行の通知が積み重なり、フェードインして自動で消えるフィード。</p>
+      <p class="catalog-base">継承 <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>クールダウンリング、準備完了の弾み、ドラッグ照準を備えたタッチ画面用の丸い親指ボタン。</p>
+      <p class="catalog-base">継承 <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>一つのコントロールの周りを暗くして枠で囲む。暗さは消え、枠は残る。</p>
+      <p class="catalog-base">継承 <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>チュートリアルの課題カード。ステップ、タイトル、やること、完了でチェックされるチップとヒント。一行にたためる。</p>
+      <p class="catalog-base">継承 <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>常時表示のパフォーマンス帯。fps、フレーム時間、三角形、ドローコール、ノード、メモリ。fpsが落ちると赤くなる。</p>
+      <p class="catalog-base">継承 <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gomappreview"><code>GoMapPreview</code></h3>
+      <p>レベルの小さな地図。エリア・通路・開始点を描き、ロック中は灰色のシルエットになる。</p>
+      <p class="catalog-base">継承 <code>Control</code></p>
+      <pre><code>var map := GoMapPreview.<wbr>new(<wbr>)
+map.<wbr>add_rect(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>6,<wbr> 4),<wbr> Color(<wbr>"#f2b84b"))
+map.<wbr>add_circle(<wbr>Vector2(<wbr>18,<wbr> 0),<wbr> 5.0,<wbr> Color(<wbr>"#6fc3ff"))
+map.<wbr>add_link(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>18,<wbr> 0),<wbr> 2.0,<wbr> Color(<wbr>"#c9a26b"))
+map.<wbr>set_starts(<wbr>PackedVector2Array(<wbr>[<wbr>Vector2(<wbr>-3,<wbr> 0),<wbr> Vector2(<wbr>20,<wbr> 0)]))</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>
       <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — 毎日の出席報酬。押せるのは今日だけ。" loading="lazy"></figure>
       <p>毎日の出席報酬。押せるのは今日だけ。</p>
@@ -892,11 +1039,11 @@ var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
 </section>
 
 <section id="look" class="catalog">
-  <h2>見た目とシステム <small>(8)</small></h2>
+  <h2>見た目とシステム <small>(9)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="goui-gothemepresets"><code>GoUi · GoThemePresets</code></h3>
-      <figure class="shot"><img src="../img/widgets/goui.webp" width="682" height="571" alt="GoUi · GoThemePresets — プリセット（デフォルト・SF・中世・Material・キッズ・コミック・アーケード）から選び、色とサイズはトークンから読む。" loading="lazy"></figure>
+      <figure class="shot"><img src="../img/widgets/goui.webp" width="958" height="571" alt="GoUi · GoThemePresets — プリセット（デフォルト・SF・中世・Material・キッズ・コミック・アーケード）から選び、色とサイズはトークンから読む。" loading="lazy"></figure>
       <p>プリセット（デフォルト・SF・中世・Material・キッズ・コミック・アーケード）から選び、色とサイズはトークンから読む。</p>
       <p class="catalog-base">継承 <code>RefCounted</code></p>
       <pre><code>GoUi.<wbr>use_preset(<wbr>GoThemePresets.<wbr>MATERIAL_LIGHT)
@@ -940,10 +1087,19 @@ face.<wbr>cut = 8
 panel.<wbr>add_theme_stylebox_override(<wbr>&amp;"panel",<wbr> face)</code></pre>
     </div>
     <div class="card">
+      <h3 id="gostyleboxsprite-gotexturesprite"><code>GoStyleBoxSprite · GoTextureSprite</code></h3>
+      <p>PNG を9スライスで描くペイント済みの面と、スライダーのつまみやスイッチ用のアイコン版。</p>
+      <p class="catalog-base">継承 <code>StyleBox</code></p>
+      <pre><code>var plate := GoStyleBoxSprite.<wbr>new(<wbr>)
+plate.<wbr>texture = preload(<wbr>"res://ui/painted/gloss_green.<wbr>png")
+plate.<wbr>pixels_per_unit = 3.0
+button.<wbr>add_theme_stylebox_override(<wbr>&amp;"normal",<wbr> plate)</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gosafearea-goscale"><code>GoSafeArea · GoScale</code></h3>
       <p>ノッチ・ジェスチャーバー・キーボードを避けた領域と、dp 基準のブレークポイント。</p>
       <p class="catalog-base">継承 <code>Control · RefCounted</code></p>
-      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_window(<wbr>))
+      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_viewport(<wbr>))
 var size_class := GoScale.<wbr>breakpoint_for_dp(<wbr>minf(<wbr>usable.<wbr>size.<wbr>x,<wbr> usable.<wbr>size.<wbr>y))   # by the short side</code></pre>
     </div>
     <div class="card">

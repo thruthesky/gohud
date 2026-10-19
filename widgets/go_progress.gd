@@ -83,7 +83,13 @@ func _ready() -> void:
 	_name_it()
 	visibility_changed.connect(_sync_process)
 	_sync_process()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(queue_redraw)
+	if is_node_ready(): queue_redraw()
 
 
 func _exit_tree() -> void:
