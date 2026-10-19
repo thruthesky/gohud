@@ -63,6 +63,12 @@ static func is_any_surface_open() -> bool:
 	return _open_count > 0
 
 
+## Is a held window open (a `GoDrawer` — `hold_open`)? Unlike a surface, a held window has no "lets play go on" variant:
+## a game asking "does a window take the screen away" counts it as blocking whatever surfaces are up.
+static func is_any_held_open() -> bool:
+	return _held_count > 0
+
+
 ## A window that is not a surface takes (`on`) or gives back (`not on`) its place in `is_any_open()` — call it once on open
 ## and once on close, from `_exit_tree` too (the back-gesture rule, `GoBackPolicy`).
 static func hold_open(on: bool) -> void:

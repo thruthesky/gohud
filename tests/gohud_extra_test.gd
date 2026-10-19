@@ -707,6 +707,7 @@ func _drawer() -> void:
 	drawer.open("Esc")
 	await frames(2)
 	check(GoSurface.is_any_open() and not GoSurface.is_any_surface_open(), "drawer: open, it counts as a window, not a surface")
+	check(GoSurface.is_any_held_open(), "drawer: open, it is a held window (is_any_held_open)")
 	var esc := InputEventAction.new()
 	esc.action = &"ui_cancel"
 	esc.pressed = true
@@ -714,6 +715,7 @@ func _drawer() -> void:
 	await frames(2)
 	check(not drawer.is_open(), "drawer: Escape (ui_cancel) closes it")
 	check(not GoSurface.is_any_open(), "drawer: closed, it gives the window count back")
+	check(not GoSurface.is_any_held_open(), "drawer: closed, no held window is left")
 	# 🛑 Leaving the tree **puts the state down too** — otherwise re-adding and closing releases the back-button
 	#    claim one more time and eats another window's claim with it.
 	drawer.open("다시")
@@ -727,6 +729,28 @@ func _drawer() -> void:
 	await frames(2)
 	drawer.queue_free()
 	await frames(1)
+	# ↔️ A one-sided heading mark mirrors for RTL (`GoStyle.section(…, rtl)` → `mirror_box`) — on a copy.
+	var mark := StyleBoxFlat.new()
+	mark.border_width_left = 3
+	mark.content_margin_left = 6.0
+	mark.expand_margin_left = 1.0
+	mark.corner_radius_top_left = 2
+	mark.corner_radius_bottom_left = 4
+	var flipped := GoStyle.mirror_box(mark) as StyleBoxFlat
+	check(flipped != null and flipped.border_width_right == 3 and flipped.border_width_left == 0
+			and is_equal_approx(flipped.content_margin_right, 6.0) and is_equal_approx(flipped.expand_margin_right, 1.0)
+			and flipped.corner_radius_top_right == 2 and flipped.corner_radius_bottom_right == 4 and flipped.corner_radius_top_left == 0,
+		"mirror_box: borders, padding, overhang and corners swap sides")
+	check(mark.border_width_left == 3 and mark.border_width_right == 0, "mirror_box: the face itself is untouched")
+	var ltr_heading := GoStyle.section("Sound", false)
+	var rtl_heading := GoStyle.section("Sound", false, true)
+	var ltr_face := ltr_heading.get_theme_stylebox(&"normal")
+	var rtl_face := rtl_heading.get_theme_stylebox(&"normal")
+	check(is_equal_approx(rtl_face.content_margin_right, ltr_face.content_margin_left)
+			and is_equal_approx(rtl_face.content_margin_left, ltr_face.content_margin_right),
+		"section(rtl): the skin's heading face is mirrored")
+	ltr_heading.free()
+	rtl_heading.free()
 	section("drawer")
 
 

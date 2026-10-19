@@ -183,6 +183,14 @@ func open(title := "") -> void:
 	visible = true
 	_relayout()
 	_animate(true)
+	# 🛑 The pointer did not move, so the engine still thinks it is over the control that opened the drawer (its button):
+	#    that control's tooltip timer runs on and its tooltip pops up over the drawer — and in Godot 4.7 a click inside a
+	#    visible tooltip goes to the tooltip window, not to what is under it (a press picks any embedded window whose rect
+	#    holds the point, passthrough or not). An "all menus" drawer opened from a corner ☰ had the ☰ tooltip sitting on
+	#    its own ✕, which then did nothing (2026-10-19). Re-reading the hover now (a synthetic motion at the pointer) puts
+	#    it on the scrim / panel, and leaving the button cancels its tooltip. Deferred: `open()` usually runs inside that
+	#    button's press handling, and input must not be pushed from inside input.
+	if not Engine.is_editor_hint(): get_viewport().update_mouse_cursor_state.call_deferred()
 	GoBackPolicy.acquire(get_tree())
 	# 🔑 An open drawer is a window like a surface: the game's input pauses and a coach mark waits (`GoSurface.is_any_open`).
 	GoSurface.hold_open(true)

@@ -430,13 +430,45 @@ static func label(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPAR
 
 
 ## One section title line (a small, dim, uppercase-feeling heading).
-static func section(text_or_key: String, translate := true) -> Label:
+## 🛑 A face knows nothing about text direction (the `edge_card` rule): a skin that marks the heading on one side (the
+##    sci-fi accent bar down the left) must stand it where the text starts — in RTL (Arabic, Urdu) on the **right**. The
+##    caller reads `Control.is_layout_rtl()` of the container it adds the heading to and passes it as [param rtl]; the
+##    skin's face is then mirrored (`mirror_box`). Measured 2026-10-19: an Urdu "all menus" drawer drew the bar at the left
+##    edge, a panel's width away from its right-aligned heading.
+static func section(text_or_key: String, translate := true, rtl := false) -> Label:
 	var node := label_key(text_or_key, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED)) if translate \
 		else label(text_or_key, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
 	node.name = "Section"
 	# Lets the skin mark the heading. The default skin's is an empty face, so the look is unchanged.
-	node.add_theme_stylebox_override(&"normal", GoUi.skin().section_box())
+	var face := GoUi.skin().section_box()
+	node.add_theme_stylebox_override(&"normal", mirror_box(face) if rtl else face)
 	return node
+
+
+## [param face] for the other text direction: left and right swapped — the padding and, on a `StyleBoxFlat`, the border
+## widths, the overhang (`expand_margin_*`) and the corner radii. Returns a copy; the face itself is untouched. A custom
+## `StyleBox` only gets its padding swapped (what it draws is its own — give it a side property to mirror it).
+static func mirror_box(face: StyleBox) -> StyleBox:
+	if face == null: return null
+	var out := face.duplicate() as StyleBox
+	var left := out.content_margin_left
+	out.content_margin_left = out.content_margin_right
+	out.content_margin_right = left
+	var flat := out as StyleBoxFlat
+	if flat != null:
+		var border := flat.border_width_left
+		flat.border_width_left = flat.border_width_right
+		flat.border_width_right = border
+		var overhang := flat.expand_margin_left
+		flat.expand_margin_left = flat.expand_margin_right
+		flat.expand_margin_right = overhang
+		var top := flat.corner_radius_top_left
+		flat.corner_radius_top_left = flat.corner_radius_top_right
+		flat.corner_radius_top_right = top
+		var bottom := flat.corner_radius_bottom_left
+		flat.corner_radius_bottom_left = flat.corner_radius_bottom_right
+		flat.corner_radius_bottom_right = bottom
+	return out
 
 
 # ── Buttons ────────────────────────────────────────────────────────────

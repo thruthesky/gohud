@@ -129,7 +129,8 @@ for item in items: tiles.add_child(GoStyle.item_card(item))
 |---|---|---|
 | `label(text, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT)` | `Label` | Wraps when `autowrap_text`; ignores mouse |
 | `label_key(key, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT)` | `Label` | Translated |
-| `section(text_or_key, translate := true)` | `Label` | Small muted heading; skin may decorate (`section_box`) |
+| `section(text_or_key, translate := true, rtl := false)` | `Label` | Small muted heading; skin may decorate (`section_box`) — pass `is_layout_rtl()` of its container as `rtl` so a one-sided mark stands where the text starts |
+| `mirror_box(face)` | `StyleBox` | A copy with left and right swapped (padding; a `StyleBoxFlat`'s borders, overhang, corners) |
 | `typography(control, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT)` | void | Apply a role to any Label/Button/RichTextLabel (via type variation, so it follows theme changes) |
 
 Roles: `ROLE_MICRO` `ROLE_COMPACT` `ROLE_CAPTION` `ROLE_BODY` `ROLE_BUTTON` `ROLE_SUBTITLE` `ROLE_TITLE`.

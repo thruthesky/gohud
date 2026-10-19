@@ -47,13 +47,26 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   sat below the screen edge where no scroll reached them (a 13-tile menu on a 327dp-tall landscape phone, 2026-10-16).
   The drawer lays the panel out again, a frame later, whenever its minimum size changes. Test: extra "drawer: a
   wrapping title on first open keeps the panel the screen's height" (2971 vs 1670 before the fix).
+- **A tooltip of the button that opened a `GoDrawer` no longer pops up over the drawer and eats its taps.** The pointer
+  had not moved, so the engine still had it over the button: the button's tooltip appeared over the open drawer, and
+  in Godot 4.7 a click inside a visible tooltip goes to the tooltip window — an "all menus" drawer opened from a corner
+  button had that button's tooltip on its own ✕, which did nothing (2026-10-19). `open()` re-reads the hover at the
+  pointer (`Viewport.update_mouse_cursor_state`, deferred), so it lands on the scrim or the panel and the button's
+  tooltip is cancelled. Checked in a host's live drawer test (a desktop window; the headless suites have no tooltips).
+- **`GoStyle.section(text, translate, rtl)`** (trailing `rtl`, default `false`) mirrors the skin's heading face for a
+  right-to-left heading, and **`GoStyle.mirror_box(face)`** returns a face with left and right swapped (padding; on a
+  `StyleBoxFlat` also borders, overhang and corners). The sci-fi look marks a heading with an accent bar down its left
+  edge; in Urdu the heading is right-aligned and the bar stood a panel's width away from it. Like `edge_card`, the
+  caller passes `Control.is_layout_rtl()` of where the heading goes. Tests: extra "drawer" (mirror_box, section rtl).
 - **Escape closes an open `GoDrawer`, and an open drawer counts as an open window.** The drawer claimed Android back
   but not Escape, so on a desktop Esc fell through to the game behind it (a pause menu opened over the drawer). And
   `GoSurface.is_any_open()` counted only surfaces: with a drawer open a game's WASD still moved the hero and a
   `GoCoachMark` kept pointing over it, then ate the Esc meant for the drawer (an "all menus" drawer in a HUD,
   2026-10-16). `GoDrawer._input` now consumes `ui_cancel` (`close_on_back`; a surface over it goes first), and the
   drawer holds a place in `is_any_open()` while open (`GoSurface.hold_open(on)`; surfaces alone:
-  `GoSurface.is_any_surface_open()`). Tests: extra "drawer" (Esc consumed and closes, window count).
+  `GoSurface.is_any_surface_open()`; held windows alone: `GoSurface.is_any_held_open()` — a game whose surfaces can let
+  play go on, a map overlay, still counts a drawer as blocking). Tests: extra "drawer" (Esc consumed and closes, window
+  count, held count).
 - **A tap on a text field inside a scroll reaches it with its release.** `GoScroll` holds the press on a control that
   yields vertical drags (a `LineEdit`, a slider, a tab bar…) until the finger lifts or picks a direction, then replays
   it. The replayed press left the viewport's "handled" flag up, so the engine dropped the event being dispatched right
