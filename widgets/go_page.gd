@@ -72,6 +72,7 @@ var _tab_buttons := {}
 var _current := &""
 var _landscape := false
 var _arranged := false
+var _content_edge_padding := -1
 
 
 ## 🛑 Built in `_init` — `page.open()` and `page.body` before adding the page to the tree is natural use (as `GoSheet`).
@@ -320,7 +321,11 @@ func _layout_to(area: Vector2) -> void:
 ## there the content column's right side borders the rail and there is no padding to borrow.
 func _sync_content_edge() -> void:
 	var meets_edge := not _landscape or not surface.is_layout_rtl()
-	_content_scroll.set_panel_padding(surface._content_padding if meets_edge else 0)
+	var padding: int = surface._content_padding if meets_edge else 0
+	# Only on a change — re-applying the same insets still re-emits minimum sizes, and the page relayouts on those.
+	if padding == _content_edge_padding: return
+	_content_edge_padding = padding
+	_content_scroll.set_panel_padding(padding)
 
 
 func _arrange(force := false) -> void:
@@ -412,10 +417,13 @@ class _PageSurface extends GoSurface:
 	## 🛑 The window can change size without `size_changed` reaching this surface in the same frame (a stretch change, a
 	##    rotation settling over two frames — measured: the card kept the portrait width after a turn). An open page
 	##    compares the rectangle it laid out for with the current one each frame; the comparison costs nothing.
+	##    And the card fits again when its content's minimum drops: the engine grows a card whose minimum passes its size
+	##    and nothing shrinks it back (measured: a page first shown at 320×640 kept an 796–1073 dp card from the frame
+	##    before its tabs were arranged). The sections' `minimum_size_changed` marks `_layout_dirty` (GoSurface).
 	func _process(delta: float) -> void:
 		super._process(delta)
-		if _active and is_inside_tree() \
-				and GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px) != _laid_out:
+		if _active and is_inside_tree() and (_layout_dirty
+				or GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px) != _laid_out):
 			relayout()
 
 	## A language switch can flip the direction without a resize — the content scroll's edge follows it.

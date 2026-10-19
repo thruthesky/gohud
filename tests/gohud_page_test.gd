@@ -29,6 +29,7 @@ func _initialize() -> void:
 	await _tabs()
 	await _orientation_and_preview()
 	await _long_tab_labels()
+	await _card_follows_content()
 	await _back_and_stacking()
 	await _ownership_after_free()
 	await _rtl()
@@ -215,6 +216,37 @@ func _long_tab_labels() -> void:
 	check(spill == 0, "landscape: a wrapped rail label stays inside its tab (%d spills)" % spill)
 	await _icon_rows()
 	page.queue_free()
+	await frames(2)
+
+
+## A pinned part taller than the screen for a moment grows the card (the engine's minimum); once it is gone the card
+## fits the usable area again by itself, and an idle page does not lay itself out every frame.
+func _card_follows_content() -> void:
+	# The game's case: a page built and shown for the first time on a narrow portrait screen — before its first layout
+	# the tabs stand in the build-time row and ask for a tall card (measured 796 dp at 320×640).
+	await _size(320, 640)
+	var page := GoPage.new()
+	page.open("Fresh")
+	var tabs: Array[Dictionary] = []
+	for i in 6:
+		tabs.append({id = StringName("f%d" % i), label = "Category name %d long" % i, icon = GoIconSet.USER})
+	page.set_tabs(tabs)
+	for i in 30: page.body.add_child(GoStyle.label("Row %d" % i))
+	root.add_child(page)
+	await frames(1)
+	var first := page.surface.card.size.y
+	await frames(4)
+	var area := GoSafeArea.usable_rect(page.surface.get_window())
+	check(_fills(page.surface.card.get_global_rect(), area),
+		"a page first shown in portrait fits the screen once laid out (%.0f → %.0f, area %.0f)"
+		% [first, page.surface.card.size.y, area.size.y])
+	var laid := 0
+	for i in 6:
+		await frames(1)
+		if page.surface._layout_dirty: laid += 1
+	check(laid == 0, "an idle page is not marked for layout frame after frame (%d of 6)" % laid)
+	page.queue_free()
+	await _size(390, 844)
 	await frames(2)
 
 
