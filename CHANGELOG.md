@@ -6,6 +6,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoPage.set_tab_badge(id, badge, alert)`** changes one tab's count badge and red dot in place (no `set_tabs()`
+  rebuild — the shown tab, its body and the focus stay): a count that changes while the page is up.
+- **`GoDrawer.close_when_surface_opens`** (off): a launcher drawer closes when a surface opens while it is up (a tile,
+  a hotkey, a voice command, a prompt), so the window is never left under the drawer where the first Escape / back
+  closes it unseen. `GoSurface.open_surface_count()` is new (the count it compares).
 - **`GoPage` — a full-screen page** for menus that own the whole screen (settings, a bag, a character screen, mail):
   a title with back and close, a category rail that sits on the left in landscape and becomes tabs along the top in
   portrait (`set_tabs()` takes `{id, label, icon, badge}` data, `tab_changed(id)` fires per tab), an optional preview

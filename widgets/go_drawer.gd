@@ -35,6 +35,12 @@ enum Side {
 	RIGHT,  ## From the right of the screen
 }
 
+## 🚪 Close when a window (a `GoSurface`) opens while the drawer is up — for a launcher drawer (an "all menus" list): the
+## window it leads to takes the screen whatever opened it (a tile, a hotkey, a voice command, a prompt from the game), so
+## it is never left UNDER the drawer, where the first Escape / back would close it unseen. A surface already open when the
+## drawer opened does not count. Off (the default): a surface sits wherever its layer puts it, as before.
+@export var close_when_surface_opens := false
+
 ## Which side it comes in from.
 @export var side := Side.LEFT:
 	set(value):
@@ -93,6 +99,8 @@ var _root: Control
 var _scroll: GoScroll
 var _tween: Tween
 var _open := false
+## `GoSurface.open_surface_count()` when it opened (lowered as those close) — `close_when_surface_opens`.
+var _surfaces_at_open := 0
 ## The side the panel face was last made for (`_restyle`).
 var _styled_left := true
 
@@ -155,8 +163,19 @@ func _init() -> void:
 
 func _ready() -> void:
 	_restyle()
+	set_process(false)
 	if not Engine.is_editor_hint():
 		get_viewport().size_changed.connect(_relayout)
+
+
+## `close_when_surface_opens`: watched only while open — a count compare a frame, nothing while closed.
+func _process(_delta: float) -> void:
+	if not _open:
+		set_process(false)
+		return
+	var count := GoSurface.open_surface_count()
+	if count > _surfaces_at_open: close()
+	else: _surfaces_at_open = count
 
 
 func _enter_tree() -> void:
@@ -198,6 +217,8 @@ func open(title := "") -> void:
 	GoBackPolicy.acquire(get_tree())
 	# 🔑 An open drawer is a window like a surface: the game's input pauses and a coach mark waits (`GoSurface.is_any_open`).
 	GoSurface.hold_open(true)
+	_surfaces_at_open = GoSurface.open_surface_count()
+	set_process(close_when_surface_opens and not Engine.is_editor_hint())
 	GoFeedback.opened()
 	opened.emit()
 
@@ -205,6 +226,7 @@ func open(title := "") -> void:
 func close() -> void:
 	if not _open: return
 	_open = false
+	set_process(false)
 	_animate(false)
 	GoBackPolicy.release(get_tree())
 	GoSurface.hold_open(false)

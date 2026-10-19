@@ -47,7 +47,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 | methods | `set_title(text)` · `set_title_key(key)` · `set_back(callable)` (empty Callable hides) · `clear()` · `request_close()` · `is_top()` · `relayout()` · `content_inset()` · `section_gap()` · `attach_resize_handle(control)` |
 | status line | `set_status_text(text, tone := StringName())` · `set_status_key(key, tone)` · `clear_status()` — one pinned line between the body and the footer ("Passwords do not match"), in a colour token's tone. 🛑 Not in the body: an error that lands below a long form's fold looks as if nothing happened. `status` (VBox) · `status_label` (created on first use) |
 | layout pass | Runs **when something changes**, not every frame: a size field above set to a new value, a section's minimum size or visibility, the window, the keyboard, the config. Assign a field and it applies next frame — no `relayout()` call needed. An `ANCHOR` popover follows its anchor every frame. A subclass may replace `relayout()` outright (no `super()`) and still gets these calls |
-| static | `GoSurface.is_any_open() -> bool` — pause gameplay input while true (counts an open `GoDrawer` too) · `is_any_surface_open()` (surfaces only) · `is_any_held_open()` (held windows only — an open `GoDrawer`) · `hold_open(on)` (a non-surface window takes / gives back its place in `is_any_open`) |
+| static | `GoSurface.is_any_open() -> bool` — pause gameplay input while true (counts an open `GoDrawer` too) · `is_any_surface_open()` (surfaces only) · `open_surface_count()` (how many surfaces are open) · `is_any_held_open()` (held windows only — an open `GoDrawer`) · `hold_open(on)` (a non-surface window takes / gives back its place in `is_any_open`) |
 
 🛑 It never frees itself. The owner reacts to `close_requested` (hide, `queue_free`, save first…).
 🛑 Put it inside a `CanvasLayer` so it draws above the game and HUD. Escape / Android Back closes only the
@@ -357,7 +357,7 @@ bag.body.add_child(inventory_grid)
 ```
 
 A `CanvasLayer` on layer 80 (above the HUD and sheets, below snackbars at 90). `side` · `follow_text_direction` ·
-`width_ratio` 0.42 · `min_width` 320 · `max_width` 420 · `alpha` · `dismissable` · `motion_seconds` · `body` `header`
+`width_ratio` 0.42 · `min_width` 320 · `max_width` 420 · `alpha` · `dismissable` · `motion_seconds` · `close_when_surface_opens` (false) · `body` `header`
 `title_label` `panel` · signals `opened` `closed` · `open(title := "")` (the body is **not** emptied) · `close()` ·
 `clear()` · `is_open()` · `set_title()` · `set_title_key()` · `effective_side()`. In a `GoScaffold`, `set_drawer(drawer)`
 makes the app bar's menu button open it.
@@ -374,6 +374,10 @@ makes the app bar's menu button open it.
   surface opened over the drawer closes first.
 - While open it counts in `GoSurface.is_any_open()` (`hold_open`): gameplay input pauses and a `GoCoachMark` waits.
 - An "all menus" drawer: `GoStyle.section()` headers, each over a `GoGrid` of `GoStyle.menu_tile()` tiles.
+- 🚪 A launcher drawer (an "all menus" list) sets `close_when_surface_opens`: a surface that opens while it is up — from
+  a tile, a hotkey, a voice command or a prompt from the game — closes it, so the window is never left UNDER the drawer
+  (layer 80), where the first Escape / back would close it unseen. A surface already open when the drawer opened does
+  not count (`GoSurface.open_surface_count()`).
 
 
 **Opacity.** `drawer.alpha = 0.7` — a ratio (negative = theme/config value).
@@ -510,6 +514,7 @@ restore all come from `GoSurface`.
 | `open(title)` / `open_key(key)` | Shows the page, resets the back button. **Keeps** tabs, preview and `body` (call `clear()` for a fresh tab) |
 | `set_tabs(tabs: Array[Dictionary], selected := &"")` | `{id, label, icon, badge}` (+ `alert = true` for a dot); `label` is translated text or a key; fires `tab_changed` for the shown tab; an empty list hides the rail |
 | `select_tab(id)` · `current_tab()` · `tab_button(id)` | `select_tab` fires `tab_changed` only for a different, known tab |
+| `set_tab_badge(id, badge := "", alert := false)` | Changes one tab's count (`""` removes it) and red dot in place — no rebuild, so the shown tab, its body and the focus stay |
 | `set_preview(node)` | `null` hides it. The page never frees a preview it was handed — replacing it only detaches it |
 | `set_back(callable)` · `set_title(text)` · `clear()` · `close()` · `is_open()` | As `GoSheet` |
 | `toolbar()` / `footer()` | The pinned rows under the header / at the bottom (the surface's own) |

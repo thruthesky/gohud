@@ -64,6 +64,12 @@ static func is_any_surface_open() -> bool:
 	return _open_count > 0
 
 
+## How many surfaces are open now (drawers left out). A drawer that hands the screen to a window opened over it
+## (`GoDrawer.close_when_surface_opens`) compares it with the count when it opened.
+static func open_surface_count() -> int:
+	return _open_count
+
+
 ## Is a held window open (a `GoDrawer` — `hold_open`)? Unlike a surface, a held window has no "lets play go on" variant:
 ## a game asking "does a window take the screen away" counts it as blocking whatever surfaces are up.
 static func is_any_held_open() -> bool:

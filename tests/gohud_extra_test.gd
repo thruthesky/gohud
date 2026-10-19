@@ -833,6 +833,39 @@ func _drawer() -> void:
 	check(not drawer.is_open(), "drawer: Escape (ui_cancel) closes it")
 	check(not GoSurface.is_any_open(), "drawer: closed, it gives the window count back")
 	check(not GoSurface.is_any_held_open(), "drawer: closed, no held window is left")
+	# 🚪 A launcher drawer (`close_when_surface_opens`) hands the screen to a surface that opens while it is up — never left
+	#    over it, where the first Escape would close the surface unseen. One already open when it opened does not count;
+	#    off (the default), a surface opening leaves the drawer open.
+	var before := GoSurface.new()
+	before.visible = false
+	root.add_child(before)
+	var after := GoSurface.new()
+	after.visible = false
+	root.add_child(after)
+	await frames(1)
+	before.visible = true
+	await frames(1)
+	drawer.close_when_surface_opens = true
+	drawer.open("Launcher")
+	await frames(3)
+	check(drawer.is_open(), "drawer: a launcher stays open over a surface that was open before it")
+	after.visible = true
+	await frames(2)
+	check(not drawer.is_open(), "drawer: a launcher closes when a surface opens while it is up")
+	after.visible = false
+	before.visible = false
+	await frames(1)
+	drawer.close_when_surface_opens = false
+	drawer.open("Plain")
+	await frames(2)
+	after.visible = true
+	await frames(2)
+	check(drawer.is_open(), "drawer: off (the default), a surface opening leaves it open")
+	after.visible = false
+	drawer.close()
+	before.free()
+	after.free()
+	await frames(2)
 	# 🛑 Leaving the tree **puts the state down too** — otherwise re-adding and closing releases the back-button
 	#    claim one more time and eats another window's claim with it.
 	drawer.open("다시")

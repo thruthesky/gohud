@@ -155,6 +155,23 @@ func _tabs() -> void:
 	check(badge != null and badge.label_text == "12" and badge.visible, "a tab's badge text shows on its tab")
 	check(page.tab_button(&"one").find_child("Badge", true, false) == null, "a tab without a badge has none")
 	check(page.tab_button(&"three").has_meta(&"gohud_badge"), "alert = true puts a dot on the tab")
+	# 🔁 One tab's count and dot change in place — no rebuild, the shown tab stays and fires nothing.
+	var shown_before := page.current_tab()
+	var fired := seen.size()
+	var two_button := page.tab_button(&"two")
+	page.set_tab_badge(&"one", "3", true)
+	var one_badge := page._row_of(page.tab_button(&"one")).get_node_or_null(^"Badge") as GoBadge
+	check(one_badge != null and one_badge.label_text == "3" and page.tab_button(&"one").has_meta(&"gohud_badge"),
+		"set_tab_badge() puts a count and a dot on a tab")
+	page.set_tab_badge(&"two", "13")
+	check(badge.label_text == "13" and page.tab_button(&"two") == two_button, "set_tab_badge() changes a count in place")
+	page.set_tab_badge(&"one")
+	await frames(1)
+	check(page.tab_button(&"one").find_child("Badge", true, false) == null and not page.tab_button(&"one").has_meta(&"gohud_badge"),
+		"set_tab_badge() with no badge and no alert removes both")
+	page.set_tab_badge(&"missing", "1", true)
+	check(page.current_tab() == shown_before and seen.size() == fired, "set_tab_badge() keeps the shown tab and fires nothing")
+	page.set_tab_badge(&"two", "12")
 	for id in [&"one", &"two", &"three"]:
 		check(page.tab_button(id).size.y >= GoUi.metric(GoTheme.TOUCH) - 0.5,
 			"tab %s is a full touch target (%.0f)" % [id, page.tab_button(id).size.y])

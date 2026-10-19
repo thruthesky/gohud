@@ -229,15 +229,7 @@ func set_tabs(tabs: Array[Dictionary], selected: StringName = &"") -> void:
 			select_tab.bind(id))
 		button.name = "Tab_%s" % id
 		button.set_meta(&"go_page_tab", id)
-		var badge := str(tab.get("badge", ""))
-		var line := _row_of(button)
-		if line != null and not badge.is_empty():
-			var count := GoBadge.make(0, badge, false, GoUi.color(GoTheme.SECONDARY))
-			count.name = "Badge"
-			count.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			line.add_child(count)
-		if bool(tab.get("alert", false)):
-			GoBadge.attach(button, 0, "", true)
+		_dress_tab(button, str(tab.get("badge", "")), bool(tab.get("alert", false)))
 		_rail.add_child(button)
 		_tab_buttons[id] = button
 		_fit_tab(button)
@@ -246,6 +238,39 @@ func set_tabs(tabs: Array[Dictionary], selected: StringName = &"") -> void:
 	if _tabs.is_empty(): return
 	var first := StringName(_tabs[0].get("id", &""))
 	select_tab(selected if _tab_buttons.has(selected) else first)
+
+
+## Changes tab [param id]'s count [param badge] (`""` removes it) and red dot ([param alert]) in place — the tabs are
+## not rebuilt, so the shown tab, its body and the focus stay (a count that changes while the page is up: unspent points,
+## unread mail). An unknown id does nothing.
+func set_tab_badge(id: StringName, badge := "", alert := false) -> void:
+	var button := _tab_buttons.get(id) as Button
+	if button == null: return
+	for tab in _tabs:
+		if StringName(tab.get("id", &"")) == id:
+			tab["badge"] = badge
+			tab["alert"] = alert
+	_dress_tab(button, badge, alert)
+	_fit_tab(button)
+
+
+## The tab button's count badge (in its row, after the label) and red dot (on its corner) — `set_tabs` / `set_tab_badge`.
+func _dress_tab(button: Button, badge: String, alert: bool) -> void:
+	var line := _row_of(button)
+	var count: GoBadge = line.get_node_or_null(^"Badge") as GoBadge if line != null else null
+	if badge.is_empty():
+		if count != null:
+			line.remove_child(count)
+			count.queue_free()
+	elif count != null:
+		count.label_text = badge
+	elif line != null:
+		count = GoBadge.make(0, badge, false, GoUi.color(GoTheme.SECONDARY))
+		count.name = "Badge"
+		count.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		line.add_child(count)
+	if alert: GoBadge.attach(button, 0, "", true)
+	else: GoBadge.detach(button)
 
 
 ## Shows tab [param id] and fires `tab_changed` when it is a different tab. An unknown id does nothing.
