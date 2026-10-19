@@ -285,8 +285,8 @@ func _relayout() -> void:
 ##    minimum changes, lay it out again (next frame — after the containers have sorted).
 func _on_panel_minimum() -> void:
 	if not _open or not is_inside_tree(): return
-	var window := get_window()
-	if window != null and not is_equal_approx(panel.size.y, window.get_visible_rect().size.y): _relayout.call_deferred()
+	var view := get_viewport()
+	if view != null and not is_equal_approx(panel.size.y, view.get_visible_rect().size.y): _relayout.call_deferred()
 
 
 func _animate(shown: bool) -> void:
