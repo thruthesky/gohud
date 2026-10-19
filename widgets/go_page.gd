@@ -403,8 +403,11 @@ class _PageSurface extends GoSurface:
 		#    carried the other orientation's minimums (a portrait preview band kept a landscape card 32dp too tall).
 		var owner_page: GoPage = page.get_ref() if page != null else null
 		if owner_page != null: owner_page._layout_to(area.size)
-		card.position = area.position.round()
-		card.size = area.size.round()
+		# Whole pixels, inside the area: rounding the size up put the card's last row 0.3 px past an 800×450 window's
+		# 355.7 logical px (key_bindings_ui "MoveArrows outside the window", 2026-10-19).
+		var top_left := area.position.ceil()
+		card.position = top_left
+		card.size = area.end.floor() - top_left
 
 	## 🛑 The window can change size without `size_changed` reaching this surface in the same frame (a stretch change, a
 	##    rotation settling over two frames — measured: the card kept the portrait width after a turn). An open page

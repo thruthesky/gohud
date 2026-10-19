@@ -54,6 +54,12 @@ func frames(count: int) -> void:
 	for _i in count: await process_frame
 
 
+## The card covers [param area] to within a pixel on every side and never reaches past it (a fractional logical size
+## must not round the card's last row off the screen).
+func _fills(card: Rect2, area: Rect2) -> bool:
+	return area.grow(0.001).encloses(card) and card.size.x > area.size.x - 1.0 and card.size.y > area.size.y - 1.0
+
+
 func _size(width: int, height: int) -> void:
 	root.content_scale_size = Vector2i(width, height)
 	await frames(3)
@@ -95,8 +101,8 @@ func _open_close() -> void:
 	check(not quit_on_go_back, "with a page open the back gesture does not quit")
 	# Safe-area fill: the card is the usable rectangle, the ground behind is the whole screen and opaque.
 	var area := GoSafeArea.usable_rect(page.surface.get_window())
-	check(page.surface.card.get_global_rect().is_equal_approx(Rect2(area.position.round(), area.size.round())),
-		"the card fills the safe area (%s vs %s)" % [page.surface.card.get_global_rect(), area])
+	check(_fills(page.surface.card.get_global_rect(), area),
+		"the card fills the safe area in whole pixels, never past it (%s vs %s)" % [page.surface.card.get_global_rect(), area])
 	var ground := page.surface._scrim
 	check(ground.get_global_rect().size.is_equal_approx(page.surface.get_viewport_rect().size),
 		"the ground fills the whole screen (%s)" % ground.get_global_rect())
@@ -291,7 +297,7 @@ func _orientation_and_preview() -> void:
 	check(rail.size.x >= page.rail_min_width - 0.5 and rail.size.x <= page.rail_max_width + 0.5,
 		"landscape: the rail width is within its bounds (%.0f)" % rail.size.x)
 	var area := GoSafeArea.usable_rect(page.surface.get_window())
-	check(page.surface.card.get_global_rect().size.is_equal_approx(area.size.round()), "landscape: the card still fills the safe area (%s vs %s · min %s)"
+	check(_fills(page.surface.card.get_global_rect(), area), "landscape: the card still fills the safe area (%s vs %s · min %s)"
 		% [page.surface.card.size, area.size, page.surface.card.get_combined_minimum_size()])
 
 	page.set_preview(null)
