@@ -6,6 +6,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **The widgets speak their own UI cue** (`GoFeedback`, plugged into `GoFeedback.sound_handler`): every one has a
+  `feedback` export, the `GoFeedback` event it plays (an empty one is silent). `GoGlyphButton`, `GoLevelCard` and
+  `GoSwitch` say `tapped` on the player's press (never on a `button_pressed` set from code); `GoSlider` says the new
+  `stepped` (`slider_tick`) when the player moves it, not when code sets its value; `GoNoticeFeed.push()` says the new
+  `noticed` (`notice_pop`); `GoSurface.request_close()` says `closed` (`close_feedback`, on) and a surface says
+  `opened` when it shows if `open_feedback` is on (off). `GoIconButton` stays silent unless given a `feedback`.
+  `GoSheet`, `GoCombobox` and `GoDialogs` turn their surface's `close_feedback` off, so a close is one cue.
+  `GoFeedback.noticed()`, `GoFeedback.stepped()` and `GoConfig.sound_cues` `noticed` / `stepped` are new; `noticed`
+  and `stepped` never buzz.
 - **`GoSurface.fit_screen_share`** (0): under a centred `FitMode.SCALE` fit, the least share of the safe area (0–1)
   the window covers. A smaller card grows past its own size (a scale above 1) until it and its overhang reach the
   share across or down, whichever comes first, as far as the screen holds it — a room window that takes 70% of a

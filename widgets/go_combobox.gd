@@ -181,6 +181,7 @@ func _open() -> void:
 			_surface = null
 			_search = null
 	_surface.close_requested.connect(dispose, CONNECT_ONE_SHOT)
+	_surface.close_feedback = false   # a pick says tapped; the list just goes
 
 
 ## Lays out only the entries matching the current search text.

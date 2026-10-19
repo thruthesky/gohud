@@ -200,6 +200,12 @@ var resizable := false
 var show_header := true
 var scroll_body := true
 var close_enabled := true
+## 🔔 Say `GoFeedback.opened()` each time the window shows (enters the tree visible, or it or a parent turns visible).
+## Off by default: `GoSheet`, `GoPopover` and `GoDialogs` say their own; turn it on for a window the game shows itself.
+var open_feedback := false
+## 🔔 Say `GoFeedback.closed()` when the player asks to close it (`request_close()`: the close button, the close key,
+## a tap on the scrim, Escape / Back). Off for a host that says its own (`GoSheet.close()`, `GoCombobox`'s pick).
+var close_feedback := true
 ## Control to focus when opened. Without one, pointer input leaves focus nowhere.
 var initial_focus: Control
 
@@ -1138,7 +1144,9 @@ func clear() -> void:
 
 
 func request_close() -> void:
-	if close_enabled and is_top(): close_requested.emit()
+	if close_enabled and is_top():
+		if close_feedback: GoFeedback.closed()
+		close_requested.emit()
 
 
 # ── Topmost test ───────────────────────────────────────────────────────
@@ -1187,6 +1195,7 @@ func _sync_active() -> void:
 		if scroll != null: scroll.scroll_vertical = 0
 		relayout()
 		if fade_in: _fade = GoStyle.fade(card, _fade, true)
+		if open_feedback and not Engine.is_editor_hint(): GoFeedback.opened()
 		_focus_default.call_deferred()
 	else:
 		# Closed in the frame of a drag — the last height still reaches a host that keeps it for the next open.

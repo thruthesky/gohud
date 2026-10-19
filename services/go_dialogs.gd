@@ -120,6 +120,7 @@ func _init() -> void:
 	_surface.fit_content = true
 	# Close (X) counts as "confirm" on an alert that has only a confirm button, and as "cancel" on a question that has one.
 	_surface.close_requested.connect(func() -> void: _finish(not _cancel.visible))
+	_surface.close_feedback = false   # _finish says confirmed / canceled itself
 	_layer.add_child(_surface)
 
 	_body = GoStyle.label("")
