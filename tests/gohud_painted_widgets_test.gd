@@ -385,6 +385,31 @@ func _level_card_stars(look: StringName) -> void:
 	check(not card.star_row.visible, "%s card stars: back to 0 hides the row" % look)
 	holder.queue_free()
 	await frames(1)
+	# 🛑 Under a GoScroll a scaled card with stars once never finished its frame (the gallery at 0.8): the row now
+	#    restyles its stars in place, and the tile holds its three lines.
+	var scroll := GoScroll.new()
+	scroll.theme = GoUi.theme()
+	scroll.custom_minimum_size = Vector2(320, 400)
+	root.add_child(scroll)
+	var page := VBoxContainer.new()
+	scroll.add_child(page)
+	var scaled := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
+	scaled.stars = 2
+	scaled.scale_factor = 0.8
+	scaled.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	page.add_child(scaled)
+	await frames(2)
+	var kept := scaled.star_row.star_nodes[0].get_child(0)
+	scaled.star_size = 20.0
+	await frames(2)
+	check(scaled.star_row.visible and scaled.star_row.star_nodes[0].get_child(0) == kept
+		and scaled.star_row.star_nodes[0].get_child_count() == 1 and scaled.star_row.star_side() == 16.0,
+		"%s card stars: a new star size restyles the same star in a GoScroll" % look)
+	check(scaled.star_row.get_global_rect().end.y <= scaled.get_global_rect().end.y,
+		"%s card stars: a scaled tile holds its star line (row %s, card %s)" % [look,
+			scaled.star_row.get_global_rect().end.y, scaled.get_global_rect().end.y])
+	scroll.queue_free()
+	await frames(1)
 
 
 # ── Glyph button ───────────────────────────────────────────────────────
