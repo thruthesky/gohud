@@ -207,7 +207,48 @@ func _long_tab_labels() -> void:
 		var words: Label = button.find_children("*", "Label", true, false)[0]
 		if not button.get_global_rect().grow(0.5).encloses(words.get_global_rect()): spill += 1
 	check(spill == 0, "landscape: a wrapped rail label stays inside its tab (%d spills)" % spill)
+	await _icon_rows()
 	page.queue_free()
+	await frames(2)
+
+
+## A glyph icon (a Label marked `go_no_wrap`) never wraps on the rail and sits level with its words, in both orientations.
+func _icon_rows() -> void:
+	# 🔤 An icon-**font** set — its glyphs are `Label`s (a texture set draws TextureRects, which no label rule touches).
+	#    The wide ones (two-cell volume / eye shapes in a host's font) are the ones that wrapped.
+	var glyphs := GoIconSet.new()
+	var points: Dictionary[StringName, int] = {&"volume": 0x1F50A, &"eye": 0x1F441, &"crown": 0x265B, &"check": 0x2713}
+	glyphs.codepoints = points
+	GoUi.config.icons = glyphs
+	var page := GoPage.new()
+	root.add_child(page)
+	page.open("Icons")
+	var tabs: Array[Dictionary] = []
+	var icons: Array[StringName] = [&"volume", &"eye", &"crown", &"check"]
+	for i in icons.size():
+		tabs.append({id = StringName("i%d" % i), label = "Tab %d" % i, icon = icons[i]})
+	page.set_tabs(tabs)
+	for shape: Vector2i in [Vector2i(844, 390), Vector2i(390, 844)]:
+		await _size(shape.x, shape.y)
+		await frames(3)
+		var wrapped := 0
+		var drawn := 0
+		var off := 0.0
+		for i in icons.size():
+			var button := page.tab_button(StringName("i%d" % i))
+			for words in button.find_children("*", "Label", true, false):
+				if not words.has_meta(&"go_icon"): continue
+				drawn += 1
+				if (words as Label).autowrap_mode != TextServer.AUTOWRAP_OFF: wrapped += 1
+				var title: Label = null
+				for other in button.find_children("*", "Label", true, false):
+					if not other.has_meta(&"go_icon"): title = other
+				off = maxf(off, absf(words.get_global_rect().get_center().y - title.get_global_rect().get_center().y))
+		check(drawn == icons.size() and wrapped == 0 and off <= 1.0,
+			"%s: tab glyphs never wrap and sit level with their words (%d glyphs · %d wrapped · %.1f px off)"
+			% ["landscape" if shape.x > shape.y else "portrait", drawn, wrapped, off])
+	page.queue_free()
+	GoUi.config.icons = null
 	await frames(2)
 
 

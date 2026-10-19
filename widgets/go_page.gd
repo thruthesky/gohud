@@ -340,6 +340,9 @@ func _fit_tab(button: Control) -> void:
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for words in button.find_children("*", "Label", true, false):
 		if words.get_parent() is GoBadge: continue   # a count keeps its own one-line shape
+		# 🛑 A glyph icon is a Label too (`GoIconSet.node`) and carries `go_no_wrap`: wrapped down the rail it grew taller
+		#    than its row and drew above the words (Sound / Display tabs in a landscape settings page, 2026-10-16).
+		if words.has_meta(&"go_no_wrap"): continue
 		(words as Label).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if _landscape else TextServer.AUTOWRAP_OFF
 	var inset := button.get_child(0) as Control if button.get_child_count() > 0 else null
 	if inset != null and not inset.has_meta(&"go_page_hug"):
