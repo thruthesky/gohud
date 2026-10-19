@@ -29,6 +29,7 @@ func _initialize() -> void:
 	await _tabs()
 	await _orientation_and_preview()
 	await _long_tab_labels()
+	await _card_follows_content()
 	await _back_and_stacking()
 	await _ownership_after_free()
 	await _rtl()
@@ -52,6 +53,12 @@ func section(name: String) -> void:
 
 func frames(count: int) -> void:
 	for _i in count: await process_frame
+
+
+## The card covers [param area] to within a pixel on every side and never reaches past it (a fractional logical size
+## must not round the card's last row off the screen).
+func _fills(card: Rect2, area: Rect2) -> bool:
+	return area.grow(0.001).encloses(card) and card.size.x > area.size.x - 1.0 and card.size.y > area.size.y - 1.0
 
 
 func _size(width: int, height: int) -> void:
@@ -95,8 +102,8 @@ func _open_close() -> void:
 	check(not quit_on_go_back, "with a page open the back gesture does not quit")
 	# Safe-area fill: the card is the usable rectangle, the ground behind is the whole screen and opaque.
 	var area := GoSafeArea.usable_rect(page.surface.get_window())
-	check(page.surface.card.get_global_rect().is_equal_approx(Rect2(area.position.round(), area.size.round())),
-		"the card fills the safe area (%s vs %s)" % [page.surface.card.get_global_rect(), area])
+	check(_fills(page.surface.card.get_global_rect(), area),
+		"the card fills the safe area in whole pixels, never past it (%s vs %s)" % [page.surface.card.get_global_rect(), area])
 	var ground := page.surface._scrim
 	check(ground.get_global_rect().size.is_equal_approx(page.surface.get_viewport_rect().size),
 		"the ground fills the whole screen (%s)" % ground.get_global_rect())
@@ -207,7 +214,79 @@ func _long_tab_labels() -> void:
 		var words: Label = button.find_children("*", "Label", true, false)[0]
 		if not button.get_global_rect().grow(0.5).encloses(words.get_global_rect()): spill += 1
 	check(spill == 0, "landscape: a wrapped rail label stays inside its tab (%d spills)" % spill)
+	await _icon_rows()
 	page.queue_free()
+	await frames(2)
+
+
+## A pinned part taller than the screen for a moment grows the card (the engine's minimum); once it is gone the card
+## fits the usable area again by itself, and an idle page does not lay itself out every frame.
+func _card_follows_content() -> void:
+	# The game's case: a page built and shown for the first time on a narrow portrait screen — before its first layout
+	# the tabs stand in the build-time row and ask for a tall card (measured 796 dp at 320×640).
+	await _size(320, 640)
+	var page := GoPage.new()
+	page.open("Fresh")
+	var tabs: Array[Dictionary] = []
+	for i in 6:
+		tabs.append({id = StringName("f%d" % i), label = "Category name %d long" % i, icon = GoIconSet.USER})
+	page.set_tabs(tabs)
+	for i in 30: page.body.add_child(GoStyle.label("Row %d" % i))
+	root.add_child(page)
+	await frames(1)
+	var first := page.surface.card.size.y
+	await frames(4)
+	var area := GoSafeArea.usable_rect(page.surface.get_window())
+	check(_fills(page.surface.card.get_global_rect(), area),
+		"a page first shown in portrait fits the screen once laid out (%.0f → %.0f, area %.0f)"
+		% [first, page.surface.card.size.y, area.size.y])
+	var laid := 0
+	for i in 6:
+		await frames(1)
+		if page.surface._layout_dirty: laid += 1
+	check(laid == 0, "an idle page is not marked for layout frame after frame (%d of 6)" % laid)
+	page.queue_free()
+	await _size(390, 844)
+	await frames(2)
+
+
+## A glyph icon (a Label marked `go_no_wrap`) never wraps on the rail and sits level with its words, in both orientations.
+func _icon_rows() -> void:
+	# 🔤 An icon-**font** set — its glyphs are `Label`s (a texture set draws TextureRects, which no label rule touches).
+	#    The wide ones (two-cell volume / eye shapes in a host's font) are the ones that wrapped.
+	var glyphs := GoIconSet.new()
+	var points: Dictionary[StringName, int] = {&"volume": 0x1F50A, &"eye": 0x1F441, &"crown": 0x265B, &"check": 0x2713}
+	glyphs.codepoints = points
+	GoUi.config.icons = glyphs
+	var page := GoPage.new()
+	root.add_child(page)
+	page.open("Icons")
+	var tabs: Array[Dictionary] = []
+	var icons: Array[StringName] = [&"volume", &"eye", &"crown", &"check"]
+	for i in icons.size():
+		tabs.append({id = StringName("i%d" % i), label = "Tab %d" % i, icon = icons[i]})
+	page.set_tabs(tabs)
+	for shape: Vector2i in [Vector2i(844, 390), Vector2i(390, 844)]:
+		await _size(shape.x, shape.y)
+		await frames(3)
+		var wrapped := 0
+		var drawn := 0
+		var off := 0.0
+		for i in icons.size():
+			var button := page.tab_button(StringName("i%d" % i))
+			for words in button.find_children("*", "Label", true, false):
+				if not words.has_meta(&"go_icon"): continue
+				drawn += 1
+				if (words as Label).autowrap_mode != TextServer.AUTOWRAP_OFF: wrapped += 1
+				var title: Label = null
+				for other in button.find_children("*", "Label", true, false):
+					if not other.has_meta(&"go_icon"): title = other
+				off = maxf(off, absf(words.get_global_rect().get_center().y - title.get_global_rect().get_center().y))
+		check(drawn == icons.size() and wrapped == 0 and off <= 1.0,
+			"%s: tab glyphs never wrap and sit level with their words (%d glyphs · %d wrapped · %.1f px off)"
+			% ["landscape" if shape.x > shape.y else "portrait", drawn, wrapped, off])
+	page.queue_free()
+	GoUi.config.icons = null
 	await frames(2)
 
 
@@ -250,7 +329,7 @@ func _orientation_and_preview() -> void:
 	check(rail.size.x >= page.rail_min_width - 0.5 and rail.size.x <= page.rail_max_width + 0.5,
 		"landscape: the rail width is within its bounds (%.0f)" % rail.size.x)
 	var area := GoSafeArea.usable_rect(page.surface.get_window())
-	check(page.surface.card.get_global_rect().size.is_equal_approx(area.size.round()), "landscape: the card still fills the safe area (%s vs %s · min %s)"
+	check(_fills(page.surface.card.get_global_rect(), area), "landscape: the card still fills the safe area (%s vs %s · min %s)"
 		% [page.surface.card.size, area.size, page.surface.card.get_combined_minimum_size()])
 
 	page.set_preview(null)
@@ -264,7 +343,8 @@ func _orientation_and_preview() -> void:
 	check(page.body.get_parent() == page._content_holder and not page._content_scroll.visible, "set_scrolls(false) unwraps the body")
 	page.set_scrolls(true)
 	await frames(1)
-	check(page.body.get_parent() == page._content_scroll, "set_scrolls(true) puts the scroll back")
+	check(GoScroll.containing(page.body) == page._content_scroll and page._content_scroll.visible
+		and page._content_scroll._edge_frame.visible, "set_scrolls(true) puts the scroll back")
 	page.close()
 	page.queue_free()
 	await _size(390, 844)
@@ -334,12 +414,26 @@ func _rtl() -> void:
 	var ltr_rail := page._rail_scroll.get_global_rect()
 	var ltr_content := page._content_holder.get_global_rect()
 	check(ltr_rail.position.x < ltr_content.position.x, "left to right: the rail is on the left")
+	# The content scroll takes the shared panel edge where its column meets the card's right edge.
+	var gutter := maxi(0, page.surface._content_padding - GoUi.metric(GoTheme.SCROLL_EDGE))
+	check(page._content_scroll._edge_frame != null and page._content_scroll._edge_gutter == gutter and gutter > 0,
+		"left to right: the content scrollbar borrows the card's right padding (gutter %d of %d)"
+		% [page._content_scroll._edge_gutter, gutter])
 	TranslationServer.set_locale("ar")
 	await frames(4)
 	var rail := page._rail_scroll.get_global_rect()
 	var content := page._content_holder.get_global_rect()
 	check(rail.position.x > content.position.x,
 		"right to left: the rail mirrors to the right (rail %.0f · content %.0f)" % [rail.position.x, content.position.x])
+	check(page._content_scroll._edge_gutter == 0,
+		"right to left landscape: the content column borders the rail — no padding to borrow (gutter %d)"
+		% page._content_scroll._edge_gutter)
+	await _size(390, 844)
+	gutter = maxi(0, page.surface._content_padding - GoUi.metric(GoTheme.SCROLL_EDGE))
+	check(page._content_scroll._edge_gutter == gutter and gutter > 0,
+		"right to left portrait: one column, the scrollbar borrows the right padding again (gutter %d of %d)"
+		% [page._content_scroll._edge_gutter, gutter])
+	await _size(844, 390)
 	var header := page.surface.header
 	check(page.surface.close_button.get_global_rect().position.x < page.surface.title_label.get_global_rect().position.x,
 		"right to left: the close button mirrors with the header (%s)" % header.get_global_rect())

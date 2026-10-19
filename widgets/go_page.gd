@@ -72,6 +72,7 @@ var _tab_buttons := {}
 var _current := &""
 var _landscape := false
 var _arranged := false
+var _content_edge_padding := -1
 
 
 ## 🛑 Built in `_init` — `page.open()` and `page.body` before adding the page to the tree is natural use (as `GoSheet`).
@@ -134,6 +135,10 @@ func _build_frame() -> void:
 	body.name = "PageBody"
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(body)
+	# 🔑 The shared panel edge (as `GoSurface`'s own body scroll): the scrollbar sits in the card's padding, four units in
+	#    from the card's right edge, and glows near the column's sides are not clipped. The padding follows the look and
+	#    the density on each layout (`_sync_content_edge`).
+	_content_scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
 
 
 # ── Opening and closing ────────────────────────────────────────────────
@@ -198,13 +203,14 @@ func set_scrolls(on: bool) -> void:
 	if on == _scrolls: return
 	_scrolls = on
 	if on:
-		body.reparent(_content_scroll, false)
+		# The edge frame puts the scroll's content in an inset (`GoScroll.use_panel_edge`) — the body goes back there.
+		body.reparent(_content_scroll._content_inset if _content_scroll._content_inset != null else _content_scroll, false)
 		body.size_flags_vertical = Control.SIZE_FILL
-		_content_scroll.visible = true
+		_content_scroll.set_section_visible(true)
 	else:
 		body.reparent(_content_holder, false)
 		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		_content_scroll.visible = false
+		_content_scroll.set_section_visible(false)
 
 
 # ── Tabs ───────────────────────────────────────────────────────────────
@@ -307,6 +313,19 @@ func _layout_to(area: Vector2) -> void:
 		_landscape = landscape
 		_arrange(true)
 	_size_parts(area)
+	_sync_content_edge()
+
+
+## The content column borrows the card's right padding for its scrollbar only where it meets that edge: always left
+## to right, and in portrait (one column) right to left too. A right-to-left landscape page has the rail on the right —
+## there the content column's right side borders the rail and there is no padding to borrow.
+func _sync_content_edge() -> void:
+	var meets_edge := not _landscape or not surface.is_layout_rtl()
+	var padding: int = surface._content_padding if meets_edge else 0
+	# Only on a change — re-applying the same insets still re-emits minimum sizes, and the page relayouts on those.
+	if padding == _content_edge_padding: return
+	_content_edge_padding = padding
+	_content_scroll.set_panel_padding(padding)
 
 
 func _arrange(force := false) -> void:
@@ -340,6 +359,9 @@ func _fit_tab(button: Control) -> void:
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for words in button.find_children("*", "Label", true, false):
 		if words.get_parent() is GoBadge: continue   # a count keeps its own one-line shape
+		# 🛑 A glyph icon is a Label too (`GoIconSet.node`) and carries `go_no_wrap`: wrapped down the rail it grew taller
+		#    than its row and drew above the words (Sound / Display tabs in a landscape settings page, 2026-10-16).
+		if words.has_meta(&"go_no_wrap"): continue
 		(words as Label).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if _landscape else TextServer.AUTOWRAP_OFF
 	var inset := button.get_child(0) as Control if button.get_child_count() > 0 else null
 	if inset != null and not inset.has_meta(&"go_page_hug"):
@@ -386,17 +408,29 @@ class _PageSurface extends GoSurface:
 		#    carried the other orientation's minimums (a portrait preview band kept a landscape card 32dp too tall).
 		var owner_page: GoPage = page.get_ref() if page != null else null
 		if owner_page != null: owner_page._layout_to(area.size)
-		card.position = area.position.round()
-		card.size = area.size.round()
+		# Whole pixels, inside the area: rounding the size up put the card's last row 0.3 px past an 800×450 window's
+		# 355.7 logical px (key_bindings_ui "MoveArrows outside the window", 2026-10-19).
+		var top_left := area.position.ceil()
+		card.position = top_left
+		card.size = area.end.floor() - top_left
 
 	## 🛑 The window can change size without `size_changed` reaching this surface in the same frame (a stretch change, a
 	##    rotation settling over two frames — measured: the card kept the portrait width after a turn). An open page
 	##    compares the rectangle it laid out for with the current one each frame; the comparison costs nothing.
+	##    And the card fits again when its content's minimum drops: the engine grows a card whose minimum passes its size
+	##    and nothing shrinks it back (measured: a page first shown at 320×640 kept an 796–1073 dp card from the frame
+	##    before its tabs were arranged). The sections' `minimum_size_changed` marks `_layout_dirty` (GoSurface).
 	func _process(delta: float) -> void:
 		super._process(delta)
-		if _active and is_inside_tree() \
-				and GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px) != _laid_out:
+		if _active and is_inside_tree() and (_layout_dirty
+				or GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px) != _laid_out):
 			relayout()
+
+	## A language switch can flip the direction without a resize — the content scroll's edge follows it.
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_TRANSLATION_CHANGED or what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
+			var owner_page: GoPage = page.get_ref() if page != null else null
+			if owner_page != null: owner_page._sync_content_edge.call_deferred()
 
 	## The ground behind the card — the theme's background, opaque, for an opaque page (no world showing in the
 	## notch bands); the usual scrim otherwise.

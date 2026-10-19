@@ -12,7 +12,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   beside the content (`set_preview()`), and the content area (`body`, scrolling unless `set_scrolls(false)`). The
   chrome is a `GoSurface` filling the safe area, so back-gesture ownership, Escape / Android back closing only the
   topmost window and focus restore are the surface's own; the ground behind is opaque by default (`opaque`), so a host
-  can stop drawing what a page covers. Tests: `tests/gohud_page_test.gd` (in `tools/check_all.sh`).
+  can stop drawing what a page covers. The card snaps to whole pixels inside the usable area and refits when its
+  content's minimum drops; the content scroll keeps the shared panel edge where its column meets the card's right
+  edge; a tab's glyph icon never wraps with the rail's labels. Tests: `tests/gohud_page_test.gd` (in `tools/check_all.sh`).
 - **`GoSurface.fit_screen_share`** (0): under a centred `FitMode.SCALE` fit, the least share of the safe area (0–1)
   the window covers. A smaller card grows past its own size (a scale above 1) until it and its overhang reach the
   share across or down, whichever comes first, as far as the screen holds it — a room window that takes 70% of a

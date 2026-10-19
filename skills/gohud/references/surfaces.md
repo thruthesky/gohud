@@ -532,3 +532,9 @@ page.set_preview(character_view)   # a SubViewportContainer, say
 🔑 Build each tab on `tab_changed`, or build them all up front into `body` and toggle their visibility there — the
 page never builds content itself. 🛑 Nested vertical scrolls fight over the finger: a tab whose content scrolls by
 itself (a slot grid in its own `GoScroll`) calls `set_scrolls(false)` first.
+
+🔑 Layout rules the page keeps for you: the card snaps to whole pixels **inside** the usable area (a fractional logical
+window never rounds its last row off screen) and fits again whenever its content's minimum drops; the content scroll
+takes the shared panel edge (`GoScroll.use_panel_edge` — the scrollbar in the card's right padding) wherever its column
+meets the card's right edge, i.e. always left to right and in portrait — in a right-to-left landscape page the rail is
+there instead; a tab's glyph icon never wraps with the rail's labels.
