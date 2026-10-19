@@ -305,7 +305,8 @@ func _orientation_and_preview() -> void:
 	check(page.body.get_parent() == page._content_holder and not page._content_scroll.visible, "set_scrolls(false) unwraps the body")
 	page.set_scrolls(true)
 	await frames(1)
-	check(page.body.get_parent() == page._content_scroll, "set_scrolls(true) puts the scroll back")
+	check(GoScroll.containing(page.body) == page._content_scroll and page._content_scroll.visible
+		and page._content_scroll._edge_frame.visible, "set_scrolls(true) puts the scroll back")
 	page.close()
 	page.queue_free()
 	await _size(390, 844)
@@ -375,12 +376,26 @@ func _rtl() -> void:
 	var ltr_rail := page._rail_scroll.get_global_rect()
 	var ltr_content := page._content_holder.get_global_rect()
 	check(ltr_rail.position.x < ltr_content.position.x, "left to right: the rail is on the left")
+	# The content scroll takes the shared panel edge where its column meets the card's right edge.
+	var gutter := maxi(0, page.surface._content_padding - GoUi.metric(GoTheme.SCROLL_EDGE))
+	check(page._content_scroll._edge_frame != null and page._content_scroll._edge_gutter == gutter and gutter > 0,
+		"left to right: the content scrollbar borrows the card's right padding (gutter %d of %d)"
+		% [page._content_scroll._edge_gutter, gutter])
 	TranslationServer.set_locale("ar")
 	await frames(4)
 	var rail := page._rail_scroll.get_global_rect()
 	var content := page._content_holder.get_global_rect()
 	check(rail.position.x > content.position.x,
 		"right to left: the rail mirrors to the right (rail %.0f · content %.0f)" % [rail.position.x, content.position.x])
+	check(page._content_scroll._edge_gutter == 0,
+		"right to left landscape: the content column borders the rail — no padding to borrow (gutter %d)"
+		% page._content_scroll._edge_gutter)
+	await _size(390, 844)
+	gutter = maxi(0, page.surface._content_padding - GoUi.metric(GoTheme.SCROLL_EDGE))
+	check(page._content_scroll._edge_gutter == gutter and gutter > 0,
+		"right to left portrait: one column, the scrollbar borrows the right padding again (gutter %d of %d)"
+		% [page._content_scroll._edge_gutter, gutter])
+	await _size(844, 390)
 	var header := page.surface.header
 	check(page.surface.close_button.get_global_rect().position.x < page.surface.title_label.get_global_rect().position.x,
 		"right to left: the close button mirrors with the header (%s)" % header.get_global_rect())

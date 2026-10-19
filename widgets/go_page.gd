@@ -134,6 +134,10 @@ func _build_frame() -> void:
 	body.name = "PageBody"
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(body)
+	# 🔑 The shared panel edge (as `GoSurface`'s own body scroll): the scrollbar sits in the card's padding, four units in
+	#    from the card's right edge, and glows near the column's sides are not clipped. The padding follows the look and
+	#    the density on each layout (`_sync_content_edge`).
+	_content_scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
 
 
 # ── Opening and closing ────────────────────────────────────────────────
@@ -198,13 +202,14 @@ func set_scrolls(on: bool) -> void:
 	if on == _scrolls: return
 	_scrolls = on
 	if on:
-		body.reparent(_content_scroll, false)
+		# The edge frame puts the scroll's content in an inset (`GoScroll.use_panel_edge`) — the body goes back there.
+		body.reparent(_content_scroll._content_inset if _content_scroll._content_inset != null else _content_scroll, false)
 		body.size_flags_vertical = Control.SIZE_FILL
-		_content_scroll.visible = true
+		_content_scroll.set_section_visible(true)
 	else:
 		body.reparent(_content_holder, false)
 		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		_content_scroll.visible = false
+		_content_scroll.set_section_visible(false)
 
 
 # ── Tabs ───────────────────────────────────────────────────────────────
@@ -307,6 +312,15 @@ func _layout_to(area: Vector2) -> void:
 		_landscape = landscape
 		_arrange(true)
 	_size_parts(area)
+	_sync_content_edge()
+
+
+## The content column borrows the card's right padding for its scrollbar only where it meets that edge: always left
+## to right, and in portrait (one column) right to left too. A right-to-left landscape page has the rail on the right —
+## there the content column's right side borders the rail and there is no padding to borrow.
+func _sync_content_edge() -> void:
+	var meets_edge := not _landscape or not surface.is_layout_rtl()
+	_content_scroll.set_panel_padding(surface._content_padding if meets_edge else 0)
 
 
 func _arrange(force := false) -> void:
@@ -400,6 +414,12 @@ class _PageSurface extends GoSurface:
 		if _active and is_inside_tree() \
 				and GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px) != _laid_out:
 			relayout()
+
+	## A language switch can flip the direction without a resize — the content scroll's edge follows it.
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_TRANSLATION_CHANGED or what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
+			var owner_page: GoPage = page.get_ref() if page != null else null
+			if owner_page != null: owner_page._sync_content_edge.call_deferred()
 
 	## The ground behind the card — the theme's background, opaque, for an opaque page (no world showing in the
 	## notch bands); the usual scrim otherwise.
