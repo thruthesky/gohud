@@ -664,7 +664,7 @@ card.pressed.connect(_play.bind(3))
 | `title` · `subtitle` · `locked_text` ("LOCKED") · `play_text` ("PLAY!") | The texts come from the caller (language); each shrinks to fit with `GoStyle.fit_font_size`. An empty `subtitle` hides the row |
 | `thumbnail` · `thumbnail_focus` · `thumbnail_slot` | The picture is drawn through `GoCoverImage`; leave it empty to put your own node in the slot |
 | `selected` | The gold ring (`GoSkin.selection_ring_box()`) |
-| `stars` (0) · `max_stars` (3) · `star_size` (16) · `star_gap` (2) · `star_row` | A `GoStarRow` as a third line under the subtitle, lined up with the title: `stars` of `max_stars` lit. 0 shows no row (a card that never sets it is unchanged); a `LOCKED` tile shows none. The corners stay free for the check, the PLAY! tag and the pointer |
+| `stars` (0) · `max_stars` (3) · `star_size` (22, readable on a phone) · `star_gap` (2) · `star_row` | A `GoStarRow` as a third line under the subtitle, lined up with the title: `stars` of `max_stars` lit. 0 shows no row (a card that never sets it is unchanged); a `LOCKED` tile shows none. The corners stay free for the check, the PLAY! tag and the pointer |
 | `check_texture` · `lock_texture` · `person_texture` · `play_tag_texture` · `pointer_texture` | Art overrides. Empty: the skin (`GoSkin.widget_art`), else the icon set, else a drawn plate — a look with no art still works |
 | `scale_factor` · `card_size` (300×98) | Sizes are multiplied by `scale_factor` |
 | `lock_gap` (4) | Pixels between the padlock and LOCKED — set on the column, so a theme's own VBox gap never reaches it |

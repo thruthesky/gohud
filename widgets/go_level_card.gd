@@ -38,6 +38,8 @@ const VAR_TITLE := &"GoTitle"
 const VAR_WELL := &"GoWell"
 ## The thumbnail of a locked level is greyed with this (the game greys its map preview).
 const LOCKED_TINT := Color(0.62, 0.64, 0.7)
+## How much vertical padding a tile gives up for its star line (`stars`), so the default tile keeps its height.
+const STAR_LINE_ROOM := 5.0
 
 ## 🔔 What the player's press says through `GoFeedback` (`GoFeedback.TAPPED`, `FAILED` for a locked card, …). Empty:
 ## silent. A press from code says nothing.
@@ -229,7 +231,7 @@ const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 		pointer_size = value
 		_queue_refresh()
 ## One rating star's side (`stars`).
-@export var star_size := 16.0:
+@export var star_size := 22.0:
 	set(value):
 		star_size = value
 		_queue_refresh()
@@ -543,12 +545,13 @@ func _refresh() -> void:
 	#    taller than the game's (on purpose: it stays easy to press).
 	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, GoUi.touch_size()))
 
-	_margin.add_theme_constant_override(&"margin_left", roundi(thumbnail_inset * k))
-	for side in [&"margin_right", &"margin_top", &"margin_bottom"]:
-		_margin.add_theme_constant_override(side, roundi(card_padding * k))
-	_row.add_theme_constant_override(&"separation", roundi(row_gap * k))
 	# Three lines (title, subtitle, stars) close up so the default tile stays its height.
 	var three_lines := stars > 0 and not locked
+	_margin.add_theme_constant_override(&"margin_left", roundi(thumbnail_inset * k))
+	_margin.add_theme_constant_override(&"margin_right", roundi(card_padding * k))
+	for side in [&"margin_top", &"margin_bottom"]:
+		_margin.add_theme_constant_override(side, _pad_y(three_lines))
+	_row.add_theme_constant_override(&"separation", roundi(row_gap * k))
 	_text_box.add_theme_constant_override(&"separation", roundi((2.0 if three_lines else 4.0) * k))
 	_lock_box.add_theme_constant_override(&"separation", lock_gap)
 	_subtitle_row.add_theme_constant_override(&"separation", roundi(text_gap * k))
@@ -704,9 +707,15 @@ func _hold_text() -> void:
 	var k := scale_factor
 	var tall := maxf(card_size.y * k, GoUi.touch_size())
 	if star_row.visible:
-		var pad := roundi(card_padding * k) * 2
+		var pad := _pad_y(true) * 2
 		tall = maxf(tall, ceilf(_text_box.get_combined_minimum_size().y) + pad)
 	custom_minimum_size = Vector2(card_size.x * k, tall)
+
+
+## The padding above and below the text column. With the star line it gives up `STAR_LINE_ROOM`, so the 22 px stars
+## (readable on a phone) fit the default tile's height.
+func _pad_y(three_lines: bool) -> int:
+	return roundi(maxf(0.0, card_padding - (STAR_LINE_ROOM if three_lines else 0.0)) * scale_factor)
 
 
 func _label_font() -> Font:

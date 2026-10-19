@@ -365,6 +365,10 @@ func _level_card_stars(look: StringName) -> void:
 				"%s card stars: state %d shows %d of 3" % [look, state, earned])
 	var bottom := card.star_row.get_global_rect().end.y
 	var card_bottom := card.get_global_rect().end.y
+	check(card.star_size == 22.0 and card.star_row.star_side() == 22.0,
+		"%s card stars: 22 px by default, big enough to read on a phone" % look)
+	check(is_equal_approx(card.size.y, card.card_size.y),
+		"%s card stars: the bigger stars keep the tile its height (%s)" % [look, card.size.y])
 	check(bottom <= card_bottom - 6.0, "%s card stars: the row sits inside the card (row %s, card %s)" % [look, bottom, card_bottom])
 	check(card.star_row.get_global_rect().position.y >= card.subtitle_label.get_global_rect().end.y - 1.0
 		and is_equal_approx(card.star_row.get_global_rect().position.x, card.title_label.get_global_rect().position.x),
@@ -378,7 +382,7 @@ func _level_card_stars(look: StringName) -> void:
 	card.scale_factor = 0.5
 	await frames(1)
 	check(card.star_row.visible and card.star_row.star_nodes.size() == 5 and card.star_row.earned() == 4
-		and is_equal_approx(card.star_row.scale_factor, 0.5) and card.star_row.star_side() == 8.0,
+		and is_equal_approx(card.star_row.scale_factor, 0.5) and card.star_row.star_side() == 11.0,
 		"%s card stars: max_stars and scale_factor reach the row" % look)
 	card.stars = 0
 	await frames(1)

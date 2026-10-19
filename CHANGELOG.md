@@ -14,7 +14,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   are solid (a gold one with a navy rim and a gloss, a grey one), never an outline.
 - **arcade_light's icon set draws `GoIconSet.STAR` with the filled painted gold star** (it fell back to the default
   set's outline star).
-- **`GoLevelCard.stars`** (0) and **`max_stars`** (3): a `GoStarRow` (`star_row`, `star_size` 16, `star_gap` 2) as a
+- **`GoLevelCard.stars`** (0) and **`max_stars`** (3): a `GoStarRow` (`star_row`, `star_size` 22 — readable on a phone — `star_gap` 2) as a
   third line under the subtitle, on an open, cleared or current tile; 0 shows no row and a locked tile never shows
   one, so a card that never sets it is unchanged.
 - **The widgets speak their own UI cue** (`GoFeedback`, plugged into `GoFeedback.sound_handler`): every one has a
