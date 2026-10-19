@@ -128,6 +128,10 @@ func _init() -> void:
 
 	header = GoStyle.row()
 	header.name = "Header"
+	# 🔤 The root is LTR so the panel's own place is measured on the screen; the header's content follows the language,
+	#    as the body's does (`GoScroll` hands its children the locale): in Arabic or Urdu the title stands at the right
+	#    and ✕ at the left, not an RTL title left-aligned beside a ✕ on the far side.
+	header.layout_direction = Control.LAYOUT_DIRECTION_APPLICATION_LOCALE
 	column.add_child(header)
 	title_label = GoStyle.label("", GoTheme.ROLE_TITLE)
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL

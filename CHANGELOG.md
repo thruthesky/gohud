@@ -53,6 +53,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   button had that button's tooltip on its own ✕, which did nothing (2026-10-19). `open()` re-reads the hover at the
   pointer (`Viewport.update_mouse_cursor_state`, deferred), so it lands on the scrim or the panel and the button's
   tooltip is cancelled. Checked in a host's live drawer test (a desktop window; the headless suites have no tooltips).
+- **A `GoDrawer`'s header follows the text direction.** The drawer's root is left-to-right so the panel's place is
+  measured on the screen, and the header inherited it: in Arabic or Urdu the title stood left-aligned on the left and
+  ✕ on the far right while the body below ran right to left. The header row now takes the application locale's
+  direction (title at the right, ✕ at the left); the panel's side is still `side` / `follow_text_direction`. The
+  first-open height check also reads the drawer's viewport, not the window (a drawer in a SubViewport fits that).
+  Test: extra "drawer: right to left, ✕ stands left of the title" (✕ at x 352 right of the title before the fix).
 - **`GoStyle.section(text, translate, rtl)`** (trailing `rtl`, default `false`) mirrors the skin's heading face for a
   right-to-left heading, and **`GoStyle.mirror_box(face)`** returns a face with left and right swapped (padding; on a
   `StyleBoxFlat` also borders, overhang and corners). The sci-fi look marks a heading with an accent bar down its left

@@ -686,6 +686,24 @@ func _drawer() -> void:
 	tall.close()
 	tall.queue_free()
 	await frames(2)
+	# 🔤 Right to left: the header follows the language (title at the right, ✕ at the left); the panel stays where it is.
+	var was_locale := TranslationServer.get_locale()
+	TranslationServer.set_locale("ar")
+	var rtl_drawer := GoDrawer.new()
+	rtl_drawer.motion_seconds = 0.0
+	root.add_child(rtl_drawer)
+	await frames(2)
+	rtl_drawer.open("قائمة")
+	await frames(3)
+	var close_rect := (rtl_drawer.header.get_child(1) as Control).get_global_rect()
+	var title_rect := rtl_drawer.title_label.get_global_rect()
+	check(rtl_drawer.header.is_layout_rtl() and close_rect.end.x <= title_rect.position.x + 0.5,
+		"drawer: right to left, ✕ stands left of the title (✕ %s · title %s)" % [close_rect, title_rect])
+	check(is_equal_approx(rtl_drawer.panel.position.x, 0.0), "drawer: right to left, a left drawer stays on the left")
+	rtl_drawer.close()
+	rtl_drawer.queue_free()
+	TranslationServer.set_locale(was_locale)
+	await frames(2)
 	# 🪟 Container alpha — an `@export`, so it is a **percent**, and it reaches the panel as a **ratio**.
 	# 🛑 There is no `near()` in this file — its only helper is `check`, so the difference is measured directly.
 	var drawer_themed := GoSkin.box_background(drawer.panel.get_theme_stylebox(&"panel")).a
