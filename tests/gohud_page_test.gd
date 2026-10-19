@@ -451,6 +451,18 @@ func _rtl() -> void:
 		"right to left portrait: one column, the scrollbar borrows the right padding again (gutter %d of %d)"
 		% [page._content_scroll._edge_gutter, gutter])
 	await _size(844, 390)
+	# 🛑 The page's own content mirrors too, not only its rail: the body sits in the content scroll's inset, which the
+	#    scroll keeps physically left to right for its rail and margins — the body itself must follow the locale.
+	var row := HBoxContainer.new()
+	var lead := GoStyle.label("lead")
+	var tail := GoStyle.label("tail")
+	row.add_child(lead)
+	row.add_child(tail)
+	page.body.add_child(row)
+	await frames(3)
+	check(page.body.is_layout_rtl() and lead.get_global_rect().position.x > tail.get_global_rect().position.x,
+		"right to left: the page body mirrors — a row's first child is on the right (body rtl %s · lead %.0f · tail %.0f)"
+		% [page.body.is_layout_rtl(), lead.get_global_rect().position.x, tail.get_global_rect().position.x])
 	var header := page.surface.header
 	check(page.surface.close_button.get_global_rect().position.x < page.surface.title_label.get_global_rect().position.x,
 		"right to left: the close button mirrors with the header (%s)" % header.get_global_rect())

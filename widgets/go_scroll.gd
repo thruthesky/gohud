@@ -278,7 +278,13 @@ func _sync_edge_inset() -> void:
 ##    card and then sets `mouse_filter = STOP` on it, or a widget whose `_ready` sets STOP, would otherwise win.
 func _prepare_branch(node: Node) -> void:
 	if node is ScrollBar or node is ScrollContainer: return
-	if node is Control and node.get_parent() == self and node.layout_direction == Control.LAYOUT_DIRECTION_INHERITED:
+	# 🛑 The content's roots are the scroll's children **and the panel-edge inset's** (`use_panel_edge` moves the content
+	#    into `_content_inset`, which stays physically left to right for its margins). Checking only the scroll's own
+	#    children left a page body built before it entered the tree inheriting the inset's LTR: in Urdu and Arabic the
+	#    rail mirrored and every row behind it did not (GoPage settings rows, 2026-10-19).
+	var parent := node.get_parent()
+	var content_root := parent == self or (_content_inset != null and parent == _content_inset)
+	if node is Control and content_root and node.layout_direction == Control.LAYOUT_DIRECTION_INHERITED:
 		node.layout_direction = Control.LAYOUT_DIRECTION_APPLICATION_LOCALE  # the 4.4+ name — `LOCALE` is a deprecated alias
 	_let_finger_through(node)
 	if not node.child_entered_tree.is_connected(_on_branch_entered):

@@ -57,6 +57,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **Right-to-left content inside a panel-edge scroll mirrors again.** `GoScroll.use_panel_edge` moves the content into
+  an inset that stays physically left to right (its margins hold the scrollbar gutter); the scroll handed the locale's
+  direction only to its own children, so content built before the scroll entered the tree — a `GoPage` body, a
+  `GoSurface` body — inherited the inset's LTR: under Arabic / Urdu the rail and header mirrored and the rows did not.
+  The inset's children are content roots too. Test: `gohud_page_test` "the page body mirrors".
+
 - **A `GoDrawer` keeps the screen's height after its first open.** A drawer is built hidden, and containers do not
   lay out while hidden: when `open()` showed it, the header had never been sorted, its wrapping title was 0 wide and
   asked for one character per line, and the panel grew to that height and never shrank back — the body's last rows
