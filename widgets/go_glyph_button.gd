@@ -64,6 +64,10 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		fit_base_size = value
 		_queue_fit()
 
+## 🔔 What the player's press says through `GoFeedback` (`GoFeedback.TAPPED`, `CONFIRMED`, `CANCELED`, …): a sound
+## the project plays and a short buzz on a phone. Empty: silent. A press from code (`button_pressed =`) says nothing.
+@export var feedback: StringName = GoFeedback.TAPPED
+
 var _shift := 0.0
 var _shifting := false
 ## The `font_size` override [member fit_label] put on (0: none of ours).
@@ -117,6 +121,11 @@ func _init() -> void:
 	GoStyle.skin_focus(self)   # arcade_light: out of the focus order like the game's GlossButton
 	# A new text changes the minimum size — the one notice a `Button.text` change gives.
 	minimum_size_changed.connect(_queue_fit)
+	pressed.connect(_on_feedback_pressed)
+
+
+func _on_feedback_pressed() -> void:
+	if not Engine.is_editor_hint(): GoFeedback.play(feedback)
 
 
 static func make(label: String, icon: StringName = &"", variation: StringName = GoTheme.VAR_BUTTON,

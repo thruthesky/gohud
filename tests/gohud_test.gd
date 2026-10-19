@@ -1833,6 +1833,24 @@ func _surface() -> void:
 
 # ── Sheet ────────────────────────────────────────────────────────────
 
+
+## A key press for `push_input`.
+func _key(code: Key) -> InputEventKey:
+	var event := InputEventKey.new()
+	event.keycode = code
+	event.pressed = true
+	return event
+
+
+## A left-button press or release in the screen's top-left corner, away from the windows under test.
+func _mouse(down: bool) -> InputEventMouseButton:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = down
+	event.position = Vector2(1, 1)
+	event.global_position = event.position
+	return event
+
 func _sheet() -> void:
 	GoUi.config.dismiss_on_scrim = true
 	var sheet := GoSheet.new()
@@ -2301,6 +2319,34 @@ func _anchor() -> void:
 	GoSurface._pointer_navigation = pointer_was
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	await frames(2)
+
+	# ── The default control of a window opened by pointer — focused, no ring ───────────────
+	# 🛑 A dialog names its confirm button as `initial_focus`. Opened by a click (or right after walking with game keys)
+	#    that button must take focus — Enter answers it — but **without** the ring: the ring is for steering by keyboard.
+	#    Before, `initial_focus` skipped `suppress_pointer_focus_ring` and every dialog wore the ring on its confirm button.
+	#    The window is in the tree (hidden is enough) before the input — it is what watches the device.
+	#    Enter (an answer key) keeps whichever mode it found.
+	for case: Array in [["a click", [_mouse(true), _mouse(false)], false], ["a game key (W)", [_key(KEY_W)], false],
+			["Tab", [_key(KEY_TAB)], true], ["Tab then Enter", [_key(KEY_TAB), _key(KEY_ENTER)], true],
+			["a click then Enter", [_mouse(true), _mouse(false), _key(KEY_ENTER)], false]]:
+		var focus_win := GoSurface.new()
+		var default_button := GoStyle.button("기본")
+		root.add_child(focus_win)
+		focus_win.body.add_child(default_button)
+		focus_win.initial_focus = default_button
+		await frames(2)
+		# Start from the other mode, so the case's own input is what decides.
+		root.push_input(_mouse(true) if case[2] else _key(KEY_TAB))
+		if case[2]: root.push_input(_mouse(false))
+		for event: InputEvent in case[1]: root.push_input(event)
+		await frames(2)
+		focus_win._focus_default()
+		await frames(2)
+		check(default_button.has_focus(), "after %s the window's default control takes focus" % case[0])
+		check(default_button.has_focus(true) == case[2], "after %s the default control %s its focus ring"
+			% [case[0], "shows" if case[2] else "does not show"])
+		focus_win.queue_free()
+		await frames(2)
 
 	# ── Tooltip ─────────────────────────────────────────────────────────
 	# 🛑 **For an icon button the tooltip is the only description there is.** The engine's default tooltip leaves wrapping on

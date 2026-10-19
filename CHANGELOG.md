@@ -15,6 +15,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   can stop drawing what a page covers. The card snaps to whole pixels inside the usable area and refits when its
   content's minimum drops; the content scroll keeps the shared panel edge where its column meets the card's right
   edge; a tab's glyph icon never wraps with the rail's labels. Tests: `tests/gohud_page_test.gd` (in `tools/check_all.sh`).
+- **The widgets speak their own UI cue** (`GoFeedback`, plugged into `GoFeedback.sound_handler`): every one has a
+  `feedback` export, the `GoFeedback` event it plays (an empty one is silent). `GoGlyphButton`, `GoLevelCard` and
+  `GoSwitch` say `tapped` on the player's press (never on a `button_pressed` set from code); `GoSlider` says the new
+  `stepped` (`slider_tick`) when the player moves it, not when code sets its value; `GoNoticeFeed.push()` says the new
+  `noticed` (`notice_pop`); `GoSurface.request_close()` says `closed` (`close_feedback`, on) and a surface says
+  `opened` when it shows if `open_feedback` is on (off). `GoIconButton` stays silent unless given a `feedback`.
+  `GoSheet`, `GoCombobox` and `GoDialogs` turn their surface's `close_feedback` off, so a close is one cue.
+  `GoFeedback.noticed()`, `GoFeedback.stepped()` and `GoConfig.sound_cues` `noticed` / `stepped` are new; `noticed`
+  and `stepped` never buzz.
 - **`GoSurface.fit_screen_share`** (0): under a centred `FitMode.SCALE` fit, the least share of the safe area (0–1)
   the window covers. A smaller card grows past its own size (a scale above 1) until it and its overhang reach the
   share across or down, whichever comes first, as far as the screen holds it — a room window that takes 70% of a
@@ -75,6 +84,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `GoSurface.is_any_surface_open()`; held windows alone: `GoSurface.is_any_held_open()` — a game whose surfaces can let
   play go on, a map overlay, still counts a drawer as blocking). Tests: extra "drawer" (Esc consumed and closes, window
   count, held count).
+- **A window opened by pointer no longer rings its default button.** `GoSurface.initial_focus` (a dialog's confirm
+  button) took focus with its ring even when `suppress_pointer_focus_ring` was on, so every confirm opened by a click
+  wore the ring — on a filled button in the sci-fi look, dark corner brackets cut over its face (a quit confirm,
+  2026-10-16). The default control still takes focus, so Enter answers it; it just takes it without the ring
+  (`grab_focus(hide_focus)`), and the first Tab or arrow shows it. The device rule behind it now sorts keys: a key that
+  moves focus (`ui_focus_next/prev`, the `ui_` arrows) turns keyboard navigation on, an answer key (`ui_accept`,
+  `ui_select`, `ui_cancel`) keeps the mode, and any other key is the game's (walking with WASD) and counts like a
+  pointer. Tests: "after a click / a game key (W) / Tab / Tab then Enter / a click then Enter …" in `tests/gohud_test.gd` (next to the keyboard-only window checks).
 - **A tap on a text field inside a scroll reaches it with its release.** `GoScroll` holds the press on a control that
   yields vertical drags (a `LineEdit`, a slider, a tab bar…) until the finger lifts or picks a direction, then replays
   it. The replayed press left the viewport's "handled" flag up, so the engine dropped the event being dispatched right

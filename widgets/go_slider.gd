@@ -35,11 +35,17 @@ const MIN_WIDTH := 120.0
 const _ICONS: Array[StringName] = [&"grabber", &"grabber_highlight", &"grabber_disabled"]
 const _BOXES: Array[StringName] = [&"slider", &"grabber_area", &"grabber_area_highlight"]
 
+## 🔔 What a step under the player's hand says through `GoFeedback` (`GoFeedback.STEPPED`: a soft tick, no buzz). The
+## project rate-limits it — a drag moves many steps a second. Empty: silent. A value set from code says nothing.
+@export var feedback: StringName = GoFeedback.STEPPED
+
 ## The theme's parts, read before the blanks went on: StyleBox for the boxes, Texture2D for the icons.
 var _parts: Dictionary[StringName, Resource] = {}
 var _held := false
 var _hovered := false
 var _reading := false
+## The frame the player's last input reached the slider: a value change in that frame is theirs (it says `feedback`).
+var _input_frame := -1
 ## The least size the widget last set itself; a different custom minimum is the caller's own and stays.
 var _floor := Vector2.ZERO
 
@@ -50,6 +56,7 @@ func _init() -> void:
 	# set here, as the game's PaintedSlider does, so a screen that sets its own still wins.
 	_floor = Vector2(MIN_WIDTH, float(GoUi.metric(GoTheme.TOUCH)))
 	custom_minimum_size = _floor
+	value_changed.connect(_on_feedback_value)
 
 
 ## A slider from [param minimum] to [param maximum] snapping to [param snap].
@@ -139,7 +146,10 @@ func _read_parts() -> void:
 	queue_redraw()
 
 
+## 🔑 The script's `_gui_input` runs before the engine's Slider moves the value for the same event, so marking the frame
+##    here tells the player's step (a press, a drag, an arrow key) from `value =` in code.
 func _gui_input(event: InputEvent) -> void:
+	_input_frame = Engine.get_process_frames()
 	var press := event as InputEventMouseButton
 	if press != null and press.button_index == MOUSE_BUTTON_LEFT:
 		_held = press.pressed and editable
@@ -170,6 +180,10 @@ func _draw() -> void:
 	var at := handle_rect()
 	if grab != null: draw_texture_rect(grab, at, false)
 	else: draw_circle(at.get_center(), at.size.x * 0.5, GoUi.color(GoTheme.ACCENT), true, -1.0, true)
+
+
+func _on_feedback_value(_value: float) -> void:
+	if _input_frame == Engine.get_process_frames() and not Engine.is_editor_hint(): GoFeedback.play(feedback)
 
 
 ## Keeps the height floor on the look's touch size, unless the caller set a size of their own.

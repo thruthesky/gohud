@@ -37,6 +37,10 @@ const VAR_WELL := &"GoWell"
 ## The thumbnail of a locked level is greyed with this (the game greys its map preview).
 const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 
+## 🔔 What the player's press says through `GoFeedback` (`GoFeedback.TAPPED`, `FAILED` for a locked card, …). Empty:
+## silent. A press from code says nothing.
+@export var feedback: StringName = GoFeedback.TAPPED
+
 ## The level's name ("STAGE 3").
 @export var title := "":
 	set(value):
@@ -250,6 +254,11 @@ func _init() -> void:
 	_build()
 	_built = true
 	_refresh()
+	pressed.connect(_on_feedback_pressed)
+
+
+func _on_feedback_pressed() -> void:
+	if not Engine.is_editor_hint(): GoFeedback.play(feedback)
 
 
 ## 🔑 Watched on every entry, not once in `_ready` — `reparent()` takes the node out and back, and a watch set only in

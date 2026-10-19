@@ -75,6 +75,7 @@ func _initialize() -> void:
 	await _side_bars()
 	_safe_area_units()
 	await _safe_area_viewport()
+	await _widget_feedback()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -92,6 +93,104 @@ func section(name: String) -> void:
 
 func frames(count: int) -> void:
 	for _i in count: await process_frame
+
+
+# ── Widget feedback (GoFeedback from the widgets themselves) ───────────
+
+## Each widget with a `feedback` says it through GoFeedback when the player acts — and never for a value set from code.
+func _widget_feedback() -> void:
+	section("widget feedback")
+	var cues: Array[String] = []
+	var buzz: Array[int] = []
+	GoFeedback.sound_handler = func(cue: String) -> void: cues.append(cue)
+	GoFeedback.haptic_handler = func(ms: int, _amplitude: float) -> void: buzz.append(ms)
+	var holder := Control.new()
+	holder.size = Vector2(390, 844)
+	root.add_child(holder)
+	await frames(1)
+
+	var glyph := GoGlyphButton.make("Play", GoIconSet.PLAY)
+	holder.add_child(glyph)
+	glyph.pressed.emit()
+	check(cues == ["ui_click"], "a GoGlyphButton press says tapped (%s)" % [cues])
+	glyph.feedback = GoFeedback.CONFIRMED
+	glyph.pressed.emit()
+	check(cues.back() == "ui_confirm", "GoGlyphButton.feedback picks the event")
+	glyph.feedback = &""
+	glyph.pressed.emit()
+	check(cues.size() == 2, "an empty feedback is silent")
+
+	cues.clear()
+	var icon := GoIconButton.new()
+	holder.add_child(icon)
+	icon.pressed.emit()
+	check(cues.is_empty(), "a GoIconButton is silent unless asked")
+	icon.feedback = GoFeedback.TAPPED
+	icon.pressed.emit()
+	check(cues == ["ui_click"], "GoIconButton.feedback = TAPPED says tapped")
+
+	cues.clear()
+	var card := GoLevelCard.new()
+	holder.add_child(card)
+	card.pressed.emit()
+	check(cues == ["ui_click"], "a GoLevelCard press says tapped")
+
+	cues.clear()
+	var flip := GoSwitch.make(false)
+	holder.add_child(flip)
+	flip.button_pressed = true
+	flip.set_pressed_no_signal(false)
+	check(cues.is_empty(), "a switch flipped from code is silent (%s)" % [cues])
+	flip.pressed.emit()
+	check(cues == ["ui_click"], "the player's flip says tapped")
+
+	cues.clear()
+	buzz.clear()
+	var slider := GoSlider.make(0.0, 100.0, 1.0)
+	holder.add_child(slider)
+	slider.value = 30.0
+	check(cues.is_empty(), "a slider value set from code is silent")
+	slider._gui_input(InputEventMouseMotion.new())
+	slider.value = 31.0
+	check(cues == ["slider_tick"], "a step under the player's hand says stepped (%s)" % [cues])
+	check(buzz.is_empty(), "a slider step does not buzz")
+	await frames(1)
+	slider.value = 40.0
+	check(cues.size() == 1, "a later value from code is silent again")
+
+	cues.clear()
+	var feed := GoNoticeFeed.new()
+	holder.add_child(feed)
+	feed.push("RED knocked out BLUE")
+	check(cues == ["notice_pop"], "a notice says noticed (%s)" % [cues])
+	check(buzz.is_empty(), "a notice does not buzz")
+	feed.feedback = &""
+	feed.push("quiet")
+	check(cues.size() == 1, "a feed with no feedback is silent")
+
+	cues.clear()
+	var window := GoSurface.new()
+	window.visible = false
+	holder.add_child(window)
+	await frames(1)
+	window.visible = true
+	check(cues.is_empty(), "a window shows silently by default")
+	window.visible = false
+	window.open_feedback = true
+	window.visible = true
+	check(cues == ["ui_open"], "open_feedback says opened when it shows (%s)" % [cues])
+	holder.visible = false
+	holder.visible = true
+	check(cues == ["ui_open", "ui_open"], "a parent turning visible shows it too")
+	window.request_close()
+	check(cues.back() == "ui_close", "request_close says closed")
+	window.close_feedback = false
+	window.request_close()
+	check(cues.size() == 3, "close_feedback off is silent")
+
+	holder.free()
+	GoFeedback.sound_handler = Callable()
+	GoFeedback.haptic_handler = Callable()
 
 
 # ── Snackbar ──────────────────────────────────────────────────────────

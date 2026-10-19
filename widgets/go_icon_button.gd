@@ -86,6 +86,11 @@ extends Button
 		set_meta(GoStyle.SKIN_FOCUS_META, -1)   # the project chose: the look's focus mode never overrides it
 		notify_property_list_changed()   # now saved in the scene (`_validate_property`)
 
+## 🔔 What the player's press says through `GoFeedback` (`GoFeedback.TAPPED`, …). Empty (the default): silent — an
+## icon button is mostly a part of a bigger widget (a close key, a pager arrow) that says its own. A press from code
+## says nothing.
+@export var feedback: StringName = &""
+
 ## The sibling icon buttons placed alongside. Where the widened hit areas overlap, **whichever centre is nearer** takes the press.
 var touch_peers: Array[Control] = []
 
@@ -102,6 +107,11 @@ func _init() -> void:
 	clip_text = false
 	GoStyle.press_feel(self)
 	GoStyle.skin_focus(self)
+	pressed.connect(_on_feedback_pressed)
+
+
+func _on_feedback_pressed() -> void:
+	if not Engine.is_editor_hint(): GoFeedback.play(feedback)
 
 
 ## 🛑 `keyboard_focus` is saved only once the project set it: unset, it reads the look's mode, and a scene saved under
