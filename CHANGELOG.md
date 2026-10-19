@@ -6,6 +6,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoStarRow`** (`HBoxContainer`): a row of rating stars — `stars` (0) of `max_stars` (3) lit, the rest dim;
+  `star_size`, `gap`, `scale_factor`, `earned_texture` / `empty_texture`, `GoStarRow.make(earned, total, side)`.
+  arcade_light paints them (`assets/arcade_light/stage/star.png` and `star_empty.png`, drawn by
+  `tools/paint_arcade_stars.gd` in the style of the painted check, `GoSkin.widget_art` `star` / `star_empty`); a look
+  with no art draws the icon set's star in `warning_fill`, the unearned ones in a faded `muted_fill`.
+- **`GoLevelCard.stars`** (0) and **`max_stars`** (3): a `GoStarRow` (`star_row`, `star_size` 16, `star_gap` 2) as a
+  third line under the subtitle, on an open, cleared or current tile; 0 shows no row and a locked tile never shows
+  one, so a card that never sets it is unchanged.
 - **The widgets speak their own UI cue** (`GoFeedback`, plugged into `GoFeedback.sound_handler`): every one has a
   `feedback` export, the `GoFeedback` event it plays (an empty one is silent). `GoGlyphButton`, `GoLevelCard` and
   `GoSwitch` say `tapped` on the player's press (never on a `button_pressed` set from code); `GoSlider` says the new

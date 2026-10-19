@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (24)
+8. [HUD and game shapes](#hud-and-game-shapes) (25)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -885,6 +885,15 @@ Extends `Button`. A stage-select tile: thumbnail, title, subtitle, and a check, 
 ```gdscript
 var card := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
 card.pressed.connect(play_stage)
+```
+
+### `GoStarRow`
+
+Extends `HBoxContainer`. A row of rating stars: some lit in gold, the rest dim — a level's best clear or a result screen's grade. Details: `hud.md` §20 (GoLevelCard › GoStarRow).
+
+```gdscript
+var rating := GoStarRow.make(2)
+rating.star_size = 40.0
 ```
 
 ### `GoKeyCluster`

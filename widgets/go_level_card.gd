@@ -1,11 +1,13 @@
 ## 🗺️ **A level-select tile** — the thumbnail on the left, the level's title and a subtitle row (a person icon and
 ## "OPPONENTS: 3", say) beside it, and on the right the state: a check on a cleared level, a padlock with LOCKED on a
-## locked one, a tilted PLAY! tag on the level to play next. A gold ring marks the selected tile.
+## locked one, a tilted PLAY! tag on the level to play next. A gold ring marks the selected tile. `stars` adds a row of
+## rating stars under the subtitle (`GoStarRow`: 1 cleared on easy, 2 on normal, 3 on hard, say).
 ##
 ## ```gdscript
 ## var card := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
 ## card.thumbnail = preload("res://levels/3.png")       # or put your own node in card.thumbnail_slot
 ## card.selected = true
+## card.stars = 2                                        # two of max_stars (3) lit; 0, the default, shows no row
 ## card.pressed.connect(_play.bind(3))
 ## ```
 ##
@@ -74,6 +76,19 @@ const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 @export var play_text := "PLAY!":
 	set(value):
 		play_text = value
+		_queue_refresh()
+
+## The stars earned, shown as a row under the subtitle (`star_row`): `stars` of `max_stars` lit, the rest dim.
+## 0 (the default) shows no row; a locked tile never shows one.
+@export_range(0, 10) var stars := 0:
+	set(value):
+		stars = maxi(0, value)
+		_queue_refresh()
+
+## How many stars the row holds.
+@export_range(1, 10) var max_stars := 3:
+	set(value):
+		max_stars = maxi(1, value)
 		_queue_refresh()
 
 ## The thumbnail, drawn to cover its slot (`GoCoverImage`). Leave it empty to put your own node in `thumbnail_slot`.
@@ -213,6 +228,16 @@ const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 	set(value):
 		pointer_size = value
 		_queue_refresh()
+## One rating star's side (`stars`).
+@export var star_size := 16.0:
+	set(value):
+		star_size = value
+		_queue_refresh()
+## The space between two rating stars.
+@export var star_gap := 2.0:
+	set(value):
+		star_gap = value
+		_queue_refresh()
 @export_group("")
 
 ## Put your own thumbnail here (a live map preview, say): a Control added to it is anchored to fill the slot inside
@@ -228,6 +253,8 @@ var lock: Control
 var play_tag: Control
 var pointer: TextureRect
 var selection_ring: Panel
+## The rating stars under the subtitle (`stars`, `max_stars`) — hidden at 0 stars and on a locked tile.
+var star_row: GoStarRow
 
 var _margin: MarginContainer
 var _row: HBoxContainer
@@ -380,6 +407,9 @@ func _build() -> void:
 	subtitle_label = _text("Subtitle")
 	subtitle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_subtitle_row.add_child(subtitle_label)
+	star_row = GoStarRow.new()
+	star_row.name = "Stars"
+	_text_box.add_child(star_row)
 
 	_lock_box = VBoxContainer.new()
 	_lock_box.name = "Lock"
@@ -545,6 +575,12 @@ func _refresh() -> void:
 	locked_label.text = locked_text
 	tag_label.text = play_text
 	_subtitle_row.visible = not subtitle.is_empty()
+	star_row.visible = stars > 0 and not locked
+	star_row.max_stars = max_stars
+	star_row.stars = stars
+	star_row.star_size = star_size
+	star_row.gap = star_gap
+	star_row.scale_factor = k
 
 	var face_ink := ink()
 	var edge := outline_ink()

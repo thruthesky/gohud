@@ -320,6 +320,24 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	badges.add_child(GoBadge.make(0, "", true))
 	page.add_child(badges)
 
+	page.add_child(GoStyle.section("Level cards and stars", false))
+	# GoLevelCard.stars: 1 cleared on easy, 2 on normal, 3 on hard — 0 (the default) shows no row, a locked card none.
+	var levels := GoStyle.column(GoUi.metric(GoTheme.GAP))
+	for entry in [[GoLevelCard.State.CLEARED, 3], [GoLevelCard.State.CLEARED, 1], [GoLevelCard.State.CURRENT, 2],
+			[GoLevelCard.State.OPEN, 0], [GoLevelCard.State.LOCKED, 0]]:
+		var number := levels.get_child_count() + 1
+		var level := GoLevelCard.make("STAGE %d" % number, "OPPONENTS: %d" % number, entry[0])
+		level.stars = entry[1]
+		level.scale_factor = 0.8   # a 320dp phone still holds the 300dp tile
+		level.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		level.pressed.connect(_say.bind("stage %d" % number))
+		levels.add_child(level)
+	page.add_child(levels)
+	var grade := GoStyle.row()
+	grade.add_child(GoStarRow.make(2, 3, 32.0))
+	grade.add_child(GoStyle.label("GoStarRow — a result screen's grade", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
+	page.add_child(grade)
+
 	page.add_child(GoStyle.section("Fields", false))
 	_gallery_field = GoField.make("Guild name", GoStyle.line_edit("2-16 characters"),
 		"Everyone in the guild sees this")
