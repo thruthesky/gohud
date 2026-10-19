@@ -694,6 +694,10 @@ rating.stars = 3
 
 - 🛑 It ignores the mouse and never flips with the language: the first lit star is the left one. A screen reader hears
   "2/3" (`accessibility_name`).
+- arcade_light's stars are solid: the earned one gold with the navy rim and a gloss, the unearned one a filled grey star.
+  `GoUi.icons().node(GoIconSet.STAR, ...)` in arcade_light is that same gold star (a picture — leave the ink empty).
+- 🛑 It changes its stars in place: a card re-dresses its row in its deferred refresh, and freeing and adding a glyph
+  in that pass under a `GoScroll` never let the frame end (4.7.2).
 
 ## 21. GoKeyCluster — WASD or arrows in a T
 

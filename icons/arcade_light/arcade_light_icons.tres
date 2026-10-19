@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GoIconSet" load_steps=23 format=3]
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
 [ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
@@ -22,11 +22,12 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/plus.png" id="plus"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/minus.png" id="minus"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/close.png" id="close"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/star.png" id="star"]
 
 [resource]
 script = ExtResource("script")
 set_name = "Arcade painted glyphs"
-attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game; plus, minus and close painted for gohud in the same style (tools/paint_arcade_glyphs.gd). gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
+attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game; plus, minus and close painted for gohud in the same style (tools/paint_arcade_glyphs.gd); star is the filled gold rating star (tools/paint_arcade_stars.gd). gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
 fallback = ExtResource("fallback")
 textures = {
 &"back": ExtResource("back"),
@@ -49,6 +50,7 @@ textures = {
 &"plus": ExtResource("plus"),
 &"minus": ExtResource("minus"),
 &"close": ExtResource("close"),
+&"star": ExtResource("star"),
 &"home": ExtResource("exit"),
 &"refresh": ExtResource("retry"),
 &"forward": ExtResource("skip"),

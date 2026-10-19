@@ -134,7 +134,7 @@ func _refresh() -> void:
 	while star_nodes.size() > max_stars:
 		star_nodes.pop_back().free()
 	while star_nodes.size() < max_stars:
-		var holder := Control.new()
+		var holder := MarginContainer.new()
 		holder.name = "Star%d" % (star_nodes.size() + 1)
 		holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -148,23 +148,47 @@ func _refresh() -> void:
 
 
 func _dress(holder: Control, lit: bool, side: float) -> void:
-	for child in holder.get_children(): child.free()
+	var old: Control = holder.get_child(0) if holder.get_child_count() > 0 else null
 	var art := earned_texture if lit else empty_texture
 	if art == null: art = GoUi.skin().widget_art(&"star" if lit else &"star_empty")
+	var fresh: Control = null
 	if art != null:
 		var picture := TextureRect.new()
 		picture.texture = art
 		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		holder.add_child(picture)
-		picture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		fresh = picture
+	elif GoUi.icons().has_icon(GoIconSet.STAR):
+		var ink := GoUi.color(GoTheme.WARNING_FILL)
+		if not lit:
+			ink = GoUi.color(GoTheme.MUTED_FILL)
+			ink.a *= EMPTY_ALPHA
+		fresh = GoUi.icons().node(GoIconSet.STAR, maxi(1, roundi(side)), ink)
+	# 🛑 Restyle the star that is already there rather than free it and add another. A card re-dresses its row in its
+	#    deferred refresh; swapping a glyph Label in that pass, under a `GoScroll`, never let the frame end (4.7.2, 2026-10-19).
+	if old != null and fresh != null and _restyle(old, fresh):
+		fresh.free()
 		return
-	if not GoUi.icons().has_icon(GoIconSet.STAR): return
-	var ink := GoUi.color(GoTheme.WARNING_FILL)
-	if not lit:
-		ink = GoUi.color(GoTheme.MUTED_FILL)
-		ink.a *= EMPTY_ALPHA
-	var glyph := GoUi.icons().node(GoIconSet.STAR, maxi(1, roundi(side)), ink)
-	holder.add_child(glyph)
-	glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for child in holder.get_children(): child.free()
+	if fresh != null: holder.add_child(fresh)
+
+
+## Copies the look of [param fresh] onto [param old] when they are the same kind of node; false when they are not.
+func _restyle(old: Control, fresh: Control) -> bool:
+	if old.get_class() != fresh.get_class(): return false
+	old.custom_minimum_size = fresh.custom_minimum_size
+	old.modulate = fresh.modulate
+	if fresh is TextureRect:
+		(old as TextureRect).texture = (fresh as TextureRect).texture
+		return true
+	var label := old as Label
+	var source := fresh as Label
+	label.text = source.text
+	label.remove_theme_font_override(&"font")
+	if source.has_theme_font_override(&"font"): label.add_theme_font_override(&"font", source.get_theme_font(&"font"))
+	label.remove_theme_font_size_override(&"font_size")
+	if source.has_theme_font_size_override(&"font_size"):
+		label.add_theme_font_size_override(&"font_size", source.get_theme_font_size(&"font_size"))
+	label.add_theme_color_override(&"font_color", source.get_theme_color(&"font_color"))
+	return true

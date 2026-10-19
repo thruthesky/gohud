@@ -10,7 +10,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `star_size`, `gap`, `scale_factor`, `earned_texture` / `empty_texture`, `GoStarRow.make(earned, total, side)`.
   arcade_light paints them (`assets/arcade_light/stage/star.png` and `star_empty.png`, drawn by
   `tools/paint_arcade_stars.gd` in the style of the painted check, `GoSkin.widget_art` `star` / `star_empty`); a look
-  with no art draws the icon set's star in `warning_fill`, the unearned ones in a faded `muted_fill`.
+  with no art draws the icon set's star in `warning_fill`, the unearned ones in a faded `muted_fill`. Both painted stars
+  are solid (a gold one with a navy rim and a gloss, a grey one), never an outline.
+- **arcade_light's icon set draws `GoIconSet.STAR` with the filled painted gold star** (it fell back to the default
+  set's outline star).
 - **`GoLevelCard.stars`** (0) and **`max_stars`** (3): a `GoStarRow` (`star_row`, `star_size` 16, `star_gap` 2) as a
   third line under the subtitle, on an open, cleared or current tile; 0 shows no row and a locked tile never shows
   one, so a card that never sets it is unchanged.

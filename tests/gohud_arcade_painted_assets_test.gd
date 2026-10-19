@@ -179,7 +179,10 @@ func _light_icons() -> void:
 		var want := _glyph(expect[name])
 		check(want != null and icons.texture(name) == want, "arcade_light draws '%s' with the %s glyph" % [name, expect[name]])
 	# Not a glyph here — the default set still draws it.
-	for name: StringName in [&"trash", &"star", &"lock"]:
+	# The rating star is the filled painted one (gold, navy rim, gloss), the same art as GoStarRow's earned star.
+	check(icons.texture(&"star") != null and icons.texture(&"star") == load("res://addons/gohud/assets/arcade_light/stage/star.png"),
+		"arcade_light draws 'star' with the filled painted star")
+	for name: StringName in [&"trash", &"lock"]:
 		var drawn := icons.texture(name)
 		check(drawn != null and drawn == GoUi.DEFAULT_ICONS.texture(name),
 			"arcade_light falls back to the default set for '%s'" % name)

@@ -547,7 +547,9 @@ func _refresh() -> void:
 	for side in [&"margin_right", &"margin_top", &"margin_bottom"]:
 		_margin.add_theme_constant_override(side, roundi(card_padding * k))
 	_row.add_theme_constant_override(&"separation", roundi(row_gap * k))
-	_text_box.add_theme_constant_override(&"separation", roundi(4.0 * k))
+	# Three lines (title, subtitle, stars) close up so the default tile stays its height.
+	var three_lines := stars > 0 and not locked
+	_text_box.add_theme_constant_override(&"separation", roundi((2.0 if three_lines else 4.0) * k))
 	_lock_box.add_theme_constant_override(&"separation", lock_gap)
 	_subtitle_row.add_theme_constant_override(&"separation", roundi(text_gap * k))
 
@@ -691,6 +693,20 @@ func _fit_texts() -> void:
 	var icon_room := room - (person_size + text_gap) * k
 	subtitle_label.add_theme_font_size_override(&"font_size",
 			GoStyle.fit_font_size(PackedStringArray([shown_subtitle]), sub_base, icon_room, font))
+	_hold_text()
+
+
+## The tile is at least as tall as its text column with the padding — the star line never spills out of the card.
+## 🛑 A text column taller than the tile (the stars under a small `scale_factor`, whose fonts stop at their floor) spilled
+##    out, and inside a `GoScroll` the overflow set the layout swinging so a frame never ended (the gallery at 0.8,
+##    2026-10-19). The `Button` takes no size from its children, so the height is handed over here.
+func _hold_text() -> void:
+	var k := scale_factor
+	var tall := maxf(card_size.y * k, GoUi.touch_size())
+	if star_row.visible:
+		var pad := roundi(card_padding * k) * 2
+		tall = maxf(tall, ceilf(_text_box.get_combined_minimum_size().y) + pad)
+	custom_minimum_size = Vector2(card_size.x * k, tall)
 
 
 func _label_font() -> Font:
